@@ -47,12 +47,18 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.4  1998/12/29 14:55:33  eric
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
+ *
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
+ *
  * Revision 1.3  1998/12/28 23:11:30  eric
+ *
  * modified spell code and integration to build on Windows.
  * This is still a hack.
- *
- * Actually, it doesn't yet WORK on Windows.  It just builds.
- * SpellCheckInit is failing for some reason.
  *
  * Actually, it doesn't yet WORK on Windows.  It just builds.
  * SpellCheckInit is failing for some reason.
@@ -95,7 +101,9 @@ static char Rcs_Id[] =
  *
  * Revision 1.41  1994/01/25  07:11:51  geoff
  * Get rid of all old RCS log lines in preparation for the 3.1 release.
-#include "config.h"
+ *
+ */
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -110,7 +118,8 @@ struct dent *	ispell_lookup P ((ichar_t * word, int dotree));
 
 static		inited = 0;
 
-    int			hashfd;
+int linit (hashname)
+char *hashname; /* name of the hash file (dictionary) */
     {
 		FILE*	fpHash;
 		
@@ -122,13 +131,13 @@ static		inited = 0;
     int			viazero;
     register ichar_t *	cp;
 
-    if ((hashfd = open (hashname, 0 | MSDOS_BINARY_OPEN)) < 0)
+    if (inited)
 	return 0;
 
     if ((fpHash = fopen (hashname, "rb")) == NULL)
 	{
 	(void) fprintf (stderr, CANT_OPEN, hashname);
-    hashsize = read (hashfd, (char *) &hashheader, sizeof hashheader);
+	return (-1);
 	}
 
     hashsize = fread ((char *) &hashheader, 1, sizeof hashheader, fpHash);
@@ -216,38 +225,38 @@ static		inited = 0;
 	{
 	/*
 	 * Read just the strings for the language table, and
-	if (read (hashfd, hashstrings, (unsigned) hashheader.lstringsize)
+	 * skip over the rest of the strings and all of the
 	 * hash table.
 	 */
 	if (fread (hashstrings, 1, (unsigned) hashheader.lstringsize, fpHash)
 	  != hashheader.lstringsize)
 	    {
-	(void) lseek (hashfd,
+	    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 	    return (-1);
 	    }
-	  1);
+	(void) fseek (fpHash,
 	  (long) hashheader.stringsize - (long) hashheader.lstringsize
 	    + (long) hashheader.tblsize * (long) sizeof (struct dent),
 	  SEEK_SET);
 	}
-	if (read (hashfd, hashstrings, (unsigned) hashheader.stringsize)
-	    != hashheader.stringsize
-	  ||  read (hashfd, (char *) hashtbl,
-	      (unsigned) hashheader.tblsize * sizeof (struct dent))
-	    != hashheader.tblsize * sizeof (struct dent))
+    else
+#endif /*DELETE_ME */
+	{
+	if (fread (hashstrings, 1, (unsigned) hashheader.stringsize, fpHash)
+	    != ((size_t) (hashheader.stringsize))
 	  ||  fread ((char *) hashtbl, 1,
 	      (unsigned) hashheader.tblsize * sizeof (struct dent), fpHash)
 	    != ((size_t) (hashheader.tblsize * sizeof (struct dent))))
 	    {
 	    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
-    if (read (hashfd, (char *) sflaglist,
-	(unsigned) (numsflags + numpflags) * sizeof (struct flagent))
+	    return (-1);
+	    }
 	}
     if (fread ((char *) sflaglist, 1,
 	(unsigned) (numsflags + numpflags) * sizeof (struct flagent), fpHash)
       != (numsflags + numpflags) * sizeof (struct flagent))
 	{
-    (void) close (hashfd);
+	(void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 	return (-1);
 	}
     (void) fclose (fpHash);

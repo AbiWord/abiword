@@ -43,12 +43,18 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
- * Revision 1.2  1998/12/28 23:11:30  eric
- * modified spell code and integration to build on Windows.
- * This is still a hack.
+ * Revision 1.3  1998/12/29 14:55:33  eric
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
  *
- * Actually, it doesn't yet WORK on Windows.  It just builds.
- * SpellCheckInit is failing for some reason.
+ * Revision 1.3  1998/12/29 14:55:33  eric
+ *
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
+ *
+ * Revision 1.2  1998/12/28 23:11:30  eric
  *
  * modified spell code and integration to build on Windows.
  * This is still a hack.
@@ -75,7 +81,9 @@ static char Rcs_Id[] =
  *
  * Revision 1.42  1994/02/07  04:23:43  geoff
  * Correctly identify the deformatter when changing file types
-#include "config.h"
+ *
+ * Revision 1.41  1994/01/25  07:11:55  geoff
+ * Get rid of all old RCS log lines in preparation for the 3.1 release.
  *
  */
 
@@ -146,11 +154,11 @@ int makedent (lbuf, lbuflen, d)
 
     /* Strip off any trailing newline */
     len = strlen (lbuf) - 1;
-    (void) bzero ((char *) d->mask, sizeof (d->mask));
+    if (lbuf[len] == '\n')
 	lbuf[len] = '\0';
 
     d->next = NULL;
-    p = index (lbuf, hashheader.flagmarker);
+    /* WARNING:  flagfield might be the same as mask! See ispell.h. */
     d->flagfield = 0;
     (void) memset ((char *) d->mask, 0, sizeof (d->mask));
     d->flagfield |= USED;
@@ -195,7 +203,7 @@ int makedent (lbuf, lbuflen, d)
     d->flagfield |= whatcap (ibuf);
 #endif
 
-    d->word = mymalloc ((unsigned) len + 1);
+    if (len > INPUTWORDLEN - 1)
 	{
 	(void) fprintf (stderr, WORD_TOO_LONG (lbuf));
 	return (-1);
@@ -293,7 +301,7 @@ long whatcap (word)
 int addvheader (dp)
     register struct dent *	dp;	/* Entry to update */
     {
-    tdent = (struct dent *) mymalloc (sizeof (struct dent));
+    register struct dent *	tdent; /* Copy of entry */
 
     /*
     ** Add a second entry with the correct capitalization, and then make
@@ -305,11 +313,11 @@ int addvheader (dp)
 	(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
 	return -1;
 	}
-	tdent->word = mymalloc ((unsigned int) strlen (tdent->word) + 1);
+    *tdent = *dp;
     if (captype (tdent->flagfield) != FOLLOWCASE)
 	tdent->word = NULL;
     else
-	    myfree ((char *) tdent);
+	{
 	/* Followcase words need a copy of the capitalization */
 	tdent->word = malloc ((unsigned int) strlen (tdent->word) + 1);
 	if (tdent->word == NULL)
@@ -433,7 +441,7 @@ int combinecaps (hdrp, newp)
 	retval = combine_two_entries (hdrp, oldp, newp);
     if (retval == 0)
 	{
-	tdent = (struct dent *) mymalloc (sizeof (struct dent));
+	/*
 	** Couldn't combine the two entries.  Add a new variant.  For
 	** ease, we'll stick it right behind the header, rather than
 	** at the end of the list.
@@ -451,7 +459,7 @@ int combinecaps (hdrp, newp)
 	tdent->flagfield |= (hdrp->flagfield & MOREVARIANTS);
 	hdrp->flagfield |= MOREVARIANTS;
 	combineaffixes (hdrp, newp);
-	    myfree (newp->word);		/* newp->word isn't needed */
+	hdrp->flagfield |= (newp->flagfield & KEEP);
 	if (captype (newp->flagfield) == FOLLOWCASE)
 	    tdent->word = newp->word;
 	else
@@ -497,7 +505,7 @@ static int combine_two_entries (hdrp, oldp, newp)
 			newp;	/* Entry to possibly combine */
     {
 
-	myfree (newp->word);
+    if (acoversb (oldp, newp))
 	{
 	/* newp is superfluous.  Drop it, preserving affixes and keep flag */
 	combineaffixes (oldp, newp);
@@ -522,7 +530,7 @@ static int combine_two_entries (hdrp, oldp, newp)
 	newp->next = oldp->next;
 	/*
 	** We really want to free oldp->word, but that might be part of
-	myfree (newp->word);	/* No longer needed */
+	** "hashstrings".  So we'll futz around to arrange things so we can
 	** free newp->word instead.  This depends very much on the fact
 	** that both words are the same length.
 	*/
@@ -882,7 +890,7 @@ int strtoichar (out, in, outlen, canonical)
     {
     register int	len;		/* Length of next character */
 
-	    *out++ = *in & NOPARITY;
+    outlen /= sizeof (ichar_t);		/* Convert to an ichar_t count */
     for (  ;  --outlen > 0  &&  *in != '\0';  in += len)
 	{
 	if (l1_isstringch (in, len, canonical))
@@ -920,7 +928,7 @@ int ichartostr (out, in, outlen, canonical)
 	    *out++ = (char) ch;
 	else
 	    {
-		      &&  hashheader.stringdups[i] == ch)
+	    ch -= SET_SIZE;
 	    if (!canonical)
 		{
 		for (i = hashheader.nstrchars;  --i >= 0;  )

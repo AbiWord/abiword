@@ -1,4 +1,6 @@
 
+#error This file is not used
+
 /*
   TODO looks like a lot of this file could go away.  AbiWord
   doesn't really need most of it. --EWS
@@ -61,7 +63,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  1998/12/29 14:55:32  eric
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
+ *
  * Revision 1.3  1998/12/28 23:11:30  eric
+ *
  * modified spell code and integration to build on Windows.
  * This is still a hack.
  *
@@ -837,6 +845,10 @@
 #endif /* O_BINARY */
 #endif /* MSDOS_BINARY_OPEN */
 
+#ifdef WIN32
+#define MSDOS_BINARY_OPEN	O_BINARY
+#endif
+	
 /*
 ** Environment variable to use to locate the home directory.  On DOS
 ** systems you might want to set this to ISPELL_HOME to avoid

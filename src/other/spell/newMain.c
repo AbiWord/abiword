@@ -1,16 +1,9 @@
 
-#include <stdio.h>
-#include "config.h"
+#include <stdlib.h>
+#include <string.h>
+
 #include "ispell.h"
 #include "sp_spell.h"
-
-#ifndef HASHPATH
-#define HASHPATH "/home/davet/ispell-install/lib"
-#endif
-
-#ifndef DEFHASH
-#define DEFHASH  "english.hash"
-#endif
 
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
@@ -38,16 +31,6 @@ struct strchartype 		*chartypes;  /* String character type collection */
 /***************************************************************************/
 
 
-void myfree (void *ptr)
-{
-    free(ptr);
-}
-
-void *mymalloc (unsigned int size)
-{
-    return (void *) malloc (size);
-}
-
 int g_bSuccessfulInit = 0;
 
 int SpellCheckInit(char *hashname)
@@ -65,22 +48,6 @@ int SpellCheckInit(char *hashname)
 }
 
 
-static int ICharTheWord(char *theWord, ichar_t *iWord)
-{
-    char *pc;
-    ichar_t  *pi;
-
-   /* convert from char string to ichar_t string */
-    for (pi = iWord, pc = theWord; *pc; )
-        {
-            *pi++ = chartoichar(*pc++);
-        }
-    *pi = 0;
-
-	return 1;
-}
-
-
 int SpellCheckWord16(unsigned short  *word16)
 {
 	int retVal;
@@ -93,7 +60,7 @@ int SpellCheckWord16(unsigned short  *word16)
 	if (!word16) 
 		return 0;
 
-	retVal = good( (ichar_t *) word16, 0, 0, 1, 0, 0);
+	retVal = good( (ichar_t *) word16, 0, 0, 1, 0);
 
 	return retVal;  /* returns 0 or 1 (boolean) */
 }
@@ -120,7 +87,7 @@ int SpellCheckWord(char *word)
 	if (!wordLength)
 		return 0;
 
-	if (!(iWord = (ichar_t *) mymalloc( (wordLength+1) * 2 )))
+	if (!(iWord = (ichar_t *) malloc( (wordLength+1) * 2 )))
 		{
 			return -1;
 		}
@@ -131,79 +98,12 @@ int SpellCheckWord(char *word)
         }
     *pi = 0;
 
-	retVal = good(iWord, 0, 0, 1, 0, 0);
+	retVal = good(iWord, 0, 0, 1, 0);
 
-	myfree(iWord);
+	free(iWord);
 
 	return retVal; /* return 0 not found, 1 on found */
 	
 }
 
 
-#if 0
-
-/*
-  I'm removing this main() since we don't really need it for anything
-  but test purposes.		-- EWS
-*/
-
-/********************************************************************
-
-	To use the Ispell checker at this stage, the following two calls
-	are all that need be known externally:
-
-	 SpellCheckInit(char *NameOfTheDictionaryHere)
-	 Boolean SpellCheckWord( uint16 *WordHereIn16bitChars )
-
- ********************************************************************/
-
-
-int main (argc, argv)
-int argc;
-char *argv[];
-{
-	char *w;
-    ichar_t iword[256];
-	int retVal;
-
-#if 0
-	char 			hashname[MAXPATHLEN];
-	sprintf(hashname,"%s/%s",HASHPATH, DEFHASH);
-#endif
-
-	if (!SpellCheckInit("/usr/lib/ispell/english.hash"))
-	{
-		printf("Couldn't read in spell check dictionary....\n");
-		exit(0);
-	}
-
-
-	w = "publish";
-	printf("Looking up the word \"%s\"\n",w);
-	retVal = SpellCheckWord(w);
-	printf("returned %d\n",retVal);
-	
-	w = "Publish";
-	printf("Looking up the word \"%s\"\n",w);
-	retVal = SpellCheckWord(w);
-	printf("returned %d\n",retVal);
-
-	w = "boogyramma";
-	printf("Looking up the word \"%s\"\n",w);
-	retVal = SpellCheckWord(w);
-	printf("returned %d\n",retVal);
-
-
-	w = "costly";
-	printf("Looking up the word \"%s\"\n",w);
-	retVal = SpellCheckWord(w);
-	printf("returned %d\n",retVal);
-
-	w = "cost";
-	printf("Looking up the word \"%s\"\n",w);
-	retVal = SpellCheckWord(w);
-	printf("returned %d\n",retVal);
-
-}
-
-#endif

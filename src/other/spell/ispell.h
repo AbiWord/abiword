@@ -42,12 +42,17 @@
 
 /*
  * $Log$
- * Revision 1.1  1998/12/28 18:04:43  davet
- * Spell checker code stripped from ispell.  At this point, there are
- * two external routines...  the Init routine, and a check-a-word routine
- * which returns a boolean value, and takes a 16 bit char string.
- * The code resembles the ispell code as much as possible still.
+ * Revision 1.2  1998/12/29 14:55:33  eric
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
  *
+ *
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
+ *
+ * Revision 1.1  1998/12/28 18:04:43  davet
  * Spell checker code stripped from ispell.  At this point, there are
  * two external routines...  the Init routine, and a check-a-word routine
  * which returns a boolean value, and takes a 16 bit char string.
@@ -96,6 +101,122 @@
  *
  * Revision 1.57  1994/01/25  07:11:48  geoff
  *
+ */
+
+#include <stdio.h>
+/*  #include "ut_types.h" */
+
+/* largest word accepted from a file by any input routine, plus one */
+#ifndef	INPUTWORDLEN
+#define INPUTWORDLEN 100
+#endif
+
+/* largest amount that a word might be extended by adding affixes */
+#ifndef MAXAFFIXLEN
+#define MAXAFFIXLEN 20
+#endif
+
+/*
+** Number of mask bits (affix flags) supported.  Must be 32, 64, 128, or
+** 256.  If MASKBITS is 32 or 64, there are really only 26 or 58 flags
+** available, respectively.  If it is 32, the flags are named with the
+** 26 English uppercase letters;  lowercase will be converted to uppercase.
+** If MASKBITS is 64, the 58 flags are named 'A' through 'z' in ASCII
+** order, including the 6 special characters from 'Z' to 'a': "[\]^_`".
+** If MASKBITS is 128 or 256, all the 7-bit or 8-bit characters,
+** respectively, are theoretically available, though a few (newline, slash,
+** null byte) are pretty hard to actually use successfully.
+**
+** Note that a number of non-English affix files depend on having a
+** larger value for MASKBITS.  See the affix files for more
+** information.
+*/
+#ifndef MASKBITS
+#define MASKBITS	32
+#endif
+
+/*
+** C type to use for masks.  This should be a type that the processor
+** accesses efficiently.
+**
+** MASKTYPE_WIDTH must correctly reflect the number of bits in a
+** MASKTYPE.  Unfortunately, it is also required to be a constant at
+** preprocessor time, which means you can't use the sizeof operator to
+** define it.
+**
+** Note that MASKTYPE *must* match MASKTYPE_WIDTH or you may get
+** division-by-zero errors! 
+*/
+#ifndef MASKTYPE
+#define MASKTYPE	long
+#endif
+#ifndef MASKTYPE_WIDTH
+#define MASKTYPE_WIDTH	32
+#endif
+#if MASKBITS < MASKTYPE_WIDTH
+#undef MASKBITS
+#define MASKBITS	MASKTYPE_WIDTH
+#endif /* MASKBITS < MASKTYPE_WIDTH */
+
+/*
+** Maximum hash table fullness percentage.  Larger numbers trade space
+** for time.
+**/
+#ifndef MAXPCT
+#define MAXPCT	70		/* Expand table when 70% full */
+#endif
+
+/*
+** Maximum number of "string" characters that can be defined in a
+** language (affix) file.  Don't forget that an upper/lower string
+** character counts as two!
+*/
+#ifndef MAXSTRINGCHARS
+#define MAXSTRINGCHARS 100
+#endif /* MAXSTRINGCHARS */
+
+/*
+** Maximum length of a "string" character.  The default is appropriate for
+** nroff-style characters starting with a backslash.
+*/
+#ifndef MAXSTRINGCHARLEN
+#define MAXSTRINGCHARLEN 10
+#endif /* MAXSTRINGCHARLEN */
+
+/*
+** Maximum number of "hits" expected on a word.  This is basically the
+** number of different ways different affixes can produce the same word.
+** For example, with "english.aff", "brothers" can be produced 3 ways:
+** "brothers," "brother+s", or "broth+ers".  If this is too low, no major
+** harm will be done, but ispell may occasionally forget a capitalization.
+*/
+#ifndef MAX_HITS
+#define MAX_HITS	10
+#endif
+
+/*
+** Maximum number of capitalization variations expected in any word.
+** Besides the obvious all-lower, all-upper, and capitalized versions,
+** this includes followcase variants.  If this is too low, no real
+** harm will be done, but ispell may occasionally fail to suggest a
+** correct capitalization.
+*/
+#ifndef MAX_CAPS
+#define MAX_CAPS	10
+#endif /* MAX_CAPS */
+
+/* buffer size to use for file names if not in sys/param.h */
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 512
+#endif
+
+/*
+** Maximum language-table search size.  Smaller numbers make ispell
+** run faster, at the expense of more memory (the lowest reasonable value
+** is 2).  If a given character appears in a significant position in
+** more than MAXSEARCH suffixes, it will be given its own index table.
+** If you change this, define INDEXDUMP in lookup.c to be sure your
+** index table looks reasonable.
 */
 #ifndef MAXSEARCH
 #define MAXSEARCH 4
@@ -190,6 +311,22 @@ typedef unsigned char	ichar_t;	/* Internal character */
 #define icharlen(s)	strlen ((char *) (s))
 #define icharcpy(a, b)	strcpy ((char *) (a), (char *) (b))
 #define icharcmp(a, b)	strcmp ((char *) (a), (char *) (b))
+#define icharncmp(a, b, n) strncmp ((char *) (a), (char *) (b), (n))
+    struct dent *	dictent;	/* Header of dict entry chain for wd */
+    struct flagent *	prefix;		/* Prefix flag used, or NULL */
+    struct flagent *	suffix;		/* Suffix flag used, or NULL */
+    };
+
+ichar_t* icharcpy (ichar_t* out, ichar_t* in);
+int icharlen (ichar_t* in);
+int icharcmp (ichar_t* s1, ichar_t* s2);
+int icharncmp (ichar_t* s1, ichar_t* s2, int n);
+int ichartostr (char* out, ichar_t* in, int outlen, int canonical);
+int strtoichar (ichar_t* out, char* in, int outlen, int canonical);
+struct dent * ispell_lookup (ichar_t* s, int dotree);
+int good (ichar_t* w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
+int linit(char*);
+void lcleanup(void);
 int cap_ok (ichar_t* word, struct success* hit, int len);
 void chk_aff (ichar_t* word, ichar_t* ucword, int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
 long whatcap (ichar_t* word);
@@ -528,16 +665,21 @@ EXTERN char *	nd;	/* non-destructive space */
 EXTERN char *	so;	/* standout */
 EXTERN char *	se;	/* standout end */
 EXTERN int	sg;	/* space taken by so/se */
+EXTERN char *	ti;	/* terminal initialization sequence */
 EXTERN char *	te;	/* terminal termination sequence */
 EXTERN int	li;	/* lines */
 EXTERN int	co;	/* columns */
 
+#if 0
+EXTERN int	contextsize;	/* number of lines of context to show */
 EXTERN char	contextbufs[MAXCONTEXT][BUFSIZ]; /* Context of current line */
 EXTERN int	contextoffset;	/* Offset of line start in contextbufs[0] */
 EXTERN char *	currentchar;	/* Location in contextbufs */
+#endif
 
 EXTERN char	ctoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Current token as char */
 EXTERN ichar_t	itoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Ctoken as ichar_t str */
+
 #if 0
 EXTERN char	termcap[2048];	/* termcap entry */
 EXTERN char	termstr[2048];	/* for string values */

@@ -49,12 +49,18 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
- * Revision 1.3  1998/12/28 23:11:30  eric
- * modified spell code and integration to build on Windows.
- * This is still a hack.
+ * Revision 1.4  1998/12/29 14:55:33  eric
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
  *
- * Actually, it doesn't yet WORK on Windows.  It just builds.
- * SpellCheckInit is failing for some reason.
+ * Revision 1.4  1998/12/29 14:55:33  eric
+ *
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
+ *
+ * Revision 1.3  1998/12/28 23:11:30  eric
  *
  * modified spell code and integration to build on Windows.
  * This is still a hack.
@@ -111,7 +117,9 @@ static char Rcs_Id[] =
  * Add support for controlled compound formation and the COMPOUNDONLY
  * option to affix flags.
  *
-#include "config.h"
+ * Revision 1.28  1994/01/25  07:12:13  geoff
+ * Get rid of all old RCS log lines in preparation for the 3.1 release.
+ *
  */
 
 #include <ctype.h>

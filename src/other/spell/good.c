@@ -48,7 +48,13 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.4  1998/12/29 14:55:32  eric
+ * I've doctored the ispell code pretty extensively here.  It is now
+ * warning-free on Win32.  It also *works* on Win32 now, since I
+ * replaced all the I/O calls with ANSI standard ones.
+ *
  * Revision 1.3  1998/12/28 23:11:30  eric
+ *
  * modified spell code and integration to build on Windows.
  * This is still a hack.
  *
@@ -108,7 +114,10 @@ static char Rcs_Id[] =
  */
 
 #include <ctype.h>
-#include "config.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "ispell.h"
 
 int		good P ((ichar_t * word, int ignoreflagbits, int allhits,
@@ -361,105 +370,3 @@ static int entryhasaffixes (dent, hit)
     }
 #endif
 
-/*
- * Print a word and its flag, making sure the case of the output matches
- * the case of the original found in "orig_word".
- */
-void flagpr (word, preflag, prestrip, preadd, sufflag, sufadd)
-    register ichar_t *	word;		/* (Modified) word to print */
-    int			preflag;	/* Prefix flag (if any) */
-    int			prestrip;	/* Lth of pfx stripped off orig_word */
-    int			preadd;		/* Length of prefix added to w */
-    int			sufflag;	/* Suffix flag (if any) */
-    int			sufadd;		/* Length of suffix added to w */
-    {
-    register ichar_t *	origp;		/* Pointer into orig_word */
-    int			orig_len;	/* Length of orig_word */
-
-    orig_len = icharlen (orig_word);
-    /*
-     * We refuse to print if the cases outside the modification
-     * points don't match those just inside.  This prevents things
-     * like "OEM's" from being turned into "OEM/S" which expands
-     * only to "OEM'S".
-     */
-    if (preflag > 0)
-	{
-	origp = orig_word + preadd;
-	if (myupper (*origp))
-	    {
-	    for (origp = orig_word;  origp < orig_word + preadd;  origp++)
-		{
-		if (mylower (*origp))
-		    return;
-		}
-	    }
-	else
-	    {
-	    for (origp = orig_word;  origp < orig_word + preadd;  origp++)
-		{
-		if (myupper (*origp))
-		    return;
-		}
-	    }
-	}
-    if (sufflag > 0)
-	{
-	origp = orig_word + orig_len - sufadd;
-	if (myupper (origp[-1]))
-	    {
-	    for (  ;  *origp != 0;  origp++)
-		{
-		if (mylower (*origp))
-		    return;
-		}
-	    }
-	else
-	    {
-	    origp = orig_word + orig_len - sufadd;
-	    for (  ;  *origp != 0;  origp++)
-		{
-		if (myupper (*origp))
-		    return;
-		}
-	    }
-	}
-    /*
-     * The cases are ok.  Put out the word, being careful that the
-     * prefix/suffix cases match those in the original, and that the
-     * unchanged characters from the original actually match it.
-     */
-    (void) putchar (' ');
-    origp = orig_word + preadd;
-    if (myupper (*origp))
-	{
-	while (--prestrip >= 0)
-	    (void) fputs (printichar ((int) *word++), stdout);
-	}
-    else
-	{
-	while (--prestrip >= 0)
-	    (void) fputs (printichar ((int) mytolower (*word++)), stdout);
-	}
-    for (prestrip = orig_len - preadd - sufadd;  --prestrip >= 0;  word++)
-	(void) fputs (printichar ((int) *origp++), stdout);
-    if (origp > orig_word)
-	origp--;
-    if (myupper (*origp))
-	(void) fputs (ichartosstr (word, 0), stdout);
-    else
-	{
-	while (*word)
-	    {
-	    (void) fputs (printichar ((int) mytolower (*word++)), stdout);
-	    }
-	}
-    /*
-     * Now put out the flags
-     */
-    (void) putchar (hashheader.flagmarker);
-    if (preflag > 0)
-	(void) putchar (preflag);
-    if (sufflag > 0)
-	(void) putchar (sufflag);
-    }
