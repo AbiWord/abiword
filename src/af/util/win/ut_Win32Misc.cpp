@@ -25,6 +25,7 @@
 #endif
 #include <nb30.h>
 #include "ut_debugmsg.h"
+#include "ut_Win32Resources.rc2"
 
 /*!
     UT_gettimeofday() fills in the timeval structure with current
@@ -403,3 +404,145 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 #endif
 }
 
+/*!
+    Class that implements an assert dialogue; this is a private class, we only access it
+    through UT_Win32ThrowAssert() function
+*/
+class UT_Win32AssertDlg
+{
+	friend int UT_Win32ThrowAssert(const char *, const char *, int, int);
+	
+  private:
+	UT_Win32AssertDlg(const char * pCond, const char * pFile, int iLine, int iCount)
+		: m_pCond(pCond), m_pFile(pFile), m_iLine(iLine), m_iCount(iCount){};
+	~UT_Win32AssertDlg(){};
+
+	static BOOL CALLBACK  s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+
+	BOOL		  _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL		  _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	enum answer {AN_Debug, AN_Ignore, AN_IgnoreAll, AN_Abort};
+	
+	answer runModal();
+	
+	int  m_iLine;
+	const char * m_pCond;
+	const char * m_pFile;
+	int  m_iCount;
+
+	answer m_answer;
+};
+
+/*!
+    This function wraps arround the Assert dialog class and handles the returned
+    responses; it will abort application if the user chose Abort.
+    
+    \return : 0 -- give control to debugger
+              > 0  ignore this time
+              < 0  ignore always
+*/
+int UT_Win32ThrowAssert(const char * pCond, const char * pFile, int iLine, int iCount)
+{
+	UT_Win32AssertDlg dlg(pCond, pFile, iLine, iCount);
+	UT_Win32AssertDlg::answer a = dlg.runModal();
+
+	switch(a)
+	{
+		case UT_Win32AssertDlg::AN_Debug:
+			return 0;
+
+		case UT_Win32AssertDlg::AN_Ignore:
+			return 1;
+			
+		case UT_Win32AssertDlg::AN_IgnoreAll:
+			return -1;
+			
+		case UT_Win32AssertDlg::AN_Abort:
+			exit(0);
+			return 1;
+	}
+
+	return 1;
+}
+
+BOOL CALLBACK UT_Win32AssertDlg::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{
+	// This is a static function.
+	
+	UT_Win32AssertDlg * pThis;
+	
+	
+	switch (msg){
+	case WM_INITDIALOG:
+		pThis = (UT_Win32AssertDlg *)lParam;
+		SetWindowLong(hWnd,DWL_USER,lParam);
+		return pThis->_onInitDialog(hWnd,wParam,lParam);
+		
+	case WM_COMMAND:
+		pThis = (UT_Win32AssertDlg *)GetWindowLong(hWnd,DWL_USER);
+		return pThis->_onCommand(hWnd,wParam,lParam);
+		
+	default:
+		return 0;
+	}
+}
+
+UT_Win32AssertDlg::answer UT_Win32AssertDlg::runModal()
+{
+	LPCTSTR lpTemplate = MAKEINTRESOURCE(UT_RID_DIALOG_ASSERT);
+	
+	int result = DialogBoxParam(GetModuleHandle(NULL),
+								lpTemplate,
+								NULL,
+								(DLGPROC)s_dlgProc,(LPARAM)this);
+
+	return m_answer;
+}
+
+BOOL UT_Win32AssertDlg::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wId = LOWORD(wParam);
+	
+	switch (wId)
+	{
+		case UT_RID_DIALOG_ASSERT_DEBUG:
+			m_answer = AN_Debug;
+			break;
+
+		case UT_RID_DIALOG_ASSERT_ABORT:
+			m_answer = AN_Abort;
+			break;
+
+		case UT_RID_DIALOG_ASSERT_IGNORE:
+			m_answer = AN_Ignore;
+			break;
+
+		case UT_RID_DIALOG_ASSERT_IGNOREALLWAYS:
+			m_answer = AN_IgnoreAll;
+			break;
+
+		default:
+			return 0;
+	}
+	
+	EndDialog(hWnd,0);
+	return 1;
+
+}
+
+BOOL UT_Win32AssertDlg::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	// set initial state
+	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_FILE,m_pFile);
+	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_CONDITION,m_pCond);
+
+	char buff[20];
+	_snprintf(buff, 19, "%d",m_iLine);
+	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_LINE,buff);
+
+	_snprintf(buff, 19, "%d",m_iCount);
+	SetDlgItemText(hWnd,UT_RID_DIALOG_ASSERT_COUNT,buff);
+	
+	return 1;				// 1 == we did not call SetFocus()
+}
