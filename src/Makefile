@@ -58,6 +58,8 @@ canonical:
 	done
 	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
 ifeq ($(ABI_NATIVE),unix)
+# icons for X window manager use
+	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - icons/*) | (cd $(CANONDIR); tar -xf -)
 # font stuff for installation
 	@$(subst xxxx,$(CANONDIR)/fonts,$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(CANONDIR)/fonts/scripts,$(VERIFY_DIRECTORY))

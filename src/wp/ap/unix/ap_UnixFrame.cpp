@@ -40,8 +40,11 @@
 #include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
 
-// icons
+#ifdef ABISOURCE_LICENSED_TRADEMARKS
+#include "abi_app_48_tm.xpm"
+#else
 #include "abi_app_48.xpm"
+#endif
 
 /*****************************************************************/
 
