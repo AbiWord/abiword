@@ -150,13 +150,13 @@ public:
 													   PT_DocPosition docPos,
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
-        bool                                 getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
+	bool					getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
 
-bool getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
-					PL_StruxDocHandle * nextsdh);
+	bool getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+							PL_StruxDocHandle * nextsdh);
 
-bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
-					PL_StruxDocHandle * prevsdh);
+	bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+							PL_StruxDocHandle * prevsdh);
 
 	// data items
 
@@ -180,43 +180,43 @@ bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
-	const char *                            getFileName() { return m_szFilename; }
-	UT_uint32                               getLastType() { return m_lastSavedAsType; }
-        bool                 updateFields(void);
-        bool                 getField(PL_StruxDocHandle sdh, 
-					 UT_uint32 offset,
+	const char *			getFileName() { return m_szFilename; }
+	UT_uint32				getLastType() { return m_lastSavedAsType; }
+	bool					updateFields(void);
+	bool					getField(PL_StruxDocHandle sdh, 
+									 UT_uint32 offset,
                                      fd_Field * &pField);
 	void                    setDontChangeInsPoint(void);
 	void                    allowChangeInsPoint(void);
 	bool                    getAllowChangeInsPoint(void) const;
-	bool                 isPieceTableChanging(void);
-        void                    notifyPieceTableChangeStart(void);
-        void                    notifyPieceTableChangeEnd(void);
+	bool					isPieceTableChanging(void);
+	void					notifyPieceTableChangeStart(void);
+	void					notifyPieceTableChangeEnd(void);
 	
 	// List Functions
-	fl_AutoNum *    getListByID(UT_uint32 id) const;
-	fl_AutoNum *    getNthList(UT_uint32 i) const; 
-	bool		enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
-	UT_uint32       getListsCount(void) const; 
-	void            addList(fl_AutoNum * pAutoNum);
-	bool		appendList(const XML_Char ** attributes);
-	bool		fixListHierarchy(void);
-	void	 	removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
-	void            listUpdate(PL_StruxDocHandle sdh);
-	void            StopList(PL_StruxDocHandle sdh);
-	void            disableListUpdates(void);
-	void            enableListUpdates(void);
-	void            updateDirtyLists(void);
-	bool         areListUpdatesAllowed(void);
+	fl_AutoNum *			getListByID(UT_uint32 id) const;
+	fl_AutoNum *			getNthList(UT_uint32 i) const; 
+	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
+	UT_uint32				getListsCount(void) const; 
+	void					addList(fl_AutoNum * pAutoNum);
+	bool					appendList(const XML_Char ** attributes);
+	bool					fixListHierarchy(void);
+	void					removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
+	void					listUpdate(PL_StruxDocHandle sdh);
+	void					StopList(PL_StruxDocHandle sdh);
+	void					disableListUpdates(void);
+	void					enableListUpdates(void);
+	void					updateDirtyLists(void);
+	bool					areListUpdatesAllowed(void);
 
-	void            setDoingPaste(void);
-	void            clearDoingPaste(void);
-	bool         isDoingPaste(void);
+	void					setDoingPaste(void);
+	void					clearDoingPaste(void);
+	bool					isDoingPaste(void);
 	
-	fp_PageSize     m_docPageSize;
-	void            setDefaultPageSize(void);
-	const char *    getDefaultPageSize(void);
-	bool		setPageSizeFromFile(const XML_Char ** attributes);
+	fp_PageSize				m_docPageSize;
+	void					setDefaultPageSize(void);
+	const char *			getDefaultPageSize(void);
+	bool					setPageSizeFromFile(const XML_Char ** attributes);
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
@@ -229,18 +229,20 @@ protected:
 
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
-	bool                                 m_ballowListUpdates;
-	pt_PieceTable *			        m_pPieceTable;
+	void					_createAutoSaveTimer();
+	bool					m_ballowListUpdates;
+	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
 	UT_Vector				m_vecLists;
 	
-	UT_AlphaHashTable		        m_hashDataItems;
+	UT_AlphaHashTable		m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;
-	bool                                 m_bPieceTableChanging;
-	bool                                 m_bDoingPaste;
+	bool					m_bPieceTableChanging;
+	bool					m_bDoingPaste;
 private:
-        bool                                 m_bAllowInsertPointChange;
+	bool					m_bAllowInsertPointChange;
+	UT_uint32				m_iIdAutoSaveTimer;
 };
 
 

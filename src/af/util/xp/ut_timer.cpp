@@ -22,11 +22,10 @@
 #include "ut_assert.h"
 
 UT_Timer::UT_Timer()
+	: m_pCallback(0),
+	  m_pInstanceData(0),
+	  m_iIdentifier(0)
 {
-	m_pCallback = NULL;
-	m_pInstanceData = NULL;
-	m_iIdentifier = 0;
-	
 	static_vecTimers.addItem(this);
 }
 

@@ -23,6 +23,7 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_string.h"
+#include "ut_timer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
@@ -60,21 +61,21 @@ struct _dataItemPair
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+// perhaps this should be a magic "unknown" or "NULL" value,
+// but now we just depend on save() never being called without
+// a previous saveAs() (which specifies a type)
 PD_Document::PD_Document()
-  : AD_Document(),  
-  m_docPageSize(getDefaultPageSize()),
-  m_hashDataItems(11),
-  m_bAllowInsertPointChange(true)
+	: AD_Document(),  
+	m_docPageSize(getDefaultPageSize()),
+	m_ballowListUpdates(false),
+	m_pPieceTable(0),
+	m_hashDataItems(11),
+	m_lastSavedAsType(IEFT_AbiWord_1),
+	m_bPieceTableChanging(false),
+	m_bDoingPaste(false),
+	m_bAllowInsertPointChange(true),
+	m_iIdAutoSaveTimer(0)
 {
-	m_pPieceTable = NULL;
-
-	// perhaps this should be a magic "unknown" or "NULL" value,
-	// but now we just depend on save() never being called without
-	// a previous saveAs() (which specifies a type)
-	m_lastSavedAsType = IEFT_AbiWord_1;
-	m_ballowListUpdates = false;
-        m_bPieceTableChanging = false;
-	m_bDoingPaste = false;
 }
 
 PD_Document::~PD_Document()
@@ -86,6 +87,10 @@ PD_Document::~PD_Document()
 
 	_destroyDataItemData();
 
+	UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
+	if (timer != 0)
+		timer->stop();
+	
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 }
@@ -138,6 +143,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
+	_createAutoSaveTimer();
 	return UT_OK;
 }
 
@@ -160,6 +166,7 @@ UT_Error PD_Document::newDocument(void)
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
+	_createAutoSaveTimer();
 	return UT_OK;
 }
 
@@ -193,20 +200,20 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 	}
 
 	if (cpy) // we want to make the current settings persistent
-	  {
+	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
 	    if (m_szFilename)
-	      {
-		free((void *) m_szFilename);
-		m_szFilename = NULL;
-	      }
+		{
+			free((void *) m_szFilename);
+			m_szFilename = NULL;
+		}
 	
 	    char * szFilenameCopy = NULL;
 	    if (!UT_cloneString(szFilenameCopy,szFilename))
-	      return UT_SAVE_OTHERERROR;
+			return UT_SAVE_OTHERERROR;
 	    m_szFilename = szFilenameCopy;
-	  }
+	}
 
 	_setClean();
 	return UT_OK;
@@ -253,6 +260,32 @@ UT_Error PD_Document::save(void)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+static void autoSaveCallback(UT_Timer *timer)
+{
+	UT_DEBUGMSG(("Autosaving doc...\n"));
+	PD_Document *me = static_cast<PD_Document *> (timer->getInstanceData());
+
+	if (me->isDirty())
+	{
+		UT_Error error = me->save();
+
+		if (!error)
+			UT_DEBUGMSG(("Document saved\n"));
+		else
+			UT_DEBUGMSG(("Error [%d] saving document.\n", error));
+	}
+}
+
+void PD_Document::_createAutoSaveTimer()
+{
+#if DEBUG
+	UT_DEBUGMSG(("Creating auto save timer.\n"));
+	UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
+	timer->set(300000); // TODO: the time should be configurable.  I choose 5 min by now
+	m_iIdAutoSaveTimer = timer->getIdentifier();
+#endif
+}
 
 bool PD_Document::isDirty(void) const
 {
