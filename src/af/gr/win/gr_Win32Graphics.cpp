@@ -737,7 +737,6 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	FREEP(points);
 }
 
-int nStart = 0;
 
 void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
@@ -1454,7 +1453,6 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
 {		
-	
 	UT_Rect * oldR = NULL;
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
 	DELETEP(oldR);
@@ -1469,8 +1467,24 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 		x,y, iWidth, iHeight));	
 	#endif
 
+	BITMAPINFO bmi; 
+	BYTE *imagedata;
 	HDC		hMemDC = CreateCompatibleDC(m_hdc);
-	HBITMAP hBit = CreateCompatibleBitmap(hMemDC, iWidth, iHeight);
+		
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
+	bmi.bmiHeader.biWidth = iWidth;
+	bmi.bmiHeader.biHeight = iHeight;
+	bmi.bmiHeader.biPlanes = 1; 
+	bmi.bmiHeader.biBitCount = 24; // as we want true-color
+	bmi.bmiHeader.biCompression = BI_RGB; // no compression
+	bmi.bmiHeader.biSizeImage = (((iWidth * bmi.bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
+	bmi.bmiHeader.biXPelsPerMeter = 0;
+	bmi.bmiHeader.biYPelsPerMeter = 0; 
+	bmi.bmiHeader.biClrImportant = 0;
+	bmi.bmiHeader.biClrUsed = 0; // we are not using palette
+		
+	HBITMAP hBit = CreateDIBSection(hMemDC,&bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
+	GdiFlush();
 
 	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
 	BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
@@ -1484,12 +1498,10 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 }
 
 void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) 
-{	
-	
+{		
 	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
 	HBITMAP hBit = (HBITMAP)m_vSaveRectBuf.getNthItem(iIndx);
-	SIZE	mida;
-
+	
 	UT_ASSERT(r);
 	UT_ASSERT(hBit);
 	
@@ -1505,8 +1517,8 @@ void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx)
 
 	HDC		hMemDC = CreateCompatibleDC(m_hdc);
 	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
+	
 	BitBlt(m_hdc, x, y, iWidth, iHeight, hMemDC, 0, 0, SRCCOPY);
 	SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);		
 }
-
