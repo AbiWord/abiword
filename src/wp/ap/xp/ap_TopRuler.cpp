@@ -1210,8 +1210,11 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
 {
-	if (!m_bValidMouseClick)
+	if (!m_bValidMouseClick || m_bEventIgnored)
+	{
+		m_draggingWhat = DW_NOTHING;
 		return;
+	}
 
 	m_bValidMouseClick = UT_FALSE;
 
@@ -1507,21 +1510,12 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// the whole thing.  but this may interact with the current scroll.
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
+		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 	ap_RulerTicks tick(m_pG,m_dim);
-	UT_sint32 sum=0;
-	UT_uint32 k;
-	for (k=0; k<m_infoCache.m_iNumColumns; k++)
-	{
-		sum += m_infoCache.u.c.m_xColumnWidth;
-		
-		if (k+1 < m_infoCache.m_iNumColumns)
-			sum += m_infoCache.u.c.m_xColumnGap;
-	}
+
 	if ((x < xFixed + m_infoCache.m_xPageViewMargin)
-		|| (x > m_infoCache.m_xPageViewMargin
-			+ m_infoCache.u.c.m_xaLeftMargin
-			+ sum
-			+ m_infoCache.u.c.m_xaRightMargin))
+		|| (x > xAbsRight))
 	{
 		if(!m_bEventIgnored)
 		{
@@ -1545,7 +1539,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
-		UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 		UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
 
 		m_draggingCenter = _snapPixelToGrid(x, tick);
@@ -1611,8 +1604,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_RIGHTMARGIN:
 		{
 		UT_sint32 oldDragCenter = m_draggingCenter;
-		UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
-								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
         UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
         UT_sint32 iRightShift = UT_MAX(0,m_infoCache.m_xrRightIndent);
         UT_sint32 iLeftShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
@@ -1663,9 +1654,9 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_COLUMNGAPLEFTSIDE:
 		{
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
-			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-			UT_sint32 xAbsRightGap = xAbsRight + m_infoCache.u.c.m_xColumnGap;
-			UT_sint32 xAbsMidPoint = (xAbsRight + xAbsRightGap)/2;
+			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+			UT_sint32 xAbsRightGap = xAbsRight2 + m_infoCache.u.c.m_xColumnGap;
+			UT_sint32 xAbsMidPoint = (xAbsRight2 + xAbsRightGap)/2;
 			UT_sint32 xrel;
 			
 			if(m_draggingWhat == DW_COLUMNGAP)
@@ -1673,7 +1664,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 				UT_sint32 xAbsLowerLimit = xAbsMidPoint + _snapPixelToGrid((UT_sint32)(tick.dragDelta/tick.tickUnitScale),tick);
 				if (((UT_sint32)x) < xAbsLowerLimit)
 					x = (UT_uint32)xAbsLowerLimit;
-				xrel = ((UT_sint32)x) - xAbsRight;
+				xrel = ((UT_sint32)x) - xAbsRight2;
 			}
 			else
 			{
@@ -1697,11 +1688,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsRight + xgrid;
+			m_draggingCenter = xAbsRight2 + xgrid;
 			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
 
 
-			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight,xrel,xgrid,m_draggingRect.width));
+			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight2,xrel,xgrid,m_draggingRect.width));
 
 
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
@@ -1724,8 +1715,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// location for the first-line, but means that we need
 			// to update it (since it is stored in relative to the
 			// paragraph in the document).
-			
-			// TODO what upper/lower bound should we place on this ?
 			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
@@ -1766,8 +1755,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// first-line-indent (since it is stored in relative
 			// terms.
 			
-			// TODO what upper/lower bound should we place on this ?
-			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
@@ -1775,6 +1762,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			double dgrid = _scalePixelDistanceToUnits(xrel,tick);
 			UT_DEBUGMSG(("SettingLeftIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
+			UT_sint32 oldDragging2Center = m_dragging2Center;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			UT_Rect oldDragging2Rect = m_dragging2Rect;
 			m_draggingCenter  = xAbsLeft + xgrid;
@@ -1782,6 +1770,20 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
             UT_sint32 iFirstIndentShift = UT_MAX(0,m_infoCache.m_xrFirstLineIndent);
             UT_sint32 iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent - iFirstIndentShift;
+
+			// Prevent the first-line indent from being dragged off the page
+			if (m_dragging2Center < xFixed + m_infoCache.m_xPageViewMargin)
+			{
+				m_dragging2Center = oldDragging2Center;
+				m_draggingCenter = oldDragging2Center;
+				if(!m_bEventIgnored)
+				{
+					_ignoreEvent(UT_FALSE);
+					m_bEventIgnored = UT_TRUE;
+				}
+				return;
+			}
+
             if(iRightIndentPos - m_draggingCenter < m_minColumnWidth)
             {
                 m_draggingCenter = iRightIndentPos - m_minColumnWidth;
@@ -1808,17 +1810,15 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		
 	case DW_RIGHTINDENT:
 		{
-			// TODO what upper/lower bound should we place on this ?
-			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-			UT_sint32 xrel = xAbsRight - ((UT_sint32)x);
+			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+			UT_sint32 xrel = xAbsRight2 - ((UT_sint32)x);
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
 			double dgrid = _scalePixelDistanceToUnits(xrel,tick);
 			UT_DEBUGMSG(("SettingRightIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsRight - xgrid;
+			m_draggingCenter = xAbsRight2 - xgrid;
 
             UT_sint32 iLeftIndentPos = xAbsLeft + UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent);
             if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
@@ -1832,18 +1832,14 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 			_xorGuide();
 
-			double dxrel = _scalePixelDistanceToUnits(xAbsRight - m_draggingCenter,tick);
+			double dxrel = _scalePixelDistanceToUnits(xAbsRight2 - m_draggingCenter,tick);
 			_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel);
-
-
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
 
 	case DW_FIRSTLINEINDENT:
 		{
-			// TODO what upper/lower bound should we place on this ?
-			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
 			// first-line-indent is relative to the left-indent
@@ -1879,8 +1875,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	case DW_TABSTOP:
 		{
-			// TODO what upper/lower bound should we place on this ?
-			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
