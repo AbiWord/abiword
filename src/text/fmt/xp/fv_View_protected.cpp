@@ -2516,8 +2516,9 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	if (_BlockOffsetToPos(*pBlock, *pOffset) <= (*pBlock)->getPosition(false))
 	{
 		// Then return a fresh new block's buffer
-		newBlock = (*pBlock)->getPrevBlockInDocument();
-
+		newBlock = *pBlock;
+	    get_new_block:	newBlock = newBlock->getPrevBlockInDocument();
+		xxx_UT_DEBUGMSG(("Got prev block %x \n",newBlock));
 		// Are we at the end of the document?
 		if (!newBlock)
 		{
@@ -2528,7 +2529,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 			newBlock = m_pLayout->findBlockAtPositionReverse(endOfDoc);
 
 			m_wrappedEnd = true;
-
+			UT_DEBUGMSG(("Reached start of doc via getPrevBlockinDocument \n"));
 			UT_return_val_if_fail(newBlock, NULL);
 		}
 
@@ -2544,7 +2545,10 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 			UT_ASSERT_HARMLESS(0);
 			return NULL;
 		}
-
+		if(pBuffer.getLength() == 0)
+		{
+			goto get_new_block;
+		}
 		// Good to go with a full buffer for our new block
 	}
 	else
@@ -2565,7 +2569,8 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 
 	if(blockStart >= pBuffer.getLength())
 	{
-		// we are done, as there is nothing to search ...
+		// we are done, as there is nothing to search .
+		UT_DEBUGMSG(("PrevSearch completed \n"));
 		return NULL;
 	}
 		
@@ -2585,7 +2590,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	*pBlock = newBlock;
 	*pOffset = newOffset;
 	
-	UT_DEBUGMSG(("Block pos: %d", (newBlock)->getPosition(false)));
+	UT_DEBUGMSG(("Block pos: %d ", (newBlock)->getPosition(false)));
 	UT_DEBUGMSG((" - len: %d\n", pBuffer.getLength()));
 	
 
