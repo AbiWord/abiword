@@ -27,11 +27,11 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-/* #include "ut_string.h" */
 #include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "barbarisms.h"		  
+
 // forward declaration
 class SpellManager;
 
@@ -62,6 +62,9 @@ public:
 	virtual bool  doesDictionaryExist (const char * szLang) {return false;};
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 
+	virtual void correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
+							  const UT_UCSChar *correct, size_t correctLen);
+
 protected:
 
 	virtual bool requestDictionary (const char * szLang) = 0;
@@ -75,15 +78,17 @@ protected:
 
     void setLanguage (const char * lang)
       {
-	m_language = lang;
+		  m_language = lang;
       }
 
     UT_String getLanguage () const
       {
-	return m_language;
+		  return m_language;
       }
+
+	static void couldNotLoadDictionary ( const char * szLang );
     
-    UT_String           m_language;
+    UT_String       m_language;
     Barbarisms		m_barbarism;
     UT_Vector		m_vecEmpty;
     

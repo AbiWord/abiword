@@ -15,8 +15,6 @@
 
 // for a silly messagebox
 #include <stdio.h>
-#include "xap_Frame.h"
-#include "xap_Strings.h"
 
 #ifdef HAVE_CURL
 #include "ap_HashDownloader.h"
@@ -286,30 +284,6 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	return sgvec;
 }
 
-static void
-s_couldNotLoadDictionary ( const char * szLang )
-{
-	UT_return_if_fail(szLang);
-
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
-
-	if(pFrame)
-	{
-
-		const XAP_StringSet * pSS    = XAP_App::getApp()->getStringSet ();
-
-		const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
-		pFrame->showMessageBox (UT_String_sprintf(text, szLang).c_str(),
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK);
-	}
-	else
-	{
-		// TODO -- create a dialog not bound to a frame
-		UT_DEBUGMSG(( "ispell_checker::s_couldNotLoadDictionary: could not load dictionary for %s\n", szLang ));
-	}
-}
-
 static char *
 s_buildHashName ( const char * base, const char * dict )
 {
@@ -512,7 +486,7 @@ ISpellChecker::requestDictionary(const char *szLang)
 		 */
 		if (!getUserSaidNo())
 #endif
-			s_couldNotLoadDictionary ( szLang );
+			couldNotLoadDictionary ( szLang );
 		return false ;
 	}
 

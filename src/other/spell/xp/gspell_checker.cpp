@@ -1,5 +1,5 @@
 /* AbiSuite
- * Copyright (C) 2001, 2002 Dom Lachowicz
+ * Copyright (C) 2003 Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,19 +16,11 @@
  * 02111-1307, USA.
  */
 
-/* Pspell 0.12 added a size param to a lot of its functions. If this is
- * defined before <pspell.h>, we retain source compatibility with
- * Pspell 0.11. Theoretically with 0.12, we could use UCS-4, but in practice
- * this doesn't work at all. We'll stick to converting between  UCS-4 and UTF-8
- * instead.
- */
-#define USE_ORIGINAL_MANAGER_FUNCS 1
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "pspell_checker.h"
+#include "gspell_checker.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_assert.h"
@@ -48,16 +40,17 @@ utf8_to_utf32(const char *word8)
 	return ucs4;
 }
 
-PSpellChecker::PSpellChecker ()
-  : spell_manager(0)
+GSpellChecker::GSpellChecker ()
+	: m_dict (CORBA_NIL)
 {
+	m_dict = bonobo_get_object ("OAFIID:GNOME_Spell_Dictionary:0.2", "GNOME/Spell/Dictionary", 0);
+	UT_ASSERT (m_dict != CORBA_NIL)
 }
 
-PSpellChecker::~PSpellChecker()
+GSpellChecker::~GSpellChecker()
 {
-	// some versions of pspell segfault here for some reason
-	if(spell_manager)
-		delete_pspell_manager(spell_manager);
+	if(m_dict != CORBA_NIL)
+		bonobo_object_release_unref (m_dict, NULL);
 }
 
 /*!
@@ -68,38 +61,30 @@ PSpellChecker::~PSpellChecker()
  * \return true if we loaded the dictionary, false if not
  */
 bool 
-PSpellChecker::requestDictionary (const char * szLang)
+GSpellChecker::requestDictionary (const char * szLang)
 {
-	PspellConfig *spell_config;
-	PspellCanHaveError *spell_error;
-
 	UT_return_val_if_fail ( szLang, false ) ;
+
+	CORBA_Environment ev;
+	CORBA_exception_init (&ev);
 
 	// Convert the language tag from en-US to en_US form
 	char * lang = UT_strdup (szLang);
 	char * hyphen = strchr (lang, '-');
 	if (hyphen)
 		*hyphen = '_';
-	
-	spell_config = new_pspell_config();
-	pspell_config_replace(spell_config, "language-tag", lang);
-	pspell_config_replace(spell_config, "encoding", "utf-8");
-	
-	spell_error = new_pspell_manager(spell_config);
-	delete_pspell_config(spell_config);
-	UT_DEBUGMSG(("Attempting to load %s \n",lang));
-	
+
+	GNOME_Spell_Dictionary_setLanguage (m_dict, lang, &ev);
 	FREEP(lang);
-	
-	if(pspell_error_number(spell_error) != 0)
+
+	if(ev._major != CORBA_NO_EXCEPTION)
 	{
-		couldNotLoadDictionary ( szLang );
-		UT_DEBUGMSG(("SpellCheckInit: Pspell error: %s\n",
-					 pspell_error_message(spell_error)));
+		s_couldNotLoadDictionary ( szLang );
+		CORBA_exception_free (&ev);
 		return false;
 	}
-	
-	spell_manager = to_pspell_manager(spell_error);
+
+	CORBA_exception_free (&ev);
 	return true;
 }
 
@@ -112,24 +97,28 @@ PSpellChecker::requestDictionary (const char * szLang)
  * \return One of SpellChecker::SpellCheckResult
  */
 SpellChecker::SpellCheckResult 
-PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
+GSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
 {
 	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
 	
-	UT_return_val_if_fail ( spell_manager, SpellChecker::LOOKUP_ERROR );
+	UT_return_val_if_fail ( m_dict != CORBA_NIL, SpellChecker::LOOKUP_ERROR );
 	UT_return_val_if_fail ( szWord, SpellChecker::LOOKUP_ERROR ) ;
 	UT_return_val_if_fail ( len, SpellChecker::LOOKUP_ERROR ) ;
 
-	switch (pspell_manager_check(spell_manager, const_cast<char*>(UT_UTF8String (szWord, len).utf8_str())))
-	{
-	case 0:
-		ret = SpellChecker::LOOKUP_FAILED; break;
-	case 1:
-		ret = SpellChecker::LOOKUP_SUCCEEDED; break;
-	default:
-		ret = SpellChecker::LOOKUP_ERROR; break;
-	}
-	
+	CORBA_Environment ev;
+	CORBA_exception_init (&ev);
+
+	CORBA_boolean result = GNOME_Spell_Dictionary_checkWord (m_dict, UT_UTF8String (szWord, len).utf8_str(),
+															 &ev);
+
+	if (ev._major != CORBA_NO_EXCEPTION)
+		ret = SpellChecker::LOOKUP_ERROR;
+	else if (result == CORBA_FALSE)
+		ret = SpellChecker::LOOKUP_FAILED;
+	else
+		ret = SpellChecker::LOOKUP_SUCCEEDED;
+
+	CORBA_exception_free (&ev);
 	return ret;
 }
 
@@ -142,60 +131,75 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
  *         'delete'd and its UT_UCSChar * suggests must be 'free()'d
  */
 UT_Vector * 
-PSpellChecker::suggestWord (const UT_UCSChar * szWord, 
-			    size_t len)
+GSpellChecker::suggestWord (const UT_UCSChar * szWord, 
+							size_t len)
 {
-	PspellStringEmulation *suggestions = NULL;
-	const PspellWordList *word_list = NULL;
+	GNOME_Spell_StringSeq *seq = 0;
+	CORBA_Environment   ev;
 	const char *new_word = NULL;
 	int count = 0, i = 0;
 	
-	UT_return_val_if_fail ( spell_manager, 0 ) ;
+	UT_return_val_if_fail ( m_dict != CORBA_NIL, 0 ) ;
 	UT_return_val_if_fail ( szWord && len, 0 ) ;
 
-	word_list   = pspell_manager_suggest(spell_manager, const_cast<char*>(UT_UTF8String (szWord, len).utf8_str()));
-	suggestions = pspell_word_list_elements(word_list);
-	count       = pspell_word_list_size(word_list);
+	CORBA_exception_init (&ev);
 
-	// no suggestions, not an error
-	if(count == 0)
+	seq = GNOME_Spell_Dictionary_getSuggestions (m_dict, UT_UTF8String (szWord, len).utf8_str(), &ev);
+	if (seq == CORBA_NIL) {
+		CORBA_exception_free (&ev);
 		return 0;
+	} else if (seq->_length == 0) {
+		CORBA_free (seq);
+		CORBA_exception_free (&ev);
+		return 0;
+	}
 	
 	UT_Vector * sg = new UT_Vector ();
 	
-	while ((new_word = pspell_string_emulation_next(suggestions)) != NULL) 
-	{
-		UT_UCSChar *word = utf8_to_utf32(new_word);
+	for (i = 0; i < seq->_length; i++)
+	{		
+		UT_UCSChar *word = utf8_to_utf32(seq->_buffer [i]);
 		if (word)
-		{
 			sg->addItem (static_cast<void *>(word));
-			i++;
-		}
 	}
 	
+	CORBA_free (seq);
+	CORBA_exception_free (&ev);
+
 	return sg;
 }
 
 bool 
-PSpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
+GSpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
-  if (spell_manager && word && len) {
-    pspell_manager_add_to_personal(spell_manager, const_cast<char *>(UT_UTF8String (word, len).utf8_str()));
-    return true;
-  }
-  return false;
+	bool result = false;
+	
+	if (m_dict != CORBA_NIL && word && len) {
+		CORBA_Environment   ev;
+		CORBA_exception_init (&ev);
+		GNOME_Spell_Dictionary_addWordToPersonal (m_dict, UT_UTF8String (word, len).utf8_str(), &ev);
+		if (ev._major == CORBA_NO_EXCEPTION) 
+			result = true;
+		CORBA_exception_free (&ev);
+	}
+	return result;
 }
 
 void 
-PSpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
+GSpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 							const UT_UCSChar *correct, size_t correctLen)
 {
-	UT_return_if_fail (spell_manager);
+	UT_return_if_fail (m_dict != CORBA_NIL);
 	UT_return_if_fail (toCorrect || toCorrectLen);
 	UT_return_if_fail (correct || correctLen);
 
 	UT_UTF8String bad (toCorrect, toCorrectLen);
 	UT_UTF8String good (correct, correctLen);
 
-	pspell_manager_store_replacement (spell_manager, bad.utf8_str(), good.utf8_str());
+	CORBA_Environment   ev;
+	CORBA_exception_init (&ev);
+
+	GNOME_Spell_Dictionary_setCorrection (m_dict, bad.utf8_str(), good.utf8_str());
+
+	CORBA_exception_free (&ev);
 }

@@ -18,7 +18,10 @@
  */
 
 #include "xap_App.h"
+#include "xap_Frame.h"
+#include "xap_Strings.h"
 #include "spell_manager.h"
+#include "ut_debugmsg.h"
 
 // we either use an ispell or pspell based backend
 #ifdef HAVE_PSPELL
@@ -147,4 +150,26 @@ bool SpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
   // TODO: make this support language tags, subclass this for pspell
   return XAP_App::getApp()->addWordToDict (word, len);
+}
+
+void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
+								const UT_UCSChar *correct, size_t correctLen)
+{
+}
+
+/* static */ void SpellChecker::couldNotLoadDictionary ( const char * szLang )
+{
+	XAP_App             * pApp   = XAP_App::getApp ();
+	XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
+	  
+	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD), 
+									 szLang));
+
+	if (pFrame)
+		pFrame->showMessageBox (buf.c_str(),
+								XAP_Dialog_MessageBox::b_O,
+								XAP_Dialog_MessageBox::a_OK);
+	else {
+		UT_DEBUGMSG(("spell_checker::could not load dictionary for %s\n", szLang));
+	}
 }

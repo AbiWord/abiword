@@ -1,5 +1,5 @@
 /* AbiSuite
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2003 Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,18 +17,20 @@
  * 02111-1307, USA.
  */
 
-#ifndef PSPELL_CHECKER_H
-#define PSPELL_CHECKER_H
+#ifndef GSPELL_CHECKER_H
+#define GSPELL_CHECKER_H
 
-#include <pspell/pspell.h>
+#include <bonobo.h>
+#include <gnome.h>
+#include "Spell.h"
 #include "spell_manager.h"
 
-class PSpellChecker : public SpellChecker
+class GSpellChecker : public SpellChecker
 {
 	friend class SpellManager;
 
 public:
-	virtual ~PSpellChecker();
+	virtual ~GSpellChecker();
 
 	virtual SpellChecker::SpellCheckResult checkWord (const UT_UCSChar * word, size_t len);
 	virtual UT_Vector * suggestWord (const UT_UCSChar * word, size_t len);
@@ -38,10 +40,10 @@ public:
 
 protected:
 	virtual bool requestDictionary (const char * szLang);
-	PSpellChecker();
+	GSpellChecker();
 
 private:
-	PspellManager *spell_manager;
+	GNOME_Spell_Dictionary m_dict;
 };
 
-#endif /* PSPELL_CHECKER_H */
+#endif /* GSPELL_CHECKER_H */
