@@ -48,6 +48,8 @@
 
 XAP_App * XAP_App::m_pApp = NULL;
 
+XAP_App * XAP_App::getApp() {return m_pApp;}
+
 XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	: m_pArgs(pArgs),
 	  m_szAppName(szAppName),

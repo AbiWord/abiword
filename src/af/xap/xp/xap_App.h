@@ -107,7 +107,7 @@ public:
 	bool							getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
 	bool							getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
 
-	static XAP_App *						getApp() {return m_pApp;}
+	static XAP_App *				getApp();
 
 	virtual XAP_DialogFactory *				getDialogFactory() = 0;
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory() = 0;
