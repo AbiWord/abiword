@@ -165,10 +165,10 @@ void AP_Dialog_Options::_storeWindowData(void)
 		m_pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
 	}
 
-	if (_gatherViewShowExtraBar() != pFrameData->m_bShowBar[2])
+	if (_gatherViewShowExtraBar() != pFrameData->m_bShowBar[3])
 	{
-		pFrameData->m_bShowBar[2] = _gatherViewShowExtraBar();
-		m_pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
+		pFrameData->m_bShowBar[3] = _gatherViewShowExtraBar();
+		m_pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
 	}
 
 	if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )

@@ -321,6 +321,7 @@ public:
 	static EV_EditMethod_Fn viewStd;
 	static EV_EditMethod_Fn viewFormat;
 	static EV_EditMethod_Fn viewExtra;
+	static EV_EditMethod_Fn viewTable;
 	static EV_EditMethod_Fn viewRuler;
 	static EV_EditMethod_Fn viewStatus;
 	static EV_EditMethod_Fn viewPara;
@@ -988,6 +989,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
+	EV_EditMethod(NF(viewTable),			0,		""),
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
@@ -7049,6 +7051,38 @@ Defun1(viewExtra)
 	  return false;
 
 	// toggle the ruler bit
+	pFrameData->m_bShowBar[3] = ! pFrameData->m_bShowBar[3];
+
+	// actually do the dirty work
+	pFrame->toggleBar( 3, pFrameData->m_bShowBar[3] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]);
+
+	return true;
+}
+
+Defun1(viewTable)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
+	// toggle the ruler bit
 	pFrameData->m_bShowBar[2] = ! pFrameData->m_bShowBar[2];
 
 	// actually do the dirty work
@@ -7062,7 +7096,7 @@ Defun1(viewExtra)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]);
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_TableBarVisible, pFrameData->m_bShowBar[3]);
 
 	return true;
 }
@@ -7249,6 +7283,7 @@ Defun1(viewFullScreen)
 	  pFrame->toggleBar(0, false);
 	  pFrame->toggleBar(1, false);
 	  pFrame->toggleBar(2, false);
+	  pFrame->toggleBar(3, false);
 	  pFrame->toggleStatusBar(false);
 	  pFrame->toggleRuler(false);
 	  pFrame->setFullScreen(true);
@@ -7258,6 +7293,7 @@ Defun1(viewFullScreen)
 	  pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
 	  pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
 	  pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
+	  pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
 	  pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
 	  pFrame->toggleRuler(pFrameData->m_bShowRuler);
 	  pFrameData->m_bIsFullScreen = false;

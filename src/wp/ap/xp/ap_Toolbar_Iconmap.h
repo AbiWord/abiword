@@ -85,6 +85,13 @@ toolbariconmap(FMTPAINTER,tb_stock_paint_xpm)
 toolbariconmap(FMT_DIR_OVERRIDE_LTR,tb_text_direction_ltr_xpm)
 toolbariconmap(FMT_DIR_OVERRIDE_RTL,tb_text_direction_rtl_xpm)
 toolbariconmap(FMT_DOM_DIRECTION,tb_text_dom_direction_rtl_xpm)
+toolbariconmap(INSERT_TABLE, tb_insert_table_xpm)
+toolbariconmap(ADD_ROW, tb_add_row_xpm)
+toolbariconmap(ADD_COLUMN, tb_add_column_xpm)
+toolbariconmap(DELETE_ROW, tb_delete_row_xpm)
+toolbariconmap(DELETE_COLUMN, tb_delete_column_xpm)
+toolbariconmap(MERGE_CELLS, tb_merge_cells_xpm)
+toolbariconmap(SPLIT_CELLS, tb_split_cells_xpm)
 toolbariconmap(_BOGUS2__,NoIcon)
 // Add new default icons here		
 		

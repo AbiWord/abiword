@@ -878,8 +878,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 			s = EV_MIS_ZERO;
 		break;
-	case AP_MENU_ID_VIEW_TB_EXTRA:
+	case AP_MENU_ID_VIEW_TB_TABLE:
 		if ( pFrameData->m_bShowBar[2] && !pFrameData->m_bIsFullScreen)
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
+		break;
+	case AP_MENU_ID_VIEW_TB_EXTRA:
+		if ( pFrameData->m_bShowBar[3] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;
 		else
 			s = EV_MIS_ZERO;

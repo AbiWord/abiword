@@ -764,3 +764,14 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_StylesLocked)
         return EV_TIS_ZERO;
 }
 
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
+{
+  ABIWORD_VIEW;
+  UT_ASSERT(pView);
+  
+  if(pView->isInTable())
+    return EV_TIS_ZERO;
+  
+  return EV_TIS_Gray;
+}
+

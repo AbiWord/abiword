@@ -102,6 +102,13 @@ toolbaritem(FMTPAINTER)
 toolbaritem(FMT_DIR_OVERRIDE_LTR)
 toolbaritem(FMT_DIR_OVERRIDE_RTL)
 toolbaritem(FMT_DOM_DIRECTION)
+toolbaritem(INSERT_TABLE)
+toolbaritem(ADD_ROW)
+toolbaritem(ADD_COLUMN)
+toolbaritem(DELETE_ROW)
+toolbaritem(DELETE_COLUMN)
+toolbaritem(MERGE_CELLS)
+toolbaritem(SPLIT_CELLS)
 
 
 

@@ -107,6 +107,14 @@
 #	include "tb_script_play.xpm"
 #       include "tb_stock_paint.xpm"
 
+#include "tb_insert_table.xpm"
+#include "tb_add_row.xpm"
+#include "tb_add_column.xpm"
+#include "tb_delete_row.xpm"
+#include "tb_delete_column.xpm"
+#include "tb_merge_cells.xpm"
+#include "tb_split_cells.xpm"
+
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
@@ -225,6 +233,13 @@
  	DefineToolbarIcon(tb_edit_removefooter_xpm)
 	DefineToolbarIcon(tb_script_play_xpm)
         DefineToolbarIcon(tb_stock_paint_xpm)
+        DefineToolbarIcon(tb_insert_table_xpm)
+        DefineToolbarIcon(tb_add_row_xpm)
+        DefineToolbarIcon(tb_add_column_xpm)
+        DefineToolbarIcon(tb_delete_row_xpm)
+        DefineToolbarIcon(tb_delete_column_xpm)
+        DefineToolbarIcon(tb_merge_cells_xpm)
+        DefineToolbarIcon(tb_split_cells_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

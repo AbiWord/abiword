@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2002 Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,13 +25,20 @@
 ******************************************************************
 *****************************************************************/
 
-// Include each toolbar layout that we want to build.
+BeginLayout(TableOps)
 
-#include "ap_TB_Layouts_FileEditOps.h"
-#include "ap_TB_Layouts_FormatOps.h"
-#include "ap_TB_Layouts_TableOps.h"
-#include "ap_TB_Layouts_ExtraOps.h"
+     ToolbarItem(AP_TOOLBAR_ID_INSERT_TABLE)
+     ToolbarItem(AP_TOOLBAR_ID_ADD_ROW)
+     ToolbarItem(AP_TOOLBAR_ID_ADD_COLUMN)
 
+     Spacer()
 
+     ToolbarItem(AP_TOOLBAR_ID_DELETE_ROW)
+     ToolbarItem(AP_TOOLBAR_ID_DELETE_COLUMN)
 
+     Spacer()
 
+     ToolbarItem(AP_TOOLBAR_ID_MERGE_CELLS)
+     ToolbarItem(AP_TOOLBAR_ID_SPLIT_CELLS)
+
+EndLayout()

@@ -123,6 +123,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_TB_STD,		0,0,1,	"viewStd",			ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_TB_FORMAT,	0,0,1,	"viewFormat",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_TB_EXTRA,	0,0,1,	"viewExtra",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_TB_TABLE,	0,0,1,	"viewTable",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_RULER,		0,0,1,	"viewRuler",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_STATUSBAR,	0,0,1,	"viewStatus",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,	"viewPara",			ap_GetState_View,		NULL);

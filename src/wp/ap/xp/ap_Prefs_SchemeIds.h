@@ -79,6 +79,8 @@
 #define AP_PREF_DEFAULT_FormatBarVisible			"1"
 #define AP_PREF_KEY_ExtraBarVisible					"ExtraBarVisible"			/* is the extra toolbar visible? {0,1} */
 #define AP_PREF_DEFAULT_ExtraBarVisible				"0"
+#define AP_PREF_KEY_TableBarVisible					"ExtraBarVisible"			/* is the table toolbar visible? {0,1} */
+#define AP_PREF_DEFAULT_TableBarVisible				"0"
 
 #define AP_PREF_KEY_StatusBarVisible				"StatusBarVisible"			/* is the status bar visible? {0,1} */
 #define AP_PREF_DEFAULT_StatusBarVisible			"1"
@@ -112,7 +114,7 @@
 #define AP_PREF_DEFAULT_ToolbarLabelSet				"en-US"						/* value in BeginSet() */
 
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
-#define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps ExtraOps"		/* values in BeginLayout() */
+#define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps TableOps ExtraOps"		/* values in BeginLayout() */
 
 #define AP_PREF_KEY_SpellDirectory					"SpellCheckDirectory"		/* where we find hash files */
 #define AP_PREF_DEFAULT_SpellDirectory				"dictionary" 				/* if relative, use prefix "getAbiSuiteLibDir()" */
@@ -160,6 +162,7 @@ dcl(RulerVisible)
 dcl(StandardBarVisible)
 dcl(FormatBarVisible)
 dcl(ExtraBarVisible)
+dcl(TableBarVisible)
 dcl(StatusBarVisible)
 dcl(ParaVisible)
 dcl(StringSet)
