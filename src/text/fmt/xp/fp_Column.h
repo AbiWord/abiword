@@ -51,7 +51,9 @@ public:
 	virtual ~fp_VerticalContainer();
 
 	virtual void		setWidth(UT_sint32);
+	void		        _setWidth(UT_sint32 iWidth) {m_iWidth = iWidth;}
 	virtual void		setHeight(UT_sint32);
+	void		        _setHeight(UT_sint32 iHeight) {m_iHeight = iHeight;}
 	virtual void		setMaxHeight(UT_sint32);
 	virtual void		setX(UT_sint32, bool bDontClearIfNeeded=false);
 	virtual void		setY(UT_sint32);

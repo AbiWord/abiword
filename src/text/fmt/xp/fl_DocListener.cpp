@@ -1848,6 +1848,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		  {
 			  UT_DEBUGMSG(("Not Implemented \n"));
 			  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			  break;
 		  }
 			
 		}
@@ -1859,9 +1860,9 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		{
 		case PTX_Block:				// we are inserting a block into a frame. This is valid
 		  {
-			   // The immediately prior strux is a section.  So, this
-			   // will become the first block of the section and have no
-			   // text.
+			   // The immediately prior strux is a Frame.  So, this
+			   // will become the first block of the Frame.
+
 			  UT_DEBUGMSG(("Inserting block into frame \n"));
 			  fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
 			  UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_FRAME);

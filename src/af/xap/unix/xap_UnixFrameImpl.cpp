@@ -632,6 +632,29 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint XAP_UnixFrameImpl::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
+	if(e->type == GDK_DRAG_MOTION)
+	{
+		//
+		// swallow qued drag events and just get the last one.
+		//
+		GdkEvent  * eNext = gdk_event_peek();
+		if(eNext && eNext->type == GDK_DRAG_MOTION)
+		{
+			gdk_event_free(reinterpret_cast<GdkEvent *>(e));
+			e = reinterpret_cast<GdkEventMotion *>(eNext);
+			eNext = gdk_event_peek();
+			while(eNext && eNext->type == GDK_DRAG_MOTION)
+			{
+				gdk_event_free(eNext);
+				eNext = gdk_event_get();
+				gdk_event_free(reinterpret_cast<GdkEvent *>(e));
+				e = reinterpret_cast<GdkEventMotion *>(eNext);
+				eNext = gdk_event_peek();
+			}
+			gdk_event_free(eNext);
+		}
+	}
+
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();

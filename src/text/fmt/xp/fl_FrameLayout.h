@@ -82,10 +82,11 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
-
+	void                     miniFormat(void);
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
 	virtual void             collapse(void);
+	void                     localCollapse();
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
@@ -108,12 +109,16 @@ public:
 	UT_sint32                getFrameYpos(void) const
 		{ return m_iYpos;}
 
+	void                setFrameWidth(UT_sint32 iW) { m_iWidth = iW;}
+	void                setFrameHeight(UT_sint32 iH) { m_iHeight = iH;}
+	void                setFrameXpos(UT_sint32 iX) 	{ m_iXpos = iX;}
+	void                setFrameYpos(UT_sint32 iY) { m_iYpos = iY;}
+
 private:
 	void		             _lookupProperties(void);
 	void                     _purgeLayout(void);
 	void                     _createFrameContainer(void);
 	void                     _insertFrameContainer(fp_Container * pNewFC);
-	void                     _localCollapse();
 	FL_FrameType             m_iFrameType;
 	FL_FrameFormatMode       m_iFramePositionTo;
 	bool                     m_bNeedsRebuild;

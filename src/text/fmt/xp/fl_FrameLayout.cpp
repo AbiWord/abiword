@@ -357,7 +357,7 @@ void fl_FrameLayout::_purgeLayout(void)
  * from the Attributes/properties of this Layout
  */
 void fl_FrameLayout::_createFrameContainer(void)
-{
+{	
 	_lookupProperties();
 	fp_FrameContainer * pFrameContainer = new fp_FrameContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pFrameContainer);
@@ -398,6 +398,18 @@ void fl_FrameLayout::_insertFrameContainer(fp_Container * pNewFC)
 
 }
 
+
+void fl_FrameLayout::miniFormat(void)
+{
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	
+	while (pBL)
+	{
+		pBL->format();
+		pBL = pBL->getNext();
+	}
+	static_cast<fp_FrameContainer *>(getFirstContainer())->layout();
+}
 
 void fl_FrameLayout::format(void)
 {
@@ -655,7 +667,7 @@ void fl_FrameLayout::_lookupProperties(void)
 
 }
 
-void fl_FrameLayout::_localCollapse(void)
+void fl_FrameLayout::localCollapse(void)
 {
 	// ClearScreen on our Cell. One Cell per layout.
 	fp_FrameContainer *pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
@@ -676,7 +688,7 @@ void fl_FrameLayout::_localCollapse(void)
 
 void fl_FrameLayout::collapse(void)
 {
-	_localCollapse();
+	localCollapse();
 	fp_FrameContainer *pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	if (pFC)
 	{
