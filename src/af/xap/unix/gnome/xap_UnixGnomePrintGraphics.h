@@ -121,6 +121,8 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) {}
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 
+	virtual UT_uint32 getDeviceResolution(void) const;
+
 protected:
 
 	virtual UT_uint32 _getResolution() const;
@@ -135,7 +137,6 @@ private:
 	bool _startPage(const char * szPageLabel);
 	bool _endPage(void);
 	bool _endDocument(void);
-	void _setup_rotation (void);
 
 	bool                     m_bIsPreview;
 	GnomePrintJob           *m_gpm;

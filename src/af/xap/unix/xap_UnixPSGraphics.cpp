@@ -1027,13 +1027,10 @@ void PS_Graphics::_emit_SetColor(void)
 	m_ps->writeBytes(buf);
 }
 
- GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
+GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
 	GR_Image* pImg = NULL;
    
-	//_UUD(iDisplayWidth);
-	//_UUD(iDisplayHeight);
-
    	if (iType == GR_Image::GRT_Raster)
      		pImg = new PS_Image(pszName);
    	else if (iType == GR_Image::GRT_Vector)
@@ -1046,10 +1043,10 @@ void PS_Graphics::_emit_SetColor(void)
 
 void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
-  if (!m_bStartPage)
-    return;
-
-  xDest = tdu(xDest); yDest = tdu(yDest);
+	if (!m_bStartPage)
+		return;
+	
+	xDest = tdu(xDest); yDest = tdu(yDest);
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
 	   pImg->render(this, xDest, yDest);

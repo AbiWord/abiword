@@ -144,9 +144,7 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	XAP_UnixFont* pUFont = m_pCurrentPSFont->getUnixFont();
-	UT_sint32 iSize = m_pCurrentPSFont->getSize();
-	return (UT_uint32) (pUFont->measureUnRemappedChar(c, iSize) + 0.5);
+	return static_cast<UT_uint32>(m_pCurrentPSFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentPSFont->getSize()) * getResolution() / getDeviceResolution());
 }
 
 void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -176,7 +174,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	gnome_print_gsave (m_gpc);
 	gnome_print_setfont (m_gpc, m_pCurrentFont);
 
-	gnome_print_moveto(m_gpc, xoff, yoff);
+	gnome_print_moveto(m_gpc, tdu(xoff), tdu(yoff));
 	gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
 
 	// pop the graphics state
@@ -186,8 +184,8 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 void XAP_UnixGnomePrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
 										   UT_sint32 x2, UT_sint32 y2)
 {
-	gnome_print_moveto (m_gpc, x1, y1);
-	gnome_print_lineto (m_gpc, x2, y2);
+	gnome_print_moveto (m_gpc, tdu(x1), tdu(y1));
+	gnome_print_lineto (m_gpc, tdu(x2), tdu(y2));
 	gnome_print_stroke (m_gpc);
 }
 
@@ -229,15 +227,15 @@ void XAP_UnixGnomePrintGraphics::setColor(const UT_RGBColor& clr)
 
 	m_currentColor = clr;
 
-	double red = (double)m_currentColor.m_red / 255.0;
-	double green = (double)m_currentColor.m_grn / 255.0;
-	double blue = (double)m_currentColor.m_blu / 255.0;
+	double red   = (double)(m_currentColor.m_red << 8);
+	double green = (double)(m_currentColor.m_grn << 8);
+	double blue  = (double)(m_currentColor.m_blu << 8);
 	gnome_print_setrgbcolor(m_gpc,red,green,blue);
 }
 
 void XAP_UnixGnomePrintGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
- 	m_dLineWidth = (double)((double)iLineWidth);
+ 	m_dLineWidth = tduD((double)iLineWidth);
 	gnome_print_setlinewidth (m_gpc, m_dLineWidth); 
 }
 
@@ -249,8 +247,12 @@ bool XAP_UnixGnomePrintGraphics::startPrint(void)
 }
 
 bool XAP_UnixGnomePrintGraphics::startPage (const char *szPageLabel,
-											unsigned int, bool, unsigned int, unsigned int)
+											UT_uint32 pageNo, bool portrait, 
+											UT_uint32 width, UT_uint32 height)
 {
+	width  = tdu (width);
+	height = tdu (height);
+
 	if (m_bStartPage)
 	  _endPage();
 	m_bStartPage = true;
@@ -273,6 +275,11 @@ void XAP_UnixGnomePrintGraphics::setColorSpace(GR_Graphics::ColorSpace c)
 GR_Graphics::ColorSpace XAP_UnixGnomePrintGraphics::getColorSpace(void) const
 {
 	return m_cs;
+}
+
+UT_uint32 XAP_UnixGnomePrintGraphics::getDeviceResolution(void) const
+{
+	return 300;
 }
 
 void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg, 
@@ -312,6 +319,9 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, 
 										   UT_sint32 yDest)
 {
+	xDest = tdu(xDest);
+	yDest = tdu(yDest);
+
    	if (pImg->getType() != GR_Image::GRT_Raster) 
 	    pImg->render(this, xDest, yDest);
 	else {
@@ -331,10 +341,10 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 }
 
 GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName, 
-					     const UT_ByteBuf* pBB, 
-					     UT_sint32 iDisplayWidth,
-					     UT_sint32 iDisplayHeight, 
-					     GR_Image::GRType iType)
+													 const UT_ByteBuf* pBB, 
+													 UT_sint32 iDisplayWidth,
+													 UT_sint32 iDisplayHeight, 
+													 GR_Image::GRType iType)
 {
 	GR_Image* pImg = NULL;
 
@@ -343,7 +353,7 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
    	else if (iType == GR_Image::GRT_Vector)
 		pImg = new GR_VectorImage(pszName);
    
-	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+	pImg->convertFromBuffer(pBB, tdu(iDisplayWidth), tdu(iDisplayHeight));
 
 	return pImg;
 }
@@ -363,7 +373,6 @@ bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 		return true ;
 	
 	gnome_print_beginpage(m_gpc, (const guchar *)szPageLabel);
-	_setup_rotation ();
 	return true;
 }
 
@@ -373,7 +382,7 @@ bool XAP_UnixGnomePrintGraphics::_endPage(void)
 		gnome_print_stroke(m_gpc);
 	
 	if (!m_gpm)
-		return true ;
+		return true;
 	
 	gnome_print_showpage(m_gpc);
 	return true;
@@ -419,6 +428,8 @@ void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c,
 	UT_RGBColor old (m_currentColor);
 	setColor (c);
 	
+	x = tdu(x); y = tdu(y); w = tdu(w); h = tdu(h);
+
 	gnome_print_newpath (m_gpc);
 	gnome_print_moveto (m_gpc, x,   y);		
 	gnome_print_lineto (m_gpc, x+w, y);
@@ -523,25 +534,24 @@ void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 {
-	PSFont * psfnt = static_cast<PSFont *>(fnt);
-	XAP_UnixFont* pUFont = psfnt->getUnixFont();
-	UT_sint32 iSize = psfnt->getSize();
-	return (UT_uint32) (pUFont->getAscender(iSize) + 0.5);
+	PSFont*	hndl = static_cast<PSFont*> (fnt);
+	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME but we're not smart enough to do that yet
+	// we call getDeviceResolution() to avoid zoom
+	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 {
-	UT_uint32 asc;
-	asc = getFontAscent(static_cast<GR_Font *>(m_pCurrentPSFont));
-	return asc;
+	return getFontAscent(static_cast<GR_Font *>(m_pCurrentPSFont));
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 {
-	PSFont * psfnt = static_cast<PSFont *>(fnt);
-	XAP_UnixFont* pUFont = psfnt->getUnixFont();
-	UT_sint32 iSize = psfnt->getSize();
-	return (UT_uint32) (pUFont->getAscender(iSize) + 0.5);
+	PSFont*	psfnt = static_cast<PSFont*> (fnt);
+	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME but we're not smart enough to do that yet
+	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
@@ -591,22 +601,10 @@ GR_Font* XAP_UnixGnomePrintGraphics::findFont(const char* pszFontFamily,
 	XAP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
 	XAP_UnixFontHandle * item = NULL;
 	
-	//
-	// This piece of code scales the FONT chosen at low resolution to that at high
-	// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
-	//
-	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
-	if (unixfont)
-		{
-			// end up burying a pointer to the unix font, but first we need a handle
-			item = new XAP_UnixFontHandle(unixfont,iSize);
-		}
-	else
-		{
-			// Oops!  We don't have that font here.  substitute something
-			// we know we have (get smarter about this later)
-			item = new XAP_UnixFontHandle(m_fm->getFont("Times New Roman", s),iSize);
-		}
+	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
+
+	// end up burying a pointer to the unix font, but first we need a handle
+	item = new XAP_UnixFontHandle(unixfont,iSize);
 
 	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
     delete item;
@@ -619,42 +617,79 @@ void XAP_UnixGnomePrintGraphics::setPageSize(char* pageSizeName, UT_uint32 iwidt
 	UT_ASSERT (UT_TODO);
 }
 
+static int
+joinToPS (GR_Graphics::JoinStyle js)
+{
+  switch(js)
+    {
+    case GR_Graphics::JOIN_MITER: 
+      return 0;
+    case GR_Graphics::JOIN_ROUND: 
+      return 1;
+    case GR_Graphics::JOIN_BEVEL: 
+      return 2;
+    }
+
+  return 1;
+}
+
+static int
+capToPS (GR_Graphics::CapStyle cs)
+{
+  switch (cs)
+    {
+    case GR_Graphics::CAP_BUTT: 
+      return 0;
+    case GR_Graphics::CAP_ROUND: 
+      return 1;
+    case GR_Graphics::CAP_PROJECTING: 
+      return 2;
+    }
+
+  return 1;
+}
+
+static double*
+dashToPS (GR_Graphics::LineStyle ls, gint & n_values, double &offset)
+{
+  switch(ls)
+    {
+    case GR_Graphics::LINE_SOLID:
+		offset = 0.; n_values = 0; return 0;
+    case GR_Graphics::LINE_ON_OFF_DASH: 
+		offset = 0.; n_values = 2; return {1., 1.};
+    case GR_Graphics::LINE_DOUBLE_DASH: 
+		offset = 0.; n_values = 2; return {1., 2.};
+    case GR_Graphics::LINE_DOTTED: 
+		UT_ASSERT(UT_TODO);
+		offset = 0.; n_values = 0; return 0;
+    }
+
+  n_values = 0; offset = 0.; return 0;
+}
+
 void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 													JoinStyle inJoinStyle,
 													CapStyle inCapStyle,
 													LineStyle inLineStyle)
 {
-	UT_ASSERT (UT_TODO);
+
+	gnome_print_setlinejoin (m_gpc, joinToPS(inJoinStyle));
+	gnome_print_setlinecap (m_gpc, capToPS(inCapStyle));
+
+	gint n_values = 0;
+	double offset = 0;
+	double * dash = 0;
+
+	dash = dashToPS (inLineStyle);
+	gnome_print_setdash (m_gpc, n_values, dash, offset);
+
+#if 0
+	// rounded up and most certainly ignored for now!!!
+	m_iLineWidth = (UT_uint32)tdu(ceil(inWidthPixels));
+#endif
 }
 
 /***********************************************************************/
 /*                Private Scaling Conversion Routines                  */
 /***********************************************************************/
-
-#if 0
-
-#include <libart_lgpl/art-affine.h>
-
-void XAP_UnixGnomePrintGraphics::_setup_rotation (void)
-{
-	// do nothing for this default case
-	if (isPortrait ())
-		return;
-
-	// we have to apply an affine to the print context for
-	// each page in order to print in landscape mode
-	double affine [6];
-	art_affine_rotate (affine, 90.0);
-	gnome_print_concat (m_gpc, affine);
-
-	art_affine_translate (affine, 0, - _get_height ());
-	gnome_print_concat (m_gpc, affine);
-}
-
-#else
-
-void XAP_UnixGnomePrintGraphics::_setup_rotation (void)
-{
-}
-
-#endif
