@@ -535,6 +535,13 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	UT_sint32 offx =0;
 	fp_Column * pCol = static_cast<fp_Column *>(pBroke->getColumn());
 	fp_Page * pPage = pBroke->getPage(); 
+	if(pPage == NULL)
+	{
+//
+// Can happen while laoding.
+//
+		return;
+	}
 	pPage->getScreenOffsets(pCol, col_x,col_y);
 	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 	{

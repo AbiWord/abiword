@@ -572,6 +572,17 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
+		 else if(UT_XML_strcmp(pszType,"endnote_ref") == 0)
+		 {
+			 _openSpan(api,pSpanAP);
+             m_pie->_rtf_keyword("chftn");
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"endnote_anchor") == 0)
+		 {
+             m_pie->_rtf_keyword("chftn");
+			 return;
+		 }
 		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
@@ -1048,10 +1059,21 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 	double colwidth = 0.0;
 	double dcells = (double) m_Table.getNumCols();
 	colwidth = (_getColumnWidthInches() - dColSpace*0.5)/dcells;
-	for(i=0; i < m_Table.getNumCols(); i = m_Table.getRight())
+	UT_sint32 iNext = 1;
+	for(i=0; i < m_Table.getNumCols(); i = iNext)
 	{
 		m_Table.setCellRowCol(row,i);
-		UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d top %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
+		UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
+		if(m_Table.getRight() <= i)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			iNext = i+1;
+		}
+		else
+		{
+			iNext = m_Table.getRight();
+		}
+
 		m_pie->_rtf_keyword("clvertalt"); // Top aligned vertical alignment. ONly one for now
 		if(iThick > 0)
 		{
@@ -1407,6 +1429,31 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_apiThisBlock = m_apiSavedBlock;
 			m_pie->_rtf_close_brace();
 			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
+			return true;
+		}
+	case PTX_SectionEndnote:
+	    {
+			_closeSpan();
+			m_bOpennedFootnote = true;
+			_closeBlock();
+			m_apiSavedBlock = m_apiThisBlock;
+			m_sdhSavedBlock = m_sdh;
+			_setTabEaten(false);
+			m_sdh = sdh;
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("footnote");
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Endnote \n"));
+			return true;
+		}
+	case PTX_EndEndnote:
+	    {
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = m_sdhSavedBlock;
+			m_apiThisBlock = m_apiSavedBlock;
+			m_pie->_rtf_close_brace();
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Endnote \n"));
 			return true;
 		}
 	case PTX_SectionTable:
