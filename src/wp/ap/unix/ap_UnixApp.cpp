@@ -72,8 +72,6 @@
 #include "fv_View.h"
 #include "fp_Run.h"
 
-AP_UnixApp * pGlobalApp; // AAAH Global Variable
-
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
@@ -856,15 +854,24 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
 
-	// Create global app pointer - EVIL but neccessary for signal handling
-
-	pGlobalApp = pMyUnixApp;
-
 	// Setup signal handlers, primarily for segfault
 	// If we segfaulted before here, we *really* blew it
 
-	signal(SIGSEGV, signalWrapper);
+	struct sigaction sa;
 
+	sa.sa_handler = signalWrapper;
+
+	sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+	sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+
+	sa.sa_flags = SA_ONESHOT | SA_NOMASK; // Don't handle nested signals
+	
+	sigaction(SIGSEGV, &sa, NULL);
+	sigaction(SIGBUS, &sa, NULL);
+	sigaction(SIGILL, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+	// TODO: handle SIGABRT
+	
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
 	{
@@ -1133,10 +1140,11 @@ void AP_UnixApp::_printUsage(void)
 
 void signalWrapper(int sig_num)
 {
-	pGlobalApp->catchSegFault(sig_num);
+	AP_UnixApp *pApp = (AP_UnixApp *) XAP_App::getApp();
+	pApp->catchSignals(sig_num);
 }
 
-void AP_UnixApp::catchSegFault(int sig_num)
+void AP_UnixApp::catchSignals(int sig_num)
 {
 	// Reset the signal handler (not that it matters - this is mostly for race conditions)
 	signal(SIGSEGV, signalWrapper);

@@ -74,7 +74,7 @@ public:
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
-	void                                             catchSegFault(int sig_num);
+	void                                             catchSignals(int sig_num);
 
 protected:
 
@@ -94,8 +94,9 @@ protected:
 	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
 };
 
-// What follows is an ugly hack. It (and the global variable in ap_UnixApp.cpp) 
-// are neccessitated by the C/C++ conflict over pointers to member functions. 
+// What follows is an ugly hack. It is neccessitated by the 
+// C/C++ conflict over pointers to member functions. It is,
+// however, what the C++ FAQ reccommends.
 
 void signalWrapper(int);
 
