@@ -224,9 +224,9 @@ UT_uint32 GR_QNXGraphics::getFontHeight()
 		return(0);
 	}
 
-	PfExtentText(&rect, NULL, font, "Thomas", 0);
+	PfExtentText(&rect, NULL, font, "A", 0);
 	//printf("GR: Height:%d + %d \n", MY_ABS(rect.lr.y), MY_ABS(rect.ul.y));
-	return(MY_ABS(rect.ul.y) + MY_ABS(rect.lr.y));
+	return(MY_ABS(rect.ul.y) + MY_ABS(rect.lr.y) + 1);
 }
 
 UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
@@ -282,6 +282,7 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									NULL);			/* Clipping rectangle? */
 		pWidths[i] = penpos;
 		charWidth += penpos;
+		//printf("Width of %s is %d (%d)\n", &buffer[i], pWidths[i], charWidth);
 	}
 
 #endif
@@ -375,9 +376,12 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 
 	//The size is in xxpt so just cat it and back up two
 	//strncat(fname, pszFontSize, strlen(pszFontSize) - 2);
-	//OR: Keep scale  ... this may not be right, I think the return is pixels ...
-	int size = convertDimension(pszFontSize);
-	sprintf(temp, "%s%d", fname, size);
+	//OR: keep scaling ... the return from this is inches?
+	//int size = convertDimension(pszFontSize);
+	//OR: just do it yourself!
+	double size = UT_convertToPoints(pszFontSize);
+	size = (size * (double)getZoomPercentage() / 100.0) + 0.5;
+	sprintf(temp, "%s%d", fname, (int)size);
 	strcpy(fname, temp);
 	//printf("GR: Font w/ size is [%s] (%s -> %d)  \n", fname, pszFontSize, size);
 	
@@ -823,5 +827,27 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontPitchEnum * pfp,
 										 UT_Bool * pbTrueType)
 {
+#if 0
+   switch (xx & 0xf0)
+   {
+   default:
+   case FF_DONTCARE:   *pff = FF_Unknown;      break;
+   case FF_ROMAN:      *pff = FF_Roman;        break;
+   case FF_SWISS:      *pff = FF_Swiss;        break;
+   case FF_MODERN:     *pff = FF_Modern;       break;
+   case FF_SCRIPT:     *pff = FF_Script;       break;
+   case FF_DECORATIVE: *pff = FF_Decorative;   break;
+   }
+
+   if ((xx & TMPF_FIXED_PITCH) == TMPF_FIXED_PITCH)
+       *pfp = FP_Variable;             // yes these look backwards
+   else                                // but that is how windows
+       *pfp = FP_Fixed;                // defines the bits...
+
+   *pbTrueType = ((xx & TMPF_TRUETYPE) == TMPF_TRUETYPE);
+#endif
 	printf("SET GENERIC FONT ... WHY HERE?\n");
+	*pff = FF_Unknown;
+	*pfp = FP_Variable;
+	*pbTrueType = 0;
 }
