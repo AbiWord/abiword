@@ -705,6 +705,7 @@ bool UT_UTF8Stringbuf::grow (size_t length)
 
 	if (m_psz == 0)
 	{
+		if (length == 0) return true;
 		m_psz = static_cast<char *>(malloc(length));
 		if (m_psz == 0) return false;
 		m_strlen = 0;
