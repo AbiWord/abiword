@@ -217,8 +217,8 @@ void FV_View::_drawSelection()
 {
 	UT_return_if_fail(!isSelectionEmpty());
 //	CHECK_WINDOW_SIZE
-	UT_DEBUGMSG(("_drawSelection \n"));
-	if(m_iLowDrawPoint == 0 && m_iHighDrawPoint == 0)
+	UT_DEBUGMSG(("_drawSelection getPoint() %d m_iSelectionAnchor %d \n",getPoint(),m_iSelectionAnchor));
+//	if(m_iLowDrawPoint == 0 && m_iHighDrawPoint == 0)
 	{
 		if (m_iSelectionAnchor < getPoint())
 		{
@@ -229,6 +229,7 @@ void FV_View::_drawSelection()
 			_drawBetweenPositions(getPoint(), m_iSelectionAnchor);
 		}
 	}
+#if 0
 	else
 	{
 		PT_DocPosition iLow = UT_MIN(m_iSelectionAnchor,getPoint());
@@ -242,6 +243,7 @@ void FV_View::_drawSelection()
 			_drawBetweenPositions(m_iHighDrawPoint, iHigh);
 		}
 	}
+#endif
 	m_iLowDrawPoint = UT_MIN(m_iSelectionAnchor,getPoint());
 	m_iHighDrawPoint = UT_MAX(m_iSelectionAnchor,getPoint());
 }

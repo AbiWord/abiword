@@ -654,6 +654,7 @@ private:
 	UT_sint32               m_iImageHeight;
 	UT_String               m_sCachedWidthProp;
 	UT_String               m_sCachedHeightProp;
+	UT_sint32               m_iPointHeight;
 };
 
 #define FPFIELD_MAX_LENGTH	127

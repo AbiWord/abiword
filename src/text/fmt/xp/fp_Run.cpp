@@ -2445,11 +2445,8 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 		// it (to reflect proper ascent).
 		if (pPropRun->getLine() == getLine())
 		{
-			if(FPRUN_TEXT == pPropRun->getType())
-			{
-				pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
-				return;
-			}
+			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+			return;
 		}
 	}
 
@@ -2600,6 +2597,7 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 	m_pImage = pFG->generateImage(pG, NULL, 0, 0);
 	m_sCachedWidthProp = pFG->getWidthProp();
 	m_sCachedHeightProp = pFG->getHeightProp();
+	m_iPointHeight = 0;
 	lookupProperties();
 }
 
@@ -2687,6 +2685,18 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	_setAscent(getHeight());
 	_setDescent(0);
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+	getBlock()->getAttrProp(&pBlockAP);
+
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
+
+	if (pFont != _getFont())
+	{
+		_setFont(pFont);
+	}
+	m_iPointHeight = getGR()->getFontAscent(pFont) + getGR()->getFontDescent(pFont);
 }
 
 bool fp_ImageRun::canBreakAfter(void) const
@@ -2737,9 +2747,10 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	else
 	{
 		x = xoff;
+		x2 = x;
 	}
-	y = yoff;
-	height = getHeight();
+	y = yoff + getHeight() - m_iPointHeight;
+	height = m_iPointHeight;
 	y2 = y;
 	bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
 }
