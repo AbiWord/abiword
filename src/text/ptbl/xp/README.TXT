@@ -273,9 +273,9 @@ performed in the session and of the complexity of the
 structure and formatting of the original document.  A
 linear search might be painfully slow.
 <ul>
-<li><b>TODO</b> We have switched to using an rbtree
+<li><b>TODO</b> We have a patch to use an rbtree
 instead of the doubly-linked list to give us O(<i>log(n)</i>)
-searching, but the memory consumption is terrible and
+searching, but the memory consumption is still terrible and
 there is much improvement to be made.  It is recommended
 that we optimize away the color and better yet, just
 switch to a fractal prefetching b+-tree.  Other ideas
