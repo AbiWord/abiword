@@ -7733,9 +7733,8 @@ fl_BlockSpellIterator::updateSentenceBoundaries(void)
 	// and go with that as the end....
 	m_iSentenceEnd = m_iWordOffset + m_iWordLength;
 	while (m_iSentenceEnd < (iBlockLength - 10)) {
-		if (UT_UCS4_isSentenceSeparator(m_pText[m_iSentenceStart]))
+		if (UT_UCS4_isSentenceSeparator(m_pText[m_iSentenceEnd++]))
 			break;
-		m_iSentenceEnd++;
 	}
 	if (m_iSentenceEnd == (iBlockLength-10)) m_iSentenceEnd = iBlockLength-1;
 }
