@@ -48,8 +48,6 @@ CANON_TOPLEVELFILES=	$(ABI_DEPTH)/../COPYING
 ## that have work to do.
 CANON_SubDirs=		wp
 
-## TODO decide who/what wants to deal with unix fonts.
-
 canonical:
 	@$(subst xxxx,$(CANONDIR),$(VERIFY_DIRECTORY))
 	@for k in $(CANON_TOPLEVELFILES); do			\
@@ -59,6 +57,12 @@ canonical:
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$k canonical;	\
 	done
 	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
+ifeq ($(ABI_NATIVE),unix)
+	@$(subst xxxx,$(CANONDIR)/fonts,$(VERIFY_DIRECTORY))
+	$(ABICOPY) $(ABI_ROOT)/../unixfonts/fonts.dir $(CANONDIR)/fonts
+	$(ABICOPY) $(ABI_ROOT)/../unixfonts/fonts/*.pfa $(CANONDIR)/fonts
+	$(ABICOPY) $(ABI_ROOT)/../unixfonts/fonts/*.afm $(CANONDIR)/fonts
+endif
 
 ##################################################################
 ## Target for building a distribution package from the compiled

@@ -26,7 +26,7 @@ CPPSRCS=		UnixMain.cpp
 
 INCLUDES=		`gtk-config --cflags`
 
-PROGRAM=		$(BINDIR)/AbiWord
+PROGRAM=		$(BINDIR)/AbiWord_d
 PROGRAM_S=		$(BINDIR)/AbiWord_s
 
 # TODO the Linux linker is fussy about the ordering of libraries.
@@ -54,8 +54,6 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 STATIC_LDFLAGS =	-static
 
 # we override the $(PROGRAM) rule.
-
-## TODO why do we do -L/usr/local/lib twice ??
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
