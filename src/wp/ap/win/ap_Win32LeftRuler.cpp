@@ -48,6 +48,12 @@ AP_Win32LeftRuler::AP_Win32LeftRuler(XAP_Frame * pFrame)
 AP_Win32LeftRuler::~AP_Win32LeftRuler(void)
 {
 	DELETEP(m_pG);
+
+	if (m_hwndLeftRuler)
+	{
+		if (IsWindow(m_hwndLeftRuler))
+			DestroyWindow(m_hwndLeftRuler);
+	}
 }
 
 void AP_Win32LeftRuler::setView(AV_View * pView)

@@ -52,6 +52,12 @@ AP_Win32TopRuler::~AP_Win32TopRuler(void)
 {
 	reinterpret_cast<FV_View *>(getView())->setTopRuler(NULL);
 	DELETEP(m_pG);
+
+	if (m_hwndTopRuler)
+	{
+		if (IsWindow(m_hwndTopRuler))
+			DestroyWindow(m_hwndTopRuler);
+	}
 }
 
 void AP_Win32TopRuler::setView(AV_View * pView)
@@ -61,10 +67,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	DELETEP(m_pG);
 	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler, m_pFrame->getApp());
 	m_pG = pG;
-	UT_ASSERT(m_pG);
-
-	UT_DEBUGMSG(("Jordi->AP_Win32TopRuler::setView->getGraphics() %x\n", getGraphics()));
-		
+	UT_ASSERT(m_pG);		
 	pG->init3dColors();
 }
 
