@@ -30,6 +30,7 @@
 #include "xap_Dlg_MessageBox.h"
 #include "fl_SectionLayout.h"
 #include "fp_Page.h"
+#include "fl_DocLayout.h"
 
 #include "ut_misc.h"
 
@@ -63,6 +64,416 @@ AP_Dialog_Styles::tAnswer AP_Dialog_Styles::getAnswer(void) const
 {
 	return m_answer;
 }
+
+/*!
+ * This method adds the key,value pair pszProp,pszVal to the Vector of 
+ * all properties of the current style.
+ * If the Property already exists it's value is replaced with pszVal
+\param const XML_Char * pszProp the property name
+\param const XML_Char * pszVal the value of this property.
+*/
+void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp, 
+												 const XML_Char * pszVal)
+{
+	UT_sint32 iCount = m_vecAllProps.getItemCount();
+	const char * pszV = NULL;
+	if(iCount <= 0)
+	{
+		m_vecAllProps.addItem((void *) pszProp);
+		m_vecAllProps.addItem((void *) pszVal);
+		return;
+	}
+	UT_sint32 i = 0;
+	for(i=0; i < iCount ; i += 2)
+	{
+		pszV = (const XML_Char *) m_vecAllProps.getNthItem(i);
+		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
+			break;
+	}
+	if(i < iCount)
+		m_vecAllProps.setNthItem(i+1, (void *) pszVal, NULL);
+	else
+	{
+		m_vecAllProps.addItem((void *) pszProp);
+		m_vecAllProps.addItem((void *) pszVal);
+	}
+	return;
+}
+
+/*!
+ * This method adds the key,value pair pszProp,pszVal to the Vector of 
+ * all attributes of the current style.
+ * If the Property already exists it's value is replaced with pszVal
+\param const XML_Char * pszProp the property name
+\param const XML_Char * pszVal the value of this property.
+*/
+void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp, 
+												 const XML_Char * pszVal)
+{
+	UT_sint32 iCount = m_vecAllAttribs.getItemCount();
+	const char * pszV = NULL;
+	if(iCount <= 0)
+	{
+		m_vecAllAttribs.addItem((void *) pszProp);
+		m_vecAllAttribs.addItem((void *) pszVal);
+		return;
+	}
+	UT_sint32 i = 0;
+	for(i=0; i < iCount ; i += 2)
+	{
+		pszV = (const XML_Char *) m_vecAllAttribs.getNthItem(i);
+		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
+			break;
+	}
+	if(i < iCount)
+		m_vecAllAttribs.setNthItem(i+1, (void *) pszVal, NULL);
+	else
+	{
+		m_vecAllAttribs.addItem((void *) pszProp);
+		m_vecAllAttribs.addItem((void *) pszVal);
+	}
+	return;
+}
+
+void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle)
+{
+	PD_Style * pStyle = NULL;
+	m_vecAllProps.clear();
+	m_vecAllAttribs.clear();
+	if(szStyle == NULL || ! m_pDoc->getStyle(szStyle,&pStyle))
+	{
+		return;
+	}
+
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","field-font","field-color"};
+
+	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
+
+	const static XML_Char * charFields[] = 
+	{"bgcolor","color","font-family","font-size","font-stretch","font-style", 
+	 "font-variant", "font-weight","text-decoration"};
+
+	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
+
+	const static XML_Char * attribs[] = 
+	{"followedby","basedon","listid","parentid","level","style"};
+
+	const size_t nattribs = sizeof(attribs)/sizeof(attribs[0]);
+	UT_uint32 i;
+//
+// Loop through all Paragraph properties and add those with non-null values
+//
+	for(i = 0; i < nParaFlds; i++)
+	{
+		const XML_Char * szName = paraFields[i];
+		const XML_Char * szValue = NULL;		
+		pStyle->getProperty(szName,szValue);
+		if(!szValue)
+			pStyle->getAttribute(szName,szValue);
+		if(szValue)
+			addOrReplaceVecProp(szName, szValue);
+	}
+//
+// Loop through all Character properties and add those with non-null values
+//
+	for(i = 0; i < nCharFlds; i++)
+	{
+		const XML_Char * szName = charFields[i];
+		const XML_Char * szValue = NULL;		
+		pStyle->getProperty(szName,szValue);
+		if(!szValue)
+			pStyle->getAttribute(szName,szValue);
+		if(szValue)
+			addOrReplaceVecProp(szName, szValue);
+	}
+//
+// Loop through all the attributes and add those with non-null values
+//
+	for(i = 0; i < nattribs; i++)
+	{
+		const XML_Char * szName = attribs[i];
+		const XML_Char * szValue = NULL;		
+		pStyle->getProperty(szName,szValue);
+		if(!szValue)
+			pStyle->getAttribute(szName,szValue);
+		if(szValue)
+			addOrReplaceVecAttribs(szName, szValue);
+	}
+}
+
+
+/*!
+ * This method returns a pointer to the const char * value associated with the
+ * the property szProp. Stolen from ap_Dialog_Lists and ap_Dialog_Styles.
+ * It assumes properties and values are stored the array like this:
+ * vecProp(n)   :   vecProp(n+1)
+ * "property"   :   "value"
+ */
+const XML_Char * AP_Dialog_Styles::getPropsVal(const XML_Char * szProp) const
+{
+	UT_sint32 i = m_vecAllProps.getItemCount();
+	if(i <= 0) 
+		return NULL;
+	UT_sint32 j;
+	const XML_Char * pszV = NULL;
+	for(j= 0; j<i ;j=j+2)
+	{
+		pszV = (const XML_Char *) m_vecAllProps.getNthItem(j);
+		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
+			break;
+	}
+	if( j < i )
+		return  (const XML_Char *) m_vecAllProps.getNthItem(j+1);
+	else
+		return NULL;
+}
+
+
+/*!
+ * This method returns a pointer to the const char * value associated with the
+ * the attribute szProp. Stolen from ap_Dialog_Lists and ap_Dialog_Styles.
+ * It assumes properties and values are stored the array like this:
+ * vecProp(n)   :   vecProp(n+1)
+ * "attribute"   :   "value"
+ */
+const XML_Char * AP_Dialog_Styles::getAttsVal(const XML_Char * szProp) const
+{
+	UT_sint32 i = m_vecAllAttribs.getItemCount();
+	if(i <= 0) 
+		return NULL;
+	UT_sint32 j;
+	const XML_Char * pszV = NULL;
+	for(j= 0; j<i ;j=j+2)
+	{
+		pszV = (const XML_Char *) m_vecAllAttribs.getNthItem(j);
+		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
+			break;
+	}
+	if( j < i )
+		return  (const XML_Char *) m_vecAllAttribs.getNthItem(j+1);
+	else
+		return NULL;
+}
+
+void AP_Dialog_Styles::ModifyFont(void)
+{
+	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Fonts\n"));
+//
+// Fire up the Font Chooser dialog. Code stolen straight from ap_EditMethods.
+//
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_FONT;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(m_pFrame->getDialogFactory());
+
+	XAP_Dialog_FontChooser * pDialog
+		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	// stuff the GR_Graphics into the dialog so that it
+	// can query the system for font info relative to our
+	// context.
+
+	pDialog->setGraphicsContext(m_pView->getLayout()->getGraphics());
+
+
+	// stuff font properties into the dialog.
+	// for a/p which are constant across the selection (always
+	// present) we will set the field in the dialog.  for things
+	// which change across the selection, we ask the dialog not
+	// to set the field (by passing null).
+
+	pDialog->setFontFamily(getPropsVal("font-family"));
+	pDialog->setFontSize(getPropsVal("font-size"));
+	pDialog->setFontWeight(getPropsVal("font-weight"));
+	pDialog->setFontStyle(getPropsVal("font-style"));
+	pDialog->setColor(getPropsVal("color"));
+	pDialog->setBGColor(getPropsVal("bgcolor"));
+//
+// Set the background color for the preview
+//
+	static XML_Char  background[8];
+	UT_RGBColor * bgCol = m_pView->getCurrentPage()->getOwningSection()->getPaperColor();
+	sprintf(background, "%02x%02x%02x",bgCol->m_red,
+			bgCol->m_grn,bgCol->m_blu);
+	pDialog->setBackGroundColor( (const XML_Char *) background);
+		
+	// these behave a little differently since they are
+	// probably just check boxes and we don't have to
+	// worry about initializing a combo box with a choice
+	// (and because they are all stuck under one CSS attribute).
+
+	bool bUnderline = false;
+	bool bOverline = false;
+	bool bStrikeOut = false;
+	const XML_Char * s = getPropsVal("text-decoration");
+	if (s)
+	{
+		bUnderline = (strstr(s, "underline") != NULL);
+		bOverline = (strstr(s, "overline") != NULL);
+		bStrikeOut = (strstr(s, "line-through") != NULL);
+	}
+	pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut);
+/*
+#ifdef BIDI_ENABLED
+    bool bDirection;
+	s = UT_getAttribute("dir", props_in);
+	if (s)
+	{
+	     bDirection = (strstr(s, "rtl") != NULL);
+	}
+	pDialog->setDirection(bDirection);
+#endif
+*/
+
+	// run the dialog
+
+	pDialog->runModal(m_pFrame);
+
+	// extract what they did
+
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_FontChooser::a_OK);
+
+	if (bOK)
+	{
+		const XML_Char * s;
+
+		if (pDialog->getChangedFontFamily(&s))
+		{
+			addOrReplaceVecProp("font-family", s);
+		}
+
+		if (pDialog->getChangedFontSize(&s))
+		{
+			addOrReplaceVecProp("font-size", s);
+		}
+
+		if (pDialog->getChangedFontWeight(&s))
+		{
+			addOrReplaceVecProp("font-weight", s);
+		}
+
+		if (pDialog->getChangedFontStyle(&s))
+		{
+			addOrReplaceVecProp("font-style", s);
+		}
+
+		if (pDialog->getChangedColor(&s))
+		{
+			addOrReplaceVecProp("color", s);
+		}
+
+		if (pDialog->getChangedBGColor(&s))
+		{
+			addOrReplaceVecProp("bgcolor", s);
+		}
+
+		bool bUnderline = false;
+		bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
+		bool bOverline = false;
+		bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
+		bool bStrikeOut = false;
+		bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+/*
+#ifdef BIDI_ENABLED
+		bool bDirection = false;
+		bool bChangedDirection = pDialog->getChangedDirection(&bDirection);
+#endif
+*/
+
+		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline)
+		{
+			if (bUnderline && bStrikeOut && bOverline)
+				s = "underline line-through overline";
+			else if (bUnderline && bOverline)
+				s = "underline overline";
+			else if (bStrikeOut && bOverline)
+				s = "line-through overline";
+			else if (bStrikeOut && bUnderline)
+				s = "line-through underline";
+			else if (bStrikeOut)
+				s = "line-through";
+			else if (bUnderline)
+				s = "underline";
+			else if (bOverline)
+				s = "overline";
+			else
+				s = "none";
+
+			addOrReplaceVecProp("text-decoration", s);
+		}
+/*
+#ifdef BIDI_ENABLED
+		if(bChangedDirection)
+		{
+		    if (bDirection == 1)
+		        s = "rtl";
+		    else
+		        s = "ltr";
+		
+			addOrReplaceVecProp("dir", s);
+		}
+#endif
+*/
+	}
+	pDialogFactory->releaseDialog(pDialog);
+	updateCurrentStyle();
+}
+
+void AP_Dialog_Styles::ModifyTabs(void)
+{
+	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Tabs \n"));
+//
+// Fire up the tabs dialog. TODO. Should move the PieceTable manipulations into
+// ap_EditMethods so we can intercept them.
+//
+
+}
+
+void AP_Dialog_Styles::ModifyLists(void)
+{
+	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Lists \n"));
+}
+void AP_Dialog_Styles::ModifyParagraph(void)
+{
+	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Lists \n"));
+}
+
+/*!
+ * Extract all the props from the vector and apply them to the preview. We use
+ * the style "tmp" to display the current style in the preview. 
+ */
+void AP_Dialog_Styles::updateCurrentStyle()
+{
+
+	const XML_Char ** props = NULL;
+	UT_uint32 i = 0;
+	if(m_vecAllProps.getItemCount() <= 0)
+		return;
+	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
+	props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+
+	for(i=0; i<countp; i++)
+	{
+		props[i] = (const XML_Char *) m_vecAllProps.getNthItem(i);
+	}
+	props[i] = NULL;
+	PD_Style * pStyle = NULL;
+	getLDoc()->getStyle("tmp", &pStyle); 
+	if( pStyle == NULL)
+	{
+		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",PT_TYPE_ATTRIBUTE_NAME,"P","basedon","Normal","followedby","Normal","props","",NULL};
+		getLDoc()->appendStyle(attrib);
+	}
+	getLDoc()->setStyleProperties("tmp",props);
+	getLView()->setPoint(m_posFocus);
+	getLView()->setStyle("tmp");
+	drawLocal();
+	DELETEP(props);
+
+}
+
 
 void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
                                                 UT_uint32 width,
@@ -195,8 +606,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	UT_RGBColor FGColor(0,0,0);
 	UT_RGBColor BGColor(255,255,255);
 	UT_RGBColor * pageCol = NULL;
-	if(!isNew)
-		getLView()->setStyle(szStyle);
+	getLView()->setStyle("Normal");
 
 	const XML_Char ** props_in = NULL;
 	getLView()->getCharFormat(&props_in);
@@ -231,6 +641,8 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 // Second Paragraph in focus
 //
+	if(!isNew)
+		getLView()->setStyle(szStyle);
 	m_posFocus = getLView()->getPoint();
 //
 // Set Color Back

@@ -60,6 +60,7 @@ public:
 	virtual void event_ClistClicked(int row, int col);
 	virtual void event_ListClicked(const char * which);
 	virtual void			event_WindowDelete(void);
+	void new_styleName(void);
 
 /////////////////////////////////////////////////////////////////////////
 // Modify window
@@ -74,8 +75,10 @@ public:
 	void         event_ModifyTabs();
 	void         event_ModifyPreviewExposed();
 
-	void         modifyRunModal(bool isNew);
+	void         modifyRunModal(void);
 
+	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
+	const bool   isNew(void) const { return m_bIsNew;}     
 protected:
 
 	// private construction functions
@@ -114,13 +117,13 @@ protected:
 // Modify window
 /////////////////////////////////////////////////////////////////////////
 
-	GtkWidget * _constructModifyDialog(bool isNew);
+	GtkWidget * _constructModifyDialog(void);
 	void        _constructGnomeModifyButtons( GtkWidget * dialog_sction_area1);
 	void        _constructFormatList(GtkWidget * FormatMenu);
 	void        _connectModifySignals(void);
 	void        _constructModifyDialogContents(GtkWidget * modifyDialog);
 	virtual void setModifyDescription( const char * desc);
-	bool        _populateModify(bool isNew);
+	bool        _populateModify(void);
 
 	GR_UnixGraphics	* 		m_pAbiPreviewWidget;
 
@@ -145,6 +148,8 @@ protected:
 	GtkWidget *	m_wModifyTabs;
 	GList *     m_gbasedOnStyles;
 	GList *     m_gfollowedByStyles;
+private:
+	bool m_bIsNew;
 };
 
 #endif /* AP_UnixDialog_Styles_H */

@@ -62,6 +62,16 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	PD_Document * getLDoc(void) const;
 	void drawLocal(void);
 	void destroyAbiPreview(void);
+	void addOrReplaceVecProp(const XML_Char * pszProp,  const XML_Char * pszVal);
+	void addOrReplaceVecAttribs(const XML_Char * pszProp,  const XML_Char * pszVal);
+	void fillVecWithProps(const XML_Char * szStyle);
+	const XML_Char * getAttsVal(const XML_Char * szProp) const;
+	const XML_Char * getPropsVal(const XML_Char * szProp) const;
+	void ModifyLists(void);
+	void ModifyFont(void);
+	void ModifyParagraph(void);
+	void ModifyTabs(void);
+	void updateCurrentStyle(void);
 
  protected:
 
@@ -82,6 +92,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	UT_Vector                     m_vecCharProps;
     UT_String                     m_curStyleDesc;
 	UT_Vector                     m_vecAllProps;
+	UT_Vector                     m_vecAllAttribs;
 	PT_DocPosition                m_posBefore;
 	PT_DocPosition                m_posFocus;
 	PT_DocPosition                m_posAfter;

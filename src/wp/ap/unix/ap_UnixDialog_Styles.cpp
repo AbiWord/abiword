@@ -35,9 +35,8 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Styles.h"
 #include "ap_UnixDialog_Styles.h"
-
-#include "fv_View.h"
 #include "fl_DocLayout.h"
+#include "fv_View.h"
 #include "pd_Style.h"
 #include "ut_string_class.h"
 
@@ -134,6 +133,12 @@ s_newbtn_clicked (GtkWidget *w, gpointer d)
 {
 	AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
 	dlg->event_NewClicked ();
+}
+
+static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(widget && me);
+	me->new_styleName();
 }
 
 static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
@@ -260,7 +265,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	m_pFrame = pFrame;
 	m_pView = (FV_View *) pFrame->getCurrentView();
 	UT_ASSERT(m_pView);
+
 	m_pDoc = m_pView->getLayout()->getDocument();
+
 	UT_ASSERT(m_pDoc);
 
 	// Build the window's widgets and arrange them
@@ -424,7 +431,8 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 //
 // fill the data structures needed for the Modify dialog
 //
-	modifyRunModal(true);
+	setIsNew(true);
+	modifyRunModal();
 	UT_DEBUGMSG(("SEVIOR: Finished New \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
@@ -742,6 +750,12 @@ void AP_UnixDialog_Styles::_connectsignals(void) const
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) this);
 
+	gtk_signal_connect(GTK_OBJECT(m_wStyleNameEntry),
+					   "activate",
+					   GTK_SIGNAL_FUNC(s_style_name),
+					   (gpointer) this);
+
+	
 	// the catch-alls
 	
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
@@ -820,7 +834,7 @@ const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 	return szStyleBuf.c_str();
 }
 
-GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(bool isNew)
+GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 {
 	GtkWidget *modifyDialog;
 	GtkWidget *dialog_action_area;
@@ -828,7 +842,7 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(bool isNew)
 
 	modifyDialog = gtk_dialog_new ();
 	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
-	if(!isNew)
+	if(!isNew())
 		gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTitle));
 	else
 		gtk_window_set_title (GTK_WINDOW (modifyDialog), "New Style");
@@ -1132,6 +1146,15 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
 	gtk_main_quit();
 }
 
+/*!
+ * fill the properties vector with the values the given style.
+ */
+void AP_UnixDialog_Styles::new_styleName(void)
+{
+	const char * style_name = getCurrentStyle();
+	fillVecWithProps(style_name);
+}
+
 void AP_UnixDialog_Styles::event_Modify_Cancel(void)
 {
 	m_answer = AP_Dialog_Styles::a_CANCEL;
@@ -1144,7 +1167,7 @@ void AP_UnixDialog_Styles::event_ModifyDelete(void)
 	gtk_main_quit();
 }
 
-void  AP_UnixDialog_Styles::modifyRunModal(bool isNew)
+void  AP_UnixDialog_Styles::modifyRunModal(void)
 {
 //
 // OK Construct the new dialog and make it modal.
@@ -1154,13 +1177,13 @@ void  AP_UnixDialog_Styles::modifyRunModal(bool isNew)
 //
 // Center our new dialog in its parent and make it a transient
 
-	_constructModifyDialog(isNew);
+	_constructModifyDialog();
 
 	connectFocus(GTK_WIDGET(m_wModifyDialog),m_pFrame);
 //
 // populate the dialog with useful info
 //
-    if(!_populateModify(isNew))
+    if(!_populateModify())
 	{
 		if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
 			gtk_widget_destroy(m_wModifyDialog);
@@ -1188,7 +1211,7 @@ void  AP_UnixDialog_Styles::modifyRunModal(bool isNew)
 	_createAbiPreviewFromGC(m_pAbiPreviewWidget,
 							 (UT_uint32) m_wModifyDrawingArea->allocation.width, 
 							 (UT_uint32) m_wModifyDrawingArea->allocation.height);
-    _populateAbiPreview(isNew);
+    _populateAbiPreview(isNew());
 	event_ModifyPreviewExposed();
 	gtk_main();
 
@@ -1228,11 +1251,13 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 // Hide the old window
 //
 	UT_DEBUGMSG(("SEVIOR: Hiding main window \n"));
-    gtk_widget_hide(m_windowMain);
+    gtk_widget_hide( m_windowMain);
 //
 // fill the data structures needed for the Modify dialog
 //
-	modifyRunModal(false);
+	setIsNew(false);
+	
+	modifyRunModal();
 	UT_DEBUGMSG(("SEVIOR: Finished Modify \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
@@ -1262,14 +1287,14 @@ void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
 	gtk_label_set_text (GTK_LABEL(m_wLabDescription), desc);
 }
 
-bool  AP_UnixDialog_Styles::_populateModify(bool isNew)
+bool  AP_UnixDialog_Styles::_populateModify(void)
 {
 	setModifyDescription( m_curStyleDesc.c_str());
 //
 // Get Style name and put in in the text entry
 //
 	const char * szCurrentStyle = NULL;
-	if(!isNew)
+	if(!isNew())
 	{
 		szCurrentStyle= getCurrentStyle();
 		if(!szCurrentStyle)
@@ -1321,8 +1346,8 @@ bool  AP_UnixDialog_Styles::_populateModify(bool isNew)
 
 		if(pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
-
-		m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
+			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
 		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
 	}
 
@@ -1345,23 +1370,88 @@ bool  AP_UnixDialog_Styles::_populateModify(bool isNew)
 void   AP_UnixDialog_Styles::event_ModifyParagraph()
 {
 	UT_DEBUGMSG(("SEVIOR: Modify Paragraphs properties \n"));
+//
+// Hide this window
+//
+    gtk_widget_hide(m_wModifyDialog);
+//
+// Can do all this in XP land.
+//
+	ModifyParagraph();
+//
+// Restore this window
+//
+    gtk_widget_show(m_wModifyDialog);
+//
+// This applies the changes to current style and displays them
+//
+	updateCurrentStyle();
 }
 
 void   AP_UnixDialog_Styles::event_ModifyFont()
 {
 	UT_DEBUGMSG(("SEVIOR: Modify Character properties \n"));
+//
+// Hide this window
+//
+    gtk_widget_hide(m_wModifyDialog);
+//
+// Can do all this in XP land.
+//
+	ModifyFont();
+//
+// Restore this window
+//
+    gtk_widget_show(m_wModifyDialog);
+//
+// This applies the changes to current style and displays them
+//
+	updateCurrentStyle();
 }
 
 
 void   AP_UnixDialog_Styles::event_ModifyNumbering()
 {
 	UT_DEBUGMSG(("SEVIOR: Modify List properties \n"));
+//
+// Hide this window
+//
+    gtk_widget_hide(m_wModifyDialog);
+//
+// Can do all this in XP land.
+//
+	ModifyLists();
+//
+// Restore this window
+//
+    gtk_widget_show(m_wModifyDialog);
+//
+// This applies the changes to current style and displays them
+//
+	updateCurrentStyle();
+
 }
 
 
 void   AP_UnixDialog_Styles::event_ModifyTabs()
 {
 	UT_DEBUGMSG(("SEVIOR: Modify Tab properties \n"));
+//
+// Hide this window
+//
+    gtk_widget_hide(m_wModifyDialog);
+//
+// Can do all this in XP land.
+//
+	ModifyTabs();
+//
+// Restore this window
+//
+    gtk_widget_show(m_wModifyDialog);
+//
+// This applies the changes to current style and displays them
+//
+	updateCurrentStyle();
 }
 
 
