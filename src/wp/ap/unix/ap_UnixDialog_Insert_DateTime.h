@@ -40,14 +40,18 @@ public:
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 protected:
 
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
-	void            _connectSignals(void);
 	GtkWidget *     _constructWindowContents(void);
 
 	// pointers to widgets we need to query/set
@@ -55,10 +59,6 @@ protected:
 
 	// group of radio buttons for easy traversal
 	GtkWidget * m_listFormats;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
 };
 
 #endif /* AP_UNIXDIALOG_INSERT_DATETIME_H */
