@@ -603,11 +603,11 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			
 			// add list items
 			{
-				UT_ASSERT(UT_pointerArrayLength(static_cast<void **>(m_szSuffixes)) ==
-						  UT_pointerArrayLength(static_cast<void **>(m_szDescriptions)));
+				UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes))) ==
+						  UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
 				
 				// measure one list, they should all be the same length
-				UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(m_szDescriptions));
+				UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
 			  
 				for (UT_uint32 i = 0; i < end; i++)
 				{

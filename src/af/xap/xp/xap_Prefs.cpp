@@ -276,7 +276,7 @@ const char * XAP_Prefs::getRecent(UT_uint32 k) const
 	
 	if (k <= m_vecRecent.getItemCount())
 	{
-		pRecent = static_cast<const char *>(m_vecRecent.getNthItem(k - 1));
+		pRecent = reinterpret_cast<const char *>(m_vecRecent.getNthItem(k - 1));
 	}
 
 	return pRecent;
@@ -293,7 +293,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 	// was it already here? 
 	for (UT_uint32 i=0; i<m_vecRecent.getItemCount(); i++)
 	{
-		sz = static_cast<const char *>(m_vecRecent.getNthItem(i));
+		sz = reinterpret_cast<const char *>(m_vecRecent.getNthItem(i));
 		if ((sz==szRecent) || !strcmp(sz, szRecent))
 		{
 			// yep, we're gonna move it up
