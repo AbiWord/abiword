@@ -25,9 +25,84 @@
 #import <Cocoa/Cocoa.h>
 
 #include "xap_CocoaPlugin.h"
+#include "xap_Types.h"
+
+class XAP_Frame;
+
+class EV_EditMethod;
+class EV_Menu_Action;
+
+class FV_View;
 
 class PD_Document;
-class XAP_Frame;
+
+@interface AP_CocoaPlugin_EditMethod : NSObject
+{
+	EV_EditMethod *		m_EditMethod;
+	char				m_EditMethod_Name[64];
+
+	BOOL				m_InContextMenu;
+
+	SEL					m_Action;
+	id <NSObject>		m_Target;
+}
+- (id)init;
+- (void)dealloc;
+
+- (const char *)editMethodName;
+
+- (void)trigger;
+
+- (void)setAction:(SEL)aSelector;
+- (SEL)action;
+
+- (void)setTarget:(id <NSObject>)target;
+- (id <NSObject>)target;
+
+@end
+
+@interface AP_CocoaPlugin_MenuIDRef : NSObject
+{
+	id <XAP_CocoaPlugin_MenuItem>	m_NonRetainedRef;
+}
++ (AP_CocoaPlugin_MenuIDRef *)menuIDRefWithMenuItem:(id <XAP_CocoaPlugin_MenuItem>)menuItem;
+
+- (id)initWithMenuItem:(id <XAP_CocoaPlugin_MenuItem>)menuItem;
+
+- (id <XAP_CocoaPlugin_MenuItem>)menuItem;
+@end
+
+@interface AP_CocoaPlugin_ContextMenuItem : AP_CocoaPlugin_EditMethod // <XAP_CocoaPlugin_MenuItem>
+{
+	NSString *						m_Label;
+
+	EV_Menu_Action *				m_pAction;
+
+	XAP_Menu_Id						m_MenuID;
+
+	int								m_Tag;
+	int								m_State;
+
+	BOOL							m_Enabled;
+}
++ (AP_CocoaPlugin_ContextMenuItem *)itemWithLabel:(NSString *)label;
+
+- (id)initWithLabel:(NSString *)label;
+- (void)dealloc;
+
+- (void)setLabel:(NSString *)label;
+- (NSString *)label;
+
+- (void)setTag:(int)anInt;
+- (int)tag;
+
+- (void)setState:(int)state;
+- (int)state;
+
+- (void)setEnabled:(BOOL)enabled;
+- (BOOL)isEnabled;
+
+@end
 
 @interface AP_CocoaPlugin_FramelessDocument : NSObject <XAP_CocoaPlugin_FramelessDocument>
 {

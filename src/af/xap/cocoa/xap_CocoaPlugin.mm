@@ -114,4 +114,9 @@
 	return [AP_CocoaPlugin_FramelessDocument documentFromFile:path importOptions:options];
 }
 
+- (id <NSObject, XAP_CocoaPlugin_MenuItem>)contextMenuItemWithLabel:(NSString *)label
+{
+	return [AP_CocoaPlugin_ContextMenuItem itemWithLabel:label];
+}
+
 @end
