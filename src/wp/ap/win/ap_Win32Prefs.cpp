@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,30 +16,44 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
+#include "stdlib.h"
+#include "string.h"
+#include "ap_Win32Prefs.h"
 
-#ifndef UT_UNITS_H
-#define UT_UNITS_H
+/*****************************************************************/
 
-#include "ut_types.h"
-class GR_Graphics;
+AP_Win32Prefs::AP_Win32Prefs(XAP_App * pApp)
+	: AP_Prefs(pApp)
+{
+}
 
-UT_BEGIN_EXTERN_C
+const char * AP_Win32Prefs::getPrefsPathname(void) const
+{
+	/* return a pointer to a static buffer */
+	
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 
-#define UT_PAPER_UNITS_PER_INCH				100
+	static char buf[PATH_MAX];
+	memset(buf,0,sizeof(buf));
 
-double UT_convertToInches(const char* s);
-double UT_convertToPoints(const char* s);
-UT_sint32 UT_paperUnits(const char * sz);
-UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
+	// TODO what should the filename be on win32 ??
+		   
+	char * szHome = getenv("HOME");
+	char * szFile = "abiword.txt";
 
-typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_PI, DIM_PT } UT_Dimension;
+	if (strlen(szHome) + strlen(szFile) + 2 >= PATH_MAX)
+		return NULL;
 
-UT_Dimension UT_determineDimension(const char * sz);
-const char * UT_dimensionName(UT_Dimension dim);
-const char * UT_convertToDimensionString(UT_Dimension, double value);
+	strcpy(buf,szHome);
+	int len = strlen(buf);
+	if ((len > 0) && (buf[len-1] == '\\'))
+		;
+	else
+		strcat(buf,"\\");
+	strcat(buf,szFile);
 
-UT_END_EXTERN_C
-
-#endif /* UT_UNITS_H */
+	return buf;
+}

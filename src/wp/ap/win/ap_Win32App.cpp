@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,21 +17,74 @@
  * 02111-1307, USA.
  */
 
+/*****************************************************************
+** Only one of these is created by the application.
+*****************************************************************/
 
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
 #include <crtdbg.h>
-#include <string.h>
 
 #ifdef ABI_OPT_JS
 #include <js.h>
 #endif /* ABI_OPT_JS */
 
-#include "xap_Args.h"
-#include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include <stdio.h>
+#include <string.h>
 
-#include "ap_Win32Frame.h"			// TODO move this
+#include "xap_Args.h"
+#include "ap_Win32Frame.h"
+#include "ap_Win32App.h"
+
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
+#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
+#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
+
+/*****************************************************************/
+
+AP_Win32App::AP_Win32App(AP_Args * pArgs, const char * szAppName)
+	: XAP_Win32App(pArgs,szAppName)
+{
+	m_prefs = NULL;
+}
+
+AP_Win32App::~AP_Win32App(void)
+{
+	DELETEP(m_prefs);
+}
+
+UT_Bool AP_Win32App::initialize(void)
+{
+	// load preferences, first the builtin set and then any on disk.
+	
+	m_prefs = new AP_Win32Prefs(this);
+	m_prefs->loadBuiltinPrefs();
+	m_prefs->loadPrefsFile();
+
+	// TODO overlay command line arguments onto preferences...
+		   
+	// now that preferences are established, let the xap init
+		   
+	return XAP_Win32App::initialize();
+}
+
+UT_Bool AP_Win32App::shutdown(void)
+{
+	if (m_prefs->getAutoSave())
+		m_prefs->savePrefsFile();
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_Win32App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValue(szKey,pszValue);
+}
+
+/*****************************************************************/
 
 #ifdef   _DEBUG
 #define  SET_CRT_DEBUG_FIELD(a) \
@@ -45,7 +98,7 @@
 
 /*****************************************************************/
 
-int XAP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
+int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
 	// this is a static function and doesn't have a 'this' pointer.
@@ -72,7 +125,7 @@ int XAP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	AP_Args Args = AP_Args(argc,argv);
 	
-	XAP_Win32App * pMyWin32App = new XAP_Win32App(hInstance, &Args, szAppName);
+	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
 
 	// create the first window.
@@ -137,6 +190,7 @@ int XAP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	// destroy the App.  It should take care of deleting all frames.
 
+	pMyWin32App->shutdown();
 	delete pMyWin32App;
 
 	SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );

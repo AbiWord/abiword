@@ -28,6 +28,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
+#include "xmlparse.h"
 
 class AP_Args;
 class AP_DialogFactory;
@@ -87,6 +88,8 @@ public:
 
 	virtual AP_DialogFactory *				getDialogFactory(void) = 0;
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void) = 0;
+
+	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 
 	static AP_Clipboard*					getClipboard(void);
 

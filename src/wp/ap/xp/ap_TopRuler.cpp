@@ -28,7 +28,8 @@
 #include "xav_View.h"
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
-class XAP_Frame;
+#include "ap_Prefs.h"
+#include "xap_Frame.h"
 #include "fv_View.h"					// TODO remove this.  we need to
 										// TODO add the various pView->...()
 										// TODO methods that we use to the
@@ -72,6 +73,12 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_bGuide = UT_FALSE;
 	m_xGuide = 0;
 	
+	const XML_Char * szRulerUnits;
+	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+		m_dim = UT_determineDimension(szRulerUnits);
+	else
+		m_dim = DIM_IN;
+
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
@@ -934,7 +941,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	
 	// now draw tick marks on the bar, using the selected system of units.
 
-	ap_RulerTicks tick(m_pG);
+	ap_RulerTicks tick(m_pG,m_dim);
 	GR_Font * pFont = m_pG->getGUIFont();
 
 	// find the origin for the tick marks.  this is the left-edge of the
@@ -1173,7 +1180,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 		m_bBeforeFirstMotion = UT_TRUE;
 
 		// this is a new widget, so it needs more work to get started
-		ap_RulerTicks tick(m_pG);
+		ap_RulerTicks tick(m_pG,m_dim);
 
 		UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 		UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
@@ -1239,7 +1246,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 	
 	//UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
-	ap_RulerTicks tick(m_pG);
+	ap_RulerTicks tick(m_pG,m_dim);
 
 	switch (m_draggingWhat)
 	{
@@ -1465,7 +1472,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 
 	// mouse motion was in the ruler portion of the window, we cannot ignore it.
 	
-	ap_RulerTicks tick(m_pG);
+	ap_RulerTicks tick(m_pG,m_dim);
 
 	switch (m_draggingWhat)
 	{
@@ -1774,7 +1781,7 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 		{
 			// delete the tab
 			m_draggingWhat = dw;
-			ap_RulerTicks tick(m_pG);
+			ap_RulerTicks tick(m_pG,m_dim);
 			_setTabStops(tick, tr_TABINDEX_NONE, UT_TRUE);
 		}
 		break;

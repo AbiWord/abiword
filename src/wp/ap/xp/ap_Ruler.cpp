@@ -24,10 +24,10 @@
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 
-ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG)
+ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 {
 	m_pG = pG;
-	dimType = DIM_IN;					// TODO pass this in
+	dimType = dim;
 	
 	// we scale the units up by UnitScale to avoid round-off problems.
 	

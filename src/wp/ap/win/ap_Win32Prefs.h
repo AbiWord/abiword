@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,30 +16,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
+#ifndef AP_WIN32PREFS_H
+#define AP_WIN32PREFS_H
 
-#ifndef UT_UNITS_H
-#define UT_UNITS_H
+#include "ap_Prefs.h"
 
-#include "ut_types.h"
-class GR_Graphics;
+class AP_Win32Prefs : public AP_Prefs
+{
+public:
+	AP_Win32Prefs(XAP_App * pApp);
+	
+	virtual const char *	getPrefsPathname(void) const;
+};
 
-UT_BEGIN_EXTERN_C
-
-#define UT_PAPER_UNITS_PER_INCH				100
-
-double UT_convertToInches(const char* s);
-double UT_convertToPoints(const char* s);
-UT_sint32 UT_paperUnits(const char * sz);
-UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
-
-typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_PI, DIM_PT } UT_Dimension;
-
-UT_Dimension UT_determineDimension(const char * sz);
-const char * UT_dimensionName(UT_Dimension dim);
-const char * UT_convertToDimensionString(UT_Dimension, double value);
-
-UT_END_EXTERN_C
-
-#endif /* UT_UNITS_H */
+#endif /* AP_WIN32PREFS_H */

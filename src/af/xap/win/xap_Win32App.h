@@ -30,10 +30,7 @@ class AP_Win32Toolbar_Icons;
 
 /*****************************************************************
 ******************************************************************
-** This file defines the Win32-platform-specific class for the
-** cross-platform application.  This is used to hold all of the
-** platform-specific, application-specific data.  Only one of these
-** is created by the application.
+** Only one of these is created by the application.
 ******************************************************************
 *****************************************************************/
 
@@ -51,9 +48,7 @@ public:
 
 	virtual AP_DialogFactory *				getDialogFactory(void);
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
-
-	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
-					HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
+	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 
 protected:
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);

@@ -28,7 +28,7 @@
 class ap_RulerTicks
 {
 public:
-	ap_RulerTicks(GR_Graphics * pG);
+	ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim);
 
 	GR_Graphics *	m_pG;
 	

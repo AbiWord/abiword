@@ -26,16 +26,12 @@ LIBRARY_NAME=		AbiAp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-# note: we assume that this will be used as a static library
-# note: only.  if we want to use it as a shared library, then
-# note: we probably need to append $(SHARED_LIBRARY) to TARGETS
-# note: and add a line to the intall section which copies it to
-# note: the $(DIST)/bin directory on Windows.
-
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)			\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX)	\
@@ -65,6 +61,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_Prefs.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Ruler.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)			\

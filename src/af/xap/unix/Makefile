@@ -31,7 +31,6 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixFont.cpp			\
 			xap_UnixFontManager.cpp			\
 			xap_UnixFrame.cpp			\
-			xap_UnixMain.cpp			\
 			xap_UnixToolbar_Icons.cpp		\
 			xap_UnixPSFont.cpp			\
 			xap_UnixPSGenerate.cpp			\

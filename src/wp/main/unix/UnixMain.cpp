@@ -17,9 +17,9 @@
  * 02111-1307, USA.
  */
 
-#include "xap_UnixApp.h"
+#include "ap_UnixApp.h"
 
 int main(int argc, char ** argv)
 {
-	return XAP_UnixApp::main("AbiWord", argc, argv);
+	return AP_UnixApp::main("AbiWord", argc, argv);
 }

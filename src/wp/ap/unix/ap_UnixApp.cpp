@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+/*****************************************************************
+** Only one of these is created by the application.
+*****************************************************************/
+
 #ifdef ABI_OPT_JS
 #include <js.h>
 #endif /* ABI_OPT_JS */
@@ -25,19 +29,64 @@
 #include <string.h>
 
 #include "xap_Args.h"
-#include "xap_UnixApp.h"
-#include "xap_UnixFrame.h"
+#include "ap_UnixFrame.h"
+#include "ap_UnixApp.h"
 
-#include "ap_UnixFrame.h"				// TODO move this
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
+#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
+#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
 
 /*****************************************************************/
 
-int XAP_UnixApp::main(const char * szAppName, int argc, char ** argv)
+AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
+	: XAP_UnixApp(pArgs,szAppName)
 {
-	/*
-		These printfs are not here permanently.
-		TODO remove them later
-	*/
+	m_prefs = NULL;
+}
+
+AP_UnixApp::~AP_UnixApp(void)
+{
+	DELETEP(m_prefs);
+}
+
+UT_Bool AP_UnixApp::initialize(void)
+{
+	// load preferences, first the builtin set and then any on disk.
+	
+	m_prefs = new AP_UnixPrefs(this);
+	m_prefs->loadBuiltinPrefs();
+	m_prefs->loadPrefsFile();
+
+	// TODO overlay command line arguments onto preferences...
+		   
+	// now that preferences are established, let the xap init
+		   
+	return XAP_UnixApp::initialize();
+}
+
+UT_Bool AP_UnixApp::shutdown(void)
+{
+	if (m_prefs->getAutoSave())
+		m_prefs->savePrefsFile();
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_UnixApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValue(szKey,pszValue);
+}
+
+/*****************************************************************/
+
+int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
+{
+	// This is a static function.
+		   
+	// TODO These printfs are not here permanently.  remove them later.
 
 	printf("Build ID:\t%s\n", XAP_App::s_szBuild_ID);
 	printf("Version:\t%s\n", XAP_App::s_szBuild_Version);
@@ -51,8 +100,8 @@ int XAP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	// initialize our application.
 
 	AP_Args Args = AP_Args(argc,argv);
-	
-	XAP_UnixApp * pMyUnixApp = new XAP_UnixApp(&Args, szAppName);
+
+	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
@@ -109,6 +158,7 @@ int XAP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 	// destroy the App.  It should take care of deleting all frames.
 
+	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
 	
 	return 0;

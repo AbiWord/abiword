@@ -31,6 +31,7 @@
 #include "ap_TopRuler.h"
 #include "xap_Frame.h"
 #include "ap_Ruler.h"
+#include "ap_Prefs.h"
 
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
@@ -49,6 +50,12 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_yScrollOffset = 0;
 	m_yScrollLimit = 0;
 	
+	const XML_Char * szRulerUnits;
+	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+		m_dim = UT_determineDimension(szRulerUnits);
+	else
+		m_dim = DIM_IN;
+
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
@@ -337,7 +344,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	
 	// now draw tick marks on the bar, using the selected system of units.
 
-	ap_RulerTicks tick(m_pG);
+	ap_RulerTicks tick(m_pG,m_dim);
 
 	UT_uint32 k, iFontHeight;
 

@@ -39,6 +39,8 @@
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
+// TODO move all the AbiWord declarations to wp/ap/unix/ap_UnixApp...
+
 // The first defines the environment variable we honor,
 // the second defines the default path we use (this should
 // change) if that variable is not set.

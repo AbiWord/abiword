@@ -34,6 +34,46 @@
 #include "ut_units.h"
 #include "gr_Graphics.h"
 
+const char * UT_dimensionName(UT_Dimension dim)
+{
+	switch (dim)
+	{
+	case DIM_IN:
+		return "in";
+
+	case DIM_CM:
+		return "cm";
+
+	case DIM_PI:
+		return "pi";
+
+	case DIM_PT:
+		return "pt";
+
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return "in";
+	}
+}
+
+UT_Dimension UT_determineDimension(const char * sz)
+{
+	if (UT_stricmp(sz,"in") == 0)
+		return DIM_IN;
+
+	if (UT_stricmp(sz,"cm") == 0)
+		return DIM_CM;
+	
+	if (UT_stricmp(sz,"pi") == 0)
+		return DIM_PI;
+
+	if (UT_stricmp(sz,"pt") == 0)
+		return DIM_PT;
+
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return DIM_IN;
+}
+
 const char * UT_convertToDimensionString(UT_Dimension dim, double value)
 {
 	// return pointer to static buffer -- use it quickly.

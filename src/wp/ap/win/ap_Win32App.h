@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,50 +17,34 @@
  * 02111-1307, USA.
  */
 
-
-#ifndef XAP_UNIXAPP_H
-#define XAP_UNIXAPP_H
-
-#include "xap_App.h"
-#include "xap_UnixDialogFactory.h"
-#include "xap_Unix_TB_CFactory.h"
-#include "xap_UnixFontManager.h"
-
-#include <gdk/gdk.h>
-
-class AP_Args;
-class AP_UnixToolbar_Icons;
-
 /*****************************************************************
 ******************************************************************
 ** Only one of these is created by the application.
 ******************************************************************
 *****************************************************************/
 
-class XAP_UnixApp : public XAP_App
+#ifndef AP_WIN32APP_H
+#define AP_WIN32APP_H
+
+#include "xap_Args.h"
+#include "xap_Win32App.h"
+#include "ap_Win32Prefs.h"
+
+class AP_Win32App : public XAP_Win32App
 {
 public:
-	XAP_UnixApp(AP_Args * pArgs, const char * szAppName);
-	virtual ~XAP_UnixApp(void);
+	AP_Win32App(AP_Args * pArgs, const char * szAppName);
+	virtual ~AP_Win32App(void);
 
-	virtual UT_Bool					initialize(void);
-	virtual XAP_Frame * 			newFrame(void);
-	virtual void					reallyExit(void);
-
-	virtual AP_DialogFactory *				getDialogFactory(void);
-	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
-	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
-	AP_UnixFontManager *					getFontManager(void);
+	virtual UT_Bool			initialize(void);
+	virtual UT_Bool			shutdown(void);
+	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	
+	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
+						HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
 
 protected:
-	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
-	AP_UnixDialogFactory			m_dialogFactory;
-	AP_UnixToolbar_ControlFactory	m_controlFactory;
-	AP_UnixFontManager *			m_fontManager;
-	
-	/* TODO put anything we need here.  for example, our
-	** TODO connection to the XServer.
-	*/
+	AP_Win32Prefs *			m_prefs;
 };
 
-#endif /* XAP_UNIXAPP_H */
+#endif /* AP_WIN32APP_H */

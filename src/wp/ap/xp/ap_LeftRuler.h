@@ -25,6 +25,7 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
+#include "ut_units.h"
 #include "xav_Listener.h"
 
 class XAP_Frame;
@@ -64,6 +65,7 @@ protected:
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;
 	GR_Graphics *		m_pG;
+	UT_Dimension		m_dim;
 	UT_uint32			m_iHeight;		/* size of window */
 	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iPageViewTopMargin;
