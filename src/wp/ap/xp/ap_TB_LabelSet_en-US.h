@@ -36,6 +36,9 @@
 // Note: for BOLD doesn't make sense in another language, change the entry in
 // Note: the localization and add the icon to whatever table.
 
+// Note: if a tool item does not use an icon (like a combo box), use the
+// Note: constant "NoIcon" in that column.
+
 BeginSet(EnUS)
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)

@@ -20,6 +20,7 @@
 #include <gtk/gtk.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_string.h"
 #include "ev_UnixToolbar.h"
 #include "ap_Types.h"
 #include "ap_UnixApp.h"
@@ -158,15 +159,6 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 			_wd * wd = new _wd(this,id);
 			UT_ASSERT(wd);
 
-
-			GtkWidget * wPixmap;
-			UT_Bool bFoundIcon =
-				m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
-													  &wTLW->style->bg[GTK_STATE_NORMAL],
-													  pLabel->getIconName(),
-													  &wPixmap);
-			UT_ASSERT(bFoundIcon);
-
 			const char * szToolTip = pLabel->getToolTip();
 			if (!szToolTip || !*szToolTip)
 				szToolTip = pLabel->getStatusMsg();
@@ -174,24 +166,45 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 			switch (pAction->getItemType())
 			{
 			case EV_TBIT_PushButton:
-				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-													   pLabel->getToolbarLabel(),
-													   szToolTip,(const char *)NULL,
-													   wPixmap,
-													   GTK_SIGNAL_FUNC(_wd::s_callback),
-													   wd);
+				{
+					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+					GtkWidget * wPixmap;
+					UT_Bool bFoundIcon =
+						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
+															  &wTLW->style->bg[GTK_STATE_NORMAL],
+															  pLabel->getIconName(),
+															  &wPixmap);
+					UT_ASSERT(bFoundIcon);
 
+					wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
+														   pLabel->getToolbarLabel(),
+														   szToolTip,(const char *)NULL,
+														   wPixmap,
+														   GTK_SIGNAL_FUNC(_wd::s_callback),
+														   wd);
+				}
 				break;
 
 			case EV_TBIT_ToggleButton:
-				wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
-														  GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
-														  (GtkWidget *)NULL,
-														  pLabel->getToolbarLabel(),
-														  szToolTip,(const char *)NULL,
-														  wPixmap,
-														  GTK_SIGNAL_FUNC(_wd::s_callback),
-														  wd);
+				{
+					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+					GtkWidget * wPixmap;
+					UT_Bool bFoundIcon =
+						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
+															  &wTLW->style->bg[GTK_STATE_NORMAL],
+															  pLabel->getIconName(),
+															  &wPixmap);
+					UT_ASSERT(bFoundIcon);
+
+					wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
+															  GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
+															  (GtkWidget *)NULL,
+															  pLabel->getToolbarLabel(),
+															  szToolTip,(const char *)NULL,
+															  wPixmap,
+															  GTK_SIGNAL_FUNC(_wd::s_callback),
+															  wd);
+				}
 				break;
 
 			case EV_TBIT_EditText:
@@ -201,6 +214,8 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				break;
 					
 			case EV_TBIT_ComboBox:
+				UT_DEBUGMSG(("TODO: add toolbar combo box code for: [tip %s]\n",
+							 szToolTip));
 				break;
 					
 			case EV_TBIT_StaticLabel:
