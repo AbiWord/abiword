@@ -81,8 +81,6 @@ protected:
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
 
-	// our "group" of radio buttons
-	PtWidget_t * m_radioGroup;
 	int 		 done;
 };
 

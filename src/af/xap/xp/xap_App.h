@@ -116,7 +116,7 @@ public:
 	EV_Menu_ActionSet *				getMenuActionSet();
 	EV_Toolbar_ActionSet *			getToolbarActionSet();
 
-	XAP_Args *			getArgs() const;
+	XAP_Args *			getArgs() const { return m_pArgs; };
 
 	// only used in ispell builds because aspell doesn't suck...
 	bool				addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
