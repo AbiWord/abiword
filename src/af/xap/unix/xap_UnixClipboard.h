@@ -45,8 +45,12 @@ public:
 	bool				addData(const char* format, void* pData, UT_sint32 iNumBytes);
 	void				clearData(bool bClipboard, bool bPrimary);
 	bool				getData(T_AllowGet tFrom, const char** formatList,
-								void ** ppData, UT_uint32 * pLen,
-								const char **pszFormatFound);
+						void ** ppData, UT_uint32 * pLen,
+						const char **pszFormatFound);
+
+	bool addTextUTF8(void * pData, UT_sint32 iNumBytes);
+	bool getTextUTF8(T_AllowGet tFrom, void ** ppData, UT_uint32 * pLen);
+
 	bool				assertSelection(void);
 	
 	// the following are callbacks
@@ -76,6 +80,10 @@ protected:
 	bool					_getCurrentSelection(const char** formatList,
 												 void ** ppData, UT_uint32 * pLen,
 												 const char **pszFormatFound);
+
+	void AddFmt(const char * fmt);
+
+ private:
 
 	GtkWidget *			m_myWidget;				// private widget to sync selection/clipboard communication with XServer.
    

@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource Program Utilities
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -609,8 +609,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				  w = gtk_menu_item_new();
 				  UT_ASSERT(w);
 			}
-			
-			m_vecMenuWidgets.addItem(w);
+
+			m_vecMenuWidgets.addItem(w);			
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
@@ -734,8 +734,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				// item is created, add to vector
 				m_vecMenuWidgets.addItem(w);
 				break;
-			}
-			
+			}			
 			
 			// give it a fake, with no label, to make sure it passes the
 			// test that an empty (to be replaced) item in the vector should
@@ -757,7 +756,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 			break;
 		}
 		case EV_MLF_Separator:
-		{	
+		{				
 			GtkWidget * w = gtk_separator_menu_item_new();
 			gtk_widget_set_sensitive(w, FALSE);
 			gtk_object_set_user_data(GTK_OBJECT(w),this);

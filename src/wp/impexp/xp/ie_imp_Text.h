@@ -153,6 +153,7 @@ class ABI_EXPORT IE_Imp_Text : public IE_Imp
 {
 public:
 	IE_Imp_Text(PD_Document * pDocument, bool bEncoded=false);
+	IE_Imp_Text(PD_Document * pDocument, const char * encoding);
 	~IE_Imp_Text() {}
 
 	virtual UT_Error	importFile(const char * szFilename);
@@ -170,6 +171,7 @@ protected:
 
  private:
 	const char *	m_szEncoding;
+	bool m_bExplicitlySetEncoding;
 	bool			m_bIsEncoded;
 	bool			m_bIs16Bit;
 	bool			m_bUseBOM;

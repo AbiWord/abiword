@@ -485,7 +485,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
     
     // create raw 8bit text buffer to put on the clipboard
 		
-    IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+    IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc, "UTF-8");
     if (pExpText)
     {
 		pExpText->copyToBuffer(pDocRange,&bufTEXT);
@@ -528,6 +528,8 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     XAP_UnixClipboard::T_AllowGet tFrom = ((bUseClipboard)
 										   ? XAP_UnixClipboard::TAG_ClipboardOnly
 										   : XAP_UnixClipboard::TAG_PrimaryOnly);
+
+    UT_DEBUGMSG(("PASTING FROM '%s' CLIPBOARD\n", bUseClipboard ? "CLIPBOARD" : "PRIMARY"));
 
     const char * szFormatFound = NULL;
     unsigned char * pData = NULL;
@@ -609,7 +611,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		iLen = MyMin(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
-		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
+		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
 

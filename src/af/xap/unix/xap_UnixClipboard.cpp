@@ -179,11 +179,38 @@ static void s_selrcv(GtkWidget * widget, GtkSelectionData *selectionData, guint3
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+// DOM: TEMPORARY HACK
+#define	XAP_CLIPBOARD_TEXTPLAIN_8BIT 		"TEXT"
+#define XAP_CLIPBOARD_STRING			"STRING"
+#define XAP_CLIPBOARD_COMPOUND_TEXT		"COMPOUND_TEXT"
+#define XAP_CLIPBOARD_TEXT_PLAIN                 "text/plain"
+
+// DOM: TEMPORARY HACK
+static const char * txtszFormatsAccepted[] = { 
+  XAP_CLIPBOARD_TEXT_PLAIN,
+  XAP_CLIPBOARD_STRING,
+  XAP_CLIPBOARD_TEXTPLAIN_8BIT,
+  XAP_CLIPBOARD_COMPOUND_TEXT,
+  0 };
+
+void XAP_UnixClipboard::AddFmt(const char * szFormat)
+{
+  UT_return_if_fail(szFormat && strlen(szFormat));
+  m_vecFormat_AP_Name.addItem((void *) szFormat);
+  m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));
+}
+
 XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
 {
 	// caller must call initialize()
 
 	m_pUnixApp = pUnixApp;
+
+	// DOM: TEMPORARY HACK
+	AddFmt(XAP_CLIPBOARD_TEXT_PLAIN);
+	AddFmt(XAP_CLIPBOARD_TEXTPLAIN_8BIT);
+	AddFmt(XAP_CLIPBOARD_STRING);
+	AddFmt(XAP_CLIPBOARD_COMPOUND_TEXT);
 }
 
 XAP_UnixClipboard::~XAP_UnixClipboard()
@@ -281,6 +308,24 @@ bool XAP_UnixClipboard::assertSelection(void)
 	UT_DEBUGMSG(("Clipboard: took ownership of PRIMARY property [%s][timestamp %08lx]\n",
 				 ((m_bOwnPrimary) ? "successful" : "failed"),m_timePrimary));
 	return m_bOwnPrimary;
+}
+
+bool XAP_UnixClipboard::addTextUTF8(void * pData, UT_sint32 iNumBytes)
+{
+  // DOM: TEMPORARY HACK
+  if ( addData ( XAP_CLIPBOARD_TEXTPLAIN_8BIT, pData, iNumBytes ) &&
+       addData ( XAP_CLIPBOARD_STRING, pData, iNumBytes ) &&
+       addData ( XAP_CLIPBOARD_TEXT_PLAIN, pData, iNumBytes ) &&
+       addData ( XAP_CLIPBOARD_COMPOUND_TEXT, pData, iNumBytes ) )
+    return true ;
+  return false ;
+}
+
+bool XAP_UnixClipboard::getTextUTF8(T_AllowGet tFrom, void ** ppData, UT_uint32 * pLen)
+{
+  // DOM: TEMPORARY HACK
+  const char *pszFormatFound = NULL;
+  return getData ( tFrom, txtszFormatsAccepted, ppData, pLen, &pszFormatFound ) ;
 }
 	
 bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)

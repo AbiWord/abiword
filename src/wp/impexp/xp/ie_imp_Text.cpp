@@ -505,7 +505,7 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 		getDoc()->setEncodingName(m_szEncoding);
 
 	// Call encoding dialog
-	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
+	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
 	{
 		X_CleanupIfError(error,_constructStream(pStream,fp));
 		Inserter ins(getDoc());
@@ -535,7 +535,13 @@ Cleanup:
  Uses current document's encoding if it is set
 */
 IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
-	: IE_Imp(pDocument)
+  : IE_Imp(pDocument),
+    m_szEncoding(0),
+    m_bExplicitlySetEncoding(false),
+    m_bIsEncoded(false),
+    m_bIs16Bit(false),
+    m_bUseBOM(false),
+    m_bBigEndian(false)
 {
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt;
@@ -548,6 +554,24 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 		szEncodingName = XAP_EncodingManager::get_instance()->getNativeEncodingName();
 
 	_setEncoding(szEncodingName);
+}
+
+IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, const char * encoding)
+  : IE_Imp(pDocument),
+    m_szEncoding(0),
+    m_bExplicitlySetEncoding(false),
+    m_bIsEncoded(false),
+    m_bIs16Bit(false),
+    m_bUseBOM(false),
+    m_bBigEndian(false)
+{
+  m_bIsEncoded = ((encoding != NULL) && (strlen(encoding) > 0));
+  
+  if ( m_bIsEncoded )
+    {
+      m_bExplicitlySetEncoding = true ;
+      _setEncoding(encoding);
+    }
 }
 
 /*****************************************************************/

@@ -70,6 +70,7 @@ class ABI_EXPORT IE_Exp_Text : public IE_Exp
 {
 public:
 	IE_Exp_Text(PD_Document * pDocument, bool bEncoded=false);
+	IE_Exp_Text(PD_Document * pDocument, const char * encoding);
 	virtual ~IE_Exp_Text() {}
 
 protected:
@@ -83,6 +84,7 @@ protected:
 	PL_Listener *		m_pListener;
 	bool				m_bIsEncoded;
 	const char *		m_szEncoding;
+	bool m_bExplicitlySetEncoding;
 	bool				m_bIs16Bit;
 	bool				m_bBigEndian;
 	bool				m_bUseBOM;

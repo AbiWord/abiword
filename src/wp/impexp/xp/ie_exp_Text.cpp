@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,9 +48,15 @@
 
 IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument),
-	  m_pListener(NULL)
+	  m_pListener(NULL),
+	  m_bIsEncoded(false),
+	  m_szEncoding(0),
+	  m_bExplicitlySetEncoding(false),
+	  m_bIs16Bit(false),
+	  m_bBigEndian(false),
+	  m_bUseBOM(false)
 {
-	m_error = 0;
+	m_error = UT_OK;
 
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt = false;
@@ -63,6 +69,27 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 		szEncodingName = XAP_EncodingManager::get_instance()->getNativeEncodingName();
 
 	_setEncoding(szEncodingName);
+}
+
+IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
+  : IE_Exp(pDocument),
+    m_pListener(NULL),
+    m_bIsEncoded(false),
+    m_szEncoding(0),
+    m_bExplicitlySetEncoding(false),
+    m_bIs16Bit(false),
+    m_bBigEndian(false),
+    m_bUseBOM(false)
+{
+  m_error = UT_OK;
+  
+  m_bIsEncoded = ((encoding != NULL) && (strlen(encoding) > 0));
+  
+  if ( m_bIsEncoded )
+    {
+      m_bExplicitlySetEncoding = true;
+     _setEncoding(encoding);
+    }
 }
 
 /*****************************************************************/
@@ -175,7 +202,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 bool IE_Exp_Text::_openFile(const char * szFilename)
 {
 	// Don't call base method if user cancels encoding dialog
-	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
+	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
 		return IE_Exp::_openFile(szFilename);
 	else
 		return false;
