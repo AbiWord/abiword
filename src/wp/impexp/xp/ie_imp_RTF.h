@@ -702,6 +702,7 @@ private:
 	PL_StruxDocHandle     m_lastCellSDH;
 	bool                  m_bNestTableProps;
 	bool                  m_bParaWrittenForSection;
+	bool                  m_bCellBlank;
 };
 
 #endif /* IE_IMP_RTF_H */

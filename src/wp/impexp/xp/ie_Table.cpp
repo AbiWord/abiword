@@ -1306,7 +1306,6 @@ void ie_imp_table::_removeAllStruxes(void)
 {
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
-	UT_ASSERT(0);
 	for(i= (UT_sint32) m_vecCells.getItemCount() -1; i >=0 ; i--)
 	{
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);

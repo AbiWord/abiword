@@ -1266,7 +1266,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_lastBlockSDH(NULL),
 	m_lastCellSDH(NULL),
 	m_bNestTableProps(false),
-	m_bParaWrittenForSection(false)
+	m_bParaWrittenForSection(false),
+	m_bCellBlank(true)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -1441,6 +1442,7 @@ void IE_Imp_RTF::OpenTable(void)
 	m_currentRTFState.m_tableProps = RTFProps_TableProps();
 	m_lastCellSDH = NULL; // This is in the table structure and can be deleted from there.
 	m_lastBlockSDH = getDoc()->getLastStruxOfType(PTX_Block);
+	m_bCellBlank = true;
 }
 
 
@@ -1547,12 +1549,12 @@ void IE_Imp_RTF::HandleCell(void)
 		getDoc()->appendStrux(PTX_Block,NULL);
 		m_lastCellSDH = getDoc()->getLastStruxOfType(PTX_SectionCell);
 		m_lastBlockSDH = getDoc()->getLastStruxOfType(PTX_Block);
-		
 	}
 	else
 	{
 		getTable()->incPosOnRow();
 	}
+	m_bCellBlank = true;
 }
 
 void IE_Imp_RTF::FlushCellProps(void)
@@ -1768,6 +1770,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	}
 	if (ok  &&  m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
 	{
+		m_bCellBlank = false;
 		bool bSave = m_newParaFlagged;
 		m_newParaFlagged = false;
 		ok = ApplyParagraphAttributes();
@@ -1786,8 +1789,10 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	}
 
 	if (ok  &&  (m_gbBlock.getLength() > 0))
+	{
 		ok = ApplyCharacterAttributes();
-
+		m_bCellBlank = false;
+	}
 	return ok;
 }
 
@@ -3915,6 +3920,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 				{
 					CloseTable();
+					m_bCellBlank = true;
 				}
 				UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			}
@@ -3926,8 +3932,15 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 				while(m_TableControl.getNestDepth() > 1)
 				{
 					CloseTable();
+					m_bCellBlank = true;
 				}
 				m_currentRTFState.m_paraProps.m_tableLevel = 1;
+			}
+//
+// If a trowd appears without  a preceding \cell we close the previous table
+			if(false == m_bCellBlank)
+			{
+				CloseTable();
 			}
 			m_bNestTableProps = false;
 			ResetCellAttributes();
