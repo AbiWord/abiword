@@ -332,20 +332,10 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
 				gtk_widget_show(GTK_WIDGET(label));
 				gtk_widget_show(w);
-
-				// bind to top-level accel group
-				if ((keyCode != GDK_VoidSymbol))// && GTK_IS_MENU_BAR (parent))
-				{
-					gtk_widget_add_accelerator(w,
-											   "activate_item",
-											   m_accelGroup,
-											   keyCode,
-											   GDK_MOD1_MASK,
-											   GTK_ACCEL_LOCKED);
-				}
 				
 				// set menu data to relate to class
 				gtk_object_set_user_data(GTK_OBJECT(w),this);
+				
 				// create callback info data for action handling
 				_wd * wd = new _wd(this, id);
 				UT_ASSERT(wd);
@@ -362,7 +352,31 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				UT_ASSERT(wsub);
 
 				wd->m_accelGroup = gtk_accel_group_new();
-					
+
+				if ((keyCode != GDK_VoidSymbol))
+				{
+					// bind to top level if parent is top level
+					if (wParent == m_wMenuBar)
+					{
+						gtk_widget_add_accelerator(w,
+												   "activate_item",
+												   m_accelGroup,
+												   keyCode,
+												   GDK_MOD1_MASK,
+												   GTK_ACCEL_LOCKED);
+					}
+					else
+					{
+						// just bind to be triggered by parent
+						gtk_widget_add_accelerator(w,
+												   "activate_item",
+												   GTK_MENU(wParent)->accel_group,
+												   keyCode,
+												   0,
+												   GTK_ACCEL_LOCKED);
+					}
+				}
+				
 				gtk_menu_set_accel_group(GTK_MENU(wsub), wd->m_accelGroup);
 										 
 				// menu items with sub menus attached (w) get this signal
@@ -444,9 +458,6 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	// pack it in a handle box
 	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
 	gtk_widget_show(m_wHandleBox);
-	
-	// put it in the vbox
- 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
 
 	// we also have to bind the top level window to our
 	// accelerator group for this menu... it needs to join in
@@ -454,6 +465,9 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	gtk_accel_group_attach(m_accelGroup, GTK_OBJECT(m_pUnixFrame->getTopLevelWindow()));
 	gtk_accel_group_lock(m_accelGroup);
 	
+	// put it in the vbox
+ 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
+
 	return UT_TRUE;
 }
 
