@@ -36,7 +36,7 @@ ifeq ($(ABI_FE), Mac)
 PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)Font.$(OBJ_SUFFIX)
 endif
 
-ifdef ABI_OPT_GNOME
+ifeq ($(ABI_OPT_GNOME),1)
 	PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)$(ABI_GNOME_PREFIX)Image.$(OBJ_SUFFIX)
 endif
 

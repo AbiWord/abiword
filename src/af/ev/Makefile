@@ -43,7 +43,7 @@ else
 PLATFORM_OBJS += $(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
 endif
 
-ifdef ABI_OPT_GNOME
+ifeq ($(ABI_OPT_GNOME),1)
 PLATFORM_OBJS +=	$(OBJDIR)/ev_$(ABI_FE)$(ABI_GNOME_PREFIX)Menu.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/ev_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar.$(OBJ_SUFFIX)
 endif

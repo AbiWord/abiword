@@ -25,7 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CPPSRCS=		gr_UnixGraphics.cpp	\
 			gr_UnixImage.cpp
 
-ifdef ABI_OPT_GNOME
+ifeq ($(ABI_OPT_GNOME),1)
 CPPSRCS+=		gr_UnixGnomeImage.cpp
 endif
 
