@@ -650,7 +650,7 @@ static UCSRange s_nonjoining_with_next[] =
 static UCSRange s_nonjoining_with_prev[] =
 {
 	// everything in the Latin ranges
-	{0x0000, 0x05ff},
+	{0x0000, 0x05cf},
 
 	// Arabic
 	{0x0621, 0x0621},
@@ -1127,7 +1127,7 @@ void UT_contextGlyph::_fixHebrewLigatures(bool bShape)
 }
 
 
-inline GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint32 offset) const
+GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint32 offset) const
 {
 	UT_ASSERT( text.getStatus() == UTIter_OK );
 
@@ -1141,7 +1141,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, U
 	next = text.getStatus() == UTIter_OK ? text.getChar() : 0;
 	
 	UT_UCS4Char prev;
-	text -= 2;
+	text.setPosition(pos + offset - 1);
 	prev = text.getStatus() == UTIter_OK ? text.getChar() : 0;
 
 	if(!next && !prev)
@@ -1151,7 +1151,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, U
 	bool bNextWD;
 
 	UT_UCS4Char prev2;
-	--text;
+	text.setPosition(pos + offset - 2);
 	prev2 = text.getStatus() == UTIter_OK ? text.getChar() : 0;
 	
 	if(!next && prev)
@@ -1168,7 +1168,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, U
 	// no-next has been trapped above, now we can check if next is not
 	// a character that is to be ignored (the indexing operator is
 	// necessary here, to position the iterator for us)
-	UT_UCSChar myNext = text[pos+1];
+	UT_UCSChar myNext = text[pos + offset + 1];
 	
 	while(text.getStatus() == UTIter_OK
 		  && bsearch(static_cast<void*>(&myNext),
@@ -1545,7 +1545,7 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 	if(iLigature > 0 && iContextSensitive > 0)
 		return SR_ContextSensitiveAndLigatures;
 
-	return SR_Plain;
+	return SR_None;
 }
 
 /*!
