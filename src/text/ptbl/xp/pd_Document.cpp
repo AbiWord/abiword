@@ -1061,7 +1061,6 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
   //
         pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
         PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-	//PT_DocPosition pos = getStruxPosition(sdh) + fl_BLOCK_STRUX_OFFSET;
 	PT_DocPosition pos = getStruxPosition(sdh);
         const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
 	notifyListeners(pfs, pcr);
@@ -1190,12 +1189,24 @@ UT_Bool PD_Document::fixListHierarchy(void)
 	}
 }
 
-void PD_Document::removeList(fl_AutoNum * pAutoNum)
+void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 {
 	UT_ASSERT(pAutoNum);
 	UT_sint32 ndx = m_vecLists.findItem(pAutoNum);
+	UT_ASSERT(ndx >= 0);
 	if (ndx != -1)
+	{
+	        //
+	        // Notify all views of a remove List
+	        //
+	        pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
+		PT_DocPosition pos = getStruxPosition(sdh);
+		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
+		notifyListeners(pfs, pcr);
+		delete pcr;						  
 		m_vecLists.deleteNthItem(ndx);
+	}
 }
 
 

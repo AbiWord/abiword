@@ -629,8 +629,17 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 {
 	UT_sint32 ndx = m_pItems.findItem((void *)pItem);
 	UT_sint32 i;
+	//
+	// For multi-views we might have already deleted pItem from the
+        // fl_AutoNum 
+	//
+	//
 	UT_ASSERT(ndx != -1);
-
+	if(ndx < 0 )
+	{
+	        m_bDirty = UT_TRUE;
+	        _updateItems(0,NULL);
+        }        
         PL_StruxDocHandle ppItem = NULL;
 	if(ndx > 0)
 	{
@@ -735,7 +744,7 @@ fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 
 const UT_Bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) 
 {
-	if (m_pItems.findItem(const_cast<void *>(pItem)) == -1)
+	if (m_pItems.findItem((void *)(pItem)) == -1)
 		return UT_FALSE;
 	else
 		return UT_TRUE;

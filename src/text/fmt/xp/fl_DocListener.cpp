@@ -545,6 +545,18 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		pView->updateScreen();
 		goto finish_up;
 	}
+	case PX_ChangeRecord::PXT_RemoveList:
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		pBL->m_bStopList = UT_TRUE;
+		pBL->_deleteListLabel();
+                pBL->m_pAutoNum = NULL;
+                pBL->m_bListItem = UT_FALSE;
+		pBL->m_bStopList = UT_FALSE;
+		goto finish_up;
+	}
 	default:
 		UT_ASSERT(0);
 		bResult = UT_FALSE;

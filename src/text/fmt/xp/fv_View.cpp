@@ -2013,6 +2013,8 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	XML_Char pszStart[80],pszAlign[20],pszIndent[20];
 	UT_Vector va,vp,vb;
 	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
+	m_pDoc->disableListUpdates();
+
 	if(lType == NOT_A_LIST)
 	{
 	  // Stop lists in all elements
@@ -2030,6 +2032,9 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	              m_pDoc->listUpdate(sdh);
 	              m_pDoc->StopList(sdh);
 		}
+	       m_pDoc->enableListUpdates();
+	       m_pDoc->updateDirtyLists();
+	       _generalUpdate();
 	       return;
 	}
 
@@ -2098,8 +2103,9 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	       sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
 	       _generalUpdate();
 	}
-	sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(0);
-	m_pDoc->listUpdate(sdh);
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	_generalUpdate();
 	_ensureThatInsertionPointIsOnScreen();
 	DELETEP(attribs);
 	DELETEP(props);
@@ -2544,14 +2550,15 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
   
 	if (!isSelectionEmpty())
 	{
-	        m_pDoc->disableListUpdates();
+	  // m_pDoc->disableListUpdates();
 
 		_deleteSelection();
 
 		// restore updates and clean up dirty lists
-		m_pDoc->enableListUpdates();
-		m_pDoc->updateDirtyLists();
+		//m_pDoc->enableListUpdates();
 
+		_generalUpdate();
+		m_pDoc->updateDirtyLists();
 		_generalUpdate();
 
 		if (!_ensureThatInsertionPointIsOnScreen())
@@ -2632,7 +2639,14 @@ deleted.
 
 		if (amt > 0)
 		{
-			m_pDoc->deleteSpan(posCur, posCur+amt);
+		  //  m_pDoc->disableListUpdates();
+
+	      		m_pDoc->deleteSpan(posCur, posCur+amt);
+			// restore updates and clean up dirty lists
+			//	m_pDoc->enableListUpdates();
+			//m_pDoc->updateDirtyLists();
+			_generalUpdate();
+			m_pDoc->updateDirtyLists();
 			if(fontFlag)
 			  {
 			    setCharFormat(properties);

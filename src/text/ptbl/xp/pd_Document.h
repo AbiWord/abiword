@@ -190,7 +190,7 @@ public:
 	void            addList(fl_AutoNum * pAutoNum);
 	UT_Bool		appendList(const XML_Char ** attributes);
 	UT_Bool		fixListHierarchy(void);
-	void	 	removeList(fl_AutoNum * pAutoNum);
+	void	 	removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
 	void            listUpdate(PL_StruxDocHandle sdh);
 	void            StopList(PL_StruxDocHandle sdh);
 	void            disableListUpdates(void);

@@ -496,17 +496,22 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		// We have stopped a final list item.
 		m_bStopList = UT_TRUE;
-		m_pAutoNum->removeItem(getStruxDocHandle());
+		m_pAutoNum->markAsDirty();
+		if(m_pAutoNum->isItem(getStruxDocHandle()) == UT_TRUE)
+		        m_pAutoNum->removeItem(getStruxDocHandle());
 		m_bListItem = UT_FALSE;
 		_deleteListLabel();
 		
 		if (m_pAutoNum->isEmpty())
 		{
-			m_pDoc->removeList(m_pAutoNum);
+		        fl_AutoNum * pAuto = m_pAutoNum;
 			DELETEP(m_pAutoNum);
+			m_pDoc->removeList(pAuto,getStruxDocHandle());
 		}
 		else
+		{
 			m_pAutoNum->update(0);
+		}
 		m_bStopList = UT_FALSE;
 		m_pAutoNum = NULL;
 		UT_DEBUGMSG(("Stopped List\n"));
@@ -530,6 +535,7 @@ void fl_BlockLayout::_lookupProperties(void)
  	                pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
 			List_Type lType = getListTypeFromStyle( style);
 			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc);
+			UT_DEBUGMSG(("SEVIOR: Created new list \n"));
 			m_pDoc->addList(pAutoNum);
 		}
 		UT_ASSERT(pAutoNum);
@@ -3713,6 +3719,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		_delete(blockOffset, 1);
 		if(m_pAutoNum)
 		{
+		       m_pAutoNum->markAsDirty();
 		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE && m_pAutoNum->canListUpdate()==UT_TRUE)
 		       {
 			     remItemFromList();
@@ -4685,6 +4692,12 @@ void    fl_BlockLayout::StopList(void)
 	UT_Vector vp;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
+	if(getAutoNum()== NULL)
+	{
+	        return; // this block has already been processed
+		pView->_generalUpdate();
+	}
+
 /*
 	UT_uint32 currLevel = getLevel();
 
@@ -5055,6 +5068,7 @@ void fl_BlockLayout::listUpdate(void)
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
+	        pView->_generalUpdate();
 		pView->_fixInsertionPointCoords();
 		pView->updateScreen();
 		pView->drawInsertionPoint();
