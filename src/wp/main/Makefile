@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../..
 
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-ifeq ($(ABI_OPT_GNOME),1)
+ifdef ABI_OPT_GNOME
 DIRS=		xp $(ABI_NATIVE)/$(ABI_GNOME_DIR)
 else
 DIRS=		xp $(ABI_NATIVE)

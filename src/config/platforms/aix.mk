@@ -100,12 +100,10 @@ ABI_FE		= Unix
 
 ##################################################################
 ## Here you can choice if you want to use the gnome stuff.
-## Set ABI_OPT_GNOME to 1 (when invoking 'make') to override
-## the setting of 0 here.  Example:  "make ABI_OPT_GNOME=1 install"
-
-ABI_OPT_GNOME		= 0
-ABI_GNOME_DIR		= gnome
-ABI_GNOME_PREFIX	= Gnome
+## Set ABI_OPT_GNOME to 1 (when invoking 'make') or set as
+## an environment variable.
+##
+## ABI_OPT_GNOME=1
 
 ##################################################################              
 ## ABIPKGDIR defines the directory containing the Makefile to use to            

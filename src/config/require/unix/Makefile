@@ -59,9 +59,9 @@ _GTK_:
 	|| (echo gtk not found; exit 1)
 
 # For right now GNOME is, by default, disabled, but can be forced on 
-# through ABI_GNOME_OPT=1
+# through ABI_OPT_GNOME=1
 
-ifeq ($(ABI_OPT_GNOME),1)
+ifdef ABI_OPT_GNOME
 _GNOME_:
 	@$(GNOME_CONFIG) --version 2>&1 1>/dev/null		\
 	|| (echo gnome not found; exit 1)

@@ -25,7 +25,24 @@
 #### kept separately.  However, the executable will be overwritten.
 #### This may change in the near future.
 ####
+#### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
+#### NOTE: this to **any** value will enable it.
+####
 #### ABI_OPT_DEBUG=1
+####
+
+#### To get a GNOME build:  add the following line back to the
+#### Makefile, add the variable to the make command line, or set
+#### this variable as an environment variable.  A full recompile
+#### must be done when switching the value of this variable.
+#### (Each platform makefile (./platforms/*.mk) also has a commented-
+#### out note about this incase you only want to enable it on a
+#### particular platform.)
+####
+#### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
+#### NOTE: this to **any** value will enable it.
+####
+#### ABI_OPT_GNOME=1
 ####
 
 ##################################################################
@@ -111,7 +128,7 @@ ABI_XAP_INCS=	/config						\
 		/af/util/xp		/af/util/$(ABI_NATIVE)	\
 		/af/gr/xp		/af/gr/$(ABI_NATIVE)
 
-ifeq ($(ABI_OPT_GNOME),1)
+ifdef ABI_OPT_GNOME
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
@@ -147,8 +164,6 @@ else
 ABI_DBGDEFS=		-DNDEBUG
 ABI_OPTIONS+=Debug:Off
 endif
-
-ABI_GNOME_DIR=.
 
 ##################################################################
 ##################################################################
@@ -331,16 +346,18 @@ endif
 ##################################################################
 ## Generic Unix includes for Gtk, as it moves about installation paths.
 ## We should change this when get non-gtk versions on unix....
-## Changed: I've added the ABI_OPT_GNOME variable, anybody has any
-## inconvenient with the addition?
 
 ifeq ($(ABI_NATIVE),unix)
-ifeq ($(ABI_OPT_GNOME),1)
+ifdef ABI_OPT_GNOME
 CFLAGS 		+=	`$(GNOME_CONFIG) --cflags gnorba gnomeui` -DHAVE_GNOME
 EXTRA_LIBS	+=	`$(GNOME_CONFIG) --libs gnorba gnomeui`
+ABI_GNOME_DIR		= gnome
+ABI_GNOME_PREFIX	= Gnome
+ABI_OPTIONS+=Gnome:On
 else
 CFLAGS 		+=	`$(GTK_CONFIG) --cflags`
 EXTRA_LIBS	+=	`$(GTK_CONFIG) --libs`
+ABI_OPTIONS+=Gnome:Off
 endif
 endif
 
