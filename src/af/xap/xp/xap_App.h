@@ -133,7 +133,7 @@ public:
 	bool				addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
 	bool				isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
 	void                            suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord);
-	inline XAP_Prefs *						getPrefs() const;
+    XAP_Prefs *						getPrefs() const;
 	bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	bool							getPrefsValue(const UT_String &stKey, UT_String &stValue) const;
 	bool							getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;

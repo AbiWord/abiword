@@ -66,7 +66,7 @@ public:
 	// its cached value.  The scheme pointer can be different because
 	// the preference scheme has changed.  The tick count bumps up once
 	// every time any preference value in the scheme is changed.
-	inline UT_uint32			getTickCount() {return m_uTick;}
+    UT_uint32			getTickCount() {return m_uTick;}
 	
 	bool				setValue(const XML_Char * szKey, const XML_Char * szValue);
 	bool				setValueBool(const XML_Char * szKey, bool bValue);
@@ -100,7 +100,7 @@ public:
 	bool					savePrefsFile(void);
 	
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
-	inline XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
+    XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
 	bool					addScheme(XAP_PrefsScheme * pNewScheme);
 	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
 	bool					setCurrentScheme(const XML_Char * szSchemeName);
