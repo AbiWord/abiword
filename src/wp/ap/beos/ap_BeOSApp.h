@@ -52,7 +52,7 @@ public:
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool);
 	virtual UT_Bool					canPasteFromClipboard(void);
 	virtual void					cacheCurrentSelection(AV_View *) {};
-	
+
 	void							ParseCommandLine(void);
 	
 	static int local_main (const char * szAppName, int argc, char ** argv);
@@ -63,5 +63,11 @@ protected:
 	XAP_StringSet *			m_pStringSet;
 	AP_BeOSClipboard *		m_pClipboard;
 };
+
+// What follows is an ugly hack. It is neccessitated by the 
+// C/C++ conflict over pointers to member functions. It is,
+// however, what the C++ FAQ reccommends.
+
+void signalWrapper(int);
 
 #endif /* AP_BEOSAPP_H */

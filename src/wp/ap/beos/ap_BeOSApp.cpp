@@ -724,10 +724,24 @@ void signalWrapper(int sig_num)
 	pApp->catchSignals(sig_num);
 }
 
+
+
+
+static int s_signal_count = 0;
+
 void AP_BeOSApp::catchSignals(int sig_num)
 {
 	// Reset the signal handler (not that it matters - this is mostly for race conditions)
 	signal(SIGSEGV, signalWrapper);
+
+        s_signal_count = s_signal_count + 1;
+        if(s_signal_count > 1)
+        {
+                UT_DEBUGMSG(("Segfault during filesave - no file saved  \n"));
+                fflush(stdout);
+                abort();
+        }
+
 
 	UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
 
