@@ -7305,6 +7305,11 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword,
 		pbChars->bm_italic = true;
 		return HandleBoolCharacterProp((fParam ? false : true), &(pChars->m_italic));
 	}
+	else if (strcmp(reinterpret_cast<char*>(pKeyword), "lang") == 0)
+	{
+		pChars->m_szLang = wvLIDToLangConverter(static_cast<unsigned short>(param));
+		return true;
+	}
 	else if (strcmp(reinterpret_cast<char*>(pKeyword), "li") == 0)
 	{
 		pbParas->bm_indentLeft = true;
@@ -10519,6 +10524,13 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 				strcat(propBuffer, tempBuffer.c_str());
 			}
 		}
+	}
+// Language
+	if (pChars->m_szLang)
+	{
+		strcat(propBuffer, " lang:");
+		strcat(propBuffer, pChars->m_szLang);
+		strcat(propBuffer, ";");
 	}
 // List Tag to hang lists off
 	if(pbChars->bm_listTag)
