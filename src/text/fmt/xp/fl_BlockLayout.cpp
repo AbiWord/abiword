@@ -2617,7 +2617,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 	while(len > curOffset - blockOffset)
 	{
-		FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
+		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
 		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
 		UT_ASSERT(pSpan);
 		if(!pSpan)
@@ -2628,12 +2628,75 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		UT_uint32 trueLen = UT_MIN(lenSpan,len);
 		UT_uint32 i = 1;
 
+		
 		for(i = 1; i < trueLen; i++)
 		{
 			iPrevType = iType;
+			if(FRIBIDI_IS_STRONG(iType))
+				iLastStrongType = iType;
+			
 			iType = fribidi_get_type((FriBidiChar)pSpan[i]);
 			if(iType != iPrevType)
-				break;
+			{
+				// potential direction boundary see if we can ignore
+				// it
+				bool bIgnore = false;
+				
+				if(!FRIBIDI_IS_STRONG(iPrevType) && !FRIBIDI_IS_STRONG(iType))
+				{
+					// two week characters in a row will have the same
+					// direction
+					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->weak\n"));
+					bIgnore = true;
+				}
+				else if(FRIBIDI_IS_STRONG(iPrevType) && !FRIBIDI_IS_STRONG(iType))
+				{
+					// we can ignore a week character following a
+					// strong one if it is followed by a strong
+					// character of identical type to the previous one
+					
+					// take a peek at what follows
+					for(UT_uint32 j = i+1; j < trueLen; j++)
+					{
+						iNextType = fribidi_get_type((FriBidiChar)pSpan[j]);
+						if(iNextType == iPrevType)
+						{
+							bIgnore = true;
+							break;
+						}
+
+						if(FRIBIDI_IS_STRONG(iNextType))
+							break;
+					}
+					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->weak\n"));
+					
+				}
+				else if(!FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_STRONG(iType))
+				{
+					// a week character followed by a strong one -- we
+					// can ignore it, if the week character was
+					// preceeded by a strong character of the same
+					// type
+					if(iType == iLastStrongType)
+					{
+						bIgnore = true;
+					}
+					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->strong\n"));
+					
+				}
+				else
+				{
+					// two strong characters -- change cannot be
+					// ignored
+					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->strong\n"));
+					
+				}
+
+				UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: bIgnore %d\n",(UT_uint32)bIgnore));
+				if(!bIgnore)
+					break;
+			}
+			
 		}
 		xxx_UT_DEBUGMSG(("_doInsertTextSpan: text run: offset %d, len %d\n", curOffset, i));
 		fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), curOffset, i);
