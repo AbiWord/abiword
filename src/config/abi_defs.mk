@@ -91,7 +91,7 @@
 
 # this makes HP-UX look like "HP" (sed turns "HP-UX" into "HP" with the -.* pattern)
 OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
-OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
+OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/[() ].*//g")
 ####OS_ARCH is now set in platform/*.mk
 
 ##################################################################
