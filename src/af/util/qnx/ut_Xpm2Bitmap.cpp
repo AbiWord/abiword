@@ -56,18 +56,14 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	UT_ASSERT(charsPerPixel > 0);
 
 	//Create a new PhImage_t 
-	//printf("Allocating an image buffer %d bytes\n", sizeof(*pImage));
 	if (!(pImage = (PhImage_t *)malloc(sizeof(*pImage))))
 		return(false);
 	memset(pImage, 0, sizeof(*pImage));
 
-	//printf("Setting information \n");
 	pImage->type = Pg_IMAGE_DIRECT_8888; //Could use Pg_IMAGE_DIRECT_888
-	//pImage->image_tab = PxCRC() ... later 
 	pImage->bpl = sizeof(PgColor_t) * width;
 	pImage->size.w = width;
 	pImage->size.h = height;
-	//printf("Width/Height %d/%d \n", pImage->size.w, pImage->size.h);
 	//pImage->palette_tag = ???;
 	//pImage->colors = nrColors;
 	//pImage->xscale = pImage->yscale = 1;
@@ -167,7 +163,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 			*/
 		}
 	}
-
+	pImage.imgae_tag = PtCRC(pImage->image,sizeof(PgColor_t) * width * height);
 	free(pRGB);
 	*ppImage = pImage;
 	return(true);
