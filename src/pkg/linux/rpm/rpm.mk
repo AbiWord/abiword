@@ -43,7 +43,7 @@ RPM_TOPDIR			= $(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/topdir://"))
 
 ifneq ($(RPM),)
 ifneq ($(ALIEN),)
-rpm: rpm_fonts rpm_dynamic_nofonts deb_dynamic_fonts
+rpm: rpm_fonts rpm_dynamic_nofonts rpm_dynamic_fonts
 else
 rpm::
 	@echo ""
