@@ -28,6 +28,8 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
+#include "ut_mbtowc.h"
+#include "ut_wctomb.h"
 
 //////////////////////////////////////////////////////////////////
 // char * UT_catPathname(const char * szPath, const char * szFile);
@@ -578,8 +580,13 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	UT_UCSChar * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
+	UT_Mbtowc m;
+	wchar_t wc;
 	while (*s != NULL)
-		*d++ = *s++;
+	  {
+		if(m.mbtowc(wc,*s))*d++=wc;
+		s++;
+	  }
 	*d = NULL;
 
 	return dest;
@@ -593,8 +600,13 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	char * 			d = dest;
 	UT_UCSChar * 	s = (UT_UCSChar *) src;
 
+	UT_Wctomb w;
 	while (*s != NULL)
-	    *d++ = *s++;
+	  {
+		int length;
+		if(w.wctomb(d,length,*s++))
+		  d+=length;
+	  }
 	*d = NULL;
 	
 	return dest;
@@ -613,13 +625,24 @@ UT_Bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
 
 UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 {
-	UT_uint32 length = strlen(src) + 1;
-	*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
-	if (!*dest)
-		return UT_FALSE;
-	UT_UCS_strcpy_char(*dest, src);
+  UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
+  *dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
+  if (!*dest)
+	return UT_FALSE;
+  UT_UCSChar * d= *dest;
+  unsigned char * s	= (unsigned char *) src;
+  
+  UT_Mbtowc m;
+  wchar_t wc;
 
-	return UT_TRUE;
+  while (*s != NULL)
+	{
+	  if(m.mbtowc(wc,*s))*d++=wc;
+	  s++;
+	}
+  *d = NULL;  
+  
+  return UT_TRUE;
 }
 
 // convert each character in a string to ASCII uppercase

@@ -29,6 +29,7 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_growbuf.cpp		\
 		ut_hash.cpp		\
 		ut_math.cpp		\
+		ut_mbtowc.cpp		\
 		ut_misc.cpp		\
 		ut_png.cpp		\
 		ut_svg.cpp		\
@@ -38,7 +39,8 @@ CPPSRCS=	ut_alphahash.cpp	\
 		ut_test.cpp		\
 		ut_timer.cpp		\
 		ut_units.cpp		\
-		ut_vector.cpp
+		ut_vector.cpp		\
+		ut_wctomb.cpp
 
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c
