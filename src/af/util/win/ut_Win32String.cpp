@@ -60,3 +60,10 @@ char * UT_tmpnam(char * pszBase)
 	return pszBase;
 }
 
+void UT_unlink (const char * base)
+{
+	// note: both remove & unlink are available in VC5, and both
+	// should perform identically, but remove was choosen since it is ANSI C (stdio.h)
+	// unlink (base);
+	remove(base);
+}
