@@ -99,10 +99,6 @@ void fp_TextRun::lookupProperties(void)
 		{
 			m_fDecorations |= TEXT_DECOR_UNDERLINE;
 		}
-		else if (0 == UT_stricmp(q, "overline"))
-		{
-			m_fDecorations |= TEXT_DECOR_OVERLINE;
-		}
 		else if (0 == UT_stricmp(q, "line-through"))
 		{
 			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
@@ -622,7 +618,7 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 	if (
 		bFullLineHeightRect
 		|| m_bSquiggled
-		|| (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE | TEXT_DECOR_LINETHROUGH))
+		|| (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_LINETHROUGH))
 		|| !(
 			(iSel2 < iRunBase)
 			|| (iSel1 >= (iRunBase + m_iLen))
@@ -880,12 +876,6 @@ void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	{
 		UT_sint32 iDrop = (m_pLine->getDescent() / 3);
 		m_pG->drawLine(xoff, yoff + iDrop + m_iAscent, xoff+getWidth(), yoff + iDrop + m_iAscent);
-	}
-
-	if (m_fDecorations & TEXT_DECOR_OVERLINE)
-	{
-		UT_sint32 y2 = yoff;
-		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
 	}
 
 	if (m_fDecorations & TEXT_DECOR_LINETHROUGH)

@@ -79,7 +79,6 @@ protected:
 	enum
 	{
 		TEXT_DECOR_UNDERLINE = 		0x01,
-		TEXT_DECOR_OVERLINE = 		0x02,
 		TEXT_DECOR_LINETHROUGH = 	0x04
 	};
 	unsigned char			m_fDecorations;
