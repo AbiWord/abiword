@@ -52,6 +52,8 @@ public:
 		{ return m_iMainLevel;}
 	void                    setMainLevel(UT_sint32 iLevel);
 	void                    setDetailsLevel(UT_sint32 iLevel);
+	void                    event_IndentChanged(GtkWidget * wSpin);
+	void                    event_StartAtChanged(GtkWidget * wSpin);
 private:
 	GtkWidget *		_constructWindow(void);
 	void			_populateWindowData(void);
@@ -73,6 +75,10 @@ private:
 	UT_Vector   m_vecAllPropVals;
 	UT_sint32   m_iMainLevel;
 	UT_sint32   m_iDetailsLevel;
+	UT_sint32   m_iIndentValue;
+	UT_sint32   m_iStartValue;
+	guint       m_iStartID;
+	guint       m_iIndentID;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATOC_H */

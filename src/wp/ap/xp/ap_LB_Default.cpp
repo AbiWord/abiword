@@ -214,6 +214,8 @@ ap_bs_Mouse MouseTable[] =
 	{_CTV _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CTH _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CTH _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
+	{_CTO _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CTO _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 
 
 //  Button-5, Mouse wheel (3 lines down)
@@ -241,6 +243,8 @@ ap_bs_Mouse MouseTable[] =
 	{_CTV _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 	{_CTH _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
 	{_CTH _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
+	{_CTO _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CTO _B5 _C,{ "zoomOut",		            "zoomOut",           			"",		"",			"",			""				}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},

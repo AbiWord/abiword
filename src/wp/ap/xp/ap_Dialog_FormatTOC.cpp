@@ -289,6 +289,66 @@ void AP_Dialog_FormatTOC::incrementStartAt(UT_sint32 iLevel, bool bInc)
 	setTOCProperty(sProp,sStartVal);
 }
 
+
+/*!
+ * Increment the "indent" property
+ */
+void AP_Dialog_FormatTOC::incrementIndent(UT_sint32 iLevel, bool bInc)
+{
+	UT_UTF8String sProp = "toc-indent";
+	UT_UTF8String sLevel = UT_UTF8String_sprintf("%d",iLevel);
+	sProp += sLevel.utf8_str();
+	UT_UTF8String sVal = getTOCPropVal(sProp);
+	double inc = getIncrement(sVal.utf8_str());
+	if(!bInc)
+	{
+		inc = -inc;
+	}
+	sVal = UT_incrementDimString(sVal.utf8_str(),inc);
+	setTOCProperty(sProp,sVal);
+}
+
+
+/*!
+ * Returns the increment associated with the dimension defined in the string.
+\params const char * sz the dimensioned string.
+\returns double -  the increment associated with the dimension in sz
+*/
+double AP_Dialog_FormatTOC::getIncrement(const char * sz)
+{
+	double inc = 0.1;
+	UT_Dimension dim =  UT_determineDimension(sz);
+	if(dim == DIM_IN)
+	{
+		inc = 0.02;
+	}
+	else if(dim == DIM_CM)
+	{
+		inc = 0.1;
+	}
+	else if(dim == DIM_MM)
+	{
+		inc = 1.0;
+	}
+	else if(dim == DIM_PI)
+	{
+		inc = 1.0;
+	}
+	else if(dim == DIM_PT)
+	{
+		inc = 1.0;
+	}
+	else if(dim == DIM_PX)
+	{
+		inc = 1.0;
+	}
+	else
+	{
+		inc = 0.02;
+	}
+	return inc;
+}
+
 void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 {
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
@@ -311,7 +371,6 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 //
 // OK Now lets gets all props from here and place them in our local cache
 //
-		const char * szPropVal = NULL;
 		PT_AttrPropIndex iAPI = m_pDoc->getAPIFromSDH(sdhTOC);
 		m_pDoc->getAttrProp(iAPI,&m_pAP);
 		m_bTOCFilled = true;
@@ -331,6 +390,11 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	setPropFromDoc("toc-heading");
 	setPropFromDoc("toc-heading-style");
 	setPropFromDoc("toc-id");
+
+	setPropFromDoc("toc-indent1");
+	setPropFromDoc("toc-indent2");
+	setPropFromDoc("toc-indent3");
+	setPropFromDoc("toc-indent4");
 
 	setPropFromDoc("toc-label-after1");
 	setPropFromDoc("toc-label-after2");

@@ -71,6 +71,16 @@ static void s_DetailsLevel_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me
 	me->setDetailsLevel(iLevel);
 }
 
+static void s_Indent_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
+{
+	me->event_IndentChanged(wid);
+}
+
+
+static void s_StartAt_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
+{
+	me->event_StartAtChanged(wid);
+}
 
 static void s_set_style(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 {
@@ -131,7 +141,9 @@ AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory
 	  m_wClose(NULL),
 	  m_pXML(NULL),
 	  m_iMainLevel(1),
-	  m_iDetailsLevel(1)
+	  m_iDetailsLevel(1),
+	  m_iIndentValue(1),
+	  m_iStartValue(1)
 {
 }
 
@@ -186,6 +198,49 @@ void AP_UnixDialog_FormatTOC::activate(void)
 {
 	UT_ASSERT (m_windowMain);
 	gdk_window_raise (m_windowMain->window);
+}
+
+
+void AP_UnixDialog_FormatTOC::event_StartAtChanged(GtkWidget * wSpin)
+{
+	UT_sint32 iNew = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(wSpin));
+	bool bInc = true;
+	if(iNew == m_iStartValue)
+	{
+		return;
+	}
+	UT_DEBUGMSG(("New StartAt value %d \n",iNew));
+	if(iNew < m_iStartValue)
+	{
+		bInc = false;
+	}
+	m_iStartValue = iNew;
+	incrementStartAt(m_iDetailsLevel,bInc);
+	UT_UTF8String sVal = getTOCPropVal("toc-label-start",m_iDetailsLevel);
+	GtkWidget * pW = _getWidget("wStartEntry");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+}
+
+
+
+void AP_UnixDialog_FormatTOC::event_IndentChanged(GtkWidget * wSpin)
+{
+	UT_sint32 iNew = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(wSpin));
+	bool bInc = true;
+	UT_DEBUGMSG(("New Indent value %d \n",iNew));
+	if(iNew == m_iIndentValue)
+	{
+		return;
+	}
+	if(iNew < m_iIndentValue)
+	{
+		bInc = false;
+	}
+	m_iIndentValue = iNew;
+	incrementIndent(m_iDetailsLevel,bInc);
+	UT_UTF8String sVal = getTOCPropVal("toc-indent",m_iDetailsLevel);
+	GtkWidget * pW = _getWidget("wIndentEntry");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 }
 
 void AP_UnixDialog_FormatTOC::notifyActiveFrame(XAP_Frame *pFrame)
@@ -310,6 +365,16 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 	pW = _getWidget("wTextBefore");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 
+	sVal = getTOCPropVal("toc-label-start",m_iDetailsLevel);
+	pW = _getWidget("wStartEntry");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+
+
+	sVal = getTOCPropVal("toc-indent",m_iDetailsLevel);
+	pW = _getWidget("wIndentEntry");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+	
+
 	sVal = getTOCPropVal("toc-label-inherits",m_iDetailsLevel);
 	pW = _getWidget("wInherit");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
@@ -356,6 +421,8 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 		iHist = 1;
 	}
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
+
+	
 }
 
 void AP_UnixDialog_FormatTOC::_createLevelItems(void)
@@ -436,6 +503,7 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(_getWidget("wDetailsLevel")),wM);
 	
 }
+
 void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 {
 	UT_Vector * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
@@ -644,13 +712,29 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 					 "toggled",
 					 G_CALLBACK(s_check_changedDetails),
 					 (gpointer) this);
-/*
-Have to deal with these later
-	"toc-label-start1",
-	"toc-label-start2",
-	"toc-label-start3",
-	"toc-label-start4",
-*/
+
+
+	sVal = getTOCPropVal("toc-label-start",m_iDetailsLevel);
+	pW = _getWidget("wStartEntry");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON (_getWidget("wStartSpin")),
+                                             (gdouble) m_iStartValue );
+	g_signal_connect(G_OBJECT(_getWidget("wStartSpin")),
+							  "value-changed",
+							  G_CALLBACK(s_StartAt_changed),
+							  reinterpret_cast<gpointer>(this));
+
+	sVal = getTOCPropVal("toc-indent",m_iDetailsLevel);
+	pW = _getWidget("wIndentEntry");
+	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON (_getWidget("wIndentSpin")),
+                                             (gdouble) m_iIndentValue );
+	g_signal_connect(G_OBJECT(_getWidget("wIndentSpin")),
+							  "value-changed",
+							  G_CALLBACK(s_Indent_changed),
+							  reinterpret_cast<gpointer>(this));
+	
+
 	sVal = getTOCPropVal("toc-label-type",m_iDetailsLevel);
 	pW = _getWidget("wLabelChoose"); 
 	UT_sint32 iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));

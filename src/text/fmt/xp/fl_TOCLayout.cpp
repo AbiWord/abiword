@@ -1195,6 +1195,47 @@ void fl_TOCLayout::_lookupProperties(void)
 	m_sNumOff2 = "0.5in";
 	m_sNumOff3 = "0.5in";
 	m_sNumOff4 = "0.5in";
+
+
+	const XML_Char *pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent1",pszINDENT))
+	{
+		m_sNumOff1 = "0.5in";
+	}
+	else
+	{
+		m_sNumOff1 = pszINDENT;
+	}
+	pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent2",pszINDENT))
+	{
+		m_sNumOff2 = "0.5in";
+	}
+	else
+	{
+		m_sNumOff2 = pszINDENT;
+	}
+
+	pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent3",pszINDENT))
+	{
+		m_sNumOff3 = "0.5in";
+	}
+	else
+	{
+		m_sNumOff3 = pszINDENT;
+	}
+
+	pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent4",pszINDENT))
+	{
+		m_sNumOff4 = "0.5in";
+	}
+	else
+	{
+		m_sNumOff4 = pszINDENT;
+	}
+
 	const XML_Char *pszTOCSRC = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
 	{
