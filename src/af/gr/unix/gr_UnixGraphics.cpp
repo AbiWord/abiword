@@ -833,6 +833,12 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
    	return pImg;
 }
 
+// a bit of voodoo since i'm not entirely sure what the
+// alpha_threshold param means. I know it takes values 0 <= threshold <= 255
+// and that values < than the alpha threshold are painted as 0s
+// this seems to work for me, so I'm happy - Dom
+#define ABI_ALPHA_THRESHOLD 100
+
 void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
@@ -844,12 +850,22 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
    	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 	
-	gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
-								   0, 0,
-								   xDest, yDest,
-								   iImageWidth, iImageHeight,
-								   GDK_RGB_DITHER_NORMAL,
-								   0, 0);
+	if (gdk_pixbuf_get_has_alpha (image))
+		gdk_pixbuf_render_to_drawable_alpha (image, m_pWin,
+											 0, 0,
+											 xDest, yDest,
+											 iImageWidth, iImageHeight,
+											 GDK_PIXBUF_ALPHA_BILEVEL, 
+											 ABI_ALPHA_THRESHOLD,
+											 GDK_RGB_DITHER_NORMAL,
+											 0, 0); 
+	else
+		gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
+									   0, 0,
+									   xDest, yDest,
+									   iImageWidth, iImageHeight,
+									   GDK_RGB_DITHER_NORMAL,
+									   0, 0);
 }
 
 #endif /* HAVE_GNOME */
