@@ -51,6 +51,7 @@
 #include "xap_Clipboard.h"
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
+#include "ap_Prefs.h"
 
 #include "sp_spell.h"
 
@@ -88,7 +89,10 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_bSelection = UT_FALSE;
 //	m_bPointAP = UT_FALSE;
 	m_pAutoScrollTimer 	= NULL;
-	m_pAutoPointTimer  	= NULL;
+	m_pAutoCursorTimer  = NULL;
+	
+	// initialize prefs cache
+	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 	
 	// initialize change cache
 	m_chg.bUndo = UT_FALSE;
@@ -118,7 +122,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 FV_View::~FV_View()
 {
 	DELETEP(m_pAutoScrollTimer);
-	DELETEP(m_pAutoPointTimer);
+	DELETEP(m_pAutoCursorTimer);
 	
 	FREEP(_m_findNextString);
 	
@@ -3343,10 +3347,10 @@ void FV_View::_xorInsertionPoint()
 
 void FV_View::_eraseInsertionPoint()
 {
-	if (m_pAutoPointTimer) 
-		m_pAutoPointTimer->stop();
+	if (m_pAutoCursorTimer) 
+		m_pAutoCursorTimer->stop();
 	
-	if (!isSelectionEmpty() || !m_pointIsOn)
+	if (!isSelectionEmpty() || !m_bCursorIsOn)
 	{
 		return;
 	}
@@ -3356,13 +3360,16 @@ void FV_View::_eraseInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
-	if (m_pAutoPointTimer == NULL) {
-		m_pAutoPointTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
-		m_pAutoPointTimer->set(AUTO_DRAW_POINT);
-	}
+	if (m_bCursorBlink)
+	{
+		if (m_pAutoCursorTimer == NULL) {
+			m_pAutoCursorTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
+			m_pAutoCursorTimer->set(AUTO_DRAW_POINT);
+		}
 
-	m_pAutoPointTimer->start();
-	m_pointIsOn = UT_TRUE;
+		m_pAutoCursorTimer->start();
+	}
+	m_bCursorIsOn = UT_TRUE;
 	
 	if (m_iWindowHeight <= 0)
 	{
@@ -3394,7 +3401,7 @@ void FV_View::_autoDrawPoint(UT_Timer * pTimer)
 		return;
 	}
 	pView->_xorInsertionPoint();
-	pView->m_pointIsOn = !pView->m_pointIsOn;
+	pView->m_bCursorIsOn = !pView->m_bCursorIsOn;
 }
 
 void FV_View::setXScrollOffset(UT_sint32 v)

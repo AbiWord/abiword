@@ -29,7 +29,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // The following are the set of application-dependent preference keys and the
-// set of default values for them.  Each item must have the AP_PREF_IEY_ prefix
+// set of default values for them.  Each item must have the AP_PREF_KEY_ prefix
 // and each value must have the AP_PREF_DEFAULT_ prefix.
 //
 // ***FOR EACH PAIR DEFINED, ADD A 'dcl(basename)' TO THE BOTTOM HALF OF THIS FILE***
@@ -37,6 +37,9 @@
 // Note: These are in addition to the application-independent ones defined in
 // abi/src/xap/xp/xap_Prefs_SchemeIds.h.
 //////////////////////////////////////////////////////////////////////////////
+
+#define AP_PREF_KEY_CursorBlink						"CursorBlink"				/* enable cursor blink {0,1} */
+#define AP_PREF_DEFAULT_CursorBlink					"1"
 
 #define AP_PREF_KEY_AutoSpellCheck					"AutoSpellCheck"			/* enable automatic spell check {0,1} */
 #define AP_PREF_DEFAULT_AutoSpellCheck				"1"
@@ -83,6 +86,7 @@
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
 
+dcl(CursorBlink)
 dcl(AutoSpellCheck)
 dcl(SpellCheckCaps)
 dcl(SpellCheckNumbers)

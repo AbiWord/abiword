@@ -304,8 +304,9 @@ protected:
 	UT_sint32			m_xLastMouse;
 	UT_sint32			m_yLastMouse;
 
-	UT_Timer *			m_pAutoPointTimer;
-	UT_Bool				m_pointIsOn;
+	UT_Timer *			m_pAutoCursorTimer;
+	UT_Bool				m_bCursorIsOn;
+	UT_Bool				m_bCursorBlink;
 	
 	fv_ChangeState		m_chg;
 
