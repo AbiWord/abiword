@@ -1353,11 +1353,9 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		props += "section-restart:1;";
 	  }
 
-	{
-	  // user specified starting page number
-	  UT_String_sprintf(propBuffer, "section-restart-value:%d;", asep->pgnStart);
-	  props += propBuffer;
-	}
+	// user specified starting page number
+	UT_String_sprintf(propBuffer, "section-restart-value:%d;", asep->pgnStart);
+	props += propBuffer;
 
 	// columns
 	if (asep->ccolM1) {
