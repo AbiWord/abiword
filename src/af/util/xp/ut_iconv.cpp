@@ -110,12 +110,11 @@ UT_iconv_t auto_iconv::getHandle ()
 
 const char * ucs2Internal ()
 {
-
 #if defined(WIN32)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
   return "UCS-2LE";
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__QNXNTO__) || defined(__NetBSD__)
   // we special case the BSDs since spelling just doesn't work
   return "UCS2";
 #else
@@ -125,7 +124,6 @@ const char * ucs2Internal ()
   else
     return "UCS-2LE";
 #endif
-
 }
 
 /************************************************************************/
