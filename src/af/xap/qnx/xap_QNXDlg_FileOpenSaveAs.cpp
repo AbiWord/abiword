@@ -217,7 +217,6 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 			if(m_nTypeList[i] == m_nDefaultFileType) {
 				printf("Missing FEATURE: No way to show default filter\n");
-				break;
 			}
 
 #define PHOTON_HAS_STUPID_FILTER_LIMITATION
@@ -251,7 +250,9 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 #endif
 		}
 	}
-	
+	char *tmp=file_filter;
+while(tmp=strchr(tmp,';')) tmp[0]=',';
+		
 	ret = PtFileSelection(parent,											/* Parent */
 						  NULL,												/* Position */
 						  szTitle,											/* Title */
