@@ -17,41 +17,44 @@
  * 02111-1307, USA.
  */
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
 #include "xap_App.h"
-#include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_QNXApp.h"
+#include "xap_QNXFrameImpl.h"
+#include "xap_Frame.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Dlg_ListDocuments.h"
-#include "xap_BeOSDlg_ListDocuments.h"
+#include "xap_QNXDlg_ListDocuments.h"
+#include "ut_qnxHelper.h"
 
-#include "ut_Rehydrate.h"
 
 /*****************************************************************/
 
-XAP_Dialog * XAP_BeOSDialog_ListDocuments::static_constructor(XAP_DialogFactory * pFactory,
+XAP_Dialog * XAP_QNXDialog_ListDocuments::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
-	XAP_BeOSDialog_ListDocuments * p = new XAP_BeOSDialog_ListDocuments(pFactory,id);
+	XAP_QNXDialog_ListDocuments * p = new XAP_QNXDialog_ListDocuments(pFactory,id);
 	return p;
 }
 
-XAP_BeOSDialog_ListDocuments::XAP_BeOSDialog_ListDocuments(XAP_DialogFactory * pDlgFactory,
-												 XAP_Dialog_Id id)
+XAP_QNXDialog_ListDocuments::XAP_QNXDialog_ListDocuments(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: XAP_Dialog_ListDocuments(pDlgFactory,id)
 {
 }
 
-XAP_BeOSDialog_ListDocuments::~XAP_BeOSDialog_ListDocuments(void)
+XAP_QNXDialog_ListDocuments::~XAP_QNXDialog_ListDocuments(void)
 {
 }
 
-void XAP_BeOSDialog_ListDocuments::runModal(XAP_Frame * pFrame)
+void XAP_QNXDialog_ListDocuments::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 

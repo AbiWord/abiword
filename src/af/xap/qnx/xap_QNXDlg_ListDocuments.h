@@ -17,20 +17,21 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_BEOSDIALOG_LISTDOCUMENTS_H
-#define XAP_BEOSDIALOG_LISTDOCUMENTS_H
+#ifndef XAP_QNXDIALOG_LISTDOCUMENTS_H
+#define XAP_QNXDIALOG_LISTDOCUMENTS_H
 
 #include "xap_Dlg_ListDocuments.h"
+#include <Pt.h>
 
-class XAP_BeOSFrame;
+class XAP_QNXFrame;
 
 /*****************************************************************/
 
-class XAP_BeOSDialog_ListDocuments: public XAP_Dialog_ListDocuments
+class XAP_QNXDialog_ListDocuments: public XAP_Dialog_ListDocuments
 {
 public:
-	XAP_BeOSDialog_ListDocuments(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_BeOSDialog_ListDocuments(void);
+	XAP_QNXDialog_ListDocuments(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_QNXDialog_ListDocuments(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -40,4 +41,4 @@ protected:
 
 };
 
-#endif /* XAP_BEOSDIALOG_STUB_H */
+#endif /* XAP_QNXDIALOG_STUB_H */
