@@ -59,8 +59,20 @@ public:
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 		FV_View * pView = pUnixFrame->getCurrentView();
 
+		GdkColor clr;
+		clr.red = 255 << 8;
+		clr.green = 255 << 8;
+		clr.blue = 255 << 8;
+
+		GdkColormap*  pColormap = gdk_colormap_get_system();
+		gdk_color_alloc(pColormap, &clr);
+	
+		gdk_window_set_background(w->window, &clr);
+	
 		if (pView)
+		{
 			pView->setWindowSize(e->width, e->height);
+		}
 		return 1;
 	};
 	
@@ -71,8 +83,12 @@ public:
 		EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
 		if (pView)
+		{
 			if (e->state & GDK_BUTTON1_MASK)
+			{
 				pUnixMouse->mouseMotion(pView, e);
+			}
+		}
 	
 		return 1;
 	};
@@ -84,7 +100,9 @@ public:
 		ev_UnixKeyboard * pUnixKeyboard = pUnixFrame->getUnixKeyboard();
 		
 		if (pView)
+		{
 			pUnixKeyboard->keyPressEvent(pView, e);
+		}
 		return 1;
 	};
 	
@@ -118,13 +136,20 @@ public:
 		return TRUE;
 	};
 	
-	static gint expose(GtkWidget * w, gpointer /*data*/)
+	static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	{
+		UT_Rect rClip;
+		rClip.left = pExposeEvent->area.x;
+		rClip.top = pExposeEvent->area.y;
+		rClip.width = pExposeEvent->area.width;
+		rClip.height = pExposeEvent->area.height;
+		
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 		FV_View * pView = pUnixFrame->getCurrentView();
-
 		if (pView)
-			pView->draw();
+		{
+			pView->draw(&rClip);
+		}
 		return 0;
 	};
 	
@@ -134,7 +159,9 @@ public:
 		FV_View * pView = pUnixFrame->getCurrentView();
 
 		if (pView)
+		{
 			pView->setYScrollOffset((UT_sint32) w->value);
+		}
 	};
 	
 	static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
@@ -143,7 +170,9 @@ public:
 		FV_View * pView = pUnixFrame->getCurrentView();
 
 		if (pView)
+		{
 			pView->setXScrollOffset((UT_sint32) w->value);
+		}
 	};
 	
 	static void destroy (GtkWidget * /*widget*/, gpointer /*data*/)
@@ -227,10 +256,14 @@ AP_Frame * AP_UnixFrame::cloneFrame(void)
 	ENSUREP(pClone);
 
 	if (!pClone->initialize())
+	{
 		goto Cleanup;
+	}
 
 	if (!pClone->_showDocument())
+	{
 		goto Cleanup;
+	}
 
 	pClone->show();
 
@@ -362,6 +395,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	// create a drawing area in the for our document window.
 	
 	m_dArea = gtk_drawing_area_new();
+
 	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
 												GDK_BUTTON_PRESS_MASK |

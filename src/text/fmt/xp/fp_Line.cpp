@@ -447,6 +447,11 @@ void fp_Line::_recalcHeight()
 	m_iHeight = iMaxAscent + iMaxDescent;
 }
 
+UT_uint32 fp_Line::getAscent(void) const
+{
+	return m_iAscent;
+}
+
 void fp_Line::expandWidthTo(UT_uint32 iNewWidth)
 {
 	UT_uint32 iPrevWidth = m_iWidth;
@@ -506,6 +511,7 @@ void fp_Line::draw(DG_Graphics* pG)
 									my_yoff, width, height);
 
 	dg_DrawArgs da;
+	
 	da.yoff = my_yoff + m_iAscent;
 	da.xoff = my_xoff;
 	da.x = 0;
@@ -513,6 +519,9 @@ void fp_Line::draw(DG_Graphics* pG)
 	da.pG = pG;
 	da.width = m_iWidth;
 	da.height = m_iHeight;
+
+	// TODO: The following line means that no selection will be drawn.  Is this right?
+	da.iSelPos1 = da.iSelPos2 = 0;
 	
 	int count = m_vecRunInfos.getItemCount();
 

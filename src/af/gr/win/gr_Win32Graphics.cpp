@@ -162,7 +162,12 @@ void Win32Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset, int iLe
 	SelectObject(m_hdc, m_pFont->getHFONT());
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 
-	// TODO why is this resulting in opaque text!!?!!
+	/*
+	  TODO Paul -- we need to find a way to ensure that text is drawn
+	  transparently.  The new selection code expects to be able to fill
+	  the screen with a background color, and then draw text over it,
+	  without overwriting that background color.
+	*/
 	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, pChars + iCharOffset, iLength, NULL);
 	//TextOutW(m_hdc, xoff, yoff, pChars + iCharOffset, iLength);
 }
@@ -172,9 +177,9 @@ void Win32Graphics::setFont(DG_Font* pFont)
 	UT_ASSERT(pFont);	// TODO should we allow pFont == NULL?
 
 	if (m_pFont == (static_cast<Win32Font*> (pFont)))
-	  {
+	{
 		return;
-	  };
+	};
 	
 	m_pFont = static_cast<Win32Font*> (pFont);
 	SelectObject(m_hdc, m_pFont->getHFONT());
@@ -420,4 +425,20 @@ void Win32Graphics::invertRect(const UT_Rect* pRect)
 	r.bottom = pRect->top + pRect->height;
 
 	InvertRect(m_hdc, &r);
+}
+
+/*
+  TODO Paul you'll need to implement the routine below.  Doing
+  so should get rid of a lot of screen dirt.
+*/
+void Win32Graphics::setClipRect(const UT_Rect* pRect)
+{
+	if (pRect)
+	{
+		// TODO set the clip rectangle
+	}
+	else
+	{
+		// TODO stop clipping
+	}
 }

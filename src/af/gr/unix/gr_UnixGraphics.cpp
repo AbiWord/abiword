@@ -82,7 +82,9 @@ void UNIXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	drawable_private = (GdkWindowPrivate*) m_pWin;
 	if (drawable_private->destroyed)
+	{
 		return;
+	}
 	gc_private = (GdkGCPrivate*) m_pGC;
 	font_private = (GdkFontPrivate*) m_pFont->getHFONT();
 
@@ -398,6 +400,27 @@ void UNIXGraphics::invertRect(const UT_Rect* pRect)
 					   pRect->width, pRect->height);
 }
 
+void UNIXGraphics::setClipRect(const UT_Rect* pRect)
+{
+	if (pRect)
+	{
+		GdkRectangle r;
+
+		r.x = pRect->left;
+		r.y = pRect->top;
+		r.width = pRect->width;
+		r.height = pRect->height;
+
+		gdk_gc_set_clip_rectangle(m_pGC, &r);
+		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
+	}
+	else
+	{
+		gdk_gc_set_clip_rectangle(m_pGC, NULL);
+		gdk_gc_set_clip_rectangle(m_pXORGC, NULL);
+	}
+}
+
 void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							UT_sint32 w, UT_sint32 h)
 {
@@ -414,9 +437,9 @@ void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
   // get the new color
 	GdkColor nColor;
 
-	nColor.red = c.m_red;
-	nColor.blue = c.m_blu;
-	nColor.green = c.m_grn;
+	nColor.red = c.m_red << 8;
+	nColor.blue = c.m_blu << 8;
+	nColor.green = c.m_grn << 8;
 
 	gdk_color_alloc(m_pColormap, &nColor);
   
@@ -460,7 +483,6 @@ void UNIXGraphics::scroll(UT_sint32 /*dx*/, UT_sint32 dy)
 		{
 			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
 		}
-      
     }
 }
 

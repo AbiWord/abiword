@@ -48,9 +48,11 @@ UT_Bool EV_Mouse::invokeMouseMethod(FV_View * pView,
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
+#if 0
 	UT_DEBUGMSG(("invokeMouseMethod: %s repeat %d at (%d %d)\n",
 				 pEM->getName(),iPrefixCount,xPos,yPos));
-
+#endif
+	
 	EV_EditMethodType t = pEM->getType();
 
 	if (((t & EV_EMT_ALLOWMULTIPLIER) == 0) && (iPrefixCount != 1))

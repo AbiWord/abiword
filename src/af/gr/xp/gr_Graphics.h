@@ -74,6 +74,7 @@ public:
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
 	virtual void invertRect(const UT_Rect* pRect) = 0;
+	virtual void setClipRect(const UT_Rect* pRect) = 0;
 	virtual void scroll(UT_sint32, UT_sint32) = 0;
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	

@@ -349,7 +349,9 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 
 	// clean up immediately after doing the charwidths calculation 
 	if (bInsertBlock)
+	{
 		pNew->m_iOffsetFirst -= fl_BLOCK_STRUX_OFFSET;
+	}
 
 	// TODO who deals with iLineBreak{Before,After},bCanSplit,iExtraWidth,etc...
 	
@@ -650,7 +652,6 @@ void fp_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
 	m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height, UT_TRUE);
 
 	UT_Rect r;
-
 	_getPartRect(&r, xoff, yoff + m_iAscent, iStart, iLen, m_pBL->getCharWidths());
 
 	// inverting to line height avoids "staggered" selections
@@ -658,16 +659,116 @@ void fp_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
 	m_pG->invertRect(&r);
 }
 
+void fp_Run::_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iPos1, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths)
+{
+	UT_Rect r;
+
+	_getPartRect(&r, xoff, yoff + m_iAscent, iPos1, iLen, pgbCharWidths);
+	r.height = m_pLine->getHeight();
+	r.top -= m_pLine->getAscent();
+	
+	m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
+
+	_drawPart(xoff, yoff, iPos1, iLen, pgbCharWidths);
+}
+
+/*
+  TODO we should NOT be drawing things with backgrounds when printing.
+  Selections on paper do not apply, nor is it necessary to erase the
+  background before drawing text when rendering to paper.
+*/
+
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_uint32 iBase = m_pBL->getPosition();
 
 	m_pG->setFont(m_pFont);
 	m_pG->setColor(m_colorFG);
-	_drawPart(pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+
+	/*
+	  TODO this should not be hard-coded.  We should calculate an
+	  appropriate selection background color based on the color
+	  of the foreground text, probably.
+	*/
+	UT_RGBColor clrSelBackground(192, 192, 192);
+
+	/*
+	  TODO this should not be hard-coded.  We need to figure out
+	  what the appropriate background color for this run is, and
+	  use that.  Note that it could vary on a run-by-run basis,
+	  since document facilities allow the background color to be
+	  changed, for things such as table cells.
+	*/
+	UT_RGBColor clrNormalBackground(255,255,255);
+
+	UT_uint32 iRunBase = iBase + m_iOffsetFirst;
+
+	UT_ASSERT(pDA->iSelPos1 <= pDA->iSelPos2);
+	
+	if (pDA->iSelPos1 == pDA->iSelPos2)
+	{
+		// nothing in this run is selected
+		_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+	}
+	else if (pDA->iSelPos1 <= iRunBase)
+	{
+		if (pDA->iSelPos2 <= iRunBase)
+		{
+			// nothing in this run is selected
+			_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+		}
+		else if (pDA->iSelPos2 >= (iRunBase + m_iLen))
+		{
+			// the whole run is selected
+			
+			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+		}
+		else
+		{
+			// the first part is selected, the second part is not
+
+			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, pDA->iSelPos2 - iRunBase, pgbCharWidths);
+
+			_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+		}
+	}
+	else if (pDA->iSelPos1 >= (iRunBase + m_iLen))
+	{
+		// nothing in this run is selected
+		_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+	}
+	else
+	{
+		_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, pDA->iSelPos1 - iRunBase, pgbCharWidths);
+		
+		if (pDA->iSelPos2 >= (iRunBase + m_iLen))
+		{
+			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, pDA->iSelPos1 - iBase, m_iLen - (pDA->iSelPos1 - iRunBase), pgbCharWidths);
+		}
+		else
+		{
+			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, pDA->iSelPos1 - iBase, pDA->iSelPos2 - pDA->iSelPos1, pgbCharWidths);
+
+			_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+		}
+	}
 
 	_drawDecors(pDA->xoff, pDA->yoff);
+}
+
+UT_uint32 fp_Run::_sumPartWidth(UT_uint32 iStart, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths)
+{
+	UT_uint32 iWidth = 0;
+	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
+	
+	for (UT_uint32 i=iStart; i<(iStart + iLen); i++)
+	{
+		iWidth += pCharWidths[i];
+	}
+
+	return iWidth;
 }
 
 void fp_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,

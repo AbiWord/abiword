@@ -505,6 +505,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							pRun = pRun->getNext();
 						}
 
+						// TODO we should NOT be doing a complete format here.
 						pBL->complete_format();
 						pBL->draw(m_pLayout->getGraphics());
 
@@ -513,7 +514,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 						FV_View* pView = m_pLayout->m_pView;
 						if (pView)
+						{
 							pView->notifyListeners(FV_CHG_TYPING | FV_CHG_FMTCHAR);
+						}
 					}
 					else
 					{

@@ -76,16 +76,16 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_iWindowHeight = 0;
 	m_iWindowWidth = 0;
 	m_iPointHeight = 0;
-	m_bPointVisible = UT_FALSE;
 	m_bPointEOL = UT_FALSE;
-	m_bSelectionVisible = UT_FALSE;
-	m_iSelectionAnchor = 0;
 	m_bSelection = UT_FALSE;
 	m_bPointAP = UT_FALSE;
 
 	pLayout->setView(this);
 		
 	moveInsPtTo(FV_DOCPOS_BOD);
+	m_iSelectionAnchor = _getPoint();
+	_resetSelection();
+	_fixInsertionPointCoords();
 
 	// initialize change cache
 	m_chg.bUndo = UT_FALSE;
@@ -130,7 +130,9 @@ UT_Bool FV_View::addListener(FV_Listener * pListener,
 	// otherwise, extend the vector for it.
 	
 	if (m_vecListeners.addItem(pListener,&k) != 0)
+	{
 		return UT_FALSE;				// could not add item to vector
+	}
 
   ClaimThisK:
 
@@ -177,9 +179,13 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 		UT_Bool bDirty = m_pDoc->isDirty();
 
 		if (m_chg.bDirty != bDirty)
+		{
 			m_chg.bDirty = bDirty;
+		}
 		else
+		{
 			mask ^= FV_CHG_DIRTY;
+		}
 	}
 
 	if (mask & FV_CHG_EMPTYSEL)
@@ -255,7 +261,9 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 	// make sure there's something left
 
 	if (mask == FV_CHG_NONE)
+	{
 		return UT_FALSE;
+	}
 	
 	// notify listeners of a change.
 		
@@ -312,9 +320,34 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 
 void FV_View::_clearSelection(void)
 {
-	_eraseSelection();
+	UT_uint32 iPos1, iPos2;
+	UT_Bool bRedrawOldSelection;
+
+	if (m_bSelection)
+	{
+		if (m_iSelectionAnchor < _getPoint())
+		{
+			iPos1 = m_iSelectionAnchor;
+			iPos2 = _getPoint();
+		}
+		else
+		{
+			iPos1 = _getPoint();
+			iPos2 = m_iSelectionAnchor;
+		}
+		bRedrawOldSelection = UT_TRUE;
+	}
+	else
+	{
+		bRedrawOldSelection = UT_FALSE;
+	}
 
 	_resetSelection();
+
+	if (bRedrawOldSelection)
+	{
+		_drawBetweenPositions(iPos1, iPos2);
+	}
 }
 
 void FV_View::_resetSelection(void)
@@ -323,44 +356,18 @@ void FV_View::_resetSelection(void)
 	m_iSelectionAnchor = 0;
 }
 
-void FV_View::_eraseSelectionOrInsertionPoint()
-{
-	if (isSelectionEmpty())
-	{
-		_eraseInsertionPoint();
-	}
-	else
-	{
-		_eraseSelection();
-	}
-}
-
-void FV_View::_xorSelection()
+void FV_View::_drawSelection()
 {
 	UT_ASSERT(!isSelectionEmpty());
 
-	m_bSelectionVisible = !m_bSelectionVisible;
-	
 	if (m_iSelectionAnchor < _getPoint())
 	{
-		invertBetweenPositions(m_iSelectionAnchor, _getPoint());
+		_drawBetweenPositions(m_iSelectionAnchor, _getPoint());
 	}
 	else
 	{
-		invertBetweenPositions(_getPoint(), m_iSelectionAnchor);
+		_drawBetweenPositions(_getPoint(), m_iSelectionAnchor);
 	}
-}
-
-void FV_View::_eraseSelection(void)
-{
-	UT_ASSERT(!isSelectionEmpty());
-
-	if (!m_bSelectionVisible)
-	{
-		return;
-	}
-
-	_xorSelection();
 }
 
 void FV_View::_setSelectionAnchor(void)
@@ -382,17 +389,21 @@ void FV_View::_deleteSelection(void)
 	
 	UT_ASSERT(!isSelectionEmpty());
 
-	_eraseSelection();
-
 	PT_DocPosition iPoint = _getPoint();
 	UT_ASSERT(iPoint != m_iSelectionAnchor);
+
+	// TODO fix this
 	
 	UT_Bool bForward = (iPoint < m_iSelectionAnchor);
 
 	if (bForward)
+	{
 		m_pDoc->deleteSpan(iPoint, m_iSelectionAnchor);
+	}
 	else
+	{
 		m_pDoc->deleteSpan(m_iSelectionAnchor, iPoint);
+	}
 
 	_resetSelection();
 
@@ -636,11 +647,17 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 	{
 		_clearSelection();
 	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
 	
 	PT_DocPosition iPos = _getDocPos(dp);
 
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
-	_updateInsertionPoint();
+
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 }
 
 void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
@@ -681,7 +698,8 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
 
-	_drawSelectionOrInsertionPoint();
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 
 	return bResult;
 }
@@ -702,14 +720,18 @@ void FV_View::insertParagraphBreak()
 
 	m_pDoc->insertStrux(_getPoint(), PTX_Block);
 	
-	_drawSelectionOrInsertionPoint();
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 }
 
 UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
-	_eraseSelectionOrInsertionPoint();
+	if (isSelectionEmpty())
+	{
+		_eraseInsertionPoint();
+	}
 
 	PT_DocPosition posStart = _getPoint();
 	PT_DocPosition posEnd = posStart;
@@ -717,14 +739,26 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
+		{
 			posStart = m_iSelectionAnchor;
+		}
 		else
+		{
 			posEnd = m_iSelectionAnchor;
+		}
 	}
 
 	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
-	_drawSelectionOrInsertionPoint();
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	else
+	{
+		_drawSelection();
+	}
 
 	return bRet;
 }
@@ -908,7 +942,7 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
-	_eraseSelectionOrInsertionPoint();
+	_eraseInsertionPoint();
 
 	PT_DocPosition posStart = _getPoint();
 	PT_DocPosition posEnd = posStart;
@@ -916,14 +950,19 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
+		{
 			posStart = m_iSelectionAnchor;
+		}
 		else
+		{
 			posEnd = m_iSelectionAnchor;
+		}
 	}
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
-	_drawSelectionOrInsertionPoint();
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 
 	return bRet;
 }
@@ -1054,11 +1093,15 @@ void FV_View::delTo(FV_DocPos dp)
 	PT_DocPosition iPos = _getDocPos(dp);
 
 	if (iPos == _getPoint())
+	{
 		return;
+	}
 
 	_extSelToPos(iPos);
 	_deleteSelection();
-	_drawSelectionOrInsertionPoint();
+	
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 }
 
 void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
@@ -1066,6 +1109,9 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
+		
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
 	}
 	else
 	{
@@ -1101,10 +1147,13 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		}
 
 		if (amt > 0)
+		{
 			m_pDoc->deleteSpan(posCur, posCur+amt);
-	}
+		}
 
-	_drawSelectionOrInsertionPoint();
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 }
 
 void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
@@ -1181,13 +1230,14 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 			yoff *= -1;
 			cmdScroll(DG_SCROLLCMD_LINEUP, (UT_uint32) yoff);
 		}
-		else if (yoff + (UT_sint32)pFirstRunOnNewLine->getHeight() >= height)
-			cmdScroll(DG_SCROLLCMD_LINEDOWN, (UT_uint32)(yoff + pFirstRunOnNewLine->getHeight() - height));
-
+		else if (yoff + ((UT_sint32) (pFirstRunOnNewLine->getHeight())) >= m_iWindowHeight)
+		{
+			cmdScroll(DG_SCROLLCMD_LINEDOWN, (UT_uint32)(yoff + pFirstRunOnNewLine->getHeight() - m_iWindowHeight));
+		}
 	}
 	else
 	{
-		// cannot move.  should we beep?
+		// cannot move.  should we beep?  TODO
 	}
 
 	notifyListeners(FV_CHG_MOTION);
@@ -1199,10 +1249,17 @@ void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 	{
 		_moveToSelectionEnd(bNext);
 	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+
+	_resetSelection();
 
 	_moveInsPtNextPrevLine(bNext);
 
-	_updateInsertionPoint();
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 
 	notifyListeners(FV_CHG_MOTION);
 }
@@ -1213,7 +1270,7 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 	{
 		_setSelectionAnchor();
 		_moveInsPtNextPrevLine(bNext);
-		_drawSelectionOrInsertionPoint();
+		_drawSelection();
 	}
 	else
 	{
@@ -1223,15 +1280,17 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 
 		// top/bottom of doc - nowhere to go
 		if (iOldPoint == iNewPoint)
+		{
 			return;
+		}
 		
 		if (iOldPoint < iNewPoint)
 		{
-			invertBetweenPositions(iOldPoint, iNewPoint);
+			_drawBetweenPositions(iOldPoint, iNewPoint);
 		}
 		else
 		{
-			invertBetweenPositions(iNewPoint, iOldPoint);
+			_drawBetweenPositions(iNewPoint, iOldPoint);
 		}
 
 		if (isSelectionEmpty())
@@ -1249,7 +1308,7 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	{
 		_setSelectionAnchor();
 		_charMotion(bForward, count);
-		_drawSelectionOrInsertionPoint();
+		_drawSelection();
 	}
 	else
 	{
@@ -1265,11 +1324,11 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 
 		if (iOldPoint < iNewPoint)
 		{
-			invertBetweenPositions(iOldPoint, iNewPoint);
+			_drawBetweenPositions(iOldPoint, iNewPoint);
 		}
 		else
 		{
-			invertBetweenPositions(iNewPoint, iOldPoint);
+			_drawBetweenPositions(iNewPoint, iOldPoint);
 		}
 
 		if (isSelectionEmpty())
@@ -1329,8 +1388,10 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 {
 	PT_DocPosition iOldPoint = _getPoint();
 
+#if 0
 	UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
 				 iOldPoint, iNewPoint, m_iSelectionAnchor));
+#endif
 	
 	if (iNewPoint == iOldPoint)
 	{
@@ -1339,8 +1400,8 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	
 	if (isSelectionEmpty())
 	{
+		_eraseInsertionPoint();
 		_setSelectionAnchor();
-		m_bSelectionVisible = UT_TRUE;
 	}
 
 	/*
@@ -1360,6 +1421,8 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	  is still not selected, should not be touched.
 	*/
 
+	_setPoint(iNewPoint);
+	
 	if (iNewPoint < iOldPoint)
 	{
 		if (iNewPoint < m_iSelectionAnchor)
@@ -1371,7 +1434,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 				  The selection got bigger.  Both points are
 				  left of the anchor.
 				*/
-				invertBetweenPositions(iNewPoint, iOldPoint);
+				_drawBetweenPositions(iNewPoint, iOldPoint);
 			}
 			else
 			{
@@ -1379,7 +1442,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 				  N A O
 				  The selection flipped across the anchor to the left.
 				*/
-				invertBetweenPositions(iNewPoint, iOldPoint);
+				_drawBetweenPositions(iNewPoint, iOldPoint);
 			}
 		}
 		else
@@ -1392,7 +1455,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 			  right of the anchor
 			*/
 
-			invertBetweenPositions(iNewPoint, iOldPoint);
+			_drawBetweenPositions(iNewPoint, iOldPoint);
 		}
 	}
 	else
@@ -1409,7 +1472,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 			  left of the anchor.
 			*/
 
-			invertBetweenPositions(iOldPoint, iNewPoint);
+			_drawBetweenPositions(iOldPoint, iNewPoint);
 		}
 		else
 		{
@@ -1420,7 +1483,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 				  The selection flipped across the anchor to the right.
 				*/
 
-				invertBetweenPositions(iOldPoint, iNewPoint);
+				_drawBetweenPositions(iOldPoint, iNewPoint);
 			}
 			else
 			{
@@ -1429,12 +1492,10 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 				  The selection got bigger.  Both points are to the
 				  right of the anchor
 				*/
-				invertBetweenPositions(iOldPoint, iNewPoint);
+				_drawBetweenPositions(iOldPoint, iNewPoint);
 			}
 		}
 	}
-	
-	_setPoint(iNewPoint);
 }
 
 void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
@@ -1467,6 +1528,10 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	{
 		_clearSelection();
 	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
 	
 	PT_DocPosition pos;
 	UT_Bool bBOL, bEOL;
@@ -1474,7 +1539,8 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, pos, bBOL, bEOL);
 	
 	_setPoint(pos, bEOL);
-	_updateInsertionPoint();
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
 }
 
 void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
@@ -1521,19 +1587,24 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 }
 
 /*
-  This functionality has moved into the run code.
+  This method simply iterates over every run between two doc positions
+  and draws each one.  The current selection information is heeded.
 */
-void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
+void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
 	UT_ASSERT(iPos1 < iPos2);
 	
 	fp_Run* pRun1;
 	fp_Run* pRun2;
+	UT_sint32 xoff;
+	UT_sint32 yoff;
+	UT_sint32 width;
+	UT_sint32 height;
+	UT_uint32 uheight;
 
 	{
 		UT_uint32 x;
 		UT_uint32 y;
-		UT_uint32 height;
 		fl_BlockLayout* pBlock1;
 		fl_BlockLayout* pBlock2;
 
@@ -1541,8 +1612,8 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		  we don't really care about the coords.  We're calling these
 		  to get the Run pointer
 		*/
-		_findPositionCoords(iPos1, UT_FALSE, x, y, height, &pBlock1, &pRun1);
-		_findPositionCoords(iPos2, UT_FALSE, x, y, height, &pBlock2, &pRun2);
+		_findPositionCoords(iPos1, UT_FALSE, x, y, uheight, &pBlock1, &pRun1);
+		_findPositionCoords(iPos2, UT_FALSE, x, y, uheight, &pBlock2, &pRun2);
 	}
 
 	UT_Bool bDone = UT_FALSE;
@@ -1557,31 +1628,41 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		
 		fl_BlockLayout* pBlock = pCurRun->getBlock();
 		UT_ASSERT(pBlock);
-		UT_uint32 iBlockBase = pBlock->getPosition();
 
-		UT_uint32 iStart;
-		UT_uint32 iLen;
-		if (iPos1 > (iBlockBase + pCurRun->getBlockOffset()))
+		fp_Line* pLine = pCurRun->getLine();
+
+		pLine->getScreenOffsets(pCurRun, pCurRun->getLineData(), xoff, yoff, width, height, UT_TRUE);
+
+		dg_DrawArgs da;
+			
+		da.pG = m_pG;
+		da.xoff = xoff;
+		da.yoff = yoff + pLine->getAscent();
+		da.x = 0;
+		da.y = 0;
+		da.width = width;
+		da.height = height;
+
+		if (m_bSelection)
 		{
-			iStart = iPos1 - iBlockBase;
+			if (m_iSelectionAnchor < _getPoint())
+			{
+				da.iSelPos1 = m_iSelectionAnchor;
+				da.iSelPos2 = _getPoint();
+			}
+			else
+			{
+				da.iSelPos1 = _getPoint();
+				da.iSelPos2 = m_iSelectionAnchor;
+			}
 		}
 		else
 		{
-			iStart = pCurRun->getBlockOffset();
-		}
-	
-		if (iPos2 < (iBlockBase + pCurRun->getBlockOffset() + pCurRun->getLength()))
-		{
-			iLen = iPos2 - (iStart + iBlockBase);
-		}
-		else
-		{
-			iLen = pCurRun->getLength() - iStart + pCurRun->getBlockOffset();
+			da.iSelPos1 = da.iSelPos2 = 0;
 		}
 
-		if (iLen > 0)
-			pCurRun->invert(iStart, iLen);
-
+		pCurRun->draw(&da);
+		
 		pCurRun = pCurRun->getNext();
 		if (!pCurRun)
 		{
@@ -1639,49 +1720,49 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	}
 }
 
-void FV_View::_drawSelectionOrInsertionPoint()
+void FV_View::_fixInsertionPointCoords()
 {
-	if (isSelectionEmpty())
-	{
-		_updateInsertionPoint();
-	}
-	else
-	{
-		_xorSelection();
-	}
+	_findPositionCoords(_getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
 }
 
 void FV_View::_updateInsertionPoint()
 {
-	UT_ASSERT(isSelectionEmpty());
-	
-	_eraseInsertionPoint();
-
-	_findPositionCoords(_getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
-	
-	_xorInsertionPoint();
+	if (isSelectionEmpty())
+	{
+		_eraseInsertionPoint();
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 }
 
 void FV_View::_xorInsertionPoint()
 {
-	UT_ASSERT(isSelectionEmpty());
-	
-	UT_ASSERT(m_iPointHeight > 0);
-	m_bPointVisible = !m_bPointVisible;
-
-	UT_RGBColor clr(255,255,255);
-	m_pG->setColor(clr);
-	m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
+	if (m_iPointHeight > 0)
+	{
+		UT_RGBColor clr(255,255,255);
+		
+		m_pG->setColor(clr);
+		m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
+	}
 }
 
 void FV_View::_eraseInsertionPoint()
 {
-	UT_ASSERT(isSelectionEmpty());
-	
-	if (!m_bPointVisible)
+	if (!isSelectionEmpty())
 	{
 		return;
 	}
+
+	_xorInsertionPoint();
+}
+
+void FV_View::_drawInsertionPoint()
+{
+	if (!isSelectionEmpty())
+	{
+		return;
+	}
+
 	_xorInsertionPoint();
 }
 
@@ -1699,16 +1780,24 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 	if (dx > 0)
     {
 		if (dx >= m_iWindowWidth)
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight);
+		{
+			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+		}
 		else
-			draw(m_iWindowWidth - dx, 0, m_iWindowWidth, m_iWindowHeight);
+		{
+			draw(m_iWindowWidth - dx, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+		}
     }
 	else
     {
 		if (dx <= -m_iWindowWidth)
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight);
+		{
+			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+		}
 		else
-			draw(0, 0, -dx, m_iWindowHeight);
+		{
+			draw(0, 0, -dx, m_iWindowHeight, UT_TRUE);
+		}
     }
 }
 
@@ -1725,16 +1814,24 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	if (dy > 0)
     {
 		if (dy >= m_iWindowHeight)
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight);
+		{
+			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+		}
 		else
-			draw(0, m_iWindowHeight - dy, m_iWindowWidth, dy);
+		{
+			draw(0, m_iWindowHeight - dy, m_iWindowWidth, dy, UT_TRUE);
+		}
     }
 	else
     {
 		if (dy <= -m_iWindowHeight)
-			draw(0, 0, m_iWindowWidth, m_iWindowHeight);
+		{
+			draw(0, 0, m_iWindowWidth, m_iWindowHeight, UT_TRUE);
+		}
 		else
-			draw(0, 0, m_iWindowWidth, -dy);
+		{
+			draw(0, 0, m_iWindowWidth, -dy, UT_TRUE);
+		}
     }
 }
 
@@ -1749,30 +1846,43 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 	da->pG = m_pG;
 	fp_Page* pPage = m_pLayout->getNthPage(page);
 	if (pPage)
+	{
 		pPage->draw(da);
+	}
 }
 
-void FV_View::draw()
+void FV_View::draw(const UT_Rect* pClipRect)
 {
-  draw(0, 0, m_iWindowWidth, m_iWindowHeight);
+	if (pClipRect)
+	{
+		m_pG->setClipRect(pClipRect);
+	}
+	
+	draw(0, 0, m_iWindowWidth, m_iWindowHeight);
+
+	if (pClipRect)
+	{
+		m_pG->setClipRect(NULL);
+	}
 }
 
 void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
-						 UT_sint32 height)
+						 UT_sint32 height, UT_Bool bClip)
 {
 	UT_ASSERT(m_iWindowWidth > 0);
 	UT_ASSERT(m_iWindowHeight > 0);
 
-	/*
-	  We erase the selection before we draw, then we
-	  redraw it afterwards.  This causes flicker, but it
-	  makes sure that the selection is always drawn in the right
-	  place.  What we should actually do is not erase before
-	  we draw, then as we scroll things into view, we should
-	  draw the selection in the newly shown area, if it's
-	  visible there.
-	*/
-	_eraseSelectionOrInsertionPoint();
+	if (bClip)
+	{
+		UT_Rect r;
+
+		r.left = x;
+		r.top = y;
+		r.width = width;
+		r.height = height;
+
+		m_pG->setClipRect(&r);
+	}
 	
 	UT_sint32 curY = 0;
 	fp_Page* pPage = m_pLayout->getFirstPage();
@@ -1808,6 +1918,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 			m_pG->drawLine(0, curY - m_yScrollOffset, m_iWindowWidth, curY - m_yScrollOffset);
 			
 			dg_DrawArgs da;
+			
 			da.pG = m_pG;
 			da.xoff = 0;
 			da.yoff = curY - m_yScrollOffset;
@@ -1816,6 +1927,24 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 			da.width = width;
 			da.height = height;
 
+			if (m_bSelection)
+			{
+				if (m_iSelectionAnchor < _getPoint())
+				{
+					da.iSelPos1 = m_iSelectionAnchor;
+					da.iSelPos2 = _getPoint();
+				}
+				else
+				{
+					da.iSelPos1 = _getPoint();
+					da.iSelPos2 = m_iSelectionAnchor;
+				}
+			}
+			else
+			{
+				da.iSelPos1 = da.iSelPos2 = 0;
+			}
+
 			pPage->draw(&da);
 		}
 		curY += iPageHeight;
@@ -1823,7 +1952,13 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 		pPage = pPage->getNext();
 	}
 
-	_drawSelectionOrInsertionPoint();
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
+
+	if (bClip)
+	{
+		m_pG->setClipRect(NULL);
+	}
 }
 
 // TODO remove this later
@@ -1853,14 +1988,17 @@ void FV_View::Test_Dump(void)
 		
 		int count = pPrintLayout->countPages();
 		for (int k=0; k<count; k++)
+		{
 			if (ps.startPage("foo",k+1,UT_TRUE,width,height))
 			{
 				dg_DrawArgs da;
+				
 				da.pG = &ps;
 				da.width = width;
 				da.height = height;
 				pPrintLayout->getNthPage(k)->draw(&da);
 			}
+		}
 
 		UT_Bool bResult = ps.endPrint();
 		UT_ASSERT(bResult);
@@ -1877,13 +2015,15 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	UT_sint32 lineHeight = iPos;
 	UT_sint32 docWidth = 0, docHeight = 0;
 	
-	_xorInsertionPoint();	
+//	_eraseInsertionPoint();	
 
 	docHeight = m_pLayout->getHeight();
 	docWidth = m_pLayout->getWidth();
 	
 	if (lineHeight == 0)
+	{
 		lineHeight = 20; // TODO
+	}
 	
 	UT_sint32 yoff = m_yScrollOffset, xoff = m_xScrollOffset;
 	
@@ -1932,7 +2072,9 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	if (yoff < 0)
 	{
 		if (m_yScrollOffset == 0) // already at top - forget it
+		{
 			return;
+		}
 		
 		yoff = 0;
 	}
@@ -1940,9 +2082,13 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	if (yoff > docHeight)
 	{
 		if (m_yScrollOffset == docHeight) // all ready at bottom
+		{
 			return;
+		}
 		else
+		{
 			yoff = docHeight;
+		}
 	}
 				
 	sendScrollEvent(xoff, yoff);
@@ -2033,13 +2179,14 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 	if (iPosLeft == iPosRight)
 	{
-		_updateInsertionPoint();
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
 		return;
 	}
 
 	m_bSelection = UT_TRUE;
 	
-	_xorSelection();
+	_drawSelection();
 }
 
 // -------------------------------------------------------------------------
@@ -2100,9 +2247,13 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	m_bPointEOL = UT_FALSE;
 	
 	if (bForward)
+	{
 		m_iInsPoint += countChars;
+	}
 	else
+	{
 		m_iInsPoint -= countChars;
+	}
 
 	PT_DocPosition posBOD;
 	PT_DocPosition posEOD;
@@ -2148,7 +2299,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	m_pDoc->undoCmd(count);
 
-	_drawSelectionOrInsertionPoint();
+	_drawInsertionPoint();
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -2164,7 +2315,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	m_pDoc->redoCmd(count);
 
-	_drawSelectionOrInsertionPoint();
+	_drawInsertionPoint();
 }
 
 void FV_View::cmdSave(void)
@@ -2197,7 +2348,7 @@ UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
 
-	_drawSelectionOrInsertionPoint();
+	_drawInsertionPoint();
 
 	return bResult;
 }

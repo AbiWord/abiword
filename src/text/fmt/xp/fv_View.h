@@ -94,15 +94,14 @@ public:
 	void setXScrollOffset(UT_sint32);
 	void setYScrollOffset(UT_sint32);
 	void setWindowSize(UT_sint32, UT_sint32);
-	void draw();
+	void draw(const UT_Rect* pRect=(UT_Rect*) NULL);
 	void draw(int page, dg_DrawArgs* da);
-	void draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	void draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bClip=UT_FALSE);
 
 	// TODO some of these functions should move into protected
 	
 	void getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 	void getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
-	void invertBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties);
@@ -151,6 +150,7 @@ public:
 // ----------------------
 	
 protected:
+	void _drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
 
 	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
@@ -165,17 +165,16 @@ protected:
 
 	void				_moveToSelectionEnd(UT_Bool bForward);
 	void				_clearSelection(void);
-	void				_eraseSelection(void);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
 	void				_deleteSelection(void);
 	UT_Bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void 				_updateInsertionPoint();
+	void				_fixInsertionPointCoords();
 	void 				_xorInsertionPoint();
 	void 				_eraseInsertionPoint();
-	void				_eraseSelectionOrInsertionPoint();
-	void				_drawSelectionOrInsertionPoint();
-	void				_xorSelection();
+	void				_drawInsertionPoint();
+	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
 	void				_extSelToPos(PT_DocPosition pos);
 
@@ -200,7 +199,6 @@ protected:
 	UT_Bool				m_bPointAP;
 	PT_AttrPropIndex	m_apPoint;
 	
-	UT_Bool				m_bSelectionVisible;
 	void*				m_pParentData;
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;

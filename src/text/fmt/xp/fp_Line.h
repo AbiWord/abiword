@@ -89,7 +89,8 @@ public:
 	void		draw(dg_DrawArgs*);
 	void        draw(DG_Graphics*);
 	void		align();
-
+	UT_uint32	getAscent(void) const;
+	
 	void		dumpRunInfo(const fp_Run* pRun, void* p);
 
 	UT_Bool		isEmpty(void) const;

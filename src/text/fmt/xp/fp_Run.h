@@ -116,7 +116,10 @@ class fp_Run
 	void					_drawDecors(UT_sint32, UT_sint32);
 	void 					_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 										 const UT_GrowBuf * pgbCharWidths);
+	UT_uint32				_sumPartWidth(UT_uint32 iStart, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths);
 	void					_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
+									  const UT_GrowBuf * pgbCharWidths);
+	void					_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
 	void 					_calcWidths(UT_GrowBuf * pgbCharWidths);
 
