@@ -95,7 +95,7 @@ static const char * s_Table[] =
 	"DeadCedilla",
 	"DeadOgonek",
 	"DeadIota",
-	"MeunShortCut"
+	"MenuShortCut"
 	// TODO as other items are added to ev_NamedVirtualKey, add items here.
 };
 
