@@ -47,6 +47,7 @@ class EV_CocoaMenuPopup;
 
 class XAP_CocoaFrame;
 class GR_CocoaGraphics;
+class FV_View;
 
 // TODO should figure out if need default values
 @interface XAP_CocoaNSView : NSView
