@@ -40,9 +40,11 @@ build::		$(REQUIRE)
 
 _EXPAT_:
 	@if [ -d $(ABI_ROOT)/../expat ]; then						\
-		echo Found expat in peer directory;					\
-		cd $(ABI_ROOT)/../expat; \
-		./configure --enable-shared=no; \
+		echo "Found expat in peer directory";					\
+		if [ ! -r $(ABI_ROOT)/../expat/config.h ]; then \
+			cd $(ABI_ROOT)/../expat; \
+			./configure --disable-shared --enable-static; \
+		fi; \
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;			\
 	elif [ -e /usr/include/expat.h -o -e /usr/local/include/expat.h ]; then \
 		echo "*** Found a shared library version of expat.  I'm going to use "; \
@@ -50,10 +52,10 @@ _EXPAT_:
 		echo "*** distributed with AbiWord."; \
 		echo ; \
 	else										\
-		echo ERROR -- expat not found;						\
-		echo You need to get expat from the AbiSource downloads site;		\
-		echo It is identical to expat from www.jclark.com, except for;		\
-		echo minor modifications to integrate with the AbiSource build system.;	\
+		echo "ERROR -- expat not found";						\
+		echo "You need to get expat from the AbiSource downloads site";		\
+		echo "It is identical to expat from expat.sourceforge.net, except for";		\
+		echo "minor modifications to integrate with the AbiSource build system.";	\
 		exit 1;									\
 	fi
 
