@@ -581,7 +581,9 @@ private:
 	UT_uint32		m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
 	UT_uint32		m_footnoteNum;
+	UT_uint32		m_footnoteRNum;
 	UT_uint32		m_endnoteNum;
+	UT_uint32		m_endnoteRNum;
 
 	enum WhiteSpace
 		{
@@ -3819,6 +3821,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 	m_footnoteNum = 1;
 	m_endnoteNum = 1;
+	m_footnoteRNum = 1;
+	m_endnoteRNum = 1;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -4150,17 +4154,20 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		}
 		
 		tagOpen (TT_SPAN, m_utf8_1, ws_None);
-
-		// If the field is a footnote ref, finish opening the span (unchanged),
-		// then open a link with
-		//  m_utf8_1 = "a";
-		//  UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (m_footnoteRNum));
-		//  m_utf8_1 += footnoteRLString;
-		//  tagOpen (TT_A, m_utf8_1, ws_None);
-		// then let the span be finished below (it'll catch the textUntrusted)
-		// then close up with
-		//  m_utf8_1 = "a";
-		//  tagClose (TT_A, m_utf8_1, ws_None);
+		
+		if (UT_strcmp (szType, "footnote_ref") == 0)
+		{
+			UT_UTF8String footnoteRLString;
+			UT_UTF8String footnoteRNString;
+			m_utf8_1 = "a";
+			UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (m_footnoteRNum));
+			m_utf8_1 += footnoteRLString;
+			tagOpen (TT_A, m_utf8_1, ws_None);
+			UT_UTF8String_sprintf(footnoteRNString, "%d", (m_footnoteRNum));
+			m_pie->write (footnoteRNString.utf8_str (), footnoteRNString.byteLength ());
+		}
+		
+		// TODO: Have the anchor link back to the reference.  Should be totally trivial.
 		
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
 		{
@@ -4170,6 +4177,12 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		}
 			textUntrusted (field->getValue ());
 
+		if (UT_strcmp (szType, "footnote_ref") == 0)
+		{
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
+		
 		m_utf8_1 = "span";
 		tagClose (TT_SPAN, m_utf8_1, ws_None);
 	}
