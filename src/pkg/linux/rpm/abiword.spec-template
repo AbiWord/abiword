@@ -228,8 +228,8 @@ cd ../abi
 
 %files
 %defattr(644,root,root,755)
-%attr{755,root,root} %{prefix}/bin/*
-%attr{755,root,root} %{ABIPREFIX}/AbiSuite/bin/*
+%attr(755,root,root) %{prefix}/bin/*
+%attr(755,root,root) %{ABIPREFIX}/AbiSuite/bin/*
 %{ABIPREFIX}/AbiSuite/COPYING
 %{ABIPREFIX}/AbiSuite/readme.txt
 %{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
