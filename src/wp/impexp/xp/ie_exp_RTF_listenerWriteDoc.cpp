@@ -114,6 +114,15 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 			m_pie->_rtf_keyword("strike");
 	}
 
+	const XML_Char * szFontPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	if (szFontPosition && *szFontPosition)
+	{
+		if (!UT_stricmp(szFontPosition,"superscript"))
+			m_pie->_rtf_keyword("super");
+		else if (!UT_stricmp(szFontPosition,"subscript"))
+			m_pie->_rtf_keyword("sub");
+	}
+
 	// TODO do something with our font-stretch and font-variant properties
 	// note: we assume that kerning has been turned off at global scope.
 	

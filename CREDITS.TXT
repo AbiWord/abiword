@@ -29,6 +29,7 @@ Martin Willemoes Hansen <mwh@stampede.org>
 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>	m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog
+Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist

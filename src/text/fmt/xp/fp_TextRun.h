@@ -110,6 +110,14 @@ protected:
 	unsigned char			m_fDecorations;
 	UT_sint32				m_iLineWidth;
 
+	enum
+	{
+		TEXT_POSITION_NORMAL,
+		TEXT_POSITION_SUPERSCRIPT,
+		TEXT_POSITION_SUBSCRIPT
+	};
+	UT_Byte				m_fPosition;
+	
 	/*
 	  This makes the assumption that all characters in a given run
 	  can be obtained from the same font.  This may not be true.

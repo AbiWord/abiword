@@ -174,6 +174,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pSectionAP)
 {
 	GR_Font* pFont;
+	char buf[10];
 
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
@@ -181,7 +182,21 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	
+	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+
+	// for superscripts and subscripts, we'll automatically shrink the font size
+	if ((0 == UT_stricmp(pszPosition, "superscript")) ||
+		(0 == UT_stricmp(pszPosition, "subscript")))
+	{
+		double newSize;
+
+		newSize = UT_convertToPoints(pszSize);
+		newSize *= (double)2/(double)3;
+		sprintf(buf, "%fpt", newSize);
+
+		pszSize = buf;
+	}
+
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	char key[500];

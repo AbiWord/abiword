@@ -309,7 +309,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			free(p);
 		}
-		
+
 		if (
 			(pAP->getProperty("text-decoration", szValue))
 			)
@@ -338,6 +338,18 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			free(p);
 		}
 
+		if (pAP->getProperty("text-position", szValue))
+		{
+			if (!UT_stricmp("superscript", szValue))
+			{
+				m_pie->write("<sup>");
+			}
+			else if (!UT_stricmp("subscript", szValue))
+			{
+				m_pie->write("<sub>");
+			}
+		}
+		
 		if (
 			(pAP->getProperty("color", szValue))
 		    || (pAP->getProperty("font-size", szValue))
@@ -404,6 +416,18 @@ void s_HTML_Listener::_closeSpan(void)
 			)
 		{
 			m_pie->write("</font>");
+		}
+
+		if (pAP->getProperty("text-position", szValue))
+		{
+			if (!UT_stricmp("superscript", szValue))
+			{
+				m_pie->write("</sup>");
+			}
+			else if (!UT_stricmp("subscript", szValue))
+			{
+				m_pie->write("</sub>");
+			}
 		}
 
 		if (

@@ -66,6 +66,8 @@ public:
 	UT_Bool	m_italic;
 	UT_Bool	m_underline;
 	UT_Bool	m_strikeout;
+	UT_Bool m_superscript;
+	UT_Bool m_subscript;
 	double	m_fontSize;			// font size in points
 	UT_uint32 m_fontNumber;		// index into font table
 	UT_uint32 m_colourNumber;	// index into colour table
@@ -215,6 +217,8 @@ private:
 		UT_Bool HandleItalic(UT_Bool state);
 		UT_Bool HandleUnderline(UT_Bool state);
 		UT_Bool HandleStrikeout(UT_Bool state);
+		UT_Bool HandleSuperscript(UT_Bool state);
+		UT_Bool HandleSubscript(UT_Bool state);
 	UT_Bool HandleFontSize(long sizeInHalfPoints);
 	UT_Bool HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp);
 		UT_Bool HandleFace(UT_uint32 fontNumber);

@@ -35,7 +35,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
-
+#include "ut_units.h"
 
 /*****************************************************************/
 
@@ -113,6 +113,18 @@ void fp_TextRun::lookupProperties(void)
 	}
 
 	free(p);
+
+	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
+
+	if (0 == UT_stricmp(pszPosition, "superscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
+	}
+	else if (0 == UT_stricmp(pszPosition, "subscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUBSCRIPT;
+	} 
+	else m_fPosition = TEXT_POSITION_NORMAL;
 
 	m_pG->setFont(m_pFont);
 	m_iAscent = m_pG->getFontAscent();	
@@ -382,6 +394,15 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		xoff += pCharWidths[i];
 	}
 
+	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+	{
+		yoff -= m_iAscent * 1/2;
+	}
+	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
+	{
+		yoff += m_iDescent;
+	}
+	
 	x = xoff;
 	y = yoff;
 	height = m_iHeight;
@@ -630,6 +651,16 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	*/
 
 	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent;
+	UT_sint32 yTopOfSel = yTopOfRun;
+	
+	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+	{
+		yTopOfRun -= m_iAscent * 1/2;
+	}
+	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT) 
+	{
+		yTopOfRun += m_iDescent;
+	} 
 	
 	UT_ASSERT(pDA->pG == m_pG);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
@@ -672,14 +703,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		{
 			// the whole run is selected
 			
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
 		else
 		{
 			// the first part is selected, the second part is not
 
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
@@ -696,12 +727,12 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		
 		if (iSel2 >= (iRunBase + m_iLen))
 		{
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
 		}
 		else
 		{
-			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
@@ -734,7 +765,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = m_pLine->getHeight();
 		r.top = r.top + m_iAscent - m_pLine->getAscent();
-	
+		
 		m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }

@@ -253,6 +253,8 @@ public:
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
 	static EV_EditMethod_Fn toggleStrike;
+	static EV_EditMethod_Fn toggleSuper;
+	static EV_EditMethod_Fn toggleSub;
 	static EV_EditMethod_Fn togglePlain;
 
 	static EV_EditMethod_Fn alignLeft;
@@ -523,6 +525,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleItalic),			0,		""),
 	EV_EditMethod(NF(toggleUline),			0,		""),
 	EV_EditMethod(NF(toggleStrike),			0,		""),
+	EV_EditMethod(NF(toggleSuper),			0,		""),
+	EV_EditMethod(NF(toggleSub),			0,		""),
 	EV_EditMethod(NF(togglePlain),			0,		""),
 
 	EV_EditMethod(NF(alignLeft),			0,		""),
@@ -3880,6 +3884,18 @@ Defun1(toggleStrike)
 {
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", UT_TRUE);
+}
+
+Defun1(toggleSuper)
+{
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "text-position", "superscript", "normal");
+}
+
+Defun1(toggleSub)
+{
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "text-position", "subscript", "normal");
 }
 
 Defun0(togglePlain)

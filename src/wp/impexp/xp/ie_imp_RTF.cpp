@@ -68,6 +68,8 @@ RTFProps_CharProps::RTFProps_CharProps()
 	m_italic = UT_FALSE;
 	m_underline = UT_FALSE;
 	m_strikeout = UT_FALSE;
+	m_superscript = UT_FALSE;
+	m_subscript = UT_FALSE;
 	m_fontSize = 12.0;
 	m_fontNumber = 0;
 	m_colourNumber = 0;
@@ -846,6 +848,14 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		{
 			m_currentRTFState.m_paraProps.m_lineSpaceExact = (!fParam  ||  param == 0);
 		}
+		else if (strcmp((char*)pKeyword, "super") == 0)
+		{
+			return HandleSuperscript(fParam ? UT_FALSE : UT_TRUE);
+		}	
+		else if (strcmp((char*)pKeyword, "sub") == 0)
+		{
+			return HandleSubscript(fParam ? UT_FALSE : UT_TRUE);
+		}
 		break;
 
 	case 't':
@@ -964,6 +974,21 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 	{
 		strcat(propBuffer, "none");
 	}
+	//superscript and subscript
+	strcat(propBuffer, "; text-position:");
+	if (m_currentRTFState.m_charProps.m_superscript)
+	{
+		strcat(propBuffer, "superscript");
+	}
+	else if (m_currentRTFState.m_charProps.m_subscript)
+	{
+		strcat(propBuffer, "subscript");
+	}
+	else
+	{
+		strcat(propBuffer, "normal");
+	}
+
 	// font size
 	sprintf(tempBuffer, "; font-size:%dpt", (int)(m_currentRTFState.m_charProps.m_fontSize+0.5));
 	strcat(propBuffer, tempBuffer);
@@ -1513,6 +1538,15 @@ UT_Bool IE_Imp_RTF::HandleStrikeout(UT_Bool state)
 	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_strikeout);
 }
 
+UT_Bool IE_Imp_RTF::HandleSuperscript(UT_Bool state)
+{
+	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_superscript);
+}
+
+UT_Bool IE_Imp_RTF::HandleSubscript(UT_Bool state)
+{
+	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_subscript);
+}
 
 UT_Bool IE_Imp_RTF::HandleFontSize(long sizeInHalfPoints)
 {

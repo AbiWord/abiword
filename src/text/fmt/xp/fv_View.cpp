@@ -1313,6 +1313,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 	v.addItem(new _fmtPair("font-weight",    pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair("font-style",     pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-position",	 pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair("color",          pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 
 	// 2. prune 'em as they vary across selection

@@ -405,7 +405,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 		val  = "line-through";
 		bMultiple = UT_TRUE;
 		break;
+	case AP_MENU_ID_FMT_SUPERSCRIPT:
+		prop = "text-position";
+		val  = "superscript";
+		break;
 
+	case AP_MENU_ID_FMT_SUBSCRIPT:
+		prop = "text-position";
+		val  = "subscript";
+		break;
+	
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
