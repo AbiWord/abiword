@@ -7723,6 +7723,7 @@ UT_return_val_if_fail(pDialog, false);
 //
 		pView->clearCursorWait();
 		s_pLoadingFrame = NULL;
+		pView->updateScreen(false);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
