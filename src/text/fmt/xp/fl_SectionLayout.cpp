@@ -616,6 +616,36 @@ void fl_DocSectionLayout::updateLayout(void)
 	}
 }
 
+void fl_DocSectionLayout::redrawUpdate(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		if (pBL->needsRedraw())
+		{
+			pBL->redrawUpdate();
+		}
+		
+		pBL = pBL->getNext();
+	}
+	
+	breakSection();
+
+	m_pLayout->deleteEmptyColumnsAndPages();
+	
+	if (m_pHeaderSL)
+	{
+		m_pHeaderSL->recalculateFields();
+		m_pHeaderSL->updateLayout();
+	}
+	
+	if (m_pFooterSL)
+	{
+		m_pFooterSL->recalculateFields();
+		m_pFooterSL->updateLayout();
+	}
+}
+
 UT_Bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
@@ -1406,6 +1436,20 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 	}
 }
 
+void fl_HdrFtrSectionLayout::redrawUpdate(void)
+{
+	UT_ASSERT(UT_FALSE);
+/*
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		pPair->pShadow->updateLayout();
+	}
+*/
+}
+
 UT_Bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
@@ -1730,6 +1774,15 @@ void fl_HdrFtrShadow::updateLayout(void)
 	}
 }
 
+void fl_HdrFtrShadow::redrawUpdate(void)
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		pBL->redrawUpdate();
+		pBL = pBL->getNext();
+	}
+}
 UT_Bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);

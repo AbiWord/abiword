@@ -80,6 +80,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pLastLine = NULL;
 
 	m_bNeedsReformat = UT_TRUE;
+	m_bNeedsRedraw = UT_FALSE;
 	m_bFixCharWidths = UT_FALSE;
 	m_bKeepTogether = UT_FALSE;
 	m_bKeepWithNext = UT_FALSE;
@@ -746,6 +747,23 @@ int fl_BlockLayout::format()
 	m_bNeedsReformat = UT_FALSE;
 
 	return 0;	// TODO return code
+}
+
+void fl_BlockLayout::redrawUpdate()
+{
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
+	{
+		if(pLine->needsRedraw())
+		{
+			pLine->redrawUpdate();
+		}
+ 
+		pLine = pLine->getNext();
+	}
+
+	m_bNeedsRedraw = UT_FALSE;
+
 }
 
 fp_Line* fl_BlockLayout::getNewLine(void)

@@ -77,6 +77,8 @@ public:
 	virtual void		format(void) = 0;
 	virtual void		updateLayout(void) = 0;
 
+	virtual void		redrawUpdate(void) = 0;
+
 	inline fl_SectionLayout*	getPrev(void) const { return m_pPrev; }
 	inline fl_SectionLayout*	getNext(void) const { return m_pNext; }
 	void				setPrev(fl_SectionLayout*);
@@ -156,6 +158,8 @@ public:
 	virtual void		format(void);
 	virtual void		updateLayout(void);
 	UT_sint32			breakSection(void);
+
+	virtual void		redrawUpdate(void);
 	
 	virtual fp_Container*		getNewContainer();
 	virtual fp_Container*		getFirstContainer();
@@ -234,6 +238,8 @@ public:
 	
 	virtual void				format(void);
 	virtual void				updateLayout(void);
+
+	virtual void				redrawUpdate(void);
 	
 	virtual fp_Container*		getNewContainer();
 	virtual fp_Container*		getFirstContainer();
@@ -293,6 +299,8 @@ public:
 
 	virtual void				format(void);
 	virtual void				updateLayout(void);
+
+	virtual void				redrawUpdate(void);
 	
 	virtual fp_Container*		getNewContainer();
 	virtual fp_Container*		getFirstContainer();

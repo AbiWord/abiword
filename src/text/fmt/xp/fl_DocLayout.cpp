@@ -39,6 +39,9 @@
 #include "ut_assert.h"
 #include "ut_timer.h"
 
+
+#define REDRAW_UPDATE_MSECS	500
+
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(19)
 {
 	m_pDoc = doc;
@@ -54,6 +57,14 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 	m_bSpellCheckNumbers = UT_TRUE;
 	m_bSpellCheckInternet = UT_TRUE;
 	m_pPrefs = NULL;
+
+	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
+	if (m_pRedrawUpdateTimer)
+	{
+		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
+		m_pRedrawUpdateTimer->start();
+	}
+
 
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -86,6 +97,13 @@ FL_DocLayout::~FL_DocLayout()
 	
 	DELETEP(m_pSpellCheckTimer);
 	DELETEP(m_pPendingWord);
+
+	if (m_pRedrawUpdateTimer)
+	{
+		m_pRedrawUpdateTimer->stop();
+	}
+	
+	DELETEP(m_pRedrawUpdateTimer);
 
 	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
 	
@@ -820,3 +838,57 @@ void FL_DocLayout::recheckIgnoredWords()
 		pSL = (fl_DocSectionLayout *) pSL->getNext();
 	}
 }
+
+void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
+{
+	UT_ASSERT(pTimer);
+
+	// this is a static callback method and does not have a 'this' pointer.
+
+	FL_DocLayout * pDocLayout = (FL_DocLayout *) pTimer->getInstanceData();
+	UT_ASSERT(pDocLayout);
+
+	if (!pDocLayout->m_pView)
+	{
+		// Win32 timers can fire prematurely on asserts
+		// (the dialog's message pump releases the timers)
+		return;
+	}
+
+	fl_SectionLayout* pSL = pDocLayout->m_pFirstSection;
+	while (pSL)
+	{
+		pSL->redrawUpdate();
+		
+		pSL = pSL->getNext();
+	}
+
+/*
+	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
+	UT_ASSERT(vecToCheck);
+
+	UT_uint32 i = vecToCheck->getItemCount();
+
+	if (i > 0)
+	{
+		fl_BlockLayout *pB = (fl_BlockLayout *) vecToCheck->getFirstItem();
+
+		if (pB != NULL)
+		{
+			vecToCheck->deleteNthItem(0);
+			i--;
+
+			//	note that we remove this block from queue before checking it
+			//	(otherwise asserts could trigger redundant recursive calls)
+			pB->checkSpelling();
+		}
+	}
+
+	if (i == 0)
+	{
+		// timer not needed any more, so suspend it
+		pDocLayout->m_pSpellCheckTimer->stop();
+	}
+*/
+}
+

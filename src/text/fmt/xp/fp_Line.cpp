@@ -47,6 +47,8 @@ fp_Line::fp_Line()
 	m_iY = 0;
 	m_pContainer = NULL;
 	m_pBlock = NULL;
+
+	m_bNeedsRedraw = UT_FALSE;
 }
 
 fp_Line::~fp_Line()
@@ -121,6 +123,8 @@ void fp_Line::addRun(fp_Run* pNewRun)
 	pNewRun->setLine(this);
 
 	m_vecRuns.addItem(pNewRun);
+
+	setNeedsRedraw();
 }
 
 void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
@@ -467,6 +471,18 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	}
 }
 
+
+void fp_Line::redrawUpdate(void)
+{
+	UT_uint32 count = m_vecRuns.getItemCount();
+	if(count)
+	{
+		draw(((fp_Run*) m_vecRuns.getNthItem(0))->getGraphics());
+	}
+
+	m_bNeedsRedraw = UT_FALSE;
+	
+}
 
 void fp_Line::draw(GR_Graphics* pG)
 {

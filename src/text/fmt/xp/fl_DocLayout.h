@@ -153,6 +153,8 @@ protected:
 									   class UT_AlphaHashTable *, void *);
 
 
+	static void			_redrawUpdate(UT_Timer * pTimer);
+
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
 	FV_View*			m_pView;
@@ -176,6 +178,8 @@ protected:
 	UT_Bool				m_bSpellCheckInternet;
 
 	XAP_Prefs *			m_pPrefs;
+
+	UT_Timer*			m_pRedrawUpdateTimer;
 };
 
 #endif /* DOCLAYOUT_H */

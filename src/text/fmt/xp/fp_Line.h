@@ -129,7 +129,11 @@ public:
 
 	UT_Bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);
 	UT_Bool		findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);
-	
+
+	void		setNeedsRedraw(void) { m_bNeedsRedraw = UT_TRUE; m_pBlock->setNeedsRedraw();}
+	UT_Bool		needsRedraw(void) { return m_bNeedsRedraw; }
+	void		redrawUpdate(void);
+
 protected:
 	fl_BlockLayout*	m_pBlock;
 	fp_Container*	m_pContainer;
@@ -152,6 +156,8 @@ protected:
 
 	fp_Line*		m_pNext;
 	fp_Line*        m_pPrev;
+
+	UT_Bool			m_bNeedsRedraw;
 };
 
 #endif /* FP_LINE_H */

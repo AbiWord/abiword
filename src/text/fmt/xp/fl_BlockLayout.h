@@ -137,6 +137,8 @@ public:
 	int 		format();
 	UT_Bool		recalculateFields(void);
 	
+	void		redrawUpdate();
+
 	fp_Line*	getNewLine(void);
 
 	const char*	getProperty(const XML_Char * pszName, UT_Bool bExpandStyles=UT_TRUE) const;
@@ -247,6 +249,9 @@ public:
 	void					setNeedsReformat(void) { m_bNeedsReformat = UT_TRUE; }
 	inline UT_Bool			needsReformat(void) const { return m_bNeedsReformat; }
 
+	void					setNeedsRedraw(void) { m_bNeedsRedraw = UT_TRUE; }
+	inline UT_Bool			needsRedraw(void) const { return m_bNeedsRedraw; }
+
 	UT_Bool					checkWord(fl_PartOfBlock* pPOB);
 	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
 	void					recheckIgnoredWords();
@@ -307,6 +312,7 @@ protected:
 	void					_insertFakeTextRun(void);
 
 	UT_Bool					m_bNeedsReformat;
+	UT_Bool					m_bNeedsRedraw;
 	UT_Bool					m_bFixCharWidths;
 	
 	fl_CharWidths			m_gbCharWidths;
