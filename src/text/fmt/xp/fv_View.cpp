@@ -5836,6 +5836,20 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 {
+//
+// Clear out the old table info
+//
+	if(pInfo->m_vecTableRowInfo)
+	{
+		UT_sint32 count = (UT_sint32) pInfo->m_vecTableRowInfo->getItemCount();
+		UT_sint32 i =0;
+		for(i=0; i< count; i++)
+		{
+			delete (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(i);
+		}
+		delete pInfo->m_vecTableRowInfo;
+		pInfo->m_vecTableRowInfo =NULL;
+	}
 	memset(pInfo,0,sizeof(*pInfo));
 	xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: get Leftruler info \n"));
 
@@ -5882,40 +5896,45 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		fl_SectionLayout * pSection = NULL;
 		fl_DocSectionLayout * pDSL = NULL;
 		fp_Container * pContainer = pRun->getLine()->getContainer();
+		if(pContainer == NULL)
+		{
+			pInfo->m_yPageStart = 0;
+			pInfo->m_yPageSize = 0;
+			pInfo->m_yPoint = 0;
+			pInfo->m_yTopMargin = 0;
+			pInfo->m_yBottomMargin = 0;
+			return;
+		}
+
 		bool isFootnote = false;
 		xxx_UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
+		fp_Page * pPage =  pContainer->getPage();
+		if(pPage == NULL)
+		{
+			pInfo->m_yPageStart = 0;
+			pInfo->m_yPageSize = 0;
+			pInfo->m_yPoint = 0;
+			pInfo->m_yTopMargin = 0;
+			pInfo->m_yBottomMargin = 0;
+			return;
+		}
+
 		if(pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
-			pSection = pContainer->getPage()->getOwningSection();
+			pSection = pPage->getOwningSection();
 			pDSL = (fl_DocSectionLayout *) pSection;
 			isFootnote = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else
 		{
-			pSection = pContainer->getPage()->getOwningSection();
+			pSection = pPage->getOwningSection();
 			pDSL = (fl_DocSectionLayout*) pSection;
 		}
 		pInfo->m_yPoint = yCaret - pContainer->getY();
-//
-// Clear out the old table info
-//
-		if(pInfo->m_vecTableRowInfo)
-		{
-			UT_sint32 count = (UT_sint32) pInfo->m_vecTableRowInfo->getItemCount();
-			UT_sint32 i =0;
-			for(i=0; i< count; i++)
-			{
-				delete (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(i);
-			}
-			delete pInfo->m_vecTableRowInfo;
-			pInfo->m_vecTableRowInfo =NULL;
-		}
 
 		if ((isFootnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
 		{
-			fp_Page * pPage = pContainer->getPage();
-
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
 			pInfo->m_yPageStart = (UT_uint32)yoff;
@@ -5926,7 +5945,6 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 		else if(isHdrFtrEdit())
 		{
-			fp_Page * pPage = pContainer->getPage();
 			fl_HdrFtrSectionLayout * pHF =	m_pEditShadow->getHdrFtrSectionLayout();
 			pDSL = pHF->getDocSectionLayout();
 			UT_sint32 yoff = 0;
@@ -5961,8 +5979,6 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return;
 			}
-
-			fp_Page * pPage = pRun->getLine()->getPage();
 
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);

@@ -184,7 +184,14 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 
 	_UUL(x);
 	_UUL(y);
-	
+	if(m_pView == NULL)
+	{
+		return;
+	}
+	if(m_pView->getPoint() == 0)
+	{
+		return;
+	}
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
@@ -262,6 +269,14 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		m_draggingWhat = DW_NOTHING;
 		m_bValidMouseClick = false;
 		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+		return;
+	}
+	if(m_pView == NULL)
+	{
+		return;
+	}
+	if(m_pView->getPoint() == 0)
+	{
 		return;
 	}
 
@@ -1020,6 +1035,10 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
 	if (!m_pView)
 		return;
+	if(m_pView->getPoint() == 0)
+	{
+		return;
+	}
 	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&m_tempInfo);
 	
 // lfi will be reference to m_lfi which will be deleted before taking this.

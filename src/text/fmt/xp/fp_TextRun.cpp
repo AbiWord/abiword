@@ -726,6 +726,10 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 xdiff = 0;
 	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
 	UT_ASSERT(getLine());
+	if(getLine() == NULL)
+	{
+		return;
+	}
 	getLine()->getOffsets(this, xoff, yoff);
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
@@ -891,7 +895,7 @@ void fp_TextRun::mergeWithNext(void)
 
 	_setField(pNext->getField());
 
-	UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
+	xxx_UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
 	// first of all, make sure the X coordinance of the merged run is correct
 
 	if(getX() > pNext->getX())
@@ -994,7 +998,7 @@ void fp_TextRun::mergeWithNext(void)
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
 {
-	UT_DEBUGMSG(("fp_TextRun::split: iSplitOffset=%d\n", iSplitOffset));
+	xxx_UT_DEBUGMSG(("fp_TextRun::split: iSplitOffset=%d\n", iSplitOffset));
 	UT_ASSERT(iSplitOffset >= getBlockOffset());
 	UT_ASSERT(iSplitOffset < (getBlockOffset() + getLength()));
 

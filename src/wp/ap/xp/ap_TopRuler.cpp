@@ -349,6 +349,14 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 	// convert page-relative coordinates into absolute coordinates.
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
 	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView == NULL)
+	{
+		return;
+	}
+	if(pView->getPoint() == 0)
+	{
+		return;
+	}
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		ixMargin = 0;
@@ -1376,6 +1384,10 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	// incremental loader segfault protection
 	if (!m_pView)
 		return false;
+	if(m_pView->getPoint() == 0)
+	{
+		return false;
+	}
 //
 // Piecetable changes means the document is changing as we look. Bail out until it stablizes.
 //
