@@ -50,9 +50,15 @@ XAP_Dialog * AP_Win32Dialog_Styles::static_constructor(XAP_DialogFactory * pFact
 	return p;
 }
 
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 AP_Win32Dialog_Styles::AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_Styles(pDlgFactory,id), _win32Dialog(this), m_whichType(AP_Win32Dialog_Styles::USED_STYLES)
+:	AP_Dialog_Styles(pDlgFactory,id),
+	_win32Dialog(this),
+	m_whichType(AP_Win32Dialog_Styles::USED_STYLES)
 {
 }
 
@@ -80,17 +86,18 @@ void AP_Win32Dialog_Styles::runModal(XAP_Frame * pFrame)
 
 	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_STYLES, AP_RID_DIALOG_STYLES_TOP, this);
 
-	if(m_answer == AP_Dialog_Styles::a_OK)
+	if (m_answer == AP_Dialog_Styles::a_OK)
 	{
-		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
-		getView()->getCurrentBlock()->setNeedsRedraw();
-		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+		const char* szStyle = getCurrentStyle();
+		if (szStyle)
+		{
+			getDoc()->updateDocForStyleChange(szStyle, true);
+			getView()->getCurrentBlock()->setNeedsRedraw();
+			getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+		}
 	}
 
 }
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -103,8 +110,28 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
 
 	// localize controls
-	_DSX(STYLES_TOP_BUTTON_OK,					DLG_OK);
-	_DSX(STYLES_TOP_BUTTON_CANCEL,				DLG_Cancel);
+	struct control_id_string_id {
+		UT_sint32		controlId;
+		XAP_String_Id	stringId;
+	} static const rgMapping[] =
+	{
+		AP_RID_DIALOG_STYLES_TOP_TEXT_LIST				, AP_STRING_ID_DLG_Styles_List,
+		AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW	, AP_STRING_ID_DLG_Styles_ParaPrev,
+		AP_RID_DIALOG_STYLES_TOP_TEXT_CHARACTER_PREVIEW	, AP_STRING_ID_DLG_Styles_CharPrev,
+		AP_RID_DIALOG_STYLES_TOP_TEXT_DESCRIPTION		, AP_STRING_ID_DLG_Styles_Description,
+		AP_RID_DIALOG_STYLES_TOP_BUTTON_DELETE			, AP_STRING_ID_DLG_Styles_Delete,
+		AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY			, AP_STRING_ID_DLG_Styles_Modify,
+		AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW				, AP_STRING_ID_DLG_Styles_New,
+		AP_RID_DIALOG_STYLES_TOP_TEXT_AVAILABLE			, AP_STRING_ID_DLG_Styles_Available,	// "Available Styles" GROUPBOX
+		AP_RID_DIALOG_STYLES_TOP_BUTTON_OK				, XAP_STRING_ID_DLG_OK,
+		AP_RID_DIALOG_STYLES_TOP_BUTTON_CANCEL			, XAP_STRING_ID_DLG_Cancel
+	};
+
+	for (int i = 0; i < NrElements(rgMapping); ++i)
+	{
+		_win32Dialog.setControlText(rgMapping[i].controlId,
+									pSS->getValue(rgMapping[i].stringId));
+	}
 
 	// Set the list combo.
 
@@ -117,12 +144,14 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	_win32Dialog.selectComboItem(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST, (int)m_whichType);
 	
 /*
+#define _DS(c,s)	_win32Dialog.setControlText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 	_DS(COLUMN_GROUP1,					DLG_Column_Number);
 	_DS(COLUMN_GROUP2,					DLG_Column_Preview);
 	_DS(COLUMN_TEXT_ONE,				DLG_Column_One);
 	_DS(COLUMN_TEXT_TWO,				DLG_Column_Two);
 	_DS(COLUMN_TEXT_THREE,				DLG_Column_Three);
 	_DS(COLUMN_CHECK_LINE_BETWEEN,		DLG_Column_Line_Between);
+#undef _DS
 */
 
 	// Create a preview windows.
@@ -161,7 +190,8 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	{
 	case IDCANCEL:
 		m_answer = a_CANCEL;
-		// fall through
+		EndDialog(hWnd,0);
+		return 1;
 
 	case IDOK:
 		m_answer = a_OK;
@@ -170,7 +200,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 
 	case AP_RID_DIALOG_STYLES_TOP_COMBO_LIST:
-		if(wNotifyCode == CBN_SELCHANGE)
+		if (wNotifyCode == CBN_SELCHANGE)
 		{
 			switch(_win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_STYLES_TOP_COMBO_LIST))
 			{
@@ -192,11 +222,11 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_STYLES_TOP_LIST_STYLES:
-		if(wNotifyCode == LBN_SELCHANGE)
+		if (wNotifyCode == LBN_SELCHANGE)
 		{
 			int row = _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES);
 
-			if(row == -1)
+			if (row == -1)
 			{
 				m_selectedStyle = "";
 				return 1;
@@ -214,6 +244,8 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_populatePreviews(false);
 		}
 		return 1;
+
+	case AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY:
 
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
@@ -267,12 +299,7 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 
 const char * AP_Win32Dialog_Styles::getCurrentStyle (void) const
 {
-
-	if(m_selectedStyle.size() != 0)
-		return m_selectedStyle.c_str();
-	else
-		return NULL;
-
+	return m_selectedStyle.size() ? m_selectedStyle.c_str() : 0;
 }
 
 void AP_Win32Dialog_Styles::setDescription (const char * desc) const
