@@ -46,6 +46,12 @@ public:
     virtual void            setSensitivity(bool bSensitive);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);
+	UT_sint32               getDetailsLevel(void)
+		{ return m_iDetailsLevel;}
+	UT_sint32               getMainLevel(void)
+		{ return m_iMainLevel;}
+	void                    setMainLevel(UT_sint32 iLevel);
+	void                    setDetailsLevel(UT_sint32 iLevel);
 private:
 	GtkWidget *		_constructWindow(void);
 	void			_populateWindowData(void);
@@ -53,6 +59,7 @@ private:
 	void            _fillGUI(void);
 	void            _createLabelTypeItems(void);
 	void            _createTABTypeItems(void);
+	void            _createLevelItems(void);
 	GtkWidget *     _getWidget(const char * szNameBase, UT_sint32 level=0);
 	gpointer        _makeProp(const char * szProp, UT_sint32 i);
 
@@ -64,6 +71,8 @@ private:
 	UT_Vector   m_vecStyleEntries;
 	UT_Vector   m_vecTextTypes;
 	UT_Vector   m_vecAllPropVals;
+	UT_sint32   m_iMainLevel;
+	UT_sint32   m_iDetailsLevel;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATOC_H */
