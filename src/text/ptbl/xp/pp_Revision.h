@@ -29,16 +29,19 @@
   id and the sign whether the text is to be added or deleted
 */
 
-class pp_Revision
+class PP_Revision
 {
   public:
-	pp_Revision():m_bDirty(true){};
-	pp_Revision(const XML_Char * r);
-	/*~pp_Revision();*/
+	PP_Revision():m_bDirty(true){};
+	PP_Revision(const XML_Char * r);
+	/*~PP_Revision();*/
 
 	void             setRevision(const XML_Char * r);
+
 	void             addRevisionId(UT_sint32 id);
-	void             removeRevisionId(UT_sint32 id);
+	void             removeRevisionIdWithSign(UT_sint32 id);
+	void             removeRevisionIdSignless(UT_uint32 id);
+	void             removeAllLesserOrEqualIds(UT_uint32 id);
 
 	UT_sint32        getGreatestLesserOrEqualRevision(UT_uint32 id) const;
 	bool             isVisible(UT_uint32 id) const;

@@ -22,14 +22,14 @@
 
 /*! create class instance from an XML attribute string
  */
-pp_Revision::pp_Revision(const XML_Char * r)
+PP_Revision::PP_Revision(const XML_Char * r)
 {
 	_setVector(r);
 }
 
 /*! initialize instance with XML attribute string
  */
-void pp_Revision::setRevision(const XML_Char * r)
+void PP_Revision::setRevision(const XML_Char * r)
 {
 	m_vRev.clear();
 	_setVector(r);
@@ -38,7 +38,7 @@ void pp_Revision::setRevision(const XML_Char * r)
 /*! parse given XML attribute string and fill the
     instance with the data
 */
-void pp_Revision::_setVector(const XML_Char *r)
+void PP_Revision::_setVector(const XML_Char *r)
 {
 	char * s = (char*) UT_XML_cloneString(s,r);
 	char * t = strtok(s,";");
@@ -64,9 +64,10 @@ void pp_Revision::_setVector(const XML_Char *r)
 
     \param UT_uint32 id : the id of this revision (must be a positive value!!!)
     \return : id with sign indicating whether this is addition or
-    deletion; two special cases are 0: addition, INT_MIN deletion
+    deletion; two special cases are 0: addition, INT_MIN deletion with
+    level id == 0
 */
-UT_sint32 pp_Revision::getGreatestLesserOrEqualRevision(UT_uint32 id) const
+UT_sint32 PP_Revision::getGreatestLesserOrEqualRevision(UT_uint32 id) const
 {
 	UT_sint32 r = 0; // this will be the revision id we are looking for
 	UT_sint32 m = 0xFFFF; // this will be the smallest revision id present
@@ -87,7 +88,7 @@ UT_sint32 pp_Revision::getGreatestLesserOrEqualRevision(UT_uint32 id) const
 			r = t;
 	}
 
-	// now we have the biggest ID lesser or equal id,
+	// now that we have the biggest ID lesser or equal id,
 	// we have to deal with the special case when this is 0
 	// i.e., this fragment only figures in revisions > id
 	// the problem with 0 is that it is an addition if the smallest
@@ -109,7 +110,7 @@ UT_sint32 pp_Revision::getGreatestLesserOrEqualRevision(UT_uint32 id) const
 /*! given revision level id, this function returns true if given
     segment of text is to be visible, false if it is to be hidden
 */
-bool pp_Revision::isVisible(UT_uint32 id) const
+bool PP_Revision::isVisible(UT_uint32 id) const
 {
 	return (getGreatestLesserOrEqualRevision(id) >= 0);
 }
@@ -117,7 +118,7 @@ bool pp_Revision::isVisible(UT_uint32 id) const
 /*! adds id to the revision vector, ignoring identical ids, but
     changing sign when needed
 */
-void pp_Revision::addRevisionId(UT_sint32 id)
+void PP_Revision::addRevisionId(UT_sint32 id)
 {
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
@@ -147,9 +148,10 @@ void pp_Revision::addRevisionId(UT_sint32 id)
 	m_bDirty = true;
 }
 
-/*! removes id from this revision
+/*! removes id from this revision, respecting the sign, i.e., it will
+  not remove -5 if given 5
  */
-void pp_Revision::removeRevisionId(UT_sint32 id)
+void PP_Revision::removeRevisionIdWithSign(UT_sint32 id)
 {
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
@@ -164,9 +166,46 @@ void pp_Revision::removeRevisionId(UT_sint32 id)
 	}
 }
 
+/*! removes id from the attribute disregarding sign, i.e.,
+    if given 5 it will remove both -5 and +5
+*/
+void PP_Revision::removeRevisionIdSignless(UT_uint32 id)
+{
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		UT_uint32 r = (UT_uint32)abs((UT_sint32)m_vRev.getNthItem(i));
+
+		if(id == r)
+		{
+			m_vRev.deleteNthItem(i);
+			m_bDirty = true;
+			return;
+		}
+	}
+}
+
+/*! removes all IDs from the attribute whose abs value is lesser or
+    equal the given id
+*/
+void PP_Revision::removeAllLesserOrEqualIds(UT_uint32 id)
+{
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		UT_uint32 r = (UT_uint32)abs((UT_sint32)m_vRev.getNthItem(i));
+
+		if(id >= r)
+		{
+			m_vRev.deleteNthItem(i);
+		}
+	}
+
+	m_bDirty = true;
+}
+
+
 /*! create XML string from our vector
  */
-void pp_Revision::_refreshString()
+void PP_Revision::_refreshString()
 {
 	char buf[30];
 	m_sXMLstring.clear();
@@ -181,9 +220,9 @@ void pp_Revision::_refreshString()
 
 
 
-/*! get and XML_Char string representation of this revision
+/*! get an XML_Char string representation of this revision
  */
-const XML_Char * pp_Revision::getXMLstring()
+const XML_Char * PP_Revision::getXMLstring()
 {
 	if(m_bDirty)
 		_refreshString();
