@@ -274,4 +274,11 @@ UT_Bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 	return m_pPieceTable->getSpanPtr(sdh,offset,ppSpan,pLength);
 }
 
+PT_DocPosition PD_Document::getStruxPosition(PL_StruxDocHandle sdh) const
+{
+	// return absolute document position of the given handle.
+
+	// TODO do this.
+	return 0;
+}
 

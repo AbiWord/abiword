@@ -56,39 +56,10 @@ FL_BlockLayout::FL_BlockLayout(PL_StruxDocHandle sdh,
 	m_pLastLine = NULL;
 	m_pCurrentSlice = NULL;
 	m_bFormatting = UT_FALSE;
-	m_pCharWidths = NULL;
-	m_iCharWidthSize = 0;
-	m_iCharWidthSpace = 0;
 	m_bNeedsReformat = UT_FALSE;
 	
 	m_pLayout = m_pSectionLayout->getLayout();
 	m_pDoc = m_pLayout->getDocument();
-
-#ifdef BUFFER	// calculate m_iCharWidthSize
-	UT_uint32 posCur = m_pBuffer->getMarkerPosition(m_sdh);
-	UT_uint32 posBase = posCur;
-	for (;;)
-	{
-	    UT_UCSChar ch;
-	    DG_DocMarkerId dmid;
-	    DG_DocMarker* pMarker = NULL;
-	    
-	    UT_Bool bMarker = (m_pBuffer->getOneItem(posCur, &ch, &dmid) == DG_DBPI_MARKER);
-	    if (bMarker)
-		{
-			pMarker = m_pBuffer->fetchDocMarker(dmid);
-			DG_DocMarkerType dmt = pMarker->getType();
-			if ((dmt & DG_MT_BLOCK) && (dmt & DG_MT_END))
-			{
-				// we found the end of this block
-				m_pEndBlockMarker = pMarker;
-				m_iCharWidthSize = posCur - posBase + 1;
-				break;
-			}
-		}
-	    m_pBuffer->inc(posCur);
-	}
-#endif /* BUFFER */
 
 	m_pPrev = pPrev;
 	if (m_pPrev)
@@ -363,13 +334,6 @@ void FL_BlockLayout::_purgeLayout(UT_Bool bVisible)
 		m_pFirstRun = pNext;
 	}
 
-	if (m_pCharWidths)
-	{
-		delete m_pCharWidths;
-		m_pCharWidths = NULL;
-	}
-	m_iCharWidthSpace = 0;
-
 	m_pCurrentSlice = NULL;
 }
 
@@ -408,15 +372,10 @@ int FL_BlockLayout::format()
 			m_pFirstRun = pNext;
 		}
 
-		delete m_pCharWidths;
-		m_pCharWidths = NULL;
-		m_iCharWidthSpace = 0;
-
+		m_gbCharWidths.truncate(0);
 		m_pCurrentSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(0);
 	}
 	
-	if (!m_pCharWidths)
-		_allocateCharWidthArray();
 	_createRuns();
 	_verifyCurrentSlice(); // this is helpful for empty paragraphs
 
@@ -434,7 +393,7 @@ int FL_BlockLayout::format()
 		DG_Graphics* pG = m_pLayout->getGraphics();
 
 		m_pFirstRun = new FP_Run(this, pG, 0, 0);
-		m_pFirstRun->calcWidths(m_pCharWidths);
+		m_pFirstRun->calcWidths(&m_gbCharWidths);
 
 		// the line just contains the empty run
 		UT_uint32 iGuessLineHeight = m_pFirstRun->getHeight();
@@ -587,7 +546,7 @@ void FL_BlockLayout::_createRuns()
 	      if (lenRun > 0)
 	      {
 	          FP_Run* pRun = new FP_Run(this, pG, posStartRun - posBase, lenRun);
-			  pRun->calcWidths(m_pCharWidths);
+			  pRun->calcWidths(&m_gbCharWidths);
 	      
 	          if (!m_pFirstRun)
 		      {
@@ -648,77 +607,15 @@ UT_uint32 FL_BlockLayout::getPosition() const
 	return 0;
 }
 
-UT_uint16* FL_BlockLayout::getCharWidthArray() const
+UT_GrowBuf * FL_BlockLayout::getCharWidths(void)
 {
-	return m_pCharWidths;
+	return &m_gbCharWidths;
 }
 
-void FL_BlockLayout::_growCharWidthArray(UT_uint32 count) // TODO return an error code
-{
-	UT_ASSERT(m_pCharWidths);
-
-	UT_uint32 growby = ((count > EXTRA_CHARWIDTH_SPACE) ? count : EXTRA_CHARWIDTH_SPACE);
-	
-	UT_uint16* pCharWidths = new UT_uint16[m_iCharWidthSpace + growby];
-	// TODO check for failure and return outofmem if needed.
-	
-	memcpy(pCharWidths, m_pCharWidths, m_iCharWidthSpace * sizeof(UT_UCSChar));
-	m_iCharWidthSpace += growby;
-	delete m_pCharWidths;
-	m_pCharWidths = pCharWidths;
-}
-
-void FL_BlockLayout::_allocateCharWidthArray()   // TODO return an error code
-{
-//  UT_ASSERT(m_iCharWidthSize == (m_pBuffer->getMarkerPosition(m_sdh) - m_pBuffer->getMarkerPosition(m_pEndBlockMarker) + 1));
-	if (m_pCharWidths)
-    {
-		delete m_pCharWidths;
-    }
-
-	m_iCharWidthSpace = m_iCharWidthSize + EXTRA_CHARWIDTH_SPACE;
-
-	m_pCharWidths = new UT_uint16[m_iCharWidthSpace];
-	for (UT_uint32 i=0; i<m_iCharWidthSpace; i++)
-	{
-		m_pCharWidths[i] = 0;
-	}
-	// TODO check for failure and return outofmem if needed.
-}
 
 UT_Bool FL_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
 	return m_pDoc->getSpanPtr(m_sdh, offset, ppSpan, pLength);
-}
-
-UT_Bool FL_BlockLayout::_insertInCharWidthsArray(UT_uint32 iOffset, UT_uint32 count)
-{
-	/*
-	  The BlockLayout stores an array of character widths which is shared
-	  by all of its runs.  Runs know their first character, expressed
-	  as an offset from the base of the block, and the number of characters
-	  in that run.  When an insert occurs, we need to update the charWidths
-	  array, and we need to update the offsets on some/all of the runs.
-	  Unfortunately, the char widths array is contiguous, not a gap
-	  buffer.  Inserting a char involves a memmove.  However, this memmove
-	  is likely to be much smaller than it would have been in the case of
-	  a document.
-
-	  We can try to find a better solution for this later.  For now, this is
-	  tolerable.
-	*/
-
-	if ((m_iCharWidthSize + count) >= m_iCharWidthSpace)
-	{
-		_growCharWidthArray(count);
-		// TODO check result and do outofmem code
-	}
-	
-	UT_ASSERT((m_iCharWidthSize + count) <= m_iCharWidthSpace);
-	memmove(m_pCharWidths + iOffset + count, m_pCharWidths + iOffset, (m_iCharWidthSize - iOffset + 1)*sizeof(UT_UCSChar));
-	m_iCharWidthSize += count;
-
-	return UT_TRUE;
 }
 
 FP_Run* FL_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height)

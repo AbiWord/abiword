@@ -92,6 +92,24 @@ UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length
 	return UT_TRUE;
 }
 
+UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint32 length)
+{
+	// insert zeroed space into the growbuf
+	
+	UT_ASSERT(length);
+	
+	if (m_iSpace-m_iSize < length)
+		if (!_growBuf(length))
+			return UT_FALSE;
+
+	if (m_iSize-position > 0)
+		memmove(m_pBuf+position+length,m_pBuf+position,(m_iSize-position)*sizeof(*m_pBuf));
+	m_iSize += length;
+	memset(m_pBuf+position,0,length*sizeof(*m_pBuf));
+
+	return UT_TRUE;
+}
+
 UT_Bool UT_GrowBuf::del(UT_uint32 position, UT_uint32 amount)
 {
 	if (!m_pBuf)
@@ -114,7 +132,7 @@ UT_uint32 UT_GrowBuf::getLength(void) const
 	return m_iSize;
 }
 
-const UT_uint16 * UT_GrowBuf::getPointer(UT_uint32 position) const
+UT_uint16 * UT_GrowBuf::getPointer(UT_uint32 position) const
 {
 	// return a read-only pointer to the buffer
 	
@@ -122,5 +140,28 @@ const UT_uint16 * UT_GrowBuf::getPointer(UT_uint32 position) const
 		return 0;
 	UT_ASSERT(position < m_iSize);
 	return m_pBuf+position;
+}
+
+UT_Bool UT_GrowBuf::overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length)
+{
+	// overwrite the current cells at the given position for the given length.
+
+	UT_ASSERT(pValue);
+	UT_ASSERT(length);
+
+	if (m_iSpace < position+length)
+		if (!_growBuf(position+length-m_iSpace))
+			return UT_FALSE;
+
+	memmove(m_pBuf+position,pValue,length*sizeof(*m_pBuf));
+	return UT_TRUE;
+}
+
+void UT_GrowBuf::truncate(UT_uint32 position)
+{
+	if (position < m_iSize)
+		m_iSize = position;
+
+	// TODO consider reallocing down
 }
 

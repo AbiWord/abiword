@@ -35,6 +35,8 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_growbuf.h"
+
 
 FP_Run::FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties)
 {
@@ -313,7 +315,7 @@ UT_Bool FP_Run::split(UT_uint32 splitOffset)
 {
 	UT_ASSERT(splitOffset >= m_iOffsetFirst);
 	UT_ASSERT(splitOffset < (m_iOffsetFirst + m_iLen));
-    UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 
 	FP_Run* pNew = new FP_Run(m_pBL, m_pG, splitOffset, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
 	UT_ASSERT(pNew);
@@ -335,8 +337,8 @@ UT_Bool FP_Run::split(UT_uint32 splitOffset)
 	m_pLine->splitRunInLine(this,pNew);
 	m_iLen = splitOffset - m_iOffsetFirst;
 	
-	calcWidths(pCharWidths);
-	pNew->calcWidths(pCharWidths);
+	calcWidths(pgbCharWidths);
+	pNew->calcWidths(pgbCharWidths);
 	
 	// TODO who deals with iLineBreak{Before,After},bCanSplit,iExtraWidth,etc...
 	
@@ -345,7 +347,8 @@ UT_Bool FP_Run::split(UT_uint32 splitOffset)
 
 UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si)
 {
-    UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iLeftWidth = 0;
 	UT_sint32 iRightWidth = m_iWidth;
@@ -408,7 +411,8 @@ UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 
 UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 {
-    UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iLeftWidth = 0;
 	UT_sint32 iRightWidth = m_iWidth;
@@ -430,7 +434,8 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 			iLeftWidth += pCharWidths[i + offset];
 			iRightWidth -= pCharWidths[i + offset];
 
-			if (32 == pSpan[i])
+			
+			if (32 == pSpan[i])					// TODO isn't this a bit english specific ??
 			{
 				si.iLeftWidth = iLeftWidth;
 				si.iRightWidth = iRightWidth;
@@ -462,8 +467,10 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 	return UT_TRUE;
 }
 
-void FP_Run::_calcWidths(UT_uint16* pCharWidths)
+void FP_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 {
+	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
 	UT_uint32 offset = m_iOffsetFirst;
@@ -494,11 +501,11 @@ void FP_Run::_calcWidths(UT_uint16* pCharWidths)
 	}
 }
 
-void FP_Run::calcWidths(UT_uint16* pCharWidths)
+void FP_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
 {
 	UT_sint32 iOldWidth = m_iWidth;
 
-	_calcWidths(pCharWidths);
+	_calcWidths(pgbCharWidths);
 	
 	// let our parent know that we are changing underneath them ...
 	if (m_pLine)
@@ -515,7 +522,8 @@ void FP_Run::expandWidthTo(UT_uint32 iNewWidth)
 
 void FP_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
-    UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	if  (x <= 0)
 	{
@@ -595,7 +603,8 @@ void FP_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 	UT_sint32 yoff;
 
 	m_pLine->getOffsets(this, m_pLineData, xoff, yoff);
-    UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	for (UT_uint32 i=m_iOffsetFirst; i<iOffset; i++)
 	{
@@ -624,28 +633,28 @@ void FP_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
 	m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height);
 
 	UT_Rect r;
-	UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
 
-	_getPartRect(&r, xoff, yoff + m_iAscent, iStart, iLen, pCharWidths);
+	_getPartRect(&r, xoff, yoff + m_iAscent, iStart, iLen, m_pBL->getCharWidths());
 	m_pG->invertRect(&r);
 }
 
 void FP_Run::draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
-	
-	UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 
 	m_pG->setFont(m_pFont);
 	m_pG->setColor(m_colorFG);
-	_drawPart(pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pCharWidths);
+	_drawPart(pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
 
 	_drawDecors(pDA->xoff, pDA->yoff);
 }
 
 void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-						  const UT_uint16* pCharWidths)
+						  const UT_GrowBuf * pgbCharWidths)
 {
+	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
+
 	pRect->left = xoff;
 	pRect->top = yoff - m_iAscent;
 	pRect->height = m_iHeight;
@@ -666,7 +675,7 @@ void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uin
 }
 
 void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-					   const UT_uint16* pCharWidths)
+					   const UT_GrowBuf * pgbCharWidths)
 {
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
@@ -678,6 +687,7 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 	UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
 
 	UT_uint32 iLeftWidth = 0;
+	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
 	
 	for (UT_uint32 i=m_iOffsetFirst; i<iStart; i++)
 	{

@@ -36,9 +36,12 @@ public:
 	~UT_GrowBuf();
 
 	UT_Bool				ins(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length);
+	UT_Bool				ins(UT_uint32 position, UT_uint32 length);
 	UT_Bool				del(UT_uint32 position, UT_uint32 amount);
+	UT_Bool				overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length);
+	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
-	const UT_uint16 *	getPointer(UT_uint32 position) const;				/* temporary use only */
+	UT_uint16 *			getPointer(UT_uint32 position) const;				/* temporary use only */
 	
 protected:
 	UT_Bool				_growBuf(UT_uint32 spaceNeeded);

@@ -29,6 +29,7 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 
+class UT_GrowBuf;
 class FL_BlockLayout;
 class FP_Line;
 class DG_Graphics;
@@ -98,7 +99,7 @@ class FP_Run
 	UT_Bool					findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si);
 	UT_Bool					findMinLeftFitSplitPoint(fp_RunSplitInfo& si);
 
-	void 					calcWidths(UT_uint16*);
+	void 					calcWidths(UT_GrowBuf * pgbCharWidths);
 	void            		expandWidthTo(UT_uint32);
 
 	void					mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
@@ -120,10 +121,10 @@ class FP_Run
  protected:
 	void					_drawDecors(UT_sint32, UT_sint32);
 	void 					_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-										 const UT_uint16* pCharWidths);
+										 const UT_GrowBuf * pgbCharWidths);
 	void					_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-									  const UT_uint16* pCharWidths);
-	void 					_calcWidths(UT_uint16*);
+									  const UT_GrowBuf * pgbCharWidths);
+	void 					_calcWidths(UT_GrowBuf * pgbCharWidths);
 
 	FP_Line*				m_pLine;
 	void*					m_pLineData;

@@ -26,6 +26,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_growbuf.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
 
@@ -126,7 +127,7 @@ public:
 	FP_Line* findNextLineInDocument(FP_Line*);
 	FP_Run* getFirstRun();
 
-	UT_uint16* getCharWidthArray() const;
+	UT_GrowBuf * getCharWidths(void);
 
 	PT_DocPosition getPosition() const;
 	FP_Run* findPointCoords(PT_DocPosition position, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height);
@@ -166,12 +167,10 @@ protected:
 	void _align();
 	int						m_bNeedsReformat;
 	void					_verifyCurrentSlice();
-	void					_allocateCharWidthArray();   // TODO return an error code
-	void					_growCharWidthArray(UT_uint32 count);		// TODO return an error code	
-	UT_Bool					_insertInCharWidthsArray(UT_uint32 iOffset, UT_uint32 count);
 	UT_uint32				_getLastChar();
 	void					_purgeLayout(UT_Bool bVisible);
 
+	UT_GrowBuf				m_gbCharWidths;
 	UT_Vector				m_vecSlices;
 
 	FL_DocLayout*	       	m_pLayout;
@@ -179,10 +178,6 @@ protected:
 
 	FL_BlockLayout*			m_pPrev;
 	FL_BlockLayout*			m_pNext;
-
-	UT_uint32               m_iCharWidthSpace;
-	UT_uint32               m_iCharWidthSize;
-	UT_uint16*              m_pCharWidths;
 
 	FP_BlockSlice*			m_pCurrentSlice;
 	FP_Run*					m_pFirstRun;

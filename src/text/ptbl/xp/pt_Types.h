@@ -12,6 +12,8 @@ typedef UT_uint32 PT_VarSetIndex;		/* index the VarSet */
 
 
 typedef UT_uint32 PT_DocPosition;		/* absolute document position */
+typedef UT_uint32 PT_BlockOffset;		/* block-relative document position */
+
 typedef enum _PTStruxType { PTX_Section, PTX_ColumnSet, PTX_Column, PTX_Block } PTStruxType;
 
 typedef UT_uint32 PL_ListenerId;

@@ -52,7 +52,7 @@ fl_DocListener::~fl_DocListener()
 }
 
 UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
-							   PX_ChangeRecord * pcr)
+								 PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(m_pLayout);
 	UT_DEBUGMSG(("fl_DocListener::populate\n"));
@@ -61,50 +61,57 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
 	PX_ChangeRecord_Span * pcrs = static_cast<PX_ChangeRecord_Span *> (pcr);
 
-	// TODO: analyze sfh to figure out where this change belongs
-
-	// HACK: for now, locate the last BlockLayout of the last SectionLayout
-	int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
-	UT_ASSERT(countSections > 0);
-	FL_SectionLayout* pSL = (FL_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
-	UT_ASSERT(pSL);
-	FL_BlockLayout*	pBL = pSL->m_pLastBlock;
-	UT_ASSERT(pBL);
-
-	FP_Run * pRun = pBL->m_pFirstRun;
-	FP_Run * pLastRun = NULL;
-	UT_uint32 offset = 0;
-	UT_uint32 len = pcrs->getLength();
-
-	while (pRun)
+	fl_Layout * pL = (fl_Layout *)sfh;
+	switch (pL->getType())
 	{
-		pLastRun = pRun;
-		offset += pRun->m_iLen;
-		pRun = pRun->getNext();
-	}
+	case PTX_Block:
+		{
+			FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+			PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
+			PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 
-	FP_Run * pNewRun = new FP_Run(pBL, m_pLayout->getGraphics(), offset, len);
+			FP_Run * pRun = pBL->m_pFirstRun;
+			FP_Run * pLastRun = NULL;
+			UT_uint32 offset = 0;
 
-	// TODO: this mucking around with CharWidths is another gruesome HACK
-	if (!pBL->m_pCharWidths)
-	{
-		pBL->m_iCharWidthSize += len;
-		pBL->_allocateCharWidthArray();
-	}
-	pBL->_insertInCharWidthsArray(offset, len);
-	pNewRun->calcWidths(pBL->m_pCharWidths);
+			while (pRun)
+			{
+				pLastRun = pRun;
+				offset += pRun->m_iLen;
+				pRun = pRun->getNext();
+			}
 
-	if (pLastRun)
-	{
-		pLastRun->setNext(pNewRun);
-		pNewRun->setPrev(pLastRun);
+			UT_ASSERT(offset==blockOffset);
+			UT_uint32 len = pcrs->getLength();
+			FP_Run * pNewRun = new FP_Run(pBL, m_pLayout->getGraphics(), offset, len);
+			if (!pNewRun)
+			{
+				UT_DEBUGMSG(("Could not allocate run\n"));
+				return UT_FALSE;
+			}
+			
+			pBL->m_gbCharWidths.ins(offset, len);
+			pNewRun->calcWidths(&pBL->m_gbCharWidths);
+			
+			if (pLastRun)
+			{
+				pLastRun->setNext(pNewRun);
+				pNewRun->setPrev(pLastRun);
+			}
+			else
+			{
+				pBL->m_pFirstRun = pNewRun;
+			}
+		}
+		return UT_TRUE;
+			
+	case PTX_Section:
+	case PTX_ColumnSet:
+	case PTX_Column:
+	default:
+		UT_ASSERT((0));
+		return UT_FALSE;
 	}
-	else
-	{
-		pBL->m_pFirstRun = pNewRun;
-	}
-
-	return UT_TRUE;
 }
 
 UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
@@ -132,7 +139,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			pSL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
 			m_pLayout->m_vecSectionLayouts.addItem(pSL);
 
-			psfh = (PL_StruxFmtHandle *)pSL;
+			*psfh = (PL_StruxFmtHandle)pSL;
 		}
 		break;
 
@@ -153,7 +160,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			UT_ASSERT(pSL->getColumnSetLayout()==NULL);
 			pSL->setColumnSetLayout(pCSL);
 
-			psfh = (PL_StruxFmtHandle *)pCSL;
+			*psfh = (PL_StruxFmtHandle)pCSL;
 		}
 		break;
 			
@@ -175,7 +182,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			pCL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
 			pCSL->appendColumnLayout(pCL);
 
-			psfh = (PL_StruxFmtHandle *)pCL;
+			*psfh = (PL_StruxFmtHandle)pCL;
 		}
 		break;
 			
@@ -196,7 +203,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			pBL->setPTvars(pcr->getVarSetIndex(),pcr->getIndexAP());
 
-			psfh = (PL_StruxFmtHandle *)pBL;
+			*psfh = (PL_StruxFmtHandle)pBL;
 		}
 		break;
 			
