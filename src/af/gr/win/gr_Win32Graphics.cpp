@@ -739,12 +739,10 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 
 void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 {
-	if (queryProperties(GR_Graphics::DGP_PAPER))
-	{
-		// FIXME: Currently it seems the cliprect doesn't work
-		// when printing images, clipping out large portions of them.
-		return;
-	}
+	// This causes a lot of drawing and screen refresh problems.  
+	// It can be removed from here without problems, but may
+	// not work for other things.  For now leave code in place.
+	// return;
 
 	int res;
 	m_pRect = pRect;
@@ -793,6 +791,14 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	{
 		pImg->render(this, xDest, yDest);
 		return;
+	}
+
+	// When Printing yDest must be within Page Height for each
+	// Page.   
+	if (queryProperties(GR_Graphics::DGP_PAPER))
+	{
+		UT_sint32 nPageHeight = GetDeviceCaps(m_hdc, PHYSICALHEIGHT);
+		yDest = ( yDest % nPageHeight );
 	}
 
 	GR_Win32Image* pWin32Img = static_cast<GR_Win32Image*>(pImg);

@@ -2469,9 +2469,9 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
-	UT_ASSERT(m_pLine);
+	UT_ASSERT(getLine());
 	
-	m_pLine->getOffsets(this, xoff, yoff);
+	getLine()->getOffsets(this, xoff, yoff);
 	if (iOffset == (m_iOffsetFirst + m_iLen))
 	{
 		x = xoff + m_iWidth;
@@ -2491,7 +2491,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 #endif
 }
 
-void fp_ImageRun::_clearScreen(bool /* bFullLineHeightRect */)
+void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 {
 	UT_ASSERT(!m_bDirty);
 	
@@ -2500,8 +2500,8 @@ void fp_ImageRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
-	m_pLine->getScreenOffsets(this, xoff, yoff);
-	UT_sint32 iLineHeight = m_pLine->getHeight();
+	getLine()->getScreenOffsets(this, xoff, yoff);
+	UT_sint32 iLineHeight = getLine()->getHeight();
 
 	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, iLineHeight);
 }
@@ -2511,18 +2511,18 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 
 	UT_sint32 xoff = 0, yoff = 0;
-	m_pLine->getScreenOffsets(this, xoff, yoff);
+	getLine()->getScreenOffsets(this, xoff, yoff);
 
 //
 // Sevior's infamous + 1....
-	yoff += m_pLine->getAscent() - m_iAscent + 1;
+	yoff += getLine()->getAscent() - m_iAscent + 1;
 
 	// clip drawing to the page
 	UT_Rect pClipRect;
 	pClipRect.top = yoff;
 	pClipRect.left = xoff;
-	pClipRect.height = m_pLine->getContainer()->getHeight();
-	pClipRect.width = m_pLine->getContainer()->getWidth();
+	pClipRect.height = getLine()->getContainer()->getHeight();
+	pClipRect.width = getLine()->getContainer()->getWidth();
 	//
 	// SEVIOR Says don't touch this if statement unless you know how to make windows 
 	// and gnome-print print images. Otherwise your commit priviliges will be revoked.
