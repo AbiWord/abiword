@@ -1818,7 +1818,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 // Whoops! foornotes/endnotes can screw this up since they placed on the page
 // out of order to their location in the PieceTable
 //
-			while (iNewPoint <= getPoint() && (getCurrentPage() == pPage) )
+			while (iNewPoint >= getPoint() && (getCurrentPage() == pPage) )
 			{
 				if (yClick-delta < 0)
 				{
