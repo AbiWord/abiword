@@ -114,7 +114,7 @@ typedef	UT_sint32		UT_Error;
 /* When objects (fields, etc) must be represented in unicode, use the
    BELL code and let UT_isWordDelimiter recognize it as a word
    character. See bug 223.  */
-#define UCS_OBJECT		((UT_UCSChar)0x0007)
+#define UCS_ABI_OBJECT	((UT_UCSChar)0x0007)
 
 #define UCS_TAB			((UT_UCSChar)0x0009)
 #define UCS_LF			((UT_UCSChar)0x000a)

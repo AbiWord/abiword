@@ -351,14 +351,14 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
               the block is safely stored in the buffer in the proper
               location. 
 
-              The UCS_OBJECT used to be defined as a space, but that
-              caused selection code to fail for fields since the code
-              would look for the beginning of a word, ignoring
-              spaces. Now the UCS_OBJECT is instead defined as an
+              The UCS_ABI_OBJECT used to be defined as a space, but
+              that caused selection code to fail for fields since the
+              code would look for the beginning of a word, ignoring
+              spaces. Now the UCS_ABI_OBJECT is instead defined as an
               alpha character. Doesn't really matter since it'll never
               be used for anything but limit checking anyway. See bug
-              #223 for details.
-            */
+              #223 for details. 
+			*/
 
             UT_uint32 length = pfTemp->getLength();
             
@@ -369,7 +369,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
             UT_UCSChar* pSpaces = new UT_UCSChar[length];
             for (UT_uint32 i=0; i<length; i++)
             {
-                pSpaces[i] = UCS_OBJECT;
+                pSpaces[i] = UCS_ABI_OBJECT;
             }
             bool bAppended;
             bAppended = pgb->ins(bufferOffset, pSpaces, length);

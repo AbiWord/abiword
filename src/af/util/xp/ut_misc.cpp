@@ -225,10 +225,10 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 #if 1
 	/* wjc ... these UT_UCS_isXXX() functions aren't really right for UCS */
 	if (UT_UCS_isalnum(currentChar)) return false;
-        // This is for the unicode character used to represent objects
-        // (which are used among other things for computed fields
-        // which should be considered words).
-        if (UCS_OBJECT == currentChar) return false;
+	// This is for the unicode character used to represent AbiWord
+	// objects (which are used among other things for computed
+	// fields which should be considered words).
+	if (UCS_ABI_OBJECT == currentChar) return false;
 	// the following case is for embedded apostrophe in a contraction
 	if ((currentChar == '\''  ||  currentChar == UCS_RQUOTE)  &&  UT_UCS_isalnum(followChar)) return false;
 	return true;
