@@ -97,10 +97,9 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 
 	// build the dialog
 	GtkWidget * cf = _constructWindow();
+	GdkWindow * window = NULL;
 	UT_ASSERT(cf);
 	connectFocus(GTK_WIDGET(cf),pFrame);
-
-	gtk_widget_set_usize(cf, 350, 210);
 
 	// get top level window and its GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -115,7 +114,14 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 	gtk_widget_show (cf);
 	gtk_grab_add (cf);
 
+	// grab focus from the keyboard to the current window
+	// stops password snooping supposedly
+	window = gtk_widget_get_parent_window(GTK_WIDGET(cf));
+	gdk_keyboard_grab(window, FALSE, GDK_CURRENT_TIME);
+
 	gtk_main();
+	
+	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 
 	if (cf && GTK_IS_WIDGET(cf))
 	  gtk_widget_destroy (cf);
