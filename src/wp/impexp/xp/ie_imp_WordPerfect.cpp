@@ -783,9 +783,9 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 					  float marginInch; 
 					  UT_uint16 nonDeletableInfoSize;
 					  
-					  // if there is a section in the document and the contents of it are changed 
-					  // then flush them first, before changing the section style
-					  if (m_bInSection && (m_bParagraphChanged || m_textBuf.getLength() > 0))
+					  // if there is a section in the document which current properties are not changed,
+					  // but the contents of it _are_ changed then flush the changes first, before changing the section style
+					  if (!m_bSectionChanged && (m_bParagraphChanged || m_textBuf.getLength() > 0))
 					  {
 						  X_CheckWordPerfectError(_flushText());
 					  }
@@ -823,7 +823,7 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
                   unsigned char colType;
                   unsigned char rowSpacing[4]; // a WP SPacing type variable, which is 4 bytes
                   unsigned char unknown; 
-			      unsigned char nonDeletableInfoSize; // 1 byte only this case
+                  unsigned char nonDeletableInfoSize; // 1 byte only this case
 
 				  X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(unsigned char), 1, m_importFile));
                   X_CheckFileReadElementError(fread(&colType, sizeof(unsigned char), 1, m_importFile));
@@ -855,26 +855,15 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
                         case 2: // parallel
                         case 3: // parallel with protect [what does this mean? for now, handle the same as parallel]
                                 {
-								   m_bColumnsSet = true;
+                                   m_bColumnsSet = true;
 
-                                   // if we are already in a section, but there is no PTX_Block (= paragraph) inside it,
-								   // then insert one before adding a new section. This must be done, because a
-								   // section always must contain at least one PTX_Block
-								   if (m_bInSection && (!m_bParagraphInSection))
-								   {
-							 		  X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, NULL));
-								   }
-
-                                   // this is a realy obscure statement, which has to be cleaned up sometime
-                                   if (
-                                         ((!m_bParagraphExists) && (m_textBuf.getLength() > 0)) ||
-                                         (m_bParagraphExists && m_bParagraphChanged) || 
-                                         (m_textBuf.getLength() > 0)
-                                      )
+                                   if ((m_bParagraphChanged) || (m_textBuf.getLength() > 0))
                                    {
                                       X_CheckWordPerfectError(_flushText());
                                    }
-                                   X_CheckWordPerfectError(_appendSection());
+				   
+                                   m_bSectionChanged = true;
+				   
                                    // set m_bParagraphChanged to true so the paragraph properties will 
                                    // unconditionally be added in this new section
                                    m_bParagraphChanged = true;
