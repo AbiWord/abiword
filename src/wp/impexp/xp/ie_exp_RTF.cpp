@@ -2358,14 +2358,21 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 //
 	if(Param == 23)
 	{
-		_rtf_font_info fi(fontName.c_str());
-		UT_sint32 ifont = _findFont(&fi);
-		if(ifont < 0)
-		{
-		  UT_ASSERT_NOT_REACHED();
-			ifont = 0;
-		}
-		_rtf_keyword("f",ifont);
+		UT_TRY
+			{
+				_rtf_font_info fi(fontName.c_str());
+				UT_sint32 ifont = _findFont(&fi);
+				if(ifont < 0)
+				{
+					UT_ASSERT_NOT_REACHED();
+					ifont = 0;
+				}
+				_rtf_keyword("f",ifont);
+			}
+		UT_CATCH(UT_CATCH_ANY)
+			{
+			}
+		UT_END_CATCH
 	}
 }
 
@@ -2476,11 +2483,17 @@ UT_sint32 IE_Exp_RTF::_findFont(const s_RTF_AttrPropAdapter * apa) const
 void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 {
 	UT_return_if_fail(pfi && (_findFont(pfi)==-1));
-	_rtf_font_info * pNew = new _rtf_font_info(*pfi);
-	if (pNew)
-		m_vecFonts.addItem(pNew);
 
-	return;
+	UT_TRY
+		{
+			_rtf_font_info * pNew = new _rtf_font_info(*pfi);
+			if (pNew)
+				m_vecFonts.addItem(pNew);
+		}
+	UT_CATCH(UT_CATCH_ANY)
+		{
+		}
+	UT_END_CATCH
 }
 
 _rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)

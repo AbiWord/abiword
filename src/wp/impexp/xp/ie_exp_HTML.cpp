@@ -42,6 +42,7 @@
 #include "ut_math.h"
 #include "ut_misc.h"
 #include "ut_string_class.h"
+#include "ut_png.h"
 
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
@@ -4262,6 +4263,11 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	}
 	UT_UTF8String tmp;
 	UT_DEBUGMSG(("Width of Image %s \n",szWidth ? szWidth : "(null)"));
+
+	UT_sint32 iImageWidth, iImageHeight;
+	UT_PNG_getDimensions(pByteBuf, iImageWidth, iImageHeight);
+	UT_DEBUGMSG(("Real image dimensions: (%d x %d)\n", iImageWidth, iImageHeight));
+
 	if (szWidth)
 	{
 		m_utf8_1 += " style=\"width:";
@@ -5875,7 +5881,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	UT_UTF8String declaration;
 
 	if (m_exp_opt.bDeclareXML)
-		declaration += "<?xml version=\"1.0\"?>" MYEOL;
+		declaration += "<?xml version=\"1.0\" encoding=\"utf-8\"?>" MYEOL;
 
 	declaration += "<";
 	declaration += s_DTD_XHTML;
