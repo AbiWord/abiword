@@ -10680,6 +10680,24 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	if(m_pDoc->isTableAtPos(pos))
 	{
 		xxx_UT_DEBUGMSG(("As Table pos this char will actuall right before the table %d \n",pos));
+//
+// This could be the start of nested table. If so return true!
+//
+		if(isInTable(pos-1))
+		{
+			fl_TableLayout * pTL = getTableAtPos(pos-1);
+//
+// make sure we're nested not just previous.
+//
+			if(pTL && ((pTL->getPosition(true) + pTL->getLength()-1) > pos))
+			{
+				return true;
+			}
+		}
+//
+// Otherwise return false since this char will actually be right before the
+// table
+//
 		return false;
 	}
 	if(m_pDoc->isCellAtPos(pos))

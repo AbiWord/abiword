@@ -1025,8 +1025,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 // Deleting the table so don't delay deleting the following strux.
 //
 					bPrevWasEndTable = false;
-					xxx_UT_DEBUGMSG(("Doing Table delete immediately \n"));
-					iTable = 1;
+					UT_DEBUGMSG(("Doing Table delete immediately \n"));
+//					iTable = 1;
+					UT_sint32 myTable =1;
 //
 // First delete the EndTable Strux
 //
@@ -1041,16 +1042,16 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 					bResult = _deleteStruxWithNotify(myPos, pfs,
 													  &pfNewEnd,
 													  &fragOffsetNewEnd);
-					while(bResult && iTable > 0)
+					while(bResult && myTable > 0)
 					{
 						stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 						if(pfs->getStruxType() == PTX_SectionTable)
 						{
-							iTable--;
+							myTable--;
 						}
 						else if(pfs->getStruxType() == PTX_EndTable)
 						{
-							iTable++;
+							myTable++;
 						}
 						PT_DocPosition myPos = pfs->getPos();
 						_deleteFormatting(myPos - pfs->getLength(), myPos);
@@ -1066,6 +1067,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 //
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 				}
+				UT_DEBUGMSG(("Finished doing table delete -1 \n"));
 				break;
 			}
 //

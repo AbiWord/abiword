@@ -1541,6 +1541,20 @@ PT_DocPosition fl_TableLayout::getPosition(bool bActualBlockPosition /* = false 
 }
 
 /*!
+ * Return the total length of the table including nested tables.
+ * This length includes the table and endtable struxs so if you add it
+ * to the position of the table strux you will get the first position 
+ * past the endtable strux
+ */
+UT_uint32 fl_TableLayout::getLength(void)
+{
+	PL_StruxDocHandle sdhTab = getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = m_pDoc-> getEndTableStruxFromTableSDH(sdhTab);
+	UT_uint32 len = m_pDoc->getStruxPosition(sdhEnd) -  m_pDoc->getStruxPosition(sdhTab) + 1;
+	return len;
+}
+
+/*!
  * This method attaches pCell to the current tablecontainer.
  */
 void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)

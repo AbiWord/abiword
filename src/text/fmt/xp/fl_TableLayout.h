@@ -162,6 +162,7 @@ public:
 	virtual void                markAllRunsDirty(void);
 	virtual bool                needsReformat(void) const;
 	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const;
+	UT_uint32                   getLength(void);
 	virtual void		        redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
