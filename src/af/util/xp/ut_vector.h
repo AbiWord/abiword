@@ -81,7 +81,7 @@
 class ABI_EXPORT UT_Vector
 {
 public:
-	typedef int (*compar_fn_t) (__const void *, __const void *);
+	typedef int (*compar_fn_t) (const void *, const void *);
 
 	UT_Vector(UT_uint32 sizehint = 2048);
 	UT_Vector(const UT_Vector&);
