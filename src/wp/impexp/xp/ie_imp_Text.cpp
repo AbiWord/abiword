@@ -108,6 +108,16 @@ bool ImportStream::getRawChar(UT_UCSChar &ucs)
 
 	} while (!m_Mbtowc.mbtowc(wc,b));
 
+	// Watch for evil Unicode values!
+	// Surrogates
+	UT_ASSERT(!(wc >= 0xD800 && wc <= 0xDFFF));
+	// Private Use Area
+	UT_ASSERT(!((wc >= 0xDB80 && wc <= 0xDBFF)||(wc >= 0xE000 && wc <= 0xF8FF)));
+	// AbiWord control characters
+	UT_ASSERT(wc != UCS_FIELDSTART && wc != UCS_FIELDEND);
+	// Illegal characters
+	UT_ASSERT(wc != 0xFFFE && wc != 0xFFFF);
+
 	ucs = m_ucsLookAhead;
 	m_ucsLookAhead = wc;
 
@@ -611,6 +621,7 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
 {
 	UT_ASSERT(pStream);
 
+	bool bFirstChar = true;
 	UT_GrowBuf gbBlock(1024);
 	UT_UCSChar c;
 
@@ -629,17 +640,23 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
 			// we interpret either CRLF, CR, or LF as a paragraph break.
 			// we also accept U+2028 (line separator) and U+2029 (para separator)
 			// especially since these are recommended by Mac OS X.
-			
+
 			// flush out what we have
 			if (gbBlock.getLength() > 0)
 				X_ReturnNoMemIfError(ins.insertSpan(gbBlock));
 			X_ReturnNoMemIfError(ins.insertBlock());
 			break;
 
+		case UCS_BOM:
+			// This is Byte Order Mark at the start of file, Zero Width Non Joiner elsewhere
+			if (bFirstChar)
+				break;
+
 		default:
 			X_ReturnNoMemIfError(gbBlock.append(&c,1));
 			break;
 		}
+		bFirstChar = false;
 	}
 
 	if (gbBlock.getLength() > 0)
