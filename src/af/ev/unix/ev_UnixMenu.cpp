@@ -457,57 +457,6 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	return UT_TRUE;
 }
 
-#if 0
-UT_Vector * EV_UnixMenu::_get_MenuVector(UT_uint32 n)
-{
-	UT_ASSERT(m_vecMenuWidgets.getNthItem(n));
-       
-	return (UT_Vector *) m_vecMenuWidgets.getNthItem(n);
-}
-#endif
-
-#if 0
-static void _ev_strip_accel(char * bufResult,
-							const char * szString)
-{
-	int i = 0;
-	int j = 0;
-	while (szString[i] != 0)
-	{
-		if (szString[i] != '_')
-		{
-			bufResult[j] = szString[i];
-			j++;
-		}
-		i++;
-	}
-	bufResult[j++] = NULL;
-}
-
-static void _ev_concat_and_convert(char * bufResult,
-								   const char * szPrefix,
-								   const char * szLabelName)
-{
-	// Win32 uses '&' in it's menu strings to denote an accelerator.
-	// GTK MenuFactory uses '_'.  We do the conversion.
-
-	strcpy(bufResult,szPrefix);
-	char * pb = bufResult + strlen(bufResult);
-	*pb++ = '/';
-
-	const char * pl = szLabelName;
-	while (*pl)
-	{
-		if (*pl == '&')
-			*pb++ = '_';
-		else
-			*pb++ = *pl;
-		pl++;
-	}
-	*pb = 0;
-}
-#endif
-
 UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 {
 	// update the status of stateful items on menu bar.
@@ -647,6 +596,10 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 				UT_Bool bRemoveIt = (!szLabelName || !*szLabelName);
 				if (bRemoveIt)
 				{
+					// unbind all accelerators
+					gtk_widget_remove_accelerators(item,
+												   "activate_item",
+												   FALSE);
 					// wipe it out
 //					gtk_container_remove(GTK_CONTAINER(item->parent), item);
 					gtk_widget_destroy(item);
@@ -687,6 +640,12 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 
 						// destroy the current label
 						gtk_container_remove(GTK_CONTAINER(item), labelChild);
+
+						// unbind all accelerators
+						gtk_widget_remove_accelerators(item,
+													   "activate_item",
+													   FALSE);
+						
 						//gtk_widget_destroy(labelChild);
 					}
 				
@@ -699,15 +658,25 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 					GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
 					UT_ASSERT(label);
 					// trigger the underscore conversion in the menu labels
-					gtk_label_parse_uline(label, labelbuf);
+					guint keyCode = gtk_label_parse_uline(label, labelbuf);
 
 					// show and add the label to our menu item
 					gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
 					gtk_container_add(GTK_CONTAINER(item), GTK_WIDGET(label));
 					gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), item);
 					gtk_widget_show(GTK_WIDGET(label));
-//					gtk_widget_show(item);
-					
+
+					// bind to parent item's accel group
+					if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
+					{
+						gtk_widget_add_accelerator(item,
+												   "activate_item",
+												   GTK_MENU(item->parent)->accel_group,
+												   keyCode,
+												   0,
+												   GTK_ACCEL_LOCKED);
+					}
+
 					// finally, enable/disable and/or check/uncheck it.
 					if (GTK_IS_CHECK_MENU_ITEM(item))
 						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
@@ -752,29 +721,3 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 
 	return UT_TRUE;
 }
-
-#if 0
-const char * EV_UnixMenu::_getItemPath(AP_Menu_Id id) const
-{
-	for (UT_uint32 k=0; (k < m_nrActualFactoryItems); k++)
-	{
-		_wd * wd = (_wd *)m_vecMenuWidgets.getNthItem(m_menuFactoryItems[k].callback_action);
-		if (wd && (wd->m_id==id))
-			return m_menuFactoryItems[k].path;
-	}
-
-	return NULL;
-}
-
-UT_Bool EV_UnixMenu::_isItemPresent(AP_Menu_Id id) const
-{
-	for (UT_uint32 k=0; (k < m_nrActualFactoryItems); k++)
-	{
-		_wd * wd = (_wd *)m_vecMenuWidgets.getNthItem(m_menuFactoryItems[k].callback_action);
-		if (wd && (wd->m_id==id))
-			return UT_TRUE;
-	}
-
-	return UT_FALSE;
-}
-#endif
