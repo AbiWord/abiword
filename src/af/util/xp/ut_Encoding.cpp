@@ -53,7 +53,6 @@
 // TODO This code should probably move into the Encoding Manager.
 
 static XML_Char * enc_armscii[]	= {"ARMSCII-8",0};
-static XML_Char * enc_ascii[]	= {"US-ASCII","ASCII","US",0};
 static XML_Char * enc_big5[]	= {"BIG5","BIG-5","BIG-FIVE","BIGFIVE","CN-BIG5",0};
 static XML_Char * enc_cp874[]	= {"CP874",0};
 static XML_Char * enc_cp932[]	= {"CP932",0};
@@ -76,102 +75,135 @@ static XML_Char * enc_euc_tw[]	= {"EUC-TW","EUCTW",0};
 static XML_Char * enc_gb2312[]	= {"GB_2312-80","ISO-IR-58","CHINESE",0};	// Cf. EUC-CN
 static XML_Char * enc_georga[]	= {"GEORGIAN-ACADEMY",0};
 static XML_Char * enc_georgps[]	= {"GEORGIAN-PS",0};
+static XML_Char * enc_hp[]		= {"HP-ROMAN8","ROMAN8","R8",0};
 static XML_Char * enc_hz[]		= {"HZ","HZ-GB-2312",0};
 static XML_Char * enc_8859_1[]	= {"ISO-8859-1","ISO_8859-1","LATIN1","L1",0};
 static XML_Char * enc_8859_2[]	= {"ISO-8859-2","ISO_8859-2","LATIN2","L2",0};
-static XML_Char * enc_8859_3[]	= {"ISO-8859-3","ISO_8859-3","LATIN3","L3",0};
+//static XML_Char * enc_8859_3[]	= {"ISO-8859-3","ISO_8859-3","LATIN3","L3",0};
 static XML_Char * enc_8859_4[]	= {"ISO-8859-4","ISO_8859-4","LATIN4","L4",0};
 static XML_Char * enc_8859_5[]	= {"ISO-8859-5","ISO_8859-5","CYRILLIC",0};
 static XML_Char * enc_8859_6[]	= {"ISO-8859-6","ISO_8859-6","ECMA-114","ASMO-708","ARABIC",0};
 static XML_Char * enc_8859_7[]	= {"ISO-8859-7","ISO_8859-7","ECMA-118","ELOT_928","GREEK8","GREEK",0};
 static XML_Char * enc_8859_8[]	= {"ISO-8859-8","ISO_8859-8","HEBREW",0};
 static XML_Char * enc_8859_9[]	= {"ISO-8859-9","ISO_8859-9","LATIN5","L5",0};
+//static XML_Char * enc_8859_10[]	= {"ISO-8859-10","ISO_8859-10","LATIN6","L6",0};
+//static XML_Char * enc_8859_13[]	= {"ISO-8859-13","ISO_8859-13","LATIN7","L7",0};
+//static XML_Char * enc_8859_14[]	= {"ISO-8859-14","ISO_8859-14","LATIN8","L8",0};
+//static XML_Char * enc_8859_15[]	= {"ISO-8859-15","ISO_8859-15",0};
+//static XML_Char * enc_8859_16[]	= {"ISO-8859-16","ISO_8859-16",0};
 static XML_Char * enc_2022_jp[]	= {"ISO-2022-JP",0};
+// There are 4 JIS encodings which are not Shift-JIS...
 static XML_Char * enc_johab[]	= {"JOHAB","CP1361",0};
 static XML_Char * enc_koi8r[]	= {"KOI8-R",0};
 static XML_Char * enc_koi8u[]	= {"KOI8-U",0};
 static XML_Char * enc_ksc5601[]	= {"KSC_5601","KS_C_5601-1987","KS_C_5601-1989","KOREAN",0};
 static XML_Char * enc_macarab[]	= {"MacArabic",0};
 static XML_Char * enc_macceur[] = {"MacCentralEurope",0};
+static XML_Char * enc_maccroat[]	= {"MacCroatian",0};
 static XML_Char * enc_maccyr[]	= {"MacCyrillic",0};
 static XML_Char * enc_macgrk[]	= {"MacGreek",0};
 static XML_Char * enc_macheb[]	= {"MacHebrew",0};
+static XML_Char * enc_macice[]	= {"MacIceLand",0};
 static XML_Char * enc_macrom[]	= {"MacRoman","MACINTOSH","MAC",0};
+static XML_Char * enc_macrman[]	= {"MacRomania",0};
 static XML_Char * enc_macthai[]	= {"MacThai",0};
 static XML_Char * enc_macturk[]	= {"MacTurkish",0};
 static XML_Char * enc_macukr[]	= {"MacUkraine",0};
+//static XML_Char * enc_mulao[]	= {"MULELAO-1",0};
+static XML_Char * enc_next[]	= {"NEXTSTEP",0};
 static XML_Char * enc_sjis[]	= {"SJIS","SHIFT_JIS","SHIFT-JIS","MS_KANJI",0};
 static XML_Char * enc_tcvn[]	= {"TCVN","TCVN-5712","TCVN5712-1",0};
 static XML_Char * enc_tis620[]	= {"TIS-620","TIS620","TIS620-0",0};
 static XML_Char * enc_ucs2be[]	= {"UCS-2BE","UCS-2-BE","UNICODEBIG","UNICODE-1-1",0};
 static XML_Char * enc_ucs2le[]	= {"UCS-2LE","UCS-2-LE","UNICODELITTLE",0};
+static XML_Char * enc_ucs4be[]	= {"UCS-4BE","UCS-4-BE",0};
+static XML_Char * enc_ucs4le[]	= {"UCS-4LE","UCS-4-LE",0};
+// US-ASCII has more aliases if we need them
+static XML_Char * enc_usascii[]	= {"US-ASCII","ASCII","US",0};
 static XML_Char * enc_utf7[]	= {"UTF-7","UNICODE-1-1-UTF-7",0};
 static XML_Char * enc_utf8[]	= {"UTF-8",0};
+static XML_Char * enc_utf16be[]	= {"UTF-16BE","UTF-16-BE",0};
+static XML_Char * enc_utf16le[]	= {"UTF-16LE","UTF-16-LE",0};
+static XML_Char * enc_utf32be[]	= {"UTF-32BE","UTF-32-BE",0};
+static XML_Char * enc_utf32le[]	= {"UTF-32LE","UTF-32-LE",0};
 static XML_Char * enc_viscii[]	= {"VISCII",0};
 
 static enc_entry s_Table[] = 
 {
 	//the property value, the localised translation, the numerical id
-	{enc_armscii,			NULL, XAP_STRING_ID_ENC_33},
-    {enc_ascii,	    		NULL, XAP_STRING_ID_ENC_0},
-	{enc_big5,				NULL, XAP_STRING_ID_ENC_40},
-	{enc_cp874,				NULL, XAP_STRING_ID_ENC_22},
-	{enc_cp932,				NULL, XAP_STRING_ID_ENC_46},
-	{enc_cp936,				NULL, XAP_STRING_ID_ENC_39},
-	{enc_cp949,				NULL, XAP_STRING_ID_ENC_50},
-	{enc_cp950,				NULL, XAP_STRING_ID_ENC_42},
-	{enc_cp1250,			NULL, XAP_STRING_ID_ENC_5},
-	{enc_cp1251,			NULL, XAP_STRING_ID_ENC_14},
-	{enc_cp1252,			NULL, XAP_STRING_ID_ENC_2},
-	{enc_cp1253,			NULL, XAP_STRING_ID_ENC_10},
-	{enc_cp1254,			NULL, XAP_STRING_ID_ENC_19},
-	{enc_cp1255,			NULL, XAP_STRING_ID_ENC_28},
-	{enc_cp1256,			NULL, XAP_STRING_ID_ENC_31},
-	{enc_cp1257,			NULL, XAP_STRING_ID_ENC_8},
-	{enc_cp1258,			NULL, XAP_STRING_ID_ENC_26},
-	{enc_euc_cn,			NULL, XAP_STRING_ID_ENC_36},
-	{enc_euc_jp,			NULL, XAP_STRING_ID_ENC_44},
-	{enc_euc_kr,			NULL, XAP_STRING_ID_ENC_48},
-	{enc_euc_tw,			NULL, XAP_STRING_ID_ENC_41},
-	{enc_gb2312,			NULL, XAP_STRING_ID_ENC_37},
-	{enc_georga,			NULL, XAP_STRING_ID_ENC_34},
-	{enc_georgps,			NULL, XAP_STRING_ID_ENC_35},
-	{enc_hz,				NULL, XAP_STRING_ID_ENC_38},
-	{enc_8859_1,			NULL, XAP_STRING_ID_ENC_1},
-	{enc_8859_2,			NULL, XAP_STRING_ID_ENC_4},
+	{enc_armscii,			NULL, XAP_STRING_ID_ENC_ARME_ARMSCII},
+	{enc_big5,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5},
+	{enc_cp874,				NULL, XAP_STRING_ID_ENC_THAI_WIN},
+	{enc_cp932,				NULL, XAP_STRING_ID_ENC_JAPN_WIN},
+	{enc_cp936,				NULL, XAP_STRING_ID_ENC_CHSI_WIN},
+	{enc_cp949,				NULL, XAP_STRING_ID_ENC_KORE_WIN},
+	{enc_cp950,				NULL, XAP_STRING_ID_ENC_CHTR_WIN},
+	{enc_cp1250,			NULL, XAP_STRING_ID_ENC_CENT_WIN},
+	{enc_cp1251,			NULL, XAP_STRING_ID_ENC_CYRL_WIN},
+	{enc_cp1252,			NULL, XAP_STRING_ID_ENC_WEST_WIN},
+	{enc_cp1253,			NULL, XAP_STRING_ID_ENC_GREE_WIN},
+	{enc_cp1254,			NULL, XAP_STRING_ID_ENC_TURK_WIN},
+	{enc_cp1255,			NULL, XAP_STRING_ID_ENC_HEBR_WIN},
+	{enc_cp1256,			NULL, XAP_STRING_ID_ENC_ARAB_WIN},
+	{enc_cp1257,			NULL, XAP_STRING_ID_ENC_BALT_WIN},
+	{enc_cp1258,			NULL, XAP_STRING_ID_ENC_VIET_WIN},
+	{enc_euc_cn,			NULL, XAP_STRING_ID_ENC_CHSI_EUC},
+	{enc_euc_jp,			NULL, XAP_STRING_ID_ENC_JAPN_EUC},
+	{enc_euc_kr,			NULL, XAP_STRING_ID_ENC_KORE_EUC},
+	{enc_euc_tw,			NULL, XAP_STRING_ID_ENC_CHTR_EUC},
+	{enc_gb2312,			NULL, XAP_STRING_ID_ENC_CHSI_GB},
+	{enc_georga,			NULL, XAP_STRING_ID_ENC_GEOR_ACADEMY},
+	{enc_georgps,			NULL, XAP_STRING_ID_ENC_GEOR_PS},
+	{enc_hp,				NULL, XAP_STRING_ID_ENC_WEST_HP},
+	{enc_hz,				NULL, XAP_STRING_ID_ENC_CHSI_HZ},
+	{enc_8859_1,			NULL, XAP_STRING_ID_ENC_WEST_ISO},
+	{enc_8859_2,			NULL, XAP_STRING_ID_ENC_CENT_ISO},
 	// 8859-3
-	{enc_8859_4,			NULL, XAP_STRING_ID_ENC_7},
-	{enc_8859_5,			NULL, XAP_STRING_ID_ENC_12},
-	{enc_8859_6,			NULL, XAP_STRING_ID_ENC_30},
-	{enc_8859_7,			NULL, XAP_STRING_ID_ENC_9},
-	{enc_8859_8,			NULL, XAP_STRING_ID_ENC_27},
-	{enc_8859_9,			NULL, XAP_STRING_ID_ENC_18},
+	{enc_8859_4,			NULL, XAP_STRING_ID_ENC_BALT_ISO},
+	{enc_8859_5,			NULL, XAP_STRING_ID_ENC_CYRL_ISO},
+	{enc_8859_6,			NULL, XAP_STRING_ID_ENC_ARAB_ISO},
+	{enc_8859_7,			NULL, XAP_STRING_ID_ENC_GREE_ISO},
+	{enc_8859_8,			NULL, XAP_STRING_ID_ENC_HEBR_ISO},
+	{enc_8859_9,			NULL, XAP_STRING_ID_ENC_TURK_ISO},
 	// 8859-10, 8859-13-16
-	{enc_2022_jp,			NULL, XAP_STRING_ID_ENC_43},
-	{enc_johab,				NULL, XAP_STRING_ID_ENC_49},
-	{enc_koi8r,				NULL, XAP_STRING_ID_ENC_13},
-	{enc_koi8u,				NULL, XAP_STRING_ID_ENC_16},
-	{enc_ksc5601,			NULL, XAP_STRING_ID_ENC_47},	// ISO
-	{enc_macarab,			NULL, XAP_STRING_ID_ENC_32},
-	{enc_macceur,			NULL, XAP_STRING_ID_ENC_6},
-	{enc_maccyr,			NULL, XAP_STRING_ID_ENC_15},
-	{enc_macgrk,			NULL, XAP_STRING_ID_ENC_11},
-	{enc_macheb,			NULL, XAP_STRING_ID_ENC_29},
-	{enc_macrom,			NULL, XAP_STRING_ID_ENC_3},
-	{enc_macthai,			NULL, XAP_STRING_ID_ENC_23},
-	{enc_macturk,			NULL, XAP_STRING_ID_ENC_20},
-	{enc_macukr,			NULL, XAP_STRING_ID_ENC_17},
+	{enc_2022_jp,			NULL, XAP_STRING_ID_ENC_JAPN_ISO},
+	{enc_johab,				NULL, XAP_STRING_ID_ENC_KORE_JOHAB},
+	{enc_koi8r,				NULL, XAP_STRING_ID_ENC_CYRL_KOI},
+	{enc_koi8u,				NULL, XAP_STRING_ID_ENC_UKRA_KOI},
+	{enc_ksc5601,			NULL, XAP_STRING_ID_ENC_KORE_KSC},	// ISO
+	{enc_macarab,			NULL, XAP_STRING_ID_ENC_ARAB_MAC},
+	{enc_macceur,			NULL, XAP_STRING_ID_ENC_CENT_MAC},
+	{enc_maccroat,			NULL, XAP_STRING_ID_ENC_CROA_MAC},
+	{enc_maccyr,			NULL, XAP_STRING_ID_ENC_CYRL_MAC},
+	{enc_macgrk,			NULL, XAP_STRING_ID_ENC_GREE_MAC},
+	{enc_macheb,			NULL, XAP_STRING_ID_ENC_HEBR_MAC},
+	{enc_macice,			NULL, XAP_STRING_ID_ENC_ICEL_MAC},
+	{enc_macrman,			NULL, XAP_STRING_ID_ENC_ROMA_MAC},
+	{enc_macrom,			NULL, XAP_STRING_ID_ENC_WEST_MAC},
+	{enc_macthai,			NULL, XAP_STRING_ID_ENC_THAI_MAC},
+	{enc_macturk,			NULL, XAP_STRING_ID_ENC_TURK_MAC},
+	{enc_macukr,			NULL, XAP_STRING_ID_ENC_UKRA_MAC},
 	// other mac encodings
-	{enc_sjis,				NULL, XAP_STRING_ID_ENC_45},
-	{enc_tcvn,				NULL, XAP_STRING_ID_ENC_25},
-	{enc_tis620,			NULL, XAP_STRING_ID_ENC_21},
-	{enc_ucs2be,			NULL, XAP_STRING_ID_ENC_53},
-	{enc_ucs2le,			NULL, XAP_STRING_ID_ENC_54},
-	// UCS-4 be and le
-	{enc_utf7,				NULL, XAP_STRING_ID_ENC_51},
-	{enc_utf8,				NULL, XAP_STRING_ID_ENC_52},
-	// UTF-16, UTF-32 be and le
-	{enc_viscii,			NULL, XAP_STRING_ID_ENC_24},
+	{enc_next,				NULL, XAP_STRING_ID_ENC_WEST_NXT},
+	{enc_sjis,				NULL, XAP_STRING_ID_ENC_JAPN_SJIS},
+	{enc_tcvn,				NULL, XAP_STRING_ID_ENC_VIET_TCVN},
+	{enc_tis620,			NULL, XAP_STRING_ID_ENC_THAI_TIS},
+//	{enc_ucs2,				NULL, XAP_STRING_ID_ENC_UNIC_UCS_2},
+	{enc_ucs2be,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_2BE},
+	{enc_ucs2le,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_2LE},
+//	{enc_ucs4,				NULL, XAP_STRING_ID_ENC_UNIC_UCS_4},
+	{enc_ucs4be,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_4BE},
+	{enc_ucs4le,			NULL, XAP_STRING_ID_ENC_UNIC_UCS_4LE},
+    {enc_usascii,    		NULL, XAP_STRING_ID_ENC_WEST_ASCII},
+	{enc_utf7,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_7},
+	{enc_utf8,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_8},
+//	{enc_utf16,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_16},
+	{enc_utf16be,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_16BE},
+	{enc_utf16le,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_16LE},
+//	{enc_utf32,				NULL, XAP_STRING_ID_ENC_UNIC_UTF_32},
+	{enc_utf32be,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_32BE},
+	{enc_utf32le,			NULL, XAP_STRING_ID_ENC_UNIC_UTF_32LE},
+	{enc_viscii,			NULL, XAP_STRING_ID_ENC_VIET_VISCII},
 };
 
 static int s_compareQ(const void * a, const void *b)
@@ -227,6 +259,7 @@ UT_Encoding::UT_Encoding()
 			UT_uint32 iAltIndex;
 			bool bFound = false;
 
+			UT_DEBUGMSG(("Encoding '%s' = ",s_Table[iCheckIndex].encs[0]));
 			for (iAltIndex = 0; (szEnc = s_Table[iCheckIndex].encs[iAltIndex]); ++iAltIndex)
 			{
 				iconv_t iconv_handle = iconv_open(szEnc,szEnc);
@@ -238,19 +271,14 @@ UT_Encoding::UT_Encoding()
 					s_Table[iOkayIndex].encs[1] = 0;
 					s_Table[iOkayIndex].desc = szName;
 					s_Table[iOkayIndex].id = s_Table[iCheckIndex].id;
+					UT_DEBUGMSG(("'%s' (alias %d)\n",szEnc,iAltIndex+1));
 					++iOkayIndex;
 					break;
-				}
-				else
-				{
-					UT_DEBUGMSG(("Encoding '%s' unknown\n",szEnc));
 				}
 			}
 			if (bFound == false)
 			{
-				//don't do this as it SEGfaults. What was the author original
-				//intent?
-				//UT_DEBUGMSG(("Encoding '%s' not supported at all\n",s_Table[iCheckIndex].desc[0]));
+				UT_DEBUGMSG(("** Not supported **\n"));
 			}
 			++iCheckIndex;
 		}
@@ -314,26 +342,6 @@ UT_uint32 UT_Encoding::getIdFromEncoding(const XML_Char * enc)
 	if (e)
 	{
 		return e->id;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-// this function is not as useless as might seem; it takes a pointer to a property string, finds the same
-// property in the static table and returns the pointer to it
-// this is used by fp_TextRun to set its m_pEncoding member; by always refering into the static table
-// it is possible to compare the encoding property by simply comparing the pointers, rather than
-// having to use strcmp
-
-const XML_Char *  UT_Encoding::getEncodingFromEncoding(const XML_Char * enc)
-{
-	UT_ASSERT (s_Init == false);
-	enc_entry * e = (enc_entry *) bsearch(enc, s_Table, s_iCount, sizeof(enc_entry), s_compareB);
-	if (e)
-	{
-		return e->encs[0];
 	}
 	else
 	{

@@ -40,7 +40,6 @@ public:
 	const XML_Char * 	getNthEncoding(UT_uint32 n);
 	const XML_Char * 	getNthDescription(UT_uint32 n);
 	const XML_Char * 	getEncodingFromDescription(const XML_Char * desc);
-	const XML_Char * 	getEncodingFromEncoding(const XML_Char * enc); //see the cpp file for explanation
 	UT_uint32 	getIndxFromEncoding(const XML_Char * enc);
 	UT_uint32 	getIdFromEncoding(const XML_Char * enc);
 
