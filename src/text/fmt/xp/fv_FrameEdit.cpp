@@ -618,7 +618,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 			return;
 		}
 	}
-	if(bDrawFrame)
+	if(bDrawFrame && (m_recCurFrame.width > 0) && (m_recCurFrame.height >0))
 	{
 		drawFrame(true);
 	}

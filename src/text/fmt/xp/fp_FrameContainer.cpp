@@ -98,16 +98,17 @@ void fp_FrameContainer::clearScreen(void)
 	UT_sint32 xoff,yoff;
 	getView()->getPageScreenOffsets(pPage,xoff,yoff);
 	xxx_UT_DEBUGMSG(("pagescreenoffsets xoff %d yoff %d \n",xoff,yoff));
-	xoff += getFullX();
-	yoff += getFullY();
-#if 1
-	srcX = xoff;
-	srcY = yoff;
-#else
-	srcX = 0;
-	srcY = 0;
-#endif
-	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth(),getFullHeight());
+	UT_sint32 leftThick = m_lineLeft.m_thickness;
+	UT_sint32 rightThick = m_lineRight.m_thickness;
+	UT_sint32 topThick = m_lineTop.m_thickness;
+	UT_sint32 botThick = m_lineBottom.m_thickness;
+
+	srcX = getFullX() - leftThick;
+	srcY = getFullY() - topThick;
+
+	xoff += getFullX() - leftThick;
+	yoff += getFullY() - topThick;
+	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+leftThick+rightThick,getFullHeight()+topThick+botThick+getGraphics()->tlu(1) +1);
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)

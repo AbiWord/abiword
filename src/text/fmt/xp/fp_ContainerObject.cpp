@@ -704,7 +704,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			}
 		}
 	}
-
+	
 	UT_Rect src;
 	UT_Rect dest;
 	xxx_UT_DEBUGMSG(("----Called fill -- Parent = %x Container %x FillType %d \n",m_pParent,m_pContainer,m_FillType));
@@ -811,6 +811,62 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		dest.top = y;
 		dest.width = width;
 		dest.height = height;
+//
+// Only fill the bits exposed by the clip rect
+//
+		const UT_Rect * pClip = pG->getClipRect();
+		if(pClip != NULL)
+		{
+			UT_sint32 leftDiff = 0;
+			UT_sint32 widthDiff = 0;
+			UT_sint32 topDiff = 0;
+			UT_sint32 heightDiff = 0;
+			if(pClip->left > dest.left)
+			{
+				leftDiff = pClip->left - dest.left - pG->tlu(2) -1;
+				src.left += leftDiff;
+				dest.left += leftDiff;
+				src.width -= leftDiff;
+				dest.width -= leftDiff;
+				if(dest.width <= 0)
+				{
+					return;
+				}
+			}
+			if(pClip->left + pClip->width < dest.left + dest.width)
+			{
+				widthDiff = dest.left + dest.width - pClip->left - pClip->width  - pG->tlu(2) -1;
+				src.width -= widthDiff;
+				dest.width -= widthDiff;
+				if(dest.width <= 0)
+				{
+					return;
+				}
+			}
+			if(pClip->top > dest.top)
+			{
+				topDiff = pClip->top - dest.top  - pG->tlu(2) -1;
+				src.top += topDiff;
+				dest.top += topDiff;
+				src.height -= topDiff;
+				dest.height -= topDiff;
+				if(dest.height <= 0)
+				{
+					return;
+				}
+			}
+			if(pClip->top + pClip->height < dest.top + dest.height)
+			{
+				heightDiff = dest.top + dest.height - pClip->top - pClip->height  - pG->tlu(2) -1;
+				src.height -= heightDiff;
+				dest.height -= heightDiff;
+				if(dest.height <= 0)
+				{
+					return;
+				}
+			}
+		}
+
 		if(m_pDocImage == NULL)
 		{
 			pG->fillRect(m_pImage,src,dest);
