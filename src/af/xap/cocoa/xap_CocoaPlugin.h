@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource Application Framework
- * Copyright (C) 2004 Francis James Franklin
+ * Copyright (C) 2004-2005 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -85,7 +85,7 @@
 
 @interface XAP_CocoaPlugin : NSObject
 {
-	XAP_CocoaPluginImpl *	m_pImpl;
+	id <NSObject, XAP_CocoaPluginDelegate>	m_delegate;
 }
 - (id)init;
 - (void)dealloc;
