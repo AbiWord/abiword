@@ -2828,6 +2828,7 @@ void fl_BlockLayout::format()
 		// Create the first line if necessary.
 		if (!getFirstContainer())
 		{
+			collapse(); // remove all old content
 			_stuffAllRunsOnALine();
 			fp_Line * pLine = static_cast<fp_Line *>(getFirstContainer());
 			pLine->resetJustification(true);

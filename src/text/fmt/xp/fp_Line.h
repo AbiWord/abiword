@@ -130,7 +130,7 @@ public:
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
 	void        insertRun(fp_Run*);
-    bool     removeRun(fp_Run*, bool bTellTheRunAboutIt=false);
+    bool     removeRun(fp_Run*, bool bTellTheRunAboutIt=true);
 
 	inline	bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
