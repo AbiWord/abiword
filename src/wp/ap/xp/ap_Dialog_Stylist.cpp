@@ -245,7 +245,8 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 //
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
 	Stylist_row * pStyleRow = new Stylist_row();
-	UT_UTF8String sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_HeadingStyles);
+	UT_UTF8String sTmp;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_HeadingStyles, sTmp);
 	pStyleRow->setRowName(sTmp);
 	m_vecStyleRows.addItem(pStyleRow);
 	for(i=0; i< numStyles; i++)
@@ -263,7 +264,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 // Next the list styles.
 //
 	pStyleRow = new Stylist_row();
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_ListStyles);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_ListStyles, sTmp);
 	pStyleRow->setRowName(sTmp);
 	m_vecStyleRows.addItem(pStyleRow);
 	for(i=0; i< numStyles; i++)
@@ -281,7 +282,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 // Now the Footnote/Endnote.
 //
 	pStyleRow = new Stylist_row();
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_FootnoteStyles);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_FootnoteStyles, sTmp);
 	pStyleRow->setRowName(sTmp);
 	m_vecStyleRows.addItem(pStyleRow);
 	for(i=0; i< numStyles; i++)
@@ -299,7 +300,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 // Now the user-defined
 //
 	pStyleRow = new Stylist_row();
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_UserStyles);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_UserStyles, sTmp);
 	pStyleRow->setRowName(sTmp);
 	UT_sint32 iCount = 0;
 	for(i=0; i< numStyles; i++)
@@ -325,7 +326,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 //
 // Now everything else
 //
-	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_MiscStyles);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_MiscStyles, sTmp);
 	pStyleRow = new Stylist_row();
 	pStyleRow->setRowName(sTmp);
 	m_vecStyleRows.addItem(pStyleRow);
