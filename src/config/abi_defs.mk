@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiSource Program Utilities
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998,1999 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -333,12 +333,15 @@ endif
 ## We should change this when get non-gtk versions on unix....
 ## Changed: I've added the ABI_OPT_GNOME variable, anybody has any
 ## inconvenient with the addition?
+
+ifeq ($(ABI_NATIVE),unix)
 ifeq ($(ABI_OPT_GNOME),1)
 CFLAGS 		+=	`$(GNOME_CONFIG) --cflags gnorba gnomeui` -DHAVE_GNOME
 EXTRA_LIBS	+=	`$(GNOME_CONFIG) --libs gnorba gnomeui`
 else
 CFLAGS 		+=	`$(GTK_CONFIG) --cflags`
 EXTRA_LIBS	+=	`$(GTK_CONFIG) --libs`
+endif
 endif
 
 ##################################################################
