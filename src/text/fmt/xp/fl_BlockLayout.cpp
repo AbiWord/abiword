@@ -964,13 +964,13 @@ void fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 {
 	// When loading a document, there may not have been created
 	// lines yet. Get a first one created and hope for the best...
-        // Sevior: Ah here is one source of the multi-level list bug we
-        // need a last line from the previous block before we call this.
-        if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
-        {
-	        UT_DEBUGMSG(("In _breakLineAfterRun no LastLine \n"));
-	        UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
-	        //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	// Sevior: Ah here is one source of the multi-level list bug we
+	// need a last line from the previous block before we call this.
+	if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
+	{
+		UT_DEBUGMSG(("In _breakLineAfterRun no LastLine \n"));
+		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
+		//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	if (!m_pFirstLine)
 		_stuffAllRunsOnALine();
@@ -2387,9 +2387,9 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 
 UT_Bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
-        FV_View* pView = m_pLayout->getView();
-        if(pView)
-	        pView->eraseInsertionPoint();
+	FV_View* pView = m_pLayout->getView();
+	if(pView)
+		pView->eraseInsertionPoint();
 	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
@@ -2585,9 +2585,9 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 #endif
 
 
-        FV_View* ppView = m_pLayout->getView();
-        if(ppView)
-	        ppView->eraseInsertionPoint();
+	FV_View* ppView = m_pLayout->getView();
+	if(ppView)
+		ppView->eraseInsertionPoint();
 	
 	m_gbCharWidths.ins(blockOffset, len);
 	if (pNewRun->getType() == FPRUN_TEXT)
@@ -2604,17 +2604,17 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		  We special case the situation where we are inserting into
 		  a block which has nothing but the fake run.
 		*/
-	  // Handle special case for headers/footers where a line may not be 
-	  // defined
-	        fp_Line * pLine = m_pFirstRun->getLine();
+		// Handle special case for headers/footers where a line may not be 
+		// defined
+		fp_Line * pLine = m_pFirstRun->getLine();
 		if(pLine)
-		        pLine->removeRun(m_pFirstRun);
+			pLine->removeRun(m_pFirstRun);
 		delete m_pFirstRun;
 		m_pFirstRun = NULL;
 
 		m_pFirstRun = pNewRun;
 		if(m_pLastLine)
-		       m_pLastLine->addRun(pNewRun);
+			m_pLastLine->addRun(pNewRun);
 
 		return UT_TRUE;
 	}
@@ -2754,7 +2754,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	  runs as usual.
 	*/
 	UT_uint32 	iNormalBase = 0;
-	UT_Bool		bNormal = UT_FALSE;
+	UT_Bool	bNormal = UT_FALSE;
 	UT_uint32 i;
 	UT_uint32 _sqlist[100], *sqlist = _sqlist; 
 	UT_uint32 sqcount = 0;
@@ -3426,11 +3426,27 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	fp_Run* pRun;
 	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun); pLastRun=pRun, pRun=pRun->getNext())
 	{
-		switch (pRun->containsOffset(blockOffset))
-		{
-		case FP_RUN_INSIDE:
-			if (blockOffset > pRun->getBlockOffset())
-			{
+		// We have passed the point. Why didn't previous Run claim to
+		// hold the offset? Make the best of it in non-debug
+		// builds. But keep the assert to get us information...
+		if (pRun->getBlockOffset() > blockOffset) {
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			pFirstNewRun = pRun;
+			break;
+		}
+
+		// FIXME: Room for optimization improvement here - always scan
+		// FIXME: past the point by only comparing getBlockOffset.
+
+		if (pRun->getBlockOffset() <= blockOffset &&
+			(pRun->getBlockOffset() + pRun->getLength()) > blockOffset) {
+			// We found the Run. Now handle splitting.
+
+			if (pRun->getBlockOffset() == blockOffset) {
+				// Split between this Run and the previous one
+				pFirstNewRun = pRun;
+			} else {
+				// Need to split current Run
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 
 				// split here
@@ -3438,17 +3454,6 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 				pTextRun->split(blockOffset);
 				pFirstNewRun = pRun->getNext();
 			}
-			else
-			{
-				pFirstNewRun = pRun;
-			}
-			break;
-
-		case FP_RUN_NOT:
-			break;
-
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
 	}
