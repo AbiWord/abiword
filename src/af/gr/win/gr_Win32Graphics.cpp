@@ -1089,6 +1089,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		hinst = NULL;
 		break;
 
+	case GR_CURSOR_HLINE_DRAG:
 	case GR_CURSOR_UPDOWN:
 	case GR_CURSOR_IMAGESIZE_N:
 	case GR_CURSOR_IMAGESIZE_S:
@@ -1102,6 +1103,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		hinst = NULL;
 		break;
 
+	case GR_CURSOR_VLINE_DRAG:
 	case GR_CURSOR_LEFTRIGHT:
 	case GR_CURSOR_IMAGESIZE_E:
 	case GR_CURSOR_IMAGESIZE_W:
