@@ -152,7 +152,7 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 # Which links can this platform create.  Define one or
 # both of these options.
 UNIX_CAN_BUILD_DYNAMIC=1
-UNIX_CAN_BUILD_STATIC=0
+UNIX_CAN_BUILD_STATIC=1
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= dl
