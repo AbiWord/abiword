@@ -34,11 +34,3 @@ const char gAbi_Build_Version[] = ABI_BUILD_VERSION;
 const char gAbi_Build_CompileTime[] = __TIME__;
 const char gAbi_Build_CompileDate[] = __DATE__;
 
-int main()
-{
-	printf("id=%s\n", gAbi_Build_ID);
-	printf("version=%s\n", gAbi_Build_Version);
-	printf("time=%s\n", gAbi_Build_CompileTime);
-	printf("date=%s\n", gAbi_Build_CompileDate);
-}
-
