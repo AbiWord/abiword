@@ -1,0 +1,31 @@
+
+All of the following terms are trademarks or registered trademarks
+of AbiSource, Inc.:
+	AbiSource
+	AbiWord
+	AbiList
+	AbiCalc
+	AbiList
+	AbiSuite
+	( the stylized A logo )
+	( the 'ant' cartoon character )
+
+Except as described below, all usage of these trademarks, as well as
+similar derivative forms, is reserved for use exclusively by
+AbiSource, Inc.
+
+As of the time of this writing, the AbiWord source tree is configured
+such that it builds an executable which is labelled "AbiWord
+Personal".  In accordance with the terms of the AbiSource Public
+License, You may distribute binaries built from this source tree,
+bearing the name "AbiWord Personal".  However, no other usage of the
+marks above is permitted.
+
+In other words, if you want to distribute a binary built from this
+source tree, you must either call it "AbiWord Personal", or call it
+something else which does not make include or resemble any trademarks
+of AbiSource, Inc.
+
+20 August 1998
+
+
