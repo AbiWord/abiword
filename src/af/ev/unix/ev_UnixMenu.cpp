@@ -270,6 +270,12 @@ void EV_UnixMenu::_append_NormalItem(char * bufMenuPathname,const char * szLabel
 	_ev_concat_and_convert(buf,bufMenuPathname,szLabelName);
 	UT_cloneString(p->path,buf);
 
+	// TODO search our keybindings and see if there's one or more
+	// TODO keys set to the function that this menu item is bound
+	// TODO to.  if so, add an accelerator to the following.
+	// TODO note that this is independent of any mnemonic given on
+	// TODO the menu label.
+	
 	p->accelerator = NULL;
 	p->callback = (GtkItemFactoryCallback)_wd::s_onActivate;
 
@@ -290,6 +296,14 @@ void EV_UnixMenu::_append_SubMenu(char * bufMenuPathname,const char * szLabelNam
 	// we are given 2 strings -- something of the form: "/Edit" and "&Align"
 	// build string for the sub-menu (with accelerator) and then yank the "&"
 	// and extend the prefix.
+
+	// TODO if this is a top-level sub-menu (like "File" or "Edit")
+	// TODO and there's an accelerator (mnemonic) defined in the label
+	// TODO string ("&File"), verify that the we haven't already bound
+	// TODO that particular keyboard action (Alt-F) to some EditMethod
+	// TODO in the keybindings.  if so, we should strip off the '&',
+	// TODO so that GTK will ignore the key sequence and let our
+	// TODO keyboard handler take care of it.
 	
 	char buf[1024];
 	_ev_concat_and_convert(buf,bufMenuPathname,szLabelName);
