@@ -86,10 +86,11 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			}
 			else
 			{
-				pFirstWin32Frame->loadDocument(q);
 				break;
 			}
 		}
+		
+		pFirstWin32Frame->loadDocument(q);
 
 		free(p);
 	}
