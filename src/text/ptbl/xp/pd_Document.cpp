@@ -121,7 +121,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 
 	// save out file type so future saves know the type imported as
 	m_lastSavedAsType = (IEFileType) ieft;
-	
+
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
 	return UT_OK;
@@ -196,7 +196,9 @@ UT_Error PD_Document::save(void)
 {
 	if (!m_szFilename || !*m_szFilename)
 		return UT_SAVE_NAMEERROR;
-
+	if (m_lastSavedAsType == IEFT_Unknown)
+     		return UT_EXTENSIONERROR;
+   
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
 
