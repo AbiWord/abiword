@@ -93,6 +93,7 @@ protected:
 	GR_Win32Font*		m_pFontGUI;
 	ABC					m_aABCs[256];
 	int					m_aCharWidths[256];
+	int					m_defaultCharWidth;
 	UT_sint32			m_iLineWidth;
 
 private:

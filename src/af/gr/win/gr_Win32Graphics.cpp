@@ -62,6 +62,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_pFontGUI = NULL;
 	memset(m_aABCs, 0, 256*sizeof(ABC));
 	memset(m_aCharWidths, 0, 256*sizeof(int));
+	m_defaultCharWidth = 0;
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
@@ -225,6 +226,27 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 
 		UT_ASSERT(err);
 	}
+
+	// also get the width of the default (slug) character
+
+	TEXTMETRIC tm;
+
+	GetTextMetrics(m_hdc, &tm);
+
+	UINT d = tm.tmDefaultChar;
+	UT_ASSERT(d<256);	// if this is always true, we could save a lookup
+
+	if (__isWinNT())
+		bSuccess = GetCharWidth32(m_hdc, d, d, &m_defaultCharWidth);
+	else
+		bSuccess = GetCharWidth(m_hdc, d, d, &m_defaultCharWidth);
+
+	if (!bSuccess)
+	{
+		DWORD err = GetLastError();
+
+		UT_ASSERT(err);
+	}
 }
 
 HFONT GR_Win32Font::getHFONT()
@@ -310,13 +332,20 @@ UT_uint32 GR_Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int 
 	UT_ASSERT(s);
 
 	int iCharWidth = 0;
+	int iWidth;
 	for (int i=0; i<num; i++)
 	{
-		// TODO should this assert be s[i+iOffset] ??
-		UT_ASSERT(s[i] < 256);	// TODO we currently cannot deal with Unicode properly
+//		UT_ASSERT(s[i+iOffset] < 256);	
+		
+		// TODO we currently cannot deal with Unicode properly
 
-		iCharWidth += m_aCharWidths[s[i + iOffset]];
-		pWidths[i] = m_aCharWidths[s[i + iOffset]];
+		if (s[i+iOffset] < 256)
+			iWidth = m_aCharWidths[s[i + iOffset]];
+		else 
+			iWidth = m_defaultCharWidth;
+
+		iCharWidth += iWidth;
+		pWidths[i] = iWidth;
 	}
 
 	return iCharWidth;
