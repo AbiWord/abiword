@@ -12,7 +12,8 @@
 // If anyone think it's more apropriate to express it in meters,
 // you're free to change the implementation.
 
-const int cMaxSymbolicLength = 25;
+static const int cMaxSymbolicLength = 25;
+static const UT_Dimension FUND = DIM_MM;
 
 struct private_pagesize_sizes
 {

@@ -84,8 +84,6 @@ public:
 	static const char * PredefinedToName(Predefined preDef);
 
 private:
-	static const UT_Dimension FUND = DIM_MM;
-
 	char * m_predefined;
 
 	double m_iWidth;
