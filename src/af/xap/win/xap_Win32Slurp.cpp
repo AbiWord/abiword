@@ -33,7 +33,7 @@
 #include "xap_Prefs.h"
 
 //////////////////////////////////////////////////////////////////
-// "Slurp" (aka "Leach") refers to the ability of an application
+// "Slurp" (aka "Leech") refers to the ability of an application
 // to receive DDE messages to open a document.  For example, the
 // user can double-click on a foo.abw document in Windows Explorer
 // and (if we're properly registered with the system) it will hand

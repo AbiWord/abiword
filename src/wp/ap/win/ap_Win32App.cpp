@@ -406,8 +406,14 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 	if (!bShowSplash)
 		goto Done;
 
+	extern unsigned char g_pngSplash[];		// see ap_wp_Splash.cpp
+	extern unsigned long g_pngSplash_sizeof;	// see ap_wp_Splash.cpp
+
 	pBB = new UT_ByteBuf();
-	if (pBB->insertFromFile(0, szFile))
+	if (
+		(pBB->insertFromFile(0, szFile))
+		|| (pBB->ins(0, g_pngSplash, g_pngSplash_sizeof))
+		)
 	{
 		// NB: can't access 'this' members from a static member function
 		WNDCLASSEX  wndclass;
