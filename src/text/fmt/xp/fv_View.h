@@ -147,7 +147,7 @@ class ABI_EXPORT fv_PropCache
 {
 public:
 	fv_PropCache(void);
-	virtual ~fv_PropCache(void);
+	~fv_PropCache(void);
 	UT_uint32         getTick(void) const;
 	void              setTick(UT_uint32 iTick);
 	bool              isValid(void) const;
