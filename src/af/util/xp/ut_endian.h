@@ -35,6 +35,12 @@
 	#else
 		#define UT_BIG_ENDIAN
 	#endif
+#elif defined(__MACH__) && defined(__APPLE__)
+	#if defined(__BIG_ENDIAN__)
+		#define UT_BIG_ENDIAN
+	#else
+		#define UT_LITTLE_ENDIAN
+	#endif
 #else /* this is for Linux */
 	#include <endian.h>
 	#if __BYTE_ORDER == __LITTLE_ENDIAN		
