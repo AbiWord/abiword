@@ -48,7 +48,7 @@ class EV_CocoaToolbar;
 - (void)setColor:(XAP_Toolbar_Id)tlbrid;
 - (IBAction)aColor_FG:(id)sender;
 - (IBAction)aColor_BG:(id)sender;
-- (id)toolbarSelected:(id)sender;
+- (void)toolbarSelected:(id)sender;
 - (void)setXAPOwner:(EV_CocoaToolbar*)owner;
 @end
 
