@@ -57,6 +57,7 @@
 #define PREVIEW_WIDTH  100
 #define PREVIEW_HEIGHT 100
 
+// NSFileHandlingPanelBrowser
 
 @implementation XAP_OpenSavePanel_AccessoryController
 
@@ -65,11 +66,6 @@
 	self = [super init];
 	_xap = xap;
 	return self;
-}
-
--(void)awakeFromNib
-{
-	
 }
 
 -(NSView*)fileTypeAcessoryView
@@ -216,10 +212,14 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: title and the error/confirmation message boxes.  we
 	// NOTE: let Cocoa take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
-
-	[m_panel setTitle:[NSString stringWithUTF8String:szTitle.c_str()]];
+	NSString * str;
+	str = [[NSString alloc] initWithUTF8String:szTitle.c_str()];
+	[m_panel setTitle:str];
+	[str release];
 	[m_panel setExtensionHidden:NO];
-	[m_accessoryViewsController setFileTypeLabel:[NSString stringWithUTF8String:szFileTypeLabel.c_str()]];
+	str = [[NSString alloc] initWithUTF8String:szFileTypeLabel.c_str()];
+	[m_accessoryViewsController setFileTypeLabel:str];
+	[str release];
 	[m_accessoryViewsController removeItemsOfFileTypesMenu];
 	NSMenuItem*	item;
 	NSMenu* fileTypesMenu = [m_accessoryViewsController fileTypesMenu];
@@ -248,7 +248,17 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	
 	[m_panel setAccessoryView:[m_accessoryViewsController fileTypeAcessoryView]];
-
+#if 0
+	{
+		NSView* topView = [[[m_accessoryViewsController fileTypeAcessoryView] window] contentView];
+		id obj = [topView viewWithTag:NSFileHandlingPanelBrowser];
+		if ([obj isKindOfClass:[NSBrowser class]]) {
+			NSBrowser* browser = obj;
+			id delegate = [browser delegate];
+			UT_ASSERT(delegate);
+		}
+	}
+#endif
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
 	
@@ -309,7 +319,6 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_answer = a_OK;
 	}
 			  
-	FREEP(szPersistDirectory);
 	m_pCocoaFrame = NULL;
 
 	return;
