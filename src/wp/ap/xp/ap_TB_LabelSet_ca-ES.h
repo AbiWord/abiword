@@ -87,13 +87,18 @@ BeginSet(ca,ES,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"Espaiat 1,5",		tb_line_middle_space_xpm,	NULL, "Espaiat 1,5")
 	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Espaiat doble",	tb_line_double_space_xpm,	NULL, "Espaiat doble")
 
-	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"1 columna",			tb_1column_xpm,			NULL, "1 columna")
-	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 columnes",		tb_2column_xpm,			NULL, "2 columnes")
-	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 columnes",		tb_3column_xpm,			NULL, "3 columnes")
+	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 columna",			tb_1column_xpm,			NULL, "1 columna")
+	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 columnes",		tb_2column_xpm,			NULL, "2 columnes")
+	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 columnes",		tb_3column_xpm,			NULL, "3 columnes")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",			NoIcon,			NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Vinyetes",			tb_lists_bullets_xpm,	NULL, "Vinyetes")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Llistes",			tb_lists_numbers_xpm,	NULL, "Llistes numerades")
+	
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color",		NoIcon,			NULL,	"Canvia el color")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fons",	NoIcon,			NULL,	"Canvia el color de fons")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Identació",	tb_text_indent_xpm,	NULL,	"Augmenta la identació del paràgraf")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desidentació",	tb_text_unindent_xpm,	NULL,	"Diminueix la identació del paràgraf")
 	
 	// ... add others here ...
 
