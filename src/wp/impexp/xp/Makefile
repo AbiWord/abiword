@@ -52,6 +52,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_imp_UTF8.cpp				\
 			ie_imp_WML.cpp				\
 			ie_imp_XHTML.cpp			\
+			ie_imp_XSL-FO.cpp			\
 			ie_imp_Applix.cpp			\
 			ie_imp_MIF.cpp				\
 			ie_imp_GraphicAsDocument.cpp		\

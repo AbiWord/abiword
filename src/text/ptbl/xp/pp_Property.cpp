@@ -151,21 +151,6 @@ static int s_compare (const void * a, const void * b)
 
 /*****************************************************************/
 
-inline const XML_Char * PP_Property::getName() const
-{
-	return m_pszName;
-}
-
-inline const XML_Char * PP_Property::getInitial() const
-{
-	return m_pszInitial;
-}
-
-inline bool PP_Property::canInherit() const
-{
-	return m_bInherit;
-}
-
 const PP_Property * PP_lookupProperty(const XML_Char * name)
 {
 	PP_Property * prop = NULL;

@@ -21,11 +21,8 @@
 #ifndef IE_IMP_WML_H
 #define IE_IMP_WML_H
 
-#include <stdio.h>
-#include "ut_vector.h"
-#include "ut_stack.h"
 #include "ie_imp_XML.h"
-#include "ut_bytebuf.h"
+
 class PD_Document;
 
 // The importer/reader for WML files.

@@ -17,37 +17,34 @@
  * 02111-1307, USA.
  */
 
-#ifndef IE_IMP_XHTML_1_H
-#define IE_IMP_XHTML_1_H
+#ifndef IE_IMP_XSL_FO_H
+#define IE_IMP_XSL_FO_H
 
 #include "ie_imp_XML.h"
 
 class PD_Document;
 
-// The importer/reader for XHTML 1.0
+// The importer/reader for XSL-FO files.
 
-class IE_Imp_XHTML : public IE_Imp_XML
+class IE_Imp_XSL_FO : public IE_Imp_XML
 {
 public:
-    IE_Imp_XHTML(PD_Document * pDocument);
-    ~IE_Imp_XHTML();
+	IE_Imp_XSL_FO(PD_Document * pDocument);
+	virtual ~IE_Imp_XSL_FO();
 
-    static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-    static bool		RecognizeSuffix(const char * szSuffix);
-    static UT_Error		StaticConstructor(PD_Document * pDocument,
-	    IE_Imp ** ppie);
-    static bool		GetDlgLabels(const char ** pszDesc,
-	    const char ** pszSuffixList,
-	    IEFileType * ft);
-    static bool 		SupportsFileType(IEFileType ft);
-
-    void			_startElement(const XML_Char *name, 
-					      const XML_Char **atts);
-    void			_endElement(const XML_Char *name);
-
- protected:
-    
-    enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
+	static bool		    RecognizeContents(const char * szBuf, 
+										  UT_uint32 iNumbytes);
+	static bool		    RecognizeSuffix(const char * szSuffix);
+	static UT_Error		StaticConstructor(PD_Document * pDocument,
+										  IE_Imp ** ppie);
+	static bool		    GetDlgLabels(const char ** pszDesc,
+									 const char ** pszSuffixList,
+									 IEFileType * ft);
+	static bool 		SupportsFileType(IEFileType ft);
+	
+	void			    _startElement(const XML_Char *name, 
+									  const XML_Char **atts);
+	void			    _endElement(const XML_Char *name);
 };
 
-#endif /* IE_IMP_XHTML_H */
+#endif /* IE_IMP_XSL_FO_H */

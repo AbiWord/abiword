@@ -88,7 +88,7 @@ protected:
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
 
-
+private:
 	PD_Document *		m_pDocument;
 	IE_Exp_XSL_FO *	    m_pie;
 
@@ -649,10 +649,18 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 			m_pie->write("\"");
 		}
 
-		if (pAP->getProperty("windows", szValue))
+		if (pAP->getProperty("text-align", szValue))
 		{
 			BLOCK();
-			m_pie->write("windows=\"");
+			m_pie->write("text-align=\"");
+			m_pie->write((const char *)szValue);
+			m_pie->write("\"");
+		}
+
+		if (pAP->getProperty("widows", szValue))
+		{
+			BLOCK();
+			m_pie->write("widows=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
 		}
@@ -763,14 +771,6 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			SPAN();
 			m_pie->write("keep-with-next=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("lang", szValue))
-		{
-			SPAN();
-			m_pie->write("language=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
 		}

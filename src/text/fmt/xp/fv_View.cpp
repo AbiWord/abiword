@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <locale.h>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
@@ -7095,7 +7097,9 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		static char buf[20];
+		setlocale(LC_NUMERIC,"C");
 		snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(fp_PageSize::inch));
+		setlocale(LC_NUMERIC,""); // restore original locale
 
 		pInfo->m_xPaperSize = m_pG->convertDimension(buf);
 		pInfo->m_xPageViewMargin = getPageViewLeftMargin();
