@@ -206,11 +206,26 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	pf_Frag_Strux * pfsNew = NULL;
 	if (!_createStrux(pts,indexAP,&pfsNew))
 		return UT_FALSE;
-
+	
 	// insert this frag into the fragment list.
 
 	_insertStrux(pf,fragOffset,pfsNew);
-	
+
+	if (pfsNew->getStruxType() == PTX_Block)
+	{
+		// when inserting paragraphs, we try to remember the current
+		// span formatting active at the insertion point.  if the
+		// user keeps typing text (or comes back later and starts
+		// inserting text at the beginning of the paragraph), we'll
+		// try to use it rather than defaulting to plain text.
+
+		_captureActiveSpan(static_cast<pf_Frag_Strux_Block *>(pfsNew));
+
+		// TODO we need to remember the capturedActiveSpan in the change record
+		// TODO so that undo can restore it.  we need to clear the it on the
+		// TODO block after the first time it is used.
+	}
+
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.
 	
@@ -222,4 +237,51 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);
 	
 	return UT_TRUE;
+}
+
+void pt_PieceTable::_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock)
+{
+	// set the preferredSpanFmt field in pfsBlock based upon the
+	// current state in the document.
+	
+	PT_AttrPropIndex api;
+	if (_haveTempSpanFmt(NULL,&api))
+	{
+		pfsBlock->setPreferredSpanFmt(api);
+		return;
+	}
+
+	pf_Frag * pfPrev = pfsBlock->getPrev();
+	if (!pfPrev)
+		return;
+
+	switch (pfPrev->getType())
+	{
+	default:
+		return;
+
+	case pf_Frag::PFT_Text:
+		{
+			pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pfPrev);
+			pfsBlock->setPreferredSpanFmt(pfPrevText->getIndexAP());
+		}
+		return;
+
+	case pf_Frag::PFT_Strux:
+		{	
+			pf_Frag_Strux * pfPrevStrux = static_cast<pf_Frag_Strux *>(pfPrev);
+			switch (pfPrevStrux->getType())
+			{
+			default:
+				return;
+				
+			case PTX_Block:
+				{
+					pf_Frag_Strux_Block * pfPrevStruxBlock = static_cast<pf_Frag_Strux_Block *>(pfPrevStrux);
+					pfsBlock->setPreferredSpanFmt(pfPrevStruxBlock->getPreferredSpanFmt());
+				}
+				return;
+			}
+		}
+	}
 }

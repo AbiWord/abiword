@@ -58,13 +58,19 @@ PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset
 	case pf_Frag::PFT_Strux:
 		{
 			// we are looking at a strux or EOD.  see if there is text
-			// just before us and if it is different.
+			// just before us and if it is different.  if there is nothing
+			// or something other than text before us, we are by-definition
+			// changing fmt.
 			if (   (pf->getPrev())
 				&& (pf->getPrev()->getType()==pf_Frag::PFT_Text))
 			{
 				pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pf->getPrev());
 				if (pftPrev->getIndexAP() != indexAP)
 					diff |= PT_Diff_Left;
+			}
+			else
+			{
+				diff |= PT_Diff_Left;
 			}
 		}
 		return diff;
@@ -308,7 +314,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// or an append to the previous one (when it's a text frag).
 	// in the normal case, we want the Attr/Prop of a character
 	// insertion to take the AP of the thing to the immediate
-	// left (this is what MS-Word and MS-WordPad do).  It's also
+	// left (seems to be what MS-Word and MS-WordPad do).  It's also
 	// useful when the user hits the BOLD button (without a)
 	// selection) and then starts typing -- ideally you'd like
 	// all of the text to have bold not just the first.  therefore,
@@ -321,16 +327,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		fragOffset = pf->getLength();
 	}
 	
-	PT_AttrPropIndex indexAP = 0;
-	if (_haveTempSpanFmt(NULL,&indexAP))
-	{
-		// we were given what we need.
-	}
-	else if (pf->getType() == pf_Frag::PFT_Text)
-	{
-		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
-		indexAP = pft->getIndexAP();
-	}
+	PT_AttrPropIndex indexAP = _chooseIndexAP(pf,fragOffset);
 
 	// before we actually do the insert, see if we are introducing a
 	// change in the formatting.
@@ -355,4 +352,87 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	m_pDocument->notifyListeners(pfs,pcr);
 
 	return UT_TRUE;
+}
+
+PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset fragOffset)
+{
+	// decide what indexAP to give an insertSpan inserting at the given
+	// position in the document [pf,fragOffset].
+	
+	PT_AttrPropIndex indexAP;
+
+	// if we have a TempSpanFmt active, use it.
+	
+	if (_haveTempSpanFmt(NULL,&indexAP))
+		return indexAP;
+
+	// try to get it from the current fragment.
+	
+	if ((pf->getType() == pf_Frag::PFT_Text) && (fragOffset > 0))
+	{
+		// if we are inserting at the middle or end of a text fragment,
+		// we take the A/P of this text fragment.
+
+		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
+		return pft->getIndexAP();
+	}
+
+	// we are not looking forward at a text fragment or
+	// we are at the beginning of a text fragment.
+	// look to the previous fragment to see what to do.
+	
+	pf_Frag * pfPrev = pf->getPrev();
+	switch (pfPrev->getType())
+	{
+	case pf_Frag::PFT_Text:
+		{
+			// if we immediately follow another text fragment, we
+			// take the A/P of that fragment.
+
+			pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
+			return pftPrev->getIndexAP();
+		}
+
+	case pf_Frag::PFT_Strux:
+		{
+			// if we immediately follow a block (paragraph), we try
+			// to use the preferredSpanFmt which was set when the
+			// paragraph was created.  this allows continuous typing
+			// (typing in a style, hitting return, and typing some more)
+			// to work as expected.  ***BUT*** it may cause inserts at
+			// the beginning of this paragraph to be *stuck* to that
+			// style.
+
+			// TODO figure out how to "forget" about the preferredSpanFmt
+			// TODO and/or when to start looking at the existing text in
+			// TODO the paragraph.
+
+			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pfPrev);
+			if (pfsPrev->getStruxType() == PTX_Block)
+			{
+				pf_Frag_Strux_Block * pfsbPrev = static_cast<pf_Frag_Strux_Block *>(pfsPrev);
+				return pfsbPrev->getPreferredSpanFmt();
+			}
+
+			// if we are looking back at something else, we really don't
+			// have a choice.  as a last ditch effort, try to take
+			// a look to the right.
+				
+			if (pf->getType() == pf_Frag::PFT_Text)
+			{
+				// we take the A/P of this text fragment.
+
+				pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
+				return pft->getIndexAP();
+			}
+
+			// we can't find anything, just use the default.
+			
+			return 0;
+		}
+
+	default:
+		UT_ASSERT(0);
+		return 0;
+	}
 }

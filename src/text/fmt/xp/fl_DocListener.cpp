@@ -277,8 +277,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					{					
 						if (pRun->ins(blockOffset, len, pcrs->getIndexAP()))
 						{
-							if (pcrs->isDifferentFmt() & PT_Diff_Left)
+							if (pcrs->isDifferentFmt() & (PT_Diff_Left|PT_Diff_Right))
 							{
+								// TODO break up this section to do a left- and right-split
+								// TODO seperately.
 								/*
 									The format changed too, so this needs to 
 									wind up in its own run.

@@ -33,6 +33,7 @@
 #include "pt_VarSet.h"
 class pf_Frag_Text;
 class pf_Frag_Strux;
+class pf_Frag_Strux_Block;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -128,6 +129,9 @@ public:
 #endif /* PT_TEST */
 	
 protected:
+
+	void					_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock);
+	PT_AttrPropIndex		_chooseIndexAP(pf_Frag * pf, PT_BlockOffset fragOffset);
 
 	UT_Bool					_createStrux(PTStruxType pts,
 										 PT_AttrPropIndex indexAP,

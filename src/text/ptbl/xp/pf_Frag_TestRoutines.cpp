@@ -43,25 +43,25 @@ void pf_Frag::__dump(FILE * fp) const
 
 void pf_Frag_Strux_Block::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Block 0x%08lx api[%ld]\n",
-			(UT_uint32)this,m_indexAP);
+	fprintf(fp,"      Block 0x%08lx api[%08lx] preferredSpanAPI[%08lx]\n",
+			(UT_uint32)this,m_indexAP,m_preferredSpanAPI);
 }
 
 void pf_Frag_Strux_Column::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Column 0x%08lx api[%ld]\n",
+	fprintf(fp,"      Column 0x%08lx api[%08lx]\n",
 			(UT_uint32)this,m_indexAP);
 }
 
 void pf_Frag_Strux_ColumnSet::__dump(FILE * fp) const
 {
-	fprintf(fp,"      ColumnSet 0x%08lx api[%ld]\n",
+	fprintf(fp,"      ColumnSet 0x%08lx api[%08lx]\n",
 			(UT_uint32)this,m_indexAP);
 }
 
 void pf_Frag_Strux_Section::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Section 0x%08lx api[%ld]\n",
+	fprintf(fp,"      Section 0x%08lx api[%08lx]\n",
 			(UT_uint32)this,m_indexAP);
 }
 

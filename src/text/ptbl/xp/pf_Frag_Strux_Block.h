@@ -37,9 +37,15 @@ public:
 						PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux_Block();
 
+	void					setPreferredSpanFmt(PT_AttrPropIndex api);
+	PT_AttrPropIndex		getPreferredSpanFmt(void) const;
+	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif
+
+protected:
+	PT_AttrPropIndex		m_preferredSpanAPI;
 };
 
 #endif /* PF_FRAG_STRUX_BLOCK_H */
