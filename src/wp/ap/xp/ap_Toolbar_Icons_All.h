@@ -70,8 +70,8 @@
 #	include "tb_save_as.xpm"
 #	include "tb_undo.xpm"
 #	include "tb_todo.xpm"
-//#       include "tb_lists_bullets.xpm"
-//#       include "tb_lists_numbers.xpm"
+#       include "tb_lists_bullets.xpm"
+#       include "tb_lists_numbers.xpm"
 
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
@@ -138,8 +138,8 @@
 	DefineToolbarIcon(tb_save_as_xpm)
 	DefineToolbarIcon(tb_undo_xpm)
 	DefineToolbarIcon(tb_todo_xpm)
-		//	DefineToolbarIcon(tb_lists_numbers_xpm)
-		//	DefineToolbarIcon(tb_lists_bullets_xpm)
+      	DefineToolbarIcon(tb_lists_numbers_xpm)
+       	DefineToolbarIcon(tb_lists_bullets_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)
