@@ -11,7 +11,8 @@
 
 // WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW AND Cocoa (Hub)
 #if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__))
-XAP_FrameImpl::XAP_FrameImpl() :
+XAP_FrameImpl::XAP_FrameImpl(XAP_Frame *pFrame) :
+	m_pFrame(pFrame),
 	m_pMouse(0),
 	m_pKeyboard(0),
 	m_iFrameMode(XAP_NormalFrame),

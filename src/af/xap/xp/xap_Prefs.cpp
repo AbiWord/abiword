@@ -502,7 +502,9 @@ XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 		// so we may need to create one that is
 		if ( !strcmp((const char*)m_currentScheme->getSchemeName(), "_builtin_") ) 
 		{
-			const XML_Char new_name[] = "_custom_";
+	
+
+		const XML_Char new_name[] = "_custom_";
 
 			if (setCurrentScheme(new_name))
 			{

@@ -51,7 +51,7 @@ class ABI_EXPORT XAP_FrameImpl
 public:
 	XAP_Frame*	getFrame() { return m_pFrame; };	/* needed for Obj-C access */
 protected:
-	XAP_FrameImpl();
+	XAP_FrameImpl(XAP_Frame *pFrame);
 	virtual ~XAP_FrameImpl();
 
 	friend class XAP_Frame;

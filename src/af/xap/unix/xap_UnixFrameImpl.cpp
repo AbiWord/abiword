@@ -105,15 +105,15 @@ static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
 
 /****************************************************************/
 XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) : 
+	XAP_FrameImpl(pFrame),
 	m_bDoZoomUpdate(false),
 	m_iZoomUpdateID(0),
 	m_iAbiRepaintID(0),
+	m_pUnixApp(pApp),
+	m_pUnixMenu(NULL),
+	m_pUnixPopup(NULL),
 	m_dialogFactory(pFrame, static_cast<XAP_App *>(pApp))
 {
-	m_pFrame = pFrame;
-	m_pUnixMenu = NULL;
-	m_pUnixPopup = NULL;
-	m_pUnixApp = pApp;
 }
 
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
