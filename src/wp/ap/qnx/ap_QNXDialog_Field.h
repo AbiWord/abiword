@@ -35,9 +35,23 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+	virtual void 			event_WindowDelete(void);
+	virtual void 			event_Cancel(void);
+	virtual void 			event_OK(void);
+	virtual void 			types_changed(int row);
 	
 protected:
-
+	virtual void			setTypesList(void);
+	virtual void 			setFieldsList(void);
+	
+	PtWidget_t * 			_constructWindow(void);
+	virtual void 			_populateCatogries(void);
+	
+	PtWidget_t		*m_listTypes;
+	PtWidget_t		*m_listFields;
+	PtWidget_t		*m_windowMain;
+	int				done;
 };
 
 #endif /* AP_QNXDIALOG_FIELD_H */
