@@ -432,6 +432,15 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   sprintf(propBuffer + strlen(propBuffer), 
 			   "font-size:%dpt;", (achp->hps/2));
 
+		   // sub/superscript
+		   if (achp->iss == 1) {
+		      strcat(propBuffer, "text-position: superscript;");
+		   } else if (achp->iss == 2) {
+		      strcat(propBuffer, "text-position: subscript;");
+		   }
+
+		   // done processing character properties
+
 		   // remove trailing ;
 		   propBuffer[strlen(propBuffer)-1] = 0;
 
