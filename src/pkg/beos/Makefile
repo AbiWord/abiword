@@ -29,7 +29,7 @@ PKGBASENAME=AbiSuite-$(ABI_BUILD_VERSION)
 ifeq ($(OS_ARCH), x86)
 SUFFIX=i386
 endif
-ifeq ($(OS_ARCH), BeMac)
+ifeq ($(OS_ARCH), ppc)
 SUFFiX=ppc
 endif
 
