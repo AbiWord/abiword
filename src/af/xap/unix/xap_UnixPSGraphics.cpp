@@ -1276,10 +1276,9 @@ void PS_Graphics::_emit_SetColor(void)
                 ((float) m_currentColor.m_blu / (float) 255.0));
 		break;
 	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
-		newclr = (unsigned char) (( (float) m_currentColor.m_red +
-									(float) m_currentColor.m_grn +
-									(float) m_currentColor.m_blu ) /
-								  (float) 3.0);
+		newclr = (unsigned char) (( (float) 0.30 * m_currentColor.m_red +
+									(float) 0.59 * m_currentColor.m_grn +
+									(float) 0.11 * m_currentColor.m_blu ));
 		g_snprintf(buf, sizeof(buf), "%.8f setgray\n", (float) newclr / (float) 255.0);
 		break;
 	case GR_Graphics::GR_COLORSPACE_BW:
