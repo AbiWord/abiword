@@ -45,20 +45,20 @@
 // NOTE -- they're just here to make sizing easier
 
 // The main tab dialog
-XAP_RID_DIALOG_HTMLOPTIONS DIALOG DISCARDABLE  10, 10, 245, 135
+XAP_RID_DIALOG_HTMLOPTIONS DIALOG DISCARDABLE  10, 10, 270, 135
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "HTML Export Options"
 FONT 8, "MS Sans Serif"
 BEGIN
     PUSHBUTTON      "Save Settings", XAP_RID_DIALOG_HTMLOPTIONS_BTN_SAVE,
-                    4,115,58,14
+                    4,115,64,14
     PUSHBUTTON      "Restore Settings", XAP_RID_DIALOG_HTMLOPTIONS_BTN_RESTORE,
-                    64,115,58,14
+                    70,115,64,14
 
 	DEFPUSHBUTTON   "OK", XAP_RID_DIALOG_HTMLOPTIONS_BTN_OK,
-                    124,115,58,14
+                    136,115,64,14
     PUSHBUTTON      "Cancel", XAP_RID_DIALOG_HTMLOPTIONS_BTN_CANCEL,
-                    184,115,58,14
+                    202,115,64,14
 
 	LTEXT			"Select HTML export optons:", XAP_RID_DIALOG_HTMLOPTIONS_LBL,
 					5,5,145,14, SS_CENTERIMAGE
@@ -84,7 +84,7 @@ BEGIN
 
 	CONTROL			"", XAP_RID_DIALOG_HTMLOPTIONS_STATIC,
 					"Static", SS_BLACKFRAME | SS_SUNKEN,
-					3, 109, 242, 1
+					3, 109, 264, 1
 END
 
 #endif /* RC_INVOKED */
