@@ -645,8 +645,8 @@ void fp_TextRun::_calcWidths(UT_GrowBuf * pgbCharWidths)
 void fp_TextRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
-	
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+
 	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
@@ -1010,6 +1010,13 @@ void fp_TabRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+
+	UT_sint32 xoff = 0, yoff = 0;
+	
+	// need to clear full height of line, in case we had a selection
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+	
+	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
