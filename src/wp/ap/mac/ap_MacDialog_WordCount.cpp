@@ -185,7 +185,7 @@ void AP_MacDialog_WordCount::event_Update(void)
 	_updateWindowData();
 }
 
-void AP_MacDialog_WordCount::autoupdateWC(UT_Timer * pTimer)
+void AP_MacDialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 {
 	UT_ASSERT(pTimer);
 
