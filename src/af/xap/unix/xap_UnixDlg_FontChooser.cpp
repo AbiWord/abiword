@@ -746,7 +746,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
-	gtk_clist_moveto(GTK_CLIST(m_fontList), st, 0, 0, -1);
+	gtk_clist_moveto(GTK_CLIST(m_styleList), st, 0, 0, -1);
 	
 	double size = UT_convertToPoints(m_pFontSize);
 	g_snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
