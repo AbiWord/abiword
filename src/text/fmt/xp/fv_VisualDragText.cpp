@@ -343,10 +343,9 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	bool bEOL = false;
 	if(m_pView->getSelectionMode() < 	FV_SelectionMode_Multiple)
 	{
-		if(posLow < m_pView->getPoint())
+		if(m_pView->getSelectionAnchor() < m_pView->getPoint())
 		{
 			posLow = m_pView->getSelectionAnchor();
-			posHigh = 0;
 			posHigh = m_pView->getPoint();
 		}
 		else
@@ -462,9 +461,6 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 // low and high are on different rows. First get top, left
 //
-// Fix me! Instead of redrawing over this, do a fillrect(image,src,dest)
-// three times.
-// Then left and right are inverted.
 //
 		UT_sint32 xx,yy;
 		fp_Run * pRun = pLineLow->getFirstRun();
@@ -479,6 +475,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_recCurFrame.top = yy;
 		fp_Line * pNext = pLineLow;
 		UT_sint32 width = 0;
+		UT_sint32 iRightpos = 0;
 		while(pNext && (pNext != pLineHigh))
 		{
 			pRun = pNext->getFirstRun();
@@ -521,6 +518,18 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		if(m_recCurFrame.top + m_recCurFrame.height > m_pView->getWindowHeight())
 		{
 			m_recCurFrame.height = m_pView->getWindowHeight() - m_recCurFrame.top;
+		}
+		fl_DocSectionLayout * pDSL = pRun->getBlock()->getDocSectionLayout();
+		if(pDSL == NULL)
+		{
+			UT_DEBUGMSG(("No DocSectionLayout \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+			
+		if(m_recCurFrame.width > pDSL->getActualColumnWidth())
+		{
+			m_recCurFrame.width = pDSL->getActualColumnWidth();
 		}
 		m_recOrigRight.left = xHigh;
 		m_recOrigRight.width = m_recCurFrame.left + m_recCurFrame.width - xHigh;
