@@ -37,82 +37,79 @@ public:
 	virtual ~UT_ScriptSniffer();
 	
 	// these you get for free
-	inline bool supportsType (UT_ScriptIdType type) {return m_type == type;}
-	inline UT_ScriptIdType getType() const {return m_type;}
+	inline bool supportsType (UT_ScriptIdType type) { return m_type == type; }
+	inline UT_ScriptIdType getType() const { return m_type; }
 	
 	// these you must override these
 	virtual bool recognizeContents (const char * szBuf, 
-					UT_uint32 iNumbytes) = 0;
+									UT_uint32 iNumbytes) = 0;
 	virtual bool recognizeSuffix (const char * szSuffix) = 0;
 	virtual bool getDlgLabels (const char ** szDesc,
-				   const char ** szSuffixList,
-				   UT_ScriptIdType * ft) = 0;
+							   const char ** szSuffixList,
+							   UT_ScriptIdType * ft) = 0;
 	virtual UT_Error constructScript (UT_Script ** ppscript) = 0;
 	
- protected:
+protected:
 	UT_ScriptSniffer();
 	
- private:
+private:
 	// only UT_ScriptLibrary ever calls this
-	inline void setType (UT_ScriptIdType type) {m_type = type;}
+	inline void setType (UT_ScriptIdType type) { m_type = type; }
 	UT_ScriptIdType m_type;
 };
 
 class ABI_EXPORT UT_Script
 {
- public:
-  
-  virtual UT_Error execute ( const char * scriptName ) = 0;
-  virtual ~UT_Script ();
+public:
+	virtual UT_Error execute(const char * scriptName) = 0;
+	virtual ~UT_Script();
 
- protected:
-  UT_Script ();
+protected:
+	UT_Script();
 
- private:
-
-  UT_Script ( const UT_Script & ); // no impl
-  UT_Script& operator=( const UT_Script & ); // no impl
+private:
+	UT_Script(const UT_Script &); // no impl
+	UT_Script& operator=(const UT_Script &); // no impl
 };
 
 class ABI_EXPORT UT_ScriptLibrary
 {
- public:
+public:
+	virtual ~UT_ScriptLibrary();
 
-  virtual ~UT_ScriptLibrary ();
+	static UT_ScriptLibrary& instance();
 
-  static UT_ScriptLibrary& instance ();
+	bool	    enumerateDlgLabels(UT_uint32 ndx,
+								   const char ** pszDesc,
+								   const char ** pszSuffixList,
+								   UT_ScriptIdType * ft);
 
-  bool	    enumerateDlgLabels(UT_uint32 ndx,
-			       const char ** pszDesc,
-			       const char ** pszSuffixList,
-			       UT_ScriptIdType * ft);
-
-  UT_Error execute ( const char * script, UT_ScriptIdType type = -1 );
+	UT_Error execute(const char * script, UT_ScriptIdType type = -1);
   
-  UT_uint32 getNumScripts () const;
-  void registerScript ( UT_ScriptSniffer * );
-  void unregisterScript ( UT_ScriptSniffer * );
-  void unregisterAllScripts ();
+	UT_uint32 getNumScripts() const;
+	void registerScript(UT_ScriptSniffer*);
+	void unregisterScript(UT_ScriptSniffer*);
+	void unregisterAllScripts();
 
- private:
+private:
 
-  UT_ScriptIdType	typeForContents(const char * szBuf,
-					UT_uint32 iNumbytes);
+	UT_ScriptIdType	typeForContents(const char * szBuf,
+									UT_uint32 iNumbytes);
 	
-  UT_ScriptIdType	typeForSuffix(const char * szSuffix);
-  const char *          suffixesForType(UT_ScriptIdType ieft);
+	UT_ScriptIdType	typeForSuffix(const char * szSuffix);
+	const char *          suffixesForType(UT_ScriptIdType ieft);
 	
-  UT_Error	constructScript(const char * szFilename,
-				UT_ScriptIdType ieft,
-				UT_Script ** ppscript, 
-				UT_ScriptIdType * pieft = NULL);
+	UT_Error	constructScript(const char * szFilename,
+								UT_ScriptIdType ieft,
+								UT_Script ** ppscript, 
+								UT_ScriptIdType * pieft = NULL);
   
-  UT_ScriptLibrary ();
-  UT_ScriptLibrary ( const UT_ScriptLibrary & );
-  UT_ScriptLibrary& operator=( const UT_ScriptLibrary & );
+	UT_ScriptLibrary();
+	UT_ScriptLibrary(const UT_ScriptLibrary&);
+	UT_ScriptLibrary& operator=(const UT_ScriptLibrary&);
 
-  static UT_ScriptLibrary mInstance;
-  UT_Vector *mSniffers;
+	static UT_ScriptLibrary mInstance;
+	UT_Vector *mSniffers;
 };
 
 #endif /* UT_SCRIPT_H */

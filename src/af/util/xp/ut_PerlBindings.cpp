@@ -166,6 +166,8 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 			impl_->errmsg = "Error executing perl script:\n";
 			impl_->errmsg += SvPV(ERRSV, PL_na);
 			warpString(impl_->errmsg, 50);
+			printf(impl_->errmsg.c_str());
+			fflush(stdout);
 		}
 
 		return false;
@@ -280,12 +282,13 @@ UT_PerlScript::~UT_PerlScript ()
 {
 }
 
-UT_Error UT_PerlScript::execute ( const char * fileName )
+UT_Error UT_PerlScript::execute(const char * fileName)
 {
-  UT_PerlBindings& instance = UT_PerlBindings::getInstance ();
-  UT_String file ( fileName );
+	UT_PerlBindings& instance = UT_PerlBindings::getInstance();
+	UT_String file(fileName);
 
-  if ( instance.evalFile ( file ) )
-    return UT_OK;
-  return UT_ERROR;
+	if (instance.evalFile(file))
+		return UT_OK;
+
+	return UT_ERROR;
 }
