@@ -560,6 +560,9 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 	[    _hasHeadingBtn setEnabled:enable];
 	[      _hasLabelBtn setEnabled:enable];
 
+	[      _startAtData setEnabled:enable];
+	[       _indentData setEnabled:enable];
+
 	[   _startAtStepper setEnabled:enable];
 	[    _indentStepper setEnabled:enable];
 
