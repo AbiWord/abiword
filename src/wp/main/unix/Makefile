@@ -38,9 +38,11 @@ INCLUDES=		-I$(DIST)/include -I. -I../xp `gtk-config --cflags`
 
 PROGRAM=		AbiWord
 
-# note: the Linux linker is fussy about this ordering
+# TODO the Linux linker is fussy about the ordering of libraries.
+# TODO in order to get all symbols to resolve, i had to list them
+# TODO several times.  see if there is a better way of doing this.
 
-LoadOrder=		AbiGr AbiFmt AbiDocStrux AbiImpExp AbiPS AbiAp AbiEv AbiUtil
+LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiPS AbiAp AbiEv AbiUtil
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_OTHLIBS=		expat 
 ABI_LIBS=		stdc++
