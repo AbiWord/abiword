@@ -77,6 +77,10 @@ private:
 - (void)typesAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)okAction:(id)sender;
+
+/* NSTableView delegate methods
+ */
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 @end
 
 #endif /* AP_COCOADIALOG_FIELD_H */
