@@ -70,11 +70,6 @@ _LIBPNG_:
 _LIBICONV_:
 	@if [ -d $(ABI_ROOT)/../libiconv ]; then			\
 		echo Found libiconv in peer directory;			\
-		cd $(ABI_ROOT)/../libiconv; 			\
-		$(ABICOPY) lib/config.h.msvc lib/config.h;	\
-		$(ABICOPY) libcharset/config.h.msvc libcharset/config.h;	\
-		$(ABICOPY) libcharset/include/libcharset.h.in libcharset/include/libcharset.h;	\
-		$(ABICOPY) include/iconv.h.msvc-static include/iconv.h; \
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;	\
 	else								\
 		echo peer libiconv not found.  You can check it out of cvs by; \
