@@ -6210,10 +6210,15 @@ UT_return_val_if_fail(pDialog, false);
 	{
 		UT_UCSChar * buffer;
 		pView->getSelectionText(buffer);
-
-		pDialog->setFindString(buffer);
-
-		FREEP(buffer);
+		if(buffer != NULL)
+		{
+			pDialog->setFindString(buffer);
+			FREEP(buffer);
+		}
+		else
+		{
+			pView->setPoint(pView->getPoint());
+		}
 	}
 
 	// run the dialog (it should really be modeless if anyone

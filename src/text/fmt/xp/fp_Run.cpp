@@ -3376,6 +3376,12 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 
 	m_sFieldValue[0] = 0;
 }
 
+fp_FieldRun::~fp_FieldRun(void)
+{
+	UT_DEBUGMSG(("FieldRun deleted %x FieldType %d \n",this,getFieldType()));
+	return;
+}
+
 bool fp_FieldRun::_recalcWidth()
 {
 	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
@@ -4448,6 +4454,10 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
+	if(footid == NULL)
+	{
+		return false;
+	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
 	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
@@ -4484,6 +4494,10 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
+	if(footid == NULL)
+	{
+		return false;
+	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
 	UT_sint32 endnoteNo = pView->getLayout()->getEndnoteVal(iPID);
@@ -4520,6 +4534,10 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
+	if(footid == NULL)
+	{
+		return false;
+	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
 	UT_sint32 endnoteNo = pView->getLayout()->getEndnoteVal(iPID);

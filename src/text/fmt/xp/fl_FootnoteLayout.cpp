@@ -255,6 +255,7 @@ bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //
 // Fix the offsets for the block
 //
+	m_bHasEndFootnote = false;
 	pEncBlock->updateOffsets(prevPos,0);
 
 	fl_ContainerLayout * pPrev = getPrev();

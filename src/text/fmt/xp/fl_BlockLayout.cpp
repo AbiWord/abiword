@@ -987,6 +987,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	{
 		if(pPrev == NULL)
 		{
+			UT_DEBUGMSG(("!!!YIKES NO RUN or PREV RUN!!! \n"));
 			return;
 		}
 		//
@@ -994,6 +995,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		//
 		if((posInBlock + pPrev->getBlockOffset() +1) < posEmbedded)
 		{
+			UT_DEBUGMSG(("!!! POSEMBEDDED past end of block!! \n"));
+			UT_DEBUGMSG(("End of block %d PosEmbedded %d \n",posInBlock+pPrev->getBlockOffset()+1,posEmbedded));
 			return;
 		}
 		else
@@ -1189,7 +1192,10 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
 	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
 	UT_uint32 iSize = posEnd - posStart + 1;
-	fl_BlockLayout * pBL = m_pLayout->findBlockAtPosition(posStart-1);
+	PL_StruxFmtHandle  psfh = NULL;
+	getDocument()->getStruxOfTypeFromPosition(m_pLayout->getLID(),posStart,PTX_Block, &psfh);
+	fl_BlockLayout * pBL = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 	UT_ASSERT(iSize > 1);
 	pBL->updateOffsets(posStart,iSize);
 }
@@ -4511,6 +4517,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "footnote_ref") == 0)
 	{
+		UT_DEBUGMSG(("Footnoet ref run created at %d \n",blockOffset));
 		pNewRun = new fp_FieldFootnoteRefRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "footnote_anchor") == 0)
@@ -4519,6 +4526,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "endnote_ref") == 0)
 	{
+		UT_DEBUGMSG(("Endnote ref run created at %d \n",blockOffset));
 		pNewRun = new fp_FieldEndnoteRefRun(this,   blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
@@ -4723,7 +4731,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	pNewRun->calculateValue();
 
 	_doInsertRun(pNewRun);
-	recalculateFields(0);
+	//	recalculateFields(0); MES Do this in the format following
 	return true;
 }
 
@@ -4774,7 +4782,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 {
 	PT_BlockOffset blockOffset = pNewRun->getBlockOffset();
 	UT_uint32 len = pNewRun->getLength();
-	xxx_UT_DEBUGMSG(("_doInsertRun: New run has offset %d Length %d \n",blockOffset,len));
+	UT_DEBUGMSG(("_doInsertRun: New run has offset %d Length %d \n",blockOffset,len));
 	_assertRunListIntegrity();
 
 	bool bInserted = false;
@@ -4783,7 +4791,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	{
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
 		UT_uint32 iRunLength = pRun->getLength();
-		xxx_UT_DEBUGMSG(("_doInsertRun: Target offset %d CurRun Offset %d Length %d \n",blockOffset,iRunBlockOffset,iRunLength));
+		UT_DEBUGMSG(("_doInsertRun: Target offset %d CurRun Offset %d Length %d  Type %d \n",blockOffset,iRunBlockOffset,iRunLength,pRun->getType()));
 		if ( (iRunBlockOffset + iRunLength) <= blockOffset )
 		{
 			// nothing to do.  the insert occurred AFTER this run
@@ -7219,8 +7227,11 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		return false;
 	}
 	m_iNeedsReformat = blockOffset;
-	format();
+	//
+	// Update the offsets before the format (Where stuff gets calculated)
+	//
 	updateEnclosingBlockIfNeeded();
+	format();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))

@@ -2588,8 +2588,6 @@ void FV_View::insertParagraphBreak(void)
 		}
 	}
 
-//	_generalUpdate();
-
 
 	m_pDoc->endUserAtomicGlob();
 
@@ -2603,9 +2601,10 @@ void FV_View::insertParagraphBreak(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	_generalUpdate();
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 	m_pLayout->considerPendingSmartQuoteCandidate();
 }
 
@@ -9695,6 +9694,10 @@ bool FV_View::isInFootnote(PT_DocPosition pos)
 	{
 		return false;
 	}
+	if(!pFL->isEndFootnoteIn())
+	{
+		return false;
+	}
 	if((pFL->getDocPosition() <= pos) && ((pFL->getDocPosition() + pFL->getLength()) > pos))
 	{
 		return true;
@@ -9717,6 +9720,10 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 {
 	fl_EndnoteLayout * pFL = getClosestEndnote(pos);
 	if(pFL == NULL)
+	{
+		return false;
+	}
+	if(!pFL->isEndFootnoteIn())
 	{
 		return false;
 	}

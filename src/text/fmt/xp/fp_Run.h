@@ -846,7 +846,7 @@ class ABI_EXPORT fp_FieldRun : public fp_Run
 {
 public:
 	fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	virtual ~fp_FieldRun() {return;};
+	virtual ~fp_FieldRun();
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
