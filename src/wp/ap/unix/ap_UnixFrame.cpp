@@ -388,7 +388,7 @@ bool AP_UnixFrame::initialize()
 	EV_Menu_ActionSet* pActionSet = getApp()->getMenuActionSet();
 	UT_ASSERT(pLayout && pLabelSet && pActionSet);
 
-	XAP_Menu_Id id = EV_searchMenuLabel(*pLabelSet, "&Tools");
+	XAP_Menu_Id id = EV_searchMenuLabel(pLabelSet, "&Tools");
 	if (id == 0)
 	{
 		// TODO: What can I do here?

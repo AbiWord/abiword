@@ -80,11 +80,11 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet)
 {
 	m_stLanguage = pLabelSet->getLanguage();
 	m_first = pLabelSet->getFirst();
-	UT_Vector vecLabels = pLabelSet->getAllLabels();
+	const UT_Vector * vecLabels = pLabelSet->getAllLabels();
 	UT_uint32 i = 0;
-	for(i=0; i< vecLabels.getItemCount(); i++)
+	for(i=0; i< vecLabels->getItemCount(); i++)
 	{
-	    EV_Menu_Label * pEvl = (EV_Menu_Label *) vecLabels.getNthItem(i);
+	    EV_Menu_Label * pEvl = (EV_Menu_Label *) vecLabels->getNthItem(i);
 		EV_Menu_Label * pNewLab = NULL;
 		if(pEvl != NULL)
 		{

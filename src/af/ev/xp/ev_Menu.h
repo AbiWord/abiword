@@ -81,6 +81,6 @@ private:
 	XAP_App *					m_pApp;
 };
 
-XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet &labels, const UT_String &label);
+XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet* labels, const UT_String &label);
 
 #endif /* EV_MENU_H */

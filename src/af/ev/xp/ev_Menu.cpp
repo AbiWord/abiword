@@ -86,7 +86,7 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	{
 		label = static_cast<const UT_String*> ((*names)[i]);
 		UT_ASSERT(label);
-		index = EV_searchMenuLabel(*m_pMenuLabelSet, *label);
+		index = EV_searchMenuLabel(m_pMenuLabelSet, *label);
 
 		// Here we should create end - i submenus
 		if (index == 0)
@@ -256,16 +256,16 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
 	return data;
 }
 
-XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet &labels, const UT_String &label)
+XAP_Menu_Id EV_searchMenuLabel(const EV_Menu_LabelSet *labels, const UT_String &label)
 {
-	const UT_Vector &labels_table = labels.getAllLabels();
+	const UT_Vector * labels_table = labels->getAllLabels();
 	const EV_Menu_Label *l = 0;
-	UT_uint32 size_labels = labels_table.size();
+	UT_uint32 size_labels = labels_table->size();
 	XAP_Menu_Id id = 0;
 
 	for (UT_uint32 i = 0; i < size_labels; ++i)
 	{
-		l = static_cast<const EV_Menu_Label *> (labels_table[i]);
+		l = const_cast<const EV_Menu_Label *> (static_cast<EV_Menu_Label *> (labels_table->getNthItem(i)));
 		if (l && label == l->getMenuLabel())
 		{
 			id = l->getMenuId();

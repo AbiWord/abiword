@@ -340,15 +340,17 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 		{
 			UT_uint32 NrEntries = pVectt->getNrEntries();
 			EV_Menu_Layout * pLayout = new EV_Menu_Layout(pVectt->m_name,NrEntries);
+			UT_DEBUGMSG(("pLayout 0x%x (1)\n", pLayout));
 			UT_ASSERT(pLayout);
-	
+			
 			for (UT_uint32 j=0; (j < NrEntries); j++)
 			{
 				_lt * plt = pVectt->getNth_lt(j);
-				UT_DEBUGMSG(("SEVIOR: Adding jth %d id %d to menu %s \n",j, plt->m_id,pVectt->m_name));
+				UT_DEBUGMSG(("SEVIOR: Adding jth %d id %d, flags 0x%x to menu %s \n",j, plt->m_id,plt->m_flags, pVectt->m_name));
 				bool bResult = pLayout->setLayoutItem(j, plt->m_id, plt->m_flags);
 				UT_ASSERT(bResult);
 			}
+			UT_DEBUGMSG(("pLayout 0x%x (2)\n", pLayout));
 
 			return pLayout;
 		}
@@ -436,7 +438,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	_vecLab * labt = (_vecLab *) m_vecLabs.getNthItem(indxLang);
 	EV_Menu_LabelSet * LabelSet = labt->m_pLabset;
 	UT_String After = szAfter;
-	XAP_Menu_Id afterID = EV_searchMenuLabel( *LabelSet, After);
+	XAP_Menu_Id afterID = EV_searchMenuLabel( LabelSet, After);
 	if(afterID == 0)
 	{
 		return 0;

@@ -82,7 +82,16 @@ public:
 	XAP_Menu_Id         getFirst(void) { return m_first;}
 	const char *		getLanguage() const;
 	void				setLanguage(const char *szLanguage);
+#if 0	
+	// we really do not need this, the way it was used it
+	// was causing stack overflows on my machine (took me hours to
+	// track), yet, there was no single call that would require to make
+	// a temporary copy of this table on the stack, so I have done
+	// away with this (Tomas)
 	inline const UT_Vector& getAllLabels() const { return m_labelTable; }
+#else
+	const UT_Vector *		getAllLabels() const { return &m_labelTable;}
+#endif
 
 private:
 	UT_Vector			m_labelTable;
