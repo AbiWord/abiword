@@ -96,6 +96,7 @@ protected:
 	const char *				m_szMenuLabelSetName;		/* language for menus */
 	UT_Vector					m_vecToolbarLayoutNames;
 	const char *				m_szToolbarLabelSetName;	/* language for toolbars */
+	const char *				m_szToolbarAppearance;
 	UT_uint32					m_nView;
 	int							m_iUntitled;
 

@@ -33,17 +33,13 @@ public:
 	virtual const char *		getPrefsPathname(void) const = 0;
 };
 
-// The following are the set of strings that we
-// use to key into the preferences.  The list in
-// ap_Prefs::loadBuildinPrefs() in _t[] must match
-// this set.
+// The following are the set of application-dependent preference keys.
+// These are in addition to the application-independent ones defined in
+// abi/src/xap/xp/xap_Prefs.h.
+//
+// The list in ap_Prefs::loadBuildinPrefs() in _t[] should match these sets.
 
-#define AP_PREF_KEY_KeyBindings			"KeyBindings"
-#define AP_PREF_KEY_MenuLayout			"MenuLayouts"
-#define AP_PREF_KEY_MenuLabelSet		"MenuLabelSet"
+#define AP_PREF_KEY_AutoSpellCheck		"AutoSpellCheck"
 #define AP_PREF_KEY_RulerUnits			"RulerUnits"
-#define AP_PREF_KEY_ToolbarAppearance	"ToolbarAppearance"
-#define AP_PREF_KEY_ToolbarLabelSet		"ToolbarLabelSet"
-#define AP_PREF_KEY_ToolbarLayouts		"ToolbarLayouts"
 
 #endif /* AP_PREFS_H */

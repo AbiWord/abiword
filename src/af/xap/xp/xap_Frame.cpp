@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -27,6 +28,7 @@
 #include "ut_vector.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "xap_Prefs.h"
 #include "xap_ViewListener.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
@@ -39,7 +41,8 @@
 #include "xad_Document.h"
 #include "xap_Scrollbar_ViewListener.h"
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
+#define DELETEP(p)	do { if (p) delete (p); (p)=NULL; } while (0)
+#define FREEP(p)	do { if (p) free((void*)(p)); (p)=NULL; } while (0)
 
 /*****************************************************************/
 
@@ -55,6 +58,8 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
 	m_szMenuLabelSetName = NULL;
+	m_szToolbarLabelSetName = NULL;
+	m_szToolbarAppearance = NULL;
 	m_iUntitled = 0;
 	m_nView = 0;
 	m_pScrollbarViewListener = NULL;
@@ -79,6 +84,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
 	m_szMenuLabelSetName = NULL;
+	m_szToolbarLabelSetName = NULL;
+	m_szToolbarAppearance = NULL;
 	m_nView = 0;
 	m_pScrollbarViewListener = NULL;
 	
@@ -104,6 +111,13 @@ XAP_Frame::~XAP_Frame(void)
 	DELETEP(m_pEEM);
 
 	DELETEP(m_pScrollbarViewListener);
+
+	UT_VECTOR_PURGEALL(char *,m_vecToolbarLayoutNames);
+	
+	FREEP(m_szMenuLayoutName);
+	FREEP(m_szMenuLabelSetName);
+	FREEP(m_szToolbarLabelSetName);
+	FREEP(m_szToolbarAppearance);
 }
 
 /*****************************************************************/
@@ -119,35 +133,101 @@ int XAP_Frame::_getNextUntitledNumber(void)
 
 UT_Bool XAP_Frame::initialize(void)
 {
+	XAP_App * pApp = getApp();
+
+	//////////////////////////////////////////////////////////////////
 	// choose which set of key- and mouse-bindings to load
-	char * szBindings = "default";
-	// TODO override szBindings from m_app->m_pArgs->{argc,argv}.
 	// create a EventMapper state-machine to process our events
-	m_pEEM = new EV_EditEventMapper(m_app->getBindingMap(szBindings));
+	//////////////////////////////////////////////////////////////////
+
+	const char * szBindings = NULL;
+	EV_EditBindingMap * pBindingMap = NULL;
+
+	if ((pApp->getPrefsValue(XAP_PREF_KEY_KeyBindings,&szBindings)) && (szBindings) && (*szBindings))
+		pBindingMap = m_app->getBindingMap(szBindings);
+	if (!pBindingMap)
+		pBindingMap = m_app->getBindingMap(XAP_PREF_DEFAULT_KeyBindings);
+	UT_ASSERT(pBindingMap);
+
+	m_pEEM = new EV_EditEventMapper(pBindingMap);
 	UT_ASSERT(m_pEEM);
 
+	//////////////////////////////////////////////////////////////////
 	// select which menu bar we should use
-	// TODO override szMenuLayout using m_app->m_pArgs->{argc,argv}.
-	m_szMenuLayoutName = "Main";
+	//////////////////////////////////////////////////////////////////
 
-	// select language for menu labels
-	// TODO override szLanguage using m_app->m_pArgs->{argc,argv}.
-	m_szMenuLabelSetName = "EnUS";
-
-	// select which toolbars we should display
-	// TODO add an addItem() call for each toolbar we want to have.
-	// TODO optionally allow override from m_app->m_pArgs->{argc,argv}.
-	m_vecToolbarLayoutNames.addItem("FileEditOps");
-	m_vecToolbarLayoutNames.addItem("FormatOps");
+	const char * szMenuLayoutName = NULL;
+	if ((pApp->getPrefsValue(XAP_PREF_KEY_MenuLayout,&szMenuLayoutName)) && (szMenuLayoutName) && (*szMenuLayoutName))
+		;
+	else
+		szMenuLayoutName = XAP_PREF_DEFAULT_MenuLayout;
+	UT_cloneString((char *&)m_szMenuLayoutName,szMenuLayoutName);
 	
+	//////////////////////////////////////////////////////////////////
+	// select language for menu labels
+	//////////////////////////////////////////////////////////////////
+
+	const char * szMenuLabelSetName = NULL;
+	if ((pApp->getPrefsValue(XAP_PREF_KEY_MenuLabelSet,&szMenuLabelSetName)) && (szMenuLabelSetName) && (*szMenuLabelSetName))
+		;
+	else
+		szMenuLabelSetName = XAP_PREF_DEFAULT_MenuLabelSet;
+	UT_cloneString((char *&)m_szMenuLabelSetName,szMenuLabelSetName);
+	
+	//////////////////////////////////////////////////////////////////
+	// select which toolbars we should display
+	//////////////////////////////////////////////////////////////////
+
+	const char * szToolbarLayouts = NULL;
+	if ((pApp->getPrefsValue(XAP_PREF_KEY_ToolbarLayouts,&szToolbarLayouts)) && (szToolbarLayouts) && (*szToolbarLayouts))
+		;
+	else
+		szToolbarLayouts = XAP_PREF_DEFAULT_ToolbarLayouts;
+
+	// take space-delimited list and call addItem() for each name in the list.
+	
+	{
+		char * szTemp;
+		UT_cloneString(szTemp,szToolbarLayouts);
+		UT_ASSERT(szTemp);
+		for (char * p=strtok(szTemp," "); (p); p=strtok(NULL," "))
+		{
+			char * szTempName;
+			UT_cloneString(szTempName,p);
+			m_vecToolbarLayoutNames.addItem(szTempName);
+		}
+		free(szTemp);
+	}
+	
+	//////////////////////////////////////////////////////////////////
 	// select language for the toolbar labels.
 	// i'm not sure if it would ever make sense to
 	// deviate from what we set the menus to, but
 	// we can if we have to.
 	// all toolbars will have the same language.
-	m_szToolbarLabelSetName = m_szMenuLabelSetName;
+	//////////////////////////////////////////////////////////////////
+
+	const char * szToolbarLabelSetName = NULL;
+	if ((pApp->getPrefsValue(XAP_PREF_KEY_ToolbarLabelSet,&szToolbarLabelSetName)) && (szToolbarLabelSetName) && (*szToolbarLabelSetName))
+		;
+	else
+		szToolbarLabelSetName = XAP_PREF_DEFAULT_ToolbarLabelSet;
+	UT_cloneString((char *&)m_szToolbarLabelSetName,szToolbarLabelSetName);
 	
+	//////////////////////////////////////////////////////////////////
+	// select the appearance of the toolbar buttons
+	//////////////////////////////////////////////////////////////////
+
+	const char * szToolbarAppearance = NULL;
+	if ((pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szToolbarAppearance)) && (szToolbarAppearance) && (*szToolbarAppearance))
+		;
+	else
+		szToolbarAppearance = XAP_PREF_DEFAULT_ToolbarAppearance;
+	UT_cloneString((char *&)m_szToolbarAppearance,szToolbarAppearance);
+	
+	//////////////////////////////////////////////////////////////////
 	// ... add other stuff here ...
+	//////////////////////////////////////////////////////////////////
 
 	return UT_TRUE;
 }

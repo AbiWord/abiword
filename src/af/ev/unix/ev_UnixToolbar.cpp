@@ -35,6 +35,8 @@
 #include "xap_UnixToolbar_Icons.h"
 #include "ev_UnixToolbar_ViewListener.h"
 #include "xav_View.h"
+#include "xmlparse.h"
+#include "xap_Prefs.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -239,8 +241,26 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 
 	m_wHandleBox = gtk_handle_box_new();
 	UT_ASSERT(m_wHandleBox);
+
+	////////////////////////////////////////////////////////////////
+	// get toolbar button appearance from the preferences
+	////////////////////////////////////////////////////////////////
 	
-	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, GTK_TOOLBAR_ICONS);
+	const XML_Char * szValue = NULL;
+	if (m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue) && (szValue) && (*szValue))
+		;
+	else
+		szValue = XAP_PREF_DEFAULT_ToolbarAppearance;
+	
+	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+	if (UT_XML_stricmp(szValue,"icon")==0)
+		style = GTK_TOOLBAR_ICONS;
+	else if (UT_XML_stricmp(szValue,"text")==0)
+		style = GTK_TOOLBAR_TEXT;
+	else if (UT_XML_stricmp(szValue,"both")==0)
+		style = GTK_TOOLBAR_BOTH;
+	
+	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
 	UT_ASSERT(m_wToolbar);
 	
 	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);

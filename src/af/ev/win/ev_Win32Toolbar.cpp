@@ -33,6 +33,8 @@
 #include "xap_Win32Toolbar_Icons.h"
 #include "ev_Win32Toolbar_ViewListener.h"
 #include "xav_View.h"
+#include "xmlparse.h"
+#include "xap_Prefs.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -275,6 +277,34 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 {
 	// create a toolbar from the info provided.
 
+	////////////////////////////////////////////////////////////////
+	// get toolbar button appearance from the preferences
+	////////////////////////////////////////////////////////////////
+
+	UT_Bool bIcons = UT_TRUE;
+	UT_Bool bText = UT_FALSE;
+	const XML_Char * szValue = NULL;
+	if (m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue) && (szValue) && (*szValue))
+		;
+	else
+		szValue = XAP_PREF_DEFAULT_ToolbarAppearance;
+
+	if (UT_XML_stricmp(szValue,"icon") == 0)
+	{
+		bIcons = UT_TRUE;
+		bText = UT_FALSE;
+	}
+	else if (UT_XML_stricmp(szValue,"text") == 0)
+	{
+		bIcons = UT_FALSE;
+		bText = UT_TRUE;
+	}
+	else if (UT_XML_stricmp(szValue,"both") == 0)
+	{
+		bIcons = UT_TRUE;
+		bText = UT_TRUE;
+	}
+
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 	
@@ -504,26 +534,32 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 					// TODO add code to create these once per application
 					// TODO and reference them in each toolbar instance
 					// TODO rather than create them once for each window....
+
+					if (bIcons)
+					{
+						HBITMAP hBitmap;
+						UT_Bool bFoundIcon = m_pWin32ToolbarIcons->getBitmapForIcon(m_hwnd,
+																					MY_MAXIMUM_BITMAP_X,
+																					MY_MAXIMUM_BITMAP_Y,
+																					&backgroundColor,
+																					pLabel->getIconName(),
+																					&hBitmap);
+						UT_ASSERT(bFoundIcon);
+						TBADDBITMAP ab;
+						ab.hInst = 0;
+						ab.nID = (LPARAM)hBitmap;
+						LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
+						UT_ASSERT(iAddedAt != -1);
+
+						tbb.iBitmap = iAddedAt;
+					}
 					
-					HBITMAP hBitmap;
-					UT_Bool bFoundIcon = m_pWin32ToolbarIcons->getBitmapForIcon(m_hwnd,
-																				MY_MAXIMUM_BITMAP_X,
-																				MY_MAXIMUM_BITMAP_Y,
-																				&backgroundColor,
-																				pLabel->getIconName(),
-																				&hBitmap);
-					UT_ASSERT(bFoundIcon);
-					TBADDBITMAP ab;
-					ab.hInst = 0;
-					ab.nID = (LPARAM)hBitmap;
-					LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
-					UT_ASSERT(iAddedAt != -1);
+					if (bText)
+					{
+						const char * szLabel = pLabel->getToolbarLabel();
+						tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
+					}
 					
-					tbb.iBitmap = iAddedAt;
-#if 0
-					const char * szLabel = pLabel->getToolbarLabel();
-					tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
-#endif
 				}
 			}
 			break;

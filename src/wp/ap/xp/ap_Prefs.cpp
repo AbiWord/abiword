@@ -56,14 +56,17 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 
 	/* the set of keys defined in ap_Prefs.h must match this list. */
 
-	struct _table _t[] = {
-	{	AP_PREF_KEY_KeyBindings,		"default"					/* value in ap_LoadBindings.cpp */	},
-	{	AP_PREF_KEY_MenuLayout,			"Main"						/* value in BeginLayout() */		},
-	{	AP_PREF_KEY_MenuLabelSet,		"EnUS"						/* value in BeginSet() */			},
-	{	AP_PREF_KEY_RulerUnits,			"in"						/* value in UT_dimensionName() */	},
-	{	AP_PREF_KEY_ToolbarAppearance,	"icon"						/* {icon,text,both} */				},
-	{	AP_PREF_KEY_ToolbarLabelSet,	"EnUS"						/* value in BeginSet() */			},
-	{	AP_PREF_KEY_ToolbarLayouts,		"FileEditOps FormatOps"		/* values in BeginLayout() */		},
+	struct _table _t[] =
+	{
+		{	XAP_PREF_KEY_KeyBindings,		XAP_PREF_DEFAULT_KeyBindings		/* value in ap_LoadBindings.cpp */	},
+		{	XAP_PREF_KEY_MenuLayout,		XAP_PREF_DEFAULT_MenuLayout			/* value in BeginLayout() */		},
+		{	XAP_PREF_KEY_MenuLabelSet,		XAP_PREF_DEFAULT_MenuLabelSet		/* value in BeginSet() */			},
+		{	XAP_PREF_KEY_ToolbarAppearance,	XAP_PREF_DEFAULT_ToolbarAppearance	/* {icon,text,both} */				},
+		{	XAP_PREF_KEY_ToolbarLabelSet,	XAP_PREF_DEFAULT_ToolbarLabelSet	/* value in BeginSet() */			},
+		{	XAP_PREF_KEY_ToolbarLayouts,	XAP_PREF_DEFAULT_ToolbarLayouts		/* values in BeginLayout() */		},
+
+		{	AP_PREF_KEY_AutoSpellCheck,		"1"									/* {0,1} */							},
+		{	AP_PREF_KEY_RulerUnits,			"in"								/* value in UT_dimensionName() */	},
 	};
 
 	for (UT_uint32 k=0; k<NrElements(_t); k++)
