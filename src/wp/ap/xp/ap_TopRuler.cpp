@@ -1398,11 +1398,9 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	
 	fl_BlockLayout * pBL = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	UT_ASSERT (pBL);
-#if DEBUG
 	if (pBL == NULL) {
 		return false;
 	}
-#endif
 	bool bRTLpara = pBL->getDominantDirection() == FRIBIDI_TYPE_RTL;
 
 	if(bRTLpara)
