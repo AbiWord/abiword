@@ -98,8 +98,8 @@ BeginSet(ca,ES,true)
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Vinyetes",			tb_lists_bullets_xpm,	NULL, "Vinyetes")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Llistes",			tb_lists_numbers_xpm,	NULL, "Llistes numerades")
 	
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color",		NoIcon,			NULL,	"Canvia el color")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fons",	NoIcon,			NULL,	"Canvia el color de fons")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color",			tb_text_fgcolor_xpm,			NULL,	"Canvia el color")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fons",	tb_text_bgcolor_xpm,			NULL,	"Canvia el color de fons")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Identació",	tb_text_indent_xpm,	NULL,	"Augmenta la identació del paràgraf")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desidentació",	tb_text_unindent_xpm,	NULL,	"Disminueix la identació del paràgraf")
 	

@@ -100,8 +100,8 @@ BeginSet(nb,NO,true)
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,       "Punktlister",          tb_lists_bullets_xpm,		NULL, "Start/stopp punktliste")
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,       "Nummererte lister",    tb_lists_numbers_xpm,		NULL, "Start/stopp nummerert liste")
 
-   	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Forgrunnsfarge",	NoIcon,			        NULL, "Endre forgrunnsfarge")
-        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Bakgrunnsfarge",	NoIcon,			        NULL, "Endre bakgrunnsfarge")
+   	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Forgrunnsfarge",	tb_text_fgcolor_xpm,			        NULL, "Endre forgrunnsfarge")
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Bakgrunnsfarge",	tb_text_bgcolor_xpm,			        NULL, "Endre bakgrunnsfarge")
    
         ToolbarLabel(AP_TOOLBAR_ID_INDENT,               "Øk innrykk",          tb_text_indent_xpm,             NULL, "Øker avsnittsinnrykk")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,             "Reduser innrykk",     tb_text_unindent_xpm,           NULL, "Reduserer avsnittsinnrykk")

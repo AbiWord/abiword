@@ -95,8 +95,8 @@ BeginSet(pt,PT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Lista Pontuada",tb_lists_bullets_xpm,	NULL,	"Começar/Terminar listas pontuadas")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Lista Numerada",tb_lists_numbers_xpm,	NULL,	"Começar/Terminar listas numeradas")
 	
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Cor",		NoIcon,			NULL,	"Mudar a cor")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Cor de fundo",	NoIcon,			NULL,	"Mudar a cor de fundo")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Cor",		tb_text_fgcolor_xpm,			NULL,	"Mudar a cor")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Cor de fundo",	tb_text_bgcolor_xpm,			NULL,	"Mudar a cor de fundo")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Indentar",	tb_text_indent_xpm,	NULL,	"Aumentar indentação do parágrafo")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar",	tb_text_unindent_xpm,	NULL,	"Diminuir a indentação do parágrafo")
 

@@ -82,6 +82,8 @@
 #       include "tb_text_unindent.xpm"
 #       include "tb_spellcheck.xpm"
 #       include "tb_insert_graphic.xpm"
+#       include "tb_text_fgcolor.xpm"
+#       include "tb_text_bgcolor.xpm"
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
@@ -164,6 +166,8 @@
         DefineToolbarIcon(tb_text_unindent_xpm)
         DefineToolbarIcon(tb_spellcheck_xpm)
         DefineToolbarIcon(tb_insert_graphic_xpm)
+        DefineToolbarIcon(tb_text_fgcolor_xpm)
+        DefineToolbarIcon(tb_text_bgcolor_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

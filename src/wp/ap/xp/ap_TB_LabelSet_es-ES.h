@@ -97,8 +97,8 @@ BeginSet(es,ES,true)
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Viñetas",			tb_lists_bullets_xpm,	NULL, "Viñetas")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Listas",			tb_lists_numbers_xpm,	NULL, "Listas numeradas")
 	
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color de la tinta",	NoIcon,				NULL, "Cambiar el color de la tinta")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fondo",	NoIcon,					NULL, "Cambiar el color del fondo")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color de la tinta",	tb_text_fgcolor_xpm,				NULL, "Cambiar el color de la tinta")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fondo",	tb_text_bgcolor_xpm,					NULL, "Cambiar el color del fondo")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Indentar párrafo", tb_text_indent_xpm,		NULL, "Incrementar la indentación del párrafo")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar párrafo", tb_text_unindent_xpm,	NULL, "Reducir la indentación del párrafo")
 

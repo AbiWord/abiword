@@ -93,8 +93,8 @@ BeginSet(lt,LT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Mastelis",	NoIcon,			NULL,	"Mastelis")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Punktø sàr.",	tb_lists_bullets_xpm,	NULL,	"Pradëti/Uþbaigti punktø sàraðus")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numeruotas",	tb_lists_numbers_xpm,	NULL,	"Pradëti/Uþbaigti numeruotus sàraðus")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Fonas",	NoIcon,			NULL,	"Fono spalva")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Spalva",	NoIcon,			NULL,	"Teksto spalva")	
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Fonas",	tb_text_fgcolor_xpm,			NULL,	"Fono spalva")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Spalva",	tb_text_bgcolor_xpm,			NULL,	"Teksto spalva")	
 	
 	// New
 	
