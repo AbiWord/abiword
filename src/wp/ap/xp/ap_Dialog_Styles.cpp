@@ -36,6 +36,9 @@
 #include "ap_Dialog_Styles.h"
 #include "ut_string_class.h"
 
+#include "ap_Strings.h"
+#include "ap_Dialog_Id.h"
+
 AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
@@ -63,11 +66,12 @@ void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
 						UT_uint32 height)
 {
 	UT_ASSERT(gc);
-	// TODO: translate me
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	UT_UCSChar * str;
 
-	UT_UCS_cloneString_char (&str, "What Hath God Wrought");
+	UT_UCS_cloneString_char (&str, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
 
 	m_pParaPreview = new AP_Preview_Paragraph(gc, str, static_cast<XAP_Dialog*>(this));
 	UT_ASSERT(m_pParaPreview);
@@ -84,6 +88,8 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 {
 	UT_ASSERT(gc);
 
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
 //
 // Set the Background color for the preview.
 //
@@ -99,7 +105,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 // Text for the Preview
 //
 	static UT_UCSChar szString[60];
-	UT_UCS_strcpy_char( (UT_UCSChar *) szString, "What Hath God Wrought");
+	UT_UCS_strcpy_char( (UT_UCSChar *) szString, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
 	m_pCharPreview->setDrawString((const UT_UCSChar *) szString);
 //
 // set our Vector of Character Properties into the preview class.
@@ -216,12 +222,9 @@ void AP_Dialog_Styles::_populatePreviews(void)
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 	const XML_Char * paraValues [nParaFlds];
 
-//
-// Note to Dom: Actually do this code for character previews
-//
 	const static XML_Char * charFields[] = 
-	{"bgcolor","color","font-family","font-size","font-stretch","font-variant",
-	"font-weight","text-decoration"};
+	{"bgcolor","color","font-family","font-size","font-stretch","font-style", 
+	 "font-variant", "font-weight","text-decoration"};
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 	const XML_Char * charValues [nCharFlds];
 
@@ -247,13 +250,9 @@ void AP_Dialog_Styles::_populatePreviews(void)
 			if (!pStyle->getProperty(szName, szValue))
 				if (!pStyle->getAttribute(szName, szValue))
 				{
-					UT_DEBUGMSG(("DOM: could not obtain property/attribute %s (%d)\n",
-								 szName, i));
 					paraValues[i] = 0;
 					continue;
 				}
-
-			UT_DEBUGMSG(("DOM: paragraph property is: (%s, %s)\n", szName, szValue));
 				
 			strDesc += (const char *)szName;
 			strDesc += ":";
@@ -277,20 +276,14 @@ void AP_Dialog_Styles::_populatePreviews(void)
 			if (!pStyle->getProperty(szName, szValue))
 				if (!pStyle->getAttribute(szName, szValue))
 				{
-					UT_DEBUGMSG(("DOM: could not obtain property/attribute %s (%d)\n",
-								 szName, i));
 					charValues[i] = 0;
 					continue;
 				}
 
-			UT_DEBUGMSG(("DOM: char property is: (%s, %s)\n", szName, szValue));
-				
 			strDesc += (const char *)szName;
 			strDesc += ":";
 			strDesc += (const char *)szValue;
-
-			if (i != nCharFlds)
-				strDesc += "; ";
+			strDesc += "; ";
 
 			charValues[i] = szValue;
 //
@@ -304,16 +297,17 @@ void AP_Dialog_Styles::_populatePreviews(void)
 		if (!strDesc.empty())
 		{
 			setDescription (strDesc.c_str());
-		
+
+			// these aren't set at a style level, but we need to put them in there anyway
 			const XML_Char ** props_in = NULL;
 			m_pView->getSectionFormat(&props_in);
 
-			event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in), UT_getAttribute("page-margin-right", props_in),
+			event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in), 
+									 UT_getAttribute("page-margin-right", props_in),
 									 (const XML_Char *)paraValues[0], (const XML_Char *)paraValues[1],
 									 (const XML_Char *)paraValues[2], (const XML_Char *)paraValues[3], 
 									 (const XML_Char *)paraValues[4], (const XML_Char *)paraValues[5],
 									 (const XML_Char *)paraValues[6]);
-			UT_DEBUGMSG(("SEVIOR: Calling FontPreview Draw \n"));
 			event_charPreviewUpdated();
 		}
 	}

@@ -113,6 +113,10 @@ dcl(DLG_Styles_Description,		"Description")
 dcl(DLG_Styles_New,				"New...")
 dcl(DLG_Styles_Modify,			"Modify...")
 dcl(DLG_Styles_Delete,			"Delete")
+dcl(DLG_Styles_LBL_InUse,       "In Use")
+dcl(DLG_Styles_LBL_All,         "All")
+dcl(DLG_Styles_LBL_UserDefined, "User-defined styles")
+dcl(DLG_Styles_LBL_TxtMsg,      "What Hath God Wrought")
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle,			"Paragraph")
@@ -237,7 +241,7 @@ dcl(DLG_Options_Label_ViewAll,			"&All")
 dcl(DLG_Options_Label_ViewHiddenText,	"&Hidden Text")
 dcl(DLG_Options_Label_ViewUnprintable,	"Invisible &Layout Marks")
 
-dcl(DLG_Options_Label_CheckWhiteForTransparent,	"Allow screen colors other than White")
+dcl(DLG_Options_Label_CheckWhiteForTransparent,	"Allow screen colors other than white")
 dcl(DLG_Options_Label_ChooseForTransparent,	"Choose Screen Color")
 dcl(DLG_Options_Label_ColorChooserLabel,	"Choose screen color for AbiWord")
 

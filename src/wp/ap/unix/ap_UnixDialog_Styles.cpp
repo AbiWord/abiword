@@ -172,8 +172,6 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(mainWindow);
 
 	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	// Populate the window's data items
-	_populateWindowData();
 	
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -227,11 +225,34 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 							 (UT_uint32) m_wCharPreviewArea->allocation.width, 
 							 (UT_uint32) m_wCharPreviewArea->allocation.height);
 
+	// the expose event of the preview
+	gtk_signal_connect(GTK_OBJECT(m_wParaPreviewArea),
+					   "expose_event",
+					   GTK_SIGNAL_FUNC(s_paraPreview_exposed),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wCharPreviewArea),
+					   "expose_event",
+					   GTK_SIGNAL_FUNC(s_charPreview_exposed),
+					   (gpointer) this);
+	
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+							 "expose_event",
+							 GTK_SIGNAL_FUNC(s_window_exposed),
+							 (gpointer) this);
+
+	// connect the select_row signal to the clist
+	gtk_signal_connect (GTK_OBJECT (m_wclistStyles), "select_row",
+						GTK_SIGNAL_FUNC (s_clist_clicked), (gpointer)this);
+
 	// Run into the GTK event loop for this window.
 	
 //
 // Draw the previews!!
 //
+	// Populate the window's data items
+	_populateWindowData();
+
 	event_paraPreviewExposed();
 	event_charPreviewExposed();
 	gtk_main();
@@ -319,13 +340,12 @@ void AP_UnixDialog_Styles::event_ClistClicked(gint row, gint col)
 
 void AP_UnixDialog_Styles::event_ListClicked(const char * which)
 {
-	// todo: translate
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	if (!strcmp(which, "Styles in use"))
+	if (!strcmp(which, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_InUse)))
 		m_whichType = USED_STYLES;
-	else if (!strcmp(which, "User-defined styles"))
-		m_whichType = USED_STYLES;
+	else if (!strcmp(which, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined)))
+		m_whichType = USER_STYLES;
 	else
 		m_whichType = ALL_STYLES;
 
@@ -462,12 +482,14 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	// TODO: translate me
 	GList * styleTypes = NULL;
 
-	styleTypes = g_list_append (styleTypes, (gpointer)"Styles in use");
-	styleTypes = g_list_append (styleTypes, (gpointer)"All styles");
-	styleTypes = g_list_append (styleTypes, (gpointer)"User-defined styles");
+	styleTypes = g_list_append (styleTypes, 
+								(gpointer)pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse));
+	styleTypes = g_list_append (styleTypes,
+								(gpointer)pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_All));
+	styleTypes = g_list_append (styleTypes, (gpointer)pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined));
 
 	gtk_combo_set_popdown_strings (GTK_COMBO(comboList), styleTypes);
-	//gtk_combo_set_value_in_list (GTK_COMBO(comboList), (int)m_whichType, false);
+	gtk_combo_set_value_in_list (GTK_COMBO(comboList), (int)m_whichType, false);
 	gtk_container_add(GTK_CONTAINER(frameList), comboList);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameList, FALSE, FALSE, 2);
@@ -551,10 +573,6 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxStyleManip, FALSE, FALSE, 0);
 
-	// connect the select_row signal to the clist
-	gtk_signal_connect (GTK_OBJECT (listStyles), "select_row",
-						GTK_SIGNAL_FUNC (s_clist_clicked), (gpointer)this);
-
 	// connect signal for this list
 	gtk_signal_connect (GTK_OBJECT(GTK_COMBO(comboList)->entry), 
 						"changed",
@@ -603,23 +621,6 @@ void AP_UnixDialog_Styles::_connectsignals(void) const
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) this);
-
-	// the expose event of the preview
-	gtk_signal_connect(GTK_OBJECT(m_wParaPreviewArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_paraPreview_exposed),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wCharPreviewArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_charPreview_exposed),
-					   (gpointer) this);
-
-	
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "expose_event",
-							 GTK_SIGNAL_FUNC(s_window_exposed),
-							 (gpointer) this);
 
 	// the catch-alls
 	
