@@ -43,7 +43,8 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 			if (UT_IsWinNT())
 				GetCharWidth32(hdc, loc0, loc1, &(pA->aCW[loc0]));
 			else
-				GetCharWidth(hdc, loc0, loc1, &(pA->aCW[loc0]));
+				// GetCharWidth(hdc, loc0, loc1, &(pA->aCW[loc0]));
+				GetTextExtentPoint32W( ...se below... );
 			return;
 		}
 	}
@@ -64,8 +65,12 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	else
 		for (k=c0; k<=c1; k++)
 		{
-			GetCharWidth(hdc,k,k,&w);
-			setWidth(k,w);
+			// GetCharWidth(hdc,k,k,&w);  // This gives correct width of CP1252 char 128-159 but do we need it?
+			SIZE Size;
+			wchar_t sz1[2];
+			sz1[0] = k;
+			GetTextExtentPoint32W(hdc, sz1, 1, &Size);
+			setWidth(k,Size.cx);
 		}
 }
 
