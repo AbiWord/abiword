@@ -36,7 +36,7 @@ class GR_QNXImage : public GR_RasterImage
 {
 public:
 	GR_QNXImage(const char* pszName);
-	~GR_QNXImage();
+	virtual ~GR_QNXImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;

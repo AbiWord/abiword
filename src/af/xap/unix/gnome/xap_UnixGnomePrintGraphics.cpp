@@ -191,7 +191,7 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 		gnome_font_unref(m_pCurrentFont);
 }
 
-UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	UT_UCSChar realChar;
 	if(!m_bIsSymbol && !m_bIsDingbat)

@@ -30,7 +30,7 @@ class GR_Win32Image : public GR_RasterImage
 {
 public:
 	GR_Win32Image(const char* szName);
-	~GR_Win32Image();
+	virtual ~GR_Win32Image();
 
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);

@@ -41,7 +41,7 @@ class GR_CocoaImage : public GR_RasterImage
 {
 public:
 	GR_CocoaImage(const char* pszName);
-	~GR_CocoaImage();
+	virtual ~GR_CocoaImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
