@@ -67,7 +67,7 @@ need to be enclosed in double quotes:
 ------------
 
 ** As of the moment the ttf support only works for locales using encodings
-** iso-8859-1,2,8; utf-8 and koi8-r,u. Other encodings can be added
+** iso-8859-1,2,5,8; utf-8 and koi8-r,u. Other encodings can be added
 ** on request.
 
 Your font server must support ttf fonts. Then, just
