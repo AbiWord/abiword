@@ -26,7 +26,12 @@
 #include "gr_BeOSGraphics.h"
 
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+#define ENSUREP(p)	do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+
+/*
+ TODO: Take all of this generic ruler draw view stuff and put
+ it in it's own class, rather than duplicating it!
+*/
 
 /*****************************************************************/
 class TopRulerDrawView: public be_GRDrawView {
@@ -55,9 +60,11 @@ RulerFilter::RulerFilter(TopRulerDrawView *pRuler)
 
 filter_result RulerFilter::Filter(BMessage *msg, BHandler **target) {
         switch(msg->what) {
+        case B_MOUSE_MOVED:
+		//Check the queue for other mouse moved events,
+		//if they exists then drop this one.
         case B_MOUSE_DOWN:
         case B_MOUSE_UP:
-        case B_MOUSE_MOVED:
                 break;
         default:
                 return(B_DISPATCH_MESSAGE);
@@ -77,7 +84,6 @@ filter_result RulerFilter::Filter(BMessage *msg, BHandler **target) {
         msg->FindInt32("clicks", &clicks);
         msg->FindInt32("buttons", &buttons);
         msg->FindInt32("modifiers", &mod);
-        msg->FindPoint("where", &pt);
 
         if (mod & B_SHIFT_KEY)
                 ems |= EV_EMS_SHIFT;
@@ -93,19 +99,22 @@ filter_result RulerFilter::Filter(BMessage *msg, BHandler **target) {
         else if (buttons & B_PRIMARY_MOUSE_BUTTON)
                 emb = EV_EMB_BUTTON3;           
 
-	
-	printf("Mouse Position: "); pt.PrintToStream();
-
-#if SEND_MOUSE_EVENT
-	if (msg->what == B_MOUSE_DOWN)
+	if (msg->what == B_MOUSE_DOWN) {
+        	msg->FindPoint("where", &pt);
 		pBeOSTopRuler->mousePress(ems, emb,(long)pt.x,(long)pt.y);
-	else if (msg->what == B_MOUSE_UP)
+	}
+	else if (msg->what == B_MOUSE_UP) {
+        	msg->FindPoint("where", &pt);
 	        pBeOSTopRuler->mouseRelease(ems, emb, (long)pt.x, (long)pt.y);
-	else if (msg->what == B_MOUSE_MOVED && emb)
- 		pBeOSTopRuler->mouseMotion(ems, (long)pt.x, (long)pt.y);   
+	}
+	else if (msg->what == B_MOUSE_MOVED && emb) {
+		//The where position is screen centric, use the view_where
+		//instead.  Also we get a -1 value when we leave the view 
+        	msg->FindPoint("be:view_where", &pt);
+		if (pt.x >= 0 && pt.y >=0)
+ 			pBeOSTopRuler->mouseMotion(ems, (long)pt.x, (long)pt.y);   
+	}
 
-        return(B_DISPATCH_MESSAGE);
-#endif
         return(B_SKIP_MESSAGE);
 }                                             
 
@@ -114,9 +123,7 @@ TopRulerDrawView::TopRulerDrawView(AP_BeOSTopRuler *pRuler, AV_View *pView,
                                    uint32 resizeMask, uint32 flags) 
 		: be_GRDrawView(pView, frame, name, resizeMask, flags) {
 	m_pAPRuler = pRuler;
- 	//Window()->Lock();
         AddFilter(new RulerFilter(this));
-        //Window()->Unlock(); 
 }
 
 void TopRulerDrawView::FrameResized(float new_width, float new_height) {
@@ -128,10 +135,20 @@ void TopRulerDrawView::FrameResized(float new_width, float new_height) {
 }
 
 void TopRulerDrawView::Draw(BRect invalid) {
+	BPicture *mypict;
+	BeginPicture(new BPicture);
+
+/*
 	UT_Rect rect(invalid.left,invalid.top, 
 		     invalid.Width(), invalid.Height());
 	m_pAPRuler->draw(&rect);
-	//m_pAPRuler->draw(NULL);
+*/
+	m_pAPRuler->draw(NULL);
+
+	if ((mypict = EndPicture())) {
+		DrawPicture(mypict, BPoint(0,0));
+		delete mypict;
+	}
 }
 
 /*****************************************************************/
@@ -148,12 +165,6 @@ AP_BeOSTopRuler::~AP_BeOSTopRuler(void)
 
 void AP_BeOSTopRuler::createWidget(BRect r)
 {
-	printf("TOPRULER: create widget \n");
-	/*
-	m_wTopRuler = new be_GRDrawView(NULL, r, "TopRuler", 
-					B_FOLLOW_TOP | B_FOLLOW_LEFT_RIGHT,
-					B_WILL_DRAW);
-	*/
 	m_wTopRuler = new TopRulerDrawView(this, NULL, r, "TopRuler", 
 					B_FOLLOW_TOP | B_FOLLOW_LEFT_RIGHT,
 					B_WILL_DRAW);
@@ -161,7 +172,6 @@ void AP_BeOSTopRuler::createWidget(BRect r)
 	//Attach the widget to the window ...
 	be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow();
 	pBWin->AddChild(m_wTopRuler);
-	printf("Setting height/width to %d/%d \n", r.Height(), r.Width());
  	setHeight(r.Height());
         setWidth(r.Width());
 }

@@ -573,6 +573,7 @@ be_DocView *be_Window::_createDocumentWindow() {
         m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView",
                                        B_FOLLOW_ALL, B_WILL_DRAW);
         //m_pbe_DocView->SetViewColor(0,120, 255);
+        //m_pbe_DocView->SetViewColor(B_TRANSPARENT_32_BIT);
         //Add the view to both frameworks (Be and Abi)
         AddChild(m_pbe_DocView);
         m_pBeOSFrame->setBeDocView(m_pbe_DocView);

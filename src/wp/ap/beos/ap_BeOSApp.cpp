@@ -262,10 +262,6 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 		return -1;	// make this something standard?
 	}
 
-	// create the first window.
-	AP_BeOSFrame * pFirstBeOSFrame = new AP_BeOSFrame(pMyBeOSApp);
-	pFirstBeOSFrame->initialize();
-	
 	pMyBeOSApp->ParseCommandLine();
 
 	// Turn control over to the runtime (don't return until done)
@@ -274,7 +270,9 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	printf("Exiting infinite loop here \n");
 	
 	// destroy the App.  It should take care of deleting all frames.
+	printf("Running Shutdown \n");
 	pMyBeOSApp->shutdown();
+	printf("Deleting App \n");
 	delete pMyBeOSApp;
 	
 	return 0;

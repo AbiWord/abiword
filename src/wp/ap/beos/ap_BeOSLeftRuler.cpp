@@ -25,8 +25,136 @@
 #include "ap_BeOSLeftRuler.h"
 #include "gr_BeOSGraphics.h"
 
+#include <MessageFilter.h>
+
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+#define ENSUREP(p)	do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+
+/*****************************************************************/
+
+class LeftRulerDrawView: public be_GRDrawView {
+public:
+ 	LeftRulerDrawView(AP_BeOSLeftRuler *pRuler, AV_View *pView, 
+			 BRect frame, const char *name,
+                         uint32 resizeMask, uint32 flags);
+	virtual void FrameResized(float new_width, float new_height);
+	virtual void Draw(BRect invalid);
+
+	AP_BeOSLeftRuler *m_pAPRuler;
+};
+
+class LeftRulerFilter: public BMessageFilter {
+        public:
+                LeftRulerFilter(LeftRulerDrawView *pRuler);
+                filter_result Filter(BMessage *message, BHandler **target);
+        private:
+                LeftRulerDrawView  *m_pRuler;
+};
+
+LeftRulerFilter::LeftRulerFilter(LeftRulerDrawView *pRuler)
+          : BMessageFilter(B_PROGRAMMED_DELIVERY, B_LOCAL_SOURCE) {
+        m_pRuler = pRuler;
+}
+
+filter_result LeftRulerFilter::Filter(BMessage *msg, BHandler **target) {
+/*
+  There currently aren't any events 
+  defined for the Left Ruler yet.
+  We are ready when they do happen!
+*/
+	return(B_DISPATCH_MESSAGE);
+#if 0
+        switch(msg->what) {
+        case B_MOUSE_MOVED:
+		//Check the queue for other mouse moved events,
+		//if they exists then drop this one.
+        case B_MOUSE_DOWN:
+        case B_MOUSE_UP:
+                break;
+        default:
+                return(B_DISPATCH_MESSAGE);
+        }
+
+	if (!m_pRuler)
+		return(B_DISPATCH_MESSAGE);
+        AP_BeOSLeftRuler * pBeOSLeftRuler = m_pRuler->m_pAPRuler;
+	if (!pBeOSLeftRuler)
+		return(B_DISPATCH_MESSAGE);
+
+  	BPoint  pt;
+        int32   clicks, mod, buttons;
+        EV_EditModifierState ems = 0;
+        EV_EditMouseButton emb = 0;
+
+        msg->FindInt32("clicks", &clicks);
+        msg->FindInt32("buttons", &buttons);
+        msg->FindInt32("modifiers", &mod);
+
+        if (mod & B_SHIFT_KEY)
+                ems |= EV_EMS_SHIFT;
+        if (mod & B_CONTROL_KEY)
+                ems |= EV_EMS_CONTROL;
+        if (mod & B_OPTION_KEY)
+                ems |= EV_EMS_ALT;
+
+        if (buttons & B_PRIMARY_MOUSE_BUTTON)
+                emb = EV_EMB_BUTTON1;
+        else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+                emb = EV_EMB_BUTTON2;
+        else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+                emb = EV_EMB_BUTTON3;           
+
+	if (msg->what == B_MOUSE_DOWN) {
+        	msg->FindPoint("where", &pt);
+		pBeOSLeftRuler->mousePress(ems, emb,(long)pt.x,(long)pt.y);
+	}
+	else if (msg->what == B_MOUSE_UP) {
+        	msg->FindPoint("where", &pt);
+	        pBeOSLeftRuler->mouseRelease(ems, emb, (long)pt.x, (long)pt.y);
+	}
+	else if (msg->what == B_MOUSE_MOVED && emb) {
+		//The where position is screen centric, use the view_where
+		//instead.  Also we get a -1 value when we leave the view 
+        	msg->FindPoint("be:view_where", &pt);
+		if (pt.x >= 0 && pt.y >=0)
+ 			pBeOSLeftRuler->mouseMotion(ems, (long)pt.x, (long)pt.y);   
+	}
+
+        return(B_SKIP_MESSAGE);
+#endif
+}                                             
+
+LeftRulerDrawView::LeftRulerDrawView(AP_BeOSLeftRuler *pRuler, AV_View *pView, 
+				   BRect frame, const char *name,
+                                   uint32 resizeMask, uint32 flags) 
+		: be_GRDrawView(pView, frame, name, resizeMask, flags) {
+	m_pAPRuler = pRuler;
+        AddFilter(new LeftRulerFilter(this));
+}
+
+void LeftRulerDrawView::FrameResized(float new_width, float new_height) {
+	m_pAPRuler->setHeight((int)new_height);
+        m_pAPRuler->setWidth((int)new_width);
+	//Then call the inherited version
+	//be_GRDrawView::FrameResized(new_width, new_height);
+	m_pAPRuler->draw(NULL);
+}
+
+void LeftRulerDrawView::Draw(BRect invalid) {
+	BPicture *mypict;
+	BeginPicture(new BPicture);
+/*
+	UT_Rect rect(invalid.left,invalid.top, 
+		     invalid.Width(), invalid.Height());
+	m_pAPRuler->draw(&rect);
+*/
+	m_pAPRuler->draw(NULL);
+
+	if ((mypict = EndPicture())) {
+		DrawPicture(mypict, BPoint(0,0));
+		delete mypict;
+	}
+}
 
 /*****************************************************************/
 
@@ -42,15 +170,13 @@ AP_BeOSLeftRuler::~AP_BeOSLeftRuler(void)
 
 void  AP_BeOSLeftRuler::createWidget(BRect r)
 {
-	printf("LEFTRULER: create widget \n");
-        m_wLeftRuler = new be_GRDrawView(NULL, r, "LeftRuler",
+        m_wLeftRuler = new LeftRulerDrawView(this, NULL, r, "LeftRuler",
                                         B_FOLLOW_TOP_BOTTOM | B_FOLLOW_LEFT,
                                         B_WILL_DRAW);
         //Attach the widget to the window ...
         be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow()
 ;
         pBWin->AddChild(m_wLeftRuler);
-        printf("Setting height/width to %d/%d \n", r.Height(), r.Width());
         setHeight(r.Height());
         setWidth(r.Width());        
 }
@@ -72,87 +198,3 @@ void AP_BeOSLeftRuler::setView(AV_View * pView) {
 	}
 }
 
-/*****************************************************************/
-#if 0
-gint AP_BeOSLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
-{
-	// a static function
-	AP_BeOSLeftRuler * pBeOSLeftRuler = (AP_BeOSLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("BeOSLeftRuler: [p %p] received button_press_event\n",pBeOSLeftRuler));
-	return 1;
-}
-
-gint AP_BeOSLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
-{
-	// a static function
-	AP_BeOSLeftRuler * pBeOSLeftRuler = (AP_BeOSLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("BeOSLeftRuler: [p %p] received button_release_event\n",pBeOSLeftRuler));
-	return 1;
-}
-	
-gint AP_BeOSLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
-{
-	// a static function
-	AP_BeOSLeftRuler * pBeOSLeftRuler = (AP_BeOSLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-
-	// UT_DEBUGMSG(("BeOSLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
-	//			 pBeOSLeftRuler, e->width, e->height));
-
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	if (iHeight != pBeOSLeftRuler->getHeight())
-		pBeOSLeftRuler->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pBeOSLeftRuler->getWidth())
-		pBeOSLeftRuler->setWidth(iWidth);
-	
-	return 1;
-}
-	
-gint AP_BeOSLeftRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
-{
-	// a static function
-	// AP_BeOSLeftRuler * pBeOSLeftRuler = (AP_BeOSLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("BeOSLeftRuler: [p %p] received motion_notify_event\n",pBeOSLeftRuler));
-	return 1;
-}
-	
-gint AP_BeOSLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
-{
-	// a static function
-	AP_BeOSLeftRuler * pBeOSLeftRuler = (AP_BeOSLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("BeOSLeftRuler: [p %p] received key_press_event\n",pBeOSLeftRuler));
-	return 1;
-}
-	
-gint AP_BeOSLeftRuler::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	// a static function
-	// AP_BeOSLeftRuler * pBeOSLeftRuler = (AP_BeOSLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("BeOSLeftRuler: [p %p] received delete_event\n",pBeOSLeftRuler));
-	return 1;
-}
-	
-gint AP_BeOSLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
-{
-	// a static function
-	AP_BeOSLeftRuler * pBeOSLeftRuler = (AP_BeOSLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (!pBeOSLeftRuler)
-		return 0;
-
-	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
-
-	pBeOSLeftRuler->draw(&rClip);
-	return 0;
-}
-
-void AP_BeOSLeftRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// a static function
-}
-
-#endif
