@@ -3766,6 +3766,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		}		
 	}
 	m_iInsPoint = pt;
+	xxx_UT_DEBUGMSG(("Point set to %d in View %x \n",pt,this));
 	m_bPointEOL = bEOL;
 	_fixInsertionPointCoords();
 	if(!m_pDoc->isPieceTableChanging())

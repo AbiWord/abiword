@@ -5296,7 +5296,7 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition());
-	else if (pView) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	else if (pView && ((pView->getPoint() == 0) || pView->getPoint() > pcrx->getPosition()) ) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 	// Run list should be valid now.
 	_assertRunListIntegrity();
