@@ -30,15 +30,22 @@
 
 class ImportStream
 {
-public:
+ public:
 	ImportStream();
 	virtual ~ImportStream() {}
 	bool init(const char *szEncoding);
 	bool getChar(UT_UCSChar &b);
 	UT_UCSChar peekChar() { return m_ucsLookAhead; }
-protected:
+ protected:
 	virtual bool _getByte(unsigned char &b) = 0;
 	virtual bool getRawChar(UT_UCSChar &b);
+
+	bool _eof () const { return m_bEOF; }
+	void _eof (bool b) { m_bEOF = b; }
+	UT_UCSChar _lookAhead () const { return m_ucsLookAhead; }
+	void _lookAhead ( UT_UCSChar c ) { m_ucsLookAhead = c; }
+
+ private:
 	UT_Mbtowc m_Mbtowc;
 	UT_UCSChar m_ucsLookAhead;
 	bool m_bEOF;
@@ -161,6 +168,7 @@ protected:
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);
 
+ private:
 	const char *	m_szEncoding;
 	bool			m_bIsEncoded;
 	bool			m_bIs16Bit;

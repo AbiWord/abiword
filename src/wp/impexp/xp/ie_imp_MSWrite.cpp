@@ -230,7 +230,7 @@ IE_Imp_MSWrite::IE_Imp_MSWrite(PD_Document * pDocument)
 
 UT_Error IE_Imp_MSWrite::_writeHeader(FILE * /* fp */)
 {
-    X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
+    X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
     
     return UT_OK;
 }
@@ -282,8 +282,8 @@ UT_Error IE_Imp_MSWrite::_parseFile(FILE * fp)
           {
           // if we have text left over (without final CR/LF),
           // create a paragraph and emit the text now.
-          X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-          X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), 
+          X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
+          X_ReturnNoMemIfError(getDoc()->appendSpan(gbBlock.getPointer(0), 
           gbBlock.getLength()));
           }
         */
@@ -343,11 +343,11 @@ IE_Imp_MSWrite::ReadTextRangeWithFormat (FILE * fp, const UT_uint32 end,
                 // a paragraph is delimited by a CRLF as specified 
                 // by the file format specification
                 
-                X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+                X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
                 if (gbBlock.getLength() > 0)
                 {
                     X_ReturnNoMemIfError(
-                        m_pDocument->appendSpan(gbBlock.getPointer(0), 
+                        getDoc()->appendSpan(gbBlock.getPointer(0), 
                                                 gbBlock.getLength()));
                     gbBlock.truncate(0);
                 }
@@ -387,7 +387,7 @@ IE_Imp_MSWrite::ReadTextRangeWithFormat (FILE * fp, const UT_uint32 end,
         propsArray[1] = propsBuffer;
         propsArray[2] = NULL;
         
-        m_pDocument->appendFmt (propsArray);
+        getDoc()->appendFmt (propsArray);
         free (propsBuffer);
     } 
     
@@ -409,7 +409,7 @@ IE_Imp_MSWrite::ReadTextRangeWithFormat (FILE * fp, const UT_uint32 end,
 void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
                                      unsigned char * pData, UT_uint32 lenData)
 {
-    UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
+    UT_ASSERT(getDoc() == pDocRange->m_pDoc);
     UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
     
     UT_GrowBuf gbBlock(1024);
@@ -444,7 +444,7 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
             if (gbBlock.getLength() > 0)
             {
                 // flush out what we have
-                m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
+                getDoc()->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
                 dpos += gbBlock.getLength();
                 gbBlock.truncate(0);
             }
@@ -455,7 +455,7 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
             bEatLF = false;
             if (bInColumn1 && !bSuppressLeadingParagraph)
             {
-                m_pDocument->insertStrux(dpos,PTX_Block);
+                getDoc()->insertStrux(dpos,PTX_Block);
                 dpos++;
             }
             
@@ -475,7 +475,7 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
     if (gbBlock.getLength() > 0)
     {
         // if we have text left over (without final CR/LF),
-        m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
+        getDoc()->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
         dpos += gbBlock.getLength();
     }
     

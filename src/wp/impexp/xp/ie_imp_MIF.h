@@ -49,26 +49,17 @@ public:
 
 class IE_Imp_MIF : public IE_Imp
 {
-public:
-	IE_Imp_MIF(PD_Document * pDocument);
-	~IE_Imp_MIF();
+ public:
+  IE_Imp_MIF(PD_Document * pDocument);
+  ~IE_Imp_MIF();
+  
+  virtual UT_Error	importFile(const char * szFilename);
 
-	virtual UT_Error	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
-
-	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
-	
-protected:
+ protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
+
+ private:
 	UT_Mbtowc 		m_Mbtowc;
 };
 

@@ -49,8 +49,8 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
 
    	UT_DEBUGMSG(("trying to open an image as a document...\n"));
    
-	if (!m_pDocument->appendStrux(PTX_Section, NULL) ||
-	    !m_pDocument->appendStrux(PTX_Block, NULL))
+	if (!getDoc()->appendStrux(PTX_Section, NULL) ||
+	    !getDoc()->appendStrux(PTX_Block, NULL))
      		return UT_IE_NOMEMORY;
    
    	FG_Graphic* pFG;
@@ -79,12 +79,12 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
    	propsArray[1] = "image_0";
    	propsArray[2] = NULL;
    
-   	if (!m_pDocument->appendObject(PTO_Image, propsArray)) {
+   	if (!getDoc()->appendObject(PTO_Image, propsArray)) {
 	   delete pFG;
 	   return UT_IE_NOMEMORY;
 	}
 
-   	if (!m_pDocument->createDataItem("image_0", false,
+   	if (!getDoc()->createDataItem("image_0", false,
 					buf, (void*)mimetype, NULL)) {
 	   delete pFG;
 	   return UT_IE_NOMEMORY;

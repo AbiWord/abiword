@@ -532,8 +532,8 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Doc);
 
 		// append the two lists to the document
-		m_pDocument->appendList (ol_atts);
-		m_pDocument->appendList (ul_atts);
+		getDoc()->appendList (ol_atts);
+		getDoc()->appendList (ul_atts);
 		UT_DEBUGMSG(("DOM: appended lists\n"));
 
 		//UT_DEBUGMSG(("%d atts: %s\n", i, atts[i]));
@@ -543,7 +543,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Sec;
-		X_CheckError(m_pDocument->appendStrux(PTX_Section,NULL));
+		X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
 		return;
 
 	case TT_Q:
@@ -560,7 +560,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		sz = NULL;
 		UT_XML_cloneString(sz, "font-style:italic");
 		new_atts[1]=sz;
-		X_CheckError(m_pDocument->appendFmt(new_atts));
+		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 
 	case TT_CODE:
@@ -575,7 +575,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		sz = NULL;
 		UT_XML_cloneString(sz, "font-weight:bold");
 		new_atts[1]=sz;
-		X_CheckError(m_pDocument->appendFmt(new_atts));
+		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 
 	case TT_UNDERLINE:
@@ -586,7 +586,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		sz = NULL;
 		UT_XML_cloneString(sz, "text-decoration:underline");
 		new_atts[1]=sz;
-		X_CheckError(m_pDocument->appendFmt(new_atts));
+		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 
 	case TT_SUP:
@@ -601,7 +601,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  else
 	    UT_XML_cloneString(sz, "text-position:subscript");
 	  new_atts[1]=sz;
-	  X_CheckError(m_pDocument->appendFmt(new_atts));
+	  X_CheckError(getDoc()->appendFmt(new_atts));
 	  return;
 
 	case TT_S:
@@ -613,7 +613,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  sz = NULL;
 	  UT_XML_cloneString(sz, "text-decoration:line-through");
 	  new_atts[1]=sz;
-	  X_CheckError(m_pDocument->appendFmt(new_atts));
+	  X_CheckError(getDoc()->appendFmt(new_atts));
 	  return;
   
 	case TT_FONT:
@@ -640,7 +640,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	    sz = NULL;
 	    UT_XML_cloneString(sz, output);
 	    new_atts[1] = sz;
-	    X_CheckError(m_pDocument->appendFmt(new_atts));
+	    X_CheckError(getDoc()->appendFmt(new_atts));
 	  }
 	  return;
 
@@ -657,7 +657,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
 		if(p_val == NULL)
-		  X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
+		  X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
 		else
 		  {
 		    sz = NULL;
@@ -674,7 +674,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 			new_atts[0] = sz;		      
 		      }
 
-		    X_CheckError(m_pDocument->appendStrux(PTX_Block,new_atts));
+		    X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
 		  }
 
 		UT_XML_cloneString(sz, PT_STYLE_ATTRIBUTE_NAME);
@@ -691,7 +691,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		  UT_XML_cloneString(sz, "Block Text");
 
 		new_atts[1]=sz;
-		X_CheckError(m_pDocument->appendFmt(new_atts));
+		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 	  }
 
@@ -720,11 +720,11 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 	      if (m_listType == L_OL)
 		{
-		  X_CheckError(m_pDocument->appendStrux(PTX_Block, ol_p_atts));
+		  X_CheckError(getDoc()->appendStrux(PTX_Block, ol_p_atts));
 		}
 	      else
 		{
-		  X_CheckError(m_pDocument->appendStrux(PTX_Block, ul_p_atts));
+		  X_CheckError(getDoc()->appendStrux(PTX_Block, ul_p_atts));
 		}
 
 	      // append a field
@@ -732,18 +732,18 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	      new_atts[0] = sz;
 	      UT_XML_cloneString(sz, "list_label");
 	      new_atts[1] = sz;
-	      X_CheckError(m_pDocument->appendObject(PTO_Field, new_atts));
+	      X_CheckError(getDoc()->appendObject(PTO_Field, new_atts));
 
 	      // append the character run
 	      UT_XML_cloneString(sz, "type");
 	      new_atts[0] = sz;
 	      UT_XML_cloneString(sz, "list_label");
 	      new_atts[1] = sz;
-	      X_CheckError(m_pDocument->appendFmt(new_atts));
+	      X_CheckError(getDoc()->appendFmt(new_atts));
 
 	      // finally, append a tab
 	      UT_UCSChar c = '\t';
-	      X_CheckError(m_pDocument->appendSpan(&c, 1));
+	      X_CheckError(getDoc()->appendSpan(&c, 1));
 	      return;
 	    }
 	  break;
@@ -762,7 +762,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
 		if(p_val == NULL)
-		  X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
+		  X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
 		else
 		  {
 		    sz = NULL;
@@ -779,7 +779,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 			new_atts[0] = sz;
 		      }
 
-		    X_CheckError(m_pDocument->appendStrux(PTX_Block,new_atts));
+		    X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
 		  }
 		return;
 	  }
@@ -801,7 +801,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		  }
 
 		_pushInlineFmt(new_atts);
-		m_pDocument->appendFmt(&m_vecInlineFmt);
+		getDoc()->appendFmt(&m_vecInlineFmt);
 		return;
 
 	case TT_BREAK:
@@ -809,7 +809,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		if(m_parseState == _PS_Block)
 		{
 			UT_UCSChar ucs = UCS_LF;
-			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 		}
 		return;
 
@@ -883,7 +883,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		return;
 
 		// text formatting
@@ -910,7 +910,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()==0);
 		//_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		return;
 		
 	case TT_INLINE:
@@ -919,7 +919,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
-		m_pDocument->appendFmt(&m_vecInlineFmt);
+		getDoc()->appendFmt(&m_vecInlineFmt);
 		return;
 
 	case TT_BREAK:						// not a container, so we don't pop stack

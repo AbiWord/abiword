@@ -239,7 +239,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 		
 		// I'm torn as to where to put this:
 		// TT_DOCUMENT or here. Oh well :-)
-		X_CheckError(m_pDocument->appendStrux(PTX_Section,(const XML_Char **)NULL));
+		X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char **)NULL));
 		return;
 	  }
 
@@ -271,7 +271,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 		    else
 		      left = true;
 		  }
-		  X_CheckError(m_pDocument->appendStrux(PTX_Block, (left ? NULL : (const XML_Char **)buf)));
+		  X_CheckError(getDoc()->appendStrux(PTX_Block, (left ? NULL : (const XML_Char **)buf)));
 		}
 		return;
 		
@@ -284,7 +284,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 		X_VerifyParseState(_PS_Block);
 		{
 			UT_UCSChar ucs = UCS_LF;
-			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 		}
 		return;
 
@@ -329,7 +329,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 
 	    p_atts = (const XML_Char **)buf;
 	    X_CheckError(_pushInlineFmt(p_atts));
-	    X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+	    X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 	  }
 	  return;
 
@@ -388,7 +388,7 @@ void IE_Imp_WML::_endElement(const XML_Char *name)
 	        X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		return;
 
 	case TT_OTHER:

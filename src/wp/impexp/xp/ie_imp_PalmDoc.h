@@ -56,13 +56,10 @@ public:
 	~IE_Imp_PalmDoc();
 
 	virtual UT_Error	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 	
 protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
-	UT_Mbtowc 			m_Mbtowc;
 
         void				_selectSwap();
 	void				_uncompress( buffer* );
@@ -71,7 +68,8 @@ protected:
 	DWord				_swap_DWord( DWord );
 
 private:
-    
+
+	UT_Mbtowc 			m_Mbtowc;    
         FILE *				m_pdfp;
 	pdb_header			m_header;
 	doc_record0			m_rec0;

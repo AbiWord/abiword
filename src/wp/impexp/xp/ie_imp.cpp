@@ -30,7 +30,8 @@
 #include "ie_imp_GraphicAsDocument.h"
 #include "pd_Document.h"
 
-static UT_Vector m_sniffers (20);
+const UT_uint32 importer_size_guess = 20;
+static UT_Vector m_sniffers (importer_size_guess);
 
 /*****************************************************************/
 /*****************************************************************/
@@ -42,6 +43,24 @@ IE_Imp::IE_Imp(PD_Document * pDocument)
 
 IE_Imp::~IE_Imp()
 {
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+// default impl, meant to abort
+
+void	  IE_Imp::pasteFromBuffer(PD_DocumentRange * pDocRange,
+				  unsigned char * pData, 
+				  UT_uint32 lenData, 
+				  const char * szEncoding)
+{
+  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+PD_Document * IE_Imp::getDoc () const
+{
+  return m_pDocument;
 }
 	
 /*****************************************************************/

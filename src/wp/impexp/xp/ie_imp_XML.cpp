@@ -223,13 +223,14 @@ IE_Imp_XML::~IE_Imp_XML()
 }
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
-	: IE_Imp(pDocument), m_parseState(_PS_Init), m_bLoadIgnoredWords(false),
-	  m_error(UT_OK), m_lenCharDataSeen(0), m_lenCharDataExpected(0), 
+	: IE_Imp(pDocument), m_error(UT_OK), 
+          m_parseState(_PS_Init), m_bLoadIgnoredWords(false),
+	  m_lenCharDataSeen(0), m_lenCharDataExpected(0), 
 	  m_iOperationCount(0), m_bSeenCR(false), 
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
 	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL)
 {
-	XAP_App *pApp = m_pDocument->getApp();
+	XAP_App *pApp = getDoc()->getApp();
 	UT_ASSERT(pApp);
 	XAP_Prefs *pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
@@ -380,12 +381,12 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 		switch (m_parseState)
 		  {
 		  case _PS_Block:
-		    X_CheckError(m_pDocument->appendSpan(buf.ucs_str(), buf.size()));
+		    X_CheckError(getDoc()->appendSpan(buf.ucs_str(), buf.size()));
 		    break;
 		  case _PS_IgnoredWordsItem:
 		    if (m_bLoadIgnoredWords) 
 		      {
-			X_CheckError(m_pDocument->appendIgnore(buf.ucs_str(), buf.size()));
+			X_CheckError(getDoc()->appendIgnore(buf.ucs_str(), buf.size()));
 		      }
 		    break;
 		  default:
@@ -492,12 +493,6 @@ const XML_Char * IE_Imp_XML::_getXMLPropValue(const XML_Char *name,
       return a[1];
   
   return NULL;
-}
-
-void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				       unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
 #ifdef HAVE_LIBXML2

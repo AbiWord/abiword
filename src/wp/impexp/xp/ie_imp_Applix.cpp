@@ -211,7 +211,7 @@ IE_Imp_Applix::IE_Imp_Applix(PD_Document * pDocument)
 
 UT_Error IE_Imp_Applix::_writeHeader(FILE * /* fp */)
 {
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
 
 	return UT_OK;
 }
@@ -657,7 +657,7 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 
 	if (m_textBuf.getLength() > 0) 
 	{
-		m_pDocument->appendSpan (m_textBuf.getPointer (0), m_textBuf.getLength ());
+		getDoc()->appendSpan (m_textBuf.getPointer (0), m_textBuf.getLength ());
 		m_textBuf.truncate(0);
 	}
 }
@@ -678,11 +678,11 @@ void IE_Imp_Applix::_applixNewPara (const char *buf, size_t len)
 	if (runlen > 0) 
 	{
 		xxx_UT_DEBUGMSG(("applix: flushing\n"));
-		m_pDocument->appendSpan (m_textBuf.getPointer (0), runlen);
+		getDoc()->appendSpan (m_textBuf.getPointer (0), runlen);
 	}
 	
 	xxx_UT_DEBUGMSG(("applix: new para\n"));
-	m_pDocument->appendStrux (PTX_Block, NULL);	
+	getDoc()->appendStrux (PTX_Block, NULL);	
 }
 
 
@@ -699,20 +699,10 @@ void IE_Imp_Applix::_applixPageBreak (const char * /*buf*/, size_t /*len*/)
 	UT_UCSChar c;
 	c = UCS_FF;
 	m_textBuf.append(&c, 1);
-	m_pDocument->appendSpan (m_textBuf.getPointer (0), m_textBuf.getLength ());
+	getDoc()->appendSpan (m_textBuf.getPointer (0), m_textBuf.getLength ());
 	m_textBuf.truncate(0);
 }
 
 
 /*****************************************************************/
 /*****************************************************************/
-
-void IE_Imp_Applix::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				    unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
-{
-	return;
-}
-
-/*****************************************************************/
-/*****************************************************************/
-

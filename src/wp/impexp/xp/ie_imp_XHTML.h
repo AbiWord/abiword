@@ -55,7 +55,7 @@ public:
 								  const XML_Char **atts);
     void			_endElement(const XML_Char *name);
 
- protected:
+ private:
     
     enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 };

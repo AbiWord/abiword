@@ -37,8 +37,14 @@ struct xmlToIdMapping {
 };
 
 // The importer/reader for reading generic
-// XML documents. The Abiword and WML importers
-// Derive from this *abstract* base class
+// XML documents. Currently, the following classes derive from this:
+//
+// ABW, AWT, GZABW
+// DBK
+// WML
+// XHTML
+// XSL-FO
+// KWORD 1 && 2 (soon)
 
 class IE_Imp_XML : public IE_Imp
 {
@@ -47,10 +53,6 @@ public:
     virtual ~IE_Imp_XML();
 
     virtual UT_Error	importFile(const char * szFilename);
-    virtual void	pasteFromBuffer(PD_DocumentRange * pDocRange,
-					unsigned char * pData, 
-					UT_uint32 lenData,
-					const char * szEncoding = 0);
 
     // the following are public only so that the
     // XML parser callback routines can access them.
@@ -79,6 +81,10 @@ protected:
     bool			_pushInlineFmt(const XML_Char ** atts);
     void			_popInlineFmt(void);
 
+#ifdef HAVE_LIBXML2
+    UT_Error _sax(const char *path);
+#endif	
+
     typedef enum _parseState { _PS_Init,
 			       _PS_Doc,
 			       _PS_Sec,
@@ -95,9 +101,13 @@ protected:
 			       _PS_PageSize
     } ParseState;
 
+ protected:
+   
+    // TODO: make us private, refactor code
+    UT_Error m_error;
     ParseState                  m_parseState;
-	bool				m_bLoadIgnoredWords;
-    UT_Error			m_error;
+
+    bool			m_bLoadIgnoredWords;
     XML_Char			m_charDataSeen[4];
     UT_uint32			m_lenCharDataSeen;
     UT_uint32			m_lenCharDataExpected;
@@ -115,9 +125,6 @@ protected:
     bool			m_currentDataItemEncoded;
 
     FILE *			m_fp;
-#ifdef HAVE_LIBXML2
-    UT_Error _sax(const char *path);
-#endif	
 };
 
 #endif /* IE_IMP_XML_H */

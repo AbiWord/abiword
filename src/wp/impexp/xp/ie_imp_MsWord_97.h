@@ -68,8 +68,6 @@ public:
 	~IE_Imp_MsWord_97 ();
 
 	UT_Error			importFile (const char * szFilename);
-	void                pasteFromBuffer (PD_DocumentRange *, 
-										 unsigned char *, unsigned int, const char * szEncoding = 0);
 
    	// wv's callbacks need access to these, so they have to be public
 	int             _specCharProc (wvParseStruct *ps, UT_uint16 eachchar, 

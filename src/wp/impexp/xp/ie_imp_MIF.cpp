@@ -178,7 +178,7 @@ IE_Imp_MIF::IE_Imp_MIF(PD_Document * pDocument)
 
 UT_Error IE_Imp_MIF::_writeHeader(FILE * /* fp */)
 {
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
 
 	return UT_OK;
 }
@@ -190,13 +190,3 @@ UT_Error IE_Imp_MIF::_parseFile(FILE * fp)
 
 #undef X_ReturnNoMemIfError
 #undef X_ReturnIfFail
-
-/*****************************************************************/
-/*****************************************************************/
-
-void IE_Imp_MIF::pasteFromBuffer(PD_DocumentRange * pDocRange,
-								  unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
-{
-	return;
-}
-

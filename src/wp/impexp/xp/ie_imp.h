@@ -48,13 +48,13 @@ public:
 	
 	// these you must override these
 	virtual bool recognizeContents (const char * szBuf, 
-									UT_uint32 iNumbytes) = 0;
+					UT_uint32 iNumbytes) = 0;
 	virtual bool recognizeSuffix (const char * szSuffix) = 0;
 	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEFileType * ft) = 0;
+				   const char ** szSuffixList,
+				   IEFileType * ft) = 0;
 	virtual UT_Error constructImporter (PD_Document * pDocument,
-										IE_Imp ** ppie) = 0;
+					    IE_Imp ** ppie) = 0;
 	
 private:
 	// only IE_Imp ever calls this
@@ -72,23 +72,23 @@ public:
 	// with it.
 
 	static IEFileType	fileTypeForContents(const char * szBuf,
-											UT_uint32 iNumbytes);
-
+						    UT_uint32 iNumbytes);
+	
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	static const char * suffixesForFileType(IEFileType ieft);
 	
-	static UT_Error		constructImporter(PD_Document * pDocument,
-										  const char * szFilename,
-										  IEFileType ieft,
-										  IE_Imp ** ppie, 
-										  IEFileType * pieft = NULL);
+	static UT_Error	constructImporter(PD_Document * pDocument,
+					  const char * szFilename,
+					  IEFileType ieft,
+					  IE_Imp ** ppie, 
+					  IEFileType * pieft = NULL);
+	
+	static bool	    enumerateDlgLabels(UT_uint32 ndx,
+					       const char ** pszDesc,
+					       const char ** pszSuffixList,
+					       IEFileType * ft);
 
-	static bool		    enumerateDlgLabels(UT_uint32 ndx,
-										   const char ** pszDesc,
-										   const char ** pszSuffixList,
-										   IEFileType * ft);
-	static UT_uint32	getImporterCount(void);
-
+	static UT_uint32	getImporterCount(void);	
 	static void registerImporter (IE_ImpSniffer * sniffer);
 	static void unregisterImporter (IE_ImpSniffer * sniffer);
 	static void unregisterAllImporters ();
@@ -97,10 +97,17 @@ public:
 	IE_Imp(PD_Document * pDocument);
 	virtual ~IE_Imp();
 	virtual UT_Error	importFile(const char * szFilename) = 0;
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-						unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0) = 0;
 
-protected:
+	// default impl
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+						unsigned char * pData, 
+						UT_uint32 lenData, 
+						const char * szEncoding = 0);
+	
+ protected:
+	PD_Document *           getDoc() const;
+	
+ private:
 	PD_Document *		m_pDocument;
 };
 

@@ -37,9 +37,8 @@
 #include "fl_BlockLayout.h"
 
 // Font table entry
-class RTFFontTableItem
+struct RTFFontTableItem
 {
-public:
 	enum FontFamilyEnum { ffNone, ffRoman, ffSwiss, ffModern, ffScript, ffDecorative, ffTechnical, ffBiDirectional};
 	enum FontPitch { fpDefault, fpFixed, fpVariable};
 
@@ -47,7 +46,6 @@ public:
 						unsigned char* panose, char* pFontName, char* pAlternativeFontName);
 	~RTFFontTableItem();
 
-public:
 	FontFamilyEnum m_family;
 	int m_charSet;
 	int m_codepage;
@@ -61,9 +59,8 @@ public:
 
 
 // Character properties
-class RTFProps_CharProps
+struct RTFProps_CharProps
 {
-public:
 	RTFProps_CharProps();
 
 	bool	m_deleted;
@@ -88,9 +85,8 @@ public:
 
 
 // Paragraph properties
-class RTFProps_ParaProps
+struct RTFProps_ParaProps
 {
-public:
 	enum ParaJustification { pjLeft, pjCentre, pjRight, pjFull};
 
 	RTFProps_ParaProps();
@@ -132,9 +128,8 @@ public:
 
 
 // Section properties
-class RTFProps_SectionProps
+struct RTFProps_SectionProps
 {
-public:
 	enum SectionBreak {sbkNone, sbkColumn, sbkEven, sbkOdd, sbkPage};
 	enum PageNumber {pgDecimal, pgURoman, pgLRoman, pgULtr, pgLLtr};
 
@@ -153,12 +148,11 @@ public:
   before any section data begins.
   \todo add right and left headers and footer. Not yet supported by AbiWord
  */
-class RTFHdrFtr
+struct RTFHdrFtr
 {
-public:
 	enum HdrFtrType {hftNone, hftHeader, hftFooter };
 
-	RTFHdrFtr () : m_buf(1024) { m_type = hftNone; m_id = 0; };
+	RTFHdrFtr () : m_type(hftNone), m_id(0), m_buf(1024) {}
 	
 	HdrFtrType      m_type;
 	UT_uint32       m_id;
@@ -166,9 +160,8 @@ public:
 };	
 
 // RTFStateStore
-class RTFStateStore
+struct RTFStateStore
 {
-public:
 	RTFStateStore();
 	
 //	RTFStateStore& operator=(const RTFStateStore&);

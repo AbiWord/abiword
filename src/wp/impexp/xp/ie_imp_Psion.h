@@ -40,10 +40,6 @@ public:
 	~IE_Imp_Psion();
 
 	virtual UT_Error	importFile(const char * szFilename);
-	virtual void        pasteFromBuffer(PD_DocumentRange * pDocRange,
-	                                    unsigned char * pData, 
-	                                    UT_uint32 lenData,
-										const char * szEncoding = 0);
 
 protected:
 		bool			getCharacterAttributes(psiconv_character_layout layout, UT_ByteBuf *props);
@@ -57,6 +53,7 @@ protected:
 		bool 		applyStyles(psiconv_word_styles_section style_sec);
 
 	virtual	UT_Error	parseFile(psiconv_file psionfile) = 0;
+ private:
 	const XML_Char *listid;
 };
 

@@ -369,9 +369,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 #define ErrCleanupAndExit(code)  do {wvOLEFree (); return (code); FREEP(password);} while(0)
 
 // TODO: DOM: *actually define these*
-#define GetPassword() _getPassword ( m_pDocument->getApp()->getLastFocussedFrame() )
+#define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
 
-#define ErrorMessage(x) do { XAP_Frame *_pFrame = m_pDocument->getApp()->getLastFocussedFrame(); _errorMessage (_pFrame, (x)); } while (0)
+#define ErrorMessage(x) do { XAP_Frame *_pFrame = getDoc()->getApp()->getLastFocussedFrame(); _errorMessage (_pFrame, (x)); } while (0)
 
 static char * _getPassword (XAP_Frame * pFrame)
 {
@@ -458,17 +458,11 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	return UT_OK;
 }
 
-void IE_Imp_MsWord_97::pasteFromBuffer (PD_DocumentRange *, 
-										unsigned char *, unsigned int, const char *)
-{
-	// nada
-}
-
 void IE_Imp_MsWord_97::_flush ()
 {
 	if (m_pTextRun.size())
 	{
-		if (!m_pDocument->appendSpan(m_pTextRun.ucs_str(), m_pTextRun.size()))
+		if (!getDoc()->appendSpan(m_pTextRun.ucs_str(), m_pTextRun.size()))
 		{
 			UT_DEBUGMSG(("DOM: error appending text run\n"));
 			return;
@@ -835,9 +829,9 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		const char * paper_name = 0;
 
 		if (asep->dmOrientPage == 1)
-			m_pDocument->m_docPageSize.setLandscape ();
+			getDoc()->m_docPageSize.setLandscape ();
 		else
-			m_pDocument->m_docPageSize.setPortrait ();
+			getDoc()->m_docPageSize.setPortrait ();
 
 		page_width = asep->xaPage / 1440.0;
 		page_height = asep->yaPage / 1440.0;
@@ -849,14 +843,14 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 		if (paper_name) {
 			// we found a paper name
-			m_pDocument->m_docPageSize.Set (paper_name);
+			getDoc()->m_docPageSize.Set (paper_name);
 		}
 		else {
 			// this can cause us to SEGV, so I'm not sure if we even want to set it...
 			// TODO: make more mappings for s_MapPageIdToString as I discover them
-			m_pDocument->m_docPageSize.Set (page_width, page_height, fp_PageSize::inch);
+			getDoc()->m_docPageSize.Set (page_width, page_height, fp_PageSize::inch);
 		}
-		m_pDocument->m_docPageSize.setScale(page_scale);
+		getDoc()->m_docPageSize.setScale(page_scale);
 	}
 
 	xxx_UT_DEBUGMSG (("DOM: the section properties are: '%s'\n", props.c_str()));
@@ -865,7 +859,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
 
-	if (!m_pDocument->appendStrux(PTX_Section, (const XML_Char **)propsArray))
+	if (!getDoc()->appendStrux(PTX_Section, (const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG (("DOM: error appending section props!\n"));
 		return 1;
@@ -888,7 +882,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	if (asep->bkc > 1 && m_nSections > 1) // don't apply on the 1st page
 	{
 		// new section
-		if (!m_pDocument->appendStrux(PTX_Block, (const XML_Char **)NULL))
+		if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)NULL))
 		{
 			UT_DEBUGMSG (("DOM: error appending new block\n"));
 			return 1;
@@ -898,19 +892,19 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		switch (asep->bkc) {
 		case 1: 
 			ucs = UCS_VTAB;
-			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
 			break;
 			
 		case 2:
-			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
 			break;
 			
 		case 3: // TODO: handle me better (not even)
-			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
 			break;
 			
 		case 4: // TODO: handle me better (not odd)
-			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
 			break;
 			
 		case 0:
@@ -1004,7 +998,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		// TODO: in the paragraph, instead; but this
 		// TODO: gives a similar effect for now.
 		UT_UCSChar ucs = UCS_FF;
-		m_pDocument->appendSpan(&ucs,1);
+		getDoc()->appendSpan(&ucs,1);
 	}
 
 	// widowed/orphaned lines
@@ -1109,7 +1103,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
 	
-	if (!m_pDocument->appendStrux(PTX_Block, (const XML_Char **)propsArray))
+	if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 		return 1;
@@ -1165,10 +1159,10 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		codepage = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName();
 	// if this is the first codepage we've seen, use it.
 	// if we see more than one different codepage in a document, use unicode.
-	if (!m_pDocument->getEncodingName())
-		m_pDocument->setEncodingName(codepage.c_str());
-	else if (m_pDocument->getEncodingName() != codepage)
-		m_pDocument->setEncodingName(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
+	if (!getDoc()->getEncodingName())
+		getDoc()->setEncodingName(codepage.c_str());
+	else if (getDoc()->getEncodingName() != codepage)
+		getDoc()->setEncodingName(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
 	
 #ifdef BIDI_ENABLED
 
@@ -1284,7 +1278,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
-	if (!m_pDocument->appendFmt((const XML_Char **)propsArray))
+	if (!getDoc()->appendFmt((const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
 		return 1;
@@ -1441,7 +1435,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 			continue;
 	    }
 
-		if (!m_pDocument->appendObject (PTO_Field, (const XML_Char**)atts))
+		if (!getDoc()->appendObject (PTO_Field, (const XML_Char**)atts))
 		{
 			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
 		}
@@ -1540,7 +1534,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 		}
 	}
 	
-	if (!m_pDocument->appendObject (PTO_Image, propsArray))
+	if (!getDoc()->appendObject (PTO_Image, propsArray))
 	{
 		UT_DEBUGMSG (("Could not append object\n"));
 		DELETEP(buf);
@@ -1554,7 +1548,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 		return UT_ERROR;
 	}
 
-	if (!m_pDocument->createDataItem((char*)propsName, false,
+	if (!getDoc()->createDataItem((char*)propsName, false,
 									 pBBPNG, (void*)mimetype, NULL))
 	{
 		UT_DEBUGMSG (("Could not create data item\n"));

@@ -64,9 +64,11 @@ protected:
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
     bool		_getDataItemEncoded(const XML_Char ** atts);
+
+ private:
     bool			m_bDocHasLists;
     bool			m_bDocHasPageSize;
-	UT_uint32		m_iInlineStart;
+    UT_uint32		m_iInlineStart;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

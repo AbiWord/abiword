@@ -56,9 +56,6 @@ class IE_Imp_ClarisWorks : public IE_Imp
    ~IE_Imp_ClarisWorks();
    
    virtual UT_Error     importFile(const char * szFilename);
-   virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-                                        unsigned char * pData, 
-                                        UT_uint32 lenData);
   
  protected:
    UT_Error			_parseFile(FILE * fp);

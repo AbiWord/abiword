@@ -120,7 +120,7 @@ bool ImportISCIIStreamFile::getRawChar(UT_UCSChar &ucs)
 	wchar_t wc = 0;
 	unsigned char c;
 
-	if (m_bEOF)
+	if (_eof())
 		return false;
 
 	// prefetch lookahead byte
@@ -128,18 +128,18 @@ bool ImportISCIIStreamFile::getRawChar(UT_UCSChar &ucs)
 		if (!_getByte(m_cLookAhead))
 		{
 			m_cLookAhead = 0;
-			m_bEOF = true;
+			_eof( true );
 		}
 		else
 			m_bNeedByte = false;
 
-	if (!m_bEOF)
+	if (!_eof())
 	{
 		c = m_cLookAhead;
 		if (!_getByte(m_cLookAhead))
 		{
 			m_cLookAhead = 0;
-			m_bEOF = true;
+			_eof ( true );
 		}
 		if (c < 0x80)
 			wc = c;
@@ -373,8 +373,8 @@ bool ImportISCIIStreamFile::getRawChar(UT_UCSChar &ucs)
 		}
 	}
 
-	ucs = m_ucsLookAhead;
-	m_ucsLookAhead = wc;
+	ucs = _lookAhead ();
+	_lookAhead ( wc );
 
 	return true;
 }

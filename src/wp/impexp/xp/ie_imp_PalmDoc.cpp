@@ -214,7 +214,7 @@ IE_Imp_PalmDoc::IE_Imp_PalmDoc(PD_Document * pDocument)
 
 UT_Error IE_Imp_PalmDoc::_writeHeader(FILE * /* m_pdfp */)
 {
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
 	return UT_OK;
 }
 
@@ -239,7 +239,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 		UT_DEBUGMSG(("This is not a DOC file!\n"));
 
 		// Create an empty paragraph.
-		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+		X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
 		return UT_OK;
 	}
 
@@ -312,11 +312,11 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 		
 				// start a paragraph and emit any text that we
 				// have accumulated.
-				X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+				X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
 				bEmptyFile = false;
 				if (gbBlock.getLength() > 0)
 				{
-					X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
+					X_ReturnNoMemIfError(getDoc()->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 					gbBlock.truncate(0);
 				}
 				break;
@@ -336,9 +336,9 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 		// if we have text left over (without final CR/LF),
 		// or if we read an empty file,
 		// create a paragraph and emit the text now.
-		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+		X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
 		if (gbBlock.getLength() > 0)
-			X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
+			X_ReturnNoMemIfError(getDoc()->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 	}
 
 	return UT_OK;
@@ -346,14 +346,6 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 
 #undef X_ReturnNoMemIfError
 #undef X_ReturnIfFail
-
-/*****************************************************************/
-/*****************************************************************/
-
-void IE_Imp_PalmDoc::pasteFromBuffer(PD_DocumentRange * pDocRange,
-				     unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
-{
-}
 
 /*****************************************************************/
 /*****************************************************************/

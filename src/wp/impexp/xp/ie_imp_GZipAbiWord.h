@@ -52,14 +52,12 @@ public:
 	IE_Imp_GZipAbiWord(PD_Document * pDocument);
 	~IE_Imp_GZipAbiWord();
 
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData);
-
 protected:
     virtual bool			_openFile(const char * szFilename);
     virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
     virtual void			_closeFile(void);
 
+ private:
     gzFile m_gzfp;
 };
 

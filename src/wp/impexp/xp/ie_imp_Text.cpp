@@ -489,13 +489,13 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 
 	// First we try to determine the encoding.
 	if (_recognizeEncoding(fp) == UT_OK)
-		m_pDocument->setEncodingName(m_szEncoding);
+		getDoc()->setEncodingName(m_szEncoding);
 
 	// Call encoding dialog
 	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
 	{
 		X_CleanupIfError(error,_constructStream(pStream,fp));
-		Inserter ins(m_pDocument);
+		Inserter ins(getDoc());
 		X_CleanupIfError(error,_writeHeader(fp));
 		X_CleanupIfError(error,_parseStream(pStream,ins));
 		error = UT_OK;
@@ -528,7 +528,7 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt;
-	m_pDocument->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
+	getDoc()->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
 
 	m_bIsEncoded = bAlwaysPrompt | bEncoded;
 
@@ -609,8 +609,8 @@ UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
  */
 UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 {
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
 
 	return UT_OK;
 }
@@ -680,7 +680,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_ENCODING;
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(m_pDocument->getApp()->getDialogFactory());
+		= (XAP_DialogFactory *)(getDoc()->getApp()->getDialogFactory());
 
 	XAP_Dialog_Encoding * pDialog
 		= (XAP_Dialog_Encoding *)(pDialogFactory->requestDialog(id));
@@ -689,7 +689,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 	pDialog->setEncoding(szEncoding);
 
 	// run the dialog
-	XAP_Frame * pFrame = m_pDocument->getApp()->getLastFocussedFrame();
+	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame();
 	UT_ASSERT(pFrame);
 
 	pDialog->runModal(pFrame);
@@ -708,7 +708,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 
 		strcpy(szEnc,s);
 		_setEncoding((const char *)szEnc);
-		m_pDocument->setEncodingName(szEnc);
+		getDoc()->setEncodingName(szEnc);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -774,7 +774,7 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								  unsigned char * pData, UT_uint32 lenData,
 								  const char *szEncoding)
 {
-	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
+	UT_ASSERT(getDoc() == pDocRange->m_pDoc);
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	// Attempt to guess whether we're pasting 8 bit or unicode text
@@ -784,7 +784,7 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		_recognizeEncoding((const char *)pData, lenData);
 
 	ImportStreamClipboard stream(pData, lenData);
-	Inserter ins(m_pDocument, pDocRange->m_pos1);
+	Inserter ins(getDoc(), pDocRange->m_pos1);
 
 	_parseStream(&stream, ins);
 }

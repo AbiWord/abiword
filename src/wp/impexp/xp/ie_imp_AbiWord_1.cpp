@@ -176,7 +176,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
 	UT_Error bret = IE_Imp_XML::importFile(szFilename);
 	if(m_bDocHasPageSize == false)
-		m_pDocument->setDefaultPageSize();
+		getDoc()->setDefaultPageSize();
 	return bret;
 }
 
@@ -290,14 +290,14 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Sec;
-		X_CheckError(m_pDocument->appendStrux(PTX_Section,atts));
+		X_CheckError(getDoc()->appendStrux(PTX_Section,atts));
 		return;
 
 	case TT_BLOCK:
 	{
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
-		X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
+		X_CheckError(getDoc()->appendStrux(PTX_Block,atts));
 		return;
 	}
 
@@ -306,7 +306,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		if (m_parseState == _PS_Field) return;
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(_pushInlineFmt(atts));
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		m_iInlineStart = getOperationCount();
 		return;
 
@@ -317,14 +317,14 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		
 	case TT_IMAGE:
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(m_pDocument->appendObject(PTO_Image,atts));
+		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
 		return;
 
 	case TT_FIELD:
 	{
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Field;
-		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
+		X_CheckError(getDoc()->appendObject(PTO_Field,atts));
 
 #ifdef DEBUG
 		UT_DEBUGMSG(("SEVIOR: Appending field \n"));
@@ -358,7 +358,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		// TODO spans.
 		{
 			UT_UCSChar ucs = UCS_LF;
-			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 		}
 		return;
 
@@ -376,7 +376,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		// TODO spans.
 		{
 			UT_UCSChar ucs = UCS_VTAB;
-			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 		}
 		return;
 
@@ -394,7 +394,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		// TODO spans.
 		{
 			UT_UCSChar ucs = UCS_FF;
-			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 		}
 		return;
 
@@ -424,7 +424,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	case TT_STYLE:
 		X_VerifyParseState(_PS_StyleSec);
 		m_parseState = _PS_Style;
-		X_CheckError(m_pDocument->appendStyle(atts));
+		X_CheckError(getDoc()->appendStyle(atts));
 		return;
 		
 	case TT_LISTSECTION:
@@ -437,14 +437,14 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_ListSec);
 		m_parseState = _PS_List;
 		// Urgh! Complex. I think how done.
-		X_CheckError(m_pDocument->appendList(atts));
+		X_CheckError(getDoc()->appendList(atts));
 		m_bDocHasLists = true;
 		return;
 
 	case TT_PAGESIZE:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_PageSize;
-		X_CheckError(m_pDocument->setPageSizeFromFile(atts));
+		X_CheckError(getDoc()->setPageSizeFromFile(atts));
 		m_bDocHasPageSize = true;
 		return;
 
@@ -509,10 +509,10 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		// Insert a FmtMark if nothing was inserted in the block.
 		if (m_iInlineStart+1 == getOperationCount())
 		{
-			X_CheckError(m_pDocument->appendFmtMark());
+			X_CheckError(getDoc()->appendFmtMark());
 		}
 		_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		return;
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
@@ -568,7 +568,7 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		while (trim >= 0 && MyIsWhite(buffer[trim])) trim--;
 		m_currentDataItem.truncate(trim+1);
 #undef MyIsWhite
- 		X_CheckError(m_pDocument->createDataItem((char*)m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
+ 		X_CheckError(getDoc()->createDataItem((char*)m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
 		FREEP(m_currentDataItemName);
 		// the data item will free the token we passed (mime-type)
 		m_currentDataItemMimeType = NULL;
@@ -588,7 +588,7 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	case TT_LISTSECTION:
 		X_VerifyParseState(_PS_ListSec);
 		if (m_bDocHasLists)
-			X_CheckError(m_pDocument->fixListHierarchy());
+			X_CheckError(getDoc()->fixListHierarchy());
 		m_parseState = _PS_Doc;
 		return;
 

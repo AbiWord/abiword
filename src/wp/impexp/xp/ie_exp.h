@@ -116,7 +116,7 @@ protected:
 	virtual bool		_writeBytes(const UT_Byte * sz);
 	virtual bool		_closeFile(void);
 	virtual void		_abortFile(void);
-	
+
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;

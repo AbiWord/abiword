@@ -1259,14 +1259,14 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			propsArray[1] = (XML_Char *) image_name;
 			propsArray[2] = NULL;
 			
-			if (!m_pDocument->appendObject(PTO_Image, propsArray)) 
+			if (!getDoc()->appendObject(PTO_Image, propsArray)) 
 			{
 				delete pictData;
 				FREEP(mimetype);
 				return false;
 			}
 			
-			if (!m_pDocument->createDataItem(image_name, false,
+			if (!getDoc()->createDataItem(image_name, false,
 											 buf, (void*)mimetype, NULL)) 
 			{
 				delete pictData;
@@ -1295,7 +1295,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			for (;;)
 			{
 				sprintf(szName, "%s_%d", image_name, ndx);
-				if (!m_pDocument->getDataItemDataByName(szName, NULL, NULL, NULL))
+				if (!getDoc()->getDataItemDataByName(szName, NULL, NULL, NULL))
 				{
 					break;
 				}
@@ -1310,7 +1310,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			const char * mimetype = NULL;
 			mimetype = UT_strdup("image/png");
 			bool bOK = false;
-			bOK = m_pDocument->createDataItem(szName, false, buf, (void *) mimetype, NULL);
+			bOK = getDoc()->createDataItem(szName, false, buf, (void *) mimetype, NULL);
 			UT_ASSERT(bOK);
 			/*
 			  Insert the object into the document.
@@ -1321,7 +1321,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			};
 			attributes [1] = szName;
 			
-			m_pDocument->insertObject(m_dposPaste, PTO_Image, attributes, NULL);
+			getDoc()->insertObject(m_dposPaste, PTO_Image, attributes, NULL);
             m_dposPaste++;
 			delete [] szName;
 		}
@@ -1865,7 +1865,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage((UT_uint32)param);
 			m_mbtowc.setInCharset(szEncoding);
-			m_pDocument->setEncodingName(szEncoding);
+			getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "ansi") == 0) 
@@ -1873,7 +1873,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// this is charset Windows-1252
 			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(1252);
 			m_mbtowc.setInCharset(szEncoding);
-			m_pDocument->setEncodingName(szEncoding);
+			getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
 		break;		
@@ -2068,7 +2068,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// TODO some iconv's may have a different name - "MacRoman"
 			// TODO EncodingManager should handle encoding names
 			m_mbtowc.setInCharset("MACINTOSH");
-			m_pDocument->setEncodingName("MacRoman");
+			getDoc()->setEncodingName("MacRoman");
 			return true;
 		}
 	case 'o': 
@@ -2520,14 +2520,14 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	bool ok;
 	if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
 	{
-		ok = (   m_pDocument->appendFmt(propsArray)
-			  && m_pDocument->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
+		ok = (   getDoc()->appendFmt(propsArray)
+			  && getDoc()->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
 	}
 	else								// else we are pasting from a buffer
 	{
-		ok = (   m_pDocument->insertSpan(m_dposPaste,
+		ok = (   getDoc()->insertSpan(m_dposPaste,
 										 m_gbBlock.getPointer(0),m_gbBlock.getLength())
-				 && m_pDocument->changeSpanFmt(PTC_AddFmt,
+				 && getDoc()->changeSpanFmt(PTC_AddFmt,
 											   m_dposPaste,m_dposPaste+m_gbBlock.getLength(),
 											   propsArray,NULL));
 		m_dposPaste += m_gbBlock.getLength();
@@ -2572,7 +2572,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 //
 // Handle case of no id in any lists. If this is the case no need to remap
 //
-	fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+	fl_AutoNum * pAuto = getDoc()->getListByID(id);
 	if(pAuto == NULL)
 	{
 	        return id;
@@ -2595,13 +2595,13 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 			    ///
 			{
 				fl_AutoNum * pMapAuto = NULL;
-				UT_uint32 nLists = m_pDocument->getListsCount();
+				UT_uint32 nLists = getDoc()->getListsCount();
 				UT_uint32 highestLevel = 0;
 				PL_StruxDocHandle sdh;
-				m_pDocument->getStruxOfTypeFromPosition(m_dposPaste, PTX_Block,&sdh);
+				getDoc()->getStruxOfTypeFromPosition(m_dposPaste, PTX_Block,&sdh);
 				for(j=0; j< nLists; j++)
 				{
-					fl_AutoNum * pAuto = m_pDocument->getNthList(j);
+					fl_AutoNum * pAuto = getDoc()->getNthList(j);
 					if(pAuto->isContainedByList(sdh) == true)
 					{
 						if(highestLevel < pAuto->getLevel())
@@ -2860,7 +2860,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	{
 		if(bPasteList )
 		{
-			bool bret = m_pDocument->appendStrux(PTX_Block, attribs);
+			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
 			//
 			// Insert a list-label field??
 			//
@@ -2869,17 +2869,17 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			fielddef[0] ="type";
 			fielddef[1] = "list_label";
 			fielddef[2] = NULL;
-			bret =   m_pDocument->appendObject(PTO_Field,fielddef);
+			bret =   getDoc()->appendObject(PTO_Field,fielddef);
 			UT_UCSChar cTab = UCS_TAB;
 //
 // Put the tab back in.
 //
-			m_pDocument->appendSpan(&cTab,1);
+			getDoc()->appendSpan(&cTab,1);
 			return bret;
 		}
 		else
 		{
-			return m_pDocument->appendStrux(PTX_Block, propsArray);
+			return getDoc()->appendStrux(PTX_Block, propsArray);
 		}
 	}
 	else
@@ -2889,18 +2889,18 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			if(bPasteList)
 			{
-				bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+				bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 				m_dposPaste++;
 //
 // Put the tab back in.
 //
 				UT_UCSChar cTab = UCS_TAB;
-				m_pDocument->insertSpan(m_dposPaste,&cTab,1);
+				getDoc()->insertSpan(m_dposPaste,&cTab,1);
 				m_dposPaste++;
 				PL_StruxDocHandle sdh_cur,sdh_next;
 				PT_DocPosition pos_next;
 				UT_uint32 j;
-				fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+				fl_AutoNum * pAuto = getDoc()->getListByID(id);
 				if(pAuto == NULL) 
 				/*
 				 * Got to create a new list here. 
@@ -2921,11 +2921,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 						lType = (List_Type) j;
 					else
 						lType = (List_Type) 0;
-					pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, m_pDocument);
-					m_pDocument->addList(pAuto);
-					pAuto->fixHierarchy(m_pDocument);
+					pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, getDoc());
+					getDoc()->addList(pAuto);
+					pAuto->fixHierarchy(getDoc());
 				}
-				bSuccess = m_pDocument->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh_cur);
+				bSuccess = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh_cur);
 				///
 				/// Now insert this into the pAuto List
 				///
@@ -2937,13 +2937,13 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				{
 					j= 0;
 					sdh_next = pAuto->getNthBlock(j);
-					pos_next = m_pDocument->getStruxPosition(sdh_next);
+					pos_next = getDoc()->getStruxPosition(sdh_next);
 					while(sdh_next != NULL && pos_next < m_dposPaste)
 					{
 						j++;
 						sdh_next = pAuto->getNthBlock(j);
 						if(sdh_next != NULL)
-							pos_next = m_pDocument->getStruxPosition(sdh_next);
+							pos_next = getDoc()->getStruxPosition(sdh_next);
 					}
 					if(sdh_next != NULL)
 					{
@@ -2963,20 +2963,20 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					sprintf(pszParentID,"%d",npid);
 				}
 				UT_DEBUGMSG(("SEVIOR: Pasting list element pid =%d id= %d pszParentID = %s \n",pid,id,pszParentID));
-				bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
+				bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
   				FREEP(attribs);
 			}
 			else
 			{
-				bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+				bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 				m_dposPaste++;
-				bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, propsArray,NULL,PTX_Block);
+				bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, propsArray,NULL,PTX_Block);
 //
 // Now check if this strux has associated list element. If so stop the list!
 //
 				PL_StruxDocHandle sdh = NULL;
-				m_pDocument->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh);
-				UT_uint32 nLists = m_pDocument->getListsCount();
+				getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh);
+				UT_uint32 nLists = getDoc()->getListsCount();
 				bool bisListItem = false;
 //
 // Have to loop so that multi-level lists get stopped. Each StopList removes
@@ -2988,7 +2988,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					bisListItem = false;
 					for(UT_uint32 i=0; (i< nLists && !bisListItem); i++)
 					{
-						pAuto = m_pDocument->getNthList(i);
+						pAuto = getDoc()->getNthList(i);
 						bisListItem = pAuto->isItem(sdh);
 					}
 //
@@ -2996,7 +2996,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 					if(bisListItem)
 					{
-						m_pDocument->StopList(sdh);
+						getDoc()->StopList(sdh);
 					}
 				}
 				while(bisListItem);
@@ -3068,21 +3068,21 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 
 	if ((m_pImportFile) || (m_parsingHdrFtr)) // if we are reading a file or parsing a header and footer
 	{
-		return m_pDocument->appendStrux(PTX_Section, propsArray);
+		return getDoc()->appendStrux(PTX_Section, propsArray);
 	}
 	else
 	{
 		// Add a block before the section so there's something content
 		// can be inserted into.
-		bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+		bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 
 		if (bSuccess)
 		{
-			bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Section);
+			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Section);
 			if (bSuccess)
 			{
 				m_dposPaste++;
-				bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
+				bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
 													   propsArray,NULL,PTX_Section);
 			}
 		}
@@ -4161,10 +4161,10 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		propsArray[7] = "0";
 		propsArray[8] = NULL;
 
-		m_pDocument->appendStrux (PTX_SectionHdrFtr, propsArray);
+		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
 		propsArray[0] = NULL;
 		// actually it appears that we have to append a block for some cases.
-		m_pDocument->appendStrux(PTX_Block, propsArray);
+		getDoc()->appendStrux(PTX_Block, propsArray);
 
 		// tell that we are parsing headers and footers
 		m_parsingHdrFtr = true;
@@ -4189,7 +4189,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars ();
 	UT_ASSERT (ok);
-	m_pDocument->appendObject (PTO_Field, propsArray);
+	getDoc()->appendObject (PTO_Field, propsArray);
 	return ok;
 }
 
@@ -4199,7 +4199,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								 unsigned char * pData, UT_uint32 lenData, const char * /* szEncoding */)
 {
-	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
+	UT_ASSERT(getDoc() == pDocRange->m_pDoc);
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	m_newParaFlagged = false;

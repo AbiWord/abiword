@@ -344,7 +344,7 @@ bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
 		propsArray[5] = (const XML_Char *) "Normal";
 		propsArray[6] = (const XML_Char *) NULL;
 
-		if (!( m_pDocument->appendStyle(propsArray))) {
+		if (!( getDoc()->appendStyle(propsArray))) {
 			UT_DEBUGMSG(("AppendStyle failed...\n"));
 			return false;
 		}
@@ -407,7 +407,7 @@ bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
 	propsArray[1] = (const XML_Char *) props.getPointer(0);
 	propsArray[2] = (const XML_Char *) NULL;
 
-	return  m_pDocument->appendStrux(PTX_Section,propsArray);
+	return  getDoc()->appendStrux(PTX_Section,propsArray);
 }
 
 
@@ -577,7 +577,7 @@ bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 	// HACK: there is no real setting to do this.
 	if (layout->on_next_page) {
 		UT_UCSChar ucs = UCS_FF;
-		if (!(m_pDocument->appendSpan(&ucs,1)))
+		if (!(getDoc()->appendSpan(&ucs,1)))
 			return false;
 	}
 	// Get all attributes into prop
@@ -607,7 +607,7 @@ bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 			propsArray[8] = (const XML_Char *) "list-delim";
 			propsArray[9] = (const XML_Char *) "%L";
 			propsArray[10] =(const XML_Char *)  NULL;
-			m_pDocument->appendList(propsArray);
+			getDoc()->appendList(propsArray);
 		}
 	}
 
@@ -627,7 +627,7 @@ bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 		propsArray[6] = (const XML_Char *) NULL;
 	}
 
-	if (!(m_pDocument->appendStrux(PTX_Block,propsArray)))
+	if (!(getDoc()->appendStrux(PTX_Block,propsArray)))
 		return false;
 	
 	// We need to append a field and some other stuff...
@@ -635,14 +635,14 @@ bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 		propsArray[0] = (const XML_Char *) "type";
 		propsArray[1] = (const XML_Char *) "list_label";
 		propsArray[2] = (const XML_Char *) NULL;
-		if (!(m_pDocument->appendObject(PTO_Field,propsArray)))
+		if (!(getDoc()->appendObject(PTO_Field,propsArray)))
 			return false;
 
 		// If this is a bullet-with-indent, we need a tab to get the
 		// text alligned to the selected left margin.
 		if (layout->bullet->indent) {
 			UT_UCSChar uc = (UT_UCSChar) UCS_TAB;
-			if (!(m_pDocument->appendSpan(&uc,1)))
+			if (!(getDoc()->appendSpan(&uc,1)))
 				return false;
 		}
 	}
@@ -782,7 +782,7 @@ bool IE_Imp_Psion::applyCharacterAttributes(psiconv_character_layout layout)
 	propsArray[1] = (const XML_Char *) props.getPointer(0);
 	propsArray[2] = NULL;
 
-	return m_pDocument->appendFmt(propsArray);
+	return getDoc()->appendFmt(propsArray);
 }
 
 // Read length character from input, translate them to the internal
@@ -886,7 +886,7 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 			if (gbBlock.getLength()) {
 				if (!( applyCharacterAttributes(in_line->layout))) 
 					return UT_IE_NOMEMORY;
-				if (!( m_pDocument->appendSpan(gbBlock.getPointer(0), 
+				if (!( getDoc()->appendSpan(gbBlock.getPointer(0), 
 		   		                  gbBlock.getLength())))
 					return UT_IE_NOMEMORY;
 			}
@@ -901,7 +901,7 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 			if (gbBlock.getLength()) {
 				if (!(applyCharacterAttributes(paragraph->base_character))) 
 					return UT_IE_NOMEMORY;
-				if (!( m_pDocument->appendSpan(gbBlock.getPointer(0), 
+				if (!( getDoc()->appendSpan(gbBlock.getPointer(0), 
 		   		                  gbBlock.getLength())))
 					return UT_IE_NOMEMORY;
 			}
@@ -909,13 +909,6 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 	}
 	return UT_OK;
 }
-
-void IE_Imp_Psion::pasteFromBuffer(PD_DocumentRange * pDocRange,
-                                   unsigned char * pData, UT_uint32 lenData, const char * szEncoding)
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-}
-
 
 /*****************************************************************/
 /*****************************************************************/

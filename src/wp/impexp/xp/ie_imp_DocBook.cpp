@@ -238,14 +238,14 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		
 		// I'm torn as to where to put this:
 		// TT_DOCUMENT or here. Oh well :-)
-		X_CheckError(m_pDocument->appendStrux(PTX_Section,(const XML_Char **)NULL));
+		X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char **)NULL));
 		return;
 	  }
 
 	case TT_BLOCK:
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
-		X_CheckError(m_pDocument->appendStrux(PTX_Block, NULL));
+		X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
 		return;
 		
 	case TT_BRIDGEHEAD:
@@ -261,11 +261,11 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		  XML_Char style_att[15] = "Heading a";
 		  style_att[8] = p_val[4]; 
 
-		  X_CheckError(m_pDocument->appendStrux(PTX_Block, NULL));
+		  X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
 		  UT_XML_cloneString(buf[0], PT_STYLE_ATTRIBUTE_NAME);
 		  UT_XML_cloneString(buf[1], (XML_Char *) style_att);
 		  p_atts = (const XML_Char **)buf;
-		  X_CheckError(m_pDocument->appendFmt(p_atts));
+		  X_CheckError(getDoc()->appendFmt(p_atts));
 		  return;
 		}
 
@@ -279,11 +279,11 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 
 		  XML_Char style_att[15] = "Block Text";
 
-		  X_CheckError(m_pDocument->appendStrux(PTX_Block, NULL));
+		  X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
 		  UT_XML_cloneString(buf[0], PT_STYLE_ATTRIBUTE_NAME);
 		  UT_XML_cloneString(buf[1], (XML_Char *) style_att);
 		  p_atts = (const XML_Char **)buf;
-		  X_CheckError(m_pDocument->appendFmt(p_atts));
+		  X_CheckError(getDoc()->appendFmt(p_atts));
 		  return;
 		}
 
@@ -325,7 +325,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		
 		p_atts = (const XML_Char **)buf;
 		X_CheckError(_pushInlineFmt(p_atts));
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 	    }
 	    return;
 	    
@@ -371,7 +371,7 @@ void IE_Imp_DocBook::_endElement(const XML_Char *name)
 		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		return;
 
 	case TT_BLOCK:
@@ -389,7 +389,7 @@ void IE_Imp_DocBook::_endElement(const XML_Char *name)
 	    X_VerifyParseState(_PS_Block);
 	    X_CheckDocument(_getInlineDepth()>0);
 	    _popInlineFmt();
-	    X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+	    X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 	    return;
 	    
 	case TT_TITLE:

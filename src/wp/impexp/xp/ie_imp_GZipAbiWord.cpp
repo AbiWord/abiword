@@ -160,11 +160,3 @@ IE_Imp_GZipAbiWord::IE_Imp_GZipAbiWord(PD_Document * pDocument)
 {
 }
 
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-void IE_Imp_GZipAbiWord::pasteFromBuffer(PD_DocumentRange * /*pDocRange*/,
-										 unsigned char * /*pData*/, UT_uint32 /*lenData*/)
-{
-    UT_ASSERT(UT_NOT_IMPLEMENTED);
-}

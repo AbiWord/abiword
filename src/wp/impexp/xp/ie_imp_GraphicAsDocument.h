@@ -35,12 +35,11 @@ public:
 	~IE_Imp_GraphicAsDocument();
 
 	virtual UT_Error	importFile(const char * szFilename);
-   	void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-					unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0) {}
+
 	void 		setGraphicImporter(IE_ImpGraphic* importer) 
 	     { DELETEP(m_pGraphicImporter); m_pGraphicImporter = importer; }
 
-protected:
+private:
 
 	IE_ImpGraphic * m_pGraphicImporter;
 };

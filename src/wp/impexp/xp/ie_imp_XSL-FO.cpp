@@ -268,7 +268,7 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Sec;
-		X_CheckError(m_pDocument->appendStrux(PTX_Section,
+		X_CheckError(getDoc()->appendStrux(PTX_Section,
 											  (const XML_Char **)NULL));
 		return;
 
@@ -418,9 +418,9 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 
 			// append the atts/block to the document
 			if (sBuf.size())
-				X_CheckError(m_pDocument->appendStrux(PTX_Block, buf));
+				X_CheckError(getDoc()->appendStrux(PTX_Block, buf));
 			else
-				X_CheckError(m_pDocument->appendStrux(PTX_Block, (const XML_Char **)NULL));
+				X_CheckError(getDoc()->appendStrux(PTX_Block, (const XML_Char **)NULL));
 		}
 		break;
 
@@ -524,7 +524,7 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 
             p_atts = (const XML_Char **)buf;
 			X_CheckError(_pushInlineFmt(p_atts));
-			X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+			X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		}
 		break;
 
@@ -535,7 +535,7 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 			// TODO: we should do some cool stuff based on these prop=val keys:
 			// margin-top, margin-bottom, margin-left, margin-right,
 			// page-width, page-height
-			m_pDocument->setDefaultPageSize();
+			getDoc()->setDefaultPageSize();
 		}
 		break;
 
@@ -596,7 +596,7 @@ void IE_Imp_XSL_FO::_endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth() > 0);
 		_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 		return;
 
 	case TT_IMAGE:
