@@ -42,6 +42,10 @@
 
 /*
  * $Log$
+ * Revision 1.8  2004/03/29 02:30:17  mgilbert
+ * forport build maskfix.  again, as a reminder, this is not a fix, it is
+ * still potentially dangerous on non-32bit archs.
+ *
  * Revision 1.7  2003/09/02 19:10:56  mgilbert
  * - Oops, forgot to cvs add some translations yesterday
  * - es-ES update from FJF
@@ -340,22 +344,22 @@ int ISpellChecker::linit (char *hashname)
 			if (dp->word == (char *) -1)
 				dp->word = NULL;
 			else
-				dp->word = &m_hashstrings [ reinterpret_cast<int>(dp->word) ];
+				dp->word = &m_hashstrings [ (int)(dp->word) ];
 			if (dp->next == (struct dent *) -1)
 				dp->next = NULL;
 			else
-				dp->next = &m_hashtbl [ reinterpret_cast<int>(dp->next) ];
+				dp->next = &m_hashtbl [ (int)(dp->next) ];
 	    }
 	}
 
     for (i = m_numsflags + m_numpflags, entry = m_sflaglist; --i >= 0; entry++)
 	{
 		if (entry->stripl)
-			entry->strip = reinterpret_cast<ichar_t *>(&m_hashstrings[reinterpret_cast<int>(entry->strip)]);
+			entry->strip = reinterpret_cast<ichar_t *>(&m_hashstrings[(int)(entry->strip)]);
 		else
 			entry->strip = NULL;
 		if (entry->affl)
-			entry->affix = reinterpret_cast<ichar_t *>(&m_hashstrings[reinterpret_cast<int>(entry->affix)]);
+			entry->affix = reinterpret_cast<ichar_t *>(&m_hashstrings[(int)(entry->affix)]);
 		else
 			entry->affix = NULL;
 	}
