@@ -612,6 +612,7 @@ public:
 	virtual fp_FieldsEnum	getFieldType(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
+	virtual bool 			hasLayoutProperties(void) const;
 
 	virtual bool			isSuperscript(void) const;
 	virtual bool			isSubscript(void) const;

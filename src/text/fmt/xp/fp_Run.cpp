@@ -2988,6 +2988,11 @@ bool fp_FieldRun::isSubscript(void) const
 	return (m_fPosition == TEXT_POSITION_SUBSCRIPT);
 }
 
+bool fp_FieldRun::hasLayoutProperties(void) const
+{
+	return true;
+}
+
 void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	// If X is left of the middle, return offset to the left,
