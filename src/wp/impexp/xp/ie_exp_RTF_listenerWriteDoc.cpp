@@ -1485,6 +1485,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 		case UCS_NBSP:					// NBSP -- non breaking space
 			FlushBuffer();
 			m_pie->_rtf_keyword("~");
+			m_pie->m_bLastWasKeyword = false;       // no space needed afterward
+			
 			pData++;
 			break;
 
