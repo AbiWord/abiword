@@ -21,6 +21,8 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
+#define ABIWORD_INTERNAL
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

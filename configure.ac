@@ -292,10 +292,10 @@ if test "$PLATFORM" = unix -a "$gnome" = true ; then
 fi
 
 if test "$PLATFORM" = unix -a "$gnome" = true ; then
-	GNOME_CFLAGS="`gnome-config --cflags gnomeui print vfs gdk_pixbuf` -DHAVE_GNOME"
+	GNOME_CFLAGS="`gnome-config --cflags bonobox gnomeui print vfs gdk_pixbuf` -DHAVE_GNOME"
 	dnl This is the old line
 	#GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
-	GNOME_LIBS="`gnome-config --libs gal print vfs gdk_pixbuf`"
+	GNOME_LIBS="`gnome-config --libs bonobox gal print vfs gdk_pixbuf`"
 else
 	GNOME_CFLAGS=""
 	GNOME_LIBS=""
