@@ -64,6 +64,8 @@ else
 dictionary = $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash
 endif
 
+dictionary_list=$(top_srcdir)/../abidistfiles/dictionary/ispell_dictionary_list.xml
+
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
 	@if test -d $(top_srcdir)/../unixfonts/fonts ; then \
@@ -81,6 +83,7 @@ install-data-local:
             $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
             if test "$$dir" = "./dictionary"; then \
               $(INSTALL_DATA) $(dictionary) $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
+              $(INSTALL_DATA) $(dictionary_list) $(DESTDIR)$(pkgdatadir)/$$dir/ispell_dictionary_list.xml; \
             else \
               for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
                 if test -f $$file ; then \
