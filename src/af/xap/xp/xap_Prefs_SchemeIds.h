@@ -44,9 +44,6 @@
 #define XAP_PREF_KEY_ToolbarAppearance		"ToolbarAppearance"
 #define XAP_PREF_DEFAULT_ToolbarAppearance	"icon"						/* {icon,text,both} */
 
-#define XAP_PREF_KEY_UnixFontPath			"UnixFontPath"
-#define XAP_PREF_DEFAULT_UnixFontPath		"fonts" 					/* if relative path, prepend "getAbiSuiteLibDir()" */
-
 #define XAP_PREF_KEY_RemapGlyphsMasterSwitch			"RemapGlyphsMasterSwitch"
  /* completely ignore glyph remapping if false */
 #define XAP_PREF_DEFAULT_RemapGlyphsMasterSwitch		"1"
@@ -163,9 +160,6 @@
 #define XAP_PREF_KEY_ZoomPercentage		"ZoomPercentage"
 #define XAP_PREF_DEFAULT_ZoomPercentage	"100"
 
-#define XAP_PREF_KEY_ShowUnixFontWarning "ShowUnixFontWarning"
-#define XAP_PREF_DEFAULT_ShowUnixFontWarning "1"
-
 #define XAP_PREF_KEY_AllowCustomToolbars "AllowCustomToolbars"
 #define XAP_PREF_DEFAULT_AllowCustomToolbars		 "0"
 
@@ -175,9 +169,6 @@
 #define XAP_PREF_KEY_ToolbarNumEntries "Toolbar_NumEntries_"
 #define XAP_PREF_KEY_ToolbarID "Toolbar_ID_"
 #define XAP_PREF_KEY_ToolbarFlag "Toolbar_Flag_"
-
-#define XAP_PREF_KEY_ModifyUnixFontPath  "ModifyUnixFontPath"
-#define XAP_PREF_DEFAULT_ModifyUnixFontPath "1"
 
 #define XAP_PREF_KEY_HTMLExportOptions  "HTML_Export_Options"
 #define XAP_PREF_DEFAULT_HTMLExportOptions "?xml,xmlns:awml,+CSS"
@@ -190,7 +181,6 @@
 #ifdef dcl
 
 dcl(ToolbarAppearance)
-dcl(UnixFontPath)
 dcl(RemapGlyphsMasterSwitch)
 dcl(RemapGlyphsNoMatterWhat)
 dcl(RemapGlyphsDefault)
@@ -232,8 +222,6 @@ dcl(AutoLoadPlugins)
 dcl(ZoomType)
 dcl(ZoomPercentage)
 dcl(DefaultSaveDirectory)
-dcl(ShowUnixFontWarning)
-dcl(ModifyUnixFontPath)
 dcl(HTMLExportOptions)
 dcl(ChangeLanguageWithKeyboard)
 #endif /* dcl */

@@ -362,9 +362,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *save_context_glyphs;
 	GtkWidget *hebrew_context_glyphs;
 
-	GtkWidget *fontWarning;
-	GtkWidget *fontPath;
-
 	mainWindow = m_windowMain;
 	dialog_vbox1 = vbox;
 	gtk_widget_show (dialog_vbox1);
@@ -914,14 +911,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (check_splash);
 	gtk_box_pack_start (GTK_BOX (vbox29), check_splash, FALSE, FALSE, 0);
 
-	fontWarning = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Options_Label_UnixFontWarning).c_str());
-	gtk_widget_show (fontWarning);
-	gtk_box_pack_start (GTK_BOX (vbox29), fontWarning, FALSE, FALSE, 0);
-
-	fontPath = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_Options_Label_ModifyUnixFontPath).c_str());
-	gtk_widget_show (fontPath);
-	gtk_box_pack_start (GTK_BOX (vbox29), fontPath, FALSE, FALSE, 0);
-
 //
 // Auto Load Plugins.
 //
@@ -980,8 +969,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_checkbuttonViewAll			= view_all;
 	m_checkbuttonViewHiddenText		= view_hidden;
 	m_checkbuttonViewUnprintable	= view_invis;
-	m_checkbuttonFontWarning		= fontWarning;
-	m_checkbuttonFontPath		    = fontPath;
 
 	// TODO: rulers
 	m_checkbuttonViewShowTB	        = show_toolbar;
@@ -1581,32 +1568,10 @@ void AP_UnixDialog_Options::_initUnixOnlyPrefs()
 	{
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), TRUE);
 	}
-
-	bool bFontWarning;
-	bool bRet = m_pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bFontWarning);
-    UT_DEBUGMSG(("bRet %d, bFontWarning %d\n",bRet,bFontWarning));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning), bFontWarning);
-
-	bRet = m_pApp->getPrefsValueBool(XAP_PREF_KEY_ModifyUnixFontPath, &bFontWarning);
-    UT_DEBUGMSG(("bRet %d, FontPath %d\n",bRet,bFontWarning));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_checkbuttonFontPath), bFontWarning);
 }
 
 void AP_UnixDialog_Options::_saveUnixOnlyPrefs()
 {
-	XAP_Prefs *pPrefs = m_pApp->getPrefs();
-	UT_ASSERT(pPrefs);
-
-	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_ASSERT(pPrefsScheme);
-
-	bool bRet = pPrefsScheme->setValueBool(XAP_PREF_KEY_ShowUnixFontWarning,
-			       gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning)));
-	UT_DEBUGMSG(("bRet %d, Font warning %d\n",bRet,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning))));
-
-	bRet = pPrefsScheme->setValueBool(XAP_PREF_KEY_ModifyUnixFontPath,
-			       gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontPath)));
-	UT_DEBUGMSG(("bRet %d, Font path %d\n",bRet,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontPath))));
 }
 
 void AP_UnixDialog_Options::_storeWindowData(void)

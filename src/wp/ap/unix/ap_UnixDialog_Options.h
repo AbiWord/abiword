@@ -166,8 +166,6 @@ public:
 	GtkWidget * m_textAutoSaveFilePeriod;
 	GtkWidget * m_textAutoSaveFileExt;
 	GtkWidget * m_checkbuttonShowSplash;
-	GtkWidget * m_checkbuttonFontWarning;
-	GtkWidget * m_checkbuttonFontPath;
 	GtkWidget * m_buttonDefaults;
 	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonOK;

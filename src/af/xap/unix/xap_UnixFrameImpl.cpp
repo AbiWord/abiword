@@ -1203,14 +1203,12 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 
 gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offset, gint n_chars, gpointer data)
 {
-	UT_DEBUGMSG(("Delete Surrounding: %d %d\n", offset, n_chars));
-
 	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
 	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
 
 	PT_DocPosition insPt = pView->getInsPoint ();
 	if ((gint) insPt + offset < 0)
-		return;
+		return TRUE;
 
 	pView->moveInsPtTo (insPt + offset);
 	pView->cmdCharDelete (true, n_chars);

@@ -26,15 +26,11 @@
 ******************************************************************
 *****************************************************************/
 
-dcl(MSG_ShowUnixFontWarning, "AbiWord was not able to add its fonts to the X font path.\nThis does not mean that there is anything wrong with your\nsystem, but you will need to modify your font path manually.\nPlease see \"Unix Font Path Problem\" in the FAQ section of\nthe Abiword help file for more detailed information, including\ninstructions on how to turn this warning off.")
-
-dcl(MSG_UnixFontSizeWarning, "The operating system was unable to allocate a font of the\nrequested size; a smaller font will be used in its place on\nthe screen, which will look strange, but the overall layout\nwill be correct, and you should be able to print the document\nproperly. Using a smaller zoom factor may resolve this problem.")
 dcl(MSG_ImportingDoc, "Importing Document..")
 dcl(MSG_BuildingDoc, "Building Document..")
 
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")
-
 
 /*  Styles */
 dcl(STYLE_NUMBER_LIST,		"Numbered List")
@@ -236,9 +232,6 @@ dcl(DLG_ABOUT_Title,					"About %s")
 	 dcl(DLG_Image_Width, "Width:")
 	 dcl(DLG_Image_Height, "Height:")
 	 dcl(DLG_Image_Aspect, "Preserve Aspect Ratio:")
-
-dcl(DLG_Options_Label_UnixFontWarning, "Show font warning at start up")
-dcl(DLG_Options_Label_ModifyUnixFontPath, "Modify Unix Font Path")
 
 /* HashDownloader dialogs */
 dcl(DLG_HashDownloader_AskDownload, 		"I could not find a dictionary for %s.\nWould you like me to try downloading it from the internet?")

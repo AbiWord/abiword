@@ -205,88 +205,19 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 bool XAP_UnixApp::_loadFonts()
 {
 	// create a font manager for our app to use
-	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
-	UT_uint32 i = 0;
-	
 	m_fontManager = new XAP_UnixFontManager();
 	XAP_UnixFontManager::pFontManager = m_fontManager; // set the static variable pFontManager, so we can access our fontmanager from a static context
 	UT_ASSERT(m_fontManager);
 
-	// find all the fonts in the appropriate places.  the list of directories
-	// is given in a preferences variable.
-
-	char * szTemp = NULL;
-	const char * szPrefFontPath = NULL;
-	getPrefsValue(XAP_PREF_KEY_UnixFontPath,
-		      static_cast<const XML_Char**>(&szPrefFontPath));
-	UT_ASSERT((szPrefFontPath) && (*szPrefFontPath));
-
- 	for (i = 0; szPrefFontPath[i]; i++)
-  	{
-  		// count the number of segments in the path
-  		// path looks like: "/font/dir;dir/anotherdir;/more/fonts"
-  		if( ((i == 0) || (szPrefFontPath[i-1] == ';')) && (szPrefFontPath[i] != '/'))
-  			relativePathCount++;
-  	}
-  	
-  	// cache the suiteDir's name and length instead of calculating
-  	// them on every loop
-	char * suiteDirCache = const_cast<char *>(getAbiSuiteLibDir());
-  	UT_uint32 suiteLenCache = strlen(suiteDirCache);
-
- 	// make pointer to the font path. ignore the cast to make gcc shut up
-	char *szPrefFontPathPtr = const_cast<char *>(szPrefFontPath);
-
-	for (i = 0; szPrefFontPathPtr[i]; i++)
- 		if ( ((i == 0) || (szPrefFontPathPtr[i-1] == ';')) && (szPrefFontPathPtr[i] != '/'))
- 		{
-		        // if relative path in prefs, prepend library directory.
- 			szTemp = static_cast<char *>(UT_calloc(suiteLenCache + strlen(szPrefFontPathPtr) + 10, sizeof(char)));
- 			strcpy(szTemp, szPrefFontPathPtr);
- 			sprintf(szTemp + i, "%s/%s", suiteDirCache, szPrefFontPathPtr + i);
- 			
- 			// if relativePathsSoFar > 1 then szPrefFontPathPtr
- 			// was really szTemp and was allocated by our call to
- 			// UT_calloc so we must free it. also, we are sure not to
-			// free the memory pointed to by getPrefsValue()
- 			if (relativePathsSoFar && szPrefFontPathPtr)
- 				free(szPrefFontPathPtr);
- 			
- 			szPrefFontPathPtr = szTemp;
- 			relativePathsSoFar++;
- 		}
- 
- 	// HUH? These don't match somehow. Abort!!
- 	UT_ASSERT(relativePathsSoFar == relativePathCount);
-	//UT_DEBUGMSG(("Using FontPath from preferences [%s].\n",szPrefFontPathPtr));
-	FREEP(szTemp);
-	
 	// let it loose
 	UT_DEBUGMSG(("Scavange Fonts started \n"));
 	if (!m_fontManager->scavengeFonts())
 		return false;
 	
 	UT_DEBUGMSG(("Scavange Fonts finished \n"));
-#if 0
-#ifdef DEBUG
-	XAP_UnixFont ** fonts = m_fontManager->getAllFonts();
-	UT_DEBUGMSG(("Found Fonts:\n"));
-	for (i = 0; i < m_fontManager->getCount(); i++)
-	{
-		UT_DEBUGMSG(("\tName [%s] at [%s], metrics [%s]\n",
-					 fonts[i]->getName(), fonts[i]->getFontfile(),
-					 fonts[i]->getMetricfile()));
-	}
-
-	DELETEP(fonts);
-#endif
-#endif
-
 	return true;
 }
 #endif //#ifndef WITH_PANGO
-
-
 
 void XAP_UnixApp::_setAbiSuiteLibDir()
 {
