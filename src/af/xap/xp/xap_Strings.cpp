@@ -289,7 +289,7 @@ const XML_Char * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 
 	if (id < kLimit)
 	{
-		const XML_Char * szValue = static_cast<const XML_Char *>(m_vecStringsXAP.getNthItem(id));
+		const XML_Char * szValue = reinterpret_cast<XML_Char *>(m_vecStringsXAP.getNthItem(id));
 		if (szValue)
 			return szValue;
 	}
