@@ -382,7 +382,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
-		MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE)
+                BeginSubMenu(AP_MENU_ID_TABLE_TEXTTOTABLE)
+		   MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_ALL)
+		   MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE_NOSPACES)
+                EndSubMenu()
 #if DEBUG
 	    BeginSubMenu(AP_MENU_ID_TABLE_SORT)
 	       MenuItem(AP_MENU_ID_TABLE_SORTROWSASCEND)

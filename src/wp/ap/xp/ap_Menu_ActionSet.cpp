@@ -271,7 +271,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_DELETE_ROWS,0,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_DELETEROW,0,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_DELETE_CELLS,0,0,0,0, "deleteCell", ap_GetState_InTable, NULL);
-	_s(AP_MENU_ID_TABLE_TEXTTOTABLE,1,0,0,0, "textToTable", ap_GetState_TextToTableOK, NULL);
+	_s(AP_MENU_ID_TABLE_TEXTTOTABLE_ALL,1,0,0,0, "textToTable", ap_GetState_TextToTableOK, NULL);
+	_s(AP_MENU_ID_TABLE_TEXTTOTABLE_NOSPACES,1,0,0,0, "textToTableNoSpaces", ap_GetState_TextToTableOK, NULL);
 	_s(AP_MENU_ID_TABLE_SORTROWSASCEND,1,0,0,0, "sortRowsAscend", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SORTROWSDESCEND,1,0,0,0, "sortRowsDescend", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SORTCOLSASCEND,1,0,0,0, "sortColsAscend", ap_GetState_InTable, NULL);
@@ -288,6 +289,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0,0, "autoFitTable", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_SORT,0,0,0,0, NULL, ap_GetState_InTable, NULL);
+	_s(AP_MENU_ID_TABLE_TEXTTOTABLE,0,0,0,0, NULL, ap_GetState_TextToTableOK, NULL);
 
 
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);

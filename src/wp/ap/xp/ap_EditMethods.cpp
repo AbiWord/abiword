@@ -661,6 +661,7 @@ public:
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 
 	static EV_EditMethod_Fn textToTable;
+	static EV_EditMethod_Fn textToTableNoSpaces;
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn toggleAutoRevision;
 	static EV_EditMethod_Fn revisionAccept;
@@ -1127,6 +1128,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// t
 	EV_EditMethod(NF(textToTable),			0,		""),
+	EV_EditMethod(NF(textToTableNoSpaces),		0,		""),
 	EV_EditMethod(NF(toggleAutoRevision),  0,  ""),
 	EV_EditMethod(NF(toggleAutoSpell),      0,  ""),
 	EV_EditMethod(NF(toggleBold),			0,	""),
@@ -10792,6 +10794,15 @@ Defun1(textToTable)
 	pView->cmdTextToTable(false);
 	return true;
 }
+
+Defun1(textToTableNoSpaces)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdTextToTable(true);
+	return true;
+}
+
 
 
 Defun1(insertSumRows)
