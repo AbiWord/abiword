@@ -211,7 +211,7 @@ public:
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
-									   const PP_AttrProp *p_AttrProp = NULL);
+									   PP_AttrProp *p_AttrProp = NULL);
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
@@ -259,7 +259,7 @@ public:
 
 	bool					insertFmtMark(PTChangeFmt ptc,
 										  PT_DocPosition dpos,
-										  const PP_AttrProp *p_AttrProp);
+										  PP_AttrProp *p_AttrProp);
 
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const XML_Char ** attrs, const XML_Char ** props,

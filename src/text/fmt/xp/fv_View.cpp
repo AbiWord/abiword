@@ -976,18 +976,14 @@ void FV_View::toggleCase (ToggleCase c)
 		}
 	}
 
-	if(low < 2)
-	{
-		// the initial block strux / section strux is also selected, for example when
-		// using ctrl+a
-		low = 2;
-	}
-	
 	// if this is an empty document, gracefully return
 	if(low == high)
 		return;
 
 	UT_DEBUGMSG(("fv_View::toggleCase: low %d, high %d\n", low, high));
+
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+	bool bDirection;
 
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(low);
 	fp_Run * pRun;
@@ -1009,22 +1005,6 @@ void FV_View::toggleCase (ToggleCase c)
 
 		PT_DocPosition offset = low - pBL->getPosition(false);
 
-		if(offset == buffer.getLength())
-		{
-			// this is a special case when the selection starts at the very begining of a
-			// block which is not the first block in the document -- the block that
-			// findBlockAtPosition() returned to us is actually the block _before_ the one
-			// we are interested in
-			pBL = pBL->getNextBlockInDocument();
-			UT_return_if_fail( pBL );
-			buffer.truncate(0);
-			pBL->getBlockBuf(&buffer);
-
-			// move past the block strux
-			++low;
-			offset = 0;
-		}
-		
 		if(c == CASE_ROTATE)
 		{
 			// workout the current case
@@ -1064,9 +1044,11 @@ void FV_View::toggleCase (ToggleCase c)
 		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
 
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: pBL 0x%x, offset %d, pSpanAPAfter 0x%x\n", pBL, offset, pSpanAPAfter));
-
-		pRun = pBL->findRunAtOffset(offset);
-
+		//fp_Run * pLastRun = static_cast<fp_Line *>(pBL->getLastContainer())->getLastRun();
+		//PT_DocPosition lastPos = pBL->getPosition(false) + pLastRun->getBlockOffset() + pLastRun->getLength() - 1;
+		pRun = pBL->findPointCoords(low, false, xPoint,
+										   yPoint, xPoint2, yPoint2,
+										   iPointHeight, bDirection);
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
 
 		bool bBlockDone = false;
@@ -1236,12 +1218,6 @@ void FV_View::toggleCase (ToggleCase c)
 				pBL->getSpanAP(offset+iLen,false,pSpanAPAfter);
 				xxx_UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
 
-#if 0
-				UT_DEBUGMSG(("AP Now\n"));
-				pSpanAPNow->miniDump(getDocument());
-				UT_DEBUGMSG(("---------------------------------- \nAP After\n"));
-				pSpanAPAfter->miniDump(getDocument());
-#endif
 				UT_uint32 iRealDeleteCount;
 				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL,iRealDeleteCount);
 				UT_ASSERT(bResult);
@@ -1261,10 +1237,6 @@ void FV_View::toggleCase (ToggleCase c)
 				UT_ASSERT(bResult);
 				low += iLen;
 				offset += iLen;
-
-				// the piecetable operations might have invalidated the pRun pointer,
-				// need to get it afresh
-				pRun = pBL->findRunAtOffset(offset);
 			}
 		}
 		pBL = pBL->getNextBlockInDocument();
@@ -3378,12 +3350,12 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	// Here the selection used to be cleared, but that prevented users
 	// from making multiple changes to the same region.
 
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,attribs,properties);
+
 	// if there is a selection then we need to change the formatting also for any
 	// completely selected block within the selection
 	if(posStart != posEnd)
 	{
-		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,attribs,properties);
-
 		fl_BlockLayout * pBL1 = _findBlockAtPosition(posStart);
 		fl_BlockLayout * pBL2 = _findBlockAtPosition(posEnd);
 
@@ -3538,22 +3510,6 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		}
 		
 	}
-	else
-	{
-		// changing fmt at insertion point only; retrieve current settings, add new ones
-		// and insert fmt mark
-		const PP_AttrProp * pAP = getAttrPropForPoint();
-		PP_AttrProp AP;
-
-		if(pAP)
-			AP = *pAP;
-
-		AP.setProperties(properties);
-		AP.setAttributes(attribs);
-
-		bRet = m_pDoc->insertFmtMark(PTC_AddFmt,posStart,&AP);
-	}
-	
 
 	m_pDoc->endUserAtomicGlob();
 
@@ -3564,66 +3520,6 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 
 	return bRet;
 }
-
-/*!
-    clears props and attribs
-    bAll specifies that everything is to go; if !bAll some selected props will be preserved
-    NB: if there is a selection everythin will go irrespective of bAll
-    
-*/
-bool FV_View::resetCharFormat(bool bAll)
-{
-	if (!isSelectionEmpty())
-	{
-		const XML_Char p[] = "props";
-		const XML_Char v[] = "";
-		const XML_Char * props_out[3] = {p,v,NULL};
-		return setCharFormat(NULL,props_out);
-	}
-	
-	bool bRet;
-
-	// Signal PieceTable Change
-	_saveAndNotifyPieceTableChange();
-
-	PT_DocPosition posStart = getPoint();
-	PT_DocPosition posEnd = posStart;
-
-	m_pDoc->beginUserAtomicGlob();
-
-	PP_AttrProp AP;
-
-	if(!bAll)
-	{
-		const PP_AttrProp * pAP = getAttrPropForPoint();
-
-		if(pAP)
-		{
-			UT_uint32 i = 0;
-			const XML_Char * szName, *szValue;
-			while(pAP->getNthProperty(i++,szName,szValue))
-			{
-				// add other props as required ...
-				if(!UT_strcmp(szName,"lang"))
-				   AP.setProperty(szName,szValue);
-			}
-			
-		}
-	}
-	
-	bRet = m_pDoc->insertFmtMark(PTC_AddFmt,posStart,&AP);
-	
-
-	m_pDoc->endUserAtomicGlob();
-
-	// Signal piceTable is stable again
-	_restorePieceTableState();
-	_generalUpdate();
-	_fixInsertionPointCoords();
-
-	return bRet;
-}
-
 
 bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP, PT_DocPosition posStart)
 {
@@ -11020,38 +10916,6 @@ const XML_Char ** FV_View::getViewPersistentProps()
 	return pProps;
 }
 
-
-const PP_AttrProp * FV_View::getAttrPropForPoint()
-{
-	const fl_BlockLayout * pBL = getCurrentBlock();
-	UT_return_val_if_fail( pBL, NULL);
-
-	UT_uint32 blockOffset = getPoint() - pBL->getPosition();
-	fp_Run * pRun = pBL->findRunAtOffset(blockOffset);
-
-	UT_return_val_if_fail( pRun, NULL );
-	bool bLeftSide = true;
-
-	if(/*(pRun->getType() == FPRUN_TEXT || pRun->getType() == FPRUN_ENDOFPARAGRAPH) &&*/
-	   pRun->getBlockOffset() == blockOffset &&
-	   pRun->getPrevRun()
-	   && pRun->getPrevRun()->getType() == FPRUN_TEXT)
-	{
-		// between two text frags, use the one on the left
-		pRun = pRun->getPrevRun();
-
-		// +1 ensure we do not retrieve AP for the run still before this one
-		blockOffset = pRun->getBlockOffset();
-		bLeftSide = false;
-	}
-	
-	const PP_AttrProp * pAP = NULL;
-	getDocument()->getSpanAttrProp(pBL->getStruxDocHandle(), blockOffset, bLeftSide, &pAP);
-#if 0
-	if(pAP) pAP->miniDump(getDocument());
-#endif
-	return pAP;
-}
 
 fv_PropCache::fv_PropCache(void):
 	m_iTick(0),

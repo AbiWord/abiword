@@ -39,12 +39,6 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-/*!
-    This funciton tried to acomplish too much; I have simplified it, so that does not try
-    to merge the props and attrs passed to it with some fmt from the context -- that must
-    be the responsibility of code on much higher level than the PT
-    (the previous code broke change case functionality and probably other stuff too)
-*/
 bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 													PT_DocPosition dpos,
 													const XML_Char ** attributes,
@@ -60,7 +54,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	getFragFromPosition(dpos,&pf,&fo);
 
 	UT_return_val_if_fail (pf, false);
-
+	
 	if ((fo==0) && (pf->getPrev()))
 	{
 		if (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark)
@@ -77,10 +71,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			return _fmtChangeFmtMarkWithNotify(ptc,pffm,dpos,attributes,properties,pfsContainer,NULL,NULL);
 		}
 
-		// we are always interested in the fmt that is on the left side of the doc position; the only
-		// exception is the case where the frag is a strux (which already is on left side
-		// of the doc position
-		if (pf->getType() != pf_Frag::PFT_Strux)
+		if (pf->getPrev()->getType() == pf_Frag::PFT_Text)
 		{
 			// if we are on a boundary between two frags and the one to our left (before us)
 			// is a text fragment, we pretend to be at the end of it.
@@ -89,48 +80,21 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			fo = pf->getLength();
 		}
 	}
-
-
-	PT_AttrPropIndex indexOldAP = pf->getIndexAP();
+	
+	PT_AttrPropIndex indexOldAP = _chooseIndexAP(pf,fo);
 	PT_AttrPropIndex indexNewAP;
 	bool bMerged;
-
-	// we really do not want to merge props with the existing ones -- that is something
-	// that has to be handled on much higher level when it is required (because there are
-	// situations in which this is undesirable; in fact, this is only desirable when
-	// inserting chars from keyboard)
-	// passing 0 for the old index forces creation of a new AP
-	bMerged = m_varset.mergeAP(ptc,0,attributes,properties,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 
-	// the old index and the new index might sometimes be the same, in which case
-	// the fmt mark is not needed; an exception to this is when we are asked to insert mk
-	// at the start of a block, because without it the _chooseIndexAP() function does not
-	// work (it will choose AP from whatever is on the right, which is desirable in lot of
-	// situations, but not always -- when we were asked to insert a mark, we assume that
-	// is excatly what the caller wants here)
-	if (indexOldAP == indexNewAP && !(pf->getType() == pf_Frag::PFT_Strux))
-	{
+	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
-	}
 	
 	pf_Frag_Strux * pfs = NULL;
-	PT_BlockOffset blockOffset = 0;
-
-	if(pf->getType() == pf_Frag::PFT_Strux && ((pf_Frag_Strux*)pf)->getStruxType() == PTX_Block)
-	{
-		// we already have the block ...
-		pfs = (pf_Frag_Strux*)pf;
-		blockOffset = 0;
-	}
-	else
-	{
-		bool bFoundStrux;
-		bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
-		UT_return_val_if_fail (bFoundStrux, false);
-		blockOffset = _computeBlockOffset(pfs,pf) + fo;
-	}
-	
+	bool bFoundStrux;
+	bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
+	UT_return_val_if_fail (bFoundStrux, false);
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fo;
 
 	if (!_insertFmtMark(pf,fo,indexNewAP))
 		return false;
@@ -365,10 +329,50 @@ bool pt_PieceTable::_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
 }
 
 bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
-												 PT_DocPosition dpos,
-												 const PP_AttrProp *pAttrProp)
+													PT_DocPosition dpos,
+													PP_AttrProp *p_AttrProp)
 {
-	UT_return_val_if_fail (pAttrProp,false);
+	UT_return_val_if_fail (p_AttrProp,false);
 
-	return _insertFmtMarkFragWithNotify(ptc, dpos, pAttrProp->getAttributes(), pAttrProp->getProperties());
+	const XML_Char * properties[] =	{ NULL, NULL, 0};
+
+	int Index = 0;
+	
+	do
+	{
+		if(p_AttrProp->getNthProperty(Index, properties[0], properties[1]))
+		{
+			_insertFmtMarkFragWithNotify(ptc, dpos, NULL,
+												properties);
+		}
+		else
+		{
+			break;
+		}
+
+		Index++;
+	}
+	while(true);
+
+	const XML_Char * Attributes[] =	{ NULL, NULL, 0};
+
+	Index = 0;
+	
+	do
+	{
+		if(p_AttrProp->getNthAttribute(Index, Attributes[0], Attributes[1]))
+		{
+			_insertFmtMarkFragWithNotify(ptc, dpos, Attributes,
+												NULL);
+		}
+		else
+		{
+			break;
+		}
+
+		Index++;
+	}
+	while(true);
+
+	return true;
 }

@@ -227,8 +227,6 @@ public:
 
 	void draw(int page, dg_DrawArgs* da);
 
-	const PP_AttrProp * getAttrPropForPoint();
-	
 	// TODO some of these functions should move into protected
 
 	void	getPageScreenOffsets(const fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
@@ -276,7 +274,6 @@ public:
 	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0);
 
 	bool	setCharFormat(const XML_Char * properties[], const XML_Char * attribs[] = NULL);
-	bool	resetCharFormat(bool bAll);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles, PT_DocPosition posStart);
 	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
