@@ -9,6 +9,10 @@ Bob Sievers <bob@abisource.com>                 QA
 Eric Sink <eric@abisource.com>
 Shaw Terwilliger <sterwill@abisource.com>
 
+current maintainer
+-----------------------------
+Dom Lachowicz <dominicl@seas.upenn.edu>
+
 contributors
 ------------
 Pierre Abbat <phma@oltronics.net>               LaTeX Testing, Help translation, font work
