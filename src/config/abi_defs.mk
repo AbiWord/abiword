@@ -141,6 +141,12 @@ endif
 ifeq ($(OS_NAME), CYGWIN32_95)
 OS_NAME = WIN32
 endif
+ifeq ($(OS_NAME), CYGWIN_NT)
+OS_NAME = WIN32
+endif
+ifeq ($(OS_NAME), CYGWIN_95)
+OS_NAME = WIN32
+endif
 
 ifeq ($(OS_NAME), WIN32)
 include $(ABI_DEPTH)/config/platforms/win32.mk
