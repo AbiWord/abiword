@@ -2407,14 +2407,14 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			{
 				UT_sint32 left =0;
 				UT_sint32 right = 0;
-				pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
 				if((i - 1) != m_draggingCell)
 				{
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
 					left = pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing;
 				}
 				else
 				{
-					left =  m_draggingCenter - xAbsLeft;
+					left =  m_draggingCenter - xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
 				if(i != nCells && i != m_draggingCell)
 				{
@@ -2424,11 +2424,12 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				else if( i == nCells && i != m_draggingCell)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
-					right = pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing;
+					right = pTInfo->m_iRightCellPos;
 				}
 				else
 				{
-					right = m_draggingCenter - xAbsLeft;
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
+					right = m_draggingCenter - xAbsLeft - pTInfo->m_iLeftSpacing;
 				}
 				UT_DEBUGMSG(("SEVIOR i %d iCell %d left %d right %d \n",i,m_draggingCell,left,right));
 				UT_sint32 width = right - left;
