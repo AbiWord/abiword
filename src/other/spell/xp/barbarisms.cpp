@@ -52,33 +52,36 @@ BarbarismChecker::~BarbarismChecker()
 /*
 	Takes a language code and builds the barbarism full filename.
 */
-bool BarbarismChecker::load(const char *szLang)
+bool BarbarismChecker::load(const char * szLang)
 {
-	UT_String	fullPath;
-	UT_XML 		parser;
+	UT_DEBUGMSG(("SPELL: BarbarismChecker::load(%s)\n",szLang));
 
 	if (!szLang || !*szLang)
 		return false;
 
 	m_sLang = szLang;
 
-	fullPath = XAP_App::getApp()->getAbiSuiteLibDir();
-#if defined(WIN32)
-	fullPath += "\\dictionary\\";
-#else
-	fullPath += "/dictionary/";
-#endif
-	fullPath += szLang;
-	fullPath += "-barbarism.xml";
+	UT_String fileName;
+	UT_String fullPath;
 
-	parser.setListener (this);
+	fileName  = szLang;
+	fileName += "-barbarism.xml";
 
-	if ((parser.parse (fullPath.c_str())) != UT_OK)
-		return false; // cannot parse the file
+	bool bLoaded = false;
 
-	UT_DEBUGMSG(("SPELL: barbar %s loaded %u\n", szLang, m_map.size()));
+	if (XAP_App::getApp()->findAbiSuiteLibFile(fullPath, fileName.c_str(), "dictionary"))
+	{
+		UT_XML parser;
 
-	return true;
+		parser.setListener(this);
+
+		if ((parser.parse (fullPath.c_str())) == UT_OK)
+		{
+			bLoaded = true;
+			UT_DEBUGMSG(("SPELL: barbar %s loaded %u\n", szLang, m_map.size()));
+		}
+	}
+	return bLoaded;
 }
 
 /**

@@ -415,23 +415,15 @@ bool XAP_CocoaFrameImpl::_updateTitle()
 		return false;
 	}
 
-	char buf[256];
-	buf[0] = 0;
-
-	const char * szAppName = m_pCocoaApp->getApplicationTitleForTitleBar();
-
-	int len = 256 - strlen(szAppName) - 4;
-	
-	const char * szTitle = getFrame()->getTitle(len);
-
-	//sprintf(buf, "%s - %s", szTitle, szAppName);
-	/* TODO discard this sprintf and you NSString features instead */
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	NSString * str = [[NSString alloc] initWithUTF8String:szTitle];
-	[theWindow setTitleWithRepresentedFilename:str];
-	[str release];
-	
+	if (theWindow)
+		{
+			const char * szTitle = getFrame()->getNonDecoratedTitle();
+
+			[theWindow setTitleWithRepresentedFilename:[NSString stringWithUTF8String:szTitle]];
+			[theWindow setDocumentEdited:(getFrame()->isDirty() ? YES : NO)];
+		}
 	return true;
 }
 

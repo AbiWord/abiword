@@ -4095,7 +4095,7 @@ bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szVal
 	{
 		if (pBlockAP->getProperty(szProperty, szPropValue))
 		{
-			UT_DEBUGMSG(("Property \"%s\" defined at block level as \"%s\"\n",szProperty,szPropValue));
+			xxx_UT_DEBUGMSG(("Property \"%s\" defined at block level as \"%s\"\n",szProperty,szPropValue));
 			szValue = szPropValue;
 			bExplicitlyDefined = true;
 		}
@@ -4107,7 +4107,7 @@ bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szVal
 	{
 		if (szPropValue = PP_evalProperty(szProperty, pSpanAP, pBlockAP, pSectionAP, m_pDoc, true))
 		{
-			UT_DEBUGMSG(("Property \"%s\" defined at style/document level as \"%s\"\n",szProperty,szPropValue));
+			xxx_UT_DEBUGMSG(("Property \"%s\" defined at style/document level as \"%s\"\n",szProperty,szPropValue));
 			szValue = szPropValue;
 		}
 		else
