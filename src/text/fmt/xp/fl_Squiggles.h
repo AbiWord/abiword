@@ -35,6 +35,7 @@ public:
 virtual	~fl_Squiggles(void);
 
 	void					add(fl_PartOfBlock* pPOB);
+	void					markForRedraw(fl_PartOfBlock* pPOB);
 
 	bool					deleteAll(void);
 

@@ -275,6 +275,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 			// "gest's" the entire >gest's< is squiggled.
 			pPrev->setLength(pPOB->getLength());
 			_deleteNth(iIndex--);
+			markForRedraw(pPrev);
 		}
 		else if (pPOB->getOffset() == pPrev->getOffset() + pPrev->getLength())
 		{
@@ -283,8 +284,19 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 			// typing a character ' between them.
 			pPrev->setLength(pPrev->getLength() + pPOB->getLength());
 			_deleteNth(iIndex--);
+			markForRedraw(pPrev);
 		}
+		else
+		{
+			markForRedraw(pPOB);
+		}
+
 	}
+	else
+	{
+	        markForRedraw(pPOB);
+	}
+
 #if UT_DEBUG
 	UT_sint32 iSquiggles = _getCount();
 	if (iSquiggles <= 1) return;
@@ -395,6 +407,28 @@ fl_Squiggles::_deleteAtOffset(UT_sint32 iOffset)
 	return res;
 }
 
+
+/*!
+ * Mark all the runs overlapping with the POB for Redraw.
+ */
+void fl_Squiggles::markForRedraw(fl_PartOfBlock* pPOB)
+{
+	PT_DocPosition pos1 = pPOB->getOffset();
+	PT_DocPosition pos2 = pos1 + pPOB->getLength();
+	//
+	// Make sure the runs in this POB get redrawn.
+	//
+	fp_Run * pRun = m_pOwner->getFirstRun();
+	while(pRun && (pRun->getBlockOffset() <= pos2))
+	{
+	    if((pRun->getBlockOffset() + pRun->getLength()) >= pos1)
+	    {
+	         pRun->markAsDirty();
+	    }
+	    pRun = pRun->getNextRun();
+	}
+}
+
 /*!
  Get squiggle at offset
  \param iOffset Offset
@@ -432,15 +466,7 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 	  //
 	  // Make sure the runs in this POB get redrawn.
 	  //
-	  fp_Run * pRun = m_pOwner->getFirstRun();
-	  while(pRun && (pRun->getBlockOffset() <= pos2))
-	  {
-	    if((pRun->getBlockOffset() + pRun->getLength() >= pos1))
-	    {
-	      pRun->markAsDirty();
-	    }
-	    pRun = pRun->getNextRun();
-	  }
+	  markForRedraw(pPOB);
 	  return;
 	}
 	PT_DocPosition posEOD = 0;
