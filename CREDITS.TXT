@@ -94,7 +94,7 @@ Tomas Frydrych <tomas@frydrych.uklinux.net> 		ttf, utf8 locale, bidi
 Gabriel Gerhardsson <mr.g@home.se>			Abispell work, dictionary downloader
 David Given <dg@tao-group.com>				Human Readable Text
 							Export
-Daniel Glassey <danglassey@ntlworld.com>	msys Win32 build							
+Daniel Glassey <danglassey@ntlworld.com>		msys Win32 build							
 Ashleigh Gordon <gordonac@ocean.com.au> 		English help files
 Peter Haight <peterh@sapros.com>			Fonts location bug fix
 Vlad Harchev <hvv@hippo.ru> 				Support for non latin-1 Languages
@@ -188,7 +188,7 @@ Jakub "Jimmac" Steiner <jimmac@ximian.com>		Artwork
 Diego Sueiro <dsueiro@yahoo.com>			Gnome work & bugfixes
 Owen Stenseth <owen@pdaverticals.com>			script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu> 		VI keybindings
-Keith Stribley									Piece Table Fields
+Keith Stribley						Piece Table Fields
 Jim Studt <jim@federated.com>				ARM configuration
 Peter Teichman <peter@helixcode.com>			XFree86 4.0 Fix
 Jeremy Teo <nerant@gmx.net>
@@ -200,7 +200,7 @@ Sam Tobin-Hochstadt <sytobinh@uchicago.edu> 		Lots of fun stuff
 John Tunison <nosinut@WIND.REM.CMU.EDU> 		GNOME dialogs
 Göran Thyni <goran@kirra.net>				libxml support,
 							some autoconf work
-Sam Trenholme <abiword_bugs@yahoo.com>             RTF exporter fixes
+Sam Trenholme <abiword_bugs@yahoo.com>			RTF exporter fixes
 Kevin Vajk <kvajk@ricochet.net> 			File import/export
 							detection, hpux
 Martin Vermeer <martin.vermeer@fgi.fi>			Unicode Latex export
@@ -211,7 +211,7 @@ John Wood <jyonw@asu.edu>				NetBSD
 Alan Young <ayoung@teleport.com>			Alpha/NT
 Justin Zaun <jzaun@telerama.com> Some templates
 Belcon Zhao <rainfall@yeah.net> 			Testing/fixing CJK support
-Johan BjÃ¶rk <phearbear@home.se>		QNX Maintainer
+Johan BjÃ¶rk <phearbear@home.se>			QNX Maintainer
 
 translators
 -----------
@@ -247,7 +247,7 @@ Marco Innocenti <dot0037@iperbole.bologna.it>		Italian
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>			Finnish
 Mantas Kriauciunas <mantelis@centras.lt>		Lithuanian (lt-LT)
 Michl Ladislav <xmichl03@stud.fee.vutbr.cz> 		Czech
-Karl Ove Hufthammer <karl@huftis.org>		Norwegian (Nynorsk)
+Karl Ove Hufthammer <karl@huftis.org>			Norwegian (Nynorsk)
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>		Norwegian (Bokmål)
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com>		Norwegian (Bokmål)
 Kjartan Maraas <kmaraas@online.no>			Norwegian (Bokmål)
@@ -281,6 +281,7 @@ Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
 Mugurel Tudor <mugurelu@go.ro>				Romanian
 Ivica Bogosavljevic <ivica84@ptt.yu>			Serbian
 pclouds <pclouds@users.sourceforge.net>			Vietnamese
+Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>	Malay
 
 unsung heroes
 -------------
