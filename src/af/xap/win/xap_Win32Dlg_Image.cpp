@@ -85,6 +85,7 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_WRAPPING,	XAP_STRING_ID_DLG_Image_TextWrapping);
 	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_PLACEMENT,	XAP_STRING_ID_DLG_Image_Placement);
 	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_INLINE,	XAP_STRING_ID_DLG_Image_InLine);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_FLOAT, XAP_STRING_ID_DLG_Image_WrappedNone);
 	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_RIGHT,	XAP_STRING_ID_DLG_Image_WrappedRight);
 	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_LEFT,	XAP_STRING_ID_DLG_Image_WrappedLeft);
 	localizeControlText(XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,XAP_STRING_ID_DLG_Image_WrappedBoth);
@@ -107,6 +108,11 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	{
         CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE, XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,
 		XAP_RID_DIALOG_IMAGE_RADIO_INLINE);
+	}
+	else if(getWrapping() == WRAP_NONE)
+	{
+        CheckRadioButton(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE, XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES,
+		XAP_RID_DIALOG_IMAGE_RADIO_FLOAT);
 	}
 	else if(getWrapping() == WRAP_TEXTRIGHT)
 	{
@@ -176,6 +182,10 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			setWrapping(WRAP_INLINE);
 		}
+		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_FLOAT))
+		{
+			setWrapping(WRAP_NONE);
+		}
 		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_RIGHT))
 		{
 			setWrapping(WRAP_TEXTRIGHT);
@@ -189,28 +199,31 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			setWrapping(WRAP_TEXTBOTH);
 		}
 
-		// change placement
-		if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH))
+		if(!IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_INLINE))
 		{
-			setPositionTo(POSITION_TO_PARAGRAPH);
-		}
-		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_COLUMN))
-		{
-			setPositionTo(POSITION_TO_COLUMN);
-		}
-		else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PAGE))
-		{
-			setPositionTo(POSITION_TO_PAGE);
-		}
+			// change placement if the inline option isn't selected
+			if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PARAGRAPH))
+			{
+				setPositionTo(POSITION_TO_PARAGRAPH);
+			}
+			else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_COLUMN))
+			{
+				setPositionTo(POSITION_TO_COLUMN);
+			}
+			else if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_PAGE))
+			{
+				setPositionTo(POSITION_TO_PAGE);
+			}
 
-		//change type
-		if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_SQUARE))
-		{
-			setTightWrap(false);
-		}
-		else
-		{
-			setTightWrap(true);
+			//change type if the inline option isn't selected
+			if(IsDlgButtonChecked(hWnd, XAP_RID_DIALOG_IMAGE_RADIO_SQUARE))
+			{
+				setTightWrap(false);
+			}
+			else
+			{
+				setTightWrap(true);
+			}
 		}
 
 		char buf[BUFSIZE];
@@ -249,8 +262,8 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		setPreserveAspect( isChecked(wId)!=0 );
 		return 1;
 
-	case XAP_RID_DIALOG_IMAGE_RADIO_INLINE:	case XAP_RID_DIALOG_IMAGE_RADIO_RIGHT:
-	 case XAP_RID_DIALOG_IMAGE_RADIO_LEFT: case XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES:
+	case XAP_RID_DIALOG_IMAGE_RADIO_INLINE: case XAP_RID_DIALOG_IMAGE_RADIO_FLOAT:
+	case XAP_RID_DIALOG_IMAGE_RADIO_RIGHT: case XAP_RID_DIALOG_IMAGE_RADIO_LEFT: case XAP_RID_DIALOG_IMAGE_RADIO_BOTHSIDES:
 		wrappingChanged();
 		return 1;
 
