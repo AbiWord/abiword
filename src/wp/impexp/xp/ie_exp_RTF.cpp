@@ -1322,7 +1322,7 @@ void IE_Exp_RTF::_selectStyles()
 					if (_findFont(&fi) == -1)
 						_addFont(&fi);
 				}
-				UT_CATCH(_rtf_no_font e)
+				UT_CATCH(UT_CATCH_ANY)
 				{
 				}
 				UT_END_CATCH
@@ -1335,7 +1335,7 @@ void IE_Exp_RTF::_selectStyles()
 					if (_findFont(&fi) == -1)
 						_addFont(&fi);
 				}
-				UT_CATCH(_rtf_no_font e)
+				UT_CATCH(UT_CATCH_ANY)
 				{
 				}
 				UT_END_CATCH
@@ -2151,7 +2151,7 @@ UT_sint32 IE_Exp_RTF::_findFont(const s_RTF_AttrPropAdapter * apa) const
 	    ifont = _findFont(&fi);
 	    return ifont;
 	  }
-	UT_CATCH(_rtf_no_font e)
+	UT_CATCH(UT_CATCH_ANY)
 	  {
 	    return -1;
 	  }

@@ -52,10 +52,6 @@
 // -DAL-
 //
 
-#if defined(_MSC_VER) 
-	#define ABI_DOESNT_SUPPORT_THROWS 1
-#endif
-
 /*
  * Public base-class which all of our own 
  * exceptions should inherit from
@@ -114,13 +110,8 @@ class ABI_EXPORT UT_Exception
 
 #endif
 
-// void Class::method () throw(Ex1, Ex2) 
-// is a newer C++ language feature (1998, IIRC). let's special-case it
-
-#if defined(ABI_DOESNT_SUPPORT_EXCEPTIONS) || defined(ABI_DOESNT_SUPPORT_THROWS)
+// yeah, so 99.9999/100 C++ compilers don't handle this properly. shucks.
+// #define UT_THROWS(x) throw x
 #define UT_THROWS(x)
-#else
-#define UT_THROWS(x)     throw x
-#endif
 
 #endif /* UT_EXCEPTION_H */
