@@ -37,6 +37,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "xap_EncodingManager.h"
+#include "fd_Field.h"
 
 #include "ut_string_class.h"
 
@@ -977,6 +978,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("\\documentclass[12pt]{article}\n");
 	m_pie->write("\\usepackage[T1]{fontenc}\n");
 	m_pie->write("\\usepackage{calc}\n");
+	m_pie->write("\\usepackage{hyperref}");
 	m_pie->write("\\usepackage{setspace}\n");
 	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
 	m_pie->write("\\usepackage[normalem]{ulem}\t% TODO: Package is only needed if you have underline/strikeout.\n");
@@ -1026,9 +1028,16 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-#if 0			
-			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();
+			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
+
+			const PP_AttrProp * pAP = NULL;
+			bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
+			const XML_Char* szValue = NULL;
+
+			fd_Field* field = NULL;
+
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
@@ -1036,21 +1045,34 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 
 			case PTO_Field:
+
+			  field = pcro->getField();
+			  m_pie->write(field->getValue());
+
 				// we do nothing with computed fields.
 				return true;
 
 				// todo: support these
 			case PTO_Hyperlink:
+				if(bHaveProp && pAP && pAP->getAttribute("xlink:href", szValue))
+				{
+					m_pie->write("\\href{");
+					m_pie->write(szValue);
+					m_pie->write("}{");
+				}
+				else
+				{
+					m_pie->write("}");
+				}
+				return true;
+
 			case PTO_Bookmark:
 			  return true;
 
 			default:
 				UT_ASSERT(0);
-				return false;
+				return true;
 			}
-#else
-			return true;
-#endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
