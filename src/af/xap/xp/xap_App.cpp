@@ -40,6 +40,7 @@
 #include "xap_Dictionary.h"
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
+#include "ut_rand.h"
 
 /*****************************************************************/
 
@@ -136,7 +137,7 @@ bool XAP_App::initialize()
 	// Need to initialize the random number generator. 
 	//
 	UT_uint32 t = (UT_uint32) time( NULL);
-	srand(t);
+	UT_srandom(t);
 	return true;
 }
 

@@ -43,6 +43,7 @@
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
 #include "ut_bytebuf.h"
+#include "ut_rand.h"
 
 #include "xap_App.h"
 #include "fv_View.h"
@@ -152,9 +153,9 @@ bool	IE_Imp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uint32 level )
 {
 	levelStartAt = 1;
-	AbiLevelID = rand();
+	AbiLevelID = UT_rand();
 	while(AbiLevelID < 10000)
-		AbiLevelID = rand();
+		AbiLevelID = UT_rand();
 	pParaProps = NULL;
 	pCharProps = NULL;
 	pbParaProps = NULL;
@@ -2407,7 +2408,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 
 	header = new RTFHdrFtr ();
 	header->m_type = hftype;
-	header->m_id = rand();    // TODO: make sure it is unique
+	header->m_id = UT_rand();    // TODO: make sure it is unique
 	UT_DEBUGMSG(("Header id=%u\n", header->m_id));
 
 	m_hdrFtrTable.addItem (header);
@@ -3218,11 +3219,11 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 					}
 				}
 				if(pMapAuto == NULL )
-					mappedID = rand();
+					mappedID = UT_rand();
 				else if( getAbiList(i)->level <= pMapAuto->getLevel() && pMapAuto->getID() != 0)
 					mappedID = pMapAuto->getID();
 				else
-					mappedID = rand();
+					mappedID = UT_rand();
 				getAbiList(i)->hasBeenMapped = true;
 				getAbiList(i)->mapped_id = mappedID;	  
 				if(highestLevel > 0)
@@ -4126,7 +4127,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	pList->RTF_level[levelCount] = pLevel;
 	UT_uint32 rnd =0;
 	while(rnd < 10000)
-		rnd = rand();
+		rnd = UT_rand();
 	pLevel->AbiLevelID = rnd;
 	while(nesting > 0)
 	{

@@ -59,6 +59,7 @@
 #include "fg_Graphic.h"
 #include "ap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
+#include "ut_rand.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -5518,9 +5519,9 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 		m_bListItem = true;
 		listUpdate();
 	}
-	id = rand();
+	id = UT_rand();
 	while(id < AUTO_LIST_RESERVED)
-		id = rand();
+		id = UT_rand();
 	sprintf(lid, "%i", id);
 
 	sprintf(pid, "%i", iParentID);

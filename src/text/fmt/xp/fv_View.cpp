@@ -59,6 +59,7 @@
 #include "ap_Prefs.h"
 #include "fd_Field.h"
 #include "spell_manager.h"
+#include "ut_rand.h"
 
 #include "xap_EncodingManager.h"
 
@@ -8993,7 +8994,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 	static XML_Char sid[15];
 	UT_uint32 id = 0;
 	while(id < AUTO_LIST_RESERVED)
-		id = rand();
+		id = UT_rand();
 	sprintf(sid, "%i", id);
 
 	const XML_Char*	sec_attributes1[] = {
@@ -9098,7 +9099,7 @@ bool FV_View::insertEndnote()
 	static XML_Char enpid[15];
 	UT_uint32 pid = 0;
 	while (pid < AUTO_LIST_RESERVED)
-		pid = rand();
+		pid = UT_rand();
 	sprintf(enpid, "%i", pid);
 
 	// You know, I'm not sure if endnote-id should be a prop or attr on
@@ -9232,7 +9233,7 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char **
 	static XML_Char sid[15];
 	UT_uint32 id = 0;
 	while(id < AUTO_LIST_RESERVED)
-		id = rand();
+		id = UT_rand();
 	sprintf(sid, "%i", id);
 
 	const XML_Char*	sec_attributes1[] = {
