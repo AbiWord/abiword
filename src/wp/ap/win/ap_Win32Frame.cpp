@@ -27,6 +27,9 @@
 #include "xad_Document.h"
 #include "xap_Scrollbar_ViewListener.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable: 4355)	// 'this' used in base member initializer list
+#endif
 
 AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app) :
 	AP_Frame(new AP_Win32FrameImpl(this), app)
@@ -151,7 +154,8 @@ void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 {
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
-	UT_ASSERT(pFrameData);
+	UT_return_if_fail(pFrameData);
+	UT_return_if_fail(pFrameData->m_pStatusBar);
 
 	if (bStatusBarOn)
 	{

@@ -92,10 +92,10 @@ protected:
 	virtual void				_translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual HWND				_getTopLevelWindow(void) const {  return m_hwndFrame;  }
 
-	virtual HWND				_createDocumentWindow(HWND hwndParent,
-								UT_uint32 iLeft, UT_uint32 iTop, UT_uint32 iWidth, UT_uint32 iHeight) { return NULL; } /* = 0; */
-	virtual HWND				_createStatusBarWindow(HWND hwndParent,
-								UT_uint32 iLeft, UT_uint32 iTop, UT_uint32 iWidth) { return NULL; } /* = 0; */
+	virtual HWND				_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent,
+								UT_uint32 iLeft, UT_uint32 iTop, UT_uint32 iWidth, UT_uint32 iHeight) = 0;
+	virtual HWND				_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParent,
+								UT_uint32 iLeft, UT_uint32 iTop, UT_uint32 iWidth) = 0;
 	void						_createTopLevelWindow(void);
 
 	void						_setHwndStatusBar(HWND hWnd) {  m_hwndStatusBar = hWnd;  }

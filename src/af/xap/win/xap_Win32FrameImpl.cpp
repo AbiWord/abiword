@@ -34,6 +34,10 @@
 #include "ev_EditMethod.h"
 #include "xav_View.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable: 4355)	// 'this' used in base member initializer list
+#endif
+
 // Where the heck is this function????
 // TODO Fix the following header file. It seems to be incomplete
 // TODO #include <ap_EditMethods.h>
@@ -144,7 +148,9 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	UT_ASSERT(m_hwndFrame);
 
 	// bind this frame to its window
-	SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)this);
+	// WARNING: We assume in many places this refers to a XAP_Frame or descendant!!!
+	//SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)this);
+	SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)getFrame());
 
 	m_mouseWheelMessage = RegisterWindowMessage(MSH_MOUSEWHEEL);
 
@@ -203,14 +209,14 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 	else
 		m_iBarHeight = 0;
 
-	m_hwndContainer = _createDocumentWindow(m_hwndFrame, 0, m_iBarHeight, iWidth, iHeight);
+	m_hwndContainer = _createDocumentWindow(getFrame(), m_hwndFrame, 0, m_iBarHeight, iWidth, iHeight);
 
 	// Let the app-specific frame code create the status bar
 	// if it wants to.  we will put it below the document
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
 
-	m_hwndStatusBar = _createStatusBarWindow(m_hwndFrame,0,m_iBarHeight+iHeight,iWidth);
+	m_hwndStatusBar = _createStatusBarWindow(getFrame(), m_hwndFrame,0,m_iBarHeight+iHeight,iWidth);
 	GetClientRect(m_hwndStatusBar,&r);
 	m_iStatusBarHeight = r.bottom;
 
@@ -684,7 +690,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 				for (k=0; k < nrToolbars; k++)
 				{
 					EV_Win32Toolbar * t = (EV_Win32Toolbar *)fimpl->m_vecToolbars.getNthItem(k);
-					if( pNMcd->hdr.hwndFrom == t->getWindow() )
+					if( t && (pNMcd->hdr.hwndFrom == t->getWindow()) )
 					{
 						if( pNMcd->dwDrawStage == CDDS_PREPAINT )
 						{

@@ -1068,7 +1068,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 //	
 
 
-#ifndef __MINGW32__
+#if  !defined(__MINGW32__) /* && !defined(DEBUG) */
 __try
 #endif	
 {		
@@ -1126,7 +1126,7 @@ __try
 // If an exception happens, with "catch" the block
 // and then the save it into disk
 //
-#ifndef __MINGW32__
+#if  !defined(__MINGW32__) /* && !defined(DEBUG) */
 __except (1)
 {
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();

@@ -349,7 +349,8 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	}
 	if(isStatusBarShown())
 	{
-		((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
+		if (((AP_FrameData*)m_pData)->m_pStatusBar)
+			((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
 	}
 
 	m_pView->notifyListeners(AV_CHG_ALL);

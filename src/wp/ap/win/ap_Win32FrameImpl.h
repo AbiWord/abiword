@@ -38,7 +38,6 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	virtual void _initialize(void);
 
-	virtual void _createToolbars();
 	virtual void _refillToolbarsInFrameData();
 	virtual void _rebuildToolbar(UT_uint32 ibar);
 
@@ -65,7 +64,6 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 
 	void						_createRulers(XAP_Frame *pFrame) {  _createTopRuler(pFrame); _createLeftRuler(pFrame);  }
 
-/* Who calls me / who should call me??? */
 	HWND						_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent,
 													  UT_uint32 iLeft, UT_uint32 iTop,
 													  UT_uint32 iWidth, UT_uint32 iHeight);

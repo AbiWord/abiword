@@ -95,7 +95,6 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 							UT_uint32 iLeft, UT_uint32 iTop,
 							UT_uint32 iWidth, UT_uint32 iHeight)
 {
-	UT_ASSERT(0);
 	UT_return_val_if_fail(pFrame, NULL);
 
 	// create the window(s) that the user will consider to be the
@@ -111,7 +110,9 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									 iLeft, iTop, iWidth, iHeight,
 									 hwndParent, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
 	UT_ASSERT(m_hwndContainer);
-	SWL(m_hwndContainer, this);
+	// WARNING!!! many places expect an XAP_Frame or descendant!!!
+	//SWL(m_hwndContainer, this);
+	SWL(m_hwndContainer, pFrame);
 
 	// now create all the various windows inside the container window.
 
@@ -126,7 +127,9 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									m_hwndContainer,
 									0, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), 0);
 	UT_ASSERT(m_hWndHScroll);
-	SWL(m_hWndHScroll, this);
+	// WARNING!!! many places expact an XAP_Frame or descendant!!!
+	//SWL(m_hWndHScroll, this);
+	SWL(m_hWndHScroll, pFrame);
 
 	m_hWndVScroll = CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_VERT,
 									r.right - cxVScroll, 0,
@@ -134,7 +137,9 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									m_hwndContainer,
 									0, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), 0);
 	UT_ASSERT(m_hWndVScroll);
-	SWL(m_hWndVScroll, this);
+	// WARNING!!! many places expact an XAP_Frame or descendant!!!
+	//SWL(m_hWndVScroll, this);
+	SWL(m_hWndVScroll, pFrame);
 
 #if 1 // if the StatusBar is enabled, our lower-right corner is a dead spot
 #  define XX_StyleBits          (WS_DISABLED | SBS_SIZEBOX)
@@ -147,7 +152,9 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 										r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
 										m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
 	UT_ASSERT(m_hWndGripperHack);
-	SWL(m_hWndGripperHack, this);
+	// WARNING!!! many places expact an XAP_Frame or descendant!!!
+	//SWL(m_hWndGripperHack, this);
+	SWL(m_hWndGripperHack, pFrame);
 
 	// create the rulers, if needed
 
@@ -168,7 +175,9 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 									r.bottom - yTopRulerHeight - cyHScroll,
 									m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
 	UT_ASSERT(m_hwndDocument);
-	SWL(m_hwndDocument, this);
+	// WARNING!!! many places expact an XAP_Frame or descendant!!!
+	//SWL(m_hwndDocument, this);
+	SWL(m_hwndDocument, pFrame);
 
 	return m_hwndContainer;
 }
@@ -177,7 +186,6 @@ HWND AP_Win32FrameImpl::_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParen
 										   UT_uint32 iLeft, UT_uint32 iTop,
 										   UT_uint32 iWidth)
 {
-	UT_ASSERT(0);
 	UT_return_val_if_fail(pFrame, NULL);
 	AP_Win32StatusBar * pStatusBar = new AP_Win32StatusBar(pFrame);
 	UT_ASSERT(pStatusBar);
@@ -185,11 +193,6 @@ HWND AP_Win32FrameImpl::_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParen
 	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pStatusBar = pStatusBar;
 
 	return _getHwndStatusBar();
-}
-
-void AP_Win32FrameImpl::_createToolbars() 
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
 void AP_Win32FrameImpl::_refillToolbarsInFrameData() 
@@ -645,7 +648,8 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 	UT_return_val_if_fail(fImpl, DefWindowProc(hwnd, iMsg, wParam, lParam));
 
 	AV_View* pView = f->getCurrentView();
-	UT_ASSERT(pView);		/* only fatal for some messages */
+	//UT_ASSERT(pView);		/* only fatal for some messages */
+	UT_return_val_if_fail((pView && ((iMsg == WM_VSCROLL) || (iMsg == WM_HSCROLL))) || ((iMsg != WM_VSCROLL) && (iMsg != WM_HSCROLL)), 0);
 
 	switch (iMsg)
 	{
