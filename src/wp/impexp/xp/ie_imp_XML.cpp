@@ -278,6 +278,8 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						
 						UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
 						
+						UT_uint32 actualLen = m_currentDataItem.getLength();
+						m_currentDataItem.ins(actualLen, len); // allocate all the possibly needed memory at once
 						const UT_Byte * ss = reinterpret_cast<const UT_Byte *>(s);
 						const UT_Byte * ssEnd = ss + len;
 						while (ss < ssEnd)
@@ -288,11 +290,15 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 								while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
 									k++;
 								if (k > 0)
-									m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
+								{
+									m_currentDataItem.overwrite(actualLen, reinterpret_cast<UT_Byte *>(ss), k);
+									actualLen += k;
+								}
 								
 								ss += k;
 							}
 						
+							m_currentDataItem.truncate(actualLen); // chop off the mem we don't need after all
 						return;
 					}
 				else
@@ -353,10 +359,3 @@ const XML_Char * IE_Imp_XML::_getXMLPropValue(const XML_Char *name,
 {
 	return UT_getAttribute(name, atts);
 }
-
-
-
-
-
-
-
