@@ -615,11 +615,11 @@ bool EV_UnixGnomeToolbar::synthesize(bool bAddToolbar)
 			    GtkWidget * wPixmap;
 			    if (pAction->getItemType() == EV_TBIT_ColorFore)
 				{
-					combo = color_combo_new (font_xpm, szToolTip, black, NULL);
+					combo = color_combo_new (font_xpm, szToolTip, black, color_group_fetch("foreground_color", NULL));
 				}
 			    else
 				{
-					combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
+					combo = color_combo_new (bucket_xpm, szToolTip, NULL, color_group_fetch("background_color", NULL));
 				}
 			    if (!gnome_preferences_get_toolbar_relief_btn ())
 			      gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (combo), GTK_RELIEF_NONE);
