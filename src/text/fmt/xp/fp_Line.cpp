@@ -163,6 +163,12 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun)
 
 void fp_Line::insertRun(fp_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 {
+	if (!m_bDirty)
+	{
+		clearScreen();
+	}
+	bClear = UT_FALSE;
+	
 	fp_RunInfo* pRI = (fp_RunInfo*) pRun->getLineData();
 	
 	if (bNewData == UT_TRUE)
@@ -184,7 +190,7 @@ void fp_Line::insertRun(fp_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 	{
 		fp_RunInfo *p = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		if (bClear == UT_TRUE)
+		if ((bClear == UT_TRUE) && (p->pRun != pRun))
 		{
 			p->pRun->clearScreen();
 		}
@@ -509,6 +515,11 @@ void fp_Line::shrink(UT_sint32 width)
 
 void fp_Line::clearScreen()
 {
+	if (m_bDirty)
+	{
+		return;
+	}
+	
 	int count = m_vecRunInfos.getItemCount();
 
 	for (int i=0; i < count; i++)

@@ -48,7 +48,6 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 	UT_Bool bDone = UT_FALSE;
 	fp_Line* pLine = pBlock->getFirstLine();
 	fp_RunSplitInfo si;
-	UT_Bool bRedrawLine = UT_FALSE;
 	
 	while (pLine && (bDone == UT_FALSE))
 	{
@@ -218,10 +217,6 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 							pBlock->addLine(pLine);
 							bAddLine = UT_FALSE;
 						}
-						
-						// This line just had an element inserted at the
-						// beginning of it - redraw the whole thing
-						bRedrawLine = UT_TRUE;
 						
 						pLine->m_bDirty = UT_TRUE;
 

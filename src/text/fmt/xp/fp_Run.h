@@ -112,7 +112,6 @@ class fp_Run
 
 	void                    clearScreen(void);
 	void					draw(dg_DrawArgs*);
-	void					invert(UT_uint32 iStart, UT_uint32 iLen);
 	void					dumpRun(void) const;
 	
  protected:

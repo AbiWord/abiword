@@ -2651,28 +2651,6 @@ void FV_View::cmdSaveAs(const char * szFilename)
 	notifyListeners(AV_CHG_SAVE);
 }
 
-#if 0
-UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
-{
-	if (!isSelectionEmpty())
-	{
-		_deleteSelection();
-	}
-	else
-	{
-		_eraseInsertionPoint();
-	}	
-
-	UT_DEBUGMSG(("pasteBlock: pasting block of length %d.\n", count));
-
-	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
-
-	_drawInsertionPoint();
-
-	return bResult;
-}
-#endif
-
 void FV_View::cmdCut(void)
 {
 	cmdCopy();
