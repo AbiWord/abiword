@@ -104,7 +104,15 @@ void AP_UnixFrame::setYScrollRange(void)
 	bool bDifferentPosition = (newvalue != static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5));
 	UT_sint32 diff = static_cast<UT_sint32>(pFrameImpl->m_pVadj->upper-
 											pFrameImpl->m_pVadj->page_size +0.5);
-
+	if(bDifferentPosition)
+	{
+		UT_sint32 iDU = pGr->tdu( static_cast<UT_sint32>(pFrameImpl->m_pVadj->value +0.5) - newvalue);
+		if(iDU == 0)
+		{
+			bDifferentPosition = false;
+			pFrameImpl->m_pVadj->value = static_cast<gdouble>(newvalue);
+		}
+	}
 	bool bDifferentLimits = ((height-windowHeight) != diff);
 	
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
