@@ -156,7 +156,10 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
     else
     {
         /* convert to 8bit string and null terminate */
-        unsigned int len_in, len_out;
+		/* TF CHANGE: Use the right types 
+        unsigned int len_in, len_out; 
+		*/
+		size_t len_in, len_out;
         const char *In = (const char *)word16;
         char *Out = word8;
 
@@ -201,7 +204,10 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
     else
     {
         /* convert to 8bit string and null terminate */
-        unsigned int len_in, len_out;
+		/* TF CHANGE: Use the right types
+        unsigned int len_in, len_out; 
+		*/
+        size_t len_in, len_out; 
         const char *In = (const char *)word16;
         char *Out = word8;
 
@@ -215,7 +221,10 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
         makepossibilities(iWord);
 
     sg->count = pcount;
-    sg->score = (unsigned short*)malloc(sizeof(unsigned short) * pcount);
+	/* TF CHANGE: Use the right types
+    sg->score = (unsigned short *)malloc(sizeof(unsigned short) * pcount); 
+	*/
+    sg->score = (short *)malloc(sizeof(short) * pcount);
     sg->word = (unsigned short**)malloc(sizeof(unsigned short**) * pcount);
     if (sg->score == NULL || sg->word == NULL) 
     {
