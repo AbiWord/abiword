@@ -51,6 +51,7 @@ public:
 
 	AP_Menu_Id						getMenuId(void) const;
 	const char *					getMenuLabel(void) const;
+	const char *					getMenuStatusMessage(void) const;
 
 protected:
 	AP_Menu_Id						m_id;

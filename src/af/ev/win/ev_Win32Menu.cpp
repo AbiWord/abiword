@@ -30,7 +30,7 @@
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
-
+#include "xap_Win32Frame.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define NrElements(a)	((sizeof(a) / sizeof(a[0])))
@@ -436,6 +436,52 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 #endif
 		
 	return UT_TRUE;
+}
+
+UT_Bool EV_Win32Menu::onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
+								   HWND hWnd, HMENU hMenu, WPARAM wParam)
+{
+	UINT nItemID = (UINT)LOWORD(wParam);
+	UINT nFlags  = (UINT)HIWORD(wParam);
+
+	if ( (nFlags==0xffff) && (hMenu==0) )
+	{
+		//UT_DEBUGMSG(("ClearMessage 1\n"));
+		pFrame->setStatusMessage(NULL);
+		return 1;
+	}
+
+	if ( (nItemID==0) || (nFlags & (MF_SEPARATOR|MF_POPUP)) )
+	{
+		//UT_DEBUGMSG(("ClearMessage 2\n"));
+		pFrame->setStatusMessage(NULL);
+		return 1;
+	}
+
+	if (nFlags & (MF_SYSMENU))
+	{
+		//UT_DEBUGMSG(("SysMenu [%x]\n",nItemID));
+		// TODO do we want to bother with the system menu ??
+		pFrame->setStatusMessage(NULL);
+		return 1;
+	}
+	
+	AP_Menu_Id id = MenuIdFromWmCommand(nItemID);
+	EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+	if (!pLabel)
+	{
+		//UT_DEBUGMSG(("ClearMessage 3 [%d %d]\n",nItemID,id));
+		pFrame->setStatusMessage(NULL);
+		return 1;
+	}
+
+	const char * szMsg = pLabel->getMenuStatusMessage();
+	if (!szMsg || !*szMsg)
+		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+	
+	//UT_DEBUGMSG(("SetMessage [%s]\n",szMsg));
+	pFrame->setStatusMessage(szMsg);
+	return 1;
 }
 
 /*****************************************************************/

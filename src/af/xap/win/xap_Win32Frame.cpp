@@ -402,7 +402,17 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		else if (f->m_pWin32Menu->onInitMenu(pView,hwnd,(HMENU)wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-		
+
+	case WM_MENUSELECT:
+		if (f->m_pWin32Popup)
+		{
+			if (f->m_pWin32Popup->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam))
+				return 0;
+		}
+		else if (f->m_pWin32Menu->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		if (f->m_pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))

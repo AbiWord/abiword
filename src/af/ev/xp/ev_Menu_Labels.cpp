@@ -59,6 +59,11 @@ const char * EV_Menu_Label::getMenuLabel(void) const
 	return m_szMenuLabel;
 }
 
+const char * EV_Menu_Label::getMenuStatusMessage(void) const
+{
+	return m_szStatusMsg;
+}
+
 /*****************************************************************/
 
 EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,

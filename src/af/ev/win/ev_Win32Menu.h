@@ -28,7 +28,7 @@
 class AV_View;
 class XAP_Win32App;
 class EV_EditEventMapper;
-
+class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -44,6 +44,8 @@ public:
 	UT_Bool				synthesizeMenu(HMENU menuRoot);
 	UT_Bool				onCommand(AV_View * pView, HWND hWnd, WPARAM wParam);
 	UT_Bool				onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar);
+	UT_Bool				onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
+									 HWND hWnd, HMENU hMenu, WPARAM wParam);
 
 	inline HMENU		getMenuHandle(void) const			{ return m_myMenu; };
 	inline AP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (AP_Menu_Id)(cmd - WM_USER); };
