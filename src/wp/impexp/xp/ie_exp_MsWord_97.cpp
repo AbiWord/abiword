@@ -617,6 +617,11 @@ bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				
 				return true;
 
+				// todo: support these
+			case PTO_Hyperlink:
+			case PTO_Bookmark:
+			  return true;
+
 			default:
 				UT_ASSERT(0);
 				return false;

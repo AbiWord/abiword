@@ -369,6 +369,11 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 
 				//#endif
+				
+			case PTO_Bookmark:
+			case PTO_Hyperlink:
+			    return true;
+
 			default:
 				return false;
 			}

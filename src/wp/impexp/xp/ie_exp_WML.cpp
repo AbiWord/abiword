@@ -350,6 +350,11 @@ bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				// we do nothing with computed fields.
 				return true;
 
+				// todo: support these
+			case PTO_Hyperlink:
+			case PTO_Bookmark:
+			  return true;
+
 			default:
 				UT_ASSERT(0);
 				return false;

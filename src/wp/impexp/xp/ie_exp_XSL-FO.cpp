@@ -313,6 +313,11 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return true;
 			}
 
+				// todo: support these
+			case PTO_Hyperlink:
+			case PTO_Bookmark:
+			  return true;
+
 			default:
 			{
 				UT_ASSERT(0);
