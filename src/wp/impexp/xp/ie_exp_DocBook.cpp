@@ -213,7 +213,7 @@ void s_DocBook_Listener::_closeSection(void)
 		return;
 	}
 	
-	m_pie->write("</section>\n");
+	m_pie->write("</section>\n</chapter>\n");
 	m_bInSection = false;
 	return;
 }
@@ -343,7 +343,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 
 void s_DocBook_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
-	m_pie->write("<section>\n<title></title>\n");
+	m_pie->write("<chapter><section>\n<title></title>\n");
 }
 
 

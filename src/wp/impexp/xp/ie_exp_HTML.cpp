@@ -1786,6 +1786,10 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				      m_pie->write("#");
 				      m_pie->write(szValue);
 				    }
+				  else
+				    {
+				      m_pie->write(szValue);
+				    }
 				}
 				
 				m_pie->write(";");
