@@ -102,3 +102,4 @@ endif
 	    fi ; \
 	  done; \
 	done
+	@$(INSTALL_DATA) $(top_srcdir)/CREDITS.TXT $(DESTDIR)$(pkgdatadir)/AbiWord/help/en-US/credits.txt
