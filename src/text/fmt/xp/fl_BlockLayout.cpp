@@ -2273,7 +2273,7 @@ const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName
  \return Position of block (or first run in block)
  \fixme Split in two functions if called most often with FALSE
 */
-UT_uint32 fl_BlockLayout::getPosition(bool bActualBlockPos) const
+PT_DocPosition fl_BlockLayout::getPosition(bool bActualBlockPos) const
 {
 	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);
 
