@@ -113,11 +113,7 @@ OTHER_LIBS=@SPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ \
 	@LIBPOPT_LIBS@ @LIBCURL_LIBS@ @XFT_LIBS@ @THREAD_LIBS@
 
 # BiDi needs a specific lib
-if BIDI_ENABLED
 BIDI_LIBS=$(top_builddir)/src/other/fribidi/xp/libFribidi.a
-else
-BIDI_LIBS=
-endif
 ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a $(BIDI_LIBS)
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
@@ -126,7 +122,7 @@ ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/other/ttftool/@BE_PLATFORM@/libTtfTool.a
-ABI_LIBS+=$(top_builddir)/src/other/fribidi/xp/libFribidi.a
+ABI_LIBS+=$(BIDI_LIBS)
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 
