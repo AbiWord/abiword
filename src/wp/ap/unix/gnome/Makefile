@@ -52,6 +52,7 @@ CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Columns.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Goto.cpp		\
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertBookmark.cpp \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Insert_DateTime.cpp \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.cpp     \
