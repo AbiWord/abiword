@@ -615,23 +615,38 @@ fp_CircleColumn::~fp_CircleColumn()
 
 UT_uint32 fp_CircleColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)
 {
-	UT_uint32 halfwidth;
+	UT_uint32 halfwidth = 0;
 
-	if (iY > m_iRadius)
+	// compute vertical distance of the top and bottom
+	// of the line from the center of the circle.  then
+	// take the one that is the farthest from the origin
+	// to get the narrowest horizontal.
+	
+	UT_uint32 yTop = abs(m_iRadius - iY);
+	UT_uint32 yBottom = abs(m_iRadius - (iY+iHeight));
+	UT_uint32 yMax = ((yTop > yBottom) ? yTop : yBottom);
+
+	// if the vertical distance of either edge of the
+	// sliver exceeds the radius, we don't have any room
+	// for a sliver of this height.
+	
+	if (yMax < m_iRadius)
 	{
-		double vert = (iY + iHeight) - m_iRadius;
-		halfwidth = (UT_uint32) sqrt((m_iRadius * m_iRadius) - (vert * vert));
+		// compute halfwidth of the circle at these vertical
+		// distances.  we use a^2 + b^2 = c^2 and solve for a.
+	
+		double r2 = m_iRadius * m_iRadius;
+		double y2 = yMax * yMax;
+	
+		halfwidth = (UT_uint32)sqrt(r2 - y2);
 	}
-	else
-	{
-		double vert = m_iRadius - iY;
-		halfwidth = (UT_uint32) sqrt((m_iRadius * m_iRadius) - (vert * vert));
-	}
+
+	// if the want the x offset, give it to them.
 
 	if (pX)
-	{
 		*pX = m_iRadius - halfwidth;
-	}
+
+	// return the full-width of this sliver...
 
 	return 2 * halfwidth;
 }
