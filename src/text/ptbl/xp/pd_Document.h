@@ -191,7 +191,8 @@ public:
 									   PP_AttrProp *p_AttrProp = NULL);
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
-									   PP_AttrProp *p_AttrProp_Before = NULL);
+									   PP_AttrProp *p_AttrProp_Before,
+									   bool bDeleteTableStruxes = false);
 
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,

@@ -530,9 +530,10 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 
 bool PD_Document::deleteSpan(PT_DocPosition dpos1,
 							 PT_DocPosition dpos2,
-							 PP_AttrProp *p_AttrProp_Before)
+							 PP_AttrProp *p_AttrProp_Before,
+							 bool bDeleteTableStruxes)
 {
-	return m_pPieceTable->deleteSpan(dpos1, dpos2, p_AttrProp_Before);
+	return m_pPieceTable->deleteSpanWithTable(dpos1, dpos2, p_AttrProp_Before,bDeleteTableStruxes );
 }
 
 bool PD_Document::changeSpanFmt(PTChangeFmt ptc,

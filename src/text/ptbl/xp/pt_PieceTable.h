@@ -87,8 +87,10 @@ protected:
 									   bool bAddChangeRec = true);
 
 	bool					_realDeleteSpan(PT_DocPosition dpos1,
-									   PT_DocPosition dpos2,
-									   PP_AttrProp *p_AttrProp_Before, bool bDontGlob=false);
+											PT_DocPosition dpos2,
+											PP_AttrProp *p_AttrProp_Before, 
+											bool bDeleteTableStruxes,
+											bool bDontGlob=false);
 
 #if 0
 	// this is for fields and so should be needed with revisions
@@ -148,7 +150,14 @@ public:
 
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
-									   PP_AttrProp *p_AttrProp_Before, bool bDontGlob=false);
+									   PP_AttrProp *p_AttrProp_Before,
+									   bool bDontGlob=false);
+
+
+	bool					deleteSpanWithTable(PT_DocPosition dpos1,
+									   PT_DocPosition dpos2,
+									   PP_AttrProp *p_AttrProp_Before,
+									   bool bDeleteTableStrux);
 
 	bool                	deleteFieldFrag(pf_Frag * pf);
 
@@ -303,7 +312,7 @@ protected:
 										UT_uint32 length,
 										PT_AttrPropIndex indexAP,
                                         fd_Field * pField = NULL);
-
+	bool                    _StruxIsNotTable(pf_Frag_Strux * pfs);
 	bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 										PT_BufIndex bi, UT_uint32 length,
 										pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
@@ -346,7 +355,8 @@ protected:
 											  PT_DocPosition dpos2);
 
 	bool					_deleteComplexSpan(PT_DocPosition dpos1,
-											   PT_DocPosition dpos2);
+											   PT_DocPosition dpos2,
+											   bool bDeleteTableStruxes);
 
 
 	bool					_deleteComplexSpan_norec(PT_DocPosition dpos1,

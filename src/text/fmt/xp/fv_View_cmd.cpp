@@ -518,17 +518,17 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else if(bisList == true)
 				{
-					m_pDoc->deleteSpan(posCur, posCur+amt);
+					m_pDoc->deleteSpan(posCur, posCur+amt,NULL);
 					nBlock->remItemFromList();
 				}
 				else
 				{
-					m_pDoc->deleteSpan(posCur, posCur+amt);
+					m_pDoc->deleteSpan(posCur, posCur+amt,NULL);
 				}
 			}
 			else
 			{
-				m_pDoc->deleteSpan(posCur, posCur+amt);
+				m_pDoc->deleteSpan(posCur, posCur+amt,NULL);
 			}
 
 			if(fontFlag)
@@ -541,7 +541,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		if(isTabListAheadPoint())
 		{
-			m_pDoc->deleteSpan(getPoint(), getPoint()+2);
+			m_pDoc->deleteSpan(getPoint(), getPoint()+2,NULL);
 		}
 
 		// restore updates and clean up dirty lists

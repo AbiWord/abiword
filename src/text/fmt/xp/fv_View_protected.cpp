@@ -3079,7 +3079,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		pos1 = pBlock[0]->getPosition(false) + bmBlockOffset[0];
 		pos2 = pBlock[1]->getPosition(false) + bmBlockOffset[1];
 
-		m_pDoc->deleteSpan(pos1,pos1 + 1);
+		m_pDoc->deleteSpan(pos1,pos1 + 1,NULL);
 
 		// Signal PieceTable Changes have finished
 		if(bSignal)
@@ -3174,7 +3174,7 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: position [%d]\n",
 				pos1));
 
-	m_pDoc->deleteSpan(pos1,pos1 + 1);
+	m_pDoc->deleteSpan(pos1,pos1 + 1,NULL);
 
 	// Signal PieceTable Changes have finished
 	if(bSignal)
