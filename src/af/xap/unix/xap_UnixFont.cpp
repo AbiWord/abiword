@@ -177,7 +177,7 @@ XAP_UnixFont::XAP_UnixFont(void)
 	, m_pXftFont(0)
 #endif
 {
-	//UT_DEBUGMSG(("XAP_UnixFont:: constructor (void)\n"));	
+	//UT_DEBUGMSG(("XAP_UnixFont:: constructor (void)\n"));
 
 	m_cjk_font_metric.ascent  = 0;
 	m_cjk_font_metric.descent = 0;
@@ -508,9 +508,8 @@ const char * XAP_UnixFont::getXLFD(void) const
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
 {
 	/* don't care about the pixel size */
-	UT_uint16 width = (UT_uint16) m_cw.getWidth(c);
-	
-	if (width == 0)
+	UT_sint32 width = (UT_sint32) m_cw.getWidth(c);
+	if (width == GR_CW_UNKNOWN || width == GR_UNKNOWN_BYTE)
 	{
 		XftFaceLocker locker(getXftFont(12));
 		FT_Face pFace = locker.getFace();
@@ -524,7 +523,7 @@ UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
 		m_cw.setWidth(c, width);
 	}
 
-	return width;
+	return (UT_uint16)width;
 }
 
 #else
