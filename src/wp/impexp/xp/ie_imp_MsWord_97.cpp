@@ -1544,17 +1544,23 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		this->_fieldProc (ps, eachchar, chartype, lid);
 		return 0;
 
-	case 20: // field separator
-		this->_fieldProc (ps, eachchar, chartype, lid);
-		ps->fieldmiddle = 1;
+	case 20: // field separator; some docs have spurious 0x14's in
+			 // them, see bug 3745
+		if (ps->fieldstate)
+		{
+			this->_fieldProc (ps, eachchar, chartype, lid);
+			ps->fieldmiddle = 1;
+		}
 		return 0;
 
 	case 21: // field end
-		ps->fieldstate--;
-		ps->fieldmiddle = 0;
-		this->_fieldProc (ps, eachchar, chartype, lid);
+		if (ps->fieldstate)
+		{
+			ps->fieldstate--;
+			ps->fieldmiddle = 0;
+			this->_fieldProc (ps, eachchar, chartype, lid);
+		}
 		return 0;
-
 	}
 
 	// i'm not sure if this is needed any more
