@@ -242,7 +242,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	
 	gtk_window_set_title (GTK_WINDOW (window), pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle));
 	gtk_container_set_border_width (GTK_CONTAINER (window), 0);
-	gtk_widget_set_usize (window, 325, 275);
+	gtk_widget_set_usize (window, 370, 275);
 
 	// Add a main vbox
 	vbox1 = gtk_vbox_new (FALSE, 0);
