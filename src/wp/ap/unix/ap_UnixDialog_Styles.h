@@ -91,6 +91,14 @@ public:
 	XML_Char *   getStyleType(void) const {return (XML_Char *) m_styleType;}
 protected:
 
+	enum
+	  {
+	    BUTTON_APPLY,
+	    BUTTON_CANCEL,
+	    BUTTON_MODIFY_OK,
+	    BUTTON_MODIFY_CANCEL
+	  } ResponseId;
+
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	GtkWidget * _constructWindowContents(GtkWidget * parent);

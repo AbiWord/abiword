@@ -40,6 +40,9 @@
 #include "pd_Style.h"
 #include "ut_string_class.h"
 
+// define to 0 to popup dialogs on top of each other, 1 to hide them
+#define HIDE_MAIN_DIALOG 0
+
 XAP_Dialog * AP_UnixDialog_Styles::static_constructor(XAP_DialogFactory * pFactory,
 													   XAP_Dialog_Id id)
 {
@@ -179,31 +182,6 @@ static void s_styletype(GtkWidget * widget, AP_UnixDialog_Styles * me)
 	me->event_styleType();
 }
 
-static void s_apply_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(widget && me);
-	me->event_Apply();
-}
-
-static void s_close_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(widget && me);
-	me->event_Close();
-}
-
-
-static void s_modify_ok_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(widget && me);
-	me->event_Modify_OK();
-}
-
-static void s_modify_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(widget && me);
-	me->event_Modify_Cancel();
-}
-
 static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
@@ -243,23 +221,6 @@ static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_Uni
 	me->event_charPreviewExposed();
 	return FALSE;
 }
-
-
-static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */,
-			     AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(me);
-	me->event_WindowDelete();
-}
-
-
-static void s_modify_delete_clicked(GtkWidget * /* widget */, gpointer /* data */,
-			     AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(me);
-	me->event_ModifyDelete();
-}
-
 
 static void s_modify_paragraph(GtkWidget * /* widget */, 
 			     AP_UnixDialog_Styles * me)
@@ -320,27 +281,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
+	abiSetupModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL);
 
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-    // populate the member variables for the  previews
+	// populate the member variables for the  previews
 
 	_populatePreviews(false);
 	// *** this is how we add the gc for the para and char Preview's ***
@@ -358,9 +301,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
         // let the widget materialize
 
 	_createParaPreviewFromGC(m_pParaPreviewWidget,
-							 (UT_uint32) m_wParaPreviewArea->allocation.width, 
-							 (UT_uint32) m_wParaPreviewArea->allocation.height);
-
+				 (UT_uint32) m_wParaPreviewArea->allocation.width, 
+				 (UT_uint32) m_wParaPreviewArea->allocation.height);
+	
 	
 	UT_ASSERT(m_wCharPreviewArea && m_wCharPreviewArea->window);
 
@@ -371,9 +314,9 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// let the widget materialize
 
 	_createCharPreviewFromGC(m_pCharPreviewWidget,
-							 (UT_uint32) m_wCharPreviewArea->allocation.width, 
-							 (UT_uint32) m_wCharPreviewArea->allocation.height);
-
+				 (UT_uint32) m_wCharPreviewArea->allocation.width, 
+				 (UT_uint32) m_wCharPreviewArea->allocation.height);
+	
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wParaPreviewArea),
 					   "expose_event",
@@ -386,13 +329,13 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 					   (gpointer) this);
 	
 	g_signal_connect_after(G_OBJECT(m_windowMain),
-							 "expose_event",
-							 G_CALLBACK(s_window_exposed),
-							 (gpointer) this);
-
+			       "expose_event",
+			       G_CALLBACK(s_window_exposed),
+			       (gpointer) this);
+	
 	// connect the select_row signal to the clist
 	g_signal_connect (G_OBJECT (m_wclistStyles), "select_row",
-						G_CALLBACK (s_clist_clicked), (gpointer)this);
+			  G_CALLBACK (s_clist_clicked), (gpointer)this);
 
 	// Run into the GTK event loop for this window.
 	
@@ -404,13 +347,25 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	event_paraPreviewExposed();
 	event_charPreviewExposed();
-	gtk_main();
+
+	// main loop for the dialog
+	while(true)
+	  {
+	    if(abiRunModalDialog(GTK_DIALOG(m_windowMain), false) == BUTTON_APPLY)
+	      {
+		event_Apply();
+	      }
+	    else
+	      {
+		event_Close();
+		break ; // exit the loop
+	      }
+	  }
 
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
 	
-	if(mainWindow && GTK_IS_WIDGET(mainWindow)) 
-	    gtk_widget_destroy(mainWindow);
+	abiDestroyWidget(m_windowMain);
 }
 
 /*****************************************************************/
@@ -429,13 +384,11 @@ void AP_UnixDialog_Styles::event_Apply(void)
 void AP_UnixDialog_Styles::event_Close(void)
 {
 	m_answer = AP_Dialog_Styles::a_CANCEL;
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_Styles::event_WindowDelete(void)
 {
 	m_answer = AP_Dialog_Styles::a_CANCEL;
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_Styles::event_paraPreviewExposed(void)
@@ -522,56 +475,34 @@ void AP_UnixDialog_Styles::event_ListClicked(const char * which)
 GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 {
 	GtkWidget * windowStyles;
-	GtkWidget * hsepMid;
 	GtkWidget * vboxContents;
 
-	GtkWidget * buttonBoxGlobal;
 	GtkWidget * buttonApply;
 	GtkWidget * buttonClose;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowStyles = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (windowStyles), 
-		pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowStyles), FALSE, FALSE, TRUE);
+	windowStyles = abiDialogNew(true, pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
 	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
 	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
+	//gtk_widget_set_usize(windowStyles, 600, 400);
 
-	vboxContents = _constructWindowContents(windowStyles);
+	buttonApply = abiAddStockButton(GTK_DIALOG(windowStyles),
+					GTK_STOCK_APPLY,
+					BUTTON_APPLY);
 
-	hsepMid = gtk_hseparator_new();
-	gtk_box_pack_start(GTK_BOX(vboxContents), hsepMid, FALSE, FALSE, 0);
-	gtk_widget_show(hsepMid);
+	buttonClose = abiAddStockButton(GTK_DIALOG(windowStyles),
+					GTK_STOCK_CLOSE,
+					BUTTON_CANCEL);
 
-	// These buttons need to be gnomified
-
-	buttonBoxGlobal = gtk_hbutton_box_new();
-	gtk_hbutton_box_set_spacing_default(0);
-	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
-	gtk_widget_show(buttonBoxGlobal);
-
-	buttonApply = gtk_button_new_with_label ( 
-		pSS->getValue(XAP_STRING_ID_DLG_Apply) );
-	gtk_widget_show(buttonApply);
-	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonApply);
-	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
-
-	buttonClose = gtk_button_new_with_label ( 
-		pSS->getValue(XAP_STRING_ID_DLG_Close) );
-	gtk_widget_show(buttonClose);
-	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonClose);
-	GTK_WIDGET_SET_FLAGS (buttonClose, GTK_CAN_DEFAULT);
-
-	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxGlobal, FALSE, FALSE, 0);
-
-	// done packing buttons
-
-	gtk_widget_show(vboxContents);
-	gtk_container_add(GTK_CONTAINER(windowStyles), vboxContents);
-
+	m_windowMain   = windowStyles;
 	m_wbuttonApply = buttonApply;
 	m_wbuttonClose = buttonClose;
+
+	vboxContents = _constructWindowContents(GTK_DIALOG(windowStyles)->vbox);
+	gtk_widget_show(vboxContents);
+	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(windowStyles)->vbox), 
+			  vboxContents);
 
 	_connectsignals();
 	return windowStyles;
@@ -732,20 +663,17 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
 	gtk_widget_show(buttonBoxStyleManip);
 
-	buttonNew = gtk_button_new_with_label(
-		pSS->getValue(AP_STRING_ID_DLG_Styles_New));
+	buttonNew = gtk_button_new_from_stock(GTK_STOCK_NEW);
 	gtk_widget_show(buttonNew);
 	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonNew);
 	GTK_WIDGET_SET_FLAGS (buttonNew, GTK_CAN_DEFAULT);
 
-	buttonModify = gtk_button_new_with_label(
-		pSS->getValue(AP_STRING_ID_DLG_Styles_Modify));
+	buttonModify = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_Styles_Modify));
 	gtk_widget_show(buttonModify);
 	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonModify);
 	GTK_WIDGET_SET_FLAGS (buttonModify, GTK_CAN_DEFAULT);
 
-	buttonDelete = gtk_button_new_with_label(
-		pSS->getValue(AP_STRING_ID_DLG_Styles_Delete));
+	buttonDelete = gtk_button_new_from_stock(GTK_STOCK_DELETE);
 	gtk_widget_show(buttonDelete);
 	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonDelete);
 	GTK_WIDGET_SET_FLAGS (buttonDelete, GTK_CAN_DEFAULT);
@@ -754,29 +682,28 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	// connect signal for this list
 	g_signal_connect (G_OBJECT(GTK_COMBO(comboList)->entry), 
-						"changed",
-						G_CALLBACK(s_typeslist_changed),
-						(gpointer)this);
+			  "changed",
+			  G_CALLBACK(s_typeslist_changed),
+			  (gpointer)this);
 
 	// connect signals for these 3 buttons
 	g_signal_connect (G_OBJECT(buttonNew),
-						"clicked",
-						G_CALLBACK(s_newbtn_clicked),
-						(gpointer)this);
-
+			  "clicked",
+			  G_CALLBACK(s_newbtn_clicked),
+			  (gpointer)this);
+	
 	g_signal_connect (G_OBJECT(buttonModify),
-						"clicked",
-						G_CALLBACK(s_modifybtn_clicked),
-						(gpointer)this);
-
+			  "clicked",
+			  G_CALLBACK(s_modifybtn_clicked),
+			  (gpointer)this);
+	
 	g_signal_connect (G_OBJECT(buttonDelete),
-						"clicked",
-						G_CALLBACK(s_deletebtn_clicked),
-						(gpointer)this);
-
+			  "clicked",
+			  G_CALLBACK(s_deletebtn_clicked),
+			  (gpointer)this);
+	
 	m_wclistStyles = listStyles;
 	m_wlistTypes = comboList;
-	m_windowMain = windowStyles;
 	m_wbuttonNew = buttonNew;
 	m_wbuttonModify = buttonModify;
 	m_wbuttonDelete = buttonDelete;
@@ -788,30 +715,6 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 void AP_UnixDialog_Styles::_connectsignals(void) const
 {
-
-	// the control buttons
-
-	g_signal_connect(G_OBJECT(m_wbuttonApply),
-					   "clicked",
-					   G_CALLBACK(s_apply_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_wbuttonClose),
-					   "clicked",
-					   G_CALLBACK(s_close_clicked),
-					   (gpointer) this);
-	
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_windowMain),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
 }
 
 void AP_UnixDialog_Styles::_populateCList(void) const
@@ -889,18 +792,23 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 	GtkWidget *dialog_action_area;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	modifyDialog = gtk_dialog_new ();
-	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
+	const char * title;
+
 	if(!isNew())
-		gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTitle));
+		title = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTitle);
 	else
-		gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_NewTitle));
-	gtk_window_set_policy (GTK_WINDOW (modifyDialog), TRUE, TRUE, FALSE);
+		title = pSS->getValue(AP_STRING_ID_DLG_Styles_NewTitle);
+
+	modifyDialog = abiDialogNew(true, title);
+	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
+
 	_constructModifyDialogContents(GTK_DIALOG (modifyDialog)->vbox);
 
 	dialog_action_area = GTK_DIALOG (modifyDialog)->action_area;
 	gtk_widget_show (dialog_action_area);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area), 10);
+
+	m_wModifyDialog = modifyDialog;
+
 //
 // Gnome buttons
 //
@@ -908,7 +816,6 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 //
 // Connect signals
 //
-	m_wModifyDialog = modifyDialog;
 
 	_connectModifySignals();
 	return modifyDialog;
@@ -1123,29 +1030,18 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_action_area)
 {
-	GtkWidget *bottomButtons;
 	GtkWidget *buttonOK;
 	GtkWidget *cancelButton;
 	GtkWidget *FormatMenu;
 	GtkWidget *shortCutButton = 0;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	bottomButtons = gtk_hbox_new (TRUE, 5);
-	gtk_widget_show (bottomButtons);
-	gtk_box_pack_start (GTK_BOX (dialog_action_area), bottomButtons, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (bottomButtons), 3);
 	
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show (buttonOK);
-	gtk_box_pack_start (GTK_BOX (bottomButtons), buttonOK, TRUE, TRUE, 0);
-
-	cancelButton = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (cancelButton);
-	gtk_box_pack_start (GTK_BOX (bottomButtons), cancelButton, TRUE, TRUE, 0);
+	buttonOK = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_OK, BUTTON_MODIFY_OK);
+	cancelButton = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_CANCEL, BUTTON_MODIFY_CANCEL);
 
 	FormatMenu = gtk_option_menu_new ();
 	gtk_widget_show (FormatMenu);
-	gtk_box_pack_start (GTK_BOX (bottomButtons), FormatMenu, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (dialog_action_area), FormatMenu); //, FALSE, FALSE, 0);
 
 	_constructFormatList(FormatMenu);
 
@@ -1205,17 +1101,6 @@ void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
 
 void AP_UnixDialog_Styles::_connectModifySignals(void)
 {
-
-	g_signal_connect(G_OBJECT(m_wModifyOk),
-					   "clicked",
-					   G_CALLBACK(s_modify_ok_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_wModifyCancel),
-					   "clicked",
-					   G_CALLBACK(s_modify_cancel_clicked),
-					   (gpointer) this);
-
 	g_signal_connect(G_OBJECT(m_wModifyParagraph),
 					   "activate",
 					   G_CALLBACK(s_modify_paragraph),
@@ -1278,18 +1163,6 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 							 "expose_event",
 							 G_CALLBACK(s_modify_window_exposed),
 							 (gpointer) this);
-
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_wModifyDialog),
-					   "delete_event",
-					   G_CALLBACK(s_modify_delete_clicked),
-					   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_wModifyDialog),
-							 "destroy",
-							 NULL,
-							 NULL);
 }
 
 
@@ -1312,7 +1185,6 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
 
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
-	gtk_main_quit();
 }
 
 /*!
@@ -1413,13 +1285,11 @@ void AP_UnixDialog_Styles::event_styleType(void)
 void AP_UnixDialog_Styles::event_Modify_Cancel(void)
 {
 	m_answer = AP_Dialog_Styles::a_CANCEL;
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_Styles::event_ModifyDelete(void)
 {
 	m_answer = AP_Dialog_Styles::a_CANCEL;
-	gtk_main_quit();
 }
 
 void  AP_UnixDialog_Styles::modifyRunModal(void)
@@ -1434,25 +1304,16 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 
 	_constructModifyDialog();
 
-	connectFocus(GTK_WIDGET(m_wModifyDialog),getFrame());
 //
 // populate the dialog with useful info
 //
     if(!_populateModify())
 	{
-		if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
-			gtk_widget_destroy(m_wModifyDialog);
+	  abiDestroyWidget(m_wModifyDialog);
 		return;
 	}
 
-	// so it won't get lost underneath
-	centerDialog(m_windowMain, m_wModifyDialog);
-
-	// Show the top level dialog,
-	gtk_widget_show(m_wModifyDialog);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(m_wModifyDialog);
+        abiSetupModalDialog(GTK_DIALOG(m_wModifyDialog), getFrame(), this, BUTTON_MODIFY_CANCEL);
 
 	// make a new Unix GC
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
@@ -1464,11 +1325,18 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
         // let the widget materialize
 
 	_createAbiPreviewFromGC(m_pAbiPreviewWidget,
-							 (UT_uint32) m_wModifyDrawingArea->allocation.width, 
-							 (UT_uint32) m_wModifyDrawingArea->allocation.height);
-    _populateAbiPreview(isNew());
+				(UT_uint32) m_wModifyDrawingArea->allocation.width, 
+				(UT_uint32) m_wModifyDrawingArea->allocation.height);
+	_populateAbiPreview(isNew());
 	event_ModifyPreviewExposed();
-	gtk_main();
+
+	switch(abiRunModalDialog(GTK_DIALOG(m_wModifyDialog), false))
+	  {
+	  case BUTTON_MODIFY_OK:
+	    event_Modify_OK(); break;
+	  default:
+	    event_Modify_Cancel(); break ;
+	  }
 
 	if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
 	{
@@ -1536,7 +1404,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 	}	
 #endif
 	
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Hide the old window
 //
@@ -1564,7 +1432,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 // Restore the values in the main dialog
 //
 	
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Reveal main window again
 //
@@ -1735,7 +1603,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 
 void   AP_UnixDialog_Styles::event_ModifyParagraph()
 {
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Hide this window
 //
@@ -1747,7 +1615,7 @@ void   AP_UnixDialog_Styles::event_ModifyParagraph()
 //
 	ModifyParagraph();
 	rebuildDeleteProps();
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Restore this window
 //
@@ -1762,7 +1630,7 @@ void   AP_UnixDialog_Styles::event_ModifyParagraph()
 
 void   AP_UnixDialog_Styles::event_ModifyFont()
 {
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Hide this window
 //
@@ -1774,7 +1642,7 @@ void   AP_UnixDialog_Styles::event_ModifyFont()
 //
 	ModifyFont();
 	rebuildDeleteProps();
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Restore this window
 //
@@ -1789,13 +1657,13 @@ void   AP_UnixDialog_Styles::event_ModifyFont()
 
 void AP_UnixDialog_Styles::event_ModifyLanguage()
 {
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 	gtk_widget_hide (m_wModifyDialog);
 #endif
 
 	ModifyLang();
 	rebuildDeleteProps();
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 	gtk_widget_show (m_wModifyDialog);
 #endif
 
@@ -1804,7 +1672,7 @@ void AP_UnixDialog_Styles::event_ModifyLanguage()
 
 void   AP_UnixDialog_Styles::event_ModifyNumbering()
 {
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Hide this window
 //
@@ -1816,7 +1684,7 @@ void   AP_UnixDialog_Styles::event_ModifyNumbering()
 //
 	ModifyLists();
 	rebuildDeleteProps();
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Restore this window
 //
@@ -1833,7 +1701,7 @@ void   AP_UnixDialog_Styles::event_ModifyNumbering()
 
 void   AP_UnixDialog_Styles::event_ModifyTabs()
 {
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Hide this window
 //
@@ -1845,7 +1713,7 @@ void   AP_UnixDialog_Styles::event_ModifyTabs()
 //
 	ModifyTabs();
 	rebuildDeleteProps();
-#ifndef HAVE_GNOME
+#if HIDE_MAIN_DIALOG
 //
 // Restore this window
 //
@@ -1867,12 +1735,3 @@ void  AP_UnixDialog_Styles::setModifySignalBlocked( bool val)
 {
 	m_bBlockModifySignal = val;
 }
-
-
-
-
-
-
-
-
-
