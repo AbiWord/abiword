@@ -711,6 +711,9 @@ bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
 	return true;
 }
 
+/*!
+ * Returns true if pfs is not a strux connected with a table
+ */
 bool pt_PieceTable::_StruxIsNotTable(pf_Frag_Strux * pfs)
 {
 	PTStruxType its = pfs->getStruxType();
@@ -900,6 +903,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 					while(bResult && iTable > 0)
 					{
 						stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
+						if(m_fragments.areFragsDirty())
+						{
+							m_fragments.cleanFrags();
+						}
 						if(pfs->getStruxType() == PTX_SectionTable)
 						{
 							iTable--;
@@ -934,6 +941,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 				xxx_UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
 				stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
+				if(m_fragments.areFragsDirty())
+				{
+					m_fragments.cleanFrags();
+				}
 				PT_DocPosition myPos = pfs->getPos();
 				_deleteFormatting(myPos - pfs->getLength(), myPos);
 				bResult = _deleteStruxWithNotify(myPos, pfs,
@@ -953,6 +964,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 						iFootnoteCount--;
 					}
 					PT_DocPosition myPos = pfs->getPos();
+					if(m_fragments.areFragsDirty())
+					{
+						m_fragments.cleanFrags();
+					}
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
 					bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
 //
@@ -1425,6 +1440,10 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 				prevDepthReached = true;
 			}
 			stDelayStruxDelete.pop(reinterpret_cast<void **>(&pfs));
+			if(m_fragments.areFragsDirty())
+			{
+				m_fragments.cleanFrags();
+			}
 
  			pf_Frag *pf;
 			PT_DocPosition dp;
@@ -1441,6 +1460,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 //					bSuccess = _deleteStruxWithNotify(myPos - pfs->getLength(), pfs,
 //													  &pf, &dp);
 #endif
+
 					PT_DocPosition myPos = pfs->getPos();
 					bSuccess = _deleteStruxWithNotify(myPos, pfs, &pf, &dp);
 				}
