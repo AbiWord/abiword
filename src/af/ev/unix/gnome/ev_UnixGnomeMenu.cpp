@@ -124,36 +124,82 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 	return data;
 }
 
+/*! This function copies a string into a given buffer
+  replacing any cSpecial character (except the first)
+  with two times itself. It's used for preprocessing
+  menu item captions, so that only the first underscore
+  is used to point wich the hot key for the item is. 
+*/
+static void _ev_preprocess_caption(char * bufResult,
+								   const char * szString,
+								   char cSpecial = '_')
+{
+	UT_ASSERT(szString && bufResult);
+
+	bool hasAppeared = false;
+
+	while (*szString)
+	{
+		if (hasAppeared && (*szString == cSpecial))
+			*bufResult++ = cSpecial;
+
+		if (!hasAppeared)
+			hasAppeared = (*szString == cSpecial);
+
+		*bufResult++ = *szString++;
+	}
+
+	*bufResult = 0;
+}
+
+
 static void _ev_convert(char * bufResult,
 						const char * szString)
 {
 	UT_ASSERT(szString && bufResult);
 	
-	strcpy(bufResult, szString);
+	char * tmpBuf = g_strdup(szString);
 
-	char * pl = bufResult;
+	if (!tmpBuf)
+		return;
+
+	char * pl = tmpBuf;
 	while (*pl)
 	{
 		if (*pl == '&')
 			*pl = '_';
 		pl++;
 	}
+
+	_ev_preprocess_caption(bufResult, tmpBuf);
+
+	g_free( tmpBuf );
 }
 
-static void _ev_extract_char(char * bufResult,
-							 const char * szString,
-							 char cToExtract)
-{
-	UT_ASSERT(szString && bufResult);
 
-	// char * pSrc = szString;
+/*! This function copies a string extracting every appearence of 
+   cToExtract not immediately preceded by an 
+   already extracted cToExtract.
+*/
+static void _ev_extract_char(char * bufResult,
+							 const char *szString,
+							 char cToExtract = '_')
+{
+	UT_ASSERT( szString && bufResult );
+
+	bool extracted_previous = false;
 
 	while (*szString)
 	{
-		if (*szString != cToExtract)
-			*bufResult++ = *szString;
+		if (!extracted_previous && (*szString == cToExtract))
+		{
+			extracted_previous = true;
+			szString++;
+			continue;
+		}
 
-		szString++;
+		extracted_previous = false;
+		*bufResult++ = *szString++;
 	}
 
 	*bufResult = 0;
