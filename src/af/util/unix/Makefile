@@ -27,6 +27,7 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_unixString.cpp	\
 			ut_unixTimer.cpp	\
 			ut_unixIdle.cpp		\
+			ut_unixDirent.cpp	\
 			ut_files.cpp		\
 			ut_path.cpp
 

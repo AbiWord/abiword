@@ -35,6 +35,7 @@
 #include "ut_misc.h"
 #include "ut_PerlBindings.h"
 #include "ut_Script.h"
+#include "ut_unixDirent.h"
 
 #include "xap_Args.h"
 #include "ap_Convert.h"
