@@ -23,7 +23,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 ## Note: main must be last
 
-DIRS=		ap ptbl impexp fmt gr main
+DIRS=		ap ptbl impexp fmt main
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

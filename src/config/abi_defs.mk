@@ -70,6 +70,7 @@ ABI_XAP_INCS=	/config					\
 		/xap/xp		/xap/$(ABI_NATIVE)	\
 		/ev/xp		/ev/$(ABI_NATIVE)	\
 		/util/xp	/util/$(ABI_NATIVE)	\
+		/gr/xp		/gr/$(ABI_NATIVE)	\
 		/ver/xp
 
 ABI_CALC_INCS=	/calc/engine/xp				\
@@ -77,7 +78,6 @@ ABI_CALC_INCS=	/calc/engine/xp				\
 
 ABI_WP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
 		/wp/fmt/xp				\
-		/wp/gr/xp	/wp/gr/$(ABI_NATIVE)	\
 		/wp/impexp/xp				\
 		/wp/ptbl/xp	/wp/ap/xp/ToolbarIcons
 

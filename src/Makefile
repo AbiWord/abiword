@@ -28,15 +28,15 @@ T=abiword
 #endif
 
 # ifeq ($(T), all)
-# DIRS=		require ver other util $(PS_DIRS) ev xap wp calc
+# DIRS=		require ver other util $(PS_DIRS) ev xap gr wp calc
 # endif
 
 ifeq ($(T), abiword)
-DIRS=		require ver other util $(PS_DIRS) ev xap wp
+DIRS=		require ver other util $(PS_DIRS) ev xap gr wp
 endif
 
 ifeq ($(T), abicalc)
-DIRS=		require ver other util $(PS_DIRS) ev ap calc
+DIRS=		require ver other util $(PS_DIRS) ev ap gr calc
 endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk
