@@ -44,10 +44,6 @@
 #include "xap_Toolbar_Layouts.h"
 #include "ut_rand.h"
 
-#ifdef HAVE_CURL
-#include "xap_HashDownloader.h"
-#endif
-
 #include "ut_map.h"
 UT_Map * abi_ut_map_instance = 0;
 
@@ -72,6 +68,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_lastFocussedFrame(NULL),
 	  m_pMenuFactory(NULL),
 	  m_pToolbarFactory(NULL),
+	  m_pHashDownloader(NULL),
 	  m_bAllowCustomizing(true),
 	  m_bDebugBool(false)
 {
@@ -81,10 +78,6 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	m_pMenuFactory = new XAP_Menu_Factory(this);
 	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
 	clearIdTable();
-
-#ifdef HAVE_CURL
-	m_pHashDownloader = NULL;
-#endif
 
 	/* hack to force the linker to link in UT_Map functions
 	 */

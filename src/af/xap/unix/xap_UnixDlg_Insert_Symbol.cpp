@@ -19,17 +19,18 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
 
+#include "gr_UnixGraphics.h"
+
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
-
-#include "gr_UnixGraphics.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -41,6 +42,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_UnixDlg_Insert_Symbol.h"
+#include "xap_Draw_Symbol.h"
 
 /*****************************************************************/
 

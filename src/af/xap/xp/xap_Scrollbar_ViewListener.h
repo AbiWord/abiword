@@ -21,7 +21,9 @@
 #define XAP_SCROLLBAR_VIEWLISTENER_H
 
 #include "xav_Listener.h"
+
 class AV_View;
+
 class XAP_Frame;
 
 class ap_Scrollbar_ViewListener : public AV_Listener

@@ -19,9 +19,12 @@
 
 #include "ut_assert.h"
 #include "ut_vector.h"
+
+#include "xap_App.h"
+#include "xap_Frame.h"
+
 #include "ap_UnixToolbar_ZoomCombo.h"
 #include "ap_Toolbar_Id.h"
-#include "xap_Frame.h"
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_UnixToolbar_ZoomCombo::static_constructor(EV_Toolbar * pToolbar,

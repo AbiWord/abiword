@@ -20,10 +20,17 @@
 #ifndef UT_WORKER_H
 #define UT_WORKER_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+
+class UT_Worker;
 
 class GR_Graphics;
-class UT_Worker;
 
 typedef void (*UT_WorkerCallback)(UT_Worker* pWorker);
 

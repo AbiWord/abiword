@@ -20,12 +20,20 @@
 #ifndef XAP_DIALOG_ENCODING_H
 #define XAP_DIALOG_ENCODING_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
-#include "ut_xml.h"
-#include "ut_assert.h"
-#include "ut_debugmsg.h"
+#endif
+/* #include "ut_Encoding.h" */
+/* #include "ut_assert.h" */
+/* #include "ut_debugmsg.h" */
+
 #include "xap_Dialog.h"
-#include "ut_Encoding.h"
+
+class UT_Encoding;
 
 /********************************************************************
 INSTRUCTIONS FOR DESIGN OF THE PLATFORM VERSIONS OF THIS DIALOGUE

@@ -22,8 +22,10 @@
 #define XAP_MENU_LAYOUTS_H
 
 #include "ev_Menu_Layouts.h"
-#include "ev_Menu_Labels.h"
+/* #include "ev_Menu_Labels.h" */
 #include "ev_EditBits.h"
+
+class EV_Menu_LabelSet;
 
 class XAP_App;
 class XAP_StringSet;

@@ -21,9 +21,9 @@
 
 #include <string.h>
 #include "ut_hash.h"
-
+#include "ut_string_class.h"
+#include "ut_vector.h"
 #include "ut_debugmsg.h"
-
 
 // fwd. decls.
 static  UT_uint32 _Recommended_hash_size(UT_uint32	size);

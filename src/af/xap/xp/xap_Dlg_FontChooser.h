@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -20,12 +22,18 @@
 #ifndef XAP_DIALOG_FONTCHOOSER_H
 #define XAP_DIALOG_FONTCHOOSER_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
-#include "ut_xml.h"
+#endif
 #include "ut_string.h"
+#include "ut_vector.h"
+
 #include "xap_Dialog.h"
 #include "xap_Preview.h"
-#include "ut_vector.h"
 
 class GR_Graphics;
 

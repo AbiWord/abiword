@@ -20,8 +20,14 @@
 #ifndef UT_SET_H
 #define UT_SET_H
 
-#include "ut_rbtree.h"
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+#include "ut_rbtree.h"
 
 class ABI_EXPORT UT_Set
 {

@@ -17,11 +17,15 @@
  * 02111-1307, USA.
  */
 
+#include "ut_string.h"
+
+#include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
+
 #include "ap_Dialog_ListRevisions.h"
-#include "ut_string.h"
 #include "ap_Strings.h"
+
 #include <fribidi/fribidi.h>
 
 AP_Dialog_ListRevisions::AP_Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory,

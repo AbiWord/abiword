@@ -26,7 +26,14 @@
 // To a valid child instance of this class.
 
 #include <stdio.h>
+
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
 
 #ifdef WIN32
   #define WIN32_LEAN_AND_MEAN

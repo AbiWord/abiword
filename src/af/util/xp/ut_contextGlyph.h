@@ -20,9 +20,22 @@
 #ifndef UTCONTEXTGLYPH_H
 #define UTCONTEXTGLYPH_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
 #include "ut_misc.h"
-#include "xap_App.h"
-#include "xap_Prefs.h"
+
+/* #include "xap_App.h" */
+/* #include "xap_Prefs.h" */
+
+class UT_StringPtrMap;
+
+class XAP_App;
+class XAP_Prefs;
 
 #define CONTEXT_BUFF_SIZE 5
 

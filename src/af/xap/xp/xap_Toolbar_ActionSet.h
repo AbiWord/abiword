@@ -21,7 +21,9 @@
 #ifndef XAP_TOOLBAR_ACTIONSET_H
 #define XAP_TOOLBAR_ACTIONSET_H
 
-#include "ev_Toolbar_Actions.h"
+/* #include "ev_Toolbar_Actions.h" */
+
+class EV_Toolbar_ActionSet;
 
 EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void);
 

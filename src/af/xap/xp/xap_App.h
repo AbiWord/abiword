@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
@@ -21,11 +23,15 @@
 #ifndef XAP_APP_H
 #define XAP_APP_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
 #include "ut_vector.h"
 #include "ut_hash.h"
-#include "ut_xml.h"
-#include "ut_string_class.h"
 
 #define NUM_MODELESSID 39
 
@@ -48,10 +54,8 @@ class XAP_EncodingManager;
 class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
-
-#ifdef HAVE_CURL
 class XAP_HashDownloader;
-#endif
+
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -172,9 +176,8 @@ public:
 	virtual bool 							getDisplayStatus(void) const;
 	virtual bool 							setDisplayStatus(bool b);
 
-#ifdef HAVE_CURL
 	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
-#endif
+
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual void							_printUsage();   
@@ -195,9 +198,8 @@ protected:
 	XAP_Frame *								m_lastFocussedFrame;
 	XAP_Menu_Factory *                      m_pMenuFactory;
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;
-#ifdef HAVE_CURL
+
 	XAP_HashDownloader *			        m_pHashDownloader;
-#endif
 
 	static bool 							s_bShowDisplay;
 

@@ -21,15 +21,24 @@
 #ifndef AV_VIEW_H
 #define AV_VIEW_H
 
-#include "ut_misc.h"
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+#include "ut_misc.h"
 #include "ut_vector.h"
-#include "xav_Listener.h"
-#include "ev_EditBits.h"
 #include "ut_debugmsg.h"
 
-class XAP_App;
+#include "ev_EditBits.h"
+
+#include "xav_Listener.h"
+
 class GR_Graphics;
+
+class XAP_App;
 
 // TODO shouldn't these classes be xav_ prefixed ??
 

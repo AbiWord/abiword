@@ -21,7 +21,13 @@
 #ifndef UT_EXCEPTION_H
 #define UT_EXCEPTION_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
 
 //
 // I really want AbiWord to start using exceptions as soon as is possible

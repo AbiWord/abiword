@@ -20,8 +20,9 @@
 #ifndef XAP_DIALOG_PRINT_H
 #define XAP_DIALOG_PRINT_H
 
-#include "xap_Dialog.h"
 #include "gr_Graphics.h"
+
+#include "xap_Dialog.h"
 
 /*****************************************************************/
 

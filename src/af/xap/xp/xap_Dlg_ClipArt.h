@@ -20,9 +20,9 @@
 #ifndef XAP_DIALOG_CLIPART_H
 #define XAP_DIALOG_CLIPART_H
 
-#include "xap_Frame.h"
+/* #include "xap_Frame.h" */
 #include "xap_Dialog.h"
-#include "xav_View.h"
+/* #include "xav_View.h" */
 
 class XAP_Frame;
 

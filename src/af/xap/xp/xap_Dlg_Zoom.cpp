@@ -20,15 +20,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
 #include "xap_Dlg_Zoom.h"
-
+#include "xap_Preview_Zoom.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+
 #include "xav_View.h"
 
 XAP_Dialog_Zoom::XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)

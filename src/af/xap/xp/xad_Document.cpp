@@ -18,11 +18,14 @@
  */
 
 #include <stdlib.h>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "xad_Document.h"
 #include "ut_string.h"
 #include "ut_hash.h"
+#include "ut_vector.h"
+
+#include "xad_Document.h"
 
 AD_Document::AD_Document()
 {

@@ -21,7 +21,17 @@
 #ifndef XAP_TOOLBAR_LABELSET_H
 #define XAP_TOOLBAR_LABELSET_H
 
-#include "ev_Toolbar_Labels.h"
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+
+/* #include "ev_Toolbar_Labels.h" */
+
+class EV_Toolbar_LabelSet;
 
 EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage);
 UT_uint32 AP_GetToolbarLabelSetLanguageCount(void);

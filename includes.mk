@@ -22,8 +22,6 @@
 # the tree can just include this and then use some variables.  This
 # makes the job of dealing with regular make files much simpler.  
 
-DEFS = @DEFS@ @ABI_FEATURE_DEFS@
-
 # automake complains at us if we just if out the gnome-specific parts
 if WITH_GNOME
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
@@ -85,7 +83,8 @@ WV_INCLUDES+=-I'$(top_srcdir)/../wv/glib-wv'
 ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @FRIBIDI_CFLAGS@ \
 	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ \
-	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @LIBCURL_CFLAGS@ @THREAD_CFLAGS@
+	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @LIBCURL_CFLAGS@ @THREAD_CFLAGS@ \
+	@ABI_FEATURE_DEFS@
 
 MACOSX_CFLAGS=-DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_QUARTZ 
 

@@ -17,7 +17,11 @@
  * 02111-1307, USA.
  */
 
+#include "ut_string_class.h"
+#include "ut_units.h"
+
 #include "xap_Dlg_Image.h"
+#include "xap_Preview_Zoom.h"
 
 XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent (pDlgFactory, id), 

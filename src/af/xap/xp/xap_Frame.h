@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -21,14 +23,23 @@
 #ifndef XAP_Frame_H
 #define XAP_Frame_H
 
-#include "ut_string_class.h"
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+#include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_misc.h"
+
 #include "xav_Listener.h"	// for AV_ListenerID
+
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Strings.h"
 #include "xap_Types.h"
+
 #include "gr_Graphics.h"
 
 //#include "ev_Toolbar.h"

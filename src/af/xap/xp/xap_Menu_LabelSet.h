@@ -21,7 +21,15 @@
 #ifndef XAP_MENU_LABELSET_H
 #define XAP_MENU_LABELSET_H
 
-#include "ev_Menu_Labels.h"
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+
+class EV_Menu_LabelSet;
 
 EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage);
 UT_uint32 AP_GetMenuLabelSetLanguageCount(void);

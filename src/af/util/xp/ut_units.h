@@ -22,7 +22,14 @@
 #ifndef UT_UNITS_H
 #define UT_UNITS_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+
 class GR_Graphics;
 
 UT_BEGIN_EXTERN_C

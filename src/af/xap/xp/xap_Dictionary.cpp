@@ -17,18 +17,18 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdlib.h>
 #include <string.h>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "ut_hash.h"
-#include "ut_types.h"
+#include "ut_vector.h"
+#include "ut_string_class.h"
 
 #include "xap_Dictionary.h"
-#include "ut_string_class.h"
 
 /*****************************************************************/
 /*****************************************************************/

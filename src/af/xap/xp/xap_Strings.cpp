@@ -22,14 +22,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <string.h>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "ut_bytebuf.h"
 #include "ut_wctomb.h"
+
+#include "xap_App.h"
 #include "xap_Strings.h"
 #include "xap_EncodingManager.h"
+
 #include <fribidi/fribidi.h>
 
 //////////////////////////////////////////////////////////////////

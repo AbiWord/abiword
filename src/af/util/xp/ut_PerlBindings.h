@@ -1,10 +1,16 @@
 #ifndef UT_PERLBINDINGS_H
 #define UT_PERLBINDINGS_H
 
-class UT_String;
-
-#include "ut_Script.h"
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+#include "ut_Script.h"
+
+class UT_String;
 
 class ABI_EXPORT UT_PerlBindings
 {

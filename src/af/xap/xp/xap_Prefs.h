@@ -20,11 +20,18 @@
 #ifndef XAP_PREFS_H
 #define XAP_PREFS_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_string.h"
 #include "ut_xml.h"
+
 #include "xap_App.h"
 #include "xap_Prefs_SchemeIds.h"
 

@@ -20,13 +20,22 @@
 #ifndef XAP_DIALOG_H
 #define XAP_DIALOG_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+
 #include "xap_Types.h"
-#include "ut_string_class.h"
+
+class UT_String;
 
 class XAP_DialogFactory;
 class XAP_App;
 class XAP_Frame;
+
 class AV_View;
 
 /*****************************************************************
@@ -57,7 +66,7 @@ public:
 	XAP_Dialog_Id				getDialogId(void) const { return m_id; }
 	XAP_App *				getApp(void) const { return m_pApp;}
 	
-	const UT_String& getHelpUrl () const { return m_helpUrl ; }
+	const UT_String& getHelpUrl () const { return *m_helpUrl ; }
 
 protected:
 	XAP_App *				m_pApp;
@@ -65,7 +74,7 @@ protected:
 	XAP_Dialog_Id				m_id;
 
  private:
-	UT_String m_helpUrl ;
+	UT_String * m_helpUrl ;
 };
 
 

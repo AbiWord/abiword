@@ -20,9 +20,10 @@
 #ifndef XAP_DIALOG_WINDOWMORE_H
 #define XAP_DIALOG_WINDOWMORE_H
 
-#include "xap_Frame.h"
+/* #include "xap_Frame.h" */
 #include "xap_Dialog.h"
-class XAP_App;
+
+class XAP_Frame;
 
 class XAP_Dialog_WindowMore : public XAP_Dialog_NonPersistent
 {

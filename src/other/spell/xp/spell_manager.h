@@ -20,8 +20,15 @@
 #ifndef SPELL_MANAGER_H
 #define SPELL_MANAGER_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
-#include "ut_string.h"
+#endif
+/* #include "ut_string.h" */
+#include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
 

@@ -56,6 +56,12 @@ typedef signed short        UT_sint16;
 typedef unsigned int		UT_uint32;
 typedef signed int		    UT_sint32;
 
+/* If expat is in use, include <expat.h> before "ut_types.h"
+ */
+#ifndef XML_Char
+typedef char XML_Char;
+#endif
+
 /*!
  * Confidence heuristic datatype normalized to the range
  * [0,255] with 0 being least confident and 255 being the most confident

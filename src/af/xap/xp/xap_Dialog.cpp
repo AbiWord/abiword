@@ -18,9 +18,12 @@
  */
 
 #include <string.h>
-#include "xap_Dialog.h"
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_string_class.h"
+
+#include "xap_Dialog.h"
 #include "xap_DialogFactory.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -29,14 +32,14 @@
 
 XAP_Dialog::XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
 		       const char * helpUrl )
-  : m_pApp ( NULL ), m_pDlgFactory ( pDlgFactory ), m_id ( id )
+  : m_pApp ( NULL ), m_pDlgFactory ( pDlgFactory ), m_id ( id ), m_helpUrl(new UT_String("- no help available, sorry -"))
 {
   m_pApp = pDlgFactory->getApp();
 
   if ( helpUrl )
     {
       // TODO: properly localize the help string
-      UT_String_sprintf ( m_helpUrl, "%s", helpUrl ) ;
+      UT_String_sprintf ( *m_helpUrl, "%s", helpUrl ) ;
     }
 }
 

@@ -21,7 +21,7 @@
 #ifndef XAP_MENU_ACTIONSET_H
 #define XAP_MENU_ACTIONSET_H
 
-#include "ev_Menu_Actions.h"
+class EV_Menu_ActionSet;
 
 EV_Menu_ActionSet * AP_CreateMenuActionSet(void);
 

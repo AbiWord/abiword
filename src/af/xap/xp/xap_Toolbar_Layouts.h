@@ -21,14 +21,15 @@
 #ifndef XAP_TOOLBAR_LAYOUTS_H
 #define XAP_TOOLBAR_LAYOUTS_H
 
-#include "ev_Toolbar_Layouts.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
 
-EV_Toolbar_Layout * AP_CreateToolbarLayout(const char * szName);
+#include "ev_Toolbar_Layouts.h"
 #include "ev_EditBits.h"
 
 class XAP_App;
+
+EV_Toolbar_Layout * AP_CreateToolbarLayout(const char * szName);
 
 struct ABI_EXPORT XAP_Toolbar_Factory_lt
 {

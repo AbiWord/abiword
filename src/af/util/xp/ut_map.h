@@ -20,8 +20,14 @@
 #ifndef UT_MAP_H
 #define UT_MAP_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
 #include "ut_rbtree.h"
-#include "ut_types.h" // ABI_EXPORT
 
 class UT_Pair;
 

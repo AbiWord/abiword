@@ -20,9 +20,6 @@
 #ifndef XAP_DIALOGFACTORY_H
 #define XAP_DIALOGFACTORY_H
 
-#include "ut_vector.h"
-#include "xap_Dialog.h"
-
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -31,7 +28,18 @@
 ******************************************************************
 *****************************************************************/
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+#include "ut_vector.h"
+
+#include "xap_Dialog.h"
 #include "xap_Types.h"
+
 class XAP_Dialog;
 class XAP_App;
 class XAP_Frame;

@@ -17,11 +17,13 @@
  * 02111-1307, USA.
  */
 
-#include "ut_Language.h"
-#include "ut_string.h"
-#include "xap_Strings.h"
 #include <stdlib.h>
 
+#include "ut_Language.h"
+#include "ut_string.h"
+
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 // Please keep the list below alphabetised by the lang; even though 
 // this is not required for it to work, it will make it easier to maintain.

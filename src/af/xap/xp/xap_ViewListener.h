@@ -22,11 +22,19 @@
 #ifndef XAP_VIEWLISTENER_H
 #define XAP_VIEWLISTENER_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
+
 #include "xav_Listener.h"
 
-class XAP_Frame;
 class AV_View;
+
+class XAP_Frame;
 
 /*
 	The ap_ViewListener class handles UI change notifications from an AV_View

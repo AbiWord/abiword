@@ -25,11 +25,13 @@
 #include "ut_types.h"
 #include "ut_string.h"
 
+#include "xap_App.h"
 #include "xap_Preview.h"
 
 #include "ap_Preview_Paragraph.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Lists.h"
+
 #include <fribidi/fribidi.h>
 
 /************************************************************************/

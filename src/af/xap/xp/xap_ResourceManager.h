@@ -24,9 +24,16 @@
 #ifndef XAP_RESOURCE_MANAGER_H
 #define XAP_RESOURCE_MANAGER_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
+#endif
 
 class XAP_Resource;
+
 class ABI_EXPORT XAP_ResourceManager
 {
 public:

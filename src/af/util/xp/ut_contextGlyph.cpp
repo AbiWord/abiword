@@ -20,10 +20,14 @@
 
 #include <stdlib.h>
 #include <string.h>
+
 #include "ut_contextGlyph.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
+
+#include "xap_App.h"
+#include "xap_Prefs.h"
 
 struct LigatureData
 {

@@ -18,12 +18,13 @@
  */
 
 
-#include "ut_types.h"
+#include "ut_debugmsg.h"
+
 #include "xav_View.h"
 #include "xav_Listener.h"
-#include "xap_Frame.h"
-#include"ut_debugmsg.h"
 
+#include "xap_Frame.h"
+#include "xap_App.h"
 
 AV_View::AV_View(XAP_App * pApp, void* pParentData)
 :	m_pApp(pApp),

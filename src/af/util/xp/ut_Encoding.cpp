@@ -17,14 +17,15 @@
  * 02111-1307, USA.
  */
 
-#include "ut_iconv.h"
+#include <stdlib.h>
 
+#include "ut_iconv.h"
 #include "ut_Encoding.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
-#include "xap_Strings.h"
-#include <stdlib.h>
 
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 // Please keep the list below alphabetised by the encoding; even though 
 // this is not required for it to work, it will make it easier to maintain.

@@ -27,8 +27,11 @@
 #include "ut_growbuf.h"
 #include "ut_bytebuf.h"
 #include "ut_wctomb.h"
-#include "ap_Strings.h"
+
+#include "xap_App.h"
 #include "xap_EncodingManager.h"
+
+#include "ap_Strings.h"
 
 //////////////////////////////////////////////////////////////////
 // a sub-class to wrap the compiled-in (english) strings

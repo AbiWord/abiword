@@ -18,22 +18,25 @@
  */
 
 #include <stdlib.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+
+#include "gr_UnixGraphics.h"
+
+#include "xav_View.h"
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
-#include "gr_UnixGraphics.h"
-
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
-
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
+#include "xap_Preview_Zoom.h"
 #include "xap_UnixDlg_Zoom.h"
 
 /*****************************************************************/

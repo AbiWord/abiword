@@ -20,9 +20,6 @@
 #ifndef XAP_TOOLBAR_CONTROLFACTORY_H
 #define XAP_TOOLBAR_CONTROLFACTORY_H
 
-#include "ut_vector.h"
-//#include "EV_Toolbar_Control.h"
-
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -31,7 +28,19 @@
 ******************************************************************
 *****************************************************************/
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
+#include "ut_types.h"
+#endif
+/* #include "ut_vector.h" */
+
+/* #include "EV_Toolbar_Control.h" */
+
 #include "xap_Types.h"
+
 class EV_Toolbar_Control;
 class EV_Toolbar;
 

@@ -20,13 +20,19 @@
 #ifndef UT_SCRIPT_H
 #define UT_SCRIPT_H
 
+/* pre-emptive dismissal; ut_types.h is needed by just about everything,
+ * so even if it's commented out in-file that's still a lot of work for
+ * the preprocessor to do...
+ */
+#ifndef UT_TYPES_H
 #include "ut_types.h"
-#include "ut_vector.h"
+#endif
 #include "ut_AbiObject.h"
 #include "ut_string_class.h"
 
 typedef UT_sint32 UT_ScriptIdType;
 
+class UT_Vector;
 class UT_Script;
 class UT_ScriptLibrary;
 

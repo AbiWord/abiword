@@ -27,6 +27,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ev_Toolbar.h"
+#include "ev_Toolbar_Labels.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "xap_Toolbar_Layouts.h"

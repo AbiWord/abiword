@@ -20,17 +20,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
-#include "xap_Dlg_Insert_Symbol.h"
+#include "gr_Graphics.h"
 
+#include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+#include "xap_Draw_Symbol.h"
 #include "xap_App.h"
-
+#include "xap_Frame.h"
 
 XAP_Dialog_Insert_Symbol::XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogsymbol.html")

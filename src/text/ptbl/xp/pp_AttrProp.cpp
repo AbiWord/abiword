@@ -22,13 +22,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_pair.h"
+
 #include "pt_Types.h"
+
 #include "pp_AttrProp.h"
 
 /****************************************************************/

@@ -21,14 +21,18 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
-#include "xap_Menu_Layouts.h"
-#include "ap_Menu_Id.h"
 #include "ut_debugmsg.h"
+
 #include "ev_Menu_Labels.h"
-#include "xap_Menu_ActionSet.h"
-#include "ap_Menu_Id.h"
-#include "xap_EncodingManager.h"
 #include "ev_Menu.h"
+
+#include "xap_App.h"
+#include "xap_Menu_Layouts.h"
+#include "xap_Menu_ActionSet.h"
+#include "xap_EncodingManager.h"
+
+#include "ap_Menu_Id.h"
+#include "ap_Menu_Id.h"
 #include "ap_Strings.h"
 
 	struct _lt

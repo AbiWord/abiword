@@ -25,30 +25,32 @@
 #include <locale.h>
 
 #include "wv.h"
-#include "ie_imp_MsWord_97.h"
-#include "xap_EncodingManager.h"
-
-#include "ie_impGraphic.h"
-#include "fg_Graphic.h"
-#include "fg_GraphicRaster.h"
-#include "fg_GraphicVector.h"
 
 #include "ut_string_class.h"
-#include "pd_Document.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_units.h"
 #include "ut_math.h"
-
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "xap_App.h"
 #include "xap_Frame.h"
-#include "ap_Strings.h"
-
-#include "ap_Dialog_Id.h"
+#include "xap_EncodingManager.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Password.h"
+
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
+
+#include "pd_Document.h"
+
+#include "ie_imp_MsWord_97.h"
+#include "ie_impGraphic.h"
+
+#include "ap_Strings.h"
+#include "ap_Dialog_Id.h"
 
 #ifdef DEBUG
 #define IE_IMP_MSWORD_DUMP

@@ -20,14 +20,15 @@
 #ifndef XAP_Dialog_Insert_Symbol_H
 #define XAP_Dialog_Insert_Symbol_H
 
-#include "xap_Frame.h"
+/* #include "xap_Frame.h" */
 #include "xap_Dialog.h"
-#include "xap_Draw_Symbol.h"
+/* #include "xap_Draw_Symbol.h" */
 
-
-#include "xav_View.h"
+/* #include "xav_View.h" */
+class AV_View;
 
 class XAP_Frame;
+class XAP_Draw_Symbol;
 
 class XAP_Insert_symbol_listener
 	{
