@@ -4977,6 +4977,8 @@ Defun(insertData)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
+#if 0
 //
 // Do this operation in an idle loop so when can reject queued events
 //
@@ -5001,6 +5003,7 @@ Defun(insertData)
 		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
 	}
 	s_pFrequentRepeat->start();
+#endif
 	return true;
 }
 
