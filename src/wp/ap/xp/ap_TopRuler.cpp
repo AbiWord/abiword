@@ -297,18 +297,20 @@ void AP_TopRuler::_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInf
 	{
 		// draw black lines above and left of area
 		m_pG->setColor(clrBlack);
-		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsLeft + w + 2, yTop - 1);		// above
+		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsRight + 2, yTop - 1);		// above
 		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsLeft - 1, yTop + yBar + 1);	// left
 
 		// draw dark gray lines above and left of black lines
 		m_pG->setColor(clrDarkGray);
-		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsLeft + w + 3, yTop - 2);		// above
+		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsRight + 3, yTop - 2);		// above
 		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsLeft - 2, yTop + yBar + 2);	// left
 
 		// draw light gray lines down and right of area, seperated by 1 pixel all the way
 		m_pG->setColor(clrWhite);
-		m_pG->drawLine(xAbsLeft - 1, yTop + yBar + 1, xAbsLeft + w + 2, yTop + yBar + 1);	// below
-		m_pG->drawLine(xAbsLeft + w + 2, yTop + yBar + 1, xAbsLeft + w + 2, yTop - 2);		// right
+		m_pG->drawLine(xAbsLeft - 1, yTop + yBar + 1, xAbasRight + 2, yTop + yBar + 1);	// below
+		m_pG->drawLine(xAbsRight + 2, yTop + yBar + 1, xAbsRight + 2, yTop - 2);		// right
+
+		m_pG->setColor(clrBlack);
 	}
 	
 	return;
