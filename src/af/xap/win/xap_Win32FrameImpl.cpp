@@ -895,9 +895,9 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 					UT_Error errorCode;
 
 					/*
-						The user may be dropping every kind of file
-						Check first if the file is a graphic. If it's a graphics. I we insert it 
-						in the document, if not we assume that it's document 		
+						The user may be dropping any kind of file
+						Check first if the file is a graphic. If it's a graphic we insert it 
+						in the document, if not we assume that it's a document 		
 					*/								
 					// If there is no import graphic, it's a document...
 					errorCode = IE_ImpGraphic::constructImporter(szFileName, iegft, &pIEG);
