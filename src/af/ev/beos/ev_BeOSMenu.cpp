@@ -69,15 +69,35 @@ filter_result MenuFilter::Filter(BMessage *message, BHandler **target) {
 		return(B_DISPATCH_MESSAGE);
 	}
 	//XAP_Menu_Id id = 0;
+	BMenuItem* sourceItem;
+	
 	int32	id = 0;
 	message->FindInt32(ABI_BEOS_MENU_EV_NAME, &id);
-
+	message->FindPointer("source" , (void **)&sourceItem);
+	//if(sourceItem->IsMarked())
+	//	sourceItem->SetMarked(false);
+	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pBeOSApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 	UT_ASSERT(pAction);
 
+#if 0
+	if(m_pBeOSFrame->getCurrentView() && pAction->hasGetStateFunction())
+	{
+		if(pAction->isCheckable())
+		{
+		
+			EV_Menu_ItemState mis = pAction->getMenuItemState(m_pBeOSFrame->getCurrentView());
+	    	if (mis & EV_MIS_Toggled)
+        	    sourceItem->SetMarked(false);
+        	else
+        		sourceItem->SetMarked(true);
+		}
+	}
+#endif
+             
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
 		return(B_SKIP_MESSAGE);
@@ -89,6 +109,9 @@ filter_result MenuFilter::Filter(BMessage *message, BHandler **target) {
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	m_pEVMenu->invokeMenuMethod(m_pBeOSFrame->getCurrentView(),pEM,0,0);
+
+	((EV_BeOSMenu *)m_pEVMenu)->synthesize();
+	
 	return(B_SKIP_MESSAGE);			
 }
 
@@ -247,10 +270,11 @@ const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 	return data;
 }
 
-UT_Bool EV_BeOSMenu::synthesize(void)
- {
+UT_Bool EV_BeOSMenu::synthesizeMenuBar()
+{
+	AV_View* pView = m_pBeOSFrame->getCurrentView();
+ 	UT_Bool bCheck = UT_FALSE;
 	BMenu 		*pMenu = NULL;
-	BMenuBar 	*pMenuBar = NULL;
 	be_Window 	*pBWin = NULL;
 	//Future reference, use the UT_Stack stack;
 	my_stack_t	*stack = NULL;
@@ -274,6 +298,44 @@ UT_Bool EV_BeOSMenu::synthesize(void)
 	pMenuBar = new BMenuBar(all, "Menubar");
 	UT_ASSERT(pMenuBar);
 	
+	return UT_TRUE;
+}
+
+UT_Bool EV_BeOSMenu::synthesize()
+ {		
+	AV_View* pView = m_pBeOSFrame->getCurrentView();
+		
+	// Save off the rect we were created with and recreate the whole thing
+	BRect frameRect = pMenuBar->Frame();
+	pMenuBar->RemoveSelf();
+	delete pMenuBar;
+	pMenuBar = new BMenuBar(frameRect , "Menubar");
+	
+ 	UT_Bool bCheck = UT_FALSE;
+	BMenu 		*pMenu = NULL;
+	be_Window 	*pBWin = NULL;
+	//Future reference, use the UT_Stack stack;
+	my_stack_t	*stack = NULL;
+	int			accel;
+
+	UT_ASSERT(m_pBeOSFrame);
+	pBWin = (be_Window*)m_pBeOSFrame->getTopLevelWindow();
+	UT_ASSERT(pBWin);
+		
+    // Get the list of actions, and a count.
+	const EV_Menu_ActionSet * pMenuActionSet = m_pBeOSApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
+	
+	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
+	UT_ASSERT(nrLabelItemsInLayout > 0);
+
+	//Create the top level menubar
+//	BRect all = pBWin->m_winRectAvailable;
+//	all.bottom = all.top + 18;
+//	pBWin->m_winRectAvailable.top = all.bottom + 1;
+//	pMenuBar = new BMenuBar(all, "Menubar");
+//	UT_ASSERT(pMenuBar);
+	
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
@@ -294,6 +356,17 @@ UT_Bool EV_BeOSMenu::synthesize(void)
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:	{
+
+						if(pView && pAction->hasGetStateFunction()) 
+						{
+						EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+//	                            if (mis & EV_MIS_Gray)
+//                                	bEnable = UT_FALSE;
+                                if (mis & EV_MIS_Toggled)
+                                	bCheck = UT_TRUE;
+                                else
+                                	bCheck = UT_FALSE;
+                        }
 #if 0
 			UT_Bool bEnable = UT_TRUE;
                         UT_Bool bCheck = UT_FALSE;
@@ -416,6 +489,9 @@ UT_Bool EV_BeOSMenu::synthesize(void)
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
                 
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
+				if( pAction->isCheckable() )
+					pMenuItem->SetMarked( (bCheck == UT_TRUE) );
+					
 				pMenu->AddItem(pMenuItem);
 				
 				delete [] buffer;

@@ -42,11 +42,14 @@ public:
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
 	~EV_BeOSMenu(void);
-	UT_Bool synthesize(void);
+	UT_Bool synthesize();
+	UT_Bool synthesizeMenuBar();
 
 protected:
 	XAP_BeOSApp 		*m_pBeOSApp;
 	XAP_BeOSFrame 		*m_pBeOSFrame;
+	
+	class BMenuBar* pMenuBar;
 };
 
 /*****************************************************************/
