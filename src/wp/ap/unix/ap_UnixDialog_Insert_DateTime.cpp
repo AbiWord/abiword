@@ -204,8 +204,6 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 	g_object_unref (model);
 	
 	// now select first item in box
-	/*gtk_tree_selection_select_iter  (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)),
-                                     );*/
  	gtk_widget_grab_focus (m_tvFormats);
 }
 
