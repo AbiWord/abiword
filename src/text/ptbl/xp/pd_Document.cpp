@@ -953,7 +953,17 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_
 	return m_pPieceTable->appendStrux(pts,attributes,ppfs_ret);
 }
 
-bool  PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
+/*!
+    appends given fmt to the last strux in document
+*/
+bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->appendLastStruxFmt(pts,attributes,bSkipEmbededSections);
+}
+
+bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 

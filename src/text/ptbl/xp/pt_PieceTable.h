@@ -232,6 +232,7 @@ public:
 	PD_Document *			getDocument(void);
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes);
+	bool                    appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, bool bSkipEmbededSections);
 	bool					appendFmt(const XML_Char ** attributes);
 	bool					appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);

@@ -2437,12 +2437,37 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 //
 bool IE_Imp_RTF::StartNewPara()
 {
-
+	// NB: the \par keyword really represents '\r' and concludes a paragraph rather than
+	// begins it -- some paragraph properties are indicated by formating applied to the
+	// \par keyword, for example revisions are. This means that we sometimes have to
+	// change fmt of the last block
+	// properties are 
 	bool ok = FlushStoredChars(true);
 	m_newParaFlagged = true;
 
 	// need to reset any left-over direction override
 	m_currentRTFState.m_charProps.m_dirOverride = UT_BIDI_UNSET;
+
+	if(m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE)
+	{
+		UT_String props, rev;
+		const XML_Char * attrs[3] = {"revision", NULL, NULL};
+		const XML_Char * pStyle = NULL;
+		
+		UT_return_val_if_fail( buildCharacterProps(props), false);
+
+		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
+		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+		{
+			pStyle = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+		}
+
+		_formRevisionAttr(rev, props, pStyle);
+		attrs[1] = rev.c_str();
+
+		UT_return_val_if_fail(getDoc()->appendLastStruxFmt(PTX_Block, attrs, true), false);
+	}
+	
 	return ok;
 }
 
@@ -5063,6 +5088,12 @@ void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const XM
 
 	attr += temp;
 
+	if(m_currentRTFState.m_charProps.m_eRevision == PP_REVISION_DELETION)
+	{
+		// ignore props
+		return;
+	}
+	
 	attr += '{';
 	attr += props;
 	attr += '}';
