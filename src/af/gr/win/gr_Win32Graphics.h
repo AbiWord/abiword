@@ -106,6 +106,7 @@ class GR_Win32AllocInfo : public GR_AllocInfo
 		m_hdc(0), m_hwnd(0), m_pApp(NULL), m_pDocInfo(NULL), m_hDevMode(NULL) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_WIN32;}
+	virtual bool isPrinterGraphics() const {return (m_pDocInfo != 0);}
 	
 	HDC               m_hdc;
 	HWND              m_hwnd;

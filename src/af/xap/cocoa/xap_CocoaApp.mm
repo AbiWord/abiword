@@ -95,6 +95,12 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 									  GRID_DEFAULT);
 
 		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(GR_CocoaGraphics::graphicsAllocator,
+									  GR_CocoaGraphics::graphicsDescriptor,
+									  GRID_DEFAULT_PRINT);
+
+		UT_ASSERT( bSuccess );
 	}
 
 }

@@ -1197,21 +1197,20 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
    factory.
 
    allocator is a static intermediary to the graphics constructor; it
-   takes a parameter of type void*, which should point to any data the
-   allocator needs to pass onto the constructor.
+   takes a parameter of type GR_AllocInfo*, which should point to any
+   data the allocator needs to pass onto the constructor.
 
    descriptor is a static function that returns a string that
    describes the graphics class in human-readable manner (e.g., to be
    shown in dialogues).
    
    Returns true on success, false if requested id is already
-   registered. GRID_DEFAULT is an exception to this
+   registered (except for IDs < GRID_LAST_DEFAULT, which will
+   automatically be reassigned).
 
    This function is to be used by built-in classes; plugins
    should use registerPluginClass() instead.
 
-   Class that wishes to register as the default class should use registerDefaultClass()
-   
    The default platform implementation of the graphics class should
    register itself twice, once with its predefined id and once as the
    default class.
@@ -1225,9 +1224,9 @@ bool GR_GraphicsFactory::registerClass(GR_Allocator allocator, GR_Descriptor des
 
 	if(indx >= 0)
 	{
-		if(iClassId == GRID_DEFAULT)
+		if(iClassId < GRID_LAST_DEFAULT)
 		{
-			// we allow the default value to be replace
+			// we allow the default values to be replaced
 			m_vClassIds.deleteNthItem(indx);
 			m_vAllocators.deleteNthItem(indx);
 			m_vDescriptors.deleteNthItem(indx);
@@ -1243,15 +1242,6 @@ bool GR_GraphicsFactory::registerClass(GR_Allocator allocator, GR_Descriptor des
 	m_vClassIds.addItem((UT_sint32)iClassId);
 
 	return true;
-}
-
-/*!
-    registers class with GRID_DEFAULT; if this id is already used, the
-    previous class is undergistered first
-*/
-bool GR_GraphicsFactory::registerDefaultClass(GR_Allocator allocator, GR_Descriptor descriptor)
-{
-	return registerClass(allocator, descriptor, GRID_DEFAULT);
 }
 
 
@@ -1291,7 +1281,7 @@ UT_uint32 GR_GraphicsFactory::registerPluginClass(GR_Allocator allocator, GR_Des
 */
 bool GR_GraphicsFactory::unregisterClass(UT_uint32 iClassId)
 {
-	UT_return_val_if_fail(iClassId == GRID_DEFAULT || iClassId > GRID_LAST_BUILT_IN, false);
+	UT_return_val_if_fail(iClassId < GRID_LAST_BUILT_IN, false);
 
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 

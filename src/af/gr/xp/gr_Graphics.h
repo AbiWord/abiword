@@ -127,26 +127,44 @@ class ABI_EXPORT GR_Font
     GR_GraphicsId defines IDs returned by GR_Graphics::getClassId()
     used to identify the class in communication with GR_GraphicsFactory.
 
-	ID's for plugins are auto-generated at load time from the range
-	between GRID_LAST_BULT_IN and GRID_UNKNOWN. The downside of this
-	is that auto-generated IDs cannot be stored in preference files.
-	It is, therefore, desirable that plugins be assigned fixed IDs as
-	well (we could use UUIDs to identify graphics, but that seems an
-	overkill).
+    There are three types of IDs: default, built-in and plugin.
+
+    Default IDs are not assigned permanently to any class and are used
+	by the factory to allocate default graphics. These IDs are
+	reallocable -- if the factory receives a request to register a
+	class under one of these IDs, it will automatically unregister any
+	class currently registered under that ID.
+
+	Built-in IDs are permanently assinged to specific derrived
+	classes. The factory will refuse to register a class under one of
+	these IDs if another class is already registered with it.
+
+	Plugin IDs are dynamically generated for a graphics class by the
+	factory. The main draw-back of plugin IDs is that they cannot be
+	stored in preference profiles. A plugin desinger might prefer to
+	request a fixed ID from the built-in range (we could use UUIDs to
+	identify graphics, but that seems an overkill).
  */
 enum GR_GraphicsId
 {
-	/* id's for built-in classes: DO NOT CHANGE THE ASSIGNED VALUES !!!*/
-	GRID_DEFAULT         =  0,
-	GRID_BEOS            =  1,
-	GRID_COCOA           =  2,
-	GRID_QNX             =  3,
-	GRID_WIN32           =  4,
-	GRID_UNIX            =  5,
-	GRID_UNIX_PS         =  6,
-	GRID_UNIX_NULL       =  7,
-	GRID_UNIX_PANGO      =  8,
-	GRID_WIN32_UNISCRIBE =  9,
+	/* default id's (re-allocable) */
+	GRID_DEFAULT         =  0x0,
+	GRID_DEFAULT_PRINT   =  0x1,
+
+
+	GRID_LAST_DEFAULT    =  0xff,
+
+	/* IDs for built-in classes: DO NOT CHANGE THE ASSIGNED VALUES !!!*/
+	
+	GRID_BEOS            =  0x101,
+	GRID_COCOA           =  0x102,
+	GRID_QNX             =  0x103,
+	GRID_WIN32           =  0x104,
+	GRID_UNIX            =  0x105,
+	GRID_UNIX_PS         =  0x106,
+	GRID_UNIX_NULL       =  0x107,
+	GRID_UNIX_PANGO      =  0x108,
+	GRID_WIN32_UNISCRIBE =  0x109,
 
 	/*add new built-in ids here*/
 	
@@ -213,6 +231,7 @@ class GR_AllocInfo
 {
   public:
 	virtual GR_GraphicsId getType() const {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
+	virtual bool isPrinterGraphics()const {UT_ASSERT(UT_NOT_IMPLEMENTED); return false;}
 };
 
 typedef GR_Graphics * (*GR_Allocator)(GR_AllocInfo*);
@@ -236,7 +255,6 @@ class GR_GraphicsFactory
 	UT_uint32     getClassCount() const {return m_vClassIds.getItemCount();}
 
 	bool          registerClass(GR_Allocator, GR_Descriptor, UT_uint32 iClassId);
-	bool          registerDefaultClass(GR_Allocator, GR_Descriptor);
 	UT_uint32     registerPluginClass(GR_Allocator, GR_Descriptor);
 	
 	bool          unregisterClass(UT_uint32 iClassId);

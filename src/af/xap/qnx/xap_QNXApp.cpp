@@ -69,6 +69,13 @@ XAP_QNXApp::XAP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 									  GRID_DEFAULT);
 
 		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(GR_QNXGraphics::graphicsAllocator,
+									  GR_QNXGraphics::graphicsDescriptor,
+									  GRID_DEFAULT_PRINT);
+
+		UT_ASSERT( bSuccess );
+		
 	}
 }
 

@@ -1044,12 +1044,35 @@ const char * XAP_App::getInputMode(void) const
 	return m_pInputModes->getCurrentMapName();
 }
 
+/*!
+    This is the primary function for allocating graphics classes. It
+    determines if screen or priter graphics is required and then
+    allocates appropriate graphics respecting current setting.
+*/
+GR_Graphics * XAP_App::newGraphics(GR_AllocInfo * param) const
+{
+	UT_return_val_if_fail(m_pGraphicsFactory && param, NULL);
+
+	if(param->isPrinterGraphics())
+	{
+		return m_pGraphicsFactory->newGraphics(GRID_DEFAULT_PRINT, param);
+	}
+	else
+	{
+		return m_pGraphicsFactory->newGraphics(GRID_DEFAULT, param);
+	}
+}
+
+/*!
+    Use only if you require specific graphics, otherwise use newGraphics(GR_AllocInfo*)
+*/
 GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo * param) const
 {
 	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
 
 	return m_pGraphicsFactory->newGraphics(iClassId, param);
 }
+
 void XAP_App::setDefaultGraphicsId(UT_uint32 i)
 {
 	if(i == GRID_UNKNOWN)
@@ -1057,7 +1080,7 @@ void XAP_App::setDefaultGraphicsId(UT_uint32 i)
 	
 	m_iDefaultGraphicsId = i;
 
-	if(i < GRID_LAST_BUILT_IN)
+	if(i < GRID_LAST_BUILT_IN && i > GRID_LAST_DEFAULT)
 	{
 		// change the preference settings
 		UT_return_if_fail(m_prefs)

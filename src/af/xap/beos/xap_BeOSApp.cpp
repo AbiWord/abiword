@@ -66,6 +66,12 @@ XAP_BeOSApp::XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 									  GRID_DEFAULT);
 
 		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(GR_BeOSGraphics::graphicsAllocator,
+									  GR_BeOSGraphics::graphicsDescriptor,
+									  GRID_DEFAULT_PRINT);
+
+		UT_ASSERT( bSuccess );
 	}
 }
 

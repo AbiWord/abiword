@@ -104,8 +104,17 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		UT_ASSERT( bSuccess );
 
-		// I am not going to register UnixNull_Graphics since that
-		// only gets called when we run as cmd line tool
+		bSuccess = pGF->registerClass(PS_Graphics::graphicsAllocator,
+									  PS_Graphics::graphicsDescriptor,
+									  GRID_DEFAULT_PRINT);
+
+		UT_ASSERT( bSuccess );
+
+		bSuccess = pGF->registerClass(UnixNull_Graphics::graphicsAllocator,
+									  UnixNull_Graphics::graphicsDescriptor,
+									  UnixNull_Graphics::s_getClassId());
+
+		UT_ASSERT( bSuccess );
 	}
 }
 
