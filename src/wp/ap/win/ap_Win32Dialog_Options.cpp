@@ -570,7 +570,7 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			SetDlgItemInt(hWnd, AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, 1, FALSE );
 
 			// Set the range for the period to 1-360
-			SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETRANGE,(WPARAM)1,(WPARAM)360);
+			SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin),UDM_SETRANGE,0,(WPARAM)MAKELONG(120,1));
 			SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod),EM_LIMITTEXT,(WPARAM)3,(WPARAM)0);
 
 			// Limit the extension to 5 characters (plus the period)
