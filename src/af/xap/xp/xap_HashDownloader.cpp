@@ -24,6 +24,7 @@
 #include "ut_debugmsg.h"
 #include "ut_endian.h"
 #include "ut_string.h"
+#include "ut_path.h"
 
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -445,7 +446,24 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 				return(-1);
 			}
 
-	sprintf(buff, "/tmp/%s", szFName);
+	// TODO: add (or find the) UT_GetTempPath() function and replace this #ifdef logic with it
+#ifdef _WIN32
+	GetTempPath(sizeof(buff), buff);
+	UT_ASSERT(buff);
+	buff[strlen(buff)-1] = '\0';	// GetTempPath should always returns \ on end, but following test fails with it
+	// on Win9x buff should contain a valid directory, but on NT docs say it may not exist
+	if (!UT_directoryExists(buff)) 
+	{
+		pFrame->showMessageBox("XAP_HashDownloader:: Error TEMP path refers to nonexistant directory!\n",
+						XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		return (-1);
+	}
+	strcat(buff, "/");	// re-add the slash on end
+#else
+	// UT_GetTempPath(sizeof(buff), buff);
+	strcpy(buff, "/tmp/"
+#endif
+	strcat(buff, szFName);
 	if (!(fp = fopen(buff, "wb"))) {
 		perror("suggest_download(): fopen(buff, \"wb\") failed");
 		return(-1);
@@ -453,7 +471,8 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	fwrite(fileData.data, fileData.s, 1, fp);
 	fclose(fp);
 
-	if (installPackage(pFrame, buff, szLang, pkgType, RM_SUCCESS | RM_FAILURE)) {
+	if (installPackage(pFrame, buff, szLang, pkgType, RM_SUCCESS | RM_FAILURE))
+	{
 		pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictInstallFail
 				, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
 		return(-2);

@@ -53,92 +53,13 @@ AP_UnixHashDownloader::~AP_UnixHashDownloader()
 }
 
 
-UT_sint32
-AP_UnixHashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload)
+void AP_UnixHashDownloader::showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno) const
 {
-	char szURL[256], szFName[128], szPath[512];
-	UT_sint32 ret, i;
-	FILE *fp;
-	gzFile gzfp;
-	struct stat statBuf;
-
-#ifdef CURLHASH_NO_CACHING_OF_LIST
-	forceDownload = 1;
-#endif
-
-	sprintf(szFName, "abispell-list.%s.xml.gz", endianess);
-	sprintf(szURL, "http://www.abisource.com/~fjf/%s", szFName);
-	sprintf(szPath, "%s/%s", XAP_App::getApp()->getUserPrivateDirectory(), szFName);
-	
-
-#ifdef CURLHASH_NEVER_UPDATE_LIST
-	if (stat(szPath, &statBuf)) {
-#else
-	if (forceDownload || stat(szPath, &statBuf) || statBuf.st_mtime + dictionaryListMaxAge < time(NULL)) {
-#endif	
-		if (fileData.data)
-			free(fileData.data);
-		fileData.data = NULL;
-		if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
-			if (dlg_askFirstTryFailed(pFrame))
-				if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
-					pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_DictlistDLFail
-							, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK, NULL);
-					return(-1);
-				}
-		}
-
-		if (!(fp = fopen(szPath, "wb"))) {
-			perror("AP_UnixHashDownloader::downloadDictionaryList(): fopen(, \"wb\") failed");
-			return(-1);
-		}
-		fwrite(fileData.data, fileData.s, 1, fp);
-		fclose(fp);
-	}
-	
-	if (!(gzfp = gzopen(szPath, "rb"))) {
-		perror("downloadDictionaryList(): failed to open compressed dictionarylist");
-		return(-1);
-	}
-	
-	if (fileData.data)
-		free(fileData.data);
-	fileData.data = NULL;
-	i = 0;
-	/* Find out how many bytes the uncompressed file is */
-	while ((ret = gzread(gzfp, szURL, 1)))
-		i += ret;
-
-	fileData.data = (char *)malloc(i);
-	fileData.s = i;
-	gzrewind(gzfp);
-	/* Read for real */
-	gzread(gzfp, fileData.data, i);
-	gzclose(gzfp);
-	
-	/* Parse XML */
-	initData();
-	xmlParser.setListener(this);
-	if ((ret = xmlParser.parse(fileData.data, fileData.s)) || xmlParseOk == -1) {
-		fprintf(stderr, "Error while parsing abispell dictionary-list (ret=%d - xmlParseOk=%d\n", ret, xmlParseOk);
-		return(-1);
-	}
-
-	return(0);
+	if (showErrno)
+		perror(errMsg);
+	else
+		fprintf(stderr, "%s", errMsg);
 }
-
-
-UT_sint32
-AP_UnixHashDownloader::dlg_askInstallSystemwide(XAP_Frame *pFrame)
-{
-	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_AskInstallGlobal
-				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES
-				, pFrame->getApp()->getAbiSuiteLibDir()))
-		return(0);
-
-	return(1);
-}
-
 
 UT_sint32
 AP_UnixHashDownloader::isRoot()
@@ -183,26 +104,24 @@ AP_UnixHashDownloader::execCommand(const char *szCommand)
 XAP_HashDownloader::tPkgType 
 AP_UnixHashDownloader::wantedPackageType(XAP_Frame *pFrame)
 {
-	installSystemwide = 0;
-	
 #ifdef CURLHASH_INSTALL_SYSTEMWIDE
-#ifdef CURLHASH_USE_RPM
 	if (isRoot() && dlg_askInstallSystemwide(pFrame)) {
-		installSystemwide = 1;
-		return(pkgType_RPM);
+		setInstallSystemWide(true);
 	}
-#endif /* CURLHASH_USE_RPM */
-
-	if (isRoot() && dlg_askInstallSystemwide(pFrame))
-		installSystemwide = 1;
+	else
+		setInstallSystemWide(false);
 #endif
 
+#if defined(CURLHASH_USE_RPM) && defined(CURLHASH_INSTALL_SYSTEMWIDE)
+	return(pkgType_RPM);
+#else
 	return(pkgType_Tarball);
+#endif
 }
 
 
 UT_sint32 
-AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType, UT_sint32 rm)
+AP_UnixHashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType)
 {
 	char buff[512], tmpDir[512];
 	UT_sint32 ret;
@@ -214,11 +133,18 @@ AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, co
 		ret = execCommand(buff);
 	}
 
+#if 1
+	else
+		ret = AP_HashDownloader::platformInstallPackage(pFrame, szFName, szLName, pkgType);
+
+#else
 
 	if (pkgType == pkgType_Tarball) {
-		if (installSystemwide)
+#ifdef CURLHASH_INSTALL_SYSTEMWIDE
+		if (getInstallSystemWide())
 			pName = XAP_App::getApp()->getAbiSuiteLibDir();
 		else
+#endif
 			pName = XAP_App::getApp()->getUserPrivateDirectory();
 
 		pName += "/dictionary/";
@@ -271,12 +197,7 @@ AP_UnixHashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, co
 			return(ret);
 		}
 	}
+#endif
 
-	if (ret && (rm & RM_FAILURE))
-		remove(szFName);
-
-	if (!ret && (rm & RM_SUCCESS))
-		remove(szFName);
-	
 	return(ret);
 }

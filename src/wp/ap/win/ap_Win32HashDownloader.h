@@ -24,15 +24,6 @@
 #include "ap_HashDownloader.h"
 
 
-/* 
- * WARNING!
- * Do not enable this unless you know what you do!
- * It works, but don't come screaming if Abiword destroyed your harddrive while
- * you where running it as root
- */
-/*#define CURLHASH_INSTALL_SYSTEMWIDE */
-
-
 class ABI_EXPORT AP_Win32HashDownloader : public AP_HashDownloader
 {
 public:
@@ -40,18 +31,13 @@ public:
 	~AP_Win32HashDownloader();
 
 protected:
-	virtual UT_sint32	dlg_askInstallSystemwide(XAP_Frame *pFrame);
-	
 	virtual UT_sint32	execCommand(const char *szCommand);
-	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload);
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame);
-	virtual UT_sint32	installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm);
 
-	virtual void showErrorMsg(XAP_Frame *pFrame, const char *errMsg) const;
+	virtual UT_sint32 platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType);
+	virtual void showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno) const;
+
 private:
-	UT_sint32		installSystemwide;
-	UT_sint32		_installPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, tPkgType pkgType, UT_sint32 rm);
-	UT_sint32 		_untgz(XAP_Frame *pFrame, gzFile tarball, const char *hashname, const char *destpath);
 };
 
 
