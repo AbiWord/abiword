@@ -23,7 +23,7 @@
 ## (Philippe.Defert@cern.ch)
 ## Updated by Kevin Vajk (kevin_vajk@hp.com) for gcc with HP-UX ld
 ##############################################################################
-
+include $(ABI_ROOT)/src/config/platforms/nix-common.mk
 ##################################################################
 ##################################################################
 ## The main makefile and/or this file requires that OS_ARCH be set
@@ -36,16 +36,7 @@ OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.
 OS_ENDIAN	= BigEndian32
 
 
-# Define tools
-CC		= gcc
-CCC		= g++
-RANLIB		= ranlib
-
-# Suffixes
-OBJ_SUFFIX	= o
-LIB_SUFFIX	= a
 DLL_SUFFIX	= sl
-AR		= ar cr $@
 
 ## nessecary changes for systems without snprintf() like hp-ux 10.20 from Martin Gansser mgansser@ngi.de
 ## compilation instruction how to build abiword on hp-ux 10.20 can found on http://cloud.prohosting.com/patos
@@ -61,19 +52,6 @@ AR		= ar cr $@
 ## OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
 
 HPUX_MAJOR= $(shell uname -r|sed 's/^[^.]*\.\([^.]*\).*/\1/')
-# Compiler flags
-ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g -Wall -ansi -pedantic
-DEFINES		= -DDEBUG -UNDEBUG
-OBJ_DIR_SFX	= DBG
-else
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
-DEFINES		=
-OBJ_DIR_SFX	= OBJ
-endif
-
-# Includes
-G++INCLUDES		= -I/usr/include/g++
 
 ifeq ($(HPUX_MAJOR), 10)
   USE_EXTERNAL_SNPRINTF = 1
@@ -97,13 +75,6 @@ endif
 
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
-PLATFORM_FLAGS		+= 
-PORT_FLAGS		+= 
-
-GLIB_CONFIG		= glib-config
-GTK_CONFIG		= gtk-config
-GNOME_CONFIG    	= gnome-config
-
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -b -o $(@:$(OBJDIR)/%.sl=%.sl)
 
@@ -118,16 +89,6 @@ UNIX_CAN_BUILD_STATIC=1
 # Compiler options for static and dynamic linkage
 DL_LIBS			= 
 STATIC_FLAGS		= -Wl,-a,archive_shared
-
-ABI_NATIVE	= unix
-ABI_FE		= Unix
-
-##################################################################
-## Here you can choice if you want to use the gnome stuff.
-## Set ABI_OPT_GNOME to 1 (when invoking 'make') or set as
-## an environment variable.
-##
-## ABI_OPT_GNOME=1
 
 ##################################################################              
 ## ABIPKGDIR defines the directory containing the Makefile to use to            
