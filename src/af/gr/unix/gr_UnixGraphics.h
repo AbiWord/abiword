@@ -115,7 +115,8 @@ class GR_UnixGraphics : public GR_Graphics
 	GdkFont * m_pSingleByteFont, * m_pMultiByteFont;
 
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
-	XAP_UnixFontHandle * 	m_pFontGUI;
+	static XAP_UnixFontHandle *	s_pFontGUI;
+	static UT_uint32		s_iInstanceCount;
   
 	GdkColormap* 	 		m_pColormap;
 	int          			m_iWindowHeight, m_iWindowWidth;

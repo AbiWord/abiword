@@ -48,6 +48,9 @@ static bool isFontUnicode(GdkFont *font)
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"
 
+XAP_UnixFontHandle *	GR_UnixGraphics::s_pFontGUI = NULL;
+UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
+
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
 {
 	m_pApp = app;
@@ -56,7 +59,8 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pFont = NULL;
 	m_pSingleByteFont = NULL;
 	m_pMultiByteFont = NULL;
-	m_pFontGUI = NULL;
+	//m_pFontGUI = NULL;
+	s_iInstanceCount++;
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
 
@@ -91,7 +95,9 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 
 GR_UnixGraphics::~GR_UnixGraphics()
 {
-	DELETEP(m_pFontGUI);
+	s_iInstanceCount--;
+	if(!s_iInstanceCount)
+		DELETEP(s_pFontGUI);
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -432,18 +438,19 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 	if (!m_pFontManager)
 		return NULL;
 	
-	if (!m_pFontGUI)
+	if (!s_pFontGUI)
 	{
 		// get the font resource
+		//UT_DEBUGMSG(("GR_UnixGraphics::getGUIFont: getting default font\n"));
 		XAP_UnixFont * font = (XAP_UnixFont *) m_pFontManager->getDefaultFont();
 		UT_ASSERT(font);
 
 		// bury it in a new font handle
-		m_pFontGUI = new XAP_UnixFontHandle(font, 12); // Hardcoded GUI font size
-		UT_ASSERT(m_pFontGUI);
+		s_pFontGUI = new XAP_UnixFontHandle(font, 12); // Hardcoded GUI font size
+		UT_ASSERT(s_pFontGUI);
 	}
 
-	return m_pFontGUI;
+	return s_pFontGUI;
 }
 
 GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily, 
