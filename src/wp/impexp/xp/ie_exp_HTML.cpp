@@ -584,7 +584,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    }
 				  else
 				    {
-				        m_pie->write(" overline");
+				        m_pie->write("; overline");
 				    }
 				}
 
@@ -627,20 +627,18 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 			  if (!span)
 				    {
-					m_pie->write("<span style=\"color: #");	
+					m_pie->write("<span style=\"color:#");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszColor);
 					m_pie->write(szColor);
-					m_pie->write(";");
 					span = true;
 				    }
 				  else 
 				    {
-					m_pie->write("; color: #");	
+					m_pie->write("; color:#");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszColor);
 					m_pie->write(szColor);
-					m_pie->write(";");
 				    }
 			}
 			
@@ -650,14 +648,12 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    {
 					m_pie->write("<span style=\"font-family: ");	
 					m_pie->write((char*)pszFontFamily);
-					m_pie->write(";");
 					span = true;
 				    }
 				  else 
 				    {
-					m_pie->write(" font-family: ");	
+					m_pie->write("; font-family: ");	
 					m_pie->write((char*)pszFontFamily);
-					m_pie->write(";");
 				    }
 
 			}
@@ -671,15 +667,15 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					m_pie->write("<span style=\"font-size: ");	
 					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
 					m_pie->write(szSize);
-					m_pie->write("pt;");
+					m_pie->write("pt");
 					span = true;
 				    }
 				  else 
 				    {
-					m_pie->write(" font-size: ");	
+					m_pie->write("; font-size: ");	
 					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
 					m_pie->write(szSize);
-					m_pie->write("pt;");
+					m_pie->write("pt");
 				    }
 
 			}
@@ -692,16 +688,14 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					char szColor[16];
 					_convertColor(szColor,(char*)pszBgColor);
 					m_pie->write(szColor);
-					m_pie->write(";");
 					span = true;
 				    }
 				  else 
 				    {
-					m_pie->write(" background: #");	
+					m_pie->write("; background: #");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszBgColor);
 					m_pie->write(szColor);
-					m_pie->write(";");
 				    }
 			  }
 
@@ -963,6 +957,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	} else {
 	    m_pie->write("<?xml version=\"1.0\"?>\n");
 	};
+	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
 
 	m_pie->write("<!-- ================================================================================  -->\n");
 	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\n");
@@ -1008,14 +1003,12 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 		m_pie->write(" -->\n");
 	}
 	
-	m_pie->write("\n");
-	
-	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
+	m_pie->write("\n");	
 	m_pie->write("<html>\n");
 	m_pie->write("<head>\n");
 	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html;charset=");
 	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
-	m_pie->write("\"></meta>\n");//</meta> looks ugly, but it should work.
+	m_pie->write("\"/>");
 	m_pie->write("<title>AbiWord Document</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!-- \n P { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");
