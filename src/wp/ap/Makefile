@@ -160,7 +160,6 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_InsertBookmark.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_FormatFootnotes.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_InsertHyperlink.$(OBJ_SUFFIX)\
-		$(OBJDIR)/ap_Dialog_MetaData.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_MailMerge.$(OBJ_SUFFIX)\
 		$(OBJDIR)/ap_Dialog_MarkRevisions.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ap_Dialog_ListRevisions.$(OBJ_SUFFIX) \
