@@ -4004,14 +4004,19 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Container* pOldContainer = pOldLine->getContainer();
+	fp_Column * pOldColumn = NULL;
+	fp_Column * pOldLeader = NULL;
 	fp_Page* pOldPage = pOldContainer->getPage();
 	bool bDocSection = (pOldSL->getType() == FL_SECTION_DOC) ||
 		               (pOldSL->getType() == FL_SECTION_ENDNOTE);
 
-	fp_Column* pOldLeader = NULL;
 	if (bDocSection)
 	{
 		pOldLeader = ((fp_Column*) (pOldContainer))->getLeader();
+	}
+	if(bDocSection)
+	{
+		pOldColumn = (fp_Column *) pOldContainer;
 	}
 
 	UT_sint32 iPageOffset;
@@ -4034,32 +4039,40 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			UT_sint32 iAfter = 1;
 			yPoint += (iLineHeight + iAfter);
 		}
-		else if (bDocSection && (((fp_Column*) (pOldSL->getLastContainer()))->getLeader() == pOldLeader))
+		else if (bDocSection)
 		{
-			// move to next container
-			fl_SectionLayout* pSL = pOldSL->getNext();
-			if (pSL)
+			UT_sint32 count = (UT_sint32) pOldPage->countColumnLeaders();
+			UT_sint32 i = 0;
+			for(i =0; i < count ;i++) 
 			{
-				yPoint = pSL->getFirstContainer()->getY();
+				if( (fp_Column *) pOldPage->getNthColumnLeader(i) == pOldLeader)
+				{
+					break;
+				}
+			}
+			if((i + 1) < count)
+			{
+				// Move to next container
+				yPoint = pOldPage->getNthColumnLeader(i+1)->getY();
 			}
 			else
 			{
-				bNOOP = true;
+				// move to next page
+				fp_Page* pPage = pOldPage->getNext();
+				if (pPage)
+				{
+					getPageYOffset(pPage, iPageOffset);
+					yPoint = 0;
+				}
+				else
+				{
+					bNOOP = true;
+				}
 			}
 		}
 		else
 		{
-			// move to next page
-			fp_Page* pPage = pOldPage->getNext();
-			if (pPage)
-			{
-				getPageYOffset(pPage, iPageOffset);
-				yPoint = 0;
-			}
-			else
-			{
-				bNOOP = true;
-			}
+			bNOOP = true;
 		}
 	}
 	else
@@ -4069,43 +4082,41 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			// just move off this line
 			yPoint -= (pOldLine->getMarginBefore() + 1);
 		}
-		else if (bDocSection && (pOldSL->getFirstContainer() == pOldLeader))
+		else if (bDocSection)
 		{
-			// move to prev section
-			fl_SectionLayout* pSL = pOldSL->getPrev();
-			if (pSL)
+			UT_sint32 count = (UT_sint32) pOldPage->countColumnLeaders();
+			UT_sint32 i = 0;
+			for(i =0; i < count ;i++) 
 			{
-				fp_Column* pTmpCol = ((fp_Column*) (pSL->getLastContainer()))->getLeader();
-				yPoint = pTmpCol->getY();
-
-				UT_sint32 iMostHeight = 0;
-				while (pTmpCol)
+				if( (fp_Column *) pOldPage->getNthColumnLeader(i) == pOldLeader)
 				{
-					iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
-
-					pTmpCol = pTmpCol->getFollower();
+					break;
 				}
-
-				yPoint += (iMostHeight - 1);
+			}
+			if( (i> 0) && (i < count))
+			{
+				// Move to prev container
+				yPoint = pOldPage->getNthColumnLeader(i-1)->getLastLine()->getY();
+				yPoint +=  pOldPage->getNthColumnLeader(i-1)->getY()+2;
 			}
 			else
 			{
-				bNOOP = true;
+				// move to prev page
+				fp_Page* pPage = pOldPage->getPrev();
+				if (pPage)
+				{
+					getPageYOffset(pPage, iPageOffset);
+					yPoint = pPage->getBottom();
+				}
+				else
+				{
+					bNOOP = true;
+				}
 			}
 		}
 		else
 		{
-			// move to prev page
-			fp_Page* pPage = pOldPage->getPrev();
-			if (pPage)
-			{
-				getPageYOffset(pPage, iPageOffset);
-				yPoint = pPage->getBottom();
-			}
-			else
-			{
-				bNOOP = true;
-			}
+			bNOOP = true;
 		}
 	}
 
