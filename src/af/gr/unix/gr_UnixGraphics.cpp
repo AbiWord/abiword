@@ -1094,7 +1094,7 @@ UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	fWidth = m_pFont->measureUnRemappedChar(newChar, m_pFont->getSize())
 		* ((double)getResolution() / (double)s_getDeviceResolution());
-	UT_DEBUGMSG(("char %d width = %d \n",newChar,rint(fWidth)));
+	xxx_UT_DEBUGMSG(("char %d width = %d \n",newChar,rint(fWidth)));
 	return static_cast<UT_uint32>(rint(fWidth));
 }
 

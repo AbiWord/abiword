@@ -41,6 +41,9 @@
 #include "fp_PageSize.h"
 #include "ut_OverstrikingChars.h"
 
+#ifndef FT_ENCODING_ADOBE_CUSTOM
+#define FT_ENCODING_ADOBE_CUSTOM ft_encoding_adobe_custom
+#endif
 static inline bool isItalic(XAP_UnixFont::style s)
 {
 	return ((s == XAP_UnixFont::STYLE_ITALIC) || (s == XAP_UnixFont::STYLE_BOLD_ITALIC));
@@ -241,7 +244,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 	if (!pCharWidths) {
 		// short circuit if no character widths given. at least fields use this
-		if(!m_bIsSymbol)
+		if(!m_bIsSymbol && !m_bIsDingbat)
 		{
 			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
@@ -273,11 +276,22 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 		}
 		else
 		{
-			// fixme put in code for dingbats
-			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
-			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
-			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			// code for dingbats we must use just the glyphs
+
+			XAP_UnixFont * uF = m_pCurrentPSFont->getUnixFont();
+			XftFaceLocker locker(uF->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));			
+			FT_Face pFace = locker.getFace();
+			GnomeGlyphList * pGL = gnome_glyphlist_new ();
+			UT_sint32 i =0;
+			for(i=0; i<iLength;i++)
+			{
+				FT_UInt glyph_index = FT_Get_Char_Index(pFace, pChars[iCharOffset + i]);
+				gnome_glyphlist_glyph(pGL, glyph_index);
+			}
+			gnome_glyphlist_moveto (pGL, tdu (xoff), yoff);
+			gnome_print_glyphlist  (m_gpc, pGL);
 			gnome_print_grestore (m_gpc);
+			g_free(pGL);
 			return;
 		}
 	}
@@ -288,15 +302,72 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	UT_UTF8String utf8;
 	bool last_was_overstriking = false;
 	UT_sint32 advance = 0, prevAdvance = 0;
+	if(m_bIsDingbat)
+	{
+		UT_UCS4String sUCS4;
+		XAP_UnixFont * uF = m_pCurrentPSFont->getUnixFont();
+		XftFaceLocker locker(uF->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));			
+		FT_Face pFace = locker.getFace();
+		FT_Select_Charmap(pFace,FT_ENCODING_ADOBE_CUSTOM);
+		GnomeGlyphList * pGL = gnome_glyphlist_new ();
+		for (UT_sint32 i = 0; i < iLength; i++) 
+		{
+			UT_UCS4Char ch = pChars[iCharOffset + i];
+			FT_UInt gi = FT_Get_Char_Index(pFace, pChars[iCharOffset + i]);
+				
+			advance += pCharWidths [i];
+			if (UT_UCS4_isspace (ch) || 
+				(UT_isOverstrikingChar(ch) != UT_NOT_OVERSTRIKING) 
+				|| last_was_overstriking) 
+			{
+				if (!sUCS4.empty()) 
+				{
+					gnome_glyphlist_moveto(pGL, tdu (xoff + prevAdvance), yoff);
+					gnome_print_glyphlist  (m_gpc, pGL);
+					g_free(pGL);
+					pGL = gnome_glyphlist_new ();
+					sUCS4.clear ();
+				}
 
+				if (!UT_UCS4_isspace (ch))
+				{
+					sUCS4 += ch;
+					gnome_glyphlist_glyph(pGL,gi);
+				}
+
+				if (UT_isOverstrikingChar(ch) != UT_NOT_OVERSTRIKING)
+					last_was_overstriking = true;
+				else
+					last_was_overstriking = false;
+				
+				prevAdvance = advance;
+			} 
+			else 
+		    {
+				last_was_overstriking = false;
+			    sUCS4 += ch;
+				gnome_glyphlist_glyph(pGL,gi);
+			}
+		}
+
+	// chars remain - flush buffer
+		if (!sUCS4.empty ()) 
+		{
+			gnome_glyphlist_moveto(pGL, tdu (xoff + prevAdvance), yoff);
+			gnome_print_glyphlist  (m_gpc, pGL);
+			g_free(pGL);
+		}
+
+		// pop the graphics state
+		gnome_print_grestore (m_gpc);
+		return;
+	}
 	for (UT_sint32 i = 0; i < iLength; i++) {
 		UT_UCS4Char ch = pChars[iCharOffset + i];
 		if(m_bIsSymbol && (ch < 255) && (ch >= 32))
 			ch = static_cast<UT_UCS4Char>(adobeToUnicode(ch));
 
-		//
-		// fixme put in code for dingbats
-		//
+
 		advance += pCharWidths [i];
 
 		if (UT_UCS4_isspace (ch) || (UT_isOverstrikingChar(ch) != UT_NOT_OVERSTRIKING) || last_was_overstriking) {

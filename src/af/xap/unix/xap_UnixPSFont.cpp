@@ -26,6 +26,9 @@
 #include "gr_CharWidthsCache.h"
 #include "xap_UnixPSFont.h"
 
+#ifndef FT_ENCODING_ADOBE_CUSTOM
+#define FT_ENCODING_ADOBE_CUSTOM ft_encoding_adobe_custom
+#endif
 /*
   This class is much like the UnixGraphics class in
   abi/src/wp/gr/unix/gr_UnixGraphics.h.  Why?  Because it's
@@ -71,7 +74,10 @@ UT_sint32 PSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	UT_sint32 width;
 	XftFaceLocker locker(m_hFont->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
-
+	if(m_hFont->isDingbat())
+	{
+		FT_Select_Charmap(pFace,FT_ENCODING_ADOBE_CUSTOM);
+	}		
 	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
 	FT_Error error =
 		FT_Load_Glyph(pFace, glyph_index,
