@@ -182,16 +182,16 @@ or
 
 MSYS/MingW
 
-MSYS and MinGW provide a Windows port of popular GNU building tools and compilers.  MinGW provides the compiler, headers, and libraries to build Window binaries.  Information about it and how to download it can be found at http://www.mingw.org/.  MSYS was developed   to provide MinGW an operating shell compliant with various GNU building scripts.  Information on MSYS can be found at http://www.mingw.org/msys.shtml.
+MSYS and MinGW provide a Windows port of popular GNU building tools and compilers.  MinGW provides the compiler, headers, and libraries to build Window binaries.  Information about it and how to download it can be found at http://www.mingw.org/.  MSYS was developed to provide MinGW an operating shell compliant with various GNU building scripts.  Information on MSYS can be found at http://www.mingw.org/msys.shtml.
 
 
 Microsoft Visual C++
 
-For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two methods for building AbiWord;  command line with cygwin tools (actively maintained, and will work) or the Microsoft Developer Project files (intermittently maintained, and may not work).  MSVC 5 building is not actively done and will minimally require an updated Win32 platform SDK.
+For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two methods for building AbiWord;  command line with cygwin tools (intermittently maintained, and may not work) or the Microsoft Developer Project files (actively maintained, and will work).  MSVC 5 building is not actively done and will minimally require an updated Win32 platform SDK.
 
 Building via MSVC command line using cygwin tools is the traditional method for building AbiWord and is used for the release builds.  You can find information about the cygwin tools at http://www.cygwin.com/.  Beyond the packages in the Base category during the Cygwin installation, only the "libintl1", "libiconv2" and "make" packages are required to build AbiWord.  The exact programs required are: cp, cut, echo, expr, make, mkdir, pwd, rm, sed, sh (bash), tar, uname, along with cygwin specific cygpath.exe and cygwin1.dll.  To obtain the source you may also want the cvs client.
 
-The second method is to try the MSVC6 project files that have been generated.  These project files are not actively maintained, and are only available for MSVC 6.0 and greater.  We are looking for volunteers to keep them in sync with development.  See the "Getting the sources" section below to use CVS to download the latest versions of these project files.
+The second method is to try the MSVC6 project files that have been generated.  These project files are actively maintained and are only available for MSVC 6.0 and greater.  See the "Getting the sources" section below to use CVS to download the latest versions of these project files.
 
 
 Getting the source:
@@ -200,7 +200,7 @@ There are two methods for getting the AbiWord source code; source tar.gz files a
 
 The source tar.gz files are packaged for building AbiWord.  You can find the latest version of the tar.gz on http://sourceforge.net/projects/abiword/.  They will be typically labelled abiword-<version>.tar.gz.  Once download you can use WinZip or command line tools from MSYS or cygwin to unpackage the file and install the abiword sources locally to your hard disk.  The command line to unpackage the file from MSYS or cygwin is "tar xvfz abiword-*.tar.gz"
 
-Concurrent Versions Systems (CVS) is used by the developers to maintain the source files of the project.  Information on CVS can be located at there web site http://www.cvshome.org/.  An excellent Window GUI for CVS is WinCVS and can be located at http://www.wincvs.org/, with links to other great CVS tools.
+Concurrent Versions Systems (CVS) is used by the developers to maintain the source files of the project.  Information on CVS can be located at there web site http://www.cvshome.org/.  An excellent Window GUI for CVS is WinCVS and can be located at http://www.wincvs.org/, with links to other great CVS tools; alternately, you can download and install the MSYS DTK which includes a CVS client.
 
 For AbiWord, the CVSROOT environment variable should be:
 
@@ -222,7 +222,7 @@ CVS modules required to check out are:
 
 	abi
 
-	abidistfiles
+	abidistfiles (only needed for make canonical and make distribution)
 
 	expat
 
@@ -244,11 +244,11 @@ The following modules may optionally be checked out as well:
 
 If you wish to use JPEG images in AbiWord, you will need to download and install the libjpeg library.  More information on libjpeg can be found at http://www.ijg.org/. However, building with JPEG support is obsolete, you should instead use the JPEG plugin or one of the other image supporting plugins (e.g., AbiMagick).
 
-You will need the "zlib" library to build AbiWord.   The zlib "compiled DLL" version can be found at http://www.gzip.org/zlib/.  Follow the instructions included in the package to install it in your build environment.
+You will need the "zlib" library to build AbiWord.  The zlib "compiled DLL" version can be found at http://www.gzip.org/zlib/.  Extract the complete archive (i.e. headers, library files, and the compiled dll) to a peer directory named 'libs\zlib\'.
 
-To build the distribution installer of AbiWord, you will need the latest version of NSIS 2, as well as the md5dll and untgz plugins.  These packages can be found at http://nsis.sourceforge.net/
+To build the distribution installer of AbiWord, you will need the latest version of NSIS 2, as well as the md5dll and untgz plugins.  These packages can be found at http://nsis.sourceforge.net/.  Additionally, the command make canonical can be used to build a directory structure useful for testing spellchecking and alternate languages.
 
-Install them according to the instructions.  If you do not install NSIS to C:\Program Files\NSIS, you will need to set your NSIS_ROOT environment variable to the path you chose.  
+Install them according to the instructions.  If you do not install NSIS to C:\Program Files\NSIS, you will need to add makensis.exe to your PATH variable.
 
 
 Building AbiWord:
@@ -275,7 +275,7 @@ This will build the AbiWord application and any associated tools and libraries. 
 
 A setup_abiword.exe will be built and located in a dist subdirectory, if your NSIS and plugin installs are correctly set up.
 
-Several build options are available and are detailed in the BUILD.txt file.  They are used by during the build by replacing the make command above with:
+Several build options are available and are detailed in the BUILD.txt file.  They are used during the build by replacing the make command above with:
 
 	make option1 option2
 
@@ -287,7 +287,7 @@ ABI_OPT_PERL=1			Enables Perl scripting
 ABI_OPT_LIBJPEG=1		Enables you to view JPEG images
 ABI_OPT_CURL=1			Enables automatic dictionary downloading
 
-If attempting to use the MSVC6 project files, follow the instructions in its README.TXT file. 
+If attempting to use the MSVC6 (or later) project files, follow the instructions in its README.TXT file. 
 
 
 QNX:
