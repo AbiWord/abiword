@@ -90,7 +90,7 @@ public:
 
 	virtual void			charData (const XML_Char * buffer, int length);
 
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, 
 										UT_uint32 lenData, 
 										const char * szEncoding = 0);
@@ -135,6 +135,7 @@ private:
 	UT_Vector	m_divClasses;
 	UT_GenericVector<UT_UTF8String *>	m_divStyles;
 	bool        bInTable(void);
+	bool        m_bFirstBlock;
 };
 
 #endif /* IE_IMP_XHTML_H */

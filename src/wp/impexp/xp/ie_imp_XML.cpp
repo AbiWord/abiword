@@ -123,11 +123,11 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	return m_error;
 }
 
-void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned char * pData, 
+bool IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned char * pData, 
 								 UT_uint32 lenData, const char * /*szEncoding*/)
 {
 	UT_DEBUGMSG(("IE_Imp_XML::pasteFromBuffer\n"));
-	UT_return_if_fail(pDocRange && pDocRange->m_pDoc);
+	UT_return_val_if_fail(pDocRange && pDocRange->m_pDoc,false);
 	setClipboard(pDocRange->m_pos1);
 
 	UT_XML default_xml;
@@ -145,7 +145,9 @@ void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned ch
 	if (m_error != UT_OK)
 	{
 		UT_DEBUGMSG(("Problem reading document\n"));
+		return false;
 	}
+	return true;
 }
 
 

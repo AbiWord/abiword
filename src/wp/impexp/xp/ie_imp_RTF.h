@@ -534,7 +534,7 @@ public:
 
 	virtual bool supportsLoadStylesOnly() {return true;}
 	virtual UT_Error	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
 	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return m_vecWord97Lists.getNthItem(i);}

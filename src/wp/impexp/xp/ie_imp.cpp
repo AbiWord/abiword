@@ -192,12 +192,13 @@ bool IE_Imp::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 
 // default impl, meant to abort
 
-void	  IE_Imp::pasteFromBuffer(PD_DocumentRange * pDocRange,
+bool	  IE_Imp::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				  const unsigned char * pData, 
 				  UT_uint32 lenData, 
 				  const char * szEncoding)
 {
   UT_ASSERT_NOT_REACHED();
+  return false;
 }
 
 PD_Document * IE_Imp::getDoc () const

@@ -2010,9 +2010,18 @@ IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux *
 
 IE_Imp_TableHelper::~IE_Imp_TableHelper ()
 {
-	UT_VECTOR_PURGEALL(CellHelper *, m_thead);
-	UT_VECTOR_PURGEALL(CellHelper *, m_tfoot);
-	UT_VECTOR_PURGEALL(CellHelper *, m_tbody);
+	if(m_thead.getItemCount() > 0)
+	{
+		UT_VECTOR_PURGEALL(CellHelper *, m_thead);
+	}
+	if(m_tfoot.getItemCount() > 0)
+	{	
+		UT_VECTOR_PURGEALL(CellHelper *, m_tfoot);
+	}
+	if(m_tbody.getItemCount() > 0)
+	{	
+		UT_VECTOR_PURGEALL(CellHelper *, m_tbody);
+	}
 }
 
 bool IE_Imp_TableHelper::tableStart (void)

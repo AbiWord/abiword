@@ -100,6 +100,8 @@ public:
 
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
+	const char * recognizeContentsType (const char * szBuf,
+									UT_uint32 iNumbytes);
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
@@ -148,7 +150,7 @@ public:
 	~IE_Imp_Text() {}
 
 	virtual UT_Error	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 
 protected:

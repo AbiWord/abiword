@@ -225,7 +225,8 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 	m_iNewImage(0),
 	m_szBookMarkName(NULL),
 	m_addedPTXSection(false),
-	m_iPreCount(0)
+	m_iPreCount(0),
+	m_bFirstBlock(false)
 {
 }
 
@@ -600,13 +601,13 @@ UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 	return e;
 }
 
-void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
+bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								   const unsigned char * pData, 
 								   UT_uint32 lenData, 
 								   const char * szEncoding)
 {
-	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
-	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
+	UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
+	UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
 	
 	PD_Document * newDoc = new PD_Document(getDoc()->getApp());
 	newDoc->createRawDocument();
@@ -623,7 +624,7 @@ void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		delete p;
 		delete newXML;
 		UNREFP( newDoc);
-		return;
+		return false;
 	}
 	newDoc->finishRawCreation();
 	//
@@ -636,6 +637,7 @@ void IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	delete p;
 	delete newXML;
 	UNREFP( newDoc);
+	return true;
 	//	setClipboard (pDocRange->m_pos1);
 
 }
@@ -959,7 +961,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			listAtts[propsPos] = props.c_str();
 
 			X_CheckError(appendStrux(PTX_Block, listAtts));
-
+			m_bFirstBlock = true;
 			listAtts[propsPos] = temp;
 
 			// append a field
@@ -1877,6 +1879,7 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 		{
 			UT_return_val_if_fail(0,false);
 		}
+	m_bFirstBlock = true;
 	m_parseState = _PS_Block;
 
 	_data_NewBlock (); // warn XML charData() handler that a new block is beginning
@@ -1909,7 +1912,7 @@ bool IE_Imp_XHTML::requireSection ()
 			UT_return_val_if_fail(0,false);
 		}
 	m_parseState = _PS_Sec;
-
+	m_bFirstBlock = false;
 	m_addedPTXSection = true;
 	return true;
 }
@@ -1917,7 +1920,15 @@ bool IE_Imp_XHTML::requireSection ()
 bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_DEBUGMSG(("XHTML Import - appendStruxStrux type %d document %x \n",pts,getDoc()));
-
+	if(pts == PTX_Section)
+	{
+		m_bFirstBlock = false;
+		m_addedPTXSection = true;
+	}
+	else if(pts == PTX_Block)
+	{
+		m_bFirstBlock = true;
+	}
 	if(!bInTable())
 		{
 			return getDoc()->appendStrux(pts,attributes);
@@ -1931,6 +1942,14 @@ bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 
 bool IE_Imp_XHTML::appendFmt( const XML_Char ** attributes)
 {
+	if(!m_addedPTXSection)
+		{
+			appendStrux(PTX_Section,NULL);
+		}
+	if(!m_bFirstBlock)
+		{
+			appendStrux(PTX_Block,NULL);
+		}
 	if(!bInTable())
 		{
 			return getDoc()->appendFmt(attributes);
@@ -1967,6 +1986,15 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
 
 bool IE_Imp_XHTML::appendSpan(const UT_UCSChar * p, UT_uint32 length)
 {
+	if(!m_addedPTXSection)
+		{
+			appendStrux(PTX_Section,NULL);
+		}
+	if(!m_bFirstBlock)
+		{
+			appendStrux(PTX_Block,NULL);
+		}
+
 	if(!bInTable())
 		{
 			return getDoc()->appendSpan(p,length);
@@ -1982,6 +2010,14 @@ bool IE_Imp_XHTML::appendSpan(const UT_UCSChar * p, UT_uint32 length)
 
 bool IE_Imp_XHTML::appendObject(PTObjectType pto, const XML_Char ** attributes)
 {
+	if(!m_addedPTXSection)
+		{
+			appendStrux(PTX_Section,NULL);
+		}
+	if(!m_bFirstBlock)
+		{
+			appendStrux(PTX_Block,NULL);
+		}
 	if(!bInTable())
 		{
 			return getDoc()->appendObject(pto,attributes);

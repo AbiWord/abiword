@@ -69,7 +69,7 @@
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 #include "xap_UnixDialogHelper.h"
-
+#include "ut_iconv.h"
 #include "fv_View.h"
 #include "fp_Run.h"
 
@@ -621,12 +621,51 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     }
 	else if (AP_UnixClipboard::isHTMLTag (szFormatFound))
 	{
-		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
-		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
+		UT_DEBUGMSG(("iLen = %d \n",iLen));
+		IE_Imp_Text_Sniffer SniffBuf;
+		const char * szRes = SniffBuf.recognizeContentsType(reinterpret_cast<const char *>(pData),iLen);
+		bool bres = false;
+		if(UT_strcmp(szRes,"none") != 0)
+		{
+			UT_DEBUGMSG(("Data is type %s \n",szRes));
 
-		IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
-		pImpHTML->pasteFromBuffer(pDocRange,pData,iLen);
-		DELETEP(pImpHTML);
+		//		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
+			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
+			UT_uint32 iread,iwritten = 0;
+			const char * szutf8= static_cast<const char *>(UT_convert(reinterpret_cast<const char *>(pData),iLen,szRes,"UTF-8",&iread,&iwritten));
+			xxx_UT_DEBUGMSG(("Char is %s \n",szutf8));
+			IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
+			bres = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(szutf8),iwritten,"UTF-8");
+			free(const_cast<char *>(szutf8));
+			DELETEP(pImpHTML);
+		}
+		else
+		{
+			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
+			IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
+			bres = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(pData),iLen);
+			DELETEP(pImpHTML);
+		}
+		if(!bres)
+		{
+			//
+			// Try plain text.
+			//
+			UT_DEBUGMSG(("DOing text paste not HTML  type %s \n",szRes));
+			bFoundOne = m_pClipboard->getTextData(tFrom,reinterpret_cast<const void **>(&pData),&iLen, &szFormatFound);
+			if(bFoundOne)
+			{
+		
+				IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
+				pImpText->pasteFromBuffer(pDocRange,pData,iLen);
+				DELETEP(pImpText);
+			}
+			else
+			{
+				UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
+				return;
+			}
+		}
 	}
     else if (AP_UnixClipboard::isImageTag(szFormatFound))
       {

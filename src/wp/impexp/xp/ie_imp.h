@@ -134,7 +134,7 @@ public:
 	virtual UT_Error	importFile(const char * szFilename) = 0;
 
 	// default impl
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+	virtual  bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 						const unsigned char * pData, 
 						UT_uint32 lenData, 
 						const char * szEncoding = 0);

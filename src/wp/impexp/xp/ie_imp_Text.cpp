@@ -337,6 +337,28 @@ UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * szBuf,
   return UT_CONFIDENCE_POOR; // anything can be a text document - we'll unfairly weight this down
 }
 
+
+/*!
+  This sniffer is useful to convert text from the clipbaord.
+ */
+const char * IE_Imp_Text_Sniffer::recognizeContentsType(const char * szBuf,
+													   UT_uint32 iNumbytes)
+{
+  if (_recognizeUTF8 (szBuf, iNumbytes))
+  {
+	  return "UTF-8";
+  }
+  else if (UE_BigEnd == _recognizeUCS2(szBuf, iNumbytes, false))
+  {
+	  return XAP_EncodingManager::get_instance()->getUCS2BEName();
+  }
+  else if (UE_LittleEnd == _recognizeUCS2(szBuf, iNumbytes, false))
+  {
+	  return XAP_EncodingManager::get_instance()->getUCS2LEName();
+  }
+  return "none";
+}
+
 /*!
   Check buffer for UTF-8 encoded characters
  \param szBuf Buffer to check
@@ -958,12 +980,12 @@ void IE_Imp_Text::_setEncoding(const char *szEncoding)
 // TODO UCS-2 which handles Windows's unicode clipboard.  8-bit data is
 // TODO always interpreted using the system default encoding which can be wrong.
 
-void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
+bool IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								  const unsigned char * pData, UT_uint32 lenData,
 								  const char *szEncoding)
 {
-	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
-	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
+	UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
+	UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
 
 	// Attempt to guess whether we're pasting 8 bit or unicode text
 	if (szEncoding)
@@ -974,5 +996,6 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	ImportStreamClipboard stream(pData, lenData);
 	setClipboard (pDocRange->m_pos1);
 	_parseStream(&stream);
+	return true;
 }
 

@@ -9690,11 +9690,11 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
+bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 								 const unsigned char * pData, UT_uint32 lenData, const char * /* szEncoding */)
 {
-	UT_return_if_fail(getDoc() == pDocRange->m_pDoc);
-	UT_return_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2);
+	UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
+	UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
 
 	m_newParaFlagged = false;
 	m_newSectionFlagged = false;
@@ -9709,7 +9709,7 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	// to do a paste, we set the fp to null and let the
 	// read-a-char routines know about our paste buffer.
 
-	UT_return_if_fail(m_pImportFile==NULL);
+	UT_return_val_if_fail(m_pImportFile==NULL,false);
 
 	// note, we skip the _writeHeader() call since we don't
 	// want to assume that selection starts with a section
@@ -9720,7 +9720,7 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	m_lenPasteBuffer = 0;
 	m_pCurrentCharInPasteBuffer = NULL;
 
-	return;
+	return true;
 }
 
 
