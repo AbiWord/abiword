@@ -65,6 +65,7 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dlg_FontChooser.h"
 #include "xap_Dlg_Print.h"
+#include "xap_Dlg_PrintPreview.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_Dlg_Zoom.h"
 #include "xap_Dlg_Insert_Symbol.h"
@@ -226,6 +227,7 @@ public:
 	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
+        static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn fileInsertGraphic;
 
 	static EV_EditMethod_Fn undo;
@@ -519,6 +521,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(pageSetup),			0,	""),
 	EV_EditMethod(NF(print),				0,	""),
 	EV_EditMethod(NF(printTB),				0,	""), // avoid query if possible
+	EV_EditMethod(NF(printPreview), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 
 	EV_EditMethod(NF(undo),					0,	""),
@@ -3631,6 +3634,52 @@ static UT_Bool _toggleSpan(FV_View * pView,
 /*****************************************************************/
 /*****************************************************************/
 
+static UT_Bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics, 
+			       FV_View * pPrintView, const char *pDocName,
+			       UT_uint32 nCopies, UT_Bool bCollate,
+			       UT_sint32 iWidth,  UT_sint32 iHeight,
+			       UT_uint32 nToPage, UT_uint32 nFromPage)
+{
+        UT_uint32 j,k;
+
+        dg_DrawArgs da;
+	memset(&da, 0, sizeof(da));
+	da.pG = NULL;
+
+	if(pGraphics->startPrint())
+	  {
+	    if (bCollate)
+	      {
+		for (j=1; (j <= nCopies); j++)
+		  for (k=nFromPage; (k <= nToPage); k++)
+		    {
+		      // NB we will need a better way to calc 
+		      // pGraphics->m_iRasterPosition when 
+		      // iHeight is allowed to vary page to page
+		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
+		      pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
+		      pPrintView->draw(k-1, &da);
+		    }
+	      }
+	    else
+	      {
+		for (k=nFromPage; (k <= nToPage); k++)
+		  for (j=1; (j <= nCopies); j++)
+		    {
+		      // NB we will need a better way to calc
+		      // pGraphics->m_iRasterPosition when 
+		      // iHeight is allowed to vary page to page
+		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
+		      pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
+		      pPrintView->draw(k-1, &da);
+		    }
+	      }
+	    pGraphics->endPrint();
+	  }
+	
+	return UT_TRUE;
+}
+
 static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -3683,49 +3732,15 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		UT_uint32 nCopies = pDialog->getNrCopies();
 		UT_Bool bCollate = pDialog->getCollate();
 
-		dg_DrawArgs da;
-		memset(&da, 0, sizeof(da));
-		da.pG = NULL;
-
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
 		UT_sint32 iWidth = pDocLayout->getWidth();
 		UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
-		
-		UT_uint32 j,k;
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
 
-		if(pGraphics->startPrint())
-		{
-			if (bCollate)
-			{
-				for (j=1; (j <= nCopies); j++)
-					for (k=nFromPage; (k <= nToPage); k++)
-					{
-						// NB we will need a better way to calc 
-						// pGraphics->m_iRasterPosition when 
-						// iHeight is allowed to vary page to page
-						pGraphics->m_iRasterPosition = (k-1)*iHeight;
-						pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
-						pPrintView->draw(k-1, &da);
-					}
-			}
-			else
-			{
-				for (k=nFromPage; (k <= nToPage); k++)
-					for (j=1; (j <= nCopies); j++)
-					{
-						// NB we will need a better way to calc
-						// pGraphics->m_iRasterPosition when 
-						// iHeight is allowed to vary page to page
-						pGraphics->m_iRasterPosition = (k-1)*iHeight;
-						pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
-						pPrintView->draw(k-1, &da);
-					}
-			}
-			pGraphics->endPrint();
-		}
+		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
+				iWidth,  iHeight, nToPage, nFromPage);
 
 		delete pDocLayout;
 		delete pPrintView;
@@ -3736,6 +3751,66 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+}
+
+static UT_Bool s_doPrintPreview(FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_PrintPreview * pDialog
+		= (XAP_Dialog_PrintPreview *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINTPREVIEW));
+	UT_ASSERT(pDialog);
+
+	FL_DocLayout* pLayout = pView->getLayout();
+	PD_Document * doc = pLayout->getDocument();
+
+	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
+	pDialog->setDocumentPathname((doc->getFilename())
+				     ? doc->getFilename()
+				     : pFrame->getTempNameFromTitle());
+
+	pDialog->runModal(pFrame);
+
+	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
+	
+	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+	pDocLayout->formatAll();
+	FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
+	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages();
+	
+	if (nToPage > pDocLayout->countPages())
+	  {
+	    nToPage = pDocLayout->countPages();
+	  }
+		
+	UT_uint32 nCopies = 1;
+	UT_Bool bCollate  = UT_FALSE;
+	
+	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
+	// BUGBUG assumes all pages are same size and orientation
+	UT_sint32 iWidth = pDocLayout->getWidth();
+	UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
+	
+	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
+	
+	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
+			iWidth,  iHeight, nToPage, nFromPage);
+
+	delete pDocLayout;
+	delete pPrintView;
+	
+	pDialog->releasePrinterGraphicsContext(pGraphics);
+
+	pDialogFactory->releaseDialog(pDialog);
+				     
+        return UT_TRUE;
 }
 
 static UT_Bool s_doZoomDlg(FV_View * pView)
@@ -3923,6 +3998,12 @@ Defun1(printTB)
 
 	ABIWORD_VIEW;
 	return s_doPrint(pView,UT_TRUE);
+}
+
+Defun1(printPreview)
+{
+        ABIWORD_VIEW;
+	return s_doPrintPreview(pView);
 }
 
 Defun1(pageSetup)

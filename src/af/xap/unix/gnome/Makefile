@@ -28,6 +28,7 @@ CPPSRCS=		xap_UnixGnomeApp.cpp               \
 			xap_UnixGnomeDlg_Insert_Symbol.cpp \
 			xap_UnixGnomeDlg_MessageBox.cpp    \
 			xap_UnixGnomeDlg_Print.cpp         \
+			xap_UnixGnomeDlg_PrintPreview.cpp  \
 			xap_UnixGnomeDlg_Zoom.cpp          \
 			xap_UnixGnomeFrame.cpp 	           \
 			xap_UnixGnomePrintGraphics.cpp     \

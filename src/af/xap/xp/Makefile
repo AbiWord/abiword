@@ -34,6 +34,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_FontChooser.cpp		\
 		xap_Dlg_MessageBox.cpp		\
 		xap_Dlg_Print.cpp		\
+		xap_Dlg_PrintPreview.cpp        \
 		xap_Dlg_WindowMore.cpp		\
 		xap_Dlg_Zoom.cpp		\
 		xap_Dlg_Insert_Symbol.cpp		\

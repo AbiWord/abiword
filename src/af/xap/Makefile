@@ -34,6 +34,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_MessageBox.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Print.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_PrintPreview.$(OBJ_SUFFIX)           \
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_WindowMore.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Zoom.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)			\
@@ -76,6 +77,7 @@ PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Insert_Symbol.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_MessageBox.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Print.$(OBJ_SUFFIX) 	\
+			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_PrintPreview.$(OBJ_SUFFIX) \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Zoom.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Frame.$(OBJ_SUFFIX)           \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)PrintGraphics.$(OBJ_SUFFIX)
@@ -94,6 +96,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Print.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_Dlg_PrintPreview.$(OBJ_SUFFIX)                    \
 		$(OBJDIR)/xap_Dlg_WindowMore.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Zoom.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_Insert_Symbol.$(OBJ_SUFFIX)				\

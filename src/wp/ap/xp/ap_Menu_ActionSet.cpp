@@ -75,6 +75,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	"closeWindow",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	"pageSetup",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,	"print",			NULL,					NULL);
+
+#ifdef HAVE_GNOME
+	_s(AP_MENU_ID_FILE_PRINT_PREVIEW, 0,1,0, "printPreview", NULL, NULL);
+#endif
+
 	_s(AP_MENU_ID_FILE_RECENT_1,	0,0,0,	"openRecent_1",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_2,	0,0,0,	"openRecent_2",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_3,	0,0,0,	"openRecent_3",		NULL,					ap_GetLabel_Recent);

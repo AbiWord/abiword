@@ -65,6 +65,7 @@
 #	include "tb_open.xpm"
 #	include "tb_paste.xpm"
 #	include "tb_print.xpm"
+#       include "tb_print_preview.xpm"
 #	include "tb_redo.xpm"
 #	include "tb_save.xpm"
 #	include "tb_save_as.xpm"
@@ -138,6 +139,7 @@
 	DefineToolbarIcon(tb_open_xpm)
 	DefineToolbarIcon(tb_paste_xpm)
 	DefineToolbarIcon(tb_print_xpm)
+        DefineToolbarIcon(tb_print_preview_xpm)
 	DefineToolbarIcon(tb_redo_xpm)
 	DefineToolbarIcon(tb_save_xpm)
 	DefineToolbarIcon(tb_save_as_xpm)

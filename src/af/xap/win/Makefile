@@ -29,6 +29,7 @@ CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32Dlg_FontChooser.cpp		\
 			xap_Win32Dlg_MessageBox.cpp		\
 			xap_Win32Dlg_Print.cpp			\
+			xap_Win32Dlg_PrintPreview.cpp           \
 			xap_Win32Dlg_WindowMore.cpp		\
 			xap_Win32Dlg_Zoom.cpp			\
 			xap_Win32Dlg_Insert_Symbol.cpp	\

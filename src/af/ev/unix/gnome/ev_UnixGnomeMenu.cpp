@@ -46,6 +46,11 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 
+// hack to get the print-preview menu icon
+#include "tb_menu_print_preview.xpm"
+
+static UT_Bool s_init = UT_FALSE;
+
 /*****************************************************************/
 
 struct __Aux {
@@ -145,6 +150,34 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 	: EV_UnixMenu(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 	m_pUIInfo = NULL;
+
+	if(!s_init)
+		{
+			/* register non-standard pixmaps with the gnome-stock engine */
+			s_init = UT_TRUE;
+
+			static struct AbiWordStockPixmap{
+				int width, height;
+				char const * const name;
+				gchar **xpm_data;
+			} const entry_names [] = {
+				{ 16, 16, "Menu_AbiWord_PrintPreview", tb_menu_print_preview_xpm },
+				{ 0, 0, NULL, NULL}
+			};
+
+			static GnomeStockPixmapEntry entry[sizeof(entry_names)/sizeof(struct AbiWordStockPixmap)-1];
+
+			int i = 0;
+
+			for (i = 0; entry_names[i].name != NULL ; i++) {
+				entry[i].data.type = GNOME_STOCK_PIXMAP_TYPE_DATA;
+				entry[i].data.width = entry_names[i].width;
+				entry[i].data.height = entry_names[i].height;
+				entry[i].data.xpm_data = entry_names[i].xpm_data;
+				gnome_stock_pixmap_register (entry_names[i].name,
+											 GNOME_STOCK_PIXMAP_REGULAR, entry + i);
+			}
+		}
 }
 
 EV_UnixGnomeMenu::~EV_UnixGnomeMenu(void)
@@ -179,6 +212,8 @@ void EV_UnixGnomeMenu::s_getStockPixmapFromName (const char *name,
 		{"_Spelling...", GNOME_STOCK_MENU_SPELLCHECK},
 		{"_Options...", GNOME_STOCK_MENU_PREF},
 		{"Date and _Time...", GNOME_STOCK_MENU_TIMER},
+		{"Page Set_up...", GNOME_STOCK_MENU_PRINT},
+		{"Print P_review", "Menu_AbiWord_PrintPreview"},
 		{"_About", GNOME_STOCK_MENU_ABOUT},
 		{NULL, NULL}
 	};

@@ -34,6 +34,9 @@ BeginLayout(FileEditOps)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT)
+#ifdef HAVE_GNOME
+        ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
+#endif
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
