@@ -3459,6 +3459,8 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	fp_HyperlinkRun * pH = pRun->getHyperlink();
 
 	UT_ASSERT(pH);
+	if(!pH)
+		return;
 
 	const XML_Char * pTarget = pH->getTarget();
 
