@@ -26,6 +26,12 @@ REQUIRE=		_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _ABIDISTFILES_
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBICONV clean_LIBWV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+XML_OPTION = --with-expat=peer
+else
+XML_OPTION = --with-libxml2
+endif
+
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -41,18 +47,23 @@ realclean::	$(REQUIREREALCLEAN)
 #################################################################
 
 _ZLIB_:
-	@if [ -d $(ABI_ROOT)/../zlib ]; then					\
+	@if [ -r /usr/include/zlib.h ]; then
+		echo Found zlib in system location;
+	else	
+	    if [ -d $(ABI_ROOT)/../zlib ]; then					\
 		echo Found zlib in peer directory;				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib;		\
-	else									\
+	    else									\
 		echo zlib not found;						\
-		echo TODO provide a nicer error message;			\
-		echo TODO with instructions for obtaining it;			\
 		exit 1;								\
+	fi
 	fi
 
 _LIBPNG_:
-	@if [ -d $(ABI_ROOT)/../libpng ]; then					\
+	@if [ -r /usr/include/png.h ]; then
+	    echo Found libpng in system location;
+	    else
+	if [ -d $(ABI_ROOT)/../libpng ]; then					\
 		echo Found libpng in peer directory;				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;		\
 	else									\
@@ -60,6 +71,7 @@ _LIBPNG_:
 		echo TODO provide a nicer error message;			\
 		echo TODO with instructions for obtaining it;			\
 		exit 1;								\
+	fi
 	fi
 
 # Right now, we can only build wv as a peer, not in the
@@ -70,7 +82,7 @@ _LIBWV_:
 		echo Found libwv in peer directory;		\
 		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
 			cd $(ABI_ROOT)/../wv; 			\
-			./configure --with-peer-iconv=abi;	\
+			./configure --with-peer-iconv=abi $XML_OPTION;	\
 		fi;						\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\

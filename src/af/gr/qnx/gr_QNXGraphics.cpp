@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <photon/Pf.h>
 
 #include "xap_QNXApp.h"
 #include "gr_QNXGraphics.h"
@@ -160,6 +161,14 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+void GR_QNXGraphics::setLineProperties ( double inWidthPixels,
+					    GR_QNXGraphics::JoinStyle inJoinStyle,
+					    GR_QNXGraphics::CapStyle inCapStyle,
+					    GR_QNXGraphics::LineStyle inLineStyle )
+    {
+    //XXX: ???
+    
+    }
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
 {
 	/*Unix uses a fixed value of 100dpi for this value,
@@ -259,38 +268,13 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 */
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	PhRect_t rect;
 	const char *font;
-	int 	 indices, penpos;
-	UT_UCSChar buffer[1];
-
-	buffer[0]=c;
+	FontRender metrics;
 if (!m_pFont || !(font = m_pFont->getFont())) {
 		return 0;
 	}
-
-	indices = 1;			
-	penpos = 0;			
-/*
-	printf("wide character %d (0x%x) [%c] in %s ==\n", c, c, (char)c, font);
-	printf("multi byte char 0x%x 0x%x 0x%x 0x%x (%d) \n", buffer[0], buffer[1], buffer[2], buffer[3], len);
-*/
-	PfExtentTextCharPositions(&rect, 		/* Rect extent */
-				  NULL,			/* Position offset */
-				  (char*)buffer,	   	/* Buffer to hit */
-				  font, 		/* Font buffer uses */
-				  &indices,		/* Where to get pen pos from */
-				  &penpos, 		/* Where to store pen pos */
-				  1,			/* Number of indices */
-				  PF_WIDE_CHARS,		/* Flags */
-				  0,			/* Length of buffer (0 = use strlen) */
-				  0, 			/* Number of characters to skip */
-				  NULL);		/* Clipping rectangle? */
-/*
-	printf("gives width %d and char = 0x%x\n", penpos,c);
-*/
-	
-	return penpos;
+    PfGlyph(font,c,&metrics,NULL,NULL,NULL);
+    return metrics.width;
 }
 
 /*** 
