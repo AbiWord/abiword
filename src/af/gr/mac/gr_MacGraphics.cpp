@@ -18,30 +18,35 @@
  * 02111-1307, USA.
  */
 
+#include <Appearance.h>
+#include <Fonts.h>
 
 #include "gr_MacGraphics.h"
-
+#include "gr_MacFont.h"
+#include "xap_MacFontManager.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
-/* UNDOCUMENTED feature for public beta. */
-#ifndef CreateCGContextForPort
-extern "C" {
-OSStatus CreateCGContextForPort( CGrafPtr port, CGContextRef* outContext );	// in build 4I10.
-OSStatus BeginCGSContextForPort(CGrafPtr thePort, CGContextRef *outContext);	// in prior build eg PB.
-};
-#endif
 
-
-GR_MacGraphics::GR_MacGraphics(CGrafPtr port, XAP_App * app)
+GR_MacGraphics::GR_MacGraphics(CGrafPtr port, XAP_MacFontManager * fontManager, XAP_App * app)
       : GR_Graphics ()
 {
+    Rect rect;
     OSStatus err;
     UT_ASSERT (port != NULL);
+	UT_ASSERT (fontManager);
 
-    err = BeginCGSContextForPort (port, &m_CGContext );
+	m_pMacFontManager = fontManager;
+    err = CreateCGContextForPort (port, &m_CGContext );
     UT_ASSERT (err == noErr);
+    ::GetPortBounds(port, &rect);
+    CGContextTranslateCTM(m_CGContext, 0, (float)(rect.bottom - rect.top));
+    // Be aware that by performing a negative scale in the following line of
+    // code, your text will also be flipped
+    CGContextScaleCTM(m_CGContext, 1, -1);
+
     
+	m_CGFont   = NULL;
     m_pMacFont = NULL;
 
     UT_RGBColor c;
@@ -61,6 +66,9 @@ GR_MacGraphics::~GR_MacGraphics ()
 {
     CGContextRelease (m_CGContext);
     m_CGContext = NULL; 
+    if (m_CGFont) {
+        CGFontRelease (m_CGFont);
+    }
     if (m_pMacFont) {
         delete m_pMacFont;
     }
@@ -75,34 +83,38 @@ void GR_MacGraphics::drawChars(const UT_UCSChar* pChars,
 
 void GR_MacGraphics::setFont(GR_Font* pFont)
 {
-    MacFont * macFont = dynamic_cast<MacFont *>(pFont);
+    GR_MacFont * macFont = dynamic_cast<GR_MacFont *>(pFont);
     UT_ASSERT (macFont != NULL);
-    CGContextSelectFont (m_CGContext, macFont->m_font, macFont->m_pointSize, kCGEncodingFontSpecific);
+	ATSFontRef	fontRef;
+    
+    if (m_CGFont) {
+        CGFontRelease (m_CGFont);
+    }
+	fontRef = macFont->getFontRef();
+    m_CGFont = CGFontCreateWithPlatformFont ((void*)&fontRef);
+    ::CGContextSetFont(m_CGContext, m_CGFont);
+	::CGContextSetFontSize (m_CGContext, macFont->getSize());
 }
 
 
 UT_uint32 GR_MacGraphics::getFontAscent()
 {
-    // FIXME
     UT_ASSERT (m_pMacFont != NULL);
-    return m_pMacFont->m_pointSize;
+    return m_pMacFont->getAscent();
 }
 
 
 UT_uint32 GR_MacGraphics::getFontDescent()
 {
-    // FIXME
     UT_ASSERT (m_pMacFont != NULL);
-    return m_pMacFont->m_pointSize;
+    return m_pMacFont->getDescent();
 }
 
 
 UT_uint32 GR_MacGraphics::getFontHeight()
 {
-    // FIXME
     UT_ASSERT (m_pMacFont != NULL);
-    return m_pMacFont->m_pointSize;
-    return 0;
+    return m_pMacFont->getHeight();
 }
 
 
@@ -115,14 +127,34 @@ UT_uint32 GR_MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 void GR_MacGraphics::setColor(UT_RGBColor& clr)
 {
-    CGContextSetRGBStrokeColor (m_CGContext, clr.m_red, clr.m_grn, clr.m_blu, 1.0f);
+    ::CGContextSetRGBStrokeColor (m_CGContext, clr.m_red, clr.m_grn, clr.m_blu, 1.0f);
 }
 
 
 GR_Font* GR_MacGraphics::getGUIFont()
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return NULL;
+    // TODO: move this to GR_MacFont as it belongs to it.
+    
+    OSStatus err;
+    Style	fontStyle;
+    SInt16 fontSize;
+    
+    static GR_MacFont *guiFont = NULL;
+    if (guiFont == NULL) {
+		ATSUFontID	atsFontId = kATSUInvalidFontID;
+        FMFontFamily fontFamily;
+		Str255 fontName;
+        // FIXME: choose the right script
+        err = ::GetThemeFont (kThemeApplicationFont, smRoman, fontName, &fontSize, &fontStyle);
+        fontFamily = ::FMGetFontFamilyFromName (fontName);
+		// This one is useful as it convert a QD font to an ATSUI FontID.
+		err = ::ATSUFONDtoFontID(fontFamily, fontStyle, &atsFontId);
+		UT_ASSERT (atsFontId != kATSUInvalidFontID);
+		
+		guiFont = new GR_MacFont (atsFontId);
+    }
+
+    return guiFont;
 }
 
 GR_Font* GR_MacGraphics::findFont(
@@ -133,11 +165,12 @@ GR_Font* GR_MacGraphics::findFont(
 		const char* pszFontStretch, 
 		const char* pszFontSize)
 {
-    float		size = convertDimension(pszFontSize);
 
 //    CGContextSelectFont (m_CGContext, pszFontFamily, pszFontSize, kCGEncodingFontSpecific);
-
-    m_pMacFont = new MacFont(pszFontFamily, size);
+    // TODO retrieve the atsuiFont
+	ATSUFontID atsuiFont = m_pMacFontManager->findFont (pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, 
+	            convertDimension(pszFontSize));
+    m_pMacFont = new GR_MacFont(atsuiFont);
     return(m_pMacFont);
 }
 
@@ -336,7 +369,7 @@ UT_uint32 GR_MacGraphics::getFontAscent(GR_Font * font)
 {
     // FIXME
     UT_ASSERT (font != NULL);
-    return ((MacFont *)font)->m_pointSize;
+    return ((GR_MacFont *)font)->getAscent();
 }
 
 
@@ -344,7 +377,7 @@ UT_uint32 GR_MacGraphics::getFontDescent(GR_Font *font)
 {
     // FIXME
     UT_ASSERT (font != NULL);
-    return ((MacFont *)font)->m_pointSize;
+    return ((GR_MacFont *)font)->getDescent();
 }
 
 
@@ -352,7 +385,7 @@ UT_uint32 GR_MacGraphics::getFontHeight(GR_Font *font)
 {
     // FIXME
     UT_ASSERT (font != NULL);
-    return ((MacFont *)font)->m_pointSize;
+    return ((GR_MacFont *)font)->getHeight();
 }
 
 

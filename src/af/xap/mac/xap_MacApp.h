@@ -30,6 +30,7 @@
 #include "xap_MacModule.h"
 
 class XAP_Args;
+class XAP_MacFontManager;
 class AP_MacToolbar_Icons;
 
 /*****************************************************************
@@ -51,6 +52,8 @@ public:
 	virtual XAP_DialogFactory *				getDialogFactory(void);
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
 	virtual const char *					getUserPrivateDirectory(void);
+	XAP_MacFontManager * 					getFontManager (void)
+											{return m_pMacFontManager; };
 
    	void run ();
    	void terminate ()		{ m_finished = true; };		// simply set the finished flag to true
@@ -76,8 +79,10 @@ protected:
 	void DispatchEvent (const EventRecord & theEvent);
 	void HandleMenus (long menuSelection);
 
+	bool		_loadFonts (void);
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	bool					m_finished;
+	XAP_MacFontManager *		m_pMacFontManager;
 	
 	AP_MacToolbar_Icons *		m_pMacToolbarIcons;
 	AP_MacDialogFactory			m_dialogFactory;

@@ -47,7 +47,8 @@ PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)			\
 endif
 
 ifeq ($(ABI_FE), Mac)
-PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Tlbr_Icons.$(OBJ_SUFFIX)
+PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Tlbr_Icons.$(OBJ_SUFFIX)\
+			$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)
 else
 PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 endif

@@ -175,3 +175,35 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 }
 #endif
 
+
+#if 0 
+// Quartz version 
+static void Draw32BitARGBToContext(void * pBits, size_t width, size_t height, size_t bytesPerRow, CGContextRef context)
+{
+    CGRect rectangle;
+    CGDataProviderRef provider;
+    CGColorSpaceRef colorspace;
+    size_t size;
+    CGImageRef image;
+    size = bytesPerRow * height;
+    /* Create a data provider with a pointer to the memory bits */
+    provider = CGDataProviderCreateWithData(NULL, pBits, size, NULL);
+    /* Colorspace can be device, calibrated, or ICC profile based */
+    colorspace = CGColorSpaceCreateDeviceRGB();
+    /* Create the image */
+    image = CGImageCreate(width, height, 8 /* bitsPerComponent */, 32 /* bitsPerPixel */,
+                            bytesPerRow, colorspace,
+                            kCGImageAlphaFirst, provider, NULL, 0,
+                            kCGRenderingIntentDefault);
+    /* Once the image is created we can release our reference to the
+    provider and the colorspace. They will be retained by the
+    image */
+    CGDataProviderRelease(provider);
+    CGColorSpaceRelease(colorspace);
+    /* Determine the location where the image will be drawn in userspace */
+    rectangle = CGRectMake(0, 0, width, height);
+    /* Draw the image to the Core Graphics context */
+    CGContextDrawImage(context, rectangle, image);
+    CGImageRelease(image);
+}
+#endif

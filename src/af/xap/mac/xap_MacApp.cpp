@@ -49,6 +49,7 @@
 #include "xap_MacApp.h"
 #include "xap_MacClipboard.h"
 #include "xap_MacFrame.h"
+#include "xap_MacFontManager.h"
 #include "xap_MacTlbr_Icons.h"
 #include "xap_MacTlbr_ControlFactory.h"
 #include "ev_MacMenu.h"
@@ -67,10 +68,12 @@ XAP_MacApp::XAP_MacApp(XAP_Args * pArgs, const char * szAppName)
 
 	m_finished = false;
 	m_pMacToolbarIcons = 0;
+	m_pMacFontManager = NULL;
 }
 
 XAP_MacApp::~XAP_MacApp(void)
 {
+	DELETEP(m_pMacFontManager);
 	DELETEP(m_pMacToolbarIcons);
 }
 
@@ -80,6 +83,8 @@ bool XAP_MacApp::initialize(void)
 	
 	XAP_App::initialize();
 
+	if (!_loadFonts())
+		return false;
 
 	// load only one copy of the platform-specific icons.
 
@@ -146,6 +151,16 @@ const char * XAP_MacApp::getUserPrivateDirectory(void) {
 		
         return buf;                                     
 }
+
+
+bool XAP_MacApp::_loadFonts (void)
+{
+	m_pMacFontManager = new XAP_MacFontManager();
+	UT_ASSERT(m_pMacFontManager);
+	return true;
+}
+
+
 
 UT_uint32 XAP_MacApp::_getExeDir(char* /*pDirBuf*/, UT_uint32 /*iBufLen*/)
 {

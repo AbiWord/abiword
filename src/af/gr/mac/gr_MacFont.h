@@ -24,7 +24,9 @@
 
 #ifndef GR_MACFONT_h
 #define GR_MACFONT_h
- 
+
+#include <ATSUnicode.h>
+
 #include "ut_misc.h"
 #include "gr_Graphics.h"
 
@@ -34,17 +36,28 @@ class GR_MacFont : public GR_Font
 {
 public:
 	GR_MacFont(int font, int face, int pointSize);
+    // constructor from ASTUI font
+	GR_MacFont (ATSUFontID atsuId);
+    
     virtual ~GR_MacFont ();
-    UT_uint32 getFontAscent()
-    	{};
-	UT_uint32 getFontDescent()
-		{};
-	UT_uint32 getFontHeight()
-		{};
+    UT_uint32 getAscent();
+	UT_uint32 getDescent();
+	UT_uint32 getHeight();
+    UT_uint32 getSize ()
+		{ return m_pointSize; };
+    ATSFontRef getFontRef ()
+        { return m_fontRef; };
+	ATSUFontID getFontID ()
+		{ return m_fontID; };
+protected:
+	ATSUTextLayout		m_MeasurementText;
+	
+static void _quickAndDirtySetUnicodeTextFromASCII_C_Chars(UniCharArrayPtr *ucap, UniCharCount *ucc);
 private:
-	int m_font;
-	int m_face;
-	int m_pointSize;
+	ATSUFontID	m_fontID;
+    ATSFontRef m_fontRef;
+	UT_uint32	m_pointSize;
+void _initMeasurements ();
 };
 
 

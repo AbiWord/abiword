@@ -30,22 +30,14 @@
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "gr_Graphics.h"
+#include "gr_MacFont.h"
+#include "xap_MacFontManager.h"
 
-class MacFont : public GR_Font
-{
-public:
-	MacFont(const char * font, float pointSize)
-            { m_font = UT_strdup (font); m_pointSize = pointSize; };
-        virtual ~MacFont ()
-            { if (m_font) free (m_font); };
-	char *m_font;
-	float m_pointSize;
-};
 
 class GR_MacGraphics : public GR_Graphics
 {
 public:
-	GR_MacGraphics(CGrafPtr port, XAP_App * app);	/* for screen */
+	GR_MacGraphics(CGrafPtr port, XAP_MacFontManager * fontManager, XAP_App * app);	/* for screen */
 	virtual ~GR_MacGraphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
@@ -118,11 +110,13 @@ public:
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
-        CGContextRef m_CGContext;
-        MacFont	*m_pMacFont;
+	CGContextRef m_CGContext;
+	CGFontRef	m_CGFont;
+
+	GR_MacFont	*m_pMacFont;
         
-        UT_RGBColor m_3Dcolors[COUNT_3D_COLORS];
-	
+	UT_RGBColor m_3Dcolors[COUNT_3D_COLORS];
+	XAP_MacFontManager	*m_pMacFontManager;
 };
 
 #endif /* GR_MACGRAPHICS_h */

@@ -36,6 +36,7 @@
 #include "ap_MacLeftRuler.h"
 #include "ap_MacStatusBar.h"
 #include "xap_ViewListener.h"
+#include "xap_MacApp.h"
 
 
 AP_MacFrame::AP_MacFrame(XAP_MacApp * app)
@@ -203,9 +204,9 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
 //	bool bFocus;
-//	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
+	XAP_MacFontManager * fontManager = ((XAP_MacApp *) getApp())->getFontManager();
 	
-	pG = new GR_MacGraphics(m_MacWindowPort, /*fontManager,*/ getApp());
+	pG = new GR_MacGraphics(m_MacWindowPort, fontManager, getApp());
 	UT_ASSERT(pG);
 	pG->setZoomPercentage(iZoom);
 	

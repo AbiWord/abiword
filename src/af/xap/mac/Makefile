@@ -34,6 +34,7 @@ CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacDlg_PrintPreview.cpp     \
 			xap_MacDlg_WindowMore.cpp	\
 			xap_MacDlg_Zoom.cpp	\
+			xap_MacFontManager.cpp	\
 			xap_MacFrame.cpp			\
 			xap_MacModule.cpp			\
 			xap_MacTlbr_Icons.cpp

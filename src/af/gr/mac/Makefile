@@ -27,6 +27,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 ## CoreGraphics aka Quartz. Hence we don't use the QuickDraw version
 ## 
 CPPSRCS=		gr_MacGraphics.cpp	\
+			gr_MacFont.cpp		\
 			gr_MacImage.cpp
 
 TARGETS=		$(OBJS)

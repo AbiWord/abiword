@@ -61,11 +61,11 @@ void AP_MacStatusBar::setView(AV_View * pView)
     CGrafPtr controlPort;
     
 	DELETEP(m_pG);	
-//	XAP_MacApp * app = static_cast<XAP_MacApp *>(m_pFrame->getApp());
-//	XAP_MacFontManager * fontManager = app->getFontManager();
+	XAP_MacApp * app = static_cast<XAP_MacApp *>(m_pFrame->getApp());
+	XAP_MacFontManager * fontManager = app->getFontManager();
     UT_ASSERT (m_wStatusBar);
     controlPort = ::GetWindowPort (::GetControlOwner (m_wStatusBar));
-	GR_MacGraphics * pG = new GR_MacGraphics(controlPort, /*fontManager,*/ m_pFrame->getApp());
+	GR_MacGraphics * pG = new GR_MacGraphics(controlPort, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
