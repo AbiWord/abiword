@@ -219,6 +219,7 @@ public:
 	const UT_GenericVector<AD_Revision*> &         getRevisions() {return m_vRevisions;}
 	UT_uint32           getHighestRevisionId() const;
 	const AD_Revision*  getHighestRevision() const;
+	UT_sint32           getRevisionIndxFromId(UT_uint32 iId) const;
 
 	bool                isMarkRevisions() const{ return m_bMarkRevisions;}
 	bool                isShowRevisions() const{ return m_bShowRevisions;}

@@ -37,7 +37,19 @@ const XML_Char * s_RTF_AttrPropAdapter_Style::getProperty(const XML_Char * szNam
 
 const XML_Char * s_RTF_AttrPropAdapter_AP::getAttribute(const XML_Char * szName) const
 {
-    return 0;
+	// we should probably have something similar for attrs as PP_evalProperty() ...
+	const XML_Char * pValue = NULL;
+
+	if(pSpanAP && pSpanAP->getAttribute(szName, pValue))
+		return pValue;
+
+	if(pBlockAP && pBlockAP->getAttribute(szName, pValue))
+		return pValue;
+
+	if(pSectionAP && pSectionAP->getAttribute(szName, pValue))
+		return pValue;
+
+	return NULL;
 }
 
 const XML_Char * s_RTF_AttrPropAdapter_AP::getProperty(const XML_Char * szName) const 

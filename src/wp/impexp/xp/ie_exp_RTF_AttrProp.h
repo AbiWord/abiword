@@ -40,8 +40,6 @@ class PP_AttrProp;
 class ABI_EXPORT s_RTF_AttrPropAdapter
 {
 public:
-    // TODO: remove 'getAttribute'. I don't think it's being used and it's
-    //       not even implemented for the _AP version.
     virtual const XML_Char * getAttribute(const XML_Char * szName) const = 0;
 
     virtual const XML_Char * getProperty(const XML_Char * szName) const = 0;

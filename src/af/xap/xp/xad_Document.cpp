@@ -512,6 +512,23 @@ const char * AD_Document::getDocUUIDString() const
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+/*!
+    find revision with id iId and return its index in revision table
+    \param iId  -- id of revision we are interested in
+    \return     -- if found index into revision vector if not found < 0
+*/
+UT_sint32 AD_Document::getRevisionIndxFromId(UT_uint32 iId) const
+{
+	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
+	{
+		if(m_vRevisions.getNthItem(i)->getId() == iId)
+			return i;
+	}
+
+	return -1;
+}
+
+
 UT_uint32 AD_Document::getHighestRevisionId() const
 {
 	UT_uint32 iId = 0;

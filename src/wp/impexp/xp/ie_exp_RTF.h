@@ -171,7 +171,8 @@ protected:
 	void                            _get_LeftRight_Side(UT_String & LeftSide, UT_String & RightSide);
 	void                            _generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,UT_String &LevelNumbers, UT_uint32 & lenText, UT_uint32 & ifoundLevel);
 
-
+	void                            _output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara);
+	
 	UT_sint32			_findFont(const s_RTF_AttrPropAdapter * apa) const;
 	UT_sint32			_findFont(const _rtf_font_info * pfi) const;
 	void				_addFont(const _rtf_font_info * pfi);

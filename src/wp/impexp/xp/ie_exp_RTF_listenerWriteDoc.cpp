@@ -4655,6 +4655,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword("keepn");
 
 	m_pie->_write_tabdef(szTabStops);
+
+	m_pie->_output_revision(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument),true);
 }
 
 //////////////////////////////////////////////////////////////////

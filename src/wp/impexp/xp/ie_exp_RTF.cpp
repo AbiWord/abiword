@@ -24,11 +24,13 @@
 #include "ut_misc.h"
 #include "ut_units.h"
 #include "ut_vector.h"
+#include "ut_endian.h"
 #include "pt_Types.h"
 #include "ie_exp_RTF.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
+#include "pp_Revision.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
@@ -923,6 +925,50 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 //
 	_rtf_keyword("facingp"); // Allow odd-even headers/footers
 	_rtf_keyword("titlepg"); // Allow first page headers/footers
+
+	// revisions stuff
+	const UT_GenericVector<AD_Revision*> & Revs = getDoc()->getRevisions();
+
+	if(Revs.getItemCount())
+	{
+		_rtf_open_brace();
+		_rtf_keyword("*");
+		_rtf_keyword("revtbl");
+		
+		UT_UTF8String s;
+		UT_UCS4String s4;
+		
+		for(UT_sint32 i = 0; i < Revs.getItemCount(); ++i)
+		{
+			AD_Revision* pRev = Revs.getNthItem(i);
+			if(!pRev)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			s4 = pRev->getDescription();
+
+			// construct author name from our numerical id and comment
+			// (the id guarantees us uniqueness)
+			UT_UTF8String_sprintf(s, "rev %d (%s)",pRev->getId(),s4.utf8_str());
+			_rtf_open_brace();
+			_rtf_chardata(s.utf8_str(),s.byteLength());
+			_rtf_semi();
+			_rtf_close_brace();
+		}
+		
+		_rtf_close_brace();
+	}
+
+	// underline newly inserted text
+	_rtf_keyword("revprop", 3);
+	
+	if(getDoc()->isMarkRevisions())
+	{
+		_rtf_keyword("revisions");
+	}
+	
 	return (m_error == 0);
 }
 
@@ -1267,7 +1313,163 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	// TODO do something with our font-stretch and font-variant properties
 	// note: we assume that kerning has been turned off at global scope.
 
+	// MUST BE LAST after all other props have been processed
+	_output_revision(apa, false);
 }
+
+void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara)
+{
+	const XML_Char *szRevisions = apa.getAttribute("revision");
+	if (szRevisions && *szRevisions)
+	{
+		PP_RevisionAttr RA(szRevisions);
+
+		if(!RA.getRevisionsCount())
+		{
+			UT_return_if_fail( UT_SHOULD_NOT_HAPPEN );
+		}
+
+		// for now, we will just dump the lot; later we need to figure out how to deal
+		// with revision conflicts ...
+		for(UT_uint32 i = 0; i < RA.getRevisionsCount(); ++i)
+		{
+			const PP_Revision * pRev = RA.getNthRevision(i); // a revision found in our attribute
+			if(!pRev)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			UT_uint32 iId = pRev->getId();
+
+			// now we translated the revision id to and index into the revision table of
+			// the document
+			UT_sint32 iIndx = getDoc()->getRevisionIndxFromId(iId);
+			const UT_GenericVector<AD_Revision*> & RevTbl = getDoc()->getRevisions();
+			if(iIndx < 0 || RevTbl.getItemCount() == 0)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			AD_Revision * pRevTblItem = RevTbl.getNthItem(iIndx);
+			if(!pRevTblItem)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+			
+			
+			// the revisions in rtf are marked by a peculiar timestamp, which we now need
+			// to construct
+			time_t t = pRevTblItem->getStartTime();
+			struct tm * pT = gmtime(&t);
+
+			UT_uint32 iDttm = pT->tm_min | (pT->tm_hour << 6) | (pT->tm_mday << 11) | (pT->tm_mon << 16)
+				| (pT->tm_year << 20) | (pT->tm_wday << 29);
+
+			// Now that we have the int, we need to convert the 4 bytes to ascii string.
+			// We need to output this in little endian order, I think, since win32 is
+			// inherently LE
+			char Dttm[4];
+			const char * pDttm = (const char *) & iDttm;
+			
+#ifdef UT_LITTLE_ENDIAN
+			Dttm[0] = *pDttm;
+			Dttm[1] = *(pDttm + 1);
+			Dttm[2] = *(pDttm + 2);
+			Dttm[3] = *(pDttm + 3);
+#else
+			Dttm[3] = *pDttm;
+			Dttm[2] = *(pDttm + 1);
+			Dttm[1] = *(pDttm + 2);
+			Dttm[0] = *(pDttm + 3);
+#endif
+			UT_UTF8String s;
+
+			for(UT_uint32 j = 0; j < 4; j++)
+			{
+				if(pDttm[i] <= 127)
+				{
+					s += Dttm[i];
+				}
+				else
+				{
+					UT_String s2;
+					_rtf_nonascii_hex2((UT_sint32)Dttm[i], s2);
+					s += s2.c_str();
+				}
+			}
+			
+			if(iIndx < 0)
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				continue;
+			}
+
+			bool bRevisedProps = false;
+
+			const char * pAD     = bPara ? "pnrnot": "revised";
+			const char * pADauth = bPara ? "pnrauth" : "revauth";
+			const char * pADdttm = bPara ? "pnrdate" : "revdttm";
+			
+			const char * pDEL     = "deleted";
+			const char * pDELauth = "revauthdel";
+			const char * pDELdttm = "revdttmdel";
+
+			// it seems that block props cannot be changed in rev mode
+			const char * pCHauth = bPara ? NULL : "crauth";
+			const char * pCHdttm = bPara ? NULL : "crdate";
+
+			switch(pRev->getType())
+			{
+				case PP_REVISION_ADDITION_AND_FMT:
+					bRevisedProps = true;
+					// fall through
+				case PP_REVISION_ADDITION:
+					_rtf_keyword(pAD);
+					_rtf_keyword(pADauth, iIndx);
+					_rtf_keyword(pADdttm, iDttm);
+					break;
+					
+				case PP_REVISION_DELETION:
+					_rtf_keyword(pDEL);
+					_rtf_keyword(pDELauth, iIndx);
+					_rtf_keyword(pDELdttm, iDttm);
+					break;
+					
+				case PP_REVISION_FMT_CHANGE:
+					bRevisedProps = true;
+
+					if(bPara)
+					{
+						break;
+					}
+					
+					_rtf_keyword(pCHauth, iIndx);
+					_rtf_keyword(pCHdttm, iDttm);
+					break;
+
+				default:
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			}
+
+			if(bRevisedProps)
+			{
+				// need to dump the props that belong to our revision ...
+				// NB: this might be a recursive call, since _output_revision()
+				// gets (among others) called by _write_charfmt()
+				const PP_AttrProp * pSpanAP = pRev;
+				const PP_AttrProp * pBlockAP = NULL;
+				const PP_AttrProp * pSectionAP = NULL;
+				
+				_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, getDoc()));
+			}
+		} // for
+		
+	} // if(pRevisions)
+}
+
 
 /*!
  * Write out the formatting group for one style in the RTF header.
