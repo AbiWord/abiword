@@ -172,9 +172,14 @@ typedef		UT_sint32				UT_Error;
 #define E2B(err)		((err) == UT_OK)
 
 
-/* UGLY UGLY Iconv hack for win32.  I will suffer in the afterlife for this */
+/* UGLY UGLY Iconv hack for operating systems with strange declartions
+   for iconv.  Why, oh why can't they all be the same? <sob> I will
+   suffer in the afterlife for this - sam - dec 2000 */
 
-#if defined (WIN32) || defined(__QNXNTO__) || (defined (__MACH__) && defined (__APPLE__))
+#if defined (WIN32) || defined(__QNXNTO__) ||  \
+(defined (__MACH__) && defined (__APPLE__)) || \
+defined(__BEOS__) || defined (__AIX__) 
+
 #define ICONV_CONST const
 #else
 #define ICONV_CONST
