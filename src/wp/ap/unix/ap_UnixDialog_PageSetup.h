@@ -47,11 +47,13 @@ public:
  protected:
 	// construction functions
 	virtual GtkWidget * _constructWindow (void);
-	virtual void        _constructWindowContents (GtkWidget *container);
 	virtual void        _connectSignals (void);
+	GtkWidget *         _getWidget(const char * szNameBase, UT_sint32 level=0);
 
 	// pointers to all the action items
 	GtkWidget * m_window;
+	GtkWidget * m_wHelp;
+	GladeXML *  m_pXML;
 
 	typedef enum
 		{
@@ -76,6 +78,14 @@ public:
 	GtkWidget * m_spinMarginRight;
 	GtkWidget * m_spinMarginHeader;
 	GtkWidget * m_spinMarginFooter;
+
+	GtkWidget * customPreview;
+	GtkWidget * m_PageHbox;
+	GtkWidget * m_MarginHbox;
+
+	GtkWidget * glade_menuitem;
+	GtkWidget * optionMarginUnits_menu;
+	GtkWidget * optionPageUnits_menu;
 
 	guint m_iEntryPageWidthID;
 	guint m_iEntryPageHeightID;
