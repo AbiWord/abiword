@@ -37,9 +37,10 @@ John Wood <jyonw@asu.edu>                       NetBSD
 translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
+Frédéric CELLA <fcella@mahj.org>		French
+Philippe Duperron <duperron@mail.dotcom.fr>	French
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
-Frédéric CELLA <fcella@mahj.org>		French
 Christian Terboven <cterboven@gmx.net>          German
 
 unsung heroes
