@@ -597,7 +597,7 @@ UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 		m_dirname = "";
 
 	UT_Error e = IE_Imp_XML::importFile(szFilename);
-	m_parseState = _PS_Sec; // no point having another sections the end
+	// m_parseState = _PS_Sec; // no point having another sections the end
  	if (!requireBlock ()) e = UT_IE_BOGUSDOCUMENT;
 	return e;
 }
@@ -889,12 +889,17 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	  	else 
 			m_listType = L_UL;
 
-		if(m_parseState != _PS_Sec)
+		if(m_parseState == _PS_Block)
 		{
 			endElement("li");
 			m_parseState = _PS_Sec;
 			m_bWasSpace = false;
 			/* this sort of tag shuffling can mess up the space tracking */
+		}
+		else if(m_parseState != _PS_Sec)
+		{
+			requireSection ();
+			m_bWasSpace = false;
 		}
 
 		parentID = new UT_uint16(m_iListID);
@@ -925,8 +930,9 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_DT:
 	case TT_DD:
 	{
+		if (m_parseState == _PS_Block)
+			m_parseState =  _PS_Sec;
 		X_CheckError (requireSection ());
-		m_parseState = _PS_Block;
 
 		XML_Char *sz;
 
@@ -968,6 +974,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			listAtts[propsPos] = props.c_str();
 
 			X_CheckError(appendStrux(PTX_Block, listAtts));
+			m_parseState = _PS_Block;
 			m_bFirstBlock = true;
 			listAtts[propsPos] = temp;
 
@@ -1398,7 +1405,8 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_BODY:
 		/* add two empty blocks at the end...
 		 */
-		m_parseState = _PS_Sec; // no point having two sections at the end
+		requireSection ();
+		// m_parseState = _PS_Sec; // no point having two sections at the end
 		newBlock ("Normal", 0, 0);
 		m_parseState = _PS_Sec; // no point having two sections at the end
 		newBlock ("Normal", 0, 0);
@@ -1970,6 +1978,14 @@ bool IE_Imp_XHTML::appendFmt( const XML_Char ** attributes)
 
 bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<XML_Char*>* pVecAttributes)
 {
+	if(!m_addedPTXSection)
+		{
+			appendStrux(PTX_Section,NULL);
+		}
+	if(!m_bFirstBlock)
+		{
+			appendStrux(PTX_Block,NULL);
+		}
 	if(!bInTable())
 		{
 			return getDoc()->appendFmt(pVecAttributes);
