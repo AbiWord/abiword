@@ -1038,7 +1038,7 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 		}
 		if(strstr(szLCFontName,"dingbat") != NULL)
 			m_bIsDingbat = true;
-		UT_DEBUGMSG(("Unix Font name is %s dingbat %d \n",szLCFontName,isDingbat()));
+		xxx_UT_DEBUGMSG(("Unix Font name is %s dingbat %d \n",szLCFontName,isDingbat()));
 	}
 	FREEP(szLCFontName);
 	//	m_bIsSymbol = false;
