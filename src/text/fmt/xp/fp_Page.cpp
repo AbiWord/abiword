@@ -1186,13 +1186,15 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	if (bFirst)
 	{
 		fp_Column* pColumn = getNthColumnLeader(0);
-		UT_ASSERT(pColumn);
+		UT_return_val_if_fail(pColumn, 2);
 		fp_Container* pFirstContainer = static_cast<fp_Container *>(pColumn->getFirstContainer());
-		UT_ASSERT(pFirstContainer);
-		while(pFirstContainer->getContainerType() != FP_CONTAINER_LINE)
+		while(pFirstContainer && pFirstContainer->getContainerType() != FP_CONTAINER_LINE)
 		{
 			pFirstContainer = static_cast<fp_Container *>(pFirstContainer->getNthCon(0));
 		}
+
+		UT_return_val_if_fail(pFirstContainer, 2);
+		
 		fp_Run* pFirstRun = static_cast<fp_Line *>(pFirstContainer)->getFirstRun();
 		fl_BlockLayout* pFirstBlock = static_cast<fp_Line *>(pFirstContainer)->getBlock(); // SEVIOR This needs fix me, FIXME
 
@@ -1201,17 +1203,19 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	else
 	{
 		fp_Column* pColumn = getNthColumnLeader(cols-1);
-		UT_ASSERT(pColumn);
+		UT_return_val_if_fail(pColumn, 2);
 		fp_Container* pLastContainer = static_cast<fp_Container *>(pColumn->getLastContainer());
-		UT_ASSERT(pLastContainer);
+		UT_return_val_if_fail(pLastContainer, 2);
 
 		fp_Run* pLastRun = static_cast<fp_Line *>(pLastContainer)->getLastRun();
 		fl_BlockLayout* pLastBlock = static_cast<fp_Line *>(pLastContainer)->getBlock();
+		UT_return_val_if_fail(pLastRun && pLastBlock, 2);
 
-		while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
+		while (pLastRun && !pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
 		{
 			pLastRun = pLastRun->getPrevRun();
 		}
+		UT_return_val_if_fail(pLastRun, 2);
 
 		if(pLastRun->isForcedBreak())
 		{
