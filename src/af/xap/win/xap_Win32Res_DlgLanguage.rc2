@@ -1,0 +1,51 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define XAP_RID_DIALOG_LANGUAGE_BTN_OK				IDOK
+#define XAP_RID_DIALOG_LANGUAGE_BTN_CANCEL			IDCANCEL
+#define XAP_RID_DIALOG_LANGUAGE_FRM_LANGUAGE		1001
+#define XAP_RID_DIALOG_LANGUAGE_LBX_LANGUAGE		1002
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+XAP_RID_DIALOG_LANGUAGE DIALOG DISCARDABLE  0, 0, 120, 100
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Activate Window"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON  "OK",		XAP_RID_DIALOG_LANGUAGE_BTN_OK,		7,80,50,14
+    PUSHBUTTON     "Cancel",	XAP_RID_DIALOG_LANGUAGE_BTN_CANCEL,	62,80,50,14
+    GROUPBOX       "Text: ",	XAP_RID_DIALOG_LANGUAGE_FRM_LANGUAGE,	7,7,103,66
+    LISTBOX						XAP_RID_DIALOG_LANGUAGE_LBX_LANGUAGE,	14,21,91,49,
+	                            WS_VSCROLL | WS_TABSTOP | LBS_NOINTEGRALHEIGHT | LBS_NOTIFY
+END
+
+#endif /* RC_INVOKED */
