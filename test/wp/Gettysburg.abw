@@ -1,6 +1,6 @@
 <abiword>
-<SECTION>
-<P PROPS="text-align:center">Four score and seven years ago our fathers brought forth on this
+<section>
+<p props="text-align:center">Four score and seven years ago our fathers brought forth on this
 continent a new nation, conceived in liberty and dedicated to the
 proposition that all men are created equal. Now we are engaged in
 a great civil war, testing whether that nation or any nation so
@@ -23,6 +23,6 @@ resolve that these dead shall not have died in vain, that this
 nation under God shall have a new birth of freedom, and that
 government of the people, by the people, for the people shall
 not perish from the earth.
-</P>
-</SECTION>
+</p>
+</section>
 </abiword>

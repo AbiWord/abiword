@@ -1,6 +1,6 @@
-<awml>
+<abiword>
 <section>
-<p PROPS="text-align:center"><c PROPS="font-size:14pt">Test of Data Section</c></p>
+<p props="text-align:center"><c props="font-size:14pt">Test of Data Section</c></p>
 <p></p>
 <p>This is a test.</p>
 <p></p>
@@ -8,4 +8,4 @@
 <data>
 <d name="foo">base64datagoeshere012345</d>
 </data>
-</awml>
+</abiword>
