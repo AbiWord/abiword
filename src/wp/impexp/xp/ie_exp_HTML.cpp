@@ -810,7 +810,11 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 
 void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
 {
-	m_pie->write (text.utf8_str ());
+	if (text.byteLength ())
+	{
+		m_bWroteText = true;
+		m_pie->write (text.utf8_str ());
+	}
 }
 
 void s_HTML_Listener::textUntrusted (const char * text)

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -181,119 +183,13 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 	case _PS_Block:
 	case _PS_IgnoredWordsItem:
 	{
-		UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-		UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
-		
-		// parse UTF-8 text and convert to Unicode.
-		// also take care of some white-space issues:
-		//    [] convert CRLF to SP.
-		//    [] convert CR to SP.
-		//    [] convert LF to SP.
-		// ignored words processing doesn't care about the 
-		// white-space stuff, but it does no harm
-		
-		UT_Byte * ss = (UT_Byte *)s;
-		UT_UCS2String buf;
-		UT_Byte currentChar;
-		
-		for (int k=0; k<len; k++)
-		{
-			currentChar = ss[k];
-			
-			if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
-			{
-				// is it us-ascii and we are in a UTF-8
-				// multi-byte sequence.  puke.
-				X_CheckError(0);
-			}
+		UT_ASSERT(sizeof(XML_Char) == sizeof(char));
 
-			if (currentChar == UCS_CR)
-			{
-				if (!m_bWhiteSignificant)
-					buf += UCS_SPACE;		// substitute a SPACE
-				else
-					buf += UCS_LF;
-				m_bSeenCR = true;
-				continue;
-			}
-			
-			// only honor one space
-			// if !m_bWhiteSignificant (XHTML, WML)
-			// else just blissfully ignore everything
-			// (ABW)
-			if (!m_bWhiteSignificant)
-			{
-				/* Bit of a hack; multibyte encoding screws the logic up here
-				 */
-				if((currentChar < 0x80) && UT_UCS_isspace(currentChar))
-				{
-					if(!m_bWasSpace)
-					{
-						buf += UCS_SPACE;
-						m_bWasSpace = true;
-					}
-					continue;
-				}
-				else
-				{
-					m_bWasSpace = false;
-				}
-			}
+		UT_UCS2String buf(s,static_cast<size_t>(len),!m_bWhiteSignificant);
 
-			if (currentChar == UCS_LF)	// LF
-			{
-				if (!m_bSeenCR)		// if not immediately after a CR,
-					if (!m_bWhiteSignificant)
-						buf += UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
-					else
-						buf += UCS_LF;
-				m_bSeenCR = false;
-				continue;
-			}
-			
-			m_bSeenCR = false;
-			
-			if (currentChar < 0x80)			// plain us-ascii part of latin-1
-			{
-				buf += ss[k];		// copy as is.
-			}
-			else if ((currentChar & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
-			{
-				// surrogate pairs are defined in section 3.7 of the
-				// unicode standard version 2.0 as an extension
-				// mechanism for rare characters in future extensions
-				// of the unicode standard.
-				UT_ASSERT(m_lenCharDataSeen == 0);
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
-			}
-			else if ((currentChar & 0xe0) == 0xe0)  // lead byte in 3-byte sequence
-			{
-				UT_ASSERT(m_lenCharDataSeen == 0);
-				m_lenCharDataExpected = 3;
-				m_charDataSeen[m_lenCharDataSeen++] = currentChar;
-			}
-			else if ((currentChar & 0xc0) == 0xc0)	// lead byte in 2-byte sequence
-			{
-				UT_ASSERT(m_lenCharDataSeen == 0);
-				m_lenCharDataExpected = 2;
-				m_charDataSeen[m_lenCharDataSeen++] = currentChar;
-			}
-			else if ((currentChar & 0x80) == 0x80)		// trailing byte in multi-byte sequence
-			{
-				UT_ASSERT(m_lenCharDataSeen > 0);
-				m_charDataSeen[m_lenCharDataSeen++] = currentChar;
-				if (m_lenCharDataSeen == m_lenCharDataExpected)
-				{
-					buf += UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
-					m_lenCharDataSeen = 0;
-				}
-			}
-		}
-		
-		// flush out the buffer
-		
-		if (buf.size() == 0 )
-		  return;
+		if (buf.size () == 0) break; // probably shouldn't happen; not sure
+
+		if (!m_bWhiteSignificant && (buf.size () == 1) && (buf[0] == UCS_SPACE)) break;
 
 		switch (m_parseState)
 		  {

@@ -118,6 +118,7 @@ class ABI_EXPORT UT_UCS2String
 {
 public:
 	UT_UCS2String();
+	UT_UCS2String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */, bool strip_whitespace);
 	UT_UCS2String(const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
 	UT_UCS2String(const UT_UCS2String& rhs);
 	~UT_UCS2String();

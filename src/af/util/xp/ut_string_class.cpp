@@ -459,6 +459,49 @@ UT_UCS2String::UT_UCS2String()
 {
 }
 
+/* construct from a string in UTF-8 format
+ * if (strip_whitespace == true) replace all white space sequences with a single UCS_SPACE
+ * if (strip_whitespace != true) replace CR-LF & CR by LF
+ * non-breaking spaces (&nbsp; UCS_NBSP 0x0a) are not white space; see UT_UCS_isspace()
+ */
+UT_UCS2String::UT_UCS2String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */,
+							 bool strip_whitespace)
+:	pimpl(new UT_UCS2Stringbuf)
+{
+	if (bytelength == 0) {
+		if (utf8_str == 0) return;
+		bytelength = strlen (utf8_str);
+	}
+	UT_UCSChar ucs2a = UT_UCS2Stringbuf::UTF8_to_UCS2 (utf8_str, bytelength);
+	while (true) {
+		if (ucs2a == 0) break; // end-of-string
+		UT_UCSChar ucs2b = UT_UCS2Stringbuf::UTF8_to_UCS2 (utf8_str, bytelength);
+		if (UT_UCS_isspace (ucs2a)) {
+			if (strip_whitespace) {
+				if (!UT_UCS_isspace (ucs2b)) {
+					ucs2a = UCS_SPACE;
+					pimpl->append (&ucs2a, 1);
+					ucs2a = ucs2b;
+				}
+			} else if (ucs2a == UCS_CR) {
+				if (ucs2b == UCS_LF) {
+					ucs2a = ucs2b;
+				} else {
+					ucs2a = UCS_LF;
+					pimpl->append (&ucs2a, 1);
+					ucs2a = ucs2b;
+				}
+			} else {
+				pimpl->append (&ucs2a, 1);
+				ucs2a = ucs2b;
+			}
+		} else {
+			pimpl->append (&ucs2a, 1);
+			ucs2a = ucs2b;
+		}
+	}
+}
+
 UT_UCS2String::UT_UCS2String(const UT_UCSChar* sz, size_t n)
 :	pimpl(new UT_UCS2Stringbuf(sz, n ? n : (sz) ? UT_UCS_strlen(sz) : 0))
 {

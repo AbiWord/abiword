@@ -23,7 +23,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <locale.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -920,6 +922,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		p_val = _getXMLPropValue((const XML_Char *)"style", atts);
 		if(p_val)
 		{
+			parseCSStyle (UT_UTF8String ((const char *) p_val));
+
 		    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		    new_atts[0] = sz;
 		    sz = NULL;
@@ -1210,6 +1214,16 @@ X_Fail:
 
 void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 {
+	/* No need to insert new blocks if we're just looking at the spaces
+	 * between XML elements - unless we're in a <pre> sequence
+	 */
+	if (!m_bWhiteSignificant)
+	{
+		UT_UCS2String buf(buffer,static_cast<size_t>(length),!m_bWhiteSignificant);
+		if (buf.size () == 0) return; // probably shouldn't happen; not sure
+		if ((buf.size () == 1) && (buf[0] == UCS_SPACE)) return;
+	}
+
 	int failLine;
 	failLine = 0;
 	bool bResetState = false;
@@ -1233,4 +1247,153 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 X_Fail:
 	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
 	return;
+}
+
+static void s_pass_whitespace (const char *& csstr)
+{
+	while (*csstr)
+	{
+		unsigned char u = static_cast<unsigned char>(*csstr);
+		if (u & 0x80)
+		{
+			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+			if ((ucs4 & 0x7fff) || UT_UCS_isspace (static_cast<UT_UCSChar>(ucs4 & 0xffff)))
+			{
+				while (static_cast<unsigned char>(*++csstr) & 0x80) { }
+				continue;
+			}
+		}
+		else if (isspace ((int) u))
+		{
+			csstr++;
+			continue;
+		}
+		break;
+	}
+}
+
+static const char * s_pass_name (const char *& csstr)
+{
+	const char * name_end = csstr;
+
+	while (*csstr)
+	{
+		unsigned char u = static_cast<unsigned char>(*csstr);
+		if (u & 0x80)
+		{
+			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+			if ((ucs4 & 0x7fff) == 0)
+				if (UT_UCS_isspace (static_cast<UT_UCSChar>(ucs4 & 0xffff)))
+				{
+					name_end = csstr;
+					break;
+				}
+			while (static_cast<unsigned char>(*++csstr) & 0x80) { }
+			continue;
+		}
+		else if ((isspace ((int) u)) || (*csstr == ':'))
+		{
+			name_end = csstr;
+			break;
+		}
+		csstr++;
+	}
+	return name_end;
+}
+
+static const char * s_pass_value (const char *& csstr)
+{
+	const char * value_end = csstr;
+
+	bool bQuoted = false;
+	while (*csstr)
+	{
+		bool bSpace = false;
+		unsigned char u = static_cast<unsigned char>(*csstr);
+		if (u & 0x80)
+		{
+			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+			if (!bQuoted && ((ucs4 & 0x7fff) == 0))
+				if (UT_UCS_isspace (static_cast<UT_UCSChar>(ucs4 & 0xffff)))
+				{
+					bSpace = true;
+					break;
+				}
+			while (static_cast<unsigned char>(*++csstr) & 0x80) { }
+			if (!bSpace) value_end = csstr;
+			continue;
+		}
+		else if ((*csstr == '\'') || (*csstr == '"'))
+		{
+			bQuoted = (bQuoted ? false : true);
+		}
+		else if (*csstr == ';')
+		{
+			if (!bQuoted)
+			{
+				csstr++;
+				break;
+			}
+		}
+		else if (!bQuoted && isspace ((int) u)) bSpace = true;
+
+		csstr++;
+		if (!bSpace) value_end = csstr;
+	}
+	return value_end;
+}
+
+UT_UTF8String IE_Imp_XHTML::parseCSStyle (const UT_UTF8String & style)
+{
+	UT_UTF8String props;
+
+	const char * csstr = style.utf8_str ();
+	while (*csstr)
+	{
+		s_pass_whitespace (csstr);
+
+		const char * name_start = csstr;
+		const char * name_end   = s_pass_name (csstr);
+
+		if (*csstr == 0) break; // whatever we have, it's not a "name:value;" pair
+		if (name_start == name_end) break; // ?? stray colon?
+
+		s_pass_whitespace (csstr);
+		if (*csstr != ':') break; // whatever we have, it's not a "name:value;" pair
+
+		csstr++;
+		s_pass_whitespace (csstr);
+
+		if (*csstr == 0) break; // whatever we have, it's not a "name:value;" pair
+
+		const char * value_start = csstr;
+		const char * value_end   = s_pass_value (csstr);
+
+		if (value_start == value_end) break; // ?? no value...
+
+		/* unfortunately there's no easy way to turn these two sequences into strings :-(
+		 * atm, anyway
+		 */
+		char * name = (char *) malloc (name_end - name_start + 1);
+		if (name)
+		{
+			strncpy (name, name_start, name_end - name_start);
+			name[name_end - name_start] = 0;
+		}
+		char * value = (char *) malloc (value_end - value_start + 1);
+		if (value)
+		{
+			strncpy (value, value_start, value_end - value_start);
+			value[value_end - value_start] = 0;
+		}
+		if (name && value)
+		{
+			// TODO
+			UT_DEBUGMSG(("CSS name:  %s\n",name));
+			UT_DEBUGMSG(("CSS value: %s\n",value));
+		}
+		FREEP (name);
+		FREEP (value);
+	}
+	return props;
 }

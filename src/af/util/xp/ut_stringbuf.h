@@ -69,6 +69,13 @@ class ABI_EXPORT UT_UCS2Stringbuf
 public:
 	typedef UT_UCSChar char_type;
 
+	/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
+	 * UCS-2 value for that sequence; the pointer and length-remaining are incremented
+	 * and decremented respectively; returns 0 if no valid UTF-8 sequence found by the
+	 * end of the string
+	 */
+	static UT_UCSChar UTF8_to_UCS2 (const char *& buffer, size_t & length);
+
 	UT_UCS2Stringbuf();
 	UT_UCS2Stringbuf(const UT_UCS2Stringbuf& rhs);
 	UT_UCS2Stringbuf(const char_type* sz, size_t n);

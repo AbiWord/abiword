@@ -177,6 +177,67 @@ void UT_Stringbuf::copy(char_type* pDest, const char_type* pSrc, size_t n)
 /***************************************************************************/
 /***************************************************************************/
 
+/* scans a buffer for the next valid UTF-8 sequence and returns the corresponding
+ * UCS-2 value for that sequence; the pointer and length-remaining are incremented
+ * and decremented respectively; returns 0 if no valid UTF-8 sequence found by the
+ * end of the string
+ */
+UT_UCSChar UT_UCS2Stringbuf::UTF8_to_UCS2 (const char *& buffer, size_t & length)
+{
+	UT_UCSChar ucs2;
+
+	while (true) {
+		ucs2 = 0;
+		if (length == 0) break;
+
+		unsigned char c = static_cast<unsigned char>(*buffer);
+		buffer++;
+		length--;
+
+		if ((c & 0x80) == 0) { // ascii, single-byte sequence
+			ucs2 = static_cast<UT_UCSChar>(c);
+			break;
+		}
+		if ((c & 0xc0) == 0x80) { // hmm, continuing byte - let's just ignore it
+			continue;
+		}
+
+		/* we have a multi-byte sequence...
+		 */
+		size_t seql;
+
+		if ((c & 0xe0) == 0xc0) {
+			seql = 2;
+			ucs2 = static_cast<UT_UCSChar>(c & 0x1f);
+		}
+		else if ((c & 0xf0) == 0xe0) {
+			seql = 3;
+			ucs2 = static_cast<UT_UCSChar>(c & 0x0f);
+		}
+		else { // or perhaps we don't :-( - whatever it is, let's just ignore it
+			continue;
+		}
+
+		if (length < seql - 1) { // huh? broken sequence perhaps? anyway, let's just ignore it
+			continue;
+		}
+
+		bool okay = true;
+		for (size_t i = 1; i < seql; i++) {
+			c = static_cast<unsigned char>(*buffer);
+			buffer++;
+			length--;
+			if ((c & 0xc0) != 0x80) { // not a continuing byte? grr!
+				okay = false;
+				break;
+			}
+			ucs2 = ucs2 << 6 | static_cast<UT_UCSChar>(c & 0x3f);
+		}
+		if (okay) break;
+	}
+	return ucs2;
+}
+
 UT_UCS2Stringbuf::UT_UCS2Stringbuf()
 :	m_psz(0),
 	m_pEnd(0),
