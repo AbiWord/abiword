@@ -1476,10 +1476,16 @@ static bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 
 static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
-	return pFrame->showMessageBox(AP_STRING_ID_MSG_ConfirmSave,
-										XAP_Dialog_MessageBox::b_YNC,
-										XAP_Dialog_MessageBox::a_YES,
-										pFrame->getTitle(200));
+  // remove the *, if it exists
+  UT_String title(pFrame->getTitle(200));
+  size_t star_pos = UT_String_findRCh(title, '*');
+  if ((size_t)-1 != star_pos && star_pos > 1)
+    title = title.substr(0, star_pos-1);
+
+  return pFrame->showMessageBox(AP_STRING_ID_MSG_ConfirmSave,
+				XAP_Dialog_MessageBox::b_YNC,
+				XAP_Dialog_MessageBox::a_YES,
+				title.c_str());
 }
 
 static bool s_AskForPathname(XAP_Frame * pFrame,
