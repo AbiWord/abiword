@@ -35,7 +35,6 @@
 #include <gtk/gtkframe.h>
 #include <gtk/gtksignal.h>
 #include <gtk/gtkbutton.h>
-/*#include "gtkmarshalers.h"*/
 #include "gtkintl.h"
 
 #include "xap_UnixGtkColorPicker.h"

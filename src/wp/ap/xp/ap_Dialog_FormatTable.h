@@ -73,7 +73,7 @@ public:
 	virtual void					runModeless(XAP_Frame * pFrame) = 0;
 
 	typedef enum { a_OK, a_CLOSE } tAnswer;
-	typedef enum { radio_left, radio_right, radio_top, radio_bottom } lineEnable;
+	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
 	
 	AP_Dialog_FormatTable::tAnswer		getAnswer(void) const;
 	PT_DocPosition						getCellSource(void);
@@ -81,7 +81,8 @@ public:
 	virtual void                        startUpdater(void);
 	virtual void                        stopUpdater(void);
 	static void                         autoUpdateMC(UT_Worker * pTimer);
-	void								addOrReplaceVecProp(const XML_Char * pszProp,
+	void								addOrReplaceVecProp(UT_Vector &vec,
+															const XML_Char * pszProp,
 															const XML_Char * pszVal);
 	virtual void                        setSensitivity(bool bSens) = 0;
     virtual void                        setActiveFrame(XAP_Frame *pFrame);
@@ -90,8 +91,9 @@ public:
 	void                                event_update(void);
 	void                                finalize(void);
 	void								applyChanges(void);
-	void                                setLineType( lineEnable iLineType);
+	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
+	void								setBackgroundColor(UT_RGBColor clr);
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
@@ -100,6 +102,16 @@ public:
 	XML_Char *							m_rightColor;
 	XML_Char *							m_topColor;
 	XML_Char *							m_bottomColor;															 
+	
+	UT_sint32							m_lineStyle;
+	UT_sint32							m_leftStyle;
+	UT_sint32							m_rightStyle;
+	UT_sint32							m_topStyle;
+	UT_sint32							m_bottomStyle;
+	
+	XML_Char *							m_bgColor;
+	XML_Char *							m_bgFillStyle;
+													 
 													 
 protected:
 	AP_Dialog_FormatTable::tAnswer		m_answer;
@@ -112,8 +124,9 @@ private:
 	
 	PT_DocPosition                      m_iCellSource;
 	PT_DocPosition                      m_iCellDestination;
-	AP_Dialog_FormatTable::lineEnable	m_lineType;
 	UT_Vector                           m_vecProps;
+	UT_Vector                           m_vecPropsRight;
+	UT_Vector                           m_vecPropsBottom;
 
 	UT_sint32                           m_iLeftStyle;
 	UT_sint32                           m_iRightStyle;

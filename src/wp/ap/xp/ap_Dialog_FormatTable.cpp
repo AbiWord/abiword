@@ -47,7 +47,9 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	m_leftColor(NULL),
 	m_rightColor(NULL),
 	m_topColor(NULL),
-	m_bottomColor(NULL),													 
+	m_bottomColor(NULL),
+	m_bgColor(NULL),
+	m_bgFillStyle(NULL),
 	m_answer(a_OK),
 	m_pFormatTablePreview(NULL),
 	m_iCellSource(0),
@@ -58,6 +60,11 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	m_iBottomStyle(0),
     m_iNumRows(0),
     m_iNumCols(0),
+	m_lineStyle(1),   // 1 == normal line style
+	m_leftStyle(1),   // 1 == normal line style
+	m_rightStyle(1),  // 1 == normal line style
+	m_topStyle(1),    // 1 == normal line style
+	m_bottomStyle(1), // 1 == normal line style
     m_pTab(NULL),
 	  m_pAutoUpdaterMC(NULL),
 	m_bDestroy_says_stopupdating(false),
@@ -65,6 +72,12 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 {
       if(m_vecProps.getItemCount() > 0)
 		  m_vecProps.clear();
+	  
+      if(m_vecPropsRight.getItemCount() > 0)
+		  m_vecPropsRight.clear();
+	  
+      if(m_vecPropsBottom.getItemCount() > 0)
+		  m_vecPropsBottom.clear();
 }
 
 AP_Dialog_FormatTable::~AP_Dialog_FormatTable(void)
@@ -137,30 +150,31 @@ void AP_Dialog_FormatTable::autoUpdateMC(UT_Worker * pTimer)
 	}
 }        
 
-void AP_Dialog_FormatTable::addOrReplaceVecProp(const XML_Char * pszProp,
+void AP_Dialog_FormatTable::addOrReplaceVecProp(UT_Vector &vec,
+												const XML_Char * pszProp,
 												const XML_Char * pszVal)
 {
-	UT_sint32 iCount = m_vecProps.getItemCount();
+	UT_sint32 iCount = vec.getItemCount();
 	const char * pszV = NULL;
 	if(iCount <= 0)
 	{
-		m_vecProps.addItem((void *) pszProp);
-		m_vecProps.addItem((void *) pszVal);
+		vec.addItem((void *) pszProp);
+		vec.addItem((void *) pszVal);
 		return;
 	}
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) m_vecProps.getNthItem(i);
+		pszV = (const XML_Char *) vec.getNthItem(i);
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
-		m_vecProps.setNthItem(i+1, (void *) pszVal, NULL);
+		vec.setNthItem(i+1, (void *) pszVal, NULL);
 	else
 	{
-		m_vecProps.addItem((void *) pszProp);
-		m_vecProps.addItem((void *) pszVal);
+		vec.addItem((void *) pszProp);
+		vec.addItem((void *) pszVal);
 	}
 	return;
 }
@@ -220,9 +234,23 @@ void AP_Dialog_FormatTable::finalize(void)
 /*!
  * Set the merge Type
  */
-void AP_Dialog_FormatTable::setLineType(lineEnable iLineType)
+void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 {
-	m_lineType = iLineType;
+	switch (btn)
+	{
+		case toggle_left:
+			m_leftStyle = (enabled ? m_lineStyle : 0);
+			break;
+		case toggle_right:
+			m_rightStyle = (enabled ? m_lineStyle : 0);
+			break;
+		case toggle_top:
+			m_topStyle = (enabled ? m_lineStyle : 0);
+			break;
+		case toggle_bottom:
+			m_bottomStyle = (enabled ? m_lineStyle : 0);
+			break;
+	}
 }
 
 void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
@@ -234,11 +262,26 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 	CLONEP(m_topColor, s.c_str());
 	CLONEP(m_bottomColor, s.c_str());
 	
-	addOrReplaceVecProp("left-color", m_leftColor);
-	addOrReplaceVecProp("right-color", m_rightColor);
-	addOrReplaceVecProp("top-color", m_topColor);
-	addOrReplaceVecProp("bot-color", m_bottomColor);
+	addOrReplaceVecProp(m_vecProps, "left-color", m_leftColor);
+	addOrReplaceVecProp(m_vecProps, "right-color", m_rightColor);
+	addOrReplaceVecProp(m_vecProps, "top-color", m_topColor);
+	addOrReplaceVecProp(m_vecProps, "bot-color", m_bottomColor);
+	
+	addOrReplaceVecProp(m_vecPropsRight, "left-color", m_rightColor);
+	addOrReplaceVecProp(m_vecPropsBottom, "top-color", m_bottomColor);
 }
+
+void AP_Dialog_FormatTable::setBackgroundColor(UT_RGBColor clr)
+{
+	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
+	
+	CLONEP(m_bgColor, s.c_str());
+	CLONEP(m_bgFillStyle, "fill");
+	
+	addOrReplaceVecProp(m_vecProps, "bgcolor", m_bgColor);
+	addOrReplaceVecProp(m_vecProps, "bg-style", m_bgFillStyle);
+}
+
 
 /*!
  * Call this method after pressing OK to read out the radio buttons and store results in the
@@ -317,44 +360,119 @@ void AP_FormatTable_preview::draw(void)
 {
 	UT_sint32 iWidth = getWindowWidth();
 	UT_sint32 iHeight = getWindowHeight();
-    //double maxHeightPercent = m_pColumns->getMaxHeightPercent();
-	//double SpacePercent = m_pColumns->getSpaceAfterPercent();
-	UT_Rect pageRect(5, 5, iWidth - 10, iHeight - 10);
+	UT_Rect pageRect(0, 0, iWidth, iHeight);
 
-	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
 	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width,
 					pageRect.height);
-
 	
+	UT_RGBColor black(0, 0, 0);
+	UT_RGBColor write(0, 0, 0);
 	UT_RGBColor lineColor(0, 0, 0);
 	m_gc->setLineWidth(1);
 	
-	if (m_pFormatTable->m_topColor)
-		UT_parseColor(m_pFormatTable->m_topColor, lineColor);
-	m_gc->setColor(lineColor);
-	m_gc->drawLine(pageRect.left+10, pageRect.top+10,
-				   pageRect.left + pageRect.width - 10, pageRect.top + 10);
+	int whiteBorder = 20;
+	int cornerLength = 5;
+
+//
+//  Draw the cell background
+//
+
+	if (m_pFormatTable->m_bgColor)
+	{
+		UT_parseColor(m_pFormatTable->m_bgColor, lineColor);
+		m_gc->fillRect(lineColor, 0 + whiteBorder, 0 + whiteBorder, iWidth - 2*whiteBorder, iHeight - 2*whiteBorder);
+	}
+
+//
+//  Draw the cell corners
+//
 	
-	if (m_pFormatTable->m_leftColor)
-		UT_parseColor(m_pFormatTable->m_leftColor, lineColor);
-	m_gc->setColor(lineColor);
-	m_gc->drawLine(pageRect.left + 10, pageRect.top + 10,
-				   pageRect.left + 10, pageRect.top + pageRect.height - 10);
-				   
-	if (m_pFormatTable->m_rightColor)
-		UT_parseColor(m_pFormatTable->m_rightColor, lineColor);
-	m_gc->setColor(lineColor);
-	m_gc->drawLine(pageRect.left + pageRect.width - 10, pageRect.top + 10,
-				   pageRect.left + pageRect.width - 10, pageRect.top + pageRect.height - 10);
-				   
-	if (m_pFormatTable->m_bottomColor)	
-		UT_parseColor(m_pFormatTable->m_bottomColor, lineColor);
-	m_gc->setColor(lineColor);
-	m_gc->drawLine(pageRect.left + 10, pageRect.top + pageRect.height - 10,
-				   pageRect.left + pageRect.width - 10, pageRect.top + pageRect.height - 10);
+	m_gc->setColor(UT_RGBColor(127,127,127));
 	
-	//pageRect.top += 5;
-	//pageRect.height -= 5;
+	// top left corner
+	m_gc->drawLine(pageRect.left + whiteBorder - cornerLength, pageRect.top + whiteBorder,
+				   pageRect.left + whiteBorder, pageRect.top + whiteBorder);
+	m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + whiteBorder  - cornerLength,
+				   pageRect.left + whiteBorder, pageRect.top + whiteBorder);
+
+	// top right corner
+	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder + cornerLength, pageRect.top + whiteBorder,
+				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder);
+	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder - cornerLength,
+				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder);
+
+	// bottom left corner
+	m_gc->drawLine(pageRect.left + whiteBorder - cornerLength, pageRect.top + pageRect.height - whiteBorder,
+				   pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+	m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder + cornerLength,
+				   pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+
+	// bottom right corner
+	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder + cornerLength, pageRect.top + pageRect.height - whiteBorder,
+				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder + cornerLength,
+				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+
+//
+//  Draw the cell borders
+//
+	
+	// top border
+	if (m_pFormatTable->m_topStyle != 0)
+	{
+		if (m_pFormatTable->m_topColor)
+		{
+			UT_parseColor(m_pFormatTable->m_topColor, lineColor);
+			m_gc->setColor(lineColor);
+		}
+		else
+			m_gc->setColor(black);
+		m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + whiteBorder,
+					   pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder);
+	}
+	
+	// left border
+	if (m_pFormatTable->m_leftStyle != 0)
+	{
+		if (m_pFormatTable->m_leftColor)
+		{
+			UT_parseColor(m_pFormatTable->m_leftColor, lineColor);
+			m_gc->setColor(lineColor);
+		}
+		else
+			m_gc->setColor(black);
+		m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + whiteBorder,
+					   pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+	}
+	
+	// right border
+	if (m_pFormatTable->m_rightStyle != 0)
+	{
+		if (m_pFormatTable->m_topColor)
+		{
+			UT_parseColor(m_pFormatTable->m_topColor, lineColor);
+			m_gc->setColor(lineColor);
+		}
+		else
+			m_gc->setColor(black);
+		m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder,
+					   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+	}
+	
+	// bottom border
+	if (m_pFormatTable->m_bottomStyle != 0)
+	{
+		if (m_pFormatTable->m_bottomColor)
+		{
+			UT_parseColor(m_pFormatTable->m_bottomColor, lineColor);
+			m_gc->setColor(lineColor);
+		}
+		else
+			m_gc->setColor(black);
+		m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder,
+					   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+	}
+	
 	//m_previewDrawer.draw(m_gc, pageRect);
 }
 

@@ -66,6 +66,7 @@ protected:
 	GtkWidget * m_wCloseButton;
 
 	GtkWidget * m_wBorderColorButton;
+	GtkWidget * m_wBackgroundColorButton;
 	GtkWidget * m_wLineLeft;
 	GtkWidget * m_wLineRight;
 	GtkWidget * m_wLineTop;

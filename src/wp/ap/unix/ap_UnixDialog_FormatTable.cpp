@@ -57,28 +57,32 @@ static void s_line_left(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
 	UT_return_if_fail(widget && dlg);
-	dlg->setLineType(AP_Dialog_FormatTable::radio_left);
+	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_left, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+	dlg->event_previewExposed();
 }
 
 static void s_line_right(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
 	UT_return_if_fail(widget && dlg);
-	dlg->setLineType(AP_Dialog_FormatTable::radio_right);
+	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_right, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+	dlg->event_previewExposed();
 }
 
 static void s_line_top(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
 	UT_return_if_fail(widget && dlg);
-	dlg->setLineType(AP_Dialog_FormatTable::radio_top);
+	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_top, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+	dlg->event_previewExposed();
 }
 
 static void s_line_bottom(GtkWidget *widget, gpointer data )
 {
 	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
 	UT_return_if_fail(widget && dlg);
-	dlg->setLineType(AP_Dialog_FormatTable::radio_bottom);
+	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_bottom, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+	dlg->event_previewExposed();
 }
 
 static void s_border_color(GtkWidget *widget, gpointer data )
@@ -89,6 +93,17 @@ static void s_border_color(GtkWidget *widget, gpointer data )
 	guint8 r, g, b, a;
 	gtk_color_picker_get_i8 (GTK_COLOR_PICKER(widget), &r, &g, &b, &a);
 	dlg->setBorderColor(UT_RGBColor(r,g,b));
+	dlg->event_previewExposed();
+}
+
+static void s_background_color(GtkWidget *widget, gpointer data )
+{
+	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	UT_return_if_fail(widget && dlg);
+	
+	guint8 r, g, b, a;
+	gtk_color_picker_get_i8 (GTK_COLOR_PICKER(widget), &r, &g, &b, &a);
+	dlg->setBackgroundColor(UT_RGBColor(r,g,b));
 	dlg->event_previewExposed();
 }
 
@@ -172,6 +187,7 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 void AP_UnixDialog_FormatTable::setSensitivity(bool bSens)
 {
 	gtk_widget_set_sensitive(m_wBorderColorButton, bSens);
+	gtk_widget_set_sensitive(m_wBackgroundColorButton, bSens);	
 	gtk_widget_set_sensitive(m_wLineLeft, bSens);
 	gtk_widget_set_sensitive(m_wLineRight, bSens);
 	gtk_widget_set_sensitive(m_wLineTop, bSens);
@@ -248,10 +264,17 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 	GtkWidget *borderContents;
 	GtkWidget *backgroundContents;
 	GtkWidget *notebook;
-	GtkWidget *vboxColorStyle;
-	GtkWidget *hboxColorLabel;
+	
+	GtkWidget *vboxBorderColorStyle;
+	GtkWidget *hboxBorderColorLabel;
 	GtkWidget *labelBorderColor;
-	GtkWidget *colorButton;
+	GtkWidget *borderColorButton;
+	
+	GtkWidget *vboxBackgroundColorStyle;
+	GtkWidget *hboxBackgroundColorLabel;
+	GtkWidget *labelBackgroundColor;
+	GtkWidget *backgroundColorButton;
+	
 	GtkWidget *vboxPreviewApplyTo;
 	GtkWidget *framePreview;
 	GtkWidget *tablePreview;	
@@ -263,7 +286,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 	GtkWidget *hboxApplyTo;
 	GtkWidget *labelApplyTo;
 	GtkWidget *comboApplyTo;	
-
+	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	wContents = gtk_vbox_new (FALSE, 0);
@@ -289,22 +312,21 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 // construct the border tab
 //
 
-	vboxColorStyle = gtk_vbox_new(FALSE, 0);
-	gtk_widget_show(vboxColorStyle);
-	//gtk_container_add(GTK_CONTAINER(borderContents), vboxColorStyle);
-	gtk_box_pack_start (GTK_BOX (borderContents), vboxColorStyle, FALSE, TRUE, 6);
+	vboxBorderColorStyle = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(vboxBorderColorStyle);
+	gtk_box_pack_start (GTK_BOX (borderContents), vboxBorderColorStyle, FALSE, TRUE, 6);
 
-	hboxColorLabel = gtk_hbox_new(FALSE, 0);
-	gtk_widget_show(hboxColorLabel);
-	gtk_box_pack_start (GTK_BOX (vboxColorStyle), hboxColorLabel, FALSE, TRUE, 0);
+	hboxBorderColorLabel = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hboxBorderColorLabel);
+	gtk_box_pack_start (GTK_BOX (vboxBorderColorStyle), hboxBorderColorLabel, FALSE, TRUE, 0);
 
 	labelBorderColor = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Border_Color).c_str());
 	gtk_widget_show(labelBorderColor);
-	gtk_box_pack_start (GTK_BOX (hboxColorLabel), labelBorderColor, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hboxBorderColorLabel), labelBorderColor, FALSE, FALSE, 0);
 
-	colorButton = gtk_color_picker_new();
-	gtk_widget_show(colorButton);
-	gtk_box_pack_start (GTK_BOX (hboxColorLabel), colorButton, TRUE, FALSE, 0);
+	borderColorButton = gtk_color_picker_new();
+	gtk_widget_show(borderColorButton);
+	gtk_box_pack_start (GTK_BOX (hboxBorderColorLabel), borderColorButton, TRUE, FALSE, 0);
 
 	vboxPreviewApplyTo = gtk_vbox_new(FALSE, 0);
 	gtk_widget_show(vboxPreviewApplyTo);
@@ -320,12 +342,13 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 
 	wPreviewArea = createDrawingArea ();
 	gtk_widget_show(wPreviewArea);
-	gtk_widget_set_usize(wPreviewArea, 150, 150);
+	gtk_widget_set_usize(wPreviewArea, 140, 140);
 	gtk_table_attach (GTK_TABLE (tablePreview), wPreviewArea, 1, 2, 1, 2,
                     (GtkAttachOptions) (0),
-                    (GtkAttachOptions) (0), 3, 0);
+                    (GtkAttachOptions) (0), 10, 10);
 
 	wLineTop = gtk_toggle_button_new();
+	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineTop), true);
 	gtk_widget_show (wLineTop);
 	gtk_widget_set_usize (wLineTop, 25, 25);
 	label_button_with_abi_pixmap(wLineTop, "tb_LineTop_xpm");
@@ -334,6 +357,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
                     (GtkAttachOptions) (0), 3, 0);
 					
 	wLineBottom = gtk_toggle_button_new();
+	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineBottom), true);
 	gtk_widget_show (wLineBottom);
 	gtk_widget_set_usize (wLineBottom, 25, 25);
 	label_button_with_abi_pixmap(wLineBottom, "tb_LineBottom_xpm");
@@ -342,6 +366,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
                     (GtkAttachOptions) (0), 3, 0);
 
 	wLineLeft = gtk_toggle_button_new();
+	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineLeft), true);
 	gtk_widget_show (wLineLeft);
 	gtk_widget_set_usize (wLineLeft, 25, 25);
 	label_button_with_abi_pixmap(wLineLeft, "tb_LineLeft_xpm");
@@ -350,6 +375,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
                     (GtkAttachOptions) (0), 3, 0);
 
 	wLineRight = gtk_toggle_button_new();
+	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wLineRight), true);
 	gtk_widget_show (wLineRight);
 	gtk_widget_set_usize (wLineRight, 25, 25);
 	label_button_with_abi_pixmap(wLineRight, "tb_LineRight_xpm");
@@ -368,6 +394,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 
 	GList *items = NULL;
 
+	items = g_list_append (items, (void *)"Selection");
 	items = g_list_append (items, (void *)"Cell");
 	items = g_list_append (items, (void *)"Row");
 	items = g_list_append (items, (void *)"Column");
@@ -382,6 +409,23 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 // construct the background tab
 //
 
+	vboxBackgroundColorStyle = gtk_vbox_new(FALSE, 0);
+	gtk_widget_show(vboxBackgroundColorStyle);
+	gtk_box_pack_start (GTK_BOX (backgroundContents), vboxBackgroundColorStyle, FALSE, TRUE, 6);
+
+	hboxBackgroundColorLabel = gtk_hbox_new(FALSE, 0);
+	gtk_widget_show(hboxBackgroundColorLabel);
+	gtk_box_pack_start (GTK_BOX (vboxBackgroundColorStyle), hboxBackgroundColorLabel, FALSE, TRUE, 0);
+
+	labelBackgroundColor = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Border_Color).c_str());
+	gtk_widget_show(labelBackgroundColor);
+	gtk_box_pack_start (GTK_BOX (hboxBackgroundColorLabel), labelBackgroundColor, FALSE, FALSE, 0);
+
+	backgroundColorButton = gtk_color_picker_new();
+	gtk_widget_show(backgroundColorButton);
+	gtk_box_pack_start (GTK_BOX (hboxBackgroundColorLabel), backgroundColorButton, TRUE, FALSE, 0);
+
+
 	//hboxBackground = gtk_hbox_new(FALSE, 0);
 	//gtk_widget_show(hboxBackground);
 	//gtk_container_add(GTK_CONTAINER(backgroundContents), hboxBackground);
@@ -392,7 +436,8 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 	m_wLineLeft = wLineLeft;
 	m_wLineRight = wLineRight;
 
-	m_wBorderColorButton = colorButton;
+	m_wBorderColorButton = borderColorButton;
+	m_wBackgroundColorButton = backgroundColorButton;
 	m_wpreviewArea = wPreviewArea;
 	m_wContents = wContents;
 	
@@ -458,6 +503,11 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							"color_set",
 							G_CALLBACK(s_border_color),
 							(gpointer) this);
+
+	g_signal_connect(G_OBJECT(m_wBackgroundColorButton),
+							"color_set",
+							G_CALLBACK(s_background_color),
+							(gpointer) this);	   
 						   
 	g_signal_connect(G_OBJECT(m_wpreviewArea),
 							"expose_event",
