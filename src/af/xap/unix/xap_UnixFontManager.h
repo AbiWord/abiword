@@ -56,7 +56,6 @@ protected:
 	// perhaps this should be a hash to avoid duplicates?
 	UT_Vector				m_searchPaths;
 	UT_HashTable 			m_fontHash;
-	
 };
 
 #endif /* AP_UNIXFONTMANAGER_H */
