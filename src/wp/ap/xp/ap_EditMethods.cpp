@@ -1942,7 +1942,7 @@ static void set_ok (GtkWidget * /*widget*/, UT_Bool *dialog_result)
 
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
-	// These define the element offsets in a color vector
+	// These define the color element offsets in a vector
 	guint RED = 0;
 	guint GREEN = 1;
 	guint BLUE = 2;
@@ -1973,7 +1973,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	gtk_notebook_insert_page(&fontsel->notebook,
 							 colorSelector,
 							 tabLabel,
-							 1); // 0 based index
+							 3); // 0 based index
 
     // Connect the signals to the buttons
 	gtk_signal_connect(GTK_OBJECT(cf->ok_button),
@@ -2017,12 +2017,13 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	s = UT_getAttribute("font-family", props_in);
 	if (s)
 	{
-		if (!UT_stricmp(s, ""))
+		// If blank or standard Windows font
+		if (!UT_stricmp(s, "Times New Roman") || !UT_stricmp(s, ""))
 		{
 			// this satisfies the condition the view doesn't have
 			// a family set
 			strcat(fontString, "-");
-			strcat(fontString, "Times");
+			strcat(fontString, "times");
 		}
 		else
 		{
@@ -2052,6 +2053,8 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	{
 		if (!UT_stricmp(s, "italic"))
 			strcat(fontString, "-i");
+		else if (!UT_stricmp(s, "oblique"))
+			strcat(fontString, "-o");
 		else
 			strcat(fontString, "-r");
 	}
@@ -2087,7 +2090,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	strcat(fontString, "-*");
 	strcat(fontString, "-*");
 
-	UT_DEBUGMSG(("Priming with XLFD: [%s]\n", fontString));
+	UT_DEBUGMSG(("Priming dialog with XLFD: [%s]\n", fontString));
 
 	// Underline or Strikeout aren't standard X font properties.
 	s = UT_getAttribute("text-decoration", props_in);

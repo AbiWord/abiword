@@ -239,30 +239,39 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	char xFontName[2048];
 
 	char szFamily[256];
-	char szWeight[32];
-	char szSlant[8];
 
+	char szWeight[32];
+	char szWeight2[32]; 	// HACK:  since it's almost always the weight
+	                        // we have trouble matching, we use this for a second shot.
+	
+	char szSlant[8];
+	char cSpacing = 'p';	// proportional
+	
 	// family copied unless it maches a generic-font type or Windows, then it's cast 
 	if (!UT_stricmp(pszFontFamily, "times new roman") ||	// win font
 		!UT_stricmp(pszFontFamily, "serif") ||				// generic
 		!UT_stricmp(pszFontFamily, ""))						// our default font
 	{
-		strcpy(szFamily, "Times");
+		strcpy(szFamily, "times");
+		cSpacing = 'p';	// proportional
 	}
 	else if(!UT_stricmp(pszFontFamily, "courier new") ||	// win font
 			!UT_stricmp(pszFontFamily, "monospace"))		// generic
 	{
 		strcpy(szFamily, "courier");
+		cSpacing = 'm';	// monospace
 	}
 	else if (!UT_stricmp(pszFontFamily, "arial") ||			// win font
 			 !UT_stricmp(pszFontFamily, "sans-serif"))		// generic
 	{	
 		strcpy(szFamily, "helvetica");
+		cSpacing = 'p';	// proportional		
 	}
 	else
 	{
 		// Font "foo" we don't know anything about
 		strcpy(szFamily, pszFontFamily);
+		cSpacing = '*';	// match all
 	}
 
 	// weight 
@@ -272,39 +281,51 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	}
 	else
 	{
-		strcpy(szWeight, "medium");
+		strcpy(szWeight, "medium");		// matches most fonts
+		strcpy(szWeight2, "normal");	// matches other fonts
 	}
 
 	UT_sint32 height = convertDimension(pszFontSize);
 
-	if (0 == UT_stricmp(pszFontStyle, "italic"))
+	if (!UT_stricmp(pszFontStyle, "italic"))
+	{
+		strcpy(szSlant, "i");
+	}
+	else if (!UT_stricmp(pszFontStyle, "oblique"))
 	{
 		strcpy(szSlant, "o");
-		if (!UT_stricmp(szFamily, "times"))
-		{
-			strcpy(szSlant, "i");
-		}
 	}
 	else
 	{
 		strcpy(szSlant, "r");
 	}
 
-	sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-p-0-iso8859-1", szFamily, szWeight, szSlant, height);
+	// First match try
+	GdkFont * pgFont;
+	{
+		sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-iso8859-1", szFamily, szWeight, szSlant, height, cSpacing);
+		if (m_pFont && m_pFont->m_strFontName)
+			if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
+				return m_pFont;
 
-	if (m_pFont && m_pFont->m_strFontName)
-    {
-		if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
+		pgFont = gdk_font_load(xFontName);
+
+		if (!pgFont)
 		{
-			return m_pFont;
+			// load failed, try again with compromise attributes (this should be made much more general)
+			sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-%c-0-iso8859-1", szFamily, szWeight2, szSlant, height, cSpacing);
+			if (m_pFont && m_pFont->m_strFontName)
+				if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
+					return m_pFont;
+
+			pgFont = gdk_font_load(xFontName);
+			
+			// we failed the second lookup!  Bail!
+			if (!pgFont)
+				pgFont = gdk_font_load("fixed");
 		}
-    }
-
-	GdkFont* pgFont = gdk_font_load(xFontName);
-
-	if (!pgFont)
-		pgFont = gdk_font_load("fixed");
-
+	}
+	
 	UT_ASSERT(pgFont);
 
 	pFont = new UNIXFont(pgFont);
