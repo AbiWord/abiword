@@ -37,7 +37,6 @@ bool XAP_Dialog_PluginManager::activatePlugin (const char * szName) const
 {
 	UT_ASSERT (szName);
 	bool loaded = XAP_ModuleManager::instance ().loadModule (szName);
-	XAP_ModuleManager::instance ().registerPending (); // TODO: handle dependencies?
 	return loaded;
 }
 

@@ -805,11 +805,6 @@ void AP_UnixApp::loadAllPlugins ()
 		  free(namelist);
       }
   }
-
-  /* SPI modules don't register automatically on loading, so
-   * now that we've loaded the modules we need to register them:
-   */
-  XAP_ModuleManager::instance().registerPending ();
 }
 
 /*****************************************************************/

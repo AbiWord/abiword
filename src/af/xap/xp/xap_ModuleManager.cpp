@@ -25,7 +25,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "xap_Spider.h"
 #include "xap_ModuleManager.h"
 #include "xap_Prefs.h"
 #include "ut_string_class.h"
@@ -84,8 +83,7 @@ if(XAP_App::getApp() && XAP_App::getApp()->getPrefs())                          
 /*!
  * Protected destructor creates an instance of this module class
  */
-XAP_ModuleManager::XAP_ModuleManager ()	:
-  m_spider(new XAP_Spider)
+XAP_ModuleManager::XAP_ModuleManager ()
 {
 	m_modules = new UT_GenericVector<XAP_Module*> (11);
 }
@@ -95,7 +93,6 @@ XAP_ModuleManager::XAP_ModuleManager ()	:
  */
 XAP_ModuleManager::~XAP_ModuleManager ()
 {
-	DELETEP (m_spider);
 	UT_VECTOR_PURGEALL (MODULE_CLASS *, (*m_modules));
 	delete m_modules;
 }
@@ -114,10 +111,7 @@ XAP_ModuleManager & XAP_ModuleManager::instance ()
  *
  * \param szFilename - the .dll or .so on your system that you wish to load
  *
- * Note that if the plugin is a SPI then registration will be postponed until
- * XAP_ModuleManager::registerPending () is called.
- *
- * \return true if loaded (and, if not a SPI, registered) successfully, false otherwise
+ * \return true if loaded successfully, false otherwise
  */
 bool XAP_ModuleManager::loadModule (const char * szFilename)
 {
@@ -180,7 +174,6 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 
 	/* assign the module's creator to be us, etc.
 	 */
-	pModule->setSpider (m_spider);
 	pModule->setLoaded (true);
 	pModule->setCreator (this);
 
@@ -215,6 +208,9 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 	return true;
 }
 
+/*!
+* Load builtin plugins.
+*/
 bool XAP_ModuleManager::loadPreloaded (XAP_Plugin_Registration fnRegister,
 									   XAP_Plugin_Registration fnDeregister,
 									   XAP_Plugin_VersionCheck fnSupportsVersion)
@@ -242,7 +238,6 @@ bool XAP_ModuleManager::loadPreloaded (XAP_Plugin_Registration fnRegister,
 
 	/* assign the module's creator to be us, etc.
 	 */
-	pModule->setSpider (m_spider);
 	pModule->setLoaded (true);
 	pModule->setCreator (this);
 
@@ -266,32 +261,6 @@ bool XAP_ModuleManager::loadPreloaded (XAP_Plugin_Registration fnRegister,
 }
 
 /*!
- * Register any SPI plugins/modules pending registration.
- * 
- * This procedure calls XAP_ModuleManager::unloadUnregistered
- * 
- * \return number of plugins registered
- */
-UT_uint32 XAP_ModuleManager::registerPending ()
-{
-	UT_uint32 count = 0;
-
-	if (m_spider) count = m_spider->register_spies ();
-
-	/* The Spider does the plugin registration (see above)
-	 * but the module info has to be updated:
-	 */
-	for (UT_uint32 i = 0; i < m_modules->size (); i++)
-	{
-		XAP_Module * pModule = reinterpret_cast<XAP_Module *>(m_modules->getNthItem(i));
-		if (pModule) pModule->registerPending ();
-	}
-	unloadUnregistered ();
-
-	return count;
-}
-
-/*!
  * Unload a module
  *
  * \param pModule - a valid module that you want to unload
@@ -299,7 +268,7 @@ UT_uint32 XAP_ModuleManager::registerPending ()
  * WARNING: zero or more plugins/modules may be unloaded as a result of
  * calling XAP_ModuleManager::unloadModule since the plugin may be unloaded
  * already or other plugins may depend on this one and be unloaded
- * automatically (this procedure calls XAP_ModuleManager::unloadUnregistered).
+ * automatically.
  * 
  * Don't assume anything, therefore, about the UT_Vector returned by
  * XAP_ModuleManager::enumModules
@@ -320,10 +289,9 @@ void XAP_ModuleManager::unloadModule (XAP_Module * pModule)
 		return;
 	}
 	unloadModule (ndx);
-	unloadUnregistered ();
 }
 
-/* for use by unloadAllPlugins, unloadModule & unloadUnregistered only!
+/* for use by unloadAllPlugins, unloadModule only!
  */
 void XAP_ModuleManager::unloadModule (UT_sint32 ndx)
 {
@@ -348,31 +316,6 @@ void XAP_ModuleManager::unloadModule (UT_sint32 ndx)
 	UT_ASSERT (module_unloaded == true);
 
 	delete pModule;
-}
-
-/*!
- * Unload any SPI plugins/modules that haven't been registered
- */
-void XAP_ModuleManager::unloadUnregistered ()
-{
-	UT_return_if_fail(m_spider  != NULL);
-	UT_return_if_fail(m_modules != NULL);
-
-	UT_sint32 bad_module;
-	do
-	{
-		bad_module = -1;
-		for (UT_uint32 i = 0; i < m_modules->size (); i++)
-		{
-			XAP_Module * pModule = m_modules->getNthItem (i);
-			if (!pModule->registered ())
-			{
-				bad_module = static_cast<UT_sint32>(i);
-				break;
-			}
-		}
-		if (bad_module != -1) unloadModule (bad_module);
-	} while (bad_module != -1);
 }
 
 /*!

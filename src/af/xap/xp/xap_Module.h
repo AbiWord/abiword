@@ -57,9 +57,6 @@ extern "C" {
 	} XAP_ModuleInfo;
 }
 
-class UT_SPI;
-
-class XAP_Spider;
 class XAP_ModuleManager;
 
 typedef int (*XAP_Plugin_Registration) (XAP_ModuleInfo * mi);
@@ -94,7 +91,6 @@ private:
 	bool unregisterThySelf ();
 	bool supportsAbiVersion (UT_uint32 major, UT_uint32 minor, 
 							 UT_uint32 release);
-	inline void setSpider (XAP_Spider * spider) { m_spider = spider; }
 	inline void setCreator (XAP_ModuleManager * creator) {m_creator = creator;}
 	inline void setLoaded (bool bLoaded) {m_bLoaded = bLoaded;}
 
@@ -126,7 +122,6 @@ private:
 	XAP_Plugin_Registration		m_fnDeregister;
 	XAP_Plugin_VersionCheck		m_fnSupportsVersion;
 
-	XAP_Spider          * m_spider;
 	XAP_ModuleManager   * m_creator;
 	bool                  m_bLoaded;
 	bool                  m_bRegistered;
