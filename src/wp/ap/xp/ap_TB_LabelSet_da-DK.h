@@ -18,7 +18,8 @@
  */
 
 // Danish translations provided by Martin Willemoes Hansen <mwh@stampede.org>
-//                             and Birger Langkjer <birger.langkjer@image.dk>
+//                             , Birger Langkjer <birger.langkjer@image.dk>
+//                             and Rasmus Toftdahl Olesen <rto@post.tele.dk>
 
 /*****************************************************************
 ******************************************************************
@@ -96,3 +97,5 @@ BeginSet(da,DK,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()
+
+

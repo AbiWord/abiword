@@ -18,7 +18,8 @@
  */
 
 // Danish translations provided by Martin Willemoes Hansen <mwh@stampede.org>
-//                             and Birger Langkjer <birger.langkjer@image.dk>
+//                             , Birger Langkjer <birger.langkjer@image.dk>
+//                             and Rasmus Toftdahl Olesen <rto@post.tele.dk>
 
 /*****************************************************************
 ******************************************************************
@@ -105,8 +106,10 @@ BeginSet(da,DK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,		"&Hævet",		"Gør den markerede tekst højere end omgivelserne")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Sæ&nket",		"Gør den markerede tekst lavere end omgivelserne")
 
+	MenuLabel(AP_MENU_ID_TOOLS,				"Vær&ktøjer",			NULL)   
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"Sta&vekontrol",	"Kontrollér dokumentet for forkert stavede ord")
-	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opsætning",			"Ændr opsætning")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"O&rd optælling",		"Optæl antallet af ord i dokumentet")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opsætning",			"Opsæt programmet...")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Justér",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Venstrestillet",		"Venstrestil afsnittet")
@@ -130,8 +133,30 @@ BeginSet(da,DK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_HELP,				"&Hjælp",			NULL)
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Om %s",			"Vis programinformation, versionsnummer og ophavsret")
 
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_9,	"%s",				"Ændr til det foreslåede ord")
+	MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,	"&Ignorér alle", 		"Ignorér alle forekomster af dette ord i dette dokument")
+	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Tilføj", 			"Add this word to the custom dictionary")
+
 	// ... add others here ...
 
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)
 
 EndSet()
+
+
+
+
+
+
+
+
+
+
