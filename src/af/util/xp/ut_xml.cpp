@@ -259,7 +259,7 @@ UT_Error UT_XML::parse (const char * szFilename)
       return UT_errnoToUTError ();
     }
 
-  char buffer[4096];
+  char buffer[2048];
 
   m_bStopped = false;
 
@@ -495,7 +495,7 @@ UT_Error UT_XML::html (const char * szFilename)
       return UT_errnoToUTError ();
     }
 
-  char buffer[4096];
+  char buffer[2048];
 
   m_bStopped = false;
 
