@@ -26,11 +26,28 @@
 
 #include "xap_CocoaPlugin.h"
 
+class PD_Document;
 class XAP_Frame;
+
+@interface AP_CocoaPlugin_FramelessDocument : NSObject <XAP_CocoaPlugin_FramelessDocument>
+{
+	PD_Document *	m_pDocument;
+}
++ (NSString *)optionsPropertyString:(NSDictionary *)options;
+
++ (AP_CocoaPlugin_FramelessDocument *)documentFromFile:(NSString *)path importOptions:(NSDictionary *)options;
+
+- (id)initWithPDDocument:(PD_Document *)document;
+- (void)dealloc;
+
+/* XAP_CocoaPlugin_FramelessDocument
+ */
+- (BOOL)exportDocumentToFile:(NSString *)path exportOptions:(NSDictionary *)options;
+@end
 
 @interface AP_CocoaPlugin_Document : NSObject <XAP_CocoaPlugin_Document>
 {
-	XAP_Frame *	m_pFrame;
+	XAP_Frame *		m_pFrame;
 }
 /* Please bear in mind that documents can be closed, so don't keep references to documents
  * lying around for future use.
