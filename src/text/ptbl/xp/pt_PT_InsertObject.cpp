@@ -238,7 +238,6 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									const XML_Char ** attributes,
 									const XML_Char ** properties )
 {
-	UT_ASSERT_HARMLESS(properties == NULL);
 
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!

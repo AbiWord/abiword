@@ -266,6 +266,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 				case FPRUN_TEXT:
 				case FPRUN_HYPERLINK:
 				case FPRUN_DIRECTIONMARKER:
+				case FPRUN_MATH:
 				{
 
 					break;

@@ -58,7 +58,6 @@ OBJS=	$(PLATFORM_OBJS)	\
 	$(OBJDIR)/ie_imp_Text.$(OBJ_SUFFIX)                         \
         $(OBJDIR)/ie_imp_PasteListener.$(OBJ_SUFFIX)                \
         $(OBJDIR)/ie_imp_GraphicAsDocument.$(OBJ_SUFFIX)            \
-        $(OBJDIR)/ie_imp_MathML.$(OBJ_SUFFIX)           	    \
         $(OBJDIR)/ie_impGraphic.$(OBJ_SUFFIX)                       \
         $(OBJDIR)/ie_impGraphic_PNG.$(OBJ_SUFFIX)                   \
         $(OBJDIR)/ie_impGraphic_SVG.$(OBJ_SUFFIX)                   \
