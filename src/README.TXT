@@ -16,6 +16,9 @@ other
 wp
 	Source code for the word processor application.
 
+calc
+	Source code for the spreadsheet application.
+
 util
 	Source code for general-purpose utility functions.
 
@@ -23,13 +26,6 @@ config
 	Files related to the build system.  This contains no actual
 	product source code.  Rather, it contains things like
 	Makefiles and scripts.
-
-dist
-	This is where things are placed after they are built.  Under this
-	directory, you'll find one or more directories which are named
-	in accordance with the platform on which the build took place.
-	The dist directory is initially empty, since nothing is placed
-	there until it has been built.
 
 ps
 	Source code for PostScript generation.  Currently used only by
