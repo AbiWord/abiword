@@ -313,27 +313,21 @@ void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
 
 	if (bRulerOn) {
 		    AP_LeftRuler * pLeft = pFrameData->m_pLeftRuler;
-			if(pLeft)
-			{
-				delete pLeft;
-			}
 			PtRealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);
 			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, - (*width));
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 			UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
 			static_cast<AP_LeftRuler *>(pLeftRuler)->setView(m_pView,iZoom);
+			pView->setLeftRuler(pLeft);
 			setYScrollRange();
 	} else {
 			PtUnrealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);
 			PtSetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
-			DELETEP(pFrameDate->m_pLeftRuler);
-			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, *height, 0);
+			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, *width);
 
-			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler = NULL;
 			static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
 			}
 	}
-}
 
 void AP_QNXFrame::toggleRuler(bool bRulerOn)
 {
