@@ -92,12 +92,12 @@ bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 		if (strcmp((const char*)szValue,pEntry->pszRight) == 0)
 			return true;				// equal values, no changes required
 		
-		m_hash.setEntry(pEntry, (char*)szValue, NULL); // update with new value
+		m_hash.setEntry(pEntry, (const char*)szValue, NULL); // update with new value
 	}
 	else
 	{
 		// otherwise, need to add a new entry
-		m_hash.addEntry((char*)szKey,(char*)szValue,NULL);
+		m_hash.addEntry((char*)szKey,(const char*)szValue,NULL);
 	}
 
 	m_pPrefs->_markPrefChange( szKey );

@@ -652,7 +652,7 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 #define DEFINE_GET_SET_BOOL(index,button)																	\
 	bool AP_Win32Dialog_Options::_gather##button(void)													\
 	{ return (IsDlgButtonChecked((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button) == BST_CHECKED); }	\
-	void AP_Win32Dialog_Options::_set##button(bool b)													\
+	void AP_Win32Dialog_Options::_set##button(const bool b)													\
 	{ CheckDlgButton((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellCheckAsType);
@@ -711,7 +711,7 @@ int AP_Win32Dialog_Options::_gatherNotebookPageNum(void)
 	return 0;
 }
 
-void    AP_Win32Dialog_Options::_setNotebookPageNum(int pn) 
+void    AP_Win32Dialog_Options::_setNotebookPageNum(const int pn) 
 {
 }
 

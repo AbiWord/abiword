@@ -90,7 +90,7 @@ public:
 	EV_EditBindingMap *				getBindingMap(const char * szName);
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
 	const EV_Toolbar_ActionSet *	getToolbarActionSet(void) const;
-	const XAP_EncodingManager*			getEncodingManager(void) const;
+	const XAP_EncodingManager*		getEncodingManager(void) const;
 
 	XAP_Args *						getArgs(void) const;
 
@@ -114,37 +114,36 @@ public:
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard) = 0;
 	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
-        void rememberFocussedFrame( void * pJustFocussedFrame);
-        XAP_Frame * getLastFocussedFrame( void ) ;
-        XAP_Frame * findValidFrame( void ) ;
-        bool safeCompare( XAP_Frame * lff, XAP_Frame * f);
-        UT_sint32 safefindFrame( XAP_Frame * f);
-        void clearLastFocussedFrame(void);
-        void clearIdTable( void);
+	void rememberFocussedFrame( void * pJustFocussedFrame);
+	XAP_Frame * getLastFocussedFrame( void ) ;
+	XAP_Frame * findValidFrame( void ) ;
+	bool safeCompare( XAP_Frame * lff, XAP_Frame * f);
+	UT_sint32 safefindFrame( XAP_Frame * f);
+	void clearLastFocussedFrame(void);
+	void clearIdTable( void);
 	void rememberModelessId(  UT_sint32 id, XAP_Dialog_Modeless * pDialog);
 	void forgetModelessId( UT_sint32 id );
-        bool isModelessRunning( UT_sint32 id);
+	bool isModelessRunning( UT_sint32 id);
 	XAP_Dialog_Modeless * getModelessDialog( UT_sint32 id);
 	void closeModelessDlgs( void);
 	void notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
 	void notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
 
-        virtual void                                            setViewSelection( AV_View * pView) {}; //subclasses override
-        virtual AV_View *                                       getViewSelection( void) { return (AV_View *)  NULL;} ; // subclasses override
+	virtual void					setViewSelection( AV_View * pView) {}; //subclasses override
+	virtual AV_View *				getViewSelection( void) { return (AV_View *)  NULL;} ; // subclasses override
+	
+	virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y, 
+												UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
+	virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
+												UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
+	virtual void 					parseAndSetGeometry(const char *string);
 
-		virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y, 
-												    UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
-		virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
-													UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
-		virtual void 					parseAndSetGeometry(const char *string);
 
-
-		virtual XAP_Module * createModule (void) = 0;
+	virtual XAP_Module * createModule (void) = 0;
 
 protected:
-	void				  _setAbiSuiteLibDir(const char * sz);
-	virtual void                      _printUsage(void);   
-	
+	void							_setAbiSuiteLibDir(const char * sz);
+	virtual void					_printUsage(void);   
 	
 	XAP_Args *						m_pArgs;
 	const char *					m_szAppName;
@@ -155,22 +154,20 @@ protected:
 	EV_Menu_ActionSet *				m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 	EV_Toolbar_ActionSet *			m_pToolbarActionSet;
 	XAP_Dictionary *				m_pDict;
-
 	XAP_Prefs *						m_prefs;			/* populated in AP_<platform>App::initialize() */
 
 	UT_Vector						m_vecFrames;
 	UT_HashTable					m_hashClones;
-        XAP_Frame *                                     m_lastFocussedFrame;
+	XAP_Frame *						m_lastFocussedFrame;
 
-        struct modeless_pair 
-        { 
-	       UT_sint32 id;
-	       XAP_Dialog_Modeless * pDialog;
-        } m_IdTable[NUM_MODELESSID+1]; 
+	struct modeless_pair 
+	{ 
+		UT_sint32 id;
+		XAP_Dialog_Modeless * pDialog;
+	} m_IdTable[NUM_MODELESSID+1]; 
         
-	XAP_EncodingManager*				m_pEncMgr;
+	XAP_EncodingManager*			m_pEncMgr;
 	static XAP_App *				m_pApp;
-
 };
 
 #endif /* XAP_APP_H */

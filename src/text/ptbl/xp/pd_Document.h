@@ -229,7 +229,6 @@ protected:
 
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
-	void					_createAutoSaveTimer();
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
@@ -240,10 +239,9 @@ protected:
 	IEFileType				m_lastSavedAsType;
 	bool					m_bPieceTableChanging;
 	bool					m_bDoingPaste;
+
 private:
 	bool					m_bAllowInsertPointChange;
-	UT_uint32				m_iIdAutoSaveTimer;
 };
-
 
 #endif /* PD_DOCUMENT_H */

@@ -35,17 +35,15 @@ UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, 
 }
 
 UT_UNIXTimer::UT_UNIXTimer(UT_TimerCallback pCallback, void* pData)
+	: m_iMilliseconds(0), m_iGtkTimerId(0)
 {
 	setCallback(pCallback);
 	setInstanceData(pData);
-	m_bStarted = false;
-	m_iMilliseconds = 0;
 }
 
 UT_UNIXTimer::~UT_UNIXTimer()
 {
 	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer destructor\n"));
-
 	stop();
 }
 
@@ -56,24 +54,11 @@ static int _Timer_Proc(void *p)
 	UT_UNIXTimer* pTimer = (UT_UNIXTimer*) p;
 	UT_ASSERT(pTimer);
 
-//	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer fire\n"));
+//	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer fired\n"));
 	
 	pTimer->fire();
 
-	/*
-	  We need to manually reset the timer here.  This cross-platform
-	  timer was designed to emulate the semantics of Win32 timers,
-	  which continually fire until they are killed.
-	*/
-
-	pTimer->resetIfStarted();
-	return 0;
-}
-
-void UT_UNIXTimer::resetIfStarted(void)
-{
-	if (m_bStarted)
-		set(m_iMilliseconds);
+	return TRUE;
 }
 
 UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
@@ -88,38 +73,36 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	  of how it's done on Windows.  We're hoping that something similar will work
 	  for other platforms.
 	*/
+	stop();
 
-	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer set\n"));
+	m_iGtkTimerId = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
 
-	UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
-	
-	setIdentifier(idTimer);
-	
+	if (getIdentifier() == 0)
+		setIdentifier(m_iGtkTimerId);
+
+	UT_DEBUGMSG(("ut_unixTimer.cpp: timer [%d] (with id [%d] set\n", getIdentifier(), m_iGtkTimerId));
+
 	m_iMilliseconds = iMilliseconds;
-	m_bStarted = true;
 
 	return 0;
 }
 
-void UT_UNIXTimer::stop(void)
+void UT_UNIXTimer::stop()
 {
 	// stop the delivery of timer events.
 	// stop the OS timer from firing, but do not delete the class.
-
-	if (m_bStarted)
-		gtk_timeout_remove(getIdentifier());
-	m_bStarted = false;
-
-	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer stopped\n"));
+	if (m_iGtkTimerId != 0)
+	{
+//		UT_DEBUGMSG(("ut_unixTimer.cpp: timer [%d] (with id [%d]) stopped\n", getIdentifier(), m_iGtkTimerId));
+		gtk_timeout_remove(m_iGtkTimerId);
+		m_iGtkTimerId = 0;
+	}
 }
 
-void UT_UNIXTimer::start(void)
+void UT_UNIXTimer::start()
 {
 	// resume the delivery of events.
-
 	UT_ASSERT(m_iMilliseconds > 0);
-	
-	if (!m_bStarted)
-		set(m_iMilliseconds);
+	set(m_iMilliseconds);
 }
 

@@ -1117,12 +1117,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     
     if (bShowApp)
     {
-	// if the initialize fails, we don't have icons, fonts, etc.
-	if (!pMyUnixApp->initialize())
-	{
-	    delete pMyUnixApp;
-	    return -1;	// make this something standard?
-	}
+		// if the initialize fails, we don't have icons, fonts, etc.
+		if (!pMyUnixApp->initialize())
+		{
+			delete pMyUnixApp;
+			return -1;	// make this something standard?
+		}
     }
     
     // this function takes care of all the command line args.
@@ -1130,9 +1130,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     // continue out the door.
     if (pMyUnixApp->parseCommandLine() && bShowApp)
     {
-	// turn over control to gtk
-	gtk_main();
-	pMyUnixApp->shutdown();
+		// turn over control to gtk
+		gtk_main();
+		pMyUnixApp->shutdown();
     }
     
     // destroy the App.  It should take care of deleting all frames.
@@ -1377,11 +1377,10 @@ bool AP_UnixApp::parseCommandLine(void)
     
     if (kWindowsOpened == 0)
     {
-	// no documents specified or were able to be opened, open an untitled one
-	
-	AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-	pFirstUnixFrame->initialize();
-	pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+		// no documents specified or were able to be opened, open an untitled one
+		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+		pFirstUnixFrame->initialize();
+		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
     }
     
     return true;

@@ -55,12 +55,19 @@ AP_Dialog_Options::tAnswer AP_Dialog_Options::getAnswer(void) const
 }
 
 inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme, 
-						XML_Char const * key, 
-						bool var )
+							 XML_Char const * key, 
+							 bool var )
 {
 	XML_Char szBuffer[2] = {0,0};
 	szBuffer[0] = ((var)==true ? '1' : '0');
 	pPrefsScheme->setValue( key, szBuffer );
+}
+
+inline void Save_Pref_Text(  XAP_PrefsScheme *pPrefsScheme, 
+							 XML_Char const *key, 
+							 const char *var )
+{
+	pPrefsScheme->setValue( key, var );
 }
 
 void AP_Dialog_Options::_storeWindowData(void)
@@ -112,7 +119,9 @@ void AP_Dialog_Options::_storeWindowData(void)
 #ifdef BIDI_ENABLED
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 #endif
-
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoSaveFile, _gatherAutoSaveFile() );
+	Save_Pref_Text( pPrefsScheme, XAP_PREF_KEY_AutoSaveFileExt, _gatherAutoSaveFileExt() );
+					
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
@@ -198,7 +207,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	bool			b;
 	XAP_Prefs		*pPrefs;
 	const XML_Char	*pszBuffer;	
-
+	
 	// TODO: move this logic when we get a PrefsListener API and turn this
 	//		 dialog into an app-specific
 
@@ -252,6 +261,12 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
+
+	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFile,&b))
+		_setAutoSaveFile (b);
+
+//	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoSaveFileExt,&b))
+//		_setAutoSaveFileExt (b);
 
 	// ------------ the page tab number 
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))

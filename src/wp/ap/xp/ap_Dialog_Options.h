@@ -54,6 +54,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 //				   id_CHECK_OTHER_USE_UNICODE_DIRECTION,
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
 #endif
+				   id_CHECK_AUTO_SAVE_FILE,
+				   id_TEXT_AUTO_SAVE_FILE_EXT,
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
@@ -93,7 +95,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 								// optdlgs should as for the same preferences
 
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
-					 	virtual void    _set##a( u ) = 0
+					 	virtual void    _set##a(const u) = 0
 	SET_GATHER			(SpellCheckAsType,	bool);
 	SET_GATHER			(SpellHideErrors,	bool);
 	SET_GATHER			(SpellSuggest,		bool);
@@ -122,6 +124,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
+
+	SET_GATHER			(AutoSaveFile,		bool);
+	SET_GATHER			(AutoSaveFileExt,	char *);
 
  	// so we can save and restore to the same page - must be able to return
   	// the current page and reset it later (i.e., don't use a handle, but a

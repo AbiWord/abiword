@@ -264,6 +264,16 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *label17;
 	GtkWidget *current_scheme;
 	GtkWidget *label10;
+	GtkWidget *frame43;
+	GtkWidget *hbox26;
+	GtkWidget *hbox27;
+	GtkWidget *autosave_cb;
+	GtkObject *autosave_time_adj;
+	GtkWidget *autosave_time;
+	GtkWidget *label23;
+	GtkWidget *hbox28;
+	GtkWidget *label24;
+	GtkWidget *autosave_ext;
 
 #ifdef BIDI_ENABLED
 	GtkWidget *frame42;
@@ -630,14 +640,14 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 			  (GtkAttachOptions) (GTK_EXPAND), 0, 0);
 	page_size_menu = gtk_menu_new ();
 	for (int i = (int)fp_PageSize::A0; i < (int)fp_PageSize::Custom; i++)
-	  {
+	{
 	    glade_menuitem = gtk_menu_item_new_with_label (fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i));
 	    gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) page_size);
 	    gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, GINT_TO_POINTER(i));
 	    CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	    gtk_widget_show (glade_menuitem);
 	    gtk_menu_append (GTK_MENU (page_size_menu), glade_menuitem);
-	  }
+	}
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (page_size), page_size_menu);
 	
 	label22 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DefaultPageSize));
@@ -716,6 +726,48 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (rtl_dominant);
 	gtk_box_pack_start (GTK_BOX (vbox59), rtl_dominant, FALSE, FALSE, 0);
 #endif		
+	
+#define _(a) (a)
+	// AUTO SAVE
+	frame43 = gtk_frame_new (_("Auto Save"));
+	gtk_widget_show (frame43);
+	gtk_box_pack_start (GTK_BOX (vbox36), frame43, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (frame43), 4);
+	
+	hbox26 = gtk_hbox_new (FALSE, 14);
+	gtk_widget_show (hbox26);
+	gtk_container_add (GTK_CONTAINER (frame43), hbox26);
+	
+	hbox27 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show (hbox27);
+	gtk_box_pack_start (GTK_BOX (hbox26), hbox27, TRUE, TRUE, 0);
+	
+	autosave_cb = gtk_check_button_new_with_label (_("Auto save current file each"));
+	gtk_widget_show (autosave_cb);
+	gtk_box_pack_start (GTK_BOX (hbox27), autosave_cb, FALSE, FALSE, 0);
+	
+	autosave_time_adj = gtk_adjustment_new (5, 0, 100, 1, 10, 10);
+	autosave_time = gtk_spin_button_new (GTK_ADJUSTMENT (autosave_time_adj), 1, 0);
+	gtk_widget_show (autosave_time);
+	gtk_box_pack_start (GTK_BOX (hbox27), autosave_time, FALSE, TRUE, 0);
+	
+	label23 = gtk_label_new (_("minutes"));
+	gtk_widget_show (label23);
+	gtk_box_pack_start (GTK_BOX (hbox27), label23, FALSE, FALSE, 0);
+	
+	hbox28 = gtk_hbox_new (TRUE, 4);
+	gtk_widget_show (hbox28);
+	gtk_box_pack_start (GTK_BOX (hbox26), hbox28, TRUE, FALSE, 0);
+	
+	label24 = gtk_label_new (_("With extension:"));
+	gtk_widget_show (label24);
+	gtk_box_pack_start (GTK_BOX (hbox28), label24, FALSE, FALSE, 0);
+	
+	autosave_ext = gtk_entry_new_with_max_length (5);
+	gtk_widget_show (autosave_ext);
+	gtk_box_pack_start (GTK_BOX (hbox28), autosave_ext, TRUE, TRUE, 0);
+	gtk_widget_set_usize (autosave_ext, 50, -2);
+	gtk_entry_set_text (GTK_ENTRY (autosave_ext), _(".bak"));
 
 	label10 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_show (label10);
@@ -728,6 +780,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 #ifdef BIDI_ENABLED
 	m_checkbuttonOtherDirectionRtl = rtl_dominant;
 #endif
+	m_checkbuttonAutoSaveFile = autosave_cb;
+	m_textAutoSaveFileExt = autosave_ext;
 
 	m_checkbuttonSpellCheckAsType	        = check_spell;
 	m_checkbuttonSpellHideErrors	        = hide_errors;
@@ -910,53 +964,41 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	// spell
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		return m_checkbuttonSpellCheckAsType;
-		break;
 
 	case id_CHECK_SPELL_HIDE_ERRORS:
 		return m_checkbuttonSpellHideErrors;
-		break;
 
 	case id_CHECK_SPELL_SUGGEST:
 		return m_checkbuttonSpellSuggest;
-		break;
 
 	case id_CHECK_SPELL_MAIN_ONLY:
 		return m_checkbuttonSpellMainOnly;
-		break;
 
 	case id_CHECK_SPELL_UPPERCASE:
 		return m_checkbuttonSpellUppercase;
-		break;
 
 	case id_CHECK_SPELL_NUMBERS:
 		return m_checkbuttonSpellNumbers;
-		break;
 
 	case id_CHECK_SPELL_INTERNET:
 		return m_checkbuttonSpellInternet;
-		break;
 
 	case id_LIST_DICTIONARY:
 		return m_listSpellDicts;
-		break;
 
 	case id_BUTTON_DICTIONARY_EDIT:
 		return m_buttonSpellDictionary;
-		break;
 
 	case id_BUTTON_IGNORE_RESET:
 		return m_buttonSpellIgnoreReset;
-		break;
 
 	case id_BUTTON_IGNORE_EDIT:
 		return m_buttonSpellIgnoreEdit;
-		break;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
 	case id_CHECK_SMART_QUOTES_ENABLE:
 		return m_checkbuttonSmartQuotesEnable;
-		break;
 
 	case id_LIST_DEFAULT_PAGE_SIZE:
 		return m_listDefaultPageSize;
@@ -965,64 +1007,58 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
 #endif
+
+	case id_CHECK_AUTO_SAVE_FILE:
+		return m_checkbuttonAutoSaveFile;
+
+	case id_TEXT_AUTO_SAVE_FILE_EXT:
+		return m_textAutoSaveFileExt;
+		
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
 	case id_CHECK_PREFS_AUTO_SAVE:
 		return m_checkbuttonPrefsAutoSave;
-		break;
 
 	case id_COMBO_PREFS_SCHEME:
 		return m_comboPrefsScheme;
-		break;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// view
 	case id_CHECK_VIEW_SHOW_RULER:
 		return m_checkbuttonViewShowRuler;
-		break;
 
 	case id_LIST_VIEW_RULER_UNITS:
 		return m_listViewRulerUnits;
-		break;
 
 	case id_CHECK_VIEW_CURSOR_BLINK:
 		return m_checkbuttonViewCursorBlink;
-		break;
 
 	case id_CHECK_VIEW_SHOW_STATUS_BAR:
 		return m_checkbuttonViewShowStatusBar;
-		break;
 
 	case id_CHECK_VIEW_ALL:
 		return m_checkbuttonViewAll;
-		break;
 
 	case id_CHECK_VIEW_HIDDEN_TEXT:
 		return m_checkbuttonViewHiddenText;
-		break;
 
 	case id_CHECK_VIEW_UNPRINTABLE:
 		return m_checkbuttonViewUnprintable;
-		break;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// general
 
 	case id_BUTTON_DEFAULTS:
 		return m_buttonDefaults;
-		break;
 
 	case id_BUTTON_OK:
 		return m_buttonOK;
-		break;
 
 	case id_BUTTON_CANCEL:
 		return m_buttonCancel;
-		break;
 
 	case id_BUTTON_APPLY:
 		return m_buttonApply;
-		break;
 
 		// not implemented
 	case id_BUTTON_SAVE:
@@ -1030,13 +1066,14 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
 	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
 	  return 0;
-	  break;
 
 	default:
-	        UT_ASSERT("Unknown Widget");
+		UT_ASSERT("Unknown Widget");
 		return 0;
-		break;
 	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return 0;
 }
 
 void AP_UnixDialog_Options::_controlEnable( tControl id, bool value )
@@ -1077,6 +1114,18 @@ void        AP_UnixDialog_Options::_set##button(bool b) {	\
 	gtk_toggle_button_set_active (										\
 				GTK_TOGGLE_BUTTON(m_checkbutton##button), b ); }
 
+#define DEFINE_GET_SET_TEXT(widget) \
+char *		AP_UnixDialog_Options::_gather##widget() {				\
+	UT_ASSERT(m_text##widget && GTK_IS_EDITABLE(m_text##widget));	\
+	return gtk_editable_get_chars(GTK_EDITABLE(m_text##widget), 0, -1); }			\
+\
+void		AP_UnixDialog_Options::_set##widget(const char *t) {	\
+	int pos = 0;													\
+	UT_ASSERT(m_text##widget && GTK_IS_EDITABLE(m_text##widget));	\
+	gtk_editable_delete_text(GTK_EDITABLE(m_text##widget), 0, -1);				\
+	gtk_editable_insert_text(GTK_EDITABLE(m_text##widget), t, strlen(t), &pos);	\
+}
+ 
 DEFINE_GET_SET_BOOL(SpellCheckAsType);
 DEFINE_GET_SET_BOOL(SpellHideErrors);
 DEFINE_GET_SET_BOOL(SpellSuggest);
@@ -1089,6 +1138,9 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 #ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 #endif
+
+DEFINE_GET_SET_BOOL(AutoSaveFile);
+DEFINE_GET_SET_TEXT(AutoSaveFileExt);
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);

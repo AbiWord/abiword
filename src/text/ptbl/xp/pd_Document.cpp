@@ -23,7 +23,6 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_string.h"
-#include "ut_timer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
@@ -73,8 +72,7 @@ PD_Document::PD_Document()
 	m_lastSavedAsType(IEFT_AbiWord_1),
 	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
-	m_bAllowInsertPointChange(true),
-	m_iIdAutoSaveTimer(0)
+	m_bAllowInsertPointChange(true)
 {
 }
 
@@ -86,10 +84,6 @@ PD_Document::~PD_Document()
 		delete m_pPieceTable;
 
 	_destroyDataItemData();
-
-	UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
-	if (timer != 0)
-		timer->stop();
 	
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
@@ -143,7 +137,6 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
-	_createAutoSaveTimer();
 	return UT_OK;
 }
 
@@ -166,7 +159,6 @@ UT_Error PD_Document::newDocument(void)
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
-	_createAutoSaveTimer();
 	return UT_OK;
 }
 
@@ -260,32 +252,6 @@ UT_Error PD_Document::save(void)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-
-static void autoSaveCallback(UT_Timer *timer)
-{
-	UT_DEBUGMSG(("Autosaving doc...\n"));
-	PD_Document *me = static_cast<PD_Document *> (timer->getInstanceData());
-
-	if (me->isDirty())
-	{
-		UT_Error error = me->save();
-
-		if (!error)
-			UT_DEBUGMSG(("Document saved\n"));
-		else
-			UT_DEBUGMSG(("Error [%d] saving document.\n", error));
-	}
-}
-
-void PD_Document::_createAutoSaveTimer()
-{
-#if DEBUG
-	UT_DEBUGMSG(("Creating auto save timer.\n"));
-	UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
-	timer->set(300000); // TODO: the time should be configurable.  I choose 5 min by now
-	m_iIdAutoSaveTimer = timer->getIdentifier();
-#endif
-}
 
 bool PD_Document::isDirty(void) const
 {

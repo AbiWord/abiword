@@ -31,7 +31,7 @@ public:
 	AP_UnixGnomeDialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixGnomeDialog_Options(void);
 
-        static XAP_Dialog *             static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *             static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 
 protected:

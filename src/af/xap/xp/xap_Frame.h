@@ -189,8 +189,11 @@ protected:
 	static int					_getNextUntitledNumber(void);
 	
 private:
+	void						_createAutoSaveTimer();
+
 	char						m_szTitle[512];				/* TODO need #define for this number */
 	char						m_szNonDecoratedTitle[512]; /* TODO need #define for this number */
+	UT_uint32					m_iIdAutoSaveTimer;
 	
 	static int					s_iUntitled;	
 };

@@ -90,6 +90,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_string_class.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_stringbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)			\
@@ -99,7 +101,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_AdobeEncoding.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_OverstrikingChars.$(OBJ_SUFFIX) \
 		$(OBJDIR)/ut_Language.$(OBJ_SUFFIX)
-		
+
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

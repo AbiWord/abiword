@@ -28,6 +28,8 @@
 #include "ut_vector.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
+#include "ut_timer.h"
+#include "ut_string_class.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Prefs.h"
@@ -71,7 +73,8 @@ XAP_Frame::XAP_Frame(XAP_App * app)
         m_lidScrollbarViewListener((AV_ListenerId)-1),
         m_zoomType(z_100),
         m_pData(0),
-        m_pInputModes(0)
+        m_pInputModes(0),
+		m_iIdAutoSaveTimer(0)
 {
         m_app->rememberFrame(this);
         memset(m_szTitle,0,sizeof(m_szTitle));
@@ -97,7 +100,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
         m_lidScrollbarViewListener((AV_ListenerId)-1),
         m_zoomType(z_100),
         m_pData(0),
-        m_pInputModes(0)
+        m_pInputModes(0),
+        m_iIdAutoSaveTimer(0)
 {
         m_app->rememberFrame(this, f);
         memset(m_szTitle,0,sizeof(m_szTitle));
@@ -132,6 +136,17 @@ XAP_Frame::~XAP_Frame(void)
 	FREEP(m_szToolbarAppearance);
 
 	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
+
+	UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
+	if (timer != 0)
+	{
+		UT_DEBUGMSG(("Stopping timer [%d]\n", m_iIdAutoSaveTimer));
+		timer->stop();
+	}
+	else
+	{
+		UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
+	}
 }
 
 /*****************************************************************/
@@ -264,8 +279,37 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	//////////////////////////////////////////////////////////////////
 	// ... add other stuff here ...
 	//////////////////////////////////////////////////////////////////
+	_createAutoSaveTimer();
 
 	return true;
+}
+
+static void autoSaveCallback(UT_Timer *timer)
+{
+	UT_DEBUGMSG(("Autosaving doc...\n"));
+	XAP_Frame *me = static_cast<XAP_Frame *> (timer->getInstanceData());
+
+	if (me->isDirty())
+	{
+		UT_Error error = me->backup();
+
+#if DEBUG
+		if (!error)
+			UT_DEBUGMSG(("Document saved\n"));
+		else
+			UT_DEBUGMSG(("Error [%d] saving document.\n", error));
+#endif
+	}
+}
+
+void XAP_Frame::_createAutoSaveTimer()
+{
+#if 0
+	UT_Timer *timer = UT_Timer::static_constructor(autoSaveCallback, this);
+	timer->set(300000); // TODO: the time should be configurable.  I choose 5 min by now
+	m_iIdAutoSaveTimer = timer->getIdentifier();
+	UT_DEBUGMSG(("Creating auto save timer [%d].\n", m_iIdAutoSaveTimer));
+#endif
 }
 
 EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
@@ -572,25 +616,22 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
 
 UT_Error XAP_Frame::backup()
 {
-	char * ext = ".bak"; // TODO: Make this a preference
-	char * oldName = (char *) m_pDoc->getFilename();
-	char * backupName;
-	if (!oldName || !(*oldName))
+	UT_String ext(".bak"); // TODO: Make this a preference
+	UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
+	UT_String backupName;
+
+	if (oldName.empty())
 	{
 		const XAP_StringSet * pSS = m_app->getStringSet();
-		oldName = (char *) malloc(strlen(pSS->getValue(XAP_STRING_ID_UntitledDocument)) + strlen(ext) + 1);
-		sprintf(oldName, pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
-		UT_ASSERT(oldName);
+		oldName = pSS->getValue(XAP_STRING_ID_UntitledDocument);
+		UT_DEBUGMSG(("Unnamed.  We will give it the name [%s]", oldName.c_str()));
 	}
-	backupName = (char *) malloc(strlen(oldName) + strlen(ext) + 1);
-	UT_ASSERT(backupName);
-	sprintf(backupName, "%s%s", oldName, ext);
-	
+	else
+		UT_DEBUGMSG(("Filename [%s]", oldName.c_str()));
+
+	backupName = oldName + ext;
 	UT_Error error = m_pDoc->saveAs(backupName, m_pDoc->getLastType());
-	UT_DEBUGMSG(("File %s saved.\n", backupName));
-	
-	FREEP(backupName);
-	FREEP(oldName);
+	UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
 	
 	return error;
 }

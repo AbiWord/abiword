@@ -82,7 +82,7 @@
 #define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"				
 
 #define AP_PREF_KEY_StringSet						"StringSet"					/* name of dialog/msgbox strings */
-#define AP_PREF_DEFAULT_StringSet					"ja-JP"						
+#define AP_PREF_DEFAULT_StringSet					"en-US"
 
 #define AP_PREF_KEY_KeyBindings						"KeyBindings"
 #define AP_PREF_DEFAULT_KeyBindings					"default"					/* value in ap_LoadBindings.cpp */
@@ -160,6 +160,6 @@ dcl(StringSetDirectory)
 #ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
 #endif
-
+	
 #endif /* dcl */
 #endif /* AP_PREFS_SCHEMEIDS_H */

@@ -83,6 +83,12 @@
 #endif
 #endif  /* BIDI_ENABLED */
 
+#define XAP_PREF_KEY_AutoSaveFile					"AutoSaveFile"
+#define XAP_PREF_DEFAULT_AutoSaveFile				"1"							/* Auto save files by default */
+
+#define XAP_PREF_KEY_AutoSaveFileExt					"AutoSaveFileExt"
+#define XAP_PREF_DEFAULT_AutoSaveFileExt				".bak"						/* TODO: set a platform specific suffix */
+
 #define XAP_PREF_KEY_EmbedFontsInPS					"EmbedFontsInPs"
 #define XAP_PREF_DEFAULT_EmbedFontsInPS				"1"
 #else /* XAP_PREFS_SCHEMEID_H */
@@ -103,6 +109,9 @@ dcl(DefaultPageSize)
 #ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
 #endif
+
+dcl(AutoSaveFile)
+dcl(AutoSaveFileExt)
 
 dcl(EmbedFontsInPS)
 #endif /* dcl */

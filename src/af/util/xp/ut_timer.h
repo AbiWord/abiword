@@ -39,8 +39,8 @@ class UT_Timer
 public:
 	virtual ~UT_Timer();
 	
-	void setCallback(UT_TimerCallback p);
-	UT_TimerCallback getCallback();
+	virtual void setCallback(UT_TimerCallback p);
+	virtual UT_TimerCallback getCallback();
 	
 	void setInstanceData(void*);
 	void* getInstanceData();

@@ -44,7 +44,7 @@ public:
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
- 					    virtual void    _set##a( t )
+ 					    virtual void _set##a(const t)
 
  	SET_GATHER			(SpellCheckAsType,	bool );
  	SET_GATHER			(SpellHideErrors,	bool );
@@ -79,6 +79,9 @@ public:
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
+
+	SET_GATHER			(AutoSaveFile, bool);
+	SET_GATHER			(AutoSaveFileExt, char *);
 #undef SET_GATHER
 	
  protected:
@@ -129,6 +132,8 @@ public:
 #ifdef BIDI_ENABLED
     GtkWidget * m_checkbuttonOtherDirectionRtl;
 #endif
+	GtkWidget * m_checkbuttonAutoSaveFile;
+	GtkWidget * m_textAutoSaveFileExt;
 	
 	GtkWidget * m_buttonDefaults;
 	GtkWidget * m_buttonApply;

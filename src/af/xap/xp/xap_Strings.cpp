@@ -320,12 +320,12 @@ void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **att
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (strcmp((char*)a[0],"class") == 0)
+			if (strcmp((char*)a[0], "class") == 0)
 				continue;
 			
-			if (!setValue(a[0],a[1]))
+			if (!setValue(a[0], a[1]))
 			{
-				UT_DEBUGMSG(("UNKNOWN StringId [%s] value [%s]\n",a[0],a[1]));
+				UT_DEBUGMSG(("UNKNOWN StringId [%s] value [%s]\n", a[0], a[1]));
 			}
 		}
 	}

@@ -33,11 +33,10 @@ public:
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
 	virtual void stop(void);
 	virtual void start(void);
-	virtual void resetIfStarted(void);
 	
 protected:
 	UT_sint32 m_iMilliseconds;
-	bool m_bStarted;
+	UT_uint32 m_iGtkTimerId;
 };
 
 #endif /* UT_UNIXTIMER_H */
