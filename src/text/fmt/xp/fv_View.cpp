@@ -3822,6 +3822,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	}
 	
 
+#ifdef BIDI_ENABLED	
 	// if the format change includes dom-dir, we need to force change
 	// of direction for the last run in the block, the EndOfParagraph
 	// run. (This should really not be necessary, the EndOfParagraph
@@ -3873,6 +3874,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 		}
 	}
 	
+#endif
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
