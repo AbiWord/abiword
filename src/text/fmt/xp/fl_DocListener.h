@@ -54,7 +54,10 @@ public:
 	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
-									PL_StruxFmtHandle * psfh);
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
 
 protected:
 	PD_Document*		m_pDoc;

@@ -123,7 +123,10 @@ public:
 	UT_Bool doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	UT_Bool doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
 									PL_StruxDocHandle sdh,
-									fl_BlockLayout ** ppNewBL);
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
 	UT_Bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
 	UT_Bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
 	UT_Bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);

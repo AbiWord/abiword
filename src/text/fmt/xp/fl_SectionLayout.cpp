@@ -514,12 +514,27 @@ UT_Bool fl_SectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 }
 
 UT_Bool fl_SectionLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
-									PL_StruxDocHandle sdh,
-									fl_SectionLayout ** ppNewBL)
+												  PL_StruxDocHandle sdh,
+												  PL_ListenerId lid,
+												  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																		  PL_ListenerId lid,
+																		  PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 
 	UT_ASSERT(UT_TODO);
+
+#if 0	
+	fl_SectionLayout * pNewSL = NULL;						// TODO
+
+	// must call the bind function to complete the exchange
+	// of handles with the document (piece table) *** before ***
+	// anything tries to call down into the document (like all
+	// of the view listeners).
+	
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewSL;
+	pfnBindHandles(sdh,lid,sfhNew);
+#endif
 	
 	return UT_FALSE;
 }

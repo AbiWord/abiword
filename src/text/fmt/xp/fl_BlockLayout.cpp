@@ -2251,7 +2251,10 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
 												PL_StruxDocHandle sdh,
-												fl_BlockLayout ** ppNewBL)
+												PL_ListenerId lid,
+												void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																		PL_ListenerId lid,
+																		PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 					
@@ -2263,7 +2266,14 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		UT_DEBUGMSG(("no memory for BlockLayout"));
 		return UT_FALSE;
 	}
-	*ppNewBL = pNewBL;
+
+	// must call the bind function to complete the exchange
+	// of handles with the document (piece table) *** before ***
+	// anything tries to call down into the document (like all
+	// of the view listeners).
+
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewBL;
+	pfnBindHandles(sdh,lid,sfhNew);
 	
 	/*
 	  The idea here is to divide the runs of the existing block 
@@ -2364,17 +2374,7 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	if (pView)
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
-		/*
-		  TODO
-		  We SHOULD include AV_CHG_FMTCHAR here, but doing so
-		  ends up crashing, since it tries to request char formatting
-		  info from the current block, which we just inserted, and
-		  so it's not fully cooked yet.
-
-		  We need a "PostMessage" style functionality here, rather than
-		  the "SendMessage" functionality provided by notifyListeners.
-		*/
-		pView->notifyListeners(AV_CHG_TYPING);
+		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 	
 	return UT_TRUE;

@@ -345,7 +345,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
-									PL_StruxFmtHandle * psfh)
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew))
 {
 	UT_DEBUGMSG(("fl_DocListener::insertStrux\n"));
 
@@ -364,9 +367,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		case PTX_Section:
 		{
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			fl_SectionLayout * pNewSL = NULL;
-			UT_Bool bResult = pSL->doclistener_insertStrux(pcrx,sdh,&pNewSL);
-			*psfh = (PL_StruxFmtHandle)pNewSL;
+			UT_Bool bResult = pSL->doclistener_insertStrux(pcrx,sdh,lid,pfnBindHandles);
 			return bResult;
 		}
 		
@@ -387,9 +388,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		case PTX_Block:
 		{
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			fl_BlockLayout * pNewBL = NULL;
-			UT_Bool bResult = pBL->doclistener_insertStrux(pcrx,sdh,&pNewBL);
-			*psfh = (PL_StruxFmtHandle)pNewBL;
+			UT_Bool bResult = pBL->doclistener_insertStrux(pcrx,sdh,lid,pfnBindHandles);
 			return bResult;
 		}
 				

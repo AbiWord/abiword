@@ -348,6 +348,17 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord 
 	return UT_TRUE;
 }
 
+static void s_BindHandles(PL_StruxDocHandle sdhNew,
+						  PL_ListenerId lid,
+						  PL_StruxFmtHandle sfhNew)
+{
+	UT_ASSERT(sdhNew);
+	UT_ASSERT(sfhNew);
+
+	pf_Frag_Strux * pfsNew = (pf_Frag_Strux *)sdhNew;
+	pfsNew->setFmtHandle(lid,sfhNew);
+}
+
 UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 									 pf_Frag_Strux * pfsNew,
 									 const PX_ChangeRecord * pcr) const
@@ -373,10 +384,12 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 		if (pListener)
 		{
 			PL_StruxDocHandle sdhNew = (PL_StruxDocHandle)pfsNew;
-			PL_StruxFmtHandle sfhNew = 0;
 			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
-			if (pListener->insertStrux(sfh,pcr,sdhNew,&sfhNew))
-				pfsNew->setFmtHandle(lid,sfhNew);
+			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
+			{
+				// verify that the listener used our callback
+				UT_ASSERT(pfsNew->getFmtHandle(lid));
+			}
 		}
 	}
 

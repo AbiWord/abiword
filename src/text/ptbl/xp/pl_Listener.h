@@ -47,8 +47,8 @@ public:
 	// will call each listener and notify them.  the (fmt) structure
 	// handle passed represents the either the structure being
 	// modified or the containing structure block.  if the change
-	// is an insertStrux, the listener can return a handle for the
-	// new structure.
+	// is an insertStrux, the listener is given a function it must
+	// call to return a handle for the new structure.
 	//
 	// the change notification occurs after the document has
 	// been updated and in a stable state.  (for an editing operation
@@ -83,7 +83,10 @@ public:
 	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdhNew,
-									PL_StruxFmtHandle * psfhNew) = 0;
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew)) = 0;
 };
 	
 #endif /* PL_LISTENER_H */
