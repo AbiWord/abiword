@@ -8,7 +8,7 @@
 <H2 align=Center>AbiWord Roadmap</H2>
 
 <ul>
-<li>Last updated:  7 April 1999, the current tarball is 0.5.2
+<li>Last updated:  9 April 1999, the current tarball is 0.5.3
 
 <li>Please see the <a href="#notes">notes</a> at the bottom of this list.
 </ul>
@@ -60,7 +60,6 @@ development tree.</p></td>
   <TD VALIGN=top>
   <UL>
 <hr><b>File format stability</b><br>
-    <li>ensure that file format contains the version number of the app which wrote the file (jeff@abisource.com)
     <li>define file format for tables (jeff@abisource.com, eric@abisource.com)
 <hr><b>Bugs</b><br>
     <li>bugs 94, 218, 241, 242, 243, 260 (all of which may be related; specially requested by Bob) (jeff@abisource.com)
@@ -73,9 +72,6 @@ development tree.</p></td>
     <LI>finish code to insert, delete section breaks
     <LI>add ability to manipulate page margins, size, orientation 
 <hr><b>Tree</b><br>
-    <li>sort out paradigm for how external libraries get built and used by our code
-    <li>move src/other/expat out of the abi tree, treating it like zlib, png, and other external libs
-    <li>remove abi/src/ps from the CVS tree
     <li>Abstract ptbl and fmt code into a XAP text layout library for use by multiple AbiSuite apps (eric@abisource.com)
 <hr><b>Other</b><br>
     <li>figure out memory usage issues on long text file import (eric@abisource.com)
@@ -133,7 +129,6 @@ development tree.</p></td>
     <LI>tables
     <li>tabs:  center, right
 <hr><b>Other</b><br>
-    <li>Get the BeOS port checked into the tree. (thomasf@qnx.com, eric@abisource.com)
     <li>switch to UTF-8 encoding for internal piece table storage (jeff@abisource.com, eric@abisource.com)
     <li>Cleanup mapping of Unicode encodings to font encodings, focusing on: bullets, dashes, fancy quotation marks, symbols, dingbats (eric@abisource.com)
     <LI>online help (in HTML?)

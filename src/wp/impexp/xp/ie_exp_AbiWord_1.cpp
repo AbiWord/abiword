@@ -391,53 +391,81 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_pie->write("<!-- =====================================================================  -->\n");
 	m_pie->write("\n");
 
-#if DEBUG
+	m_pie->write("<!--         Build_ID          = ");
 	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
 	{
-		m_pie->write("<!--         Build_ID          = ");
 		m_pie->write(XAP_App::s_szBuild_ID);
-		m_pie->write(" -->\n");
 	}
+	else
+	{
+		m_pie->write("(none)");
+	}
+	m_pie->write(" -->\n");
+	m_pie->write("<!--         Build_Version     = ");
 	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 	{
-		m_pie->write("<!--         Build_Version     = ");
 		m_pie->write(XAP_App::s_szBuild_Version);
-		m_pie->write(" -->\n");
 	}
+	else
+	{
+		m_pie->write("(none)");
+	}
+	m_pie->write(" -->\n");
+	m_pie->write("<!--         Build_Options     = ");
 	if (XAP_App::s_szBuild_Options && XAP_App::s_szBuild_Options[0])
 	{
-		m_pie->write("<!--         Build_Options     = ");
 		m_pie->write(XAP_App::s_szBuild_Options);
-		m_pie->write(" -->\n");
 	}
+	else
+	{
+		m_pie->write("(none)");
+	}
+	m_pie->write(" -->\n");
+	m_pie->write("<!--         Build_Target      = ");
 	if (XAP_App::s_szBuild_Target && XAP_App::s_szBuild_Target[0])
 	{
-		m_pie->write("<!--         Build_Target      = ");
 		m_pie->write(XAP_App::s_szBuild_Target);
-		m_pie->write(" -->\n");
 	}
+	else
+	{
+		m_pie->write("(none)");
+	}
+	m_pie->write(" -->\n");
+	m_pie->write("<!--         Build_CompileTime = ");
 	if (XAP_App::s_szBuild_CompileTime && XAP_App::s_szBuild_CompileTime[0])
 	{
-		m_pie->write("<!--         Build_CompileTime = ");
 		m_pie->write(XAP_App::s_szBuild_CompileTime);
-		m_pie->write(" -->\n");
 	}
+	else
+	{
+		m_pie->write("(none)");
+	}
+	m_pie->write(" -->\n");
+	m_pie->write("<!--         Build_CompileDate = ");
 	if (XAP_App::s_szBuild_CompileDate && XAP_App::s_szBuild_CompileDate[0])
 	{
-		m_pie->write("<!--         Build_CompileDate = ");
 		m_pie->write(XAP_App::s_szBuild_CompileDate);
-		m_pie->write(" -->\n");
 	}
+	else
+	{
+		m_pie->write("(none)");
+	}
+	m_pie->write(" -->\n");
 	m_pie->write("\n");
-#endif /* DEBUG */
 
 	// end of preamble.
 	// now we begin the actual document.
 	
 	// TODO add a file-format name/value pair to this tag.
-	// TODO add application name and version name/value pairs to this tag.
 	
-	m_pie->write("<abiword>\n");
+	m_pie->write("<abiword");
+	m_pie->write(" version=\"");
+	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+	{
+		m_pie->write(XAP_App::s_szBuild_Version);
+	}
+	m_pie->write("\"");
+	m_pie->write(">\n");
 	_handleStyles();
 }
 

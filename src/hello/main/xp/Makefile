@@ -31,13 +31,7 @@ TARGETS=		$(LIBRARY)
 ifdef ABI_BUILD_ID
 BUILD_ID=		$(ABI_BUILD_ID)
 else
-
-## TODO evaluate putting this stuff elsewhere.
-ifeq ($(OS_NAME), BeOS)
-BUILD_ID=		`uname -n`-`id -un`
-else
-BUILD_ID=		`hostname`-`whoami`
-endif
+BUILD_ID=
 endif
 
 ifdef ABI_BUILD_VERSION
