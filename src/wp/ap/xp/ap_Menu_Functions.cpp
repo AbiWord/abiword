@@ -534,12 +534,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 			outbuf += unichar_to_utf8(p[i], reinterpret_cast<unsigned char *>(outbuf));
 		}
 		*outbuf = 0;
-		c = cBuf;
-
-		#ifdef _WIN32	// UTF-8 to ANSI conversion for win32 build
-		UT_String 	sAnsi =	AP_Win32App::s_fromUTF8ToAnsi(cBuf);
-		strcpy (cBuf, sAnsi.c_str());
-		#endif
+		c = cBuf;		
 	}
 	else if (ndx == 1)
 	{
