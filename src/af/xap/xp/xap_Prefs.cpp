@@ -29,6 +29,11 @@
 #include "ut_string_class.h"
 #include "xap_Prefs.h"
 
+#if defined(_WIN32) && !defined(UNICODE)	// ANSI to UTF-8 conversion for win32 build
+#include "ap_Win32App.h"
+#endif	
+
+
 struct xmlToIdMapping {
 	char *m_name;
 	int m_type;
@@ -871,7 +876,14 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 				// NOTE: taking advantage of the fact that XML_Char == char
 				UT_ASSERT((sizeof(XML_Char) == sizeof(char)));
 				XML_Char * sz;
+
+				#if defined(_WIN32) && !defined(UNICODE)	// UTF-8 to ANSI conversion for win32 build
+				char szBuff[1024];
+				strcpy (szBuff, (AP_Win32App::s_fromUTF8ToAnsi(a[1])).c_str());
+				UT_XML_cloneString((XML_Char *&)sz, szBuff);
+				#else
 				UT_XML_cloneString((XML_Char *&)sz, a[1]);
+				#endif
 
 				// NOTE: we keep the copied string in the vector
 				m_vecRecent.addItem(static_cast<void *>(sz));
@@ -1303,6 +1315,12 @@ bool XAP_Prefs::savePrefsFile(void)
 		for (k=0; k<kLimit; k++)
 		{
 			const char * szRecent = getRecent(k+1);
+
+			#if defined(_WIN32) && !defined(UNICODE)	// ANSI to UTF-8 conversion for win32 build
+			char szBuff[1024];
+			strcpy (szBuff, (AP_Win32App::s_fromAnsiToUTF8(szRecent)).utf8_str());
+			szRecent = reinterpret_cast<const char *>(szBuff);
+			#endif
 
 			fprintf(fp,"\t\tname%d=\"%s\"\n",k+1,szRecent);
 		}
