@@ -62,7 +62,7 @@ ifeq ($(OS_ARCH), alpha)
 ARCH_FLAGS	= -D_ALPHA_
 OPTIMIZER	= -Oib3 -QAtuneEV56 -QAarchEV4 -QAgq -QAOu0 -QAieee0
 LINK_ARCH	= ALPHA
-OS_ENDIAN	= BigEndian32
+OS_ENDIAN	= LittleEndian32
 endif
 
 # Compiler and shared library flags 
