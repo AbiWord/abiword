@@ -881,8 +881,15 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 {
 	//now search for position m_iDocPosition in our bookmark list;
-	bookmark * bm = (bookmark*) bsearch((const void *) &m_iDocPosition, m_pBookmarks, m_iBookmarksCount, sizeof(bookmark),
-					   s_cmp_bookmarks_bsearch);
+	bookmark * bm;
+	if (m_iBookmarksCount == 0) {
+		bm = (bookmark*) NULL;
+	}
+	else {
+		bm = (bookmark*) bsearch((const void *) &m_iDocPosition,
+				m_pBookmarks, m_iBookmarksCount, sizeof(bookmark),
+				s_cmp_bookmarks_bsearch);
+	}
 	bool error = false;
 	if(bm)
 	{
