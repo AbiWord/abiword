@@ -5795,6 +5795,9 @@ FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 
 	bool bRes = false;
 
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+
 	// Replace selection if it's due to a find operation
 	if (m_doneFind && !isSelectionEmpty())
 	{
@@ -5835,6 +5838,9 @@ FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 
 		UT_ASSERT(m_startPosition >= 2);
 	}
+
+	m_pDoc->endUserAtomicGlob();
+	_restorePieceTableState();
 
 	// Find next occurrence in document
 	_findNext(pFind, pPrefix, bMatchCase, bDoneEntireDocument);
