@@ -20,7 +20,7 @@
 #ifndef EV_UNIXGNOMETOOLBAR_H
 #define EV_UNIXGNOMETOOLBAR_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk-2.0/gtk/gtkwidget.h>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xap_Types.h"

@@ -42,14 +42,14 @@ AC_ARG_ENABLE(gnome,[  --enable-gnome    Turn on gnome ],[
 ])
 
 if test "$gnome" = true ; then
-	AC_MSG_CHECKING(for gnome-libs >= 1.2.0)
-	if gnome-config --modversion gnome 2> /dev/null | grep gnome-libs >/dev/null 2>&1; then 
+	AC_MSG_CHECKING(for gnome-libs >= 2.0.0)
+	if pkg-config --modversion libgnome-2.0 2> /dev/null; then 
 	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`gnome-config --modversion gnome | sed s,gnome-libs-,, | awk 'BEGIN { FS = "."; } { printf "%d", ([$]1 * 1000 + [$]2) * 1000 + [$]3;}'`
-	    if test "$vers" -ge 1002000; then
+	    vers=`pkg-config --modversion libgnome-2.0 | awk 'BEGIN { FS = "."; } { printf "%d", ([$]1 * 1000 + [$]2) * 1000 + [$]3;}'`
+	    if test "$vers" -ge 2000000; then
 	        AC_MSG_RESULT(found)
 	    else
-	       AC_MSG_RESULT(You need at least gnome-libs 1.2.0: disabling gnome)
+	       AC_MSG_RESULT(You need at least gnome-libs 2.0.0: disabling gnome)
                gnome=false
 	    fi
 	else
@@ -59,8 +59,8 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	gnomelibs="bonobox bonobox_print gnomeui gal print vfs gdk_pixbuf"
-	gnomeliberrors=`gnome-config --cflags $gnomelibs 2>&1 | grep "Unknown library"`
+	gnomelibs="libbonobo-2.0 libgnomeui-2.0 gal-2.0 libgnomeprint-2.0 gnome-vfs-2.0 gdk-pixbuf-2.0"
+	gnomeliberrors=`pkg-config --cflags $gnomelibs 2>&1 | grep "Unknown library"`
 	if test "x$gnomeliberrors" != "x"; then
 		AC_MSG_ERROR([One or more gnome libraries not found; require: $gnomelibs])
 	fi
@@ -69,9 +69,9 @@ fi
 if test "$gnome" = true ; then
 	dnl What is the minimum gal library we can use?
 	AC_MSG_CHECKING(for gal >= 0.5)
-	if gnome-config --modversion gal 2> /dev/null | grep gal > /dev/null 2>&1; then 
+	if pkg-config --modversion gal-2.0 2> /dev/null | grep gal > /dev/null 2>&1; then 
 	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`gnome-config --modversion gal | sed s,gal-,, | awk 'BEGIN { FS = "."; } { printf "%d", [$]1 * 1000 + [$]2;}'`
+	    vers=`pkg-config --modversion gal-2.0 | awk 'BEGIN { FS = "."; } { printf "%d", [$]1 * 1000 + [$]2;}'`
 	    if test "$vers" -ge 5; then
 	        AC_MSG_RESULT(found)
 	    else
@@ -85,8 +85,8 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` -DHAVE_GNOME=1"
-	GNOME_LIBS="`gnome-config --libs $gnomelibs`"
+	GNOME_CFLAGS="`pkg-config --cflags $gnomelibs` -DHAVE_GNOME=1"
+	GNOME_LIBS="`pkg-config --libs $gnomelibs`"
 
 	AC_PATH_PROG(NAUTILUS_CONFIG,nautilus-config, ,[$PATH])
 	if test "x$NAUTILUS_CONFIG" != "x"; then

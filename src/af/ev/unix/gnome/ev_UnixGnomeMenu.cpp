@@ -19,7 +19,7 @@
  * 02111-1307, USA.
  */
  
-#include <gnome.h>
+#include "libgnomeui-2.0/gnome.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -41,6 +41,7 @@
 #include "ev_EditEventMapper.h"
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
+#include <libgnomeui-2.0/libgnomeui/gnome-stock-icons.h>
 
 // set up these replacement icons
 #include "stock/menu_about.xpm"
@@ -244,7 +245,7 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 {
 	if (!s_init)
 	{
-		/* register non-standard pixmaps with the gnome-stock engine */
+		/* register non-standard pixmaps with the gnome-stock engine
 		s_init = true;
 
 		static struct AbiWordStockPixmap{
@@ -281,17 +282,15 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 			{ 0, 0, NULL, NULL}
 		};
 
-		static GnomeStockPixmapEntry entry[sizeof(entry_names) / sizeof(struct AbiWordStockPixmap) - 1];
+		static GnomePixmapEntry entry[sizeof(entry_names) / (sizeof(struct AbiWordStockPixmap) - 3)];
 
 		for (int i = 0; entry_names[i].name != NULL ; ++i)
 		{
-			entry[i].data.type = GNOME_STOCK_PIXMAP_TYPE_DATA;
 			entry[i].data.width = entry_names[i].width;
 			entry[i].data.height = entry_names[i].height;
 			entry[i].data.xpm_data = entry_names[i].xpm_data;
 			gnome_stock_pixmap_register (entry_names[i].name,
-										 GNOME_STOCK_PIXMAP_REGULAR, entry + i);
-		}
+		}*/
 	}
 }
 

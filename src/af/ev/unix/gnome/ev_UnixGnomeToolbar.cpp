@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -44,10 +44,10 @@
 
 // hack to support gal < 0.3 
 extern "C" {
-#include <gal/widgets/gtk-combo-text.h>
-#include <gal/widgets/widget-color-combo.h>
-#include <gal/widgets/color-group.h>
-#include <gal/widgets/widget-pixmap-combo.h>
+#include <gal-2-0/gal/widgets/gtk-combo-text.h>
+#include <gal-2-0/gal/widgets/widget-color-combo.h>
+#include <gal-2-0/gal/widgets/color-group.h>
+#include <gal-2-0/gal/widgets/widget-pixmap-combo.h>
 }
 
 static GdkColor * black = g_new0 (GdkColor, 1);
