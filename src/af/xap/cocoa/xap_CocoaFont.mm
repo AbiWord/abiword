@@ -137,7 +137,7 @@ float XAP_CocoaFont::getHeight()
 	return _m_height;
 }
 
-void XAP_CocoaFont::getCoverage(UT_Vector& coverage)
+void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 {
 	UT_uint32 i, begin;
 	bool lastState = false;
@@ -147,7 +147,7 @@ void XAP_CocoaFont::getCoverage(UT_Vector& coverage)
 		coverage = *_m_coverage;
 		return;
 	}
-	_m_coverage = new UT_Vector(10);
+	_m_coverage = new UT_NumberVector(10);
 	const char *bitmap = static_cast<const char*>([[[m_font coveredCharacterSet] bitmapRepresentation] bytes]);
 	for (i = 0; i < 0xffff; i++) {
 		currentState = (bitmap[i >> 3] & (((unsigned int)1) << (i & 7)));
@@ -158,8 +158,8 @@ void XAP_CocoaFont::getCoverage(UT_Vector& coverage)
 				xxx_UT_DEBUGMSG(("getCoverage(): begin range\n"));
 			}
 			else {
-				_m_coverage->push_back(reinterpret_cast<void *>(begin));
-				_m_coverage->push_back(reinterpret_cast<void *>(i - begin));
+				_m_coverage->push_back(begin);
+				_m_coverage->push_back(i - begin);
 				xxx_UT_DEBUGMSG(("getCoverage(): adding range %lu - %lu\n", begin, i - begin));
 			}
 			lastState = currentState;

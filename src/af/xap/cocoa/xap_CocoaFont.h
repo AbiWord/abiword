@@ -49,7 +49,7 @@ class XAP_CocoaFont : public GR_Font
 	float						getAscent();
 	float						getDescent(); /* returns -descent because it is <0 on CG */
 	float						getHeight();
-	void 						getCoverage(UT_Vector& coverage);
+	void 						getCoverage(UT_NumberVector& coverage);
 	
 	virtual UT_sint32 			measureUnremappedCharForCache(UT_UCSChar cChar) const;
 private:
@@ -67,7 +67,7 @@ private:
 	float						_m_ascent;
 	float						_m_descent;
 	float						_m_height;
-	UT_Vector*					_m_coverage;
+	UT_NumberVector*					_m_coverage;
 
 	/*! static metrics stuff */
 	static NSTextStorage *s_fontMetricsTextStorage;
