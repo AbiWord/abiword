@@ -39,47 +39,24 @@ public:
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static void			autoupdateWC(UT_Worker * pTimer);
-	virtual void			set_sensitivity(void);
-	virtual void			setUpdateCounter(void);
+
 	// callbacks can fire these events
 
-	virtual void			event_OK(void);
-	virtual void			event_Update(void);
-	virtual void			event_Checkbox(void);
-	virtual void			event_Spin(void);
-	virtual void			event_WindowDelete(void);
+	void			event_OK(void);
+	void			event_WindowDelete(void);
 
 protected:
 
 	static void s_response(GtkWidget * wid, gint id, AP_UnixDialog_WordCount * me ) ;
 
-	enum
-	  {
-	    BUTTON_UPDATE,
-	    BUTTON_CLOSE
-	  } ResponseId ;
-
 	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	void				_populateWindowData(void);
-	virtual GtkWidget * _constructWindowContents(void);
-	void 				_updateWindowData(void);       
-	void 				_connectSignals(void);
+	GtkWidget * _constructWindow(void);
+	void 				_updateWindowData(void);
+
+	static void                     autoupdateWC(UT_Worker * pTimer);
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
-	GtkWidget * m_wContent;
-	GtkWidget * m_buttonClose;
-	GtkWidget * m_buttonUpdate;
-	GtkWidget * m_pTableframe;
-	UT_Timer * m_pAutoUpdateWC;
-	GtkWidget * m_pAutospin;
-	GtkWidget * m_pAutocheck;
-	GtkWidget * m_pAutospinlabel;
-	GtkAdjustment * m_Spinrange;
-	bool m_bAutoWC;
-	guint m_Update_rate;
 
 	// Labels for the Word Count data
 	GtkWidget * m_labelWCount;
@@ -88,7 +65,10 @@ protected:
 	GtkWidget * m_labelCNCount;
 	GtkWidget * m_labelLCount;	
 	GtkWidget * m_labelPgCount;	
-	
+	GtkWidget * m_labelTitle;
+
+	UT_Timer * m_pAutoUpdateWC;
+
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;

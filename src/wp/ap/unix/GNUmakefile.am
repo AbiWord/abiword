@@ -46,7 +46,8 @@ glade_DATA = \
 	ap_UnixDialog_Insert_DateTime.glade \
 	ap_UnixDialog_MailMerge.glade	\
 	ap_UnixDialog_PageNumbers.glade		\
-	ap_UnixDialog_Replace.glade
+	ap_UnixDialog_Replace.glade		\
+	ap_UnixDialog_WordCount.glade
 
 if WITH_CURL
 CURL_SOURCE_OBJ = ap_@ABI_FE@HashDownloader.cpp ap_@ABI_FE@Dialog_Download_File.cpp
