@@ -87,9 +87,9 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
  */
 NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 {
-	char buf [1024];
 	UT_UTF8String label;
 	pSS->getValueUTF8(stringId, label);
+	return [NSString stringWithUTF8String:label.utf8_str()];
 }
 
 /*!
