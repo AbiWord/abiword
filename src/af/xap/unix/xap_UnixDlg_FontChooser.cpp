@@ -552,8 +552,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	GtkWidget *checkbuttonStrikeout;
 	GtkWidget *checkbuttonUnderline;
 	GtkWidget *checkbuttonOverline;
-	GtkWidget *labelEncoding;
-	GtkWidget *comboEncoding;
+//	GtkWidget *labelEncoding;
+//	GtkWidget *comboEncoding;
 	GtkWidget *listStyles;
 	GtkWidget *listSizes;
 	GtkWidget *hbox1;
@@ -602,8 +602,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
   	GtkWidget *vbox3;
   	GtkWidget *scrolledwindow3;
   	GtkWidget *vboxmisc;
-  	GtkWidget *hboxForEncoding;
-
+//  	GtkWidget *hboxForEncoding;
 	table1 = gtk_table_new (2, 3, FALSE);
 	gtk_widget_set_name (table1, "table1");
 	gtk_widget_ref (table1);
@@ -775,6 +774,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 #endif
 */
 
+#if 0
 	hboxForEncoding = gtk_hbox_new (FALSE, 0);
 	gtk_widget_set_name (hboxForEncoding, "hboxForEncoding");
 	gtk_widget_ref (hboxForEncoding);
@@ -806,6 +806,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 //	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");	
 	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
 	g_list_free (comboEncoding_items);
+
+#endif
 
 	/* Notebook page for ForeGround Color Selector */
 
