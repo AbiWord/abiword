@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
+
 #include "ut_Win32Idle.h"
 
 UT_Vector UT_Win32Idle::static_vecIdles;
@@ -27,26 +27,33 @@ UT_Idle * UT_Idle::static_constructor(UT_WorkerCallback pCallback, void * pData)
 }
 
 UT_Win32Idle::UT_Win32Idle(UT_WorkerCallback pCallback, void* pData) :
+	UT_Idle(pCallback, pData),
 	m_bRunning(false)
 {
-    _setCallback(pCallback);
-    _setInstanceData(pData);
-	_register(this);	
 }
 
 UT_Win32Idle::~UT_Win32Idle() 
 {
-	_unregister(this);
+	if( m_bRunning )
+		stop();
 }
 
 void UT_Win32Idle::stop(void)
 {
-	m_bRunning = false;
+	if( m_bRunning )
+	{
+		m_bRunning = false;
+		_unregister(this);
+	}
 }
 
 void UT_Win32Idle::start(void)
 {
-	m_bRunning = true;
+	if( !m_bRunning )
+	{
+		m_bRunning = true;
+		_register(this);
+	}
 }
 
 void UT_Win32Idle::_register(UT_Idle * pIdle)
@@ -72,7 +79,6 @@ void UT_Win32Idle::_fireall()
 	for (i = 0; i < static_vecIdles.getItemCount(); ++i) 
 	{
 		UT_Win32Idle * pIdle = reinterpret_cast<UT_Win32Idle *>(static_vecIdles.getNthItem(i));
-		if (pIdle->m_bRunning)
-			pIdle->fire();
+		pIdle->fire();
 	}
 }

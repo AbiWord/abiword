@@ -794,37 +794,25 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	if (bShowApp)
 	{
-               // Special event loop to support idle functions.
-	  while (1)
+		while( GetMessage(&msg, NULL, 0, 0) )
 	    {
-	      if (!PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) 
-		{
-		  while (1) 
-		    {
-		      if (UT_Win32Idle::_isEmpty()) 
-			break;
+   	      	// TranslateMessage is not called because AbiWord
+	      	// has its own way of decoding keyboard accelerators
+	      	if (pMyWin32App->handleModelessDialogMessage(&msg)) 
+				continue;
+	    	DispatchMessage(&msg);	
 
-		      UT_Win32Idle::_fireall();
-
-		      if (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) 
-			break;
-		    }
-		  GetMessage(&msg, NULL, 0, 0);
-		}
-	      
-	      if (msg.message == WM_QUIT) 
-		break;
-	      if (pMyWin32App->handleModelessDialogMessage(&msg)) 
-		continue;
-
-	      // TranslateMessage is not called because AbiWord
-	      // has its own way of decoding keyboard accelerators
-	      DispatchMessage(&msg);
+			// Check for idle condition
+			while( !UT_Win32Idle::_isEmpty() &&
+                   !PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) ) 
+			{
+				// Fire idle functions when no pending messages
+		    	UT_Win32Idle::_fireall();
+			}
 	    }
 	}
-
+	
 	// destroy the App.  It should take care of deleting all frames.
-
 	pMyWin32App->shutdown();
 	delete pMyWin32App;
 
