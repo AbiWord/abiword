@@ -24,7 +24,13 @@ public:
 		// to update the cpp accordingly.
 		A0, A1, A2, A3, A4, A5, A6,
 		B0, B1, B2, B3, B4, B5, B6,
-		Legal, Folio, Letter, Half, Custom,
+		Legal, Folio, Letter, Half_Letter, 
+
+		B5_Japan, Tabloid_Ledger, Monarch, SuperB,
+		Envelope_Commercial, Envelope_Monarch,
+		Envelope_DL, Envelope_C5, EuroPostcard,
+
+		Custom,
 		// append new pagesizes here
 		_last_predefined_pagesize_dont_use_
 	};
