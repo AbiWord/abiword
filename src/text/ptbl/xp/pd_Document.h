@@ -300,7 +300,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
 										   const pf_Frag * pfStart = NULL);
 	pf_Frag *               getLastFrag() const;
-	
+	bool                    appendBlockIfNeeded(void);
 	bool                    removeStyle(const XML_Char * name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
