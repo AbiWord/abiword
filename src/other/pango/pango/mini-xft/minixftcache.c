@@ -78,10 +78,10 @@ MiniXftFileCacheFind (char *file, int id, int *count)
     MiniXftFileCacheEnt *c, *name;
     int		    maxid;
     struct stat	    statb;
-    
+
     cache = &_MiniXftFileCache;
     match = file;
-    
+
     hash = _MiniXftFileCacheHash (match);
     name = 0;
     maxid = -1;
@@ -126,7 +126,7 @@ MiniXftFileCacheFind (char *file, int id, int *count)
  *
  * "file_name" id time "font_name" \n
  */
- 
+
 static Bool
 _MiniXftFileCacheReadString (FILE *f, char *dest, int len)
 {
@@ -140,7 +140,7 @@ _MiniXftFileCacheReadString (FILE *f, char *dest, int len)
 	return False;
     if (len == 0)
 	return False;
-    
+
     escape = False;
     while ((c = getc (f)) != EOF)
     {
@@ -232,7 +232,7 @@ _MiniXftFileCacheAdd (MiniXftFileCache	*cache,
 		file, id, name);
     }
     hash = _MiniXftFileCacheHash (file);
-    for (prev = &cache->ents[hash % HASH_SIZE]; 
+    for (prev = &cache->ents[hash % HASH_SIZE];
 	 (old = *prev);
 	 prev = &(*prev)->next)
     {
@@ -251,7 +251,7 @@ _MiniXftFileCacheAdd (MiniXftFileCache	*cache,
 	free (old);
 	cache->entries--;
     }
-	
+
     c = malloc (sizeof (MiniXftFileCacheEnt) +
 		strlen (file) + 1 +
 		strlen (name) + 1);
@@ -279,7 +279,7 @@ MiniXftFileCacheDispose (void)
     int		    h;
 
     cache = &_MiniXftFileCache;
-    
+
     for (h = 0; h < HASH_SIZE; h++)
     {
 	for (c = cache->ents[h]; c; c = next)
@@ -334,7 +334,7 @@ MiniXftFileCacheUpdate (char *file, int id, char *name)
 
     if (stat (file, &statb) < 0)
 	return False;
-    ret = _MiniXftFileCacheAdd (cache, match, id, 
+    ret = _MiniXftFileCacheAdd (cache, match, id,
 			    statb.st_mtime, name, True);
     if (ret)
 	cache->updated = True;
@@ -417,7 +417,7 @@ MiniXftFileCacheSave (char *cache_file)
 
     if (!cache->updated && cache->referenced == cache->entries)
 	return True;
-    
+
     lck = malloc (strlen (cache_file)*2 + 4);
     if (!lck)
 	goto bail0;
@@ -466,10 +466,10 @@ MiniXftFileCacheSave (char *cache_file)
 
     if (fclose (f) == EOF)
 	goto bail3;
-    
+
     if (rename (tmp, cache_file) < 0)
 	goto bail3;
-    
+
 #ifndef _WIN32
     unlink (lck);
 #else
@@ -510,7 +510,7 @@ MiniXftFileCacheReadDir (MiniXftFontSet *set, const char *cache_file)
     {
 	printf ("MiniXftFileCacheReadDir cache_file \"%s\"\n", cache_file);
     }
-    
+
     f = fopen (cache_file, "r");
     if (!f)
     {
@@ -530,7 +530,7 @@ MiniXftFileCacheReadDir (MiniXftFontSet *set, const char *cache_file)
 	goto bail1;
     memcpy (path, cache_file, base - cache_file);
     base = path + (base - cache_file);
-    
+
     while (_MiniXftFileCacheReadString (f, file, sizeof (file)) &&
 	   _MiniXftFileCacheReadInt (f, &id) &&
 	   _MiniXftFileCacheReadString (f, name, sizeof (name)))
@@ -552,7 +552,7 @@ MiniXftFileCacheReadDir (MiniXftFontSet *set, const char *cache_file)
     {
 	printf (" cache loaded\n");
     }
-    
+
     ret = True;
 bail2:
     free (path);
@@ -574,7 +574,7 @@ MiniXftFileCacheWriteDir (MiniXftFontSet *set, const char *cache_file)
 
     if (_MiniXftFontDebug () & XFT_DBG_CACHE)
 	printf ("MiniXftFileCacheWriteDir cache_file \"%s\"\n", cache_file);
-    
+
     f = fopen (cache_file, "w");
     if (!f)
     {
@@ -613,11 +613,11 @@ MiniXftFileCacheWriteDir (MiniXftFontSet *set, const char *cache_file)
     }
     if (fclose (f) == EOF)
 	goto bail0;
-    
+
     if (_MiniXftFontDebug () & XFT_DBG_CACHE)
 	printf (" cache written\n");
     return True;
-    
+
 bail1:
     fclose (f);
 bail0:

@@ -76,7 +76,9 @@ GR_Graphics::GR_Graphics()
 {
 	m_pApp = 0;
 	m_iZoomPercentage = 100;
+#ifdef USE_LAYOUT_UNITS
 	m_bLayoutResolutionModeEnabled = false;
+#endif
 	m_bIsPortrait = true;
 
 	m_pRect = NULL;
@@ -432,9 +434,12 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 	//double dSize;
 	if(queryProperties(DGP_SCREEN))
 	{
+#ifdef USE_LAYOUT_UNITS
 		bool curRes = m_bLayoutResolutionModeEnabled;
 		m_bLayoutResolutionModeEnabled = false;
+#endif
 		iSize = convertDimension(pszFontSize);
+#ifdef USE_LAYOUT_UNITS		
 		m_bLayoutResolutionModeEnabled = curRes;
 		if( m_bLayoutResolutionModeEnabled)
 		{
@@ -442,6 +447,7 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 			xxx_UT_DEBUGMSG(("SEVIOR: iSizeLayout in gr_graphics = %d \n",iSizeLayout));
 			return iSizeLayout;
 		}
+#endif
 		return iSize;
 	}
 //
@@ -452,11 +458,13 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 	{
 		double dPaperSize = UT_convertToInches(pszFontSize) * (double) getResolution();
 		iSize = (UT_sint32) (dPaperSize + 0.05);
+#ifdef USE_LAYOUT_UNITS		
 		if( m_bLayoutResolutionModeEnabled)
 		{
 			iSizeLayout = (UT_uint32) ((double ) UT_LAYOUT_UNITS * UT_convertToInches(pszFontSize) +0.05);
 			return iSizeLayout;
 		}
+#endif
 		return iSize;
 	}
 }
@@ -470,11 +478,13 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 {
 	double dInches = UT_convertToInches(s);
 	double dResolution;
+#ifdef USE_LAYOUT_UNITS
 	if(m_bLayoutResolutionModeEnabled)
 	{
 		dResolution = UT_LAYOUT_UNITS;
 	}
 	else
+#endif
 	{
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 	}
@@ -492,11 +502,13 @@ UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
 {
 	double dInches = UT_convertDimToInches(Value, dim);
 	double dResolution;
+#ifdef USE_LAYOUT_UNITS
 	if(m_bLayoutResolutionModeEnabled)
 		{
 		dResolution = UT_LAYOUT_UNITS;
 		}
 	else
+#endif
 		{
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 		}
@@ -514,11 +526,13 @@ const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 	// return pointer to static buffer -- use it quickly.
 
 	double dResolution;
+#ifdef USE_LAYOUT_UNITS	
 	if(m_bLayoutResolutionModeEnabled)
 		{
 		dResolution = UT_LAYOUT_UNITS;
 		}
 	else
+#endif
 		{
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 		}

@@ -315,7 +315,8 @@ static void _css_length (const char *str,GR_Graphics* pG,
 		{
 			*iDisplayLength = pG->convertDimension((char*)str);
 		}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		//TF#TODO
 		*iLayoutLength = UT_convertToLayoutUnits(str);
 #endif
 	}

@@ -204,8 +204,15 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		now, we're hard-coding a hack.
 	*/
 
+#ifdef USE_LAYOUT_UNITS
 	UT_sint32 iHeight = convertDimension(pszFontSize);
 	lf.lfHeight = -(iHeight);
+#else
+	// we need to get the size in logpixels for the current DC, which
+	// simply means to divide points by 72 and multiply by device Y resolution
+	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
+	lf.lfHeight = -MulDiv(iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72);
+#endif
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
@@ -272,6 +279,8 @@ void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
+	_UUD(xoff);
+	_UUD(yoff);
 	HFONT hFont = GR_Win32Font::Acq::getHFONT(*m_pFont);
 	SelectObject(m_hdc, hFont);
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
@@ -316,6 +325,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 								 int * pCharWidths)
 {
 	UT_ASSERT(pChars);
+	_UUD(xoff);
+	_UUD(yoff);
 	// iLength can be modified by _remapGlyphs
 	int iLength = iLengthOrig;
 	HFONT hFont = GR_Win32Font::Acq::getHFONT(*m_pFont);
@@ -529,6 +540,11 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
+	_UUD(x1);
+	_UUD(x2);
+	_UUD(y1);
+	_UUD(y2);
+	
 	if (m_eLineStyle == LINE_SOLID &&
 		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
 	 && m_iLineWidth <= 1)
@@ -624,6 +640,11 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	  this should always be done to the screen.
 	*/
 
+	_UUD(x1);
+	_UUD(x2);
+	_UUD(y1);
+	_UUD(y2);
+
 	if (m_clrCurrent != m_clrXorPen || !m_hXorPen)
 	{
 		if (m_hXorPen)
@@ -655,8 +676,8 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
-		points[i].x = pts[i].x;
-		points[i].y = pts[i].y;
+		points[i].x = _UD(pts[i].x);
+		points[i].y = _UD(pts[i].y);
 	}
 
 	Polyline(m_hdc, points, nPoints);
@@ -669,10 +690,10 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	RECT r;
-	r.left = x;
-	r.top = y;
-	r.right = r.left + w;
-	r.bottom = r.top + h;
+	r.left = _UD(x);
+	r.top = _UD(y);
+	r.right = r.left + _UD(w);
+	r.bottom = r.top + _UD(h);
 
 #if 0
 	// This is what one might think is reasonable. Forget it,
@@ -702,6 +723,8 @@ bool GR_Win32Graphics::startPrint(void)
 bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
+	_UUD(iWidth);
+	_UUD(iHeight);
 	if (m_bStartPage)
 	{
 		EndPage(m_hdc);
@@ -753,6 +776,8 @@ bool GR_Win32Graphics::endPrint(void)
  **/
 void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
+	_UUD(dx);
+	_UUD(dy);
 	ScrollWindowEx(m_hwnd, -dx, -dy, NULL, NULL, NULL, 0, SW_INVALIDATE);
 }
 
@@ -760,11 +785,17 @@ void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 							  UT_sint32 x_src, UT_sint32 y_src,
 							  UT_sint32 width, UT_sint32 height)
 {
+	_UUD(x_dest);
+	_UUD(y_dest);
+	_UUD(x_src);
+	_UUD(y_src);
+	_UUD(width);
+	_UUD(height);
 	RECT r;
 	r.left = x_src;
 	r.top = y_src;
-	r.right = x_src + width;
-	r.bottom = y_src + height;
+	r.right = r.left + width;
+	r.bottom = r.top + height;
 	ScrollWindowEx(m_hwnd, (x_dest - x_src), (y_dest - y_src),
 				   &r, NULL, NULL, NULL, SW_ERASE);
 }
@@ -773,7 +804,11 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 {
 
 //	UT_ASSERT((x + width) < 800);
-
+	_UUD(x);
+	_UUD(y);
+	_UUD(width);
+	_UUD(height);
+	
 	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);
 	RECT r;
 	r.left = x;
@@ -788,10 +823,10 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 {
 	RECT r;
 
-	r.left = pRect->left;
-	r.top = pRect->top;
-	r.right = pRect->left + pRect->width;
-	r.bottom = pRect->top + pRect->height;
+	r.left = _UD(pRect->left);
+	r.top = _UD(pRect->top);
+	r.right = _UD(pRect->left + pRect->width);
+	r.bottom = _UD(pRect->top + pRect->height);
 
 	InvertRect(m_hdc, &r);
 }
@@ -808,10 +843,10 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		// set the clip rectangle
-		HRGN hrgn = CreateRectRgn(pRect->left,
-								  pRect->top,
-								  pRect->left + pRect->width,
-								  pRect->top + pRect->height);
+		HRGN hrgn = CreateRectRgn(_UD(pRect->left),
+								  _UD(pRect->top),
+								  _UD(pRect->left + pRect->width),
+								  _UD(pRect->top + pRect->height));
 		UT_ASSERT(hrgn);
 
 		res = SelectClipRgn(m_hdc, hrgn);
@@ -831,6 +866,9 @@ GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf
 					   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					   GR_Image::GRType iType)
 {
+	_UUD(iDisplayWidth);
+	_UUD(iDisplayHeight);
+	
 	GR_Image* pImg = NULL;
 	if (iType == GR_Image::GRT_Raster)
 		pImg = new GR_Win32Image(pszName);
@@ -846,6 +884,9 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 {
 	UT_ASSERT(pImg);
 
+	_UUD(xDest);
+	_UUD(yDest);
+	
 	if (pImg->getType() != GR_Image::GRT_Raster)
 	{
 		pImg->render(this, xDest, yDest);
@@ -869,7 +910,7 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 	int iRes = StretchDIBits(m_hdc,
 							 xDest, yDest,
-							 pImg->getDisplayWidth(), pImg->getDisplayHeight(),
+							 _UD(pImg->getDisplayWidth()), _UD(pImg->getDisplayHeight()),
 							 0, 0,
 							 pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
 							 pBits, pDIB, DIB_RGB_COLORS, SRCCOPY);
@@ -1168,6 +1209,18 @@ void GR_Win32Font::setupFontInfo()
 
 	GetTextMetrics(m_oldHDC, &m_tm);
 
+#ifndef USE_LAYOUT_UNITS
+	// have to adjust the text metrics to our LOG units
+
+	_UUL(m_tm.tmHeight); 
+    _UUL(m_tm.tmAscent); 
+    _UUL(m_tm.tmDescent); 
+    _UUL(m_tm.tmInternalLeading); 
+    _UUL(m_tm.tmExternalLeading); 
+    _UUL(m_tm.tmAveCharWidth); 
+    _UUL(m_tm.tmMaxCharWidth);
+#endif
+
 	UINT d = m_tm.tmDefaultChar;
 	m_cw.setCharWidthsOfRange(m_oldHDC, d, d);
 	m_defaultCharWidth = m_cw.getWidth(d);
@@ -1263,8 +1316,8 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; ++i)
 	{
-		points[i].x = pts[i].x;
-		points[i].y = pts[i].y;
+		points[i].x = _UD(pts[i].x);
+		points[i].y = _UD(pts[i].y);
 	}
 
 	Polygon(m_hdc, points, nPoints);
@@ -1277,3 +1330,4 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 
 	delete[] points;
 }
+

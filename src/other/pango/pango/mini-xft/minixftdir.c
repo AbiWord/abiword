@@ -51,14 +51,14 @@ MiniXftDirScan (MiniXftFontSet *set, const char *dir, Bool force)
     if (!force)
     {
 	strcpy (base, "XftCache");
-	
+
 	if (MiniXftFileCacheReadDir (set, file))
 	{
 	    free (file);
 	    return True;
 	}
     }
-    
+
     d = opendir (dir);
     if (!d)
     {
@@ -120,7 +120,7 @@ MiniXftDirSave (MiniXftFontSet *set, const char *dir)
     char	    *file;
     char	    *base;
     Bool	    ret;
-    
+
     file = (char *) malloc (strlen (dir) + 1 + 256 + 1);
     if (!file)
 	return False;

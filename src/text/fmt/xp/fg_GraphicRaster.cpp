@@ -160,13 +160,15 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	}
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iLayoutWidth = 0;
 	UT_sint32 iLayoutHeight = 0;
+#endif
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
 		iDisplayWidth = pG->convertDimension((char*)pszWidth);
 		iDisplayHeight = pG->convertDimension((char*)pszHeight);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
 		iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
 #endif
@@ -182,7 +184,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 
 		iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
 		iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		//			fScale = 1440.0 / 72.0;
 		fScale = 14.399999999999999;
 		iLayoutWidth = (UT_sint32) (iImageWidth * fScale);
@@ -195,8 +197,10 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 
    	GR_Image *pImage = pG->createNewImage((char*)m_pszDataID, m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
 
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	//TF#TODO
 	pImage->setLayoutSize(iLayoutWidth, iLayoutHeight);
-
+#endif
 	return pImage;
 }
 

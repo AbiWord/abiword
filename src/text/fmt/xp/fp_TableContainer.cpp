@@ -342,9 +342,11 @@ void fp_CellContainer::setWidth(UT_sint32 iWidth)
 	}
 	clearScreen();
 	fp_VerticalContainer::setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	double scale = SCALE_TO_SCREEN;
 	UT_sint32 iWidthLO = (UT_sint32) ((((double) iWidth))/scale);
 	fp_VerticalContainer::setWidthInLayoutUnits(iWidthLO);
+#endif
 	fl_SectionLayout * pSL = getSectionLayout();
 	pSL = (fl_SectionLayout *) pSL->myContainingLayout();
 	UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_TABLE);
@@ -389,7 +391,7 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 	UT_sint32 iWidth = pTable->getWidth();
 
 	fp_CellContainer::setWidth(iWidth);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iWidthLayout = pTable->getWidthInLayoutUnits();
 	setWidthInLayoutUnits(iWidthLayout);
 #endif
@@ -969,11 +971,19 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		if(pCon->getContainerType() == FP_CONTAINER_LINE)
 		{
 			static_cast<fp_Line *>(pCon)->recalcHeight();
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			if(width < pCon->getWidthInLayoutUnits())
 			{
 				width = pCon->getWidthInLayoutUnits();
 
 			}
+#else
+			if(width < pCon->getWidth())
+			{
+				width = pCon->getWidth();
+
+			}
+#endif
 			height = height + pCon->getHeight();
 			height = height + pCon->getMarginAfter();
 		}
@@ -1022,8 +1032,7 @@ void fp_CellContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
-#ifndef WITH_PANGO
-	
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_sint32 iYLayoutUnits = 0;
@@ -1040,7 +1049,7 @@ void fp_CellContainer::layout(void)
 		if(pContainer->getHeight() > _getMaxContainerHeight())
 			_setMaxContainerHeight(pContainer->getHeight());
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
 #endif
 
@@ -1050,11 +1059,11 @@ void fp_CellContainer::layout(void)
 		}
 			
 		pContainer->setY(iY);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 #else
@@ -1062,7 +1071,7 @@ void fp_CellContainer::layout(void)
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 #else
@@ -1072,7 +1081,7 @@ void fp_CellContainer::layout(void)
 
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		if((long) iYLayoutUnits > imax)
 		{
 		       UT_ASSERT(0);
@@ -1091,13 +1100,13 @@ void fp_CellContainer::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
 #endif
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
 #else
 	UT_sint32 iNewHeight = iY;
@@ -1109,7 +1118,7 @@ void fp_CellContainer::layout(void)
 	}
 
 	setHeight(iNewHeight);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setHeightLayoutUnits(iYLayoutUnits);
 #endif
 
@@ -1118,12 +1127,18 @@ void fp_CellContainer::layout(void)
 void fp_CellContainer::setToAllocation(void)
 {
 	m_bBgDirty = true;
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setWidthInLayoutUnits(m_MyAllocation.width);
 	setWidth((UT_sint32)(m_MyAllocation.width * SCALE_TO_SCREEN));
 	setHeightLayoutUnits(m_MyAllocation.height);
 	setHeight(m_MyAllocation.height);
 	setYInLayoutUnits(m_MyAllocation.y);
 	setX((UT_sint32)(m_MyAllocation.x * SCALE_TO_SCREEN));
+#else
+	setWidth((UT_sint32)(m_MyAllocation.width));
+	setHeight(m_MyAllocation.height);
+	setX((UT_sint32)(m_MyAllocation.x));
+#endif
 	xxx_UT_DEBUGMSG(("SEVIOR: set to width %d, height %d,y %d,x %d \n", m_MyAllocation.width,m_MyAllocation.height,m_MyAllocation.y,m_MyAllocation.x));
 	setMaxHeight(m_MyAllocation.height);
 	setY(m_MyAllocation.y);
@@ -1957,7 +1972,7 @@ void fp_TableContainer::setContainer(fp_Container * pContainer)
 	}
 	fp_Container::setContainer(pContainer);
 	setWidth(pContainer->getWidth());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setWidthInLayoutUnits(pContainer->getWidthInLayoutUnits());
 #endif
 }
@@ -2047,7 +2062,11 @@ void fp_TableContainer::layout(void)
 	setX( m_iBorderWidth * SCALE_TO_SCREEN);
 	alloc.x = getX();
 	alloc.y = getY();
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	alloc.width = getWidthInLayoutUnits();
+#else
+	alloc.width = getWidth();
+#endif
 	alloc.height = requisition.height;
 	sizeAllocate(&alloc);
 	setToAllocation();
@@ -2055,15 +2074,19 @@ void fp_TableContainer::layout(void)
 
 void fp_TableContainer::setToAllocation(void)
 {
+	bool bDeleteBrokenTables = false;
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setWidthInLayoutUnits(m_MyAllocation.width);
 	double dHeightLO = (double) m_MyAllocation.height ;
 	double scale = SCALE_TO_SCREEN;
 	dHeightLO = dHeightLO / scale;
 	UT_sint32 iHeightLO = (UT_sint32) dHeightLO;
-	bool bDeleteBrokenTables = false;
 	setHeightLayoutUnits(iHeightLO);
 	setMaxHeightInLayoutUnits(iHeightLO);
 	setWidth((UT_sint32)(m_MyAllocation.width * SCALE_TO_SCREEN));
+#else
+	setWidth(m_MyAllocation.width);
+#endif
 	if(getHeight() != m_MyAllocation.height)
 	{
 		bDeleteBrokenTables = true;
@@ -2324,10 +2347,12 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 	return false;
 }	
 
+
 /*! 
  * Return the height of this Table taking into account the possibility
  * of it being broken.
  */
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fp_TableContainer::getHeightInLayoutUnits(void)
 {
 	if(!isThisBroken() && (getFirstBrokenTable() == NULL))
@@ -2340,7 +2365,7 @@ UT_sint32 fp_TableContainer::getHeightInLayoutUnits(void)
 	iMyHeight = (UT_sint32) dHeight;
 	return iMyHeight;
 }
-
+#endif
 /*!
  * Draw that segment of the table that fits within the Y offsets of this
  * Broken table.

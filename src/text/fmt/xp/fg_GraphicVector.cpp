@@ -156,13 +156,15 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
+	//#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iLayoutWidth = 0;
 	UT_sint32 iLayoutHeight = 0;
+	//#endif
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
 		iDisplayWidth = pG->convertDimension((char*)pszWidth);
 		iDisplayHeight = pG->convertDimension((char*)pszHeight);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
 		iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
 #endif
@@ -176,7 +178,8 @@ UT_DEBUGMSG(("SVG image: width = %d, height = %d\n",(int)iDisplayWidth,(int)iDis
 	UT_ASSERT(iDisplayHeight > 0);
 
 	GR_Image *pImage = pG->createNewImage((char*)m_pszDataID, m_pbbSVG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Vector);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	//TF#TODO
 	pImage->setLayoutSize(iLayoutWidth, iLayoutHeight);
 #endif
 	return pImage;

@@ -383,7 +383,7 @@ double UT_convertToPoints(const char* s)
 	return result;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 UT_convertToLayoutUnits(const char* s)
 {
 	return (UT_sint32)(UT_convertToInches(s) * UT_LAYOUT_UNITS);
@@ -534,7 +534,7 @@ UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits)
 	return (UT_LAYOUT_UNITS * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 UT_paperUnitsFromLayoutUnits(UT_sint32 iLayoutUnits)
 {
 	// convert number in layout units into paper units (loss of precision)

@@ -328,9 +328,10 @@ class ABI_EXPORT GR_Graphics
 	void              setZoomPercentage(UT_uint32 iZoom);
 	UT_uint32         getZoomPercentage(void) const;
 	UT_uint32         getResolution(void) const;
+#ifdef USE_LAYOUT_UNITS
 	void              setLayoutResolutionMode(bool bEnable) {m_bLayoutResolutionModeEnabled = bEnable;}
 	bool              getLayoutResolutionMode(void) const {return m_bLayoutResolutionModeEnabled;}
-
+#endif
 	inline void       setPortrait (bool b) {m_bIsPortrait = b;}
 	inline bool       isPortrait (void) const {return m_bIsPortrait;}
 
@@ -424,7 +425,9 @@ class ABI_EXPORT GR_Graphics
  protected:
 	XAP_App	*	      m_pApp;
 	UT_uint32	      m_iZoomPercentage;
+#ifdef USE_LAYOUT_UNITS	
 	bool		      m_bLayoutResolutionModeEnabled;
+#endif
 	UT_uint32         m_iFontAllocNo;
 #ifndef WITH_PANGO
 	static bool       m_bRemapGlyphsMasterSwitch;

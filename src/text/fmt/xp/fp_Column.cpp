@@ -45,7 +45,7 @@ fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLay
 			m_iY(0),
 			m_bIntentionallyEmpty(0),
  		    m_imaxContainerHeight(0)
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		   ,m_iWidthLayoutUnits(0),
 			m_iHeightLayoutUnits(0),
 			m_iMaxHeightLayoutUnits(0)
@@ -82,7 +82,7 @@ void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 /*!
  Set width in layout units
  \param iWidth Width in layout units of container
@@ -123,7 +123,7 @@ void fp_VerticalContainer::setMaxHeight(UT_sint32 iMaxHeight)
 	m_iMaxHeight = iMaxHeight;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 /*!
  Set maximum height in layout units
  \param iMaxHeight Maximum height in layout units of container
@@ -973,7 +973,7 @@ void fp_Column::layout(void)
 {
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
@@ -986,8 +986,8 @@ void fp_Column::layout(void)
 	for (UT_uint32 i=0; i < (UT_sint32) countCons() ; i++)
 	{
 		pContainer = (fp_Container*) getNthCon(i);
-
-#ifndef WITH_PANGO
+		
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
 #endif
 //
@@ -999,7 +999,7 @@ void fp_Column::layout(void)
 			pContainer->clearScreen();
 		}
 		pContainer->setY(iY);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
 #endif
 
@@ -1012,7 +1012,7 @@ void fp_Column::layout(void)
 		{
 			_setMaxContainerHeight(iHeight);
 		}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		if(pTab)
 		{
@@ -1024,7 +1024,7 @@ void fp_Column::layout(void)
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 #else
@@ -1034,7 +1034,7 @@ void fp_Column::layout(void)
 
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		if((long) iYLayoutUnits > imax)
 		{
 		       UT_ASSERT(0);
@@ -1053,13 +1053,13 @@ void fp_Column::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
 #endif
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
 #else
 	UT_sint32 iNewHeight = iY;
@@ -1071,7 +1071,7 @@ void fp_Column::layout(void)
 	}
 
 	setHeight(iNewHeight);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setHeightLayoutUnits(iYLayoutUnits);
 #endif
 	getPage()->columnHeightChanged(this);
@@ -1096,8 +1096,10 @@ fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 									   UT_sint32 iY,
 									   UT_sint32 iWidth,
 									   UT_sint32 iHeight,
-									   UT_sint32 iWidthLayout,
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+ 									   UT_sint32 iWidthLayout,
 									   UT_sint32 iHeightLayout,
+#endif
 									   fl_SectionLayout* pSectionLayout)
 	: fp_VerticalContainer(FP_CONTAINER_COLUMN_SHADOW, pSectionLayout)
 {
@@ -1106,7 +1108,7 @@ fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 	setWidth(iWidth);
 	setHeight(iHeight);
 	setMaxHeight(iHeight);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setWidthInLayoutUnits(iWidthLayout);
 	setHeightLayoutUnits(iHeightLayout);
 	setMaxHeightInLayoutUnits( (UT_sint32)(  (double) getHeight() * ( (double) iHeightLayout/ (double) getMaxHeight()))) ;
@@ -1120,12 +1122,12 @@ fp_ShadowContainer::~fp_ShadowContainer()
 
 void fp_ShadowContainer::layout(void)
 {
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	double ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	double yHardOffset = 5.0; // Move 5 pixels away from the very edge
 	UT_sint32 iYLayoutUnits = (UT_sint32) (yHardOffset/	ScaleLayoutUnitsToScreen);
 #else
-	UT_sint32 iY = PANGO_UNITS(5);
+	UT_sint32 iY = 5;
 #endif
 	UT_uint32 iCountContainers = countCons();
 	FV_View * pView = getPage()->getDocLayout()->getView();
@@ -1142,7 +1144,7 @@ void fp_ShadowContainer::layout(void)
 		{
 			pTab = (fp_TableContainer *) pContainer;
 		}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		if(pTab != NULL)
 		{
@@ -1183,11 +1185,11 @@ void fp_ShadowContainer::layout(void)
 // FIXME: Dirty hack to clip.
 //
 			pContainer->setY(-1000000);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			pContainer->setYInLayoutUnits(-1000000);
 #endif
 		}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 #else
@@ -1195,8 +1197,8 @@ void fp_ShadowContainer::layout(void)
 		iY += iContainerMarginAfter;
 #endif
 	}
-
-#ifndef WITH_PANGO
+	
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
 #else
 	UT_sint32 iNewHeight = iY;
@@ -1205,7 +1207,8 @@ void fp_ShadowContainer::layout(void)
 	{
 		return;
 	}
-#ifndef WITH_PANGO
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	if(iYLayoutUnits <= getMaxHeightInLayoutUnits())
 	{
 		setHeight(iNewHeight);
@@ -1288,7 +1291,8 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 		{
 			pTab = static_cast<fp_TableContainer *>(pContainer);
 		}
-#ifndef WITH_PANGO
+		
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		if(pTab)
 		{
@@ -1409,7 +1413,7 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iWidth,
 	_setY(0);
 	setWidth(iWidth);
 	setHeight(0);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setWidthInLayoutUnits(iWidthLayout);
 	setHeightLayoutUnits(0);
 #endif
@@ -1426,7 +1430,7 @@ fp_HdrFtrContainer::~fp_HdrFtrContainer()
 
 void fp_HdrFtrContainer::layout(void)
 {
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
@@ -1444,7 +1448,7 @@ void fp_HdrFtrContainer::layout(void)
 		{
 			pTab = static_cast<fp_TableContainer *>(pContainer);
 		}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		if(pTab)
 		{
@@ -1466,12 +1470,12 @@ void fp_HdrFtrContainer::layout(void)
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 
 		pContainer->setY(iY);
-		iY += iContainerHeightLayoutUnits;
-		iY += iContainerMarginAfterLayoutUnits;
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
 #endif
 	}
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
 #else
 	UT_sint32 iNewHeight = iY;
@@ -1483,7 +1487,7 @@ void fp_HdrFtrContainer::layout(void)
 	}
 
 	setHeight(iNewHeight);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setHeightLayoutUnits(iYLayoutUnits);
 #endif
 }

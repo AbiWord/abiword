@@ -59,7 +59,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		fp_Container* pFirstContainerToKeep = pOuterContainer;
 		fp_Container* pLastContainerToKeep = NULL;
 		fp_Container* pOffendingContainer = NULL;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 iMaxSecCol = pSL->getMaxSectionColumnHeightInLayoutUnits();
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeightInLayoutUnits();
 #else
@@ -125,7 +125,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		while (pCurContainer)
 		{
 			UT_sint32 iContainerHeight = 0;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
 				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeightInLayoutUnits();
 			else
@@ -242,7 +242,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 // Break it at 0 first.
 //
 							UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
-							UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
+							xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
 							fp_Container * pNext = (fp_Container *) pTab->getNext();
 							UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
 							if(pNext)

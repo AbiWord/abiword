@@ -90,7 +90,7 @@ class ABI_EXPORT fl_CharWidths
 {
 public:
 	fl_CharWidths() : m_gbCharWidths(256)
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		, m_gbCharWidthsLayoutUnits(256)
 #endif
 		{
@@ -99,7 +99,7 @@ public:
 private:
 
 	UT_GrowBuf m_gbCharWidths;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_GrowBuf m_gbCharWidthsLayoutUnits;
 #endif
 
@@ -107,7 +107,7 @@ public:
 
 	bool ins(UT_uint32 position, UT_uint32 length)
 		{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			m_gbCharWidthsLayoutUnits.ins(position, length);
 #endif
 			return m_gbCharWidths.ins(position, length);
@@ -116,21 +116,21 @@ public:
 
 	bool del(UT_uint32 position, UT_uint32 amount)
 		{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			m_gbCharWidthsLayoutUnits.del(position, amount);
 #endif
 			return m_gbCharWidths.del(position, amount);
 		}
 	UT_uint32 getLength(void) const
 		{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			UT_ASSERT(m_gbCharWidths.getLength() == m_gbCharWidthsLayoutUnits.getLength());
 #endif
 			return m_gbCharWidths.getLength();
 		}
 	bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
 		{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
 #endif
 			return m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
@@ -138,7 +138,7 @@ public:
 	void truncate(UT_uint32 position)
 		{
 			m_gbCharWidths.truncate(position);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			m_gbCharWidthsLayoutUnits.truncate(position);
 #endif
 		}
@@ -147,7 +147,7 @@ public:
 		{
 			return &m_gbCharWidths;
 		}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_GrowBuf *getCharWidthsLayoutUnits()
 		{
 			return &m_gbCharWidthsLayoutUnits;
@@ -260,7 +260,7 @@ public:
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	inline UT_sint32	getTextIndentInLayoutUnits(void) const { return m_iTextIndentLayoutUnits; }
 	inline UT_sint32	getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32	getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
@@ -274,7 +274,12 @@ public:
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
-	void getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const;
+	void getLineSpacing(double& dSpacing,
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+						
+						double &dSpacingLayout,
+#endif
+						eSpacingPolicy& eSpacing) const;
 
 	virtual void updateBackgroundColor(void);
 
@@ -300,7 +305,7 @@ public:
 	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,
 							eTabLeader &iLeader );
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
 										 UT_sint32& iPosition,
 										 eTabType& iType,
@@ -463,7 +468,7 @@ protected:
 
 	UT_Vector				m_vecTabs;
 	UT_sint32				m_iDefaultTabInterval;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32				m_iDefaultTabIntervalLayoutUnits;
 #endif
 	// read-only caches of the underlying properties
@@ -474,7 +479,7 @@ protected:
 	UT_sint32				m_iLeftMargin;
 	UT_sint32				m_iRightMargin;
 	UT_sint32				m_iTextIndent;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32				m_iTopMarginLayoutUnits;
 	UT_sint32				m_iBottomMarginLayoutUnits;
 	UT_sint32				m_iLeftMarginLayoutUnits;
@@ -483,7 +488,7 @@ protected:
 #endif
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	double					m_dLineSpacingLayoutUnits;
 #endif
 	//bool					m_bExactSpacing;
@@ -541,7 +546,7 @@ public:
 
 	UT_sint32		getPosition() { return iPosition;}
 	void			setPosition(UT_sint32 value) { iPosition = value;}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32		getPositionLayoutUnits() { return iPositionLayoutUnits;}
 	void			setPositionLayoutUnits(UT_sint32 value) { iPositionLayoutUnits = value;}
 #endif
@@ -555,7 +560,7 @@ public:
 	void operator = (const fl_TabStop &Other)
 		{
 			iPosition = Other.iPosition;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			iPositionLayoutUnits = Other.iPositionLayoutUnits;
 #endif
 			iType = Other.iType;

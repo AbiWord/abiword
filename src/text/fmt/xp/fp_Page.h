@@ -54,7 +54,10 @@ public:
 	UT_sint32			getWidth(void) const;
 	const fp_PageSize&	getPageSize() const;
 	UT_sint32			getHeight(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_sint32			getWidthInLayoutUnits(void) const;
+	UT_sint32			getHeightInLayoutUnits(void) const;
+#else
 	UT_sint32			getWidthInLayoutUnits(void) const;
 	UT_sint32			getHeightInLayoutUnits(void) const;
 #endif
@@ -77,9 +80,12 @@ public:
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
     UT_sint32           getFilledHeightInLayoutUnits(fp_Container * prevContainer) const;
 	UT_sint32           getAvailableHeightInLayoutUnits(void) const;
+#else
+    UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
+	UT_sint32           getAvailableHeight(void) const;
 #endif
 	void 				columnHeightChanged(fp_Column* pLeader);
 	bool                breakPage(void);

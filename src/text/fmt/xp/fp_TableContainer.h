@@ -345,7 +345,9 @@ public:
 	void				layout(void);
 	virtual void        setY(UT_sint32 iY);
 	virtual UT_sint32   getHeight(void);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual UT_sint32   getHeightInLayoutUnits(void);
+#endif
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}

@@ -464,10 +464,10 @@ int	    MiniXftConfigLineno;
 static void _MiniXftConfigSkipComment (void);
 
 static void _MiniXftConfigSkipLine (void);
-    
+
 static int _MiniXftConfigPopInput (void);
-    
-    
+
+
 #define		XFT_CONFIG_IN_DEEP	20
 FILE	*MiniXftConfigInStack[XFT_CONFIG_IN_DEEP];
 FILE	**MiniXftConfigInpt = MiniXftConfigInStack + XFT_CONFIG_IN_DEEP;
@@ -500,7 +500,7 @@ int	MiniXftConfigFiledeep = 0;
 	} \
     } \
 }
-    
+
 #ifndef FLEX_SCANNER
 #undef		input
 #undef		unput
@@ -1894,9 +1894,9 @@ Bool
 MiniXftConfigLexFile(char *s)
 {
     FILE    *f;
-    
+
     f = fopen (s, "r");
-    if (f == 0) 
+    if (f == 0)
     {
 	fprintf (stderr, "cannot open file \"%s\"\n", s);
 	return False;
@@ -1906,7 +1906,7 @@ MiniXftConfigLexFile(char *s)
     MiniXftConfigFile = s;
     return True;
 }
-	
+
 Bool
 MiniXftConfigPushInput (char *s, Bool complain)
 {
@@ -1914,7 +1914,7 @@ MiniXftConfigPushInput (char *s, Bool complain)
     char	*t;
     char	*h;
 
-    if (MiniXftConfigInpt == MiniXftConfigInStack) 
+    if (MiniXftConfigInpt == MiniXftConfigInStack)
     {
 	(void) fprintf (stderr, "files nested too deeply\n");
 	return False;
@@ -1938,7 +1938,7 @@ MiniXftConfigPushInput (char *s, Bool complain)
     f = fopen (t, "r");
     if (t != s)
 	free (t);
-    if (f == 0) 
+    if (f == 0)
     {
 	if (complain)
 	    (void) fprintf (stderr, "cannot open file %s\n", s);

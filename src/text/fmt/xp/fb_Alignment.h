@@ -52,7 +52,7 @@ public:
 
 	virtual void		initialize(fp_Line *pLine) = 0;
 	virtual UT_sint32	getStartPosition() = 0;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual UT_sint32	getStartPositionInLayoutUnits() = 0;
 #endif
 	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
@@ -66,7 +66,7 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	getStartPositionInLayoutUnits();
 #endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
@@ -75,7 +75,7 @@ public:
 private:
 
 	UT_sint32	m_iStartPosition;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	m_iStartPositionLayoutUnits;
 #endif
 };
@@ -86,7 +86,7 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	getStartPositionInLayoutUnits();
 #endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
@@ -95,7 +95,7 @@ public:
 private:
 
 	UT_sint32	m_startPosition;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	m_startPositionLayoutUnits;
 #endif
 };
@@ -106,7 +106,7 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	getStartPositionInLayoutUnits();
 #endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
@@ -115,7 +115,7 @@ public:
 private:
 
 	UT_sint32	m_startPosition;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	m_startPositionLayoutUnits;
 #endif
 };
@@ -126,7 +126,7 @@ public:
 
 	void		initialize(fp_Line *pLine);
 	UT_sint32	getStartPosition();
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	getStartPositionInLayoutUnits();
 #endif
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
@@ -138,7 +138,7 @@ private:
 	int			m_iSpaceCount;
 	int			m_iExtraWidth;
 	UT_sint32	m_iStartPosition;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32	m_iStartPositionLayoutUnits;
 #endif
 

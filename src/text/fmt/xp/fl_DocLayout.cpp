@@ -319,7 +319,10 @@ UT_sint32 FL_DocLayout::getWidth()
 GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pBlockAP,
 								const PP_AttrProp * pSectionAP,
-								UT_sint32 iUseLayoutResolution, bool isField)
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+								UT_sint32 iUseLayoutResolution,
+#endif
+								bool isField)
 {
 	GR_Font* pFont = NULL;
 
@@ -345,21 +348,28 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	if (pszField != NULL && isField && UT_strcmp(pszField, "NULL"))
 		pszFamily = pszField;
 
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
+#else
+	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+#endif
 	const void *pEntry = m_hashFontCache.pick(key.c_str());
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
 
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		if(iUseLayoutResolution)
 			m_pG->setLayoutResolutionMode(true);
-
+#endif
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 		UT_ASSERT(pFont);
 
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_pG->setLayoutResolutionMode(false);
-
+#endif
+		
 		// add it to the cache
 		m_hashFontCache.insert(key.c_str(),
 				       (void *)pFont);

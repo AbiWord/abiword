@@ -147,19 +147,20 @@ public:
     bool                        needsReFormat(void) const { return m_bNeedsFormat;}
 
 	UT_sint32                getLeftOffset(void) const;
-#ifndef WITH_PANGO
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
  UT_sint32                   getLeftOffsetInLayoutUnits(void) const;
 #endif
 UT_sint32                    getRightOffset(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32                    getRightOffsetInLayoutUnits(void) const;
 #endif
 	UT_sint32                getTopOffset(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
  UT_sint32                   getTopOffsetInLayoutUnits(void) const;
 #endif
 UT_sint32                    getBottomOffset(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 #endif
 	bool                     isDirty(void) const
@@ -184,17 +185,21 @@ private:
 	bool                   m_bNeedsRebuild;
 	FL_TableJustification  m_iJustification;
 	UT_sint32              m_iLeftOffset;
-	UT_sint32              m_iLeftOffsetLayoutUnits;
 	double                 m_dLeftOffsetUserUnits;
 	UT_sint32              m_iRightOffset;
-	UT_sint32              m_iRightOffsetLayoutUnits;
 	double                 m_dRightOffsetUserUnits;
 	UT_sint32              m_iTopOffset;
-	UT_sint32              m_iTopOffsetLayoutUnits;
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
-	UT_sint32              m_iBottomOffsetLayoutUnits;
 	double                 m_dBottomOffsetUserUnits;
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_sint32              m_iLeftOffsetLayoutUnits;
+	UT_sint32              m_iRightOffsetLayoutUnits;
+	UT_sint32              m_iTopOffsetLayoutUnits;
+	UT_sint32              m_iBottomOffsetLayoutUnits;
+#endif
+	
 	bool                   m_bIsHomogeneous;
 	bool                   m_bSameRowOnTopOfPage;
 	UT_sint32              m_iRowNumberForTop;
@@ -255,19 +260,19 @@ public:
 #endif
 
 	UT_sint32                getLeftOffset(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
  UT_sint32                   getLeftOffsetInLayoutUnits(void) const;
 #endif
 UT_sint32                    getRightOffset(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32                    getRightOffsetInLayoutUnits(void) const;
 #endif
 	UT_sint32                getTopOffset(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
  UT_sint32                   getTopOffsetInLayoutUnits(void) const;
 #endif
 UT_sint32                    getBottomOffset(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 #endif
 protected:
@@ -277,17 +282,20 @@ private:
 	bool                   m_bNeedsFormat;
 	bool                   m_bNeedsRebuild;
 	UT_sint32              m_iLeftOffset;
-	UT_sint32              m_iLeftOffsetLayoutUnits;
 	double                 m_dLeftOffsetUserUnits;
 	UT_sint32              m_iRightOffset;
-	UT_sint32              m_iRightOffsetLayoutUnits;
 	double                 m_dRightOffsetUserUnits;
 	UT_sint32              m_iTopOffset;
-	UT_sint32              m_iTopOffsetLayoutUnits;
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
-	UT_sint32              m_iBottomOffsetLayoutUnits;
 	double                 m_dBottomOffsetUserUnits;
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_sint32              m_iLeftOffsetLayoutUnits;
+	UT_sint32              m_iRightOffsetLayoutUnits;
+	UT_sint32              m_iTopOffsetLayoutUnits;
+	UT_sint32              m_iBottomOffsetLayoutUnits;
+#endif
 	
 	UT_sint32              m_iLeftAttach;
 	UT_sint32              m_iRightAttach;

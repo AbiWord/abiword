@@ -67,7 +67,7 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setDescent(getGR()->getFontDescent(pFont));
 	_setHeight(getGR()->getFontHeight(pFont));
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pFont = pLayout->findFont(pSpanAP,
 							  pBlockAP,
 							  pSectionAP,

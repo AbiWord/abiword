@@ -206,8 +206,8 @@ public:
 	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
 	inline UT_sint32            getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
 	UT_uint32                   getColumnGap(void) const;
-
-#ifndef WITH_PANGO
+	
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32			getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
 	UT_sint32                   getTopMarginInLayoutUnits(void) const;
@@ -306,8 +306,8 @@ private:
 	double				m_dHeaderMarginUserUnits;
 	UT_sint32           m_iMaxSectionColumnHeight;
 	double              m_dMaxSectionColumnHeight;
-
-#ifndef WITH_PANGO
+	
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_uint32			m_iColumnGapLayoutUnits;
 	UT_sint32			m_iSpaceAfterLayoutUnits;
 	UT_sint32			m_iLeftMarginLayoutUnits;

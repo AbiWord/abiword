@@ -141,8 +141,8 @@ public:
 	UT_uint32		        getAscent() const				{ return m_iAscent; }
 	UT_uint32		        getDescent() const 				{ return m_iDescent; }
 	virtual UT_uint32       getDrawingWidth() const         { return m_iWidth; }
-
-#ifndef WITH_PANGO
+	
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32		        getHeightInLayoutUnits() const	{ return m_iHeightLayoutUnits; }
 	UT_sint32		        getWidthInLayoutUnits() const	{ return m_iWidthLayoutUnits; }
 	UT_uint32		        getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
@@ -207,9 +207,13 @@ public:
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return false; }
 	virtual bool			alwaysFits(void) const { return false; }
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
+#else
+	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
+#endif
 	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }
 #endif
 	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
@@ -298,6 +302,7 @@ protected:
 	void					_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
 	void					_setAscent(int iAscent) { m_iAscent = iAscent; }
 	void					_setDescent(int iDescent) {m_iDescent = iDescent;}
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	void					_setAscentLayoutUnits(int iAscent)
                                 { m_iAscentLayoutUnits = iAscent; }
 	void					_setDescentLayoutUnits(int iDescent)
@@ -306,15 +311,22 @@ protected:
 			   					{ m_iWidthLayoutUnits = iWidth; }
 	void					_setHeightLayoutUnits(int iHeight)
 			   					{ m_iHeightLayoutUnits = iHeight; }
+#endif
 	void					_setX(int iX) { m_iX = iX; }
 	void					_setY(int iY) { m_iY = iY; }
 	void					_setDirection(FriBidiCharType c) { m_iDirection = c; }
 	FriBidiCharType			_getDirection(void) const { return m_iDirection; }
 	FriBidiCharType			_getVisDirection(void) const { return m_iVisDirection; }
+#if defined(USE_LAYOUT_UNITS)
 	GR_Font *				_getScreenFont(void) const { return m_pScreenFont; }
 	void  					_setScreenFont(GR_Font * f) { m_pScreenFont = f; }
 	GR_Font *				_getLayoutFont(void) const { return m_pLayoutFont; }
 	void  					_setLayoutFont(GR_Font * f) { m_pLayoutFont = f; }
+#else
+	GR_Font *				_getFont(void) const { return m_pFont; }
+	void  					_setFont(GR_Font * f) { m_pFont = f; }
+#endif
+	
 #ifdef WITH_PANGO
 	PangoFont *				_getPangoFont(void) const { return m_pPangoFont; }
 	void  					_setPangoFont(Pango * f) { m_pPangoFont = f; }
@@ -374,7 +386,7 @@ private:
 	UT_sint32				m_iHeight;
 	UT_uint32				m_iAscent;
 	UT_uint32				m_iDescent;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32				m_iHeightLayoutUnits;
 	UT_sint32				m_iWidthLayoutUnits;
 	UT_uint32				m_iAscentLayoutUnits;
@@ -393,11 +405,14 @@ private:
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_pColorHL;
 
-#ifndef WITH_PANGO
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	GR_Font * 				m_pScreenFont;
 	GR_Font * 				m_pLayoutFont;
-#else
+#elif defined(WITH_PANGO)
 	PangoFont * 			m_pPangoFont;
+#else
+	GR_Font *               m_pFont;
 #endif
 
 	bool					m_bRecalcWidth;
@@ -683,7 +698,7 @@ private:
 	GR_Image*				m_pImage;
 	UT_sint32               m_iImageWidth;
 	UT_sint32               m_iImageHeight;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32               m_iImageWidthLayoutUnits;
 	UT_sint32               m_iImageHeightLayoutUnits;
 #endif
@@ -785,10 +800,11 @@ protected:
 	const XML_Char *		_getParameter() const { return m_pParameter; }
 
 private:
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	GR_Font*				m_pFont;
 	GR_Font*				m_pFontLayout;
 #else
+	GR_Font *               m_pFont;
 	//PangoFont *           m_pPangoFont; // I do not think we need this, just refer to fp_Run
 #endif
 

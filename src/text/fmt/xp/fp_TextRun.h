@@ -56,13 +56,13 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			alwaysFits(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 #else
 	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 #endif
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
 #endif
 	UT_uint32				countTrailingSpaces(void) const;
@@ -90,8 +90,10 @@ public:
 	{
 		Calculate_full_width = -1
 	};
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width);
+#else
+	UT_sint32				simpleRecalcWidth(UT_sint32 iLength = Calculate_full_width);
 #endif
 
 	void					resetJustification();
@@ -106,8 +108,11 @@ public:
 	inline virtual bool isSuperscript(void) const;
 	inline virtual bool isSubscript(void) const;
 	GR_Font*				getFont(void) const
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		{ return _getScreenFont(); }
-
+#else
+		{ return _getFont(); }
+#endif
 	const XML_Char *			getLanguage() const
 		{ return m_pLanguage; }
 
@@ -226,9 +231,6 @@ private:
 	  retrieved from multiple fonts.
 	  TODO fix this issue
 	*/
-	//GR_Font*				m_pFont;
-	//GR_Font*				m_pFontLayout;
-	//UT_RGBColor 			m_colorFG; //#TF moved this into fp_Run
 	bool					m_bSquiggled;
 
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer

@@ -127,7 +127,7 @@ public:
 	// all containers that may wish to draw stuff outwith the normal
 	// drawing region, such as the pilcrow on a line, should overwrite this
 	virtual UT_sint32   getDrawingWidth(void) const {return getWidth();}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual void		setWidthInLayoutUnits(UT_sint32) =0;
 	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) =0;
 	virtual void		setYInLayoutUnits(UT_sint32) = 0;
@@ -195,7 +195,7 @@ public:
 	fp_Page *              getPage(void) const;
 	virtual UT_sint32      getMarginBefore(void) const =0;
 	virtual UT_sint32      getMarginAfter(void) const =0;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	virtual UT_sint32      getMarginBeforeInLayoutUnits(void) const =0;
 	virtual UT_sint32      getMarginAfterInLayoutUnits(void) const =0;
 #endif

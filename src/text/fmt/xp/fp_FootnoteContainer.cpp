@@ -143,8 +143,7 @@ void fp_FootnoteContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
-#ifndef WITH_PANGO
-	
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_sint32 iYLayoutUnits = 0;
@@ -161,7 +160,7 @@ void fp_FootnoteContainer::layout(void)
 		if(pContainer->getHeight() > _getMaxContainerHeight())
 			_setMaxContainerHeight(pContainer->getHeight());
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
 #endif
 
@@ -171,11 +170,11 @@ void fp_FootnoteContainer::layout(void)
 		}
 			
 		pContainer->setY(iY);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 #else
@@ -183,7 +182,7 @@ void fp_FootnoteContainer::layout(void)
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 #else
@@ -193,7 +192,7 @@ void fp_FootnoteContainer::layout(void)
 
 #endif
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		if((long) iYLayoutUnits > imax)
 		{
 		       UT_ASSERT(0);
@@ -212,13 +211,13 @@ void fp_FootnoteContainer::layout(void)
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
 #endif
 		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
 #else
 	UT_sint32 iNewHeight = iY;
@@ -230,7 +229,7 @@ void fp_FootnoteContainer::layout(void)
 	}
 
 	setHeight(iNewHeight);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setHeightLayoutUnits(iYLayoutUnits);
 #endif
 

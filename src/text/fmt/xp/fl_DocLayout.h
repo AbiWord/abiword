@@ -104,7 +104,9 @@ public:
 	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 							 UT_sint32 iUseLayoutResolution,
+#endif
 							 bool isField = false
 		);
 	void        changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL);

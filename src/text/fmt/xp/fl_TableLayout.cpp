@@ -60,16 +60,24 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	  m_bNeedsRebuild(false),
       m_iJustification(FL_TABLE_FULL),
 	  m_iLeftOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iLeftOffsetLayoutUnits(0),
+#endif
 	  m_dLeftOffsetUserUnits(0.0),
 	  m_iRightOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iRightOffsetLayoutUnits(0),
+#endif
 	  m_dRightOffsetUserUnits(0.0),
 	  m_iTopOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iTopOffsetLayoutUnits(0),
+#endif
 	  m_dTopOffsetUserUnits(0.0),
 	  m_iBottomOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iBottomOffsetLayoutUnits(0),
+#endif
 	  m_dBottomOffsetUserUnits(0.0),
 	  m_bIsHomogeneous(true),
 	  m_bSameRowOnTopOfPage(false),
@@ -119,16 +127,22 @@ void fl_TableLayout::createTableContainer(void)
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
 	UT_sint32 iWidth = pCon->getWidth();
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iWidthLayout = pCon->getWidthInLayoutUnits();
+#endif
 	if(iWidth == 0)
 	{
 		iWidth = pCon->getPage()->getWidth();
-		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
 		pCon->setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
 		pCon->setWidthInLayoutUnits(iWidthLayout);
+#endif
 	}
 	pTableContainer->setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pTableContainer->setWidthInLayoutUnits(iWidthLayout);
+#endif
 //
 // The container of the tbale is set in getNewContainer()
 //
@@ -141,7 +155,11 @@ void fl_TableLayout::createTableContainer(void)
 void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 {
 	pTab->setHomogeneous(m_bIsHomogeneous);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 borderWidth = m_iLeftOffsetLayoutUnits + m_iRightOffsetLayoutUnits;
+#else
+	UT_sint32 borderWidth = m_iLeftOffset + m_iRightOffset;
+#endif
 	pTab->setBorderWidth(borderWidth);
 	pTab->setColSpacings(m_iColSpacing);
 	pTab->setRowSpacings(m_iRowSpacing);
@@ -603,7 +621,7 @@ void fl_TableLayout::_lookupProperties(void)
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(pszLeftOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(pszLeftOffset);
 #endif
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(pszLeftOffset);
@@ -611,7 +629,7 @@ void fl_TableLayout::_lookupProperties(void)
 	else
 	{
 		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -620,7 +638,7 @@ void fl_TableLayout::_lookupProperties(void)
 	if(pszTopOffset && pszTopOffset[0])
 	{
 		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(pszTopOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(pszTopOffset);
 #endif
 		m_dTopOffsetUserUnits = UT_convertDimensionless(pszTopOffset);
@@ -628,7 +646,7 @@ void fl_TableLayout::_lookupProperties(void)
 	else
 	{
 		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -637,7 +655,7 @@ void fl_TableLayout::_lookupProperties(void)
 	if(pszRightOffset && pszRightOffset[0])
 	{
 		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(pszRightOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(pszRightOffset);
 #endif
 		m_dRightOffsetUserUnits = UT_convertDimensionless(pszRightOffset);
@@ -645,7 +663,7 @@ void fl_TableLayout::_lookupProperties(void)
 	else
 	{
 		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -654,7 +672,7 @@ void fl_TableLayout::_lookupProperties(void)
 	if(pszBottomOffset && pszBottomOffset[0])
 	{
 		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(pszBottomOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(pszBottomOffset);
 #endif
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(pszBottomOffset);
@@ -662,7 +680,7 @@ void fl_TableLayout::_lookupProperties(void)
 	else
 	{
 		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -694,11 +712,19 @@ void fl_TableLayout::_lookupProperties(void)
 //
 // Anyway column spacing being horizontal is layout units.
 //
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iColSpacing = UT_convertToLayoutUnits(pszTableColSpacing);
+#else
+		m_iColSpacing = m_pLayout->getGraphics()->convertDimension(pszTableColSpacing);
+#endif
 	}
 	else
 	{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iColSpacing =  UT_convertToLayoutUnits("0.05in");
+#else
+		m_iColSpacing = m_pLayout->getGraphics()->convertDimension("0.05in");
+#endif
 	}
 	if(pszTableRowSpacing && *pszTableRowSpacing)
 	{
@@ -723,7 +749,11 @@ void fl_TableLayout::_lookupProperties(void)
 //
 // Anyway column positioning being horizontal is layout units.
 //
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iLeftColPos = UT_convertToLayoutUnits(pszLeftColPos);
+#else
+		m_iLeftColPos = m_pLayout->getGraphics()->convertDimension(pszLeftColPos);
+#endif
 	}
 	else
 	{
@@ -761,7 +791,11 @@ void fl_TableLayout::_lookupProperties(void)
 				char * pszSub = UT_strdup(sProps.substr(i,(j-i)).c_str());
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 				pColP->m_iColWidth = UT_convertToLayoutUnits(pszSub);
+#else
+				pColP->m_iColWidth = m_pLayout->getGraphics()->convertDimension(pszSub);
+#endif
 				m_vecColProps.addItem((void *) pColP);
 				delete [] pszSub;
 			}
@@ -796,7 +830,7 @@ UT_sint32 fl_TableLayout::getTopOffset(void) const
 	return m_iTopOffset;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fl_TableLayout::getTopOffsetInLayoutUnits(void) const
 {
 	return m_iTopOffsetLayoutUnits;
@@ -808,7 +842,7 @@ UT_sint32 fl_TableLayout::getBottomOffset(void) const
 	return m_iBottomOffset;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fl_TableLayout::getBottomOffsetInLayoutUnits(void) const
 {
 	return m_iBottomOffsetLayoutUnits;
@@ -820,7 +854,7 @@ UT_sint32   fl_TableLayout::getLeftOffset(void) const
 	return m_iLeftOffset;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32  fl_TableLayout::getLeftOffsetInLayoutUnits(void) const
 {
 	return m_iLeftOffsetLayoutUnits;
@@ -830,7 +864,8 @@ UT_sint32   fl_TableLayout::getRightOffset(void) const
 {
 	return m_iRightOffset;
 }
-#ifndef WITH_PANGO
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32   fl_TableLayout::getRightOffsetInLayoutUnits(void) const
 {
 	return m_iRightOffsetLayoutUnits;
@@ -978,16 +1013,24 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
 	  m_iLeftOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iLeftOffsetLayoutUnits(0),
+#endif
 	  m_dLeftOffsetUserUnits(0.0),
 	  m_iRightOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iRightOffsetLayoutUnits(0),
+#endif
 	  m_dRightOffsetUserUnits(0.0),
 	  m_iTopOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iTopOffsetLayoutUnits(0),
+#endif
 	  m_dTopOffsetUserUnits(0.0),
 	  m_iBottomOffset(0),
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iBottomOffsetLayoutUnits(0),
+#endif
 	  m_dBottomOffsetUserUnits(0.0),
 	  m_iLeftAttach(0),
 	  m_iRightAttach(1),
@@ -1048,9 +1091,11 @@ void fl_CellLayout::createCellContainer(void)
 	UT_ASSERT(pDSL != NULL);
 	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
 	pCellContainer->setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iWidthLayout = pDSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - pDSL->getLeftMarginInLayoutUnits() - pDSL->getRightMarginInLayoutUnits();
 	xxx_UT_DEBUGMSG(("SEVIOR: Setting initial width of cell %x to %d \n",pCellContainer,iWidthLayout));
 	pCellContainer->setWidthInLayoutUnits(iWidthLayout);
+#endif
 }
 
 
@@ -1064,8 +1109,13 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setRightAttach(m_iRightAttach);
 	pCell->setTopAttach(m_iTopAttach);
 	pCell->setBottomAttach(m_iBottomAttach);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pCell->setLeftPad(m_iLeftOffsetLayoutUnits);
 	pCell->setRightPad(m_iRightOffsetLayoutUnits);
+#else
+	pCell->setLeftPad(m_iLeftOffset);
+	pCell->setRightPad(m_iRightOffset);
+#endif
 	pCell->setTopPad(m_iTopOffset);
 	pCell->setBotPad(m_iBottomOffset);
 	pCell->setLeftColor(m_cLeftColor);
@@ -1447,7 +1497,7 @@ void fl_CellLayout::_lookupProperties(void)
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
 		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(pszLeftOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(pszLeftOffset);
 #endif
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(pszLeftOffset);
@@ -1455,7 +1505,7 @@ void fl_CellLayout::_lookupProperties(void)
 	else
 	{
 		m_iLeftOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iLeftOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -1464,7 +1514,7 @@ void fl_CellLayout::_lookupProperties(void)
 	if(pszTopOffset && pszTopOffset[0])
 	{
 		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(pszTopOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(pszTopOffset);
 #endif
 		m_dTopOffsetUserUnits = UT_convertDimensionless(pszTopOffset);
@@ -1472,7 +1522,7 @@ void fl_CellLayout::_lookupProperties(void)
 	else
 	{
 		m_iTopOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iTopOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -1481,7 +1531,7 @@ void fl_CellLayout::_lookupProperties(void)
 	if(pszRightOffset && pszRightOffset[0])
 	{
 		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(pszRightOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(pszRightOffset);
 #endif
 		m_dRightOffsetUserUnits = UT_convertDimensionless(pszRightOffset);
@@ -1489,7 +1539,7 @@ void fl_CellLayout::_lookupProperties(void)
 	else
 	{
 		m_iRightOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iRightOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -1498,7 +1548,7 @@ void fl_CellLayout::_lookupProperties(void)
 	if(pszBottomOffset && pszBottomOffset[0])
 	{
 		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(pszBottomOffset);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(pszBottomOffset);
 #endif
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(pszBottomOffset);
@@ -1506,7 +1556,7 @@ void fl_CellLayout::_lookupProperties(void)
 	else
 	{
 		m_iBottomOffset = m_pLayout->getGraphics()->convertDimension(defaultOffset.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iBottomOffsetLayoutUnits = UT_convertToLayoutUnits(defaultOffset.c_str());
 #endif
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
@@ -1660,7 +1710,7 @@ UT_sint32   fl_CellLayout::getLeftOffset(void) const
 	return m_iLeftOffset;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32  fl_CellLayout::getLeftOffsetInLayoutUnits(void) const
 {
 	return m_iLeftOffsetLayoutUnits;
@@ -1670,7 +1720,7 @@ UT_sint32   fl_CellLayout::getRightOffset(void) const
 {
 	return m_iRightOffset;
 }
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32   fl_CellLayout::getRightOffsetInLayoutUnits(void) const
 {
 	return m_iRightOffsetLayoutUnits;
@@ -1682,7 +1732,8 @@ UT_sint32 fl_CellLayout::getTopOffset(void) const
 	return m_iTopOffset;
 }
 
-#ifndef WITH_PANGO
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fl_CellLayout::getTopOffsetInLayoutUnits(void) const
 {
 	return m_iTopOffsetLayoutUnits;
@@ -1694,7 +1745,7 @@ UT_sint32 fl_CellLayout::getBottomOffset(void) const
 	return m_iBottomOffset;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fl_CellLayout::getBottomOffsetInLayoutUnits(void) const
 {
 	return m_iBottomOffsetLayoutUnits;

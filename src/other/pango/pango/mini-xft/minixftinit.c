@@ -76,7 +76,7 @@ mini_xft_get_default_path (void)
   };
   int i;
   gboolean found = FALSE;
-  
+
   if (result)
     return result;
 

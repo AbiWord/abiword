@@ -321,7 +321,7 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 
 			fl_TabStop* pTabStop = new fl_TabStop();
 			pTabStop->setPosition(iPosition);
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			pTabStop->setPositionLayoutUnits(UT_convertToLayoutUnits(pszPosition));
 #endif
 			pTabStop->setType(iType);
@@ -443,13 +443,13 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		const char* szProp;
 		UT_sint32*	pVar;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		UT_sint32*	pVarLU;
 #endif
 	}
 	const rgProps[] =
 	{
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		{ "margin-top", 	&m_iTopMargin ,		&m_iTopMarginLayoutUnits    },
 		{ "margin-bottom",	&m_iBottomMargin,	&m_iBottomMarginLayoutUnits },
 		{ "margin-left",	&m_iLeftMargin, 	&m_iLeftMarginLayoutUnits	},
@@ -468,7 +468,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const PP_PropertyTypeSize * pProp = (const PP_PropertyTypeSize *)getPropertyType((XML_Char*)mai.szProp, Property_type_size);
 		*mai.pVar	= pG->convertDimension(pProp->getValue(), pProp->getDim());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		*mai.pVarLU = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 #endif
 	}
@@ -539,11 +539,11 @@ void fl_BlockLayout::_lookupProperties(void)
 	if (!m_iDefaultTabInterval)
 	{
 		m_iDefaultTabInterval = pG->convertDimension("1pt");
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iDefaultTabIntervalLayoutUnits = UT_convertSizeToLayoutUnits(1.0, DIM_PT);
 #endif
 	}
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	else
 	m_iDefaultTabIntervalLayoutUnits = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 #endif
@@ -575,7 +575,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			pTmp[posPlus] = 0;
 
 			m_dLineSpacing = pG->convertDimension(pTmp.c_str());
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pTmp.c_str());
 #endif
 		}
@@ -583,7 +583,8 @@ void fl_BlockLayout::_lookupProperties(void)
 		{
 			m_eSpacingPolicy = spacing_EXACT;
 			m_dLineSpacing = pG->convertDimension(pszSpacing);
-#ifndef WITH_PANGO
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pszSpacing);
 #endif
 		}
@@ -591,7 +592,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		{
 			m_eSpacingPolicy = spacing_MULTIPLE;
 			m_dLineSpacing =
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 				m_dLineSpacingLayoutUnits =
 #endif
 				    UT_convertDimensionless(pszSpacing);
@@ -1660,14 +1661,14 @@ fl_CharWidths * fl_BlockLayout::getCharWidths(void)
 	return &m_gbCharWidths;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 void fl_BlockLayout::getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const
 #else
 void fl_BlockLayout::getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) const
 #endif
 {
 	dSpacing = m_dLineSpacing;
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	dSpacingLayout = m_dLineSpacingLayoutUnits;
 #endif
 	eSpacing = m_eSpacingPolicy;
@@ -5147,7 +5148,7 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	return true;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 													  eTabType& iType, eTabLeader &iLeader)
 {
@@ -5359,7 +5360,7 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	return true;
 }
 
-#ifndef WITH_PANGO
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 													  eTabType& iType, eTabLeader &iLeader)
 {

@@ -103,16 +103,22 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_ASSERT(pCon);
 	UT_sint32 iWidth = pCon->getWidth();
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 iWidthLayout = pCon->getWidthInLayoutUnits();
+#endif
 	if(iWidth == 0)
 	{
 		iWidth = pCon->getPage()->getWidth();
-		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
 		pCon->setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
 		pCon->setWidthInLayoutUnits(iWidthLayout);
+#endif
 	}
 	pFootnoteContainer->setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pFootnoteContainer->setWidthInLayoutUnits(iWidthLayout);
+#endif
 }
 	
 bool fl_FootnoteLayout::bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
