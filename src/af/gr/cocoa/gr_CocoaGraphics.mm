@@ -558,8 +558,7 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	}
 
 	NSFont*		nsfont;
-	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
-
+	UT_uint32 iSize = UT_convertToPoints(pszFontSize);
 	nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithCString:pszFontFamily] 
 		traits:s weight:5 size:(float)iSize];
 	if (!nsfont)
@@ -1132,7 +1131,7 @@ void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 
 UT_uint32 GR_CocoaGraphics::getDeviceResolution(void) const
 {
-	_getResolution ();
+	return _getResolution ();
 }
 
 
