@@ -384,7 +384,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				else if (height > 1.9 && height < 2.1)
 					m_pie->write("1.66}\n");
 				else if (m_bLineHeight) // glup.  TODO: calculate the spacing :)
-				    m_pie->write("1.0} % Sorry.  I know that you don't expected the 1.0... feel free to fix it! :)\n");
+				    m_pie->write("1.0} % Sorry.  I know that you don't expect the 1.0... feel free to fix it! :)\n");
 			}
 		}
 	}
@@ -980,9 +980,9 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("\\usepackage{calc}\n");
 	m_pie->write("\\usepackage{hyperref}");
 	m_pie->write("\\usepackage{setspace}\n");
-	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
-	m_pie->write("\\usepackage[normalem]{ulem}\t% TODO: Package is only needed if you have underline/strikeout.\n");
-	m_pie->write("\\usepackage{color}\t% TODO: Package is only needed if you have color.\n");
+	m_pie->write("\\usepackage{multicol}\n");
+	m_pie->write("\\usepackage[normalem]{ulem}\n");
+	m_pie->write("\\usepackage{color}\n");
 	{
 	    const char* misc = XAP_EncodingManager::get_instance()->getTexPrologue();
 	    if (misc)
@@ -1052,8 +1052,8 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				// we do nothing with computed fields.
 				return true;
 
-				// todo: support these
 			case PTO_Hyperlink:
+			  _closeSpan () ;
 				if(bHaveProp && pAP && pAP->getAttribute("xlink:href", szValue))
 				{
 					m_pie->write("\\href{");

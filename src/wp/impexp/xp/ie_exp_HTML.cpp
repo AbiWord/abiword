@@ -1883,7 +1883,6 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				}
 				return true;
 
-				// todo: support these
 			case PTO_Hyperlink:
 				if(bHaveProp && pAP && pAP->getAttribute("xlink:href", szValue))
 				{
