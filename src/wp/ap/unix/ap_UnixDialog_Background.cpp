@@ -95,7 +95,7 @@ void AP_UnixDialog_Background::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(mainWindow);
 	m_dlg = mainWindow;
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(m_dlg), pFrame,
+	switch ( abiRunModalDialog ( GTK_DIALOG(m_dlg), pFrame, this,
 								 BUTTON_CANCEL, true ) )
 	{
 		case BUTTON_OK:

@@ -2698,9 +2698,8 @@ Defun(fileNew)
 	return bOK;
 }
 
-bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
+bool _helpOpenURL(XAP_Frame * pFrame, const char* helpURL)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	pFrame->openURL(helpURL);
 	return true;
@@ -2766,14 +2765,14 @@ bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBef
 		_catPath(url, pathAfterLang);
 	}
 
-	return _helpOpenURL(pAV_View, url.c_str());
+	return _helpOpenURL(pFrame, url.c_str());
 }
 	
 bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {
 	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
 
-	return _helpLocalizeAndOpenURL(pFrame, bLocal, pathBeforeLang, pathAfterLang);
+	return helpLocalizeAndOpenURL(pFrame, bLocal, pathBeforeLang, pathAfterLang);
 }
 
 Defun1(helpContents)

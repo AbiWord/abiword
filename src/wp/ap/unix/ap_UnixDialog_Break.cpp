@@ -75,10 +75,10 @@ void AP_UnixDialog_Break::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
-								 pFrame, BUTTON_CANCEL, false ) )
+								 pFrame, this, BUTTON_CANCEL, false ) )
 	{
 		case BUTTON_OK:
-			event_Ok () ; break ;
+			event_OK () ; break ;
 		default:
 			event_Cancel () ; break ;
 	}
@@ -217,8 +217,8 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
 #endif
 	
-	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK ) ;
-	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(windowBreak), GTK_STOCK_OK, BUTTON_OK ) ;
+	abiAddStockButton ( GTK_DIALOG(windowBreak), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
