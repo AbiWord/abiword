@@ -310,7 +310,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 			}
 		}
 
-		if (!pBlockAttrProp && pProp->canInherit())
+		if (!pBlockAttrProp || pProp->canInherit())
 		{
 			if (pSectionAttrProp && pSectionAttrProp->getProperty(pProp->getName(),szValue))
 				return szValue;
