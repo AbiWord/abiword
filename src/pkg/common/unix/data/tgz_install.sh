@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #  AbiSource Unix Installer Program
-#  Copyright (C) 1999 AbiSource, Inc.
+#  Copyright (C) 1999-2000 AbiSource, Inc.
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -130,6 +130,16 @@ $ECHO ""
 $ECHO "Installing AbiSuite software in [$INSTALL_BASE]..."
 cd $INSTALL_BASE
 tar xf $INSTALL_DATA_FILE
+
+if [ $? -ne 0 ] 
+then 
+    $ECHO "" 
+    $ECHO "  Oops, tar seems to be having some trouble."
+	$ECHO "  Refer to the errors above for more details." 
+    $ECHO "  Installation aborted." 
+    $ECHO "" 
+    exit 1 
+fi
 
 ########################################################################
 # If we're on Solaris, do the PostScript resource thing.  This script

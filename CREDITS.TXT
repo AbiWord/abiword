@@ -13,7 +13,7 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
-Henrik Berg <henrik@lansen.se>			ispell patch for non-English dictionaries
+Henrik Berg <henrik@lansen.se>          ispell patch for non-English dictionaries
 Daniel Berlin <db003g@mail.rochester.edu>       BeOS whiz
 Bryan Blackburn <blb@pobox.com>                 Solaris / GCC 2.95 make
 Scott Boesch <scott@abisource.com>              artist, trade shows
@@ -24,41 +24,42 @@ Andy Burnett <andy@abisource.com>
 Heath D. Carr <heath@abisource.com>
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
-Harald Fernengel <harry@bnro.de>		RTF compatability fixes
+Danny Faught <faught@rstcorp.com>               
+Harald Fernengel <harry@bnro.de>                RTF compatability fixes
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
-Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>	m68k Endian patch
+Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>    m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
-Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>	GNOME front end, LaTeX exporter
+Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
-Johnny C. Lam <lamj@stat.cmu.edu>		NetBSD
-Birger Langkjer <birger.langkjer@image.dk>	GNOME icon/menu integration
+Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
+Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
-Aaron Lehmann <aaronl@vitelus.com>		Ruler placement patch
+Aaron Lehmann <aaronl@vitelus.com>              Ruler placement patch
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
-Brian Marick <marick@rstcorp.com>		
+Brian Marick <marick@rstcorp.com>       
 Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
-James Montgomerie <jamie@montgomerie.net>	ANSI C patrol
+James Montgomerie <jamie@montgomerie.net>       ANSI C patrol
 Bruce Pearson <BruceP@wn.com.au>                full justification
-Andy Richardson <andy@promethium.chem.ucl.ac.uk>	PostScript image handling
+Andy Richardson <andy@promethium.chem.ucl.ac.uk>    PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
 Pierre Sarrazin <ps@cam.org>            
-Martin Sevior <msevior@kosal0.triumf.ca>	Overline, variable width lines
+Martin Sevior <msevior@kosal0.triumf.ca>        Symbol dialog, Overline
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
-Alexey Sinutin <megabyte@salesexplosion.com>	Insert Date/Time dialog
+Alexey Sinutin <megabyte@salesexplosion.com>    Insert Date/Time dialog
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
-Jim Studt <jim@federated.com>			ARM configuration
-Sam Tobin-Hochstadt <sytobinh@uchicago.edu>	File I/O error handling, misc fixes
+Jim Studt <jim@federated.com>                   ARM configuration
+Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     File I/O error handling, misc fixes
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>           
-Kevin Vajk <kvajk@ricochet.net>			File import/export detection
+Kevin Vajk <kvajk@ricochet.net>                 File import/export detection
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
 Alan Young <ayoung@teleport.com>                Alpha/NT
@@ -66,24 +67,24 @@ Alan Young <ayoung@teleport.com>                Alpha/NT
 translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
-Tim & Rita Allen <tim@proximity.com.au>		Indonesian
+Tim & Rita Allen <tim@proximity.com.au>         Indonesian
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
-Henrik Berg <henrik@lansen.se>			Swedish
+Henrik Berg <henrik@lansen.se>                  Swedish
 Frédéric CELLA <fcella@mahj.org>                French
 Mauro Colorio <macolori@tin.it>                 Italian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
-Marco Innocenti <dot0037@iperbole.bologna.it>	Italian
+Marco Innocenti <dot0037@iperbole.bologna.it>   Italian
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian
 Birger Langkjer <birger.langkjer@image.dk>      Danish
-Kjartan Maraas <kmaraas@online.no>		Norwegian
+Kjartan Maraas <kmaraas@online.no>              Norwegian
 Jordi Mas <jmas@softcatala.org>                 Catalan
-Zbynek Miksa <xmiksa@informatics.muni.cz>	Czech
-Giovanni dos Reis Nunes <giovanni@skydome.net>	Portugese (Brazil)
-Rasmus Toftdahl Olesen <rto@post.tele.dk>	da-DK translation
-Eutanazy Sercxemulo <szperacz@free.net.pl>	Polish
+Zbynek Miksa <xmiksa@informatics.muni.cz>       Czech
+Giovanni dos Reis Nunes <giovanni@skydome.net>  Portugese (Brazil)
+Rasmus Toftdahl Olesen <rto@post.tele.dk>       Danish
+Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
 Rui Silva <rms@ssi.aaum.pt>                     Portugese
 Christian Terboven <cterboven@gmx.net>          German
 Javier Yáñez <javier@cibal.es>                  Spanish
