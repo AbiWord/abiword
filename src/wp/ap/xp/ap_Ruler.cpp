@@ -66,6 +66,18 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		dragDelta = m_pG->convertDimension(Buffer);
 		break;
 
+	case DIM_MM:
+		dBasicUnit = 2.5;
+		tickUnitScale = 1000;
+		sprintf(Buffer, "%imm", (int)(dBasicUnit * tickUnitScale));
+		tickUnit = m_pG->convertDimension(Buffer);
+		tickLong = 2;
+		tickLabel = 4;
+		tickScale = 1;
+		sprintf(Buffer, "%imm", (int)(dBasicUnit / 2 * tickUnitScale));
+		dragDelta = m_pG->convertDimension(Buffer);
+		break;
+
 	case DIM_PI:						// picas
 		dBasicUnit = 1.0;
 		tickUnitScale = 100;
