@@ -2455,7 +2455,7 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 	: fp_Run(pBL, iOffsetFirst, iLen, FPRUN_BOOKMARK)
 {
 	m_pBookmark = getBlock()->getBookmark(iOffsetFirst);
-	UT_ASSERT(m_pBookmark);
+	UT_return_if_fail(m_pBookmark);
 
 	_setDirty(true);
 
