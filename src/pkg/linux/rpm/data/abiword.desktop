@@ -14,3 +14,5 @@ Terminal=0
 Type=Application
 Categories=Application;Office;WordProcessor;X-Red-Hat-Base;
 StartupNotify=true
+Encoding=UTF-8
+X-Desktop-File-Install-Version=0.3
