@@ -1609,7 +1609,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE)
 
 	// we do hold a local start position, so we know when we've
 	// done the entire document, and when to stop
-	PT_DocPosition
+	//PT_DocPosition;
 		
 	// search it
 	while (block)
@@ -1761,35 +1761,6 @@ fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * wrapped)
 	// no blocks at the cursor!
 	return NULL;
 }
-
-		// while the cursor is not yet at the doc position of the end of this block
-//		while (m_iFindCur < (buffer.getLength() + m_pFindCurrentBlock->getPosition(UT_FALSE)))
-
-/*							 
-	if (m_iFindPos == m_iFindPosStart)	
-	{
-		m_pFindCurrentBlock = m_pLayout->findBlockAtPosition(m_iFindPos);
-
-		m_iFindPos = m_pFindCurrentBlock->getPosition(UT_FALSE);
-			
-		return UT_TRUE;
-	}
-	else
-	{
-		UT_ASSERT(m_pFindCurrentBlock);
-		
-		if ( (m_pFindCurrentBlock = m_pFindCurrentBlock->getNext(UT_TRUE)) )
-		{
-			m_iFindPos = m_pFindCurrentBlock->getPosition(UT_FALSE);
-			
-			return UT_TRUE;
-		}
-		else
-			return UT_FALSE;
-	}
-}
-*/
-
 
 // ---------------- end find and replace ---------------
 
