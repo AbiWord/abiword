@@ -35,10 +35,9 @@ public:
 
 	IEStatus			importFile(const char * szFilename);
 
-
 protected:
-	
-protected:
+	IEStatus			_parseFile(FILE * fp);
+	IEStatus			_writeHeader(FILE * fp);
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */
