@@ -189,7 +189,7 @@ XAP_HashDownloader::initData()
 }
 
 UT_sint32
-XAP_HashDownloader::getPref(XAP_Frame *pFrame)
+XAP_HashDownloader::getPref(XAP_Frame *pFrame, XML_Char *pref)
 {
 	char *endptr, *val;
 	UT_sint32 i;
@@ -199,7 +199,7 @@ XAP_HashDownloader::getPref(XAP_Frame *pFrame)
 	XAP_Prefs *prefs = pFrame->getApp()->getPrefs();
 	XAP_PrefsScheme *prefsScheme = prefs->getCurrentScheme(true);
 	
-	if (!prefsScheme->getValue((const XML_Char *)"SpellUseHashDownloader", (const XML_Char **)&val))
+	if (!prefsScheme->getValue(pref, (const XML_Char **)&val))
 		return(-1);
 	
 	i = strtol(val, &endptr, 10);
@@ -211,7 +211,7 @@ XAP_HashDownloader::getPref(XAP_Frame *pFrame)
 
 
 UT_sint32
-XAP_HashDownloader::setPref(XAP_Frame *pFrame, UT_sint32 newVal)
+XAP_HashDownloader::setPref(XAP_Frame *pFrame, XML_Char *pref, UT_sint32 newVal)
 {
 	char val[10];
 
@@ -224,8 +224,8 @@ XAP_HashDownloader::setPref(XAP_Frame *pFrame, UT_sint32 newVal)
 
 	sprintf(val, "%d", newVal);
 	
-	if (!prefsScheme->setValue((const XML_Char *)"SpellUseHashDownloader", (const XML_Char *)val)) {
-		fprintf(stderr, "Failed to save preference \"SpellUseHashDownloader\"\n");
+	if (!prefsScheme->setValue(pref, (const XML_Char *)val)) {
+		fprintf(stderr, "Failed to save preference \"%s\"\n", pref);
 		return(-1);
 	}
 
@@ -355,11 +355,11 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 #endif
 	
 	/* Feature disabled in prefs, if error reading preferences then go ahead and ask */
-	if (!getPref(pFrame))
+	if (!getPref(pFrame, "SpellUseHashDownloader"))
 		return(0);
 	
 	/* only download if the user really said yes, any other value [no,error] we simply return */
-	if (dlg_askDownload(pFrame, szLang) != 1)
+	if (getPref(pFrame, "SpellAlwaysDownload") != 1 && dlg_askDownload(pFrame, szLang) != 1)
 		return(0);
 
 	if ((i = getLangNum(szLang)) == -1)
@@ -373,7 +373,7 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 		return(-1);
 	}
 
-	setPref(pFrame, doUse);
+	setPref(pFrame, "SpellUseHashDownloader", doUse);
 	
 	if (!doUse) {
 		/* Feature was just disabled. Give user a note about it.
