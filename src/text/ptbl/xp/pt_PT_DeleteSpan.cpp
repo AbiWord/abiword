@@ -969,7 +969,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 // Look to see if we've reached the end of a footnote section.
 //
-			if (isEndFootnote(pfs))
+			if (isEndFootnote(pfs) && (iFootnoteCount > 0))
 			{
 //
 // First delete the EndFootnote Strux
