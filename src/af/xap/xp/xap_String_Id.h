@@ -469,5 +469,7 @@ dcl(DLG_HTMLOPT_ExpDeclareXML,			"Declare as XML (version 1.0)")
 dcl(DLG_HTMLOPT_ExpAllowAWML,			"Allow extra markup in AWML namespace")
 dcl(DLG_HTMLOPT_ExpEmbedCSS,			"Embed (CSS) style sheet")
 dcl(DLG_HTMLOPT_ExpEmbedImages,			"Embed images in URLs (Base64-encoded)")
+dcl(DLG_Exit_CloseWithoutSaving,				"Close &without Saving")
+
 	/* X11 input methods */
 dcl(XIM_Methods, "Input Methods")

@@ -29,6 +29,8 @@
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
 
+#include "xap_Strings.h"
+
 /*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
 							   XAP_Dialog_Id id)
@@ -64,6 +66,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	UT_String labelText, separator;
 	
+	const XAP_StringSet * pSS = pApp->getStringSet ();
+
 	switch (m_buttons)
 	{
 		case b_O:
@@ -90,7 +94,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			message = gtk_dialog_new_with_buttons("",
 							      toplevel, 
 							      GTK_DIALOG_MODAL,
-							      "Close _without Saving",
+							      pSS->getValue (XAP_STRING_ID_DLG_Exit_CloseWithoutSaving),
 							      GTK_RESPONSE_NO,
 							      GTK_STOCK_CANCEL, 
 							      GTK_RESPONSE_CANCEL, 
