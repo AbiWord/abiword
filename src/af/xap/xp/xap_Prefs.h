@@ -49,6 +49,15 @@ public:
 
 	const XML_Char *	getSchemeName(void) const;
 	UT_Bool				setSchemeName(const XML_Char * szNewSchemeName);
+	// The idea of the tick is that some object can cache a preference
+	// value if it makes a performance difference.  It should also save
+	// a copy of the tick count and the scheme pointer.  If the scheme
+	// pointer and the tick count are the same, the cached preference
+	// value is current.  If either is changed, the object can refresh
+	// its cached value.  The scheme pointer can be different because
+	// the preference scheme has changed.  The tick count bumps up once
+	// every time any preference value in the scheme is changed.
+	inline UT_uint32			getTickCount() {return m_uTick;}
 	
 	UT_Bool				setValue(const XML_Char * szKey, const XML_Char * szValue);
 	UT_Bool				setValueBool(const XML_Char * szKey, UT_Bool bValue);
@@ -64,6 +73,7 @@ protected:
 	XML_Char *			m_szName;
 	UT_AlphaHashTable	m_hash;
 	XAP_Prefs *			m_pPrefs;
+	UT_uint32			m_uTick;   // ticks up every time setValue() or setValueBool() is called
 };
 
 /*****************************************************************/

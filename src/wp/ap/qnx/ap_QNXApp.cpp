@@ -715,7 +715,8 @@ static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
 		PtAddEventHandler(da, Ph_EV_BUT_RELEASE, s_hideSplash, NULL);
 
 		// create image context
-		pQNXGraphics = new GR_QNXGraphics(spwin, da);
+		// TODO: find an XAP_App pointer for the following call:
+		pQNXGraphics = new GR_QNXGraphics(spwin, da, 0);
 		pSplashImage = pQNXGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
 
 		PtRealizeWidget(spwin);

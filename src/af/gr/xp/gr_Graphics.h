@@ -26,6 +26,7 @@
 #include "gr_Image.h"
 
 class UT_RGBColor;
+class XAP_App;
 
 /*
 	GR_Font is a reference to a font.  As it happens, everything about fonts
@@ -193,6 +194,7 @@ public:
 protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	
+	XAP_App	*	m_pApp;
 	UT_uint32	m_iZoomPercentage;
 	UT_Bool		m_bLayoutResolutionModeEnabled;
 	

@@ -305,7 +305,7 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 
 UT_Bool AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
 {
-	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndDocument), m_hwndDocument);
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndDocument), m_hwndDocument, getApp());
 	pG->setFont(pG->findFont("Times New Roman", "normal", NULL, "bold", NULL, "72pt"));
 	pG->setZoomPercentage(100);
 

@@ -59,8 +59,8 @@ protected:
 class GR_Win32Graphics : public GR_Graphics
 {
 public:
-	GR_Win32Graphics(HDC, HWND);					/* for screen */
-	GR_Win32Graphics(HDC, const DOCINFO *);		/* for printing */
+	GR_Win32Graphics(HDC, HWND, XAP_App *);					/* for screen */
+	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *);		/* for printing */
 	~GR_Win32Graphics();
 
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);

@@ -56,7 +56,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	AP_TopRuler::setView(pView);
 
 	DELETEP(m_pG);
-	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler);
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler, pView->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 

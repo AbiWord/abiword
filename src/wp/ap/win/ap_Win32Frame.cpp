@@ -185,7 +185,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	UT_uint32					point					= 0;
 	HWND hwnd = m_hwndDocument;
 
-	pG = new GR_Win32Graphics(GetDC(hwnd), hwnd);
+	pG = new GR_Win32Graphics(GetDC(hwnd), hwnd, getApp());
 	ENSUREP(pG);
 	
 	pG->setZoomPercentage(iZoom);

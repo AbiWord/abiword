@@ -136,7 +136,7 @@ void AP_QNXTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);	
 	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrame *)m_pFrame)->getTopLevelWindow(), 
-											 m_wTopRuler);
+											 m_wTopRuler, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 	pG->init3dColors();

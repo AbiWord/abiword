@@ -43,7 +43,8 @@ public:
 				const char * szTitle,
 				const char * szSoftwareNameAndVersion,
 				XAP_UnixFontManager * fontManager,
-				UT_Bool		 bIsFile);
+				UT_Bool		 bIsFile,
+				XAP_App *pApp);
 	virtual ~PS_Graphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 

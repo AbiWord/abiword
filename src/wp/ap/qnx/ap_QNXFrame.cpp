@@ -97,7 +97,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
 
-	pG = new GR_QNXGraphics(m_wTopLevelWindow, m_dArea);
+	pG = new GR_QNXGraphics(m_wTopLevelWindow, m_dArea, getApp());
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 	

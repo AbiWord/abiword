@@ -39,7 +39,7 @@ private:
 class MacGraphics : public GR_Graphics
 {
 public:
-	MacGraphics();					/* for screen */
+	MacGraphics(XAP_App * app);					/* for screen */
 	~MacGraphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 

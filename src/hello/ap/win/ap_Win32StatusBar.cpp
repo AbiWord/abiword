@@ -53,7 +53,7 @@ AP_Win32StatusBar::~AP_Win32StatusBar(void)
 void AP_Win32StatusBar::setView(AV_View * pView)
 {
 	DELETEP(m_pG);
-	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndStatusBar), m_hwndStatusBar);
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndStatusBar), m_hwndStatusBar, pView->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 

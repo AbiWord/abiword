@@ -269,7 +269,7 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(m_drawingareaPreview);
 
 		// make a new QNX GC
-		m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_drawingareaPreview);
+		m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_drawingareaPreview, pFrame->getApp());
 		unsigned short w, h;
 
 		// let the widget materialize

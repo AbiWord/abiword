@@ -68,7 +68,7 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 	m_DocInfo.lpszDocName = m_szDocumentPathname;
 	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
 	
-	GR_Win32Graphics * pGraphics = new GR_Win32Graphics(m_pPersistPrintDlg->hDC,&m_DocInfo);
+	GR_Win32Graphics * pGraphics = new GR_Win32Graphics(m_pPersistPrintDlg->hDC,&m_DocInfo, m_pApp);
 	return pGraphics;
 }
 

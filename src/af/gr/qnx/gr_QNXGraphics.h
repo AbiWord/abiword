@@ -50,7 +50,7 @@ class QNXFont : public GR_Font {
 class GR_QNXGraphics : public GR_Graphics
 {
  public:
-	GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw);
+	GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App * app);
 	~GR_QNXGraphics();
 
 	virtual void drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);

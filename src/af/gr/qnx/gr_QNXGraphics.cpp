@@ -108,8 +108,9 @@ int GR_QNXGraphics::DrawTeardown() {
 	return 0;
 }
 
-GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw)
+GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app)
 {
+	m_pApp = app;
 	m_pWin = win;
 	m_pDraw = draw;
 	m_pFont = NULL;

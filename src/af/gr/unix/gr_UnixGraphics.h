@@ -31,7 +31,7 @@ class UT_ByteBuf;
 class GR_UnixGraphics : public GR_Graphics
 {
  public:
-	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager);
+	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
 	~GR_UnixGraphics();
 
     // HACK: I need more speed

@@ -51,9 +51,11 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 						 const char * szTitle,
 						 const char * szSoftwareNameAndVersion,
 						 XAP_UnixFontManager * fontManager,						 
-						 UT_Bool	  bIsFile)
+						 UT_Bool	  bIsFile,
+						 XAP_App *pApp)
 {
 	UT_ASSERT(szFilename && *szFilename);
+	m_pApp = pApp;
 	m_szFilename = szFilename;
 	m_szTitle = szTitle;
 	m_szSoftwareNameAndVersion = szSoftwareNameAndVersion;

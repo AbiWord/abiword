@@ -33,6 +33,7 @@ XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeNa
 	: m_hash(13)
 {
 	m_pPrefs = pPrefs;
+	m_uTick = 0;
 
 	if (szSchemeName && *szSchemeName)
 		UT_XML_cloneString((XML_Char *&)m_szName,szSchemeName);
@@ -58,6 +59,7 @@ UT_Bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
 
 UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 {
+	++m_uTick;
 	UT_HashEntry * pEntry = m_hash.findEntry(szKey);
 	if (pEntry)
 	{

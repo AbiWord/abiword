@@ -45,11 +45,34 @@
 #define XAP_PREF_KEY_UnixFontPath			"UnixFontPath"
 #define XAP_PREF_DEFAULT_UnixFontPath		"fonts"						/* if relative path, prepend "getAbiSuiteLibDir()" */
 
+#define XAP_PREF_KEY_RemapGlyphsMasterSwitch			"RemapGlyphsMasterSwitch"
+ /* completely ignore glyph remapping if false */
+#define XAP_PREF_DEFAULT_RemapGlyphsMasterSwitch		"1"
+
+#define XAP_PREF_KEY_RemapGlyphsNoMatterWhat			"RemapGlyphsNoMatterWhat"
+ /* if true, do remap even if originals aren't zero-width */
+#define XAP_PREF_DEFAULT_RemapGlyphsNoMatterWhat	"0"
+
+#define XAP_PREF_KEY_RemapGlyphsDefault			    "RemapGlyphsDefault"
+ /* default replacement glyph for originals not mentioned in the table */
+#define XAP_PREF_DEFAULT_RemapGlyphsDefault			"&#x00B0;"
+/* degree symbol */
+
+#define XAP_PREF_KEY_RemapGlyphsTable			    "RemapGlyphsTable"
+/* pairwise table of originals and replacements, arbitrarily many pairs */
+#define XAP_PREF_DEFAULT_RemapGlyphsTable			"&#x2018;`&#x2019;'&#x201c;&quot;&#x201d;&quot;"
+/* smart quotes */
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
 dcl(ToolbarAppearance)
 dcl(UnixFontPath)
+
+dcl(RemapGlyphsMasterSwitch)
+dcl(RemapGlyphsNoMatterWhat)
+dcl(RemapGlyphsDefault)
+dcl(RemapGlyphsTable)
 
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

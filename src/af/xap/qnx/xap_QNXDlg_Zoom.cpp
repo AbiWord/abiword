@@ -194,7 +194,7 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 	// Populate the window's data items
 	_populateWindowData();
 	
-	m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_previewArea);
+	m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_previewArea, pFrame->getApp());
 	unsigned short w, h;
 	UT_QNXGetWidgetArea(m_previewArea, NULL, NULL, &w, &h);
 	_createPreviewFromGC(m_qnxGraphics, w, h);

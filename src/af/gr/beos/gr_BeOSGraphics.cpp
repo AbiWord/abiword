@@ -54,7 +54,8 @@ replay a previously recorded BPicture.
 					}
 #endif
 
-GR_BeOSGraphics::GR_BeOSGraphics(BView *docview) {
+GR_BeOSGraphics::GR_BeOSGraphics(BView *docview, XAP_App * app) {
+	m_pApp = app;
 	m_pShadowView = NULL;
 	m_pShadowBitmap = NULL;
 	m_pBeOSFont = NULL;

@@ -21,6 +21,8 @@
 #include <math.h>
 #include <string.h>
 
+#include "xap_App.h"
+#include "xap_Prefs.h"
 #include "gr_Graphics.h"
 #include "ut_assert.h"
 #include "ut_string.h"
@@ -38,6 +40,7 @@ GR_Font::~GR_Font()
 
 GR_Graphics::GR_Graphics()
 {
+	m_pApp = 0;
 	m_iZoomPercentage = 100;
 	m_bLayoutResolutionModeEnabled = UT_FALSE;
 }
@@ -107,6 +110,11 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat
 	// and visible.  This is most useful for the smart quote
 	// characters, which are specially treated.  Other zero-width
 	// characters are mapped to a generic filler character.
+	if (!m_pApp)
+	{
+		UT_DEBUGMSG(("m_pApp in GR_Graphics object is null, glyphs not remapped\n"));
+		return actual;
+	}
 	UT_UCSChar remap = actual;
 	unsigned short w = 1;
 	
@@ -122,7 +130,10 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat
 		default:             remap = (w ? actual : 0xB0); break;
 		}
 	}
-	if (remap != actual) UT_DEBUGMSG(("remapGlyph  0x%04X -> 0x%04X   %d %d\n", actual, remap, noMatterWhat, w));
+	XAP_Prefs *p = m_pApp->getPrefs();
+	XAP_PrefsScheme *s = p->getCurrentScheme(UT_FALSE);
+	UT_uint32 t = s->getTickCount();
+	if (remap != actual) UT_DEBUGMSG(("remapGlyph  0x%04X -> 0x%04X   %d %d  tick: %d [%d]\n", actual, remap, noMatterWhat, w, t, s));
 	return remap;
 }
 

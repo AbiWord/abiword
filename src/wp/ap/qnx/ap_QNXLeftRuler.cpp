@@ -114,7 +114,7 @@ void AP_QNXLeftRuler::setView(AV_View * pView)
 	// shown.
 	DELETEP(m_pG);
 	GR_QNXGraphics * pG = new GR_QNXGraphics(((XAP_QNXFrame *)m_pFrame)->getTopLevelWindow(),
-                                           m_wLeftRuler);
+                                           m_wLeftRuler, m_pFrame->getApp());
 	m_pG = pG;
 	pG->init3dColors();
 }

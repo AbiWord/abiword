@@ -50,7 +50,7 @@ void AP_BeOSStatusBar::setView(AV_View * pView)
 	DELETEP(m_pG);	
 	XAP_BeOSApp * app = static_cast<XAP_BeOSApp *>(m_pFrame->getApp());
 	XAP_BeOSFontManager * fontManager = app->getFontManager();
-	m_pG = new GR_BeOSGraphics(m_wStatusBar->window, fontManager);
+	m_pG = new GR_BeOSGraphics(m_wStatusBar->window, m_pFrame->getApp());
 	UT_ASSERT(m_pG);
 
 	GR_Font * pFont = m_pG->getGUIFont();

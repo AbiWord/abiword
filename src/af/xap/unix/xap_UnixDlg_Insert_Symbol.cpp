@@ -202,7 +202,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_unixGraphics);
-	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager());
+	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
 
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
@@ -214,7 +214,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_unixarea);
-	m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager());
+	m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
 		
 	// let the widget materialize
 	_createSymbolareaFromGC(m_unixarea,

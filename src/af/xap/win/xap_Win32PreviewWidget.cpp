@@ -83,7 +83,7 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 
 	// create a GR_Graphics for this window and HDC
 	
-	m_pGraphics = new GR_Win32Graphics(GetDC(m_hwndPreview),m_hwndPreview);
+	m_pGraphics = new GR_Win32Graphics(GetDC(m_hwndPreview),m_hwndPreview, pWin32App->getApp());
 	UT_ASSERT(m_pGraphics);
 
 	m_iInstanceCount++;

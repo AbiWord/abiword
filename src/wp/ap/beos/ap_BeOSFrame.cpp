@@ -90,7 +90,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 point = 0;
 	
 	//pG = new GR_BeOSGraphics(m_dArea->window, fontManager);
-	pG = new GR_BeOSGraphics(getBeDocView());
+	pG = new GR_BeOSGraphics(getBeDocView(), getApp());
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 

@@ -35,8 +35,9 @@
 #include "ut_string.h"
 #include "ut_dialogHelper.h"
 
-GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager)
+GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
 {
+	m_pApp = app;
 	m_pWin = win;
 	m_pFontManager = fontManager;
 	m_pFont = NULL;

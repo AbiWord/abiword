@@ -185,7 +185,7 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(m_previewArea && m_previewArea->window);
 
 		// make a new Unix GC
-		m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, unixapp->getFontManager());
+		m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, unixapp->getFontManager(), m_pApp);
 		
 		// let the widget materialize
 		_createPreviewFromGC(m_unixGraphics,

@@ -186,7 +186,7 @@ void AP_BeOSLeftRuler::setView(AV_View * pView) {
 	// is not created until the frame's top-level window is
 	// shown.
 		DELETEP(m_pG);
-		m_pG = new GR_BeOSGraphics(m_wLeftRuler);
+		m_pG = new GR_BeOSGraphics(m_wLeftRuler, m_pFrame->getApp());
 		UT_ASSERT(m_pG);
 	}
 }

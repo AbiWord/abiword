@@ -507,7 +507,8 @@ static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
 		{
-			GR_Graphics * pG = new GR_Win32Graphics(hdc, hwndSplash);
+			// TODO: find XAP_App pointer for this
+			GR_Graphics * pG = new GR_Win32Graphics(hdc, hwndSplash, 0);
 			pG->drawImage(pSplash, 0, 0);
 			DELETEP(pG);
 		}
@@ -641,7 +642,8 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 		if (hwndSplash) 
 		{
 			// create image first
-			GR_Graphics * pG = new GR_Win32Graphics(GetDC(hwndSplash), hwndSplash);
+			// TODO: find XAP_App pointer for this
+			GR_Graphics * pG = new GR_Win32Graphics(GetDC(hwndSplash), hwndSplash, 0);
 			pSplash = pG->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
 			DELETEP(pG);
 

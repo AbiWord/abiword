@@ -820,7 +820,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_doneFirstFont = UT_FALSE;
 	
 	// attach a new graphics context
-	m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager);
+	XAP_App *pApp = frame->getApp();
+	m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager, pApp);
 	gtk_object_set_user_data(GTK_OBJECT(m_preview), this);
 	
 	// unfreeze updates of the preview

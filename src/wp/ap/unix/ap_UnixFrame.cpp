@@ -96,7 +96,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	gboolean bFocus;
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 	
-	pG = new GR_UnixGraphics(m_dArea->window, fontManager);
+	pG = new GR_UnixGraphics(m_dArea->window, fontManager, getApp());
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 	

@@ -48,15 +48,17 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	setCursor(GR_CURSOR_DEFAULT);
 }
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
 {
 	_constructorCommonCode(hdc);
+	m_App = app;
 	m_hwnd = hwnd;
 }
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app)
 {
 	_constructorCommonCode(hdc);
+	m_App = app;
 	m_bPrint = UT_TRUE;
 	m_pDocInfo = pDocInfo;
 }

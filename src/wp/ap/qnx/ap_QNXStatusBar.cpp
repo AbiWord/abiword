@@ -50,7 +50,7 @@ void AP_QNXStatusBar::setView(AV_View * pView)
 	XAP_QNXApp * app = (XAP_QNXApp *)m_pFrame->getApp();
 	XAP_QNXFrame *frame = (XAP_QNXFrame *) m_pFrame;
 
-	m_pG = new GR_QNXGraphics(frame->getTopLevelWindow(), m_wStatusBar);
+	m_pG = new GR_QNXGraphics(frame->getTopLevelWindow(), m_wStatusBar, m_pFrame->getApp());
 	UT_ASSERT(m_pG);
 
 	GR_Font * pFont = m_pG->getGUIFont();

@@ -147,7 +147,7 @@ void ZoomWin::SetDlg(XAP_BeOSDialog_Zoom *dlg) {
 	m_CustomText=(BTextControl *)FindView("custxt");
 	Show();
 	//Create our preview window graphics
-	m_BeOSGraphics=new GR_BeOSGraphics(preview);
+	m_BeOSGraphics=new GR_BeOSGraphics(preview, dlg->m_pApp);
 	if (preview->Window()->Lock())
 	{
 		dlg->_createPreviewFromGC(m_BeOSGraphics,preview->Frame().Width(),preview->Frame().Height());

@@ -36,7 +36,7 @@ class BeOSFont : public GR_Font {
 class GR_BeOSGraphics : public GR_Graphics
 {
 public:
-  GR_BeOSGraphics(BView *front);
+  GR_BeOSGraphics(BView *front, XAP_App *app);
   ~GR_BeOSGraphics();
 
   virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
