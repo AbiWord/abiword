@@ -354,7 +354,8 @@ void Text_Listener::_genLineBreak(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	m_iLineBreakLen = pMB - m_mbLineBreak;
-	UT_ASSERT(m_iLineBreakLen);
+
+	UT_ASSERT(m_iLineBreakLen && m_iLineBreakLen < 20);
 }
 
 /*!

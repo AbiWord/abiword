@@ -752,20 +752,30 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 	const XML_Char * szListid=NULL;
 	const XML_Char * szParentid=NULL;
-	const XML_Char * szLevel=NULL;
 	const XML_Char * szListStyle=NULL;
 
 	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"listid", szListid))		szListid = NULL;
 	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"parentid", szParentid))
 		szParentid = NULL;
-	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"level", szLevel))
-		szLevel = NULL;
-
+	UT_uint32 listid = 0;
+	const XML_Char * szAbiListDelim = NULL;
+	const XML_Char * szAbiListDecimal = NULL;
+	static XML_Char szAbiStartValue[15];
+	static XML_Char szLevel[6];
+	if(szListid!=NULL)
+	{
+		listid = atoi(szListid);
+		if(listid != 0)
+		{
+			fl_AutoNum * pAuto = m_pDocument->getListByID(listid);
+			szAbiListDelim = pAuto->getDelim();
+			szAbiListDecimal = pAuto->getDecimal();
+			sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
+			sprintf(szLevel,"%i",pAuto->getLevel());
+		}
+	}
 	szListStyle = PP_evalProperty("list-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	const XML_Char * szAbiListDecimal = PP_evalProperty("list-decimal",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	const XML_Char * szAbiStartValue = PP_evalProperty("start-value",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	const XML_Char * szAbiFieldFont = PP_evalProperty("field-font",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	const XML_Char * szAbiListDelim = PP_evalProperty("list-delim",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 
 	m_pie->_rtf_nl();
 

@@ -2802,7 +2802,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	const XML_Char** attribs = NULL;
 	UT_Vector v;
 	static char pszLevel[8];
-	static char pszStyle[20];
+	static char pszStyle[40];
 	static char pszListID[15];
 	static char pszParentID[15];
 	static char pszStartValue[15];
@@ -2835,6 +2835,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		// Now handle the List properties
 		//
 		sprintf(tempBuffer,"list-style:%s;",m_currentRTFState.m_paraProps.m_pszStyle);
+		sprintf(pszStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
 		strcat(propBuffer, tempBuffer);
 		sprintf(tempBuffer, "list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
 		strcat(propBuffer, tempBuffer);
@@ -3746,25 +3747,25 @@ bool IE_Imp_RTF::HandleAbiLists()
 		if(ch == '{')  // abiliststyle, abilistdecimal, abilistdelim
 		{
 			if (!ReadCharFromFile(&ch))
-			         return false;
+				return false;
 			if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 			{
-		                 return false;
+				return false;
 			}
 			else
 			{
-			         if (strcmp((char*)keyword, "abiliststyle") == 0)
+				if (strcmp((char*)keyword, "abiliststyle") == 0)
 				 {
 			  // OK scan through the text until a closing delimeter is
 			  // found
-			                 int count = 0;
+					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
-				                 return false;
+						 return false;
 					 while ( ch != '}'  && ch != ';')
 					 {
-				                 keyword[count++] = ch;
+						 keyword[count++] = ch;
 						 if (!ReadCharFromFile(&ch))
-					                  return false;
+							 return false;
 					 }
 					 keyword[count++] = 0;
 					 strcpy(m_currentRTFState.m_paraProps.m_pszStyle,(char*)keyword);
@@ -3773,14 +3774,14 @@ bool IE_Imp_RTF::HandleAbiLists()
 				 {
 			  // OK scan through the text until a closing delimeter is
 			  // found
-			                 int count = 0;
+					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
-				                  return false;
+						 return false;
 					 while ( ch != '}'  && ch != ';' )
 					 {
-				                  keyword[count++] = ch;
-						  if (!ReadCharFromFile(&ch))
-					                  return false;
+						 keyword[count++] = ch;
+						 if (!ReadCharFromFile(&ch))
+							 return false;
 					 }
 					 keyword[count++] = 0;
 					 strcpy(m_currentRTFState.m_paraProps.m_pszListDecimal,(char*)keyword);
@@ -3789,14 +3790,14 @@ bool IE_Imp_RTF::HandleAbiLists()
 				 {
 			  // OK scan through the text until a closing delimeter is
 			  // found
-			                 int count = 0;
+					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
-				                  return false;
+						 return false;
 					 while ( ch != '}'  && ch != ';' )
 					 {
-				                  keyword[count++] = ch;
-						  if (!ReadCharFromFile(&ch))
-					                  return false;
+						 keyword[count++] = ch;
+						 if (!ReadCharFromFile(&ch))
+							 return false;
 					 }
 					 keyword[count++] = 0;
 					 strcpy(m_currentRTFState.m_paraProps.m_pszListDelim,(char*)keyword);
@@ -3805,56 +3806,56 @@ bool IE_Imp_RTF::HandleAbiLists()
 				 {
 			  // OK scan through the text until a closing delimeter is
 			  // found
-			                 int count = 0;
+					 int count = 0;
 					 if (!ReadCharFromFile(&ch))
-				                  return false;
+						 return false;
 					 while ( ch != '}'  && ch != ';' )
 					 {
-				                  keyword[count++] = ch;
-						  if (!ReadCharFromFile(&ch))
-					                  return false;
+						 keyword[count++] = ch;
+						 if (!ReadCharFromFile(&ch))
+							 return false;
 					 }
 					 keyword[count++] = 0;
 					 strcpy(m_currentRTFState.m_paraProps.m_pszFieldFont,(char*)keyword);
 				 }
 				 else
-			         {
-				         UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
+				 {
+					 UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
 				 }
 			}
 			goto nextChar;
 		}
 		if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 		{
-		        return false;
+			return false;
 		}
 		else
 		{
-		        if (strcmp((char*)keyword, "abistartat") == 0)
+			if (strcmp((char*)keyword, "abistartat") == 0)
 			{
-			         m_currentRTFState.m_paraProps.m_startValue= (UT_uint32) parameter;
+				m_currentRTFState.m_paraProps.m_startValue= (UT_uint32) parameter;
 			}
-		        else if (strcmp((char*)keyword, "abilistid") == 0)
+			else if (strcmp((char*)keyword, "abilistid") == 0)
 			{
-			         m_currentRTFState.m_paraProps.m_rawID = (UT_uint32) parameter;
-			         m_currentRTFState.m_paraProps.m_isList = true;
+				m_currentRTFState.m_paraProps.m_rawID = (UT_uint32) parameter;
+				m_currentRTFState.m_paraProps.m_isList = true;
 
 			}
-		        else if (strcmp((char*)keyword, "abilistparentid") == 0)
+			else if (strcmp((char*)keyword, "abilistparentid") == 0)
 			{
-			         m_currentRTFState.m_paraProps.m_rawParentID = (UT_uint32) parameter;
+				m_currentRTFState.m_paraProps.m_rawParentID = (UT_uint32) parameter;
 			}
 			else if (strcmp((char*)keyword, "abilistlevel") == 0)
 			{
-			         m_currentRTFState.m_paraProps.m_level = (UT_uint32) parameter;
+				m_currentRTFState.m_paraProps.m_level = (UT_uint32) parameter;
 			}
 			else
 			{
-				 UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
+				UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
 			}
 		}
-nextChar:	if (!ReadCharFromFile(&ch))
-			         return false;
+	nextChar:	if (!ReadCharFromFile(&ch))
+		return false;
 	}
 	//
 	// Increment the list mapping table if necessary
@@ -3862,23 +3863,23 @@ nextChar:	if (!ReadCharFromFile(&ch))
 	UT_uint32 i;
 	if(m_currentRTFState.m_paraProps.m_rawID != 0) 
 	{
-	  for(i=0; i < m_numLists; i++)
-	  {
-		  if(m_currentRTFState.m_paraProps.m_rawID == getAbiList(i)->orig_id)
-			  break;
-	  }
-	  if(i >= m_numLists)
-	  {
-		  m_vecAbiListTable.addItem( (void *) new _rtfAbiListTable);
-		  getAbiList(m_numLists)->orig_id = m_currentRTFState.m_paraProps.m_rawID ; 
-		  getAbiList(m_numLists)->orig_parentid = m_currentRTFState.m_paraProps.m_rawParentID ;
-		  getAbiList(m_numLists)->level = m_currentRTFState.m_paraProps.m_level ;
-		  getAbiList(m_numLists)->hasBeenMapped = false;
-		  getAbiList(m_numLists)->start_value = 0;
-		  getAbiList(m_numLists)->mapped_id = 0;
-		  getAbiList(m_numLists)->mapped_parentid = 0;
-		  m_numLists++;
-	  }
+		for(i=0; i < m_numLists; i++)
+		{
+			if(m_currentRTFState.m_paraProps.m_rawID == getAbiList(i)->orig_id)
+				break;
+		}
+		if(i >= m_numLists)
+		{
+			m_vecAbiListTable.addItem( (void *) new _rtfAbiListTable);
+			getAbiList(m_numLists)->orig_id = m_currentRTFState.m_paraProps.m_rawID ; 
+			getAbiList(m_numLists)->orig_parentid = m_currentRTFState.m_paraProps.m_rawParentID ;
+			getAbiList(m_numLists)->level = m_currentRTFState.m_paraProps.m_level ;
+			getAbiList(m_numLists)->hasBeenMapped = false;
+			getAbiList(m_numLists)->start_value = 0;
+			getAbiList(m_numLists)->mapped_id = 0;
+			getAbiList(m_numLists)->mapped_parentid = 0;
+			m_numLists++;
+		}
 	}
 
 	// Put the '}' back into the input stream
