@@ -450,7 +450,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	{
 		m_vecEntries.insertItemAt(static_cast<void *>(pNewEntry),0);
 	}
-	else if (iAllBlocks < static_cast<UT_sint32>(m_vecEntries.getItemCount()-1))
+	else if (iAllBlocks < static_cast<UT_sint32>(m_vecEntries.getItemCount()))
 	{
 		m_vecEntries.insertItemAt(static_cast<void *>(pNewEntry),iAllBlocks);
 	}
@@ -636,13 +636,14 @@ void fl_TOCLayout::_calculateLabels(void)
 	}
 	pThisEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(0));
 	stEntry.push(static_cast<void *>(pThisEntry));
-	for(i=1; i<	iCount; i++)
+	for(i=0; i<	iCount; i++)
 	{
 		if(pPrevEntry == NULL)
 		{
 			pThisEntry->setPosInList(_getStartValue(pThisEntry));
 			pThisEntry->calculateLabel(pPrevEntry);
 			pPrevEntry = pThisEntry;
+			continue;
 		}
 		pThisEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
 		if(pThisEntry->getLevel() == pPrevEntry->getLevel())
