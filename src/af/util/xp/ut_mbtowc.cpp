@@ -254,7 +254,7 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
     unsigned char outbuf[2];
     char* outptr = (char* )outbuf;
     size_t inlen = m_bufLen, outlen = 2;
-    size_t len  = iconv(cd,const_cast<char **>(&inptr),&inlen,&outptr,&outlen);
+    size_t len  = iconv(cd,const_cast<ICONV_CONST char **>(&inptr),&inlen,&outptr,&outlen);
     if (len!=(size_t)-1) {
 	bool swap = XAP_EncodingManager::swap_stou;
 	unsigned short val = outbuf[swap] | (outbuf[!swap]<<8);

@@ -172,4 +172,12 @@ typedef		UT_sint32				UT_Error;
 #define E2B(err)		((err) == UT_OK)
 
 
+/* UGLY UGLY Iconv hack for win32.  I will suffer in the afterlife for this */
+
+#ifdef WIN32
+#define ICONV_CONST const
+#else
+#define ICONV_CONST
+#endif
+
 #endif /* UT_TYPES_H */
