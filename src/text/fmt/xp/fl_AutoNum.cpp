@@ -376,14 +376,21 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 
 	while (p[i] && p[i] != '%' && p[i+1] != 'L')
 	{
+		// FIXME check the bounds to not overflow leftDelim
 		leftDelim[i] = p[i];
 		i++;
+	}
+	if (p[i] == '\0') {
+		UT_DEBUGMSG (("Hub: not a delim (SHOULD NOT HAPPEN)!!!\n"));
+		*insPoint = 0;
+		return;
 	}
 	leftDelim[i] = '\0';
 	i += 2;
 	rTmp = i;
 	while (p[i] || p[i] != '\0')
 	{
+		// FIXME check the bounds to not overflow rightDelim
 		rightDelim[i - rTmp] = p[i];
 		i++;
 	}
