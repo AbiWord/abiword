@@ -1819,7 +1819,7 @@ static BonoboUIVerb abi_nautilus_verbs[] = {
 static void
 abi_nautilus_view_create_ui (AbiWidget *abi)
 {
-
+#if 0
 	g_return_if_fail (IS_ABI_WIDGET(abi));
 	BonoboUIComponent * uic = abi_widget_get_Bonobo_uic(abi);
 
@@ -1841,6 +1841,9 @@ abi_nautilus_view_create_ui (AbiWidget *abi)
 			       "abi-nautilus-view-file.xml", "AbiWordNautilusView", NULL);
 	bonobo_ui_component_add_verb_list_with_data (uic, abi_nautilus_verbs,
 						     abi);
+#else
+	UT_DEBUGMSG(("DOM: abi_nautilus_view_create_ui not implemented\n"));
+#endif
 }
 
 static void
