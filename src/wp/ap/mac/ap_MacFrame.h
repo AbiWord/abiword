@@ -23,6 +23,8 @@
 
 #include "xap_MacFrame.h"
 
+#include "ie_types.h"
+
 /*****************************************************************/
 
 class AP_MacFrame : public XAP_MacFrame
@@ -37,15 +39,17 @@ public:
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
-	virtual bool				close(void);
-	virtual bool				raise(void);
-	virtual bool				show(void);
 
-	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 
 	virtual void 				setStatusMessage(const char * szMsg);
+protected:
+	UT_Error   				_showDocument(UT_uint32 iZoom=100);
+	UT_Error   				_loadDocument(const char * szFilename, IEFileType ieft);
+       	UT_Error				_replaceDocument(AD_Document * pDoc);
+    	static void				_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
+	static void				_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 };
 
 #endif /* AP_MACFRAME_H */
