@@ -30,11 +30,13 @@
 #include "xav_View.h"
 
 EV_Win32Mouse::EV_Win32Mouse(EV_EditEventMapper * pEEM)
-	: EV_Mouse(pEEM)
-{
-	m_clickState = 0;					// no click
-	m_contextState = 0;
+:	EV_Mouse(pEEM),
+	m_iCaptureCount(0),
+	m_embCaptured(0),
+	m_clickState(0),		// no click
+	m_contextState(0)
 
+{
 	reset();
 }
 
