@@ -59,6 +59,17 @@ void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)
 		emb = EV_EMB_BUTTON2;
 	else if (e->state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
+	// these are often used for X scrolling mice, 4 is down, 5 is up
+	else if (e->state & GDK_BUTTON4_MASK)
+		emb = EV_EMB_BUTTON4;
+	else if (e->state & GDK_BUTTON5_MASK)
+		emb = EV_EMB_BUTTON5;
+	else
+	{
+		// TODO decide something better to do here....
+		UT_DEBUGMSG(("EV_UnixMouse::mouseUp: unknown button %d\n",e->button));
+		return;
+	}
 
 	// TODO confirm that we report release under the
 	// TODO mouse button that we did the capture on.
@@ -106,6 +117,11 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 		emb = EV_EMB_BUTTON2;
 	else if (e->button == 3)
 		emb = EV_EMB_BUTTON3;
+	// these are often used for X scrolling mice, 4 is down, 5 is up
+	else if (e->button == 4)
+		emb = EV_EMB_BUTTON4;
+	else if (e->button == 5)
+		emb = EV_EMB_BUTTON5;
 	else
 	{
 		// TODO decide something better to do here....

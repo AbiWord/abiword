@@ -68,6 +68,7 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 	
 	if (pView)
 		pUnixMouse->mouseUp(pView,e);
+	
 	return 1;
 }
 	
