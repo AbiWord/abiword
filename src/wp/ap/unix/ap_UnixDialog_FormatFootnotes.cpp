@@ -168,7 +168,7 @@ void AP_UnixDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 
 
 	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
-							 GTK_RESPONSE_CANCEL, false))
+							 GTK_RESPONSE_OK, false))
 	  {
 	  case BUTTON_DELETE:
 		  UT_DEBUGMSG(("Doing Delete branch \n"));
