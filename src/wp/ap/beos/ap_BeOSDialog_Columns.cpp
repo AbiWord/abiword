@@ -189,6 +189,12 @@ void ColumnWin::SetDlg(AP_BeOSDialog_Columns *brk)
 		preview->Window()->Unlock();
 	}
 	
+	if (preview->Window()->Lock())
+	{
+		buttonCol1->SetValue(1);
+		preview->Window()->Unlock();
+	}
+	
 	UpdateIfNeeded();
 	
 	modalSem = create_sem(0,"ColumnWindowSem");
