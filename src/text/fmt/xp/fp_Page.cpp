@@ -1360,8 +1360,7 @@ fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
 	else
 	{
 		*ppHF = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
-									 getHeight() - m_pOwner->getBottomMargin()+
-									              m_pOwner->getFooterMargin(),
+									 getHeight() - m_pOwner->getBottomMargin(),
 									 getWidth() - (m_pOwner->getLeftMargin()+ 
                                                   m_pOwner->getRightMargin()),
 									   m_pOwner->getBottomMargin() - m_pOwner->getFooterMargin(),
@@ -1463,4 +1462,3 @@ void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
 	}
 	return;
 }
-
