@@ -365,7 +365,7 @@ void XAP_QNXDialog_Insert_Symbol::Key_Pressed(void * e)
 			iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 		}
 
-		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
+		gtk_signal_emit_stop_by_name((G_OBJECT(m_windowMain)),
 									 "key_press_event");
 	}
 #endif

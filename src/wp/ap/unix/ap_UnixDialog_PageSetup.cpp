@@ -133,9 +133,9 @@ static char _ev_buf[256];
 // convenience macro
 #define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w, m, d, f)				\
         do {												\
-                gtk_object_set_data (GTK_OBJECT (w), WIDGET_MENU_OPTION_PTR, (gpointer)m);                \
-                gtk_object_set_data (GTK_OBJECT (w), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(d));                \
-	        gtk_signal_connect (GTK_OBJECT (w), "activate",	\
+                gtk_object_set_data (G_OBJECT (w), WIDGET_MENU_OPTION_PTR, (gpointer)m);                \
+                gtk_object_set_data (G_OBJECT (w), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(d));                \
+	        gtk_signal_connect (G_OBJECT (w), "activate",	\
                 GTK_SIGNAL_FUNC (f),		\
                 (gpointer)this);							\
         } while (0)
@@ -166,14 +166,14 @@ static void s_delete_clicked (GtkWidget * w,
 
 static void s_menu_item_activate (GtkWidget * widget)
 {
-	GtkWidget *option_menu = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (widget),
+	GtkWidget *option_menu = (GtkWidget *)gtk_object_get_data (G_OBJECT (widget),
 								   WIDGET_MENU_OPTION_PTR);
 	UT_ASSERT(option_menu && GTK_IS_OPTION_MENU (option_menu));
 
-	gpointer p = gtk_object_get_data (GTK_OBJECT (widget),
+	gpointer p = gtk_object_get_data (G_OBJECT (widget),
 					  WIDGET_MENU_VALUE_TAG);
 
-	gtk_object_set_data (GTK_OBJECT (option_menu), WIDGET_MENU_VALUE_TAG, p);
+	gtk_object_set_data (G_OBJECT (option_menu), WIDGET_MENU_VALUE_TAG, p);
 }
 
 static void s_page_size_changed (GtkWidget * w, GtkWidget * child, 
@@ -240,11 +240,11 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 
 	_setWidth(szAfter);
 
-	gtk_signal_handler_block(GTK_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
+	gtk_signal_handler_block(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageWidth));
 	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),szAfter );
 	gtk_entry_set_position(GTK_ENTRY(m_entryPageWidth), pos);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_entryPageWidth),m_iEntryPageWidthID);
+	gtk_signal_handler_unblock(G_OBJECT(m_entryPageWidth),m_iEntryPageWidthID);
 
 	_updatePageSizeList();
 }
@@ -254,11 +254,11 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 	const char * szAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
 	_setHeight(szAfter);
 
-	gtk_signal_handler_block(GTK_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
+	gtk_signal_handler_block(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageHeight));
 	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),szAfter );
 	gtk_entry_set_position(GTK_ENTRY(m_entryPageHeight), pos);
-	gtk_signal_handler_unblock(GTK_OBJECT(m_entryPageHeight),m_iEntryPageHeightID);
+	gtk_signal_handler_unblock(G_OBJECT(m_entryPageHeight),m_iEntryPageHeightID);
 
 	_updatePageSizeList();
 }
@@ -270,9 +270,9 @@ void AP_UnixDialog_PageSetup::_updatePageSizeList(void)
 	  (m_PageSize.getPredefinedName ());
 
   GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_optionPageSize)->list);
-  gtk_signal_handler_block(GTK_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
+  gtk_signal_handler_block(G_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
   gtk_list_select_item (optionPageSizeList, last_page_size);
-  gtk_signal_handler_unblock(GTK_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
+  gtk_signal_handler_unblock(G_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
 }
 
 void AP_UnixDialog_PageSetup::event_OK (void)
@@ -333,7 +333,7 @@ void AP_UnixDialog_PageSetup::event_WindowDelete (void)
 
 void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 {
-  UT_Dimension pu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionPageUnits), 
+  UT_Dimension pu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (G_OBJECT (m_optionPageUnits), 
 										   WIDGET_MENU_VALUE_TAG));
 
   double width, height;
@@ -395,14 +395,14 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 	  ps.Set(atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth))),
 			 atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight))),
 			 (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data 
-												  (GTK_OBJECT (m_optionPageUnits), 
+												  (G_OBJECT (m_optionPageUnits), 
 						   WIDGET_MENU_VALUE_TAG)));
   }
 }
 
 void AP_UnixDialog_PageSetup::event_MarginUnitsChanged (void)
 {
-  UT_Dimension mu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionMarginUnits),
+  UT_Dimension mu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (G_OBJECT (m_optionMarginUnits),
 										   WIDGET_MENU_VALUE_TAG));
 
   float top, bottom, left, right, header, footer;
@@ -493,34 +493,34 @@ void AP_UnixDialog_PageSetup::runModal (XAP_Frame *pFrame)
 void AP_UnixDialog_PageSetup::_connectSignals (void)
 {
   	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+	gtk_signal_connect(G_OBJECT(m_buttonOK),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_ok_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+	gtk_signal_connect(G_OBJECT(m_buttonCancel),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
 			   (gpointer) this);
 
- 	m_iEntryPageWidthID = gtk_signal_connect(GTK_OBJECT(m_entryPageWidth),
+ 	m_iEntryPageWidthID = gtk_signal_connect(G_OBJECT(m_entryPageWidth),
  					   "changed",
  					  GTK_SIGNAL_FUNC(s_entryPageWidth_changed),
  					   (gpointer) this);
 
- 	m_iEntryPageHeightID = gtk_signal_connect(GTK_OBJECT(m_entryPageHeight),
+ 	m_iEntryPageHeightID = gtk_signal_connect(G_OBJECT(m_entryPageHeight),
  					   "changed",
  					  GTK_SIGNAL_FUNC(s_entryPageHeight_changed),
  					   (gpointer) this);
 
 	// the catch-alls
 	
-	gtk_signal_connect(GTK_OBJECT(m_window),
+	gtk_signal_connect(G_OBJECT(m_window),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_window),
+	gtk_signal_connect_after(G_OBJECT(m_window),
 				 "destroy",
 				 NULL,
 				 NULL);
@@ -683,7 +683,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(optionPageSize)->list);
   gtk_list_select_item (optionPageSizeList, last_page_size);
 
-  m_iOptionPageSizeListID = gtk_signal_connect(GTK_OBJECT(optionPageSizeList), "select-child",
+  m_iOptionPageSizeListID = gtk_signal_connect(G_OBJECT(optionPageSizeList), "select-child",
 		     GTK_SIGNAL_FUNC(s_page_size_changed), (gpointer)this);
 
   labelPageUnits = gtk_label_new (_(AP, DLG_PageSetup_Units));

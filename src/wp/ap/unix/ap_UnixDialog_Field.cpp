@@ -394,7 +394,7 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	m_entryParam = gtk_entry_new();
 	gtk_box_pack_start (GTK_BOX (vboxFields), m_entryParam, FALSE, FALSE, 0);
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_listTypes),
+	gtk_signal_connect_after(G_OBJECT(m_listTypes),
 							 "select_row",
 							 GTK_SIGNAL_FUNC(s_types_clicked),
 							 (gpointer) this);
@@ -404,23 +404,23 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 void AP_UnixDialog_Field::_connectSignals (void)
 {
 	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+	gtk_signal_connect(G_OBJECT(m_buttonOK),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+	gtk_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) this);
 	
 	// the catch-alls
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	gtk_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	gtk_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);

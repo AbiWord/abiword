@@ -70,7 +70,7 @@ GtkWidget * AP_UnixGnomeDialog_Columns::_constructWindow(void)
 	m_wbuttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowColumns)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_wbuttonCancel, GTK_CAN_DEFAULT);
 
-	gtk_signal_connect (GTK_OBJECT(windowColumns),
+	gtk_signal_connect (G_OBJECT(windowColumns),
 			    "close",
 			    GTK_SIGNAL_FUNC(cb_close),
 			    (gpointer) this);

@@ -33,6 +33,7 @@
 #include "pd_Document.h"
 #include "ie_imp.h"
 #include "ie_exp.h"
+#include "xap_UnixDialogHelper.h"
 
 #ifdef HAVE_GNOME
 #include "ap_UnixGnomeApp.h"
@@ -1208,13 +1209,13 @@ abi_widget_realize (GtkWidget * widget)
 								 GDK_IC_PREEDIT_AREA);
 		}
 	}
-	gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", priv->ic_attr);
-	gtk_object_set_data(GTK_OBJECT(widget), "ic", priv->ic);
+	gtk_object_set_data(G_OBJECT(widget), "ic_attr", priv->ic_attr);
+	gtk_object_set_data(G_OBJECT(widget), "ic", priv->ic);
 	
 	//
     // connect a signal handler to load files after abiword is mapped
     //
-	gtk_signal_connect_after(GTK_OBJECT(widget),"map_event", 
+	gtk_signal_connect_after(G_OBJECT(widget),"map_event", 
 							 GTK_SIGNAL_FUNC (s_abi_widget_map_cb),
 							 (gpointer) abi);
 //	int i =1;
@@ -1257,8 +1258,8 @@ abi_widget_destroy (GtkObject *object)
 	g_free (abi->priv);
 
 	// chain up
-	if (GTK_OBJECT_CLASS (parent_class)->destroy)
-		GTK_OBJECT_CLASS (parent_class)->destroy (object);
+	if (G_OBJECT_CLASS (parent_class)->destroy)
+		G_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void

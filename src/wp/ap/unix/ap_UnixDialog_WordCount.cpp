@@ -311,7 +311,7 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	gtk_box_pack_start(GTK_BOX (vbox), separator, FALSE, TRUE, 0);
 
 	hbuttonboxWordCount = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (m_windowMain), "hbuttonboxWordCount", hbuttonboxWordCount);
+	gtk_object_set_data (G_OBJECT (m_windowMain), "hbuttonboxWordCount", hbuttonboxWordCount);
 	gtk_widget_show (hbuttonboxWordCount);
 	gtk_box_pack_start(GTK_BOX (vbox), hbuttonboxWordCount, FALSE, TRUE, 0);
 
@@ -537,33 +537,33 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 void AP_UnixDialog_WordCount::_connectSignals(void)
 {
 	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonClose),
+	gtk_signal_connect(G_OBJECT(m_buttonClose),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_buttonUpdate),
+	gtk_signal_connect(G_OBJECT(m_buttonUpdate),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_update_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect (GTK_OBJECT (m_Spinrange), "value_changed",
+	gtk_signal_connect (G_OBJECT (m_Spinrange), "value_changed",
 						GTK_SIGNAL_FUNC (s_updateRate_changed),
 						(gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(m_pAutocheck),
+	gtk_signal_connect(G_OBJECT(m_pAutocheck),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_autocheck_clicked),
 					   (gpointer) this);
 
 	// the catch-alls
 	// Don't use gtk_signal_connect_after for Modeless dialogs
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	gtk_signal_connect(G_OBJECT(m_windowMain),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	gtk_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);

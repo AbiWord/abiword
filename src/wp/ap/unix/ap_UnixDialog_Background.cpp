@@ -173,21 +173,21 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 	k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_widget_show(k);
 	gtk_container_add (GTK_CONTAINER(actionarea), k);
-	gtk_signal_connect (GTK_OBJECT(k), "clicked", 
+	gtk_signal_connect (G_OBJECT(k), "clicked", 
 						GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
 
 	cancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_widget_show(cancel);
 	gtk_container_add (GTK_CONTAINER(actionarea), cancel);
-	gtk_signal_connect (GTK_OBJECT(cancel), "clicked", 
+	gtk_signal_connect (G_OBJECT(cancel), "clicked", 
 						GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
 
-	gtk_signal_connect_after(GTK_OBJECT(dlg),
+	gtk_signal_connect_after(G_OBJECT(dlg),
 							 "destroy",
 							 NULL,
 							 NULL);
 
-	gtk_signal_connect(GTK_OBJECT(dlg),
+	gtk_signal_connect(G_OBJECT(dlg),
 					   "delete_event",
 					   GTK_SIGNAL_FUNC(s_delete_clicked),
 					   (gpointer) this);
@@ -241,11 +241,11 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 		gtk_widget_show(clearColor);
 	
 		gtk_container_add(GTK_CONTAINER(vbox),clearColor);
-		gtk_signal_connect(GTK_OBJECT(clearColor), "clicked",
+		gtk_signal_connect(G_OBJECT(clearColor), "clicked",
 						GTK_SIGNAL_FUNC(s_color_cleared),
 						(gpointer) this);
 	}
-	gtk_signal_connect (GTK_OBJECT(colorsel), "color-changed",
+	gtk_signal_connect (G_OBJECT(colorsel), "color-changed",
 							GTK_SIGNAL_FUNC(s_color_changed),
 						(gpointer) this);
 }

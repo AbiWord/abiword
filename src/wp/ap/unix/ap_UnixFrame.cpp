@@ -113,7 +113,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
-	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
+	bFocus=GPOINTER_TO_INT(gtk_object_get_data(G_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
 	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
@@ -304,7 +304,7 @@ void AP_UnixFrame::setXScrollRange(void)
 	m_pHadj->step_increment = 20.0;
 	m_pHadj->page_increment = (gfloat) windowWidth;
 	m_pHadj->page_size = (gfloat) windowWidth;
-	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
+	gtk_signal_emit_by_name(G_OBJECT(m_pHadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendHorizontalScrollEvent(newvalue, (int)(m_pHadj->upper-m_pHadj->page_size));
@@ -331,7 +331,7 @@ void AP_UnixFrame::setYScrollRange(void)
 	m_pVadj->step_increment = 20.0;
 	m_pVadj->page_increment = (gfloat) windowHeight;
 	m_pVadj->page_size = (gfloat) windowHeight;
-	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
+	gtk_signal_emit_by_name(G_OBJECT(m_pVadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendVerticalScrollEvent(newvalue, (int)(m_pVadj->upper-m_pVadj->page_size));
@@ -765,18 +765,18 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
+	gtk_object_set_user_data(G_OBJECT(m_pHadj),this);
 	m_hScroll = gtk_hscrollbar_new(m_pHadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_hScroll),this);
+	gtk_object_set_user_data(G_OBJECT(m_hScroll),this);
 
-	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
+	gtk_signal_connect(G_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
 
 	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pVadj),this);
+	gtk_object_set_user_data(G_OBJECT(m_pVadj),this);
 	m_vScroll = gtk_vscrollbar_new(m_pVadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_vScroll),this);
+	gtk_object_set_user_data(G_OBJECT(m_vScroll),this);
 
-	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
+	gtk_signal_connect(G_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
 
 	// we don't want either scrollbar grabbing events from us
 	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
@@ -785,7 +785,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 	// create a drawing area in the for our document window.
 	m_dArea = createDrawingArea ();
 	
-	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
+	gtk_object_set_user_data(G_OBJECT(m_dArea),this);
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
 												GDK_BUTTON_PRESS_MASK |
 												GDK_POINTER_MOTION_MASK |
@@ -793,25 +793,25 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 												GDK_KEY_PRESS_MASK |
 												GDK_KEY_RELEASE_MASK));
 
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "expose_event",
+	gtk_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_press_event",
+	gtk_signal_connect(G_OBJECT(m_dArea), "button_press_event",
 					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_release_event",
+	gtk_signal_connect(G_OBJECT(m_dArea), "button_release_event",
 					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "motion_notify_event",
+	gtk_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
 					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "configure_event",
+	gtk_signal_connect(G_OBJECT(m_dArea), "configure_event",
 					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
 
 	// create a table for scroll bars, rulers, and drawing area
 
 	m_table = gtk_table_new(1, 1, FALSE); //was 1,1
-	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
+	gtk_object_set_user_data(G_OBJECT(m_table),this);
 
 	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
 	// work with.  The 2 2x2 tables, (i)nner and (o)uter divide up the 3x3
@@ -979,7 +979,7 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 	else
 	  {
 		// delete the actual widgets
-		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+		gtk_object_destroy( G_OBJECT(m_topRuler) );
 		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
 		m_topRuler = NULL;
 	  }
@@ -1020,7 +1020,7 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 	else
 	{
 	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
-		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+		gtk_object_destroy( G_OBJECT(m_leftRuler) );
 	    
 	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
 	    m_leftRuler = NULL;

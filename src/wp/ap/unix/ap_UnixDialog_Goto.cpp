@@ -367,15 +367,15 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	
 
     //add signal handlers
-	gtk_signal_connect (GTK_OBJECT (clist), "select_row",
+	gtk_signal_connect (G_OBJECT (clist), "select_row",
 						GTK_SIGNAL_FUNC (s_targetChanged),
 						this);
-	gtk_signal_connect (GTK_OBJECT (m_wEntry), "changed",
+	gtk_signal_connect (G_OBJECT (m_wEntry), "changed",
 						GTK_SIGNAL_FUNC (s_dataChanged), this);
-	gtk_signal_connect (GTK_OBJECT (m_wEntry), "activate",
+	gtk_signal_connect (G_OBJECT (m_wEntry), "activate",
 						GTK_SIGNAL_FUNC (s_gotoClicked), this);
 						
-	gtk_signal_connect (GTK_OBJECT (blist), "select_row",
+	gtk_signal_connect (G_OBJECT (blist), "select_row",
 						GTK_SIGNAL_FUNC (s_blist_clicked), this);
 
 	gtk_widget_add_accelerator (clist, "grab_focus", m_accelGroup,
@@ -390,21 +390,21 @@ void AP_UnixDialog_Goto::_populateWindowData (void) {}
 
 void AP_UnixDialog_Goto::_connectSignals(void)
 {
-	gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
+	gtk_signal_connect_after(G_OBJECT(m_wMainWindow),
 							 "destroy",
 							 NULL,
 							 NULL);
 	//
         // Don't use connect_after in modeless dialog
-	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+	gtk_signal_connect(G_OBJECT(m_wMainWindow),
 						     "delete_event",
 						     GTK_SIGNAL_FUNC(s_deleteClicked), (gpointer) this);
-	gtk_signal_connect (GTK_OBJECT (m_wPrev), "clicked",
+	gtk_signal_connect (G_OBJECT (m_wPrev), "clicked",
 						GTK_SIGNAL_FUNC (s_prevClicked), this);
-	gtk_signal_connect (GTK_OBJECT (m_wNext), "clicked",
+	gtk_signal_connect (G_OBJECT (m_wNext), "clicked",
 						GTK_SIGNAL_FUNC (s_nextClicked), this);
-	gtk_signal_connect (GTK_OBJECT (m_wGoto), "clicked",
+	gtk_signal_connect (G_OBJECT (m_wGoto), "clicked",
 						GTK_SIGNAL_FUNC (s_gotoClicked), this);
-	gtk_signal_connect (GTK_OBJECT (m_wClose), "clicked",
+	gtk_signal_connect (G_OBJECT (m_wClose), "clicked",
 						GTK_SIGNAL_FUNC (s_closeClicked), this);
 }

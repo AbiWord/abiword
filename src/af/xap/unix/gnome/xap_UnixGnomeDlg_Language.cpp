@@ -75,7 +75,7 @@ GtkWidget * XAP_UnixGnomeDialog_Language::constructWindow(void)
 	windowLangSelection = gnome_dialog_new (pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle),
 						GNOME_STOCK_BUTTON_OK, GNOME_STOCK_BUTTON_CANCEL, NULL);
 
-	constructWindowContents(GTK_OBJECT(GNOME_DIALOG (windowLangSelection)->vbox));
+	constructWindowContents(G_OBJECT(GNOME_DIALOG (windowLangSelection)->vbox));
 
 	buttonOK = GTK_WIDGET (g_list_first (GNOME_DIALOG (windowLangSelection)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
@@ -83,25 +83,25 @@ GtkWidget * XAP_UnixGnomeDialog_Language::constructWindow(void)
 
 	buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowLangSelection)->buttons)->data);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowLangSelection),
+	gtk_signal_connect_after(G_OBJECT(windowLangSelection),
 				 "destroy",
 				 NULL,
 				 NULL);
-	gtk_signal_connect(GTK_OBJECT(windowLangSelection),
+	gtk_signal_connect(G_OBJECT(windowLangSelection),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
 			   (gpointer) &m_answer);
 
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
+	gtk_signal_connect(G_OBJECT(buttonOK),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_ok_clicked),
 			   (gpointer) &m_answer);
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+	gtk_signal_connect(G_OBJECT(buttonCancel),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
 			   (gpointer) &m_answer);
 	
-	gtk_signal_connect(GTK_OBJECT(windowLangSelection),
+	gtk_signal_connect(G_OBJECT(windowLangSelection),
 			   "close",
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
 			   (gpointer) &m_answer);

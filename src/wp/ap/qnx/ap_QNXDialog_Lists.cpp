@@ -897,7 +897,7 @@ void AP_QNXDialog_Lists::_gatherData(void)
 
 #if 0
 	PtWidget_t * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
-	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wfont)));
+	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(G_OBJECT(wfont)));
 	if(ifont == 0)
 	{
                  UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  "NULL");

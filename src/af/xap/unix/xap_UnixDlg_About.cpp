@@ -226,20 +226,20 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	g_snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
 
 	windowAbout = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "windowAbout", windowAbout);
+	gtk_object_set_data (G_OBJECT (windowAbout), "windowAbout", windowAbout);
 	gtk_widget_set_usize (windowAbout, 0, 350);
 	gtk_window_set_title (GTK_WINDOW (windowAbout), buf);
 	gtk_window_set_policy (GTK_WINDOW (windowAbout), FALSE, FALSE, FALSE);
 
 	hboxAbout = gtk_hbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "hboxAbout", hboxAbout);
+	gtk_object_set_data (G_OBJECT (windowAbout), "hboxAbout", hboxAbout);
 	gtk_widget_show (hboxAbout);
 	gtk_container_add (GTK_CONTAINER (windowAbout), hboxAbout);
 
 	drawingareaGraphic = createDrawingArea ();
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "drawingareaGraphic", drawingareaGraphic);
+	gtk_object_set_data (G_OBJECT (windowAbout), "drawingareaGraphic", drawingareaGraphic);
 	gtk_widget_set_events(drawingareaGraphic, GDK_EXPOSURE_MASK);
-	gtk_signal_connect (GTK_OBJECT(drawingareaGraphic), "expose_event",
+	gtk_signal_connect (G_OBJECT(drawingareaGraphic), "expose_event",
 						GTK_SIGNAL_FUNC(s_drawingarea_expose), (gpointer) this);
 	gtk_widget_show (drawingareaGraphic);
 	gtk_box_pack_start (GTK_BOX (hboxAbout), drawingareaGraphic, TRUE, TRUE, 0);
@@ -247,12 +247,12 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	gtk_widget_set_usize (drawingareaGraphic, 200, 350);
 
 	vboxInfo = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "vboxInfo", vboxInfo);
+	gtk_object_set_data (G_OBJECT (windowAbout), "vboxInfo", vboxInfo);
 	gtk_widget_show (vboxInfo);
 	gtk_box_pack_start (GTK_BOX (hboxAbout), vboxInfo, TRUE, TRUE, 8);
 
 	labelTitle = gtk_label_new (m_pApp->getApplicationName());
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "labelTitle", labelTitle);
+	gtk_object_set_data (G_OBJECT (windowAbout), "labelTitle", labelTitle);
 	gtk_widget_show (labelTitle);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), labelTitle, FALSE, TRUE, 18);
 
@@ -266,7 +266,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	g_snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
 	
 	labelVersion = gtk_label_new (buf);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "labelVersion", labelVersion);
+	gtk_object_set_data (G_OBJECT (windowAbout), "labelVersion", labelVersion);
 	gtk_widget_show (labelVersion);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), labelVersion, FALSE, FALSE, 0);
 
@@ -276,7 +276,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	g_snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
 	
 	textCopyright = gtk_text_new (NULL, NULL);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "textCopyright", textCopyright);
+	gtk_object_set_data (G_OBJECT (windowAbout), "textCopyright", textCopyright);
 	gtk_widget_show (textCopyright);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), textCopyright, TRUE, FALSE, 10);
 	gtk_widget_set_usize (textCopyright, 290, 200);
@@ -291,38 +291,38 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	gtk_widget_set_style(textCopyright, smallstyle);
 	
 	hbox2 = gtk_hbox_new (FALSE, 10);
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "hbox2", hbox2);
+	gtk_object_set_data (G_OBJECT (windowAbout), "hbox2", hbox2);
 	gtk_widget_show (hbox2);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), hbox2, FALSE, TRUE, 10);
 
 	buttonURL = _constructButtonURL();
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonURL", buttonURL);
+	gtk_object_set_data (G_OBJECT (windowAbout), "buttonURL", buttonURL);
 	gtk_box_pack_start (GTK_BOX (hbox2), buttonURL, FALSE, TRUE, 0);
 
 	buttonOK = _constructButtonOK();
-	gtk_object_set_data (GTK_OBJECT (windowAbout), "buttonOK", buttonOK);
+	gtk_object_set_data (G_OBJECT (windowAbout), "buttonOK", buttonOK);
 	gtk_box_pack_end (GTK_BOX (hbox2), buttonOK, FALSE, TRUE, 0);
 
 	// Since we do drawing, we need a graphics context which can
 	// understand PNG data.
 	
 	
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
+	gtk_signal_connect(G_OBJECT(buttonOK),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(buttonURL),
+	gtk_signal_connect(G_OBJECT(buttonURL),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_url_clicked),
 					   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(windowAbout),
+	gtk_signal_connect(G_OBJECT(windowAbout),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowAbout),
+	gtk_signal_connect_after(G_OBJECT(windowAbout),
 							 "destroy",
 							 NULL,
 							 NULL);

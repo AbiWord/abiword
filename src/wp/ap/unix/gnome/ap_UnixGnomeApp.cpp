@@ -297,7 +297,7 @@ static void get_prop (BonoboPropertyBag 	*bag,
 // OK get the data from the widget. Only one argument at a time.
 //
 	abi = ABI_WIDGET(user_data); 
-	gtk_object_getv(GTK_OBJECT(abi),1,gtk_arg);
+	gtk_object_getv(G_OBJECT(abi),1,gtk_arg);
 //
 // Now copy it back to the bonobo argument.
 //
@@ -334,7 +334,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 //
 // Can only pass one argument at a time.
 //
-	gtk_object_setv(GTK_OBJECT(abi),1,gtk_arg);
+	gtk_object_setv(G_OBJECT(abi),1,gtk_arg);
 //
 // Free up allocated memory
 //
@@ -406,8 +406,8 @@ load_document_from_stream (BonoboPersistStream *ps,
 // Load the file.
 //
 //
-	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
-	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
+	gtk_object_set(G_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
+	gtk_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
 	return;
 
  exit_clean:
@@ -565,7 +565,7 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 //
 // Load the file.
 //
-	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) filename,NULL);
+	gtk_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) filename,NULL);
 	return 0;
 }
 
@@ -827,7 +827,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	item_container = bonobo_item_container_new ();
 
-	gtk_signal_connect (GTK_OBJECT (item_container),
+	gtk_signal_connect (G_OBJECT (item_container),
 			    "get_object",
 			    GTK_SIGNAL_FUNC (abiwidget_get_object),
 			    abiwidget);
@@ -845,15 +845,15 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (zoomable));
 
-	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_in",
+	gtk_signal_connect(G_OBJECT(zoomable), "zoom_in",
 			   GTK_SIGNAL_FUNC(zoom_in_func), abiwidget);
-	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_out",
+	gtk_signal_connect(G_OBJECT(zoomable), "zoom_out",
 			   GTK_SIGNAL_FUNC(zoom_out_func), abiwidget);
-	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_to_fit",
+	gtk_signal_connect(G_OBJECT(zoomable), "zoom_to_fit",
 			   GTK_SIGNAL_FUNC(zoom_to_fit_func), abiwidget);
-	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_to_default",
+	gtk_signal_connect(G_OBJECT(zoomable), "zoom_to_default",
 			   GTK_SIGNAL_FUNC(zoom_to_default_func), abiwidget);
-	gtk_signal_connect(GTK_OBJECT(zoomable), "set_zoom_level",
+	gtk_signal_connect(G_OBJECT(zoomable), "set_zoom_level",
 			   GTK_SIGNAL_FUNC(zoom_level_func), abiwidget);
 
 	return to_aggregate;
@@ -888,7 +888,7 @@ static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget *
 
 	/* put all AbiWidget's arguments in the property bag - way cool!! */
   
-	bonobo_property_bag_add_gtk_args (prop_bag,GTK_OBJECT(abi));
+	bonobo_property_bag_add_gtk_args (prop_bag,G_OBJECT(abi));
 //
 // persist_stream , persist_file interfaces/methods, item container
 // 

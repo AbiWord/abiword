@@ -416,7 +416,7 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	clistPlugins = PtCreateWidget(PtList, hgroup, n, args);
 	//lblActivePlugins = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE));
 /*
-	gtk_signal_connect (GTK_OBJECT(clistPlugins), "select_row",
+	gtk_signal_connect (G_OBJECT(clistPlugins), "select_row",
 						GTK_SIGNAL_FUNC(s_clist_selected),
 						(gpointer)this);
 */

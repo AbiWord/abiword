@@ -307,7 +307,7 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 		point = ((FV_View *) m_pView)->getPoint();
 	}
 	UT_ASSERT(pView);
-//	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
+//	bFocus=GPOINTER_TO_INT(gtk_object_get_data(G_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
 //	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
@@ -603,7 +603,7 @@ void AP_MacFrame::toggleTopRuler(bool bRulerOn)
 	}
 	else {
 		// delete the actual widgets
-//		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+//		gtk_object_destroy( G_OBJECT(m_topRuler) );
         UT_DEBUGMSG(("Actually do the stuff: %s:%d\n", __FILE__, __LINE__));	
         DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
 //		m_topRuler = NULL;
@@ -638,7 +638,7 @@ void AP_MacFrame::toggleLeftRuler(bool bRulerOn)
 	else
 	  {
 //	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
-//		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+//		gtk_object_destroy( G_OBJECT(m_leftRuler) );
         UT_DEBUGMSG(("Actually do the stuff: %s:%d\n", __FILE__, __LINE__));
 	    
 	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);

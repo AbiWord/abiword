@@ -92,7 +92,7 @@ GtkWidget* AP_UnixGnomeDialog_New::_constructWindow (void )
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
 
 	// catch the close signal
-	gtk_signal_connect (GTK_OBJECT (windowNew),
+	gtk_signal_connect (G_OBJECT (windowNew),
 						"close",
 						GTK_SIGNAL_FUNC(cb_close),
 						(gpointer) this);

@@ -42,6 +42,7 @@
 #include "fv_View.h"
 #include "xad_Document.h"
 #include "gr_Graphics.h"
+#include "xap_UnixDialogHelper.h"
 
 /*****************************************************************/
 
@@ -50,8 +51,8 @@
 /****************************************************************/
 void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(G_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(G_OBJECT(widget), "ic");
   if (gdk_im_ready () && (ic_attr = gdk_ic_attr_new ()) != NULL)
     {
       gint width, height;
@@ -120,14 +121,14 @@ void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /
 			gdk_im_begin (ic, widget->window);
 		}
 	}
-  gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", ic_attr);
-  gtk_object_set_data(GTK_OBJECT(widget), "ic", ic);
+  gtk_object_set_data(G_OBJECT(widget), "ic_attr", ic_attr);
+  gtk_object_set_data(G_OBJECT(widget), "ic", ic);
 }
 
 void XAP_UnixFrame::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(G_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(G_OBJECT(widget), "ic");
   if (ic)
     {
       gdk_ic_destroy (ic);
@@ -138,14 +139,14 @@ void XAP_UnixFrame::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer
       gdk_ic_attr_destroy (ic_attr);
       ic_attr = (GdkICAttr *)NULL;
     }
-  gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", ic_attr);
-  gtk_object_set_data(GTK_OBJECT(widget), "ic", ic);
+  gtk_object_set_data(G_OBJECT(widget), "ic_attr", ic_attr);
+  gtk_object_set_data(G_OBJECT(widget), "ic", ic);
 }
 
 void XAP_UnixFrame::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(GTK_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkICAttr *ic_attr=(GdkICAttr *)gtk_object_get_data(G_OBJECT(widget), "ic_attr");
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(G_OBJECT(widget), "ic");
   if (ic &&
 	  (gdk_ic_get_style (ic) & GDK_IM_PREEDIT_POSITION))
 	{
@@ -161,7 +162,7 @@ void XAP_UnixFrame::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpoin
 
 gint XAP_UnixFrame::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  GdkIC * ic=(GdkIC *)gtk_object_get_data(GTK_OBJECT(widget), "ic");
+  GdkIC * ic=(GdkIC *)gtk_object_get_data(G_OBJECT(widget), "ic");
   if (ic)
     gdk_im_begin (ic, widget->window);
   return FALSE;
@@ -174,9 +175,9 @@ gint XAP_UnixFrame::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer 
 }
 gboolean XAP_UnixFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-	XAP_UnixFrame * pFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pFrame = (XAP_UnixFrame *) gtk_object_get_user_data(G_OBJECT(w));
 	UT_ASSERT(pFrame);
-	gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
+	gtk_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(TRUE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
@@ -185,9 +186,9 @@ gboolean XAP_UnixFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpo
 
 gboolean XAP_UnixFrame::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-	XAP_UnixFrame * pFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	UT_ASSERT(pFrame);
-	gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
+	gtk_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
 	if (pFrame->getCurrentView())
 		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
@@ -196,7 +197,7 @@ gboolean XAP_UnixFrame::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gp
 
 gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
@@ -211,7 +212,7 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 
 gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 
@@ -292,7 +293,7 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// This is basically a resize event.
 		
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 
 	if (pView)
@@ -310,7 +311,7 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	
 gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
@@ -323,7 +324,7 @@ gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	
 gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pUnixFrame->getKeyboard());
@@ -360,13 +361,13 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	}
 
 	// ... else, stop this signal
-	gtk_signal_emit_stop_by_name(GTK_OBJECT(w), "key_press_event");
+	gtk_signal_emit_stop_by_name(G_OBJECT(w), "key_press_event");
 	return 1;
 }
 	
 gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(G_OBJECT(w));
 	XAP_App * pApp = pUnixFrame->getApp();
 	UT_ASSERT(pApp);
 
@@ -403,7 +404,7 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	rClip.width = pExposeEvent->area.width;
 	rClip.height = pExposeEvent->area.height;
 	xxx_UT_DEBUGMSG(("gtk in Frame expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
 	if(pView)
 	{
@@ -466,7 +467,7 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 
 void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 	
 	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
@@ -477,7 +478,7 @@ void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	
 void XAP_UnixFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 	
 	if (pView)
@@ -760,8 +761,8 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
-		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
+		gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
+		gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 							 m_pUnixApp->getApplicationTitleForTitleBar());
 		gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
@@ -769,44 +770,44 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 							   m_pUnixApp->getApplicationName(),
 							   m_pUnixApp->getApplicationName());
 	}
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
+	gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
+	gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
-	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
+	gtk_object_set_user_data(G_OBJECT(m_wTopLevelWindow),this);
 
 	// This is now done with --geometry parsing.
 	//gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 700, 650);
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "realize",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
 					   GTK_SIGNAL_FUNC(_fe::realize), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "unrealize",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "unrealize",
 					   GTK_SIGNAL_FUNC(_fe::unrealize), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "size_allocate",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "size_allocate",
 					   GTK_SIGNAL_FUNC(_fe::sizeAllocate), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
 					   GTK_SIGNAL_FUNC(_fe::focusIn), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   GTK_SIGNAL_FUNC(_fe::focusOut), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
 	// here we connect the "destroy" event to a signal handler.  
 	// This event occurs when we call gtk_widget_destroy() on the window,
 	// or if we return 'FALSE' in the "delete_event" callback.
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "destroy",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "destroy",
 					   GTK_SIGNAL_FUNC(_fe::destroy), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
 					   GTK_SIGNAL_FUNC(_fe::focus_in_event), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   GTK_SIGNAL_FUNC(_fe::focus_out_event), NULL);
 
 	// create a VBox inside it.
 	
 	m_wVBox = gtk_vbox_new(FALSE,0);
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
-	gtk_object_set_user_data(GTK_OBJECT(m_wVBox),this);
+	gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
+	gtk_object_set_user_data(G_OBJECT(m_wVBox),this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
 
 	// synthesize a menu from the info in our base class.
@@ -829,7 +830,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	}
 
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   GTK_SIGNAL_FUNC(_fe::key_press_event), NULL);
 
 

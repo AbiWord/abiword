@@ -388,35 +388,35 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonCancel);
 
 	// attach generic signals
-	gtk_signal_connect(GTK_OBJECT(checkbuttonMatchCase),
+	gtk_signal_connect(G_OBJECT(checkbuttonMatchCase),
 					   "toggled",
 					   GTK_SIGNAL_FUNC(s_match_case_toggled),
 					   this);
 
 	// If the user hits "enter" in the entry field, we launch a find
-	gtk_signal_connect(GTK_OBJECT(entryFind),
+	gtk_signal_connect(G_OBJECT(entryFind),
 					   "activate",
 					   GTK_SIGNAL_FUNC(s_find_entry_activate),
 					   this);
 
 	// Buttons
-	gtk_signal_connect(GTK_OBJECT(buttonFindNext),
+	gtk_signal_connect(G_OBJECT(buttonFindNext),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_find_clicked),
 					   this);
 	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+	gtk_signal_connect(G_OBJECT(buttonCancel),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   this);
 
 	// Window events
-	gtk_signal_connect(GTK_OBJECT(windowReplace),
+	gtk_signal_connect(G_OBJECT(windowReplace),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowReplace),
+	gtk_signal_connect_after(G_OBJECT(windowReplace),
 							 "destroy",
 							 NULL,
 							 NULL);
@@ -425,18 +425,18 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		// If the user hits "enter" in the entry field, we launch a replace
-		gtk_signal_connect(GTK_OBJECT(entryReplace),
+		gtk_signal_connect(G_OBJECT(entryReplace),
 						   "activate",
 						   GTK_SIGNAL_FUNC(s_replace_entry_activate),
 						   this);
 
 		// Buttons
-		gtk_signal_connect(GTK_OBJECT(buttonReplace),
+		gtk_signal_connect(G_OBJECT(buttonReplace),
 						   "clicked",
 						   GTK_SIGNAL_FUNC(s_replace_clicked),
 						   this);
 
-		gtk_signal_connect(GTK_OBJECT(buttonReplaceAll),
+		gtk_signal_connect(G_OBJECT(buttonReplaceAll),
 						   "clicked",
 						   GTK_SIGNAL_FUNC(s_replace_all_clicked),
 						   this);

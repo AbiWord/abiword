@@ -86,7 +86,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	m_iBackgroundRedrawID = 0;
     // change ruler color on theme change
 	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
-	gtk_signal_connect_after (GTK_OBJECT(toplevel),
+	gtk_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
 							  GTK_SIGNAL_FUNC(ruler_style_changed),
 							  (gpointer)this);
@@ -116,7 +116,7 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 	
 	m_wLeftRuler = createDrawingArea ();
 
-	gtk_object_set_user_data(GTK_OBJECT(m_wLeftRuler),this);
+	gtk_object_set_user_data(G_OBJECT(m_wLeftRuler),this);
 	gtk_widget_show(m_wLeftRuler);
 	gtk_widget_set_usize(m_wLeftRuler, s_iFixedWidth, -1);
 
@@ -127,19 +127,19 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 													 GDK_KEY_PRESS_MASK |
 													 GDK_KEY_RELEASE_MASK));
 
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "expose_event",
+	gtk_signal_connect(G_OBJECT(m_wLeftRuler), "expose_event",
 					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_press_event",
+	gtk_signal_connect(G_OBJECT(m_wLeftRuler), "button_press_event",
 					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_release_event",
+	gtk_signal_connect(G_OBJECT(m_wLeftRuler), "button_release_event",
 					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "motion_notify_event",
+	gtk_signal_connect(G_OBJECT(m_wLeftRuler), "motion_notify_event",
 					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
   
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "configure_event",
+	gtk_signal_connect(G_OBJECT(m_wLeftRuler), "configure_event",
 					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
 	if( m_iBackgroundRedrawID == 0)
 	{
@@ -201,7 +201,7 @@ GdkWindowPrivate * AP_UnixLeftRuler::getRootWindow(void)
 gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_press_event\n",pUnixLeftRuler));
 
 	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
@@ -243,7 +243,7 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_release_event\n",pUnixLeftRuler));
 	EV_EditModifierState ems;
 	EV_EditMouseButton emb = 0;
@@ -288,7 +288,7 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
 
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
 	//			 pUnixLeftRuler, e->width, e->height));
@@ -307,7 +307,7 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received motion_notify_event\n",pUnixLeftRuler));
 
 	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
@@ -341,7 +341,7 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
-// 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+// 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received key_press_event\n",pUnixLeftRuler));
 	return 1;
 }
@@ -349,7 +349,7 @@ gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received delete_event\n",pUnixLeftRuler));
 	return 1;
 }
@@ -357,7 +357,7 @@ gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	if (!pUnixLeftRuler)
 		return 0;
 

@@ -36,6 +36,7 @@
 #include "ev_EditMethod.h"
 #include "xav_View.h"
 #include "xad_Document.h"
+#include "xap_UnixDialogHelper.h"
 
 // sorry about the XAP/AP separation breakage, but this is more important
 #include "ie_types.h"
@@ -126,7 +127,7 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 	IEGraphicFileType iegft;
 	UT_Error error;
 	UT_DEBUGMSG(("SEVIOR: _dnd_drop_event being handled \n"));
-	pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(widget));
+	pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(G_OBJECT(widget));
 	pApp = pUnixFrame->getApp ();
 
 	char * rawChar = (char *) selection_data->data;
@@ -425,16 +426,16 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	{
 		m_wTopLevelWindow = gnome_app_new((gchar *)(m_pUnixApp->getApplicationName()),
 									  (gchar *)(m_pUnixApp->getApplicationTitleForTitleBar()));
-		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
-		gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic", NULL);
+		gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
+		gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
 		gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
 		gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
 						   m_pUnixApp->getApplicationName(),
 						   m_pUnixApp->getApplicationName());
 	} 
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
+	gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
-	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
+	gtk_object_set_user_data(G_OBJECT(m_wTopLevelWindow),this);
 
 	gtk_drag_dest_set (m_wTopLevelWindow,
 					   GTK_DEST_DEFAULT_ALL,
@@ -444,55 +445,55 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 
-		gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "realize",
+		gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
  					   GTK_SIGNAL_FUNC(_fe::realize), NULL);
-		gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "unrealize",
+		gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "unrealize",
  					   GTK_SIGNAL_FUNC(_fe::unrealize), NULL);
 	}
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "size_allocate",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "size_allocate",
  					   GTK_SIGNAL_FUNC(_fe::sizeAllocate), NULL);
   
- 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+ 	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
  					   GTK_SIGNAL_FUNC(_fe::focusIn), NULL);
- 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+ 	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
  					   GTK_SIGNAL_FUNC(_fe::focusOut), NULL);
 
-	gtk_signal_connect (GTK_OBJECT (m_wTopLevelWindow),
+	gtk_signal_connect (G_OBJECT (m_wTopLevelWindow),
 						"drag_data_get",
 						GTK_SIGNAL_FUNC (_dnd_drop_event), 
 						(gpointer)this);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), 
 					   "drag_data_received",
                        GTK_SIGNAL_FUNC(_dnd_drop_event), 
 					   (gpointer)this);
 
-  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
+  	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), 
   					   "drag_drop",
                          GTK_SIGNAL_FUNC(_dnd_real_drop_event), 
 					   (gpointer)this);
 
-  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
+  	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), 
   					   "drag_end",
                          GTK_SIGNAL_FUNC(_dnd_drag_end), 
 					   (gpointer)this);
 
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
 	// here we connect the "destroy" event to a signal handler.  
 	// This event occurs when we call gtk_widget_destroy() on the window,
 	// or if we return 'FALSE' in the "delete_event" callback.
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "destroy",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "destroy",
 					   GTK_SIGNAL_FUNC(_fe::destroy), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_in_event",
 					   GTK_SIGNAL_FUNC(_fe::focus_in_event), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "focus_out_event",
 					   GTK_SIGNAL_FUNC(_fe::focus_out_event), NULL);
 
 	// create a VBox inside it.
 
 	m_wVBox = gtk_vbox_new(FALSE,0);
-	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
-	gtk_object_set_user_data(GTK_OBJECT(m_wVBox),this);
+	gtk_object_set_data(G_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
+	gtk_object_set_user_data(G_OBJECT(m_wVBox),this);
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		gnome_app_set_contents(GNOME_APP(m_wTopLevelWindow), m_wVBox);
@@ -528,7 +529,7 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	{
 		gtk_widget_realize(m_wVBox);
 	}
-	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
+	gtk_signal_connect(G_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   GTK_SIGNAL_FUNC(_fe::key_press_event), NULL);
 
 

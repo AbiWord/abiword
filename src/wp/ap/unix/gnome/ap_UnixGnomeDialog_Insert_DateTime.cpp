@@ -75,7 +75,7 @@ GtkWidget * AP_UnixGnomeDialog_Insert_DateTime::_constructWindow (void)
 	m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_windowMain)->buttons)->data);
 
 	//gtk_widget_show_all (m_windowMain);
-	gtk_signal_connect (GTK_OBJECT(m_windowMain),
+	gtk_signal_connect (G_OBJECT(m_windowMain),
 			    "close",
 			    GTK_SIGNAL_FUNC(cb_close),
 			    (gpointer)this);

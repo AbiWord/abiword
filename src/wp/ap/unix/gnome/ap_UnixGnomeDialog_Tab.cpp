@@ -80,7 +80,7 @@ GtkWidget* AP_UnixGnomeDialog_Tab::_constructWindow (void )
 	gtk_widget_show_all(GNOME_DIALOG(windowTabs)->vbox);
 	gtk_widget_show_all(windowTabs);
 
-	gtk_signal_connect (GTK_OBJECT(windowTabs),
+	gtk_signal_connect (G_OBJECT(windowTabs),
 			    "close",
 			    GTK_SIGNAL_FUNC(s_cancel_clicked),
 			    (gpointer)this);
@@ -104,7 +104,7 @@ void    AP_UnixGnomeDialog_Tab::_constructGnomeButtons(GtkWidget * /* ignored */
 				   GNOME_STOCK_BUTTON_APPLY);
 	buttonApply = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_windowMain)->buttons)->data);
 	gtk_widget_ref (buttonApply);
-	gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "buttonApply", buttonApply,
+	gtk_object_set_data_full (G_OBJECT (m_windowMain), "buttonApply", buttonApply,
 							(GtkDestroyNotify) gtk_widget_unref);
 	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
 
@@ -114,7 +114,7 @@ void    AP_UnixGnomeDialog_Tab::_constructGnomeButtons(GtkWidget * /* ignored */
 				   GNOME_STOCK_BUTTON_OK);
 	buttonOK = GTK_WIDGET (g_list_last(GNOME_DIALOG(m_windowMain)->buttons)->data);
 	gtk_widget_ref (buttonOK);
-	gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "buttonOK", buttonOK,
+	gtk_object_set_data_full (G_OBJECT (m_windowMain), "buttonOK", buttonOK,
 				  (GtkDestroyNotify) gtk_widget_unref);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 
@@ -124,7 +124,7 @@ void    AP_UnixGnomeDialog_Tab::_constructGnomeButtons(GtkWidget * /* ignored */
 				   GNOME_STOCK_BUTTON_CANCEL);
 	buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_windowMain)->buttons)->data);
 	gtk_widget_ref(buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "buttonCancel", buttonCancel,
+	gtk_object_set_data_full (G_OBJECT (m_windowMain), "buttonCancel", buttonCancel,
 				  (GtkDestroyNotify) gtk_widget_unref);
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
 

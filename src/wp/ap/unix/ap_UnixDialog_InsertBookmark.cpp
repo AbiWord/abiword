@@ -247,21 +247,21 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
 void AP_UnixDialog_InsertBookmark::_connectSignals (void)
 {
 	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+	gtk_signal_connect(G_OBJECT(m_buttonOK),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+	gtk_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_buttonDelete),
+	gtk_signal_connect(G_OBJECT(m_buttonDelete),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_delete_clicked),
 					   (gpointer) this);
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+	gtk_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);

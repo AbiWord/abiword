@@ -391,62 +391,62 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 
 void AP_UnixDialog_HdrFtr::_connectSignals(void)
 {
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[HdrEven]), 
+	gtk_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrEven]), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_HdrEven), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[HdrFirst]), 
+	gtk_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrFirst]), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_HdrFirst), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[HdrLast]), 
+	gtk_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrLast]), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_HdrLast), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[FtrEven]), 
+	gtk_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrEven]), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_FtrEven), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[FtrFirst]), 
+	gtk_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrFirst]), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_FtrFirst), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wHdrFtrCheck[FtrLast]), 
+	gtk_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrLast]), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_FtrLast), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wRestartButton), 
+	gtk_signal_connect (G_OBJECT(m_wRestartButton), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_restart_toggled), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT (m_oSpinAdj), "value_changed",
+	gtk_signal_connect (G_OBJECT (m_oSpinAdj), "value_changed",
 						GTK_SIGNAL_FUNC (s_spin_changed),
 						(gpointer) this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wRestartButton), 
+	gtk_signal_connect (G_OBJECT(m_wRestartButton), 
 						"toggled", 
 						GTK_SIGNAL_FUNC(s_restart_toggled), 
 						(gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wButtonOK), "clicked", 
+	gtk_signal_connect (G_OBJECT(m_wButtonOK), "clicked", 
 						GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
 
-	gtk_signal_connect (GTK_OBJECT(m_wButtonCancel), "clicked", 
+	gtk_signal_connect (G_OBJECT(m_wButtonCancel), "clicked", 
 						GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
 	 
-	gtk_signal_connect_after(GTK_OBJECT(m_wHdrFtrDialog),
+	gtk_signal_connect_after(G_OBJECT(m_wHdrFtrDialog),
 							 "destroy",
 							 NULL,
 							 NULL);
 
-	gtk_signal_connect(GTK_OBJECT(m_wHdrFtrDialog),
+	gtk_signal_connect(G_OBJECT(m_wHdrFtrDialog),
 					   "delete_event",
 					   GTK_SIGNAL_FUNC(s_delete_clicked),
 					   (gpointer) this);

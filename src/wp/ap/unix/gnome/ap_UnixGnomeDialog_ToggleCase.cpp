@@ -98,25 +98,25 @@ GtkWidget * AP_UnixGnomeDialog_ToggleCase::_constructWindow(void)
 
 	buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowMain)->buttons)->data);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
+	gtk_signal_connect_after(G_OBJECT(windowMain),
 				 "destroy",
 				 NULL,
 				 NULL);
-	gtk_signal_connect(GTK_OBJECT(windowMain),
+	gtk_signal_connect(G_OBJECT(windowMain),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
 			   (gpointer) this);
 
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
+	gtk_signal_connect(G_OBJECT(buttonOK),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_ok_clicked),
 			   (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+	gtk_signal_connect(G_OBJECT(buttonCancel),
 			   "clicked",
 			   GTK_SIGNAL_FUNC(s_cancel_clicked),
 			   (gpointer) this);
 	
-	gtk_signal_connect (GTK_OBJECT(windowMain),
+	gtk_signal_connect (G_OBJECT(windowMain),
 			    "close",
 			    GTK_SIGNAL_FUNC(s_cancel_clicked),
 			    (gpointer) this);

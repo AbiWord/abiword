@@ -602,7 +602,7 @@ void XAP_QNXDialog_Zoom::_storeWindowData(void)
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
 		{
 			m_zoomType = (XAP_Frame::tZoomType)
-				GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(item->data), WIDGET_ID_TAG_KEY));
+				GPOINTER_TO_INT(gtk_object_get_data(G_OBJECT(item->data), WIDGET_ID_TAG_KEY));
 			break;
 		}
 	}

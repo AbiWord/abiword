@@ -255,7 +255,7 @@ int AP_QNXTopRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallba
 int AP_QNXTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
-	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	UT_DEBUGMSG(("QNXTopRuler: [p %p] received key_press_event\n",pQNXTopRuler));
 	return 1;
 }
@@ -263,7 +263,7 @@ int AP_QNXTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 int AP_QNXTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)gtk_object_get_user_data(G_OBJECT(w));
 	// UT_DEBUGMSG(("QNXTopRuler: [p %p] received delete_event\n",pQNXTopRuler));
 	return 1;
 }

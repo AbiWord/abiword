@@ -59,7 +59,7 @@ GtkWidget * AP_UnixGnomeDialog_PageNumbers::_constructWindow (void)
   gnome_dialog_append_button (GNOME_DIALOG (m_window), GNOME_STOCK_BUTTON_CANCEL);
   m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_window)->buttons)->data);
 
-  gtk_signal_connect (GTK_OBJECT(m_window),
+  gtk_signal_connect (G_OBJECT(m_window),
 		      "close",
 		      GTK_SIGNAL_FUNC(cb_close),
 		      (gpointer)this);

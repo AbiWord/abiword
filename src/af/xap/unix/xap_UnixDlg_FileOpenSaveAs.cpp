@@ -116,7 +116,7 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 {
 #ifdef GDK_Escape
 	if (event->keyval == GDK_Escape) {
-		gtk_signal_emit_stop_by_name (GTK_OBJECT (widget), "key_press_event");
+		gtk_signal_emit_stop_by_name (G_OBJECT (widget), "key_press_event");
 		s_cancel_clicked ( widget, answer ) ;
 		return TRUE;
 	}
@@ -246,7 +246,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			UT_ASSERT(activeItem);
 
 			UT_sint32 nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(
-				GTK_OBJECT(activeItem)));
+				G_OBJECT(activeItem)));
 
 			// set to first item, which should probably be auto detect
 			// TODO : "probably" isn't very good.
@@ -555,12 +555,12 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		    gtk_widget_set_usize (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 
 		    // the expose event off the preview
-		    gtk_signal_connect(GTK_OBJECT(preview),
+		    gtk_signal_connect(G_OBJECT(preview),
 				       "expose_event",
 				       GTK_SIGNAL_FUNC(s_preview_exposed),
 				       static_cast<gpointer>(this));
 
-		    gtk_signal_connect(GTK_OBJECT(pFS->file_list),
+		    gtk_signal_connect(G_OBJECT(pFS->file_list),
 				       "select-row",
 				       GTK_SIGNAL_FUNC(s_filename_select),
 				       static_cast<gpointer>(this));
@@ -608,7 +608,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// types yet.
 			g_snprintf(buffer, 1024, "%s", pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect));
 			thismenuitem = gtk_menu_item_new_with_label(buffer);
-			gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
+			gtk_object_set_user_data(G_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
 			gtk_widget_show(thismenuitem);
 			gtk_menu_append(GTK_MENU(menu), thismenuitem);
 
@@ -630,7 +630,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					
 					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
 					thismenuitem = gtk_menu_item_new_with_label(buffer);
-					gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
+					gtk_object_set_user_data(G_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
 					gtk_widget_show(thismenuitem);
 					gtk_menu_append(GTK_MENU(menu), thismenuitem);
 				}
@@ -654,21 +654,21 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
-	gtk_signal_connect_after(GTK_OBJECT(pFS),
+	gtk_signal_connect_after(G_OBJECT(pFS),
 							 "destroy",
 							 NULL,
 							 NULL);
-	gtk_signal_connect(GTK_OBJECT(pFS),
+	gtk_signal_connect(G_OBJECT(pFS),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 &m_answer);
 
-	gtk_signal_connect (GTK_OBJECT (pFS),
+	gtk_signal_connect (G_OBJECT (pFS),
 			    "key_press_event",
 			    GTK_SIGNAL_FUNC(fsel_key_event), &m_answer);
-	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
+	gtk_signal_connect(G_OBJECT(pFS->ok_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked), &m_answer);
-	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
+	gtk_signal_connect(G_OBJECT(pFS->cancel_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
 
 	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_EXPORT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
@@ -757,7 +757,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// what a long ugly line of code
 		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 		UT_ASSERT(activeItem);
-		m_nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(activeItem)));
+		m_nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(G_OBJECT(activeItem)));
 	}
 			  
 	if(pFS && GTK_IS_WIDGET(pFS))

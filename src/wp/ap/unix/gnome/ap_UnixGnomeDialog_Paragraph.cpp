@@ -94,7 +94,7 @@ GtkWidget * AP_UnixGnomeDialog_Paragraph::_constructWindow(void)
 	m_buttonOK = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 1));
 	m_buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (m_windowMain)->buttons, 2));
 
-	gtk_signal_connect (GTK_OBJECT(m_windowMain),
+	gtk_signal_connect (G_OBJECT(m_windowMain),
 			    "close",
 			    GTK_SIGNAL_FUNC(cb_close),
 			    (gpointer)this);

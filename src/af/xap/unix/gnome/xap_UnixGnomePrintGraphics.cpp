@@ -33,6 +33,8 @@
 #include "xap_EncodingManager.h"
 #include "gr_UnixGnomeImage.h"
 #include "ut_string_class.h"
+#include "xap_UnixDialogHelper.h"
+
 #include <libgnomeprint/gnome-print-master-preview.h>
 
 /***********************************************************************/
@@ -857,7 +859,7 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 	    gtk_widget_show(GTK_WIDGET(preview));
 	  }
 	
-	gtk_object_unref(GTK_OBJECT(m_gpm));
+	gtk_object_unref(G_OBJECT(m_gpm));
 	return true;
 }
 

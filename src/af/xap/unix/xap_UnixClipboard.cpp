@@ -22,6 +22,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "xap_UnixDialogHelper.h"
 
 #include "xap_UnixClipboard.h"
 
@@ -155,7 +156,7 @@
 static void s_selsnd(GtkWidget * widget, GtkSelectionData * selectionData, guint info, guint32 time, gpointer data)
 {
 	// callback
-	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
+	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)gtk_object_get_data(G_OBJECT(widget), "clipboard");
 	pThis->_selsnd(selectionData,info,time,data);
 	return;
 }
@@ -163,14 +164,14 @@ static void s_selsnd(GtkWidget * widget, GtkSelectionData * selectionData, guint
 static gint s_selclr(GtkWidget * widget, GdkEventSelection * event)
 {
 	// callback
-	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
+	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)gtk_object_get_data(G_OBJECT(widget), "clipboard");
 	return pThis->_selclr(event);
 }
 
 static void s_selrcv(GtkWidget * widget, GtkSelectionData *selectionData, guint32 time, gpointer data)
 {
 	// callback
-	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
+	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)gtk_object_get_data(G_OBJECT(widget), "clipboard");
 	pThis->_selrcv(selectionData,time,data);
    	return;
 }
@@ -234,14 +235,14 @@ void XAP_UnixClipboard::initialize(void)
    
    m_myWidget = gtk_window_new(GTK_WINDOW_POPUP);
    gtk_widget_realize(m_myWidget);
-   gtk_object_set_data(GTK_OBJECT(m_myWidget), "clipboard", (gpointer)this);
+   gtk_object_set_data(G_OBJECT(m_myWidget), "clipboard", (gpointer)this);
 
    // register static callbacks to listen to selection-related events
    // on this window.
    
-   gtk_signal_connect(GTK_OBJECT(m_myWidget), "selection_received",    GTK_SIGNAL_FUNC(s_selrcv), (gpointer)this);
-   gtk_signal_connect(GTK_OBJECT(m_myWidget), "selection_clear_event", GTK_SIGNAL_FUNC(s_selclr), (gpointer)this);
-   gtk_signal_connect(GTK_OBJECT(m_myWidget), "selection_get",         GTK_SIGNAL_FUNC(s_selsnd), (gpointer)this);
+   gtk_signal_connect(G_OBJECT(m_myWidget), "selection_received",    GTK_SIGNAL_FUNC(s_selrcv), (gpointer)this);
+   gtk_signal_connect(G_OBJECT(m_myWidget), "selection_clear_event", GTK_SIGNAL_FUNC(s_selclr), (gpointer)this);
+   gtk_signal_connect(G_OBJECT(m_myWidget), "selection_get",         GTK_SIGNAL_FUNC(s_selsnd), (gpointer)this);
 
    // register targets (formats) for each format that we support
    // on both the CLIPBOARD property and the PRIMARY property.

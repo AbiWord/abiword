@@ -88,7 +88,7 @@ GtkWidget * AP_UnixGnomeDialog_WordCount::_constructWindow(void)
    	m_buttonUpdate = GTK_WIDGET (g_list_first (GNOME_DIALOG (m_windowMain)->buttons)->data);
    	m_buttonClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_windowMain)->buttons)->data);
 
-	gtk_signal_connect (GTK_OBJECT (m_windowMain),
+	gtk_signal_connect (G_OBJECT (m_windowMain),
 			    "close",
 			    GTK_SIGNAL_FUNC(cb_close),
 			    (gpointer)this);

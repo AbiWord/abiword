@@ -75,7 +75,7 @@ GtkWidget * AP_UnixGnomeDialog_InsertBookmark::_constructWindow(void)
 	m_buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowInsertBookmark)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_buttonCancel, GTK_CAN_DEFAULT);
 
-	gtk_signal_connect (GTK_OBJECT(windowInsertBookmark),
+	gtk_signal_connect (G_OBJECT(windowInsertBookmark),
 			    "close",
 			    GTK_SIGNAL_FUNC(cb_close),
 			    (gpointer) this);

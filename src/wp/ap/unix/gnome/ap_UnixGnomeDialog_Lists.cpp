@@ -95,7 +95,7 @@ GtkWidget * AP_UnixGnomeDialog_Lists::_constructWindow(void)
 	gtk_widget_show (wClose);
 	_setCloseButton(wClose);
 
-	gtk_signal_connect (GTK_OBJECT (wMainWindow),
+	gtk_signal_connect (G_OBJECT (wMainWindow),
 			    "close",
 			    GTK_SIGNAL_FUNC(cb_close),
 			    (gpointer)this);

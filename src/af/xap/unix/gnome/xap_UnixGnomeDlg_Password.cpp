@@ -96,21 +96,21 @@ GtkWidget * XAP_UnixGnomeDialog_Password::_constructWindow ()
 
   _constructWindowContents (hbox1);
 
-  gtk_signal_connect_after(GTK_OBJECT(dialog1),
+  gtk_signal_connect_after(G_OBJECT(dialog1),
 			   "destroy",
 			   NULL,
 			   NULL);
   
-  gtk_signal_connect(GTK_OBJECT(dialog1),
+  gtk_signal_connect(G_OBJECT(dialog1),
 		     "delete_event",
 		     GTK_SIGNAL_FUNC(s_delete_clicked),
 		     (gpointer) this);
 
-  gtk_signal_connect (GTK_OBJECT(ok_btn), "clicked",
+  gtk_signal_connect (G_OBJECT(ok_btn), "clicked",
 		      GTK_SIGNAL_FUNC(s_ok_clicked), 
 		      (gpointer)this);
   
-  gtk_signal_connect (GTK_OBJECT(cancel_btn), "clicked",
+  gtk_signal_connect (G_OBJECT(cancel_btn), "clicked",
 		      GTK_SIGNAL_FUNC(s_cancel_clicked), 
 		      (gpointer)this);
 

@@ -71,13 +71,13 @@ static gint s_preview_exposed(GtkWidget * w,
 
 static void s_position_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-  int pos = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+  int pos = GPOINTER_TO_INT (gtk_object_get_user_data(G_OBJECT (w)));
   dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
 }
 
 static void s_alignment_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-  int align = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+  int align = GPOINTER_TO_INT (gtk_object_get_user_data(G_OBJECT (w)));
   dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
 }
 
@@ -217,12 +217,12 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 void AP_UnixDialog_PageNumbers::_connectSignals()
 {
   	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK), "clicked", GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
-    gtk_signal_connect(GTK_OBJECT(m_buttonCancel), "clicked", GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
+	gtk_signal_connect(G_OBJECT(m_buttonOK), "clicked", GTK_SIGNAL_FUNC(s_ok_clicked), (gpointer)this);
+    gtk_signal_connect(G_OBJECT(m_buttonCancel), "clicked", GTK_SIGNAL_FUNC(s_cancel_clicked), (gpointer)this);
 	
 	// the catch-alls
-    gtk_signal_connect(GTK_OBJECT(m_window), "delete_event", GTK_SIGNAL_FUNC(s_delete_clicked), (gpointer)this);
-	gtk_signal_connect_after(GTK_OBJECT(m_window), "destroy", NULL, NULL);
+    gtk_signal_connect(G_OBJECT(m_window), "delete_event", GTK_SIGNAL_FUNC(s_delete_clicked), (gpointer)this);
+	gtk_signal_connect_after(G_OBJECT(m_window), "destroy", NULL, NULL);
 }
 
 void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
@@ -319,11 +319,11 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
   gtk_container_add(GTK_CONTAINER(box), hboxMain);
   
   // Set user data so that our callbacks know what to do.
-  gtk_object_set_user_data(GTK_OBJECT(radioFooter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));
-  gtk_object_set_user_data(GTK_OBJECT(radioHeader), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));
-  gtk_object_set_user_data(GTK_OBJECT(radioLeft),   GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
-  gtk_object_set_user_data(GTK_OBJECT(radioCenter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
-  gtk_object_set_user_data(GTK_OBJECT(radioRight),  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
+  gtk_object_set_user_data(G_OBJECT(radioFooter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));
+  gtk_object_set_user_data(G_OBJECT(radioHeader), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));
+  gtk_object_set_user_data(G_OBJECT(radioLeft),   GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
+  gtk_object_set_user_data(G_OBJECT(radioCenter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
+  gtk_object_set_user_data(G_OBJECT(radioRight),  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
 
   // Set our defaults to number in the top-right corner.
   m_control = AP_Dialog_PageNumbers::id_HDR;
@@ -332,14 +332,14 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioRight), true);
   
   // Connect clicked signals so that our callbacks get called.
-  gtk_signal_connect(GTK_OBJECT(radioHeader), "clicked", GTK_SIGNAL_FUNC(s_position_changed),  (gpointer)this);
-  gtk_signal_connect(GTK_OBJECT(radioFooter), "clicked", GTK_SIGNAL_FUNC(s_position_changed),  (gpointer)this);
-  gtk_signal_connect(GTK_OBJECT(radioLeft),   "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
-  gtk_signal_connect(GTK_OBJECT(radioCenter), "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
-  gtk_signal_connect(GTK_OBJECT(radioRight),  "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
+  gtk_signal_connect(G_OBJECT(radioHeader), "clicked", GTK_SIGNAL_FUNC(s_position_changed),  (gpointer)this);
+  gtk_signal_connect(G_OBJECT(radioFooter), "clicked", GTK_SIGNAL_FUNC(s_position_changed),  (gpointer)this);
+  gtk_signal_connect(G_OBJECT(radioLeft),   "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
+  gtk_signal_connect(G_OBJECT(radioCenter), "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
+  gtk_signal_connect(G_OBJECT(radioRight),  "clicked", GTK_SIGNAL_FUNC(s_alignment_changed), (gpointer)this);
 
   // the expose event off the preview
-  gtk_signal_connect(GTK_OBJECT(m_previewArea), "expose_event", GTK_SIGNAL_FUNC(s_preview_exposed), (gpointer)this);
+  gtk_signal_connect(G_OBJECT(m_previewArea), "expose_event", GTK_SIGNAL_FUNC(s_preview_exposed), (gpointer)this);
   
   // The position combo entry
 
@@ -363,8 +363,8 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
 //  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
 //  gtk_widget_show(li);
 //  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
-//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
+//  gtk_signal_connect (G_OBJECT (li), "select",
 //		      GTK_SIGNAL_FUNC (s_position_changed),
 //		      (gpointer) this);
 
@@ -373,8 +373,8 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
 //  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
 //  gtk_widget_show(li);
 //  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_FTR));
-//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_FTR));
+//  gtk_signal_connect (G_OBJECT (li), "select",
 //		      GTK_SIGNAL_FUNC (s_position_changed),
 //		      (gpointer) this);
 
@@ -400,24 +400,24 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
 //  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right));
 //  gtk_widget_show(li);
 //  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_RALIGN));
-//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_RALIGN));
+//  gtk_signal_connect (G_OBJECT (li), "select",
 //		      GTK_SIGNAL_FUNC (s_alignment_changed),
 //		      (gpointer) this);
 
 //  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left));
 //  gtk_widget_show(li);
 //  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_LALIGN));
-//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_LALIGN));
+//  gtk_signal_connect (G_OBJECT (li), "select",
 //		      GTK_SIGNAL_FUNC (s_alignment_changed),
 //		      (gpointer) this);
 
 //  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center));
 //  gtk_widget_show(li);
 //  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo2)->list), li);
-//  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_CALIGN));
-//  gtk_signal_connect (GTK_OBJECT (li), "select",
+//  gtk_object_set_user_data (G_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_CALIGN));
+//  gtk_signal_connect (G_OBJECT (li), "select",
 //		      GTK_SIGNAL_FUNC (s_alignment_changed),
 //		      (gpointer) this);
 

@@ -157,8 +157,8 @@ GtkWidget* AP_UnixFrame::_createDocumentWindow(void)
 	
 	m_dArea = gtk_drawing_area_new();
 
-	gtk_object_set_user_data(GTK_OBJECT(m_dArea), this);
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "expose_event",
+	gtk_object_set_user_data(G_OBJECT(m_dArea), this);
+	gtk_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   GTK_SIGNAL_FUNC(_fe::expose), this);
 
 	gtk_widget_show(m_dArea);

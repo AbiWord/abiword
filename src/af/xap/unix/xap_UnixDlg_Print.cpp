@@ -227,11 +227,11 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	// Create window
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	connectFocus(GTK_WIDGET(window),pFrame);
-	gtk_signal_connect_after(GTK_OBJECT(window),
+	gtk_signal_connect_after(G_OBJECT(window),
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect(GTK_OBJECT(window),
+	gtk_signal_connect(G_OBJECT(window),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
 			   (void *) &m_answer);
@@ -285,7 +285,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 			entryPrint = gtk_entry_new_with_max_length (50);
 			
-			gtk_signal_connect(GTK_OBJECT(buttonPrint), "toggled",
+			gtk_signal_connect(G_OBJECT(buttonPrint), "toggled",
 							GTK_SIGNAL_FUNC(entry_toggle_enable), entryPrint);
 			gtk_box_pack_start (GTK_BOX (hbox), entryPrint, TRUE, TRUE, 0);
 			gtk_widget_show (entryPrint);
@@ -414,7 +414,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_widget_show (hbox);
 
 			button = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-			gtk_signal_connect (GTK_OBJECT (button), "clicked",
+			gtk_signal_connect (G_OBJECT (button), "clicked",
 							GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
 			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 5);
 			//GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
@@ -429,7 +429,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			m_callbackData.answer = &m_answer;
 			
 			button = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UP_PrintButton));
-			gtk_signal_connect (GTK_OBJECT (button), "clicked",
+			gtk_signal_connect (G_OBJECT (button), "clicked",
 							GTK_SIGNAL_FUNC(s_ok_clicked), &m_callbackData);
 			
 			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 5);
