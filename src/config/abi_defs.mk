@@ -482,6 +482,7 @@ endif
 # finding the proper library to link against. This sucks. This is my
 # work-around. It isn't the greatest but it's the best solution that my
 # puny intellect could come up with, at least in the short-term ;^)
+
 ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
 GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
@@ -506,12 +507,15 @@ ABI_GNOME_PREFIX	= Gnome
 ABI_OPTIONS+=Gnome:On
 
 else
+# vanilla gtk port
+ABI_OPT_GNOME=
 GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
 CFLAGS 		+=	$(GTK_CFLAGS)
 EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
 endif
+
 ifdef ABI_OPT_LIBXML2
 XML_CFLAGS	= $(shell $(LIBXML_CONFIG) --cflags)
 XML_LIBS	= $(shell $(LIBXML_CONFIG) --libs)
