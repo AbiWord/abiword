@@ -527,6 +527,11 @@ ABI_OPTIONS+=LibXML:Off
 endif
 endif
 
+ifdef ABI_OPT_PSICONV
+EXTRA_LIBS	+=	-lpsiconv
+CFLAGS		+= -DHAVE_PSICONV
+endif
+
 ##################################################################
 ##################################################################
 ## Pspell spell checker

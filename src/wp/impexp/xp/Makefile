@@ -53,6 +53,11 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_impGraphic_SVG.cpp			\
 			ie_impGraphic_BMP.cpp
 
+ifdef ABI_OPT_PSICONV
+CPPSRCS +=		ie_imp_Psion.cpp
+endif
+
+
 LIBRARY_NAME=		AbiImpExp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
