@@ -2747,6 +2747,29 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 
 	UT_sint32 iTrailingBlank = 0;
 
+
+#ifdef BIDI_ENABLED
+	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+	UT_sint32 i;
+	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
+
+	for (i=iCountRuns -1 ; i >= 0; i--)
+	{
+		// work from the run on the visual end of the line
+		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+
+		if(!pRun->doesContainNonBlankData())
+		{
+			iTrailingBlank += pRun->getWidth();
+		}
+		else
+		{
+			iTrailingBlank += pRun->findTrailingSpaceDistance();
+			break;
+		}
+	}
+#else
 	fp_Run *pCurrentRun = getLastRun();
 
 	do
@@ -2767,7 +2790,7 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 		pCurrentRun = pCurrentRun->getPrev();
 	}
 	while(pCurrentRun);
-
+#endif
 
 	return iTrailingBlank;
 }
@@ -2781,6 +2804,28 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
 
 	UT_sint32 iTrailingBlank = 0;
 
+#ifdef BIDI_ENABLED
+	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
+	UT_sint32 i;
+
+	for (i=iCountRuns -1 ; i >= 0; i--)
+	{
+		// work from the run on the visual end of the line
+		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+
+		if(!pRun->doesContainNonBlankData())
+		{
+			iTrailingBlank += pRun->getWidthInLayoutUnits();
+		}
+		else
+		{
+			iTrailingBlank += pRun->findTrailingSpaceDistanceInLayoutUnits();
+			break;
+		}
+	}
+#else
 	fp_Run *pCurrentRun = getLastRun();
 
 	do
@@ -2801,7 +2846,7 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
 		pCurrentRun = pCurrentRun->getPrev();
 	}
 	while(pCurrentRun);
-
+#endif
 
 	return iTrailingBlank;
 }
@@ -2816,11 +2861,16 @@ const
 	UT_uint32 iSpaceCount = 0;
 	bool bStartFound = false;
 
+#ifdef BIDI_ENABLED
+	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+#endif
 	// first calc the width of the line
 	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
 #ifdef BIDI_ENABLED
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+		// work from the run on the visual end of the line
+		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
 #else
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 #endif		
@@ -2914,11 +2964,17 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 		{
 			bool bFoundStart = false;
 
+#ifdef BIDI_ENABLED
+			FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+#endif
+
 			UT_uint32 count = m_vecRuns.getItemCount();
 			for (UT_uint32 i=count - 1; i >= 0 && iSpaceCount > 0; i--)
 			{
 #ifdef BIDI_ENABLED
-				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+				// work from the run on the visual end of the line
+				UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : count  - i - 1;
+				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
 #else
 				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 #endif		
