@@ -56,7 +56,7 @@ public:
 
 	~fl_AutoNum();
 
-	void						fixHierarchy(PD_Document *);
+	void						fixHierarchy(void);
 		
 	const UT_UCSChar *			getLabel(PL_StruxDocHandle) const;
 	void						addItem(PL_StruxDocHandle pItem);
@@ -104,7 +104,6 @@ public:
 	void						fixListOrder(void);
 	void						markAsDirty(void);
 	void						findAndSetParentItem(void);
-	void						setParent(fl_AutoNum *);
 	void						setAsciiOffset(UT_uint32 new_asciioffset);
 
 	void						update(UT_uint32 start);
@@ -119,7 +118,8 @@ public:
 	const char **				getAttributes(void) ;
 	
 protected:
-
+	void                        _setParent(fl_AutoNum * pParent);
+	void                        _setParentID(UT_uint32 iParentID);
 	void						_calculateLabelStr(UT_uint32 depth);
 	void						_getLabelstr(	UT_UCSChar labelStr[],
 												UT_uint32 * insPoint,

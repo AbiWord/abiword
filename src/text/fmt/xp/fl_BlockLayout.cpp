@@ -6022,7 +6022,7 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 		// TODO Out of Mem.
 	}
 	m_pDoc->addList(pAutoNum);
-	pAutoNum->fixHierarchy(m_pDoc);
+	pAutoNum->fixHierarchy();
 
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;

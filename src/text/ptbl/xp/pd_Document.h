@@ -116,6 +116,9 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts);
 
+	bool					changeStruxForLists(PL_StruxDocHandle sdh,
+												const char * pszParentID);
+
 	// the append- methods are only available while importing
 	// the document.
 
@@ -174,7 +177,7 @@ public:
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	bool                    verifySectionID(const XML_Char * pszId);
-	
+    bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszValue);
 	// styles
 	void                    getAllUsedStyles(UT_Vector * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);

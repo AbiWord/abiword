@@ -3692,7 +3692,8 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 {
   //
-  // For the parent ID we have to look to see if the parent ID has been remapped
+  // For the parent ID we have to look to see if the parent ID has been 
+  // remapped or if the id 
   //
 	UT_uint32 mappedID;
 	mappedID = id;
@@ -3701,8 +3702,10 @@ UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 		return id;
 	}
 	UT_uint32 i;
-	for(i=0; (i<m_numLists) && (getAbiList(i)->orig_id == id); i++)
+	for(i=0; i<m_numLists ; i++)
 	{
+		if(getAbiList(i)->orig_id == id)
+			break;
 	}
 	if( i < m_numLists && getAbiList(i)->orig_id == id)
 	{
@@ -4190,7 +4193,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					lType = (List_Type) 0;
 				pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, getDoc());
 				getDoc()->addList(pAuto);
-				pAuto->fixHierarchy(getDoc());
+				pAuto->fixHierarchy();
 			}
 			bSuccess = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh_cur);
 			///

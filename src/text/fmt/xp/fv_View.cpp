@@ -2139,6 +2139,38 @@ bool FV_View::isPointBeforeListLabel(void)
 	return bBefore;
 }
 
+/*!
+ * This method returns true if the block presented has a numbered heading
+ * defined or in it's ancestray.
+ */
+bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
+{
+	bool bHasNumberedHeading = false;
+	if(pBlock == NULL)
+	{
+		return bHasNumberedHeading;
+	}
+	const PP_AttrProp * pBlockAP = NULL;
+	pBlock->getAttrProp(&pBlockAP);
+	const XML_Char* pszCurStyle = NULL;
+	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszCurStyle);
+	PD_Style * pCurStyle = NULL;
+	m_pDoc->getStyle((char*)pszCurStyle, &pCurStyle);
+	UT_uint32 depth = 0;
+	while(pCurStyle && !bHasNumberedHeading && depth < 10)
+	{
+		bHasNumberedHeading = (strstr(pszCurStyle,"Numbered Heading") != NULL);
+		if(!bHasNumberedHeading)
+		{
+			pCurStyle = pCurStyle->getBasedOn();
+			if(pCurStyle)
+				pszCurStyle = pCurStyle->getName();
+			depth++;
+		}
+	}
+	return bHasNumberedHeading;
+}
+
 void FV_View::processSelectedBlocks(List_Type listType)
 {
 	//
@@ -2197,7 +2229,19 @@ void FV_View::processSelectedBlocks(List_Type listType)
 				blockLeft = UT_convertToInches(pBlock->getProperty(margin_left,true));
 #endif
 			}
-			if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->isListItem()== true && pPrev->getAutoNum()->getType() == listType && (blockLeft <= (prevLeft - 0.00001)))
+//
+// Look for Numbered Heading in the prev block style or it's ancestry.
+// If there is one there we don't attach this block to it.
+//
+			bool bHasNumberedHeading = false;
+			if(pPrev != NULL)
+			{
+				bHasNumberedHeading = isNumberedHeadingHere(pPrev);
+			}
+//
+// Don't resume if the previous block has a Numbered Heading Style
+//
+			if(!bHasNumberedHeading && (pBlock->isListItem()== false) && (pPrev != NULL) && (pPrev->isListItem()== true) && (pPrev->getAutoNum()->getType() == listType) && (blockLeft <= (prevLeft - 0.00001)))
 			{
 				pBlock->resumeList(pPrev);
 			}			
@@ -2208,7 +2252,6 @@ void FV_View::processSelectedBlocks(List_Type listType)
 			}
 		}
 	}
-	m_pDoc->endUserAtomicGlob();
 
 	// closes bug # 1255 - unselect a list after creation
 	cmdUnselectSelection();
@@ -2216,6 +2259,8 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+
+	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 
@@ -2373,13 +2418,13 @@ void FV_View::insertParagraphBreak(void)
 		}
 	}
 
-	m_pDoc->endUserAtomicGlob();
-
 	_generalUpdate();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+
+	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 
@@ -7844,7 +7889,6 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	bool bEOL = false;
 	fl_HdrFtrShadow * pShadow=NULL;
 	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
-
 	return bBOL;
 }
 
@@ -7890,6 +7934,24 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
 
+//
+// Code to select a paragraph break on selectLine if on first line of a Block.
+//
+	if((dpBeg == FV_DOCPOS_BOL) || (dpBeg == FV_DOCPOS_BOP) || (dpBeg == FV_DOCPOS_BOD))
+	{
+		fl_BlockLayout * pBlock =  _findBlockAtPosition(iPosLeft);
+		UT_sint32 x, y, x2, y2, h;
+		bool b;
+		fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
+		if(pRun)
+		{
+			fp_Line * pLine = pRun->getLine();
+			if(pLine == pBlock->getFirstLine())
+			{
+				iPosLeft = pBlock->getPosition() -1;
+			}
+		}
+	}
 	cmdSelect (iPosLeft, iPosRight);
 }
 

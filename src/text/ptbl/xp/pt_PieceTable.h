@@ -108,6 +108,9 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts);
 
+	bool                    changeStruxForLists(PL_StruxDocHandle sdh, 
+												const char * pszParentID);
+
 	bool					insertFmtMark(PTChangeFmt ptc,
 										  PT_DocPosition dpos,
 										  PP_AttrProp *p_AttrProp)

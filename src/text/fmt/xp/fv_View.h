@@ -260,7 +260,7 @@ public:
 
 	bool	setStyle(const XML_Char * style, bool bDontGeneralUpdate=false);
 	bool	setStyleAtPos(const XML_Char * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
-	
+	bool    isNumberedHeadingHere(fl_BlockLayout * pBlock);
 	bool	getStyle(const XML_Char ** style);
 	bool appendStyle(const XML_Char ** style);
 

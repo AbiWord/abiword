@@ -322,9 +322,9 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 	{
 		xxx_UT_DEBUGMSG(("fp_Line::mapXYToPosition [0x%x]: x=%d, first run x=%d\n", this, x, pFirstRun->getX()));
 		bBOL = true;
-
+		bool bBBOL = true;
 		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
-		pFirstRun->mapXYToPosition(0, y2, pos, bBOL, bEOL);
+		pFirstRun->mapXYToPosition(0, y2, pos, bBBOL, bEOL);
 		return;
 	}
 

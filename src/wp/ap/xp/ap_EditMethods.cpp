@@ -3694,6 +3694,7 @@ Defun(selectLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
 	return true;
 }

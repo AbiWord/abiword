@@ -437,6 +437,15 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties,pts);
 }
 
+/*!
+ * This Method is used to change just the parentID of each strux in a list
+ * without updating the fl_Layouts.
+ */
+bool PD_Document::changeStruxForLists(PL_StruxDocHandle sdh, const char * pszParentID)
+{
+	return m_pPieceTable->changeStruxForLists(sdh, pszParentID);
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -499,6 +508,33 @@ bool PD_Document::appendFmtMark(void)
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendFmtMark();
+}
+
+/*!
+ * This method returns the value associated with attribute szAttribute
+ * at picetable location given by sdh.
+ \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
+\param const char * szAttribute the attribute we're looking for.
+\param const char ** pszValue the value of the attribute.
+\returns true if the attribute was present at the sdh
+Don't FREEP *pszRetValue!!!
+*/
+bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszRetValue)
+{
+	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
+	const PP_AttrProp * pAP = NULL;
+	m_pPieceTable->getAttrProp(indexAP,&pAP);
+	UT_ASSERT(pAP);
+	const XML_Char * pszValue = NULL;
+	(pAP)->getAttribute(szAttribute, pszValue);
+	if(pszValue == NULL)
+	{
+		*pszRetValue = NULL;
+		return false;
+	}
+	*pszRetValue = pszValue;
+	return true;
 }
 
 /*!
@@ -2299,18 +2335,35 @@ void PD_Document::updateDirtyLists(void)
 	UT_uint32 iNumLists = m_vecLists.getItemCount();
 	UT_uint32 i;
 	fl_AutoNum * pAutoNum;
+	bool bDirtyList = false;
+	for(i=0; i< iNumLists; i++)
+	{
+		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		if(pAutoNum->isEmpty())
+		{
+			delete pAutoNum;
+			m_vecLists.deleteNthItem(i);
+			iNumLists--;
+			i--;
+		}
+	}
 	for(i=0; i< iNumLists; i++)
 	{
 		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
 		if(pAutoNum->isDirty() == true)
 		{
 			pAutoNum->update(0);
+			bDirtyList = true;
 		}
 	}
-	for(i=0; i< iNumLists; i++)
+	if(bDirtyList)
 	{
-		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-		pAutoNum->findAndSetParentItem();
+		for(i=0; i< iNumLists; i++)
+		{
+			pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+			pAutoNum->fixHierarchy();
+			pAutoNum->findAndSetParentItem();
+		}
 	}
 }
 
@@ -2329,7 +2382,7 @@ bool PD_Document::fixListHierarchy(void)
 		for (UT_uint32 i = 0; i < iNumLists; i++)
 		{
 			pAutoNum = (fl_AutoNum *)m_vecLists.getNthItem(i);
-			pAutoNum->fixHierarchy(this);
+			pAutoNum->fixHierarchy();
 		}
 		return true;
 	}
