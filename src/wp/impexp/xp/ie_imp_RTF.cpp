@@ -40,11 +40,7 @@
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
 #include "xap_EncodingManager.h"
-#include "ie_impGraphic_PNG.h"
-#include "ie_impGraphic_BMP.h"
-#ifdef HAVE_LIBJPEG
-#include "ie_impGraphic_JPEG.h"
-#endif
+#include "ie_impGraphic.h"
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
@@ -1968,33 +1964,35 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 	if (CanHandlePictFormat (format))
 	{
 		// TODO: investigate whether pictData is leaking memory or not
-
-		IE_ImpGraphic * m_pGraphicImporter = NULL;
+		IEGraphicFileType fileType = IEGFT_Unknown;
+		IE_ImpGraphic * pGraphicImporter = NULL;
 		
 		switch (format)
 		{
 		case picPNG:
-			m_pGraphicImporter = new IE_ImpGraphic_PNG();
+			fileType = IEGFT_PNG;
 			break;
 		case picBMP:
-			m_pGraphicImporter = new IE_ImpGraphic_BMP();
+			fileType = IEGFT_BMP;
 			break;
 #ifdef HAVE_LIBJPEG
 		case picJPEG:
-			m_pGraphicImporter = new IE_ImpGraphic_JPEG();
+			fileType = IEGFT_JPEG;
 			break;
 #endif
 		default:
-			UT_DEBUGMSG (("Unknown format will crash !!\n"));
-			UT_ASSERT (UT_NOT_IMPLEMENTED);
+			UT_DEBUGMSG (("Unknown format may crash !!\n"));
+			fileType = IEGFT_Unknown;
 		}
+
+		UT_Error error = IE_ImpGraphic::constructImporter(pictData, fileType, &pGraphicImporter);
 
 		FG_Graphic* pFG;
 
 		// TODO: according with IE_ImpGraphic header, we shouldn't free
 		// TODO: the buffer. Confirm that.
-		UT_Error error = m_pGraphicImporter->importGraphic(pictData, &pFG);
-		DELETEP(m_pGraphicImporter);
+		error = pGraphicImporter->importGraphic(pictData, &pFG);
+		DELETEP(pGraphicImporter);
 
 		if (error != UT_OK) 
 		{
@@ -2445,8 +2443,8 @@ bool IE_Imp_RTF::HandleField()
 	}
 	else 
 	{
-		UT_DEBUGMSG (("RTF: Field result not present. Found '%s' in stream\n", keyword));
-		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		UT_DEBUGMSG (("RTF: Field result not present. Found '%s' in stream. Ignoring.\n", keyword));
+		// UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 		// continue
 	}
 	
@@ -2505,7 +2503,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	newBuf =  (char *)malloc (sizeof (char) * (len + 1));
 	memcpy (newBuf, pBuf, len);
 	newBuf [len] = 0;
-	instr = strtok (newBuf, " ");
+	instr = strtok (newBuf, " \\{}");
 	if (instr == NULL) 
 	{
 		free (newBuf);
@@ -2548,6 +2546,10 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			xmlField = UT_strdup ("page_number");
 			UT_ASSERT (xmlField);
 			isXML = (xmlField != NULL);
+		}
+		else if (strcmp (instr, "PRIVATE") == 0)
+		{
+			UT_DEBUGMSG (("RTF: PRIVATE fieldinst not handled yet\n"));
 		}
 		break;
 	case 'N':
@@ -2606,9 +2608,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			{
 				char * fileName = NULL;
 				char * tok  = strtok (NULL, " ");
-				fileName = (char *)malloc (sizeof (char) * (strlen (tok) + strlen (m_szFileDirName) + 1));
-				strcpy (fileName, m_szFileDirName);
-				strcat (fileName, tok);
+				fileName = UT_catPathname (m_szFileDirName, tok);
 				UT_DEBUGMSG (("fileName is %s\n", fileName));
 								
 				bool ok = FlushStoredChars ();
