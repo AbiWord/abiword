@@ -168,18 +168,6 @@ EV_Menu* XAP_Win32FrameImpl::_getMainMenu()
 	return m_pWin32Menu;
 }
 
-
-#if 0
-void XAP_Win32FrameImpl::_createToolbars() {}
-void _refillToolbarsInFrameData() {}
-#endif
-
-
-void XAP_Win32FrameImpl::_rebuildToolbar(UT_uint32 ibar)
-{
-	// TODO: currently does nothing
-}
-
 // Useful to refresh the size of the Frame.  For instance,
 // when the user selects hide statusbar, the Frame has to be
 // resized in order to fill the gap leaved by the statusbar

@@ -69,11 +69,7 @@ protected:
 	virtual XAP_DialogFactory * _getDialogFactory();
 	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage);
 	virtual EV_Menu* _getMainMenu();
-#if 0
-	virtual void _createToolbars();
-	virtual void _refillToolbarsInFrameData() = 0;
-#endif
-	virtual void _rebuildToolbar(UT_uint32 ibar);
+
 	// Useful to refresh the size of the Frame.  For instance,
 	// when the user selects hide statusbar, the Frame has to be
 	// resized in order to fill the gap leaved by the statusbar
@@ -85,25 +81,6 @@ protected:
 	virtual bool _openURL(const char * szURL);
 	virtual void _nullUpdate () const;
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
-
-#if formetolookat
-	EV_Mouse * m_pMouse;
-	EV_Keyboard * m_pKeyboard;
-	XAP_FrameMode m_iFrameMode;
-
-	UT_uint32 m_ViewAutoUpdaterID;
-	UT_Timer * m_ViewAutoUpdater;
-
-	UT_Vector m_vecToolbarLayoutNames;
-	const char * m_szToolbarLabelSetName;	/* language for toolbars */
-	const char * m_szToolbarAppearance;
-	UT_Vector m_vecToolbars;
-
-	const char * m_szMenuLayoutName;
-	const char * m_szMenuLabelSetName;		/* language for menus */
-
-	XAP_Frame * m_pFrame;
-#endif
 
 
 /*** Win32 help functions ***/
