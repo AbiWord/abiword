@@ -79,7 +79,7 @@ ${WRSU} "HelpLink" "http://www.abisource.com/support/"
 
 ${WRSU} "URLUpdateInfo" "http://www.abisource.com/"
 ${WRSU} "URLInfoAbout" "http://www.abisource.com/information/about/"
-${WRSU} "Readme" "file://$INSTDIR/readme.txt"
+${WRSU} "Readme" "$INSTDIR\readme.txt"
 
 ; DisplayVersion (string) - Displayed version of the application
 ; VersionMajor (DWORD) - Major version number of the application

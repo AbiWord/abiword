@@ -43,18 +43,23 @@
   !define DoActionLbl "DoAction_${__LINE__}"
   !define CleanupLbl  "Cleanup_${__LINE__}"
 
+  ;DetailPrint "Searching in [${dir}] for [${filespec}]"
   push $R0
   push $R1
   ClearErrors
   FindFirst $R0 $R1 "${dir}\${filespec}"
   IfErrors ${DoActionLbl}           ; assume failed to find any files matching filespec
+  ;DetailPrint "Found $R1"
   strcmp $R1 "." 0 ${NoDeleteLbl}   ; some file found matching filespec, ignore if current dir entry (.)
    FindNext $R0 $R1                 ; check again (could still be .. or file matching filespec)
    IfErrors ${DoActionLbl}          ; assume failed to find any files matching filespec
+   ;DetailPrint "Found next $R1"
    strcmp $R1 ".." 0 ${NoDeleteLbl} ; ignore only if it was the parent directory (..)
     FindNext $R0 $R1                ; any match now means filespec was found
+    ;DetailPrint "Found last $R1"
     IfErrors 0 ${NoDeleteLbl}       ; so if an error then we can assume no files matching filespec found
      ${DoActionLbl}:
+     ;DetailPrint "Doing Action"
      FindClose $R0                  ; close handle on directory in case we want to delete it or something
      Sleep 1000                     ; give close handle time to process and propogate
      ${actionToDo}                  ; do action since no files matching filespec found in dir

@@ -14,6 +14,10 @@
 ; wrapped with !ifdef 0 !endif
 
 
+!ifndef VERSION_MAJOR
+!define VERSION_MAJOR "2"
+!endif
+
 ; Do a Cyclic Redundancy Check to make sure the installer 
 ; was not corrupted by the download.  
 CRCCheck on
@@ -35,10 +39,10 @@ LicenseText "This program is Licensed under the GNU General Public License (GPL)
 LicenseData "..\AbiSuite\Copying"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\AbiSuite
+InstallDir $PROGRAMFILES\AbiSuite${VERSION_MAJOR}
 
 ; Registry key to check for directory (so if you install again, it will overwrite the old one automatically)
-InstallDirRegKey HKLM SOFTWARE\Abisuite "Install_Dir"
+InstallDirRegKey HKLM SOFTWARE\Abisuite\AbiWord\v${VERSION_MAJOR} "Install_Dir"
 
 ; The text to prompt the user to enter a directory
 ComponentText "This will install AbiWord's Importer/Exporter Plugins on your computer."
@@ -180,7 +184,7 @@ SectionEnd
 !endif
 SubSectionEnd
 
-SubSection /e "Additional File Format Importers/Exporters"
+SubSection /e "File Format Importers/Exporters"
 
 Section "AbiApplix Plugin"
 	SectionIn 2
@@ -431,7 +435,7 @@ SectionEnd
 !endif
 
 Section "MSWrite (*.wri) Plugin"
-	SectionIn 2
+	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiMSWrite.dll" 0 DoInstall

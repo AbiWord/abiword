@@ -15,7 +15,8 @@ SectionEnd
 	DetailPrint "*** Removing or skipping install of en-US dictionary..."
 
 	; remove dictionary
-	Delete "$INSTDIR\dictionary\american.hash"
+	;Delete "$INSTDIR\dictionary\american.hash"
+	Delete "$INSTDIR\dictionary\*.hash"
 !macroend
 
 
@@ -32,8 +33,10 @@ SubSectionEnd ; Dictionaries
 	DetailPrint "*** ssection_dictionary"
 
 	; remove ispell dictionary info file
-	${DoIfDirLacks} "*.hash"  "$INSTDIR\dictionary" "Delete 'ispell_dictionary_list.xml'"
+	${DoIfDirLacks} "*.hash"  "$INSTDIR\dictionary" 'Delete "$INSTDIR\dictionary\ispell_dictionary_list.xml"'
 
 	; attempt to remove dictionary directory, if no more are present
 	${DeleteDirIfEmpty} "$INSTDIR\dictionary"
+	IfFileExists "$INSTDIR\dictionary" 0 +2
+	DetailPrint "Unable to remove $INSTDIR\dictionary"
 !macroend
