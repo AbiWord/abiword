@@ -161,7 +161,6 @@ Distribution: RedHat 7.x Contrib
 Requires: gtk+ >= 1.2.7
 Requires: glib >= 1.2.7
 Requires: %{name}-fonts
-BuildArch: i386 i486 i586 i686
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -196,7 +195,6 @@ BuildRequires: gnome-vfs-devel
 AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration this version is compiled with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
 
 %package embeddable
-BuildArch: noarch
 Requires: bonobo
 BuildRequires: bonobo-devel
 Summary: Files for embedding AbiWord in other bonobo-aware programs.
@@ -224,7 +222,6 @@ Perl Module containing classes for AbiWord Scripting.
 
 %if %{enable_abicommand}
 %package plugin-abicommand
-BuildArch: i386 i486 i586 i686
 Summary: Enables AbiWord to be used as a commanded daemon.
 Group: Applications/Productivity
 Requires: abiword
@@ -235,7 +232,6 @@ Installing this plugin will enable you to use AbiWord as a commanded daemon.
 
 %if %{enable_abigimp}
 %package plugin-abigimp
-BuildArch: i386 i486 i586 i686
 Summary: Enables editing of your images in The GIMP.
 Group: Applications/Productivity
 Requires: abiword
@@ -246,7 +242,6 @@ Installing this plugin will allow AbiWord to transfer images to The GIMP for edi
 
 %if %{enable_aiksaurus}
 %package plugin-aiksaurus
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to connect with AikSaurus.
 Group: Applications/Productivity
 BuildRequires: Aiksaurus, AiksaurusGTK
@@ -259,7 +254,6 @@ Go to http://www.aiksaurus.com and download AikSaurus and AikSaurusGTK.
 
 %if %{enable_babelfish}
 %package plugin-babelfish
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to show babelfish translations.
 Group: Applications/Productivity
 Requires: abiword
@@ -270,7 +264,6 @@ Installing this plugin will allow abiword fetch babelfish translations for selec
 
 %if %{enable_bz2abw}
 %package plugin-bz2abw
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword documents compressed with bzip2
 Group: Applications/Productivity
 Requires: bzip2, abiword
@@ -282,7 +275,6 @@ Installing this plugin will allow abiword to open abiword documents compressed w
 
 %if %{enable_festvox}
 %package plugin-festvox
-BuildArch: i386 i486 i586 i686
 Summary: Plugin for festvox
 Group: Applications/Productivity
 Requires: abiword
@@ -293,7 +285,6 @@ Plugin for festvox
 
 %if %{enable_freetranslation}
 %package plugin-freetranslation
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to connect with freetranslation.
 Group: Applications/Productivity
 Requires: abiword
@@ -304,7 +295,6 @@ Plugin to allow abiword to connect with freetranslation.
 
 %if %{enable_gdict}
 %package plugin-gdict
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to use gdict
 Group: Applications/Productivity
 Requires: abiword
@@ -315,7 +305,6 @@ Plugin to allow abiword to use gdict
 
 %if %{enable_gdkpixbuf} && ! %{enable_gnome}
 %package plugin-gdkpixbuf
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to import several image types with gdk-pixbuf
 Group: Applications/Productivity
 Requires: gdk-pixbuf, abiword
@@ -327,7 +316,6 @@ Installing this plugin will allow abiword to import all image types supported by
 
 %if %{enable_html}
 %package plugin-html
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to enable import of arbitrary HTML documents (experimental)
 Group: Applications/Productivity
 Requires: libxml2, abiword
@@ -339,7 +327,6 @@ Installing this plugin will allow abiword to import of arbitrary HTML documents 
 
 %if %{enable_imagemagick}
 %package plugin-imagemagick
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to use imagemagick.
 Group: Applications/Productivity
 Requires: abiword
@@ -350,7 +337,6 @@ Installing this plugin will allow abiword to use imagemagick.
 
 %if %{enable_openwriter}
 %package plugin-openwriter
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to read/write OpenWriter and StartWriter documents
 Group: Applications/Productivity
 Requires: abiword
@@ -361,7 +347,6 @@ Plugin to allow abiword to read/write OpenWriter and StartWriter documents
 
 %if %{enable_shell}
 %package plugin-shell
-BuildArch: i386 i486 i586 i686
 Summary: Enables redirection of shell output into AbiWord.
 Group: Applications/Productivity
 Requires: abiword
@@ -372,7 +357,6 @@ Installing this plugin will allow AbiWord to read output of shell commands.
 
 %if %{enable_urldict}
 %package plugin-urldict
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to use dict through a web browser
 Group: Applications/Productivity
 Requires: abiword
@@ -383,7 +367,6 @@ Installing this plugin will allow abiword to use dict through a web browser on s
 
 %if %{enable_wikipedia}
 %package plugin-wikipedia
-BuildArch: i386 i486 i586 i686
 Summary: Plugin to allow abiword to connect with WikiPedia.
 Group: Applications/Productivity
 Requires: abiword
@@ -396,7 +379,6 @@ Plugin to allow abiword to connect with WikiPedia.
 Summary: AbiWord Fonts
 Group: Applications/Productivity
 Epoch: 1
-BuildArch: noarch
 
 %description fonts
 These are the basic fonts used by AbiWord.
@@ -404,7 +386,6 @@ These are the basic fonts used by AbiWord.
 %package clipart
 Summary: AbiWord Clipart
 Group: Applications/Productivity
-BuildArch: noarch
 
 %description clipart
 This is the clipart portfolio used by AbiWord.
@@ -482,7 +463,7 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
 %{ABIPREFIX}/AbiSuite/bin
-%{ABIPREFIX}/AbiSuite/dictionary/*american*.hash
+%attr(644,root,root) %{ABIPREFIX}/AbiSuite/dictionary/*american*.hash*
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
