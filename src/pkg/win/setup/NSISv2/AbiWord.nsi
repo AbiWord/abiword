@@ -71,6 +71,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 ; Useful inclusions
 !include Sections.nsh
 !include "abi_util_ifexists.nsh"
+!include "abi_util_startmenu.nsh"
 
 
 ; Support 'Modern' UI and multiple languages
@@ -114,42 +115,6 @@ InstType "Full plus Downloads"		;Section 5
 !define DLSECT
 !endif
 ; any other combination is "Custom"
-
-
-
-; Create a language localized Start Menu group
-!macro lngCreateSMGroup group
-	push $0
-	StrCpy $0 "${group}"
-	CreateDirectory "$SMPROGRAMS\$0"
-	pop $0
-!macroend
-!define lngCreateSMGroup "!insertmacro lngcreateSMGroup"
-
-; Create a language localized Start Menu ShortCut
-; we split the link.lnk up so we can use localized components without confusing NSIS
-!macro lngCreateShortCut basedir group linkname target.file parameters icon.file icon_index_number
-	push $0
-	push $1
-	push $2
-	StrCpy $0 "${basedir}"
-	StrCpy $0 "$0\"
-	; if group is empty skip past it
-	StrCpy $1 "${group}"
-	StrLen $2 "$1"
-	IntCmp $2 0 +3
-	StrCpy $0 "$0$1"
-	StrCpy $0 "$0\"
-	;skipGroup:
-	StrCpy $1 ${linkname}
-	StrCpy $0 "$0$1"
-	StrCpy $0 "$0.lnk"
-	CreateShortCut $0 "${target.file}" "${parameters}" "${icon.file}" ${icon_index_number}
-	pop $2
-	pop $1
-	pop $0
-!macroend
-!define lngCreateShortCut "!insertmacro lngCreateShortCut"
 
 
 ; *********************************************************************
@@ -231,9 +196,10 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 
-		; add entry for (English) Help entry, if help documents installed
-		!insertmacro SectionFlagIsSet section_help SF_SELECTED 0 +2
-		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_HELP)" "$INSTDIR\AbiWord\help\en-US\index.html" "" "" 0
+		; if help documents installed, add entry for Help
+		IfFileExists "$INSTDIR\AbiWord\help\en-US\index.html" 0 skipHelpLnk
+			${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_HELP)" "$INSTDIR\AbiWord\help\en-US\index.html" "" "" 0
+		skipHelpLnk:
 	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
