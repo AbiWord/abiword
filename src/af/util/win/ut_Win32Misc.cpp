@@ -19,6 +19,7 @@
 
 #include "ut_misc.h"
 #include <windows.h>
+#include <winsock2.h>
 /*!
     UT_gettimeofday() fills in the timeval structure with current
     time; the platform implementation needs to be as accurate as
