@@ -77,7 +77,8 @@ ABI_WP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
 		/wp/ptbl/xp
 
 ABI_OTH_INCS=	/other/expat/xmltok			\
-		/other/expat/xmlparse /../dist/$(OBJDIR)/include
+		/other/expat/xmlparse			\
+		/../dist/$(OBJDIR)/include
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
 ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))

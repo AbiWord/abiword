@@ -61,9 +61,13 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ##LDFLAGS +=		-static
 ##LDFLAGS +=		-shared
 
+# ACK!  TODO - do we really want a directory pattern match here in a makefile?
+
+THE_LIBS=		$(DIST)/lib/*
+
 # we override the $(PROGRAM) rule.
 
-$(PROGRAM): $(OBJS)
+$(PROGRAM): $(OBJS) $(THE_LIBS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS)
