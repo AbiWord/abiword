@@ -96,6 +96,7 @@ public:
 
     virtual bool				_macUpdate(void);
     virtual bool				_macGrow(void);
+	UT_uint32					_getToolbarCount (void) { return m_vecToolbarLayoutNames.getItemCount(); };
 	WindowPtr					getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 	GrafPtr						getMacWindowPort (void) { UT_ASSERT (m_MacWindowPort != NULL); return m_MacWindowPort; } ;
     void						_getStatusBarRect (Rect & rect) { rect = m_placardRect; };

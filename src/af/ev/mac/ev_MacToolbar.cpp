@@ -28,6 +28,7 @@
 #include "ev_MacToolbar.h"
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
+#include "xap_MacToolbar_Control.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Labels.h"
@@ -52,6 +53,7 @@ EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 	m_pViewListener = NULL;
 	m_lid = 0;							// view listener id
 	m_MacWindow = pMacFrame->getMacWindow ();
+	m_hMainControl = NULL;
 }
 
 EV_MacToolbar::~EV_MacToolbar(void)
@@ -116,14 +118,16 @@ bool EV_MacToolbar::synthesize(void)
 {
 	OSErr err;
 	ControlHandle rootControl;
-	ControlHandle toolbarControl;
+	XAP_MacToolbar_Control *appWideControl;
+	Rect toolbarRect;
 
     short btnX = 8;
-    WindowPtr owningWin = m_pMacFrame->getMacWindow ();
+	appWideControl = ((XAP_MacApp*)m_pMacFrame->getApp())->getToolbarControl();
+    WindowPtr owningWin = appWideControl->getWindow();
     UT_ASSERT (owningWin);
 	// create a toolbar from the info provided.
 
-	xxx_UT_DEBUGMSG(("EV_MacToolbar::synthesize() called !\n"));
+	UT_DEBUGMSG(("EV_MacToolbar::synthesize() called !\n"));
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pMacApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 	
@@ -136,17 +140,16 @@ bool EV_MacToolbar::synthesize(void)
     Rect btnRect;
 
     /* create the toolbar */
-	m_toolbarRect.top = m_pMacFrame->_getVisibleRgnTop();
-    _calcToolbarRect ();
-	m_pMacFrame->_setVisibleRgnTop (m_toolbarRect.bottom);
-	err = ::GetRootControl(m_MacWindow, &rootControl);
+	appWideControl->requestToolbarRect (toolbarRect);
+	err = ::GetRootControl(owningWin, &rootControl);
 	UT_ASSERT (err == noErr);
 	if (err) {
 		UT_DEBUGMSG(("GetRootControl failed: %d\n", err));
 	}
-	::CreateWindowHeaderControl (m_MacWindow, &m_toolbarRect, false, &toolbarControl);
-	UT_ASSERT (toolbarControl);
-	err = ::EmbedControl (toolbarControl, rootControl);
+	::CreateWindowHeaderControl (owningWin, &toolbarRect, false, &m_hMainControl);
+	UT_ASSERT (m_hMainControl);
+	::HideControl (m_hMainControl);
+	err = ::EmbedControl (m_hMainControl, rootControl);
 	UT_ASSERT (err == noErr);
 	if (err) {
 		UT_DEBUGMSG(("EmbedControl failed: %d\n", err));
@@ -212,15 +215,15 @@ bool EV_MacToolbar::synthesize(void)
 
 
                 // build control
-                btnRect.top = m_toolbarRect.top + 8;
+                btnRect.top = toolbarRect.top + 8;
                 btnRect.left = btnX;
                 btnRect.bottom = btnRect.top + 24;
                 btnRect.right = btnX + 24;
                 
-				UT_DEBUGMSG (("Toolbar: new push button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
+				xxx_UT_DEBUGMSG (("Toolbar: new push button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
                 control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonNormalBevelProc, 0);
 				UT_ASSERT (control);
-				err = ::EmbedControl (control, toolbarControl);
+				err = ::EmbedControl (control, m_hMainControl);
 				UT_ASSERT (err == noErr);
 				// set its icon
 				ControlButtonContentInfo info;
@@ -240,14 +243,14 @@ bool EV_MacToolbar::synthesize(void)
                 // get pixmap
                 
                 // build control
-                btnRect.top = m_toolbarRect.top + 8;
+                btnRect.top = toolbarRect.top + 8;
                 btnRect.left = btnX;
                 btnRect.bottom = btnRect.top + 24;
                 btnRect.right = btnX + 24;
                 
-				UT_DEBUGMSG (("Toolbar: new group button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
+				xxx_UT_DEBUGMSG (("Toolbar: new group button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
                 control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonNormalBevelProc, 0);
-				err = ::EmbedControl (control, toolbarControl);
+				err = ::EmbedControl (control, m_hMainControl);
 				UT_ASSERT (err == noErr);
                 btnX += 32;
                 break;
@@ -271,7 +274,7 @@ bool EV_MacToolbar::synthesize(void)
                 //
                 // Really special as Combo Box does NOT exists in MacOS.
                 // Use popup menu instead. This will be the same as combo boxes are not editable in AbiWord
-                btnRect.top = m_toolbarRect.top + 8;
+                btnRect.top = toolbarRect.top + 8;
                 btnRect.left = btnX;
                 btnRect.bottom = btnRect.top + 24;
                 btnRect.right = btnX + iWidth;
@@ -285,7 +288,7 @@ bool EV_MacToolbar::synthesize(void)
 							kControlBehaviorCommandMenu + kControlContentTextOnly, 0,
 							kControlBevelButtonNormalBevelProc, 0);
                 // control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
-				err = ::EmbedControl (control, toolbarControl);
+				err = ::EmbedControl (control, m_hMainControl);
 				UT_ASSERT (err == noErr);
                 btnX += iWidth + 8;
 				if (pControl)
@@ -315,7 +318,8 @@ bool EV_MacToolbar::synthesize(void)
 				break;
 					
 			case EV_TBIT_Spacer:
-				UT_DEBUGMSG (("Putting spacer\n"));
+				// TODO really put some visual spacer. Purely cosmetic.
+				xxx_UT_DEBUGMSG (("Putting spacer\n"));
 				btnX += 8;
 				break;
 					
@@ -529,24 +533,3 @@ bool EV_MacToolbar::getToolTip(long lParam)
 	return true;
 }
 
-
-void EV_MacToolbar::_calcToolbarRect ()
-{
-    Rect rect;
-    GrafPtr	macWindowPort;
-#if TARGET_API_MAC_CARBON
-    macWindowPort = ::GetWindowPort (m_MacWindow);
-    ::GetPortBounds (macWindowPort, &rect);
-#else
-    /* don't do this in Carbon !! */
-    macWindowPort = (GrafPtr)m_MacWindow;
-    rect = macWindowPort->portRect;
-#endif
-    // Draw the window header where toolbar reside
-	short top = m_toolbarRect.top;
-    m_toolbarRect = rect;
-    ::InsetRect (&m_toolbarRect, -1, -1 );
-	// get the previous toolbar...
-	m_toolbarRect.top = top;
-    m_toolbarRect.bottom = m_toolbarRect.top + 40;
-}

@@ -43,6 +43,7 @@
 #include "xap_ViewListener.h"
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
+#include "xap_MacToolbar_Control.h"
 #include "ev_MacKeyboard.h"
 #include "ev_MacMouse.h"
 #include "ev_MacMenu.h"
@@ -155,12 +156,17 @@ XAP_Frame *	XAP_MacFrame::cloneFrame(void)
 
 bool	XAP_MacFrame::close(void)
 {
+	XAP_MacToolbar_Control *appWideControl = ((XAP_MacApp*)getApp())->getToolbarControl();
+	// we must remove the toolbar before killing the controls
+	appWideControl->setToolbar (NULL);
 	::DisposeWindow ((WindowPtr)m_MacWindow);
 	return true;
 }
 
 bool	XAP_MacFrame::raise(void)
 {
+	XAP_MacToolbar_Control *appWideControl = ((XAP_MacApp*)getApp())->getToolbarControl();
+	appWideControl->setToolbar (this);
 #if defined(USE_CARBON_EVENTS)
 	// only needed if not doing Carbon Events. Otherwise done automatically
 	::BringToFront ((WindowPtr)m_MacWindow);
@@ -170,6 +176,8 @@ bool	XAP_MacFrame::raise(void)
 
 bool	XAP_MacFrame::show(void)
 {
+	XAP_MacToolbar_Control *appWideControl = ((XAP_MacApp*)getApp())->getToolbarControl();
+	appWideControl->setToolbar (this);
 	::ShowWindow ((WindowPtr)m_MacWindow);
 	return true;
 }

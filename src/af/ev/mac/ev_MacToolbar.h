@@ -60,11 +60,13 @@ class EV_MacToolbar : public EV_Toolbar
 	
 	WindowPtr getWindow(void) const;
 	bool getToolTip(long lParam);
+	ControlHandle	getControl () { return m_hMainControl; };
+	UT_Vector &	getWidgets () { return m_vecToolbarWidgets; };
 	XAP_MacApp * getApp() { return m_pMacApp; };		// refactor and put it in EV_Toolbar
  protected:
     void 	_releaseListener(void);
  private:
-    void							_calcToolbarRect ();
+//    void							_calcToolbarRect ();
     
     XAP_MacApp *					m_pMacApp;
     XAP_MacFrame *                  m_pMacFrame;
@@ -74,7 +76,8 @@ class EV_MacToolbar : public EV_Toolbar
     AP_MacToolbar_Icons *			m_pMacToolbarIcons;
     UT_Vector						m_vecToolbarWidgets;
     WindowPtr						m_MacWindow;
-    Rect							m_toolbarRect;
+	ControlHandle					m_hMainControl;
+//    Rect							m_toolbarRect;
     
     bool _refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, UT_uint32 k);
     bool _refreshID(XAP_Toolbar_Id id);

@@ -28,8 +28,10 @@
 #include "xap_MacDialogFactory.h"
 #include "xap_MacTlbr_ControlFactory.h"
 
+
 class XAP_Args;
 class XAP_MacFontManager;
+class XAP_MacToolbar_Control;
 class AP_MacToolbar_Icons;
 
 /*****************************************************************
@@ -58,6 +60,7 @@ public:
    	void run ();
    	void terminate ()		{ m_finished = true; };		// simply set the finished flag to true
 
+	XAP_MacToolbar_Control * getToolbarControl () { return m_pToolbarControl; };
 	static bool m_NotInitialized;
 
 /* 
@@ -85,6 +88,7 @@ protected:
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	bool					m_finished;
 	XAP_MacFontManager *		m_pMacFontManager;
+	XAP_MacToolbar_Control *	m_pToolbarControl;
 	
 	AP_MacToolbar_Icons *		m_pMacToolbarIcons;
 	AP_MacDialogFactory			m_dialogFactory;

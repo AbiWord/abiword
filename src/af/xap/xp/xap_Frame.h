@@ -170,8 +170,7 @@ public:
 
 protected:
 	virtual void				_createToolbars();
-	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *)
-									{ return NULL; } // Abstract
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) = 0; // Abstract
 
 	XAP_App *					m_app;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */

@@ -42,6 +42,7 @@ libXap_mac_a_SOURCES=		\
 	xap_MacDlg_MessageBox.cpp	\
 	xap_MacModule.cpp	\
 	xap_MacDlg_Print.cpp	\
-	xap_MacTlbr_Icons.cpp
+	xap_MacTlbr_Icons.cpp	\
+	xap_MacToolbar_Control.cpp
 
 

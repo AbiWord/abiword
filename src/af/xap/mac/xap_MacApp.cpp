@@ -53,6 +53,8 @@
 #include "xap_MacFontManager.h"
 #include "xap_MacTlbr_Icons.h"
 #include "xap_MacTlbr_ControlFactory.h"
+#include "xap_MacToolbar_Control.h"
+
 #include "ev_MacMenu.h"
 
 
@@ -70,12 +72,14 @@ XAP_MacApp::XAP_MacApp(XAP_Args * pArgs, const char * szAppName)
 	m_finished = false;
 	m_pMacToolbarIcons = 0;
 	m_pMacFontManager = NULL;
+	m_pToolbarControl = new XAP_MacToolbar_Control ();
 }
 
 XAP_MacApp::~XAP_MacApp(void)
 {
 	DELETEP(m_pMacFontManager);
 	DELETEP(m_pMacToolbarIcons);
+	DELETEP(m_pToolbarControl);
 }
 
 bool XAP_MacApp::initialize(void)
@@ -91,7 +95,7 @@ bool XAP_MacApp::initialize(void)
 
 	// load only one copy of the platform-specific icons.
 
-//	m_pMacToolbarIcons = new AP_MacToolbar_Icons();
+	m_pMacToolbarIcons = new AP_MacToolbar_Icons();
 	
 	// do anything else we need here...
 
@@ -105,6 +109,8 @@ bool XAP_MacApp::initialize(void)
 	EventHandlerUPP handlerUPP = NewEventHandlerUPP (HandleCarbonMenus);
 	err = ::InstallApplicationEventHandler (handlerUPP, 1, eventTypes, (void*)this, &handlerRef);
 #endif
+
+	m_pToolbarControl->show ();
 
 	return true;
 }
