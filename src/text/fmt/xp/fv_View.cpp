@@ -439,7 +439,7 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		// computing which column the cursor is in is rather expensive,
 		// i'm not sure it's worth the effort here...
 		
-		fp_Run * pRun;
+		fp_Run * pRun = NULL;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 
@@ -5677,8 +5677,8 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	{
 		// we are in a column context
 
-		fl_BlockLayout * pBlock;
-		fp_Run * pRun;
+		fl_BlockLayout * pBlock = NULL;
+		fp_Run * pRun = NULL;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 
@@ -5747,8 +5747,8 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 		pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_COLUMNS;
 
-		fl_BlockLayout * pBlock;
-		fp_Run * pRun;
+		fl_BlockLayout * pBlock = NULL;
+		fp_Run * pRun = NULL;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 

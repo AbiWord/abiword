@@ -927,8 +927,8 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	  NOT the baseline.
 	*/
 	
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
+	const UT_UCSChar* pSpan = NULL;
+	UT_uint32 lenSpan = 0;
 	UT_uint32 offset = iStart;
 	UT_uint32 len = iLen;
 	UT_Bool bContinue = UT_TRUE;
@@ -1158,8 +1158,8 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
     UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
     UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
-    const UT_UCSChar* pSpan;
-    UT_uint32 lenSpan;
+    const UT_UCSChar* pSpan = NULL;
+    UT_uint32 lenSpan = 0;
     UT_uint32 len = m_iLen;
     UT_sint32 iWidth = 0;
     UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
@@ -1297,8 +1297,8 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 {
 	// NOTE: startPosition is run-relative
 	// NOTE: return value is block-relative (don't ask me why)
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
+	const UT_UCSChar* pSpan = NULL;
+	UT_uint32 lenSpan = 0;
 	UT_uint32 offset = m_iOffsetFirst + startPosition;
 	UT_uint32 len = m_iLen - startPosition;
 	UT_Bool bContinue = UT_TRUE;
@@ -1346,8 +1346,8 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 
 UT_Bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 {
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
+	const UT_UCSChar* pSpan = NULL;
+	UT_uint32 lenSpan = 0;
 
 	UT_ASSERT(run_offset < m_iLen);
 
@@ -1396,8 +1396,8 @@ UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 {
 	if(m_iLen > 0)
 	{
-		const UT_UCSChar* pSpan;
-		UT_uint32 lenSpan;
+		const UT_UCSChar* pSpan = NULL;
+		UT_uint32 lenSpan = 0;
 		UT_uint32 offset = m_iOffsetFirst;
 		UT_uint32 len = m_iLen;
 		UT_Bool bContinue = UT_TRUE;
@@ -1683,13 +1683,13 @@ UT_uint32 fp_TextRun::countJustificationPoints(void) const
 
 UT_Bool fp_TextRun::canContainPoint(void) const
 {
-        if (m_pField) 
+	if (m_pField) 
 	{
-	        return UT_FALSE;
+		return UT_FALSE;
 	}
 	else
 	{
-	        return UT_TRUE;
+		return UT_TRUE;
 	}
 }
 
@@ -1706,8 +1706,8 @@ void fp_TextRun::__dump(FILE * fp) const
 
 	fprintf(fp,"      [");
 	{
-		const UT_UCSChar* pSpan;
-		UT_uint32 lenSpan;
+		const UT_UCSChar* pSpan = NULL;
+		UT_uint32 lenSpan = 0;
 
 		UT_uint32 koff=m_iOffsetFirst;
 		UT_uint32 klen=m_iLen;

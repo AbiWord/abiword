@@ -222,7 +222,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pSectionAP,
 								UT_sint32 iUseLayoutResolution)
 {
-	GR_Font* pFont;
+	GR_Font* pFont = NULL;
 
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
@@ -276,7 +276,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pSectionAP,
 								UT_sint32 iUseLayoutResolution, UT_Bool isField)
 {
-	GR_Font* pFont;
+	GR_Font* pFont = NULL;
 
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, UT_TRUE);

@@ -583,7 +583,7 @@ void fp_Line::layout(void)
 			UT_ASSERT(bRes);
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
-			fp_Run *pScanRun;
+			fp_Run *pScanRun = NULL;
 			int iScanWidth = 0;
 			int iScanWidthLayoutUnits = 0;
 
@@ -642,7 +642,7 @@ void fp_Line::layout(void)
 			case FL_TAB_DECIMAL:
 			{
 				UT_UCSChar *pDecimalStr;
-				UT_uint32	runLen;
+				UT_uint32	runLen = 0;
 
 				// the string to search for decimals
 				UT_UCS_cloneString_char(&pDecimalStr, ".");
@@ -829,15 +829,15 @@ UT_Bool fp_Line::recalculateFields(void)
 
 fp_Run* fp_Line::getLastRun(void) const
 { 
-        UT_sint32 i = m_vecRuns.getItemCount();
+	UT_sint32 i = m_vecRuns.getItemCount();
 	if( i <= 0 )
 	{    
-	        fp_Run * pRun = getBlock()->getFirstRun();
+		fp_Run * pRun = getBlock()->getFirstRun();
 		return pRun;
 	}
 	else
 	{
-                return ((fp_Run*) m_vecRuns.getLastItem()); 
+		return ((fp_Run*) m_vecRuns.getLastItem()); 
 	}
 }
 
