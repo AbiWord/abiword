@@ -68,13 +68,16 @@ int GR_QNXGraphics::DrawSetup() {
 	//sometimes abi is stupid and calls a raw draw function without making sure we want to draw it (ie, Left ruler in normal view mode), therefor we do a simple check if our widget is realized or not...
 	if(PtWidgetIsRealized(m_pDraw) == 0) return -1;
 
-//	m_pOldDC = PhDCSetCurrent(m_pOSC);
 	m_pGC_old=PgSetGC(m_pGC);
 
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
+
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
-	PgSetTranslation (&m_OffsetPoint,0); //replace translation with this one.
+	m_OffsetPoint.y+=m_pDraw->area.pos.y;
+	m_OffsetPoint.x+=m_pDraw->area.pos.x;
+	PgSetTranslation (&m_OffsetPoint,0); //replace translation with this one.	
+
 /*	PhPoint_t trans;
 	trans.x = -m_OffsetPoint.x;
 	trans.y = -m_OffsetPoint.y;
@@ -83,12 +86,6 @@ int GR_QNXGraphics::DrawSetup() {
 	//Always clip to the canvas
 	PhRect_t _rdraw;
 	PtCalcCanvas(m_pDraw, &_rdraw);
-//	PtClipAdd(m_pDraw,&_rdraw);
-/*
-	printf("Widget Rect %d,%d %d,%d \n",
-		_rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y);
-*/
-
 	//Add additional user clipping areas (only one for now)
 	if (m_pClipList) {
 		//Instead use this
@@ -103,8 +100,11 @@ int GR_QNXGraphics::DrawSetup() {
 			memset(&_rdraw, 0, sizeof(_rdraw));
 		}
 	}
-
+/*	PhPoint_t abs;
+	PtGetAbsPosition(m_pDraw,&abs.x,&abs.y);
+	PhDeTranslateRect(&_rdraw,&abs);*/
 	PgSetUserClip(&_rdraw);
+
 
 	return 0;
 
@@ -163,7 +163,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_pPrintContext = NULL;
 	m_iAscentCache = m_iDescentCache = m_iHeightCache -1;
 
-	m_pOSC = PdCreateOffscreenContext(0,draw->area.size.w,draw->area.size.h,NULL);
+//	m_pOSC = PdCreateOffscreenContext(0,draw->area.size.w,draw->area.size.h,NULL);
 	m_pFontCx = PfAttachCx("/dev/phfont",240000);
 	
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
@@ -182,7 +182,7 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	  PgShmemDestroy(pImg);
 	}
 	PgDestroyGC(m_pGC);
-	PhDCRelease(m_pOSC);
+//	PhDCRelease(m_pOSC);
 	PfDetach(m_pFontCx);
 }
 
@@ -435,13 +435,14 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar *s,int iOffset,int num,UT_GrowBufElement *pWidths)
 {
 const char *font;
-uint16_t mychr[num + 1]; //QNX does not support UCS-4
-int indices[num]; //Get pen x pos after the last char
+uint16_t mychr[50]; //QNX does not support UCS-4
+int indices[50]; //Get pen x pos after the last char
 int indicesnum=0;
-int penpos[num]; //will hold the pen x pos after the letter inclined by indices. 
+int penpos[50]; //will hold the pen x pos after the letter inclined by indices. 
 PhRect_t rect;
 long scale=0; //16.16
 
+UT_DEBUGMSG(("MeasureString: %d,%d\n",iOffset,num));
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
@@ -457,14 +458,16 @@ mychr[num] = '\0';
 
 scale = DOUBLE_TO_FIXED((double)m_pFont->getSize() * (double)(getZoomPercentage()/100.0));
 
-PfExtentFractTextCharPositions(&rect,NULL,(char *)&mychr,font,(int *)&indices,(int *)&penpos,indicesnum,PF_WIDE_CHARS,0,0,NULL,scale,scale);
+PfExtentFractTextCharPositions(&rect,NULL,(char *)&mychr,font,(int *)&indices,(int *)&penpos,indicesnum,PF_WIDE_CHARS,sizeof(uint16_t)*num,0,NULL,scale,scale);
 if(pWidths)
 	for(int i=0;i<indicesnum;i++)
-		pWidths[i] = tlu(penpos[i]);
+		pWidths[i] = tlu((penpos[i] - ((i > 0) ? penpos[i-1] : 0)));
 
 return tlu((rect.lr.x - min(rect.ul.x,0) +1 ) );
 }
-#endif 
+#endif
+
+
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 
@@ -1347,3 +1350,30 @@ void GR_QNXGraphics::restoreRectangle(UT_uint32 iIndx)
   return;
 }
 
+const char *QNXFont::getFont()
+{
+return m_fontstr;
+}
+const int QNXFont::getSize() {
+	return m_size;
+}
+
+QNXFont::QNXFont(const char *aFont)
+{
+	m_fontstr = (aFont) ? UT_strdup(aFont) : NULL; 
+	m_fontID = PfDecomposeStemToID(m_fontstr);
+	m_size = PfFontSize(m_fontID);
+	m_hashKey =m_fontstr;	
+}
+
+QNXFont::~QNXFont() {
+if (m_fontstr) { 
+	free(m_fontstr); 
+	PfFreeFont(m_fontID);
+} 
+}
+UT_sint32 QNXFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
+{
+printf("\n");
+return 0;
+}

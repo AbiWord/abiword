@@ -21,7 +21,6 @@
 #define GR_QNXGRAPHICS_H
 
 #include "xap_QNXApp.h"
-//#include "xap_QNXFont.h"
 #include "gr_Graphics.h"
 #include <string.h>
 #include <Pt.h>
@@ -33,28 +32,17 @@
 class UT_ByteBuf;
 
 class QNXFont : public GR_Font {
-        public:
-                QNXFont(const char *aFont) { 
-					m_fontstr = (aFont) ? UT_strdup(aFont) : NULL; 
-					m_fontID = PfDecomposeStemToID(m_fontstr);
-					m_size = PfFontSize(m_fontID);
-				};
-                ~QNXFont() { 
-					if (m_fontstr) { 
-						free(m_fontstr); 
-					PfFreeFont(m_fontID);
-					} 
-				};
-                const char *getFont(void) { 
-					return(m_fontstr); 
-				};
-				const int getSize(void) {
-					return m_size;
-				};
-        private:
-                char   *m_fontstr;
-								int			m_size;
-								FontID	*m_fontID;
+  public:
+		QNXFont(const char *aFont); 
+		~QNXFont();
+		const char *getFont(void); 
+		const int getSize(void);
+		virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
+
+	private:
+		char   *m_fontstr;
+		int			m_size;
+		FontID	*m_fontID;
 };
 
 class GR_QNXGraphics : public GR_Graphics
@@ -62,7 +50,7 @@ class GR_QNXGraphics : public GR_Graphics
  public:
 	GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App * app);
 	~GR_QNXGraphics();
-	
+
 	virtual void		drawGlyph(UT_uint32 glyph_idx,UT_sint32 xoff,UT_sint32 yoff);
 	virtual void 		drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void 		drawChars(const UT_UCSChar* pChars, int iCharOffset,
