@@ -56,6 +56,9 @@ public:
 private:
 	XAP_MacApp *m_pMacApp;
 	XAP_MacFrame *m_pMacFrame;
+#if UNIVERSAL_INTERFACES_VERSION <= 0x0330
+	typedef Handle MenuBarHandle;
+#endif
     MenuBarHandle	m_hMacMenubar;
     
     short m_lastMenuID;

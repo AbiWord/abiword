@@ -85,7 +85,11 @@ EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 EV_MacMenu::~EV_MacMenu(void)
 {
     if (m_hMacMenubar) {
+#if UNIVERSAL_INTERFACES_VERSION <= 0x0330
+        ::DisposeHandle (m_hMacMenubar);
+#else
         ::DisposeMenuBar (m_hMacMenubar);
+#endif
         m_hMacMenubar = NULL;
     }
 }
