@@ -26,6 +26,7 @@
 *****************************************************************/
 
 // Indonesian translation by Tim & Rita Allen <tim@proximity.com.au>
+// Amendments suggested by I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>
 
 // Note: if the tooltip is blank, the status message will be used as the
 // Note: tooltip.  therefore, we probably don't need most tooltip strings
@@ -58,13 +59,13 @@ BeginSet(IdID,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Kembali",	tb_undo_xpm,	NULL, "Batalkan perintah terakhir")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Berlaku lagi",		tb_redo_xpm,	NULL, "Yang dibatalkan tadi berlaku lagi")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Gunting",	tb_cut_xpm,	NULL, "Gunting")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Potong",	tb_cut_xpm,	NULL, "Potong")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Salin",	tb_copy_xpm,	NULL, "Salin")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Letakkan",	tb_paste_xpm,	NULL, "Letakkan")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Model",	NoIcon,			NULL, "Model")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Fon",		NoIcon,			NULL, "Fon")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Ukuran Fon",	NoIcon,			NULL, "Ukuran Fon")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Huruf",		NoIcon,			NULL, "Huruf")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Ukuran huruf",	NoIcon,			NULL, "Ukuran huruf")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Tebal",		tb_text_bold_xpm,		NULL, "Tebal")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Miring",	tb_text_italic_xpm,	NULL, "Miring")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Garis bawah",tb_text_underline_xpm,	NULL, "Garis bawah")
@@ -76,7 +77,7 @@ BeginSet(IdID,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Kiri",		tb_text_align_left_xpm,		NULL, "Rata kiri")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Tengah",	tb_text_center_xpm,	NULL, "Pusatkan di tengah")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Kanan",	tb_text_align_right_xpm,	NULL, "Rata kanan")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justifikasi",	tb_text_justify_xpm,	NULL, "Justifikasikan paragraf")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Rata dua sisi",	tb_text_justify_xpm,	NULL, "Rata dua sisi")
 
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Tidak ada sebelum",		tb_para_0before_xpm,	NULL, "Ruang sebelum: Tidak ada")
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt sebelum",		tb_para_12before_xpm,	NULL, "Ruang sebelum: 12 pt")

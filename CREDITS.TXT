@@ -30,7 +30,7 @@ Martin Willemoes Hansen <mwh@stampede.org>
 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>	m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
-Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>	GNOME front end
+Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>	GNOME front end, LaTeX exporter
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
@@ -59,6 +59,7 @@ translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Tim & Rita Allen <tim@proximity.com.au>		Indonesian
+I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
 Henrik Berg <henrik@lansen.se>			Swedish
 Frédéric CELLA <fcella@mahj.org>                French
 Mauro Colorio <macolori@tin.it>                 Italian
