@@ -3367,7 +3367,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 			fp_Run * pPrevRun = NULL;
 			UT_uint32 iLength = 0;
-			while(pRun && pRun->deleteFollowingIfAtInsPoint())
+			while(pRun && (pRun->deleteFollowingIfAtInsPoint() && (getPoint() == curBlock->getPosition() + pRun->getBlockOffset())))
 			{
 				pPrevRun = pRun;
 				iLength += pRun->getLength();
@@ -3390,7 +3390,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 			fp_Run * pPrevRun = NULL;
 			UT_uint32 iLength = 0;
-			while(pRun && pRun->deleteFollowingIfAtInsPoint())
+			while(pRun && (pRun->deleteFollowingIfAtInsPoint() && (getPoint() == curBlock->getPosition() + pRun->getBlockOffset())) )
 			{
 				pPrevRun = pRun;
 				iLength += pRun->getLength();
