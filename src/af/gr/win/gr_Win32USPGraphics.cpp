@@ -113,14 +113,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		s_iInstanceCount++;
 		if(s_iInstanceCount == 1)
 		{
-			s_pAdvances = new int [200];
-			s_pJustifiedAdvances = new int [200];
-			s_pJustify  = new int [200];
-			s_pLogAttr  = new SCRIPT_LOGATTR[200]; // log attr. correspont to characters, not glyphs, but since there are
-												   // always at least as many glyphs, this is OK
-			s_pChars    = new WCHAR[200];
-			UT_ASSERT_HARMLESS(s_pAdvances && s_pJustifiedAdvances && s_pJustify && s_pLogAttr && s_pChars);
-			s_iAdvancesSize = 200;
+			allocStaticBuffers(200);
 		}
 		
 	};
@@ -151,8 +144,38 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	virtual bool      append(GR_RenderInfo &ri, bool bReverse = false);
 	virtual bool      split (GR_RenderInfo *&pri, bool bReverse = false);
 	virtual bool      cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
-	virtual bool isJustified() const;
+	virtual bool      isJustified() const;
 	
+	inline bool       allocStaticBuffers(UT_uint32 iSize)
+	    {
+			s_iAdvancesSize = 0;
+			if(s_pAdvances) { delete [] s_pAdvances; s_pAdvances = NULL;}
+			s_pAdvances = new int [iSize];
+
+			if(s_pJustifiedAdvances) { delete [] s_pJustifiedAdvances; s_pJustifiedAdvances = NULL;}
+			s_pJustifiedAdvances = new int [iSize];
+
+			if(s_pJustify) { delete [] s_pJustify; s_pJustify = NULL; }
+			s_pJustify  = new int [iSize];
+
+			if(s_pLogAttr) { delete [] s_pLogAttr; s_pLogAttr = NULL; }
+			s_pLogAttr  = new SCRIPT_LOGATTR[iSize]; // log attr. correspont to characters, not glyphs, but since there are
+												   // always at least as many glyphs, this is OK
+			if(s_pChars) { delete [] s_pChars; s_pChars = NULL; }
+			s_pChars    = new WCHAR[iSize];
+
+			UT_return_val_if_fail(s_pAdvances && s_pJustifiedAdvances && s_pJustify && s_pLogAttr && s_pChars, false);
+
+			s_iAdvancesSize = iSize;
+			
+			s_pOwnerDraw = NULL;
+			s_pOwnerCP = NULL;
+			s_pOwnerChar = NULL;
+			
+			return true;
+	    }
+
+  public:
 
 	WORD *           m_pIndices;
 	SCRIPT_VISATTR * m_pVisAttr;
@@ -812,17 +835,7 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 
 	if(RI.s_iAdvancesSize < RI.m_iIndicesCount)
 	{
-		delete [] RI.s_pAdvances; delete [] RI.s_pJustifiedAdvances;  delete [] RI.s_pJustify;
-		RI.s_pAdvances = new int [RI.m_iIndicesCount];
-		RI.s_pJustifiedAdvances = new int [RI.m_iIndicesCount];
-		RI.s_pJustify  = new int [RI.m_iIndicesCount];
-		// also need to realloc s_pLogAttr and s_pChars, since we do not keep track
-		// of is size separately
-		delete [] RI.s_pLogAttr; delete [] RI.s_pChars;
-		RI.s_pLogAttr = new SCRIPT_LOGATTR[RI.m_iIndicesCount];
-		RI.s_pChars   = new WCHAR[RI.m_iIndicesCount];
-		
-		RI.s_iAdvancesSize = RI.m_iIndicesCount;
+		UT_return_if_fail(RI.allocStaticBuffers(RI.m_iIndicesCount));
 	}
 
 	UT_sint32 iWidth = 0;
@@ -999,9 +1012,14 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 		UT_uint32 iPosEnd   = ri.m_pText->getUpperLimit();
 		UT_return_val_if_fail(iPosEnd < 0xffffffff && iPosEnd >= iPosStart, false);
 
-		UT_uint32 iLen = iPosEnd - iPosStart + 1; // including iPosEnd
+		UT_uint32 iLen = UT_MIN(iPosEnd - iPosStart + 1, ri.m_iLength); // including iPosEnd
 
 		ri.s_pOwnerChar = &ri;
+		
+		if(ri.s_iAdvancesSize < iLen)
+		{
+			UT_return_val_if_fail( ri.allocStaticBuffers(iLen),false);
+		}
 		
 		for(UT_uint32 i = 0; i < iLen; ++i, ++(*(ri.m_pText)))
 		{
@@ -1023,13 +1041,19 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 	// for now we will call ScriptBreak from here; should this be too
 	// much of a bottle neck, we will store the values (but we are
 	// already storing loads of data per char)
-	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, false);
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_iOffset < ri.m_iLength, false);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 	iNext = -1;
 	
 	if(!_scriptBreak(RI))
 		return false;
 
+	if(ri.m_iLength < RI.s_iAdvancesSize)
+	{
+		UT_return_val_if_fail( RI.allocStaticBuffers(ri.m_iLength),false );
+	}
+	
+	
 	if(_needsSpecialBreaking(RI))
 	{
 		if(RI.s_pLogAttr[ri.m_iOffset].fSoftBreak)
@@ -1303,7 +1327,11 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 	
 	if(RI.m_pJustify && RI.s_pOwnerCP != &RI)
 	{
-		UT_return_val_if_fail( RI.s_iAdvancesSize >= RI.m_iIndicesCount, 0 );
+		if(RI.s_iAdvancesSize < RI.m_iIndicesCount)
+		{
+			UT_return_val_if_fail( RI.allocStaticBuffers (RI.m_iIndicesCount), 0);
+		}
+		
 		
 		for(UT_uint32 i  = 0; i < RI.m_iIndicesCount; ++i)
 		{
@@ -1339,7 +1367,11 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 	
 	if(RI.m_pJustify && RI.s_pOwnerCP != &RI)
 	{
-		UT_return_if_fail( RI.s_iAdvancesSize >= RI.m_iIndicesCount);
+		if( RI.s_iAdvancesSize < RI.m_iIndicesCount)
+		{
+			UT_return_if_fail( RI.allocStaticBuffers(RI.m_iIndicesCount));
+		}
+		
 		
 		for(UT_uint32 i  = 0; i < RI.m_iIndicesCount; ++i)
 		{
@@ -1432,6 +1464,8 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) *pri;
 
+	UT_return_val_if_fail( m_iClustSize > m_iOffset, false );
+	
 	UT_uint32 iGlyphOffset = m_pClust[m_iOffset];
 	UT_uint32 iGlyphLen1 = iGlyphOffset;
 	UT_uint32 iGlyphLen2 = m_iIndicesCount - iGlyphLen1;
