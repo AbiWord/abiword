@@ -46,16 +46,138 @@ XAP_Dialog * AP_UnixDialog_FormatFootnotes::static_constructor(XAP_DialogFactory
 	return p;
 }
 
+
 AP_UnixDialog_FormatFootnotes::AP_UnixDialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
 	: AP_Dialog_FormatFootnotes(pDlgFactory,id)
 {
-	m_windowMain = 0;
-}
+	m_windowMain = NULL;
+	m_wButtonApply = NULL;
+
+	m_wFootnotesStyleMenu = NULL;
+	m_wFootnotesRestartOnSection = NULL;
+	m_wFootnotesRestartOnPage = NULL;
+	m_wFootnotesInitialValText = NULL;
+	m_wFootnoteSpin = NULL;
+	m_oFootnoteSpinAdj = NULL;
+
+	m_wEndnotesStyleMenu = NULL;
+	m_wEndnotesRestartOnSection = NULL;
+	m_wEndnotesPlaceEndOfDoc = NULL;
+	m_wEndnotesPlaceEndOfSec = NULL;
+	m_wEndnotesInitialValText = NULL;
+	m_wEndnoteSpin = NULL;
+	m_oEndnoteSpinAdj = NULL;
+
+	m_wEnd123 = NULL;
+	m_wEnd123Brack = NULL;
+	m_wEnd123Paren = NULL;
+	m_wEnd123OpenParen = NULL;
+	m_wEndLower = NULL;
+	m_wEndLowerParen = NULL;
+	m_wEndLowerOpenParen = NULL;
+	m_wEndUpper = NULL;
+	m_wEndUpperParen = NULL;
+	m_wEndUpperOpenParen = NULL;
+	m_wEndRomanLower = NULL;
+	m_wEndRomanLowerParen = NULL;
+	m_wEndRomanUpper = NULL;
+	m_wEndRomanUpperParen = NULL;
+
+	m_wFoot123 = NULL;
+	m_wFoot123Brack = NULL;
+	m_wFoot123Paren  = NULL;
+	m_wFoot123OpenParen  = NULL;
+	m_wFootLower  = NULL;
+	m_wFootLowerParen = NULL;
+	m_wFootLowerOpenParen = NULL;
+	m_wFootUpper = NULL;
+	m_wFootUpperParen = NULL;
+	m_wFootUpperOpenParen = NULL;
+	m_wFootRomanLower = NULL;
+	m_wFootRomanLowerParen = NULL;
+	m_wFootRomanUpper = NULL;
+	m_wFootRomanUpperParen = NULL;
+
+	m_FootnoteSpinHanderID= 0;
+	m_EndnoteSpinHanderID =0;
+	m_FootRestartPageID = 0;
+	m_FootRestartSectionID = 0;
+	m_EndPlaceEndofSectionID = 0;
+	m_EndPlaceEndofDocID = 0;
+	m_EndRestartSectionID = 0;
+	m_FootStyleID = 0;
+	m_EndStyleID = 0;
+};
+
 
 AP_UnixDialog_FormatFootnotes::~AP_UnixDialog_FormatFootnotes(void)
 {
 }
+/****************************************************************/
+/* Static Callbacks for event handling */
+/****************************************************************/
+
+static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_MenuChange(widget);
+}
+
+static void s_FootInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_FootInitialValueChange();
+}
+
+
+static void s_Apply(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_Apply();
+}
+
+
+static void s_EndInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_EndInitialValueChange();
+}
+
+static void s_FootRestartPage(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	dlg->event_FootRestartPage();
+}
+
+
+static void s_FootRestartSection(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	dlg->event_FootRestartSection();
+
+}
+
+
+static void s_EndPlaceEndSection(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	dlg->event_EndPlaceEndSection();
+}
+
+static void s_EndPlaceEndDoc(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{
+	dlg->event_EndPlaceEndDoc();
+}
+
+static void s_EndRestartSection(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
+{	
+	dlg->event_EndRestartSection();
+
+}
+
+
 
 /*****************************************************************/
 /***********************************************************************/
@@ -71,8 +193,6 @@ void AP_UnixDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
 				 BUTTON_CANCEL, false))
 	  {
-	  case BUTTON_OK:
-	    event_OK () ; break ;
 	  case BUTTON_DELETE:
 	    event_Delete () ; break ;
 	  default:
@@ -82,22 +202,211 @@ void AP_UnixDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 	abiDestroyWidget ( mainWindow ) ;
 }
 
-void AP_UnixDialog_FormatFootnotes::event_OK(void)
+void AP_UnixDialog_FormatFootnotes::event_Apply(void)
+{
+
+// Apply the current settings to the document
+}
+
+void AP_UnixDialog_FormatFootnotes::event_FootInitialValueChange(void)
+{
+
+}
+
+
+void AP_UnixDialog_FormatFootnotes::event_EndInitialValueChange(void)
+{
+
+}
+
+
+
+void AP_UnixDialog_FormatFootnotes::event_FootRestartPage(void)
+{
+
+}
+
+
+
+void AP_UnixDialog_FormatFootnotes::event_FootRestartSection(void)
+{
+
+}
+
+
+
+void AP_UnixDialog_FormatFootnotes::event_EndPlaceEndSection(void)
+{
+
+}
+
+
+void AP_UnixDialog_FormatFootnotes::event_EndPlaceEndDoc(void)
+{
+
+}
+
+
+void AP_UnixDialog_FormatFootnotes::event_EndRestartSection(void)
+{
+
+}
+
+void AP_UnixDialog_FormatFootnotes::event_MenuChange(GtkWidget * widget)
 {
 	UT_ASSERT(m_windowMain);
-	// get the bookmark name, if any (return cancel if no name given)	
-	const XML_Char *mark = NULL;
-	if(mark && *mark)
+	UT_ASSERT(widget);
+	bool bIsFootnote = true;
+	FootnoteType iType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	if (widget == m_wEnd123)
 	{
-		xxx_UT_DEBUGMSG(("FormatFootnotes: OK pressed, first char 0x%x\n", (UT_uint32)*mark));
-		setAnswer(AP_Dialog_FormatFootnotes::a_OK);
+		iType = FOOTNOTE_TYPE_NUMERIC;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEnd123Brack )
+	{
+		iType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+		bIsFootnote = false;
+	}
+	else if (widget ==m_wEnd123Paren  )
+	{
+		iType =FOOTNOTE_TYPE_NUMERIC_PAREN ;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEnd123OpenParen )
+	{
+		iType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndLower )
+	{
+		iType = FOOTNOTE_TYPE_LOWER;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndLowerParen )
+	{
+		iType = FOOTNOTE_TYPE_LOWER_PAREN;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndLowerOpenParen )
+	{
+		iType =FOOTNOTE_TYPE_LOWER_OPEN_PAREN ;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndUpper )
+	{
+		iType = FOOTNOTE_TYPE_UPPER;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndUpperParen )
+	{
+		iType = FOOTNOTE_TYPE_UPPER_PAREN;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndUpperOpenParen)
+	{
+		iType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndRomanLower)
+	{
+		iType = FOOTNOTE_TYPE_LOWER_ROMAN ;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndRomanLowerParen )
+	{
+		iType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
+		bIsFootnote = false;
+	}
+	else if (widget ==  m_wEndRomanUpper)
+	{
+		iType =FOOTNOTE_TYPE_UPPER_ROMAN ;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wEndRomanUpperParen )
+	{
+		iType =FOOTNOTE_TYPE_UPPER_ROMAN ;
+		bIsFootnote = false;
+	}
+	else if (widget == m_wFoot123)
+	{
+		iType = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else if (widget == m_wFoot123Brack )
+	{
+		iType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if (widget ==m_wFoot123Paren  )
+	{
+		iType =FOOTNOTE_TYPE_NUMERIC_PAREN ;
+	}
+	else if (widget == m_wFoot123OpenParen )
+	{
+		iType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
+	}
+	else if (widget == m_wFootLower )
+	{
+		iType = FOOTNOTE_TYPE_LOWER;
+	}
+	else if (widget == m_wFootLowerParen )
+	{
+		iType = FOOTNOTE_TYPE_LOWER_PAREN;
+	}
+	else if (widget == m_wFootLowerOpenParen )
+	{
+		iType =FOOTNOTE_TYPE_LOWER_OPEN_PAREN ;
+	}
+	else if (widget == m_wFootUpper )
+	{
+		iType = FOOTNOTE_TYPE_UPPER;
+	}
+	else if (widget == m_wFootUpperParen )
+	{
+		iType = FOOTNOTE_TYPE_UPPER_PAREN;
+	}
+	else if (widget == m_wFootUpperOpenParen)
+	{
+		iType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
+	}
+	else if (widget == m_wFootRomanLower)
+	{
+		iType = FOOTNOTE_TYPE_LOWER_ROMAN ;
+	}
+	else if (widget == m_wFootRomanLowerParen )
+	{
+		iType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
+	}
+	else if (widget ==  m_wEndRomanUpper)
+	{
+		iType = FOOTNOTE_TYPE_UPPER_ROMAN;
+	}
+	else if (widget == m_wEndRomanUpperParen )
+	{
+		iType =FOOTNOTE_TYPE_UPPER_ROMAN ;
 	}
 	else
 	{
-		setAnswer(AP_Dialog_FormatFootnotes::a_CANCEL);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
 	}
+	if(bIsFootnote)
+	{
+		setFootnoteType(iType);
+	}
+	else
+	{
+		setEndnoteType(iType);
+	}
+	refreshVals();
 }
 
+/* 
+   This method sets all the GUI visible things from values in the xp layer of
+   the dialog.
+*/
+void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
+{
+}
 void AP_UnixDialog_FormatFootnotes::event_Cancel(void)
 {
 	setAnswer(AP_Dialog_FormatFootnotes::a_CANCEL);
@@ -143,43 +452,76 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   GtkWidget * glade_menuitem = gtk_menu_item_new_with_label ("1,2,3,..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFoot123 = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("[1],[2],[3],..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFoot123Brack = glade_menuitem;
+
+  glade_menuitem = gtk_menu_item_new_with_label ("(1),(2),(3)..");
+  gtk_widget_show (glade_menuitem);
+  gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFoot123Paren = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("1),2),3)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFoot123OpenParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("a,b,c,..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootLower = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(a),(b),(c)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootLowerParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("a),b),c)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootLowerOpenParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("A,B,C..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootUpper = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(A),(B),(C)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootUpperParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("A),B),C)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootUpperOpenParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("i,ii,iii,..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootRomanLower = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(i),(ii),(iii),..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootRomanLowerParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("I,II,III,...");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootRomanUpper = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(I),(II),(III),..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu1_menu), glade_menuitem);
+  m_wFootRomanUpperParen = glade_menuitem;
+
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu1), optionmenu1_menu);
+
+  m_wFootnotesStyleMenu = optionmenu1;
 
   GtkWidget * hbox2 = gtk_hbox_new (FALSE, 0);
   gtk_widget_show (hbox2);
@@ -189,10 +531,14 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (Restart_On_Section);
   gtk_box_pack_start (GTK_BOX (hbox2), Restart_On_Section, FALSE, FALSE, 0);
 
+  m_wFootnotesRestartOnSection = Restart_On_Section;
+
   GtkWidget * Restart_On_Page = gtk_check_button_new_with_label ("Restart on each Page");
   gtk_widget_show (Restart_On_Page);
   gtk_box_pack_start (GTK_BOX (hbox2), Restart_On_Page, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (Restart_On_Page), 2);
+
+  m_wFootnotesRestartOnPage = Restart_On_Page;
 
   GtkWidget * hbox3 = gtk_hbox_new (FALSE, 0);
   gtk_widget_show (hbox3);
@@ -203,11 +549,21 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_box_pack_start (GTK_BOX (hbox3), Initial_Val_lab, TRUE, FALSE, 0);
   gtk_misc_set_padding (GTK_MISC (Initial_Val_lab), 9, 0);
 
-  GtkWidget * Initial_Value_Footnote = gtk_entry_new ();
+  GtkObject * spinbutton1_adj = gtk_adjustment_new (1, 0, 100, 1, 1, 10);
+  GtkWidget * spinbutton1 = gtk_spin_button_new (GTK_ADJUSTMENT (spinbutton1_adj), 1, 0);
+  gtk_widget_show (spinbutton1);
+  gtk_box_pack_end (GTK_BOX (hbox3), spinbutton1, FALSE, FALSE, 25);
+  gtk_widget_set_usize (spinbutton1, 1, -2);
+
+  m_oFootnoteSpinAdj = spinbutton1_adj;
+  m_wFootnoteSpin = spinbutton1;
+
+  GtkWidget * Initial_Value_Footnote = gtk_label_new ("1");
   gtk_widget_show (Initial_Value_Footnote);
   gtk_box_pack_end (GTK_BOX (hbox3), Initial_Value_Footnote, FALSE, FALSE, 25);
   gtk_widget_set_usize (Initial_Value_Footnote, 90, -2);
-  gtk_entry_set_text (GTK_ENTRY (Initial_Value_Footnote), "1");
+
+  m_wFootnotesInitialValText = Initial_Value_Footnote;
 
   GtkWidget * Footnotes_tab = gtk_label_new ("Format Footnotes");
   gtk_widget_show (Footnotes_tab);
@@ -234,43 +590,77 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   glade_menuitem = gtk_menu_item_new_with_label ("1,2,3,..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEnd123 = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("[1],[2],[3],..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEnd123Brack = glade_menuitem;
+
+  glade_menuitem = gtk_menu_item_new_with_label ("(1),(2),(3)..");
+  gtk_widget_show (glade_menuitem);
+  gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEnd123Paren = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("1),2),3)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEnd123OpenParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("a,b,c,..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndLower = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(a),(b),(c)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndLowerParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("a),b),c)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndLowerOpenParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("A,B,C..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndUpper = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(A),(B),(C)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndUpperParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("A),B),C)..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndUpperOpenParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("i,ii,iii,..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndRomanLower = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(i),(ii),(iii),..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndRomanLowerParen = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("I,II,III,...");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndRomanUpper = glade_menuitem;
+
   glade_menuitem = gtk_menu_item_new_with_label ("(I),(II),(III),..");
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionmenu2_menu), glade_menuitem);
+  m_wEndRomanUpperParen = glade_menuitem;
+
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionmenu2), optionmenu2_menu);
+
+
+  m_wEndnotesStyleMenu = optionmenu2;
 
   GtkWidget * hbox5 = gtk_hbox_new (FALSE, 0);
   gtk_widget_show (hbox5);
@@ -279,12 +669,15 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   GtkWidget * Place_at_end_of_Section = gtk_check_button_new_with_label ("Place at end of Section");
   gtk_widget_show (Place_at_end_of_Section);
   gtk_box_pack_start (GTK_BOX (hbox5), Place_at_end_of_Section, FALSE, FALSE, 0);
+  m_wEndnotesPlaceEndOfSec = Place_at_end_of_Section;
 
   GtkWidget * Place_At_End_of_doc = gtk_check_button_new_with_label ("Place at end of Document");
   gtk_widget_show (Place_At_End_of_doc);
   gtk_box_pack_start (GTK_BOX (hbox5), Place_At_End_of_doc, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (Place_At_End_of_doc), 2);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (Place_At_End_of_doc), TRUE);
+
+  m_wEndnotesPlaceEndOfDoc = Place_At_End_of_doc;
 
   GtkWidget * hbox6 = gtk_hbox_new (FALSE, 0);
   gtk_widget_show (hbox6);
@@ -294,22 +687,33 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (Restart_on_Section);
   gtk_box_pack_start (GTK_BOX (hbox6), Restart_on_Section, FALSE, FALSE, 0);
 
-  GtkWidget * entry2 = gtk_entry_new ();
-  gtk_widget_show (entry2);
-  gtk_box_pack_end (GTK_BOX (hbox6), entry2, FALSE, FALSE, 0);
-  gtk_widget_set_usize (entry2, 77, -2);
-  gtk_entry_set_text (GTK_ENTRY (entry2), "1");
+  m_wEndnotesRestartOnSection = Restart_on_Section;
 
-  GtkWidget * Initial_Endnote_val = gtk_label_new ("Initial Endnote value");
-  gtk_widget_show (Initial_Endnote_val);
-  gtk_box_pack_start (GTK_BOX (hbox6), Initial_Endnote_val, FALSE, FALSE, 0);
-  gtk_misc_set_padding (GTK_MISC (Initial_Endnote_val), 9, 0);
+  GtkWidget * Initial_Endnote_lab = gtk_label_new ("Initial Endnote value");
+  gtk_widget_show (Initial_Endnote_lab);
+  gtk_box_pack_start (GTK_BOX (hbox6), Initial_Endnote_lab, FALSE, FALSE, 0);
+  gtk_misc_set_padding (GTK_MISC (Initial_Endnote_lab), 9, 0);
+
 
   GtkWidget * Endnotes_tab = gtk_label_new ("Format Endnotes");
   gtk_widget_show (Endnotes_tab);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (NoteBook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (NoteBook), 1), Endnotes_tab);
 
+  GtkObject * spinbutton2_adj = gtk_adjustment_new (1, 0, 100, 1, 1, 10);
+  GtkWidget * spinbutton2 = gtk_spin_button_new (GTK_ADJUSTMENT (spinbutton2_adj), 1, 0);
+  gtk_widget_show (spinbutton2);
+  gtk_box_pack_end (GTK_BOX (hbox6), spinbutton2, TRUE, FALSE, 0);
+  gtk_widget_set_usize (spinbutton2, 1, -2);
 
+  m_oEndnoteSpinAdj = spinbutton2_adj;
+  m_wEndnoteSpin = spinbutton2;
+
+  GtkWidget * Initial_Value_Endnote = gtk_label_new ("1");
+  gtk_widget_show (Initial_Value_Endnote);
+  gtk_box_pack_end (GTK_BOX (hbox6), Initial_Value_Endnote, FALSE, FALSE, 25);
+  gtk_widget_set_usize (Initial_Value_Endnote, 90, -2);
+
+  m_wEndnotesInitialValText = Initial_Value_Endnote;
 }
 
 GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
@@ -333,9 +737,85 @@ GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 
   _constructWindowContents ( vbox2 );
 
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_DELETE, BUTTON_DELETE);
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK);
-
+  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CANCEL);
+  GtkWidget * buttonApply = abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_APPLY, BUTTON_OK);
+  m_wButtonApply = buttonApply;
   return m_windowMain;
+}
+
+
+#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
+        do {												\
+	        g_signal_connect(G_OBJECT(w), "activate",	\
+                G_CALLBACK(s_menu_item_activate),		\
+                (gpointer) this);							\
+        } while (0)
+
+void AP_UnixDialog_FormatFootnotes::_connectSignals(void)
+{
+	m_FootnoteSpinHanderID = g_signal_connect(G_OBJECT(m_wFootnoteSpin ),
+											  "changed",
+											  G_CALLBACK(s_FootInitial),
+											  (gpointer) this);
+	m_EndnoteSpinHanderID = g_signal_connect(G_OBJECT(m_wEndnoteSpin ),
+											  "changed",
+											  G_CALLBACK(s_EndInitial),
+											  (gpointer) this);
+	m_FootRestartPageID = g_signal_connect(G_OBJECT(m_wFootnotesRestartOnPage ),
+										   "changed",
+										   G_CALLBACK(s_FootRestartPage),
+										   (gpointer) this);
+	m_FootRestartSectionID = g_signal_connect(G_OBJECT(m_wFootnotesRestartOnSection ),
+										   "changed",
+										   G_CALLBACK(s_FootRestartSection),
+										   (gpointer) this);
+	m_EndPlaceEndofSectionID = g_signal_connect(G_OBJECT(m_wEndnotesPlaceEndOfSec ),
+											  "changed",
+											  G_CALLBACK(s_EndPlaceEndSection),
+											  (gpointer) this);
+	m_EndPlaceEndofDocID = g_signal_connect(G_OBJECT(m_wEndnotesPlaceEndOfDoc ),
+										  "changed",
+										  G_CALLBACK(s_EndPlaceEndDoc),
+										  (gpointer) this);
+	m_EndRestartSectionID = g_signal_connect(G_OBJECT(m_wEndnotesRestartOnSection ),
+										  "changed",
+										  G_CALLBACK(s_EndRestartSection),
+										  (gpointer) this);
+
+	g_signal_connect(G_OBJECT(m_wButtonApply),
+					 "clicked",
+					 G_CALLBACK(s_Apply),
+					 (gpointer) this);
+									
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123Brack);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123Paren);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123OpenParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndLower);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndLowerParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndLowerOpenParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndUpper);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndUpperParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndUpperOpenParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanLower);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanLowerParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanUpper);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEndRomanUpperParen);
+
+									
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123Brack);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123Paren);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFoot123OpenParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootLower);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootLowerParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootLowerOpenParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootUpper);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootUpperParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootUpperOpenParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanLower);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanLowerParen);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanUpper);
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wFootRomanUpperParen);
+
 }

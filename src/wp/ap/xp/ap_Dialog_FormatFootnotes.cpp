@@ -40,3 +40,15 @@ AP_Dialog_FormatFootnotes::tAnswer AP_Dialog_FormatFootnotes::getAnswer(void) co
 {
   return m_answer;
 }
+
+
+void AP_Dialog_FormatFootnotes::setFootnoteType(	FootnoteType iType)
+{
+	m_iFootnoteType = iType;
+}
+
+
+void AP_Dialog_FormatFootnotes::setEndnoteType(	FootnoteType iType)
+{
+	m_iEndnoteType = iType;
+}

@@ -36,13 +36,22 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	void event_OK(void);
+	void event_Apply(void);
 	void event_Cancel(void);
 	void event_Delete(void);
-
-protected:
+	void refreshVals(void);
+	void event_MenuChange(GtkWidget * widget);
+	void event_FootInitialValueChange(void);
+	void event_EndInitialValueChange(void);
+	void event_FootRestartPage();
+	void event_FootRestartSection();
+	void event_EndPlaceEndSection();
+	void event_EndPlaceEndDoc();
+	void event_EndRestartSection();
+private:
 	virtual GtkWidget *		_constructWindow(void);
 	void _constructWindowContents (GtkWidget * container);
+	void _connectSignals(void);
 
 	enum
 	  {
@@ -51,7 +60,64 @@ protected:
 	    BUTTON_DELETE
 	  } ResponseId ;
 
-	GtkWidget * m_windowMain;
+	GtkWidget *   m_windowMain;
+	GtkWidget *   m_wButtonApply;
+	GtkWidget *   m_wFootnotesStyleMenu;
+	GtkWidget *   m_wFootnotesRestartOnSection;
+	GtkWidget *   m_wFootnotesRestartOnPage;
+	GtkWidget *   m_wFootnotesInitialValText;
+	GtkWidget *   m_wFootnoteSpin;
+	GtkObject *   m_oFootnoteSpinAdj;
+
+	GtkWidget *   m_wEndnotesStyleMenu;
+	GtkWidget *   m_wEndnotesRestartOnSection;
+	GtkWidget *   m_wEndnotesPlaceEndOfDoc;
+	GtkWidget *   m_wEndnotesPlaceEndOfSec;
+	GtkWidget *   m_wEndnotesInitialValText;
+	GtkWidget *   m_wEndnoteSpin;
+	GtkObject *   m_oEndnoteSpinAdj;
+
+	GtkWidget *   m_wEnd123;
+	GtkWidget *   m_wEnd123Brack;
+	GtkWidget *   m_wEnd123Paren;
+	GtkWidget *   m_wEnd123OpenParen;
+	GtkWidget *   m_wEndLower;
+	GtkWidget *   m_wEndLowerParen;
+	GtkWidget *   m_wEndLowerOpenParen;
+	GtkWidget *   m_wEndUpper;
+	GtkWidget *   m_wEndUpperParen;
+	GtkWidget *   m_wEndUpperOpenParen;
+	GtkWidget *   m_wEndRomanLower;
+	GtkWidget *   m_wEndRomanLowerParen;
+	GtkWidget *   m_wEndRomanUpper;
+	GtkWidget *   m_wEndRomanUpperParen;
+
+
+	GtkWidget *   m_wFoot123;
+	GtkWidget *   m_wFoot123Brack;
+	GtkWidget *   m_wFoot123Paren;
+	GtkWidget *   m_wFoot123OpenParen;
+	GtkWidget *   m_wFootLower;
+	GtkWidget *   m_wFootLowerParen;
+	GtkWidget *   m_wFootLowerOpenParen;
+	GtkWidget *   m_wFootUpper;
+	GtkWidget *   m_wFootUpperParen;
+	GtkWidget *   m_wFootUpperOpenParen;
+	GtkWidget *   m_wFootRomanLower;
+	GtkWidget *   m_wFootRomanLowerParen;
+	GtkWidget *   m_wFootRomanUpper;
+	GtkWidget *   m_wFootRomanUpperParen;
+
+
+	guint         m_FootnoteSpinHanderID;
+	guint         m_EndnoteSpinHanderID;
+	guint         m_FootRestartPageID;
+	guint         m_FootRestartSectionID;
+	guint    	  m_EndPlaceEndofSectionID;
+	guint         m_EndPlaceEndofDocID;
+	guint    	  m_EndRestartSectionID;
+	guint         m_FootStyleID;
+	guint         m_EndStyleID;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATFOOTNOTES_H */
