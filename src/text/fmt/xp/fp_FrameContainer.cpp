@@ -119,6 +119,7 @@ void fp_FrameContainer::clearScreen(void)
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
 	}
+	m_bNeverDrawn = true;
 }
 
 /*!

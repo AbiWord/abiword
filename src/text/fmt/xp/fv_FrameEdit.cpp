@@ -98,11 +98,16 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 		DELETEP(m_pFrameImage);
 		m_recCurFrame.width = 0;
 		m_recCurFrame.height = 0;
-	    m_iDraggingWhat = FV_FrameEdit_DragNothing;
+		m_iDraggingWhat = FV_FrameEdit_DragNothing;
 		m_iLastX = 0;
 		m_iLastY = 0;
 	}
 	m_iFrameEditMode = iEditMode;
+	if(getGraphics() && getGraphics()->getCaret() && iEditMode !=  FV_FrameEdit_NOT_ACTIVE)
+	{
+	        getGraphics()->getCaret()->disable();
+		m_pView->m_countDisable++;
+	}
 }
 
 
@@ -686,6 +691,11 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	if(!isActive() && (pFCon == NULL))
 	{
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
+		if(getGraphics() && getGraphics()->getCaret())
+		{
+		      getGraphics()->getCaret()->disable();
+		      m_pView->m_countDisable++;
+		}
 		fl_ContainerLayout * pCL = pBL->myContainingLayout();
 		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
 		{
@@ -716,6 +726,11 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	if(!isActive())
 	{
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
+		if(getGraphics() && getGraphics()->getCaret())
+		{
+		      getGraphics()->getCaret()->disable();
+		      m_pView->m_countDisable++;
+		}
 		m_pFrameLayout = pFL;
 		UT_ASSERT(m_pFrameLayout->getContainerType() == FL_CONTAINER_FRAME);
 		m_pFrameContainer = pFCon;
@@ -850,6 +865,11 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	xxx_UT_DEBUGMSG(("Initial width %d \n",m_recCurFrame.width));
 	xxx_UT_DEBUGMSG((" Dragging What %d \n",m_iDraggingWhat));
 	m_pView->setCursorToContext();
+	if(getGraphics() && getGraphics()->getCaret())
+	{
+	    getGraphics()->getCaret()->disable();
+	    m_pView->m_countDisable++;
+	}
 }
 
 /*!
@@ -909,6 +929,11 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 				m_iInitialDragX = m_recCurFrame.left;
 				m_iInitialDragY = m_recCurFrame.top;
 			}
+			if(getGraphics() && getGraphics()->getCaret())
+			{
+			        getGraphics()->getCaret()->disable();
+			        m_pView->m_countDisable++;
+			}
 		}
 		return;
 	}
@@ -944,8 +969,26 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		m_iDraggingWhat = FV_FrameEdit_DragBotRightCorner;
 		m_bFirstDragDone = false;
 		m_bInitialClick = true;
+		if(getGraphics() && getGraphics()->getCaret())
+		{
+		      getGraphics()->getCaret()->disable();
+		      m_pView->m_countDisable++;
+		}
 		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
 	}
+}
+
+bool FV_FrameEdit::isImageWrapper(void) const
+{
+        if(m_pFrameLayout == NULL)
+	{
+	        return false;
+	}
+	if(m_pFrameLayout->getFrameType() == FL_FRAME_WRAPPER_IMAGE)
+	{
+	        return true;
+	}
+	return false;
 }
 
 bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y, 
@@ -1175,6 +1218,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 //
 		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
+		if(getGraphics() && getGraphics()->getCaret())
+		{
+		      getGraphics()->getCaret()->disable();
+		      m_pView->m_countDisable++;
+		}
 		fl_BlockLayout * pBL = m_pView->_findBlockAtPosition(posFrame+2);
 		fl_ContainerLayout * pCL = pBL->myContainingLayout();
 		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
@@ -1660,6 +1708,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		DELETEP(m_pFrameImage);
 		m_pView->updateScreen(false);
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
+		if(getGraphics() && getGraphics()->getCaret())
+		{
+		      getGraphics()->getCaret()->disable();
+		      m_pView->m_countDisable++;
+		}
 		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);
 		m_bFirstDragDone = false;
@@ -1739,6 +1792,7 @@ void FV_FrameEdit::deleteFrame(void)
 
 	m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
 	m_bFirstDragDone = false;
+	m_pView->_setPoint(m_pView->getPoint());
 }
 
 /*!
