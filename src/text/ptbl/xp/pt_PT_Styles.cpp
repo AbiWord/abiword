@@ -105,7 +105,7 @@ const char* pt_PieceTable::s_getLocalisedStyleName(const char *szStyle)
 {		
   static XAP_App * pApp = XAP_App::getApp();
 
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	const XAP_StringSet * pSS = pApp->getStringSet();
 	const char*	pRslt = szStyle;
 	int n;	
 		

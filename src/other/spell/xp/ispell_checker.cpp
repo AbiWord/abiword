@@ -120,10 +120,9 @@ ISpellChecker::ISpellChecker()
 	m_infile(NULL),
 	m_outfile(NULL),
 	m_askfilename(NULL),
+	m_Trynum(0),
 	m_translate_in(UT_ICONV_INVALID),
-	m_translate_out(UT_ICONV_INVALID),
-	m_Trynum(0)
-
+	m_translate_out(UT_ICONV_INVALID)
 {
   if (mRefCnt == 0)
     {
