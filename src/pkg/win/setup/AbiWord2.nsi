@@ -1,7 +1,7 @@
-; This is a file for creating an installer for Abiword using NSIS v1 series
-; by Alan Horkan <horkana@tcd.ie>
+; This is a file for creating an installer for Abiword using NSIS v2 series
+; originally for NSIS v1 by Alan Horkan <horkana@tcd.ie>
 ; modified by Michael D. Pritchett <mpritchett@attglobal.net>
-; Kenneth J. Davis <jeremyd@computer.org> (2002)
+; Kenneth J. Davis <jeremyd@computer.org> (2002,2003)
 ; [add your name here]
 
 !define UI_PRODUCT "AbiWord"
@@ -11,6 +11,9 @@
 !ifndef UI_VERSION_MAJOR
 !define UI_VERSION_MAJOR "2"
 !endif
+
+; To not include the list of dictionaries ... to download define this
+;!define NODOWNLOADS
 
 ; Do a Cyclic Redundancy Check to make sure the installer 
 ; was not corrupted by the download.  
@@ -176,6 +179,28 @@ SectionEnd
 
 SubSectionEnd ; Shortcuts
 
+;SectionDivider " general file associations "
+SubSection /e "General file associations"
+
+
+; OPTIONAL 
+Section "Associate .doc with AbiWord"
+	SectionIn 2
+	; Write File Associations
+	WriteRegStr HKCR ".doc" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".doc" "Content Type" "application/abiword"
+SectionEnd
+
+; OPTIONAL 
+Section "Associate .rtf with AbiWord"
+	SectionIn 2
+	; Write File Associations
+	WriteRegStr HKCR ".rtf" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".rtf" "Content Type" "application/abiword"
+SectionEnd
+
+SubSectionEnd ; general file associations
+
 ;SectionDivider " helper files "
 SubSection /e "Helper files"
 
@@ -221,8 +246,11 @@ Section "en-US  US English (default)"
 	File /r "..\AbiSuite\dictionary"
 SectionEnd
 
+!ifndef NODOWNLOADS
+; NOTE: these just reference files for download then installs them
 SubSection /e "Download optional dictionaries"
 
+;TODO make a string and figure out how to let user pick another
 !ifndef DICTIONARY_BASE
 !define DICTIONARY_BASE "http://dl.sourceforge.net/abiword"
 !endif
@@ -254,82 +282,56 @@ Function getDictionary
 		!undef DICT_ARCH
 FunctionEnd
 
-Section "ca-ES  Catalan"
+!macro SectionDict DICT_NAME DICT_LANG DICT_LOCALE DICT_ARCH DICT_SIZE
+Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}'
 ;	SectionIn 2	; Full only
-	AddSize 4324
-	StrCpy $R0 "ca"
-	StrCpy $R1 "ES"
-	StrCpy $R2 "i386"
+	AddSize ${DICT_SIZE}
+	StrCpy $R0 ${DICT_LANG}
+	StrCpy $R1 ${DICT_LOCALE}
+	StrCpy $R2 ${DICT_ARCH}
 	Call getDictionary
 SectionEnd
+!macroend
 
-Section "de-DE  Deutsch"
-;	SectionIn 2	; Full only
-	AddSize 2277
-	StrCpy $R0 "de"
-	StrCpy $R1 "DE"
-	StrCpy $R2 "i386"
-	Call getDictionary
-SectionEnd
-
-Section "en-GB  English"
-;	SectionIn 2	; Full only
-	AddSize 2109
-	StrCpy $R0 "en"
-	StrCpy $R1 "GB"
-	StrCpy $R2 "i386"
-	Call getDictionary
-SectionEnd
-
-Section "es-ES  Español"
-;	SectionIn 2	; Full only
-	AddSize 2632
-	StrCpy $R0 "es"
-	StrCpy $R1 "ES"
-	StrCpy $R2 "i386"
-	Call getDictionary
-SectionEnd
-
-Section "fr-FR  Français"
-;	SectionIn 2	; Full only
-	AddSize 1451
-	StrCpy $R0 "fr"
-	StrCpy $R1 "FR"
-	StrCpy $R2 "i386"
-	Call getDictionary
-SectionEnd
+; These are listed alphabetically based on English LANG-LOCALE
+; NOTE: if the dictinaries are updated so to should these sizes (KB)
+!insertmacro SectionDict "Catalan"      "ca" "ES" "i386"  4324
+!insertmacro SectionDict "Czech"        "cs" "DZ" "i386"  2558
+!insertmacro SectionDict "Danish"       "da" "DK" "i386"  1580
+!insertmacro SectionDict "Swiss"        "de" "CH" "i386"  8501
+!insertmacro SectionDict "Deutsch"      "de" "DE" "i386"  2277
+!insertmacro SectionDict "Ellhnika"     "el" "GR" "i386"  2049  ;Greek
+!insertmacro SectionDict "English"      "en" "GB" "i386"  2109
+;insertmacro SectionDict "Esperanto"    "eo" "  " "i386"   942  ;no locale...
+!insertmacro SectionDict "Español"      "es" "ES" "i386"  2632
+!insertmacro SectionDict "Finnish"      "fi" "FI" "i386" 10053
+!insertmacro SectionDict "Français"     "fr" "FR" "i386"  1451
+!insertmacro SectionDict "Hungarian"    "hu" "HU" "i386"  8086
+!insertmacro SectionDict "Irish gaelic" "ga" "IE" "i386"   587
+!insertmacro SectionDict "Galician"     "gl" "ES" "i386"   807
+!insertmacro SectionDict "Italian"      "it" "IT" "i386"  1638
+!insertmacro SectionDict "Latin"        "la" "IT" "i386"  2254  ;mlatin
+!insertmacro SectionDict "Lietuviu"     "lt" "LT" "i386"  1907  ;Lithuanian
+!insertmacro SectionDict "Dutch"        "nl" "NL" "i386"  1079  ;nederlands
+!insertmacro SectionDict "Norsk"        "nb" "NO" "i386"  2460  ;Norwegian
+!insertmacro SectionDict "Nynorsk"      "nn" "NO" "i386"  3001  ;Norwegian(nynorsk)
+!insertmacro SectionDict "Polish"       "pl" "PL" "i386"  4143
+!insertmacro SectionDict "Portugues"    "pt" "PT" "i386"  1117  ;Portuguese
+!insertmacro SectionDict "Brazilian"    "pt" "BR" "i386"  1244  ;Portuguese
+!insertmacro SectionDict "Russian"      "ru" "RU" "i386"  8307
+!insertmacro SectionDict "Slovensko"    "sl" "SI" "i386"   857  ;Slovenian
+!insertmacro SectionDict "Svenska"      "sv" "SE" "i386"   753  ;Swedish
+!insertmacro SectionDict "Ukrainian"    "uk" "UA" "i386"  3490
 
 SubSectionEnd ; Optional downloads
+!endif  ; NODOWNLOADS
 
 SubSectionEnd ; Dictionaries
 
 SubSectionEnd ; helper files
 
 
-;SectionDivider " general file associations "
-SubSection /e "General file associations"
-
-
-; OPTIONAL 
-Section "Associate .doc with AbiWord"
-	SectionIn 2
-	; Write File Associations
-	WriteRegStr HKCR ".doc" "" "AbiSuite.AbiWord"
-	WriteRegStr HKCR ".doc" "Content Type" "application/abiword"
-SectionEnd
-
-; OPTIONAL 
-Section "Associate .rtf with AbiWord"
-	SectionIn 2
-	; Write File Associations
-	WriteRegStr HKCR ".rtf" "" "AbiSuite.AbiWord"
-	WriteRegStr HKCR ".rtf" "Content Type" "application/abiword"
-SectionEnd
-
-
-SubSectionEnd ; general file associations
 ;SubSection /e " uninstall "
-
 
 ; uninstall stuff
 UninstallText "This will uninstall ${UI_PRODUCT} v${UI_VERSION_MAJOR}. Hit next to continue."
