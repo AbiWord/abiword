@@ -399,6 +399,16 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 		{
 			UT_GrowBufElement valz = 0;
             bool bAppended;
+			//
+			// Deal with TOC's. Since TOC's are always placed right before
+			// the end of the paragraph we terminate the fill here.
+			//
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pfTemp);
+			if(pfs->getStruxType() == PTX_SectionTOC)
+			{
+				pfTemp = NULL;
+				break;
+			}
 			if(isFootnote(pfTemp))
 			{
 				countFoots++;
