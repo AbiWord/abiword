@@ -64,33 +64,49 @@ else
 dictionary = $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash
 endif
 
+if WITH_XFT
+INSTALLUNIXFONTS = no
+else
+INSTALLUNIXFONTS = yes
+endif
+
+if WITH_PSPELL
+INSTALLDICTIONARY = no
+else
+INSTALLDICTIONARY = yes
+endif
+
 dictionary_list=$(top_srcdir)/../abidistfiles/dictionary/ispell_dictionary_list.xml
 
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
-	@if test -d $(top_srcdir)/../unixfonts/fonts ; then \
-	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/fonts ;\
-	  for file in $(top_srcdir)/../unixfonts/fonts/* ; do \
-	    if test -f $$file ; then \
-	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/fonts; \
-	    fi ;\
-	  done; \
-	else \
-	  echo "Warning: unixfonts package not found." ;\
+	@if test "$(INSTALLUNIXFONTS)" != "no" ; then \
+	  if test -d $(top_srcdir)/../unixfonts/fonts ; then \
+	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/fonts ;\
+	    for file in $(top_srcdir)/../unixfonts/fonts/* ; do \
+	      if test -f $$file ; then \
+	        $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/fonts; \
+	      fi ;\
+	    done; \
+	  else \
+	    echo "Warning: unixfonts package not found." ;\
+	  fi ;\
 	fi
 	@if test -d $(top_srcdir)/../abidistfiles ; then \
-          for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
-            $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
-            if test "$$dir" = "./dictionary"; then \
-              $(INSTALL_DATA) $(dictionary) $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
-              $(INSTALL_DATA) $(dictionary_list) $(DESTDIR)$(pkgdatadir)/$$dir/ispell_dictionary_list.xml; \
-            else \
-              for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
-                if test -f $$file ; then \
-                  $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
-                fi; \
-              done; \
-            fi; \
+	  for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
+	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
+	    if test "$$dir" = "./dictionary"; then \
+	      if test "$(INSTALLDICTIONARY)" != "no" ; then \
+	        $(INSTALL_DATA) $(dictionary) $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
+	        $(INSTALL_DATA) $(dictionary_list) $(DESTDIR)$(pkgdatadir)/$$dir/ispell_dictionary_list.xml; \
+	      fi; \
+	    else \
+	      for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
+	        if test -f $$file ; then \
+	          $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
+	        fi; \
+	      done; \
+	    fi; \
 	  done; \
 	else \
 	  echo "Warning: abidistfiles package not found." ;\
