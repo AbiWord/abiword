@@ -34,6 +34,15 @@ DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
 ; binary, license, and American dictionary
 Section "Abiword.exe (required)"
 
+	;;;;
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\bin\AbiWord.exe" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiWord?" IDYES DoInstall
+	
+	Abort "Quitting the install process"
+
+	DoInstall:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\AbiWord\bin
