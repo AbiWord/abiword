@@ -391,7 +391,7 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 		pFrameData = static_cast<AP_FrameData *>( pFrame->getFrameData() );
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
 		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>( pFrameData->m_pTopRuler );
-		yTopRulerHeight =  pWin32TopRuler->getGR()->tdu(pWin32TopRuler->getHeight());
+		yTopRulerHeight =  pWin32TopRuler->getGraphics()->tdu(pWin32TopRuler->getHeight());
 	}
 
 	// create the left ruler
