@@ -130,7 +130,11 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
 
     if (!g_bSuccessfulInit)
-        return SpellChecker::LOOKUP_SUCCEEDED;
+	{
+// was
+//        return SpellChecker::LOOKUP_SUCCEEDED;
+        return SpellChecker::LOOKUP_FAILED;
+	}
 
     if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
         return SpellChecker::LOOKUP_FAILED;

@@ -310,11 +310,10 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 		m_bLayoutResolutionModeEnabled = false;
 		iSize = convertDimension(pszFontSize);
 		m_bLayoutResolutionModeEnabled = curRes;
-		dSize = iSize;
-		double rat = (double) UT_LAYOUT_UNITS / (double) getResolution();
-		iSizeLayout = (UT_uint32) (dSize * rat + 0.5);
 		if( m_bLayoutResolutionModeEnabled)
 		{
+			iSizeLayout = (UT_uint32) ((double ) UT_LAYOUT_UNITS * UT_convertToInches(pszFontSize) +0.05);
+			xxx_UT_DEBUGMSG(("SEVIOR: iSizeLayout in gr_graphics = %d \n",iSizeLayout));
 			return iSizeLayout;
 		} 
 		return iSize;
@@ -328,14 +327,11 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 		double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
 		UT_uint32 iScreenSize = (UT_uint32) (dScreenSize + 0.05);
 		dScreenSize = (double) iScreenSize;
-
-		double ratToLayout = (double) UT_LAYOUT_UNITS / (double) getScreenResolution();
-		UT_sint32 iSizeLayout = (UT_sint32) (dScreenSize * ratToLayout + 0.5);
-
 		double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
 		iSize = (UT_sint32) (dPaperSize + 0.05);
 		if( m_bLayoutResolutionModeEnabled)
 		{
+			iSizeLayout = (UT_uint32) ((double ) UT_LAYOUT_UNITS * UT_convertToInches(pszFontSize) +0.05);
 			return iSizeLayout;
 		} 
 		return iSize;
@@ -352,13 +348,13 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 	double dInches = UT_convertToInches(s);
 	double dResolution;
 	if(m_bLayoutResolutionModeEnabled)
-		{
+	{
 		dResolution = UT_LAYOUT_UNITS;
-		}
+	}
 	else
-		{
+	{
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
-		}
+	}
 
 	/* 
 	 We do this because the convert Dimension code is actually

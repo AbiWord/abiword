@@ -6060,10 +6060,10 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 
 UT_sint32 FV_View::getPageViewSep(void) const
 {
-	// return the amount of gray-space we draw to the left
+	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-	if(isPreview())
+	if(isPreview()  || m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 		return 0;
 	else
 		return fl_PAGEVIEW_PAGE_SEP;
@@ -6856,9 +6856,18 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			}
 
 			// fill separator below page
-			if (m_iWindowHeight - (adjustedBottom + 1) > 0)
+//			if ((m_iWindowHeight - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()) )
+			if ((m_iWindowHeight - (adjustedBottom + 1)) > 0)
 			{
-				m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, getPageViewSep());
+				if(pPage->getNext() != NULL)
+				{
+					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, getPageViewSep());
+				}
+				else
+				{
+					UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
+					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, botfill);
+				}
 			}
 			
 			// two pixel drop shadow
