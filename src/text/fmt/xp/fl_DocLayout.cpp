@@ -325,8 +325,6 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 
 void FL_DocLayout::deleteEmptyColumnsAndPages(void)
 {
-	int i;
-
 	fl_DocSectionLayout* pSL = m_pFirstSection;
 	while (pSL)
 	{

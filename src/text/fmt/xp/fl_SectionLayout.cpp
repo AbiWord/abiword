@@ -1216,13 +1216,17 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 
 UT_Bool fl_HdrFtrSectionLayout::recalculateFields(void)
 {
+	UT_Bool bResult = UT_FALSE;
+	
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
-		pPair->pShadow->recalculateFields();
+		bResult = pPair->pShadow->recalculateFields() || bResult;
 	}
+
+	return bResult;
 }
 
 fp_Container* fl_HdrFtrSectionLayout::getFirstContainer()
