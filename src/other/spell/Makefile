@@ -25,7 +25,14 @@ ABI_PEER:=/spell
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CSRCS=		newMain.c good.c tgood.c lookup.c makedent.c hash.c correct.c
+#dummy initialization
+CSRCS=
+
+ifdef ABI_OPT_PSPELL
+	CSRCS=  pSpell.c
+else
+	CSRCS=	newMain.c good.c tgood.c lookup.c makedent.c hash.c correct.c
+endif
 
 LIBRARY_NAME=		AbiSpell
 LIBRARY_VERSION=	$(ABI_VERSION)

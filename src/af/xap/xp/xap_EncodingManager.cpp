@@ -135,7 +135,7 @@ const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,
 	const char* inptr = in;
 	char* outptr = buf;
 	size_t inbytes = strlen(in), outbytes = bufsz;	
-	size_t donecnt = iconv(iconv_handle,const_cast<char**>(&inptr),&inbytes,&outptr,&outbytes);
+	size_t donecnt = iconv(iconv_handle,const_cast<const char**>(&inptr),&inbytes,&outptr,&outbytes);
 	const char* retstr = in;
 	if (donecnt!=(size_t)-1 && inbytes==0) {
 		retstr = buf;
@@ -166,7 +166,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 			const char* iptr = ibuf;
 			char* optr = obuf;
 			ibuf[0] = (unsigned char)i;
-			size_t donecnt = iconv(iconv_handle,const_cast<char**>(&iptr),&ibuflen,&optr,&obuflen);			
+			size_t donecnt = iconv(iconv_handle,const_cast<const char**>(&iptr),&ibuflen,&optr,&obuflen);			
 			if (donecnt!=(size_t)-1 && ibuflen==0) 
 			{
 				unsigned short uval;
@@ -216,7 +216,7 @@ static UT_UCSChar try_CToU(UT_UCSChar c,iconv_t iconv_handle)
 	const char* iptr = ibuf;
 	char* optr = obuf;
 	ibuf[0]	= (unsigned char)c;	
-	size_t donecnt = iconv(iconv_handle,const_cast<char**>(&iptr),&ibuflen,&optr,&obuflen);			
+	size_t donecnt = iconv(iconv_handle,const_cast<const char**>(&iptr),&ibuflen,&optr,&obuflen);			
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		unsigned short uval;
@@ -241,7 +241,7 @@ static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
 		ibuf[XAP_EncodingManager::swap_utos] = b0;
 		ibuf[!XAP_EncodingManager::swap_utos] = b1;
 	}
-	size_t donecnt = iconv(iconv_handle,const_cast<char**>(&iptr),&ibuflen,&optr,&obuflen);
+	size_t donecnt = iconv(iconv_handle,const_cast<const char**>(&iptr),&ibuflen,&optr,&obuflen);
 	/* reset state */
 	iconv(iconv_handle,NULL,NULL,NULL,NULL);
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
@@ -894,3 +894,10 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
     ptrs[idx]=NULL;
     return (const char **)ptrs;
 };
+
+/* pspell hack */
+extern "C"
+const char * xap_encoding_manager_get_language_iso_name(void)
+{
+  return XAP_EncodingManager::instance->getLanguageISOName();
+}

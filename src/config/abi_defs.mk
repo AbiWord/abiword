@@ -492,4 +492,11 @@ endif
 endif
 
 ##################################################################
-
+##################################################################
+## Pspell spell checker
+## Should only be enabled for unix or else do the
+## addprefix addsuffix stuff as shown above
+## Need ltdl for dynamic loading/linking on Solaris
+ifdef ABI_OPT_PSPELL
+EXTRA_LIBS      += -lpspell -lltdl
+endif

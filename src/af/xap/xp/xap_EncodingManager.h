@@ -266,6 +266,7 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 /* placate win32 compiler */
 extern "C" {
 extern int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
+const char * xap_encoding_manager_get_language_iso_name(void);
 }
 
 #endif /* XAP_APP_H */
