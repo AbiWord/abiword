@@ -45,7 +45,7 @@ libWpAp_xp_a_SOURCES=	ap_Convert.cpp			\
 		ap_Dialog_ToggleCase.cpp	\
 		ap_Dialog_PageSetup.cpp         \
 		ap_Dialog_New.cpp		\
-		ap_Dialog_InsertBookmarks.cpp \
+		ap_Dialog_InsertBookmark.cpp \
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,15 +16,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+#ifndef AP_UNIXGNOMEDIALOG_INSERTBOOKMARK_H
+#define AP_UNIXGNOMEDIALOG_INSERTBOOKMARK_H
 
-#include "xap_Dlg_Image.h"
+#include <gnome.h>
+#include "ap_UnixDialog_InsertBookmark.h"
 
-XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent (pDlgFactory, id), m_width(0), m_height(0),
-    m_maxWidth (0), m_maxHeight(0), m_answer(a_OK)
+#include "ut_types.h"
+#include "ut_string.h"
+
+class AP_UnixGnomeDialog_InsertBookmark: public AP_UnixDialog_InsertBookmark
 {
-}
+public:
+	AP_UnixGnomeDialog_InsertBookmark(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixGnomeDialog_InsertBookmark(void);
 
-XAP_Dialog_Image::~XAP_Dialog_Image ()
-{
-}
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+protected:
+
+	// private construction functions
+	virtual GtkWidget * _constructWindow(void);
+};
+
+#endif /* AP_UnixGnomeDialog_INSERTBookmark.h */

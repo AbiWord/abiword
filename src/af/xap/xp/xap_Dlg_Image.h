@@ -46,12 +46,17 @@ public:
 	void setWidth (double w) { m_width = w; }
 	void setHeight (double h) { m_height = h; }
 
+	void setMaxHeight ( double h ) { m_maxWidth = h; }
+	void setMaxWidth ( double w ) { m_maxHeight = w; }
+
  protected:	  
 	void setAnswer ( tAnswer ans ) { m_answer = ans; }
 
  private:
 	double m_width;
 	double m_height;
+	double m_maxWidth;
+	double m_maxHeight;
 	tAnswer m_answer;
 };
 

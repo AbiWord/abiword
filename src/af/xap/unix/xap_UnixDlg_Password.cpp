@@ -210,6 +210,9 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 		      GTK_SIGNAL_FUNC(s_cancel_clicked), 
 		      (gpointer)this);
 
+  GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
+  GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
+
   mMainWindow = dialog1;
 
   return dialog1;

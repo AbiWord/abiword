@@ -93,6 +93,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Background.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_HdrFtr.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertBookmark.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX)
 endif
 endif

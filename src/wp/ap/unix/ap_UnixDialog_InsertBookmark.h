@@ -41,6 +41,7 @@ public:
 
 protected:
 	virtual GtkWidget *		_constructWindow(void);
+	void _constructWindowContents (GtkWidget * container);
 	void					_connectSignals (void);
 	void					_setList();
 

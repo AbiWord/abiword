@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -149,90 +149,71 @@ void AP_UnixDialog_InsertBookmark::_setList(void)
 	for(i = 0; i < (gint)getExistingBookmarksCount(); i++)
 		glist = g_list_insert_sorted(glist, (gchar *) getNthExistingBookmark(i),my_cmp);
 	
-	gtk_combo_set_popdown_strings(GTK_COMBO(m_comboBookmark), glist);
-
-	g_list_free (glist);
+	if (glist != NULL)
+	  {
+	    gtk_combo_set_popdown_strings(GTK_COMBO(m_comboBookmark), glist);
+	    g_list_free (glist);
+	  }
 	
 	gtk_entry_set_text(GTK_ENTRY(m_comboEntry), getBookmark());	
 }
 
+void  AP_UnixDialog_InsertBookmark::_constructWindowContents(GtkWidget * container )
+{
+  GtkWidget *label1;
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Msg));
+  gtk_widget_show (label1);
+  gtk_box_pack_start (GTK_BOX (container), label1, TRUE, FALSE, 3);
+
+  m_comboBookmark = gtk_combo_new ();
+  gtk_widget_show (m_comboBookmark);
+  gtk_box_pack_start (GTK_BOX (container), m_comboBookmark, FALSE, FALSE, 3);
+
+  m_comboEntry = GTK_COMBO (m_comboBookmark)->entry;
+  gtk_widget_show (m_comboEntry);
+  GTK_WIDGET_SET_FLAGS (m_comboEntry, GTK_CAN_DEFAULT);
+}
 
 GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
 {
   GtkWidget *frame1;
   GtkWidget *vbox2;
-  GtkWidget *label1;
   GtkWidget *hseparator1;
   GtkWidget *hbox1;
+
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
   m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_object_set_data (GTK_OBJECT (m_windowMain), "window1", m_windowMain);
   gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Title));
 
   frame1 = gtk_frame_new (NULL);
-  gtk_widget_ref (frame1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "frame1", frame1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (frame1);
   gtk_container_add (GTK_CONTAINER (m_windowMain), frame1);
   gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
 
   vbox2 = gtk_vbox_new (FALSE, 5);
-  gtk_widget_ref (vbox2);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "vbox2", vbox2,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (vbox2);
   gtk_container_add (GTK_CONTAINER (frame1), vbox2);
   gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
 
-  label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Msg));
-  gtk_widget_ref (label1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "label1", label1,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (vbox2), label1, TRUE, FALSE, 3);
-
-  m_comboBookmark = gtk_combo_new ();
-  gtk_widget_ref (m_comboBookmark);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "combo1", m_comboBookmark,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (m_comboBookmark);
-  gtk_box_pack_start (GTK_BOX (vbox2), m_comboBookmark, FALSE, FALSE, 3);
-
-  m_comboEntry = GTK_COMBO (m_comboBookmark)->entry;
-  gtk_widget_ref (m_comboEntry);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "combo_entry1", m_comboEntry,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (m_comboEntry);
-  GTK_WIDGET_SET_FLAGS (m_comboEntry, GTK_CAN_DEFAULT);
+  _constructWindowContents ( vbox2 );
 
   hseparator1 = gtk_hseparator_new ();
-  gtk_widget_ref (hseparator1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "hseparator1", hseparator1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hseparator1);
   gtk_box_pack_start (GTK_BOX (vbox2), hseparator1, TRUE, TRUE, 0);
 
   hbox1 = gtk_hbox_new (TRUE, 0);
-  gtk_widget_ref (hbox1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "hbox1", hbox1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hbox1);
   gtk_box_pack_start (GTK_BOX (vbox2), hbox1, TRUE, TRUE, 0);
 
   m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_ref (m_buttonOK);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "button1", m_buttonOK,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (m_buttonOK);
   gtk_box_pack_start (GTK_BOX (hbox1), m_buttonOK, FALSE, FALSE, 3);
   gtk_widget_set_usize (m_buttonOK, DEFAULT_BUTTON_WIDTH, 0);
 
   m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_ref (m_buttonCancel);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "button2", m_buttonCancel,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (m_buttonCancel);
   gtk_box_pack_start (GTK_BOX (hbox1), m_buttonCancel, FALSE, FALSE, 3);
   gtk_widget_set_usize (m_buttonCancel, DEFAULT_BUTTON_WIDTH, 0);
