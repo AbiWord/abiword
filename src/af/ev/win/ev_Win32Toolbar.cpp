@@ -254,35 +254,9 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 WHICHPROC s_lpfnDefCombo; 
 WHICHPROC s_lpfnDefComboEdit; 
-WHICHPROC s_lpfnDefToolbar;
+
 
 #define COMBO_BUF_LEN 256
-
-// Return codes for TBN_DROPDOWN
-#define TBDDRET_DEFAULT         0
-#define TBDDRET_NODEFAULT       1
-#define TBDDRET_TREATPRESSED    2       // Treat as a standard press button
-
-
-LRESULT CALLBACK _ToolbarWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
-{
-	if (uMessage==WM_NOTIFY)
-	{
-		NMHDR* pNMHDR;
-		pNMHDR = (NMHDR*)lParam;
-		NMTOOLBAR* lpnmtb = (LPNMTOOLBAR) lParam;
-
-		if (pNMHDR->code==TBN_DROPDOWN)
-		{
-			int n=1;		
-			return TBDDRET_TREATPRESSED;
-			return TBDDRET_DEFAULT;
-			
-		}
-	}	
-
-	return CallWindowProc(s_lpfnDefToolbar, hWnd, uMessage, wParam, lParam);
-}
 
 
 LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
@@ -568,9 +542,7 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	UT_ASSERT(m_hwnd);
 
-	// override the window procedure 
-	s_lpfnDefToolbar = (WHICHPROC)GetWindowLong(m_hwnd, GWL_WNDPROC);
-	SetWindowLong(m_hwnd, GWL_WNDPROC, (LONG)_ToolbarWndProc);
+	// override the window procedure 	
 	SetWindowLong(m_hwnd, GWL_USERDATA, (LONG)this);
 
 
