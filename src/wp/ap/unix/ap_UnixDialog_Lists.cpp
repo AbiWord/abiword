@@ -218,9 +218,8 @@ void AP_UnixDialog_Lists::previewExposed(void)
 			event_PreviewAreaExposed();
 		}
 		m_bDoExpose = UT_TRUE;
-	}
-} 
-
+	} 
+}
 
 void AP_UnixDialog_Lists::destroy (void)
 {
@@ -257,7 +256,7 @@ void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 }
 
 
-void  AP_UnixDialog_Lists::typeChanged(gint style)
+void  AP_UnixDialog_Lists::typeChanged(gint type)
 {
 	// 
 	// code to change list list
@@ -265,39 +264,67 @@ void  AP_UnixDialog_Lists::typeChanged(gint style)
 
 	gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
 	m_bDoExpose = UT_TRUE;
-	if(style == 0)
+	m_bguiChanged = UT_TRUE;
+	if(type == 0)
 	{
 		//     gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
 	  	m_wListStyleNone_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNone_menu;
 		_fillNoneStyleMenu(m_wListStyleNone_menu);
+
+
+		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 								  m_wListStyleNone_menu);
+		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
+
+
+		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
+								  0);
+                m_newListType = NOT_A_LIST;
 	}
-	else if(style == 1)
+	else if(type == 1)
 	{
 		//    gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
 		m_wListStyleBulleted_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleBulleted_menu;
 		_fillBulletedStyleMenu(m_wListStyleBulleted_menu);
+
+
+		gtk_signal_handler_block(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 								  m_wListStyleBulleted_menu);
+		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
+
+
+		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
+								  1);
+                m_newListType = BULLETED_LIST;
 	}
-	else if(style == 2)
+	else if(type == 2)
 	{
 		//  gtk_widget_destroy(GTK_WIDGET(m_wListStyleNumbered_menu));
 	  	m_wListStyleNumbered_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNumbered_menu;
 		_fillNumberedStyleMenu(m_wListStyleNumbered_menu);
+ 
+		// Block events during this manual change
+
+		gtk_signal_handler_block(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 								  m_wListStyleNumbered_menu);
+        	gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox), m_iStyleBoxID );
+		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
+								  2);
+                m_newListType = NUMBERED_LIST;
 	}
 	if(m_bManualListStyle == UT_TRUE)
 	{
-		GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
-		m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
-		m_iListType = m_newListType;
+	  //		GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
+	  //		m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+	  //	m_iListType = m_newListType;
 	}
+	setMemberVariables();
 	previewExposed();
 }
 
@@ -352,7 +379,7 @@ void  AP_UnixDialog_Lists::customChanged(void)
 	if(m_bisCustomized == UT_FALSE)
 	{
 		fillWidgetFromDialog();
-		gtk_widget_set_sensitive(m_wCustomTable, TRUE);
+		gtk_widget_show(m_wCustomFrame);
 		m_bisCustomized = UT_TRUE;
 		setMemberVariables();
 		previewExposed();
@@ -361,7 +388,7 @@ void  AP_UnixDialog_Lists::customChanged(void)
 	{
 		m_bisCustomized = UT_FALSE;
 		fillUncustomizedValues();
-		gtk_widget_set_sensitive(m_wCustomTable, FALSE);
+		gtk_widget_hide(m_wCustomFrame);
 		_setData();
 	}
 }
@@ -470,6 +497,10 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
 
 	// somebody can explain me (jca) the reason of these 6 lines?
 	// it seems to me like if we were inserting two times the current font in the menu
+	// Sevior: This is not a valid font name. However if you select 
+        // this you get whatever font is in the document at the point the 
+        // list is inserted.
+
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Lists_Current_Font));
 	gtk_widget_show (glade_menuitem);
 	gtk_object_set_user_data (GTK_OBJECT (glade_menuitem), GINT_TO_POINTER (0));
@@ -487,7 +518,7 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
 							GTK_SIGNAL_FUNC (s_styleChanged), this);
 	}
 
-	gtk_option_menu_set_history (GTK_OPTION_MENU (menu), 0);
+	  //gtk_option_menu_set_history (GTK_OPTION_MENU (menu), 0);
 }
 
 GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
@@ -618,14 +649,14 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 
 	frame1 = gtk_frame_new (NULL);
-	gtk_widget_show (frame1);
+	//gtk_widget_show (frame1);
 	gtk_box_pack_start (GTK_BOX (vbox4), frame1, TRUE, TRUE, 0);
 
 	table2 = gtk_table_new (6, 2, FALSE);
 	gtk_widget_show (table2);
 	gtk_container_add (GTK_CONTAINER (frame1), table2);
 	gtk_container_set_border_width (GTK_CONTAINER (table2), 4);
-	gtk_widget_set_sensitive (table2, FALSE);
+	gtk_widget_set_sensitive (table2, TRUE);
 	gtk_table_set_row_spacings (GTK_TABLE (table2), 4);
 	gtk_table_set_col_spacings (GTK_TABLE (table2), 4);
 
@@ -736,6 +767,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_frame_set_shadow_type (GTK_FRAME (preview_frame), GTK_SHADOW_IN);
 	
 	preview_area = gtk_drawing_area_new ();
+        gtk_drawing_area_size (GTK_DRAWING_AREA(preview_area),180,225);
 	//	gtk_widget_set_usize(preview_area, 180, 225);
 	gtk_widget_show (preview_area);
 	gtk_container_add (GTK_CONTAINER (preview_frame), preview_area);
@@ -789,6 +821,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 	// Start by hiding the Custom frame
 	//
+	gtk_widget_hide(m_wCustomFrame);
 	m_bisCustomized = UT_FALSE;
 
 	return m_wContents;
@@ -1055,7 +1088,7 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 						GTK_SIGNAL_FUNC (s_typeChangedBullet), this);
 	gtk_signal_connect (GTK_OBJECT (m_wMenu_Num), "activate",
 						GTK_SIGNAL_FUNC (s_typeChangedNumbered), this);
-	gtk_signal_connect (GTK_OBJECT (m_oStartSpin_adj), "value_changed",
+        gtk_signal_connect (GTK_OBJECT (m_oStartSpin_adj), "value_changed",
 						GTK_SIGNAL_FUNC (s_styleChanged), this);
 	m_iLevelSpinID = gtk_signal_connect (GTK_OBJECT (m_wLevelSpin), "changed",
 										 GTK_SIGNAL_FUNC (s_styleChanged), this);
@@ -1066,7 +1099,10 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 	m_iDelimEntryID = gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "changed",
 										  GTK_SIGNAL_FUNC (s_styleChanged), this);
 
-
+	m_iStyleBoxID = gtk_signal_connect (GTK_OBJECT(m_wListStyleBox),
+					    "configure_event",
+					    GTK_SIGNAL_FUNC (s_styleChanged), 
+					    this);
 	// the expose event of the preview
 	gtk_signal_connect(GTK_OBJECT(m_wPreviewArea),
 					   "expose_event",
@@ -1101,6 +1137,7 @@ void AP_UnixDialog_Lists::_setData(void)
 	//
 	// Code to work out which is active Font
 	//
+	UT_DEBUGMSG(("SEVIOR: m_pszFont = %s \n",m_pszFont));
 	if(strcmp((char *) m_pszFont,"NULL") == 0 )
 	{
 		gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );

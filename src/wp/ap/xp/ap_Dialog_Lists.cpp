@@ -284,7 +284,10 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		else if (m_bisCustomized == UT_TRUE)
 		{
+		        getBlock()->getDocument()->disableListUpdates();
 			getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
+			getBlock()->getDocument()->enableListUpdates();
+			getBlock()->getDocument()->updateDirtyLists();
 			return;
 		}
 		else if (m_bisCustomized == UT_FALSE)
@@ -299,7 +302,10 @@ void AP_Dialog_Lists::Apply(void)
 			UT_uint32 curlevel = getBlock()->getLevel();
 			UT_uint32 currID = getBlock()->getAutoNum()->getID();
 			curlevel++;
+		        getBlock()->getDocument()->disableListUpdates();
 			getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
+			getBlock()->getDocument()->enableListUpdates();
+			getBlock()->getDocument()->updateDirtyLists();
 			return;
 		}
 		else
@@ -379,6 +385,10 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
        {
                UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
        }
+       else if (m_newListType == NOT_A_LIST)
+       {
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+       }
        else if(m_newListType > DASHED_LIST)
        {
                UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Dingbats");
@@ -405,7 +415,12 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
                UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
                UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
        }
-       else if(m_newListType > DASHED_LIST)
+       else if (m_newListType == NOT_A_LIST)
+       {
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+               UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+       }
+      else if(m_newListType > DASHED_LIST)
        {
                UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Dingbats");
                UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");

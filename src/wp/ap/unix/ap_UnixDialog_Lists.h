@@ -116,6 +116,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GtkWidget * m_wStartNew_label;
 	gint m_iLevelSpinID;
 	gint m_iDelimEntryID;
+	gint m_iStyleBoxID;
 };
 
 #endif /* AP_UNIXDIALOG_LISTS_H */
