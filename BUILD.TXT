@@ -206,13 +206,14 @@ It will work with MPW 3.5 GM. Currently Metrowerks MPW compilers are not support
 Build Instructions -- darwin: MacOS X | XDarwin
 -----------------------------------------------
 
-There are two ways to build AbiWord for MacOS X:
+There are three ways to build AbiWord for MacOS X:
 
-(1) The native port, which uses the Carbon API to provide a delicious
+(1) The 1st native port, which uses the Cocoa API to provide a delicious
     Aqua interface. No Mac enthusiast should put up with anything less.
-    (Only MacOS X final is supported. MacOS Public Beta is no longer...)
 
-(2) The UNIX build. Although this lacks the silky, sexy finish of the
+(2) The 2nd native port, which uses the Carbon API.
+
+(3) The UNIX build. Although this lacks the silky, sexy finish of the
     native port, it has the undeniable advantage that it works. If your
     X server is set up rootless then the burden of interface is light.
 
@@ -229,7 +230,7 @@ Whichever you're building, or trying to, here are a few guidelines:
     * * * WARNING * * *
 
     Don't use automake-1.5, cos it don't work. Any of the automake-1.4
-    releases should be fine.
+    releases, or automake-1.5d and up, should be fine.
 
 (c) It's probably safe to ignore this next bit of advice, but come back
     to it if you experience mysterious problems...
@@ -263,7 +264,7 @@ Whichever you're building, or trying to, here are a few guidelines:
     autoconf >= 2.50, it may be worth adding SHELL=/oss/bin/bash to
     [ENVIRONMENT], e.g.:
 
-	PLATFORM=NetBSD /oss/bin/bash configure SHELL=/oss/bin/bash ...
+	/oss/bin/bash configure SHELL=/oss/bin/bash ...
 
     If you think you know better than Apple (which, let's face it, in
     this instance you probably do) you can save yourself all of this
@@ -314,18 +315,22 @@ or, if you are taking my paranoid advice from (c) above:
 
 	/oss/bin/bash autogen.sh
 
-Then, or otherwise, run configure. To build for Carbon & Aqua:
+Then, or otherwise, run configure. To build for Cocoa & Aqua:
 
-	./configure --prefix=/Users/me/wherever CPPFLAGS="-no-cpp-precomp"
+	./configure --prefix=/Users/me/wherever
+
+or '/oss/bin/bash configure etc.'. To build for Carbon & Aqua:
+
+	./configure --disable-Cocoa --prefix=/Users/me/wherever
 
 or '/oss/bin/bash configure etc.'. To build for XDarwin:
 
-	PLATFORM=NetBSD ./configure --prefix=/Users/me/wherever CPPFLAGS="-no-cpp-precomp"
+	./configure --disable-Cocoa --disable-Carbon --prefix=/Users/me/wherever
 
 and similarly. Depending on where you installed the various libraries,
 you will probably need to add these to the search paths:
 
-	./configure CPPFLAGS="-no-cpp-precomp -I/Users/me/wherever/include" LDFLAGS="-L/Users/me/wherever/lib"
+	./configure CPPFLAGS="-I/Users/me/wherever/include" LDFLAGS="-L/Users/me/wherever/lib"
 
 and so on and so forth. It looks horribly messy, but it's not so bad once
 you get to know it. Kinda like mature cheddar. Or mature whisky, if you
