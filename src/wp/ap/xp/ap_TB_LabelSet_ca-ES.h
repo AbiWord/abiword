@@ -51,7 +51,7 @@ BeginSet(ca,ES,true)
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nou", 			tb_new_xpm,			NULL, "Crea un nou document")	
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Obre",			tb_open_xpm,			NULL, "Obre un dicument existent")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Obre",			tb_open_xpm,			NULL, "Obre un document existent")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Desa", 		tb_save_xpm,			NULL, "Desa el document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Anomena i desa", 	tb_save_as_xpm,			NULL, "Desa el document amb un altre nom")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimeix",		tb_print_xpm,			NULL, "Imprimeix el document")
@@ -71,8 +71,8 @@ BeginSet(ca,ES,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Negreta",		tb_text_bold_N_xpm,		NULL, "Negreta")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Cursiva",		tb_text_italic_K_xpm,		NULL, "Cursiva")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Subratllat",		tb_text_underline_S_xpm,	NULL, "Subratllat")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Supraratllat",		tb_text_overline_xpm,		NULL, "Supraratllat")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrat",   		tb_text_strikeout_xpm,		NULL, "Barrat")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Supraratllat",		tb_text_overline_S_xpm,		NULL, "Supraratllat")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrat",   		tb_text_strikeout_B_xpm,	NULL, "Barrat")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,		"Ajuda",		tb_help_xpm,			NULL, "Ajuda")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superíndex",		tb_text_superscript_xpm,	NULL, "Superíndex")
@@ -108,8 +108,8 @@ BeginSet(ca,ES,true)
 	// ... add others here ...
 
 #ifdef BIDI_ENABLED
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Força text LTR",	tb_text_direction_ltr_xpm,	NULL, "Força direcció LTR del text")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Força text RTL",	tb_text_direction_rtl_xpm,	NULL, "Força direcció RTL del text")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Força text EAD",	tb_text_direction_ltr_xpm,	NULL, "Força direcció del text d'esquerra a dreta")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Força text DAE",	tb_text_direction_rtl_xpm,	NULL, "Força direcció del text de dreta a esquerra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Direcció del paràgraf",tb_text_dom_direction_rtl_xpm,	NULL, "Canvia la direcció dominant del paràgraf")
 #endif
 

@@ -161,6 +161,17 @@ BeginSet(ca,ES,true)
 	MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,		"&Ignora-les totes", 		"Ignora totes les aparicions d'aquesta paraula al diccionari")
 	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Afegeix", 			"Afegeix aquesta paraula al diccionari personalitzat")
 
+ 	/* autotext submenu labels */
+ 	
+     	MenuLabel(AP_MENU_ID_INSERT_AUTOTEXT, "&Text automàtic", "")
+     	MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN, "A l'atenció de:", "")
+     	MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING, "Cloenda:", "") 
+     	MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL, "Instruccions de correu:", "")
+     	MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE, "Referència:", "")
+     	MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION, "Salutació:", "")
+     	MenuLabel(AP_MENU_ID_AUTOTEXT_SUBJECT, "Assumpte:", "")
+     	MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL, "Correu electrònic:", "")
+
 	// ... add others here ...
 
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)
