@@ -605,11 +605,20 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 		init_chp(&achp);
 		init_pap(&apap);
 		decode_e_chp(&achp);
+
+/* sterwill: Do we really want to throw (possibly) mismatching tags at the end? */
+/*
 		if (inafont)
 			{
 				 spewString("</c>");
 			inafont=0;
 			}
+		if (inacolor)
+		{
+			spewString("</c>");
+			inacolor=0;
+		}
+*/		
 		decode_e_specials(&apap,&achp,NULL);
 
 /*		spewString("\n<br><img src=\"%s/documentend.gif\"><br>\n",patterndir()); */
@@ -1668,7 +1677,7 @@ int decode_word8(FILE *mainfd,FILE *tablefd0,FILE *tablefd1,FILE *data,int core)
 #if 0
 	if ( (list_author_key) && (key_atrd!=NULL) )
 		{
-		spewString("<p>\n");
+		spewString("\n<p>");
 		spewString("<table border=1>\n");
 		spewString("<tr><td colspan=2><b>Annotation Author Key</b></td></tr>");
 		spewString("<tr><td>Initials</td><td>Full Name</td></tr>");
@@ -2581,7 +2590,7 @@ void decode_simple(FILE *mainfd,FILE *tablefd,FILE *data,U32 fcClx,U32 fcMin,U32
 			spewString("\n<head>\n<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html;charset=utf-8\">\n</head>\n");
 #endif
 		
-		spewString("\n<section>\n<p>\n");  /* we need at least one paragraph */
+		spewString("<section>\n<p>");  /* we need at least one paragraph */
 		}
 
 	/*now we have a problem as some simple (hah!!!) docs can go from 16 bit text to 
@@ -2848,7 +2857,7 @@ void decode_simple(FILE *mainfd,FILE *tablefd,FILE *data,U32 fcClx,U32 fcMin,U32
 			decode_e_specials(apap,achp,a_list_info);
 			decode_e_table(apap,achp,a_list_info);
 			decode_s_table(apap,achp,a_list_info);
-			decode_s_specials(apap,achp,a_list_info);
+/*			decode_s_specials(apap,achp,a_list_info); */
 			decode_s_chp(achp,fontnamelist);
 			}
 
@@ -3261,12 +3270,12 @@ void decode_s_chp(chp *achp, ffn *fontnamelist)
 		return;
 	error(erroroutput,"still in start chp\n");
 	error(erroroutput,"incolor is %s,font =%d, current font is %d, currentfont is %d, achpfont is %d\n", incolor,achp->fontsize,currentfontsize,currentfontcode,achp->ascii_font);
-
+#if 0
 	if (achp->fStrike)
 		strcpy(achp->color,"#ed32ff");		/*i just ensure that strike through text becomes this horrible shade of pink*/
 	if (achp->fDStrike)
 		strcpy(achp->color,"#ff7332");		
-
+#endif
 	if ((use_fontfacequery(achp) && (achp->ascii_font != currentfontcode)) || (achp->fontsize!=currentfontsize) || (strcmp(achp->color,incolor)) /* ( (achp->color[0] != '\0') && (!inacolor))  || ( (achp->color[0] == '\0' ) && (inacolor))*/   )
 		{
 		error(erroroutput,"b: font =%d %s\n", achp->fontsize,achp->color);
@@ -3423,7 +3432,8 @@ void decode_s_chp(chp *achp, ffn *fontnamelist)
 		{
 			/* sterwill: hey!  We do this! */
 			/* error(erroroutput,"STRIKETHROUGH"); */
-		spewString("<c PROPS=\"text-decoration:strikethrough\">");
+/* sterwill: TESTING			 */
+/*		spewString("<c PROPS=\"text-decoration:strikethrough\">"); */
 		instrike=1;
 		}
 	}
@@ -3460,7 +3470,7 @@ void end_para(pap *apap,pap *newpap)
 			do_indent(apap);
 			}
 		error(erroroutput,"apap height\n");
-		spewString("\n</p>\n<p>\n");
+		spewString("</p>\n<p>");
 		}
 
 	if (apap != NULL)
@@ -3475,7 +3485,7 @@ void end_para(pap *apap,pap *newpap)
 			if (apap->dyaAfter/TWIRPS_PER_V_PIXEL > 1)
 				{
 				error(erroroutput,"apap height\n");
-				spewString("\n</p>\n<p>\n");
+				spewString("</p>\n<p>");
 				}
 			}
 		}
@@ -3497,7 +3507,7 @@ void end_para(pap *apap,pap *newpap)
 			if (newpap->dyaAfter/TWIRPS_PER_V_PIXEL >1)
 				{
 				error(erroroutput,"newpap height\n");
-				spewString("\n</p>\n<p>\n");
+				spewString("</p>\n<p>");
 				/*  sterwill: later				*/
 /*				spewString("\n<img width=1 height=%d src=\"%s/clear.gif\"><br>\n",newpap->dyaAfter/TWIRPS_PER_V_PIXEL,patterndir()); */
 				}
@@ -3511,12 +3521,12 @@ void decode_e_chp(chp *achp)
 	error(erroroutput,"in end chp\n");
 	if (chps)
 		return;
-
+#if 0
 	if (achp->fStrike)
 		strcpy(achp->color,"#ed32ff");		/*i just ensure that strike through text becomes this horrible shade of pink*/
 	if (achp->fDStrike)
 		strcpy(achp->color,"#ff7332");		
-
+#endif
 	if ((achp->fStrike==0) && (instrike==1))
 		{
 		spewString("</c>");
@@ -3643,7 +3653,8 @@ void decode_e_chp(chp *achp)
 
 		if (instrike)
 		{
-			spewString("</c>");
+/* sterwill: TESTING			 */
+/* 			spewString("</c>"); */
 			instrike=0;
 		}
 
@@ -4332,7 +4343,7 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 			inafont=0;
 			}
 
-					spewString("\n</p>\n<p>\n");
+					spewString("</p>\n<p>");
 					if (!silent)
 						{
 						breakcount++;
@@ -5195,7 +5206,7 @@ void decode_clx(U32 startpiece,U32 begincp,U32 endcp,FILE *in,FILE *main,FILE *d
 			if ( (header == 0) && (metadone == 0) )
 				{
 /*				spewString("\n<head>\n<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html;charset=utf-8\">\n</head>\n"); */
-				spewString("\n<section>\n<p>\n");
+				spewString("<section>\n<p>");
 				metadone=1;
 				}
 
@@ -5204,7 +5215,7 @@ void decode_clx(U32 startpiece,U32 begincp,U32 endcp,FILE *in,FILE *main,FILE *d
 
 				if ((header == 0) && (metadone ==0))
 					{
-					spewString("\n<section>\n<p>\n");
+					spewString("<section>\n<p>");
 					metadone=1;
 					}
 
@@ -6319,7 +6330,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				resetchp=1;
 				}
 				
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 8) && (inah1 == 8))
 			{
@@ -6329,7 +6340,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 7) && (inah1 == 7))
 			{
@@ -6339,7 +6350,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 6) && (inah1 == 6))
 			{
@@ -6349,7 +6360,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 5) && (inah1 == 5))
 			{
@@ -6359,7 +6370,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 4) && (inah1 == 4))
 			{
@@ -6369,7 +6380,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 3) && (inah1 == 3))
 			{
@@ -6379,7 +6390,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 2) && (inah1 == 2))
 			{
@@ -6389,7 +6400,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		else if ((apap->istd != 1) && (inah1 == 1))
 			{
@@ -6399,7 +6410,7 @@ void decode_e_specials(pap *apap,chp *achp,list_info *a_list_info)
 				decode_e_chp(&reset);
 				resetchp=1;
 				}
-			spewString("</c>\n");
+			spewString("</c>");
 			}
 		}
 	error(erroroutput,"inah1 is now %d\n",inah1);

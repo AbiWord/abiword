@@ -56,21 +56,26 @@ void do_indent(pap *apap)
     if (paraindent < 0)
         paraindent = 0;
 
+/*
     if (paraindent < oldparaindent)
         {
-        for(i=paraindent;i<oldparaindent;i++)
-            fprintf(outputfile,"\n</dir>");
+  for(i=paraindent;i<oldparaindent;i++)
+  fprintf(outputfile,"\n</dir>");
         }
     else if (paraindent > oldparaindent)
         {
-        for (i=oldparaindent;i<paraindent;i++)
+  for (i=oldparaindent;i<paraindent;i++)
             fprintf(outputfile,"\n<dir>");
         }
+*/
+		
     oldparaindent = paraindent;
+	/*
     if (apap->firstline >0)
         {
-        fprintf(outputfile,"<img height=1 width=%d src=\"%s/clear.gif\">",apap->firstline/TWIRPS_PER_H_PIXEL,patterndir());
+			fprintf(outputfile,"<img height=1 width=%d src=\"%s/clear.gif\">",apap->firstline/TWIRPS_PER_H_PIXEL,patterndir());
         }
+	*/
     }
 
 

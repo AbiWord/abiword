@@ -375,6 +375,8 @@ void oprintf(int silentflag,char *fmt, ...)
 
 void error(FILE *stream,char *fmt, ...)
 	{
+/* sterwill: this slows things down	*/
+#if 0		
 	#ifdef DEBUG
     va_list argp;
     fprintf(stream, "error: ");
@@ -384,6 +386,7 @@ void error(FILE *stream,char *fmt, ...)
     fprintf(stream, "\n");
 	fflush(stream);
 	#endif
+#endif
     }
 
 RETSIGTYPE reaper (int ignored)
