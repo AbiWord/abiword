@@ -160,7 +160,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			if((UT_stricmp(lf.lfFaceName,m_pFontFamily) != 0))
 			{
 				m_bChangedFontFamily = true;
-				setFontFamily(lf.lfFaceName);
+				CLONEP((char *&) m_pFontFamily, lf.lfFaceName);
 			}
 		}
 		else
@@ -168,7 +168,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			if(lf.lfFaceName[0])
 			{
 				m_bChangedFontFamily = true;
-				setFontFamily(lf.lfFaceName);
+				CLONEP((char *&) m_pFontFamily, lf.lfFaceName);
 			}
 		}
 
@@ -187,7 +187,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		else
 		{
 			m_bChangedFontSize = true;
-			setFontSize(bufSize);
+			CLONEP((char *&) m_pFontSize, bufSize);
 		}
 
 		bool bIsBold = ((cf.nFontType & BOLD_FONTTYPE) != 0);
@@ -199,7 +199,10 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		if ((bIsBold != bWasBold) || (bIsNormal != bWasNormal))
 		{
 			m_bChangedFontWeight = true;
-			setFontWeight((bIsBold) ? "bold" : "normal");
+			if( bIsBold )
+				CLONEP((char *&) m_pFontWeight, "bold");
+			else
+				CLONEP((char *&) m_pFontWeight, "normal");
 		}
 
 		bool bIsItalic = ((cf.nFontType & ITALIC_FONTTYPE) != 0);
@@ -207,7 +210,10 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		if (bIsItalic != bWasItalic)
 		{
 			m_bChangedFontStyle = true;
-			setFontStyle((bIsItalic) ? "italic" : "normal");
+			if( bIsItalic )
+				CLONEP((char *&)m_pFontStyle, "italic");
+			else
+				CLONEP((char *&)m_pFontStyle, "normal");
 		}
 
 		char bufColor[10];
@@ -218,7 +224,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			|| (!bWasColorValid && (UT_stricmp(bufColor,"000000") != 0)))
 		{
 			m_bChangedColor = true;
-			setColor(bufColor);
+			CLONEP((char *&)m_pColor, bufColor);
 		}
 
 		m_bChangedUnderline  = ((lf.lfUnderline == TRUE) != m_bUnderline);
