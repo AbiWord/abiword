@@ -183,18 +183,20 @@ ABI_ZLIB_LIB = -lzdll
 ABI_LIBS += zdll 
 
 # gsf (for many of the plugins)
-PKGCONFIG ?= $(shell which pkg-config)
-ifeq ($(PKGCONFIG), )
-	#ABI_OPTIONS += pkg-config:No
-else
+ifneq ($(shell which pkg-config), )
 	ABI_GSF_LIB += $(shell pkg-config --libs --silence-errors libgsf-1)
 	ABI_GSF_INC += $(shell pkg-config --cflags --silence-errors libgsf-1)
-	#ABI_OPTIONS += pkg-config:$(PKGCONFIG)
-	#ABI_OPTIONS += gsf_lib:$(ABI_GSF_LIB) gsf_inc:$(ABI_GSF_INC)
 endif
 
 # so <fribidi.h> works
 OS_INCLUDES += -I$(ABI_ROOT)/../fribidi	
+
+# Try to find where NSIS is installed, if anywhere
+# First check to see if it's in the path.  If not, check default install path.
+NSIS_ROOT ?= $(shell dirname "`which makensis`")
+ifeq ($(NSIS_ROOT), .)
+	NSIS_ROOT := /c/Program Files/NSIS 
+endif
 
 # Compiler flags
 # requires the commctrl.dll from ie4.0 or greater
