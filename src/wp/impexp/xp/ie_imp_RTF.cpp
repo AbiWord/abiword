@@ -926,7 +926,6 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 		// TODO Many are not supported by iconv
 		switch (m_codepage)
 		{
-			// 437	United States IBM
 			// 708	Arabic (ASMO 708)
 		case 708:
 			m_szEncoding = "ASMO-708";	// ISO-8859-6
@@ -939,6 +938,12 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 		case 819:
 			m_szEncoding = "CP819";	// ISO-8859-1
 			break;
+
+			// 437: IBM
+		case 437:
+			m_szEncoding = "CP437";
+			break;
+
 			// 850	IBM Multilingual
 		case 850:
 			m_szEncoding = "CP850";
@@ -1065,11 +1070,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 				m_szEncoding = "CP1250";	// MS-EE
 				break;
 			case 254:	// PC437_CHARSET
-				// TODO What is this and can iconv do it?
-				// TODO It seems to be "OEM United States" "IBM437"
-				// TODO Maybe same as code page 1252
-				UT_DEBUGMSG(("RTF Font charset 'PC437'??\n"));
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				m_szEncoding = "CP437";
 				break;
 			case 255:	// OEM_CHARSET
 				// TODO Can iconv do this?
