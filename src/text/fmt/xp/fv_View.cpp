@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -789,6 +789,24 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			}
 
 			iPos = offset + pBlock->getPosition();
+		}
+		break;
+
+	case FV_DOCPOS_BOP: 
+		{
+			fp_Container* pContainer = pLine->getContainer();
+			fp_Page* pPage = pContainer->getPage();
+
+			iPos = pPage->getFirstLastPos(UT_TRUE);
+		}
+		break;
+
+	case FV_DOCPOS_EOP:
+		{
+			fp_Container* pContainer = pLine->getContainer();
+			fp_Page* pPage = pContainer->getPage();
+
+			iPos = pPage->getFirstLastPos(UT_FALSE);
 		}
 		break;
 
@@ -2024,16 +2042,87 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 	*/
 	if (m_xPoint < 0)
 	{
-		cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(m_xPoint)));
+		cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(m_xPoint) + fl_PAGEVIEW_MARGIN_X/2));
 		bRet = UT_TRUE;
 	}
 	else if (((UT_uint32) (m_xPoint)) >= ((UT_uint32) m_iWindowWidth))
 	{
-		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth));
+		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth + fl_PAGEVIEW_MARGIN_X/2));
 		bRet = UT_TRUE;
 	}
 
 	return bRet;
+}
+
+void FV_View::_moveInsPtNextPrevPage(UT_Bool bNext)
+{
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
+
+	/*
+		This function moves the IP to the beginning of the previous or 
+		next page (ie not this one).
+	*/
+
+	// first, find the page we are on now
+	UT_uint32 iOldPoint = getPoint();
+
+	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
+	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
+	fp_Line* pOldLine = pOldRun->getLine();
+	fp_Container* pOldContainer = pOldLine->getContainer();
+	fp_Page* pOldPage = pOldContainer->getPage();
+
+	// try to locate next/prev page
+	fp_Page* pPage = (bNext ? pOldPage->getNext() : pOldPage->getPrev());
+
+	// if couldn't move, go to top of this page instead
+	if (!pPage) 
+		pPage = pOldPage;
+
+	// move to the first pos on this page
+	PT_DocPosition iNewPoint = pPage->getFirstLastPos(UT_TRUE);
+	_setPoint(iNewPoint, UT_FALSE);
+
+	// explicit vertical scroll to top of page
+	UT_sint32 iPageOffset;
+	getPageYOffset(pPage, iPageOffset);
+
+	iPageOffset -= fl_PAGEVIEW_PAGE_SEP /2;
+	iPageOffset -= m_yScrollOffset;
+	
+	UT_Bool bVScroll = UT_FALSE;
+	if (iPageOffset < 0)
+	{
+		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(iPageOffset)));
+		bVScroll = UT_TRUE;
+	}
+	else if (iPageOffset > 0)
+	{
+		cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(iPageOffset));
+		bVScroll = UT_TRUE;
+	}
+
+	// also allow implicit horizontal scroll, if needed
+	if (!_ensureThatInsertionPointIsOnScreen() && !bVScroll)
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
+
+void FV_View::warpInsPtNextPrevPage(UT_Bool bNext)
+{
+	if (!isSelectionEmpty())
+		_moveToSelectionEnd(bNext);
+	else
+		_eraseInsertionPoint();
+
+	_resetSelection();
+	_clearIfAtFmtMark(getPoint());
+	_moveInsPtNextPrevPage(bNext);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)

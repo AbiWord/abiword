@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -58,6 +58,7 @@ typedef enum _FVDocPos
 {
 	FV_DOCPOS_BOB, FV_DOCPOS_EOB,	// block
 	FV_DOCPOS_BOD, FV_DOCPOS_EOD,	// document
+	FV_DOCPOS_BOP, FV_DOCPOS_EOP,	// page
 	FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
 	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
 	FV_DOCPOS_BOW, FV_DOCPOS_EOW	// word
@@ -167,6 +168,7 @@ public:
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			moveInsPtTo(FV_DocPos dp);
 	void 			moveInsPtTo(PT_DocPosition dp);
+	void			warpInsPtNextPrevPage(UT_Bool bNext);
 	void			warpInsPtNextPrevLine(UT_Bool bNext);
 	void			extSelHorizontal(UT_Bool bForward, UT_uint32 count);
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag);
@@ -234,6 +236,7 @@ protected:
 	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, UT_Bool bFullLineHeightRect);
 	
 	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
+	void			    _moveInsPtNextPrevPage(UT_Bool bNext);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
 
 	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);

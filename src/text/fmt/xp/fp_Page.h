@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@ class fp_Page
 
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
+	PT_DocPosition	getFirstLastPos(UT_Bool bFirst) const;
 	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void			getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 	void			getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);

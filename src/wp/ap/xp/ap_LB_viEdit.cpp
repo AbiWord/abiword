@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -154,10 +154,10 @@ static struct ap_bs_NVK s_NVKTable[] =
 						  "",					"",					"",				""					}},
 	{EV_NVK_ESCAPE,		{ "setEditVI",			"",					"",				"",
 						  "",					"",					"",				""					}},
-	{EV_NVK_PAGEUP,		{ "scrollPageUp",		"extSelPageUp",		"",				"",
-						  "",					"",					"",				""					}},
-	{EV_NVK_PAGEDOWN,	{ "scrollPageDown",		"extSelPageDown",	"",				"",
-						  "",					"",					"",				""					}},
+	{EV_NVK_PAGEUP,		{ "scrollPageUp",		"extSelPageUp",		"warpInsPtPrevPage",	"",
+						  "",					"",					"warpInsPtBOP",	""					}},
+	{EV_NVK_PAGEDOWN,	{ "scrollPageDown",		"extSelPageDown",	"warpInsPtNextPage",	"",
+						  "",					"",					"warpInsPtEOP",	""					}},
 	{EV_NVK_END,		{ "warpInsPtEOL",		"extSelEOL",		"warpInsPtEOD",	"extSelEOD",
 						  "",					"",					"",				""					}},
 	{EV_NVK_HOME,		{ "warpInsPtBOL",		"extSelBOL",		"warpInsPtBOD",	"extSelBOD",

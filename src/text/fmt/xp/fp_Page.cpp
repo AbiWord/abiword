@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,9 @@
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fp_Column.h"
+#include "fp_Line.h"
+#include "fp_Run.h"
+#include "fl_BlockLayout.h"
 #include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
@@ -348,6 +351,53 @@ void fp_Page::columnHeightChanged(fp_Column* pCol)
 	UT_ASSERT(ndx >= 0);
 
 	_reformat();
+}
+
+PT_DocPosition fp_Page::getFirstLastPos(UT_Bool bFirst) const
+{
+	PT_DocPosition pos;
+
+	UT_sint32 cols = countColumnLeaders();
+	UT_ASSERT(cols>0);
+
+	if (bFirst)
+	{
+		fp_Column* pColumn = getNthColumnLeader(0);
+		UT_ASSERT(pColumn);
+		fp_Line* pFirstLine = pColumn->getFirstLine();
+		UT_ASSERT(pFirstLine);
+
+		fp_Run* pFirstRun = pFirstLine->getFirstRun();
+		fl_BlockLayout* pFirstBlock = pFirstLine->getBlock();
+
+		pos = pFirstRun->getBlockOffset() + pFirstBlock->getPosition();
+	}
+	else
+	{
+		fp_Column* pColumn = getNthColumnLeader(cols-1);
+		UT_ASSERT(pColumn);
+		fp_Line* pLastLine = pColumn->getLastLine();
+		UT_ASSERT(pLastLine);
+
+		fp_Run* pLastRun = pLastLine->getLastRun();
+		fl_BlockLayout* pLastBlock = pLastLine->getBlock();
+
+		while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
+		{
+			pLastRun = pLastRun->getPrev();
+		}
+
+		if(pLastRun->isForcedBreak())
+		{
+			pos = pLastBlock->getPosition() + pLastRun->getBlockOffset();
+		}
+		else
+		{
+			pos = pLastBlock->getPosition() + pLastRun->getBlockOffset() + pLastRun->getLength();
+		}
+	}
+
+	return pos;
 }
 
 void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)

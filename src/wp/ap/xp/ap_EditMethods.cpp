@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -103,6 +103,8 @@ public:
 	static EV_EditMethod_Fn warpInsPtToXY;
 	static EV_EditMethod_Fn warpInsPtLeft;
 	static EV_EditMethod_Fn warpInsPtRight;
+	static EV_EditMethod_Fn warpInsPtBOP;
+	static EV_EditMethod_Fn warpInsPtEOP;
 	static EV_EditMethod_Fn warpInsPtBOL;
 	static EV_EditMethod_Fn warpInsPtEOL;
 	static EV_EditMethod_Fn warpInsPtBOW;
@@ -113,6 +115,8 @@ public:
 	static EV_EditMethod_Fn warpInsPtEOB;
 	static EV_EditMethod_Fn warpInsPtBOD;
 	static EV_EditMethod_Fn warpInsPtEOD;
+	static EV_EditMethod_Fn warpInsPtPrevPage;
+	static EV_EditMethod_Fn warpInsPtNextPage;
 	static EV_EditMethod_Fn warpInsPtPrevLine;
 	static EV_EditMethod_Fn warpInsPtNextLine;
 
@@ -379,6 +383,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(warpInsPtToXY),		0,	""),
 	EV_EditMethod(NF(warpInsPtLeft),		0,	""),
 	EV_EditMethod(NF(warpInsPtRight),		0,	""),
+	EV_EditMethod(NF(warpInsPtBOP),			0,	""),
+	EV_EditMethod(NF(warpInsPtEOP),			0,	""),
 	EV_EditMethod(NF(warpInsPtBOL),			0,	""),
 	EV_EditMethod(NF(warpInsPtEOL),			0,	""),
 	EV_EditMethod(NF(warpInsPtBOW),			0,	""),
@@ -389,6 +395,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(warpInsPtEOB),			0,	""),
 	EV_EditMethod(NF(warpInsPtBOD),			0,	""),
 	EV_EditMethod(NF(warpInsPtEOD),			0,	""),
+	EV_EditMethod(NF(warpInsPtPrevPage),	0,	""),
+	EV_EditMethod(NF(warpInsPtNextPage),	0,	""),
 	EV_EditMethod(NF(warpInsPtPrevLine),	0,	""),
 	EV_EditMethod(NF(warpInsPtNextLine),	0,	""),
 
@@ -1887,6 +1895,20 @@ Defun1(warpInsPtRight)
 	return UT_TRUE;
 }
 
+Defun1(warpInsPtBOP)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_BOP);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtEOP)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_EOP);
+	return UT_TRUE;
+}
+
 Defun1(warpInsPtBOL)
 {
 	ABIWORD_VIEW;
@@ -1950,6 +1972,20 @@ Defun1(warpInsPtEOD)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOD);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtPrevPage)
+{
+	ABIWORD_VIEW;
+	pView->warpInsPtNextPrevPage(UT_FALSE);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtNextPage)
+{
+	ABIWORD_VIEW;
+	pView->warpInsPtNextPrevPage(UT_TRUE);
 	return UT_TRUE;
 }
 
