@@ -1173,8 +1173,11 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 			m_pDoc->deleteSpan(posCur, posCur+amt);
 		}
 
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 }
 
@@ -1773,8 +1776,12 @@ void FV_View::_updateInsertionPoint()
 	if (isSelectionEmpty())
 	{
 		_eraseInsertionPoint();
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 }
 
