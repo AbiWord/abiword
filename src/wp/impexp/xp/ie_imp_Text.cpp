@@ -156,6 +156,81 @@ IEStatus IE_Imp_Text::_parseFile(FILE * fp)
 /*****************************************************************/
 /*****************************************************************/
 
+void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
+								  unsigned char * pData, UT_uint32 lenData)
+{
+	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
+	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
+
+	UT_GrowBuf gbBlock(1024);
+	UT_Bool bEatLF = UT_FALSE;
+	unsigned char * pc;
+
+	PT_DocPosition dpos = pDocRange->m_pos1;
+	
+	for (pc=pData; (pc<pData+lenData); pc++)
+	{
+		unsigned char c = *pc;
+		
+		switch (c)
+		{
+		case '\r':
+		case '\n':
+			if ((c == '\n') && bEatLF)
+			{
+				bEatLF = UT_FALSE;
+				break;
+			}
+
+			if (c == '\r')
+			{
+				bEatLF = UT_TRUE;
+			}
+			
+			// we interprete either CRLF, CR, or LF as a paragraph break.
+			
+			// start a paragraph and emit any text that we
+			// have accumulated.
+			m_pDocument->insertStrux(dpos,PTX_Block);
+			dpos += 1;
+			
+			if (gbBlock.getLength() > 0)
+			{
+				m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
+				dpos += gbBlock.getLength();
+				gbBlock.truncate(0);
+			}
+			break;
+
+		default:
+			bEatLF = UT_FALSE;
+
+			// deal with plain character.
+			// this cast is OK.  we have US-ASCII (actually Latin-1) character
+			// data, so we can do this.
+			
+			UT_UCSChar uc = (UT_UCSChar) c;
+			gbBlock.ins(gbBlock.getLength(),&uc,1);
+			break;
+		}
+	} 
+
+	if (gbBlock.getLength() > 0)
+	{
+		// if we have text left over (without final CR/LF),
+		// create a paragraph and emit the text now.
+		m_pDocument->insertStrux(dpos, PTX_Block);
+		dpos += 1;
+		m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
+		dpos += gbBlock.getLength();
+	}
+
+	return;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
 UT_Bool IE_Imp_Text::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".txt") == 0);

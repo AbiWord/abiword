@@ -368,7 +368,8 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange)
 			DELETEP(pData);
 			goto MyEnd;
 		}
-
+#endif
+#if 0
 		if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
 		{
 			// TODO
@@ -376,7 +377,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange)
 			goto MyEnd;
 		}
 #endif
-#if 0
+
 		if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		{
 			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
@@ -395,7 +396,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange)
 			DELETEP(pData);
 			goto MyEnd;
 		}
-#endif
+
 		// TODO figure out what to do with an image....
 		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
 	}

@@ -40,7 +40,6 @@ IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument)
 {
 	m_error = 0;
 	m_pListener = NULL;
-	m_lid = 0;
 }
 
 IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
@@ -78,47 +77,6 @@ UT_Bool IE_Exp_AbiWord_1::SupportsFileType(IEFileType ft)
 	return (IEFT_AbiWord_1 == ft);
 }
 	  
-/*****************************************************************/
-/*****************************************************************/
-
-IEStatus IE_Exp_AbiWord_1::writeFile(const char * szFilename)
-{
-	UT_ASSERT(m_pDocument);
-	UT_ASSERT(szFilename && *szFilename);
-
-	if (!_openFile(szFilename))
-		return IES_CouldNotOpenForWriting;
-
-	IEStatus status = _writeDocument();
-	if (status == IES_OK)
-		_closeFile();
-	else
-		_abortFile();
-
-	// Note: we let our caller worry about resetting the dirty bit
-	// Note: on the document and possibly updating the filename.
-	
-	return status;
-}
-
-void IE_Exp_AbiWord_1::write(const char * sz)
-{
-	if (m_error)
-		return;
-	m_error |= ! _writeBytes((UT_Byte *)sz);
-	return;
-}
-
-void IE_Exp_AbiWord_1::write(const char * sz, UT_uint32 length)
-{
-	if (m_error)
-		return;
-	if (_writeBytes((UT_Byte *)sz,length) != length)
-		m_error = UT_TRUE;
-	
-	return;
-}
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -596,12 +554,10 @@ IEStatus IE_Exp_AbiWord_1::_writeDocument(void)
 	m_pListener = new s_AbiWord_1_Listener(m_pDocument,this);
 	if (!m_pListener)
 		return IES_NoMemory;
-	if (!m_pDocument->addListener(static_cast<PL_Listener *>(m_pListener),&m_lid))
+	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
 		return IES_Error;
-	m_pDocument->removeListener(m_lid);
 	delete m_pListener;
 
-	m_lid = 0;
 	m_pListener = NULL;
 	
 	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);

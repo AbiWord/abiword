@@ -321,3 +321,12 @@ UT_Bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_MsWord_97 == ft);
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
+									   unsigned char * pData, UT_uint32 lenData)
+{
+	UT_DEBUGMSG(("TODO IE_Imp_MsWord_97::pasteFromBuffer\n"));
+}

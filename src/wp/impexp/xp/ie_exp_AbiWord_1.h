@@ -34,10 +34,6 @@ public:
 	IE_Exp_AbiWord_1(PD_Document * pDocument);
 	virtual ~IE_Exp_AbiWord_1();
 
-	virtual IEStatus	writeFile(const char * szFilename);
-	void				write(const char * sz);
-	void				write(const char * sz, UT_uint32 length);
-
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static IEStatus		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
@@ -47,13 +43,9 @@ public:
 	static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	IEStatus			_writeDocument(void);
+	virtual IEStatus	_writeDocument(void);
 	
 	s_AbiWord_1_Listener *	m_pListener;
-	PL_ListenerId		m_lid;
-
-public:
-	UT_Bool				m_error;
 };
 
 #endif /* IE_EXP_ABIWORD_1_H */

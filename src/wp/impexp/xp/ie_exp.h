@@ -28,8 +28,12 @@
 #include "ie_types.h"
 
 class PD_Document;
+class PD_DocumentRange;
+class UT_ByteBuf;
 
+//////////////////////////////////////////////////////////////////
 // IE_Exp defines the base class for file exporters.
+//////////////////////////////////////////////////////////////////
 
 class IE_Exp
 {
@@ -54,9 +58,15 @@ public:
 public:
 	IE_Exp(PD_Document * pDocument);
 	virtual ~IE_Exp();
-	virtual IEStatus	writeFile(const char * szFilename) = 0;
 
- protected:
+	virtual IEStatus	writeFile(const char * szFilename);
+	virtual IEStatus	copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf);
+	virtual void		write(const char * sz);
+	virtual void		write(const char * sz, UT_uint32 length);
+
+protected:
+	virtual IEStatus	_writeDocument(void) = 0;
+	
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.
@@ -68,6 +78,11 @@ public:
 	void				_abortFile(void);
 
 	PD_Document *		m_pDocument;
+	PD_DocumentRange *	m_pDocRange;
+	UT_ByteBuf *		m_pByteBuf;
+
+public:
+	UT_Bool				m_error;
 
 private:
 	FILE *				m_fp;

@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-
+#include <string.h>
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -30,6 +30,47 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 
+//////////////////////////////////////////////////////////////////
+// a private listener class to help us translate the document
+// into a text stream.  code is at the bottom of this file.
+//////////////////////////////////////////////////////////////////
+
+class s_Text_Listener : public PL_Listener
+{
+public:
+	s_Text_Listener(PD_Document * pDocument,
+					IE_Exp_Text * pie);
+	virtual ~s_Text_Listener();
+
+	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+								 const PX_ChangeRecord * pcr);
+
+	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+									  const PX_ChangeRecord * pcr,
+									  PL_StruxFmtHandle * psfh);
+
+	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+							   const PX_ChangeRecord * pcr);
+
+	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+									const PX_ChangeRecord * pcr,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
+
+	virtual UT_Bool		signal(UT_uint32 iSignal);
+
+protected:
+	void				_closeBlock(void);
+	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	
+	PD_Document *		m_pDocument;
+	IE_Exp_Text *		m_pie;
+	UT_Bool				m_bInBlock;
+};
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -38,7 +79,6 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument)
 {
 	m_error = 0;
 	m_pListener = NULL;
-	m_lid = 0;
 }
 
 IE_Exp_Text::~IE_Exp_Text()
@@ -80,82 +120,22 @@ UT_Bool IE_Exp_Text::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Exp_Text::writeFile(const char * szFilename)
+IEStatus IE_Exp_Text::_writeDocument(void)
 {
-	UT_ASSERT(m_pDocument);
-	UT_ASSERT(szFilename && *szFilename);
+	m_pListener = new s_Text_Listener(m_pDocument,this);
+	if (!m_pListener)
+		return IES_NoMemory;
+	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
+		return IES_Error;
+	delete m_pListener;
 
-	if (!_openFile(szFilename))
-		return IES_CouldNotOpenForWriting;
-
-	IEStatus status = _writeDocument();
-	if (status == IES_OK)
-		_closeFile();
-	else
-		_abortFile();
-
-	// Note: we let our caller worry about resetting the dirty bit
-	// Note: on the document and possibly updating the filename.
+	m_pListener = NULL;
 	
-	return status;
-}
-
-void IE_Exp_Text::write(const char * sz)
-{
-	if (m_error)
-		return;
-	m_error |= ! _writeBytes((UT_Byte *)sz);
-	return;
-}
-
-void IE_Exp_Text::write(const char * sz, UT_uint32 length)
-{
-	if (m_error)
-		return;
-	if (_writeBytes((UT_Byte *)sz,length) != length)
-		m_error = UT_TRUE;
-	
-	return;
+	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
 }
 
 /*****************************************************************/
 /*****************************************************************/
-
-class s_Text_Listener : public PL_Listener
-{
-public:
-	s_Text_Listener(PD_Document * pDocument,
-					IE_Exp_Text * pie);
-	virtual ~s_Text_Listener();
-
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
-								 const PX_ChangeRecord * pcr);
-
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
-									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh);
-
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
-							   const PX_ChangeRecord * pcr);
-
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
-
-	virtual UT_Bool		signal(UT_uint32 iSignal);
-
-protected:
-	void				_closeBlock(void);
-	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
-	
-	PD_Document *		m_pDocument;
-	IE_Exp_Text *		m_pie;
-	UT_Bool				m_bInBlock;
-};
 
 void s_Text_Listener::_closeBlock(void)
 {
@@ -226,16 +206,16 @@ UT_Bool s_Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 #if 0
+			// TODO decide how to indicate objects in text output.
+			
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
-				_openTag("i","/",UT_FALSE,api);
 				return UT_TRUE;
 
 			case PTO_Field:
-				_openTag("f","/",UT_FALSE,api);
 				return UT_TRUE;
 
 			default:
@@ -246,6 +226,9 @@ UT_Bool s_Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			return UT_FALSE;
 #endif
 		}
+
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+		return UT_TRUE;
 
 	default:
 		UT_ASSERT(0);
@@ -305,25 +288,4 @@ UT_Bool s_Text_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;
-}
-
-
-
-/*****************************************************************/
-/*****************************************************************/
-
-IEStatus IE_Exp_Text::_writeDocument(void)
-{
-	m_pListener = new s_Text_Listener(m_pDocument,this);
-	if (!m_pListener)
-		return IES_NoMemory;
-	if (!m_pDocument->addListener(static_cast<PL_Listener *>(m_pListener),&m_lid))
-		return IES_Error;
-	m_pDocument->removeListener(m_lid);
-	delete m_pListener;
-
-	m_lid = 0;
-	m_pListener = NULL;
-	
-	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
 }

@@ -27,7 +27,8 @@
 #include "ut_growbuf.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
-class PD_Document;
+#include "pt_Types.h"
+#include "pd_Document.h"
 
 
 
@@ -163,7 +164,9 @@ public:
 	IE_Imp_RTF(PD_Document * pDocument);
 	~IE_Imp_RTF();
 
-	IEStatus			importFile(const char * szFilename);
+	virtual IEStatus	importFile(const char * szFilename);
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+										unsigned char * pData, UT_uint32 lenData);
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static IEStatus		StaticConstructor(PD_Document * pDocument,
@@ -237,6 +240,11 @@ private:
 	UT_Vector m_colourTable;
 
 	FILE* m_pImportFile;
+
+	unsigned char *		m_pPasteBuffer;
+	UT_uint32 			m_lenPasteBuffer;
+	unsigned char *		m_pCurrentCharInPasteBuffer;
+	PT_DocPosition		m_dposPaste;
 };
 
 #endif /* IE_IMP_RTF_H */

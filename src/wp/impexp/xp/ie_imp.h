@@ -25,6 +25,7 @@
 #include "ie_types.h"
 
 class PD_Document;
+class PD_DocumentRange;
 
 // IE_Imp defines the abstract base class for file importers.
 
@@ -53,6 +54,8 @@ public:
 	IE_Imp(PD_Document * pDocument);
 	virtual ~IE_Imp();
 	virtual IEStatus	importFile(const char * szFilename) = 0;
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+										unsigned char * pData, UT_uint32 lenData) = 0;
 
 protected:
 	PD_Document *		m_pDocument;

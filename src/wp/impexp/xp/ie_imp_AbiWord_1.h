@@ -37,7 +37,9 @@ public:
 	IE_Imp_AbiWord_1(PD_Document * pDocument);
 	~IE_Imp_AbiWord_1();
 
-	IEStatus			importFile(const char * szFilename);
+	virtual IEStatus	importFile(const char * szFilename);
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+										unsigned char * pData, UT_uint32 lenData);
 
 	// the following are public only so that the
 	// XML parser callback routines can access them.

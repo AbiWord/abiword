@@ -51,7 +51,6 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument)
 	m_error = 0;
 	m_pListenerWriteDoc = NULL;
 	m_pListenerGetProps = NULL;
-	m_lid = 0;
 	m_bNeedUnicodeText = UT_FALSE;
 	m_braceLevel = 0;
 	m_bLastWasKeyword = UT_FALSE;
@@ -97,47 +96,6 @@ UT_Bool IE_Exp_RTF::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 /*****************************************************************/
 
-IEStatus IE_Exp_RTF::writeFile(const char * szFilename)
-{
-	UT_ASSERT(m_pDocument);
-	UT_ASSERT(szFilename && *szFilename);
-
-	if (!_openFile(szFilename))
-		return IES_CouldNotOpenForWriting;
-
-	IEStatus status = _writeDocument();
-	if (status == IES_OK)
-		_closeFile();
-	else
-		_abortFile();
-
-	// Note: we let our caller worry about resetting the dirty bit
-	// Note: on the document and possibly updating the filename.
-	
-	return status;
-}
-
-void IE_Exp_RTF::write(const char * sz)
-{
-	if (m_error)
-		return;
-	m_error |= ! _writeBytes((UT_Byte *)sz);
-	return;
-}
-
-void IE_Exp_RTF::write(const char * sz, UT_uint32 length)
-{
-	if (m_error)
-		return;
-	if (_writeBytes((UT_Byte *)sz,length) != length)
-		m_error = UT_TRUE;
-	
-	return;
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
 IEStatus IE_Exp_RTF::_writeDocument(void)
 {
 	// The overall syntax for an RTF file is:
@@ -157,9 +115,8 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 	m_pListenerGetProps = new s_RTF_ListenerGetProps(m_pDocument,this);
 	if (!m_pListenerGetProps)
 		return IES_NoMemory;
-	if (!m_pDocument->addListener(static_cast<PL_Listener *>(m_pListenerGetProps),&m_lid))
+	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerGetProps)))
 		return IES_Error;
-	m_pDocument->removeListener(m_lid);
 	DELETEP(m_pListenerGetProps);
 
 	// write rtf header
@@ -173,9 +130,8 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(m_pDocument,this);
 	if (!m_pListenerWriteDoc)
 		return IES_NoMemory;
-	if (!m_pDocument->addListener(static_cast<PL_Listener *>(m_pListenerWriteDoc),&m_lid))
+	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListenerWriteDoc)))
 		return IES_Error;
-	m_pDocument->removeListener(m_lid);
 	DELETEP(m_pListenerWriteDoc);
 
 	// write any rtf trailer matter

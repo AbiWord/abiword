@@ -25,7 +25,7 @@
 #include "ut_assert.h"
 #include "ut_types.h"
 #include "ut_misc.h"
-
+#include "ut_bytebuf.h"
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_RTF.h"
@@ -64,6 +64,8 @@ IE_Exp::IE_Exp(PD_Document * pDocument)
 {
 	m_fp = 0;
 	m_pDocument = pDocument;
+	m_pDocRange = NULL;
+	m_pByteBuf = NULL;
 }
 
 IE_Exp::~IE_Exp()
@@ -75,7 +77,7 @@ IE_Exp::~IE_Exp()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp::	_openFile(const char * szFilename)
+UT_Bool IE_Exp::_openFile(const char * szFilename)
 {
 	UT_ASSERT(!m_fp);
 
@@ -118,6 +120,73 @@ void IE_Exp::_abortFile(void)
 	// TODO close the file and do any restore and/or cleanup.
 
 	_closeFile();
+	return;
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+IEStatus IE_Exp::writeFile(const char * szFilename)
+{
+	UT_ASSERT(m_pDocument);
+	UT_ASSERT(szFilename && *szFilename);
+
+	if (!_openFile(szFilename))
+		return IES_CouldNotOpenForWriting;
+
+	IEStatus status = _writeDocument();
+	if (status == IES_OK)
+		_closeFile();
+	else
+		_abortFile();
+
+	// Note: we let our caller worry about resetting the dirty bit
+	// Note: on the document and possibly updating the filename.
+	
+	return status;
+}
+
+IEStatus IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
+{
+	// copy selected range of the document into the provided
+	// byte buffer.  (this will be given to the clipboard later)
+
+	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
+	
+	m_pDocRange = pDocRange;
+	m_pByteBuf = pBuf;
+
+	// TODO deal with document range...
+	
+	return _writeDocument();
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void IE_Exp::write(const char * sz)
+{
+	if (m_error)
+		return;
+
+	if (m_pByteBuf)
+		m_error |= (m_pByteBuf->append((UT_Byte *)sz,strlen(sz)) != UT_TRUE);
+	else
+		m_error |= ! _writeBytes((UT_Byte *)sz);
+
+	return;
+}
+
+void IE_Exp::write(const char * sz, UT_uint32 length)
+{
+	if (m_error)
+		return;
+
+	if (m_pByteBuf)
+		m_error |= (m_pByteBuf->append((UT_Byte *)sz,length) != UT_TRUE);
+	else
+		m_error |= (_writeBytes((UT_Byte *)sz,length) != length);
+	
 	return;
 }
 

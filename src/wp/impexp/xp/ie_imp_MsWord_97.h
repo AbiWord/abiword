@@ -40,6 +40,9 @@ public:
 	~IE_Imp_MsWord_97();
 
 	IEStatus			importFile(const char * szFilename);
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+										unsigned char * pData, UT_uint32 lenData);
+
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static IEStatus		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);

@@ -33,7 +33,6 @@
 #include "ut_string.h"
 #include "ie_types.h"
 #include "ie_imp_RTF.h"
-#include "pd_Document.h"
 
 
 // Font table items
@@ -168,6 +167,9 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_cbBin(0),
 	m_pImportFile(NULL)
 {
+	m_pPasteBuffer = NULL;
+	m_lenPasteBuffer = 0;
+	m_pCurrentCharInPasteBuffer = NULL;
 }
 
 
@@ -365,11 +367,7 @@ UT_Bool IE_Imp_RTF::FlushStoredChars(UT_Bool forceInsertPara)
 	}
 
 	if (ok  &&  (m_gbBlock.getLength() > 0))
-	{
-		ok = ( ApplyCharacterAttributes()  &&
-				m_pDocument->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
-		m_gbBlock.truncate(0);
-	}
+		ok = ApplyCharacterAttributes();
 
 	return ok;
 }
@@ -559,23 +557,51 @@ UT_Bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* 
 
 UT_Bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
 {
-	while (fread(pCh, 1, sizeof(unsigned char), m_pImportFile) > 0)
+	if (m_pImportFile)					// if we are reading a file
 	{
-		// line feed and cr should be ignored in RTF files
-		if (*pCh != 10  &&  *pCh != 13)
+		while (fread(pCh, 1, sizeof(unsigned char), m_pImportFile) > 0)
 		{
-			return UT_TRUE;
+			// line feed and cr should be ignored in RTF files
+			if (*pCh != 10  &&  *pCh != 13)
+			{
+				return UT_TRUE;
+			}
 		}
-	}
 
-	return UT_FALSE;
+		return UT_FALSE;
+	}
+	else								// else we are pasting from a buffer
+	{
+		while (m_pCurrentCharInPasteBuffer < m_pPasteBuffer+m_lenPasteBuffer)
+		{
+			*pCh = *m_pCurrentCharInPasteBuffer++;
+			
+			// line feed and cr should be ignored in RTF files
+			if (*pCh != 10  &&  *pCh != 13)
+			{
+				return UT_TRUE;
+			}
+		}
+
+		return UT_FALSE;
+	}
 }
 
 
 UT_Bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
 {
-	// TODO - I've got a sneaking suspicion that this doesn't work on the Macintosh
-	return (ungetc(ch, m_pImportFile) != EOF);
+	if (m_pImportFile)					// if we are reading a file
+	{
+		// TODO - I've got a sneaking suspicion that this doesn't work on the Macintosh
+		return (ungetc(ch, m_pImportFile) != EOF);
+	}
+	else								// else we are pasting from a buffer
+	{
+		UT_Bool bStatus = (m_pCurrentCharInPasteBuffer > m_pPasteBuffer);
+		if (bStatus)
+			m_pCurrentCharInPasteBuffer--;
+		return bStatus;
+	}
 }
 
 
@@ -885,7 +911,24 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 	propsArray[1] = propBuffer;
 	propsArray[2] = NULL;
 
-	return m_pDocument->appendFmt(propsArray);
+	UT_Bool ok;
+	if (m_pImportFile)					// if we are reading from a file
+	{
+		ok = (   m_pDocument->appendFmt(propsArray)
+			  && m_pDocument->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
+	}
+	else								// else we are pasting from a buffer
+	{
+		ok = (   m_pDocument->insertSpan(m_dposPaste,
+										 m_gbBlock.getPointer(0),m_gbBlock.getLength())
+				 && m_pDocument->changeSpanFmt(PTC_AddFmt,
+											   m_dposPaste,m_dposPaste+m_gbBlock.getLength(),
+											   propsArray,NULL));
+		m_dposPaste += m_gbBlock.getLength();
+	}
+
+	m_gbBlock.truncate(0);
+	return ok;
 }
 
 
@@ -918,7 +961,7 @@ UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 	}
 
 	XML_Char* pProps = "PROPS";
-	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
+	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack // TODO consider using a UT_ByteBuf instead -- jeff
 	XML_Char tempBuffer[128];
 
 	propBuffer[0] = 0;
@@ -996,7 +1039,17 @@ UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 	propsArray[1] = propBuffer;
 	propsArray[2] = NULL;
 
-	return m_pDocument->appendStrux(PTX_Block, propsArray);
+	if (m_pImportFile)					// if we are reading a file
+		return m_pDocument->appendStrux(PTX_Block, propsArray);
+	else
+	{
+		UT_Bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+		m_dposPaste++;
+		if (bSuccess)
+			bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
+												   propsArray,NULL,PTX_Block);
+		return bSuccess;
+	}
 }
 
 
@@ -1425,3 +1478,37 @@ UT_Bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist)
 
 	return UT_TRUE;
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
+								 unsigned char * pData, UT_uint32 lenData)
+{
+	UT_ASSERT(m_pDocument == pDocRange->m_pDoc);
+	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
+
+	UT_DEBUGMSG(("Pasting %d bytes of RTF\n",lenData));
+
+	m_pPasteBuffer = pData;
+	m_lenPasteBuffer = lenData;
+	m_pCurrentCharInPasteBuffer = pData;
+	m_dposPaste = pDocRange->m_pos1;
+	
+	// to do a paste, we set the fp to null and let the
+	// read-a-char routines know about our paste buffer.
+	
+	UT_ASSERT(m_pImportFile==NULL);
+
+	// note, we skip the _writeHeader() call since we don't
+	// want to assume that selection starts with a section
+	// break.
+	_parseFile(NULL);
+	
+	m_pPasteBuffer = NULL;
+	m_lenPasteBuffer = 0;
+	m_pCurrentCharInPasteBuffer = NULL;
+
+	return;
+}
+

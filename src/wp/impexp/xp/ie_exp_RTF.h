@@ -42,10 +42,6 @@ public:
 	IE_Exp_RTF(PD_Document * pDocument);
 	virtual ~IE_Exp_RTF();
 
-	virtual IEStatus	writeFile(const char * szFilename);
-	void				write(const char * sz);
-	void				write(const char * sz, UT_uint32 length);
-
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static IEStatus		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
@@ -55,7 +51,8 @@ public:
 	static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	IEStatus			_writeDocument(void);
+	virtual IEStatus	_writeDocument(void);
+
 	UT_sint32			_findColor(const char * szColor) const;
 	void				_addColor(const char * szColor);
 	void				_rtf_open_brace(void);
@@ -81,15 +78,11 @@ protected:
 	
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
 	s_RTF_ListenerGetProps *	m_pListenerGetProps;
-	PL_ListenerId				m_lid;
 	UT_Vector					m_vecColors;			/* vector of "const char * szColor" */
 	UT_Vector					m_vecFonts;				/* vector of struct _font */
 	UT_Bool						m_bNeedUnicodeText;		/* doc has unicode chars */
 	UT_sint32					m_braceLevel;			/* nesting depth of {} braces */
 	UT_Bool						m_bLastWasKeyword;		/* just wrote a keyword, so need space before text data */
-
-public:
-	UT_Bool						m_error;
 };
 
 /*****************************************************************/
