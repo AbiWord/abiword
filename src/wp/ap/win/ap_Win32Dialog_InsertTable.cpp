@@ -118,7 +118,7 @@ BOOL CALLBACK AP_Win32Dialog_InsertTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+	char 	szValue[BUFSIZE];	
 	m_hwndDlg = hWnd;
 		
 		
@@ -130,8 +130,7 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_DS(TEXT_ROW,		DLG_InsertTable_NumRows);		
 	_DS(TEXT_AUTOFIT,	DLG_InsertTable_AutoFit);		
 	_DS(RADIO_AUTO,		DLG_InsertTable_AutoColSize);		
-	_DS(RADIO_FIXED,	DLG_InsertTable_FixedColSize);		
-	
+	_DS(RADIO_FIXED,	DLG_InsertTable_FixedColSize);			
 		
 	// Localise caption
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableTitle));
@@ -152,6 +151,16 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN));
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, EM_SETSEL, 0, -1);
+	
+	// Set default values		
+	sprintf(szValue, "%u", getNumCols());
+	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_COLUMN, szValue);
+		
+	sprintf(szValue, "%u", getNumRows());
+	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_ROW, szValue);
+				
+	sprintf(szValue, "%f", getColumnWidth());
+	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue);
 
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	
@@ -172,7 +181,7 @@ void AP_Win32Dialog_InsertTable::getCtrlValues(void)
 		m_numRows = atoi(szValue);
 		
 	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue, BUFSIZE ))	
-		m_columnWidth = (float) atoi(szValue);
+		m_columnWidth = (float) atof(szValue);
 		
 	if (IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO))
 		m_columnType = AP_Dialog_InsertTable::b_AUTOSIZE;

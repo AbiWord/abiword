@@ -162,7 +162,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelNumCols), 0, 0.5);
 
-	spinRangeCols = (GtkAdjustment *) gtk_adjustment_new(5, 1, 9999, 1, 5, 0);
+	spinRangeCols = (GtkAdjustment *) gtk_adjustment_new(getNumCols(), 1, 9999, 1, 5, 0);
 	spinNumCols = gtk_spin_button_new (spinRangeCols, 1, 0);
 	gtk_widget_show (spinNumCols);
 	gtk_table_attach (GTK_TABLE (tableInsert), spinNumCols, 1, 2, 1, 2,
@@ -176,7 +176,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelNumRows), 0, 0.5);
 	
-	spinRangeRows = (GtkAdjustment *) gtk_adjustment_new(2, 1, 9999, 1, 5, 0);
+	spinRangeRows = (GtkAdjustment *) gtk_adjustment_new(getNumRows(), 1, 9999, 1, 5, 0);
 	spinNumRows = gtk_spin_button_new (spinRangeRows, 1, 0);
 	gtk_widget_show (spinNumRows);
 	gtk_table_attach (GTK_TABLE (tableInsert), spinNumRows, 1, 2, 2, 3,
@@ -215,7 +215,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonFixedColSize, 0, 1, 6, 7,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 6);
 
-	spinRangeColWidth = (GtkAdjustment *) gtk_adjustment_new(0.7, 0.1, 9999.0, 0.1, 1.0, 0.0);
+	spinRangeColWidth = (GtkAdjustment *) gtk_adjustment_new(getColumnWidth(), 0.1, 9999.0, 0.1, 1.0, 0.0);
 	spinColWidth = gtk_spin_button_new (spinRangeColWidth, 0.1, 1);
 	gtk_widget_show (spinColWidth);
 	gtk_table_attach (GTK_TABLE (tableInsert), spinColWidth, 1, 2, 6, 7,

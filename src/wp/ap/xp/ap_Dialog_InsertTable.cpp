@@ -34,6 +34,11 @@ AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XA
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
 	m_answer = a_OK;
+	
+	/* Default values for the dialog box*/
+	m_numRows = 2;
+	m_numCols = 5;
+	m_columnWidth = 0.7;
 }
 
 AP_Dialog_InsertTable::~AP_Dialog_InsertTable(void)
