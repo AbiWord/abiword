@@ -585,9 +585,9 @@ endif
 # ABI_OPT_GNOME_DIRECT_PRINT enables "Print directly" command for
 # gnome port
 #ABI_OPT_GNOME_DIRECT_PRINT = 1
-#ifeq ($(ABI_OPT_GNOME),0)
-#	ABI_OPT_GNOME_DIRECT_PRINT = 0
-#endif
+ifeq ($(ABI_OPT_GNOME),1)
+	ABI_OPT_GNOME_DIRECT_PRINT = 1
+endif
 
 # This next bit is ugly so I'll explain my rationale:
 # gnome-config --libs links us against lots of libs that we don't need.
@@ -632,10 +632,10 @@ ABI_OPTIONS+=Bonobo:Off
 endif
 
 #ifeq ($(ABI_OPT_GNOME_DIRECT_PRINT),1)
-#GNOME_CFLAGS    +=	-DHAVE_GNOME_DIRECT_PRINT
-#ABI_OPTIONS+=DirectPrint:On
+GNOME_CFLAGS    +=	-DHAVE_GNOME_DIRECT_PRINT
+ABI_OPTIONS+=DirectPrint:On
 #else
-#ABI_OPTIONS+=DirectPrint:Off
+ABI_OPTIONS+=DirectPrint:Off
 #endif
 
 CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
