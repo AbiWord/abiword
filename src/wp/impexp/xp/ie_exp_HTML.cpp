@@ -1181,21 +1181,24 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		m_bInSpan = true;
 #ifdef BIDI_ENABLED
 /*
-	if the dir-override is set, we will output the dir property; however,
-	this property cannot be within a style sheet, so anything that needs
-	to be added to this code and belongs withing a style property must
-	be above us; further it should be noted that there is a good chance 
-	that the html browser will not handle it correctly. For instance IE 
-	will take dir=rtl as an indication that the span should have rtl 
-	placement on a line, but it will ignore this value when printing the 
-	actual span.
+	if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
+	the dir property; however, this property cannot be within a style 
+	sheet, so anything that needs to be added to this code and belongs 
+	withing a style property must be above us; further it should be noted 
+	that there is a good chance that the html browser will not handle it 
+	correctly. For instance IE will take dir=rtl as an indication that 
+	the span should have rtl placement on a line, but it will ignore this 
+	value when printing the actual span.
 */
-		if(!span && pAP->getProperty("dir-override", szValue))
+		if(!span && (pAP->getProperty("dir-override", szValue) || pAP->getProperty("dir", szValue)))
 		{
-		    m_pie->write("<span dir=\"");
-			m_pie->write(szValue);
-			bDir = true;
-			span = true;
+			if(*szValue == 'r' || *szValue == 'l')
+			{
+				m_pie->write("<span dir=\"");
+				m_pie->write(szValue);
+				bDir = true;
+				span = true;
+			}
 		}
 
 #endif
@@ -1203,12 +1206,15 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			m_pie->write("\"");
 #ifdef BIDI_ENABLED
-			if (!bDir && pAP->getProperty("dir-override", szValue))
+			if (!bDir && (pAP->getProperty("dir-override", szValue) || pAP->getProperty("dir", szValue)))
 			{
-			    m_pie->write(" dir=\"");
-				m_pie->write(szValue);
-				bDir = true;
-				m_pie->write("\"");
+				if(*szValue == 'r' || *szValue == 'l')
+				{
+					m_pie->write(" dir=\"");
+					m_pie->write(szValue);
+					bDir = true;
+					m_pie->write("\"");
+				}
 			}
 #endif
 

@@ -33,6 +33,9 @@
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
 
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
 class UT_GrowBuf;
 class fl_BlockLayout;
 class fp_Line;
@@ -96,7 +99,6 @@ enum FP_RUN_TYPE
 	differently, but they can all be treated like rectangular blocks to 
 	be arranged.  
 */
-
 class fp_Run
 {
 public:
@@ -197,15 +199,15 @@ public:
 	UT_sint32               getToplineThickness(void);
 
 #ifdef BIDI_ENABLED
-	UT_sint32		inline getDirection(){return m_iDirection; };
-	UT_sint32		getVisDirection();
-	virtual void            setDirection(UT_sint32 iDirection = -1);
+	FriBidiCharType			inline getDirection(){return m_iDirection; };
+	FriBidiCharType			getVisDirection();
+	virtual void            setDirection(FriBidiCharType iDirection = FRIBIDI_TYPE_WS);
+	void					setVisDirection(FriBidiCharType iDir);
 	UT_uint32               getVisPosition(UT_uint32 ilogPos);
 	UT_uint32               getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);
 	UT_uint32               getOffsetFirstVis();
 	UT_uint32               getOffsetLog(UT_uint32 iVisOff);
-	//virtual bool         setUnicodeDirection();
-	virtual void            setDirectionProperty(UT_sint32 dir);	
+	virtual void            setDirectionProperty(FriBidiCharType dir);	
 #endif	
 
 #ifdef FMT_TEST
@@ -237,7 +239,8 @@ protected:
 	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field*				m_pField;
 #ifdef BIDI_ENABLED
-	UT_sint32				m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
+	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
+	FriBidiCharType			m_iVisDirection;
 #endif
 
 	// the run highlight color. If the property is transparent use the page color

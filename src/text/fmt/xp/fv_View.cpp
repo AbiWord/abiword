@@ -7885,7 +7885,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 #ifdef BIDI_ENABLED
 		UT_ASSERT(pBlock);
 		xxx_UT_DEBUGMSG(("Entered BOL margin: dir %d\n", pBlock->getDominantDirection()));
-		if(pBlock->getDominantDirection())
+		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_RTL)
 			return EV_EMC_RIGHTOFTEXT;
 		else
 			return EV_EMC_LEFTOFTEXT;

@@ -36,6 +36,9 @@
 #include "fl_AutoLists.h"
 #include "pp_Property.h"
 
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
 
@@ -268,8 +271,8 @@ public:
 	inline bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
 	inline bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
 #ifdef BIDI_ENABLED
-	inline bool getDominantDirection(void) const { return m_bDomDirection; }
-	void setDominantDirection(bool bDirection);
+	inline FriBidiCharType getDominantDirection(void) const { return m_iDomDirection; }
+	void setDominantDirection(FriBidiCharType iDirection);
 #endif
 
 	bool isHdrFtr(void);
@@ -472,7 +475,7 @@ protected:
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;
 #ifdef BIDI_ENABLED
-	bool					m_bDomDirection;
+	FriBidiCharType			m_iDomDirection;
 #endif
 
 };

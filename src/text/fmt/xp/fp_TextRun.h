@@ -95,7 +95,7 @@ public:
 #ifdef BIDI_ENABLED
 	UT_sint32               getStr(UT_UCSChar * str, UT_uint32 &iMax);
 	//bool                 setUnicodeDirection();
-    void					setDirection(UT_sint32 dir);
+    void					setDirection(FriBidiCharType dir);
 
 	/* needed for handling BiDi text, static because we need only one buffer
 	   for all the instances, public so that we could inicialised them in the cpp file outside of the
@@ -104,7 +104,7 @@ public:
 	static UT_UCSChar * s_pSpanBuff;
 	static UT_uint32    s_iSpanBuffSize;
 	static UT_uint32    s_iClassInstanceCount;
-	UT_sint32			m_iDirOverride;
+	FriBidiCharType		m_iDirOverride;
 #endif
 
 #ifdef FMT_TEST

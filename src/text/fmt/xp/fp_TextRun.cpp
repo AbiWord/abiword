@@ -45,7 +45,7 @@
 #include "ut_Language.h"
 #ifdef BIDI_ENABLED
 //#define CAPS_TEST
-#include "AbiFriBiDi.h"
+#include "fribidi.h"
 #include "ap_Prefs.h"
 #endif
 
@@ -56,6 +56,7 @@
 UT_UCSChar * fp_TextRun::s_pSpanBuff = 0;
 UT_uint32    fp_TextRun::s_iClassInstanceCount = 0;
 UT_uint32    fp_TextRun::s_iSpanBuffSize = 0;
+UT_UCSChar getMirrorChar(UT_UCSChar c);
 #endif
 
 
@@ -74,9 +75,9 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_pField = NULL;
 	m_pLanguage = NULL;
 #ifdef BIDI_ENABLED
-	m_iDirection = 2; //we will use this as an indication that the direction property has not been yet set
+	m_iDirection = FRIBIDI_TYPE_UNSET; //we will use this as an indication that the direction property has not been yet set
 			  //normal values are -1,0,1 (neutral, ltr, rtl)
-	m_iDirOverride = -1; //no override by default
+	m_iDirOverride = FRIBIDI_TYPE_UNSET; //no override by default
 #endif
 	if (bLookupProperties)
 	{
@@ -239,47 +240,31 @@ void fp_TextRun::lookupProperties(void)
 	delete lls;
 
 #ifdef BIDI_ENABLED
-	const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+
+	const XML_Char * pszDirection; /* = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	//UT_DEBUGMSG(( "pszDirection = %s\n", pszDirection ));
-	//UT_ASSERT((m_pLine));
-	UT_sint32 prevDir = m_iDirection;
-	if(!UT_stricmp(pszDirection, "rtl"))
-	{
-		m_iDirection = 1;
-		//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_RTL);
-	}
-	else if(!UT_stricmp(pszDirection, "ltr"))
-	{
-		m_iDirection = 0;
-		//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_LTR);
-	}
-	else if(!UT_stricmp(pszDirection, "ontrl"))
-	{
-		m_iDirection = -3;
-		//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_LTR);
-	}
-	else
-	{
-		m_iDirection = -1; //whitespace
-	}
+	//UT_ASSERT((m_pLine));  */
+	
+	FriBidiCharType prevDir = m_iDirection;
+	
+	//if(m_iDirection == FRIBIDI_TYPE_UNSET)
+	//	setDirection(FRIBIDI_TYPE_UNSET);
 
 	//UT_DEBUGMSG(("TextRun: lookupProperties, m_iDirection=%d (%s)\n", m_iDirection, pszDirection));
     pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
     if(!UT_stricmp(pszDirection, "rtl"))
-    	m_iDirOverride = 1;
+    	m_iDirOverride = FRIBIDI_TYPE_RTL;
     else if(!UT_stricmp(pszDirection, "ltr"))
-    	m_iDirOverride = 0;
+    	m_iDirOverride = FRIBIDI_TYPE_LTR;
     else
-    	m_iDirOverride = -1;
+    	m_iDirOverride = FRIBIDI_TYPE_UNSET;
 
-    if(m_iDirOverride != -1)
+    if(m_iDirOverride != FRIBIDI_TYPE_UNSET)
     	m_iDirection = m_iDirOverride;
     	
    	if(m_iDirection != prevDir && m_pLine)
    	{
-    	m_pLine->removeDirectionUsed(prevDir);
-    	m_pLine->addDirectionUsed(m_iDirection);
-    	m_pLine->setMapOfRunsDirty();
+    	m_pLine->changeDirectionUsed(prevDir, m_iDirection, true);
     }
 	    //UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
 #endif
@@ -492,7 +477,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	if (x <= 0)
 	{
 #ifdef BIDI_ENABLED
-		if(m_pBL->getDominantDirection())
+		if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
 		{
 			pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
 			bEOL = true;
@@ -515,7 +500,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	if (x >= m_iWidth)
 	{
 #ifdef BIDI_ENABLED
-		if(m_pBL->getDominantDirection())
+		if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
 		{
 			pos = m_pBL->getPosition() + m_iOffsetFirst;
 			bEOL = false;
@@ -618,7 +603,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	}
 #ifdef BIDI_ENABLED
 	UT_sint32 iDirection = getVisDirection();
-	UT_sint32 iNextDir = iDirection ? 0 : 1; //if this is last run we will anticipate the next to have *different* direction
+	UT_sint32 iNextDir = iDirection == FRIBIDI_TYPE_RTL ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL; //if this is last run we will anticipate the next to have *different* direction
 	fp_Run * pRun = 0;   //will use 0 as indicator that there is no need to deal with the second caret
 #ifdef UT_DEBUG	
 	UT_uint32 rtype;
@@ -642,7 +627,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	    }
 	}
 
-	if(iDirection == 1)                 //#TF rtl run
+	if(iDirection == FRIBIDI_TYPE_RTL)                 //#TF rtl run
 	{
 	    x = xoff + m_iWidth - xdiff; //we want the caret right of the char
 	}
@@ -653,7 +638,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	
     if(pRun && (iNextDir != iDirection)) //followed by run of different direction, have to split caret
 	{
-		x2 = (iNextDir == 0) ? xoff2 : xoff2 + pRun->getWidth();
+		x2 = (iNextDir == FRIBIDI_TYPE_LTR) ? xoff2 : xoff2 + pRun->getWidth();
 		y2 = yoff2;
 	}
 	else
@@ -661,7 +646,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	    x2 = x;
 	    y2 = yoff;
 	}
-	bDirection = (iDirection != 0);
+	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
 #else	    // ! BIDI_ENABLED
 	x = xoff;
 #endif
@@ -788,7 +773,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 #ifdef BIDI_ENABLED
 	//bool bDomDirection = m_pBL->getDominantDirection();
 	
-	if(getVisDirection() == 0)
+	if(getVisDirection() == FRIBIDI_TYPE_LTR)
 	{
 		pNew->m_iX = m_iX + m_iWidth;
 	}
@@ -930,7 +915,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 			}
 		}
 	}
-
+ 	//UT_DEBUGMSG(("fp_TextRun (0x%x)::simpleRecalcWidth: width %d\n", this, iWidth));
 	return iWidth;
 }
 
@@ -1222,7 +1207,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	}
 	
 #ifdef BIDI_ENABLED
-	if(getVisDirection() == 0)
+	if(getVisDirection() == FRIBIDI_TYPE_LTR)
 	{
 		pRect->left += xoff; //if this is ltr then adding xoff is all that is needed
 	}
@@ -1233,7 +1218,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	}
 #ifdef BIDI_ENABLED
 	//in case of rtl we are now in the position to calculate the position of the the left corner
-	if(getVisDirection() == 1) pRect->left = xoff + m_iWidth - pRect->left - pRect->width;
+	if(getVisDirection() == FRIBIDI_TYPE_RTL) pRect->left = xoff + m_iWidth - pRect->left - pRect->width;
 #endif
 }
 
@@ -1278,8 +1263,8 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	}
 
 #ifdef BIDI_ENABLED
-	UT_uint32 iVisDir = getVisDirection();
-	if(iVisDir == 1)
+	FriBidiCharType iVisDir = getVisDirection();
+	if(iVisDir == FRIBIDI_TYPE_RTL)
 	{
 		iLeftWidth = m_iWidth - iLeftWidth;
 	}
@@ -1300,7 +1285,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	
 		UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
 		
-		if(m_iDirection != -3 || iVisDir != 1)
+		if(m_iDirection != FRIBIDI_TYPE_ON || iVisDir != FRIBIDI_TYPE_RTL)
 			UT_UCS_strncpy(s_pSpanBuff, pSpan, iTrueLen);
 		else
 		{
@@ -1310,7 +1295,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 				s_pSpanBuff[i] = getMirrorChar(pSpan[i]);
 		}
 		
-		if(iVisDir == 1) //rtl: determine the width of the text we are to print
+		if(iVisDir == FRIBIDI_TYPE_RTL) //rtl: determine the width of the text we are to print
 		{
 			UT_UCS_strnrev(s_pSpanBuff, iTrueLen);
 			for (i= 0; i < iTrueLen; i++)
@@ -1326,7 +1311,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 			break;
 		}
 
-		if(iVisDir == 0)
+		if(iVisDir == FRIBIDI_TYPE_LTR)
 		{
 			for(i = 0; i < iTrueLen; i++)
 			{
@@ -1925,22 +1910,22 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 	if in Unicode mode, or it will just return.
 */
 
-void fp_TextRun::setDirection(UT_sint32 dir)
+void fp_TextRun::setDirection(FriBidiCharType dir)
 {
 	if(!m_iLen)
 	{
 		return; //ignore 0-length runs, let them be treated on basis of the app defaults
 	}
 
-	UT_sint32 prevDir = m_iDirection;	
-	if(dir == -2)
+	FriBidiCharType prevDir = m_iDirection;	
+	if(dir == FRIBIDI_TYPE_UNSET)
 	{
-		if(m_iDirOverride == -1)
+		if(m_iDirOverride == FRIBIDI_TYPE_UNSET)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
 			
-			m_iDirection = isUCharRTL(firstChar);
+			m_iDirection = fribidi_get_type((FriBidiChar)firstChar);
 		}
 		else
 		{
@@ -1951,6 +1936,8 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 	{
 		m_iDirection = dir;
 	}
+	
+	xxx_UT_DEBUGMSG(("fp_TextRun::setDirection: %d (passed %d, override %d, prev. %d)\n", m_iDirection, dir, m_iDirOverride, prevDir));
 	
 	setDirectionProperty(m_iDirection);
 	
@@ -1967,12 +1954,45 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 	{
 		if(m_pLine)
 		{
-			m_pLine->addDirectionUsed(m_iDirection);
-			m_pLine->removeDirectionUsed(prevDir);
+			m_pLine->changeDirectionUsed(prevDir,m_iDirection,true);
 		}
 		clearScreen();
 	}
 	
 	//UT_DEBUGMSG(("TextRun::setDirection: direction=%d\n", m_iDirection));
 }
+
+struct mirr_table{
+     FriBidiChar ch, mirrored_ch;
+} ;
+
+
+static int s_cmpMirr(const void * p1, const void *p2)
+{
+	FriBidiChar * f1 = (FriBidiChar *)p1;
+	mirr_table   * f2 = (mirr_table *)p2;
+	if(f2->ch > *f1)
+		return -1;
+	if(f2->ch < *f1)
+		return 1;
+		
+	return 0;
+}
+
+
+extern mirr_table FriBidiMirroredChars;
+extern UT_sint32 nFriBidiMirroredChars;
+
+UT_UCSChar getMirrorChar(UT_UCSChar c)
+{
+	//got to do this, otherwise bsearch screws up
+	FriBidiChar fc = (FriBidiChar) c;
+	
+	mirr_table * m = (mirr_table*) bsearch(&fc,&FriBidiMirroredChars,nFriBidiMirroredChars, sizeof(mirr_table), s_cmpMirr);
+	if(m)
+		return (UT_UCSChar) m->mirrored_ch;
+	else
+		return c;
+}
+
 #endif

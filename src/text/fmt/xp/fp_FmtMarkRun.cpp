@@ -77,7 +77,7 @@ void fp_FmtMarkRun::lookupProperties(void)
 	PD_Document * pDoc = m_pBL->getDocument();
 
 #ifdef BIDI_ENABLED
-	m_iDirection = -1;
+	m_iDirection = FRIBIDI_TYPE_WS;
 #endif
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 

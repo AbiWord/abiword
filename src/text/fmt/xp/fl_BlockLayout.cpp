@@ -478,7 +478,15 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	{
 #ifdef BIDI_ENABLED
-		m_bDomDirection = !UT_stricmp(getProperty("dom-dir", true), "rtl");
+		const char * dir = getProperty("dom-dir", true);
+		if(!UT_stricmp(dir,"rtl"))
+		{
+			m_iDomDirection = FRIBIDI_TYPE_RTL;
+		}
+		else
+			m_iDomDirection = FRIBIDI_TYPE_LTR;
+			
+		//m_iDomDirection = !UT_stricmp(getProperty("dom-dir", true), "rtl");
 		//UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s)\n", m_bDomDirection, getProperty("dom-dir", true)));
 #endif
 		const PP_PropertyTypeInt *pOrphans = (const PP_PropertyTypeInt *)getPropertyType("orphans", Property_type_int);
@@ -2815,7 +2823,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 #endif
 
 #ifdef BIDI_ENABLED
-		pNewRun->setDirection(-2);      //#TF need the the previous run to be set before we can do this
+		pNewRun->setDirection(FRIBIDI_TYPE_UNSET);      //#TF need the the previous run to be set before we can do this
 #endif
 		return true;
 	}
@@ -3875,7 +3883,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 // Not sure if we'll ever need this. We don't need this now I'll comment it out.
 //	const XML_Char * szOldStyle = m_szStyle;
 #ifdef BIDI_ENABLED
-	bool bOldDomDirection = m_bDomDirection;
+	UT_sint32 iOldDomDirection = m_iDomDirection;
 #endif
 	_lookupProperties();
 	xxx_UT_DEBUGMSG(("SEVIOR: Old Style = %s new style = %s \n",szOldStyle,m_szStyle));
@@ -3909,7 +3917,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 		pLine->recalcHeight();	// line-height
 		pLine->recalcMaxWidth();
 #ifdef BIDI_ENABLED
-		if(m_bDomDirection != bOldDomDirection)
+		if(m_iDomDirection != iOldDomDirection)
 		{
 			pLine->setMapOfRunsDirty();
 		}
@@ -6287,9 +6295,9 @@ void fl_BlockLayout::setStopping( bool bValue)
 }
 
 #ifdef BIDI_ENABLED
-void fl_BlockLayout::setDominantDirection(bool bDirection)
+void fl_BlockLayout::setDominantDirection(FriBidiCharType iDirection)
 {
-	m_bDomDirection = bDirection;
+	m_iDomDirection = iDirection;
 	XML_Char * prop[] = {NULL, NULL, 0};
 	XML_Char   ddir[] = "dom-dir";
 	XML_Char   rtl[]  = "rtl";
@@ -6297,7 +6305,7 @@ void fl_BlockLayout::setDominantDirection(bool bDirection)
 
 	prop[0] = (XML_Char *) &ddir;
 	
-	if(m_bDomDirection)
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
 	{
 		prop[1] = (XML_Char *) &rtl;
 	}

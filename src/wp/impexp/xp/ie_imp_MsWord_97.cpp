@@ -53,7 +53,7 @@
 // Counterparts
 //
 #ifdef BIDI_ENABLED
-extern UT_sint32 isUCharRTL(UT_UCSChar c);
+#include "fribidi.h"
 #endif
 
 //
@@ -484,7 +484,7 @@ void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 #ifdef BIDI_ENABLED
 	XML_Char * propsArray[3];
 	UT_String props;
-	m_iCurrDir = isUCharRTL(ch);
+	m_iCurrDir = fribidi_get_type((FriBidiCharType) ch);
 	
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[2] = 0;
@@ -497,20 +497,18 @@ void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 				
 		switch (m_iCurrDir)
 		{
-			case 0:
+			case FRIBIDI_TYPE_L:
 					props += "dir:ltr";
 					break;
-			case 1:
+			case FRIBIDI_TYPE_R:
 					props += "dir:rtl";
 					break;
-			case -1:
+			default:
 					props += "dir:ntrl";
 					break;
-			case -3:
-					props += "dir:ontrl";
-					break;
-			default:
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			//case -3:
+			//		props += "dir:ontrl";
+			//		break;
 		}
 		m_iPrevDir = m_iCurrDir;
 		

@@ -303,7 +303,7 @@ ABI_XAP_INCS+= /af/util/unix
 endif 
 
 ABI_OTH_INCS=	/other/spell/xp \
-                /other/fribidi
+                /other/fribidi/xp
 
 ifdef ABI_OPT_LIBXML2
 ABI_PEER_INCS=

@@ -1,6 +1,6 @@
 #! gmake
 
-## AbiSource Program Utilities
+## AbiSource Program Utilities, libwv wrapper
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
@@ -18,21 +18,33 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_ROOT:=$(shell pwd)/../..
+ABI_ROOT:=$(shell pwd)/../../..
+
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-# fribidi library
 ifdef ABI_OPT_BIDI_ENABLED
-DIRS=		spell fribidi
-else
-DIRS=		spell
-endif
 
-# libmswordview
+CSRCS= \
+	fribidi.c \
+	fribidi_types.c \
+	fribidi_get_type.c
+	
+#	fribidi_benchmark.c \
+#	fribidi_char_ets.c \
+#	fribidi_main.c\
+#	fribidi_utils.c \
+#	test_fribidi.c \
+	
 
-# The functionality of libmswordview is now in the wv/ module
-# proper.
-
+LIBRARY_NAME=		Abi_fribidi
+LIBRARY_VERSION=	$(ABI_VERSION)
+TARGETS=		$(LIBRARY)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
+
+build:: $(TARGETS)
+
+endif
+
+#leave this line here
 

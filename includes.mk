@@ -60,7 +60,7 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 endif
 
 OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
-OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi'
+OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi/xp'
 
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
 TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'

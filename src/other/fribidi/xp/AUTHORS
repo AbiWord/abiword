@@ -1,0 +1,25 @@
+Dov Grobgeld <dov@imagic.weizmann.ac.il>
+   * Initial author and current maintainer.
+   
+Owen Tayler <otaylor@redhat.com>
+   * Contributed very important memory leak and speed patches.
+
+Raphael Finkel <raphael@cs.uky.edu>       
+   * Contributed UTF-8 converters.
+
+Pablo Saratxaga <pablo@mandrakesoft.com>  
+   * Contributed several arabic charset converters.
+
+Manish Singh <yosh@gimp.org> 
+   * Contributed patch to make fribidi use libtool.
+
+Omer Zak <omerz@actcom.co.il>
+   * Contributed several bug fixes, improved interface UTF-8 converters, and
+     several considerations for embedded systems.
+
+Behdad Esfahbod <behdad@bamdad.org>
+   * Added explicit bidi support, fixed all conformance bugs, changed the
+     library to use bitmasks.
+
+Roozbeh Pournader <roozbeh@sharif.edu>
+   * fixed small things here and there.

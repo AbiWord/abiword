@@ -1,6 +1,6 @@
 #! gmake
 
-## AbiSource Program Utilities
+## AbiWord
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
@@ -18,21 +18,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_ROOT:=$(shell pwd)/../..
-include $(ABI_ROOT)/src/config/abi_defs.mk
+ABI_ROOT:=$(shell pwd)/../../..
+include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-# fribidi library
-ifdef ABI_OPT_BIDI_ENABLED
-DIRS=		spell fribidi
-else
-DIRS=		spell
-endif
-
-# libmswordview
-
-# The functionality of libmswordview is now in the wv/ module
-# proper.
-
+DIRS=	xp
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

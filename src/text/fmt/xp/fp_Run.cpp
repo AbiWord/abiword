@@ -109,7 +109,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	getPageColor();
 	
 #ifdef BIDI_ENABLED
-	m_iDirection = -1; //by default all runs are whitespace
+	m_iDirection = FRIBIDI_TYPE_WS; //by default all runs are whitespace
+	m_iVisDirection = FRIBIDI_TYPE_UNSET;
 #endif
 }
 
@@ -891,7 +892,7 @@ void fp_TabRun::lookupProperties(void)
 	    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
 	}
 #ifdef BIDI_ENABLED
-	m_iDirection = -1;
+	m_iDirection = FRIBIDI_TYPE_WS;
 #endif
 //
 // Lookup Decoration properties for this run
@@ -991,7 +992,7 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	
 	UT_sint32 iDirection = getVisDirection();
 
-	if(iDirection == 1)
+	if(iDirection == FRIBIDI_TYPE_RTL)
 	    x = xoff - 1;      //necessary to draw the the caret properly -- I am not sure why though #TF
 	else
 	    x = xoff + getWidth() + 1;
@@ -999,7 +1000,7 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	
 	if(pRun && (iNextDir != iDirection)) //if this run precedes run of different direction, we have to split the caret
 	{
-	    x2 = (iNextDir == 0) ?  xoff + pRun->getWidth() + 1 : xoff2 - 1;
+	    x2 = (iNextDir == FRIBIDI_TYPE_LTR) ?  xoff + pRun->getWidth() + 1 : xoff2 - 1;
 	    y2 = yoff2;
 	}
 	else
@@ -1007,7 +1008,7 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	    x2 = x;
 	    y2 = yoff;
 	}
-	bDirection = (iDirection != 0);
+	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
 #else
 	if (iOffset == m_iOffsetFirst)
 	{
@@ -1571,7 +1572,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	
 #ifdef BIDI_ENABLED
-	if(m_pBL->getDominantDirection())
+	if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
 	{
 		xoff -= m_iDrawWidth;
 	}
@@ -1677,7 +1678,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	m_iXoffText = pDA->xoff;
 
 #ifdef BIDI_ENABLED
-	if(m_pBL->getDominantDirection())
+	if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
 	{
 		m_iXoffText -= m_iDrawWidth;
 	}
@@ -1834,7 +1835,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	height = m_iHeight;
 #ifdef BIDI_ENABLED
 	y2 = y;
-	bDirection = (getVisDirection() != 0);
+	bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
 #endif
 }
 
@@ -2120,11 +2121,11 @@ void fp_FieldRun::lookupProperties(void)
 	const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	if(!UT_stricmp(pszDirection, "rtl"))
 	{
-		m_iDirection = 1;
+		m_iDirection = FRIBIDI_TYPE_R;
 	}
 	else
 	{
-		m_iDirection = 0;
+		m_iDirection = FRIBIDI_TYPE_L;
 	}
 #endif
 
@@ -2260,7 +2261,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 #ifdef BIDI_ENABLED
 	x2 = x;
 	y2 = y;
-	bDirection = (getVisDirection() != 0);
+	bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
 #endif
 }
 
@@ -3439,7 +3440,7 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
 // (will also translate correctly visual -> logical)
 UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos)
 {
-    if(getVisDirection() == 1) //rtl needs translation
+    if(getVisDirection() == FRIBIDI_TYPE_RTL) //rtl needs translation
     {
         return (m_iLen - iLogPos - 1);
     }
@@ -3450,7 +3451,7 @@ UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos)
 //or vice versa
 UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen)
 {
-    if(getVisDirection() == 1) //rtl needs translation
+    if(getVisDirection() == FRIBIDI_TYPE_RTL) //rtl needs translation
     {
         return (iLen - iLogPos - 1);
     }
@@ -3460,7 +3461,7 @@ UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen)
 //returns the logical offset of the first visual character
 UT_uint32 fp_Run::getOffsetFirstVis()
 {
-    if(getVisDirection() == 1) //rtl, requires translation
+    if(getVisDirection() == FRIBIDI_TYPE_RTL) //rtl, requires translation
     {
         return(m_iOffsetFirst + m_iLen - 1);
     }
@@ -3471,24 +3472,20 @@ UT_uint32 fp_Run::getOffsetFirstVis()
 //in the other direction
 UT_uint32 fp_Run::getOffsetLog(UT_uint32 iVisOff)
 {
-    if(getVisDirection() == 1) //rtl needs translation
+    if(getVisDirection() == FRIBIDI_TYPE_RTL) //rtl needs translation
     {
         return(m_iOffsetFirst + m_iLen - iVisOff + m_iOffsetFirst - 1);
     }
     else return (iVisOff);
 }
 
-void fp_Run::setDirection(UT_sint32 iDir)
+void fp_Run::setDirection(FriBidiCharType iDir)
 {
-	//this function should be called with -1,0,1; if it is called
-	//with -2, which is used in the derived classes that can handle
-	//Unicode as an indication that direction should be worked out
-	//from Unicode, we will treat this a whitespace
-    UT_DEBUGMSG(("fp_Run::SetDirection, m_iDirection %d, iDir %d, run type %d\n", m_iDirection, iDir, getType()));
-	UT_sint32 iDirection = iDir != -2 ? iDir : -1;
+    xxx_UT_DEBUGMSG(("fp_Run::SetDirection, m_iDirection %d, iDir %d, run type %d\n", m_iDirection, iDir, getType()));
+	FriBidiCharType iDirection = iDir != FRIBIDI_TYPE_UNSET ? iDir : FRIBIDI_TYPE_WS;
 	if(m_iDirection != iDirection)
 	{
-		UT_sint32 origDirection = m_iDirection;
+		FriBidiCharType origDirection = m_iDirection;
 		m_iDirection = iDirection;
 		clearScreen();
 		/*
@@ -3501,163 +3498,38 @@ void fp_Run::setDirection(UT_sint32 iDir)
 		*/
 	
 		if(m_pLine)
-		{
-			m_pLine->addDirectionUsed(m_iDirection);
-			m_pLine->removeDirectionUsed(origDirection);
-		}
-
+			m_pLine->changeDirectionUsed(origDirection,m_iDirection,true);
 	}
 }
 
-// returns the direction with which the run is displayed, converting the direction of white
-// space to either ltr or rtl depending on context
-UT_sint32 fp_Run::getVisDirection()
+// returns the direction with which the run is displayed,
+FriBidiCharType fp_Run::getVisDirection()
 {
-    if(m_iDirection == 2) //direction not set, yet, use dominant direction;
-    {
-        return (m_pBL->getDominantDirection());
-    }
-
-    if(m_iDirection >= 0)
-    {
-        //UT_DEBUGMSG(("getVisDirection (non-white): direction = %d, visDirection = %d\n", m_iDirection, m_iDirection));
-        return(m_iDirection);
-    }
-
-    UT_sint32 iBlDirection = (UT_sint32) m_pBL->getDominantDirection();
-
-    if(m_iDirection == -1)
-    {
-    fp_Run * r = getPrev();
-    UT_sint32 prevDir;
-
-    // find first non-white run before this one
-    while (r)
-    {
-        prevDir = r->getDirection();
-        r = r->getPrev();
-
-        if(prevDir == iBlDirection)
-        {
-            //UT_DEBUGMSG(("getVisDirection (prev): direction = %d, visDirection = %d\n", m_iDirection, iBlDirection));
-            return(iBlDirection);
-        }
-        if(prevDir >= 0) break; //run of foreign direction
-    }
-
-    // if there are no non-white runs, return direction of the block
-    if(r == 0)
-    {
-        //UT_DEBUGMSG(("getVisDirection (non-white start): direction = %d, visDirection = %d\n", m_iDirection, iBlDirection));
-        return(iBlDirection);
-    }
-
-    // now we know that the preceding run is of foreing direction, in which case
-    // the direction of white space depends on the first non-white run that follows it
-    UT_sint32 nextDir;
-    r = getNext();
-
-    while(r)
-    {
-        nextDir = r->getDirection();
-
-        if(nextDir >= 0)
-        {
-            //UT_DEBUGMSG(("getVisDirection (next): direction = %d, visDirection = %d\n", m_iDirection, nextDir));
-            //last run pefore end of paragraph mark will have direction of the run
-            //that precedes it, otherwise the direction of the next run
-            return(r->getType() == FPRUN_ENDOFPARAGRAPH) ? prevDir : nextDir;
-        }
-        r = r->getNext();
-
-    }
-
-    // if get this far, this white space run is the last one on the line
-    // and will have the direciton of the previous run
-    //UT_DEBUGMSG(("getVisDirection (last on line): direction = %d, visDirection = %d\n", m_iDirection, prevDir));
-    return(prevDir);
-    }
-
-    if(m_iDirection == -3)
-    {
-	    fp_Run * r = getPrev();
-	    UT_sint32 prevDir = -1;
-	    UT_sint32 nextDir = -1;
-	    bool bEndOfPara;
-	
-	    if(r)
-	    	prevDir = r->getDirection();
-	    	
-	    r = getNext();
-	
-	    if(r)
-	    {
-	    	nextDir = r->getDirection();
-	    	if(r->getType() == FPRUN_ENDOFPARAGRAPH)
-	    	{
-	    		fp_Run * pr = getPrev();
-	    		if(pr && prevDir != -3)
-	    			return pr->getVisDirection();
-		    	else
-			    	return iBlDirection;
-	    	}
-	    }
-
-	    if(nextDir < 0 && prevDir < 0)
-	    {
-	    	if(!r)
-	    		r = getPrev();
-	    	if(r)
-	    		return r->getVisDirection();
-	    	
-	    	return iBlDirection;
-	    }
-	    else if(prevDir >= 0)
-	    	return prevDir;
-	    else
-	    	return nextDir;
-		
-    }
+	return m_iVisDirection;
 }
 
-/*
-bool fp_Run::setUnicodeDirection()
+void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
-	//bool bSetProperty = (m_iDirection == 2) ? true : false; //do we need to call View->setCharFormat ?
-	
-	m_iDirection = -1; //all runs that rely on this implementatio will be treated as whitespace
-	
-	//if this run did not have its direction set so far we have to call View->setCharFormat
-	//if(bSetProperty)
-	//    setDirectionProperty(-1);
-	
-	return (false);
+	m_iVisDirection = iDir;
 }
-*/
-void fp_Run::setDirectionProperty(UT_sint32 dir)
+
+void fp_Run::setDirectionProperty(FriBidiCharType dir)
 {
-	//FV_View * pView = getBlock()->getDocLayout()->getView();
-	//UT_ASSERT(pView);
 	const XML_Char * prop[] = {NULL, NULL, 0};
 	const XML_Char direction[] = "dir";
 	const XML_Char rtl[] = "rtl";
 	const XML_Char ltr[] = "ltr";
 	const XML_Char neutral[] = "ntrl";
-	const XML_Char bracket[] = "ontrl";
 	
 	prop[0] = (XML_Char*) &direction;
 	
 	switch(dir)
 	{
-	case 0:  prop[1] = (XML_Char*) &ltr;     break;
-	case 1:  prop[1] = (XML_Char*) &rtl;     break;
-	case -1: prop[1] = (XML_Char*) &neutral; break;
-	case -3: prop[1] = (XML_Char*) &bracket; break;
-	
-	default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		case FRIBIDI_TYPE_LTR:  prop[1] = (XML_Char*) &ltr;     break;
+		case FRIBIDI_TYPE_RTL:  prop[1] = (XML_Char*) &rtl;     break;
+		default: prop[1] = (XML_Char*) &neutral; break;
 	};
 	
-	//pView->setCharFormat(prop);
 	UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
 	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
 	//UT_DEBUGMSG(("Run::setDirectionProperty: offset=%d, len=%d\n", offset,m_iLen));

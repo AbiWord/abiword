@@ -173,8 +173,10 @@ public:
 	fp_Run *	getLastVisRun();
 	fp_Run *	getFirstVisRun();
 	void		setMapOfRunsDirty(){m_bMapDirty = true;};
-	void		addDirectionUsed(UT_uint32 dir);
-	void		removeDirectionUsed(UT_uint32 dir);
+	void		addDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
+	void		removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
+	void		changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir, bool bRefreshMap = true);
+
 
 	
 	/* the following variable is needed for handling of BiDi support; static because we need
@@ -223,16 +225,25 @@ protected:
 	UT_sint32       _createMapOfRuns();	
 	
 #ifdef USE_STATIC_MAP
-	static UT_sint32 * s_pMapOfRuns;
+	static UT_Byte *   s_pEmbeddingLevels;
+	static UT_uint16 * s_pMapOfRunsL2V;
+	static UT_uint16 * s_pMapOfRunsV2L;
+	static UT_uint32 * s_pPseudoString;
+	
+	
 	static UT_uint32   s_iMapOfRunsSize;
 	static fp_Line   * s_pMapOwner;
 	bool            m_bMapDirty;
 #else	
-	UT_sint32  *    m_pMapOfRuns;
+	UT_sint32  * 	m_pMapOfDirs;
+	UT_sint32  *    m_pMapOfRunsL2V;
+	UT_sint32  *    m_pMapOfRunsV2L;
+	
 	UT_uint32       m_iMapOfRunsSize;
 #endif
 	UT_uint32		m_iRunsRTLcount;
 	UT_uint32		m_iRunsLTRcount;
+	UT_sint32		m_iMaxDirLevel;
 #endif //BIDI_ENABLED
 };
 
