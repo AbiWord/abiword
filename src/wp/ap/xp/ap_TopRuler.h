@@ -230,10 +230,11 @@ protected:
 	// a collection of standard colors for drawing
 
 	UT_RGBColor			m_clrWhite;				/* constant used for highlights */
-	UT_RGBColor			m_clrBlack;				/* constant used for ticks/text, shadows */
+	UT_RGBColor			m_clrBlack;				/* constant */
 	UT_RGBColor			m_clrDarkGray;			/* constant used for default tab stops, shadows */
-	UT_RGBColor			m_clrLiteGray;
+	UT_RGBColor			m_clrLiteGray;			/* constant used for fills of 3D objects, etc. */
 	
+	UT_RGBColor			m_clrForeground;		/* used for text, ticks, etc. */
 	UT_RGBColor			m_clrBackground;		/* used for background flood fill */
 
 	UT_RGBColor			m_clrMarginArea;		/* used for flood fill of ruler area where margins are */

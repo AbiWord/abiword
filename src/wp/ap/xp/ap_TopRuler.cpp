@@ -94,7 +94,8 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	UT_setColor(m_clrBlack, 0, 0, 0);
 	UT_setColor(m_clrDarkGray, 127, 127, 127);
 	UT_setColor(m_clrLiteGray, 192, 192, 192);
-	
+
+	UT_setColor(m_clrForeground, 0, 0, 0);
 	UT_setColor(m_clrBackground, 192, 192, 192);
 
 	UT_setColor(m_clrMarginArea, 127, 127, 127);
@@ -913,7 +914,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw negative ticks over left margin.  
 
-	_drawTicks(pClipRect,pInfo,tick,m_clrBlack,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
+	_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
 	sum += pInfo->u.c.m_xaLeftMargin;
 	
 	for (k=0; k<pInfo->m_iNumColumns; k++)
@@ -921,9 +922,9 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		// draw positive or negative ticks on this column.
 		
 		if (k < pInfo->m_iCurrentColumn)
-			_drawTicks(pClipRect,pInfo,tick,m_clrBlack,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
+			_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
 		else
-			_drawTicks(pClipRect,pInfo,tick,m_clrBlack,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
+			_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
 
 		sum += pInfo->u.c.m_xColumnWidth;
 
@@ -936,7 +937,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw ticks over the right margin
 
-	_drawTicks(pClipRect,pInfo,tick,m_clrBlack,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+	_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
 
 	// draw the various widgets for the:
 	// 

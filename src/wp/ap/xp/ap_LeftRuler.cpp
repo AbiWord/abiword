@@ -70,7 +70,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	UT_setColor(m_clrBlack, 0, 0, 0);
 	UT_setColor(m_clrDarkGray, 127, 127, 127);
 	UT_setColor(m_clrLiteGray, 192, 192, 192);
-	
+
+	UT_setColor(m_clrForeground, 0, 0, 0);
 	UT_setColor(m_clrBackground, 192, 192, 192);
 
 	UT_setColor(m_clrMarginArea, 127, 127, 127);
@@ -302,7 +303,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 
 	UT_uint32 k, iFontHeight;
 
-	m_pG->setColor(m_clrBlack);
+	m_pG->setColor(m_clrForeground);
 
 	GR_Font * pFont = m_pG->getGUIFont();
 	if (pFont)

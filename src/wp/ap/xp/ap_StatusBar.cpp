@@ -166,7 +166,7 @@ void ap_sb_Field_PageInfo::draw(void)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		pG->setColor(m_pSB->m_clrBlack);
+		pG->setColor(m_pSB->m_clrForeground);
 	
 		pG->setClipRect(&m_rect3d);
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
@@ -257,7 +257,7 @@ void ap_sb_Field_StatusMessage::draw(void)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		pG->setColor(m_pSB->m_clrBlack);
+		pG->setColor(m_pSB->m_clrForeground);
 	
 		pG->setClipRect(&m_rect3d);
 		pG->drawChars(szMsg,0,len,x,y);
@@ -335,7 +335,7 @@ void ap_sb_Field_InputMode::draw(void)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		pG->setColor(m_pSB->m_clrBlack);
+		pG->setColor(m_pSB->m_clrForeground);
 
 		pG->setClipRect(&m_rect3d);
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
@@ -389,7 +389,8 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 	UT_setColor(m_clrBlack, 0, 0, 0);
 	UT_setColor(m_clrDarkGray, 127, 127, 127);
 	UT_setColor(m_clrLiteGray, 192, 192, 192);
-	
+
+	UT_setColor(m_clrForeground, 0, 0, 0);
 	UT_setColor(m_clrBackground, 192, 192, 192);
 }
 

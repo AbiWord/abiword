@@ -39,10 +39,17 @@ AP_UnixStatusBar::AP_UnixStatusBar(XAP_Frame * pFrame)
 
 	// Initialize ruler colors to match the style of the GTK Window
 	// representing pFrame
-	GtkStyle * style = gtk_widget_get_default_style();
+	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (pFrame))->getTopLevelWindow());
 	UT_ASSERT(style);
 
-	UT_setColor(m_clrBackground, style->bg[GTK_STATE_NORMAL].red, style->bg[GTK_STATE_NORMAL].green, style->bg[GTK_STATE_NORMAL].blue);
+	UT_setColor(m_clrForeground,
+				style->fg[GTK_STATE_NORMAL].red,
+				style->fg[GTK_STATE_NORMAL].green,
+				style->fg[GTK_STATE_NORMAL].blue);
+	UT_setColor(m_clrBackground,
+				style->bg[GTK_STATE_NORMAL].red,
+				style->bg[GTK_STATE_NORMAL].green,
+				style->bg[GTK_STATE_NORMAL].blue);	
 }
 
 AP_UnixStatusBar::~AP_UnixStatusBar(void)

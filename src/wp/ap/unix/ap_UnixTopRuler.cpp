@@ -74,10 +74,27 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 
 	// Initialize ruler colors to match the style of the GTK Window
 	// representing pFrame
-	GtkStyle * style = gtk_widget_get_default_style();
+	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (pFrame))->getTopLevelWindow());
 	UT_ASSERT(style);
 
-	UT_setColor(m_clrBackground, style->bg[GTK_STATE_NORMAL].red, style->bg[GTK_STATE_NORMAL].green, style->bg[GTK_STATE_NORMAL].blue);
+	/*
+	  Setting the foreground color changes the way ticks and text
+	  are drawn.  This should probably be avoided for rulers, since
+	  part of the background of this text/these ticks is white,
+	  and a user will probably set up his or her GTK foreground style
+	  to contrast well with the menu gray.
+	*/
+	/*
+	UT_setColor(m_clrForeground,
+				style->fg[GTK_STATE_NORMAL].red,
+				style->fg[GTK_STATE_NORMAL].green,
+				style->fg[GTK_STATE_NORMAL].blue);
+	*/
+	
+	UT_setColor(m_clrBackground,
+				style->bg[GTK_STATE_NORMAL].red,
+				style->bg[GTK_STATE_NORMAL].green,
+				style->bg[GTK_STATE_NORMAL].blue);	
 }
 
 AP_UnixTopRuler::~AP_UnixTopRuler(void)
