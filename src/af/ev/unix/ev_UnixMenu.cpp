@@ -372,7 +372,7 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				UT_ASSERT(bResult);
 				gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
 				// bury in parent
-				gtk_container_add(GTK_CONTAINER(wParent),w);
+				gtk_menu_append(GTK_MENU(wParent), w);
 				// connect callbacks
 				gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
 
@@ -428,7 +428,7 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				UT_ASSERT(bResult);
 				gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
 				// bury the widget in parent menu
-				gtk_container_add(GTK_CONTAINER(wParent),w);
+				gtk_container_add(GTK_CONTAINER(wParent), w);
 				
 				// since we are starting a new sub menu, create a shell for new items
 				GtkWidget * wsub = gtk_menu_new();
@@ -592,7 +592,7 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 			gtk_object_set_data(GTK_OBJECT(wMenuRoot), _ev_FakeName("separator",tmp++), w);
 			gtk_widget_show(w);
-			gtk_container_add(GTK_CONTAINER(wParent),w);
+			gtk_menu_append(GTK_MENU(wParent),w);
 
 			// item is created, add to class vector
 			m_vecMenuWidgets.addItem(w);
@@ -639,6 +639,11 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
+	// -1 will catch the case where we're inserting and haven't actually
+	// entered into a real menu (only at a top level menu)
+	
+	gint nPositionInThisMenu = -1;
+	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
@@ -650,6 +655,10 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		{
 		case EV_MLF_Normal:
 			{
+				// Keep track of where we are in this menu; we get cut down
+				// to zero on the creation of each new submenu.
+				nPositionInThisMenu++;
+			
 				// see if we need to enable/disable and/or check/uncheck it.
 				
 				UT_Bool bEnable = UT_TRUE;
@@ -712,8 +721,8 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 						// set parent data stuff
 						gtk_object_set_data(GTK_OBJECT(wMenuRoot), szLabelName, w);
-						// bury in parent
-						gtk_container_add(GTK_CONTAINER(GTK_MENU_ITEM(wParent)->submenu), w);
+						// bury in parent 
+						gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, nPositionInThisMenu);
 						// connect callbacks
 						gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
 
@@ -770,7 +779,6 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 												   "activate_item",
 												   FALSE);
 					// wipe it out
-//					gtk_container_remove(GTK_CONTAINER(item->parent), item);
 					gtk_widget_destroy(item);
 
 					// we must also mark this item in the vector as "removed",
@@ -856,10 +864,14 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			}
 			break;
 		case EV_MLF_Separator:
+			nPositionInThisMenu++;
+			
 			break;
 
 		case EV_MLF_BeginSubMenu:
 		{
+			nPositionInThisMenu = -1;
+
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
 			GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
