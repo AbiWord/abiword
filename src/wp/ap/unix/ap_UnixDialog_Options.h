@@ -87,6 +87,7 @@ public:
 	SET_GATHER			(OtherDirectionRtl, bool);
 	SET_GATHER			(OtherUseContextGlyphs, bool);
 	SET_GATHER			(OtherSaveContextGlyphs, bool);
+	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 #endif
 
 	SET_GATHER			(AutoSaveFile, bool);
@@ -152,6 +153,7 @@ public:
     GtkWidget * m_checkbuttonOtherDirectionRtl;
     GtkWidget * m_checkbuttonOtherUseContextGlyphs;
     GtkWidget * m_checkbuttonOtherSaveContextGlyphs;
+    GtkWidget * m_checkbuttonOtherHebrewContextGlyphs;
 #endif
 	GtkWidget * m_checkbuttonAutoSaveFile;
 	GtkWidget * m_textAutoSaveFilePeriod;

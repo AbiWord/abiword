@@ -119,6 +119,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseContextGlyphs, _gatherOtherUseContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
 #endif
 
 #if 1
@@ -134,7 +135,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	_gatherAutoSaveFilePeriod(stVal);
 	UT_DEBUGMSG(("Saving Auto Save File with a period of [%s]\n", stVal.c_str()));
 	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, stVal.c_str());
-#endif					
+#endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
@@ -164,19 +165,19 @@ void AP_Dialog_Options::_storeWindowData(void)
 		m_pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
 	}
 
-    if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
-    {
-        pFrameData->m_bShowPara = _gatherViewUnprintable() ;
-        AV_View * pAVView = m_pFrame->getCurrentView();
-        UT_ASSERT(pAVView);
+	if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
+	{
+		pFrameData->m_bShowPara = _gatherViewUnprintable() ;
+		AV_View * pAVView = m_pFrame->getCurrentView();
+		UT_ASSERT(pAVView);
 
-        FV_View * pView = static_cast<FV_View *> (pAVView);
+		FV_View * pView = static_cast<FV_View *> (pAVView);
 
-        pView->setShowPara(pFrameData->m_bShowPara);
-    }
+		pView->setShowPara(pFrameData->m_bShowPara);
+	}
 
 
-    if ( _gatherAllowCustomToolbars() != m_pFrame->getApp()->areToolbarsCustomizable() )
+	if ( _gatherAllowCustomToolbars() != m_pFrame->getApp()->areToolbarsCustomizable() )
 	{
 		m_pFrame->getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
 	}
@@ -184,20 +185,20 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save ruler units value
 	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
-			       (XML_Char*)UT_dimensionName( _gatherViewRulerUnits()) );
+				   (XML_Char*)UT_dimensionName( _gatherViewRulerUnits()) );
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save default paper size
 	UT_ASSERT(sizeof(XML_Char) && sizeof(char));
 	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_DefaultPageSize,
-			       (XML_Char*)fp_PageSize::PredefinedToName( _gatherDefaultPageSize()) );
+				   (XML_Char*)fp_PageSize::PredefinedToName( _gatherDefaultPageSize()) );
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // save screen color
+	// save screen color
 	UT_ASSERT(sizeof(XML_Char) && sizeof(char));
 	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ColorForTransparent,
-			       _gatherColorForTransparent() );
+				   _gatherColorForTransparent() );
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -208,7 +209,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	XML_Char szBuffer[40];
 	sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
 	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,
-			       (XML_Char*)szBuffer );
+				   (XML_Char*)szBuffer );
 
 	// allow the prefListeners to receive their calls
 	pPrefs->endBlockChange();
@@ -220,7 +221,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 }
 
-void AP_Dialog_Options::_setColorForTransparent(const XML_Char * 
+void AP_Dialog_Options::_setColorForTransparent(const XML_Char *
 												pzsColorForTransparent)
 {
 	strncpy(m_CurrentTransparentColor,pzsColorForTransparent,9);
@@ -235,7 +236,7 @@ void AP_Dialog_Options::_eventSave(void)
 {
 	m_answer = a_SAVE;
 
-	_storeWindowData();	
+	_storeWindowData();
 
 	m_answer = a_OK;
 }
@@ -244,8 +245,8 @@ void AP_Dialog_Options::_populateWindowData(void)
 {
 	bool			b;
 	XAP_Prefs		*pPrefs = 0;
-	const XML_Char	*pszBuffer = 0;	
-	
+	const XML_Char	*pszBuffer = 0;
+
 	// TODO: move this logic when we get a PrefsListener API and turn this
 	//		 dialog into an app-specific
 
@@ -264,7 +265,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckInternet,&b))
 		_setSpellInternet (b);
-	
+
 	// ------------ Smart Quotes
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,&b))
 		_setSmartQuotesEnable (b);
@@ -274,7 +275,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setDefaultPageSize (fp_PageSize::NameToPredefined((char*) pszBuffer));
 	}
 
-	// ------------ Prefs	
+	// ------------ Prefs
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
 
 	//-------------ShowSplash
@@ -299,10 +300,10 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setViewShowExtraBar (b);
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_StatusBarVisible,&b))
-        _setViewShowStatusBar (b);
+		_setViewShowStatusBar (b);
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ParaVisible,&b))
-        _setViewUnprintable (b);
+		_setViewUnprintable (b);
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
@@ -326,14 +327,14 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setAutoSaveFilePeriod(stBuffer);
 #endif
 
-    // ------------ Screen Color
+	// ------------ Screen Color
 
 	const XML_Char * pszColorForTransparent = NULL;
 	if (pPrefs->getPrefsValue(XAP_PREF_KEY_ColorForTransparent, &pszColorForTransparent))
 		_setColorForTransparent(pszColorForTransparent);
 
-			
-	// ------------ the page tab number 
+
+	// ------------ the page tab number
 	int which = getInitialPageNum ();
 	if ((which == -1) && pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
 		_setNotebookPageNum (atoi(pszBuffer));
@@ -347,6 +348,8 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setOtherUseContextGlyphs (b);
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_SaveContextGlyphs,&b))
 		_setOtherSaveContextGlyphs (b);
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,&b))
+		_setOtherHebrewContextGlyphs (b);
 #endif
 
 	// enable/disable controls
@@ -373,9 +376,10 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 #ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
 		_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
+		_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 		break;
-
 #endif
+
 	default:
 		// do nothing
 		break;
@@ -387,11 +391,11 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 void AP_Dialog_Options::_initEnableControls()
 {
 	// spelling
-	_controlEnable( id_CHECK_SPELL_SUGGEST,			false );
-	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS,		false );
+	_controlEnable( id_CHECK_SPELL_SUGGEST, 		false );
+	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS, 	false );
 	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		false );
 	_controlEnable( id_CHECK_SPELL_INTERNET,		false );
-	_controlEnable( id_LIST_DICTIONARY,				false );
+	_controlEnable( id_LIST_DICTIONARY, 			false );
 	_controlEnable( id_BUTTON_DICTIONARY_EDIT,		false );
 	_controlEnable( id_BUTTON_IGNORE_EDIT,			false );
 
@@ -403,10 +407,11 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_CHECK_VIEW_HIDDEN_TEXT,		false );
 
 	// general
-	_controlEnable( id_BUTTON_SAVE,					false );
+	_controlEnable( id_BUTTON_SAVE, 				false );
 	
 #ifdef BIDI_ENABLED
-	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());	
+	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
+	_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 #endif
 //
 // If the prefs color for transparent is white initially disable the choose
@@ -434,7 +439,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 	// SetDefaults
 	//	To set the defaults, save the scheme name and notebook page number,
-	//  re-populate the window with the _builtin_ scheme, then reset the 
+	//	re-populate the window with the _builtin_ scheme, then reset the 
 	//	scheme name and page number.
 	// If the user hits cancel, then nothing is saved in user_prefs
 
@@ -451,7 +456,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 	// TODO set us to "_builtin_" and that's it.  if the user
 	// TODO then changes something, we should create a new
 	// TODO scheme and fill in the new value.  --jeff
-	_setNotebookPageNum( currentPage );		
+	_setNotebookPageNum( currentPage ); 	
 	pPrefs->setCurrentScheme(old_name);
 }
 
@@ -463,7 +468,7 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 	// TODO:  shack@uiuc.edu: waiting for a vote for reset strings...
 
 	// Ask "Do you want to reset ignored words in the current document?" 
-    XAP_Dialog_MessageBox::tAnswer ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent,
+	XAP_Dialog_MessageBox::tAnswer ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent,
 								XAP_Dialog_MessageBox::b_YNC,
 								XAP_Dialog_MessageBox::a_NO); // should this be YES?
 
@@ -493,7 +498,7 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 									XAP_Dialog_MessageBox::a_NO); // should this be YES?
 
 
-		// if cancel, don't to ANYTHING	
+		// if cancel, don't to ANYTHING 
 		if (ans == XAP_Dialog_MessageBox::a_CANCEL )
 		{
 			UT_DEBUGMSG(("No/Canceled\n"));

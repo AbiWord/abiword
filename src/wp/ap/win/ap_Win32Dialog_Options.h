@@ -35,7 +35,7 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 
  protected:
@@ -44,41 +44,42 @@ public:
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
- 					    virtual void    _set##a(const t)
+						virtual void	_set##a(const t)
  
- 	SET_GATHER			(SpellCheckAsType,	bool );
- 	SET_GATHER			(SpellHideErrors,	bool );
- 	SET_GATHER			(SpellSuggest,		bool );
- 	SET_GATHER			(SpellMainOnly,		bool );
- 	SET_GATHER			(SpellUppercase,	bool );
- 	SET_GATHER			(SpellNumbers,		bool );
- 	SET_GATHER			(SpellInternet,		bool );
+	SET_GATHER			(SpellCheckAsType,	bool );
+	SET_GATHER			(SpellHideErrors,	bool );
+	SET_GATHER			(SpellSuggest,		bool );
+	SET_GATHER			(SpellMainOnly, 	bool );
+	SET_GATHER			(SpellUppercase,	bool );
+	SET_GATHER			(SpellNumbers,		bool );
+	SET_GATHER			(SpellInternet, 	bool );
 
 	SET_GATHER			(ShowSplash,		bool );
  
-	SET_GATHER			(SmartQuotesEnable,	bool ); 
-	SET_GATHER			(DefaultPageSize,  	fp_PageSize::Predefined ); 
+	SET_GATHER			(SmartQuotesEnable, bool ); 
+	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined ); 
 
- 	SET_GATHER			(PrefsAutoSave,		bool );
+	SET_GATHER			(PrefsAutoSave, 	bool );
  
- 	SET_GATHER			(ViewShowRuler,		bool );
-	SET_GATHER			(ViewShowStandardBar,bool );      
-	SET_GATHER			(ViewShowFormatBar,	bool );      
+	SET_GATHER			(ViewShowRuler, 	bool );
+	SET_GATHER			(ViewShowStandardBar,bool );	  
+	SET_GATHER			(ViewShowFormatBar, bool ); 	 
 	SET_GATHER			(ViewShowExtraBar,	bool );
-	SET_GATHER			(ViewShowStatusBar,	bool );
+	SET_GATHER			(ViewShowStatusBar, bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	bool);
  
- 	SET_GATHER			(ViewAll,			bool );
- 	SET_GATHER			(ViewHiddenText,	bool );
- 	SET_GATHER			(ViewUnprintable,	bool );
-    SET_GATHER          (AllowCustomToolbars, bool);
-    SET_GATHER          (AutoLoadPlugins, bool);
+	SET_GATHER			(ViewAll,			bool );
+	SET_GATHER			(ViewHiddenText,	bool );
+	SET_GATHER			(ViewUnprintable,	bool );
+	SET_GATHER			(AllowCustomToolbars, bool);
+	SET_GATHER			(AutoLoadPlugins, bool);
 
 #ifdef BIDI_ENABLED
-	SET_GATHER			(OtherDirectionRtl,	bool );
-	SET_GATHER			(OtherUseContextGlyphs,	bool );
+	SET_GATHER			(OtherDirectionRtl, bool );
+	SET_GATHER			(OtherUseContextGlyphs, bool );
 	SET_GATHER			(OtherSaveContextGlyphs,bool );
+	SET_GATHER			(OtherHebrewContextGlyphs,bool );
 #endif
 
 	SET_GATHER			(AutoSaveFile, bool);
@@ -88,7 +89,7 @@ public:
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);
 	void _initializeTransperentToggle(void);
 
- 	SET_GATHER			(NotebookPageNum,	int );
+	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER
 	
  protected:
@@ -102,11 +103,11 @@ public:
 	HWND						m_hwndDlg;		// parent dialog
 	HWND						m_hwndTab;		// tab control in parent dialog
 
-	int							m_nrSubDlgs;		// number of tabs on tab control
+	int 						m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
 	
 private:
-	XAP_DialogFactory *			m_pDialogFactory;
+	XAP_DialogFactory * 		m_pDialogFactory;
 };
 
 #endif /* AP_WIN32DIALOG_OPTIONS_H */

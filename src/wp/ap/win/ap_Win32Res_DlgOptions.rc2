@@ -36,24 +36,24 @@
 // sub-dialog for the "TOOLBARS" tab
 #define AP_RID_DIALOG_OPTIONS_FRM_Toolbars				1100
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar	1101
-#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar		1102
+#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar 	1102
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar		1103
 #define AP_RID_DIALOG_OPTIONS_FRM_ButtonStyle			1104
-#define AP_RID_DIALOG_OPTIONS_RDO_Icons					1105
+#define AP_RID_DIALOG_OPTIONS_RDO_Icons 				1105
 #define AP_RID_DIALOG_OPTIONS_RDO_Text					1106
 #define AP_RID_DIALOG_OPTIONS_RDO_IconsAndText			1107
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips			1108
 
 // sub-dialog for the "SPELL" tab
-#define AP_RID_DIALOG_OPTIONS_FRM_SpellGeneral          1200
+#define AP_RID_DIALOG_OPTIONS_FRM_SpellGeneral			1200
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType		1201
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors		1202
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest			1203
-#define AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly			1204
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly 		1204
 #define AP_RID_DIALOG_OPTIONS_FRM_SpellIgnore			1205
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase		1206
 #define AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers			1207
-#define AP_RID_DIALOG_OPTIONS_CHK_SpellInternet			1208
+#define AP_RID_DIALOG_OPTIONS_CHK_SpellInternet 		1208
 #define AP_RID_DIALOG_OPTIONS_LBL_CUSTOMDICT			1209
 #define AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT			1210
 #define AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT			1211
@@ -63,38 +63,39 @@
 
 // sub-dialog for the "LAYOUT" tab
 #define AP_RID_DIALOG_OPTIONS_FRM_SHOWHIDE				1300
-#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler			1301
-#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar		1302
+#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler 		1301
+#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar 	1302
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink		1303
-#define AP_RID_DIALOG_OPTIONS_FRM_VIEWFRAME				1304
+#define AP_RID_DIALOG_OPTIONS_FRM_VIEWFRAME 			1304
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewAll				1305
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText		1306
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable		1307
-#define AP_RID_DIALOG_OPTIONS_LBL_UNITS					1308
+#define AP_RID_DIALOG_OPTIONS_LBL_UNITS 				1308
 #define AP_RID_DIALOG_OPTIONS_COMBO_UNITS				1309
 #define AP_RID_DIALOG_OPTIONS_LBL_DefaultPageSize		1310
-#define AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize		1311
-#define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable		1312
-#define AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable			1313
+#define AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize 	1311
+#define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable 	1312
+#define AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable 		1313
 #define AP_RID_DIALOG_OPTIONS_BTN_BGColor				1314
 
 // sub-dialog for the "SCHEMES" tab
 #define AP_RID_DIALOG_OPTIONS_FRM_PreferenceScheme		1400
-#define AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave			1401
-#define AP_RID_DIALOG_OPTIONS_LBL_CURRENTSCHEME			1402
+#define AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave 		1401
+#define AP_RID_DIALOG_OPTIONS_LBL_CURRENTSCHEME 		1402
 #define AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME		1403
 #define AP_RID_DIALOG_OPTIONS_FRM_BidiOptions			1404
-#define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl		1405
-#define AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs		1406
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl 	1405
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs 	1406
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs	1407
 #define AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions		1408
 #define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1409
 #define AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod		1410
 #define AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin	1411
 #define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes		1412
-#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension		1413
-#define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension		1414
+#define AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension 	1413
+#define AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension 	1414
 #define AP_RID_DIALOG_OPTIONS_CHK_ShowSplash			1415
+#define AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs	  1416
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -106,14 +107,14 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Options"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Tab1",AP_RID_DIALOG_OPTIONS_TAB,"SysTabControl32",
-                    TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,5,5,295,150,
-                    WS_EX_CONTROLPARENT
-    PUSHBUTTON      "Sa&ve",AP_RID_DIALOG_OPTIONS_BTN_SAVE,85,160,50,14
-    PUSHBUTTON      "De&faults",AP_RID_DIALOG_OPTIONS_BTN_DEFAULT,140,160,50,
-                    14
-    DEFPUSHBUTTON   "OK",AP_RID_DIALOG_OPTIONS_BTN_OK,195,160,50,14
-    PUSHBUTTON      "Cancel",AP_RID_DIALOG_OPTIONS_BTN_CANCEL,250,160,50,14
+	CONTROL 		"Tab1",AP_RID_DIALOG_OPTIONS_TAB,"SysTabControl32",
+					TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,5,5,295,150,
+					WS_EX_CONTROLPARENT
+	PUSHBUTTON		"Sa&ve",AP_RID_DIALOG_OPTIONS_BTN_SAVE,85,160,50,14
+	PUSHBUTTON		"De&faults",AP_RID_DIALOG_OPTIONS_BTN_DEFAULT,140,160,50,
+					14
+	DEFPUSHBUTTON	"OK",AP_RID_DIALOG_OPTIONS_BTN_OK,195,160,50,14
+	PUSHBUTTON		"Cancel",AP_RID_DIALOG_OPTIONS_BTN_CANCEL,250,160,50,14
 END
 
 // The sub-dialog for the TOOLBARS tab of the Preference dialog
@@ -121,70 +122,70 @@ AP_RID_DIALOG_OPT_TOOLBARS DIALOG DISCARDABLE  0, 0, 290, 135
 STYLE DS_CONTROL | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Toolbars",AP_RID_DIALOG_OPTIONS_FRM_Toolbars,2,2,143,131
-    CONTROL         "&Standard Toolbar",
-                    AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,130,10
-    CONTROL         "&Format Toolbar",
-                    AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,30,130,10
-    CONTROL         "&Extra Toolbar",
-                    AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,45,130,10
-    GROUPBOX        "Button Style",AP_RID_DIALOG_OPTIONS_FRM_ButtonStyle,147,2,140,113
-    CONTROL         "Icons",AP_RID_DIALOG_OPTIONS_RDO_Icons,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,152,15,130,10
-    CONTROL         "Text",AP_RID_DIALOG_OPTIONS_RDO_Text,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,152,30,130,10
-    CONTROL         "Icons and Text",AP_RID_DIALOG_OPTIONS_RDO_IconsAndText,
-                    "Button",BS_AUTORADIOBUTTON | WS_TABSTOP,152,45,130,10
-    CONTROL         "View Tooltips",AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips,
-                    "Button",BS_AUTOCHECKBOX,152,103,130,10
+	GROUPBOX		"Toolbars",AP_RID_DIALOG_OPTIONS_FRM_Toolbars,2,2,143,131
+	CONTROL 		"&Standard Toolbar",
+					AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,15,130,10
+	CONTROL 		"&Format Toolbar",
+					AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,30,130,10
+	CONTROL 		"&Extra Toolbar",
+					AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,45,130,10
+	GROUPBOX		"Button Style",AP_RID_DIALOG_OPTIONS_FRM_ButtonStyle,147,2,140,113
+	CONTROL 		"Icons",AP_RID_DIALOG_OPTIONS_RDO_Icons,"Button",
+					BS_AUTORADIOBUTTON | WS_TABSTOP,152,15,130,10
+	CONTROL 		"Text",AP_RID_DIALOG_OPTIONS_RDO_Text,"Button",
+					BS_AUTORADIOBUTTON | WS_TABSTOP,152,30,130,10
+	CONTROL 		"Icons and Text",AP_RID_DIALOG_OPTIONS_RDO_IconsAndText,
+					"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,152,45,130,10
+	CONTROL 		"View Tooltips",AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips,
+					"Button",BS_AUTOCHECKBOX,152,103,130,10
 END
 
 // The sub-dialog for the SPELL tab of the Options dialog
-AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 290, 135
+AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE	0, 0, 290, 135
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "General",AP_RID_DIALOG_OPTIONS_FRM_SpellGeneral,2,2,143,
-                    75
-    CONTROL         "Check s&pelling as you type",
-                    AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,135,10
-    CONTROL         "Hide &spelling errors in the document",
-                    AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,30,135,10
-    CONTROL         "A&lways suggest corrections",
-                    AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,45,135,10
-    CONTROL         "Suggest from &main only",
-                    AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,60,135,10
-    GROUPBOX        "Ignore",AP_RID_DIALOG_OPTIONS_FRM_SpellIgnore,147,2,140,
-                    75
-    CONTROL         "Ignore words in &UPPERCASE",
-                    AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,150,15,130,10
-    CONTROL         "Ignore words with num&bers",
-                    AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,150,30,130,10
-    CONTROL         "Ignore Internet and &file addresses",
-                    AP_RID_DIALOG_OPTIONS_CHK_SpellInternet,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,150,45,130,10
-    RTEXT           "Custom Dictionary:",
-                    AP_RID_DIALOG_OPTIONS_LBL_CUSTOMDICT,5,82,110,12,
-                    SS_CENTERIMAGE
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT,122,82,80,50,
-                    CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_DISABLED
-    PUSHBUTTON      "Dictionary...",AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT,207,82,80,14,
+	GROUPBOX		"General",AP_RID_DIALOG_OPTIONS_FRM_SpellGeneral,2,2,143,
+					75
+	CONTROL 		"Check s&pelling as you type",
+					AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,15,135,10
+	CONTROL 		"Hide &spelling errors in the document",
+					AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,30,135,10
+	CONTROL 		"A&lways suggest corrections",
+					AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,45,135,10
+	CONTROL 		"Suggest from &main only",
+					AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,60,135,10
+	GROUPBOX		"Ignore",AP_RID_DIALOG_OPTIONS_FRM_SpellIgnore,147,2,140,
+					75
+	CONTROL 		"Ignore words in &UPPERCASE",
+					AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,150,15,130,10
+	CONTROL 		"Ignore words with num&bers",
+					AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,150,30,130,10
+	CONTROL 		"Ignore Internet and &file addresses",
+					AP_RID_DIALOG_OPTIONS_CHK_SpellInternet,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,150,45,130,10
+	RTEXT			"Custom Dictionary:",
+					AP_RID_DIALOG_OPTIONS_LBL_CUSTOMDICT,5,82,110,12,
+					SS_CENTERIMAGE
+	COMBOBOX		AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT,122,82,80,50,
+					CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_DISABLED
+	PUSHBUTTON		"Dictionary...",AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT,207,82,80,14,
 					WS_DISABLED
-    RTEXT           "Ignored Words:",AP_RID_DIALOG_OPTIONS_LBL_IGNOREDWORD,
-                    5,100,110,12,SS_CENTERIMAGE
-    PUSHBUTTON      "&Reset",AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET,122,100,
-                    80,14,WS_DISABLED
-    PUSHBUTTON      "&Edit...",AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT,207,100,
-                    80,14,WS_DISABLED
+	RTEXT			"Ignored Words:",AP_RID_DIALOG_OPTIONS_LBL_IGNOREDWORD,
+					5,100,110,12,SS_CENTERIMAGE
+	PUSHBUTTON		"&Reset",AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET,122,100,
+					80,14,WS_DISABLED
+	PUSHBUTTON		"&Edit...",AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT,207,100,
+					80,14,WS_DISABLED
 
 END
 
@@ -193,37 +194,37 @@ AP_RID_DIALOG_OPT_LAYOUT DIALOG DISCARDABLE  0, 0, 290, 135
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Show/Hide...",AP_RID_DIALOG_OPTIONS_FRM_SHOWHIDE,2,2,143,
-                    60
-    CONTROL         "&Rule",
-                    AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,130,10
-    CONTROL         "&Status Bar",
-                    AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,30,130,10
-    CONTROL         "&Cursor &blink",
-                    AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,45,130,10
-    GROUPBOX        "View...",AP_RID_DIALOG_OPTIONS_FRM_VIEWFRAME,147,2,140,60
-    CONTROL         "&All",AP_RID_DIALOG_OPTIONS_CHK_ViewAll,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,152,15,130,10
-    CONTROL         "&Hidden Text",AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,152,30,130,10
-    CONTROL         "Invisible &layout marks",AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,152,45,130,10
-    RTEXT           "Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,
-                    5,65,135,12,SS_CENTERIMAGE
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,147,65,140,75,
-                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    RTEXT           "Default page size:",AP_RID_DIALOG_OPTIONS_LBL_DefaultPageSize,
-                    5,80,135,12,SS_CENTERIMAGE
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize,147,80,140,75,
-                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-	AUTOCHECKBOX    "Enable smart quotes",
-                    AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable, 5, 100, 175, 10
-	AUTOCHECKBOX    "Allow screen colors other than white",
-                    AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable,  5, 115, 175, 10
-    PUSHBUTTON      "Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,196,111,90,14
+	GROUPBOX		"Show/Hide...",AP_RID_DIALOG_OPTIONS_FRM_SHOWHIDE,2,2,143,
+					60
+	CONTROL 		"&Rule",
+					AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,15,130,10
+	CONTROL 		"&Status Bar",
+					AP_RID_DIALOG_OPTIONS_CHK_ViewShowStatusBar,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,30,130,10
+	CONTROL 		"&Cursor &blink",
+					AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,45,130,10
+	GROUPBOX		"View...",AP_RID_DIALOG_OPTIONS_FRM_VIEWFRAME,147,2,140,60
+	CONTROL 		"&All",AP_RID_DIALOG_OPTIONS_CHK_ViewAll,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,152,15,130,10
+	CONTROL 		"&Hidden Text",AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,152,30,130,10
+	CONTROL 		"Invisible &layout marks",AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable,
+					"Button",BS_AUTOCHECKBOX | WS_TABSTOP,152,45,130,10
+	RTEXT			"Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,
+					5,65,135,12,SS_CENTERIMAGE
+	COMBOBOX		AP_RID_DIALOG_OPTIONS_COMBO_UNITS,147,65,140,75,
+					CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+	RTEXT			"Default page size:",AP_RID_DIALOG_OPTIONS_LBL_DefaultPageSize,
+					5,80,135,12,SS_CENTERIMAGE
+	COMBOBOX		AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize,147,80,140,75,
+					CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+	AUTOCHECKBOX	"Enable smart quotes",
+					AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable, 5, 100, 175, 10
+	AUTOCHECKBOX	"Allow screen colors other than white",
+					AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable,  5, 115, 175, 10
+	PUSHBUTTON		"Choose Screen Color",AP_RID_DIALOG_OPTIONS_BTN_BGColor,196,111,90,14
 END
 
 // The sub-dialog for the PREFERENCES tab of the Options dialog
@@ -233,45 +234,48 @@ FONT 8, "MS Sans Serif"
 BEGIN
 	GROUPBOX		"Preference Schemes",
 					AP_RID_DIALOG_OPTIONS_FRM_PreferenceScheme, 2,2,285,45
-    CONTROL         "Automatically save preferences",
-                    AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,275,10
-    LTEXT           "Current preferences scheme:",
-                    AP_RID_DIALOG_OPTIONS_LBL_CURRENTSCHEME,5,30,120,10
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME,125,30,157,75,
-                    CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_DISABLED
+	CONTROL 		"Automatically save preferences",
+					AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave,"Button",
+					BS_AUTOCHECKBOX | WS_TABSTOP,5,15,275,10
+	LTEXT			"Current preferences scheme:",
+					AP_RID_DIALOG_OPTIONS_LBL_CURRENTSCHEME,5,30,120,10
+	COMBOBOX		AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME,125,30,157,75,
+					CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_DISABLED
 	GROUPBOX		"Auto Save", AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions,
 					2, 47, 285, 26
-	CONTROL			"Auto save current file each", AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile ,
+	CONTROL 		"Auto save current file each", AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5, 60, 120, 10
-    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,125,58,30,12, ES_LEFT | WS_BORDER | WS_TABSTOP
-    CONTROL         "Spin",	AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin,	
+	EDITTEXT		AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,125,58,30,12, ES_LEFT | WS_BORDER | WS_TABSTOP
+	CONTROL 		"Spin", AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin,	
 							"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | 
 							UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,
 					152,60,8,8
-    LTEXT           "minutes",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes,
+	LTEXT			"minutes",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes,
 					157,60,50,8
-    RTEXT           "With extension:",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,
+	RTEXT			"With extension:",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,
 					182,60,70,8
-    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,
+	EDITTEXT		AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,
 					257,58,25,12, ES_LEFT | WS_BORDER | WS_TABSTOP
 
-    CONTROL         "Show Spash on Startup", AP_RID_DIALOG_OPTIONS_CHK_ShowSplash,
-                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+	CONTROL 		"Show Spash on Startup", AP_RID_DIALOG_OPTIONS_CHK_ShowSplash,
+					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,75,270,10
 
 	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,
 					2, 87, 285, 46
-	CONTROL			"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
+	CONTROL 		"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,98, 280, 10
-	CONTROL			"Select correct shapes of glyphs from context:", AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs ,
+	CONTROL 		"Select correct shapes of glyphs from context:", AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,109, 280, 10
-	CONTROL			"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
+	CONTROL 		"Use glyph shaping for Hebrew:", AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,120, 280, 10
+	CONTROL 		"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
+					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+					5,131, 280, 10
 
 
 END

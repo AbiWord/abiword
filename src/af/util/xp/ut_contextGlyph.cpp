@@ -23,6 +23,8 @@
 #include "ut_contextGlyph.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "xap_App.h"
+#include "xap_Prefs_SchemeIds.h"
 
 struct LigatureData
 {
@@ -37,16 +39,16 @@ struct LigatureData
 // glyph exists
 static Letter s_ligature[] =
 {
-    // Latin
-    /*
-    {0x0066, 0x0066, 0xFB00, 0xFB00, 0xFB00, 0xFB00},
-    {0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0xFB01},
-    {0x0066, 0x006C, 0xFB02, 0xFB02, 0xFB02, 0xFB02},
-    {0x017F, 0x0074, 0xFB05, 0xFB05, 0xFB05, 0xFB05},
-    */
+	// Latin
+	/*
+	{0x0066, 0x0066, 0xFB00, 0xFB00, 0xFB00, 0xFB00},
+	{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0xFB01},
+	{0x0066, 0x006C, 0xFB02, 0xFB02, 0xFB02, 0xFB02},
+	{0x017F, 0x0074, 0xFB05, 0xFB05, 0xFB05, 0xFB05},
+	*/
 
-    // Greek
-    {0x0391, 0x0301, 0x0386, 0x0386, 0x0386, 0x0386},
+	// Greek
+	{0x0391, 0x0301, 0x0386, 0x0386, 0x0386, 0x0386},
 	{0x0395, 0x0301, 0x0388, 0x0388, 0x0388, 0x0388},
 	{0x0397, 0x0301, 0x0389, 0x0389, 0x0389, 0x0389},
 	{0x0399, 0x0301, 0x038a, 0x038a, 0x038a, 0x038a},
@@ -67,69 +69,76 @@ static Letter s_ligature[] =
 	{0x03CA, 0x0301, 0x0390, 0x0390, 0x0390, 0x0390},
 	{0x03CB, 0x0301, 0x03b0, 0x03b0, 0x03b0, 0x03b0},
  
-    // Hebrew
-    {0x05D0, 0x05B7, 0xFB2E, 0xFB2E, 0xFB2E, 0xFB2E},
-    {0x05D0, 0x05B8, 0xFB2F, 0xFB2F, 0xFB2F, 0xFB2F},
-    {0x05D0, 0x05BC, 0xFB30, 0xFB30, 0xFB30, 0xFB30},
-    {0x05D1, 0x05BC, 0xFB31, 0xFB31, 0xFB31, 0xFB31},
-    {0x05D2, 0x05BC, 0xFB32, 0xFB32, 0xFB32, 0xFB32},
-    {0x05D3, 0x05BC, 0xFB33, 0xFB33, 0xFB33, 0xFB33},
-    {0x05D4, 0x05BC, 0xFB34, 0xFB34, 0xFB34, 0xFB34},
-    {0x05D5, 0x05B9, 0xFB4B, 0xFB4B, 0xFB4B, 0xFB4B},
-    {0x05D5, 0x05BC, 0xFB35, 0xFB35, 0xFB35, 0xFB35},
-    {0x05D6, 0x05BC, 0xFB36, 0xFB36, 0xFB36, 0xFB36},
-    {0x05D8, 0x05BC, 0xFB38, 0xFB38, 0xFB38, 0xFB38},
-    /*{0x05D9, 0x05B4, 0xFB1D, 0xFB1D, 0xFB1D, 0xFB1D},*/ //not found in MS fonts
-    {0x05D9, 0x05BC, 0xFB39, 0xFB39, 0xFB39, 0xFB39},
-    {0x05DA, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
-    {0x05DB, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
-    {0x05DC, 0x05BC, 0xFB3C, 0xFB3C, 0xFB3C, 0xFB3C},
-    {0x05DE, 0x05BC, 0xFB3E, 0xFB3E, 1, 1},
-    {0x05E0, 0x05BC, 0xFB40, 0xFB40, 1, 1},
-    {0x05E1, 0x05BC, 0xFB41, 0xFB41, 0xFB41, 0xFB41},
-    {0x05E3, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0xFB43},
-    {0x05E4, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0xFB43},
-    {0x05E6, 0x05BC, 0xFB46, 0xFB46, 1, 1},
-    {0x05E7, 0x05BC, 0xFB47, 0xFB47, 0xFB47, 0xFB47},
-    {0x05E8, 0x05BC, 0xFB48, 0xFB48, 0xFB48, 0xFB48},
-    {0x05E9, 0x05BC, 0xFB49, 0xFB49, 0xFB49, 0xFB49},
-    {0x05E9, 0x05C1, 0xFB2A, 0xFB2A, 0xFB2A, 0xFB2A},
-    {0x05E9, 0x05C2, 0xFB2B, 0xFB2B, 0xFB2B, 0xFB2B},
-    {0x05EA, 0x05BC, 0xFB4A, 0xFB4A, 0xFB4A, 0xFB4A},
-    
-    
-    
-    // Arabic
-    {0x0644, 0x0622, 1, 1, 0xFEF6, 0xFEf5},
+	// Hebrew
+	{0x05D0, 0x05B7, 0xFB2E, 0xFB2E, 0xFB2E, 0xFB2E},
+	{0x05D0, 0x05B8, 0xFB2F, 0xFB2F, 0xFB2F, 0xFB2F},
+	{0x05D0, 0x05BC, 0xFB30, 0xFB30, 0xFB30, 0xFB30},
+	{0x05D1, 0x05BC, 0xFB31, 0xFB31, 0xFB31, 0xFB31},
+	{0x05D2, 0x05BC, 0xFB32, 0xFB32, 0xFB32, 0xFB32},
+	{0x05D3, 0x05BC, 0xFB33, 0xFB33, 0xFB33, 0xFB33},
+	{0x05D4, 0x05BC, 0xFB34, 0xFB34, 0xFB34, 0xFB34},
+	{0x05D5, 0x05B9, 0xFB4B, 0xFB4B, 0xFB4B, 0xFB4B},
+	{0x05D5, 0x05BC, 0xFB35, 0xFB35, 0xFB35, 0xFB35},
+	{0x05D6, 0x05BC, 0xFB36, 0xFB36, 0xFB36, 0xFB36},
+	{0x05D8, 0x05BC, 0xFB38, 0xFB38, 0xFB38, 0xFB38},
+	/*{0x05D9, 0x05B4, 0xFB1D, 0xFB1D, 0xFB1D, 0xFB1D},*/ //not found in MS fonts
+	{0x05D9, 0x05BC, 0xFB39, 0xFB39, 0xFB39, 0xFB39},
+	{0x05DA, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
+	{0x05DB, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
+	{0x05DC, 0x05BC, 0xFB3C, 0xFB3C, 0xFB3C, 0xFB3C},
+	{0x05DE, 0x05BC, 0xFB3E, 0xFB3E, 1, 1},
+	{0x05E0, 0x05BC, 0xFB40, 0xFB40, 1, 1},
+	{0x05E1, 0x05BC, 0xFB41, 0xFB41, 0xFB41, 0xFB41},
+	{0x05E3, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0xFB43},
+	{0x05E4, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0xFB43},
+	{0x05E6, 0x05BC, 0xFB46, 0xFB46, 1, 1},
+	{0x05E7, 0x05BC, 0xFB47, 0xFB47, 0xFB47, 0xFB47},
+	{0x05E8, 0x05BC, 0xFB48, 0xFB48, 0xFB48, 0xFB48},
+	{0x05E9, 0x05BC, 0xFB49, 0xFB49, 0xFB49, 0xFB49},
+	{0x05E9, 0x05C1, 0xFB2A, 0xFB2A, 0xFB2A, 0xFB2A},
+	{0x05E9, 0x05C2, 0xFB2B, 0xFB2B, 0xFB2B, 0xFB2B},
+	{0x05EA, 0x05BC, 0xFB4A, 0xFB4A, 0xFB4A, 0xFB4A},
+	
+	
+	
+	// Arabic
+	{0x0644, 0x0622, 1, 1, 0xFEF6, 0xFEf5},
 	{0x0644, 0x0623, 1, 1, 0xFEF8, 0xFEF7},
 	{0x0644, 0x0625, 1, 1, 0xFEFA, 0xFEF9},
 	{0x0644, 0x0627, 1, 1, 0xFEFC, 0xFEFB},
 
-    // Hebrew
-    {0xFB2A, 0x05BC, 0xFB2C, 0xFB2C, 0xFB2C, 0xFB2C},
-    {0xFB2B, 0x05BC, 0xFB2D, 0xFB2D, 0xFB2D, 0xFB2D},
-    {0xFB49, 0x05C1, 0xFB2C, 0xFB2C, 0xFB2C, 0xFB2C},
-    {0xFB49, 0x05C2, 0xFB2D, 0xFB2D, 0xFB2D, 0xFB2D},
+	// Hebrew
+	{0xFB2A, 0x05BC, 0xFB2C, 0xFB2C, 0xFB2C, 0xFB2C},
+	{0xFB2B, 0x05BC, 0xFB2D, 0xFB2D, 0xFB2D, 0xFB2D},
+	{0xFB49, 0x05C1, 0xFB2C, 0xFB2C, 0xFB2C, 0xFB2C},
+	{0xFB49, 0x05C2, 0xFB2D, 0xFB2D, 0xFB2D, 0xFB2D},
  
 };
 
 static Letter s_lig_rev[NrElements(s_ligature)];
 
+// when adding entries to this table, make sure that you update
+// the HEBREW_START and HEBREW_END macros that follow
 static Letter s_table[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
  
-    // Greek
-    {0x03C2, 0x03C3, 0x03C3, 0x03C3, 0x03C2, 0x03C2},
-    
-    // Hebrew letters
+	// Greek
+	{0x03C2, 0x03C3, 0x03C3, 0x03C3, 0x03C2, 0x03C2},
+	
+	// Hebrew letters
+	// the following macro defines how many entries in this table
+	// precede the Hebrew section
+#define HEBREW_START 1
 	{0x05DA, 0x05DB, 0x05DB, 0x05DB, 0x05DA, 0x05DA},
 	{0x05DD, 0x05DE, 0x05DE, 0x05DE, 0x05DD, 0x05DD},
 	{0x05DF, 0x05E0, 0x05E0, 0x05E0, 0x05DF, 0x05DF},
 	{0x05E3, 0x05E4, 0x05E4, 0x05E4, 0x05E3, 0x05E3},
 	{0x05E5, 0x05E6, 0x05E6, 0x05E6, 0x05E5, 0x05E5},
- 
-    // Arabic
+	// the following macro defines the index of the last entry in
+	// the Hebrew section of the table
+#define HEBREW_END 5
+	// Arabic
 	{0x0621, 0x0621, 0x0621, 0x0621, 0x0621, 0xFE80},
 	{0x0622, 0x0622, 0x0622, 0x0622, 0xFE82, 0xFE81},
 	{0x0623, 0x0623, 0x0623, 0x0623, 0xFE84, 0xFE83},
@@ -167,9 +176,9 @@ static Letter s_table[] =
 	{0x0649, 0x0649, 0x0649, 0x0649, 0xFEF0, 0xFEEF},
 	{0x064a, 0x064a, 0xFEF3, 0xFEF4, 0xFEF2, 0xFEF1},
  
-    /* the following characters are not found in Arabic Presentation forms B
-        and so we will leave it for now -- most of these are ligatures
-        
+	/* the following characters are not found in Arabic Presentation forms B
+		and so we will leave it for now -- most of these are ligatures
+		
 	{0x0660, 0x0660, 0xFE, 0xFE, 0xFE, 0xFE},
 	{0x0661, 0x0661, 0xFE, 0xFE, 0xFE, 0xFE},
 	{0x0662, 0x0662, 0xFE, 0xFE, 0xFE, 0xFE},
@@ -302,7 +311,7 @@ static Letter s_table[] =
 	{0x06fc, 0x06fc, 0xFE, 0xFE, 0xFE, 0xFE},
 	{0x06fd, 0x06fd, 0xFE, 0xFE, 0xFE, 0xFE},
 	{0x06fe, 0x06fe, 0xFE, 0xFE, 0xFE, 0xFE},
-    */
+	*/
 };
 
 static UCSRange s_ignore[] =
@@ -362,7 +371,7 @@ static int s_comp_lig(const void *a, const void *b)
 	if(!ret)
 		ret = (int) A->next - (int) B->code_high;
 
-	return ret;	
+	return ret; 
 }
 
 static int s_comp_lig2(const void *a, const void *b)
@@ -374,7 +383,7 @@ static int s_comp_lig2(const void *a, const void *b)
 	if(!ret)
 		ret = (int) A->next - (int) B->code_low;
 
-	return ret;	
+	return ret;
 }
 
 
@@ -382,11 +391,11 @@ static int s_comp_qlig(const void *a, const void *b)
 {
 	const Letter *A = (const Letter*)a;
 	const Letter *B = (const Letter*)b;
-	
+
 	int ret = (int) A->code_high - (int) B->code_high;
 	if(!ret)
 		return (int) A->code_low - (int) B->code_low;
-		
+
 	return ret;
 }
 
@@ -395,11 +404,21 @@ UCSRange * UT_contextGlyph::s_pIgnore = &s_ignore[0];
 Letter* UT_contextGlyph::s_pLigature = &s_ligature[0];
 Letter* UT_contextGlyph::s_pLigRev = &s_lig_rev[0];
 bool UT_contextGlyph::s_bInit = false;
+UT_uint32 UT_contextGlyph::s_iGlyphTableSize = sizeof(s_table);
 
 UT_contextGlyph::UT_contextGlyph()
 {
 	if(!s_bInit)
 	{
+		bool bHebrewContextGlyphs = false;
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs, &bHebrewContextGlyphs);
+		UT_DEBUGMSG(("UT_contextGlyph Constructor: bHebrewContextGlyphs %d\n",bHebrewContextGlyphs));
+		if(!bHebrewContextGlyphs)
+		{
+			s_iGlyphTableSize -= (HEBREW_END - HEBREW_START + 1) * sizeof(Letter);
+			memcpy(&s_table[HEBREW_START], &s_table[HEBREW_END + 1],s_iGlyphTableSize - HEBREW_START);
+		}
+
 		memcpy(s_pLigRev,s_pLigature, sizeof(s_ligature));
 		qsort(s_pLigRev,NrElements(s_lig_rev), sizeof(Letter),s_comp_qlig);
 		s_bInit = true;
@@ -433,7 +452,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 	while(*myNext && bsearch((void*)myNext, (void*)s_pIgnore, NrElements(s_ignore),sizeof(UCSRange),s_comp_ignore))
 		myNext++;
   
-    const UT_UCSChar myNextNext = (*myNext && *(myNext+1)) ?  *(myNext+1) : UCS_SPACE;
+	const UT_UCSChar myNextNext = (*myNext && *(myNext+1)) ?  *(myNext+1) : UCS_SPACE;
 
 	xxx_UT_DEBUGMSG(("UT_contextGlyph::_evalGlyphContext: myNext 0x%x\n", *myNext));
 
@@ -493,98 +512,98 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 	UT_ASSERT(code);
 	
 	// first, decide if this is a part of a ligature
-    // first check for a ligature form
-    LigatureData Lig;
-    Letter *pL = 0;
-    bool bIsSecond = false;
+	// first check for a ligature form
+	LigatureData Lig;
+	Letter *pL = 0;
+	bool bIsSecond = false;
 	GlyphContext context = GC_NOT_SET;
 
-    Lig.next = next ? *next : 0;
+	Lig.next = next ? *next : 0;
 	Lig.code = *code;
-    	
-   	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
+		
+	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
 
-    if(pL)
-    {
+	if(pL)
+	{
 		next++;
-   		xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));			
-    }
-    else
-    {
-    	Lig.next = prev ? *prev : 0;
-	   	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
+		xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));			
+	}
+	else
+	{
+		Lig.next = prev ? *prev : 0;
+		pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
 		if(pL)
 		{
-	   		xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
-	   		bIsSecond = true;
-	 	}
-    }
+			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
+			bIsSecond = true;
+		}
+	}
 
 	// if this is a ligature, handle it
-    if(pL)
-    {
-	    context = bIsSecond ? _evalGlyphContext(prev, prev+1, next)
-	    									: _evalGlyphContext(code, prev, next);
-	    UT_UCSChar glyph = 0;
-    	switch (context)
-    	{
-    		case GC_INITIAL:
-    			glyph = pL->initial;
-    			break;
-    		case GC_MEDIAL:
-    			glyph = pL->medial;
-    			break;
-    		case GC_FINAL:
-    			glyph = pL->final;
-    			break;
-    		case GC_ISOLATE:
-    			glyph = pL->alone;
-    			break;
-    		default:
-	    		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-    	}
-    	
-    	UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
-    	if(!bIsSecond && glyph != 1) //first part of a ligature
-    		return glyph;
-    	if(bIsSecond && glyph != 1)
-    	{
-    		// a special ligature glyph was used, map this to a 0-width non breaking space
-    		return 0xFEFF;
-    	}
+	if(pL)
+	{
+		context = bIsSecond ? _evalGlyphContext(prev, prev+1, next)
+											: _evalGlyphContext(code, prev, next);
+		UT_UCSChar glyph = 0;
+		switch (context)
+		{
+			case GC_INITIAL:
+				glyph = pL->initial;
+				break;
+			case GC_MEDIAL:
+				glyph = pL->medial;
+				break;
+			case GC_FINAL:
+				glyph = pL->final;
+				break;
+			case GC_ISOLATE:
+				glyph = pL->alone;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+		
+		UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
+		if(!bIsSecond && glyph != 1) //first part of a ligature
+			return glyph;
+		if(bIsSecond && glyph != 1)
+		{
+			// a special ligature glyph was used, map this to a 0-width non breaking space
+			return 0xFEFF;
+		}
 
-    	// if we got here, the glyph was 1, which means this form is to be just
-    	// treated as an ordinary letter, also if this was a first part of the ligature
-    	// we already know its context, but not if it was a second part of lig.
-    }
+		// if we got here, the glyph was 1, which means this form is to be just
+		// treated as an ordinary letter, also if this was a first part of the ligature
+		// we already know its context, but not if it was a second part of lig.
+	}
 
 
-    // if we have no pL we are dealing with an ordinary letter
-	pL = (Letter*) bsearch((void*)code, (void*)s_pGlyphTable, NrElements(s_table),sizeof(Letter),s_comp);
+	// if we have no pL we are dealing with an ordinary letter
+	pL = (Letter*) bsearch((void*)code, (void*)s_pGlyphTable, s_iGlyphTableSize/sizeof(Letter),sizeof(Letter),s_comp);
 	
 	// if we still have no pL, it means the letter has only one form
 	// so we return it back
 	if(!pL)
 		return *code;
 
-    if(context == GC_NOT_SET || bIsSecond)
-       	context = _evalGlyphContext(code, prev, next);
-       	
-   	switch (context)
-   	{
-   		case GC_INITIAL:
-   			return pL->initial;
-   		case GC_MEDIAL:
-   			return pL->medial;
-   		case GC_FINAL:
-   			return pL->final;
-   		case GC_ISOLATE:
-   			return pL->alone;
-   		default:
-    		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-   	}
-   	
-   	return 0;
+	if(context == GC_NOT_SET || bIsSecond)
+		context = _evalGlyphContext(code, prev, next);
+		
+	switch (context)
+	{
+		case GC_INITIAL:
+			return pL->initial;
+		case GC_MEDIAL:
+			return pL->medial;
+		case GC_FINAL:
+			return pL->final;
+		case GC_ISOLATE:
+			return pL->alone;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	
+	return 0;
 }
 
 void UT_contextGlyph::renderString(const UT_UCSChar * src,
@@ -602,15 +621,15 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 	UT_UCSChar prev_tmp[2] = {0,0};
 	UT_UCSChar next_tmp[CONTEXT_BUFF_SIZE + 1] = {0,0,0,0,0,0};
 	const UT_UCSChar * prev_ptr;
-    UT_UCSChar glyph = 0;
+	UT_UCSChar glyph = 0;
 	
 	for(UT_uint32 i = 0; i < len; i++, src_ptr++)	
 	{
 		// first, decide if this is a part of a ligature
-    	// first check for a ligature form
-	    LigatureData Lig;
-    	Letter *pL = 0;
-	    bool bIsSecond = false;
+		// first check for a ligature form
+		LigatureData Lig;
+		Letter *pL = 0;
+		bool bIsSecond = false;
 		GlyphContext context = GC_NOT_SET;
 
 		//get the current context
@@ -627,101 +646,101 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		}
 		
 		if(i == 0)
-    		prev_ptr = prev;
-	 	else if(i == 1)
- 		{
- 			prev_tmp[0] = *src;
-	 		prev_tmp[1] = *prev;
- 			prev_ptr = prev_tmp;
-	 	}
- 		else
-	 	{
- 			prev_tmp[0] = *(src_ptr - 1);
- 			prev_tmp[1] = *(src_ptr - 2);
-	 		//no need to set prev_ptr, since this has been done when i == 1
- 		}
+			prev_ptr = prev;
+		else if(i == 1)
+		{
+			prev_tmp[0] = *src;
+			prev_tmp[1] = *prev;
+			prev_ptr = prev_tmp;
+		}
+		else
+		{
+			prev_tmp[0] = *(src_ptr - 1);
+			prev_tmp[1] = *(src_ptr - 2);
+			//no need to set prev_ptr, since this has been done when i == 1
+		}
 			
-	    Lig.next = next_ptr ? *next_ptr : 0;
+		Lig.next = next_ptr ? *next_ptr : 0;
 		Lig.code = *src_ptr;
-    	
-	   	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
+		
+		pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
 
-    	if(pL)
-	    {
-	    	// we need the context of the whole pair not just of this character
+		if(pL)
+		{
+			// we need the context of the whole pair not just of this character
 			next_ptr++;
-   			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));			
-	    }
-    	else
-	    {
-    		//we only check that this is not a second part of a ligature for the
-    		//first character, for the rest we will handle that in the previous
-	    	//cycle of the loop
-    		if(i == 0)
-    		{
-    			Lig.next = prev ? *prev : 0;
-		   		pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
+			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));			
+		}
+		else
+		{
+			//we only check that this is not a second part of a ligature for the
+			//first character, for the rest we will handle that in the previous
+			//cycle of the loop
+			if(i == 0)
+			{
+				Lig.next = prev ? *prev : 0;
+				pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
 				if(pL)
 				{
-		   			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
-		   			bIsSecond = true;
-			 	}
-	 		}
-	    }
+					xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
+					bIsSecond = true;
+				}
+			}
+		}
 
 		// if this is a ligature, handle it
-	    if(pL)
-    	{
-	    	context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
-	    									: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
-	    	switch (context)
-    		{
-    			case GC_INITIAL:
-    				glyph = pL->initial;
-    				break;
-	    		case GC_MEDIAL:
-    				glyph = pL->medial;
-    				break;
-    			case GC_FINAL:
-	    			glyph = pL->final;
-    				break;
-    			case GC_ISOLATE:
-    				glyph = pL->alone;
-    				break;
-	    		default:
-		    		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-    		}
-    	
-	    	UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
-    		if(!bIsSecond && glyph != 1) //first part of a ligature
-    		{
-    			// we set both this and the next char if we can
-	    		*dst_ptr++ = glyph;
-    			if(i < len - 1)
-    			{
-    				*dst_ptr++ = 0xFEFF;
-    				src_ptr++;
-	    			i++;
-    				continue;
-    			}
-    			continue;
-	    	}
-    		else if(bIsSecond && glyph != 1)
-    		{
-    			// a special ligature glyph was used, map this to a 0-width non breaking space
-	    		*dst_ptr++ = 0xFEFF;
-    			continue;
-    		}
+		if(pL)
+		{
+			context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
+											: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
+			switch (context)
+			{
+				case GC_INITIAL:
+					glyph = pL->initial;
+					break;
+				case GC_MEDIAL:
+					glyph = pL->medial;
+					break;
+				case GC_FINAL:
+					glyph = pL->final;
+					break;
+				case GC_ISOLATE:
+					glyph = pL->alone;
+					break;
+				default:
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		
+			UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
+			if(!bIsSecond && glyph != 1) //first part of a ligature
+			{
+				// we set both this and the next char if we can
+				*dst_ptr++ = glyph;
+				if(i < len - 1)
+				{
+					*dst_ptr++ = 0xFEFF;
+					src_ptr++;
+					i++;
+					continue;
+				}
+				continue;
+			}
+			else if(bIsSecond && glyph != 1)
+			{
+				// a special ligature glyph was used, map this to a 0-width non breaking space
+				*dst_ptr++ = 0xFEFF;
+				continue;
+			}
 
-	    	// if we got here, the glyph was 1, which means this form is to be just
-    		// treated as an ordinary letter, also if this was a first part of the ligature
-    		// we already know its context, but not if it was a second part of lig.
-	    }
+			// if we got here, the glyph was 1, which means this form is to be just
+			// treated as an ordinary letter, also if this was a first part of the ligature
+			// we already know its context, but not if it was a second part of lig.
+		}
 
 
-    	// if we have no pL we are dealing with an ordinary letter
-		pL = (Letter*) bsearch((void*)src_ptr, (void*)s_pGlyphTable, NrElements(s_table),sizeof(Letter),s_comp);
-	
+		// if we have no pL we are dealing with an ordinary letter
+		pL = (Letter*) bsearch((void*)src_ptr, (void*)s_pGlyphTable, s_iGlyphTableSize/sizeof(Letter),sizeof(Letter),s_comp);
+
 		// if we still have no pL, it means the letter has only one form
 		// so we return it back
 		if(!pL)
@@ -730,28 +749,28 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			continue;
 		}
 
-	    if(context == GC_NOT_SET || bIsSecond)
-    	   	context = _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
-       	
-	   	switch (context)
-   		{
-   			case GC_INITIAL:
-	   			glyph = pL->initial;
-	   			break;
-   			case GC_MEDIAL:
-   				glyph = pL->medial;
-   				break;
-	   		case GC_FINAL:
-   				glyph = pL->final;
-   				break;
-   			case GC_ISOLATE:
-   				glyph = pL->alone;
-   				break;
-	   		default:
-    			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	   	}
-   	
-   		*dst_ptr++ = glyph;
-	}   	
+		if(context == GC_NOT_SET || bIsSecond)
+			context = _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
+		
+		switch (context)
+		{
+			case GC_INITIAL:
+				glyph = pL->initial;
+				break;
+			case GC_MEDIAL:
+				glyph = pL->medial;
+				break;
+			case GC_FINAL:
+				glyph = pL->final;
+				break;
+			case GC_ISOLATE:
+				glyph = pL->alone;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	
+		*dst_ptr++ = glyph;
+	}		
 
 }

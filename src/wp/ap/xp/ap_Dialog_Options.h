@@ -59,6 +59,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
 				   id_CHECK_OTHER_USE_CONTEXT_GLYPHS,
 				   id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS,
+				   id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS,
 #endif
 				   id_CHECK_AUTO_SAVE_FILE,
 				   id_TEXT_AUTO_SAVE_FILE_EXT,
@@ -79,8 +80,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
 				   id_SHOWSPLASH,
 				   id_UNIXFONTWARNING,
-                   id_CHECK_ALLOW_CUSTOM_TOOLBARS,
-                   id_CHECK_AUTO_LOAD_PLUGINS,
+				   id_CHECK_ALLOW_CUSTOM_TOOLBARS,
+				   id_CHECK_AUTO_LOAD_PLUGINS,
 				   id_last } tControl;
 
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
@@ -105,42 +106,43 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 									// lookup values to set as preferences
 
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
-					 	virtual void    _set##a(const u) = 0
+						virtual void	_set##a(const u) = 0
 	SET_GATHER			(SpellCheckAsType,	bool);
 	SET_GATHER			(SpellHideErrors,	bool);
 	SET_GATHER			(SpellSuggest,		bool);
-	SET_GATHER			(SpellMainOnly,		bool);
+	SET_GATHER			(SpellMainOnly, 	bool);
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
-	SET_GATHER			(SpellInternet,		bool);
+	SET_GATHER			(SpellInternet, 	bool);
 #if 0
-	SET_GATHER          (SpellAutoReplace,  bool);
+	SET_GATHER			(SpellAutoReplace,	bool);
 #endif
 	
 	SET_GATHER			(ShowSplash,bool);
-	SET_GATHER			(SmartQuotesEnable,	bool);
+	SET_GATHER			(SmartQuotesEnable, bool);
 	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
 
-	SET_GATHER			(PrefsAutoSave,		bool);
+	SET_GATHER			(PrefsAutoSave, 	bool);
 
-	SET_GATHER			(ViewShowRuler,		bool);
+	SET_GATHER			(ViewShowRuler, 	bool);
 	SET_GATHER			(ViewShowStandardBar,	bool);
-	SET_GATHER			(ViewShowFormatBar,	bool);
+	SET_GATHER			(ViewShowFormatBar, bool);
 	SET_GATHER			(ViewShowExtraBar,	bool);
-	SET_GATHER			(ViewShowStatusBar,	bool);
- 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewShowStatusBar, bool);
+	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	bool);
 
 	SET_GATHER			(ViewAll,			bool);
 	SET_GATHER			(ViewHiddenText,	bool);
 	SET_GATHER			(ViewUnprintable,	bool);
-    SET_GATHER          (AllowCustomToolbars, bool);
-    SET_GATHER          (AutoLoadPlugins, bool);
+	SET_GATHER			(AllowCustomToolbars, bool);
+	SET_GATHER			(AutoLoadPlugins, bool);
 
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
 	SET_GATHER			(OtherUseContextGlyphs, bool);
 	SET_GATHER			(OtherSaveContextGlyphs, bool);
+	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 #endif
 
 #if 1 // TODO: JCA
@@ -151,10 +153,10 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	virtual void _setAutoSaveFileExt(const UT_String &stExt) = 0;
 #endif
 
- 	// so we can save and restore to the same page - must be able to return
-  	// the current page and reset it later (i.e., don't use a handle, but a
-  	// page index)
-  	SET_GATHER			(NotebookPageNum,	int );
+	// so we can save and restore to the same page - must be able to return
+	// the current page and reset it later (i.e., don't use a handle, but a
+	// page index)
+	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER
 	
  protected:
@@ -166,9 +168,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	void _setColorForTransparent(const XML_Char * pzsColorForTransparent);
 	
 
-	tAnswer				m_answer;
-	XAP_Frame *			m_pFrame;
-	XML_Char            m_CurrentTransparentColor[10];
+	tAnswer 			m_answer;
+	XAP_Frame * 		m_pFrame;
+	XML_Char			m_CurrentTransparentColor[10];
 
 	int m_pageNum;
 

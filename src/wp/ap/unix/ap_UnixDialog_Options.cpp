@@ -421,6 +421,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *rtl_dominant;
 	GtkWidget *use_context_glyphs;
 	GtkWidget *save_context_glyphs;
+	GtkWidget *hebrew_context_glyphs;
 #endif
 	GtkWidget *fontWarning;
 	GtkWidget *fontPath;
@@ -897,10 +898,18 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	use_context_glyphs = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_UseContextGlyphs));
 	gtk_widget_show (use_context_glyphs);
 	gtk_box_pack_start (GTK_BOX (vbox59), use_context_glyphs, FALSE, FALSE, 0);
+	
+	// this is not implemented at the moment
 	save_context_glyphs = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs));
+#if 0
+	// currently not implemented	
 	gtk_widget_show (save_context_glyphs);
+#endif
 	gtk_box_pack_start (GTK_BOX (vbox59), save_context_glyphs, FALSE, FALSE, 0);
 	
+	hebrew_context_glyphs = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs));
+	gtk_widget_show (hebrew_context_glyphs);
+	gtk_box_pack_start (GTK_BOX (vbox59), hebrew_context_glyphs, FALSE, FALSE, 0);
 #endif		
 	
 	// AUTO SAVE
@@ -983,6 +992,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_checkbuttonOtherDirectionRtl = rtl_dominant;
 	m_checkbuttonOtherUseContextGlyphs = use_context_glyphs;
 	m_checkbuttonOtherSaveContextGlyphs = save_context_glyphs;
+	m_checkbuttonOtherHebrewContextGlyphs = hebrew_context_glyphs;
 #endif
 	m_checkbuttonAutoSaveFile = autosave_cb;
 	m_textAutoSaveFileExt = autosave_ext;
@@ -1249,6 +1259,8 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_checkbuttonOtherUseContextGlyphs;
 	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
 		return m_checkbuttonOtherSaveContextGlyphs;
+	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
+		return m_checkbuttonOtherHebrewContextGlyphs;
 #endif
 
 	case id_CHECK_AUTO_SAVE_FILE:
@@ -1397,6 +1409,7 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 DEFINE_GET_SET_BOOL(OtherUseContextGlyphs);
 DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs);
+DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs);
 #endif
 
 DEFINE_GET_SET_BOOL(AutoSaveFile);

@@ -61,10 +61,11 @@ class UT_contextGlyph
 										const UT_UCSChar * prev,
 										const UT_UCSChar * next) const;
 										
-		static Letter 		*s_pGlyphTable;
+		static Letter		*s_pGlyphTable;
 		static UCSRange 	*s_pIgnore;
 		static Letter		*s_pLigature;
 		static Letter		*s_pLigRev;
-		static bool			s_bInit;
+		static bool 		s_bInit;
+		static UT_uint32	s_iGlyphTableSize;
 };
 #endif
