@@ -141,7 +141,12 @@ bool IE_Imp_Psion_Word_Sniffer::recognizeContents(const char * szBuf,
 			psiconv_buffer_free(pl);
 			return false;
 		}
+
+	// It is likely detection will fail, so keep it silent
+	int verbosity=psiconv_verbosity;
+	psiconv_verbosity=PSICONV_VERB_FATAL;
 	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
+	psiconv_verbosity = verbosity;
 	psiconv_buffer_free(pl);
 	if (filetype == psiconv_word_file)
 		return true;
@@ -190,7 +195,11 @@ bool IE_Imp_Psion_TextEd_Sniffer::recognizeContents(const char * szBuf,
 			psiconv_buffer_free(pl);
 			return false;
 		}
+	// Keep it silent...
+	int verbosity=psiconv_verbosity;
+	psiconv_verbosity=PSICONV_VERB_FATAL;
 	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
+	psiconv_verbosity = verbosity;
 	psiconv_buffer_free(pl);
 	if (filetype == psiconv_texted_file)
 		return true;
