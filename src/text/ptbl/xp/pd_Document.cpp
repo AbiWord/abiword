@@ -668,6 +668,17 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttr
 }
 
 /*!
+ * Get API fromthe supplied StruxDocHandle
+ */
+PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
+{
+	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
+	return indexAP;
+}
+
+
+/*!
  * This method returns the value associated with attribute szProperty
  * at picetable strux given by sdh.
  \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
@@ -881,6 +892,39 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
 				{
 					depth--;
 				}
+			}
+		}
+//
+// Get Next frag in the table.
+//
+		currentFrag = currentFrag->getNext();
+	}
+	return NULL;
+}
+/*!
+ * This method returns the end cell strux associated with the cell strux cellSDH
+ * Returns NULL on failure to find it.
+ */
+PL_StruxDocHandle PD_Document::getEndCellStruxFromCellSDH(PL_StruxDocHandle cellSDH)
+{
+	pf_Frag * currentFrag = (pf_Frag *) cellSDH;
+	currentFrag = currentFrag->getNext();
+	PL_StruxDocHandle EndCellSDH = NULL;
+	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			if(pfSec->getStruxType() == PTX_SectionTable)
+			{
+				PL_StruxDocHandle endTab = getEndTableStruxFromTableSDH((PL_StruxDocHandle ) pfSec);
+				currentFrag = (pf_Frag *) endTab;
+			}
+			else if(pfSec->getStruxType() == PTX_EndCell)
+			{
+				EndCellSDH = (PL_StruxDocHandle) pfSec;
+				return EndCellSDH;
 			}
 		}
 //

@@ -316,7 +316,7 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
 	{
 		return false;
 	}
-	bres = m_pDoc->getNextStruxOfType(sourceSDH,PTX_EndCell,&endSourceSDH);
+	endSourceSDH =  m_pDoc->getEndCellStruxFromCellSDH(sourceSDH);
 	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endSourceSDH)-1;
 	posSource = m_pDoc->getStruxPosition(sourceSDH)+1;
 	bres = m_pDoc->getStruxOfTypeFromPosition(posDestination,PTX_SectionCell,&destinationSDH);
@@ -324,7 +324,7 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
 	{
 		return false;
 	}
-	bres = m_pDoc->getNextStruxOfType(destinationSDH,PTX_EndCell,&endDestSDH);
+	endDestSDH = m_pDoc-> m_pDoc->getEndCellStruxFromCellSDH(destinationSDH);
 	PT_DocPosition posEndDestCell = m_pDoc->getStruxPosition(endSourceSDH)-1;
 	if(!bBefore)
 	{
@@ -453,7 +453,11 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 	{
 		return false;
 	}
-	bres = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+	endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
+	if(!endCellSDH)
+	{
+		return false;
+	}
 	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endCellSDH) +1;
 	if(posEndCell == 0)
 	{
@@ -597,7 +601,11 @@ bool FV_View::_insertCellAfter(PT_DocPosition posTable, UT_sint32 rowold, UT_sin
 	{
 		return false;
 	}
-	bres = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+	endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
+	if(!endCellSDH)
+	{
+		return false;
+	}
 	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endCellSDH);
 	if(posEndCell == 0)
 	{

@@ -630,7 +630,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			}
 			else
 			{
-				bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+				endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 				posEndCell = m_pDoc->getStruxPosition(endCellSDH);
 				UT_String_sprintf(sLeft,"%d",iLeft+1);
 				UT_String_sprintf(sRight,"%d",iLeft+2);
@@ -696,7 +696,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 						if(jTop == i)
 						{
 							bAfter = true;
-							bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+							endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 							posEndCell = m_pDoc->getStruxPosition(endCellSDH);
 							UT_String_sprintf(sLeft,"%d",iLeft+1);
 							UT_String_sprintf(sRight,"%d",iLeft+2);
@@ -733,7 +733,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 					if(jTop == i)
 					{
 						bAfter = true;
-						bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+						endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 						posEndCell = m_pDoc->getStruxPosition(endCellSDH);
 						UT_String_sprintf(sLeft,"%d",iLeft+1);
 						UT_String_sprintf(sRight,"%d",iLeft+2);
@@ -807,7 +807,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			bEnd = true;
 			break;
 		}
-		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
 		if(posEndCell+1 >= posEndTable)
 		{
@@ -1034,8 +1034,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 // After Last row so just before the end of table
 //
 			prevTop = numRows;
-			bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
-			if(!bRes)
+			endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+			if(!endTableSDH)
 			{
 				//
 				// Disaster! the table structure in the piecetable is screwed.
@@ -1088,7 +1088,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 //
 // OK! now starting immediately after this insert loop through the table adding 1 to top and bottom
 //
-	bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
+	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
 	if(!bRes)
 	{
 		//
@@ -1111,7 +1111,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 			bEnd = true;
 			break;
 		}
-		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
 		if(posEndCell+1 >= posEndTable)
 		{
@@ -1328,7 +1328,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 			props[7] = sBot.c_str();
 			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
 		}
-		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
 		if(posEndCell+1 >= posEndTable)
 		{
@@ -1466,7 +1466,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 // We stop when the position of the endCell strux is just before the position of
 // the endTable strux. So lets's get that now.
 //
-	bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
+	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
 	if(!bRes)
 	{
 		//
@@ -1522,7 +1522,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 			props[7] = sBot.c_str();
 			bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
 		}
-		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+		endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
 		if(posEndCell+1 >= posEndTable)
 		{

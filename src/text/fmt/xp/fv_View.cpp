@@ -7490,62 +7490,15 @@ bool FV_View::isInTable( PT_DocPosition pos)
 PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col)
 {
 	PL_StruxDocHandle cellSDH,tableSDH;
-	const char * pszLeftAttach =NULL;
-	const char * pszTopAttach = NULL;
-	const char * pszRightAttach = NULL;
-	const char * pszBotAttach = NULL;
-	UT_sint32 iLeft=-999;
-	UT_sint32 iRight=-999;
-	UT_sint32 iTop=-999;
-	UT_sint32 iBot =-999;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posTable,PTX_SectionTable,&tableSDH);
 	if(!bRes)
 	{
 		return 0;
 	}
-	bool bFound = false;
-	while(!bFound && bRes)
+	cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, row,col);
+	if(cellSDH == NULL)
 	{
-		iLeft=-999;
-		iRight=-999;
-		iTop=-999;
-		iBot =-999;
-		bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_SectionCell,&cellSDH);
-		if(bRes)
-		{
-			m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&pszLeftAttach);
-			m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&pszRightAttach);
-			m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&pszTopAttach);
-			m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&pszBotAttach);
-			if(pszLeftAttach && *pszLeftAttach)
-			{
-				iLeft = atoi(pszLeftAttach);
-			}
-			if(pszRightAttach && *pszRightAttach)
-			{
-				iRight = atoi(pszRightAttach);
-			}
-			if(pszTopAttach && *pszTopAttach)
-			{
-				iTop = atoi(pszTopAttach);
-			}
-			if(pszBotAttach && *pszBotAttach)
-			{
-				iBot = atoi(pszBotAttach);
-			}
-			if(col >= iLeft && col < iRight && row >= iTop && row < iBot)
-			{
-				bFound = true;
-			}
-		}
-		if(!bFound)
-		{
-			tableSDH = cellSDH;
-		}
-	}
-	if(!bFound)
-	{
-	    return 0;
+		return 0;
 	}
 	return 	m_pDoc->getStruxPosition(cellSDH);
 }
