@@ -142,10 +142,11 @@ protected:
 	UT_Bool					m_bInChangeBlock;
 	void					_sendPrefsSignal( UT_AlphaHashTable *hash );
 
-public:						/* these are needed by the XML parser interface */
 #ifdef HAVE_LIBXML2
 	UT_Bool _sax(const char *path, UT_Bool sys);
 #endif
+
+public:						/* these are needed by the XML parser interface */
 	void					_startElement(const XML_Char *name, const XML_Char **atts);
 	void					_endElement(const XML_Char *name);
 	void					_charData(const XML_Char *s, int len);
