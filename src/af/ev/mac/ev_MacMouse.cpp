@@ -48,6 +48,7 @@ void EV_MacMouse::onButtonDown(AV_View * pView,
 	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
 
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 #if 0
 	m_iCaptureCount++;			// keep track of number of clicks/releases
 	if (m_iCaptureCount > 1)	// ignore subsequent clicks (other mouse buttons) during drag
@@ -98,6 +99,7 @@ void EV_MacMouse::onButtonMove(AV_View * pView,
 	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
 
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 #if 0
 	if (!m_iCaptureCount)		// ignore free movements
 		return;
@@ -147,6 +149,7 @@ void EV_MacMouse::onButtonUp(AV_View * pView,
 	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
 
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
 #if 0
 	if (m_iCaptureCount > 0)
 		m_iCaptureCount--;
@@ -198,6 +201,8 @@ void EV_MacMouse::onDoubleClick(AV_View * pView,
 	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
 
+	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	
 #if 0
 	m_iCaptureCount++;			// keep track of number of clicks/releases
 	if (m_iCaptureCount > 1)	// ignore subsequent clicks (other mouse buttons) during drag
