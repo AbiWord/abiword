@@ -233,7 +233,7 @@ dcl(DLG_ABOUT_Title,					"About %s")
 	 dcl(DLG_Image_Title, "Image Properties")
 	 dcl(DLG_Image_Width, "Width:")
 	 dcl(DLG_Image_Height, "Height:")
-	 dcl(DLG_Image_Aspect, "Preserve Aspect Ratio:")
+	 dcl(DLG_Image_Aspect, "Preserve aspect ratio")
 
 /* HashDownloader dialogs */
 dcl(DLG_HashDownloader_AskDownload, 		"I could not find a dictionary for %s.\nWould you like me to try downloading it from the internet?")

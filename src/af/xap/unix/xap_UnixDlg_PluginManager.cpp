@@ -346,6 +346,8 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	m_version = glade_xml_get_widget(xml, "enVersion");
 	m_desc = glade_xml_get_widget(xml, "tvDescription");
 
+	gtk_window_set_title(GTK_WINDOW(m_windowMain), pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE));
+
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbActivePlugins"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE);
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPluginDetails"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_DETAILS);
 	localizeLabel(glade_xml_get_widget(xml, "lbPluginName"), pSS, XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME);

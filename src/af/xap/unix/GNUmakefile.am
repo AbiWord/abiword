@@ -36,6 +36,7 @@ glade_DATA = \
 	xap_UnixDlg_Password.glade	\
 	xap_UnixDlg_PluginManager.glade \
 	xap_UnixDlg_WindowMore.glade \
+	xap_UnixDlg_Image.glade	\
 	xap_UnixDlg_Zoom.glade
 
 libXap_unix_a_SOURCES=\
