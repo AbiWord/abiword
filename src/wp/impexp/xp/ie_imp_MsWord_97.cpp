@@ -455,9 +455,18 @@ bool IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 	if (iNumbytes > 8)
 	{
 #if 0
-	  // this code is too generic - also picks up .wri documents
+	        // this code is too generic - also picks up .wri documents
 		if (szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
 			szBuf[2] == (char)0 && szBuf[3] == (char)0)
+		{
+			return true;
+		}
+
+		// this identifies staroffice dox
+		if (szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
+			szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
+			szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
+			szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1)
 		{
 			return true;
 		}
@@ -473,14 +482,6 @@ bool IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 			return true;
 		}
 
-		// OLE magic:
-		if (szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
-			szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
-			szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
-			szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1)
-		{
-			return true;
-		}
 		if (szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
 			szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
 			szBuf[4] == (char)0 && szBuf[5] == (char)0)
