@@ -52,12 +52,15 @@ TARGETS=		$(OBJS)
 ifeq ($(OS_NAME),WIN32)
 INCLUDES=		-I$(ABI_XX_ROOT)/../libpng	\
 			-I$(ABI_XX_ROOT)/../zlib
-elif ($(OS_NAME),UNIX)
-INCLUDES=
 else
-INCLUDES=		-I$(ABI_ROOT)/../libpng	\
-			-I$(ABI_ROOT)/../zlib
+INCLUDES=
 endif
+
+# If you add another operating system that does require
+# libpng, add lines like this to the "ifeq" group above.
+#
+#INCLUDES=		-I$(ABI_ROOT)/../libpng	\
+#			-I$(ABI_ROOT)/../zlib
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
