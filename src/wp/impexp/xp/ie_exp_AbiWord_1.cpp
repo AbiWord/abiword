@@ -127,6 +127,7 @@ protected:
 								 bool bNewLineAfter, PT_AttrPropIndex api,
 								 bool bIgnoreProperties = false);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	void				_outputXMLChar(const XML_Char * data, UT_uint32 length);
 	void				_handleStyles(void);
 	void				_handleIgnoredWords(void);
 	void				_handleLists(void);
@@ -252,11 +253,12 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			// TODO we force double-quotes on all values.
 			// TODO consider scanning the value to see if it has one
 			// TODO in it and escaping it or using single-quotes.
+			// Let's also escape ampersands and other goodies.
 			
 			m_pie->write(" ");
 			m_pie->write((char*)szName);
 			m_pie->write("=\"");
-			m_pie->write((char*)szValue);
+			_outputXMLChar(szValue, strlen(szValue));
 			m_pie->write("\"");
 		}
 		if (!bIgnoreProperties && pAP->getNthProperty(0,szName,szValue))
@@ -266,7 +268,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			m_pie->write("=\"");
 			m_pie->write((char*)szName);
 			m_pie->write(":");
-			m_pie->write((char*)szValue);
+			_outputXMLChar(szValue, strlen(szValue));
 			UT_uint32 j = 1;
 			while (pAP->getNthProperty(j++,szName,szValue))
 			{
@@ -278,7 +280,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 					m_pie->write("; ");
 					m_pie->write((char*)szName);
 					m_pie->write(":");
-					m_pie->write((char*)szValue);
+					_outputXMLChar(szValue, strlen(szValue));
 				}
 			}
 			m_pie->write("\"");
@@ -292,6 +294,42 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 		m_pie->write("\n");
 
 	m_bInTag = true;
+}
+
+// This method is very much like _outputData but uses XML_Chars instead of UT_UCS_Char's.
+void s_AbiWord_1_Listener::_outputXMLChar(const XML_Char * data, UT_uint32 length)
+{
+	UT_String sBuf;
+	const XML_Char * pData;
+
+	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+
+	for (pData=data; (pData<data+length); /**/)
+	{
+		switch (*pData)
+		{
+		case '<':
+			sBuf += "&lt;";
+			pData++;
+			break;
+			
+		case '>':
+			sBuf += "&gt;";
+			pData++;
+			break;
+			
+		case '&':
+			sBuf += "&amp;";
+			pData++;
+			break;
+
+		default:
+			sBuf += (char)*pData++;
+			break;
+		}
+	}
+
+	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
 void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
@@ -937,11 +975,14 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	   	if (status)
 	    {
 	   		m_pie->write("<d name=\"");
-			m_pie->write(szName);
+			// We assume that UT_XML_Char is equivalent to char.
+			// That's not really a good assumption, but, hey.
+			// TODO: make szName, szMimeType be UT_XML_Chars.
+			_outputXMLChar(szName, strlen(szName));
 		   	if (szMimeType)
 			{
 			   m_pie->write("\" mime-type=\"");
-			   m_pie->write(szMimeType);
+			   _outputXMLChar(szMimeType, strlen(szMimeType));
 			}
 		   	if (encoded) 
 		    {
