@@ -153,6 +153,6 @@ UT_UCSChar getMirrorChar(UT_UCSChar c)
 	if(m)
 		return (UT_UCSChar) m->mirrored_ch;
 	else
-		return (UT_UCSChar) 0;
+		return c;
 }
 #endif

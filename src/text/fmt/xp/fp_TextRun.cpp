@@ -1278,7 +1278,8 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	}
 
 #ifdef BIDI_ENABLED
-	if(getVisDirection() == 1)
+	UT_uint32 iVisDir = getVisDirection();
+	if(iVisDir == 1)
 	{
 		iLeftWidth = m_iWidth - iLeftWidth;
 	}
@@ -1298,11 +1299,18 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		}
 	
 		UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
-		UT_UCS_strncpy(s_pSpanBuff, pSpan, iTrueLen);
-	
-	
 		
-		if(getVisDirection() == 1) //rtl: determine the width of the text we are to print
+		if(m_iDirection != -3 || iVisDir != 1)
+			UT_UCS_strncpy(s_pSpanBuff, pSpan, iTrueLen);
+		else
+		{
+			//this is 'other neutral' visually rtl span, we need to deal
+			//with mirror characters
+			for (UT_uint32 i = 0; i < iTrueLen; i++)
+				s_pSpanBuff[i] = getMirrorChar(pSpan[i]);
+		}
+		
+		if(iVisDir == 1) //rtl: determine the width of the text we are to print
 		{
 			UT_UCS_strnrev(s_pSpanBuff, iTrueLen);
 			for (i= 0; i < iTrueLen; i++)
@@ -1318,7 +1326,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 			break;
 		}
 
-		if(getVisDirection() == 0)
+		if(iVisDir == 0)
 		{
 			for(i = 0; i < iTrueLen; i++)
 			{
