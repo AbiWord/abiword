@@ -1202,8 +1202,10 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 	if (*ieft != IEFT_Bogus)
 		dflFileType = *ieft;
-	else
+	else if (bSaveAs)
 		dflFileType = IE_Exp::fileTypeForSuffix (".abw");
+	else
+		dflFileType = IE_Imp::fileTypeForSuffix (".abw"); 
 
 	pDialog->setDefaultFileType(dflFileType);
 		

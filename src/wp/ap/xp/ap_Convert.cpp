@@ -22,6 +22,7 @@
 
 #include "ap_Convert.h"
 #include "ie_exp.h"
+#include "ie_imp.h"
 #include "ut_types.h"
 
 class XAP_App;
@@ -128,7 +129,7 @@ void AP_Convert::convertTo(const char * szFilename, const char * szSourceSuffix,
 	strncat(ext, szTargetSuffix, 255);
 	strncat(sourceExt, szSourceSuffix, 255);
 	ieft = IE_Exp::fileTypeForSuffix(ext);
-	sourceIeft = IE_Exp::fileTypeForSuffix(sourceExt);
+	sourceIeft = IE_Imp::fileTypeForSuffix(sourceExt);
 	strncpy(file, szFilename, 255);
 
 	tmp = strrchr(file, '.');
