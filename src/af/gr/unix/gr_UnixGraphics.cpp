@@ -898,11 +898,12 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 		gdk_gc_set_clip_rectangle(m_pXORGC, &r);
 		Region region;
 		XPoint points[4];
+	
 		points[0].x = r.x + tdu(m_iXoff);
-		points[0].y = r.y - r.height + tdu(m_iYoff);
+		points[0].y = r.y + tdu(m_iYoff);
 			
 		points[1].x = r.x + r.width  + tdu(m_iXoff);
-		points[1].y = r.y - r.height + tdu(m_iYoff);
+		points[1].y = r.y + tdu(m_iYoff);
 			
 		points[2].x = r.x + r.width  + tdu(m_iXoff);
 		points[2].y = r.y + r.height + tdu(m_iYoff);
