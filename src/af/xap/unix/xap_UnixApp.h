@@ -66,28 +66,30 @@ public:
 
 	XAP_UnixFontManager *					getFontManager();
 
-	typedef enum
+	enum
 	{
 		GEOMETRY_FLAG_POS = 	1 << 0,
 		GEOMETRY_FLAG_SIZE = 	1 << 1
-	} windowGeometryFlags;
+	};
 	
 	struct windowGeometry
 	{
 		int x, y;
 		UT_uint32 width, height;
-		XAP_UnixApp::windowGeometryFlags flags;
+		UT_uint32 flags;
 	};
 	
-	virtual	void					setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
-												windowGeometryFlags flags);
-	virtual	void					getGeometry(int * x, int * y, UT_uint32 * width, UT_uint32 * height,
-												windowGeometryFlags * flags);
+	virtual	void					setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
+												UT_uint32 flags);
+	virtual	void					getWinGeometry(int * x, int * y, UT_uint32 * width, UT_uint32 * height,
+												UT_uint32 * flags);
 
 	void							setTimeOfLastEvent(UT_uint32 eventTime);
 	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
-	
+	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
+	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
+
 protected:
 	bool							_loadFonts();
 	void							_setAbiSuiteLibDir();
@@ -101,6 +103,8 @@ protected:
 	UT_uint32					m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
+	bool                    m_bBonoboRunning;
+	
 };
 
 #endif /* XAP_UNIXAPP_H */

@@ -1,3 +1,5 @@
+/* Copyright (c) 1997-1998 by Juliusz Chroboczek */
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -634,8 +634,8 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 		}
 		UT_sint32 yoffEnd = pDA->yoff + iHeight + 2;
 
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+       	getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+		getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
         getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }

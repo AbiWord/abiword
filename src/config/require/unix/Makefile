@@ -101,7 +101,7 @@ _ZLIB_:
 # libpng can only be used if located in a system directory.
 
 _LIBPNG_:
-	@if [    -r /usr/lib/libpng.a				\
+	@if [ -r /usr/lib/libpng.a				\
 	      -o -r ${LOCALBASE}/lib/libpng.a			\
 	      -o -r /usr/local/lib/libpng.a			\
 	      -o -r ${X11BASE}/lib/libpng.a			\

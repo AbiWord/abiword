@@ -1005,8 +1005,6 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	// <docfmt> -- page information
 
-	char * old_locale;
-	old_locale = setlocale (LC_NUMERIC, "C");
 
 	double width = m_pDocument->m_docPageSize.Width(DIM_IN);
 	double height = m_pDocument->m_docPageSize.Height(DIM_IN);
@@ -1014,6 +1012,9 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	UT_String szPaperWidth;
 	UT_String szPaperHeight;
+
+	char * old_locale;
+	old_locale = setlocale (LC_NUMERIC, "C");
 
 	UT_String_sprintf(szPaperWidth, "%fin", width);
 	UT_String_sprintf(szPaperHeight, "%fin", height);
@@ -1148,8 +1149,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword("sbknone");								// no page break implied
 	m_pie->_rtf_keyword_ifnotdefault("cols",(char*)szColumns,1);
 	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",(char*)szColumnGap,720);
-	char * old_locale;
-	old_locale = setlocale (LC_NUMERIC, "C");
 
 	if (bColLine)
 	{
@@ -1160,7 +1159,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 		double hMarg = UT_convertToInches(szHeaderY);
 		UT_String sHeaderY;
 
+		char * old_locale = setlocale (LC_NUMERIC, "C");
 		UT_String_sprintf(sHeaderY,"%fin",hMarg);
+		setlocale (LC_NUMERIC, old_locale);
+
 		m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)sHeaderY.c_str(), 720);
 
 	}
@@ -1170,7 +1172,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 		UT_String sRtfTop;
 
 
+		char * old_locale = setlocale (LC_NUMERIC, "C");
 		UT_String_sprintf(sRtfTop,"%fin",tMarg);
+		setlocale (LC_NUMERIC, old_locale);
+		
 		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)sRtfTop.c_str(), 1440);
 	}
 	if(szFooterExists  && szMarginBottom)
@@ -1184,17 +1189,20 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 			FooterY = bMarg;
 		}
 		UT_String sFooterY;
+		char * old_locale = setlocale (LC_NUMERIC, "C");
 		UT_String_sprintf(sFooterY,"%fin",FooterY);
+		setlocale (LC_NUMERIC, old_locale);
 		m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)sFooterY.c_str(), 720);
 	}
 	if(szMarginBottom)
 	{
 		double bMarg = UT_convertToInches(szMarginBottom);
 		UT_String sRtfBot;
+		char * old_locale = setlocale (LC_NUMERIC, "C");
 		UT_String_sprintf(sRtfBot,"%fin",bMarg);
+		setlocale (LC_NUMERIC, old_locale);
 		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", (char*)sRtfBot.c_str(), 1440);
 	}
-	setlocale (LC_NUMERIC, old_locale);
 
 	if(szMarginLeft)
 	{

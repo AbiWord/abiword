@@ -32,6 +32,7 @@
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
+#include "ut_sleep.h"
 #include <sys/stat.h>
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
@@ -70,9 +71,12 @@ static int s_xerror_handler(Display *dsp, XErrorEvent *e)
 			XAP_App * pApp = XAP_App::getApp();
 			UT_ASSERT(pApp);
 			pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bShowWarning);
-
-#if 0 // sevior FIXME switch this back.
-			
+			bool bBonobo = ((XAP_UnixApp *)pApp)->isBonoboRunning();
+			if(bBonobo)
+			{
+				bShowWarning = false;
+			}
+#if 1 
 			if(bShowWarning)
 			{
 				if(pApp->getDisplayStatus())
@@ -299,6 +303,11 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 				XAP_App * pApp = XAP_App::getApp();
 				UT_ASSERT(pApp);
 				pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bShowWarning);
+				bool bBonobo = ((XAP_UnixApp *)pApp)->isBonoboRunning();
+				if(bBonobo)
+				{
+					bShowWarning = false;
+				}
 
 				UT_DEBUGMSG(("found non-directory entry in existing fontpath [%s]\n", *oldFontPath_ptr));
 				if(bShowWarning)			

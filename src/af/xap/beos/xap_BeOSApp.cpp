@@ -91,7 +91,7 @@ const char * XAP_BeOSApp::getUserPrivateDirectory(void) {
 #define PATH_MAX 4096
 #endif
 
-        char * szAbiDir = ".AbiSuite";
+        char * szAbiDir = "config/settings/AbiSuite";
 
         static char buf[PATH_MAX];
         memset(buf,0,sizeof(buf));

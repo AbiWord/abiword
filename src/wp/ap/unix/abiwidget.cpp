@@ -20,16 +20,52 @@
  * 02111-1307, USA.
  */
 
-
 #include <string.h>
 
 #include "abiwidget.h"
-#include "ap_UnixFrame.h"
 #include "gr_UnixGraphics.h"
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
 #include "fv_View.h"
+#include "ap_UnixFrame.h"
+#include "ap_FrameData.h"
+#include  "xap_Args.h"
+#include "pd_Document.h"
+#include "ie_imp.h"
+#include "ie_exp.h"
+#include "xap_UnixDialogHelper.h"
+
+#ifdef HAVE_GNOME
+#include "ap_UnixGnomeApp.h"
+#else
 #include "ap_UnixApp.h"
+#endif
+
+/**************************************************************************/
+/**************************************************************************/
+
+/*
+ * The AbiWord Widget
+ *    by Martin Sevior and Dom Lachowicz
+ *
+ * Four score and 3 months ago, we decided that it would be cool to have
+ * AbiWord exposed as a GTK+ widget. After inventing the computer and GTK+,
+ * Dom and Martin undertook the task of exposing AbiWord's functionality
+ * in freaky-fun GTKWidget form. And to this day, it has been a horrible
+ * success.
+ *
+ * Not stymied by the hoopla and fanfare surrounding their earlier 
+ * achievements, the two decided to actually make AbiWord's main frame
+ * an instance of this AbiWidget. Following that, Martin undertook the
+ * ordeal of exposing this Widget via a Bonobo interface (after first
+ * inventing Bonobo, of course) so that other applications such as
+ * Ximian Evolution could seamlessly embed instances of AbiWord inside
+ * of themselves.
+ *
+ */
+
+/**************************************************************************/
+/**************************************************************************/
 
 // Our widget's private storage data
 // UnixApp and UnixFrame already properly inherit from either
@@ -39,11 +75,18 @@
 struct _AbiPrivData {
 	AP_UnixApp           * m_pApp;
 	AP_UnixFrame         * m_pFrame;
-	char                 * m_szFilename;
+	char           * m_szFilename;
 	GdkICAttr            * ic_attr;
 	GdkIC                * ic;
-	bool                 externalApp;
+	bool                 m_bWithExternalAppPointer;
+	bool                 m_bMappedToScreen;
+	bool                 m_bPendingFile;
+	bool                 m_bMappedEventProcessed;
+    bool                 m_bUnlinkFileAfterLoad;
 };
+
+/**************************************************************************/
+/**************************************************************************/
 
 //
 // Our widget's arguments. 
@@ -53,6 +96,8 @@ enum {
   CURSOR_ON,
   INVOKE_NOARGS,
   MAP_TO_SCREEN,
+  IS_ABI_WIDGET,
+  UNLINK_AFTER_LOAD,
   DRAW,
   LOAD_FILE,
   ALIGNCENTER,
@@ -92,6 +137,7 @@ enum {
   EXTSELEOL,
   EXTSELEOW,
   EXTSELLEFT,
+  EXTSELRIGHT,
   EXTSELNEXTLINE,
   EXTSELPAGEDOWN,
   EXTSELPAGEUP,
@@ -134,7 +180,7 @@ enum {
   WARPINSPTPREVPAGE,
   WARPINSPTPREVSCREEN,
   WARPINSPTPREVRIGHT, 
- ZOOM100,
+  ZOOM100,
   ZOOM200,
   ZOOM50,
   ZOOM75,
@@ -145,6 +191,9 @@ enum {
 
 // our parent class
 static GtkBinClass * parent_class = 0;
+
+static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p);
+
 
 /**************************************************************************/
 /**************************************************************************/
@@ -186,8 +235,8 @@ return abi_widget_invoke_ex (w, #n, str, 0, 0); \
 /**************************************************************************/
 /**************************************************************************/
 
-// Here we define our EditMethods (which will later be mapped back onto
-// Our AbiWidgetClass' member functions)
+// Here we define our EditMethods which will later be mapped back onto
+// Our AbiWidgetClass' member functions
 
 EM_VOID__BOOL(alignCenter);
 EM_VOID__BOOL(alignLeft);
@@ -307,15 +356,99 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 /**************************************************************************/
 /**************************************************************************/
 
+//
 static bool
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
+	if(abi->priv->m_szFilename)
+	{
+		free(abi->priv->m_szFilename);
+	}
+	abi->priv->m_szFilename = UT_strdup(pszFile);
+	if(!abi->priv->m_bMappedToScreen)
+	{
+	  abi->priv->m_bPendingFile = true;
+	  return false;
+	}
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 	{
 		return false;
 	}
-	return ( UT_OK == pFrame->loadDocument(pszFile,IEFT_Unknown,true) );
+
+	bool res= ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
+	if(abi->priv->m_bUnlinkFileAfterLoad)
+	{
+	  unlink(pszFile);
+	  abi->priv->m_bUnlinkFileAfterLoad = false;
+	}
+	return res;
+}
+
+static gint s_abi_widget_load_file(gpointer p)
+{
+  AbiWidget * abi = (AbiWidget *) p;
+//  int i =1;
+//  while(i == 1) usleep(10000);
+  if(!abi->priv->m_bMappedToScreen)
+  {
+	abi_widget_map_to_screen(abi);
+  }
+  if(abi->priv->m_bPendingFile)
+  {
+	char * pszFile = UT_strdup(abi->priv->m_szFilename);
+	abi_widget_load_file(abi, pszFile);
+	free(pszFile);
+  }
+  return FALSE;
+}
+	  
+
+static void s_abi_widget_map_cb(GtkObject * w,  GdkEvent *event,gpointer p)
+{
+  AbiWidget * abi = ABI_WIDGET(p);
+//  int i = 1;
+//  while(i == 1) usleep(10000);
+  if(!abi->priv->m_bMappedEventProcessed)
+  {
+	  abi->priv->m_bMappedEventProcessed = true;
+//	  gtk_idle_add( (GtkFunction) s_abi_widget_load_file,(gpointer) abi);
+	  s_abi_widget_load_file((gpointer) abi);
+  }
+  else
+  {
+	  return;
+  }
+}
+
+//
+// arguments to abiwidget
+//
+static void abi_widget_get_arg (GtkObject  *object,
+				GtkArg     *arg,
+				guint	arg_id)
+{
+    AbiWidget * abi = ABI_WIDGET(object);
+	switch(arg_id)
+	{
+	    case MAP_TO_SCREEN:
+		{
+			GTK_VALUE_BOOL(*arg) = (gboolean) abi->priv->m_bMappedToScreen;
+			break;
+		}
+	    case IS_ABI_WIDGET:
+		{
+			GTK_VALUE_BOOL(*arg) = (gboolean) true;
+			break;
+		}
+	    case UNLINK_AFTER_LOAD:
+		{
+			GTK_VALUE_BOOL(*arg) = (gboolean) abi->priv->m_bUnlinkFileAfterLoad;
+			break;
+		}
+	    default:
+			break;
+	}
 }
 
 //
@@ -325,7 +458,11 @@ static void abi_widget_set_arg (GtkObject  *object,
 				GtkArg     *arg,
 				guint	arg_id)
 {
-    AbiWidget * abi = ABI_WIDGET(object);
+  g_return_if_fail (object != 0);
+
+  AbiWidget * abi = ABI_WIDGET (object);
+  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (object->klass);
+
 	switch(arg_id)
 	{
 	    case CURSOR_ON:
@@ -350,6 +487,18 @@ static void abi_widget_set_arg (GtkObject  *object,
 			 }
 			 break;
 		}
+	    case UNLINK_AFTER_LOAD:
+		{
+		     if(GTK_VALUE_BOOL (*arg) == TRUE)
+			 {
+			      abi->priv->m_bUnlinkFileAfterLoad = true;
+			 }
+			 else
+			 {
+			      abi->priv->m_bUnlinkFileAfterLoad = false;
+			 }
+			 break;
+		}
 	    case DRAW:
 		{
 		     if(GTK_VALUE_BOOL (*arg) == TRUE)
@@ -366,431 +515,435 @@ static void abi_widget_set_arg (GtkObject  *object,
 		}
 	    case ALIGNCENTER:
 		{
-			abi_widget_invoke_ex(abi,"alignCenter",0,0,0);
-			break;
+		  abi_klazz->align_center (abi);
+		  break;
 		}
 	    case ALIGNLEFT:
 		{
-			abi_widget_invoke_ex(abi,"alignLeft",0,0,0);
-			break;
-	    }
+		  abi_klazz->align_left (abi);
+		  break;
+		}
 	    case ALIGNRIGHT:
-		{
-			abi_widget_invoke_ex(abi,"alignRight",0,0,0);
-			break;
-	    }
+	      {
+		abi_klazz->align_right (abi);
+		break;
+	      }
 	    case ALIGNJUSTIFY:
 		{
-			abi_widget_invoke_ex(abi,"alignJustify",0,0,0);
-			break;
+		  abi_klazz->align_justify (abi);
+		  break;
 		}
 	    case COPY:
 		{
-			abi_widget_invoke_ex(abi,"copy",0,0,0);
-			break;
+		  abi_klazz->copy (abi);
+		  break;
 		}
 	    case CUT:
-		{
-			abi_widget_invoke_ex(abi,"cut",0,0,0);
-			break;
-	    }
+	      {
+		abi_klazz->cut (abi);
+		break;
+	      }
 	    case PASTE:
 		{
-			abi_widget_invoke_ex(abi,"paste",0,0,0);
-			break;
-	    }
+		  abi_klazz->paste (abi);
+		  break;
+		}
 	    case PASTESPECIAL:
 		{
-			abi_widget_invoke_ex(abi,"pasteSpecial",0,0,0);
-			break;
+		  abi_klazz->paste_special (abi);
+		  break;
 		}
 	    case SELECTALL:
 		{
-			abi_widget_invoke_ex(abi,"selectAll",0,0,0);
-			break;
+		  abi_klazz->select_all (abi);
+		  break;
 		}
 	    case SELECTBLOCK:
 		{
-			abi_widget_invoke_ex(abi,"selectBlock",0,0,0);
-			break;
+		  abi_klazz->select_block (abi);
+		  break;
 		}
 	    case SELECTLINE:
 		{
-			abi_widget_invoke_ex(abi,"selectLine",0,0,0);
-			break;
+		  abi_klazz->select_line (abi);
+		  break;
 		}
 	    case SELECTWORD:
 		{
-			abi_widget_invoke_ex(abi,"selectWord",0,0,0);
-			break;
+		  abi_klazz->select_word (abi);
+		  break;
 		}
 	    case INSERTDATA:
 		{
 		    const char * pszstr = GTK_VALUE_STRING (*arg);
-            
-			abi_widget_invoke_ex(abi,"insertData",pszstr,0,0);
-			break;
+		    abi_klazz->insert_data (abi, pszstr);
+		    break;
 		}
 	    case  INSERTSPACE:
 		{
-			abi_widget_invoke_ex(abi," insertSpace",0,0,0);
-			break;
+		  abi_klazz->insert_space (abi);
+		  break;
 		}
 	    case DELBOB:
 		{
-			abi_widget_invoke_ex(abi,"delBOB",0,0,0);
-			break;
+		  abi_klazz->delete_bob (abi);
+		  break;
 		}
 	    case DELBOD:
 		{
-			abi_widget_invoke_ex(abi,"delBOD",0,0,0);
-			break;
+		  abi_klazz->delete_bod (abi);
+		  break;
 		}
 	    case DELBOL:
 		{
-			abi_widget_invoke_ex(abi,"delBOL",0,0,0);
-			break;
+		  abi_klazz->delete_bol (abi);		  
+		  break;
 		}
 	    case DELBOW:
 		{
-			abi_widget_invoke_ex(abi,"delBOW",0,0,0);
-			break;
+		  abi_klazz->delete_bow (abi);
+		  break;
 		}
-	    case DELEOB:
-		{
-			abi_widget_invoke_ex(abi,"delEOB",0,0,0);
-			break;
-	    }
-	    case DELEOD:
-		{
-			abi_widget_invoke_ex(abi,"delEOD",0,0,0);
-			break;
-		}
-	    case DELEOL:
-		{
-			abi_widget_invoke_ex(abi,"delEOL",0,0,0);
-			break;
-	    }
-	    case DELEOW:
-		{
-			abi_widget_invoke_ex(abi,"delEOW",0,0,0);
-			break;
-		}
-	    case DELLEFT:
-		{
-			abi_widget_invoke_ex(abi,"delLeft",0,0,0);
-			break;
-		}
+	case DELEOB:
+	  {
+	    abi_klazz->delete_eob (abi);
+	    break;
+	  }
+	case DELEOD:
+	  {
+	    abi_klazz->delete_eod (abi);
+	    break;
+	  }
+	case DELEOL:
+	  {
+	    abi_klazz->delete_eol (abi);
+	    break;
+	  }
+	case DELEOW:
+	  {
+	    abi_klazz->delete_eow (abi);
+	    break;
+	  }
+	case DELLEFT:
+	  {
+	    abi_klazz->delete_left (abi);
+	    break;
+	  }
 	    case DELRIGHT:
-		{
-			abi_widget_invoke_ex(abi,"delRight",0,0,0);
-			break;
-	    }
+	      {
+		abi_klazz->delete_right (abi);
+		break;
+	      }
 	    case EDITHEADER:
 		{
-			abi_widget_invoke_ex(abi,"editHeader",0,0,0);
-			break;
+		  abi_klazz->edit_header (abi);
+		  break;
 		}
 	    case EDITFOOTER:
 		{
-			abi_widget_invoke_ex(abi,"editFooter",0,0,0);
-			break;
+		  abi_klazz->edit_footer (abi);
+		  break;
 		}
 	    case REMOVEHEADER:
 		{
-			abi_widget_invoke_ex(abi,"removeHeader",0,0,0);
-			break;
+		  abi_klazz->remove_header (abi);
+		  break;
 		}
 	    case REMOVEFOOTER:
 		{
-			abi_widget_invoke_ex(abi,"removeFooter",0,0,0);
-			break;
+		  abi_klazz->remove_footer (abi);
+		  break;
 		}
 	    case EXTSELBOB:
 		{
-			abi_widget_invoke_ex(abi,"extSelBOB",0,0,0);
-			break;
+		  abi_klazz->select_bob (abi);
+		  break;
 		}
 	    case EXTSELBOD:
 		{
-			abi_widget_invoke_ex(abi,"extSelBOD",0,0,0);
-			break;
+		  abi_klazz->select_bod (abi);
+		  break;
 		}
 	    case EXTSELBOL:
 		{
-			abi_widget_invoke_ex(abi,"extSelBOL",0,0,0);
-			break;
+		  abi_klazz->select_bol (abi);
+		  break;
 		}
 	    case EXTSELBOW:
 		{
-			abi_widget_invoke_ex(abi,"extSelBOW",0,0,0);
-			break;
+		  abi_klazz->select_bow (abi);
+		  break;
 		}
 	    case EXTSELEOB:
 		{
-			abi_widget_invoke_ex(abi,"extSelEOB",0,0,0);
-			break;
+		  abi_klazz->select_eob (abi);
+		  break;
 		}
 	    case EXTSELEOD:
 		{
-			abi_widget_invoke_ex(abi,"extSelEOD",0,0,0);
-			break;
+		  abi_klazz->select_eod (abi);
+		  break;
 		}
 	    case EXTSELEOL:
 		{
-			abi_widget_invoke_ex(abi,"extSelEOL",0,0,0);
-			break;
+		  abi_klazz->select_eol (abi);
+		  break;
 		}
 	    case EXTSELEOW:
 		{
-			abi_widget_invoke_ex(abi,"extSelEOW",0,0,0);
-			break;
+		  abi_klazz->select_eow (abi);
+		  break;
 		}
 	    case EXTSELLEFT:
 		{
-			abi_widget_invoke_ex(abi,"extSelLeft",0,0,0);
-			break;
+		  abi_klazz->select_left (abi);
+		  break;
 		}
+	case EXTSELRIGHT:
+	  {
+	    abi_klazz->select_right (abi);
+	    break;
+	  }
 	    case EXTSELNEXTLINE:
 		{
-			abi_widget_invoke_ex(abi,"extSelNextLine",0,0,0);
-			break;
+		  abi_klazz->select_next_line (abi);
+		  break;
 		}
 	    case EXTSELPAGEDOWN:
 		{
-			abi_widget_invoke_ex(abi,"extSelPageDown",0,0,0);
-			break;
+		  abi_klazz->select_page_down (abi);
+		  break;
 		}
 	    case EXTSELPAGEUP:
 		{
-			abi_widget_invoke_ex(abi,"extSelPageUp",0,0,0);
-			break;
+		  abi_klazz->select_page_up (abi);
+		  break;
 		}
 	    case EXTSELPREVLINE:
 		{
-			abi_widget_invoke_ex(abi,"extSelPrevLine",0,0,0);
-			break;
+		  abi_klazz->select_prev_line (abi);
+		  break;
 		}
 	    case EXTSELSCREENDOWN:
 		{
-			abi_widget_invoke_ex(abi,"extSelScreenDown",0,0,0);
-			break;
+		  abi_klazz->select_screen_down (abi);
+		  break;
 		}
 	    case EXTSELSCREENUP:
 		{
-			abi_widget_invoke_ex(abi,"extSelScreenUp",0,0,0);
-			break;
+		  abi_klazz->select_screen_up (abi);
+		  break;
 		}
 	    case TOGGLEBOLD:
 		{
-			abi_widget_invoke_ex(abi,"toggleBold",0,0,0);
-			break;
+		  abi_klazz->toggle_bold (abi);
+		  break;
 		}
 	    case TOGGLEBOTTOMLINE:
 		{
-			abi_widget_invoke_ex(abi,"toggleBottomLine",0,0,0);
-			break;
+		  abi_klazz->toggle_bottomline (abi);
+		  break;
 		}
 	    case TOGGLEINSERTMODE:
 		{
-			abi_widget_invoke_ex(abi,"toggleInsertMode",0,0,0);
-			break;
+		  abi_klazz->toggle_insert_mode (abi);
+		  break;
 		}
 	    case TOGGLEITALIC:
 		{
-			abi_widget_invoke_ex(abi,"toggleItalic",0,0,0);
-			break;
+		  abi_klazz->toggle_italic (abi);
+		  break;
 		}
 	    case TOGGLEOLINE:
 		{
-			abi_widget_invoke_ex(abi,"toggleOline",0,0,0);
-			break;
+		  abi_klazz->toggle_overline (abi);
+		  break;
 		}
 	    case TOGGLEPLAIN:
 		{
-			abi_widget_invoke_ex(abi,"togglePlain",0,0,0);
-			break;
+		  abi_klazz->toggle_plain (abi);
+		  break;
 		}
 	    case TOGGLESTRIKE:
 		{
-			abi_widget_invoke_ex(abi,"toggleStrike",0,0,0);
-			break;
+		  abi_klazz->toggle_strike (abi);
+		  break;
 		}
 	    case TOGGLESUB:
-		{
-			abi_widget_invoke_ex(abi,"toggleSub",0,0,0);
-			break;
-		}
+	      {
+		abi_klazz->toggle_sub (abi);
+		break;
+	      }
 	    case TOGGLESUPER:
 		{
-			abi_widget_invoke_ex(abi,"toggleSuper",0,0,0);
-			break;
+		  abi_klazz->toggle_super (abi);
+		  break;
 		}
 	    case TOGGLETOPLINE:
-		{
-			abi_widget_invoke_ex(abi,"toggleTopline",0,0,0);
-			break;
+	      {
+		abi_klazz->toggle_topline (abi);
+		break;
 		}
 	    case TOGGLEULINE:
 		{
-			abi_widget_invoke_ex(abi,"toggleUline",0,0,0);
-			break;
+		  abi_klazz->toggle_underline (abi);
+		  break;
 		}
 	    case TOGGLEUNINDENT:
 		{
-			abi_widget_invoke_ex(abi,"toggleUnindent",0,0,0);
-			break;
+		  abi_klazz->toggle_unindent (abi);
+		  break;
 		}
 	    case VIEWPARA:
 		{
-			abi_widget_invoke_ex(abi,"viewPara",0,0,0);
-			break;
+		  abi_klazz->view_formatting_marks (abi);
+		  break;
 		}
 	    case VIEWPRINTLAYOUT:
 		{
-			abi_widget_invoke_ex(abi,"viewPrintLayout",0,0,0);
-			break;
+		  abi_klazz->view_print_layout (abi);
+		  break;
 		}
 	    case VIEWNORMALLAYOUT:
 		{
-			abi_widget_invoke_ex(abi,"viewNormalLayout",0,0,0);
-			break;
+		  abi_klazz->view_normal_layout (abi);
+		  break;
 		}
 	    case VIEWWEBLAYOUT:
-		{
-			abi_widget_invoke_ex(abi,"viewWebLayout",0,0,0);
-			break;
+	      {
+		abi_klazz->view_online_layout (abi);
+		break;
 		}
 	    case UNDO:
-		{
-			abi_widget_invoke_ex(abi,"undo",0,0,0);
-			break;
+	      {
+		  abi_klazz->undo (abi);
+		  break;
 		}
 	    case REDO:
 		{
-			abi_widget_invoke_ex(abi,"redo",0,0,0);
-			break;
+		  abi_klazz->redo (abi);
+		  break;
 		}
 
 	    case WARPINSPTBOB:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtBOB",0,0,0);
-			break;
+		  abi_klazz->moveto_bob (abi);
+		  break;
 		}
 	    case WARPINSPTBOD:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtBOD",0,0,0);
-			break;
+		  abi_klazz->moveto_bod (abi);
+		  break;
 		}
 	    case WARPINSPTBOL:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtBOL",0,0,0);
-			break;
+		  abi_klazz->moveto_bol (abi);
+		  break;
 		}
 	    case WARPINSPTBOP:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtBOP",0,0,0);
-			break;
+		  abi_klazz->moveto_bop (abi);
+		  break;
 		}
 	    case WARPINSPTBOW:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtBOW",0,0,0);
-			break;
+		  abi_klazz->moveto_bow (abi);
+		  break;
 		}
 	    case WARPINSPTEOB:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtEOB",0,0,0);
-			break;
+		  abi_klazz->moveto_eob (abi);
+		  break;
 		}
 	    case WARPINSPTEOD:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtEOD",0,0,0);
-			break;
+		  abi_klazz->moveto_eod (abi);
+		  break;
 		}
 	    case WARPINSPTEOL:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtEOL",0,0,0);
-			break;
+		  abi_klazz->moveto_eol (abi);
+		  break;
 		}
 	    case WARPINSPTEOP:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtEOP",0,0,0);
-			break;
+		  abi_klazz->moveto_eop (abi);
+		  break;
 		}
 	    case WARPINSPTEOW:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtEOW",0,0,0);
-			break;
+		  abi_klazz->moveto_eow (abi);
+		  break;
 		}
 	    case WARPINSPTLEFT:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtLeft",0,0,0);
-			break;
+		  abi_klazz->moveto_left (abi);
+		  break;
 		}
 	    case WARPINSPTNEXTLINE:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtNextLine",0,0,0);
-			break;
+		  abi_klazz->moveto_next_line (abi);
+		  break;
 		}
 	    case WARPINSPTNEXTPAGE:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtNextPage",0,0,0);
-			break;
+		  abi_klazz->moveto_next_page (abi);
+		  break;
 		}
 	    case WARPINSPTNEXTSCREEN:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtNextScreen",0,0,0);
-			break;
+		  abi_klazz->moveto_next_screen (abi);
+		  break;
 		}
 	    case WARPINSPTPREVLINE:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtPrevLine",0,0,0);
-			break;
+		  abi_klazz->moveto_prev_line (abi);
+		  break;
 		}
 	    case WARPINSPTPREVPAGE:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtPrevPage",0,0,0);
-			break;
+		  abi_klazz->moveto_prev_page (abi);
+		  break;
 		}
 	    case WARPINSPTPREVSCREEN:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtPrevScreen",0,0,0);
-			break;
+		  abi_klazz->moveto_prev_screen (abi);
+		  break;
 		}
 	    case WARPINSPTPREVRIGHT:
 		{
-			abi_widget_invoke_ex(abi,"warpInsPtPrevRight",0,0,0);
-			break;
+		  abi_klazz->moveto_right (abi);
+		  break;
 		}
 	    case ZOOM100:
 		{
-			abi_widget_invoke_ex(abi,"zoom100",0,0,0);
-			break;
+		  abi_klazz->zoom_100 (abi);
+		  break;
 		}
 	    case ZOOM200:
 		{
-			abi_widget_invoke_ex(abi,"zoom200",0,0,0);
-			break;
+		  abi_klazz->zoom_200 (abi);
+		  break;
 		}
 	    case ZOOM50:
 		{
-			abi_widget_invoke_ex(abi,"zoom50",0,0,0);
-			break;
+		  abi_klazz->zoom_50 (abi);
+		  break;
 		}
 	    case ZOOM75:
 		{
-			abi_widget_invoke_ex(abi,"zoom75",0,0,0);
-			break;
+		  abi_klazz->zoom_75 (abi);
+		  break;
 		}
 	    case ZOOMWHOLE:
 		{
-			abi_widget_invoke_ex(abi,"zoomWhole",0,0,0);
-			break;
+		  abi_klazz->zoom_whole (abi);		  
+		  break;
 		}
 	    case ZOOMWIDTH:
 		{
-			abi_widget_invoke_ex(abi,"zoomWidth",0,0,0);
-			break;
+		  abi_klazz->zoom_width (abi);
+		  break;
 		}
 	    default:
 			break;
@@ -834,7 +987,7 @@ abi_widget_size_request (GtkWidget      *widget,
 //
 static void
 abiwidget_add(GtkContainer *container,
-		GtkWidget    *widget)
+	      GtkWidget    *widget)
 {
   g_return_if_fail (container != NULL);
   g_return_if_fail (widget != NULL);
@@ -852,7 +1005,7 @@ abiwidget_add(GtkContainer *container,
 //
 static void
 abiwidget_remove (GtkContainer *container,
-		   GtkWidget    *widget)
+		  GtkWidget    *widget)
 {
   g_return_if_fail (container != NULL);
   g_return_if_fail (widget != NULL);
@@ -895,6 +1048,7 @@ abi_widget_size_allocate (GtkWidget     *widget,
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (widget));
 	g_return_if_fail (allocation != NULL);
+
 	GtkAllocation child_allocation;
 	widget->allocation = *allocation;
 
@@ -954,7 +1108,7 @@ abi_widget_realize (GtkWidget * widget)
 
 	GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 	abi = ABI_WIDGET(widget);
-	
+
 	attributes.x = widget->allocation.x;
 	attributes.y = widget->allocation.y;
 	attributes.width = ABI_DEFAULT_WIDTH;
@@ -1057,6 +1211,16 @@ abi_widget_realize (GtkWidget * widget)
 	}
 	gtk_object_set_data(GTK_OBJECT(widget), "ic_attr", priv->ic_attr);
 	gtk_object_set_data(GTK_OBJECT(widget), "ic", priv->ic);
+	
+	//
+    // connect a signal handler to load files after abiword is mapped
+    //
+	gtk_signal_connect_after(GTK_OBJECT(widget),"map_event", 
+							 GTK_SIGNAL_FUNC (s_abi_widget_map_cb),
+							 (gpointer) abi);
+//	int i =1;
+//	while(i == 1) usleep(10000);
+	return;
 }
 
 static void
@@ -1074,9 +1238,12 @@ abi_widget_destroy (GtkObject *object)
 
 	if(abi->priv->m_pApp)
 	{
-		abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
-		delete abi->priv->m_pFrame;
-		if(!abi->priv->externalApp)
+		if(abi->priv->m_pFrame)
+		{
+			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
+			delete abi->priv->m_pFrame;
+		}
+		if(!abi->priv->m_bWithExternalAppPointer)
 		{
 			abi->priv->m_pApp->shutdown();
 			delete abi->priv->m_pApp;
@@ -1116,6 +1283,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	// set our custom destroy method
 	object_class->destroy = abi_widget_destroy; 
 	object_class->set_arg = abi_widget_set_arg;
+	object_class->get_arg = abi_widget_get_arg;
 
 	// set our custom class methods
 	widget_class->realize       = abi_widget_realize;
@@ -1237,6 +1405,8 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	gtk_object_add_arg_type ("AbiWidget::cursoron", GTK_TYPE_BOOL, GTK_ARG_READWRITE, CURSOR_ON);
 	gtk_object_add_arg_type ("AbiWidget::invoke_noargs", GTK_TYPE_STRING, GTK_ARG_READWRITE, INVOKE_NOARGS);
 	gtk_object_add_arg_type ("AbiWidget::map_to_screen", GTK_TYPE_BOOL, GTK_ARG_READWRITE, MAP_TO_SCREEN);
+	gtk_object_add_arg_type ("AbiWidget::unlink_after_load", GTK_TYPE_BOOL, GTK_ARG_READWRITE, UNLINK_AFTER_LOAD);
+	gtk_object_add_arg_type ("AbiWidget::is_abi_widget", GTK_TYPE_BOOL, GTK_ARG_READABLE, IS_ABI_WIDGET);
 	gtk_object_add_arg_type ("AbiWidget::draw", GTK_TYPE_BOOL, GTK_ARG_READWRITE, DRAW);
 	gtk_object_add_arg_type ("AbiWidget::load_file", GTK_TYPE_STRING, GTK_ARG_READWRITE, LOAD_FILE);
 	gtk_object_add_arg_type("AbiWidget::aligncenter", GTK_TYPE_BOOL, GTK_ARG_READWRITE,ALIGNCENTER);
@@ -1278,6 +1448,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
   gtk_object_add_arg_type("AbiWidget::extseleol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOL);
   gtk_object_add_arg_type("AbiWidget::extseleow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOW);
   gtk_object_add_arg_type("AbiWidget::extselleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELLEFT);
+  gtk_object_add_arg_type("AbiWidget::extselright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELRIGHT);
   gtk_object_add_arg_type("AbiWidget::extselnextline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELNEXTLINE);
   gtk_object_add_arg_type("AbiWidget::extselpagedown", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPAGEDOWN);
   gtk_object_add_arg_type("AbiWidget::extselpageup", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPAGEUP);
@@ -1337,15 +1508,19 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	priv->m_szFilename = NULL;
 	priv->ic_attr = NULL;
 	priv->ic = NULL;
+	priv->m_bMappedToScreen = false;
+	priv->m_bPendingFile = false;
+	priv->m_bMappedEventProcessed = false;
+	priv->m_bUnlinkFileAfterLoad = false;
 	if(pApp == NULL)
 	{
 		priv->m_pApp = NULL;
-		priv->externalApp = false;
+		priv->m_bWithExternalAppPointer = false;
 	}
 	else
 	{
 		priv->m_pApp = pApp;
-		priv->externalApp = true;
+		priv->m_bWithExternalAppPointer = true;
 	}
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
@@ -1354,6 +1529,9 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 		priv->m_szFilename = g_strdup (file);
 
 	abi->priv = priv;
+//	int i = 1;
+//	while(i == 1) usleep(10000);
+	return;
 }
 
 /**************************************************************************/
@@ -1362,46 +1540,75 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 extern "C" void 
 abi_widget_map_to_screen(AbiWidget * abi)
 {
-	GtkWidget * widget = GTK_WIDGET(abi);
-	// now we can set up Abi inside of this GdkWindow
+  g_return_if_fail (abi != 0);
+
+  GtkWidget * widget = GTK_WIDGET(abi);
+
+  // now we can set up Abi inside of this GdkWindow
 
 	XAP_Args *pArgs = 0;
-	if(abi->priv->externalApp)
+	abi->priv->m_bMappedToScreen = true;
+	if(!abi->priv->m_bWithExternalAppPointer)
 	{
 		if (abi->priv->m_szFilename)
 		{
+			//pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
 			pArgs = new XAP_Args (1, &abi->priv->m_szFilename);
 		}
 		else
 		{
 			pArgs = new XAP_Args(0, 0);
 		}
-		AP_UnixApp   * pApp = new AP_UnixApp (pArgs, "AbiWidget");
+
+		AP_UnixApp * pApp = static_cast<AP_UnixApp*>(XAP_App::getApp());
+
+		if ( !pApp )
+		  {
+#ifdef HAVE_GNOME
+		    pApp = new AP_UnixGnomeApp (pArgs, "AbiWidget");
+#else
+		    pApp = new AP_UnixApp (pArgs, "AbiWidget");
+#endif
+		  }
+
 		UT_ASSERT(pApp);
+		pApp->setBonoboRunning();
 		pApp->initialize();
 		abi->priv->m_pApp     = pApp;
 	}
 
-
+	// there is no AP_UnixGnomeFrame
 	AP_UnixFrame * pFrame  = new AP_UnixFrame(abi->priv->m_pApp);
+
 	UT_ASSERT(pFrame);
 	static_cast<XAP_UnixFrame *>(pFrame)->setTopLevelWindow(widget);
 	pFrame->initialize(XAP_NoMenusWindowLess);
 	abi->priv->m_pFrame   = pFrame;
-	if(!abi->priv->externalApp)
+	if(!abi->priv->m_bWithExternalAppPointer)
 	{
 		delete pArgs;
 	}
+
+	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
+	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
+
 	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
 
+#if 0
+	// disable rulers after we have a view of the document
+	pFrame->toggleRuler ( false ) ;
+#endif
 }
 
 extern "C" void 
 abi_widget_turn_on_cursor(AbiWidget * abi)
 {
-	
-    FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
-	pV->focusChange(AV_FOCUS_HERE);
+	if(abi->priv->m_pFrame)
+	{
+		g_return_if_fail (abi != 0);
+		FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
+		pV->focusChange(AV_FOCUS_HERE);
+	}
 }
 
 extern "C" GtkType
@@ -1476,6 +1683,8 @@ abi_widget_new_with_app (AP_UnixApp * pApp)
 {
 	AbiWidget * abi;
 
+	g_return_val_if_fail (pApp != 0, 0);
+
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
 	abi_widget_construct (abi, 0, pApp);
 
@@ -1497,11 +1706,19 @@ abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 	AbiWidget * abi;
 
 	g_return_val_if_fail (file != 0, 0);
+	g_return_val_if_fail (pApp != 0, 0);
 
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
-	abi_widget_construct (abi, file,pApp);
+	abi_widget_construct (abi, file, pApp);
 
 	return GTK_WIDGET (abi);
+}
+
+extern "C" XAP_Frame * 
+abi_widget_get_frame ( AbiWidget * w )
+{
+  g_return_val_if_fail ( w != NULL, NULL ) ;
+  return w->priv->m_pFrame ;
 }
 
 /**
@@ -1578,6 +1795,9 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 	function = method->getFn();
 	g_return_val_if_fail (function != 0, FALSE);
 
+	// get a valid frame
+	g_return_val_if_fail (w->priv->m_pFrame != 0, FALSE);
+
 	// obtain a valid view
 	view = w->priv->m_pFrame->getCurrentView();
 	g_return_val_if_fail (view != 0, FALSE);
@@ -1595,20 +1815,40 @@ extern "C" void
 abi_widget_draw (AbiWidget * w)
 {
 	// obtain a valid view
-	FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
-	view->draw();
+	if(w->priv->m_pFrame)
+	{
+		// obtain a valid view
+		g_return_if_fail (w != NULL);
+		FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+		view->draw();
+	}
 }
 
+extern "C" gboolean
+abi_widget_save ( AbiWidget * w, const char * fname )
+{
+  return abi_widget_save_ext ( w, fname, ".abw" ) ;
+}
 
+extern "C" gboolean 
+abi_widget_save_ext ( AbiWidget * w, const char * fname,
+		      const char * extension )
+{
+  g_return_val_if_fail ( w != NULL, FALSE );
+  g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+  g_return_val_if_fail ( fname != NULL, FALSE );
 
+  FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+  PD_Document * doc = view->getDocument () ;
 
+  // start out saving as abiword format by default
+  IEFileType ieft = IE_Exp::fileTypeForSuffix ( ".abw" ) ;
 
+  if ( extension != NULL && strlen ( extension ) > 0 && extension[0] == '.' )
+    ieft = IE_Exp::fileTypeForSuffix ( extension ) ;
 
-
-
-
-
-
+  return ( doc->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
+}
 
 
 

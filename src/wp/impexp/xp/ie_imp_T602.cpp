@@ -404,7 +404,7 @@ UT_Error IE_Imp_T602::_write_fh(UT_String & fh, UT_uint32 id, bool hea)
 {
   UT_DEBUGMSG(("T602: Append footer/header section\n"));
   const XML_Char* fhps[5];
-  const XML_Char* fps[3];
+  const XML_Char* fps[5];
   UT_String bf1;
   UT_String buff;
   int i = 0;

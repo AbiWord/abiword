@@ -139,8 +139,16 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_MsWord_Hack_Sniffer ());
 #endif
 	IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
-	IE_Exp::registerExporter(new IE_Exp_HTML4_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
+#ifdef HTML_ENABLE_HTML4
+	IE_Exp::registerExporter(new IE_Exp_HTML4_Sniffer ());
+#endif
+#ifdef HTML_ENABLE_PHTML
+	IE_Exp::registerExporter(new IE_Exp_PHTML_Sniffer ());
+#endif
+#ifdef HTML_ENABLE_MHTML
+	IE_Exp::registerExporter(new IE_Exp_MHTML_Sniffer ());
+#endif
 	IE_Exp::registerExporter(new IE_Exp_ISCII_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_KWord_1_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());

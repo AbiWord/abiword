@@ -412,9 +412,13 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 // it is possible (and it has happened) that the pointers are the same,
 // but it's two different fonts.
 //
-//	if (m_pFont != pWin32Font)
+
+	// this should work though, the allocation number is unique, even
+	// if the pointers are identical
+	if (pFont->getAllocNumber() != m_iFontAllocNo)
 	{
 		m_pFont = pWin32Font;
+		m_iFontAllocNo = pFont->getAllocNumber();
 		GR_Win32Font::Acq::selectFontIntoDC(*m_pFont, m_hdc);
 	}
 }
@@ -654,6 +658,8 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 
 	// Correct for Portrait vs Lanscape mode
 	DEVMODE pDevMode;
+	memset(&pDevMode, 0, sizeof(pDevMode));
+	pDevMode.dmSpecVersion = DM_SPECVERSION;
 	pDevMode.dmSize = sizeof(DEVMODE);
 	pDevMode.dmDriverExtra = 0;
 	pDevMode.dmFields = DM_ORIENTATION;

@@ -73,6 +73,9 @@ UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 		magic = "<abiword " ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
 		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
+	       magic = "<awml " ;
+	       if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
 		magic = "<!-- This file is an AbiWord document." ;
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_CONFIDENCE_ZILCH);
 		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_CONFIDENCE_PERFECT);
@@ -587,7 +590,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		if (trim) m_currentDataItem.del(0, trim);
 		trim = m_currentDataItem.getLength();
 		buffer = m_currentDataItem.getPointer(0);
-		while (trim >= 0 && MyIsWhite(buffer[trim])) trim--;
+		while (trim > 0 && MyIsWhite(buffer[trim])) trim--;
 		m_currentDataItem.truncate(trim+1);
 #undef MyIsWhite
  		X_CheckError(getDoc()->createDataItem((char*)m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));

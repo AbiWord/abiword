@@ -61,6 +61,8 @@ AP_Win32Dialog_Lists::static_constructor(	XAP_DialogFactory* pFactory,
 AP_Win32Dialog_Lists::AP_Win32Dialog_Lists(	XAP_DialogFactory* pDlgFactory,
 											XAP_Dialog_Id id)
 :	AP_Dialog_Lists(pDlgFactory,id),
+	m_bDestroy_says_stopupdating(false),
+	m_bAutoUpdate_happening_now(false),
 	m_pAutoUpdateLists(0),
 	_win32Dialog(this),
 	m_pPreviewWidget(0),
@@ -76,6 +78,7 @@ AP_Win32Dialog_Lists::~AP_Win32Dialog_Lists(void)
 		m_pAutoUpdateLists->stop();
 		DELETEP(m_pAutoUpdateLists);
 	}
+	DELETEP(m_pPreviewWidget);
 }
 
 /*****************************************************************/
@@ -151,7 +154,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_STATIC_FORMAT		, AP_STRING_ID_DLG_Lists_Format,
 		AP_RID_DIALOG_LIST_STATIC_FONT			, AP_STRING_ID_DLG_Lists_Font,
 		AP_RID_DIALOG_LIST_BTN_FONT				, AP_STRING_ID_DLG_Lists_ButtonFont,
-		AP_RID_DIALOG_LIST_STATIC_FORMAT		, AP_STRING_ID_DLG_Lists_DelimiterString,
+		AP_RID_DIALOG_LIST_STATIC_DECIMAL		, AP_STRING_ID_DLG_Lists_DelimiterString,
 		AP_RID_DIALOG_LIST_STATIC_LEVEL			, AP_STRING_ID_DLG_Lists_Level,
 		AP_RID_DIALOG_LIST_STATIC_START_AT		, AP_STRING_ID_DLG_Lists_Start,
 		AP_RID_DIALOG_LIST_STATIC_LIST_ALIGN	, AP_STRING_ID_DLG_Lists_Align,
@@ -629,13 +632,11 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 		AP_STRING_ID_DLG_Lists_Upper_Case_List,
 		AP_STRING_ID_DLG_Lists_Lower_Roman_List,
 		AP_STRING_ID_DLG_Lists_Upper_Roman_List
-/*
 #ifdef BIDI_ENABLED
 		,AP_STRING_ID_DLG_Lists_Arabic_List,
 
 		AP_STRING_ID_DLG_Lists_Hebrew_List
 #endif
-*/
 	};
 
 	const XAP_String_Id*	pIDs;

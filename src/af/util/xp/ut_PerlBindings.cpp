@@ -6,12 +6,17 @@
 
 #include "ut_PerlBindings.h"
 #include "ut_string_class.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
 #include "ut_debugmsg.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu.h"
 #include "ev_Menu_Actions.h"
+
+// for scandir - TODO: make me less unixish
+#include <unistd.h>
+#include <dirent.h>
 
 // HACK to no collide with perl DEBUG
 #ifdef DEBUG
@@ -21,6 +26,7 @@
 
 #include <math.h>
 #include <stdio.h> // printf
+
 
 #ifdef is_cplusplus
 extern "C" {
@@ -57,17 +63,15 @@ extern "C" {
 #endif
 
 extern "C" {
-//	void boot_DynaLoader (pTHXo_ CV* cv);
-//	void boot_AbiWord (pTHXo_ CV* cv);
-	void xs_init();
-	void boot_DynaLoader(CV* cv);
-//	void boot_AbiWord(CV* cv);
-
-//	void xs_init (pTHXo) {
+	void boot_DynaLoader(PerlInterpreter *pi, CV *cv);
+#ifdef NOT_PERL_5_8	
 	void xs_init()
+#else
+	void xs_init(PerlInterpreter * my_perl)
+#endif
 	{
 		char *file = __FILE__;
-		newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+		newXS("DynaLoader::boot_DynaLoader", (XSUBADDR_t) boot_DynaLoader, file);
 		/* we want to link to the module code, but until it's stable
 		   it's better to have it dynamically loaded...
 		   newXS("abi::boot_AbiWord", boot_AbiWord, file);*/
@@ -87,6 +91,30 @@ public:
 #ifdef PERL_DEBUG
 #define DEBUG
 #endif
+
+extern "C" {
+#if defined (__APPLE__) || defined (__FREEBSD__) || defined (__OpenBSD) \
+    || defined (_AIX) || defined(__osf__)
+ static int perl_only (struct dirent *d)
+#else
+ static int perl_only (const struct dirent *d)
+#endif
+{
+  const char *name = d->d_name;
+  
+  if( name )
+    {
+     int len = strlen (name);
+     
+     if (len >= 3)
+       {
+        if(!strcmp(name+(len-3), ".pl") || !strcmp(name+(len-3), ".pm"))
+	  return 1;
+	}
+     }
+    return 0;
+  }
+} // extern "C"
 
 UT_PerlBindings::UT_PerlBindings()
 	: impl_(new UT_PerlBindings::Impl)
@@ -116,6 +144,47 @@ UT_PerlBindings::UT_PerlBindings()
 		printf("perl_run failed with error nb: %d", exitstatus);
 		fflush(stdout);
 	}
+	
+	// interpreter loaded, now to auto-load plugins...TODO: make this less unix-ish
+	{
+	 struct dirent **namelist;
+	 int n = 0;
+	 
+	 UT_String scriptList[2];
+	 
+	 // global script dir
+	 UT_String scriptDir = XAP_App::getApp()->getAbiSuiteAppDir();
+	 scriptDir += "/scripts/";
+	 scriptList[0] = scriptDir;
+	  
+	 // user script dir
+	 scriptDir = XAP_App::getApp()->getUserPrivateDirectory();
+	 scriptDir += "/AbiWord/scripts/";
+	 scriptList[1] = scriptDir;
+	 
+	 for(UT_uint32 i = 0; i < (sizeof(scriptList)/sizeof(scriptList[0])); i++)
+	 {
+	  scriptDir = scriptList[i];
+	  
+	  n = scandir(scriptDir.c_str(), &namelist, perl_only, alphasort);
+	  UT_DEBUGMSG(("DOM: found %d PERL scripts in %s\n", n, scriptDir.c_str()));
+	  
+	  if (n > 0)
+	   {
+	    while(n--)
+	     {
+	      UT_String script (scriptDir + namelist[n]->d_name);
+	      
+	      UT_DEBUGMSG(("DOM: loading PERL script %s\n", script.c_str()));
+	      
+	      evalFile(script);
+	      
+	      free(namelist[n]);
+	      }
+	     }
+	    free(namelist);
+	    }
+    }
 }
 
 UT_PerlBindings::~UT_PerlBindings()
@@ -145,6 +214,10 @@ UT_PerlBindings::errmsg() const
 bool
 UT_PerlBindings::evalFile(const UT_String& filename)
 {
+#ifndef NOT_PERL_5_8
+    PerlInterpreter * my_perl = impl_->pPerlInt;
+#endif
+
 	UT_String code("require \"");
 
 	for (size_t i = 0; i < filename.size(); ++i)
@@ -208,11 +281,13 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 bool
 UT_PerlBindings::runCallback(const char* method)
 {
+#ifndef NOT_PERL_5_8
+    PerlInterpreter * my_perl = impl_->pPerlInt;
+#endif
 	dSP;
 	PUSHMARK(SP);
 	perl_call_pv(const_cast<char*> (method),
 				 G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
-
 	if (SvTRUE(ERRSV))
 	{
 		if (impl_)

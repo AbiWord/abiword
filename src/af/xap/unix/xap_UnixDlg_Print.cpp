@@ -77,7 +77,7 @@ void XAP_UnixDialog_Print::useStart(void)
 		m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
 		m_persistPrintDlg.bDoPrintToFile = m_bDoPrintToFile;
 		m_persistPrintDlg.bDoCollate = m_bCollate;
-
+		m_persistPrintDlg.bDoReverse = m_bReverse;
 		m_persistPrintDlg.colorSpace = m_cColorSpace;
 		m_persistPrintDlg.szPrintCommand = m_szPrintCommand;
 	}
@@ -91,6 +91,7 @@ void XAP_UnixDialog_Print::useEnd(void)
 	m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
 	m_persistPrintDlg.bDoPrintToFile = m_bDoPrintToFile;
 	m_persistPrintDlg.bDoCollate = m_bCollate;
+	m_persistPrintDlg.bDoReverse = m_bReverse;
 	m_persistPrintDlg.nCopies = m_nCopies;
 	m_persistPrintDlg.nFromPage = m_nFirstPage;
 	m_persistPrintDlg.nToPage = m_nLastPage;
@@ -185,6 +186,11 @@ static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 	gtk_widget_grab_focus (entry);
 }
 
+static void entry_range_changed( GtkWidget *entry, GtkWidget *togglebutton)
+{
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (togglebutton), TRUE);
+}
+
 void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	// raise the actual dialog and wait for an answer.
@@ -203,6 +209,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	GtkWidget *buttonSelection;
 	GtkWidget *button;
 	GtkWidget *buttonCollate;
+	GtkWidget *buttonReverse;
 	GtkWidget *buttonEmbedFonts;
 	
 	GtkWidget *spinCopies;
@@ -355,6 +362,10 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			gtk_box_pack_start (GTK_BOX (hbox), buttonCollate, TRUE, TRUE, 0);
 			gtk_widget_show (buttonCollate);
 			
+			buttonReverse = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UP_Reverse));
+			gtk_box_pack_start (GTK_BOX (hbox), buttonReverse, TRUE, TRUE, 0);
+			gtk_widget_show (buttonReverse);
+
 			buttonEmbedFonts = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UP_EmbedFonts));
 			gtk_box_pack_start (GTK_BOX (hbox), buttonEmbedFonts, TRUE, TRUE, 0);
 			gtk_widget_show (buttonEmbedFonts);
@@ -434,6 +445,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			
 			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 5);
 			//gtk_widget_grab_default (button);
+			gtk_widget_grab_focus (button);
 			gtk_widget_show (button);
 
 
@@ -491,12 +503,17 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_entry_set_text (GTK_ENTRY (entryFrom), str);
 		sprintf(str, "%d", m_persistPrintDlg.nToPage);
 		gtk_entry_set_text (GTK_ENTRY (entryTo), str);
-
+	
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonReverse), m_persistPrintDlg.bDoReverse);
 		XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &m_bEmbedFonts);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonEmbedFonts), m_bEmbedFonts);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 
+		gtk_signal_connect(GTK_OBJECT(entryFrom), "changed",
+			GTK_SIGNAL_FUNC(entry_range_changed), buttonRange);
+		gtk_signal_connect(GTK_OBJECT(entryTo), "changed",
+			GTK_SIGNAL_FUNC(entry_range_changed), buttonRange);
 
 	// get top level window and it's GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -519,6 +536,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		m_bDoPrintSelection = GTK_TOGGLE_BUTTON(buttonSelection)->active;
 		m_bDoPrintToFile	= GTK_TOGGLE_BUTTON(buttonFile)->active;
 		m_bCollate			= GTK_TOGGLE_BUTTON(buttonCollate)->active;
+		m_bReverse			= GTK_TOGGLE_BUTTON(buttonReverse)->active;
 		bool bEmbedFonts 	= m_bEmbedFonts;
 		m_bEmbedFonts		= GTK_TOGGLE_BUTTON(buttonEmbedFonts)->active;
 		m_nCopies			= gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinCopies));

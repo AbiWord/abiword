@@ -52,6 +52,12 @@ public:
 										   FontPitchEnum * pfp,
 										   bool * pbTrueType);
 	
+	UT_uint32           getAllocNumber() const {return m_iAllocNo;}
+ 
+   private:
+ 
+ 	static UT_uint32 s_iAllocCount;
+ 	UT_uint32        m_iAllocNo;
 };
 
 /*
@@ -243,7 +249,8 @@ protected:
 	XAP_App	*	m_pApp;
 	UT_uint32	m_iZoomPercentage;
 	bool		m_bLayoutResolutionModeEnabled;
-	
+ 	UT_uint32	m_iFontAllocNo;
+
 	static bool m_bRemapGlyphsMasterSwitch;
 	static bool m_bRemapGlyphsNoMatterWhat;
 	static UT_UCSChar m_ucRemapGlyphsDefault;

@@ -39,6 +39,18 @@ build::		$(REQUIRE)
 #################################################################
 
 _EXPAT_:
+ifeq ($(OS_NAME),WIN32)
+	@if [ -d $(ABI_ROOT)/../expat ]; then				\
+		echo "Found expat in peer directory";			\
+		cd $(ABI_ROOT)/../expat; 			\
+		$(ABICOPY) expat_config.h.msvc expat_config.h;	\
+		$(ABICOPY) lib/winconfig.h lib/config.h;	\
+		$(MAKE) -fMakefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
+	else										\
+		echo "ERROR -- peer expat not found";					\
+		exit 1;									\
+	fi
+else
 	@if [ -d $(ABI_ROOT)/../expat ]; then				\
 		echo "Found expat in peer directory";			\
 		if [ ! -r $(ABI_ROOT)/../expat/Makefile ]; then 	\
@@ -58,6 +70,7 @@ _EXPAT_:
 		echo "minor modifications to integrate with the AbiSource build system.";	\
 		exit 1;									\
 	fi
+endif
 
 _PSICONV_:
 	@if [ -r $(ABI_ROOT)/../psiconv ]; then 			\

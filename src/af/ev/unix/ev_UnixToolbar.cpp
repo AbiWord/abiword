@@ -498,7 +498,7 @@ bool EV_UnixToolbar::synthesize(void)
 									GDK_ACTION_COPY);
 				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
 				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+			//	GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
 				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
 				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
@@ -542,7 +542,7 @@ bool EV_UnixToolbar::synthesize(void)
 									GDK_ACTION_COPY);
 				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
 				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+//				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
 				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
 				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
