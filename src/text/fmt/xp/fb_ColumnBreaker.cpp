@@ -707,6 +707,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				        ->containsForcedPageBreak() &&
 				   (pNextColumn->getPage() == pPrevPage));
 
+			if(pCurColumn != NULL && (pCurColumn == pNextColumn))
+			{
+				pCurColumn->layout();
+			}
 			// Bump content down the columns
 			while (pCurColumn != NULL && pCurColumn != pNextColumn)
 			{

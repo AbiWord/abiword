@@ -292,7 +292,8 @@ void fp_FootnoteContainer::layout(void)
 fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout) 
 	: fp_VerticalContainer(FP_CONTAINER_ENDNOTE, pSectionLayout),
 	  m_pLocalNext(NULL),
-	  m_pLocalPrev(NULL)
+	  m_pLocalPrev(NULL),
+	  m_iY(0)
 {
 }
 
@@ -308,6 +309,21 @@ fp_EndnoteContainer::~fp_EndnoteContainer()
 	UT_DEBUGMSG(("deleting endnote container %x \n",this));
 	m_pLocalNext = NULL;
 	m_pLocalPrev = NULL;
+}
+
+void fp_EndnoteContainer::setY(UT_sint32 iY)
+{
+	if(iY == m_iY)
+	{
+		return;
+	}
+	clearScreen();
+	m_iY = iY;
+}
+
+UT_sint32 fp_EndnoteContainer::getY(void) const
+{
+	return m_iY;
 }
 
 /*! 
@@ -399,8 +415,13 @@ fl_DocSectionLayout * fp_EndnoteContainer::getDocSectionLayout(void)
  */
 void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 {
-	xxx_UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
-
+	UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	UT_DEBUGMSG(("pDA yoff %d \n",pDA->yoff));
+	const UT_Rect * pClipRect = pDA->pG->getClipRect();
+	if(pClipRect)
+	{
+		UT_DEBUGMSG(("clip y %d height %d \n",pClipRect->top, pClipRect->height));
+	}
 //
 // Only draw the lines in the clipping region.
 //

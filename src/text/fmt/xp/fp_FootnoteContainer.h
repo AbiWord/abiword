@@ -54,7 +54,6 @@ public:
 	virtual fp_Page *   getPage(void) { return m_pPage;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
-
 private:
 	fp_Page * m_pPage;
 };
@@ -77,10 +76,13 @@ public:
 	fp_EndnoteContainer * getLocalNext(void);
 	fp_EndnoteContainer * getLocalPrev(void);
 	fl_DocSectionLayout * getDocSectionLayout(void);
-
+	virtual void        setY(UT_sint32 iY);
+	virtual UT_sint32   getY(void) const;
+	
 private:
 	fp_EndnoteContainer * m_pLocalNext;
 	fp_EndnoteContainer * m_pLocalPrev;
+	UT_sint32             m_iY;
 };
 
 #endif /* FOOTNOTECONTAINER_H */

@@ -773,6 +773,10 @@ bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 		   (bSkipFootnotes && ((countEndFootnotes > 0) || isFootnote(pfFirst) || isEndFootnote(pfFirst)))))
 	{
 		pfFirst = pfFirst->getPrev();
+		if(pfFirst == NULL)
+		{
+			break;
+		}
 		if(isFootnote(pfFirst))
 			countEndFootnotes--;
 		else if(isEndFootnote(pfFirst))

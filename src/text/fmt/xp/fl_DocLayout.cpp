@@ -779,13 +779,19 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 		if(pCol)
 		{
 			pCol->addContainer(pECon);
-			pCol->layout();
+//
+// No height defined yet. Can't layout
+//
+//			pCol->layout();
 		}
 		else
 		{
 			fp_Column * pCol = static_cast<fp_Column *>(pDSL->getNewContainer(NULL));
 			pCol->addContainer(pECon);
-			pCol->layout();
+//
+// No height defined yet. Can't layout
+//
+//			pCol->layout();
 		}
 		return;
 	}

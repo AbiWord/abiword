@@ -1505,7 +1505,7 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 	}
 	posStartTable = m_pDoc->getStruxPosition(tableSDH);
 	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
-	posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+	posEndTable = m_pDoc->getStruxPosition(endTableSDH)+1;
 //
 // Got all we need, now set things up to do the delete nicely
 //
