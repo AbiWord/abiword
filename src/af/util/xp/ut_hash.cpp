@@ -141,7 +141,7 @@ UT_StringPtrMap::UT_StringPtrMap(size_t expected_cardinality)
 
 UT_StringPtrMap::~UT_StringPtrMap()
 {
-	delete[] m_pMapping;
+	DELETEPV(m_pMapping);
 }
 
 
@@ -539,6 +539,7 @@ void UT_StringPtrMap::reorg(size_t slots_to_allocate)
 	reorg_threshold = compute_reorg_threshold(m_nSlots);
 	
 	assign_slots(pOld, old_num_slot);
+	DELETEPV(pOld);
 
 	n_deleted = 0;
 }
@@ -575,6 +576,7 @@ const UT_String& UT_StringPtrMap::_key(UT_Cursor& c) const
 	}
 	// should never happen
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return 0;
 }
 
 const void* UT_StringPtrMap::_next(UT_Cursor& c) const
