@@ -70,7 +70,8 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,
 	UT_ASSERT(pToolbarActionSet);
 
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
-	UT_ASSERT(pAction);
+	if (!pAction)
+		return UT_FALSE;
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
