@@ -64,6 +64,10 @@ void AP_Win32Dialog_FontChooser::runModal(AP_Frame * pFrame)
 				 (m_bUnderline),
 				 (m_bStrikeOut)));
 	
+	/*
+	   WARNING: any changes to this function should be closely coordinated
+	   with the equivalent logic in Win32Graphics::FindFont()
+	*/
 	LOGFONT lf;
 	memset(&lf, 0, sizeof(lf));
 	

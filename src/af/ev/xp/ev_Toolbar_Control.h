@@ -43,11 +43,13 @@ public:
 
 	UT_uint32			getMaxLength(void) const;
 	UT_uint32			getPixelWidth(void) const;
+	UT_Bool				shouldSort(void) const;
 
 protected:
 	EV_Toolbar *	m_pToolbar;
 	UT_uint32		m_nLimit;
 	UT_uint32		m_nPixels;
+	UT_Bool			m_bSort;
 
 	UT_Vector		m_vecContents;
 };

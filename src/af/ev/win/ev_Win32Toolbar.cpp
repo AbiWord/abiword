@@ -380,11 +380,18 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 						tbb.iBitmap = iWidth;
 
 						// create a matching child control
+						DWORD dwStyle = WS_CHILD | WS_BORDER | WS_VISIBLE |
+								CBS_HASSTRINGS | CBS_DROPDOWN;
+
+						if ((pControl) && (pControl->shouldSort()))
+						{
+							dwStyle |= CBS_SORT;
+						}
+
 						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
 							"COMBOBOX",                    // Class name.
 							"",                            // Default text.
-							WS_CHILD | WS_BORDER | WS_VISIBLE |
-								CBS_HASSTRINGS | CBS_DROPDOWN,    // Styles and defaults.
+							dwStyle,                       // Styles and defaults.
 							0, 2, iWidth, 250,             // Size and position.
                             m_hwnd,                        // Parent window.
 							(HMENU) u,                     // ID.
@@ -409,7 +416,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 								for (UT_uint32 k=0; k < items; k++)
 								{
 									char * sz = (char *)v->getNthItem(k);
-									SendMessage(hwndCombo, CB_INSERTSTRING,(WPARAM)-1, (LPARAM)sz);
+									SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
 								}
 							}
 						}

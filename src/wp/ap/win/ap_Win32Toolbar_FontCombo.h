@@ -20,6 +20,7 @@
 #ifndef AP_WIN32TOOLBAR_FONTCOMBO_H
 #define AP_WIN32TOOLBAR_FONTCOMBO_H
 
+#include <windows.h>
 #include "ap_Types.h"
 #include "ev_Toolbar_Control.h"
 class EV_Toolbar;
@@ -37,6 +38,10 @@ public:
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, AP_Toolbar_Id id);
 
 protected:
+	static int CALLBACK				_EnumFontsProc(LPLOGFONT lplf, 
+												   LPTEXTMETRIC lptm,
+												   DWORD dwStyle, 
+												   LONG lParam);
 };
 
 #endif /* AP_WIN32TOOLBAR_FONTCOMBO_H */
