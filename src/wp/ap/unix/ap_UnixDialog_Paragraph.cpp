@@ -1062,10 +1062,12 @@ void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fal
 		case indent_NONE:
 			// clear the spin control
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), "");
+			gtk_widget_set_sensitive(m_spinbuttonBy, FALSE);
 			break;
 
 		default:
 			// set the spin control
+			gtk_widget_set_sensitive(m_spinbuttonBy, TRUE);
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 			break;
 		}
@@ -1091,10 +1093,12 @@ void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fal
 		case spacing_DOUBLE:
 			// clear the spin control
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), "");
+			gtk_widget_set_sensitive(m_spinbuttonAt, FALSE);
 			break;
 
 		default:
 			// set the spin control
+			gtk_widget_set_sensitive(m_spinbuttonAt, TRUE);
 			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
 			break;
 		}
