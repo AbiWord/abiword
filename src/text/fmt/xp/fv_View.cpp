@@ -7925,7 +7925,7 @@ fl_HdrFtrShadow *  FV_View::getEditShadow(void)
 }
 
 /*!
- *   Returns true if we're currently edditting a HdrFtr section.
+ *   Returns true if we're currently editting a HdrFtr section.
  */
 bool FV_View::isHdrFtrEdit(void)
 {
