@@ -140,7 +140,7 @@ AP_Win32Frame::~AP_Win32Frame(void)
 	DELETEP(m_pWin32Keyboard);
 	DELETEP(m_pWin32Mouse);
 	DELETEP(m_pWin32Menu);
-	UT_VECTOR_PURGEALL(EV_Win32Toolbar, m_vecWin32Toolbars);
+	UT_VECTOR_PURGEALL(EV_Win32Toolbar *, m_vecWin32Toolbars);
 }
 
 UT_Bool AP_Win32Frame::initialize(void)

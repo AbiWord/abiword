@@ -922,7 +922,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 		p += 2;
 	}
 
-	UT_VECTOR_PURGEALL(_fmtPair,v);
+	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
 	*pProps = props;
 
@@ -1079,7 +1079,7 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 		p += 2;
 	}
 
-	UT_VECTOR_PURGEALL(_fmtPair,v);
+	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
 	*pProps = props;
 

@@ -68,10 +68,10 @@ FL_DocLayout::~FL_DocLayout()
 	if (m_pDocListener)
 		delete m_pDocListener;
 
-	UT_VECTOR_PURGEALL(fp_Page, m_vecPages);
-	UT_VECTOR_PURGEALL(fl_SectionLayout, m_vecSectionLayouts);
+	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
+	UT_VECTOR_PURGEALL(fl_SectionLayout *, m_vecSectionLayouts);
 
-	UT_HASH_PURGEDATA(DG_Font, m_hashFontCache);
+	UT_HASH_PURGEDATA(DG_Font *, m_hashFontCache);
 }
 
 void FL_DocLayout::setView(FV_View* pView)

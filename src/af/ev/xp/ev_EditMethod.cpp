@@ -111,7 +111,7 @@ EV_EditMethodContainer::EV_EditMethodContainer(UT_uint32 cStatic,EV_EditMethod a
 
 EV_EditMethodContainer::~EV_EditMethodContainer()
 {
-	UT_VECTOR_PURGEALL(EV_EditMethod, m_vecDynamicEditMethods);
+	UT_VECTOR_PURGEALL(EV_EditMethod *, m_vecDynamicEditMethods);
 }
 
 UT_Bool EV_EditMethodContainer::addEditMethod(EV_EditMethod * pem)

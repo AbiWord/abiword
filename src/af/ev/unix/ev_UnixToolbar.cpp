@@ -86,7 +86,7 @@ EV_UnixToolbar::EV_UnixToolbar(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame,
 
 EV_UnixToolbar::~EV_UnixToolbar(void)
 {
-	UT_VECTOR_PURGEALL(_wd,m_vecToolbarWidgets);
+	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 	_releaseListener();
 }
 

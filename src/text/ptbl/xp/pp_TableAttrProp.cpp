@@ -31,7 +31,7 @@ pp_TableAttrProp::pp_TableAttrProp()
 
 pp_TableAttrProp::~pp_TableAttrProp()
 {
-	UT_VECTOR_PURGEALL(PP_AttrProp, m_vecTable);
+	UT_VECTOR_PURGEALL(PP_AttrProp *, m_vecTable);
 }
 
 UT_Bool pp_TableAttrProp::createAP(UT_uint32 * pSubscript)

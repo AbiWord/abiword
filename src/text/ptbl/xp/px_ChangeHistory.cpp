@@ -38,7 +38,7 @@ px_ChangeHistory::px_ChangeHistory()
 
 px_ChangeHistory::~px_ChangeHistory()
 {
-	UT_VECTOR_PURGEALL(PX_ChangeRecord,m_vecChangeRecords);
+	UT_VECTOR_PURGEALL(PX_ChangeRecord *,m_vecChangeRecords);
 }
 
 void px_ChangeHistory::_invalidateRedo(void)

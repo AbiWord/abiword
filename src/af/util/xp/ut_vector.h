@@ -69,7 +69,7 @@ protected:
 	do	{	int utv_max = v.getItemCount();				\
 			for (int utv=utv_max-1; utv>=0; utv--)		\
 			{											\
-				d* utv_p = (d*) v.getNthItem(utv);		\
+				d utv_p = (d) v.getNthItem(utv);		\
 				UT_ASSERT(utv_p);						\
 				if (utv_p)								\
 					delete utv_p;						\

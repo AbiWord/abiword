@@ -55,7 +55,7 @@ AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 AP_App::~AP_App(void)
 {
 	// run thru and destroy all frames on our window list.
-	UT_VECTOR_PURGEALL(AP_Frame, m_vecFrames);
+	UT_VECTOR_PURGEALL(AP_Frame *, m_vecFrames);
 
 	DELETEP(m_pEMC);
 	DELETEP(m_pMenuActionSet);

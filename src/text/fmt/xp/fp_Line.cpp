@@ -47,7 +47,7 @@ fp_RunInfo::fp_RunInfo(fp_Run* p)
 
 fp_Line::~fp_Line()
 {
-	UT_VECTOR_PURGEALL(fp_RunInfo, m_vecRunInfos);
+	UT_VECTOR_PURGEALL(fp_RunInfo *, m_vecRunInfos);
 }
 
 UT_Bool fp_Line::isEmpty(void) const

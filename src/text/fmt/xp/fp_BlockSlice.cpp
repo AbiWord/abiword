@@ -54,7 +54,7 @@ fp_LineInfo::fp_LineInfo(fp_Line* l, UT_sint32 _base_xoff, UT_sint32 _xoff, UT_s
 
 fp_BlockSlice::~fp_BlockSlice()
 {
-	UT_VECTOR_PURGEALL(fp_Sliver, m_vecSlivers);
+	UT_VECTOR_PURGEALL(fp_Sliver *, m_vecSlivers);
 	
 	deleteLines();
 }

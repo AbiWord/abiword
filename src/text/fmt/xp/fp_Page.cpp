@@ -70,7 +70,7 @@ fp_SectionSliceInfo::fp_SectionSliceInfo(fp_SectionSlice* p, UT_uint32 x, UT_uin
 
 fp_Page::~fp_Page()
 {
-	UT_VECTOR_PURGEALL(fp_SectionSliceInfo, m_vecSliceInfos);
+	UT_VECTOR_PURGEALL(fp_SectionSliceInfo *, m_vecSliceInfos);
 }
 
 

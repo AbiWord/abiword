@@ -38,7 +38,7 @@ fp_SectionSlice::fp_SectionSlice(UT_sint32 iWidth, UT_sint32 iHeight)
 
 fp_SectionSlice::~fp_SectionSlice()
 {
-	UT_VECTOR_PURGEALL(fp_ColumnInfo, m_vecColumnInfos);
+	UT_VECTOR_PURGEALL(fp_ColumnInfo *, m_vecColumnInfos);
 }
 
 void fp_SectionSlice::setPage(fp_Page* pPage, void* p)

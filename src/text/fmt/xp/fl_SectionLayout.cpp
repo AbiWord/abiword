@@ -62,8 +62,8 @@ fl_SectionLayout::~fl_SectionLayout()
 	// NB: be careful about the order of these
 	_purgeLayout();
 
-	UT_VECTOR_PURGEALL(fp_SectionSlice, m_vecSlices);
-	UT_VECTOR_PURGEALL(fp_Column, m_vecColumns);
+	UT_VECTOR_PURGEALL(fp_SectionSlice *, m_vecSlices);
+	UT_VECTOR_PURGEALL(fp_Column *, m_vecColumns);
 
 	if (m_pColumnSetLayout)
 		delete m_pColumnSetLayout;

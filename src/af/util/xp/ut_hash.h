@@ -81,7 +81,7 @@ protected:
 				UT_ASSERT(uth_e);						\
 				if (uth_e)								\
 				{										\
-					d* uth_p = (d*) uth_e->pData;		\
+					d uth_p = (d) uth_e->pData;			\
 					if (uth_p)							\
 						delete uth_p;					\
 				}										\

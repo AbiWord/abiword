@@ -225,7 +225,7 @@ AP_UnixFrame::~AP_UnixFrame(void)
 	DELETEP(m_pUnixKeyboard);
 	DELETEP(m_pUnixMouse);
 	DELETEP(m_pUnixMenu);
-	UT_VECTOR_PURGEALL(EV_UnixToolbar, m_vecUnixToolbars);
+	UT_VECTOR_PURGEALL(EV_UnixToolbar *, m_vecUnixToolbars);
 }
 
 UT_Bool AP_UnixFrame::initialize(void)

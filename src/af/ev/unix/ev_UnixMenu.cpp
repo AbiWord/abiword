@@ -131,7 +131,7 @@ EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame,
 
 EV_UnixMenu::~EV_UnixMenu(void)
 {
-	UT_VECTOR_PURGEALL(_wd,m_vecMenuWidgets);
+	UT_VECTOR_PURGEALL(_wd *,m_vecMenuWidgets);
 }
 
 UT_Bool EV_UnixMenu::refreshMenu(AV_View * pView)
