@@ -805,7 +805,7 @@ ifeq ($(OS_NAME), WIN32)
 #	EXTRA_LIBS += $(LIBDIR)/fribidi.lib
 	EXTRA_LIBS += $(LIBDIR)/libfribidi_s.lib
 	CFLAGS += -DFRIBIDI_EXPORTS	# symbols match
-	CFLAGS += -I$(ABI_XX_ROOT)/..	# so <fribidi/fribidi.h> works
+	CFLAGS += -I$(ABI_XX_ROOT)/../fribidi	# so <fribidi.h> works
 else
 ifeq ($(OS_NAME),QNX)
 	EXTRA_LIBS += -Bstatic -lfribidi -Bdynamic
@@ -814,6 +814,6 @@ else
 endif
 endif
 ifeq ($(OS_NAME), MINGW32)
-	CFLAGS += -I$(ABI_ROOT)/..	# so <fribidi/fribidi.h> works
+	CFLAGS += -I$(ABI_ROOT)/../fribidi	# so <fribidi.h> works
 endif
 

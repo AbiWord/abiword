@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
