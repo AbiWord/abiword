@@ -65,7 +65,7 @@ BEGIN
                     WS_HSCROLL | WS_TABSTOP
     GROUPBOX        "List",AP_RID_DIALOG_STYLES_TOP_TEXT_LIST,7,144,118,29
     COMBOBOX        AP_RID_DIALOG_STYLES_TOP_COMBO_LIST,14,153,108,60,
-                    CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+                    CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Paragraph Preview",
                     AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW,129,7,
                     229,58
