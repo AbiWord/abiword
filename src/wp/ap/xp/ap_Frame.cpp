@@ -91,8 +91,12 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 // Redraw the entire screen
 //
 		pView->updateScreen(false);
-
 	}
+
+	// Notify listeners of new zoom (to update the zoom combo in toolbar)
+	// We do this regardless of bChanged since a change from 100% zoom to
+	// "Page Width" zoom may not change the logical zoom level.
+	pView->notifyListeners(AV_CHG_ALL);
 }
 
 UT_uint32 AP_Frame::getZoomPercentage(void)

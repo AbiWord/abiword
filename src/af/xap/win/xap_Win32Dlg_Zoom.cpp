@@ -129,8 +129,7 @@ BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_WHOLE,	XAP_STRING_ID_DLG_Zoom_WholePage);
 	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_PCT,		XAP_STRING_ID_DLG_Zoom_Percent);
 	localizeControlText(XAP_RID_DIALOG_ZOOM_TEXT_PREVIEW,	XAP_STRING_ID_DLG_Zoom_PreviewFrame);
-	localizeControlText(XAP_RID_DIALOG_ZOOM_BTN_OK,			XAP_STRING_ID_DLG_OK);
-	localizeControlText(XAP_RID_DIALOG_ZOOM_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_BTN_CLOSE,		XAP_STRING_ID_DLG_Close);
 
 	// set initial state
 	checkButton(XAP_RID_DIALOG_ZOOM_RADIO_200 + m_zoomType);
@@ -177,30 +176,35 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	switch (wId)
 	{
 	case XAP_RID_DIALOG_ZOOM_RADIO_200:
-		_updatePreviewZoomPercent(200);
 		m_zoomType = XAP_Frame::z_200;
+		m_pFrame->setZoomType(m_zoomType);
+		_updatePreviewZoomPercent(200);
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_100:
-		_updatePreviewZoomPercent(100);
 		m_zoomType = XAP_Frame::z_100;
+		m_pFrame->setZoomType(m_zoomType);
+		_updatePreviewZoomPercent(100);
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_75:
-		_updatePreviewZoomPercent(75);
 		m_zoomType = XAP_Frame::z_75;
+		m_pFrame->setZoomType(m_zoomType);
+		_updatePreviewZoomPercent(75);
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_WIDTH:
 		newValue = m_pFrame->getCurrentView()->calculateZoomPercentForPageWidth();
-		_updatePreviewZoomPercent(newValue);
 		m_zoomType = XAP_Frame::z_PAGEWIDTH;
+		m_pFrame->setZoomType(m_zoomType);
+		_updatePreviewZoomPercent(newValue);
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_WHOLE:
 		newValue = m_pFrame->getCurrentView()->calculateZoomPercentForWholePage();
-		_updatePreviewZoomPercent(newValue);
 		m_zoomType = XAP_Frame::z_WHOLEPAGE;
+		m_pFrame->setZoomType(m_zoomType);
+		_updatePreviewZoomPercent(newValue);
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_PCT:
@@ -208,9 +212,10 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			if (_getValueFromEditPct(&newValue))
 			{
-				_updatePreviewZoomPercent(newValue);
 				m_zoomType = XAP_Frame::z_PERCENT;
+				m_pFrame->setZoomType(m_zoomType);
 				m_zoomPercent = newValue;
+				_updatePreviewZoomPercent(newValue);
 			}
 		}
 		return 1;
@@ -218,18 +223,13 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case XAP_RID_DIALOG_ZOOM_EDIT_PCT:
 		if (_getValueFromEditPct(&newValue))
 		{
-			_updatePreviewZoomPercent(newValue);
-			m_zoomType = XAP_Frame::z_PERCENT;
 			m_zoomPercent = newValue;
+			_updatePreviewZoomPercent(newValue);
 		}
 		return 1;
-		
-	case IDCANCEL:						// also XAP_RID_DIALOG_ZOOM_BTN_CANCEL
-		m_answer = a_CANCEL;
-		EndDialog(hWnd,0);
-		return 1;
-
-	case IDOK:							// also XAP_RID_DIALOG_ZOOM_BTN_OK
+			
+	case IDCANCEL:						// Zoom is instant-apply, so treat cancel as OK
+	case IDOK:							// also XAP_RID_DIALOG_ZOOM_BTN_CLOSE
 		m_answer = a_OK; 
 		EndDialog(hWnd,0);
 		return 1;

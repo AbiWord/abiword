@@ -127,12 +127,12 @@ BOOL XAP_Win32Dialog_HTMLOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		refreshStates();
 		return 1;
 					
-	case IDCANCEL:						// also XAP_RID_DIALOG_ZOOM_BTN_CANCEL
+	case IDCANCEL:						// also XAP_RID_DIALOG_HTMLOPTIONS_BTN_CANCEL
 		m_bShouldSave = false;
 		EndDialog(hWnd,0);
 		return 1;
 
-	case IDOK:							// also XAP_RID_DIALOG_ZOOM_BTN_OK
+	case IDOK:							// also XAP_RID_DIALOG_HTMLOPTIONS_BTN_OK
 		m_bShouldSave = true;
 		EndDialog(hWnd,0);
 		return 1;

@@ -7304,53 +7304,18 @@ static bool s_doZoomDlg(FV_View * pView)
 
 	XAP_Dialog_Zoom * pDialog
 		= static_cast<XAP_Dialog_Zoom *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_ZOOM));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
+
 	pDialog->setZoomPercent(pFrame->getZoomPercentage());
 	pDialog->setZoomType(pFrame->getZoomType());
 
 	pDialog->runModal(pFrame);
 
-	XAP_Dialog_Zoom::tAnswer ans = pDialog->getAnswer();
-	bool bOK = (ans == XAP_Dialog_Zoom::a_OK);
-
-	if (bOK)
-	{
-		UT_uint32 newZoom = pFrame->getZoomPercentage();
-		pFrame->setZoomType(pDialog->getZoomType());
-		switch(pDialog->getZoomType())
-		{
-		// special cases
-		case XAP_Frame::z_PAGEWIDTH:
-			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("width"));
-			newZoom = pView->calculateZoomPercentForPageWidth();
-			break;
-		case XAP_Frame::z_WHOLEPAGE:
-			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>("width"));
-			newZoom = pView->calculateZoomPercentForWholePage();
-			break;
-		default:
-			bNewZoom = true;
-			newZoom = pDialog->getZoomPercent();
-		}
-		if(bNewZoom)
-		{
-			UT_String_sprintf(tmp,"%d",newZoom);
-			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						   static_cast<const XML_Char*>(tmp.c_str()));
-		}
-		pFrame->quickZoom(newZoom);
-	}
-	else
-	  {
-	    // force toolbar combo refresh
-	    pFrame->setZoomPercentage(pFrame->getZoomPercentage());
-	  }
-
+	// Zoom is instant-apply, no need to worry about processing the
+	// OK/cancel state of the dialog.  Just release it.
 	pDialogFactory->releaseDialog(pDialog);
 
-	return bOK;
+	return true;
 }
 
 Defun1(zoom100)

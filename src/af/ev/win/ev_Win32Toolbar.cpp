@@ -376,27 +376,26 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					// yep, we're done 
 					SendMessage(hWnd, CB_SHOWDROPDOWN, (WPARAM) FALSE, 0);
 
-					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);		
+					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);
 									
 					if(iSelected != -1)
 					{							
-						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
-						UT_ASSERT(t);
-
-						
-						UINT u = GetDlgCtrlID(hWnd);
-						XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
-
 						static UT_UCSChar ucs_buf[COMBO_BUF_LEN];
 						char buf[COMBO_BUF_LEN];
 
-						UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
+						UT_uint32 dataLength = SendMessage(hWnd, CB_GETLBTEXT, iSelected, (LPARAM)&buf);
 
 						UT_UCS4_strcpy_char(ucs_buf, buf);
 						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
-						
+
+						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+						UT_ASSERT(t);
+
 						if(dataLength)
 						{	
+							UINT u = GetDlgCtrlID(hWnd);
+							XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
+
 							// If is a STYLE_NAME we should pass the internal one, not the localised				
 							if (id==AP_TOOLBAR_ID_FMT_STYLE)
 							{									
@@ -651,8 +650,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						
 						if (id==AP_TOOLBAR_ID_FMT_FONT)
 							dwStyle |= CBS_OWNERDRAWFIXED;
-							
-							
+
 						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
 							"COMBOBOX",						// Class name.
 							"",								// Default text.
@@ -1049,48 +1047,55 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				}					
 				
 				
-				// are we currently dropped down?
-			
 				// Find the proper non-localised text
-		
-				EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hwndCombo, GWL_USERDATA);
-				XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
-
-				EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
-				const UT_GenericVector<const char*> * v = pControl->getContents();				
-					
-				AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
-				pStyleC->repopulate();	
-				
-				//
-				// Is this a valid text?
-				//
-				UT_uint32 items = v->getItemCount();
-				bool bFound = false;
-				UT_uint32 k=0;
-				
-				for (k=0; k < items; k++)
-				{
-					if (strcmp((char *)v->getNthItem(k), szState)==0)
-					{
-						bFound = true;
-						break;
-					}	
-				}				
-				
 				char* pLocalised = (char *)szState;
-				
-				if (bFound)
+				if (id==AP_TOOLBAR_ID_FMT_STYLE)
 				{
-				 	pLocalised = (char *)v->getNthItem(k);					
-					pLocalised = (char *) pt_PieceTable::s_getLocalisedStyleName(pLocalised);
-				}								
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hwndCombo, GWL_USERDATA);
+					UINT u = GetDlgCtrlID(hwndCombo);
+					XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
+
+					XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
+
+					EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
+					const UT_GenericVector<const char*> * v = pControl->getContents();				
+						
+					AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
+					pStyleC->repopulate();	
+					
+					//
+					// Is this a valid text?
+					//
+					UT_uint32 items = v->getItemCount();
+					bool bFound = false;
+					UT_uint32 k=0;
+					
+					for (k=0; k < items; k++)
+					{
+						if (strcmp((char *)v->getNthItem(k), szState)==0)
+						{
+							bFound = true;
+							break;
+						}	
+					}
+								
+					if (bFound)
+					{
+				 		pLocalised = (char *)v->getNthItem(k);					
+						pLocalised = (char *) pt_PieceTable::s_getLocalisedStyleName(pLocalised);
+					}
+					DELETEP(pControl);	
+				}
 												
 				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pLocalised);
 				if (idx==CB_ERR)
-					SetWindowText(hwndCombo, pLocalised);							
+				{
+                    // String not found, if the combo box has an "Other..." string, select it
+					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+					pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent);
+					idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
+				}
 	
-				DELETEP(pControl);	
 				//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
 				//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 				//			 ((bGrayed) ? "disabled" : "enabled"),

@@ -59,27 +59,6 @@ XAP_Dialog_Zoom::tAnswer XAP_Dialog_Zoom::getAnswer(void) const
 
 void XAP_Dialog_Zoom::setZoomPercent(UT_uint32 zoom)
 {
-	// If the percentage is "special", make the dialog read
-	// the "special" case, otherwise use the custom percentage
-	// setting.  We can't detect the Page Width and Whole Page
-	// settings, although we could store those if we really wanted.
-
-	switch(zoom)
-	{
-	case 200:
-		m_zoomType = XAP_Frame::z_200;
-		break;
-	case 100:
-		m_zoomType = XAP_Frame::z_100;
-		break;
-	case 75:
-		m_zoomType = XAP_Frame::z_75;
-		break;
-	// can't detect PageWidth and WholePage
-	default:
-		m_zoomType = XAP_Frame::z_PERCENT;
-	}
-
 	// store the percentage within limits clipping if necessary
 	if      (zoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) m_zoomPercent = XAP_DLG_ZOOM_MINIMUM_ZOOM;
 	else if (zoom > XAP_DLG_ZOOM_MAXIMUM_ZOOM) m_zoomPercent = XAP_DLG_ZOOM_MAXIMUM_ZOOM;
