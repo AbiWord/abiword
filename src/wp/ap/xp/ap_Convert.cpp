@@ -144,11 +144,12 @@ public:
 				PS_Graphics *psGr = static_cast<PS_Graphics*>(m_pGraphics);
 				psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
 				psGr->setPageSize(printView.getPageSize().getPredefinedName());
+			}
 #endif
 				
-				if (m_pGraphics->startPrint())
-					m_bPrintedFirstPage = true;
-			}
+			if (m_pGraphics->startPrint())
+				m_bPrintedFirstPage = true;
+			
 
 			if (m_bPrintedFirstPage) {
 
