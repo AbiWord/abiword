@@ -78,6 +78,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	pCurColumn = (fp_Column*) pSL->getFirstContainer();
 	if(m_pStartPage)
 	{
+		xxx_UT_DEBUGMSG(("Layout from page %x \n",m_pStartPage));
 		pCurColumn = m_pStartPage->getNthColumnLeader(0);
 		pOuterContainer = pCurColumn->getFirstContainer();
 		if(pOuterContainer && pOuterContainer->getContainerType() == FP_CONTAINER_LINE)
@@ -200,6 +201,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				xxx_UT_DEBUGMSG(("SEVIOR: iWorkingColHeight %d iTotalContainerSpace %d iMaxColHeight %d pCurContainer %x height %d \n",iWorkingColHeight,iTotalContainerSpace,iMaxColHeight,   pCurContainer,  iContainerHeight));
 				if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
 				{
+					xxx_UT_DEBUGMSG(("fb_ColumnBreak 1 Broken Table num %d \n",((fp_TableContainer *) pOffendingContainer)->getBrokenNumber()));
 					if (_breakTable(pOffendingContainer,
 									pLastContainerToKeep,
 									iMaxColHeight, iWorkingColHeight, 
@@ -409,7 +411,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					{
 
 						pLastContainerToKeep = (fp_Container *) pOffendingContainer->getPrevContainerInSection();
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 9 %x \n",pLastContainerToKeep));
 					}
 				}
 				break;
@@ -425,7 +427,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					{
 
 						pLastContainerToKeep = pCurContainer;
-						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 9 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 10 %x \n",pLastContainerToKeep));
 						bBreakOnColumnBreak = (pL->containsForcedColumnBreak()) ;
 						bBreakOnPageBreak = pL->containsForcedPageBreak();
 						if(iWorkingColHeight >= iMaxColHeight)
@@ -479,6 +481,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 		pCurContainer = pFirstContainerToKeep;
 		fp_TableContainer * pTab = (fp_TableContainer *) pFirstContainerToKeep;
+		UT_sint32 conPos = 0;
 		while (pCurContainer)
 		{
 			if (pCurContainer->getContainer() != pCurColumn)
@@ -486,7 +489,18 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
 				pCurColumn->addContainer(pCurContainer);
 			}
-
+//
+// Code to fix order in the column
+//
+			if(pCurColumn->findCon(pCurContainer) != conPos)
+			{
+				xxx_UT_DEBUGMSG(("fb_ColumnBreaker:Container out of order. Should be at %d is at %d \n",conPos,pCurColumn->findCon(pCurContainer)));
+				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Fixing this now \n"));
+				static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
+				pCurColumn->insertConAt(pCurContainer,conPos);
+//				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+			conPos++;
 			if (pCurContainer == pLastContainerToKeep)
 				break;
 			else
@@ -630,12 +644,21 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // Loop back for next pCurContainer. Finish if pCurColumn == NULL.
 //
+		UT_DEBUGMSG(("fb_ColumnBreaker:: Finished this column, doing next now."));
 	}
 //
 // End of massive while loop here
 //
 	m_pStartPage = NULL;
 	m_bStartFromStart = false;
+//
+// Look if the next DocSectionLayout needs section break.(
+// This happens if a column height changes. If so, do it!
+//
+	if(pSL->getNextDocSection() && pSL->needsSectionBreak())
+	{
+		pSL->completeBreakSection();
+	}
 	return 0; // TODO return code
 }
 

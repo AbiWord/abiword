@@ -997,7 +997,7 @@ void fp_Column::layout(void)
 	for (UT_uint32 i=0; i < iCountContainers ; i++)
 	{
 		pContainer = (fp_Container*) getNthCon(i);
-		
+		xxx_UT_DEBUGMSG(("Column Layout: Container %d Container %x Type %d \n",i,pContainer,pContainer->getContainerType()));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
 #endif
@@ -1009,8 +1009,10 @@ void fp_Column::layout(void)
 		{
 			pContainer->clearScreen();
 		}
+		xxx_UT_DEBUGMSG(("Layout: setY %d \n",iY));
 		pContainer->setY(iY);
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		xxx_UT_DEBUGMSG(("Layout: setYInLAyoutUnits %d \n",iYLayoutUnits));
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
 #endif
 
@@ -1022,6 +1024,7 @@ void fp_Column::layout(void)
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			pTab = (fp_TableContainer *) pContainer;
+			iHeight = pTab->getHeight();
 		}
 		if(iHeight > _getMaxContainerHeight())
 		{
@@ -1033,6 +1036,7 @@ void fp_Column::layout(void)
 		{
 			iContainerHeightLayoutUnits = pTab->getHeightInLayoutUnits();
 		}
+		xxx_UT_DEBUGMSG(("Layout: container %d height %d heightLayout %d \n",i,iHeight,iContainerHeightLayoutUnits));
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 #else
 		UT_sint32 iContainerHeight = iHeight;
@@ -1063,6 +1067,7 @@ void fp_Column::layout(void)
 #endif
 		if (pPrevContainer)
 		{
+			xxx_UT_DEBUGMSG(("layout: Assigned screen height %x %d \n",pPrevContainer,iY-iPrevY));
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
 		}
 		pPrevContainer = pContainer;
@@ -1094,6 +1099,13 @@ void fp_Column::layout(void)
 	setHeightLayoutUnits(iYLayoutUnits);
 #endif
 	getPage()->columnHeightChanged(this);
+	fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+	pDSL = pDSL->getNextDocSection();
+	while(pDSL)
+	{
+		pDSL->setNeedsSectionBreak(true,NULL);
+		pDSL = pDSL->getNextDocSection();
+	}
 }
 
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const

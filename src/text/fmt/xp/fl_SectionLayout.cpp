@@ -941,7 +941,7 @@ void fl_DocSectionLayout::updateLayout(void)
 	if(needsSectionBreak())
 	{
 		m_ColumnBreaker.breakSection(this);
-		UT_ASSERT(!needsSectionBreak());
+//		UT_ASSERT(!needsSectionBreak());
 	}
 	if(needsRebuild())
 	{

@@ -1483,6 +1483,26 @@ fp_TableContainer * fp_TableContainer::getLastBrokenTable(void) const
 	return m_pLastBrokenTable;
 }
 
+UT_sint32 fp_TableContainer::getBrokenNumber(void)
+{
+	if(!isThisBroken())
+	{
+		return 0;
+	}
+	fp_TableContainer * pTab = getMasterTable()->getFirstBrokenTable();
+	UT_sint32 i = 1;
+	while(pTab && pTab != this)
+	{
+		pTab = pTab->getNext();
+		i++;
+	}
+	if(!pTab)
+	{
+		return -1;
+	}
+	return i;
+}
+		
 
 void fp_TableContainer::setFirstBrokenTable(fp_TableContainer * pBroke) 
 {

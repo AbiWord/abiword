@@ -390,6 +390,7 @@ public:
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+	UT_sint32           getBrokenNumber(void);
 	void                setToAllocation(void);
 	void                tableAttach(fp_CellContainer * pCell);
 	void                setHomogeneous (bool bIsHomogeneous);

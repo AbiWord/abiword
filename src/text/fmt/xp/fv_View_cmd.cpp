@@ -1805,6 +1805,17 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	{
 		pointBreak++;
 	}
+	secSDH = NULL;
+	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
+	if(secSDH != NULL)
+	{
+		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
+		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));
+		if(secPos == pointBreak -2)
+		{
+			pointBreak++;
+		}
+	}
 	setPoint(pointBreak-1);
 	e |= (UT_sint32)(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //
