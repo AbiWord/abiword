@@ -1207,7 +1207,7 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
     bOverwrite indicates what happens if the property/attribute is already present. If false
     (default) the style definition is ignored; if true the style value overrides the present value
 */
-bool PP_AttrProp::explodeStyle(PD_Document * pDoc, bool bOverwrite)
+bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 {
 	UT_return_val_if_fail(pDoc,false);
 	

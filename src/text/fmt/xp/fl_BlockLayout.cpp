@@ -792,7 +792,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			}
 			UT_ASSERT(style);
 			FL_ListType lType = getListTypeFromStyle( style);
-			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc);
+			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc, getView());
 			UT_DEBUGMSG(("SEVIOR: Created new list id = %d\n",id));
 			m_pDoc->addList(pAutoNum);
 		}
@@ -7794,7 +7794,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	vp.addItem("list-style"); 	vp.addItem(style);
 	xxx_UT_DEBUGMSG(("SEVIOR: Starting List with font %s \n",fFont));
 
-	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc);
+	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc, getView());
 	if (!pAutoNum)
 	{
 		// TODO Out of Mem.

@@ -206,7 +206,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -229,7 +229,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 //
 // OK now insert the cell and do the update
 //
-	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc-> getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 
 	if(iSplitType <= hori_right)
 	{
@@ -400,7 +400,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 				bool bFound = false;
 				while(!bFound)
 				{
-					curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,jTop,jLeft);
+					curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,isShowRevisions(), getRevisionLevel(), jTop,jLeft);
 					if(curSDH == NULL)
 					{
 						endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
@@ -711,7 +711,7 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 //
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
-	m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 //
 // Ok set the selection type to that of a column
 //
@@ -787,7 +787,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
-	m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 	bool bChanged = false;
 	UT_sint32 iLineType = 0;
 
@@ -1458,7 +1458,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
 	UT_sint32 i = 0;
-	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc-> getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 	if(!bBefore)
 	{
 		for(i=0;i<numRows;i++)
@@ -1511,7 +1511,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -1964,7 +1964,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -2253,7 +2253,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -2518,7 +2518,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;

@@ -27,6 +27,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_Run.h"
 #include "fp_Line.h"
+#include "fv_View.h"
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
@@ -48,9 +49,11 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						const XML_Char * lDelim,
 						const XML_Char * lDecimal,
 						FL_ListType lType,
-						PD_Document * pDoc)
+						PD_Document * pDoc,
+						FV_View * pView)
 	:	m_pParent(pParent),
 		m_pDoc(pDoc),
+		m_pView(pView),
 		m_List_Type(lType),
 		m_iID(id),
 		m_iParentID(0),
@@ -82,9 +85,11 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 						UT_uint32 start,
 						const XML_Char * lDelim,
 						const XML_Char * lDecimal,
-						PD_Document * pDoc)
+						PD_Document * pDoc,
+						FV_View * pView)
 	:	m_pParent(0),
 		m_pDoc(pDoc),
+		m_pView(pView),
 		m_List_Type(lType),
 		m_iID(id),
 		m_iParentID(parent_id),
@@ -144,7 +149,10 @@ void fl_AutoNum::fixHierarchy(void)
 	if(m_pItems.getItemCount() >0)
 	{
 		PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(0));
-		bool bFound = m_pDoc->getAttributeFromSDH(sdh,PT_PARENTID_ATTRIBUTE_NAME,&pszParentID);
+		bool bFound = m_pDoc->getAttributeFromSDH(sdh,
+												  m_pView ? m_pView->isShowRevisions() : true,
+												  m_pView ? m_pView->getRevisionLevel(): 0xffffffff,
+												  PT_PARENTID_ATTRIBUTE_NAME,&pszParentID);
 		if(bFound)
 		{
 			docParentID= atoi(pszParentID);

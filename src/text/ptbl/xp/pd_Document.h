@@ -303,9 +303,21 @@ public:
 	void					deferNotifications(void);
 	void					processDeferredNotifications(void);
 
+	// the first two of these functions just retrieve the AP with the given index; the latter two
+	// return AP that represents state of things with current revision settings
 	bool					getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const;
 	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
+
+	bool                    getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+										bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const;
+
+	bool                    getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
+											const PP_AttrProp ** ppAP,
+											PP_RevisionAttr *& pRevisions,
+											bool bShowRevisions, UT_uint32 iRevisionId,
+											bool &bHiddenRevision) const;
+	
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
 	bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
 
@@ -351,9 +363,16 @@ public:
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
 	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
 	bool                    isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts);
+
+	// the function below does exactly what the name says -- returns the AP index; in revisions mode
+	// you would need the AP at that index to have revision attribute exploded -- use one of the
+	// functions below to retrieve props and attrs correctly reflecting revisions settings
 	PT_AttrPropIndex        getAPIFromSDH(PL_StruxDocHandle sdh);
-    bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszValue);
-    bool                    getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszValue);
+    bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
+												const char * szAttribute, const char ** pszValue);
+	
+    bool                    getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
+											   const char * szProperty, const char ** pszValue);
 	// styles
 	void                    getAllUsedStyles(UT_GenericVector<PD_Style*> * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
@@ -401,8 +420,12 @@ public:
 	PL_StruxDocHandle       getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH);
 	PL_StruxDocHandle       getEndCellStruxFromCellSDH(PL_StruxDocHandle cellSDH);
 	PL_StruxDocHandle       getEndTableStruxFromTablePos(PT_DocPosition posTable);
-	bool                    getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 * numRows, UT_sint32 * numCols);
-	PL_StruxDocHandle       getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, UT_sint32 row, UT_sint32 col);
+	bool                    getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH,
+													bool bShowRevisions, UT_uint32 iRevisionLevel,
+													UT_sint32 * numRows, UT_sint32 * numCols);
+	PL_StruxDocHandle       getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
+												 bool bShowRevisions, UT_uint32 iRevisionLevel,
+												 UT_sint32 row, UT_sint32 col);
 	void                    miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes);
 
 	// List Functions
@@ -455,7 +478,7 @@ public:
 	virtual bool            rejectAllHigherRevisions(UT_uint32 iLevel);
 
 	const PP_AttrProp *     explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
-											 bool bShow, UT_uint32 iId, bool &bHiddenRevision);
+											 bool bShow, UT_uint32 iId, bool &bHiddenRevision) const;
 	
 	virtual void            purgeRevisionTable();
 

@@ -1073,20 +1073,31 @@ bool PD_Document::appendFmtMark(void)
 /*!
  * This method returns the value associated with attribute szAttribute
  * at picetable strux given by sdh.
+ * NB: attributes and props are view-specific because of revision attributes
+ * 
  \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
-\param const char * szAttribute the attribute we're looking for.
-\param const char ** pszValue the value of the attribute.
-\returns true if the attribute was present at the sdh
-Don't FREEP *pszRetValue!!!
+ \param  bool bShowRevisions -- revisions setting for the view (FV_View::isShowRevisions())
+ \param  UT_uint32 iRevisionLevel -- the revision level of the view (FV_View::getRevisionLevel())
+ \param const char * szAttribute the attribute we're looking for.
+ \param const char ** pszValue the value of the attribute.
+ \returns true if the attribute was present at the sdh
+
+ Don't FREEP *pszRetValue!!!
 */
-bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszRetValue)
+bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
+									  const char * szAttribute, const char ** pszRetValue)
 {
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
-	m_pPieceTable->getAttrProp(indexAP,&pAP);
-	UT_return_val_if_fail (pAP, false);
 	const XML_Char * pszValue = NULL;
+
+	bool bHiddenRevision = false;
+	PP_RevisionAttr * pRevisions = NULL; // must be NULL
+	getAttrProp(indexAP, &pAP,pRevisions,bShowRevisions,iRevisionLevel,bHiddenRevision);
+	delete pRevisions;
+	
+	UT_return_val_if_fail (pAP, false);
 	(pAP)->getAttribute(szAttribute, pszValue);
 	if(pszValue == NULL)
 	{
@@ -1099,6 +1110,10 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttr
 
 /*!
  * Get API fromthe supplied StruxDocHandle
+ *
+ * NB: this method does not take into account revisions settings; you either have to further process
+ *     the AP at the index using the explodeRevisions() methods or you can retrieve specific props
+ *     and attrs using getPropertyFromSDH() and getAttributeFromSDH().
  */
 PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
 {
@@ -1109,21 +1124,35 @@ PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
 /*!
  * This method returns the value associated with attribute szProperty
  * at picetable strux given by sdh.
+ * NB: attributes and props are view-specific because of revision attributes
+ * 
  \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
-\param const char * szProperty the Property we're looking for.
-\param const char ** pszValue the value of the property.
-\returns true if the property was present at the sdh
-Don't FREEP *pszRetValue!!!
+ \param  bool bShowRevisions -- revisions setting for the view (FV_View::isShowRevisions())
+ \param  UT_uint32 iRevisionLevel -- the revision level of the view (FV_View::getRevisionLevel())
+ \param const char * szProperty the Property we're looking for.
+ \param const char ** pszValue the value of the property.
+ \returns true if the property was present at the sdh
+
+ Don't FREEP *pszRetValue!!!
 */
-bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszRetValue)
+bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
+									 const char * szProperty, const char ** pszRetValue)
 {
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
-	m_pPieceTable->getAttrProp(indexAP,&pAP);
-	UT_return_val_if_fail (pAP, false);
 	const XML_Char * pszValue = NULL;
+
+	bool bHiddenRevision = false;
+	PP_RevisionAttr * pRevisions = NULL; // must be NULL
+
+	getAttrProp(indexAP, &pAP,pRevisions,bShowRevisions,iRevisionLevel,bHiddenRevision);
+
+	delete pRevisions;
+	
+	UT_return_val_if_fail (pAP, false);
 	(pAP)->getProperty(szProperty, pszValue);
+	
 	if(pszValue == NULL)
 	{
 		*pszRetValue = NULL;
@@ -1614,8 +1643,8 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition table
 \params UT_sint32 * numRows pointer to the number of rows returned
 \params UT_sint32 * numCols pointer to the number of cols returned
 */
-bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 * numRows,
-										  UT_sint32 * numCols)
+bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShowRevisions, UT_uint32 iRevisionLevel,
+										  UT_sint32 * numRows, UT_sint32 * numCols)
 {
 	UT_sint32 iRight, iBot;
 	const char * szRight = NULL;
@@ -1647,10 +1676,10 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
 				cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
-				bool bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
+				bool bres = getPropertyFromSDH(cellSDH,bShowRevisions, iRevisionLevel,"right-attach",&szRight);
 				if(szRight && *szRight)
 					iRight = atoi(szRight);
-				bres = getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
+				bres = getPropertyFromSDH(cellSDH,bShowRevisions, iRevisionLevel,"bot-attach",&szBot);
 				if(szBot && *szBot)
 					iBot = atoi(szBot);
 
@@ -1736,10 +1765,10 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		const char * szRight=NULL;
 		const char * szTop=NULL;
 		const char * szBot = NULL;
-		getPropertyFromSDH(sdhTemp,"left-attach",&szLeft);
-		getPropertyFromSDH(sdhTemp,"right-attach",&szRight);
-		getPropertyFromSDH(sdhTemp,"top-attach",&szTop);
-		getPropertyFromSDH(sdhTemp,"bot-attach",&szBot);
+		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"left-attach",&szLeft);
+		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"right-attach",&szRight);
+		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"top-attach",&szTop);
+		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"bot-attach",&szBot);
 		if(szLeft != NULL)
 		{
 			UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
@@ -1766,8 +1795,9 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 \params UT_sint32 col column location
 */
 
-PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, UT_sint32 row,
-													UT_sint32 col)
+PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
+													bool bShowRevisions, UT_uint32 iRevisionLevel,
+													UT_sint32 row, UT_sint32 col)
 {
 	UT_sint32 Top,Left,Bot,Right;
 	const char * szLeft = NULL;
@@ -1808,16 +1838,16 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 				Top = -1;
 				Right = -1;
 				Bot = -1;
-				bool bres = getPropertyFromSDH(cellSDH,"left-attach",&szLeft);
+				bool bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"left-attach",&szLeft);
 				if(szLeft && *szLeft)
 					Left = atoi(szLeft);
-				bres = getPropertyFromSDH(cellSDH,"top-attach",&szTop);
+				bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"top-attach",&szTop);
 				if(szTop && *szTop)
 					Top = atoi(szTop);
-				bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
+				bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"right-attach",&szRight);
 				if(szRight && *szRight)
 					Right = atoi(szRight);
-				bres = getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
+				bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"bot-attach",&szBot);
 				if(szBot && *szBot)
 					Bot = atoi(szBot);
 				if( (Top <= row) && (row < Bot) && (Left <= col) && (Right > col))
@@ -2461,7 +2491,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
     pAP is to be hidden or visible
 */
 const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
-												  bool bShow, UT_uint32 iId, bool &bHiddenRevision)
+												  bool bShow, UT_uint32 iId, bool &bHiddenRevision) const
 {
 	PP_AttrProp * pNewAP = NULL;
 	const XML_Char* pRevision = NULL;
@@ -3963,7 +3993,9 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 	type = static_cast<FL_ListType>(atoi(szType));
 	start = atoi(szStart);
 
-	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this);
+	// this is bad design -- layout items should not be created by the document, only by the view
+	// (the props and attrs of layout items are view-specific due to possible revisions settings !!!)
+	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this,NULL);
 	addList(pAutoNum);
 
 	return true;
@@ -4086,8 +4118,10 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 	PL_StruxDocHandle sdhSec = getLastSectionSDH();
 	const char * szLeftMargin = NULL;
 	const char * szRightMargin = NULL;
-	getPropertyFromSDH(sdhSec,"page-margin-left",&szLeftMargin);
-	getPropertyFromSDH(sdhSec,"page-margin-right",&szRightMargin);
+
+	// TODO -- probably needs to get revision settings from some view ...
+	getPropertyFromSDH(sdhSec,true,0xffffffff,"page-margin-left",&szLeftMargin);
+	getPropertyFromSDH(sdhSec,true,0xffffffff,"page-margin-right",&szRightMargin);
 	if(szLeftMargin == NULL)
 	{
 		szLeftMargin = "0.5in";
@@ -5977,6 +6011,82 @@ bool PD_Document::purgeFmtMarks()
 	return m_pPieceTable->purgeFmtMarks();
 }
 
+
+bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+							  bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
+{
+	bHiddenRevision = false;
+
+	const PP_AttrProp * pAP = NULL;
+
+	UT_return_val_if_fail(m_pDoc, false);
+	
+	if(!getAttrProp(apIndx,&pAP))
+		return false;
+
+	if(   pAP->getRevisedIndex() != 0xffffffff
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	{
+		// the revision has a valid index to an inflated AP, so we use it
+		bHiddenRevision = pAP->getRevisionHidden();
+		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
+
+		getAttrProp(revAPI, ppAP);
+		return true;
+	}
+	
+	const PP_AttrProp * pNewAP = explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+
+	if(pNewAP)
+	{
+		*ppAP = pNewAP;
+	}
+	else
+	{
+		*ppAP = pAP;
+	}
+	
+	return true;
+}
+
+
+bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
+								  const PP_AttrProp ** ppAP,
+								  PP_RevisionAttr *& pRevisions,
+								  bool bShowRevisions, UT_uint32 iRevisionId,
+								  bool &bHiddenRevision) const
+{
+	const PP_AttrProp *pAP = NULL;
+	
+	if(!getSpanAttrProp(sdh,offset,bLeftSide,&pAP))
+		return false;
+
+	if(   pAP->getRevisedIndex() != 0xffffffff
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	{
+		// the revision has a valid index to an inflated AP, so we use it
+		bHiddenRevision = pAP->getRevisionHidden();
+		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
+
+		getAttrProp(revAPI, ppAP);
+		return true;
+	}
+	
+	const PP_AttrProp * pNewAP = explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+
+	if(pNewAP)
+	{
+		*ppAP = pNewAP;
+	}
+	else
+	{
+		*ppAP = pAP;
+	}
+	
+	return true;
+}
+
+	
 
 #ifdef DEBUG
 void PD_DocumentDiff::_dump() const

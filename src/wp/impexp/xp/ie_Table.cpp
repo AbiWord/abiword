@@ -304,7 +304,7 @@ const char * ie_PartTable::getCellProp(const char * pProp)
 */
 void ie_PartTable::_setRowsCols(void)
 {
-	m_pDoc->getRowsColsFromTableSDH(m_TableSDH, &m_iNumRows, &m_iNumCols);
+	m_pDoc->getRowsColsFromTableSDH(m_TableSDH, true, 0xffffffff, &m_iNumRows, &m_iNumCols);
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -603,7 +603,7 @@ void ie_Table::setCellRowCol(UT_sint32 row, UT_sint32 col)
 	ie_PartTable * pPT = NULL;
 	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
 	UT_return_if_fail(pPT);
-	PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(pPT->getTableSDH(),row,col);
+	PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(pPT->getTableSDH(),true,0xffffffff,row,col);
 	if(cellSDH != NULL)
 	{
 		PT_AttrPropIndex api = m_pDoc->getAPIFromSDH(cellSDH);

@@ -538,7 +538,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szLineType);
 	if(szLineType == NULL || *szLineType == '\0')
 	{
 		iLineType = 0;
@@ -5101,7 +5101,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 	const XML_Char * pszHdrFtrType = NULL;
 	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
 	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
-	m_pDoc->getAttributeFromSDH(sdhHdrFtr,PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
+	m_pDoc->getAttributeFromSDH(sdhHdrFtr,isShowRevisions(),getRevisionLevel(),PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
 	PT_DocPosition	posDSL = m_pDoc->getStruxPosition(pDSL->getStruxDocHandle());
 //
 // Remove the header/footer strux

@@ -188,7 +188,7 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	}
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
-	pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	pDoc-> getRowsColsFromTableSDH(tableSDH, pView->isShowRevisions(), pView->getRevisionLevel(), &numRows, &numCols);
 	UT_UTF8String sValF;
 	if(!pView->isInTable(pos))
 	{
@@ -285,7 +285,7 @@ bool fp_FieldTableSumCols::calculateValue(void)
 	}
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
-	pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	pDoc-> getRowsColsFromTableSDH(tableSDH, pView->isShowRevisions(), pView->getRevisionLevel(), &numRows, &numCols);
 
 	UT_UTF8String sValF;
 	if(!pView->isInTable(pos))
