@@ -40,6 +40,9 @@
 #include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
 
+// icons
+#include "abi_app_48.xpm"
+
 /*****************************************************************/
 
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -627,6 +630,24 @@ GtkWidget * AP_UnixFrame::_createStatusBarWindow(void)
 void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+}
+
+void AP_UnixFrame::_setWindowIcon(void)
+{
+	// attach program icon to window
+	GtkWidget * window = getTopLevelWindow();
+	UT_ASSERT(window);
+
+	// create a pixmap from our included data
+	GdkBitmap * mask;
+	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window,
+													  &mask,
+													  NULL,
+													  abi_app_48_xpm);
+	UT_ASSERT(pixmap && mask);
+		
+	gdk_window_set_icon(window->window, NULL, pixmap, mask);
+	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
 }
 
 UT_Bool AP_UnixFrame::_replaceDocument(AD_Document * pDoc)

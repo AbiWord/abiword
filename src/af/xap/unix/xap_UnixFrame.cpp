@@ -423,8 +423,10 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 
 	gtk_widget_show(m_wVBox);
 	
-	// we let our caller decide when to show m_wTopLevelWindow.
+	// set the icon
+	_setWindowIcon();
 
+	// we let our caller decide when to show m_wTopLevelWindow.
 	return;
 }
 

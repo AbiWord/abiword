@@ -67,7 +67,7 @@ public:
 	GtkWidget *					getVBoxWidget(void) const;
 	EV_UnixMouse *				getUnixMouse(void);
 	ev_UnixKeyboard *			getUnixKeyboard(void);
-
+		
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
@@ -75,12 +75,13 @@ public:
 													UT_sint32 x, UT_sint32 y);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual void				setStatusMessage(const char * szMsg) = 0;
-	
+
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void)=0;
 	virtual GtkWidget *			_createStatusBarWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);
-
+	virtual void				_setWindowIcon(void) = 0;
+	
 	// TODO see why ev_UnixKeyboard has lowercase prefix...
 	XAP_UnixApp *				m_pUnixApp;
 	ev_UnixKeyboard *			m_pUnixKeyboard;
