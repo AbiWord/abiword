@@ -28,6 +28,7 @@
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"
+#include "gr_UnixImage.h"
 #include "xap_UnixFrame.h"
 #include "xap_UnixToolbar_Icons.h"
 #include "xap_UnixToolbar_ControlFactory.h"
@@ -51,6 +52,7 @@ AP_UnixApp::~AP_UnixApp(void)
 
 	DELETEP(m_pUnixToolbarIcons);
 	DELETEP(_pClipboard);
+	DELETEP(_pImageFactory);
 }
 
 UT_Bool AP_UnixApp::initialize(void)
@@ -110,6 +112,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	// do any thing we need here...
 
 	_pClipboard = new AP_FakeClipboard();
+	_pImageFactory = new GR_UnixImageFactory();
 	
 	/*
 	  The following call initializes the spell checker.

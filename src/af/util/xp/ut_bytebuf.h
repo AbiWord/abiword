@@ -41,6 +41,7 @@ public:
 	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
 	const UT_Byte *		getPointer(UT_uint32 position) const;				/* temporary use only */
+	UT_Bool				writeToFile(const char* pszFileName);
 	
 protected:
 	UT_Bool				_byteBuf(UT_uint32 spaceNeeded);

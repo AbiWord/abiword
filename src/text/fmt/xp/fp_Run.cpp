@@ -221,6 +221,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFi
 {
 	m_pFont = NULL;
 	m_fDecorations = 0;
+	m_iLineWidth = 0;
 
 	if (bLookupProperties)
 	{
@@ -1334,6 +1335,8 @@ void fp_ImageRun::lookupProperties(void)
 		}
 		else
 		{
+			// If we have no image, we simply insert a one-inch-square "slug"
+			
 			iImageWidth = m_pG->convertDimension("1in");
 			iImageHeight = m_pG->convertDimension("1in");
 		}

@@ -18,7 +18,7 @@
  */
  
 
-
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -177,3 +177,24 @@ void UT_ByteBuf::truncate(UT_uint32 position)
 	// TODO consider reallocing down
 }
 
+UT_Bool UT_ByteBuf::writeToFile(const char* pszFileName)
+{
+	UT_ASSERT(pszFileName && pszFileName[0]);
+	
+	FILE* fp = fopen(pszFileName, "wb");
+	if (!fp)
+	{
+		return UT_FALSE;
+	}
+
+	UT_uint32 iBytesWritten = fwrite(m_pBuf, 1, m_iSize, fp);
+	if (iBytesWritten != m_iSize)
+	{
+		fclose(fp);
+		return UT_FALSE;
+	}
+
+	fclose(fp);
+
+	return UT_TRUE;
+}

@@ -1556,9 +1556,8 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 
 	/*
 	  Get the attribute list for this offset, lookup the dataid
-	  for the image, and get the dataItem.  Inside that data
-	  item there may already be a GR_Image.  If so, use it.
-	  If not, take the data stream and create one from it.
+	  for the image, and get the dataItem.  The bytes in the
+	  dataItem should be a PNG image.
 	*/
 	
 	const PP_AttrProp * pSpanAP = NULL;
@@ -1570,21 +1569,15 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 		if (bFoundDataID && pszDataID)
 		{
 			const UT_ByteBuf* pBB = NULL;
-			void* pToken = NULL;
 
 			void* pHandle = NULL;
-			UT_Bool bFoundDataItem = m_pDoc->getDataItemDataByName(pszDataID, &pBB, &pToken, &pHandle);
+			UT_Bool bFoundDataItem = m_pDoc->getDataItemDataByName(pszDataID, &pBB, NULL, NULL);
 			if (bFoundDataItem && pBB)
 			{
-				if (pToken)
-				{
-					pImage = (GR_Image*) pToken;
-					m_pDoc->setDataItemToken(pHandle, NULL);
-				}
-				else
-				{
-					// TODO convert the bytebuf into a GR_Image
-				}
+				GR_ImageFactory* pIF = AP_App::getImageFactory();
+
+				pImage = pIF->createNewImage(pszDataID);
+				pImage->convertFromPNG(pBB);
 			}
 		}
 	}

@@ -25,7 +25,8 @@
 class GR_UnixImage : public GR_Image
 {
 public:
-	GR_UnixImage();
+	// Shaw, I assume we'll need more args to this constructor, like a GdkImage
+	GR_UnixImage(const char* pszName);
 	~GR_UnixImage();
 
 	virtual UT_sint32	getWidth(void) const;
@@ -34,6 +35,12 @@ public:
 	
 protected:
 
+};
+
+class GR_UnixImageFactory : public GR_ImageFactory
+{
+public:
+	virtual GR_Image*	createNewImage(const char* pszName);
 };
 
 #endif /* GR_UNIXIMAGE_H */

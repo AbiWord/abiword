@@ -32,6 +32,7 @@
 #include "xap_App.h"
 #include "xap_Args.h"
 #include "xap_Clipboard.h"
+#include "gr_Image.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
 #include "xap_Menu_ActionSet.h"
@@ -44,6 +45,7 @@
 /*****************************************************************/
 
 AP_Clipboard* AP_App::_pClipboard = NULL;
+GR_ImageFactory* AP_App::_pImageFactory = NULL;
 
 AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 {
@@ -376,3 +378,9 @@ AP_Clipboard* AP_App::getClipboard(void)
 {
 	return _pClipboard;
 }
+
+GR_ImageFactory* AP_App::getImageFactory(void)
+{
+	return _pImageFactory;
+}
+

@@ -3809,34 +3809,9 @@ void FV_View::_doInsertImage(GR_Image* pImg)
 	pImg->getByteBuf(&pBB);
 
 	/*
-	  There's some ugliness here.  Full disclosure:
-	  
-	  When we get an image from the clipboard, we get it as
-	  a GR_Image object.  However, the document's data item
-	  list only includes binary data arrays.  So, we extended
-	  the notion of a data item to allow us to pass a token,
-	  which we use to store the GR_Image pointer.  When the
-	  insertion of the image object eventually reaches the layout
-	  code (see fl_BlockLayout.cpp) we check to see if the dataItem
-	  has a token.  If so, we use the GR_Image stored therein, AND
-	  we remove the token from the dataItem.
-
-	  Ugly.
-
-	  The alternative is to simply convert the image to the byte buf,
-	  (which we are already doing), punt the GR_Image, and then reconstruct
-	  the GR_Image from scratch when things bubble back up to the layout
-	  code.
-
-	  Also Ugly.
-
-	  TODO TODO TODO
-	*/
-
-	/*
 	  Create the data item
 	*/
-	m_pDoc->createDataItem(szName, UT_FALSE, pBB, pImg, NULL);
+	m_pDoc->createDataItem(szName, UT_FALSE, pBB, NULL, NULL);
 
 	delete pBB;
 
@@ -3847,8 +3822,22 @@ void FV_View::_doInsertImage(GR_Image* pImg)
 		"dataid", szName,
 		NULL, NULL
 	};
+
+	// TODO could get res from img instead of hard-coded to 72
 	
-	const XML_Char**	properties = NULL;
+	char szWidth[32];
+	char szHeight[32];
+	double fWidthInInches = pImg->getWidth() / 72.0;
+	double fHeightInInches = pImg->getHeight() / 72.0;
+
+	sprintf(szWidth, "%3.2f", fWidthInInches);
+	sprintf(szHeight, "%3.2f", fHeightInInches);
+	const XML_Char*	properties[] = {
+		"width", szWidth,
+		"height", szHeight,
+		NULL, NULL
+	};
+	
 	m_pDoc->insertObject(_getPoint(), PTO_Image, attributes, properties);
 }
 
@@ -3879,6 +3868,8 @@ void FV_View::_doPaste(void)
 			UT_ASSERT(pImg);
 
 			_doInsertImage(pImg);
+
+			delete pImg;
 		}
 		else if (pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		{

@@ -28,7 +28,7 @@ RCSRCS=			Win32Main.rc
 PROGRAM=		AbiWord.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
-ABI_APPLIBS=		AbiVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv AbiXAp AbiGr AbiAp AbiSpell
+ABI_APPLIBS=		AbiVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv AbiXAp AbiGr AbiAp AbiSpell Abi_libpng Abi_zlib
 
 ABI_OTHLIBS=		expat $(ABI_JSLIBS)
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \

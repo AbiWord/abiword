@@ -86,8 +86,11 @@ ABI_OTH_INCS=	/other/expat/xmltok			\
 		/other/spell				\
 		/../dist/$(OBJDIR)/include
 
+ABI_PEER_INCS=	-I$(ABI_DEPTH)/../../libpng 		\
+		-I$(ABI_DEPTH)/../../zlib
+
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
-ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
+ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS))) $(ABI_PEER_INCS)
 
 ##################################################################
 ##################################################################

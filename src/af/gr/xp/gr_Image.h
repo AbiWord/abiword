@@ -34,12 +34,19 @@ public:
 	
 	virtual UT_sint32	getWidth(void) const = 0;
 	virtual UT_sint32	getHeight(void) const = 0;
-	virtual void		getByteBuf(UT_ByteBuf** ppBB) const = 0;
+	virtual UT_Bool		getByteBuf(UT_ByteBuf** ppBB) const = 0;
+	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB) = 0;
 
 	void				getName(char* szName) const;
 	
 protected:
 	char				m_szName[GR_IMAGE_MAX_NAME_LEN+1];
+};
+
+class GR_ImageFactory
+{
+public:
+	virtual GR_Image*	createNewImage(const char* pszName) = 0;
 };
 
 #endif /* GR_IMAGE */

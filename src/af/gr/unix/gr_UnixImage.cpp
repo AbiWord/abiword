@@ -19,8 +19,16 @@
 
 #include "gr_UnixImage.h"
 
-GR_UnixImage::GR_UnixImage()
+GR_UnixImage::GR_UnixImage(const char* pszName)
 {
+	if (szName)
+	{
+		strcpy(m_szName, szName);
+	}
+	else
+	{
+		strcpy(m_szName, "Win32Image");
+	}
 }
 
 GR_UnixImage::~GR_UnixImage()
@@ -40,5 +48,10 @@ UT_sint32	GR_UnixImage::getHeight(void) const
 void		GR_UnixImage::getByteBuf(UT_ByteBuf** ppBB) const
 {
 	// TODO convert to PNG and copy to the byte buf
+}
+
+GR_Image* GR_UnixImageFactory::createNewImage(const char* pszName)
+{
+	return new GR_UnixImage(pszName);
 }
 
