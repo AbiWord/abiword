@@ -55,8 +55,7 @@
 	#endif
 #endif
 
-#define STATIC_BUFFER_INCREMENT 30
-#define STATIC_BUFFER_INITIAL 5 * STATIC_BUFFER_INCREMENT
+#define STATIC_BUFFER_INITIAL 150
 
 UT_sint32 * fp_Line::s_pOldXs = NULL;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
@@ -1572,7 +1571,7 @@ void fp_Line::layout(void)
 					 // iOldXsSize, iOldXsSize+STATIC_BUFFER_INCREMENT, iDefinesLine + 2, __FILE__));
 
 		delete[] s_pOldXs;
-		s_iOldXsSize += STATIC_BUFFER_INCREMENT;
+		s_iOldXsSize *= 2;
 		s_pOldXs = new UT_sint32[s_iOldXsSize];
 #ifdef DEBUG
 		iRealocCount++;
