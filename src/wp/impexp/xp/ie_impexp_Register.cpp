@@ -40,6 +40,7 @@
 #include "ie_exp_Applix.h"
 #include "ie_exp_XSL-FO.h"
 #include "ie_exp_ISCII.h"
+#include "ie_exp_KWord_1.h"
 
 #include "ie_imp_AbiWord_1.h"
 #include "ie_imp_GZipAbiWord.h"
@@ -92,6 +93,9 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_HTML4_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_ISCII_Sniffer ());
+#ifdef DEBUG
+	IE_Exp::registerExporter(new IE_Exp_KWord_1_Sniffer ());
+#endif
 	IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_PalmDoc_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Psion_TextEd_Sniffer ());

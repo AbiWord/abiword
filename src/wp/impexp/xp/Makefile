@@ -44,6 +44,7 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_exp_XSL-FO.cpp			\
 			ie_exp_ISCII.cpp			\
 			ie_exp_PW.cpp				\
+			ie_exp_KWord_1.cpp			\
 			ie_imp.cpp				\
 			ie_imp_XML.cpp				\
 			ie_imp_AbiWord_1.cpp			\
