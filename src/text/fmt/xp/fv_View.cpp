@@ -5687,7 +5687,6 @@ void FV_View::updateScreen(bool bDirtyRunsOnly)
 	_draw(0,0,getWindowWidth(),getWindowHeight(),bDirtyRunsOnly,false);
 }
 
-
 bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 {
 	/*

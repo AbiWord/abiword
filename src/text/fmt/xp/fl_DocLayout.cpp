@@ -92,7 +92,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_iSkipUpdates = 0;
 	m_bDeletingLayout = false;
 	setLayoutIsFilling(false);
-	m_lid = 123;
+	m_lid = (PL_ListenerId)-1;
 	m_iGraphicTick = 0;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
@@ -502,7 +502,7 @@ void FL_DocLayout::fillLayouts(void)
 	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
 //	m_pDocListener->setHoldTableLayout(false);
 	m_pDoc->setDontImmediatelyLayout(false);
-	UT_ASSERT(m_lid != 123);
+	UT_ASSERT(m_lid != (PL_ListenerId)-1);
 	formatAll();
 	if(m_pView)
 	{
