@@ -9,9 +9,14 @@
 ; check internet connection/OS/etc and enable/disable options as appropriate
 Function .onInit
 
+  ; Load default values and parse command line
+  ${ProcessCmdLineArgs}
+
   ; Select language the installation is displayed in
   !insertmacro MUI_LANGDLL_DISPLAY
 
+  ;Reads components status from registry (in case of change or re-install)
+  !insertmacro SectionList "InitSection"
 
 !ifndef NODOWNLOADS
   ; Disable all downloads if not connected
@@ -29,6 +34,7 @@ Function .onInit
 
 ; Disable Windows 95 specific sections
 !ifdef OPT_CRTL_WIN95ONLY
+StrCmp $v_opt_enable_win95only "1" skipDisableW95dl  ; cmd line opt to skip OS check and leave enabled
 Call GetWindowsVersion
 Pop $R0
 StrCmp $R0 '95' skipDisableW95dl 0	; disable for all but Windows 95

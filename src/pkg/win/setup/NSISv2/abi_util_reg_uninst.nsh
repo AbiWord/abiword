@@ -1,21 +1,25 @@
 ;Title          AbiWord for Windows, NSIS v2 series installer script
 ;FileDesc       Adds all the registry keys for use by Windows add/remove control panel
+;               and calls the NSIS function to create the uninstaller
 
+
+!ifndef _ABI_UTIL_REG_UNINST_NSH_
+!define _ABI_UTIL_REG_UNINST_NSH_
 
 ; filename of uninstaller
-!define UninstallerFname "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
+!define REG_UNINSTALL_FNAME "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
 
 ; base uninstaller key used by control panel add/remove util to get info about Abi's uninstaller
-!define UninstallerKeyName "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}"
+!define REG_UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}"
 
 ; simply control panel reg writing
 !macro WRSU name value
-  WriteRegStr HKLM  "${UninstallerKeyName}" "${name}" '"${value}"'
+  WriteRegStr HKLM  "${REG_UNINSTALL_KEY}" "${name}" '"${value}"'
 !macroend
 !define WRSU "!insertmacro WRSU"
 
 !macro WRDU name value
-  WriteRegDWORD HKLM "${UninstallerKeyName}" "${name}" "${value}"
+  WriteRegDWORD HKLM "${REG_UNINSTALL_KEY}" "${name}" "${value}"
 !macroend
 !define WRDU "!insertmacro WRDU"
 
@@ -31,7 +35,7 @@
 ; N.B. This needs to include a version number or unique identifier.  
 ; More than one version of Abiword but only one Control Panel.  
 ${WRSU} "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
-${WRSU} "UninstallString" "$INSTDIR\${UninstallerFname}"
+${WRSU} "UninstallString" "$INSTDIR\${REG_UNINSTALL_FNAME}"
 
 
 ; Optional values
@@ -50,7 +54,9 @@ ${WRSU} "Publisher" "AbiSource Developers"
 ; ModifyPath (string) - Path and filename of the application modify program
 ; InstallSource (string) - Location where the application was installed from
 
-;${WRSU} "ModifyPath" "$INSTDIR\${UninstallerFname}"
+StrCmp $v_opt_modify_reg "0" 0 omitModifyPath
+  ${WRSU} "ModifyPath" "$v_opt_modify_path"
+omitModifyPath:
 ;${WRSU} "InstallSource" ""
 
 ; ProductID (string) - Product ID of the application
@@ -85,7 +91,7 @@ ${WRDU} "VersionMinor" ${VERSION_MINOR}
 ; NoRepair (DWORD) - 1 if the uninstaller has no option to repair the installation
 ; If both NoModify and NoRapair are set to 1, the button displays "Remove" instead of "Modify/Remove".
 
-${WRDU} "NoModify" 1
+${WRDU} "NoModify" $v_opt_modify_reg
 ${WRDU} "NoRepair" 1
 
 ; Comments (string) - misc info (1 line, no wrap or newlines)
@@ -94,4 +100,6 @@ ${WRSU} "Comments" "AbiWord is a free word processing program suitable for typin
 
 
 ; Create the Uninstaller
-WriteUninstaller "${UninstallerFname}"
+WriteUninstaller "${REG_UNINSTALL_FNAME}"
+
+!endif ; _ABI_UTIL_REG_UNINST_NSH_

@@ -23,5 +23,5 @@
 
 !define APPSET  "AbiSuite"
 !define PROGRAMEXE "AbiWord.exe"
-!define MAINPROGRAM "AbiWord\bin\${PROGRAMEXE}"
+!define MAINPROGRAM "${PRODUCT}\bin\${PROGRAMEXE}"
 

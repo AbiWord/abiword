@@ -69,10 +69,14 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 
 ; Useful inclusions
-!include Sections.nsh
+!include "Sections.nsh"
+!include "LogicLib.nsh"
+!include "abi_util_winver.nsh"
 !include "abi_util_ifexists.nsh"
 !include "abi_util_startmenu.nsh"
-
+!include "abi_util_addremove.nsh"
+!include "abi_util_deldir.nsh"
+!include "abi_parsecmdline.nsh"
 
 ; Support 'Modern' UI
 !include "abi_mui.nsh"
@@ -129,11 +133,14 @@ Section "$(TITLE_section_abi)" section_abi
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\${MAINPROGRAM}" 0 DoInstall
 	
-	MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" IDYES DoInstall
+	MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" /SD IDYES IDYES DoInstall
 	
 	Abort "$(MSG_ABORT)"
 
 	DoInstall:
+  Call GetParameters
+  pop $0
+DetailPrint "Params are ($0)"
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\${PRODUCT}\bin
@@ -144,9 +151,19 @@ Section "$(TITLE_section_abi)" section_abi
 		File "libAbiWord.dll"
 	${IfExistsEnd}
 SectionEnd
+!macro Remove_${section_abi}
+	;Removes this component
+	DetailPrint "*** Removing Main Component..."
+	Delete "$INSTDIR\${MAINPROGRAM}"
+
+	; only for MinGW builds
+	${IfExists} "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
+		Delete "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
+	${IfExistsEnd}
+!macroend
 
 
-Section "" ; invisible section that must also be installed, sets installer information
+Section "" section_core_inv ; invisible section that must also be installed, sets installer information
 	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	; TODO: determine if we should be using HKCU instead of HKLM for some of these
@@ -163,6 +180,17 @@ Section "" ; invisible section that must also be installed, sets installer infor
 	!include "abi_util_reg_uninst.nsh"
 
 SectionEnd
+!macro Remove_${section_core_inv}
+	; remove registry keys
+	DetailPrint "*** Removing Primary Registry Keys..."
+
+	; removes all the uninstaller info we added
+	DeleteRegKey HKLM "${REG_UNINSTALL_KEY}"
+
+	; removes all the stuff we store concerning this major revision of AbiWord
+	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
+
+!macroend
 
 
 Section "$(TITLE_section_abi_req)" section_abi_req
@@ -198,8 +226,44 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
+!macro Remove_${section_abi_req}
+	;Removes this component
+	DetailPrint "*** Removing Support Files and Start Menu Entry..."
+
+	; remove start menu shortcuts. (tries to get folder name from registry)
+	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
+	!insertmacro MUI_STARTMENU_GETFOLDER Application $0
+	StrCmp "$0" "" +2			; don't accidently delete all start menu entries
+      RMDir /r "$SMPROGRAMS\$0"
+
+	; remove desktop shortcut.
+	StrCpy $0 "$(SHORTCUT_NAME)"
+	Delete "$DESKTOP\$0.lnk"
+
+	; don't bother removing Dingbats font
+	; it shouldn't hurt to leave installed and user may now rely on it
+	; as its in the System directory
+
+	; remove files we installed in $INSTDIR
+	Delete "$INSTDIR\copying.txt"
+	Delete "$INSTDIR\readme.txt"
+
+	; remove string sets
+	Delete "$INSTDIR\${PRODUCT}\strings\*.strings"
+	${DeleteDirIfEmpty} "$INSTDIR\${PRODUCT}\strings"
+
+	; remove profile sets
+	Delete "$INSTDIR\${PRODUCT}\system.profile*"
+
+	; remove always (for interoperability) installed plugins 
+	Delete "$INSTDIR\${PRODUCT}\plugins\libAbi_IEG_Win32Native.dll"
+!macroend
 
 SubSectionEnd ; core
+!macro Remove_${ssection_core}
+	;Removes this component
+	DetailPrint "*** End: Removing file associations..."
+!macroend
 
 
 ; *********************************************************************
@@ -242,8 +306,30 @@ ${IfExistsEnd}
 
 ; *********************************************************************
 
-!include "abi_util_winver.nsh"
 
+;--- Add/Remove callback functions: ---
+!macro SectionList MacroName
+  ;This macro used to perform operation on multiple sections.
+  ;List all of your components in following manner here.
+
+  !insertmacro "${MacroName}" "section_abi"
+  !insertmacro "${MacroName}" "section_core_inv"
+  !insertmacro "${MacroName}" "section_abi_req"
+  !insertmacro "${MacroName}" "ssection_core"
+  !insertmacro "${MacroName}" "section_fa_shellupdate_inv"
+  !insertmacro "${MacroName}" "section_fa_abw"
+  !insertmacro "${MacroName}" "section_fa_awt"
+  !insertmacro "${MacroName}" "section_fa_zabw"
+  !insertmacro "${MacroName}" "section_fa_doc"
+  !insertmacro "${MacroName}" "section_fa_rtf"
+  !insertmacro "${MacroName}" "ssection_fa_shellupdate"
+!macroend
+
+Section -FinishComponents
+  ;Removes unselected components and writes component status to registry
+  !insertmacro SectionList "FinishSection"
+SectionEnd
+;--- End of Add/Remove callback functions ---
 
 ; Perform one time steps done at installer startup, e.g. get installer language, 
 ; check internet connection/OS/etc and enable/disable options as appropriate
@@ -271,39 +357,15 @@ Section "Uninstall"
 	Abort "Quitting the uninstall process"
 
 	DoUnInstall:
-	; remove start menu shortcuts. (tries to get folder name from registry)
-	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
-	!insertmacro MUI_STARTMENU_GETFOLDER Application $0
-	StrCmp "$0" "" +2			; don't accidently delete all start menu entries
-      RMDir /r "$SMPROGRAMS\$0"
 
-	; remove desktop shortcut.
-	StrCpy $0 "$(SHORTCUT_NAME)"
-	Delete "$DESKTOP\$0.lnk"
+	; removes all optional components
+	!insertmacro SectionList "RemoveSection"
 
-	; remove directories used (and any files in them)
-	RMDir /r "$INSTDIR"
+	; attempt to remove actual product directory
+	${DeleteDirIfEmpty} "$INSTDIR\AbiWord"
 
-	; remove registry keys
-
-	; removes all the uninstaller info we added
-	DeleteRegKey HKLM ${UninstallerKeyName}
-
-	; removes all the stuff we store concerning this major revision of AbiWord
-	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
-
-	; remove file assoications (only removes if still registered with ${appType}, tries to restore prior one
-      !define appType "${APPSET}.${PRODUCT}"
-	; our native ones
-	${RemoveFileAssociation} ".abw"  "${appType}"
-	${RemoveFileAssociation} ".awt"  "${appType}"
-	${RemoveFileAssociation} ".zabw" "${appType}"
-	; other common ones
-	${RemoveFileAssociation} ".doc"  "${appType}"
-	${RemoveFileAssociation} ".rtf"  "${appType}"
-
-	; actual apptype entry
-	DeleteRegKey HKCR "${appType}"
+	; attempt to remove install directory
+	${DeleteDirIfEmpty} "$INSTDIR"
 
 SectionEnd
 
