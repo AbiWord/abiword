@@ -246,7 +246,7 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 defined(__BEOS__) || defined (__AIX__) || \
 (defined(__linux__) && defined(__powerpc__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 1))
 
-#define ICONV_CONST const
+#define ICONV_CONST 
 #else
 #define ICONV_CONST
 #endif
