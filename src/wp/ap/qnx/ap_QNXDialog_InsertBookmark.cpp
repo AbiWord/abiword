@@ -123,7 +123,6 @@ void AP_QNXDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 
 PtWidget_t *AP_QNXDialog_InsertBookmark::_constructWindow(void)
 {
-PtWidget_t *PtLabel_msg;
 PtWidget_t *PtButton_cancel;
 PtWidget_t *PtButton_ok; 
 PtWidget_t *MainWindow;
@@ -131,89 +130,54 @@ PtWidget_t *PtButton_delete;
 int numBookmark = getExistingBookmarksCount();
 XML_Char **bookmarkList=(XML_Char **)calloc(numBookmark,sizeof(XML_Char*));
 int i;
-
 const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
-	 //Main Window
-	 PhDim_t dim = { 450,100};
-		PtArg_t args[] = {
-		Pt_ARG(Pt_ARG_DIM,&dim,0),
-		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Title).c_str(),0),
-		Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
-		Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
-		};
-
-	 //PtPane.
-	 PhArea_t area1 = { { 0, 0 }, { 450, 70 } };
-	 PtArg_t args1[] = {
-		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		};
-	// Combo Box
-	 PhArea_t area2 = { { 5, 35 }, { 440, 27 } };
-	 PtArg_t args2[] = {
-		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
-		};
-	// Dialog MSG.
-	 PhArea_t area3 = { { 5, 0 }, { 450, 20 } };
-	 PtArg_t args3[] = {
-		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Msg).c_str() , 0 ),
-		};
-
-		// Bottom most PtPane (where OK and cancel button are..)
-	 PhArea_t area4 = { { 0, 69 }, { 450, 30 } };
-	 PtArg_t args4[] = {
-		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 258,1334445470 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		Pt_ARG( Pt_ARG_FILL_COLOR, 0xc0c0c0, 0 ),
-		Pt_ARG( Pt_ARG_BASIC_FLAGS, 67056,4194303 ),
-		};
-		//Cancel button.
-	 PhArea_t area5 = { { 285, 0 }, { 50, 27 } };
-	 PtArg_t args5[] = {
-		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0 ),
-		};
-
-	//Delete button
-	PhArea_t area6 = { { 340, 0 }, { 50, 27 } };
-	PtArg_t args6[] = {
-		Pt_ARG(Pt_ARG_AREA,&area6,0),
-		Pt_ARG(Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Delete).c_str(),0)
-		};
-		//OK Button.
-	 PhArea_t area7 = { { 395, 0 }, { 50, 27 } };
-	 PtArg_t args7[] = {
-		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
-		};
+PtArg_t args[10];	
+int n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertBookmark_Title),0);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
+//	PtSetArg(&args[n++],Pt_ARG_WINDOW_MODAL_FLAGS,Pt_FALSE,ABI_MODAL_WDINWO_MANAGE_FLAGS);
+	MainWindow= PtCreateWidget(PtWindow,NULL,n,args);
+	n=0;
 	
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	MainWindow= PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
-	
-	PtCreateWidget( PtPane, NULL, sizeof(args1) / sizeof(PtArg_t), args1 );
-
-	m_comboBox = PtCreateWidget( PtComboBox, NULL, sizeof(args2) / sizeof(PtArg_t), args2 );
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertBookmark_Msg),0);
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	m_comboBox = PtCreateWidget( PtComboBox, Pt_DEFAULT_PARENT, n,args);
 
 	//Add existing bookmarks to the widget.
 	for(i=0;i<numBookmark;i++)
 	{
-	bookmarkList[i]=(XML_Char *)getNthExistingBookmark(i);
+		bookmarkList[i]=(XML_Char *)getNthExistingBookmark(i);
 	}	
 	PtListAddItems(m_comboBox,(const XML_Char **)bookmarkList,i,0);
 	free(bookmarkList);
 
-	PtLabel_msg = PtCreateWidget( PtLabel, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
 
-	PtCreateWidget( PtPane, MainWindow, sizeof(args4) / sizeof(PtArg_t), args4 );
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
 
-	PtButton_cancel = PtCreateWidget( PtButton, NULL, sizeof(args5) / sizeof(PtArg_t), args5 );
-	PtButton_delete = PtCreateWidget( PtButton, NULL,sizeof(args6) / sizeof(PtArg_t),args6);
-	PtButton_ok = PtCreateWidget( PtButton, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	PtButton_cancel = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT, n,args );
+
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Delete),0);
+	PtButton_delete = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
+
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	PtButton_ok = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
 
 	PtAddCallback(PtButton_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
 	PtAddCallback(PtButton_delete,Pt_CB_ACTIVATE,ph_event_delete,this);
