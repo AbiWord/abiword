@@ -51,14 +51,12 @@ enum _progress_flags {
 	PROGRESS_SHOW_PERCENT = 0x10	/* Allow calculation of percent value */
 };
 
-// WL: ONLY ENABLE NEW STATUS BAR ON UNIX/GTK AND WIN32 FOR NOW
-#if !defined(__BEOS__) && !defined(__APPLE__)
 #include "ut_timer.h"
 
 // NOTE BY WILL LACHANCE (Tue. Oct 22/2002): This code is less of a mess than it used to be, but
-// it is still far from ideal. We pretty much statically define every the statusbar here (and
-// have classes for each statusbar element, to boot). This leads to lots of hackish compile-time
-// defining. But it's too much work, for too little benefit, to do that right now.
+// it is still far from ideal. We pretty much statically define the statusbar here (and
+// have classes for each statusbar element, to boot). Ideally, we would somehow create a statusbar
+// at run-time using an XML file. But it's too much work, for too little benefit, to do that right now.
 
 class AP_StatusBar : public AV_Listener
 {
@@ -145,6 +143,9 @@ class AP_StatusBarField_TextInfo : public AP_StatusBarField
 	AP_StatusBarField_TextInfo(AP_StatusBar * pSB); 
 	//virtual ~AP_StatusBarField_TextInfo(void) {}
 	const UT_UCS4Char * getBufUCS() { return m_bufUCS; }
+	// getRepresentativeString: give a "guess" as to how long the string will be. it's not a big deal
+	// if it's wrong; we should resize fixed-length status bar elements in platform specific code 
+	// if they're not big enough to store the string
 	const char * getRepresentativeString(void) { return m_sRepresentativeString; }
 	_statusbar_textelement_alignment_method getAlignmentMethod() { return m_alignmentMethod; }
  protected:
@@ -173,55 +174,4 @@ class AP_StatusBarField_ProgressBar : public AP_StatusBarField
 	UT_uint32			m_ProgressFlags;
 	UT_Timer			*m_ProgressTimer;
 };
-
-#else
-
-class AP_StatusBar : public AV_Listener
-{
-public:
-	AP_StatusBar(XAP_Frame * pFrame);
-	virtual ~AP_StatusBar(void);
-
-	XAP_Frame *			getFrame(void) const;
-	GR_Graphics *		getGraphics(void) const;
-	virtual void		setView(AV_View * pView);
-	void				draw(void);
-	UT_uint32			getWidth(void) const;
-	UT_uint32			getHeight(void) const;
-	void				setWidth(UT_uint32 iWidth);
-	void				setHeight(UT_uint32 iHeight);
-	void				setStatusMessage(UT_UCSChar * pbufUCS, int redraw = true);
-	void				setStatusMessage(const char * pbuf, int redraw = true);
-	const UT_UCSChar *	getStatusMessage(void) const;
-
-	void				setStatusProgressType(int start, int end, int flags);
-	void 				setStatusProgressValue(int value);
-
-	virtual void		show(void) {} // It must be abstract, but I don't want to screw
-	virtual void		hide(void) {} // the platforms that don't implement show/hide
-	
-	/* used with AV_Listener */
-	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
-
-protected:
-	void				_draw(void);
-
-	XAP_Frame *			m_pFrame;
-	AV_View *			m_pView;
-	GR_Graphics *		m_pG;
-	UT_Dimension		m_dim;
-	UT_uint32			m_iHeight;
-	UT_uint32			m_iWidth;
-
-	UT_uint32			s_iFixedHeight;
-
-	bool				m_bInitFields;
-	UT_Vector			m_vecFields;			/* vector of 'ap_sb_Field *' */
-	void *				m_pStatusMessageField;	/* actually 'ap_sb_Field_StatusMessage *' */
-
-	UT_UCSChar			m_bufUCS[AP_MAX_MESSAGE_FIELD];
-};
-
-#endif // conditional compilation of new code
-
 #endif /* AP_STATUSBAR_H */

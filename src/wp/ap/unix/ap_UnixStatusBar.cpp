@@ -49,6 +49,21 @@ void ap_usb_TextListener::notify()
 	UT_UTF8String utf8 (buf);	
 
 	gtk_label_set_label(GTK_LABEL(m_pLabel), utf8.utf8_str());
+
+	// we conditionally update the size request, if the representative string (or an earlier
+	// size) wasn't large enough, if the element uses the representative string method
+	if (textInfo->getFillMethod() == REPRESENTATIVE_STRING) {
+		GtkRequisition requisition;
+		gint iOldWidthRequest, iOldHeightRequest;
+		gtk_widget_get_size_request(m_pLabel, &iOldWidthRequest, &iOldHeightRequest);
+		gtk_widget_set_size_request(m_pLabel, -1, -1);		
+		gtk_widget_size_request(m_pLabel, &requisition);
+		if (requisition.width > iOldWidthRequest)			
+			gtk_widget_set_size_request(m_pLabel, requisition.width, -1);		
+		else
+			gtk_widget_set_size_request(m_pLabel, iOldWidthRequest, -1);		
+			
+	}
 }
 
 //////////////////////////////////////////////////////////////////
