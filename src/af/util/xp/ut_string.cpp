@@ -329,7 +329,7 @@ UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szS
 
 	UT_uint32 i = 0;
 
-	while (i < nLen - 1)
+	while (i < nLen)
 	{
 		szDest[i] = szSource[i];
 

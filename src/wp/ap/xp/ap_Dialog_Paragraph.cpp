@@ -475,7 +475,7 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			pTmp = (XML_Char *) calloc(nSize + 2, sizeof(XML_Char));
 			UT_ASSERT(pTmp);
 
-			UT_XML_strncpy(pTmp, nSize + 1, pString);
+			UT_XML_strncpy(pTmp, nSize, pString);
 			// stick a '+' at the end
 			pTmp[nSize] = '+';
 			UT_XML_cloneString(p->val, pTmp);
