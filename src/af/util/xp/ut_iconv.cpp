@@ -107,7 +107,7 @@ const char * ucs2Internal ()
 #if defined(WIN32)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
-  return "UCS-LE";
+  return "UCS-2LE";
 #else
   // general case, found by hub and dom
   if (XAP_EncodingManager__swap_stou)
