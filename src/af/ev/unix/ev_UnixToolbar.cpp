@@ -73,14 +73,23 @@ public:									// we create...
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 
+		if (wd->m_blockSignal)
+			return;
+		
 		gchar * buffer = gtk_entry_get_text(widget);
-		UT_uint32 length = widget->text_length;
- 
-		UT_UCSChar * text = (UT_UCSChar *) buffer;
-		if (!wd->m_blockSignal)
-			if (wd->m_widget)
-				wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, length);
+		UT_uint32 length = strlen(buffer);
+		UT_ASSERT(length > 0);
 
+		char buf[1024];
+		UT_ASSERT(length < 1024);
+		strcpy(buf,buffer);
+
+		// TODO fix cast here or figure our 1- vs. 2-byte strings....
+
+		UT_UCSChar * text = (UT_UCSChar *) buf;
+
+		if (wd->m_widget)
+			wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, length);
 	};
 
 	// block the changed signals on popdown (so we don't get real-time formatting
