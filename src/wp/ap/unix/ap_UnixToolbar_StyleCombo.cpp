@@ -38,7 +38,7 @@ AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
 
-	m_nPixels = 90;		// TODO: do a better calculation
+	m_nPixels = 65;		// TODO: do a better calculation
 	m_nLimit = 20;
 }
 

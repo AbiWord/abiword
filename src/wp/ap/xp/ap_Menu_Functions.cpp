@@ -395,6 +395,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Bars)
 	{
 	case AP_MENU_ID_VIEW_TB_STD:
 	case AP_MENU_ID_VIEW_TB_FORMAT:
+	case AP_MENU_ID_VIEW_TB_EXTRA:
 	case AP_MENU_ID_VIEW_STATUSBAR:
 		// TODO: implement XAP methods to check, toggle state
 		s = EV_MIS_Gray;

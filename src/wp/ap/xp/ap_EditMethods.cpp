@@ -236,6 +236,7 @@ public:
 
 	static EV_EditMethod_Fn viewStd;
 	static EV_EditMethod_Fn viewFormat;
+	static EV_EditMethod_Fn viewExtra;
 	static EV_EditMethod_Fn viewRuler;
 	static EV_EditMethod_Fn viewStatus;
 	static EV_EditMethod_Fn viewPara;
@@ -522,6 +523,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(viewStd),				0,		""),
 	EV_EditMethod(NF(viewFormat),			0,		""),
+	EV_EditMethod(NF(viewExtra),			0,		""),
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewPara),				0,		""),
@@ -3851,6 +3853,16 @@ Defun1(viewFormat)
 
 	// TODO: synch this implementation with ap_GetState_Bars
 	s_TellNotImplemented(pFrame, "Toggle formatting toolbar", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(viewExtra)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	// TODO: synch this implementation with ap_GetState_Bars
+	s_TellNotImplemented(pFrame, "Toggle extra toolbar", __LINE__);
 	return UT_TRUE;
 }
 

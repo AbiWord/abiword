@@ -392,9 +392,10 @@ UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 		beh = GNOME_DOCK_ITEM_BEH_LOCKED;
 
 	// HACK: UGLIEST HACK OF THE CENTURY!!
-	// HACK: I want the GNOME_DOCK_ITEM_NEVER_VERTICAL for all
-	// HACK: the toolbars but the first one...
-	if (nbBands != 0)
+	// HACK: I want the GNOME_DOCK_ITEM_NEVER_VERTICAL for the first
+	// HACK: toolbar of the second band... (this must to be set in the xp
+	// HACK: toolbar description)
+	if (nbBands == 1 && nbToolbarsInBand == 0)
 		beh = static_cast<GnomeDockItemBehavior> (beh | GNOME_DOCK_ITEM_BEH_NEVER_VERTICAL);
 
 	buf = g_strdup_printf("Toolbar %d-%d", nbBands, ++nbToolbarsInBand);

@@ -62,7 +62,6 @@ AP_UnixGnomeDialog_WordCount::~AP_UnixGnomeDialog_WordCount(void)
 GtkWidget * AP_UnixGnomeDialog_WordCount::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr;	// used for conversions
 
 	ConstructWindowName();
 	m_windowMain = gnome_dialog_new (m_WindowName, pSS->getValue(XAP_STRING_ID_DLG_Update),
