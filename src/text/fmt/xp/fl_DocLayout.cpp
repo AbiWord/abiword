@@ -469,13 +469,13 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 				
 		case PTX_Section:
 		default:
-			UT_ASSERT((UT_SHOULD_NOT_HAPPEN)); 
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); 
 			// We asked for a block, and we got a section.  Bad
 		}
 	}
 	else
 	{
-		UT_ASSERT((0));
+		UT_ASSERT(0);
 		return NULL;
 	}
 
@@ -491,12 +491,25 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		{
 			pShadow = ((fl_HdrFtrSectionLayout *) pBL->getSectionLayout())->getFirstShadow();
 		}
+		fl_BlockLayout * ppBL = NULL;
 		if(pShadow != NULL)
-			pBL = pShadow->findMatchingBlock(pBL);
+			ppBL = pShadow->findMatchingBlock(pBL);
 		else
 		{
 			UT_DEBUGMSG(("SEVIOR: No Shadow! But there should be ! \n"));
 			//	UT_ASSERT(0);
+		}
+//
+// FIXME: Header/Footers
+// some failsafe code should not trigger. Header/footer still not perfect.
+//
+		if(!ppBL)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+		else
+		{
+			pBL = ppBL;
 		}
 	}
 	UT_ASSERT(pBL);

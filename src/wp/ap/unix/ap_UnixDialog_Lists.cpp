@@ -90,14 +90,29 @@ static void s_styleChangedNumbered (GtkWidget * widget, AP_UnixDialog_Lists * me
 	me->styleChanged ( 2 );
 }
 
-
-
+/*!
+ * User has changed their list type selection.
+ */
 static void s_typeChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
-        if(me->dontUpdate())
-	        return;
+	if(me->dontUpdate())
+		return;
   	me->setDirty();
-	me->setXPFromLocal();
+	me->setListTypeFromWidget(); // Use this to set m_newListType
+	me->fillUncustomizedValues(); // Use defaults to start.
+	me->loadXPDataIntoLocal(); // Load them into our member variables
+	me->previewExposed();
+}
+
+/*!
+ * A value in the Customized box has changed.
+ */
+static void s_valueChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
+{
+	if(me->dontUpdate())
+		return;
+  	me->setDirty();
+	me->setXPFromLocal(); // Update member Variables
 	me->previewExposed();
 }
 
@@ -207,8 +222,8 @@ void AP_UnixDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 
 	AP_Dialog_Lists * pList = ( AP_Dialog_Lists *) pDialog;
 
-        if(pList->isDirty())
-	        return;
+	if(pList->isDirty())
+		return;
 	if(pDialog->getAvView()->getTick() != pDialog->getTick())
 	{
 		pDialog->setTick(pDialog->getAvView()->getTick());
@@ -227,7 +242,7 @@ void AP_UnixDialog_Lists::previewExposed(void)
 {
 	if(m_pPreviewWidget)
 	{
-	        m_bisCustomized = true;
+		m_bisCustomized = true;
 		event_PreviewAreaExposed();
 	} 
 }
@@ -243,7 +258,7 @@ void AP_UnixDialog_Lists::destroy (void)
 	g_list_free( m_glFonts);
 	modeless_cleanup();
 	if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
-	  gtk_widget_destroy(m_wMainWindow);
+		gtk_widget_destroy(m_wMainWindow);
 	m_wMainWindow = NULL;
 	DELETEP(m_pAutoUpdateLists);
 	DELETEP (m_pPreviewWidget);
@@ -285,7 +300,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 
 
 		gtk_signal_handler_block(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-        	gtk_signal_handler_block_by_data(  GTK_OBJECT(m_wListStyleBox), (gpointer) this );
+		gtk_signal_handler_block_by_data(  GTK_OBJECT(m_wListStyleBox), (gpointer) this );
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 								  m_wListStyleNone_menu);
 		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
@@ -293,7 +308,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 
 		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
 								  0);
-                m_newListType = NOT_A_LIST;
+		m_newListType = NOT_A_LIST;
 	}
 	else if(type == 1)
 	{
@@ -307,12 +322,12 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 								  m_wListStyleBulleted_menu);
-       		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
+		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 
 
 		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
 								  1);
-                m_newListType = BULLETED_LIST;
+		m_newListType = BULLETED_LIST;
 	}
 	else if(type == 2)
 	{
@@ -326,26 +341,52 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 		gtk_signal_handler_block(  GTK_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
 								  m_wListStyleNumbered_menu);
-        	gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox), m_iStyleBoxID );
+		gtk_signal_handler_unblock(  GTK_OBJECT(m_wListStyleBox), m_iStyleBoxID );
 		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
 								  2);
-                m_newListType = NUMBERED_LIST;
+		m_newListType = NUMBERED_LIST;
 	}
-	setXPFromLocal();
-	previewExposed();
+//
+// This methods needs to be called from loadXPDataIntoLocal to set the correct
+// list style. However if we are doing this we definately don't want to call
+// loadXPDataIntoLocal again! Luckily we can just check this to make sure this is
+// not happenning.
+//
+	if(!dontUpdate())
+	{
+		fillUncustomizedValues(); // Set defaults
+		loadXPDataIntoLocal(); // load them into the widget
+		previewExposed(); // Show current setting
+	}
 }
 
-
-void  AP_UnixDialog_Lists::setXPFromLocal(void)
+/*!
+ * This method just sets the value of m_newListType. This is needed to
+ * make fillUncustomizedValues work.
+ */
+void  AP_UnixDialog_Lists::setListTypeFromWidget(void)
 {
-	//
-	// Failsafe code to make sure the start, stop and change flags are set
-	// as shown on the GUI.
-	//
 	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
 	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
-	_gatherData();
+}
 
+/*!
+ * This method reads out all the elements of the GUI and sets the XP member
+ * variables from them
+ */
+void  AP_UnixDialog_Lists::setXPFromLocal(void)
+{
+	// Read m_newListType
+
+	setListTypeFromWidget();
+//
+// Read out GUI stuff in the customize box and load their values into the member
+// variables.
+//
+	_gatherData(); 
+//
+// Now read the toggle button state and set the member variables from them
+//
 	if (GTK_TOGGLE_BUTTON (m_wStartNewList)->active)
 	{
 		m_bStartNewList = true;
@@ -377,7 +418,7 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 void  AP_UnixDialog_Lists::customChanged(void)
 {
         fillUncustomizedValues();
-	_loadXPDataIntoLocal();
+	loadXPDataIntoLocal();
 }
 
 
@@ -386,7 +427,7 @@ void AP_UnixDialog_Lists::updateFromDocument(void)
 	PopulateDialogData();
 	_setRadioButtonLabels();
 	m_newListType = m_iListType;
-	_loadXPDataIntoLocal();
+	loadXPDataIntoLocal();
 }
 
 void AP_UnixDialog_Lists::updateDialog(void)
@@ -484,7 +525,7 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
 	gtk_object_set_user_data (GTK_OBJECT (glade_menuitem), GINT_TO_POINTER (0));
 	gtk_menu_append (GTK_MENU (menu), glade_menuitem);
 	gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-						GTK_SIGNAL_FUNC (s_typeChanged), this);
+						GTK_SIGNAL_FUNC (s_valueChanged), this);
 	for(i = 0; i < nfonts; i++)
 	{
 		glade_menuitem = gtk_menu_item_new_with_label ((gchar *) g_list_nth_data (m_glFonts, i));
@@ -492,7 +533,7 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
 		gtk_object_set_user_data (GTK_OBJECT (glade_menuitem), GINT_TO_POINTER (i + 1));
 		gtk_menu_append (GTK_MENU (menu), glade_menuitem);
 		gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-							GTK_SIGNAL_FUNC (s_typeChanged), this);
+							GTK_SIGNAL_FUNC (s_valueChanged), this);
 	}
 
 	  //gtk_option_menu_set_history (GTK_OPTION_MENU (menu), 0);
@@ -1058,15 +1099,15 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 	gtk_signal_connect (GTK_OBJECT (m_wMenu_Num), "activate",
 						GTK_SIGNAL_FUNC (s_styleChangedNumbered), this);
         gtk_signal_connect (GTK_OBJECT (m_oStartSpin_adj), "value_changed",
-						GTK_SIGNAL_FUNC (s_typeChanged), this);
+						GTK_SIGNAL_FUNC (s_valueChanged), this);
 	m_iDecimalEntryID = gtk_signal_connect (GTK_OBJECT (m_wDecimalEntry), "changed",
-										 GTK_SIGNAL_FUNC (s_typeChanged), this);
+										 GTK_SIGNAL_FUNC (s_valueChanged), this);
 	m_iAlignListSpinID = gtk_signal_connect (GTK_OBJECT (m_oAlignList_adj), "value_changed",
-						GTK_SIGNAL_FUNC (s_typeChanged), this);
+						GTK_SIGNAL_FUNC (s_valueChanged), this);
 	m_iIndentAlignSpinID = gtk_signal_connect (GTK_OBJECT (m_oIndentAlign_adj), "value_changed",
-						GTK_SIGNAL_FUNC (s_typeChanged), this);
+						GTK_SIGNAL_FUNC (s_valueChanged), this);
 	m_iDelimEntryID = gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "changed",
-										  GTK_SIGNAL_FUNC (s_typeChanged), this);
+										  GTK_SIGNAL_FUNC (s_valueChanged), this);
 
 	m_iStyleBoxID = gtk_signal_connect (GTK_OBJECT(m_wListStyleBox),
 					    "configure_event",
@@ -1086,7 +1127,7 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 
 }
 
-void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
+void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)
 {
 	//
 	// This function reads the various memeber variables and loads them into
@@ -1107,7 +1148,7 @@ void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
 	//
 	m_bDontUpdate = true;
 
-	UT_DEBUGMSG(("_loadXP newListType = %d \n",m_newListType));
+	UT_DEBUGMSG(("loadXP newListType = %d \n",m_newListType));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wAlignListSpin),m_fAlign);
 	float indent = m_fAlign + m_fIndent;
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin),indent);
@@ -1186,11 +1227,12 @@ bool    AP_UnixDialog_Lists::dontUpdate(void)
         return m_bDontUpdate;
 }
 
+/*!
+ * This method reads the various elements in the Customize box and loads
+ * the XP member variables with them
+ */
 void AP_UnixDialog_Lists::_gatherData(void)
 {
-	//
-	// This function reads the various elements in customize box and loads
-	// the member variables with them
 	//
 	m_iLevel =  1;
 	//gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wLevelSpin));

@@ -715,17 +715,18 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Now make a new one.
 //
-	if (v)
+	UT_uint32 items = v->getItemCount();
+	for (UT_uint32 m=0; m < items; m++)
 	{
-		UT_uint32 items = v->getItemCount();
-		for (UT_uint32 m=0; m < items; m++)
-		{
-			char * sz = (char *)v->getNthItem(m);
-			GtkWidget * li = gtk_list_item_new_with_label(sz);
-			gtk_widget_show(li);
-			gtk_container_add (GTK_CONTAINER(GTK_COMBO(item)->list), li);
-		}
+		char * sz = (char *)v->getNthItem(m);
+		GtkWidget * li = gtk_list_item_new_with_label(sz);
+		gtk_widget_show(li);
+		gtk_container_add (GTK_CONTAINER(GTK_COMBO(item)->list), li);
 	}
+//
+// Don't need this anymore and we don't like memory leaks in abi
+//
+	delete pStyleC;
 //
 // I think we've finished!
 //

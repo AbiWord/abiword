@@ -251,7 +251,13 @@ bool s_Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Field:
 				// Lossy, but pretty much unavoidable
 				field = pcro->getField();
-				m_pie->write(field->getValue());
+				UT_ASSERT(field);
+//
+// Sevior: This makes me really unconfortable. I this will oly work for piecetable
+// fields
+//
+				if(field->getValue() != NULL)
+					m_pie->write(field->getValue());
 				
 				return true;
 

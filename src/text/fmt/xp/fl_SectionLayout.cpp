@@ -2002,6 +2002,7 @@ fl_BlockLayout* fl_HdrFtrSectionLayout::findMatchingBlock(fl_BlockLayout* pBL)
 		ppBL = ppBL->getNext();
 	}
 	UT_ASSERT(ppBL);
+	UT_DEBUGMSG(("SEVIOR: This header/footer is %x \n",this));
 	return ppBL;
 }
 
@@ -2657,6 +2658,7 @@ fl_BlockLayout* fl_HdrFtrShadow::findMatchingBlock(fl_BlockLayout* pBL)
 		ppBL = ppBL->getNext();
 	}
 	UT_ASSERT(ppBL);
+	UT_DEBUGMSG(("SEVIOR: Search for block in shadow %x \n",this));
 	return ppBL;
 }
 	  
@@ -2698,11 +2700,26 @@ fl_BlockLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 	{
 		return pBL;
 	}
+	else if(pBL && pBL->getPosition() == pos)
+	{
+		return pBL;
+	}
+//
+// Next corner case. See if position is inside the edittableBounds of this
+// section
+//
+	PT_DocPosition posEnd;
+	FV_View * pView = m_pLayout->getView();
+	if(pView)
+	{
+		pView->getEditableBounds(true,posEnd);
+		if(pos <= posEnd)
+			return pBL;
+	}
 //
 // Now the point MIGHT be in this last block. Use code from pd_Document
 // to find out. Have to check whether we're out of docrange first
 //
-	PT_DocPosition posEnd;
 	m_pDoc->getBounds(true,posEnd);
 	if(pos > posEnd)
 		return NULL;

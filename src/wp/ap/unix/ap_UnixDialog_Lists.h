@@ -47,8 +47,12 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					applyClicked(void);
 	void					styleChanged( gint style);
 	void					previewExposed(void);
-	void					setXPFromLocal(void);
+
 	/* Just Plain Useful Functions */
+
+	void                    setListTypeFromWidget(void);
+	void					setXPFromLocal(void);
+	void					loadXPDataIntoLocal(void);
 	void					updateFromDocument(void);
 	void					setAllSensitivity(void);
 	void					updateDialog(void);
@@ -63,7 +67,6 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					_fillNumberedStyleMenu( GtkWidget *listmenu);
 	void					_fillBulletedStyleMenu( GtkWidget *listmenu);
 	void					_fillNoneStyleMenu( GtkWidget *listmenu);
-	void					_loadXPDataIntoLocal(void);
 	void					_gatherData(void);
 	GList *					_getGlistFonts (void);
 	void					_fillFontMenu(GtkWidget* menu);

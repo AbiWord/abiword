@@ -1304,6 +1304,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 			return pBL;
 	}
 	pBL = m_pLayout->findBlockAtPosition(pos);
+	UT_ASSERT(pBL);
 	if(pBL->isHdrFtr())
 	{
 		fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
@@ -7890,17 +7891,12 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	}
 	pBL = m_pEditShadow->getLastBlock();
 	posEOD = pBL->getPosition(false);
-	PT_DocPosition posDocEnd;
-	m_pDoc->getBounds(isEnd,posDocEnd);
 	fp_Run * pRun = pBL->getFirstRun();
 	while( pRun->getNext() != NULL)
 	{
 		pRun = pRun->getNext();
 	}
 	posEOD += pRun->getBlockOffset();
-	while(_findBlockAtPosition(posEOD) == pBL && posEOD <= posDocEnd)
-		posEOD++;
-	posEOD--;
 	return true;
 }
 /*!

@@ -464,8 +464,8 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		{
 			_closeSpan();
 			_closeBlock();
-			_rtf_open_block(pcr->getIndexAP());
 			m_sdh = sdh;
+			_rtf_open_block(pcr->getIndexAP());
 			return true;
 		}
 
@@ -680,42 +680,42 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	///
 	UT_uint32 id = 0;
 	if(szListid != NULL)
-	        id = atoi(szListid);
+		id = atoi(szListid);
 	if(id != 0 )
 	{
-	        m_pie->_rtf_open_brace();
-	        m_pie->_rtf_keyword("*");
-	        m_pie->_rtf_keyword("abilist");
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("*");
+		m_pie->_rtf_keyword("abilist");
 		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",(char *) szLevel,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abistartat",(char *) szAbiStartValue,-1);
 		/// field font
 
-	        m_pie->_rtf_open_brace();
-	        m_pie->_rtf_keyword("abifieldfont");
-	        m_pie->_rtf_chardata( (const char *) szAbiFieldFont ,strlen(szAbiFieldFont));
+		m_pie->_rtf_open_brace();
+		m_pie->_rtf_keyword("abifieldfont");
+		m_pie->_rtf_chardata( (const char *) szAbiFieldFont ,strlen(szAbiFieldFont));
 		m_pie->_rtf_close_brace();
 
 		/// list decimal
 	        
 		m_pie->_rtf_open_brace();
-	        m_pie->_rtf_keyword("abilistdecimal");
-	        m_pie->_rtf_chardata((const char *)  szAbiListDecimal ,strlen(szAbiListDecimal));
+		m_pie->_rtf_keyword("abilistdecimal");
+		m_pie->_rtf_chardata((const char *)  szAbiListDecimal ,strlen(szAbiListDecimal));
 		m_pie->_rtf_close_brace();
 
 		/// list delim
 	        
 		m_pie->_rtf_open_brace();
-	        m_pie->_rtf_keyword("abilistdelim");
-	        m_pie->_rtf_chardata((const char *)  szAbiListDelim ,strlen( szAbiListDelim));
+		m_pie->_rtf_keyword("abilistdelim");
+		m_pie->_rtf_chardata((const char *)  szAbiListDelim ,strlen( szAbiListDelim));
 		m_pie->_rtf_close_brace();
 
 		/// list style
 	        
 		m_pie->_rtf_open_brace();
-	        m_pie->_rtf_keyword("abiliststyle");
-	        m_pie->_rtf_chardata((const char *)  szListStyle ,strlen( szListStyle));
+		m_pie->_rtf_keyword("abiliststyle");
+		m_pie->_rtf_chardata((const char *)  szListStyle ,strlen( szListStyle));
 		m_pie->_rtf_close_brace();
 		
 		/// Finished!
@@ -731,7 +731,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if(id != 0 )
 	{
 		m_pie->_rtf_open_brace();
-	        m_pie->_rtf_keyword("pntext");
+		m_pie->_rtf_keyword("pntext");
 		// if string is "left" use "ql", but that is the default, so we don't need to write it out.
 		if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
 			m_pie->_rtf_keyword("qr");
@@ -762,12 +762,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 				UT_uint32 len = UT_MIN(UT_UCS_strlen(lab),100);
 				UT_uint32 i;
 				for(i=0; i<=len; i++)
-					tmp[i] = (char ) *lab++;
+					tmp[i] = (char ) (unsigned char)  *lab++;
 				m_pie->_rtf_chardata(tmp,len);
 			}
 			else
 			{
 			    UT_DEBUGMSG(("SEVIOR: We should not be here! id = %d \n",id));
+				m_pie->_rtf_chardata(" ",1);
 			}
 		}
 		m_pie->_rtf_close_brace();
@@ -779,12 +780,12 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if(id != 0 )
 	{
 		m_pie->_rtf_open_brace();
-	        m_pie->_rtf_keyword("*");
-	        m_pie->_rtf_keyword("pn");
+		m_pie->_rtf_keyword("*");
+		m_pie->_rtf_keyword("pn");
 		fl_AutoNum * pAuto = m_pDocument->getListByID(id);
 		UT_ASSERT(pAuto);
-	        m_pie->_rtf_keyword("pnql");
-	        m_pie->_rtf_keyword("pnstart",pAuto->getStartValue32());
+		m_pie->_rtf_keyword("pnql");
+		m_pie->_rtf_keyword("pnstart",pAuto->getStartValue32());
 		List_Type lType = pAuto->getType();
 
 		///
@@ -797,8 +798,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		UT_uint32 i = 0;
 	
 		while (p[i] && p[i] != '%' && p[i+1] != 'L')
-	        {
-		        leftDelim[i] = p[i];
+		{
+			leftDelim[i] = p[i];
 			i++;
 		}
 		leftDelim[i] = '\0';
@@ -806,7 +807,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		rTmp = i;
 		while (p[i] || p[i] != '\0')
 		{
-		        rightDelim[i - rTmp] = p[i];
+			rightDelim[i - rTmp] = p[i];
 			i++;
 		}
 		rightDelim[i - rTmp] = '\0';
@@ -814,40 +815,40 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		fl_AutoNum * pParent = pAuto->getParent();
 		if(pParent == NULL && (lType < BULLETED_LIST))
 		{
-		        m_pie->_rtf_keyword("pnlvlbody");
+			m_pie->_rtf_keyword("pnlvlbody");
 		}
 		else if(lType >= BULLETED_LIST && (lType != NOT_A_LIST))
 		{
-		        m_pie->_rtf_keyword("pnlvlblt");
+			m_pie->_rtf_keyword("pnlvlblt");
 		}
 		else
 		{
-		        m_pie->_rtf_keyword("pnprev");
-		        m_pie->_rtf_keyword("pnlvl",9);
+			m_pie->_rtf_keyword("pnprev");
+			m_pie->_rtf_keyword("pnlvl",9);
 		}
 		if(lType == NUMBERED_LIST)
 		{
-		        m_pie->_rtf_keyword("pndec");
+			m_pie->_rtf_keyword("pndec");
 		}
 		else if(lType == LOWERCASE_LIST)
 		{
-		        m_pie->_rtf_keyword("pnlcltr");
+			m_pie->_rtf_keyword("pnlcltr");
 		}
 		else if(lType == UPPERCASE_LIST)
 		{
-		        m_pie->_rtf_keyword("pnucltr");
+			m_pie->_rtf_keyword("pnucltr");
 		}
 		else if(lType == LOWERROMAN_LIST)
 		{
-		        m_pie->_rtf_keyword("pnlcrm");
+			m_pie->_rtf_keyword("pnlcrm");
 		}
 		else if(lType == UPPERROMAN_LIST)
 		{
-		        m_pie->_rtf_keyword("pnucrm");
+			m_pie->_rtf_keyword("pnucrm");
 		}
 		else if(lType == NOT_A_LIST)
 		{
-		        m_pie->_rtf_keyword("pnucrm");
+			m_pie->_rtf_keyword("pnucrm");
 		}
 		if(lType < BULLETED_LIST)
 		{
@@ -872,11 +873,20 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			m_pie->_rtf_open_brace();
 			m_pie->_rtf_keyword("pntxtb");
 			const UT_UCSChar * tmp = pAuto->getLabel(m_sdh);
-			UT_uint32 i,len;
-			len = UT_UCS_strlen(tmp);
-			for(i=0;i<=len;i++)
-				p[i] = (char) *tmp++;
-			m_pie->_rtf_chardata((const char *)p,strlen((const char *) p));
+			UT_ASSERT(tmp);
+
+			if(!tmp) // Should not happen, if it does attempt to recover
+			{
+				m_pie->_rtf_chardata(" ",1);
+			}
+			else
+			{
+				UT_uint32 i,len;
+				len = UT_UCS_strlen(tmp);
+				for(i=0;i<=len;i++)
+					p[i] = (char) (unsigned char) *tmp++;
+				m_pie->_rtf_chardata(p,len);
+			}
 			m_pie->_rtf_close_brace();
 		}
 		m_pie->_rtf_close_brace();

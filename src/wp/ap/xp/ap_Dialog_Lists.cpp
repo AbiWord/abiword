@@ -188,17 +188,6 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 
 void AP_Dialog_Lists::event_PreviewAreaExposed(void)
 {
-
-/* Thomas's code
-	if (m_paragraphPreview) {
-		m_paragraphPreview->draw();
-	}
-	else {
-		UT_ASSERT(0);
-	}
-*/
-// Martin's code
-
 	if (m_pListsPreview) 
 	{
 		fillFakeLabels();
@@ -267,14 +256,14 @@ void AP_Dialog_Lists::Apply(void)
 			getAutoNum()->update(0);
 			// getBlock()->listUpdate();
 		}
-                clearDirty();
+		clearDirty();
 		return;
 	}
 	else if ( m_isListAtPoint == true &&  m_newListType == NOT_A_LIST)
 	{
-	        if(getBlock()->isListItem() == true)
+		if(getBlock()->isListItem() == true)
 		{
-		        getBlock()->StopList();
+			getBlock()->StopList();
 		}
 		clearDirty();
 		return;
@@ -317,7 +306,7 @@ void AP_Dialog_Lists::Apply(void)
 		fl_BlockLayout * rBlock = getBlock()->getPreviousList();
 		if(rBlock == NULL)
 		{
-		        clearDirty();
+			clearDirty();
 			return;
 		}
 		getBlock()->resumeList(rBlock);
@@ -336,108 +325,108 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
   //
   // m_fAlign and m_fIndent should be in inches
   //
-       if(m_newListType == NOT_A_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-	       m_fAlign = 0.0;
-	       m_fIndent = 0.0;
-	       m_iLevel = 0;
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
-	       m_iStartValue = 1;
-       }	       
+	if(m_newListType == NOT_A_LIST)
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		m_fAlign = 0.0;
+		m_fIndent = 0.0;
+		m_iLevel = 0;
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		m_iStartValue = 1;
+	}	       
 
-       if(m_iLevel <= 0)
-       {
-	        m_iLevel = 1;
-       }
-       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
-       m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
+	if(m_iLevel <= 0)
+	{
+		m_iLevel = 1;
+	}
+	UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+	m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
+	m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 
-       if( m_newListType == NUMBERED_LIST)
-       {   
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
-	       m_iStartValue = 1;
-	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L.");
-       }
-       else if( m_newListType == LOWERCASE_LIST)
-       {   
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
-	       m_iStartValue = 1;
-	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
-       }
-       else if( m_newListType == UPPERCASE_LIST)
-       {   
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
-	       m_iStartValue = 1;
-	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
-       }
-       else if( m_newListType < BULLETED_LIST)
-       {   
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
-	       m_iStartValue = 1;
-	       UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       }
-       else
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-               UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
-	       m_iStartValue = 0;
-       }	       
-       if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
-       }
-       else if (m_newListType == NOT_A_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-       }
-       else if(m_newListType > DASHED_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
-       }
+	if( m_newListType == NUMBERED_LIST)
+	{   
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		m_iStartValue = 1;
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L.");
+	}
+	else if( m_newListType == LOWERCASE_LIST)
+	{   
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		m_iStartValue = 1;
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
+	}
+	else if( m_newListType == UPPERCASE_LIST)
+	{   
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		m_iStartValue = 1;
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
+	}
+	else if( m_newListType < BULLETED_LIST)
+	{   
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		m_iStartValue = 1;
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+	}
+	else
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		m_iStartValue = 0;
+	}	       
+	if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
+	}
+	else if (m_newListType == NOT_A_LIST)
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+	}
+	else if(m_newListType > DASHED_LIST)
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
+	}
 }
 
 void  AP_Dialog_Lists::fillFakeLabels(void)
 {
 
-       if(m_bisCustomized == false)
-       {
-	      m_iLevel = getBlock()->getLevel();
-	      if(m_iLevel == 0 || m_bStartSubList == true)
-	      {
-		      m_iLevel++;
-	      }
-	      PopulateDialogData();
-	      if(m_bguiChanged == false)
-	              m_newListType = m_iListType;
-	      m_bguiChanged = false;
-       }
-       if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
-               UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       }
-       else if (m_newListType == NOT_A_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
-               UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       }
-      else if(m_newListType > DASHED_LIST)
-       {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
-               UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
-       }
-       m_pFakeAuto->setListType(m_newListType);
-       m_pFakeAuto->setDelim(m_pszDelim);
-       m_pFakeAuto->setDecimal(m_pszDecimal);
-       m_pFakeAuto->setStartValue(m_iStartValue);
-       m_pListsPreview->setData(m_pszFont,m_fAlign,m_fIndent);
+	if(m_bisCustomized == false)
+	{
+		m_iLevel = getBlock()->getLevel();
+		if(m_iLevel == 0 || m_bStartSubList == true)
+		{
+			m_iLevel++;
+		}
+		PopulateDialogData();
+		if(m_bguiChanged == false)
+			m_newListType = m_iListType;
+		m_bguiChanged = false;
+	}
+	if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+	}
+	else if (m_newListType == NOT_A_LIST)
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+	}
+	else if(m_newListType > DASHED_LIST)
+	{
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+	}
+	m_pFakeAuto->setListType(m_newListType);
+	m_pFakeAuto->setDelim(m_pszDelim);
+	m_pFakeAuto->setDecimal(m_pszDecimal);
+	m_pFakeAuto->setStartValue(m_iStartValue);
+	m_pListsPreview->setData(m_pszFont,m_fAlign,m_fIndent);
 }
 
 void  AP_Dialog_Lists::generateFakeLabels(void)
@@ -446,32 +435,32 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
   // This routine generates it's own AutoNum's and Layout pointers 
   // for use in the preview
   //
-       UT_uint32 i;
-       //
-       // Start by generating 4 fake (PL_StruxDocHandle and fl_Layout pointers
-       //
-       // Jeeze gotta generate a fake void * pointer!! Try this hack.
-       //
-       XAP_App * fakeApp = getApp();
-       for(i=0; i<4; i++)
-       {
-	      DELETEP(m_pFakeLayout[i]);
-              m_pFakeSdh[i] = (PL_StruxDocHandle) fakeApp++;
-	      m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] ); 
-       }
-       //
-       // Now generate the AutoNum
-       //
-       DELETEP(m_pFakeAuto);
-       m_pFakeDoc = new PD_Document(fakeApp);
-       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim, m_pszDecimal, (PD_Document *) m_pFakeDoc);
-       m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1);
-       m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
-       for(i=1; i<4; i++)
-       {
-	      m_pFakeAuto->insertItem(m_pFakeSdh[i],m_pFakeSdh[i-1]);
-	      m_pFakeLayout[i]->setAutoNum(m_pFakeAuto);
-       }
+	UT_uint32 i;
+	//
+	// Start by generating 4 fake (PL_StruxDocHandle and fl_Layout pointers
+	//
+	// Jeeze gotta generate a fake void * pointer!! Try this hack.
+	//
+	XAP_App * fakeApp = getApp();
+	for(i=0; i<4; i++)
+	{
+		DELETEP(m_pFakeLayout[i]);
+		m_pFakeSdh[i] = (PL_StruxDocHandle) fakeApp++;
+		m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] ); 
+	}
+	//
+	// Now generate the AutoNum
+	//
+	DELETEP(m_pFakeAuto);
+	m_pFakeDoc = new PD_Document(fakeApp);
+	m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim, m_pszDecimal, (PD_Document *) m_pFakeDoc);
+	m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1);
+	m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
+	for(i=1; i<4; i++)
+	{
+		m_pFakeAuto->insertItem(m_pFakeSdh[i],m_pFakeSdh[i-1]);
+		m_pFakeLayout[i]->setAutoNum(m_pFakeAuto);
+	}
 }
 
 
