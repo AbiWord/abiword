@@ -2133,13 +2133,22 @@ void FV_View::moveInsPtTo(FV_DocPos dp, bool bClearSelection)
 
 
 	PT_DocPosition iPos = _getDocPos(dp);
-	if((dp == FV_DOCPOS_EOD) && m_pDoc->isEndFrameAtPos(iPos))
+	if((dp == FV_DOCPOS_EOD) && m_pDoc->isHdrFtrAtPos(iPos) &&
+	   m_pDoc->isEndFrameAtPos(iPos-1))
 	{
-	  iPos--;
-	  while(!isPointLegal(iPos))
-	  {    
-	       iPos--;
-	  }
+	     iPos--;
+	     while(!isPointLegal(iPos))
+	     {    
+	          iPos--;
+	     }
+	}
+	else if((dp == FV_DOCPOS_EOD) && m_pDoc->isEndFrameAtPos(iPos))
+	{
+	     iPos--;
+	     while(!isPointLegal(iPos))
+	     {    
+	          iPos--;
+	     }
 	}
 	if (iPos != getPoint())
 	{
