@@ -39,10 +39,10 @@
 // Note: if a tool item does not use an icon (like a combo box), use the
 // Note: constant "NoIcon" in that column.
 
-// Polish translated by Sercxemulo <explo@poczta.wp.pl>
+// First Polish translation by Sercxemulo <explo@poczta.wp.pl>
 // Since December 2001 maintained by Piotr Banski <bansp@bigfoot.com>
 // Since February 2002 Andrzej Pruszynski <ap@ignis.pl> joined
-// Last update: 05-mar-2002
+// Last update: 28-mar-2002
 BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
@@ -57,8 +57,8 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,	"Podgl±d",	tb_print_preview_xpm, NULL, "Wy¶wietl podgl±d wydruku")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Cofnij",		tb_undo_xpm,	NULL, "Cofnij ostatni± czynno¶æ")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Ponów",		tb_redo_xpm,	NULL, "Anuluj cofniêcie ostatniej czynno¶ci")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Wytnij",		tb_cut_xpm,		NULL, "Wytnij zaznaczony tekst i umie¶æ go w Schowku")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiuj",		tb_copy_xpm,	NULL, "Umie¶æ zaznaczony tekst w Schowku")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Wytnij",		tb_cut_xpm,		NULL, "Wytnij do Schowka")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiuj",		tb_copy_xpm,	NULL, "Kopiuj do Schowka")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Wklej",	tb_paste_xpm,	NULL, "Wklej ze Schowka")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 "Nag³ówek",		tb_edit_editheader_xpm,			NULL, "Edycja nag³ówka")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 "Stopka",		tb_edit_editfooter_xpm,			NULL, "Edycja stopki")
@@ -103,7 +103,7 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Wypunktowanie",			tb_lists_bullets_xpm,	NULL, "Lista wypunktowana")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numerowanie",		tb_lists_numbers_xpm,	NULL, "Lista numerowana")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Kolor czcionki",		tb_text_fgcolor_xpm,	NULL, "Kolor czcionki")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Wyró¿nienie",		tb_text_bgcolor_xpm,	NULL, "Wyró¿nienie odcinka tekstu")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Wyró¿nienie",		tb_text_bgcolor_xpm,	NULL, "Kolor t³a czcionki")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Zwiêksz wciêcie",	tb_text_indent_xpm, 	NULL, "Zwiêksz wciêcie akapitu")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Zmniejsz wciêcie",	tb_text_unindent_xpm,	NULL, "Zmniejsz wciêcie akapitu")
 
