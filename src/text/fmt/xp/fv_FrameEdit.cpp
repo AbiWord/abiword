@@ -1252,6 +1252,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			newPoint = oldPoint - oldFrameLen;
 		}
 		m_pView->setPoint(newPoint);
+		bool bOK = true;
+		while(!m_pView->isPointLegal() && bOK)
+		{
+			bOK = m_pView->_charMotion(true,1);
+		}
 		m_pView->notifyListeners(AV_CHG_HDRFTR);
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();

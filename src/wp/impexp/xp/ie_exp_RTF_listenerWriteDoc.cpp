@@ -525,11 +525,15 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 void s_RTF_ListenerWriteDoc::_closeFrame(void)
 {
+	if(!m_bInFrame) // Can happen dragging frames around
+	{
+		return;
+	}
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
 	m_bInFrame = false;
 	m_bJustOpennedFrame = false;
-	m_pie->_rtf_close_brace();
-	m_pie->_rtf_close_brace();
-	m_pie->_rtf_close_brace();
 }
 
 void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrProp * pInSpanAP)
