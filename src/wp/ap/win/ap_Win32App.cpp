@@ -126,16 +126,9 @@ UT_Bool AP_Win32App::initialize(void)
 	//////////////////////////////////////////////////////////////////
 	
 	{
-#if 0 // TODO turn this part on when we get installation stuff ready
 		const char * szISpellDirectory = NULL;
-		if ((getPrefsValue(AP_PREF_KEY_WinISpellDirectory,&szISpellDirectory)) && (szISpellDirectory) && (*szISpellDirectory))
-			;
-		else
-			szISpellDirectory = AP_PREF_DEFAULT_WinISpellDirectory;
-#else
-		char szISpellDirectory[512];
-		_getExeDir(szISpellDirectory, 512);
-#endif
+		getPrefsValueDirectory(AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
+		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
 
 		const char * szSpellCheckWordList = NULL;
 		if ((getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList)) && (szSpellCheckWordList) && (*szSpellCheckWordList))
@@ -180,10 +173,8 @@ UT_Bool AP_Win32App::initialize(void)
 			&& (*szStringSet)
 			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			if ((getPrefsValue(AP_PREF_KEY_WinStringSetDirectory,&szDirectory)) && (szDirectory) && (*szDirectory))
-				;
-			else
-				szDirectory = AP_PREF_DEFAULT_WinStringSetDirectory;
+			getPrefsValueDirectory(AP_PREF_KEY_StringSetDirectory,&szDirectory);
+			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
 			UT_ASSERT(szPathname);
@@ -240,6 +231,37 @@ XAP_Prefs * AP_Win32App::getPrefs(void) const
 	return m_prefs;
 }
 
+UT_Bool AP_Win32App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValue(szKey,pszValue);
+}
+
+UT_Bool AP_Win32App::getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	const XML_Char * psz = NULL;
+	if (!m_prefs->getPrefsValue(szKey,&psz))
+		return UT_FALSE;
+
+	if ((*psz == '/') || (*psz == '\\'))
+	{
+		*pszValue = psz;
+		return UT_TRUE;
+	}
+
+	static XML_Char buf[1024];
+	UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(psz) + 2) < sizeof(buf));
+	
+	sprintf(buf,"%s\\%s",getAbiSuiteLibDir(),psz);
+	*pszValue = buf;
+	return UT_TRUE;
+}
+
 HICON AP_Win32App::getIcon(void)
 {
 	return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_MAINFRAME));
@@ -248,14 +270,6 @@ HICON AP_Win32App::getIcon(void)
 HICON AP_Win32App::getSmallIcon(void)
 {
 	return LoadIcon(getInstance(), MAKEINTRESOURCE(AP_RID_ICON_MAINFRAME));
-}
-
-UT_Bool AP_Win32App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
-{
-	if (!m_prefs)
-		return UT_FALSE;
-
-	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
 const XAP_StringSet * AP_Win32App::getStringSet(void) const
@@ -516,7 +530,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 void AP_Win32App::ParseCommandLine(int iCmdShow)
 {
 	// parse the command line
-	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
+	// <app> [-script <scriptname>]* [-dumpstrings] [-lib <AbiSuiteLibDirectory>] [<documentname>]*
 	
 	// TODO when we refactor the App classes, consider moving
 	// TODO this to app-specific, cross-platform.
@@ -538,10 +552,18 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 				// [-script scriptname]
 				k++;
 			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0)
+			{
+				// [-lib <AbiSuiteLibDirectory>]
+				// we've already processed this when we initialized the App class
+				k++;
+			}
 			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
 			{
 				// [-dumpstrings]
 #ifdef DEBUG
+				// dump the string table in english as a template for translators.
+				// see abi/docs/AbiSource_Localization.abw for details.
 				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
 				pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
 				delete pBuiltinStringSet;

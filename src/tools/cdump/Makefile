@@ -21,7 +21,7 @@
 ABI_DEPTH=../..
 include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
-DIRS=		$(ABI_NATIVE)
+DIRS=		xp $(ABI_NATIVE)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

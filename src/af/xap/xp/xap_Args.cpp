@@ -21,6 +21,7 @@
 #include <string.h>
 #include "xap_Args.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 
 /*****************************************************************/
 
@@ -43,30 +44,115 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 		return;
 
 	// copy command line into work buffer
-	// and count the tokens
+	// and put pointers to the tokens in m_argv
+	//
+	// we support (with apologies to Flex & Bison):
+	//
+	//    WHITE [ \t]+
+	//    DQUOTE '"'
+	//    SQUOTE '\''
+	//    OTHER [^ \t'"]
+	//
+	//    T1 := OTHER*
+	//    T2 := DQUOTE [^DQUOTE]* DQUOTE
+	//    T3 := SQUOTE [^SQUOTE]* SQUOTE
+	//
+	//    WHITE ({T1|T2|T3}WHITE)* [WHITE]
 	
 	UT_cloneString(m_szBuf,szCmdLine);
-	int k;
-	char * p;
-	for (k=0, p=strtok(m_szBuf," "); (p); k++, p=strtok(NULL," "))
-		;
 
-	// if no tokens, do nothing.
+	int count = 10;	// start with 10 and realloc if necessary
+	int k = 0;
+	m_argv = (char **)calloc(count,sizeof(char *));
+
+	enum _state { S_START, S_INTOKEN, S_INDQUOTE, S_INSQUOTE } state;
+	state = S_START;
+
+#define GrowArrayIfNecessary()								\
+	do	{	if (k==count)									\
+			{	int newsize = (count+10)*sizeof(char *);	\
+				m_argv = (char **)realloc(m_argv,newsize);	\
+				count += 10;								\
+		}} while (0)
+
+	char * p = m_szBuf;
+	while (*p)
+	{
+		switch (state)
+		{
+		case S_START:
+			if ( (*p==' ') || (*p=='\t') )
+			{
+				p++;
+				break;
+			}
+
+			if (*p=='\'')
+			{
+				state=S_INSQUOTE;
+				*p++=0;					// don't include starting quote in token
+			}
+			else if (*p=='"')
+			{
+				state=S_INDQUOTE;
+				*p++=0;					// don't include starting quote in token
+			}
+			else
+				state=S_INTOKEN;
+
+			GrowArrayIfNecessary();
+			m_argv[k++] = p++;
+			break;
+			
+		case S_INTOKEN:
+			if ( (*p==' ') || (*p=='\t') )
+			{
+				state=S_START;
+				*p++=0;
+				break;
+			}
+			
+			p++;
+			break;
+			
+		case S_INDQUOTE:
+			if ( (*p=='"') )
+			{
+				state=S_START;
+				*p++=0;
+				break;
+			}
+
+			p++;
+			break;
+			
+		case S_INSQUOTE:
+			if ( (*p=='\'') )
+			{
+				state=S_START;
+				*p++=0;
+				break;
+			}
+
+			p++;
+			break;
+		}
+	}
 	
 	if (k==0)
 	{
 		FREEP(m_szBuf);
 		return;
 	}
-
-	// build an array of tokens.  we just let them
-	// point back into our work buffer.
 	
 	m_argc = k;
-	m_argv = (char **)calloc(m_argc,sizeof(char *));
-	strcpy(m_szBuf,szCmdLine);
-	for (k=0, p=strtok(m_szBuf," "); (p); k++, p=strtok(NULL," "))
-		m_argv[k] = p;
+
+#ifdef UT_DEBUG
+	for (int kk=0; kk<m_argc; kk++)
+		UT_DEBUGMSG(("ParsedCommandLine: argv[%d][%s]",kk,m_argv[kk]));
+#endif
+
+	return;
 }
 
 XAP_Args::~XAP_Args(void)

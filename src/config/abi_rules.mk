@@ -68,6 +68,7 @@ endif
 ifndef OBJS
 OBJS		= $(addprefix $(OBJDIR)/,$(CSRCS:.c=.$(OBJ_SUFFIX)))		\
 		  $(addprefix $(OBJDIR)/,$(CPPSRCS:.cpp=.$(OBJ_SUFFIX)))	\
+		  $(addprefix $(OBJDIR)/,$(notdir $(GENCPPSRCS:.cpp=.$(OBJ_SUFFIX))))	\
 		  $(addprefix $(OBJDIR)/,$(ASFILES:.s=.$(OBJ_SUFFIX)))
 endif
 
@@ -148,6 +149,10 @@ $(RCOBJS): $(RCSRCS)
 	@echo $(RCOBJS) finished
 endif
 
+###############################################################################
+## Rule for building .cpp sources in the current directory into .o's in $(OBJDIR)
+###############################################################################
+
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.cpp
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
@@ -156,6 +161,23 @@ else
 	@echo $<:
 	@$(CCC) -o $@ -c $(CFLAGS) $<
 endif
+
+###############################################################################
+## Rule for building generated .cpp sources (in $(OBJDIR)) into .o's in $(OBJDIR)
+###############################################################################
+
+$(OBJDIR)/%.$(OBJ_SUFFIX): $(OBJDIR)/%.cpp
+	@$(MAKE_OBJDIR)
+ifeq ($(OS_NAME), WIN32)
+	@$(CCC) -Fo$(subst /,\\,$@) -c $(CFLAGS) $<
+else
+	@echo $<:
+	@$(CCC) -o $@ -c $(CFLAGS) $<
+endif
+
+###############################################################################
+## Rule for building .c sources in the current directory into .o's in $(OBJDIR)
+###############################################################################
 
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.c
 	@$(MAKE_OBJDIR)

@@ -45,6 +45,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 
 	m_pArgs = pArgs;
 	m_szAppName = szAppName;
+	m_szAbiSuiteLibDir = NULL;
 	m_pEMC = NULL;
 	m_pBindingSet = NULL;
 	m_pMenuActionSet = NULL;
@@ -56,6 +57,7 @@ XAP_App::~XAP_App(void)
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
 
+	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);
 	DELETEP(m_pBindingSet);
 	DELETEP(m_pMenuActionSet);
@@ -372,6 +374,18 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 AP_Clipboard* XAP_App::getClipboard(void)
 {
 	return _pClipboard;
+}
+
+
+void XAP_App::_setAbiSuiteLibDir(const char * sz)
+{
+	FREEP(m_szAbiSuiteLibDir);
+	UT_cloneString((char *&)m_szAbiSuiteLibDir,sz);
+}
+
+const char * XAP_App::getAbiSuiteLibDir(void) const
+{
+	return m_szAbiSuiteLibDir;
 }
 
 

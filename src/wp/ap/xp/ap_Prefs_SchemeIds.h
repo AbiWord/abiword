@@ -38,34 +38,17 @@
 // abi/src/xap/xp/xap_Prefs_SchemeIds.h.
 //////////////////////////////////////////////////////////////////////////////
 
-#define AP_PREF_KEY_AutoSpellCheck					"AutoSpellCheck"
-#define AP_PREF_DEFAULT_AutoSpellCheck				"1"							/* {0,1} */
+#define AP_PREF_KEY_AutoSpellCheck					"AutoSpellCheck"			/* enable automatic spell check {0,1} */
+#define AP_PREF_DEFAULT_AutoSpellCheck				"1"
 
-#define AP_PREF_KEY_RulerUnits						"RulerUnits"
-#define AP_PREF_DEFAULT_RulerUnits					"in"						/* value in UT_dimensionName() */
+#define AP_PREF_KEY_RulerUnits						"RulerUnits"				/* value in UT_dimensionName() */
+#define AP_PREF_DEFAULT_RulerUnits					"in"
 
-#define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"
-#define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"				/* name of ispell hash file */
+#define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"		/* name of ispell hash file */
+#define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"				
 
-#define AP_PREF_KEY_StringSet						"StringSet"
-#define AP_PREF_DEFAULT_StringSet					"EnUS"						/* name of dialog/msgbox strings */
-#define AP_PREF_KEY_BeOSISpellDirectory				"BeOSISpellDirectory"
-#define AP_PREF_DEFAULT_BeOSISpellDirectory			"/usr/lib/ispell" 			/* where we find hash files */ /* TODO DECIDE WHERE THIS SHOULD BE */
-
-#define AP_PREF_KEY_BeOSStringSetDirectory			"BeOSStringSetDirectory"
-#define AP_PREF_DEFAULT_BeOSStringSetDirectory		"/boot/home/config/settings/AbiSuite/AbiWord/lib"	/* where we find StringSets */ /* TODO DECIDE WHERE THIS SHOULD BE */
-
-#define AP_PREF_KEY_UnixISpellDirectory				"UnixISpellDirectory"
-#define AP_PREF_DEFAULT_UnixISpellDirectory			"/usr/lib/ispell" 			/* where we find hash files */ /* TODO DECIDE WHERE THIS SHOULD BE */
-
-#define AP_PREF_KEY_UnixStringSetDirectory			"UnixStringSetDirectory"
-#define AP_PREF_DEFAULT_UnixStringSetDirectory		"/usr/local/AbiSuite/AbiWord/lib"	/* where we find StringSets */ /* TODO DECIDE WHERE THIS SHOULD BE */
-
-#define AP_PREF_KEY_WinISpellDirectory				"WinISpellDirectory"
-#define AP_PREF_DEFAULT_WinISpellDirectory			"C:\\"						/* where we find hash files */ /* TODO DECIDE WHERE THIS SHOULD BE */
-
-#define AP_PREF_KEY_WinStringSetDirectory			"WinStringSetDirectory"
-#define AP_PREF_DEFAULT_WinStringSetDirectory		"C:\\"						/* where we find StringSets */ /* TODO DECIDE WHERE THIS SHOULD BE */
+#define AP_PREF_KEY_StringSet						"StringSet"					/* name of dialog/msgbox strings */
+#define AP_PREF_DEFAULT_StringSet					"EnUS"						
 
 #define AP_PREF_KEY_KeyBindings						"KeyBindings"
 #define AP_PREF_DEFAULT_KeyBindings					"default"					/* value in ap_LoadBindings.cpp */
@@ -82,6 +65,12 @@
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
 #define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps"		/* values in BeginLayout() */
 
+#define AP_PREF_KEY_SpellDirectory					"SpellCheckDirectory"		/* where we find hash files */
+#define AP_PREF_DEFAULT_SpellDirectory				"dictionary" 				/* if relative, use prefix "getAbiSuiteLibDir()" */
+
+#define AP_PREF_KEY_StringSetDirectory				"StringSetDirectory"		/* where we find StringSets */
+#define AP_PREF_DEFAULT_StringSetDirectory			"AbiWord/strings"			/* if relative, use prefix "getAbiSuiteLibDir()" */
+
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
 
@@ -89,17 +78,14 @@ dcl(AutoSpellCheck)
 dcl(RulerUnits)
 dcl(SpellCheckWordList)
 dcl(StringSet)
-dcl(UnixISpellDirectory)
-dcl(UnixStringSetDirectory)
-dcl(WinISpellDirectory)
-dcl(WinStringSetDirectory)
-dcl(BeOSISpellDirectory)
-dcl(BeOSStringSetDirectory)
 dcl(KeyBindings)
 dcl(MenuLayout)
 dcl(MenuLabelSet)
 dcl(ToolbarLabelSet)
 dcl(ToolbarLayouts)
+
+dcl(SpellDirectory)
+dcl(StringSetDirectory)
 
 #endif /* dcl */
 #endif /* AP_PREFS_SCHEMEIDS_H */

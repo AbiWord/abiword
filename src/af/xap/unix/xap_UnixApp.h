@@ -59,6 +59,7 @@ public:
 
 protected:
 	UT_Bool									_loadFonts(void);
+	void									_setAbiSuiteLibDir(void);
 
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;

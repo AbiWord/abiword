@@ -22,9 +22,9 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CSRCS=			../xp/cdump.c
+OBJS=			$(OBJDIR)/cdump.$(OBJ_SUFFIX)
 
-PROGRAM=		$(BINDIR)/cdump
+PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 
@@ -56,4 +56,5 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
 
 build:: $(TARGETS)
+	@echo cdump built
 

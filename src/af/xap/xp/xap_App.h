@@ -93,12 +93,16 @@ public:
 	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getUserPrivateDirectory(void) = 0;
+	virtual const char *					getAbiSuiteLibDir(void) const;
 
 	static AP_Clipboard*					getClipboard(void);
 	
 protected:
+	void							_setAbiSuiteLibDir(const char * sz);
+	
 	XAP_Args *						m_pArgs;
 	const char *					m_szAppName;
+	const char *					m_szAbiSuiteLibDir;
 
 	EV_EditMethodContainer *		m_pEMC;				/* the set of all possible EditMethods in the app */
 	XAP_BindingSet *				m_pBindingSet;		/* the set of binding maps */

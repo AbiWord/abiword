@@ -41,10 +41,7 @@
 #define XAP_PREF_DEFAULT_ToolbarAppearance	"icon"						/* {icon,text,both} */
 
 #define XAP_PREF_KEY_UnixFontPath			"UnixFontPath"
-// TODO until we the the installation problems solved, try several paths probably valid during debugging only.
-// TODO when the installion is resolved, use the latter form of this.
-//#define XAP_PREF_DEFAULT_UnixFontPath		"/usr/local/AbiSuite/lib/fonts;./src/wp/lib/unix/fonts;./wp/lib/unix/fonts;../../lib/unix/fonts"
-#define XAP_PREF_DEFAULT_UnixFontPath		"/usr/local/AbiSuite/lib/fonts"
+#define XAP_PREF_DEFAULT_UnixFontPath		"fonts"						/* if relative path, prepend "getAbiSuiteLibDir()" */
 
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl

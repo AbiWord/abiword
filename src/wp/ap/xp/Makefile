@@ -65,8 +65,9 @@ CPPSRCS=	ap_Dialog_Break.cpp		\
 		ap_Toolbar_Icons.cpp		\
 		ap_Toolbar_LabelSet.cpp		\
 		ap_Toolbar_Layouts.cpp		\
-		ap_TopRuler.cpp			\
-		$(OBJDIR)/ap_wp_splash.cpp	\
+		ap_TopRuler.cpp
+
+GENCPPSRCS=	$(OBJDIR)/ap_wp_splash.cpp	\
 		$(OBJDIR)/ap_wp_sidebar.cpp
 
 TARGETS=		$(OBJS)
@@ -77,23 +78,23 @@ build:: $(TARGETS)
 
 ifdef ABI_OPT_BRANDED
 
-$(OBJDIR)/ap_wp_splash.cpp: $(ABI_BRAND_DIR)/art/xp/splash_tm.png $(BINDIR)/cdump
+$(OBJDIR)/ap_wp_splash.cpp: $(ABI_BRAND_DIR)/art/xp/splash_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_splash.cpp
-	$(BINDIR)/cdump $(ABI_BRAND_DIR)/art/xp/splash_tm.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) $(ABI_BRAND_DIR)/art/xp/splash_tm.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
 
-$(OBJDIR)/ap_wp_sidebar.cpp: $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png $(BINDIR)/cdump
+$(OBJDIR)/ap_wp_sidebar.cpp: $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_sidebar.cpp
-	$(BINDIR)/cdump $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
 
 else
 
-$(OBJDIR)/ap_wp_splash.cpp: splash.png $(BINDIR)/cdump
+$(OBJDIR)/ap_wp_splash.cpp: splash.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_splash.cpp
-	$(BINDIR)/cdump ./splash.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) ./splash.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
 
-$(OBJDIR)/ap_wp_sidebar.cpp: sidebar.png $(BINDIR)/cdump
+$(OBJDIR)/ap_wp_sidebar.cpp: sidebar.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_sidebar.cpp
-	$(BINDIR)/cdump ./sidebar.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
+	$(BINDIR)/cdump$(EXE_SUFFIX) ./sidebar.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
 
 endif
 

@@ -22,9 +22,9 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CSRCS=			../xp/cdump.c
+OBJS=			$(OBJDIR)/cdump.$(OBJ_SUFFIX)
 
-PROGRAM=		$(BINDIR)/cdump.exe
+PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
 ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:I386 /profile
 ABI_APPLIBS=		

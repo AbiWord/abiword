@@ -37,6 +37,8 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 
 	m_hInstance = hInstance;
 	m_pWin32ToolbarIcons = 0;
+
+	_setAbiSuiteLibDir();
 }
 
 XAP_Win32App::~XAP_Win32App(void)
@@ -172,4 +174,120 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 		strcat(buf,"\\");
 	strcat(buf,szAbiDir);
 	return buf;
+}
+
+void XAP_Win32App::_setAbiSuiteLibDir(void)
+{
+	char buf[PATH_MAX];
+	char buf2[PATH_MAX];
+	const char * sz = NULL;
+
+	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
+
+	int kLimit = m_pArgs->m_argc;
+	int nFirstArg = 0;	// Win32 does not put the program name in argv[0], so [0] is the first argument
+	int k;
+	
+	for (k=nFirstArg; k<kLimit; k++)
+		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
+		{
+			strcpy(buf,m_pArgs->m_argv[k+1]);
+			int len = strlen(buf);
+			if (buf[len-1]=='\\')		// trim trailing slash
+				buf[len-1] = 0;
+			XAP_App::_setAbiSuiteLibDir(buf);
+			return;
+		}
+	
+	// if not, see if ABISUITE_HOME was set in the environment
+
+	if (GetEnvironmentVariable("ABISUITE_HOME",buf,sizeof(buf)) > 0)
+	{
+		char * p = buf;
+		int len = strlen(p);
+		if ( (p[0]=='"') && (p[len-1]=='"') )
+		{
+			// trim leading and trailing DQUOTES
+			p[len-1]=0;
+			p++;
+			len -= 2;
+		}
+		if (p[len-1]=='\\')				// trim trailing slash
+			p[len-1] = 0;
+		XAP_App::_setAbiSuiteLibDir(p);
+		return;
+	}
+
+	// [Win32 only] if not, use something relative to <exedir>
+	// if we are in normal distribution format, we have:
+	//
+	// .../AbiSuite/AbiWord/bin/AbiWord.exe
+	//                     /strings/*.strings
+	//                     /help/EnUS/*.html
+	//                     /samples/EnUS/*.abw
+	//             /AbiShow/bin/AbiShow.exe
+	//                     /strings/*.strings
+	//                     /help/EnUS/*.html
+	//                     /samples/EnUS/*.abw
+	//             /dictionary/*.hash
+	//
+	// we want to set the library directory to .../AbiSuite
+	// (aka "getExeDir()/../..")
+	//
+	// if this is a developer build in the canonical build
+	// directory, we have:
+	//
+	// $(OUT)/$os_..._$dbg/bin/AbiWord.exe
+	//                        /AbiShow.exe
+	//                    /obj/*.obj
+	//                    /AbiSuite/AbiWord/strings/*.strings
+	//                                     /help/...
+	//                                     /samples/...
+	//                             /AbiShow/...
+	//                             /dictionary/*.hash
+	//
+	// note that the bin directory is in a different place.
+	// in this case, we want to set the library directory to
+	// $(OUT)/$os_..._$dbg/AbiSuite
+	// (aka "getExeDir()/../AbiSuite")
+	
+	if (_getExeDir(buf,sizeof(buf)) > 0)
+	{
+		int len = strlen(buf);
+		if (buf[len-1]=='\\')
+			buf[len-1] = 0;
+
+		strcpy(buf2,buf);
+		
+		UT_Vector v;
+		char * p = strtok(buf2,"\\");
+		v.addItem(p);
+		while ( (p=strtok(NULL,"\\")) )
+			v.addItem(p);
+
+		int n = v.getItemCount();
+		if (   (n > 2)
+			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0)
+			&& (UT_stricmp((const char *)v.getNthItem(n-3),"AbiSuite")==0))
+		{
+			strcat(buf,"\\..\\..");		// TODO trim the string rather than use ..'s
+			XAP_App::_setAbiSuiteLibDir(buf);
+			return;
+		}
+
+		if (   (n > 1)
+			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0))
+		{
+			strcat(buf,"\\..\\AbiSuite"); // TODO trim the string rather than use ..'s
+			XAP_App::_setAbiSuiteLibDir(buf);
+			return;
+		}
+
+		// [win32 only] if none of this works, just leave it the exe directory.
+
+		XAP_App::_setAbiSuiteLibDir(buf);
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return;
 }

@@ -43,6 +43,8 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	m_pUnixToolbarIcons = 0;
+
+	_setAbiSuiteLibDir();
 }
 
 XAP_UnixApp::~XAP_UnixApp(void)
@@ -149,15 +151,24 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 	// find all the fonts in the appropriate places.  the list of directories
 	// is given in a preferences variable.
 
+	char * szTemp = NULL;
 	const char * szPrefFontPath = NULL;
 	if ((getPrefsValue(XAP_PREF_KEY_UnixFontPath,&szPrefFontPath)) && (szPrefFontPath) && (*szPrefFontPath))
 		;
 	else
 		szPrefFontPath = XAP_PREF_DEFAULT_UnixFontPath;
 
+	if (*szPrefFontPath != '/')			// if relative path in prefs, prepend library directory.
+	{
+		szTemp = (char *)calloc(strlen(getAbiSuiteLibDir())+strlen(szPrefFontPath)+10,sizeof(char));
+		sprintf(szTemp,"%s/%s",getAbiSuiteLibDir(),szPrefFontPath);
+		szPrefFontPath = szTemp;
+	}
+
 	UT_DEBUGMSG(("Using FontPath from preferences [%s].\n",szPrefFontPath));
 	m_fontManager->setFontPath(szPrefFontPath);
-
+	FREEP(szTemp);
+	
 	// let it loose
 
 	if (!m_fontManager->scavengeFonts())
@@ -177,4 +188,59 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 #endif
 
 	return UT_TRUE;
+}
+
+void XAP_UnixApp::_setAbiSuiteLibDir(void)
+{
+	char buf[PATH_MAX];
+	char buf2[PATH_MAX];
+
+	// see if a command line option [-lib <AbiSuiteLibraryDirectory>] was given
+
+	int kLimit = m_pArgs->m_argc;
+	int nFirstArg = 1;	// Unix puts the program name in argv[0], so [1] is the first argument
+	int k;
+	
+	for (k=nFirstArg; k<kLimit; k++)
+		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
+		{
+			strcpy(buf,m_pArgs->m_argv[k+1]);
+			int len = strlen(buf);
+			if (buf[len-1]=='/')		// trim trailing slash
+				buf[len-1] = 0;
+			XAP_App::_setAbiSuiteLibDir(buf);
+			return;
+		}
+	
+	// if not, see if ABISUITE_HOME was set in the environment
+
+	const char * sz = getenv("ABISUITE_HOME");
+	if (sz && *sz)
+	{
+		strcpy(buf,sz);
+		char * p = buf;
+		int len = strlen(p);
+		if ( (p[0]=='"') && (p[len-1]=='"') )
+		{
+			// trim leading and trailing DQUOTES
+			p[len-1]=0;
+			p++;
+			len -= 2;
+		}
+		if (p[len-1]=='/')				// trim trailing slash
+			p[len-1] = 0;
+		XAP_App::_setAbiSuiteLibDir(p);
+		return;
+	}
+
+	// TODO what to do ??  try the current directory...
+	
+	UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory...."));
+
+	getcwd(buf,sizeof(buf));
+	int len = strlen(buf);
+	if (buf[len-1]=='/')				// trim trailing slash
+		buf[len-1] = 0;
+	XAP_App::_setAbiSuiteLibDir(buf);
+	return;
 }
