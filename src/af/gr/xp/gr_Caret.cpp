@@ -124,12 +124,12 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	// the editing window. To check for the other side would be more
 	// complicated, we would need to have a listener watching for
 	// window resizing. Tomas Jan 18, 2003
-	if(x < 0 || y < 0)
+	if(x <= 0 || y <= 0)
 		m_bCaret1OnScreen = false;
 	else
 		m_bCaret1OnScreen = true;
 	
-	if(x2 < 0 || y2 < 0)
+	if(x2 <= 0 || y2 <= 0)
 		m_bCaret2OnScreen = false;
 	else
 		m_bCaret2OnScreen = true;
