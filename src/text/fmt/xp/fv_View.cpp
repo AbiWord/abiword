@@ -1491,7 +1491,14 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 					const XML_Char * pszFieldF = pBlock->getProperty("field-font",true);
 					float fAlign = (float)atof(pszAlign);
 					float fIndent = (float)atof(pszIndent);
-					fAlign += (float) LIST_DEFAULT_INDENT;
+//
+// Convert pixels to inches.
+//
+					float maxWidthIN = ((float) pBlock->getFirstLine()->getContainer()->getWidth())/100. -0.6;
+					if(fAlign + (float) LIST_DEFAULT_INDENT < maxWidthIN)
+					{
+						fAlign += (float) LIST_DEFAULT_INDENT;
+					}
 					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),pszFieldF,fAlign,fIndent, currID,curlevel);
 					doInsert = false;
 				}

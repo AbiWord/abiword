@@ -34,6 +34,8 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Lists.h"
 #include "ap_UnixDialog_Lists.h"
+#include "fp_Line.h"
+#include "fp_Column.h"
 
 /*****************************************************************/
 
@@ -1333,11 +1335,25 @@ bool    AP_UnixDialog_Lists::dontUpdate(void)
  */
 void AP_UnixDialog_Lists::_gatherData(void)
 {
-	//
+	UT_sint32 maxWidth = getBlock()->getFirstLine()->getContainer()->getWidth();
+//
+// screen resolution is 100 pixels/inch
+//
+	float fmaxWidthIN = ((float) maxWidth/ 100.) - 0.6;
 	setiLevel(1);
-	//gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wLevelSpin));
-	setfAlign(gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_wAlignListSpin)));
+	float f =gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_wAlignListSpin));
+	if(f >   fmaxWidthIN)
+	{
+		f = fmaxWidthIN;
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wAlignListSpin), f);
+	}
+	setfAlign(f);
 	float indent = gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON( m_wIndentAlignSpin));
+	if((indent - f) > fmaxWidthIN )
+	{
+		indent = fmaxWidthIN + f;
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), indent);
+	}
 	setfIndent(indent - getfAlign());
 	if( (getfIndent() + getfAlign()) < 0.0)
 	{
