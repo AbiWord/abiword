@@ -138,9 +138,10 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 }
 
 UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
-								   const char * szFilename,
-								   IEFileType ieft,
-								   IE_Imp ** ppie)
+				   const char * szFilename,
+				   IEFileType ieft,
+				   IE_Imp ** ppie,
+				   IEFileType * pieft)
 {
 	// construct an importer of the right type.
 	// caller is responsible for deleting the importer object
@@ -177,6 +178,9 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
  		UT_Error errorCode = IE_ImpGraphic::constructImporter(szFilename, IEGFT_Unknown, &pIEG);
 		if (!errorCode && pIEG) 
  		{
+			// tell the caller the type of importer they got
+		   	if (pieft != NULL) *pieft = IEFT_Unknown; // to force a save-as
+
 		   	// create the importer 
 			*ppie = new IE_Imp_GraphicAsDocument(pDocument);
 		   	if (*ppie) {
@@ -196,6 +200,9 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	}
 
 	UT_ASSERT(ieft != IEFT_Unknown);
+
+	// tell the caller the type of importer they got
+	if (pieft != NULL) *pieft = ieft;
 
 	// use the importer for the specified file type
 	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)

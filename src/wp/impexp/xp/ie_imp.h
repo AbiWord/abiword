@@ -44,13 +44,14 @@ public:
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
 	static UT_Error		constructImporter(PD_Document * pDocument,
-										  const char * szFilename,
-										  IEFileType ieft,
-										  IE_Imp ** ppie);
+						  const char * szFilename,
+						  IEFileType ieft,
+						  IE_Imp ** ppie, 
+						  IEFileType * pieft = NULL);
 	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
-										   const char ** pszDesc,
-										   const char ** pszSuffixList,
-										   IEFileType * ft);
+						   const char ** pszDesc,
+						   const char ** pszSuffixList,
+						   IEFileType * ft);
 	static UT_uint32	getImporterCount(void);
 
  public:
@@ -58,7 +59,7 @@ public:
 	virtual ~IE_Imp();
 	virtual UT_Error	importFile(const char * szFilename) = 0;
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData) = 0;
+						unsigned char * pData, UT_uint32 lenData) = 0;
 
 protected:
 	PD_Document *		m_pDocument;

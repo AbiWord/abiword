@@ -95,7 +95,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	IE_Imp * pie = NULL;
 	UT_Error errorCode;
 
-	errorCode = IE_Imp::constructImporter(this,szFilename,(IEFileType) ieft,&pie);
+	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &m_lastSavedAsType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
@@ -118,9 +118,6 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
 		return UT_IE_NOMEMORY;
 	}
-
-	// save out file type so future saves know the type imported as
-	m_lastSavedAsType = (IEFileType) ieft;
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
