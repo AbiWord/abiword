@@ -19,13 +19,7 @@
  * 02111-1307, USA.
  */
  
-//extern "C" {
 #include <gnome.h>
-#ifdef HAVE_BONOBO
-// #include <libgnorba/gnorba.h>
-#include <bonobo.h>
-#endif
-//}
 
 #include <string.h>
 #include <stdio.h>

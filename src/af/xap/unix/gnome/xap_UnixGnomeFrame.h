@@ -21,13 +21,7 @@
 #ifndef XAP_UNIXGNOMEFRAME_H
 #define XAP_UNIXGNOMEFRAME_H
 
-extern "C" {
 #include <gnome.h>
-#ifdef HAVE_BONOBO
-#include <libgnorba/gnorba.h>
-#include <bonobo/gnome-bonobo.h>
-#endif
-}
 
 #include "xap_UnixFrame.h"
 #include "xap_UnixApp.h"

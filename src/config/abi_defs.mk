@@ -466,9 +466,15 @@ endif
 
 ifeq ($(ABI_NATIVE),unix)
 ifdef ABI_OPT_GNOME
-GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui)
+ifdef ABI_OPT_BONOBO
+GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print bonobo)
+GNOME_LIBS	:= $(shell $(GNOME_CONFIG) --libs gnomeui gal print bonobo)
+CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME -DHAVE_BONOBO
+else
+GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
 GNOME_LIBS	:= $(shell $(GNOME_CONFIG) --libs gnomeui gal print)
 CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
+endif
 EXTRA_LIBS	+=	$(GNOME_LIBS)
 ABI_GNOME_DIR		= gnome
 ABI_GNOME_PREFIX	= Gnome

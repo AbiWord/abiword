@@ -51,18 +51,7 @@ XAP_UnixGnomeApp::~XAP_UnixGnomeApp(void)
 
 UT_Bool XAP_UnixGnomeApp::initialize(void)
 {
-	// initialize GNOME first.
-#   ifdef HAVE_BONOBO
-	{
-		CORBA_Environment ev;
-		CORBA_exception_init(&ev);
-		gnome_CORBA_init(m_szAppName, "0.0", &m_pArgs->m_argc, m_pArgs->m_argv, GNORBA_INIT_SERVER_FUNC, &ev);
-		CORBA_exception_free(&ev);
-	}
-	bonobo_init(CORBA_OBJECT_NIL, CORBA_OBJECT_NIL, CORBA_OBJECT_NIL);
-#   else
 	gnome_init(m_szAppName, "0.0", m_pArgs->m_argc, m_pArgs->m_argv);
-#   endif
 
 	// let the base class of XAP_UnixApp do it's thing.
 	

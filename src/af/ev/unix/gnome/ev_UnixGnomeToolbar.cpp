@@ -18,10 +18,6 @@
  */
 
 #include <gnome.h>
-#ifdef HAVE_BONOBO
-//#include <libgnorba/gnorba.h>
-#include <bonobo.h>
-#endif
 
 #include <string.h>
 #include <stdlib.h>

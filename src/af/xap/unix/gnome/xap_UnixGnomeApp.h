@@ -21,13 +21,7 @@
 #ifndef XAP_UNIXGNOMEAPP_H
 #define XAP_UNIXGNOMEAPP_H
 
-extern "C" {
 #include <gnome.h>
-#ifdef HAVE_BONOBO
-#include <libgnorba/gnorba.h>
-#include <bonobo/gnome-bonobo.h>
-#endif
-}
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
