@@ -71,7 +71,7 @@ rpm_dynamic_fonts:
 ifdef UNIX_CAN_BUILD_DYNAMIC
 	@echo "* Building .rpm package [dynamic,fonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
-	(cd $(DIST); $(ALIEN) --to-rpm $(DEB_PKGBASENAME_DYNAMIC_FONTS).deb)
+	(cd $(DIST); alien -k --to-rpm $(DEB_PKGBASENAME_DYNAMIC_FONTS).deb)
 	(mv $(RPM_TOPDIR)/RPMS/$(OS_ARCH)/$(RPM_PKGBASENAME_DYNAMIC_FONTS).$(OS_ARCH).rpm $(DIST))
 endif
 
