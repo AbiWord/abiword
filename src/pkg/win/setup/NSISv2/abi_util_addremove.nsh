@@ -17,16 +17,21 @@ Var AR_RegFlags
   ;changes checked state of the section on the components page.
   ;Input: section index constant name specified in Section command.
 
-  ClearErrors
+  ; skip this for subsection, they will be correctly set based on subitems
+  SectionGetFlags ${${SecName}} $AR_SecFlags          ;Reading default section flags
+  IntOp $AR_SecFlags $AR_SecFlags & ${SF_SECGRP}      ;ignore all but group bit
+  IntCmp $AR_SecFlags ${SF_SECGRP} "default_${SecName}" ; is a section so skip ahead
+
   ;Reading component status from registry
+  ClearErrors
   ReadRegDWORD $AR_RegFlags HKLM \
     "${REG_UNINSTALL_KEY}\Components\${SecName}" "Installed"
   IfErrors "default_${SecName}"
     ;Status will stay default if registry value not found
     ;(component was never installed)
-  IntOp $AR_RegFlags $AR_RegFlags & 0x0001  ;Turn off all other bits
-  SectionGetFlags ${${SecName}} $AR_SecFlags  ;Reading default section flags
-  IntOp $AR_SecFlags $AR_SecFlags & 0xFFFE  ;Turn lowest (enabled) bit off
+  IntOp $AR_RegFlags $AR_RegFlags & 0x01              ;Turn off all other bits
+  SectionGetFlags ${${SecName}} $AR_SecFlags          ;Reading default section flags
+  IntOp $AR_SecFlags $AR_SecFlags & ${SECTION_OFF}    ;Turn lowest (enabled) bit off
   IntOp $AR_SecFlags $AR_RegFlags | $AR_SecFlags      ;Change lowest bit
 
   ;Writing modified flags
