@@ -8,13 +8,19 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 								 UT_Byte atomic,
 								 PT_DocPosition position,
 								 UT_Bool bLeftSide,
-								 PT_AttrPropIndex indexAP)
+								 PT_AttrPropIndex indexOldAP,
+								 PT_AttrPropIndex indexNewAP,
+								 UT_Bool bTempBefore,
+								 UT_Bool bTempAfter)
 {
 	m_type = type;
 	m_atomic = atomic;
 	m_position = position;
 	m_bLeftSide = bLeftSide;
-	m_indexAP = indexAP;
+	m_indexOldAP = indexOldAP;
+	m_indexAP = indexNewAP;
+	m_bTempBefore = bTempBefore;
+	m_bTempAfter = bTempAfter;
 }
 
 PX_ChangeRecord::~PX_ChangeRecord()
@@ -41,6 +47,21 @@ PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 	return m_indexAP;
 }
 
+PT_AttrPropIndex PX_ChangeRecord::getOldIndexAP(void) const
+{
+	return m_indexOldAP;
+}
+
+UT_Bool PX_ChangeRecord::getTempBefore(void) const
+{
+	return m_bTempBefore;
+}
+
+UT_Bool PX_ChangeRecord::getTempAfter(void) const
+{
+	return m_bTempAfter;
+}
+
 UT_Bool PX_ChangeRecord::isLeftSide(void) const
 {
 	return m_bLeftSide;
@@ -50,7 +71,9 @@ PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 {
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord(getRevType(),getRevFlags(),
-							  m_position,m_bLeftSide,m_indexAP);
+							  m_position,m_bLeftSide,
+							  m_indexAP,m_indexOldAP,
+							  m_bTempAfter,m_bTempBefore);
 	UT_ASSERT(pcr);
 	return pcr;
 }

@@ -41,8 +41,8 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			PT_BlockOffset fragOffset = 0;
 			if (!getTextFragFromPosition(pcrSpan->getPosition(),pcrSpan->isLeftSide(),&pfs,&pft,&fragOffset))
 				return UT_FALSE;
-			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
-			if (!_insertSpan(pft,pcrSpan->getBufIndex(),pcrSpan->isLeftSide(),fragOffset,pcrSpan->getLength()))
+			if (!_insertSpan(pft,pcrSpan->getBufIndex(),pcrSpan->isLeftSide(),fragOffset,
+							 pcrSpan->getLength(),pcrSpan->getIndexAP()))
 				return UT_FALSE;
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
@@ -62,6 +62,13 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			PT_BlockOffset fragOffset = 0;
 			if (!getTextFragFromPosition(pcrSpan->getPosition(),UT_FALSE,&pfs,&pft,&fragOffset))
 				return UT_FALSE;
+			// TODO the following assert fired on me one time when
+			// TODO inserting/deleting frags that were formatted
+			// TODO differently than the surrounding text.  part of
+			// TODO this is a problem with undo/redo and part of it
+			// TODO is that we hard-coded a right-side in the above
+			// TODO search.  readdress this after we delete the left/
+			// TODO right-side thing.
 			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
 			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
 			m_pDocument->notifyListeners(pfs,pcr);
@@ -208,6 +215,14 @@ UT_Bool pt_PieceTable::undoCmd(void)
 		UT_Byte flagsRev = pcrRev->getFlags();
 		UT_Bool bResult = _doTheDo(pcrRev);
 		delete pcrRev;
+
+		if (pcr->getType() != PX_ChangeRecord::PXT_GlobMarker)
+		{
+			m_bHaveTemporarySpanFmt = pcr->getTempBefore();
+			m_indexAPTemporarySpanFmt = pcr->getOldIndexAP();
+			m_dposTemporarySpanFmt = pcr->getPosition();
+		}
+		
 		if (!bResult)
 			return UT_FALSE;
 		m_history.didUndo();
@@ -240,6 +255,14 @@ UT_Bool pt_PieceTable::redoCmd(void)
 	{
 		if (!_doTheDo(pcr))
 			return UT_FALSE;
+
+		if (pcr->getType() != PX_ChangeRecord::PXT_GlobMarker)
+		{
+			m_bHaveTemporarySpanFmt = pcr->getTempAfter();
+			m_indexAPTemporarySpanFmt = pcr->getIndexAP();
+			m_dposTemporarySpanFmt = pcr->getPosition();
+		}
+		
 		m_history.didRedo();
 		if (flagsRevFirst == pcr->getFlags())		// stop when we have a matching end
 			break;

@@ -10,15 +10,13 @@ PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   UT_Bool bLeftSide,
 													   PT_AttrPropIndex indexOldAP,
 													   PT_AttrPropIndex indexNewAP,
+													   UT_Bool bTempBefore,
+													   UT_Bool bTempAfter,
 													   PTChangeFmt ptc,
 													   PT_BufIndex bufIndex,
 													   UT_uint32 length)
-	: PX_ChangeRecord(type, atomic, position, bLeftSide, indexNewAP)
+	: PX_ChangeRecord(type, atomic, position, bLeftSide, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
 {
-	UT_ASSERT(length > 0);
-	
-	// m_indexAP in base class is set to indexNewAP
-	m_indexOldAP = indexOldAP;
 	m_ptc = ptc;
 	m_bufIndex = bufIndex;
 	m_length = length;
@@ -36,14 +34,10 @@ PX_ChangeRecord * PX_ChangeRecord_SpanChange::reverse(void) const
 		= new PX_ChangeRecord_SpanChange(getRevType(),getRevFlags(),
 										 m_position,m_bLeftSide,
 										 m_indexAP,m_indexOldAP,
+										 m_bTempAfter,m_bTempBefore,
 										 ptcRev,m_bufIndex,m_length);
 	UT_ASSERT(pcr);
 	return pcr;
-}
-
-PT_AttrPropIndex PX_ChangeRecord_SpanChange::getOldIndexAP(void) const
-{
-	return m_indexOldAP;
 }
 
 UT_uint32 PX_ChangeRecord_SpanChange::getLength(void) const

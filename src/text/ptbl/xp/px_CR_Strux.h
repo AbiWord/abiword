@@ -26,7 +26,10 @@ public:
 						  UT_Byte atomic,
 						  PT_DocPosition position,
 						  UT_Bool bLeftSide,
+						  PT_AttrPropIndex indexOldAP,
 						  PT_AttrPropIndex indexAP,
+						  UT_Bool bTempBefore,
+						  UT_Bool bTempAfter,
 						  PTStruxType struxType);
 	~PX_ChangeRecord_Strux();
 

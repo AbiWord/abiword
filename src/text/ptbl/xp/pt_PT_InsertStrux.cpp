@@ -183,6 +183,9 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	UT_ASSERT(m_pts==PTS_Editing);
 
+	if (m_bHaveTemporarySpanFmt)
+		clearTemporarySpanFmt();
+
 	// get the text fragment at the doc postion and the strux fragment
 	// immediately prior to (containing) the given document position.
 	// this is valid for stuff within the body of the document, but may
@@ -220,10 +223,14 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,PX_ChangeRecord::PXF_Null,
-									dpos,bLeftSide,indexAP,pts);
+									dpos,bLeftSide,
+									m_indexAPTemporarySpanFmt,indexAP,
+									m_bHaveTemporarySpanFmt,UT_FALSE,
+									pts);
 	UT_ASSERT(pcrs);
 	m_history.addChangeRecord(pcrs);
 	m_pDocument->notifyListeners(pfsPrev,pfsNew,pcrs);
-
+	m_bHaveTemporarySpanFmt = UT_FALSE;
+	
 	return UT_TRUE;
 }

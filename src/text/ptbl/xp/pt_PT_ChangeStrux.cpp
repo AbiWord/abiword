@@ -45,11 +45,15 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  PX_ChangeRecord::PXF_Null,
-										  getFragPosition(pfs),indexOldAP,indexNewAP,ptc);
+										  getFragPosition(pfs),
+										  indexOldAP,indexNewAP,
+										  m_bHaveTemporarySpanFmt,UT_FALSE,
+										  ptc);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);
 	m_pDocument->notifyListeners(pfs,pcr);
+	m_bHaveTemporarySpanFmt = UT_FALSE;
 
 	return UT_TRUE;
 }
@@ -64,6 +68,9 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	UT_ASSERT(m_pts==PTS_Editing);
 
 	// apply a strux-level formating change to the given region.
+
+	if (m_bHaveTemporarySpanFmt)
+		clearTemporarySpanFmt();
 
 	UT_ASSERT(dpos1 <= dpos2);
 	UT_Bool bHaveAttributes = (attributes && *attributes);

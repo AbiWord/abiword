@@ -94,6 +94,8 @@ public:
 													pf_Frag_Text ** ppft,
 													PT_BlockOffset * pOffset) const;
 
+	void					clearTemporarySpanFmt(void);
+	
 	// TODO add stuff for objects like in-line images.
 
 	void					dump(FILE * fp) const;
@@ -114,7 +116,8 @@ protected:
 										PT_BufIndex bi,
 										UT_Bool bLeftSide,
 										PT_BlockOffset fragOffset,
-										UT_uint32 length);
+										UT_uint32 length,
+										PT_AttrPropIndex indexAP);
 
 	UT_Bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 										PT_BufIndex bi, UT_uint32 length,
@@ -162,13 +165,24 @@ protected:
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd);
 	
+	void					_setTemporarySpanFmt(PT_AttrPropIndex indexNewAP,
+												 PT_DocPosition dpos);
+
+	UT_Bool					_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
+														   PT_DocPosition dpos,
+														   UT_Bool bLeftSide,
+														   const XML_Char ** attributes,
+														   const XML_Char ** properties);
 	
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
-
+	UT_Bool					m_bHaveTemporarySpanFmt;
+	PT_AttrPropIndex		m_indexAPTemporarySpanFmt;
+	PT_DocPosition			m_dposTemporarySpanFmt;
+	
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;
 	} loading;							/* stuff only valid while m_pts==PTS_Loading */

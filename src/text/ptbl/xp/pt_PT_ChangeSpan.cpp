@@ -184,17 +184,22 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	// we need may be blown away during the change.  we then notify all
 	// listeners of the change.
 
+	UT_ASSERT(!m_bHaveTemporarySpanFmt);
 	UT_Bool bLeftSide = UT_TRUE;		// TODO we are going to delete these.
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 										 PX_ChangeRecord::PXF_Null,
-										 dpos,bLeftSide,indexOldAP,indexNewAP,ptc,
+										 dpos,bLeftSide,
+										 indexOldAP,indexNewAP,
+										 m_bHaveTemporarySpanFmt,UT_FALSE,
+										 ptc,
 										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 										 length);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _fmtChangeSpan(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
 	m_pDocument->notifyListeners(pfs,pcr);
+	m_bHaveTemporarySpanFmt = UT_FALSE;
 
 	return bResult;
 }
@@ -211,6 +216,15 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 
 	// apply a span-level formating change to the given region.
 
+	if (dpos1 == dpos2)					// if length of change is zero
+	{
+		if (m_bHaveTemporarySpanFmt && (dpos1 != m_dposTemporarySpanFmt))
+			clearTemporarySpanFmt();
+		return _setTemporarySpanFmtWithNotify(ptc,dpos1,bLeftSide1,attributes,properties);
+	}
+	if (m_bHaveTemporarySpanFmt)
+		clearTemporarySpanFmt();
+	
 	UT_ASSERT(dpos1 < dpos2);
 	UT_Bool bHaveAttributes = (attributes && *attributes);
 	UT_Bool bHaveProperties = (properties && *properties);

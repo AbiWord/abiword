@@ -9,11 +9,11 @@ PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
 														 PT_DocPosition position,
 														 PT_AttrPropIndex indexOldAP,
 														 PT_AttrPropIndex indexNewAP,
+														 UT_Bool bTempBefore,
+														 UT_Bool bTempAfter,
 														 PTChangeFmt ptc)
-	: PX_ChangeRecord(type, atomic, position, UT_FALSE, indexNewAP)
+	: PX_ChangeRecord(type, atomic, position, UT_FALSE, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
 {
-	// m_indexAP in base class is set to indexNewAP
-	m_indexOldAP = indexOldAP;
 	m_ptc = ptc;
 }
 
@@ -29,12 +29,8 @@ PX_ChangeRecord * PX_ChangeRecord_StruxChange::reverse(void) const
 		= new PX_ChangeRecord_StruxChange(getRevType(),getRevFlags(),
 										  m_position,
 										  m_indexAP,m_indexOldAP,
+										  m_bTempAfter,m_bTempBefore,
 										  ptcRev);
 	UT_ASSERT(pcr);
 	return pcr;
-}
-
-PT_AttrPropIndex PX_ChangeRecord_StruxChange::getOldIndexAP(void) const
-{
-	return m_indexOldAP;
 }

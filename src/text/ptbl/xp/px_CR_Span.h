@@ -30,7 +30,10 @@ public:
 						 UT_Byte atomic,
 						 PT_DocPosition position,
 						 UT_Bool bLeftSide,
+						 PT_AttrPropIndex indexOldAP,
 						 PT_AttrPropIndex indexAP,
+						 UT_Bool bTempBefore,
+						 UT_Bool bTempAfter,
 						 PT_BufIndex bufIndex,
 						 UT_uint32 length);
 	~PX_ChangeRecord_Span();

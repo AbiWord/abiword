@@ -38,7 +38,7 @@ void pt_PieceTable::beginMultiStepGlob(void)
 
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
 												PX_ChangeRecord::PXF_MultiStepStart,
-												0,0,0);
+												0,0,0,0,0,0);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 }
@@ -47,7 +47,7 @@ void pt_PieceTable::endMultiStepGlob(void)
 {
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
 												PX_ChangeRecord::PXF_MultiStepEnd,
-												0,0,0);
+												0,0,0,0,0,0);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 }
@@ -65,7 +65,7 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 	
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
 												PX_ChangeRecord::PXF_UserAtomicStart,
-												0,0,0);
+												0,0,0,0,0,0);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 }
@@ -74,7 +74,7 @@ void pt_PieceTable::endUserAtomicGlob(void)
 {
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_GlobMarker,
 												PX_ChangeRecord::PXF_UserAtomicEnd,
-												0,0,0);
+												0,0,0,0,0,0);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 }

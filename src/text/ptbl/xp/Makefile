@@ -75,6 +75,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pt_PieceTable_DeleteStrux.cpp	\
 			pt_PieceTable_InsertSpan.cpp	\
 			pt_PieceTable_InsertStrux.cpp	\
+			pt_PieceTable_TempFmt.cpp	\
 			pt_PieceTable_Undo.cpp		\
 			pt_VarSet.cpp			\
 			px_ChangeHistory.cpp		\

@@ -49,7 +49,9 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   0,docPos,
 								   UT_TRUE, /* assume left side */
-								   m_indexAP,m_bufIndex,m_length);
+								   m_indexAP,m_indexAP,
+								   UT_FALSE,UT_FALSE,
+								   m_bufIndex,m_length);
 	if (!pcr)
 		return UT_FALSE;
 

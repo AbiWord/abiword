@@ -35,6 +35,10 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 
 	setPieceTableState(PTS_Loading);
 	loading.m_indexCurrentInlineAP = 0;
+
+	m_bHaveTemporarySpanFmt = UT_FALSE;
+	m_indexAPTemporarySpanFmt = 0;
+	m_dposTemporarySpanFmt = 0;
 }
 
 pt_PieceTable::~pt_PieceTable()

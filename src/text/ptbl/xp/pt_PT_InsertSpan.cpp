@@ -27,7 +27,8 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 								   PT_BufIndex bi,
 								   UT_Bool bLeftSide,
 								   PT_BlockOffset fragOffset,
-								   UT_uint32 length)
+								   UT_uint32 length,
+								   PT_AttrPropIndex indexAP)
 {
 	// update the fragment and/or the fragment list.
 	// return true if successful.
@@ -45,7 +46,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 		// if the fragment length is equal to our offset, we are
 		// at the right end of it.
 		
-		if (m_varset.isContiguous(pft->getBufIndex(),fragLen,bi))
+		if ((pft->getIndexAP()==indexAP) && m_varset.isContiguous(pft->getBufIndex(),fragLen,bi))
 		{
 			// we are at the right end of it and the actual data is contiguous.
 			// new text is contiguous, we just update the length of this fragment.
@@ -70,7 +71,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 		// [This case happens when the user hits a right-arrow and
 		//  then starts typing, for example.]
 		
-		if (m_varset.isContiguous(bi,length,pft->getBufIndex()))
+		if ((pft->getIndexAP()==indexAP) && m_varset.isContiguous(bi,length,pft->getBufIndex()))
 		{
 			// we are at the left end of it and the actual data is contiguous.
 			// new text is contiguous, we just update the offset and length of
@@ -103,7 +104,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 			pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
 			UT_uint32 prevLength = pftPrev->getLength();
 			
-			if (   (pftPrev->getIndexAP() == pft->getIndexAP())
+			if (   (pftPrev->getIndexAP() == indexAP)
 				&& (m_varset.isContiguous(pftPrev->getBufIndex(),prevLength,bi)))
 			{
 				pftPrev->changeLength(prevLength+length);
@@ -116,7 +117,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 	// fragment(s) into the list.  first we construct a new text fragment
 	// for the data that we inserted.
 
-	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,pft->getIndexAP());
+	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,indexAP);
 	if (!pftNew)
 		return UT_FALSE;
 
@@ -163,6 +164,9 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	UT_ASSERT(m_pts==PTS_Editing);
 
+	if (m_bHaveTemporarySpanFmt && (dpos != m_dposTemporarySpanFmt))
+		clearTemporarySpanFmt();
+
 	// append the text data to the end of the current buffer.
 
 	PT_BufIndex bi;
@@ -177,7 +181,12 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	if (!getTextFragFromPosition(dpos,bLeftSide,&pfs,&pft,&fragOffset))
 		return UT_FALSE;
 
-	if (!_insertSpan(pft,bi,bLeftSide,fragOffset,length))
+	PT_AttrPropIndex indexAP;
+	if (m_bHaveTemporarySpanFmt)
+		indexAP = m_indexAPTemporarySpanFmt;
+	else
+		indexAP = pft->getIndexAP();
+	if (!_insertSpan(pft,bi,bLeftSide,fragOffset,length,indexAP))
 		return UT_FALSE;
 
 	// create a change record, add it to the history, and notify
@@ -185,10 +194,14 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,PX_ChangeRecord::PXF_Null,
-								   dpos,bLeftSide,pft->getIndexAP(),bi,length);
+								   dpos,bLeftSide,
+								   indexAP,indexAP,
+								   m_bHaveTemporarySpanFmt,UT_FALSE,
+								   bi,length);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
+	m_bHaveTemporarySpanFmt = UT_FALSE;
 
 	return UT_TRUE;
 }
