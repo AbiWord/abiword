@@ -132,7 +132,7 @@ BeginSet(en,GB,false)
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Align",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Left",			"Left-justify the paragraph")
-	MenuLabel(AP_MENU_ID_ALIGN_CENTER,		"&Center",			"Center-align the paragraph")
+	MenuLabel(AP_MENU_ID_ALIGN_CENTER,		"&Centre",			"Centre-align the paragraph")
 	MenuLabel(AP_MENU_ID_ALIGN_RIGHT,		"&Right",			"Right-justify the paragraph")
 	MenuLabel(AP_MENU_ID_ALIGN_JUSTIFY,		"&Justify",			"Justify the paragraph")
 
