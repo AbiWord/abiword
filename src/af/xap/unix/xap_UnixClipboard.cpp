@@ -236,6 +236,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 					   void ** ppData, UT_uint32 * pLen,
 					   const char **pszFormatFound)
 {
+  bool rval = false;
   if (!m_bWaitingForContents) {
     // walk desired formats list and find first one that server also has
     GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
@@ -254,20 +255,23 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
         GtkSelectionData* selection = gtk_clipboard_wait_for_contents (clipboard, atom);
         m_bWaitingForContents = false;
 
-        if(selection && selection->data && (selection->length > 0))
+        if(selection)
 	  {
-	    m_databuf.truncate(0);
-	    m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
-     	    *pLen = selection->length;
-	    *ppData = (void*)m_databuf.getPointer(0);
-	    *pszFormatFound = formatList[i];
+	    if (selection->data && (selection->length > 0))
+	      {
+		m_databuf.truncate(0);
+		m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
+		*pLen = selection->length;
+		*ppData = (void*)m_databuf.getPointer(0);
+		*pszFormatFound = formatList[i];
+		rval = true;
+	      }
 	    gtk_selection_data_free(selection);
-	    return true;
  	  }
       }
   }
 
-   return false;
+   return rval;
 }
 
 //////////////////////////////////////////////////////////////////
