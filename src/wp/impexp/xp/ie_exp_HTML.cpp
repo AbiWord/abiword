@@ -3557,7 +3557,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		if (*--ptr == '.')
 			{
 				suffix = ptr;
-				break;
+				// break;
 			}
 	if (dataid == suffix) return;
 
