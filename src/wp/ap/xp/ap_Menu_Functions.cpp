@@ -41,9 +41,13 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 	switch(id)
 	{
 	case AP_MENU_ID_EDIT_UNDO:
+		if (!pView->canDo(UT_TRUE))
+			s = EV_MIS_Gray;
+		break;
+
 	case AP_MENU_ID_EDIT_REDO:
-		// TODO if (no relevant change history)
-		// TODO     s |= EV_MIS_Gray;
+		if (!pView->canDo(UT_FALSE))
+			s = EV_MIS_Gray;
 		break;
 
 	default:

@@ -56,17 +56,22 @@ public:
 	//            having just performed the redo).
 	
 	UT_Bool					addChangeRecord(PX_ChangeRecord * pcr);
+	UT_Bool					canDo(UT_Bool bUndo) const;
 	UT_Bool					getUndo(PX_ChangeRecord ** ppcr) const;
 	UT_Bool					getRedo(PX_ChangeRecord ** ppcr) const;
 	UT_Bool					didUndo(void);
 	UT_Bool					didRedo(void);
 	void					coalesceHistory(const PX_ChangeRecord * pcr);
 
+	void					setClean(void);
+	UT_Bool					isDirty(void) const;
+
 protected:
 	void					_invalidateRedo(void);
 	
 	UT_Vector				m_vecChangeRecords;
 	UT_uint32				m_undoPosition;
+	UT_sint32				m_savePosition;
 };
 
 #endif /* PX_CHANGEHISTORY_H */

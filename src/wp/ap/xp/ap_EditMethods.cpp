@@ -1223,13 +1223,13 @@ Defun(closeWindow)
 	UT_ASSERT(pApp);
 
 	// is this the last view on a dirty document?
-	if ((pFrame->getViewNumber() > 0) && 
+	if ((pFrame->getViewNumber() == 0) && 
 		(pFrame->isDirty()))
 	{
 #ifdef DLGHACK
 		char buf[256];	// TODO: could overflow until we get path out of filename
 
-		sprintf(buf, "Save changes to %s?", pFrame->getFilename());
+		sprintf(buf, "Save changes to %s?", pFrame->getTitle(200));
 		dlg_Answer ans = _askUser(pFrame, buf, dlg_YNC, 0);
 		
 		if (ans == dlg_YES)

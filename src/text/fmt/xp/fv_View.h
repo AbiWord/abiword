@@ -127,6 +127,7 @@ public:
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(UT_Bool bNext);
 
+	UT_Bool			canDo(UT_Bool bUndo) const;
 	void			cmdUndo(UT_uint32 count);
 	void			cmdRedo(UT_uint32 count);
 	void			cmdSave(void);

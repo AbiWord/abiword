@@ -27,7 +27,7 @@
 void PD_Document::__dump(FILE * fp) const
 {
 	fprintf(fp,"Dump for %s:\n",m_szFilename);
-	fprintf(fp,"  Document is %s\n",((m_bDirty) ? "DIRTY" : "CLEAN"));
+	fprintf(fp,"  Document is %s\n",((isDirty()) ? "DIRTY" : "CLEAN"));
 	
 	if (m_pPieceTable)
 		m_pPieceTable->__dump(fp);

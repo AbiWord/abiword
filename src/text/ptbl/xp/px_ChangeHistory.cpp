@@ -33,6 +33,7 @@
 px_ChangeHistory::px_ChangeHistory()
 {
 	m_undoPosition = 0;
+	m_savePosition = 0;
 }
 
 px_ChangeHistory::~px_ChangeHistory()
@@ -58,6 +59,9 @@ void px_ChangeHistory::_invalidateRedo(void)
 		delete pcrTemp;
 		m_vecChangeRecords.deleteNthItem(k-1);
 	}
+
+	if (m_savePosition > (UT_sint32) m_undoPosition)
+		m_savePosition = -1;
 }
 
 UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
@@ -70,6 +74,13 @@ UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	UT_Bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
 	UT_ASSERT(bResult);
 	return bResult;
+}
+
+UT_Bool px_ChangeHistory::canDo(UT_Bool bUndo) const
+{
+	PX_ChangeRecord * pcr;
+
+	return (bUndo ? getUndo(&pcr) : getRedo(&pcr));
 }
 
 UT_Bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
@@ -138,3 +149,12 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 	}
 }
 
+void px_ChangeHistory::setClean(void)
+{
+	m_savePosition = (UT_sint32) m_undoPosition;
+}
+
+UT_Bool px_ChangeHistory::isDirty(void) const
+{
+	return (m_savePosition != (UT_sint32) m_undoPosition);
+}

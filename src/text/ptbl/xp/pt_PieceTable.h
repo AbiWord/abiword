@@ -55,7 +55,11 @@ public:
 	void					endMultiStepGlob(void);
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
+
+	void					setClean(void);
+	UT_Bool					isDirty(void) const;
 	
+	UT_Bool					canDo(UT_Bool bUndo) const;
 	UT_Bool					undoCmd(void);
 	UT_Bool					redoCmd(void);
 

@@ -254,6 +254,11 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 /*****************************************************************/
 /*****************************************************************/
 	
+UT_Bool pt_PieceTable::canDo(UT_Bool bUndo) const
+{
+	return m_history.canDo(bUndo);
+}
+
 UT_Bool pt_PieceTable::undoCmd(void)
 {
 	// do a user-atomic undo.
@@ -331,3 +336,22 @@ UT_Bool pt_PieceTable::redoCmd(void)
 
 	return UT_TRUE;
 }
+
+UT_Bool pt_PieceTable::isDirty(void) const
+{
+	UT_Bool bDirty = m_history.isDirty();
+
+	if (!bDirty)
+	{
+		// TODO: this is a good spot for sanity checks of the undo mechanism
+		// TODO: if we really *aren't* dirty, then doc should be identical to saved version
+	}
+
+	return bDirty;
+}
+
+void pt_PieceTable::setClean(void)
+{
+	m_history.setClean();
+}
+

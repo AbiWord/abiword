@@ -36,7 +36,6 @@
 PD_Document::PD_Document()
 {
 	m_szFilename = NULL;
-	m_bDirty = UT_FALSE;
 	m_pPieceTable = NULL;
 }
 
@@ -93,7 +92,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 	}
 	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
-	setClean();							// mark the document as not-dirty
+	_setClean();							// mark the document as not-dirty
 	return UT_TRUE;
 }
 
@@ -129,7 +128,7 @@ UT_Bool PD_Document::newDocument(void)
 	appendStrux(PTX_Block,NULL);
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
-	setClean();							// mark the document as not-dirty
+	_setClean();							// mark the document as not-dirty
 	return UT_TRUE;
 }
 
@@ -164,7 +163,7 @@ UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
 
     m_szFilename = strdup(szFilename);
 
-	setClean();
+	_setClean();
 	return UT_TRUE;
 }
 
@@ -192,7 +191,7 @@ UT_Bool PD_Document::save(IEFileType ieft)
 		return UT_FALSE;
 	}
 
-	setClean();
+	_setClean();
 	return UT_TRUE;
 }
 
@@ -203,12 +202,12 @@ const char * PD_Document::getFilename(void) const
 
 UT_Bool PD_Document::isDirty(void) const
 {
-	return m_bDirty;
+	return m_pPieceTable->isDirty();
 }
 
-void PD_Document::setClean(void)
+void PD_Document::_setClean(void)
 {
-	m_bDirty = UT_FALSE;
+	m_pPieceTable->setClean();
 }
 
 UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
@@ -458,6 +457,11 @@ void PD_Document::beginUserAtomicGlob(void)
 void PD_Document::endUserAtomicGlob(void)
 {
 	m_pPieceTable->endUserAtomicGlob();
+}
+
+UT_Bool PD_Document::canDo(UT_Bool bUndo) const
+{
+	return m_pPieceTable->canDo(bUndo);
 }
 
 UT_Bool PD_Document::undoCmd(UT_uint32 repeatCount)

@@ -1917,6 +1917,11 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 }
 // -------------------------------------------------------------------------
 
+UT_Bool FV_View::canDo(UT_Bool bUndo) const
+{
+	return m_pDoc->canDo(bUndo);
+}
+
 void FV_View::cmdUndo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())

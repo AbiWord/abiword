@@ -57,10 +57,11 @@ public:
 	UT_Bool					newDocument(void);
 	const char *			getFilename(void) const;
 	UT_Bool					isDirty(void) const;
-	void					setClean(void);
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
+
+	UT_Bool					canDo(UT_Bool bUndo) const;
 	UT_Bool					undoCmd(UT_uint32 repeatCount);
 	UT_Bool					redoCmd(UT_uint32 repeatCount);
 	
@@ -126,8 +127,9 @@ public:
 #endif
 	
 protected:
+	void					_setClean(void);
+
 	const char *			m_szFilename;
-	UT_Bool					m_bDirty;
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
 };
