@@ -598,15 +598,17 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "label9", label9,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (label9);
-	gtk_box_pack_start (GTK_BOX (hbox12), label9, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox12), label9, FALSE, FALSE, 1);
 
-	spinbuttonTabstop_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
-	spinbuttonTabstop = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonTabstop_adj), 1, 0);
-	gtk_widget_ref (spinbuttonTabstop);
-	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "spinbuttonTabstop", spinbuttonTabstop,
-							  (GtkDestroyNotify) gtk_widget_unref);
+	spinbuttonTabstop_adj = gtk_adjustment_new (1, -1000, 1000, 3, 3, 10);
+        spinbuttonTabstop = gtk_entry_new();
 	gtk_widget_show (spinbuttonTabstop);
 	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop, TRUE, TRUE, 0);
+	gtk_entry_set_editable( GTK_ENTRY( spinbuttonTabstop),FALSE);
+	GtkWidget * spinbuttonTabstop_dum = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonTabstop_adj), 1, 0);
+	gtk_widget_show (spinbuttonTabstop_dum);
+	gtk_widget_set_usize(spinbuttonTabstop_dum,10,-2);
+	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop_dum, FALSE,FALSE, 0);
 
 	gtk_window_add_accel_group (GTK_WINDOW (windowTabs), accel_group);
 
@@ -663,9 +665,17 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
                        GTK_SIGNAL_FUNC(s_edit_change),
                        (gpointer) this);
 
+    gtk_signal_connect(spinbuttonTabstop_adj,
+                       "value_changed",
+                       GTK_SIGNAL_FUNC(s_spin_default_changed),
+                       (gpointer) this);
+
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
 
+
+        m_iDefaultSpin =  (UT_sint32) GTK_ADJUSTMENT(spinbuttonTabstop_adj)->value;
+        m_oDefaultSpin_adj = spinbuttonTabstop_adj;
 	m_Widgets.setNthItem( id_EDIT_TAB,				entryTabEntry,		NULL);
 	m_Widgets.setNthItem( id_LIST_TAB,				listTabs,			NULL);
 	m_Widgets.setNthItem( id_SPIN_DEFAULT_TAB_STOP,	spinbuttonTabstop,	NULL);
@@ -701,7 +711,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 						   (gpointer) this);
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_ALIGN_LEFT));
+		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_ALIGN_LEFT + (UT_uint32)FL_TAB_LEFT));
 	}
 
 	for ( id = id_LEADER_NONE; id <= id_LEADER_UNDERLINE; id = (tControl)((UT_uint32)id + 1))
@@ -713,7 +723,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 						   (gpointer) this);
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_ALIGN_LEFT));
+		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_LEADER_NONE + (UT_uint32)FL_LEADER_NONE));
 	}
 
 	// create the accelerators from &'s
@@ -751,6 +761,20 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	gtk_widget_set_sensitive( w, value );
 }
 
+
+void AP_UnixDialog_Tab::_spinChanged(void)
+{
+        UT_sint32 i =  (UT_sint32) GTK_ADJUSTMENT(m_oDefaultSpin_adj)->value;
+	UT_sint32 amt = i - m_iDefaultSpin;
+	if(amt < 0)
+	      amt = -1;
+	else if(amt > 0)
+	      amt = 1;
+	_doSpin(id_SPIN_DEFAULT_TAB_STOP, amt);
+	m_iDefaultSpin = i;
+}
+
+
 /*****************************************************************/
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -783,6 +807,13 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 // WP level events
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
  
+/*static*/ void AP_UnixDialog_Tab::s_spin_default_changed(GtkWidget * widget, gpointer data )
+{ 
+	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	dlg->_spinChanged();
+}
+
+
 /*static*/ void AP_UnixDialog_Tab::s_set_clicked(GtkWidget * widget, gpointer data )
 { 
 	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
@@ -918,9 +949,8 @@ void AP_UnixDialog_Tab::_setAlignment( eTabType a )
 			break;
 
 		}
-
 	// time to set the alignment radiobutton widget
-	GtkWidget *w = _lookupWidget( id );
+	GtkWidget *w = _lookupWidget( id); 
 	UT_ASSERT(w && GTK_IS_RADIO_BUTTON(w));
 
 	// tell the change routines to ignore this message
@@ -961,21 +991,16 @@ void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
 
 const XML_Char* AP_UnixDialog_Tab::_gatherDefaultTabStop()
 {
-	return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_SPIN_DEFAULT_TAB_STOP ) ) );
+        return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_SPIN_DEFAULT_TAB_STOP ) ) );
 }
 
 void AP_UnixDialog_Tab::_setDefaultTabStop( const XML_Char* defaultTabStop )
 {
 	GtkWidget *w = _lookupWidget( id_SPIN_DEFAULT_TAB_STOP );
 
-	// first, we stop the entry from sending the changed signal to our handler
-	gtk_signal_handler_block_by_data(  GTK_OBJECT(w), (gpointer) this );
-
 	// then set the text
-	gtk_entry_set_text( GTK_ENTRY(w), defaultTabStop );
 
-	// turn signals back on
-	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(w), (gpointer) this );
+	gtk_entry_set_text( GTK_ENTRY(w), defaultTabStop );
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -1024,8 +1049,8 @@ void AP_UnixDialog_Tab::_setSelectTab( UT_sint32 v )
 	}
 	else
 	{
-	  UT_DEBUGMSG(("SEVIOR: _setSelectTab not implemented \n"));
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
+		gtk_list_select_item( wList, m_iGtkListIndex);
 	}
 }
 
@@ -1059,3 +1084,7 @@ void AP_UnixDialog_Tab::_clearList()
 	// clear all the items from the list
 	gtk_list_clear_items( wList, 0, -1 );
 }
+
+
+
+

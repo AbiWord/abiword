@@ -130,3 +130,5 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 };
 
 #endif /* AP_DIALOG_PARAGRAPH_H */
+
+

@@ -40,7 +40,7 @@ public:
 
 	GtkWidget *_lookupWidget( tControl id );
 	virtual void _controlEnable( tControl id, UT_Bool value );
-
+        void _spinChanged(void);
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
  					    virtual void    _set##a( t )
@@ -84,26 +84,28 @@ public:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonCancel;
-
+	UT_sint32 m_iDefaultSpin;
+	GtkObject *  m_oDefaultSpin_adj;
 	UT_Bool	   m_bInSetCall;		// a flag set to tell the change routines to ignore this message
 	UT_sint32  m_iGtkListIndex;		// the -1, 0.. (N-1) index for the N tabs
 
 protected:
 	// Unix call back handlers
-	static void s_ok_clicked			( GtkWidget *, gpointer );
+	static void s_ok_clicked		( GtkWidget *, gpointer );
 	static void s_cancel_clicked		( GtkWidget *, gpointer );
-	static void s_apply_clicked			( GtkWidget *, gpointer );
+	static void s_apply_clicked		( GtkWidget *, gpointer );
 
-	static void s_set_clicked			( GtkWidget *, gpointer );
-	static void s_clear_clicked			( GtkWidget *, gpointer );
+	static void s_set_clicked		( GtkWidget *, gpointer );
+	static void s_clear_clicked		( GtkWidget *, gpointer );
 	static void s_clear_all_clicked		( GtkWidget *, gpointer );
 
 	static void s_delete_clicked		( GtkWidget *, GdkEvent *, gpointer );
 
-	static void s_list_select			( GtkWidget *, gpointer );
-	static void s_list_deselect			( GtkWidget *, gpointer );
+	static void s_list_select		( GtkWidget *, gpointer );
+	static void s_list_deselect		( GtkWidget *, gpointer );
 
-	static void s_edit_change			( GtkWidget *, gpointer );
+	static void s_edit_change		( GtkWidget *, gpointer );
+	static void s_spin_default_changed	( GtkWidget *, gpointer );
 	static void s_alignment_change		( GtkWidget *, gpointer );
 	static void s_leader_change 		( GtkWidget *, gpointer );
 	
@@ -115,4 +117,6 @@ protected:
 };
 
 #endif /* AP_UNIXDIALOG_TAB_H */
+
+
 

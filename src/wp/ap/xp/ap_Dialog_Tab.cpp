@@ -558,9 +558,12 @@ void AP_Dialog_Tab::_deleteTabFromTabString(fl_TabStop *pTabInfo)
 
 void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 {
-	UT_ASSERT(amt); // zero makes no sense
+  //	UT_ASSERT(amt); // zero makes no sense
 	UT_ASSERT(id = id_SPIN_DEFAULT_TAB_STOP);
-
+	if(amt == 0 )
+	{
+	        UT_DEBUGMSG(("AMOUNT = 0 amt = %d \n",amt));
+	}
 	// get current value from member
 	const XML_Char* szOld = _gatherDefaultTabStop();
 	double d = UT_convertDimensionless(szOld);
@@ -569,7 +572,6 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 	UT_Dimension dimSpin = m_dim;
 	double dSpinUnit = SPIN_INCR_PT;
 	double dMin = 0.0;
-
 	switch (dimSpin)
 	{
 	case DIM_IN:	
@@ -618,7 +620,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 	}
 
 	// value is now in desired units, so change it
-	d += (dSpinUnit * amt);
+	d += (dSpinUnit * (double) amt);
 	if (d < dMin)
 		d = dMin;
 
