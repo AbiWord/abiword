@@ -286,6 +286,8 @@ public:
 	static EV_EditMethod_Fn insertRowsBefore;
 	static EV_EditMethod_Fn insertSectionBreak;
 	static EV_EditMethod_Fn insertSoftBreak;
+	static EV_EditMethod_Fn insertSumRows;
+	static EV_EditMethod_Fn insertSumCols;
 	static EV_EditMethod_Fn insertTab;
 	static EV_EditMethod_Fn insertTabShift;
 
@@ -649,6 +651,7 @@ public:
 	static EV_EditMethod_Fn lockGUI;
 	static EV_EditMethod_Fn unlockGUI;
 
+	static EV_EditMethod_Fn textToTable;
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn toggleAutoRevision;
 	static EV_EditMethod_Fn revisionAccept;
@@ -662,6 +665,11 @@ public:
 	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
 	static EV_EditMethod_Fn revisionCompareDocuments;
 	static EV_EditMethod_Fn revisionMergeDocuments;
+
+	static EV_EditMethod_Fn sortColsAscend;
+	static EV_EditMethod_Fn sortColsDescend;
+	static EV_EditMethod_Fn sortRowsAscend;
+	static EV_EditMethod_Fn sortRowsDescend;
 
 	static EV_EditMethod_Fn history;
 
@@ -973,6 +981,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertSectionBreak),	0,	""),
 	EV_EditMethod(NF(insertSoftBreak),		0,	""),
 	EV_EditMethod(NF(insertSpace),			0,	""),
+	EV_EditMethod(NF(insertSumCols),			0,	""),
+	EV_EditMethod(NF(insertSumRows),			0,	""),
 	EV_EditMethod(NF(insertTab),			0,	""),
 	EV_EditMethod(NF(insertTabShift),			0,	""),
 	EV_EditMethod(NF(insertTable),          0,  ""),
@@ -1079,6 +1089,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(setStyleHeading2), 	0,		""),
 	EV_EditMethod(NF(setStyleHeading3), 	0,		""),
 	EV_EditMethod(NF(singleSpace),			0,		""),
+	EV_EditMethod(NF(sortColsAscend),       0,  ""),
+	EV_EditMethod(NF(sortColsDescend),      0,  ""),
+	EV_EditMethod(NF(sortRowsAscend),       0,  ""),
+	EV_EditMethod(NF(sortRowsDescend),      0,  ""),
 	EV_EditMethod(NF(spellAdd), 			0,	""),
 	EV_EditMethod(NF(spellIgnoreAll),		0,	""),
 	EV_EditMethod(NF(spellSuggest_1),		0,	""),
@@ -1094,6 +1108,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(style),				_D_,""),
 
 	// t
+	EV_EditMethod(NF(textToTable),			0,		""),
 	EV_EditMethod(NF(toggleAutoRevision),  0,  ""),
 	EV_EditMethod(NF(toggleAutoSpell),      0,  ""),
 	EV_EditMethod(NF(toggleBold),			0,	""),
@@ -9610,6 +9625,56 @@ UT_return_val_if_fail(pDialog, false);
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+}
+
+Defun1(sortColsAscend)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun1(sortColsDescend)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun1(sortRowsAscend)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun1(sortRowsDescend)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun1(textToTable)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+
+Defun1(insertSumRows)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
+}
+
+Defun1(insertSumCols)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	return true;
 }
 
 Defun1(insertTable)

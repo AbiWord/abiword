@@ -109,7 +109,7 @@ public:
 	bool				insertContainerAfter(fp_Container* pNewContainer, fp_Container*	pAfterContainer);
 	bool				insertContainer(fp_Container*);
 	bool				addContainer(fp_Container*);
-	void				removeContainer(fp_Container*);
+	void				removeContainer(fp_Container* pContainer, bool bClear = false);
 
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y);
 

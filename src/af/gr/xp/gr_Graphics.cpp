@@ -219,8 +219,8 @@ void GR_Graphics::endPaint ()
 
 UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
 {
-	double d = ((double)layoutUnits * static_cast<double>(getDeviceResolution())) * static_cast<double>(getZoomPercentage()) / (100. * static_cast<double>(getResolution()));
-	return (UT_sint32)d;
+	double d = (static_cast<double>(layoutUnits) * static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())) / (100. * static_cast<double>(getResolution())) + 0.1;
+	return static_cast<UT_sint32>(d);
 }
 
 /*!

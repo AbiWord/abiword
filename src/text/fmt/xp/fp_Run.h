@@ -1029,6 +1029,34 @@ public:
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_LINE_COUNT;};
 };
 
+
+// Sum the contents of the row of a table
+class ABI_EXPORT fp_FieldTableSumRows : public fp_FieldRun
+{
+public:
+	fp_FieldTableSumRows(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldTableSumRows(){}
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_LINE_COUNT;};
+};
+
+
+// Sum the contents of the row of a table
+class ABI_EXPORT fp_FieldTableSumCols : public fp_FieldRun
+{
+public:
+	fp_FieldTableSumCols(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldTableSumCols(){}
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_LINE_COUNT;};
+};
+
 // count of the #para in the document
 class ABI_EXPORT fp_FieldParaCountRun : public fp_FieldRun
 {

@@ -1121,10 +1121,11 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 {
 	const XML_Char * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
 	UT_sint32 iStyle = -1;
-	PD_Style * pStyle = NULL;
 	s_RTF_AttrPropAdapter_Style * pADStyle = NULL;
+#if 0
 	if(szStyle != NULL)
 	{
+		PD_Style * pStyle = NULL;
 		iStyle = static_cast<UT_sint32>(_getStyleNumber(szStyle));
 		getDoc()->getStyle(szStyle,&pStyle);
 		pADStyle = new s_RTF_AttrPropAdapter_Style(pStyle);
@@ -1133,7 +1134,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 // OK now we have to make sure all these character props aren't in the style
 //
 	}
-	
+#endif	
 	const XML_Char * szColor = _getStyleProp(pADStyle,&apa,"color");
 
 	UT_sint32 ndxColor = -1;

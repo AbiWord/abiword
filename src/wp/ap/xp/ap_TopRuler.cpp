@@ -4290,7 +4290,6 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 
 	// stroke the vertical first
 	painter.fillRect(clr3d, l+m_pG->tlu(4),   t,    m_pG->tlu(2),    m_pG->tlu(4));
-
 	if (iType == FL_TAB_DECIMAL)
 	{
 		// add the dot

@@ -78,6 +78,8 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_EDIT_FIND)
 		MenuItem(AP_MENU_ID_EDIT_REPLACE)
 		MenuItem(AP_MENU_ID_EDIT_GOTO)
+		Separator()
+		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_VIEW)
@@ -322,9 +324,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
 #ifndef XP_MAC_TARGET_MACOSX
 		// On MacOS X don't put a separator as the "Option" menu item is moved away at run time
-		Separator()
 #endif
-		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TABLE)
@@ -334,7 +334,8 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE)
-			MenuItem(AP_MENU_ID_TABLE_INSERT_ROWS_AFTER)
+			MenuItem(AP_MENU_ID_TABLE_INSERT_SUMCOLS)
+			MenuItem(AP_MENU_ID_TABLE_INSERT_SUMROWS)
 #if 0
 // Not for 2.0
 			MenuItem(AP_MENU_ID_TABLE_INSERT_CELLS)
@@ -366,11 +367,18 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
+		MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE)
+	    BeginSubMenu(AP_MENU_ID_TABLE_SORT)
+	       MenuItem(AP_MENU_ID_TABLE_SORTROWSASCEND)
+	       MenuItem(AP_MENU_ID_TABLE_SORTROWSDESCEND)
+	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSASCEND)
+	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
+	    EndSubMenu()
+
 #if 0
 // Not for 2.0
 		MenuItem(AP_MENU_ID_TABLE_AUTOFIT)
 		MenuItem(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT)
-		MenuItem(AP_MENU_ID_TABLE_SORT)
 #endif
 	EndSubMenu()
 

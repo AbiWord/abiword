@@ -56,7 +56,9 @@ public:
 	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y); 	
 	PT_DocPosition        getPosFromXY(UT_sint32 x, UT_sint32 y);
 	void                  drawCursor(PT_DocPosition newPos);
+	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  clearCursor(void);
+
 private:
 	FV_View *             m_pView;
 	FV_VisualDragMode     m_iVisualDragMode;
@@ -72,6 +74,11 @@ private:
 	GR_Image *            m_pDocUnderCursor;
 	bool                  m_bCursorDrawn;
 	UT_Rect               m_recCursor;
+
+	// autoscroll stuff
+	UT_Timer *			  m_pAutoScrollTimer;
+	UT_sint32			  m_xLastMouse;
+	UT_sint32			  m_yLastMouse;
 };
 
 #endif /* FV_VISUALDRAGTEXT_H */

@@ -60,6 +60,8 @@ _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_FootnoteAnchor, footnote_anch)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_FootnoteReference, footnote_ref)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_TOCPageNumber, toc_page_number)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_TOCListLabel, toc_list_label)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_TableSumCols, sum_cols)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_TableSumRows, sum_rows)
 
 _FIELDTYPE(DOCUMENT, AP_STRING_ID_FIELD_Type_Document)
 _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Title, meta_title)
