@@ -51,10 +51,17 @@ DISTBASE 	= $(ABI_DEPTH)/../dist
 
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
-CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)
+CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS) $(ABI_JSDEFS)
 
 INSTALL		= install
 
+ifdef ABI_OPT_JS
+ABI_JSLIBS=		js
+ABI_JSDEFS=		-DABI_OPT_JS
+else
+ABI_JSLIBS=
+ABI_JSDEFS=
+endif
 
 #### Include the proper platform defs.  Add another if clause for
 #### any new platforms you port to.

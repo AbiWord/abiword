@@ -22,7 +22,9 @@
 #include <crtdbg.h>
 #include <string.h>
 
+#ifdef ABI_OPT_JS
 #include <js.h>
+#endif /* ABI_OPT_JS */
 
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
@@ -77,6 +79,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		*/
 		while (q)
 		{
+#ifdef ABI_OPT_JS			
 			if (0 == strcmp(q, "-script"))
 			{
 				q = strtok(NULL, " ");
@@ -85,6 +88,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				q = strtok(NULL, " ");
 			}
 			else
+#endif /* ABI_OPT_JS */
 			{
 				break;
 			}

@@ -52,7 +52,7 @@ AP_Frame * AP_UnixApp::newFrame(void)
 	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
 
 	if (pUnixFrame)
-		pUnixFrame->initialize(0,NULL);
+		pUnixFrame->initialize(0, (char***) NULL);
 
 	return pUnixFrame;
 }

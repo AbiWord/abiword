@@ -16,8 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
+
+#ifdef ABI_OPT_JS
 #include <js.h>
+#endif /* ABI_OPT_JS */
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -50,8 +52,12 @@ AP_App::~AP_App(void)
 	DELETEP(m_pEMC);
 	DELETEP(m_pMenuActionSet);
 
+#ifdef ABI_OPT_JS
 	if (m_pJSInterp)
+	{
 		js_destroy_interp (m_pJSInterp);
+	}
+#endif /* ABI_OPT_JS */
 }
 
 UT_Bool AP_App::initialize(int * /*pArgc*/, char *** /*pArgv*/)
@@ -68,6 +74,7 @@ UT_Bool AP_App::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 	// TODO use argc,argv to process any command-line
 	// TODO options that we need.
 
+#ifdef ABI_OPT_JS
 	// Create our app-global JavaScript interpreter
 	js_init_default_options (&m_JSOptions);
 
@@ -78,13 +85,17 @@ UT_Bool AP_App::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 
 	// TODO initialize the interp with our object model.
 
+#endif /* ABI_OPT_JS */
+	
 	return UT_TRUE;
 }
 
+#ifdef ABI_OPT_JS
 JSInterpPtr AP_App::getInterp(void) const
 {
 	return m_pJSInterp;
 }
+#endif /* ABI_OPT_JS */
 
 const char * AP_App::getApplicationTitleForTitleBar(void) const
 {

@@ -21,7 +21,9 @@
 #ifndef AP_APP_H
 #define AP_APP_H
 
+#ifdef ABI_OPT_JS
 #include <js.h>
+#endif /* ABI_OPT_JS */
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -59,15 +61,20 @@ public:
 	EV_EditMethodContainer *		getEditMethodContainer(void) const;
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
 
+#ifdef ABI_OPT_JS	
 	JSInterpPtr			   			getInterp(void) const;
+#endif /* ABI_OPT_JS */
 	
 protected:
 	EV_EditMethodContainer *	m_pEMC;				/* the set of all possible EditMethods in the app */
 	EV_Menu_ActionSet *			m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 
 	UT_Vector					m_vecFrames;
+
+#ifdef ABI_OPT_JS	
 	JSInterpPtr 				m_pJSInterp;
 	JSInterpOptions 			m_JSOptions;
+#endif /* ABI_OPT_JS */
 };
 
 #endif /* AP_APP_H */
