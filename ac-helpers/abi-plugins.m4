@@ -33,6 +33,8 @@ AC_ARG_WITH(builtin_plugins,[  --with-builtin-plugins  (experimental) compile-in
 	if test "$withval" != "no"; then
 		abi_builtin_plugins=yes
 
+		PLUGIN_CFLAGS="-DABI_PLUGIN_BUILTIN=1"
+
 		if test "$withval" != "yes"; then
 			_abi_plugin_list=`echo $withval | tr ',' ' '`
 		fi

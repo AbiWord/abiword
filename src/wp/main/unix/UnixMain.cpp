@@ -27,3 +27,7 @@ int main(int argc, const char ** argv)
 }
 
 #endif
+
+#ifdef ABI_PLUGIN_BUILTIN
+#include "abi_plugin_builtin.h"
+#endif
