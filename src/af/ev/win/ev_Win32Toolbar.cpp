@@ -397,7 +397,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 						tbb.iBitmap = iWidth;
 
 						// create a matching child control
-						DWORD dwStyle = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_VSCROLL 
+						DWORD dwStyle = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_VSCROLL |
 								CBS_HASSTRINGS | CBS_DROPDOWN;
 
 						if ((pControl) && (pControl->shouldSort()))
