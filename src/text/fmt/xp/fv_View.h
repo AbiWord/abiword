@@ -516,11 +516,9 @@ public:
 	bool				isResizingImage();
 	void				getResizeOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
 	bool				isDraggingImage();
-	void				setDraggedImage(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos);
+	void				startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos);
+	void				drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos);
 	void				stopImageDrag(UT_sint32 xPos, UT_sint32 yPos);
-	fp_Run *			getDraggedImage();
-	UT_Rect				getImageDragRect();
-	void				getDragOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin);
 
 //
 // Table resizing

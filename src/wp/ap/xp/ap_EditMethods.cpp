@@ -10570,26 +10570,10 @@ Defun(dragImage)
 			}
 			pView->cmdSelect(pos,pos+1);
 
-			pView->setDraggedImage(pRun, pCallData->m_xPos, pCallData->m_yPos);
-			UT_Rect clipRect = pView->getImageDragRect();
-			pView->setCurImageSel(clipRect);
+			pView->startImageDrag(pRun, pCallData->m_xPos, pCallData->m_yPos);
 		}
 		
-		pRun = pView->getDraggedImage();
-		UT_ASSERT(pRun);
-		
-		GR_Image * pImage = ((fp_ImageRun *)pRun)->getImage();
-		UT_ASSERT(pImage);
-		
-		UT_Rect imgRect = pView->getImageDragRect();
-		UT_sint32 xOrigin; 
-		UT_sint32 yOrigin;
-		pView->getDragOrigin(xOrigin, yOrigin);
-		
-		pView->draw( &pView->getCurImageSel() );
-		UT_Rect clipRect(pCallData->m_xPos - (xOrigin - imgRect.left), pCallData->m_yPos - (yOrigin - imgRect.top), imgRect.width, imgRect.height);
-		pView->setCurImageSel(clipRect);
-		pG->drawImage(pImage, pCallData->m_xPos - (xOrigin - imgRect.left), pCallData->m_yPos - (yOrigin - imgRect.top));
+		pView->drawDraggedImage(pCallData->m_xPos, pCallData->m_yPos);
 	}
 	
 	return true;
@@ -10609,7 +10593,6 @@ Defun(dropImage)
 	GR_Graphics * pG = pView->getGraphics();
 	if(pG)
 	{
-		pView->draw( &pView->getCurImageSel() );
 		pView->stopImageDrag(pCallData->m_xPos, pCallData->m_yPos);
 	}
 	

@@ -8219,7 +8219,7 @@ bool FV_View::isDraggingImage()
 	return m_bIsDraggingImage;
 }
 
-void FV_View::setDraggedImage(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
+void FV_View::startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
 {
 	UT_ASSERT(pRun);
 	
@@ -8232,7 +8232,9 @@ void FV_View::setDraggedImage(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
 	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
 	
 	// Set the image size in the image selection rect
-	m_dragImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());	
+	m_dragImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
+	// Set the current image position to the original image position
+	m_curImageSel = m_dragImageRect;
 	
 	m_ixDragOrigin = xPos;
 	m_iyDragOrigin = yPos;
@@ -8240,9 +8242,23 @@ void FV_View::setDraggedImage(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
 	m_bIsDraggingImage = true;
 }
 
+void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
+{
+	UT_ASSERT(m_pDraggedImageRun);
+	GR_Image * pImage = ((fp_ImageRun *)m_pDraggedImageRun)->getImage();
+	UT_ASSERT(pImage);
+	
+	draw(&m_curImageSel);
+	m_curImageSel = UT_Rect(xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top), m_dragImageRect.width, m_dragImageRect.height);
+	m_pG->drawImage(pImage, xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top));
+}
+
 void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
 {
 	m_bIsDraggingImage = false;
+	
+	// clear the last dragged image
+	draw(&m_curImageSel);	
 	
 	//
 	// Signal PieceTable Change
@@ -8281,18 +8297,3 @@ void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
 	_restorePieceTableState();
 }
 
-fp_Run * FV_View::getDraggedImage()
-{
-	return m_pDraggedImageRun;
-}
-
-UT_Rect FV_View::getImageDragRect()
-{
-	return m_dragImageRect;
-}
-
-void FV_View::getDragOrigin(UT_sint32 &xOrigin, UT_sint32 &yOrigin)
-{
-	xOrigin = m_ixDragOrigin;
-	yOrigin = m_iyDragOrigin;
-}
