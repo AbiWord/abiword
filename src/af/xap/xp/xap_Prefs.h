@@ -58,6 +58,14 @@ typedef void (*PrefsListener) (
 ** between schemes.
 ******************************************************************/
 
+enum XAPPrefsLog_Level
+{
+	Log,
+	Warning,
+	Error
+};
+
+
 class ABI_EXPORT XAP_PrefsScheme
 {
 public:
@@ -147,6 +155,8 @@ public:
 	void					startBlockChange();
 	void					endBlockChange();
 
+	void                    log(const char * where, const char * what, XAPPrefsLog_Level level = Log);
+	
 	// a only-to-be-used-by XAP_PrefsScheme::setValue
 	void					_markPrefChange	( const XML_Char *szKey );
 protected:
@@ -164,7 +174,8 @@ protected:
 
 	UT_uint32				m_iMaxRecent;
 	UT_Vector				m_vecRecent;		/* vector of (char *) */
-
+	UT_Vector               m_vecLog;           /* vector of UT_UTF8String */
+	
 	UT_Vector				m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
 	UT_StringPtrMap		    m_ahashChanges;
 	bool					m_bInChangeBlock;

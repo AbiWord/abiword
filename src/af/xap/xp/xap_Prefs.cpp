@@ -44,6 +44,7 @@ static  UT_sint32 compareStrings(const void * ppS1, const void * ppS2)
 enum
 {
 	TT_ABIPREFERENCES,
+	TT_LOG,
 	TT_GEOMETRY,
 	TT_PLUGIN,
 	TT_RECENT,
@@ -55,6 +56,7 @@ enum
 static struct xmlToIdMapping s_Tokens[] =
 {
 	{ "AbiPreferences",		TT_ABIPREFERENCES },
+	{ "Log",                TT_LOG},
 	{ "Geometry",			TT_GEOMETRY },
 	{ "Plugin",				TT_PLUGIN },
 	{ "Recent",				TT_RECENT },
@@ -392,6 +394,59 @@ bool XAP_Prefs::getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, 
 	return true;
 }
 
+void XAP_Prefs::log(const char * where, const char * what, XAPPrefsLog_Level level)
+{
+	UT_return_if_fail(where && what);
+	char b[50];
+
+	time_t t = time(NULL);
+
+	// we are inserting the log entries as comments, so we have to
+	// ensure we have no "--" in there (it anoys the parser)
+	UT_UTF8String sWhere(where);
+	UT_UTF8String sWhat(what);
+	UT_UTF8String sDashdash = "--";
+	UT_UTF8String sDash = "-";
+
+	while(strstr(sWhat.utf8_str(), "--"))
+	{
+		sWhat.escape(sDashdash, sDash);
+	}
+	
+	while(strstr(sWhere.utf8_str(), "--"))
+	{
+		sWhere.escape(sDashdash, sDash);
+	}
+
+	strftime(b, 50, "<!-- [%c] ", localtime(&t));
+
+	UT_UTF8String * s = new UT_UTF8String(b);
+	UT_return_if_fail(s);
+
+	switch(level)
+	{
+		case Warning:
+			*s += "warning: ";
+			break;
+
+		case Error:
+			*s += "error:   ";
+		case Log:
+		default:
+			*s += "message: ";
+	}
+	
+	*s += sWhere;
+	*s += " - ";
+	*s += sWhat;
+	*s += " -->";
+
+	// s->escapeXML(); // since we embed these as comments we do not
+	                   // have to do this
+
+	m_vecLog.addItem((void*) s);
+}
+
 
 /*****************************************************************/
 
@@ -424,6 +479,7 @@ XAP_Prefs::~XAP_Prefs(void)
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecPluginSchemes);
 	UT_VECTOR_FREEALL(char *, m_vecRecent);
 	UT_VECTOR_PURGEALL(tPrefsListenersPair *, m_vecPrefsListeners);
+	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecLog);
 }
 
 /*****************************************************************/
@@ -497,7 +553,6 @@ bool XAP_Prefs::addPluginScheme(XAP_PrefsScheme * pNewScheme)
 {
 	return (m_vecPluginSchemes.addItem(pNewScheme) == 0);
 }
-
 
 XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 {
@@ -664,6 +719,9 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 
 	switch (id->m_type)
 	{
+		case TT_LOG: // ignore
+			break;
+			
 		case TT_ABIPREFERENCES:
 		{
 		m_parserState.m_bFoundAbiPreferences = true;
@@ -1095,7 +1153,7 @@ bool XAP_Prefs::savePrefsFile(void)
 	fprintf(fp,"<!-- =====================================================================  -->\n");
 	fprintf(fp,"\n");
 
-#ifdef DEBUG
+#if 1 //def DEBUG -- want this always in, it helps debugging
 	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
 	{
 		fprintf(fp,"<!--         Build_ID          = ");
@@ -1324,7 +1382,21 @@ bool XAP_Prefs::savePrefsFile(void)
 		fprintf(fp,"\t\tflags=\"%d\"\n", m_geom.m_flags); 
 		fprintf(fp,"\t\t/>\n");
 	}
+	
+	{
+		// now the log
+		fprintf(fp, "\n\t<Log>\n");
 
+		UT_uint32 kLimit = m_vecLog.getItemCount();
+		for (UT_uint32 k = 0; k < kLimit; ++k)
+		{
+			UT_UTF8String * s = (UT_UTF8String *) m_vecLog.getNthItem(k);
+			fprintf(fp,"\t%s\n", s->utf8_str());
+		}
+	
+		fprintf(fp, "\t</Log>\n");
+	}
+	
 	fprintf(fp,"\n</AbiPreferences>\n");
 	
 Cleanup:
