@@ -387,19 +387,6 @@ else
 ABI_OPTIONS+=Pango:Off
 endif
 
-ifeq ($(ABI_OPT_LIBJPEG),1)
-LIBJPEG_CFLAGS=-DHAVE_LIBJPEG
-ifeq ($(OS_NAME), WIN32)
-LIBJPEG_LIBS=libjpeg.lib
-else
-LIBJPEG_LIBS=-ljpeg
-endif
-ABI_OPTIONS+=libjpeg:On
-else
-LIBJPEG_CFLAGS=
-LIBJPEG_LIBS=
-endif
-
 ##################################################################
 ##################################################################
 
@@ -589,12 +576,12 @@ USERDIR			= $(ABI_ROOT)/user
 
 ifeq ($(OS_NAME),WIN32)
 EXTRA_LIBS	= 	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-			$(addsuffix .lib,$(ABI_LIBS)) $(LIBJPEG_LIBS)
+			$(addsuffix .lib,$(ABI_LIBS))
 EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBDEP)))
 else
 EXTRA_LIBS	=	-L$(LIBDIR) 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
-			$(addprefix -l,$(ABI_LIBS)) $(LIBJPEG_LIBS)
+			$(addprefix -l,$(ABI_LIBS))
 EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION).a,$(ABI_APPLIBDEP)))
 endif
 
@@ -760,6 +747,8 @@ ifeq ($(ABI_OPT_PERL),1)
 else
 	ABI_OPTIONS+=Scripting:Off
 endif
+
+ABI_OPTIONS += v$(ABI_BUILD_VERSION_MAJOR)-$(ABI_BUILD_VERSION_MINOR)-$(ABI_BUILD_VERSION_MICRO) 
 
 ifeq ($(ABI_OPT_WIDGET),1)
 CFLAGS += -DABI_OPT_WIDGET
