@@ -212,8 +212,6 @@ UT_Error UT_errnoToUTError (void);
 #define MyMax(a,b)		(((a) > (b)) ? (a) : (b))
 #define MyMin(a,b)		(((a) < (b)) ? (a) : (b))
 
-#define UT_UNUSED(v)		do { (v) = (v); } while (0)
-
 #define E2B(err)		((err) == UT_OK)
 
 /* UGLY UGLY Iconv hack for operating systems with strange declartions

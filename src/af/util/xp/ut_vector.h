@@ -78,7 +78,8 @@ public:
 	    UT_ASSERT(m_iCount > 0);
 	    UT_ASSERT(n<m_iCount);
 
-		return m_pEntries[n];
+	    if(n >= m_iCount || !m_pEntries) return NULL;
+	    return m_pEntries[n];
 	}
 
 	const void*		operator[](UT_uint32 i) const;

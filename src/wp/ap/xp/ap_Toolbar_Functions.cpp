@@ -631,8 +631,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 {
-	UT_UNUSED(id);
-	
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 

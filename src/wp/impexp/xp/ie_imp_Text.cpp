@@ -204,7 +204,15 @@ bool Inserter::insertBlock()
 		m_dPos++;
 	}
 	else
-		bRes = m_pDocument->appendStrux(PTX_Block, NULL);
+	  {
+	    // text gets applied in the Normal style
+	    const XML_Char * propsArray[3];
+	    propsArray[0] = "style";
+	    propsArray[1] = "Normal";
+	    propsArray[2] = 0;
+
+	    bRes = m_pDocument->appendStrux(PTX_Block, (const XML_Char **)propsArray);
+	  }
 
 	return bRes;
 }
@@ -608,10 +616,16 @@ UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, FILE * fp)
  */
 UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 {
-	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
-	X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, NULL));
+  // text gets applied in the Normal style
+  const XML_Char * propsArray[3];
+  propsArray[0] = "style";
+  propsArray[1] = "Normal";
+  propsArray[2] = 0;
 
-	return UT_OK;
+  X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
+  X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, (const XML_Char**)propsArray));
+
+  return UT_OK;
 }
 
 /*!

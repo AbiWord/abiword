@@ -920,7 +920,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			break;
 			// 936  Chinese: Simplified
 		case 936:
-			CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GB2312");
+			CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GBK");
 			break;
 			// 950  Chinese: Traditional
 		case 950:
@@ -977,7 +977,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 				m_szEncoding = "CP1361";
 				break;
 			case 134:	// Chinese GB - undocumented?
-				CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GB2312");
+				CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GBK");
 				break;
 			case 136:	// Chinese BIG5 - undocumented?
 				CPNAME_OR_FALLBACK(m_szEncoding,"CP950","BIG5");

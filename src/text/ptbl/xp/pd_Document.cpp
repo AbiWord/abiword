@@ -112,7 +112,7 @@ PD_Document::~PD_Document()
 //////////////////////////////////////////////////////////////////
 
 UT_Error PD_Document::importFile(const char * szFilename, int ieft, 
-								 bool markClean)
+				 bool markClean)
 {
 	if (!szFilename || !*szFilename)
 	{

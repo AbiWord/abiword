@@ -338,7 +338,7 @@ void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(cf);
 	connectFocus(GTK_WIDGET(cf),pFrame);
 
-	gtk_widget_set_usize(cf, 350, 210);
+	gtk_widget_set_usize(cf, 450, 300);
 
 	// get top level window and its GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -413,8 +413,8 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
 	gtk_widget_show (scrolledwindow1);
 	gtk_box_pack_start (GTK_BOX (hbox1), scrolledwindow1, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), 
-									GTK_POLICY_AUTOMATIC, 
-									GTK_POLICY_AUTOMATIC);
+					GTK_POLICY_AUTOMATIC,
+					GTK_POLICY_AUTOMATIC);
 	
 	clistPlugins = gtk_clist_new (1);
 	gtk_widget_show (clistPlugins);

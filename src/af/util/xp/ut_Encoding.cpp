@@ -46,7 +46,7 @@
 // Another approach is to do these tests in an external program which
 // outputs the C++ code for the following table.
 //
-// TODO Note that certain operations in Abiword currently try to open or
+// TODO Note that certain operations in AbiWord currently try to open or
 // TODO compare certain encodings via hard-coded names.  This should be
 // TODO discouraged and replaced with names derived as in these tables.
 //
@@ -54,6 +54,7 @@
 
 static XML_Char * enc_armscii[]	= {"ARMSCII-8",0};
 static XML_Char * enc_big5[]	= {"BIG5","BIG-5","BIG-FIVE","BIGFIVE","CN-BIG5",0};
+static XML_Char * enc_big5hkscs[]	= {"BIG5-HKSCS","BIG5HKSCS",0};
 static XML_Char * enc_cp874[]	= {"CP874",0};
 static XML_Char * enc_cp932[]	= {"CP932",0};
 static XML_Char * enc_cp936[]	= {"CP936","GBK",0};
@@ -133,6 +134,7 @@ static enc_entry s_Table[] =
 	//the property value, the localised translation, the numerical id
 	{enc_armscii,			NULL, XAP_STRING_ID_ENC_ARME_ARMSCII},
 	{enc_big5,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5},
+	{enc_big5hkscs,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5HKSCS},
 	{enc_cp874,				NULL, XAP_STRING_ID_ENC_THAI_WIN},
 	{enc_cp932,				NULL, XAP_STRING_ID_ENC_JAPN_WIN},
 	{enc_cp936,				NULL, XAP_STRING_ID_ENC_CHSI_WIN},

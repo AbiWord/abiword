@@ -90,8 +90,8 @@ bool IE_Exp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 									  const char ** pszSuffixList,
 									  IEFileType * ft)
 {
-	*pszDesc = "Text (.text, .txt)";
-	*pszSuffixList = "*.text; *.txt";
+	*pszDesc = "Text (.txt, .text)";
+	*pszSuffixList = "*.txt; *.text";
 	*ft = getFileType();
 	return true;
 }
@@ -121,7 +121,7 @@ bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 									  IEFileType * ft)
 {
 	*pszDesc = "Encoded Text (.txt, .text)";
-	*pszSuffixList = "*.txt; *.text";
+	*pszSuffixList = "*.text; *.txt";
 	*ft = getFileType();
 	return true;
 }

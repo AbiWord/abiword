@@ -339,12 +339,13 @@ dcl(ENC_GEOR_ACADEMY,					"Georgian, Academy")
 dcl(ENC_GEOR_PS,						"Georgian, PS")
 /* Multibyte CJK */
 /* Chinese Simplified */
-dcl(ENC_CHSI_EUC,						"Chinese Simplified, EUC-CN")
+dcl(ENC_CHSI_EUC,						"Chinese Simplified, EUC-CN (GB2312)")
 dcl(ENC_CHSI_GB,						"Chinese Simplified, GB_2312-80")	// Cf. EUC
 dcl(ENC_CHSI_HZ,						"Chinese Simplified, HZ")
 dcl(ENC_CHSI_WIN,						"Chinese Simplified, Windows Code Page 936")
 /* Chinese Traditional */
 dcl(ENC_CHTR_BIG5,						"Chinese Traditional, BIG5")
+dcl(ENC_CHTR_BIG5HKSCS,						"Chinese Traditional, BIG5-HKSCS")
 dcl(ENC_CHTR_EUC,						"Chinese Traditional, EUC-TW")
 dcl(ENC_CHTR_WIN,						"Chinese Traditional, Windows Code Page 950")
 /* Japanese */

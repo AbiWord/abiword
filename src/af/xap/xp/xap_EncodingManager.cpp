@@ -476,11 +476,11 @@ static const _map langcode_to_babelarg[]=
 	{NULL,NULL},
 	{"ru","english,russian"},
 	
-	/* I'm not sure that this is correct, but my TeTex 0.9.17 works only 
+	/* I'm not sure that this is correct, but my teTeX 0.9.17 works only 
 	   this way (i.e. only with "russian" in the middle) - hvv */
 	{"uk","english,russian,ukrainian"},
 	
-	/* I'm not sure again - my TeTex 0.9.17 doesn't know 'byelorussian' 
+	/* I'm not sure again - my teTeX 0.9.17 doesn't know 'byelorussian' 
 	   language - hvv */
 	{"be","english,russian"},
 	{NULL,NULL}
@@ -493,7 +493,7 @@ static const _map langcode_to_babelarg[]=
  RUSSIAN_CHARSET).
 */
 static const char* wincharsetcode_ru[]= /* russian charset */
-{ "ru","be", "uk" , NULL };
+{ "ru", "be", "uk" , NULL };
 static const char* wincharsetcode_el[]=  /* greek charset*/
 { "el", NULL };
 
@@ -510,10 +510,10 @@ static const char* wincharsetcode_th[]=  /* thai charset*/
   Tested with GB2312 only.  
 */
 static const char* wincharsetcode_zh_GB2312[]= /* chinese*/
-{ "zh_CN.GB2312", "zh_TW.GB2312", NULL };
+{ "zh_CN.GB2312", "zh_CN.GBK", "zh_CN.GB18030", NULL };
 
 static const char* wincharsetcode_zh_BIG5[]= /* chinese*/
-{ "zh_CN.BIG5", "zh_TW.BIG5", NULL };
+{ "zh_TW.BIG5", "zh_HK.BIG5-HKSCS", NULL };
 
 static const _rmap langcode_to_wincharsetcode[]=
 {
@@ -528,7 +528,7 @@ static const _rmap langcode_to_wincharsetcode[]=
 	{NULL}
 };
 
-static const UT_Bijection::pair_data zh_CN_big5[]=
+static const UT_Bijection::pair_data zh_TW_big5[]=
 {
 /*
     This data was constructed from the HJ's patch for support  of Big5 to 
@@ -541,20 +541,20 @@ static const UT_Bijection::pair_data zh_CN_big5[]=
     {NULL,NULL}
 };
 
-static const char* zh_CN_big5_keys[]=
-{  "zh_CN.BIG5", NULL };
+static const char* zh_TW_big5_keys[]=
+{  "zh_TW.BIG5", NULL };
 
 static const _rmap cjk_word_fontname_mapping_data[]=
 {
     {NULL},
-    {(char*)zh_CN_big5,zh_CN_big5_keys},
+    {(char*)zh_TW_big5,zh_TW_big5_keys},
     {NULL}
 };
 
 
 /*all CJK language codes should be listed here to be marked as CJK*/
 static const char* cjk_languages[]=
-{ "zh","ja","ko",NULL}; 
+{ "zh", "ja", "ko", NULL }; 
 
 static const _rmap langcode_to_cjk[]=
 {
@@ -585,16 +585,16 @@ static const _map MSCodepagename_to_charset_name_map[]=
     {NULL,NULL},
 	// libiconv also lists "SHIFT_JIS", "SHIFT-JIS", "MS_KANJI", "csShiftJIS"
 	{"CP932","SJIS"},
-    {"CP936","GB2312"},
+    {"CP936","GBK"},
     {"CP950","BIG5"},  
 	{"CP1361","JOHAB"},
     {NULL,NULL}
 };
 
 /*
- This table is only concern CJK RTF part.It is a reverse table of
- MSCodepagename_to_charset_name_map.Iconv doesn't know some cpNNNN,
- but M$Word know.
+ This table is only concern CJK RTF part.  It is a reverse table of
+ MSCodepagename_to_charset_name_map.  Iconv doesn't know some cpNNNN,
+ but M$Word knows.
 */
 static const _map charset_name_to_MSCodepagename_map[]=
 {
@@ -603,7 +603,10 @@ static const _map charset_name_to_MSCodepagename_map[]=
 	// libiconv also lists "SHIFT_JIS", "SHIFT-JIS", "MS_KANJI", "csShiftJIS"
 	{"SJIS","CP932"},
     {"GB2312","CP936"},
+    {"GBK","CP936"},
+    {"GB18030","CP936"},
     {"BIG5","CP950"},
+    {"BIG5-HKSCS","CP950"},
 	{"JOHAB","CP1361"},
     {NULL,NULL}
 };
@@ -613,10 +616,11 @@ static const _map langcode_to_winlangcode[]=
 {
 /*key, value*/
     {NULL},
-   {"zh_CN.BIG5",	"0x404"},  
    {"zh_CN.GB2312",	"0x804"},     
+   {"zh_CN.GBK",	"0x804"}, 
+   {"zh_CN.GB18030",	"0x804"}, 
+   {"zh_HK.BIG5-HKSCS",	"0x404"},  
    {"zh_TW.BIG5",	"0x404"},  
-   {"zh_TW.GB2312",	"0x804"}, 
     {NULL}
 };
 
