@@ -342,6 +342,7 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 //			_CDB(OPTIONS_CHK_PrefsAutoSave,		id_CHECK_PREFS_AUTO_SAVE);
 //			_CDB(OPTIONS_CHK_ViewShowRuler,		id_CHECK_VIEW_SHOW_RULER);
+//			_CDB(OPTIONS_CHK_ViewCursorBlink,	id_CHECK_VIEW_SHOW_TOOLBARS);
 //			_CDB(OPTIONS_CHK_ViewShowToolbars,	id_CHECK_VIEW_SHOW_TOOLBARS);
 //			_CDB(OPTIONS_CHK_ViewAll,				id_CHECK_VIEW_ALL);
 //			_CDB(OPTIONS_CHK_ViewHiddenText,		id_CHECK_VIEW_HIDDEN_TEXT);
@@ -480,6 +481,10 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, UT_Bool value )
 		
 	case id_CHECK_VIEW_SHOW_RULER:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler),value);
+		return;
+		
+	case id_CHECK_VIEW_CURSOR_BLINK:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink),value);
 		return;
 		
 	case id_CHECK_VIEW_SHOW_TOOLBARS:

@@ -54,6 +54,8 @@
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewAll				1026
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText		1027
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable		1028
+#define AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink		1029
+
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
