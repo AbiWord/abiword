@@ -46,7 +46,13 @@ struct dg_DrawArgs;
 #ifdef BIDI_ENABLED
 //these are the initial sizes of the temp buffers
 #define TEMP_LINE_BUFFER_SIZE 512
-#define RUNS_MAP_SIZE         80
+
+// the memory requirement connected with the following constant
+// is 9 bytes per 1; 100 is reasonable: if loading documents with long paragraphs
+// this will have to be reallocated, since initially each paragraph is loaded
+// on a single line, but for creating documents from a scratch this is
+// more than adequate.
+#define RUNS_MAP_SIZE 100
 /* the following define determines whether the map used to convert logical to visual position and
    vice versa is shared by all lines, or whether each line has map of its own. In the former case
    only small encrease in memory requirenments is needed, but we have to recalculate the map

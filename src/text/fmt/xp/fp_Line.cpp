@@ -3042,8 +3042,8 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			                               //do this immediately again
 			s_pMapOfRunsL2V = new UT_uint16[s_iMapOfRunsSize];
 			s_pMapOfRunsV2L = new UT_uint16[s_iMapOfRunsSize];
-			s_pPseudoString    = new UT_uint32[RUNS_MAP_SIZE];
-			s_pEmbeddingLevels =  new UT_Byte[RUNS_MAP_SIZE];
+			s_pPseudoString    = new UT_uint32[s_iMapOfRunsSize];
+			s_pEmbeddingLevels =  new UT_Byte[s_iMapOfRunsSize];
 			
 			
 			UT_ASSERT(s_pMapOfRunsL2V && s_pMapOfRunsV2L && s_pPseudoString && s_pEmbeddingLevels);
