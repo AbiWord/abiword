@@ -102,7 +102,8 @@
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_QNXDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_QNXDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_QNXDialog_New)
-
+        DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_QNXDialog_FileOpenSaveAs)
+        DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_QNXDialog_FileOpenSaveAs)
 
 	// ... also add new dialogs here ...
 

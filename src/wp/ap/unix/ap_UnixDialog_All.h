@@ -146,6 +146,8 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixGnomeDialog_New)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixGnomeDialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
+        DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_UnixDialog_FileOpenSaveAs)
+        DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
 
 	// ... also add new dialogs here ...
 #   else
@@ -186,6 +188,8 @@
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixDialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixDialog_ClipArt)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
+        DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_UnixDialog_FileOpenSaveAs)
+        DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
 	// ... also add new dialogs here ...
 #   endif
 

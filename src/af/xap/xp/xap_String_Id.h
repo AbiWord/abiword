@@ -87,6 +87,8 @@ dcl(DLG_UFS_Direction,     "Right-to-left")
 /* Unix FileOpenSaveAs dialog */
 dcl(DLG_FOSA_OpenTitle,					"Open File")
 dcl(DLG_FOSA_SaveAsTitle,				"Save File As")
+dcl(DLG_FOSA_ExportTitle, "Export File")
+dcl(DLG_FOSA_ImportTitle, "Import File")
 dcl(DLG_FOSA_PrintToFileTitle,			"Print To File")
 dcl(DLG_FOSA_FileOpenTypeLabel,			"Open file as type:")
 dcl(DLG_FOSA_FileSaveTypeLabel,			"Save file as type:")

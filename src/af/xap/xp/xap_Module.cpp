@@ -104,12 +104,12 @@ bool XAP_Module::unregisterThySelf ()
  * Query if this plugin supports the requested AbiWord version
  *
  * \param major   - "0"
- * \param minor   - "7"
- * \param release - "15"
+ * \param minor   - "9"
+ * \param release - "4"
  * \return true if it supports the requested version, false otherwise
  */
 bool XAP_Module::supportsAbiVersion (UT_uint32 major, UT_uint32 minor,
-									 UT_uint32 release)
+				     UT_uint32 release)
 {
 	UT_ASSERT (m_bLoaded && m_bRegistered);
 
@@ -117,7 +117,7 @@ bool XAP_Module::supportsAbiVersion (UT_uint32 major, UT_uint32 minor,
 	int result = 0;
 
 	if (resolveSymbol ("abi_plugin_supports_version", 
-					   (void **)&plugin_supports_ver))
+			   (void **)&plugin_supports_ver))
 	{
 		if (!plugin_supports_ver)
 		{

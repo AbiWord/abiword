@@ -87,6 +87,8 @@
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_BeOSDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_BeOSDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,		AP_BeOSDialog_PageNumbers)
+        DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_BeOSDialog_FileOpenSaveAs)
+        DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_BeOSDialog_FileOpenSaveAs)
 	// ... also add new dialogs here ...
 
 #endif

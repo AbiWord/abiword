@@ -1170,10 +1170,11 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 }
 
 static bool s_AskForPathname(XAP_Frame * pFrame,
-							 bool bSaveAs,
-							 const char * pSuggestedName,
-							 char ** ppPathname,
-							 IEFileType * ieft)
+			     bool bSaveAs,
+			     XAP_Dialog_Id id,
+			     const char * pSuggestedName,
+			     char ** ppPathname,
+			     IEFileType * ieft)
 {
 	// raise the file-open or file-save-as dialog.
 	// return a_OK or a_CANCEL depending on which button
@@ -1189,8 +1190,6 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	*ppPathname = NULL;
 
 	pFrame->raise();
-
-	XAP_Dialog_Id id = ((bSaveAs) ? XAP_DIALOG_ID_FILE_SAVEAS : XAP_DIALOG_ID_FILE_OPEN);
 
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
@@ -1593,7 +1592,7 @@ Defun1(fileOpen)
 
 	char * pNewFile = NULL;
 	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
-	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_OPEN, NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 	  return false;
@@ -1679,7 +1678,7 @@ Defun1(openTemplate)
 
 	char * pNewFile = NULL;
 	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
-	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_IMPORT, NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 	  return false;
@@ -1734,7 +1733,12 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 
 	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastSavedAsType();
 	char * pNewFile = NULL;
-	bool bOK = s_AskForPathname(pFrame,true,pFrame->getFilename(),&pNewFile,&ieft);
+	XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_SAVEAS;
+
+	if ( !overwriteName )
+	  id = XAP_DIALOG_ID_FILE_EXPORT;
+
+	bool bOK = s_AskForPathname(pFrame,true, id, pFrame->getFilename(),&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 		return false;
@@ -1784,7 +1788,7 @@ Defun1(fileImport)
 
 	char * pNewFile = NULL;
 	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastOpenedType();
-	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,false, XAP_DIALOG_ID_FILE_IMPORT, NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 	  return false;
@@ -1807,7 +1811,7 @@ Defun1(fileSaveAsWeb)
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   IEFileType ieft = IE_Exp::fileTypeForSuffix (".xhtml");
   char * pNewFile = NULL;
-  bool bOK = s_AskForPathname(pFrame,true,pFrame->getFilename(),&pNewFile,&ieft);
+  bool bOK = s_AskForPathname(pFrame,true, XAP_DIALOG_ID_FILE_SAVEAS, pFrame->getFilename(),&pNewFile,&ieft);
   
   if (!bOK || !pNewFile)
     return false;
