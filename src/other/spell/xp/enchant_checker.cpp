@@ -140,3 +140,21 @@ void EnchantChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectL
 									bad.utf8_str(), bad.byteLength(),
 									good.utf8_str(), good.byteLength());
 }
+
+bool
+EnchantChecker::_requestDictionary (const char * szLang)
+{
+	UT_return_val_if_fail (szLang, false);
+	UT_return_val_if_fail (s_enchant_broker, false);
+
+	// Convert the language tag from en-US to en_US form
+	char * lang = UT_strdup (szLang);
+	char * hyphen = strchr (lang, '-');
+	if (hyphen)
+		*hyphen = '_';
+
+	m_dict = enchant_broker_request_dict(s_enchant_broker, lang);
+	FREEP(lang);
+
+	return (m_dict != NULL);
+}
