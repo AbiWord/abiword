@@ -33,9 +33,11 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_Break.mm	\
 	ap_CocoaDialog_Columns.mm	\
 	ap_CocoaDialog_Field.mm	\
+	ap_CocoaDialog_FormatFrame.mm	\
 	ap_CocoaDialog_FormatFootnotes.mm	\
 	ap_CocoaDialog_FormatTable.mm	\
 	ap_CocoaDialog_Goto.mm	\
+	ap_CocoaDialog_HdrFtr.mm	\
 	ap_CocoaDialog_Insert_DateTime.mm	\
 	ap_CocoaDialog_InsertBookmark.mm	\
 	ap_CocoaDialog_InsertHyperlink.mm	\
@@ -45,8 +47,11 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_MetaData.mm	\
 	ap_CocoaDialog_New.mm	\
 	ap_CocoaDialog_Options.mm	\
+	ap_CocoaDialog_Spell.mm	\
+	ap_CocoaDialog_SplitCells.mm	\
 	ap_CocoaDialog_Styles.mm	\
 	ap_CocoaDialog_Paragraph.mm	\
+	ap_CocoaDialog_PageNumbers.mm	\
 	ap_CocoaDialog_PageSetup.mm	\
 	ap_CocoaDialog_Replace.mm	\
 	ap_CocoaDialog_Tab.mm	\
