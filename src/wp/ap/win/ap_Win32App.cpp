@@ -1572,23 +1572,21 @@ UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 	const char * szDirectory = NULL;
 	const XML_Char * szStringSet = NULL;
 	UT_Vector* pVec = new UT_Vector();
-	UT_Language lang;
-	char* pStringSet = NULL;
-	UT_String str;
-	
-
-	if (!((getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
-		&& (szStringSet)
-		&& (*szStringSet)
-		&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0)))
-		return pVec;
-			
+	UT_Language lang;	
+					
 	for (UT_uint32 i=0; i< lang.getCount(); i++)
 	{
-		const char *p = (const char*)lang.getNthLangCode(i);
-		if (doesStringSetExist(p))
-			pVec->addItem(strdup((char*)p));				
-	}	
+		const char *pLangCode = (const char*)lang.getNthLangCode(i);
+		if (doesStringSetExist(pLangCode))
+			pVec->addItem(strdup((char*)pLangCode));	
+		else
+		{	
+			/*The en-US is the default internal string set and wont be found on disk but it should be also listed*/
+			if (strcmp(pLangCode, "en-US")==0)
+				pVec->addItem(strdup((char*)pLangCode));		
+		}
+		
+	}		
 
 	return pVec;
 }
