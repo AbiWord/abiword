@@ -3820,61 +3820,6 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	{
 		posStart = 2;
 	}
-	
-
-#ifdef BIDI_ENABLED	
-	// if the format change includes dom-dir, we need to force change
-	// of direction for the last run in the block, the EndOfParagraph
-	// run. (This should really not be necessary, the EndOfParagraph
-	// run should lookup its properties)
-
-	bool bDomDirChange = false;
-	FriBidiCharType iDomDir = FRIBIDI_TYPE_LTR;
-
-	const XML_Char * p  = properties[0];
-
-	while(p)
-	{
-		if(!UT_strcmp(p,"dom-dir"))
-		{
-			bDomDirChange = true;
-			if(!UT_strcmp(p+1, "rtl"))
-			{
-				iDomDir = FRIBIDI_TYPE_RTL;
-			}
-			break;
-		}
-		p += 2;
-	}
-
-	if(bDomDirChange)
-	{
-
-		fl_BlockLayout * pBl = _findBlockAtPosition(posStart);
-		fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
-
-		if(pBl2)
-			pBl2 = static_cast<fl_BlockLayout *>(pBl2->getNext());
-
-		while(pBl)
-		{
-
-			if(iDomDir == FRIBIDI_TYPE_RTL)
-			{
-				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
-			}
-			else
-			{
-				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
-			}
-
-			pBl = static_cast<fl_BlockLayout *>(pBl->getNext());
-			if(pBl == pBl2)
-				break;
-		}
-	}
-	
-#endif
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
