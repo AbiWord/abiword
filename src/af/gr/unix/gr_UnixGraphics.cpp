@@ -342,7 +342,7 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 				// could have other fixed fonts (like a JIS Japanese foundry or
 				// the Sony foundry)
 				if (!pgFont)
-					pgFont = gdk_font_load("-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*");
+					pgFont = gdk_font_load("-misc-fixed-*-*-*--*-*-*-*-*-*-*-*");
 			}
 		}
 	}
