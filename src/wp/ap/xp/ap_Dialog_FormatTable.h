@@ -34,6 +34,7 @@
 #include "ie_types.h"
 #include "fg_Graphic.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
+#define FORMAT_TABLE_NUMTHICKNESS 9
 
 class UT_Timer;
 class XAP_Frame;
@@ -107,6 +108,8 @@ public:
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
 	void								setBGColor(UT_RGBColor clr);
+	void                                setBorderThickness(UT_String & sThick);
+	virtual void                        setBorderThicknessInGUI(UT_String & sThick) = 0;
 	void                                clearImage(void);
 	void                                askForGraphicPathName(void);
 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
@@ -125,7 +128,8 @@ public:
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	XML_Char *							m_bgFillStyle;
-	UT_Vector                           m_vecProps;													 
+	UT_Vector                           m_vecProps;
+	UT_String                           m_sBorderThickness;
 protected:
 	AP_Dialog_FormatTable::tAnswer		m_answer;
 	char                                m_WindowName[100];
