@@ -771,6 +771,10 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 	{
 		UT_DEBUGMSG(("fpRun: Clearscreen on line without container \n"));
 	}
+	if(getLine())
+    {
+		getLine()->setNeedsRedraw();
+	}
 	xxx_UT_DEBUGMSG(("fp_Run: clearscreen applied \n"));
 }
 

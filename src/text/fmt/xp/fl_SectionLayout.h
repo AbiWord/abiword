@@ -115,6 +115,8 @@ public:
 		{return m_bNeedsReformat;}
 	virtual bool                needsRedraw(void) const
 		{return m_bNeedsRedraw;}
+	virtual void                clearNeedsRedraw(void)
+		{m_bNeedsRedraw = false;}
 	virtual void        updateBackgroundColor(void);
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) = 0;

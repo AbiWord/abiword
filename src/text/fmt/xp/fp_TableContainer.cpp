@@ -3679,9 +3679,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			da.yoff = da.yoff - getYBreak();
 			if(bDirtyOnly)
 			{
-				//
-				// Fix me! Doesn't work deleting text in a table!
-				//		if(pCell->isDirty())
+				if(pCell->isDirty())
 				{
 					pCell->drawBroken(&da, this);
 					iCountCells++;
@@ -3757,6 +3755,8 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	}
 	UT_DEBUGMSG(("_brokenDraw: Draw %d cells \n",iCountCells));
     _drawBrokenBoundaries(pDA);
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	pTL->clearNeedsRedraw();
 }
 
 

@@ -1375,6 +1375,11 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 			getNext()->markAsDirty();
 		}
 	}
+	if(getLine())
+	{
+		getLine()->setNeedsRedraw();
+	}
+
 
 }
 

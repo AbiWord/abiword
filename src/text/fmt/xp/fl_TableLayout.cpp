@@ -411,7 +411,7 @@ void fl_TableLayout::redrawUpdate(void)
 	{
 		return;
 	}
-	UT_DEBUGMSG(("Doing Redraw update in Table \n"));
+ 	UT_DEBUGMSG(("Doing Redraw update in Table layout %x \n",this));
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -428,6 +428,7 @@ void fl_TableLayout::redrawUpdate(void)
 		pTab->drawLines();
 	}
 	m_bNeedsRedraw = false;
+ 	UT_DEBUGMSG(("Finished Redraw update in Table layout %x \n",this));
 }
 
 bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
