@@ -52,6 +52,7 @@ const char * AP_Args::m_sFile = NULL;
 int    AP_Args::m_iVersion = 0;
 int    AP_Args::m_iHelp = 0;
 const char * AP_Args::m_sDisplay = NULL;
+struct poptOption * AP_Args::options = NULL;
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName,
 				 initPopt_cb ipFunc, dwa_cb dwaFunc) : XArgs (pArgs),
@@ -159,7 +160,7 @@ bool AP_Args::doWindowlessArgs() const
 
 /*****************************************************************/
 
-const struct poptOption AP_Args::options[] =
+const struct poptOption AP_Args::const_opts[] =
 	{{"geometry", 'g', POPT_ARG_STRING, &m_sGeometry, 0, "Set initial frame geometry", "GEOMETRY"},
 	 {"nosplash", 'n', POPT_ARG_NONE,   &m_iNosplash, 0, "Do not show splash screen", NULL},
 #ifdef ABI_OPT_PERL

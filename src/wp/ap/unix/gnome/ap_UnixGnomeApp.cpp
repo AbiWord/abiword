@@ -200,16 +200,23 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 
 static void s_poptInit(AP_Args *Args)
 {
-	// go to the Args options array and kill starting with --version.
-	for (int i = 0; Args->options[i].longName != NULL; i++)
-		if (!strcmp(Args->options[i].longName, "version"))
-		{
-			Args->options[i].longName = NULL; Args->options[i].shortName = 0;
-			Args->options[i].argInfo = 0; Args->options[i].arg = NULL;
-			Args->options[i].val = 0; Args->options[i].descrip = NULL;
-			Args->options[i].argDescrip = NULL;
-			break;
+	int v = -1, i;
+
+	for (i = 0; Args->const_opts[i].longName != NULL; i++)
+		if (!strcmp(Args->const_opts[i].longName, "version"))
+		{ 
+			v = i; break; 
 		}
+
+	if (v == -1)
+		v = i;
+
+	struct poptOption * opts = (struct poptOption *)
+		UT_calloc(v+1, sizeof(struct poptOption));
+	for (int j = 0; j < v; j++)
+		opts[j] = Args->const_opts[j];
+
+	Args->options = opts;
 
 #ifndef ABI_OPT_WIDGET
 	// This is deprecated.  We're supposed to use gnome_program_init!

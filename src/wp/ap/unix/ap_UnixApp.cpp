@@ -1379,6 +1379,7 @@ static void s_poptInit(AP_Args *Args)
 {
 	int nextopt;
 
+	Args->options = Args->const_opts;
 	Args->poptcon = poptGetContext("AbiWord", 
 							   Args->XArgs->m_argc, Args->XArgs->m_argv, 
 								   Args->options, 0);

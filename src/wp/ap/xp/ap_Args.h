@@ -48,7 +48,8 @@ public:
 	bool doWindowlessArgs() const;
 
 	// Would be nice if this could be non-static.
-	const static struct poptOption options[];
+	const static struct poptOption const_opts[];
+	static struct poptOption * options;
 
 #ifdef ABI_OPT_PERL
  	static const char * m_sScript;
