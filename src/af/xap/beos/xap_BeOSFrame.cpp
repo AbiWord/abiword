@@ -214,6 +214,14 @@ UT_Bool XAP_BeOSFrame::show()
 	return UT_TRUE;
 }
 
+UT_Bool XAP_BeOSFrame::openURL(const char * szURL)
+{
+	// TODO: call NetPositive to open the specified URL
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
+	return UT_FALSE;
+}
+
 UT_Bool XAP_BeOSFrame::updateTitle()
 {
 	if (!XAP_Frame::updateTitle())

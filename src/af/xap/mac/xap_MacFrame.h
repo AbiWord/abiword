@@ -51,6 +51,7 @@ public:
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
+	virtual UT_Bool				openURL(const char * szURL);
 
 	virtual AP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);

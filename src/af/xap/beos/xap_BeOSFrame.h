@@ -112,6 +112,7 @@ public:
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
+	virtual UT_Bool				openURL(const char * szURL);
 	virtual UT_Bool				updateTitle(void);
 
 	BWindow *				getTopLevelWindow(void) const;

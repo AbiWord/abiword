@@ -431,6 +431,14 @@ UT_Bool XAP_UnixFrame::show()
 	return UT_TRUE;
 }
 
+UT_Bool XAP_UnixFrame::openURL(const char * szURL)
+{
+	// TODO: call NSCP to open the specified URL
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
+	return UT_FALSE;
+}
+
 UT_Bool XAP_UnixFrame::updateTitle()
 {
 	if (!XAP_Frame::updateTitle())

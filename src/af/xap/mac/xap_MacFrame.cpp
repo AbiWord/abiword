@@ -88,6 +88,14 @@ UT_Bool	XAP_MacFrame::show(void)
 	return UT_TRUE;
 }
 
+UT_Bool XAP_MacFrame::openURL(const char * szURL)
+{
+	// TODO: use GURL or InternetConfig to open the specified URL
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
+	return UT_FALSE;
+}
+
 AP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 {
 	return 0;

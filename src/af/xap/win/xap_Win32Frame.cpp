@@ -330,6 +330,20 @@ UT_Bool XAP_Win32Frame::show()
 	return UT_TRUE;
 }
 
+UT_Bool XAP_Win32Frame::openURL(const char * szURL)
+{
+	// NOTE: could get finer control over browser window via DDE 
+	// NOTE: may need to fallback to WinExec for old NSCP versions
+
+	HWND hwnd = getTopLevelWindow();
+	int res = (int) ShellExecute(hwnd, "open", szURL, NULL, NULL, SW_SHOWNORMAL);
+
+	// TODO: more specific error messages ??
+	UT_ASSERT(res>32);
+
+	return (res>32);
+}
+
 UT_Bool XAP_Win32Frame::updateTitle()
 {
 	if (!XAP_Frame::updateTitle())

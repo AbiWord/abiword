@@ -87,6 +87,7 @@ public:
 	virtual UT_Bool				close(void)=0;
 	virtual UT_Bool				raise(void)=0;
 	virtual UT_Bool				show(void)=0;
+	virtual UT_Bool				openURL(const char * szURL)=0;
 	virtual UT_Bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode(void) const;
