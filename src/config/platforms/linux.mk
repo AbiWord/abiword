@@ -25,8 +25,8 @@
 # Define architecture-specific flags (L. Kollar, 3 Nov 1998)
 # (only i386 and ppc now; anyone want to add sparc & alpha?)
 # These are (probably) optional for your platform.
-i386_ARCH_FLAGS		= -mno-486 -Di386
-PPC_ARCH_FLAGS		= -O2
+i386_ARCH_FLAGS		= 	# -mno-486 -Di386
+PPC_ARCH_FLAGS		= 
 ALPHA_ARCH_FLAGS 	= 
 SPARC_ARCH_FLAGS 	= 
 
@@ -48,7 +48,7 @@ OPTIMIZER	= -g -Wall -Wshadow
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O3 -Wall -Wshadow
+OPTIMIZER	= -O2 -Wall -Wshadow
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
