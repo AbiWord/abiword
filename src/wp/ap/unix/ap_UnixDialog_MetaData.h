@@ -20,6 +20,7 @@
 #ifndef AP_UNIXDIALOG_METADATA_H
 #define AP_UNIXDIALOG_METADATA_H
 
+#include "xap_UnixDialogHelper.h"
 #include "ap_Dialog_MetaData.h"
 
 class XAP_UnixFrame;
@@ -36,7 +37,7 @@ class AP_UnixDialog_MetaData: public AP_Dialog_MetaData
   
   static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
- private:
+ protected:
 
   void eventCancel () ;
   void eventOK () ;
@@ -58,7 +59,10 @@ class AP_UnixDialog_MetaData: public AP_Dialog_MetaData
     }
 
   virtual GtkWidget * _constructWindow () ;
-  virtual void _constructWindowContents ( GtkWidget * container ) ;
+
+  void _constructWindowContents ( GtkWidget * container ) ;
+
+ private:  
 
   GtkWidget * m_entryTitle ;
   GtkWidget * m_entrySubject ;

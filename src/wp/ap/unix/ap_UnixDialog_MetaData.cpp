@@ -142,11 +142,13 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
   GtkWidget *cancel_btn;
   GtkWidget *dialog_action_area1;
 
+  const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
   // create dialog
 
   main_dlg = gtk_dialog_new ();
   gtk_container_set_border_width (GTK_CONTAINER (main_dlg), 3);
-  gtk_window_set_title (GTK_WINDOW (main_dlg), _("Document Properties"));
+  gtk_window_set_title (GTK_WINDOW (main_dlg), pSS->getValue(AP_STRING_ID_DLG_MetaData_Title));
   GTK_WINDOW (main_dlg)->type = GTK_WINDOW_DIALOG;
   gtk_window_set_position (GTK_WINDOW (main_dlg), GTK_WIN_POS_CENTER);
   gtk_window_set_modal (GTK_WINDOW (main_dlg), TRUE);
@@ -165,12 +167,12 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 
   // buttons
 
-  ok_btn = gtk_button_new_with_label (_("Ok"));
+  ok_btn = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_OK));
   gtk_widget_show (ok_btn);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), ok_btn);
   GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
 
-  cancel_btn = gtk_button_new_with_label (_("Cancel"));
+  cancel_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
   gtk_widget_show (cancel_btn);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), cancel_btn);
   GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
@@ -228,6 +230,8 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   GtkWidget *coverage_entry;
   GtkWidget *rights_entry;
 
+  const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
   vbox1 = gtk_vbox_new (FALSE, 5);
   gtk_widget_show (vbox1);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), vbox1, TRUE, TRUE, 0);
@@ -239,35 +243,35 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gtk_table_set_row_spacings (GTK_TABLE (table2), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table2), 3);
 
-  title_lbl = gtk_label_new (_("Title:"));
+  title_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Title_LBL));
   gtk_widget_show (title_lbl);
   gtk_table_attach (GTK_TABLE (table2), title_lbl, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (title_lbl), 0, 0.5);
 
-  subject_lbl = gtk_label_new (_("Subject:"));
+  subject_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Subject_LBL));
   gtk_widget_show (subject_lbl);
   gtk_table_attach (GTK_TABLE (table2), subject_lbl, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (subject_lbl), 0, 0.5);
 
-  author_lbl = gtk_label_new (_("Author:"));
+  author_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Author_LBL));
   gtk_widget_show (author_lbl);
   gtk_table_attach (GTK_TABLE (table2), author_lbl, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (author_lbl), 0, 0.5);
 
-  publisher_lbl = gtk_label_new (_("Publisher:"));
+  publisher_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Publisher_LBL));
   gtk_widget_show (publisher_lbl);
   gtk_table_attach (GTK_TABLE (table2), publisher_lbl, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (publisher_lbl), 0, 0.5);
 
-  coauthor_lbl = gtk_label_new (_("Co-Author(s):"));
+  coauthor_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_CoAuthor_LBL));
   gtk_widget_show (coauthor_lbl);
   gtk_table_attach (GTK_TABLE (table2), coauthor_lbl, 0, 1, 4, 5,
                     (GtkAttachOptions) (GTK_FILL),
@@ -315,28 +319,28 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gtk_table_set_row_spacings (GTK_TABLE (table3), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table3), 3);
 
-  category_lbl = gtk_label_new (_("Category:"));
+  category_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Category_LBL));
   gtk_widget_show (category_lbl);
   gtk_table_attach (GTK_TABLE (table3), category_lbl, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (category_lbl), 0, 0.5);
 
-  keywords_lbl = gtk_label_new (_("Keywords:"));
+  keywords_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Keywords_LBL));
   gtk_widget_show (keywords_lbl);
   gtk_table_attach (GTK_TABLE (table3), keywords_lbl, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (keywords_lbl), 0, 0.5);
 
-  language_lbl = gtk_label_new (_("Language(s):"));
+  language_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Languages_LBL));
   gtk_widget_show (language_lbl);
   gtk_table_attach (GTK_TABLE (table3), language_lbl, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (language_lbl), 0, 0.5);
 
-  desc_lbl = gtk_label_new (_("Description:"));
+  desc_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Description_LBL));
   gtk_widget_show (desc_lbl);
   gtk_table_attach (GTK_TABLE (table3), desc_lbl, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -384,28 +388,28 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gtk_table_set_row_spacings (GTK_TABLE (table4), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table4), 3);
 
-  source_lbl = gtk_label_new (_("Source:"));
+  source_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Source_LBL));
   gtk_widget_show (source_lbl);
   gtk_table_attach (GTK_TABLE (table4), source_lbl, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (source_lbl), 0, 0.5);
 
-  relation_lbl = gtk_label_new (_("Relation:"));
+  relation_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Relation_LBL));
   gtk_widget_show (relation_lbl);
   gtk_table_attach (GTK_TABLE (table4), relation_lbl, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (relation_lbl), 0, 0.5);
 
-  coverage_lbl = gtk_label_new (_("Coverage:"));
+  coverage_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Coverage_LBL));
   gtk_widget_show (coverage_lbl);
   gtk_table_attach (GTK_TABLE (table4), coverage_lbl, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (coverage_lbl), 0, 0.5);
 
-  rights_lbl = gtk_label_new (_("Rights:"));
+  rights_lbl = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_MetaData_Rights_LBL));
   gtk_widget_show (rights_lbl);
   gtk_table_attach (GTK_TABLE (table4), rights_lbl, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),

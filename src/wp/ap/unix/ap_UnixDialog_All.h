@@ -106,7 +106,7 @@
 #   include "ap_UnixGnomeDialog_HdrFtr.h"
 #   include "ap_UnixGnomeDialog_InsertBookmark.h"
 #   include "ap_UnixGnomeDialog_InsertHyperlink.h"
-//#include "ap_UnixGnomeDialog_MetaData.h"
+#include "ap_UnixGnomeDialog_MetaData.h"
 
 #	ifdef HAVE_GNOME_DIRECT_PRINT
 #		include "xap_UnixDlg_Print.h"
@@ -155,7 +155,7 @@
 	DeclareDialog(AP_DIALOG_ID_LISTS,		    AP_UnixGnomeDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixGnomeDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
-     DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData)
+     DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixGnomeDialog_MetaData)
     DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_UnixGnomeDialog_Language)
     DeclareDialog(AP_DIALOG_ID_TOGGLECASE,      AP_UnixGnomeDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixGnomeDialog_New)
