@@ -65,13 +65,13 @@ ifeq ($(OS_NAME),MINGW32)
 NSIS_OPT += //DMINGW32=1
 endif
 
-ifneq ($(wildcard $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/bmp),)
-ifeq ($(OS_NAME),MINGW32)
-NSIS_OPT += //DHAVEBMP=1
-else
-NSIS_OPT += /DHAVEBMP=1
-endif
-endif
+#ifneq ($(wildcard $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/bmp),)
+#ifeq ($(OS_NAME),MINGW32)
+#NSIS_OPT += //DHAVEBMP=1
+#else
+#NSIS_OPT += /DHAVEBMP=1
+#endif
+#endif
 
 $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
 	@rm -f $(BINDIR)/*.ns*; \
@@ -101,6 +101,18 @@ _BMP_PLUGIN_:
 		echo Cut and paste support may not work for images without this plugin!;	\
 	fi
 
+_W32NATIVE_PLUGIN_:
+	@if [ -d $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/win32native ]; then	\
+		echo Found win32native graphic file filter plugin;	\
+		echo Building for use with Windows cut and paste support and importers;	\
+		$(MAKE) -f Makefile -C $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/win32native;	\
+	else	\
+		echo WARNING: win32native graphic file filter plugin NOT found;	\
+		echo Please download the peer abiword-plugins directory \
+		echo Document import and cut-n-paste won't support standard image formats!;	\
+		exit 1;
+	fi
+
 ifeq ($(ABI_OPT_DEBUG),1)
 
 distribution::
@@ -110,7 +122,7 @@ distribution::
 
 else
 
-distribution:: _NSIS_ _BMP_PLUGIN_ $(TARGETS)
+distribution:: _NSIS_ _W32NATIVE_PLUGIN_ $(TARGETS)
 	@echo Copying $(PROGRAM) to $(DIST)
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(PROGRAM) $(DIST)
