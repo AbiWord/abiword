@@ -357,16 +357,27 @@ void fl_BlockLayout::_lookupProperties(void)
 	
 	GR_Graphics* pG = m_pLayout->getGraphics();
 
-	m_iTopMargin = pG->convertDimension(getProperty((XML_Char*)"margin-top"));
-	m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-top"));
-	m_iBottomMargin = pG->convertDimension(getProperty((XML_Char*)"margin-bottom"));
-	m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-bottom"));
-	m_iLeftMargin = pG->convertDimension(getProperty((XML_Char*)"margin-left"));
-	m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-left"));
-	m_iRightMargin = pG->convertDimension(getProperty((XML_Char*)"margin-right"));
-	m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-right"));
-	m_iTextIndent = pG->convertDimension(getProperty((XML_Char*)"text-indent"));
-	m_iTextIndentLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"text-indent"));
+	struct MarginAndIndent_t
+	{
+		const char* szProp;
+		UT_sint32*	pVar;
+		UT_sint32*	pVarLU;
+	}
+	const rgProps[] =
+	{
+		{ "margin-top",		&m_iTopMargin,		&m_iTopMarginLayoutUnits	},
+		{ "margin-bottom",	&m_iBottomMargin,	&m_iBottomMarginLayoutUnits },
+		{ "margin-left",	&m_iLeftMargin,		&m_iLeftMarginLayoutUnits	},
+		{ "margin-right",	&m_iRightMargin,	&m_iRightMarginLayoutUnits	},
+		{ "text-indent",	&m_iTextIndent,		&m_iTextIndentLayoutUnits	}
+	};
+	for (int iRg = 0; iRg < NrElements(rgProps); ++iRg)
+	{
+		const MarginAndIndent_t& mai = rgProps[iRg];
+		const char* pszProp = getProperty((XML_Char*)mai.szProp);
+		*mai.pVar	= pG->convertDimension(pszProp);
+		*mai.pVarLU	= UT_convertToLayoutUnits(pszProp);
+	}
 
 	{
 		const char* pszAlign = getProperty((XML_Char*)"text-align");
