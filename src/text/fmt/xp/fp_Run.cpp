@@ -935,7 +935,10 @@ UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex /*inde
 	  from the if below gets rid of bug 96.  However, these
 	  changes cause other problems which are worse.
 	*/
-	if ((m_iOffsetFirst + m_iLen) < iOffset)
+	if (
+		((m_iOffsetFirst + m_iLen) <= iOffset)
+		&& (m_pNext)
+		)
 	{
 		// nothing to do.  the insert occurred AFTER this run
 		return UT_FALSE;
@@ -943,7 +946,7 @@ UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex /*inde
 
 	if (
 		(m_iOffsetFirst > iOffset)
-		|| ((m_iOffsetFirst == iOffset) && (iOffset > 0))
+//		|| ((m_iOffsetFirst == iOffset) && (iOffset > 0))
 		)
 	{
 		m_iOffsetFirst += iCount;
@@ -959,7 +962,9 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	
-	if ((m_iOffsetFirst + m_iLen) <= iOffset)
+	if (
+		((m_iOffsetFirst + m_iLen) <= iOffset)
+		)
 	{
 		// nothing to do.  the delete occurred AFTER this run
 		return UT_FALSE;
