@@ -111,7 +111,7 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	{
 	   IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	   UT_DEBUGMSG(("word 97 char is %c (%d), type is %d",eachchar,(int)eachchar,chartype));
+	   UT_DEBUGMSG(("word 97 char is %c (%d), type is %d\n",eachchar,(int)eachchar,chartype));
 
 	   // take care of any oddities in Microsoft's character "encoding"
 	   if (chartype == 1 && eachchar == 146) eachchar = 39; // apostrophe
@@ -209,7 +209,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 	switch(tag)
 		{
 		 case SECTIONBEGIN:
-		   UT_DEBUGMSG(("section properties..."));
+		   UT_DEBUGMSG(("section properties...\n"));
 		   asep = (SEP*)props;
 
 		   // page margins

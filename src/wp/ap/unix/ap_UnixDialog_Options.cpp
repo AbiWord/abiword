@@ -64,21 +64,21 @@ AP_UnixDialog_Options::AP_UnixDialog_Options(XAP_DialogFactory * pDlgFactory,
 	/* DEBUG stuff */
 	XAP_Prefs *prefs = m_pApp->getPrefs();
 	UT_ASSERT(prefs);
-	UT_DEBUGMSG(("AP_UnixDialog_Options::AP_UnixDialog_Options[%s:%d]", __FILE__, __LINE__));
-	UT_DEBUGMSG(("    current pref : %s",
+	UT_DEBUGMSG(("AP_UnixDialog_Options::AP_UnixDialog_Options[%s:%d]\n", __FILE__, __LINE__));
+	UT_DEBUGMSG(("    current pref : %s\n",
 		prefs->getCurrentScheme()->getSchemeName()) );
 
 	UT_Bool b = prefs->savePrefsFile();
-	UT_DEBUGMSG(("    prefs saved (%d) in %s", b, prefs->getPrefsPathname() ));
+	UT_DEBUGMSG(("    prefs saved (%d) in %s\n", b, prefs->getPrefsPathname() ));
 
 	UT_uint32 i;
 	XAP_PrefsScheme *ps;
 	for ( i = 0; (ps = prefs->getNthScheme(i)) != 0; i++ ) {
-		UT_DEBUGMSG(("    %d [%s]", i, ps->getSchemeName() ));
+		UT_DEBUGMSG(("    %d [%s]\n", i, ps->getSchemeName() ));
 	
 		XML_Char const *pszKey, *pszValue;
 		for ( UT_uint32 j = 0; ps->getNthValue(j, &pszKey, &pszValue ); j++ ) {
-			UT_DEBUGMSG(("        %x %-30s : %s", j, pszKey, pszValue ));
+			UT_DEBUGMSG(("        %x %-30s : %s\n", j, pszKey, pszValue ));
 		}
 	}
 #endif
@@ -132,7 +132,7 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 			break;
 
 		case AP_Dialog_Options::a_APPLY:
-			UT_DEBUGMSG(("Applying changes"));
+			UT_DEBUGMSG(("Applying changes\n"));
 			_storeWindowData();
 			break;
 
@@ -981,7 +981,7 @@ int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key 
 		UT_DEBUGMSG(("search found %d", data.found ));
 	}
 	else
-		UT_DEBUGMSG(("search NOT found (searched %d indexes)", data.index ));
+		UT_DEBUGMSG(("search NOT found (searched %d indexes)\n", data.index ));
 
 	return data.found;
 }
@@ -1104,7 +1104,7 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 
 	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
 
-	UT_DEBUGMSG(("s_menu_item_activate [%d %s]", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
+	UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
 
 	return TRUE;
 }

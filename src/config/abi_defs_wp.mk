@@ -25,7 +25,7 @@ ABI_AP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-ifdef ABI_OPT_GNOME
+ifeq ($(ABI_OPT_GNOME),1)
 ABI_AP_INCS+=	/wp/ap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
 

@@ -109,7 +109,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 			}
 			else
 			{
-				UT_DEBUGMSG(("File says %d fonts should follow...", fontcount));
+				UT_DEBUGMSG(("File says %d fonts should follow...\n", fontcount));
 			}
 #endif
 			
@@ -139,7 +139,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 			if (line >= 0)
 				totaldirs++;
 		  
-			UT_DEBUGMSG(("Read %ld fonts from directory [%s].", line, filename));
+			UT_DEBUGMSG(("Read %ld fonts from directory [%s].\n", line, filename));
 		}
 		FREEP(filename);
 		if (file)

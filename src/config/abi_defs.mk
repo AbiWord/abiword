@@ -105,11 +105,16 @@ endif
 ## ABI_AP_INCS should define application-specific headers.  these are set
 ##             in abi_defs_*.mk -- one for each application in AbiSuite.
 
-ABI_XAP_INCS=	/config					\
-		/af/xap/xp		/af/xap/$(ABI_NATIVE)	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
-		/af/ev/xp		/af/ev/$(ABI_NATIVE)	/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
+ABI_XAP_INCS=	/config						\
+		/af/xap/xp		/af/xap/$(ABI_NATIVE)	\
+		/af/ev/xp		/af/ev/$(ABI_NATIVE)	\
 		/af/util/xp		/af/util/$(ABI_NATIVE)	\
 		/af/gr/xp		/af/gr/$(ABI_NATIVE)
+
+ifeq ($(ABI_OPT_GNOME),1)
+ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
+		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
+endif
 
 ABI_OTH_INCS=	/other/spell
 
@@ -144,6 +149,7 @@ ABI_OPTIONS+=Debug:Off
 endif
 
 ABI_GNOME_DIR=.
+
 ##################################################################
 ##################################################################
 
@@ -327,7 +333,7 @@ endif
 ## We should change this when get non-gtk versions on unix....
 ## Changed: I've added the ABI_OPT_GNOME variable, anybody has any
 ## inconvenient with the addition?
-ifdef ABI_OPT_GNOME
+ifeq ($(ABI_OPT_GNOME),1)
 CFLAGS 		+=	`$(GNOME_CONFIG) --cflags gnorba gnomeui` -DHAVE_GNOME
 EXTRA_LIBS	+=	`$(GNOME_CONFIG) --libs gnorba gnomeui`
 else

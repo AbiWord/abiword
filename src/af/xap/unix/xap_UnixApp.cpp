@@ -205,10 +205,10 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 	
 #ifdef DEBUG	
 	XAP_UnixFont ** fonts = m_fontManager->getAllFonts();
-	UT_DEBUGMSG(("Found Fonts:"));
+	UT_DEBUGMSG(("Found Fonts:\n"));
 	for (UT_uint32 i = 0; i < m_fontManager->getCount(); i++)
 	{
-		UT_DEBUGMSG(("\tName [%s] at [%s], metrics [%s]",
+		UT_DEBUGMSG(("\tName [%s] at [%s], metrics [%s]\n",
 					 fonts[i]->getName(), fonts[i]->getFontfile(),
 					 fonts[i]->getMetricfile()));
 	}
@@ -264,7 +264,7 @@ void XAP_UnixApp::_setAbiSuiteLibDir(void)
 
 	// TODO what to do ??  try the current directory...
 	
-	UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory...."));
+	UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory....\n"));
 
 	getcwd(buf,sizeof(buf));
 	int len = strlen(buf);

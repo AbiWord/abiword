@@ -266,7 +266,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 void AP_Dialog_Options::_event_IgnoreReset(void)
 {
-	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreReset"));
+	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreReset\n"));
 	UT_ASSERT( m_pFrame );
 
 	// TODO:  shack@uiuc.edu: waiting for a vote for reset strings...
@@ -294,13 +294,13 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 	if (ans == XAP_Dialog_MessageBox::a_CANCEL ||
 		ans == XAP_Dialog_MessageBox::a_NO )
 	{
-		UT_DEBUGMSG(("No/Canceled"));
+		UT_DEBUGMSG(("No/Canceled\n"));
 		pDialogFactory->releaseDialog(pDialog);
 		return;
 	}
 
 	// do it
-	UT_DEBUGMSG(("Yes"));
+	UT_DEBUGMSG(("Yes\n"));
 	UT_ASSERT(ans == XAP_Dialog_MessageBox::a_YES );
 
 	// ask another question : "Do you want to reset ignored words in all the
@@ -321,7 +321,7 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 		// if cancel, don't to ANYTHING	
 		if (ans == XAP_Dialog_MessageBox::a_CANCEL )
 		{
-			UT_DEBUGMSG(("No/Canceled"));
+			UT_DEBUGMSG(("No/Canceled\n"));
 			pDialogFactory->releaseDialog(pDialog);
 			return;
 		}
@@ -350,10 +350,10 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 
 void AP_Dialog_Options::_event_IgnoreEdit(void)
 {
-	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreEdit"));
+	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreEdit\n"));
 }
 
 void AP_Dialog_Options::_event_DictionaryEdit(void)
 {
-	UT_DEBUGMSG(("AP_Dialog_Options::_event_DictionaryEdit"));
+	UT_DEBUGMSG(("AP_Dialog_Options::_event_DictionaryEdit\n"));
 }

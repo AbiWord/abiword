@@ -56,7 +56,7 @@ AP_UnixDialog_Spell::~AP_UnixDialog_Spell(void)
 /************************************************************/
 void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
 {
-   UT_DEBUGMSG(("beginning spelling check..."));
+   UT_DEBUGMSG(("beginning spelling check...\n"));
    
    // class the base class method to initialize some basic xp stuff
    AP_Dialog_Spell::runModal(pFrame);
@@ -116,7 +116,7 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
    }
    
    // TODO: all done message?
-   UT_DEBUGMSG(("spelling check complete."));
+   UT_DEBUGMSG(("spelling check complete.\n"));
 }
 
 /**********************************************************/
@@ -676,7 +676,7 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
    }
    word[mblength] = 0;
 
-   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i", wcindex, wclength, mbindex, mblength));
+   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i\m", wcindex, wclength, mbindex, mblength));
    UT_ASSERT(mblength >= mbindex);
    
    return word;
@@ -708,7 +708,7 @@ UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
    }
    wword[wclength] = 0;
    
-   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i", mbindex, mblength, wcindex, wclength));
+   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i\n", mbindex, mblength, wcindex, wclength));
    UT_ASSERT(wclength >= wcindex);
    
    return (UT_UCSChar*)wword;

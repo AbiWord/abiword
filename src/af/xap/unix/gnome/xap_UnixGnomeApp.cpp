@@ -143,7 +143,7 @@ void XAP_UnixGnomeApp::_setAbiSuiteLibDir(void)
 
 	// TODO what to do ??  try the current directory...
 	
-	UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory...."));
+	UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory....\n"));
 
 	getcwd(buf,sizeof(buf));
 	int len = strlen(buf);

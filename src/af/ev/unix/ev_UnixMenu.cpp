@@ -856,7 +856,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 						void ** old = NULL;
 						if (m_vecMenuWidgets.setNthItem(k, w, old))
 						{
-							UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.", k));
+							UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
 							UT_ASSERT(0);
 						}
 						
@@ -921,7 +921,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					void ** blah = NULL;
 					if(m_vecMenuWidgets.setNthItem(k, w, blah))
 					{
-						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.", k));
+						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
 						UT_ASSERT(0);
 					}
 					break;
