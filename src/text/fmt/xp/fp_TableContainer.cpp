@@ -223,7 +223,7 @@ fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
 			}
 			else
 			{
-				pCol = pCon->getColumn();
+				pCol = static_cast<fp_Column *>(pCon->getColumn());
 			}
 			bStop = true;
 		}
