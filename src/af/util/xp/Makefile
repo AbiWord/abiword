@@ -64,7 +64,8 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_contextGlyph.cpp	\
 		ut_thread.cpp		\
 		ut_decompress.cpp	\
-		ut_IntStrMap.cpp
+		ut_IntStrMap.cpp       \
+                ut_crc32.cpp
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  CPPSRCS += ut_xml_expat.cpp
