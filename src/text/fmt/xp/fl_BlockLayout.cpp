@@ -550,7 +550,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	UT_uint32 nLen = strlen(pszSpacing);
 	if (nLen > 1)
 	{
-		char * pPlusFound = strrchr(pszSpacing, '+');
+		const char * pPlusFound = strrchr(pszSpacing, '+');
 		if (pPlusFound && *(pPlusFound + 1) == 0)
 		{
 			m_eSpacingPolicy = spacing_ATLEAST;
