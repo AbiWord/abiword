@@ -378,7 +378,7 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff)
 	
 	gfloat yoffNew = (gfloat)yoff;
 	gfloat yoffMax = pUnixFrame->m_pVadj->upper - pUnixFrame->m_pVadj->page_size;
-	if (yoffNew > yoffMax)
+	if ((yoffMax > 0) && (yoffNew > yoffMax))
 		yoffNew = yoffMax;
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pVadj),yoffNew);
 	pView->setYScrollOffset((UT_sint32)yoffNew);
@@ -397,7 +397,7 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff)
 
 	gfloat xoffNew = (gfloat)xoff;
 	gfloat xoffMax = pUnixFrame->m_pHadj->upper - pUnixFrame->m_pHadj->page_size;
-	if (xoffNew > xoffMax)
+	if ((xoffMax > 0) && (xoffNew > xoffMax))
 		xoffNew = xoffMax;
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pHadj),xoffNew);
 	pView->setXScrollOffset((UT_sint32)xoffNew);
