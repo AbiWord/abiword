@@ -263,7 +263,6 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 	}
 
 	pUnixFrameImpl->m_bDoZoomUpdate = true;
-	UT_DEBUGMSG(("setting window size to %d %d, have %d %d\n", pUnixFrameImpl->m_iNewWidth, pUnixFrameImpl->m_iNewHeight, pView->getGraphics()->tdu(pView->getWindowWidth()), pView->getGraphics()->tdu(pView->getWindowHeight())));
 
 	UT_sint32 iNewWidth = 0;
 	UT_sint32 iNewHeight = 0;
