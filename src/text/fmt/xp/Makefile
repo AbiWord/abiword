@@ -36,6 +36,7 @@ CPPSRCS=		fv_View.cpp			\
 			fl_AutoLists.cpp		\
 			fl_TestRoutines.cpp		\
 			fp_Column.cpp			\
+			fp_ContainerObject.cpp		\
 			fp_Line.cpp			\
 			fp_Page.cpp			\
 			fp_PageSize.cpp			\
