@@ -51,6 +51,5 @@
 #include "ap_Win32Res_DlgParagraph.rc2"
 #include "ap_Win32Res_DlgOptions.rc2"
 #include "ap_Win32Res_DlgWordCount.rc2"
-#include "ap_Win32Res_DlgInsertSymbol.rc2"
 #include "ap_Win32Res_Icons.rc2"
 
