@@ -1092,6 +1092,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 		case PTX_Section:
 		case PTX_SectionEndnote:
+		case PTX_SectionFootnote:
 		{
 			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
 			
