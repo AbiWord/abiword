@@ -63,6 +63,8 @@ public:
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool							canPasteFromClipboard() = 0;
 	virtual const char *					getUserPrivateDirectory();
+	virtual bool							findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir = 0) const;
+	virtual bool							findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir = 0) const; // doesn't check user-dir
 
 	virtual void							setSelectionStatus(AV_View * pView) = 0;
 	virtual void							clearSelection() = 0;

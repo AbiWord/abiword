@@ -143,13 +143,12 @@ Failed:
 void AP_Prefs::overlaySystemPrefs(void)
 {
 	// read system prefs file and overlay builtin values.
-
-	const char * szSystemDefaultPrefsDir = m_pApp->getAbiSuiteAppDir();
-	char buf[1024];
-	sprintf(buf,"%s/%s",szSystemDefaultPrefsDir,"system.profile");
-	const char** items = localeinfo_combinations(buf,"","-",0);
+	const char** items = localeinfo_combinations("system.profile","","-",0);
+	UT_String path;
 	while(*items) {
-	    loadSystemDefaultPrefsFile(*items++);
+	    const char * item = *items++;
+	    if (m_pApp->findAbiSuiteAppFile(path,item))
+		loadSystemDefaultPrefsFile(path.c_str());
 	};
 }
 

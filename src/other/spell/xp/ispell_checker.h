@@ -30,9 +30,6 @@ private:
 
 	virtual bool _requestDictionary (const char * szLang);
 
-	char * loadGlobalDictionary ( const char *szHash );
-	char * loadLocalDictionary ( const char *szHash );
-
 	bool   loadDictionaryForLanguage ( const char * szLang );
 	void   setDictionaryEncoding ( const char * hashname, const char * enc );
 

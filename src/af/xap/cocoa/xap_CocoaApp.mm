@@ -31,6 +31,7 @@
 #include <glib.h>
 
 #include "ut_debugmsg.h"
+#include "ut_path.h"
 #include "ut_string.h"
 #include "ut_uuid.h"
 
@@ -207,6 +208,61 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 	return upd_cache;
 }
 
+bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir) const
+{
+	if (!filename)
+		return false;
+	if (XAP_App::findAbiSuiteLibFile(path,filename,subdir))
+		return true;
+
+	bool bFound = false;
+
+	// get Bundle resource directory and use that.
+	NSString * resDir = [[NSBundle mainBundle] resourcePath];
+	if (resDir)
+	{
+		path  = [resDir UTF8String];
+		if (subdir)
+		{
+			path += "/";
+			path += subdir;
+		}
+		path += "/";
+		path += filename;
+xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteLibFile(\"%s\",\"%s\",\"%s\")\n",path.c_str(),filename,subdir));
+		bFound = UT_isRegularFile (path.c_str ());
+	}
+	return bFound;
+}
+
+bool XAP_CocoaApp::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir) const
+{
+	if (!filename)
+		return false;
+	if (XAP_App::findAbiSuiteLibFile(path,filename,subdir))
+		return true;
+
+	bool bFound = false;
+
+	// get Bundle resource directory and use that.
+	NSString * resDir = [[NSBundle mainBundle] resourcePath];
+	if (resDir)
+	{
+		path  = [resDir UTF8String];
+		path += "/AbiWord";
+		if (subdir)
+		{
+			path += "/";
+			path += subdir;
+		}
+		path += "/";
+		path += filename;
+xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteAppFile(\"%s\",\"%s\",\"%s\")\n",path.c_str(),filename,subdir));
+		bFound = UT_isRegularFile (path.c_str ());
+	}
+	return bFound;
+}
+
 bool XAP_CocoaApp::_loadFonts()
 {
 	return true;
@@ -214,6 +270,8 @@ bool XAP_CocoaApp::_loadFonts()
 
 void XAP_CocoaApp::_setAbiSuiteLibDir()
 {
+	XAP_App::_setAbiSuiteLibDir("/Library/Application Support/AbiSuite");
+#if 0
 	// TODO Change that to use Bundle path instead. Probably by using FJF code.
 	char buf[PATH_MAX];
 //	char buf2[PATH_MAX]; // not used?
@@ -268,6 +326,7 @@ void XAP_CocoaApp::_setAbiSuiteLibDir()
 	UT_DEBUGMSG(("Couldn't get resource bundle directory."));
 	XAP_App::_setAbiSuiteLibDir(getAbiSuiteHome());
 	return;
+#endif
 }
 
 //////////////////////////////////////////////////////////////////

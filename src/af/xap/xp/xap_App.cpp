@@ -25,6 +25,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_path.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
@@ -781,6 +782,72 @@ void XAP_App::_setAbiSuiteLibDir(const char * sz)
 const char * XAP_App::getAbiSuiteLibDir() const
 {
 	return m_szAbiSuiteLibDir;
+}
+
+bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir) const
+{
+	if (!filename) return false;
+
+#if defined(WIN32)
+	const char * sep = "\\";
+#else
+	const char * sep = "/";
+#endif
+	bool bFound = false;
+
+	const char * dir = 0;
+	if (dir = getUserPrivateDirectory())
+	{
+		path = dir;
+		if (subdir)
+		{
+			path += sep;
+			path += subdir;
+		}
+		path += sep;
+		path += filename;
+		bFound = UT_isRegularFile (path.c_str ());
+	}
+	if (!bFound && (dir = getAbiSuiteLibDir()))
+	{
+		path = dir;
+		if (subdir)
+		{
+			path += sep;
+			path += subdir;
+		}
+		path += sep;
+		path += filename;
+		bFound = UT_isRegularFile (path.c_str ());
+	}
+	return bFound;
+}
+
+bool XAP_App::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir) const
+{
+	if (!filename) return false;
+
+#if defined(WIN32)
+	const char * sep = "\\";
+#else
+	const char * sep = "/";
+#endif
+	bool bFound = false;
+
+	const char * dir = 0;
+	if (dir = getAbiSuiteAppDir())
+	{
+		path = dir;
+		if (subdir)
+		{
+			path += sep;
+			path += subdir;
+		}
+		path += sep;
+		path += filename;
+		bFound = UT_isRegularFile (path.c_str ());
+	}
+	return bFound;
 }
 
 bool XAP_App::addWordToDict(const UT_UCSChar * pWord, UT_uint32 len)

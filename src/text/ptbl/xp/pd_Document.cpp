@@ -227,9 +227,23 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	template_list[0] = user_template_base; // always try to load user's normal.awt first
 	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
 	template_list[2] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.utf8_str());
-	template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
-	template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.utf8_str());
-	template_list[5] = global_template_base; // always try to load global normal.awt last
+
+	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[5],base.c_str(),"templates"))
+		template_list[5] = global_template_base; // always try to load global normal.awt last
+
+	UT_String xbase = base;
+
+	xbase += "-";
+	xbase += lang.utf8_str();
+
+	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[4],xbase.c_str(),"templates"))
+		template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.utf8_str());
+
+	xbase += "_";
+	xbase += terr.utf8_str();
+
+	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[3],xbase.c_str(),"templates"))
+		template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
 }
 
 UT_Error PD_Document::importFile(const char * szFilename, int ieft,

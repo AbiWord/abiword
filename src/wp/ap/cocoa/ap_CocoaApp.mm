@@ -444,6 +444,9 @@ bool AP_CocoaApp::getPrefsValueDirectory(bool bAppSpecific,
 */
 const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
 {
+	static const char * SystemAppDir = "/Library/Application Support/AbiSuite/AbiWord";
+	return SystemAppDir;
+#if 0
     // we return a static string, use it quickly.
 	
     static XML_Char buf[1024];
@@ -451,6 +454,7 @@ const char * AP_CocoaApp::getAbiSuiteAppDir(void) const
 
     sprintf(buf,"%s/%s",getAbiSuiteLibDir(),ABIWORD_APP_LIBDIR);
     return buf;
+#endif
 }
 
 /*!

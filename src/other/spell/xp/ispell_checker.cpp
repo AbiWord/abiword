@@ -17,12 +17,6 @@
 // for a silly messagebox
 #include <stdio.h>
 
-#if defined(WIN32)
-#define DICTIONARY_LIST_FILENAME "\\dictionary\\ispell_dictionary_list.xml"
-#else
-#define DICTIONARY_LIST_FILENAME "/dictionary/ispell_dictionary_list.xml"
-#endif
-
 /***************************************************************************/
 
 class ABI_EXPORT DictionaryListener : public UT_XML::Listener
@@ -212,15 +206,15 @@ ISpellChecker::ISpellChecker()
 	if (mRefCnt == 0)
 	{
 		// load the dictionary list
-		UT_String dictionary_list ( XAP_App::getApp()->getAbiSuiteLibDir() );
-		dictionary_list += DICTIONARY_LIST_FILENAME;
-
-		DictionaryListener listener(m_mapping);
-		UT_XML parser;
-		parser.setListener (&listener);
-		parser.parse (dictionary_list.c_str());
+		UT_String dictionary_list;
+		if (XAP_App::getApp()->findAbiSuiteLibFile(dictionary_list,"ispell_dictionary_list.xml","dictionary"))
+		{
+			DictionaryListener listener(m_mapping);
+			UT_XML parser;
+			parser.setListener (&listener);
+			parser.parse (dictionary_list.c_str());
+		}
 	}
-
 	mRefCnt++;
 }
 
@@ -397,48 +391,6 @@ ISpellChecker::_suggestWord(const UT_UCSChar *ucszWord, size_t length)
 	return sgvec;
 }
 
-static char *
-s_buildHashName ( const char * base, const char * dict )
-{
-	UT_String hName ( base );
-#if defined(WIN32)
-	hName += "\\dictionary\\";
-#else
-	hName += "/dictionary/";
-#endif
-	hName += dict;
-	return UT_strdup (hName.c_str());
-}
-
-
-char *
-ISpellChecker::loadGlobalDictionary ( const char *szHash )
-{
-	char *hashname = NULL;
-	hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), szHash );
-	if (linit(const_cast<char*>(hashname)) < 0)
-	{
-		FREEP( hashname );
-		return(NULL);
-	}
-
-	return(hashname);
-}
-
-
-char *
-ISpellChecker::loadLocalDictionary ( const char *szHash )
-{
-	char *hashname = NULL;
-	hashname = s_buildHashName ( XAP_App::getApp()->getUserPrivateDirectory(), szHash );
-	if (linit(const_cast<char*>(hashname)) < 0)
-	{
-		FREEP( hashname );
-		return(NULL);
-	}
-	return(hashname);
-}
-
 
 /*!
  * Load ispell dictionary hash file for given language.
@@ -449,8 +401,7 @@ ISpellChecker::loadLocalDictionary ( const char *szHash )
 bool
 ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 {
-	char *hashname = NULL;
-
+	UT_String hashname;
 	UT_String encoding;
 	UT_String szFile;
 
@@ -478,17 +429,15 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 
 	alloc_ispell_struct();
 
-	if (!(hashname = loadGlobalDictionary(szFile.c_str())))
+	if (XAP_App::getApp()->findAbiSuiteLibFile(hashname,szFile.c_str(),"dictionary"))
 	{
-		if (!(hashname = loadLocalDictionary(szFile.c_str())))
+		if (!(linit(const_cast<char*>(hashname.c_str())) < 0))
 		{
-			return false;
+			setDictionaryEncoding (hashname.c_str(), encoding.c_str() );
+			return true;
 		}
 	}
-
-	// one of the two above calls succeeded
-	setDictionaryEncoding ( hashname, encoding.c_str() );
-	return true;
+	return false;
 }
 
 void
@@ -559,8 +508,10 @@ ISpellChecker::setDictionaryEncoding( const char * hashname, const char * encodi
 
 bool ISpellChecker::doesDictionaryExist (const char * szLang)
 {
-	char *hashname = NULL;
+	UT_String hashname;
 	UT_String szFile;
+
+	FILE * in = 0;
 
 	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
 	{
@@ -575,17 +526,12 @@ bool ISpellChecker::doesDictionaryExist (const char * szLang)
 	if (szFile.size () == 0 )
 		return false;
 
-	hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), szFile.c_str());
-	FILE* in = fopen(hashname, "r");
-	FREEP(hashname);
-
-	if (!in)
-		return false;
-	else
+	if (XAP_App::getApp()->findAbiSuiteLibFile(hashname,szFile.c_str(),"dictionary"))
 	{
-		fclose(in);
-		return true;
+		in = fopen(hashname.c_str(), "r");
+		if (in) fclose (in);
 	}
+	return (in != 0);
 }
 
 bool
