@@ -52,15 +52,48 @@ install_redhat:
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/linux/scripts/install_redhat.sh 
 
-uninstall_redhat:
-	@echo Removing Red Hat install of AbiSuite...
-# remove app tree and doc tree
-	rm -rf /usr/share/abisuite
-	rm -rf /usr/doc/abisuite
-# remove symbolic links and menu entry
-	rm -f /usr/lib/menu/abiword
-	rm -f /usr/bin/X11/abiword
-	rm -f /usr/bin/X11/AbiWord
+########################################################################
+
+RPM_LOC = $(shell [ -x /usr/bin/rpm ] && echo 1)
+ALIEN_LOC = $(shell [ -x /usr/bin/alien ] && echo 1)
+
+# If tgz is inside $ABI_DIST_TARGET
+ifneq ($(findstring tgz,$(ABI_DIST_TARGET)),)
+	DIST_DEPS += tgz
+endif
+
+# If rpm is inside $ABI_DIST_TARGET _and_ rpm is found locally
+ifneq ($(findstring rpm,$(ABI_DIST_TARGET)),)
+ifneq ($(RPM_LOC),)
+	DIST_DEPS += rpm
+else
+	@echo ""
+	@echo "Skipping RPM packaging: [/usr/bin/rpm] not found."
+	@echo ""
+endif
+endif
+
+# If deb is inside $ABI_DIST_TARGET _and_ alien is found locally
+ifneq ($(findstring deb,$(ABI_DIST_TARGET)),)
+ifneq ($(ALIEN_LOC),)
+	DIST_DEPS += deb
+else
+	@echo ""
+	@echo "Skipping DEB packaging: [/usr/bin/alien] not found."
+	@echo ""
+endif
+endif
+
+# If slp is inside $ABI_DIST_TARGET _and_ alien is found locally
+ifneq ($(findstring slp,$(ABI_DIST_TARGET)),)
+ifneq ($(ALIEN_LOC),)
+	DIST_DEPS += slp
+else
+	@echo ""
+	@echo "Skipping SLP packaging: [/usr/bin/alien] not found."
+	@echo ""
+endif
+endif
 
 ########################################################################
 
@@ -91,7 +124,7 @@ pack_rpm:
 
 # These targets actually do all the heavy lifting of packaging.
 
-rpm: pack_rpm
+rpm: $(RPM_DEPS) 
 # A tarball is already sitting in /usr/src/redhat/SOURCES (or thereabouts)
 # so rip the spec template through some sed magic and run with it.
 	@echo "Exporting spec file to [$(RPM_SOURCE_DIR)/SPECS]..."
@@ -117,4 +150,4 @@ slp: rpm
 include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 
 # This target should build all packages 
-distribution: tgz rpm deb slp
+distribution: $(DIST_DEPS)
