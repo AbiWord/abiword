@@ -873,7 +873,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			(m_iFrameEditMode == FV_FrameEdit_DRAG_EXISTING))
 	{
 		const PP_AttrProp* pSectionAP = NULL;
-		m_pFrameLayout->getAttrProp(&pSectionAP);
+		m_pFrameLayout->getAP(pSectionAP);
 		const XML_Char * pszXpos = NULL;
 		const XML_Char * pszYpos = NULL;
 		UT_sint32 iX,iY;

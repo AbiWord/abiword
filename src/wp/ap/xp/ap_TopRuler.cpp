@@ -41,6 +41,7 @@
 #include "fp_TableContainer.h"
 
 #include "pp_AttrProp.h"
+#include "pd_Document.h"
 #include "gr_Painter.h"
 
 enum TABINDEX
@@ -2474,7 +2475,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				if(pFrame)
 				{
 					const PP_AttrProp* pSectionAP = NULL;
-					pFrame->getAttrProp(&pSectionAP);
+					pFrame->getAP(pSectionAP);
 					const XML_Char * pszXpos = NULL;
 					const XML_Char * pszWidth = NULL;
 					UT_sint32 iX;
@@ -2562,7 +2563,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				if(pFrame)
 				{
 					const PP_AttrProp* pSectionAP = NULL;
-					pFrame->getAttrProp(&pSectionAP);
+					pFrame->getAP(pSectionAP);
 					const XML_Char * pszWidth = NULL;
 					UT_sint32 iWidth;
 					if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))

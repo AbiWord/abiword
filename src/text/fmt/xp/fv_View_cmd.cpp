@@ -2712,7 +2712,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 			{
 				const fl_BlockLayout * pBL = getCurrentBlock();
 				const PP_AttrProp *pBlockAP = NULL;
-				pBL->getAttrProp(&pBlockAP);
+				pBL->getAP(pBlockAP);
 
 				bResult = m_pDoc->insertSpan(getPoint(), text, count,
 											 const_cast<PP_AttrProp *>(pBlockAP));

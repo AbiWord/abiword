@@ -22,7 +22,7 @@
 #include "fp_FieldListLabelRun.h"
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
-
+#include "pd_Document.h"
 #include <string.h>
 
 fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL,iOffsetFirst, iLen)

@@ -360,7 +360,7 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	if(!pView->isTOCSelected())
 	{
 		fl_BlockLayout * pBL = pView->getCurrentBlock();
-		pBL->getAttrProp(&m_pAP);
+		pBL->getAP(m_pAP);
 	}
 	else
 	{

@@ -1095,9 +1095,8 @@ void fl_DocSectionLayout::updateDocSection(void)
 {
 
 	const PP_AttrProp* pAP = NULL;
-	bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
-	UT_ASSERT(bres);
-
+	getAP(pAP);
+	UT_return_if_fail(pAP);
 
 	const XML_Char* pszSectionType = NULL;
 	pAP->getAttribute("type", pszSectionType);
@@ -1146,8 +1145,8 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	lookupFoldedLevel();
 
 	const PP_AttrProp* pSectionAP = NULL;
-
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
+	UT_return_if_fail(pSectionAP);
 
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
@@ -1430,7 +1429,8 @@ UT_sint32 fl_DocSectionLayout::getBottomMargin(void) const
 void fl_DocSectionLayout::setPaperColor(void)
 {
 	const PP_AttrProp* pSectionAP = NULL;
-	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	getAP(pSectionAP);
+	UT_return_if_fail(pSectionAP);
 
 	const char* pszClrPaper = NULL;
 	pSectionAP->getProperty("background-color", (const XML_Char *&)pszClrPaper);
@@ -1777,7 +1777,7 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 		if(m_pImageImage == NULL)
 		{
 			const PP_AttrProp * pAP = NULL;
-			getAttrProp(&pAP);
+			getAP(pAP);
 			GR_Image * pImage = m_pGraphicImage->generateImage(getDocLayout()->getGraphics(),pAP,pPage->getWidth(),pPage->getHeight());
 			m_iDocImageWidth = pPage->getWidth();
 			m_iDocImageHeight = pPage->getHeight();
@@ -3781,7 +3781,41 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
-		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
+
+		// need to explode revision attribute
+		m_pDoc->getAttrProp(indexAP, &pAP);
+		if(pAP)
+		{
+			UT_return_val_if_fail(m_pHFSL && m_pHFSL->getDocLayout(), false);
+			FV_View* pView = m_pHFSL->getDocLayout()->getView();
+			UT_return_val_if_fail(pView, false);
+
+			UT_uint32 iId  = pView->getRevisionLevel();
+			bool bShow     = pView->isShowRevisions();
+
+			PP_RevisionAttr * pRevisions = NULL; // must be NULL
+
+			
+			if(  pAP->getRevisedIndex() != 0xffffffff
+			  && pAP->getRevisionState().isEqual(iId, bShow, m_pDoc->isMarkRevisions()))
+			{
+				// the revision has a valid index to an inflated AP, so we use it
+				PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
+
+				m_pDoc->getAttrProp(revAPI, &pAP);
+			}
+			else
+			{
+				bool bHiddenRevision;
+				const PP_AttrProp * pNewAP = m_pDoc->explodeRevisions(pRevisions, pAP, bShow,
+																	  iId, bHiddenRevision);
+
+				if(pNewAP)
+					pAP = pNewAP;
+			}
+		}
+		
+		if (pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
@@ -3826,7 +3860,40 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
-		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
+		// need to explode revision attribute
+		m_pDoc->getAttrProp(indexAP, &pAP);
+		if(pAP)
+		{
+			UT_return_val_if_fail(m_pHFSL && m_pHFSL->getDocLayout(), false);
+			FV_View* pView = m_pHFSL->getDocLayout()->getView();
+			UT_return_val_if_fail(pView, false);
+
+			UT_uint32 iId  = pView->getRevisionLevel();
+			bool bShow     = pView->isShowRevisions();
+
+			PP_RevisionAttr * pRevisions = NULL; // must be NULL
+
+			
+			if(  pAP->getRevisedIndex() != 0xffffffff
+			  && pAP->getRevisionState().isEqual(iId, bShow, m_pDoc->isMarkRevisions()))
+			{
+				// the revision has a valid index to an inflated AP, so we use it
+				PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
+
+				m_pDoc->getAttrProp(revAPI, &pAP);
+			}
+			else
+			{
+				bool bHiddenRevision;
+				const PP_AttrProp * pNewAP = m_pDoc->explodeRevisions(pRevisions, pAP, bShow,
+																	  iId, bHiddenRevision);
+
+				if(pNewAP)
+					pAP = pNewAP;
+			}
+		}
+		
+		if (pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);

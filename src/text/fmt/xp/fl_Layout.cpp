@@ -27,6 +27,7 @@
 #include "pd_Document.h"
 #include "fd_Field.h"
 #include "po_Bookmark.h"
+#include "pp_AttrProp.h"
 
 fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh) :
 	m_type(type),
@@ -70,14 +71,99 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 	m_apIndex = apIndex;
 }
 
-bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP) const
+/*!
+    ppAP [out] -- the requested AP
+    
+    pRevisions [in] -- revisions attribute; can be set to NULL, in
+                       which case an instance will be created; the
+                       caller is responsible for deleting
+
+    bShowRevisions -- indicates if in the current view revisions are
+                      to be shown
+
+    iRevisionId -- the id of revision which is shown in the current view
+    
+    bHiddenRevision [out] indicates if the element associated with
+                          ppAP is hidden or visible
+
+    bDelete [out] -- if set, the caller must delete ppAP when done
+                     with it.
+    
+*/
+bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
+							bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const
 {
-	return m_pDoc->getAttrProp(m_apIndex,ppAP);
+	bHiddenRevision = false;
+
+	const PP_AttrProp * pAP = NULL;
+
+	UT_return_val_if_fail(m_pDoc, false);
+	
+	if(!m_pDoc->getAttrProp(m_apIndex,&pAP))
+		return false;
+
+	if(   pAP->getRevisedIndex() != 0xffffffff
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	{
+		// the revision has a valid index to an inflated AP, so we use it
+		bHiddenRevision = pAP->getRevisionHidden();
+		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
+
+		m_pDoc->getAttrProp(revAPI, ppAP);
+		return true;
+	}
+	
+	const PP_AttrProp * pNewAP = m_pDoc->explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+
+	if(pNewAP)
+	{
+		*ppAP = pNewAP;
+	}
+	else
+	{
+		*ppAP = pAP;
+	}
+	
+	return true;
 }
 
-bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP) const
+bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP,
+								PP_RevisionAttr *& pRevisions,
+								bool bShowRevisions, UT_uint32 iRevisionId,
+								bool &bHiddenRevision) const
 {
-	return m_pDoc->getSpanAttrProp(m_sdh,offset,bLeftSide,ppAP);
+	bHiddenRevision = false;
+
+	const PP_AttrProp * pAP = NULL;
+
+	UT_return_val_if_fail(m_pDoc, false);
+	
+	if(!m_pDoc->getSpanAttrProp(m_sdh,offset,bLeftSide,&pAP))
+		return false;
+
+	if(   pAP->getRevisedIndex() != 0xffffffff
+	   && pAP->getRevisionState().isEqual(iRevisionId, bShowRevisions, m_pDoc->isMarkRevisions()))
+	{
+		// the revision has a valid index to an inflated AP, so we use it
+		bHiddenRevision = pAP->getRevisionHidden();
+		PT_AttrPropIndex revAPI = pAP->getRevisedIndex();
+
+		m_pDoc->getAttrProp(revAPI, ppAP);
+		return true;
+	}
+	
+	const PP_AttrProp * pNewAP = m_pDoc->explodeRevisions(pRevisions, pAP, bShowRevisions, iRevisionId, bHiddenRevision);
+
+	if(pNewAP)
+	{
+		*ppAP = pNewAP;
+	}
+	else
+	{
+		*ppAP = pAP;
+	}
+	
+	return true;
 }
 
 bool fl_Layout::getField(UT_uint32 offset, fd_Field * & pField)

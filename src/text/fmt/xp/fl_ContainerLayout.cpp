@@ -82,14 +82,56 @@ fl_ContainerLayout::~fl_ContainerLayout()
 #endif
 }
 
+void fl_ContainerLayout::getAP(const PP_AttrProp *& pAP)const
+{
+	FL_DocLayout* pDL =	getDocLayout();
+	UT_return_if_fail(pDL);
+
+	FV_View* pView = pDL->getView();
+	UT_return_if_fail(pView);
+
+	UT_uint32 iId  = pView->getRevisionLevel();
+	bool bShow     = pView->isShowRevisions();
+	bool bHiddenRevision = false;
+
+	PP_RevisionAttr * pRevisions = NULL; // must be NULL
+
+	getAttrProp(&pAP,pRevisions,bShow,iId,bHiddenRevision);
+
+	delete pRevisions;
+}
+
+void fl_ContainerLayout::getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_AttrProp * &pSpanAP) const
+{
+	//first we need to ascertain if this revision is visible
+	FL_DocLayout* pDL =	getDocLayout();
+	UT_return_if_fail(pDL);
+
+	FV_View* pView = pDL->getView();
+	UT_return_if_fail(pView);
+
+	UT_uint32 iId  = pView->getRevisionLevel();
+	bool bShow     = pView->isShowRevisions();
+	bool bHiddenRevision = false;
+
+	PP_RevisionAttr * pRevisions = NULL; // must be NULL
+
+	getSpanAttrProp(blockPos, bLeft, &pSpanAP,pRevisions,bShow,iId,bHiddenRevision);
+
+	delete pRevisions;
+}
+
+
+
 /*!
  * Return the value of the attribute keyed by pszName
  */
 const char*	fl_ContainerLayout::getAttribute(const char * pszName) const
 {
 	const PP_AttrProp * pAP = NULL;
-	getAttrProp(&pAP);
-
+	getAP(pAP);
+	UT_return_val_if_fail(pAP, NULL);
+	
 	const XML_Char* pszAtt = NULL;
 	pAP->getAttribute(static_cast<const XML_Char*>(pszName), pszAtt);
 

@@ -1180,7 +1180,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 		  if(!isLayoutFilling())
 		  {
 			  UT_DEBUGMSG(("SEVIOR: in view \n"));
-			  UT_ASSERT(0);
+			  //UT_ASSERT(0);
 		  }
 	}
 #endif

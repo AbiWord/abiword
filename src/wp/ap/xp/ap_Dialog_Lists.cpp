@@ -778,7 +778,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 // First get the fold level.
 //
 	const PP_AttrProp * pAP = NULL;
-	getBlock()->getAttrProp(&pAP);
+	getBlock()->getAP(pAP);
 	const XML_Char *pszTEXTFOLDED = NULL;
 	if(!pAP || !pAP->getProperty("text-folded",pszTEXTFOLDED))
 	{

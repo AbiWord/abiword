@@ -23,19 +23,21 @@
 #include "fg_GraphicVector.h"
 
 #include "ut_string.h"
-#include "fl_Layout.h"
-#include "px_CR_Object.h"
 #include "pp_AttrProp.h"
+#include "px_CR_Object.h"
+#include "gr_Graphics.h"
+#include "gr_Image.h"
+#include "fl_ContainerLayout.h"
 
-FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
+FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_ContainerLayout* pFL,
 											   const PX_ChangeRecord_Object* pcro)
 {
 	PT_BlockOffset blockOffset = pcro->getBlockOffset();
    
 	// Get the attribute list for this offset.
-	const PP_AttrProp* pSpanAP;
-	bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false, &pSpanAP);
-	if (bFoundSpanAP && pSpanAP)
+	const PP_AttrProp* pSpanAP = NULL;
+	pFL->getSpanAP(blockOffset, false, pSpanAP);
+	if (pSpanAP)
 	{
 		const XML_Char *pszDataID;
 		bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
@@ -58,13 +60,13 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
 	return NULL;
 }
 
-FG_Graphic* FG_Graphic::createFromStrux(const fl_Layout* pFL)
+FG_Graphic* FG_Graphic::createFromStrux(const fl_ContainerLayout* pFL)
 {
    
 	// Get the attribute list for this offset.
-	const PP_AttrProp* pSpanAP;
-	bool bFoundSpanAP = pFL->getAttrProp(&pSpanAP);
-	if (bFoundSpanAP && pSpanAP)
+	const PP_AttrProp* pSpanAP = NULL;
+	pFL->getAP(pSpanAP);
+	if (pSpanAP)
 	{
 		const XML_Char *pszDataID;
 		bool bFoundDataID = pSpanAP->getAttribute("strux-image-dataid", pszDataID);

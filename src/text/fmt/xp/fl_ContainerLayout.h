@@ -138,6 +138,10 @@ public:
 	UT_sint32               getFoldedLevel(void);
 	UT_uint32               getFoldedID(void);
     void                    lookupFoldedLevel(void);
+
+	void                    getAP(const PP_AttrProp *& pAP)const;
+	void                    getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_AttrProp * &pSpanAP) const;
+
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif

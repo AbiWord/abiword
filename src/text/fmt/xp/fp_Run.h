@@ -164,8 +164,14 @@ public:
 #if DEBUG
 	virtual void        printText(void) {};
 #endif
-	void                getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
 
+	void                getSpanAP(const PP_AttrProp * &pSpanAP);
+	const PP_AttrProp * getSpanAP() {const PP_AttrProp * pAP; getSpanAP(pAP); return pAP;}
+	
+	inline void         getBlockAP(const PP_AttrProp * &pBlockAP)
+	                                     {getBlock()->getAP(pBlockAP);}
+		
+	
 	void				insertIntoRunListBeforeThis(fp_Run& newRun);
 	void				insertIntoRunListAfterThis(fp_Run& newRun);
 	fd_Field*			getField(void) const { return m_pField; }
@@ -215,7 +221,6 @@ public:
 	void                setCleared(void);
 	bool				isDirty(void) const { return m_bDirty; }
 	bool			    canContainPoint(void) const;
-	virtual const PP_AttrProp* getAP(void) const;
 	bool		        recalcWidth(void);
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 
@@ -1406,7 +1411,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual const PP_AttrProp* getAP(void) const;
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const {return true;}
@@ -1441,7 +1445,6 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
-	virtual const PP_AttrProp* getAP(void) const;
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const {return false;}

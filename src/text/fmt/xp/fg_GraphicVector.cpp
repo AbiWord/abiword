@@ -25,7 +25,7 @@
 #include "ut_svg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
-#include "fl_Layout.h"
+#include "fl_ContainerLayout.h"
 #include "px_CR_Object.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
@@ -33,7 +33,7 @@
 #include "fg_GraphicVector.h"
 #include "ut_string_class.h"
 
-FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
+FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_ContainerLayout* pFL,
 													 const PX_ChangeRecord_Object* pcro)
 {
 	FG_GraphicVector* pFG = new FG_GraphicVector();
@@ -47,9 +47,8 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 	  for the image, and get the dataItem.  The bytes in the
 	  dataItem should be a SVG image.
 	*/
-	bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false,
-											 &pFG->m_pSpanAP);
-	if (bFoundSpanAP && pFG->m_pSpanAP)
+	pFL->getSpanAP(blockOffset, false, pFG->m_pSpanAP);
+	if (pFG->m_pSpanAP)
 	{
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
@@ -65,7 +64,7 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 }
 
 
-FG_Graphic* FG_GraphicVector::createFromStrux(const fl_Layout *pFL)
+FG_Graphic* FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 {
 	FG_GraphicVector* pFG = new FG_GraphicVector();
 
@@ -76,8 +75,9 @@ FG_Graphic* FG_GraphicVector::createFromStrux(const fl_Layout *pFL)
 	  for the image, and get the dataItem.  The bytes in the
 	  dataItem should be a SVG image.
 	*/
-	bool bFoundSpanAP = pFL->getAttrProp(&pFG->m_pSpanAP);
-	if (bFoundSpanAP && pFG->m_pSpanAP)
+	pFL->getAP(pFG->m_pSpanAP);
+	
+	if (pFG->m_pSpanAP)
 	{
 		bool bFoundDataID = pFG->m_pSpanAP->getAttribute(PT_STRUX_IMAGE_DATAID, pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)

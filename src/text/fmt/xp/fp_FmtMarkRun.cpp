@@ -177,15 +177,6 @@ void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA */)
 #endif
 }
 
-const PP_AttrProp* fp_FmtMarkRun::getAP(void) const
-{
-	const PP_AttrProp * pSpanAP = NULL;
-
-	getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-
-	return pSpanAP;
-}
-
 ////////////////////////////////////////////////////////////////////////
 
 /*!
@@ -283,14 +274,5 @@ void fp_DummyRun::_draw(dg_DrawArgs* /*pDA */)
 {
 }
 
-
-const PP_AttrProp* fp_DummyRun::getAP(void) const
-{
-	const PP_AttrProp * pSpanAP = NULL;
-
-	getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-
-	return pSpanAP;
-}
 
 /////////////////////////////////////////////////////////////////////////

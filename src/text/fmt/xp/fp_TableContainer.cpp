@@ -65,6 +65,7 @@
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
 #include "gr_Painter.h"
+#include "pd_Document.h"
 
 fp_TableRowColumn::fp_TableRowColumn(void) :
 		requisition(0),

@@ -212,9 +212,8 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-	bool bDelete;
 
-	m_pBL->getAttrProp(&pBlockAP);
+	getBlockAP(pBlockAP);
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
@@ -232,12 +231,11 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	// change visibility if it is affected by the presence of revisions
 	if(!getBlock()->isContainedByTOC())
 	{
-		getSpanAP(pSpanAP,bDelete);
+		getSpanAP(pSpanAP);
 	}
 	else
 	{
-		m_pBL->getAttrProp(&pSpanAP);
-		bDelete = false;
+		pSpanAP = pBlockAP;
 	}
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 
@@ -277,10 +275,6 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	// be done inside getSpanAP() because we need to know whether the
 	// revision is to be visible or not before we can properly apply
 	// any properties the revision contains.
-
-	//if we are responsible for deleting pSpanAP, then just do so
-	if(bDelete)
-		delete pSpanAP;
 
 }
 
@@ -349,9 +343,8 @@ fp_Run::_inheritProperties(void)
 		const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 
 		//m_pBL->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-		bool bDeleteSpanAP;
-		getSpanAP(pSpanAP, bDeleteSpanAP);
-		getBlock()->getAttrProp(&pBlockAP);
+		getSpanAP(pSpanAP);
+		getBlockAP(pBlockAP);
 
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
@@ -364,9 +357,6 @@ fp_Run::_inheritProperties(void)
 			_setDescent(getGraphics()->getFontDescent(pFont));
 		    _setHeight(getGraphics()->getFontHeight(pFont));
 		}
-
-		if(bDeleteSpanAP)
-			delete pSpanAP;
 	}
 }
 
@@ -454,268 +444,40 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 /*! returns PP_AttrProp associated with this span, taking on board the
     presence of revisions
     \param pSpan : location to store the PP_AttrProp
-    \param bDeleteAfter : indicates whether the caller should free the
-    pointer when no longer needed
 */
-void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
+void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 {
-	PP_AttrProp * pMySpanAP = NULL;
 	if(getBlock()->isContainedByTOC())
 	{
-		getBlock()->getAttrProp(&pSpanAP);
-		bDeleteAfter = false;
+		getBlockAP(pSpanAP);
 		return;
 	}
 		
-	if(getType() != FPRUN_FMTMARK)
+	//first we need to ascertain if this revision is visible
+	FV_View* pView = _getView();
+	UT_return_if_fail(pView);
+
+	UT_uint32 iId  = pView->getRevisionLevel();
+	bool bShow     = pView->isShowRevisions();
+	bool bHiddenRevision = false;
+
+	if(getType() != FPRUN_FMTMARK && getType() != FPRUN_DUMMY && getType() != FPRUN_DIRECTIONMARKER)
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+		getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP,m_pRevisions,bShow,iId,bHiddenRevision);
 	}
 	else
 	{
-		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP,m_pRevisions,bShow,iId,bHiddenRevision);
 	}
 
-	/**************************************************************************
-	 * revision handling
-	 * -----------------
-	 *
-	 * if there is a revision attribute in our span AP we have to
-	 * superimpose any props contained in that attribute over the span props
-	 *
-	 */
-
-	bDeleteAfter = false;
-
-	const PP_AttrProp * pSpanAPOrig = pSpanAP;
-	
-	const XML_Char* pRevision = NULL;
-	if(pSpanAP && pSpanAP->getAttribute("revision", pRevision))
+	if(bHiddenRevision)
 	{
-		if(!m_pRevisions)
-			m_pRevisions = new PP_RevisionAttr(pRevision);
-
-		UT_return_if_fail(m_pRevisions);
-		
-		//first we need to ascertain if this revision is visible
-		FV_View* pView = _getView();
-		UT_return_if_fail(pView);
-
-		UT_uint32 iId  = pView->getRevisionLevel();
-		bool bShow     = pView->isShowRevisions();
-		bool bMark     = pView->isMarkRevisions();
-		bool bDeleted = false;
-
-		const PP_Revision * pRev;
-		UT_uint32 i = 0;
-		UT_uint32 iMinId;
-
-		pRev = m_pRevisions->getLastRevision();
-		UT_return_if_fail(pRev);
-		
-		UT_uint32 iMaxId = pRev->getId();
-
-		// set initial visibility ...
+		setVisibility(FP_HIDDEN_REVISION);
+	}
+	else
+	{
 		setVisibility(FP_VISIBLE);
-		
-		if(!bMark && !bShow && iId == 0)
-		{
-			// revisions are not to be shown, and the document to be
-			// shown in the state before the first revision, i.e.,
-			// additions are to be hidden, fmt changes ignored, and
-			// deletions will be visible
-
-			// see if the first revision is an addition ...
-			i = 1;
-			do
-			{
-				pRev = m_pRevisions->getRevisionWithId(i, iMinId);
-
-				if(!pRev)
-				{
-					UT_DEBUGMSG(("fp_Run::getSpanAP: iMinId %d\n", iMinId));
-					
-					if(iMinId == 0xffffffff)
-					{
-						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-						return;
-					}
-
-					// jump directly to the first revision ...
-					i = iMinId;
-				}
-			}
-			while(!pRev && i <= (UT_sint32)iMaxId);
-			
-				
-			if(  (pRev->getType() == PP_REVISION_ADDITION)
-			   ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
-			{
-				setVisibility(FP_HIDDEN_REVISION);
-				return;
-			}
-
-			// if we got this far, we found no additions, i.e., this
-			// text was part of the document before the revisions were
-			// applied all other revisions need to be ingored
-			setVisibility(FP_VISIBLE);
-			return;
-		}
-		
-		if((bMark || !bShow) && iId != 0)
-		{
-			// revisions not to be shown, but document to be presented
-			// as it looks after the revision iId
-			UT_ASSERT( bMark || iId == 0xffffffff );
-			
-			UT_uint32 iMyMaxId = bMark ? UT_MIN(iId,iMaxId) : iMaxId;
-
-			// we need to loop through subsequent revisions,
-			// working out the their cumulative effect
-			i = 1;
-			
-			for(i = 1; i <= iMyMaxId; i++)
-			{
-				pRev = m_pRevisions->getRevisionWithId(i,iMinId);
-
-				if(!pRev)
-				{
-					if(iMinId == 0xffffffff)
-					{
-						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-						break;
-					}
-
-					// advance i so that we do not waste our time, -1
-					// because of i++ in loop
-					i = iMinId - 1;
-					continue;
-				}
-			
-			
-				if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
-					 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
-				{
-					// create copy of span AP and then set all props contained
-					// in our revision;
-					if(!pMySpanAP)
-					{
-						pMySpanAP = new PP_AttrProp;
-						UT_return_if_fail(pMySpanAP);
-				
-						(*pMySpanAP) = *pSpanAP;
-						(*pMySpanAP) = *pRev;
-						pSpanAP = pMySpanAP;
-						bDeleteAfter = true;
-					}
-					else
-					{
-						// add fmt to our AP
-						pMySpanAP->setAttributes(pRev->getAttributes());
-						pMySpanAP->setProperties(pRev->getProperties());
-					}
-				}
-				else if(pRev->getType() == PP_REVISION_DELETION)
-				{
-					// deletion means resetting all previous fmt
-					// changes
-					if(pMySpanAP)
-					{
-						delete pMySpanAP;
-						pMySpanAP = NULL;
-						pSpanAP = pSpanAPOrig;
-						bDeleteAfter = false;
-					}
-
-					bDeleted = true;
-				}
-				else if(pRev->getType() == PP_REVISION_ADDITION)
-				{
-					bDeleted = false;
-				}
-			} // for
-
-			if(bDeleted)
-			{
-				setVisibility(FP_HIDDEN_REVISION);
-			}
-			else
-			{
-				setVisibility(FP_VISIBLE);
-			}
-
-			if(!bMark || iId == 0xffffffff)
-				return;
-
-			// if we are in Mark mode, we need to process the last
-			// revision ... 
-		}
-		else if(!m_pRevisions->isVisible(iId))
-		{
-			// we are to show revisions with id <= iId
-			setVisibility(FP_HIDDEN_REVISION);
-			return;
-		}
-
-		//next step is to find any fmt changes, layering them as
-		//subsequent revisions come
-		if(bMark && iId != 0)
-		{
-			// we are in Mark mode and only interested in the last
-			// revision; the loop below will run only once
-			i = UT_MIN(iId+1,iMaxId);
-		}
-		else
-		{
-			i = 1;
-		}
-		
-
-		for(i = 1; i <= iMaxId; i++)
-		{
-			pRev = m_pRevisions->getRevisionWithId(i,iMinId);
-
-			if(!pRev)
-			{
-				if(iMinId == 0xffffffff)
-				{
-					UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-					break;
-				}
-
-				// advance i so that we do not waste our time, -1
-				// because of i++ in loop
-				i = iMinId - 1;
-				continue;
-			}
-			
-			
-			if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
-				 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
-			{
-				// create copy of span AP and then set all props contained
-				// in our revision;
-				if(!pMySpanAP)
-				{
-					pMySpanAP = new PP_AttrProp;
-					UT_return_if_fail(pMySpanAP);
-				
-					(*pMySpanAP) = *pSpanAP;
-					(*pMySpanAP) = *pRev;
-					pSpanAP = pMySpanAP;
-					bDeleteAfter = true;
-					bDeleted = false;
-				}
-				else
-				{
-					// add fmt to our AP
-					pMySpanAP->setAttributes(pRev->getAttributes());
-					pMySpanAP->setProperties(pRev->getProperties());
-					bDeleted = false;
-				}
-			}
-		} // for
-	} // if "revision"
+	}
 }
 
 void fp_Run::setX(UT_sint32 iX, bool bDontClearIfNeeded)
@@ -1313,16 +1075,6 @@ bool fp_Run::_recalcWidth(void)
 	return false;
 }
 
-const PP_AttrProp* fp_Run::getAP(void) const
-{
-	const PP_AttrProp * pSpanAP = NULL;
-
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
-
-	return pSpanAP;
-}
-
-
 void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG)
 {
 
@@ -1524,8 +1276,9 @@ text so we can keep the original code.
 	const PP_AttrProp * pSectionAP = NULL;
 
 	PD_Document * pDoc = getBlock()->getDocument();
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
-	getBlock()->getAttrProp(&pBlockAP);
+	
+	getSpanAP(pSpanAP);
+	getBlockAP(pBlockAP);
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 
 	// This gives the baseline of the selection.
@@ -2020,8 +1773,10 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	const PP_AttrProp * pSectionAP = NULL;
 
 	PD_Document * pDoc = getBlock()->getDocument();
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
-	getBlock()->getAttrProp(&pBlockAP);
+
+	getSpanAP(pSpanAP);
+	getBlockAP(pBlockAP);
+	
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 	
 	GR_Painter painter(pG);
@@ -2290,8 +2045,10 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 		const PP_AttrProp * pSpanAP = NULL;
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL;
-		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-		getBlock()->getAttrProp(&pBlockAP);
+
+		getSpanAP(pSpanAP);
+		getBlockAP(pBlockAP);
+		
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
@@ -2340,7 +2097,6 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 		getGraphics()->setColor(clrShowPara);
 		painter.drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
     }
-
 }
 
 //////////////////////////////////////////////////////////////////
@@ -2634,7 +2390,8 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 
 	const PP_AttrProp * pAP = NULL;
 
-	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pAP);
+	getSpanAP(pAP);
+	
 	const XML_Char * pTarget;
 	const XML_Char * pName;
 	bool bFound = false;
@@ -2947,8 +2704,10 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		const PP_AttrProp * pSpanAP = NULL;
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL;
-		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-		getBlock()->getAttrProp(&pBlockAP);
+
+		getSpanAP(pSpanAP);
+		getBlockAP(pBlockAP);
+
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
@@ -3121,7 +2880,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setDescent(0);
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
-	getBlock()->getAttrProp(&pBlockAP);
+
+	getBlockAP(pBlockAP);
 
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
@@ -4451,7 +4211,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 // Refers to an footnote in the main body of the text.
 fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
@@ -4462,7 +4222,7 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iO
 
 bool fp_FieldFootnoteRefRun::calculateValue(void)
 {
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
@@ -4484,7 +4244,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 
 fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
@@ -4495,7 +4255,7 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, UT_uin
 // Appears in the FootnoteContainer, one per footnote.
 bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
@@ -4519,7 +4279,7 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 
 fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
@@ -4531,7 +4291,7 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, UT_uint3
 bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 {
 
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid = NULL;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
@@ -4555,7 +4315,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 
 fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
 {
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 
@@ -4567,7 +4327,7 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL,UT_uint32 iOffs
 bool fp_FieldEndnoteRefRun::calculateValue(void)
 {
 
-	const PP_AttrProp * pp = getAP();
+	const PP_AttrProp * pp = getSpanAP();
 	const XML_Char * footid = NULL;
 	bool bRes = pp->getAttribute("endnote-id", footid);
 

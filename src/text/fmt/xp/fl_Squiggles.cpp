@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "fv_View.h"
+#include "pd_Document.h"
 
 /*! \page squiggle_overview Squiggles
 

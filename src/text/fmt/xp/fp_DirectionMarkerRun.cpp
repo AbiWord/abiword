@@ -249,8 +249,8 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 		const PP_AttrProp * pSpanAP = NULL;
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL;
-		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
-		getBlock()->getAttrProp(&pBlockAP);
+		getSpanAP(pSpanAP);
+		getBlockAP(pBlockAP);
 		// look for fonts in this DocLayout's font cache
 		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 

@@ -433,7 +433,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				if(pFrame)
 				{
 					const PP_AttrProp* pSectionAP = NULL;
-					pFrame->getAttrProp(&pSectionAP);
+					pFrame->getAP(pSectionAP);
 					const XML_Char * pszYpos = NULL;
 					UT_sint32 iYpos;
 					const XML_Char * pszHeight = NULL;
@@ -519,7 +519,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				if(pFrame)
 				{
 					const PP_AttrProp* pSectionAP = NULL;
-					pFrame->getAttrProp(&pSectionAP);
+					pFrame->getAP(pSectionAP);
 					const XML_Char * pszHeight = NULL;
 					UT_sint32 iHeight;
 					if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))

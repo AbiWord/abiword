@@ -127,7 +127,9 @@ private:
 };
 
 /****************************************************************/
-
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
 FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	:	AV_View(pApp, pParentData),
 		m_iInsPoint(0),
@@ -935,7 +937,7 @@ void FV_View::toggleCase (ToggleCase c)
 		}
 
 		const PP_AttrProp * pSpanAPAfter = NULL;
-		pBL->getSpanAttrProp(offset,false,&pSpanAPAfter);
+		pBL->getSpanAP(offset,false,pSpanAPAfter);
 		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
 
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: pBL 0x%x, offset %d, pSpanAPAfter 0x%x\n", pBL, offset, pSpanAPAfter));
@@ -1107,7 +1109,7 @@ void FV_View::toggleCase (ToggleCase c)
 				}
 
 				// get the props after our segment
-				pBL->getSpanAttrProp(offset+iLen,false,&pSpanAPAfter);
+				pBL->getSpanAP(offset+iLen,false,pSpanAPAfter);
 				xxx_UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
 
 				UT_uint32 iRealDeleteCount;
@@ -1983,7 +1985,7 @@ bool FV_View::isNumberedHeadingHere(fl_BlockLayout * pBlock)
 		return bHasNumberedHeading;
 	}
 	const PP_AttrProp * pBlockAP = NULL;
-	pBlock->getAttrProp(&pBlockAP);
+	pBlock->getAP(pBlockAP);
 	const XML_Char* pszCurStyle = NULL;
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszCurStyle);
 	if(pszCurStyle == NULL)
@@ -2925,7 +2927,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 
 	// 1. get block style at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
-	pBlock->getAttrProp(&pBlockAP);
+	pBlock->getAP(pBlockAP);
 
 	szBlock = x_getStyle(pBlockAP, true);
 
@@ -2948,7 +2950,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 			}
 
 			// did block format change?
-			pBlock->getAttrProp(&pAP);
+			pBlock->getAP(pAP);
 			if (pBlockAP != pAP)
 			{
 				pBlockAP = pAP;
@@ -3009,7 +3011,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 			posEnd--;
 		}
 
-		pBlock->getSpanAttrProp( (posStart - blockPosition), bLeftSide, &pSpanAP);
+		pBlock->getSpanAP( (posStart - blockPosition), bLeftSide, pSpanAP);
 
 		if (pSpanAP)
 		{
@@ -3042,7 +3044,7 @@ bool FV_View::getStyle(const XML_Char ** style)
 				// did span format change?
 
 				pAP = NULL;
-				pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),true,&pAP);
+				pBlock->getSpanAP(pRun->getBlockOffset()+pRun->getLength(),true,pAP);
 				if (pAP && (pSpanAP != pAP))
 				{
 					pSpanAP = pAP;
@@ -3289,9 +3291,9 @@ bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** 
 	}
 
 	if (ppSpanAP)
-		pBlock->getSpanAttrProp( (posStart - blockPosition), bLeftSide, ppSpanAP);
+		pBlock->getSpanAP( (posStart - blockPosition), bLeftSide, *ppSpanAP);
 	if (ppBlockAP)
-		pBlock->getAttrProp(ppBlockAP);
+		pBlock->getAP(*ppBlockAP);
 
 	return true;
 }
@@ -3425,9 +3427,9 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 		posEnd--;
 	}
 
-	pBlock->getSpanAttrProp( (posStart - blockPosition), bLeftSide, &pSpanAP);
+	pBlock->getSpanAP( (posStart - blockPosition), bLeftSide, pSpanAP);
 
-	pBlock->getAttrProp(&pBlockAP);
+	pBlock->getAP(pBlockAP);
 
 	UT_uint32 iPropsCount = PP_getPropertyCount();
 
@@ -3467,7 +3469,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 					break;
 
 				// did block format change?
-				pBlock->getAttrProp(&pAP);
+				pBlock->getAP(pAP);
 				if (pBlockAP != pAP)
 				{
 					pBlockAP = pAP;
@@ -3489,7 +3491,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 			// did span format change?
 
 			pAP = NULL;
-			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),true,&pAP);
+			pBlock->getSpanAP(pRun->getBlockOffset()+pRun->getLength(),true,pAP);
 			if (pSpanAP != pAP)
 			{
 				pSpanAP = pAP;
@@ -4170,7 +4172,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
-	pSection->getAttrProp(&pSectionAP);
+	pSection->getAP(pSectionAP);
 
 	UT_uint32 iPropsCount = PP_getPropertyCount();
 	for(UT_uint32 n = 0; n < iPropsCount; n++)
@@ -4201,7 +4203,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 				break;
 
 			// did block format change?
-			pSection->getAttrProp(&pAP);
+			pSection->getAP(pAP);
 			if (pSectionAP != pAP)
 			{
 				pSectionAP = pAP;
@@ -4297,7 +4299,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	pCell->getAttrProp(&pCellAP);
+	pCell->getAP(pCellAP);
 
 	UT_sint32 iPropsCount = PP_getPropertyCount();
 	UT_sint32 n = 0;
@@ -4368,10 +4370,10 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
-	pBlock->getAttrProp(&pBlockAP);
+	pBlock->getAP(pBlockAP);
 
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
-	pSection->getAttrProp(&pSectionAP);
+	pSection->getAP(pSectionAP);
 
 
 	UT_uint32 iPropsCount = PP_getPropertyCount();
@@ -4402,7 +4404,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 				break;
 
 			// did block format change?
-			pBlock->getAttrProp(&pAP);
+			pBlock->getAP(pAP);
 			if (pBlockAP != pAP)
 			{
 				pBlockAP = pAP;

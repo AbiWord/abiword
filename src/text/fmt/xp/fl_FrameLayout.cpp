@@ -155,7 +155,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 		if(m_pImageImage == NULL)
 		{
 			const PP_AttrProp * pAP = NULL;
-			getAttrProp(&pAP);
+			getAP(pAP);
 			GR_Graphics * pG = getDocLayout()->getGraphics();
 			UT_sint32 iWidth = pG->tlu(100);
 			UT_sint32 iHeight = pG->tlu(100);

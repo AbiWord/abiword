@@ -35,6 +35,7 @@
 #include "fv_View.h"
 #include "fl_BlockLayout.h"
 #include "xap_Frame.h"
+#include "pd_Document.h"
 
 char * AP_Dialog_Goto::s_pJumpTargets[] = {
 	NULL,

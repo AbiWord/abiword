@@ -105,9 +105,9 @@ fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
-		
-	getSpanAttrProp(blockPos, false, &pSpanAP);
-	getAttrProp(&pBlockAP);
+	
+	getSpanAP(blockPos, false, pSpanAP);
+	getAP(pBlockAP);
 
 	if(pSpanAP != pPrevSpanAP || pBlockAP != pPrevBlockAP)
 	{
@@ -190,7 +190,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	setAttrPropIndex(indexAP);
 
 	const PP_AttrProp * pAP = 0;
-	getAttrProp (&pAP);
+	getAP(pAP);
     UT_ASSERT(pAP);
 
 	if (!pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
@@ -399,7 +399,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 	const PP_AttrProp * pBlockAP = NULL;
-	getAttrProp(&pBlockAP);
+	getAP(pBlockAP);
 	UT_UTF8String sOldStyle("");
 	if(m_szStyle)
 	{
@@ -434,7 +434,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			fl_DocSectionLayout * pDSL=	 pFL->getDocSectionLayout();
 
 			const PP_AttrProp * pSectionAP = NULL;
-			pDSL->getAttrProp(&pSectionAP);
+			pDSL->getAP(pSectionAP);
 				
 			pszDir = PP_evalProperty("dom-dir",NULL,NULL,pSectionAP,m_pDoc,false);
 		}
@@ -2345,12 +2345,12 @@ const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
-	getAttrProp(&pBlockAP);
+	getAP(pBlockAP);
 
 	// at the moment this is only needed in the bidi build, where dom-dir property
 	// can be inherited from the section; however, it the future this might need to
 	// be added for the normal build too.
-	m_pSectionLayout->getAttrProp(&pSectionAP);
+	m_pSectionLayout->getAP(pSectionAP);
 
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
@@ -2401,7 +2401,7 @@ const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
-	getAttrProp(&pBlockAP);
+	getAP(pBlockAP);
 
 	return PP_evalPropertyType(pszName,pSpanAP,pBlockAP,pSectionAP,Type,m_pDoc,bExpandStyles);
 }
@@ -3538,8 +3538,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
-	getSpanAttrProp(blockOffset, false, &pSpanAP);
-	getAttrProp(&pBlockAP);
+	getSpanAP(blockOffset, false, pSpanAP);
+	getAP(pBlockAP);
 	const char * szLang = static_cast<const char *>(PP_evalProperty("lang",pSpanAP,pBlockAP,NULL,m_pDoc,true));
 
 	I.setLang(szLang);
@@ -5394,6 +5394,9 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	{
 		clearScreen(m_pLayout->getGraphics());
 	}
+
+	bool bWasOnScreen = isOnScreen();
+	
 	collapse();
 	setAttrPropIndex(pcrxc->getIndexAP());
 	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
@@ -5442,6 +5445,13 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 //	This was...
 	setNeedsReformat();
+
+	// if we were on screen we need to reformat immediately, since the ruler will be
+	// calling the findPointCoords() chain and if we are collapsed (as
+	// we are now) and contain the point, it will fail
+	if(bWasOnScreen)
+		format();
+	
 	updateEnclosingBlockIfNeeded();
 	//
 	// Need this to find where to break section in the document.
@@ -7527,7 +7537,7 @@ void	fl_BlockLayout::getListAttributesVector(UT_GenericVector<const XML_Char*> *
 	static XML_Char  buf[5];
 
 	const PP_AttrProp * pBlockAP = NULL;
-	getAttrProp(&pBlockAP);
+	getAP(pBlockAP);
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
 	pBlockAP->getAttribute(static_cast<const XML_Char *>(PT_LISTID_ATTRIBUTE_NAME),lid);
 	level = getAutoNum()->getLevel();
@@ -7645,7 +7655,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	fl_AutoNum * pAutoNum;
 	const PP_AttrProp * pBlockAP = NULL;
 	const XML_Char * szLid=NULL;
-	getAttrProp(&pBlockAP);
+	getAP(pBlockAP);
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
 	if (szLid)
@@ -8648,8 +8658,6 @@ fp_Run* fl_BlockLayout::findRunAtOffset(UT_uint32 offset) const
 
 	return pRunResult;
 }
-
-
 
 /*!
   Constructor for iterator

@@ -29,9 +29,9 @@
 class ABI_EXPORT FG_GraphicVector : public FG_Graphic
 {
 public:
-	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL, 
+	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL, 
 											   const PX_ChangeRecord_Object* pcro);
-	static FG_Graphic*	createFromStrux(const fl_Layout *pFL);
+	static FG_Graphic*	createFromStrux(const fl_ContainerLayout *pFL);
 
 	FG_GraphicVector();
 	virtual ~FG_GraphicVector();

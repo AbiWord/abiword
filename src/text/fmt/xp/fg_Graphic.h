@@ -21,11 +21,17 @@
 #ifndef FG_GRAPHIC_H
 #define FG_GRAPHIC_H
 
-#include "fl_Layout.h"
-#include "px_CR_Object.h"
-#include "gr_Graphics.h"
-#include "gr_Image.h"
 #include "ut_types.h"
+#include "pt_types.h"
+
+class fl_ContainerLayout;
+class PX_ChangeRecord_Object;
+class PP_AttrProp;
+class PD_Document;
+class GR_Graphics;
+class GR_Image;
+
+
 
 enum FGType { 
 	FGT_Unknown,
@@ -41,9 +47,9 @@ enum FGType {
 class ABI_EXPORT FG_Graphic
 {
 public:
-	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL,
+	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL,
 											   const PX_ChangeRecord_Object* pcro);
-	static FG_Graphic*	createFromStrux(const fl_Layout *pFL);
+	static FG_Graphic*	createFromStrux(const fl_ContainerLayout *pFL);
 
 	virtual ~FG_Graphic();
 
