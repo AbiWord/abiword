@@ -1108,7 +1108,7 @@ FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
 		UT_ASSERT(pWord);
 	}
 
-	if (m_pPendingWordForSpell != pWord)
+	if (m_pPendingWordForSpell && (m_pPendingWordForSpell != pWord))
 	{
 		// When clobbering prior POB, make sure we don't leak it
 		DELETEP(m_pPendingWordForSpell);
