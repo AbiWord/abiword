@@ -33,7 +33,7 @@ XAP_Win32FontPreview::XAP_Win32FontPreview(XAP_Frame * pFrame, UT_sint32 left, U
 	// create the preview window here
 }
 
-XAP_UnixFontPreview::~XAP_UnixFontPreview(void)
+XAP_Win32FontPreview::~XAP_Win32FontPreview(void)
 {
 	// and fill in the destructor
 }
