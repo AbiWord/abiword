@@ -854,7 +854,12 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
 			{
 				k++;
-				verbose = atoi (m_pArgs->m_argv[k]);
+				if(k<m_pArgs->m_argc)
+				{
+					/* if we don't check we segfault when there aren't any numbers
+						after --verbose */
+					verbose = atoi (m_pArgs->m_argv[k]);
+				}
 			}
 			else
 			{
