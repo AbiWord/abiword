@@ -75,7 +75,8 @@ After running configure (assuming that configure worked and didn't spout any nas
 
 When the 'make' part of this process is finished, you will want to install AbiWord. You can achieve this through typing 'make install' - this part might require you to be superuser (root), depending on your permissions and where you chose as your prefix (the default, /usr/local, usually requires superuser permission). You can do this through typing 'su' or 'sudo'. Please consult your manual pages or local system(s) administrator if you have questions.
 
-
+NOTES FOR SOLARIS USERS:
+It may be necessary to use the "make UNIX_CAN_BUILD_STATIC=0" form and also to set "CC=gcc export CC"  even though the path is set to /usr/local/bin:$PATH if the wv library is to be made correctly. Please see bug 4200
 
 1Some incarnations of 'make', even though they are not GNU's, understand (or have an option to understand) GNU's syntax.  This will work fine, if it either can be told to use GNUmakefile (as the makefile input), or (if it looks for Makefile) from wherever you've run configure do:
 for d in `find -name GNUmakefile | tr -d "GNUmakefile"`; do mv -f $d/GNUmakefile $d/Makefile; done
@@ -139,7 +140,7 @@ If you wish to use JPEG images in AbiWord, you will need to download and install
 If you wish to enable the automatic dictionary downloader you will need to download and install libcurl as well.  More information may be found at http://curl.haxx.se/  or in peer 'curl' module.
 Building AbiWord:
 
-If using the MSYS/MinGW build system, start MSYS.  
+If using the MSYS/MinGW build system, start MSYS.  NB: It is currently impossible to use MSYS/MinGW along with the 'configure' style build system. To date, it only works with the 'diving make' build system.
 
 If using MSVC with the cygwin system, start a command/cmd shell.  Run VCVARS32.BAT which sets appropriate environment variables pointing paths, includes, libs that come with MSVC.  You will find this batch function typically in the bin directory under VC98.  Once these environment variables are set, from the same shell, launch cygwin.  Typically this is done via a cygwin.bat batch file located where you installed cygwin.
 
