@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:RDF="http://www.w3.org/TR/PR-rdf-syntax"
+    xmlns:QPM="http://www.qnx.com">
+    <RDF:Description about="http://www.qnx.com">
+
+    <QPM:RepositoryManifest>
+        <QPM:RepositoryType>Archive Repository</QPM:RepositoryType>
+
+        <QPM:RepositoryContent>
+            <QPM:PackageCount>1</QPM:PackageCount>
+            <QPM:LastUpdate>(DATE)</QPM:LastUpdate>
+        </QPM:RepositoryContent>
+
+        <QPM:RepositoryDescription>
+            <QPM:RepositoryName>AbiWord Install Repository</QPM:RepositoryName>
+            <QPM:RepositoryURL></QPM:RepositoryURL>
+            <QPM:RepositoryHomeURL></QPM:RepositoryHomeURL>
+            <QPM:RepositoryEmail></QPM:RepositoryEmail>
+            <QPM:RepositorySmallIcon></QPM:RepositorySmallIcon>
+            <QPM:RepositoryLargeIcon></QPM:RepositoryLargeIcon>
+            <QPM:PackageList>index</QPM:PackageList>
+            <QPM:Summary></QPM:Summary>
+            <QPM:SummaryUrl></QPM:SummaryUrl>
+            <QPM:Description>Temporary install repsitory for AbiWord</QPM:Description>
+        </QPM:RepositoryDescription>
+    </QPM:RepositoryManifest>
+
+    </RDF:Description>
+</RDF:RDF>

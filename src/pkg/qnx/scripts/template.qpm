@@ -19,7 +19,7 @@
             <QPM:VendorInstallName>abisource</QPM:VendorInstallName>
             <QPM:VendorEmbedURL>www.abisource.com</QPM:VendorEmbedURL>
             <QPM:VendorURL>www.abisource.com</QPM:VendorURL>
-			<QPM:VendorIdentifier>abisource</QPM:VendorIdentifier>
+            <QPM:VendorIdentifier>abisource</QPM:VendorIdentifier>
             <QPM:ProductIconSmall></QPM:ProductIconSmall>
             <QPM:ProductIconLarge></QPM:ProductIconLarge>
             <QPM:ProductDescriptionShort>A photon word processor</QPM:ProductDescriptionShort>
@@ -29,7 +29,7 @@
             <QPM:ProductDescriptionEmbedURL></QPM:ProductDescriptionEmbedURL>
             <QPM:ProductDescriptionURL></QPM:ProductDescriptionURL>
 -->	    
-	    <QPM:InstallPath>abisource/abiword</QPM:InstallPath>
+	    <QPM:InstallPath>abisource/abiword-(VERSION)</QPM:InstallPath>
         </QPM:ProductDescription>
 
         <QPM:ReleaseDescription>
