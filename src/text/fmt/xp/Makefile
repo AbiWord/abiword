@@ -27,6 +27,7 @@ CPPSRCS=		fv_View.cpp			\
 			fb_LineBreaker.cpp		\
 			fb_Alignment.cpp		\
 			fl_BlockLayout.cpp		\
+			fl_Squiggles.cpp		\
 			fl_DocLayout.cpp		\
 			fl_DocListener.cpp		\
 			fl_Layout.cpp			\

@@ -26,6 +26,7 @@
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_Squiggles.h"
 #include "fl_AutoNum.h"
 #include "fp_Page.h"
 #include "fp_Run.h"
@@ -822,7 +823,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 			while (b)
 			{
 				b->removeBackgroundCheckReason(bgcrSpelling);
-				b->_purgeSquiggles();
+				b->getSquiggles()->deleteAll();
 				b = b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
@@ -835,7 +836,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 			m_pView->draw(NULL);
 			// A pending word would be bad. Not sure why it's not
 			// ignored once autospell is off, but for now it should
-			// definattely be annulled.
+			// definitely be annulled.
 			setPendingWordForSpell(NULL, NULL);
 		}
 	}
@@ -884,14 +885,13 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	}
 
 	// Don't spell check if disabled, or already happening
-	if(pDocLayout->m_bStopSpellChecking == true 
-	   || pDocLayout->m_bImSpellCheckingNow == true)
+	if(pDocLayout->m_bStopSpellChecking || pDocLayout->m_bImSpellCheckingNow)
 	{
 		return;
 	}
 
 	// Code added to hold spell checks during block insertions
-	if(pDocLayout->m_pDoc->isPieceTableChanging() == true)
+	if(pDocLayout->m_pDoc->isPieceTableChanging())
 	{
 		return;
 	}
@@ -1050,14 +1050,17 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
  is stopped. The function does not return before the background
  spell-checking timer has stopped.
 */
-void
+bool
 FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 {
+	bool bRes = false;
+
 	// Remove block from queue if it's found there
 	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
 	if (i >= 0)
 	{
 		m_vecUncheckedBlocks.deleteNthItem(i);
+		bRes = true;
 	}
 
 	// When queue is empty, kill timer
@@ -1073,6 +1076,8 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 			}
 		}
 	}
+
+	return bRes;
 }
 
 /*!
@@ -1088,13 +1093,14 @@ void
 FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
 									 fl_PartOfBlock* pWord)
 {
-	// Return if matching the existant marked region
+	// Return if matching the existing marked region
 	if ((pBlock == m_pPendingBlockForSpell) && 
 		(pWord == m_pPendingWordForSpell))
 		return;
 
-	// Assert an exisant pWord allocation is reused
-	UT_ASSERT(!m_pPendingBlockForSpell || !pBlock);
+	// Assert an existing pWord allocation is reused
+	UT_ASSERT(!m_pPendingBlockForSpell || !pBlock
+			  || m_pPendingWordForSpell == pWord);
 
 	// Check for valid arguments
 	if (pBlock && m_pPendingBlockForSpell && m_pPendingWordForSpell)
@@ -1102,8 +1108,11 @@ FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
 		UT_ASSERT(pWord);
 	}
 
-	// When clobbering prior POB, make sure we don't leak it
-	DELETEP(m_pPendingWordForSpell);
+	if (m_pPendingWordForSpell != pWord)
+	{
+		// When clobbering prior POB, make sure we don't leak it
+		DELETEP(m_pPendingWordForSpell);
+	}
 
 	m_pPendingBlockForSpell = pBlock;
 	m_pPendingWordForSpell = pWord;
@@ -1120,10 +1129,12 @@ FL_DocLayout::checkPendingWordForSpell(void)
 {
 	bool bUpdate = false;
 
+	xxx_UT_DEBUGMSG(("FL_DocLayout::checkPendingWordForSpell\n"));
+
 	if (!m_pPendingBlockForSpell)
 		return bUpdate;
 
-	if(m_pDoc->isPieceTableChanging() == true)
+	if(m_pDoc->isPieceTableChanging())
 		return bUpdate;
 
 	// Check pending word
@@ -1159,7 +1170,7 @@ FL_DocLayout::isPendingWordForSpell(void) const
 */
 bool
 FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
-										 UT_uint32 iOffset, 
+										 UT_sint32 iOffset, 
 										 UT_sint32 chg) const
 {
 	UT_uint32 len = (chg < 0) ? -chg : 0;

@@ -35,6 +35,7 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_Squiggles.h"
 #include "fl_SectionLayout.h"
 #include "fl_AutoNum.h"
 #include "fp_Page.h"
@@ -2073,6 +2074,7 @@ void FV_View::insertParagraphBreak(void)
 	bool bDidGlob = false;
 	bool bBefore = false;
 	bool bStopList = false;
+
 	m_pDoc->beginUserAtomicGlob();
 
 	// Prevent access to Piecetable for things like spellchecks until
@@ -2194,7 +2196,6 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-
 	_generalUpdate();
 
 	// Signal piceTable is stable again
@@ -2202,10 +2203,8 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
 
-
 	_ensureThatInsertionPointIsOnScreen();
 	m_pLayout->considerPendingSmartQuoteCandidate();
-	_checkPendingWordForSpell();
 }
 
 
@@ -4784,7 +4783,7 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 	FV_View * pView = (FV_View *) pWorker->getInstanceData();
 	UT_ASSERT(pView);
 
-	if(pView->getLayout()->getDocument()->isPieceTableChanging() == true)
+	if(pView->getLayout()->getDocument()->isPieceTableChanging())
 	{
 		return;
 	}
@@ -7521,14 +7520,13 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
-
 	if (!m_pDoc->getAllowChangeInsPoint())
 	{
 		return;
 	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
-	if(m_pDoc->isPieceTableChanging() == false)
+	if(!m_pDoc->isPieceTableChanging())
 	{	
 		m_pLayout->considerPendingSmartQuoteCandidate();
 		_checkPendingWordForSpell();
@@ -7537,16 +7535,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 
 void FV_View::setPoint(PT_DocPosition pt)
 {
-	if (!m_pDoc->getAllowChangeInsPoint())
-	{
-		return;
-	}
-	m_iInsPoint = pt;
-	if(m_pDoc->isPieceTableChanging() == false)
-	{	
-		m_pLayout->considerPendingSmartQuoteCandidate();
-		_checkPendingWordForSpell();
-	}
+	_setPoint(pt, m_bPointEOL);
 }
 
 void FV_View::setDontChangeInsPoint(void)
@@ -7567,7 +7556,7 @@ bool FV_View::isDontChangeInsPoint(void)
 
 void FV_View::_checkPendingWordForSpell(void)
 {
-	if(m_pDoc->isPieceTableChanging() == true)
+	if(m_pDoc->isPieceTableChanging())
 	{
 		return;
 	}
@@ -8921,7 +8910,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	{
 	case FPRUN_TEXT:
 		if (!isPosSelected(pos))
-			if (pBlock->getSquiggle(pos - pBlock->getPosition()))
+			if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
 			{
 				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (8)\n"));
 				return EV_EMC_MISSPELLEDTEXT;
@@ -8968,7 +8957,7 @@ bool FV_View::isTextMisspelled() const
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	
 	if (!isPosSelected(pos))
-		if (pBlock->getSquiggle(pos - pBlock->getPosition()))
+		if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
 		{
 			return true;
 		}
@@ -9079,7 +9068,7 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
-	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
 	UT_ASSERT(pPOB);
 
 	// grab the suggestion
@@ -9127,14 +9116,16 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar * pWord = pgb.getPointer(pPOB->iOffset);
+	const UT_UCSChar * pWord = pgb.getPointer(pPOB->getOffset());
 
 	// lookup suggestions
 	UT_Vector * sg = 0;
 
 	UT_UCSChar theWord[INPUTWORDLEN + 1];
-	// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-	for (UT_uint32 ldex=0; ldex<pPOB->iLength && ldex<INPUTWORDLEN; ++ldex)
+	// convert smart quote apostrophe to ASCII single quote to be
+	// compatible with ispell
+	UT_uint32 len = pPOB->getLength();
+	for (UT_uint32 ldex=0; ldex < len && ldex < INPUTWORDLEN; ldex++)
 	{
 		UT_UCSChar currentChar;
 		currentChar = *(pWord + ldex);
@@ -9165,7 +9156,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 			checker = SpellManager::instance().lastDictionary();
 		}
 
-		sg = checker->suggestWord (theWord, pPOB->iLength);
+		sg = checker->suggestWord (theWord, pPOB->getLength());
 		
 	}
 
@@ -9205,7 +9196,7 @@ void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 	UT_ASSERT(pBL);
 
 	if (!ppPOB)
-		pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+		pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
 	else
 		pPOB = ppPOB;
 	UT_ASSERT(pPOB);
@@ -9219,8 +9210,8 @@ void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 	// make the change
 	UT_ASSERT(isSelectionEmpty());
 
-	moveInsPtTo((PT_DocPosition) (pBL->getPosition() + pPOB->iOffset));
-	extSelHorizontal(true, pPOB->iLength);
+	moveInsPtTo((PT_DocPosition) (pBL->getPosition() + pPOB->getOffset()));
+	extSelHorizontal(true, pPOB->getLength());
 	cmdCharInsert(replace, UT_UCS_strlen(replace));
 
 	FREEP(replace);
@@ -9232,7 +9223,7 @@ void FV_View::cmdContextIgnoreAll(void)
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
-	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
 	UT_ASSERT(pPOB);
 
 	// grab a copy of the word
@@ -9240,10 +9231,10 @@ void FV_View::cmdContextIgnoreAll(void)
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar * pBuf = pgb.getPointer(pPOB->iOffset);
+	const UT_UCSChar * pBuf = pgb.getPointer(pPOB->getOffset());
 
 	// make the change
-	if (m_pDoc->appendIgnore(pBuf, pPOB->iLength))
+	if (m_pDoc->appendIgnore(pBuf, pPOB->getLength()))
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
@@ -9268,7 +9259,7 @@ void FV_View::cmdContextAdd(void)
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
-	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
 	UT_ASSERT(pPOB);
 
 	// grab a copy of the word
@@ -9276,10 +9267,10 @@ void FV_View::cmdContextAdd(void)
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar * pBuf = pgb.getPointer(pPOB->iOffset);
+	const UT_UCSChar * pBuf = pgb.getPointer(pPOB->getOffset());
 
 	// make the change
-	if (m_pApp->addWordToDict(pBuf, pPOB->iLength))
+	if (m_pApp->addWordToDict(pBuf, pPOB->getLength()))
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();

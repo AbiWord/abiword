@@ -28,4 +28,8 @@
     Where each fp_Run contains some fragment of content from the original 
     document, usually text.  
 
+<h3>Other subjects</h3>
+
+- \ref squiggle_overview used by the spell checker.
+
 */

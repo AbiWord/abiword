@@ -127,13 +127,13 @@ public:
 
 	bool		isPendingWordForSpell(void) const;
 	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
-										   UT_uint32 iOffset, 
+										   UT_sint32 iOffset, 
 										   UT_sint32 chg) const;
 	void		setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
 	bool		checkPendingWordForSpell(void);
 	
 	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead=false);
-	void 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
+	bool 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
 
 	void		addSection(fl_DocSectionLayout*);
 	void		removeSection(fl_DocSectionLayout*);

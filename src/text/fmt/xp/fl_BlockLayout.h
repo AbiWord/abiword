@@ -42,6 +42,7 @@
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
 
+class fl_Squiggles;
 class FL_DocLayout;
 class fl_SectionLayout;
 class fb_LineBreaker;
@@ -59,7 +60,6 @@ class PX_ChangeRecord_Span;
 class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
-class fl_PartOfBlock;
 class fl_AutoNum;
 
 // Tab types and leaders
@@ -148,6 +148,7 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 
 class ABI_EXPORT fl_BlockLayout : public fl_Layout
 {
+	friend class fl_Squiggles;
 	friend class fl_DocListener;
 
 	// TODO: shack - code should be moved from toggleAuto to a function in
@@ -277,6 +278,8 @@ public:
 	void setDominantDirection(FriBidiCharType iDirection);
 #endif
 
+	inline fl_Squiggles* getSquiggles(void) const { return m_pSquiggles; }
+
 	bool isHdrFtr(void);
 	void setHdrFtr(void) { m_bIsHdrFtr = true;}
 	void clearHdrFtr(void) { m_bIsHdrFtr = false;}
@@ -348,7 +351,6 @@ public:
 	inline bool			needsRedraw(void) const { return m_bNeedsRedraw; }
     void                    markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);
-	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
 	void					recheckIgnoredWords();
 
 	static bool			s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
@@ -366,6 +368,11 @@ public:
 #endif
 
 protected:
+
+	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
+	bool					_doCheckWord(fl_PartOfBlock* pPOB,
+										 const UT_UCSChar* pBlockText,
+										 bool bAddSquiggle = true);
 
 	bool                    _spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos);
 
@@ -399,22 +406,6 @@ protected:
 	void					_removeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 
-	void					_purgeSquiggles(void);
-	UT_sint32				_findSquiggle(UT_uint32 iOffset) const;
-	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, bool bIsIgnored = false);
-	void					_updateSquiggle(fl_PartOfBlock* pPOB);
-	void					_insertSquiggles(UT_uint32 iOffset,
-											 UT_uint32 iLength);
-	void					_breakSquiggles(UT_uint32 iOffset,
-											fl_BlockLayout* pNewBL);
-	void					_deleteSquiggles(UT_uint32 iOffset,
-											 UT_uint32 iLength);
-	void					_mergeSquiggles(UT_uint32 iOffset,
-											fl_BlockLayout* pPrevBL);
-	void					_moveSquiggles(UT_uint32 iOffset,
-										   UT_sint32 chg,
-										   fl_BlockLayout* pBlock=NULL);
-	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
 	bool					_checkMultiWord(const UT_UCSChar* pBlockText,
 											UT_uint32 iStart, 
 											UT_uint32 eor,
@@ -484,12 +475,11 @@ protected:
 	bool					m_bStopList;
 	bool					m_bListLabelCreated;
 	bool                    m_bIsCollapsed;
-	// spell check stuff
-	UT_Vector				m_vecSquiggles;
 #ifdef BIDI_ENABLED
 	FriBidiCharType			m_iDomDirection;
 #endif
 
+	fl_Squiggles*			m_pSquiggles;
 };
 
 /*
@@ -501,15 +491,24 @@ class ABI_EXPORT fl_PartOfBlock
 {
 public:
 	fl_PartOfBlock();
+	fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength, 
+				   bool bIsIgnored = false);
 
-	bool doesTouch(UT_uint32 offset, UT_uint32 length) const;
+	bool doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const;
 
-	UT_uint32	iOffset;
-	UT_uint32	iLength;
+	inline UT_sint32 getOffset(void) const { return m_iOffset; }
+	inline UT_sint32 getLength(void) const { return m_iLength; }
+	inline bool      getIsIgnored(void) const { return m_bIsIgnored; }
 
-	bool		bIsIgnored;
+	inline void      setOffset(UT_sint32 iOffset) { m_iOffset = iOffset; }
+	inline void      setLength(UT_sint32 iLength) { m_iLength = iLength; }
+	inline void      setIsIgnored(bool bIsIgnored) { m_bIsIgnored = bIsIgnored; }
 
-protected:
+private:
+	UT_sint32	m_iOffset;
+	UT_sint32	m_iLength;
+
+	bool		m_bIsIgnored;
 };
 
 class ABI_EXPORT fl_TabStop
