@@ -66,6 +66,43 @@ static void s_cancel_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
+static void s_select_row_font(GtkWidget * widget,
+							  gint row,
+							  gint column,
+							  GdkEventButton * event,
+							  AP_UnixDialog_FontChooser * dlg)
+{
+	UT_ASSERT(widget);
+	UT_ASSERT(dlg);
+
+	// redisplay the preview text
+	dlg->updatePreview();
+}
+static void s_select_row_style(GtkWidget * widget,
+							   gint row,
+							   gint column,
+							   GdkEventButton * event,
+							   AP_UnixDialog_FontChooser * dlg)
+{
+	UT_ASSERT(widget);
+	UT_ASSERT(dlg);
+
+	// redisplay the preview text
+	dlg->updatePreview();
+}
+static void s_select_row_size(GtkWidget * widget,
+							  gint row,
+							  gint column,
+							  GdkEventButton * event,
+							  AP_UnixDialog_FontChooser * dlg)
+{
+	UT_ASSERT(widget);
+	UT_ASSERT(dlg);
+
+	// redisplay the preview text
+	dlg->updatePreview();
+}
+
 /*****************************************************************/
 
 // Glade helper function
@@ -177,6 +214,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "listFonts", listFonts);
 	gtk_clist_set_selection_mode (GTK_CLIST(listFonts), GTK_SELECTION_SINGLE);
 	gtk_clist_set_shadow_type (GTK_CLIST(listFonts), GTK_SHADOW_IN);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (frameFonts), listFonts);
 
@@ -218,6 +256,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "listStyles", listStyles);
 	gtk_clist_set_selection_mode (GTK_CLIST(listStyles), GTK_SELECTION_SINGLE);
 	gtk_clist_set_shadow_type (GTK_CLIST(listStyles), GTK_SHADOW_IN);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listStyles), 0, TRUE);
 	gtk_widget_show (listStyles);
 	gtk_container_add (GTK_CONTAINER (frameStyle), listStyles);
 
@@ -232,6 +271,7 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "listSizes", listSizes);
 	gtk_clist_set_selection_mode (GTK_CLIST(listSizes), GTK_SELECTION_SINGLE);
 	gtk_clist_set_shadow_type (GTK_CLIST(listSizes), GTK_SHADOW_IN);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listSizes), 0, TRUE);
 	gtk_widget_show (listSizes);
 	gtk_container_add (GTK_CONTAINER (frameSize), listSizes);
 
@@ -321,7 +361,51 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (void *) &m_answer);
+	gtk_signal_connect(GTK_OBJECT(listFonts),
+					   "select_row",
+					   GTK_SIGNAL_FUNC(s_select_row_font),
+					   (void *) this);
+	gtk_signal_connect(GTK_OBJECT(listStyles),
+					   "select_row",
+					   GTK_SIGNAL_FUNC(s_select_row_style),
+					   (void *) this);
+	gtk_signal_connect(GTK_OBJECT(listSizes),
+					   "select_row",
+					   GTK_SIGNAL_FUNC(s_select_row_size),
+					   (void *) this);
+	
+	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
+	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
+	GTK_WIDGET_SET_FLAGS(listSizes, GTK_CAN_FOCUS);
 
+	gchar * text[2] = {NULL, NULL};
+
+	// update the styles list
+	gtk_clist_clear(GTK_CLIST(m_styleList));
+	text[0] = "Regular"; 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = "Italic"; 		gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = "Bold"; 			gtk_clist_append(GTK_CLIST(m_styleList), text);
+	text[0] = "Bold Italic"; 	gtk_clist_append(GTK_CLIST(m_styleList), text);	
+
+    gtk_clist_clear(GTK_CLIST(m_sizeList));
+	// TODO perhaps populate the list based on the selected font/style?
+	text[0] = "8"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "9"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "10"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "11"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "12"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "14"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "16"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "18"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "20"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "22"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "24"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "26"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "28"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "36"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "48"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	text[0] = "72"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	
 	return windowFontSelection;
 }
 
@@ -388,9 +472,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		text[0] = (gchar *) entry->pszLeft;
 		gtk_clist_append(GTK_CLIST(m_fontList), text);
 	}
-
-	// resize column to fit the new data
-	gtk_clist_set_column_auto_resize(GTK_CLIST(m_fontList), 0, TRUE);
 
 	// Set color in the color selector
 	if (m_pColor)
@@ -489,4 +570,9 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// the caller can get the answer from getAnswer().
 
 	m_pUnixFrame = NULL;
+}
+
+void AP_UnixDialog_FontChooser::updatePreview(void)
+{
+	return;
 }

@@ -36,16 +36,10 @@ public:
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-protected:
+	void 					updatePreview(void);
 
-	// these are Glade helper or Glade generated functions
-	GtkWidget * 		get_widget(GtkWidget * widget, gchar * widget_name);
-	void 				set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);
-	GtkWidget * 		create_windowFontSelection(void);
-
-	AP_UnixFontManager * m_fontManager;
-	
-	// pointers to widgets which need to import/export class data
+	// pointers to widgets for static callbacks
+	AP_UnixFontManager * 	m_fontManager;
 	GtkWidget * 		m_fontList;
 	GtkWidget * 		m_styleList;
 	GtkWidget * 		m_sizeList;
@@ -53,6 +47,13 @@ protected:
 	GtkWidget *			m_checkUnderline;
 	GtkWidget *			m_colorSelector;
 	GtkWidget * 		m_previewEntry;
+
+protected:
+
+	// these are Glade helper or Glade generated functions
+	GtkWidget * 		get_widget(GtkWidget * widget, gchar * widget_name);
+	void 				set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);
+	GtkWidget * 		create_windowFontSelection(void);
 
 	// parent frame
 	XAP_UnixFrame *		m_pUnixFrame;
