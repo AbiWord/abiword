@@ -299,8 +299,7 @@ void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle)
 	switch (inLineStyle) {
 	case LINE_SOLID:
 		{
-			float dash_list[1] = { 1 };
-			::CGContextSetLineDash (m_CGContext, 0, dash_list, 1);
+			::CGContextSetLineDash (m_CGContext, 0, NULL, 0);
 		}
 		break;
 	case LINE_ON_OFF_DASH:
