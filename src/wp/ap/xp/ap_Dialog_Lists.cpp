@@ -143,9 +143,8 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 	}
 
 	// Mike: I added the "#if 0" to make it perfectly clear that
-	// this code is not currently used. I think mixing C and
-	// C++ comments is bad form. Please remove this comment
-	// if this code gets reactivated.
+	// this code is not currently used.
+	// Please remove this comment if this code gets reactivated.
 #if 0
 	// This is Thomas Code. I'll do a fake preview instead
 // Martin
@@ -208,8 +207,11 @@ void AP_Dialog_Lists::event_PreviewAreaExposed(void)
 
 void AP_Dialog_Lists::StartList(void)
 {
+	UT_ASSERT(!IS_NONE_LIST_TYPE(m_iListType));
 	getBlock()->listUpdate();
-	getView()->cmdStartList(getBlock()->getListStyleString(m_iListType));
+	const XML_Char* pStyle = getBlock()->getListStyleString(m_iListType);
+	UT_ASSERT(pStyle);
+	getView()->cmdStartList(pStyle);
 }
 
 
