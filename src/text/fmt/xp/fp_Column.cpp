@@ -18,7 +18,6 @@
  */
 
 
-
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -429,7 +428,7 @@ void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, U
 
 		if ((i + 1) < count)
 		{
-			if (y >= (pLine->getY() + pLine->getHeight()))
+			if (y >= (pLine->getY() + (UT_sint32) pLine->getHeight()))
 			{
 				fp_Line* pLine2 = (fp_Line*) m_vecLines.getNthItem(i+1);
 				if (y < (pLine2->getY()))
@@ -438,7 +437,7 @@ void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, U
 					  The point is between these two lines.  Pick one.
 					*/
 
-					if ((pLine2->getY() - y) < (y - (pLine->getY() + pLine->getHeight())))
+					if ((pLine2->getY() - y) < (y - (pLine->getY() + (UT_sint32) pLine->getHeight())))
 					{
 						pLine2->mapXYToPosition(x - pLine2->getX(), y - pLine2->getY(), pos, bBOL, bEOL);
 						return;
