@@ -562,8 +562,8 @@ void XAP_Preview_FontPreview::draw(void)
 //
 // Calculate the draw coordinates position
 //
-	UT_sint32 iWinWidth = getWindowWidth();
-	UT_sint32 iWinHeight = getWindowHeight();
+	UT_sint32 iWinWidth = _UL(getWindowWidth());
+	UT_sint32 iWinHeight = _UL(getWindowHeight());
 	UT_sint32 iTop = (iWinHeight - iHeight)/2;
 	UT_sint32 len = UT_UCS4_strlen(m_pszChars);
 #ifndef WITH_PANGO
@@ -611,7 +611,7 @@ void XAP_Preview_FontPreview::draw(void)
 	}
 	if(isOver)
 	{
-		UT_sint32 iDrop = iTop + 1 + (UT_MAX(10,iAscent) - 10)/8;
+		UT_sint32 iDrop = iTop + _UL(1) + (UT_MAX(_UL(10),iAscent) - _UL(10))/8;
 		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isStrike)
@@ -620,18 +620,18 @@ void XAP_Preview_FontPreview::draw(void)
 		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 
-	m_gc->drawLine(0, 0, getWindowWidth(), 0);
-	m_gc->drawLine(getWindowWidth() - 1, 0, getWindowWidth() - 1,
-		getWindowHeight());
-	m_gc->drawLine(getWindowWidth() - 1, getWindowHeight() - 1, 0,
-		getWindowHeight() - 1);
-	m_gc->drawLine(0, getWindowHeight() - 1, 0, 0);
+	m_gc->drawLine(0, 0, _UL(getWindowWidth()), 0);
+	m_gc->drawLine(_UL(getWindowWidth()) - _UL(1), 0, _UL(getWindowWidth()) - _UL(1),
+		_UL(getWindowHeight()));
+	m_gc->drawLine(_UL(getWindowWidth()) - _UL(1), _UL(getWindowHeight()) - _UL(1), 0,
+		_UL(getWindowHeight()) - _UL(1));
+	m_gc->drawLine(0, _UL(getWindowHeight()) - _UL(1), 0, 0);
 }
 
 void XAP_Preview_FontPreview::clearScreen(void)
 {
-	UT_sint32 iWidth = getWindowWidth();
-	UT_sint32 iHeight = getWindowHeight();
+	UT_sint32 iWidth = _UL(getWindowWidth());
+	UT_sint32 iHeight = _UL(getWindowHeight());
 
 	m_gc->fillRect(m_clrBackground, 0, 0, iWidth, iHeight);
 }
