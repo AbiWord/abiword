@@ -11719,7 +11719,7 @@ Defun(resizeImage)
 		if (bIsResizing)
 		{
 			UT_DEBUGMSG(("MARCM: Clearing old line\n"));
-#ifdef XAP_DONTUSE_XOR
+#if XAP_DONTUSE_XOR
 			UT_Rect r2 = pView->getCurImageSel();
 			GR_Image *img = pView->getCurImageSelCache();
 			r2.left -= pG->tlu(1);
@@ -11732,7 +11732,7 @@ Defun(resizeImage)
 #endif
 		}
 		pView->setCurImageSel(r);
-#ifdef XAP_DONTUSE_XOR
+#if XAP_DONTUSE_XOR
 		UT_Rect r3 = r;
 		r3.left -= pG->tlu(1);
 		r3.top -= pG->tlu(1);
@@ -11803,7 +11803,7 @@ Defun(endResizeImage)
 		pG->setColor(UT_RGBColor(255,255,255));
 
 		GR_Painter painter(pG);
-#ifdef XAP_DONTUSE_XOR
+#if XAP_DONTUSE_XOR
 		{
 			UT_Rect r2 = pView->getCurImageSel();
 			GR_Image *img = pView->getCurImageSelCache();
