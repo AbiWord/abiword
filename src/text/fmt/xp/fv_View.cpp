@@ -3130,6 +3130,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	// Moved outside the loop. Speeds things up and seems OK.
 	//
 	_generalUpdate();
+	_fixInsertionPointCoords();
 
 	m_pDoc->endUserAtomicGlob();
 
@@ -8114,22 +8115,14 @@ bool FV_View::insertFootnote(bool bFootnote)
 	_setPoint(FanchStart);
 	if(bFootnote)
 	{
-		if (cmdInsertField("footnote_anchor", attrs)==false)
-		{
-			m_pDoc->endUserAtomicGlob();
-			return false;
-		}
+		cmdInsertField("footnote_anchor", attrs);
 	}
 	else
 	{
-		if (cmdInsertField("endnote_anchor", attrs)==false)
-		{
-			m_pDoc->endUserAtomicGlob();
-			return false;
-		}
+		cmdInsertField("endnote_anchor", attrs);
 	}
 	FanchEnd = FanchStart+1;
-
+	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a space after the anchor
 	UT_UCSChar space = UCS_SPACE;
 	m_pDoc->insertSpan(FanchEnd, &space, 1);
@@ -8166,7 +8159,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pRun->getType(),bWidthChange));
 	pBL->setNeedsReformat();
 
-
 	pBL = _findBlockAtPosition(FanchStart);
 	UT_ASSERT(pBL != 0);
 
@@ -8181,7 +8173,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 	m_pDoc->changeStruxFmt(PTC_RemoveFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
 	m_pDoc->endUserAtomicGlob();
+	_updateInsertionPoint();
 	_generalUpdate();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 //
 // Lets have a peek at the doc structure, shall we?
 //

@@ -411,7 +411,11 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		if ((pf->getType()==pf_Frag::PFT_Text) && (fragOffset == 0) &&
 			(pf->getPrev()!=NULL) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
 		{
-			_insertFmtMarkAfterBlockWithNotify(pfsContainer,dpos,apFmtMark);
+			pf_Frag_Strux *pfsStrux = static_cast<pf_Frag_Strux *>(pf->getPrev());
+			if(pfsStrux->getStruxType() == PTX_Block)
+			{
+				_insertFmtMarkAfterBlockWithNotify(pfsContainer,dpos,apFmtMark);
+			}
 		}
 	}
 
