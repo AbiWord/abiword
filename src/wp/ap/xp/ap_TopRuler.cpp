@@ -1651,17 +1651,13 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 		right -= m_pG->tlu(1);
 		bot -= m_pG->tlu(1);
 		m_pG->drawLine(left,top,left,bot);
-		m_pG->drawLine(left,bot,right,bot);
-		m_pG->drawLine(right,bot,right,top);
 		m_pG->drawLine(right,top,left,top);
 //
 // Fill with Background?? color
 //
 		left += m_pG->tlu(1);
 		top += m_pG->tlu(1);
-		right -= m_pG->tlu(1);
-		bot -= m_pG->tlu(1);
-		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
+		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right-left+m_pG->tlu(1),bot-top+m_pG->tlu(1));
 	}
 }
 
