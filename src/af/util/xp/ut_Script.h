@@ -34,7 +34,6 @@ class ABI_EXPORT UT_ScriptSniffer : public UT_AbiObject
 	friend class UT_ScriptLibrary;
 	
 public:
-	UT_ScriptSniffer();
 	virtual ~UT_ScriptSniffer();
 	
 	// these you get for free
@@ -50,7 +49,10 @@ public:
 				   UT_ScriptIdType * ft) = 0;
 	virtual UT_Error constructScript (UT_Script ** ppscript) = 0;
 	
-private:
+ protected:
+	UT_ScriptSniffer();
+	
+ private:
 	// only UT_ScriptLibrary ever calls this
 	inline void setType (UT_ScriptIdType type) {m_type = type;}
 	UT_ScriptIdType m_type;
@@ -63,9 +65,11 @@ class ABI_EXPORT UT_Script
   virtual UT_Error execute ( const char * scriptName ) = 0;
   virtual ~UT_Script ();
 
+ protected:
+  UT_Script ();
+
  private:
 
-  UT_Script ();
   UT_Script ( const UT_Script & ); // no impl
   UT_Script& operator=( const UT_Script & ); // no impl
 };
@@ -83,7 +87,7 @@ class ABI_EXPORT UT_ScriptLibrary
 			       const char ** pszSuffixList,
 			       UT_ScriptIdType * ft);
 
-  UT_Error execute ( const char * script );
+  UT_Error execute ( const char * script, UT_ScriptIdType type = -1 );
   
   UT_uint32 getNumScripts () const;
   void registerScript ( UT_ScriptSniffer * );

@@ -219,3 +219,67 @@ UT_PerlBindings::registerCallback(const char* pszFunctionName,
 	// UT_ASSERT(pEEM);
 	// const char * string = pEEM->getShortcutFor(pEM);
 }
+
+/***************************************************************************/
+/***************************************************************************/
+
+UT_PerlScriptSniffer::UT_PerlScriptSniffer ()
+{
+}
+
+UT_PerlScriptSniffer::~UT_PerlScriptSniffer ()
+{
+}
+
+bool UT_PerlScriptSniffer::recognizeContents (const char * szBuf, 
+					      UT_uint32 iNumbytes)
+{
+  // this can obviously get better
+  if ( NULL == strstr ( szBuf, "perl" ) )
+    return false;
+  return true;
+}
+
+bool UT_PerlScriptSniffer::recognizeSuffix (const char * szSuffix)
+{
+  if ( !UT_stricmp ( szSuffix, ".perl" ) || !UT_stricmp (szSuffix, ".pl" ) )
+    return true;
+  return false;
+}
+
+bool UT_PerlScriptSniffer::getDlgLabels (const char ** szDesc,
+					 const char ** szSuffixList,
+					 UT_ScriptIdType * ft)
+{
+	*szDesc = "Perl Scripts (.perl, .pl)";
+	*szSuffixList = "*.perl; *.pl";
+	*ft = getType();
+	return true;
+}
+
+UT_Error UT_PerlScriptSniffer::constructScript (UT_Script ** ppscript)
+{
+  *ppscript = new UT_PerlScript ();
+  return UT_OK;
+}
+
+/***************************************************************************/
+/***************************************************************************/
+
+UT_PerlScript::UT_PerlScript ()
+{
+}
+
+UT_PerlScript::~UT_PerlScript ()
+{
+}
+
+UT_Error UT_PerlScript::execute ( const char * fileName )
+{
+  UT_PerlBindings& instance = UT_PerlBindings::getInstance ();
+  UT_String file ( fileName );
+
+  if ( instance.evalFile ( file ) )
+    return UT_OK;
+  return UT_ERROR;
+}

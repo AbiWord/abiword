@@ -7602,30 +7602,125 @@ Defun(insAutotext_subject_1)
 		      AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }
 
+static bool s_AskForScriptName(XAP_Frame * pFrame,
+			       char ** ppPathname,
+			       UT_ScriptIdType * ieft)
+{
+	UT_ASSERT(ppPathname);
+	UT_ASSERT(ieft);
+
+	*ppPathname = NULL;
+
+	pFrame->raise();
+
+	XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_OPEN;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	UT_ScriptLibrary& instance = UT_ScriptLibrary::instance ();
+
+	UT_uint32 filterCount = instance.getNumScripts ();
+
+	const char ** szDescList = (const char **) calloc(filterCount + 1,
+							  sizeof(char *));
+	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+							    sizeof(char *));
+	UT_ScriptIdType * nTypeList = (UT_ScriptIdType *) calloc(filterCount + 1,
+								 sizeof(UT_ScriptIdType));
+	UT_uint32 k = 0;
+
+	while (instance.enumerateDlgLabels(k, &szDescList[k], 
+					   &szSuffixList[k], &nTypeList[k]))
+	  k++;
+	
+	pDialog->setFileTypeList(szDescList, szSuffixList, 
+				 (const UT_sint32 *) nTypeList);
+
+	UT_ScriptIdType dflFileType = -1; 
+	pDialog->setDefaultFileType(dflFileType);
+		
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+			UT_cloneString(*ppPathname,szResultPathname);
+
+		UT_sint32 type = pDialog->getFileType();
+		dflFileType = type;
+
+		// If the number is negative, it's a special type.
+		// Some operating systems which depend solely on filename
+		// suffixes to indentify type (like Windows) will always
+		// want auto-detection.
+		if (type < 0)
+			switch (type)
+			{
+			case XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO:
+				// do some automagical detecting
+				*ieft = -1;
+				break;
+			default:
+				// it returned a type we don't know how to handle
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		else
+			*ieft = (UT_ScriptIdType) pDialog->getFileType();
+	}
+
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+	
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
 Defun1(scriptPlay)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft = IEFT_Bogus;
-	bool bOK = s_AskForPathname(pFrame, false, XAP_DIALOG_ID_FILE_OPEN, NULL, &pNewFile, &ieft);
+
+	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
+
+	if ( 0 == instance.getNumScripts () )
+	  {
+	    pFrame->showMessageBox(AP_STRING_ID_SCRIPT_NOSCRIPTS,
+				   XAP_Dialog_MessageBox::b_O,
+				   XAP_Dialog_MessageBox::a_OK);
+	    return true;
+	  }
+
+	UT_ScriptIdType ieft = -1;
+
+	bool bOK = s_AskForScriptName(pFrame, &pNewFile, &ieft);
 
 	if (!bOK || !pNewFile)
 		return false;
 
-	UT_DEBUGMSG(("scripPlay (trying to play [%s])\n", pNewFile));
+	UT_DEBUGMSG(("scriptPlay (trying to play [%s])\n", pNewFile));
 
-	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
-
-	if ( UT_OK != instance.execute ( pNewFile ) )
+	if ( UT_OK != instance.execute ( pNewFile, ieft ) )
 	  {
-	    // TODO: error message box
-#if 0
-	    pFrame->showMessageBox(p.errmsg().c_str(),
+	    // TODO: better error message
+	    pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 				   XAP_Dialog_MessageBox::b_O,
-				   XAP_Dialog_MessageBox::a_OK);
-#endif
+				   XAP_Dialog_MessageBox::a_OK,
+				   pNewFile);
 	  }
 
 	return true;
@@ -7641,12 +7736,11 @@ Defun(executeScript)
 
 	if ( UT_OK != instance.execute ( pCallData->getScriptName().c_str() ) )
 	  {
-	    // TODO: show error message
-#if 0
-	    pFrame->showMessageBox(p.errmsg().c_str(),
+	    // TODO: better error message
+	    pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 				   XAP_Dialog_MessageBox::b_O,
-				   XAP_Dialog_MessageBox::a_OK);
-#endif
+				   XAP_Dialog_MessageBox::a_OK,
+				   pCallData->getScriptName().c_str());
 	  }
 	
 	return true;

@@ -66,14 +66,15 @@ UT_ScriptLibrary& UT_ScriptLibrary::instance ()
   return mInstance;
 }
 
-UT_Error UT_ScriptLibrary::execute ( const char * script )
+UT_Error UT_ScriptLibrary::execute ( const char * script,
+				     UT_ScriptIdType type )
 {
   UT_Script * pScript = NULL;
   UT_ScriptIdType scriptId = -1;
 
   UT_Error err = UT_OK;
 
-  if ((err = constructScript(script, -1, &pScript, &scriptId)) == UT_OK)
+  if ((err = constructScript(script, type, &pScript, &scriptId)) == UT_OK)
     {
       pScript->execute ( script );
       DELETEP ( pScript );
@@ -226,7 +227,7 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
 					   UT_Script ** ppscript, 
 					   UT_ScriptIdType * pieft)
 {
-  //bool bUseGuesswork = (ieft != -1);
+  bool bUseGuesswork = (ieft != -1);
   
   UT_ASSERT(ieft != -1 || (szFilename && *szFilename));
   UT_ASSERT(ppscript);
@@ -271,4 +272,19 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
 
   // all has failed
   return UT_ERROR;
+}
+
+bool UT_ScriptLibrary::enumerateDlgLabels(UT_uint32 ndx,
+					  const char ** pszDesc,
+					  const char ** pszSuffixList,
+					  UT_ScriptIdType * ft)
+{
+	UT_uint32 nrElements = getNumScripts();
+	if (ndx < nrElements)
+	{
+		UT_ScriptSniffer * s = (UT_ScriptSniffer *) mSniffers->getNthItem (ndx);
+		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
+	}
+
+	return false;
 }

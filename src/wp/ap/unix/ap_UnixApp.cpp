@@ -34,6 +34,7 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_PerlBindings.h"
+#include "ut_Script.h"
 
 #include "xap_Args.h"
 #include "ap_Convert.h"
@@ -283,6 +284,12 @@ bool AP_UnixApp::initialize(void)
     loadAllPlugins();
 
     //////////////////////////////////////////////////////////////////
+
+#ifdef ABI_OPT_PERL
+    // hack to keep the perl bindings working on unix
+    UT_ScriptLibrary& instance = UT_ScriptLibrary::instance(); 
+    instance.registerScript ( new UT_PerlScriptSniffer () );
+#endif
 
     return true;
 }
