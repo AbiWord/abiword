@@ -46,6 +46,7 @@ libXap_unix_a_SOURCES=\
 	xap_UnixFontXLFD.cpp			\
 	xap_UnixFont.cpp			\
 	xap_UnixFontManager.cpp			\
+	xap_UnixFontPreview.cpp			\
 	xap_UnixModule.cpp			\
 	xap_UnixToolbar_Icons.cpp		\
 	xap_UnixDlg_Password.cpp		\

@@ -58,6 +58,7 @@ libXap_xp_a_SOURCES=\
 	xap_Dlg_PrintPreview.cpp	\
 	xap_Dlg_Encoding.cpp		\
 	xap_FakeClipboard.cpp		\
+	xap_FontPreview.cpp			\
 	xap_Frame.cpp			\
 	xap_LoadBindings.cpp		\
 	xap_Log.cpp			\

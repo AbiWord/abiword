@@ -43,6 +43,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixDlg_Insert_Symbol.cpp		\
 			xap_UnixFontXLFD.cpp			\
 			xap_UnixFont.cpp			\
+			xap_UnixFontPreview.cpp			\
 			xap_UnixPSFont.cpp			\
 			xap_UnixFrame.cpp			\
 			xap_UnixToolbar_Icons.cpp		\
