@@ -274,6 +274,7 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
    m_bParagraphChanged = false;
    m_bParagraphExists = false;
    m_bInSection = false;
+   m_bSectionChanged = true;
    m_bFirstMargin = true;
    m_bParagraphInSection = false;
    m_bLeftMarginSet = false;
@@ -781,13 +782,12 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 					  UT_uint16 margin; // WPU (WordPerfect Unit), which is one 1200th of an inch)
 					  float marginInch; 
 					  UT_uint16 nonDeletableInfoSize;
-
-					  // HACK HACK HACK! There always seem to be 2 Left Margin Sets at the beginning of a 
-					  // WP document, so as a quick and dirty fix, skip the first one
-					  if (m_bFirstMargin)
+					  
+					  // if there is a section in the document and the contents of it are changed 
+					  // then flush them first, before changing the section style
+					  if (m_bInSection && (m_bParagraphChanged || m_textBuf.getLength() > 0))
 					  {
-						  m_bFirstMargin = false;
-						  break;
+						  X_CheckWordPerfectError(_flushText());
 					  }
 					  
 					  X_CheckFileReadElementError(fread(&nonDeletableInfoSize, sizeof(UT_uint16), 1, m_importFile));
@@ -799,7 +799,7 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 
 					  marginInch = ((float)margin / 1200);
 
-					  // set the new margin setting
+					  // set the new margin properties
 					  if (subGroup == 0)
 					  {
 						  m_leftMargin = marginInch;
@@ -811,15 +811,7 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 						  m_bRightMarginSet = true;
 					  }
                       
-					  // if we are already in a section, but there is no PTX_Block (= paragraph) inside it,
-					  // then insert one before adding a new section. This must be done, because a
-					  // section always must contain at least one PTX_Block
-					  if (m_bInSection && (!m_bParagraphInSection))
-					  {
-						 X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, NULL));
-					  }
-
-                      X_CheckWordPerfectError(_appendSection());
+					  m_bSectionChanged = true;
 					  
                       // set m_bParagraphChanged to true so the paragraph properties will 
                       // unconditionally be added in this new section
@@ -1645,9 +1637,6 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentTextProperties()
 
 UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
 {
-   UT_DEBUGMSG(("WordPerfect: Appending Paragraph Properties\n"));
-
-   XML_Char* pProps = "props";
    UT_String propBuffer;
 
    propBuffer += "text-align:";
@@ -1669,71 +1658,76 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
 	break;
      }
    
-   UT_DEBUGMSG(("Appending Style: %s\n", propBuffer.c_str()));
+   if ( (!m_bInSection) || m_bSectionChanged)
+   {
+      X_CheckWordPerfectError(_appendSection ());
+   }
+   
+   UT_DEBUGMSG(("WordPerfect: Appending Paragraph Properties: %s\n", propBuffer.c_str()));
    const XML_Char* propsArray[3];
-   propsArray[0] = pProps;
+   propsArray[0] = "props";
    propsArray[1] = propBuffer.c_str();
    propsArray[2] = NULL;
-   m_bParagraphChanged = false;
-   // _never_ set m_bParagraphExists to false again!
-   m_bParagraphExists = true;
-   
-   if ( !m_bInSection )
-     {
-       X_CheckDocumentError(_appendSection ());
-     }
-
-   m_bParagraphInSection = true;
    X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, propsArray));   
-   
+
+   m_bParagraphChanged = false;
+   m_bParagraphExists = true; // _never_ set m_bParagraphExists to false again!
+   m_bParagraphInSection = true;
+	 
    return UT_OK;
 }
 
 UT_Error IE_Imp_WordPerfect::_appendSection()
 {
-  UT_DEBUGMSG(("WordPerfect: Appending section\n"));
+   UT_DEBUGMSG(("WordPerfect: Appending section\n"));
 
-  XML_Char * propsArray[3];
-  UT_String myProps ( "" ) ;
-  propsArray[0] = "props";
-  propsArray[2] = NULL ;
+   XML_Char * propsArray[3];
+   UT_String myProps ( "" ) ;
+   propsArray[0] = "props";
+   propsArray[2] = NULL ;
 
-  setlocale(LC_NUMERIC, "C");
-  if (m_bLeftMarginSet)
-  {
-    UT_DEBUGMSG(("WordPerfect: Appending left margin\n"));
-    myProps += UT_String_sprintf("page-margin-left:%4.4fin", m_leftMargin);
-  }
-  if (m_bRightMarginSet)
-  {
-    UT_DEBUGMSG(("WordPerfect: Appending right margin\n"));
+   setlocale(LC_NUMERIC, "C");
+	
+   if (m_bLeftMarginSet)
+   {
+      UT_DEBUGMSG(("WordPerfect: Appending left margin\n"));
+      myProps += UT_String_sprintf("page-margin-left:%4.4fin", m_leftMargin);
+   }
+  
+   if (m_bRightMarginSet)
+   {
+      UT_DEBUGMSG(("WordPerfect: Appending right margin\n"));
 
-    if ( myProps.size () )
-      myProps += "; " ;
-    myProps += UT_String_sprintf("page-margin-right:%4.4fin", m_rightMargin);
-  }
-  if (m_bColumnsSet)
-  {
+      if ( myProps.size () )
+         myProps += "; " ;
+	
+      myProps += UT_String_sprintf("page-margin-right:%4.4fin", m_rightMargin);
+   }
+  
+   if (m_bColumnsSet)
+   {
       UT_DEBUGMSG(("Appending column definition\n"));
 
       if ( myProps.size () )
-	myProps += "; " ;
+	     myProps += "; " ;
 
       myProps += UT_String_sprintf("columns:%d", m_numberOfColumns);
-  }
-  setlocale(LC_NUMERIC, NULL);
-  propsArray[1] = (XML_Char*)myProps.c_str() ;
+   }
+  
+   setlocale(LC_NUMERIC, NULL);
+   propsArray[1] = (XML_Char*)myProps.c_str() ;
 
-  if (myProps.size() == 0)
-  {
-	  X_CheckDocumentError(getDoc()->appendStrux(PTX_Section, NULL));
-  }
-  else
-  {
-	  X_CheckDocumentError(getDoc()->appendStrux(PTX_Section, (const XML_Char**)propsArray));
-  }
+   if (myProps.size() == 0)
+   {
+ 	  X_CheckDocumentError(getDoc()->appendStrux(PTX_Section, NULL));
+   }
+   else
+   {
+ 	  X_CheckDocumentError(getDoc()->appendStrux(PTX_Section, (const XML_Char**)propsArray));
+   }
 
-  m_bInSection = true;
-  m_bParagraphInSection = false;
-  return UT_OK;
+   m_bInSection = true;
+   m_bSectionChanged = false;
+   m_bParagraphInSection = false;
+   return UT_OK;
 }

@@ -280,6 +280,7 @@ public:
    bool m_bParagraphChanged;
    bool m_bParagraphExists;
    bool m_bInSection;
+   bool m_bSectionChanged;
    bool m_bParagraphInSection;
    bool m_bFirstMargin;
    UT_Mbtowc m_Mbtowc;
