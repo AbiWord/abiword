@@ -178,7 +178,8 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	/*
 	  Create the data item
 	*/
-	pDoc->createDataItem(szName, UT_FALSE, m_pbbPNG, NULL, NULL);
+	char * mimetype = strdup("image/png");
+   	pDoc->createDataItem(szName, UT_FALSE, m_pbbPNG, mimetype, NULL);
 
 	/*
 	  Insert the object into the document.
@@ -193,7 +194,6 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
 		"PROPS", szProps,
-		"mime-type", "image/png",
 	   	NULL, NULL
 	};
 

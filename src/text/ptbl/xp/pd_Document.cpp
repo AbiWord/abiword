@@ -798,7 +798,8 @@ void PD_Document::_destroyDataItemData(void)
 		UT_ASSERT(pPair);
 
 		delete pPair->pBuf;
-		delete pPair;
+		FREEP(pPair->pToken);
+	   	delete pPair;
 
 		pHE->pData = NULL;
 	}

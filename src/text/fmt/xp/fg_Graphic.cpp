@@ -36,18 +36,24 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
    const PP_AttrProp* pSpanAP;
    UT_Bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, UT_FALSE, &pSpanAP);
    if (bFoundSpanAP && pSpanAP)
-     {
-	const XML_Char *pszType;
-	UT_Bool bFoundType = pSpanAP->getAttribute("mime-type", pszType);
-	
-	// figure out what type to create
-	
-	if (!bFoundType || UT_stricmp(pszType, "image/svg-xml") != 0) {
-	   return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
-	} else {
-	   return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
-	}
-     }
+   {
+      const XML_Char *pszDataID;
+      UT_Bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
+      
+      if (bFoundDataID && pszDataID)
+      {
+	   char * pszMimeType = NULL;
+	   bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL, (void**)&pszMimeType, NULL);
+	   
+	   // figure out what type to create
+	   
+	   if (!bFoundDataID || !pszMimeType || UT_stricmp(pszMimeType, "image/svg-xml") != 0) {
+	      return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
+	   } else {
+	      return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
+	   }
+      }
+   }
    return NULL;
 }
 

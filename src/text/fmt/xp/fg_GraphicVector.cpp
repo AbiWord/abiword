@@ -195,7 +195,8 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	/*
 	  Create the data item
 	*/
-	pDoc->createDataItem(szName, UT_FALSE, m_pbbSVG, NULL, NULL);
+	char * mimetype = strdup("image/svg-xml");
+   	pDoc->createDataItem(szName, UT_FALSE, m_pbbSVG, mimetype, NULL);
 
 	/*
 	  Insert the object into the document.
@@ -210,7 +211,6 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
 		"PROPS", szProps,
-	   	"mime-type", "image/svg-xml",
 		NULL, NULL
 	};
 
