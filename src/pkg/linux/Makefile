@@ -117,7 +117,7 @@ PACK_ROOT:=$(ABI_ROOT)/../abisuite-$(ABI_BUILD_VERSION)
 
 MODULE_LIST=abi-$(ABI_BUILD_VERSION) expat unixfonts abidistfiles libpng zlib
 
-RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/topdir://"))
+RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/.*topdir://"))
 
 # TODO : should this be specified outside the build process?  
 ABI_RELEASE_NUMBER=1
