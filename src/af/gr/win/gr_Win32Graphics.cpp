@@ -924,6 +924,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_name = IDC_SIZEWE;
 		hinst = NULL;
+		break;
 
 	case GR_CURSOR_WAIT:
 		cursor_name = IDC_WAIT;
