@@ -757,11 +757,13 @@ bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 	// return the strux fragment immediately prior (containing)
 	// the given absolute document position.  If bSkip set, skip past
     // Footnote struxes.
+	xxx_UT_DEBUGMSG(("_getStruxFromPosition bSkipFootnotes %d initial pos %d \n",bSkipFootnotes,docPos));
 	UT_sint32 countEndFootnotes = 0;
 	pf_Frag * pfFirst = m_fragments.findFirstFragBeforePos( docPos);
-
+	xxx_UT_DEBUGMSG(("Frag found %x pos %d \n",pfFirst,pfFirst->getPos()));
 	if(isEndFootnote(pfFirst))
 		countEndFootnotes++;
+	xxx_UT_DEBUGMSG(("Frag found, count endfootnotes %d  \n",countEndFootnotes));
 
 	while(pfFirst && pfFirst->getPrev() && pfFirst->getPos() >= docPos)
 	{
@@ -778,6 +780,7 @@ bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 		   (bSkipFootnotes && ((countEndFootnotes > 0) || isFootnote(pfFirst) || isEndFootnote(pfFirst)))))
 	{
 		pfFirst = pfFirst->getPrev();
+		xxx_UT_DEBUGMSG(("Frag found %x pos %d \n",pfFirst,pfFirst->getPos()));
 		if(pfFirst == NULL)
 		{
 			break;
@@ -805,10 +808,12 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	*ppfs = NULL;
 
 	pf_Frag_Strux * pfs = NULL;
-	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote || pts == PTX_EndEndnote || pts == PTX_SectionEndnote || pts == PTX_SectionTOC)))
+	bool wantFootNoteType = (pts == PTX_EndFootnote || pts == PTX_SectionFootnote || pts == PTX_EndEndnote || pts == PTX_SectionEndnote || pts == PTX_SectionTOC || pts == PTX_EndTOC);
+	if (!_getStruxFromPosition(dpos,&pfs, !wantFootNoteType))
 		return false;
 
 	PTStruxType pfsType = pfs->getStruxType();
+	xxx_UT_DEBUGMSG(("Got strux type %d \n",pfs->getStruxType()));
 	if (pfsType == pts || (pts == PTX_Section && pfsType == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsType == PTX_SectionFootnote) || (pts == PTX_SectionEndnote && pfsType == PTX_SectionEndnote) || (pts == PTX_SectionTable && pfsType == PTX_SectionTable) || (pts == PTX_SectionCell && pfsType == PTX_SectionCell) || (pts == PTX_EndTable && pfsType == PTX_EndTable) || (pts == PTX_EndCell && pfsType == PTX_EndCell) || (pts == PTX_SectionTOC && pfsType == PTX_SectionTOC)  )		// is it of the type we want
 	{
 		*ppfs = pfs;
@@ -820,7 +825,15 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	for (pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+			pf_Frag_Strux * pfsTemp = NULL;
+			if(!wantFootNoteType && isEndFootnote(pf))
+			{
+				_getStruxFromFragSkip(pf,&pfsTemp);
+			}
+			else
+			{
+				pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+			}
 			if(pfsTemp->getStruxType() == PTX_EndTable)
 			{
 				numEndTable++;

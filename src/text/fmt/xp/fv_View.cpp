@@ -10047,9 +10047,11 @@ bool FV_View::isInTable( PT_DocPosition pos)
 {
 	if(m_pDoc->isEndFootnoteAtPos(pos))
 	{
+		xxx_UT_DEBUGMSG(("Found end footnote \n"));
 		pos++;
 	}
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	xxx_UT_DEBUGMSG((" Got Bokc at pos %d looking at pos %d \n",pBL->getPosition(true),pos));
 	if(!pBL)
 	{
 		return false;
@@ -10059,6 +10061,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	{
 		return false;
 	}
+	xxx_UT_DEBUGMSG(("Containing Layout is %s \n",pCL->getContainerString()));
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		return true;
@@ -10066,8 +10069,10 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	pCL = pBL->getNext();
 	if(pCL == NULL)
 	{
+		xxx_UT_DEBUGMSG(("Get Next is NULL \n"));
 		return false;
 	}
+	xxx_UT_DEBUGMSG(("Get Next Containing Layout is %s \n",pCL->getContainerString()));
 	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 	{
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());

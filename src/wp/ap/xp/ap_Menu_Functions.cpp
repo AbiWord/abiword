@@ -467,6 +467,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->isInTable() && (pView->getPoint() > 3) && pView->isInFootnote(pView->getPoint()-2))
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInTable()  && (pView->getPoint() > 3) && pView->isInEndnote(pView->getPoint()-2))
+  {
+    s = EV_MIS_Gray;
+  }
   return s;
 }
 
