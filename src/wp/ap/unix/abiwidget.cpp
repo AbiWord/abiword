@@ -28,7 +28,13 @@
 #include "ut_assert.h"
 #include "fv_View.h"
 #include "ap_UnixFrame.h"
+#include "ap_FrameData.h"
 #include  "xap_Args.h"
+#include "pd_Document.h"
+#include "ie_imp.h"
+#include "ie_exp.h"
+#include "xap_UnixDialogHelper.h"
+
 #ifdef HAVE_GNOME
 #include "ap_UnixGnomeApp.h"
 #else
@@ -72,7 +78,7 @@ struct _AbiPrivData {
 	char           * m_szFilename;
 	GdkICAttr            * ic_attr;
 	GdkIC                * ic;
-	bool                 externalApp;
+	bool                 m_bWithExternalAppPointer;
 	bool                 m_bMappedToScreen;
 	bool                 m_bPendingFile;
 	bool                 m_bMappedEventProcessed;
@@ -1237,7 +1243,7 @@ abi_widget_destroy (GtkObject *object)
 			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
 			delete abi->priv->m_pFrame;
 		}
-		if(!abi->priv->externalApp)
+		if(!abi->priv->m_bWithExternalAppPointer)
 		{
 			abi->priv->m_pApp->shutdown();
 			delete abi->priv->m_pApp;
@@ -1509,12 +1515,12 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	if(pApp == NULL)
 	{
 		priv->m_pApp = NULL;
-		priv->externalApp = false;
+		priv->m_bWithExternalAppPointer = false;
 	}
 	else
 	{
 		priv->m_pApp = pApp;
-		priv->externalApp = true;
+		priv->m_bWithExternalAppPointer = true;
 	}
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
@@ -1542,21 +1548,29 @@ abi_widget_map_to_screen(AbiWidget * abi)
 
 	XAP_Args *pArgs = 0;
 	abi->priv->m_bMappedToScreen = true;
-	if(!abi->priv->externalApp)
+	if(!abi->priv->m_bWithExternalAppPointer)
 	{
 		if (abi->priv->m_szFilename)
 		{
-			pArgs = new XAP_Args (1, (char **)&abi->priv->m_szFilename);
+			//pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
+			pArgs = new XAP_Args (1, &abi->priv->m_szFilename);
 		}
 		else
 		{
 			pArgs = new XAP_Args(0, 0);
 		}
+
+		AP_UnixApp * pApp = static_cast<AP_UnixApp*>(XAP_App::getApp());
+
+		if ( !pApp )
+		  {
 #ifdef HAVE_GNOME
-		AP_UnixApp   * pApp = new AP_UnixGnomeApp (pArgs, "AbiWidget");
+		    pApp = new AP_UnixGnomeApp (pArgs, "AbiWidget");
 #else
-		AP_UnixApp   * pApp = new AP_UnixApp (pArgs, "AbiWidget");
+		    pApp = new AP_UnixApp (pArgs, "AbiWidget");
 #endif
+		  }
+
 		UT_ASSERT(pApp);
 		pApp->setBonoboRunning();
 		pApp->initialize();
@@ -1570,11 +1584,20 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	static_cast<XAP_UnixFrame *>(pFrame)->setTopLevelWindow(widget);
 	pFrame->initialize(XAP_NoMenusWindowLess);
 	abi->priv->m_pFrame   = pFrame;
-	if(!abi->priv->externalApp)
+	if(!abi->priv->m_bWithExternalAppPointer)
 	{
 		delete pArgs;
 	}
+
+	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
+	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
+
 	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
+
+#if 0
+	// disable rulers after we have a view of the document
+	pFrame->toggleRuler ( false ) ;
+#endif
 }
 
 extern "C" void 
@@ -1686,9 +1709,16 @@ abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 	g_return_val_if_fail (pApp != 0, 0);
 
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
-	abi_widget_construct (abi, file,pApp);
+	abi_widget_construct (abi, file, pApp);
 
 	return GTK_WIDGET (abi);
+}
+
+extern "C" XAP_Frame * 
+abi_widget_get_frame ( AbiWidget * w )
+{
+  g_return_val_if_fail ( w != NULL, NULL ) ;
+  return w->priv->m_pFrame ;
 }
 
 /**
@@ -1794,16 +1824,31 @@ abi_widget_draw (AbiWidget * w)
 	}
 }
 
+extern "C" gboolean
+abi_widget_save ( AbiWidget * w, const char * fname )
+{
+  return abi_widget_save_ext ( w, fname, ".abw" ) ;
+}
 
+extern "C" gboolean 
+abi_widget_save_ext ( AbiWidget * w, const char * fname,
+		      const char * extension )
+{
+  g_return_val_if_fail ( w != NULL, FALSE );
+  g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
+  g_return_val_if_fail ( fname != NULL, FALSE );
 
+  FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+  PD_Document * doc = view->getDocument () ;
 
+  // start out saving as abiword format by default
+  IEFileType ieft = IE_Exp::fileTypeForSuffix ( ".abw" ) ;
 
+  if ( extension != NULL && strlen ( extension ) > 0 && extension[0] == '.' )
+    ieft = IE_Exp::fileTypeForSuffix ( extension ) ;
 
-
-
-
-
-
+  return ( doc->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
+}
 
 
 
