@@ -9027,8 +9027,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		UT_String_sprintf(buf, "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 		setlocale(LC_NUMERIC,old_locale); // restore original locale
 		
-		static char *cbuf = buf.c_str();
-		pInfo->m_xPaperSize = m_pG->convertDimension(cbuf);
+		pInfo->m_xPaperSize = m_pG->convertDimension(buf.c_str());
 		pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
