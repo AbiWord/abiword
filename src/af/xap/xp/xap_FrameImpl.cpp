@@ -70,7 +70,6 @@ XAP_FrameImpl::~XAP_FrameImpl(void)
 	FREEP(m_szToolbarLabelSetName);
 	FREEP(m_szToolbarAppearance);
 	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
-
 }
 
 UT_RGBColor XAP_FrameImpl::getColorSelBackground () const
@@ -164,6 +163,10 @@ bool XAP_FrameImpl::_updateTitle()
 	/* first try to use the metadata title as our title */
 	if (m_pFrame->m_pDoc->getMetaDataProp ("dc.title", m_pFrame->m_sTitle) && m_pFrame->m_sTitle.size()) {
 		m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
+
+		if (m_pFrame->m_pDoc->isDirty())
+			m_pFrame->m_sTitle += " *";
+
 		return true;
 	}
 	
@@ -196,7 +199,6 @@ bool XAP_FrameImpl::_updateTitle()
 	{
 		// multiple top-level views, so append : & view number
 		UT_UTF8String sBuf;
-		UT_ASSERT(m_pFrame->m_nView < 10000);
 		UT_UTF8String_sprintf(sBuf, ":%d", m_pFrame->m_nView);
 		m_pFrame->m_sTitle += sBuf;
 	}
