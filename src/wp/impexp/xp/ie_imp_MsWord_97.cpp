@@ -540,7 +540,7 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 
   const XAP_StringSet * pSS = XAP_App::getApp ()->getStringSet ();
 
-  const char * text = pSS->getValue (id);
+  const char * text = pSS->getValue (id, pFrame->getApp()->getDefaultEncoding()).c_str();
 
   pFrame->showMessageBox (text,
 			  XAP_Dialog_MessageBox::b_O,
