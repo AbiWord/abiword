@@ -48,6 +48,7 @@ protected:
 	bool					m_bWin32Overline;
 	bool					m_bWin32Topline;
 	bool					m_bWin32Bottomline;
+	bool                    m_bWin32Hidden;
 };
 
 #endif /* XAP_WIN32DIALOG_FONTCHOOSER_H */

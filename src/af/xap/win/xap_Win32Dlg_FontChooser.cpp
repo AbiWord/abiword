@@ -1,20 +1,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
 
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -82,21 +82,22 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_bWin32Overline   = m_bOverline;
 	m_bWin32Topline    = m_bTopline;
 	m_bWin32Bottomline = m_bBottomline;
-	
+	m_bWin32Hidden     = m_bHidden;
+
 	/*
 	   WARNING: any changes to this function should be closely coordinated
 	   with the equivalent logic in Win32Graphics::FindFont()
 	*/
 	LOGFONT lf;
 	memset(&lf, 0, sizeof(lf));
-	
+
 	CHOOSEFONT cf;
 	memset(&cf, 0, sizeof(cf));
 	cf.lStructSize = sizeof(cf);
 	cf.hwndOwner = m_pWin32Frame->getTopLevelWindow();
 	cf.lpLogFont = &lf;
-	cf.Flags = CF_SCREENFONTS | 
-               CF_EFFECTS | 
+	cf.Flags = CF_SCREENFONTS |
+               CF_EFFECTS |
                CF_ENABLEHOOK |
                CF_ENABLETEMPLATE |
                CF_INITTOLOGFONTSTRUCT;
@@ -143,7 +144,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_parseColor(m_pColor,c);
 		cf.rgbColors = RGB(c.m_red,c.m_grn,c.m_blu);
 	}
-	
+
 	if (m_bUnderline)
 		lf.lfUnderline = TRUE;
 	if (m_bStrikeout)
@@ -231,18 +232,25 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_bChangedOverline   = (m_bWin32Overline   != m_bOverline);
 		m_bChangedTopline    = (m_bWin32Topline    != m_bTopline);
 		m_bChangedBottomline = (m_bWin32Bottomline != m_bBottomline);
-		if (m_bChangedUnderline || 
+		if (m_bChangedUnderline ||
             m_bChangedStrikeOut ||
             m_bChangedOverline  ||
             m_bChangedTopline   ||
             m_bChangedBottomline)
-			setFontDecoration( (lf.lfUnderline == TRUE), 
-                                m_bWin32Overline, 
-                                (lf.lfStrikeOut == TRUE), 
+			setFontDecoration( (lf.lfUnderline == TRUE),
+                                m_bWin32Overline,
+                                (lf.lfStrikeOut == TRUE),
                                 m_bWin32Topline,
                                 m_bWin32Bottomline );
+
+		m_bChangedHidden = (m_bWin32Hidden != m_bHidden);
+
+		if(m_bChangedHidden)
+			setHidden(m_bWin32Hidden);
+		
+
 	}
-	
+
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
 				 ((m_pFontFamily) ? m_pFontFamily : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
 				 ((m_pFontSize) ? m_pFontSize : ""),		((m_bChangedFontSize) ? "(chg)" : ""),
@@ -251,7 +259,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 ((m_pColor) ? m_pColor : "" ),				((m_bChangedColor) ? "(chg)" : ""),
 				 (m_bUnderline),							((m_bChangedUnderline) ? "(chg)" : ""),
 				 (m_bStrikeout),							((m_bChangedStrikeOut) ? "(chg)" : "")));
-	
+
 	// the caller can get the answer from getAnswer().
 
 	m_pWin32Frame = NULL;
@@ -260,7 +268,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	// static routine
-	XAP_Win32Dialog_FontChooser* pThis; 
+	XAP_Win32Dialog_FontChooser* pThis;
 
 	switch(msg)
 	{
@@ -268,7 +276,7 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 		pThis = (XAP_Win32Dialog_FontChooser *) ((CHOOSEFONT *)lParam)->lCustData;
 		SetWindowLong(hDlg,DWL_USER,(LPARAM) pThis);
 		return pThis->_onInitDialog(hDlg,wParam,lParam);
-		
+
 	case WM_COMMAND:
 		pThis = (XAP_Win32Dialog_FontChooser *)GetWindowLong(hDlg,DWL_USER);
 		if (pThis)
@@ -291,8 +299,8 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	HWND hFrame     = GetParent(hWnd);
 	XAP_Win32Frame* pWin32Frame = (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
 	XAP_App*              pApp        = pWin32Frame->getApp();
-	const XAP_StringSet*  pSS         = pApp->getStringSet();	
-	
+	const XAP_StringSet*  pSS         = pApp->getStringSet();
+
 	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
 
 	// localize controls
@@ -311,6 +319,8 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	_DS(FONT_TEXT_SAMPLE,		DLG_UFS_SampleFrameLabel);
 	_DS(FONT_BTN_OK,			DLG_OK);
 	_DS(FONT_BTN_CANCEL,		DLG_Cancel);
+	_DS(FONT_CHK_HIDDEN,        DLG_UFS_HiddenCheck);
+
 
 	// set initial state
 	if( m_bWin32Overline )
@@ -321,7 +331,10 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 
 	if( m_bWin32Bottomline )
 		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE, BST_CHECKED );
-		
+
+	if( m_bWin32Hidden )
+		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_HIDDEN, BST_CHECKED );
+
 	// use the owner-draw-control dialog-item (aka window) specified in the
 	// dialog resource file as a parent to the window/widget that we create
 	// here and thus have complete control of.
@@ -331,7 +344,7 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 
 	// instantiate the XP preview object using the win32 preview widget (window)
 	// we just created.  we seem to have a mish-mash of terms here, sorry.
-	
+
 //	UT_uint32 w,h;
 //	m_pPreviewWidget->getWindowSize(&w,&h);
 //	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
@@ -359,6 +372,9 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 
 	case XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE:
 		m_bWin32Bottomline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE)==BST_CHECKED);
+
+	case XAP_RID_DIALOG_FONT_CHK_HIDDEN:
+		m_bWin32Hidden = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_HIDDEN)==BST_CHECKED);
 		return 1;
 
 	case XAP_RID_DIALOG_FONT_CHK_SMALLCAPS:

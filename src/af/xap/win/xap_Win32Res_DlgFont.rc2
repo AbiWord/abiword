@@ -43,6 +43,7 @@
 #define XAP_RID_DIALOG_FONT_PREVIEW 				1005
 #define XAP_RID_DIALOG_FONT_BTN_OK					IDOK
 #define XAP_RID_DIALOG_FONT_BTN_CANCEL				IDCANCEL
+#define XAP_RID_DIALOG_FONT_CHK_HIDDEN  			1006
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -58,8 +59,8 @@ BEGIN
     COMBOBOX        1136,7,16,98,76,CBS_SIMPLE | CBS_OWNERDRAWFIXED | 
                     CBS_AUTOHSCROLL | CBS_SORT | CBS_HASSTRINGS | 
                     CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Font st&yle:",XAP_RID_DIALOG_FONT_TEXT_FONT_STYLE,
-                    110,7,51,9
+    LTEXT           "Font st&yle:",XAP_RID_DIALOG_FONT_TEXT_FONT_STYLE,110,7,
+                    51,9
     COMBOBOX        1137,110,16,62,76,CBS_SIMPLE | CBS_DISABLENOSCROLL | 
                     WS_VSCROLL | WS_TABSTOP
     LTEXT           "&Size:",1090,177,7,30,9
@@ -70,38 +71,33 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,210,32,45,14,WS_GROUP
     PUSHBUTTON      "&Apply",1026,210,48,45,14,WS_GROUP
     PUSHBUTTON      "&Help",1038,210,64,45,14,WS_GROUP
-    GROUPBOX        "Effects",1072,7,92,199,77,WS_GROUP
-    CONTROL         "Stri&keout",XAP_RID_DIALOG_FONT_BTN_STRIKEOUT,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,106,84,10
-    CONTROL         "&Underline",XAP_RID_DIALOG_FONT_BTN_UNDERLINE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,118,84,10
+    GROUPBOX        "Effects",1072,7,92,199,89,WS_GROUP
+    CONTROL         "Stri&keout",XAP_RID_DIALOG_FONT_BTN_STRIKEOUT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,106,84,10
+    CONTROL         "&Underline",XAP_RID_DIALOG_FONT_BTN_UNDERLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,118,84,10
     LTEXT           "&Color:",XAP_RID_DIALOG_FONT_TEXT_COLOR,113,114,84,9
     COMBOBOX        1139,113,125,84,100,CBS_DROPDOWNLIST | 
                     CBS_OWNERDRAWFIXED | CBS_AUTOHSCROLL | CBS_HASSTRINGS | 
                     WS_BORDER | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Sample",XAP_RID_DIALOG_FONT_TEXT_SAMPLE,7,173,198,36,
+    GROUPBOX        "Sample",XAP_RID_DIALOG_FONT_TEXT_SAMPLE,7,188,198,36,
                     WS_GROUP
-    CTEXT           "AaBbYyZz",1092,15,183,183,21,SS_NOPREFIX | NOT 
+    CTEXT           "AaBbYyZz",1092,15,199,183,21,SS_NOPREFIX | NOT 
                     WS_VISIBLE
-//    CONTROL         "(preview)", XAP_RID_DIALOG_FONT_PREVIEW,
-//                    "Button", BS_OWNERDRAW,
-//                    15,183,183,21
-    LTEXT           "",1093,7,210,196,20,SS_NOPREFIX | NOT WS_GROUP
     LTEXT           "Sc&ript:",XAP_RID_DIALOG_FONT_TEXT_SCRIPT,113,141,84,9
     COMBOBOX        1140,113,151,84,30,CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | 
                     CBS_AUTOHSCROLL | CBS_HASSTRINGS | WS_BORDER | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "&Overline",XAP_RID_DIALOG_FONT_CHK_OVERLINE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,154,84,10
-    CONTROL         "&Topline",XAP_RID_DIALOG_FONT_CHK_TOPLINE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    130,84,10
-    CONTROL         "&Bottomline",XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,142,84,10
-    CONTROL         "&Small Caps",XAP_RID_DIALOG_FONT_CHK_SMALLCAPS,
-                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,
-                    113,103,84,10
+    CONTROL         "&Overline",XAP_RID_DIALOG_FONT_CHK_OVERLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,154,84,10
+    CONTROL         "&Topline",XAP_RID_DIALOG_FONT_CHK_TOPLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,130,84,10
+    CONTROL         "&Bottomline",XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,142,84,10
+    CONTROL         "&Small Caps",XAP_RID_DIALOG_FONT_CHK_SMALLCAPS,"Button",
+                    BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,113,103,84,10
+    CONTROL         "&Hidden",XAP_RID_DIALOG_FONT_CHK_HIDDEN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,166,84,10
 END
+
 #endif /* RC_INVOKED */

@@ -2713,6 +2713,12 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	else
 		delete f;
 
+	f = new _fmtPair("display",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	else
+		delete f;
+	
 #endif
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)

@@ -3452,7 +3452,7 @@ Defun1(cursorDefault)
 	// clear status bar of any lingering messages
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	pFrame->setStatusMessage(NULL);
-	
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
@@ -5297,6 +5297,7 @@ static bool s_doFontDlg(FV_View * pView)
 		bool bStrikeOut = false;
 		bool bTopLine = false;
 		bool bBottomLine = false;
+
 		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
 		if (s)
 		{
@@ -5307,6 +5308,15 @@ static bool s_doFontDlg(FV_View * pView)
 			bBottomLine = (strstr(s, "bottomline") != NULL);
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopLine,bBottomLine);
+
+		bool bHidden = false;
+		const XML_Char * h = UT_getAttribute("display", props_in);
+		if(h)
+		{
+			bHidden = (strstr(h, "none") != NULL);
+		}
+		pDialog->setHidden(bHidden);
+
 		FREEP(props_in);
 	}
 
@@ -5327,7 +5337,7 @@ static bool s_doFontDlg(FV_View * pView)
 	if (bOK)
 	{
 		UT_uint32  k = 0;
-		const XML_Char * props_out[17];
+		const XML_Char * props_out[19];
 		const XML_Char * s;
 
 		if (pDialog->getChangedFontFamily(&s))
@@ -5397,6 +5407,26 @@ static bool s_doFontDlg(FV_View * pView)
 			props_out[k++] = "text-decoration";
 			props_out[k++] = (const XML_Char *) sstr;
 		}
+
+		bool bHidden = false;
+		bool bChangedHidden = pDialog->getChangedHidden(&bHidden);
+
+		if (bChangedHidden)
+		{
+			if(bHidden)
+			{
+				props_out[k++] = "display";
+				props_out[k++] = "none";
+				
+			}
+			else
+			{
+				props_out[k++] = "display";
+				props_out[k++] ="";
+			}
+		}
+
+
 		props_out[k] = 0;						// put null after last pair.
 		UT_ASSERT(k < NrElements(props_out));
 		for(UT_uint32 i = 0; i<k; i= i+2 )
@@ -9177,7 +9207,7 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 			stPathname += szResultPathname;
 		}
 #endif
- 
+
 		UT_sint32 type = pDialog->getFileType();
 		dflFileType = type;
 
