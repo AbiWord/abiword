@@ -36,6 +36,7 @@ libImpexp_a_SOURCES=\
 	ie_exp_MsWord_97.cpp			\
 	ie_exp_Text.cpp				\
 	ie_exp_RTF.cpp				\
+	ie_exp_RTF_AttrProp.cpp			\
 	ie_exp_RTF_listenerGetProps.cpp		\
 	ie_exp_RTF_listenerWriteDoc.cpp		\
 	ie_exp_LaTeX.cpp			\
