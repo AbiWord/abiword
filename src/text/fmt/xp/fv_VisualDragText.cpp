@@ -567,7 +567,7 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
 	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
-	if(bPasteTableCol)
+	if(!bPasteTableCol)
 	{
 		PT_DocPosition pos1 = m_pView->getSelectionAnchor();
 		PT_DocPosition pos2 = m_pView->getPoint();
