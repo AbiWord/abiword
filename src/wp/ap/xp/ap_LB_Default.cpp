@@ -335,9 +335,9 @@ static struct _iChar s_CharTable[] =
 //	TODO to some other functions -- but rather than try guessing, let's
 //	TODO wait and let some of our European friends comment.
 
-//	{char, /* desc           */ { none,					_C,					_A,				_A_C				}},
+//	{char, /* desc           */ { none,				_C,					_A,				_A_C				}},
 
-	{0xa0, /* nbs            */ { "insertNBSpace",		"",					"",				""					}},
+	{0xa0, /* nbs            */ { "insertNBSpace",	"",					"",				""					}},
 	{0xa1, /* exclamdown     */ { "insertData",		"",					"",				""					}},
 	{0xa2, /* cent           */ { "insertData",		"",					"",				""					}},
 	{0xa3, /* sterling       */ { "insertData",		"",					"",				""					}},
