@@ -391,6 +391,7 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 		/* menu items */
 		[_alignmentPopup setTag:(int)AP_Dialog_Paragraph::id_MENU_ALIGNMENT];
 		[_alignmentPopup removeAllItems];
+		[_alignmentPopup addItemWithTitle:@" "];
 		AppendLocalizedMenuItem(_alignmentPopup, pSS, AP_STRING_ID_DLG_Para_AlignLeft, AP_Dialog_Paragraph::align_LEFT);
 		AppendLocalizedMenuItem(_alignmentPopup, pSS, AP_STRING_ID_DLG_Para_AlignCentered, AP_Dialog_Paragraph::align_CENTERED );
 		AppendLocalizedMenuItem(_alignmentPopup, pSS, AP_STRING_ID_DLG_Para_AlignRight, AP_Dialog_Paragraph::align_RIGHT);
@@ -407,6 +408,7 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 		/*menu items*/
 		[_specialPopup setTag:(int)AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT];
 		[_specialPopup removeAllItems];
+		[_specialPopup addItemWithTitle:@" "];
 		AppendLocalizedMenuItem(_specialPopup, pSS, AP_STRING_ID_DLG_Para_SpecialNone, AP_Dialog_Paragraph::indent_NONE);
 		AppendLocalizedMenuItem(_specialPopup, pSS, AP_STRING_ID_DLG_Para_SpecialFirstLine, AP_Dialog_Paragraph::indent_FIRSTLINE);
 		AppendLocalizedMenuItem(_specialPopup, pSS, AP_STRING_ID_DLG_Para_SpecialHanging, AP_Dialog_Paragraph::indent_HANGING);
@@ -421,6 +423,7 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 		/*menu items*/
 		[_lineSpacingPopup setTag:(int)AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING];
 		[_lineSpacingPopup removeAllItems];
+		[_lineSpacingPopup addItemWithTitle:@" "];
 		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingSingle, AP_Dialog_Paragraph::spacing_SINGLE);
 		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingHalf, AP_Dialog_Paragraph::spacing_ONEANDHALF);
 		AppendLocalizedMenuItem(_lineSpacingPopup, pSS, AP_STRING_ID_DLG_Para_SpacingDouble, AP_Dialog_Paragraph::spacing_DOUBLE);
