@@ -1,6 +1,3 @@
-
-#error This file is no longer used
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -27,13 +24,14 @@
 
 #include "ut_types.h"
 
-class fl_SectionLayout;
+class fl_DocSectionLayout;
 
 class ABI_EXPORT fb_ColumnBreaker
 {
 public:
+	static UT_sint32 breakSection(fl_DocSectionLayout * pSL);
+private:
 	fb_ColumnBreaker();
-	UT_sint32 breakSection(fl_SectionLayout*);
 };
 
 #endif /* COLUMNBREAKER_H */

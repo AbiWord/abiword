@@ -190,7 +190,6 @@ public:
 	virtual void  setLastContainer(fp_Container * pCon)
 		{ m_pLastColumn = (fp_Column *)pCon;}
 
-	UT_sint32			breakSection(fl_ContainerLayout * pLastValidBlock=NULL);
 	virtual void        markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void) const
 		{ return NULL; }

@@ -1872,14 +1872,13 @@ void FV_View::cmdUndo(UT_uint32 count)
 	notifyListeners(AV_CHG_DIRTY);
 
 // Look to see if we need the saved insertion point after the undo
-	if(needSavedPosition())
-	{
+// 	if(needSavedPosition())
+// 	{
 //
 // We do, so restore insertion point to that value.
-//
-		_setPoint(getSavedPosition());
-		clearSavedPosition();
-	}
+// 		_setPoint(getSavedPosition());
+// 		clearSavedPosition();
+// 	}
 
 	// Move insertion point out of field run if it is in one
 	//
@@ -1922,14 +1921,14 @@ void FV_View::cmdRedo(UT_uint32 count)
 	allowChangeInsPoint();
 
 // Look to see if we need the saved insertion point after the undo
-	if(needSavedPosition())
-	{
+// 	if(needSavedPosition())
+// 	{
 //
 // We do, so restore insertion point to that value.
 //
-		_setPoint(getSavedPosition());
-		clearSavedPosition();
-	}
+// 		_setPoint(getSavedPosition());
+// 		clearSavedPosition();
+// 	}
 	m_pDoc->setDontImmediatelyLayout(false);
 
 	// restore updates and clean up dirty lists

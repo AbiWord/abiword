@@ -55,5 +55,6 @@ libFmt_a_SOURCES= \
 	fg_Graphic.cpp			\
 	fg_GraphicRaster.cpp		\
 	fp_ContainerObject.cpp		\
-	fg_GraphicVector.cpp
+	fg_GraphicVector.cpp		\
+	fb_ColumnBreaker.cpp
 
