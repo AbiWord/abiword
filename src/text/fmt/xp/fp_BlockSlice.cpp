@@ -651,9 +651,8 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 	}
 	else
 	{
-		/*
-		  TODO should we shrink the slice?
-		*/
+		// TODO we might be able to be smarter than this
+		m_pBlock->setNeedsCompleteReformat(UT_TRUE);
 	}
 }
 

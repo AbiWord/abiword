@@ -49,7 +49,6 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 	fp_Line* pLine = pBlock->getFirstLine();
 	fp_RunSplitInfo si;
 	UT_Bool bRedrawLine = UT_FALSE;
-	UT_Bool bLineOnScreen = UT_TRUE;
 	
 	while (pLine && (bDone == UT_FALSE))
 	{
@@ -59,38 +58,6 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 		// This line has been affected by the edit ...
 		if (pLine->m_bDirty)
 		{
-			UT_sint32 xoff, yoff, screenWidth, screenHeight;
-
-			if (bLineOnScreen == UT_TRUE)
-			{
-				if (pLine->countRuns() != 0)
-				{
-					fp_Run* pRun = pLine->getFirstRun();
-					pLine->getScreenOffsets(pRun, pRun->getLineData(), xoff,
-											yoff, screenWidth, screenHeight);
-
-					if (yoff > screenHeight)
-					{
-						/*
-						  This check is apparently too aggressive.  There are cases
-						  where a line needs to be cleared but it is not being done,
-						  due to this variable being [apparently] set incorrectly.
-
-						  For now, I've fixed the symptom, not the problem, by commenting
-						  out the check (see below).  TODO we should fix the problem,
-						  not the symptom.  -EWS
-
-						  REVISED COMMENT:  (EWS)  This check is not merely too aggressive.
-						  It's simply wrong.  It is assuming that the 'screenWidth' variable
-						  returned from getScreenOffsets is in fact the width of the
-						  entire window.  (same for screenHeight).  This is quite wrong.
-						  This code should be revisited or removed.
-						*/
-						bLineOnScreen = UT_FALSE;
-					}
-				}
-			}
-			
 			pLine->m_bDirty = UT_FALSE;
 
 			int iWidth = 0;
@@ -318,12 +285,7 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 							if (!pRunLooking->getNext() ||
 								pRunLooking->canBreakAfter())
 							{
-#if 0	// this check seems to leave screen dirt -EWS								
-								if (bLineOnScreen)
-#endif
-								{
-									pNextLine->clearScreen();
-								}
+								pNextLine->clearScreen();
 								
 								// snarf up any runs previous to us who
 								// said they couldn't be broken after ...
@@ -339,21 +301,15 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 
 								if (pRealNextLine != pNextLine)
 								{
-									if (bLineOnScreen)
-									{
-										pRealNextLine->clearScreen();
-										pRealNextLine->align();
-										pRealNextLine->draw(pRunLooking->getGraphics());
-									}
+									pRealNextLine->clearScreen();
+									pRealNextLine->align();
+									pRealNextLine->draw(pRunLooking->getGraphics());
 								}
 								
-								if (bLineOnScreen)
-								{
-									pNextLine->align();
-									pNextLine->draw(pRunLooking->getGraphics());
-									pLine->align();
-									pLine->draw(pRunLooking->getGraphics());
-								}
+								pNextLine->align();
+								pNextLine->draw(pRunLooking->getGraphics());
+								pLine->align();
+								pLine->draw(pRunLooking->getGraphics());
 								
 								pRealNextLine->m_bDirty = UT_TRUE;
 								pNextLine->m_bDirty = UT_TRUE;
@@ -401,12 +357,7 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 						}
 						else if	(pRunLooking->findMaxLeftFitSplitPoint(iSpaceLeft - (iWidthLooking - pRunLooking->getWidth()), si))
 						{
-#if 0	// this line causes display dirt.  -EWS
-							if (bLineOnScreen)
-#endif								
-							{
-								pNextLine->clearScreen();
-							}
+							pNextLine->clearScreen();
 							
 							pNextLine->removeRun(pRunLooking);
 							
@@ -426,11 +377,8 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 
 							pLine->addRun(pRunLooking);
 							
-							if (bLineOnScreen)
-							{
-								pLine->align();
-								pLine->draw(pCurRun->getGraphics());
-							}
+							pLine->align();
+							pLine->draw(pCurRun->getGraphics());
 							
 							pRealNextLine->insertRun(pOtherRun, UT_TRUE,
 													 UT_TRUE);
@@ -441,11 +389,9 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 								pRealNextLine->draw(pOtherRun->getGraphics());
 							}
 							
-							if (bLineOnScreen)
-							{
-								pNextLine->align();
-								pNextLine->draw(pOtherRun->getGraphics());
-							}
+							pNextLine->align();
+							pNextLine->draw(pOtherRun->getGraphics());
+
 							pRealNextLine->m_bDirty = UT_TRUE;
 							pLine->m_bDirty = UT_FALSE;
 							pNextLine->m_bDirty = UT_TRUE;
@@ -453,11 +399,8 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 						}
 						else
 						{
-							if (bLineOnScreen)
-							{
-								pLine->align();
-								pLine->draw(pCurRun->getGraphics());
-							}
+							pLine->align();
+							pLine->draw(pCurRun->getGraphics());
 							
 							pLine->m_bDirty = UT_FALSE;
 						}
