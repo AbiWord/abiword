@@ -187,6 +187,16 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   } else {
 		      strcat(propBuffer, "font-style:normal;");
 		   }
+		   strcat(propBuffer, "text-decoration:");
+		   if (achp->fStrike && achp->kul) {
+		      strcat(propBuffer, "underline line-through;");
+		   } else if (achp->fStrike) {
+		      strcat(propBuffer, "line-through;");
+		   } else if (achp->kul) {
+		      strcat(propBuffer, "underline;");
+		   } else {
+		      strcat(propBuffer, "normal;");
+		   }
 		   propsArray[0] = pProps;
 		   // remove trailing ;
 		   propBuffer[strlen(propBuffer)-1] = 0;
