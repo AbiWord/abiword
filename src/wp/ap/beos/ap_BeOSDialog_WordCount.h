@@ -38,6 +38,7 @@ public:
         virtual void                    destroy(void){};
         virtual void                    activate(void){};
 	virtual void	 notifyActiveFrame(XAP_Frame *pFrame) {};
+	virtual void	 notifyCloseFrame(XAP_Frame *pFrame){};
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
