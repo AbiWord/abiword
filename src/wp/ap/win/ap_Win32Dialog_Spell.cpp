@@ -402,7 +402,20 @@ BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 		case EN_SETFOCUS:
 			{
+				// FIXME: need proper replacement for m_iSentenceStart
+				// I think: m_iWordOffset - m_iSentenceStart equals the
+				// relative distance between selected area and suspected
+				// [only because the alg may be wrong] start of a word.
+				// If the selection is on a separator (word starts after)
+				// then value is negative (m_iSentenceStart = m_iWordOffset + offset)
+				// and if selection in the middle of the word then (word starts before)
+				// then value is positive (m_iSentenceStart = m_iWordOffset - offset)
+#if 0
 				UT_sint32 iAfter = m_iWordOffset + m_iWordLength - m_iSentenceStart;
+#else
+				// so for now just so it compiles assume perfect selection
+				UT_sint32 iAfter = m_iWordLength;
+#endif
 
 				// set scroll position so misspelled word is centered
 				SendMessage(m_hwndSentence, EM_SETSEL, (WPARAM) iAfter, (LPARAM) iAfter);	
