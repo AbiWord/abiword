@@ -757,6 +757,8 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 // The delay is how long the splash should stay on screen in milliseconds.
 GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 {
+	bool pngReturnVal;
+    
 	wSplash = NULL;
 	pSplashImage = NULL;
 
@@ -780,8 +782,15 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		// get splash size
 		UT_sint32 iSplashWidth;
 		UT_sint32 iSplashHeight;
-		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
-
+		{
+			bool pngReturnVal = UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
+			if(!pngReturnVal)
+			{
+				// uh oh
+				UT_DEBUGMSG(("That image caused an error in the PNG library."));
+				return NULL;
+			}
+		}
 		// create a centered window the size of our image
 		wSplash = gtk_window_new(GTK_WINDOW_POPUP);
 		gtk_window_set_default_size (GTK_WINDOW (wSplash),
