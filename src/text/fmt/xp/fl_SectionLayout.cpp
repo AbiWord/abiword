@@ -1749,6 +1749,7 @@ void fl_DocSectionLayout::updateLayout(void)
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
+	xxx_UT_DEBUGMSG(("Doing Update layout \n"));
 	while (pBL)
 	{
 		eHidden  = pBL->isHidden();
@@ -1760,7 +1761,10 @@ void fl_DocSectionLayout::updateLayout(void)
  		{
  			if (pBL->needsReformat())
 			{
+			  if(!(m_pLayout->isLayoutFilling() && pBL->getContainerType() == FL_CONTAINER_TOC))
+			  {
 				pBL->format();
+			  }
 			}
 			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
 			{
