@@ -107,6 +107,8 @@ protected:
 	
 	AP_Win32DialogFactory		m_dialogFactory;
 
+	UINT						m_mouseWheelMessage;
+
 	/* These 2 variables are used in the frame
 	** to remember the last values we used to set
 	** the size of client area of the frame (on

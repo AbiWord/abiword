@@ -409,6 +409,7 @@ AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 	m_hwndHScroll = NULL;
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
+	m_bMouseWheelTrack = UT_FALSE;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
@@ -422,6 +423,7 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_hwndHScroll = NULL;
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
+	m_bMouseWheelTrack = UT_FALSE;
 }
 
 AP_Win32Frame::~AP_Win32Frame(void)
@@ -884,7 +886,8 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 	case WM_MBUTTONDOWN:
-		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON2,wParam,LOWORD(lParam),HIWORD(lParam));
+		f->_startTracking(LOWORD(lParam), HIWORD(lParam));
+//		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON2,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 	case WM_RBUTTONDOWN:
 		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON3,wParam,LOWORD(lParam),HIWORD(lParam));
@@ -894,21 +897,29 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		pMouse->onDoubleClick(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 	case WM_MBUTTONDBLCLK:
-		pMouse->onDoubleClick(pView,hwnd,EV_EMB_BUTTON2,wParam,LOWORD(lParam),HIWORD(lParam));
+//		pMouse->onDoubleClick(pView,hwnd,EV_EMB_BUTTON2,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 	case WM_RBUTTONDBLCLK:
 		pMouse->onDoubleClick(pView,hwnd,EV_EMB_BUTTON3,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 
 	case WM_MOUSEMOVE:
-		pMouse->onButtonMove(pView,hwnd,wParam,LOWORD(lParam),HIWORD(lParam));
+		if(f->_isTracking())
+		{
+			f->_track(LOWORD(lParam),HIWORD(lParam));
+		}
+		else
+		{
+			pMouse->onButtonMove(pView,hwnd,wParam,LOWORD(lParam),HIWORD(lParam));
+		}
 		return 0;
 
 	case WM_LBUTTONUP:
 		pMouse->onButtonUp(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 	case WM_MBUTTONUP:
-		pMouse->onButtonUp(pView,hwnd,EV_EMB_BUTTON2,wParam,LOWORD(lParam),HIWORD(lParam));
+		f->_endTracking(LOWORD(lParam), HIWORD(lParam));
+//		pMouse->onButtonUp(pView,hwnd,EV_EMB_BUTTON2,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 	case WM_RBUTTONUP:
 		pMouse->onButtonUp(pView,hwnd,EV_EMB_BUTTON3,wParam,LOWORD(lParam),HIWORD(lParam));
@@ -1102,3 +1113,45 @@ void AP_Win32Frame::toggleRuler(UT_Bool bRulerOn)
 	_onSize(r.right - r.left, r.bottom - r.top);
 }
 
+
+/////////////////////////////////////////////////////////////////////////
+
+void AP_Win32Frame::_startTracking(UT_sint32 x, UT_sint32 y)
+{
+	m_startMouseWheelY = y;
+	m_bMouseWheelTrack = UT_TRUE;
+
+	m_startScrollPosition = GetScrollPos(m_hwndVScroll, SB_CTL);
+
+	SetCapture(m_hwndDocument);
+	
+}
+void AP_Win32Frame::_track(UT_sint32 x, UT_sint32 y)
+{
+	UT_sint32 Delta = y - m_startMouseWheelY;
+
+	// map delta to scroll bar range.
+
+	int iMin, iMax;
+	RECT rect;
+	GetClientRect(m_hwndDocument, &rect);
+
+	if(y < rect.top || y > rect.bottom)
+		return;
+
+	GetScrollRange(m_hwndVScroll, SB_CTL, &iMin, &iMax);
+
+	if(Delta < 0)
+	{
+		int iNewPosition = (m_startScrollPosition - iMin) * (y - rect.top) / (m_startMouseWheelY - rect.top);
+
+		SendMessage(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
+	}
+	else
+	{
+		int iNewPosition = m_startScrollPosition + (iMax - m_startScrollPosition) * (y - m_startMouseWheelY) / (rect.bottom - m_startMouseWheelY);
+
+		SendMessage(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
+	}
+
+}

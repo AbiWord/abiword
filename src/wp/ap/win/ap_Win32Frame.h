@@ -85,6 +85,23 @@ protected:
 	HWND						m_hwndDocument;	/* the actual document window */
 
 	UT_uint32					m_vScale; /* vertical scroll scaling to get around 16-bit scrollbar problems */
+
+private:
+
+	UT_Bool m_bMouseWheelTrack;
+	UT_sint32 m_startMouseWheelY, m_startScrollPosition;
+
+	void _startTracking(UT_sint32 x, UT_sint32 y);
+	void _endTracking(UT_sint32 x, UT_sint32 y)
+	{
+		m_bMouseWheelTrack = UT_FALSE;
+		ReleaseCapture();
+	}
+	void _track(UT_sint32 x, UT_sint32 y);
+	UT_Bool _isTracking()
+	{
+		return m_bMouseWheelTrack;
+	}
 };
 
 #endif /* AP_WIN32FRAME_H */

@@ -20,6 +20,7 @@
 #include <windows.h>
 #include <commctrl.h>
 #include <stdio.h>
+#include "zmouse.h"
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -87,6 +88,7 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
 	m_hwndContainer = NULL;
 	m_iSizeWidth = 0;
 	m_iSizeHeight = 0;
+	m_mouseWheelMessage = 0;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -108,6 +110,7 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
 	m_hwndContainer = NULL;
 	m_iSizeWidth = 0;
 	m_iSizeHeight = 0;
+	m_mouseWheelMessage = 0;
 }
 
 XAP_Win32Frame::~XAP_Win32Frame(void)
@@ -213,6 +216,8 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 							   NULL, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndFrame);
 	SWL(m_hwndFrame, this);					// bind this frame to its window
+
+	m_mouseWheelMessage = RegisterWindowMessage(MSH_MOUSEWHEEL);
 
 	// synthesize a menu from the info in our
 	// base class and install it into the window.
@@ -371,6 +376,13 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 	if (f)
 	{
 		pView = f->m_pView;
+
+		if(iMsg == f->m_mouseWheelMessage)
+			{
+			wParam = MAKEWPARAM(0, (short)(int)wParam);
+			return SendMessage(hwnd, WM_MOUSEWHEEL, wParam, lParam);
+			}
+
 	}
 
 	switch (iMsg)
@@ -535,6 +547,13 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		// We must propagate this message.
 		
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+	}
+
+	case WM_MOUSEWHEEL:
+	{
+		short zDelta = (short) HIWORD(wParam);
+		SendMessage(f->m_hwndContainer, WM_VSCROLL, (zDelta > 0) ? SB_LINEUP : SB_LINEDOWN, NULL);
+		return 0;
 	}
 
 	case WM_SYSCOLORCHANGE:
