@@ -29,10 +29,14 @@
 #include "ut_misc.h"
 #include "xap_Strings.h"
 #include "xap_UnixGnomePrintGraphics.h"
-#include "xap_UnixPSImage.h"
 #include "xap_EncodingManager.h"
+#include "gr_UnixGnomeImage.h"
 
 #include <libgnomeprint/gnome-print-master-preview.h>
+
+/***********************************************************************/
+/*      This file provides an interface into Gnome Print               */
+/***********************************************************************/
 
 #define OUR_LINE_LIMIT          200 /* FIXME:
 				       UGLY UGLY UGLY, but we need to fix the PrintPrivew
@@ -59,26 +63,26 @@ typedef struct _fontMapping
 /* The ones with ?? have not been verified. (Chema) */
 static struct _fontMapping fontMappingTable[] = 
 {
-	{"Arial",                  "Helvetica"}, // Arial is a MS name for Helvetica, so I've been told
-	{"Bitstream",              "Palatino"}, // ??
-	{"Bookman",                "URW Bookman L"},
-	{"Century Schoolbook",     "Century Schoolbook L"},
-	{"Courier",                "Courier"},
-	{"Courier New",            "Courier"}, /* ??? not really. (I think) */
-	{"Dingbats",               "Dingbats"},
-	{"Goth",                   "URW Gothic L"},
-	{"Helvetic",               "Helvetica"},
-	{"Helvetica",              "Helvetica"},
-	{"Nimbus Mono",            "Nimbus Mono L"},
-	{"Nimbus Roman",           "Nimbus Roman No9 L"},
-	{"Nimbus Sans",            "Nimbus Sans L"},
-	{"Nimbus Sans Condensed",  "Nimbus Sans L"}, // ??
-	{"Palladio",               "URW Palladio L"},
-	{"Standard Symbols",       "Standard Symbols L"},
-	{"Symbol",                 "Standard Symbols L"}, // ?? (Symbol?)
-	{"Times",                  "Times"},
-	{"Times New Roman",        "Nimbus Roman No9 L"},
-	{"*",                      GPG_DEFAULT_FONT}
+		{"Arial",                  "Helvetica"}, // Arial is a MS name for Helvetica, so I've been told
+		{"Bitstream",              "Palatino"}, // ??
+		{"Bookman",                "URW Bookman L"},
+		{"Century Schoolbook",     "Century Schoolbook L"},
+		{"Courier",                "Courier"},
+		{"Courier New",            "Courier"}, /* ??? not really. (I think) */
+		{"Dingbats",               "Dingbats"},
+		{"Goth",                   "URW Gothic L"},
+		{"Helvetic",               "Helvetica"},
+		{"Helvetica",              "Helvetica"},
+		{"Nimbus Mono",            "Nimbus Mono L"},
+		{"Nimbus Roman",           "Nimbus Roman No9 L"},
+		{"Nimbus Sans",            "Nimbus Sans L"},
+		{"Nimbus Sans Condensed",  "Nimbus Sans L"}, // ??
+		{"Palladio",               "URW Palladio L"},
+		{"Standard Symbols",       "Standard Symbols L"},
+		{"Symbol",                 "Symbol"}, // ?? (Symbol?)
+		{"Times",                  "Times"},
+		{"Times New Roman",        "Nimbus Roman No9 L"},
+		{"*",                      GPG_DEFAULT_FONT}
 };
 
 #define TableSize	((sizeof(fontMappingTable)/sizeof(fontMappingTable[0])))
@@ -87,52 +91,53 @@ static char * mapFontName(const char *name)
 {
         unsigned int idx = 0;
 
-	// if we're passed crap, default to some normal font
-	if(!name || !*name)
-	  {
-	        xxx_UT_DEBUGMSG(("Dom: mapFontName: null name, returning default\n"));
-	        return GPG_DEFAULT_FONT;
-	  }
+		// if we're passed crap, default to some normal font
+		if(!name || !*name)
+				{
+						return GPG_DEFAULT_FONT;
+				}
 
-	for (unsigned int k=0; k<TableSize; k++)
-	  {
-		if (fontMappingTable[k].abi[0] == '*')
-			idx = k;
-		else if (!UT_strnicmp(fontMappingTable[k].abi,name, 
-				      strlen(fontMappingTable[k].abi)))
-		  {
-		    idx = k;
-		    break;
-		  }
-	  }
+		for (unsigned int k=0; k<TableSize; k++)
+				{
+						if (fontMappingTable[k].abi[0] == '*')
+								idx = k;
+						else if (!UT_strnicmp(fontMappingTable[k].abi,name, 
+											  strlen(fontMappingTable[k].abi)))
+								{
+										idx = k;
+										break;
+								}
+				}
 
-	// return the gnome mapping
-	return fontMappingTable[idx].gnome;
+		// return the gnome mapping
+		return fontMappingTable[idx].gnome;
 }
 
 #undef TableSize
 
 static bool isItalic(XAP_UnixFont::style s)
 {
-        return ((s == XAP_UnixFont::STYLE_ITALIC) || (s == XAP_UnixFont::STYLE_BOLD_ITALIC));
+        return ((s == XAP_UnixFont::STYLE_ITALIC) || 
+				(s == XAP_UnixFont::STYLE_BOLD_ITALIC));
 }
 
 static GnomeFontWeight getGnomeFontWeight(XAP_UnixFont::style s)
 {
         GnomeFontWeight w = GNOME_FONT_BOOK;
-	switch((int)s)
-	  {
-	  case XAP_UnixFont::STYLE_BOLD_ITALIC:
-	  case XAP_UnixFont::STYLE_BOLD:
-	    w = GNOME_FONT_BOLD;
-	  default:
-	    break;
-	  }
-
-	return w;
+		switch((int)s)
+				{
+				case XAP_UnixFont::STYLE_BOLD_ITALIC:
+				case XAP_UnixFont::STYLE_BOLD:
+						w = GNOME_FONT_BOLD;
+				default:
+						break;
+				}
+		
+		return w;
 }
 
 #define DEFAULT_GNOME_FONT "Helvetica"
+
 static
 gboolean fonts_match(GnomeFont *tmp, const gchar * intended)
 {
@@ -141,9 +146,8 @@ gboolean fonts_match(GnomeFont *tmp, const gchar * intended)
 
 		if(!g_strcasecmp(intended, DEFAULT_GNOME_FONT))
 				return TRUE; // asked for and got helvetica
-
+		
 		const gchar * what = gnome_font_get_name(tmp);
-		xxx_UT_DEBUGMSG(("DOM: intended - '%s' what - '%s'\n", intended, what));
 
 		if(!g_strcasecmp(what, DEFAULT_GNOME_FONT))
 				return FALSE; // asked for something and got helvetica instead
@@ -154,57 +158,53 @@ gboolean fonts_match(GnomeFont *tmp, const gchar * intended)
 GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 {
         XAP_UnixFont *uf          = pFont->getUnixFont();
-	XAP_UnixFont::style style = uf->getStyle();
-	char *abi_name            = (char*)uf->getName();
+		XAP_UnixFont::style style = uf->getStyle();
+		char *abi_name            = (char*)uf->getName();
+		
+		GnomeFontWeight gfw = getGnomeFontWeight(style);
+		bool italic      = isItalic(style);
 	
-	GnomeFontWeight gfw = getGnomeFontWeight(style);
-	bool italic      = isItalic(style);
+		// ok, this is the ugliest hack of the year, so I'll take it one step
+		// at a time
+
+		// add 0.1 so 11.99 gets rounded up to 12
+		double size         = (double)pFont->getSize() * _scale_factor_get () + 0.1;
 	
-	// ok, this is the ugliest hack of the year, so I'll take it one step
-	// at a time
-
-	// add 0.1 so 11.99 gets rounded up to 12
-	double size         = (double)pFont->getSize() * _scale_factor_get () + 0.1;
-	
-	// test for oddness, if odd, subtract 1
-	// why? abi allows odd point fonts for at least 
-	// 9 and 11 points. gnome print does not, so we
-	// scale it down. *ugly*
-	if((int)size % 2 != 0)
-			size -= 1.0;
-			
-	// first try to directly allocate abi's name
-	// this is good for fonts not in my table, and
-	// fonts installed by the user in both Abi and
-	// using gnome-font-install
-
-	GnomeFont *tmp = NULL;
-
-	/* gnome_font_new_closest always returns a font. 
-	   So you will get helvetica if not found */
-
-	tmp      = gnome_font_new_closest(abi_name, gfw, italic, size);
-
-	// assert that the fonts match
-	if(tmp && fonts_match(tmp, abi_name))
-			return tmp;
-
-	xxx_UT_DEBUGMSG(("Dom: unreffing gnome font: ('%s','%s')\n", 
-		     gnome_font_get_ps_name(tmp), abi_name));
-
-	// else we got something we didn't ask for
-	// unref the gnome-font and try again
-	gnome_font_unref(tmp);
-
-	char *fontname      = mapFontName(abi_name);
-	tmp = gnome_font_new_closest(fontname, gfw, italic, size);
-
-	return tmp;
+		// test for oddness, if odd, subtract 1
+		// why? abi allows odd point fonts for at least 
+		// 9 and 11 points. gnome print does not, so we
+		// scale it down. *ugly*
+		if((int)size % 2 != 0)
+				size -= 1.0;
+		
+		// first try to directly allocate abi's name
+		// this is good for fonts not in my table, and
+		// fonts installed by the user in both Abi and
+		// using gnome-font-install
+		
+		GnomeFont *tmp = NULL;
+		
+		/* gnome_font_new_closest always returns a font. 
+		   So you will get helvetica if not found */
+		
+		tmp      = gnome_font_new_closest(abi_name, gfw, italic, size);
+		
+		// assert that the fonts match
+		if(tmp && fonts_match(tmp, abi_name))
+				return tmp;
+		
+		xxx_UT_DEBUGMSG(("Dom: unreffing gnome font: ('%s','%s')\n", 
+						 gnome_font_get_ps_name(tmp), abi_name));
+		
+		// else we got something we didn't ask for
+		// unref the gnome-font and try again
+		gnome_font_unref(tmp);
+		
+		char *fontname      = mapFontName(abi_name);
+		tmp = gnome_font_new_closest(fontname, gfw, italic, size);
+		
+		return tmp;
 }
-
-/***********************************************************************/
-/*      This file provides an interface into Gnome Print               */
-/***********************************************************************/
 
 XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 {
@@ -460,66 +460,37 @@ GR_Graphics::ColorSpace XAP_UnixGnomePrintGraphics::getColorSpace(void) const
 
 
 void XAP_UnixGnomePrintGraphics::drawAnyImage (GR_Image* pImg, 
-				       UT_sint32 xDest, UT_sint32 yDest, bool rgb)
+											   UT_sint32 xDest, 
+											   UT_sint32 yDest, bool rgb)
 {
 	UT_sint32 iDestWidth  = pImg->getDisplayWidth();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight();
-	
-	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
 
-	PSFatmap * image = pPSImage->getData();
-
-#if 0
-	xxx_UT_DEBUGMSG(("DOM: image data:\n"
-				 "\tiDestWidth: %d\n"
-				 "\tiDestHeight: %d\n"
-				 "\twidth: %d\n"
-				 "\theight: %d\n"
-				 "\tRGB: %d\n"
-				 "\tTranslated: (%d, %d)\n"
-				 "\tScaled = (iDestWidth, iDestHeight)\n"
-				 "\tyDest: %d displayHeight: %d\n",
-				 (int)(iDestWidth*_scale_factor_get()), // iDestWidth
-				 (int)(iDestHeight*_scale_factor_get()), // iDestHeight
-				 image->width, // width
-				 image->height, // height
-				 rgb, // rgb
-				 (int)_scale_x_dir(xDest), // translated 1
-				 (int)_scale_y_dir(yDest + pImg->getDisplayHeight()), // translated 2
-				 yDest, pImg->getDisplayHeight()));
-#endif
-
-	UT_ASSERT(image && image->data);
+	GR_UnixGnomeImage * pImage = static_cast<GR_UnixGnomeImage *>(pImg);
+	GdkPixbuf * image = pImage->getData();
+	UT_ASSERT(image);
 
 	gnome_print_gsave(m_gpc);
 	gnome_print_translate(m_gpc,
 						  _scale_x_dir(xDest),
-						  _scale_y_dir(yDest + pImg->getDisplayHeight()));
+						  _scale_y_dir(yDest + iDestHeight));
 	gnome_print_scale(m_gpc,
 			  ((double) iDestWidth)  * _scale_factor_get (),
 			  ((double) iDestHeight) * _scale_factor_get ());
-				 
-	/* 
-	 * TODO: one day support the alpha channel internally and then call
-	 * gnome_print_rgbaimage()
-	 */
-	if (rgb)
-		gnome_print_rgbimage(m_gpc, (const gchar*)image->data, image->width, 
-				     image->height, (UT_sint32) (image->width) * 3);
-	else
-		gnome_print_grayimage(m_gpc, (const gchar*)image->data, image->width, 
-				      image->height, (UT_sint32) (image->width) * 1);
+
+	gnome_print_pixbuf (m_gpc, image);
+	
 	gnome_print_grestore(m_gpc);
 }
 
 void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, 
-				   UT_sint32 yDest)
+										   UT_sint32 yDest)
 {
    	if (pImg->getType() != GR_Image::GRT_Raster) {
 	   pImg->render(this, xDest, yDest);
 	   return;
 	}
-   
+
    	switch(m_cs)
      	{
        	case GR_Graphics::GR_COLORSPACE_COLOR:
@@ -543,9 +514,9 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
 					     GR_Image::GRType iType)
 {
 	GR_Image* pImg = NULL;
-   
+
    	if (iType == GR_Image::GRT_Raster)
-     		pImg = new PS_Image(pszName);
+     		pImg = new GR_UnixGnomeImage(pszName);
    	else if (iType == GR_Image::GRT_Vector)
      		pImg = new GR_VectorImage(pszName);
    
@@ -564,7 +535,6 @@ bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
 
 bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
-		xxx_UT_DEBUGMSG(("DOM: startPage\n"));
         gnome_print_beginpage(m_gpc, szPageLabel);
 		_setup_rotation ();
 		return true;
@@ -572,8 +542,6 @@ bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 
 bool XAP_UnixGnomePrintGraphics::_endPage(void)
 {
-		xxx_UT_DEBUGMSG(("DOM: endPage\n"));
-
 	if(m_bNeedStroked)
 	  gnome_print_stroke(m_gpc);
 
@@ -583,8 +551,6 @@ bool XAP_UnixGnomePrintGraphics::_endPage(void)
 
 bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
-
-		xxx_UT_DEBUGMSG(("DOM: endDocument\n"));
 		// bonobo version, we'd don't own the context
 		// or the master, just return
 	if(!m_gpm)
@@ -616,33 +582,6 @@ UT_uint32 XAP_UnixGnomePrintGraphics::_getResolution(void) const
         return GPG_RESOLUTION;
 }
 
-
-/***********************************************************************/
-/*                    Things that souldn't happen                      */
-/***********************************************************************/
-void XAP_UnixGnomePrintGraphics::setCursor(GR_Graphics::Cursor)
-{
-        // nada
-}
-
-GR_Graphics::Cursor XAP_UnixGnomePrintGraphics::getCursor(void) const
-{
-	return GR_CURSOR_INVALID;
-}
-
-void XAP_UnixGnomePrintGraphics::xorLine(UT_sint32, UT_sint32, UT_sint32, 
-				 UT_sint32)
-{
-}
-
-void XAP_UnixGnomePrintGraphics::polyLine(UT_Point * /* pts */, 
-				  UT_uint32 /* nPoints */)
-{
-        // only used by us for printing red squiggly lines
-        // in the spell-checker
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-}
-
 void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, 
 										  UT_sint32 y, UT_sint32 w, 
 										  UT_sint32 h)
@@ -653,20 +592,16 @@ void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_sint32 x,
 								(int)(c.m_grn / 255),
 								(int)(c.m_blu / 255));
 
+#if 0
 		// adjust for the text's height
-		//y += getFontDescent () + getFontHeight();
+		y += getFontDescent () + getFontHeight();
 		
 		/* Mirror gdk which excludes the far point */
-#if 0
+
 		w -= (int)_scale_x_dir (1);
 		h -= (int)_scale_y_dir (1);
 #endif
 
-		xxx_UT_DEBUGMSG(("DOM: (w: %d) (h: %d) (x: %d) (y: %d)\n",
-						 w, h, x, y));
-
-		// Lauris says to do this: 
-		// newpath + moveto + lineto + lineto + lineto + lineto + closepath + fill
 		gnome_print_newpath (m_gpc);
 		gnome_print_moveto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y));		
 		gnome_print_lineto (m_gpc, _scale_x_dir(x+w), _scale_y_dir(y));
@@ -688,64 +623,91 @@ void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_Rect & r)
 		fillRect(c, r.left, r.top, r.width, r.height);
 }
 
-void XAP_UnixGnomePrintGraphics::invertRect(const UT_Rect* /*pRect*/)
+void XAP_UnixGnomePrintGraphics::setClipRect(const UT_Rect* pRect)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		// TODO: gnome_print_clip()
+		// useful for clipping images and other objects
 }
 
-void XAP_UnixGnomePrintGraphics::setClipRect(const UT_Rect* /*pRect*/)
+/***********************************************************************/
+/*                    Things that souldn't happen                      */
+/***********************************************************************/
+void XAP_UnixGnomePrintGraphics::setCursor(GR_Graphics::Cursor)
 {
-        // can ps print this?
+        // nada
+}
+
+GR_Graphics::Cursor XAP_UnixGnomePrintGraphics::getCursor(void) const
+{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return GR_CURSOR_INVALID;
+}
+
+void XAP_UnixGnomePrintGraphics::xorLine(UT_sint32, UT_sint32, UT_sint32, 
+										 UT_sint32)
+{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+void XAP_UnixGnomePrintGraphics::polyLine(UT_Point * /* pts */, 
+										  UT_uint32 /* nPoints */)
+{
+        // only used by us for printing red squiggly lines
+        // in the spell-checker
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+void XAP_UnixGnomePrintGraphics::invertRect(const UT_Rect* /*pRect*/)
+{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 void XAP_UnixGnomePrintGraphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
-				   UT_sint32 /*width*/, UT_sint32 /*height*/)
+										   UT_sint32 /*width*/, UT_sint32 /*height*/)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 void XAP_UnixGnomePrintGraphics::scroll(UT_sint32, UT_sint32)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 void XAP_UnixGnomePrintGraphics::scroll(UT_sint32 /* x_dest */,
-				UT_sint32 /* y_dest */,
-				UT_sint32 /* x_src */,
-				UT_sint32 /* y_src */,
-				UT_sint32 /* width */,
-				UT_sint32 /* height */)
+										UT_sint32 /* y_dest */,
+										UT_sint32 /* x_src */,
+										UT_sint32 /* y_src */,
+										UT_sint32 /* width */,
+										UT_sint32 /* height */)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 UT_RGBColor * XAP_UnixGnomePrintGraphics::getColor3D(GR_Color3D /*c*/)
 {
         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return NULL;
+		return NULL;
 }
 
 void XAP_UnixGnomePrintGraphics::setColor3D(GR_Color3D /*c*/)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 GR_Font* XAP_UnixGnomePrintGraphics::getGUIFont()
 {
         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return NULL;
+		return NULL;
 }
 
 void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-		// nada
-		xxx_UT_DEBUGMSG(("DOM: FILLRECT3D\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
-		// nada
-		xxx_UT_DEBUGMSG(("DOM: FILLRECT3D\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 
