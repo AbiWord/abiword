@@ -135,10 +135,16 @@
 #define HAVE_SYS_PARAM_H 1
 
 /* Define if you have the <unistd.h> header file.  */
+#ifndef WIN32
 #define HAVE_UNISTD_H 1
+#endif
 
 /* Define if you have the <values.h> header file.  */
 #define HAVE_VALUES_H 1
+
+#ifdef WIN32
+#define snprintf _snprintf
+#endif /* WIN32 */
 
 /* Define if you have the i library (-li).  */
 /* #undef HAVE_LIBI */
