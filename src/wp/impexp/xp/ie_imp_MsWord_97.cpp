@@ -1600,7 +1600,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  k = ps->lfo[i].clfolvl;
 
 	  // if there are any overrides, then see if one of them applies to this level
-	  if(k)
+	  if(k && ps->lfolvl)
 		{
 		  i = 0;
 		  while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
