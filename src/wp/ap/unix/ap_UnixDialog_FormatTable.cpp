@@ -418,7 +418,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 	gtk_widget_show(hboxBackgroundColorLabel);
 	gtk_box_pack_start (GTK_BOX (vboxBackgroundColorStyle), hboxBackgroundColorLabel, FALSE, TRUE, 6);
 
-	labelBackgroundColor = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Border_Color).c_str());
+	labelBackgroundColor = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Background_Color).c_str());
 	gtk_widget_show(labelBackgroundColor);
 	gtk_box_pack_start (GTK_BOX (hboxBackgroundColorLabel), labelBackgroundColor, FALSE, FALSE, 0);
 
