@@ -343,6 +343,9 @@ ABI_ZLIB
 dnl check for libpng.
 ABI_LIBPNG
 
+dnl check for MathView
+ABI_MATHVIEW
+
 dnl check for popt.
 ABI_POPT
 
@@ -519,6 +522,7 @@ cat <<EOF
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
   spelling:        ${abi_spell_message}
+  MathView:        ${abi_mathview_message}
 
 EOF
 
