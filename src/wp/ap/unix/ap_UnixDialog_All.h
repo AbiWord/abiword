@@ -169,6 +169,8 @@
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixGnomeDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixGnomeDialog_InsertBookmark)
      DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixGnomeDialog_Image)
+     DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
+     DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
      // ... also add new dialogs here ...
 #   else
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
@@ -218,7 +220,7 @@
      DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixDialog_Image)
      DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData)
      DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
-     DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_ListRevisions)
+     DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
  	// ... also add new dialogs here ...
 #   endif
 

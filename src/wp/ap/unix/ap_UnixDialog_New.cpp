@@ -66,23 +66,21 @@ AP_UnixDialog_New::~AP_UnixDialog_New(void)
 
 void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 
 	m_pFrame = pFrame;
 	
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
 	
 	connectFocus(GTK_WIDGET(mainWindow),pFrame);
 
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
 	
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
+	UT_return_if_fail(parentWindow);
 	
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
@@ -419,7 +417,7 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_clist_select_row (GTK_CLIST (choicesList), 0, 0);
 
 	// connect the select_row signal to the clist
-	g_signal_connect (G_OBJECT (choicesList), "select_row",
+	g_signal_connect (G_OBJECT (choicesList), "select-row",
 			    G_CALLBACK (s_clist_clicked), (gpointer)this);
 
 	// TODO? Put clist inside of scrolled window
