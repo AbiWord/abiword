@@ -486,7 +486,31 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 		}
 	}
 
-	UT_ASSERT(pClosestRun);
+	// if we do not have a closest run by now, then all the content of
+	// this line is hidden; the only circumstance under which this
+	// should be legal is if this is a last line in a paragraph and
+	// this is the only paragraph in the document, in which case we
+	// will use the EndOfParagraph run
+	// However, for now we will allow this for all last lines in a
+	// paragraph, whether it is the only one in the doc or not, since
+	// hidden paragraphs need to be handled elsewhere
+	
+	if(!pClosestRun)
+	{
+		pClosestRun = getLastVisRun();
+
+		if(pClosestRun && pClosestRun->getType() == FPRUN_ENDOFPARAGRAPH)
+		{
+			UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
+			pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
+			return;
+		}
+		
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		pos = 2; // start of document; this is just to avoid crashing
+		return;
+	}
+	
 
 	UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
 	if(pClosestRun->isField())
@@ -1060,7 +1084,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.pG = pG;
 	da.bDirtyRunsOnly = true; //magic line to give a factor 2 speed up!
 	const UT_Rect* pRect = pG->getClipRect();
-		
+
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
 

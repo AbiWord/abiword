@@ -312,7 +312,7 @@ bool FV_View::_getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint3
 	else
 	{
 		return false;
-	}	
+	}
 	m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&pszBot);
 	if(pszBot && *pszBot)
 	{
@@ -349,7 +349,7 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 		return false;
 	}
 //
-// check that this 
+// check that this
 //
 
 //
@@ -368,7 +368,7 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 
 
 /*!
- * This method changes the coordinates of the cell at (row,col) in the table specified by 
+ * This method changes the coordinates of the cell at (row,col) in the table specified by
  * posTable to the cordinates specified.
  */
 bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
@@ -407,8 +407,8 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
 
 
 /*!
- * This method inserts the cell before the coordinates of the cell at (row,col) in the table 
- * specified by 
+ * This method inserts the cell before the coordinates of the cell at (row,col) in the table
+ * specified by
  * posTable at the cordinates specified.
  */
 bool FV_View::_insertCellBefore(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
@@ -467,8 +467,8 @@ bool FV_View::_insertCellBefore(PT_DocPosition posTable, UT_sint32 rowold, UT_si
 
 
 /*!
- * This method inserts the cell after the coordinates of the cell at (row,col) in the table 
- * specified by 
+ * This method inserts the cell after the coordinates of the cell at (row,col) in the table
+ * specified by
  * posTable at the cordinates specified.
  */
 bool FV_View::_insertCellAfter(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
@@ -2249,9 +2249,11 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	bool bDone = false;
 	bool bIsDirty = false;
 	fp_Run* pCurRun = pRun1;
+	bool bShowHidden = getShowPara();
 
 	while ((!bDone || bIsDirty) && pCurRun)
 	{
+
 		if (pCurRun == pRun2)
 		{
 			bDone = true;
@@ -2260,20 +2262,27 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		fl_BlockLayout* pBlock = pCurRun->getBlock();
 		UT_ASSERT(pBlock);
 
-		fp_Line* pLine = pCurRun->getLine();
-		if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
+		FPVisibility eHidden  = pCurRun->isHidden();
+		if(!((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		   || eHidden == FP_HIDDEN_REVISION
+		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT))
 		{
-			return;
+
+			fp_Line* pLine = pCurRun->getLine();
+			if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
+			{
+				return;
+			}
+			pLine->getScreenOffsets(pCurRun, xoff, yoff);
+
+			dg_DrawArgs da;
+
+			da.pG = m_pG;
+			da.xoff = xoff;
+			da.yoff = yoff + pLine->getAscent();
+
+			pCurRun->draw(&da);
 		}
-		pLine->getScreenOffsets(pCurRun, xoff, yoff);
-
-		dg_DrawArgs da;
-
-		da.pG = m_pG;
-		da.xoff = xoff;
-		da.yoff = yoff + pLine->getAscent();
-
-		pCurRun->draw(&da);
 
 		pCurRun = pCurRun->getNext();
 		if (!pCurRun)
@@ -2286,6 +2295,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 				pCurRun = pNextBlock->getFirstRun();
 			}
 		}
+
 		if (!pCurRun)
 		{
 			bIsDirty = false;
@@ -3228,8 +3238,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 //
 // FIXME: Put in some code here to handle table/cell boundaries. Right
 // now you have to press left arrow twice to move form outside to inside
-// a table. The comment in find 
-		}			
+// a table. The comment in find
+		}
 	}
 
 	// this is much simpler, since the findPointCoords will return the
