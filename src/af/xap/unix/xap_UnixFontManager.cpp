@@ -337,6 +337,62 @@ XAP_UnixFont* XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f)
 	return m_f[f].getFont();
 }
 
+// Internal function to force loading of a synthesized font
+static XAP_UnixFont* forceFontSynth(XAP_UnixFontManager* pFontManager,
+									const char* pszFontFamily,
+									const char* pszFontStyle,
+									const char* /* pszFontVariant */,
+									const char* pszFontWeight,
+									const char* /* pszFontStretch */,
+									const char* pszFontSize)
+{
+  const char *pszFontSlant = (!UT_stricmp("italic", pszFontStyle)? "100":
+							  !UT_stricmp("oblique", pszFontStyle)? "110":
+							  "0");
+  XAP_UnixFont::style xap_pszFontStyle = XAP_UnixFont::STYLE_NORMAL;
+
+  if (!UT_stricmp("italic", pszFontStyle) || !UT_stricmp("oblique", pszFontStyle)) {
+	  if (!UT_stricmp("bold", pszFontWeight)) {
+		  xap_pszFontStyle = XAP_UnixFont::STYLE_BOLD_ITALIC;
+	  }
+	  else {
+		  xap_pszFontStyle = XAP_UnixFont::STYLE_ITALIC;
+	  }
+  } else if (!UT_stricmp("bold", pszFontWeight)) {
+	  xap_pszFontStyle = XAP_UnixFont::STYLE_BOLD;
+  }
+
+  UT_DEBUGMSG(("Attempting to cache synth [%s, %s] style for font [%s]\n",
+			   pszFontWeight,pszFontStyle,pszFontFamily));
+  XAP_UnixFont* pNewFont = pFontManager->findNearestFont(pszFontFamily, NULL,
+														 NULL, NULL, NULL,
+														 pszFontSize);
+  if(pNewFont){
+    if(!(pNewFont->getFontfile())){
+      UT_DEBUGMSG(("No font file found!  ABORT ABORT ABORT!"));
+      return NULL;
+    }
+    UT_String pFontFile (pNewFont->getFontfile());
+	UT_String pMetricFile (pNewFont->getMetricfile());
+
+    pNewFont->setStyle(xap_pszFontStyle);
+    UT_String newFontXLFD(pszFontFamily);
+    newFontXLFD += ":slant=";
+    newFontXLFD += pszFontSlant;
+    newFontXLFD += ":weight=";
+    newFontXLFD += pszFontWeight;
+    newFontXLFD += ":size=";
+    newFontXLFD += pszFontSize;
+    UT_DEBUGMSG(("XLFD is [%s]\n",newFontXLFD.c_str()));
+    pNewFont->openFileAs(pFontFile.c_str(), pMetricFile.c_str(),
+						 pszFontFamily, newFontXLFD.c_str(),
+						 xap_pszFontStyle);
+    
+  }	
+
+  return pNewFont;
+}
+
 /* everybody seems to ignore variant and stretch...
    In the future, we may switch to something as PANOSE
    to find similar fonts.  By now, I will just leave
@@ -392,12 +448,49 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 	// We use a static buffer because this function gets called a lot.
 	// Doing an allocation is really slow on many machines.
 	static char keyBuffer[512];
-	g_snprintf(keyBuffer, 512, "%s@%d", pszFontFamily, pszFontStyle);
+	g_snprintf(keyBuffer, 512, "%s@%s", pszFontFamily, pszFontStyle);
 	UT_upperString(keyBuffer);
 		
 	// find the font the hard way
-	XAP_UnixFont * pFont = searchFont(st.c_str());
+	XAP_UnixFont *pFont = searchFont(st.c_str());
+
+	// If the font doesn't exist, try to load a synthesized version
+	if(!pFont){
+	  UT_DEBUGMSG(("The font does not exist!\n"));
+	  pFont = forceFontSynth(pFontManager, pszFontFamily, pszFontStyle, NULL, pszFontWeight,
+							 NULL, pszFontSize);
+	}
 	
+	// If the font still doesn't exist, search for possible alternatives
+	// Because of the recursive nature of this call, this should cover most font variants.
+	  if(!pFont){
+	    UT_DEBUGMSG(("The font still does not exist after synthesization!\n"));
+	    if ((!UT_stricmp(pszFontStyle, "italic") || !UT_stricmp(pszFontStyle, "oblique"))
+		&& !UT_stricmp(pszFontWeight, "bold")){
+	      pFont = findNearestFont(pszFontFamily, "normal",
+				      NULL, pszFontWeight,
+				      NULL, pszFontSize);
+	      if (pFont && (pFont->getStyle() == XAP_UnixFont::STYLE_NORMAL)){
+		pFont = findNearestFont(pszFontFamily, pszFontStyle,
+					NULL, "normal",
+					NULL, pszFontSize);
+	      }
+	    } else if (!UT_stricmp(pszFontStyle, "italic") || !UT_stricmp(pszFontStyle, "oblique")){
+	      pFont = findNearestFont(pszFontFamily, "normal",
+				      NULL, pszFontWeight,
+				      NULL, pszFontSize);
+	    } else if (!UT_stricmp(pszFontWeight, "bold")){
+	      pFont = findNearestFont(pszFontFamily, pszFontStyle,
+				      NULL, "normal",
+				      NULL, pszFontSize);
+	    } else {
+	      UT_DEBUGMSG(("No Such Font!\n"));
+	      pFont = findNearestFont("Times", "normal",
+				      NULL, "normal",
+				      NULL, pszFontSize);    
+	    }
+	  }
+  
 	return pFont;
 }
 
@@ -437,6 +530,5 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 	   unconditionally.
 	*/
 
-	m_fontHash.insert(fontkey,
-					  static_cast<void *>(newfont));
+	m_fontHash.insert(fontkey, static_cast<void *>(newfont));
 }
