@@ -1531,21 +1531,16 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
 
 		m_draggingCenter = _snapPixelToGrid(x, tick);
-		if(m_draggingCenter < xAbsLeft)
+
+        UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
+        UT_sint32 iAbsRight = iAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+        UT_sint32 iIndentShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
+        UT_sint32 iRightIndentPos = iAbsRight - UT_MAX(0,m_infoCache.m_xrRightIndent) - iIndentShift;
+        if(iRightIndentPos - m_draggingCenter < m_minColumnWidth)
 		{
-			// don't drag off the page.
-			m_draggingCenter = xAbsLeft;
+            m_draggingCenter = iRightIndentPos - m_minColumnWidth;
 		}
-		if(m_draggingCenter + m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent < xAbsLeft)
-		{
-			// don't drag first line indent off page.
-			m_draggingCenter = xAbsLeft - m_infoCache.m_xrLeftIndent - m_infoCache.m_xrFirstLineIndent;
-		}
-		if(m_draggingCenter + m_infoCache.m_xrLeftIndent < xAbsLeft)
-		{
-			// don't drag left indent off page.
-			m_draggingCenter = xAbsLeft - m_infoCache.m_xrLeftIndent;
-		}
+
 		if(m_draggingCenter == oldDragCenter)
 		{
 			// Position not changing so finish here.
@@ -1601,10 +1596,15 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 
 		m_draggingCenter = _snapPixelToGrid(x, tick);
-		if(m_draggingCenter > xAbsRight)
+
+        UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
+        UT_sint32 iAbsRight = iAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+        UT_sint32 iLeftIndentPos = iAbsLeft + UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent)) + UT_MAX(0,m_infoCache.m_xrRightIndent);
+        if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
 		{
-			m_draggingCenter = xAbsRight;
+            m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
 		}
+
 		if(m_draggingCenter == oldDragCenter)
 		{
 			// Position not changing so finish here.
@@ -1717,6 +1717,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xAbsLeft + xgrid;
+
+            UT_sint32 iRightPos = m_infoCache.u.c.m_xColumnWidth + xAbsLeft - m_infoCache.m_xrRightIndent;
+            if(iRightPos - m_draggingCenter < m_minColumnWidth)
+            {
+                m_draggingCenter = iRightPos - m_minColumnWidth;
+            }
+
 			_getParagraphMarkerRects(&m_infoCache,m_draggingCenter,0,0,&m_draggingRect,NULL,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
@@ -1754,6 +1761,15 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_Rect oldDragging2Rect = m_dragging2Rect;
 			m_draggingCenter  = xAbsLeft + xgrid;
 			m_dragging2Center = xAbsLeft + xgridTagAlong;
+
+            UT_sint32 iFirstIndentShift = UT_MAX(0,m_infoCache.m_xrFirstLineIndent);
+            UT_sint32 iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent - iFirstIndentShift;
+            if(iRightIndentPos - m_draggingCenter < m_minColumnWidth)
+            {
+                m_draggingCenter = iRightIndentPos - m_minColumnWidth;
+                m_dragging2Center = m_draggingCenter + xgridTagAlong - xgrid;
+            }
+
 			_getParagraphMarkerRects(&m_infoCache,
 									 m_draggingCenter,0,m_dragging2Center,
 									 &m_draggingRect,NULL,&m_dragging2Rect);
@@ -1785,6 +1801,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xAbsRight - xgrid;
+
+            UT_sint32 iLeftIndentPos = xAbsLeft + UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent);
+            if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
+            {
+                m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
+            }
+
 			_getParagraphMarkerRects(&m_infoCache,0,m_draggingCenter,0,NULL,&m_draggingRect,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
@@ -1814,6 +1837,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xAbsLeft + m_infoCache.m_xrLeftIndent + xgrid;
+
+            UT_sint32 iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent;
+            if(iRightIndentPos - m_draggingCenter  < m_minColumnWidth)
+            {
+                m_draggingCenter = iRightIndentPos - m_minColumnWidth;
+            }
+
 			_getParagraphMarkerRects(&m_infoCache,0,0,m_draggingCenter,NULL,NULL,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);

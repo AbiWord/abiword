@@ -307,7 +307,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			UT_ASSERT(iPosLen < sizeof pszPosition);
 
 			memcpy(pszPosition, pStart, iPosLen);
-			pszPosition[i] = 0;
+            pszPosition[iPosLen] = 0;
 
 			iPosition = pG->convertDimension(pszPosition);
 
