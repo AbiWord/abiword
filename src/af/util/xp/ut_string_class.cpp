@@ -845,6 +845,21 @@ bool operator==(const UT_UTF8String& s1, const UT_UTF8String& s2)
 	return strcmp(s1.utf8_str(), s2.utf8_str()) == 0;
 }
 
+bool operator!=(const UT_UTF8String& s1, const UT_UTF8String& s2)
+{
+	return strcmp(s1.utf8_str(), s2.utf8_str()) != 0;
+}
+
+bool operator==(const UT_UTF8String& s1, const char * s2)
+{
+	return s2 ? (strcmp(s1.utf8_str(), s2) == 0) : false;
+}
+
+bool operator!=(const UT_UTF8String& s1, const char * s2)
+{
+	return s2 ? (strcmp(s1.utf8_str(), s2) != 0) : true;
+}
+
 UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
 {
 	UT_UTF8String s(s1);

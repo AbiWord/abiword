@@ -31,6 +31,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_exception.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -303,33 +304,50 @@ static UT_UTF8String s_string_to_url (UT_String & str)
 	return url;
 }
 
+static const char * s_prop_list[] = {
+	"background-color",	"transparent",
+	"color",			0,
+	"font-family",		0,
+	"font-size",		"medium",
+	"font-style",		"normal",
+	"font-variant",		"normal",
+	"font-weight",		"normal",
+	"height",			"auto",
+	"margin-bottom",	"0pt",
+	"margin-left",		"0pt",
+	"margin-right",		"0pt",
+	"margin-top",		"0pt",
+	"orphans",			"2",
+	"text-align",		0,
+	"text-decoration",	"none",
+	"text-indent",		"0in",
+	"vertical-align",	"baseline",
+	"widows",			"2",
+	"width"				"auto",
+};
+static UT_uint32 s_PropListLen = sizeof s_prop_list / sizeof (char *);
+
 /*!	This function returns true if the given property is a valid CSS
 	property.  It is based on the list in pp_Property.cpp, and, as such,
 	is quite brittle.
+
+    prop_default may be zero on return, indicating that the default is not fixed
  */
-static bool is_CSS (const char* property)
+static bool is_CSS (const char * prop_name, const char ** prop_default = 0)
 {
-	static const char * prop_list [] = {"background-color", "color", 
-										"font-family", "font-size", 
-										"font-stretch", "font-style", 
-										"font-variant", "font-weight",
-										"height", "margin-bottom", 
-										"margin-left", "margin-right",
-										"margin-top",
-										"orphans", "text-align", 
-										"text-decoration", "text-indent",
-										"widows", "width"};
+	if ( prop_name == 0) return false;
+	if (*prop_name == 0) return false;
 
-	#define PropListLen sizeof(prop_list)/sizeof(prop_list[0])
+	bool bCSS = false;
 
-	for (UT_uint32 i = 0; i < PropListLen; i++) 
-	{
-		if (!UT_strcmp (property, prop_list[i]))
-			return true;
-	}
-	return false;
-
-	#undef PropListLen
+	for (UT_uint32 i = 0; i < s_PropListLen; i += 2)
+		if (!UT_strcmp (prop_name, s_prop_list[i]))
+			{
+				if (prop_default) *prop_default = s_prop_list[i+1];
+				bCSS = true;
+				break;
+			}
+	return bCSS;
 }
 
 /*!	This function copies a string to a new string, removing all the white
@@ -346,11 +364,15 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str)
 			const char * ptr = text;
 			while (*ptr)
 				{
-					if (!isspace ((int) ((unsigned char) *ptr)))
+					if (isspace ((int) ((unsigned char) *ptr)))
+						{
+							buf[0] = '_';
+						}
+					else
 						{
 							buf[0] = *ptr;
-							utf8str += buf;
 						}
+					utf8str += buf;
 					ptr++;
 				}
 		}
@@ -370,6 +392,56 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str)
 #define BT_PLAINTEXT	6
 #define BT_NUMBEREDLIST	7
 #define BT_BULLETLIST	8
+
+class s_HTML_Listener;
+
+class s_StyleTree
+{
+private:
+	s_StyleTree *	m_parent;
+	s_StyleTree **	m_list;
+
+	UT_uint32		m_count;
+	UT_uint32		m_max;
+
+	UT_UTF8String	m_style_name;
+	UT_UTF8String	m_class_name;
+	UT_UTF8String	m_class_list;
+
+	PD_Style *		m_style;
+
+	UT_StringPtrMap	m_map;
+
+	s_StyleTree (s_StyleTree * parent, const char * name, PD_Style * style);
+public:
+	s_StyleTree ();
+
+	~s_StyleTree ();
+
+private:
+	bool add (const char * style_name, PD_Style * style);
+public:
+	bool add (const char * style_name, PD_Document * pDoc);
+
+	const s_StyleTree * find (const char * style_name) const;
+	const s_StyleTree * find (PD_Style * style) const;
+
+	bool descends (const char * style_name) const;
+
+	void print (s_HTML_Listener * listener) const;
+
+	const s_StyleTree * operator[] (UT_uint32 i) const
+	{
+		return (i < m_count) ? m_list[i] : 0;
+	}
+	UT_uint32 count () const { return m_count; }
+
+	UT_UTF8String style_name () const { return m_style_name; }
+	UT_UTF8String class_name () const { return m_class_name; }
+	UT_UTF8String class_list () const { return m_class_list; }
+
+	const char * lookup (const char * prop_name) const;
+};
 
 class s_HTML_Listener : public PL_Listener
 {
@@ -405,6 +477,7 @@ private:
 	bool 	_openStyleSheet (UT_UTF8String & css_path);
 	void 	_closeStyleSheet ();
 	void	_outputStyles (const PP_AttrProp * pAP);
+	void	_buildStyleTree ();
 	void	_openSection (PT_AttrPropIndex api);
 	void	_closeSection (void);
 
@@ -506,9 +579,11 @@ private:
 	void			tagCommentOpen ();
 	void			tagCommentClose ();
 	void			styleIndent ();
+public:
 	void			styleOpen (const UT_UTF8String & rule);
 	void			styleClose ();
 	void			styleNameValue (const char * name, const UT_UTF8String & value);
+private:
 	void			styleText (const UT_UTF8String & content);
 	void			textTrusted (const UT_UTF8String & text);
 	void			textUntrusted (const char * text);
@@ -568,7 +643,12 @@ private:
 	UT_StringPtrMap	m_BodyStyle;
 	UT_StringPtrMap	m_BlockStyle;
 	UT_StringPtrMap	m_SavedURLs;
+
+	s_StyleTree		m_style_tree;
 };
+
+/*****************************************************************/
+/*****************************************************************/
 
 const char * s_HTML_Listener::bodyStyle (const char * key)
 {
@@ -1134,6 +1214,8 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	_handleMeta ();
 #endif
 
+	_buildStyleTree ();
+
 	if (!get_PHTML ())
 		{
 			const PP_AttrProp * pAP = 0;
@@ -1402,6 +1484,19 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 #endif /* HTML_TABLES_SUPPORTED */
 		}
 
+	m_style_tree.print (this);
+
+	if (get_Embed_CSS ())
+		{
+			tagCommentClose ();
+			m_utf8_1 = "style";
+			tagClose (TT_STYLE, m_utf8_1);
+		}
+	else _closeStyleSheet ();
+}
+
+void s_HTML_Listener::_buildStyleTree ()
+{
 	const PD_Style * p_pds = 0;
 	const XML_Char * szStyleName = 0;
 
@@ -1416,105 +1511,9 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 
 			if (bHaveProp && pAP_style && p_pds->isUsed ())
 				{
-					s_removeWhiteSpace ((const char *) szStyleName, m_utf8_0); // careful!!
-					const char * myStyleName = m_utf8_0.utf8_str ();
-
-					if (UT_strcmp (myStyleName, "Heading1") == 0)
-						{
-							m_utf8_1 = "h1, .";
-						}
-					else if (UT_strcmp (myStyleName, "Heading2") == 0)
-						{
-							m_utf8_1 = "h2, .";
-						}
-					else if (UT_strcmp (myStyleName, "Heading3") == 0)
-						{
-							m_utf8_1 = "h3, .";
-						}
-					else if (UT_strcmp (myStyleName, "BlockText") == 0)
-						{
-							m_utf8_1 = "blockquote, .";
-						}
-					else if (UT_strcmp (myStyleName, "PlainText") == 0)
-						{
-							m_utf8_1 = "pre, .";
-						}
-					else if (UT_strcmp (myStyleName, "Normal") == 0)
-						{
-							m_utf8_1 = "p, .";
-						}
-					else m_utf8_1 = ".";
-
-					m_utf8_1 += m_utf8_0; // i.e., += myStyleName
-
-					styleOpen (m_utf8_1);
-
-					UT_uint32 i = 0;
-					UT_uint32 j = 0;
-
-					while (pAP_style->getNthAttribute (i++, szName, szValue))
-						{
-							if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
-
-							/* see line 770 of this file for reasoning behind skipping here:
-							 * [winner of the Nov.'02 "Comment of the Month" Award]
-							 */
-							if (strstr (szName, "margin") || !UT_strcmp (szName, "text-indent"))
-								if (strstr (myStyleName, "List"))
-									continue;
-				
-							m_utf8_1 = (const char *) szValue;
-							styleNameValue (szName, m_utf8_1);
-						}
-					while (pAP_style->getNthProperty (j++, szName, szValue))
-						{
-							if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
-
-							/* see line 770 of this file for reasoning behind skipping here:
-							 */
-							if (strstr (szName, "margin") || !UT_strcmp (szName, "text-indent"))
-								if (strstr (myStyleName, "List"))
-									continue;
-				
-							if (UT_strcmp (szName, "font-family") == 0)
-								{
-									if ((UT_strcmp (szValue, "serif")      == 0) ||
-										(UT_strcmp (szValue, "sans-serif") == 0) ||
-										(UT_strcmp (szValue, "cursive")    == 0) ||
-										(UT_strcmp (szValue, "fantasy")    == 0) ||
-										(UT_strcmp (szValue, "monospace")  == 0))
-										{
-											m_utf8_1 = (const char *) szValue;
-										}
-									else
-										{
-											m_utf8_1  = "'";
-											m_utf8_1 += (const char *) szValue;
-											m_utf8_1 += "'";
-										}
-								}
-							else if (UT_strcmp (szName, "color") == 0)
-								{
-									if (IS_TRANSPARENT_COLOR (szValue)) continue;
-
-									m_utf8_1  = "#";
-									m_utf8_1 += (const char *) szValue;
-								}
-							else m_utf8_1 = (const char *) szValue;
-
-							styleNameValue (szName, m_utf8_1);
-						}
-					styleClose (); // end of: ?, .? { }
+					m_style_tree.add (szStyleName, m_pDocument);
 				}
 		}
-
-	if (get_Embed_CSS ())
-		{
-			tagCommentClose ();
-			m_utf8_1 = "style";
-			tagClose (TT_STYLE, m_utf8_1);
-		}
-	else _closeStyleSheet ();
 }
 
 void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
@@ -2141,7 +2140,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			if (m_bInTList) tlistPop ();
 			listPopToDepth (0);
 
-			bool bAddInheritance = false;
+			const s_StyleTree * tree = m_style_tree.find (szValue);
 
 			bool bAddAWMLStyle = false;
 			if (get_Allow_AWML () && !get_HTML4 ()) bAddAWMLStyle = true;
@@ -2153,7 +2152,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_H1;
 					tagPending = true;
 					m_utf8_1 = "h1";
-					if (UT_strcmp ((const char *) szValue, "Heading 1") == 0) bAddAWMLStyle = false;
+					if (UT_strcmp ((const char *) szValue, "Heading 1") == 0)
+						bAddAWMLStyle = false;
 				}
 			else if ((UT_strcmp ((const char *) szValue, "Heading 2") == 0) ||
 					 (UT_strcmp ((const char *) szValue, "Numbered Heading 2") == 0))
@@ -2162,7 +2162,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_H2;
 					tagPending = true;
 					m_utf8_1 = "h2";
-					if (UT_strcmp ((const char *) szValue, "Heading 2") == 0) bAddAWMLStyle = false;
+					if (UT_strcmp ((const char *) szValue, "Heading 2") == 0)
+						bAddAWMLStyle = false;
 				}
 			else if ((UT_strcmp ((const char *) szValue, "Heading 3") == 0) ||
 					 (UT_strcmp ((const char *) szValue, "Numbered Heading 3") == 0))
@@ -2171,7 +2172,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_H3;
 					tagPending = true;
 					m_utf8_1 = "h3";
-					if (UT_strcmp ((const char *) szValue, "Heading 3") == 0) bAddAWMLStyle = false;
+					if (UT_strcmp ((const char *) szValue, "Heading 3") == 0)
+						bAddAWMLStyle = false;
 				}
 			else if (UT_strcmp ((const char *) szValue, "Block Text") == 0)
 				{
@@ -2197,53 +2199,54 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					m_utf8_1 = "p";
 					bAddAWMLStyle = false;
 				}
-			else if (_inherits ((const char *) szValue, "Heading1"))
-				{
-					m_iBlockType = BT_HEADING1;
-					tagID = TT_H1;
-					tagPending = true;
-					m_utf8_1 = "h1";
-					bAddInheritance = true;
-				}
-			else if (_inherits ((const char *) szValue, "Heading2"))
-				{
-					m_iBlockType = BT_HEADING2;
-					tagID = TT_H2;
-					tagPending = true;
-					m_utf8_1 = "h2";
-					bAddInheritance = true;
-				}
-			else if (_inherits ((const char *) szValue, "Heading3"))
-				{
-					m_iBlockType = BT_HEADING3;
-					tagID = TT_H3;
-					tagPending = true;
-					m_utf8_1 = "h3";
-					bAddInheritance = true;
-				}
-			else if (_inherits ((const char *) szValue, "BlockText"))
-				{
-					m_iBlockType = BT_BLOCKTEXT;
-					tagID = TT_BLOCKQUOTE;
-					tagPending = true;
-					m_utf8_1 = "blockquote";
-					bAddInheritance = true;
-				}
-			else if (_inherits ((const char *) szValue, "PlainText"))
-				{
-					m_iBlockType = BT_PLAINTEXT;
-					tagID = TT_PRE;
-					tagPending = true;
-					m_utf8_1 = "pre";
-					bAddInheritance = true;
-				}
-			else if (_inherits ((const char *) szValue, "Normal"))
+			else if (tree == 0) // hmm...
 				{
 					m_iBlockType = BT_NORMAL;
 					tagID = TT_P;
 					tagPending = true;
 					m_utf8_1 = "p";
-					bAddInheritance = true;
+				}
+			else if (tree->descends ("Heading 1"))
+				{
+					m_iBlockType = BT_HEADING1;
+					tagID = TT_H1;
+					tagPending = true;
+					m_utf8_1 = "h1";
+				}
+			else if (tree->descends ("Heading 2"))
+				{
+					m_iBlockType = BT_HEADING2;
+					tagID = TT_H2;
+					tagPending = true;
+					m_utf8_1 = "h2";
+				}
+			else if (tree->descends ("Heading 3"))
+				{
+					m_iBlockType = BT_HEADING3;
+					tagID = TT_H3;
+					tagPending = true;
+					m_utf8_1 = "h3";
+				}
+			else if (tree->descends ("Block Text"))
+				{
+					m_iBlockType = BT_BLOCKTEXT;
+					tagID = TT_BLOCKQUOTE;
+					tagPending = true;
+					m_utf8_1 = "blockquote";
+				}
+			else if (tree->descends ("Plain Text"))
+				{
+					m_iBlockType = BT_PLAINTEXT;
+					tagID = TT_PRE;
+					tagPending = true;
+					m_utf8_1 = "pre";
+				}
+			else if (tree->descends ("Normal"))
+				{
+					m_iBlockType = BT_NORMAL;
+					tagID = TT_P;
+					tagPending = true;
+					m_utf8_1 = "p";
 				}
 			else
 				{
@@ -2253,10 +2256,10 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					m_utf8_1 = "p";
 				}
 
-			if (bAddInheritance)
+			if (tree)
 				{
 					m_utf8_1 += " class=\"";
-					_appendInheritanceLine ((const char*) szValue, m_utf8_1, true);
+					m_utf8_1 += tree->class_list ();
 					m_utf8_1 += "\"";
 				}
 			if (bAddAWMLStyle)
@@ -3591,6 +3594,261 @@ bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return false;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Style * style) :
+	m_parent(parent),
+	m_list(0),
+	m_count(0),
+	m_max(0),
+	m_style_name(style_name),
+	m_class_name(style_name),
+	m_class_list(style_name),
+	m_style(style)
+{
+	s_removeWhiteSpace (style_name, m_class_name);
+
+	m_class_list = m_class_name;
+
+	if (parent->class_list () != "")
+		{
+			m_class_list += " ";
+			m_class_list += parent->class_list ();
+		}
+
+	UT_uint32 j = 0;
+
+	const XML_Char * szName  = 0;
+	const XML_Char * szValue = 0;
+
+	UT_UTF8String name;
+	UT_UTF8String value;
+
+	while (style->getNthProperty (j++, szName, szValue))
+		{
+			name  = szName;
+			value = szValue;
+
+			/* map property names to CSS equivalents
+			 */
+			if (name == "text-position")
+				{
+					name = "vertical-align";
+				}
+			else if (name == "bgcolor")
+				{
+					name = "background-color";
+				}
+			else if (!is_CSS (szName)) continue;
+
+			/* map property values to CSS equivalents
+			 */
+			if (name == "font-family")
+				{
+					if (!((value == "serif") || (value == "sans-serif") ||
+						  (value == "cursive") || (value == "fantasy") || (value == "monospace")))
+						{
+							value  = "'";
+							value += szValue;
+							value += "'";
+						}
+				}
+			else if ((name == "color") || (name == "background-color"))
+				{
+					if (value != "transparent")
+						{
+							value  = "#";
+							value += szValue;
+						}
+				}
+
+			const char * cascade_value = lookup (name.utf8_str ());
+			if (cascade_value)
+				if (value == cascade_value)
+					continue;
+
+			char * copy = UT_strdup (value.utf8_str ());
+			if (copy)
+				{
+					m_map.insert (name.utf8_str (), copy);
+				}
+		}
+}
+
+s_StyleTree::s_StyleTree () :
+	m_parent(0),
+	m_list(0),
+	m_count(0),
+	m_max(0),
+	m_style_name("None"),
+	m_class_name(""),
+	m_class_list(""),
+	m_style(0)
+{
+	// 
+}
+
+s_StyleTree::~s_StyleTree ()
+{
+	for (UT_uint32 i = 0; i < m_count; i++)
+		{
+			DELETEP(m_list[i]);
+		}
+	FREEP (m_list);
+
+	if (m_parent)
+		{
+			UT_HASH_PURGEDATA (char *, &m_map, free);
+		}
+}
+
+bool s_StyleTree::add (const char * style_name, PD_Style * style)
+{
+	if (m_list == 0)
+		{
+			m_list = (s_StyleTree **) malloc (8 * sizeof (s_StyleTree *));
+			if (m_list == 0) return false;
+			m_max = 8;
+		}
+	if (m_count == m_max)
+		{
+			s_StyleTree ** more = 0;
+			more = (s_StyleTree **) realloc (m_list, (m_max + 8) * sizeof (s_StyleTree *));
+			if (more == 0) return false;
+			m_list = more;
+			m_max += 8;
+		}
+
+	s_StyleTree * tree = 0;
+
+	UT_TRY
+		{
+			tree = new s_StyleTree(this,style_name,style);
+		}
+	UT_CATCH(...)
+		{
+			tree = 0;
+		}
+	if (tree == 0) return false;
+
+	m_list[m_count++] = tree;
+
+	return true;
+}
+
+bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
+{
+	if ((pDoc == 0) || (style_name == 0) || (*style_name == 0)) return false;
+
+	if (m_parent) return m_parent->add (style_name, pDoc);
+
+	if (find (style_name)) return true;
+
+	PD_Style * style = 0;
+	pDoc->getStyle (style_name, &style);
+	if (!style) return false;
+
+	s_StyleTree * parent = 0;
+
+	PD_Style * basis = style->getBasedOn ();
+
+	if (basis)
+		{
+			parent = const_cast<s_StyleTree *>(find (basis));
+			if (parent == 0)
+				{
+					const XML_Char * basis_name = 0;
+					basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, basis_name);
+					if (!basis_name) return false;
+
+					if (!add (basis_name, pDoc)) return false;
+
+					parent = const_cast<s_StyleTree *>(find (basis));
+				}
+		}
+	else parent = this;
+
+	return parent->add (style_name, style);
+}
+
+const s_StyleTree * s_StyleTree::find (const char * style_name) const
+{
+	if (m_style_name == style_name) return this;
+
+	const s_StyleTree * tree = 0;
+
+	for (UT_uint32 i = 0; i < m_count; i++)
+		{
+			tree = m_list[i]->find (style_name);
+			if (tree) break;
+		}
+	return tree;
+}
+
+const s_StyleTree * s_StyleTree::find (PD_Style * style) const
+{
+	const XML_Char * style_name = 0;
+	style->getAttribute (PT_NAME_ATTRIBUTE_NAME, style_name);
+	if (!style_name) return false;
+
+	return find (style_name);
+}
+
+bool s_StyleTree::descends (const char * style_name) const
+{
+	if (m_parent == 0) return false;
+
+	if (m_style_name == style_name) return true;
+
+	return m_parent->descends (style_name);
+}
+
+void s_StyleTree::print (s_HTML_Listener * listener) const
+{
+	if (strstr (m_style_name.utf8_str (), "List")) return;
+
+	if (m_parent && m_map.size ())
+		{
+			UT_UTF8String selector("*.");
+			selector += m_class_name;
+			listener->styleOpen (selector);
+
+			UT_StringPtrMap::UT_Cursor _hc1(&m_map);
+
+			UT_UTF8String value = reinterpret_cast<const char *>(_hc1.first ());
+			while (_hc1.is_valid ())
+				{
+					listener->styleNameValue (_hc1.key().c_str (), value);
+
+					value = reinterpret_cast<const char *>(_hc1.next ());
+				}
+
+			listener->styleClose ();
+		}
+	for (UT_uint32 i = 0; i < m_count; i++)
+		{
+			m_list[i]->print (listener);
+		}
+}
+
+const char * s_StyleTree::lookup (const char * prop_name) const
+{
+	const char * prop_value = 0;
+
+	if (m_parent)
+		{
+			const void * vptr = m_map.pick (prop_name);
+			if (vptr)
+				prop_value = reinterpret_cast<const char *>(vptr);
+			else
+				prop_value = m_parent->lookup (prop_name);
+		}
+	else is_CSS (prop_name, &prop_value); // get default value (if any) for CSS property
+
+	return prop_value;
 }
 
 /*****************************************************************/

@@ -39,7 +39,7 @@
 
 /* Define if the [P/X]HTML export options dialog is implemented
  */
-/* #undef HTML_DIALOG_OPTIONS */
+#define HTML_DIALOG_OPTIONS
 
 /* Define if the tables are supported
  */

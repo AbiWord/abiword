@@ -2012,6 +2012,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		_restorePieceTableState();
 		return true; // do nothing.
 	}
+	pStyle->used (1);
 //
 // Get This info before it's lost from the following processing
 //

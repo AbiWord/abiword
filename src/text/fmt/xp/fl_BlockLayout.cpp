@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
@@ -176,7 +178,14 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	UT_ASSERT(m_pDoc);
 	setAttrPropIndex(indexAP);
 
-	if(m_szStyle != NULL)
+	const PP_AttrProp * pAP = 0;
+	bool bHaveAP = getAttrProp (&pAP);
+
+	if (!pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
+		{
+			m_szStyle = NULL;
+		}
+	if (m_szStyle != NULL)
 	{
 		PD_Style * pStyle = NULL;
 		m_pDoc->getStyle((const char*) m_szStyle, &pStyle);

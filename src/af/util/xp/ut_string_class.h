@@ -249,6 +249,9 @@ private:
 };
 
 ABI_EXPORT bool operator==(const UT_UTF8String& s1, const UT_UTF8String& s2);
+ABI_EXPORT bool operator!=(const UT_UTF8String& s1, const UT_UTF8String& s2);
+ABI_EXPORT bool operator==(const UT_UTF8String& s1, const char * s2);
+ABI_EXPORT bool operator!=(const UT_UTF8String& s1, const char * s2);
 ABI_EXPORT UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
 ABI_EXPORT UT_UTF8String UT_UTF8String_sprintf(const char * inFormat, ...);
 ABI_EXPORT UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inFormat, ...);
