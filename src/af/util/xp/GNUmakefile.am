@@ -23,8 +23,18 @@ INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
 noinst_LIBRARIES = libUtil_xp.a
 
 if SCRIPT
+SCRIPT_OBJ=ut_PerlBindings.cpp
+else
+SCRIPT_OBJ=
+endif
+
+if HAVE_EXPAT
+XML_OBJ=ut_xml_expat.cpp
+else
+XML_OBJ=ut_xml_libxml2.cpp
+endif
+
 libUtil_xp_a_SOURCES=\
-	ut_PerlBindings.cpp	\
 	ut_AdobeEncoding.cpp 	\
 	ut_allocator.cpp	\
 	ut_base64.cpp		\
@@ -63,47 +73,7 @@ libUtil_xp_a_SOURCES=\
 	ut_Encoding.cpp		\
 	ut_iconv.cpp		\
 	ut_rand.cpp		\
+	$(XML_OBJ)		\
+	$(SCRIPT_OBJ)		\
 	ut_xml.cpp
-else
-libUtil_xp_a_SOURCES=\
-	ut_AdobeEncoding.cpp 	\
-	ut_base64.cpp		\
-	ut_allocator.cpp	\
-	ut_AbiObject.cpp	\
-	ut_base64_TestRoutines.cpp	\
-	ut_bytebuf.cpp		\
-	ut_contextGlyph.cpp	\
-	ut_growbuf.cpp		\
-	ut_hash.cpp		\
-	ut_Language.cpp		\
-	ut_map.cpp		\
-	ut_math.cpp		\
-	ut_mbtowc.cpp		\
-	ut_misc.cpp		\
-	ut_mutex.cpp		\
-	ut_png.cpp		\
-	ut_svg.cpp		\
-	ut_rbtree.cpp	\
-	ut_Script.cpp		\
-	ut_set.cpp		\
-	ut_stack.cpp		\
-	ut_string.cpp		\
-	ut_string_class.cpp	\
-	ut_stringbuf.cpp	\
-	ut_test.cpp		\
-	ut_timer.cpp		\
-	ut_types.cpp		\
-	ut_worker.cpp		\
-	ut_idle.cpp		\
-	ut_units.cpp		\
-	ut_vector.cpp		\
-	ut_wctomb.cpp		\
-	ut_OverstrikingChars.cpp \
-	ut_pair.cpp		\
-	ut_bijection.cpp	\
-	ut_Encoding.cpp		\
-	ut_iconv.cpp		\
-	ut_rand.cpp		\
-	ut_xml.cpp
-endif
 

@@ -32,18 +32,18 @@ class UT_MutexAcquirer;
  */
 class UT_Mutex
 {
-  friend class UT_MutexImpl;
+	friend class UT_MutexImpl;
+	friend class UT_MutexAcquirer;
 
  public:
-  UT_Mutex ();
-  ~UT_Mutex ();
+	UT_Mutex ();
+	~UT_Mutex ();
 
-  // HACK HACK HACK
+ private:
   // only called by UT_MutexImpl
   void lock ();
   void unlock ();
 
- private:
   // no impls
   UT_Mutex (const UT_Mutex & other);
   UT_Mutex & operator=(const UT_Mutex & other);

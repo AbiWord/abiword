@@ -120,4 +120,6 @@ AC_SUBST(XML_CFLAGS)
 AC_SUBST(XML_LIBS)
 AC_SUBST(EXPAT_PEERDIR)
 
+AM_CONDITIONAL(HAVE_EXPAT, test "$abi_found_parser" = "expat")
+
 ])
