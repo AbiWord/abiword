@@ -96,6 +96,8 @@ public:
 	bool    m_RTL;
 	UT_BidiCharType m_dirOverride;
 	bool    m_Hidden;
+	PP_RevisionType m_eRevision;
+	UT_uint32 m_iCurrentRevisionId;
 };
 
 class ABI_EXPORT RTFProps_bCharProps
@@ -221,6 +223,8 @@ struct ABI_EXPORT RTFProps_ParaProps
 	bool            m_RTL;
 	UT_sint32       m_tableLevel; //nesting level of the paragram in a table.
 	bool            m_bInTable; // true if paragraph is in a table
+	PP_RevisionType m_eRevision;
+	UT_uint32 m_iCurrentRevisionId;
 };
 
 // These are set true if changed in list definitions.
@@ -727,6 +731,7 @@ private:
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
 	bool     _insertSpan();
+	void     _formRevisionAttr(UT_String & s,UT_String & props, const XML_Char * style);
 	
 
 private:
@@ -842,7 +847,6 @@ private:
 	UT_String             m_sPendingShapeProp;
 	RTFProps_FrameProps   m_currentFrame;
 	bool                  m_bEndFrameOpen;
-	UT_uint32             m_iCurrentRevisionId;
 };
 
 #endif /* IE_IMP_RTF_H */

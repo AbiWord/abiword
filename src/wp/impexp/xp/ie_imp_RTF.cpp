@@ -1132,6 +1132,8 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_RTL = false;
 	m_dirOverride = UT_BIDI_UNSET;
 	m_Hidden = false;
+	m_eRevision = PP_REVISION_NONE;
+	m_iCurrentRevisionId = 0;
 }
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -1167,6 +1169,8 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_tableLevel = 1; // Has to be 1 because the RTF spec has itap defaulting 
 	                  // to this value
 	m_bInTable = false;
+	m_eRevision = PP_REVISION_NONE;
+	m_iCurrentRevisionId = 0;
 }
 
 RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& other)
@@ -1403,8 +1407,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iStackDepthAtFrame(0),
 	m_bFrameOpen(false),
 	m_sPendingShapeProp(""),
-	m_bEndFrameOpen(false),
-	m_iCurrentRevisionId(0)
+	m_bEndFrameOpen(false)
 {
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
@@ -5035,6 +5038,47 @@ bool IE_Imp_RTF::HandleStarKeyword()
 	return true;
 }
 
+void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const XML_Char * style)
+{
+	attr.clear();
+	
+	if(m_currentRTFState.m_charProps.m_eRevision == PP_REVISION_NONE)
+	{
+		return;
+	}
+	
+	UT_String temp;
+	
+	switch(m_currentRTFState.m_charProps.m_eRevision)
+	{
+		case PP_REVISION_DELETION: attr += '-'; break;
+		case PP_REVISION_FMT_CHANGE: attr += '!'; break;
+			
+		case PP_REVISION_ADDITION:
+		case PP_REVISION_ADDITION_AND_FMT:
+		default:; // nothing
+	}
+
+	UT_String_sprintf(temp, "%d", m_currentRTFState.m_charProps.m_iCurrentRevisionId);
+
+	attr += temp;
+
+	attr += '{';
+	attr += props;
+	attr += '}';
+	if(style)
+	{
+		attr += '{';
+		attr += PT_STYLE_ATTRIBUTE_NAME;
+		attr += ';';
+		attr += style;
+		attr += '}';
+	}
+	
+}
+
+
+
 bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 {
 	UT_String tempBuffer;
@@ -5172,6 +5216,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	return true;
 }
 
+
 /*!
  * Returns true if we're pasting text rather than parsing a file
  */
@@ -5189,23 +5234,24 @@ bool IE_Imp_RTF::bUseInsertNotAppend(void)
 bool IE_Imp_RTF::_appendSpan()
 {
 	const XML_Char* pProps = "props";
+	const XML_Char* pRevs  = "revision";
 	const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
+
+	const XML_Char* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
+
 	UT_String prop_basic;
+	UT_String revision;
 	buildCharacterProps(prop_basic);
 
-	UT_String prop_ltr = prop_basic;
-	prop_ltr += ";dir-override:ltr";
-	
-	UT_String prop_rtl = prop_basic;
-	prop_rtl += ";dir-override:rtl";
-	
+	UT_String prop_ltr;
+	UT_String prop_rtl;
 
-	const XML_Char* propsArray[5];
-	propsArray[0] = pProps;
+	UT_uint32 iPropOffset = 0;
+	
+	bool bRevised = m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE;
+
+	propsArray[0] = bRevised ? pRevs : pProps;
 	propsArray[1] = prop_basic.c_str();
-	propsArray[2] = NULL;
-	propsArray[3] = NULL;
-	propsArray[4] = NULL;
 
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
 	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
@@ -5213,6 +5259,30 @@ bool IE_Imp_RTF::_appendSpan()
 		propsArray[2] = pStyle;
 		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
 	}
+
+	if(bRevised)
+	{
+		_formRevisionAttr(revision, prop_basic, propsArray[3]);
+
+		// the style attribute is inside the revision, clear it out of the props array
+		propsArray[1] = revision.c_str();
+		propsArray[2] = NULL;
+		propsArray[3] = NULL;
+
+		iPropOffset = 2;
+	}
+	else
+	{
+		prop_ltr = prop_basic;
+		prop_rtl = prop_basic;
+
+		prop_ltr += ';';
+		prop_rtl += ';';
+	}
+
+	prop_ltr += "dir-override:ltr";
+	prop_rtl += "dir-override:rtl";
+	
 	
 	UT_UCS4Char * p;
 	UT_uint32 iLen = m_gbBlock.getLength();
@@ -5254,7 +5324,8 @@ bool IE_Imp_RTF::_appendSpan()
 							return false;
 					}
 					iOverride = UT_BIDI_LTR;
-					propsArray[1] = prop_ltr.c_str();
+					propsArray[iPropOffset] = pProps;
+					propsArray[iPropOffset + 1] = prop_ltr.c_str();
 					iLast = i;
 				}
 				else if(m_currentRTFState.m_charProps.m_RTL
@@ -5271,7 +5342,8 @@ bool IE_Imp_RTF::_appendSpan()
 							return false;
 					}
 					iOverride = UT_BIDI_RTL;
-					propsArray[1] = prop_rtl.c_str();
+					propsArray[iPropOffset] = pProps;
+					propsArray[iPropOffset + 1] = prop_rtl.c_str();
 					iLast = i;
 				}
 			}
@@ -5291,7 +5363,17 @@ bool IE_Imp_RTF::_appendSpan()
 							return false;
 					}
 					iOverride = UT_BIDI_UNSET;
-					propsArray[1] = prop_basic.c_str();
+
+					if(bRevised)
+					{
+						propsArray[iPropOffset] = NULL;
+						propsArray[iPropOffset + 1] = NULL;
+					}
+					else
+					{
+						propsArray[1] = prop_basic.c_str();
+					}
+					
 					iLast = i;
 				}
 			}
@@ -5329,23 +5411,24 @@ bool IE_Imp_RTF::_appendSpan()
 bool IE_Imp_RTF::_insertSpan()
 {
 	const XML_Char* pProps = "props";
+	const XML_Char* pRevs  = "revision";
 	const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
+
+	const XML_Char* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
+
 	UT_String prop_basic;
+	UT_String revision;
 	buildCharacterProps(prop_basic);
 
-	UT_String prop_ltr = prop_basic;
-	prop_ltr += ";dir-override:ltr";
-	
-	UT_String prop_rtl = prop_basic;
-	prop_rtl += ";dir-override:rtl";
-	
+	UT_String prop_ltr;
+	UT_String prop_rtl;
 
-	const XML_Char* propsArray[5];
-	propsArray[0] = pProps;
+	UT_uint32 iPropOffset = 0;
+	
+	bool bRevised = m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE;
+
+	propsArray[0] = bRevised ? pRevs : pProps;
 	propsArray[1] = prop_basic.c_str();
-	propsArray[2] = NULL;
-	propsArray[3] = NULL;
-	propsArray[4] = NULL;
 	
 	UT_UCS4Char * p;
 	UT_uint32 iLen = m_gbBlock.getLength();
@@ -5357,6 +5440,32 @@ bool IE_Imp_RTF::_insertSpan()
 		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
 	}
 	
+
+	if(bRevised)
+	{
+		_formRevisionAttr(revision, prop_basic, propsArray[3]);
+
+		// the style attribute is inside the revision, clear it out of the props array
+		propsArray[1] = revision.c_str();
+		propsArray[2] = NULL;
+		propsArray[3] = NULL;
+
+		iPropOffset = 2;
+	}
+	else
+	{
+		prop_ltr = prop_basic;
+		prop_rtl = prop_basic;
+
+		prop_ltr += ';';
+		prop_rtl += ';';
+	}
+
+	prop_ltr += "dir-override:ltr";
+	prop_rtl += "dir-override:rtl";
+	
+	
+
 	if(m_bBidiMode)
 	{
 		UT_BidiCharType iOverride = UT_BIDI_UNSET, cType, cLastType = UT_BIDI_UNSET, cNextType;
@@ -5397,7 +5506,8 @@ bool IE_Imp_RTF::_insertSpan()
 						m_dposPaste += i - iLast;						
 					}
 					iOverride = UT_BIDI_LTR;
-					propsArray[1] = prop_ltr.c_str();
+					propsArray[iPropOffset] = pProps;
+					propsArray[iPropOffset + 1] = prop_ltr.c_str();
 					iLast = i;
 				}
 				else if(m_currentRTFState.m_charProps.m_RTL
@@ -5417,7 +5527,8 @@ bool IE_Imp_RTF::_insertSpan()
 						m_dposPaste += i - iLast;						
 					}
 					iOverride = UT_BIDI_RTL;
-					propsArray[1] = prop_rtl.c_str();
+					propsArray[iPropOffset] = pProps;
+					propsArray[iPropOffset + 1] = prop_rtl.c_str();
 					iLast = i;
 				}
 			}
@@ -5440,7 +5551,16 @@ bool IE_Imp_RTF::_insertSpan()
 						m_dposPaste += i - iLast;						
 					}
 					iOverride = UT_BIDI_UNSET;
-					propsArray[1] = prop_basic.c_str();
+					if(bRevised)
+					{
+						propsArray[iPropOffset] = NULL;
+						propsArray[iPropOffset + 1] = NULL;
+					}
+					else
+					{
+						propsArray[1] = prop_basic.c_str();
+					}
+					
 					iLast = i;
 				}
 			}
@@ -8633,7 +8753,9 @@ bool IE_Imp_RTF::HandleRevisedText(PP_RevisionType eType, UT_uint32 iId)
 	UT_return_val_if_fail( FlushStoredChars(), false);
 
 	// remember the id for future reference
-	m_iCurrentRevisionId = iId;
+	m_currentRTFState.m_charProps.m_iCurrentRevisionId = iId;
+	m_currentRTFState.m_charProps.m_eRevision = eType;
+	
 #if 0
 	switch(eType)
 	{
@@ -8653,13 +8775,13 @@ bool IE_Imp_RTF::HandleRevisedTextTimestamp(UT_uint32 iDttm)
 {
 	// we basically rely on the dttm keyword to follow the auth keyword -- Word outputs
 	// them in this sequence, and so do we
-	UT_return_val_if_fail( m_iCurrentRevisionId > 0,false);
+	UT_return_val_if_fail( m_currentRTFState.m_charProps.m_iCurrentRevisionId > 0,false);
 	
 	const UT_GenericVector<AD_Revision*> & Rtbl = getDoc()->getRevisions();
 	UT_return_val_if_fail(Rtbl.getItemCount(),false);
 
 	// valid revision id's start at 1, but vector is 0-based
-	AD_Revision * pRev = Rtbl.getNthItem(m_iCurrentRevisionId - 1);
+	AD_Revision * pRev = Rtbl.getNthItem(m_currentRTFState.m_charProps.m_iCurrentRevisionId - 1);
 
 	UT_return_val_if_fail( pRev, false );
 
