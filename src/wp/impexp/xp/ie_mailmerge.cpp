@@ -551,8 +551,8 @@ public:
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEMergeType * ft){
-		*szDesc = "XML Mail Merge";
-		*szSuffixList = ".xml";
+		*szDesc = "XML Mail Merge (*.xml)";
+		*szSuffixList = "*.xml";
 		*ft = getFileType();
 		return true;
 	}
@@ -760,8 +760,8 @@ private:
 void IE_MailMerge_RegisterXP ()
 {
 	IE_MailMerge::registerMerger (new IE_XMLMerge_Sniffer ());
-	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Comma Separated Values", ".csv", ','));
-	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Tabbed Text", ".tdt", '\t'));
+	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Comma Separated Values (*.csv)", "*.csv", ','));
+	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Tabbed Text (.tdt)", "*.tdt", '\t'));
 }
 
 void IE_MailMerge_UnRegisterXP ()
