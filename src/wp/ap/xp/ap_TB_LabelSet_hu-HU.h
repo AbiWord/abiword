@@ -54,13 +54,14 @@ BeginSet(hu,HU,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Ment", 	tb_save_xpm,	NULL, "A dokumentum mentése")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Mentés másként", 	tb_save_as_xpm,	NULL, "A dokumentum mentése más néven")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Nyomtat",	tb_print_xpm,	NULL, "A dokumentum nyomtatása")
-
+  ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,	"Nyomtatási kép",	tb_print_preview_xpm, NULL, "A dokumentum megtekintése nyomtatás elõtt")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Visszavon",		tb_undo_xpm,	NULL, "A szerkesztés visszavonása")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Újra",		tb_redo_xpm,	NULL, "A szerkesztés ismételt végrehajtása")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Kivágás",		tb_cut_xpm,		NULL, "Kivágás")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Másolás",		tb_copy_xpm,	NULL, "Másolás")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Beillesztés",	tb_paste_xpm,	NULL, "Beillesztés")
-
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Helyesírás",	tb_spellcheck_xpm,		NULL, "A dokumentum helyesírásának ellenõrzése")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG,				"Kép beszúrása",	tb_insert_graphic_xpm,	NULL, "Kép beszúrása a dokumentumba")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stílus",	NoIcon,			NULL, "Stílus")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Betûtípus",		NoIcon,			NULL, "Betûtípus")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Betû Méret", NoIcon,		NULL, "Betû Méret")
@@ -69,6 +70,7 @@ BeginSet(hu,HU,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Aláhúzott",tb_text_underline_A_xpm,	NULL, "Aláhúzott")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Felülvonás",tb_text_overline_F_xpm,	NULL, "Felülvonás")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Kihúzott",   tb_text_strikeout_K_xpm,	NULL, "Kihúzott")
+	ToolbarLabel(AP_TOOLBAR_ID_HELP,			"Súgó",			tb_help_xpm,			NULL, "Súgó")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Felsõ index",	tb_text_superscript_xpm,	NULL, "Felsõ index")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Alsó index",	tb_text_subscript_xpm,		NULL, "Alsó index")
@@ -90,12 +92,21 @@ BeginSet(hu,HU,true)
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Hasáb",		tb_2column_xpm,			NULL, "2 Hasáb")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Hasáb",		tb_3column_xpm,			NULL, "3 Hasáb")
 
+	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Mindent mutat",			tb_view_showpara_xpm,		NULL, "¶ (bekezdésvég jel) megjelenítése/elrejtése")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Nagyítás",		NoIcon,			NULL, "Nagyítás")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Felsorolások",		tb_lists_bullets_xpm,		NULL,		"Felsorolások kezdése/lezárása")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Sorszámozott Listák",		tb_lists_numbers_xpm,		NULL,		"Sorszámozott Listák kezdése/lezárása")
-	
-	// ... add others here ...
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Betûszín",		tb_text_fgcolor_xpm,	NULL, "Betûszín")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Kiemelés",		tb_text_bgcolor_xpm,	NULL, "Kiemelés")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Nagyobb behúzás",	tb_text_indent_xpm, 	NULL, "Nagyobb behúzás")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Kisebb behúzás",	tb_text_unindent_xpm,	NULL, "Kisebb behúzás")
 
+     // ... add others here ...
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Mindenképp Balról Jobbra",		tb_text_direction_ltr_xpm,	NULL, "A szöveg irány mindenképp balról jobbra legyen")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Mindenképp Jobbról Balra",		tb_text_direction_rtl_xpm,	NULL, "A szöveg irány mindenképp jobbról balra legyen")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Bekezdés Iránya",	tb_text_dom_direction_rtl_xpm,	NULL, "A bekezdés domináns irányának megváltoztatása")
+#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()
