@@ -24,6 +24,11 @@
 #include "gr_BeOSGraphics.h"
 #include "gr_BeOSImage.h"
 
+#include "xap_BeOSFrame.h"	//For be_DocView 
+//#include <float.h>		//for FLT_MAX
+//#define FLT_MAX         3.402823466e+38f 
+#include <limits.h>
+
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
@@ -44,9 +49,11 @@ replay a previously recorded BPicture.
 					m_pFrontView->Window()->Unlock();
 #else
 //Do a flush instead of a sync
-#define UPDATE_VIEW			m_pShadowView->Window()->Lock();\
+#define UPDATE_VIEW			if (!m_pShadowView->IsPrinting()) { \
+					m_pShadowView->Window()->Lock();\
 					m_pShadowView->Sync();		\
-					m_pShadowView->Window()->Unlock();
+					m_pShadowView->Window()->Unlock(); \
+					}
 #endif
 
 GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
@@ -54,7 +61,10 @@ GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
 	m_pShadowBitmap = NULL;
 	m_pBeOSFont = NULL;
 	m_pFontGUI = NULL;
+	m_pPrintSettings = NULL;
+	m_pPrintJob = NULL;
 	m_pFrontView = docview;
+ 	m_bPrint = FALSE;    
 	if (!m_pFrontView)
 		return;
 
@@ -142,7 +152,8 @@ UT_Bool GR_BEOSGraphics::queryProperties(GR_Graphics::Properties gp) const
 	{
 	case DGP_SCREEN:
 		return UT_TRUE;
-	case DGP_PAPER:
+	case DGP_PAPER:			//Not sure what this does
+		return UT_TRUE;
 		return UT_FALSE;
 	default:
 		UT_ASSERT(0);
@@ -581,24 +592,105 @@ void GR_BEOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 
 UT_Bool GR_BEOSGraphics::startPrint(void)
 {
-	UT_ASSERT(0);
-	return UT_FALSE;
+	if (!m_pPrintJob) {
+		printf("Creating a new print job \n");
+		m_pPrintJob = new BPrintJob("ADD A NAME HERE");
+	}
+	if (!m_pPrintJob) {
+		printf("No print job ... exiting \n");
+		return(UT_FALSE);
+	}
+
+	if (!m_pPrintSettings) {
+		printf("I SHOULD NEVER BE HERE! \n");
+		return(UT_FALSE);
+		if (m_pPrintJob->ConfigPage() != B_OK) {
+			return(UT_FALSE);
+		}
+
+		if (m_pPrintJob->ConfigJob() != B_OK) {
+       		         return(UT_FALSE);
+       		}
+		m_pPrintSettings = m_pPrintJob->Settings();
+	}
+	m_pPrintJob->SetSettings(m_pPrintSettings);
+
+	printf("Paper Rect: "); m_pPrintJob->PaperRect().PrintToStream();
+	printf("Print Rect: "); m_pPrintJob->PrintableRect().PrintToStream();
+
+	m_pPrintJob->BeginJob();
+
+	//Make sure that we start spooling at the right time
+	m_bPrint = FALSE;
+	return(UT_TRUE);
 }
 
 UT_Bool GR_BEOSGraphics::startPage(const char * /*szPageLabel*/, 
 				   UT_uint32 /*pageNumber*/,
 				   UT_Bool /*bPortrait*/, 
 				   UT_uint32 /*iWidth*/, 
-				   UT_uint32 /*iHeight*/)
-{
-	UT_ASSERT(0);
-	return UT_FALSE;
+				   UT_uint32 /*iHeight*/) {
+
+	if (!m_pPrintJob || !m_pPrintJob->CanContinue() || !m_pShadowView) {
+		printf("GR: Start page something amiss \n");
+		return(UT_FALSE);
+	}
+
+	if (m_bPrint) {
+		BPicture *tmppic;
+		BRect     r;
+
+		m_pShadowView->Window()->Lock();
+		r = m_pShadowView->Bounds();
+		tmppic = m_pShadowView->EndPicture();
+		m_pShadowView->Window()->Unlock();
+
+		((be_DocView *)m_pShadowView)->SetPrintPicture(tmppic);
+		m_pPrintJob->DrawView(m_pShadowView, 
+				      //BRect(0, 0, 600, 600), 
+				      BRect(0, 0, SHRT_MAX, SHRT_MAX), 
+				      BPoint(0,0));
+		
+		//Commit this page and move to the next one
+		m_pPrintJob->SpoolPage();
+		delete(tmppic);
+	}
+
+	m_bPrint = TRUE;
+	m_pShadowView->BeginPicture(new BPicture());
+
+	return(UT_TRUE);
 }
 
-UT_Bool GR_BEOSGraphics::endPrint(void)
-{
-	UT_ASSERT(0);
-	return UT_FALSE;
+UT_Bool GR_BEOSGraphics::endPrint(void) {
+	if (!m_pPrintJob || !m_pPrintJob->CanContinue()) {
+		return(UT_FALSE);
+	}
+
+	if (m_bPrint) {
+		BPicture *tmppic;
+		BRect     r;
+
+		m_pShadowView->Window()->Lock();
+		tmppic = m_pShadowView->EndPicture();
+		m_pShadowView->Window()->Unlock();
+
+		((be_DocView *)m_pShadowView)->SetPrintPicture(tmppic);
+		m_pPrintJob->DrawView(m_pShadowView, 
+				      //BRect(0, 0, FLT_MAX, FLT_MAX), 
+				      BRect(0, 0, SHRT_MAX, SHRT_MAX), 
+                                      BPoint(0,0));
+		
+		//Commit this page and move to the next one
+		m_pPrintJob->SpoolPage();
+		delete(tmppic);
+	}
+
+	((be_DocView *)m_pShadowView)->SetPrintPicture(NULL);
+	m_pPrintJob->CommitJob();
+	delete(m_pPrintJob);
+	m_pPrintJob = NULL;
+	return(UT_TRUE);
 }
 
 GR_Image* GR_BEOSGraphics::createNewImage(const char* pszName, 

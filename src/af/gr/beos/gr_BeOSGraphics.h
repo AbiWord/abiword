@@ -93,16 +93,28 @@ public:
 
 
 	//Added for local updating of the View
-	void	ResizeBitmap(BRect r);
-	BBitmap *ShadowBitmap()		{ return(m_pShadowBitmap); };
+	void			ResizeBitmap(BRect r);
+	BBitmap 		*ShadowBitmap()	
+					{ return(m_pShadowBitmap); };
+	BMessage		*GetPrintSettings() 	
+					{ return(m_pPrintSettings); };
+	void 			SetPrintSettings(BMessage *s) 
+					{ m_pPrintSettings = s; };
+	BPrintJob		*GetPrintJob()
+					{ return(m_pPrintJob); };
+	void			SetPrintJob(BPrintJob *j)
+					{ m_pPrintJob = j; };
   
 protected:
 	BView				*m_pShadowView, *m_pFrontView;
 	BBitmap				*m_pShadowBitmap;
+	BMessage			*m_pPrintSettings;	
+	BPrintJob			*m_pPrintJob;
 	BeOSFont			*m_pBeOSFont, *m_pFontGUI;
 	GR_Graphics::ColorSpace m_cs;
 	GR_Graphics::Cursor		m_cursor;
 	rgb_color			m_3dColors[COUNT_3D_COLORS];
+ 	UT_Bool                         m_bPrint;    
 };
 
 #endif /* GR_BEOSGRAPHICS_H */
