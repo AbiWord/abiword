@@ -1729,6 +1729,14 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	
 	if(_insertNoteIfAppropriate(ps->currentcp,0))
 		return 0;
+
+	if(eachchar == 0x28)
+	{
+		// this is a symbol; the font is identified by achp->ftcSym and the char code is
+		// achp->xchSym
+		this->_appendChar(achp->xchSym);
+		return 0;
+	}
 	
 	//
 	// This next bit of code is to handle fields
@@ -2929,9 +2937,20 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	m_charProps.clear();
 	m_charStyle.clear();
 
-	if(ps->fonts.ffn[achp->ftcAscii].chs == 0)
+	UT_uint32 iFontType = 0;
+	if(achp->xchSym)
+	{
+		// inserting a symbol char ...
+		iFontType = ps->fonts.ffn[achp->ftcSym].chs;
+	}
+	else
+	{
+		iFontType = ps->fonts.ffn[achp->ftcAscii].chs;
+	}
+	
+	if(iFontType == 0)
 		m_bSymbolFont = false;
-	else if(ps->fonts.ffn[achp->ftcAscii].chs == 2)
+	else if(iFontType == 2)
 		m_bSymbolFont = true;
 	else
 	{
@@ -4220,11 +4239,20 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 
 	// if the FarEast flag is set, use the FarEast font,
 	// otherwise, we'll use the ASCII font.
-	if (achp->fBidi) {
+	if(achp->xchSym)
+	{
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcSym);
+	}
+	else if (achp->fBidi)
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcBidi);
-	} else if (!ps->fib.fFarEast) {
+	}
+	else if (!ps->fib.fFarEast)
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
-	} else {
+	}
+	else
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
 
 		if (strlen (fname) > 6)
