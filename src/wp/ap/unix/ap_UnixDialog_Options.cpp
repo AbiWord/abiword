@@ -101,12 +101,11 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     _populateWindowData();
     _initUnixOnlyPrefs();
 
-    switch ( abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false ) )
+    switch ( abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_OK, false ) )
       {
       case BUTTON_OK:
-	event_OK (); break ;
       default:
-	event_Cancel(); break ;
+	event_OK (); break ;
       }
 
     abiDestroyWidget ( mainWindow ) ;
@@ -1032,26 +1031,21 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	GtkWidget * mainWindow;
-	GtkWidget * buttonApply;
+	GtkWidget * buttonApply = 0;
 	GtkWidget * buttonOk;
-	GtkWidget * buttonCancel;
+	GtkWidget * buttonCancel = 0;
 	GtkWidget * buttonDefaults;
 
 	mainWindow = abiDialogNew("options dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).c_str());
 
+#if 0
 	buttonCancel = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+#endif
 
 	buttonDefaults = gtk_button_new_from_stock (GTK_STOCK_REVERT_TO_SAVED);
 	gtk_widget_show (buttonDefaults);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonDefaults);
 	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
-
-	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
-	gtk_widget_show (buttonApply);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonApply);
-	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
-
-	buttonOk = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK);
 
 	//////////////////////////////////////////////////////////////////////
 	// the control buttons
@@ -1060,11 +1054,19 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 			   G_CALLBACK(s_defaults_clicked),
 			   (gpointer) this);
 
+#if 0
+	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
+	gtk_widget_show (buttonApply);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonApply);
+	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
+
 	g_signal_connect(G_OBJECT(buttonApply),
 			   "clicked",
 			   G_CALLBACK(s_apply_clicked),
 			   (gpointer) this);
+#endif
 
+	buttonOk = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CLOSE, BUTTON_OK);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.

@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "xap_Prefs.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 
 /*****************************************************************
@@ -64,6 +65,11 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
 	  m_bSuggestName(false),
 	  m_answer(a_VOID)
 {
+  const XML_Char * savedir = 0;
+  if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, &savedir) && strlen(savedir))
+    {
+      UT_cloneString(m_szPersistPathname,savedir);
+    }
 }
 
 XAP_Dialog_FileOpenSaveAs::~XAP_Dialog_FileOpenSaveAs(void)

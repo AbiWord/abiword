@@ -151,6 +151,9 @@
 #define XAP_PREF_KEY_DocumentLocale "DocumentLocale"
 #define XAP_PREF_DEFAULT_DocumentLocale "en-US"
 
+#define XAP_PREF_KEY_DefaultSaveDirectory "DefaultSaveDirectory"
+#define XAP_PREF_DEFAULT_DefaultSaveDirectory "" /* empty for $PWD basically */
+
 #define XAP_PREF_KEY_ZoomType		"ZoomType"
 #define XAP_PREF_DEFAULT_ZoomType	"Width" /* 100, Width, Page */
 
@@ -175,28 +178,22 @@
 
 dcl(ToolbarAppearance)
 dcl(UnixFontPath)
-
 dcl(RemapGlyphsMasterSwitch)
 dcl(RemapGlyphsNoMatterWhat)
 dcl(RemapGlyphsDefault)
 dcl(RemapGlyphsTable)
-
 dcl(SmartQuotesEnable)
 dcl(UseSuffix)
 dcl(DefaultPageSize)
-
 dcl(DefaultDirectionRtl)
 dcl(UseContextGlyphs)
 dcl(SaveContextGlyphs)
 dcl(UseHebrewContextGlyphs)
-
 dcl(AutoSaveFile)
 dcl(AutoSaveFilePeriod)
 dcl(AutoSaveFileExt)
-
 dcl(EmbedFontsInPS)
 dcl(ColorForTransparent)
-
 dcl(ColorForShowPara)
 dcl(ColorForSquiggle)
 dcl(ColorForMargin)
@@ -216,15 +213,11 @@ dcl(ColorForRevision7)
 dcl(ColorForRevision8)
 dcl(ColorForRevision9)
 dcl(ColorForRevision10)
-
 dcl(DocumentLocale)
-
 dcl(AllowCustomToolbars)
 dcl(AutoLoadPlugins)
-
-
 dcl(ZoomType)
-
+dcl(DefaultSaveDirectory)
 dcl(ShowUnixFontWarning)
 dcl(ModifyUnixFontPath)
 
