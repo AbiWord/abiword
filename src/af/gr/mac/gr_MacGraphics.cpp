@@ -332,6 +332,24 @@ void GR_MacGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 }
 
 
+UT_uint32 GR_MacGraphics::getFontAscent(GR_Font *)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+}
+
+
+UT_uint32 GR_MacGraphics::getFontDescent(GR_Font *)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+}
+
+
+UT_uint32 GR_MacGraphics::getFontHeight(GR_Font *)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+}
+
+
 // Code below borrowed to gr_BeOSGraphics.cpp... FIXIT
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
@@ -355,4 +373,5 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
+
 

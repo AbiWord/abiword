@@ -111,6 +111,10 @@ public:
 	virtual void		fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
 
+	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
