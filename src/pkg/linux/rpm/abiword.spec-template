@@ -21,7 +21,7 @@
 %define enable_gdkpixbuf 1
 %define enable_openwriter 0
 %define enable_eml 0
-%define enable_html 0
+%define enable_html 1
 %define enable_eg 0
 
 %define name abiword
@@ -233,6 +233,17 @@ BuildRequires: bzip2-devel
 Installing this plugin will allow abiword to open abiword documents compressed with bzip2.
 %endif
 
+%if %{enable_html}
+%package plugin-html
+Summary: Plugin to enable import of arbitrary HTML documents (experimental)
+Group: Applications/Productivity
+Requires: libxml2, abiword
+BuildRequires: libxml2-devel
+
+%description plugin-html
+Installing this plugin will allow abiword to import of arbitrary HTML documents (experimental)
+%endif
+
 %if %{enable_wikipedia}
 %package plugin-wikipedia
 Summary: Plugin to allow abiword to connect with WikiPedia.
@@ -415,6 +426,11 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libBZ2Abw.*
 %endif
 
+%if %{enable_html}
+%files plugin-html
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
+%endif
+
 %if %{enable_gdkpixbuf} && ! %{enable_gnome}
 %files plugin-gdkpixbuf
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
@@ -448,6 +464,9 @@ ln -sf %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
 
 
 %changelog
+* Thu Feb 21 2002 Francis James Franklin <fjf@alinameridon.com>
+- Added HTML importer plugin to list
+
 * Thu Dec 27 2001 Rui M. Silva Seabra <rms@multicert.com>
 - Simplified spec's ifs, gdkpixbuf plugin is installed by default in gnome build
 
