@@ -226,16 +226,25 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		m_parseState = _PS_Block;
 		X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
 		UT_DEBUGMSG(("SEVIOR: Appending strux \n"));
+
+		{	// M$ compilers don't regard for-loop variable scoping! :-<
+			for(UT_sint32 i=0; atts[i] != NULL; i++)
+			{ 
+				UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
+			}
+		}
+
 		for(UT_sint32 i=0; atts[i] != NULL; i++)
 		{ 
 			UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
 		}
+
 		return;
 	}
 
 	case TT_INLINE:
-        // ignored for fields
-                if (m_parseState == _PS_Field) return;
+		// ignored for fields
+		if (m_parseState == _PS_Field) return;
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(_pushInlineFmt(atts));
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
@@ -254,13 +263,15 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	case TT_FIELD:
 	{
 		X_VerifyParseState(_PS_Block);
-                m_parseState = _PS_Field;
+		m_parseState = _PS_Field;
 		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
 		UT_DEBUGMSG(("SEVIOR: Appending field \n"));
-		for(UT_sint32 i=0; atts[i] != NULL; i++)
-		  { 
-		    UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
-		  }
+		{	// M$ compilers don't regard for-loop variable scoping! :-<
+			for(UT_sint32 i=0; atts[i] != NULL; i++)
+			{
+				UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
+			}
+		}
 		return;
 	}
 	
@@ -272,8 +283,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		// (which get mapped into SPACE) keeps the file sanely editable.
 
 	case TT_BREAK:
-	        if(X_TestParseState(_PS_Field))
-		  return; // just return
+		if(X_TestParseState(_PS_Field))
+			return; // just return
 
 		X_VerifyParseState(_PS_Block);
 
@@ -289,9 +300,9 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 
 	case TT_COLBREAK:
-#if 0	        
-	        if(X_TestParseState(_PS_Field))
-		        return; // just return
+#if 0
+		if(X_TestParseState(_PS_Field))
+			return; // just return
 #endif
 		X_VerifyParseState(_PS_Block);
 
