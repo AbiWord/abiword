@@ -63,11 +63,11 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Couper",			tb_cut_xpm,			NULL, "Couper")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copier",			tb_copy_xpm,			NULL, "Copier")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Coller",			tb_paste_xpm,			NULL, "Coller")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,		"Entête",			tb_edit_editheader_xpm,	NULL, "Edite l'entête")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,		"Pied de page",		tb_edit_editfooter_xpm,	NULL, "Edite le pied de page")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Enlever l'entête",	tb_edit_removeheader_xpm,	NULL, "Enlever l'entête de cette page du document")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,		"En-tête",			tb_edit_editheader_xpm,	NULL, "Editer l'en-tête")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,		"Pied de page",		tb_edit_editfooter_xpm,	NULL, "Editer le pied de page")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Enlever l'en-tête",	tb_edit_removeheader_xpm,	NULL, "Enlever l'en-tête de cette page du document")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, "Enlever le pied de page",tb_edit_removefooter_xpm,	NULL, "Enlever le pied de page de cette page du document")
-	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, 		"Orthographe", 			tb_spellcheck_xpm, 		NULL, "Vérification orthographique du document")
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, 		"Orthographe", 			tb_spellcheck_xpm, 		NULL, "Vérifier l'orthographe du document")
 	ToolbarLabel(AP_TOOLBAR_ID_IMG, 		"Insérer une image", 		tb_insert_graphic_xpm, 		NULL, "Insérer une image dans un document")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Style",			NoIcon,				NULL, "Style")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Police",			NoIcon,				NULL, "Police")
@@ -85,9 +85,9 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indice",			tb_text_subscript_xpm,		NULL, "Indice")
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbole",			tb_symbol_xpm,			NULL, "Insérer un symbole")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Gauche",			tb_text_align_left_xpm,		NULL, "Alignement à gauche")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Gauche",			tb_text_align_left_xpm,		NULL, "Aligner à gauche")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centré",			tb_text_center_xpm,		NULL, "Paragraphe centré")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Droite",			tb_text_align_right_xpm,	NULL, "Alignement à droite")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Droite",			tb_text_align_right_xpm,	NULL, "Aligner à droite")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justifié",			tb_text_justify_xpm,		NULL, "Paragraphe justifié")
 
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Pas d'espacement avant",	tb_para_0before_xpm,		NULL, "Espacement avant: aucun")
@@ -103,23 +103,23 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Afficher/Masquer ¶",		tb_view_showpara_xpm,		NULL, "Afficher/Masquer ¶")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",				NoIcon,				NULL, "Zoom")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Liste à puce",			tb_lists_bullets_xpm,		NULL, "Démarre/arrête une liste à puce")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Liste numérotée",		tb_lists_numbers_xpm,		NULL, "Démarre/arrête une liste numérotée")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Premier plan",			tb_text_fgcolor_xpm,		NULL, "Change la couleur du premier plan")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Arrière plan",			tb_text_bgcolor_xpm,		NULL, "Change la couleur de l'arrière plan")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Liste à puce",			tb_lists_bullets_xpm,		NULL, "Démarrer/arrêter une liste à puce")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Liste numérotée",		tb_lists_numbers_xpm,		NULL, "Démarrer/arrêter une liste numérotée")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Premier plan",			tb_text_fgcolor_xpm,		NULL, "Changer la couleur du premier plan")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Arrière plan",			tb_text_bgcolor_xpm,		NULL, "Changer la couleur de l'arrière plan")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Augmenter le retrait", 	tb_text_indent_xpm, 		NULL, "Augmenter le retrait")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Diminuer le retrait", 		tb_text_unindent_xpm,		NULL, "Diminuer le retrait")
 
 #ifdef ABI_OPT_PERL
-	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Script",				tb_script_play_xpm,			NULL, "Exécute un script")
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Script",				tb_script_play_xpm,			NULL, "Exécuter un script")
 #endif
 
 	// ... add others here ...
 
 #ifdef BIDI_ENABLED
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Oriente le texte de gauche à droite",		tb_text_direction_ltr_xpm,	NULL, "Force la direction du texte de GàD")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Oriente le texte de droite à gauche",		tb_text_direction_rtl_xpm,	NULL, "Force la direction du texte de DàG")	
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Orientation des paragraphes",			tb_text_dom_direction_rtl_xpm,	NULL, "Change l'orientation dominante des paragraphes")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Oriente le texte de gauche à droite",		tb_text_direction_ltr_xpm,	NULL, "Forcer la direction du texte de gauche à droite")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Oriente le texte de droite à gauche",		tb_text_direction_rtl_xpm,	NULL, "Forcer la direction du texte de droite à gauche")	
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Orientation des paragraphes",			tb_text_dom_direction_rtl_xpm,	NULL, "Changer l'orientation dominante des paragraphes")
 #endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
