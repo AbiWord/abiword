@@ -345,6 +345,10 @@ static void set_prop (BonoboPropertyBag 	*bag,
 	g_free(gtk_arg);
 }
 
+/*****************************************************************/
+/* Implements the Bonobo/Persist:1.0, Bonobo/PersistStream:1.0,
+   Bonobo/PersistFile:1.0 Interfaces */
+/*****************************************************************/
 
 /*
  * Loads a document from a Bonobo_Stream. Code gratitutously stolen 
@@ -582,6 +586,10 @@ save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
   return 0 ;
 }
 
+/*****************************************************************/
+/* Implements the Bonobo/Print:1.0 Interface */
+/*****************************************************************/
+
 static void
 print_document (GnomePrintContext         *ctx,
 		double                     inWidth,
@@ -665,6 +673,102 @@ pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 	return bonobo_persist_generate_content_types (9, "application/msword", "application/rtf", "application/x-abiword", "application/x-applix-word", "application/wordperfect5.1", "appplication/vnd.palm", "text/abiword", "text/plain", "text/vnd.wap.wml");
 }
 
+/*****************************************************************/
+/* Implements the Bonobo/Zoom:1.0 Interface */
+/*****************************************************************/
+
+// increment/decrement zoom percentages by this amount
+#define ZOOM_PCTG 25
+
+static void zoom_level_func(GtkObject * z, float lvl, gpointer data)
+{
+  g_return_if_fail (data != NULL);
+  g_return_if_fail (IS_ABI_WIDGET(data));
+
+  AbiWidget * abi = ABI_WIDGET(data);
+
+  if ( lvl <= 0.0 )
+    return ;
+
+  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  UT_return_if_fail ( pFrame != NULL ) ;
+
+  pFrame->setZoomType (XAP_Frame::z_PERCENT);
+  pFrame->setZoomPercentage ((UT_uint32)lvl);
+}
+
+static void zoom_in_func(GtkObject * z, gpointer data)
+{
+  g_return_if_fail (data != NULL);
+  g_return_if_fail (IS_ABI_WIDGET(data));
+
+  AbiWidget * abi = ABI_WIDGET(data);
+
+  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  UT_return_if_fail ( pFrame != NULL ) ;
+
+  UT_sint32 zoom_lvl = pFrame->getZoomPercentage();
+  zoom_lvl += ZOOM_PCTG ;
+
+  pFrame->setZoomType (XAP_Frame::z_PERCENT);
+  pFrame->setZoomPercentage (zoom_lvl);  
+}
+
+static void zoom_out_func(GtkObject * z, gpointer data)
+{
+  g_return_if_fail (data != NULL);
+  g_return_if_fail (IS_ABI_WIDGET(data));
+
+  AbiWidget * abi = ABI_WIDGET(data);
+
+  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  UT_return_if_fail ( pFrame != NULL ) ;
+
+  UT_sint32 zoom_lvl = pFrame->getZoomPercentage();
+  zoom_lvl += ZOOM_PCTG ;
+
+  if ( zoom_lvl <= 0 )
+    return ;
+
+  pFrame->setZoomType (XAP_Frame::z_PERCENT);
+  pFrame->setZoomPercentage (zoom_lvl);  
+}
+
+static void zoom_to_fit_func(GtkObject * z, gpointer data)
+{
+  g_return_if_fail (data != NULL);
+  g_return_if_fail (IS_ABI_WIDGET(data));
+
+  AbiWidget * abi = ABI_WIDGET(data);
+
+  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  UT_return_if_fail ( pFrame != NULL ) ;
+
+  FV_View * pView = (FV_View*) pFrame->getCurrentView();
+  UT_return_if_fail(pView!=NULL);
+
+  UT_uint32 newZoom = pView->calculateZoomPercentForPageWidth();
+  pFrame->setZoomType( XAP_Frame::z_PAGEWIDTH );
+  pFrame->setZoomPercentage(newZoom);
+}
+
+static void zoom_to_default_func(GtkObject * z, gpointer data)
+{
+  g_return_if_fail (data != NULL);
+  g_return_if_fail (IS_ABI_WIDGET(data));
+
+  AbiWidget * abi = ABI_WIDGET(data);
+
+  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
+  UT_return_if_fail ( pFrame != NULL ) ;
+
+  pFrame->setZoomType (XAP_Frame::z_100);
+  pFrame->setZoomPercentage (100);  
+}
+
+/*****************************************************************/
+/* Bonobo Inteface-Adding Code */
+/*****************************************************************/
 
 //
 // Add extra interfaces to load data into the control
@@ -677,6 +781,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	BonoboPersistStream *stream;
 	BonoboPrint         *printer;
 	BonoboItemContainer *item_container;
+	BonoboZoomable      *zoomable;
 
 	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
@@ -730,6 +835,27 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (item_container));
 	
+	/* Bonobo::Zoomable */
+	zoomable = bonobo_zoomable_new () ;
+	if ( !zoomable ) {
+	  bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
+	  return NULL;
+	}
+
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
+				     BONOBO_OBJECT (zoomable));
+
+	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_in",
+			   GTK_SIGNAL_FUNC(zoom_in_func), abiwidget);
+	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_out",
+			   GTK_SIGNAL_FUNC(zoom_out_func), abiwidget);
+	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_to_fit",
+			   GTK_SIGNAL_FUNC(zoom_to_fit_func), abiwidget);
+	gtk_signal_connect(GTK_OBJECT(zoomable), "zoom_to_default",
+			   GTK_SIGNAL_FUNC(zoom_to_default_func), abiwidget);
+	gtk_signal_connect(GTK_OBJECT(zoomable), "set_zoom_level",
+			   GTK_SIGNAL_FUNC(zoom_level_func), abiwidget);
+
 	return to_aggregate;
 }
 
