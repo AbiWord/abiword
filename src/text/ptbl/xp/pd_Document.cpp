@@ -112,6 +112,7 @@ PD_Document::~PD_Document()
 	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
 	// remove the meta data
 	UT_HASH_PURGEDATA(UT_String*, &m_metaDataMap, delete) ;
+	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
@@ -216,6 +217,27 @@ bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp )
     outProp = *val ;
 
   return found ;
+}
+
+UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
+{
+  const UT_UTF8String * val = (UT_UTF8String *) m_metaDataMap.pick ( key ) ;
+  if (val)
+    return *val;
+  return "";
+}
+
+bool PD_Document::mailMergeFieldExists(const UT_String & key) const
+{
+    void * val = m_metaDataMap.pick ( key ) ;
+    return (val != NULL);
+}
+
+void PD_Document::setMailMergeField(const UT_String & key,
+				    const UT_UTF8String & value)
+{
+  UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
+  m_metaDataMap.set ( key, ptrvalue ) ;
 }
 
 //////////////////////////////////////////////////////////////////

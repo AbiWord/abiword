@@ -4436,6 +4436,53 @@ bool fp_FieldPageCountRun::calculateValue(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+fp_FieldMailMergeRun::fp_FieldMailMergeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
+  : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMailMergeRun::calculateValue(void)
+{
+	fd_Field * fld = getField();
+	if (fld) {
+	  const XML_Char * param = fld->getParameter ();
+
+	  if (!param)
+	    return false;
+
+	  UT_UTF8String value ;
+
+	  UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	  sz_ucs_FieldValue[0] = 0;
+	  
+	  PD_Document * pDoc = getBlock()->getDocument();
+	  UT_ASSERT(pDoc);	  
+
+	  if (!pDoc->mailMergeFieldExists(param))
+	  {
+	    // we'll take this branch if there's no mapping, we'll display
+	    // the field name instead
+	    value = "<";
+	    value += param;
+	    value += ">";
+	  }
+	  else
+	    {
+	      value = pDoc->getMailMergeField(param);
+	    }
+
+	  fld->setValue((XML_Char*) value.utf8_str());
+	  UT_UCS4_strcpy(sz_ucs_FieldValue, value.ucs4_str().ucs4_str());
+
+	  return _setValue(sz_ucs_FieldValue);
+	}
+
+	return false;
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 fp_FieldMetaRun::fp_FieldMetaRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, const char * which)
   : fp_FieldRun(pBL, pG, iOffsetFirst, iLen), m_which(which)
 {

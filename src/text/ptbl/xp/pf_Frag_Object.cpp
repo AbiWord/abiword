@@ -185,9 +185,9 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         		}
     			break;
     		case 'm':
-		        if (0 == UT_strcmp(pszType, "martin_test"))
+		        if (0 == UT_strcmp(pszType, "mail_merge"))
 		        {
-        		    fieldType = fd_Field::FD_MartinTest;
+        		    fieldType = fd_Field::FD_MailMerge;
 		        }
 			else if(0 == UT_strcmp(pszType, "meta_title"))
 			  {
@@ -237,6 +237,10 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 			  {
 			    fieldType = fd_Field::FD_Meta_Description;
 			  }
+		        else if (0 == UT_strcmp(pszType, "martin_test"))
+		        {
+        		    fieldType = fd_Field::FD_MartinTest;
+		        }
 		        else
         		{
 		            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

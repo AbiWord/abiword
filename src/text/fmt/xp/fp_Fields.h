@@ -35,6 +35,7 @@ _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Epoch, time_epoch)
 
 _FIELDTYPE(APPLICATION, AP_STRING_ID_FIELD_Application)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Filename, file_name)
+_FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_MailMerge, mail_merge)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Version, app_ver)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_BuildId, app_id)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Options, app_options)
@@ -68,3 +69,4 @@ _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Coverage, meta_coverage)
 _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Rights, meta_rights)
 _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Keywords, meta_keywords)
 _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Description, meta_description)
+

@@ -548,6 +548,8 @@ public:
 	static EV_EditMethod_Fn scriptPlay;
 	static EV_EditMethod_Fn executeScript;
 
+        static EV_EditMethod_Fn mailMerge;
+
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 
@@ -830,6 +832,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(lockGUI), 		0,	""),
 
 	// m
+	EV_EditMethod(NF(mailMerge), 0, ""),
 	EV_EditMethod(NF(mergeCells),			0,		""),
 	EV_EditMethod(NF(middleSpace),			0,		""),
 
@@ -9438,6 +9441,103 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+}
+
+class MailMerge_Listener : public UT_XML::Listener
+{
+public:
+
+  MailMerge_Listener ( PD_Document *pdoc )
+    : UT_XML::Listener(), mDoc(pdoc), mAcceptingText(false)
+  {
+  }
+  
+  virtual ~MailMerge_Listener ()
+  {
+  }
+  
+  virtual void startElement (const XML_Char * name, const XML_Char ** atts) 
+  {
+    mCharData.clear ();
+    mKey.clear ();
+
+    if (!UT_strcmp (name, "merge"))
+	{
+	  const XML_Char * key = UT_getAttribute("key", atts);
+	  if (key) {
+	    mKey = key;
+	    mAcceptingText = true;
+	  }
+	}
+  }
+  
+  virtual void endElement (const XML_Char * name)
+  {
+    if (!UT_strcmp(name, "merge")) {
+      if (mCharData.size()) {
+	UT_DEBUGMSG(("DOM: creating mail merge: %s => %s\n", mKey.c_str(),
+		     mCharData.utf8_str()));
+	mDoc->setMailMergeField (mKey, mCharData);
+      }
+    }
+    mCharData.clear ();
+    mKey.clear ();
+  }
+  
+  virtual void charData (const XML_Char * buffer, int length)
+  {
+    if (buffer && length && mAcceptingText) {
+      UT_String buf(buffer, length);
+      mCharData += buf.c_str();
+    }
+  }
+
+private:
+
+  UT_String mKey;
+  UT_UTF8String mCharData;
+  PD_Document * mDoc;
+  bool mAcceptingText;
+};
+
+Defun1(mailMerge)
+{
+  CHECK_FRAME;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+  UT_return_val_if_fail(pFrame, false);
+
+  PD_Document * pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
+  UT_return_val_if_fail(pDoc, false);
+
+  pFrame->raise();
+  XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_OPEN;
+  
+  XAP_DialogFactory * pDialogFactory
+    = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+  
+  XAP_Dialog_FileOpenSaveAs * pDialog
+    = (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+  UT_ASSERT(pDialog);
+  if (!pDialog)
+    return false;
+
+  pDialog->runModal(pFrame);
+
+  XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+  bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+  if (bOK)
+    {
+      UT_String filename = pDialog->getPathname();
+      
+      UT_XML reader;
+      MailMerge_Listener listener (pDoc);
+      reader.setListener (&listener);
+      reader.parse (filename.c_str());
+    }
+  
+  pDialogFactory->releaseDialog(pDialog);
+  return true;
 }
 
 Defun1(scriptPlay)

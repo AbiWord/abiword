@@ -428,6 +428,11 @@ public:
 	bool                     isDontImmediateLayout(void)
 		{ return m_bDontImmediatelyLayout;}
 
+	// map UT_String=>UT_UTF8String*
+	UT_UTF8String getMailMergeField(const UT_String & key) const;
+	bool mailMergeFieldExists(const UT_String & key) const;
+	void setMailMergeField(const UT_String & key,
+						   const UT_UTF8String & value);
 
 protected:
 	~PD_Document();
@@ -464,6 +469,9 @@ private:
 	UT_Vector               m_vRevisions;
 	PT_AttrPropIndex        m_indexAP;
 	bool                    m_bDontImmediatelyLayout;
+
+	// mapping UT_String=>UT_UTF8String pointer
+	UT_StringPtrMap         m_mailMergeMap;
 };
 
 #endif /* PD_DOCUMENT_H */

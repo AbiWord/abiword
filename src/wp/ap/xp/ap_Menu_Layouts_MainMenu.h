@@ -258,6 +258,7 @@ BeginLayout(Main,0)
 
 	    MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
 	    MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
+            MenuItem(AP_MENU_ID_TOOLS_MAILMERGE)
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
     EndSubMenu()

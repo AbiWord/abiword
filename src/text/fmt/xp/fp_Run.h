@@ -766,6 +766,7 @@ extern fp_FieldData fp_FieldFmts[];
 #define FIELD_UPDATE_WORD_COUNT    4
 #define FIELD_UPDATE_PARA_COUNT   20
 #define FIELD_UPDATE_META         10
+#define FIELD_UPDATE_MAILMERGE    10
 
 class ABI_EXPORT fp_FieldRun : public fp_Run
 {
@@ -1232,6 +1233,19 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMailMergeRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMailMergeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMailMergeRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+
+  virtual UT_uint32		needsFrequentUpdates(){ return FIELD_UPDATE_MAILMERGE; }
 };
 
 class ABI_EXPORT fp_FieldMetaRun : public fp_FieldRun
