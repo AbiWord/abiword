@@ -165,9 +165,11 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	UT_ASSERT(hwndChild);
 
 	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),  hwndChild, 0);	
+	m_pPreviewWidget->getGraphics()->init3dColors();
 	m_pPreviewWidget->getWindowSize(&w,&h);
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);	
 	m_pPreviewWidget->setPreview(m_pFormatTablePreview); 
+	
 							
 	startUpdater();
 	setAllSensitivities();
