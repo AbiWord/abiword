@@ -49,6 +49,8 @@ bool AP_MacFrame::initialize()
 		return false;
 
 	_createTopLevelWindow();
+	
+	::ShowWindow (m_MacWindow);
 	return true;
 }
 
@@ -90,20 +92,17 @@ void AP_MacFrame::killFrameData(void)
 
 bool	AP_MacFrame::close(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED); 
-	return true;
+	return XAP_MacFrame::close();
 }
 
 bool	AP_MacFrame::raise(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED); 
-	return true;
+	return XAP_MacFrame::raise();
 }
 
 bool	AP_MacFrame::show(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED); 
-	return true;
+	return XAP_MacFrame::show();
 }
 
 XAP_DialogFactory *AP_MacFrame::getDialogFactory(void)
