@@ -79,6 +79,7 @@ libXap_unix_a_SOURCES=\
 	xap_UnixPSImage.cpp			\
 	xap_UnixNullGraphics.cpp		\
 	xap_UnixPSGraphics.cpp			\
+	xap_UnixGnomePrintGraphics.cpp		\
 	xap_UnixEncodingManager.cpp		\
 	xap_UnixFrameImpl.cpp			\
 	xap_UnixTableWidget.cpp \

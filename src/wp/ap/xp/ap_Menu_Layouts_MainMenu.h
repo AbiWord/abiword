@@ -44,9 +44,7 @@ BeginLayout(Main,0)
 
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
-#if defined(HAVE_GNOME)
 		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
-#endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PROPERTIES)

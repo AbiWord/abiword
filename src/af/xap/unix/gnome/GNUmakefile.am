@@ -32,7 +32,4 @@ libXap_Gnome_a_SOURCES=\
 	gal-combo-box.c				\
 	gnm-marshalers.c			\
 	xap_UnixGnomeDlg_About.cpp	\
-	xap_UnixGnomeDlg_ClipArt.cpp	\
-	xap_UnixGnomeDlg_PrintPreview.cpp  \
-	xap_UnixGnomeDlg_Print.cpp	\
-	xap_UnixGnomePrintGraphics.cpp
+	xap_UnixGnomeDlg_ClipArt.cpp

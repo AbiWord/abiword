@@ -21,23 +21,21 @@
 #define XAP_UNIXDIALOG_PRINT_H
 
 #include "xap_Dlg_Print.h"
-class XAP_Frame;
-class PS_Graphics;
+#include <libgnomeprint/gnome-print.h>
+#include <libgnomeprint/gnome-print-job.h>
+
+class XAP_UnixGnomePrintGraphics;
 
 /*****************************************************************/
-struct _printCBStruct
-{
-	GtkWidget * entry;
-	XAP_Frame * frame;
-	XAP_Dialog_Print::tAnswer * answer;
-};
-typedef struct _printCBStruct printCBStruct;
 
 class XAP_UnixDialog_Print : public XAP_Dialog_Print
 {
 public:
-	XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory, 
+							  XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_Print(void);
+
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			useStart(void);
 	virtual void			runModal(XAP_Frame * pFrame);
@@ -46,45 +44,14 @@ public:
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
 	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
 protected:
-
-	typedef enum
-	  {
-	    BUTTON_CANCEL,
-	    BUTTON_PRINT
-	  } ResponseId ;
-
-	printCBStruct			m_callbackData;
-	
 	virtual void			_raisePrintDialog(XAP_Frame * pFrame);
-	virtual void			_getGraphics(void);
+	virtual void            _getGraphics(void);
 
-	XAP_Frame *			m_pFrame;
-	PS_Graphics *			m_pPSGraphics;
-
-	struct
-	{
-		// add various fields here to persist between uses of the dialog....
-		UT_uint32	nFromPage;
-		UT_uint32	nToPage;
-		UT_uint32	nMinPage;
-		UT_uint32	nMaxPage;
-		UT_uint32	nCopies;
-		bool		bDoPageRange;
-		bool		bDoPrintSelection;
-		bool		bDoPrintToFile;
-		bool		bDoCollate;
-		bool		bEnablePrintToFile;
-		bool		bEnableSelection;
-		bool		bEnablePageRange;
-
-		GR_Graphics::ColorSpace		colorSpace;
-
-		char *		szPrintCommand;
-		
-	} m_persistPrintDlg;
+	XAP_UnixGnomePrintGraphics  * m_pGnomePrintGraphics;
+	GR_Graphics::ColorSpace		  colorSpace;
+	GnomePrintJob                *m_gpm;
+	bool                          m_bIsPreview;
 };
 
 #endif /* XAP_UNIXDIALOG_PRINT_H */

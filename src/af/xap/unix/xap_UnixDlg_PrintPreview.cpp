@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Dom Lachowicz <cinamod@hotmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,38 +17,47 @@
  * 02111-1307, USA.
  */
 
+#include <libgnomeprint/gnome-print.h>
+#include <libgnomeprint/gnome-print-config.h>
+
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#include "xap_UnixApp.h"
+
 #include "xap_UnixDlg_PrintPreview.h"
+#include "xap_UnixGnomePrintGraphics.h"
+
+class XAP_UnixFontManager;
+
+XAP_Dialog * XAP_UnixDialog_PrintPreview::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
+{
+	return new XAP_UnixDialog_PrintPreview (pFactory,id);
+}
 
 XAP_UnixDialog_PrintPreview::XAP_UnixDialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_PrintPreview(pDlgFactory,id)
+	: XAP_Dialog_PrintPreview(pDlgFactory,id), m_pGnomePrintGraphics(NULL)  
 {
-	UT_ASSERT_NOT_REACHED ();
 }
 
 XAP_UnixDialog_PrintPreview::~XAP_UnixDialog_PrintPreview(void)
 {
 }
 
-XAP_Dialog * XAP_UnixDialog_PrintPreview::static_constructor(XAP_DialogFactory * pFactory,
-															 XAP_Dialog_Id id)
+void XAP_UnixDialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
-	return new XAP_UnixDialog_PrintPreview (pFactory, id);
+	UT_return_if_fail(pGraphics == m_pGnomePrintGraphics);	
+	DELETEP(m_pGnomePrintGraphics);
 }
 
 GR_Graphics * XAP_UnixDialog_PrintPreview::getPrinterGraphicsContext(void)
-{
-	UT_ASSERT_NOT_REACHED ();
-	return 0;
+{	
+	return m_pGnomePrintGraphics;
 }
 
-void XAP_UnixDialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
+void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame) 
 {
-	UT_ASSERT_NOT_REACHED ();
-}
-
-void XAP_UnixDialog_PrintPreview::runModal(XAP_Frame * pFrame)
-{
-	UT_ASSERT_NOT_REACHED ();
+       m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config(pFrame)), true);
+       UT_return_if_fail(m_pGnomePrintGraphics != NULL);       
+       m_pGnomePrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
 }

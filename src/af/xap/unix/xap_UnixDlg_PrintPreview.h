@@ -17,13 +17,13 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UnixDIALOG_PRINTPREVIEW_H
-#define XAP_UnixDIALOG_PRINTPREVIEW_H
+#ifndef XAP_UNIXDIALOG_PRINTPREVIEW_H
+#define XAP_UNIXDIALOG_PRINTPREVIEW_H
 
 #include "xap_Dlg_PrintPreview.h"
-#include "gr_Graphics.h"
 
-class XAP_Frame;
+class XAP_UnixGnomePrintGraphics;
+
 /*****************************************************************/
 
 class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview
@@ -37,9 +37,11 @@ class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview
 	virtual void					runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory,
-										   XAP_Dialog_Id id);
+					       XAP_Dialog_Id id);
 
  protected:
+
+	XAP_UnixGnomePrintGraphics      * m_pGnomePrintGraphics;
 };
 
-#endif /* XAP_UnixDIALOG_PRINTPREVIEW_H */
+#endif /* XAP_UNIXDIALOG_PRINTPREVIEW_H */

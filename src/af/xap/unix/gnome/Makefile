@@ -38,12 +38,9 @@ CPPSRCS=		widget-color-combo.c                    \
 			xap_UnixGnomeDlg_MessageBox.cpp    \
 			xap_UnixGnomeDlg_Password.cpp	\
 			xap_UnixGnomeDlg_PluginManager.cpp \
-			xap_UnixGnomeDlg_Print.cpp         \
-			xap_UnixGnomeDlg_PrintPreview.cpp  \
 			xap_UnixGnomeDlg_Zoom.cpp          \
 			xap_UnixGnomeFrame.cpp 	           \
-			xap_UnixGnomeDlg_Language.cpp	   \
-			xap_UnixGnomePrintGraphics.cpp
+			xap_UnixGnomeDlg_Language.cpp
 
 TARGETS=		$(OBJS)
 INCLUDES=		-I/usr/X11R6/include

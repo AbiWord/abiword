@@ -42,6 +42,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixDlg_HTMLOptions.cpp		\
 			xap_UnixDlg_MessageBox.cpp		\
 			xap_UnixDlg_Print.cpp			\
+			xap_UnixDlg_PrintPreview.cpp		\
 			xap_UnixDlg_WindowMore.cpp		\
 			xap_UnixDlg_Zoom.cpp			\
 			xap_UnixDlg_Insert_Symbol.cpp		\
@@ -59,6 +60,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 	                xap_UnixNullGraphics.cpp                \
 			xap_UnixPSGenerate.cpp			\
 			xap_UnixPSGraphics.cpp                  \
+			xap_UnixGnomePrintGraphics.cpp          \
 			xap_UnixGtkColorPicker.cpp              \
 	        xap_UnixTableWidget.cpp		\
 			xap_UnixFontManager.cpp \
