@@ -179,7 +179,6 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"About &Open Source",	"Visar information om Open Source")
      MenuLabel(AP_MENU_ID_HELP_ABOUT_GNU, "Om &GNU Free Software", "Om the GNU project")
      MenuLabel(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE, "Om G&NOME Office", "Om the GNOME Office project")
- 
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Ändrar till föreslagen stavning")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Ändrar till föreslagen stavning")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,	"%s",				"Ändrar till föreslagen stavning")
