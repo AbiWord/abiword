@@ -210,8 +210,8 @@ AP_UnixDialog_Spell::runModal (XAP_Frame * pFrame)
             _updateWindow();
      
             // run into the GTK event loop for this window
-			gint response = abiRunModalDialog (GTK_DIALOG(mainWindow), false)
-			UT_DEBUGMSG (("ROB: response='%d'\n", response));
+	    gint response = abiRunModalDialog (GTK_DIALOG(mainWindow), false);
+	    UT_DEBUGMSG (("ROB: response='%d'\n", response));
             switch(response) {
 
 	            case SPELL_RESPONSE_CHANGE:
