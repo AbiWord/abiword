@@ -263,7 +263,7 @@ bool ev_Win32Keyboard::onChar(AV_View * pView,
 	EV_EditModifierState ems = _getModifierState(); 		
 
 	// The user is pressing ALT+x. If x is from a to a is a Hotkey for sure	
-	if (GetKeyState(VK_MENU) & 0x8000 && !(GetKeyState(VK_MENU) & 0x8000))
+	if (GetKeyState(VK_MENU) & 0x8000)
 	{
 		UT_DEBUGMSG(("WM_CHAR discarting char because is a menu accesskey\n"));
 		if (b>='a' && b<='z')
