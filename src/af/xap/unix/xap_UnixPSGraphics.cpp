@@ -293,7 +293,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	for (UT_sint32 i = 0; i < iLength; i++) {
 		UT_UCS4Char ch = pChars[iCharOffset + i];
-		advance += pCharWidths [i];
+		advance += pCharWidths [iCharOffset + i];
 
 		if (UT_UCS4_isspace (ch) || (UT_isOverstrikingChar(ch) != UT_NOT_OVERSTRIKING) || last_was_overstriking) {
 			if (!utf8.empty()) {

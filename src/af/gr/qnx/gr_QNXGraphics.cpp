@@ -352,7 +352,7 @@ else
 	for(int i=0;i<iLength;i++) {
 		drawChar(pChars[iCharOffset + i],xoff,yoff);
 		if(pCharWidths && i < iLength - 1)
-			xoff += pCharWidths[i];
+			xoff += pCharWidths[iCharOffset + i];
 }
 }
 

@@ -446,12 +446,12 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 					// I rather stupidly changed this to the version
 					// below the #else, but this one produces much
 					// smaller rounding errors. Tomas, Dec 6, 2003
-					iwidth += pCharWidths[i];
+					iwidth += pCharWidths[iCharOffset + i];
 					inextAdvance = tdu(iwidth);
 					pCharAdvances[j] = inextAdvance - iadvance;
 					iadvance = inextAdvance;
 #else
-					pCharAdvances[j] = tdu(pCharWidths[i]);
+					pCharAdvances[j] = tdu(pCharWidths[iCharOffset + i]);
 #endif
 					j++;
 				}

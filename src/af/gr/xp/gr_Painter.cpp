@@ -117,6 +117,12 @@ void GR_Painter::drawChars(const UT_UCSChar* pChars,
 	m_pGr->drawChars (pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
 }
 
+void GR_Painter::renderChars(GR_RenderInfo & ri)
+{
+	m_pGr->renderChars(ri);
+}
+
+
 void GR_Painter::fillRect(GR_Graphics::GR_Color3D c, UT_Rect &r)
 {
 	m_pGr->fillRect (c, r.left, r.top, r.width, r.height);

@@ -900,7 +900,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			pCharSpec[i].x = idx;
 			pCharSpec[i].y = currentYoff;
 			if (i < iLength - 1) {
-				xPos += pCharWidths[i];
+				xPos += pCharWidths[iCharOffset+i];
 			}
 		}
 		

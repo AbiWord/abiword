@@ -391,13 +391,13 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, len) atPoint:point];
 				xoff += currentRunLen;	
 				if (i < iLength - 1) {
-					xoff += pCharWidths[i];
+					xoff += pCharWidths[iCharOffset+i];
 				}
 				currentRunLen = 0;	
 				begin =  end + 1;
 			}
 			else if (i < iLength - 1) {
-				currentRunLen += pCharWidths[i];
+				currentRunLen += pCharWidths[iCharOffset+i];
 			}
 		}
 		FREEP(cBuf);

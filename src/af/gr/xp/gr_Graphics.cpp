@@ -34,8 +34,8 @@
 #include "ut_debugmsg.h"
 #include "ut_OverstrikingChars.h"
 #include "ut_TextIterator.h"
-#include "gr_ContextGlyph.h"
 #include "gr_Caret.h"
+#include "gr_RenderInfo.h"
 #include <fribidi.h>
 
 // static class member initializations
@@ -943,260 +943,35 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri, UT_GrowBufElemen
 	
 }
 
-
-bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
-{
-	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
-	
-	if((m_iBufferSize <= m_iLength + RI.m_iLength) || (bReverse && (m_iLength > RI.m_iLength)))
-	{
-		xxx_UT_DEBUGMSG(("GR_RenderInfo::append: reallocating span buffer\n"));
-		m_iBufferSize = m_iLength + RI.m_iLength + 1;
-		UT_UCS4Char * pSB = new UT_UCS4Char[m_iBufferSize];
-		UT_UCS4Char * pAB = new UT_UCS4Char[m_iBufferSize];
-		
-		UT_return_val_if_fail(pSB && pAB, false);
-		
-		if(bReverse)
-		{
-			UT_UCS4_strncpy(pSB, RI.m_pChars, RI.m_iLength);
-			UT_UCS4_strncpy(pSB + RI.m_iLength, m_pChars, m_iLength);
-
-			UT_UCS4_strncpy(pAB, (UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
-			UT_UCS4_strncpy(pAB + RI.m_iLength, (UT_UCS4Char*)m_pAdvances, m_iLength);
-		}
-		else
-		{
-			UT_UCS4_strncpy(pSB,m_pChars, m_iLength);
-			UT_UCS4_strncpy(pSB + m_iLength, RI.m_pChars, RI.m_iLength);
-
-			UT_UCS4_strncpy(pAB,(UT_UCS4Char*)m_pAdvances, m_iLength);
-			UT_UCS4_strncpy(pAB + m_iLength, (UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
-		}
-
-		*(pSB + m_iLength + RI.m_iLength) = 0;
-		delete [] m_pChars;
-		delete [] m_pAdvances;
-		
-		m_pChars = pSB;
-		m_pAdvances = (UT_sint32*)pAB;
-	}
-	else
-	{
-		UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reusing existin span buffer\n"));
-		if(bReverse)
-		{
-			// can only shift the text directly in the existing buffer if
-			// getLength() <= pNext->getLength()
-			UT_return_val_if_fail(m_iLength <= RI.m_iLength, false);
-			UT_UCS4_strncpy(m_pChars + RI.m_iLength, m_pChars, m_iLength);
-			UT_UCS4_strncpy(m_pChars, RI.m_pChars, RI.m_iLength);
-
-			UT_UCS4_strncpy((UT_UCS4Char*)m_pAdvances + RI.m_iLength,
-							(UT_UCS4Char*)m_pAdvances, m_iLength);
-			
-			UT_UCS4_strncpy((UT_UCS4Char*)m_pAdvances,
-							(UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
-		}
-		else
-		{
-			UT_UCS4_strncpy(m_pChars + m_iLength, RI.m_pChars, RI.m_iLength);
-
-			UT_UCS4_strncpy((UT_UCS4Char*)m_pAdvances + m_iLength,
-							(UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
-		}
-		*(m_pChars + m_iLength + RI.m_iLength) = 0;
-	}
-
-	return true;
-}
-
-bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse)
-{
-	UT_ASSERT( !pri );
-	pri = new GR_XPRenderInfo(m_eScriptType);
-	UT_return_val_if_fail(pri, false);
-
-	GR_XPRenderInfo * pRI = (GR_XPRenderInfo *)pri;
-	
-	UT_uint32 iPart2Len = m_iLength - offset;
-	UT_uint32 iPart1Len = m_iLength - iPart2Len;
-
-	m_iLength = iPart1Len;
-	pRI->m_iLength = iPart2Len;
-
-	UT_UCS4Char * pSB = new UT_UCS4Char[m_iLength + 1];
-	UT_UCS4Char * pAB = new UT_UCS4Char[m_iLength + 1];
-	UT_return_val_if_fail(pSB && pAB, false);
-	m_iBufferSize = iPart1Len;
-	
-	pRI->m_pChars = new UT_UCS4Char[iPart2Len + 1];
-	pRI->m_pAdvances = (UT_sint32*)new UT_UCS4Char[iPart2Len + 1];
-	UT_return_val_if_fail(pRI->m_pChars && pRI->m_pAdvances, false);
-	pRI->m_iBufferSize = iPart2Len;
-	
-	
-	if(bReverse)
-	{
-		UT_UCS4_strncpy(pSB, m_pChars + pRI->m_iLength, m_iLength);
-		UT_UCS4_strncpy(pRI->m_pChars, m_pChars, pRI->m_iLength);
-
-		UT_UCS4_strncpy(pAB, (UT_UCS4Char*)m_pAdvances + pRI->m_iLength, m_iLength);
-		UT_UCS4_strncpy((UT_UCS4Char*)pRI->m_pAdvances,
-						(UT_UCS4Char*)m_pAdvances, pRI->m_iLength);
-	}
-	else
-	{
-		UT_UCS4_strncpy(pSB, m_pChars, m_iLength);
-		UT_UCS4_strncpy(pRI->m_pChars, m_pChars + m_iLength, pRI->m_iLength);
-
-		UT_UCS4_strncpy(pAB,(UT_UCS4Char*)m_pAdvances, m_iLength);
-		UT_UCS4_strncpy((UT_UCS4Char*)pRI->m_pAdvances,
-						(UT_UCS4Char*)m_pAdvances + m_iLength, pRI->m_iLength);
-	}
-
-	pSB[m_iLength] = 0;
-	
-	pRI->m_pChars[pRI->m_iLength] = 0;
-
-	delete[] m_pChars;
-	m_pChars = pSB;
-
-	delete[] m_pAdvances;
-	m_pAdvances = (UT_sint32*)pAB;
-
-	pRI->m_eShapingResult = m_eShapingResult;
-	
-	return true;
-}
-
 /*
-   remove section of legth iLen starting at offset from any chaches ...
-   return value false indicates that simple removal was not possible
-   and the caller needs to re-shape.
+   do any preprocessing necessary prior to the actual output on screen
+
+   This function is always called before renderChars() and should take
+   care of refreshing any buffers that might need to be refreshed,
+   etc. This is to limit the number of processing if the caller needs
+   to make several calls to renderChars() with the same GR_RenderInfo
+   (for example, fp_TextRun::_draw() makes up to three calls to
+   renderChars() because it can draw the text in three segments -- we
+   do not want to recalculate the static buffers three times)
 */
-bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
+void GR_Graphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
-	UT_return_val_if_fail(m_pText, false);
-	
-	// ascertain the state of the buffer and our shaping requirenments ...
-	bool bRefresh = (((UT_uint32)m_eState & (UT_uint32)m_eShapingResult ) != 0);
-
-	if(bRefresh)
-		return false;
-	
-	bool bLigatures = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_Ligatures) != 0);
-	bool bContext = (((UT_uint32)m_eShapingResult & (UT_uint32) GRSR_ContextSensitive) != 0);
-
-	GR_ContextGlyph cg;
-	UT_UCS4Char c;
-
-	UT_uint32 pos = m_pText->getPosition();
-
-	if(!bRefresh && bLigatures)
-	{
-		// we need to recalculate the draw buffer if the character
-		// left of the deleted section is susceptible to ligating or
-		// if the two characters around the right edge of the deletion
-		// form a ligagure
-
-		// start with the right boundary, as that is computationally
-		// easier
-		if(offset + iLen < m_iLength)
-		{
-			// the easiest way of checking for presence of ligature
-			// glyph is to check for the presence of the placeholder
-			UT_uint32 off2  = offset + iLen;
-
-			if(m_iVisDir == FRIBIDI_TYPE_RTL)
-			{
-				off2 = m_iLength - off2 - 1;
-			}
-
-			bRefresh |= (m_pChars[off2] == UCS_LIGATURE_PLACEHOLDER);
-		}
-
-		// now the left boundary
-		if(!bRefresh && offset > 0)
-		{
-			m_pText->setPosition(pos + offset - 1);
-			if(m_pText->getStatus() == UTIter_OK)
-			{
-				c = m_pText->getChar();
-				bRefresh |= !cg.isNotFirstInLigature(c);
-			}
-		}
-	}
-
-	if(!bRefresh && bContext)
-	{
-		// we need to retrieve the characters left and right of the
-		// deletion
-		if(offset > 0)
-		{
-			m_pText->setPosition(pos + offset - 1);
-			if(m_pText->getStatus() == UTIter_OK)
-			{
-				c = m_pText->getChar();
-				bRefresh |= !cg.isNotContextSensitive(c);
-			}
-		}
-
-		if(!bRefresh && offset + iLen < m_iLength)
-		{
-			// this function is called in response to the PT being
-			// already changed, i.e., the character that used to be at
-			// offset + iLen is now at offset
-			m_pText->setPosition(pos + offset);
-			if(m_pText->getStatus() == UTIter_OK)
-			{
-				c = m_pText->getChar();
-				bRefresh |= !cg.isNotContextSensitive(c);
-			}
-		}
-	}
-
-	if(bRefresh)
-	{
-		return false;
-	}
-	else
-	{
-		// if we got here, we just need to cut out a bit of the draw
-		// buffer
-		UT_uint32 iLenToCopy = m_iLength - offset - iLen;
-
-		if(iLenToCopy)
-		{
-			UT_UCS4Char * d = m_pChars+offset;
-			UT_UCS4Char * s = m_pChars+offset+iLen;
-
-			if(m_iVisDir == FRIBIDI_TYPE_RTL)
-			{
-				d = m_pChars + (m_iLength - (offset + iLen - 1));
-				s = m_pChars + (m_iLength - offset);
-			}
-
-			UT_UCS4_strncpy(d, s, iLenToCopy);
-			m_pChars[m_iLength - iLen] = 0;
-
-			d = (UT_UCS4Char *) m_pAdvances+offset;
-			s = (UT_UCS4Char *) m_pAdvances+offset+iLen;
-
-			if(m_iVisDir == FRIBIDI_TYPE_RTL)
-			{
-				d = (UT_UCS4Char *) m_pAdvances + (m_iLength - offset + iLen - 1);
-				s = (UT_UCS4Char *) m_pAdvances + (m_iLength - offset);
-			}
-
-			UT_UCS4_strncpy(d, s, iLenToCopy);
-			m_pAdvances[m_iLength - iLen] = 0;
-			
-		}
-	}
-
-	return true;
+	UT_return_if_fail(ri.getType() == GRRI_XP);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+	RI.prepareToRenderChars();
 }
+
+
+void GR_Graphics::renderChars(GR_RenderInfo & ri)
+{
+	UT_return_if_fail(ri.getType() == GRRI_XP);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+
+	drawChars(RI.s_pCharBuff,RI.m_iOffset,RI.m_iLength,RI.m_xoff,RI.m_yoff,RI.m_pAdvances);
+
+	
+};
+
 
 /*
    Registers the class allocator and descriptor functions with the

@@ -63,6 +63,9 @@ public:
 				   UT_sint32 yoff,
 				   int* pCharWidths = NULL);
 
+	void renderChars(GR_RenderInfo & ri);
+
+	
 	GR_Image * genImageFromRectangle(const UT_Rect & r);
 
 private:

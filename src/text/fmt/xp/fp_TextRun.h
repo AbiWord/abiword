@@ -27,6 +27,7 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "pt_Types.h"
+#include "gr_RenderInfo.h"
 
 /*
 	fp_TextRun represents a run of contiguous text sharing the same
@@ -146,16 +147,9 @@ protected:
 										 UT_uint32 iLen,
 										 const UT_GrowBuf * pgbCharWidths);
 
-	void					_drawLastChar(UT_sint32 xoff,
-										  UT_sint32 yoff,
-										  const UT_GrowBuf * pgbCharWidths,
-										  bool bSelection,
-										  GR_Graphics * pG);
+	void					_drawLastChar(bool bSelection);
 	
-	void					_drawFirstChar(UT_sint32 xoff,
-										   UT_sint32 yoff,
-										   bool bSelection,
-										   GR_Graphics * pG);
+	void					_drawFirstChar(bool bSelection);
 
 	void					_fillRect(UT_RGBColor& clr,
 									  UT_sint32 xoff,
@@ -176,14 +170,6 @@ protected:
 	void                   _setSpaceWidthBeforeJustification(UT_sint32 iWidth);
 
 private:
-	inline void            _stripLigaturePlaceHolders(UT_UCS4Char * pChars,
-													  UT_sint32 * pWidths,
-													  UT_uint32 &iLen,
-													  UT_uint32 * pOffsets,
-													  UT_uint32 iOffsetsCount);
-
-	inline void            _calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw);
-	inline bool            _checkAndFixStaticBuffers(UT_uint32 iLen);
 
 private:
 	enum
@@ -210,10 +196,6 @@ private:
 	bool					m_bIsOverhanging;
 	bool                    m_bIsJustified;
 	UT_sint32               m_iSpaceWidthBeforeJustification;
-	// these can be static as for now we do not want to chache anything
-	static UT_UCS4Char *    s_pCharBuff;
-	static UT_sint32 *      s_pWidthBuff;
-	static UT_uint32        s_iBuffSize;
 
 	bool                    m_bKeepWidths;
 
