@@ -44,7 +44,7 @@ public:
 	
 	FontInfo * 			getMetricsData(void);
 	// perhaps request raw data from PSFont?
-
+ 
 protected:
 	AP_UnixFont * 		m_hFont;
 	UT_uint32			m_pointSize;
