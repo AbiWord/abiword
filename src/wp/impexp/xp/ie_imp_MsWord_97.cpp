@@ -111,13 +111,35 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype)
 	{
 	   IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	   UT_UCSChar *pbuf=&eachchar;
 	   UT_DEBUGMSG(("word 97 char is %c (%d), type is %d",eachchar,(int)eachchar,chartype));
 
-	   // the following character appears to be an apostrophe in Microsoft's "encoding"
+	   // take care of any oddities in Microsoft's character "encoding"
 	   if (chartype == 1 && eachchar == 146) eachchar = 39; // apostrophe
 
-	   return(pDocReader->_charData(&eachchar, 1));
+	   // HACK: don't pass through the paragraph delimiter
+	   // TODO: is there a better place to filter this?
+	   // TODO: the upcoming special character callback might
+	   // TODO: take care of these for us... -JB
+	   if (eachchar == UCS_CR)
+	     return 0;
+
+	   // add character to our current text run
+	   pDocReader->m_pTextRun[pDocReader->m_iTextRunLength++] = 
+	     (UT_UCSChar) eachchar;
+	   
+	   if (pDocReader->m_iTextRunLength == 
+	       pDocReader->m_iTextRunMaxLength) 
+	     {
+		// we can't hold any more characters in this run,
+		// so send what we currently have
+		int iRes = pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
+		pDocReader->m_iTextRunLength = 0;
+		return iRes;
+	     }
+	   else
+	     {
+		return 0;
+	     }
 	}
 
 int DocProc(wvParseStruct *ps,wvTag tag)
@@ -134,23 +156,24 @@ int ElementProc(wvParseStruct *ps,wvTag tag,void *props)
 	return(0);
 	}
 
-int IE_Imp_MsWord_97::_charData(U16 *charstr, int len)
+int IE_Imp_MsWord_97::_charData(UT_UCSChar * charstr, int len)
 	{
-	UT_UCSChar buf[1];
-	buf[0] = charstr[0];
-
-	// HACK: don't pass through the paragraph delimiter
-	// TODO: is there a better place to filter this?
-	if (buf[0]==UCS_CR)
-		return 0;
-
-	X_CheckError0(m_pDocument->appendSpan(buf,1));
+	X_CheckError0(m_pDocument->appendSpan(charstr, len));
 	return(0);
 	}
 
-int IE_Imp_MsWord_97::_docProc(wvParseStruct *ps,wvTag tag)
+int IE_Imp_MsWord_97::_docProc(wvParseStruct * ps, wvTag tag)
 	{
-	switch(tag)
+	   if (m_iTextRunLength)
+	     {
+		// flush any text in the current run
+		int iRes = _charData(m_pTextRun, m_iTextRunLength);
+		m_iTextRunLength = 0;
+		UT_ASSERT(iRes == 0);
+	     }
+		
+	   
+	   switch(tag)
 		{
 		case DOCBEGIN:
 		   /* a section will be started in the eleProc handler */
@@ -163,11 +186,19 @@ int IE_Imp_MsWord_97::_docProc(wvParseStruct *ps,wvTag tag)
 	return(0);
 	}
 
-int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
+int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props)
 	{
 	XML_Char propBuffer[1024];
 	XML_Char* pProps = "PROPS";
 	const XML_Char* propsArray[3];
+
+	if (m_iTextRunLength)
+	     {
+		// flush any text in the current run
+		int iRes = _charData(m_pTextRun, m_iTextRunLength);
+		m_iTextRunLength = 0;
+		UT_ASSERT(iRes == 0);
+	     }
 
 	propBuffer[0] = 0;
 	UT_DEBUGMSG((" started\n"));
@@ -425,6 +456,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 
 IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 {
+   FREEP(m_pTextRun);
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
@@ -432,6 +464,15 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 {
 	UT_DEBUGMSG(("constructed wv\n"));
 	m_iestatus = IES_OK;
+   
+	// to increase the speed and efficiency of the important,
+	// we'll queue characters into runs of text, and only
+	// append this to the document when something changes
+	// (or we run out of space in the buffer)
+   	m_iTextRunLength = 0;
+   	m_iTextRunMaxLength = 256;
+   	m_pTextRun = (UT_UCSChar*) calloc(m_iTextRunMaxLength, sizeof(UT_UCSChar));
+   	UT_ASSERT(m_pTextRun != NULL);
 }
 
 /*****************************************************************/
@@ -469,7 +510,7 @@ UT_Bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
 //////////////////////////////////////////////////////////////////
 
 void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
-									   unsigned char * pData, UT_uint32 lenData)
+				       unsigned char * pData, UT_uint32 lenData)
 {
 	UT_DEBUGMSG(("TODO IE_Imp_MsWord_97::pasteFromBuffer\n"));
 }

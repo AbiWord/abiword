@@ -50,9 +50,17 @@ public:
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
 	static UT_Bool 		SupportsFileType(IEFileType ft);
-	int					_charData(U16 *, int);
+
+   
+   	// the callbacks need access to these, so they have to be public
+   	int				_charData(UT_UCSChar *, int);
 	int 				_docProc(wvParseStruct *ps,wvTag tag);
 	int 				_eleProc(wvParseStruct *ps,wvTag tag,void *props);
+
+	UT_UCSChar * m_pTextRun;
+   	UT_uint16 m_iTextRunLength;
+   	UT_uint16 m_iTextRunMaxLength;
+   
 protected:
 	IEStatus			m_iestatus;
 };
