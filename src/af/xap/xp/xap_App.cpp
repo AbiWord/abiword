@@ -21,6 +21,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_string.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
 #include "ap_App.h"
@@ -162,4 +163,24 @@ AP_Frame * AP_App::getFrame(UT_uint32 ndx) const
 UT_sint32 AP_App::findFrame(AP_Frame * pFrame)
 {
 	return m_vecFrames.findItem(pFrame);
+}
+	
+UT_sint32 AP_App::findFrame(const char * szFilename)
+{
+	if (!szFilename || !*szFilename)
+		return -1;
+
+	for (UT_uint32 i=0; i<getFrameCount(); i++)
+	{
+		AP_Frame * f = getFrame(i);
+		UT_ASSERT(f);
+		const char * s = f->getFilename();
+
+		if (s && *s && (0 == UT_stricmp(szFilename, s)))
+		{
+			return (UT_sint32) i;
+		}
+	}
+
+	return -1;
 }

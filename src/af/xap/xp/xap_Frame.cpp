@@ -147,6 +147,16 @@ FV_View * AP_Frame::getCurrentView(void) const
 	return m_pView;
 }
 
+const char * AP_Frame::getFilename(void) const
+{
+	return m_pDoc->getFilename();
+}
+
+UT_Bool AP_Frame::isDirty(void) const
+{
+	return m_pDoc->isDirty();
+}
+
 void AP_Frame::setViewNumber(UT_uint32 n)
 {
 	m_nView = n;

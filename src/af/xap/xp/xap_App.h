@@ -51,6 +51,7 @@ public:
 	UT_uint32						getFrameCount(void) const;
 	AP_Frame * 						getFrame(UT_uint32 ndx) const;
 	UT_sint32						findFrame(AP_Frame * pFrame);
+	UT_sint32						findFrame(const char * szFilename);
 
 	const char *					getApplicationTitleForTitleBar(void) const;
 	const char *					getApplicationName(void) const;

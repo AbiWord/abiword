@@ -62,7 +62,10 @@ public:
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
 	AP_App *					getApp(void) const;
 	FV_View *					getCurrentView(void) const;
+	const char *				getFilename(void) const;
 	const char *				getTitle(int len) const;
+
+	UT_Bool						isDirty(void) const;
 
 	void						setViewNumber(UT_uint32 n);
 	UT_uint32					getViewNumber(void) const;

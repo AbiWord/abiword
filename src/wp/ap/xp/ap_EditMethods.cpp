@@ -43,6 +43,10 @@
 
 
 #ifdef DLGHACK
+typedef enum _dlg_Answer { dlg_OK, dlg_CANCEL, dlg_YES, dlg_NO } dlg_Answer;
+typedef enum _dlg_Buttons { dlg_O, dlg_OC, dlg_YN, dlg_YNC } dlg_Buttons;
+
+dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton);
 char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs);
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
 #endif /* DLGHACK */
@@ -959,7 +963,38 @@ Defun1(fileOpen)
 		UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 		AP_App * pApp = pFrame->getApp();
 		UT_ASSERT(pApp);
-		AP_Frame * pNewFrame = pApp->newFrame();
+		AP_Frame * pNewFrame = NULL;
+
+		// see if requested file is already open in another frame
+		UT_sint32 ndx = pApp->findFrame(pNewFile);
+
+		if (ndx < 0)
+		{
+			// nope, make a new one  
+			pNewFrame = pApp->newFrame();
+		}
+		else
+		{
+			// yep, reuse it 
+			pNewFrame = pApp->getFrame(ndx);
+			UT_ASSERT(pNewFrame);
+
+			pNewFrame->raise();
+
+#ifdef DLGHACK
+			char buf[256];	// TODO: could overflow until we get path out of filename
+
+			sprintf(buf, "Revert to saved copy of %s?", pNewFrame->getFilename());
+			dlg_Answer ans = _askUser(pNewFrame, buf, dlg_YN, 0);
+
+			if (ans == dlg_NO)
+			{
+				// never mind
+				free(pNewFile);
+				return UT_FALSE;
+			}
+#endif /* DLGHACK */
+		}
 
 		if (pNewFrame)
 			pFrame = pNewFrame;
@@ -977,11 +1012,11 @@ Defun1(fileOpen)
 
 Defun(fileSave)
 {
-	FL_DocLayout* pLayout = pView->getLayout();
-	UT_ASSERT(pLayout);
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
 
 	// can only save without prompting if filename already known
-	if (!pLayout->getDocument()->getFilename())
+	if (!pFrame->getFilename())
 		return EX(fileSaveAs);
 
 	pView->cmdSave();
@@ -1180,23 +1215,39 @@ static void _reallyExit(void)
 #endif /* DLGHACK */
 }
 
-Defun1(closeWindow)
+Defun(closeWindow)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-	FL_DocLayout* pLayout = pView->getLayout();
-	UT_ASSERT(pLayout);
 
 	// is this the last view on a dirty document?
 	if ((pFrame->getViewNumber() > 0) && 
-		(pLayout->getDocument()->isDirty()))
+		(pFrame->isDirty()))
 	{
-		// TODO do we care?  raise dlg & ask user
-		// TODO		yes -- EX(save)
-		// TODO		no -- fall through & keep going 
-		// TODO		cancel -- return UT_FALSE;
+#ifdef DLGHACK
+		char buf[256];	// TODO: could overflow until we get path out of filename
+
+		sprintf(buf, "Save changes to %s?", pFrame->getFilename());
+		dlg_Answer ans = _askUser(pFrame, buf, dlg_YNC, 0);
+		
+		if (ans == dlg_YES)
+		{
+			// save it first
+			UT_Bool bRet = EX(fileSave);
+
+			if (!bRet)
+			{
+				/* TODO */
+			}
+		}
+		else if (ans == dlg_CANCEL)
+		{
+			// don't close
+			return UT_FALSE;
+		}
+#endif /* DLGHACK */
 	}
 
 	// are we the last window?
@@ -1222,9 +1273,15 @@ Defun(querySaveAndExit)
 
 	if (1 < pApp->getFrameCount())
 	{
-		// TODO warn user that this will close all windows & exit
-		// TODO		ok -- fall through
-		// TODO		cancel -- return UT_FALSE;
+#ifdef DLGHACK
+		dlg_Answer ans = _askUser(pFrame, "Close all windows and exit?", dlg_YN, 1);
+		
+		if (ans == dlg_NO)
+		{
+			// never mind
+			return UT_FALSE;
+		}
+#endif /* DLGHACK */
 	}
 
 	UT_Bool bRet = UT_TRUE;
@@ -1691,6 +1748,93 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	return UT_FALSE;
 }
 
+dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton)
+{
+	dlg_Answer ans = dlg_OK;
+
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	const char * szCaption = pApp->getApplicationTitleForTitleBar();
+
+	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
+	HWND hwnd = pWin32Frame->getTopLevelWindow();
+	UINT flags = (b == dlg_O ? MB_ICONASTERISK : MB_ICONQUESTION);
+
+	switch (b)
+	{
+	case dlg_O:
+		flags |= MB_OK;
+		break;
+
+	case dlg_OC:
+		flags |= MB_OKCANCEL;
+		break;
+
+	case dlg_YN:
+		flags |= MB_YESNO;
+		break;
+
+	case dlg_YNC:
+		flags |= MB_YESNOCANCEL;
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	switch (defButton)
+	{
+	case 0:
+		flags |= MB_DEFBUTTON1;
+		break;
+
+	case 1:
+		flags |= MB_DEFBUTTON2;
+		break;
+
+	case 2:
+		flags |= MB_DEFBUTTON3;
+		break;
+
+	case 3:
+		flags |= MB_DEFBUTTON4;
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	int res = MessageBox(hwnd, szQ, szCaption, flags);
+
+	switch (res)
+	{
+	case IDCANCEL:
+		ans = dlg_CANCEL;
+		break;
+
+	case IDNO:
+		ans = dlg_NO;
+		break;
+
+	case IDOK:
+		ans = dlg_OK;
+		break;
+
+	case IDYES:
+		ans = dlg_YES;
+		break;
+
+	case IDABORT:
+	case IDIGNORE:
+	case IDRETRY:
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	return ans;
+}
+
 // TODO: figure out what can be shared here and move it up 
 UT_Bool _printDoc(HWND hwnd)
 {
@@ -1849,6 +1993,20 @@ UT_Bool _chooseFont(AP_Frame * /*pFrame*/, FV_View * /*pView*/)
 	gtk_widget_destroy (GTK_WIDGET(cf));
 
 	return UT_TRUE;
+}
+
+dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton)
+{
+	dlg_Answer ans = dlg_OK;
+
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	const char * szCaption = pApp->getApplicationTitleForTitleBar();
+
+	/* TODO */
+
+	return ans;
 }
 
 #endif /* LINUX */
