@@ -2,6 +2,7 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
+<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="ap_UnixDialog_FormatTable">
   <property name="visible">True</property>
@@ -79,7 +80,6 @@
 
 	      <child>
 		<widget class="GtkLabel" id="label9">
-		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Thickness:</property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
@@ -104,7 +104,6 @@
 
 	      <child>
 		<widget class="GtkOptionMenu" id="optionmenu1">
-		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="history">0</property>
 
