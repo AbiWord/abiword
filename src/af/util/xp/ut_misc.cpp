@@ -684,7 +684,13 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 			return true;
 
 		default:
-			return (UT_BIDI_IS_LETTER(UT_bidiGetCharType(currentChar)) == 0);
+			{
+				UT_BidiCharType t = UT_bidiGetCharType(currentChar);
+				if(UT_BIDI_IS_NSM(t) || UT_BIDI_IS_LETTER(t))
+					return false;
+				else
+					return true;
+			}
 	}
 
 #else
