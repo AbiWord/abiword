@@ -3304,7 +3304,8 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 		}
 	}
 
-	if (( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
+	if (!pView->m_bWarnedThatRestartNeeded && 
+		( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
 		 || (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs, &b) && b != pView->m_bUseHebrewContextGlyphs)
 		)
 	{
@@ -3323,6 +3324,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 		UT_ASSERT((/*pMsg1 && */pMsg2));
 
 		pFrame->showMessageBox(pMsg2, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		pView->m_bWarnedThatRestartNeeded = true;
 	}
 }
 

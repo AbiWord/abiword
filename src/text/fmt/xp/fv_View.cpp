@@ -138,7 +138,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iPieceTableState(0),
 		m_iMouseX(0),
 		m_iMouseY(0),
-		m_iViewRevision(0)
+		m_iViewRevision(0),
+		m_bWarnedThatRestartNeeded(false)
 {
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
