@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 2001 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,8 @@
 #include "ie_exp.h"
 #include "ie_impexp_Register.h"
 
+#include "ie_impGraphic_Cocoa.h"
+
 
 /*!
   Register all Cocoa Importer and Exporter
@@ -31,5 +33,6 @@
  */
 void IE_ImpExp_RegisterPlatform ()
 {
+	IE_ImpGraphic::registerImporter(new IE_ImpGraphicCocoa_Sniffer());
 }
     

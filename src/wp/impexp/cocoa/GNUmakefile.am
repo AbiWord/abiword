@@ -26,4 +26,5 @@ INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 
 noinst_LIBRARIES = libImpExp_cocoa.a
 
-libImpExp_cocoa_a_SOURCES = ie_impexp_RegisterCocoa.cpp
+libImpExp_cocoa_a_SOURCES = ie_impexp_RegisterCocoa.cpp \
+		ie_impGraphic_Cocoa.mm
