@@ -68,16 +68,19 @@ public:									// we create...
 {
 	UT_DEBUGMSG (("@EV_CocoaToolbarTarget (id)toolbarSelected:(id)sender\n"));
 	
-	Class senderClass = [sender class];
-	if (senderClass == [NSButton class]) {
+	if ([sender isKindOfClass:[NSButton class]]) {
 		_wd* wd = (_wd*)[sender tag];
 		wd->m_pCocoaToolbar->toolbarEvent (wd, NULL, 0);
 	}
-	else  if (senderClass == [NSComboBox class]){
+	else  if ([sender isKindOfClass:[NSComboBox class]]){
 		_wd* wd = (_wd*)[sender tag];
-//		NSString * str = [sender stringValue];
-//		wd->m_pCocoaToolbar->toolbarEvent (wd, [str cString], [str cStringLength]);	
-		wd->m_pCocoaToolbar->toolbarEvent (wd, NULL, 0);
+		NSString * str = [sender stringValue];
+		int numChars = [str cStringLength];
+		UT_UCSChar * data = (UT_UCSChar *)malloc (sizeof (UT_UCSChar) * (numChars + 1));
+		[str getCharacters:data];
+		wd->m_pCocoaToolbar->toolbarEvent (wd, data, numChars * sizeof(UT_UCSChar));	
+//		wd->m_pCocoaToolbar->toolbarEvent (wd, NULL, 0);
+		FREEP (data);
 	}
 	else {
 		UT_DEBUGMSG (("Unexpected object class\n"));
