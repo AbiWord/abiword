@@ -103,6 +103,7 @@
 #define AP_RID_DIALOG_OPTIONS_LANGSETTINGS				1502
 #define AP_RID_DIALOG_OPTIONS_TEXT_DOCLANG				1503
 #define AP_RID_DIALOG_OPTIONS_TEXT_UILANG				1504
+#define AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard  1505
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -263,7 +264,7 @@ AP_RID_DIALOG_OPT_LANGUAGE DIALOG DISCARDABLE  0, 0, 295, 135
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-	GROUPBOX        "Language settings", 	AP_RID_DIALOG_OPTIONS_LANGSETTINGS,0,2,290,61
+	GROUPBOX        "Language settings", 	AP_RID_DIALOG_OPTIONS_LANGSETTINGS,0,2,290,67
     LTEXT           "Default language for documents", AP_RID_DIALOG_OPTIONS_TEXT_DOCLANG, 5,16,120,8
     
     COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG,130,14,113,70,CBS_DROPDOWNLIST | CBS_SORT | 
@@ -274,20 +275,23 @@ BEGIN
 	COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG, 130,32,113,70,CBS_DROPDOWNLIST | CBS_SORT | 
 		            WS_VSCROLL | WS_TABSTOP	
 
+	CONTROL 		"Change language when changing keyboard", AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard ,
+					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
+					5,56, 280, 8
 	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,
-					2, 87, 290, 46
+					2, 77, 290, 57
 	CONTROL 		"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,98, 285, 10
+					5,87, 285, 10
 	CONTROL 		"Select correct shapes of glyphs from context:", AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,109, 285, 10
+					5,98, 285, 10
 	CONTROL 		"Use glyph shaping for Hebrew:", AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,120, 285, 10
+					5,109, 285, 10
 	CONTROL 		"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,131, 285, 10
+					5,120, 285, 10
 END
 
 #endif /* RC_INVOKED */

@@ -83,6 +83,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_AUTO_LOAD_PLUGINS,
 				   id_LIST_VIEW_TOOLBARS,		// this is needed for the Cocoa front-end to fetch the control
 				   id_NOTEBOOK,
+				   id_CHECK_LANG_WITH_KEYBOARD,
 				   id_last } tControl;
 
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
@@ -168,11 +169,14 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	virtual void _setDocLanguage(const UT_String &stExt) {};
 	virtual void _gatherUILanguage(UT_String &stRetVal){stRetVal.clear();};
 	virtual void _setUILanguage(const UT_String &stExt) {};
-
+	virtual bool _gatherLanguageWithKeyboard() {return false;}
+	virtual void _setLanguageWithKeyboard(const bool) {}
+	
 	// so we can save and restore to the same page - must be able to return
 	// the current page and reset it later (i.e., don't use a handle, but a
 	// page index)
 	SET_GATHER			(NotebookPageNum,	int );
+
 #undef SET_GATHER
 
  protected:

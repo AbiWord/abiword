@@ -841,35 +841,36 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 		pWin32Keyboard->remapKeyboard((HKL)lParam);
 
 		// we also want to automatically change the language at
-		// the insertion point
-		WORD langID = LANGIDFROMLCID(LOWORD((HKL)lParam));
-		const char * pszLang = wvLIDToLangConverter((unsigned short)langID);
-		UT_DEBUGMSG(("Keyboard Language: %s\n",pszLang));
-#if 0
-		// now translate the string to a pointer into the
-		// UT_Language table
-		UT_Language l;
-		const XML_Char * pLanguage = l.getPropertyFromProperty(pszLang);
-		UT_DEBUGMSG(("Keyboard Language: %s (%s)\n",pszLang, pLanguage));
-#endif
-			
-		// now invoke the appropriet formatting method ...
-		EV_EditMethodCallData CallData(pszLang,strlen(pszLang));
+		// the insertion point, unless the user preferences tell us
+		// otherwise
 
-		XAP_App * pApp = f->getApp();
-		UT_ASSERT(pApp);
+	    bool bChangeLang = true;
+		XAP_App::getApp()->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard, &bChangeLang);
 
-		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
-		UT_ASSERT(pEMC);
-
-		if(pEMC)
+		if(bChangeLang)
 		{
-			EV_EditMethod * pEM = pEMC->findEditMethodByName("language");
-			UT_ASSERT(pEM);						// make sure it's bound to something
+			WORD langID = LANGIDFROMLCID(LOWORD((HKL)lParam));
+			const char * pszLang = wvLIDToLangConverter((unsigned short)langID);
+			UT_DEBUGMSG(("Keyboard Language: %s\n",pszLang));
 			
-			if (pEM)
+			// now invoke the appropriet formatting method ...
+			EV_EditMethodCallData CallData(pszLang,strlen(pszLang));
+
+			XAP_App * pApp = f->getApp();
+			UT_ASSERT(pApp);
+
+			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+			UT_ASSERT(pEMC);
+
+			if(pEMC)
 			{
-				pEM->Fn(pView,&CallData);
+				EV_EditMethod * pEM = pEMC->findEditMethodByName("language");
+				UT_ASSERT(pEM);						// make sure it's bound to something
+			
+				if (pEM)
+				{
+					pEM->Fn(pView,&CallData);
+				}
 			}
 		}
 		

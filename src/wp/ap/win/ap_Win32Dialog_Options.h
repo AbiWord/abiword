@@ -259,6 +259,7 @@ public:
 	virtual void _setUILanguage(const UT_String &stExt);
 
 	SET_GATHER			(NotebookPageNum,	int );
+	SET_GATHER          (LanguageWithKeyboard, bool);
 #undef SET_GATHER
 
  protected:

@@ -119,7 +119,9 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseContextGlyphs, _gatherOtherUseContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
-
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
+	
+	
 #if 1
 	// JOAQUIN - fix this: Dom
 	UT_DEBUGMSG(("Saving Auto Save File [%i]\n", _gatherAutoSaveFile()));
@@ -382,6 +384,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,&b))
 		_setOtherHebrewContextGlyphs (b);
 
+	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_ChangeLanguageWithKeyboard,&b))
+		_setLanguageWithKeyboard (b);
+	
 	// enable/disable controls
 	_initEnableControls();
 }
@@ -402,8 +407,11 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 		break;
 */
 
-	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
+	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
 		_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
+		break;
+		
+	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
 		_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 		break;
 
@@ -434,7 +442,7 @@ void AP_Dialog_Options::_initEnableControls()
 
 	// general
 	_controlEnable( id_BUTTON_SAVE, 				false );
-	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
+	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, /*_gatherOtherUseContextGlyphs()*/false);
 	_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 
 	//

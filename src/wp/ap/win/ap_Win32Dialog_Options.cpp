@@ -265,17 +265,21 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		return;
 
 	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_PREF),AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs),value);
+		EnableWindow(GetDlgItem((HWND)getPage(PG_LANG),AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs),value);
 		return;
 
 	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-		EnableWindow(GetDlgItem((HWND)getPage(PG_PREF),AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs),value);
+		EnableWindow(GetDlgItem((HWND)getPage(PG_LANG),AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs),value);
 		return;
 
 	case id_CHECK_AUTO_SAVE_FILE:
 		EnableWindow(GetDlgItem((HWND)getPage(PG_PREF),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile),value);
 		return;
 
+	case id_CHECK_LANG_WITH_KEYBOARD:
+		EnableWindow(GetDlgItem((HWND)getPage(PG_LANG),AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard),value);
+		return;
+		
 	default:
 //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -323,6 +327,7 @@ DEFINE2_GET_SET_BOOL(PG_LANG,OtherDirectionRtl);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherUseContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherSaveContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherHebrewContextGlyphs);
+DEFINE2_GET_SET_BOOL(PG_LANG,LanguageWithKeyboard);
 
 #undef DEFINE_GET_SET_BOOL
 
@@ -723,7 +728,7 @@ void AP_Win32Dialog_Options_Spelling::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;	
+	HWND hWndCtrl = (HWND)lParam;
 	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
 	
 	switch (wId)
@@ -804,7 +809,21 @@ AP_Win32Dialog_Options_Lang::~AP_Win32Dialog_Options_Lang()
 */	
 void AP_Win32Dialog_Options_Lang::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;	
+	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getContainer();	
 	
+	switch (wId)
+	{
+		case AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs:
+			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);
+			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);
+			return;
+			
+		default:
+			break;
+	}
 }
 
 /*
@@ -814,35 +833,18 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 {				
 	const XAP_StringSet * pSS = getApp()->getStringSet();	
 
-	// Hidi Bidi Controls
-	HWND hwndBidiBox = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_FRM_BidiOptions);
-	HWND hwndBidiChk = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl);
-	HWND hwndBidiUseContextGlyphs = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs);
-	HWND hwndBidiSaveContextGlyphs = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs);
-	HWND hwndBidiHebrewContextGlyphs = GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs);
-	
-	ShowWindow( hwndBidiBox, SW_HIDE);
-	ShowWindow( hwndBidiChk, SW_HIDE);
-	ShowWindow( hwndBidiUseContextGlyphs, SW_HIDE);
-	ShowWindow( hwndBidiHebrewContextGlyphs, SW_HIDE);
-	ShowWindow( hwndBidiSaveContextGlyphs, SW_HIDE);
-	
-	ShowWindow( hwndBidiBox, SW_SHOW);
-	ShowWindow( hwndBidiChk, SW_SHOW);
-	ShowWindow( hwndBidiUseContextGlyphs, SW_SHOW);
-	ShowWindow( hwndBidiHebrewContextGlyphs, SW_SHOW);
 	_DS2(OPTIONS_FRM_BidiOptions,			DLG_Options_Label_BiDiOptions);
 	_DS2(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
 	_DS2(OPTIONS_CHK_OtherUseContextGlyphs,	DLG_Options_Label_UseContextGlyphs);
 	_DS2(OPTIONS_CHK_OtherSaveContextGlyphs, DLG_Options_Label_SaveContextGlyphs);
 	_DS2(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
 	
+	_DSX2(OPTIONS_CHK_LanguageWithKeyboard,		DLG_Options_Label_LangWithKeyboard);
+
 	_DS2(OPTIONS_TEXT_DOCLANG, 					DLG_Options_Label_DefLangForDocs);
 	_DS2(OPTIONS_TEXT_UILANG,				 	DLG_Options_Label_UILang);
 	_DS2(OPTIONS_LANGSETTINGS, 					DLG_Options_Label_LangSettings);
 				
-	_DS2(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
-	
 	/* Fill up document language*/			
 	{			
 		HWND	hCtrlUILang		= GetDlgItem(getHandle(), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
@@ -1056,7 +1058,9 @@ void AP_Win32Dialog_Options_Pref::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		pParent->_enableDisableLogic(AP_Dialog_Options::id_SHOWSPLASH); 	
 		return;	
 	
-	default:
+	case AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard:  pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_LANG_WITH_KEYBOARD);return;
+
+		default:
 		break;
 	}
 

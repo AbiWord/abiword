@@ -178,6 +178,10 @@
 #define XAP_PREF_KEY_HTMLExportOptions  "HTML_Export_Options"
 #define XAP_PREF_DEFAULT_HTMLExportOptions "?xml,xmlns:awml,+CSS"
 
+#define XAP_PREF_KEY_ChangeLanguageWithKeyboard "ChangeLangWithKeyboard"
+#define XAP_PREF_DEFAULT_ChangeLanguageWithKeyboard "1"
+
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -226,6 +230,6 @@ dcl(DefaultSaveDirectory)
 dcl(ShowUnixFontWarning)
 dcl(ModifyUnixFontPath)
 dcl(HTMLExportOptions)
-
+dcl(ChangeLanguageWithKeyboard)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
