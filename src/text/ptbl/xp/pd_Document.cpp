@@ -1730,19 +1730,20 @@ void PD_Document::_destroyDataItemData(void)
 
 /*! 
   Synchronize the last opened/last saves filetypes.
- \param bOpenedFromSaved True to set opened from saved, otherwise the reverse
+ \param bReadLastSavedAsType True to write last opened and read last 
+           saved type; otherwise, write last saved type from last opened type.
 
  There are actually two filetypes - one for importers and one for
  exporters.  This function tries to synchronize the one to the other.
 */
-bool PD_Document::_syncFileTypes(bool bOpenedFromSaved)
+bool PD_Document::_syncFileTypes(bool bReadSaveWriteOpen)
 {
 	const char *szSuffixes;
 
-	if (bOpenedFromSaved)
-	  szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
-	else
+	if (bReadSaveWriteOpen)
 	  szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
+	else
+	  szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
 
 	if (!szSuffixes)
 	  return false;
@@ -1754,7 +1755,7 @@ bool PD_Document::_syncFileTypes(bool bOpenedFromSaved)
 			suffix += *p;
 
 	IEFileType ieft;
-	if (bOpenedFromSaved)
+	if (bReadSaveWriteOpen)
 	{
 		ieft = IE_Imp::fileTypeForSuffix(suffix.c_str());
 		m_lastOpenedType = ieft;

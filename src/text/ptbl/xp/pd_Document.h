@@ -280,7 +280,7 @@ protected:
 
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
-	bool					_syncFileTypes(bool bOpenedFromSaved);
+	bool					_syncFileTypes(bool bReadSaveWriteOpen);
 
 private:
 	bool					m_ballowListUpdates;
