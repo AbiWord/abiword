@@ -69,7 +69,7 @@ static lang_entry s_Table[] =
 	{"es-MX",		NULL, XAP_STRING_ID_LANG_ES_MX, UTLANG_LTR},
 	{"et",			NULL, XAP_STRING_ID_LANG_ET,    UTLANG_LTR},		// Hipi: Why not et-EE?
 	{"eu-ES",		NULL, XAP_STRING_ID_LANG_EU_ES, UTLANG_LTR},	// Hipi: What about eu-FR?
-	{"fa-IR",		NULL, XAP_STRING_ID_LANG_FA_IR, UTLANG_LTR},
+	{"fa-IR",		NULL, XAP_STRING_ID_LANG_FA_IR, UTLANG_RTL},
 	{"fi-FI",		NULL, XAP_STRING_ID_LANG_FI_FI, UTLANG_LTR},
 	{"fr-BE",		NULL, XAP_STRING_ID_LANG_FR_BE, UTLANG_LTR},
 	{"fr-CA",		NULL, XAP_STRING_ID_LANG_FR_CA, UTLANG_LTR},
@@ -89,9 +89,9 @@ static lang_entry s_Table[] =
 	{"ia",			NULL, XAP_STRING_ID_LANG_IA,    UTLANG_LTR},
 	{"id-ID",		NULL, XAP_STRING_ID_LANG_ID_ID, UTLANG_LTR},
 	{"it-IT",		NULL, XAP_STRING_ID_LANG_IT_IT, UTLANG_LTR},
-	{"ja-JP",		NULL, XAP_STRING_ID_LANG_JA_JP, UTLANG_LTR},
+	{"ja-JP",		NULL, XAP_STRING_ID_LANG_JA_JP, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
 	{"ka-GE",		NULL, XAP_STRING_ID_LANG_KA_GE, UTLANG_LTR},
-	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR, UTLANG_LTR},	// Hipi: What about ko-KP?
+	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR, UTLANG_VERTICAL},	// TODO also UTLANG_LTR, Hipi: What about ko-KP?
 	{"kw-GB",		NULL, XAP_STRING_ID_LANG_KW_GB, UTLANG_LTR},	
 	{"la-IT",		NULL, XAP_STRING_ID_LANG_LA_IT, UTLANG_LTR},	// Hipi: Should be just "la"
 	{"lt-LT",		NULL, XAP_STRING_ID_LANG_LT_LT, UTLANG_LTR},
@@ -116,14 +116,15 @@ static lang_entry s_Table[] =
 	{"sr",			NULL, XAP_STRING_ID_LANG_SR,    UTLANG_LTR},		// Why not sr-YU?
 	{"sv-SE",		NULL, XAP_STRING_ID_LANG_SV_SE, UTLANG_LTR},
 	{"th-TH",		NULL, XAP_STRING_ID_LANG_TH_TH, UTLANG_LTR},
-	{"tr-TR",		NULL, XAP_STRING_ID_LANG_TR_TR, UTLANG_LTR},
+	{"tr-TR",		NULL, XAP_STRING_ID_LANG_TR_TR, UTLANG_LTR},		// UTLANG_RTL for Ottoman Turkish
 	{"uk-UA",		NULL, XAP_STRING_ID_LANG_UK_UA, UTLANG_LTR},
+	{"ur-PK",		NULL, XAP_STRING_ID_LANG_UR_PK, UTLANG_RTL},
 	{"vi-VN",		NULL, XAP_STRING_ID_LANG_VI_VN, UTLANG_LTR},
 	{"yi",			NULL, XAP_STRING_ID_LANG_YI,    UTLANG_RTL},
-	{"zh-CN",		NULL, XAP_STRING_ID_LANG_ZH_CN, UTLANG_LTR},
-	{"zh-HK",		NULL, XAP_STRING_ID_LANG_ZH_HK, UTLANG_LTR},
-	{"zh-SG",		NULL, XAP_STRING_ID_LANG_ZH_SG, UTLANG_LTR},
-	{"zh-TW",		NULL, XAP_STRING_ID_LANG_ZH_TW, UTLANG_LTR},
+	{"zh-CN",		NULL, XAP_STRING_ID_LANG_ZH_CN, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
+	{"zh-HK",		NULL, XAP_STRING_ID_LANG_ZH_HK, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
+	{"zh-SG",		NULL, XAP_STRING_ID_LANG_ZH_SG, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
+	{"zh-TW",		NULL, XAP_STRING_ID_LANG_ZH_TW, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
 };
 
 static int s_compareQ(const void * a, const void *b)
@@ -237,7 +238,7 @@ const XML_Char *  UT_Language::getPropertyFromProperty(const XML_Char * prop)
 	{
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
 					 "language to the tables\n", prop));
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		//UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 		return 0;
 	}
 }
