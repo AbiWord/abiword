@@ -45,7 +45,7 @@ public:
 
 protected:
 
-	bool					_run_gtk_main(XAP_Frame * pFrame, void * pFSvoid,
+	bool					_run_gtk_main(XAP_Frame * pFrame,
 										  bool bCheckWritePermission,
 										  GtkWidget * filetypes_pulldown);
 	void 					_notifyError_OKOnly(XAP_Frame * pFrame,
@@ -56,7 +56,7 @@ protected:
 	bool 				_askOverwrite_YesNo(XAP_Frame * pFrame,
 												const char * fileName);
 
-	GtkFileSelection * m_FS;
+	GtkFileChooser * m_FC;
 	GtkWidget * m_preview;
 private:
 	bool				m_bExport;
