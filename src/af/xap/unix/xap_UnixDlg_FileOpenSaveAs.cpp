@@ -795,28 +795,35 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
 #if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect(G_OBJECT(m_FC),
-#else
-	g_signal_connect(G_OBJECT(m_FS),
-#endif
 							 "delete_event",
 							 G_CALLBACK(s_delete_clicked),
 							 &m_answer);
+#else
+	g_signal_connect(G_OBJECT(m_FS),
+							 "delete_event",
+							 G_CALLBACK(s_delete_clicked),
+							 &m_answer);
+#endif
 
 #if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect(G_OBJECT(m_FC),
-#else
-	g_signal_connect(G_OBJECT(m_FS),
-#endif
 			    "key_press_event",
 			    G_CALLBACK(fsel_key_event), &m_answer);
+#else
+	g_signal_connect(G_OBJECT(m_FS),
+			    "key_press_event",
+			    G_CALLBACK(fsel_key_event), &m_answer);
+#endif
 
 #if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect (G_OBJECT (m_FC),
-#else
-	g_signal_connect (G_OBJECT (m_FS),
-#endif
 				"response",
 				G_CALLBACK(s_dialog_response), &m_answer);
+#else
+	g_signal_connect (G_OBJECT (m_FS),
+				"response",
+				G_CALLBACK(s_dialog_response), &m_answer);
+#endif
 	
 #if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect (G_OBJECT (m_FC),
