@@ -71,21 +71,24 @@ public:
 	UT_contextGlyph(bool bNoInit);
 	void static_destructor();
 	
-	UT_UCSChar getGlyph(const UT_UCSChar * code,
-						const UT_UCSChar * prev,
-						const UT_UCSChar * next,
-						const XML_Char   * pLang) const;
-		
 	void renderString(const UT_UCSChar * src,
 					  UT_UCSChar       * dest,
 					  UT_uint32          len,
 					  const UT_UCSChar * prev,
 					  const UT_UCSChar * next,
 					  const XML_Char   * pLang,
-					  FriBidiCharType    iDirection) const;
+					  FriBidiCharType    iDirection,
+					  bool (*isGlyphAvailable)(UT_UCS4Char g) = NULL) const;
 		
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;
+
+	UT_UCS4Char       getSmartQuote(UT_UCS4Char c,
+									UT_UCS4Char *prev,
+									UT_UCS4Char * next,
+									const XML_Char   * pLang,
+									bool (*isGlyphAvailable)(UT_UCS4Char g) = NULL) const;
+									
 
 	bool  isNotFirstInLigature(UT_UCS4Char c) const;
 	bool  isNotSecondInLigature(UT_UCS4Char c) const;

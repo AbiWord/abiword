@@ -911,7 +911,7 @@ static int s_comp_qlig(const void *a, const void *b)
 
 
 /*
-   SOFT SMART QUOTES HANDLING
+   SMART QUOTES HANDLING
 
    This is how it works: each type of smart quote is described by a
    LetterData structure in which the first two fields are unused;
@@ -982,7 +982,6 @@ static UT_UCSChar s_getMirrorChar(UT_UCSChar c)
 // Initialisation of static members
 bool             UT_contextGlyph::s_bInit           = false;
 UT_uint32        UT_contextGlyph::s_iGlyphTableSize = sizeof(s_table);
-bool             UT_contextGlyph::s_bSmartQuotes    = true;
 const XML_Char * UT_contextGlyph::s_pEN_US          = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1037,9 +1036,6 @@ UT_contextGlyph::UT_contextGlyph()
 			s_smart_quotes[i].pLang = lang.getCodeFromCode(s_smart_quotes[i].pLang);
 		}
 
-		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SmartQuotesEnable),
-											 &s_bSmartQuotes);
-
 
 		// add a listener to the preferences, so that we know when the
 		// user changed his/her mind
@@ -1065,7 +1061,6 @@ void UT_contextGlyph::static_destructor()
 void UT_contextGlyph::_prefsListener(	XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
 {
 	UT_return_if_fail(pApp);
-	pApp->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SmartQuotesEnable), &s_bSmartQuotes);
 }
 
 /*!
@@ -1099,6 +1094,58 @@ const LetterData * UT_contextGlyph::smartQuote(UT_UCS4Char c, const XML_Char * p
 
 	return NULL;
 }
+
+/*!
+    returns smart quote glyph for given character c in context defined
+    by prev and next in text using language described by code pLang;
+
+    /param c - quote character
+    /param prev -  pointer to buffer of size CONTEXT_BUFF_SIZE
+                   containing characters preceeding c; the characters
+                   in the buffer are in reversed order, i.e., prev[0]
+                   is the character immediately before c
+    /param next -  pointer to buffer of size CONTEXT_BUFF_SIZE
+                   containing characters following c;
+
+    /param pLang - pointer to a language code
+    /param isGlyphAvailable - pointer to a function that determines if
+                   the smart quote qlyph is available; if the pointer
+				   is NULL, all glyphs are considered available
+*/
+UT_UCS4Char UT_contextGlyph::getSmartQuote(UT_UCS4Char c,
+										   UT_UCS4Char *prev,
+										   UT_UCS4Char * next,
+										   const XML_Char   * pLang,
+										   bool (*isGlyphAvailable)(UT_UCS4Char g)) const
+{
+	const LetterData   * pLet = smartQuote(c,pLang);
+
+	if(!pLet)
+		return c;
+	
+	GlyphContext context = _evalGlyphContext(&c, prev, next);
+	UT_UCS4Char glyph;
+
+	switch (context)
+	{
+		case GC_INITIAL:
+			glyph = pLet->initial;
+		case GC_MEDIAL:
+			glyph = pLet->medial;
+		case GC_FINAL:
+			glyph = pLet->final;
+		case GC_ISOLATE:
+			glyph = pLet->alone;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	if(isGlyphAvailable == NULL || isGlyphAvailable(glyph))
+		return glyph;
+
+	return c;
+}
+
 
 
 // This function evaluates the context of a glyph deciding what form
@@ -1185,168 +1232,18 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 	return GC_ISOLATE;
 
 }
-/*
-	code - pointer to the character to interpret
-	prev - pointer to the character before code
-	next - NULL-terminated string of characters that follow
 
-	returns the glyph to be drawn
-*/
-UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
-									 const UT_UCSChar * prev,
-									 const UT_UCSChar * next,
-									 const XML_Char   * pLang) const
-{
-
-	UT_ASSERT(code);
-
-	const LetterData   * pLet = 0;
-	const LigatureData * pLig = 0;
-	LigatureSequence     Lig;
-	bool                 bIsSecond = false;
-	GlyphContext         context = GC_NOT_SET;
-
-	// first, deal with smart quotes
-	if(s_bSmartQuotes)
-	{
-		pLet = smartQuote(*code,pLang);
-	}
-
-	if(!pLet)
-	{
-		// decide if this is a part of a ligature
-		// check for a ligature form
-
-		if(!isNotFirstInLigature(*code))
-		{
-			
-			Lig.next = next ? *next : 0;
-			Lig.code = *code;
-
-			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
-													  static_cast<void*>(s_ligature),
-													  NrElements(s_ligature),
-													  sizeof(LigatureData),
-													  s_comp_lig));
-		}
-		
-		if(pLig)
-		{
-			next++;
-			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: 0x%x, 1st of lig.\n", *code));
-		}
-		else
-		{
-			if(!isNotSecondInLigature(*code))
-			{
-				
-				Lig.next = prev ? *prev : 0;
-				Lig.code = *code;
-
-				pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
-														  static_cast<void*>(s_lig_rev),
-														  NrElements(s_lig_rev),
-														  sizeof(LigatureData),
-														  s_comp_lig2));
-			}
-			
-			if(pLig)
-			{
-				xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: 0x%x, 2nd of lig.\n", *code));
-				bIsSecond = true;
-			}
-		}
-
-		// if this is a ligature, handle it
-		if(pLig)
-		{
-			context = bIsSecond ? _evalGlyphContext(prev, prev+1, next)
-				: _evalGlyphContext(code, prev, next);
-			UT_UCSChar glyph = 0;
-			switch (context)
-			{
-				case GC_INITIAL:
-					glyph = pLig->initial;
-					break;
-				case GC_MEDIAL:
-					glyph = pLig->medial;
-					break;
-				case GC_FINAL:
-					glyph = pLig->final;
-					break;
-				case GC_ISOLATE:
-					glyph = pLig->alone;
-					break;
-				default:
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			}
-
-			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: lig. (%d), glyph 0x%x\n",bIsSecond,glyph));
-			
-			if(!bIsSecond && glyph != 1) //first part of a ligature
-				return glyph;
-			
-			if(bIsSecond && glyph != 1)
-			{
-				// a special ligature glyph was used, map this to a 0-width non breaking space
-				return 0xFEFF;
-			}
-
-			// if we got here, the glyph was 1, which means this form is to be just
-			// treated as an ordinary letter, also if this was a first part of the ligature
-			// we already know its context, but not if it was a second part of lig.
-		}
-
-
-		// if we have no pL we are dealing with an ordinary letter
-		if(!isNotContextSensitive(*code))
-		{
-			
-			pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(code),
-													static_cast<void*>(s_table),
-													s_iGlyphTableSize/sizeof(LetterData),
-													sizeof(LetterData),
-													s_comp));
-		}
-		
-		// if we have no pLet, it means the letter has only one form
-		// so we return it back
-		if(!pLet)
-			return *code;
-	} // was not a smart quote
-	
-	if(context == GC_NOT_SET || bIsSecond)
-		context = _evalGlyphContext(code, prev, next);
-
-	switch (context)
-	{
-		case GC_INITIAL:
-			return pLet->initial;
-		case GC_MEDIAL:
-			return pLet->medial;
-		case GC_FINAL:
-			return pLet->final;
-		case GC_ISOLATE:
-			return pLet->alone;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-
-	return 0;
-}
-
-
-// Similar to getGlyph, except it processes an entire array of
-// characters
-// NOTE: it is significantly more efficient to use this function that
-// to call getGlyph in a loop
+/*!
+    render string using glyph and ligature tables
+ */
 void UT_contextGlyph::renderString(const UT_UCSChar * src,
 								   UT_UCSChar *dest,
 								   UT_uint32 len,
 								   const UT_UCSChar * prev,
 								   const UT_UCSChar * next,
 								   const XML_Char   * pLang,
-							       FriBidiCharType    iDirection) const
+							       FriBidiCharType    iDirection,
+								   bool (*isGlyphAvailable)(UT_UCS4Char g)) const
 {
 	UT_ASSERT(src);
 	UT_ASSERT(dest);
@@ -1358,6 +1255,7 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 	UT_UCSChar         prev_tmp[2] = {0,0};
 	UT_UCSChar         next_tmp[CONTEXT_BUFF_SIZE + 1] = {0,0,0,0,0,0};
 	UT_UCSChar         glyph = 0;
+	UT_UCS4Char        glyph2 = 2;
 
 	for(UT_uint32 i = 0; i < len; i++, src_ptr++)
 	{
@@ -1395,132 +1293,138 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			//no need to set prev_ptr, since this has been done when i == 1
 		}
 
-		// first, deal with smart quotes
-		if(s_bSmartQuotes)
+		// decide if this is a part of a ligature
+		// check for a ligature form
+		if(!isNotFirstInLigature(*src_ptr))
 		{
-			pLet = smartQuote(*src_ptr,pLang);
+			Lig.next = next_ptr ? *next_ptr : 0;
+			Lig.code = *src_ptr;
+
+			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+													  static_cast<void*>(s_ligature),
+													  NrElements(s_ligature),
+													  sizeof(LigatureData),
+													  s_comp_lig));
 		}
-
-		// if this is a smart quote, than we are of the hook
-		if(!pLet)
-		{
-			// decide if this is a part of a ligature
-			// check for a ligature form
-			if(!isNotFirstInLigature(*src_ptr))
-			{
-				Lig.next = next_ptr ? *next_ptr : 0;
-				Lig.code = *src_ptr;
-
-				pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
-														  static_cast<void*>(s_ligature),
-														  NrElements(s_ligature),
-														  sizeof(LigatureData),
-														  s_comp_lig));
-			}
 			
-			if(pLig)
+		if(pLig)
+		{
+			// we need the context of the whole pair not just of this
+			// character
+			glyph2 = *next_ptr;
+			next_ptr++;
+			xxx_UT_DEBUGMSG(("UT_contextGlyph::render: 0x%x, 1st of lig.\n", *code));
+		}
+		else
+		{
+			//we only check that this is not a second part of a ligature for the
+			//first character, the rest we will handle in the previous
+			//cycle of the loop
+			if(i == 0 && !isNotSecondInLigature(*src_ptr))
 			{
-				// we need the context of the whole pair not just of this character
-				next_ptr++;
-				xxx_UT_DEBUGMSG(("UT_contextGlyph::render: 0x%x, 1st of lig.\n", *code));
+				Lig.next = prev ? *prev : 0;
+				Lig.code = *src_ptr;
+					
+				pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+														  static_cast<void*>(s_lig_rev),
+														  NrElements(s_lig_rev),
+														  sizeof(LigatureData),
+														  s_comp_lig2));
+					
+				if(pLig)
+				{
+					xxx_UT_DEBUGMSG(("UT_contextGlyph::render: 0x%x, 2nd of lig.\n",*code));
+					bIsSecond = true;
+				}
+			}
+		}
+			
+		// if this is a ligature, handle it
+		if(pLig)
+		{
+			context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
+				: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
+			switch (context)
+			{
+				case GC_INITIAL:
+					glyph = pLig->initial;
+					break;
+				case GC_MEDIAL:
+					glyph = pLig->medial;
+					break;
+				case GC_FINAL:
+					glyph = pLig->final;
+					break;
+				case GC_ISOLATE:
+					glyph = pLig->alone;
+					break;
+				default:
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+
+			xxx_UT_DEBUGMSG(("UT_contextGlyph::render: lig.(%d), glyph 0x%x\n",bIsSecond,glyph));
+
+			if(isGlyphAvailable != NULL && !isGlyphAvailable(glyph))
+			{
+				// we need to use the original glyphs; glyph2 is
+				// already set
+				glyph = *src_ptr;
 			}
 			else
 			{
-				//we only check that this is not a second part of a ligature for the
-				//first character, the rest we will handle in the previous
-				//cycle of the loop
-				if(i == 0 && !isNotSecondInLigature(*src_ptr))
-				{
-					Lig.next = prev ? *prev : 0;
-					Lig.code = *src_ptr;
-					
-					pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
-															  static_cast<void*>(s_lig_rev),
-															  NrElements(s_lig_rev),
-															  sizeof(LigatureData),
-															  s_comp_lig2));
-					
-					if(pLig)
-					{
-						xxx_UT_DEBUGMSG(("UT_contextGlyph::render: 0x%x, 2nd of lig.\n",*code));
-						bIsSecond = true;
-					}
-				}
+				// just need to set glyph2 to the placement marker
+				glyph2 = UCS_LIGATURE_PLACEHOLDER;
 			}
 			
-			// if this is a ligature, handle it
-			if(pLig)
-			{
-				context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
-					: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
-				switch (context)
-				{
-					case GC_INITIAL:
-						glyph = pLig->initial;
-						break;
-					case GC_MEDIAL:
-						glyph = pLig->medial;
-						break;
-					case GC_FINAL:
-						glyph = pLig->final;
-						break;
-					case GC_ISOLATE:
-						glyph = pLig->alone;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				}
-
-				xxx_UT_DEBUGMSG(("UT_contextGlyph::render: lig.(%d), glyph 0x%x\n",bIsSecond,glyph));
-				if(!bIsSecond && glyph != 1) //first part of a ligature
-				{
-					// we set both this and the next char if we can
-					*dst_ptr++ = glyph;
-					if(i < len - 1)
-					{
-						*dst_ptr++ = 0xFEFF;
-						src_ptr++;
-						i++;
-						continue;
-					}
-					continue;
-				}
-				else if(bIsSecond && glyph != 1)
-				{
-					// a special ligature glyph was used, map this to a 0-width non breaking space
-					*dst_ptr++ = 0xFEFF;
-					continue;
-				}
-
-				// if we got here, the glyph was 1, which means this form is to be just
-				// treated as an ordinary letter, also if this was a first part of the ligature
-				// we already know its context, but not if it was a second part of lig.
-			}
-		
-			// if we have no pLig we are dealing with an ordinary
-			// letter
-			if(!isNotContextSensitive(*src_ptr))
-			{
-				
-				pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(src_ptr),
-														static_cast<void*>(s_table),
-														s_iGlyphTableSize/sizeof(LetterData),
-														sizeof(LetterData),
-														s_comp));
-			}
 			
-			// if we have no pLet, it means the letter has only one form
-			// last thing to do is to deal with mirror characters
-			if(!pLet)
+			
+			if(!bIsSecond && glyph != 1) //first part of a ligature
 			{
-				if(iDirection == FRIBIDI_TYPE_RTL)
-					*dst_ptr++ = s_getMirrorChar(*src_ptr);
-				else
-					*dst_ptr++ = *src_ptr;
+				// we set both this and the next char if we can
+				*dst_ptr++ = glyph;
+				if(i < len - 1)
+				{
+					*dst_ptr++ = glyph2;
+					src_ptr++;
+					i++;
+					continue;
+				}
 				continue;
 			}
-		} // was not a smart quote
+			else if(bIsSecond && glyph != 1)
+			{
+				// a special ligature glyph was used, map this to a 0-width non breaking space
+				*dst_ptr++ = UCS_LIGATURE_PLACEHOLDER;
+				continue;
+			}
+
+			// if we got here, the glyph was 1, which means this form is to be just
+			// treated as an ordinary letter, also if this was a first part of the ligature
+			// we already know its context, but not if it was a second part of lig.
+		}
 		
+		// if we have no pLig we are dealing with an ordinary
+		// letter
+		if(!isNotContextSensitive(*src_ptr))
+		{
+				
+			pLet = static_cast<LetterData*>(bsearch(static_cast<const void*>(src_ptr),
+													static_cast<void*>(s_table),
+													s_iGlyphTableSize/sizeof(LetterData),
+													sizeof(LetterData),
+													s_comp));
+		}
+			
+		// if we have no pLet, it means the letter has only one form
+		// last thing to do is to deal with mirror characters
+		if(!pLet)
+		{
+			if(iDirection == FRIBIDI_TYPE_RTL)
+				*dst_ptr++ = s_getMirrorChar(*src_ptr);
+			else
+				*dst_ptr++ = *src_ptr;
+			continue;
+		}
 
 		// if we got this far, we are dealing with a context sensitive character
 		if(context == GC_NOT_SET || bIsSecond)
@@ -1544,6 +1448,13 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 
-		*dst_ptr++ = glyph;
+		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph))
+		{
+			*dst_ptr++ = glyph;
+		}
+		else
+		{
+			*dst_ptr++ = *src_ptr;
+		}
 	}
 }
