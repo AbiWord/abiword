@@ -534,11 +534,6 @@ case "$gnome" in
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
 esac
 
-case "$libjpeg" in
-     "true" )
-        AC_MSG_RESULT([Configured with libjpeg support.]) ;;
-esac
-
 case "$debug" in
      "true" )
         AC_MSG_RESULT([Configured with debugging symbols.]) ;;
