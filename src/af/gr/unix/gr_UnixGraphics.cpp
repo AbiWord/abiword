@@ -69,8 +69,6 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	gdk_gc_set_exposures(m_pGC,1);
 	gdk_gc_set_exposures(m_pXORGC,1);
 	
-	memset(m_aCharWidths, 0, 256 * sizeof(int));
-
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
@@ -126,9 +124,8 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	for (int i = 0; i < iLength; i++)
     {
-		// TODO Is the hex constant on the byte1 assignment correct ??
-		pNChars[i].byte1 = pChars[i + iCharOffset] & 0xffff0000;
-		pNChars[i].byte2 = pChars[i + iCharOffset] & 0x0000ffff;
+		pNChars[i].byte1 = pChars[i + iCharOffset] & 0xff00;
+		pNChars[i].byte2 = pChars[i + iCharOffset] & 0x00ff;
     }
   
 	XDrawString16 (drawable_private->xdisplay, drawable_private->xwindow,
@@ -171,7 +168,6 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	m_pFont = pUFont;
   
 	gdk_gc_set_font(m_pGC, newGdkFont);
-	memset(m_aCharWidths, 0, 256 * sizeof(int));
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight()
@@ -189,8 +185,15 @@ UT_uint32 GR_UnixGraphics::getFontHeight()
 }
 
 UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
-									  int num,  unsigned short* pWidths)
+										 int num,  unsigned short* pWidths)
 {
+	// on X11, we do not use the aCharWidths[] or the GR_CharWidths
+	// cacheing mechanism -- because, XTextExtents16() provides a
+	// local copy (in the client library) of all that information
+	// unlike XQueryText...() which cause a round trip to the XServer.
+	// and i'm tired of having semi-bogus local caches which are more
+	// trouble (and cost more cycles) to maintain than they save.... -- jeff
+	
 	if (!m_pFontManager)
 		return NULL;
 
@@ -207,30 +210,21 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	
 	for (int i = 0; i < num; i++)
     {
-		UT_ASSERT(s[i + iOffset] < 256);
-		unsigned char ch = s[i + iOffset];
-
-		int len = m_aCharWidths[ch];
-      
-		if (!len)
-		{
-			XChar2b c2b;
-			XCharStruct overall;
-			int des, dir, asc;
+		XChar2b c2b;
+		XCharStruct overall;
+		int des, dir, asc;
 			
-			c2b.byte1 = s[i + iOffset] & 0xffff0000;
-			c2b.byte2 = s[i + iOffset] & 0x0000ffff;
+		c2b.byte1 = s[i + iOffset] & 0xff00;
+		c2b.byte2 = s[i + iOffset] & 0x00ff;
+		
+		XTextExtents16(pXFont, & c2b, 1, &dir, &asc, &des, &overall);
 
-			XTextExtents16(pXFont, & c2b, 1, &dir, &asc, &des, &overall);
-
-			len = overall.width;
-			m_aCharWidths[ch] = len;
-		}
+		int len = overall.width;
       
 		charWidth += len;
-		pWidths[i] = len;
+		if (pWidths)
+			pWidths[i] = len;
     }
-
   
 	return charWidth;
 }

@@ -108,7 +108,6 @@ class GR_UnixGraphics : public GR_Graphics
 	XAP_UnixFontHandle * 	m_pFontGUI;
   
 	GdkColormap* 	 		m_pColormap;
-	int						m_aCharWidths[256];
 	int          			m_iWindowHeight, m_iWindowWidth;
 	UT_sint32				m_iLineWidth;
 	GR_Graphics::Cursor		m_cursor;
