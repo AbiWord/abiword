@@ -85,7 +85,7 @@ static PP_Property _props[] =
 		the ABW file
 	*/
 	//###TF{ "dir", default_direction, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dir-override", "off", true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dir-override", NULL, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
 	{ "dom-dir", default_dominant_direction, true, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 #endif
 
