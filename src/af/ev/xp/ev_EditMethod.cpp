@@ -32,26 +32,43 @@
 EV_EditMethodCallData::EV_EditMethodCallData()
 	: m_xPos(0),
 	  m_yPos(0),
-	  m_pData(0),
 	  m_dataLength(0),
 	  m_bAllocatedData(false)
 {
+	  m_pData = NULL;
 }
 
+
+/* TF NOTE:
+ I hate the fact that we need two almost identical constructors.  It really licks,
+ not to mention the fact that nothing actually checks to see if the m_bAlocatedData
+ flag is actually set, so covering this "failure" case may be pointless if other
+ things don't play along.  Comment out this code just to see how well it would work.
+*/
 EV_EditMethodCallData::EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength)
 	: m_xPos(0),
 	  m_yPos(0),
-	  m_pData(pData),
-	  m_dataLength(dataLength),
-	  m_bAllocatedData(false)
 {
+	m_pData = new UT_UCSChar[dataLength];
+	if (m_pData)
+	{
+		for (UT_uint32 k = 0; k < dataLength; k++)
+			m_pData[k] = pData[k];
+		m_dataLength = dataLength;
+		m_bAllocatedData = true;
+	}
+	else								// since constructors can't fail, we create a zombie.
+	{
+		m_dataLength = 0;
+		m_bAllocatedData = false;
+	}
 }
 
 EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength)
 	: m_xPos(0),
-	  m_yPos(0),
-	  m_pData(new UT_UCSChar[dataLength])
+	  m_yPos(0)
 {
+	m_pData = new UT_UCSChar[dataLength];
 	if (m_pData)
 	{
 		for (UT_uint32 k = 0; k < dataLength; k++)
