@@ -303,11 +303,11 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 #endif
 
 	//set the language member
-	UT_Language *lls = new UT_Language;
+	UT_Language lls;
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	const XML_Char * pszOldLanguage = m_pLanguage;
-	m_pLanguage = lls->getPropertyFromProperty(pszLanguage);
+	m_pLanguage = lls.getPropertyFromProperty(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
 	{
 		
@@ -315,8 +315,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		bChanged = true;
 	}
 	
-	delete lls;
-
+	
 #ifdef SMART_RUN_MERGING
 	FriBidiCharType iOldOverride = m_iDirOverride;
 #endif
