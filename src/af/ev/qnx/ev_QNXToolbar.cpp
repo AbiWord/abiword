@@ -643,11 +643,11 @@ XAP_QNXFrame * EV_QNXToolbar::getFrame(void)
 }
 
 void EV_QNXToolbar::show(void) {
-    UT_ASSERT(m_wToolbarGroup);
-    PtRealizeWidget(m_wToolbarGroup);
+    UT_ASSERT(m_wToolbarGroup && m_wToolbar);
+    PtRealizeWidget(m_wToolbar);
 }
 
 void EV_QNXToolbar::hide(void) {
-    UT_ASSERT(m_wToolbarGroup);
-    PtUnrealizeWidget(m_wToolbarGroup);
+    UT_ASSERT(m_wToolbarGroup && m_wToolbar);
+    PtUnrealizeWidget(m_wToolbar);
 }
