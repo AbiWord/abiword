@@ -1168,31 +1168,6 @@ bool GR_CocoaGraphics::_callUpdateCallback(NSRect * aRect)
 	return (*m_updateCallback) (aRect, this, m_updateCBparam);
 }
 
-void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
-{
-// printf ("- (void)drawRect:(NSRect)aRect[x=%f y=%f w=%f h=%f]\n", aRect.origin.x, aRect.origin.y, aRect.size.width, aRect.size.height);
-		if ([v inLiveResize]) {
-// printf ("- (void)drawRect:[v inLiveResize]\n");
-			xxx_UT_DEBUGMSG (("Is resizing\n"));
-
-			::CGContextSaveGState(m_CGContext);
-			::CGContextClipToRect (m_CGContext, ::CGRectMake (aRect.origin.x, aRect.origin.y, 
-			                                                  aRect.size.width, aRect.size.height));
-//			if (!_callUpdateCallback (&aRect)) {
-
-//			}
-			::CGContextRestoreGState(m_CGContext);
-		}
-		else {
-// printf ("- (void)drawRect:_callUpdateCallback(&aRect);\n");
-			_callUpdateCallback(&aRect);
-		}
-/*		else {
-			m_CGContext = CG_CONTEXT__;
-		}*/
-		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
-}
-
 bool GR_CocoaGraphics::_isFlipped()
 {
 	return YES;

@@ -110,9 +110,9 @@
  */
 - (void)drawRect:(NSRect)aRect
 {
-	if (m_pGR) {
-		m_pGR->_updateRect(self, aRect);
-	}
+	if (m_pGR)
+		if (![self inLiveResize]) // this case handled in -hasBeenResized: below
+			m_pGR->_callUpdateCallback(&aRect);
 }
 
 /*!
@@ -173,11 +173,12 @@
 {
 	if (m_pGR) {
 		AV_View * pView = m_pFrame->getCurrentView();
-		NSRect rect = [self frame];
-		if (pView && !pView->isLayoutFilling()) {
+		NSRect rect = [self bounds];
+		if (pView && !pView->isLayoutFilling())
+		{
 			pView->setWindowSize((UT_sint32)rint(rect.size.width), (UT_sint32)rint(rect.size.height));
 			m_pGR->_callUpdateCallback(&rect);
-//				m_pFrame->quickZoom(); // was update zoom
+			// m_pFrame->quickZoom(); // was update zoom
 		}
 	}
 }

@@ -145,7 +145,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
 	bool				_callUpdateCallback(NSRect *aRect);
 	XAP_CocoaNSView *	_getView () { return m_pWin; };
-	void 				_updateRect(NSView * v, NSRect aRect);
+
 	static bool			_isFlipped();
 	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
 	static void 				_utNSColorToRGBColor (NSColor *c, UT_RGBColor &clr);
