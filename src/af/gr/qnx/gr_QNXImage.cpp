@@ -20,8 +20,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <png.h>
+#include <Pt.h>
 
 #include "gr_QNXImage.h"
+#include "gr_Graphics.h"
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
@@ -72,27 +74,21 @@ GR_QNXImage::~GR_QNXImage()
 {
 	if (m_image)
 	{
-		if (m_image->data)
-		{
-			free(m_image->data);
-			m_image->data = NULL;
-		}
-
-		delete m_image;
-		m_image = NULL;
+		PhReleaseImage(m_image);
+		FREEP(m_image);
 	}
 }
 
 UT_sint32	GR_QNXImage::getDisplayWidth(void) const
 {
    if (m_image == 0) return m_iDisplayWidth;
-   return m_image->width;
+   return m_image->size.w;
 }
 
 UT_sint32	GR_QNXImage::getDisplayHeight(void) const
 {
    if (m_image == 0) return m_iDisplayHeight;
-   return m_image->height;
+   return m_image->size.h;
 }
 
 bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
@@ -128,8 +124,8 @@ bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	// We want libpng to write to our ByteBuf, not stdio
 	png_set_write_fn(png_ptr, (void *)pBB, _png_write, _png_flush);
 
-	UT_uint32 iWidth = m_image->width;
-	UT_uint32 iHeight = m_image->height;
+	UT_uint32 iWidth = m_image->size.w;
+	UT_uint32 iHeight = m_image->size.h;
 
 	png_set_IHDR(png_ptr,
 				 info_ptr,
@@ -144,7 +140,7 @@ bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	/* Write the file header information.  REQUIRED */
 	png_write_info(png_ptr, info_ptr);
 
-	UT_Byte * pBits = ((unsigned char*) m_image->data);
+	UT_Byte * pBits = ((unsigned char*) m_image->image);
 	
 	UT_Byte* pData = (UT_Byte*) malloc(iWidth * iHeight * 3);
 	UT_ASSERT(pData); // TODO outofmem
@@ -256,7 +252,7 @@ bool GR_QNXImage::_convertPNGFromBuffer(const UT_ByteBuf *pBB, UT_sint32 iDispla
 	{
 		/* Free all of the memory associated with the png_ptr and info_ptr */
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-	  
+
 		/* If we get here, we had a problem reading the file */
 		return false;
 	}
@@ -296,37 +292,43 @@ bool GR_QNXImage::_convertPNGFromBuffer(const UT_ByteBuf *pBB, UT_sint32 iDispla
 	/*  We want libpng to deinterlace the image for us */
 	UT_uint32 iInterlacePasses = png_set_interlace_handling(png_ptr);
 
+	/* flip the RGB pixels to BGR (or RGBA to BGRA) */
 	png_set_bgr(png_ptr);
 
 	UT_uint32 iBytesInRow = width * 3;
-
-	Fatmap* pFM = new Fatmap;
-	pFM->width = width;
-	pFM->height = height;
-
-	// allocate for 3 bytes each pixel (one for R, G, and B)
-	pFM->data = (unsigned char *) UT_calloc(pFM->width * pFM->height * 3, sizeof(unsigned char));
-	
-	if (!pFM->data)
+	if (iBytesInRow % 4)
 	{
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-		return false;
+		iBytesInRow += (4 - (iBytesInRow % 4));
 	}
 
-	UT_Byte * pBits = (UT_Byte *) pFM->data;
 
-	UT_Byte ** pRowStarts = (UT_Byte **) UT_calloc(height, sizeof(UT_Byte *));
+//Note! We are creating a image of original size, then scale it using photon functions.
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
+	// should NOT already be set
+	UT_ASSERT(!m_image);
 
-	// fill a list of the starts of rows, so png_read_rows() can walk
-	// the pointer it gets (&pRowStarts) up each element to get a new
-	// place (row) to throw data.
-	for (UT_uint32 iRow = 0; iRow < height; iRow++)
-		pRowStarts[iRow] = ((UT_Byte *) pBits + (iRow * iBytesInRow));
+	if (m_image)
+	{
+		PhReleaseImage(m_image);
+		FREEP(m_image);
+	}
+
+	m_image = PhCreateImage(NULL,width,height,Pg_IMAGE_DIRECT_888,NULL,NULL,NULL);
+
+	UT_Byte* pBits = (UT_Byte *)m_image->image;
 
 	for (; iInterlacePasses; iInterlacePasses--)
-		png_read_rows(png_ptr, pRowStarts, NULL, height);
-	
-	free(pRowStarts);
+	{
+		for (UT_uint32 iRow = 0; iRow < height; iRow++)
+		{
+			UT_Byte* pRow = (UT_Byte *)pBits + iRow * m_image->bpl;
+
+			png_read_rows(png_ptr, &pRow, NULL, 1);
+		}
+	}
+	m_image = PiResizeImage(m_image,NULL,iDisplayWidth,iDisplayHeight,Pi_FREE);
+	m_image->image_tag = PtCRC((const char *)m_image->image,m_image->bpl*m_image->size.h);
+
 	
 	/* read rest of file, and get additional chunks in info_ptr - REQUIRED */
 	png_read_end(png_ptr, info_ptr);
@@ -334,118 +336,75 @@ bool GR_QNXImage::_convertPNGFromBuffer(const UT_ByteBuf *pBB, UT_sint32 iDispla
 	/* clean up after the read, and free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
-	if (
-		(((UT_sint32) width) != iDisplayWidth)
-		|| (((UT_sint32) height) != iDisplayHeight)
-		)
-	{
-		Fatmap* pDisplayFM = new Fatmap;
-		Fatmap* pOtherFM = pFM;
-
-		pDisplayFM->width = iDisplayWidth;
-		pDisplayFM->height = iDisplayHeight;
-
-		// allocate for 3 bytes each pixel (one for R, G, and B)
-		pDisplayFM->data = (unsigned char *) UT_calloc(pDisplayFM->width * pDisplayFM->height * 3, sizeof(unsigned char));
-	
-		if (!pDisplayFM->data)
-		{
-			delete pDisplayFM;
-			free(pOtherFM->data);
-			delete pOtherFM;
-			return false;
-		}
-
-		// stretch the pixels from pOtherFM into pDisplayFM
-
-		/*
-		  TODO this code came from imlib.  It's not exactly
-		  a match for our coding standards, so it needs a
-		  certain amount of cleanup.  However, it seems
-		  to be working nicely.
-		*/
-		
-		{
-			int                 x, y, *xarray;
-			unsigned char     **yarray, *ptr, *ptr2, *ptr22;
-			int                 pos, inc, w3;
-
-			xarray = (int*) malloc(sizeof(int) * iDisplayWidth);
-
-			if (!xarray)
-			{
-				// TODO outofmem
-				return false;
-			}
-			yarray = (unsigned char**) malloc(sizeof(unsigned char *) * iDisplayHeight);
-
-			if (!yarray)
-			{
-				// TODO outofmem
-				return false;
-			}
-			
-			ptr22 = pOtherFM->data;
-			w3 = pOtherFM->width * 3;
-
-			// set up xarray
-			inc = ((pOtherFM->width) << 16) / iDisplayWidth;
-			pos = 0;
-			for (x = 0; x < iDisplayWidth; x++)
-			{
-				xarray[x] = (pos >> 16) + (pos >> 16) + (pos >> 16);
-				pos += inc;
-			}
-
-			// set up yarray
-			inc = ((pOtherFM->height) << 16) / iDisplayHeight;
-			pos = 0;
-			for (x = 0; x < iDisplayHeight; x++)
-			{
-				yarray[x] = ptr22 + ((pos >> 16) * w3);
-				pos += inc;
-			}
-
-			// crunch the data
-			ptr = pDisplayFM->data;
-			for (y = 0; y < iDisplayHeight; y++)
-			{
-				for (x = 0; x < iDisplayWidth; x++)
-				{
-					ptr2 = yarray[y] + xarray[x];
-					*ptr++ = (int)*ptr2++;
-					*ptr++ = (int)*ptr2++;
-					*ptr++ = (int)*ptr2;
-				}
-			}
-			FREEP(xarray);
-			FREEP(yarray);
-		}
-
-		pFM = pDisplayFM;
-
-		free(pOtherFM->data);
-		delete pOtherFM;
-	}
-
-	// should NOT already be set
-	UT_ASSERT(!m_image);
-
-	if (m_image)
-	{
-		// free the data in it too
-		if (m_image->data)
-		{
-			free(m_image->data);
-			m_image->data = NULL;
-		}
-		
-		delete m_image;
-		m_image = NULL;
-	}
-
-	m_image = pFM;
-		
 	return true;
 }
+void GR_QNXImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
+{
+	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 height = pG->tdu(rec.height);
+	if(((width == getDisplayWidth()) && (height == getDisplayHeight())) || width < 0 || height < 0)
+	{
+		return;
+	}	
 
+	m_image = PiResizeImage(m_image,NULL,width,height,Pi_FREE);
+}
+
+GR_Image * GR_QNXImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
+{
+	UT_sint32 x = pG->tdu(rec.left);
+	UT_sint32 y = pG->tdu(rec.top);
+	PhRect_t rect;
+	if(x < 0)
+	{
+		x = 0;
+	}
+	if(y < 0)
+	{
+		y = 0;
+	}
+	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 height = pG->tdu(rec.height);
+	UT_sint32 dH = getDisplayHeight();
+	UT_sint32 dW = getDisplayWidth();
+	if(height > dH)
+	{
+		height = dH;
+	}
+	if(width > dW)
+	{
+		width = dW;
+	}
+	if(x + width > dW)
+	{
+		width = dW - x;
+	}
+	if(y + height > dH)
+	{
+		height = dH - y;
+	}
+	if(width < 0)
+	{
+		x = dW -1;
+		width = 1;
+	}
+	if(height < 0)
+	{
+		y = dH -1;
+		height = 1;
+	}
+	UT_String sName("");
+	getName(sName);
+	UT_String sSub("");
+	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
+	sName += sSub;
+	GR_QNXImage * pImage = new GR_QNXImage(sName.c_str());
+	UT_ASSERT(m_image);
+
+	rect.ul.x = x;
+	rect.ul.y = y;
+	rect.lr.x = x+width;
+	rect.lr.y = y+height;	
+	pImage->m_image = PiCropImage(m_image,&rect,0);
+	return static_cast<GR_Image *>(pImage);	
+}
