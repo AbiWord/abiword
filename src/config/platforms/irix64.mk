@@ -50,11 +50,11 @@ AR		= ar cr $@
 
 # Compiler flags
 ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g -Wall -ansi -pedantic
+OPTIMIZER	= -g -Wall # -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
+OPTIMIZER	= -O2 -Wall # -ansi -pedantic
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
@@ -82,7 +82,7 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 # both of these options. (what can IRIX do?  someone
 # with an SGI set the right one and mail a patch)
 UNIX_CAN_BUILD_DYNAMIC=1
-UNIX_CAN_BUILD_STATIC=1
+UNIX_CAN_BUILD_STATIC=0
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= dl
