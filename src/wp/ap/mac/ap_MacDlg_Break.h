@@ -20,7 +20,7 @@
 #ifndef AP_MACDIALOG_BREAK_H
 #define AP_MACDIALOG_BREAK_H
 
-#include "ap_Dlg_Break.h"
+#include "ap_Dialog_Break.h"
 class XAP_MacFrame;
 
 /*****************************************************************/
