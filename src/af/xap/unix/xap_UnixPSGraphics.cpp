@@ -120,7 +120,9 @@ void PS_Graphics::setFont(GR_Font* pFont)
 	// TODO I would rather do it all here.
 	if (pNewFont == m_pCurrentFont ) 
 		return;
-	
+
+	UT_ASSERT(pFont);
+
 	m_pCurrentFont = pNewFont;
 	if (m_ps)
 		_emit_SetFont();
@@ -136,10 +138,21 @@ UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
   int e,c;
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
   UT_ASSERT(gfi);
-#if 0
-  e = _scaleFont(psfnt, gfi->ascender);
-#else
-  e = _scaleFont(psfnt, gfi->fontBBox.ury);
+
+//#if 0
+//  e = _scaleFont(psfnt, gfi->ascender);
+//#elseif 0
+//  e = _scaleFont(psfnt, gfi->fontBBox.ury);
+//#else
+#if 1
+  XAP_UnixFont * pUFont = psfnt->getUnixFont();
+  UT_sint32 iSize = psfnt->getSize();
+  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+  GdkFont* pFont = pHndl->getGdkFont();
+  GdkFont* pMatchFont=pHndl->getMatchGdkFont();
+  e = MAX(pFont->ascent, pMatchFont->ascent);
+  delete pHndl;
+
 #endif	
   c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Ascent());
   return MAX(e,c);
@@ -160,13 +173,24 @@ UT_uint32 PS_Graphics::getFontDescent(GR_Font * fnt)
   int e,c;
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
   UT_ASSERT(gfi);
-#if 0	
-  UT_ASSERT(gfi->descender <= 0);
-  e=_scaleFont(psfnt, -gfi->descender);
-#else
-  UT_ASSERT(gfi->fontBBox.lly <= 0);
-  e=_scaleFont(psfnt, -(gfi->fontBBox.lly));
+
+//#if 0
+//  UT_ASSERT(gfi->descender <= 0);
+//  e=_scaleFont(psfnt, -gfi->descender);
+//#elseif 0
+//  UT_ASSERT(gfi->fontBBox.lly <= 0);
+//  e=_scaleFont(psfnt, -(gfi->fontBBox.lly));
+#if 1
+
+  XAP_UnixFont * pUFont = psfnt->getUnixFont();
+  UT_sint32 iSize = psfnt->getSize();
+  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+  GdkFont* pFont = pHndl->getGdkFont();
+  GdkFont* pMatchFont= pHndl->getMatchGdkFont();
+  e = MAX(pFont->descent, pMatchFont->descent);
+  delete pHndl;
 #endif	
+
   c= pChineseFont == pEnglishFont ? 0 :_scaleFont(psfnt, pChineseFont->getUnixFont()->get_CJK_Descent());
   return MAX(e,c);
 }
@@ -317,7 +341,29 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 		item = new XAP_UnixFont(*m_fm->getFont("Times New Roman", s));
 	}
 	
-	PSFont * pFont = new PSFont(item, convertDimension(pszFontSize));
+
+//
+// This piece of code scales the FONT chosen at low resolution to that at high
+// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
+//
+	double dScreenSize = UT_convertToInches(pszFontSize) * (double) getScreenResolution();
+	UT_sint32 iScreenSize = (UT_sint32) (dScreenSize + 0.5);
+	dScreenSize = (double) iScreenSize;
+
+	double ratToLayout = (double) UT_LAYOUT_UNITS / (double) getScreenResolution();
+	UT_sint32 iSizeLayout = (UT_sint32) (dScreenSize * ratToLayout + 0.5);
+
+	double dPaperSize = dScreenSize * (double) getResolution() / (double) getScreenResolution();
+	UT_sint32 iSize = (UT_sint32) (dPaperSize + 0.5);
+    
+	
+	if( m_bLayoutResolutionModeEnabled)
+	{
+		iSize = iSizeLayout;
+	} 
+
+	UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
+	PSFont * pFont = new PSFont(item, iSize);
 	UT_ASSERT(pFont);
 
 	// Here we do something different from gr_UnixGraphics::setFont().
