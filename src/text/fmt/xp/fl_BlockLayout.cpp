@@ -1371,10 +1371,11 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 	if (m_pFirstRun)
 	{
 		// Recalculate widths of Runs if necessary.
+		m_bFixCharWidths = true; // Kludge from sevior to fix layout bugs
 		if (m_bFixCharWidths)
 		{
 			fp_Run* pRun = m_pFirstRun;
-			bool bDoit = false;
+			bool bDoit = true; // was false. Same kludge from sevior.
 			while (pRun)
 			{
 				if(pRunToStartAt && pRun == pRunToStartAt)
