@@ -79,22 +79,28 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		*/
 		while (q)
 		{
-#ifdef ABI_OPT_JS			
 			if (0 == strcmp(q, "-script"))
 			{
 				q = strtok(NULL, " ");
+#ifdef ABI_OPT_JS			
 				js_eval_file(pMyWin32App->getInterp(), q);
+#endif /* ABI_OPT_JS */
 				
 				q = strtok(NULL, " ");
 			}
 			else
-#endif /* ABI_OPT_JS */
 			{
 				break;
 			}
 		}
 		
-		pFirstWin32Frame->loadDocument(q);
+		if (!pFirstWin32Frame->loadDocument(q))
+		{
+			// TODO: warn user that q didn't work?
+			
+			// fallback, open empty document so we don't crash
+			pFirstWin32Frame->loadDocument(NULL);
+		}
 
 		free(p);
 	}
