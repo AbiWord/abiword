@@ -4312,6 +4312,11 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		{
 			return true;
 		}
+		if(m_bInFootnote)
+		{
+			return true;
+		}
+
 		m_currentRTFState.m_paraProps.m_tableLevel = param;
 //
 // Look to see if the nesting level of our tables has changed.
@@ -9827,23 +9832,11 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 //
 		FlushStoredChars(false);
 	}
-	//
-	// Look if we're at the end of the document
-	//
-	PT_DocPosition posEnd;
-	getDoc()->getBounds(true,posEnd);
-	if(getDoc()->isEndTableAtPos(m_dposPaste-1))
-	{
-		if((posEnd==m_dposPaste) || (getDoc()->isSectionAtPos(m_dposPaste)) ||
-		   (getDoc()->isHdrFtrAtPos(m_dposPaste)))
-		{
-			getDoc()->insertStrux(m_dposPaste,PTX_Block);
-			m_dposPaste++;
-		}
-	}
+	
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
 	m_pCurrentCharInPasteBuffer = NULL;
+
 	return true;
 }
 
