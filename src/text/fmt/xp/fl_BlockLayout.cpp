@@ -2294,6 +2294,24 @@ fl_BlockLayout::checkSpelling(void)
 
 	// only update screen if this block is on it
 	bool bIsOnScreen = isOnScreen();
+
+	// we only want to do the cursor magic if the cursor is in this block
+	bool bIsCursorInBlock = false;
+	FV_View* pView = getView();
+	fp_Run* pLastRun = m_pFirstRun;
+
+	while(pLastRun && pLastRun->getNext())
+		pLastRun = pLastRun->getNext();
+	
+	
+	if(pView && pLastRun)
+	{
+		UT_uint32 iBlPosStart = (UT_uint32)getPosition();
+		UT_uint32 iBlPosEnd   = iBlPosStart + pLastRun->getBlockOffset() + pLastRun->getLength();
+		UT_uint32 iPos   = (UT_uint32)pView->getPoint(); 
+
+		bIsCursorInBlock = ((iPos >= iBlPosStart) && (iPos <= iBlPosEnd));
+	}
 	
 	// Remove any existing squiggles from the screen...
 	bool bUpdateScreen = m_pSquiggles->deleteAll();
@@ -2304,10 +2322,9 @@ fl_BlockLayout::checkSpelling(void)
 	UT_ASSERT(bRes);
 	const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
 	UT_uint32 eor = pgb.getLength();
-	bUpdateScreen |= _checkMultiWord(pBlockText, 0, eor, true);
+	bUpdateScreen |= _checkMultiWord(pBlockText, 0, eor, bIsCursorInBlock);
 
 	// Finally update screen
-	FV_View* pView = getView();
 	if (bIsOnScreen && bUpdateScreen && pView)
 	{
 		//pView->_eraseInsertionPoint(); // this is done inside updateScreen()
@@ -2398,7 +2415,7 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 #endif
 
 				if (pPOB)
-					bScreenUpdated |= _doCheckWord(pPOB, pBlockText);
+					bScreenUpdated |= _doCheckWord(pPOB, pBlockText,true,bToggleIP);
 			}
 
 			wordBeginning += (wordLength + 1);
@@ -2426,7 +2443,8 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 bool
 fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 							 const UT_UCSChar* pBlockText,
-							 bool bAddSquiggle /* = true */)
+							 bool bAddSquiggle /* = true */,
+							 bool bClearScreen /* = true */)
 {
 	UT_uint32 iLength = pPOB->getLength();
 	UT_uint32 iBlockPos = pPOB->getOffset();
@@ -2514,7 +2532,9 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 		{
 			m_pSquiggles->add(pPOB);
 		}
-		m_pSquiggles->clear(pPOB);
+
+		if(bClearScreen)
+			m_pSquiggles->clear(pPOB);
 
 		// Display was updated
 		return true;

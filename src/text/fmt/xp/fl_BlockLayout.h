@@ -393,7 +393,8 @@ protected:
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
 	bool					_doCheckWord(fl_PartOfBlock* pPOB,
 										 const UT_UCSChar* pBlockText,
-										 bool bAddSquiggle = true);
+										 bool bAddSquiggle = true,
+										 bool bClearScreen = true);
 
 	bool					_spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos);
 
