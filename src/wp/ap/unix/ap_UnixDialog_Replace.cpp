@@ -267,14 +267,15 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	GtkWidget *vboxReplace;
 	GtkWidget *tableReplace;
 	GtkWidget *entryFind;
-	GtkWidget *entryReplace;
+	GtkWidget *entryReplace = 0;
 	GtkWidget *checkbuttonMatchCase;
 	GtkWidget *labelFind;
 	GtkWidget *labelReplace;
+	GtkWidget *separator;
 	GtkWidget *hbuttonbox1;
 	GtkWidget *buttonFindNext;
-	GtkWidget *buttonReplace;
-	GtkWidget *buttonReplaceAll;
+	GtkWidget *buttonReplace = 0;
+	GtkWidget *buttonReplaceAll = 0;
 	GtkWidget *buttonCancel;
 
 
@@ -287,13 +288,8 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (windowReplace),  m_WindowName);
-	// find is smaller
-	if (m_id == AP_DIALOG_ID_FIND)
-		gtk_widget_set_usize (windowReplace, 390, 102);
-	else
-		gtk_widget_set_usize (windowReplace, 390, 123);
+	gtk_window_set_default_size(GTK_WINDOW (windowReplace), 400, 100);
 
-	gtk_window_set_policy (GTK_WINDOW (windowReplace), FALSE, FALSE, FALSE);
 
 	// top level vbox
 	vboxReplace = gtk_vbox_new (FALSE, 12);
@@ -315,9 +311,8 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "labelFind", labelFind);
 	gtk_widget_show (labelFind);
 	gtk_table_attach (GTK_TABLE (tableReplace), labelFind, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (labelFind), GTK_JUSTIFY_LEFT);
+			  GtkAttachOptions(GTK_FILL),
+			  GtkAttachOptions(0), 5, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelFind), 0, 0.5);
 
 	// find entry is always here
@@ -325,8 +320,8 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "entryFind", entryFind);
 	gtk_widget_show (entryFind);
 	gtk_table_attach (GTK_TABLE (tableReplace), entryFind, 1, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+			  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
+			  GtkAttachOptions(GTK_EXPAND | GTK_FILL), 0, 0);
 
 	// match case is always here
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));	
@@ -335,8 +330,8 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "checkbuttonMatchCase", checkbuttonMatchCase);
 	gtk_widget_show (checkbuttonMatchCase);
 	gtk_table_attach (GTK_TABLE (tableReplace), checkbuttonMatchCase, 1, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
+			  GtkAttachOptions(GTK_FILL),
+			  GtkAttachOptions(0), 0, 0);
 
 	// the replace label and field are only visible if we're a "replace" dialog
 	if (m_id == AP_DIALOG_ID_REPLACE)
@@ -348,9 +343,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 		gtk_object_set_data (GTK_OBJECT (windowReplace), "labelReplace", labelReplace);
 		gtk_widget_show (labelReplace);
 		gtk_table_attach (GTK_TABLE (tableReplace), labelReplace, 0, 1, 2, 3,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL),
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
-		gtk_label_set_justify (GTK_LABEL (labelReplace), GTK_JUSTIFY_LEFT);
+				  GtkAttachOptions(0), GtkAttachOptions(0), 5, 0);
 		gtk_misc_set_alignment (GTK_MISC (labelReplace), 0, 0.5);
 
 		// create replace entry
@@ -358,11 +351,16 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 		gtk_object_set_data (GTK_OBJECT (windowReplace), "entryReplace", entryReplace);
 		gtk_widget_show (entryReplace);
 		gtk_table_attach (GTK_TABLE (tableReplace), entryReplace, 1, 2, 2, 3,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+				  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
+				  GtkAttachOptions(GTK_EXPAND | GTK_FILL), 0, 0);
 
 	}
 	
+	// Horizontal separator above button box
+	separator = GTK_WIDGET (gtk_hseparator_new());
+	gtk_box_pack_start (GTK_BOX (vboxReplace), separator, FALSE, FALSE, 0);
+	gtk_widget_show (separator);
+
 	// button box at the bottom
 	hbuttonbox1 = gtk_hbutton_box_new ();
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "hbuttonbox1", hbuttonbox1);
@@ -371,13 +369,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 10);
 	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 85, 24);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
-	buttonFindNext = gtk_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonFindNext", buttonFindNext);
-	gtk_widget_show (buttonFindNext);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonFindNext);
 
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
@@ -395,6 +386,13 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 		gtk_widget_show (buttonReplaceAll);
 		gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonReplaceAll);
 	}
+
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
+	buttonFindNext = gtk_button_new_with_label (unixstr);
+	FREEP(unixstr);
+	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonFindNext", buttonFindNext);
+	gtk_widget_show (buttonFindNext);
+	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonFindNext);
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "buttonCancel", buttonCancel);
