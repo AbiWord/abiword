@@ -62,8 +62,8 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    void ignoreWord(void);
    
    bool inChangeAll(void);
-   bool addChangeAll(UT_UCSChar * newword);
-   bool changeWordWith(UT_UCSChar * newword);
+   bool addChangeAll(const UT_UCSChar * newword);
+   bool changeWordWith(const UT_UCSChar * newword);
 
    // make the word visible in the document behind the dialog
    bool makeWordVisible(void);

@@ -355,7 +355,7 @@ bool AP_Dialog_Spell::inChangeAll(void)
 	}
 }
 
-bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
+bool AP_Dialog_Spell::addChangeAll(const UT_UCSChar * newword)
 {
 	UT_sint32 iLength;
 	const UT_UCSChar * bufferUnicode = m_pWordIterator->getCurrentWord(iLength);
@@ -374,7 +374,7 @@ bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
    return true;
 }
 
-bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
+bool AP_Dialog_Spell::changeWordWith(const UT_UCSChar * newword)
 {
    bool result = true;
 
@@ -383,6 +383,11 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    // of the document, so isSelectionEmpty() returns true
    makeWordVisible ();
    UT_sint32 iNewLength = UT_UCS4_strlen(newword);
+   UT_sint32 iOldLength;
+
+   // have the spell checker learn about our misspellings
+   const UT_UCSChar * oldWord = m_pWordIterator->getCurrentWord(iOldLength);
+   _getDict()->correctWord (oldWord, iOldLength, newword, iNewLength);
 
    result = m_pPreserver->cmdCharInsert(newword, iNewLength);
    m_pView->updateScreen();

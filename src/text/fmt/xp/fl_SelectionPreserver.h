@@ -31,7 +31,7 @@ public:
 	explicit FL_SelectionPreserver (FV_View * pView);
 	~FL_SelectionPreserver ();
 
-	bool cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce = false);
+	bool cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 private:
 	FL_SelectionPreserver ();
 	FL_SelectionPreserver (const FL_SelectionPreserver & other);

@@ -30,5 +30,3 @@ else
 libSpell_a_SOURCES = $(COMMONSOURCES) ispell_checker.cpp \
 	good.cpp tgood.cpp lookup.cpp makedent.cpp hash.cpp correct.cpp
 endif
-
-

@@ -41,7 +41,7 @@ FL_SelectionPreserver::~FL_SelectionPreserver ()
 		m_pView->cmdSelect (m_docRange.m_pos1, m_docRange.m_pos2);
 }
 
-bool FL_SelectionPreserver::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
+bool FL_SelectionPreserver::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	// TODO: how to handle bForce???
 	m_docRange.m_pos2 += count;

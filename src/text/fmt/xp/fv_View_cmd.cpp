@@ -1932,7 +1932,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	return e;
 }
 
-bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
+bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	bool bResult = true;
 	// So this gets rid of the annoying cursor flash at the beginning
@@ -3161,6 +3161,10 @@ void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 
 	moveInsPtTo(static_cast<PT_DocPosition>(pBL->getPosition() + pPOB->getOffset()));
 	extSelHorizontal(true, pPOB->getLength());
+
+	const UT_UCSChar * selection = getSelectionText ();
+	getDictForSelection ()->correctWord (selection, UT_UCS4_strlen (selection),
+										 replace, UT_UCS4_strlen (replace));
 	cmdCharInsert(replace, UT_UCS4_strlen(replace));
 
 	FREEP(replace);
