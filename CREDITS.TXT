@@ -18,7 +18,6 @@ contributors
 Pierre Abbat <phma@oltronics.net>               LaTeX Testing, Help translation, font work
 Ithamar R. Adema <ithamar@dds.nl>               BeOS fixes
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
-Tim Allen <rita_tim@tpg.com.au>                 Goto Localization, Indonesian Translation
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Nils Barth <nils_barth@post.harvard.edu>        LaTeX exporter improvements, cntrl-Q
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
@@ -33,7 +32,6 @@ Thomas Briggs <tom@sane.com>                    Lots of Win32 work, Bug 919
 Sean Bright <elixer@erols.com>                  Fix Page# Preview align bug
 Matt Brubeck <mbrubeck@hmc.edu>                 Fixed crash bug
 Andy Burnett <andy@abisource.com>
-Christopher Caron <ChrisDigo@aol.com>           Help (French)
 Bill Carpenter <bill-abisource@carpenter.org>   Smart Quotes
 Heath D. Carr <heath@abisource.com>
 Chema Celorio <chema@celorio.com>               Help w/ Gnome-Print
@@ -144,50 +142,52 @@ Belcon Zhao <rainfall@yeah.net>                 Testing/fixing CJK support
 
 translators
 -----------
+Tim Allen <rita_tim@tpg.com.au>                 Goto Localization, Indonesian Translation
 Takeshi Aihana <aihana@muc.biglobe.ne.jp, 
                 aihana@turbolinux.co.jp>        Japanese (jp-JP)
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Jesus Bravo Alvarez <jba@pobox.com>             Galician
 Henrik Berg <henrik@lansen.se>                  Swedish
+Christopher Caron <ChrisDigo@aol.com>           Help (French)
 Frédéric CELLA <fcella@mahj.org>                French
+Philippe Duperron <duperron@mail.dotcom.fr>     French
 Kenneth Christiansen <kenneth@gnu.org>          Danish
-Mauro Colorio <macolori@tin.it>                 Italian
 Jesús Corrius <jesus@softcatala.org>            Catalan
 Joaquín Cuenca Abela <cuenca@celium.net>        Spanish
+Javier Yáñez <javier@cibal.es>                  Spanish
 Tamas Decsi <tamas@pressflex.com>               Hungarian
-Philippe Duperron <duperron@mail.dotcom.fr>     French
 Vadim Frolov <vadim@krug.uch.net>               Ukrainian (uk-UA)
 GPS <GrandPooh@telkom.net>                      Indonesian
-Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian (Bokmål)
+I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
-hj <huangj@citiz.net>                           Chinese (zh-CN)
+Birger Langkjer <birger.langkjer@image.dk>      Danish
+Rasmus Toftdahl Olesen <rto@post.tele.dk>       Danish
 Alan Horkan <horkana@maths.tcd.ie>              Irish (ga-IE); also en-GB, en-IE
+hj <huangj@citiz.net>                           Chinese (zh-CN)
 Chih-Wei Huang <cwhuang@linux.org.tw>           Chinese (zh-TW)
-Karl Ove Hufthammer <huftis@bigfoot.com>        Norwegian (Nynorsk)
+Mauro Colorio <macolori@tin.it>                 Italian
 Marco Innocenti <dot0037@iperbole.bologna.it>   Italian
-Karl Trygve Kalleberg <karltk@prosalg.no>       Norwegian Bokmål
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Mantas Kriauciunas <mantelis@centras.lt>        Lithuanian (lt-LT)
 Michl Ladislav <xmichl03@stud.fee.vutbr.cz>     Czech
+Karl Ove Hufthammer <huftis@bigfoot.com>        Norwegian (Nynorsk)
+Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian (Bokmål)
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian (Bokmål)
-Birger Langkjer <birger.langkjer@image.dk>      Danish
+Kjartan Maraas <kmaraas@online.no>              Norwegian (Bokmål)
+Karl Trygve Kalleberg <karltk@prosalg.no>       Norwegian (Bokmål)
 Linus G Larsson <linus@centrumntr.se>           Swedish
 Per Larsson <tucker@algonet.se>                 Swedish
-Kjartan Maraas <kmaraas@online.no>              Norwegian  (Bokmål)
 Jordi Mas <jmas@softcatala.org>                 Catalan
 Zbynek Miksa <xmiksa@informatics.muni.cz>       Czech
-Giovanni dos Reis Nunes <giovanni@skydome.net>  Portugese (Brazil)
-Rasmus Toftdahl Olesen <rto@post.tele.dk>       Danish
 Gediminas Paulauskas <menesis@03bar.ktu.lt>     Lithuanian
 John Profic <profic@linux.ru.net>               Russian
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
+Giovanni dos Reis Nunes <giovanni@skydome.net>  Portugese (Brazil)
 Rui M. Silva Seabra <rms@greymalkin.yi.org>     Portugese
 Martin Lacko <lacko@host.sk>                    Slovak
 Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
 Andraz Tori                                     Slovenian (sl-SI)
-I Made Wiryana <made@nakula.rvs.uni-bielefeld.de> Indonesian
-Javier Yáñez <javier@cibal.es>                  Spanish
 
 unsung heroes
 -------------
