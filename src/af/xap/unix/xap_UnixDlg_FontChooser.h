@@ -36,6 +36,9 @@ public:
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
+	void buildXLFD(char * buf);
+	void parseXLFD(char * buf);
+	
 	AP_UnixFrame *			m_pUnixFrame;
 	
 };
