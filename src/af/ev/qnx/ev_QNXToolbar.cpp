@@ -63,7 +63,7 @@ EV_QNXToolbar::~EV_QNXToolbar(void)
 }
 
 bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id, 
-				 					UT_UCSChar * pData,
+				 					char * pData,
 				 					UT_uint32 dataLength)
 
 {
@@ -109,7 +109,7 @@ bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	UT_UCS4Char *pData4 = (UT_UCS4Char*) UT_convert((char*)pData,dataLength,"UTF-8","UCS-4",NULL,NULL);
+	UT_UCS4Char *pData4 = (UT_UCS4Char*) UT_convert((char*)pData,dataLength,"UTF-8","UCS-4",NULL,NULL); 
 	invokeToolbarMethod(pView,pEM,pData4,dataLength);
 	free(pData4);
 	return true;
@@ -130,7 +130,7 @@ static int s_combo_select(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	PtListCallback_t *cb = (PtListCallback_t *)info->cbdata;
 
 	struct _cb_data *cb_data = (struct _cb_data *)data;
-	cb_data->tb->toolbarEvent(cb_data->id, (UT_UCSChar *)cb->item, (UT_uint32)cb->item_len);
+	cb_data->tb->toolbarEvent(cb_data->id, cb->item, (UT_uint32)cb->item_len);
 
 	return Pt_CONTINUE;
 }
@@ -167,7 +167,7 @@ static int s_colour_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) 
 		char clrstr[9];
 		sprintf(clrstr, "%02x%02x%02x", PgRedValue(cinfo.rgb), PgGreenValue(cinfo.rgb), PgBlueValue(cinfo.rgb));
 		//printf("Colour is [%s] len %d \n", clrstr, strlen(clrstr));
-		cb_data->tb->toolbarEvent(cb_data->id, (UT_UCSChar *)clrstr, strlen(clrstr));
+		cb_data->tb->toolbarEvent(cb_data->id, clrstr, strlen(clrstr));
 	} 
 	return Pt_CONTINUE;
 }

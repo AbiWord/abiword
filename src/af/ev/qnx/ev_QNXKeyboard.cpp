@@ -24,6 +24,7 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "ev_EditMethod.h"
+#include "ut_iconv.h"
 #include "xav_View.h"
 #include "ev_NamedVirtualKey.h"
 #include "ev_QNXKeyboard.h"
@@ -119,6 +120,9 @@ bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 	else
 	{
 		UT_uint16 charData;
+		char utf8[UTF8_CUR_MAX+1];
+		int len;
+		UT_UCS4Char *ucs4Char=0;
 		charData = s_getKeyEventValue(keyevent);
 
 		//printf("Real key value [%c] \n", charData);
@@ -142,7 +146,11 @@ bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 			
 		case EV_EEMR_COMPLETE:
 			UT_ASSERT(pEM);
-			invokeKeyboardMethod(pView,pEM,&charData,1); // no char data to offer
+			len=PhKeyToMb((char*)&utf8,keyevent);
+			utf8[len]='\0';
+			ucs4Char = (UT_UCS4Char*) UT_convert((char*)utf8,len+1,"UTF-8","UCS-4",NULL,NULL); 
+			invokeKeyboardMethod(pView,pEM,(UT_UCSChar *)ucs4Char,1); // no char data to offer*
+			free(ucs4Char);
 			return true;
 			
 		case EV_EEMR_INCOMPLETE:
