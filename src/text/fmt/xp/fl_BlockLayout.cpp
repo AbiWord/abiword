@@ -1171,32 +1171,60 @@ void fl_BlockLayout::checkSpelling(void)
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 
 	fl_PartOfBlock* pPOB;
+	UT_uint32 wordBeginning, wordLength;
+	UT_uint32 eor; /* end of region */
+	bool found;
 	
 	for (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head(); pPOB; pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.next())
 	{
-		/*
-		  TODO
-		  For each word in this region, spell check it.  If it's bad,
-		  add it to lstSpelledWrong.  (_addPartSpelledWrong)
-		*/
 
 		UT_ASSERT(pPOB->iLength <= pgb.getLength());
 
 		/*
-		  TODO DaveThompson
-		  
-		  The text needing to be checked starts at pBlockText[pPOB->iOffset] and is of length pPOB->iLength.
-		  
-		  Use UT_isWordDelimiter to find the word boundaries and call SpellCheckWord16 on each one.
-		  
-		  You might want to modify the API to the spell checker to somehow allow a pointer and length,
-		  rather than a zero-terminated string.  This would avoid the need to make a copy of every word.
+		  For each word in this region, spell check it.  If it's bad,
+		  add it to lstSpelledWrong.  
 		*/
+
+		wordBeginning = pPOB->iOffset;
+		eor = pPOB->iOffset + pPOB->iLength;
+		/* Loop through all of the words in this Part of Block segment */
+
+		while (wordBeginning < eor)
+		{
+			/*** skip delimiters... */
+			while ((wordBeginning < eor) && (UT_isWordDelimiter( pBlockText[wordBeginning])))
+			{
+				wordBeginning++;
+			}
+
+			if (!(wordBeginning < eor))
+			{
+				/* we're at the start of a word. find end of word */
+				found = false;
+				wordLength = 0;
+				while ((!found) && (wordLength < pPOB->iLength))
+				{
+					if ( UT_TRUE == UT_isWordDelimiter( pBlockText[pPOB->iOffset + wordLength] ))
+					{
+						found = true;
+					}
+					wordLength++;
+				}
+	
+				if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
+				{
+					/* unknown word... squiggle it */
+					_addPartSpelledWrong(wordBeginning, wordLength);
+				}
+	
+				wordBeginning += (wordLength + 1);
+			}
+		}
+
 	}
 
 	/*
-	  After a spell check, m_lstNotSpellChecked should be empty.  So
-	  we clear it.
+	  After a spell check, m_lstNotSpellChecked should be empty.  So we clear it.
 	*/
 	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head()))
 	{
