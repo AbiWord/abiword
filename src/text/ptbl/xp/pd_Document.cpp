@@ -1344,9 +1344,9 @@ bool PD_Document::_syncFileTypes(bool bOpenedFromSaved)
 	const char *szSuffixes;
 
 	if (bOpenedFromSaved)
-		szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
+	  szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
 	else
-		szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
+	  szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
 
 	// Pull first suffix from the file dialog pattern string
 	UT_String suffix;
