@@ -785,6 +785,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 		val  = "subscript";
 		break;
 
+	case AP_MENU_ID_FMT_DIRECTION_DO_RTL:
+		prop = "dir-override";
+		val  = "rtl";
+		break;
+		
+	case AP_MENU_ID_FMT_DIRECTION_DO_LTR:
+		prop = "dir-override";
+		val  = "ltr";
+		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -852,6 +862,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 
 	case AP_MENU_ID_ALIGN_JUSTIFY:
 		val  = "justify";
+		break;
+
+	case AP_MENU_ID_FMT_DIRECTION_DD_RTL:
+		prop = "dom-dir";
+		val  = "rtl";
 		break;
 
 	default:
