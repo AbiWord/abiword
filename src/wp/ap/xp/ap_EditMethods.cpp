@@ -1583,27 +1583,43 @@ Defun1(fileSaveAsWeb)
 
 Defun1(filePreviewWeb)
 {
+	bool bAppendExt = true;
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
-  char *tmpFileName = NULL;
+  char szTempFileName[ 2048 ];
 
-  tmpFileName = UT_tmpnam(NULL);
+  UT_tmpnam(szTempFileName);
+
+  // Make sure that our filename ends with .html
+  // This is necessary for this feature to work on Win32!
+  if( strlen( szTempFileName ) > 5 )
+  {
+	  char *pWhere = strrchr( szTempFileName, '.' );
+
+	  if( pWhere )
+	  {
+		if( UT_stricmp( pWhere, ".html" ) )
+			strcpy( pWhere, ".html" );
+	  }
+	  else
+		  strcat( szTempFileName, ".html" );
+  }
 
   UT_Error errSaved = UT_OK;
 
   // we do this because we don't want to change the default
   // document extension or rename what we're working on
-  errSaved = pAV_View->cmdSaveAs(tmpFileName, (int)IEFT_HTML, false);
+  errSaved = pAV_View->cmdSaveAs(szTempFileName, (int)IEFT_HTML, false);
 
   if(errSaved != UT_OK)
     {
       // throw up a dialog
-      s_TellSaveFailed(pFrame, tmpFileName, errSaved);
+      s_TellSaveFailed(pFrame, szTempFileName, errSaved);
       return false;
     }
 
   char * tmpUrl = NULL;
   
-  tmpUrl = UT_catPathname("file://", tmpFileName);
+  tmpUrl = UT_catPathname("file://", szTempFileName);
 
   bool bOk = _helpOpenURL(pAV_View, tmpUrl);
   FREEP(tmpUrl);

@@ -330,8 +330,3 @@ UT_sint32 signedHiWord(UT_uint32 dw)
 
 	return s32;
 }
-
-char * UT_tmpnam(char * base)
-{
-  return tmpnam(base);
-}

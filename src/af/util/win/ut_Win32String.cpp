@@ -16,7 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
+
+#include <windows.h> 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -42,5 +43,20 @@ char * UT_catPathname(const char * szPath, const char * szFile)
 			szFile);
 
 	return szPathname;
+}
+
+char * UT_tmpnam(char * pszBase)
+{
+	char szTempPath[ 1024 ];
+
+	UT_ASSERT(pszBase);
+
+	// Get a path to a temp directory...
+	GetTempPath( 1024, szTempPath );
+
+	// Then get a temp file name in the temp directory we just got.
+	GetTempFileName( szTempPath, "abi", 0, pszBase );
+
+	return pszBase;
 }
 

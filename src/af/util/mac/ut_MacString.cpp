@@ -47,6 +47,10 @@ char * UT_catPathname(const char * szPath, const char * szFile)
 	return szPathname;
 }
 
+char * UT_tmpnam(char * base)
+{
+  return tmpnam(base);
+}
 
 #if defined(TARGET_API_MAC_CARBON) && (TARGET_API_MAC_CARBON == 1)
 /*
