@@ -1002,7 +1002,7 @@ bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
 
 static UT_Timer * s_pToUpdateCursor = NULL;
 static XAP_Frame * s_pLoadingFrame = NULL;
-
+static AD_Document * s_pLoadingDoc = NULL;
 /*!
 This little macro locks out loading frames from any activity thus preventing 
 segfaults.
@@ -1020,6 +1020,10 @@ static bool s_EditMethods_check_frame(void)
 	if(s_pLoadingFrame && (pFrame == s_pLoadingFrame)) 
 	{
 		result = true;
+	}
+	else if(pFrame && (s_pLoadingDoc != NULL) && (pFrame->getCurrentDoc() == s_pLoadingDoc))
+	{
+	        result = true;
 	}
 	else if(pView && ((pView->getPoint() == 0) || pView->isLayoutFilling()))
 	{
@@ -1260,6 +1264,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 			return;
 		}
 		s_pLoadingFrame = pFrame;
+		s_pLoadingDoc = pFrame->getCurrentDoc();
 		if(s_pToUpdateCursor == NULL)
 		{
 			GR_Graphics * pG = NULL;
@@ -1289,6 +1294,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 			}
 			s_pLoadingFrame = NULL;
 		}
+		s_pLoadingDoc = NULL;
 	}
 }
 
@@ -5439,6 +5445,10 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 				   UT_uint32 nToPage, UT_uint32 nFromPage)
 {
 	UT_uint32 j,k;
+	//
+	// Lock out operations on this document
+	//
+	s_pLoadingDoc = (AD_Document *) doc;
 
 	dg_DrawArgs da;
 	memset(&da, 0, sizeof(da));
@@ -5495,7 +5505,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		pGraphics->endPrint();
 		pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
-	
+	s_pLoadingDoc = NULL;
 	return true;
 }
 
@@ -5539,13 +5549,13 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 //
 // Turn on Wait cursor
 //
-		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-		s_pLoadingFrame = pFrame;
-		FV_View * pView = (FV_View *) pFrame->getCurrentView();
-		if(pView)
+	        if(pView)
 		{
-			pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		     pView->setCursorWait();
 		}
+		s_pLoadingFrame = pFrame;
+		s_pLoadingDoc = (AD_Document *) doc;
+
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 		UT_String msg =  pSS->getValue(AP_STRING_ID_MSG_PrintingDoc);
 
@@ -5588,11 +5598,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 //
 // Turn off wait cursor
 //
-		pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
-		if(pView)
-		{
-			pView->setCursorToContext();
-		}
+		pView->clearCursorWait();
 		s_pLoadingFrame = NULL;
 	}
 
@@ -5619,6 +5625,12 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
+
+//
+// Turn on Wait cursor
+//
+	pView->setCursorWait();
+	s_pLoadingDoc = (AD_Document *) doc;
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
@@ -5661,8 +5673,13 @@ static bool s_doPrintPreview(FV_View * pView)
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
 	pDialogFactory->releaseDialog(pDialog);
-				
-		return true;
+//
+// Turn off wait cursor
+//
+	pView->clearCursorWait();
+	s_pLoadingDoc = NULL;
+	
+	return true;
 }
 
 static bool s_doZoomDlg(FV_View * pView)

@@ -30,7 +30,7 @@ struct ABI_EXPORT dg_DrawArgs
 	
 	GR_Graphics*	pG;
 	UT_sint32		xoff;
-	UT_sint32		yoff;
+	long    		yoff;
 	bool			bDirtyRunsOnly;
 };
 

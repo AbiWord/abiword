@@ -176,7 +176,7 @@ void FL_DocLayout::fillLayouts(void)
 	if(m_pView)
 	{
 		m_pView->moveInsPtTo(FV_DOCPOS_BOD);
-		m_pView->setCursorToContext();
+		m_pView->clearCursorWait();
 		m_pView->setLayoutIsFilling(false);
 	}
 

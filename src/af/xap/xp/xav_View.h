@@ -98,7 +98,6 @@ public:
 	virtual void	      draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
 	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
 	virtual GR_Graphics * getGraphics(void) const = 0;
-	virtual inline UT_uint32	  getPoint(void) const =0;
     virtual void          updateLayout(void) = 0;
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
@@ -132,6 +131,9 @@ public:
 	virtual UT_uint32   calculateZoomPercentForWholePage() = 0;
 	void   setLayoutIsFilling(bool bFill) { m_bIsLayoutFilling = bFill;}
 	bool   isLayoutFilling(void)  const {return  m_bIsLayoutFilling;}
+	virtual inline UT_uint32	  getPoint(void) const =0;
+	virtual void setCursorWait(void) = 0;
+	virtual void clearCursorWait(void) = 0;
 protected:
 	XAP_App *			m_pApp;
 	void*				m_pParentData;

@@ -591,6 +591,13 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		}
 	}
 
+
+	// shortcircuit drawing if we're way off base.
+	long imax = (1<<15) -1;
+	if(((pDA->yoff < -imax) || (pDA->yoff > imax)) && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+	     return;
+	}
 	// Hyperlink screen colour
 	// TODO this should not be hardcoded
 	UT_RGBColor fgColor(0,0,255);

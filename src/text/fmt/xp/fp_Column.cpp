@@ -673,6 +673,8 @@ void fp_Column::layout(void)
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	fp_Line *pLine, *pPrevLine = NULL;
+	long imax = (1<<30) -1;
+
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		pLine = (fp_Line*) m_vecLines.getNthItem(i);
@@ -697,7 +699,10 @@ void fp_Column::layout(void)
 
 		iYLayoutUnits += iLineHeightLayoutUnits;
 		iYLayoutUnits += iLineMarginAfterLayoutUnits;
-
+		if((long) iYLayoutUnits > imax)
+		{
+		       UT_ASSERT(0);
+		}
 		// Update height of previous line now we know the gap between
 		// it and the current line. 
 
@@ -812,7 +817,12 @@ void fp_ShadowContainer::layout(void)
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_sint32 iYLayoutUnits = (UT_sint32) (yHardOffset/	ScaleLayoutUnitsToScreen);
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
-	bool doLayout =	getPage()->getDocLayout()->getView()->getViewMode() != VIEW_NORMAL;
+	FV_View * pView = getPage()->getDocLayout()->getView();
+	bool doLayout = true;
+	if(pView)
+	{
+	    doLayout =	pView->getViewMode() != VIEW_NORMAL;
+	}
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);

@@ -160,7 +160,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		{
 			setViewMode(VIEW_WEB);
 		}
-		m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		setCursorWait();
 	}
 #ifdef BIDI_ENABLED
 	pApp->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, &m_bDefaultDirectionRtl);
@@ -8375,13 +8375,13 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	//
 	m_pDoc->disableListUpdates();
 	m_pDoc->setDoingPaste();
-	m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	setCursorWait();
 	_doPaste(true, bHonorFormatting);
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	setCursorToContext();
+	clearCursorWait();
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
@@ -8446,7 +8446,7 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 bool FV_View::setSectionFormat(const XML_Char * properties[])
 {
 	bool bRet;
-
+	setCursorWait();
 	//
 	// Signal PieceTable Change 
 	_saveAndNotifyPieceTableChange();
@@ -8492,6 +8492,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 			_drawInsertionPoint();
 		}
 	}
+	clearCursorWait();
 	notifyListeners(AV_CHG_MOTION);
 	return bRet;
 }
@@ -9429,6 +9430,36 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	return EV_EMC_UNKNOWN;
 }
 
+/*!
+ * This sets the mouse pointer to show the little watch or some other icon if
+ * if a long operation is in progress.
+ */
+void FV_View::setCursorWait(void)
+{
+	m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if(pFrame )
+	{
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	}
+}
+
+/*!
+ * The clears the "waiting" icon from the mouse pointer.
+ */  
+void FV_View::clearCursorWait(void)
+{
+	setCursorToContext();
+	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+	if(pFrame )
+	{
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+	}
+}
+
+/*! 
+ * This method sets the cursor to match current context.
+ */
 void FV_View::setCursorToContext()
 {
 	EV_EditMouseContext evMC = getMouseContext(m_iMouseY,m_iMouseY);
@@ -10225,6 +10256,7 @@ void FV_View::RestoreSavedPieceTableState(void)
  */
 void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
+        setCursorWait();
 	if(!bSkipPTSaves)
 	{
 //
@@ -10299,6 +10331,7 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 		}
 		m_pDoc->endUserAtomicGlob();
 	}
+	clearCursorWait();
 }
 
 
@@ -10310,6 +10343,7 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
  */
 void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
+	setCursorWait();
 	const XML_Char* block_props[] = {
 		"text-align", "left",
 		NULL, NULL
@@ -10362,6 +10396,7 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 			_drawInsertionPoint();
 		}
 	}
+	clearCursorWait();
 }
 
 
@@ -10377,6 +10412,7 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 //
 // Fix up the insertion point stuff.
 //
+	setCursorWait();
 	if(!bSkipPTSaves)
 	{
 		if (isSelectionEmpty())
@@ -10453,6 +10489,7 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 			_drawInsertionPoint();
 		}
 	}
+	clearCursorWait();
 }
 
 /*!
@@ -10576,6 +10613,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Repeat this code 4 times to remove all the DocSection Layouts.
 //
 	_eraseInsertionPoint();
+	setCursorWait();
 	if(isHeader)
 	{
 		_removeThisHdrFtr(pDSL->getHeaderFirst());
@@ -10608,6 +10646,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 		_drawInsertionPoint();
 	}
 	m_pDoc->endUserAtomicGlob();
+	clearCursorWait();
 }
 
 /*!
@@ -11023,6 +11062,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 // insert the header/footer and leave the cursor in there. Set us in header/footer
 //	edit mode.
 //
+	setCursorWait();
 	if(isHdrFtrEdit())
 		clearHdrFtrEdit();
 	UT_uint32 iPageNo = getCurrentPageNumber() - 1;
@@ -11077,6 +11117,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
+	clearCursorWait();
 }
 
 bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL)
