@@ -1321,6 +1321,207 @@ bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
 
 	return false;
 }
+
+bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
+{
+	if(isSelectionEmpty())
+	{
+		return false;
+	}
+	if(getSelectionMode() != FV_SelectionMode_Single)
+	{
+		return false;
+	}
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
+	getBlocksInSelection(&vecBlocks);
+	fl_BlockLayout * pBL = vecBlocks.getNthItem(0);
+	if(pBL == NULL)
+	{
+		return false;
+	}
+	UT_GrowBuf *  pBuf = new UT_GrowBuf(1024);
+	UT_uint32 numCols = 0;
+	PT_DocPosition posStart = pBL->getPosition(false);
+	PT_DocPosition begPos = posStart;
+	PT_DocPosition endPos = posStart;
+	pBL->getBlockBuf(pBuf);
+	UT_UTF8String sWords;
+	bool bGetNext = true;
+	while(bGetNext)
+	{
+		bGetNext = pBL->getNextTableElement(pBuf,
+											posStart,
+											begPos,
+											endPos,
+											sWords,
+											bIgnoreSpaces);
+		if(begPos != 0)
+		{
+			numCols++;
+			posStart = endPos+1;
+		}
+	}
+	UT_uint32 numRows = vecBlocks.getItemCount();
+	pBL = vecBlocks.getNthItem(numRows-1);
+	PT_DocPosition posTableStart = pBL->getPosition(true) + pBL->getLength();
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	_clearSelection();
+	setPoint(posTableStart);
+	UT_Error e = UT_OK;
+//
+// OK let's create that table now!
+//
+//
+// insert a block to terminate the text before this.
+//
+	PT_DocPosition pointBreak = getPoint();
+	PT_DocPosition pointTable = 0;
+	e = m_pDoc->insertStrux(getPoint(),PTX_Block);
+//
+// Insert the table strux at the same spot. This will make the table link correctly in the
+// middle of the broken text.
+//
+// Handle special case of not putting a table immediately after a section break
+//
+	PL_StruxDocHandle secSDH = NULL;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
+	PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos,pointBreak));
+	secSDH = NULL;
+	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
+	if(secSDH != NULL)
+	{
+		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
+		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	}
+	setPoint(pointBreak);
+	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,NULL));
+//
+// stuff for cell insertion.
+//
+	UT_uint32 i,j;
+	const XML_Char * attrs[3] = {"style","Normal",NULL};
+	const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	UT_String sRowTop = "top-attach";
+	UT_String sRowBot = "bot-attach";
+	UT_String sColLeft = "left-attach";
+	UT_String sColRight = "right-attach";
+	UT_String sTop,sBot,sLeft,sRight;
+	for(i=0;i<numRows;i++)
+	{
+		UT_String_sprintf(sTop,"%d",i);
+		UT_String_sprintf(sBot,"%d",i+1);
+		props[0] = sRowTop.c_str();
+		props[1] = sTop.c_str();
+		props[2] = sRowBot.c_str();
+		props[3] = sBot.c_str();
+		for(j=0;j<numCols;j++)
+		{
+			UT_String_sprintf(sLeft,"%d",j);
+			UT_String_sprintf(sRight,"%d",j+1);
+			props[4] = sColLeft.c_str();
+			props[5] = sLeft.c_str();
+			props[6] = sColRight.c_str();
+			props[7] = sRight.c_str();
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props));
+			pointBreak = getPoint();
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_Block,attrs,NULL));
+			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
+			if(getPoint() == pointBreak)
+			{
+				setPoint(pointBreak+1);
+			}
+			if(i == 0 && j==0)
+			{
+				pointTable = getPoint();
+			}
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndCell));
+		}
+	}
+	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndTable));
+//
+// Done! Now fill it.
+//
+	posTableStart +=4;
+	PL_StruxDocHandle sdhTable = NULL;
+	PL_StruxDocHandle sdhCell = NULL;
+	bool b =m_pDoc->getStruxOfTypeFromPosition(posTableStart,PTX_SectionTable,&sdhTable);
+	UT_return_val_if_fail(b,false);
+	PT_DocPosition posCell = posTableStart;
+	delete pBuf;
+	for(i =0; i< numRows;i++)
+	{
+		pBL = vecBlocks.getNthItem(i);
+		pBuf = new UT_GrowBuf(1024);
+		pBL->getBlockBuf(pBuf);
+		posStart = pBL->getPosition(false);
+		bool bEnd = false;
+		for( j = 0; !bEnd && j < numCols; j++)
+		{
+			sdhCell = m_pDoc->getCellSDHFromRowCol(sdhTable,isShowRevisions(),PD_MAX_REVISION,i,j);
+			posCell = m_pDoc->getStruxPosition(sdhCell)+1; // Points at block
+			sWords.clear();
+			bEnd = !pBL->getNextTableElement(pBuf,
+											posStart,
+											begPos,
+											endPos,
+											sWords,
+											bIgnoreSpaces);
+			if(((j < numCols-1) && (begPos > 0)) || ((j == numCols-1) && (endPos - pBL->getPosition(false)) >= pBuf->getLength()))
+			{
+				UT_UCS4String sWord4 = sWords.ucs4_str();
+				m_pDoc->insertSpan(posCell+1,sWord4.ucs4_str(),sWord4.length(),NULL);
+				posStart = endPos+1;
+			}
+			else if((j==numCols-1) && (begPos > 0))
+			{
+				UT_uint32 offset = begPos - pBL->getPosition(false);
+				UT_UCS4String sWord4;
+				for(;offset<pBuf->getLength();offset++)
+				{
+					sWord4 += static_cast<UT_UCS4Char>(*pBuf->getPointer(offset));
+				}
+				m_pDoc->insertSpan(posCell+1,sWord4.ucs4_str(),sWord4.length(),NULL);
+				posStart = endPos+1;
+				break;
+			}
+		}
+		delete pBuf;
+	}
+	pBL = vecBlocks.getNthItem(0);
+	begPos = pBL->getPosition();
+	pBL = vecBlocks.getNthItem(numRows-1);
+	endPos = pBL->getPosition(true) + pBL->getLength();
+	UT_uint32 iRealDeleteCount;
+
+	m_pDoc->deleteSpan(begPos,endPos,NULL,iRealDeleteCount);
+	
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	_setPoint(posTableStart+1);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+//
+// We're done!
+//	
+	return true;
+}
 /*!
  * Make a table columns autosizing by removing all the column properties.
  */

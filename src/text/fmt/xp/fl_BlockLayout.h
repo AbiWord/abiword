@@ -336,6 +336,12 @@ public:
 	UT_uint32				m_uBackgroundCheckReasons;
 	void                    setPrevListLabel(bool b)
 	{ m_bPrevListLabel = b;}
+	bool                    getNextTableElement(UT_GrowBuf * buf,
+												PT_DocPosition startPos, 
+												PT_DocPosition & begPos,
+												PT_DocPosition & endPos,
+												UT_UTF8String & sWord,
+												bool bIgnoreSpace);
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif

@@ -9336,6 +9336,75 @@ void fl_BlockLayout::setStopping( bool bValue)
 	m_bStopList = bValue;
 }
 
+/*!
+ * This Method searches for the next piece of of the block that could
+ * be used for texttotable conversions.
+\returns true if a valid piece of text was found and there is more, false otherwise
+\param buf reference to a growbug containing the text in the block
+\param startPos - start search from this position
+\param begPos - first character of the word
+\param endPos - Last character of the word
+\param sWord - UTF8 string containing the word
+\param If true do not use a space as a delimiter.
+*/
+bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
+										 PT_DocPosition startPos, 
+										 PT_DocPosition & begPos,
+										 PT_DocPosition & endPos,
+										 UT_UTF8String & sWord,
+										 bool bIgnoreSpace)
+{
+	UT_uint32 offset = startPos - getPosition(false);
+	UT_uint32 i = 0;
+	UT_UCS4Char curChar = 0;
+	if(offset >= buf->getLength())
+	{
+		begPos = 0;
+		endPos = 0;
+		return false;
+	}
+	UT_uint32 iMax = buf->getLength() - offset;
+	//
+	// skip initial punctuation marks
+	for(i= 0; i < iMax; i++)
+	{
+		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
+		if(!UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
+		{
+			break;
+		}
+	}
+	if( i == iMax)
+	{
+		begPos = 0;
+		endPos = 0;
+		return false;
+	}
+	begPos = getPosition(false) + offset + i;
+	for(; i< iMax; i++)
+	{
+		curChar = static_cast<UT_UCS4Char>(*buf->getPointer(offset+i));
+		sWord += curChar;
+		if(UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
+		{
+			if( bIgnoreSpace && (curChar == UCS_SPACE))
+			{
+				continue;
+			}
+			break;
+		}
+	}
+	if(i< iMax)
+	{
+		endPos = getPosition(false) + offset + i;
+	}
+	else
+	{
+		endPos = getPosition(false) + offset + i;
+	}
+	return true;
+}
+
 void fl_BlockLayout::setDominantDirection(UT_BidiCharType iDirection)
 {
 	m_iDomDirection = iDirection;

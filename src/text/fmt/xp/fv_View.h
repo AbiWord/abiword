@@ -545,6 +545,7 @@ public:
 	bool				isInTable(PT_DocPosition pos);
 	bool				isInTableForSure(PT_DocPosition pos);
 	bool                cmdAutoSizeCols(void);
+	bool                cmdTextToTable(bool bIgnoreSpaces);
 	bool                cmdAutoSizeRows(void);
 	bool                cmdAdvanceNextPrevCell(bool bGoNext);
 	fp_CellContainer *  getCellAtPos(PT_DocPosition pos);

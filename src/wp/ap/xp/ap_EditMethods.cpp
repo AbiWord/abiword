@@ -10270,7 +10270,8 @@ Defun1(sortRowsDescend)
 Defun1(textToTable)
 {
 	CHECK_FRAME;
-	//ABIWORD_VIEW;
+	ABIWORD_VIEW;
+	pView->cmdTextToTable(false);
 	return true;
 }
 
