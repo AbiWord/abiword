@@ -595,6 +595,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		}
 		else
 		{
+			UT_return_val_if_fail( m_pCurrentSL,false );
 			pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
 			if (!pCL)
 			{
