@@ -55,7 +55,8 @@ fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDo
 	  m_pLastL(NULL),
 	  m_pFirstContainer(NULL),
 	  m_pLastContainer(NULL),
-	  m_pLB(NULL)
+	  m_pLB(NULL),
+	  m_eHidden(FP_VISIBLE)
 {
 	setAttrPropIndex(indexAP);
 	if(pMyLayout)
@@ -95,10 +96,10 @@ void fl_ContainerLayout::setNext(fl_ContainerLayout* pL)
 }
 
 /*!
- * Set the pointer to the previous containerLayout in the linked list 
+ * Set the pointer to the previous containerLayout in the linked list
  * given by pL
  */
-void fl_ContainerLayout::setPrev(fl_ContainerLayout* pL) 
+void fl_ContainerLayout::setPrev(fl_ContainerLayout* pL)
 {
 	m_pPrev = pL;
 }
@@ -121,7 +122,7 @@ fl_ContainerLayout * fl_ContainerLayout::getPrev(void) const
 
 
 /*!
- * Return the fl_ContainerLayout that "owns" this. Set to NULL for 
+ * Return the fl_ContainerLayout that "owns" this. Set to NULL for
  * fl_DocSectionLayout
  */
 fl_ContainerLayout * fl_ContainerLayout::myContainingLayout(void) const
@@ -228,10 +229,10 @@ fb_LineBreaker * fl_ContainerLayout::getLineBreaker(void)
 }
 
 /*!
- * Create a new containerLayout  and insert it into the linked list of 
+ * Create a new containerLayout  and insert it into the linked list of
  * layouts held by this class.
  * Returns a pointer to the generated ContainerLayout class.
- */ 
+ */
 fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_ContainerLayout * pPrev, PT_AttrPropIndex indexAP,fl_ContainerType iType)
 {
 	fl_ContainerLayout* pL=NULL;
@@ -293,7 +294,7 @@ void  fl_ContainerLayout::insertIntoList(fl_ContainerLayout * pL, fl_ContainerLa
 	{
 		pNext->setPrev(pL);
 	}
-	UT_DEBUGMSG(("SEVIOR: Inserting in List new pointer %x , prev %x \n",pL,pPrev)); 
+	UT_DEBUGMSG(("SEVIOR: Inserting in List new pointer %x , prev %x \n",pL,pPrev));
 }
 
 /*!
@@ -408,8 +409,8 @@ UT_uint32 fl_ContainerLayout::getPosition(bool bActualBlockPos) const
 	return pos;
 }
 
-fl_HdrFtrSectionLayout*	fl_ContainerLayout::getHdrFtrSectionLayout(void) const 
-{ 
+fl_HdrFtrSectionLayout*	fl_ContainerLayout::getHdrFtrSectionLayout(void) const
+{
 	if(getContainerType() != FL_CONTAINER_SHADOW)
 	{
 		return NULL;
@@ -417,3 +418,22 @@ fl_HdrFtrSectionLayout*	fl_ContainerLayout::getHdrFtrSectionLayout(void) const
 	const fl_HdrFtrShadow * pHFS = static_cast<const fl_HdrFtrShadow * >(this);
 	return pHFS->getHdrFtrSectionLayout();
 }
+
+bool fl_ContainerLayout::canContainPoint() const
+{
+	if(isCollapsed())
+		return false;
+
+	FV_View* pView = getDocLayout()->getView();
+	bool bShowHidden = pView->getShowPara();
+
+	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+	              || m_eHidden == FP_HIDDEN_REVISION
+		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+	if(bHidden)
+		return false;
+	else
+		return _canContainPoint();
+}
+

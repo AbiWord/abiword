@@ -818,6 +818,15 @@ void fl_BlockLayout::_lookupProperties(void)
 	// Add this in for loading - see if better way to fix.
 	// if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
 	//	_createListLabel();
+
+	// display property
+	const char* pszDisplay = getProperty("display");
+	if(pszDisplay && !UT_strcmp(pszDisplay, "none"))
+	{
+		setVisibility(FP_HIDDEN_TEXT);
+	}
+
+	// latter we will need to add here revision handling ...
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -1048,7 +1057,7 @@ void fl_BlockLayout::purgeLayout(void)
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
 {
-	
+
 	if (getFirstContainer() == (fp_Container *)  pLine)
 	{
 		setFirstContainer((fp_Container *) getFirstContainer()->getNext());

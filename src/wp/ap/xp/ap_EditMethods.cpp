@@ -2119,21 +2119,21 @@ Defun1(fileSaveTemplate)
 
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
   UT_ASSERT(pFrame);
-  
+
   IEFileType ieft = IE_Exp::fileTypeForSuffix ( ".awt" ) ;
   char * pNewFile = NULL;
   XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_SAVEAS;
-  
+
   UT_String suggestedName (XAP_App::getApp()->getUserPrivateDirectory());
   suggestedName += "/templates" ;
-  
+
   bool bOK = s_AskForPathname(pFrame,true, id, suggestedName.c_str(),&pNewFile,&ieft);
-  
+
   if (!bOK || !pNewFile)
     return false;
-  
+
   UT_DEBUGMSG(("fileSaveTemplate: saving as [%s]\n",pNewFile));
-  
+
   UT_Error errSaved;
   errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft, false);
   if (errSaved)
@@ -2143,7 +2143,7 @@ Defun1(fileSaveTemplate)
       free(pNewFile);
       return false;
     }
-  
+
   return bOK;
 }
 
@@ -7021,9 +7021,6 @@ Defun1(viewPara)
 	ABIWORD_VIEW;
 	pView->setShowPara(pFrameData->m_bShowPara);
 
-	// need to update toolbar and entire layout (hidden runs emerging/hiding, etc.)
-
-	pView->notifyListeners(AV_CHG_ALL);
 #if 1
 	// POLICY: make this the default for new frames, too
 	XAP_App * pApp = pFrame->getApp();

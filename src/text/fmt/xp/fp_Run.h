@@ -37,7 +37,6 @@
 #include "pp_Revision.h"
 
 class UT_GrowBuf;
-class fl_BlockLayout;
 class fp_Line;
 class GR_Graphics;
 
@@ -97,14 +96,6 @@ enum FPRUN_CLEAR_SCREEN
 	FP_CLEARSCREEN_FORCE,
 	FP_CLEARSCREEN_NEVER
 };
-
-typedef enum {FP_VISIBLE = 0,
-			  FP_HIDDEN_TEXT,
-			  FP_HIDDEN_REVISION,
-			  FP_HIDDEN_REVISION_AND_TEXT
-} FPVisibility;
-
-
 
 /*
 	fp_Run represents a contiguous homogenous chunk on a single line.

@@ -220,7 +220,7 @@ public:
 	// TODO some of these functions should move into protected
 
 	void	getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
-	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
+	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff)const;
 	virtual UT_sint32 getPageViewLeftMargin(void) const;
 	virtual UT_sint32 getPageViewTopMargin(void) const;
 	virtual UT_sint32 getPageViewSep(void) const;
@@ -275,7 +275,7 @@ public:
 
 	UT_uint32		getCurrentPageNumber(void);
 
-	bool	getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false);
+	bool	getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false)const;
 
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
@@ -477,7 +477,7 @@ protected:
 											UT_uint32& height,
 											bool& bDirection,
 											fl_BlockLayout** ppBlock,
-											fp_Run** ppRun);
+											fp_Run** ppRun)const;
 
 	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos) const;
 

@@ -39,6 +39,16 @@ typedef enum _fl_ContainerType
 	FL_CONTAINER_FRAME
 } fl_ContainerType;
 
+// this enum is used here and by the run classes
+// I had to move it here from fp_Run to avoid circular dependency
+typedef enum {FP_VISIBLE = 0,
+			  FP_HIDDEN_TEXT,
+			  FP_HIDDEN_REVISION,
+			  FP_HIDDEN_REVISION_AND_TEXT,
+			  FP_COLLAPSED
+} FPVisibility;
+
+
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -54,8 +64,9 @@ class fl_HdrFtrSectionLayout;
 class fl_SectionLayout;
 class fp_ContainerObject;
 class fp_Container;
-class fp_Run;
 class fb_LineBreaker;
+class fp_Run;
+
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
 {
@@ -106,11 +117,18 @@ public:
 	virtual fp_Run *        getFirstRun(void) const;
 	virtual PT_DocPosition  getPosition(bool bActualBlockPosition = false) const;
 	fb_LineBreaker *        getLineBreaker(void);
+
+	bool                    canContainPoint() const;
+	FPVisibility            isHidden() const {return m_eHidden;}
+	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
+
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
 protected:
 private:
+	virtual bool                _canContainPoint() const {return true;}
+
 	fl_ContainerType	        m_iConType;
 	fl_ContainerLayout*		    m_pMyLayout;
 
@@ -122,6 +140,7 @@ private:
 	fp_Container *              m_pFirstContainer;
 	fp_Container *              m_pLastContainer;
 	fb_LineBreaker *            m_pLB;
+	FPVisibility                m_eHidden;
 };
 
 #endif /* CONTAINERLAYOUT_H */

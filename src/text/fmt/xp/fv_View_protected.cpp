@@ -268,11 +268,8 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, bool bKeepLooking)
 
 PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking)
 {
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 iPointHeight;
-	UT_sint32 xPoint2;
-	UT_sint32 yPoint2;
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	UT_uint32 iPointHeight;
 	bool bDirection;
 
 	PT_DocPosition iPos;
@@ -287,10 +284,12 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	}
 
 	// TODO: could cache these to save a lookup if point doesn't change
-	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	fp_Run* pRun = pBlock->findPointCoords(iPoint, m_bPointEOL, xPoint,
-										   yPoint, xPoint2, yPoint2,
-										   iPointHeight, bDirection);
+	fl_BlockLayout* pBlock;
+	fp_Run* pRun;
+	_findPositionCoords(iPoint, m_bPointEOL, xPoint,
+						yPoint, xPoint2, yPoint2,
+						iPointHeight, bDirection,
+						&pBlock, &pRun);
 
 	fp_Line* pLine = pRun->getLine();
 
@@ -782,12 +781,8 @@ void FV_View::_insertSectionBreak(void)
 */
 void FV_View::_moveInsPtNextPrevLine(bool bNext)
 {
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 iPointHeight;
-	UT_sint32 iLineHeight;
-	UT_sint32 xPoint2;
-	UT_sint32 yPoint2;
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	UT_uint32 iPointHeight, iLineHeight;
 	bool bDirection;
 
 //
@@ -799,8 +794,9 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	// first, find the line we are on now
 	UT_uint32 iOldPoint = getPoint();
 
-	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
-	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+	fl_BlockLayout* pOldBlock;
+	fp_Run* pOldRun;
+	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_VerticalContainer* pOldContainer = (fp_VerticalContainer *) pOldLine->getContainer();
@@ -1165,11 +1161,8 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 
 fp_Page *FV_View::_getCurrentPage(void)
 {
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 iPointHeight;
-	UT_sint32 xPoint2;
-	UT_sint32 yPoint2;
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	UT_uint32 iPointHeight;
 	bool bDirection;
 	/*
 	  This function moves the IP to the beginning of the previous or
@@ -1179,8 +1172,9 @@ fp_Page *FV_View::_getCurrentPage(void)
 	// first, find the page we are on now
 	UT_uint32 iOldPoint = getPoint();
 
-	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
-	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+	fl_BlockLayout* pOldBlock;
+	fp_Run* pOldRun;
+	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Container* pOldContainer = pOldLine->getContainer();
 	fp_Page* pOldPage = pOldContainer->getPage();
@@ -2127,7 +2121,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 								  UT_uint32& height,
 								  bool& bDirection,
 								  fl_BlockLayout** ppBlock,
-								  fp_Run** ppRun)
+								  fp_Run** ppRun) const
 {
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
@@ -2155,6 +2149,17 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		if(ppBlock)
 			*ppBlock = 0;
 		return;
+	}
+
+	// if the block cannot contain point, find the nearest block to
+	// the left that can
+	while(!pBlock->canContainPoint())
+	{
+		UT_sint32 pos2 = pBlock->getPosition(true) - 2;
+		if(pos2 < 2)
+			break;
+
+		pBlock = _findBlockAtPosition(pos2);
 	}
 
 	// If block is actually to the right of the requested position
@@ -2901,18 +2906,159 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	PT_DocPosition iRunStart = pBlock->getPosition(false) + pRun->getBlockOffset();
 	PT_DocPosition iRunEnd = iRunStart + pRun->getLength();
 
+	// containing layout we will work with, ususally section
+	fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+
+	// the layout immediately above the runs, should be block
+	fl_ContainerLayout * pBL = pBlock;
+
+	// indicates how many layout layers we had to step up to get valid pCL
+	UT_uint32 iLayoutDepth = 0;
+
 	if(bForward && ( m_iInsPoint > iRunEnd))
 	{
 		// the run we have got is the on left of the ins point, we
-		// need to find the right one and set the point there
-		pRun = pRun->getNext();
+		// need to find the right one and set the point there; we also
+		// need to make sure that we handle correctly any hidden
+		// sub layouts (blocks, sections, table cells, tables ...)
 
+		// get the next run that can contain insertion point
+		pRun = pRun->getNext();
 		while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
 			pRun = pRun->getNext();
 
-		m_iInsPoint = 1 + pBlock->getPosition(false) + pRun->getBlockOffset();
+		// if we end up with pRun == NULL, it means we reached the end
+		// of the block; we need to move to the next suitable block,
+		// or even next suitable layout ...
+		while(!pRun)
+		{
+			pBL = pBL->getNext();
+			while(pBL && !pBL->canContainPoint())
+				pBL = pBL->getNext();
+
+			while(!pBL)
+			{
+				// got to the end of the containing layout (most often
+				// section), we will try the layout next to it
+				fl_ContainerLayout * pOrigCL = pCL;
+				iLayoutDepth = 0;
+
+				pCL = pCL->getNext();
+
+				while(pCL)
+				{
+					while (pCL && !pCL->canContainPoint())
+						pCL = pCL->getNext();
+
+					if(pCL)
+					{
+						// found suitable layout, quit
+						break;
+					}
+
+					while(!pCL)
+					{
+						// reached the end of this containing layout
+						// see if there is a suitable layout layer above
+						// us (e.g. if we are in a cell we want the table)
+						pCL = pOrigCL->myContainingLayout();
+
+						if(pCL)
+						{
+							// there is a suitable layout above us
+							iLayoutDepth += 1;
+
+							// we need to find the layout in the
+							// parent layout that preceedes us
+							fl_ContainerLayout * pNewCL = pCL->getFirstLayout();
+
+							if(pNewCL == pOrigCL)
+							{
+								// we are the very first layout in our
+								// parent layout, try moving still one layer up
+								pOrigCL = pCL;
+								pCL  = NULL;
+								continue;
+							}
+
+							while(pNewCL)
+							{
+								if(pNewCL->getNext() == pOrigCL)
+								{
+									pCL = pNewCL;
+									break;
+								}
+								pNewCL = pNewCL->getNext();
+							}
+						}
+						else
+						{
+							// there is no suitable layout layer above
+							// us, quit
+							break;
+						}
+					}
+				}
+
+				if(!pCL)
+				{
+					// we have reached the end of the document
+					break;
+				}
+
+				// now we need to find the container again
+				// however, the layout layer represented by our
+				// pCL could be several levels above the layer
+				// that we are interested in
+
+				for(UT_uint32 i = 0; i < iLayoutDepth; i++)
+				{
+					pCL = pCL->getFirstLayout();
+					if(!pCL)
+					{
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						break;
+					}
+				}
+
+				// this will only happen if the assert above fails
+				if(!pCL)
+					break;
+
+				pBL = pCL->getFirstLayout();
+
+				UT_ASSERT( pBL && pBL->getContainerType() == FL_CONTAINER_BLOCK );
+
+				while(pBL && !pBL->canContainPoint())
+					pBL = pBL->getNext();
+
+			}
+
+			if(!pCL || !pBL) // end of document
+				break;
+
+			pRun = pBL->getFirstRun();
+
+			while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
+				pRun = pRun->getNext();
+
+		}
+
+		if(!pRun)
+		{
+			// reached end of document, set the point there
+			m_iInsPoint = posEOD;
+
+		}
+		else
+		{
+			m_iInsPoint = 1 + pBL->getPosition(false) + pRun->getBlockOffset();
+		}
 	}
 
+	// this is much simpler, since the findPointCoords will return the
+	// run on the left of the requested position, so we just need to move
+	// to its end if the position does not fall into that run
 	if(!bForward && (iRunEnd <= m_iInsPoint))
 	{
 		m_iInsPoint = iRunEnd - 1;
@@ -3320,7 +3466,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 		}
 	}
 
-	if (!pView->m_bWarnedThatRestartNeeded && 
+	if (!pView->m_bWarnedThatRestartNeeded &&
 		( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
 		 || (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs, &b) && b != pView->m_bUseHebrewContextGlyphs)
 		)
