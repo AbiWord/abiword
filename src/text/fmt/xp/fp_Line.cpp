@@ -1782,6 +1782,7 @@ void fp_Line::layout(void)
 							bLineErased = true;
 							iIndxToEraseFrom = iK;
 						}
+
 						pRun->setX(iStartX, FP_CLEARSCREEN_NEVER);
 					}
 					else
@@ -1793,7 +1794,6 @@ void fp_Line::layout(void)
 							bLineErased = true;
 							iIndxToEraseFrom = iK;
 						}
-						
 						pRun->setX(iStartX, FP_CLEARSCREEN_NEVER);
 						iStartX += pRun->getWidth();
 					}
@@ -2730,32 +2730,7 @@ UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
 	for (i=0; i<iCountRuns; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-
-#if 0		
-// since the tab width's have already been calculated by a call to layout
-// this is not necessary (I gather this is an ancient piece of code
-// put here before the layout function was implemented)
-
-		if (pRun->getType() == FPRUN_TAB)
-		{
-			UT_sint32 iPos;
-			eTabType iTabType;
-			eTabLeader iTabLeader;
-
-			bool bRes = findNextTabStopInLayoutUnits(iX, iPos, iTabType, iTabLeader);
-			UT_ASSERT(bRes);
-			UT_ASSERT(iTabType == FL_TAB_LEFT);
-
-			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
-			pTabRun->setWidth(iPos - iX);
-			
-			iX = iPos;
-		}
-		else
-#endif
-		{
-			iX += pRun->getWidthInLayoutUnits();
-		}
+		iX += pRun->getWidthInLayoutUnits();
 	}
 
 	m_iWidthLayoutUnits = iX;
@@ -2831,7 +2806,10 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
 	return iTrailingBlank;
 }
 
-UT_uint32 fp_Line::countJustificationPoints(void) const
+UT_uint32 fp_Line::countJustificationPoints(void)
+#ifndef BIDI_ENABLED
+const
+#endif
 {
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 i;
@@ -2841,28 +2819,31 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 	// first calc the width of the line
 	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
+#ifdef BIDI_ENABLED
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+#else
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-		
+#endif		
 		if (pRun->getType() == FPRUN_TAB)
 		{
-			//			UT_ASSERT(false);
-			UT_DEBUGMSG(("TODO - decide if tab is a space \n"));
-			// TODO: decide if a tab is a space.
-
+			// when we hit a tab, we stop this, since tabs "swallow" justification of the
+			// runs that preceed them (i.e., endpoint of the tab is given and cannot be
+			// moved)
+			break;
 		}
 		else if (pRun->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+			UT_sint32 iPointCount = pTR->countJustificationPoints();
 			if(bStartFound)
 			{
-				iSpaceCount += pTR->countJustificationPoints();
+				iSpaceCount += abs(iPointCount);
 			}
 			else
 			{
-				if(pTR->doesContainNonBlankData())
+				if(iPointCount >= 0)
 				{
-					iSpaceCount += pTR->countJustificationPoints();
-					iSpaceCount -= pTR->countTrailingSpaces();
+					iSpaceCount += iPointCount;
 					bStartFound = true;
 				}
 
@@ -2915,37 +2896,61 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 {
 	if(iAmount)
 	{
+		// because the justification means that the spaces are wider than the OS
+		// will draw them, we cannot have runs merged across the spaces
+
+		// also, we have to do the spliting  _before_ we can count justification points,
+		// otherwise we get problems if the last non blank run ends in spaces and
+		// is followed by some space-only runs; in that case the trailing spaces in 
+		// the non-blank run get counted in when they should not -- this should not cost us
+		// too much, since it is unlikely that there is going to be a justified line with
+		// no spaces on it
+		_splitRunsAtSpaces();
+
 		UT_uint32 iSpaceCount = countJustificationPoints();
+		xxx_UT_DEBUGMSG(("fp_Line::distributeJustificationAmongstSpaces: iSpaceCount %d\n", iSpaceCount));
 
 		if(iSpaceCount)
 		{
-			// Need to distribute Extra width amongst spaces.
-
-			// because the justification means that the space are wider than the OS
-			// will draw them, we cannot have runs merged across the spaces, otherwise
-			splitRunsAtSpaces();
+			bool bFoundStart = false;
 
 			UT_uint32 count = m_vecRuns.getItemCount();
-			for (UT_uint32 i=0; i<count; i++)
+			for (UT_uint32 i=count - 1; i >= 0 && iSpaceCount > 0; i--)
 			{
+#ifdef BIDI_ENABLED
+				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+#else
 				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-
-				if (pRun->getType() == FPRUN_TEXT)
+#endif		
+				if (pRun->getType() == FPRUN_TAB)
+				{
+					UT_ASSERT(iSpaceCount == 0);
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					break;
+				}
+				else if (pRun->getType() == FPRUN_TEXT)
 				{
 					fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 
-					UT_uint32 iSpacesInText = pTR->countJustificationPoints();
-					if(iSpacesInText > iSpaceCount)
-						iSpacesInText = iSpaceCount;	// Takes care of trailing spaces.
+					UT_sint32 iSpacesInText = pTR->countJustificationPoints();
 
-					if(iSpacesInText)
+					if(!bFoundStart && iSpacesInText >= 0)
+						bFoundStart = true;
+
+					if(bFoundStart && iSpacesInText)
 					{
-						UT_sint32 iJustifyAmountForRun = (int)((double)iAmount / iSpaceCount * iSpacesInText);
-
-						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iSpacesInText);
+						UT_uint32 iMySpaces = abs(iSpacesInText);
+						UT_sint32 iJustifyAmountForRun = (int)((double)iAmount / iSpaceCount * iMySpaces);
+						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iMySpaces);
 
 						iAmount -= iJustifyAmountForRun;
-						iSpaceCount -= iSpacesInText;
+						iSpaceCount -= iMySpaces;
+					}
+					else if(!bFoundStart && iSpacesInText)
+					{
+						// trailing space, need to do this so that the trailing spaces do not get merged
+						// with the last non-blank run (see fp_TextRun::distributeJustificationAmongstSpaces()
+						pTR->distributeJustificationAmongstSpaces(0, 0);
 					}
 				}
 			}
@@ -2953,15 +2958,20 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 	}
 }
 
-void fp_Line::splitRunsAtSpaces(void)
-{
-	//UT_DEBUGMSG(("splitRunsAtSpaces (line 0x%x)\n", this));
+/*
+    I was going split the line from the end up to the last visual tab,
+	but in the bidi build this would be extremely expensive because the 
+	calculation of visual coordinace for the run requires that after every
+	split we would recalculated the bidi map, and that is not worth it
+*/
 
+void fp_Line::_splitRunsAtSpaces(void)
+{
 	UT_uint32 count = m_vecRuns.getItemCount();
 #ifdef BIDI_ENABLED
 	UT_uint32 countOrig = count;
 #endif
-	for (UT_uint32 i=0; i<count; i++)
+	for (UT_uint32 i = 0; i < count; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 

@@ -2562,7 +2562,8 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
 
 void fp_TextRun::resetJustification()
 {
-	if(m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
+	if(m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED 
+    && m_iSpaceWidthBeforeJustification != JUSTIFICATION_FAKE)
 	{
 		UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 		UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -2593,7 +2594,14 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
-	UT_ASSERT(iSpacesInRun);
+	if(!iAmount || !iSpacesInRun)
+	{
+		// we still want to set the m_iSpaceWidthBeforeJustification member, to prevent such runs
+		// from being merged; we will use JUSTIFICATION_FAKE  to indicated that no change was made, 
+		// but this run is still considered justified
+		m_iSpaceWidthBeforeJustification = JUSTIFICATION_FAKE;
+		return;
+	}
 
 	if(iSpacesInRun && m_iLen > 0)
 	{
@@ -2649,24 +2657,46 @@ UT_uint32 fp_TextRun::countTrailingSpaces(void) const
 	return iCount;
 }
 
-UT_uint32 fp_TextRun::countJustificationPoints(void) const
+/*
+   if this run contains only spaces, we will return the count
+   as a negative value, this will save us having to call
+   doesContainNonBlankData() in a couple of loops in fp_Line
+*/
+
+UT_sint32 fp_TextRun::countJustificationPoints(void) const
 {
-	UT_uint32 iCount = 0;
+	UT_sint32 iCount = 0;
+	bool bNonBlank = false;
+	UT_sint32 iOldI;
 
 	if(m_iLen > 0)
 	{
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
+		iOldI = m_iOffsetFirst - 1;
 
 		while (i >= 0)
 		{
+			if(iOldI < i-1) // i.e., something between the two spaces
+				bNonBlank = true;
+
 			iCount++;
+			iOldI = i;
 
 			// keep looping
 			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
 		}
 	}
 
-	return iCount;
+	UT_ASSERT(iCount >= 0);
+
+	if(!bNonBlank)
+	{
+		return -iCount;
+	}
+	else
+	{
+		return iCount;
+	}
 }
 
 bool fp_TextRun::canContainPoint(void) const

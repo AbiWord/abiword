@@ -89,7 +89,7 @@ public:
 
 	void					resetJustification();
 	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
-	UT_uint32				countJustificationPoints() const;
+	UT_sint32				countJustificationPoints() const;
 
 	bool					getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const;
 	UT_sint32				findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const;
@@ -214,7 +214,8 @@ protected:
 
 	enum
 	{
-		JUSTIFICATION_NOT_USED = -1
+	    JUSTIFICATION_NOT_USED = -1,
+		JUSTIFICATION_FAKE = -2	  
 	};
 	UT_sint32				m_iSpaceWidthBeforeJustification;
 

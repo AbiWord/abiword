@@ -176,8 +176,12 @@ public:
 	UT_sint32	calculateWidthOfTrailingSpacesInLayoutUnits(void);
 	void		resetJustification();
 	void		distributeJustificationAmongstSpaces(UT_sint32 iAmount);
-	UT_uint32	countJustificationPoints(void) const;
-	void		splitRunsAtSpaces(void);
+	UT_uint32	countJustificationPoints(void)
+#ifndef BIDI_ENABLED
+                                              const;
+#else
+	                                               ;
+#endif
 
 	bool		isLastCharacter(UT_UCSChar Character) const;
 
@@ -225,6 +229,9 @@ protected:
 							  ,FriBidiCharType iDomDirection
 #endif							
 							  );
+private:
+void		_splitRunsAtSpaces(void);
+
 
 	fl_BlockLayout*	m_pBlock;
 	fp_Container*	m_pContainer;
