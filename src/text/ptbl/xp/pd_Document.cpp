@@ -90,7 +90,8 @@ PD_Document::PD_Document(XAP_App *pApp)
     m_bLockedStyles(false),        // same as lockStyles(false)
     m_bMarkRevisions(false),
 	m_iRevisionID(1),
-    m_bDontImmediatelyLayout(false)
+	m_bDontImmediatelyLayout(false),
+    m_iLastDirMarker(0)
 {
 	m_pApp = pApp;
 
@@ -558,7 +559,7 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 
 
 bool PD_Document::insertSpan(PT_DocPosition dpos,
-							 const UT_UCSChar * p,
+							 const UT_UCSChar * pbuf,
 							 UT_uint32 length,
 							 PP_AttrProp *p_AttrProp)
 {
@@ -567,7 +568,84 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
 	}
 
-	return m_pPieceTable->insertSpan(dpos,p, length);
+	// REMOVE UNDESIRABLE CHARACTERS ...
+	// we will remove all LRO, RLO, LRE, RLE, and PDF characters
+	// * at the moment we do not handle LRE/RLE
+	// * we replace LRO/RLO with our dir-override property
+
+	PT_DocPosition cur_pos = dpos;
+	PP_AttrProp AP;
+
+	// we want to reset m_iLastDirMarker (which is in a state left
+	// over from the last insert/append operation)
+	m_iLastDirMarker = 0;
+	
+	bool result = true;
+	const UT_UCS4Char * pStart = pbuf;
+
+	for(const UT_UCS4Char * p = pbuf; p < pbuf + length; p++)
+	{
+		switch(*p)
+		{
+			case UCS_LRO:
+				if((p - pStart) > 0)
+				{
+					result &= m_pPieceTable->insertSpan(cur_pos, pStart, p - pStart);
+					cur_pos += p - pStart;
+				}
+				
+				AP.setProperty("dir-override", "ltr");
+				result &= m_pPieceTable->insertFmtMark(PTC_AddFmt, cur_pos, &AP);
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_RLO:
+				if((p - pStart) > 0)
+				{
+					result &= m_pPieceTable->insertSpan(cur_pos, pStart, p - pStart);
+					cur_pos += p - pStart;
+				}
+				
+				AP.setProperty("dir-override", "rtl");
+				result &= m_pPieceTable->insertFmtMark(PTC_AddFmt, cur_pos, &AP);
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_PDF:
+				if((p - pStart) > 0)
+				{
+					result &= m_pPieceTable->insertSpan(cur_pos, pStart, p - pStart);
+					cur_pos += p - pStart;
+				}
+				
+				if((m_iLastDirMarker == UCS_RLO) || (m_iLastDirMarker == UCS_LRO))
+				{
+					AP.setProperty("dir-override", "");
+					result &= m_pPieceTable->insertFmtMark(PTC_RemoveFmt, cur_pos, &AP);
+				}
+
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_LRE:
+			case UCS_RLE:
+				if((p - pStart) > 0)
+				{
+					result &= m_pPieceTable->insertSpan(cur_pos, pStart, p - pStart);
+					cur_pos += p - pStart;
+				}
+				
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+		}
+	}
+	
+	result &= m_pPieceTable->insertSpan(cur_pos, pStart, length - (pStart - pbuf));
+	return result;
 }
 
 bool PD_Document::deleteSpan(PT_DocPosition dpos1,
@@ -675,7 +753,72 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 
 	// can only be used while loading the document
 
-	return m_pPieceTable->appendSpan(pbuf,length);
+	// REMOVE UNDESIRABLE CHARACTERS ...
+	// we will remove all LRO, RLO, LRE, RLE, and PDF characters
+	// * at the moment we do not handle LRE/RLE
+	// * we replace LRO/RLO with our dir-override property
+
+	const XML_Char * attrs[] = {"props", NULL, NULL};
+	UT_String s;
+			
+	bool result = true;
+	const UT_UCS4Char * pStart = pbuf;
+
+	for(const UT_UCS4Char * p = pbuf; p < pbuf + length; p++)
+	{
+		switch(*p)
+		{
+			case UCS_LRO:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->appendSpan(pStart,p - pStart);
+
+				s = "dir-override:ltr";
+				attrs[1] = s.c_str();
+				result &= m_pPieceTable->appendFmt(&attrs[0]);
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_RLO:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->appendSpan(pStart,p - pStart);
+
+				s = "dir-override:rtl";
+				attrs[1] = s.c_str();
+				result &= m_pPieceTable->appendFmt(&attrs[0]);
+				
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_PDF:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->appendSpan(pStart,p - pStart);
+
+				if((m_iLastDirMarker == UCS_RLO) || (m_iLastDirMarker == UCS_LRO))
+				{
+					s = "dir-override:";
+					attrs[1] = s.c_str();
+					result &= m_pPieceTable->appendFmt(&attrs[0]);
+				}
+				
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_LRE:
+			case UCS_RLE:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->appendSpan(pStart,p - pStart);
+
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+		}
+	}
+	
+	result &= m_pPieceTable->appendSpan(pStart,length - (pStart-pbuf));
+	return result;
 }
 
 bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)

@@ -481,6 +481,8 @@ private:
 	// mapping UT_String=>UT_UTF8String pointer
 	UT_StringPtrMap         m_mailMergeMap;
 
+	UT_UCS4Char             m_iLastDirMarker;
+
 public:
 	UT_XML_ID_Generator		m_XML_ID;
 };

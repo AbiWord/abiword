@@ -315,6 +315,10 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		}
 	}
 
+	// if szValue == NULL or *szValue == 0, we want this property
+	// removed
+	bool bRemove = (!szValue || !*szValue);
+	
 	const void * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
 	{
@@ -328,13 +332,24 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 
 		delete p;
 
-		m_pProperties->set(szName,
-				   (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+		if(bRemove)
+		{
+			m_pProperties->remove(szName,NULL);
+		}
+		else
+		{
+			m_pProperties->set(szName,
+							   (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+		}
+		
 	}
 	else
 	{
-		m_pProperties->insert(szName,
-				      (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+		if(!bRemove)
+		{
+			m_pProperties->insert(szName,
+								  (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+		}
 	}
 	return true;
 }
