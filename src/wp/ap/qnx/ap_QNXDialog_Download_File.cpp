@@ -37,6 +37,7 @@
 #include "ut_worker.h"
 #include "ut_qnxHelper.h"
 
+#include "ap_Strings.h"
 
 XAP_Dialog * AP_QNXDialog_Download_File::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
@@ -126,7 +127,7 @@ PtWidget_t * AP_QNXDialog_Download_File::_constructWindow(void)
 	
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,getTitle()),0);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,getTitle(),0);
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_RESIZE_XY_AS_REQUIRED,Pt_RESIZE_XY_AS_REQUIRED);
 	mainwindow=PtCreateWidget(PtWindow,0,n,args);
 
