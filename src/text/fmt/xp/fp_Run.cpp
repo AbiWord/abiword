@@ -165,7 +165,7 @@ void fp_Run::setBlockOffset(UT_uint32 offset)
 	m_iOffsetFirst = offset;
 }
 
-void fp_Run::clearScreen(void)
+void fp_Run::clearScreen(UT_Bool bFullLineHeightRect)
 {
 	if (m_bDirty)
 	{
@@ -181,7 +181,7 @@ void fp_Run::clearScreen(void)
 	
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	_clearScreen();
+	_clearScreen(bFullLineHeightRect);
 	
 	// make sure we only get erased once
 	m_bDirty = UT_TRUE;
@@ -313,7 +313,7 @@ void fp_TabRun::setWidth(UT_sint32 iWidth)
 	m_iWidth = iWidth;
 }
 
-void fp_TabRun::_clearScreen(void)
+void fp_TabRun::_clearScreen(UT_Bool bFullLineHeightRect)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
@@ -330,8 +330,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 	
-	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
-
 	UT_RGBColor clrSelBackground(192, 192, 192);
 	UT_RGBColor clrNormalBackground(255,255,255);
 
@@ -347,6 +345,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	
 	UT_ASSERT(iSel1 <= iSel2);
 	
+	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+
 	if (
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
@@ -405,7 +405,7 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 	height = m_pLine->getHeight();
 }
 
-void fp_ForcedLineBreakRun::_clearScreen(void)
+void fp_ForcedLineBreakRun::_clearScreen(UT_Bool bFullLineHeightRect)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
@@ -537,7 +537,7 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	height = m_iHeight;
 }
 
-void fp_ImageRun::_clearScreen(void)
+void fp_ImageRun::_clearScreen(UT_Bool bFullLineHeightRect)
 {
 	UT_ASSERT(!m_bDirty);
 	
@@ -689,7 +689,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	height = m_iHeight;
 }
 
-void fp_FieldRun::_clearScreen(void)
+void fp_FieldRun::_clearScreen(UT_Bool bFullLineHeightRect)
 {
 	UT_ASSERT(!m_bDirty);
 	
@@ -798,7 +798,7 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 	height = m_pLine->getHeight();
 }
 
-void fp_ForcedColumnBreakRun::_clearScreen(void)
+void fp_ForcedColumnBreakRun::_clearScreen(UT_Bool bFullLineHeightRect)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
@@ -854,7 +854,7 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 	height = m_pLine->getHeight();
 }
 
-void fp_ForcedPageBreakRun::_clearScreen(void)
+void fp_ForcedPageBreakRun::_clearScreen(UT_Bool bFullLineHeightRect)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));

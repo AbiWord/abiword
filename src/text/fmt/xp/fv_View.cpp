@@ -393,14 +393,14 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 	return;
 }
 
-void FV_View::_clearSelection(void)
+void FV_View::_eraseSelection(void)
 {
 	if (!m_bSelection)
 	{
 		_resetSelection();
 		return;
 	}
-	
+
 	UT_uint32 iPos1, iPos2;
 
 	if (m_iSelectionAnchor < getPoint())
@@ -414,7 +414,31 @@ void FV_View::_clearSelection(void)
 		iPos2 = m_iSelectionAnchor;
 	}
 
-	_clearBetweenPositions(iPos1, iPos2);
+	_clearBetweenPositions(iPos1, iPos2, UT_TRUE);
+}
+
+void FV_View::_clearSelection(void)
+{
+	if (!m_bSelection)
+	{
+		_resetSelection();
+		return;
+	}
+
+	UT_uint32 iPos1, iPos2;
+
+	if (m_iSelectionAnchor < getPoint())
+	{
+		iPos1 = m_iSelectionAnchor;
+		iPos2 = getPoint();
+	}
+	else
+	{
+		iPos1 = getPoint();
+		iPos2 = m_iSelectionAnchor;
+	}
+
+	_clearBetweenPositions(iPos1, iPos2, UT_TRUE);
 	
 	_resetSelection();
 
@@ -457,20 +481,20 @@ void FV_View::_deleteSelection(void)
 	PT_DocPosition iPoint = getPoint();
 	UT_ASSERT(iPoint != m_iSelectionAnchor);
 
-	// TODO fix this
+	UT_uint32 iSelAnchor = m_iSelectionAnchor;
 	
-	UT_Bool bForward = (iPoint < m_iSelectionAnchor);
+	_eraseSelection();
+	_resetSelection();
 
+	UT_Bool bForward = (iPoint < iSelAnchor);
 	if (bForward)
 	{
-		m_pDoc->deleteSpan(iPoint, m_iSelectionAnchor);
+		m_pDoc->deleteSpan(iPoint, iSelAnchor);
 	}
 	else
 	{
-		m_pDoc->deleteSpan(m_iSelectionAnchor, iPoint);
+		m_pDoc->deleteSpan(iSelAnchor, iPoint);
 	}
-
-	_resetSelection();
 }
 
 UT_Bool FV_View::isSelectionEmpty()
@@ -801,9 +825,8 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	}
 
 	UT_Bool bResult = m_pDoc->insertSpan(getPoint(), text, count);
-	m_pLayout->deleteEmptyColumnsAndPages();
-		
-	_updateScreen();
+
+	_generalUpdate();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -834,9 +857,7 @@ void FV_View::insertSectionBreak(void)
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 	m_pDoc->insertStrux(getPoint(), PTX_Section);
 	
-	m_pLayout->deleteEmptyColumnsAndPages();
-		
-	_updateScreen();
+	_generalUpdate();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -863,9 +884,7 @@ void FV_View::insertParagraphBreak(void)
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 	
-	m_pLayout->deleteEmptyColumnsAndPages();
-		
-	_updateScreen();
+	_generalUpdate();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -898,11 +917,12 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 		}
 	}
 
+	_eraseSelection();
+	
 	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
-	m_pLayout->deleteEmptyColumnsAndPages();
-	_updateScreen();
-
+	_generalUpdate();
+	
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -1134,7 +1154,7 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
-	_updateScreen();
+	_generalUpdate();
 	
 	if (isSelectionEmpty())
 	{
@@ -1466,9 +1486,8 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	{
 		_deleteSelection();
 
-		m_pLayout->deleteEmptyColumnsAndPages();
-		_updateScreen();
-		
+		_generalUpdate();
+	
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
 			_fixInsertionPointCoords();
@@ -1513,9 +1532,7 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 			m_pDoc->deleteSpan(posCur, posCur+amt);
 		}
 
-		m_pLayout->deleteEmptyColumnsAndPages();
-		
-		_updateScreen();
+		_generalUpdate();
 	
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
@@ -1757,16 +1774,9 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 		{
 			return;
 		}
-		
-		if (iOldPoint < iNewPoint)
-		{
-			_drawBetweenPositions(iOldPoint, iNewPoint);
-		}
-		else
-		{
-			_drawBetweenPositions(iNewPoint, iOldPoint);
-		}
 
+		_extSel(iOldPoint);
+		
 		if (isSelectionEmpty())
 		{
 			_resetSelection();
@@ -1814,15 +1824,8 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 		
 		PT_DocPosition iNewPoint = getPoint();
 
-		if (iOldPoint < iNewPoint)
-		{
-			_drawBetweenPositions(iOldPoint, iNewPoint);
-		}
-		else
-		{
-			_drawBetweenPositions(iNewPoint, iOldPoint);
-		}
-
+		_extSel(iOldPoint);
+		
 		if (isSelectionEmpty())
 		{
 			_resetSelection();
@@ -2392,6 +2395,34 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 	return UT_FALSE;
 }
 
+/*
+  After most editing commands, it is necessary to call this method,
+  _generalUpdate, in order to fix everything.
+*/
+void FV_View::_generalUpdate(void)
+{
+	/*
+	  TODO the following routine checks every paragraph in the
+	  document to see if it needs a reformat.  How is this going
+	  to perform on a 50-page document?
+	*/
+	m_pLayout->updateLayout();
+	
+	m_pLayout->deleteEmptyColumnsAndPages();
+
+	/*
+	  TODO note that we are far too heavy handed with the mask we
+	  send here.  I ripped out all the individual calls to notifyListeners
+	  which appeared within fl_BlockLayout, and they all now go through
+	  here.  For that reason, I made the following mask into the union
+	  of all the masks I found.  I assume that this is inefficient, but
+	  functionally correct.
+	*/
+	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
+
+	_updateScreen();
+}
+
 UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
 								  UT_Bool matchCase)
 {
@@ -2423,7 +2454,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 
 	m_pDoc->endUserAtomicGlob();
 	
-	_updateScreen();
+	_generalUpdate();
 	
 	if (isSelectionEmpty())
 	{
@@ -2476,35 +2507,17 @@ UT_sint32 FV_View::_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_
 
 // ---------------- end find and replace ---------------
 
-void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
+void FV_View::_extSel(UT_uint32 iOldPoint)
 {
-	PT_DocPosition iOldPoint = getPoint();
-
-	xxx_UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
-				 iOldPoint, iNewPoint, m_iSelectionAnchor));
-	
-	if (iNewPoint == iOldPoint)
-	{
-		return;
-	}
-
-	_clearPointAP(UT_TRUE);
-
-	if (isSelectionEmpty())
-	{
-		_eraseInsertionPoint();
-		_setSelectionAnchor();
-	}
-
 	/*
 	  We need to calculate the differences between the old
 	  selection and new one.
 
 	  Anything which was selected, and now is not, should
-	  be XORed on screen, back to normal.
+	  be fixed on screen, back to normal.
 
 	  Anything which was NOT selected, and now is, should
-	  be XORed on screen, to show it in selected state.
+	  be fixed on screen, to show it in selected state.
 
 	  Anything which was selected, and is still selected,
 	  should NOT be touched.
@@ -2513,7 +2526,12 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	  is still not selected, should not be touched.
 	*/
 
-	_setPoint(iNewPoint);
+	UT_uint32 iNewPoint = getPoint();
+
+	if (iNewPoint == iOldPoint)
+	{
+		return;
+	}
 	
 	if (iNewPoint < iOldPoint)
 	{
@@ -2534,6 +2552,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 				  N A O
 				  The selection flipped across the anchor to the left.
 				*/
+				_clearBetweenPositions(m_iSelectionAnchor, iOldPoint, UT_TRUE);
 				_drawBetweenPositions(iNewPoint, iOldPoint);
 			}
 		}
@@ -2547,6 +2566,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 			  right of the anchor
 			*/
 
+			_clearBetweenPositions(iNewPoint, iOldPoint, UT_TRUE);
 			_drawBetweenPositions(iNewPoint, iOldPoint);
 		}
 	}
@@ -2564,6 +2584,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 			  left of the anchor.
 			*/
 
+			_clearBetweenPositions(iOldPoint, iNewPoint, UT_TRUE);
 			_drawBetweenPositions(iOldPoint, iNewPoint);
 		}
 		else
@@ -2575,6 +2596,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 				  The selection flipped across the anchor to the right.
 				*/
 
+				_clearBetweenPositions(iOldPoint, m_iSelectionAnchor, UT_TRUE);
 				_drawBetweenPositions(iOldPoint, iNewPoint);
 			}
 			else
@@ -2588,7 +2610,32 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 			}
 		}
 	}
+}
 
+void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
+{
+	PT_DocPosition iOldPoint = getPoint();
+
+	xxx_UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
+				 iOldPoint, iNewPoint, m_iSelectionAnchor));
+	
+	if (iNewPoint == iOldPoint)
+	{
+		return;
+	}
+
+	_clearPointAP(UT_TRUE);
+
+	if (isSelectionEmpty())
+	{
+		_eraseInsertionPoint();
+		_setSelectionAnchor();
+	}
+
+	_setPoint(iNewPoint);
+
+	_extSel(iOldPoint);
+	
 	if (isSelectionEmpty())
 	{
 		_resetSelection();
@@ -2757,9 +2804,12 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
   This method simply iterates over every run between two doc positions
   and draws each one.
 */
-void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
+void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, UT_Bool bFullLineHeightRect)
 {
-	UT_ASSERT(iPos1 < iPos2);
+	if (iPos1 >= iPos2)
+	{
+		return;
+	}
 	
 	fp_Run* pRun1;
 	fp_Run* pRun2;
@@ -2789,16 +2839,19 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			bDone = UT_TRUE;
 		}
 		
-		fl_BlockLayout* pBlock = pCurRun->getBlock();
-		UT_ASSERT(pBlock);
-
-		pCurRun->clearScreen();
+		pCurRun->clearScreen(bFullLineHeightRect);
 		
-		pCurRun = pCurRun->getNext();
-		if (!pCurRun)
+		if (pCurRun->getNext())
+		{
+			pCurRun = pCurRun->getNext();
+		}
+		else
 		{
 			fl_BlockLayout* pNextBlock;
 			
+			fl_BlockLayout* pBlock = pCurRun->getBlock();
+			UT_ASSERT(pBlock);
+
 			pNextBlock = pBlock->getNext(UT_TRUE);
 			if (pNextBlock)
 			{
@@ -3507,9 +3560,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	m_pDoc->undoCmd(count);
 
-	m_pLayout->deleteEmptyColumnsAndPages();
-	
-	_updateScreen();
+	_generalUpdate();
 	
 	notifyListeners(AV_CHG_DIRTY);
 	
@@ -3536,9 +3587,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	m_pDoc->redoCmd(count);
 
-	m_pLayout->deleteEmptyColumnsAndPages();
-	
-	_updateScreen();
+	_generalUpdate();
 	
 	if (isSelectionEmpty())
 	{
@@ -3573,9 +3622,7 @@ void FV_View::cmdCut(void)
 	cmdCopy();
 	_deleteSelection();
 
-	m_pLayout->deleteEmptyColumnsAndPages();
-		
-	_updateScreen();
+	_generalUpdate();
 	
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
@@ -3943,9 +3990,7 @@ void FV_View::_doPaste(void)
 		pClip->close();
 	}
 
-	m_pLayout->deleteEmptyColumnsAndPages();
-		
-	_updateScreen();
+	_generalUpdate();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -3978,7 +4023,7 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Section);
 
-	_updateScreen();
+	_generalUpdate();
 	
 	if (isSelectionEmpty())
 	{

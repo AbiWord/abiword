@@ -183,11 +183,13 @@ public:
 // ----------------------
 
 protected:
+	void				_generalUpdate(void);
+	
 	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bDirtyRunsOnly, UT_Bool bClip=UT_FALSE);
 	void				_updateScreen(UT_Bool bToggleIP=UT_FALSE);
 	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
-	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right);
+	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, UT_Bool bFullLineHeightRect);
 	
 	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
@@ -208,6 +210,7 @@ protected:
 									  UT_sint32& yClick);
 
 	void				_moveToSelectionEnd(UT_Bool bForward);
+	void				_eraseSelection(void);
 	void				_clearSelection(void);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
@@ -220,6 +223,7 @@ protected:
 	void 				_xorInsertionPoint();
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
+	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
 
 	static void			_autoScroll(UT_Timer * pTimer);

@@ -342,17 +342,44 @@ fp_Column* fl_SectionLayout::getNewColumn(void)
 	return pLeaderColumn;
 }
 
-int fl_SectionLayout::format()
+void fl_SectionLayout::format()
 {
 	fl_BlockLayout*	pBL = m_pFirstBlock;
-
 	while (pBL)
 	{
 		pBL->format();
 		pBL = pBL->getNext(UT_FALSE);
 	}
+	
+	fp_Column* pCol = getFirstColumn();
+	while (pCol)
+	{
+		pCol->updateLayout();
+		
+		pCol = pCol->getNext();
+	}
+}
 
-	return 0;	// TODO return code
+void fl_SectionLayout::updateLayout()
+{
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		if (pBL->needsReformat())
+		{
+			pBL->format();
+		}
+		
+		pBL = pBL->getNext(UT_FALSE);
+	}
+
+	fp_Column* pCol = getFirstColumn();
+	while (pCol)
+	{
+		pCol->updateLayout();
+		
+		pCol = pCol->getNext();
+	}
 }
 
 void fl_SectionLayout::_purgeLayout()

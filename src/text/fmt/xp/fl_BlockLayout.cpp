@@ -62,6 +62,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pFirstLine = NULL;
 	m_pLastLine = NULL;
 
+	m_bNeedsReformat = UT_TRUE;
+	m_bFixCharWidths = UT_FALSE;
+
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
 
@@ -268,6 +271,7 @@ fl_BlockLayout::~fl_BlockLayout()
 
 void fl_BlockLayout::_fixColumns(void)
 {
+#if 0
 	if (!m_pFirstLine)
 	{
 		return;
@@ -297,6 +301,7 @@ void fl_BlockLayout::_fixColumns(void)
 	{
 		pNextCol->updateLayout();
 	}
+#endif	
 }
 
 void fl_BlockLayout::clearScreen(GR_Graphics* pG)
@@ -477,13 +482,8 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 {
 	// special case, nothing to do
 	if (!pTruncRun)
-		return UT_TRUE;
-
-	if (pTruncRun->getBlock() != this)
 	{
-		// be safe
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return UT_TRUE;
 	}
 
 	if (m_pFirstRun == pTruncRun)
@@ -513,20 +513,6 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 		pRun = pRun->getNext();
 	}
 
-#if 0	
-	// remove empty lines 
-	while (m_pLastLine && (m_pLastLine != m_pFirstLine))
-	{
-		if (m_pLastLine->countRuns())
-			break;
-
-		fp_Line* pLine = m_pLastLine;
-		m_pLastLine = m_pLastLine->getPrev();
-
-		pLine->remove();
-	}
-#endif
-
 	_removeAllEmptyLines();
 	
 	return UT_TRUE;
@@ -534,6 +520,17 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 
 int fl_BlockLayout::format()
 {
+	if (m_bFixCharWidths)
+	{
+		fp_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			pRun->recalcWidth();
+			
+			pRun = pRun->getNext();
+		}
+	}
+	
 	if (m_pFirstRun)
 	{
 		if (!m_pFirstLine)
@@ -576,6 +573,8 @@ int fl_BlockLayout::format()
 	_fixColumns();
 
 	checkForWidowsAndOrphans();
+
+	m_bNeedsReformat = UT_FALSE;
 
 	return 0;	// TODO return code
 }
@@ -1233,7 +1232,7 @@ void fl_BlockLayout::_updateSquiggle(fl_PartOfBlock* pPOB)
 	PT_DocPosition pos1 = getPosition() + pPOB->iOffset;
 	PT_DocPosition pos2 = pos1 + pPOB->iLength;
 
-	pView->_clearBetweenPositions(pos1, pos2);
+	pView->_clearBetweenPositions(pos1, pos2, UT_TRUE);
 }
 
 void fl_BlockLayout::checkSpelling(void)
@@ -1570,13 +1569,6 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			UT_ASSERT(FP_RUN_INSIDE == pRun->containsOffset(blockOffset));
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);	// only textual runs can be split anyway
 
-			/*
-			  We're pretty tricky.  :-)  This call is going to split
-			  the run.  The result is that the next time through the loop,
-			  the case above will hit, and the new run will be inserted
-			  right between the two halves of the split.
-			*/
-
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
 			pTextRun->split(blockOffset);
 			
@@ -1589,6 +1581,35 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			fp_TextRun* pOtherHalfOfSplitRun = (fp_TextRun*) pTextRun->getNext();
 			
 			pTextRun->recalcWidth();
+
+			bInserted = UT_TRUE;
+			
+			pRun = pRun->getNext();
+			
+			UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
+			UT_uint32 iRunLength = pRun->getLength();
+
+			UT_ASSERT(iRunBlockOffset == blockOffset);
+			
+			// the insert is right before this run.
+			pRun->setBlockOffset(iRunBlockOffset + len);
+
+			pNewRun->setPrev(pRun->getPrev());
+			pNewRun->setNext(pRun);
+			if (pRun->getPrev())
+			{
+				pRun->getPrev()->setNext(pNewRun);
+			}
+
+			pRun->setPrev(pNewRun);
+
+			if (m_pFirstRun == pRun)
+			{
+				m_pFirstRun = pNewRun;
+			}
+
+			pRun->getLine()->insertRunBefore(pNewRun, pRun);
+			
 			pOtherHalfOfSplitRun->recalcWidth();
 		}
 		
@@ -1717,7 +1738,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
 	}
 	
-	format();
+	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
@@ -1730,7 +1751,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		}
 			
 		pView->_setPoint(pcrs->getPosition()+len);
-		pView->notifyListeners(mask);
 	}
 
 /***************************************************************************************/
@@ -1802,6 +1822,10 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 #ifndef NDEBUG	
 	_assertRunListIntegrity();
 #endif
+
+	/*
+	  TODO the attempts herein to do fetchCharWidths will fail.
+	*/
 	
 	m_gbCharWidths.del(blockOffset, len);
 
@@ -1833,8 +1857,9 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					// the deleted section is entirely within this run
 					pRun->setLength(iRunLength - len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-					pRun->fetchCharWidths(&m_gbCharWidths);
-					pRun->recalcWidth();
+//					pRun->fetchCharWidths(&m_gbCharWidths);
+//					pRun->recalcWidth();
+					m_bFixCharWidths = UT_TRUE;
 				}
 				else
 				{
@@ -1843,8 +1868,9 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 					pRun->setLength(iRunLength - iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-					pRun->fetchCharWidths(&m_gbCharWidths);
-					pRun->recalcWidth();
+//					pRun->fetchCharWidths(&m_gbCharWidths);
+//					pRun->recalcWidth();
+					m_bFixCharWidths = UT_TRUE;
 				}
 			}
 			else
@@ -1856,8 +1882,9 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					pRun->setBlockOffset(iRunBlockOffset - (len - iDeleted));
 					pRun->setLength(iRunLength - iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-					pRun->fetchCharWidths(&m_gbCharWidths);
-					pRun->recalcWidth();
+//					pRun->fetchCharWidths(&m_gbCharWidths);
+//					pRun->recalcWidth();
+					m_bFixCharWidths = UT_TRUE;
 				}
 				else
 				{
@@ -1916,14 +1943,13 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 
 	_delete(blockOffset, len);
 	
-	format();
+	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
-		pView->_resetSelection();
-		pView->_setPoint(pcrs->getPosition());
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
+ 		pView->_resetSelection();
+ 		pView->_setPoint(pcrs->getPosition());
 	}
 
 	// TODO: instead, remove deleted squiggles,
@@ -2106,13 +2132,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 		pRun = pRun->getNext();
 	}
 
-	format();
-
-	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
-	}
+	setNeedsReformat();
 
 	UT_DEBUGMSG(("ChangeSpan spell finished, bad words=%d",
 				 m_vecSquiggles.getItemCount()));
@@ -2225,7 +2245,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 			UT_ASSERT(pLine);
 			
 			pLine->removeRun(pRun);
-			pRun->fetchCharWidths(&pPrevBL->m_gbCharWidths);
+//			pRun->fetchCharWidths(&pPrevBL->m_gbCharWidths);
 
 			pLastLine->addRun(pRun);
 
@@ -2257,13 +2277,12 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 
 	// update the display
 //	pPrevBL->_lookupProperties();	// TODO: this may be needed
-	pPrevBL->format();
-							
+	pPrevBL->setNeedsReformat();
+
 	FV_View* pView = pPrevBL->m_pLayout->getView();
 	if (pView)
 	{
 		pView->_setPoint(pcrx->getPosition());
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
 	}
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
@@ -2296,13 +2315,7 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 		pLine = pLine->getNext();
 	}
 	
-	format();
-
-	FV_View* pView = m_pLayout->getView();
-	if (pView)
-	{
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTBLOCK);
-	}
+	setNeedsReformat();
 
 	return UT_TRUE;
 }
@@ -2380,10 +2393,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	{
 		pFirstNewRun = pRun->getNext();
 
-		// last line of old block is dirty
-		pRun->getLine()->layout();
-		// we redraw the line below
-
 		// break run sequence
 		pRun->setNext(NULL);
 		if (pFirstNewRun)
@@ -2396,9 +2405,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		// everything goes in new block
 		pFirstNewRun = m_pFirstRun;
 	}
-
-	// explicitly truncate rest of this block's layout
-	truncateLayout(pFirstNewRun);
 
 	// split charwidths across the two blocks
 	UT_uint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
@@ -2423,13 +2429,16 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		pRun = pRun->getNext();
 	}
 
-	pNewBL->format();
+	// explicitly truncate rest of this block's layout
+	truncateLayout(pFirstNewRun);
+
+	pNewBL->setNeedsReformat();
 	
 	checkForWidowsAndOrphans();
 
 	coalesceRuns();
 	
-	format();
+	setNeedsReformat();
 	
 	// TODO: instead, split squiggles between blocks
 	// TODO: just check boundary word
@@ -2440,7 +2449,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	if (pView)
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 	
 	return UT_TRUE;
@@ -2746,14 +2754,13 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 		return UT_FALSE;
 	}
 	
-	format();
+	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcro->getPosition() + 1);
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
 	return UT_TRUE;
@@ -2786,14 +2793,13 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		return UT_FALSE;
 	}
 	
-	format();
+	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcro->getPosition());
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
 	return UT_TRUE;
@@ -2837,14 +2843,13 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 	}
 
 done:
-	format();
+	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcroc->getPosition());
-		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
 	return UT_TRUE;

@@ -58,14 +58,11 @@ UT_Bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 
 	// actually remove the fragment from the list and delete it.
 	
-	_deleteObject(pfo,ppfEnd,pfragOffsetEnd);
-#if 0
-	// TODO I think the following delete has already been done.
-	delete pfo;
-#endif	
-
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
+	
+	_deleteObject(pfo,ppfEnd,pfragOffsetEnd);
+
 	return UT_TRUE;
 }
 

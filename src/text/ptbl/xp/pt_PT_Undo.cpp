@@ -98,15 +98,16 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
 
-			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
-
 // TODO see if we can avoid this call to _getStruxFromPosition ??
 			pf_Frag_Strux * pfs = NULL;
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
 
-			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
+			
+			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
+
+			DONE();
 		}
 		return UT_TRUE;
 
@@ -204,10 +205,10 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 					UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+					m_pDocument->notifyListeners(pfs,pcr);
 					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
 					UT_ASSERT(bResult);
 					DONE();
-					m_pDocument->notifyListeners(pfs,pcr);
 
 					delete pfs;
 				}

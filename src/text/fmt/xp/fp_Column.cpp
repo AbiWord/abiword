@@ -230,7 +230,8 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 		UT_ASSERT(pAfterLine->isLastLineInBlock() || (pBL == pAfterLine->getBlock()));
 
 		UT_sint32 iMargin = pNewLine->getMarginBefore();
-		
+
+#if 0
 		if ((pAfterLine->getY() + pAfterLine->getHeight() + iMargin + iHeight) > m_iMaxHeight)
 		{
 			pNewLine->setColumn(NULL);
@@ -244,6 +245,7 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 			
 			return UT_FALSE;
 		}
+#endif		
 
 		UT_uint32 ndx = m_vecLines.findItem(pAfterLine);
 		UT_ASSERT(ndx >= 0);
@@ -308,26 +310,16 @@ UT_Bool fp_Column::isEmpty(void) const
 
 void fp_Column::moveLineFromNextColumn(fp_Line* pLine)
 {
-#if 0
-	fp_Column* pNextCol = getNext();
-	UT_ASSERT(pNextCol);
-	UT_ASSERT(pLine->getColumn() == pNextCol);
-	UT_ASSERT(pLine->getColumn()->getFirstLine() == pLine);
-
-	pNextCol->removeLine(pLine);
-	insertLineAfter(pLine, getLastLine(), pLine->getHeight());
-	UT_ASSERT(pLine->getColumn() == this);
-	UT_ASSERT(getLastLine() == pLine);
-#else
 	fp_Column* pOtherCol = pLine->getColumn();
 	UT_ASSERT(pOtherCol);
 	UT_ASSERT(pLine->getColumn()->getFirstLine() == pLine);
 
+	pLine->clearScreen();
+	
 	pOtherCol->removeLine(pLine);
 	insertLineAfter(pLine, getLastLine(), pLine->getHeight());
 	UT_ASSERT(pLine->getColumn() == this);
 	UT_ASSERT(getLastLine() == pLine);
-#endif
 }
 
 void fp_Column::moveLineToNextColumn(fp_Line* pLine)

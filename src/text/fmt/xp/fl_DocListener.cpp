@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -231,7 +229,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				UT_ASSERT(pView->isSelectionEmpty());
 				pView->_setPoint(pcrTSF->getPosition());
 				pView->_setPointAP(pcrTSF->getIndexAP());
+#if 0				
 				pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
+#endif				
 			}
 		}
 		else
@@ -246,7 +246,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				// TODO decide if we need to call "pView->_setPoint(pcrTSF->getPosition());"
 				// TODO and if so, add AV_CHG_TYPING to the following notifyListeners().
 				pView->_clearPointAP(UT_FALSE);
+#if 0				
 				pView->notifyListeners(AV_CHG_FMTCHAR);
+#endif				
 			}
 		}
 

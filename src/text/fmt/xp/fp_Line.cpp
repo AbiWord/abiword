@@ -54,6 +54,16 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 
 void fp_Line::setColumn(fp_Column* pColumn)
 {
+	if (pColumn == m_pColumn)
+	{
+		return;
+	}
+
+	if (m_pColumn)
+	{
+		clearScreen();
+	}
+	
 	m_pColumn = pColumn;
 }
 

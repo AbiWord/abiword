@@ -95,14 +95,14 @@ public:
 	UT_Bool					isOnlyRunOnLine(void) const;
 
 	void					draw(dg_DrawArgs*);
-	void            		clearScreen(void);
+	void            		clearScreen(UT_Bool bFullLineHeightRect = UT_FALSE);
 	UT_uint32 				containsOffset(UT_uint32 iOffset);
 	const PP_AttrProp* 		getAP(void) const;
 	virtual void			fetchCharWidths(UT_GrowBuf * pgbCharWidths);
 	virtual	UT_Bool			recalcWidth(void);
 	
 	virtual void			_draw(dg_DrawArgs*) = 0;
-	virtual void       		_clearScreen(void) = 0;
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect) = 0;
 	virtual UT_Bool			canBreakAfter(void) const = 0;
 	virtual UT_Bool			canBreakBefore(void) const = 0;
 	virtual UT_Bool			alwaysFits(void) const { return UT_FALSE; }
@@ -144,7 +144,7 @@ class fp_TabRun : public fp_Run
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(void);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 };
 
 class fp_ForcedLineBreakRun : public fp_Run
@@ -160,7 +160,7 @@ class fp_ForcedLineBreakRun : public fp_Run
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(void);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 };
 
 class fp_ForcedColumnBreakRun : public fp_Run
@@ -176,7 +176,7 @@ class fp_ForcedColumnBreakRun : public fp_Run
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(void);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 };
 
 class fp_ForcedPageBreakRun : public fp_Run
@@ -193,7 +193,7 @@ class fp_ForcedPageBreakRun : public fp_Run
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(void);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 };
 
 class fp_ImageRun : public fp_Run
@@ -211,7 +211,7 @@ public:
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(void);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 
 	GR_Image*				m_pImage;
 };
@@ -236,7 +236,7 @@ class fp_FieldRun : public fp_Run
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(void);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 
 	GR_Font*				m_pFont;
 	UT_RGBColor				m_colorFG;

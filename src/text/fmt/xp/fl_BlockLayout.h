@@ -150,6 +150,9 @@ public:
 	void					purgeLayout(void);
 	void					collapse(void);
 	void					coalesceRuns(void);
+
+	void					setNeedsReformat(void) { m_bNeedsReformat = UT_TRUE; }
+	inline UT_Bool			needsReformat(void) const { return m_bNeedsReformat; }
 	
 protected:
 
@@ -182,6 +185,9 @@ protected:
 
 	UT_uint32				_getLastChar();
 
+	UT_Bool					m_bNeedsReformat;
+	UT_Bool					m_bFixCharWidths;
+	
 	UT_GrowBuf				m_gbCharWidths;
 
 	FL_DocLayout*	       	m_pLayout;

@@ -105,9 +105,10 @@ public:
 	fl_SectionLayout* getPrevSection(fl_SectionLayout* pSL) const;
 	fl_SectionLayout* getNextSection(fl_SectionLayout* pSL) const;
 	void deleteEmptyColumnsAndPages(void);
-	void	deletePage(fp_Page*);
+	void		deletePage(fp_Page*);
 
-	int			formatAll();
+	void		formatAll();
+	void  		updateLayout();
 
 	void 		queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
 	void 		dequeueBlock(fl_BlockLayout *pBlock);

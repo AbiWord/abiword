@@ -347,29 +347,30 @@ void FL_DocLayout::deleteEmptyColumnsAndPages(void)
 	}
 }
 
-int FL_DocLayout::formatAll()
+void FL_DocLayout::formatAll()
 {
 	UT_ASSERT(m_pDoc);
-	UT_DEBUGMSG(("BEGIN Formatting document: 0x%x\n", this));
 
-	UT_Bool bStillGoing = UT_TRUE;
 	int countSections = m_vecSectionLayouts.getItemCount();
-
-	while (bStillGoing)
+	for (int i=0; i<countSections; i++)
 	{
-		bStillGoing = UT_FALSE;
+		fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
 		
-		for (int i=0; i<countSections; i++)
-		{
-			fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
-
-			bStillGoing = pSL->format() || bStillGoing;
-		}
+		pSL->format();
 	}
+}
 
-	UT_DEBUGMSG(("END Formatting document: 0x%x\n", this));
+void FL_DocLayout::updateLayout()
+{
+	UT_ASSERT(m_pDoc);
 
-	return 0;
+	int countSections = m_vecSectionLayouts.getItemCount();
+	for (int i=0; i<countSections; i++)
+	{
+		fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
+		
+		pSL->updateLayout();
+	}
 }
 
 #ifdef FMT_TEST

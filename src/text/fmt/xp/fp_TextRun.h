@@ -50,7 +50,7 @@ class fp_TextRun : public fp_Run
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(void);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 	
 	void					_drawDecors(UT_sint32, UT_sint32);
 	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);

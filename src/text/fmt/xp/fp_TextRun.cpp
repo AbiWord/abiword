@@ -397,6 +397,7 @@ void fp_TextRun::mergeWithNext(void)
 
 	m_iWidth += pNext->m_iWidth;
 	m_iLen += pNext->m_iLen;
+	m_bDirty = m_bDirty || pNext->m_bDirty;
 	m_pNext = pNext->getNext();
 	if (m_pNext)
 	{
@@ -423,6 +424,7 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iDescent = this->m_iDescent;
 	pNew->m_iHeight = this->m_iHeight;
 	pNew->m_iLineWidth = this->m_iLineWidth;
+	pNew->m_bDirty = this->m_bDirty;
 
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
@@ -533,12 +535,12 @@ UT_Bool fp_TextRun::recalcWidth(void)
 	return UT_TRUE;
 }
 
-void fp_TextRun::_clearScreen(void)
+void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 {
-#if 1
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
+#if 0
 	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
@@ -547,16 +549,6 @@ void fp_TextRun::_clearScreen(void)
 	// yoff is the top of the run, not the baseline
 	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 #else
-	/*
-	  The following code is an attempt to fix bug 7, but
-	  drawing the chars doesn't work, since the piece table
-	  has already been updated, so the chars are no longer
-	  available for drawing.  :-(
-	*/
-	
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
-
 	m_pG->setFont(m_pFont);
 	
 	UT_RGBColor clrNormalBackground(255,255,255);
@@ -564,10 +556,33 @@ void fp_TextRun::_clearScreen(void)
 	
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	yoff += m_pLine->getAscent();
 	
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
-	_drawPartWithBackground(clrNormalBackground, xoff, yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+	UT_uint32 iPoint = pView->getPoint();
+
+	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+	UT_ASSERT(iSel1 <= iSel2);
+	
+	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+
+	if (
+		bFullLineHeightRect
+		|| (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE | TEXT_DECOR_LINETHROUGH))
+		|| !(
+			(iSel2 < iRunBase)
+			|| (iSel1 >= (iRunBase + m_iLen))
+			)
+		)
+	{
+		m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
+	}
+	
+	_drawPart(xoff, yoff + m_pLine->getAscent() - m_iAscent, m_iOffsetFirst, m_iLen, pgbCharWidths);
 #endif	
 }
 
@@ -617,7 +632,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	if (iSel1 == iSel2)
 	{
 		// nothing in this run is selected
-		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+//		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else if (iSel1 <= iRunBase)
@@ -625,7 +640,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if (iSel2 <= iRunBase)
 		{
 			// nothing in this run is selected
-			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+//			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
 		else if (iSel2 >= (iRunBase + m_iLen))
@@ -642,19 +657,19 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 
-			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
+//			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}
 	else if (iSel1 >= (iRunBase + m_iLen))
 	{
 		// nothing in this run is selected
-		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+//		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else
 	{
-		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
+//		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
 		
 		if (iSel2 >= (iRunBase + m_iLen))
@@ -667,7 +682,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 
-			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
+//			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}
