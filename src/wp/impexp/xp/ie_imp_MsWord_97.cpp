@@ -5244,8 +5244,6 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 
 void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
 {
-	UT_uint32 i;
-
 	UT_uint32 *pPLCF_dgg = NULL;
 	UT_uint32 *pPLCF_txt = NULL;
 
