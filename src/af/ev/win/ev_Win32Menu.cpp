@@ -926,21 +926,21 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 	{
 		//UT_DEBUGMSG(("ClearMessage 1\n"));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 
 	if ( (nItemID==0) || (nFlags & (MF_SEPARATOR|MF_POPUP)) )
 	{
 		//UT_DEBUGMSG(("ClearMessage 2\n"));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 
 	if (nFlags & (MF_SYSMENU))
 	{
 		//UT_DEBUGMSG(("SysMenu [%x]\n",nItemID));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 	
 	XAP_Menu_Id id = MenuIdFromWmCommand(nItemID);
@@ -949,7 +949,7 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 	{
 		//UT_DEBUGMSG(("ClearMessage 3 [%d %d]\n",nItemID,id));
 		pFrame->setStatusMessage(NULL);
-		return 1;
+		return true;
 	}
 
 	const char * szMsg = pLabel->getMenuStatusMessage();
@@ -958,7 +958,7 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 	
 	//UT_DEBUGMSG(("SetMessage [%s]\n",szMsg));
 	pFrame->setStatusMessage(szMsg);
-	return 1;
+	return true;
 }
 
 
