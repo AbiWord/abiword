@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1031,6 +1031,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
         UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
         m_draggingCenter = xAbsLeft + xgrid;
 
+		m_oldX = xgrid; // used to determine if delta is zero on a mouse release
 
 	// first hit-test against the tab toggle control
 
@@ -1156,6 +1157,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 		double dgrid = _scalePixelDistanceToUnits(xrel,tick);
 		UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+
 		UT_sint32 oldDraggingCenter = m_draggingCenter;
 		UT_Rect oldDraggingRect = m_draggingRect;
 		m_draggingCenter = xAbsLeft + xgrid;
@@ -1166,6 +1168,11 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		_xorGuide();
 
 		m_bBeforeFirstMotion = UT_FALSE;
+
+		// Since this is a new tab, it may be a simple click and not
+		// a drag. Set m_oldX to a negative number so that
+		// mouseMotion() is fooled.
+		m_oldX = -1;
 	}
 }
 
@@ -1211,7 +1218,17 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	//UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 
 	ap_RulerTicks tick(m_pG,m_dim);
-
+	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+	UT_sint32 xgrid = _snapPixelToGrid(((UT_sint32)x) - xAbsLeft, tick);
+	
+	_xorGuide (UT_TRUE);
+	
+	if (xgrid == m_oldX) // Not moved - clicked and released
+	{
+		m_draggingWhat = DW_NOTHING;
+		return;
+	}
+	
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
@@ -1234,7 +1251,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: ColumnGap [%s]\n",properties[1]));
 
-			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
 		}
@@ -1246,7 +1262,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			// so, when we drop the left-indent, we need to reset the first-line
 			// so that the absolute position of the first-line has not changed.
 			// first-line is stored in relative terms, so we need to update it.
-
+			
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			double dxrel  = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
 
@@ -1270,7 +1286,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_DEBUGMSG(("TopRuler: LeftIndent [%s] TextIndent [%s]\n",
 						 properties[1],properties[3]));
 
-			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1282,7 +1297,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			// so that we do not change the first-line-indent relative to
 			// the paragraph.  since first-line-indent is stored in the
 			// document in relative coordinates, we don't need to do anything.
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
 
 			const XML_Char * properties[3];
@@ -1291,7 +1305,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: LeftIndent [%s]\n",properties[1]));
 
-			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1299,7 +1312,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		
 	case DW_RIGHTINDENT:
 		{
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 			double dxrel = _scalePixelDistanceToUnits(xAbsRight - m_draggingCenter,tick);
 
@@ -1309,7 +1321,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: RightIndent [%s]\n",properties[1]));
 
-			_xorGuide(UT_TRUE);
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1317,7 +1328,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	case DW_FIRSTLINEINDENT:
 		{
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft-m_infoCache.m_xrLeftIndent,tick);
 
 			const XML_Char * properties[3];
@@ -1325,8 +1335,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: FirstLineIndent [%s]\n",properties[1]));
-
-			_xorGuide(UT_TRUE);
+			
 			m_draggingWhat = DW_NOTHING;
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -1344,7 +1353,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				return;
 			}
 
-			_xorGuide(UT_TRUE);
 			_setTabStops(tick, iTab, UT_FALSE);
 		}
 		return;
