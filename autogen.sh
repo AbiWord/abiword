@@ -22,8 +22,6 @@ if test ! -d `aclocal --print-ac-dir`; then
   exit 1
 fi
 
-echo "Selecting the correct m4 script..."
-
 for script in `cd ac-helpers/fallback; echo *.m4`; do
   if test -r `aclocal --print-ac-dir`/$script; then
     # Perhaps it was installed recently
