@@ -223,7 +223,9 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 			// (ABW)
 			if (!m_bWhiteSignificant)
 			{
-				if(UT_UCS_isspace(currentChar))
+				/* Bit of a hack; multibyte encoding screws the logic up here
+				 */
+				if((currentChar < 0x80) && UT_UCS_isspace(currentChar))
 				{
 					if(!m_bWasSpace)
 					{
