@@ -2894,13 +2894,13 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			return true;
 		}
 		PT_DocPosition curpos = pBlock->getPosition() + pCurRun->getBlockOffset();
-		if (pCurRun == pRun2 || curpos >= posEnd)
+		if ((pCurRun->getLength() > 0 ) && (pCurRun == pRun2 || curpos >= posEnd))
 		{
 			bDone = true;
 		}
 		if(curpos > posEnd)
 		{
-			break;
+//			break;
 		}
 		xxx_UT_DEBUGMSG(("draw_between positions pos is %d width is %d \n",curpos,pCurRun->getWidth()));
 		UT_ASSERT(pBlock);
@@ -3318,7 +3318,6 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		height = iPointHeight;
 	}
-
 	if (ppBlock)
 	{
 		*ppBlock = pBlock;

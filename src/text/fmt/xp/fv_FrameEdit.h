@@ -86,7 +86,7 @@ public:
 										  PT_DocPosition & posAtXY);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
-	fp_FrameContainer *   getFrameContainer(void) { m_pFrameContainer;}
+	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
 private:
 	FV_View *             m_pView;
 	FV_FrameEditMode      m_iFrameEditMode;

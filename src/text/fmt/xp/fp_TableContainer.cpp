@@ -208,15 +208,23 @@ fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
 	}
 	bool bStop = false;
 	fp_Column * pCol = NULL;
+	fp_Container * pCon = NULL;
 	//
 	// FIXME for nexted tables off first page
 	//
 	while(!pBroke->isThisBroken() && !bStop)
 	{
 		fp_Container * pCon = pBroke->getContainer();
-		if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
+		if(pCon->isColumnType())
 		{
-			pCol = static_cast<fp_Column *>(pCon);
+			if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
+			{
+				pCol = static_cast<fp_Column *>(pCon);
+			}
+			else
+			{
+				pCol = pCon->getColumn();
+			}
 			bStop = true;
 		}
 		else
@@ -3815,8 +3823,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 //
 	fp_TableContainer * pTab = getMasterTable();
 	UT_return_val_if_fail(pTab && pTab->getContainer() && 
-			  (pTab->getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
-			   pTab->getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW), false);
+						  pTab->getContainer()->isColumnType(),false);
 	//
 	// Short circuit things if the BrokenContainer pointer is set.
     //

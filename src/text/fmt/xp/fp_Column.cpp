@@ -209,9 +209,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 	// Recursively search for the table that contains this cell.
 	//
 	fp_Container * pCur = static_cast<fp_Container *>(pCell);
-	while(pCur->getContainer() && 
-		  ( pCur->getContainer()->getContainerType() != FP_CONTAINER_COLUMN &&
-			pCur->getContainer()->getContainerType() != FP_CONTAINER_COLUMN_SHADOW))
+	while(pCur->getContainer() && !pCur->getContainer()->isColumnType())
 	{
 		pCur = pCur->getContainer();
 	}
