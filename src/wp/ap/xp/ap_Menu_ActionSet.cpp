@@ -155,6 +155,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,	"fileInsertGraphic",NULL,					NULL);
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_FMT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,	"dlgLanguage",	NULL,					NULL);
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",	ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	"dlgParagraph",		ap_GetState_StylesLocked,	NULL);
