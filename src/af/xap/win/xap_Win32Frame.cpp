@@ -231,7 +231,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	// TODO get the default window size from preferences or something.
 	m_hwndFrame = CreateWindow (m_pWin32App->getApplicationName(),	// window class name
 				m_pWin32App->getApplicationTitleForTitleBar(),	// window caption
-				WS_OVERLAPPEDWINDOW
+				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN
 				,					     // window style
 				CW_USEDEFAULT,           // initial x position
 				CW_USEDEFAULT,           // initial y position
