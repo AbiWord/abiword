@@ -231,6 +231,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		}
 	}
 
+#ifdef BIDI_ENABLED
+	m_iDirOverride = FRIBIDI_TYPE_UNSET;
+#endif	
 	_lookupProperties();
 
 	_insertEndOfParagraphRun();
@@ -294,6 +297,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	{
 		m_pNext->m_pPrev = this;
 	}
+
+#ifdef BIDI_ENABLED
+	m_iDirOverride = FRIBIDI_TYPE_UNSET;
+#endif	
 
 	_lookupProperties();
 
@@ -2037,6 +2044,8 @@ fl_PartOfBlock::doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const
 }
 
 
+
+
 /*!
  Recalculate boundries for pending word
  \param iOffset Offset of change
@@ -2472,6 +2481,11 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 		case UCS_BOOKMARKSTART:
 		case UCS_BOOKMARKEND:
 		case UCS_TAB:	// tab
+#ifdef BIDI_ENABLED		
+		case UCS_LRO:	// explicit direction overrides
+		case UCS_RLO:
+		case UCS_PDF:
+#endif					
 			if (bNormal)
 			{
 				_doInsertTextSpan(iNormalBase + blockOffset, i - iNormalBase);
@@ -2512,13 +2526,25 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 			case UCS_TAB:
 				_doInsertTabRun(i + blockOffset);
 				break;
-				
+
+#ifdef BIDI_ENABLED		
+			case UCS_LRO:
+				m_iDirOverride = FRIBIDI_TYPE_LTR;
+				break;
+			case UCS_RLO:
+				m_iDirOverride = FRIBIDI_TYPE_RTL;
+				break;
+			case UCS_PDF:
+				m_iDirOverride = FRIBIDI_TYPE_UNSET;
+				break;
+#endif					
+								
 			default:
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				break;
 			}
 			break;
-			
+		
 		default:
 			if (!bNormal)
 			{
@@ -2548,6 +2574,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		pView->eraseInsertionPoint();
 		
 #ifdef BIDI_ENABLED
+	xxx_UT_DEBUGMSG(("_doInsertTextSpan: offset %d, len %d\n", blockOffset, len));
 	PT_BlockOffset curOffset = blockOffset;
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
@@ -2559,7 +2586,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	
 		iType = fribidi_get_type((FriBidiChar)pSpan[0]);
 	
-		UT_uint32 trueLen = MIN(lenSpan,len);
+		UT_uint32 trueLen = UT_MIN(lenSpan,len);
 		UT_uint32 i = 1;
 		
 		for(i = 1; i < trueLen; i++)
@@ -2569,9 +2596,10 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 			if(iType != iPrevType)
 				break;
 		}
-	
+	    xxx_UT_DEBUGMSG(("_doInsertTextSpan: text run: offset %d, len %d\n", curOffset, i));
 		fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), curOffset, i);
 		UT_ASSERT(pNewRun);
+		pNewRun->setDirOverride(m_iDirOverride);
 		curOffset += i;
 		
 		if(!_doInsertRun(pNewRun))
@@ -3178,6 +3206,11 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		case UCS_BOOKMARKSTART:
 		case UCS_BOOKMARKEND:
 		case UCS_TAB:	// tab
+#ifdef BIDI_ENABLED		
+		case UCS_LRO:	// explicit direction overrides
+		case UCS_RLO:
+		case UCS_PDF:
+#endif					
 			if (bNormal)
 			{
 				_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
@@ -3218,6 +3251,18 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 			case UCS_TAB:
 				_doInsertTabRun(i + blockOffset);
 				break;
+
+#ifdef BIDI_ENABLED		
+			case UCS_LRO:
+				m_iDirOverride = FRIBIDI_TYPE_LTR;
+				break;
+			case UCS_RLO:
+				m_iDirOverride = FRIBIDI_TYPE_RTL;
+				break;
+			case UCS_PDF:
+				m_iDirOverride = FRIBIDI_TYPE_UNSET;
+				break;
+#endif					
 				
 			default:
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -6432,6 +6477,35 @@ void fl_BlockLayout::setStopping( bool bValue)
 {
 	m_bStopList = bValue;
 }
+
+#if 0
+// this is a start of work on a fix bugs related to non-sensical margins
+// but it is in very early stages
+void fl_BlockLayout::setTextIndent(UT_sint32 iInd)
+{
+	GR_Graphics* pG = m_pLayout->getGraphics();
+	const UT_sint32 Screen_resolution = pG->getResolution();
+
+	m_iTextIndent = iInd;
+	m_iTextIndentLayoutUnits = m_iTextIndent * UT_LAYOUT_UNITS / Screen_resolution;
+	double dInches = iInd / Screen_resolution;
+	
+	const char * szProp = getProperty("text-indent", true);
+
+	char buf[50];
+	UT_Dimension dim = UT_determineDimension(szProp, DIM_IN);
+	
+	strcpy(buf, UT_convertInchesToDimensionString(dim, dInches));
+	
+	const XML_Char ** props[] =
+	{
+		"text-indent", buf,NULL,NULL
+	};
+	
+	FV_View * pView = m_pLayout->getView();
+	pView->setBlockFormat(props);
+}
+#endif
 
 #ifdef BIDI_ENABLED
 void fl_BlockLayout::setDominantDirection(FriBidiCharType iDirection)

@@ -258,6 +258,11 @@ public:
 	inline UT_sint32	getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
 	inline UT_sint32	getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
+#if 0	
+	void				setTextIndent(UT_sint32 i);
+	void				setLeftMargin(UT_sint32 i);
+	void				setRightMargin(UT_sint32 i);
+#endif
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
 	inline fl_SectionLayout* 	getSectionLayout(void) const { return m_pSectionLayout;}
@@ -387,7 +392,6 @@ protected:
 	
 	bool					_doInsertRun(fp_Run* pNewRun);
 	bool					_delete(PT_BlockOffset blockOffset, UT_uint32 len);
-
 	bool					_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len);
 	bool					_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertFieldStartRun(PT_BlockOffset blockOffset);
@@ -477,6 +481,7 @@ protected:
 	bool                    m_bIsCollapsed;
 #ifdef BIDI_ENABLED
 	FriBidiCharType			m_iDomDirection;
+	FriBidiCharType			m_iDirOverride;
 #endif
 
 	fl_Squiggles*			m_pSquiggles;
