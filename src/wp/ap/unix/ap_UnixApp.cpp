@@ -575,17 +575,15 @@ static int so_only (const struct dirent *d)
   if ( name )
     {
       int len = strlen (name);
-#ifdef DEBUG
+
       if (len >= 7)
 	{
-	  UT_DEBUGMSG(("FJF: name is %s (%d) [bundle test]\n", name, len));
 	  if(!strcmp(name+(len-7), ".bundle"))
 	    return 1;
 	}
-#endif
+
       if (len >= 3)
 	{
-	  UT_DEBUGMSG(("DOM: name is %s (%d) [so test]\n", name, len));
 	  if(!strcmp(name+(len-3), ".so"))
 	    return 1;
 	}
@@ -615,19 +613,17 @@ void AP_UnixApp::loadAllPlugins ()
   {
       pluginDir = pluginList[i];
 
-      UT_DEBUGMSG(("DOM: loading plugins from %s\n", pluginDir.c_str()));
-      
       n = scandir(pluginDir.c_str(), &namelist, so_only, alphasort);
-      if (n < 0)
-	  {
-		  UT_DEBUGMSG(("DOM: no plugins found\n"));
-	  }
-      else 
+      UT_DEBUGMSG(("DOM: found %d plugins in %s\n", n, pluginDir.c_str()));
+
+      if (n > 0)
 	  {
 		  while(n--) 
 		  {
 			  UT_String plugin (pluginDir + namelist[n]->d_name);
-#ifdef DEBUG
+
+			  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
+
 			  struct stat pluginInfo;
 			  if (stat (plugin.c_str(), &pluginInfo) != 0)
 			  {
@@ -688,7 +684,7 @@ void AP_UnixApp::loadAllPlugins ()
 				  free(namelist[n]);
 				  continue;
 			  }
-#endif /* DEBUG */
+
 			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
 			  {
 				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
