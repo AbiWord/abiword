@@ -176,7 +176,8 @@ UT_Bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		{
 			int kLimit=gb.getLength();
 			UT_uint16 * p=gb.getPointer(0);
-			for (int k=0; k<kLimit; k++)
+			int k;
+			for (k=0; k<kLimit; k++)
 			{
 				szDup[k] = (unsigned char)p[k];
 			}
