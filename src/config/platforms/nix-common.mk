@@ -83,12 +83,21 @@ endif
 DEFINES		=
 OPTIMIZER	=
 
-ifeq ($(ABI_OPT_PROF),1)
-OPTIMIZER   	= -pg -fprofile-arcs -ftest-coverage
-OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
-ABI_OPT_OPTIMIZE= 1
-ABI_OPT_DEBUG	= 0
-ABI_OPTIONS	+= Profile:On
+ifdef ABI_OPT_PROF
+    ifeq ($(ABI_OPT_PROF),1)
+    OPTIMIZER   	= -pg -fprofile-arcs -ftest-coverage
+    OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+    ABI_OPT_OPTIMIZE= 1
+    ABI_OPT_DEBUG	= 0
+    ABI_OPTIONS	+= Profile:On
+    endif
+    ifeq ($(ABI_OPT_PROF),2)  # WARNING: This is for special purposes only.  It is NOT, I repeat NOT, intended for production use.  It should not be documented elsewhere.
+    OPTIMIZER   	= -pg -a -g -fprofile-arcs -ftest-coverage
+    OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+    ABI_OPT_OPTIMIZE= 1
+    ABI_OPT_DEBUG	= 0
+    ABI_OPTIONS	+= Profile:On
+    endif
 endif
 
 ifeq ($(ABI_OPT_OPTIMIZE),1)
