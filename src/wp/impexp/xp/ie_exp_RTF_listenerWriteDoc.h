@@ -112,6 +112,7 @@ protected:
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
 	bool				m_bInSpan;
+	bool                m_bInBlock;
 	bool				m_bJustStartingDoc;
 	bool				m_bJustStartingSection;
 	bool				m_bToClipboard;

@@ -1407,7 +1407,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iStackDepthAtFrame(0),
 	m_bFrameOpen(false),
 	m_sPendingShapeProp(""),
-	m_bEndFrameOpen(false)
+	m_bEndFrameOpen(false),
+	m_bSectionHasPara(false)
 {
 	if (!IE_Imp_RTF::keywordSorted) {
 		_initialKeywordSort();
@@ -2324,7 +2325,8 @@ UT_Error IE_Imp_RTF::_parseText()
 
 	if (ok && !getLoadStylesOnly())
 	{
-		ok = FlushStoredChars(true);
+		// force this if a paragraph is flagged (can be empty)
+		ok = FlushStoredChars(m_newParaFlagged);
 		if (!ok) {
 			UT_DEBUGMSG(("FlushStoredChars()\n"));
 		}
@@ -2430,6 +2432,50 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 /*****************************************************************/
 /*****************************************************************/
 
+bool IE_Imp_RTF::HandleParKeyword()
+{
+	// NB: the \par keyword really represents '\r' and concludes a paragraph rather than
+	// begins it -- some paragraph properties are indicated by formating applied to the
+	// \par keyword, for example revisions are. This means that we sometimes have to
+	// change fmt of the last block
+
+	if(!m_bSectionHasPara)
+	{
+		getDoc()->appendStrux(PTX_Block,NULL);
+		m_bSectionHasPara = true;
+		m_newParaFlagged = false;
+	}
+	
+	UT_String sProps;
+	const XML_Char * attrs[3] = {NULL, NULL, NULL};
+	const XML_Char * props = NULL;
+		
+	UT_return_val_if_fail( buildCharacterProps(sProps), false);
+	props = sProps.c_str();
+
+	if(m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE)
+	{
+		UT_String rev;
+		const XML_Char * pStyle = NULL;
+		
+		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
+		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+		{
+			pStyle = static_cast<const char *>
+				(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+		}
+
+		_formRevisionAttr(rev, sProps, pStyle);
+		attrs[0] = "revision";
+		attrs[1] = rev.c_str();
+		props = NULL;
+	}
+
+	if((props && *props) || attrs[0])
+		UT_return_val_if_fail(getDoc()->appendLastStruxFmt(PTX_Block, attrs, props,true), false);
+	
+	return StartNewPara();
+}
 
 // flush any remaining text in the previous para and flag
 // a new para to be started.  Don't actually start a new
@@ -2437,37 +2483,14 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 //
 bool IE_Imp_RTF::StartNewPara()
 {
-	// NB: the \par keyword really represents '\r' and concludes a paragraph rather than
-	// begins it -- some paragraph properties are indicated by formating applied to the
-	// \par keyword, for example revisions are. This means that we sometimes have to
-	// change fmt of the last block
-	// properties are 
-	bool ok = FlushStoredChars(true);
+	// force this, if new para is flagged (so we import empty paragraphs)
+	// if it is not, then we do not flagged, then we do not want new block appended (it
+	// has already been done somewhere else
+	bool ok = FlushStoredChars(m_newParaFlagged);
 	m_newParaFlagged = true;
 
 	// need to reset any left-over direction override
 	m_currentRTFState.m_charProps.m_dirOverride = UT_BIDI_UNSET;
-
-	if(m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE)
-	{
-		UT_String props, rev;
-		const XML_Char * attrs[3] = {"revision", NULL, NULL};
-		const XML_Char * pStyle = NULL;
-		
-		UT_return_val_if_fail( buildCharacterProps(props), false);
-
-		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
-		{
-			pStyle = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
-		}
-
-		_formRevisionAttr(rev, props, pStyle);
-		attrs[1] = rev.c_str();
-
-		UT_return_val_if_fail(getDoc()->appendLastStruxFmt(PTX_Block, attrs, true), false);
-	}
-	
 	return ok;
 }
 
@@ -2478,11 +2501,13 @@ bool IE_Imp_RTF::StartNewPara()
 //
 bool IE_Imp_RTF::StartNewSection()
 {
-	bool ok = FlushStoredChars(true);
+	// force this, if new para is flagged (so we import empty paragraphs)
+	// if it is not, then we do not flagged, then we do not want new block appended (it
+	// has already been done somewhere else
+	bool ok = FlushStoredChars(m_newParaFlagged);
 
-	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
-
+	m_bSectionHasPara = false;
 	return ok;
 }
 
@@ -2573,6 +2598,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 			xxx_UT_DEBUGMSG(("Append block 10 \n"));
 
 			getDoc()->appendStrux(PTX_Block,NULL);
+			m_bSectionHasPara = true;
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
 		}
@@ -2581,11 +2607,13 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 			xxx_UT_DEBUGMSG(("Append block 11 \n"));
 
 			getDoc()->appendStrux(PTX_Block,NULL);
+			m_bSectionHasPara = true;
 			m_bEndTableOpen = false;
 		}
 		else if( ok && m_bEndFrameOpen)
 		{
 			UT_DEBUGMSG(("Append block for EndFrameOpen 12 \n"));
+			m_bSectionHasPara = true;
 			getDoc()->appendStrux(PTX_Block,NULL);
 		}
 		ok = ApplyCharacterAttributes();
@@ -4393,7 +4421,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool
 	case RTF_KW_par:
 		// start new paragraph, continue current attributes
 		xxx_UT_DEBUGMSG(("Done par \n"));
-		return StartNewPara();
+		return HandleParKeyword();
 	case RTF_KW_plain:
 		// reset character attributes
 		return ResetCharacterAttributes();
@@ -6314,6 +6342,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
+			m_newParaFlagged = false;
+			m_bSectionHasPara = true;
 			getDoc()->appendFmtMark();
 			//
 			// Insert a list-label field??
@@ -6334,6 +6364,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux -2 \n"));
 			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
+			m_newParaFlagged = false;
+			m_bSectionHasPara = true;
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
 			return ok;
@@ -6347,6 +6379,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			UT_DEBUGMSG(("Insert block at 1 \n"));
 			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_newParaFlagged = false;
+			m_bSectionHasPara = true;
 			m_dposPaste++;
 			//
 			// Put the tab back in.
@@ -6412,6 +6446,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			UT_DEBUGMSG((" Insert block at 2 \n"));
 			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
+			m_newParaFlagged = false;
+			m_bSectionHasPara = true;
 			m_dposPaste++;
 			bSuccess = getDoc()->changeStruxFmt(PTC_SetFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
 			//
@@ -6471,6 +6507,7 @@ bool IE_Imp_RTF::ResetTableAttributes(void)
 bool IE_Imp_RTF::ResetParagraphAttributes()
 {
 	xxx_UT_DEBUGMSG(("Reset Para Attributes \n"));
+	// the \pard keyword always implies we are already in a paragraph
 	bool ok = FlushStoredChars();
 	m_currentRTFState.m_paraProps = RTFProps_ParaProps();
 
@@ -6480,6 +6517,7 @@ bool IE_Imp_RTF::ResetParagraphAttributes()
 
 bool IE_Imp_RTF::ResetSectionAttributes()
 {
+	// the \sectd keyword always implies we are in a section
 	bool ok = FlushStoredChars();
 
 	// not quite correct. a sectd will reset the section defaults
@@ -8611,6 +8649,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
  	getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);
 	m_dposPaste++;	
 	m_newParaFlagged = true;
+	m_bSectionHasPara = true;
 	return true;
 }
 
@@ -9272,6 +9311,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		// tell that we are parsing headers and footers
 		m_parsingHdrFtr = true;
 		m_newParaFlagged = true;
+		m_bSectionHasPara = true;
 		_parseFile (NULL);
 		m_parsingHdrFtr = false;
 	}
@@ -9376,6 +9416,7 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
 
 	m_newParaFlagged = false;
+	m_bSectionHasPara = true;
 	m_newSectionFlagged = false;
 
 	UT_DEBUGMSG(("Pasting %d bytes of RTF\n",lenData));

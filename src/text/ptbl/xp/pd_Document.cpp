@@ -956,11 +956,20 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes, pf_
 /*!
     appends given fmt to the last strux in document
 */
-bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, bool bSkipEmbededSections)
+bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, const XML_Char ** props,
+									 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
-	return m_pPieceTable->appendLastStruxFmt(pts,attributes,bSkipEmbededSections);
+	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
+}
+
+bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attributes, const XML_Char * props,
+									 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
 }
 
 bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
@@ -2861,6 +2870,7 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
  */
 PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 {
+	UT_return_val_if_fail( sdh,(PTStruxType)0 );
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
 	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux,(PTStruxType)0);
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *> (pf);

@@ -19,7 +19,7 @@
  * 02111-1307, USA.
  */
 
-
+#include <ctype.h>
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_string.h"
@@ -79,7 +79,8 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, p
     when searching for <p> if bSkipEmbededSections == true the paragraph before <footnote>
     will be modified
 */
-bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, bool bSkipEmbededSections)
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char ** props,
+									   bool bSkipEmbededSections)
 {
 	// can only be used while loading the document
 	UT_return_val_if_fail (m_pts==PTS_Loading,false);
@@ -225,7 +226,7 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
     if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
-	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes,NULL,true);
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes,props,false);
 	pNewAP->markReadOnly();
 
 	PT_AttrPropIndex indexAP;
@@ -235,6 +236,90 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
 	pf->setIndexAP(indexAP);
 
 	return true;
+}
+
+/*!
+    As above, but props represented by a single XML string
+    
+*/
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char * props,
+									   bool bSkipEmbededSections)
+{
+	if(props && *props)
+	{
+		// we parse the xml props string into separate field by simply duplicating it and then
+		// replacing ; and : with '0';
+	
+		char * pProps = UT_strdup(props);
+
+		// foolproofing
+		if(*props == ';')
+			props++;
+	
+		UT_return_val_if_fail( pProps, false );
+	
+		UT_uint32 iLen = strlen(pProps);
+	
+		UT_uint32 i = 1; // *props != 0 => at least one
+		if(pProps[iLen-1] == ';')
+		{
+			// trailing ;
+			--i;
+		}
+
+		char * semi = NULL;
+		const char * p = pProps;
+		while(semi = strchr(p, ';'))
+		{
+			*semi = 0;
+			p = semi + 1;
+			i++;
+		}
+	
+	
+		UT_uint32 iPropCount = i;
+		UT_uint32 j = 0;
+		const XML_Char ** pPropsArray = new const XML_Char *[2 * iPropCount + 1];
+		UT_return_val_if_fail( pPropsArray, false );
+	
+		const char * pStart = pProps;
+
+		// we want to include the 0-terminator
+		for(i = 0; i <= iLen; i++)
+		{
+			if(pProps[i] == 0)
+			{
+				pPropsArray[j++] = pStart;
+				char * colon = strchr(pStart, ':');
+				UT_return_val_if_fail( colon,false );
+				*colon = 0;
+				pPropsArray[j++] = colon + 1;
+
+				if(i == iLen)
+					break;
+				
+				pStart = pProps + i + 1;
+				while(isspace(*pStart))
+					pStart++;
+			}
+		}
+	
+		UT_return_val_if_fail( j == 2 * iPropCount, false );
+
+		pPropsArray[j] = NULL;
+
+		bool bRet = appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
+
+		delete [] pPropsArray;
+		FREEP(pProps);
+
+		return bRet;
+	}
+	else
+	{
+		const XML_Char ** pPropsArray = NULL;
+		return appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
+	}
 }
 
 /*! changes formatting of a strux while loading document */

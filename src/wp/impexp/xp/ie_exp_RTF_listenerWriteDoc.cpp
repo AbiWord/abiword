@@ -80,6 +80,9 @@ void s_RTF_ListenerWriteDoc::_closeSection(void)
 
 void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 {
+	if(!m_bInBlock)
+		return;
+	
 	// first reset ie's char direciton info
 	m_pie->setCharRTL(UT_BIDI_UNSET);
 //
@@ -89,21 +92,13 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 	const XML_Char * szListid=NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	xxx_UT_DEBUGMSG(("SEVIOR: Close Block \n"));
-	if(nextApi != 0)
+	
+	if(m_bInSpan)
 	{
-		m_pDocument->getAttrProp(nextApi,&pBlockAP);
-
-		if (!pBlockAP || !pBlockAP->getAttribute(static_cast<const XML_Char*>("listid"), szListid))
-		{
-			szListid = NULL;
-		}
-		if(szListid != NULL)
-		{
-			bInList = false; // was true
-		}
+		_closeSpan();
 	}
 
- 	if(!m_bInSpan && m_sdh && (m_bBlankLine || bInList) && !m_bJustStartingSection && m_pDocument->getStruxType(m_sdh) == PTX_Block )
+	if(m_sdh && m_pDocument->getStruxType(m_sdh) == PTX_Block)
   	{
 //
 // This is a blankline or list item
@@ -115,10 +110,13 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 		xxx_UT_DEBUGMSG(("SEVIOR: Close Block -open span \n"));
 		_openSpan(m_apiThisBlock,pSpanAP);
 	}
-	else
-	{
-		m_bBlankLine = false;
-	}
+
+	m_bBlankLine = false;
+	
+
+	m_pie->_rtf_keyword("par");
+	_closeSpan();
+
 	m_apiThisBlock = 0;
 	m_sdh = NULL;
 	return;
@@ -1394,6 +1392,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_pDocument = pDocument;
 	m_pie = pie;
 	m_bInSpan = false;
+	m_bInBlock = false;
 	m_apiLastSpan = 0;
 	m_apiThisSection = 0;
 	m_apiThisBlock = 0;
@@ -3472,8 +3471,10 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api,bool bIsCell)
 // Export the AbiWord table Properties as RTF extension
 //
 	_export_AbiWord_Table_props(api);
+#if 1 //#TF
 	m_pie->_rtf_keyword("par");
-
+#endif
+	
 	if(m_Table.getNestDepth() > 1)
 	{
 		m_pie->_rtf_open_brace();
@@ -3724,7 +3725,12 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 			_closeSpan();
 			m_bOpennedFootnote = true;
-			_closeBlock();
+
+			// we set m_bInBlock to false to prevent issue of \par keyword; the block
+			// which gets inserted into the footnote resets this into the normal state, so
+			// that when we exit the footnote section, we will be again in block and the
+			// block that contains the footnote will get closed as normal
+			m_bInBlock = false;
 			m_apiSavedBlock = m_apiThisBlock;
 			m_sdhSavedBlock = m_sdh;
 			_setTabEaten(false);
@@ -3737,7 +3743,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_EndFootnote:
 	    {
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = m_sdhSavedBlock;
 			m_apiThisBlock = m_apiSavedBlock;
@@ -3748,7 +3753,8 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionFrame:
 	    {
 			_closeSpan();
-			_closeBlock();
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = NULL;
 			_openFrame(pcr->getIndexAP());
@@ -3759,7 +3765,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_closeFrame();
@@ -3768,7 +3773,9 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionTOC:
 	    {
 			_closeSpan();
-			_closeBlock();
+
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			_setTabEaten(pcr->getIndexAP());
 			m_sdh = sdh;
 			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Found TOC \n"));
@@ -3779,7 +3786,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = NULL;
 			return true;
@@ -3788,7 +3794,9 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 			_closeSpan();
 			m_bOpennedFootnote = true;
-			_closeBlock();
+
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			m_apiSavedBlock = m_apiThisBlock;
 			m_sdhSavedBlock = m_sdh;
 			_setTabEaten(false);
@@ -3802,7 +3810,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_EndEndnote:
 	    {
 			_closeSpan();
-			_closeBlock();
+
 			_setTabEaten(false);
 			m_sdh = m_sdhSavedBlock;
 			m_apiThisBlock = m_apiSavedBlock;
@@ -3813,7 +3821,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionTable:
 	    {
 			_closeSpan();
-			_closeBlock();
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_open_table(pcr->getIndexAP());
@@ -3823,7 +3830,11 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionCell:
 	    {
 			_closeSpan();
-			_closeBlock();
+			// in rtf cell is a block, while in AW cell contains a block
+			// in order to avoid a superfluous paragraph marker we will pretend that we
+			// are not in a block
+			// see comments under case PTX_SectionFootnote:
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_open_cell(pcr->getIndexAP());
@@ -3832,7 +3843,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_EndTable:
 	    {
 			_closeSpan();
-			_closeBlock();
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_close_table();
@@ -3842,7 +3853,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 	    {
 
 			_closeSpan();
-			_closeBlock();
+			m_bInBlock = false;
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_close_cell();
@@ -3856,6 +3867,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
+			m_bInBlock = true;
 			m_bBlankLine = true;	
 			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
 		return true;
@@ -4239,37 +4251,25 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 	m_pie->_rtf_nl();
 
-	if (m_bJustStartingSection)			// 'par' is a delimiter, rather than a plain start.
-		m_bJustStartingSection = false;
-
-	else
+	// 'par' is a delimiter, rather than a plain start.
+	// NO! par is \r and closes a paragraph, not opens it
+	// also, block-level character properties are applied to \par so it really matters
+	// that gets associated with the correct paragraph
+	 
+	m_bJustStartingSection = false;
+	m_bOpennedFootnote = false;
+	
+	if(m_Table.getNestDepth() > 0 && m_Table.isCellJustOpenned())
 	{
-		// begin a new paragraph. The previous
-		// definitions get applied now.
-		bool bJustOpennedCell = false;
-		if(m_Table.getNestDepth() > 0)
-		{
-			bJustOpennedCell = m_Table.isCellJustOpenned();
-		}
-//		if(!m_bOpennedFootnote && (!bJustOpennedCell || (m_Table.getNestDepth()==0)))
-		if(!m_bOpennedFootnote && !bJustOpennedCell && !m_bJustOpennedFrame)
-		{
-			m_pie->_rtf_keyword("par");
-		}
-		else if(m_bOpennedFootnote)
-		{
-			m_bOpennedFootnote = false;
-		}
-		else if(bJustOpennedCell)
-		{
-			m_Table.setCellJustOpenned(false);
-		}
-		if(m_bStartedList && !m_bInFrame)
-		{
-			m_pie->_rtf_close_brace();
-		}
-		m_bStartedList = false;
+		m_Table.setCellJustOpenned(false);
 	}
+	
+	if(m_bStartedList && !m_bInFrame)
+	{
+		m_pie->_rtf_close_brace();
+	}
+	m_bStartedList = false;
+		
 	m_bJustOpennedFrame = false;
 	UT_uint32 id = 0;
 	if(szListid != NULL)

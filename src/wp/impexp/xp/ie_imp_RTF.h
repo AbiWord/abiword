@@ -577,6 +577,7 @@ private:
 	bool AddChar(UT_UCSChar ch);
 	bool FlushStoredChars(bool forceInsertPara = false);
 	bool StartNewPara();
+	bool HandleParKeyword();
 	bool StartNewSection();
 	bool PushRTFState();
 	bool PopRTFState();
@@ -847,6 +848,7 @@ private:
 	UT_String             m_sPendingShapeProp;
 	RTFProps_FrameProps   m_currentFrame;
 	bool                  m_bEndFrameOpen;
+	bool                  m_bSectionHasPara;
 };
 
 #endif /* IE_IMP_RTF_H */
