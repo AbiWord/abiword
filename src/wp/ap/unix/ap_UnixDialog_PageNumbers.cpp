@@ -50,14 +50,14 @@ static gint s_preview_exposed(GtkWidget * w,
 
 static void s_position_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-  int pos = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
-  dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
+	int pos = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+	dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
 }
 
 static void s_alignment_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-  int align = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
-  dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
+	int align = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+	dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
 }
 
 XAP_Dialog * AP_UnixDialog_PageNumbers::static_constructor(XAP_DialogFactory * pFactory,
@@ -71,230 +71,149 @@ AP_UnixDialog_PageNumbers::AP_UnixDialog_PageNumbers(XAP_DialogFactory * pDlgFac
                                                  XAP_Dialog_Id id)
     : AP_Dialog_PageNumbers(pDlgFactory,id)
 {
-  m_recentControl = m_control;
-  m_recentAlign   = m_align;
-  m_unixGraphics  = NULL;
+	m_recentControl = m_control;
+	m_recentAlign   = m_align;
+	m_unixGraphics  = NULL;
 }
 
 AP_UnixDialog_PageNumbers::~AP_UnixDialog_PageNumbers(void)
 {
-  DELETEP (m_unixGraphics);
-}
-
-void AP_UnixDialog_PageNumbers::event_OK(void)
-{
-	m_answer = AP_Dialog_PageNumbers::a_OK;
-
-	// set the align and control data
-	m_align   = m_recentAlign;
-	m_control = m_recentControl;
-}
-
-void AP_UnixDialog_PageNumbers::event_Cancel(void)
-{
-	m_answer = AP_Dialog_PageNumbers::a_CANCEL;
+	DELETEP (m_unixGraphics);
 }
 
 void AP_UnixDialog_PageNumbers::event_PreviewExposed(void)
 {
-        if(m_preview)
-	       m_preview->draw();
+	if(m_preview)
+		m_preview->draw();
 }
 
-void AP_UnixDialog_PageNumbers::event_AlignChanged(AP_Dialog_PageNumbers::tAlign   align)
+void AP_UnixDialog_PageNumbers::event_AlignChanged(AP_Dialog_PageNumbers::tAlign align)
 {
-  m_recentAlign = align;
-  _updatePreview(m_recentAlign, m_recentControl);
+	m_recentAlign = align;
+	_updatePreview(m_recentAlign, m_recentControl);
 }
 
 void AP_UnixDialog_PageNumbers::event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl control)
 {
-  m_recentControl = control;
-  _updatePreview(m_recentAlign, m_recentControl);
+	m_recentControl = control;
+	_updatePreview(m_recentAlign, m_recentControl);
 }
 
 void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
 	
-    // Build the window's widgets and arrange them
-    GtkWidget * mainWindow = _constructWindow();
-    UT_return_if_fail(mainWindow);
+    // Build the dialog's window
+    GtkWidget * m_window = _constructWindow();
+    UT_return_if_fail(m_window);
 
-	// show everything before creating the preview
-	gtk_widget_show_all ( mainWindow ) ;
+	// attach a new graphics context to the drawing area
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+	
+	UT_return_if_fail(unixapp);
+	UT_return_if_fail(m_previewArea && m_previewArea->window);
+	DELETEP (m_unixGraphics);
+	
+	// make a new Unix GC
+	m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, 
+				   unixapp->getFontManager(), 
+				   m_pApp);
+	
+	// let the widget materialize
+	_createPreviewFromGC(m_unixGraphics,
+		   (UT_uint32) m_previewArea->allocation.width,
+		   (UT_uint32) m_previewArea->allocation.height);
+		   
+	// hack in a quick draw here
+	_updatePreview(m_recentAlign, m_recentControl);
 
-    // *** this is how we add the gc ***
-    {
-      // attach a new graphics context to the drawing area
-      XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-    
-      UT_return_if_fail(unixapp);
-      UT_return_if_fail(m_previewArea && m_previewArea->window);
-      DELETEP (m_unixGraphics);
-      
-      // make a new Unix GC
-      m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, 
-					   unixapp->getFontManager(), 
-					   m_pApp);
-    
-      // let the widget materialize
-      _createPreviewFromGC(m_unixGraphics,
-			   (UT_uint32) m_previewArea->allocation.width,
-			   (UT_uint32) m_previewArea->allocation.height);
-      
-      // hack in a quick draw here
-      _updatePreview(m_recentAlign, m_recentControl);
-      event_PreviewExposed ();
-    }    
-    
-    // properly set the controls
-    m_recentControl = m_control = AP_Dialog_PageNumbers::id_HDR;
-    m_recentAlign = m_align = AP_Dialog_PageNumbers::id_RALIGN;
-
-    _updatePreview(m_align, m_control);
-    
-	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this,
-								 BUTTON_CANCEL, false ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(m_window), pFrame, this,
+								 GTK_RESPONSE_OK, false ) )
 	{
-		case BUTTON_OK:
-			event_OK () ; break ;
+		case GTK_RESPONSE_OK:
+			m_answer = AP_Dialog_PageNumbers::a_OK;
+			// set the align and control data
+			m_align   = m_recentAlign;
+			m_control = m_recentControl;			
+			break;
 		default:
-			event_Cancel () ; break ;
+			m_answer = AP_Dialog_PageNumbers::a_CANCEL;
+			break;
 	}
 
 	DELETEP (m_unixGraphics);
 
-	abiDestroyWidget ( mainWindow ) ;
-}
-
-void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
-{  
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  gtk_container_set_border_width (GTK_CONTAINER (box), 4);
-
-//  hbox1 = gtk_hbox_new (FALSE, 0);
-//  gtk_widget_ref (hbox1);
-//  gtk_widget_show (hbox1);
-//  gtk_container_border_width (GTK_CONTAINER (hbox1), 4);
-
-//  vbox1 = gtk_vbox_new (FALSE, 5);
-//  gtk_widget_ref (vbox1);
-//  gtk_widget_show (vbox1);
-//  gtk_box_pack_start (GTK_BOX (hbox1), vbox1, TRUE, TRUE, 0);
-//  gtk_container_border_width (GTK_CONTAINER (vbox1), 4);
-
- 
-  
-  // Create a hbox with "Position -----------"
-  GtkWidget* labelPosition = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Position).c_str());
-  GtkWidget* linePosition = gtk_hseparator_new();
-  GtkWidget* boxPosition = gtk_hbox_new(false, 4);
-  gtk_box_pack_start(GTK_BOX(boxPosition), labelPosition, 0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(boxPosition), linePosition, 1, 1, 0);
-  gtk_widget_show(labelPosition);
-  gtk_widget_show(linePosition);
-  gtk_widget_show(boxPosition);
-  
-  // Create a vbox with position options.
-  GtkWidget* radioHeader = gtk_radio_button_new_with_label(0, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str());
-  GtkWidget* radioFooter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioHeader), pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).c_str());
-  GtkWidget* boxPositionOptions = gtk_vbox_new(false, 1);
-  gtk_container_border_width(GTK_CONTAINER(boxPositionOptions), 5);
-  gtk_box_pack_start(GTK_BOX(boxPositionOptions), radioHeader, 0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(boxPositionOptions), radioFooter, 0, 0, 0);
-  gtk_widget_show(radioHeader);
-  gtk_widget_show(radioFooter);
-  gtk_widget_show(boxPositionOptions);
-
-  // Create a hbox with "Alignment ----------"
-  GtkWidget* labelAlignment = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Alignment).c_str());
-  GtkWidget* lineAlignment = gtk_hseparator_new();
-  GtkWidget* boxAlignment = gtk_hbox_new(false, 4);
-  gtk_box_pack_start(GTK_BOX(boxAlignment), labelAlignment, 0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(boxAlignment), lineAlignment,  1, 1, 0);
-  gtk_widget_show(labelAlignment);
-  gtk_widget_show(lineAlignment);
-  gtk_widget_show(boxAlignment);
-
-  // Create a vbox with alignment options.
-  GtkWidget* radioLeft =   gtk_radio_button_new_with_label(0, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).c_str());
-  GtkWidget* radioCenter = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str());
-  GtkWidget* radioRight =  gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radioLeft), pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).c_str());
-  GtkWidget* boxAlignmentOptions = gtk_vbox_new(false, 1);
-  gtk_container_border_width(GTK_CONTAINER(boxAlignmentOptions), 5);
-  gtk_box_pack_start(GTK_BOX(boxAlignmentOptions), radioLeft,   0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(boxAlignmentOptions), radioCenter, 0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(boxAlignmentOptions), radioRight,  0, 0, 0);
-  gtk_widget_show(radioLeft);
-  gtk_widget_show(radioCenter);
-  gtk_widget_show(radioRight);
-  gtk_widget_show(boxAlignmentOptions);
-  
-  // Create the main left-hand vbox
-  GtkWidget* vboxLeft = gtk_vbox_new(false, 4);
-  gtk_box_pack_start(GTK_BOX(vboxLeft), boxPosition, 0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(vboxLeft), boxPositionOptions, 0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(vboxLeft), boxAlignment, 0, 0, 0);
-  gtk_box_pack_start(GTK_BOX(vboxLeft), boxAlignmentOptions, 0, 0, 0);
-  gtk_widget_set_usize(vboxLeft, 140, 190);
-  gtk_widget_show(vboxLeft);
- 
-
-  // Create the preview area.
-  GtkWidget* framePreview = gtk_frame_new(pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Preview).c_str());
-  gtk_widget_set_usize(framePreview, 146, 190);
-  gtk_widget_ref(framePreview);
-  gtk_widget_show(framePreview);
-//  gtk_frame_set_shadow_type(GTK_FRAME(framePreview), GTK_SHADOW_IN);
-  m_previewArea = createDrawingArea();
-  gtk_widget_ref(m_previewArea);
-  gtk_widget_show(m_previewArea);
-  gtk_drawing_area_size(GTK_DRAWING_AREA(m_previewArea), 90, 115);
-  gtk_container_add(GTK_CONTAINER(framePreview), m_previewArea);
-
-  // Create the main layout hbox
-  GtkWidget* hboxMain = gtk_hbox_new(false, 10);
-  gtk_box_pack_start(GTK_BOX(hboxMain), vboxLeft, 1, 1, 0);
-  gtk_box_pack_start(GTK_BOX(hboxMain), framePreview, 1, 1, 0);
-  gtk_widget_show(hboxMain);
-  gtk_container_add(GTK_CONTAINER(box), hboxMain);
-  
-  // Set user data so that our callbacks know what to do.
-  gtk_object_set_user_data(GTK_OBJECT(radioFooter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));
-  gtk_object_set_user_data(GTK_OBJECT(radioHeader), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));
-  gtk_object_set_user_data(GTK_OBJECT(radioLeft),   GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
-  gtk_object_set_user_data(GTK_OBJECT(radioCenter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
-  gtk_object_set_user_data(GTK_OBJECT(radioRight),  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
-
-  // Set our defaults to number in the top-right corner.
-  m_control = AP_Dialog_PageNumbers::id_HDR;
-  m_align = AP_Dialog_PageNumbers::id_RALIGN;
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioHeader), true);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioRight), true);
-  
-  // Connect clicked signals so that our callbacks get called.
-  g_signal_connect(G_OBJECT(radioHeader), "clicked", G_CALLBACK(s_position_changed),  (gpointer)this);
-  g_signal_connect(G_OBJECT(radioFooter), "clicked", G_CALLBACK(s_position_changed),  (gpointer)this);
-  g_signal_connect(G_OBJECT(radioLeft),   "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
-  g_signal_connect(G_OBJECT(radioCenter), "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
-  g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
-
-  // the expose event off the preview
-  g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), (gpointer)this);
+	abiDestroyWidget ( m_window ) ;
 }
 
 GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkWidget * window;	
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_PageNumbers.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 
-  m_window = abiDialogNew ( "page number dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str()) ;
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_PageNumbers");
+	m_previewArea = glade_xml_get_widget(xml, "daPreview");
+	
+	// set the dialog title
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str());
 
-  _constructWindowContents (GTK_DIALOG(m_window)->vbox);
+	// disable double buffering on our preview
+	gtk_widget_set_double_buffered(m_previewArea, FALSE);  
+	
+	// localize the strings in our dialog, and set some userdata for some widgets
 
-  abiAddStockButton ( GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-  abiAddStockButton ( GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK ) ;
-  
-  return m_window;
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPosition"), pSS, AP_STRING_ID_DLG_PageNumbers_Position);
+	
+	GtkWidget * radioHeader = glade_xml_get_widget(xml, "rbHeader");
+	localizeButton(radioHeader, pSS, AP_STRING_ID_DLG_PageNumbers_Header);
+	gtk_object_set_user_data(GTK_OBJECT(radioHeader), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));	
+	
+	GtkWidget * radioFooter = glade_xml_get_widget(xml, "rbFooter");
+	localizeButton(glade_xml_get_widget(xml, "rbFooter"), pSS, AP_STRING_ID_DLG_PageNumbers_Footer);	
+	gtk_object_set_user_data(GTK_OBJECT(radioFooter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));	
+
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAlignment"), pSS, AP_STRING_ID_DLG_PageNumbers_Alignment);
+	
+	GtkWidget * radioLeft =	glade_xml_get_widget(xml, "rbLeft");
+	localizeButton(radioLeft, pSS, AP_STRING_ID_DLG_PageNumbers_Left);	
+	gtk_object_set_user_data(GTK_OBJECT(radioLeft),   GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
+	
+	GtkWidget * radioCenter = glade_xml_get_widget(xml, "rbCenter");
+	localizeButton(radioCenter, pSS, AP_STRING_ID_DLG_PageNumbers_Center);	
+	gtk_object_set_user_data(GTK_OBJECT(radioCenter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
+
+	GtkWidget * radioRight = glade_xml_get_widget(xml, "rbRight");
+	localizeButton(radioRight, pSS, AP_STRING_ID_DLG_PageNumbers_Right);	
+	gtk_object_set_user_data(GTK_OBJECT(radioRight),  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_PageNumbers_Preview);
+	
+	// Set our defaults to number in the bottom-right corner.
+	m_recentControl = m_control = AP_Dialog_PageNumbers::id_FTR;
+	m_recentAlign = m_align = AP_Dialog_PageNumbers::id_RALIGN;
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioFooter), true);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioRight), true);
+	
+	// Connect clicked signals so that our callbacks get called.
+	g_signal_connect(G_OBJECT(radioHeader), "clicked", G_CALLBACK(s_position_changed),  (gpointer)this);
+	g_signal_connect(G_OBJECT(radioFooter), "clicked", G_CALLBACK(s_position_changed),  (gpointer)this);
+	g_signal_connect(G_OBJECT(radioLeft),   "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
+	g_signal_connect(G_OBJECT(radioCenter), "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
+	g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
+
+	// the expose event off the preview
+	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), (gpointer)this);	
+
+
+	return window;
 }

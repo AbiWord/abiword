@@ -70,7 +70,9 @@ CPPSRCS +=		xap_UnixFontManager.cpp
 endif
 
 TARGETS=		$(OBJS)
-INCLUDES=      -I/usr/X11R6/include
+
+LIBGLADE_CONFIG = pkg-config libglade-2.0
+INCLUDES=      -I/usr/X11R6/include $(shell $(LIBGLADE_CONFIG) --cflags)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

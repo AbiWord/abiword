@@ -36,23 +36,13 @@ class AP_UnixDialog_PageNumbers : public AP_Dialog_PageNumbers
 
   static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-  void event_OK(void);
-  void event_Cancel(void);
   void event_PreviewExposed(void);
   void event_AlignChanged(AP_Dialog_PageNumbers::tAlign);
   void event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl);
 
  protected:
-
-	typedef enum
-		{
-			BUTTON_OK,
-			BUTTON_CANCEL
-		} ResponseId ;
-	
-  // private construction functions
+  // private construction function
   virtual GtkWidget * _constructWindow (void);
-  virtual void _constructWindowContents (GtkWidget * container);
 
   // caches of the last known values for alignment and hdr/footer/both
   AP_Dialog_PageNumbers::tAlign m_recentAlign;

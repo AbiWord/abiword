@@ -67,7 +67,7 @@ AP_UnixDialog_InsertTable::~AP_UnixDialog_InsertTable(void)
 
 void AP_UnixDialog_InsertTable::runModal(XAP_Frame * pFrame)
 {
-	// Build the window's widgets and arrange them
+    // Build the dialog's window
 	GtkWidget * m_windowMain = _constructWindow();
 	UT_return_if_fail(m_windowMain);
 
