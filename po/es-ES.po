@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-08-07 16:06+0200\n"
-"PO-Revision-Date: 2003-08-07 18:18+0200\n"
+"POT-Creation-Date: 2003-08-10 18:01+0200\n"
+"PO-Revision-Date: 2003-08-11 02:33+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -171,7 +171,8 @@ msgid ""
 msgstr ""
 "%s todavía no está implementado.\n"
 "\n"
-"Si usted es un programador, siéntase libre para añadir código en %s, línea %d\n"
+"Si usted es un programador, siéntase libre para añadir código en %s, línea %"
+"d\n"
 "y enviar parches a:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -1175,7 +1176,7 @@ msgstr "Añadir columna después"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:522
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Añadir o modificar viñetas y numeración para los parágrafos seleccionados"
+msgstr "Añadir o modificar puntos y numeración para los parágrafos seleccionados"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:524
@@ -1485,7 +1486,7 @@ msgstr "Viñeta"
 #. DLG_Lists_Bullet_List
 #: po/tmp/ap_String_Id.h.h:650 po/tmp/xap_String_Id.h.h:111
 msgid "Bullet List"
-msgstr "Lista de viñetas"
+msgstr "Lista de puntos"
 
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
@@ -4979,10 +4980,10 @@ msgid ""
 "see text from your document used in this preview, position your cursor in a "
 "document paragraph with some text in it and open this dialog."
 msgstr ""
-"Este parágrafo representa palabras tal como aparecerían en su documento. Para "
-"ver texto de otros documentos usados en esta previsualización, poonga su "
-"cursor sobre un parágrafo del documento con algo de texto en él y abra este "
-"diálogo."
+"Este parágrafo representa palabras tal como aparecerían en su documento. "
+"Para ver texto de otros documentos usados en esta previsualización, poonga "
+"su cursor sobre un parágrafo del documento con algo de texto en él y abra "
+"este diálogo."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:2110
