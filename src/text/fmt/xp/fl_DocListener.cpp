@@ -345,6 +345,119 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 		break;
 
+	case PX_ChangeRecord::PXT_DeleteStrux:
+		{
+			const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+
+			switch (pcrx->getStruxType())
+			{
+			case PTX_Section:
+			case PTX_ColumnSet:
+			case PTX_Column:
+				UT_ASSERT(UT_TODO);
+				return UT_FALSE;
+					
+			case PTX_Block:
+				{
+					fl_Layout * pL = (fl_Layout *)sfh;
+					switch (pL->getType())
+					{
+					case PTX_Block:
+						{
+							FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+							FL_BlockLayout*	pPrevBL = pBL->m_pPrev;
+							if (!pPrevBL)
+							{
+								UT_DEBUGMSG(("no prior BlockLayout"));
+								return UT_FALSE;
+							}
+
+							/*
+								The idea here is to append the runs of the deleted block,
+								if any, at the end of the previous block.
+							*/
+							if (pBL->m_pFirstRun)
+							{
+								// figure out where the merge point is
+								FP_Run * pRun = pPrevBL->m_pFirstRun;
+								FP_Run * pLastRun = NULL;
+								UT_uint32 offset = 0;
+
+								while (pRun)
+								{
+									pLastRun = pRun;
+									offset += pRun->m_iLen;
+									pRun = pRun->getNext();
+								}
+
+								// link them together
+								if (pLastRun)
+								{
+									pLastRun->setNext(pBL->m_pFirstRun);
+									pBL->m_pFirstRun->setPrev(pLastRun);
+								}
+								else
+								{
+									pPrevBL->m_pFirstRun = pBL->m_pFirstRun;
+								}
+
+								// tell all the new runs where they live
+								pRun = pBL->m_pFirstRun;
+								while (pRun)
+								{
+									pRun->m_iOffsetFirst += offset;
+									pRun->m_pBL = pPrevBL;
+
+									// detach from their line
+									FP_Line* pLine = pRun->getLine();
+									UT_ASSERT(pLine);
+									
+									pLine->removeRun(pRun);
+									
+									pRun = pRun->getNext();
+								}
+
+								// merge charwidths
+								UT_uint32 lenNew = pBL->m_gbCharWidths.getLength();
+
+								pPrevBL->m_gbCharWidths.ins(offset, pBL->m_gbCharWidths.getPointer(0), lenNew);
+							}
+
+							// get rid of everything else about the block
+							pPrevBL->m_pNext = pBL->m_pNext;
+							
+							if (pBL->m_pNext)
+								pBL->m_pNext->m_pPrev = pPrevBL;
+
+							FL_SectionLayout* pSL = pBL->m_pSectionLayout;
+							UT_ASSERT(pSL);
+							pSL->removeBlock(pBL);
+							delete pBL;
+
+							// update the display
+							pPrevBL->format();
+							pPrevBL->draw(m_pLayout->getGraphics());
+						}
+						return UT_TRUE;
+							
+					case PTX_Section:
+					case PTX_ColumnSet:
+					case PTX_Column:
+					default:
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						return UT_FALSE;
+					}
+				}
+				break;
+					
+			default:
+				UT_ASSERT(0);
+				return UT_FALSE;
+			}
+		}
+		break;
+
+
 	case PX_ChangeRecord::PXT_InsertStrux:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;

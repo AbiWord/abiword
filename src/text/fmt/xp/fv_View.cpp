@@ -346,35 +346,34 @@ void FV_View::insertCharacterFormatting(const XML_Char * properties[])
 {
 	_eraseSelectionOrInsertionPoint();
 
-#ifdef BUFFER	// insertCharacterFormatting
-	if (_insertFormatPair("C",properties))
+	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!_isSelectionEmpty())
 	{
-		UT_uint32 posCur = _getPoint();
-		UT_uint32 posStart = posCur;
-		UT_uint32 posEnd = posCur;
-		if (!_isSelectionEmpty())
-		{
-			if (m_iSelectionAnchor < posCur)
-				posStart = m_iSelectionAnchor;
-			else
-				posEnd = m_iSelectionAnchor;
-
-			FL_BlockLayout * pBlockStart = _findBlockAtPosition(posStart);
-			FL_BlockLayout * pBlockEnd = _findBlockAtPosition(posEnd);
-			FL_BlockLayout * pBlock;
-
-			for (pBlock=pBlockStart; (pBlock); pBlock=pBlock->getNext())
-			{
-				pBlock->format();				// TODO do something less expensive here
-				pBlock->draw(m_pLayout->getGraphics());
-				if (pBlock == pBlockEnd)
-					break;
-			}
-			
-			m_pLayout->reformat();
-		}
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
 	}
-#endif
+
+	if (m_pDoc->insertFmt(posStart, posEnd, NULL, properties))
+	{
+		// TODO: most of this probably belongs over in the listener, right?
+		FL_BlockLayout * pBlockStart = _findBlockAtPosition(posStart);
+		FL_BlockLayout * pBlockEnd = _findBlockAtPosition(posEnd);
+		FL_BlockLayout * pBlock;
+
+		for (pBlock=pBlockStart; (pBlock); pBlock=pBlock->getNext())
+		{
+			pBlock->format();				// TODO do something less expensive here
+			pBlock->draw(m_pLayout->getGraphics());
+			if (pBlock == pBlockEnd)
+				break;
+		}
+		
+		m_pLayout->reformat();
+	}
 
 	_drawSelectionOrInsertionPoint();
 }
@@ -1315,9 +1314,6 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 }
 
 // TODO remove this later
-#ifdef BUFFER	// Test_Dump
-#include "rw_DocWriter.h"
-#endif /* BUFFER */
 #include "ps_Graphics.h"
 void FV_View::Test_Dump(void)
 {
@@ -1329,15 +1325,7 @@ void FV_View::Test_Dump(void)
 	m_pDoc->dump(fpDump);
 	fclose(fpDump);
 
-#ifdef BUFFER	// Test_Dump
-	
-	m_pBuffer->dumpBuffer(buf);
-
-	sprintf(buf,"dump.DocWriter.%d",x);
-
-	RW_DocWriter dw(m_pLayout->getDocument());
-	dw.writeFile(buf);
-
+#ifdef POSTSCRIPT	// Test_Dump
 	sprintf(buf,"dump.ps.%d",x);
 	PS_Graphics ps(buf,"my_title","AbiWord 0.0");
 	FL_DocLayout * pPrintLayout = new FL_DocLayout(m_pLayout->getDocument(),&ps);

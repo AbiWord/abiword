@@ -58,8 +58,9 @@ public:
 	FL_ColumnSetLayout*	getColumnSetLayout(void) const;
 
 	FL_BlockLayout *	getFirstBlock(void) const;
-	FL_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, FL_BlockLayout * pPrev);
 	FL_BlockLayout *	appendBlock(PL_StruxDocHandle sdh);
+	FL_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, FL_BlockLayout * pPrev);
+	FL_BlockLayout *	removeBlock(FL_BlockLayout * pBL);
 
 protected:
 	void				_purgeLayout();
