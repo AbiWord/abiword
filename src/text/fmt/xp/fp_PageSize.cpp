@@ -176,16 +176,22 @@ void fp_PageSize::Set(Predefined preDef, Unit u)
 	else
 		m_unit = size.u;
 
-	m_iWidth        = size.w * ScaleFactors[m_unit];
-	m_iHeight       = size.h * ScaleFactors[m_unit];
-	m_iMarginTop    = size.t * ScaleFactors[m_unit];
-	m_iMarginBottom = size.b * ScaleFactors[m_unit];
-	m_iMarginLeft   = size.l * ScaleFactors[m_unit];
-	m_iMarginRight  = size.r * ScaleFactors[m_unit];
+	double sf = ScaleFactors[size.u];
+
+	// Always scale to mm's, which we store.
+	m_iWidth        = size.w * sf;
+	m_iHeight       = size.h * sf;
+	m_iMarginTop    = size.t * sf;
+	m_iMarginBottom = size.b * sf;
+	m_iMarginLeft   = size.l * sf;
+	m_iMarginRight  = size.r * sf;
 
 	m_predefined = (char *)pagesizes [preDef].name;
 }
 
+/*!
+  Set the pagesize to given width and height, assumed to be in given unit.
+ */
 void fp_PageSize::Set(double w, double h, Unit u)
 {
 	int i;
@@ -234,8 +240,8 @@ void fp_PageSize::Set(double w, double h, Unit u)
 	if ( i == (int)_last_predefined_pagesize_dont_use_ )
 	{
 		Set (static_cast<Predefined>(i-1), u);
-		m_iWidth  = w * ScaleFactors[m_unit];
-		m_iHeight = h * ScaleFactors[m_unit];
+		m_iWidth  = w * ScaleFactors[u];
+		m_iHeight = h * ScaleFactors[u];
 	}
 }
 
