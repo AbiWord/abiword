@@ -26,6 +26,7 @@
 
 #include "ie_imp.h"
 #include "ut_string_class.h"
+#include "fl_DocLayout.h"
 
 //
 // forward decls so that we don't have to #include "wv.h" here
@@ -42,6 +43,16 @@ struct bookmark
 	UT_uint32  pos;
 	bool	   start;
 };
+
+struct footnote
+{
+	UT_uint32  type;
+	UT_uint32  ref_pos;
+	UT_uint32  txt_pos;
+	UT_uint32  txt_len;
+};
+
+
 
 class emObject
 {
@@ -117,7 +128,7 @@ private:
 						   void *props, int dirty);
 	int 	   _endComment (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
-	XML_Char * _getBookmarkName(wvParseStruct * ps, UT_uint32 pos);
+	XML_Char * _getBookmarkName(const wvParseStruct * ps, UT_uint32 pos);
 	bool	   _insertBookmarkIfAppropriate();
 	bool	   _insertBookmark(bookmark * bm);
 	UT_Error   _handleImage (Blip *, long width, long height);
@@ -137,7 +148,8 @@ private:
 	void        _handleStyleSheet(const wvParseStruct *ps);
 	void        _generateCharProps(UT_String &s, const CHP * achp, wvParseStruct *ps);
 	void        _generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps);
-	
+	int         _handleBookmarks(const wvParseStruct *ps);
+	void        _handleNotes(const wvParseStruct *ps);
 
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
@@ -159,12 +171,16 @@ private:
 	bool m_bLTRParaContext;
 	FriBidiCharType  m_iOverrideIssued;
 	bool m_bBidiDocument;
-	UT_uint32 m_iDocPosition;
+	UT_uint32  m_iDocPosition;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;
-	UT_Vector m_vLists;
-	UT_uint32 m_iListIdIncrement[9];
-	UT_uint32 m_iMSWordListId;
+	footnote * m_pFootnotes;
+	UT_uint32  m_iFootnotesCount;
+	footnote * m_pEndnotes;
+	UT_uint32  m_iEndnotesCount;
+	UT_Vector  m_vLists;
+	UT_uint32  m_iListIdIncrement[9];
+	UT_uint32  m_iMSWordListId;
 	
 	bool m_bEncounteredRevision;
 	bool		m_bInTable;						// are we in a table ?
@@ -180,6 +196,11 @@ private:
 											  // struxes
 	UT_String   m_charProps;
 	UT_String   m_charRevs;
+
+	UT_uint32   m_iFootnotesStart;
+	UT_uint32   m_iFootnotesEnd;
+	UT_uint32   m_iEndnotesStart;
+	UT_uint32   m_iEndnotesEnd;
 };
 
 #endif /* IE_IMP_MSWORD_H */

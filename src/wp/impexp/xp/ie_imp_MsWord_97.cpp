@@ -522,6 +522,12 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 
 	UT_VECTOR_PURGEALL(ListIdLevelPair *, m_vLists);
 	UT_VECTOR_PURGEALL(emObject *, m_vecEmObjects);
+
+	if(m_pFootnotes)
+		delete [] m_pFootnotes;
+
+	if(m_pEndnotes)
+		delete [] m_pEndnotes;
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
@@ -545,6 +551,10 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
+	m_pFootnotes(NULL),
+	m_iFootnotesCount(0),
+	m_pEndnotes(NULL),
+	m_iEndnotesCount(0),
 	m_iMSWordListId(0),
     m_bEncounteredRevision(false),
     m_bInTable(false),
@@ -553,7 +563,11 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
     m_iCurrentRow(0),
     m_iCurrentCell(0),
     m_bRowOpen(false),
-    m_bCellOpen(false)
+	m_bCellOpen(false),
+	m_iFootnotesStart(0xffffffff),
+	m_iFootnotesEnd(0xffffffff),
+	m_iEndnotesStart(0xffffffff),
+	m_iEndnotesEnd(0xffffffff)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1027,7 +1041,7 @@ static int s_cmp_bookmarks_bsearch(const void * a, const void * b)
 	return (A - B->pos);
 }
 
-XML_Char * IE_Imp_MsWord_97::_getBookmarkName(wvParseStruct * ps, UT_uint32 pos)
+XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint32 pos)
 {
 	XML_Char *str;
 	UT_iconv_t ic_handle;
@@ -1107,85 +1121,26 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 #endif
 		// import styles
 		_handleStyleSheet(ps);
+
+		// deal with bookmarks
+		_handleBookmarks(ps);
+
+		// deal with footnotes and endnotes
+		_handleNotes(ps);
+
+		// get the doc offsets of the foot/endnote text
+		// (We are interested in the offset of this in the document,
+		// not in the data stream; therefore, we do not add
+		// ps->fib.fcMin for the simple doc
+		m_iFootnotesStart = ps->fib.ccpText;
+		m_iFootnotesEnd   = m_iFootnotesStart + ps->fib.ccpFtn;
+		m_iEndnotesStart = m_iFootnotesEnd + ps->fib.ccpHdr + ps->fib.ccpMcr + ps->fib.ccpAtn;
+		m_iEndnotesEnd   = m_iEndnotesStart + ps->fib.ccpEdn;
+
+		UT_DEBUGMSG(("Fnotes [%d,%d], Enotes [%d,%d]\n",
+					 m_iFootnotesStart, m_iFootnotesEnd, m_iEndnotesStart, m_iEndnotesEnd));
+		break;
 		
-		UT_uint32 i,j;
-
-		if(m_pBookmarks)
-		{
-			for(i = 0; i < m_iBookmarksCount; i++)
-			{
-				if(m_pBookmarks[i].name && m_pBookmarks[i].start)
-				{
-					delete []m_pBookmarks[i].name;
-					m_pBookmarks[i].name = NULL;
-				}
-			}
-			delete [] m_pBookmarks;
-		}
-		BKF *bkf;
-		BKL *bkl;
-		U32 *posf, *posl, nobkf, nobkl;
-
-		if(!wvGetBKF_PLCF (&bkf, &posf, &nobkf, ps->fib.fcPlcfbkf, ps->fib.lcbPlcfbkf, ps->tablefd))
-		{
-			m_iBookmarksCount = nobkf;
-		}
-		else
-			m_iBookmarksCount = 0;
-
-		if(!wvGetBKL_PLCF (&bkl, &posl, &nobkl, ps->fib.fcPlcfbkl, ps->fib.lcbPlcfbkl, ps->fib.fcPlcfbkf, ps->fib.lcbPlcfbkf, ps->tablefd))
-		{
-			m_iBookmarksCount += nobkl;
-		}
-		else
-		{
-			if(m_iBookmarksCount > 0)
-			{
-				//free the bkf and posf
-				wvFree(bkf);
-				wvFree(posf);
-				m_iBookmarksCount = 0;
-			}
-		}
-		UT_return_val_if_fail(nobkl == nobkf, 0);
-		if(m_iBookmarksCount > 0)
-		{
-			m_pBookmarks = new bookmark[m_iBookmarksCount];
-			UT_return_val_if_fail(m_pBookmarks, 0);
-			for(i = 0; i < nobkf; i++)
-			{
-				m_pBookmarks[i].name = _getBookmarkName(ps, i);
-				m_pBookmarks[i].pos  = posf[i];
-				m_pBookmarks[i].start = true;
-			}
-
-			for(j = i; j < nobkl + i; j++)
-			{
-				// since the name is shared with the start of the bookmark,
-				// we reuse it
-				UT_sint32 iBkf = static_cast<UT_sint32>(bkl[j-i].ibkf) < 0 ? nobkl + static_cast<UT_sint32>(bkl[j-i].ibkf) : bkl[j-i].ibkf;
-				m_pBookmarks[j].name = m_pBookmarks[iBkf].name;
-				m_pBookmarks[j].pos  = posl[j - i];
-				m_pBookmarks[j].start = false;
-			}
-			// free bkf, bkl, posf, posl
-			wvFree(bkf);
-			wvFree(bkl);
-			wvFree(posf);
-			wvFree(posl);
-
-			//now sort the bookmarks by position
-			qsort(static_cast<void*>(m_pBookmarks), m_iBookmarksCount, sizeof(bookmark), s_cmp_bookmarks_qsort);
-#ifdef DEBUG
-			for(UT_uint32 k = 0; k < m_iBookmarksCount; k++)
-			{
-				UT_DEBUGMSG(("Bookmark: name [%s], pos %d, start %d\n", m_pBookmarks[k].name,m_pBookmarks[k].pos,m_pBookmarks[k].start));
-			}
-
-#endif
-		}
-
-			break;
 	case DOCEND:
 	default:
 		break;
@@ -1258,6 +1213,16 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
+	if(m_iDocPosition > m_iFootnotesStart - 5 && m_iDocPosition < m_iFootnotesStart + 5)
+	{
+		UT_DEBUGMSG(("Start of footnotes: pos %d, char 0x%04x\n", m_iDocPosition, eachchar));
+	}
+	
+	if(m_iDocPosition > m_iEndnotesStart - 5 && m_iDocPosition < m_iEndnotesStart + 5)
+	{
+		UT_DEBUGMSG(("Start of endnotes: pos %d, char 0x%04x\n", m_iDocPosition, eachchar));
+	}
+	
 	_insertBookmarkIfAppropriate();
 
 	// convert incoming character to unicode
@@ -1849,201 +1814,21 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	UT_String props;
 	_generateParaProps(props, apap, ps);
 	
-	//props, level, listid, parentid, style (TODO), NULL
+	//props, level, listid, parentid, style, NULL
 	const XML_Char * propsArray[11];
 
 	/* lists */
 	UT_uint32 myListId = 0;
-	LVLF * myLVLF = NULL;
-	UT_String szListId;
-	UT_String szParentId;
-	UT_String szStartValue;
-	UT_String szLevel;
-	UT_String propBuffer;
-	/*
-	  The MS documentation on lists really sucks, but we've been able to decipher
-	  some meaning from it and get simple lists to sorta work. This code mostly prints out
-	  debug messages with useful information in them, but it will also append a list
-	  and add a given paragraph to a given list
-	*/
-
-	if ( apap->ilfo && ps->lfo )
+	UT_String szListId, szParentId, szLevel, szStartValue;
+	
+	// all lists have ilfo set 
+	if(apap->ilfo && ps->lfo)
 	{
-		// all lists have ilfo set
-		UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));	//ilvl is the list level
-		LVL * myLVL = NULL;
-		LFO * myLFO = NULL;
-		LST * myLST = NULL;
-		LFOLVL * myLFOLVL = NULL;
-
-		UT_sint32 myStartAt = -1;
-		U8 * mygPAPX = NULL;
-		U8 * mygCHPX = NULL;
-		XCHAR * myNumberStr = NULL;
-		UT_sint32 myNumberStr_count = 0;
-		UT_uint32 mygPAPX_count = 0, mygCHPX_count = 0;
-
-		PAPX myPAPX;
-		CHPX myCHPX;
-
-		// first, get the LFO, and then find the lfovl for this paragraph
-		myLFO = &ps->lfo[apap->ilfo - 1];
-
-		UT_uint32 i = 0, j = 0, k = 0;
-		while(static_cast<UT_sint32>(i) < apap->ilfo - 1 && i < ps->nolfo)
-		{
-			j += ps->lfo[i].clfolvl;
-			i++;
-		}
-
-		// remember how many overrides are there for this record
-		k = ps->lfo[i].clfolvl;
-
-		// if there are any overrides, then see if one of them applies to this level
-		if(k && ps->lfolvl)
-		{
-			i = 0;
-			while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
-			{
-				j++;
-				i++;
-			}
-
-			if(ps->lfolvl[--j].ilvl != apap->ilvl)
-			{
-				UT_DEBUGMSG(("list: no LFOLVL found for this level (1)\n"));
-				myLFOLVL = NULL;
-			}
-			else
-			{
-				myLFOLVL = &ps->lfolvl[j];
-				UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt\n", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
-				if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
-					myStartAt = myLFOLVL->iStartAt;
-			}
-		}
-		else
-		{
-			UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
-			myLFOLVL = NULL;
-		}
-
-		// now that we might have the LFOLVL, let's see if we should use the LVL from the LFO
-		bool bNeedLST_LVL = (!myLFOLVL || !myLFOLVL->fStartAt || !myLFOLVL->fFormatting);
-		bool bLST_LVL_format = true;
-		if(myLFOLVL)
-		{
-			// this branch has not been (thoroughly) debugged
-			// Abi bugs 2205 and 2393 exhibit this behavior
-			UT_DEBUGMSG(("list: using the LVL from LFO\n"));
-			myListId = myLFOLVL->iStartAt;
-			i = 0;
-			UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
-			{
-				i++;
-				UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
-			}
-
-			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
-			{
-				UT_DEBUGMSG(("error: could not locate LST entry\n"));
-				goto list_error;
-			}
-
-			myLST = &ps->lst[i];
-			myLVL = &myLST->lvl[apap->ilvl];
-
-			// now we should have the LVL
-			UT_ASSERT(myLVL);
-
-			myLVLF = &myLVL->lvlf;
-			UT_ASSERT(myLVLF);
-
-			myStartAt = myLFOLVL->fStartAt ? static_cast<signed>(myLVLF->iStartAt) : -1;
-
-			mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
-			mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
-
-			// not sure about this, the CHPX applies to the number, so it might be
-			// that we should take this if the fStartAt is set -- the docs are not clear
-			mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
-			mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
-
-			myNumberStr = myLFOLVL->fStartAt && myLVL->numbertext ? myLVL->numbertext + 1 : NULL;
-			myNumberStr_count = myNumberStr ? *(myLVL->numbertext) : 0;
-
-			if(myLFOLVL->fFormatting)
-				bLST_LVL_format = false;
-
-		}
-
-		if(bNeedLST_LVL)
-		{
-			LVL * prevLVL = myLVL;
-			LVLF * prevLVLF = myLVLF;
-			myListId = myLFO->lsid;
-			UT_DEBUGMSG(("list: using the LVL from LST\n"));
-			i = 0;
-			UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
-			{
-				i++;
-				xxx_UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
-			}
-
-			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
-			{
-				UT_DEBUGMSG(("error: could not locate LST entry\n"));
-				goto list_error;
-			}
-
-			myLST = &ps->lst[i];
-			myLVL = &myLST->lvl[apap->ilvl];
-
-			// now we should have the correct LVL
-			UT_ASSERT(myLVL);
-
-			myLVLF = &myLVL->lvlf;
-			UT_ASSERT(myLVLF);
-
-			// retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
-			myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
-
-			mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
-			mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
-
-			mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
-			mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
-
-			myNumberStr_count = !myNumberStr && myLVL->numbertext ? *(myLVL->numbertext) : myNumberStr_count;
-			myNumberStr = !myNumberStr && myLVL->numbertext ? myLVL->numbertext + 1 : myNumberStr;
-
-
-			// if there was a valid LFO LVL record that pertained to formatting
-			// then we will set the myLVL and myLVLF variables back to this record
-			// so that it can be used
-			if(!bLST_LVL_format && prevLVL && prevLVLF)
-			{
-				myLVL = prevLVL;
-				myLVLF = prevLVLF;
-			}
-		}
-
-		UT_DEBUGMSG(("list: number text len %d, papx len %d, chpx len%d\n",myNumberStr_count,mygPAPX_count,mygCHPX_count));
-		myPAPX.cb = mygPAPX_count;
-		myPAPX.grpprl = mygPAPX;
-		myPAPX.istd = 4095; // no style
-
-		myCHPX.cbGrpprl = mygCHPX_count;
-		myCHPX.grpprl = mygCHPX;
-		myCHPX.istd = 4095; // no style
-
-
+		UT_uint32 j;
 		// if we are in a new list, then do some clean up first and remember the list id
-		if(m_iMSWordListId != myListId)
+		if(m_iMSWordListId != apap->linfo.id)
 		{
-			m_iMSWordListId = myListId;
+			m_iMSWordListId = apap->linfo.id;
 
 			for(UT_uint32 i = 0; i < 9; i++)
 				m_iListIdIncrement[i] = 0;
@@ -2053,18 +1838,17 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		}
 
 		// a hack -- see the note on myListId below
-		myListId += myLVLF->nfc;
+		myListId = apap->linfo.id;
+		myListId += apap->linfo.format;
 		myListId += apap->ilvl;
 
 		/*
-		  IMPORTANT now we have the list formatting sutff retrieved; it is found in several
-		  different places:
+		  IMPORTANT the list sutff is found in several different
+		  places:
+
 		  apap->ilvl - the level of this list (0-8)
 
-		  myStartAt	- the value at which the numbering for this listshould start
-		  (i.e., the number of the first item on the list)
-
-		  myListId	- the id of this list, we need this to know to which list this
+		  myListId - the id of this list, we need this to know to which list this
 		  paragraph belongs; unfortunately, there seem to be some cases where separate
 		  lists *share* the same id, for instance when two lists, of different formatting,
 		  are separated by only empty paragraphs. As a hack, I have added the format number
@@ -2075,30 +1859,21 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  easiest way to tranform the Word id to AW id is to add the level to the id, which
 		  is what has been done above
 
-		  PAPX		- the formatting information that needs to be added to the format
-		  of this list
+		  apap->linfo.start - the stating number of this entire list;
 
-		  CHPX		- the formatting of the list number
-
-		  myNumberStr - the actual number string to display (XCHAR *); we probably need
+		  apap->linfo.numberstr - the actual number string to display (XCHAR *); we probably need
 		  this to work out the number separator, since there does not seem
 		  to be any reference to this anywhere
 
-		  myNumberStr_count - length of the number string
+		  apap->linfo.numberstr_size - length of the number string
+		  
+		  apap->linfo.format - number format (see the enum below)
 
-		  myLVLF->nfc - number format (see the enum below)
-
-		  myLVLF->jc	- number alignment [0: lft, 1: rght, 2: cntr]
-
-		  myLVLF->ixchFollow - what character stands between the number and the para
+		  apap->linfo.align	- number alignment [0: lft, 1: rght, 2: cntr]
+		  
+		  apap->linfo.ixchFollow - what character stands between the number and the para
 		  [0:= tab, 1: spc, 2: none]
-
 		*/
-		UT_DEBUGMSG(("list: id %d \n",myListId));
-		UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
-		UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
-		UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
-		UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
 
 		// If a given list id has already been defined, appending a new list with
 		// same values will have a harmless effect
@@ -2116,6 +1891,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		myListId += m_iListIdIncrement[apap->ilvl];
 
 		const XML_Char * list_atts[13];
+		UT_String propBuffer;
 		
 		// list id number
 		list_atts[0] = "id";
@@ -2144,17 +1920,17 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 		// list type
 		list_atts[4] = "type";
-		list_atts[5] = s_mapDocToAbiListId (static_cast<MSWordListIdType>(myLVLF->nfc));
+		list_atts[5] = s_mapDocToAbiListId (static_cast<MSWordListIdType>(apap->linfo.format));
 
 		// start value
 		list_atts[6] = "start-value";
-		UT_String_sprintf(propBuffer, "%d", myStartAt);
+		UT_String_sprintf(propBuffer, "%d", apap->linfo.start);
 		szStartValue = propBuffer;
 		list_atts[7] = szStartValue.c_str();
 
 		// list delimiter
 		list_atts[8] = "list-delim";
-		list_atts[9] = s_mapDocToAbiListDelim (static_cast<MSWordListIdType>(myLVLF->nfc));
+		list_atts[9] = s_mapDocToAbiListDelim (static_cast<MSWordListIdType>(apap->linfo.format));
 
 		list_atts[10] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
@@ -2183,16 +1959,16 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 		// list style
 		props += "list-style:";
-		props += s_mapDocToAbiListStyle (static_cast<MSWordListIdType>(myLVLF->nfc));
+		props += s_mapDocToAbiListStyle (static_cast<MSWordListIdType>(apap->linfo.format));
 		props += ";";
 
 		// field-font
 		props += "field-font:";
-		props += s_fieldFontForListStyle (static_cast<MSWordListIdType>(myLVLF->nfc));
+		props += s_fieldFontForListStyle (static_cast<MSWordListIdType>(apap->linfo.format));
 		// Put in margin-left and text-indent - Use MS info if available or
 		// AbiWord defaults if these aren't present
 		//
-
+#if 0
 		UT_String sMargeLeft("margin-left"),sMargeLeftV;
 		UT_String sMargeLeftFirst("text-indent"),sMargeLeftFirstV;
 		// margin-left
@@ -2236,11 +2012,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 		UT_String_setProperty(props,sMargeLeftFirst,sMargeLeftFirstV);
 		xxx_UT_DEBUGMSG(("props for MSWORD are %s \n",props.c_str()));
-
+#endif
 
 	} // end of list-related code
-
- list_error:
 
  	// props
 	UT_uint32 i = 0;
@@ -2286,7 +2060,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		return 1;
 	}
 
-	if (myListId > 0 && myLVLF)
+	if (myListId > 0)
 	  {
 		// TODO: honor more props
 		const XML_Char *list_field_fmt[3];
@@ -2297,16 +2071,16 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		getDoc()->appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
 
 		// the character following the list label - 0=tab, 1=space, 2=none
-		if ( myLVLF->ixchFollow == 0 ) // tab
-		  {
-		UT_UCSChar tab = UCS_TAB;
-		getDoc()->appendSpan(&tab, 1);
-		  }
-		else if ( myLVLF->ixchFollow == 1 ) // space
-		  {
-		UT_UCSChar space = UCS_SPACE;
-		getDoc()->appendSpan(&space, 1);
-		  }
+		if(apap->linfo.ixchFollow == 0) // tab
+		{
+			UT_UCSChar tab = UCS_TAB;
+			getDoc()->appendSpan(&tab, 1);
+		}
+		else if(apap->linfo.ixchFollow == 1) // space
+		{
+			UT_UCSChar space = UCS_SPACE;
+			getDoc()->appendSpan(&space, 1);
+		}
 		// else none
 	  }
 	m_bInPara = true;
@@ -3618,4 +3392,196 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			getDoc()->appendStyle(attribs);
 		}
 	}
+}
+
+int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
+{
+	UT_uint32 i,j;
+
+	if(m_pBookmarks)
+	{
+		for(i = 0; i < m_iBookmarksCount; i++)
+		{
+			if(m_pBookmarks[i].name && m_pBookmarks[i].start)
+			{
+				delete []m_pBookmarks[i].name;
+				m_pBookmarks[i].name = NULL;
+			}
+		}
+		delete [] m_pBookmarks;
+	}
+	BKF *bkf;
+	BKL *bkl;
+	U32 *posf, *posl, nobkf, nobkl;
+
+	if(!wvGetBKF_PLCF (&bkf, &posf, &nobkf, ps->fib.fcPlcfbkf, ps->fib.lcbPlcfbkf, ps->tablefd))
+	{
+		m_iBookmarksCount = nobkf;
+	}
+	else
+		m_iBookmarksCount = 0;
+
+	if(!wvGetBKL_PLCF (&bkl, &posl, &nobkl, ps->fib.fcPlcfbkl, ps->fib.lcbPlcfbkl, ps->fib.fcPlcfbkf, ps->fib.lcbPlcfbkf, ps->tablefd))
+	{
+		m_iBookmarksCount += nobkl;
+	}
+	else
+	{
+		if(m_iBookmarksCount > 0)
+		{
+			//free the bkf and posf
+			wvFree(bkf);
+			wvFree(posf);
+			m_iBookmarksCount = 0;
+		}
+	}
+	UT_return_val_if_fail(nobkl == nobkf, 0);
+	if(m_iBookmarksCount > 0)
+	{
+		m_pBookmarks = new bookmark[m_iBookmarksCount];
+		UT_return_val_if_fail(m_pBookmarks, 0);
+		for(i = 0; i < nobkf; i++)
+		{
+			m_pBookmarks[i].name = _getBookmarkName(ps, i);
+			m_pBookmarks[i].pos  = posf[i];
+			m_pBookmarks[i].start = true;
+		}
+
+		for(j = i; j < nobkl + i; j++)
+		{
+			// since the name is shared with the start of the bookmark,
+			// we reuse it
+			UT_sint32 iBkf = static_cast<UT_sint32>(bkl[j-i].ibkf) < 0 ? nobkl + static_cast<UT_sint32>(bkl[j-i].ibkf) : bkl[j-i].ibkf;
+			m_pBookmarks[j].name = m_pBookmarks[iBkf].name;
+			m_pBookmarks[j].pos  = posl[j - i];
+			m_pBookmarks[j].start = false;
+		}
+		// free bkf, bkl, posf, posl
+		wvFree(bkf);
+		wvFree(bkl);
+		wvFree(posf);
+		wvFree(posl);
+
+		//now sort the bookmarks by position
+		qsort(static_cast<void*>(m_pBookmarks),
+			  m_iBookmarksCount, sizeof(bookmark),
+			  s_cmp_bookmarks_qsort);
+		
+#ifdef DEBUG
+		for(UT_uint32 k = 0; k < m_iBookmarksCount; k++)
+		{
+			UT_DEBUGMSG(("Bookmark: name [%s], pos %d, start %d\n",
+						 m_pBookmarks[k].name,m_pBookmarks[k].pos,m_pBookmarks[k].start));
+		}
+
+#endif
+	}
+	return 0;
+}
+
+static FootnoteType s_convertNoteType(UT_uint32 t)
+{
+	return 	FOOTNOTE_TYPE_NUMERIC;
+}
+
+void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
+{
+	UT_uint32 i;
+
+	if(m_pFootnotes)
+	{
+		delete [] m_pFootnotes;
+		m_pFootnotes = NULL;
+	}
+
+	if(m_pEndnotes)
+	{
+		delete [] m_pEndnotes;
+		m_pEndnotes = NULL;
+	}
+	
+
+	m_iFootnotesCount = ps->fib.lcbPlcffndTxt/4 - 2; /* the docs say
+														-1, but that is an error */
+	m_iEndnotesCount  = ps->fib.lcbPlcfendTxt/4 - 2;
+	
+	m_pFootnotes = new footnote[m_iFootnotesCount];
+	UT_return_if_fail(m_pFootnotes);
+	
+	m_pEndnotes  = new footnote[m_iEndnotesCount];
+	UT_return_if_fail(m_pEndnotes);
+
+	// this is really quite straight forward; we retrieve the PLCF
+	// chunks that describe the references/text of the footnotes, and
+	// then use those to init our footnote stucts
+	// for n footnotes the reference PLCF is a sequnce of (n+1) doc
+	// positions (UT_uint32) followed by n type flags (UT_uint16)
+	// the text PLCF is a sequence of n+2 positions (UT_uint32) of the footnote
+	// text in its data stream 
+
+	UT_uint32 *pPLCF_ref = NULL;
+	UT_uint32 *pPLCF_txt = NULL;
+
+	bool bNoteError = false;
+	if(wvGetPLCF((void **) &pPLCF_ref, ps->fib.fcPlcffndRef, ps->fib.lcbPlcffndRef, ps->tablefd))
+	{
+		bNoteError = true;
+	}
+
+	if(!bNoteError &&
+	   wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcffndTxt, ps->fib.lcbPlcffndTxt, ps->tablefd))
+	{
+		wvFree(pPLCF_ref);
+		bNoteError = true;
+	}
+	
+	if(!bNoteError)
+	{
+		UT_return_if_fail(pPLCF_ref && pPLCF_txt);
+		for(i = 0; i < m_iFootnotesCount; i++)
+		{
+			m_pFootnotes[i].ref_pos = pPLCF_ref[i];
+			m_pFootnotes[i].txt_pos = pPLCF_txt[i];
+			m_pFootnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
+			UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iFootnotesCount + 1) + i];
+			m_pFootnotes[i].type = iType;
+			UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: fnote %d, pos %d, type %d\n",
+						 i, m_pFootnotes[i].ref_pos, iType));
+		}
+
+		wvFree(pPLCF_ref);
+		wvFree(pPLCF_txt);
+	}
+	
+	bNoteError = false;
+	if(wvGetPLCF((void **) &pPLCF_ref, ps->fib.fcPlcfendRef, ps->fib.lcbPlcfendRef, ps->tablefd))
+	{
+		bNoteError = true;
+	}
+
+	if(!bNoteError &&
+	   wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcfendTxt, ps->fib.lcbPlcfendTxt, ps->tablefd))
+	{
+		wvFree(pPLCF_ref);
+		bNoteError = true;
+	}
+
+	if(!bNoteError)
+	{
+		UT_return_if_fail(pPLCF_ref && pPLCF_txt);
+		for(i = 0; i < m_iEndnotesCount; i++)
+		{
+			m_pEndnotes[i].ref_pos = pPLCF_ref[i];
+			m_pEndnotes[i].txt_pos = pPLCF_txt[i];
+			m_pEndnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
+			UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iEndnotesCount + 1) + i];
+			m_pEndnotes[i].type = iType;
+			UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: enote %d, pos %d, type %d\n",
+						 i, m_pEndnotes[i].ref_pos, iType));
+		}
+
+		wvFree(pPLCF_ref);
+		wvFree(pPLCF_txt);
+	}
+	
 }
