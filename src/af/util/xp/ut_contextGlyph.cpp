@@ -634,19 +634,27 @@ void UT_contextGlyph::_generateNoShapingTable()
 // with the following character (excluding word delimters)
 static UCSRange s_nonjoining_with_next[] =
 {
+	// everything in the Latin ranges
+	{0x0000, 0x05ff},
+
 	// Arabic
 	{0x0622, 0x0625},
 	{0x0627, 0x0627},
 	{0x062f, 0x0632},
-	{0x0648, 0x0648}
+	{0x0648, 0x0648},
+	{0x2000, 0x2fff}
 };
 
 // This table contains Unicode ranges of characters that do not join
 // with the previous character (excluding word delimiters)
 static UCSRange s_nonjoining_with_prev[] =
 {
+	// everything in the Latin ranges
+	{0x0000, 0x05ff},
+
 	// Arabic
-	{0x0621, 0x0621}
+	{0x0621, 0x0621},
+	{0x2000, 0x2fff}
 };
 
 // This table contains Unicode ranges of characters that should be
