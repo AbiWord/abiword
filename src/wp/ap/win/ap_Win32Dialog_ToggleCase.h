@@ -17,15 +17,18 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_STUB_H
-#define AP_WIN32DIALOG_STUB_H
+#ifndef AP_WIN32DIALOG_TOGGLECASE_H
+#define AP_WIN32DIALOG_TOGGLECASE_H
 
 #include "ap_Dialog_ToggleCase.h"
+#include "xap_Win32DialogHelper.h"
+
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_ToggleCase: public AP_Dialog_ToggleCase
+class AP_Win32Dialog_ToggleCase: public AP_Dialog_ToggleCase, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,7 +39,15 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
+
+private:
+	HWND					m_hThisDlg;
+	XAP_Win32DialogHelper	m_helper;
+	ToggleCase				m_iWhichCase;
 
 };
 
-#endif /* AP_WIN32DIALOG_STUB_H */
+#endif /* AP_WIN32DIALOG_TOGGLECASE_H */

@@ -27,6 +27,8 @@
 //
 //////////////////////////////////////////////////////////////////
 
+#define AP_RID_DIALOG_TOGGLECASE_BTN_OK					IDOK
+#define AP_RID_DIALOG_TOGGLECASE_BTN_CANCEL				IDCANCEL
 #define AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase		1000
 #define AP_RID_DIALOG_TOGGLECASE_RDO_LowerCase			1001
 #define AP_RID_DIALOG_TOGGLECASE_RDO_UpperCase			1002

@@ -298,7 +298,7 @@ void FV_View::toggleCase (ToggleCase c)
   UT_uint32 replace_len = UT_UCS_strlen (cur);
   replace = new UT_UCSChar [replace_len + 1];
 
-  replace = cur;
+  UT_UCS_strcpy(replace,cur);
 
   switch (c)
     {
@@ -332,7 +332,7 @@ void FV_View::toggleCase (ToggleCase c)
   m_pDoc->notifyPieceTableChangeEnd();
 
   FREEP(cur);
-  delete [] replace;
+  delete[] replace;
 }
 
 void FV_View::setPaperColor(UT_RGBColor & rgb)

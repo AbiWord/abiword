@@ -43,9 +43,13 @@ XAP_Dialog * AP_Win32Dialog_ToggleCase::static_constructor(XAP_DialogFactory * p
 	return p;
 }
 
+#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
+#pragma warning(disable: 4355)
+#endif
+
 AP_Win32Dialog_ToggleCase::AP_Win32Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_ToggleCase(pDlgFactory,id)
+	: AP_Dialog_ToggleCase(pDlgFactory,id), m_helper(this)
 {
 }
 
@@ -56,32 +60,82 @@ AP_Win32Dialog_ToggleCase::~AP_Win32Dialog_ToggleCase(void)
 void AP_Win32Dialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
+	m_helper.runModal(pFrame, AP_DIALOG_ID_TOGGLECASE, AP_RID_DIALOG_TOGGLECASE, this);
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
 	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+}
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	m_hThisDlg = hWnd;
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+	SetWindowText( hWnd, pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title) );
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	// localize controls
+	_DSX(TOGGLECASE_BTN_OK,			DLG_OK);
+	_DSX(TOGGLECASE_BTN_CANCEL,		DLG_Cancel);
+	
+	_DS(TOGGLECASE_RDO_SentenceCase,	DLG_ToggleCase_SentenceCase);
+	_DS(TOGGLECASE_RDO_LowerCase,		DLG_ToggleCase_LowerCase);
+	_DS(TOGGLECASE_RDO_UpperCase,		DLG_ToggleCase_UpperCase);
+	_DS(TOGGLECASE_RDO_TitleCase,		DLG_ToggleCase_TitleCase);
+	_DS(TOGGLECASE_RDO_ToggleCase,		DLG_ToggleCase_ToggleCase);
+
+	return 1;							// 1 == we did not call SetFocus()
+}
+
+BOOL AP_Win32Dialog_ToggleCase::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case IDCANCEL:						// also AP_RID_DIALOG_TOGGLECASE_BTN_CANCEL
+		setAnswer(a_CANCEL);
+		EndDialog(hWnd,0);
+		return 1;
+
+	case IDOK:							// also AP_RID_DIALOG_TOGGLECASE_BTN_OK
+		setAnswer(a_OK);
+		setCase(m_iWhichCase);
+		EndDialog(hWnd,0);
+		return 1;
+
+	case AP_RID_DIALOG_TOGGLECASE_RDO_SentenceCase:
+		m_iWhichCase = CASE_SENTENCE;
+		return 1;
+
+	case AP_RID_DIALOG_TOGGLECASE_RDO_LowerCase:
+		m_iWhichCase = CASE_LOWER;
+		return 1;
+		
+	case AP_RID_DIALOG_TOGGLECASE_RDO_UpperCase:
+		m_iWhichCase = CASE_UPPER;
+		return 1;
+		
+	case AP_RID_DIALOG_TOGGLECASE_RDO_TitleCase:
+		m_iWhichCase = CASE_TITLE;
+		return 1;
+		
+	case AP_RID_DIALOG_TOGGLECASE_RDO_ToggleCase:
+		m_iWhichCase = CASE_TOGGLE;
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
+	
+BOOL AP_Win32Dialog_ToggleCase::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return 0;
 }
 
