@@ -183,7 +183,6 @@ public:
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
 	void			updateScreen(void);
-        void                    initializeInsertionPoint(void);
 
 
 // ----------------------
@@ -334,6 +333,7 @@ protected:
 
 	UT_Timer *			m_pAutoCursorTimer;
 	UT_Bool				m_bCursorIsOn;
+	UT_Bool				m_bEraseSaysStopBlinking;
 	UT_Bool				m_bCursorBlink;
 	
 	fv_ChangeState		m_chg;

@@ -756,8 +756,6 @@ Defun1(fileNew)
 	if (pNewFrame)
         {
 		pNewFrame->show();
-                FV_View * pView  = (FV_View *) pNewFrame->getCurrentView();
-		pView->initializeInsertionPoint();
 	}
 	return E2B(error);
 }
@@ -1229,8 +1227,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	{
 		pFrame->show();
 		pPrefs->addRecent(pNewFile);
-                FV_View * pView = (FV_View *) pFrame->getCurrentView();
-		pView->initializeInsertionPoint();
 	}
 	else
 	{

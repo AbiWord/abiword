@@ -2269,7 +2269,10 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 		bRet = UT_TRUE;
 	}
         if(bRet == UT_FALSE)
+	{
+	        _fixInsertionPointCoords();
 	        _drawInsertionPoint();
+	}
 
 	return bRet;
 }
@@ -2424,7 +2427,6 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 		if (isSelectionEmpty())
 		{
 			_resetSelection();
-			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
 	}
@@ -2464,7 +2466,6 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	if (isSelectionEmpty())
 	{
 		_resetSelection();
-		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
 	else
@@ -3517,7 +3518,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 
 	if (isSelectionEmpty())
 	{
-		_eraseInsertionPoint();
+		_fixInsertionPointCoords();
 		_clearIfAtFmtMark(getPoint());
 		_setSelectionAnchor();
 	}
@@ -3879,7 +3880,7 @@ void  FV_View::_clearOldPoint(void)
 
 void FV_View::_xorInsertionPoint()
 {
-	if (m_iPointHeight > 0)
+	if (m_iPointHeight > 0 )
 	{
 		UT_RGBColor clr(255,255,255);
 
@@ -3897,6 +3898,7 @@ void FV_View::_xorInsertionPoint()
 
 void FV_View::_eraseInsertionPoint()
 {
+        m_bEraseSaysStopBlinking = UT_TRUE;
         if(_hasPointMoved() == UT_TRUE)
 	{
 	        UT_DEBUGMSG(("Insertion Point has moved before erasing \n"));
@@ -3934,7 +3936,7 @@ void FV_View::_drawInsertionPoint()
 		m_pAutoCursorTimer->stop();
 		m_pAutoCursorTimer->start();
 	}
-
+	m_bEraseSaysStopBlinking = UT_FALSE;
 	if (m_iWindowHeight <= 0)
 	{
 		return;
@@ -3944,6 +3946,7 @@ void FV_View::_drawInsertionPoint()
 	{
 		return;
 	}
+
 	if(m_bCursorIsOn == UT_FALSE)
         	_xorInsertionPoint();
 }
@@ -3964,7 +3967,10 @@ void FV_View::_autoDrawPoint(UT_Timer * pTimer)
 	{
 		return;
 	}
-	pView->_xorInsertionPoint();
+        if(pView->m_bEraseSaysStopBlinking == UT_FALSE)
+        {
+	        pView->_xorInsertionPoint();
+	}
 }
 
 void FV_View::setXScrollOffset(UT_sint32 v)
@@ -4050,22 +4056,19 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 	}
 }
 
-
 void FV_View::draw(const UT_Rect* pClipRect)
 {
+        _fixInsertionPointCoords();
 	if (pClipRect)
 	{
 		_draw(pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height,UT_FALSE,UT_TRUE);
-		_fixInsertionPointCoords();
-	        _drawInsertionPoint();
-
 	}
 	else
 	{
 		_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_FALSE,UT_FALSE);
-		 _fixInsertionPointCoords();
-		 _drawInsertionPoint();
 	}
+	_fixInsertionPointCoords();
+        _drawInsertionPoint();
 }
 
 void FV_View::updateScreen(void)
@@ -4073,13 +4076,6 @@ void FV_View::updateScreen(void)
 	_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_TRUE,UT_FALSE);
 }
 
-
-void FV_View::initializeInsertionPoint(void)
-{
-        updateScreen();
-        m_bCursorIsOn = UT_FALSE;
-        _drawInsertionPoint();
-}
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				   UT_sint32 width, UT_sint32 height,
@@ -4396,6 +4392,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 
 	if (bRedrawPoint)
 	{
+	        _fixInsertionPointCoords();
        		_drawInsertionPoint();
 	}
 
@@ -4444,8 +4441,8 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 	if (iPosLeft == iPosRight)
 	{
-	        _fixInsertionPointCoords();
-		_drawInsertionPoint();
+	  //	        _fixInsertionPointCoords();
+	  _drawInsertionPoint(); // Sevior This is OK!!!
 		return;
 	}
 
