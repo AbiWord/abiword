@@ -188,7 +188,22 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	BOOL bDialogResult;
 
 	_buildFilterList(szFilter);
-		
+
+	if( m_nDefaultFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO )
+	{
+		// Find the index of the type we were given
+		UT_uint32 iCounter, iNumTypes = UT_pointerArrayLength((void **) m_nTypeList);
+
+		for( iCounter = 0; iCounter < iNumTypes; iCounter++ )
+		{
+			if( m_nTypeList[ iCounter ] == m_nDefaultFileType )
+			{
+				ofn.nFilterIndex = iCounter + 1;
+				break;
+			}
+		}
+	}
+
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:

@@ -62,6 +62,7 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
 	m_szSuffixes = NULL;
 	m_nTypeList = NULL;
 	m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
+	m_nDefaultFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
 
 	m_answer = a_VOID;
 	m_bSuggestName = false;
