@@ -154,6 +154,12 @@ char * UT_strdup(const char * szSource)
 
 UT_sint32 UT_stricmp(const char * s1, const char * s2)
 {
+
+#ifdef HAVE_STRCASECMP
+
+  return strcasecmp(s1,s2);
+
+#else
   UT_return_val_if_fail(s1, 1);
   UT_return_val_if_fail(s2, -1);
 
@@ -176,6 +182,7 @@ UT_sint32 UT_stricmp(const char * s1, const char * s2)
 	while (c1 == c2);
 
 	return c1 - c2;
+#endif /* HAVE_STRCASECMP */
 }
 
 // should really be a size_t, but that might break compilation on weird
