@@ -74,31 +74,32 @@ BEGIN
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
                     WS_TABSTOP
     CONTROL         "&Left",AP_RID_DIALOG_TABS_LEFT_RADIO,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP,123,33,28,10
+                    BS_AUTORADIOBUTTON | WS_GROUP,123,33,50,10
     CONTROL         "&Center",AP_RID_DIALOG_TABS_CENTER_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,123,44,37,10
+                    BS_AUTORADIOBUTTON,123,44,50,10
     CONTROL         "&Right",AP_RID_DIALOG_TABS_RIGHT_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,123,56,33,10
+                    BS_AUTORADIOBUTTON,123,56,50,10
     CONTROL         "&Decimal",AP_RID_DIALOG_TABS_DECIMAL_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,183,33,41,10
+                    BS_AUTORADIOBUTTON,183,33,45,10
     CONTROL         "&Bar",AP_RID_DIALOG_TABS_BAR_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,183,44,27,10
+                    BS_AUTORADIOBUTTON,183,44,45,10
     CONTROL         "&1 None",AP_RID_DIALOG_TABS_NONE_RADIO,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP,123,82,39,10
+                    BS_AUTORADIOBUTTON | WS_GROUP,123,82,50,10
     CONTROL         "&2 .........",AP_RID_DIALOG_TABS_DOTS_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,123,93,40,10
+                    BS_AUTORADIOBUTTON,123,93,50,10
     CONTROL         "&3 ---------",AP_RID_DIALOG_TABS_DASH_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,183,82,40,10
+                    BS_AUTORADIOBUTTON,183,82,45,10
     CONTROL         "&4 ____",AP_RID_DIALOG_TABS_UNDERLINE_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,183,93,38,10
+                    BS_AUTORADIOBUTTON,183,93,45,10
     PUSHBUTTON      "Set",AP_RID_DIALOG_TABS_SET_BUTTON,67,134,50,14
     PUSHBUTTON      "Clear",AP_RID_DIALOG_TABS_CLEAR_BUTTON,125,134,50,14
     PUSHBUTTON      "Clear &All",AP_RID_DIALOG_TABS_CLEAR_ALL_BUTTON,183,134,
                     50,14
     LTEXT           "Tab stop position:",
-                    AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LABEL,7,9,57,8
-    LTEXT           "Default tab stops:",
-                    AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_LABEL,113,9,56,8
+                    AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LABEL,7,9,80,8
+    RTEXT           "Default tab stops:",
+                    AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_LABEL,104,7,66,14,
+					SS_CENTERIMAGE
     GROUPBOX        "Alignment",AP_RID_DIALOG_TABS_ALIGNMENT_LABEL,117,22,116,
                     46
     GROUPBOX        "Leader",AP_RID_DIALOG_TABS_LEADER_LABEL,117,72,116,39

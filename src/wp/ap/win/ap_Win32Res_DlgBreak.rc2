@@ -53,15 +53,15 @@ BEGIN
     CONTROL         "&Page break",		AP_RID_DIALOG_BREAK_RADIO_PAGE,
 										"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,19,62,10
     CONTROL         "&Column break",	AP_RID_DIALOG_BREAK_RADIO_COL,
-										"Button",BS_AUTORADIOBUTTON,	86,19,62,10
+										"Button",BS_AUTORADIOBUTTON,	86,19,67,10
     CONTROL         "&Next page",		AP_RID_DIALOG_BREAK_RADIO_NEXT,
 										"Button",BS_AUTORADIOBUTTON,	15,48,62,10
     CONTROL         "Con&tinuous",		AP_RID_DIALOG_BREAK_RADIO_CONT,
 										"Button",BS_AUTORADIOBUTTON,	15,62,62,10
     CONTROL         "&Even page",		AP_RID_DIALOG_BREAK_RADIO_EVEN,
-										"Button",BS_AUTORADIOBUTTON,	86,48,62,10
+										"Button",BS_AUTORADIOBUTTON,	86,48,67,10
     CONTROL         "&Odd page",		AP_RID_DIALOG_BREAK_RADIO_ODD,
-										"Button",BS_AUTORADIOBUTTON,	86,62,62,10
+										"Button",BS_AUTORADIOBUTTON,	86,62,67,10
     CONTROL         "",					AP_RID_DIALOG_BREAK_LINE,		"Static",SS_ETCHEDHORZ,7,39,150,1
     LTEXT           "Section breaks  ",	AP_RID_DIALOG_BREAK_TEXT_SECTION,7,35,54,8
     CONTROL         "",					AP_RID_DIALOG_BREAK_LINE,		"Static",SS_ETCHEDHORZ,7,78,150,1

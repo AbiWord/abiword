@@ -111,6 +111,9 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_DS(COLUMN_TEXT_NUMCOLUMNS,			DLG_Column_Number_Cols);
 	_DS(COLUMN_TEXT_SPACEAFTER,			DLG_Column_Space_After);
 	_DS(COLUMN_TEXT_MAXSIZE,			DLG_Column_Size);
+#ifdef BIDI_ENABLED
+	_DS(COLUMN_CHECK_RTL_ORDER,			DLG_Column_RtlOrder);
+#endif
 
 	RECT rect;
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE), &rect);

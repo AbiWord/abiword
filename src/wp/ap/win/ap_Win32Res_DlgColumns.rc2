@@ -68,19 +68,19 @@ BEGIN
 											"Button", 
 											BS_AUTORADIOBUTTON | BS_BITMAP | BS_PUSHLIKE,
 																					20,22,20,20
-    LTEXT           "One",					AP_RID_DIALOG_COLUMN_TEXT_ONE,			42,30,29,10
+    LTEXT           "One",					AP_RID_DIALOG_COLUMN_TEXT_ONE,			42,30,45,10
     
 	CONTROL         "Two",					AP_RID_DIALOG_COLUMN_RADIO_TWO,
 											"Button",
 											BS_AUTORADIOBUTTON | BS_BITMAP | BS_PUSHLIKE,
 																					20,44,20,20
-    LTEXT           "Two",					AP_RID_DIALOG_COLUMN_TEXT_TWO,			42,52,29,10
+    LTEXT           "Two",					AP_RID_DIALOG_COLUMN_TEXT_TWO,			42,52,45,10
     
 	CONTROL         "Three",				AP_RID_DIALOG_COLUMN_RADIO_THREE,
 											"Button",
 											BS_AUTORADIOBUTTON | BS_BITMAP | BS_PUSHLIKE,
 																					20,66,20,20
-    LTEXT           "Three",				AP_RID_DIALOG_COLUMN_TEXT_THREE,		42,74,29,10
+    LTEXT           "Three",				AP_RID_DIALOG_COLUMN_TEXT_THREE,		42,74,45,10
     
 	GROUPBOX        "Preview",				AP_RID_DIALOG_COLUMN_GROUP2,			108,7,70,98
     CONTROL         "",						AP_RID_DIALOG_COLUMN_PREVIEW,
@@ -88,11 +88,11 @@ BEGIN
 
 	CONTROL         "Line between",			AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN,
 											"Button",
-											BS_AUTOCHECKBOX,						7,110,70,12
+											BS_AUTOCHECKBOX,						7,110,89,12
 
 	CONTROL         "RTL Order",			AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER,
 											"Button",
-											BS_AUTOCHECKBOX,						108,110,70,12
+											BS_AUTOCHECKBOX,						108,110,130,12
 
 	CONTROL			"",						AP_RID_DIALOG_COLUMN_STATIC,
 											"Static",

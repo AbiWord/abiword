@@ -124,13 +124,13 @@ BEGIN
     GROUPBOX        "Toolbars",AP_RID_DIALOG_OPTIONS_FRM_Toolbars,2,2,143,131
     CONTROL         "&Standard Toolbar",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,110,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,130,10
     CONTROL         "&Format Toolbar",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,30,110,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,30,130,10
     CONTROL         "&Extra Toolbar",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,45,110,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,45,130,10
     GROUPBOX        "Button Style",AP_RID_DIALOG_OPTIONS_FRM_ButtonStyle,147,2,140,113
     CONTROL         "Icons",AP_RID_DIALOG_OPTIONS_RDO_Icons,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,152,15,130,10
@@ -151,16 +151,16 @@ BEGIN
                     75
     CONTROL         "Check s&pelling as you type",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,130,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,15,135,10
     CONTROL         "Hide &spelling errors in the document",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,30,130,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,30,135,10
     CONTROL         "A&lways suggest corrections",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,45,130,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,45,135,10
     CONTROL         "Suggest from &main only",
                     AP_RID_DIALOG_OPTIONS_CHK_SpellMainOnly,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,5,60,130,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,5,60,135,10
     GROUPBOX        "Ignore",AP_RID_DIALOG_OPTIONS_FRM_SpellIgnore,147,2,140,
                     75
     CONTROL         "Ignore words in &UPPERCASE",
@@ -180,7 +180,7 @@ BEGIN
     PUSHBUTTON      "Dictionary...",AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT,207,82,80,14,
 					WS_DISABLED
     RTEXT           "Ignored Words:",AP_RID_DIALOG_OPTIONS_LBL_IGNOREDWORD,
-                    5,100,115,12,SS_CENTERIMAGE
+                    5,100,110,12,SS_CENTERIMAGE
     PUSHBUTTON      "&Reset",AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET,122,100,
                     80,14,WS_DISABLED
     PUSHBUTTON      "&Edit...",AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT,207,100,
@@ -238,24 +238,24 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,5,15,275,10
     LTEXT           "Current preferences scheme:",
                     AP_RID_DIALOG_OPTIONS_LBL_CURRENTSCHEME,5,30,120,10
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME,125,30,160,75,
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME,125,30,157,75,
                     CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP | WS_DISABLED
 	GROUPBOX		"Auto Save", AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions,
 					2, 47, 285, 26
 	CONTROL			"Auto save current file each", AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5, 60, 120, 10
-    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,125,58,30,12, ES_LEFT | WS_BORDER | WS_TABSTOP | ES_READONLY
+    EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod,125,58,30,12, ES_LEFT | WS_BORDER | WS_TABSTOP
     CONTROL         "Spin",	AP_RID_DIALOG_OPTIONS_SPN_AutoSavePeriodSpin,	
 							"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | 
 							UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,
 					152,60,8,8
     LTEXT           "minutes",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveMinutes,
-					155,60,50,8
-    LTEXT           "With extension:",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,
-					185,60,50,8
+					157,60,50,8
+    RTEXT           "With extension:",	AP_RID_DIALOG_OPTIONS_LBL_AutoSaveExtension,
+					182,60,70,8
     EDITTEXT        AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension,
-					235,58,25,12, ES_LEFT | WS_BORDER | WS_TABSTOP
+					257,58,25,12, ES_LEFT | WS_BORDER | WS_TABSTOP
 
     CONTROL         "Show Spash on Startup", AP_RID_DIALOG_OPTIONS_CHK_ShowSplash,
                     "Button", BS_AUTOCHECKBOX | WS_TABSTOP,
@@ -265,13 +265,13 @@ BEGIN
 					2, 87, 285, 46
 	CONTROL			"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,98, 285, 10
+					5,98, 280, 10
 	CONTROL			"Select correct shapes of glyphs from context:", AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,109, 285, 10
+					5,109, 280, 10
 	CONTROL			"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,120, 285, 10
+					5,120, 280, 10
 
 
 END
