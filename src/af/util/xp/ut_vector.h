@@ -36,12 +36,6 @@
 #include "ut_assert.h"
 
 // ----------------------------------------------------------------
-/*
-	The following class is a simple, portable implementation of a vector.
-	Following in Mozilla's footsteps, we don't use STL because templates
-	are not yet portable enough for our needs.  (Same goes for exceptions
-	and namespaces, BTW.)
-*/
 
 #define UT_VECTOR_CLEANUP(d, v, r) \
 	do	{	int utv_max = v.getItemCount();				\
