@@ -202,7 +202,6 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 					Pt_GROUP_EQUAL_SIZE_HORIZONTAL,
 					Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	vboxMain = PtCreateWidget(PtGroup, windowMain, n, args);
-	pretty_group(vboxMain, pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -210,6 +209,7 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
 	vboxGroup = PtCreateWidget(PtGroup, vboxMain, n, args);
+	pretty_group(vboxGroup, pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
