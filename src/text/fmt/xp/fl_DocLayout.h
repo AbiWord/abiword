@@ -130,6 +130,7 @@ public:
 	
 protected:
 	static void			_spellCheck(UT_Timer * pTimer);
+	void				_toggleAutoSpell(UT_Bool bSpell);
 	void 				_deleteEmptyColumnsAndPages(void);
 
 	GR_Graphics*		m_pG;
@@ -149,6 +150,7 @@ protected:
 	UT_Vector			m_vecUncheckedBlocks;
 	fl_BlockLayout*		m_pPendingBlock;	// if NULL, then ignore m_pPendingWord
 	fl_PartOfBlock*		m_pPendingWord;
+	UT_Bool				m_bAutoSpellCheck;
 };
 
 #endif /* DOCLAYOUT_H */

@@ -34,6 +34,9 @@
 #include "pp_Property.h"
 #include "gr_Graphics.h"
 #include "xav_Listener.h"
+#include "xap_App.h"
+#include "ap_Prefs.h"
+
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_timer.h"
@@ -52,6 +55,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 	m_pPendingWord = NULL;
 	m_pFirstSection = NULL;
 	m_pLastSection = NULL;
+	m_bAutoSpellCheck = UT_FALSE;
 	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -101,6 +105,17 @@ void FL_DocLayout::setView(FV_View* pView)
 		pPage->setView(pView);
 		
 		pPage = pPage->getNext();
+	}
+
+	if (m_pView)
+	{
+		XAP_App * pApp = m_pView->getApp();
+		UT_ASSERT(pApp);
+
+		// TODO: move this logic when we get a PrefsListener API
+		const XML_Char * szAutoSpell;
+		if (pApp->getPrefsValue(AP_PREF_KEY_AutoSpellCheck,&szAutoSpell))
+			_toggleAutoSpell((szAutoSpell[0] == '1'));
 	}
 }
 
@@ -385,6 +400,34 @@ void FL_DocLayout::__dump(FILE * fp) const
 }
 #endif
 
+#define SPELL_CHECK_MSECS 100
+
+void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
+{
+	m_bAutoSpellCheck = bSpell;
+
+	if (bSpell)
+	{
+		// make sure the timer is started
+		if (!m_pSpellCheckTimer)
+		{
+			m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this, m_pG);
+			if (m_pSpellCheckTimer)
+				m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
+		}
+		else
+		{
+			m_pSpellCheckTimer->start();
+		}
+	}
+	else
+	{
+		// make sure the timer is stopped
+		if (m_pSpellCheckTimer)
+			m_pSpellCheckTimer->stop();	
+	}
+}
+
 void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 {
 	UT_ASSERT(pTimer);
@@ -428,8 +471,6 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 	}
 }
 
-#define SPELL_CHECK_MSECS 100
-
 void FL_DocLayout::queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead)
 {
 	/*
@@ -438,15 +479,18 @@ void FL_DocLayout::queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead)
 		reprioritized by setting bHead == UT_TRUE.  
 	*/
 
-	if (!m_pSpellCheckTimer)
+	if (m_bAutoSpellCheck)
 	{
-		m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this, m_pG);
-		if (m_pSpellCheckTimer)
-			m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
-	}
-	else
-	{
-		m_pSpellCheckTimer->start();
+		if (!m_pSpellCheckTimer)
+		{
+			m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this, m_pG);
+			if (m_pSpellCheckTimer)
+				m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
+		}
+		else
+		{
+			m_pSpellCheckTimer->start();
+		}
 	}
 
 	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
