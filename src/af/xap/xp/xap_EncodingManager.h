@@ -25,7 +25,7 @@ struct XAP_LangInfo
 			maclangcode_idx, /*atoi() it to get a value*/
 			max_idx = maclangcode_idx };
 
-	char*		fields[max_idx+1];
+	const char*		fields[max_idx+1];
 };
 
 
