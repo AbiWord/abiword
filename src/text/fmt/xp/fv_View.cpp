@@ -7840,7 +7840,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 					m_prevMouseContext = EV_EMC_VLINE;
 					return EV_EMC_VLINE;
 				}
-				if((iTop - yPos < ires) && (yPos - iTop < ires))
+				if((iTop - yPos < 2*ires) && (yPos - iTop < 2*ires))
 				{
 //
 // Now look to see if the cursor is over the first row of the table.
