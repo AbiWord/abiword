@@ -314,6 +314,16 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 			pPrev->_insertIntoList(pL);
 		break;
 	}
+	case FL_CONTAINER_ENDNOTE:
+	{
+		fl_DocSectionLayout * pDSL = getDocSectionLayout();
+		pL = (fl_ContainerLayout *) new fl_EndnoteLayout(getDocLayout(), 
+					  pDSL, 
+					  sdh, indexAP, this);
+		if (pPrev)
+			pPrev->_insertIntoList(pL);
+		break;
+	}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

@@ -3930,44 +3930,6 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-// Count the endnotes before this one.
-
-
-static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
-{
-	int endnoteNo = 1;
-	const XML_Char * someid;
-	XML_Char * previd = NULL;
-	while (pBL != NULL)
-	{
-		const PP_AttrProp *pp; bool bRes = pBL->getAttrProp(&pp);
-		if (!bRes) return -1;
-		pp->getAttribute("endnote-id", someid);
-		xxx_UT_DEBUGMSG(("countEndnotesBefore: endid [%s], someid [%s]\n",endid,someid));
-		if (someid && UT_strcmp(someid, endid)==0)
-			break;
-		pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
-
-		// HACK until we stop propagating endnote-ids.
-		// actually, we do want to propagate the endnote ids, it allows
-		// us to create multiparagraph endnotes and delete everyting
-		// when the reference is deleted
-		if (!previd || (previd && someid && UT_strcmp(someid, previd) != 0))
-		{
-			endnoteNo++;
-
-			if (previd != NULL)
-				free(previd);
-			previd = UT_strdup(someid);
-		}
-	}
-	if (previd != NULL)
-		free(previd);
-
-	return endnoteNo;
-}
-
-
 
 // Refers to an footnote in the main body of the text.
 fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
@@ -4049,41 +4011,86 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-// Appears in the EndnoteSection, one per endnote.
-bool fp_FieldEndnoteAnchorRun::calculateValue(void)
+
+fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 	const PP_AttrProp * pp = getAP();
-	const XML_Char * endid;
+	const XML_Char * footid;
 #if !defined(NDEBUG)
 	bool bRes =
 #endif
-		pp->getAttribute("endnote-id", endid);
+		pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
+	m_iPID = atoi(footid);
+}
 
-	fl_DocSectionLayout * pEndSL = getBlock()->
-		getDocSectionLayout();
-	//UT_ASSERT((pEndSL->getType() == FL_SECTION_ENDNOTE));
+// Appears in the EndnoteSection, one per endnote.
+bool fp_FieldEndnoteAnchorRun::calculateValue(void)
+{
 
-	// this can happen when we delete last endnote
-	if(pEndSL->getType() != FL_SECTION_ENDNOTE)
-		return false;
-	// Now, count out how many paragraphs have special endnote-id tags
-	// until we reach the desired paragraph.  (para == block)
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * footid = NULL;
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("endnote-id", footid);
 
-	// should this actually be refactored?
-
-	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pEndSL->getFirstLayout());
-	int endnoteNo = countEndnotesBefore(pBL, endid);
+	UT_ASSERT(bRes);
+	UT_uint32 iPID = atoi(footid);
+	FV_View * pView = _getView();
+	UT_sint32 endnoteNo = pView->getLayout()->getEndnoteVal(iPID);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
-	UT_String szFieldValue;
+	FootnoteType iFootType = pView->getLayout()->getFootnoteType();
 
-	szFieldValue = UT_String_sprintf ("[%d] ", endnoteNo);
+	UT_String sFieldValue;
+	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,endnoteNo,iFootType);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, sFieldValue.c_str());
 
-	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
+	return _setValue(sz_ucs_FieldValue);
+}
+
+
+fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * footid;
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("endnote-id", footid);
+
+	UT_ASSERT(bRes);
+	m_iPID = atoi(footid);
+}
+
+// Appears in the EndnoteSection, one per endnote.
+bool fp_FieldEndnoteRefRun::calculateValue(void)
+{
+
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * footid = NULL;
+#if !defined(NDEBUG)
+	bool bRes =
+#endif
+		pp->getAttribute("endnote-id", footid);
+
+	UT_ASSERT(bRes);
+	UT_uint32 iPID = atoi(footid);
+	FV_View * pView = _getView();
+	UT_sint32 endnoteNo = pView->getLayout()->getEndnoteVal(iPID);
+
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	FootnoteType iFootType = pView->getLayout()->getFootnoteType();
+
+	UT_String sFieldValue;
+	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,endnoteNo,iFootType);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, sFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
 }

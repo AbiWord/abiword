@@ -783,7 +783,7 @@ fl_BlockLayout::~fl_BlockLayout()
 bool fl_BlockLayout::isEmbeddedType(void)
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
-	if(pCL && pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	if(pCL && (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE || pCL->getContainerType() == FL_CONTAINER_ENDNOTE ) )
 	{
 		return true;
 	}
@@ -908,6 +908,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 #endif
 #endif
 	setNeedsReformat();
+	updateEnclosingBlockIfNeeded();
 }
 
 /*!
@@ -923,8 +924,8 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 		return;
 	}
 	fl_ContainerLayout * pCL = myContainingLayout();
-	UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
-	fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pCL;
+	UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) );
+	fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
 	if(!pFL->isEndFootnoteIn())
 	{
 		return;
@@ -937,8 +938,9 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	}
 	else
 	{
-		return;
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
 	}
+
 	UT_return_if_fail(sdhEnd != NULL);
 	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
 	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
@@ -963,6 +965,11 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 	else if	(getSectionLayout()->getType() == FL_SECTION_FOOTNOTE)
 	{
 		pDSL = static_cast<fl_FootnoteLayout *>(getSectionLayout())->getDocSectionLayout();
+		return pDSL;
+	}
+	else if	(getSectionLayout()->getType() == FL_SECTION_ENDNOTE)
+	{
+		pDSL = static_cast<fl_EndnoteLayout *>(getSectionLayout())->getDocSectionLayout();
 		return pDSL;
 	}
 	else if (getSectionLayout()->getType() == FL_SECTION_HDRFTR)
@@ -3251,6 +3258,14 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	{
 		pNewRun = new fp_FieldFootnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
+	else if(UT_strcmp(pszType, "endnote_ref") == 0)
+	{
+		pNewRun = new fp_FieldEndnoteRefRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
+	{
+		pNewRun = new fp_FieldEndnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
 	else if(UT_strcmp(pszType, "time") == 0)
 	{
 		pNewRun = new fp_FieldTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
@@ -4755,7 +4770,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 																	   PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(iType == FL_SECTION_DOC || iType == FL_SECTION_HDRFTR
-			  || iType == FL_SECTION_FOOTNOTE);
+			  || iType == FL_SECTION_FOOTNOTE || iType == FL_SECTION_ENDNOTE);
 
 	_assertRunListIntegrity();
 
@@ -4879,6 +4894,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		}
 		break;
 	}
+	case FL_SECTION_ENDNOTE:
 	case FL_SECTION_FOOTNOTE:
 	{
 		// Most of the time, we would insert a new section
@@ -4886,8 +4902,14 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		// But, here we insert our FootnoteLayout after this(?)
 		// BlockLayout. -PL
 		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
-		pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_FOOTNOTE);
-//		UT_ASSERT(this == (fl_BlockLayout *) pSL->getPrev());
+		if(iType == FL_SECTION_FOOTNOTE)
+		{
+			pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_FOOTNOTE);
+		}
+		else
+		{
+			pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_ENDNOTE);
+		}
 //
 // Need to find the DocSectionLayout associated with this.
 //
@@ -4915,9 +4937,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 
 	fl_SectionLayout* pOldSL = m_pSectionLayout;
 
-// XXX PLAM BAD BAD BAD
-	UT_DEBUGMSG(("plam: inserting %x, got posSL %d, posThis %d\n", pSL, posSL, posThis));
-	if (iType == FL_SECTION_FOOTNOTE)
+	if ((iType == FL_SECTION_FOOTNOTE) || (iType == FL_SECTION_ENDNOTE))
 	{
 //
 // Now update the position pointer in the view

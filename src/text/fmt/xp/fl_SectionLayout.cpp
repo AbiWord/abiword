@@ -394,7 +394,7 @@ void fl_DocSectionLayout::setFirstEndnoteContainer(fp_EndnoteContainer * pECon)
 
 void fl_DocSectionLayout::setLastEndnoteContainer(fp_EndnoteContainer * pECon)
 {
-	m_pFirstEndnoteContainer = pECon;
+	m_pLastEndnoteContainer = pECon;
 }
 
 
@@ -1009,6 +1009,10 @@ void fl_DocSectionLayout::redrawUpdate(void)
 			{
 				pBL->format();
 			}
+		}
+		else
+		{
+			pBL->recalculateFields(getDocLayout()->getRedrawCount());
 		}
 		if (pBL->needsRedraw())
 		{

@@ -563,6 +563,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	bool bStartedDrawing = false;
 	dg_DrawArgs da = *pDA;
 	UT_uint32 count = countCons();
+	xxx_UT_DEBUGMSG(("number of container %d \n",count));
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
@@ -570,6 +571,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
+		xxx_UT_DEBUGMSG(("Draw container %d Type %d \n",i,pContainer->getContainerType()));
 
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
@@ -1212,7 +1214,6 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 //
 		if(iY > getMaxHeight())
 			break;
-
 		pContainer->draw(&da);
 	}
     if(pView && pView->isHdrFtrEdit() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())

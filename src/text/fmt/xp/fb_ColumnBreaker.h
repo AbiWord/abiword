@@ -42,9 +42,11 @@ private:
 							fp_Container *& pLastContainerToKeep,
 							int iMaxColHeight, int iWorkingColHeight,
 							int iContainerMarginAfter);
-	fp_Page * m_pStartPage;
-	bool      m_bStartFromStart;
-	bool      m_bReBreak;
+	fp_Container * _getNext(fp_Container * pCon);
+	fp_Page *             m_pStartPage;
+	bool                  m_bStartFromStart;
+	bool                  m_bReBreak;
+	fl_DocSectionLayout * m_pDocSec;
 };
 
 #endif /* COLUMNBREAKER_H */

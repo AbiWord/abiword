@@ -189,6 +189,10 @@ fp_Container * fp_FootnoteContainer::getNextContainerInSection() const
 
 	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
 	fl_ContainerLayout * pNext = pCL->getNext();
+	while(pNext && pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pNext = pNext->getNext();
+	}
 	if(pNext)
 	{
 		return pNext->getFirstContainer();
@@ -202,6 +206,10 @@ fp_Container * fp_FootnoteContainer::getPrevContainerInSection() const
 
 	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
 	fl_ContainerLayout * pPrev = pCL->getPrev();
+	while(pPrev && pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pPrev = pPrev->getPrev();
+	}
 	if(pPrev)
 	{
 		return pPrev->getLastContainer();
@@ -270,7 +278,7 @@ void fp_FootnoteContainer::layout(void)
   \param pSectionLayout Section layout type used for this container
  */
 fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout) 
-	: fp_VerticalContainer(FP_CONTAINER_FOOTNOTE, pSectionLayout),
+	: fp_VerticalContainer(FP_CONTAINER_ENDNOTE, pSectionLayout),
 	  m_pPage(NULL)
 {
 }
@@ -284,6 +292,7 @@ fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout)
  */
 fp_EndnoteContainer::~fp_EndnoteContainer()
 {
+	UT_DEBUGMSG(("deleting endnote container %x \n",this));
 	m_pPage = NULL;
 }
 
@@ -346,7 +355,7 @@ fl_DocSectionLayout * fp_EndnoteContainer::getDocSectionLayout(void)
  */
 void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 {
-	UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	xxx_UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 
 //
 // Only draw the lines in the clipping region.
@@ -366,27 +375,13 @@ void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 
 fp_Container * fp_EndnoteContainer::getNextContainerInSection() const
 {
-
-	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
-	fl_ContainerLayout * pNext = pCL->getNext();
-	if(pNext)
-	{
-		return pNext->getFirstContainer();
-	}
-	return NULL;
+	return static_cast<fp_Container *>(getNext());
 }
 
 
 fp_Container * fp_EndnoteContainer::getPrevContainerInSection() const
 {
-
-	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
-	fl_ContainerLayout * pPrev = pCL->getPrev();
-	if(pPrev)
-	{
-		return pPrev->getLastContainer();
-	}
-	return NULL;
+	return static_cast<fp_Container *>(getPrev());
 }
 
 void fp_EndnoteContainer::layout(void)
@@ -437,7 +432,10 @@ void fp_EndnoteContainer::layout(void)
 	{
 		return;
 	}
-
 	setHeight(iNewHeight);
-	getPage()->footnoteHeightChanged();
+	fl_EndnoteLayout * pEL = (fl_EndnoteLayout *) getSectionLayout();
+	FL_DocLayout * pDL = pEL->getDocLayout();
+	fl_DocSectionLayout * pDSL = pDL->getDocSecForEndnote(this);
+	fp_Page * pPage = getPage();
+	pDSL->setNeedsSectionBreak(true,pPage);
 }

@@ -757,6 +757,39 @@ fl_DocSectionLayout * FL_DocLayout::getDocSecForEndnote(fp_EndnoteContainer * pE
 }
 
 /*!
+ * This method checks to too if the endnote container to be removed is the 
+ * first or last of the section. If it is the first/last pointers are updated.
+ */
+void FL_DocLayout::removeEndnoteContainer(fp_EndnoteContainer * pECon)
+{
+	fl_DocSectionLayout * pDSL = getDocSecForEndnote(pECon);
+	if(pDSL->getFirstEndnoteContainer() == static_cast<fp_Container *>(pECon))
+	{
+		pDSL->setFirstEndnoteContainer(static_cast<fp_EndnoteContainer *>(pECon->getNext()));
+	}
+	if(pDSL->getLastEndnoteContainer() == static_cast<fp_Container *>(pECon))
+	{
+		pDSL->setLastEndnoteContainer(static_cast<fp_EndnoteContainer *>(pECon->getPrev()));
+	}
+//
+// Remove from list
+//
+	if(pECon->getPrev())
+	{
+		pECon->getPrev()->setNext(pECon->getNext());
+	}
+	if(pECon->getNext())
+	{
+		pECon->getNext()->setPrev(pECon->getPrev());
+	}
+	fp_Column * pCol = static_cast<fp_Column *>(pECon->getContainer());
+	if(pCol)
+	{
+		pCol->removeContainer(pECon);
+	}
+}
+
+/*!
  * This method inserts the endnote container into the list of containers held
  * held by the appropriate DocSection.
  */
@@ -768,6 +801,72 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 	{
 		pDSL->setFirstEndnoteContainer(pECon);
 		pDSL->setLastEndnoteContainer(pECon);
+		pECon->setNext(NULL);
+		pECon->setPrev(NULL);
+		fp_Column * pCol =  static_cast<fp_Column *>(pDSL->getLastContainer());
+		if(pCol)
+		{
+			pCol->addContainer(pECon);
+			pCol->layout();
+		}
+		else
+		{
+			fp_Column * pCol = static_cast<fp_Column *>(pDSL->getNewContainer(NULL));
+			pCol->addContainer(pECon);
+			pCol->layout();
+		}
+		return;
+	}
+	fp_EndnoteContainer * pETmp = static_cast<fp_EndnoteContainer *>(pCon);
+	fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
+	fl_EndnoteLayout * pETmpL = static_cast<fl_EndnoteLayout *>(pETmp->getSectionLayout());
+	bool bBefore = (pEL->getPosition() < pETmpL->getPosition());
+	while(!bBefore && pETmp)
+	{
+		pETmp = static_cast<fp_EndnoteContainer *>(pETmp->getNext());
+		if(pETmp)
+		{
+			pETmpL = static_cast<fl_EndnoteLayout *>(pETmp->getSectionLayout());
+			UT_ASSERT(pETmpL);
+			bBefore = (pEL->getPosition() < pETmpL->getPosition());
+		}
+	}
+	if(bBefore)
+	{
+		fp_EndnoteContainer * pOldPrev = static_cast<fp_EndnoteContainer *>(pETmp->getPrev());
+		pETmp->setPrev(pECon);
+		if(pDSL->getFirstEndnoteContainer() == pETmp)
+		{
+			pDSL->setFirstEndnoteContainer(pECon);
+		}
+		else
+		{
+			pOldPrev->setNext(pECon);
+	
+		}
+		fp_Column * pCol = static_cast<fp_Column *>(pETmp->getContainer());
+		pECon->setNext(pETmp);
+		pECon->setPrev(pOldPrev);
+		if(pOldPrev)
+		{
+			pCol->insertContainerAfter(pECon, pOldPrev);
+		}
+		else
+		{
+			pCol->insertContainer(pECon);
+		}
+		pCol->layout();
+	}
+	else
+	{
+		pETmp = static_cast<fp_EndnoteContainer *>(pDSL->getLastEndnoteContainer());
+		pETmp->setNext(pECon);
+		pECon->setPrev(pETmp);
+		pECon->setNext(NULL);
+		pDSL->setLastEndnoteContainer(pECon);
+		fp_Column * pCol = static_cast<fp_Column *>(pETmp->getContainer());
+		pCol->addContainer(pECon);
+		pCol->layout();
 	}
 }
 

@@ -1140,6 +1140,10 @@ fp_Container * fp_CellContainer::getNextContainerInSection() const
 
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	fl_ContainerLayout * pNext = pCL->getNext();
+	while(pNext && pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pNext = pNext->getNext();
+	}
 	if(pNext)
 	{
 		return pNext->getFirstContainer();
@@ -1153,6 +1157,10 @@ fp_Container * fp_CellContainer::getPrevContainerInSection() const
 
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	fl_ContainerLayout * pPrev = pCL->getPrev();
+	while(pPrev && pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pPrev = pPrev->getPrev();
+	}
 	if(pPrev)
 	{
 		return pPrev->getLastContainer();
@@ -2330,6 +2338,10 @@ fp_Container * fp_TableContainer::getNextContainerInSection() const
 	}
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	fl_ContainerLayout * pNext = pCL->getNext();
+	while(pNext && pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pNext = pNext->getNext();
+	}
 	if(pNext)
 	{
 		return pNext->getFirstContainer();
@@ -2344,8 +2356,13 @@ fp_Container * fp_TableContainer::getPrevContainerInSection() const
 	{
 		return static_cast<fp_Container *>(getPrev());
 	}
+
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	fl_ContainerLayout * pPrev = pCL->getPrev();
+	while(pPrev && pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pPrev = pPrev->getPrev();
+	}
 	if(pPrev)
 	{
 		fp_Container * pPrevCon = static_cast<fp_Container *>(pPrev->getLastContainer());

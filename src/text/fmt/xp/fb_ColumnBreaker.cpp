@@ -62,7 +62,7 @@ void fb_ColumnBreaker::setStartPage(fp_Page * pPage)
 UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 {
 	m_bReBreak = false;
-
+	m_pDocSec = pSL;
 	fl_ContainerLayout* pFirstLayout = NULL;
 	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
@@ -151,7 +151,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // skip this! We've already taken it's height into account.
 //
-				pCurContainer = pCurContainer->getNextContainerInSection();
+				pCurContainer = _getNext(pCurContainer);
 				continue;
 			}
 			UT_sint32 iContainerHeight = 0;
@@ -187,8 +187,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 #endif
 			}
 			else
+			{
 				iContainerHeight = pCurContainer->getHeight();
-
+			}
 			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
 			iTotalContainerSpace = iContainerHeight + iContainerMarginAfter;
 			if (pCurContainer && 
@@ -220,7 +221,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					iWorkingColHeight += iFootnoteHeight;
 				}
 			}
-
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
 			{
 				pOffendingContainer = pCurContainer;
@@ -472,42 +472,56 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					}
 				}
 			}
-			pCurContainer = static_cast<fp_Container *>(pCurContainer->getNextContainerInSection());
+			pCurContainer = _getNext(pCurContainer);
 		}
 //
 // End of inner while loop here. After this we've found LastContainerToKeep
 //
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
-			pOuterContainer = static_cast<fp_Container *>(pLastContainerToKeep->getNextContainerInSection());
+			pOuterContainer = _getNext(pLastContainerToKeep);
 		else
 			pOuterContainer = NULL;
 
 //
 // OK fill our column with content between pFirstContainerToKeep and pLastContainerToKeep
 //
+		xxx_UT_DEBUGMSG(("Doing column fill now pCurContainer %x pFirstContainer %x \n",pCurContainer,pFirstContainerToKeep));
 		pCurContainer = pFirstContainerToKeep;
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pFirstContainerToKeep);
 		UT_sint32 conPos = 0;
 		while (pCurContainer)
 		{
-			xxx_UT_DEBUGMSG(("Container %x is in Column %x Type %d \n",pCurContainer,pCurColumn,pCurContainer->getContainerType()));
+			xxx_UT_DEBUGMSG(("Container %x is in Column %x Type %d numCons %d \n",pCurContainer,pCurColumn,pCurContainer->getContainerType(),pCurColumn->countCons()));
 			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 			{
 //
 // Skip this. It doesn't go in this column at all.
 //
-				pCurContainer = pCurContainer->getNextContainerInSection();
+				pCurContainer = _getNext(pCurContainer);
 				continue;
 			}
 			if (pCurContainer->getContainer() != pCurColumn || (pCurColumn->findCon(pCurContainer) < 0) )
 			{
+//
+// Endnotes don't get placed in columns until here
+//
+				if(pCurContainer->getContainerType() == FP_CONTAINER_ENDNOTE)
+				{
+					if(pCurContainer->getContainer() == NULL)
+					{
+						pCurColumn->addContainer(pCurContainer);
+					}
+				}
 				UT_ASSERT(pCurContainer->getContainer());
 				if(pCurContainer->getContainer()->findCon(pCurContainer) >= 0)
 				{
 					static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
 				}
-				pCurColumn->addContainer(pCurContainer);
+				if(pCurContainer->getContainer() != pCurColumn)
+				{
+					pCurColumn->addContainer(pCurContainer);
+				}
 			}
 //
 // Now make sure footnotes are on the same page as the reference.
@@ -599,9 +613,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			if((pCurColumn->findCon(pCurContainer) >= 0) && (pCurColumn->findCon(pCurContainer)  != conPos))
 			{
 				xxx_UT_DEBUGMSG(("fb_ColumnBreaker:Container out of order. Should be at %d is at %d \n",conPos,pCurColumn->findCon(pCurContainer)));
-				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Fixing this now \n"));
+				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Fixing this now orig num cons %d \n",pCurColumn->countCons()));
 				static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
 				pCurColumn->insertConAt(pCurContainer,conPos);
+				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Insert at %d now num cons \n",conPos,pCurColumn->countCons()));
 //				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 			conPos++;
@@ -609,7 +624,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				break;
 			else
 			{
-				if((pLastContainerToKeep!=NULL) && (pCurContainer->getNextContainerInSection()==NULL))
+				if((pLastContainerToKeep!=NULL) && (_getNext(pCurContainer)))
 				{
 					UT_DEBUGMSG(("Non null LastContainerToKeep yet next container is NULL!!!!!!!!!!!! \n"));
 					UT_DEBUGMSG((" CurContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
@@ -619,7 +634,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					pLastContainerToKeep = NULL;
 					break;
 				}
-				pCurContainer = static_cast<fp_Container *>(pCurContainer->getNextContainerInSection());
+				pCurContainer = _getNext(pCurContainer);
 			}
 		}
 
@@ -649,10 +664,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				if (!pNextColumn)
 				{
 					if(bBreakOnColumnBreak || bEquivColumnBreak)
-						pNextColumn = (fp_Column*) 
-							pSL->getNewContainer
-							(static_cast<fp_Container *>(pLastContainerToKeep->
-							 getNextContainerInSection()));
+						pNextColumn = static_cast<fp_Column*>
+						 (pSL->getNewContainer(_getNext(pLastContainerToKeep)));
 					else
 						pNextColumn = static_cast<fp_Column*>(pSL->getNewContainer(NULL));
 				}
@@ -674,7 +687,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				fp_Container * pCon = pCurColumn->getLastContainer();
 				if(pCon && pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
-					pOuterContainer = pCon->getNextContainerInSection();
+					pOuterContainer = _getNext(pCon);
 				}
 				pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
 
@@ -700,8 +713,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			if(bTableTest &&
 			   pOuterContainer != pCurColumn->getLastContainer())
 			{
-				pOuterContainer = 
-				 pCurColumn->getLastContainer()->getNextContainerInSection();
+				pOuterContainer =  _getNext(pCurColumn->getLastContainer());
 				bTableTest = true;
 			}
 			pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
@@ -716,9 +728,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					pCurColumn = static_cast<fp_Column *>(pSL->getNewContainer(pOuterContainer));
 				}
 			}
-			else if(pCurColumn == NULL && pLastContainerToKeep && pLastContainerToKeep->getNextContainerInSection())
+			else if(pCurColumn == NULL && pLastContainerToKeep && _getNext(pLastContainerToKeep))
 			{
-				fp_Container * pCon = pLastContainerToKeep->getNextContainerInSection();
+				fp_Container * pCon = _getNext(pLastContainerToKeep);
 				if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
 					pCurColumn =  static_cast<fp_Column *>(pSL->getNewContainer(NULL));
@@ -729,9 +741,9 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 			}
 		}
-		if(pCurColumn == NULL && pLastContainerToKeep && pLastContainerToKeep->getNextContainerInSection())
+		if(pCurColumn == NULL && pLastContainerToKeep && _getNext(pLastContainerToKeep))
 		{
-			fp_Container * pCon = pLastContainerToKeep->getNextContainerInSection();
+			fp_Container * pCon = _getNext(pLastContainerToKeep);
 			if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 			{
 				pCurColumn =  static_cast<fp_Column *>(pSL->getNewContainer(NULL));
@@ -951,3 +963,39 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 	return false;
 #endif
 }
+
+fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
+{
+	fp_Container * pNext = NULL;
+	if(pCon->getContainerType() != FP_CONTAINER_ENDNOTE)
+	{
+		fp_Container *pNext = pCon->getNextContainerInSection();
+		if(pNext != NULL)
+		{
+			return pNext;
+		}
+		xxx_UT_DEBUGMSG(("_getNext: Returning First endnote \n"));
+		pNext = m_pDocSec->getFirstEndnoteContainer();
+		xxx_UT_DEBUGMSG(("_getNext: Returning endnote pNext %x \n",pNext));
+#if DEBUG
+		if(pNext)
+		{
+			UT_ASSERT(pNext->getContainerType() == FP_CONTAINER_ENDNOTE);
+		}
+#endif
+	}
+	else
+	{
+		xxx_UT_DEBUGMSG(("_getNext: Returning next endnote \n"));
+		pNext = static_cast<fp_Container *>(pCon->getNext());
+		xxx_UT_DEBUGMSG(("_getNext: Returning endnote pNext %x \n",pNext));
+#if DEBUG
+		if(pNext)
+		{
+			UT_ASSERT(pNext->getContainerType() == FP_CONTAINER_ENDNOTE);
+		}
+#endif
+	}
+	return pNext;
+}
+	

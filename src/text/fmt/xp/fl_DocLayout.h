@@ -186,6 +186,7 @@ public:
 
 // EndNotes
 	void                insertEndnoteContainer(fp_EndnoteContainer * pECon);
+	void                removeEndnoteContainer(fp_EndnoteContainer * pECon);
 	fl_DocSectionLayout * getDocSecForEndnote(fp_EndnoteContainer * pECon  );
 	UT_uint32           countEndnotes(void);
 	void                addEndnote(fl_EndnoteLayout *);

@@ -734,7 +734,6 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	{
 	case PTX_Section:
 	case PTX_SectionHdrFtr:
-	case PTX_SectionEndnote:
 		{
 			_closeSpan();
             _closeField();
@@ -772,6 +771,15 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			m_bInBlock = false;
 			_openTag("foot","",true,pcr->getIndexAP());
+			return true;
+		}
+	case PTX_SectionEndnote:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			m_bInBlock = false;
+			_openTag("endnote","",true,pcr->getIndexAP());
 			return true;
 		}
 	case PTX_SectionMarginnote:
@@ -820,6 +828,16 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			m_bInBlock = true;
 			return true;
 		}
+	case PTX_EndEndnote:
+		{
+			_closeSpan();
+            _closeField();
+            _closeHyperlink();
+			_closeBlock();
+			m_pie->write("</endnote>");
+			m_bInBlock = true;
+			return true;
+		}
 	case PTX_EndMarginnote:
 		{
 			_closeSpan();
@@ -836,18 +854,6 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeBlock();
 			return true;
 		}
-	case PTX_EndEndnote:
-		{
-			_closeSpan();
-            _closeField();
-            _closeHyperlink();
-			_closeBlock();
-			_closeSection();
-			_openTag("endendnote","",true,pcr->getIndexAP());
-			m_bInSection = true;
-			return true;
-		}
-
 	case PTX_Block:
 		{
 			_closeSpan();

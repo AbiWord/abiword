@@ -3281,8 +3281,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	bool bDirection;
 	UT_uint32 uheight;
 	m_bPointEOL = false;
-	bool bOldFootnote = isInFootnote();
-	xxx_UT_DEBUGMSG(("_charMotion: Old Position is %d \n",posOld));
+	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
+	UT_DEBUGMSG(("_charMotion: Old Position is %d emebed depth \n",posOld,iOldDepth));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -3441,13 +3441,13 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	}
 //
 // OK sweep through footnote sections without stopping
-	xxx_UT_DEBUGMSG(("Point is %d inFootnote %d bOldFootnote %d \n",m_iInsPoint,isInFootnote(),bOldFootnote));
+	xxx_UT_DEBUGMSG(("Point is %d inFootnote %d bOldFootnote %d \n",m_iInsPoint,isInFootnote(),iOldDepth));
 	if(bForward)
 	{
-		if(!bOldFootnote && isInFootnote())
+		if(iOldDepth < getEmbedDepth(m_iInsPoint))
 		{
 			bool bSweep = false;
-			while(m_iInsPoint <= posEOD && isInFootnote())
+			while(m_iInsPoint <= posEOD && (iOldDepth < getEmbedDepth(m_iInsPoint)))
 			{ 
 				bSweep = true;
 				m_iInsPoint++;
@@ -3461,10 +3461,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 				_setPoint(posEOD);
 			}
 		}
-		else if(bOldFootnote)
+		else if((iOldDepth > getEmbedDepth(m_iInsPoint)) )
 		{
 			bool bSweep = false;
-			while(!isInFootnote()  )
+			while((iOldDepth > getEmbedDepth(m_iInsPoint)) )
 			{
 				m_iInsPoint--;
 				bSweep = true;
@@ -3478,10 +3478,10 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	}
 	else
 	{
-		if(!bOldFootnote)
+		if(iOldDepth < getEmbedDepth(m_iInsPoint))
 		{
 			bool bSweep = false;
-			while(isInFootnote() && m_iInsPoint >= posBOD)
+			while((iOldDepth < getEmbedDepth(m_iInsPoint)) && m_iInsPoint >= posBOD)
 			{ 
 				bSweep = true;
 				m_iInsPoint--;
@@ -3498,7 +3498,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	    else
 		{
 			bool bSweep = false;
-			while(!isInFootnote())
+			while(iOldDepth > getEmbedDepth(m_iInsPoint))
 			{
 				m_iInsPoint++;
 				bSweep = true;

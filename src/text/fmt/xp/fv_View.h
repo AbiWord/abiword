@@ -368,7 +368,11 @@ public:
 	bool	            insertFootnoteSection(bool bFootnote,const XML_Char * enpid);
 	bool                isInFootnote(PT_DocPosition pos);
 	bool                isInFootnote(void);
+	bool                isInEndnote(PT_DocPosition pos);
+	bool                isInEndnote(void);
 	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos);
+	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
+	UT_sint32           getEmbedDepth(PT_DocPosition pos);
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);

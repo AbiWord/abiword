@@ -230,6 +230,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_REVISION        29 //<r>
 #define TT_RESOURCE        30 // <resource>
 #define TT_ENDENDNOTE      31
+#define TT_ENDNOTE         32 //<endnote>
 
 /*
   TODO remove tag synonyms.  We're currently accepted
@@ -260,6 +261,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"d",			TT_DATAITEM		},
 	{	"data",			TT_DATASECTION	},
 	{   "endendnote",   TT_ENDENDNOTE   },
+	{   "endnote",      TT_ENDNOTE      },
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
 	{	"foot",		    TT_FOOTNOTE	    },
@@ -350,6 +352,16 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_bWroteSection = true;
 		X_CheckError(getDoc()->appendStrux(PTX_SectionFootnote,atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
+		return;
+	}
+	case TT_ENDNOTE:
+	{
+		// Endnotes are contained inside a Block
+		X_VerifyParseState(_PS_Block);
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_SectionEndnote,atts));
+		xxx_UT_DEBUGMSG(("FInished Append Endnote strux \n"));
 		return;
 	}
 	case TT_BLOCK:
@@ -627,6 +639,13 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Sec);
 		X_CheckError(getDoc()->appendStrux(PTX_EndFootnote,NULL));
 		xxx_UT_DEBUGMSG(("FInished Append End footnote strux \n"));
+		m_parseState = _PS_Block;
+		return;
+
+	case TT_ENDNOTE:
+		X_VerifyParseState(_PS_Sec);
+		X_CheckError(getDoc()->appendStrux(PTX_EndEndnote,NULL));
+		xxx_UT_DEBUGMSG(("FInished Append End Endnote strux \n"));
 		m_parseState = _PS_Block;
 		return;
 

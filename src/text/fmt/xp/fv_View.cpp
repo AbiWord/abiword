@@ -5609,7 +5609,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 // Clear the rest of the info
 //
 	memset(pInfo,0,sizeof(*pInfo));
-	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_CONTAINER_FOOTNOTE || pSection->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		fp_Column* pColumn = NULL;
 		fl_DocSectionLayout* pDSL = NULL;
@@ -5904,6 +5904,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 
 		bool isFootnote = false;
+		bool isEndnote = false;
 		xxx_UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
 		fp_Page * pPage =  pRun->getLine()->getPage();
 		if(pPage == NULL)
@@ -5915,12 +5916,19 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yBottomMargin = 0;
 			return;
 		}
-
+ 
 		if(pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			pSection = pPage->getOwningSection();
 			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
 			isFootnote = true;
+			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
+		}
+		else if(pContainer->getContainerType() == FP_CONTAINER_ENDNOTE)
+		{
+			pSection = pPage->getOwningSection();
+			pDSL = static_cast<fl_DocSectionLayout *>(pSection);
+			isEndnote = true;
 			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else
@@ -5930,7 +5938,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		}
 		pInfo->m_yPoint = yCaret - pContainer->getY();
 
-		if ((isFootnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
+		if ((isFootnote || isEndnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
 		{
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
@@ -7578,6 +7586,26 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 }
 
 /*!
+ * This method returns the depth of the embedding level at the requested point.
+ * If the point is not inside a footnote or Endnote, we return zero. If the 
+ * point is inside a footnote or endnote return 1, if the  point is inside
+ * an endnote inside a footnote return 2 etc.
+ */
+UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos)
+{
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pBL->myContainingLayout());
+	bool bStop = false;
+	UT_sint32 count =-1;
+	while(!bStop && pCL)
+	{
+		count++;
+		bStop = ((pCL->getContainerType() != FL_CONTAINER_FOOTNOTE) && (pCL->getContainerType() != FL_CONTAINER_ENDNOTE));
+		pCL = static_cast<fl_ContainerLayout *>(pCL->myContainingLayout());
+	}
+	return count;
+}
+/*!
  * This method returns the closest footnote before or that contains the 
  * requested doc position. If the is no footnote before the doc position, NULL
  * is returned.
@@ -7604,6 +7632,37 @@ fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos)
 	}
 	return pClosest;
 }
+
+
+/*!
+ * This method returns the closest endnote before or that contains the 
+ * requested doc position. If the is no footnote before the doc position, NULL
+ * is returned.
+ */
+fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
+{
+	fl_EndnoteLayout * pFL = NULL;
+	fl_EndnoteLayout * pClosest = NULL;
+	UT_sint32 i = 0;
+	for(i = 0; i< static_cast<UT_sint32>(m_pLayout->countEndnotes());i++)
+	{
+		pFL = m_pLayout->getNthEndnote(i);
+		if(pFL->getDocPosition() <= pos)
+		{
+			if(pClosest == NULL)
+			{
+				pClosest = pFL;
+			}
+			else if( pClosest->getDocPosition() < pFL->getDocPosition())
+			{
+				pClosest = pFL;
+			}
+		}
+	}
+	return pClosest;
+}
+
+
 /*!
  * Returns true if the current insertion point is inside a footnote.
  */
@@ -7618,6 +7677,31 @@ bool FV_View::isInFootnote(void)
 bool FV_View::isInFootnote(PT_DocPosition pos)
 {
 	fl_FootnoteLayout * pFL = getClosestFootnote(pos);
+	if(pFL == NULL)
+	{
+		return false;
+	}
+	if((pFL->getDocPosition() <= pos) && ((pFL->getDocPosition() + pFL->getLength()) > pos))
+	{
+		return true;
+	}
+	return false;
+}
+
+/*!
+ * Returns true if the current insertion point is inside a footnote.
+ */
+bool FV_View::isInEndnote(void)
+{
+	return isInEndnote(getPoint());
+}
+
+/*!
+ * Returns true if the requested position is inside a endnote.
+ */
+bool FV_View::isInEndnote(PT_DocPosition pos)
+{
+	fl_EndnoteLayout * pFL = getClosestEndnote(pos);
 	if(pFL == NULL)
 	{
 		return false;
@@ -7648,6 +7732,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 		"footnote-id", footpid,
 		NULL, NULL
 	};
+	if(!bFootnote)
+	{
+		attrs[0] = "endnote-id";
+	}
 
 	/*	Apply the character style at insertion point and insert the
 		Footnote reference. */

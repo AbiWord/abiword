@@ -2369,7 +2369,8 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
 			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
-			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
+			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getColumnGap();
 			m_iClearLeftOffset = pSL->getColumnGap() - getGraphics()->tlu(1);
@@ -2393,7 +2394,8 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
 			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
 			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR ||
-			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			getContainer()->getContainerType() == FP_CONTAINER_FOOTNOTE||
+			getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - getGraphics()->tlu(2);
 			m_iClearLeftOffset = pSL->getLeftMargin() - getGraphics()->tlu(1);
@@ -2436,6 +2438,10 @@ fp_Container*	fp_Line::getNextContainerInSection(void) const
 	}
 
 	fl_ContainerLayout* pNextBlock = m_pBlock->getNext();
+	while(pNextBlock && pNextBlock->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pNextBlock = pNextBlock->getNext();
+	}
 	if (pNextBlock)
 	{
 		return static_cast<fp_Container *>(pNextBlock->getFirstContainer());
@@ -2451,6 +2457,10 @@ fp_Container*	fp_Line::getPrevContainerInSection(void) const
 	}
 
 	fl_ContainerLayout* pPrev =  static_cast<fl_ContainerLayout *>(m_pBlock->getPrev());
+	while(pPrev && pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
+	{
+		pPrev = pPrev->getPrev();
+	}
 	if(pPrev)
 	{
 		fp_Container * pPrevCon = static_cast<fp_Container *>(pPrev->getLastContainer());

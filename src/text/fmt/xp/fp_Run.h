@@ -765,8 +765,7 @@ private:
 	UT_Byte					m_fPosition;
 };
 
-/*  Missing implimentation - bad, bad, plam  */
-#if 0
+
 class ABI_EXPORT fp_FieldEndnoteRefRun : public fp_FieldRun
 {
 public:
@@ -778,13 +777,11 @@ public:
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
-#if 0
 	UT_uint32				getPID() const {return m_iPID;}
 private:
 	UT_uint32 m_iPID;
-#endif
 };
-#endif
+
 
 class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
 {
@@ -797,11 +794,9 @@ public:
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
-#if 0
 	UT_uint32				getPID() const {return m_iPID;}
 private:
 	UT_uint32 m_iPID;
-#endif
 };
 
 class ABI_EXPORT fp_FieldFootnoteRefRun : public fp_FieldRun
