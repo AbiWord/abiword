@@ -168,7 +168,12 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (IBAction)numColAction:(id)sender
 {
-	[_numOfColStepper setIntValue:[sender intValue]];
+	int count = [sender intValue];
+
+	count = (count < 1) ? 1 : ((count > 64) ? 64 : count);
+
+	[_numOfColData    setIntValue:count];
+	[_numOfColStepper setIntValue:count];
 }
 
 - (IBAction)numColStepperAction:(id)sender
@@ -178,7 +183,12 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (IBAction)numRowAction:(id)sender
 {
-	[_numOfRowStepper setIntValue:[sender intValue]];
+	int count = [sender intValue];
+
+	count = (count < 1) ? 1 : ((count > 500) ? 500 : count);
+
+	[_numOfRowData    setIntValue:count];
+	[_numOfRowStepper setIntValue:count];
 }
 
 - (IBAction)numRowStepperAction:(id)sender
