@@ -839,14 +839,14 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 			
 		}
 
-		I.addItem(iCurOffset - iPosStart, GRScriptType_Undefined);
+		I.addItem(iCurOffset - iPosStart, new GR_XPItem(GRScriptType_Undefined));
 	}
 
 	// add an extra record of type Void to allow for calculation of
 	// length of the last item
 	// iLastOffset is the offset of the last valid character; the Void
 	// offset is one beyond that
-	I.addItem(iLastOffset - iPosStart + 1, GRScriptType_Void);
+	I.addItem(iLastOffset - iPosStart + 1, new GR_XPItem(GRScriptType_Void));
 	return true;
 }
 
@@ -1169,7 +1169,6 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 		}
 	}
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //

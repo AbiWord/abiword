@@ -3515,127 +3515,22 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
 	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d\n", blockOffset, len));
-	PT_BlockOffset curOffset = blockOffset;
-	PD_StruxIterator text(getStruxDocHandle(), curOffset + fl_BLOCK_STRUX_OFFSET);
+	PD_StruxIterator text(getStruxDocHandle(),
+						  blockOffset + fl_BLOCK_STRUX_OFFSET,
+						  blockOffset + fl_BLOCK_STRUX_OFFSET + len - 1);
+	GR_Itemization I;
+	
+	m_pLayout->getGraphics()->itemize(text, I);
 
-	while(len > curOffset - blockOffset)
+	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)
 	{
-		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: len %d curOffset %d blobkOffset %d \n",len,curOffset,blockOffset));
+		fp_TextRun* pNewRun = new fp_TextRun(this,
+											 blockOffset + I.getNthOffset(i),
+											 I.getNthLength(i));
 		
-		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
-		
-		UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
-		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-		
-		iType = fribidi_get_type(static_cast<FriBidiChar>(c));
-
-		UT_uint32 i = 1;
-
-		//We need to do some bidi processing on the span; basically we
-		//have to break the text into chunks that each will go into a
-		//separate run in a manner that will ensure that the text will
-		//be correctly processed later. The most obvious way is to
-		//break every time we encounter a change of directional
-		//properties. Unfortunately that means breaking at each white
-		//space, which adds a huge amount of processing due to
-		//allocating and deleting the runs when loading a
-		//document. The following code tries to catch out the obvious
-		//cases when the span can remain intact. Tomas, Jan 28, 2003
-		for(i = 1; i < len - (curOffset-blockOffset); i++)
-		{
-			iPrevType = iType;
-			if(FRIBIDI_IS_STRONG(iType))
-				iLastStrongType = iType;
-			
-			c = text[curOffset + fl_BLOCK_STRUX_OFFSET + i];
-			UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-			
-			iType = fribidi_get_type(static_cast<FriBidiChar>(c));
-			if(iType != iPrevType)
-			{
-				// potential direction boundary see if we can ignore
-				// it
-				bool bIgnore = false;
-#if 0
-				// this assumption is not true; for instance in the
-				// sequence ") " the parenthesis and the space can
-				// resolve to different directions
-				// 
-				// I am leaving it here so that I do not add it one
-				// day again (Tomas, Apr 10, 2003)
-				
-				if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
-				{
-					// two neutral characters in a row will have the same
-					// direction
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: ntrl->ntrl (c=0x%04x)\n",
-								 c));
-					bIgnore = true;
-				}
-				else
-#endif
-				if(FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
-				{
-					// we can ignore a neutral character following a
-					// strong one if it is followed by a strong
-					// character of identical type to the previous one
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->ntrl (c=0x%04x)\n",
-								 c));
-					
-					// take a peek at what follows
-					for(UT_uint32 j = i+1; j < len - (curOffset-blockOffset); j++)
-					{
-						UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET + j];
-						UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-						
-						iNextType = fribidi_get_type(static_cast<FriBidiChar>(c));
-						xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: iNextType 0x%04x\n",
-									      iNextType));
-						if(iNextType == iPrevType)
-						{
-							bIgnore = true;
-							break;
-						}
-
-						// if the next character is strong, we cannot
-						// ignore the boundary
-						if(FRIBIDI_IS_STRONG(iNextType))
-							break;
-					}
-					
-				}
-				else if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_STRONG(iType))
-				{
-					// a neutral character followed by a strong one -- we
-					// can ignore it, if the neutral character was
-					// preceeded by a strong character of the same
-					// type
-					if(iType == iLastStrongType)
-					{
-						bIgnore = true;
-					}
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: ntrl->strong (c=0x%04x)\n",
-								 c));
-					
-				}
-				else
-				{
-					// in all other cases we will split
-					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: other (c=0x%04x)\n",pSpan[i]));
-				}
-
-				xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: bIgnore %d\n",static_cast<UT_uint32>(bIgnore)));
-				if(!bIgnore)
-					break;
-			}
-			
-		}// for
-		xxx_UT_DEBUGMSG(("_dopopulateTextSpan: text run: offset %d, len %d\n", curOffset, i));
-		fp_TextRun* pNewRun = new fp_TextRun(this, curOffset, i);
 		UT_ASSERT(pNewRun);
 		UT_ASSERT(pNewRun->getType() == FPRUN_TEXT);
 		pNewRun->setDirOverride(m_iDirOverride);
-		curOffset += i;
 
 		if(!_doInsertRun(pNewRun))
 			return false;

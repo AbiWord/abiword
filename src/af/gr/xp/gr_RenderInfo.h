@@ -45,6 +45,44 @@ enum GR_ScriptType
 };
 
 /*
+   Describes an item of text; graphics classes must implement a
+   derrived class
+
+   constructor should be protected; new instances can only be created via
+   GR_Graphics::newItem()
+*/
+
+class GR_Item
+{
+  public:
+	virtual ~GR_Item(){};
+	virtual GR_ScriptType getType() = 0;
+
+  protected:
+	GR_Item(){};
+};
+
+
+class GR_XPItem : public GR_Item
+{
+	friend class GR_Graphics;
+	
+  public:
+	virtual ~GR_XPItem(){};
+	
+	virtual GR_ScriptType getType() {return m_eType;}
+
+  protected:
+	GR_XPItem():
+	   m_eType(GRScriptType_Undefined){};
+	GR_XPItem(GR_ScriptType t):
+	   m_eType(t){};
+	
+	GR_ScriptType m_eType;
+};
+
+
+/*
    describes itemization of text
 
    offset is where an item starts
@@ -64,24 +102,30 @@ class GR_Itemization
 {
   public:
 	GR_Itemization(){};
-	virtual ~GR_Itemization() {};
+	virtual ~GR_Itemization() {clear();}
 
 	UT_uint32     getItemCount() const {return m_vOffsets.getItemCount();}
 	UT_uint32     getNthOffset(UT_uint32 i) const {return m_vOffsets.getNthItem(i);}
-	GR_ScriptType getNthType(UT_uint32 i) const {return (GR_ScriptType)m_vTypes.getNthItem(i);}
-
-	void addItem(UT_uint32 offset, UT_uint32 type)
-	         { m_vOffsets.addItem(offset); m_vTypes.addItem(type);}
-
-	void insertItem(UT_uint32 indx, UT_uint32 offset, UT_uint32 type)
-	         { m_vOffsets.insertItemAt(offset, indx); m_vTypes.insertItemAt(type,indx);}
+	GR_ScriptType getNthType(UT_uint32 i) const
+	                  {return ((GR_Item*)m_vItems.getNthItem(i))->getType();}
 	
-	void clear()
-	         {m_vOffsets.clear(); m_vTypes.clear();} 
+	UT_uint32     getNthLength(UT_uint32 i)
+	                  {
+						  UT_return_val_if_fail(i < m_vOffsets.getItemCount()-1, 0);
+						  return m_vOffsets.getNthItem(i+1) - m_vOffsets.getNthItem(i);
+					  }
+	
+	void addItem(UT_uint32 offset, const GR_Item *item)
+	         { m_vOffsets.addItem(offset); m_vItems.addItem(item);}
+
+	void insertItem(UT_uint32 indx, UT_uint32 offset, const GR_Item *item)
+	         { m_vOffsets.insertItemAt(offset, indx); m_vItems.insertItemAt(item,indx);}
+	
+	void clear();
 	
   private:
 	UT_NumberVector m_vOffsets;
-	UT_NumberVector m_vTypes;
+	UT_Vector       m_vItems;
 };
 
 /*

@@ -28,6 +28,16 @@
 #include <fribidi.h>
 
 
+
+void GR_Itemization::clear()
+{
+	m_vOffsets.clear();
+
+	UT_VECTOR_PURGEALL(GR_Item *, m_vItems);
+	m_vItems.clear();
+} 
+
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 // implementation of GRXPRenderInfo
