@@ -28,14 +28,13 @@
 
 #include <stdlib.h>
 #include "ut_string.h"
-#include "xap_AbiObject.h"
 
 // yes, this is screaming for a template
 
 //!
 //	UT_String, a simple wrapper for zero terminated 'char' strings.
 //
-class UT_String : public XAP_AbiObject
+class UT_String
 {
 public:
 	UT_String();
@@ -65,8 +64,6 @@ public:
 	// even if to an empty string.
 	const char* c_str() const;
 
-	virtual size_t hashcode () const;
-
 private:
 	class UT_Stringbuf* pimpl;
 };
@@ -78,6 +75,8 @@ bool operator==(const char*      s1, const UT_String& s2);
 bool operator!=(const UT_String& s1, const UT_String& s2);
 bool operator!=(const UT_String& s1, const char*      s2);
 bool operator!=(const char*      s1, const UT_String& s2);
+
+UT_uint32 hashcode(const UT_String& string);
 
 // strcmp ordering
 bool operator<(const UT_String& s1, const UT_String& s2);
@@ -92,7 +91,7 @@ UT_String operator+(const UT_String& s1, const UT_String& s2);
 
 // TODO: add c_str(), utf8_str(), encoded_str(const char * to)
 
-class UT_UCS2String : public XAP_AbiObject
+class UT_UCS2String
 {
 public:
 	UT_UCS2String();

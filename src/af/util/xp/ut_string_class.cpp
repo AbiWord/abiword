@@ -117,19 +117,6 @@ const char* UT_String::c_str() const
 	return pimpl->size() ? pimpl->data() : pszEmpty;
 }
 
-size_t UT_String::hashcode () const
-{
-	// from glib
-	const char *p = pimpl->data();
-	size_t h = (size_t)*p;
-	
-	if (h)
-		for (p += 1; *p != '\0'; p++)
-			h = (h << 5) - h + *p;
-	
-	return h;
-}
-
 //////////////////////////////////////////////////////////////////
 // mutators
 
@@ -240,6 +227,24 @@ char& UT_String::operator[](size_t iPos)
 {
 	UT_ASSERT(iPos <= size());
 	return pimpl->data()[iPos];
+}
+
+
+UT_uint32 hashcode(const UT_String& string)
+{
+	// from glib
+	const char* p = string.c_str();
+	UT_uint32 h = (UT_uint32)*p;
+	
+	if (h)
+	{
+		for (p += 1; *p != '\0'; p++)
+		{
+			h = (h << 5) - h + *p;
+		}
+	}
+	
+	return h;
 }
 
 /**************************************************************************/
