@@ -9,7 +9,8 @@ Package: abiword
 Architecture: any
 Depends: libpng2 (>=1.0.5), ${shlibs:Depends}
 Recommends: ispell-dictionary
-Conflicts: abi-fonts,abisuite
+Replaces: abisuite,abiword-xml,abiword-expat
+Conflicts: abi-fonts,abisuite,abiword-xml,abiword-expat
 Description: WYSIWYG word processor based on GTK.
  AbiWord is the first of a complete, open source office suite.  AbiWord is
  based on GTK and the original source includes crossplatform support for
