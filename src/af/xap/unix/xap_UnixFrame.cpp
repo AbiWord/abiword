@@ -1097,7 +1097,7 @@ bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMe
 		GtkRequisition req ;
 		gtk_widget_size_request (m_pUnixPopup->getMenuHandle(), &req);
 
-		x = bevent->x;
+		x = bevent->x - (req.width/2);
 		y = bevent->y + req.height;
 #endif
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
