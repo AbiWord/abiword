@@ -426,3 +426,26 @@ UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 	return UT_TRUE;
 }
 
+// convert each character in a string to ASCII uppercase
+char * UT_upperString(char * string)
+{
+	if (!string)
+		return NULL;
+
+	for (char * ch = string; *ch != NULL; ch++)
+		*ch = toupper(*ch);
+
+	return string;
+}
+
+// convert each character in a string to ASCII lowercase
+char * UT_lowerString(char * string)
+{
+	if (!string)
+		return NULL;
+
+	for (char * ch = string; *ch != NULL; ch++)
+		*ch = tolower(*ch);
+
+	return string;
+}

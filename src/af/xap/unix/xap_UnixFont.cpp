@@ -383,8 +383,14 @@ void AP_UnixFont::_makeFontKey(void)
 	char * key = (char *) calloc(strlen(m_name) + 1 + 1 + 1, sizeof(char));
 	UT_ASSERT(key);
 
-	sprintf(key, "%s@%d", m_name, m_style);
+	char * copy;
+	UT_cloneString(copy, m_name);
+	UT_upperString(copy);
+	
+	sprintf(key, "%s@%d", copy, m_style);
 
+	FREEP(copy);
+	
 	// point member our way
 	m_fontKey = key;
 }

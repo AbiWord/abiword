@@ -204,8 +204,14 @@ AP_UnixFont * AP_UnixFontManager::getFont(const char * fontname,
 	// Doing an allocation is really slow on many machines.
 	static char keyBuffer[512];
 
-	g_snprintf(keyBuffer, 512, "%s@%d", fontname, s);
+	char * copy;
+	UT_cloneString(copy, fontname);
+	UT_upperString(copy);
+	
+	g_snprintf(keyBuffer, 512, "%s@%d", copy, s);
 
+	FREEP(copy);
+	
 	UT_HashTable::UT_HashEntry * entry = m_fontHash.findEntry(keyBuffer);
 
 	UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
