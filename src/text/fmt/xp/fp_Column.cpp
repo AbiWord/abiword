@@ -354,7 +354,7 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 
 	if (y < m_iY)
 	{
-		dy = y - m_iY;
+		dy = m_iY - y;
 	}
 	else if (y > (m_iY + m_iHeight - 1))
 	{
@@ -377,6 +377,8 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 
 	UT_uint32 dist = (UT_uint32) (sqrt((dx * dx) + (dy * dy)));
 
+	UT_ASSERT(dist > 0);
+	
 	return dist;
 }
 

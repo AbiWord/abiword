@@ -299,13 +299,18 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	int count = m_vecColumnLeaders.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
 	fp_Column* pMinDist = NULL;
+	fp_Column* pColumn = NULL;
+	UT_uint32 iMinXDist = 0xffffffff;
+	fp_Column* pMinXDist = NULL;
+	UT_uint32 iDist = 0;
+	fp_Column* pLeader = NULL;
 	for (int i=0; i<count; i++)
 	{
-		fp_Column* pLeader = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
+		pLeader = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
 
-		fp_Column* pColumn = pLeader;
-		UT_uint32 iMinXDist = 0xffffffff;
-		fp_Column* pMinXDist = NULL;
+		pColumn = pLeader;
+		iMinXDist = 0xffffffff;
+		pMinXDist = NULL;
 		while (pColumn)
 		{
 			if (pColumn->getFirstLine())
@@ -321,7 +326,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 					return;
 				}
 				
-				UT_uint32 iDist = pColumn->distanceFromPoint(x, y);
+				iDist = pColumn->distanceFromPoint(x, y);
 				if (iDist < iMinDist)
 				{
 					iMinDist = iDist;
