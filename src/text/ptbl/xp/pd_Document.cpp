@@ -713,9 +713,18 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
 {
 	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
 	UT_ASSERT(pfStrux);
-	UT_ASSERT(pfStrux->getStruxType() == PTX_Section);
 	bool bres = m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
 	return bres;
+}
+
+/*!
+ * This method deletes a strux without throwing a change record.
+ * sdh is the StruxDocHandle that gets deleted..
+ * Use with extreme care. Should only be used for document import.
+ */
+bool PD_Document::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
+{
+	m_pPieceTable->deleteStruxNoUpdate(sdh);
 }
 
 /*!
@@ -737,6 +746,33 @@ PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
 			 }
 		}
 		currentFrag = currentFrag->getNext();
+	}
+	return (PL_StruxDocHandle *) pfSecLast;
+}
+
+
+/*!
+ * This method returns the last pf_Frag_Strux as a PL_StruxDocHandle 
+ * before the end of the piecetable.
+ */
+PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
+{
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getLast();
+	pf_Frag_Strux * pfSecLast = NULL;
+	bool bFound = false;
+	while (!bFound && currentFrag!=m_pPieceTable->getFragments().getFirst())
+	{
+		UT_ASSERT(currentFrag);
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		     if(pfSec->getStruxType() == pts)
+		     {
+				 pfSecLast = pfSec;
+				 bFound = true;
+			 }
+		}
+		currentFrag = currentFrag->getPrev();
 	}
 	return (PL_StruxDocHandle *) pfSecLast;
 }

@@ -83,6 +83,19 @@ void pt_PieceTable::setPieceTableState(PTState pts)
 	m_varset.setPieceTableState(pts);
 }
 
+/*!
+ * Use this for deleting unneeded strux during doc import. Particularly useful for importing
+ * RTF.
+ */
+bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	UT_DEBUGMSG(("SEVIOR: deleting strux %x \n",sdh));
+	getFragments().unlinkFrag((pf_Frag *) pfs);
+	delete pfs;
+}
+
+
 void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 								pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {

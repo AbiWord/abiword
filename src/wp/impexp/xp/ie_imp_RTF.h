@@ -36,9 +36,13 @@
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
 #include "fribidi/fribidi.h"
+#include  "ie_Table.h"
 
 class IE_Imp_RTF;
 class RTF_msword97_list;
+class ie_imp_cell;
+class ie_imp_table;
+class ie_imp_table_control;
 
 // Font table entry
 struct ABI_EXPORT RTFFontTableItem
@@ -146,6 +150,22 @@ struct ABI_EXPORT _rtfListTable
 };
 
 
+struct ABI_EXPORT RTFProps_CellProps
+{
+	RTFProps_CellProps();
+	RTFProps_CellProps & operator=(const RTFProps_CellProps&);
+	bool      m_bVerticalMerged;
+	bool      m_bVerticalMergedFirst;
+	UT_sint32 m_iCellx;
+};
+
+struct ABI_EXPORT RTFProps_TableProps
+{
+	RTFProps_TableProps();
+	RTFProps_TableProps& operator=(const RTFProps_TableProps&);
+	bool      m_bAutoFit;
+};
+
 // Paragraph properties
 struct ABI_EXPORT RTFProps_ParaProps
 {
@@ -181,6 +201,7 @@ struct ABI_EXPORT RTFProps_ParaProps
 	_rtfListTable   m_rtfListTable;
 	UT_sint32  m_styleNumber ; //index into the style table
 	FriBidiCharType m_dom_dir;
+	UT_sint32       m_tableLevel; //nesting level of the paragram in a table.
 };
 
 // These are set true if changed in list definitions.
@@ -407,6 +428,8 @@ struct ABI_EXPORT RTFStateStore
 	RTFProps_CharProps		m_charProps;			// Character properties
 	RTFProps_ParaProps		m_paraProps;			// Paragraph properties
 	RTFProps_SectionProps	m_sectionProps;			// Section properties
+	RTFProps_CellProps      m_cellProps;            // Cell properties
+    RTFProps_TableProps     m_tableProps;           // Table properties
 
 	UT_uint32				m_unicodeAlternateSkipCount;	// value of N in "\ucN"
 	UT_uint32				m_unicodeInAlternate;			// chars left in alternate "\u<u><A>"
@@ -534,7 +557,7 @@ private:
 					   RTFProps_bParaProps * pbParas,
 					   RTFProps_bCharProps * pbChars);
 
-
+	
 	// Character property handlers
 	bool ResetCharacterAttributes();
 	bool buildCharacterProps(UT_String & propBuffer);
@@ -574,6 +597,19 @@ private:
 	bool HandleLists(_rtfListTable & rtfListTable );
         UT_uint32 mapID(UT_uint32 id);
 	UT_uint32 mapParentID(UT_uint32 id);
+
+// Table methods
+    bool           ResetCellAttributes(void);
+	bool           ResetTableAttributes(void);
+    ie_imp_table * getTable(void);
+	ie_imp_cell *  getCell(void);
+	void           FlushCellProps(void);
+	void           FlushTableProps(void);
+	void           OpenTable(void);
+	void           CloseTable(void);
+    void           HandleCell(void);
+	void           HandleCellX(UT_sint32 cellx);
+    void           HandleRow(void);
 
 	// Section property handlers
 	bool ApplySectionAttributes();
@@ -662,6 +698,9 @@ private:
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML);
 	bool                m_bAppendAnyway;
 	RTFProps_SectionProps m_sectdProps ;
+	ie_imp_table_control  m_TableControl;
+	PL_StruxDocHandle     m_lastBlockSDH;
+	PL_StruxDocHandle     m_lastCellSDH;
 };
 
 #endif /* IE_IMP_RTF_H */

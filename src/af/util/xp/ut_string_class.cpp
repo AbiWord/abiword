@@ -396,14 +396,14 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 //
 // Look if this is the last property in the string.
 //
-	const char * szDelim = strchr(szLoc,':');
+	const char * szDelim = strchr(szLoc,';');
 	if(szDelim == NULL)
 	{
 //
 // Remove trailing spaces
 //
 		UT_sint32 iSLen = strlen(szProps);
-		while(iSLen > 0 && szLoc[iSLen-1] == ' ')
+		while(iSLen > 0 && szProps[iSLen-1] == ' ')
 		{
 			iSLen--;
 		}
@@ -425,11 +425,10 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return UT_String();
 		}
-		szDelim--;
 //
 // Remove trailing spaces.
 //
-		while(*szDelim == ' ')
+		while(*szDelim == ';' || *szDelim == ' ')
 		{
 			szDelim--;
 		}
@@ -438,7 +437,7 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 //
 		UT_sint32 offset = (UT_sint32) ((size_t) szLoc - (size_t)szProps);
 		offset += strlen(szWork);
-		UT_sint32 iLen = (UT_sint32) ((size_t) szDelim - (size_t) szProps); 
+		UT_sint32 iLen = (UT_sint32) ((size_t) szDelim - (size_t) szProps) + 1; 
 		return UT_String(sPropertyString.substr(offset,(iLen - offset)));
 	}
 }
@@ -454,7 +453,10 @@ void UT_String_setProperty(UT_String & sPropertyString, const UT_String & sProp,
 // Remove the old value if it exists and tack the new property on the end.
 //
 	UT_String_removeProperty(sPropertyString, sProp);
-	sPropertyString += "; ";
+	if(sPropertyString.size() > 0)
+	{
+		sPropertyString += "; ";
+	}
 	sPropertyString += sProp;
 	sPropertyString += ":";
 	sPropertyString += sVal;
@@ -471,7 +473,6 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 	const char * szWork = sWork.c_str();
 	const char * szProps = sPropertyString.c_str();
 	const char * szLoc = strstr(szProps,szWork);
-
 	if(szLoc == NULL)
 	{
 //
@@ -482,16 +483,38 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 // Found it, Get left part.
 //
 	UT_sint32 locLeft = (UT_sint32) ((size_t) szLoc - (size_t) szProps);
-	UT_String sLeft = sPropertyString.substr(0,locLeft);
+	UT_String sLeft;
+	if(locLeft == 0)
+	{
+		sLeft.clear();
+	}
+	else
+	{
+		sLeft = sPropertyString.substr(0,locLeft);
+	}
 	locLeft = (UT_sint32) sLeft.size();
+	if(locLeft > 0)
+	{
+//
+// If this element is the last item in the properties there is no "; ".
 //
 // Remove trailing ';' and ' '
 //
-	while(locLeft >= 0 && (sLeft[locLeft] == ';' || sLeft[locLeft] == ' '))
-	{
 		locLeft--;
+		while(locLeft >= 0 && (sLeft[locLeft] == ';' || sLeft[locLeft] == ' '))
+		{
+			locLeft--;
+		}
 	}
-	UT_String sNew(sLeft.substr(0,locLeft+1));
+	UT_String sNew;
+	if(locLeft > 0)
+	{
+		sNew = sLeft.substr(0,locLeft+1);
+	}
+	else
+	{
+		sNew.clear();
+	}
 //
 // Look for ";" to get right part
 //
@@ -506,11 +529,18 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 	else
 	{
 //
-// Just slice off the properties and tack them onot the pre-existing sNew
+// Just slice off the properties and tack them onto the pre-existing sNew
 //
+		while(*szDelim == ';' || *szDelim == ' ')
+		{
+			szDelim++;
+		}
 		UT_sint32 offset = (UT_sint32) ((size_t) szDelim - (size_t) szProps);
 		UT_sint32 iLen = sPropertyString.size() - offset;
-		sNew += " ;";
+		if(sNew.size() > 0)
+		{
+			sNew += "; ";
+		}
 		sNew += sPropertyString.substr(offset,iLen);
 		sPropertyString = sNew;
 	}

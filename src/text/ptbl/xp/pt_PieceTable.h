@@ -197,6 +197,7 @@ public:
 	bool                    changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
+	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
 
 
 	/**********************	END OF REVISIONS AWARE METHODS ******/

@@ -545,6 +545,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionCell:
 	{
 		UT_ASSERT(m_pCurrentSL);
+		UT_DEBUGMSG(("!!!! Append Section Cell \n"));
 		
 		// Append a new CallLayout to the Current TableLayout
 		fl_ContainerLayout * pCon = getTopContainerLayout();
@@ -570,7 +571,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		UT_ASSERT(m_pCurrentSL);
 		fl_ContainerLayout *  pCon = popContainerLayout();
-
+		UT_DEBUGMSG(("!!!! Append End Table \n"));
 		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -594,6 +595,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_EndCell:
 	{
 		UT_ASSERT(m_pCurrentSL);
+		UT_DEBUGMSG(("!!!! Append End Cell \n"));
 		fl_ContainerLayout *  pCon = popContainerLayout();
 
 		if(pCon->getContainerType() != FL_CONTAINER_CELL)

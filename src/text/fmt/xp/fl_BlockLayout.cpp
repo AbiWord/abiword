@@ -6423,7 +6423,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 	bool bmatchid =  false;
 	fl_AutoNum * pAutoNum = NULL;
 
-	if (pPrev != NULL && pPrev->isListItem())
+	if (pPrev != NULL && (pPrev->getAutoNum() != NULL) && pPrev->isListItem())
 	{
 		bmatchid = (bool) (id == pPrev->getAutoNum()->getID());
 		if (pPrev->isFirstInList() && !bmatchid)
@@ -6441,7 +6441,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 	while (pPrev != NULL && bmatchid == false)
 	{
 		pPrev = (fl_BlockLayout *) pPrev->getPrev();
-		if (pPrev && pPrev->isListItem())
+		if (pPrev && (pPrev->getAutoNum() != NULL) && pPrev->isListItem())
 		{
 			bmatchid = (bool) (id == pPrev->getAutoNum()->getID());
 			if (pPrev->isFirstInList() && !bmatchid)

@@ -643,10 +643,30 @@ void ie_imp_cell::setProp(const UT_String & psProp, const UT_String & psVal)
 }
 
 /*!
+ * set a property of this cell.
+ */
+void ie_imp_cell::setProp(const char * szProp, const char * szVal)
+{
+	UT_String psProp = szProp;
+	UT_String psVal = szVal;
+	UT_String_setProperty(m_sCellProps, psProp, psVal);
+}
+
+/*!
  * Return the value of a property of this cell. This should be deleted when you've finished with it.
  */
 UT_String ie_imp_cell::getPropVal(const UT_String & psProp)
 {
+	return UT_String_getPropVal(m_sCellProps, psProp);
+}
+
+
+/*!
+ * Return the value of a property of this cell. This should be deleted when you've finished with it.
+ */
+UT_String ie_imp_cell::getPropVal(const char * szProp)
+{
+	UT_String psProp = szProp;
 	return UT_String_getPropVal(m_sCellProps, psProp);
 }
 
@@ -659,7 +679,10 @@ ie_imp_table::ie_imp_table(PD_Document * pDoc):
 	m_pCurImpCell(NULL),
 	m_iRowCounter(0),
 	m_bAutoFit(true),
-	m_bNewRow(true)
+	m_bNewRow(true),
+	m_bTableUsed(false),
+	m_iPosOnRow(0),
+    m_iCellXOnRow(0)
 {
 	m_sTableProps.clear();
 	m_vecCells.clear();
@@ -668,6 +691,11 @@ ie_imp_table::ie_imp_table(PD_Document * pDoc):
 
 ie_imp_table::~ie_imp_table(void)
 {
+	xxx_UT_DEBUGMSG(("SEVIOR: deleteing table %x table used %d \n",this,m_bTableUsed));
+	if(!m_bTableUsed)
+	{
+		_removeAllStruxes();
+	}
 	UT_VECTOR_PURGEALL(ie_imp_cell *,m_vecCells);
 }
 
@@ -689,6 +717,8 @@ void ie_imp_table::NewRow(void)
 {
 	m_pCurImpCell = NULL;
 	m_iRowCounter++;
+	m_iPosOnRow = 0;
+	m_iCellXOnRow = 0;
 	m_bNewRow = true;
 }
 
@@ -754,8 +784,57 @@ void ie_imp_table::setTableSDH(PL_StruxDocHandle sdh)
 void ie_imp_table::writeTablePropsInDoc(void)
 {
 	UT_return_if_fail(m_tableSDH);
+	UT_String colwidths;
+	UT_sint32 i=0;
 	if(!m_bAutoFit)
 	{
+/*
+	table-column-props:1.2in/3.0in/1.3in/;
+
+   So we read back in pszColumnProps
+   1.2in/3.0in/1.3in/
+
+   The "/" characters will be used to delineate different column entries.
+   As new properties for each column are defined these will be delineated with "_"
+   characters. But we'll cross that bridge later. Right now only column widths are implemented.
+
+   To fill this we have to translate the cellx positions in twips (which are the right edge
+   of the cell plus 0.5 os the gap between cells, to what abiword wants, which are the widths
+   of the cell without the spacings. We have to subtract the left-col position plus the
+   cell spacings from the cellx positions to get this.
+
+   OK start by looking up table-col-spacing and table-column-leftpos. The defaults for
+   these if undefined are 0.05in and 0.0in respectively.
+*/
+		UT_String sColSpace = getPropVal("table-col-spacing");
+		if(sColSpace.size() == 0)
+		{
+			sColSpace = "0.05in";
+		}
+		UT_String sLeftPos = getPropVal("table-column-leftpos");
+		if(sLeftPos.size()==0)
+		{
+			sLeftPos = "0.0in";
+		}
+		double dLeftPos = UT_convertToInches(sLeftPos.c_str());
+		double dColSpace = UT_convertToInches(sColSpace.c_str());
+		_buildCellXVector();
+		UT_sint32 iPrev = 0;
+//
+// Now build the table-col-width string.
+//
+		UT_String sColWidth;
+		sColWidth.clear();
+		for(i=0; i< (UT_sint32) m_vecCellX.getItemCount(); i++)
+		{
+			UT_sint32 iCellx = (UT_sint32) m_vecCellX.getNthItem(i);
+			iCellx -= iPrev;
+			double dCellx = ((double) iCellx)/1440.0 - dLeftPos - dColSpace;
+			iPrev = iCellx;
+			sColWidth += UT_formatDimensionString(DIM_IN,dCellx,NULL);
+			sColWidth += "/";
+		}
+		setProp("table-col-props",sColWidth.c_str());
 	}
 	m_pDoc->changeStruxAttsNoUpdate(m_tableSDH,"props",m_sTableProps.c_str());
 }
@@ -772,7 +851,13 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
 		if(!pCell->isMergedAbove() && !pCell->isMergedRight())
 		{
+			xxx_UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 			pCell->writeCellPropsInDoc();
+		}
+		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
+		{
+			xxx_UT_DEBUGMSG(("BUG!BUG! found a sdh is merged above cell! removing it \n"));
+			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 		}
 	}
 }
@@ -791,6 +876,27 @@ void ie_imp_table::setProp(const UT_String & psProp, const UT_String & psVal)
  */
 UT_String ie_imp_table::getPropVal(const UT_String & psProp)
 {
+	return UT_String_getPropVal(m_sTableProps, psProp);
+}
+
+
+/*!
+ * Set a property in the table properties string.
+ */
+void ie_imp_table::setProp(const char * szProp, const char * szVal)
+{
+	UT_String psProp = szProp;
+	UT_String psVal = szVal;
+	UT_String_setProperty(m_sTableProps, psProp, psVal);
+}
+
+/*!
+ * Return the value of a property of this table. 
+ * This should be deleted when you've finished with it.
+ */
+UT_String ie_imp_table::getPropVal(const char * szProp)
+{
+	UT_String psProp = szProp; 
 	return UT_String_getPropVal(m_sTableProps, psProp);
 }
 
@@ -863,13 +969,14 @@ void ie_imp_table::_buildCellXVector(void)
 }
 
 /*!
- * Returns column number of the cell.
+ * Returns column number plus 1 of the cell.
  */
 UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 {
 	UT_sint32 cellx = pImpCell->getCellX();
 	UT_sint32 col = m_vecCellX.findItem((void *) cellx);
-	return col;
+	UT_return_val_if_fail((col>=0), -1)
+	return col + 1;
 }
 
 ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
@@ -883,8 +990,8 @@ ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
 		UT_sint32 icellx = pCell->getCellX();
 		if(icellx == cellX && (pCell->getRow() == iRow))
 		{
-			break;
 			bfound = true;
+			break;
 		}
 	}
 	if(bfound)
@@ -907,6 +1014,7 @@ void ie_imp_table::buildTableStructure(void)
 // Start by building a vector of cellX's
 //
 	_buildCellXVector();
+	UT_DEBUGMSG(("Building table structure \n"));
 //
 // Now construct the table structure.
 //
@@ -928,14 +1036,15 @@ void ie_imp_table::buildTableStructure(void)
 		{
 			curRow = pCell->getRow();
 			iLeft =0;
-			if(pCell->isMergedAbove())
-			{
+		}
+		if(pCell->isMergedAbove())
+		{
 //
-// This cell is verticall merged. Advance the left pointer to the position after this cell.
+// This cell is vertically merged. Advance the left pointer to the position after this cell.
 //
-				iLeft = getColNumber(pCell);
-				bSkipThis = true;
-			}
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d \n",cellx));
+			iLeft = getColNumber(pCell);
+			bSkipThis = true;
 		}
 		iRight = getColNumber(pCell);
 		iTop = curRow;
@@ -946,12 +1055,18 @@ void ie_imp_table::buildTableStructure(void)
 			//
 			UT_sint32 newRow = curRow+1;
 			ie_imp_cell * pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
-			while(pNewCell && pNewCell->isMergedAbove())
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell is first vertical mereged cell class %x cellx %d \n",pNewCell,cellx));
+			if(pNewCell)
+			{
+				xxx_UT_DEBUGMSG(("SEVIOR: this cellx %d, found cellx %d, found row %d \n",cellx,pNewCell->getCellX(),pNewCell->getRow()));
+			}
+			while(pNewCell && (pNewCell->isMergedAbove()) )
 			{
 				newRow++;
 				pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
 			}
 			iBot = newRow;
+			xxx_UT_DEBUGMSG(("SEVIOR: This cell bottom is %d \n",iBot));
 		}
 		else
 		{
@@ -966,6 +1081,7 @@ void ie_imp_table::buildTableStructure(void)
 			pCell->setRight(iRight);
 			pCell->setTop(iTop);
 			pCell->setBot(iBot);
+			xxx_UT_DEBUGMSG(("SEVIOR: Left %d Right %d top %d bot %d \n",iLeft,iRight,iTop,iBot));
 		}
 //
 // Advance left attach to the right most cell.
@@ -973,6 +1089,104 @@ void ie_imp_table::buildTableStructure(void)
 		iLeft = iRight;
 	}
 }
+
+/*!
+ * Return the number of rows in the table
+ */
+UT_sint32  ie_imp_table::getNumRows(void)
+{
+	UT_sint32 numrows = 0;
+	UT_sint32 i =0;
+	ie_imp_cell * pCell = NULL;
+	for(i= (UT_sint32) m_vecCells.getItemCount() -1; i >=0 ; i--)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pCell->getRow() > numrows)
+		{
+			numrows = pCell->getRow();
+		}
+	}
+	numrows++;
+}
+
+void ie_imp_table::CloseCell(void)
+{
+	m_bTableUsed = true;
+}
+
+/*!
+ * This method scans the vector of cells and removes cells and their sdh's if they
+ * do no have cellc defined.
+ */
+void ie_imp_table::removeExtraneousCells(void)
+{
+	UT_sint32 i =0;
+	ie_imp_cell * pCell = NULL;
+	for(i= (UT_sint32) m_vecCells.getItemCount() -1; i >=0 ; i--)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pCell->getCellX() == 0)
+		{
+			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
+			delete pCell;
+			m_vecCells.deleteNthItem(i);
+		}
+	}
+}
+
+
+/*!
+ * This method removes all the struxes placed in the document. It is called if the table
+ * is never actually used. 
+ */
+void ie_imp_table::_removeAllStruxes(void)
+{
+	UT_sint32 i =0;
+	ie_imp_cell * pCell = NULL;
+	for(i= (UT_sint32) m_vecCells.getItemCount() -1; i >=0 ; i--)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pCell->getCellSDH())
+		{
+			xxx_UT_DEBUGMSG(("SEVIOR: Removing cell strux %x from PT \n",pCell->getCellSDH())); 
+			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
+		}
+	}
+	xxx_UT_DEBUGMSG(("SEVIOR: Removing table strux %x from PT \n",m_tableSDH)); 
+	m_pDoc->deleteStruxNoUpdate(m_tableSDH);
+}
+
+/*!
+ * This method scans the vector of cell looking for the nth cell on the current row
+ * Return null if cell is not present.
+*/
+ie_imp_cell * ie_imp_table::getNthCellOnRow(UT_sint32 iCell)
+{
+	ie_imp_cell * pFoundCell = NULL;
+	ie_imp_cell * pCell = NULL;
+	UT_sint32 iCellOnRow =0;
+	UT_sint32 i=0;
+	bool bFound = false;
+	for(i=0; !bFound &&  (i< m_vecCells.getItemCount()); i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pCell->getRow() == m_iRowCounter)
+		{
+			if(iCellOnRow == iCell)
+			{
+				bFound = true;
+				pFoundCell = pCell;
+			}
+			else
+			{
+				iCellOnRow++;
+			}
+		}
+	}
+	return pFoundCell;
+}
+
+//---------------------------------------------------------------------------------------//
 
 /*!
  * Class to hold a stack of tables for nested tables.
@@ -990,6 +1204,13 @@ ie_imp_table_control::~ie_imp_table_control(void)
 	{
 		ie_imp_table * pT = NULL;
 		m_sLastTable.pop((void **)&pT);
+		if(pT->wasTableUsed())
+		{
+			pT->buildTableStructure();
+			pT->writeTablePropsInDoc();
+			pT->writeAllCellPropsInDoc();
+		}			
+		xxx_UT_DEBUGMSG(("SEVIOR: Deleting table %x \n",pT));
 		delete pT;
 	}
 }
@@ -1017,15 +1238,21 @@ void ie_imp_table_control::CloseTable(void)
 {
 	ie_imp_table * pT = NULL;
 	m_sLastTable.pop((void **) &pT);
-	pT->buildTableStructure();
-	pT->writeTablePropsInDoc();
-	pT->writeAllCellPropsInDoc();
+	if(pT->wasTableUsed())
+	{
+		pT->buildTableStructure();
+		pT->writeTablePropsInDoc();
+		pT->writeAllCellPropsInDoc();
+	}
 	delete pT;
 }
 
 
 void ie_imp_table_control::CloseCell(void)
 {
+	ie_imp_table * pT = NULL;
+	m_sLastTable.viewTop((void **) &pT);
+	pT->CloseCell();
 }
 
 ie_imp_table *  ie_imp_table_control::getTable(void)

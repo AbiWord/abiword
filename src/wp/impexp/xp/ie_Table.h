@@ -122,6 +122,8 @@ class ABI_EXPORT ie_imp_cell
 	ie_imp_cell *    getCellRight(void);
 	void             setProp(const UT_String & psProp, const UT_String & psVal);
 	UT_String        getPropVal(const UT_String & psProp);
+	void             setProp(const char * szProp, const char * szVal);
+	UT_String        getPropVal(const char * szProp);
 	UT_sint32        getRow(void) { return m_iRow;}
 	void             setMergeAbove(bool bAbove) { m_bMergeAbove = bAbove;}
 	void             setMergeRight(bool bRight) {m_bMergeRight = bRight;}
@@ -156,13 +158,16 @@ class ABI_EXPORT ie_imp_table
 	void                OpenCell(void);
 	void                NewRow(void);
 	void                setCellRowNthCell(UT_sint32 row, UT_sint32 col);
+	ie_imp_cell *       getNthCellOnRow(UT_sint32 iCell);
 	void                setCellX(UT_sint32 cellx);
 	PL_StruxDocHandle   getTableSDH(void);
 	void                setTableSDH(PL_StruxDocHandle cellSDH);
 	void                writeTablePropsInDoc(void);
 	void                writeAllCellPropsInDoc(void);
 	void                setProp(const UT_String & psProp, const UT_String & psVal);
+	void                setProp(const char *szProp, const char *  szVal);
 	UT_String           getPropVal(const UT_String & psProp);
+	UT_String           getPropVal(const char * szProp);
 	UT_String           getCellPropVal(const UT_String & psProp);
 	void                setCellProp(const UT_String & psProp, const UT_String & psVal);
 	ie_imp_cell *       getCurCell(void);
@@ -172,8 +177,21 @@ class ABI_EXPORT ie_imp_table
 	bool                isNewRow(void) { return m_bNewRow;}
 	UT_sint32           getColNumber(ie_imp_cell * pImpCell);
 	ie_imp_cell *       getCellAtRowColX(UT_sint32 newRow,UT_sint32 cellX);
+	void                CloseCell(void);
+	bool                wasTableUsed(void) { return m_bTableUsed;}
+	void                setCell( ie_imp_cell * pCell) { m_pCurImpCell = pCell;}
+	UT_sint32           getRow(void) { return m_iRowCounter;}
+	void                removeExtraneousCells(void);
+	UT_sint32           getNumRows(void);
+	void                setPosOnRow(UT_sint32 posOnRow) { m_iPosOnRow = posOnRow;}
+	UT_sint32           getPosOnRow(void) { return m_iPosOnRow;}
+	void                setCellXOnRow(UT_sint32 cellxOnRow) { m_iCellXOnRow = cellxOnRow;}
+	UT_sint32           getCellXOnRow(void) { return m_iCellXOnRow;}
+	void                incPosOnRow(void) { m_iPosOnRow++;}
+	void                incCellXOnRow(void) { m_iCellXOnRow++;}
  private:
 	void                _buildCellXVector(void);
+	void                _removeAllStruxes(void);
 	PD_Document *       m_pDoc;
 	PL_StruxDocHandle   m_tableSDH;
 	ie_imp_cell *       m_pCurImpCell;
@@ -181,6 +199,9 @@ class ABI_EXPORT ie_imp_table
 	UT_String           m_sTableProps;
 	bool                m_bAutoFit;
 	bool                m_bNewRow;
+	bool                m_bTableUsed;
+	UT_sint32           m_iPosOnRow;
+	UT_sint32           m_iCellXOnRow;
 	UT_Vector           m_vecCells;
 	UT_Vector           m_vecCellX;
 };			

@@ -1104,6 +1104,7 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_iOverrideLevel = 0;
 	m_styleNumber = -1;
 	m_dom_dir = FRIBIDI_TYPE_UNSET;
+	m_tableLevel = 1;
 };
 
 
@@ -1177,7 +1178,7 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 	}
 
 	m_dom_dir = other.m_dom_dir;
-
+	m_tableLevel = other.m_tableLevel;
 	return *this;
 }
 
@@ -1187,8 +1188,42 @@ RTFProps_ImageProps::RTFProps_ImageProps()
 	sizeType = ipstNone;
 	wGoal = hGoal = width = height = 0;
 	scaleX = scaleY = 100;
+}
+
+
+RTFProps_CellProps::RTFProps_CellProps()
+{
+	m_bVerticalMerged = false;
+	m_bVerticalMergedFirst = false;
+	m_iCellx = 0;
 };
 
+
+
+RTFProps_CellProps& RTFProps_CellProps::operator=(const RTFProps_CellProps& other)
+{
+	if (this != &other)
+	{
+		 m_bVerticalMerged = other.m_bVerticalMerged;
+		 m_bVerticalMergedFirst = other. m_bVerticalMergedFirst;
+		 m_iCellx = other.m_iCellx;
+	}
+	return *this;
+}
+
+RTFProps_TableProps::RTFProps_TableProps()
+{
+	m_bAutoFit = false;
+};
+
+RTFProps_TableProps& RTFProps_TableProps::operator=(const RTFProps_TableProps& other)
+{
+	if (this != &other)
+	{
+		m_bAutoFit = other.m_bAutoFit;
+	}
+	return *this;
+}
 
 RTFProps_SectionProps::RTFProps_SectionProps()
 {
@@ -1225,7 +1260,10 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_newSectionFlagged(false),
 	m_cbBin(0),
 	m_pImportFile(NULL),
-	deflangid(0)
+	deflangid(0),
+	m_TableControl(pDocument),
+	m_lastBlockSDH(NULL),
+	m_lastCellSDH(NULL)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -1283,6 +1321,10 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
 	UT_VECTOR_PURGEALL(RTF_msword97_listOverride *, m_vecWord97ListOverride);
+	while(getTable() && getTable()->wasTableUsed())
+	{
+		CloseTable();
+	}
 	FREEP (m_szFileDirName);
 }
 
@@ -1354,6 +1396,159 @@ static bool hexVal(char c, int& value)
 
 	return ok;
 }
+
+ie_imp_cell * IE_Imp_RTF::getCell(void)
+{
+	UT_return_val_if_fail(getTable(),NULL);
+	return getTable()->getCurCell();
+}
+
+ie_imp_table * IE_Imp_RTF::getTable(void)
+{
+	return m_TableControl.getTable();
+}
+
+void IE_Imp_RTF::OpenTable(void)
+{
+	m_TableControl.OpenTable();
+	getDoc()->appendStrux(PTX_SectionTable,NULL);
+	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
+	getTable()->setTableSDH(sdh);
+	getTable()->OpenCell();
+	getDoc()->appendStrux(PTX_SectionCell,NULL);
+	sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
+	getCell()->setCellSDH(sdh);
+	getDoc()->appendStrux(PTX_Block,NULL);
+	m_currentRTFState.m_cellProps = RTFProps_CellProps();
+	m_currentRTFState.m_tableProps = RTFProps_TableProps();
+	m_lastCellSDH = NULL; // This is in the table structure and can be deleted from there.
+	m_lastBlockSDH = getDoc()->getLastStruxOfType(PTX_Block);
+}
+
+
+void IE_Imp_RTF::CloseTable(void)
+{
+	if(m_lastCellSDH != NULL )
+	{
+		getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
+	}
+	if(m_lastBlockSDH != NULL )
+	{
+		getDoc()->deleteStruxNoUpdate(m_lastBlockSDH);
+	}
+//
+// Close table removes extraneous struxes like unmatched PTX_SectionCell's
+//
+
+	if(getTable() && getTable()->wasTableUsed())
+	{
+		m_TableControl.CloseTable();
+		getDoc()->appendStrux(PTX_EndTable,NULL);
+		getDoc()->appendStrux(PTX_Block,NULL);
+	}
+}
+
+void IE_Imp_RTF::HandleCell(void)
+{
+//
+// Flush out anything we've been holding
+//	
+	FlushStoredChars(true);
+	if(getTable() == NULL)
+	{
+		OpenTable();
+	}
+	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
+	ie_imp_cell * pCell = getTable()->getNthCellOnRow(getTable()->getPosOnRow());
+	if(!pCell)
+	{
+//
+// Cell class doesn't exist so create it.
+//
+		getTable()->OpenCell();
+		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
+	}
+	xxx_UT_DEBUGMSG(("SEVIOR: set cell sdh %x  at pos %d on row %d \n",sdh,getTable()->getPosOnRow(),getTable()->getRow()));
+	getTable()->setNthCellOnThisRow(getTable()->getPosOnRow());
+	if(!getCell()->isMergedAbove())
+	{
+		getCell()->setCellSDH(sdh);
+		getTable()->incPosOnRow();
+		xxx_UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
+		getDoc()->appendStrux(PTX_EndCell,NULL);
+		getTable()->CloseCell();
+		getDoc()->appendStrux(PTX_SectionCell,NULL);
+		getDoc()->appendStrux(PTX_Block,NULL);
+		m_lastCellSDH = getDoc()->getLastStruxOfType(PTX_SectionCell);
+		m_lastBlockSDH = getDoc()->getLastStruxOfType(PTX_Block);
+	}
+	else
+	{
+		getTable()->incPosOnRow();
+	}
+}
+
+void IE_Imp_RTF::FlushCellProps(void)
+{
+	getCell()->setMergeAbove( m_currentRTFState.m_cellProps.m_bVerticalMerged );
+	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
+}
+
+
+void IE_Imp_RTF::FlushTableProps(void)
+{
+	getTable()->setAutoFit( m_currentRTFState.m_tableProps.m_bAutoFit );
+}
+
+void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
+{
+	if(getTable() == NULL)
+	{
+		OpenTable();
+	}
+	UT_sint32 iRow = 0;
+	bool bNewCell = true;
+//
+// Look to see if a cell with cellx already exists on the current row. If so set the
+// current cell pointer to point to it.
+//
+
+	iRow = getTable()->getRow();
+	ie_imp_cell * pOldCell = getTable()->getCellAtRowColX(iRow,cellx);
+	if(pOldCell)
+	{
+		bNewCell = false;
+		getTable()->setCell(pOldCell);
+	}
+	if(!pOldCell)
+	{
+		pOldCell = getTable()->getNthCellOnRow(getTable()->getCellXOnRow());
+		xxx_UT_DEBUGMSG(("SEVIOR: Looking for cellx num %d on row %d found %x \n",getTable()->getCellXOnRow(),iRow,pOldCell));
+		if(pOldCell)
+		{
+			bNewCell = false;
+			getTable()->setCell(pOldCell);
+		}
+	}
+	if(bNewCell)
+	{
+		getTable()->OpenCell();
+		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
+	}
+	getTable()->setCellX(cellx);
+	xxx_UT_DEBUGMSG(("set cellx for class %x to %d \n",getCell(),cellx));
+	FlushCellProps();
+	ResetCellAttributes();
+	getTable()->incCellXOnRow();
+}
+
+void IE_Imp_RTF::HandleRow(void)
+{
+	xxx_UT_DEBUGMSG(("SEVIOR: Handle Row now \n"));
+	getTable()->removeExtraneousCells();
+	getTable()->NewRow();
+}
+		
 
 UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 {
@@ -3012,6 +3207,26 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
  			m_currentRTFState.m_paraProps.m_styleNumber = param;
  			return true;
  		}
+		else if (strcmp((char*)pKeyword, "cell") == 0)
+		{
+			HandleCell();
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "cellx") == 0)
+		{
+			HandleCellX(param);
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "clvmrg") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_bVerticalMerged = true;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "clvmgf") == 0)
+		{
+			m_currentRTFState.m_cellProps.m_bVerticalMergedFirst = true;
+			return true;
+		}
 		break;
 
 	case 'd':
@@ -3143,6 +3358,30 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_paraProps.m_iOverrideLevel = (UT_uint32) param;
 			return true;
 		}
+		else if (strcmp((char*)pKeyword, "itap") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_tableLevel = param;
+//
+// Look to see if the nesting level of our tables has changed.
+//
+			UT_DEBUGMSG(("SEVIOR!!! m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+			{
+				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+				{
+					OpenTable();
+				}
+			}
+			else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+			{
+				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+				{
+					CloseTable();
+				}
+			}
+			UT_DEBUGMSG(("SEVIOR!!! After m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			return true;
+		}
 		break;
 
 	case 'l':
@@ -3265,6 +3504,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			}
 		break;
 
+	case 'n':
+		if( strcmp((char *)pKeyword, "nestrow") == 0 )
+		{
+			CloseTable();
+			return true;
+		}
+		else if( strcmp((char *)pKeyword, "nestcell") == 0 )
+		{
+			HandleCell();
+			return true;
+		}
+		break;
 	case 'o':
 		if (strcmp((char*)pKeyword,"ol") == 0)
 		{
@@ -3388,7 +3639,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_RTL;
 			return true;
 		}
-
+		else if(strcmp((char*)pKeyword, "row") == 0)
+		{
+			HandleRow();
+			return true;
+		}
 		break;
 
 	case 's':
@@ -3523,6 +3778,15 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_EQUALSIGN;
 			return true;
+		}
+		else if (strcmp((char*)pKeyword, "trowd") == 0)
+		{
+			if(getTable() == NULL)
+			{
+				OpenTable();
+			}
+			ResetCellAttributes();
+			ResetTableAttributes();
 		}
 		break;
 
@@ -4020,7 +4284,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 
 	UT_String propBuffer;
 	UT_String tempBuffer;
-
 	bool bWord97List = m_currentRTFState.m_paraProps.m_isList && isWord97Lists();
 	bool bAbiList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
 	bWord97List = bWord97List && !bAbiList;
@@ -4570,6 +4833,22 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	}
 }
 
+
+bool IE_Imp_RTF::ResetCellAttributes(void)
+{
+	bool ok = FlushStoredChars();
+	m_currentRTFState.m_cellProps = RTFProps_CellProps();
+	return ok;
+}
+
+
+bool IE_Imp_RTF::ResetTableAttributes(void)
+{
+	bool ok = FlushStoredChars();
+	UT_DEBUGMSG(("SEVIOR: Reset table atts \n"));
+	m_currentRTFState.m_tableProps = RTFProps_TableProps();
+	return ok;
+}
 
 bool IE_Imp_RTF::ResetParagraphAttributes()
 {
