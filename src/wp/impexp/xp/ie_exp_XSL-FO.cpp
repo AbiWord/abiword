@@ -100,12 +100,12 @@ public:
 
 	void setIdList(UT_uint32 id)
 	{
-		XXX_UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXXXXX Setting id list: %d\n", id));
+		// UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXXXXX Setting id list: %d\n", id));
 		UT_Map::Iterator it(lists.find(reinterpret_cast<UT_Map::key_t> (id)));
 
 		if (it.is_valid())
 		{
-			XXX_UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Valid iterator\n"));
+			// UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Valid iterator\n"));
 			m_pan = static_cast<const fl_AutoNum*> (it.value());
 			UT_ASSERT(m_pan);
 			m_iNextNb = m_pan->getStartValue32();
@@ -115,7 +115,7 @@ public:
 			else
 				m_iInc = 1;
 		}
-		XXX_UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Non Valid iterator\n"));
+		// UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Non Valid iterator\n"));
 	}
 
 	UT_String getNextLabel()
@@ -129,7 +129,7 @@ public:
 	
 	static void addList(fl_AutoNum* pAutoNum)
 	{
-		XXX_UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYY Adding list id: %d\n", pAutoNum->getID()));
+		// UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYY Adding list id: %d\n", pAutoNum->getID()));
 		lists.insert(reinterpret_cast<void*> (pAutoNum->getID()), pAutoNum);
 	}
 
