@@ -28,10 +28,15 @@
 
 #include "xap_Preview_Zoom.h"
 
+#define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
+
+/*****************************************************************/
+
 XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 	: XAP_Preview(gc)
 {
 	m_string = NULL;
+	m_pFont = NULL;
 
 	// m_gc is set in base class, so set up defaults
 	setFont(XAP_Preview_Zoom::font_NORMAL);
@@ -42,6 +47,7 @@ XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 XAP_Preview_Zoom::~XAP_Preview_Zoom()
 {
 	FREEP(m_string);
+	DELETEP(m_pFont);
 }
 
 void XAP_Preview_Zoom::setDrawAtPosition(XAP_Preview_Zoom::tPos pos)
@@ -71,6 +77,9 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 
 		found = m_gc->findFont("Times New Roman", "normal", "", "normal", "", fontString);
 		UT_ASSERT(found);
+
+		if (found)
+			REPLACEP(m_pFont, found);
 
 		m_gc->setFont(found);
 

@@ -57,6 +57,8 @@ protected:
 	UT_uint32				m_zoomPercent;
 	
 	UT_UCSChar * 			m_string;
+
+	GR_Font *				m_pFont;	// so we can delete it
 };
 
 #endif /* XAP_PREVIEW_ZOOM_H */
