@@ -53,7 +53,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 	m_bSpellCheckCaps = UT_TRUE;
 	m_bSpellCheckNumbers = UT_TRUE;
 	m_bSpellCheckInternet = UT_TRUE;
-	m_bPrefsListenerInstalled = UT_FALSE;
+	m_pPrefs = NULL;
 
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -67,6 +67,11 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 
 FL_DocLayout::~FL_DocLayout()
 {
+	if (m_pPrefs)
+	{
+		m_pPrefs->removeListener ( _prefsListener, this ); 
+	}
+
 	if (m_pDoc)
 	{
 		m_pDoc->removeListener(m_lid);
@@ -107,20 +112,24 @@ void FL_DocLayout::setView(FV_View* pView)
 		pPage = pPage->getNext();
 	}
 
-	if (m_pView && ! m_bPrefsListenerInstalled )
+	if (m_pView && !m_pPrefs )
 	{
-		m_bPrefsListenerInstalled = UT_TRUE;
-
 		XAP_App * pApp = m_pView->getApp();
 		UT_ASSERT(pApp);
 		XAP_Prefs *pPrefs= pApp->getPrefs();
 		UT_ASSERT(pPrefs);
 
-		// initialize the vars here
-		_prefsListener( pApp, pPrefs, NULL, this );
+		if (pPrefs)
+		{
+			// remember this so we can remove the listener later
+			m_pPrefs = pPrefs;
 
-		// keep updating itself	
-		pPrefs->addListener ( _prefsListener, this ); 
+			// initialize the vars here
+			_prefsListener( pApp, pPrefs, NULL, this );
+
+			// keep updating itself	
+			pPrefs->addListener ( _prefsListener, this ); 
+		}
 	}
 }
 

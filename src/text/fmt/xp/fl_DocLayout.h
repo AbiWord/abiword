@@ -164,7 +164,8 @@ protected:
 	UT_Bool				m_bSpellCheckCaps;
 	UT_Bool				m_bSpellCheckNumbers;
 	UT_Bool				m_bSpellCheckInternet;
-	UT_Bool				m_bPrefsListenerInstalled;
+
+	XAP_Prefs *			m_pPrefs;
 };
 
 #endif /* DOCLAYOUT_H */

@@ -124,6 +124,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 FV_View::~FV_View()
 {
+	// remove prefs listener
+	m_pApp->getPrefs()->removeListener( _prefsListener, this );
+
 	DELETEP(m_pAutoScrollTimer);
 	DELETEP(m_pAutoCursorTimer);
 	
@@ -4693,7 +4696,7 @@ void FV_View::cmdContextAdd(void)
 	UT_ASSERT(data && pPrefs);
 	if ( pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &b) && b != pView->m_bCursorBlink )
 	{
-		UT_DEBUGMSG(("FV_View::_prefsListener m_bCursorBlink=%s m_bCursorIsOn=%s",
+		UT_DEBUGMSG(("FV_View::_prefsListener m_bCursorBlink=%s m_bCursorIsOn=%s\n",
 					 pView->m_bCursorBlink ? "TRUE" : "FALSE",
 					 pView->m_bCursorIsOn ? "TRUE" : "FALSE"));
 
