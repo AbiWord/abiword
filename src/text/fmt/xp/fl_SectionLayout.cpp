@@ -603,7 +603,8 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 	// Create row of columns
 	fp_Column* pLeaderColumn = NULL;
 	fp_Column* pTail = NULL;
-	for (UT_uint32 i=0; i<m_iNumColumns; i++)
+	UT_uint32 i = 0;
+	for (i=0; i<m_iNumColumns; i++)
 	{
 		fp_Column* pCol = new fp_Column(this);
 		if (pTail)
@@ -650,7 +651,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 	pPage->insertColumnLeader(pLeaderColumn, pAfterColumn);
 	
 	fp_Column* pTmpCol = pLeaderColumn;
-	UT_uint32 i = 0;
+	i = 0;
  	while (pTmpCol)
 	{
 		UT_ASSERT(pTmpCol->getPage());
