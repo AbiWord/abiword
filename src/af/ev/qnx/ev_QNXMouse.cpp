@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_types.h"
+#include "ut_units.h"
 #include "ev_Mouse.h"
 #include "ev_QNXMouse.h"
 #include "ev_EditMethod.h"
@@ -53,8 +54,8 @@ void EV_QNXMouse::mouseUp(AV_View* pView, PtCallbackInfo_t * e)
     ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
 	rect = PhGetRects(e->event);
 
-	mx = rect->ul.x;
-	my = rect->ul.y;
+	mx = _UL(rect->ul.x);
+	my = _UL(rect->ul.y);
 
 	if (e->event->subtype == Ph_EV_RELEASE_REAL) {
     	//UT_DEBUGMSG(("Mouse Real Release! (%d,%d)", mx, my));
@@ -136,10 +137,10 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
     ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
 	rect = PhGetRects(e->event);
 
-	mx = rect->ul.x;
-	my = rect->ul.y;
+	mx = _UL(rect->ul.x);
+	my = _UL(rect->ul.y);
     //UT_DEBUGMSG(("Mouse Click! (%d,%d)", mx, my));
-
+	
 	if (ptrevent->key_mods & Pk_KM_Shift)
 		ems |= EV_EMS_SHIFT;
 	if (ptrevent->key_mods & Pk_KM_Ctrl)
@@ -214,8 +215,8 @@ void EV_QNXMouse::mouseMotion(AV_View* pView, PtCallbackInfo_t *e)
     ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
 	rect = PhGetRects(e->event);
 
-	mx = rect->ul.x;
-	my = rect->ul.y;
+	mx = _UL(rect->ul.x);
+	my = _UL(rect->ul.y);
     //UT_DEBUGMSG(("Mouse Move! (%d,%d)", mx, my));
 
 	if (ptrevent->key_mods & Pk_KM_Shift)

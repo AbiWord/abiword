@@ -291,7 +291,7 @@ int XAP_QNXFrame::_fe::vScrollChanged(PtWidget_t * w, void *data, PtCallbackInfo
 	AV_View * pView = pQNXFrame->getCurrentView();
 
 	if (pView)
-		pView->sendVerticalScrollEvent((UT_sint32) sb->position);
+		pView->sendVerticalScrollEvent((UT_sint32) _UL(sb->position));
 	return 0;
 }
 	
@@ -302,7 +302,7 @@ int XAP_QNXFrame::_fe::hScrollChanged(PtWidget_t * w, void *data, PtCallbackInfo
 	AV_View * pView = pQNXFrame->getCurrentView();
 	
 	if (pView)
-		pView->sendHorizontalScrollEvent((UT_sint32) sb->position);
+		pView->sendHorizontalScrollEvent((UT_sint32) _UL(sb->position));
 	return 0;
 }
 
@@ -816,7 +816,8 @@ bool XAP_QNXFrame::updateTitle()
 bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
-
+	_UUD(x);
+	_UUD(y);
 	bool bResult = true;
 	UT_ASSERT(!m_pQNXPopup);
 
@@ -830,7 +831,6 @@ bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * szMen
 		PhPoint_t pos;
 
 		PtWidget_t *menu = m_pQNXPopup->getMenuHandle();
-		PtRealizeWidget(menu);
 
 		memset(&pos, 0, sizeof(pos));
 		PtGetAbsPosition(m_wSunkenBox, &pos.x, &pos.y);
@@ -838,6 +838,7 @@ bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * szMen
 
 		PtSetArg(&arg, Pt_ARG_POS, &pos, 0);
 		PtSetResources(menu, 1, &arg);
+		PtRealizeWidget(menu);
 
 		//Really we need to run this synchronously ... or at least
 		//be able to provide some sort of handler that blocks the
