@@ -22,8 +22,8 @@
 
 #include "xap_App.h"
 #include "xap_FontPreview.h"
+#include "xap_Frame.h"
 
-class XAP_Win32Frame;
 class GR_Win32Graphics;
 
 class XAP_Win32FontPreview : public XAP_FontPreview
@@ -35,11 +35,9 @@ public:
 	GR_Win32Graphics * 		m_gc;
 protected:
 private:
-	// parent frame
-	XAP_Win32Frame *		m_pWin32Frame;
 	/*
-	? 						m_pPreviewWindow;
-	? 						m_pDrawingArea;
+	? 					m_pPreviewWindow;
+	? 					m_pDrawingArea;
 	*/
 	UT_sint32				m_left;
 	UT_sint32				m_top;

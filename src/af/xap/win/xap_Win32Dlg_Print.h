@@ -21,7 +21,7 @@
 #define XAP_WIN32DIALOG_PRINT_H
 
 #include "xap_Dlg_Print.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 
@@ -32,18 +32,16 @@ public:
 	virtual ~XAP_Win32Dialog_Print(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-	virtual GR_Graphics *	getPrinterGraphicsContext(void);
+	virtual GR_Graphics *		getPrinterGraphicsContext(void);
 	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
-	void					_extractResults(void);
+	void					_extractResults(XAP_Frame *pFrame);
 	
-	XAP_Win32Frame *		m_pWin32Frame;
-
 	PRINTDLG *				m_pPersistPrintDlg;
-	DOCINFO					m_DocInfo;
+	DOCINFO				m_DocInfo;
 };
 
 #endif /* XAP_WIN32DIALOG_PRINT_H */

@@ -22,6 +22,7 @@
 #ifndef GR_WIN32GRAPHICS_H
 #define GR_WIN32GRAPHICS_H
 
+#include <windows.h>
 #include "ut_misc.h"
 #include "gr_Graphics.h"
 #include "gr_Win32CharWidths.h"

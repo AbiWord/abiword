@@ -25,7 +25,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_Print.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "gr_Win32Graphics.h"
 
 /*****************************************************************/
@@ -111,17 +111,16 @@ void XAP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphic
 
 void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 {
-	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	UT_ASSERT(m_pWin32Frame);
+	UT_return_if_fail(pFrame);
 
-	HWND hwnd = m_pWin32Frame->getTopLevelWindow();
+	HWND hwnd = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
 	m_pPersistPrintDlg->hwndOwner		= hwnd;
 	m_pPersistPrintDlg->nFromPage		= (WORD)m_nFirstPage;
-	m_pPersistPrintDlg->nToPage			= (WORD)m_nLastPage;
+	m_pPersistPrintDlg->nToPage		= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->nMinPage		= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nMaxPage		= (WORD)m_nLastPage;
-	m_pPersistPrintDlg->Flags			= PD_ALLPAGES | PD_RETURNDC | PD_ENABLEPRINTHOOK;
+	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC | PD_ENABLEPRINTHOOK;
 	m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
 	// we do not need this at the moment, but one day it will come handy in the hook procedure
 	m_pPersistPrintDlg->lCustData       = (DWORD)this;
@@ -159,7 +158,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	
 	if (m_bPersistValid && m_bBypassActualDialog)
 	{
-		_extractResults();
+		_extractResults(pFrame);
 		if (m_answer == a_OK)
 		{
 			// create a new hDC for this printer...
@@ -179,7 +178,7 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	}
 	else if (PrintDlg(m_pPersistPrintDlg))		// raise the actual dialog.
 	{
-		_extractResults();
+		_extractResults(pFrame);
 	}
 	else
 	{
@@ -187,11 +186,10 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 		m_answer = a_CANCEL;
 	}
 
-	m_pWin32Frame = NULL;
 	return;
 }
 
-void XAP_Win32Dialog_Print::_extractResults(void)
+void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 {
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
@@ -212,7 +210,7 @@ void XAP_Win32Dialog_Print::_extractResults(void)
 		// of the device is....
 		
 		sprintf(bufSuggestedName,"%s.print",m_szDocumentPathname);
-		if (!_getPrintToFilePathname(m_pWin32Frame,bufSuggestedName))
+		if (!_getPrintToFilePathname(pFrame,bufSuggestedName))
 			goto Fail;
 	}
 

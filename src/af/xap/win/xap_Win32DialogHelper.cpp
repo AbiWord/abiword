@@ -300,11 +300,12 @@ bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const
 	return false;
 }
 
-bool XAP_Win32DialogHelper::isParentFrame(const XAP_Win32Frame& frame) const
+bool XAP_Win32DialogHelper::isParentFrame(/*const*/ XAP_Frame& frame) const
 {
 	_assertValidDlgHandle(m_hDlg);
+	XAP_FrameImpl *pFrameImpl = frame.getFrameImpl();
 	return ((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) ==
-		static_cast<XAP_Win32FrameImpl*>(frame.getFrameImpl())->getTopLevelWindow()) ? true : false;
+		static_cast<XAP_Win32FrameImpl *>(pFrameImpl)->getTopLevelWindow()) ? true : false;
 }
 
 void XAP_Win32DialogHelper::setParentFrame(const XAP_Frame* pFrame)

@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "xap_Win32PropertySheet.h"
 #include "xap_Win32DialogHelper.h"
 
@@ -87,14 +87,14 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	m_page.pszTitle = pSS->getValue(nID);
 	
 	m_page.dwSize = sizeof(PROPSHEETPAGE);
-    m_page.dwFlags = PSP_DEFAULT;
-    m_page.hInstance = pWin32App->getInstance();
+	m_page.dwFlags = PSP_DEFAULT;
+	m_page.hInstance = pWin32App->getInstance();
 	m_page.hIcon  = NULL;
 	m_page.pszIcon  = NULL;	
-    m_page.pszTemplate = lpTemplate;
-    m_page.pfnDlgProc = m_pfnDlgProc;
-    m_page.lParam = (LPARAM) this;
-    m_page.pfnCallback = NULL;
+	m_page.pszTemplate = lpTemplate;
+	m_page.pfnDlgProc = m_pfnDlgProc;
+	m_page.lParam = (LPARAM) this;
+	m_page.pfnCallback = NULL;
 	m_page.pcRefParent  = NULL;
 	
 	if (nID)
@@ -146,31 +146,30 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 {		
 	PROPSHEETPAGE*	pPages = _buildPageArray();
 	const XAP_StringSet * pSS = pWin32App->getStringSet();
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 		
 	memset (&m_psh, 0, sizeof(PROPSHEETHEADER));
 		
-    m_psh.dwSize = sizeof(PROPSHEETHEADER);
-    m_psh.dwFlags = PSH_NOAPPLYNOW |PSH_USECALLBACK| PSH_PROPSHEETPAGE;
-    m_psh.hwndParent = pWin32Frame->getTopLevelWindow();
-    m_psh.hInstance = pWin32App->getInstance();    
+	m_psh.dwSize = sizeof(PROPSHEETHEADER);
+	m_psh.dwFlags = PSH_NOAPPLYNOW |PSH_USECALLBACK| PSH_PROPSHEETPAGE;
+	m_psh.hwndParent = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
+	m_psh.hInstance = pWin32App->getInstance();    
 	m_psh.hIcon  = NULL;
 	m_psh.pszIcon  = NULL;	
-    m_psh.nPages = m_vecPages.getItemCount();
-    m_psh.nStartPage = 0;
-    m_psh.ppsp = (LPCPROPSHEETPAGE) pPages;
-    m_psh.pfnCallback = NULL;
+	m_psh.nPages = m_vecPages.getItemCount();
+	m_psh.nStartPage = 0;
+	m_psh.ppsp = (LPCPROPSHEETPAGE) pPages;
+	m_psh.pfnCallback = NULL;
     
-    if (nID)
-    	m_psh.pszCaption  = pSS->getValue(nID);    	
-    else
+	if (nID)
+		m_psh.pszCaption  = pSS->getValue(nID);    	
+	else
 		m_psh.pszCaption  = NULL;
 		
-    int nRslt = PropertySheet(&m_psh);
+	int nRslt = PropertySheet(&m_psh);
     
-    delete pPages;
+	delete pPages;
     
-    return nRslt;
+	return nRslt;
 }
 
 

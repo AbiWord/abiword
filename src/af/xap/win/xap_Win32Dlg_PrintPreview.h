@@ -31,7 +31,7 @@ class XAP_Win32Dialog_PrintPreview : public XAP_Dialog_PrintPreview
 	XAP_Win32Dialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Win32Dialog_PrintPreview(void);
 
-	virtual GR_Graphics *			        getPrinterGraphicsContext(void) = 0;
+	virtual GR_Graphics *				getPrinterGraphicsContext(void) = 0;
 	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 

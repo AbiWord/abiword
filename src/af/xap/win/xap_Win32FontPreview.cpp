@@ -17,16 +17,16 @@
  * 02111-1307, USA.
  */
 
-#include "xap_Frame.h"
-#include "xap_Win32Frame.h"
+
 #include "ut_debugmsg.h"
 #include "xap_Win32FontPreview.h"
 #include "gr_Win32Graphics.h"
+#include "xap_Win32FrameImpl.h"
+
 
 XAP_Win32FontPreview::XAP_Win32FontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
 	: XAP_FontPreview()
 {
-	m_pWin32Frame = (XAP_Win32Frame *)pFrame;
 	m_left = left;
 	m_top = top;
 	

@@ -22,10 +22,9 @@
 
 #include <commctrl.h>
 #include "ut_vector.h"
+#include "xap_Frame.h"
 
 /*****************************************************************/
-
-#include "XAP_Win32Frame.h"
 
 class XAP_Win32PropertySheet;
 
@@ -39,7 +38,7 @@ public:
 	PROPSHEETPAGE*				getStruct(){return &m_page;}
 	XAP_Win32App*				getApp(){return m_pWin32App;}
 	HWND						getHandle(){return m_hWnd;}
-	XAP_Win32PropertySheet*		getParent(){return m_pParent;}
+	XAP_Win32PropertySheet*			getParent(){return m_pParent;}
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
 	virtual	void				_onInitDialog(){};
 	virtual	void				_onKillActive(){};
@@ -53,8 +52,8 @@ private:
 	HPROPSHEETPAGE	 			m_hdle;	
 	HWND						m_hWnd;
 	XAP_Win32App*				m_pWin32App;
-	XAP_Win32PropertySheet*		m_pParent;
-	DLGPROC						m_pfnDlgProc;
+	XAP_Win32PropertySheet*			m_pParent;
+	DLGPROC					m_pfnDlgProc;
 	
 };
 
@@ -69,7 +68,7 @@ public:
 
 public:
 
-	int							runModal(XAP_Win32App* pWin32App,XAP_Frame*	pFrame, XAP_String_Id	nID = 0);							
+	int						runModal(XAP_Win32App* pWin32App,XAP_Frame*	pFrame, XAP_String_Id	nID = 0);							
 	void 						addPage(XAP_Win32PropertyPage* pPage);
 	PROPSHEETPAGE* 				_buildPageArray(void);
 

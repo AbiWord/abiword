@@ -21,7 +21,7 @@
 #define XAP_WIN32DIALOG_STUB_H
 
 #include "xap_Dlg_Stub.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 

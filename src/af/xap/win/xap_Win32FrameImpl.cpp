@@ -57,18 +57,19 @@ static void XAP_Win32FrameImpl::viewAutoUpdater(UT_Worker *wkr) {}
 bool XAP_Win32FrameImpl::_updateTitle(void) 
 {
 	UT_return_val_if_fail(m_hwndFrame, false);
-	UT_return_val_if_fail(m_pFrame, false);
-	UT_return_val_if_fail(m_pFrame->getApp(), false);
+	XAP_Frame *pFrame = getFrame();
+	UT_return_val_if_fail(pFrame, false);
 
-	if (!m_pFrame->updateTitle())
+
+	if (!pFrame->updateTitle())
 	{
 		// no relevant change, so skip it
 		return false;
 	}
 
-	UT_String sTmp = m_pFrame->getTitle(INT_MAX);
+	UT_String sTmp = pFrame->getTitle(INT_MAX);
 	sTmp += " - ";
-	sTmp += m_pFrame->getApp()->getApplicationTitleForTitleBar();
+	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
 	
 	SetWindowText(m_hwndFrame, sTmp.c_str());
 
@@ -80,7 +81,7 @@ void XAP_Win32FrameImpl::_initialize(void)
 	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
 	
-	EV_EditEventMapper * pEEM = m_pFrame->getEditEventMapper();
+	EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
 	UT_ASSERT(pEEM);
 
 	m_pKeyboard = new ev_Win32Keyboard(pEEM);
@@ -93,8 +94,6 @@ void XAP_Win32FrameImpl::_initialize(void)
 bool XAP_Win32FrameImpl::_close(void)
 {
 	UT_return_val_if_fail(m_hwndFrame, false);
-	UT_return_val_if_fail(m_pFrame, false);
-	UT_return_val_if_fail(m_pFrame->getApp(), false);
 
 	// NOTE: This may not be the proper place, but it does mean that the
 	// last window closed is the one that the window state is stored from.
@@ -102,17 +101,17 @@ bool XAP_Win32FrameImpl::_close(void)
 	wndPlacement.length = sizeof(WINDOWPLACEMENT); // must do
 	if (GetWindowPlacement(m_hwndFrame, &wndPlacement))
 	{
-		m_pFrame->getApp()->setGeometry(wndPlacement.rcNormalPosition.left, 
+		XAP_App::getApp()->setGeometry(wndPlacement.rcNormalPosition.left, 
 				wndPlacement.rcNormalPosition.top, 
 				wndPlacement.rcNormalPosition.right - wndPlacement.rcNormalPosition.left,
 				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,
 				wndPlacement.showCmd
-				);
+		);
 	}
 	else
 	{
 		// if failed to get placement then invalidate stored settings
-		m_pFrame->getApp()->setGeometry(0,0,0,0,0);
+		XAP_App::getApp()->setGeometry(0,0,0,0,0);
 	}
 	
 	RevokeDragDrop(m_hwndFrame);
@@ -151,7 +150,7 @@ XAP_DialogFactory * XAP_Win32FrameImpl::_getDialogFactory(void)
 EV_Toolbar * XAP_Win32FrameImpl::_newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage)
 {
 	EV_Win32Toolbar *result = new EV_Win32Toolbar(static_cast<XAP_Win32App *>(app), 
-												  static_cast<XAP_Win32Frame *>(frame), 
+												  frame, 
 												  szLayout, szLanguage);
 	// for now, position each one manually
 	// TODO: put 'em all in a rebar instead
@@ -186,11 +185,9 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 	bool bResult = false;
 
 	UT_return_val_if_fail((m_pWin32Popup==NULL), false);
-	UT_return_val_if_fail(m_pFrame, false);
-	UT_return_val_if_fail(m_pFrame->getApp(), false);
 
-	m_pWin32Popup = new EV_Win32MenuPopup(static_cast<XAP_Win32App*>(m_pFrame->getApp()),szMenuName,m_szMenuLabelSetName);
-	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup(m_pFrame))
+	m_pWin32Popup = new EV_Win32MenuPopup(static_cast<XAP_Win32App*>(XAP_App::getApp()),szMenuName,m_szMenuLabelSetName);
+	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup(getFrame()))
 	{
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
 

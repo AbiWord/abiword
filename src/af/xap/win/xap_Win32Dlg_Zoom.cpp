@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "xav_View.h"
 
 #include "xap_Strings.h"
@@ -67,8 +67,6 @@ XAP_Win32Dialog_Zoom::~XAP_Win32Dialog_Zoom(void)
 
 void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 {
-	m_pFrame = pFrame;
-
 	/*
 	  This dialog is non-persistent.
 	  
@@ -95,18 +93,15 @@ void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 	*/
 
 	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-
 	LPCTSTR lpTemplate = NULL;
 
 	UT_ASSERT(m_id == XAP_DIALOG_ID_ZOOM);
 
 	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_ZOOM);
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+	int result = DialogBoxParam(static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(),lpTemplate,
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 }
 

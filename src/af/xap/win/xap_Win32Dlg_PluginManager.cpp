@@ -27,7 +27,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_FileOpenSaveAs.h"
@@ -68,7 +68,6 @@ void XAP_Win32Dialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -77,8 +76,8 @@ void XAP_Win32Dialog_PluginManager::runModal(XAP_Frame * pFrame)
 	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_PLUGIN_MANAGER);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 }
 

@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -59,18 +59,15 @@ void XAP_Win32Dialog_WindowMore::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(m_ndxSelFrame >= 0);
 
 	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-
 	LPCTSTR lpTemplate = NULL;
 
 	UT_ASSERT(m_id == XAP_DIALOG_ID_WINDOWMORE);
 
 	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_WINDOWMORE);
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+	int result = DialogBoxParam(static_cast<XAP_Win32App *>(m_pApp)->getInstance(),lpTemplate,
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 }
 

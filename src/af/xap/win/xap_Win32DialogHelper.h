@@ -113,7 +113,7 @@ public:
 
 	bool				isControlVisible(UT_sint32	controlId) const;
 
-	bool				isParentFrame(const XAP_Frame& frame) const;
+	bool				isParentFrame(/*const*/ XAP_Frame& frame) const;
 	void				setParentFrame(const XAP_Frame* pFrame);
 	XAP_Frame*			getParentFrame();
 	void 				centerDialog();
