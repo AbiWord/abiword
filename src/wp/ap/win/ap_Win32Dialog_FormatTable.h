@@ -24,6 +24,7 @@
 #include "xap_Frame.h"
 #include "xap_Win32PreviewWidget.h"
 #include "gr_Win32Graphics.h"
+#include "xap_Win32ColourButton.h"
 
 /*****************************************************************/
 
@@ -57,6 +58,8 @@ protected:
 	HBITMAP					m_hBitmapRight;
 	HBITMAP					m_hBitmapLeft;
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;		 
+	XAP_Win32ColourButton	m_backgButton;
+	XAP_Win32ColourButton	m_borderButton;
 	
 };
 

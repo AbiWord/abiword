@@ -74,13 +74,12 @@ BEGIN
     CONTROL         "",AP_RID_DIALOG_FORMATTABLE_STATIC_PREVIEW,"Static",
                     SS_BLACKFRAME,177,40,86,76,WS_EX_CLIENTEDGE
     LTEXT           "Background Color",
-                    AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUND,15,91,60,8
-    PUSHBUTTON      "...",AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR,82,88,22,
-                    14
-    LTEXT           "Border Color",AP_RID_DIALOG_FORMATTABLE_TEXT_BORDER,16,
-                    29,53,8
-    PUSHBUTTON      "...",AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR,82,27,22,
-                    14
+                    AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUND,15,91,60,8                    
+	CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,82,88,22,14                                                       
+    LTEXT           "Border Color",AP_RID_DIALOG_FORMATTABLE_TEXT_BORDER,16,29,53,8    
+    CONTROL         "",AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,82,27,22,14                                            
     DEFPUSHBUTTON   "Apply",AP_RID_DIALOG_FORMATTABLE_BTN_APPLY,243,153,50,
                     14
     PUSHBUTTON      "Cancel",AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL,182,153,50,

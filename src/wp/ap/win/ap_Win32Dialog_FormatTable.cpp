@@ -104,6 +104,20 @@ BOOL CALLBACK AP_Win32Dialog_FormatTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 		pThis = (AP_Win32Dialog_FormatTable *)lParam;
 		SWL(hWnd,lParam);		
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
+	
+	case WM_DRAWITEM:	
+	{
+		pThis = GWL(hWnd);
+		DRAWITEMSTRUCT* dis =  (DRAWITEMSTRUCT*)lParam;
+		
+		if (dis->CtlID==AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR)		
+			pThis->m_backgButton.draw(dis);			
+			
+		if (dis->CtlID==AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR)							    
+			pThis->m_borderButton.draw(dis);			
+			
+		return TRUE;		
+	}
 		
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
@@ -170,7 +184,7 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);	
 	m_pPreviewWidget->setPreview(m_pFormatTablePreview); 
 	
-							
+								
 	startUpdater();
 	setAllSensitivities();
 
@@ -180,7 +194,7 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
 	
-		
+			
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 	return 1; 
 }
@@ -245,7 +259,13 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 		 
 			if(ChooseColor(&cc))			
+			{
 				setBorderColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));		
+				m_borderButton.setColour(cc.rgbResult);
+
+				/*Force redraw*/
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR), NULL, FALSE);
+			}
 
 			return 1;
 		}	
@@ -265,7 +285,13 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 		 
 			if(ChooseColor(&cc))			
-				setBGColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));		
+			{
+				setBGColor(UT_RGBColor(GetRValue( cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)));						
+				m_backgButton.setColour(cc.rgbResult);
+
+				/*Force redraw*/
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
+			}
 
 			return 1;
 		}	
