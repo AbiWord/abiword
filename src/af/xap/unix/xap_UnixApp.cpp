@@ -28,7 +28,7 @@
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName)
+	: AP_App(pArgs, szAppName), m_dialogFactory(this)
 {
 	m_pUnixToolbarIcons = 0;
 }
@@ -68,3 +68,7 @@ AP_Frame * AP_UnixApp::newFrame(void)
 	return pUnixFrame;
 }
 
+AP_DialogFactory * AP_UnixApp::getDialogFactory(void)
+{
+	return &m_dialogFactory;
+}

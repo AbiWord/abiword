@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,19 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_WIN32DIALOGFACTORY_H
+#define AP_WIN32DIALOGFACTORY_H
 
-#ifndef AP_TYPES_H
-#define AP_TYPES_H
+#include "ap_DialogFactory.h"
 
-/*
-	The actual set of IDs is private to each app, but we want a general
-	way to reference them.  
-*/
+class AP_Win32DialogFactory : public AP_DialogFactory
+{
+public:
+	AP_Win32DialogFactory(AP_App * pApp);
+	AP_Win32DialogFactory(AP_Frame * pFrame);
+	virtual ~AP_Win32DialogFactory(void);
 
-typedef int		AP_Menu_Id;
-typedef int		AP_Toolbar_Id;
-typedef int		AP_Dialog_Id;
+protected:
+};
 
-#endif /* AP_TYPES_H */
+#endif /* AP_WIN32DIALOGFACTORY_H */

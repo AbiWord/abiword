@@ -18,6 +18,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -192,7 +193,8 @@ public:
 /*****************************************************************/
 
 AP_UnixFrame::AP_UnixFrame(AP_UnixApp * app)
-	: AP_Frame(static_cast<AP_App *>(app))
+	: AP_Frame(static_cast<AP_App *>(app)),
+	  m_dialogFactory(this)
 {
 	m_pUnixApp = app;
 	m_pUnixKeyboard = NULL;
@@ -201,8 +203,13 @@ AP_UnixFrame::AP_UnixFrame(AP_UnixApp * app)
 	m_pView = NULL;
 }
 
+// TODO when cloning a new frame from an existing one
+// TODO should we also clone any frame-persistent
+// TODO dialog data ??
+
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
-	: AP_Frame(static_cast<AP_Frame *>(f))
+	: AP_Frame(static_cast<AP_Frame *>(f)),
+	  m_dialogFactory(this)
 {
 	m_pUnixApp = f->m_pUnixApp;
 	m_pUnixKeyboard = NULL;
@@ -296,6 +303,11 @@ EV_UnixMouse * AP_UnixFrame::getUnixMouse(void)
 ev_UnixKeyboard * AP_UnixFrame::getUnixKeyboard(void)
 {
 	return m_pUnixKeyboard;
+}
+
+AP_DialogFactory * AP_UnixFrame::getDialogFactory(void)
+{
+	return &m_dialogFactory;
 }
 
 void AP_UnixFrame::_createTopLevelWindow(void)

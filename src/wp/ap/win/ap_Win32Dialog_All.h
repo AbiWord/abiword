@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,44 +17,27 @@
  * 02111-1307, USA.
  */
 
-
-#ifndef AP_UNIXAPP_H
-#define AP_UNIXAPP_H
-
-#include "ap_App.h"
-#include "ap_UnixDialogFactory.h"
-class AP_Args;
-class AP_UnixToolbar_Icons;
-
 /*****************************************************************
 ******************************************************************
-** This file defines the unix-platform-specific class for the
-** cross-platform application.  This is used to hold all of the
-** platform-specific, application-specific data.  Only one of these
-** is created by the application.
+** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+** MORE THAN ONE TIME.  Each time you add an entry to the top-half
+** of this file be sure to add a corresponding entry to the other
+** half and be sure to add an entry to each of the other platforms.
 ******************************************************************
 *****************************************************************/
 
-class AP_UnixApp : public AP_App
-{
-public:
-	AP_UnixApp(AP_Args * pArgs, const char * szAppName);
-	virtual ~AP_UnixApp(void);
+#ifndef AP_WIN32DIALOG_ALL_H
 
-	virtual UT_Bool					initialize(void);
-	virtual AP_Frame * 				newFrame(void);
+#	define AP_WIN32DIALOG_ALL_H
 
-	virtual AP_DialogFactory *		getDialogFactory(void);
+#	include "ap_Win32Dialog_MessageBox.h"
 
-	static int main (const char * szAppName, int argc, char ** argv);
+	// ... add new dialogs here ...
 
-protected:
-	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
-	AP_UnixDialogFactory			m_dialogFactory;
+#else
 
-	/* TODO put anything we need here.  for example, our
-	** TODO connection to the XServer.
-	*/
-};
+	DeclareDialog(AP_DIALOG_ID_MESSAGE_BOX,		AP_Win32Dialog_MessageBox)
 
-#endif /* AP_UNIXAPP_H */
+	// ... also add new dialogs here ...
+
+#endif

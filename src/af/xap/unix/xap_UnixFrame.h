@@ -24,6 +24,7 @@
 #include <gtk/gtk.h>
 #include "ap_Frame.h"
 #include "ut_vector.h"
+#include "ap_UnixDialogFactory.h"
 class AP_UnixApp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;
@@ -57,6 +58,8 @@ public:
 	GtkWidget *					getVBoxWidget(void) const;
 	EV_UnixMouse *				getUnixMouse(void);
 	ev_UnixKeyboard *			getUnixKeyboard(void);
+
+	virtual AP_DialogFactory *	getDialogFactory(void);
 	
 protected:
 	void						_createTopLevelWindow(void);
@@ -80,6 +83,8 @@ protected:
 	GtkWidget *					m_dArea;
 	GtkWidget *					m_table;
 	GtkWidget * 				m_wSunkenBox;
+
+	AP_UnixDialogFactory		m_dialogFactory;
 };
 
 #endif /* AP_UNIXFRAME_H */

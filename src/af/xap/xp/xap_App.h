@@ -30,6 +30,7 @@
 #include "ut_hash.h"
 
 class AP_Args;
+class AP_DialogFactory;
 class AP_Frame;
 class EV_EditMethodContainer;
 class EV_Menu_ActionSet;
@@ -76,6 +77,8 @@ public:
 	const EV_Toolbar_ActionSet *	getToolbarActionSet(void) const;
 
 	AP_Args *						getArgs(void) const;
+
+	virtual AP_DialogFactory *		getDialogFactory(void) = 0;
 
 protected:
 	AP_Args *						m_pArgs;

@@ -102,7 +102,8 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 /*****************************************************************/
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
-	: AP_Frame(static_cast<AP_App *>(app))
+	: AP_Frame(static_cast<AP_App *>(app)),
+	  m_dialogFactory(this)
 {
 	m_pWin32App = app;
 	m_pWin32Keyboard = NULL;
@@ -114,8 +115,13 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
 	m_hwndChild = NULL;
 }
 
+// TODO when cloning a new frame from an existing one
+// TODO should we also clone any frame-persistent
+// TODO dialog data ??
+
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
-	: AP_Frame(static_cast<AP_Frame *>(f))
+	: AP_Frame(static_cast<AP_Frame *>(f)),
+	  m_dialogFactory(this)
 {
 	m_pWin32App = f->m_pWin32App;
 	m_pWin32Keyboard = NULL;
@@ -209,6 +215,11 @@ EV_Win32Mouse * AP_Win32Frame::getWin32Mouse(void)
 ev_Win32Keyboard * AP_Win32Frame::getWin32Keyboard(void)
 {
 	return m_pWin32Keyboard;
+}
+
+AP_DialogFactory * AP_Win32Frame::getDialogFactory(void)
+{
+	return &m_dialogFactory;
 }
 
 void AP_Win32Frame::_createTopLevelWindow(void)

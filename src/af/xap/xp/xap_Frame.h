@@ -26,6 +26,7 @@
 #include "av_Listener.h"	// for AV_ListenerID
 
 class AP_App;
+class AP_DialogFactory;
 class ap_ViewListener;
 class AV_View;
 class AD_Document;
@@ -75,6 +76,8 @@ public:
 	void						setViewNumber(UT_uint32 n);
 	UT_uint32					getViewNumber(void) const;
 	const char *				getViewKey(void) const;
+
+	virtual AP_DialogFactory *	getDialogFactory(void) = 0;
 	
 protected:
 	AP_App *					m_app;			/* handle to application-specific data */

@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,27 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_WIN32DIALOG_MESSAGEBOX_H
+#define AP_WIN32DIALOG_MESSAGEBOX_H
 
-#ifndef AP_TYPES_H
-#define AP_TYPES_H
+#include "ap_Dialog_MessageBox.h"
+class AP_Win32Frame;
 
-/*
-	The actual set of IDs is private to each app, but we want a general
-	way to reference them.  
-*/
+/*****************************************************************/
 
-typedef int		AP_Menu_Id;
-typedef int		AP_Toolbar_Id;
-typedef int		AP_Dialog_Id;
+class AP_Win32Dialog_MessageBox : public AP_Dialog_MessageBox
+{
+public:
+	AP_Win32Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_MessageBox(void);
 
-#endif /* AP_TYPES_H */
+	virtual void			runModal(AP_Frame * pFrame);
+
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+
+protected:
+	AP_Win32Frame *			m_pWin32Frame;
+	
+};
+
+#endif /* AP_WIN32DIALOG_MESSAGEBOX_H */

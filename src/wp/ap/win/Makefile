@@ -22,7 +22,8 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=		ap_Win32Frame.cpp
+CPPSRCS=		ap_Win32DialogFactory.cpp	\
+			ap_Win32Frame.cpp
 
 TARGETS=		$(OBJS)
 

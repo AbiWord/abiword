@@ -22,20 +22,22 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=	ap_EditMethods.cpp			\
-			ap_Frame.cpp				\
-			ap_FrameData.cpp			\
-			ap_LoadBindings.cpp			\
-			ap_LoadBindings_Default.cpp	\
-			ap_Menu_ActionSet.cpp		\
-			ap_Menu_Functions.cpp		\
-			ap_Menu_LabelSet.cpp		\
-			ap_Menu_Layouts.cpp			\
-			ap_Toolbar_ActionSet.cpp	\
-			ap_Toolbar_Functions.cpp	\
-			ap_Toolbar_Icons.cpp		\
-			ap_Toolbar_LabelSet.cpp		\
-			ap_Toolbar_Layouts.cpp
+ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
+
+CPPSRCS=	ap_EditMethods.cpp		\
+		ap_Frame.cpp			\
+		ap_FrameData.cpp		\
+		ap_LoadBindings.cpp		\
+		ap_LoadBindings_Default.cpp	\
+		ap_Menu_ActionSet.cpp		\
+		ap_Menu_Functions.cpp		\
+		ap_Menu_LabelSet.cpp		\
+		ap_Menu_Layouts.cpp		\
+		ap_Toolbar_ActionSet.cpp	\
+		ap_Toolbar_Functions.cpp	\
+		ap_Toolbar_Icons.cpp		\
+		ap_Toolbar_LabelSet.cpp		\
+		ap_Toolbar_Layouts.cpp
 
 TARGETS=		$(OBJS)
 

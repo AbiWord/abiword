@@ -30,7 +30,7 @@
 /*****************************************************************/
 
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName)
+	: AP_App(pArgs, szAppName), m_dialogFactory(this)
 {
 	UT_ASSERT(hInstance);
 
@@ -81,3 +81,7 @@ AP_Frame * AP_Win32App::newFrame(void)
 	return pWin32Frame;
 }
 
+AP_DialogFactory * AP_Win32App::getDialogFactory(void)
+{
+	return &m_dialogFactory;
+}

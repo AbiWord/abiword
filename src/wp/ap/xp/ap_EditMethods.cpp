@@ -41,13 +41,13 @@
 #include "ap_App.h"
 #include "ap_Frame.h"
 #include "ap_EditMethods.h"
+#include "ap_Dialog_Id.h"
+#include "ap_DialogFactory.h"
+#include "ap_Dialog_MessageBox.h"
 
 
 #ifdef DLGHACK
-typedef enum _dlg_Answer { dlg_OK, dlg_CANCEL, dlg_YES, dlg_NO } dlg_Answer;
-typedef enum _dlg_Buttons { dlg_O, dlg_OC, dlg_YN, dlg_YNC } dlg_Buttons;
 
-dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton);
 char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs);
 char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs, char * pSuggestedName);
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
@@ -470,6 +470,95 @@ Defun1(fileNew)
 	return bRet;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+// TODO i've pulled the code to compose a question in a message
+// TODO box into these little s_Ask*() functions.  part of this
+// TODO is to isolate the question asking from the code which
+// TODO decides what to do with the answer.  but also to see if
+// TODO we want to abstract things further and make us think about
+// TODO localization of the question strings....
+
+static UT_Bool s_AskRevertFile(AP_Frame * pFrame)
+{
+	// return UT_TRUE if we should revert the file (back to the saved copy).
+	
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage("Revert to saved copy of %s?", pFrame->getFilename());
+	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_YES);
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return (ans == AP_Dialog_MessageBox::a_YES);
+}
+
+static UT_Bool s_AskCloseAllAndExit(AP_Frame * pFrame)
+{
+	// return UT_TRUE if we should quit.
+	
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage("Close all windows and exit?");
+	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_NO);
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return (ans == AP_Dialog_MessageBox::a_YES);
+}
+
+static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(AP_Frame * pFrame)
+{
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage("Save changes to %s?", pFrame->getTitle(200));
+	pDialog->setButtons(AP_Dialog_MessageBox::b_YNC);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_YES);
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return (ans);
+}
+
+/*****************************************************************/
+/*****************************************************************/
+	
 Defun1(fileOpen)
 {
 	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
@@ -498,21 +587,13 @@ Defun1(fileOpen)
 			pNewFrame = pApp->getFrame(ndx);
 			UT_ASSERT(pNewFrame);
 
-			pNewFrame->raise();
-
-#ifdef DLGHACK
-			char buf[256];	// TODO: could overflow until we get path out of filename
-
-			sprintf(buf, "Revert to saved copy of %s?", pNewFrame->getFilename());
-			dlg_Answer ans = _askUser(pNewFrame, buf, dlg_YN, 0);
-
-			if (ans == dlg_NO)
+			if (!s_AskRevertFile(pNewFrame))
 			{
+				// TODO should this be a delete instead of free() ??
 				// never mind
-				free(pNewFile);
+				free(pNewFrame);
 				return UT_FALSE;
 			}
-#endif /* DLGHACK */
 		}
 		else if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
 		{
@@ -748,29 +829,28 @@ Defun(closeWindow)
 	if ((pFrame->getViewNumber() == 0) &&
 		(pFrame->isDirty()))
 	{
-#ifdef DLGHACK
-		char buf[256];	// TODO: could overflow until we get path out of filename
-
-		sprintf(buf, "Save changes to %s?", pFrame->getTitle(200));
-		dlg_Answer ans = _askUser(pFrame, buf, dlg_YNC, 0);
-
-		if (ans == dlg_YES)
+		AP_Dialog_MessageBox::tAnswer ans = s_AskSaveFile(pFrame);
+		
+		switch (ans)
 		{
-			// save it first
-			UT_Bool bRet = EX(fileSave);
-
-			if (!bRet)
+		case AP_Dialog_MessageBox::a_YES:				// save it first
 			{
-				// didn't successfully save, so don't close
-				return UT_FALSE;
+				UT_Bool bRet = EX(fileSave);
+				if (!bRet)								// didn't successfully save,
+					return UT_FALSE;					//    so don't close
 			}
-		}
-		else if (ans == dlg_CANCEL)
-		{
-			// don't close
+			break;
+
+		case AP_Dialog_MessageBox::a_NO:				// just close it
+			break;
+			
+		case AP_Dialog_MessageBox::a_CANCEL:			// don't close it
+			return UT_FALSE;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return UT_FALSE;
 		}
-#endif /* DLGHACK */
 	}
 
 	// are we the last window?
@@ -796,15 +876,11 @@ Defun(querySaveAndExit)
 
 	if (1 < pApp->getFrameCount())
 	{
-#ifdef DLGHACK
-		dlg_Answer ans = _askUser(pFrame, "Close all windows and exit?", dlg_YN, 1);
-
-		if (ans == dlg_NO)
+		if (!s_AskCloseAllAndExit(pFrame))
 		{
 			// never mind
 			return UT_FALSE;
 		}
-#endif /* DLGHACK */
 	}
 
 	UT_Bool bRet = UT_TRUE;
@@ -2340,177 +2416,6 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	delete fontString;
 	return UT_TRUE;
 
-}
-
-static void message_box_ok_clicked(GtkWidget * widget, dlg_Answer * answer)
-{
-	*answer = dlg_OK;
-	gtk_main_quit();
-}
-static void message_box_cancel_clicked(GtkWidget * widget, dlg_Answer * answer)
-{
-	*answer = dlg_CANCEL;
-	gtk_main_quit();
-}
-static void message_box_yes_clicked(GtkWidget * widget, dlg_Answer * answer)
-{
-	*answer = dlg_YES;
-	gtk_main_quit();
-}
-static void message_box_no_clicked(GtkWidget * widget, dlg_Answer * answer)
-{
-	*answer = dlg_NO;
-	gtk_main_quit();
-}
-
-dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton)
-{
-	AP_App * pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
-
-	const char * szCaption = pApp->getApplicationTitleForTitleBar();
-
-	// New GTK+ dialog window
-	GtkWidget * dialog_window = gtk_dialog_new();
-	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
-							  "destroy",
-							  GTK_SIGNAL_FUNC(message_box_cancel_clicked),
-							  NULL);
-
-	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
-	gtk_container_border_width (GTK_CONTAINER (dialog_window), 0);
-	gtk_widget_set_usize (dialog_window, 400, 110);
-
-	// Add our label string to the dialog in the message area
-	GtkWidget * label = gtk_label_new (szQ);
-	gtk_misc_set_padding (GTK_MISC (label), 10, 10);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->vbox),
-						label, TRUE, TRUE, 0);
-	gtk_widget_show (label);
-
-	// Build all the buttons, regardless of whether they're
-	// used.  This is much easier than creating the ones we know we
-	// need.  Trust me.
-	dlg_Answer answer;
-	GtkWidget * ok_button;
-	GtkWidget * cancel_button;
-	GtkWidget * yes_button;
-	GtkWidget * no_button;
-
-	// OK
-	ok_button = gtk_button_new_with_label ("OK");
-	gtk_signal_connect (GTK_OBJECT (ok_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (message_box_ok_clicked),
-						&answer);
-	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
-	// Cancel
-	cancel_button = gtk_button_new_with_label ("Cancel");
-	gtk_signal_connect (GTK_OBJECT (cancel_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (message_box_cancel_clicked),
-						&answer);
-	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
-	// Yes
-	yes_button = gtk_button_new_with_label ("Yes");
-	gtk_signal_connect (GTK_OBJECT (yes_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (message_box_yes_clicked),
-						&answer);
-	GTK_WIDGET_SET_FLAGS (yes_button, GTK_CAN_DEFAULT);
-	// No
-	no_button = gtk_button_new_with_label ("No");
-	gtk_signal_connect (GTK_OBJECT (no_button),
-						"clicked",
-						GTK_SIGNAL_FUNC (message_box_no_clicked),
-						&answer);
-	GTK_WIDGET_SET_FLAGS (no_button, GTK_CAN_DEFAULT);
-
-	switch (b)
-	{
-	case dlg_O:
-		// OK
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							ok_button, TRUE, TRUE, 0);
-		if (defButton == 0)
-			gtk_widget_grab_default (ok_button);
-		gtk_widget_show (ok_button);
-
-		break;
-
-	case dlg_OC:
-		// OK
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							ok_button, TRUE, TRUE, 0);
-		if (defButton == 0)
-			gtk_widget_grab_default (ok_button);
-		gtk_widget_show (ok_button);
-		// Cancel
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							cancel_button, TRUE, TRUE, 0);
-		if (defButton == 1)
-			gtk_widget_grab_default (cancel_button);
-		gtk_widget_show (cancel_button);
-
-		break;
-
-	case dlg_YN:
-		// Yes
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							yes_button, TRUE, TRUE, 0);
-		if (defButton == 0)
-			gtk_widget_grab_default (yes_button);
-		gtk_widget_show (yes_button);
-		// No
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							no_button, TRUE, TRUE, 0);
-		if (defButton == 1)
-			gtk_widget_grab_default (no_button);
-		gtk_widget_show (no_button);
-
-		break;
-
-	case dlg_YNC:
-		// Yes
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							yes_button, TRUE, TRUE, 0);
-		if (defButton == 0)
-			gtk_widget_grab_default (yes_button);
-		gtk_widget_show (yes_button);
-		// No
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							no_button, TRUE, TRUE, 0);
-		if (defButton == 1)
-			gtk_widget_grab_default (no_button);
-		gtk_widget_show (no_button);
-		// Cancel
-		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							cancel_button, TRUE, TRUE, 0);
-		if (defButton == 2)
-			gtk_widget_grab_default (cancel_button);
-		gtk_widget_show (cancel_button);
-
-		break;
-
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-
-	gtk_grab_add(GTK_WIDGET(dialog_window));
-	gtk_widget_show (dialog_window);
-
-	// TODO maybe add some key bindings so that escape will cancel, etc.
-	gtk_main();
-
-	gtk_widget_destroy(label);
-	gtk_widget_destroy(ok_button);
-	gtk_widget_destroy(cancel_button);
-	gtk_widget_destroy(yes_button);
-	gtk_widget_destroy(no_button);
-	gtk_widget_destroy(GTK_WIDGET(dialog_window));
-
-	// answer should be set by the appropriate callback
-	return answer;
 }
 
 UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)

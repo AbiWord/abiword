@@ -24,6 +24,7 @@
 #include <windows.h>
 #include "ap_Frame.h"
 #include "ut_vector.h"
+#include "ap_Win32DialogFactory.h"
 class AP_Win32App;
 class ev_Win32Keyboard;
 class EV_Win32Mouse;
@@ -58,6 +59,8 @@ public:
 	EV_Win32Mouse *				getWin32Mouse(void);
 	ev_Win32Keyboard *			getWin32Keyboard(void);
 
+	virtual AP_DialogFactory *	getDialogFactory(void);
+
 	static UT_Bool				RegisterClass(AP_Win32App * app);
 
 protected:
@@ -78,6 +81,8 @@ protected:
 	HWND						m_hwndFrame;
 	HWND						m_hwndRebar;
 	HWND						m_hwndChild;
+
+	AP_Win32DialogFactory		m_dialogFactory;
 };
 
 #endif /* AP_WIN32FRAME_H */

@@ -22,7 +22,10 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CPPSRCS=		ap_UnixFrame.cpp
+ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
+
+CPPSRCS=		ap_UnixDialogFactory.cpp	\
+			ap_UnixFrame.cpp
 
 TARGETS=		$(OBJS)
 

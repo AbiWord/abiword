@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -18,16 +18,28 @@
  */
 
 
-#ifndef AP_TYPES_H
-#define AP_TYPES_H
+#ifndef AP_DIALOG_IDSET_H
+#define AP_DIALOG_IDSET_H
 
-/*
-	The actual set of IDs is private to each app, but we want a general
-	way to reference them.  
-*/
+/* the following Id's must start at zero and be contiguous */
 
-typedef int		AP_Menu_Id;
-typedef int		AP_Toolbar_Id;
-typedef int		AP_Dialog_Id;
+typedef enum _Ap_Dialog_Id
+{
+	AP_DIALOG_ID__BOGUS1__ = 0,			/* must be first */
 
-#endif /* AP_TYPES_H */
+	AP_DIALOG_ID_MESSAGE_BOX,
+	AP_DIALOG_ID_FILE_OPEN,
+	AP_DIALOG_ID_FILE_SAVE,
+	AP_DIALOG_ID_FILE_SAVEAS,
+	AP_DIALOG_ID_FILE_PAGESETUP,
+	AP_DIALOG_ID_FILE_PRINT,
+
+	AP_DIALOG_ID_WINDOW_MORE,
+
+	/* ... add others here ... */
+
+	AP_DIALOG_ID__BOGUS2__				/* must be last */
+
+};
+
+#endif /* AP_DIALOG_IDSET_H */

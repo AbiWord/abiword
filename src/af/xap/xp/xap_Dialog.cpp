@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,17 +17,32 @@
  * 02111-1307, USA.
  */
 
+#include "ap_Dialog.h"
 
-#ifndef AP_TYPES_H
-#define AP_TYPES_H
+/*****************************************************************/
 
-/*
-	The actual set of IDs is private to each app, but we want a general
-	way to reference them.  
-*/
+AP_Dialog::AP_Dialog(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+{
+	m_pDlgFactory = pDlgFactory;
+	m_id = id;
+}
 
-typedef int		AP_Menu_Id;
-typedef int		AP_Toolbar_Id;
-typedef int		AP_Dialog_Id;
+AP_Dialog::~AP_Dialog(void)
+{
+}
 
-#endif /* AP_TYPES_H */
+AP_Dialog_Id AP_Dialog::getDialogId(void) const
+{
+	return m_id;
+}
+
+/*****************************************************************/
+
+AP_Dialog_NonPersistent::AP_Dialog_NonPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+	: AP_Dialog(pDlgFactory,id)
+{
+}
+
+AP_Dialog_NonPersistent::~AP_Dialog_NonPersistent(void)
+{
+}

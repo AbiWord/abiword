@@ -32,22 +32,23 @@ TARGETS=		$(LIBRARY)
 # note: and add a line to the intall section which copies it to
 # note: the $(DIST)/bin directory on Windows.
 
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)
 
-OBJS=		$(PLATFORM_OBJS)								\
+OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)					\
+		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
