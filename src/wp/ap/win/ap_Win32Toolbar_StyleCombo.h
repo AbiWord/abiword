@@ -23,6 +23,8 @@
 #include <windows.h>
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
+#include "pd_Document.h"
+#include "xap_Win32Frame.h"
 class EV_Toolbar;
 
 /*****************************************************************/
@@ -34,10 +36,13 @@ public:
 	virtual ~AP_Win32Toolbar_StyleCombo(void);
 
 	virtual bool		populate(void);
+	bool				repopulate(void);
 
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
 protected:
+    PD_Document * m_pDocument;
+	XAP_Win32Frame * m_pFrame;
 };
 
 #endif /* AP_WIN32TOOLBAR_STYLECOMBO_H */
