@@ -518,7 +518,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 //
 // All this code is used to find if this strux has our style in it
 //
-		PT_AttrPropIndex indexAP;
+		PT_AttrPropIndex indexAP = 0;
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 			pfs = static_cast<pf_Frag_Strux *>(currentFrag);

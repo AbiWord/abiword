@@ -421,14 +421,14 @@ static void on_notebook_switch_page( GtkNotebook     *notebook,
                                      gint             page_num,
                                      gpointer         user_data );
 
-void process_notebook_page( GtkWidget *notebook, 
+static void process_notebook_page( GtkWidget *notebook, 
                             GtkWidget *page,
                             struct fix_label_data *data );
 
-void fix_label_callback( GtkWidget *widget, 
+static void fix_label_callback( GtkWidget *widget, 
                          gpointer _data );
 
-void fix_label( GtkWidget *widget );
+//static void fix_label( GtkWidget *widget );
 
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

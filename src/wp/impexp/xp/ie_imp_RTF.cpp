@@ -2806,7 +2806,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	static char pszListID[15];
 	static char pszParentID[15];
 	static char pszStartValue[15];
-	UT_uint32 id,pid,startValue;
+	UT_uint32 id = 0,pid = 0,startValue = 0;
 	UT_uint32 attribsCount;
 	bool bPasteList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
 	if( bPasteList )
@@ -4120,7 +4120,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 	UT_uint32 numHdrFtr;
 	const RTFHdrFtr * header;
 	XML_Char tempBuffer[128];
-	const XML_Char* szType;
+	const XML_Char* szType = NULL;
 
 	
 	numHdrFtr = m_hdrFtrTable.getItemCount();

@@ -731,7 +731,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	UT_uint32 count = m_pToolbarLayout->getLayoutItemCount();
 	UT_uint32 i =0;
 	EV_Toolbar_LayoutItem * pLayoutItem = NULL;
-	XAP_Toolbar_Id id;
+	XAP_Toolbar_Id id = 0;
 	_wd * wd = NULL;
 	for(i=0; i < count; i++)
 	{

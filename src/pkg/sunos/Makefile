@@ -44,11 +44,13 @@ pkg: install
 	@sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" pkg/pkginfo | sed \
 		"s/__ABI_ARCH__/$(OS_ARCH)/" > $(DIST)/pkginfo
 	@echo "i pkginfo" > $(DIST)/Prototype
+	@echo "i checkinstall=./checkinstall" >> $(DIST)/Prototype
 	@find /usr/local/AbiSuite /usr/local/bin/AbiWord /usr/local/bin/abiword -print \
 		| pkgproto >> $(DIST)/Prototype
 	@(cd $(DIST); pkgmk -o -r / -d $(DIST) -f Prototype)
 	@rm -f $(DIST)/Prototype
 	@rm -f $(DIST)/pkginfo
+	@rm -f $(DIST)/checkinstall
 	@echo "Compressing pkg into .tar.gz format..."
 	@(cd $(DIST); tar cf - abisuite | gzip -c > \
 		$(DIST)/abisuite.$(ABI_BUILD_VERSION).$(OS_ARCH).SunOS.$(OS_RELEASE).pkg.tar.gz)

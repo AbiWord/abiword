@@ -1,0 +1,163 @@
+# Requierement checking for AbiWord package installation on Solaris
+# Author: Hubert Figuiere <hfiguiere@teaser.fr>
+# 
+# AbiSource Applications
+# Copyright (C) 1998 AbiSource, Inc.
+# Copyright (C) 2001 Hubert Figuière
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+
+
+# Package names
+
+zlib_pkg=JGzlib
+libpng_pkg=SMClpng
+glib_pkg=SMCglib
+gtk_pkg=SMCgtk+
+# from SUN's GNOME distribution for Solaris 8
+sunglib_pkg=SUNWglib 
+sungtk_pkg=SUNWgtk+
+
+# Version requirements
+VERS_GLIB_MIN=1.2.7
+VERS_GTK_MIN=1.2.7
+
+#######################################################
+# check version. Request is arg1, current is arg2
+# return 0 if current >= requested
+# otherwise 1
+# trick borrowed from autoconf configure scripts
+check_ver ()
+{
+	vers_num=`echo ${2} | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+	req_num=`echo ${1} | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+	if [ ${vers_num} -lt ${req_num} ]; then
+	#	echo "but version >= ${1} is required..."
+		return 1
+	else
+	#	echo "version ok."
+		return 0
+	fi
+}
+
+#######################################################
+# check Solaris version. Currently only 2.6, 7 and 8 versions are
+# supported
+sol_vers=`uname -r`
+case $sol_vers in
+	5.6)
+		;;
+	5.7)
+		;;
+	5.8)
+		;;
+	*)
+		echo "This version of Solaris is not supported"
+		exit 3
+		;;
+esac
+
+# check zlib availability
+# Solaris 8 already have zlib so we don't check for it.
+if [ x${sol_vers} = x5.6 ] || [ x${sol_vers} = x5.7 ]; then
+	pkginfo -q ${zlib_pkg}  # sunfreeware package for Solaris 2.6 and 2.7
+	if [ $? -ne 0 ]; then
+		# check if installed manually
+		if [ ! -f /usr/local/lib/libz.so ]; then
+			echo "zlib package not installed. Please download it from:"
+			echo "    http://www.sunfreeware.com/"
+			echo "then install it."
+			exit 3
+		else
+			echo "Found /usr/local/lib/libz.so"
+		fi
+	else
+		echo "Found zlib in package ${zlib_pkg}"
+	fi
+fi
+
+# check libpng availability
+pkginfo -q ${libpng_pkg} # sunfreeware package for Solaris 2.6, 7 and 8
+if [ $? -ne 0 ]; then
+	if [ ! -f /usr/local/lib/libpng.so ]; then
+		echo "libpng package not installed. Please download it from:"
+		echo "    http://www.sunfreeware.com/"
+		echo "then install it."
+		exit 3
+	else
+		echo "Found /usr/local/lib/libpng.so"
+	fi
+else
+	echo "Found libpng in package ${libpng_pkg}"
+fi
+
+
+# check glib availability
+vers_check=`pkgparam ${glib_pkg} VERSION 2>/dev/null` 
+if [ $? -ne 0 ]; then
+	vers_check=`/usr/local/bin/glib-config  --version 2>/dev/null`
+	if [ $? -ne 0 ]; then
+		echo "glib package not installed. Please download it from:"
+		echo "    http://www.sunfreeware.com/"
+		echo "then install it."
+		exit 3
+	else
+		echo "Found glib version ${vers_check}"
+	fi
+else
+	# check the version
+	echo "Found glib version ${vers_check} in package ${glib_pkg}"
+fi
+if [ -z "${vers_check}" ];  then
+	echo "Could not determine version"
+	exit 3
+else
+	check_ver ${VERS_GLIB_MIN} ${vers_check}
+	if [ $? -ne 0 ]; then
+		echo "but version >= ${VERS_GLIB_MIN} required"
+		exit 3
+	fi
+fi
+
+
+
+# check gtk+ availability
+vers_check=`pkgparam ${gtk_pkg} VERSION 2>/dev/null` 
+if [ $? -ne 0 ]; then
+	vers_check=`/usr/local/bin/gtk-config  --version 2>/dev/null`
+	if [ $? -ne 0 ]; then
+		echo "gtk+ package not installed. Please download it from:"
+		echo "    http://www.sunfreeware.com/"
+		echo "then install it."
+		exit 3
+	else
+		echo "Found gtk+ version ${vers_check}"
+	fi
+else
+	echo "Found gtk+ version ${vers_check} in package ${gtk+_pkg}"
+fi
+if [ -z "${vers_check}" ];  then
+	echo "Could not determine version"
+	exit 3
+else
+	# check for version 1.2.7 at least
+	check_ver ${VERS_GTK_MIN} ${vers_check}
+	if [ $? -ne 0 ]; then
+		echo "but version >= ${VERS_GTK_MIN} required"
+		exit 3
+	fi
+fi
+
