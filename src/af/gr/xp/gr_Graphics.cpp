@@ -106,7 +106,7 @@ UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length
 			MaxWidth = pWidths[i];
 	}
 
-	delete pWidths;
+	DELETEPV(pWidths);
 
 	return MaxWidth;
 
