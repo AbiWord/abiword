@@ -104,6 +104,8 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
+	virtual bool	  storeCachedImage(UT_Rect * pRect);
+	virtual bool	  restoreCachedImage();
 
 	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);

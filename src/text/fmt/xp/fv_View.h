@@ -487,6 +487,7 @@ protected:
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
 	void				_xorInsertionPoint();
+	void 				_actuallyXorInsertionPoint();
 	bool				_hasPointMoved(void);
 	void				_saveCurrentPoint(void);
 	void				_clearOldPoint(void);

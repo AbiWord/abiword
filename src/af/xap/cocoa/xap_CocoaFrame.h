@@ -52,13 +52,14 @@ class FV_View;
 // TODO should figure out if need default values
 @interface XAP_CocoaNSView : NSView
 {
-	FV_View				*m_pFV;
+	XAP_CocoaFrame 		*m_pFrame;
 	GR_CocoaGraphics	*m_pGR;
 }
+- (id)initWith:(XAP_CocoaFrame *)frame;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
+- (void)setXAPFrame:(XAP_CocoaFrame *)frame;
 - (void)setGraphics:(GR_CocoaGraphics *)gr;
-- (void)setView:(FV_View *)fv;
 - (void)drawRect:(NSRect)aRect;
 - (BOOL)isFlipped;
 - (BOOL)isOpaque;

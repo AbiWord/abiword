@@ -330,6 +330,9 @@ class ABI_EXPORT GR_Graphics
 	void              setDoMerge( bool bMergeState);
 	bool              doMerge(void) const;
 
+	virtual bool	  storeCachedImage(UT_Rect * pRect) { return false; }
+	virtual bool	  restoreCachedImage() { return false; }
+
  protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	void              setStaticScreenResolution(UT_uint32 iRes);

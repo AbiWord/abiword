@@ -7533,6 +7533,12 @@ void  FV_View::_clearOldPoint(void)
 	m_oldyPoint2 = -1;
 }
 
+void FV_View::_actuallyXorInsertionPoint()
+{
+	m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
+	m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
+}
+
 void FV_View::_xorInsertionPoint()
 {
 	if (NULL == getCurrentPage())
@@ -7540,7 +7546,7 @@ void FV_View::_xorInsertionPoint()
 
 	UT_ASSERT(getCurrentPage()->getOwningSection());
 
-	if (m_iPointHeight > 0 )
+	if (m_iPointHeight > 0)
 	{
 		fp_Page * pPage = getCurrentPage();
 
@@ -7550,8 +7556,17 @@ void FV_View::_xorInsertionPoint()
 			m_pG->setColor(*pClr);
 		}
 
-		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
-		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
+		if (m_bCursorIsOn)
+		{
+			if (!m_pG->restoreCachedImage())
+				_actuallyXorInsertionPoint();
+		}
+		else
+		{
+			UT_Rect r(m_xPoint-1, m_yPoint+1, 1, m_iPointHeight);
+			m_pG->storeCachedImage(&r);
+			_actuallyXorInsertionPoint();
+		}
 		m_bCursorIsOn = !m_bCursorIsOn;
 
 		if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))

@@ -892,6 +892,14 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 @end
 
 @implementation XAP_CocoaNSView
+- (id)initWith:(XAP_CocoaFrame *)frame
+{
+	UT_DEBUGMSG (("Cocoa: @XAP_CocoaNSView initWith:Frame\n"));
+	m_pFrame = frame;
+	m_pGR = NULL;
+	return self;
+}
+
 - (BOOL)acceptsFirstResponder
 {
 	return YES;
@@ -899,11 +907,16 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 
 - (BOOL)becomeFirstResponder
 {
-	if (m_pFV)
-		m_pFV->focusChange(AV_FOCUS_HERE);
+	if (m_pFrame->getCurrentView())
+		m_pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE);
 
 	UT_DEBUGMSG(("became first responder!\n"));
 	return YES;
+}
+
+- (void)setXAPFrame:(XAP_CocoaFrame *)frame
+{
+	m_pFrame = frame;
 }
 
 - (void)setGraphics:(GR_CocoaGraphics *)gr
@@ -911,17 +924,11 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	m_pGR = gr;
 }
 
-- (void)setView:(FV_View *)fv
-{
-	m_pFV = fv;
-}
-
 /*!
 	Cocoa overridden method. Redraw the screen.
  */
 - (void)drawRect:(NSRect)aRect
 {
-	UT_DEBUGMSG(("called drawRect, pGR %s\n", m_pGR ? "non-null" : "null"));
 	if (m_pGR) {
 		m_pGR->_updateRect(self, aRect);
 	}

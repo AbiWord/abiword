@@ -117,6 +117,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 		[win retain];
 		m_pWin = win;
 	}
+	[m_pWin setXAPFrame:(XAP_CocoaFrame*)(app->getLastFocussedFrame())];
 	[m_pWin setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 	[m_pWin setGraphics:this];
 	m_iLineWidth = 0;
@@ -271,7 +272,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		switch(isOverstrikingChar(*pC))
 		{
 		case UT_NOT_OVERSTRIKING:
-			curWidth = [font widthOfString:string];
+			curWidth = (UT_sint32)[font widthOfString:string];
 			curX = x;
 			break;
 		case UT_OVERSTRIKING_RTL:
@@ -351,7 +352,7 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	float w = [font widthOfString:string];
 	[string release];
 
-	return w;
+	return (UT_uint32)w;
 }
 
 
@@ -502,7 +503,7 @@ UT_uint32 GR_CocoaGraphics::getFontAscent(GR_Font * fnt)
 	XAP_CocoaFontHandle * hndl = static_cast<XAP_CocoaFontHandle *>(fnt);
 
 	NSFont* pFont = hndl->getNSFont();
-	return [pFont ascender];
+	return (UT_uint32)[pFont ascender];
 }
 
 UT_uint32 GR_CocoaGraphics::getFontAscent()
@@ -517,7 +518,7 @@ UT_uint32 GR_CocoaGraphics::getFontDescent(GR_Font * fnt)
 	XAP_CocoaFontHandle * hndl = static_cast<XAP_CocoaFontHandle *>(fnt);
 
 	NSFont* pFont = hndl->getNSFont();
-	return [pFont descender];
+	return (UT_uint32)[pFont descender];
 }
 
 UT_uint32 GR_CocoaGraphics::getFontDescent()
@@ -549,6 +550,8 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 {
 	// TODO use XOR mode NSCompositeXOR
 	LOCK_CONTEXT__;
+
+	// Should make an NSImage and XOR it onto the real image.
 	[NSBezierPath strokeLineFromPoint:NSMakePoint(x1, y1) toPoint:NSMakePoint(x2, y2)];
 }
 
@@ -992,4 +995,22 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pff = FF_Unknown;
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
+}
+
+bool GR_CocoaGraphics::storeCachedImage(UT_Rect * pRect)
+{
+	NSRect r = NSMakeRect(pRect->left, pRect->top, 
+						  pRect->width, pRect->height);
+	LOCK_CONTEXT__;
+	[[m_pWin window] cacheImageInRect:r];
+	[[m_pWin window] flushWindowIfNeeded];
+	return true; 
+}
+
+bool GR_CocoaGraphics::restoreCachedImage()
+{
+	LOCK_CONTEXT__;
+	[[m_pWin window] restoreCachedImage];
+	[[m_pWin window] flushWindowIfNeeded];
+	return true; 
 }
