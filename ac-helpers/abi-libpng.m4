@@ -33,11 +33,11 @@ abi_found_libpng="no"
 
 ABI_LIBPNG_DIR=""
 AC_ARG_WITH(libpng,[  --with-libpng=DIR     use libpng in DIR],[
-	if [ test "$withval" = "no" ]; then
+	if test "$withval" = "no"; then
 		AC_MSG_ERROR([* * * libpng is required by AbiWord * * *])
-        elif [ test "$withval" = "yes" ]; then
+        elif test "$withval" = "yes"; then
 		abi_libpng=check
-        elif [ test "$withval" = "peer" ]; then
+        elif test "$withval" = "peer"; then
 		abi_libpng=peer
 	else
 		abi_libpng=sys
@@ -47,9 +47,17 @@ AC_ARG_WITH(libpng,[  --with-libpng=DIR     use libpng in DIR],[
 ],[	abi_libpng=check
 ])
 
+if test $abi_libpng = check; then
+	PKG_CHECK_MODULES(LIBPNG,libpng12,[
+		abi_libpng=pkg
+		abi_png=sys
+	],[	abi_libpng=check
+	])
+fi
+
 if test $abi_libpng = peer; then
 	abi_png=peer
-else
+elif test $abi_libpng != pkg; then
 	if test $abi_libpng = sys; then
 		_abi_cppflags="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $ZLIB_CFLAGS -I$ABI_LIBPNG_DIR/include"
@@ -97,6 +105,9 @@ else
 		abi_libpng_message="libpng in -L$ABI_LIBPNG_DIR/lib -lpng"
 		LIBPNG_CFLAGS="-I$ABI_LIBPNG_DIR/include"
 		LIBPNG_LIBS="-L$ABI_LIBPNG_DIR/lib -lpng"
+	elif test $abi_libpng = pkg; then
+		abi_libpng_message="libpng in $LIBPNG_LIBS"
+		abi_wv_cppflags="$abi_wv_cppflags $LIBPNG_CFLAGS"
 	else
 		abi_libpng_message="libpng in -lpng"
 		LIBPNG_CFLAGS=""

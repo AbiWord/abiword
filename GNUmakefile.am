@@ -72,9 +72,12 @@ endif
 
 dictionary_list=$(top_srcdir)/../abidistfiles/dictionary/ispell_dictionary_list.xml
 
+bonobodir = $(libdir)/bonobo/servers
+
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
-	@if test -d $(top_srcdir)/../abidistfiles ; then \
+	@$(mkinstalldirs) $(DESTDIR)$(bonobodir)
+	if test -d $(top_srcdir)/../abidistfiles ; then \
 	  for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
 	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
 	    if test "$$dir" = "./dictionary"; then \
@@ -85,7 +88,12 @@ install-data-local:
 	    else \
 	      for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
 	        if test -f $$file ; then \
-	          $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
+		  sfile=`echo "$$file" | sed 's/\.[^.]*$$//'`; \
+		  if test "$$sfile.server" = $$file; then \
+		    $(INSTALL_DATA) $$file $(DESTDIR)$(bonobodir); \
+		  else \
+		    $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/$$dir; \
+		  fi; \
 	        fi; \
 	      done; \
 	    fi; \
