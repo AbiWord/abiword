@@ -182,10 +182,15 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, true), m_bWroteSection (false),
-    m_bWroteParagraph(false), m_bDocHasLists(false), m_bDocHasPageSize(false),
-	m_iInlineStart(0), m_refMap(new UT_GenericStringMap<UT_UTF8String*>),
-	m_bAutoRevisioning(false)
+  : IE_Imp_XML(pDocument, true), 
+	m_bWroteSection (false),
+    m_bWroteParagraph(false), 
+	m_bDocHasLists(false), 
+	m_bDocHasPageSize(false),
+	m_iInlineStart(0), 
+	m_refMap(new UT_GenericStringMap<UT_UTF8String*>),
+	m_bAutoRevisioning(false),
+	m_bInMath(false)
 {
 }
 
@@ -479,6 +484,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_IMAGE:
 	{
+		if(m_bInMath)
+		{
+			UT_DEBUGMSG(("Ignore image in math-tag \n"));
+			return;
+		}
 		X_VerifyParseState(_PS_Block);
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
@@ -497,6 +507,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	{
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(appendObject(PTO_Math,atts));
+		m_bInMath = true;
 		return;
 	}
 	case TT_BOOKMARK:
@@ -954,6 +965,8 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_MATH:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		m_bInMath = false;
+		UT_DEBUGMSG(("In math set false \n"));
 		X_VerifyParseState(_PS_Block);
 		return;
 

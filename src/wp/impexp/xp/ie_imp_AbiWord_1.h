@@ -93,6 +93,7 @@ protected:
 
 	UT_GenericStringMap<UT_UTF8String *> *	m_refMap;
 	bool                m_bAutoRevisioning;
+	bool                m_bInMath;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

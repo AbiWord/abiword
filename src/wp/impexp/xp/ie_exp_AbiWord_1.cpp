@@ -201,6 +201,8 @@ protected:
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *          m_pCurrentField;
 	bool                m_bOpenChar;
+	UT_GenericVector<UT_UTF8String *> m_vecSnapNames;
+
 
 private:
 	UT_Set				m_pUsedImages;
@@ -371,13 +373,11 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			if (k > 1) tag += "\"";
 		}
 	}
-
 	if (szSuffix)
 		if (*szSuffix == '/')
 			tag += "/";
 	tag += ">";
 	if (bNewLineAfter) tag += "\n";
-
 	m_pie->write (tag.utf8_str (), tag.byteLength());
 
 	if (strcmp (szPrefix, "c") == 0) m_bOpenChar = true;
@@ -447,13 +447,70 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			m_pie->write("\"");
 		}
 	}
-
-	if (szSuffix && *szSuffix)
-		m_pie->write(szSuffix);
-	m_pie->write(">");
-	if (bNewLineAfter)
-		m_pie->write("\n");
-
+	if(UT_strcmp(szPrefix,"math") == 0)
+	{
+		UT_UTF8String tag;
+		const char * szPropVal = NULL;
+		pAP->getAttribute("dataid",szPropVal);
+		if(szPropVal != NULL)
+		{
+			tag = ">";
+			if (bNewLineAfter) tag += "\n";
+			m_pie->write (tag.utf8_str (), tag.byteLength());
+			tag.clear();
+			tag = "<image dataid=";
+			tag += "\"";
+			tag += "snapshot-png-";
+			tag += szPropVal;
+			tag += "\"";
+			tag += " ";
+			tag += PT_PROPS_ATTRIBUTE_NAME;
+			tag += "=\"";
+			bool bFound = pAP->getProperty("height", szPropVal);
+			UT_UTF8String sVal;
+			if(bFound)
+			{
+				double dInch = static_cast<double>(atoi(szPropVal))/UT_LAYOUT_RESOLUTION;
+				UT_UTF8String_sprintf(sVal,"%fin",dInch);
+				tag += "height:";
+				tag += sVal;
+				tag += "; ";
+			}
+			bFound = pAP->getProperty("width", szPropVal);
+			if(bFound)
+			{
+				double dInch = static_cast<double>(atoi(szPropVal))/UT_LAYOUT_RESOLUTION;
+				UT_UTF8String_sprintf(sVal,"%fin",dInch);
+				tag += "width:";
+				tag += sVal;
+				tag += "\"";
+			}
+			tag += "/";
+			tag += ">";
+			tag += "\n";
+			tag += "</math";
+			tag += ">";
+			tag += "\n";
+		}
+		else
+		{
+			if (szSuffix)
+				if (*szSuffix == '/')
+					tag += "/";
+			tag += ">";
+			if (bNewLineAfter) tag += "\n";
+		}
+		m_pie->write (tag.utf8_str (), tag.byteLength());
+	}
+	else
+	{
+		if (szSuffix)
+			if (*szSuffix == '/')
+				m_pie->write ("/");
+		m_pie->write (">");
+		if (bNewLineAfter)
+			m_pie->write ("\n");
+	}
 	//	m_bInTag = true;
 #endif /* ENABLE_RESOURCE_MANAGER */
 }
@@ -629,6 +686,7 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 	_handleDataItems();
 
 	m_pie->write("</abiword>\n");
+	UT_VECTOR_PURGEALL(UT_UTF8String * ,m_vecSnapNames);
 }
 
 
@@ -702,9 +760,17 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     _closeSpan();
                     _closeField();
                     _openTag("math","/",false,api,pcr->getXID());
-				const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
-				if (image_name)
-					m_pUsedImages.insert(image_name);
+					const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
+					if (image_name)
+					{
+						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
+						m_pUsedImages.insert(image_name);
+						UT_UTF8String * sPNGname = new UT_UTF8String("snapshot-png-");
+						m_vecSnapNames.addItem(sPNGname);
+						*sPNGname += image_name;
+						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
+						m_pUsedImages.insert(sPNGname->utf8_str());
+					}
                     return true;
                 }
   			case PTO_Bookmark:
@@ -1231,13 +1297,13 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 
 	UT_ByteBuf bbEncoded(1024);
 	UT_Set::Iterator end(m_pUsedImages.end());
-
+	UT_DEBUGMSG(("USed images are... \n"));
 	for (UT_uint32 k=0;
 		 (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(&szMimeType)));
 		 k++)
 	{
 		UT_Set::Iterator it(m_pUsedImages.find_if(szName, ut_lexico_equal));
-		if (it == end && (strstr(szName,"snapshot") == NULL))
+		if (it == end)
 		{
 			// This data item is no longer used. Don't output it to a file.
 			UT_DEBUGMSG(("item #%s# not found in set:\n", szName));
