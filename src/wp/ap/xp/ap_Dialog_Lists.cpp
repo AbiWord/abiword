@@ -314,11 +314,13 @@ void AP_Dialog_Lists::Apply(void)
 	getView()->cmdUnselectSelection();
 	if(m_bApplyToCurrent == true && m_isListAtPoint == true &&  m_NewListType != NOT_A_LIST)
 	{
+		getView()->getDocument()->beginUserAtomicGlob();
 		getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
 		if(getAutoNum() != NULL)
 		{
 			getAutoNum()->update(0);
 		}
+		getView()->getDocument()->endUserAtomicGlob();
 		clearDirty();
 		return;
 	}
@@ -327,6 +329,7 @@ void AP_Dialog_Lists::Apply(void)
  */
 	if ( m_isListAtPoint == true &&  m_NewListType == NOT_A_LIST)
 	{
+		getView()->getDocument()->beginUserAtomicGlob();
 		for(i=0;i < count; i++)
 		{
 			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
@@ -335,6 +338,7 @@ void AP_Dialog_Lists::Apply(void)
 				getView()->getDocument()->StopList(pBlock->getStruxDocHandle());
 			}
 		}
+		getView()->getDocument()->endUserAtomicGlob();
 		clearDirty();
 		return;
 	}
@@ -354,6 +358,7 @@ void AP_Dialog_Lists::Apply(void)
  */
 	if(m_bStartNewList == true)
 	{
+		getView()->getDocument()->beginUserAtomicGlob();
 		for(i=0;i < count; i++)
 		{
 			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
@@ -440,6 +445,7 @@ void AP_Dialog_Lists::Apply(void)
 		clearDirty();
 		getView()->updateScreen(true);
 		getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+		getView()->getDocument()->endUserAtomicGlob();
 		return;
 	}
 /*!
@@ -447,6 +453,7 @@ void AP_Dialog_Lists::Apply(void)
  */
 	if(m_bResumeList == true &&  m_isListAtPoint != true )
 	{
+		getView()->getDocument()->beginUserAtomicGlob();
 		for(i=0;i < count; i++)
 		{
 			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
@@ -458,6 +465,7 @@ void AP_Dialog_Lists::Apply(void)
 				pBlock->getDocument()->updateDirtyLists();
 			}
 		}
+		getView()->getDocument()->endUserAtomicGlob();
 	}
 	getView()->updateScreen(true);
 	getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
