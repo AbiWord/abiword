@@ -77,6 +77,9 @@ endif
 	@$(subst xxxx,$(CANONDIR)/clipart,$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/clipart/*.png $(CANONDIR)/clipart
 
+	@$(subst xxxx,$(CANONDIR)/templates,$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(ABI_ROOT)/../abidistfiles/templates/*.awt $(CANONDIR)/templates
+
 #	(cd $(ABI_ROOT)/../abidistfiles; tar cf - dictionary/*.hash) | (cd $(CANONDIR); tar xf -)
 ifeq ($(ABI_NATIVE),unix)
 # each Unix installer requires both unixfonts and abidistfiles, 
