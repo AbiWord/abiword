@@ -32,6 +32,8 @@
 
 #include "ap_FrameData.h"
 #include "fl_DocLayout.h"
+#include "xap_Prefs.h"
+#include "ap_Prefs.h"
 
 #include "ap_Dialog_Spell.h"
 
@@ -128,8 +130,23 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 	 // since we're done with this current block, put it
 	 // in the block spell queue so squiggles will be updated
+	
 	 FL_DocLayout * docLayout = m_pSection->getDocLayout();
-	 docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pBlock);
+
+	 // Makes this honor spelling prefs
+	 XAP_App * pApp = m_pFrame->getApp();
+	 UT_ASSERT(pApp);
+	 XAP_Prefs * pPrefs = pApp->getPrefs();
+	 UT_ASSERT(pPrefs);
+	 
+	 XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	 UT_ASSERT(pPrefsScheme);
+
+	 bool b = false;
+	 pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+
+	 if (b)
+	   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pBlock);
 	 
 	 m_pBlock = m_pBlock->getNext();
 
