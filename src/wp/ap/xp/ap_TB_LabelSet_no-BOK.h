@@ -65,10 +65,14 @@ BeginSet(no,BOK,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",		NoIcon,			NULL, "Stil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Skrift",	NoIcon,			NULL, "Skrift")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Skriftstørrelse", 	NoIcon,		NULL, "Skriftstørrelse")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Uthev",	tb_text_bold_F_xpm,	NULL, "Uthev")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fet",	        tb_text_bold_F_xpm,	NULL, "Fet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",	tb_text_italic_K_xpm,	NULL, "Kursiv")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Understreket",	tb_text_underline_xpm,	NULL, "Understreket")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Gjennomstreket",tb_text_strikeout_G_xpm,	NULL, "Gjennomstreket")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overstreket",  tb_text_overline_xpm,	NULL, "Overstreket")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Gjennomstreket",   tb_text_strikeout_xpm,	NULL, "Gjennomstreket")
+
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Hevet",	tb_text_superscript_xpm,	NULL, "Hevet")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Senket",	tb_text_subscript_xpm,		NULL, "Senket")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Venstre",	tb_text_align_left_xpm,	NULL, "Venstrestilt")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Midtstilt",	tb_text_center_xpm,	NULL, "Midtstilt")
@@ -87,7 +91,8 @@ BeginSet(no,BOK,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Kolonner",	tb_3column_xpm,		NULL, "3 Kolonner")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",		NoIcon,			NULL, "Zoom")
-	
+        ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,       "Lister",   tb_lists_xpm,		NULL,		"Lister og nummerering")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)

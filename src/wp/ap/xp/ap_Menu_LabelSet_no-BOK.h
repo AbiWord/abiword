@@ -46,7 +46,7 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FILE_CLOSE,		"&Lukk", 			"Lukk dokument")
 	MenuLabel(AP_MENU_ID_FILE_SAVE,			"&Lagre", 			"Lagre dokument")
 	MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"L&agre som", 			"Lagre dokument med et annet navn")
-	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,		"S&ideopsett",			"Endre sideopsett")
+	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,		"S&ideoppsett",			"Endre sideopsett")
 	MenuLabel(AP_MENU_ID_FILE_PRINT,		"Skriv &ut",			"Skriv ut hele dokumentet")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_1,		"&1 %s",			"Åpne dette dokumentet")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_2,		"&2 %s",			"Åpne dette dokumentet")
@@ -80,7 +80,7 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,		"&Topptekst og bunntekst",	"Rediger tekst på toppen eller bunnen av hver side")
 	MenuLabel(AP_MENU_ID_VIEW_ZOOM,			"&Zoom",			"Forminsk eller forstørr dokumentet på skjermen")
 
-	MenuLabel(AP_MENU_ID_INSERT,			"&Erstatt ",			NULL)
+	MenuLabel(AP_MENU_ID_INSERT,			"&Sett inn",			NULL)
 	MenuLabel(AP_MENU_ID_INSERT_BREAK,		"&Skift",			"Erstatt en side, rekke, eller sektions skift")
 	MenuLabel(AP_MENU_ID_INSERT_PAGENO,		"Side t&all",			"Erstatt en automatisk oppdatert side nummer")
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,		"&Dato og tid",			"Erstatt dato og/eller tid")
@@ -98,10 +98,17 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_TABS,			"&Tabulatorer",			"Sett tabulatorstopp")
 	MenuLabel(AP_MENU_ID_FMT_BOLD,			"&Fet",				"Gjør markert tekst fet (skift)")
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kursiv",			"Gjør markert tekst kursiv (skift)")
-	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Understreket",		"Understrek markert tekst (skift)")
+	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Understreket", "Understrek markert tekst (skift)")
+     	MenuLabel(AP_MENU_ID_FMT_OVERLINE,		"&Overstreket", "Overstreke markert tekst (skift)")
+     	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"Stry&k ut", "Stryk ut markert tekst (skift)")
+	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	        "&Hevet", "Hev markert tekst (skift)")
+	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"S&enket", "Senk markert tekst (skift)")
+
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Gjennomstreket",		"Gjennomstrek markert tekst (skift)")
 
-	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavekontroll",		"Sjekk dokumentet for stavefeil")
+        MenuLabel(AP_MENU_ID_TOOLS,                     "&Verktøy",			NULL)   
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavekontroll", "Sjekk dokumentet for stavefeil")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	        "&Ordtelling",		"Tell antall ord i dokumentet")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"Egens&kaper",			"Sett egenskaper")
 
 	MenuLabel(AP_MENU_ID_ALIGN,			"&Juster",			NULL)
@@ -123,10 +130,16 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_WINDOW_9,			"&9 %s",			"Hent dette vinduet")
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&Flere vinduer",		"Vis full liste av vinduer")
 
-	MenuLabel(AP_MENU_ID_HELP,				"&Hjelp",			NULL)
-	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Om %s",			"Vis programinformasjon, versjonsnummer, og copyright")
+	MenuLabel(AP_MENU_ID_HELP,			"&Hjelp",		NULL)
+	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Innhold",	        "Vis tilgjengelig hjelp")
+	MenuLabel(AP_MENU_ID_HELP_INDEX,		"I&ndeks",		"Vis indeks over tilgjengelig hjelp")
+	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Vis &Versjon",         "Vis programmets versjonsnummer")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Søk etter hjelp",	"Søk på internett etter hjelp")
+	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Om %s",		"Vis programinformasjon, versjonsnummer, og copyright")
+        MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Om O&pen Source",      "Vis informasjon om Open Source")
 
-	// ... add others here ...
+
+     // ... add others here ...
 
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)
 

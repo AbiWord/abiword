@@ -71,7 +71,7 @@ $(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(UNIX_CAN_BUILD_STATIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking static $(PROGRAM_S)
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+#	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
 else
 	@echo "Not linking static $(PROGRAM_S)"
 	@echo "    UNIX_CAN_BUILD_STATIC not defined for this platform."

@@ -493,7 +493,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	gtk_widget_show (listViewRulerUnit);
 	gtk_box_pack_start (GTK_BOX (hbox10), listViewRulerUnit, FALSE, FALSE, 0);
 	listViewRulerUnit_menu = gtk_menu_new ();
-	glade_menuitem = gtk_menu_item_new_with_label (_("inch"));		// TODO
+	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_inch));
  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_IN );	
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
@@ -507,7 +507,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
  	// gtk_widget_show (glade_menuitem);
  	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
  
-	glade_menuitem = gtk_menu_item_new_with_label (_("cm"));		// TODO
+	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_cm));
  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_CM );	
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
@@ -521,14 +521,14 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
  	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
  	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
  
-	glade_menuitem = gtk_menu_item_new_with_label (_("points"));	// TODO
+	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_points));
  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
   	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_PT );	
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
   
-  	glade_menuitem = gtk_menu_item_new_with_label (_("pico"));
+  	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Unit_pico));
   	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
   	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_PI  );	
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
