@@ -42,7 +42,9 @@
 
 #define REDRAW_UPDATE_MSECS	500
 
-FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(19)
+FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
+:	m_hashFontCache(19),
+	m_pageSize(_getDefaultPageSize())
 {
 	m_pDoc = doc;
 	m_pG = pG;
@@ -65,15 +67,12 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 		m_pRedrawUpdateTimer->start();
 	}
 
-
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
-	// TODO and cannot report failure.
+	// TODO and are not allowed to report failure.
 	
 	m_pDocListener = new fl_DocListener(doc, this);
 	doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
-
-		
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -323,10 +322,10 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 		pLastPage = NULL;
 	}
 
-	/*
-	  TODO the following page dimensions should NOT be hard-coded
-	*/
-	fp_Page*		pPage = new fp_Page(this, m_pView, 850, 1100, pOwner);
+	fp_Page* pPage = new fp_Page(	this,
+									m_pView,
+									m_pageSize,
+									pOwner);
 	if (pLastPage)
 	{
 		UT_ASSERT(pLastPage->getNext() == NULL);
@@ -890,5 +889,13 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 		pDocLayout->m_pSpellCheckTimer->stop();
 	}
 */
+}
+
+fp_PageSize FL_DocLayout::_getDefaultPageSize()
+{
+	// TODO The following page dimensions should NOT be hard-coded.
+	// TODO return PageSize initialized by prefs.
+
+	return fp_PageSize(fp_PageSize::Letter);
 }
 

@@ -25,6 +25,7 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "pt_Types.h"
+#include "fp_PageSize.h"
 
 
 class FV_View;
@@ -154,6 +155,7 @@ protected:
 
 
 	static void			_redrawUpdate(UT_Timer * pTimer);
+	static fp_PageSize	_getDefaultPageSize();
 
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
@@ -180,6 +182,7 @@ protected:
 	XAP_Prefs *			m_pPrefs;
 
 	UT_Timer*			m_pRedrawUpdateTimer;
+	fp_PageSize			m_pageSize;
 };
 
 #endif /* DOCLAYOUT_H */

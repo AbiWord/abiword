@@ -25,6 +25,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "fl_SectionLayout.h"
+#include "fp_PageSize.h"
 
 
 class FL_DocLayout;
@@ -40,11 +41,10 @@ struct dg_DrawArgs;
 // ----------------------------------------------------------------
 class fp_Page
 {
- public:
+public:
 	fp_Page(FL_DocLayout*,
 			FV_View*,
-			UT_uint32 iWidth,
-			UT_uint32 iHeight,
+			const fp_PageSize& pageSize,
 			fl_DocSectionLayout* pOwner
 			);
 	~fp_Page();
@@ -52,6 +52,7 @@ class fp_Page
 	UT_sint32		getWidth(void) const;
 	UT_sint32		getWidthInLayoutUnits(void) const;
 	UT_sint32		getHeight(void) const;
+	UT_sint32		getHeightInLayoutUnits(void) const;
 	UT_sint32		getBottom(void) const;
 	fp_Page*		getNext(void) const;
 	fp_Page*		getPrev(void) const;
@@ -95,10 +96,8 @@ protected:
 	fp_Page*			m_pNext;
 	fp_Page*			m_pPrev;
 
-	UT_sint32			m_iWidth;
-	UT_sint32			m_iWidthLayoutUnits;
-	UT_sint32			m_iHeight;
-	UT_sint32			m_iHeightLayoutUnits;
+	fp_PageSize			m_pageSize;
+	UT_uint32			m_iResolution;	// in points per inch
 
 	UT_Bool				m_bNeedsRedraw;
 

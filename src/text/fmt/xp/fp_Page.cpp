@@ -38,32 +38,27 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
-fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
-				 UT_uint32 iWidth, UT_uint32 iHeight,
+fp_Page::fp_Page(FL_DocLayout* pLayout,
+				 FV_View* pView,
+				 const fp_PageSize& pageSize,
 				 fl_DocSectionLayout* pOwner)
+:	m_pLayout(pLayout),
+	m_pView(pView),
+	m_pNext(0),
+	m_pPrev(0),
+	m_pageSize(pageSize),
+	m_bNeedsRedraw(UT_TRUE),
+	m_pOwner(pOwner),
+	m_pHeader(0),
+	m_pFooter(0)
 {
 	UT_ASSERT(pLayout);
-
-	m_pLayout = pLayout;
-	m_pView = pView;
+	UT_ASSERT(pOwner);
 	
 	GR_Graphics * pG = pLayout->getGraphics();
 	UT_ASSERT(pG);
 
-	m_iWidth = UT_docUnitsFromPaperUnits(pG,iWidth);
-	m_iWidthLayoutUnits = UT_layoutUnitsFromPaperUnits(iWidth);
-	m_iHeight = UT_docUnitsFromPaperUnits(pG,iHeight);
-	m_iHeightLayoutUnits = UT_layoutUnitsFromPaperUnits(iHeight);
-
-	m_pNext = NULL;
-	m_pPrev = NULL;
-
-	m_pHeader = NULL;
-	m_pFooter = NULL;
-
-	m_bNeedsRedraw = UT_TRUE;
-
-	m_pOwner = pOwner;
+	m_iResolution = pG->getResolution();
 
 	m_pOwner->addOwnedPage(this);
 }
@@ -85,17 +80,22 @@ UT_Bool fp_Page::isEmpty(void) const
 
 UT_sint32 fp_Page::getWidth(void) const
 {
-	return m_iWidth;
+	return (UT_sint32)(m_iResolution * m_pageSize.Width(fp_PageSize::inch));
 }
 
 UT_sint32 fp_Page::getWidthInLayoutUnits(void) const
 {
-	return m_iWidthLayoutUnits;
+	return (UT_sint32)m_pageSize.Width(fp_PageSize::LayoutUnit);
 }
 
 UT_sint32 fp_Page::getHeight(void) const
 {
-	return m_iHeight;
+	return (UT_sint32)(m_iResolution * m_pageSize.Height(fp_PageSize::inch));
+}
+
+UT_sint32 fp_Page::getHeightInLayoutUnits(void) const
+{
+	return (UT_sint32)m_pageSize.Height(fp_PageSize::LayoutUnit);
 }
 
 UT_sint32 fp_Page::getBottom(void) const
@@ -113,7 +113,7 @@ UT_sint32 fp_Page::getBottom(void) const
 //	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 	
-	return m_iHeight - iBottomMargin;
+	return getHeight() - iBottomMargin;
 }	
 
 void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff)
@@ -240,7 +240,7 @@ void fp_Page::_reformat(void)
 	int i;
 	for (i=0; i<count; i++)
 	{
-		if (iYLayoutUnits >= (m_iHeightLayoutUnits - iBottomMarginLayoutUnits))
+		if (iYLayoutUnits >= (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 		{
 			break;
 		}
@@ -248,14 +248,14 @@ void fp_Page::_reformat(void)
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
-		UT_uint32 iSpace = m_iWidth - iLeftMargin - iRightMargin;
+		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
 		pSL->checkAndAdjustColumnGap(iSpace);
 
 		UT_uint32 iNumColumns = pSL->getNumColumns();
 		UT_uint32 iColumnGap = pSL->getColumnGap();
 		UT_uint32 iColumnGapLayoutUnits = pSL->getColumnGapInLayoutUnits();
 
-		UT_uint32 iSpaceLayoutUnits = m_iWidthLayoutUnits - iLeftMarginLayoutUnits - iRightMarginLayoutUnits;
+		UT_uint32 iSpaceLayoutUnits = getWidthInLayoutUnits() - iLeftMarginLayoutUnits - iRightMarginLayoutUnits;
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 		UT_uint32 iColWidthLayoutUnits = (iSpaceLayoutUnits - ((iNumColumns - 1) * iColumnGapLayoutUnits)) / iNumColumns;
 		
@@ -268,8 +268,8 @@ void fp_Page::_reformat(void)
 		{
 			pTmpCol->setX(iX);
 			pTmpCol->setY(iY);
-			pTmpCol->setMaxHeight(m_iHeight - iBottomMargin - iY);
-			pTmpCol->setMaxHeightInLayoutUnits(m_iHeightLayoutUnits - iBottomMarginLayoutUnits - iYLayoutUnits);
+			pTmpCol->setMaxHeight(getHeight() - iBottomMargin - iY);
+			pTmpCol->setMaxHeightInLayoutUnits(getHeightInLayoutUnits() - iBottomMarginLayoutUnits - iYLayoutUnits);
 			pTmpCol->setWidth(iColWidth);
 			pTmpCol->setWidthInLayoutUnits(iColWidthLayoutUnits);
 			iX += (iColWidth + iColumnGap);
