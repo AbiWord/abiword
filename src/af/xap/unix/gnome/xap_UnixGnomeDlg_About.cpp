@@ -59,18 +59,18 @@ static void cb_delete (GtkWidget *w, gpointer, XAP_UnixGnomeDialog_About *dlg)
 
 void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
 {
-  static const gchar *authors[] = {"AbiSource, Inc.", 
-				   "Dom Lachowicz <cinamod@hotmail.com>",
+  static const gchar *authors[] = {"Dom Lachowicz <cinamod@hotmail.com>",
 				   "Joaquin Cuenca Abela <cuenca@celium.net>",
 				   "John Tunison <nosinut@wind.rem.cmu.edu>",
+				   "and many other intrepid hackers",
 				   NULL};
 
   // Build the window's widgets and arrange them
   GtkWidget * mainWindow = gnome_about_new("AbiWord", 
 					   XAP_App::s_szBuild_Version,
-					   "(C) 1998-2001 AbiSource, Inc.",
+					   "(c) 1998-2001 AbiSource, Inc.",
 					   authors,
-					   NULL,
+					   "Released under the GNU GPL v2.0",
 					   NULL);  
   UT_ASSERT(mainWindow);
   

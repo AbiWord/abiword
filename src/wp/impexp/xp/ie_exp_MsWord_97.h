@@ -25,7 +25,7 @@
 #include "ut_misc.h"
 #include "pl_Listener.h"
 
-#include "exporter/wvexporter.h"
+#include "wvexporter.h"
 
 // forward declarations
 //

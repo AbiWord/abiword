@@ -60,7 +60,7 @@ BeginSet(en,US,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copy",		tb_copy_xpm,	NULL, "Copy")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Paste",	tb_paste_xpm,	NULL, "Paste")
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Spellcheck", tb_spellcheck_xpm, NULL, "Spellcheck the document")
-
+        ToolbarLabel(AP_TOOLBAR_ID_IMG, "Insert Image", tb_insert_graphic_xpm, NULL, "Insert an image into the document")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Style",	NoIcon,			NULL, "Style")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Font",		NoIcon,			NULL, "Font")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Font Size", NoIcon,		NULL, "Font Size")

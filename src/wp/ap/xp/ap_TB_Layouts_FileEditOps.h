@@ -54,5 +54,6 @@ BeginLayout(FileEditOps)
 	ToolbarItem(AP_TOOLBAR_ID_3COLUMN)
 
 	Spacer()
+        ToolbarItem(AP_TOOLBAR_ID_IMG)
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
 EndLayout()
