@@ -96,8 +96,10 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    // the part of the document being checked
    fl_DocSectionLayout * m_pStartSection;
    fl_BlockLayout      * m_pStartBlock;
+   UT_sint32             m_iStartIndex;
    fl_DocSectionLayout * m_pEndSection;
    fl_BlockLayout      * m_pEndBlock;
+   UT_uint32             m_iEndLength;
    fl_DocSectionLayout * m_pCurrSection;
    fl_BlockLayout      * m_pCurrBlock;
    

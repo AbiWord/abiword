@@ -102,8 +102,10 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
    m_pView = NULL;
    m_pStartSection = NULL;
    m_pStartBlock = NULL;
+   m_iStartIndex = -1;
    m_pEndSection = NULL;
    m_pEndBlock = NULL;
+   m_iEndLength = 0;
    m_pCurrSection = NULL;
    m_pCurrBlock = NULL;
    m_pChangeAll = NULL;
@@ -169,9 +171,11 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    
 	   m_pStartBlock = m_pView->getBlockAtPosition(range.m_pos1);
 	   m_pStartSection = m_pStartBlock->getDocSectionLayout();
+	   m_iStartIndex = range.m_pos1 - m_pStartBlock->getPosition();
 
 	   m_pEndBlock = m_pView->getBlockAtPosition(range.m_pos2);
 	   m_pEndSection = m_pEndBlock->getDocSectionLayout();
+	   m_iEndLength = range.m_pos2 - m_pEndBlock->getPosition();
 
 	   m_pCurrBlock = m_pStartBlock;
 	   m_pCurrSection = m_pStartSection;
@@ -191,7 +195,6 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 {
    UT_ASSERT(m_pBlockBuf);
 
-   // TODO not always 0 when checking selection
    UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
 
@@ -263,10 +266,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   if (!bRes)
 		     continue;
 
-		   iBlockLength = m_pBlockBuf->getLength();
-		   // TODO not always 0 when checking selection
 		   pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
-
+		   iBlockLength = m_pBlockBuf->getLength();
 	   }
 	
 	   // scan block for misspelled words
@@ -292,6 +293,19 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   }
 			   m_iWordOffset++;
 		   }
+
+		   // If there was a selection, we may have to stop here if
+		   // we're past the end length. It's done here, and not
+		   // earlier (or later) so that the last word of the
+		   // selection (even if only partially selected) is checked.
+		   if (m_bIsSelection && m_pCurrBlock == m_pEndBlock
+			   && m_iWordOffset >= m_iEndLength)
+		   {
+			   // Trigger next-block handling code (above)
+			   m_iWordOffset = iBlockLength;
+			   break;
+		   }
+
 	     
 		   // ignore initial apostrophe
 		   // TODO i18n can be part of word
@@ -326,7 +340,24 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 					   m_iWordLength++;
 				   }
 			   }
-		  
+
+			   // We have found a word, but if there was a selection,
+			   // make sure the word lies inside the selection (this
+			   // check is for the start of the selection only).
+			   if (m_bIsSelection && m_iStartIndex >= 0)
+			   {
+				   if ((UT_uint32)m_iStartIndex >= (m_iWordOffset + m_iWordLength))
+				   {
+					   // Word is not inside the selection - skip to
+					   // next one
+					   m_iWordOffset += (m_iWordLength + 1);
+					   continue;
+				   }
+				   // OK, it's inside the selection - we don't have to
+				   // check for this anymore
+				   m_iStartIndex = -1;
+			   }
+				
 			   // ignore terminal apostrophe
 			   // TODO i18n can be part of a word
 			   if (pBlockText[m_iWordOffset + m_iWordLength - 1] == '\'')
@@ -438,9 +469,18 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   {
 					   // we changed the word, and the block buffer has
 					   // been updated, so reload the pointer and length
-					   // TODO not always 0 when checking selection
 					   pBlockText = (UT_UCS4Char*) m_pBlockBuf->getPointer(0);
-					   iBlockLength = m_pBlockBuf->getLength();
+					   UT_uint32 newLength = m_pBlockBuf->getLength();
+					   // If this is the last block, adjust the end
+					   // length accordingly (seeing as the change
+					   // must have occured before the end of the
+					   // selection).
+					   if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
+					   {
+						   m_iEndLength += (newLength - iBlockLength);
+					   }
+
+					   iBlockLength = newLength;
 					   // the offset shouldn't change
 				   }
 			   }
@@ -454,10 +494,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 bool AP_Dialog_Spell::makeWordVisible(void)
 {
-   // TODO why clear selection?
-   //if (!m_bIsSelection && m_pView->isSelectionEmpty())
-  if (m_bIsSelection && m_pView->isSelectionEmpty())
-     m_pView->cmdUnselectSelection();
+   // Always clear selection before making a new one
+   m_pView->cmdUnselectSelection();
 
    m_pView->moveInsPtTo( (PT_DocPosition) (m_pCurrBlock->getPosition() + m_iWordOffset) );
    m_pView->extSelHorizontal(true, (UT_uint32) m_iWordLength);
@@ -525,11 +563,20 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    // that the focus gets shifted to the textbox instead
    // of the document, so isSelectionEmpty() returns true
    makeWordVisible ();
-   m_iWordLength = UT_UCS4_strlen(newword);
+   UT_uint32 iNewLength = UT_UCS4_strlen(newword);
 
-   result = m_pView->cmdCharInsert(newword, m_iWordLength);
+   result = m_pView->cmdCharInsert(newword, iNewLength);
    m_pView->updateScreen();
    
+   // If this is the last block, adjust the end length accordingly
+   // (seeing as the change must have occured before the end of the
+   // selection).
+   if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
+   {
+	   m_iEndLength += (iNewLength - m_iWordLength);
+   }
+   m_iWordLength = iNewLength;
+
    // reload block into buffer, as we just changed it
    m_pBlockBuf->truncate(0);
    bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
@@ -605,7 +652,6 @@ UT_UCSChar * AP_Dialog_Spell::_getPostWord(void)
 
 void AP_Dialog_Spell::_updateSentenceBoundaries(void)
 {
-   // TODO not always 0 when checking selection
    UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
    
