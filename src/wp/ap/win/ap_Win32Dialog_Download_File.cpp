@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ut_string.h"
@@ -26,41 +25,41 @@
 
 #include "xap_App.h"
 #include "xap_Frame.h"
-#include "xap_WinApp.h"
-#include "xap_WinFrame.h"
+#include "xap_Win32App.h"
+#include "xap_Win32Frame.h"
 
 #include "xap_Dialog_Id.h"
-#include "ap_WinDialog_Download_File.h"
+#include "ap_Win32Dialog_Download_File.h"
 
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 #include "ut_worker.h"
 
 
-XAP_Dialog * AP_WinDialog_Download_File::static_constructor(XAP_DialogFactory * pFactory,
+XAP_Dialog * AP_Win32Dialog_Download_File::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
-	AP_WinDialog_Download_File * p = new AP_WinDialog_Download_File(pFactory,id);
+	AP_Win32Dialog_Download_File * p = new AP_Win32Dialog_Download_File(pFactory,id);
 	return (XAP_Dialog*)p;
 }
 
-AP_WinDialog_Download_File::AP_WinDialog_Download_File(XAP_DialogFactory * pDlgFactory,
+AP_Win32Dialog_Download_File::AP_Win32Dialog_Download_File(XAP_DialogFactory * pDlgFactory,
 											 XAP_Dialog_Id id)
 	: AP_Dialog_Download_File(pDlgFactory,id)
 {
 }
 
-AP_WinDialog_Download_File::~AP_WinDialog_Download_File(void)
+AP_Win32Dialog_Download_File::~AP_Win32Dialog_Download_File(void)
 {
 }
 
 
-void AP_WinDialog_Download_File::_runModal(XAP_Frame * pFrame)
+void AP_Win32Dialog_Download_File::_runModal(XAP_Frame * pFrame)
 {
 }
 
 void
-AP_WinDialog_Download_File::_abortDialog(void)
+AP_Win32Dialog_Download_File::_abortDialog(void)
 {
 }
 

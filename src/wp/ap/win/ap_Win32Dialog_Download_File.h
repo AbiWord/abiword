@@ -21,15 +21,15 @@
 #define AP_WINDIALOG_DOWNLOAD_FILE_H
 
 #include "ap_Dialog_Download_File.h"
-#include "xap_WinFrame.h"
+#include "xap_Win32Frame.h"
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_WinDialog_Download_File : public AP_Dialog_Download_File
+class ABI_EXPORT AP_Win32Dialog_Download_File : public AP_Dialog_Download_File
 {
 public:
-	AP_WinDialog_Download_File(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_WinDialog_Download_File(void);
+	AP_Win32Dialog_Download_File(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_Download_File(void);
 
 	static XAP_Dialog	*static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	virtual void		_runModal(XAP_Frame * pFrame);

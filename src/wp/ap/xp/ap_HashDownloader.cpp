@@ -103,7 +103,6 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	UT_sint32 ret, i;
 	FILE *fp;
 	gzFile gzfp;
-	struct stat statBuf;
 	const XAP_StringSet *pSS = pFrame->getApp()->getStringSet();
 
 #ifdef CURLHASH_NO_CACHING_OF_LIST
@@ -439,6 +438,14 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
 #endif
 			pName = XAP_App::getApp()->getUserPrivateDirectory();
 
+		// try to make sure the base path exists (e.g. while testing Debug builds)
+		XAP_App::getApp()->makeDirectory(pName.c_str(), 0750);
+		if (!UT_directoryExists(pName.c_str())) 
+		{
+			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error base abisuite directory does not exist\n");
+			return (-1);
+		}
+
 		pName += "/dictionary";
 		//name = UT_strdup(pName.c_str());
 		name = pName.c_str();
@@ -454,7 +461,6 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
 		UT_DEBUGMSG(("AP_XXXHashDownloader::installPackage(): extracting %s to %s\n",hname, name));
 
 		// ensure the dictionary directory exists
-		// NOTE: this assumes the base path exists (->getAbiSuiteLibDir() or ->getUserPrivateDirectory())
 		XAP_App::getApp()->makeDirectory(name, 0750);
 		if (!UT_directoryExists(name)) 
 		{

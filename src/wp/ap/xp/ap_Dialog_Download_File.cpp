@@ -21,7 +21,14 @@
 #include <curl/types.h>
 #include <curl/easy.h>
 
-#include <unistd.h>
+
+#ifdef WIN32
+#include <io.h>		// _pipe
+#include <fcntl.h>	// _O_BINARY
+#define pipe(x) _pipe(x, 256, _O_BINARY)
+#else
+#include <unistd.h>	// pipe
+#endif
 
 #include "ut_debugmsg.h"
 

@@ -29,7 +29,7 @@ else
     CCSET=CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash
 endif
 REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
-ifeq ($(ABI_OPT_CURLHASH),1)
+ifeq ($(ABI_OPT_CURL),1)
 REQUIRE += _PEER_LIBCURL_
 endif
 TARGET=		build
