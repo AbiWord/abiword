@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jbo\n"
 "POT-Creation-Date: 2003-09-02 23:02-0400\n"
-"PO-Revision-Date: 2003-09-16 22:34-0400\n"
+"PO-Revision-Date: 2003-09-30 00:08-0400\n"
 "Last-Translator: Pierre Abbat <phma@webjockey.net>\n"
 "Language-Team: Lojban\n"
 "MIME-Version: 1.0\n"
@@ -1372,7 +1372,7 @@ msgstr "tervi'a selska:"
 #. DLG_Tab_Radio_Bar
 #: po/tmp/ap_String_Id.h.h:605
 msgid "Bar"
-msgstr ""
+msgstr "garna"
 
 #. TabToggleBarTab
 #: po/tmp/ap_String_Id.h.h:607
@@ -1382,7 +1382,7 @@ msgstr ""
 #. DLG_Styles_ModifyBasedOn
 #: po/tmp/ap_String_Id.h.h:609
 msgid "Based On:"
-msgstr ""
+msgstr "ji'u"
 
 #. AUTOTEXT_CLOSING_1
 #: po/tmp/ap_String_Id.h.h:611
@@ -1392,7 +1392,7 @@ msgstr ""
 #. AUTOTEXT_CLOSING_2
 #: po/tmp/ap_String_Id.h.h:613
 msgid "Best wishes,"
-msgstr ""
+msgstr ".i .uidai .a'o mi'e"
 
 #. DLG_Options_Label_BiDiOptions
 #: po/tmp/ap_String_Id.h.h:615
@@ -1414,13 +1414,13 @@ msgstr "ter&xrusni"
 #. DLG_Goto_Target_Bookmark
 #: po/tmp/ap_String_Id.h.h:623
 msgid "Bookmark"
-msgstr ""
+msgstr "terxrusni"
 
 #. MSG_BookmarkNotFound
 #: po/tmp/ap_String_Id.h.h:625
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr ""
+msgstr "na tolcirko la'o xy. %s .xy po'u le terxrusni le selpapri"
 
 #. DLG_FormatTable_Border_Color
 #: po/tmp/ap_String_Id.h.h:627
@@ -1435,7 +1435,7 @@ msgstr "korbi"
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:631
 msgid "Borders and Shading"
-msgstr ""
+msgstr "korbi joi citno"
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h.h:633
@@ -1506,7 +1506,7 @@ msgstr ""
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:662
 msgid "C&redits"
-msgstr ""
+msgstr "selckire"
 
 #. AUTOTEXT_EMAIL_4
 #: po/tmp/ap_String_Id.h.h:664
@@ -1516,7 +1516,7 @@ msgstr "Cc : "
 #. AUTOTEXT_MAIL_1
 #: po/tmp/ap_String_Id.h.h:666
 msgid "CERTIFIED MAIL"
-msgstr ""
+msgstr "BITYTCITA MRILU"
 
 #. AUTOTEXT_MAIL_2
 #: po/tmp/ap_String_Id.h.h:668
@@ -1796,7 +1796,7 @@ msgstr ""
 #. MENU_LABEL_AUTOTEXT_CLOSING
 #: po/tmp/ap_String_Id.h.h:781
 msgid "Closing:"
-msgstr ""
+msgstr "te tolrinsa:"
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:783
@@ -1896,7 +1896,7 @@ msgstr ""
 #. AUTOTEXT_CLOSING_3
 #: po/tmp/ap_String_Id.h.h:821
 msgid "Cordially,"
-msgstr ""
+msgstr ".i ga'inai mi'e"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h.h:823
@@ -3335,7 +3335,7 @@ msgstr "stogau le cabna tcigarna morna"
 #. AUTOTEXT_CLOSING_4
 #: po/tmp/ap_String_Id.h.h:1418
 msgid "Love,"
-msgstr "mu'o .iu"
+msgstr ".i .iu mi'e"
 
 #. DLG_Lists_Lower_Case_List
 #: po/tmp/ap_String_Id.h.h:1420 po/tmp/xap_String_Id.h.h:417
@@ -3754,7 +3754,7 @@ msgstr "ckaji"
 #. AUTOTEXT_MAIL_3
 #: po/tmp/ap_String_Id.h.h:1599
 msgid "PERSONAL"
-msgstr ""
+msgstr "PRETE'I"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:1601
@@ -3765,7 +3765,7 @@ msgstr "tam&vi'u setca"
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h.h:1604
 msgid "Page"
-msgstr ""
+msgstr "papri"
 
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h.h:1606
@@ -4032,7 +4032,7 @@ msgstr ""
 #. AUTOTEXT_MAIL_4
 #: po/tmp/ap_String_Id.h.h:1717
 msgid "REGISTERED MAIL"
-msgstr ""
+msgstr "BEIRPOIVEI MRILU"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1719
@@ -4182,12 +4182,12 @@ msgstr "stika le vi pixra le nilbra"
 #. AUTOTEXT_CLOSING_6
 #: po/tmp/ap_String_Id.h.h:1783
 msgid "Respectfully yours,"
-msgstr ""
+msgstr ".i .io.o'e mi'e"
 
 #. AUTOTEXT_CLOSING_7
 #: po/tmp/ap_String_Id.h.h:1785
 msgid "Respectfully,"
-msgstr ""
+msgstr ".i .io mi'e"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1787
@@ -4606,7 +4606,7 @@ msgstr "jarco jonai mipri le tarmi barna"
 #. AUTOTEXT_CLOSING_8
 #: po/tmp/ap_String_Id.h.h:1957
 msgid "Sincerely yours,"
-msgstr ""
+msgstr ".i co'o mi'e"
 
 #. DLG_Para_SpacingSingle
 #: po/tmp/ap_String_Id.h.h:1959
@@ -4922,7 +4922,7 @@ msgstr ""
 #. AUTOTEXT_CLOSING_9
 #: po/tmp/ap_String_Id.h.h:2095
 msgid "Take care,"
-msgstr ""
+msgstr ".i ko ko kurji mi'e"
 
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:2097
@@ -4947,12 +4947,12 @@ msgstr ""
 #. AUTOTEXT_CLOSING_10
 #: po/tmp/ap_String_Id.h.h:2105
 msgid "Thank you,"
-msgstr ""
+msgstr ".i ki'e mi'e"
 
 #. AUTOTEXT_CLOSING_11
 #: po/tmp/ap_String_Id.h.h:2107
 msgid "Thanks,"
-msgstr ""
+msgstr ".i ki'e mi'e"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:2109
