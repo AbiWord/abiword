@@ -51,6 +51,11 @@
 // TODO discouraged and replaced with names derived as in these tables.
 //
 // TODO This code should probably move into the Encoding Manager.
+//
+// TODO Some platforms use specific names not covered by this alias table
+// TODO such as the solaris iso-8559-n problem just fixed.  Root out any
+// TODO more instances of this to easily avoid problems that can cause a
+// TODO huge PITA when misdiagnosed.
 
 static XML_Char * enc_armscii[]	= {"ARMSCII-8",0};
 static XML_Char * enc_big5[]	= {"BIG5","BIG-5","BIG-FIVE","BIGFIVE","CN-BIG5",0};
@@ -78,20 +83,20 @@ static XML_Char * enc_georga[]	= {"GEORGIAN-ACADEMY",0};
 static XML_Char * enc_georgps[]	= {"GEORGIAN-PS",0};
 static XML_Char * enc_hp[]		= {"HP-ROMAN8","ROMAN8","R8",0};
 static XML_Char * enc_hz[]		= {"HZ","HZ-GB-2312",0};
-static XML_Char * enc_8859_1[]	= {"ISO-8859-1","ISO_8859-1","LATIN1","L1",0};
-static XML_Char * enc_8859_2[]	= {"ISO-8859-2","ISO_8859-2","LATIN2","L2",0};
-//static XML_Char * enc_8859_3[]	= {"ISO-8859-3","ISO_8859-3","LATIN3","L3",0};
-static XML_Char * enc_8859_4[]	= {"ISO-8859-4","ISO_8859-4","LATIN4","L4",0};
-static XML_Char * enc_8859_5[]	= {"ISO-8859-5","ISO_8859-5","CYRILLIC",0};
-static XML_Char * enc_8859_6[]	= {"ISO-8859-6","ISO_8859-6","ECMA-114","ASMO-708","ARABIC",0};
-static XML_Char * enc_8859_7[]	= {"ISO-8859-7","ISO_8859-7","ECMA-118","ELOT_928","GREEK8","GREEK",0};
-static XML_Char * enc_8859_8[]	= {"ISO-8859-8","ISO_8859-8","HEBREW",0};
-static XML_Char * enc_8859_9[]	= {"ISO-8859-9","ISO_8859-9","LATIN5","L5",0};
-//static XML_Char * enc_8859_10[]	= {"ISO-8859-10","ISO_8859-10","LATIN6","L6",0};
-//static XML_Char * enc_8859_13[]	= {"ISO-8859-13","ISO_8859-13","LATIN7","L7",0};
-//static XML_Char * enc_8859_14[]	= {"ISO-8859-14","ISO_8859-14","LATIN8","L8",0};
-//static XML_Char * enc_8859_15[]	= {"ISO-8859-15","ISO_8859-15",0};
-//static XML_Char * enc_8859_16[]	= {"ISO-8859-16","ISO_8859-16",0};
+static XML_Char * enc_8859_1[]	= {"ISO-8859-1","ISO_8859-1","8859-1","LATIN1","L1",0};
+static XML_Char * enc_8859_2[]	= {"ISO-8859-2","ISO_8859-2","8859-2","LATIN2","L2",0};
+//static XML_Char * enc_8859_3[]  = {"ISO-8859-3","ISO_8859-3","8859-3","LATIN3","L3",0};
+static XML_Char * enc_8859_4[]	= {"ISO-8859-4","ISO_8859-4","8859-4","LATIN4","L4",0};
+static XML_Char * enc_8859_5[]	= {"ISO-8859-5","ISO_8859-5","8859-5","CYRILLIC",0};
+static XML_Char * enc_8859_6[]	= {"ISO-8859-6","ISO_8859-6","8859-6","ECMA-114","ASMO-708","ARABIC",0};
+static XML_Char * enc_8859_7[]	= {"ISO-8859-7","ISO_8859-7","8859-7","ECMA-118","ELOT_928","GREEK8","GREEK",0};
+static XML_Char * enc_8859_8[]	= {"ISO-8859-8","ISO_8859-8","8859-8","HEBREW",0};
+static XML_Char * enc_8859_9[]	= {"ISO-8859-9","ISO_8859-9","8859-9","LATIN5","L5",0};
+//static XML_Char * enc_8859_10[]	= {"ISO-8859-10","ISO_8859-10","8859-10","LATIN6","L6",0};
+//static XML_Char * enc_8859_13[]	= {"ISO-8859-13","ISO_8859-13","8859-13","LATIN7","L7",0};
+//static XML_Char * enc_8859_14[]	= {"ISO-8859-14","ISO_8859-14","8859-14","LATIN8","L8",0};
+//static XML_Char * enc_8859_15[]	= {"ISO-8859-15","ISO_8859-15","8859-15",0};
+//static XML_Char * enc_8859_16[]	= {"ISO-8859-16","ISO_8859-16","8859-16",0};
 static XML_Char * enc_2022_jp[]	= {"ISO-2022-JP",0};
 // There are 4 JIS encodings which are not Shift-JIS...
 static XML_Char * enc_johab[]	= {"JOHAB","CP1361",0};
