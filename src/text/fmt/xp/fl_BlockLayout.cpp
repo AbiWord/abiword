@@ -452,7 +452,9 @@ void fl_BlockLayout::_lookupProperties(void)
 	if (prevBlockInList != NULL)
 		last_level = prevBlockInList->getLevel();
 	else 
+	{
 	        last_level = 0;
+	}
 
 	if (id != last_id) 
 	{
@@ -474,13 +476,14 @@ void fl_BlockLayout::_lookupProperties(void)
 		else if ((level == last_level))
 		{
 			/* For now, stop-list then start list */
+
 			if (!m_bStopList)
 			{
 				if (!m_pAutoNum)
 					_addBlockToPrevList(prevBlockInList);
 				_stopList();
 			}
-			_startList(id);
+			if(id != 0) _startList(id);
 		}
 		else if ((level < last_level) && (!m_bStopList))
 		{
@@ -491,7 +494,7 @@ void fl_BlockLayout::_lookupProperties(void)
 				curr_level = m_pAutoNum->getLevel();
 			else curr_level = 0;
 		
-			while (curr_level !=  level)
+			while (curr_level >  level)
 			{
 				_stopList();
 				curr_level--;
@@ -958,6 +961,7 @@ int fl_BlockLayout::format()
 			m_bCursorErased = UT_TRUE;
 		}
 	}
+	_lookupProperties();
 	if (m_pFirstRun)
 	{
 		if (m_bFixCharWidths)
@@ -1008,6 +1012,8 @@ void fl_BlockLayout::redrawUpdate()
 			m_bCursorErased = UT_TRUE;
 		}
 	}
+
+	_lookupProperties();
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
@@ -1021,7 +1027,7 @@ void fl_BlockLayout::redrawUpdate()
 
 	m_bNeedsRedraw = UT_FALSE;
 
-	_lookupProperties();
+	//	_lookupProperties();
 
 	if(m_bCursorErased == UT_TRUE)
 	{
@@ -3439,7 +3445,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		{
 		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE)
 		       {
-			     UT_DEBUGMSG(("SEVIOR: List item has no label \n"));
 			     remItemFromList();
 		       }
 		}
@@ -3488,7 +3493,7 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 			{
 				if(pRun->getType()!= FPRUN_FIELD)
 			        {
-				  UT_DEBUGMSG(("SEVIOR:!!! run type NOT Field, instead = %d !!!! \n",pRun->getType()));
+				  UT_DEBUGMSG(("!!! run type NOT Field, instead = %d !!!! \n",pRun->getType()));
 				}
 				fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
 				pView->_eraseInsertionPoint();
@@ -4005,14 +4010,19 @@ void fl_BlockLayout::_startList(UT_uint32 id)
 
 void fl_BlockLayout::_stopList()
 {
-	fl_AutoNum * pAutoNum;
+	fl_AutoNum * pAutoNum = NULL;
 
 	UT_ASSERT(m_pAutoNum);
+	
+	m_bStopList = UT_TRUE;
+
+	//	UT_sint32 loc = m_pAutoNum->getPositionInList(this);
+
 	m_pAutoNum->removeItem(this);
-	if (m_pAutoNum->getParent())
+	if (m_pAutoNum->getParent() != NULL)
 	{
 		pAutoNum = m_pAutoNum->getParent();
-		if (!pAutoNum->isItem(this))
+		if (pAutoNum->isItem(this) == UT_FALSE)
 		{
 			pAutoNum->insertItem(this, m_pAutoNum->getFirstItem());
 		}
@@ -4025,14 +4035,15 @@ void fl_BlockLayout::_stopList()
 		pAutoNum = NULL;
 	}
 	
-	m_bStopList = UT_TRUE;
-	
 	if (m_pAutoNum->isEmpty())
 	{
 		DELETEP(m_pAutoNum);
-		m_bStopList = UT_FALSE;
 	}
-	
+	else
+	{
+	        m_pAutoNum->update(0);
+	}
+        m_bStopList = UT_FALSE;
 	m_pAutoNum = pAutoNum;	
 }
 
@@ -4046,13 +4057,13 @@ void fl_BlockLayout::remItemFromList(void)
 
 void fl_BlockLayout::listUpdate(void)
 {
-	if (!m_pAutoNum)
+	if (m_pAutoNum == NULL)
 		return;
 	
-	if (m_bStartList)
+	if (m_bStartList == UT_TRUE)
 		m_pAutoNum->update(1);
 	
-	if (!m_bListLabelCreated)
+	if ((m_bListLabelCreated == UT_FALSE) && (m_bStopList == UT_FALSE))
 		_createListLabel();
 
 	format();

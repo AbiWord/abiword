@@ -38,6 +38,7 @@ public:
 	XML_Char * 	getType(void);
 	UT_uint32	getValue(fl_Layout *) const;
 	UT_uint32	getLevel(void) const { return m_iLevel; }
+	UT_sint32       getPositionInList( fl_Layout * pItem);
 	void 		setFormat(const XML_Char * format);
 
 	UT_uint16 	getStartValue(void) const { return m_iStartValue; }

@@ -243,6 +243,11 @@ void fl_AutoNum::removeItem(fl_Layout * pItem)
 	_updateItems(ndx);
 }
 
+UT_sint32 fl_AutoNum::getPositionInList(fl_Layout * pItem)
+{
+        return m_pItems.findItem(pItem);
+}
+
 UT_Bool fl_AutoNum::isItem(fl_Layout * pItem) const
 {
 	if (m_pItems.findItem(pItem) == -1)
