@@ -63,7 +63,7 @@
 // TODO: get this from some auto-generated place
 static const UT_uint32 major   = 0;
 static const UT_uint32 minor   = 9;
-static const UT_uint32 release = 5;
+static const UT_uint32 release = 6;
 
 /*!
  * Protected destructor creates an instance of this module class
@@ -128,7 +128,7 @@ bool XAP_ModuleManager::loadBundle (const char * szFilename, const char * szBund
 	{
 		XAP_Module * pModule = (XAP_Module *) m_modules->getLastItem();
 		int (*setPath) (const char * szBundlePath) = 0;
-		if (pModule->resolveSymbol ("abi_plugin_bundle_path", &(void *)setPath))
+		if (pModule->resolveSymbol ("abi_plugin_bundle_path", (void **)&setPath))
 		{
 			UT_DEBUGMSG(("FJF: Setting bundle path...\n"));
 			setPath (szFilename);
