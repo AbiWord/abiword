@@ -2400,7 +2400,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 	// are we the last window?
 	if (1 >= pApp->getFrameCount())
 	{
-	  // Delete all the open modeless dialogs
+		// Delete all the open modeless dialogs
 
 		pApp->closeModelessDlgs();
 
@@ -2410,12 +2410,10 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		}
 		else
 		{
-			XAP_Frame * pNewFrame = pApp->newFrame();
-			pNewFrame->loadDocument(NULL, IEFT_Unknown);
-			if (pNewFrame)
-			{
-				pNewFrame->show();
-			}
+			// keep the app open with an empty document (in this frame)
+			pFrame->loadDocument(NULL, IEFT_Unknown);
+			pFrame->show();
+			return true;
 		}
 	}
 
