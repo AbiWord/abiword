@@ -596,16 +596,18 @@ void FL_DocLayout::formatAll()
 void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 {
 	UT_ASSERT(m_pDoc);
-	fl_DocSectionLayout * pStart = pFirstDSL->getPrevDocSection();
-	if(pStart == NULL)
-	{
-		pStart = pFirstDSL;
-	}
+//
+	fl_DocSectionLayout * pStart = pFirstDSL;
+//	fl_DocSectionLayout * pStart = pFirstDSL->getPrevDocSection();
+//	if(pStart == NULL)
+//	{
+//		pStart = pFirstDSL;
+//	}
 	fl_DocSectionLayout * pDSL = pStart;
 	// add page view dimensions 
-#if 0
+#if 1
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
-	for(UT_sint32 k=0; k< m_vecPages.getItemCount(); k++)
+	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
 		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(k);
 		if(pPage->getOwningSection() == pFirstDSL)
@@ -615,17 +617,20 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 		}
 	}
 #endif
-
+	deleteEmptyColumnsAndPages();
 	while (pDSL)
 	{
 		pDSL->collapseDocSection();
 		pDSL->clearRebuild();
 		pDSL = pDSL->getNextDocSection();
 	}
+	deleteEmptyColumnsAndPages();
 	pDSL= pStart;
 	while (pDSL)
 	{
+		UT_DEBUGMSG(("SEVIOR: Building section %x \n",pDSL));
 		pDSL->updateDocSection();
+		pDSL->clearRebuild();
 		pDSL = pDSL->getNextDocSection();
 	}
 }
