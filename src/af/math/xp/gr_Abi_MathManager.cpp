@@ -84,15 +84,15 @@ void GR_Abi_MathManager::initialize(void)
 {
      SmartPtr<AbstractLogger> logger = Logger::create();
      m_pLogger = logger;
-     //m_pLogger->ref();
+     // m_pLogger->ref(); // was uncommented
      logger->setLogLevel(LOG_INFO);
      SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create(getGraphics());
      m_pMathGraphicDevice = mathGraphicDevice;
-     //m_pMathGraphicDevice->ref();
+     // m_pMathGraphicDevice->ref(); // was uncommented
      m_pAbiContext = new GR_Abi_RenderingContext(getGraphics());
      SmartPtr<MathMLOperatorDictionary> dictionary = MathMLOperatorDictionary::create();
      m_pOperatorDictionary = dictionary;
-     //dictionary->ref();
+     // dictionary->ref();
      libxml2_MathView::loadOperatorDictionary(logger, dictionary,
 					      libxml2_MathView::getDefaultOperatorDictionaryPath());
 }

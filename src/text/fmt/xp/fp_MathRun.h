@@ -42,11 +42,6 @@ public:
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const;
-#if 0
-	AbstractLogger * getLogger(void) const;
-	GR_Abi_MathGraphicDevice * getMathDevice(void) const;
-	GR_Abi_RenderingContext *  getAbiContext(void) const;
-#endif
 	GR_Abi_EmbedManager *   getMathManager(void);
 
 	const char *            getDataID(void) const;
@@ -69,9 +64,7 @@ protected:
 	UT_uint32               m_iGraphicTick;
 	const XML_Char *        m_pszDataID;
 	UT_UTF8String           m_sMathML;
-#if 0
-	SmartPtr<libxml2_MathView>      m_pMathView;
-#endif
+	GR_Abi_EmbedManager * 	m_pMathManager;
 	UT_sint32               m_iMathUID;
 	PT_AttrPropIndex        m_iIndexAP;
 	FL_DocLayout *          m_pDocLayout;

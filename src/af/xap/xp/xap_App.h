@@ -229,7 +229,8 @@ public:
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
 	EV_EditEventMapper *		getEditEventMapper() const;
-    void                        registerEmbeddable(GR_Abi_EmbedManager * pEmbed);
+    UT_uint32                   registerEmbeddable(GR_Abi_EmbedManager * pEmbed);
+    bool                        unRegisterEmbeddable(UT_uint32 uid);
 	GR_Abi_EmbedManager *       getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
 
 protected:

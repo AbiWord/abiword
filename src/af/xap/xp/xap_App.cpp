@@ -209,7 +209,7 @@ EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
 /*!
  * Register an embeddable plugin with XAP_App
  */
-void XAP_App::registerEmbeddable(GR_Abi_EmbedManager * pEmbed)
+UT_uint32 XAP_App::registerEmbeddable(GR_Abi_EmbedManager * pEmbed)
 {
      UT_sint32 i=0;
      bool bFound = false;
@@ -225,7 +225,24 @@ void XAP_App::registerEmbeddable(GR_Abi_EmbedManager * pEmbed)
      if(!bFound)
      {
        m_vecEmbedManagers.addItem(pEmbed);
+       return  m_vecEmbedManagers.getItemCount() - 1;
      }
+     return 0xFFFFFFF;
+}
+
+
+/*!
+ * UnRegister an embeddable plugin with XAP_App. The plugin itself is 
+ * responsible for actually deleting the object.
+ */
+bool XAP_App::unRegisterEmbeddable(UT_uint32 uid)
+{
+  if(uid < m_vecEmbedManagers.getItemCount())
+    {
+      m_vecEmbedManagers.setNthItem(uid,NULL,NULL);
+      return true;
+    }
+  return false;
 }
 
 /*!

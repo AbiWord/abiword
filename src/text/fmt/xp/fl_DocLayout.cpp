@@ -49,16 +49,6 @@
 #include "ut_timer.h"
 #include "ut_string.h"
 #include "xap_Frame.h"
-#if 0
-// BEGIN: MathView
-#include <MathView/libxml2_MathView.hh>
-#include <MathView/MathMLElement.hh>
-#include <MathView/Logger.hh>
-#include <MathView/MathMLOperatorDictionary.hh>
-#include "gr_Abi_MathGraphicDevice.h"
-#include "gr_Abi_RenderingContext.h"
-// END: MathView
-#endif
 #include "gr_Abi_EmbedManager.h"
 
 #define REDRAW_UPDATE_MSECS	500
@@ -140,27 +130,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
         m_bRestartEndSection = false;
 	m_bPlaceAtDocEnd = true;
 	m_bPlaceAtSecEnd = false;
-	m_pMathManager = XAP_App::getApp()->getEmbeddableManager(pG,"mathml");
-	m_pMathManager->initialize();
-	UT_DEBUGMSG(("Got mamanger of type %s \n",m_pMathManager->getObjectType()));
-#if 0
-	// BEGIN: MathView
-	SmartPtr<AbstractLogger> logger = Logger::create();
-	m_pLogger = logger;
-	m_pLogger->ref();
-	logger->setLogLevel(LOG_INFO);
-	SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create(m_pG);
-	m_pMathGraphicDevice = mathGraphicDevice;
-	m_pMathGraphicDevice->ref();
-	m_pAbiContext = new GR_Abi_RenderingContext(pG);
-	SmartPtr<MathMLOperatorDictionary> dictionary = MathMLOperatorDictionary::create();
-	m_pOperatorDictionary = dictionary;
-	dictionary->ref();
-	libxml2_MathView::loadOperatorDictionary(logger, dictionary,
-						 libxml2_MathView::getDefaultOperatorDictionaryPath());
-	
-	// END: MathView
-#endif
+
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -225,20 +195,44 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
-#if 0
-	// BEGIN: MathView
-	m_pLogger->unref();
-	m_pLogger = 0;
-	m_pMathGraphicDevice->unref();
-	m_pMathGraphicDevice = 0;
-	DELETEP(m_pAbiContext);
-	m_pAbiContext = 0;
-	m_pOperatorDictionary->unref();
-	m_pOperatorDictionary = 0;
-	// END: MathView
-#endif
-	DELETEP(m_pMathManager);
+	UT_VECTOR_PURGEALL(GR_Abi_EmbedManager *,m_vecEmbedManager);
 }
+
+
+/*!
+ * Get an embedManager of the requested Type.
+ */
+GR_Abi_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
+{
+  // Look in the current collection first.
+  UT_uint32 i = 0;
+  GR_Abi_EmbedManager * pDefault = NULL;
+  GR_Abi_EmbedManager * pEmbed = NULL;
+  for(i=0; i< m_vecEmbedManager.getItemCount(); i++)
+    {
+      pEmbed = m_vecEmbedManager.getNthItem(i);
+      if(UT_strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
+	{
+	  return pEmbed;
+	}
+      if(UT_strcmp(pEmbed->getObjectType(),"default") == 0)
+	{
+	  pDefault = pEmbed;
+	}
+    }
+  pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pG,szEmbedType);
+  if((UT_strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+    {
+      delete pEmbed;
+      return pDefault;
+    }
+  UT_DEBUGMSG(("Got mamanger of type %s \n",pEmbed->getObjectType()));
+  m_vecEmbedManager.addItem(pEmbed);
+  pEmbed->initialize();
+  
+  return pEmbed;
+}
+
 
 /*! 
  * little helper method for lookup properties

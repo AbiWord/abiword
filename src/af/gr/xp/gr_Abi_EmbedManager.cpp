@@ -88,6 +88,12 @@ bool GR_Abi_EmbedManager::modify(UT_sint32 uid)
   return false;
 }
 
+
+bool GR_Abi_EmbedManager::changeAPI(UT_sint32 uid, UT_uint32 api)
+{
+  return false;
+}
+
 void GR_Abi_EmbedManager::initializeEmbedView(UT_sint32 uid)
 {
 }
