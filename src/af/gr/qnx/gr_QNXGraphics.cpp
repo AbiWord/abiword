@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <photon/Pf.h>
 
 #include "xap_QNXApp.h"
 #include "gr_QNXGraphics.h"
@@ -245,30 +246,14 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 */
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	PhRect_t rect;
-
-	const char *font;
-	UT_UCS4Char buffer[2];
-	char *utf8;
-	
-	buffer[0]=c;
-	buffer[1]=NULL;
-	utf8=(char*)UT_convert((char*)buffer,sizeof(buffer),ucs4Internal(),"UTF-8",NULL,NULL);	
-	
-if (!m_pFont || !(font = m_pFont->getFont())) {
-		return 0;
+const char *font;
+FontRender metrics;
+if(!m_pFont || !(font = m_pFont->getFont())) {
+	return 0;
 	}
+PfGlyph(font,c,&metrics,NULL,NULL,NULL);
 
-/*
-	printf("wide character %d (0x%x) [%c] in %s ==\n", c, c, (char)c, font);
-	printf("multi byte char 0x%x 0x%x 0x%x 0x%x (%d) \n", buffer[0], buffer[1], buffer[2], buffer[3], len);
-*/
-	int indices=1;
-	int penpos=0;
-	PfExtentTextCharPositions(&rect,NULL,utf8,font,&indices,&penpos,1,0,0,0,NULL);
-
-	free(utf8);
-	return penpos;
+return metrics.width;
 }
 
 /***
