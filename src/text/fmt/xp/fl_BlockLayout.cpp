@@ -3713,7 +3713,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pNewRun->setPrev(pLastRun);
 		pNewRun->setBlockOffset(pLastRun->getBlockOffset() 
 								+ pLastRun->getLength());
-		pLastRun->getLine()->addRun(pNewRun);
+		if(pLastRun->getLine())
+			pLastRun->getLine()->addRun(pNewRun);
 		coalesceRuns();
 	}
 	else
