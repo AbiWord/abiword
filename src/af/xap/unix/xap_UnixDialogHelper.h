@@ -86,6 +86,8 @@ GtkWidget * abiGtkMenuFromCStrVector(const UT_GenericVector<const char*> & vec, 
 
 void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...);
 
+void convertMnemonics(XML_Char * s);
+
 void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
@@ -103,11 +105,3 @@ UT_String abiLocaleToUTF8(const char * str);
 GdkWindow * getRootWindow(GtkWidget * widget);
 
 #endif /* UT_DIALOGHELPER_H */
-
-
-
-
-
-
-
-

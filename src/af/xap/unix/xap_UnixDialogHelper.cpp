@@ -867,6 +867,25 @@ void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id 
 	FREEP(unixstr);	
 }
 
+void convertMnemonics(XML_Char * s)
+{
+	UT_ASSERT(s);
+
+	for (UT_uint32 i = 0; s[i] != 0; i++) 
+	{
+		if ( s[i] == '&' ) {
+			if (i > 0 && s[i-1] == '\\')
+			{
+				s[i-1] = '&';
+				strcpy( &s[i], &s[i+1]);
+				i--;
+				}
+			else
+				s[i] = '_';
+		}
+	}
+}
+
 /*!
  * Localizes the label of a widget given the string id
  * Ampersands will be converted to underscores/mnemonics
@@ -877,19 +896,7 @@ void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_S
 	pSS->getValueUTF8(id,s);
 	XML_Char * newlbl = UT_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
-	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
-	{
-		if ( newlbl[i] == '&' ) {
-			if (i > 0 && newlbl[i-1] == '\\')
-			{
-				newlbl[i-1] = '&';
-				strcpy( &newlbl[i], &newlbl[i+1]);
-				i--;
-				}
-			else
-				newlbl[i] = '_';
-		}
-	}
+	convertMnemonics(newlbl);
 	gtk_label_set_text_with_mnemonic (GTK_LABEL(widget), newlbl);
 	FREEP(newlbl);	
 }
@@ -932,22 +939,9 @@ void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	
 	XML_Char * newlbl = UT_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
-	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
-	{
-		if ( newlbl[i] == '&' ) {
-			if (i > 0 && newlbl[i-1] == '\\')
-			{
-				newlbl[i-1] = '&';
-				strcpy( &newlbl[i], &newlbl[i+1]);
-				i--;
-				}
-			else
-				newlbl[i] = '_';
-		}
-	}
+	convertMnemonics(newlbl);
 	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
 	gtk_button_set_label (GTK_BUTTON(widget), newlbl);
 	FREEP(newlbl);	
@@ -965,22 +959,9 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
 {
 	UT_UTF8String s;
 	pSS->getValueUTF8(id,s);
-	
 	XML_Char * newlbl = UT_strdup(s.utf8_str());
 	UT_ASSERT(newlbl);
-	for (UT_uint32 i = 0; newlbl[i] != 0; i++) 
-	{
-		if ( newlbl[i] == '&' ) {
-			if (i > 0 && newlbl[i-1] == '\\')
-			{
-				newlbl[i-1] = '&';
-				strcpy( &newlbl[i], &newlbl[i+1]);
-				i--;
-				}
-			else
-				newlbl[i] = '_';
-		}
-	}
+	convertMnemonics(newlbl);
 	UT_String markupStr(UT_String_sprintf(gtk_button_get_label (GTK_BUTTON(widget)), newlbl));
 	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
 	gtk_button_set_label (GTK_BUTTON(widget), markupStr.c_str());
