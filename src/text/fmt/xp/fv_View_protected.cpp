@@ -3720,7 +3720,18 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 		if(m_pDoc->isFootnoteAtPos(pt))
 		{
 			pFL = getClosestFootnote(pt);
-			pt += pFL->getLength();
+			if(pFL == NULL)
+			{
+				fl_EndnoteLayout * pEL = getClosestEndnote(pt);
+				if(pEL)
+				{
+					pt += pEL->getLength();
+				}
+			}
+			else
+			{
+				pt += pFL->getLength();
+			}
 		}		
 	}
 	m_iInsPoint = pt;
