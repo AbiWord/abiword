@@ -1637,7 +1637,7 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
   	}
 	if (fmtstring == 0)
 	{
-		else if(progExists("galeon"))
+		if(progExists("galeon"))
 		{
 		  	fmtstring = "galeon '%s' &";
 			execstring = g_strdup_printf(fmtstring, szURL);
@@ -1660,7 +1660,7 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
 			fmtstring = "netscape -remote openURL\\('%s'\\) || netscape '%s' &";
 			execstring = g_strdup_printf(fmtstring, szURL, szURL);
 		}
-		if(progExists("konqueror"))
+		else if(progExists("konqueror"))
 		{
 			fmtstring = "konqueror '%s' &";
 			execstring = g_strdup_printf(fmtstring, szURL);
