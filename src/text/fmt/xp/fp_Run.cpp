@@ -1102,7 +1102,7 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 		// document to the right of the pilcrow, see Paul's suggested
 		// selection behaviors. Doesn't matter until we get selection
 		// support though (which requires PT changes).
-		m_iWidth = 1;
+		m_iWidth = 8;
 	}
 }
 
@@ -1198,47 +1198,74 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 
+	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+
 	FV_View* pView = m_pBL->getDocLayout()->getView();
+	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+	UT_uint32 iPoint = pView->getPoint();
+
+	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+	UT_ASSERT(iSel1 <= iSel2);
+	
+	bool bIsSelected = false;
+	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+		bIsSelected = true;
+
+	/*
+	  TODO this should not be hard-coded.  We should calculate an
+	  appropriate selection background color based on the color
+	  of the foreground text, probably.
+	*/
+	UT_RGBColor clrSelBackground(192, 192, 192);
+	UT_RGBColor clrShowPara(127,127,127);
+
+	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
+	UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+	UT_sint32 iAscent;
+
+	fp_Run* pPropRun = _findPrevPropertyRun();
+	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
+	{
+		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
+		m_pG->setFont(pTextRun->getFont());
+		iAscent = pTextRun->getAscent();
+	}
+	else
+	{
+		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pBlockAP = NULL;
+		const PP_AttrProp * pSectionAP = NULL;
+		m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+		m_pBL->getAttrProp(&pBlockAP);
+		// look for fonts in this DocLayout's font cache
+		FL_DocLayout * pLayout = m_pBL->getDocLayout();
+
+		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, 
+										   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+		m_pG->setFont(pFont);
+		iAscent = m_pG->getFontAscent();
+	}
+
+	m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+	m_iHeight = m_pG->getFontHeight();
+	m_iXoffText = pDA->xoff;
+	m_iYoffText = pDA->yoff - iAscent;
+	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
+
+	if (bIsSelected)
+	{
+		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iWidth, m_iHeight);
+		UT_setColor(clrShowPara, 80, 80, 80);
+	}
+	else
+	{
+		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_iHeight);
+	}
 	if (pView->getShowPara())
 	{
-		UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
-		UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
-		UT_RGBColor clrShowPara(127,127,127);
-		UT_sint32 iAscent;
-
-		fp_Run* pPropRun = _findPrevPropertyRun();
-		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
-		{
-			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			m_pG->setFont(pTextRun->getFont());
-			iAscent = pTextRun->getAscent();
-		}
-		else
-		{
-			const PP_AttrProp * pSpanAP = NULL;
-			const PP_AttrProp * pBlockAP = NULL;
-			const PP_AttrProp * pSectionAP = NULL;
-			m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
-			m_pBL->getAttrProp(&pBlockAP);
-			// look for fonts in this DocLayout's font cache
-			FL_DocLayout * pLayout = m_pBL->getDocLayout();
-
-			GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, 
-											   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-			m_pG->setFont(pFont);
-			iAscent = m_pG->getFontAscent();
-		}
-
-		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
-		m_iHeight = m_pG->getFontHeight();
-		m_iXoffText = pDA->xoff;
-		m_iYoffText = pDA->yoff - iAscent;
-		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
-
-
-
-        m_pG->fillRect(m_colorHL, m_iXoffText, m_iYoffText, 
-					   m_iWidth, m_iHeight);
+		// Draw pilcrow
 		m_pG->setColor(clrShowPara);
         m_pG->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
