@@ -40,5 +40,5 @@ things down by module.  However, eventually, source code should find
 itself in a directory which indicates the portability of the code
 within it.  For example, cross-platform code should always be placed
 in a subdirectory called 'xp'.  Win32-specific code should be in a
-subdirectory called 'win32'.
+subdirectory called 'win'.
 

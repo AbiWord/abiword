@@ -19,7 +19,7 @@ nsprpub
 --
 
 NOTE: Currently, js and nsprpub are not actually used by AbiWord.
-This will change very soon.  They have incorporated into our build
+This will change very soon.  They have been incorporated into our build
 process now, in anticipation of their future integration into the
 application itself.  We'll use js as the scripting language for
 AbiWord and our other apps.  NSPR is required because js requires it,
