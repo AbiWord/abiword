@@ -174,10 +174,15 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 /* Note: use Unicode Private Use Area 0xE000 - 0xF8FF         */
 /* Note: GB18030 mandates U+E000 - U+E765 for UDAs 1, 2 and 3 */
 /* Note: BIG5-HKSCS uses U+E000 - U+F848                      */
+/* Note: Please update UCS_ABICONTROL_START/END if more       */
+/* Note: special values are added.  We need to watch out for  */
+/* Note: them during import                                   */
+#define UCS_ABICONTROL_START	(UCS_FIELDSTART)
 #define UCS_FIELDSTART		((UT_UCSChar)0xF850)
 #define UCS_FIELDEND		((UT_UCSChar)0xF851)
 #define UCS_BOOKMARKSTART	((UT_UCSChar)0xF852)
 #define UCS_BOOKMARKEND		((UT_UCSChar)0xF853)
+#define UCS_ABICONTROL_END	(UCS_BOOKMARKEND)
 
 
 #if 1 /* try to use the unicode values for special chars */
