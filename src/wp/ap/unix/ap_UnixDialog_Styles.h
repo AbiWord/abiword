@@ -36,6 +36,9 @@ class XAP_UnixFrame;
 class AP_UnixDialog_Styles: public AP_Dialog_Styles
 {
 public:
+	typedef enum _StyleType 
+	  {USED_STYLES, ALL_STYLES, USER_STYLES} StyleType;
+
 	AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Styles(void);
 
@@ -49,6 +52,13 @@ public:
 	void                            event_charPreviewExposed(void);
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
+
+	virtual void event_DeleteClicked(void);
+	virtual void event_NewClicked(void);
+	virtual void event_ModifyClicked(void);
+	virtual void event_ClistClicked(int row, int col);
+	virtual void event_ListClicked(const char * which);
+
 	virtual void			event_WindowDelete(void);
 
 protected:
@@ -57,6 +67,8 @@ protected:
 	virtual GtkWidget * _constructWindow(void);
 	GtkWidget * _constructWindowContents(GtkWidget * parent);
 	void				_populateWindowData(void);
+	void                            _populateCList(void);
+	void                            _populatePreviews(void);
 	void 				_storeWindowData(void);
 	void				_connectsignals(void);
 
@@ -75,6 +87,12 @@ protected:
 	GtkWidget * m_wCharPreviewArea;
 	GtkWidget * m_wGnomeButtons;
 
+	GtkWidget * m_wclistStyles;
+	GtkWidget * m_wlistTypes;
+	GtkWidget * m_wlabelDesc;
+
+	gint m_whichRow, m_whichCol;
+	StyleType m_whichType;
 };
 
 #endif /* AP_UnixDialog_Styles_H */

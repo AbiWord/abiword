@@ -171,6 +171,9 @@ bool pt_PieceTable::removeStyle (const XML_Char * szName)
 	PD_Style * pStyle = (PD_Style *) pHashEntry->pData;
 	UT_ASSERT(pStyle);
 
+	if (!pStyle.isUserDefined())
+	  return false; // can't destroy a builtin style
+
 	delete pStyle;
 
 	// todo - we need to remove this from the hashtable

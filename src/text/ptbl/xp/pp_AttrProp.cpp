@@ -45,6 +45,12 @@ PP_AttrProp::~PP_AttrProp()
 	DELETEP(m_pProperties);
 }
 
+size_t PP_AttrProp::getPropertyCount (void) const
+{
+  // return m_pProperties->getEntryCount();
+        return m_pAttributes->getEntryCount();
+}
+
 bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
 {
 	if (!attributes)

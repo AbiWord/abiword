@@ -52,6 +52,10 @@ public:
 	bool					setProperty(const XML_Char * szName, const XML_Char * szValue);
 	bool					setProperties(const XML_Char ** pProperties);
 
+	size_t getPropertyCount(void) const;
+	bool getNthProperty (int ndx, const XML_Char *&szName,
+			     const XML_Char *&szValue) const;
+
 protected:
 
 	pt_PieceTable *			m_pPT;

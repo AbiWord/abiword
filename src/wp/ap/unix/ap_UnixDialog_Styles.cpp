@@ -36,6 +36,9 @@
 #include "ap_Dialog_Styles.h"
 #include "ap_UnixDialog_Styles.h"
 
+#include "fv_View.h"
+#include "pd_Style.h"
+
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
@@ -51,7 +54,7 @@ XAP_Dialog * AP_UnixDialog_Styles::static_constructor(XAP_DialogFactory * pFacto
 
 AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_Styles(pDlgFactory,id)
+  : AP_Dialog_Styles(pDlgFactory,id), m_whichRow(0), m_whichCol(0), m_whichType(AP_UnixDialog_Styles::USED_STYLES)
 {
 	m_windowMain = NULL;
 
@@ -63,6 +66,9 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
         m_wCharPreviewArea = NULL;
         m_pCharPreviewWidget = NULL;
 
+	m_wclistStyles = NULL;
+	m_wlistTypes = NULL;
+	m_wlabelDesc = NULL;
 }
 
 AP_UnixDialog_Styles::~AP_UnixDialog_Styles(void)
@@ -72,6 +78,42 @@ AP_UnixDialog_Styles::~AP_UnixDialog_Styles(void)
 }
 
 /*****************************************************************/
+
+static void
+s_clist_clicked (GtkWidget *w, gint row, gint col, 
+		 GdkEvent *evt, gpointer d)
+{
+  AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
+  dlg->event_ClistClicked (row, col);
+}
+
+static void
+s_typeslist_changed (GtkWidget *w, gpointer d)
+{
+  AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
+  dlg->event_ListClicked (gtk_entry_get_text (GTK_ENTRY(w)));
+}
+
+static void
+s_deletebtn_clicked (GtkWidget *w, gpointer d)
+{
+  AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
+  dlg->event_DeleteClicked ();
+}
+
+static void
+s_modifybtn_clicked (GtkWidget *w, gpointer d)
+{
+  AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
+  dlg->event_ModifyClicked ();
+}
+
+static void
+s_newbtn_clicked (GtkWidget *w, gpointer d)
+{
+  AP_UnixDialog_Styles * dlg = static_cast <AP_UnixDialog_Styles *>(d);
+  dlg->event_NewClicked ();
+}
 
 static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
@@ -224,6 +266,68 @@ void AP_UnixDialog_Styles::event_charPreviewExposed(void)
 		m_pCharPreview->draw();
 }
 
+void AP_UnixDialog_Styles::event_DeleteClicked(void)
+{
+  messageBoxOK("Delete Clicked");
+  if (m_whichRow != -1)
+    {
+        gchar * style = NULL;
+	int rtn = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
+				      m_whichRow, m_whichCol, 
+				      &style);
+	if (!rtn || !style)
+	  return; // ok, nothing's selected. that's fine
+
+	UT_DEBUGMSG(("DOM: attempting to delete style %s\n", style));
+	
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+	UT_ASSERT(pView);
+
+	PD_Document * pDoc = pView->getLayout()->getDocument();
+	UT_ASSERT(pDoc);
+
+	pDoc->removeStyle(style); // actually remove the style
+	_populateWindowData(); // force a refresh
+    }
+}
+
+void AP_UnixDialog_Styles::event_NewClicked(void)
+{
+  // TODO: dialog for new clicked
+  messageBoxOK("New Clicked");
+}
+
+void AP_UnixDialog_Styles::event_ModifyClicked(void)
+{
+  // TODO: dialog for modify clicked (same as for new clicked, basically)
+  messageBoxOK("Modify Clicked");
+}
+
+void AP_UnixDialog_Styles::event_ClistClicked(gint row, gint col)
+{
+  m_whichRow = row;
+  m_whichCol = col;
+
+  // refresh the previews
+  _populatePreviews();
+}
+
+void AP_UnixDialog_Styles::event_ListClicked(const char * which)
+{
+  // todo: translate
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+  if (!strcmp(which, "Styles in use"))
+    m_whichType = USED_STYLES;
+  else if (!strcmp(which, "User-defined styles"))
+    m_whichType = USED_STYLES;
+  else
+    m_whichType = ALL_STYLES;
+
+  // force a refresh of everything
+  _populateWindowData();
+}
+
 /*****************************************************************/
 
 GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
@@ -330,16 +434,35 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameStyles = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_Available));
+
+	GtkWidget * scrollWindow = gtk_scrolled_window_new(NULL, NULL);
+	gtk_widget_show(scrollWindow);
+	gtk_widget_set_usize(scrollWindow, 120, 120);
+	gtk_container_set_border_width(GTK_CONTAINER(scrollWindow), 10);
+	gtk_container_add (GTK_CONTAINER(frameStyles), scrollWindow);
+
 	listStyles = gtk_clist_new(1);
-	gtk_container_add(GTK_CONTAINER(frameStyles), listStyles);
+	gtk_clist_set_column_width (GTK_CLIST (listStyles), 0, 100);
+	gtk_clist_column_titles_hide (GTK_CLIST (listStyles));
+	gtk_widget_show(listStyles);
+	gtk_container_add(GTK_CONTAINER(scrollWindow), listStyles);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameStyles, TRUE, TRUE, 2);
 	gtk_widget_show(frameStyles);
-	gtk_widget_show(listStyles);
 
 	frameList = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_List));
 	comboList = gtk_combo_new();
+
+	// TODO: translate me
+	GList * styleTypes = NULL;
+
+	styleTypes = g_list_append (styleTypes, (gpointer)"Styles in use");
+	styleTypes = g_list_append (styleTypes, (gpointer)"All styles");
+	styleTypes = g_list_append (styleTypes, (gpointer)"User-defined styles");
+
+	gtk_combo_set_popdown_strings (GTK_COMBO(comboList), styleTypes);
+	//gtk_combo_set_value_in_list (GTK_COMBO(comboList), (int)m_whichType, false);
 	gtk_container_add(GTK_CONTAINER(frameList), comboList);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameList, FALSE, FALSE, 2);
@@ -348,7 +471,6 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	gtk_widget_show(vboxTopLeft);
 	gtk_box_pack_start(GTK_BOX(hboxContents), vboxTopLeft, TRUE, TRUE, 2);
-
 
 	vboxTopRight = gtk_vbox_new(FALSE, 0);
 
@@ -376,8 +498,10 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameDescription = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_Description));
-	DescriptionArea = gtk_drawing_area_new();
-	gtk_drawing_area_size(GTK_DRAWING_AREA(DescriptionArea), 300, 60);
+	DescriptionArea = gtk_label_new(NULL);
+	gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
+	gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
+	gtk_widget_set_usize(DescriptionArea, 300, 60);
 	gtk_container_add(GTK_CONTAINER(frameDescription), DescriptionArea);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopRight), frameDescription, TRUE, TRUE, 2);
@@ -422,13 +546,41 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxStyleManip, FALSE, FALSE, 0);
 
+	// connect the select_row signal to the clist
+	gtk_signal_connect (GTK_OBJECT (listStyles), "select_row",
+			    GTK_SIGNAL_FUNC (s_clist_clicked), (gpointer)this);
+
+	// connect signal for this list
+	gtk_signal_connect (GTK_OBJECT(GTK_COMBO(comboList)->entry), 
+			    "changed",
+			    GTK_SIGNAL_FUNC(s_typeslist_changed),
+			    (gpointer)this);
+
+	// connect signals for these 3 buttons
+	gtk_signal_connect (GTK_OBJECT(buttonNew),
+			    "clicked",
+			    GTK_SIGNAL_FUNC(s_newbtn_clicked),
+			    (gpointer)this);
+
+	gtk_signal_connect (GTK_OBJECT(buttonModify),
+			    "clicked",
+			    GTK_SIGNAL_FUNC(s_modifybtn_clicked),
+			    (gpointer)this);
+
+	gtk_signal_connect (GTK_OBJECT(buttonDelete),
+			    "clicked",
+			    GTK_SIGNAL_FUNC(s_deletebtn_clicked),
+			    (gpointer)this);
+
+	m_wclistStyles = listStyles;
+	m_wlistTypes = comboList;
 	m_windowMain = windowStyles;
 	m_wbuttonNew = buttonNew;
 	m_wbuttonModify = buttonModify;
 	m_wbuttonDelete = buttonDelete;
 	m_wParaPreviewArea = ParaPreviewArea;
 	m_wCharPreviewArea = CharPreviewArea;
-
+	m_wlabelDesc = DescriptionArea;
 	return vboxContents;
 }
 
@@ -477,8 +629,104 @@ void AP_UnixDialog_Styles::_connectsignals(void)
 				NULL);
 }
 
+void AP_UnixDialog_Styles::_populatePreviews(void)
+{
+	if (m_whichRow < 0)
+	  return;
+
+        PD_Style * pStyle;
+
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+	UT_ASSERT(pView);
+
+	PD_Document * pDoc = pView->getLayout()->getDocument();
+	UT_ASSERT(pDoc);
+	
+	char * szStyle = NULL;
+
+	int ret = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
+				      m_whichRow, m_whichCol, &szStyle);
+
+	if (!ret) // having nothing displayed is totally valid
+	  {
+	    return;
+	  }
+
+	// update the previews and the description label
+	if (pDoc->getStyle (szStyle, &pStyle))
+	  {
+	    int cnt = pStyle->getPropertyCount();
+
+	    UT_DEBUGMSG(("DOM: property count is: %d, style: %s\n", cnt, 
+			 szStyle));
+
+	    GString * gStr = g_string_new ("");
+
+	    // loop through and pass out each property:value combination
+	    for(int i = 0; i < cnt; i++)
+	      {
+		const XML_Char * szName = NULL;
+		const XML_Char * szValue = NULL;		
+
+		pStyle->getNthProperty(i, szName, szValue);
+
+		UT_DEBUGMSG(("DOM: property is: (%s, %s)\n", szName, szValue));
+
+		g_string_append (gStr, (const char *)szName);
+		g_string_append (gStr, ":");
+		g_string_append (gStr, (const char *)szValue);
+		g_string_append (gStr, "; ");
+	      }
+
+	    gtk_label_set_text (GTK_LABEL(m_wlabelDesc), gStr->str);
+	    
+	    event_paraPreviewExposed();
+	    event_charPreviewExposed();
+
+	    g_string_free (gStr, TRUE);
+	  }
+}
+
+void AP_UnixDialog_Styles::_populateCList(void)
+{
+        const PD_Style * pStyle;
+	const char * name = NULL;
+
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+	UT_ASSERT(pView);
+
+	PD_Document * pDoc = pView->getLayout()->getDocument();
+	UT_ASSERT(pDoc);
+
+	size_t nStyles = pDoc->getStyleCount();
+	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
+
+	gtk_clist_freeze (GTK_CLIST (m_wclistStyles));
+	gtk_clist_clear (GTK_CLIST (m_wclistStyles));
+
+	for (UT_uint32 i = 0; i < nStyles; i++)
+	  {
+	    const char * data[1];
+
+	    pDoc->enumStyles((UT_uint32)i, &name, &pStyle);
+
+	    // all of this is safe to do... append should take a const char **
+	    data[0] = name;
+
+	    if ((m_whichType == ALL_STYLES) || 
+		(m_whichType == USED_STYLES && pStyle->isUsed()) ||
+		(m_whichType == USER_STYLES && pStyle->isUserDefined()))
+	      {
+		gtk_clist_append (GTK_CLIST(m_wclistStyles), (gchar **)data);
+	      }
+	  }
+
+	gtk_clist_thaw (GTK_CLIST (m_wclistStyles));
+	gtk_clist_select_row (GTK_CLIST (m_wclistStyles), 0, 0);
+}
+
 void AP_UnixDialog_Styles::_populateWindowData(void)
 {
-	// We're a pretty stateless dialog, so we just set up
-	// the defaults from our members.
+        _populateCList();
+	_populatePreviews();
 }

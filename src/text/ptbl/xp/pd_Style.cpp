@@ -139,6 +139,29 @@ bool PD_Style::setProperties(const XML_Char ** pProperties)
 		return pAP->setProperties(pProperties);
 }
 
+size_t PD_Style::getPropertyCount(void) const
+{
+  	PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+		return 0;
+	else
+	        return pAP->getPropertyCount();
+}
+
+bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
+			       const XML_Char *&szValue) const
+{
+  	PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+		return false;
+	else
+	  {
+	        return pAP->getNthProperty(ndx, szName, szValue);
+	  }
+}
+
 //////////////////////////////////////////////////////////////////
 // a sub-class to wrap the compiled-in styles
 //////////////////////////////////////////////////////////////////
