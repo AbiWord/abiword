@@ -57,6 +57,8 @@ public:
 	
 	static int local_main (const char * szAppName, int argc, char ** argv);
 
+	void                                             catchSignals(int sig_num);
+
 protected:
 	XAP_StringSet *			m_pStringSet;
 	AP_BeOSClipboard *		m_pClipboard;

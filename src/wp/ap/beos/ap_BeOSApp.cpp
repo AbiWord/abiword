@@ -68,6 +68,10 @@
 
 #include "ap_Clipboard.h"
 
+// Signal handling
+#include <signal.h>
+void signalWrapper(int sig_num);
+
 /*****************************************************************/
 /*
  Splash Window Related Stuff
@@ -522,6 +526,25 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	//Show the splash screen perhaps
   	_showSplash(&Args, szAppName);        
 
+	// Setup signal handlers, primarily for segfault
+	// If we segfaulted before here, we *really* blew it
+
+	struct sigaction sa;
+
+	sa.sa_handler = signalWrapper;
+
+	sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+	sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+
+	sa.sa_flags = 0; // Unsupported under BeOS -- SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+	
+	sigaction(SIGSEGV, &sa, NULL);
+	sigaction(SIGBUS, &sa, NULL);
+	sigaction(SIGILL, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGFPE, &sa, NULL);
+	// TODO: handle SIGABRT
+
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyBeOSApp->initialize())
 	{
@@ -693,5 +716,32 @@ void AP_BeOSApp::ParseCommandLine(void)
 	}
 
 	return;
+}
+
+void signalWrapper(int sig_num)
+{
+	AP_BeOSApp *pApp = (AP_BeOSApp *) XAP_App::getApp();
+	pApp->catchSignals(sig_num);
+}
+
+void AP_BeOSApp::catchSignals(int sig_num)
+{
+	// Reset the signal handler (not that it matters - this is mostly for race conditions)
+	signal(SIGSEGV, signalWrapper);
+
+	UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
+
+	UT_uint32 i = 0;
+	for(;i<m_vecFrames.getItemCount();i++)
+	{
+		AP_BeOSFrame * curFrame = (AP_BeOSFrame*) m_vecFrames[i];
+		UT_ASSERT(curFrame);
+		curFrame->backup();
+	}
+
+	fflush(stdout);
+
+	// Abort and dump core
+	abort();
 }
 
