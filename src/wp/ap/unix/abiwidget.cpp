@@ -1558,11 +1558,18 @@ abi_widget_map_to_screen(AbiWidget * abi)
 		{
 			pArgs = new XAP_Args(0, 0);
 		}
+
+		AP_UnixApp * pApp = static_cast<AP_UnixApp*>(XAP_App::getApp());
+
+		if ( !pApp )
+		  {
 #ifdef HAVE_GNOME
-		AP_UnixApp   * pApp = new AP_UnixGnomeApp (pArgs, "AbiWidget");
+		    pApp = new AP_UnixGnomeApp (pArgs, "AbiWidget");
 #else
-		AP_UnixApp   * pApp = new AP_UnixApp (pArgs, "AbiWidget");
+		    pApp = new AP_UnixApp (pArgs, "AbiWidget");
 #endif
+		  }
+
 		UT_ASSERT(pApp);
 		pApp->setBonoboRunning();
 		pApp->initialize();
@@ -1580,6 +1587,9 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	{
 		delete pArgs;
 	}
+
+	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
+	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
 
 	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
 

@@ -185,17 +185,10 @@ bool UT_StringPtrMap::contains(const UT_String& k, const void* v) const
 	size_t slot    = 0;
 	size_t hashval = 0;
 
-#if 1
 	// DOM: TODO: make this call work
 	sl = find_slot (k, SM_LOOKUP, slot, key_found,
 			hashval, v, &v_found, 0, 0);
 	return v_found;
-#else
-	sl = find_slot(k, SM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
-
-	// this is obviously not correct
-	return key_found ? true : false;
-#endif
 }
 
 
@@ -235,15 +228,6 @@ bool UT_StringPtrMap::insert(const UT_String& key, const void* value)
 		}
 	}
 
-#if 0
-	UT_DEBUGMSG(("DOM: inserted (%s, %p)\n", key.c_str(), value));
-
-	const void * v = pick (key);
-	bool b = contains (key, 0);
-
-	UT_DEBUGMSG(("DOM: %d (%s, %p, %d)\n", b, key.c_str(), v, v==value));
-
-#endif
 	return true;
 }
 
@@ -268,9 +252,7 @@ void UT_StringPtrMap::set(const UT_String& key, const void* value)
 	
 	if (!sl || !key_found) // TODO: should we insert or just return?
 	{
-#if 1
 		insert(key, value);
-#endif
 		return;
 	}
 	
@@ -293,12 +275,10 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
 	{
 		// we don't allow nulls since so much of our code depends on this
 		// behavior
-#if 1
 		if (val)
 		{
 			pVec->addItem ((void*)val);
 		}
-#endif
 	}
 
 	return pVec;
