@@ -150,6 +150,12 @@ AC_DEFUN([ABI_GTK12], [
 
 AC_DEFUN([ABI_GLIB], [
 
+dnl Perhaps this should be:
+dnl
+dnl    if test "$BE_PLATFORM" = "unix"; then
+dnl
+dnl which would eliminate the cocoa distinction... ??
+
 if test "$PLATFORM" = "unix"; then
 	ABI_GLIB12_OPT(0,no)
 
@@ -159,7 +165,7 @@ if test "$PLATFORM" = "unix"; then
         AC_SUBST(GMODULE_CFLAGS)
         AC_SUBST(GMODULE_LIBS)
 
-elif test "$PLATFORM" = "mac" -o "$PLATFORM" = "cocoa"; then
+elif test "$PLATFORM" = "mac"; then
 	ABI_GLIB12_OPT(0,yes)
 
 	if [ test "x$abi_glib_opt" = "xno" ]; then
@@ -172,6 +178,16 @@ elif test "$PLATFORM" = "mac" -o "$PLATFORM" = "cocoa"; then
 
         AC_SUBST(GLIB_CFLAGS)
         AC_SUBST(GLIB_LIBS)
+
+elif test "$PLATFORM" = "cocoa"; then
+	ABI_GLIB12_OPT(0,no)
+
+        GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+       	GLIB_LIBS=`$GLIB_CONFIG --libs`
+
+        AC_SUBST(GLIB_CFLAGS)
+        AC_SUBST(GLIB_LIBS)
+
 fi
 
 ])

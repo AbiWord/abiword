@@ -59,19 +59,66 @@ fi
 
 ##################################################################
 ##################################################################
-#### TODO if it is Darwin, we suspect that we have MacOS X, hence we 
-#### build MacOS version using Carbon. Change later when we 
-#### support Darwin running X and other varieties (like MacOS X
-#### using Cocoa). <hfiguiere@teaser.fr>
-if test "x$PLATFORM" = "xNetBSD"; then
-	OS_NAME=NetBSD
-elif test "$OS_NAME" = "Darwin"; then
-	OS_NAME=MACOSX
+#### Mac OS X / darwin configuration
+# 
+# 1. Whether to consider using Cocoa API:
+# 
+AC_ARG_ENABLE(Cocoa,[  --disable-Cocoa    don't use Cocoa API  (MacOSX builds only)],[
+	if [ test "x$enableval" = "xno" ]; then
+		abi_gui_cocoa=no
+	else
+		abi_gui_cocoa=yes
+	fi
+],abi_gui_cocoa=yes)
+# 
+# 2. Whether to consider using Carbon API:
+# 
+AC_ARG_ENABLE(Carbon,[  --disable-Carbon   don't use Carbon API (MacOSX builds only)],[
+	if [ test "x$enableval" = "xno" ]; then
+		abi_gui_carbon=no
+	else
+		abi_gui_carbon=yes
+	fi
+],abi_gui_carbon=yes)
+# 
+# 3. Default to Cocoa, then Carbon, then GTK
+#    (Values are equivalent to PLATFORM setting)
+# 
+if [ test $abi_gui_cocoa = yes ]; then
+	abi_gui=cocoa
+else
+	if [ test $abi_gui_carbon = yes ]; then
+		abi_gui=mac
+	else
+		abi_gui=unix
+	fi
 fi
+# 
+# 4. For Cocoa or Carbon, recognize Darwin as MACOSX; otherwise, recognize as FreeBSD
+# 
+if test "$OS_NAME" = "Darwin"; then
+	if [ test $abi_gui = unix ]; then
+		OS_NAME=FreeBSD
+	else
+		OS_NAME=MACOSX
+	fi
+fi
+
 # At this point, we now have the following info:
 # OS_NAME = something like 'Linux'
 # OS_RELEASE = something like '2.4.1'
 # Additionally, there may be info about Cygwin versions.
+
+dnl TODO It would be nice to eventually add -Werror
+dnl FIXME these flags are gcc-specific, and need to be fixed
+dnl actually MacOS X build does not want some of them because of 
+dnl precompiled Mac headers.... with Apple's GCC.
+dnl 
+case "$OS_NAME" in 
+	MACOSX) WARNING_CFLAGS="" ;;
+	*BSD)   WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe" ;;
+	*)      WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe" ;;
+esac
 
 # huge nasty case statement to actually pick the platform
 
@@ -79,8 +126,7 @@ case "$OS_NAME" in
 	WIN32) PLATFORM="win" ;;
 	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS) PLATFORM="unix" ;;
 	QNX|procnto) PLATFORM="qnx" ;;
-	# used to be mac. Now it is cocoa
-	MACOSX) PLATFORM="cocoa" ;;
+	MACOSX) PLATFORM=$abi_gui ;;
 	BeOS) PLATFORM="beos" ;;
 esac
 
@@ -93,5 +139,6 @@ fi
 AC_SUBST(PLATFORM)
 AC_SUBST(BE_PLATFORM)
 AC_SUBST(OS_NAME)
+AC_SUBST(WARNING_CFLAGS)
 
 ])

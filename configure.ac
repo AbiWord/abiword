@@ -57,21 +57,6 @@ dnl Detect our platform (unix, win32, etc)
 dnl Do this before the GNOME stuff
 ABI_DETECT_PLATFORM
 
-dnl TODO It would be nice to eventually add -Werror
-dnl FIXME these flags are gcc-specific, and need to be fixed
-dnl actually MacOS X build does not want some of them because of 
-dnl precompiled Mac headers.... with Apple's GCC.
-if test "$PLATFORM" = "mac" -o "$PLATFORM" = "cocoa"; then
-	WARNING_CFLAGS=""
-elif test "$OS_NAME" = "FreeBSD"; then
-	WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
-elif test "$OS_NAME" = "NetBSD"; then
-	WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
-else
-	WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe"
-fi
-AC_SUBST(WARNING_CFLAGS)
-
 dnl Checks for libraries.
 dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
 if test "$PLATFORM" = "unix"; then
@@ -339,11 +324,11 @@ if test "$PLATFORM" = "mac"; then
 fi
 if test "$PLATFORM" = "cocoa"; then
 	if "$debug" = "true"; then
-		PLATFORM_LIBS="-liconv -framework Cocoa"
+		PLATFORM_LIBS="$GLIB_LIBS -liconv -framework Cocoa"
 	else
-		PLATFORM_LIBS="-liconv -framework Carbon"
+		PLATFORM_LIBS="$GLIB_LIBS -liconv -framework Cocoa"
 	fi
-	PLATFORM_CFLAGS="-fpascal-strings -DNO_SYS_ERRLIST"
+	PLATFORM_CFLAGS="$GLIB_CFLAGS -fpascal-strings -DNO_SYS_ERRLIST"
 fi
 
 
