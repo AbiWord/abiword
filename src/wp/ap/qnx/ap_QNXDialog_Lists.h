@@ -49,7 +49,6 @@ public:
 	void                            setMemberVariables(void);
 	/* Just Plain Useful Functions */
 	void                            fillWidgetFromDialog(void);
-	void                            setAllSensitivity(void);
 	void                            updateDialog(void);
 	static void                     autoupdateLists(UT_Timer * pTimer);
 

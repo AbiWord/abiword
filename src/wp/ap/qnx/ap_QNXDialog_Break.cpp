@@ -68,19 +68,28 @@ static int s_ok_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
 	dlg->event_OK();
+	return Pt_CONTINUE;
 }
 
 static int s_cancel_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
 	dlg->event_Cancel();
+	return Pt_CONTINUE;
 }
 
 static int s_delete_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
-        AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
-        dlg->event_WindowDelete();
-        return Pt_CONTINUE;
+	AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
+	dlg->event_WindowDelete();
+	return Pt_CONTINUE;
+}
+
+static int s_radio_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
+{
+	AP_QNXDialog_Break *dlg = (AP_QNXDialog_Break *)data;
+	dlg->event_RadioSelected(w);
+	return Pt_CONTINUE;
 }
 
 /*****************************************************************/
@@ -119,6 +128,16 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
+}
+
+void AP_QNXDialog_Break::event_RadioSelected(PtWidget_t *w) {
+	int i;
+	for (i = 0; i < BREAK_COUNT; i++) {
+		if (bm[i].widget != w) {
+			PtSetResource(bm[i].widget, Pt_ARG_FLAGS, 0, Pt_SET);
+		}
+	}
+	
 }
 
 void AP_QNXDialog_Break::event_OK(void)
@@ -185,7 +204,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 
 	/* TODO: Add all these items to a group */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
+	//PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
@@ -220,6 +239,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	bm[bmi].widget =
 	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	PtAddCallback(radiobuttonPageBreak, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_PAGE;
 
 	n = 0;
@@ -230,6 +250,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	PtAddCallback(radiobuttonColumnBreak, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_COLUMN;
 
 	/* --- */
@@ -251,6 +272,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonNextPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	PtAddCallback(radiobuttonNextPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_NEXTPAGE;
 
 	n = 0;
@@ -261,6 +283,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	PtAddCallback(radiobuttonEvenPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_EVENPAGE;
 
 	n = 0;
@@ -271,6 +294,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonContinuous = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	PtAddCallback(radiobuttonContinuous, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_CONTINUOUS;
 
 	n = 0;
@@ -281,6 +305,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
 	radiobuttonOddPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	PtAddCallback(radiobuttonOddPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_ODDPAGE;
 
 	n = 0;
@@ -320,15 +345,14 @@ void AP_QNXDialog_Break::_storeWindowData(void)
 
 AP_Dialog_Break::breakType AP_QNXDialog_Break::_getActiveRadioItem(void)
 {
-	PtArg_t arg;
 	int		*value;
 
 	for (int i = 0; i < BREAK_COUNT; i++) {
 		value = NULL;
-		PtSetArg(&arg, Pt_ARG_FLAGS, &value, 0);
-		PtGetResources(bm[i].widget, 1, &arg);
-		if (*value & Pt_SET) {
-			return ( AP_Dialog_Break::breakType)(bm[i].type);
+		
+		PtGetResource(bm[i].widget, Pt_ARG_FLAGS, &value, 0);
+		if (value && *value & Pt_SET) {
+			return (AP_Dialog_Break::breakType)(bm[i].type);
 		}
 	}
 	m_answer = AP_Dialog_Break::a_CANCEL;

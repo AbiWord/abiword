@@ -48,6 +48,7 @@ public:
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
 	virtual void			event_WindowDelete(void);
+	virtual void 			event_RadioSelected(PtWidget_t *w);
 
 protected:
 
