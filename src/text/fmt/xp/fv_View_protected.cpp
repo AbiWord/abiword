@@ -2098,80 +2098,39 @@ FV_View::_findNext(UT_uint32* pPrefix,
 		UT_sint32 foundAt = -1;
 		UT_uint32 i = 0, t = 0;
 
-		if (m_bMatchCase)
+		UT_UCSChar currentChar;
+	
+		while ((currentChar = buffer[i]) /*|| foundAt == -1*/)
 		{
-			UT_UCSChar currentChar;
-
-			while ((currentChar = buffer[i]) /*|| foundAt == -1*/)
+			// Convert smart quote apostrophe to ASCII single quote to
+			// match seach input
+			if (currentChar == UCS_RQUOTE) currentChar = '\'';
+			if (!m_bMatchCase) currentChar = UT_UCS4_tolower(currentChar);
+			
+			while (t > 0 && pFindStr[t] != currentChar)
+				t = pPrefix[t-1];
+			if (pFindStr[t] == currentChar)
+				t++;
+			i++;
+			if (t == m)
 			{
-				// Convert smart quote apostrophe to ASCII single quote to
-				// match seach input
-				if (currentChar == UCS_RQUOTE) currentChar = '\'';
-
-				while (t > 0 && pFindStr[t] != currentChar)
-					t = pPrefix[t-1];
-				if (pFindStr[t] == currentChar)
-					t++;
-				i++;
-				if (t == m)
+				if (m_bWholeWord) 
 				{
-					if (m_bWholeWord) 
-					{
-						bool start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
-						bool end = UT_isWordDelimiter(buffer[i], UCS_UNKPUNK, UCS_UNKPUNK);
-						if (start && end) 
-						{
-        					foundAt = i - m;
-					        break;
-		              	}
-			        }
-					else 
+					bool start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
+					bool end = UT_isWordDelimiter(buffer[i], UCS_UNKPUNK, UCS_UNKPUNK);
+					if (start && end) 
 					{
 						foundAt = i - m;
 						break;
 					}
 				}
-			}
-		}
-		else
-		{
-			UT_UCSChar currentChar;
-
-			while ((currentChar = buffer[i]) /*|| foundAt == -1*/)
-			{
-				// Convert smart quote apostrophe to ASCII single quote to
-				// match seach input
-				if (currentChar == UCS_RQUOTE) currentChar = '\'';
-
-				currentChar = UT_UCS4_tolower(currentChar);
-
-				while (t > 0 && pFindStr[t] != currentChar)
-					t = pPrefix[t-1];
-
-				if (pFindStr[t] == currentChar)
-					t++;
-				i++;
-				if (t == m)
+				else 
 				{
-					if (m_bWholeWord)
-					{
-						bool start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
-						bool end = UT_isWordDelimiter(buffer[i], UCS_UNKPUNK, UCS_UNKPUNK);
-						if (start && end)
-						{
-							foundAt = i - m;
-							break;
-						}
-					}
-					else
-					{
-						foundAt = i - m;
-						break;
-					}
+					foundAt = i - m;
+					break;
 				}
 			}
 		}
-
 
 		// Select region of matching string if found
 		if (foundAt != -1)
