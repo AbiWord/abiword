@@ -52,6 +52,7 @@ XAP_Win32Dialog_Insert_Symbol::XAP_Win32Dialog_Insert_Symbol(XAP_DialogFactory *
 {
 	m_pSymbolPreviewWidget = NULL;
 	m_pSamplePreviewWidget = NULL;
+	m_DrawSymbolSample     = NULL;
 	
 }
 
@@ -60,13 +61,30 @@ XAP_Win32Dialog_Insert_Symbol::~XAP_Win32Dialog_Insert_Symbol(void)
 	DELETEP(m_pSymbolPreviewWidget);
 	DELETEP(m_pSamplePreviewWidget);
 	DELETEP(m_DrawSymbolSample);
-	
-	
 }
 
 
 void XAP_Win32Dialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 {
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
+	
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL));
+}
+
+void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
+{
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
+
+	setDialog(this);
+	HWND hWndDialog = createModeless( pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL) );
+
+	UT_ASSERT((hWndDialog != NULL));
+	ShowWindow(hWndDialog, SW_SHOW);
+
+	m_pApp->rememberModelessId(m_id, this);
 }
 
 void XAP_Win32Dialog_Insert_Symbol::destroy(void)
@@ -89,30 +107,6 @@ void XAP_Win32Dialog_Insert_Symbol::activate(void)
 	UT_ASSERT((iResult != 0));
 }
 
-void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
-{
-	UT_return_if_fail(pFrame);
-
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	UT_return_if_fail(pWin32App);
-
-	LPCTSTR lpTemplate = NULL;
-
-	UT_ASSERT(m_id == XAP_DIALOG_ID_INSERT_SYMBOL);
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL);
-
-	HWND hWndDialog = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
-	ShowWindow(hWndDialog, SW_SHOW);
-	UT_ASSERT((hWndDialog != NULL));
-
-	m_pApp->rememberModelessId(m_id, this);
-
-
-}
 
 void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 {
@@ -142,41 +136,18 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 	}
 }
 
-BOOL CALLBACK XAP_Win32Dialog_Insert_Symbol::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	XAP_Win32Dialog_Insert_Symbol * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_Insert_Symbol *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_Insert_Symbol *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
-	}
-}
-
 #define _DSI(c,i)	SetDlgItemInt(hWnd,XAP_RID_DIALOG_##c,m_count.##i,FALSE)
 #define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	// localize controls
-	_DSX(INSERTSYMBOL_INSERT_BUTTON,DLG_Insert);
-	_DSX(INSERTSYMBOL_CLOSE_BUTTON,DLG_Close);
-
 	m_hDlg = hWnd;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	// localize controls
+	localizeControlText(XAP_RID_DIALOG_INSERTSYMBOL_INSERT_BUTTON,XAP_STRING_ID_DLG_Insert);
+	localizeControlText(XAP_RID_DIALOG_INSERTSYMBOL_CLOSE_BUTTON,XAP_STRING_ID_DLG_Close);
+
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
@@ -242,8 +213,8 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hDlg, m_WindowName);
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	setDialogTitle((LPCSTR)m_WindowName);
+	centerDialog();	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -278,6 +249,11 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
 	}
+}
+
+BOOL XAP_Win32Dialog_Insert_Symbol::_onDeltaPos(NM_UPDOWN * pnmud)\
+{
+	return FALSE;
 }
 
 int CALLBACK XAP_Win32Dialog_Insert_Symbol::fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam)

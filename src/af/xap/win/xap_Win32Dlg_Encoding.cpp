@@ -67,12 +67,12 @@ BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	setDialogTitle(pSS->getValue(XAP_STRING_ID_DLG_UENC_EncTitle));
+	localizeDialogTitle(XAP_STRING_ID_DLG_UENC_EncTitle);
 
 	// localize controls
-	_DS(ENCODING_BTN_OK,			DLG_OK);
-	_DS(ENCODING_BTN_CANCEL,		DLG_Cancel);
-	_DS(ENCODING_FRM_ENCODING,      DLG_UENC_EncLabel);
+	localizeControlText(XAP_RID_DIALOG_ENCODING_BTN_OK,			XAP_STRING_ID_DLG_OK);
+	localizeControlText(XAP_RID_DIALOG_ENCODING_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(XAP_RID_DIALOG_ENCODING_FRM_ENCODING,   XAP_STRING_ID_DLG_UENC_EncLabel);
 	
 	// Load Initial Data into Listbox
 	{

@@ -22,7 +22,9 @@
 
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Draw_Symbol.h"
-#include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
+
+class XAP_Frame;
 class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
@@ -57,7 +59,7 @@ public:
 
 
 
-class XAP_Win32Dialog_Insert_Symbol: public XAP_Dialog_Insert_Symbol
+class XAP_Win32Dialog_Insert_Symbol: public XAP_Win32DialogBase, public XAP_Dialog_Insert_Symbol
 {
 public:
 	XAP_Win32Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -71,7 +73,6 @@ public:
 	virtual void			activate(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	static int CALLBACK		fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam);
 
 	void *					pGetWindowHandle( void ) { return (void*)m_hDlg; }
@@ -80,13 +81,13 @@ public:
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL 					_onDeltaPos(NM_UPDOWN * pnmud);
 	int						_enumFont(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type);
 	void					_setFontFromCombo(UT_sint32 Index);
 
 
 	XAP_Win32PreviewWidget *	m_pSymbolPreviewWidget;
 	XAP_Win32PreviewWidget *	m_pSamplePreviewWidget;
-
 	XAP_Draw_Symbol_sample *	m_DrawSymbolSample;
 
 	HWND m_hDlg;

@@ -35,7 +35,6 @@
 #include "xap_Win32Dlg_Zoom.h"
 #include "xap_Win32PreviewWidget.h"
 
-
 #include "gr_Win32Graphics.h"
 #include "xap_Win32Resources.rc2"
 
@@ -102,8 +101,6 @@ void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 
 BOOL XAP_Win32Dialog_Zoom::_onDlgMessage(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
-
-	
 	switch (msg)
 	{
 		
@@ -116,25 +113,22 @@ BOOL XAP_Win32Dialog_Zoom::_onDlgMessage(HWND hWnd,UINT msg,WPARAM wParam,LPARAM
 	}
 }
 
-#define _DS(c,s)	setControlText(XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
-	setDialogTitle(pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle));
-
+		
 	// localize controls
-	_DS(ZOOM_TEXT_ZOOMTO,		DLG_Zoom_RadioFrameCaption);
-	_DS(ZOOM_RADIO_200,			DLG_Zoom_200);
-	_DS(ZOOM_RADIO_100,			DLG_Zoom_100);
-	_DS(ZOOM_RADIO_75,			DLG_Zoom_75);
-	_DS(ZOOM_RADIO_WIDTH,		DLG_Zoom_PageWidth);
-	_DS(ZOOM_RADIO_WHOLE,		DLG_Zoom_WholePage);
-	_DS(ZOOM_RADIO_PCT,			DLG_Zoom_Percent);
-	_DS(ZOOM_TEXT_PREVIEW,		DLG_Zoom_PreviewFrame);
-	_DS(ZOOM_BTN_OK,			DLG_OK);
-	_DS(ZOOM_BTN_CANCEL,		DLG_Cancel);
+	localizeDialogTitle(XAP_STRING_ID_DLG_Zoom_ZoomTitle);
+
+	localizeControlText(XAP_RID_DIALOG_ZOOM_TEXT_ZOOMTO,	XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_200,		XAP_STRING_ID_DLG_Zoom_200);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_100,		XAP_STRING_ID_DLG_Zoom_100);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_75,		XAP_STRING_ID_DLG_Zoom_75);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_WIDTH,	XAP_STRING_ID_DLG_Zoom_PageWidth);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_WHOLE,	XAP_STRING_ID_DLG_Zoom_WholePage);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_RADIO_PCT,		XAP_STRING_ID_DLG_Zoom_Percent);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_TEXT_PREVIEW,	XAP_STRING_ID_DLG_Zoom_PreviewFrame);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_BTN_OK,			XAP_STRING_ID_DLG_OK);
+	localizeControlText(XAP_RID_DIALOG_ZOOM_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
 
 	// set initial state
 	checkButton(XAP_RID_DIALOG_ZOOM_RADIO_200 + m_zoomType);

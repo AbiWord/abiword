@@ -37,11 +37,12 @@
 
 
 class XAP_Frame;
+class XAP_StringSet;
 
 class XAP_Win32DialogBase
 {
 public:
-	XAP_Win32DialogBase() : m_tag(magic_tag), m_hDlg(0), m_pDlg(0) {}
+	XAP_Win32DialogBase() : m_tag(magic_tag), m_hDlg(0), m_pDlg(0), m_pSS(0) {}
 	// no need for user-defined destructor
 		
 protected:
@@ -62,6 +63,7 @@ protected:
 	void				enableControl(UT_sint32 controlId, bool bEnabled = true);
 	void				destroyWindow();
 	void				setDialogTitle(LPCSTR p_str);
+	void				localizeDialogTitle(UT_uint32 stringId);
 	int					showWindow( int Mode );
 	int					showControl(UT_sint32 controlId, int Mode);
 	int					bringWindowToTop();
@@ -87,6 +89,7 @@ protected:
 
 	// Controls
 	void				setControlText(UT_sint32 controlId, LPCSTR p_str);
+	void				localizeControlText(UT_sint32 controlId, UT_uint32 stringId);
 	void				setControlInt(UT_sint32 controlId, int value);
 	int					getControlInt(UT_sint32 controlId) const;
 	
@@ -119,6 +122,7 @@ private:
 	int m_tag;	// all for safety
 	HWND m_hDlg;
 	XAP_Dialog* m_pDlg;
+	const XAP_StringSet* m_pSS;
 };
 
 

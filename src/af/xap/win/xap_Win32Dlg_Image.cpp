@@ -49,7 +49,7 @@ XAP_Dialog * XAP_Win32Dialog_Image::static_constructor(XAP_DialogFactory * pFact
 
 XAP_Win32Dialog_Image::XAP_Win32Dialog_Image(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: XAP_Dialog_Image(pDlgFactory,id), _win32Dialog(this), m_hThisDlg(NULL)
+	: XAP_Dialog_Image(pDlgFactory,id)
 {
 }
 
@@ -60,36 +60,28 @@ XAP_Win32Dialog_Image::~XAP_Win32Dialog_Image(void)
 void XAP_Win32Dialog_Image::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	_win32Dialog.runModal( pFrame, 
-                           XAP_DIALOG_ID_IMAGE, 
-                           XAP_RID_DIALOG_IMAGE, 
-                           this );
-}
+	UT_ASSERT(m_id == XAP_DIALOG_ID_IMAGE);
 
-#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_IMAGE));
+}
 
 BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
-
-	m_hThisDlg = hWnd;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
 	// localize dialog title
-	_win32Dialog.setDialogTitle( pSS->getValue(XAP_STRING_ID_DLG_Image_Title));
+	localizeDialogTitle(XAP_STRING_ID_DLG_Image_Title);
 
 	// localize controls
-	_DSX(IMAGE_BTN_OK,				DLG_OK);
-	_DSX(IMAGE_BTN_CANCEL,			DLG_Cancel);
-	_DSX(IMAGE_LBL_HEIGHT,			DLG_Image_Height);
-	_DSX(IMAGE_LBL_WIDTH,			DLG_Image_Width);
-	_DSX(IMAGE_CHK_ASPECT,			DLG_Image_Aspect);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_BTN_OK,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_HEIGHT,	XAP_STRING_ID_DLG_Image_Height);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_LBL_WIDTH,		XAP_STRING_ID_DLG_Image_Width);
+	localizeControlText(XAP_RID_DIALOG_IMAGE_CHK_ASPECT,	XAP_STRING_ID_DLG_Image_Aspect);
 
 	// Initialize controls
-	_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
-	_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
-	_win32Dialog.checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect() );
+	setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+	setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+	checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect() );
 
 	return TRUE;
 }
@@ -118,8 +110,8 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			setHeight( buf );
-			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
-			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}
 		return 1;
 
@@ -129,13 +121,13 @@ BOOL XAP_Win32Dialog_Image::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			setWidth( buf );
-			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
-			_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+			setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+			setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		}
 		return 1;
 
 	case XAP_RID_DIALOG_IMAGE_CHK_ASPECT:
-		setPreserveAspect( _win32Dialog.isChecked(wId)!=0 );
+		setPreserveAspect( isChecked(wId)!=0 );
 		return 1;
 
 	default:							// we did not handle this notification
@@ -157,8 +149,8 @@ BOOL XAP_Win32Dialog_Image::_onDeltaPos(NM_UPDOWN * pnmud)
 		{
 			incrementWidth( false );
 		}
-		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
-		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+		setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+		setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		return 1;
 
 	case XAP_RID_DIALOG_IMAGE_SPN_HEIGHT:
@@ -170,8 +162,8 @@ BOOL XAP_Win32Dialog_Image::_onDeltaPos(NM_UPDOWN * pnmud)
 		{
 			incrementHeight( false );
 		}
-		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
-		_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
+		setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
+		setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
 		return 1;
 
 	default:

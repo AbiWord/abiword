@@ -54,75 +54,43 @@ XAP_Win32Dialog_WindowMore::~XAP_Win32Dialog_WindowMore(void)
 
 void XAP_Win32Dialog_WindowMore::runModal(XAP_Frame * pFrame)
 {
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == XAP_DIALOG_ID_WINDOWMORE);
+	
 	// NOTE: this work could be done in XP code
 	m_ndxSelFrame = m_pApp->findFrame(pFrame);
 	UT_ASSERT(m_ndxSelFrame >= 0);
 
 	// raise the dialog
-	LPCTSTR lpTemplate = NULL;
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_WINDOWMORE));
 
-	UT_ASSERT(m_id == XAP_DIALOG_ID_WINDOWMORE);
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_WINDOWMORE);
-
-	int result = DialogBoxParam(static_cast<XAP_Win32App *>(m_pApp)->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
 }
-
-BOOL CALLBACK XAP_Win32Dialog_WindowMore::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	XAP_Win32Dialog_WindowMore * pThis;
-	
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		pThis = (XAP_Win32Dialog_WindowMore *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (XAP_Win32Dialog_WindowMore *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
-	}
-}
-
-#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL XAP_Win32Dialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));
-
 	// localize controls
-	_DS(WINDOWMORE_TEXT_ACTIVATE,	DLG_MW_Activate);
-	_DS(WINDOWMORE_BTN_OK,			DLG_OK);
-	_DS(WINDOWMORE_BTN_CANCEL,		DLG_Cancel);
+	localizeDialogTitle(XAP_STRING_ID_DLG_MW_MoreWindows);
 
+	localizeControlText(XAP_RID_DIALOG_WINDOWMORE_TEXT_ACTIVATE,	XAP_STRING_ID_DLG_MW_Activate);
+	localizeControlText(XAP_RID_DIALOG_WINDOWMORE_BTN_OK,			XAP_STRING_ID_DLG_OK);
+	localizeControlText(XAP_RID_DIALOG_WINDOWMORE_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+
+	HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_WINDOWMORE_LIST);  
+
+	// load each frame name into the list
+	for (UT_uint32 i=0; i<m_pApp->getFrameCount(); i++)
 	{
-		HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_WINDOWMORE_LIST);  
+		XAP_Frame * f = m_pApp->getFrame(i);
+		UT_ASSERT(f);
+		const char * s = f->getTitle(128);	// TODO: chop this down more? 
+		
+		int nIndex = addItemToList(XAP_RID_DIALOG_WINDOWMORE_LIST, s);
+		setListDataItem(XAP_RID_DIALOG_WINDOWMORE_LIST, nIndex, (DWORD) i);
+     } 
 
-		// load each frame name into the list
-		for (UT_uint32 i=0; i<m_pApp->getFrameCount(); i++)
-		{
-			XAP_Frame * f = m_pApp->getFrame(i);
-			UT_ASSERT(f);
-			const char * s = f->getTitle(128);	// TODO: chop this down more? 
-
-            SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
-            SendMessage(hwndList, LB_SETITEMDATA, i, (LPARAM) i);  
-        } 
-
-		// select the one we're in
-		SendMessage(hwndList, LB_SETCURSEL, (WPARAM) m_ndxSelFrame, 0);
-	}		
+	// select the one we're in
+	selectListItem(XAP_RID_DIALOG_WINDOWMORE_LIST, m_ndxSelFrame);
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -141,13 +109,13 @@ BOOL XAP_Win32Dialog_WindowMore::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 		{
 			case LBN_SELCHANGE:
 				// NOTE: we could get away with only grabbing this in IDOK case
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				m_ndxSelFrame = SendMessage(hWndCtrl, LB_GETITEMDATA, nItem, 0);
+				nItem = getListSelectedIndex(wId);
+				m_ndxSelFrame = getListDataItem(wId, nItem);
 				return 1;
 
 			case LBN_DBLCLK:
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				m_ndxSelFrame = SendMessage(hWndCtrl, LB_GETITEMDATA, nItem, 0);
+				nItem = getListSelectedIndex(wId);
+				m_ndxSelFrame = getListDataItem(wId, nItem);
 				EndDialog(hWnd,0);
 				return 1;
 
@@ -170,3 +138,7 @@ BOOL XAP_Win32Dialog_WindowMore::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 	}
 }
 
+BOOL XAP_Win32Dialog_WindowMore::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return FALSE;
+}

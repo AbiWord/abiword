@@ -19,9 +19,10 @@
  * 02111-1307, USA.
  */
 
-#include "XAP_Dialog.h"
-#include "XAP_Win32DialogBase.h"
-#include "XAP_Win32FrameImpl.h"
+#include "xap_Dialog.h"
+#include "xap_Strings.h"
+#include "xap_Win32DialogBase.h"
+#include "xap_Win32FrameImpl.h"
 
 
 void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCTSTR dlgTemplate)
@@ -366,6 +367,23 @@ void XAP_Win32DialogBase::centerDialog()
 }
 
 
+void XAP_Win32DialogBase::localizeDialogTitle(UT_uint32 stringId)
+{
+	if (!m_pSS)
+	{
+		m_pSS = m_pDlg->getApp()->getStringSet();
+	}
+	setDialogTitle( m_pSS->getValue(stringId) );
+}
+
+void XAP_Win32DialogBase::localizeControlText(UT_sint32 controlId, UT_uint32 stringId)
+{
+	if (!m_pSS)
+	{
+		m_pSS = m_pDlg->getApp()->getStringSet();
+	}
+	setControlText( controlId, m_pSS->getValue(stringId) );
+}
 
 extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang);
 
@@ -386,3 +404,5 @@ BOOL XAP_Win32DialogBase::_callHelp()
 
 	return TRUE;
 }
+
+

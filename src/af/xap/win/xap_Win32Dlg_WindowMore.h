@@ -21,11 +21,12 @@
 #define XAP_WIN32DIALOG_WINDOWMORE_H
 
 #include "xap_Dlg_WindowMore.h"
-#include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
 
+class XAP_Frame;
 /*****************************************************************/
 
-class XAP_Win32Dialog_WindowMore: public XAP_Dialog_WindowMore
+class XAP_Win32Dialog_WindowMore: public XAP_Win32DialogBase, public XAP_Dialog_WindowMore
 {
 public:
 	XAP_Win32Dialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -34,11 +35,11 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
-protected:
-	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+private:
+	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onDeltaPos(NM_UPDOWN * pnmud);
 };
 
 #endif /* XAP_WIN32DIALOG_WINDOWMORE_H */
