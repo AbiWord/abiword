@@ -246,17 +246,23 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-        if(pView->getDocument()->areStylesLocked()) {
-            return EV_TIS_Gray;
-        }
+	if(pView->getDocument()->areStylesLocked()) 
+	{
+		return EV_TIS_Gray;
+	}
+
+	if(pView->isHdrFtrEdit()) 
+	{
+		return EV_TIS_Gray;
+	}
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
-        UT_ASSERT(pBlock);
+	UT_ASSERT(pBlock);
 	if(pBlock->isListItem() == false)
-	        return s;
+		return s;
 	if(pBlock->getListType() == BULLETED_LIST)
-	        s = EV_TIS_Toggled;
-        return s;
+		s = EV_TIS_Toggled;
+	return s;
 }
 
 
@@ -266,9 +272,14 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-        if(pView->getDocument()->areStylesLocked()) {
-            return EV_TIS_Gray;
-        }
+	if(pView->getDocument()->areStylesLocked()) 
+	{
+		return EV_TIS_Gray;
+	}
+	if(pView->isHdrFtrEdit()) 
+	{
+		return EV_TIS_Gray;
+	}
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
         UT_ASSERT(pBlock);
