@@ -242,7 +242,7 @@ cd ../abi
 # Fix for wrong file rights on fonts,icons,clipart
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/pixmaps/*
 #%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/clipart/*
-%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
+#%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
 
 # this files are installed but they've already been copied to a better place
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
