@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2002 Martin Sevior (msevior@physics.unimelb.edu.au>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,214 +56,67 @@
   into smaller ones.
 */
 
-fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
-	: fl_Layout(PTX_Section, sdh)
+fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType, fl_ContainerType iCType, fl_ContainerLayout * pMyContainerLayout)
+	: fl_ContainerLayout(pMyContainerLayout, sdh, indexAP,PTX_Section, iCType),
+	  m_iType(iType),
+	  m_pLayout(pLayout),
+	  m_bIsCollapsed(true),
+	  m_bNeedsReformat(true),
+	  m_bNeedsRedraw(true)
 {
 	UT_ASSERT(pLayout);
-
-	m_iType = iType;
-
-	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
-	m_pLB = NULL;
-	m_pFirstBlock = NULL;
-	m_pLastBlock = NULL;
-	m_pNext = NULL;
-	m_pPrev = NULL;
-	m_pHdrFtrSL = NULL;
-	setAttrPropIndex(indexAP);
 }
 
 fl_SectionLayout::~fl_SectionLayout()
 {
-	if (m_pLB)
-	{
-		delete m_pLB;
-	}
-}
-
-const char*	fl_SectionLayout::getAttribute(const char * pszName) const
-{
-	const PP_AttrProp * pAP = NULL;
-	getAttrProp(&pAP);
-
-	const XML_Char* pszAtt = NULL;
-	pAP->getAttribute((XML_Char*)pszName, pszAtt);
-
-	return pszAtt;
-}
-
-void fl_SectionLayout::setNext(fl_SectionLayout* pSL)
-{
-	m_pNext = pSL;
-}
-
-void fl_SectionLayout::setPrev(fl_SectionLayout* pSL)
-{
-	m_pPrev = pSL;
 }
 
 FL_DocLayout* fl_SectionLayout::getDocLayout(void) const
 {
+	if(m_pLayout == NULL)
+	{
+		return fl_ContainerLayout::getDocLayout();
+	}
 	return m_pLayout;
-}
-
-fl_BlockLayout * fl_SectionLayout::getFirstBlock(void) const
-{
-	return m_pFirstBlock;
-}
-
-fl_BlockLayout * fl_SectionLayout::getLastBlock(void) const
-{
-	return m_pLastBlock;
 }
 
 bool fl_SectionLayout::recalculateFields(UT_uint32 iUpdateCount)
 {
 	bool bResult = false;
 
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pL = getFirstLayout();
 
-	while (pBL)
+	while (pL)
 	{
-		bResult = pBL->recalculateFields(iUpdateCount) || bResult;
+		bResult = pL->recalculateFields(iUpdateCount) || bResult;
 
-		pBL = pBL->getNext();
+		pL = pL->getNext();
 	}
 
 	return bResult;
 }
 
-fl_BlockLayout * fl_SectionLayout::appendBlock(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-{
-	return insertBlock(sdh, m_pLastBlock, indexAP);
-}
-
-void fl_SectionLayout::addBlock(fl_BlockLayout* pBL)
-{
-	if (m_pLastBlock)
-	{
-		UT_ASSERT(m_pLastBlock->getNext() == NULL);
-
-		pBL->setNext(NULL);
-		pBL->setPrev(m_pLastBlock);
-		m_pLastBlock->setNext(pBL);
-		m_pLastBlock = pBL;
-	}
-	else
-	{
-		UT_ASSERT(!m_pFirstBlock);
-
-		pBL->setNext(NULL);
-		pBL->setPrev(NULL);
-		m_pFirstBlock = pBL;
-		m_pLastBlock = m_pFirstBlock;
-	}
-	pBL->setSectionLayout(this);
-}
-
-fl_BlockLayout * fl_SectionLayout::insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP)
-{
-	fl_BlockLayout* pBL=NULL;
-	if(getType() ==  FL_SECTION_HDRFTR)
-		pBL = new fl_BlockLayout(sdh, _getLineBreaker(), pPrev, this, indexAP,true);
-	else
-		pBL = new fl_BlockLayout(sdh, _getLineBreaker(), pPrev, this, indexAP);
-
-	if (!pBL)
-	{
-		return pBL;
-	}
-
-	if (!m_pLastBlock)
-	{
-		UT_ASSERT(!m_pFirstBlock);
-		m_pFirstBlock = pBL;
-		m_pLastBlock = pBL;
-	}
-	else if (m_pLastBlock == pPrev)
-	{
-		m_pLastBlock = pBL;
-	}
-	else if (!pPrev)
-	{
-		m_pFirstBlock = pBL;
-	}
-	return pBL;
-}
-
-void fl_SectionLayout::removeBlock(fl_BlockLayout * pBL)
-{
-	UT_ASSERT(pBL);
-	UT_ASSERT(m_pFirstBlock);
-
-	if (pBL->getPrev())
-	{
-		pBL->getPrev()->setNext(pBL->getNext());
-	}
-
-	if (pBL->getNext())
-	{
-		pBL->getNext()->setPrev(pBL->getPrev());
-		pBL->transferListFlags();
-	}
-
-	if (pBL == m_pFirstBlock)
-	{
-		m_pFirstBlock = m_pFirstBlock->getNext();
-		if (!m_pFirstBlock)
-		{
-			m_pLastBlock = NULL;
-		}
-	}
-
-	if (pBL == m_pLastBlock)
-	{
-		m_pLastBlock = m_pLastBlock->getPrev();
-		if (!m_pLastBlock)
-		{
-			m_pFirstBlock = NULL;
-		}
-	}
-
-	pBL->setNext(NULL);
-	pBL->setPrev(NULL);
-	pBL->setSectionLayout(NULL);
-}
-
-fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
-{
-	if (!m_pLB)
-	{
-		fb_LineBreaker* slb = new fb_LineBreaker();
-
-		m_pLB = slb;
-	}
-
-	UT_ASSERT(m_pLB);
-
-	return m_pLB;
-}
 
 void fl_SectionLayout::markAllRunsDirty(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
-	while (pBL)
+	fl_ContainerLayout*	pL = getFirstLayout();
+	while (pL)
 	{
-		pBL->markAllRunsDirty();
-		pBL = pBL->getNext();
+		pL->markAllRunsDirty();
+		pL = pL->getNext();
 	}
 }
 
 void fl_SectionLayout::_purgeLayout()
 {
-	fl_BlockLayout*	pBL = m_pLastBlock;
+	fl_ContainerLayout*	pL = getLastLayout();
 
-	while (pBL)
+	while (pL)
 	{
-		fl_BlockLayout* pNuke = pBL;
+		fl_ContainerLayout* pNuke = pL;
 
-		pBL = pBL->getPrev();
+		pL = pL->getPrev();
 
 		delete pNuke;
 	}
@@ -270,49 +124,49 @@ void fl_SectionLayout::_purgeLayout()
 	return;
 }
 
-bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
+bool fl_SectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
-	if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
+	if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastContainer()==NULL)
 	{
 		UT_DEBUGMSG(("In bl_doclistner_pop no LastLine \n"));
 		UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 		//  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	return pBL->doclistener_populateSpan(pcrs, blockOffset, len);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_populateSpan(pcrs, blockOffset, len);
 }
 
-bool fl_SectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+bool fl_SectionLayout::bl_doclistener_populateObject(fl_ContainerLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
-	return pBL->doclistener_populateObject(blockOffset, pcro);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_populateObject(blockOffset, pcro);
 }
 
-bool fl_SectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_SectionLayout::bl_doclistener_insertSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	return pBL->doclistener_insertSpan(pcrs);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs);
 }
 
-bool fl_SectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_SectionLayout::bl_doclistener_deleteSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	return pBL->doclistener_deleteSpan(pcrs);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs);
 }
 
-bool fl_SectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
+bool fl_SectionLayout::bl_doclistener_changeSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
 {
-	return pBL->doclistener_changeSpan(pcrsc);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc);
 }
 
-bool fl_SectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
+bool fl_SectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
 {
-	return pBL->doclistener_deleteStrux(pcrx);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx);
 }
 
-bool fl_SectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
+bool fl_SectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
-	return pBL->doclistener_changeStrux(pcrxc);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeStrux(pcrxc);
 }
 
-bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
 												  PL_StruxDocHandle sdh,
 												  PL_ListenerId lid,
 												  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
@@ -321,12 +175,12 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_
 {
 	if (pBL)
 	{
-		return pBL->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
+		return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
 	}
 	else
 	{
 		// Insert the block at the beginning of the section
-		fl_BlockLayout*	pNewBL = insertBlock(sdh, NULL, pcrx->getIndexAP());
+		fl_BlockLayout*	pNewBL = (fl_BlockLayout *) insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK);
 		if (!pNewBL)
 		{
 			UT_DEBUGMSG(("no memory for BlockLayout\n"));
@@ -338,7 +192,7 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_
 	}
 }
 
-bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL,
+bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pBL,
 													SectionType iType,
 													const PX_ChangeRecord_Strux * pcrx,
 													PL_StruxDocHandle sdh,
@@ -347,37 +201,37 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL,
 																			PL_ListenerId lid,
 																			PL_StruxFmtHandle sfhNew))
 {
-	return pBL->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
 }
 
-bool fl_SectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_SectionLayout::bl_doclistener_insertObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	return pBL->doclistener_insertObject(pcro);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertObject(pcro);
 }
 
-bool fl_SectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_SectionLayout::bl_doclistener_deleteObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	return pBL->doclistener_deleteObject(pcro);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteObject(pcro);
 }
 
-bool fl_SectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
+bool fl_SectionLayout::bl_doclistener_changeObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
 {
-	return pBL->doclistener_changeObject(pcroc);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeObject(pcroc);
 }
 
-bool fl_SectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_SectionLayout::bl_doclistener_insertFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	return pBL->doclistener_insertFmtMark(pcrfm);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm);
 }
 
-bool fl_SectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_SectionLayout::bl_doclistener_deleteFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	return pBL->doclistener_deleteFmtMark(pcrfm);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm);
 }
 
-bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {
-	return pBL->doclistener_changeFmtMark(pcrfmc);
+	return static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc);
 }
 
 /*!
@@ -386,11 +240,11 @@ bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const P
  */
 void fl_SectionLayout::updateBackgroundColor(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
-	while (pBL)
+	fl_ContainerLayout*	pL = getFirstLayout();
+	while (pL)
 	{
-		pBL->updateBackgroundColor();
-		pBL = pBL->getNext();
+		pL->updateBackgroundColor();
+		pL = pL->getNext();
 	}
 	if(getType() != FL_SECTION_DOC)
 		return;
@@ -409,7 +263,7 @@ void fl_SectionLayout::updateBackgroundColor(void)
 //////////////////////////////////////////////////////////////////
 
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
-	: fl_SectionLayout(pLayout, sdh, indexAP, iType)
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_DOC,FL_CONTAINER_DOCSECTION,this)
 {
 	UT_ASSERT((iType == FL_SECTION_DOC || iType == FL_SECTION_ENDNOTE));
 
@@ -429,6 +283,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pFirstOwnedPage = NULL;
 	m_bNeedsFormat = false;
 	m_bNeedsRebuild = false;
+	m_pDoc = pLayout->getDocument();
 	_lookupProperties();
 }
 
@@ -635,12 +490,12 @@ fl_DocSectionLayout* fl_DocSectionLayout::getEndnoteOwner(void)
 	return m_pEndnoteOwnerSL;
 }
 
-fp_Container* fl_DocSectionLayout::getFirstContainer()
+fp_Container* fl_DocSectionLayout::getFirstContainer() const
 {
 	return m_pFirstColumn;
 }
 
-fp_Container* fl_DocSectionLayout::getLastContainer()
+fp_Container* fl_DocSectionLayout::getLastContainer() const
 {
 	return m_pLastColumn;
 }
@@ -892,12 +747,12 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 
 void fl_DocSectionLayout::format(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		pBL->format();
 		UT_sint32 count = 0;
-		while(pBL->getLastLine() == NULL || pBL->getFirstLine()==NULL)
+		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
 		{
 			UT_DEBUGMSG(("Error formatting a block try again \n"));
 			count = count + 1;
@@ -917,7 +772,7 @@ void fl_DocSectionLayout::format(void)
 
 void fl_DocSectionLayout::markAllRunsDirty(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		pBL->markAllRunsDirty();
@@ -959,7 +814,7 @@ void fl_DocSectionLayout::markAllRunsDirty(void)
 
 void fl_DocSectionLayout::updateLayout(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		if (pBL->needsReformat())
@@ -981,10 +836,10 @@ void fl_DocSectionLayout::updateLayout(void)
 
 void fl_DocSectionLayout::redrawUpdate(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
-		if(pBL->hasUpdatableField())
+		if(pBL->getContainerType() == FL_CONTAINER_BLOCK && static_cast<fl_BlockLayout *>(pBL)->hasUpdatableField())
 		{
 			bool bReformat = pBL->recalculateFields(getDocLayout()->getRedrawCount());
 			if(bReformat)
@@ -1546,7 +1401,7 @@ fl_DocSectionLayout* fl_DocSectionLayout::getPrevDocSection(void) const
 	return pSL;
 }
 
-void fl_DocSectionLayout::collapseDocSection(void)
+void fl_DocSectionLayout::collapse(void)
 {
 	fp_Column* pCol = m_pFirstColumn;
 	while (pCol)
@@ -1588,7 +1443,7 @@ void fl_DocSectionLayout::collapseDocSection(void)
 	}
 
 	// get rid of all the layout information for every block
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		pBL->collapse();
@@ -1637,10 +1492,10 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 //
 // Collapse previous section too. We need this so it can be rebuilt properly.
 //
-	pPrevSL->collapseDocSection();
+	pPrevSL->collapse();
 
 	// clear all the columns
-	collapseDocSection();
+	collapse();
 
 	if(m_pHeaderSL)
 	{
@@ -1689,25 +1544,29 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	fl_DocSectionLayout * pDSL = getNextDocSection();
 	while(pDSL != NULL)
 	{
-		pDSL->collapseDocSection();
+		pDSL->collapse();
 		pDSL = pDSL->getNextDocSection();
 	}
 //
 // OK set the links and move all blocks in this section into the previous section.
 //
-	fl_BlockLayout * pBCur = getFirstBlock();
-	fl_BlockLayout * pBPrev = pPrevSL->getLastBlock();
+	fl_ContainerLayout * pBCur = getFirstLayout();
+	fl_ContainerLayout * pBPrev = pPrevSL->getLastLayout();
 	UT_ASSERT(pBCur && pBPrev);
 
 	pBCur->setPrev(pBPrev);
 	pBPrev->setNext(pBCur);
 	while(pBCur != NULL)
 	{
-		pBCur->setSectionLayout(pPrevSL);
+		pBCur->setContainingLayout(pBPrev->myContainingLayout());
+		if(pBCur->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			static_cast<fl_BlockLayout *>(pBCur)->setSectionLayout(pPrevSL);
+		}
 		pBCur = pBCur->getNext();
 	}
-	m_pFirstBlock = NULL;
-	m_pLastBlock = NULL;
+	setFirstLayout(NULL);
+	setFirstLayout(NULL);
 //
 // Get this before we remove this section from the run list!
 //
@@ -1972,19 +1831,19 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 
   \fixme This function should move to fb_ColumnBreaker.cpp
 */
-UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
+UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock)
 {
-	fl_BlockLayout* pFirstBlock = NULL;
+	fl_ContainerLayout* pFirstBlock = NULL;
 	fp_Container* pCurrentContainer = NULL;
 	fp_Column* pCurColumn = NULL;
 	if(pLastValidBlock == NULL)
 	{
-		pFirstBlock = getFirstBlock();
+		pFirstBlock = getFirstLayout();
 		if (!pFirstBlock)
 		{
 			return 0;
 		}
-		pCurrentContainer = pFirstBlock->getFirstLine();
+		pCurrentContainer = pFirstBlock->getFirstContainer();
 		pCurColumn = (fp_Column*) getFirstContainer();
 	}
 //
@@ -2000,7 +1859,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 		{
 			return 0;
 		}
-		pCurrentContainer = pFirstBlock->getFirstLine();
+		pCurrentContainer = pFirstBlock->getFirstContainer();
 		pCurColumn = (fp_Column*) pCurrentContainer->getContainer();
 	}
 
@@ -2087,7 +1946,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 					UT_uint32 iNumContainersBeforeOffending = 0;
 					UT_uint32 iNumContainersAfterOffending = 0;
 					bool bFoundOffending = false;
-					fp_Container* pFirstContainerInBlock = pBlock->getFirstLine();
+					fp_Container* pFirstContainerInBlock = pBlock->getFirstContainer();
 					pCurContainer = pFirstContainerInBlock;
 					while (pCurContainer)
 					{
@@ -2128,7 +1987,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 					if (
 						pBlock->getProp_KeepTogether()
 						&& (iNumContainersBeforeOffending == iNumBlockContainersInThisColumn)
-						&& (pBlock->getFirstLine() != pFirstContainerToKeep)
+						&& (pBlock->getFirstContainer() != pFirstContainerToKeep)
 						)
 					{
 						/*
@@ -2516,14 +2375,14 @@ private:
 
 
 fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR)
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR,FL_CONTAINER_HDRFTR,pDocSL)
 {
 	m_pDocSL = pDocSL;
 	m_iHFType = iHFType;
 	m_iType = FL_SECTION_HDRFTR;
 	m_pHdrFtrContainer = NULL;
 	fl_Layout::setType(PTX_SectionHdrFtr); // Set the type of this strux
-	xxx_UT_DEBUGMSG(("SEVIOR: Creating HFType =%d \n",m_iHFType));
+	UT_DEBUGMSG(("SEVIOR: Creating HFType =%d \n",m_iHFType));
 //
 // Since we're almost certainly removing blocks at the end of the doc, tell the
 // view to remember the current position on the active view.
@@ -2605,20 +2464,23 @@ void fl_HdrFtrSectionLayout::collapse(void)
 /*!
  * This method removes the block pBlock from all the shadowLayouts.
  */
-void fl_HdrFtrSectionLayout::collapseBlock(fl_BlockLayout *pBlock)
+void fl_HdrFtrSectionLayout::collapseBlock(fl_ContainerLayout *pBlock)
 {
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	UT_uint32 i;
 	for (i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-		fl_BlockLayout * pShadowBL = pPair->getShadow()->findMatchingBlock(pBlock);
+		fl_ContainerLayout * pShadowBL = pPair->getShadow()->findMatchingContainer(pBlock);
 		UT_ASSERT(pShadowBL);
 		if(pShadowBL)
 		{
 			// In case we've never checked this one
-			m_pLayout->dequeueBlockForBackgroundCheck(pShadowBL);
-			pPair->getShadow()->removeBlock( pShadowBL);
+			if(pShadowBL->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				m_pLayout->dequeueBlockForBackgroundCheck((fl_BlockLayout *) pShadowBL);
+			}
+			pPair->getShadow()->remove( pShadowBL);
 			delete pShadowBL;
 			pPair->getShadow()->format();
 		}
@@ -2652,13 +2514,13 @@ fl_HdrFtrShadow * fl_HdrFtrSectionLayout::getFirstShadow(void)
 	return NULL;
 }
 
-fp_Container* fl_HdrFtrSectionLayout::getFirstContainer()
+fp_Container* fl_HdrFtrSectionLayout::getFirstContainer() const
 {
 	return m_pHdrFtrContainer;
 }
 
 
-fp_Container* fl_HdrFtrSectionLayout::getLastContainer()
+fp_Container* fl_HdrFtrSectionLayout::getLastContainer() const
 {
 	return m_pHdrFtrContainer;
 }
@@ -2740,7 +2602,7 @@ void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 
 
 	// get rid of all the layout information for every block
-	fl_BlockLayout*	pBL = pSL->getFirstBlock();
+	fl_ContainerLayout*	pBL = pSL->getFirstLayout();
 	while (pBL)
 	{
 		pBL->collapse();
@@ -2754,13 +2616,13 @@ void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 
 	// transfer the Sections' blocks into this header/footer
 
-	while (pSL->getFirstBlock())
+	while (pSL->getFirstLayout())
 	{
-		pBL = pSL->getFirstBlock();
-		pSL->removeBlock(pBL);
-		addBlock(pBL);
-		pBL->setSectionLayout(this);
-		pBL->setHdrFtr();
+		pBL = pSL->getFirstLayout();
+		pSL->remove(pBL);
+		add(pBL);
+		static_cast<fl_BlockLayout *>(pBL)->setSectionLayout(this);
+		static_cast<fl_BlockLayout *>(pBL)->setHdrFtr();
 	}
 	//
 	// Remove old section from the section linked list!!
@@ -2811,12 +2673,12 @@ bool fl_HdrFtrSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux
 // Note: I expect that these blocks will be deleted by a later delete strux
 // on these blocks.
 //
-	fl_BlockLayout * pBL = NULL;
-	while (m_pFirstBlock)
+	fl_ContainerLayout * pBL = NULL;
+	while (getFirstLayout())
 	{
-		pBL = m_pFirstBlock;
-		removeBlock(pBL);
-		pPrevSL->addBlock(pBL);
+		pBL = getFirstLayout();
+		remove(pBL);
+		pPrevSL->add(pBL);
 	}
 //
 // Format the new section containing the blocks.
@@ -2881,9 +2743,9 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 // Populate with just this section so find the start and end of it
 //
 	PT_DocPosition posStart,posEnd,posDocEnd;
-	posStart = getFirstBlock()->getPosition(true) - 1;
-	posEnd = getLastBlock()->getPosition(false);
-	fp_Run * pRun = getLastBlock()->getFirstRun();
+	posStart = getFirstLayout()->getPosition(true) - 1;
+	posEnd = getLastLayout()->getPosition(false);
+	fp_Run * pRun = getLastLayout()->getFirstRun();
 	while(pRun->getNext() != NULL)
 	{
 		pRun = pRun->getNext();
@@ -2893,7 +2755,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	bool bres;
 	bres = m_pDoc->getStruxOfTypeFromPosition(posEnd, PTX_Block, &sdh);
 	m_pDoc->getBounds(true,posDocEnd);
-	while(bres && sdh == getLastBlock()->getStruxDocHandle()
+	while(bres && sdh == getLastLayout()->getStruxDocHandle()
 		  && posEnd <= posDocEnd)
 	{
 		posEnd++;
@@ -2911,10 +2773,10 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
 {
 //
-// Skip through the blocks in this shadow to find the one containing this
+// Skip through the Containers in this shadow to find the one containing this
 // point.
 //
-    fl_BlockLayout*	pBL = m_pFirstBlock;
+    fl_ContainerLayout*	pBL = getFirstLayout();
 	if(pBL == NULL)
 		return false;
 	if(pos < pBL->getPosition())
@@ -2943,7 +2805,7 @@ bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	fl_BlockLayout * ppBL = pHF->getFirstBlock();
+	fl_ContainerLayout * ppBL = pHF->getFirstLayout();
 	if(ppBL != NULL)
 	{
 		if(pos < (ppBL->getPosition()-1))
@@ -2953,7 +2815,7 @@ bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
 		return false;
 	}
 
-	fl_BlockLayout* pNext = pBL->getNext();
+	fl_ContainerLayout* pNext = pBL->getNext();
 	while(pNext != NULL && pNext->getPosition( true) < pos)
 	{
 		pBL = pNext;
@@ -3020,11 +2882,14 @@ void fl_HdrFtrSectionLayout::localFormat(void)
 	xxx_UT_DEBUGMSG(("Doing a Local Format of the hdrftr section \n"));
 	if(!getDocSectionLayout())
 		return;
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 
 	while (pBL)
 	{
-		pBL->setHdrFtr();
+		if(pBL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			static_cast<fl_BlockLayout *>(pBL)->setHdrFtr();
+		}
 		pBL->format();
 		pBL = pBL->getNext();
 	}
@@ -3037,7 +2902,7 @@ void fl_HdrFtrSectionLayout::localFormat(void)
  */
 void fl_HdrFtrSectionLayout::localCollapse(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		pBL->collapse();
@@ -3048,18 +2913,18 @@ void fl_HdrFtrSectionLayout::localCollapse(void)
 /*!
  * This routine returns the matching block within this HdrFtrSectionLayout of the
  * shadow.
- \param fl_BlockLayout * Pointer to block in shadow
+ \param fl_ContainerLayout * Pointer to block in shadow
  \returns the pinter to the matching block in the HdrFtr
  */
-fl_BlockLayout* fl_HdrFtrSectionLayout::findMatchingBlock(fl_BlockLayout* pBL)
+fl_ContainerLayout* fl_HdrFtrSectionLayout::findMatchingContainer(fl_ContainerLayout* pBL)
 {
-	fl_BlockLayout* ppBL = m_pFirstBlock;
+	fl_ContainerLayout* ppBL = getFirstLayout();
 	while(ppBL && (ppBL->getStruxDocHandle() != pBL->getStruxDocHandle()))
 	{
 		ppBL = ppBL->getNext();
 	}
 	UT_ASSERT(ppBL);
-	xxx_UT_DEBUGMSG(("This header/footer is %x in findmatchingBlock \n",this));
+	//xxx_UT_DEBUGMSG(("This header/footer is %x in findmatchingBlock \n",this));
 	return ppBL;
 }
 
@@ -3146,7 +3011,7 @@ void fl_HdrFtrSectionLayout::addValidPages(void)
  */
 void fl_HdrFtrSectionLayout::format(void)
 {
-	if(getFirstBlock() == NULL)
+	if(getFirstLayout() == NULL)
 	{
 		return;
 	}
@@ -3171,7 +3036,7 @@ void fl_HdrFtrSectionLayout::format(void)
 void fl_HdrFtrSectionLayout::updateLayout(void)
 {
 	bool bredraw = false;
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		if (pBL->needsReformat())
@@ -3239,7 +3104,7 @@ void fl_HdrFtrSectionLayout::layout(void)
  */
 void fl_HdrFtrSectionLayout::updateBackgroundColor(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		pBL->updateBackgroundColor();
@@ -3309,14 +3174,14 @@ void fl_HdrFtrSectionLayout::_lookupProperties(void)
 {
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
+bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
 //
 // We need to populate block in the header/footer but to do that we need the
 // header/footer to be fomatted. So do it then unformat after.
 //
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 
@@ -3324,13 +3189,13 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_populateSpan(pcrs,blockOffset,len)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_populateSpan(pcrs,blockOffset,len)
 			&& bResult;
 	}
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_populateSpan(pcrs,blockOffset,len)
+	pBL = findMatchingContainer(pBL);
+	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_populateSpan(pcrs,blockOffset,len)
 			&& bResult;
 	return bResult;
 }
@@ -3342,35 +3207,35 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
  * is changed just once.
  */
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_ContainerLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
 //
 // We need to populate block in the header/footer but to do that we need the
 // header/footer to be fomatted. So do it then unformat after.
 //
   	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_populateObject(blockOffset,pcro)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_populateObject(blockOffset,pcro)
 			&& bResult;
 	}
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-  	bResult = pBL->doclistener_populateObject(blockOffset,pcro)
+	pBL = findMatchingContainer(pBL);
+  	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_populateObject(blockOffset,pcro)
   		&& bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -3379,22 +3244,22 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 
 		// Find matching block in this shadow.
 
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_insertSpan(pcrs)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertSpan(pcrs)
 			&& bResult;
 	}
 	m_pDoc->allowChangeInsPoint();
 	// Update the overall block too.
-	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_insertSpan(pcrs)
+	pBL = findMatchingContainer(pBL);
+	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs)
 	&& bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -3403,23 +3268,23 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, cons
 
 		// Find matching block in this shadow.
 
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_deleteSpan(pcrs)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteSpan(pcrs)
 			&& bResult;
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_deleteSpan(pcrs)
+	pBL = findMatchingContainer(pBL);
+	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs)
 		&& bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -3428,23 +3293,23 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, cons
 
 		// Find matching block in this shadow.
 
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_changeSpan(pcrsc)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeSpan(pcrsc)
 			&& bResult;
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_changeSpan(pcrsc)
+	pBL = findMatchingContainer(pBL);
+   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc)
 		&& bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -3453,22 +3318,22 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, con
 
 		// Find matching block in this shadow.
 
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_deleteStrux(pcrx)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteStrux(pcrx)
 			&& bResult;
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_deleteStrux(pcrx) && bResult;
+	pBL = findMatchingContainer(pBL);
+   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx) && bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -3477,27 +3342,27 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, con
 
 		// Find matching block in this shadow.
 
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_changeStrux(pcrxc)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeStrux(pcrxc)
 			&& bResult;
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-    bResult = pBL->doclistener_changeStrux(pcrxc)
+	pBL = findMatchingContainer(pBL);
+    bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeStrux(pcrxc)
 		&& bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,PL_StruxDocHandle sdh,PL_ListenerId lid,void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,	PL_ListenerId lid, PL_StruxFmtHandle sfhNew))
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,PL_StruxDocHandle sdh,PL_ListenerId lid,void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,	PL_ListenerId lid, PL_StruxFmtHandle sfhNew))
 {
 	bool bResult = true;
 //
 // Now insert it into all the shadows.
 //
 	UT_uint32 iCount = m_vecPages.getItemCount();
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -3506,8 +3371,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 		// Find matching block in this shadow.
 		if(pBL)
 		{
-			pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-			bResult = pShadowBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+			pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 				&& bResult;
 		}
 		else
@@ -3515,13 +3380,13 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 // This is the first block in the shadow
 //
 		{
-			fl_BlockLayout*	pNewBL = pPair->getShadow()->insertBlock(sdh, NULL, pcrx->getIndexAP());
+			fl_ContainerLayout*	pNewBL = pPair->getShadow()->insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK);
 			if (!pNewBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout\n"));
 				return false;
 			}
-			bResult = bResult && pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
+			bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
 		}
 	}
@@ -3530,37 +3395,37 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 //
 	if(pBL)
 	{
-		fl_BlockLayout * ppBL = findMatchingBlock(pBL);
+		fl_ContainerLayout * ppBL = findMatchingContainer(pBL);
 		m_pDoc->allowChangeInsPoint();
 
-		ppBL->setHdrFtr();
-		bResult = ppBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+		static_cast<fl_BlockLayout *>(ppBL)->setHdrFtr();
+		bResult = static_cast<fl_BlockLayout *>(ppBL)->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 			&& bResult;
 //
 // Mark the Block as HdrFtr
 //
-		ppBL->getNext()->setHdrFtr();
+		static_cast<fl_BlockLayout *>(ppBL->getNext())->setHdrFtr();
 	}
 	else
 //
 // First block in the section
 //
 	{
-		fl_BlockLayout*	pNewBL = insertBlock(sdh, NULL, pcrx->getIndexAP());
+		fl_ContainerLayout*	pNewBL = insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK);
 		if (!pNewBL)
 		{
 			UT_DEBUGMSG(("no memory for BlockLayout\n"));
 			return false;
 		}
-		bResult = bResult && pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
+		bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
 		m_pDoc->allowChangeInsPoint();
-		pNewBL->setHdrFtr();
+		static_cast<fl_BlockLayout *>(pNewBL)->setHdrFtr();
 	}
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
 														  PL_StruxDocHandle sdh,
 														  PL_ListenerId lid,
 														  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
@@ -3583,131 +3448,131 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, c
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_insertObject(pcro)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertObject(pcro)
 			&& bResult;
 	}
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_insertObject(pcro) && bResult;
+	pBL = findMatchingContainer(pBL);
+   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertObject(pcro) && bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_deleteObject(pcro)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteObject(pcro)
 			&& bResult;
 	}
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_deleteObject(pcro) && bResult;
-
-	return bResult;
-}
-
-bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
-{
-	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
-	UT_uint32 iCount = m_vecPages.getItemCount();
-	m_pDoc->setDontChangeInsPoint();
-	for (UT_uint32 i=0; i<iCount; i++)
-	{
-		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_changeObject(pcroc)
-			&& bResult;
-	}
-	// Update the overall block too.
-	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_changeObject(pcroc) && bResult;
+	pBL = findMatchingContainer(pBL);
+	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteObject(pcro) && bResult;
 
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_insertFmtMark(pcrfm)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeObject(pcroc)
 			&& bResult;
 	}
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_insertFmtMark(pcrfm) && bResult;
+	pBL = findMatchingContainer(pBL);
+   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeObject(pcroc) && bResult;
+
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_deleteFmtMark(pcrfm)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertFmtMark(pcrfm)
 			&& bResult;
 	}
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-	bResult = pBL->doclistener_deleteFmtMark(pcrfm)	&& bResult;
+	pBL = findMatchingContainer(pBL);
+	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm) && bResult;
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
 	bool bResult = true;
-	fl_BlockLayout * pShadowBL = NULL;
+	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
-		bResult = pShadowBL->doclistener_changeFmtMark(pcrfmc)
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteFmtMark(pcrfm)
 			&& bResult;
 	}
 	// Update the overall block too.
 	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingBlock(pBL);
-   	bResult = pBL->doclistener_changeFmtMark(pcrfmc) && bResult;
+	pBL = findMatchingContainer(pBL);
+	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm)	&& bResult;
+	return bResult;
+}
+
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+{
+	bool bResult = true;
+	fl_ContainerLayout * pShadowBL = NULL;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+		// Find matching block in this shadow.
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeFmtMark(pcrfmc)
+			&& bResult;
+	}
+	// Update the overall block too.
+	m_pDoc->allowChangeInsPoint();
+	pBL = findMatchingContainer(pBL);
+   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc) && bResult;
 	return bResult;
 }
 
@@ -3715,7 +3580,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, c
 //////////////////////////////////////////////////////////////////
 
 fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pHdrFtrSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW)
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW,FL_CONTAINER_SHADOW,pHdrFtrSL->getDocSectionLayout())
 {
 	m_pHdrFtrSL = pHdrFtrSL;
 	m_pPage = pPage;
@@ -3737,7 +3602,7 @@ fl_HdrFtrShadow::~fl_HdrFtrShadow()
 	_purgeLayout();
 }
 
-fp_Container* fl_HdrFtrShadow::getFirstContainer()
+fp_Container* fl_HdrFtrShadow::getFirstContainer() const
 {
 	if (m_pHdrFtrSL->getHFType() < FL_HDRFTR_FOOTER)
 	{
@@ -3754,7 +3619,7 @@ fp_Container* fl_HdrFtrShadow::getFirstContainer()
 }
 
 
-fp_Container* fl_HdrFtrShadow::getLastContainer()
+fp_Container* fl_HdrFtrShadow::getLastContainer() const
 {
 	UT_ASSERT(UT_TODO);
 
@@ -3768,12 +3633,12 @@ fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Container * pFirstContainer)
 	return NULL;
 }
 
-fl_BlockLayout* fl_HdrFtrShadow::findMatchingBlock(fl_BlockLayout* pBL)
+fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* pBL)
 {
 	// This routine returns the matching block within this shadow of the
 	// hdrftrSectionlayout.
 	//
-	fl_BlockLayout* ppBL = m_pFirstBlock;
+	fl_ContainerLayout* ppBL = getFirstLayout();
 	while(ppBL && (ppBL->getStruxDocHandle() != pBL->getStruxDocHandle()))
 	{
 		ppBL = ppBL->getNext();
@@ -3785,7 +3650,7 @@ fl_BlockLayout* fl_HdrFtrShadow::findMatchingBlock(fl_BlockLayout* pBL)
 
 void fl_HdrFtrShadow::format(void)
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		pBL->format();
@@ -3800,13 +3665,13 @@ void fl_HdrFtrShadow::format(void)
  \return A pointer to the block containing the point. Returns NULL if no block
          is found
  */
-fl_BlockLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
+fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 {
 //
 // Skip through the blocks in this shadow to find the one containing this
 // point.
 //
-    fl_BlockLayout*	pBL = m_pFirstBlock;
+    fl_ContainerLayout*	pBL = getFirstLayout();
 	if(pBL == NULL)
 		return NULL;
 	if(pos < pBL->getPosition())
@@ -3820,7 +3685,7 @@ fl_BlockLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 		}
 		return NULL;
 	}
-	fl_BlockLayout* pNext = pBL->getNext();
+	fl_ContainerLayout* pNext = pBL->getNext();
 	while(pNext != NULL && pNext->getPosition( true) < pos)
 	{
 		pBL = pNext;
@@ -3867,7 +3732,7 @@ fl_BlockLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 void fl_HdrFtrShadow::updateLayout(void)
 {
 	bool bredraw = false;
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
 		if (pBL->needsReformat())
@@ -3900,10 +3765,10 @@ void fl_HdrFtrShadow::clearScreen(void)
 void fl_HdrFtrShadow::redrawUpdate(void)
 {
 	FV_View * pView = m_pLayout->getView();
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL && (pView != NULL))
 	{
-		if(pBL->hasUpdatableField())
+		if(pBL->getContainerType() == FL_CONTAINER_BLOCK && static_cast<fl_BlockLayout *>(pBL)->hasUpdatableField())
 		{
 			bool bReformat = pBL->recalculateFields(getDocLayout()->getRedrawCount());
 			if(bReformat)
@@ -3986,13 +3851,13 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Block);
-			UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
+			UT_ASSERT(m_pCurrentBL == (static_cast<fl_ContainerLayout *>(pL)));
 		}
 		PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 		UT_uint32 len = pcrs->getLength();
 
 
-		bResult = m_pCurrentBL->doclistener_populateSpan(pcrs, blockOffset, len);
+		bResult = static_cast<fl_BlockLayout *>(m_pCurrentBL)->doclistener_populateSpan(pcrs, blockOffset, len);
 		goto finish_up;
 	}
 
@@ -4003,14 +3868,14 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Block);
-			UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
+			UT_ASSERT(m_pCurrentBL == (static_cast<fl_ContainerLayout *>(pL)));
 		}
 		PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
 // sterwill -- is this call to getSectionLayout() needed?  pBLSL is not used.
 
 //			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
-		bResult = m_pCurrentBL->doclistener_populateObject(blockOffset,pcro);
+		bResult = static_cast<fl_BlockLayout *>(m_pCurrentBL)->doclistener_populateObject(blockOffset,pcro);
 		goto finish_up;
 	}
 
@@ -4021,9 +3886,9 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Block);
-			UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
+			UT_ASSERT(m_pCurrentBL == (static_cast<fl_ContainerLayout *>(pL)));
 		}
-		bResult = m_pCurrentBL->doclistener_insertFmtMark( (const PX_ChangeRecord_FmtMark *) pcr);
+		bResult = static_cast<fl_BlockLayout *>(m_pCurrentBL)->doclistener_insertFmtMark( (const PX_ChangeRecord_FmtMark *) pcr);
 		goto finish_up;
 	}
 
@@ -4165,7 +4030,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		if (m_bListening)
 		{
 			// append a new BlockLayout to that SectionLayout
-			fl_BlockLayout*	pBL = m_pShadow->appendBlock(sdh, pcr->getIndexAP());
+			fl_ContainerLayout*	pBL = m_pShadow->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));

@@ -120,15 +120,14 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
 							   PT_AttrPropIndex indexAP, bool bIsHdrFtr)
-	: fl_Layout(PTX_Block, sdh)
+	: fl_ContainerLayout(pSectionLayout,sdh,indexAP,PTX_Block,FL_CONTAINER_BLOCK)
+
 {
 	m_pAlignment = NULL;
 
 	m_pSectionLayout = pSectionLayout;
 	m_pBreaker = pBreaker;
 	m_pFirstRun = NULL;
-	m_pFirstLine = NULL;
-	m_pLastLine = NULL;
 	m_pAutoNum = NULL;
 	m_szStyle = NULL;
 
@@ -154,20 +153,20 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	UT_ASSERT(m_pDoc);
 	setAttrPropIndex(indexAP);
 
-	m_pPrev = pPrev;
-	if (m_pPrev)
+	setPrev(pPrev);
+	if (getPrev())
 	{
-		m_pNext = pPrev->m_pNext;
-		m_pPrev->m_pNext = this;
+		setNext(getPrev()->getNext());
+		getPrev()->setNext(this);
 	}
 	else
 	{
-		m_pNext = pSectionLayout->getFirstBlock();
+		setNext(pSectionLayout->getFirstLayout());
 	}
 
-	if (m_pNext)
+	if (getNext())
 	{
-		m_pNext->m_pPrev = this;
+		getNext()->setPrev(this);
 	}
 
 	if(m_szStyle != NULL)
@@ -204,15 +203,13 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
 				   PT_AttrPropIndex indexAP)
-	: fl_Layout(PTX_Block, sdh)
+	: fl_ContainerLayout(pSectionLayout,sdh,indexAP,PTX_Block,FL_CONTAINER_BLOCK)
 {
 	m_pAlignment = NULL;
 
 	m_pSectionLayout = pSectionLayout;
 	m_pBreaker = pBreaker;
 	m_pFirstRun = NULL;
-	m_pFirstLine = NULL;
-	m_pLastLine = NULL;
 	m_pAutoNum = NULL;
 	m_szStyle = NULL;
 
@@ -238,20 +235,20 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 	setAttrPropIndex(indexAP);
 
-	m_pPrev = pPrev;
-	if (m_pPrev)
+	setPrev(pPrev);
+	if (getPrev())
 	{
-		m_pNext = pPrev->m_pNext;
-		m_pPrev->m_pNext = this;
+		setNext(getPrev()->getNext());
+		getPrev()->setNext(this);
 	}
 	else
 	{
-		m_pNext = pSectionLayout->getFirstBlock();
+		setNext(pSectionLayout->getFirstLayout());
 	}
 
-	if (m_pNext)
+	if (getNext())
 	{
-		m_pNext->m_pPrev = this;
+		getNext()->setPrev(this);
 	}
 
 	m_iDirOverride = FRIBIDI_TYPE_UNSET;
@@ -433,7 +430,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		// The EOP Run is an integral part of the block so also make
 		// sure it does lookup.
 
-		fp_Line* pLine = getLastLine();
+		fp_Line* pLine = (fp_Line *) getLastContainer();
 		if (pLine)
 		{
 			fp_Run* pRun = pLine->getLastRun();
@@ -878,7 +875,7 @@ bool fl_BlockLayout::isHdrFtr(void)
 
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 {
-	fp_Line* pLine = m_pFirstLine;
+	fp_Line* pLine = (fp_Line *) getFirstContainer();
 	if(isHdrFtr())
 	{
 		return;
@@ -925,7 +922,7 @@ void fl_BlockLayout::coalesceRuns(void)
 
 #if 1
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
-	fp_Line* pLine = m_pFirstLine;
+	fp_Line* pLine = (fp_Line *) getFirstContainer();
 	while (pLine)
 	{
 		pLine->coalesceRuns();
@@ -1007,20 +1004,20 @@ void fl_BlockLayout::collapse(void)
 		pRun = pRun->getNext();
 	}
 
-	fp_Line* pLine = m_pFirstLine;
+	fp_Line* pLine = (fp_Line *) getFirstContainer();
 	while (pLine)
 	{
 		_removeLine(pLine);
-		pLine = m_pFirstLine;
+		pLine = (fp_Line *) getFirstContainer();
 	}
 	m_bIsCollapsed = true;
-	UT_ASSERT(m_pFirstLine == NULL);
-	UT_ASSERT(m_pLastLine == NULL);
+	UT_ASSERT(getFirstContainer() == NULL);
+	UT_ASSERT(getLastContainer() == NULL);
 }
 
 void fl_BlockLayout::purgeLayout(void)
 {
-	fp_Line* pLine = m_pFirstLine;
+	fp_Line* pLine = (fp_Line *) getFirstContainer();
 	//		   if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
 //		{
 //		  // Sevior.
@@ -1043,11 +1040,11 @@ void fl_BlockLayout::purgeLayout(void)
 	while (pLine)
 	{
 		_purgeLine(pLine);
-		pLine = m_pFirstLine;
+		pLine = (fp_Line *) getFirstContainer();
 	}
 
-	UT_ASSERT(m_pFirstLine == NULL);
-	UT_ASSERT(m_pLastLine == NULL);
+	UT_ASSERT(getFirstContainer() == NULL);
+	UT_ASSERT(getLastContainer() == NULL);
 
 	while (m_pFirstRun)
 	{
@@ -1060,19 +1057,19 @@ void fl_BlockLayout::purgeLayout(void)
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
 {
-	if (m_pFirstLine == pLine)
+	if (getFirstContainer() == pLine)
 	{
-		m_pFirstLine = (fp_Line *) m_pFirstLine->getNext();
+		setFirstContainer((fp_Container *) getFirstContainer()->getNext());
 
 		// we have to call recalcMaxWidth so that the new line has the correct
 		// x offset and width
-		if(m_pFirstLine)
-			m_pFirstLine->recalcMaxWidth();
+		if(getFirstContainer())
+			getFirstContainer()->recalcMaxWidth();
 	}
 
-	if (m_pLastLine == pLine)
+	if (getLastContainer() == (fp_Container *) pLine)
 	{
-		m_pLastLine = (fp_Line *) m_pLastLine->getPrev();
+		setLastContainer((fp_Container *) getLastContainer()->getPrev());
 	}
 
 	pLine->setBlock(NULL);
@@ -1083,14 +1080,14 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 
 void fl_BlockLayout::_purgeLine(fp_Line* pLine)
 {
-	if (m_pLastLine == pLine)
+	if (getLastContainer() == (fp_Container *) pLine)
 	{
-		m_pLastLine = (fp_Line *) m_pLastLine->getPrev();
+		setLastContainer((fp_Container *) getLastContainer()->getPrev());
 	}
 
-	if (m_pFirstLine == pLine)
+	if (getFirstContainer() == (fp_Container *) pLine)
 	{
-		m_pFirstLine = (fp_Line *) m_pFirstLine->getNext();
+		setFirstContainer((fp_Container *)getFirstContainer()->getNext());
 	}
 	pLine->setBlock(NULL);
 	pLine->remove();
@@ -1103,13 +1100,13 @@ void fl_BlockLayout::_removeAllEmptyLines(void)
 {
 	fp_Line* pLine;
 
-	pLine = m_pFirstLine;
+	pLine = (fp_Line *) getFirstContainer();
 	while (pLine)
 	{
 		if (pLine->countRuns() == 0)
 		{
 			_removeLine(pLine);
-			pLine = m_pFirstLine;
+			pLine = (fp_Line *) getFirstContainer();
 		}
 		else
 		{
@@ -1191,8 +1188,8 @@ bool fl_BlockLayout::_truncateLayout(fp_Run* pTruncRun)
 */
 void fl_BlockLayout::_stuffAllRunsOnALine(void)
 {
-	UT_ASSERT(m_pFirstLine == NULL);
-	fp_Line* pLine = getNewLine();
+	UT_ASSERT(getFirstContainer() == NULL);
+	fp_Line* pLine = (fp_Line *) getNewContainer();
 	UT_ASSERT(pLine);
 
 	fp_Run* pTempRun = m_pFirstRun;
@@ -1239,16 +1236,16 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 	//	return;
 	//}
 
-	if (!m_pFirstLine)
+	if (!getFirstContainer())
 	{
-		getNewLine();
+		getNewContainer();
 	}
+	fp_Line * pFirst = (fp_Line *) getFirstContainer();
+	UT_ASSERT(pFirst->countRuns() == 0);
 
-	UT_ASSERT(m_pFirstLine->countRuns() == 0);
+	pFirst->addRun(m_pFirstRun);
 
-	m_pFirstLine->addRun(m_pFirstRun);
-
-	m_pFirstLine->layout();
+	pFirst->layout();
 
 	// Run list should be valid now.
 	_assertRunListIntegrity();
@@ -1268,19 +1265,20 @@ fl_BlockLayout::_purgeEndOfParagraphRun(void)
 {
 	UT_ASSERT(m_pFirstRun &&
 			  FPRUN_ENDOFPARAGRAPH == m_pFirstRun->getType());
-	UT_ASSERT(m_pFirstLine && m_pFirstLine->countRuns() == 1);
+	fp_Line * pFirstLine = (fp_Line *) getFirstContainer();
+	UT_ASSERT(pFirstLine && pFirstLine->countRuns() == 1);
 
 	// Run list should be valid when called (but not at exit!)
 	_assertRunListIntegrity();
 
-	m_pFirstLine->removeRun(m_pFirstRun);
+	pFirstLine->removeRun(m_pFirstRun);
 	delete m_pFirstRun;
 	m_pFirstRun = NULL;
 
-	m_pFirstLine->remove();
-	delete m_pFirstLine;
-	m_pFirstLine = NULL;
-	m_pLastLine = NULL;
+	pFirstLine->remove();
+	delete pFirstLine;
+	setFirstContainer(NULL);
+	setLastContainer(NULL);
 }
 
 /*!
@@ -1300,7 +1298,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	// lines yet. Get a first one created and hope for the best...
 	// Sevior: Ah here is one source of the multi-level list bug we
 	// need a last line from the previous block before we call this.
-	if (getPrev() != NULL && getPrev()->getLastLine() == NULL)
+	if (getPrev() != NULL && getPrev()->getLastContainer() == NULL)
 	{
 		UT_DEBUGMSG(("In _breakLineAfterRun no LastLine \n"));
 		UT_DEBUGMSG(("getPrev = %d this = %d \n", getPrev(), this));
@@ -1308,7 +1306,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	}
 
 	// Add a line for the Run if necessary
-	if (!m_pFirstLine)
+	if (getFirstContainer())
 		_stuffAllRunsOnALine();
 
 	// Create the new line
@@ -1323,9 +1321,9 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 		pLine->getNext()->setPrev(pNewLine);
 
 	pLine->setNext(pNewLine);
-	// Update LastLine if necessary
-	if (m_pLastLine == pLine)
-		m_pLastLine = pNewLine;
+	// Update LastContainer if necessary
+	if (getLastContainer() == (fp_Container *) pLine)
+		setLastContainer(pNewLine);
 	// Set the block
 	pNewLine->setBlock(this);
 	// Add the line to the container
@@ -1369,7 +1367,7 @@ void fl_BlockLayout::updateBackgroundColor(void)
   Formatting a paragraph means splitting the content into lines which
   will fit in the container.  */
 int
-fl_BlockLayout::format(fp_Line * pLineToStartAt)
+fl_BlockLayout::formatLocal(fp_Line * pLineToStartAt)
 {
 	_assertRunListIntegrity();
 	fp_Run *pRunToStartAt = pLineToStartAt ? pLineToStartAt->getFirstRun() : NULL;
@@ -1424,7 +1422,7 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 		}
 
 		// Create the first line if necessary.
-		if (!m_pFirstLine)
+		if (!getFirstContainer())
 			_stuffAllRunsOnALine();
 
 		recalculateFields(0);
@@ -1483,7 +1481,7 @@ void fl_BlockLayout::markAllRunsDirty(void)
 		pRun->markAsDirty();
 		pRun = pRun->getNext();
 	}
-	fp_Line  * pLine = m_pFirstLine;
+	fp_Line  * pLine = (fp_Line *) getFirstContainer();
 	while(pLine)
 	{
 		pLine->setNeedsRedraw();
@@ -1504,7 +1502,7 @@ void fl_BlockLayout::redrawUpdate()
 	_lookupProperties();
 	if(isHdrFtr())
 		return;
-	fp_Line* pLine = m_pFirstLine;
+	fp_Line* pLine = (fp_Line *) getFirstContainer();
 	while (pLine)
 	{
 		if (pLine->needsRedraw())
@@ -1531,7 +1529,7 @@ void fl_BlockLayout::redrawUpdate()
 	}
 }
 
-fp_Line* fl_BlockLayout::getNewLine(void)
+fp_Container* fl_BlockLayout::getNewContainerLocal(void)
 {
 	fp_Line* pLine = new fp_Line(getSectionLayout());
 	// TODO: Handle out-of-memory
@@ -1540,45 +1538,45 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 	pLine->setBlock(this);
 	pLine->setNext(NULL);
 	fp_VerticalContainer* pContainer = NULL;
-	if (m_pLastLine)
+	if (getLastContainer())
 	{
-		fp_Line* pOldLastLine = m_pLastLine;
+		fp_Line* pOldLastLine = (fp_Line *) getLastContainer();
 
-		UT_ASSERT(m_pFirstLine);
-		UT_ASSERT(!m_pLastLine->getNext());
+		UT_ASSERT(getFirstContainer());
+		UT_ASSERT(!getLastContainer()->getNext());
 
-		pLine->setPrev(m_pLastLine);
-		m_pLastLine->setNext(pLine);
-		m_pLastLine = pLine;
+		pLine->setPrev(getLastContainer());
+		getLastContainer()->setNext(pLine);
+		setLastContainer(pLine);
 
 		pContainer = (fp_VerticalContainer *) pOldLastLine->getContainer();
 		pContainer->insertContainerAfter((fp_Container *)pLine, (fp_Container *) pOldLastLine);
 	}
 	else
 	{
-		UT_ASSERT(!m_pFirstLine);
-		m_pFirstLine = pLine;
-		m_pLastLine = m_pFirstLine;
+		UT_ASSERT(!getFirstContainer());
+		setFirstContainer(pLine);
+		setLastContainer(getFirstContainer());
 		pLine->setPrev(NULL);
 		fp_Line* pPrevLine = NULL;
-		if(m_pPrev)
+		if(getPrev())
 		{
-			if(m_pPrev->getLastLine() == NULL)
+			if(getPrev()->getLastContainer() == NULL)
 			{
 				// Previous block exists but doesn't have a last line.
 				// This is a BUG. Try a work around for now. TODO Fix this elsewhere
 				UT_DEBUGMSG(("BUG!!! Previous block exists with no last line. This should not happen \n"));
-				//	m_pPrev->format();
+				//	getPrev()->format();
 			}
 		}
-		if (m_pPrev && m_pPrev->getLastLine())
+		if (getPrev() && getPrev()->getLastContainer())
 		{
-			pPrevLine = m_pPrev->getLastLine();
+			pPrevLine = (fp_Line *) getPrev()->getLastContainer();
 			pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
 		}
-		else if (m_pNext && m_pNext->getFirstLine())
+		else if (getNext() && getNext()->getFirstContainer())
 		{
-			pContainer = (fp_VerticalContainer *) m_pNext->getFirstLine()->getContainer();
+			pContainer = (fp_VerticalContainer *) getNext()->getFirstContainer()->getContainer();
 		}
 		else if (m_pSectionLayout->getFirstContainer())
 		{
@@ -1597,7 +1595,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 			pContainer->insertContainerAfter((fp_Container *)pLine, (fp_Container *) pPrevLine);
 	}
 
-	return pLine;
+	return (fp_Container *) pLine;
 }
 
 const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandStyles) const
@@ -1696,7 +1694,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 								UT_sint32& height,
 								bool& bDirection)
 {
-	if (!m_pFirstLine || !m_pFirstRun)
+	if (!getFirstContainer() || !m_pFirstRun)
 	{
 		// when we have no formatting information, can't find anything
 		return NULL;
@@ -1739,7 +1737,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	if (!pRun)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		pRun = getLastLine()->getLastRun();
+		pRun = static_cast<fp_Line *>(getLastContainer())->getLastRun();
 		bCoordOfPrevRun = false;
 	}
 
@@ -1925,7 +1923,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// right than pPrevRun.
 	if (pPrevRun->getLine() == pRun->getLine())
 	{
-		if(getFirstLine())
+		if(getFirstContainer())
 		{
 			pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
 		}
@@ -1960,13 +1958,13 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 	}
 	else
 	{
-		if (m_pPrev)
+		if (getPrev())
 		{
-			return m_pPrev->getLastLine();
+			return (fp_Line *) getPrev()->getLastContainer();
 		}
 		else
 		{
-			fl_SectionLayout* pSL = m_pSectionLayout->getPrev();
+			fl_SectionLayout* pSL = (fl_SectionLayout *) m_pSectionLayout->getPrev();
 
 			if (!pSL)
 			{
@@ -1974,9 +1972,9 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 				return NULL;
 			}
 
-			fl_BlockLayout* pBlock = pSL->getLastBlock();
+			fl_BlockLayout* pBlock = (fl_BlockLayout *) pSL->getLastLayout();
 			UT_ASSERT(pBlock);
-			return pBlock->getLastLine();
+			return (fp_Line *) pBlock->getLastContainer();
 		}
 	}
 
@@ -1991,15 +1989,15 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 		return (fp_Line *) pLine->getNext();
 	}
 
-	if (m_pNext)
+	if (getNext())
 	{
 		// grab the first line from the next block
-		return m_pNext->getFirstLine();
+		return (fp_Line *) getNext()->getFirstContainer();
 	}
 	else
 	{
 		// there is no next line in this section, try the next
-		fl_SectionLayout* pSL = m_pSectionLayout->getNext();
+		fl_SectionLayout* pSL = (fl_SectionLayout *) m_pSectionLayout->getNext();
 
 		if (!pSL)
 		{
@@ -2007,9 +2005,9 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 			return NULL;
 		}
 
-		fl_BlockLayout* pBlock = pSL->getFirstBlock();
+		fl_BlockLayout* pBlock = (fl_BlockLayout *) pSL->getFirstLayout();
 		UT_ASSERT(pBlock);
-		return pBlock->getFirstLine();
+		return (fp_Line *) pBlock->getFirstContainer();
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2018,18 +2016,18 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 
 fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 {
-	if (m_pNext)
+	if (getNext())
 	{
-		return m_pNext;
+		return (fl_BlockLayout *) getNext();
 	}
 
 	// keep going (check next section)
-	fl_SectionLayout* pSL = m_pSectionLayout->getNext();
+	fl_SectionLayout* pSL = (fl_SectionLayout *) m_pSectionLayout->getNext();
 	fl_BlockLayout* pBL = NULL;
 
 	if (pSL)
 	{
-		pBL = pSL->getFirstBlock();
+		pBL = (fl_BlockLayout *) pSL->getFirstLayout();
 		UT_ASSERT(pBL);
 	}
 
@@ -2038,16 +2036,16 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 
 fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
 {
-	if (m_pPrev)
-		return m_pPrev;
+	if (getPrev())
+		return (fl_BlockLayout *) getPrev();
 
 	// keep going (check prev section)
-	fl_SectionLayout* pSL = m_pSectionLayout->getPrev();
+	fl_SectionLayout* pSL = (fl_SectionLayout *) m_pSectionLayout->getPrev();
 	fl_BlockLayout* pBL = NULL;
 
 	if (pSL)
 	{
-		pBL = pSL->getLastBlock();
+		pBL = (fl_BlockLayout *) pSL->getLastLayout();
 		UT_ASSERT(pBL);
 	}
 
@@ -2551,7 +2549,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	if(pView)
 		pView->eraseInsertionPoint();
 	PT_BufIndex bi = pcrs->getBufIndex();
-	if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
+	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
 		UT_DEBUGMSG(("In fl_BlockLayout::doclistener_populateSpan  no LastLine \n"));
 		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
@@ -2764,7 +2762,7 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 
 	m_gbCharWidths.del(blockOffset, 1);
 
-	fp_Run * pLastRun = m_pLastLine->getLastRun();
+	fp_Run * pLastRun = static_cast<fp_Line *>(getLastContainer())->getLastRun();
 	while(pRun )
 	{
 		pRun->setBlockOffset(pRun->getBlockOffset() - 1);
@@ -2859,7 +2857,7 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
-	if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
+	if(getPrev()!= NULL && getPrev()->getLastContainer()==NULL)
 	{
 		UT_DEBUGMSG(("In fl_BlockLayout::_doInsertForcedPageBreakRun  no LastLine \n"));
 		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
@@ -3201,9 +3199,9 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			m_pFirstRun = pNewRun;
 		}
 
-		if (m_pLastLine)
+		if (getLastContainer())
 		{
-			m_pLastLine->addRun(pNewRun);
+			static_cast<fp_Line *>(getLastContainer())->addRun(pNewRun);
 		}
 	}
 
@@ -3741,13 +3739,13 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// the document) this will be empty - but the EOP Run needs to be
 	// deleted.
 
-	fl_BlockLayout* pPrevBL = m_pPrev;
+	fl_BlockLayout* pPrevBL = (fl_BlockLayout *) getPrev();
 	fp_Line* pLastLine = NULL;
 
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
-		pLastLine = pPrevBL->getLastLine();
+		pLastLine = (fp_Line *) pPrevBL->getLastContainer();
 		fp_Run* pPrevRun = NULL;
 		fp_Run* pNukeRun = pPrevBL->m_pFirstRun;
 		for (; pNukeRun->getNext(); pNukeRun = pNukeRun->getNext())
@@ -3853,16 +3851,16 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// Unlink this block
 	if (pPrevBL)
 	{
-		pPrevBL->m_pNext = m_pNext;
+		pPrevBL->setNext(getNext());
 	}
-	if (m_pNext)
+	if (getNext())
 	{
-		m_pNext->m_pPrev = pPrevBL;
+		getNext()->setPrev(pPrevBL);
 	}
 
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
-	pSL->removeBlock(this);
+	pSL->remove(this);
 
 	if (pPrevBL)
 	{
@@ -3946,7 +3944,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 		}
 	}
 
-	fp_Line* pLine = m_pFirstLine;
+	fp_Line* pLine = (fp_Line *) getFirstContainer();
 	while (pLine)
 	{
 		pLine->recalcHeight();	// line-height
@@ -4011,7 +4009,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
-	fl_BlockLayout* pNewBL = pSL->insertBlock(sdh, this, pcrx->getIndexAP());
+	fl_BlockLayout* pNewBL = (fl_BlockLayout *) pSL->insert(sdh, this, pcrx->getIndexAP(),FL_CONTAINER_BLOCK);
 	if(isHdrFtr())
 		pNewBL->setHdrFtr();
 	if (!pNewBL)
@@ -4019,9 +4017,9 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		UT_DEBUGMSG(("no memory for BlockLayout\n"));
 		return false;
 	}
-	xxx_UT_DEBUGMSG(("Inserting block %x it's sectionLayout is %x \n",pNewBL,pNewBL->getSectionLayout()));
-	xxx_UT_DEBUGMSG(("Inserting block at pos %d \n",getPosition(true)));
-	xxx_UT_DEBUGMSG(("shd of strux block = %x of new block is %x \n",getStruxDocHandle(),pNewBL->getStruxDocHandle()));
+	//xxx_UT_DEBUGMSG(("Inserting block %x it's sectionLayout is %x \n",pNewBL,pNewBL->getSectionLayout()));
+	//xxx_UT_DEBUGMSG(("Inserting block at pos %d \n",getPosition(true)));
+	//xxx_UT_DEBUGMSG(("shd of strux block = %x of new block is %x \n",getStruxDocHandle(),pNewBL->getStruxDocHandle()));
 	// The newly returned block will contain a line and EOP. Delete those
 	// since the code below expects an empty block
 	pNewBL->_purgeEndOfParagraphRun();
@@ -4196,7 +4194,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 	_assertRunListIntegrity();
-	xxx_UT_DEBUGMSG(("Prev Block = %x Next block = %x \n",pNewBL->getPrev(),pNewBL->getNext()));
+	//xxx_UT_DEBUGMSG(("Prev Block = %x Next block = %x \n",pNewBL->getPrev(),pNewBL->getNext()));
 	return true;
 }
 
@@ -4379,11 +4377,11 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	}
 	else
 	{
-		pBL = getNext();
+		pBL = (fl_BlockLayout *) getNext();
 	}
 	while (pBL)
 	{
-		fl_BlockLayout* pNext = pBL->getNext();
+		fl_BlockLayout* pNext = (fl_BlockLayout *) pBL->getNext();
 
 		pBL->collapse();
 		if(pBL->isHdrFtr())
@@ -4391,8 +4389,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
 			pHF->collapseBlock(pBL);
 		}
-		pOldSL->removeBlock(pBL);
-		pSL->addBlock(pBL);
+		pOldSL->remove(pBL);
+		pSL->add(pBL);
 		pBL->setSectionLayout( pSL);
 		pBL->m_bNeedsReformat = true;
 		pBL = pNext;
@@ -4401,7 +4399,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 // Terminate blocklist here. This Block is the last in this section.
 //
 	setNext(NULL);
-	pOldSL->setLastBlock( this);
+	pOldSL->setLastLayout( (fl_ContainerLayout *) this);
 //
 // OK we have to redo all the containers now.
 //
@@ -4411,7 +4409,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pDSL = pFirstDSL;
 		while(pDSL != NULL)
 		{
-			pDSL->collapseDocSection();
+			pDSL->collapse();
 			pDSL = pDSL->getNextDocSection();
 		}
 		pDSL = pFirstDSL;
@@ -5288,16 +5286,6 @@ bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, fl_TabStop *pTa
 }
 
 
-void fl_BlockLayout::setNext(fl_BlockLayout* pBL)
-{
-	m_pNext = pBL;
-}
-
-void fl_BlockLayout::setPrev(fl_BlockLayout* pBL)
-{
-	m_pPrev = pBL;
-}
-
 void fl_BlockLayout::setSectionLayout(fl_SectionLayout* pSectionLayout)
 {
 	//	If we are setting the new section layout, this block
@@ -5614,7 +5602,7 @@ void fl_BlockLayout::remItemFromList(void)
 		sprintf(buf, "%i", currLevel);
 		setStopping(false);
 		pView->_eraseInsertionPoint();
-		fl_BlockLayout * pNext = getNext();
+		fl_BlockLayout * pNext = (fl_BlockLayout *) getNext();
 		if (currLevel == 0)
 		{
 			id = 0;
@@ -6079,8 +6067,8 @@ void	fl_BlockLayout::StopListInBlock(void)
 	//
 	const XML_Char ** props = NULL;
 	const XML_Char * szAlign, * szIndent;
-	pPrev = getPrev();
-	pNext = getNext();
+	pPrev = (fl_BlockLayout *) getPrev();
+	pNext = (fl_BlockLayout *) getNext();
 
 	if (id != 0)
 	{
@@ -6091,14 +6079,14 @@ void	fl_BlockLayout::StopListInBlock(void)
 		bmatch = (bool)(pPrev->isListItem() && pPrev->getLevel() == level && pPrev->getAutoNum()->getID() == id);
 		while (pPrev && !bmatch)
 		{
-			pPrev = pPrev->getPrev();
+			pPrev = (fl_BlockLayout *) pPrev->getPrev();
 			if (pPrev && pPrev->isListItem())
 				bmatch = (bool)(pPrev->getLevel() == level
 								&& pPrev->getAutoNum()->getID() == id);
 		}
 		while (pNext  && !bmatch)
 		{
-			pNext = pNext->getNext();
+			pNext = (fl_BlockLayout *) pNext->getNext();
 			if (pNext && pNext->isListItem())
 				bmatch = (bool)(pNext->getLevel() == level
 								&& pNext->getAutoNum()->getID() == id);
@@ -6159,10 +6147,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 	{
 		// Find the last non-list item and set alignment + indent
 		while (pPrev && pPrev->isListItem())
-			pPrev = pPrev->getPrev();
+			pPrev = (fl_BlockLayout *) pPrev->getPrev();
 
 		while (pNext && pNext->isListItem())
-			pNext = pNext->getNext();
+			pNext = (fl_BlockLayout *) pNext->getNext();
 
 		if (pPrev)
 		{
@@ -6305,7 +6293,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 	// Find the most recent list item that matches the id given
 	//
 	UT_ASSERT(m_pAutoNum);
-	fl_BlockLayout * pPrev = getPrev();
+	fl_BlockLayout * pPrev = (fl_BlockLayout *) getPrev();
 	bool bmatchid =  false;
 	fl_AutoNum * pAutoNum = NULL;
 
@@ -6326,7 +6314,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 
 	while (pPrev != NULL && bmatchid == false)
 	{
-		pPrev = pPrev->getPrev();
+		pPrev = (fl_BlockLayout *) pPrev->getPrev();
 		if (pPrev && pPrev->isListItem())
 		{
 			bmatchid = (bool) (id == pPrev->getAutoNum()->getID());
@@ -6353,7 +6341,7 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
 	//
 	// Find the next list  item that matches the id given
 	//
-	fl_BlockLayout * pNext = getNext();
+	fl_BlockLayout * pNext = (fl_BlockLayout *) getNext();
 	bool bmatchLevel =	false;
 	if( pNext != NULL && pNext->isListItem())
 	{
@@ -6361,7 +6349,7 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
 	}
 	while(pNext != NULL && bmatchLevel == false)
 	{
-		pNext = pNext->getNext() ;
+		pNext = (fl_BlockLayout *) pNext->getNext() ;
 		if( pNext != NULL && pNext->isListItem())
 		{
 			bmatchLevel = (bool) (id == pNext->getAutoNum()->getID());
@@ -6379,10 +6367,10 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 	//
 	// Find the most recent block with a list
 	//
-	fl_BlockLayout * pPrev = getPrev();
+	fl_BlockLayout * pPrev = (fl_BlockLayout *) getPrev();
 	while(pPrev != NULL && !pPrev->isListItem())
 	{
-		pPrev = pPrev->getPrev() ;
+		pPrev = (fl_BlockLayout *) pPrev->getPrev() ;
 	}
 	return pPrev;
 }
@@ -6408,7 +6396,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 	fl_BlockLayout * pClosest = NULL;
 	float dClosest = 100000.;
 	bool bFound = false;
-	fl_BlockLayout * pPrev = getPrev();
+	fl_BlockLayout * pPrev = (fl_BlockLayout *) getPrev();
 	while(pPrev != NULL && !bFound)
 	{
 		if(pPrev->isListItem())
@@ -6432,12 +6420,12 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 					pClosest = pPrev;
 					dClosest = diff;
 				}
-				pPrev = pPrev->getPrev();
+				pPrev = (fl_BlockLayout *) pPrev->getPrev();
 			}
 		}
 		else
 		{
-			pPrev = pPrev->getPrev();
+			pPrev = (fl_BlockLayout *) pPrev->getPrev();
 		}
 	}
 	return pClosest;
@@ -6578,10 +6566,10 @@ void fl_BlockLayout::transferListFlags(void)
 	//
 	// Transfer list flags from a block to the following list blocks
 	//
-	UT_ASSERT(m_pNext);
-	if (m_pNext->isListItem()) // this is wrong. It should be next in the list.
+	UT_ASSERT(getNext());
+	if (static_cast<fl_BlockLayout *>(getNext())->isListItem()) // this is wrong. It should be next in the list.
 	{
-		UT_uint32 nId = m_pNext->getAutoNum()->getID();
+		UT_uint32 nId = getNext()->getAutoNum()->getID();
 		UT_uint32 cId=0, pId=0;
 		fl_BlockLayout * pPrev = getPreviousList();
 		if(pPrev != NULL)
@@ -6590,17 +6578,17 @@ void fl_BlockLayout::transferListFlags(void)
 			cId = getAutoNum()->getID();
 		if(cId == nId)
 		{
-			if (!m_pNext->m_bStartList)
-				m_pNext->m_bStartList = m_bStartList;
-			if (!m_pNext->m_bStopList)
-				m_pNext->m_bStopList = m_bStopList;
+			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStartList)
+				static_cast<fl_BlockLayout *>(getNext())->m_bStartList = m_bStartList;
+			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStopList)
+				static_cast<fl_BlockLayout *>(getNext())->m_bStopList = m_bStopList;
 		}
 		else if ( pId == nId)
 		{
-			if (!m_pNext->m_bStartList)
-				m_pNext->m_bStartList = pPrev->m_bStartList;
-			if (!m_pNext->m_bStopList)
-				m_pNext->m_bStopList = pPrev->m_bStopList;
+			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStartList)
+				static_cast<fl_BlockLayout *>(getNext())->m_bStartList = pPrev->m_bStartList;
+			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStopList)
+				static_cast<fl_BlockLayout *>(getNext())->m_bStopList = pPrev->m_bStopList;
 		}
 	}
 }

@@ -7949,12 +7949,12 @@ Defun1(toggleDomDirection)
 		properties[1] = (XML_Char *) &dltr;
 		//the last run in the block is the FmtMark, and we need
 		//to reset its direction
-		pBl->getLastLine()->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
+		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
 	}
 	else
 	{
 		properties[1] = (XML_Char *) &drtl;
-		pBl->getLastLine()->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
+		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
 	}
 
 	// if the paragraph is was aligned either left or right, then

@@ -881,6 +881,7 @@ text so we can keep the original code.
 	if ( b_Topline)
 	{
 		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + 1;
+		UT_ASSERT(ybase != 0);
 		m_pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
@@ -888,6 +889,7 @@ text so we can keep the original code.
 	*/
 	if ( b_Bottomline)
 	{
+		UT_ASSERT(yoff+getLine()->getHeight()-ithick+1 != 0);
 		m_pG->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+1, getWidth(), ithick);
 	}
 }
@@ -1005,6 +1007,7 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
+		UT_ASSERT(yoffText != 0);
         m_pG->fillRect(m_colorHL,xoffText,yoffText,iTextWidth,iTextHeight);
         m_pG->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
@@ -1250,7 +1253,7 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-
+	UT_ASSERT(yoff != 0);
 	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 
@@ -1315,10 +1318,13 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     // we get the rect running pass the end of the line and off the screen
     if((UT_sint32)(iMaxWidth - cur_linewidth * 4) > 0)
 	    if(m_iVisDirection == FRIBIDI_TYPE_LTR )
+		{
 		    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		}
 		else
+		{
 	    	m_pG->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
-
+		}
 #undef NPOINTS
 }
 
@@ -1407,6 +1413,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
+		UT_ASSERT(iFillTop != 0);
 		m_pG->fillRect(clrSelBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
@@ -1414,6 +1421,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
+		UT_ASSERT(iFillTop != 0);
 		m_pG->fillRect(clrNormalBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
@@ -1436,6 +1444,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 // Scale the vertical line thickness for printers
 //
 		UT_sint32 ithick =  getToplineThickness();
+		UT_ASSERT(iFillTop != 0);
 		m_pG->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
@@ -1667,11 +1676,14 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
     {
+
+		UT_ASSERT(iYoffText != 0);
 		m_pG->fillRect(clrSelBackground, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
     }
 	else
     {
+		UT_ASSERT(iYoffText != 0);
 		m_pG->fillRect(m_colorPG, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
     }
 	if (pView->getShowPara())
@@ -2205,7 +2217,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	{
 		xoff -= m_iDrawWidth;
 	}
-
+	UT_ASSERT(yoff != 0);
 	m_pG->fillRect(m_colorPG, xoff, yoff, m_iDrawWidth, m_pLine->getHeight());
 }
 
@@ -2315,11 +2327,13 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
+		UT_ASSERT(m_iYoffText != 0);
 		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
 	}
 	else
 	{
+		UT_ASSERT(m_iYoffText != 0);
 		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
 	}
 	if (pView->getShowPara())
@@ -3076,9 +3090,7 @@ void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = m_pLine->getHeight();
-//
-// Sevior was here
-//	m_pG->fillRect(m_colorPG, xoff, yoff-1, m_iWidth, iLineHeight);
+	UT_ASSERT(yoff != 0);
 	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, iLineHeight);
 }
 
@@ -3141,6 +3153,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		else
 		{
 			getHighlightColor();
+			UT_ASSERT(iFillTop != 0);
 			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}
@@ -3703,7 +3716,7 @@ static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
 		xxx_UT_DEBUGMSG(("countEndnotesBefore: endid [%s], someid [%s]\n",endid,someid));
 		if (someid && UT_strcmp(someid, endid)==0)
 			break;
-		pBL = pBL->getNext();
+		pBL = (fl_BlockLayout *) pBL->getNext();
 
 		// HACK until we stop propagating endnote-ids.
 		// actually, we do want to propagate the endnote ids, it allows
@@ -3772,7 +3785,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	// Now, count out how many paragraphs have special endnote-id tags
 	// until we reach the desired paragraph.  (para == block)
 
-	fl_BlockLayout * pBL = pEndSL->getFirstBlock();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pEndSL->getFirstLayout();
 	int endnoteNo = countEndnotesBefore(pBL, endid);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3831,7 +3844,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 
 	// should this actually be refactored?
 
-	fl_BlockLayout * pBL = pEndSL->getFirstBlock();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pEndSL->getFirstLayout();
 	int endnoteNo = countEndnotesBefore(pBL, endid);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -4035,7 +4048,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 
 	while (pSection)
 	{
-		pBlock = pSection->getFirstBlock();
+		pBlock = (fl_BlockLayout *) pSection->getFirstLayout();
 
 		while (pBlock)
 		{
@@ -4057,11 +4070,11 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 			if(bFound)
 				break;
 
-			pBlock = pBlock->getNext();
+			pBlock = (fl_BlockLayout *) pBlock->getNext();
 		}
 		if(bFound)
 			break;
-		pSection = pSection->getNext();
+		pSection = (fl_SectionLayout *) pSection->getNext();
 	}
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];

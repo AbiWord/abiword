@@ -62,7 +62,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 	//	   should force a full layout.
 	//	 o Also see fix me at end of loop
 
-	fp_Line* pLine = pBlock->getFirstLine();
+	fp_Line* pLine = (fp_Line *) pBlock->getFirstContainer();
 	UT_ASSERT(pLine);
 
 	if(pLineToStartAt)
@@ -594,7 +594,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		pNextLine = (fp_Line *) pLine->getNext();
 		if (!pNextLine)
 		{
-			fp_Line* pNewLine  = pBlock->getNewLine();
+			fp_Line* pNewLine  = (fp_Line *) pBlock->getNewContainer();
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
 
 			pNextLine = pNewLine;
@@ -603,9 +603,8 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		{
 			xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
 			pLine, pNextLine, pBlock->getLastLine()));
-			if(pBlock->getLastLine() == pLine)
-				pBlock->setLastLine(pNextLine);
-
+			if(pBlock->getLastContainer() == (fp_Container *) pLine)
+				pBlock->setLastContainer(pNextLine);
 		}
 
 		fp_Run* pRunToBump = pLine->getLastRun();

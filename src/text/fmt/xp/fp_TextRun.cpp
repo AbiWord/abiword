@@ -1352,6 +1352,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 			if(bthis && pPrev->getType() == FPRUN_IMAGE)
 				leftClear = 0;
 		}
+		UT_ASSERT(yoff =! 0);
 		m_pG->fillRect(clrNormalBackground,xoff-leftClear , yoff, m_iWidth+leftClear, m_pLine->getHeight());
 	}
 
@@ -1443,6 +1444,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	if(bDrawBckg)
 	{
+		UT_ASSERT(yTopOfSel + m_iAscent - m_pLine->getAscent() != 0);
 		m_pG->fillRect( clrNormalBackground,
 					pDA->xoff,
 					yTopOfSel + m_iAscent - m_pLine->getAscent(),
@@ -1595,6 +1597,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = m_pLine->getHeight();
 		r.top = r.top + m_iAscent - m_pLine->getAscent();
+		UT_ASSERT(r.top != 0);
 		m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
@@ -2152,6 +2155,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 
 			for (UT_uint32 i = 0;i < lenSpan;i++){
 			   if(pSpan[i] == UCS_SPACE){
+				   UT_ASSERT(iy != 0);
 				   m_pG->fillRect(clrShowPara,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
 			   }
 			   iWidth += pCharWidths[i + offset];
@@ -2379,7 +2383,7 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 			//	break; //no span found
 			if(lenSpan <= 0)
 			{
-				fp_Line * pLine = m_pBL->getFirstLine();
+				fp_Line * pLine = (fp_Line *) m_pBL->getFirstContainer();
 				while(pLine)
 				{
 					pLine = (fp_Line *) pLine->getNext();

@@ -37,6 +37,8 @@
 #include "fl_AutoLists.h"
 #include "pp_Property.h"
 #include "fribidi.h"
+#include "fl_ContainerLayout.h"
+#include "fl_SectionLayout.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
@@ -44,6 +46,7 @@
 class fl_Squiggles;
 class FL_DocLayout;
 class fl_SectionLayout;
+class fl_ContainerLayout;
 class fb_LineBreaker;
 class fb_Alignment;
 class fp_Line;
@@ -161,7 +164,7 @@ public:
 class fl_TabStop;
 void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTabs);
 
-class ABI_EXPORT fl_BlockLayout : public fl_Layout
+class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 {
 	friend class fl_Squiggles;
 	friend class fl_DocListener;
@@ -187,35 +190,29 @@ public:
 		spacing_ATLEAST
 	} eSpacingPolicy;
 
-	int 		format(fp_Line * pLineToStartWith = NULL);
-	bool		recalculateFields(UT_uint32 iUpdateCount);
+	virtual void        format(void) { formatLocal(NULL);}
+	int 		        formatLocal(fp_Line * pLineToStartWith = NULL);
+	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
-	void		redrawUpdate();
-
-	fp_Line*	getNewLine(void);
+	virtual void		redrawUpdate();
+	virtual void        updateLayout(void) {}
+	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL)
+		{ return getNewContainerLocal();}
+	fp_Container*	getNewContainerLocal(void);
 	FV_View *		getView(void);
 
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 
-	inline fl_BlockLayout* getNext(void) const { return m_pNext; }
-	inline fl_BlockLayout* getPrev(void) const { return m_pPrev; }
-
-	void setNext(fl_BlockLayout*);
-	void setPrev(fl_BlockLayout*);
-
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;
 
-	inline fp_Line* getFirstLine(void) const { return m_pFirstLine; }
-	inline fp_Line* getLastLine(void) const { return m_pLastLine; }
-	inline void setLastLine(fp_Line * pLine) {m_pLastLine = pLine;}
 
 	fp_Line* findPrevLineInDocument(fp_Line*);
 	fp_Line* findNextLineInDocument(fp_Line*);
 
-	inline fp_Run* getFirstRun(void) const { return m_pFirstRun; }
+	virtual fp_Run* getFirstRun(void) const { return m_pFirstRun; }
 	inline void setFirstRun(fp_Run* pRun) { m_pFirstRun = pRun; }
 
 	inline bool isListItem(void) const { return m_bListItem; }
@@ -277,15 +274,15 @@ public:
 	inline UT_sint32	getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
 #endif
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
-	inline FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
-	inline fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
+	virtual FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
+	virtual fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
 	fl_DocSectionLayout * getDocSectionLayout(void) const;
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
 	void getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const;
 
-	void updateBackgroundColor(void);
+	virtual void updateBackgroundColor(void);
 
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
@@ -360,16 +357,19 @@ public:
 	bool doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 
 	void					purgeLayout(void);
-	void					collapse(void);
-	bool					isCollapsed(void) const {return m_bIsCollapsed;}
+	virtual void			collapse(void);
+	virtual bool			isCollapsed(void) const 
+		{return m_bIsCollapsed;}
 	void					coalesceRuns(void);
-
-	void					setNeedsReformat(void) { m_bNeedsReformat = true; }
-	inline bool 		needsReformat(void) const { return m_bNeedsReformat; }
-
-	void					setNeedsRedraw(void) { m_bNeedsRedraw = true; }
-	inline bool 		needsRedraw(void) const { return m_bNeedsRedraw; }
-	void					markAllRunsDirty(void);
+	virtual void			setNeedsReformat(void) 
+		{ m_bNeedsReformat = true; }
+	inline bool 		    needsReformat(void) const 
+		{ return m_bNeedsReformat; }
+	virtual void			setNeedsRedraw(void) 
+		{ m_bNeedsRedraw = true; }
+	virtual bool 		    needsRedraw(void) const 
+		{ return m_bNeedsRedraw; }
+	virtual void			markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
 
@@ -454,14 +454,8 @@ protected:
 	FL_DocLayout*			m_pLayout;
 	fb_LineBreaker* 		m_pBreaker;
 
-	fl_BlockLayout* 		m_pPrev;
-	fl_BlockLayout* 		m_pNext;
-
 	fp_Run* 				m_pFirstRun;
 	fl_SectionLayout*		m_pSectionLayout;
-
-	fp_Line*				m_pFirstLine;
-	fp_Line*				m_pLastLine;
 
 	UT_Vector				m_vecTabs;
 	UT_sint32				m_iDefaultTabInterval;

@@ -24,38 +24,7 @@
 #include <stdio.h>
 #endif
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "pt_Types.h"
-#include "fl_Layout.h"
-#include "pl_Listener.h"
-#include "ut_debugmsg.h"
-#include "ut_misc.h" // for UT_RGBColor
-
-class fp_Page;
-class FL_DocLayout;
-class fl_BlockLayout;
-class fb_LineBreaker;
-class fp_ShadowContainer;
-class fp_Column;
-class fp_Run;
-class fp_Line;
-class fp_Container;
-class fp_VirtualContainer;
-class PD_Document;
-class PP_AttrProp;
-class fl_HdrFtrShadow;
-class PX_ChangeRecord_FmtMark;
-class PX_ChangeRecord_FmtMarkChange;
-class PX_ChangeRecord_Object;
-class PX_ChangeRecord_ObjectChange;
-class PX_ChangeRecord_Span;
-class PX_ChangeRecord_SpanChange;
-class PX_ChangeRecord_Strux;
-class PX_ChangeRecord_StruxChange;
-class fl_HdrFtrSectionLayout;
-
-typedef enum
+typedef enum _SectionType
 {
 	FL_SECTION_DOC,
     FL_SECTION_HDRFTR,
@@ -64,7 +33,7 @@ typedef enum
 } SectionType;
 
 
-typedef enum
+typedef enum _HdrFtrType
 {
 	FL_HDRFTR_HEADER,
 	FL_HDRFTR_HEADER_EVEN,
@@ -77,65 +46,84 @@ typedef enum
 	FL_HDRFTR_NONE
 } HdrFtrType;
 
-class ABI_EXPORT fl_SectionLayout : public fl_Layout
+#include "ut_types.h"
+#include "ut_vector.h"
+#include "pt_Types.h"
+#include "fl_Layout.h"
+#include "fl_ContainerLayout.h"
+#include "pl_Listener.h"
+#include "ut_debugmsg.h"
+#include "ut_misc.h" // for UT_RGBColor
+
+class fp_Page;
+class FL_DocLayout;
+class fl_Layout;
+class fl_ContainerLayout;
+class fl_BlockLayout;
+class fl_HdrFtrSectionLayout;
+class fl_HdrFtrShadow;
+class fb_LineBreaker;
+class fp_ShadowContainer;
+class fp_Column;
+class fp_Run;
+class fp_Line;
+class fp_Container;
+class fp_HdrFtrContainer;
+class PD_Document;
+class PP_AttrProp;
+class PX_ChangeRecord_FmtMark;
+class PX_ChangeRecord_FmtMarkChange;
+class PX_ChangeRecord_Object;
+class PX_ChangeRecord_ObjectChange;
+class PX_ChangeRecord_Span;
+class PX_ChangeRecord_SpanChange;
+class PX_ChangeRecord_Strux;
+class PX_ChangeRecord_StruxChange;
+
+class ABI_EXPORT fl_SectionLayout : public fl_ContainerLayout
 {
 	friend class fl_DocListener;
 
 public:
-	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, SectionType iType);
+	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, SectionType iType, fl_ContainerType iCType, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_SectionLayout();
 
 	SectionType     	getType(void) const { return m_iType; }
 
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
-	FL_DocLayout*		getDocLayout(void) const;
-
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
-	virtual fp_Container*		getFirstContainer() = 0;
-	virtual fp_Container*		getLastContainer() = 0;
-
-	fl_HdrFtrSectionLayout *    getHdrFtrSectionLayout(void) {return m_pHdrFtrSL;}
-
-
-	virtual void		format(void) = 0;
-	virtual void		updateLayout(void) = 0;
-	void                updateBackgroundColor(void);
-	void                markAllRunsDirty(void);
-
-	virtual void		redrawUpdate(void) = 0;
-
-	inline fl_SectionLayout*	getPrev(void) const { return m_pPrev; }
-	inline fl_SectionLayout*	getNext(void) const { return m_pNext; }
-	void				setPrev(fl_SectionLayout*);
-	void				setNext(fl_SectionLayout*);
-
-	fl_BlockLayout *	getFirstBlock(void) const;
-	fl_BlockLayout *	getLastBlock(void) const;
-	void                setLastBlock(fl_BlockLayout * pLast) { m_pLastBlock = pLast;}
-	fl_BlockLayout *	appendBlock(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP);
-	fl_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP);
-	void				addBlock(fl_BlockLayout* pBL);
-	void				removeBlock(fl_BlockLayout * pBL);
+    virtual void                updateLayout(void) = 0;
+	virtual FL_DocLayout*		getDocLayout(void) const;
+	virtual void                markAllRunsDirty(void) =0;
+	virtual bool                isCollapsed(void) const
+		{return m_bIsCollapsed;}
+	virtual void                setNeedsReformat(void)
+		{m_bNeedsReformat = true;}
+	virtual void                setNeedsRedraw(void)
+	    {m_bNeedsRedraw = true;}
+	virtual bool                needsReformat(void) const
+		{return m_bNeedsReformat;}
+	virtual bool                needsRedraw(void) const
+		{return m_bNeedsRedraw;}
+	virtual void        updateBackgroundColor(void);
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) = 0;
 
-	const char*			getAttribute(const char* pszName) const;
-
-	virtual bool bl_doclistener_populateSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
-	virtual bool bl_doclistener_populateObject(fl_BlockLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
-	virtual bool bl_doclistener_insertSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
-	virtual bool bl_doclistener_deleteSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
-	virtual bool bl_doclistener_changeSpan(fl_BlockLayout*, const PX_ChangeRecord_SpanChange * pcrsc);
-	virtual bool bl_doclistener_deleteStrux(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx);
-	virtual bool bl_doclistener_changeStrux(fl_BlockLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
-	virtual bool bl_doclistener_insertBlock(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+	virtual bool bl_doclistener_populateSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
+	virtual bool bl_doclistener_populateObject(fl_ContainerLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	virtual bool bl_doclistener_insertSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual bool bl_doclistener_deleteSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual bool bl_doclistener_changeSpan(fl_ContainerLayout*, const PX_ChangeRecord_SpanChange * pcrsc);
+	virtual bool bl_doclistener_deleteStrux(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx);
+	virtual bool bl_doclistener_changeStrux(fl_ContainerLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual bool bl_doclistener_insertBlock(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											PL_StruxDocHandle sdh,
 											PL_ListenerId lid,
 											void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	PL_ListenerId lid,
 																	PL_StruxFmtHandle sfhNew));
-	virtual bool bl_doclistener_insertSection(fl_BlockLayout*,
+	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*,
 											  SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
@@ -143,13 +131,13 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
-	virtual bool bl_doclistener_insertObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
-	virtual bool bl_doclistener_deleteObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
-	virtual bool bl_doclistener_changeObject(fl_BlockLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
+	virtual bool bl_doclistener_insertObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual bool bl_doclistener_deleteObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual bool bl_doclistener_changeObject(fl_ContainerLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
 
-	virtual bool bl_doclistener_insertFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
-	virtual bool bl_doclistener_deleteFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
-	virtual bool bl_doclistener_changeFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
+	virtual bool bl_doclistener_insertFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual bool bl_doclistener_deleteFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual bool bl_doclistener_changeFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -159,19 +147,13 @@ protected:
 	virtual void		_lookupProperties(void) = 0;
 
 	void				_purgeLayout();
-	fb_LineBreaker *	_getLineBreaker(void);
 
 	SectionType			m_iType;
 
-	fl_SectionLayout*	m_pPrev;
-	fl_SectionLayout*	m_pNext;
-
 	FL_DocLayout*		m_pLayout;
-	fb_LineBreaker*		m_pLB;
-
-	fl_BlockLayout*		m_pFirstBlock;
-	fl_BlockLayout*		m_pLastBlock;
-	fl_HdrFtrSectionLayout * m_pHdrFtrSL;
+	bool                m_bIsCollapsed;
+	bool                m_bNeedsReformat;
+	bool                m_bNeedsRedraw;
 };
 
 class ABI_EXPORT fl_DocSectionLayout : public fl_SectionLayout
@@ -188,15 +170,21 @@ public:
 	virtual void		format(void);
 	virtual void		updateLayout(void);
 	void                updateDocSection(void);
-	void                collapseDocSection(void);
-	UT_sint32			breakSection(fl_BlockLayout * pLastValidBlock=NULL);
-	void                markAllRunsDirty(void);
+	virtual void        collapse(void);
+	virtual fp_Container * getFirstContainer(void) const;
+	virtual fp_Container * getLastContainer(void) const;
+	virtual void        setFirstContainer(fp_Container * pCon)
+		{ m_pFirstColumn = (fp_Column *) pCon;}
+	virtual void  setLastContainer(fp_Container * pCon)
+		{ m_pLastColumn = (fp_Column *)pCon;}
+
+	UT_sint32			breakSection(fl_ContainerLayout * pLastValidBlock=NULL);
+	virtual void        markAllRunsDirty(void);
+	virtual fl_SectionLayout *  getSectionLayout(void) const
+		{ return NULL; }
 
 	virtual void		redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
-
-	virtual fp_Container*		getFirstContainer();
-	virtual fp_Container*		getLastContainer();
 
 	inline UT_sint32			getLeftMargin(void) const { return m_iLeftMargin; }
 	inline UT_sint32			getRightMargin(void) const { return m_iRightMargin; }
@@ -263,7 +251,7 @@ public:
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
 
-protected:
+private:
 	virtual void		_lookupProperties(void);
 
 	/*
@@ -322,7 +310,6 @@ protected:
 	fp_Page *           m_pFirstOwnedPage;
 	UT_RGBColor         m_clrPaper;
 
-private:
 	//! For a document DocSectionLayout, the endnote SL associated with it.
 	fl_DocSectionLayout* m_pEndnoteSL;
 	//! For an endnote DocSectionLayout, the DSL containing it.
@@ -347,66 +334,66 @@ public:
 	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	void                        localFormat(void);
 	void                        localCollapse(void);
-	void                        markAllRunsDirty(void);
+	virtual void                markAllRunsDirty(void);
 	void                        checkAndRemovePages(void);
 	void                        addValidPages(void);
 	bool                        isPageHere( fp_Page *pPage);
 	bool                        isPointInHere(PT_DocPosition pos);
-	void                        collapseBlock(fl_BlockLayout * pBlock);
+	void                        collapseBlock(fl_ContainerLayout * pBlock);
 	virtual void				format(void);
+	virtual fl_SectionLayout *  getSectionLayout(void) const
+		{ return (fl_SectionLayout *) m_pDocSL;}
 	virtual void				updateLayout(void);
 	void                        layout(void);
-	fl_BlockLayout *            findMatchingBlock( fl_BlockLayout * pBL);
+	fl_ContainerLayout *        findMatchingContainer( fl_ContainerLayout * pBL);
 	virtual void				redrawUpdate(void);
 	void                        updateBackgroundColor(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
-	virtual fp_Container*		getFirstContainer();
-	virtual fp_Container*		getLastContainer();
+	virtual fp_Container*		getFirstContainer() const;
+	virtual fp_Container*		getLastContainer() const;
 	fl_HdrFtrShadow *               getFirstShadow(void);
 	fl_HdrFtrShadow *               findShadow( fp_Page * pPage);
 	virtual bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	void                                    changeIntoHdrFtrSection( fl_DocSectionLayout * pSL);
 	void				    addPage(fp_Page*);
 	void					deletePage(fp_Page*);
-	void                            clearScreen(void);
-	void                            collapse(void);
+	void                    clearScreen(void);
+	virtual void            collapse(void);
 
-	virtual bool bl_doclistener_populateSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
-	virtual bool bl_doclistener_populateObject(fl_BlockLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
-	virtual bool bl_doclistener_insertSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
-	virtual bool bl_doclistener_deleteSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
-	virtual bool bl_doclistener_changeSpan(fl_BlockLayout*, const PX_ChangeRecord_SpanChange * pcrsc);
-	virtual bool bl_doclistener_deleteStrux(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx);
-	virtual bool bl_doclistener_changeStrux(fl_BlockLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
-	virtual bool bl_doclistener_insertBlock(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+	virtual bool bl_doclistener_populateSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
+	virtual bool bl_doclistener_populateObject(fl_ContainerLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	virtual bool bl_doclistener_insertSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual bool bl_doclistener_deleteSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);
+	virtual bool bl_doclistener_changeSpan(fl_ContainerLayout*, const PX_ChangeRecord_SpanChange * pcrsc);
+	virtual bool bl_doclistener_deleteStrux(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx);
+	virtual bool bl_doclistener_changeStrux(fl_ContainerLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual bool bl_doclistener_insertBlock(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											PL_StruxDocHandle sdh,
 											PL_ListenerId lid,
 											void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	PL_ListenerId lid,
 																	PL_StruxFmtHandle sfhNew));
-	virtual bool bl_doclistener_insertSection(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
-	virtual bool bl_doclistener_insertObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
-	virtual bool bl_doclistener_deleteObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
-	virtual bool bl_doclistener_changeObject(fl_BlockLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
+	virtual bool bl_doclistener_insertObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual bool bl_doclistener_deleteObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
+	virtual bool bl_doclistener_changeObject(fl_ContainerLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
 
-	virtual bool bl_doclistener_insertFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
-	virtual bool bl_doclistener_deleteFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
-	virtual bool bl_doclistener_changeFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
+	virtual bool bl_doclistener_insertFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual bool bl_doclistener_deleteFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual bool bl_doclistener_changeFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 
-protected:
+private:
 	UT_sint32					_findShadow(fp_Page * pPage);
 	virtual void				_lookupProperties(void);
 
 	fl_DocSectionLayout*		m_pDocSL;
 	HdrFtrType					m_iHFType;
 	UT_Vector					m_vecPages;
-
-private:
 	fp_Container *              m_pHdrFtrContainer;
 };
 
@@ -419,26 +406,32 @@ public:
 	fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
 	virtual ~fl_HdrFtrShadow();
 
-	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
-	fl_BlockLayout *			findMatchingBlock(fl_BlockLayout * pBL);
-	fl_BlockLayout *			findBlockAtPosition(PT_DocPosition pos);
+virtual	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
+	fl_ContainerLayout *		findMatchingContainer(fl_ContainerLayout * pBL);
+	fl_ContainerLayout *		findBlockAtPosition(PT_DocPosition pos);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
-	void                        layout(void);
-	void						clearScreen(void);
 	virtual void				redrawUpdate(void);
 	fp_Page *                       getPage(void) { return m_pPage;}
 	virtual fp_Container*		getNewContainer(fp_Container *pFirstContainer = NULL);
-	virtual fp_Container*		getFirstContainer();
-	virtual fp_Container*		getLastContainer();
+	virtual fp_Container*		getFirstContainer() const;
+	virtual fp_Container*		getLastContainer() const;
+	void                        layout(void);
+	void						clearScreen(void);
 	virtual bool				doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual void                collapse(void) {}
+    virtual void                markAllRunsDirty(void) {}
+	virtual fl_SectionLayout *  getSectionLayout(void) const
+		{ return getHdrFtrSectionLayout()->getSectionLayout(); }
 
-protected:
+
+private:
 	virtual void				_lookupProperties(void);
 	void						_createContainer(void);
 
 	fp_ShadowContainer*			m_pContainer;
 	fp_Page*					m_pPage;
+	fl_HdrFtrSectionLayout * m_pHdrFtrSL;
 };
 
 class ABI_EXPORT fl_ShadowListener : public PL_Listener
@@ -467,11 +460,11 @@ public:
 
 	virtual bool				signal(UT_uint32 iSignal);
 
-protected:
+private:
 	PD_Document*				m_pDoc;
 	fl_HdrFtrShadow* 			m_pShadow;
 	bool						m_bListening;
-	fl_BlockLayout*				m_pCurrentBL;
+	fl_ContainerLayout*			m_pCurrentBL;
 	fl_HdrFtrSectionLayout *    m_pHFSL;
 };
 

@@ -156,8 +156,8 @@ public:
 
 	void		getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirection, FL_WHICH_TABSTOP &eUseTabStop) const;
 
-	inline	bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
-	inline	bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }
+	inline	bool 	isFirstLineInBlock(void) const;	
+	inline	bool 	isLastLineInBlock(void) const;
 
 	void		remove(void);
 	UT_sint32	getMarginBefore(void) const;

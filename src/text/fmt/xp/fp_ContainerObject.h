@@ -28,12 +28,13 @@
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "gr_Graphics.h"
-#include "fl_SectionLayout.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
-#include "fp_Page.h"
 #include "fribidi_types.h"
 class GR_Graphics;
+class fl_SectionLayout;
+class fp_Page;
+class fp_Container;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
@@ -63,7 +64,7 @@ public:
 	  Return container type
 	  \return Type
 	*/
-	inline FP_ContainerType	getContainerType(void) const { return m_iType; }
+	FP_ContainerType	getContainerType(void) const { return m_iType; }
 
 	virtual void		setWidth(UT_sint32) = 0;
 	virtual void		setHeight(UT_sint32) = 0 ;
@@ -80,9 +81,9 @@ public:
 
 	virtual UT_sint32	getX(void) const = 0;
 	virtual UT_sint32	getY(void) const = 0;
-	inline fl_SectionLayout*   getSectionLayout(void) const
+	fl_SectionLayout*   getSectionLayout(void) const
 		{ return m_pSectionLayout; }
-	inline void         setSectionLayout(fl_SectionLayout * pSL)
+    void         setSectionLayout(fl_SectionLayout * pSL)
 		{ m_pSectionLayout = pSL; }
 	virtual inline FriBidiCharType getDirection(void)
 		{ return m_iDirection;}

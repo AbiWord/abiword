@@ -98,10 +98,10 @@ void __dump_sq(void)
 	}
 
 	fprintf(stdout,"FL_DocLayout::__dump(%p) sections:\n",(void*)FL_DocLayout::m_pDocLayout);
-	for (fl_SectionLayout * psl=FL_DocLayout::m_pDocLayout->getFirstSection(); (psl); psl=psl->getNext())
+	for (fl_SectionLayout * psl=FL_DocLayout::m_pDocLayout->getFirstSection(); (psl); psl=static_cast<fl_SectionLayout *>(psl->getNext()))
 	{
 		fprintf(stdout,"Section: %p [type %d]\n",(void*)psl,psl->getType());
-		for (fl_BlockLayout * pBL=psl->getFirstBlock(); (pBL); pBL=pBL->getNext())
+		for (fl_BlockLayout * pBL=(fl_BlockLayout *) psl->getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
 			pBL->getSquiggles()->__dump(stdout);
 	}
 }
@@ -123,7 +123,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 	}
 
 	fprintf(fp,"FL_DocLayout::__dump(%p) sections:\n",(void*)this);
-	for (fl_SectionLayout * psl=getFirstSection(); (psl); psl=psl->getNext())
+	for (fl_SectionLayout * psl= (fl_SectionLayout *) getFirstSection(); (psl); psl= (fl_SectionLayout *) psl->getNext())
 	{
 		psl->__dump(fp);
 	}
@@ -136,7 +136,19 @@ void FL_DocLayout::__dump(FILE * fp) const
 void fl_SectionLayout::__dump(FILE * fp) const
 {
 	fprintf(fp,"Section: %p [type %d]\n",(void*)this,getType());
-	for (fl_BlockLayout * pBL=getFirstBlock(); (pBL); pBL=pBL->getNext())
+	for (fl_BlockLayout * pBL=(fl_BlockLayout *) getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
+		pBL->__dump(fp);
+}
+
+
+/*!
+  Dump sections contained in this fl_SectionLayout
+  \param fp File where the dump should be written to
+*/
+void fl_ContainerLayout::__dump(FILE * fp) const
+{
+	fprintf(fp,"ContainerLayout: %p [Containertype %d]\n",(void*)this,getContainerType());
+	for (fl_BlockLayout * pBL=(fl_BlockLayout *) getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
 		pBL->__dump(fp);
 }
 
@@ -155,10 +167,10 @@ void fl_BlockLayout::__dump(FILE * fp) const
 	fp_Line* pLine;
 
 	// Get last line of previous block and its container.
-	fl_BlockLayout* pPrev = getPrev();
+	fl_BlockLayout* pPrev = (fl_BlockLayout *) getPrev();
 	if (pPrev)
 	{
-		pLine = pPrev->getLastLine();
+		pLine = (fp_Line *) pPrev->getLastContainer();
 		if (pLine)
 		{
 			pContainer = pLine->getContainer();

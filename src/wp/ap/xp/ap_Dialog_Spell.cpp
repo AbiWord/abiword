@@ -149,7 +149,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    m_pView = frameData->m_pDocLayout->getView();
    m_iOrigInsPoint = m_pView->getPoint();
    m_pSection = frameData->m_pDocLayout->getFirstSection();
-   m_pBlock = m_pSection->getFirstBlock();
+   m_pBlock = (fl_BlockLayout *) m_pSection->getFirstLayout();
 			   
    m_pBlockBuf = new UT_GrowBuf(1024);
    bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
@@ -201,7 +201,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   {
 			   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pBlock);
 		   }
-		   m_pBlock = m_pBlock->getNext();
+		   m_pBlock = (fl_BlockLayout *) m_pBlock->getNext();
 		   
 		   // next section, too?
 		   if (m_pBlock == NULL) 
@@ -210,7 +210,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   m_pSection = (fl_DocSectionLayout*) m_pSection->getNext();
 			   if (m_pSection == NULL)
 				   return false; // end of document
-			   m_pBlock = m_pSection->getFirstBlock();
+			   m_pBlock = (fl_BlockLayout *) m_pSection->getFirstLayout();
 		   }
 	 
 		   // update the buffer with our new block

@@ -489,7 +489,7 @@ void FV_View::toggleCase (ToggleCase c)
 		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
 
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: pBL 0x%x, offset %d, pSpanAPAfter 0x%x\n", pBL, offset, pSpanAPAfter));
-		//fp_Run * pLastRun = pBL->getLastLine()->getLastRun();
+		//fp_Run * pLastRun = static_cast<fp_Line *>(pBL->getLastContainer())->getLastRun();
 		//PT_DocPosition lastPos = pBL->getPosition(false) + pLastRun->getBlockOffset() + pLastRun->getLength() - 1;
 		pRun = pBL->findPointCoords(low, false, xPoint,
 										   yPoint, xPoint2, yPoint2,
@@ -672,7 +672,7 @@ void FV_View::toggleCase (ToggleCase c)
 				offset += iLen;
 			}
 		}
-		pBL = pBL->getNext();
+		pBL = (fl_BlockLayout *) pBL->getNext();
 		if ( pBL )
 		  low = pBL->getPosition(false);
 		else
@@ -1816,7 +1816,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	fl_BlockLayout * pBL=NULL;
 	if(m_bEditHdrFtr && m_pEditShadow != NULL)
 	{
-		pBL = m_pEditShadow->findBlockAtPosition(pos);
+		pBL = (fl_BlockLayout *) m_pEditShadow->findBlockAtPosition(pos);
 		if(pBL != NULL)
 			return pBL;
 	}
@@ -1937,7 +1937,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 //
 // Convert pixels to inches.
 //
-					float maxWidthIN = (float)(((float) pBlock->getFirstLine()->getContainer()->getWidth())/100. -0.6);
+					float maxWidthIN = (float)(((float) pBlock->getFirstContainer()->getContainer()->getWidth())/100. -0.6);
 					if(fAlign + (float) LIST_DEFAULT_INDENT < maxWidthIN)
 					{
 						fAlign += (float) LIST_DEFAULT_INDENT;
@@ -2155,7 +2155,7 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	// If the current block is a list and is otherwise empty return true
 	//
 	fl_BlockLayout * pBlock = getCurrentBlock();
-	fl_BlockLayout * nBlock = pBlock->getNext();
+	fl_BlockLayout * nBlock = (fl_BlockLayout *) pBlock->getNext();
 	bool bEmpty = true;
 	if(pBlock->isListItem() == false || (nBlock!= NULL && nBlock->isListItem()==true))
 	{
@@ -2312,7 +2312,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 		}
 		else
 		{
-			fl_BlockLayout * pPrev = pBlock->getPrev();
+			fl_BlockLayout * pPrev = (fl_BlockLayout *) pBlock->getPrev();
 //
 // Only attach block to previous list if the margin of the current block < the
 // previous block.
@@ -2411,7 +2411,7 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 	while( pBlock != NULL && pBlock->getPosition() <= endpos)
 	{
 		vBlock->addItem(pBlock);
-		pBlock = pBlock->getNext();
+		pBlock = (fl_BlockLayout *) pBlock->getNext();
 	}
 	return;
 }
@@ -2484,7 +2484,7 @@ void FV_View::insertParagraphBreak(void)
 		m_pDoc->insertStrux(getPoint(), PTX_Block);
 	if(bBefore == true)
 	{
-		fl_BlockLayout * pPrev = getCurrentBlock()->getPrev();
+		fl_BlockLayout * pPrev = (fl_BlockLayout *) getCurrentBlock()->getPrev();
 		sdh = pPrev->getStruxDocHandle();
 		m_pDoc->StopList(sdh);
 		_setPoint(getCurrentBlock()->getPosition());
@@ -2784,7 +2784,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			if(i == 0)
 				pBL->StartList(style);
 			else
-				pBL->resumeList(pBL->getPrev());
+				pBL->resumeList((fl_BlockLayout *)pBL->getPrev());
 		}
 	}
 //
@@ -2878,7 +2878,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 							if(i == 0)
 								pBL->StartList(style,prevSDH);
 							else
-								pBL->resumeList(pBL->getPrev());
+								pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
 						}
 					}
 					bAttach = true;
@@ -2902,7 +2902,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 // Start looking from the block following and skip through to end of Doc.
 //
 				fl_BlockLayout * pNext = (fl_BlockLayout *) vBlock.getLastItem();
-				pNext = pNext->getNext();
+				pNext = (fl_BlockLayout *) pNext->getNext();
 				if(pNext)
 				{
 					PT_DocPosition nextPos = pNext->getPosition(false)+1;
@@ -2929,7 +2929,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if(i == 0)
 						pBL->StartList(style);
 					else
-						pBL->resumeList(pBL->getPrev());
+						pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
 				}
 			}
 //
@@ -2957,7 +2957,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if(j == 0)
 						pBL->resumeList(pBlock);
 					else
-						pBL->resumeList(pBL->getPrev());
+						pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
 				}
 			}
 //
@@ -2984,7 +2984,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if (j == 0)
 						pBL->prependList(pBlock);
 					else
-						pBL->resumeList(pBL->getPrev());
+						pBL->resumeList((fl_BlockLayout *) pBL->getPrev());
 				}
 			}
 		}
@@ -3303,7 +3303,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 
 		PT_DocPosition posBL1 = pBL1->getPosition(false);
 
-		fp_Run * pLastRun2 = pBL2->getLastLine()->getLastRun();
+		fp_Run * pLastRun2 = static_cast<fp_Line *>(pBL2->getLastContainer())->getLastRun();
 		PT_DocPosition posBL2 = pBL2->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
 
 		if(posBL1 == posStart)
@@ -3337,7 +3337,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 
 		if(posBL2 > posEnd && pBL2->getPrev())
 		{
-			pLastRun2 = pBL2->getPrev()->getLastLine()->getLastRun();
+			pLastRun2 = static_cast<fp_Line *>(pBL2->getPrev()->getLastContainer())->getLastRun();
 			posEnd = pBL2->getPrev()->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
 			if(posEnd > posStart)
 				bFormatEnd = true;
@@ -3664,7 +3664,7 @@ void FV_View::getAllBlocksInList(UT_Vector * v)
 	PL_StruxDocHandle pFirstSdh = pAuto->getFirstItem();
 	PL_StruxDocHandle pLastSdh = pAuto->getNthBlock(pAuto->getNumLabels()-1);
 	fl_SectionLayout * pSl = getCurrentBlock()->getSectionLayout();
-	pBlock = pSl->getFirstBlock();
+	pBlock = (fl_BlockLayout *)pSl->getFirstLayout();
 	bool foundLast = false;
 	bool foundFirst = false;
 
@@ -3682,7 +3682,7 @@ void FV_View::getAllBlocksInList(UT_Vector * v)
 			v->addItem(pBlock);
 		if(pBlock->getStruxDocHandle() == pLastSdh)
 			foundLast = true;
-		pBlock = pBlock->getNext();
+		pBlock = (fl_BlockLayout *) pBlock->getNext();
 	}
 }
 
@@ -3875,7 +3875,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 //
 // Scan the layout for a pre-existing page number.
 //
-	fl_BlockLayout * pBL = pHFSL->getFirstBlock();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pHFSL->getFirstLayout();
 	bool bFoundPageNumber = false;
 	while(pBL != NULL && !bFoundPageNumber)
 	{
@@ -3890,7 +3890,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 			pRun = pRun->getNext();
 		}
 		if(!bFoundPageNumber)
-			pBL = pBL->getNext();
+			pBL = (fl_BlockLayout *) pBL->getNext();
 	}
 
 	// Signal PieceTable Change
@@ -3934,7 +3934,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 		"type", "page_number",
 		NULL, NULL
 	};
-	pBL = pHFSL->getFirstBlock();
+	pBL = (fl_BlockLayout *) pHFSL->getFirstLayout();
 	pos = pBL->getPosition();
 	if (isSelectionEmpty())
 		_eraseInsertionPoint();
@@ -4209,7 +4209,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pSection = pSection->getNext();
+			pSection = (fl_SectionLayout *) pSection->getNext();
 			if (!pSection)				// at EOD, so just bail
 				break;
 
@@ -4420,7 +4420,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pBlock = pBlock->getNextBlockInDocument();
+			pBlock = (fl_BlockLayout *) pBlock->getNextBlockInDocument();
 			if (!pBlock)				// at EOD, so just bail
 				break;
 
@@ -4614,7 +4614,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 			curPos	 += iLenToCopy;
 		}
 
-		pBlock = pBlock->getNext();
+		pBlock = (fl_BlockLayout *) pBlock->getNext();
 	}
 
 	UT_ASSERT(curPos == pos2);
@@ -5246,19 +5246,19 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 		if(!pLine)
 		{
 			fl_BlockLayout * pPrevBlock = pBlock;
-			pBlock = bNext ? pPrevLine->getBlock()->getNext() : pPrevLine->getBlock()->getPrev();
+			pBlock = bNext ? (fl_BlockLayout *)  pPrevLine->getBlock()->getNext() : (fl_BlockLayout *) pPrevLine->getBlock()->getPrev();
 			if(!pBlock)
 			{
 				// see if there is another section after/before this block
-				fl_SectionLayout* pSection = bNext ? pPrevBlock->getSectionLayout()->getNext()
-												   : pPrevBlock->getSectionLayout()->getPrev();
+				fl_SectionLayout* pSection = bNext ? (fl_SectionLayout *) pPrevBlock->getSectionLayout()->getNext()
+												   : (fl_SectionLayout *) pPrevBlock->getSectionLayout()->getPrev();
 
 				if(pSection && (pSection->getType() == FL_SECTION_DOC || pSection->getType() == FL_SECTION_ENDNOTE))
-					pBlock = bNext ? pSection->getFirstBlock() : pSection->getLastBlock();
+					pBlock = bNext ? (fl_BlockLayout *) pSection->getFirstLayout() : (fl_BlockLayout *) pSection->getLastLayout();
 			}
 
 			if(pBlock)
-				pLine = bNext ? pBlock->getFirstLine() : pBlock->getLastLine();
+				pLine = bNext ? (fp_Line *) pBlock->getFirstContainer() : (fp_Line *) pBlock->getLastContainer();
 		}
 	}
 
@@ -6052,8 +6052,8 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 		{
 			//UT_uint32 line = 0;
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
-			fl_BlockLayout * pBL = pSL->getFirstBlock();
-			fp_Line* pLine = pBL->getFirstLine();
+			fl_BlockLayout * pBL = (fl_BlockLayout *) pSL->getFirstLayout();
+			fp_Line* pLine = (fp_Line *) pBL->getFirstContainer();
 
 			for (UT_uint32 i = 1; i < number; i++)
 			{
@@ -6061,19 +6061,19 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 				if ((pLine = (fp_Line *) pLine->getNext ()) == NULL)
 				{
-					if ((pBL = pBL->getNext ()) == NULL)
+					if ((pBL = (fl_BlockLayout *) pBL->getNext ()) == NULL)
 					{
-						if ((pSL = pSL->getNext ()) == NULL)
+						if ((pSL = (fl_SectionLayout *) pSL->getNext ()) == NULL)
 						{
 							pLine = pOldLine;
 							break;
 						}
 						else
-							pBL = pSL->getFirstBlock ();
+							pBL = (fl_BlockLayout *) pSL->getFirstLayout ();
 					}
 					else
 					{
-						pLine = pBL->getFirstLine ();
+						pLine = (fp_Line *) pBL->getFirstContainer();
 					}
 				}
 			}
@@ -6113,7 +6113,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 			while(pSL)
 			{
-				pBL = pSL->getFirstBlock();
+				pBL = (fl_BlockLayout *) pSL->getFirstLayout();
 
 				while(pBL)
 				{
@@ -6141,11 +6141,11 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 					}
 					if(bFound)
 						break;
-					pBL = pBL->getNext();
+					pBL = (fl_BlockLayout *) pBL->getNext();
 				}
 				if(bFound)
 					break;
-				pSL = pSL->getNext();
+				pSL = (fl_SectionLayout *) pSL->getNext();
 			}
 
 			if(pB[0] && pB[1])
@@ -8251,7 +8251,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 		if(pRun)
 		{
 			fp_Line * pLine = pRun->getLine();
-			if(pLine == pBlock->getFirstLine())
+			if(pLine == (fp_Line *) pBlock->getFirstContainer())
 			{
 				iPosLeft = pBlock->getPosition() -1;
 			}
@@ -8991,7 +8991,6 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
 		if (pSection->getType() == FL_SECTION_DOC && !isHdrFtrEdit())
 		{
-			fp_Column* pColumn = (fp_Column*) pContainer;
 			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
 			fp_Page * pPage = pContainer->getPage();
 
@@ -9073,7 +9072,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 		//find the first of the two bookmarks
 		while(pSL)
 		{
-			pBL = pSL->getFirstBlock();
+			pBL = (fl_BlockLayout *) pSL->getFirstLayout();
 
 			while(pBL)
 			{
@@ -9102,11 +9101,11 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 				}
 				if(bFound)
 					break;
-				pBL = pBL->getNext();
+				pBL = (fl_BlockLayout *) pBL->getNext();
 			}
 			if(bFound)
 				break;
-			pSL = pSL->getNext();
+			pSL = (fl_SectionLayout *) pSL->getNext();
 		}
 
 		UT_ASSERT(pRun && pRun->getType()==FPRUN_BOOKMARK && pBlock || pBlock);
@@ -10257,13 +10256,13 @@ void FV_View::cmdContextIgnoreAll(void)
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
 		while (pSL)
 		{
-			fl_BlockLayout* b = pSL->getFirstBlock();
+			fl_BlockLayout* b = (fl_BlockLayout *) pSL->getFirstLayout();
 			while (b)
 			{
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
 				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
-				b = b->getNext();
+				b = (fl_BlockLayout *) b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
 		}
@@ -10293,13 +10292,16 @@ void FV_View::cmdContextAdd(void)
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
 		while (pSL)
 		{
-			fl_BlockLayout* b = pSL->getFirstBlock();
+			fl_BlockLayout* b = (fl_BlockLayout *) pSL->getFirstLayout();
 			while (b)
 			{
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
-				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
-				b = b->getNext();
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
+				}
+				b = (fl_BlockLayout *) b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
 		}
@@ -10419,7 +10421,7 @@ FV_View::countWords(void)
 
 	// Selection may start inside first block
 	UT_sint32 iStartOffset = 0, iLineOffset = 0, iCount = 0;
-	fp_Line* pLine = pBL->getFirstLine();
+	fp_Line* pLine = (fp_Line *) pBL->getFirstContainer();
 	fp_Run* pRun = pLine->getFirstRun();
 	fp_Container * pColumn = pLine->getContainer();
 	if(pColumn == NULL)
@@ -10539,19 +10541,19 @@ FV_View::countWords(void)
 		}
 
 		// Get next block
-		fl_BlockLayout* pNextBlock = pBL->getNext();
+		fl_BlockLayout* pNextBlock = (fl_BlockLayout *) pBL->getNext();
 		if (NULL == pNextBlock)
 		{
 			// If NULL, go to next section
-			fl_SectionLayout* pSL = pBL->getSectionLayout()->getNext();
+			fl_SectionLayout* pSL = (fl_SectionLayout *) pBL->getSectionLayout()->getNext();
 			if (pSL)
-				pNextBlock = pSL->getFirstBlock();
+				pNextBlock = (fl_BlockLayout *) pSL->getFirstLayout();
 		}
 		pBL = pNextBlock;
 		pLine = NULL;
 		pRun = NULL;
 		if (pBL)
-			pLine = pBL->getFirstLine();
+			pLine = (fp_Line *) pBL->getFirstContainer();
 		if (pLine)
 			pRun = pLine->getFirstRun();
 	}
@@ -10858,8 +10860,8 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
 {
 	PD_DocumentRange dr_source;
 	PT_DocPosition iPos1,iPos2;
-	iPos1 = m_pDoc->getStruxPosition(pHdrFtrSrc->getFirstBlock()->getStruxDocHandle());
-	fl_BlockLayout * pLast = pHdrFtrSrc->getLastBlock();
+	iPos1 = m_pDoc->getStruxPosition(pHdrFtrSrc->getFirstLayout()->getStruxDocHandle());
+	fl_BlockLayout * pLast = (fl_BlockLayout *) pHdrFtrSrc->getLastLayout();
 	iPos2 = pLast->getPosition(false);
 //
 // This code assumes there is an End of Block run at the end of the Block.
@@ -10867,7 +10869,7 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
 //
 	while(pLast->getNext() != NULL)
 	{
-		pLast = pLast->getNext();
+		pLast = (fl_BlockLayout *) pLast->getNext();
 	}
 	fp_Run * pRun = pLast->getFirstRun();
 	while( pRun->getNext() != NULL)
@@ -10885,7 +10887,7 @@ void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtr
 	UT_DEBUGMSG(("SEVIOR: Copy to clipboard making header/footer \n"));
 	m_pApp->copyToClipboard(&dr_source);
 	PT_DocPosition posDest = 0;
-	posDest = pHdrFtrDest->getFirstBlock()->getPosition(true);
+	posDest = pHdrFtrDest->getFirstLayout()->getPosition(true);
 	PD_DocumentRange dr_dest(m_pDoc,posDest,posDest);
 	UT_DEBUGMSG(("SEVIOR: Pasting to clipboard making header/footer \n"));
 	m_pApp->pasteFromClipboard(&dr_dest,true,true);
@@ -11219,7 +11221,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		while(pSL->getNext() != NULL && (pSL->getType() == FL_SECTION_DOC ||
 										 pSL->getType() == FL_SECTION_ENDNOTE))
 		{
-			pSL  = pSL->getNext();
+			pSL  = (fl_SectionLayout *) pSL->getNext();
 		}
 		if(pSL->getType() == FL_SECTION_DOC ||
 		   pSL->getType() == FL_SECTION_ENDNOTE)
@@ -11231,7 +11233,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 // Now loop through all the HdrFtrSections, find the first in the doc and
 // use that to get the end of editttable region.
 //
-		fl_BlockLayout * pFirstBL = pSL->getFirstBlock();
+		fl_BlockLayout * pFirstBL = (fl_BlockLayout *) pSL->getFirstLayout();
 		if(pFirstBL == NULL)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
@@ -11240,10 +11242,10 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 
 		PT_DocPosition posFirst = pFirstBL->getPosition(true) - 1;
 		PT_DocPosition posNext;
-		while((pSL->getNext() != NULL) && (pSL->getFirstBlock() != NULL))
+		while((pSL->getNext() != NULL) && (pSL->getFirstLayout() != NULL))
 		{
-			pSL = pSL->getNext();
-			pFirstBL = pSL->getFirstBlock();
+			pSL = (fl_SectionLayout *) pSL->getNext();
+			pFirstBL = (fl_BlockLayout *) pSL->getFirstLayout();
 			posNext = pFirstBL->getPosition(true) - 1;
 			if(posNext < posFirst)
 				posFirst = posNext;
@@ -11256,10 +11258,10 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 //
 	if(!isEnd)
 	{
-		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
+		posEOD = m_pEditShadow->getFirstLayout()->getPosition();
 		return true;
 	}
-	pBL = m_pEditShadow->getLastBlock();
+	pBL = (fl_BlockLayout *) m_pEditShadow->getLastLayout();
 	posEOD = pBL->getPosition(false);
 	fp_Run * pRun = pBL->getFirstRun();
 	while( pRun->getNext() != NULL)
@@ -11294,7 +11296,7 @@ void FV_View::cmdEditHeader(void)
 //
 // Put the insertion point at the beginning of the header
 //
-	fl_BlockLayout * pBL = pShadow->getFirstBlock();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pShadow->getFirstLayout();
 	if (isSelectionEmpty())
 		_eraseInsertionPoint();
 	else
@@ -11334,7 +11336,7 @@ void FV_View::cmdEditFooter(void)
 //
 // Put the insertion point at the beginning of the header
 //
-	fl_BlockLayout * pBL = pShadow->getFirstBlock();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pShadow->getFirstLayout();
 	if (isSelectionEmpty())
 		_eraseInsertionPoint();
 	else
@@ -11529,7 +11531,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 //
 // Now find the position of this section
 //
-	fl_BlockLayout * pBL = pDocL->getFirstBlock();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pDocL->getFirstLayout();
 	PT_DocPosition posSec = pBL->getPosition();
 
 	// change the section to point to the footer which doesn't exist yet.
@@ -11650,7 +11652,7 @@ bool FV_View::insertEndnote()
 
 		while (pSL)
 		{
-			pBL = pSL->getFirstBlock();
+			pBL = (fl_BlockLayout *) pSL->getFirstLayout();
 
 			while(pBL)
 			{
@@ -11679,17 +11681,17 @@ bool FV_View::insertEndnote()
 				if(bFinished)
 					break;
 
-				pBL = pBL->getNext();
+				pBL = (fl_BlockLayout *) pBL->getNext();
 			}
 
 			if(bFinished)
 				break;
 
-			pSL = pSL->getNext();
+			pSL = (fl_SectionLayout *) pSL->getNext();
 		}
 
 
-		pBL = pEndnoteSL->getFirstBlock();
+		pBL = (fl_BlockLayout *) pEndnoteSL->getFirstLayout();
 
 		// now we will find the block just after us, move the start of it
 		// and insert a new block
@@ -11716,7 +11718,7 @@ bool FV_View::insertEndnote()
 			//do not need this anymore
 			while(!someid || UT_strcmp(someid, "") == 0)
 			{
-				pBL = pBL->getNext();
+				pBL = (fl_BlockLayout *) pBL->getNext();
 				bRes = pBL->getAttrProp(&pp);
 				if (!bRes)
 					break;
@@ -11735,7 +11737,7 @@ bool FV_View::insertEndnote()
 			if(enoteCount < 0)
 				break;
 
-			pBL = pBL->getNext();
+			pBL = (fl_BlockLayout *) pBL->getNext();
 		}
 
 		if (previd != NULL)
@@ -11749,7 +11751,7 @@ bool FV_View::insertEndnote()
 		if(!pBL)
 		{
 			UT_DEBUGMSG(("no block\n"));
-			pBL = pEndnoteSL->getLastBlock();
+			pBL = (fl_BlockLayout *) pEndnoteSL->getLastLayout();
 #ifdef DEBUG
 			const XML_Char * someid;
 			const PP_AttrProp *pp;
@@ -11855,8 +11857,8 @@ bool FV_View::insertEndnote()
 
 	pBL = _findBlockAtPosition(EanchStart);
 	UT_ASSERT(pBL != 0);
-	bWidthChange = pBL->getFirstLine()->getFirstRun()->getNext()->recalcWidth();
-	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstLine()->getFirstRun()->getNext()->getType(),bWidthChange));
+	bWidthChange = pBL->getFirstRun()->getNext()->recalcWidth();
+	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstRun()->getNext()->getType(),bWidthChange));
 	if(bWidthChange) pBL->setNeedsReformat();
 
 	m_pDoc->endUserAtomicGlob();
@@ -11957,7 +11959,7 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char **
 //
 // Now find the position of this section
 //
-	fl_BlockLayout * pBL = pDocL->getFirstBlock();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pDocL->getFirstLayout();
 	PT_DocPosition posSec = pBL->getPosition();
 
 	// change the section to point to the endnote which doesn't exist yet.

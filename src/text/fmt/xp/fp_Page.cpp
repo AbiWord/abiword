@@ -99,6 +99,12 @@ UT_sint32 fp_Page::getHeightInLayoutUnits(void) const
 }
 #endif
 
+
+UT_sint32 fp_Page::getColumnGap(void) const
+{
+	return getOwningSection()->getColumnGap(); 
+}
+
 #ifndef WITH_PANGO
 /*!
  * Returns the page height minus the top and bottom margins in layout units

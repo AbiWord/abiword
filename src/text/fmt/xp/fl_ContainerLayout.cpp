@@ -1,0 +1,387 @@
+/* AbiWord
+ * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2002 Martin Sevior
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
+#include <string.h>
+#include <stdlib.h>
+
+#include "ut_types.h"
+#include "ut_string.h"
+
+#include "ap_Prefs.h"
+#include "fl_ContainerLayout.h"
+#include "fl_SectionLayout.h"
+#include "fl_Layout.h"
+#include "fl_DocLayout.h"
+#include "fl_BlockLayout.h"
+#include "fb_LineBreaker.h"
+#include "fp_Page.h"
+#include "fp_Line.h"
+#include "fp_Column.h"
+#include "pd_Document.h"
+#include "pp_AttrProp.h"
+#include "pt_Types.h"
+#include "gr_Graphics.h"
+#include "fv_View.h"
+#include "fp_Run.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "ut_units.h"
+
+fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, PTStruxType iStrux, fl_ContainerType iType)
+	: fl_Layout(iStrux, sdh),
+	  m_iConType(iType),
+	  m_pMyLayout(pMyLayout),
+	  m_pPrev(NULL),
+	  m_pNext(NULL),
+	  m_pFirstL(NULL),
+	  m_pLastL(NULL),
+	  m_pFirstContainer(NULL),
+	  m_pLastContainer(NULL),
+	  m_pLB(NULL)
+{
+	setAttrPropIndex(indexAP);
+	if(pMyLayout)
+	{
+		m_pDoc = pMyLayout->getDocument();
+	}
+}
+
+fl_ContainerLayout::~fl_ContainerLayout()
+{
+	if(m_pLB)
+	{
+		delete m_pLB;
+	}
+}
+
+/*!
+ * Return the value of the attribute keyed by pszName
+ */
+const char*	fl_ContainerLayout::getAttribute(const char * pszName) const
+{
+	const PP_AttrProp * pAP = NULL;
+	getAttrProp(&pAP);
+
+	const XML_Char* pszAtt = NULL;
+	pAP->getAttribute((XML_Char*)pszName, pszAtt);
+
+	return pszAtt;
+}
+
+/*!
+ * Set the pointer to the next containerLayout given by pL
+ */
+void fl_ContainerLayout::setNext(fl_ContainerLayout* pL)
+{
+	m_pNext = pL;
+}
+
+/*!
+ * Set the pointer to the previous containerLayout in the linked list 
+ * given by pL
+ */
+void fl_ContainerLayout::setPrev(fl_ContainerLayout* pL) 
+{
+	m_pPrev = pL;
+}
+
+/*!
+ * Return the next fl_ContainerLayout in the linked list.
+ */
+fl_ContainerLayout * fl_ContainerLayout::getNext(void) const
+{
+	return m_pNext;
+}
+
+/*!
+ * Return the previous fl_ContainerLayout in the linked list
+ */
+fl_ContainerLayout * fl_ContainerLayout::getPrev(void) const
+{
+	return m_pPrev;
+}
+
+
+/*!
+ * Return the fl_ContainerLayout that "owns" this. Set to NULL for 
+ * fl_DocSectionLayout
+ */
+fl_ContainerLayout * fl_ContainerLayout::myContainingLayout(void) const
+{
+	return m_pMyLayout;
+}
+
+FL_DocLayout* fl_ContainerLayout::getDocLayout(void) const
+{
+	fl_ContainerLayout * pMyContainer = (fl_ContainerLayout *) this;
+	while(pMyContainer->getContainerType() != FL_CONTAINER_DOCSECTION && pMyContainer->myContainingLayout())
+	{
+		pMyContainer = pMyContainer->myContainingLayout();
+	}
+	return static_cast<fl_DocSectionLayout *>(pMyContainer)->getDocLayout();
+}
+
+void fl_ContainerLayout::setContainingLayout(fl_ContainerLayout * pL)
+{
+	m_pMyLayout = pL;
+}
+
+fl_ContainerLayout * fl_ContainerLayout::append(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP,fl_ContainerType iType)
+{
+	return insert(sdh, m_pLastL, indexAP,iType);
+}
+
+void fl_ContainerLayout::add(fl_ContainerLayout* pL)
+{
+	if (m_pLastL)
+	{
+		UT_ASSERT(m_pLastL->getNext() == NULL);
+
+		pL->setNext(NULL);
+		pL->setPrev(m_pLastL);
+		m_pLastL->setNext(pL);
+		m_pLastL = pL;
+	}
+	else
+	{
+		UT_ASSERT(!m_pFirstL);
+
+		pL->setNext(NULL);
+		pL->setPrev(NULL);
+		m_pFirstL = pL;
+		m_pLastL = m_pFirstL;
+	}
+	pL->setContainingLayout(this);
+	if(pL->getContainerType() == FL_CONTAINER_BLOCK)
+	{
+		UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
+		static_cast<fl_BlockLayout *>(pL)->setSectionLayout((fl_SectionLayout *) this);
+	}
+}
+
+/*!
+ * Set the pointer to the first Layout in the linked list.
+ */
+void fl_ContainerLayout::setFirstLayout(fl_ContainerLayout * pL)
+{
+	m_pFirstL = pL;
+}
+
+/*!
+ * Set the pointer to the last Layout in the linked list.
+ */
+void fl_ContainerLayout::setLastLayout(fl_ContainerLayout * pL)
+{
+	m_pLastL = pL;
+}
+
+/*!
+ * Return the pointer to the first layout in the structure.
+ */
+fl_ContainerLayout * fl_ContainerLayout::getFirstLayout(void) const
+{
+	return m_pFirstL;
+}
+
+/*!
+ * Return the pointer to the last layout in the structure.
+ */
+fl_ContainerLayout * fl_ContainerLayout::getLastLayout(void) const
+{
+	return m_pLastL;
+}
+
+/*!
+ * Return a pointer to a line breaker class. Gnerate a new one
+ * if the class doesn't yet exist.
+ */
+fb_LineBreaker * fl_ContainerLayout::getLineBreaker(void)
+{
+	if (!m_pLB)
+	{
+		fb_LineBreaker* slb = new fb_LineBreaker();
+
+		m_pLB = slb;
+	}
+
+	UT_ASSERT(m_pLB);
+
+	return m_pLB;
+}
+
+/*!
+ * Create a new containerLayout  and insert it into the linked list of 
+ * layouts held by this class.
+ * Returns a pointer to the generated ContainerLayout class.
+ */ 
+fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_ContainerLayout * pPrev, PT_AttrPropIndex indexAP,fl_ContainerType iType)
+{
+	fl_ContainerLayout* pL=NULL;
+	if(iType == FL_CONTAINER_BLOCK)
+	{
+		UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
+		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
+			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true);
+		else
+			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP);
+	}
+	if (pL == NULL)
+	{
+		return pL;
+	}
+
+	if (!m_pLastL)
+	{
+		UT_ASSERT(!m_pFirstL);
+		m_pFirstL = pL;
+		m_pLastL = pL;
+	}
+	else if (m_pLastL == pPrev)
+	{
+		m_pLastL = pL;
+	}
+	else if (!pPrev)
+	{
+		m_pFirstL = pL;
+	}
+	return pL;
+}
+
+/*!
+ * Remove a containerLayout class from the linked list held here.
+ */
+void fl_ContainerLayout::remove(fl_ContainerLayout * pL)
+{
+	UT_ASSERT(pL);
+	UT_ASSERT(m_pFirstL);
+
+	if (pL->getPrev())
+	{
+		pL->getPrev()->setNext(pL->getNext());
+	}
+
+	if (pL->getNext())
+	{
+		pL->getNext()->setPrev(pL->getPrev());
+		if(pL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
+			static_cast<fl_BlockLayout *>(pL)->transferListFlags();
+		}
+	}
+
+	if (pL == m_pFirstL)
+	{
+		m_pFirstL = m_pFirstL->getNext();
+		if (!m_pFirstL)
+		{
+			m_pLastL = NULL;
+		}
+	}
+
+	if (pL == m_pLastL)
+	{
+		m_pLastL = m_pLastL->getPrev();
+		if (!m_pLastL)
+		{
+			m_pFirstL = NULL;
+		}
+	}
+
+	pL->setNext(NULL);
+	pL->setPrev(NULL);
+	pL->setContainingLayout(NULL);
+	if(pL->getContainerType() == FL_CONTAINER_BLOCK)
+	{
+		UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
+		static_cast<fl_BlockLayout *>(pL)->setSectionLayout(NULL);
+	}
+}
+
+fp_Container* fl_ContainerLayout::getFirstContainer() const
+{
+	return m_pFirstContainer;
+}
+
+fp_Container* fl_ContainerLayout::getLastContainer() const
+{
+	return m_pLastContainer;
+}
+
+void fl_ContainerLayout::setFirstContainer(fp_Container * pCon)
+{
+	m_pFirstContainer = pCon;
+}
+
+void fl_ContainerLayout::setLastContainer(fp_Container * pCon)
+{
+	m_pLastContainer = pCon;
+}
+
+fp_Run * fl_ContainerLayout::getFirstRun(void) const
+{
+	if(getContainerType() == FL_CONTAINER_BLOCK)
+	{
+		const fl_BlockLayout * pBL = static_cast<const fl_BlockLayout *>(this);
+		return pBL->getFirstRun();
+	}
+	else if(getFirstLayout() == NULL)
+	{
+		return NULL;
+	}
+	return getFirstLayout()->getFirstRun();
+}
+
+/*!
+ Get Container's position in document
+ \param bActualContainerPos When true return block's position. When false
+						return position of first run in block
+ \return Position of Container (or first run in block)
+ \fixme Split in two functions if called most often with FALSE
+*/
+UT_uint32 fl_ContainerLayout::getPosition(bool bActualBlockPos) const
+{
+	const fl_ContainerLayout * pL = this;
+    if(!bActualBlockPos)
+	{
+		while(pL->getContainerType() != FL_CONTAINER_BLOCK && pL->getFirstLayout())
+		{
+			pL = pL->getFirstLayout();
+		}
+		if(pL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			const fl_BlockLayout * pBL = static_cast<const fl_BlockLayout *>(pL);
+			return pBL->getPosition(bActualBlockPos);
+		}
+		return 0;
+	}
+	PT_DocPosition pos = getDocLayout()->getDocument()->getStruxPosition(m_sdh);
+	return pos;
+}
+
+fl_HdrFtrSectionLayout*	fl_ContainerLayout::getHdrFtrSectionLayout(void) const 
+{ 
+	if(getContainerType() != FL_CONTAINER_SHADOW)
+	{
+		return NULL;
+	}
+	const fl_HdrFtrShadow * pHFS = static_cast<const fl_HdrFtrShadow * >(this);
+	return pHFS->getHdrFtrSectionLayout();
+}

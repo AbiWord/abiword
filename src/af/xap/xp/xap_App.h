@@ -138,6 +138,12 @@ public:
 	UT_sint32								safefindFrame(XAP_Frame * f);
 	void									clearLastFocussedFrame();
 	void									clearIdTable();
+	bool                                    setDebugBool(void)
+		{m_bDebugBool = true; return m_bDebugBool;}
+	bool                                    clearDebugBool(void)
+		{m_bDebugBool = false; return m_bDebugBool;}
+	bool                                    isDebug(void)
+		{return m_bDebugBool;}
 	void									rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog);
 	void									forgetModelessId(UT_sint32 id );
 	bool									isModelessRunning(UT_sint32 id);
@@ -203,6 +209,7 @@ protected:
         
 	static XAP_App *						m_pApp;
 	bool                                    m_bAllowCustomizing;
+	bool                                    m_bDebugBool;
 };
 
 #endif /* XAP_APP_H */

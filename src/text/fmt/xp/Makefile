@@ -26,6 +26,7 @@ CPPSRCS=		fv_View.cpp			\
 			fv_View_TestRoutines.cpp	\
 			fb_LineBreaker.cpp		\
 			fb_Alignment.cpp		\
+			fl_ContainerLayout.cpp          \
 			fl_BlockLayout.cpp		\
 			fl_Squiggles.cpp		\
 			fl_DocLayout.cpp		\
@@ -56,3 +57,10 @@ TARGETS=		$(LIBRARY)
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)
+
+
+
+
+
+
+

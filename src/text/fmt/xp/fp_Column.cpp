@@ -278,7 +278,7 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 	  Right now, we've fixed the symptom, but we really should fix
 	  the problem.  */
 	UT_ASSERT(ndx >= 0);
-    pNewContainer->clearScreen();
+	pNewContainer->clearScreen();
 	if ( (ndx+1) == count )				// append after last line in vector
 		addCon(pNewContainer);
 	else if (ndx >= 0)					// append after this item within the vector

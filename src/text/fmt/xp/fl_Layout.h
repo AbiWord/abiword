@@ -58,7 +58,7 @@ public:
 	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
 	void    		setAutoNum(fl_AutoNum * pAutoNum);
 	
-	inline PD_Document *	getDocument(void) const { return m_pDoc; };
+	PD_Document *	    getDocument(void) const { return m_pDoc; };
 	
 protected:
 	PTStruxType				m_type;

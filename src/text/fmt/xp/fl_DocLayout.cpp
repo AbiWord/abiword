@@ -28,6 +28,7 @@
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_BlockLayout.h"
+#include  "fl_ContainerLayout.h"
 #include "fl_Squiggles.h"
 #include "fl_AutoNum.h"
 #include "fp_Page.h"
@@ -406,7 +407,7 @@ void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, f
 	pDSL->doclistener_changeStrux(pcrx);
 	while(pCur != NULL)
 	{
-		pCur->collapseDocSection();
+		pCur->collapse();
 		pCur = pCur->getNextDocSection();
 	}
 	pCur = pDSL;
@@ -599,7 +600,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 					pShadow = pHF->getFirstShadow();
 					pView->clearHdrFtrEdit();
 					pView->setHdrFtrEdit(pShadow);
-					pBL = pShadow->findBlockAtPosition(pos);
+					pBL = (fl_BlockLayout *) pShadow->findBlockAtPosition(pos);
 					return pBL;
 				}
 				pBL = NULL;
@@ -612,7 +613,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		}
 		fl_BlockLayout * ppBL = NULL;
 		if(pShadow != NULL)
-			ppBL = pShadow->findMatchingBlock(pBL);
+			ppBL = (fl_BlockLayout *) pShadow->findMatchingContainer(pBL);
 		else
 		{
 			UT_DEBUGMSG(("No Shadow! But there should be ! \n"));
@@ -683,7 +684,7 @@ void FL_DocLayout::formatAll()
 		{
 			static_cast<fl_DocSectionLayout *>(pSL)->checkAndRemovePages();
 		}
-		pSL = pSL->getNext();
+		pSL = (fl_SectionLayout *) pSL->getNext();
 	}
 }
 
@@ -716,7 +717,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	while (pDSL)
 	{
 
-		pDSL->collapseDocSection();
+		pDSL->collapse();
 		pDSL = pDSL->getNextDocSection();
 	}
 //
@@ -772,7 +773,7 @@ void FL_DocLayout::updateLayout()
 				break;
 			}
 		}
-		pSL = pSL->getNext();
+		pSL = (fl_SectionLayout *) pSL->getNext();
 	}
 	if(pSL == NULL)
 	{
@@ -864,12 +865,15 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 		fl_DocSectionLayout * pSL = getFirstSection();
 		while (pSL)
 		{
-			fl_BlockLayout* b = pSL->getFirstBlock();
+			fl_ContainerLayout* b = pSL->getFirstLayout();
 			while (b)
 			{
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
-				queueBlockForBackgroundCheck(bgcrSpelling, b);
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					queueBlockForBackgroundCheck(bgcrSpelling, (fl_BlockLayout *) b);
+				}
 				b = b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
@@ -881,11 +885,14 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 		fl_DocSectionLayout * pSL = getFirstSection();
 		while (pSL)
 		{
-			fl_BlockLayout* b = pSL->getFirstBlock();
+			fl_ContainerLayout* b = pSL->getFirstLayout();
 			while (b)
 			{
-				b->removeBackgroundCheckReason(bgcrSpelling);
-				b->getSquiggles()->deleteAll();
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					static_cast<fl_BlockLayout *>(b)->removeBackgroundCheckReason(bgcrSpelling);
+					static_cast<fl_BlockLayout *>(b)->getSquiggles()->deleteAll();
+				}
 				b = b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
@@ -1371,10 +1378,10 @@ void FL_DocLayout::addHdrFtrSection(fl_SectionLayout* pHdrFtrSL)
 	UT_ASSERT(m_pLastSection);
 
 	fl_SectionLayout * pLSL = (fl_SectionLayout *) m_pLastSection;
-	fl_SectionLayout * pnext = pLSL->getNext();
+	fl_SectionLayout * pnext = (fl_SectionLayout *) pLSL->getNext();
 
 	while (pnext && pnext->getType() == FL_SECTION_ENDNOTE)
-		pnext = pnext->getNext();
+		pnext = (fl_SectionLayout *) pnext->getNext();
 
 	if(pnext)
 	{
@@ -1488,7 +1495,7 @@ void FL_DocLayout::addEndnoteSection(fl_SectionLayout* pEndnoteSL)
 	UT_ASSERT(m_pLastSection);
 
 	fl_SectionLayout * pLSL = (fl_SectionLayout *) m_pLastSection;
-	fl_SectionLayout * pnext = pLSL->getNext();
+	fl_SectionLayout * pnext = (fl_SectionLayout *) pLSL->getNext();
 	if(pnext)
 	{
 		pnext->setPrev(pEndnoteSL);
@@ -1605,10 +1612,13 @@ void FL_DocLayout::recheckIgnoredWords()
 	fl_DocSectionLayout * pSL = getFirstSection();
 	while (pSL)
 	{
-		fl_BlockLayout* b = pSL->getFirstBlock();
+		fl_ContainerLayout* b = pSL->getFirstLayout();
 		while (b)
 		{
-			b->recheckIgnoredWords();
+			if(b->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				static_cast<fl_BlockLayout *>(b)->recheckIgnoredWords();
+			}
 			b = b->getNext();
 		}
 		pSL = (fl_DocSectionLayout *) pSL->getNext();
@@ -1685,7 +1695,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 		}
 		if(!bStopOnRebuild)
 		{
-			pSL = pSL->getNext();
+			pSL = (fl_SectionLayout *) pSL->getNext();
 		}
 	}
 	pDocLayout->deleteEmptyColumnsAndPages();
@@ -2059,7 +2069,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		{
 			// candidate was the first character in the block, so
 			// see what was at the end of the previous block, if any
-			fl_BlockLayout *ob = block->getPrev();
+			fl_BlockLayout *ob = (fl_BlockLayout *) block->getPrev();
 			if (ob)
 			{
 				fp_Run *last, *r = ob->getFirstRun();
@@ -2098,7 +2108,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		{
 			// candidate was the last character in a block, so see
 			// what's at the beginning of the next block, if any
-			fl_BlockLayout *ob = block->getNext();
+			fl_BlockLayout *ob = (fl_BlockLayout *) block->getNext();
 			if (ob)
 			{
 				fp_Run *r = ob->getFirstRun();

@@ -350,7 +350,7 @@ void AP_Dialog_Lists::Apply(void)
 				else
 				{
 					fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
-					fl_BlockLayout * rBlock = pBlock->getPrev();
+					fl_BlockLayout * rBlock = (fl_BlockLayout *) pBlock->getPrev();
 					if(rBlock != NULL)
 					{
 						pBlock->resumeList(rBlock);
@@ -381,7 +381,7 @@ void AP_Dialog_Lists::Apply(void)
 				else
 				{
 					fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
-					fl_BlockLayout * rBlock = pBlock->getPrev();
+					fl_BlockLayout * rBlock = (fl_BlockLayout *) pBlock->getPrev();
 					if(rBlock != NULL)
 					{
 						pBlock->resumeList(rBlock);

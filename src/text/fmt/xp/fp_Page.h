@@ -32,8 +32,9 @@ class FL_DocLayout;
 class fp_Column;
 class fp_Container;
 class fp_ShadowContainer;
-class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
+class fl_HdrFtrSectionLayout;
+class fl_HdrFtrShadow;
 class FV_View;
 class GR_Graphics;
 struct dg_DrawArgs;
@@ -62,8 +63,7 @@ public:
 	void				setNext(fp_Page*);
 	void				setPrev(fp_Page*);
 	void                markAllDirty(void) {m_bNeedsRedraw = true;}
-	UT_sint32			getColumnGap(void) const {return getOwningSection()->getColumnGap(); }
-
+	UT_sint32			getColumnGap(void) const;
 	FL_DocLayout*		getDocLayout();
 	void				setView(FV_View*);
 

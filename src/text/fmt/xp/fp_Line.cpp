@@ -160,9 +160,29 @@ fp_Line::~fp_Line()
 #endif
 }
 
-UT_sint32  fp_Line::getColumnGap(void)
+
+/*!
+ * Return the gap between columns.
+ */
+UT_sint32  fp_Line::getColumnGap(void)	
+{ 
+	return ((fp_Column *)getColumn())->getColumnGap(); 
+}
+
+/*!
+ * Returns true if this is the first line in the block.
+ */
+bool fp_Line::isFirstLineInBlock(void) const
 {
-	return ((fp_Column *)getColumn())->getColumnGap();
+	return (m_pBlock->getFirstContainer() == (fp_Container *) this); 
+}
+
+/*!
+ * Returns true if this is the last line in the block.
+ */
+bool fp_Line::isLastLineInBlock(void) const
+{
+	return (m_pBlock->getLastContainer() == (fp_Container *) this); 
 }
 
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
@@ -679,8 +699,9 @@ void fp_Line::clearScreen(void)
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
 
-			xxx_UT_DEBUGMSG(("ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoffLine,getHeight()));
-			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, getHeight());
+			 UT_ASSERT(yoffLine <0 || yoffLine >1);
+			UT_sint32 height = getHeight();
+			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
 //
 // Sevior: I added this for robustness.
 //
@@ -749,7 +770,6 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				leftClear = pRun->getDescent();
 
 			UT_RGBColor * pClr = pRun->getPageColor();
-
 			pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
@@ -915,7 +935,7 @@ void fp_Line::draw(GR_Graphics* pG)
 
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
+	//xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 //
@@ -968,7 +988,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	if(count <= 0)
 		return;
 
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
+	//xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
 
 	pDA->yoff += m_iAscent;
 
@@ -1127,7 +1147,7 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 						 iDomDirection
 						 );
 
-	xxx_UT_DEBUGMSG(("new iXreal %d, iXLreal %d\n", iXreal, iXLreal));
+//xxx_UT_DEBUGMSG(("new iXreal %d, iXLreal %d\n", iXreal, iXLreal));
 
 	if(iDomDirection == FRIBIDI_TYPE_RTL)
 	{
@@ -1247,7 +1267,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			UT_sint32 iXprev;
 			iXprev = iX;
 
-			xxx_UT_DEBUGMSG(("pf_Line::_calculateWidthOfRun(): tab: iX %d, iXLayout %d, iPosLayout %d, resolution %d\n",iX,iXLayoutUnits,iPosLayoutUnits,Screen_resolution));
+//xxx_UT_DEBUGMSG(("pf_Line::_calculateWidthOfRun(): tab: iX %d, iXLayout %d, iPosLayout %d, resolution %d\n",iX,iXLayoutUnits,iPosLayoutUnits,Screen_resolution));
 
 			FriBidiCharType iVisDirection = pTabRun->getVisDirection();
 
@@ -2022,7 +2042,7 @@ UT_sint32 fp_Line::getMarginBefore(void) const
 {
 	if (isFirstLineInBlock() && getBlock()->getPrev())
 	{
-		fp_Line* pPrevLine = getBlock()->getPrev()->getLastLine();
+		fp_Line* pPrevLine = (fp_Line *) getBlock()->getPrev()->getLastContainer();
 		UT_ASSERT(pPrevLine);
 		UT_ASSERT(pPrevLine->isLastLineInBlock());
 
@@ -2042,7 +2062,7 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 {
 	if (isLastLineInBlock() && getBlock()->getNext())
 	{
-		fp_Line* pNextLine = getBlock()->getNext()->getFirstLine();
+		fp_Line* pNextLine = (fp_Line *) getBlock()->getNext()->getFirstContainer();
 //		UT_ASSERT(pNextLine);
 		if (!pNextLine)
 			return 0;
@@ -2066,7 +2086,7 @@ UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
 {
 	if (isLastLineInBlock() && getBlock()->getNext())
 	{
-		fp_Line* pNextLine = getBlock()->getNext()->getFirstLine();
+		fp_Line* pNextLine = (fp_Line *) getBlock()->getNext()->getFirstContainer();
 //		UT_ASSERT(pNextLine);
 		if (!pNextLine)
 			return 0;
@@ -2347,10 +2367,10 @@ fp_Container*	fp_Line::getNextContainerInSection(void) const
 		return (fp_Container *)getNext();
 	}
 
-	fl_BlockLayout* pNextBlock = m_pBlock->getNext();
+	fl_BlockLayout* pNextBlock = (fl_BlockLayout *) m_pBlock->getNext();
 	if (pNextBlock)
 	{
-		return (fp_Container *) pNextBlock->getFirstLine();
+		return (fp_Container *) pNextBlock->getFirstContainer();
 	}
 
 	return NULL;
@@ -2363,10 +2383,10 @@ fp_Container*	fp_Line::getPrevContainerInSection(void) const
 		return (fp_Container *) getPrev();
 	}
 
-	fl_BlockLayout* pPrevBlock =  m_pBlock->getPrev();
+	fl_BlockLayout* pPrevBlock =  (fl_BlockLayout *) m_pBlock->getPrev();
 	if (pPrevBlock)
 	{
-		return (fp_Container *) pPrevBlock->getLastLine();
+		return (fp_Container *) pPrevBlock->getLastContainer();
 	}
 
 	return NULL;

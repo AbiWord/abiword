@@ -26,10 +26,11 @@
 #include "ut_hash.h"
 #include "pt_Types.h"
 #include "fp_PageSize.h"
-#include "fl_SectionLayout.h"
+#include "fl_Layout.h"
 
 class FV_View;
 class fl_DocListener;
+class fl_SectionLayout;
 class fl_DocSectionLayout;
 class fl_BlockLayout;
 class fp_Page;
@@ -41,6 +42,7 @@ class UT_Timer;
 class UT_Worker;
 class fl_PartOfBlock;
 class fl_AutoNum;
+class PX_ChangeRecord_StruxChange;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here

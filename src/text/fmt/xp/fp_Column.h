@@ -35,6 +35,7 @@ class fl_EndnoteSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
 class fl_SectionLayout;
+class fl_HdrFtrShadow;
 class fp_Page;
 class PP_AttrProp;
 class GR_Graphics;
