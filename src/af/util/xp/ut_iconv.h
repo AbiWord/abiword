@@ -20,8 +20,27 @@
 #ifndef UT_ICONV_H
 #define UT_ICONV_H
 
+#include <iconv.h>
 #include "ut_types.h"
+
 typedef void* UT_iconv_t;
+
+class auto_iconv
+{
+ public:
+
+  explicit auto_iconv(iconv_t iconv);
+  explicit auto_iconv(const char * in_charset, const char *out_charset);
+  ~auto_iconv();
+  operator iconv_t();
+  bool is_valid() const;
+
+ private:
+
+  auto_iconv(const auto_iconv&);	// no impl
+  void operator=(const auto_iconv&);	// no impl
+  iconv_t m_h;
+};
 
 UT_BEGIN_EXTERN_C
 
