@@ -23,7 +23,8 @@
 #include <ctype.h>
 #include <string.h>
 #include "ut_locale.h"
-
+#include "pf_Frag.h"
+#include "pf_Frag_Strux.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
@@ -559,6 +560,57 @@ void FV_View::setFrameFormat(const XML_Char * properties[])
 	setFrameFormat(properties,NULL,dataID);
 }
 
+void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** attributes)
+{
+
+	fl_BlockLayout * pBlock = getBlockAtPosition(pos);
+	fp_Run *  pRun = NULL;
+	bool bEOL,bDir;
+	UT_sint32 x1,y1,x2,y2,iHeight;
+	if(pBlock)
+	{
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		{
+			UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+	}
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+	_deleteSelection();
+	pf_Frag_Strux * pfFrame = NULL;
+//
+// This should place the the frame strux immediately after the block containing
+// position posXY.
+// It returns the Frag_Strux of the new frame.
+//
+	m_pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
+	PT_DocPosition posFrame = pfFrame->getPos();
+//	m_pDoc->insertStrux(posFrame+1,PTX_Block); // might need this later!
+	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
+
+
+	m_pDoc->endUserAtomicGlob();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	setPoint(posFrame+1);
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+}
+
 void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
@@ -601,15 +653,10 @@ void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionFrame);
 
-	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
 	_generalUpdate();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();

@@ -1172,6 +1172,25 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 								y - pContainer->getY() , 
 								pos, bBOL, bEOL,isTOC);
 	}
+#if 1
+	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
+	{
+		fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(pContainer);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFrame->getSectionLayout());
+		if(pFL->getFrameType() == FL_FRAME_WRAPPER_IMAGE)
+		{
+			pos = pFL->getPosition(true);
+			return;
+		}
+		else
+		{
+			pContainer->mapXYToPosition(x - pContainer->getX(),
+										y - pContainer->getY() , 
+										pos, bBOL, bEOL,isTOC);
+		}
+
+	}
+#endif
 	else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 	{
 //

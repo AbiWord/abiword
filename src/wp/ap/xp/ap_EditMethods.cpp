@@ -9250,8 +9250,8 @@ UT_return_val_if_fail(pDialog, false);
 	  }
 	  FREEP(props_in);
 
-//	  WRAPPING_TYPE oldWrapType = WRAP_INLINE;
-//	  POSITION_TO oldPositionTo = POSITION_TO_PARAGRAPH;
+	  WRAPPING_TYPE oldWrap = WRAP_INLINE;
+	  POSITION_TO oldPositionTo = POSITION_TO_PARAGRAPH;
 	  pDialog->runModal(pFrame);
 
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
@@ -9260,7 +9260,6 @@ UT_return_val_if_fail(pDialog, false);
 	  if (bOK)
 	  {
 		  WRAPPING_TYPE newWrap = pDialog->getWrapping();
-		  if(newWrap == WRAP_INLINE)
 		  // now get them back in inches
 		  width  = pDialog->getWidth () / 72.0;
 		  height = pDialog->getHeight () / 72.0;
@@ -9275,7 +9274,7 @@ UT_return_val_if_fail(pDialog, false);
 			  sprintf(widthBuf, "%fin", width);
 			  sprintf(heightBuf, "%fin", height);
 		  }
-		  if(newWrap == WRAP_INLINE)
+		  if((newWrap == WRAP_INLINE) && (oldWrap == WRAP_INLINE))
 		  {
 			  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
 			  
@@ -9297,10 +9296,10 @@ UT_return_val_if_fail(pDialog, false);
 		  }
 
 //
-// For now assume we just turn inline-images into frames this way. Later
-// we'll look at changing frames to inline.
+// This code turns inline-images into frames this way. Later
+// we changes frames to inline and frame types to frame types
 //
-		  else
+		  else if( (oldWrap == WRAP_INLINE) && (newWrap != WRAP_INLINE))
 		  {
 
 // OK we gotta create a frame with the dimensions of the image and roughly the
@@ -9311,9 +9310,9 @@ UT_return_val_if_fail(pDialog, false);
 			  fp_Line * pLine = pRun->getLine();
 //
 // Get the dataID of the image.
-// FIXME enable these laster
-//			  fp_ImageRun * pImageRun = static_cast<fp_ImageRun *>(pRun);
-//			  const char * dataID = pImageRun->getDataId();
+
+			  fp_ImageRun * pImageRun = static_cast<fp_ImageRun *>(pRun);
+			  const char * dataID = pImageRun->getDataId();
 			  UT_String sFrameProps;
 			  UT_String sProp;
 			  UT_String sVal;
@@ -9394,10 +9393,10 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Now set the wrapping type and the x-offset
 //
-			  if(pDialog->getWrapping() == WRAP_TEXTRIGHT)
+			  if(pDialog->getWrapping() == WRAP_TEXTLEFT)
 			  {
 				  sProp = "wrap-mode";
-				  sVal = "wrapped-to-right";
+				  sVal = "wrapped-to-left";
 				  UT_String_setProperty(sFrameProps,sProp,sVal);
 				  UT_sint32 ix = 0;
 				  iWidth = UT_convertToLogicalUnits(widthBuf);
@@ -9429,10 +9428,10 @@ UT_return_val_if_fail(pDialog, false);
 					  UT_String_setProperty(sFrameProps,sProp,sVal);
 				  }
 			  }
-			  else if(pDialog->getWrapping() == WRAP_TEXTLEFT)
+			  else if(pDialog->getWrapping() == WRAP_TEXTRIGHT)
 			  {
 				  sProp = "wrap-mode";
-				  sVal = "wrapped-to-left";
+				  sVal = "wrapped-to-right";
 				  UT_String_setProperty(sFrameProps,sProp,sVal);
 				  UT_sint32 ix = 0;
 				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
@@ -9492,6 +9491,31 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Now define the Frame attributes strux
 //
+			  const XML_Char * attributes[5] = {PT_STRUX_IMAGE_DATAID,
+												NULL,"props",NULL,NULL};
+			  attributes[1] = dataID;
+			  attributes[3] = sFrameProps.c_str();
+//
+// This deletes the inline image and places a positioned image in it's place
+// It deals with the undo/general update issues.
+//
+			  pView->convertInLineToPositioned(pos,attributes);
+//
+// Done! Now have a positioned image!
+//
+		  }
+//
+// Change properties of a positioned image
+//
+		  else if( (oldWrap != WRAP_INLINE) && (newWrap != WRAP_INLINE))
+		  {
+
+		  }
+//
+// Convert a positioned image to an inline image
+//
+		  else if((oldWrap != WRAP_INLINE) && (newWrap == WRAP_INLINE))
+		  {
 		  }
 	  }
 	  pDialogFactory->releaseDialog(pDialog);

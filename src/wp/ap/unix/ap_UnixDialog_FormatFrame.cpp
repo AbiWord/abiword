@@ -424,19 +424,19 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSetImageBackground"), pSS, AP_STRING_ID_DLG_FormatFrame_SetImageBackground);
 
-//  Button and label for text wrapping
-
-	m_wWrapButton = glade_xml_get_widget(xml, "bWrapButton");
+// Radio buttons to position type of the Frame
 		
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPositionTo"), pSS, AP_STRING_ID_DLG_FormatFrame_PositionTo);
 	localizeLabel(glade_xml_get_widget(xml, "lbSetToParagraph"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
 	localizeLabel(glade_xml_get_widget(xml, "lbSetToColumn"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
-	localizeLabel(glade_xml_get_widget(xml, "lbSetToPage"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
+	localizeLabel(glade_xml_get_widget(xml, "lbSetToPage "), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
 	
-// Radio buttons to position type of the Frame
+//  Button and label for text wrapping
+
+	m_wWrapButton = glade_xml_get_widget(xml, "bWrapButton");
 
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapState"), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
 

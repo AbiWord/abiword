@@ -2159,6 +2159,21 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   return bResult;
 			   
 		   }
+		case PTX_EndFrame:
+		   {
+			   UT_DEBUGMSG(("Inserting EndFrame immediately after Frame \n"));
+//
+// This gets us a fl_FrameLayout
+//
+			   fl_FrameLayout* pCLSL = static_cast<fl_FrameLayout *>( pL);
+			   if(pCLSL->getContainerType() != FL_CONTAINER_FRAME)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
+			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_FRAME);
+			   bool bResult = pCLSL->bl_doclistener_insertEndFrame(NULL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after frame %d \n",pcrx->getStruxType()));
