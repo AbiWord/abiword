@@ -214,7 +214,7 @@ deb::
 	(cd $(DEBIAN_ROOT);dpkg-shlibdeps $(DEB_ROOT)/usr/bin/*_d)
 	(cd $(DEBIAN_ROOT);dpkg-gencontrol -v$(ABI_BUILD_VERSION) -isp)
 	(fakeroot $(ABI_ROOT)/src/pkg/linux/scripts/install_debian.sh $(DEB_ROOT) $(ABI_ROOT)/dist/abisuite-$(ABI_BUILD_VERSION))
-#	cp $(DEBIAN_ROOT)/debian/tmp.deb $(ABI_ROOT)
+	@mv $(DEBIAN_ROOT)/debian/*.deb $(ABI_ROOT)/dist/
 
 # We're using alien to convert from RPM to DEB package
 deb_old: rpm
