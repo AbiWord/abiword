@@ -37,7 +37,6 @@
 #include "ut_AdobeEncoding.h"
 #ifdef USE_XFT
 #include <X11/Xft/Xft.h>
-#include <X11/Xft/XftFreetype.h>
 #endif
 
 
