@@ -189,7 +189,7 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"to", 't', POPT_ARG_STRING, &m_sTo, 0, "Target format of the file (abw, zabw, rtf, txt, utf8, html, latex)", "FORMAT"},
 	 {"to-png", '\0', POPT_ARG_NONE, &m_iToPNG, 0, "Convert incoming file to a PNG image", ""},
 	 {"verbose", 'v', POPT_ARG_INT, &m_iVerbose, 0, "Set verbosity level (0, 1, 2)", "LEVEL"},
-	 {"print", 'p', POPT_ARG_STRING, &m_sPrintTo, 0, "Print this file to FILE or printer", "FILE or |lpr"},
+	 {"print", 'p', POPT_ARG_STRING, &m_sPrintTo, 0, "Print this file to FILE or printer", "FILE or '|lpr -Pprinter'"},
 	 {"plugin", '\0', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application", "NAME"},
 	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
 	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application", ""},
