@@ -837,7 +837,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bSymbolFont(false),
 	m_dim(DIM_IN),
 	m_iLeft(0),
-	m_iRight(0)
+	m_iRight(0),
+	m_iLeftCellPos(0)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -2380,6 +2381,15 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  {
 			  m_bInTable = true;
 			  _table_open();
+//
+// Fill Column positions
+//
+			  UT_sint32 i= 0;
+			  for(i=0;i < ps->nocellbounds; i++) 
+			  {
+				  UT_sint32 pos = ps->cellbounds[i];
+				  m_vecColumnPositions.addItem(pos);
+			  }
 		  }
 
 		  if (ps->endcell) 
@@ -2403,16 +2413,17 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		{
 			m_vecColumnSpansForCurrentRow.clear();
 
-			UT_DEBUGMSG(("Number Cols in New row %d \n",ps->nocellbounds));
+			xxx_UT_DEBUGMSG(("Number of cell bounds in New row %d \n",ps->nocellbounds));
 			UT_sint32 column =1;
 			UT_sint32 i =0;
 			UT_sint32 posLeft = 0;
 			UT_sint32 posRight =0;
+			posLeft = ps->cellbounds[0];
 			for (column = 1; column < ps->nocellbounds; column++) 
 			{
 				int span = 0;
-				posLeft = apap->ptap.rgdxaCenter[column-1];
 				posRight = apap->ptap.rgdxaCenter[column];
+				xxx_UT_DEBUGMSG(("column %d posLeft %d posRight %d \n",column,posLeft,posRight));
 				for (i = 0; i < ps->nocellbounds; i++) 
 				{
 					if (ps->cellbounds[i] >= posLeft && ps->cellbounds[i] < posRight) 
@@ -2424,7 +2435,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 						break;
 					}
 				}
+				xxx_UT_DEBUGMSG(("COlumn %d has span %d \n",column,span));
 				m_vecColumnSpansForCurrentRow.addItem(span);
+				posLeft = posRight;
 			}
 	    }
 
@@ -3786,6 +3799,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   _row_close();
 
   UT_String props("table-column-props:");
+  UT_String propBuffer;
 
   if (m_vecColumnWidths.size() > 0) 
   {
@@ -3796,7 +3810,6 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 //
 	  if(_build_ColumnWidths(colWidths))
 	  {
-		  UT_String propBuffer;
 
 		  for (UT_uint32 i = 0; i < colWidths.size(); i++) 
 		  {
@@ -3809,6 +3822,13 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 	  }
 	  
 	  props += "; ";
+//
+// FIXME: Put in left position here!!!!
+//
+	  UT_String_sprintf(propBuffer,"table-column-leftpos:%s; ",
+							UT_convertInchesToDimensionString(m_dim,
+															  (static_cast<double>(m_iLeftCellPos)/1440.0)));
+	  props += propBuffer;
 	  UT_VECTOR_PURGEALL(MsColSpan *,m_vecColumnWidths);
 	  m_vecColumnWidths.clear ();
   }
@@ -3848,11 +3868,11 @@ void IE_Imp_MsWord_97::_row_open (const wvParseStruct *ps)
 
   m_bRowOpen = true;
   m_iCurrentRow++;
-  UT_DEBUGMSG(("imp_MsWord: _row_open: Last Left %d Last Right %d \n",m_iLeft,m_iRight));
+  xxx_UT_DEBUGMSG(("imp_MsWord: _row_open: Last Left %d Last Right %d \n",m_iLeft,m_iRight));
   m_iCurrentCell = 0;
   m_iLeft = 0;
   m_iRight = 0;
-  UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
+  xxx_UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
 }
 
 //--------------------------------------------------------------------------/
@@ -3921,8 +3941,9 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 // Scan the differences in centers for this row so we can work out the column
 // widths of the table eventually.
 //
+	  m_iLeftCellPos = 0;
 	  UT_sint32 iLeft, iRight, i;
-	  
+	  m_iLeftCellPos = ps->cellbounds[0];
 	  for(i = 0; i < ps->nocellbounds-1; i++) 
 	  {
 		  iLeft = i;
