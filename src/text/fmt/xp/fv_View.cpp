@@ -712,11 +712,12 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	return AV_View::notifyListeners(mask);
 }
 
+/*!
+  Reverse the direction of the current selection
+  Does so without changing the screen.
+*/
 void FV_View::_swapSelectionOrientation(void)
 {
-	// reverse the direction of the current selection
-	// without changing the screen.
-
 	UT_ASSERT(!isSelectionEmpty());
 	_fixInsertionPointCoords();
 	PT_DocPosition curPos = getPoint();
@@ -724,14 +725,17 @@ void FV_View::_swapSelectionOrientation(void)
 	_setPoint(m_iSelectionAnchor);
 	m_iSelectionAnchor = curPos;
 }
-	
+
+/*!
+  Move point to requested end of selection and clear selection
+  \param bForward True if point should be moved to the forward position
+
+  \note Do not draw the insertion point after clearing the
+        selection.
+  \fixme BIDI broken?
+*/
 void FV_View::_moveToSelectionEnd(bool bForward)
 {
-	// move to the requested end of the current selection.
-	// NOTE: this must clear the selection.
-	// NOTE: we do not draw the insertion point
-	//		after clearing the selection.
-
 	UT_ASSERT(!isSelectionEmpty());
 	
 	PT_DocPosition curPos = getPoint();
@@ -1296,15 +1300,21 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 }
 
 
+/*!
+  Move point a number of character positions
+  \param bForward True if moving forward
+  \param count Number of char positions to move
 
+  \note Cursor movement while there's a selection has the effect of
+        clearing the selection. And only that. See bug 993.
+*/
 void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 {
 	if (!isSelectionEmpty())
 	{
 		_moveToSelectionEnd(bForward);
-		// Note: _moveToSelectionEnd() clears the selection
-		//		but does not redraw the insertion point.
 		_drawInsertionPoint();
+		return;
 	}
 
 	PT_DocPosition iPoint = getPoint();
@@ -1336,7 +1346,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
   \param pos Document position
   \return Block at specified posistion, or the first block to the
           rigth of that position. May return NULL.
-  \see m_pLayout->findBlockAtPosition
+  \see m_pLayout->findBlockAtPosition 
 */
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 {
@@ -3896,10 +3906,21 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	}
 }
 
+/*!
+  Move point to next or previous page
+  \param bNext True if moving to next page
+
+  \note Cursor movement while there's a selection has the effect of
+        clearing the selection. And only that. See bug 993.
+*/
 void FV_View::warpInsPtNextPrevPage(bool bNext)
 {
 	if (!isSelectionEmpty())
+	{
 		_moveToSelectionEnd(bNext);
+		_drawInsertionPoint();
+		return;
+	}
 	else
 		_eraseInsertionPoint();
 
@@ -3909,10 +3930,21 @@ void FV_View::warpInsPtNextPrevPage(bool bNext)
 	notifyListeners(AV_CHG_MOTION);
 }
 
+/*!
+  Move point to next or previous line
+  \param bNext True if moving to next line
+
+  \note Cursor movement while there's a selection has the effect of
+        clearing the selection. And only that. See bug 993.
+*/
 void FV_View::warpInsPtNextPrevLine(bool bNext)
 {
 	if (!isSelectionEmpty())
+	{
 		_moveToSelectionEnd(bNext);
+		_drawInsertionPoint();
+		return;
+	}
 	else
 		_eraseInsertionPoint();
 
@@ -6645,6 +6677,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// versions of findPositionCoords. I think there's been some bugs
 	// due to that function being overloaded to be used from this
 	// code.
+
+	
 
 	if (bForward)
 	{
