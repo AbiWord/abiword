@@ -2214,7 +2214,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 
 	getGR()->polyLine(points, nPoints);
 
-	if (points != scratchpoints) delete points;
+	if (points != scratchpoints) delete[] points;
 }
 
 void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
