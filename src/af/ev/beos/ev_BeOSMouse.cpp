@@ -30,7 +30,6 @@
 #include "xav_View.h"
 
 #include <MessageFilter.h>
-//uint32		modifiers();
 
 class MouseFilter: public BMessageFilter {
 	public:
@@ -113,7 +112,7 @@ void ev_BeOSMouse::mouseUp(AV_View* pView, BMessage *msg)
 
 	if (mod & B_SHIFT_KEY)
 		ems |= EV_EMS_SHIFT;
-	if (mod & B_SHIFT_KEY)
+	if (mod & B_CONTROL_KEY)
 		ems |= EV_EMS_CONTROL;
 	if (mod & B_OPTION_KEY)
 		ems |= EV_EMS_ALT;
@@ -133,7 +132,7 @@ void ev_BeOSMouse::mouseUp(AV_View* pView, BMessage *msg)
 	emc = m_contextState;
 
 	// report movements under the mouse button that we did the capture on
-	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
+//	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
 	
 	result = m_pEEM->Mouse(emc|mop|emb|ems, &pEM);
 	
@@ -183,7 +182,7 @@ void ev_BeOSMouse::mouseClick(AV_View* pView, BMessage *msg)
 
 	if (mod & B_SHIFT_KEY)
 		state |= EV_EMS_SHIFT;
-	if (mod & B_SHIFT_KEY)
+	if (mod & B_CONTROL_KEY)
 		state |= EV_EMS_CONTROL;
 	if (mod & B_OPTION_KEY)
 		state |= EV_EMS_ALT;
@@ -236,7 +235,9 @@ void ev_BeOSMouse::mouseMotion(AV_View* pView, BMessage *msg)
 	msg->FindInt32("clicks", &clicks);
 	msg->FindInt32("buttons", &buttons);
 	msg->FindInt32("modifiers", &mod);
-	msg->FindPoint("where", &pt);
+	//Note with R4 the where became a screen point, use view_where
+	//msg->FindPoint("where", &pt);
+	msg->FindPoint("be:view_where", &pt);
 
 	//printf("MOUSE: Move \n");
 	
@@ -253,7 +254,7 @@ void ev_BeOSMouse::mouseMotion(AV_View* pView, BMessage *msg)
 		
 	if (mod & B_SHIFT_KEY)
 		ems |= EV_EMS_SHIFT;
-	if (mod & B_SHIFT_KEY)
+	if (mod & B_CONTROL_KEY)
 		ems |= EV_EMS_CONTROL;
 	if (mod & B_OPTION_KEY)
 		ems |= EV_EMS_ALT;
@@ -277,7 +278,7 @@ void ev_BeOSMouse::mouseMotion(AV_View* pView, BMessage *msg)
         }
 
                                                        
-	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
+//	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
         result = m_pEEM->Mouse(emc|mop|emb|ems, &pEM);
 	
 	switch (result)

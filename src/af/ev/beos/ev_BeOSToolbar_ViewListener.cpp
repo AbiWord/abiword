@@ -32,8 +32,7 @@ EV_BeOSToolbar_ViewListener::EV_BeOSToolbar_ViewListener(EV_BeOSToolbar * pBeOST
 UT_Bool EV_BeOSToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask) {
 	UT_ASSERT(pView == m_pView);
 	
-	UT_DEBUGMSG(("BeOSToolbar_ViewListener::notify [view %p tb 0x%08lx][mask 0x%08lx]\n",
-				 pView,this,mask));
+//	UT_DEBUGMSG(("BeOSToolbar_ViewListener::notify [view %p tb 0x%08lx][mask 0x%08lx]\n", pView,this,mask));
 	
 	// this code really could be in EV_BeOSToolbar, but I didn't want
 	// to multiple-inherit it.

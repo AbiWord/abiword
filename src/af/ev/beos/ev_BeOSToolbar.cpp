@@ -233,10 +233,7 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 				case EV_TBIT_PushButton: {
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
-					UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
-								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled")));
-
+				//	UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n", m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), ((bGrayed) ? "disabled" : "enabled"))); 
 					tb_item_t * item = m_pTBView->FindItemByID(id);
 					if (item) {
 						item->state = (bGrayed) ? 0 : ENABLED_MASK;
@@ -245,16 +242,13 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 				break;
 			
 				case EV_TBIT_GroupButton:
-					printf("Refresh Group->Toggle Button \n");
+					DPRINTF(printf("Ref Group->Toggle Button \n"));
 				case EV_TBIT_ToggleButton: {
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 											
-					UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
-								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled"),
-								 ((bToggled) ? "pressed" : "not pressed")));
+					//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n", m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), ((bGrayed) ? "disabled" : "enabled"), ((bToggled) ? "pressed" : "not pressed")));
 
 					tb_item_t * item = m_pTBView->FindItemByID(id);
 					if (item) {
@@ -269,10 +263,7 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					UT_Bool bString = EV_TIS_ShouldUseString(tis);
 						
-					UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
-								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled"),
-								 ((bString) ? szState : "no state")));
+					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n", m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), ((bGrayed) ? "disabled" : "enabled"), ((bString) ? szState : "no state")));
 					
 					tb_item_t * item = m_pTBView->FindItemByID(id);
 					if (item && bString) {
@@ -547,7 +538,6 @@ void ToolbarView::MessageReceived(BMessage *msg) {
 		}
 		BMenuItem *mnuitem;
 		mnuitem = items[i].menu->Menu()->FindMarked();
-		printf("You selected %s \n", mnuitem->Label());
 		char buffer[255];
 		strcpy(buffer, mnuitem->Label());
 		m_pBeOSToolbar->toolbarEvent(id, (UT_UCSChar *)buffer, strlen(buffer));
@@ -561,6 +551,8 @@ void ToolbarView::MessageReceived(BMessage *msg) {
 void ToolbarView::Draw(BRect clip) {
 	BRect 	r;
 	int 	i;
+	BPicture *mypict;
+	BeginPicture(new BPicture);
 	
 	for (i=0; i<item_count; i++) {
 		r = items[i].rect;
@@ -597,6 +589,11 @@ void ToolbarView::Draw(BRect clip) {
 	SetHighColor(240,240,240);		//Almost white
 	StrokeLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1));
 	StrokeLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1));
+
+	if ((mypict = EndPicture())) {
+		DrawPicture(mypict, BPoint(0,0));
+		delete mypict;
+	}
 }
 
 void ToolbarView::HighLightItem(int index, int up) {
