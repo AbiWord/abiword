@@ -1036,6 +1036,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_doneFirstFont = true;
 
 	// attach a new graphics context
+	gtk_widget_show ( cf ) ;
 #ifndef WITH_PANGO
 	XAP_App *pApp = pFrame->getApp();
 	m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager, pApp);

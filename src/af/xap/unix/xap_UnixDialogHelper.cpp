@@ -726,22 +726,24 @@ GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...)
 /*!
  * Add this stock button to the dialog and make it sensitive
  */
-void abiAddStockButton (GtkDialog * me, const gchar * btn_id,
-						gint response_id)
+GtkWidget * abiAddStockButton (GtkDialog * me, const gchar * btn_id,
+			       gint response_id)
 {
 	UT_return_if_fail(me);
 	UT_return_if_fail(btn_id);
 	
-	gtk_dialog_add_button(me, btn_id, response_id);
+	GtkWidget * wid = gtk_dialog_add_button(me, btn_id, response_id);
 	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
+
+	return wid;
 }
 
 /*!
  * Add this locale-sensitive button to the dialog and
  * make it sensitive
  */
-void abiAddButton(GtkDialog * me, const gchar * btn_id,
-				  gint response_id)
+GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
+			gint response_id)
 {
 	UT_return_if_fail(me);
 	UT_return_if_fail(btn_id);
@@ -750,8 +752,10 @@ void abiAddButton(GtkDialog * me, const gchar * btn_id,
 
 	UT_String utf8 ( abiLocaleToUTF8 ( btn_id ) ) ;
 	
-	gtk_dialog_add_button(me, utf8.c_str(), response_id);
+	GtkWidget * wid = gtk_dialog_add_button(me, utf8.c_str(), response_id);
 	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
+
+	return wid ;
 }
 
 /*!

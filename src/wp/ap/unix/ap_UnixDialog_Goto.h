@@ -43,6 +43,7 @@ public:
 	/* CALLBACKS */
 	static void				s_targetChanged(GtkWidget *clist, gint row, gint column,
 											GdkEventButton *event, AP_UnixDialog_Goto *me);
+	static void s_response (GtkWidget * widget, gint id, AP_UnixDialog_Goto * me );
 	static void				s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * me);
 	static void				s_goto (const char *number, AP_UnixDialog_Goto * me);
 	static void				s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
@@ -56,11 +57,11 @@ public:
 	/* Widgets members.  Publics to make them accesible to the callbacks */
 	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */
 	GtkWidget *				m_wMainWindow;
+	GtkWidget * m_wGoto ;
+	GtkWidget * m_wPrev ;
+	GtkWidget * m_wNext ;
+	GtkWidget * m_wClose ;
 	GtkWidget *				m_wEntry;
-	GtkWidget *				m_wPrev;
-	GtkWidget *				m_wNext;
-	GtkWidget *				m_wGoto;
-	GtkWidget *				m_wClose;
 	GtkAccelGroup *			m_accelGroup;
 	int						m_iRow;
 	GtkWidget *				m_swindow;
@@ -70,6 +71,15 @@ public:
 	
 	
 protected:
+
+	enum
+	  {
+	    BUTTON_PREVIOUS,
+	    BUTTON_NEXT,
+	    BUTTON_GOTO,
+	    BUTTON_CLOSE
+	  } ResponseId;
+
 	virtual GtkWidget *		_constructWindow(void);
 	GtkWidget *				_constructWindowContents(void);
 	void					_populateWindowData(void);

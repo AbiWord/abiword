@@ -93,6 +93,23 @@ void AP_UnixDialog_Goto::s_goto (const char *number, AP_UnixDialog_Goto * me)
 	free (ucsnumber);
 }
 
+void AP_UnixDialog_Goto::s_response (GtkWidget * widget, gint id, AP_UnixDialog_Goto * me )
+{
+  switch ( id )
+    {
+    case BUTTON_PREVIOUS:
+      s_prevClicked ( widget, me ) ; break ;
+    case BUTTON_NEXT:
+      s_nextClicked ( widget, me ) ; break ;
+    case BUTTON_GOTO:
+      s_gotoClicked ( widget, me ) ; break ;
+    case BUTTON_CLOSE:
+      s_closeClicked ( widget, me ) ; break ;
+    default:
+      break;
+    }
+}
+
 void AP_UnixDialog_Goto::s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
 {
 	const char *number = gtk_entry_get_text (GTK_ENTRY (me->m_wEntry));
@@ -181,7 +198,6 @@ int AP_UnixDialog_Goto::getSelectedRow (void)
 void AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
 	_constructWindow ();
-
 	setSelectedRow ( 0 ) ;
 
 	UT_ASSERT (m_wMainWindow);
@@ -193,6 +209,7 @@ void AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 	// This magic command displays the frame that characters will be
 	// inserted into.
 	connectFocusModeless (GTK_WIDGET (m_wMainWindow), m_pApp);
+	abiSetupModelessDialog( GTK_DIALOG(m_wMainWindow),pFrame, this,BUTTON_CLOSE );
 }
 
 void AP_UnixDialog_Goto::destroy (void)
@@ -225,13 +242,11 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	GtkWidget *vbox;
 	GtkWidget *actionarea;
 	GtkWidget *contents;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_wMainWindow = gtk_dialog_new ();
-	gtk_container_set_border_width (GTK_CONTAINER (m_wMainWindow), 4);
         ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_wMainWindow),m_WindowName);
-	gtk_window_set_policy(GTK_WINDOW(m_wMainWindow), FALSE, FALSE, TRUE);
+	m_wMainWindow = abiDialogNew( true, m_WindowName );
+	gtk_container_set_border_width (GTK_CONTAINER (m_wMainWindow), 4);
+
 	vbox = GTK_DIALOG (m_wMainWindow)->vbox;
 	actionarea = GTK_DIALOG (m_wMainWindow)->action_area;
 
@@ -243,23 +258,13 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
 	
 	// Buttons
-	m_wPrev = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Prev));
-	gtk_container_add (GTK_CONTAINER (actionarea), m_wPrev);
- 	GTK_WIDGET_SET_FLAGS (m_wPrev, GTK_CAN_DEFAULT);
+	m_wPrev = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_GO_BACK, BUTTON_PREVIOUS);
+	m_wNext = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_GO_FORWARD, BUTTON_NEXT);
+	m_wGoto = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_JUMP_TO, BUTTON_GOTO);
+	m_wClose = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_CLOSE, BUTTON_CLOSE);
 
-	m_wNext = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Next));
-	gtk_container_add (GTK_CONTAINER (actionarea), m_wNext);
- 	GTK_WIDGET_SET_FLAGS (m_wNext, GTK_CAN_DEFAULT);
-
-	m_wGoto = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Goto));
-	gtk_container_add (GTK_CONTAINER (actionarea), m_wGoto);
- 	GTK_WIDGET_SET_FLAGS (m_wGoto, GTK_CAN_DEFAULT);
-	gtk_widget_set_sensitive (m_wGoto, FALSE);
-
-	m_wClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Close));
-	gtk_container_add (GTK_CONTAINER (actionarea), m_wClose);
- 	GTK_WIDGET_SET_FLAGS (m_wClose, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default (m_wClose);
+	//const XAP_StringSet * pSS = m_pApp->getStringSet();
+	//m_wGoto = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Goto_Btn_Goto));
 
 	gtk_widget_show_all (m_wMainWindow);
 	
@@ -391,20 +396,7 @@ void AP_UnixDialog_Goto::_populateWindowData (void) {}
 void AP_UnixDialog_Goto::_connectSignals(void)
 {
 	g_signal_connect_after(G_OBJECT(m_wMainWindow),
-							 "destroy",
-							 NULL,
-							 NULL);
-	//
-        // Don't use connect_after in modeless dialog
-	g_signal_connect(G_OBJECT(m_wMainWindow),
-						     "delete_event",
-						     G_CALLBACK(s_deleteClicked), (gpointer) this);
-	g_signal_connect (G_OBJECT (m_wPrev), "clicked",
-						G_CALLBACK (s_prevClicked), this);
-	g_signal_connect (G_OBJECT (m_wNext), "clicked",
-						G_CALLBACK (s_nextClicked), this);
-	g_signal_connect (G_OBJECT (m_wGoto), "clicked",
-						G_CALLBACK (s_gotoClicked), this);
-	g_signal_connect (G_OBJECT (m_wClose), "clicked",
-						G_CALLBACK (s_closeClicked), this);
+							 "response",
+							 G_CALLBACK(s_response),
+							 this);
 }

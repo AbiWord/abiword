@@ -135,6 +135,7 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 
   // Build the window's widgets and arrange them
   GtkWidget * mainWindow = _constructWindow();
+  gtk_widget_show ( mainWindow ) ;
 
   // Populate the window's data items
   _populateWindowData();
