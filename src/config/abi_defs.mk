@@ -299,6 +299,7 @@ ABI_XAP_INCS=	/config						\
                 /wp/ap/xp/ToolbarIcons
 
 ifeq ($(ABI_OPT_GNOME),1)
+ABI_OPT_GNOMEVFS := 1
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR) 
 endif
