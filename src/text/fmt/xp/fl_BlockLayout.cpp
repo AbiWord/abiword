@@ -3856,8 +3856,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	// the current block empty.
 
 	// Split charwidths across the two blocks
-	UT_uint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
-	if (m_gbCharWidths.getLength() > blockOffset)
+	UT_sint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
+	if (lenNew > 0)
 	{
 		// NOTE: We do the length check on the outside for speed
 		// TODO [1] can we move info from the current to the new
