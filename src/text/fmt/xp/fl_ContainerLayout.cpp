@@ -570,7 +570,10 @@ fl_BlockLayout* fl_ContainerLayout::getPrevBlockInDocument(void) const
 		}
 		if(pPrev == NULL)
 		{
-			pPrev = pOld->myContainingLayout()->getPrev();
+			if(pOld && pOld->myContainingLayout())
+			{
+				pPrev = pOld->myContainingLayout()->getPrev();
+			}
 		}
 	}
 	return NULL;
