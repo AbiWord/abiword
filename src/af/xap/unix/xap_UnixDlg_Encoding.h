@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,46 +31,42 @@
 #include "ut_Encoding.h"
 #include "xap_Dlg_Encoding.h"
 
-/********************************************************************
-INSTRUCTIONS FOR DESIGN OF THE PLATFORM VERSIONS OF THIS DIALOGUE
-
-(1)	implement runModal(); at the moment we display a single listbox
-
-(2)	m_iEncCount will tell you how many list entries there will be; 
-	the encoding strings are then in m_ppEncodings (already sorted)
-
-(3)	use _setEncoding() to set the member variables in response
-	to the user selection when the dialog is closing.
-*********************************************************************/
-
-
-
 class XAP_UnixDialog_Encoding : public XAP_Dialog_Encoding
 {
 public:
 	XAP_UnixDialog_Encoding(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_Encoding(void);
 
-	virtual void					runModal(XAP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
 
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
-	virtual void			event_DoubleClick(void);
-	virtual void			event_WindowDelete(void);
+ protected:
 
-protected:
+ private:
 
-	gint 		_getFromList(void);
-	GtkWidget * _constructWindow(void);
+	typedef enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
+
+	static void s_clist_event(GtkWidget * widget,
+				  GdkEventButton * event,
+				  XAP_UnixDialog_Encoding * dlg) ;
+
+	void event_Ok (void);
+	void event_Cancel (void);
+
+	virtual void	event_DoubleClick(void);
+
+	GtkWidget     * _constructWindow(void);
 	void		_populateWindowData(void);
+	gint 		_getFromList(void);
 	
 	GtkWidget * m_windowMain;
 	GtkWidget * m_clistWindows;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
 };
 #endif /* XAP_UNIXDIALOG_ENCODING_H */
 

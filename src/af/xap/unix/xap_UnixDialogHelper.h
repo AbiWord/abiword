@@ -27,6 +27,7 @@
 
 class XAP_Frame;
 class XAP_App;
+class XAP_Dialog;
 
 // This macro sets up stack pointers to be used with the ConvertToUnixString
 // macro.
@@ -73,6 +74,13 @@ GtkStyle * get_ensured_style (GtkWidget * w);
 
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap
 GtkWidget *createDrawingArea ();
+
+gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, bool destroyDialog = true);
+void abiRunModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg);
+void abiDestroyWidget(GtkWidget * me);
+
+GtkWidget * abiDialogNew(gboolean resizable = FALSE);
+GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...);
 
 // These are here so that I can start on the GTK+2 port without installing
 // GTK+2 quite yet...

@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,15 +34,24 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+private:
+
+	typedef enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
 
 	// callbacks can fire these events
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
 	virtual void			event_DoubleClick(void);
-	virtual void			event_WindowDelete(void);
-	
-protected:
+
+	static void s_clist_event(GtkWidget * widget,
+				  GdkEventButton * event,
+				  XAP_UnixDialog_WindowMore * dlg) ;
 
 	gint 		_GetFromList(void);
 	GtkWidget * _constructWindow(void);
@@ -50,8 +59,6 @@ protected:
 	
 	GtkWidget * m_windowMain;
 	GtkWidget * m_clistWindows;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
 	
 };
 

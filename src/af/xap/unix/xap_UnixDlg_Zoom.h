@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,12 +36,19 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+protected:
+
+	typedef enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
 
 	// callbacks can fire these events
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 	virtual void			event_Radio200Clicked(void);
 	virtual void			event_Radio100Clicked(void);
@@ -53,8 +60,24 @@ public:
 	virtual void			event_SpinPercentChanged(void);
 
 	virtual void			event_PreviewAreaExposed(void);
-	
-protected:
+
+	static void s_radio_200_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
+
+	static void s_radio_100_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
+
+	static void s_radio_75_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
+
+	static void s_radio_PageWidth_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
+
+	static void s_radio_WholePage_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
+
+	static void s_radio_Percent_clicked(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
+
+	static void s_spin_Percent_changed(GtkWidget * widget, XAP_UnixDialog_Zoom * dlg) ;
+
+	static gint s_preview_exposed(GtkWidget * /* widget */,
+				      GdkEventExpose * /* pExposeEvent */,
+				      XAP_UnixDialog_Zoom * dlg)  ;
 
 	GR_UnixGraphics	* 		m_unixGraphics;
 	
@@ -67,8 +90,6 @@ protected:
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
-// aiken: get rid of preview frame.    
-//	GtkWidget * m_previewFrame;
 	GtkWidget * m_previewArea;
 	
 	GtkWidget * m_radio200;
@@ -78,9 +99,6 @@ protected:
 	GtkWidget * m_radioWholePage;
 	GtkWidget * m_radioPercent;
 	GtkWidget * m_spinPercent;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
 
 	// our "group" of radio buttons
 	GSList *	m_radioGroup;

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2000-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,17 +37,23 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+ protected:
+
+ private:
+
+	typedef enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
+
 	void event_Ok ();
 	void event_Cancel ();
 
- protected:
 	void _constructWindowContents (GtkWidget * container);
 	virtual GtkWidget * _constructWindow ();
 	
 	GtkWidget * mMainWindow;
-
- private:
-
 	GtkWidget * mTextEntry;
 };
 

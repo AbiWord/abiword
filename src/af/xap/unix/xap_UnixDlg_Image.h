@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2001 Dom Lachowicz
+ * Copyright (C) 2001-2002 Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,19 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
+ protected:
+	void _constructWindowContents (GtkWidget * container);
+	virtual GtkWidget * _constructWindow ();
+	void _connectSignals ();
+
+ private:
+
+	typedef enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
+
 	void event_Ok ();
 	void event_Cancel ();
 	void doHeightSpin(void);
@@ -48,16 +61,17 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 	void adjustWidthForAspect(void);
 	void aspectCheckbox();
 
- protected:
-	void _constructWindowContents (GtkWidget * container);
-	virtual GtkWidget * _constructWindow ();
-	void _connectSignals ();
+	static void s_HeightSpin_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg) ;
+
+	static void s_WidthSpin_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg) ;
+
+	static void s_HeightEntry_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg) ;
+
+	static void s_WidthEntry_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg) ;
+
+	static void s_aspect_clicked(GtkWidget * widget, XAP_UnixDialog_Image * dlg) ;
 
 	GtkWidget * mMainWindow;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
- private:
   	GtkWidget * m_wAspectCheck;
   	GtkWidget * m_wHeightSpin;
   	GtkWidget * m_wHeightEntry;

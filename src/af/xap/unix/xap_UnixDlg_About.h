@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,33 +36,35 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			runModal(XAP_Frame * pFrame);
+	
+ private:
 
 	// callbacks can fire these events
 
-	virtual void			event_OK(void);
-	virtual void			event_URL(void);
-	virtual void			event_WindowDelete(void);
-	virtual void			event_DrawingAreaExpose(void);
-	
- protected:
+	static gint s_drawingarea_expose(GtkWidget * /* widget */,
+					 GdkEventExpose * /* pExposeEvent */,
+					 XAP_UnixDialog_About * dlg) ;
+
+	virtual void	event_URL(void);
+	virtual void	event_DrawingAreaExpose(void);
+
+	typedef enum
+	  {
+	    BUTTON_CLOSE,
+	    BUTTON_URL
+	  } ResponseId ;
 
 	GtkWidget *           _constructWindow(void);
-
-	// for easy Gnome overriding
-	virtual GtkWidget *   _constructButtonOK(void);
-	virtual GtkWidget *   _constructButtonURL(void);
 
 	void		      _populateWindowData(void);
 	void		      _preparePicture(void);
 	
 	GtkWidget * m_windowMain;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonURL;
 	GtkWidget * m_drawingareaGraphic;
 	
 	GR_UnixGraphics * m_gc;
 
-	GR_UnixImage * m_pGrImageSidebar;
+	GR_UnixImage  * m_pGrImageSidebar;
 	XAP_UnixFrame * m_pFrame;
 };
 
