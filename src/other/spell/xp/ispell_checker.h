@@ -23,11 +23,6 @@ public:
 
 protected:
 
-#ifdef HAVE_CURL
-	void		setUserSaidNo(UT_uint32 flag) { m_userSaidNo = flag; }
-	UT_uint32	getUserSaidNo(void) { return(m_userSaidNo); }
-#endif
-
 private:
 	ISpellChecker(const ISpellChecker&);	// no impl
 	void operator=(const ISpellChecker&);	// no impl
@@ -321,11 +316,6 @@ private:
 
 	UT_iconv_t  m_translate_in; /* Selected translation from/to Unicode */
 	UT_iconv_t  m_translate_out;
-
-
-#ifdef HAVE_CURL
-	UT_uint32		m_userSaidNo;
-#endif
 };
 
 #endif /* ISPELL_CHECKER_H */

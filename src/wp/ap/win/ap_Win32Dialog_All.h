@@ -73,7 +73,7 @@
 #  	include "ap_Win32Dialog_MergeCells.h"
 #  	include "ap_Win32Dialog_FormatTable.h"
 #	include "ap_Win32Dialog_FormatFootnotes.h"
-#ifdef HAVE_CURL
+#if 0
 #	include "ap_Win32Dialog_Download_File.h"
 #endif
 	// ... add new dialogs here ...
@@ -131,7 +131,7 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_Win32Dialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,AP_Win32Dialog_FormatFootnotes)
 	
-#ifdef HAVE_CURL
+#if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_Win32Dialog_Download_File)
 #endif
  	// ... also add new dialogs here ...

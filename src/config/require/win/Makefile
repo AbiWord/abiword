@@ -32,10 +32,6 @@ endif
 REQUIRE+=	_LIBWV_ _POPT_ _NSIS_ _FRIBIDI_
 #REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_ clean_POPT_
 
-ifeq ($(ABI_OPT_CURL),1)
-REQUIRE += _PEER_LIBCURL_
-endif
-
 TARGET=		build
 
 #    CCSET=CC='cl.exe -nologo' CONFIG_SHELL=sh sh
@@ -127,20 +123,6 @@ _NSIS_:
 		echo TODO with instructions for obtaining it;			\
 		exit 1;								\
 	fi
-
-_PEER_LIBCURL_:
-	@if [ -d $(ABI_ROOT)/../curl/lib ]; then	\
-		echo Found libcurl in peer directory;	\
-		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../curl/lib;		\
-	else									\
-		echo libcurl not found.  You can check it out of cvs by; \
-		echo cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout curl; \
-		echo or download from http://curl.haxx.se and extract the library as a peer;	\
-		echo directory named curl;			\
-		exit 1;								\
-	fi
-#		cd $(ABI_ROOT)/../libcurl/lib
-#		nmake /f Makefile.vc6 cfg=release
 
 # TODO: update to support building statically or as DLL
 _FRIBIDI_:

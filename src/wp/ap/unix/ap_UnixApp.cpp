@@ -98,10 +98,6 @@
 #include "abiwidget.h"
 #include "ut_sleep.h"
 
-#ifdef HAVE_CURL
-#include "ap_UnixHashDownloader.h"
-#endif
-
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
 #else
@@ -153,10 +149,6 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_cacheSelectionView(0),
 	  m_pFrameSelection(0)
 {
-#ifdef HAVE_CURL
-	m_pHashDownloader = static_cast<XAP_HashDownloader *>(new AP_UnixHashDownloader());
-#endif
-
 #ifndef HAVE_GNOME
     // hack to link abi_widget - thanks fjf
 	if(this == 0)
@@ -170,10 +162,6 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 */
 AP_UnixApp::~AP_UnixApp(void)
 {
-#ifdef HAVE_CURL
-    DELETEP(m_pHashDownloader);
-#endif
-
     DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
 

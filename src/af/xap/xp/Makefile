@@ -70,10 +70,6 @@ ifeq ($(ABI_OPT_PANGO),1)
 CPPSRCS += xap_PangoFontManager.cpp
 endif
 
-ifeq ($(ABI_OPT_CURL),1)
-CPPSRCS +=	xap_HashDownloader.cpp
-endif
-
 ifeq ($(OS_NAME),WIN32)
 INCLUDES += -GX
 endif

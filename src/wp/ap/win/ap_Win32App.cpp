@@ -84,10 +84,6 @@
 #include "ap_FrameData.h"
 #include "ut_Win32Locale.h"
 
-#ifdef HAVE_CURL
-#include "ap_Win32HashDownloader.h"
-#endif
-
 #include "ap_Strings.h"
 
 // extern prototype - this is defined in ap_EditMethods.cpp
@@ -99,17 +95,10 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szA
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
-#ifdef HAVE_CURL
-	m_pHashDownloader = (XAP_HashDownloader *)(new AP_Win32HashDownloader());
-#endif
 }
 
 AP_Win32App::~AP_Win32App(void)
 {
-#ifdef HAVE_CURL
-	DELETEP(m_pHashDownloader);
-#endif
-
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 

@@ -73,7 +73,7 @@
 #	include "ap_CocoaDialog_MetaData.h"
 #	include "ap_CocoaDialog_MarkRevisions.h"
 #	include "ap_CocoaDialog_ListRevisions.h"
-#ifdef HAVE_CURL
+#if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
 	// ... add new dialogs here ...
@@ -133,7 +133,7 @@
 //PORT	 DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_CocoaDialog_FormatTable)
 //PORT	 DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
 //PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
-#ifdef HAVE_CURL
+#if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
 #endif
  	// ... also add new dialogs here ...

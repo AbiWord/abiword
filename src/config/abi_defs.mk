@@ -740,20 +740,6 @@ EXTRA_LIBS	+=	-L$(ABI_ROOT)/../popt/.libs -lpopt
 endif
 endif #ifeq(platform,unix)
 
-ifeq ($(ABI_OPT_CURL),1)
-ABI_OPTIONS+=libCurl:On
-ifneq ($(OS_NAME),WIN32)
-LIBCURL_CFLAGS  =       $(shell curl-config --cflags)
-LIBCURL_LIBS    =       $(shell curl-config --libs)
-CFLAGS          +=      $(LIBCURL_CFLAGS) -DHAVE_CURL=1
-EXTRA_LIBS      +=      $(LIBCURL_LIBS)
-endif
-ifeq ($(OS_NAME),WIN32)
-CFLAGS += -DHAVE_CURL=1 -DCURLHASH_INSTALL_SYSTEMWIDE
-INCLUDES += -I$(ABI_ROOT)/../curl/include -I$(ABI_ROOT)/../zlib
-endif
-endif	##ifeq ($(ABI_OPT_CURL),1)
-
 ##################################################################
 ##################################################################
 ## Pspell spell checker

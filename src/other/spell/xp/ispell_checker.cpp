@@ -16,10 +16,6 @@
 // for a silly messagebox
 #include <stdio.h>
 
-#ifdef HAVE_CURL
-#include "ap_HashDownloader.h"
-#endif
-
 #if defined(WIN32)
 #define DICTIONARY_LIST_FILENAME "\\dictionary\\ispell_dictionary_list.xml"
 #else
@@ -356,9 +352,6 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 
 	UT_String encoding;
 	UT_String szFile;
-#ifdef HAVE_CURL
-	UT_sint32 ret;
-#endif
 
 	/* TODO
 	 * Add support for "deterministic dictionary names"
@@ -388,23 +381,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 	{
 		if (!(hashname = loadLocalDictionary(szFile.c_str())))
 		{
-#ifdef HAVE_CURL
-			AP_HashDownloader *hd = static_cast<AP_HashDownloader *>(XAP_App::getApp()->getHashDownloader());
-			XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
-
-			setUserSaidNo(0);
-
-			if (!hd || ((ret = hd->suggestDownload(pFrame, szLang)) != 1)
-				|| (!(hashname = loadGlobalDictionary(szFile.c_str()))
-				&& !(hashname = loadLocalDictionary(szFile.c_str()))) )
-			{
-				if (hd && ret == 0)
-					setUserSaidNo(1);
-				return false;
-			}
-#else
 			return false;
-#endif
 		}
 	}
 
@@ -496,15 +473,7 @@ ISpellChecker::_requestDictionary(const char *szLang)
 {
 	if (!loadDictionaryForLanguage ( szLang ))
 	{
-#ifdef HAVE_CURL
-		/*
-		 * Don't show this message if user said no or canceled
-		 * The information (could not load dictionary) has already been given to
-		 * the user in xap_HashDownloader
-		 */
-		if (!getUserSaidNo())
-#endif
-			couldNotLoadDictionary ( szLang );
+		couldNotLoadDictionary ( szLang );
 		return false;
 	}
 

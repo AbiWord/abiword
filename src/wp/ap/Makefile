@@ -128,11 +128,6 @@ PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX)
 endif
 
 
-ifeq ($(ABI_OPT_CURL),1)
-PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)HashDownloader.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_$(ABI_FE)Dialog_Download_File.$(OBJ_SUFFIX)
-endif
-
 OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Convert.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_New.$(OBJ_SUFFIX)		\
@@ -210,11 +205,6 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)		
-
-ifeq ($(ABI_OPT_CURL),1)
-OBJS +=		$(OBJDIR)/ap_HashDownloader.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ap_Dialog_Download_File.$(OBJ_SUFFIX)
-endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

@@ -71,7 +71,7 @@
 #	include "ap_QNXDialog_MarkRevisions.h"
 #	include "ap_QNXDialog_ListRevisions.h"
 #	include "ap_QNXDialog_MetaData.h"
-#ifdef HAVE_CURL
+#if 0
 #	include "ap_QNXDialog_Download_File.h"
 #endif
 #include "ap_QNXDialog_MergeCells.h"
@@ -132,7 +132,7 @@
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,	AP_QNXDialog_MergeCells)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_QNXDialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,	AP_QNXDialog_FormatFootnotes)
-#ifdef HAVE_CURL
+#if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_QNXDialog_Download_File)
 #endif
 	// ... also add new dialogs here ...

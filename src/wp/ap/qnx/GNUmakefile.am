@@ -26,12 +26,6 @@ INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 
 noinst_LIBRARIES = libWpAp_qnx.a
 
-if WITH_CURL
-CURL_SOURCE_OBJ = ap_@ABI_FE@Dialog_Download_File.cpp
-else
-CURL_SOURCE_OBJ = 
-endif
-
 libWpAp_qnx_a_SOURCES=\
 	ap_@ABI_FE@App.cpp			\
 	ap_@ABI_FE@ViewListener.cpp \
@@ -77,5 +71,4 @@ libWpAp_qnx_a_SOURCES=\
 	ap_@ABI_FE@Toolbar_StyleCombo.cpp	\
 	ap_@ABI_FE@Toolbar_ZoomCombo.cpp	\
 	ap_@ABI_FE@_TB_CFactory.cpp		\
-	ap_@ABI_FE@TopRuler.cpp			\
-	$(CURL_SOURCE_OBJ)
+	ap_@ABI_FE@TopRuler.cpp

@@ -26,12 +26,6 @@ else
 RESOURCE_MANAGER_OBJ = 
 endif
 
-if WITH_CURL
-CURL_SUPPORT_OBJ=xap_HashDownloader.cpp
-else
-CURL_SUPPORT_OBJ=
-endif
-
 noinst_LIBRARIES = libXap_xp.a
 
 libXap_xp_a_SOURCES=\
@@ -77,6 +71,5 @@ libXap_xp_a_SOURCES=\
 	xap_Toolbar_ControlFactory.cpp	\
 	xap_ViewListener.cpp		\
 	xav_View.cpp			\
-	$(CURL_SUPPORT_OBJ)		\
 	$(RESOURCE_MANAGER_OBJ)		\
 	xap_EncodingManager.cpp

@@ -74,11 +74,6 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)TopRuler.cpp		\
 			ap_$(ABI_FE)ViewListener.cpp		\
 
-ifeq ($(ABI_OPT_CURL),1)
-CPPSRCS +=		ap_$(ABI_FE)HashDownloader.cpp		\
-			ap_$(ABI_FE)Dialog_Download_File.cpp
-endif
-
 TARGETS=		$(OBJS)
 
 INCLUDES+= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv -DABIWORD_PLUGINDIR="\"$(prefix)/lib/AbiWord-2.0/plugins/\""

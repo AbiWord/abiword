@@ -50,12 +50,6 @@ glade_DATA = \
 	ap_UnixDialog_New.glade		\
 	ap_UnixDialog_WordCount.glade
 
-if WITH_CURL
-CURL_SOURCE_OBJ = ap_@ABI_FE@HashDownloader.cpp ap_@ABI_FE@Dialog_Download_File.cpp
-else
-CURL_SOURCE_OBJ = 
-endif
-
 libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@App.cpp			\
 	ap_@ABI_FE@Clipboard.cpp		\
@@ -100,6 +94,5 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@LeftRuler.cpp		\
 	ap_@ABI_FE@TopRuler.cpp			\
 	ap_@ABI_FE@ViewListener.cpp		\
-	$(CURL_SOURCE_OBJ)			\
 	abiwidget.cpp				\
 	ap_@ABI_FE@Dialog_PageSetup.cpp

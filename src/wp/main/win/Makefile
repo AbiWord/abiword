@@ -71,12 +71,12 @@ ABI_LIBS=		unicows kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 GARBAGE=		AbiWord.map AbiWord.pdb
 
 endif
-ifeq ($(ABI_OPT_CURL),1)
-ABI_APPLIBS+=	Abi_libcurl
-# Note: ws2_32.lib is the winsock 2 import library (may cause user to require Winsock 2 update)
-ABI_LIBS+=		ws2_32
-endif
 
+# ifeq ($(ABI_OPT_CURL),1)
+# ABI_APPLIBS+=	Abi_libcurl
+# # Note: ws2_32.lib is the winsock 2 import library (may cause user to require Winsock 2 update)
+# ABI_LIBS+=		ws2_32
+# endif
 
 TARGETS=		$(PROGRAM)
 

@@ -69,11 +69,6 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_MergeCells.cpp	\
 			ap_$(ABI_FE)TopRuler.cpp
 
-ifeq ($(ABI_OPT_CURL),1)
-CPPSRCS +=		ap_$(ABI_FE)HashDownloader.cpp		\
-			ap_$(ABI_FE)Dialog_Download_File.cpp
-endif
-
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
