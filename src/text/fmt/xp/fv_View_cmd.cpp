@@ -1527,9 +1527,16 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	m_pDoc->updateDirtyLists();
 
 	setPoint(posTableStart);
-	while(!isPointLegal())
+	PT_DocPosition posEOD;
+	bool bRes;
+	bRes = getEditableBounds(true, posEOD);
+	while(!isPointLegal() && getPoint() < posEOD)
 	{
 	  setPoint(getPoint()+1);
+	}
+	while(!isPointLegal() && (getPoint() > 2))
+	{
+	  setPoint(getPoint()-1);
 	}
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
