@@ -4660,6 +4660,9 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	if(!pH1)
 		return false;
 
+	if (!isSelectionEmpty())
+		_clearSelection();
+
 	pos1 = pH1->getBlock()->getPosition(false) + pH1->getBlockOffset();
 
 	// now reset the hyperlink member for the runs that belonged to this

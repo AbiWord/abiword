@@ -40,6 +40,7 @@
 #include "pd_Document.h"
 #include "pd_Style.h"
 #include "pf_Frag_Strux.h"
+#include "xap_App.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
 #include "px_ChangeRecord.h"
@@ -234,6 +235,537 @@ void s_RTF_ListenerWriteDoc::_writeSPNumProp(const char * prop, UT_sint32 val)
 	m_pie->write(sTmp.utf8_str());
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
+}
+
+
+
+/*!
+ * OK export all the TOC properties in RTF format. 
+ */
+void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
+{
+//
+// OK get TOC properties
+//
+	const PP_AttrProp * pSectionAP = NULL;
+	m_pDocument->getAttrProp(apiTOC,&pSectionAP);
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("field");
+	m_pie->_rtf_keyword("fdledit");
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword("fldinst ");
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword(" TOC ");
+//
+// For now just close it all up. Later we'll have to worry about exporting
+// bookmarks and the text of each heading in the TOC
+//
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+
+
+	// I can't think of any properties we need for now.
+	// If we need any later, we'll add them. -PL
+	const XML_Char *pszTOCPID = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-id",pszTOCPID))
+	{
+	}
+	else
+	{
+	}
+#if 0
+	m_sNumOff1 = "0.5in";
+	m_sNumOff2 = "0.5in";
+	m_sNumOff3 = "0.5in";
+	m_sNumOff4 = "0.5in";
+#endif
+
+
+	const XML_Char *pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent1",pszINDENT))
+	{
+	}
+	else
+	{
+	}
+	pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent2",pszINDENT))
+	{
+	}
+	else
+	{
+	}
+
+	pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent3",pszINDENT))
+	{
+	}
+	else
+	{
+	}
+
+	pszINDENT = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-indent4",pszINDENT))
+	{
+	}
+	else
+	{
+	}
+
+	const XML_Char *pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style1",pszTOCSRC))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style2",pszTOCSRC))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style3",pszTOCSRC))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSRC = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-source-style4",pszTOCSRC))
+	{
+	}
+	else
+	{
+	}
+	const XML_Char * pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style1",pszTOCDEST))
+	{
+	}
+	else
+	{
+	}
+	pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style2",pszTOCDEST))
+	{
+	}
+	else
+	{
+	}
+	pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style3",pszTOCDEST))
+	{
+	}
+	else
+	{
+	}
+	pszTOCDEST = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-dest-style4",pszTOCDEST))
+	{
+	}
+	else
+	{
+	}
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	const XML_Char * pszTOCHEADING = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
+	{
+	}
+	else
+	{
+	}
+
+	const XML_Char * pszTOCHEADINGStyle = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-heading-style",pszTOCHEADINGStyle))
+	{
+	}
+	else
+	{
+	}
+
+
+	const XML_Char * pszTOCHASHEADING = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-has-heading",pszTOCHASHEADING))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCHASHEADING,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+//
+// TOC Label
+//
+	const XML_Char * pszTOCLABEL = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label1",pszTOCLABEL))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCLABEL = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label2",pszTOCLABEL))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCLABEL = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label3",pszTOCLABEL))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCLABEL = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-has-label4",pszTOCLABEL))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABEL,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+//
+// TOC Label Inherits
+//
+	const XML_Char * pszTOCLABELINHERITS = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits1",pszTOCLABELINHERITS))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCLABELINHERITS = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits2",pszTOCLABELINHERITS))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCLABELINHERITS = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits3",pszTOCLABELINHERITS))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCLABELINHERITS = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-inherits4",pszTOCLABELINHERITS))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCLABELINHERITS,"1") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+//
+// TOC Label Type
+//
+	const XML_Char * pszTOCLABELTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type1",pszTOCLABELTYPE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCLABELTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type2",pszTOCLABELTYPE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCLABELTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type3",pszTOCLABELTYPE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCLABELTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-type4",pszTOCLABELTYPE))
+	{
+	}
+	else
+	{
+	}
+//
+// TOC Label Before Text
+//
+	const XML_Char * pszTOCSTRBEFORE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before1",pszTOCSTRBEFORE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSTRBEFORE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before2",pszTOCSTRBEFORE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSTRBEFORE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before3",pszTOCSTRBEFORE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSTRBEFORE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-before4",pszTOCSTRBEFORE))
+	{
+	}
+	else
+	{
+	}
+//
+// TOC Label After Text
+//
+	const XML_Char * pszTOCSTRAFTER = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after1",pszTOCSTRAFTER))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSTRAFTER = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after2",pszTOCSTRAFTER))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSTRAFTER = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after2",pszTOCSTRAFTER))
+	{
+	}
+	else
+	{
+	}
+	pszTOCSTRAFTER = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-after4",pszTOCSTRAFTER))
+	{
+	}
+	else
+	{
+	}
+//
+// TOC Label Initial Value
+//
+	const XML_Char * pszTOCLABELSTART = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start1",pszTOCLABELSTART))
+	{
+	}
+	else
+	{
+	}
+	pszTOCLABELSTART = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start2",pszTOCLABELSTART))
+	{
+	}
+	else
+	{
+	}
+	pszTOCLABELSTART = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start3",pszTOCLABELSTART))
+	{
+	}
+	else
+	{
+	}
+	pszTOCLABELSTART = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-label-start4",pszTOCLABELSTART))
+	{
+	}
+	else
+	{
+	}
+//
+// TOC Page Number Type
+//
+	const XML_Char * pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type1",pszTOCPAGETYPE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type2",pszTOCPAGETYPE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type3",pszTOCPAGETYPE))
+	{
+	}
+	else
+	{
+	}
+	pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type4",pszTOCPAGETYPE))
+	{
+	}
+	else
+	{
+	}
+//
+// TOC TAB leader
+//
+	const XML_Char * pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader1",pszTOCTABTYPE))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader2",pszTOCTABTYPE))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader3",pszTOCTABTYPE))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+	pszTOCTABTYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-tab-leader4",pszTOCTABTYPE))
+	{
+	}
+	else
+	{
+		if(UT_stricmp(pszTOCTABTYPE,"none") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"dot") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"hyphen") == 0)
+		{
+		}
+		else if(UT_stricmp(pszTOCTABTYPE,"underline") == 0)
+		{
+		}
+		else
+		{
+		}
+	}
+
+	pszTOCTABTYPE = NULL;
+	if(pSectionAP && pSectionAP->getProperty("toc-range-bookmark",pszTOCTABTYPE))
+	{
+	}
+	else
+	{
+	}
+
 }
 
 /*!
@@ -609,7 +1141,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrP
             PD_Style* pStyle = NULL;
 			m_pDocument->getStyle(styleSzValue,&pStyle);
             UT_ASSERT(pStyle);
-            if (pStyle,pStyle->isCharStyle()) 
+            if (pStyle && pStyle->isCharStyle()) 
 			{
                 styleType = "cs";
             }
@@ -3230,6 +3762,25 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_closeFrame();
+			return true;
+		}
+	case PTX_SectionTOC:
+	    {
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(pcr->getIndexAP());
+			m_sdh = sdh;
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Found TOC \n"));
+			_writeTOC(pcr->getIndexAP());
+			return true;
+		}
+	case PTX_EndTOC:
+	    {
+
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = NULL;
 			return true;
 		}
 	case PTX_SectionEndnote:

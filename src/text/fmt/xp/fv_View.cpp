@@ -7924,6 +7924,10 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	if(pRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
+		if(m_prevMouseContext != EV_EMC_HYPERLINK)
+		{
+			UT_DEBUGMSG(("Mouse context is chaned to hyperlink \n"));
+		}
 		m_prevMouseContext = EV_EMC_HYPERLINK;
 		return EV_EMC_HYPERLINK;
 	}

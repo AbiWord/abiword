@@ -76,6 +76,7 @@ protected:
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length, PT_DocPosition pos, bool bIgnorePos);
+	void                _writeTOC(PT_AttrPropIndex api);
 	bool                _isListBlock(void) const { return m_bIsListBlock;}
 	bool                _isTabEaten(void) const { return m_bIsTabEaten;}
 	void                _setListBlock( bool bListBlock) 

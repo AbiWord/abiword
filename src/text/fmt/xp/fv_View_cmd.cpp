@@ -3645,6 +3645,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	_ensureInsertionPointOnScreen();
 
 	m_pDoc->endUserAtomicGlob();
+	m_prevMouseContext =  EV_EMC_TEXT;
 	notifyListeners(AV_CHG_ALL);
 }
 
@@ -3657,7 +3658,11 @@ UT_Error FV_View::cmdDeleteHyperlink()
 {
 	PT_DocPosition pos = getPoint();
 	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: pos %d\n", pos));
-	return _deleteHyperlink(pos,true);
+	UT_Error err= _deleteHyperlink(pos,true);
+	m_prevMouseContext =  EV_EMC_TEXT;
+	setCursorToContext();
+	notifyListeners(AV_CHG_ALL);
+	return err;
 }
 
 
