@@ -19,7 +19,9 @@
  
 #ifndef UT_PATH_H
 #define UT_PATH_H
+#ifndef UT_TYPES_H 		// recursivity bad
 #include "ut_types.h"	// for ABI_EXPORT
+#endif
 
 ABI_EXPORT const char* UT_basename(const char* path);
 
