@@ -20,7 +20,7 @@
 #include "ut_types.h"
 #include "ap_Frame.h"
 
-#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
+#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined (__QNXNTO__)
 #include "ap_FrameData.h"
 #include "fv_View.h"
 #include "xav_View.h"

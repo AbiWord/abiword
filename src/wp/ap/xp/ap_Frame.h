@@ -21,7 +21,7 @@
 #define AP_FRAME_H
 
 #include "ut_types.h"
-#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
+#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined(__QNXNTO__)
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
