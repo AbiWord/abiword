@@ -401,27 +401,26 @@ void FV_View::toggleCase (ToggleCase c)
 {
 	// if there is no selection, select the current word	
 	PT_DocPosition origPos = 0;
+	PT_DocPosition low, high;
+	
 	if (isSelectionEmpty())
 	{
 		origPos = m_iInsPoint;
-		PT_DocPosition iPosLeft = _getDocPos(FV_DOCPOS_BOW, false);
-		PT_DocPosition iPosRight = _getDocPos(FV_DOCPOS_EOW_SELECT, false);
-
-		cmdSelect (iPosLeft, iPosRight);
-	
-	}
-	
-	PT_DocPosition low, high;
-	
-	if(m_iInsPoint < m_iSelectionAnchor)
-	{
-		low  = m_iInsPoint;
-		high = m_iSelectionAnchor;
+		low = _getDocPos(FV_DOCPOS_BOW, false);
+		high = _getDocPos(FV_DOCPOS_EOW_SELECT, false);
 	}
 	else
-	{
-		high = m_iInsPoint;
-		low  = m_iSelectionAnchor;
+	{	
+		if(m_iInsPoint < m_iSelectionAnchor)
+		{
+			low  = m_iInsPoint;
+			high = m_iSelectionAnchor;
+		}
+		else
+		{
+			high = m_iInsPoint;
+			low  = m_iSelectionAnchor;
+		}
 	}
 	
 	UT_DEBUGMSG(("fv_View::toggleCase: low %d, high %d\n", low, high));
@@ -514,14 +513,13 @@ void FV_View::toggleCase (ToggleCase c)
 				UT_ASSERT(pTemp);
 			}
 			
-			while(pRun && pRun->getBlockOffset() < iLenToCopy)
+			while(pRun && iLenToCopy > 0)
 			{
 				UT_uint32 iLen = 0;
 
 				UT_ASSERT(pRun);
 		
 				while( pRun
-					&& pRun->getBlockOffset() < iLenToCopy
 					&& pRun->getType() != FPRUN_TEXT)
 				{
 					offset += pRun->getLength();
@@ -532,7 +530,7 @@ void FV_View::toggleCase (ToggleCase c)
 				fp_TextRun * pPrevTR = NULL;
 				
 				while(pRun
-					&& pRun->getBlockOffset() < iLenToCopy
+					&& iLenToCopy > 0
 					&& pRun->getType() == FPRUN_TEXT)
 				{
 					// in order not to loose formating, we will only replace
@@ -540,13 +538,14 @@ void FV_View::toggleCase (ToggleCase c)
 					if(pPrevTR && !pPrevTR->canMergeWithNext())
 						break;
 					iLen += pRun->getLength();
+					iLenToCopy -= pRun->getLength();
 					pPrevTR = static_cast<fp_TextRun*>(pRun);
 					pRun = pRun->getNext();
 				}
 				
 				if(!iLen) // sequence of 0-len runs only
 				{
-					UT_DEBUGMSG(("fv_View::toggleCase: sequence of 0-width runs only, next run type %d\n", pRun->getType()));
+					UT_DEBUGMSG(("fv_View::toggleCase: sequence of 0-width runs only, next run type %d\n", pRun ? pRun->getType():-1));
 					continue;
 				}
 				
