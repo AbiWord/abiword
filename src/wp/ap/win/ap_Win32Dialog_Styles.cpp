@@ -196,16 +196,10 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		#undef _DS
 
 		// Changes basic controls based upon either New or Modify Dialog
-		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON , 
-                                           (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
 		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE , 
                                            (m_bisNewStyle) ? SW_HIDE : SW_SHOW );
-		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_FOLLOWPARA , SW_HIDE );
-		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON , 
-                                           (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
 		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE , 
                                            (m_bisNewStyle) ? SW_SHOW : SW_HIDE );
-		_win32DialogNewModify.showControl( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA ,  SW_SHOW );
 		// Initialize the controls with appropriate data
 
 		size_t nStyles = getDoc()->getStyleCount();
@@ -219,13 +213,15 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		}
 		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
                                               pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
+                                              pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
 		if( m_bisNewStyle )
 		{	
 			// Add last Member item which will be defined as the default value
-			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
-                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
-			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
-                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+			//_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
+            //                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
+			//_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
+            //                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
                                                   pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
@@ -297,12 +293,15 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		
 			if(pBasedOnStyle != NULL)
 			{
-				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON, szBasedOn);
+				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
+										(LPARAM) szBasedOn);
+				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			}
 			else
 			{
-				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON, 
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
+				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
+										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			}
 
 			if(pFollowedByStyle != NULL)
@@ -331,7 +330,6 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 			// Disable for editing top controls in Modify Dialog
 			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME, false );
-			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_BASEDON, false );
 			_win32DialogNewModify.enableControl( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE, false ); 
 
 			fillVecWithProps(szCurrentStyle,true);
