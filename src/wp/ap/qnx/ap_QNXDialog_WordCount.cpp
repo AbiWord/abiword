@@ -301,7 +301,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_FFRONT, ABI_MODAL_WINDOW_MANAGE_FLAGS|Ph_WM_FFRONT);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_STATE,Pt_TRUE,Ph_WM_STATE_ISFRONT);
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,PT_RESIZE_XY_AS_REQUIRED);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	m_windowMain = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
@@ -313,7 +313,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,PT_RESIZE_XY_AS_REQUIRED);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	PtWidget_t *hbox = PtCreateWidget(PtGroup, vgroup, n, args);
 	pretty_group(hbox, "Statistics");
 
@@ -340,6 +340,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	n = 0;
 	sprintf(buffer, "%d", m_count.page);
 	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
 	m_labelPgCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
 
@@ -353,6 +354,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	sprintf(buffer, "%d", m_count.word);
 	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
 	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	m_labelWCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
 
 	/* Characters (no spaces) */
@@ -364,6 +366,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	n = 0;
 	sprintf(buffer, "%d", m_count.ch_no);
 	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
 	m_labelCNCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
 
@@ -377,6 +380,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	sprintf(buffer, "%d", m_count.ch_sp);
 	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
 	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	m_labelCCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
 
 	/* Paragraphs */
@@ -388,6 +392,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	n = 0;
 	sprintf(buffer, "%d", m_count.para);
 	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
 	m_labelPCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
 
@@ -400,6 +405,7 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	n = 0;
 	sprintf(buffer, "%d", m_count.line);
 	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
 	m_labelLCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
 
@@ -427,22 +433,22 @@ void AP_QNXDialog_WordCount::_updateWindowData(void)
 	char tmpbuf[50];
 
 	// Update the data in the word count
-	sprintf(tmpbuf, "%10d", m_count.word);
+	sprintf(tmpbuf, "%10d   ", m_count.word);
 	PtSetResource(m_labelWCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d", m_count.para);
+	sprintf(tmpbuf, "%10d   ", m_count.para);
 	PtSetResource(m_labelPCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d", m_count.ch_sp);
+	sprintf(tmpbuf, "%10d   ", m_count.ch_sp);
 	PtSetResource(m_labelCCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d", m_count.ch_no);
+	sprintf(tmpbuf, "%10d   ", m_count.ch_no);
 	PtSetResource(m_labelCNCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d", m_count.line);
+	sprintf(tmpbuf, "%10d   ", m_count.line);
 	PtSetResource(m_labelLCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d", m_count.page);
+	sprintf(tmpbuf, "%10d   ", m_count.page);
 	PtSetResource(m_labelPgCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 }
 
