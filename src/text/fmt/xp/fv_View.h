@@ -352,7 +352,7 @@ public:
 	void            copyVisualText(UT_sint32 x, UT_sint32 y);
 	void            dragVisualText(UT_sint32 x, UT_sint32 y);
 	void            pasteVisualText(UT_sint32 x, UT_sint32 y);
-
+	void            btn0VisualDrag(UT_sint32 x, UT_sint32 y);
 // -------
 // Frame stuff
 //

@@ -2209,7 +2209,7 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 	}
 
 	PT_DocPosition iOldPoint = pView->getPoint();
-
+	UT_DEBUGMSG(("Doing autoscroll \n"));
 	/*
 	  NOTE: We update the selection here, so that the timer can keep
 	  triggering autoscrolls even if the mouse doesn't move.

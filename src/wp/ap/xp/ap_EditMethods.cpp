@@ -13360,6 +13360,6 @@ Defun(btn0VisualText)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	xxx_UT_DEBUGMSG(("In Visual Text \n"));
-	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	pView->btn0VisualDrag(pCallData->m_xPos,pCallData->m_yPos);
 	return true;
 }

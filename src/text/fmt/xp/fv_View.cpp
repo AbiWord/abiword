@@ -525,6 +525,14 @@ void FV_View::pasteVisualText(UT_sint32 x, UT_sint32 y)
 	m_VisualDragText.mouseRelease(x,y);
 }
 
+void FV_View::btn0VisualDrag(UT_sint32 x, UT_sint32 y)
+{
+	m_xLastMouse = m_iMouseX;
+	m_iMouseX = x;
+	m_yLastMouse = m_iMouseY;
+	m_iMouseY = y;
+	setCursorToContext();
+}
 
 //
 // Local copy stuff. This pastes from the local paste buffer into the document
