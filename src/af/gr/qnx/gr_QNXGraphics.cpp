@@ -130,8 +130,6 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_iLineWidth = 1;
 	m_currentColor = Pg_BLACK;
 	m_pPrintContext = NULL;
-	m_pImg=NULL;
-	m_saveRect=NULL;
 	m_iAscentCache = m_iDescentCache = -1;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
@@ -143,6 +141,12 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 GR_QNXGraphics::~GR_QNXGraphics()
 {
 	DELETEP(m_pFontGUI);
+	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
+
+	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++) {
+	  PhImage_t * pImg = (PhImage_t	*)m_vSaveRectBuf.getNthItem (i);
+	  PgShmemDestroy(pImg);
+	}
 }
 
 /***
@@ -1062,44 +1066,59 @@ UT_DEBUGMSG((("Transform values: %d,%d,%d,%d,%d,%d"),tr.getM11(),tr.getM12(),tr.
 return false;
 }
 
-void GR_QNXGraphics::saveRectangle(UT_Rect &r)
+void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
 {
-PhRect_t rect;
-short int x,y;
+  PhRect_t rect;
+  short int x,y;
 
-if(m_pImg)
-{
-PgShmemDestroy(m_pImg);
-m_pImg=NULL;
+  if (m_vSaveRect.getItemCount()>iIndx && m_vSaveRect.getNthItem(iIndx) && 
+      ((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->left == r.left &&
+      ((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->top == r.top &&
+      ((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->width == r.width && 
+      ((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->height == r.height) {
+    return;
+  }
+		
+  void * oldR = NULL;
+  m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
+  if(oldR)
+    delete (UT_Rect*)oldR;
+  
+  PhImage_t	*pImg;
+
+  PtGetAbsPosition(m_pDraw,&x,&y);
+  rect.ul.x=x + r.left;
+  rect.ul.y=y + r.top;
+  rect.lr.x= rect.ul.x + r.width;
+  rect.lr.y= rect.ul.y + r.height;
+  pImg =PgReadScreen(&rect,NULL);
+
+  void * oldC = NULL;
+  m_vSaveRectBuf.setNthItem(iIndx, (void*) pImg, &oldC);
+  if(oldC)
+    PgShmemDestroy((PhImage_t *)oldC);
+  
+  return;
 }
-DELETEP(m_saveRect);
 
-PtGetAbsPosition(m_pDraw,&x,&y);
-rect.ul.x=x + r.left;
-rect.ul.y=y + r.top;
-rect.lr.x= rect.ul.x + r.width;
-rect.lr.y= rect.ul.y + r.height;
-m_pImg =PgReadScreen(&rect,NULL);
-
-m_saveRect = new UT_Rect(r);
-return;
-}
-
-void GR_QNXGraphics::restoreRectangle()
+void GR_QNXGraphics::restoreRectangle(UT_uint32 iIndx)
 {
-if((m_saveRect && m_pImg))
-{
-PhPoint_t pos;
+  UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
+  PhImage_t	*pImg = (PhImage_t*)m_vSaveRectBuf.getNthItem(iIndx);
 
-DRAW_START
-
-pos.x=m_saveRect->left;
-pos.y=m_saveRect->top;
-
-PgDrawPhImage(&pos,m_pImg,0);
-
-DRAW_END
-}
-return;
+  if((r && pImg))
+    {
+      PhPoint_t pos;
+      
+      DRAW_START
+	
+	pos.x=r->left;
+        pos.y=r->top;
+      
+	PgDrawPhImage(&pos,pImg,0);
+      
+      DRAW_END
+    }
+  return;
 }
 
