@@ -37,11 +37,10 @@ TARGETS=		$(LIBRARY)
 ifeq ($(ABI_NATIVE), win)
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_Win32Keyboard.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ev_Win32Mouse.$(OBJ_SUFFIX)
-
-
 endif
 ifeq ($(ABI_NATIVE), unix)
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/.....
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_UnixKeyboard.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ev_UnixMouse.$(OBJ_SUFFIX)
 endif
 
 OBJS=		$(PLATFORM_OBJS)					\
