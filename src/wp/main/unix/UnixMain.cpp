@@ -26,8 +26,15 @@
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 
+#include "abi_ver.h"
+
 int main(int argc, char ** argv)
 {
+	printf("Build ID:\t%s\n", gAbi_Build_ID);
+	printf("Version:\t%s\n", gAbi_Build_Version);
+	printf("Compile Date:\t%s\n", gAbi_Build_CompileDate);
+	printf("Compile Time:\t%s\n", gAbi_Build_CompileTime);
+
 	// initialize our application.
 
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp();

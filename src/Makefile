@@ -22,7 +22,8 @@
 ABI_DEPTH=.
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=		other util ps ev wp
+# TODO add calc to this list when it's ready
+DIRS=		ver other util ps ev wp
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

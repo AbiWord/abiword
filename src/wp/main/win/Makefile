@@ -39,7 +39,7 @@ INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 PROGRAM=		AbiWord.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
-ABI_APPLIBS=		AbiUtil AbiPS AbiImpExp AbiPTbl AbiFmt AbiEv AbiGr AbiAp
+ABI_APPLIBS=		AbiVer AbiUtil AbiPS AbiImpExp AbiPTbl AbiFmt AbiEv AbiGr AbiAp
 
 ABI_OTHLIBS=		expat $(ABI_JSLIB)
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
