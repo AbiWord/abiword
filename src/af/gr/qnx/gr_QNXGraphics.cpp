@@ -200,7 +200,9 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
 void GR_QNXGraphics::flush(void)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
+	DRAW_START
 	PgFlush();
+	DRAW_END
 }
 
 /***
@@ -491,7 +493,7 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 {
 	if(getCaret() && getCaret()->isEnabled())
 		GR_CaretDisabler caretDisabler(getCaret());
-	DRAW_START
+		DRAW_START
 
 
 	_UUD(x1);
@@ -531,9 +533,20 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	int old;
 
 	GR_CaretDisabler caretDisabler(getCaret());
+	DRAW_START
 	old = PgSetDrawMode(Pg_DrawModeDSx);
-	drawLine(x1, y1, x2, y2);
+
+	_UUD(x1);
+	_UUD(x2);
+	_UUD(y1);
+	_UUD(y2);
+
+	PgSetFillColor(m_currentColor);
+	PgSetStrokeColor(m_currentColor);
+	PgSetStrokeWidth(m_iLineWidth);
+	PgDrawILine(x1, y1, x2, y2);
 	PgSetDrawMode(old);
+	DRAW_END
 }
 
 void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
@@ -568,16 +581,19 @@ void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 {
-	UT_ASSERT(pRect);
-
 	int old;
+	UT_ASSERT(pRect);
+	GR_CaretDisabler caretDisabler(getCaret());
+
+	DRAW_START
+
 	old = PgSetDrawMode(Pg_DrawModeDSx);
-	UT_RGBColor c;
-	c.m_red = PgRedValue(m_currentColor);
-	c.m_blu = PgBlueValue(m_currentColor);
-	c.m_grn = PgGreenValue(m_currentColor);
-	fillRect(c, pRect->left, pRect->top, pRect->width, pRect->height);
+	PgSetFillColor(m_currentColor);
+	PgSetStrokeColor(m_currentColor);
+	PgDrawIRect(_UD(pRect->left), _UD(pRect->top), _UD(pRect->left)+_UD(pRect->width), _UD(pRect->top)+_UD(pRect->height), Pg_DRAW_FILL_STROKE);
 	PgSetDrawMode(old);
+
+	DRAW_END
 }
 
 void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)

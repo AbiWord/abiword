@@ -80,7 +80,7 @@
       </QPG:PackageFilter>
 
       <QPG:Files>
-         <QPG:Add type="tree" file="OUTDIR/AbiSuite" install="usr/local/AbiSuite/"/>
+         <QPG:Add type="tree" file="OUTDIR/AbiSuite" install="/opt/AbiSuite/"/>
          <QPG:Add file="OUTDIR/bin/AbiWord_d" install="usr/photon/bin/"/>
 				 <QPG:Add file="./Dingbats.ttf" install="/usr/photon/font_repository/"/>
 				 <QPG:Add file="./symbol.ttf" install="/usr/photon/font_repository/"/>

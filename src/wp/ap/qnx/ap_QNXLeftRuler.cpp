@@ -70,7 +70,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 #define _LR_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _LR_STRETCH_, _LR_STRETCH_); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE|Pt_HIGHLIGHTED, Pt_HIGHLIGHTED|Pt_DELAY_REALIZE); 
-	m_wLeftRulerGroup = PtCreateWidget(PtGroup, pQNXFrameImpl->getTopLevelWindow(), n, args);
+	m_wLeftRulerGroup = PtCreateWidget(PtGroup, m_rootWindow, n, args);
 	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
