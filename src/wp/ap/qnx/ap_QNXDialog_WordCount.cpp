@@ -162,6 +162,8 @@ void AP_QNXDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	// This magic command displays the frame that characters will be
 	// inserted into.
 	connectFocusModeless(mainWindow, m_pApp);
+
+	event_Update();
 	
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	PtRealizeWidget(mainWindow);
