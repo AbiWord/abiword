@@ -106,7 +106,7 @@ bool AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName, NSImage **
 			pRGB[k].rgb.m_red = 255;
 			pRGB[k].rgb.m_grn = 255;
 			pRGB[k].rgb.m_blu = 255;
-			pRGB[k].alpha = 255;
+			pRGB[k].alpha = 0;
 		}
 		else
 		{
@@ -115,7 +115,7 @@ bool AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName, NSImage **
 			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
 			UT_parseColor(bufColorValue, color);
 			pRGB[k].rgb = color;
-			pRGB[k].alpha   = 0;
+			pRGB[k].alpha   = 255;
 		}
 	}
 
