@@ -181,9 +181,9 @@ BOOL AP_Win32Dialog_ListRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 			{
 				HWND h = GetDlgItem(hWnd, AP_RID_DIALOG_LIST_REVISIONS_LIST);
 				int iSelCount = ListView_GetSelectedCount(h);
+				m_answer = a_OK;
 				if(iSelCount)
 				{
-					m_answer = a_OK;
 					LVITEM item;
 
 					item.iSubItem = 0;
@@ -197,7 +197,7 @@ BOOL AP_Win32Dialog_ListRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 					m_iId = item.lParam;
 				}
 				else
-					m_answer = a_CANCEL;
+					m_iId = 0;
 
 				EndDialog(hWnd,0);
 				return 1;
