@@ -50,6 +50,16 @@
 #include "ie_imp_MHT.h"
 #endif
 
+typedef enum section_class
+{
+	sc_section = 0,
+	sc_other
+} SectionClass;
+
+static const char * s_section_classes[sc_other] = {
+	"Section"
+};
+
 #define CSS_MASK_INLINE (1<<0)
 #define CSS_MASK_BLOCK  (1<<1)
 #define CSS_MASK_IMAGE  (1<<2)
@@ -284,12 +294,14 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 	m_iNewListID(0),
 	m_iNewImage(0),
 	m_szBookMarkName(NULL),
-	m_addedPTXSection(false)
+	m_addedPTXSection(false),
+	m_iPreCount(0)
 {
 }
 
 IE_Imp_XHTML::~IE_Imp_XHTML()
 {
+	UT_VECTOR_PURGEALL(UT_UTF8String *,m_divStyles);
 }
 
 // to get lists to work:
@@ -385,6 +397,22 @@ static struct xmlToIdMapping s_Tokens[] =
 
 /*****************************************************************/
 /*****************************************************************/
+
+static SectionClass s_class_query (const char * class_value)
+{
+	if ( class_value == 0) return sc_other;
+	if (*class_value == 0) return sc_other;
+
+	SectionClass sc = sc_other;
+
+	for (int i = 0; i < static_cast<int>(sc_other); i++)
+		if (UT_strcmp (class_value, s_section_classes[i]) == 0)
+			{
+				sc = static_cast<SectionClass>(i);
+				break;
+			}
+	return sc;
+}
 
 static void convertFontFace(UT_String & szDest, const char *szFrom)
 {
@@ -602,28 +630,76 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_HTML:
 	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
 		X_VerifyParseState(_PS_Init);
-		m_parseState = _PS_Doc;
+		m_parseState = _PS_StyleSec;
 		return;
 
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
-		X_VerifyParseState(_PS_Doc);
-		m_parseState = _PS_Sec;
-		X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
-		m_addedPTXSection = true;
+		X_VerifyParseState(_PS_StyleSec);
+		m_parseState = _PS_Doc;
 		return;		
 
 	case TT_DIV:
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Sec);
-		if( !m_bFirstDiv )
 		{
-			X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
-			m_addedPTXSection = true;
-		}
-		else
-		{
-			m_bFirstDiv = false;
+			/* <div> is a block marker; <span> is an inline marker
+			 */
+			if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
+
+			/* stack class attr. values if recognized;
+			 * NOTE: these are ptrs to static strings - don't alloc/free them
+			 */
+			const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "class", atts);
+			SectionClass sc = childOfSection () ? sc_other : s_class_query (p_val);
+			if (sc == sc_other)
+				m_divClasses.push_back (0);
+			else
+				m_divClasses.push_back (const_cast<char *>(s_section_classes[sc]));
+
+			/* <div> elements can specify block-level styles; concatenate and stack...
+			 */
+			UT_UTF8String * prev = 0;
+			if (m_divStyles.getItemCount ())
+				{
+					prev = reinterpret_cast<UT_UTF8String *>(m_divStyles.getLastItem ());
+				}
+			UT_UTF8String * style = 0;
+			if (prev)
+				style = new UT_UTF8String(*prev);
+			else
+				style = new UT_UTF8String;
+
+			if (style)
+				{
+					p_val = _getXMLPropValue ((const XML_Char *) "align", atts);
+					if (p_val)
+						{
+							if (!UT_XML_strcmp (p_val, "right"))
+								*style += "text-align: right; ";
+							else if (!UT_XML_strcmp (p_val, "center"))
+								*style += "text-align: center; ";
+							else if (!UT_XML_strcmp (p_val, "left"))
+								*style += "text-align: left; ";
+							else if (!UT_XML_strcmp (p_val, "justify"))
+								*style += "text-align: justify; ";
+						}
+				}
+
+			p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
+			if (style && p_val)
+				{
+					*style += p_val;
+					*style += "; ";
+				}
+
+			m_divStyles.push_back (style);
+
+			/* for top-level section <div> elements, create a new document section
+			 */
+			if (sc != sc_other)
+				{
+					m_parseState = _PS_Doc;
+					X_CheckError(requireSection ()); // TODO: handle this intelligently
+				}
 		}
 		return;
 
@@ -635,78 +711,36 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_CITE:
 	case TT_EM:
 	case TT_I:
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-		new_atts[0]=sz;
-		sz = NULL;
-		UT_XML_cloneString(sz, "font-style:italic");
-		new_atts[1]=sz;
-		X_CheckError(getDoc()->appendFmt(new_atts));
+		X_CheckError(pushInline ("font-style:italic"));
 		return;
 
 	case TT_DFN:
 	case TT_STRONG:
 	case TT_B:
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-		new_atts[0]=sz;
-		sz = NULL;
-		UT_XML_cloneString(sz, "font-weight:bold");
-		new_atts[1]=sz;
-		X_CheckError(getDoc()->appendFmt(new_atts));
+		X_CheckError(pushInline ("font-weight:bold"));
 		return;
 
 	case TT_CODE:
 	case TT_TT:
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-		new_atts[0]=sz;
-		sz = NULL;
-		UT_XML_cloneString(sz, "font-family:Courier");
-		new_atts[1]=sz;
-		X_CheckError(getDoc()->appendFmt(new_atts));
+		X_CheckError(pushInline ("font-family:Courier"));
 		return;
 
 	case TT_U:
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-		new_atts[0]=sz;
-		sz = NULL;
-		UT_XML_cloneString(sz, "text-decoration:underline");
-		new_atts[1]=sz;
-		X_CheckError(getDoc()->appendFmt(new_atts));
+		X_CheckError(pushInline ("text-decoration:underline"));
+		return;
+
+	case TT_S://	case TT_STRIKE:
+		X_CheckError(pushInline ("text-decoration:line-through"));
 		return;
 
 	case TT_SUP:
+		X_CheckError(pushInline ("text-position:superscript"));
+		return;
+
 	case TT_SUB:
-		//UT_DEBUGMSG(("Super or Subscript\n"));
-		X_VerifyParseState(_PS_Block);
-		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-		new_atts[0]=sz;
-		sz = NULL;
-		if(tokenIndex == TT_SUP)    
-			UT_XML_cloneString(sz, "text-position:superscript");
-		else
-			UT_XML_cloneString(sz, "text-position:subscript");
-		new_atts[1]=sz;
-		X_CheckError(getDoc()->appendFmt(new_atts));
+		X_CheckError(pushInline ("text-position:subscript"));
 		return;
 		
-	case TT_S://	case TT_STRIKE:
-		//UT_DEBUGMSG(("Strike\n"));
-		X_VerifyParseState(_PS_Block);
-		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-		new_atts[0]=sz;
-		sz = NULL;
-		UT_XML_cloneString(sz, "text-decoration:line-through");
-		new_atts[1]=sz;
-		X_CheckError(getDoc()->appendFmt(new_atts));
-		return;
-  
 	case TT_FONT:
 		UT_DEBUGMSG(("Font tag encountered\n"));
 		{
@@ -732,92 +766,62 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
 			UT_DEBUGMSG(("Font properties: %s\n", output.c_str()));
 			
-			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-			new_atts[0] = sz;
-			sz = NULL;
-			UT_XML_cloneString(sz, output.c_str());
-			new_atts[1] = sz;
-			X_CheckError(getDoc()->appendFmt(new_atts));
+			X_CheckError(pushInline (output.c_str ()));
 		}
 		return;
 
-	case TT_BLOCKQUOTE:
+	case TT_PRE:
+		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
+		m_iPreCount++;
+		m_bWhiteSignificant = true;
+		return;
+
 	case TT_H1:
 	case TT_H2:
 	case TT_H3:
-	case TT_PRE:
-	{
-	    //    UT_DEBUGMSG(("B %d\n", m_parseState));
-//		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Block;
-		
-		if (tokenIndex == TT_PRE) m_bWhiteSignificant = true;
-		
-		const XML_Char * api_atts[5];
-
-		sz = NULL;
-		UT_XML_cloneString (sz, PT_STYLE_ATTRIBUTE_NAME);
-		X_CheckError(sz);
-		api_atts[0] = sz;
-		api_atts[1] = NULL;
-		sz = NULL;
-		UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
-		X_CheckError(sz);
-		api_atts[2] = sz;
-		api_atts[3] = NULL;
-		api_atts[4] = NULL;
-
-		const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "awml:style", atts);
-		sz = NULL;
-		if (p_val)
-			UT_XML_cloneString (sz, p_val);
-		else if (tokenIndex == TT_H1)
-			UT_XML_cloneString (sz, "Heading 1");
-		else if (tokenIndex == TT_H2)
-			UT_XML_cloneString (sz, "Heading 2");
-		else if (tokenIndex == TT_H3)
-			UT_XML_cloneString (sz, "Heading 3");
-		else if (tokenIndex == TT_PRE)
-			UT_XML_cloneString (sz, "Plain Text");
-		else
-			UT_XML_cloneString (sz, "Block Text");
-		X_CheckError(sz);
-		api_atts[1] = sz;
-		
-		UT_UTF8String utf8val;
-
-		p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
-		if (p_val)
+	case TT_BLOCKQUOTE:
+		// &...
+	case TT_P:
+	case TT_TR:
+	case TT_H4:
+	case TT_H5:
+	case TT_H6:
 		{
-			utf8val = (const char *) p_val;
-			utf8val = s_parseCSStyle (utf8val, CSS_MASK_BLOCK);
-			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
-		}
-		if (strstr (utf8val.utf8_str (), "text-align") == 0)
-		{
-			p_val = _getXMLPropValue ((const XML_Char *) "align", atts);
+			const XML_Char * style = _getXMLPropValue ((const XML_Char *) "style", atts);
+			const XML_Char * align = _getXMLPropValue ((const XML_Char *) "align", atts);
+
+			const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "awml:style", atts);
+
 			if (p_val)
-			{
-				if (!UT_XML_strcmp (p_val, "right"))
 				{
-					if (utf8val.byteLength ()) utf8val += "; ";
-					utf8val += "text-align:right";
+					X_CheckError (newBlock (p_val, style, align));
 				}
-				else if (!UT_XML_strcmp (p_val, "center"))
+			else if (tokenIndex == TT_H1)
 				{
-					if (utf8val.byteLength ()) utf8val += "; ";
-					utf8val += "text-align:center";
+					X_CheckError (newBlock ("Heading 1", style, align));
 				}
-			}
+			else if (tokenIndex == TT_H2)
+				{
+					X_CheckError (newBlock ("Heading 2", style, align));
+				}
+			else if (tokenIndex == TT_H3)
+				{
+					X_CheckError (newBlock ("Heading 3", style, align));
+				}
+			else if (tokenIndex == TT_BLOCKQUOTE)
+				{
+					X_CheckError (newBlock ("Block Text", style, align));
+				}
+			else if (m_bWhiteSignificant)
+				{
+					X_CheckError (newBlock ("Plain Text", style, align));
+				}
+			else
+				{
+					X_CheckError (newBlock ("Normal", style, align));
+				}
 		}
-		sz = NULL;
-		UT_XML_cloneString (sz, utf8val.utf8_str ());
-		X_CheckError(sz);
-		api_atts[3] = sz;
-
-		X_CheckError(getDoc()->appendStrux (PTX_Block, api_atts));
 		return;
-	}
 
 	case TT_OL:	  
 	case TT_UL:
@@ -864,7 +868,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_DT:
 	case TT_DD:
 	{
-		X_VerifyParseState(_PS_Sec);
+		X_CheckError (requireSection ());
 		m_parseState = _PS_Block;
 
 		XML_Char *sz;
@@ -925,102 +929,18 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 	}
 
-	case TT_P:
-	case TT_TR:
-	case TT_H4:
-	case TT_H5:
-	case TT_H6:
-		//UT_DEBUGMSG(("B %d\n", m_parseState));
-	{
-//		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Block;
-
-		const XML_Char * api_atts[5];
-
-		sz = NULL;
-		UT_XML_cloneString (sz, PT_STYLE_ATTRIBUTE_NAME);
-		X_CheckError(sz);
-		api_atts[0] = sz;
-		api_atts[1] = NULL;
-		sz = NULL;
-		UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
-		X_CheckError(sz);
-		api_atts[2] = sz;
-		api_atts[3] = NULL;
-		api_atts[4] = NULL;
-
-		const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "awml:style", atts);
-		sz = NULL;
-		if (p_val)
-			UT_XML_cloneString (sz, p_val);
-		else
-			UT_XML_cloneString (sz, "Normal");
-		X_CheckError(sz);
-		api_atts[1] = sz;
-		
-		UT_UTF8String utf8val;
-
-		p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
-		if (p_val)
-		{
-			utf8val = (const char *) p_val;
-			utf8val = s_parseCSStyle (utf8val, CSS_MASK_BLOCK);
-			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
-		}
-		if (strstr (utf8val.utf8_str (), "text-align") == 0)
-		{
-			p_val = _getXMLPropValue ((const XML_Char *) "align", atts);
-			if (p_val)
-			{
-				if (!UT_XML_strcmp (p_val, "right"))
-				{
-					if (utf8val.byteLength ()) utf8val += "; ";
-					utf8val += "text-align:right";
-				}
-				else if (!UT_XML_strcmp (p_val, "center"))
-				{
-					if (utf8val.byteLength ()) utf8val += "; ";
-					utf8val += "text-align:center";
-				}
-			}
-		}
-		sz = NULL;
-		UT_XML_cloneString (sz, utf8val.utf8_str ());
-		X_CheckError(sz);
-		api_atts[3] = sz;
-
-		X_CheckError(getDoc()->appendStrux (PTX_Block, api_atts));
-		return;
-	}
-	
 	case TT_SPAN:
 		{
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
+			UT_UTF8String utf8val;
 
-		new_atts[0] = NULL;
-		new_atts[1] = NULL;
-
-		const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
-		if (p_val)
-		{
-			UT_UTF8String utf8val = (const char *) p_val;
-			utf8val = s_parseCSStyle (utf8val, CSS_MASK_INLINE);
-			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
-
-		    sz = NULL;
-		    UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
-			X_CheckError(sz);
-		    new_atts[0] = sz;
-
-		    sz = NULL;
-		    UT_XML_cloneString (sz, utf8val.utf8_str ());
-		    new_atts[1] = sz;
-			X_CheckError(sz);
-		}
-		
-		_pushInlineFmt (new_atts);
-		X_CheckError(getDoc()->appendFmt (&m_vecInlineFmt));
+			const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
+			if (p_val)
+				{
+					utf8val = (const char *) p_val;
+					utf8val = s_parseCSStyle (utf8val, CSS_MASK_INLINE);
+					UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
+				}
+			X_CheckError(pushInline (utf8val.utf8_str ()));
 		}
 		return;
 
@@ -1040,7 +960,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		if (p_val == 0) p_val = _getXMLPropValue((const XML_Char *)"href", atts);
 		if( p_val )
 		{
-			X_VerifyParseState(_PS_Block);
+			X_CheckError(requireBlock ());
 		    UT_XML_cloneString(sz, "xlink:href");
 		    new_atts[0] = sz;
 	    	sz = NULL;
@@ -1052,16 +972,9 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			p_val = _getXMLPropValue((const XML_Char *)"id", atts);
 			if (p_val == 0) p_val = _getXMLPropValue((const XML_Char *)"name", atts);
-			if( p_val )
+			if (p_val)
 			{
-				if (m_parseState == _PS_Sec)
-				{
-					/* AbiWord likes things to sit inside blocks, but XHTML has
-					 * no such requirement.
-					 */
-					X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
-				}
-				else X_VerifyParseState(_PS_Block);
+				X_CheckError(requireBlock ());
 
 				UT_sint32 i;
  				const XML_Char *bm_new_atts[5];
@@ -1223,8 +1136,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		if (m_parseState == _PS_Sec)
 			{
-				X_CheckError(getDoc()->appendStrux (PTX_Block, NULL));
-				m_parseState = _PS_Block;
+				X_CheckError(requireBlock ());
 			}
 		UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
 
@@ -1250,7 +1162,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		// Eventually we want to render the <rt> text above the
 		// <ruby> text.  The <rp> text will not be rendered but should
 		// be retained so it can be exported.
-		X_VerifyParseState(_PS_Block);
+		X_CheckError(requireBlock ());
 		X_CheckError(getDoc()->appendFmt(new_atts));
 		return;
 
@@ -1283,20 +1195,27 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	switch (tokenIndex)
 	{
 	case TT_HTML:
-	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
-		X_VerifyParseState(_PS_Doc);
-		m_parseState = _PS_Init;
+		m_parseState = _PS_Init; // irrel. - shouldn't see anything after this
 		return;
 
 	case TT_BODY:
-	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
-		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Doc;
+		m_parseState = _PS_Init;
 		return;
 
 	case TT_DIV:
-	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Sec);
+		{
+			if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
+
+			m_divClasses.pop_back ();
+
+			if (m_divStyles.getItemCount ())
+				{
+					UT_UTF8String * prev = 0;
+					prev = reinterpret_cast<UT_UTF8String *>(m_divStyles.getLastItem ());
+					DELETEP(prev);
+				}
+			m_divStyles.pop_back ();
+		}
 		return;
 
 	case TT_OL:
@@ -1328,41 +1247,39 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_H6:
 	case TT_BLOCKQUOTE:
 		UT_ASSERT(m_lenCharDataSeen==0);
-		//UT_DEBUGMSG(("B %d\n", m_parseState));
-	  	if(m_parseState != _PS_Block) return;
 		m_parseState = _PS_Sec;
-		X_CheckDocument(_getInlineDepth()==0);
-		_popInlineFmt();
-		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+		while (_getInlineDepth ()) _popInlineFmt ();
 		return;
 
-		// text formatting
+		/* text formatting
+		 */
+
+	case TT_S://	case TT_STRIKE:
+	case TT_U:
+	case TT_SUP:
+	case TT_SUB:
+	case TT_FONT:	
+	case TT_CODE:
+	case TT_TT:
+	case TT_DFN:
+	case TT_STRONG:
+	case TT_B:
 	case TT_Q:
 	case TT_SAMP:
 	case TT_VAR:
 	case TT_KBD:
 	case TT_ADDRESS:
 	case TT_CITE:
-	case TT_CODE:
-	case TT_DFN:
-	case TT_STRONG:
-	case TT_EM:	
-	case TT_S://	case TT_STRIKE:
-	case TT_SUP:
-	case TT_SUB:
-	case TT_B:
+	case TT_EM:
 	case TT_I:
-	case TT_U:
-	case TT_FONT:
-	case TT_TT:
 		UT_ASSERT(m_lenCharDataSeen==0);
-		//UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Block);
-		X_CheckDocument(_getInlineDepth()==0);
-		//_popInlineFmt();
-		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+		_popInlineFmt ();
+		if (m_parseState == _PS_Block)
+			{
+				X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+			}
 		return;
-		
+
 	case TT_SPAN:
 		UT_ASSERT(m_lenCharDataSeen==0);
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
@@ -1416,12 +1333,11 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		}
 		return;
 
-	case TT_PRE:
+	case TT_PRE: // FIXME: <pre> probably should behave more like <div> than <p> et al. ??
 		UT_ASSERT(m_lenCharDataSeen==0);
-		X_VerifyParseState(_PS_Block);
-		m_parseState = _PS_Sec;
-		X_CheckDocument(_getInlineDepth()==0);
-		m_bWhiteSignificant = false;
+		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
+		m_iPreCount--;
+		m_bWhiteSignificant = (m_iPreCount > 0);
 		return;
 
 	case TT_RUBY:
@@ -1452,10 +1368,15 @@ X_Fail:
 
 void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 {
+	if ((m_parseState == _PS_StyleSec) || (m_parseState == _PS_Init))
+		{
+			return; // outside body here
+		}
+
 	/* No need to insert new blocks if we're just looking at the spaces
 	 * between XML elements - unless we're in a <pre> sequence
 	 */
-	if (!m_bWhiteSignificant)
+	if (!m_bWhiteSignificant && (m_parseState != _PS_Block))
 	{
 #ifdef XHTML_UCS4
 		UT_UCS4String buf(buffer,static_cast<size_t>(length),!m_bWhiteSignificant);
@@ -1466,26 +1387,18 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 		if ((buf.size () == 1) && (buf[0] == UCS_SPACE)) return;
 	}
 
-	int failLine;
-	failLine = 0;
-	bool bResetState = false;
-	if( m_parseState == _PS_Sec )
-    { 
-		// Sets a block Strux and falls through.  
-		// Hack to work around the need for <p> etc to enter data 
-		// from HTML. 
-		X_CheckError(getDoc()->appendStrux(PTX_Block,NULL)); 
-		m_parseState = _PS_Block;
-		bResetState = true;
-	} 
+	int failLine = 0;
 
-	IE_Imp_XML::charData ( buffer, length );
+	// bool bResetState = (m_parseState != _PS_Block);
 
-	if( bResetState )
-	{
-		m_parseState = _PS_Sec;
-	}
+	X_CheckError(requireBlock ());
+
+	IE_Imp_XML::charData (buffer, length);
+
+	// if (bResetState) m_parseState = _PS_Sec;
+
 	return;
+
 X_Fail:
 	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
 	return;
@@ -1612,6 +1525,150 @@ FG_Graphic * IE_Imp_XHTML::importImage (const XML_Char * szSrc)
 	UT_DEBUGMSG(("image loaded successfully\n"));
 
 	return pfg;
+}
+
+bool IE_Imp_XHTML::pushInline (const char * props)
+{
+	if (!requireBlock ()) return false;
+
+	const XML_Char * api_atts[3];
+
+	XML_Char * sz = NULL;
+
+	UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+	if (sz == NULL)
+		return false;
+	api_atts[0] = sz;
+
+	sz = NULL;
+
+	UT_XML_cloneString (sz, props);
+	if (sz == NULL)
+		return false;
+	api_atts[1] = sz;
+
+	api_atts[2] = NULL;
+
+	_pushInlineFmt (api_atts);
+	return getDoc()->appendFmt (&m_vecInlineFmt);
+}
+
+bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, const char * align)
+{
+	if (!requireSection ()) return false;
+
+	UT_UTF8String * div_style = 0;
+	if (m_divStyles.getItemCount ())
+		div_style = reinterpret_cast<UT_UTF8String *>(m_divStyles.getLastItem ());
+
+	UT_UTF8String style;
+	if (div_style)
+		style = *div_style;
+	if (align)
+		{
+			if (!UT_XML_strcmp (align, "right"))
+				style += "text-align: right; ";
+			else if (!UT_XML_strcmp (align, "center"))
+				style += "text-align: center; ";
+			else if (!UT_XML_strcmp (align, "left"))
+				style += "text-align: left; ";
+			else if (!UT_XML_strcmp (align, "justify"))
+				style += "text-align: justify; ";
+		}
+	if (css_style)
+		style += css_style;
+
+	UT_UTF8String utf8val = s_parseCSStyle (style, CSS_MASK_BLOCK);
+	UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
+
+	const XML_Char * api_atts[5];
+
+	api_atts[2] = NULL;
+	api_atts[4] = NULL;
+
+	XML_Char * sz = NULL;
+
+	UT_XML_cloneString (sz, PT_STYLE_ATTRIBUTE_NAME);
+	if (sz == NULL)
+		return false;
+	api_atts[0] = sz;
+
+	sz = NULL;
+
+	UT_XML_cloneString (sz, style_name);
+	if (sz == NULL)
+		return false;
+	api_atts[1] = sz;
+
+	if (utf8val.byteLength ())
+		{
+			sz = NULL;
+
+			UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+			if (sz == NULL)
+				return false;
+			api_atts[2] = sz;
+
+			sz = NULL;
+
+			UT_XML_cloneString (sz, utf8val.utf8_str ());
+			if (sz == NULL)
+				return false;
+			api_atts[3] = sz;
+		}
+	if (getDoc()->appendStrux (PTX_Block, api_atts) == 0)
+		{
+			return false;
+		}
+	m_parseState = _PS_Block;
+
+	while (_getInlineDepth()) _popInlineFmt ();
+
+	utf8val = s_parseCSStyle (style, CSS_MASK_INLINE);
+	UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
+
+	return pushInline (utf8val.utf8_str ());
+}
+
+/* forces document into block state; returns false on failure
+ */
+bool IE_Imp_XHTML::requireBlock ()
+{
+	if (m_parseState == _PS_Block) return true;
+
+	return newBlock ("Normal", 0, 0);
+}
+
+/* forces document into section state; returns false on failure
+ */
+bool IE_Imp_XHTML::requireSection ()
+{
+	if (m_parseState == _PS_Sec) return true;
+
+	if (getDoc()->appendStrux (PTX_Section,NULL) == 0)
+		{
+			return false;
+		}
+	m_parseState = _PS_Sec;
+
+	m_addedPTXSection = true;
+	return true;
+}
+
+/* returns true if child of a <div> with a recognized "class" attribute
+ */
+bool IE_Imp_XHTML::childOfSection ()
+{
+	bool bChild = false;
+	UT_uint32 count = m_divClasses.getItemCount ();
+
+	for (UT_uint32 i = 0; i < count; i++)
+		if (m_divClasses[i])
+			{
+				bChild = true;
+				break;
+			}
+	return bChild;
 }
 
 static void s_pass_whitespace (const char *& csstr)

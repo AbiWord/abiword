@@ -194,7 +194,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 
 		if (buf.size () == 0) break; // probably shouldn't happen; not sure
 
-		if (!m_bWhiteSignificant && (buf.size () == 1) && (buf[0] == UCS_SPACE)) break;
+		// if (!m_bWhiteSignificant && (buf.size () == 1) && (buf[0] == UCS_SPACE)) break;
 
 		switch (m_parseState)
 		  {

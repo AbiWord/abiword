@@ -22,8 +22,10 @@
 #ifndef IE_IMP_XHTML_1_H
 #define IE_IMP_XHTML_1_H
 
-#include "ie_imp_XML.h"
 #include "ut_stack.h"
+#include "ut_vector.h"
+
+#include "ie_imp_XML.h"
 
 /* NOTE: I'm trying to keep the code similar across versions,
  *       and therefore features are enabled/disabled here:
@@ -93,6 +95,12 @@ protected:
 private:
 	FG_Graphic *			importDataURLImage (const XML_Char * szData);
 
+	bool					pushInline (const char * props);
+	bool					newBlock (const char * style, const char * css, const char * align);
+	bool					requireBlock ();
+	bool					requireSection ();
+	bool					childOfSection ();
+
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
 	bool        m_bFirstDiv;
@@ -104,7 +112,12 @@ private:
 
 	bool        m_addedPTXSection;
 
+	UT_uint16	m_iPreCount;
+
 	UT_String	m_dirname;
+
+	UT_Vector	m_divClasses;
+	UT_Vector	m_divStyles;
 };
 
 #endif /* IE_IMP_XHTML_H */
