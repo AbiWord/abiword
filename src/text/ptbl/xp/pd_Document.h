@@ -108,6 +108,7 @@ public:
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts);
+	void                    deleteHdrFtrStrux(PL_StruxDocHandle sdh);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,

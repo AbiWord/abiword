@@ -413,12 +413,14 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 	const pf_Frag * pfFrag = NULL;
 	pfFrag = static_cast<pf_Frag *>(pfFragStruxHdrFtr);
 	PT_DocPosition HdrFtrPos = getFragPosition(pfFrag);
+	UT_Vector vecFragStrux;
 	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Strux Pos = %d \n",HdrFtrPos));
 //
 // Now find the first Non-strux frag.
 //
 	while((pfFrag->getType() == pf_Frag::PFT_Strux) && (pfFrag != getFragments().getLast()))
 	{
+		vecFragStrux.addItem((void *) pfFrag);
 		pfFrag = pfFrag->getNext();
 	}
 	PT_DocPosition TextStartPos = getFragPosition(pfFrag);
@@ -452,7 +454,22 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 //
 // Now delete the struxes at the start.
 //
-	deleteSpan(HdrFtrPos,TextStartPos,NULL,true);
+// I assume there are blocks then sections. First delete all the blocks, then the
+// section strux.
+//
+	UT_uint32 count = vecFragStrux.getItemCount();
+	UT_ASSERT(count > 1);
+	UT_uint32 i=0;
+	bool bres = false;
+	for(i=1; i<count; i++)
+	{
+		pf_Frag_Strux * pfs = (pf_Frag_Strux *) vecFragStrux.getNthItem(i);
+		bres = _deleteStruxWithNotify(pfs->getPos(),pfs,NULL,NULL);
+		UT_ASSERT(bres);
+	}
+	bres = _deleteStruxWithNotify(pfFragStruxHdrFtr->getPos(),pfFragStruxHdrFtr,NULL,NULL);
+	UT_ASSERT(bres);
+//	deleteSpan(HdrFtrPos,TextStartPos,NULL,true);
 }
 
 

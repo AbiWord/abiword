@@ -781,7 +781,7 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 // Change ownership of the page. First remove this page from the set owned by
 // the old docSectionLayout.
 //
-			UT_DEBUGMSG(("SEVIOR: Deleting owned Page from Page \n"));
+			xxx_UT_DEBUGMSG(("SEVIOR: Deleting owned Page from Page \n"));
 			if(m_pOwner)
 				m_pOwner->deleteOwnedPage(this);
 			fl_DocSectionLayout * pDSLNew = pLeader->getDocSectionLayout();
@@ -1082,7 +1082,7 @@ void fp_Page::removeHdrFtr(HdrFtrType hfType)
 	UT_ASSERT(hfType >= FL_HDRFTR_HEADER && hfType <= FL_HDRFTR_FOOTER_LAST);
 	if(hfType < FL_HDRFTR_FOOTER)
 	{
-		UT_DEBUGMSG(("SEVIOR: Deleting header from page %x m_pHeader = %x \n",this, m_pHeader));
+		xxx_UT_DEBUGMSG(("SEVIOR: Deleting header from page %x m_pHeader = %x \n",this, m_pHeader));
 		if(m_pHeader == NULL)
 			return;
 		delete m_pHeader;
@@ -1090,7 +1090,7 @@ void fp_Page::removeHdrFtr(HdrFtrType hfType)
 	}
 	else
 	{
-		UT_DEBUGMSG(("SEVIOR: Deleting footer from page %x m_pFooter = %x \n",this,m_pFooter));
+		xxx_UT_DEBUGMSG(("SEVIOR: Deleting footer from page %x m_pFooter = %x \n",this,m_pFooter));
 		if(m_pFooter == NULL)
 			return;
 		delete m_pFooter;
@@ -1142,7 +1142,7 @@ fp_ShadowContainer* fp_Page::buildHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_pHeader->getHdrFtrSectionLayout()->deletePage(this);
 	}
-
+	xxx_UT_DEBUGMSG(("SEVIOR: Building header container. page = %x hdrftr = %x \n",this,pHFSL)); 
 	// TODO fix these coordinates - Done!
 	//
 	// headerMargin is the height from the top of the page.

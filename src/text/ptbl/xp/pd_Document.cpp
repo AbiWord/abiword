@@ -427,6 +427,17 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 	return m_pPieceTable->insertStrux(dpos,pts);
 }
 
+
+/*!
+ * This method deletes the HdrFtr strux pointed to by sdh
+ */
+void PD_Document::deleteHdrFtrStrux(PL_StruxDocHandle sdh)
+{
+	pf_Frag_Strux * pfs_hdrftr = (pf_Frag_Strux *) sdh;
+	UT_ASSERT(pfs_hdrftr->getType()  == pf_Frag::PFT_Strux);
+	m_pPieceTable->deleteHdrFtrStrux(pfs_hdrftr);
+}
+
 bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 								 PT_DocPosition dpos1,
 								 PT_DocPosition dpos2,

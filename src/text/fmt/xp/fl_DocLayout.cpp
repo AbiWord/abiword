@@ -326,9 +326,9 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	}
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
-	char key[500];
-	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-	const void * pEntry = m_hashFontCache.pick(key);
+	UT_String key;
+	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
+	const void * pEntry = m_hashFontCache.pick(key.c_str());
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
@@ -343,7 +343,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		m_hashFontCache.insert(key, 
+		m_hashFontCache.insert(key.c_str(), 
 				       (void *)pFont);
 	}
 	else
@@ -379,13 +379,13 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	}
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
-	char key[500];
+	UT_String key;
 	if(pszField!="NULL" && pszField != NULL && isField==true)
 	{
 		pszFamily = pszField;
 	}
-	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-	const void *pEntry = m_hashFontCache.pick(key);
+	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
+	const void *pEntry = m_hashFontCache.pick(key.c_str());
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
@@ -400,7 +400,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		m_hashFontCache.insert(key, 
+		m_hashFontCache.insert(key.c_str(), 
 				       (void *)pFont);
 	}
 	else
@@ -1622,6 +1622,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 		// (the dialog's message pump releases the timers)
 		return;
 	}
+	xxx_UT_DEBUGMSG(("SEVIOR: _redraw update \n"));
 //
 // Check if we're in the middle of a PieceTable change. If so don't redraw!
 //

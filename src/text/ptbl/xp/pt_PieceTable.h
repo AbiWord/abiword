@@ -92,6 +92,9 @@ public:
 											 UT_uint32 length, fd_Field * pField = NULL);
 
 	bool                	deleteFieldFrag(pf_Frag * pf);
+
+	void                	deleteHdrFtrStrux(pf_Frag_Strux * pfs);
+
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,

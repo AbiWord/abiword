@@ -3170,23 +3170,23 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 	
-	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	UT_String szFieldValue;
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
 	if(!pView)
 	{
-	    strcpy(szFieldValue, "?");
+	    szFieldValue ="?";
 	}
 	else
 	{
 	    FV_DocCount cnt = pView->countWords();	    
-	    sprintf(szFieldValue, "%d", cnt.ch_sp);
+	    UT_String_sprintf(szFieldValue, "%d", cnt.ch_sp);
 	}
 	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+		m_pField->setValue((XML_Char*) szFieldValue.c_str());
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -4503,7 +4503,7 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	const XML_Char direction[] = "dir";
 	const XML_Char rtl[] = "rtl";
 	const XML_Char ltr[] = "ltr";
-	XML_Char other[20];
+	UT_String other;
 	
 	prop[0] = (XML_Char*) &direction;
 	
@@ -4518,8 +4518,8 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 		 	// having to list here tons of possible strings
 		 	// (we could do this for rtl and ltr as well, but "rtl" and "ltr"
 		 	// are much more informative.)
-		 	sprintf(other,"fbt%d",(UT_uint32)dir);
-		 	prop[1] = (XML_Char*) &other; break;
+		 	UT_String_sprintf(other,"fbt%d",(UT_uint32)dir);
+		 	prop[1] = (XML_Char*) other.c_str(); break;
 		 }
 	};
 	

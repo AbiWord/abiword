@@ -151,7 +151,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	}
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
-
+	UT_ASSERT(m_pDoc);
 	setAttrPropIndex(indexAP);
 
 	m_pPrev = pPrev;
@@ -189,7 +189,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 #endif	
 	_lookupProperties();
 
-	_insertEndOfParagraphRun();
+	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
+	{
+		_insertEndOfParagraphRun();
+	}
 
 	m_pSquiggles = new fl_Squiggles(this);
 	UT_ASSERT(m_pSquiggles);
@@ -272,8 +275,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		}
 	}
 
-	_insertEndOfParagraphRun();
-
+	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
+	{
+		_insertEndOfParagraphRun();
+	}
 	m_pSquiggles = new fl_Squiggles(this);
 	UT_ASSERT(m_pSquiggles);
 	setUpdatableField(false);
@@ -624,12 +629,11 @@ void fl_BlockLayout::_lookupProperties(void)
 			UT_ASSERT(posPlus>=0);
 			UT_ASSERT(posPlus<100);
 
-			char pTmp[100];
-			strcpy(pTmp, pszSpacing);
+			UT_String pTmp(pszSpacing);
 			pTmp[posPlus] = 0;
 
-			m_dLineSpacing = pG->convertDimension(pTmp);
-			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pTmp);
+			m_dLineSpacing = pG->convertDimension(pTmp.c_str());
+			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pTmp.c_str());
 		}
 		else if (UT_hasDimensionComponent(pszSpacing))
 		{
@@ -808,6 +812,8 @@ fl_BlockLayout::~fl_BlockLayout()
 
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
+	m_pDoc = NULL;
+	xxx_UT_DEBUGMSG(("SEVIOR: Deleting block %x \n",this));
 }
 
 /*!
@@ -847,6 +853,10 @@ bool fl_BlockLayout::isHdrFtr(void)
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 {
 	fp_Line* pLine = m_pFirstLine;
+	if(isHdrFtr())
+	{
+		return;
+	}
 	while (pLine)
 	{
 		// I have commented this assert out, since due to the call from doclistener_deleteStrux
@@ -1021,7 +1031,7 @@ void fl_BlockLayout::purgeLayout(void)
 		delete m_pFirstRun;
 		m_pFirstRun = pNext;
 	}
-
+	m_pDoc = NULL; // remove document pointer to help with debugging.
 }
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
@@ -1413,7 +1423,7 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_DEBUGMSG(("NO block content. Insert an EOP \n"));
 		// No paragraph content. Just insert the EOP Run.
 		_removeAllEmptyLines();
 		_insertEndOfParagraphRun();
@@ -3903,7 +3913,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	}
 
 	_assertRunListIntegrity();
-
+	
 	delete this;			// FIXME: whoa!  this construct is VERY dangerous.
 
 	return true;
@@ -3916,14 +3926,17 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
 	FV_View* ppView = m_pLayout->getView();
-	if(ppView)
+	if(ppView && !isHdrFtr())
 	{
 		ppView->eraseInsertionPoint();
 		m_bCursorErased = true;
 	}
 
 	// erase the old version
-	clearScreen(m_pLayout->getGraphics());
+	if(!isHdrFtr())
+	{
+		clearScreen(m_pLayout->getGraphics());
+	}
 	setAttrPropIndex(pcrxc->getIndexAP());
 	xxx_UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
 //
@@ -4738,8 +4751,11 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
 				}
 				fp_ImageRun* pImageRun = static_cast<fp_ImageRun*>(pRun);
-				pView->_eraseInsertionPoint();
-				pImageRun->clearScreen();
+				if(!isHdrFtr())
+				{
+					pView->_eraseInsertionPoint();
+					pImageRun->clearScreen();
+				}
 				pImageRun->lookupProperties();
 
 				goto done;
@@ -4763,8 +4779,11 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 					UT_DEBUGMSG(("!!! run type NOT Field, instead = %d !!!! \n",pRun->getType()));
 				}
 				fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-				pView->_eraseInsertionPoint();
-				pFieldRun->clearScreen();
+				if(!isHdrFtr())
+				{
+					pView->_eraseInsertionPoint();
+					pFieldRun->clearScreen();
+				}
 				pFieldRun->lookupProperties();
 
 				goto done;
@@ -5407,12 +5426,21 @@ fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
+	PT_DocPosition posEOD =0;
+	m_pDoc->getBounds(true,posEOD);
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_resetSelection();
-		pView->_setPoint(pcrfm->getPosition());
-		if(!isHdrFtr())
-			pView->notifyListeners(AV_CHG_FMTCHAR);
+		if(posEOD >= pcrfm->getPosition())
+		{
+			pView->_setPoint(pcrfm->getPosition());
+			if(!isHdrFtr())
+				pView->notifyListeners(AV_CHG_FMTCHAR);
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 
 	_assertRunListIntegrity();
@@ -5497,7 +5525,10 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 		{
 			UT_ASSERT(pRun->getType() == FPRUN_FMTMARK);
 			pRun->lookupProperties();
-			pRun->clearScreen();
+			if(!isHdrFtr())
+			{
+				pRun->clearScreen();
+			}
 			break;
 		}
 

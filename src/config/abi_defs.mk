@@ -607,6 +607,10 @@ GTK_CFLAGS      := $(shell $(GTK_CONFIG) --cflags)
 GNOME_CFLAGS += $(GTK_CFLAGS) -pipe
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L gnome gal gdk_pixbuf)
 GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
+#
+# Enable this line for electric fence.
+#
+#GNOME_LIBS	+= -lefence
 
 ifeq ($(ABI_OPT_GNOMEVFS),1)
 GNOME_CFLAGS += $(shell gnome-vfs-config --cflags)
@@ -647,11 +651,11 @@ GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
 GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
 GLIB_CFLAGS     :=      $(shell $(GLIB_CONFIG) --cflags)
 CFLAGS 		+=	$(GTK_CFLAGS) $(GLIB_CFLAGS)
-EXTRA_LIBS	+=	$(GTK_LIBS)
+#EXTRA_LIBS	+=	$(GTK_LIBS)
 #
 # Enable this line for electric fence.
 #
-#EXTRA_LIBS	+=	$(GTK_LIBS) -lefence
+EXTRA_LIBS	+=	$(GTK_LIBS) -lefence
 ABI_OPTIONS+=Gnome:Off
 endif
 

@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>	// memcpy
 #include "ut_stringbuf.h"
-
+#include "ut_debugmsg.h"
 
 // these classes keep zero terminated strings.
 // if size() != 0, capacity() is always at least size() + 1.
@@ -42,7 +42,7 @@ UT_Stringbuf::UT_Stringbuf()
 }
 
 UT_Stringbuf::UT_Stringbuf(const UT_Stringbuf& rhs)
-:	m_psz(new char_type[rhs.capacity()]),
+	:	m_psz(new char_type[rhs.capacity()]),
 	m_pEnd(m_psz + rhs.size()),
 	m_size(rhs.capacity())
 {

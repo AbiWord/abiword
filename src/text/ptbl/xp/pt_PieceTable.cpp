@@ -419,6 +419,11 @@ PT_DocPosition pt_PieceTable::getStruxPosition(PL_StruxDocHandle sdh) const
 	return getFragPosition(pfToFind);
 }
 
+void pt_PieceTable::deleteHdrFtrStrux(pf_Frag_Strux * pfs)
+{
+	_deleteHdrFtrStruxWithNotify(pfs);
+}
+
 PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 {
 	if(m_fragments.areFragsDirty())

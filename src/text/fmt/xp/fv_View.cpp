@@ -1906,7 +1906,9 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 	switch(type)
 	{
 	case BreakSectionContinuous:
+		m_pDoc->beginUserAtomicGlob();
 		_insertSectionBreak();
+		m_pDoc->endUserAtomicGlob();
 		break;
 	case BreakSectionNextPage:
 		m_pDoc->beginUserAtomicGlob();
@@ -10503,6 +10505,10 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	{
 		pHdrFtrSrc = pDSL->getFooter();
 	}
+//
+// Make sure we have everythimng formatted.
+//
+	pHdrFtrSrc->format();
 	if(hfType == FL_HDRFTR_HEADER_FIRST)
 	{
 		pHdrFtrDest = pDSL->getHeaderFirst();
@@ -10720,52 +10726,25 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 	{
 		return;
 	}
-	PT_DocPosition	posBOS = m_pDoc->getStruxPosition(pHdrFtr->getStruxDocHandle());
-	fl_BlockLayout * pLast = pHdrFtr->getLastBlock();
-	PT_DocPosition posEOS = pLast->getPosition(false);
 //
-// This code assumes there is an End of Block run at the end of the Block. Thanks
-// to Jesper, there always is!
+// Need this to remove the HdrFtr attributes in the section strux.
 //
-	while(pLast->getNext() != NULL)
-	{
-		pLast = pLast->getNext();
-	}
-	fp_Run * pRun = pLast->getFirstRun();
-	while( pRun->getNext() != NULL)
-	{
-		pRun = pRun->getNext();
-	}
-	posEOS += pRun->getBlockOffset();
+	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
+	const XML_Char * pszHdrFtrType = NULL;
+	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
+	m_pDoc->getAttributeFromSDH(sdhHdrFtr,PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
+	PT_DocPosition	posDSL = m_pDoc->getStruxPosition(pDSL->getStruxDocHandle());
 //
-// deleteSpan covers from char to last char + 1;
-// 
-//	 n.e.x.t.
-//	 ^.......^
-// pos1    pos2
+// Remove the header/footer strux
 //
-// Location of the start of the text in the header/footer.
+	m_pDoc->deleteHdrFtrStrux(sdhHdrFtr);
 //
-	PT_DocPosition posBOT = pHdrFtr->getFirstBlock()->getPosition(false);
+// Change the DSL strux to remove the reference to this header/footer
 //
-// Ok Now we've got a document range to delete that covers exactly this header.
-// Do the Deed!
-//
-// I'm going to do exactly the reverse of how a header is made since Undo on 
-// creating a section works.
-//
-// First delete all text in header.
-//
-	if(posEOS > posBOT)
-		m_pDoc->deleteSpan(posBOT,posEOS,NULL);
-//
-// Now delete the header strux.
-//
-	m_pDoc->deleteSpan(posBOS,posBOS+2,NULL);
-//
-// This Header Footer is gone!
-//
+	const XML_Char * remFmt[] = {pszHdrFtrType,NULL,NULL,NULL};
+	m_pDoc->changeStruxFmt(PTC_RemoveFmt,posDSL,posDSL,(const XML_Char **) remFmt,NULL,PTX_Section);
 }
+
 
 /*!
  * This function returns true if there is a header on the current page.
@@ -11146,11 +11125,11 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
-	m_pDoc->endUserAtomicGlob(); // End the big undo block
 
 // Update Layout everywhere. This actually creates the header/footer container
 
 	m_pLayout->updateLayout(); // Update document layout everywhere
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
 //
 // Now extract the shadow section from this.
 //
@@ -11278,42 +11257,26 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
  
 	moveInsPtTo(FV_DOCPOS_EOD); // Move to the end, where we will create the page numbers
 
-	// Now create the footer section
-	// First Do a block break to finish the last section.
 
-	UT_uint32 iPoint = getPoint();
+// insert the Header/Footer
+
+	m_pDoc->insertStrux(getPoint(), PTX_SectionHdrFtr);
+	m_iInsPoint++;
+
+// Now the block strux for the content
+
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
-	//
-	// If there is a list item here remove it!
-	//
-	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
-	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
-	if(pBlock && pBlock->isListItem())
-	{
-		while(pBlock->isListItem())
-		{
-			m_pDoc->StopList(sdh);
-		}	  
-	} 
 //
-// Next set the style to Normal Clean so weird properties at the end of the 
-// doc aren't
-// inherited into the header.
+// Have to do this coz of the funny state the block is in until the change strux
 //
-	setStyle("Normal",true);
+	m_iInsPoint++;
 
-	// Now Insert the footer section.
-	// Doing things this way will grab the previously inserted block
-	// and put into the footer section.
-
-	m_pDoc->insertStrux(iPoint, PTX_SectionHdrFtr);
-	
 //
 // Give the Footer section the properties it needs to attach itself to the
 // correct DocSectionLayout.
 //
-	m_iInsPoint++;
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionHdrFtr);
+
 
 	// Change the formatting of the new footer appropriately 
 	//(currently just center it)

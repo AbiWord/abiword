@@ -58,6 +58,7 @@ PP_AttrProp::~PP_AttrProp()
 		}
 
 		delete m_pAttributes;
+		m_pAttributes = NULL;
 	}
 
 	// delete any PP_Property_types;
@@ -82,6 +83,7 @@ PP_AttrProp::~PP_AttrProp()
 		}
 
 		delete m_pProperties;
+		m_pProperties = NULL;
 	}
 }
 
@@ -398,7 +400,6 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 
 	return (PP_PropertyType *)pEntry->second();
 }
-
 bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	if (!m_pAttributes)
