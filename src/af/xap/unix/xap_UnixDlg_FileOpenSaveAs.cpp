@@ -165,7 +165,7 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 
 static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-	s_dialog_response(w, XAP_Dialog_FileOpenSaveAs::a_OK, answer);
+	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
 }
 
 static void file_selection_changed  (GtkTreeSelection  *selection,
