@@ -159,6 +159,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_INSERTFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);
+
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER,  1,0,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM,0,0,0,0, "insertLRM", NULL, NULL);
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM,0,0,0,0, "insertRLM", NULL, NULL);
+	
 	_s(AP_MENU_ID_FORMAT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,0,	"dlgLanguage",	ap_GetState_StylesLocked,					NULL);
@@ -186,6 +191,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_SUPERSCRIPT,		0,0,1,0,	"toggleSuper",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_SUBSCRIPT,		0,0,1,0,	"toggleSub",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_TOGGLECASE,           0,1,0,0,  "dlgToggleCase", ap_GetState_SomethingSelected, NULL);
+
+	_s(AP_MENU_ID_FMT_DIRECTION,  1,0,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DD_RTL,0,0,1,0, "toggleDomDirection", ap_GetState_BlockFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DO_LTR,0,0,1,0, "toggleDirOverrideLTR", ap_GetState_CharFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DO_RTL,0,0,1,0, "toggleDirOverrideRTL", ap_GetState_CharFmt, NULL);
 
 	_s(AP_MENU_ID_ALIGN,			1,0,0,0,	NULL,				ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_ALIGN_LEFT,		0,0,0,1,	"alignLeft",		ap_GetState_BlockFmt,	NULL);
