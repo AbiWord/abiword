@@ -32,6 +32,7 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_growbuf.cpp		\
 		ut_hash.cpp		\
 		ut_iconv.cpp		\
+		ut_map.cpp		\
 		ut_math.cpp		\
 		ut_mbtowc.cpp		\
 		ut_misc.cpp		\
@@ -59,7 +60,7 @@ CPPSRCS=	ut_base64.cpp		\
 ifdef ABI_OPT_BIDI_ENABLED
 CPPSRCS += ut_contextGlyph.cpp
 endif		
-		
+
 ifdef ABI_OPT_PERL
 CPPSRCS += ut_PerlBindings.cpp
 endif
