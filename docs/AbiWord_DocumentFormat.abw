@@ -7,12 +7,12 @@
 <!-- You should not edit this file by hand.                                 -->
 <!-- =====================================================================  -->
 
-<!--         Build_ID          = unknown -->
+<!--         Build_ID          = (none) -->
 <!--         Build_Version     = (none) -->
-<!--         Build_Options     = (none) -->
-<!--         Build_Target      = (none) -->
-<!--         Build_CompileTime = 07:48:37 -->
-<!--         Build_CompileDate = May  5 2001 -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:Off BiDi:Off Gnome:Off LibXML:Off Pspell:Off Scripting:Off -->
+<!--         Build_Target      = /space/sam/nightly-build/abi/src/Linux_2.2.16_i386_OBJ/obj -->
+<!--         Build_CompileTime = 05:28:50 -->
+<!--         Build_CompileDate = May 11 2001 -->
 
 <pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="inch" page-scale="1.000000"/>
 <section>
@@ -52,9 +52,16 @@
 <p props="text-align:left"></p>
 <p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The entire content of the document is contained within this pair of tags. Within these tags are a series of sections and an optional data block.</c></p>
 <p props="text-align:left"></p>
-<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The only attribute of the &lt;abiword&gt; tag is:</c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">The &lt;abiword&gt; tag has two possible attributes, both of which should always be present.</c></p>
 <p props="text-align:left"></p>
-<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">	</c><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal">version = number | "unnumbered"</c></p>
+<p props="text-align:left"><c props="font-size:12pt; font-style:normal; font-weight:normal">	</c><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal">version = number | "unnumbered" | “”</c></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal"></c></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">This specifies the version of AbiWord that created the document.  The empty string and “unnumbered” are equivalent.</c></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal"></c></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">	</c><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal">fileformat = number</c></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal"></c></p>
+<p props="text-align:left"><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">This represents the file format version.  This must be the string "1.0“.</c></p>
+<p props="text-align:left"><c props="font-family:Nimbus Mono; font-size:12pt; font-style:normal; font-weight:normal">	</c></p>
 <p props="text-align:left"></p>
 <p props="text-align:left"><c props="font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal">2.2.  &lt;section&gt;...&lt;/section&gt;</c></p>
 <p props="text-align:left"></p>
@@ -94,6 +101,7 @@
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">	listid: makes this para an element of the list with</c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">			given id;</c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">	parentid: listid of this para’s parent list;</c></p>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">	props: list of properties</c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal"></c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal"></c><c props="font-size:12pt; font-style:normal; font-weight:normal">The following are block-level properties and may appear in the value of the props attribute:</c></p>
 <p props="text-align:left"></p>
@@ -131,6 +139,8 @@
 <p props="text-align:left"><c props="color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">The following attributes belong to the c tag:</c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal"></c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal"></c><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">	style: style-name</c></p>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">	props: list of properties</c></p>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">	type:  “list-label"</c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal"></c></p>
 <p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Courier New; font-size:12pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal"></c><c props="font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal">The following are span-level properties and may appear in the value of the props attribute:</c></p>
 <p props="text-align:left"></p>
