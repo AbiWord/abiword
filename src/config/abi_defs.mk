@@ -104,21 +104,21 @@ ABI_ENABLED_OPTIONS=
 ifdef ABI_OPT_JS
 ABI_JSLIBS=		js
 ABI_JSDEFS=		-DABI_OPT_JS
-ABI_OPTIONS+=JavaScript:On
+ABI_OPTIONS += JavaScript:On
 else
 ABI_JSLIBS=
 ABI_JSDEFS=
-ABI_OPTIONS+=JavaScript:Off
+ABI_OPTIONS += JavaScript:Off
 endif
 
 ## conditionally enable some additional debugging and test code
 
 ifdef ABI_OPT_DEBUG
 ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST -DUT_TEST
-ABI_OPTIONS+=Debug:On
+ABI_OPTIONS += Debug:On
 else
 ABI_DBGDEFS=		-DNDEBUG
-ABI_OPTIONS+=Debug:Off
+ABI_OPTIONS += Debug:Off
 endif
 
 ##################################################################
@@ -167,6 +167,10 @@ endif
 ifeq ($(OS_NAME), NetBSD)
 include $(ABI_DEPTH)/config/platforms/netbsd.mk
 endif
+
+ifeq ($(OS_NAME), BeOS)
+include $(ABI_DEPTH)/config/platforms/beos.mk
+endif       
 
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
@@ -223,7 +227,17 @@ ifeq ($(OS_NAME),WIN32)
 EXTRA_LIBS	= 	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 			$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 			$(addsuffix .lib,$(ABI_LIBS))
-else
+endif
+
+ifeq ($(OS_NAME), BeOS)
+EXTRA_LIBS	=	-L$(DIST)/lib \
+			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))\
+			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))\
+			$(addprefix -l,$(ABI_LIBS)) \
+			-lpng -lz
+endif
+
+ifeq ($(ABI_NATIVE), unix)
 EXTRA_LIBS	=	-L$(DIST)/lib 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
