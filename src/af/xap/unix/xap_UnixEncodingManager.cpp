@@ -511,16 +511,21 @@ void  XAP_UnixEncodingManager::initialize()
 			  MYLANG += LanguageISOTerritory;
 			  setenv ("LANG", MYLANG.c_str(), 1);
 #endif
+	           	   const GList* my_lst = g_i18n_get_language_list ("LANG");
+			   const char* my_locname = (char*)my_lst->data;
+			   
+			   char *my_lang,*my_terr,*my_cs,*my_mod;
+			   int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
 			
 				if (mask & COMPONENT_CODESET)
 				{
 					Native8BitEncodingName = cs+1;
 					xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
-					if (!strncmp(cs+1,"ISO8859",strlen("ISO8859")))
+					if (!strncmp(my_cs+1,"ISO8859",strlen("ISO8859")))
 					{
 						static char buf[40];
 						strcpy(buf,"ISO-");
-						strcat(buf,cs+1+3);
+						strcat(buf,my_cs+1+3);
 						Native8BitEncodingName = buf;
 					}
 					xxx_UT_DEBUGMSG(("Native8BitEncodingName (2) %s\n", Native8BitEncodingName));
