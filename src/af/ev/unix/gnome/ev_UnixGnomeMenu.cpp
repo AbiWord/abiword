@@ -44,6 +44,7 @@
 // get the print-preview menu icon
 #include "tb_menu_print_preview.xpm"
 #include "tb_menu_insert_graphic.xpm"
+#include "tb_menu_insert_symbol.xpm"
 
 // hack for international menus - goes against our XAP design
 // I don't like it, but I like non-gnome menus even more
@@ -228,6 +229,7 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 			} const entry_names [] = {
 				{ 16, 16, "Menu_AbiWord_PrintPreview", tb_menu_print_preview_xpm },
 				{ 16, 16, "Menu_AbiWord_InsertGraphic", tb_menu_insert_graphic_xpm },
+				{ 16, 16, "Menu_AbiWord_InsertSymbol", tb_menu_insert_symbol_xpm },
 				{ 0, 0, NULL, NULL}
 			};
 
@@ -305,6 +307,7 @@ void EV_UnixGnomeMenu::s_getStockPixmapFromName (int id, const char *name,
 		{AP_MENU_ID_EDIT_REPLACE, GNOME_STOCK_MENU_SRCHRPL},
 		{AP_MENU_ID_EDIT_GOTO, GNOME_STOCK_MENU_JUMP_TO},
 
+		{AP_MENU_ID_INSERT_SYMBOL, "Menu_AbiWord_InsertSymbol"},
 		{AP_MENU_ID_INSERT_DATETIME, GNOME_STOCK_MENU_TIMER},
 		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_InsertGraphic"},
 

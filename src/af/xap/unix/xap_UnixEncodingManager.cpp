@@ -368,7 +368,7 @@ XAP_EncodingManager *XAP_EncodingManager::get_instance()
 		UT_DEBUGMSG(("Building XAP_EncodingManager\n"));
 		_instance = new XAP_UnixEncodingManager();
 		_instance->initialize();
-		UT_DEBUGMSG(("XAP_EncodingManager builded\n"));
+		UT_DEBUGMSG(("XAP_EncodingManager built\n"));
 	}
 
 	return _instance;
