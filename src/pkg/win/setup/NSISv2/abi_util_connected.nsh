@@ -12,7 +12,7 @@
 ; downloading files with NSISdl.
 ; 
 ; The function requires Internet Explorer 3, but asks to connect manually
-; if IE3 is not installed.
+; if IE3 is not installed.  [Assumes available on error.]
 ;
 ; On return $0 is set to "online" or error value
  
@@ -24,18 +24,17 @@ Function ConnectInternet
 	Pop $0	; $0 is set to "online"
 	StrCmp $0 "online" connected
 		DetailPrint "Unable to establish Internet connection, aborting download"
-		;MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet."
+		DetailPrint "Dialer::AttemptConnect returned $0"
+		MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet."
+		Goto connected:
      
      noie3:
    
      ; IE3 not installed
-     MessageBox MB_OK|MB_ICONINFORMATION \
-     "Please connect to the internet now."
+     MessageBox MB_OK|MB_ICONINFORMATION "Please connect to the internet now."
+     StrCpy $0 "online"	; assume user established connection ...
      
      connected:
-   
-   ;Pop $R0
-   
+     
 FunctionEnd
 !endif ;!NODOWNLOADS
-

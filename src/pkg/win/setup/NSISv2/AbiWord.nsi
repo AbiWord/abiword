@@ -573,17 +573,14 @@ SectionEnd
 Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 	SectionIn 2	${DLSECT}	; select if full installation choosen
 	Call ConnectInternet	; try to establish connection if not connected
-	StrCmp $0 "online" 0 connected
-		DetailPrint "Unable to establish Internet connection, aborting download"
-		Goto Finish
-	connected:
+	StrCmp $0 "online" 0 dlDone
 	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CRTL_FILENAME}"
 	Pop $0 ;Get the return value
-	StrCmp $0 "success" Finish
+	StrCmp $0 "success" dlDone
 		; Couldn't download the file
 		DetailPrint "$(PROMPT_CRTL_DL_FAILED)"
 		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
-	Finish:
+	dlDone:
 SectionEnd
 !endif ; OPT_CRTL_URL
 
@@ -630,10 +627,8 @@ Function .onInit
 
 !ifndef NODOWNLOADS
   ; Disable all downloads if not connected
-  ; Query system, requires IE4 installed, errors treated as not available
-  Dialer::GetConnectedState
-  Pop $R0               ;Get the return value from the stack
-  StrCmp $R0 "online" connected 0
+  Call ConnectInternet	; try to establish connection if not connected
+  StrCmp $0 "online" connected
   !ifdef OPT_DICTIONARIES
 	${SectionDisable} ${ssection_dl_opt_dict}
 	!insertmacro cycle_over_dictionary_sections "${SectionDisable} $R1"
@@ -648,14 +643,14 @@ Function .onInit
 !ifdef OPT_CRTL_WIN95ONLY
 Call GetWindowsVersion
 Pop $R0
-StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
+StrCmp $R0 '95' skipDisableW95dl 0	; disable for all but Windows 95
   !ifdef OPT_CRTL_URL
      ${SectionDisable} ${section_crtlib_dl}
   !endif
   !ifdef OPT_CRTL_LOCAL
      ${SectionDisable} ${section_crtlib_local}
   !endif
-skipW95dl:
+skipDisableW95dl:
 !endif ;OPT_CRTL_WIN95ONLY
 
 FunctionEnd

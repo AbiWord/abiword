@@ -142,11 +142,7 @@ Function getDictionary
 !ifndef NODOWNLOADS
 	; download the file
 	Call ConnectInternet	; try to establish connection if not connected
-	Pop $0
-	StrCmp $0 "online" 0 connected
-		DetailPrint "Unable to establish Internet connection, aborting download"
-		Goto Finish
-	connected:
+	StrCmp $0 "online" 0 Finish
 	DetailPrint "NSISdl::download '${DICTIONARY_BASE}/${DICT_FILENAME}' '$TEMP\${DICT_FILENAME}'"
 	NSISdl::download "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}"
 	Pop $0 ;Get the return value
