@@ -37,7 +37,8 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
-
+	virtual const char * getCurrentStyle (void) const {return (const char *)NULL;}
+	virtual void setDescription (const char * desc) const {}
 };
 
 #endif /* AP_MACDIALOG_STYLES_H */

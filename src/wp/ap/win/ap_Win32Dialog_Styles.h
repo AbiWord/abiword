@@ -37,6 +37,9 @@ public:
 	
 protected:
 
+	virtual const char * getCurrentStyle (void) const {return (const char *)NULL;}
+	virtual void setDescription (const char * desc) const {}
+
 };
 
 #endif /* AP_WIN32DIALOG_STYLES_H */
