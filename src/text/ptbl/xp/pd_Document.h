@@ -59,7 +59,7 @@ enum
  PD_Document is the representation for a document.
 */
 
-class PD_Document : public AD_Document
+class ABI_EXPORT PD_Document : public AD_Document
 {
 public:
 	PD_Document(XAP_App *pApp);

@@ -32,7 +32,7 @@
 // Property state of one or more pieces (subsequences) of the
 // document.
 
-class pp_TableAttrProp
+class ABI_EXPORT pp_TableAttrProp
 {
 public:
 	pp_TableAttrProp();

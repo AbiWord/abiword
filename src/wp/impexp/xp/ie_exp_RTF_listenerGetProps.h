@@ -28,7 +28,7 @@
 ** else) that must be written to the rtf header.
 ******************************************************************/
 
-class s_RTF_ListenerGetProps : public PL_Listener
+class ABI_EXPORT s_RTF_ListenerGetProps : public PL_Listener
 {
 public:
 	s_RTF_ListenerGetProps(PD_Document * pDocument,

@@ -27,7 +27,7 @@
 
 // yes, i know that this is screaming for templates... -Dom
 
-class UT_Stringbuf
+class ABI_EXPORT UT_Stringbuf
 {
 public:
 	typedef char char_type;
@@ -64,7 +64,7 @@ private:
 	size_t		m_size;
 };
 
-class UT_UCS2Stringbuf
+class ABI_EXPORT UT_UCS2Stringbuf
 {
 public:
 	typedef UT_UCSChar char_type;

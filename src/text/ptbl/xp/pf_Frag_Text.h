@@ -32,7 +32,7 @@
  buffer position.
 */
 
-class pf_Frag_Text : public pf_Frag
+class ABI_EXPORT pf_Frag_Text : public pf_Frag
 {
 public:
 	pf_Frag_Text(pt_PieceTable * pPT,

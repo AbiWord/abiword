@@ -40,7 +40,7 @@
 // the object at the time the change was made.
 
 
-class PX_ChangeRecord_ObjectChange : public PX_ChangeRecord
+class ABI_EXPORT PX_ChangeRecord_ObjectChange : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_ObjectChange(PXType type,

@@ -34,7 +34,7 @@ class PD_DocumentRange;
 
 class IE_Imp;
 
-class IE_ImpSniffer : public UT_AbiObject
+class ABI_EXPORT IE_ImpSniffer : public UT_AbiObject
 {
 	friend class IE_Imp;
 	
@@ -62,7 +62,7 @@ private:
 	IEFileType m_type;
 };
 
-class IE_Imp
+class ABI_EXPORT IE_Imp
 {
 public:
 	

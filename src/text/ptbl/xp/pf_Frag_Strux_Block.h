@@ -30,7 +30,7 @@
  block (paragraph) in the document.
 */
 
-class pf_Frag_Strux_Block : public pf_Frag_Strux
+class ABI_EXPORT pf_Frag_Strux_Block : public pf_Frag_Strux
 {
 public:
 	pf_Frag_Strux_Block(pt_PieceTable * pPT,

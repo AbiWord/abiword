@@ -39,7 +39,7 @@ class fd_Field;
  run-time stuff.
 */
 
-class pf_Frag
+class ABI_EXPORT pf_Frag
 {
 public:
 	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux, PFT_EndOfDoc, PFT_FmtMark } PFType;

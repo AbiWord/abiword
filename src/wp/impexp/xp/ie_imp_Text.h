@@ -28,7 +28,7 @@
 
 // Stream class can be File or Clipboard
 
-class ImportStream
+class ABI_EXPORT ImportStream
 {
  public:
 	ImportStream();
@@ -54,7 +54,7 @@ class ImportStream
 
 // File stream class
 
-class ImportStreamFile : public ImportStream
+class ABI_EXPORT ImportStreamFile : public ImportStream
 {
 public:
 	ImportStreamFile(FILE *pFile);
@@ -68,7 +68,7 @@ private:
 
 // Clipboard stream class
 
-class ImportStreamClipboard : public ImportStream
+class ABI_EXPORT ImportStreamClipboard : public ImportStream
 {
 public:
 	ImportStreamClipboard(unsigned char *pClipboard, UT_uint32 iLength);
@@ -83,7 +83,7 @@ private:
 
 // Helper class so we can parse files and clipboard with same code
 
-class Inserter
+class ABI_EXPORT Inserter
 {
 public:
 	Inserter(PD_Document * pDocument);
@@ -98,7 +98,7 @@ private:
 
 // The importer/reader for Plain Text Files.
 
-class IE_Imp_Text_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_Text_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_Text;
@@ -128,7 +128,7 @@ protected:
 
 // The importer/reader for Plain Text Files with selectable encoding.
 
-class IE_Imp_EncodedText_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_EncodedText_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_Text;
@@ -149,7 +149,7 @@ public:
 protected:
 };
 
-class IE_Imp_Text : public IE_Imp
+class ABI_EXPORT IE_Imp_Text : public IE_Imp
 {
 public:
 	IE_Imp_Text(PD_Document * pDocument, bool bEncoded=false);

@@ -12,7 +12,7 @@ typedef struct
 		UT_uint32  id;
 	} lang_entry;
 
-class UT_Language
+class ABI_EXPORT UT_Language
 {
 public:
 	UT_Language();

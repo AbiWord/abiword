@@ -25,7 +25,7 @@
 #include "pt_Types.h"
 #include "pd_Document.h"
 
-class PX_ChangeRecord
+class ABI_EXPORT PX_ChangeRecord
 {
 public:
 	typedef enum _PXType { 

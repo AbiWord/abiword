@@ -27,28 +27,13 @@
 
 #include "ut_types.h"
 
-// TODO: make this turn into extern/_declspec(dllexport) depending on platform
 #ifdef WIN32
-
-#include <windows.h>
-#define WIN32_LEAN_AND_MEAN
-
-#define ABI_FAR __declspec( dllexport )
-#define ABI_CALL extern "C"
-#define ABI_FAR_CALL ABI_CALL ABI_FAR
-
-#define ABI_PLUGIN_DECLARE(name) BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved ) { return TRUE; } 
-
+  #include <windows.h>
+  #define WIN32_LEAN_AND_MEAN
+  #define ABI_PLUGIN_DECLARE(name) BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved ) { return TRUE; } 
 #else
-
-#define ABI_FAR
-#define ABI_CALL extern "C"
-#define ABI_FAR_CALL ABI_CALL ABI_FAR
-#define ABI_PLUGIN_DECLARE(name)
-
+  #define ABI_PLUGIN_DECLARE(name)
 #endif
-
-
 
 // we want to have C linkage for both 
 // this and for all of our required functions
@@ -64,7 +49,7 @@ extern "C" {
 
 class XAP_ModuleManager;
 
-class XAP_Module {
+class ABI_EXPORT XAP_Module {
 
 	friend class XAP_ModuleManager;
 
@@ -118,7 +103,7 @@ private:
 	XAP_ModuleInfo        m_info;
 };
 
-#define ABI_VERSION_STRING "0.9.4"
-#define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==9) && ((c)==4))
+#define ABI_VERSION_STRING "0.9.5"
+#define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==9) && ((c)==5))
 
 #endif /* XAP_MODULE_H */

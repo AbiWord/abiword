@@ -31,7 +31,7 @@ class PD_Document;
 
 // ISCII file stream class
 
-class ImportISCIIStreamFile : public ImportStreamFile
+class ABI_EXPORT ImportISCIIStreamFile : public ImportStreamFile
 {
 public:
 	ImportISCIIStreamFile(FILE *pFile);
@@ -45,7 +45,7 @@ private:
 
 // The importer/reader for ISCII files.
 
-class IE_Imp_ISCII_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_ISCII_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -64,7 +64,7 @@ public:
 
 };
 
-class IE_Imp_ISCII : public IE_Imp_Text
+class ABI_EXPORT IE_Imp_ISCII : public IE_Imp_Text
 {
 public:
 	IE_Imp_ISCII(PD_Document * pDocument);

@@ -28,7 +28,7 @@ class s_HTML_Listener;
 
 // The exporter/writer for HTML
 
-class IE_Exp_HTML_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_HTML_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -44,7 +44,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_HTML4_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_HTML4_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -60,7 +60,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_HTML : public IE_Exp
+class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
 public:
 	IE_Exp_HTML(PD_Document * pDocument, bool is4 = false);

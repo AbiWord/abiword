@@ -37,7 +37,7 @@ class PD_Document;
 //
 // The Sniffer/Manager/Creator Class for DOC
 //
-class IE_Imp_MsWord_97_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_MsWord_97_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -61,7 +61,7 @@ public:
 //
 // The import class for the MSFT Word DOC format
 //
-class IE_Imp_MsWord_97 : public IE_Imp
+class ABI_EXPORT IE_Imp_MsWord_97 : public IE_Imp
 {
 public:
 	IE_Imp_MsWord_97 (PD_Document * pDocument);

@@ -25,7 +25,7 @@
 
 #include "ie_imp_AbiWord_1.h"
 
-class IE_Imp_BZ2AbiWord_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_BZ2AbiWord_Sniffer : public IE_ImpSniffer
 {
   friend class IE_Imp;
   
@@ -45,7 +45,7 @@ class IE_Imp_BZ2AbiWord_Sniffer : public IE_ImpSniffer
 				      IE_Imp ** ppie);	
 };
 
-class IE_Imp_BZ2AbiWord : public IE_Imp_AbiWord_1
+class ABI_EXPORT IE_Imp_BZ2AbiWord : public IE_Imp_AbiWord_1
 {
  public:
   IE_Imp_BZ2AbiWord(PD_Document * pDocument);

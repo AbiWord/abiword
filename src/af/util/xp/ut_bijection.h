@@ -2,7 +2,9 @@
 #define UT_BIJECTION_H
 
 #include <stdlib.h>
-class UT_Bijection
+#include "ut_types.h"
+
+class ABI_EXPORT UT_Bijection
 {
 public:
 

@@ -32,7 +32,7 @@ bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, GR_Graphics* pG,
 			  UT_sint32 & iDisplayWidth, UT_sint32 & iDisplayHeight, 
 			  UT_sint32 & iLayoutWidth,  UT_sint32 & iLayoutHeight);
 
-class UT_svg
+class ABI_EXPORT UT_svg
 {
 public:
 	enum ParseMode
@@ -75,7 +75,7 @@ public:
 	const char *getAttribute (const char * name,const char ** atts);
 };
 
-class UT_SVGPoint
+class ABI_EXPORT UT_SVGPoint
 {
  public:
   float x;
@@ -85,7 +85,7 @@ class UT_SVGPoint
   ~UT_SVGPoint();
 };
 
-class UT_SVGMatrix
+class ABI_EXPORT UT_SVGMatrix
 {
  public:
   // DOM attributes:

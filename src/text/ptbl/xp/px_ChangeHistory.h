@@ -35,7 +35,7 @@
 // (and thus invalidating what needs to be redone).  A redo command will
 // re-apply the ChangeRecord and advance the undo position.
 
-class px_ChangeHistory
+class ABI_EXPORT px_ChangeHistory
 {
 public:
 	px_ChangeHistory();

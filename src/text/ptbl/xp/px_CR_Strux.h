@@ -38,7 +38,7 @@
 //
 
 
-class PX_ChangeRecord_Strux : public PX_ChangeRecord
+class ABI_EXPORT PX_ChangeRecord_Strux : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_Strux(PXType type,

@@ -56,7 +56,7 @@ class fl_AutoNum;
 // information. README.TXT on the other hand stands clearly out from
 // the rest of the files.                           jskov 2000.12.29
 
-class FL_DocLayout
+class ABI_EXPORT FL_DocLayout
 {
 	friend class fl_DocListener;
 

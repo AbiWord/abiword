@@ -27,7 +27,7 @@ class PD_Document;
 
 // The exporter/writer for AbiWord Templates
 
-class IE_Exp_AWT_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_AWT_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -43,7 +43,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_AWT : public IE_Exp_AbiWord_1
+class ABI_EXPORT IE_Exp_AWT : public IE_Exp_AbiWord_1
 {
 public:
 	IE_Exp_AWT(PD_Document * pDocument);

@@ -40,8 +40,9 @@ class IE_Imp_RTF;
 class RTF_msword97_list;
 
 // Font table entry
-struct RTFFontTableItem
+struct ABI_EXPORT RTFFontTableItem
 {
+ public:
 	enum FontFamilyEnum { ffNone, ffRoman, ffSwiss, ffModern, ffScript, ffDecorative, ffTechnical, ffBiDirectional};
 	enum FontPitch { fpDefault, fpFixed, fpVariable};
 
@@ -60,7 +61,7 @@ struct RTFFontTableItem
 };
 
 // Set true if Character properties have been changed in list structure.
-class RTFProps_CharProps
+class ABI_EXPORT RTFProps_CharProps
 {
 public:
 	RTFProps_CharProps(void);
@@ -88,7 +89,7 @@ public:
 	const char * m_szLang;
 };                  
 
-class RTFProps_bCharProps
+class ABI_EXPORT RTFProps_bCharProps
 {
 public:
 	RTFProps_bCharProps(void);
@@ -115,7 +116,7 @@ public:
 	bool bm_listTag; // tag for lists to hanfg off
 };
 
-struct _rtfListTable
+struct ABI_EXPORT _rtfListTable
 {      
 	UT_uint32 start_value;
 	UT_uint32 level;
@@ -146,7 +147,7 @@ struct _rtfListTable
 
 
 // Paragraph properties
-struct RTFProps_ParaProps
+struct ABI_EXPORT RTFProps_ParaProps
 {
 	enum ParaJustification { pjLeft, pjCentre, pjRight, pjFull};
 
@@ -182,7 +183,7 @@ struct RTFProps_ParaProps
 };                  
 
 // These are set true if changed in list definitions.
-class RTFProps_bParaProps
+class ABI_EXPORT RTFProps_bParaProps
 {
 public:
     RTFProps_bParaProps(void);
@@ -216,7 +217,7 @@ public:
 
 
 // Lists Level class
-class RTF_msword97_level
+class ABI_EXPORT RTF_msword97_level
 {
 public:
     RTF_msword97_level(	RTF_msword97_list * pmsword97List, UT_uint32 level);
@@ -246,7 +247,7 @@ private:
 };
 
 // List Header Class
-class RTF_msword97_list
+class ABI_EXPORT RTF_msword97_list
 {
 public:
 	RTF_msword97_list(	IE_Imp_RTF * pie_rtf);
@@ -259,7 +260,7 @@ private:
 };
 
 // List Header Overide
-class RTF_msword97_listOveride
+class ABI_EXPORT RTF_msword97_listOveride
 {
 public:
 	RTF_msword97_listOveride(	IE_Imp_RTF * pie_rtf);
@@ -323,7 +324,7 @@ private:
 };
 
 // Section properties
-struct RTFProps_SectionProps
+struct ABI_EXPORT RTFProps_SectionProps
 {
 	enum SectionBreak {sbkNone, sbkColumn, sbkEven, sbkOdd, sbkPage};
 	enum PageNumber {pgDecimal, pgURoman, pgLRoman, pgULtr, pgLLtr};
@@ -343,7 +344,7 @@ struct RTFProps_SectionProps
   before any section data begins.
   \todo add right and left headers and footer. Not yet supported by AbiWord
  */
-struct RTFHdrFtr
+struct ABI_EXPORT RTFHdrFtr
 {
 	enum HdrFtrType {hftNone, hftHeader, hftFooter };
 
@@ -355,7 +356,7 @@ struct RTFHdrFtr
 };	
 
 // RTFStateStore
-struct RTFStateStore
+struct ABI_EXPORT RTFStateStore
 {
 	RTFStateStore();
 	
@@ -394,7 +395,7 @@ typedef struct doc_prop
 
 // The importer/reader for Rich Text Format files
 
-class IE_Imp_RTF_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_RTF_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -413,7 +414,7 @@ public:
 
 };
 
-class IE_Imp_RTF : public IE_Imp
+class ABI_EXPORT IE_Imp_RTF : public IE_Imp
 {
 public:
 	IE_Imp_RTF(PD_Document * pDocument);

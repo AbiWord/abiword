@@ -37,7 +37,7 @@ class PP_AttrProp;
  * and returns the value, or NULL if that property isn't defined.
  */
 
-class s_RTF_AttrPropAdapter
+class ABI_EXPORT s_RTF_AttrPropAdapter
 {
 public:
     // TODO: remove 'getAttribute'. I don't think it's being used and it's
@@ -47,7 +47,7 @@ public:
     virtual const XML_Char * getProperty(const XML_Char * szName) const = 0;
 };
 
-class s_RTF_AttrPropAdapter_Style : public s_RTF_AttrPropAdapter
+class ABI_EXPORT s_RTF_AttrPropAdapter_Style : public s_RTF_AttrPropAdapter
 {
 private:
     const PD_Style * pStyle;
@@ -59,7 +59,7 @@ public:
     virtual const XML_Char * getProperty(const XML_Char * szName) const;
 };
 
-class s_RTF_AttrPropAdapter_AP : public s_RTF_AttrPropAdapter
+class ABI_EXPORT s_RTF_AttrPropAdapter_AP : public s_RTF_AttrPropAdapter
 {
 private:
     const PP_AttrProp * pSpanAP;

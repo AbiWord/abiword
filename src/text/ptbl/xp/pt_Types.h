@@ -38,7 +38,7 @@ class PD_Document;
  PT_DocPosition absolute document positions as limits.
 */
 
-class PD_DocumentRange
+class ABI_EXPORT PD_DocumentRange
 {
 public:
 	//! Dummy constructure. 

@@ -99,7 +99,7 @@ enum FP_RUN_TYPE
 	differently, but they can all be treated like rectangular blocks to 
 	be arranged.  
 */
-class fp_Run
+class ABI_EXPORT fp_Run
 {
 public:
 	fp_Run(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, FP_RUN_TYPE iType);
@@ -275,7 +275,7 @@ private:
 	void operator=(const fp_Run&);	// no impl.
 };
 
-class fp_TabRun : public fp_Run
+class ABI_EXPORT fp_TabRun : public fp_Run
 {
 public:
 	fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -301,7 +301,7 @@ private:
     eTabType                m_TabType;
 };
 
-class fp_ForcedLineBreakRun : public fp_Run
+class ABI_EXPORT fp_ForcedLineBreakRun : public fp_Run
 {
 public:
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -318,7 +318,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
-class fp_FieldStartRun : public fp_Run
+class ABI_EXPORT fp_FieldStartRun : public fp_Run
 {
 public:
 	fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -335,7 +335,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
-class fp_FieldEndRun : public fp_Run
+class ABI_EXPORT fp_FieldEndRun : public fp_Run
 {
 public:
 	fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -352,7 +352,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
-class fp_ForcedColumnBreakRun : public fp_Run
+class ABI_EXPORT fp_ForcedColumnBreakRun : public fp_Run
 {
 public:
 	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -369,7 +369,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
-class fp_ForcedPageBreakRun : public fp_Run
+class ABI_EXPORT fp_ForcedPageBreakRun : public fp_Run
 {
 public:
 	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -387,7 +387,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
-class fp_EndOfParagraphRun : public fp_Run
+class ABI_EXPORT fp_EndOfParagraphRun : public fp_Run
 {
 public:
 	fp_EndOfParagraphRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -414,7 +414,7 @@ private:
 };
 
 
-class fp_ImageRun : public fp_Run
+class ABI_EXPORT fp_ImageRun : public fp_Run
 {
 public:
 	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage);
@@ -485,7 +485,7 @@ struct fp_FieldData
 extern fp_FieldTypeData fp_FieldTypes[];
 extern fp_FieldData fp_FieldFmts[];
 
-class fp_FieldRun : public fp_Run
+class ABI_EXPORT fp_FieldRun : public fp_Run
 {
 public:
 	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -527,7 +527,7 @@ protected:
 	UT_Byte					m_fPosition;
 };
 
-class fp_FieldEndnoteRefRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldEndnoteRefRun : public fp_FieldRun
 {
 public:
 	
@@ -537,7 +537,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldEndnoteAnchorRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
 {
 public:
 	
@@ -547,7 +547,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldTimeRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldTimeRun : public fp_FieldRun
 {
 public:
 	
@@ -557,7 +557,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldPageNumberRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldPageNumberRun : public fp_FieldRun
 {
 public:
 	
@@ -567,7 +567,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldPageCountRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldPageCountRun : public fp_FieldRun
 {
 public:
 	
@@ -577,7 +577,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldDateRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldDateRun : public fp_FieldRun
 {
 public:
 	fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -586,7 +586,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldFileNameRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldFileNameRun : public fp_FieldRun
 {
 public:
 	fp_FieldFileNameRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -601,7 +601,7 @@ public:
 
 // count of characters in the document
 // including white spaces
-class fp_FieldCharCountRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldCharCountRun : public fp_FieldRun
 {
 public:
 	fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -612,7 +612,7 @@ public:
 
 // count of the non-blank characters
 // in the document
-class fp_FieldNonBlankCharCountRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldNonBlankCharCountRun : public fp_FieldRun
 {
 public:
 	fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -622,7 +622,7 @@ public:
 };
 
 // count of the #lines in the document
-class fp_FieldLineCountRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldLineCountRun : public fp_FieldRun
 {
 public:
 	fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -632,7 +632,7 @@ public:
 };
 
 // count of the #para in the document
-class fp_FieldParaCountRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldParaCountRun : public fp_FieldRun
 {
 public:
 	fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -642,7 +642,7 @@ public:
 };
 
 // count of #words in the document
-class fp_FieldWordCountRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldWordCountRun : public fp_FieldRun
 {
 public:
 	fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -655,7 +655,7 @@ public:
 // date-releated fields
 
 // Americans - mm/dd/yy
-class fp_FieldMMDDYYRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldMMDDYYRun : public fp_FieldRun
 {
 public:
 	fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -665,7 +665,7 @@ public:
 };
 
 // most of the world - dd/mm/yy
-class fp_FieldDDMMYYRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldDDMMYYRun : public fp_FieldRun
 {
 public:
 	fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -675,7 +675,7 @@ public:
 };
 
 // April 18, 1979
-class fp_FieldMonthDayYearRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldMonthDayYearRun : public fp_FieldRun
 {
 public:
 	fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -685,7 +685,7 @@ public:
 };
 
 // Apr. 18, 1979
-class fp_FieldMthDayYearRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldMthDayYearRun : public fp_FieldRun
 {
 public:
 	fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -695,7 +695,7 @@ public:
 };
 
 // default representation for your locale. includes time too
-class fp_FieldDefaultDateRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldDefaultDateRun : public fp_FieldRun
 {
 public:
 	fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -705,7 +705,7 @@ public:
 };
 
 // default for your locale, not appending the time
-class fp_FieldDefaultDateNoTimeRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldDefaultDateNoTimeRun : public fp_FieldRun
 {
 public:
 	fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -715,7 +715,7 @@ public:
 };
 
 // day of the week (Wednesday)
-class fp_FieldWkdayRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldWkdayRun : public fp_FieldRun
 {
 public:
 	fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -725,7 +725,7 @@ public:
 };
 
 // day of year (i.e. 72)
-class fp_FieldDOYRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldDOYRun : public fp_FieldRun
 {
 public:
 	fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -735,7 +735,7 @@ public:
 };
 
 // military (zulu) time
-class fp_FieldMilTimeRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldMilTimeRun : public fp_FieldRun
 {
 public:
 	fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -745,7 +745,7 @@ public:
 };
 
 // prints am or pm
-class fp_FieldAMPMRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldAMPMRun : public fp_FieldRun
 {
 public:
 	fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -755,7 +755,7 @@ public:
 };
 
 // milliseconds since the epoch, for you geeks out there :-)
-class fp_FieldTimeEpochRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldTimeEpochRun : public fp_FieldRun
 {
 public:
 	fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -765,7 +765,7 @@ public:
 };
 
 // your time zone (EST, for example)
-class fp_FieldTimeZoneRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldTimeZoneRun : public fp_FieldRun
 {
 public:
 	fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -777,7 +777,7 @@ public:
 // application runs
 
 // build id
-class fp_FieldBuildIdRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldBuildIdRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -787,7 +787,7 @@ public:
 };
 
 // build version (i.e. 0.7.13)
-class fp_FieldBuildVersionRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldBuildVersionRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -796,7 +796,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldBuildOptionsRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldBuildOptionsRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -805,7 +805,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldBuildTargetRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldBuildTargetRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildTargetRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -814,7 +814,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldBuildCompileDateRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldBuildCompileDateRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -823,7 +823,7 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
-class fp_FieldBuildCompileTimeRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldBuildCompileTimeRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
@@ -834,7 +834,7 @@ public:
 
 // END DOM
 
-class fp_FmtMarkRun : public fp_Run
+class ABI_EXPORT fp_FmtMarkRun : public fp_Run
 {
 public:
 	fp_FmtMarkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst);

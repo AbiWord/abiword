@@ -42,7 +42,7 @@
 // of the text span.
 
 
-class PX_ChangeRecord_Glob : public PX_ChangeRecord
+class ABI_EXPORT PX_ChangeRecord_Glob : public PX_ChangeRecord
 {
 public:
 	typedef enum _PXFlags { PXF_Null=				0x00,

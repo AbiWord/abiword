@@ -23,11 +23,6 @@
 #define UT_TYPES_H
 
 #include <stdlib.h>
-#if 0
-#ifdef HAVE_GNOME
-#include /**/ <glib.h>
-#endif
-#endif
 
 #ifdef NULL
 #undef NULL
@@ -53,6 +48,23 @@ typedef unsigned short		UT_UCSChar;	/* Unicode */
 typedef unsigned short		UT_uint16;
 typedef unsigned int		UT_uint32;
 typedef signed int		UT_sint32;
+
+#ifdef WIN32
+  #ifndef ABI_DLL
+     /* we are building AbiWord and wish for its parts to be used by plugins */
+     #define ABI_EXPORT __declspec(dllexport)
+  #else 
+     /* we are building an AbiWord plugin and want to use something declared in a library */
+     #define ABI_EXPORT __declspec(dllimport)
+  #endif
+#else
+  #define ABI_EXPORT
+#endif
+
+/* ABI_FAR_CALL: C function that we want to expose across plugin boundaries */
+#define ABI_CALL extern "C"
+#define ABI_FAR_CALL ABI_CALL ABI_EXPORT
+
 
 
 /*

@@ -43,7 +43,7 @@ typedef enum {
 	} tProperty_type;
 
 
-class PP_PropertyType
+class ABI_EXPORT PP_PropertyType
 {
 public:
 	PP_PropertyType() {};
@@ -55,7 +55,7 @@ public:
 	static PP_PropertyType *createPropertyType(tProperty_type Type, const XML_Char *p_init);
 };
 
-class PP_PropertyTypeBool : public PP_PropertyType
+class ABI_EXPORT PP_PropertyTypeBool : public PP_PropertyType
 {
 
 public:
@@ -71,7 +71,7 @@ private:
 	bool State;
 };
 
-class PP_PropertyTypeInt : public PP_PropertyType
+class ABI_EXPORT PP_PropertyTypeInt : public PP_PropertyType
 {
 
 public:
@@ -87,7 +87,7 @@ private:
 	int Value;
 };
 
-class PP_PropertyTypeSize : public PP_PropertyType
+class ABI_EXPORT PP_PropertyTypeSize : public PP_PropertyType
 {
 
 public:
@@ -105,7 +105,7 @@ private:
 	UT_Dimension Dim;
 };
 
-class PP_PropertyTypeColor : public PP_PropertyType
+class ABI_EXPORT PP_PropertyTypeColor : public PP_PropertyType
 {
 
 public:
@@ -126,7 +126,7 @@ private:
 
 
 
-class PP_Property
+class ABI_EXPORT PP_Property
 {
 public:
 	XML_Char *			m_pszName;

@@ -37,7 +37,7 @@ struct _rtf_font_info;
 
 // The exporter/writer for RTF file format (based upon spec version 1.5).
 
-class IE_Exp_RTF_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_RTF_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -57,7 +57,7 @@ public:
  * this is for exporting to RTF understood by attic software
  * like WordPad and probably Word6.0.
  */
-class IE_Exp_RTF_attic_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_RTF_attic_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -73,7 +73,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_RTF : public IE_Exp
+class ABI_EXPORT IE_Exp_RTF : public IE_Exp
 {
 	friend class s_RTF_ListenerWriteDoc;
 	friend class s_RTF_ListenerGetProps;
@@ -139,11 +139,11 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-class _rtf_no_font {};
+class ABI_EXPORT _rtf_no_font {};
 
 /* This struct contains the RTF font info as needed for the 
    font table. */
-struct _rtf_font_info
+struct ABI_EXPORT _rtf_font_info
 {
     _rtf_font_info(const s_RTF_AttrPropAdapter & apa) UT_THROWS((_rtf_no_font));
     bool _is_same(const _rtf_font_info & fi) const;

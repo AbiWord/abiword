@@ -31,7 +31,7 @@ class pt_PieceTable;
 //////////////////////////////////////////////////////////////////
 // PD_Style is the representation for an individual style.
 
-class PD_Style
+class ABI_EXPORT PD_Style
 {
 public:
 	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName = NULL);
@@ -80,7 +80,7 @@ protected:
 //////////////////////////////////////////////////////////////////
 // PD_BuiltinStyle 
 
-class PD_BuiltinStyle : public PD_Style
+class ABI_EXPORT PD_BuiltinStyle : public PD_Style
 {
 public:
 	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName);

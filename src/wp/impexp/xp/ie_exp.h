@@ -42,7 +42,7 @@ class UT_ByteBuf;
 
 class IE_Exp;
 
-class IE_ExpSniffer : public UT_AbiObject
+class ABI_EXPORT IE_ExpSniffer : public UT_AbiObject
 {
 	friend class IE_Exp;
 
@@ -68,7 +68,7 @@ private:
 	IEFileType m_type;
 };
 
-class IE_Exp
+class ABI_EXPORT IE_Exp
 {
 public:
 	// constructs an exporter of the right type based upon

@@ -70,7 +70,7 @@ typedef enum
 	FL_HDRFTR_FOOTER
 } HdrFtrType;
 
-class fl_SectionLayout : public fl_Layout
+class ABI_EXPORT fl_SectionLayout : public fl_Layout
 {
 	friend class fl_DocListener;
 
@@ -167,7 +167,7 @@ protected:
 	fl_HdrFtrSectionLayout * m_pHdrFtrSL;
 };
 
-class fl_DocSectionLayout : public fl_SectionLayout
+class ABI_EXPORT fl_DocSectionLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
 
@@ -301,7 +301,7 @@ private:
 	bool                m_bNeedsRebuild;
 };
 
-class fl_HdrFtrSectionLayout : public fl_SectionLayout
+class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
 
@@ -377,7 +377,7 @@ private:
 	fp_Container *              m_pHdrFtrContainer;
 };
 
-class fl_HdrFtrShadow : public fl_SectionLayout
+class ABI_EXPORT fl_HdrFtrShadow : public fl_SectionLayout
 {
 	friend class fl_DocListener;
 
@@ -407,7 +407,7 @@ protected:
 	fp_Page*					m_pPage;
 };
 
-class fl_ShadowListener : public PL_Listener
+class ABI_EXPORT fl_ShadowListener : public PL_Listener
 {
 public:
 	fl_ShadowListener(fl_HdrFtrSectionLayout* pHFSL, fl_HdrFtrShadow* pShadow);

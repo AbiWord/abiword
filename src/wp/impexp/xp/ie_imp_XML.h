@@ -31,7 +31,7 @@
 #include "ut_bytebuf.h"
 class PD_Document;
 
-struct xmlToIdMapping {
+struct ABI_EXPORT xmlToIdMapping {
   char *m_name;
   int m_type;
 };
@@ -46,7 +46,7 @@ struct xmlToIdMapping {
 // XSL-FO
 // KWORD 1 && 2 (soon)
 
-class IE_Imp_XML : public IE_Imp
+class ABI_EXPORT IE_Imp_XML : public IE_Imp
 {
 public:
     IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant);

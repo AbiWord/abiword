@@ -33,7 +33,7 @@ class UT_ByteBuf;
 
 // The importer/reader for Applix Word files
 
-class IE_Imp_Applix_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_Applix_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -52,7 +52,7 @@ public:
 
 };
 
-class IE_Imp_Applix : public IE_Imp
+class ABI_EXPORT IE_Imp_Applix : public IE_Imp
 {
 public:
 	IE_Imp_Applix(PD_Document * pDocument);

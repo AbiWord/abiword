@@ -25,7 +25,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 
-class UT_Stack
+class ABI_EXPORT UT_Stack
 {
 public:
 	bool			push(void * pVoid);

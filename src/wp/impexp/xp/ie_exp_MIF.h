@@ -28,7 +28,7 @@ class s_MIF_Listener;
 
 // the exporter/writer for MIF
 
-class IE_Exp_MIF_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_MIF_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -44,7 +44,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_MIF : public IE_Exp
+class ABI_EXPORT IE_Exp_MIF : public IE_Exp
 {
  public:
 	IE_Exp_MIF(PD_Document *pDocument);

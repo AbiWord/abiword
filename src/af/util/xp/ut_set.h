@@ -21,8 +21,9 @@
 #define UT_SET_H
 
 #include "ut_rbtree.h"
+#include "ut_types.h"
 
-class UT_Set
+class ABI_EXPORT UT_Set
 {
 public:
 	typedef UT_RBTree::key_t key_t;

@@ -37,7 +37,7 @@
  run-time stuff.
 */
 
-class pf_Frag_Strux : public pf_Frag
+class ABI_EXPORT pf_Frag_Strux : public pf_Frag
 {
 public:
 	pf_Frag_Strux(pt_PieceTable * pPT,

@@ -84,9 +84,13 @@
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION_RESERVED 5
 
 // Character properties
-struct WordPerfectTextAttributes
+class WordPerfectTextAttributes
 {
+ public:
+
    WordPerfectTextAttributes();
+   ~WordPerfectTextAttributes() {}
+
    // text attributes
    bool	m_extraLarge;
    bool	m_veryLarge;
@@ -109,7 +113,7 @@ struct WordPerfectTextAttributes
    UT_uint16 m_fontSize;
 };
 
-struct WordPerfectFontDescriptor
+struct ABI_EXPORT WordPerfectFontDescriptor
 {
    int m_packetID;
 
@@ -135,7 +139,7 @@ struct WordPerfectFontDescriptor
 };
 
 // Paragraph Properties (set using group WP_TOP_PARAGrAPH_GROUP)
-struct WordPerfectParagraphProperties
+struct ABI_EXPORT WordPerfectParagraphProperties
 {
    WordPerfectParagraphProperties();
    //float m_lineHeight; // originally in "signed WPU" 0.0=default
@@ -167,7 +171,7 @@ struct WordPerfectParagraphProperties
    // (TODO: paragraph character count) 0xd31a
 };
 
-class IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_WordPerfect;
@@ -186,7 +190,7 @@ public:
 										IE_Imp ** ppie);
 };
 
-class IE_Imp_WordPerfect : public IE_Imp
+class ABI_EXPORT IE_Imp_WordPerfect : public IE_Imp
 {
 public:
 	IE_Imp_WordPerfect(PD_Document * pDocument);
@@ -245,9 +249,9 @@ public:
    WordPerfectParagraphProperties m_paragraphProperties;
 };
 
-struct WordPerfectByteTag
+struct ABI_EXPORT WordPerfectByteTag
 {
-   WordPerfectByteTag( unsigned char byte, UT_Error (IE_Imp_WordPerfect::*func)() );
+   WordPerfectByteTag( unsigned char byte, UT_Error (IE_Imp_WordPerfect::*func)() );   
    unsigned char m_byte;
    UT_Error (IE_Imp_WordPerfect::*m_func) () ;
 }; 

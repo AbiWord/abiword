@@ -4,7 +4,9 @@
 class UT_String;
 class XAP_Frame;
 
-class UT_PerlBindings
+#include "ut_types.h"
+
+class ABI_EXPORT UT_PerlBindings
 {
 public:
 	static void evalFile(const UT_String& filename, XAP_Frame* frame = 0);

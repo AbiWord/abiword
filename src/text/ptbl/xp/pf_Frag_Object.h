@@ -31,7 +31,7 @@
  an image) in the document.
 */
 
-class pf_Frag_Object : public pf_Frag
+class ABI_EXPORT pf_Frag_Object : public pf_Frag
 {
 public:
 	pf_Frag_Object(pt_PieceTable * pPT,

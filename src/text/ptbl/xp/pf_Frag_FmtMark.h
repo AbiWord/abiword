@@ -35,7 +35,7 @@
  away before actually entering any text).
 */
 
-class pf_Frag_FmtMark : public pf_Frag
+class ABI_EXPORT pf_Frag_FmtMark : public pf_Frag
 {
 public:
 	pf_Frag_FmtMark(pt_PieceTable * pPT,

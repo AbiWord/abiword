@@ -28,7 +28,7 @@ class s_HRText_Listener;
 
 // The exporter/writer for human readable text
 
-class IE_Exp_HRText_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_HRText_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -45,7 +45,7 @@ public:
 };
 
 
-class IE_Exp_HRText : public IE_Exp
+class ABI_EXPORT IE_Exp_HRText : public IE_Exp
 {
 public:
 	IE_Exp_HRText(PD_Document * pDocument);

@@ -93,7 +93,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_svg.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_rbtree.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_set.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)		\

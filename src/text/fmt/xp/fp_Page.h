@@ -39,7 +39,7 @@ class GR_Graphics;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
-class fp_Page
+class ABI_EXPORT fp_Page
 {
 public:
 	fp_Page(FL_DocLayout*,

@@ -58,7 +58,7 @@
 #define UT_VECTOR_SPARSEFREEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, free)
 
 #ifndef ABI_OPT_STL
-class UT_Vector
+class ABI_EXPORT UT_Vector
 {
 public:
 	UT_Vector(UT_uint32 sizehint = 2048);
@@ -111,7 +111,7 @@ private:
 #include <vector>
 #include <algorithm>
 
-class UT_Vector
+class ABI_EXPORT UT_Vector
 {
  public:
 	UT_Vector(UT_uint32 sizehint = 2048);

@@ -27,7 +27,7 @@
 
 // The importer/reader for GZipped AbiWord file format version 1.
 
-class IE_Imp_GZipAbiWord_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_GZipAbiWord_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -46,7 +46,7 @@ public:
 
 };
 
-class IE_Imp_GZipAbiWord : public IE_Imp_AbiWord_1
+class ABI_EXPORT IE_Imp_GZipAbiWord : public IE_Imp_AbiWord_1
 {
 public:
 	IE_Imp_GZipAbiWord(PD_Document * pDocument);

@@ -25,6 +25,7 @@
 #include "px_CR_Object.h"
 #include "gr_Graphics.h"
 #include "gr_Image.h"
+#include "ut_types.h"
 
 enum FGType { 
 	FGT_Unknown,
@@ -37,7 +38,7 @@ enum FGType {
 //  aren't persistent in the formatting, but are constructed when needed
 //  and removed after the operating is finished, and they act as a proxy
 //  for the underlying representation.
-class FG_Graphic
+class ABI_EXPORT FG_Graphic
 {
 public:
 	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL,

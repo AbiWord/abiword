@@ -48,7 +48,7 @@ class PD_Style;
 // pt_PieceTable implements a "Piece Table" as described/suggested
 // by .../dev/design/PieceTable.html
 
-class pt_PieceTable
+class ABI_EXPORT pt_PieceTable
 {
 public:
 	pt_PieceTable(PD_Document * pDocument);

@@ -29,7 +29,7 @@
 
 class fl_SectionLayout;
 
-class fb_ColumnBreaker
+class ABI_EXPORT fb_ColumnBreaker
 {
 public:
 	fb_ColumnBreaker();

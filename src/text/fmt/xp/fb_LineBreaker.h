@@ -33,7 +33,7 @@ struct fp_RunSplitInfo;
 	fb_LineBreaker encapsulates knowledge of how to break runs across lines.  
 	It also breaks them between words, to help with later justification. 
 */
-class fb_LineBreaker
+class ABI_EXPORT fb_LineBreaker
 {
 public:
 	fb_LineBreaker();

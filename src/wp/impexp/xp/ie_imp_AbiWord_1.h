@@ -30,7 +30,7 @@ class PD_Document;
 
 // The importer/reader for AbiWord file format version 1.
 
-class IE_Imp_AbiWord_1_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_AbiWord_1_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -49,7 +49,7 @@ public:
 
 };
 
-class IE_Imp_AbiWord_1 : public IE_Imp_XML
+class ABI_EXPORT IE_Imp_AbiWord_1 : public IE_Imp_XML
 {
 public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);

@@ -24,7 +24,7 @@
 
 // The exporter/writer for ISCII text files.
 
-class IE_Exp_ISCII_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_ISCII_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -40,7 +40,7 @@ public:
 									   IE_Exp ** ppie);
 };
 
-class IE_Exp_ISCII : public IE_Exp_Text
+class ABI_EXPORT IE_Exp_ISCII : public IE_Exp_Text
 {
 public:
 	IE_Exp_ISCII(PD_Document * pDocument) : IE_Exp_Text(pDocument) {}
@@ -55,7 +55,7 @@ protected:
 // into a text stream.
 //////////////////////////////////////////////////////////////////
 
-class ISCII_Listener : public Text_Listener
+class ABI_EXPORT ISCII_Listener : public Text_Listener
 {
 public:
 	ISCII_Listener(PD_Document * pDocument, IE_Exp_Text * pie) : Text_Listener(pDocument, pie) {}

@@ -132,7 +132,7 @@ struct FV_DocCount
 	UT_uint32 page;
 };
 
-class FV_View : public AV_View
+class ABI_EXPORT FV_View : public AV_View
 {
 	friend class fl_DocListener;
 	friend class fl_BlockLayout;

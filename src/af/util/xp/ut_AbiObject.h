@@ -27,7 +27,7 @@
 // uncomment this for memory management (experimental)
 //#define MANAGE_MEMORY 1
 
-class UT_AbiObject {
+class ABI_EXPORT UT_AbiObject {
 
  public:
 

@@ -2,6 +2,7 @@
 #define UT_MBTOWC_H
 
 #include <limits.h>
+#include "ut_types.h"
 
 #if 0
 /*
@@ -24,7 +25,7 @@ size_t mbrtowc(wchar_t&,char*,int,mbstate_t);
 typedef int mbstate_t;
 #endif
 
-class UT_Mbtowc
+class ABI_EXPORT UT_Mbtowc
 {
  public:
   void initialize();
@@ -39,7 +40,7 @@ class UT_Mbtowc
 
 #include "ut_iconv.h"
 
-class UT_Mbtowc
+class ABI_EXPORT UT_Mbtowc
 {
 public:
   void initialize();

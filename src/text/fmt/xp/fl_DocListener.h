@@ -34,7 +34,7 @@ class fl_SectionLayout;
 	to its associated FL_DocLayout. 
 */
 
-class fl_DocListener : public PL_Listener
+class ABI_EXPORT fl_DocListener : public PL_Listener
 {
 public:
 	fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout);

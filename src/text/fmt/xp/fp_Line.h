@@ -69,7 +69,7 @@ struct dg_DrawArgs;
 #endif //BIDI_ENABLED
 
 
-class fp_Line
+class ABI_EXPORT fp_Line
 {
 public:
 	fp_Line();

@@ -37,7 +37,6 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_misc.cpp		\
 		ut_png.cpp		\
 		ut_svg.cpp		\
-		ut_pool.cpp		\
 		ut_rbtree.cpp	\
 		ut_set.cpp		\
 		ut_stack.cpp		\

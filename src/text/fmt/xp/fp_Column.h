@@ -48,7 +48,7 @@ typedef enum {
 	FP_CONTAINER_ENDNOTE
 } FP_ContainerType;
 
-class fp_Container
+class ABI_EXPORT fp_Container
 {
 public:
 	fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLayout);
@@ -248,7 +248,7 @@ private:
 	UT_sint32               m_imaxLineHeight;
 };
 
-class fp_Column : public fp_Container
+class ABI_EXPORT fp_Column : public fp_Container
 {
 public:
 	fp_Column(fl_SectionLayout* pSectionLayout);
@@ -287,7 +287,7 @@ private:
 	fp_Column*				m_pFollower;
 };
 
-class fp_ShadowContainer : public fp_Container
+class ABI_EXPORT fp_ShadowContainer : public fp_Container
 {
 public:
 	fp_ShadowContainer(UT_sint32 iX, UT_sint32 iY, 
@@ -314,7 +314,7 @@ private:
 };
 
 
-class fp_HdrFtrContainer : public fp_Container
+class ABI_EXPORT fp_HdrFtrContainer : public fp_Container
 {
 public:
 	fp_HdrFtrContainer( UT_sint32 iWidth,
@@ -332,7 +332,7 @@ public:
 protected:
 };
 
-class fp_EndnoteSectionContainer : public fp_Container
+class ABI_EXPORT fp_EndnoteSectionContainer : public fp_Container
 {
 public:
 	fp_EndnoteSectionContainer(fl_SectionLayout* pSectionLayout);

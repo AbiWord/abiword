@@ -28,7 +28,7 @@ class s_Applix_Listener;
 
 // the exporter/writer for Applix
 
-class IE_Exp_Applix_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_Applix_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -44,7 +44,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_Applix : public IE_Exp
+class ABI_EXPORT IE_Exp_Applix : public IE_Exp
 {
  public:
 	IE_Exp_Applix(PD_Document *pDocument);

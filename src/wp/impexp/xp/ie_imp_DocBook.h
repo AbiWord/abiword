@@ -25,7 +25,7 @@
 
 class PD_Document;
 
-class IE_Imp_DocBook_Sniffer : public IE_ImpSniffer
+class ABI_EXPORT IE_Imp_DocBook_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 
@@ -46,7 +46,7 @@ public:
 
 // The importer/reader for DocBook files.
 
-class IE_Imp_DocBook : public IE_Imp_XML
+class ABI_EXPORT IE_Imp_DocBook : public IE_Imp_XML
 {
 public:
 	IE_Imp_DocBook(PD_Document * pDocument);

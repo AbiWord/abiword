@@ -28,7 +28,7 @@ class s_LaTeX_Listener;
 
 // The exporter/writer for LaTeX
 
-class IE_Exp_LaTeX_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_LaTeX_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -44,7 +44,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_LaTeX : public IE_Exp
+class ABI_EXPORT IE_Exp_LaTeX : public IE_Exp
 {
 public:
 	IE_Exp_LaTeX(PD_Document * pDocument);

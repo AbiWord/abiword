@@ -34,7 +34,7 @@ typedef struct _wvExporter wvExporter;
 
 // The exporter/writer for the MsWord 97 format
 
-class IE_Exp_MsWord_97_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_MsWord_97_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -50,7 +50,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_MsWord_97 : public IE_Exp
+class ABI_EXPORT IE_Exp_MsWord_97 : public IE_Exp
 {
 		friend class s_MsWord_97_Listener;
         s_MsWord_97_Listener* m_pListener;

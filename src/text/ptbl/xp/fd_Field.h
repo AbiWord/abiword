@@ -32,7 +32,7 @@ class pf_Frag_Object;
  types of fields.
 */
 
-class fd_Field
+class ABI_EXPORT fd_Field
 {
  public:
     // TBD: convention for naming 

@@ -28,13 +28,14 @@
 
 #include <stdlib.h>
 #include "ut_string.h"
+#include "ut_types.h"
 
 // yes, this is screaming for a template
 
 //!
 //	UT_String, a simple wrapper for zero terminated 'char' strings.
 //
-class UT_String
+class ABI_EXPORT UT_String
 {
 public:
 	UT_String();
@@ -91,7 +92,7 @@ UT_String operator+(const UT_String& s1, const UT_String& s2);
 
 // TODO: add c_str(), utf8_str(), encoded_str(const char * to)
 
-class UT_UCS2String
+class ABI_EXPORT UT_UCS2String
 {
 public:
 	UT_UCS2String();

@@ -34,8 +34,9 @@
 #include <stdio.h>
 #include "pf_Frag.h"
 #include "ut_vector.h"
+#include "ut_types.h"
 
-class pf_Fragments
+class ABI_EXPORT pf_Fragments
 {
 public:
 	pf_Fragments();

@@ -29,7 +29,7 @@ class PX_ChangeRecord_Object;
 ** the contents of the document to the RTF file.
 ******************************************************************/
 
-class s_RTF_ListenerWriteDoc : public PL_Listener
+class ABI_EXPORT s_RTF_ListenerWriteDoc : public PL_Listener
 {
 public:
 	s_RTF_ListenerWriteDoc(PD_Document * pDocument,

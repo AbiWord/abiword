@@ -20,6 +20,8 @@
 #ifndef UT_WORKER_H
 #define UT_WORKER_H
 
+#include "ut_types.h"
+
 class GR_Graphics;
 class UT_Worker;
 
@@ -30,7 +32,7 @@ typedef void (*UT_WorkerCallback)(UT_Worker* pWorker);
  * UT_Workers based on a passed mode, whose choices
  * can be ORed together
  */
-class UT_WorkerFactory
+class ABI_EXPORT UT_WorkerFactory
 {
  public:
   typedef enum { NONE   = 0x00,
@@ -54,16 +56,16 @@ class UT_WorkerFactory
  * serve as a base-class for UT_Timers, UT_Idles, and
  * UT_Threads
  */
-class UT_Worker
+class ABI_EXPORT UT_Worker
 {
 
  public:
   virtual ~UT_Worker ();
 
-  virtual void stop(void) = 0;		/* suspend events */
-  virtual void start(void) = 0;		/* resume events */
+  virtual void stop(void) = 0;		//! suspend events
+  virtual void start(void) = 0;		//! resume events
 
-  virtual void fire(void);              /* fire off an event */
+  virtual void fire(void);              //! fire off an event
 
   UT_WorkerCallback getCallback() const;
   void* getInstanceData() const;

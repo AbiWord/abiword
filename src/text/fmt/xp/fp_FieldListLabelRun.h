@@ -20,9 +20,10 @@
 #ifndef FP_FIELD_LIST_LABEL_RUN_H
 #define FP_FIELD_LIST_LABEL_RUN_H
 
+#include "ut_types.h"
 #include "fp_Run.h"
 
-class fp_FieldListLabelRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldListLabelRun : public fp_FieldRun
 {
 public:
 	fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);

@@ -45,14 +45,14 @@
 //
 
 #if defined(_MSC_VER) 
-	#define ABI_DOESNT_SUPPORT_THROWS = 1
+	#define ABI_DOESNT_SUPPORT_THROWS 1
 #endif
 
 /*
  * Public base-class which all of our own 
  * exceptions should inherit from
  */
-class UT_Exception
+class ABI_EXPORT UT_Exception
 {
  public:
   UT_Exception () {}

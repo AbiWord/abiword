@@ -37,7 +37,7 @@ typedef iconv_t UT_iconv_t;
 
 #include "ut_exception.h"
 
-class auto_iconv
+class ABI_EXPORT auto_iconv
 {
  public:
 

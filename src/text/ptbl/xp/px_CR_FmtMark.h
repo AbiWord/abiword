@@ -38,7 +38,7 @@
 //
 
 
-class PX_ChangeRecord_FmtMark : public PX_ChangeRecord
+class ABI_EXPORT PX_ChangeRecord_FmtMark : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_FmtMark(PXType type,

@@ -38,7 +38,7 @@ class fp_Run;
 		fb_Alignment_justify
 */
 
-class fb_Alignment
+class ABI_EXPORT fb_Alignment
 {
 public:
 
@@ -49,7 +49,7 @@ public:
 
 };
 
-class fb_Alignment_left : public fb_Alignment
+class ABI_EXPORT fb_Alignment_left : public fb_Alignment
 {
 public:
 
@@ -67,7 +67,7 @@ private:
 
 };
 
-class fb_Alignment_center : public fb_Alignment
+class ABI_EXPORT fb_Alignment_center : public fb_Alignment
 {
 public:
 
@@ -83,7 +83,7 @@ private:
 
 };
 
-class fb_Alignment_right : public fb_Alignment
+class ABI_EXPORT fb_Alignment_right : public fb_Alignment
 {
 public:
 
@@ -99,7 +99,7 @@ private:
 
 };
 
-class fb_Alignment_justify : public fb_Alignment
+class ABI_EXPORT fb_Alignment_justify : public fb_Alignment
 {
 public:
 

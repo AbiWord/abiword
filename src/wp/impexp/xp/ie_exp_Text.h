@@ -32,7 +32,7 @@ class Text_Listener;
 
 // The exporter/writer for Plain Text Files.
 
-class IE_Exp_Text_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_Text_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -50,7 +50,7 @@ public:
 
 // The exporter/writer for Plain Text Files with selectable encoding.
 
-class IE_Exp_EncodedText_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_EncodedText_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -66,7 +66,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_Text : public IE_Exp
+class ABI_EXPORT IE_Exp_Text : public IE_Exp
 {
 public:
 	IE_Exp_Text(PD_Document * pDocument, bool bEncoded=false);
@@ -93,7 +93,7 @@ protected:
 // into a text stream.
 //////////////////////////////////////////////////////////////////
 
-class Text_Listener : public PL_Listener
+class ABI_EXPORT Text_Listener : public PL_Listener
 {
 public:
 	Text_Listener(PD_Document * pDocument,

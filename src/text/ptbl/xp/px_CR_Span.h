@@ -44,7 +44,7 @@ class fd_Field;
 // of the text span.
 
 
-class PX_ChangeRecord_Span : public PX_ChangeRecord
+class ABI_EXPORT PX_ChangeRecord_Span : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_Span(PXType type,

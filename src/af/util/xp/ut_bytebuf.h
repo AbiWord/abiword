@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "ut_types.h"
 
-class UT_ByteBuf
+class ABI_EXPORT UT_ByteBuf
 {
 public:
 	UT_ByteBuf(UT_uint32 iChunk = 0);

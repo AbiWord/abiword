@@ -26,7 +26,7 @@ struct encoding_pair
 };
 
 
-class UT_AdobeEncoding
+class ABI_EXPORT UT_AdobeEncoding
 {
 	public:
 		UT_AdobeEncoding(const encoding_pair *ep, UT_uint32 esize);

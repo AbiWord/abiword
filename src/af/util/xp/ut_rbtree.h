@@ -25,7 +25,9 @@
 #include <stdio.h>
 #endif
 
-class UT_RBTree
+#include "ut_types.h"
+
+class ABI_EXPORT UT_RBTree
 {
 	struct Node;
 

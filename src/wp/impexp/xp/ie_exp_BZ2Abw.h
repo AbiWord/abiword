@@ -6,7 +6,7 @@
 
 #include "ie_exp_AbiWord_1.h"
 
-class IE_Exp_BZ2AbiWord_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_BZ2AbiWord_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -23,7 +23,7 @@ public:
 };
 
 
-class IE_Exp_BZ2AbiWord : public IE_Exp_AbiWord_1
+class ABI_EXPORT IE_Exp_BZ2AbiWord : public IE_Exp_AbiWord_1
 {
 public:
 	IE_Exp_BZ2AbiWord(PD_Document * pDocument);

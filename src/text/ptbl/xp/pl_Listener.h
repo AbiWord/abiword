@@ -41,7 +41,7 @@ class PX_ChangeRecord;
 //                it is provided an ID which may be used
 //                later to refer to it.
 
-class PL_Listener
+class ABI_EXPORT PL_Listener
 {
 public:
 	// when a listener is installed, the document calls the listener

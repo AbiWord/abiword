@@ -21,8 +21,9 @@
 #define _UT_IDLE_H
 
 #include "ut_worker.h"
+#include "ut_types.h"
 
-class UT_Idle : public UT_Worker
+class ABI_EXPORT UT_Idle : public UT_Worker
 {
 
  public:

@@ -31,7 +31,7 @@ class UT_Vector;
 class UT_String;
 
 // ----------------------------------------------------------------
-class UT_RGBColor
+class ABI_EXPORT UT_RGBColor
 {
 public:
 	UT_RGBColor();
@@ -46,7 +46,7 @@ void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned c
 void UT_parseColor(const char*, UT_RGBColor&);
 
 // ----------------------------------------------------------------
-class UT_Rect
+class ABI_EXPORT UT_Rect
 {
 public:
 	UT_Rect();
@@ -65,7 +65,7 @@ public:
 };
 
 // ----------------------------------------------------------------
-struct UT_Point
+struct ABI_EXPORT UT_Point
 {
 	UT_sint32	x;
 	UT_sint32	y;

@@ -38,7 +38,7 @@
 // (one for attributes and one for properties), it does not
 // know the meaning of any of them.
 
-class PP_AttrProp
+class ABI_EXPORT PP_AttrProp
 {
 public:
 	PP_AttrProp();

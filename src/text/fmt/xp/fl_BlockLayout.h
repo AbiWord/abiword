@@ -84,7 +84,7 @@ typedef enum {
 } eTabLeader;
 
 
-class fl_CharWidths
+class ABI_EXPORT fl_CharWidths
 {
 public:
 	fl_CharWidths()	: m_gbCharWidths(256), m_gbCharWidthsLayoutUnits(256)
@@ -146,7 +146,7 @@ public:
 class fl_TabStop;
 void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTabs);
 
-class fl_BlockLayout : public fl_Layout
+class ABI_EXPORT fl_BlockLayout : public fl_Layout
 {
 	friend class fl_DocListener;
 
@@ -485,7 +485,7 @@ protected:
 	to this class are the things contained in m_vecSquiggles and in
 	FL_DocLayout::m_pPendingWordForSpell
 */
-class fl_PartOfBlock
+class ABI_EXPORT fl_PartOfBlock
 {
 public:
 	fl_PartOfBlock();
@@ -500,7 +500,7 @@ public:
 protected:
 };
 
-class fl_TabStop
+class ABI_EXPORT fl_TabStop
 {
 public:
 	

@@ -21,12 +21,13 @@
 #define UT_PAIR_H
 
 #include <stdlib.h>
+#include "ut_types.h"
 
 typedef void* pair_type;
 
 #ifndef ABI_OPT_STL
 
-class UT_Pair
+class ABI_EXPORT UT_Pair
 {
 public:
 	UT_Pair(const pair_type first, const pair_type second);
@@ -46,7 +47,7 @@ private:
 
 #include <utility>
 
-class UT_Pair : public XAP_AbiObject
+class ABI_EXPORT UT_Pair
 {
 public:
 	UT_Pair(const pair_type first, const pair_type second);

@@ -30,7 +30,7 @@
 // fwd. decl.
 class hash_slot;
 
-class UT_StringPtrMap
+class ABI_EXPORT UT_StringPtrMap
 {
 public:
 	UT_StringPtrMap(size_t expected_cardinality = 11);

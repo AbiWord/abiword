@@ -31,7 +31,7 @@ struct enc_entry
 	UT_uint32  id;
 };
 
-class UT_Encoding
+class ABI_EXPORT UT_Encoding
 {
 public:
 	UT_Encoding();

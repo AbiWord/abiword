@@ -27,7 +27,7 @@
 #include "pp_TableAttrProp.h"
 #include "pd_Document.h"
 
-class pt_VarSet
+class ABI_EXPORT pt_VarSet
 {
 public:
 	pt_VarSet();

@@ -33,7 +33,7 @@ class fl_Layout;
 class PD_Document;
 
 
-class fl_AutoNum
+class ABI_EXPORT fl_AutoNum
 {
 public:
 	fl_AutoNum(	UT_uint32 id,

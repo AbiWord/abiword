@@ -38,7 +38,7 @@ class fl_AutoNum;
 	run-time stuff.
 */
 
-class fl_Layout
+class ABI_EXPORT fl_Layout
 {
 public:
 	fl_Layout(PTStruxType type, PL_StruxDocHandle sdh);

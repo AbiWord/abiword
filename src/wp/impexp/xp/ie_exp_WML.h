@@ -28,7 +28,7 @@ class s_WML_Listener;
 
 // the exporter/writer for WML1.0
 
-class IE_Exp_WML_Sniffer : public IE_ExpSniffer
+class ABI_EXPORT IE_Exp_WML_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
@@ -44,7 +44,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class IE_Exp_WML : public IE_Exp
+class ABI_EXPORT IE_Exp_WML : public IE_Exp
 {
 public:
 	IE_Exp_WML(PD_Document *pDocument);

@@ -35,7 +35,7 @@ typedef UT_WorkerCallback UT_TimerCallback;
 	UT_Timer is an abstract class which encapsulates the platform-specific 
 	details for managing timers.    
 */
-class UT_Timer : public UT_Worker
+class ABI_EXPORT UT_Timer : public UT_Worker
 {
 public:
 	virtual ~UT_Timer();

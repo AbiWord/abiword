@@ -35,7 +35,7 @@
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
 #endif
 
-class fp_TextRun : public fp_Run
+class ABI_EXPORT fp_TextRun : public fp_Run
 {
 public:
 	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, bool bLookupProperties=true);

@@ -22,10 +22,11 @@
 
 #include "fg_Graphic.h"
 #include "ut_bytebuf.h"
+#include "ut_types.h"
 
 //  An implementation of the FG_Graphic interface for vector files.  The
 //  internal file format happens to be SVG.
-class FG_GraphicVector : public FG_Graphic
+class ABI_EXPORT FG_GraphicVector : public FG_Graphic
 {
 public:
 	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL, 

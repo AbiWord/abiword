@@ -28,7 +28,7 @@
 
 #include "ut_types.h"
 
-class UT_GrowBuf
+class ABI_EXPORT UT_GrowBuf
 {
 public:
 	UT_GrowBuf(UT_uint32 iChunk = 0);

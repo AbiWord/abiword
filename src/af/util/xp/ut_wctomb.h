@@ -2,6 +2,8 @@
 #define UT_WCTOMB_H
 
 #include <limits.h>
+#include "ut_types.h"
+
 #if 0 
 /*
     old version using wcrtomb. Implementation used on *BSD systems is plain 
@@ -25,7 +27,7 @@ typedef unsigned long wchar_t;
 size_t wcrtomb(char *,wchar_t,mbstate_t *);
 #endif
 
-class UT_Wctomb
+class ABI_EXPORT UT_Wctomb
 {
 public:
   void initialize();
@@ -38,7 +40,7 @@ public:
 
 #include "ut_iconv.h"
 
-class UT_Wctomb
+class ABI_EXPORT UT_Wctomb
 {
 public:
   void initialize();
