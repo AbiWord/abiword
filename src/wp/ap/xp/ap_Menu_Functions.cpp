@@ -1333,6 +1333,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
+	if(pView->isInEndnote())
+	{
+		return EV_MIS_Gray;
+	}
 	else if(pView->isInFrame(pView->getPoint()))
 	{
 		return EV_MIS_Gray;

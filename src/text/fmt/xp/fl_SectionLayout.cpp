@@ -2247,7 +2247,8 @@ void fl_DocSectionLayout::collapse(void)
 	}
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
-
+	setFirstEndnoteContainer(NULL);
+	setLastEndnoteContainer(NULL);
 //
 // Remove all the empty pages thus created. Don't notify of the deletion though.
 //
