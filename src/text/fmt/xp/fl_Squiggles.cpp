@@ -706,11 +706,15 @@ fl_Squiggles::recheckIgnoredWords(const UT_UCSChar* pBlockText)
 
 	bool bUpdate = false;
 
-	UT_uint32 iSquiggles = _getCount();
-	UT_uint32 i;
+	UT_sint32 iSquiggles = (UT_sint32) _getCount();
+	UT_sint32 i;
+	if(iSquiggles == 0)
+	{
+		return bUpdate;
+	}
 	for (i = iSquiggles-1; i >= 0; i--)
 	{
-		fl_PartOfBlock*	pPOB = getNth(i);
+		fl_PartOfBlock*	pPOB = getNth((UT_uint32) i);
 		
 		if (m_pOwner->_doCheckWord(pPOB, pBlockText, false))
 		{
@@ -720,7 +724,7 @@ fl_Squiggles::recheckIgnoredWords(const UT_UCSChar* pBlockText)
 		else
 		{
 			// Word not squiggled, remove from squiggle list
-			_deleteNth(i);
+			_deleteNth((UT_uint32) i);
 		}
 	}
 
