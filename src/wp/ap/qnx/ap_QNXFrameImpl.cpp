@@ -233,7 +233,7 @@ void AP_QNXFrameImpl::_createWindow()
 		_showOrHideToolbars();
 		_showOrHideStatusbar();
 	}
-
+	PtGiveFocus(m_dArea,NULL);
 }
 
 PtWidget_t * AP_QNXFrameImpl::_createStatusBarWindow()
