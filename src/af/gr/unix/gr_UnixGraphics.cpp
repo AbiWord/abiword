@@ -337,9 +337,12 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 
 				pgFont = gdk_font_load(xFontName);
 
-				// we failed the third lookup!  Bail!
+				// we failed the third lookup!  Render with an ugly fixed font.
+				// Note that we use the misc foundry font, since some workstations
+				// could have other fixed fonts (like a JIS Japanese foundry or
+				// the Sony foundry)
 				if (!pgFont)
-					pgFont = gdk_font_load("fixed");
+					pgFont = gdk_font_load("-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*");
 			}
 		}
 	}
