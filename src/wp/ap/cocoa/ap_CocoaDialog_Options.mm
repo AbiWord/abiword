@@ -37,8 +37,8 @@
 #include "ap_Prefs_SchemeIds.h"
 
 #include "ap_Strings.h"
-
-#include "ap_CocoaDialog_Options.h"
+#import "xap_Cocoa_NSTableUtils.h"
+#import "ap_CocoaDialog_Options.h"
 
 /*!
 	This class is a proxy class to allow accessing some members
@@ -1554,14 +1554,23 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	     setLabel:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Toolbars)]];
 	[m_tlbTlbBox setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Toolbars)]];
 	// add the items
-	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)
-	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB)
-	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB)
+	
+	XAP_StringListDataSource* dataSource = [[XAP_StringListDataSource alloc] init];
+	[dataSource addString:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)]];
+	[dataSource addString:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB)]];
+	[dataSource addString:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB)]];
+	[m_tlbTlbList setDataSource:dataSource];
+	// release only if retained by the tableView. Otherwise leak it. WTF did they do at Apple ? FIXME
+	if ([dataSource retainCount] > 1) {
+		[dataSource release];
+	}
 	
 	[m_tlbVisibleBox setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Visible)]];
+	//m_tlbShowHideGroup
 	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Show
 	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Hide
 	[m_tlbBtnStylBox setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Look)]];
+	//m_tlbBtnStylGroup
 	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Icons)
 	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Text)
 	//pSS->getValue(AP_STRING_ID_DLG_Options_Label_Both)
