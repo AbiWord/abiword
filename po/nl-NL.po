@@ -947,7 +947,6 @@ msgstr "Voeg kantlijnen en shaduw aan de geselecteerde tekst"
 
 #. TOOLBAR_LABEL_ADD_COLUMN
 #: po/tmp/ap_String_Id.h.h:353
-#, fuzzy
 msgid "Add column after"
 msgstr "Kolommen rechts invoegen"
 
@@ -960,9 +959,8 @@ msgstr ""
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:357
-#, fuzzy
 msgid "Add row after"
-msgstr "Toevoegen aan sjabloon"
+msgstr "Rijen onder invoegen"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:359
@@ -3936,9 +3934,8 @@ msgstr "Aanhef:"
 
 #. TOOLBAR_LABEL_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:1457
-#, fuzzy
 msgid "Save"
-msgstr "Op&slaan"
+msgstr "Opslaan"
 
 #. MENU_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1459
@@ -3947,21 +3944,19 @@ msgstr "Ops&laan als"
 
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1461
-#, fuzzy
 msgid "Save &Template"
-msgstr "Open Bestand"
+msgstr "S&jabloon opslaan"
 
 #. TOOLBAR_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1463
-#, fuzzy
 msgid "Save As"
-msgstr "Ops&laan als"
+msgstr "Opslaan als"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1465
 #, fuzzy, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "Bekijk een voorbeeld afdruk van het document voor het printen"
+msgstr "Wilt u de veranderingen in document %s opslaan voor het te sluiten?"
 
 #. TOOLBAR_TOOLTIP_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:1467
