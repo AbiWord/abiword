@@ -101,7 +101,7 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 	else 
 	{
 		// error message box - didn't select a plugin
-		_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED ).c_str());
+		_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_NONE_SELECTED ).utf8_str());
 		return;
 	}
 
@@ -116,14 +116,14 @@ void XAP_QNXDialog_PluginManager::event_Deactivate ()
 		{
 			// error message box
 			_errorMessage (m_pFrame, 
-pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).c_str());
+pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).utf8_str());
 		}
 	}
 	else
 	{
 		// error message box
 		_errorMessage (m_pFrame, 
-pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).c_str());
+pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_UNLOAD ).utf8_str());
 	}
 }
 
@@ -180,7 +180,7 @@ void XAP_QNXDialog_PluginManager::event_Load ()
 			else
 			{
 				// error message
-				_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD ).c_str());
+				_errorMessage (m_pFrame, pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD ).utf8_str());
 			}
 		}
 	}

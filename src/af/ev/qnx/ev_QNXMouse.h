@@ -37,6 +37,7 @@ public:
 	void mouseClick(AV_View* pView, PtCallbackInfo_t *e);
 	void mouseUp(AV_View* pView, PtCallbackInfo_t *e);
 	void mouseMotion(AV_View* pView, PtCallbackInfo_t *event);
+	void mouseScroll(AV_View* pView, PtCallbackInfo_t *event);
 
 protected:
 	UT_uint32				m_clickState;	/* {NoClick,SingleClick,DoubleClick} */

@@ -22,7 +22,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/af/ev/xp/ev_Menu.h)
 AC_CONFIG_AUX_DIR(ac-helpers)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.0,2.0.0)
+AM_INIT_AUTOMAKE(AbiSuite-2.0,2.0.11)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -67,6 +67,7 @@ dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
 with_unix=false
 with_macosx=false
 with_cocoa=false
+with_qnx=false
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
@@ -85,12 +86,16 @@ elif test "$PLATFORM" = "cocoa" ; then
 	OBJCXX="c++"
 	OBJCXXFLAGS=""
 	OBJCXXDEPMODE="depmode=gcc3"
+elif test "$PLATFORM" = "qnx" ; then
+	ABI_FE="QNX"
+	ABI_THREAD
 else
 	ABI_THREAD
 fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
+AM_CONDITIONAL(WITH_QNX,$with_qnx)
 AC_SUBST(OBJCXX)
 AC_SUBST(OBJCXXFLAGS)
 AC_SUBST(OBJCXXDEPMODE)
@@ -326,7 +331,9 @@ if test "$PLATFORM" = "cocoa"; then
 	fi
 	PLATFORM_CFLAGS="$GLIB_CFLAGS -fpascal-strings -DNO_SYS_ERRLIST"
 fi
-
+if test "$PLATFORM" = "qnx"; then
+	PLATFORM_LIBS="-fexceptions"
+fi
 
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
@@ -383,7 +390,7 @@ ABI_LIBJPEG
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
+AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp)
 
 AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
 AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)

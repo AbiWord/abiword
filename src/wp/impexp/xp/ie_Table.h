@@ -243,8 +243,8 @@ class ABI_EXPORT ie_imp_table
 	UT_sint32           m_iPosOnRow;
 	UT_sint32           m_iCellXOnRow;
 	UT_Vector           m_vecCells;
-	UT_Vector           m_vecCellX;
-	UT_Vector           m_vecSavedX;
+	UT_NumberVector           m_vecCellX;
+	UT_NumberVector           m_vecSavedX;
 };			
 
 class ABI_EXPORT ie_imp_table_control

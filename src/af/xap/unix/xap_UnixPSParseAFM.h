@@ -345,7 +345,7 @@ extern "C" {
 #endif
   extern int abi_parseFile (FILE *fp, ABIFontInfo **fi, FLAGS flags); 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif /* XAP_UNIXPSPARSEAFM_H */

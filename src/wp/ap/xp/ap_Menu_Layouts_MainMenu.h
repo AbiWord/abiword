@@ -87,10 +87,10 @@ BeginLayout(Main,0)
 		Separator()
 
 		BeginSubMenu(AP_MENU_ID_VIEW_TOOLBARS)
-			MenuItem(AP_MENU_ID_VIEW_TB_STD)
-			MenuItem(AP_MENU_ID_VIEW_TB_FORMAT)
-			MenuItem(AP_MENU_ID_VIEW_TB_TABLE)
-			MenuItem(AP_MENU_ID_VIEW_TB_EXTRA)
+			MenuItem(AP_MENU_ID_VIEW_TB_1)
+			MenuItem(AP_MENU_ID_VIEW_TB_2)
+			MenuItem(AP_MENU_ID_VIEW_TB_3)
+			MenuItem(AP_MENU_ID_VIEW_TB_4)			
 // Currently we only can change toolbars in UNIX builds
 #ifdef XP_UNIX_TARGET_GTK
 			Separator()
@@ -209,6 +209,10 @@ BeginLayout(Main,0)
 #else
 		MenuItem(AP_MENU_ID_INSERT_PICTURE)
 #endif
+		BeginSubMenu(AP_MENU_ID_INSERT_DIRECTIONMARKER)
+ 	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM)
+	        MenuItem(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM)
+	    EndSubMenu()
 
 	EndSubMenu()
 
@@ -255,8 +259,13 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_EDIT_REMOVEHEADER)
 		MenuItem(AP_MENU_ID_EDIT_REMOVEFOOTER)
-
 		MenuItem(AP_MENU_ID_FMT_BACKGROUND)
+
+		BeginSubMenu(AP_MENU_ID_FMT_DIRECTION)
+	        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DD_RTL)
+	        	MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
+        		MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
+	    	EndSubMenu()
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)

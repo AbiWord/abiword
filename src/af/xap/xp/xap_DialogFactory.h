@@ -73,7 +73,7 @@ protected:
 	XAP_Frame *			m_pFrame;
 	XAP_Dialog_Type		m_dialogType;
 	UT_Vector			m_vecDialogs;
-	UT_Vector			m_vecDialogIds;
+	UT_NumberVector			m_vecDialogIds;
 
 	UT_uint32					m_nrElementsDlgTable;
 	const _dlg_table *	m_dlg_table;			/* an array of elements */

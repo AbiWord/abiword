@@ -96,7 +96,7 @@ bool IE_Imp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
 #ifdef WIN32  
 	*pszSuffixList = "*.zabw" ;  
 #else  
-	*pszSuffixList = ".abw.gz; *.zabw";
+	*pszSuffixList = "*.abw.gz; *.zabw";
 #endif
     *ft = getFileType();
     return true;

@@ -255,6 +255,7 @@ private:
 	UT_Vector	m_vecColumnWidths;
 	UT_Vector   m_vecEmObjects;               // Objects between cell
 											  // struxes
+	UT_NumberVector m_vecColumnPositions;
 	UT_String   m_charProps;
 	UT_String   m_charRevs;
 	UT_String   m_charStyle;
@@ -289,6 +290,7 @@ private:
 	UT_Dimension m_dim;
 	UT_sint32    m_iLeft;
 	UT_sint32    m_iRight;
+	UT_sint32    m_iLeftCellPos;
 };
 
 #endif /* IE_IMP_MSWORD_H */

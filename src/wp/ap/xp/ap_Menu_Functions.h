@@ -48,6 +48,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled); // REMOVE ME
@@ -56,6 +58,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Zoom);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MailMerge);
 
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore);

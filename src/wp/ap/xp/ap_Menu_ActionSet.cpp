@@ -117,10 +117,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_WEB,    0,0,0,1, "viewWebLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_PRINT,  0,0,0,1, "viewPrintLayout", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_TOOLBARS,	1,0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_VIEW_TB_STD,		0,0,1,0,	"viewStd",			ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_FORMAT,	0,0,1,0,	"viewFormat",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_EXTRA,	0,0,1,0,	"viewExtra",		ap_GetState_View,		NULL);
-	_s(AP_MENU_ID_VIEW_TB_TABLE,	0,0,1,0,	"viewTable",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_TB_1,		0,0,1,0,	"viewTB1",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_2,		0,0,1,0,	"viewTB2",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_3,		0,0,1,0,	"viewTB3",			ap_GetState_View,		ap_GetLabel_Toolbar);
+	_s(AP_MENU_ID_VIEW_TB_4,		0,0,1,0,	"viewTB4",			ap_GetState_View,		ap_GetLabel_Toolbar);
 	_s(AP_MENU_ID_VIEW_LOCK_TB_LAYOUT, 0,0,1,0,	"lockToolbarLayout", ap_GetState_View,			NULL);
 	_s(AP_MENU_ID_VIEW_DEFAULT_TB_LAYOUT, 0,0,0,0,	"defaultToolbarLayout", ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_RULER,	0,0,1,0,	"viewRuler",		ap_GetState_View,		NULL);
@@ -138,7 +138,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_ZOOM_WIDTH, 0,0,0,1, "zoomWidth", ap_GetState_Zoom, NULL);
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,0,	"insBreak",			NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,0,	"insBreak",			ap_GetState_BreakOK,					NULL);
 	_s(AP_MENU_ID_INSERT_BOOKMARK,  0,1,0,0,	"insertBookmark",	NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_SomethingSelected,					NULL);
 	_s(AP_MENU_ID_INSERT_DELETE_HYPERLINK, 0,0,0,0,	"deleteHyperlink",	NULL,			NULL);
@@ -159,6 +159,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_INSERTFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);
+
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER,  1,0,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER_LRM,0,0,0,0, "insertLRM", NULL, NULL);
+	_s(AP_MENU_ID_INSERT_DIRECTIONMARKER_RLM,0,0,0,0, "insertRLM", NULL, NULL);
+	
 	_s(AP_MENU_ID_FORMAT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,0,	"dlgLanguage",	ap_GetState_StylesLocked,					NULL);
@@ -187,6 +192,11 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_SUBSCRIPT,		0,0,1,0,	"toggleSub",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_TOGGLECASE,           0,1,0,0,  "dlgToggleCase", ap_GetState_SomethingSelected, NULL);
 
+	_s(AP_MENU_ID_FMT_DIRECTION,  1,0,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DD_RTL,0,0,1,0, "toggleDomDirection", ap_GetState_BlockFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DO_LTR,0,0,1,0, "toggleDirOverrideLTR", ap_GetState_CharFmt, NULL);
+	_s(AP_MENU_ID_FMT_DIRECTION_DO_RTL,0,0,1,0, "toggleDirOverrideRTL", ap_GetState_CharFmt, NULL);
+
 	_s(AP_MENU_ID_ALIGN,			1,0,0,0,	NULL,				ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_ALIGN_LEFT,		0,0,0,1,	"alignLeft",		ap_GetState_BlockFmt,	NULL);
 	_s(AP_MENU_ID_ALIGN_CENTER,		0,0,0,1,	"alignCenter",		ap_GetState_BlockFmt,	NULL);
@@ -211,8 +221,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	
 	_s(AP_MENU_ID_TABLE,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_TABLE_INSERT,1,0,0,0, NULL, ap_GetState_Changes, NULL);
-	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",ap_GetState_Changes , NULL);
-	_s(AP_MENU_ID_TABLE_INSERTTABLE,0,1,0,0, "insertTable",ap_GetState_Changes , NULL);
+	_s(AP_MENU_ID_TABLE_INSERT_TABLE,0,1,0,0, "insertTable",ap_GetState_TableOK, NULL);
+	_s(AP_MENU_ID_TABLE_INSERTTABLE,0,1,0,0, "insertTable",ap_GetState_TableOK, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE,0,0,0,0, "insertColsBefore", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER,0,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_INSERTCOLUMN,0,0,0,0, "insertColsAfter", ap_GetState_InTable, NULL);
