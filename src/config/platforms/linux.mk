@@ -59,7 +59,7 @@ G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
 PLATFORM_FLAGS		= -ansi -Wall -pipe -DLINUX -Dlinux
-PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR
+PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 # Architecture-specific flags
@@ -78,8 +78,6 @@ endif
 ifeq ($(OS_ARCH), sparc)
 PLATFORM_FLAGS		+= $(SPARC_ARCH_FLAGS)
 endif
-
-PORT_FLAGS		+= -D_XOPEN_SOURCE
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)

@@ -27,9 +27,9 @@ public:
 	virtual ~AP_Toolbar_Icons(void);
 	
 protected:
-	static UT_Bool AP_Toolbar_Icons::_findIconDataByName(const char * szName,
-														 const char *** pIconData,
-														 UT_uint32 * pSizeofData);
+	static UT_Bool _findIconDataByName(const char * szName,
+									   const char *** pIconData,
+									   UT_uint32 * pSizeofData);
 };
 
 #endif /* AP_TOOLBAR_ICONS_H */

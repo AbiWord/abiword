@@ -77,8 +77,7 @@ public:
 	virtual void scroll(UT_sint32, UT_sint32) = 0;
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	
-	typedef enum { DGP_SCREEN, DGP_PAPER,
-	} Properties;
+	typedef enum { DGP_SCREEN, DGP_PAPER } Properties;
 	
 	virtual UT_Bool queryProperties(DG_Graphics::Properties gp) const = 0;
 

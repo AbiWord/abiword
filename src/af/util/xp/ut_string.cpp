@@ -17,10 +17,8 @@
  * 02111-1307, USA.
  */
  
-
-
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include <ctype.h>
 
@@ -43,6 +41,7 @@ UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)
 #ifdef WIN32
 	return strnicmp(s1,s2,lenS1);
 #else
+	// TODO - fix this!  strncasecmp is NOT portable (for example, AIX doesn't have it)
 	return strncasecmp(s1,s2,lenS1);
 #endif
 }

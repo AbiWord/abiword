@@ -155,6 +155,7 @@ void fp_SectionSlice::__dump(FILE * fp) const
 	{
 		fp_ColumnInfo* pCI = (fp_ColumnInfo*) m_vecColumnInfos.getNthItem(i);
 		// TODO
+		pCI = pCI;// yank this
 	}
 }
 #endif

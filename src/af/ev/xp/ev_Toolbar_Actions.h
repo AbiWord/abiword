@@ -49,7 +49,7 @@ typedef enum _ev_Toolbar_ItemState			/* values may be ORed */
 	EV_TIS_ZERO				= 0x00,
 	EV_TIS_Gray				= 0x01,			/* should be grayed */
 	EV_TIS_Toggled			= 0x02,			/* should be pressed down */
-	EV_TIS_UseString		= 0x04,			/* should reference pszState */
+	EV_TIS_UseString		= 0x04			/* should reference pszState */
 	
 } EV_Toolbar_ItemState;
 
@@ -72,7 +72,7 @@ typedef enum _ev_Toolbar_ItemType
 	EV_TBIT_DropDown		= 4,			/* list box w/no text entry */
 	EV_TBIT_ComboBox		= 5,			/* list box w/ text entry */
 	EV_TBIT_StaticLabel		= 6,			/* a static control */
-	EV_TBIT_Spacer			= 7,			/* for extra space between buttons */
+	EV_TBIT_Spacer			= 7				/* for extra space between buttons */
 	
 } EV_Toolbar_ItemType;
 

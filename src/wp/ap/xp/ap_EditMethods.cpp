@@ -1704,7 +1704,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
-		da.width;
+		//da.width;
 		da.height /= pLayout->countPages();
 
 		UT_uint32 j,k;

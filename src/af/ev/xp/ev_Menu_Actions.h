@@ -54,7 +54,7 @@ typedef enum _ev_Menu_ItemState			/* values may be ORed */
 {
 	EV_MIS_ZERO		= 0x00,				/* nothing is turned on */
 	EV_MIS_Gray		= 0x01,				/* item is or should be gray */
-	EV_MIS_Toggled	= 0x02,				/* checkable item should be checked */
+	EV_MIS_Toggled	= 0x02				/* checkable item should be checked */
 
 } EV_Menu_ItemState;
 
