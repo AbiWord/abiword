@@ -322,7 +322,7 @@ UT_Bool GR_Win32Graphics::startPrint(void)
 	UT_ASSERT(m_bPrint);
 	UT_ASSERT(!m_bStartPrint);
 	m_bStartPrint = ( StartDoc(m_hdc,m_pDocInfo) > 0 );
-	
+
 	return m_bStartPrint;
 }
 
@@ -330,10 +330,27 @@ UT_Bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumb
 									UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	if (m_bStartPage)
+	{
 		EndPage(m_hdc);
+	}
 
-	m_bStartPage = UT_TRUE;
-	return (StartPage(m_hdc) > 0);
+	const int iRet = StartPage(m_hdc);
+
+	m_bStartPage = iRet > 0;
+
+	if (iRet > 0)
+	{
+		// PHYSICALOFFSETX returns offset of printable area from the left edge
+		// of the physical printer paper. The value returned is in device units.
+		// Since the current mapping mode is MM_TEXT, this code _should_ work.
+		const POINT ptNew = {
+			-GetDeviceCaps(m_hdc, PHYSICALOFFSETX),
+			-GetDeviceCaps(m_hdc, PHYSICALOFFSETY)
+		};
+		SetViewportOrgEx(m_hdc, ptNew.x, ptNew.y, 0);
+	}
+
+	return m_bStartPage;
 }
 
 UT_Bool GR_Win32Graphics::endPrint(void)
