@@ -266,14 +266,48 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);		
 									
 					if(iSelected != -1)
-						{
-						// now that we know dropdown is gone, this should be ok
-						PostMessage(hWnd, WM_KEYDOWN, VK_RETURN, 0);
+					{							
+						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+						UT_ASSERT(t);
+
+						//HWND hwndParent = GetParent(hWnd);
+						UINT u = GetDlgCtrlID(hWnd);
+						XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
+
+						static char buf[COMBO_BUF_LEN];
+
+						UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
+						UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
+						
+						if(dataLength)
+						{	
+							// If is a STYLE_NAME we should pass the internal one, not the localised				
+							if (id==AP_TOOLBAR_ID_FMT_STYLE)
+							{									
+								UT_sint32 iSelected;					
+								int nData;
+								
+								iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);										
+
+								// Find the proper non-localised text                                                                             					
+								XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();
+								EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);                                                                         
+								const UT_Vector * v = pControl->getContents();                                                                          
+								AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
+								pStyleC->repopulate();                                                                                                
+
+								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);                                                         					
+								strcpy (buf, (char *)v->getNthItem(nData));				
+								DELETEP(pControl);
+							}
+							
+							t->toolbarEvent(id, pData, dataLength);
 						}
+					}	
 					else
-						{
+					{
 						PostMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
-						}
+					}
 						
 					break;
 				}					
@@ -284,8 +318,6 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			} // swich
 		} // case command
 			
-			
-
 		case WM_KEYDOWN:
 		{
 			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
@@ -315,107 +347,6 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 	return (CallWindowProc(s_lpfnDefCombo, hWnd, uMessage, wParam, lParam));
 }
 
-LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
-{
-	switch (uMessage)
-	{	
-
-		
-		case WM_MOUSEMOVE:		
-		case WM_LBUTTONDOWN:
-		case WM_LBUTTONUP:
-		{
-			// forward these to parent (ie, the combo)
-			// TODO: figure out why tooltips still don't work over the edit
-			// HYP:  may need to tweak coord system for wParam/lParam
-			HWND hwndParent = GetParent(hWnd);
-			SendMessage(hwndParent, uMessage, wParam, lParam);
-			break;
-		}
-
-
-		case WM_KILLFOCUS:
-		{
-			// for now, we fire an event any time we lose focus
-			// TODO: confirm that this gives the desired behavior
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
-			UT_ASSERT(t);
-
-			HWND hwndParent = GetParent(hWnd);
-			UINT u = GetDlgCtrlID(hwndParent);
-			XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
-
-			static char buf[COMBO_BUF_LEN];
-
-			UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
-			UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
-			
-			if(dataLength)
-			{	
-				// If is a STYLE_NAME we should pass the internal one, not the localised				
-				if (id==AP_TOOLBAR_ID_FMT_STYLE)
-				{	
-					HWND hWndCombo = GetParent(hWnd);
-					UT_sint32 iSelected;					
-					int nData;
-					
-					iSelected = SendMessage(hWndCombo, CB_GETCURSEL, 0, 0);										
-
-					// Find the proper non-localised text                                                                             					
-					XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();
-					EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);                                                                         
-					const UT_Vector * v = pControl->getContents();                                                                          
-					AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
-					pStyleC->repopulate();                                                                                                
-
-					nData  = SendMessage(hWndCombo, CB_GETITEMDATA, iSelected, 0);                                                         					
-					strcpy (buf, (char *)v->getNthItem(nData));				
-					DELETEP(pControl);
-				}
-				
-				t->toolbarEvent(id, pData, dataLength);
-			}				
-			else
-			{
-				SendMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
-			}
-				
-			break;
-		}
-
-		case WM_KEYDOWN:
-		{
-			switch (wParam)
-			{
-				case VK_ESCAPE:
-				case VK_RETURN:
-				case VK_TAB:
-				{
-					// forward these to parent (ie, the combo)
-					HWND hwndParent = GetParent(hWnd);
-					SendMessage(hwndParent, uMessage, wParam, lParam);
-					return 0;
-				}
-			}
-			break;
-		}
-
-		case WM_KEYUP:
-		case WM_CHAR:
-		{
-			switch (wParam) 
-			{ 
-                case VK_TAB:
-				case VK_ESCAPE: 
-                case VK_RETURN:
-					// swallow these
-					return 0;
-			}
-			break;
-		}
-	}
-	return (CallWindowProc(s_lpfnDefComboEdit, hWnd, uMessage, wParam, lParam));
-}
 
 /*****************************************************************/
 
@@ -634,17 +565,6 @@ bool EV_Win32Toolbar::synthesize(void)
 						s_lpfnDefCombo = (WHICHPROC)GetWindowLong(hwndCombo, GWL_WNDPROC);
 						SetWindowLong(hwndCombo, GWL_WNDPROC, (LONG)_ComboWndProc);
 						SetWindowLong(hwndCombo, GWL_USERDATA, (LONG)this);
-
-						// override the window procedure for its edit control, too
-						POINT pt;
-						pt.x = 4;
-						pt.y = 4; 
-						HWND hwndComboEdit = ChildWindowFromPoint(hwndCombo, pt); 
-						UT_ASSERT(hwndComboEdit);						
-						UT_ASSERT(hwndComboEdit != hwndCombo);
-						s_lpfnDefComboEdit = (WHICHPROC)GetWindowLong(hwndComboEdit, GWL_WNDPROC);
-						SetWindowLong(hwndComboEdit, GWL_WNDPROC, (LONG)_ComboEditWndProc);
-						SetWindowLong(hwndComboEdit, GWL_USERDATA, (LONG)this);
 
 						// Get the handle to the tooltip window.
 						HWND hwndTT = (HWND)SendMessage(m_hwnd, TB_GETTOOLTIPS, 0, 0);
