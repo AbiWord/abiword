@@ -105,11 +105,21 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	if(m_iParentID != 0)
 	{
 		_setParent(m_pDoc->getListByID(parent_id));
-		if(m_pParent != NULL)
-			m_iLevel = m_pParent->getLevel() + 1;
 	}
 }
 
+bool fl_AutoNum::checkReference(fl_AutoNum * pAuto)
+{
+	if(pAuto == m_pParent)
+	{
+		return false;
+	}
+	if(m_pParent)
+	{
+		return m_pParent->checkReference(pAuto);
+	}
+	return true;
+}
 
 void fl_AutoNum::addItem(PL_StruxDocHandle pItem)
 {
@@ -1006,6 +1016,13 @@ void fl_AutoNum::_setParent(fl_AutoNum * pParent)
 		m_pParent = pParent;
 		if(m_pParent != NULL)
 		{
+			if(!pParent->checkReference(this))
+			{
+				m_pParent = NULL;
+				m_iParentID = 0;
+				m_bDirty = true;
+				return;
+			}
 			m_iParentID  = pParent->getID();
 		}
 		else

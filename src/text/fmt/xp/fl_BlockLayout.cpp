@@ -7632,23 +7632,31 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const XML_Cha
 	const PP_AttrProp * pBlockAP = NULL;
 	const XML_Char * szLid=NULL;
 	getAP(pBlockAP);
+	bool bGetPrevAuto = true;
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
 	if (szLid)
 		id = atoi(szLid);
 	else
-		id = 0;
+		{
+			id = 0;
+			bGetPrevAuto = false;
+		}
+			
 
 	FV_View* pView = getView();
 	UT_ASSERT(pView);
-
-	pAutoNum = m_pDoc->getListByID(id);
-	xxx_UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
-	if(pAutoNum != NULL)
+	if(bGetPrevAuto)
 	{
-		m_pAutoNum = pAutoNum;
-		m_bListItem = true;
-		listUpdate();
+		pAutoNum = m_pDoc->getListByID(id);
+		UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
+		if(pAutoNum != NULL)
+		{
+			m_pAutoNum = pAutoNum;
+			m_bListItem = true;
+			UT_DEBUGMSG(("Found list of id %d \n",id));
+			listUpdate();
+		}
 	}
 
 	UT_return_if_fail(m_pDoc);
@@ -7938,7 +7946,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 		{
 			pRun = pRun->getNextRun();
 		}
-		PT_DocPosition lastPos = getPosition() + pRun->getBlockOffset();
+		PT_DocPosition lastPos = getPosition(false) + pRun->getBlockOffset();
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, getPosition(false), lastPos, pListAttrs, pListProps);
 //
 // Set the indents to match.

@@ -2037,79 +2037,164 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 
 	UT_GenericVector<fl_BlockLayout *> vBlock;
 	getBlocksInSelection( &vBlock);
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = m_Selection.getSelectionAnchor();
+	if(posEnd < posStart)
+	{
+		PT_DocPosition swap = posStart;
+		posStart = posEnd;
+		posEnd = swap;
+	}
+	UT_sint32 diff  =0;
+	bool bNoSelection = true;
 //
 // Turn off cursor
 //
 	if(!isSelectionEmpty())
 	{
+		bNoSelection = false;
 		_clearSelection();
 	}
-	UT_uint32 i;
+	UT_sint32 i;
 	m_pDoc->disableListUpdates();
 
 	m_pDoc->beginUserAtomicGlob();
 
 	char margin_left [] = "margin-left";
 	char margin_right[] = "margin-right";
+	UT_GenericVector<fl_BlockLayout *> vListBlocks;
+	UT_GenericVector<fl_BlockLayout *> vNoListBlocks;
 
-	for(i=0; i< vBlock.getItemCount(); i++)
+	for(i=0; i< static_cast<UT_sint32>(vBlock.getItemCount()); i++)
 	{
-		UT_DEBUGMSG(("SEVIOR: Processing block %d \n",i));
 		fl_BlockLayout * pBlock =  vBlock.getNthItem(i);
-		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
-		if(pBlock->isListItem() == true)
+		if(pBlock->isListItem())
 		{
-			m_pDoc->StopList(sdh);
+			vListBlocks.addItem(pBlock);
+			diff -= 2;
 		}
 		else
 		{
-			fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(pBlock->getPrev());
-			while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
-			{
-				pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
-			}
+			vNoListBlocks.addItem(pBlock);
+			diff += 2;
+		}
+	}
+//
+// Have to stop lists in reverse order so undo works!
+//
+	for(i = static_cast<UT_sint32>(vListBlocks.getItemCount()) -1; i>=0; i--)
+	{
+		UT_DEBUGMSG(("SEVIOR: Processing block %d \n",i));
+		fl_BlockLayout * pBlock =  vListBlocks.getNthItem(i);
+		PT_DocPosition posBlock = pBlock->getPosition();
+
+		const XML_Char * pListAttrs[10];
+		pListAttrs[0] = "listid";
+		pListAttrs[1] = NULL;
+		pListAttrs[2] = "parentid";
+		pListAttrs[3] = NULL;
+		pListAttrs[4] = "level";
+		pListAttrs[5] = NULL;
+		pListAttrs[6] = "type";
+		pListAttrs[7] = NULL;
+		pListAttrs[8] = NULL;
+		pListAttrs[9] = NULL;
+			
+		// we also need to explicitely clear the list formating
+		// properties, since their values are not necessarily part
+		// of the style definition, so that cloneWithEliminationIfEqual
+		// which we call later will not get rid off them
+		const XML_Char * pListProps[20];
+		pListProps[0] =  "start-value";
+		pListProps[1] =  NULL;
+		pListProps[2] =  "list-style";
+		pListProps[3] =  NULL;
+			
+		if(pBlock->getDominantDirection() == UT_BIDI_RTL)
+			pListProps[4] =  "margin-right";
+		else
+			pListProps[4] =  "margin-left";
+		
+		pListProps[5] =  NULL;
+		pListProps[6] =  "text-indent";
+		pListProps[7] =  NULL;
+		pListProps[8] =  "field-color";
+		pListProps[9] =  NULL;
+		pListProps[10]=  "list-delim";
+		pListProps[11] =  NULL;
+		pListProps[12]=  "field-font";
+		pListProps[13] =  NULL;
+		pListProps[14]=  "list-decimal";
+		pListProps[15] =  NULL;
+		pListProps[16] =  "list-tag";
+		pListProps[17] =  NULL;
+		pListProps[18] =  NULL;
+		pListProps[19] =  NULL;
+//
+// Remove all the list related properties
+//
+		bool bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posBlock, posBlock, pListAttrs, pListProps, PTX_Block);
+		fp_Run * pRun = pBlock->getFirstRun();
+		while(pRun->getNextRun())
+		{
+			pRun = pRun->getNextRun();
+		}
+		PT_DocPosition lastPos = posBlock + pRun->getBlockOffset();
+		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, posBlock, lastPos, pListAttrs, pListProps);
+	}
+//
+// Have to start lists in order so undo works!
+//
+	for(i=0; i<static_cast<UT_sint32>(vNoListBlocks.getItemCount()); i++)
+	{
+		fl_BlockLayout * pBlock = vNoListBlocks.getNthItem(i);
+		fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(pBlock->getPrev());
+		while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
+		{
+			pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
+		}
 //
 // Only attach block to previous list if the margin of the current block < the
 // previous block.
 //
-			double prevLeft = 0.0;
-			double blockLeft = 0.0;
-			if(pPrev != NULL)
-			{
-				prevLeft = pPrev->getDominantDirection() == UT_BIDI_LTR
-				  ? UT_convertToInches(pPrev->getProperty(margin_left,true))
-				  : UT_convertToInches(pPrev->getProperty(margin_right,true));
-
-				blockLeft = pBlock->getDominantDirection() == UT_BIDI_LTR
-				  ? UT_convertToInches(pBlock->getProperty(margin_left,true))
-				  : UT_convertToInches(pBlock->getProperty(margin_right,true));;
-			}
+		double prevLeft = 0.0;
+		double blockLeft = 0.0;
+		if(pPrev != NULL)
+		{
+			prevLeft = pPrev->getDominantDirection() == UT_BIDI_LTR
+				? UT_convertToInches(pPrev->getProperty(margin_left,true))
+				: UT_convertToInches(pPrev->getProperty(margin_right,true));
+			
+			blockLeft = pBlock->getDominantDirection() == UT_BIDI_LTR
+				? UT_convertToInches(pBlock->getProperty(margin_left,true))
+				: UT_convertToInches(pBlock->getProperty(margin_right,true));;
+		}
 //
 // Look for Numbered Heading in the prev block style or it's ancestry.
 // If there is one there we don't attach this block to it.
 //
-			bool bHasNumberedHeading = false;
-			if(pPrev != NULL)
-			{
-				bHasNumberedHeading = isNumberedHeadingHere(pPrev);
-			}
+		bool bHasNumberedHeading = false;
+		if(pPrev != NULL)
+		{
+			bHasNumberedHeading = isNumberedHeadingHere(pPrev);
+		}
 //
 // Don't resume if the previous block has a Numbered Heading Style
 //
-			if(!bHasNumberedHeading && (pBlock->isListItem()== false) && (pPrev != NULL) && (pPrev->isListItem()== true) && (pPrev->getAutoNum()->getType() == listType) && (blockLeft <= (prevLeft - 0.00001)))
-			{
-				pBlock->resumeList(pPrev);
-			}
-			else if(!pBlock->isListItem())
-			{
-				XML_Char* cType = pBlock->getListStyleString(listType);
-				pBlock->StartList(cType);
-			}
+		if(!bHasNumberedHeading && (pBlock->isListItem()== false) && (pPrev != NULL) && (pPrev->isListItem()== true) && (pPrev->getAutoNum()->getType() == listType) && (blockLeft <= (prevLeft - 0.00001)))
+		{
+			pBlock->resumeList(pPrev);
+		}
+		else if(!pBlock->isListItem())
+		{
+			XML_Char* cType = pBlock->getListStyleString(listType);
+			pBlock->StartList(cType);
 		}
 	}
 
 	// closes bug # 1255 - unselect a list after creation
-	cmdUnselectSelection();
+	//cmdUnselectSelection();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -2118,6 +2203,14 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
+	if(!bNoSelection)
+	{
+		posEnd += diff;
+		setPoint(posStart);
+		_setSelectionAnchor();
+		setPoint(posEnd);
+		_drawSelection();
+	}
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
@@ -2126,6 +2219,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 	{
 		_ensureInsertionPointOnScreen();
 	}
+	UT_DEBUGMSG(("Point %d anchor %d \n",getPoint(),m_Selection.getSelectionAnchor()));
 }
 
 /*!
