@@ -2594,6 +2594,9 @@ bool IE_Imp_RTF::ParseRTFKeyword()
 }
 
 
+static char g_dbgLastKeyword [256];
+static UT_sint16 g_dbgLastParam; 
+
 /*!
   Read a keyword from the file.
   \retval pKeyword the keyword buffer whose len is in keywordBuffLen
@@ -2616,6 +2619,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* p
 	const unsigned int max_param = 256;
 	unsigned char parameter[max_param];
 	unsigned int count = 0;
+	unsigned char * savedKeyword = pKeyword;
 
 	// Read the first character of the control word
 	unsigned char ch;
@@ -2686,6 +2690,9 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* p
 	{
 		SkipBackChar(ch);
 	}
+
+	strcpy(g_dbgLastKeyword, (const char *)savedKeyword);
+	g_dbgLastParam = *pParam;
 
 	return true;
 }
@@ -8342,43 +8349,58 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 			}
 			else
 			{
-				if (strcmp(reinterpret_cast<char*>(&keyword[0]), "pntxta") == 0)
-				{
-			  // OK scan through the text until a closing delimeter is
-			  // found
-					int count = 0;
-					if (!ReadCharFromFile(&ch))
-						return false;
-					while ( ch != '}'  && ch != ';')
-					{
-						keyword[count++] = ch;
-						if (!ReadCharFromFile(&ch))
-							return false;
-					}
-					keyword[count++] = 0;
-					strcpy(rtfTable.textafter,reinterpret_cast<char*>(&keyword[0]));
-					UT_DEBUGMSG(("FOUND pntxta in stream, copied %s to input  \n",keyword));
+				/* 
+				   dest indicate the destination 
+				   0 = none (ignore)
+				   1 = after
+				   2 = before
+				   Any other value has no legal meaning.
+				*/
+				int dest = 0; 
+				if (strcmp(reinterpret_cast<char*>(&keyword[0]), "pntxta") == 0) {
+					dest = 1;
 				}
-				else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "pntxtb") == 0)
-				{
-			  // OK scan through the text until a closing delimeter is
-			  // found
-					int count = 0;
-					if (!ReadCharFromFile(&ch))
-						return false;
-					while ( ch != '}'  && ch != ';' )
-					{
-						keyword[count++] = ch;
-						if (!ReadCharFromFile(&ch))
-							return false;
-					}
-					keyword[count++] = 0;
-					strcpy(rtfTable.textbefore,reinterpret_cast<char*>(&keyword[0]));
-					UT_DEBUGMSG(("FOUND pntxtb in stream,copied %s to input  \n",keyword));
-				}
-				else
-				{
+				else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "pntxtb") == 0) {
+					dest = 2;
+				} 
+				else {
 					UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
+				}
+				if (dest != 0) {
+					// OK scan through the text until a closing delimeter is
+					// found
+					int level = 0;
+					int count = 0;
+					if (!ReadCharFromFile(&ch))
+						return false;
+					while ( level != 0 || (ch != '}' && ch != ';'))
+					{
+						if (ch == '{') {
+							level++;
+						}
+						else if (ch == '}') {
+							UT_ASSERT(level);
+							level--;
+						}
+						else {
+							keyword[count++] = ch;
+						}
+						if (!ReadCharFromFile(&ch))
+							return false;
+					}
+					keyword[count++] = 0;
+					switch (dest) {
+					case 1:
+						strcpy(rtfTable.textafter,reinterpret_cast<char*>(&keyword[0]));
+						UT_DEBUGMSG(("FOUND pntxta in stream, copied %s to input  \n",keyword));
+						break;
+					case 2:
+						strcpy(rtfTable.textbefore,reinterpret_cast<char*>(&keyword[0]));
+						UT_DEBUGMSG(("FOUND pntxtb in stream,copied %s to input  \n",keyword));
+						break;
+					default:
+						UT_ASSERT_NOT_REACHED();
+					}
 				}
 			}
 			goto nextChar;
