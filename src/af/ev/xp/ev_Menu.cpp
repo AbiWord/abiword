@@ -207,7 +207,7 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 /* replace _ev_GetLabelName () */
 /* this version taken from ev_UnixMenu.cpp */
 const char ** EV_Menu::getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
-									EV_Menu_Action * pAction, EV_Menu_Label * pLabel)
+									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
 

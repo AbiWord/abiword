@@ -58,7 +58,7 @@ public:
 
 protected:
 	const char ** 				getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
-											 EV_Menu_Action * pAction, EV_Menu_Label * pLabel);
+											 const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel);
 	// this method comes a bit late... if somebody has the time, add pApp to our constructor,
 	// and erase it from the constructor of our inherited classes.
 	void						setApp(XAP_App *pApp) { m_pApp = pApp; }

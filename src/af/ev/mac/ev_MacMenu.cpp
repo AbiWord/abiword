@@ -233,9 +233,9 @@ bool EV_MacMenu::synthesize(void)
 		UT_ASSERT(pLayoutItem);
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
 		// get the name for the menu item

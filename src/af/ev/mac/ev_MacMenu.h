@@ -51,7 +51,6 @@ public:
     bool synthesizeMenuBar(void);
     
     XAP_Menu_Id findMenuId (short menu, short item);
-
 private:
 	enum {
 		EV_MAC_MENUBAR,
@@ -71,7 +70,7 @@ private:
 	static char _getItemCmd (const char * mnemonic, UInt8 & modifiers, SInt16 & glyph);
 
 protected:
-	virtual bool		_doAddMenuItem(XAP_Menu_Id id) { /* TODO */ }
+	virtual bool		_doAddMenuItem(UT_uint32 layout_pos) { UT_ASSERT(UT_NOT_IMPLEMENTED); }
 };
 
 #endif /* EV_MACMENU_H */
