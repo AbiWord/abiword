@@ -217,10 +217,10 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
 				   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
    gtk_table_attach_defaults (GTK_TABLE(tableMain), scroll2, 0, 2, 1, 4);
 
-   m_textWord = gtk_text_new (NULL, NULL);
+   m_textWord = gtk_text_view_new ();
    gtk_widget_ref (m_textWord);
    gtk_container_add (GTK_CONTAINER (scroll2), m_textWord);
-   gtk_text_set_word_wrap(GTK_TEXT(m_textWord), TRUE);
+   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(m_textWord), GTK_WRAP_WORD);
    gtk_widget_set_usize (m_textWord, 350, 80);
    gtk_widget_realize (m_textWord);
 
@@ -280,22 +280,17 @@ void AP_UnixDialog_Spell::_connectSignals(void)
 }
 
 void AP_UnixDialog_Spell::_showMisspelledWord(void)
-{                                
-   
-   gtk_text_freeze( GTK_TEXT(m_textWord) );
-   
-   gtk_text_set_point( GTK_TEXT(m_textWord), 0 );
-   gtk_text_forward_delete( GTK_TEXT(m_textWord), 
-			   gtk_text_get_length( GTK_TEXT(m_textWord) ) );
-   
+{             
+  GtkTextBuffer * buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_textWord));
+  GtkTextIter iter;
+
    UT_UCSChar *p;
    // insert start of sentence
    p = _getPreWord();
    gchar * preword = (gchar*) _convertToMB(p);
    FREEP(mbword);
    FREEP(p);
-   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
-		   preword, strlen(preword));
+   gtk_text_buffer_set_text(buffer, preword, -1);
 
    // insert misspelled word (in highlight color)
    p = _getCurrentWord();
@@ -303,20 +298,22 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    FREEP(mbword);
    FREEP(p);
 
-   gtk_text_insert(GTK_TEXT(m_textWord) , NULL, &m_highlight, NULL,
-		   word, strlen(word));
+   // TODO: set highlight color m_highlight
+   GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-gdk", &m_highlight, NULL); 
+   gtk_text_buffer_get_end_iter(buffer, &iter);
+   gtk_text_buffer_insert_with_tags(buffer, &iter, word, -1, txt_tag, NULL);
    
    // insert end of sentence
    p = _getPostWord();
    gchar * postword = (gchar*) _convertToMB(p);
    FREEP(mbword);
    FREEP(p);
-   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
-		   postword, strlen(postword));
+
+   gtk_text_buffer_get_end_iter(buffer, &iter);
+   gtk_text_buffer_insert(buffer, &iter, postword, -1);
 
    // TODO: set scroll position so misspelled word is centered
 
-   gtk_text_thaw( GTK_TEXT(m_textWord) );   
    gtk_clist_freeze( GTK_CLIST(m_clistSuggestions) );   
    gtk_clist_clear(GTK_CLIST(m_clistSuggestions));
    
