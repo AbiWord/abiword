@@ -20,7 +20,6 @@
  * 02111-1307, USA.
  */
 
-#define ABIWORD_INTERNAL
 
 #include <string.h>
 
@@ -30,11 +29,13 @@
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
 #include "fv_View.h"
+#include "ap_UnixApp.h"
 
 // Our widget's private storage data
 // UnixApp and UnixFrame already properly inherit from either
 // Their GTK+ or GNOME XAP equivalents, so we don't need to worry
 // About that here
+
 struct _AbiPrivData {
 	AP_UnixApp           * m_pApp;
 	AP_UnixFrame         * m_pFrame;
