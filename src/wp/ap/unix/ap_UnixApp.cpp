@@ -1982,7 +1982,7 @@ load_document_from_stream (BonoboPersistStream *ps,
 	//
 	g_object_set(G_OBJECT(abiwidget),"AbiWidget--unlink-after-load",static_cast<gboolean>(TRUE),NULL);
 	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",static_cast<gchar *>(szTempfile),NULL);
-
+	abi_widget_map_to_screen(abiwidget);
 
 	return;
 

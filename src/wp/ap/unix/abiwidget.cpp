@@ -366,6 +366,162 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 /**************************************************************************/
 
 //
+static bool      s_bFirstDrawDone = false;
+static bool      s_bFreshDraw = false;
+static UT_Timer * s_pToUpdateCursor = NULL;
+static XAP_Frame * s_pLoadingFrame = NULL;
+static AD_Document * s_pLoadingDoc = NULL;
+static UT_sint32 s_iLastYScrollOffset = -1;
+static UT_sint32 s_iLastXScrollOffset = -1;
+
+static void s_LoadingCursorCallback(UT_Worker * pTimer )
+{
+	UT_ASSERT(pTimer);
+	xxx_UT_DEBUGMSG(("Update Screen on load Frame %x \n",s_pLoadingFrame));
+	XAP_Frame * pFrame = s_pLoadingFrame;
+	UT_uint32 iPageCount = 0;
+	
+	if(pFrame == NULL)
+	{
+		s_bFirstDrawDone = false;
+		return;
+	}
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(pView)
+	{
+		GR_Graphics * pG = pView->getGraphics();
+		if(pG)
+		{
+			pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		}
+		FL_DocLayout * pLayout = pView->getLayout();
+		if(pView->getPoint() > 0)
+		{
+			pLayout->updateLayout();
+			iPageCount = pLayout->countPages();
+
+			if(!s_bFirstDrawDone && iPageCount > 1)
+			{
+				pView->draw();
+				s_bFirstDrawDone = true;
+			}
+			else
+			{
+				// we only want to draw if we need to:
+				//   (1) if the scroller position has changed
+				//   (2) if the previous draw was due to a scroll change
+				//
+				// This way each change of scroller position will
+				// result in two draws, the second of which will
+				// ensure that anything from the current vieport that
+				// was not yet laid out when the first draw was made
+				// is drawn
+				if(iPageCount > 1)
+				{
+					if(pView->getYScrollOffset() != s_iLastYScrollOffset ||
+					   pView->getXScrollOffset() != s_iLastXScrollOffset)
+					{
+						pView->updateScreen(true);
+						s_iLastYScrollOffset = pView->getYScrollOffset();
+						s_iLastXScrollOffset = pView->getXScrollOffset();
+						s_bFreshDraw = true;
+						xxx_UT_DEBUGMSG(("Incr. loader: primary draw\n"));
+					}
+					else if(s_bFreshDraw)
+					{
+						pView->updateScreen(true);
+						s_bFreshDraw = false;
+						xxx_UT_DEBUGMSG(("Incr. loader: secondary draw\n"));
+					}
+					else
+					{
+						xxx_UT_DEBUGMSG(("Incr. loader: draw not needed\n"));
+					}
+				}
+			
+			}
+
+			if(iPageCount > 1)
+			{
+				UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
+				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+			}
+			else
+			{
+				UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+			}
+		}
+		else
+		{
+			UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+			pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+		}
+	}
+	else
+	{
+		UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );		s_bFirstDrawDone = false;
+	}
+}
+
+/*!
+ * Control Method for the updating loader.
+\params bool bStartStop true to start the updating loader, flase to stop it
+             after the document has loaded.
+\params XAP_Frame * pFrame Pointer to the new frame being loaded.
+*/
+static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
+{
+	// Now construct the timer for auto-updating
+	if(bStartStop)
+	{
+//
+// Can't have multiple loading document yet. Need Vectors of loading frames
+// and auto-updaters. Do this later.
+//
+		if(s_pLoadingFrame != NULL)
+		{
+			return;
+		}
+		s_pLoadingFrame = pFrame;
+		s_pLoadingDoc = pFrame->getCurrentDoc();
+		if(s_pToUpdateCursor == NULL)
+		{
+			GR_Graphics * pG = NULL;
+			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL,pG);
+		}
+		s_bFirstDrawDone = false;
+		s_pToUpdateCursor->set(1000);
+		s_pToUpdateCursor->start();
+//		s_pLoadingFrame = XAP_App::getApp()->getLastFocussedFrame();
+	}
+	else
+	{
+		if(s_pToUpdateCursor != NULL)
+		{
+			s_pToUpdateCursor->stop();
+			DELETEP(s_pToUpdateCursor);
+			s_pToUpdateCursor = NULL;
+			if(s_pLoadingFrame != NULL)
+			{
+				s_pLoadingFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+				FV_View * pView = static_cast<FV_View *>(s_pLoadingFrame->getCurrentView());
+				if(pView)
+				{
+					pView->setCursorToContext();
+					pView->focusChange(AV_FOCUS_HERE);
+				}
+			}
+			s_pLoadingFrame = NULL;
+		}
+		s_pLoadingDoc = NULL;
+	}
+}
+
+
 static bool
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
@@ -392,8 +548,17 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 		return false;
-
+	s_StartStopLoadingCursor( true, pFrame);
+//
+// First draw blank document
+//
+	pFrame->loadDocument(NULL,IEFT_Unknown ,true);
+	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+//
+//Now load the file
+//
 	bool res= ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
+	s_StartStopLoadingCursor( false, pFrame);
 	abi->priv->m_bPendingFile = false;
 	abi->priv->m_iNumFileLoads += 1;
 	if(abi->priv->m_bUnlinkFileAfterLoad)
@@ -2218,7 +2383,10 @@ abi_widget_map_to_screen(AbiWidget * abi)
   g_return_if_fail (abi != 0);
   UT_DEBUGMSG(("Doing map_to_screen \n"));
   GtkWidget * widget = GTK_WIDGET(abi);
-
+  if(abi->priv->m_bMappedToScreen)
+  {
+	  return;
+  }
   // now we can set up Abi inside of this GdkWindow
 
 #ifdef LOGFILE

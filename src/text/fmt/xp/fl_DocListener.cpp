@@ -197,6 +197,7 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	return bResult;
 }
 
+static UT_uint32 countStrux = 0;
 /*!
  */
 bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
@@ -217,6 +218,19 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			{
 				xxx_UT_DEBUGMSG(("Null Update in Populate Strux \n"));
 				pFrame->nullUpdate();
+				if(countStrux > 60)
+				{
+					if(countStrux < 300)
+					{
+						if(m_pLayout->getView() && (m_pLayout->getView()->getPoint() == 0))
+						{
+							fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
+							pDSL->format();
+							countStrux = 300;
+						}
+					}
+				}
+				countStrux++;
 			}
 			else
 			{

@@ -67,7 +67,7 @@ AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
 	if(m_iBackgroundRedrawID != 0)
 		gtk_timeout_remove(m_iBackgroundRedrawID);
-	while(m_pG->isSpawnedRedraw())
+	while(m_pG && m_pG->isSpawnedRedraw())
 	{
 		UT_usleep(100);
 	}
