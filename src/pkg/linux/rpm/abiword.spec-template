@@ -2,7 +2,7 @@
 %define prefix /usr
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
-%define build_id rms
+#%define build_id rms
 
 # define to 0 if you don't want, 1 if you want
 %define no_static UNIX_CAN_BUILD_STATIC=__UNIX_CAN_BUILD_STATIC__
@@ -29,7 +29,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 License: GPL
 Prefix: %{prefix}
 Epoch: 1
-Packager: Builder <builder@greymalkin.yi.org>
+#Packager: Builder <builder@greymalkin.yi.org>
 Distribution: RedHat 7.x Contrib
 # Basic requirements
 Requires: gtk+ >= 1.2.7
@@ -212,6 +212,12 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %{ABIPREFIX}/AbiSuite/AbiWord/help/fr-FR
 
 %changelog
+
+* Sat Nov 24 2001 Rui M. Silva Seabra <rms@multicert.com>
+- Made spec ready to be included in tree
+
+* Sat Nov 24 2001 Francis James Franklin <>
+- Made spec ready to be included in tree
 
 * Sat Nov 3 2001 Rui M. Silva Seabra <rms@multicert.com>
 - Seperated the help packages.
