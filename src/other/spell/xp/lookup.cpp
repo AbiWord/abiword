@@ -42,6 +42,10 @@
 
 /*
  * $Log$
+ * Revision 1.7  2003/09/02 19:10:56  mgilbert
+ * - Oops, forgot to cvs add some translations yesterday
+ * - es-ES update from FJF
+ *
  * Revision 1.6  2003/08/26 13:43:42  uwog
  * and even more :-P
  *
@@ -617,7 +621,7 @@ void ISpellChecker::clearindex (struct flagptr *indexp)
 		if (indexp->numents == 0 && indexp->pu.fp != NULL)
 		{
 		    clearindex(indexp->pu.fp);
-			free(indexp->pu.fp);
+			FREEP(indexp->pu.fp);
 		}
 	}
 }

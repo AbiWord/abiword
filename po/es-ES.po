@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-08-29 08:48+0200\n"
-"PO-Revision-Date: 2003-08-29 20:27+0200\n"
+"POT-Creation-Date: 2003-09-01 16:15+0200\n"
+"PO-Revision-Date: 2003-09-01 16:14+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1066,7 +1066,8 @@ msgstr "AbiWord terminó de comprobar la selección."
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:490
 #, c-format
-msgid "AbiWord has finished its search of the document and has made %d replacements."
+msgid ""
+"AbiWord has finished its search of the document and has made %d replacements."
 msgstr ""
 "AbiWord ha terminado su búsqueda en el documento y ha efectuado %d "
 "reemplazos."
@@ -1175,7 +1176,8 @@ msgstr "Añadir columna después"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:522
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Añadir o modificar puntos y numeración para los parágrafos seleccionados"
+msgstr ""
+"Añadir o modificar puntos y numeración para los parágrafos seleccionados"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:524
@@ -1497,7 +1499,7 @@ msgstr "Puntos"
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:656
 msgid "Bullets and &Numbering"
-msgstr "Viñetas y &numeración"
+msgstr "Puntos y &numeración"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:658
@@ -4172,7 +4174,8 @@ msgstr "Informar de un &fallo"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1775
 msgid "Report a bug and help AbiWord become a better product"
-msgstr "Informa de un fallo y ayuda a AbiWord a convertirse en un producto mejor"
+msgstr ""
+"Informa de un fallo y ayuda a AbiWord a convertirse en un producto mejor"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1777
@@ -4535,7 +4538,8 @@ msgstr "Establecer las preferencias de ortografía"
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:1924
 msgid "Setup your document's page properties such as page size and margins"
-msgstr "Configurar las propiedades de página del documento como tamaño y márgenes"
+msgstr ""
+"Configurar las propiedades de página del documento como tamaño y márgenes"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1926
@@ -4600,7 +4604,8 @@ msgstr "Mostrar u ocultar la barra de tablas"
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:1950
 msgid "Show the AbiWord splash screen on application startup"
-msgstr "Mostrar la pantalla de bienvenida de AbiWord al inicio de la aplicación"
+msgstr ""
+"Mostrar la pantalla de bienvenida de AbiWord al inicio de la aplicación"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1952
@@ -5287,7 +5292,8 @@ msgstr "Ha cambiado el modo de dirección."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2237
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Debe seleccionar una porción del documento antes de insertar un hiperenlace."
+msgstr ""
+"Debe seleccionar una porción del documento antes de insertar un hiperenlace."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2239
@@ -6641,7 +6647,8 @@ msgstr "Esloveno"
 #. DLG_HashDownloader_DictlistDLFail
 #: po/tmp/xap_String_Id.h.h:550
 msgid "Sorry! I seem unable to download the dictionary-list."
-msgstr "¡Lo sentimos! Parece que no es posible descargar la lista de diccionarios."
+msgstr ""
+"¡Lo sentimos! Parece que no es posible descargar la lista de diccionarios."
 
 #. DLG_HashDownloader_DictDLFail
 #: po/tmp/xap_String_Id.h.h:552
@@ -6962,7 +6969,7 @@ msgstr "pulgadas"
 msgid "mm"
 msgstr "milímetros"
 
-#. DLG_Unit_pico
+#. DLG_Unit_pica
 #: po/tmp/xap_String_Id.h.h:704
 msgid "pica"
 msgstr "picas"
@@ -7011,4 +7018,3 @@ msgstr "la lista de diccionarios"
 
 #~ msgid "Right-justify the paragraph"
 #~ msgstr "Justificar el párrafo a la derecha"
-

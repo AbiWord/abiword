@@ -297,7 +297,7 @@ public:
 
 	~UT_UCS4String();
 
-	size_t		size() const;
+	size_t	size() const;
 	size_t length () const { return size () ; }
 
 	bool		empty() const;
