@@ -2063,6 +2063,10 @@ void fl_BlockLayout::format()
 	// Need this to find where to break section in the document.
 	//
 	fl_ContainerLayout * pPrevCL = getPrev();
+	while(pPrevCL && pPrevCL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		pPrevCL = pPrevCL->getPrev();
+	}
 	fp_Page * pPrevP = NULL;
 	if(pPrevCL)
 	{
