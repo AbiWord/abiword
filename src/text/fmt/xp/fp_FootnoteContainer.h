@@ -75,10 +75,14 @@ public:
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	virtual fp_Page *   getPage(void) { return m_pPage;}
 	void                setPage(fp_Page * pPage);
+	fp_EndnoteContainer * getLocalNext(void);
+	fp_EndnoteContainer * getLocalPrev(void);
 	fl_DocSectionLayout * getDocSectionLayout(void);
 
 private:
 	fp_Page * m_pPage;
+	fp_EndnoteContainer * m_pLocalNext;
+	fp_EndnoteContainer * m_pLocalPrev;
 };
 
 #endif /* FOOTNOTECONTAINER_H */

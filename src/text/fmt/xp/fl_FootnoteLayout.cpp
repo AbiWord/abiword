@@ -630,7 +630,7 @@ void fl_EndnoteLayout::collapse(void)
 	fp_EndnoteContainer *pFC = (fp_EndnoteContainer *) getFirstContainer();
 	while(pFC)
 	{
-		fp_EndnoteContainer *pNext = static_cast<fp_EndnoteContainer *>(pFC->getNext());
+		fp_EndnoteContainer *pNext = static_cast<fp_EndnoteContainer *>(pFC->getLocalNext());
 		m_pLayout->removeEndnoteContainer(pFC);
 		fp_EndnoteContainer * pPrev = (fp_EndnoteContainer *) pFC->getPrev();
 		if(pPrev)

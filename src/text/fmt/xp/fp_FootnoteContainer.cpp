@@ -279,7 +279,9 @@ void fp_FootnoteContainer::layout(void)
  */
 fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout) 
 	: fp_VerticalContainer(FP_CONTAINER_ENDNOTE, pSectionLayout),
-	  m_pPage(NULL)
+	  m_pPage(NULL),
+	  m_pLocalNext(NULL),
+	  m_pLocalPrev(NULL)
 {
 }
 
@@ -294,6 +296,8 @@ fp_EndnoteContainer::~fp_EndnoteContainer()
 {
 	UT_DEBUGMSG(("deleting endnote container %x \n",this));
 	m_pPage = NULL;
+	m_pLocalNext = NULL;
+	m_pLocalPrev = NULL;
 }
 
 void fp_EndnoteContainer::setPage(fp_Page * pPage)
@@ -326,7 +330,23 @@ void fp_EndnoteContainer::clearScreen(void)
 		pCon->clearScreen();
 	}
 }
-	
+
+/*!
+ * These are for Endnote containers broken over page boundaries
+ */
+fp_EndnoteContainer * fp_EndnoteContainer::getLocalNext(void)
+{
+	return m_pLocalNext;
+}
+
+/*!
+ * These are for Endnote containers broken over page boundaries
+ */
+fp_EndnoteContainer * fp_EndnoteContainer::getLocalPrev(void)
+{
+	return m_pLocalPrev;
+}
+
 void fp_EndnoteContainer::setContainer(fp_Container * pContainer)
 {
 	if (pContainer == getContainer())
