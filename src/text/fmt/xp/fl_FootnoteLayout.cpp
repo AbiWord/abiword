@@ -391,14 +391,20 @@ bool fl_FootnoteLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFootnote);
-
+//
+// Find the block that contains this layout.
+//
+	PT_DocPosition prevPos = pcrx->getPosition();
+	fl_BlockLayout * pEncBlock =  m_pLayout->findBlockAtPosition(prevPos);
+//
+// Fix the offsets for the block
+//
+	pEncBlock->updateOffsets(prevPos,0);
 
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
 
 	collapse();
-//	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
-//	pTL->collapse();
 	if(pPrev != NULL)
 	{
 		pPrev->setNext(pNext);
@@ -415,7 +421,6 @@ bool fl_FootnoteLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	{
 		myContainingLayout()->setLastLayout(pPrev);
 	}
-//	pTL->updateTable(); // may not need this. FIXME check if we do!
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;

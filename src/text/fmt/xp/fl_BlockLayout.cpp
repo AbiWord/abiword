@@ -3407,10 +3407,11 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		}
 		else if (iRunBlockOffset > blockOffset)
 		{
-			UT_ASSERT(bInserted);
-
-			// the insert is occuring BEFORE this run, so we just move the run offset
-			pRun->setBlockOffset(iRunBlockOffset + len);
+			if(bInserted)
+			{
+				// the insert is occuring BEFORE this run, so we just move the run offset
+				pRun->setBlockOffset(iRunBlockOffset + len);
+			}
 		}
 		else if (iRunBlockOffset == blockOffset)
 		{

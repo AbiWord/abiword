@@ -840,6 +840,14 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			m_pLayout->updateLayout();
 			goto finish_up;
 		}
+		case PTX_SectionFootnote:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionFootnote);
+			fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pL;
+			pFL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
+		}
 		case PTX_SectionTable:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
@@ -861,6 +869,10 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			goto finish_up;
 		}
 		case PTX_EndCell:
+		{
+			goto finish_up;
+		}
+		case PTX_EndFootnote:
 		{
 			goto finish_up;
 		}

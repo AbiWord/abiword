@@ -3506,7 +3506,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
+	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();
 	return bRes;
 }

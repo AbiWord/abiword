@@ -67,6 +67,14 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 		UT_DEBUGMSG(("_unlink Strux Section %x \n",pfs));
 	}
+	else if(pfs->getStruxType() == PTX_SectionFootnote)
+	{
+		UT_DEBUGMSG(("_unlink Strux SectionFootnote %x \n",pfs));
+	}
+	else if(pfs->getStruxType() == PTX_EndFootnote)
+	{
+		UT_DEBUGMSG(("_unlink Strux EndFootnote %x \n",pfs));
+	}
 //	m_pDocument->miniDump((PL_StruxDocHandle) pfs, 1);
 #endif
 	switch (pfs->getStruxType())
@@ -76,8 +84,10 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	case PTX_SectionEndnote:
 	case PTX_SectionTable:
 	case PTX_SectionCell:
+	case PTX_SectionFootnote:
 	case PTX_EndCell:
 	case PTX_EndTable:
+	case PTX_EndFootnote:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
 
 	case PTX_Block:
@@ -189,7 +199,9 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 			  || pfs->getStruxType()==PTX_SectionTable
 			  || pfs->getStruxType()==PTX_SectionCell
 			  || pfs->getStruxType()==PTX_EndCell
-			  || pfs->getStruxType()==PTX_EndTable );
+			  || pfs->getStruxType()==PTX_EndTable 
+			  || pfs->getStruxType()==PTX_SectionFootnote 
+			  || pfs->getStruxType()==PTX_EndFootnote );
 
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
@@ -203,7 +215,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 
 	pf_Frag_Strux * pfsPrev = NULL;
 	pf_Frag * pf = pfs->getPrev();
-	while (pf && !pfsPrev)
+	while (pf && !pfsPrev || isFootnote(pf) || isEndFootnote(pf))
 	{
 		if (pf->getType() == pf_Frag::PFT_Strux)
 			pfsPrev = static_cast<pf_Frag_Strux *> (pf);
