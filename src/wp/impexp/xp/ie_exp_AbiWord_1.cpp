@@ -1098,7 +1098,8 @@ void s_AbiWord_1_Listener::_handleLists(void)
 
 void s_AbiWord_1_Listener::_handleMetaData(void)
 {
-  // TODO: make me UCS4 aware!!
+	if (m_pie->isCopying ())
+		return;
 
   // set all of the important meta-data props
 

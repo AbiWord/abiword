@@ -133,6 +133,10 @@ public:
 
 	void setProps (const char * props);
 
+	bool isCopying () const {
+		return getDocRange () != NULL;
+	}
+
 protected:
 	// todo: remove the = 0 for 2.2
 	IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);

@@ -4321,36 +4321,38 @@ void s_HTML_Listener::_handleMetaTag (const char * key, UT_UTF8String & value)
 
 void s_HTML_Listener::_handleMeta ()
 {
-	UT_UTF8String metaProp;
-	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE,    metaProp) && metaProp.size ())
-	    _handleMetaTag ("Title",    metaProp);
+	if (!m_pie->isCopying ()) {
 
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR,  metaProp) && metaProp.size ())
-		_handleMetaTag ("Author",   metaProp);
-	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size ())
-	    _handleMetaTag ("Keywords", metaProp);
-	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT,  metaProp) && metaProp.size ())
-		_handleMetaTag ("Subject",  metaProp);
-
+		UT_UTF8String metaProp;
+		
+		if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE,    metaProp) && metaProp.size ())
+			_handleMetaTag ("Title",    metaProp);
+		
+		if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR,  metaProp) && metaProp.size ())
+			_handleMetaTag ("Author",   metaProp);
+		
+		if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size ())
+			_handleMetaTag ("Keywords", metaProp);
+		
+		if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT,  metaProp) && metaProp.size ())
+			_handleMetaTag ("Subject",  metaProp);
+		
 #if 0
-	// now generically dump all of our data to meta stuff
-	const void * val = NULL ;
-	for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
-	{
-		if ( val )
-		{
-			UT_String *stringval = static_cast<UT_String*>(val);
-			if(stringval->size () > 0)
+		// now generically dump all of our data to meta stuff
+		const void * val = NULL ;
+		for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
 			{
-				_handleMetaTag(cursor.key().c_str(), stringval->c_str()));
-		}
-	}
-}
+				if ( val )
+					{
+						UT_String *stringval = static_cast<UT_String*>(val);
+						if(stringval->size () > 0)
+							{
+								_handleMetaTag(cursor.key().c_str(), stringval->c_str()));
+					}
+			}
 #endif
 
+	}
 }
 
 #endif /* HTML_META_SUPPORTED */
@@ -5441,15 +5443,18 @@ void s_TemplateHandler::_handleMeta ()
 	UT_UTF8String metaProp = "<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\" />" MYEOL;
 
 	m_pie->write (metaProp.utf8_str (), metaProp.byteLength ());
-	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR,  metaProp) && metaProp.size ())
-		_handleMetaTag ("Author",   metaProp);
-	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size ())
-	    _handleMetaTag ("Keywords", metaProp);
-	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT,  metaProp) && metaProp.size ())
-		_handleMetaTag ("Subject",  metaProp);
+
+	if (!m_pie->isCopying ()) {
+		
+		if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR,  metaProp) && metaProp.size ())
+			_handleMetaTag ("Author",   metaProp);
+		
+		if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size ())
+			_handleMetaTag ("Keywords", metaProp);
+		
+		if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT,  metaProp) && metaProp.size ())
+			_handleMetaTag ("Subject",  metaProp);
+	}
 }
 
 #endif /* HTML_META_SUPPORTED */
@@ -5604,7 +5609,7 @@ void IE_Exp_HTML::_buildStyleTree ()
 		}
 	}
 
-	if (getDocRange ()) // clipboard
+	if (isCopying ()) // clipboard
 		getDoc()->tellListenerSubset (m_style_tree, getDocRange ());
 	else
 		getDoc()->tellListener (m_style_tree);
@@ -5614,7 +5619,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 {
 	_buildStyleTree ();
 
-	if (getDocRange () != NULL) // ClipBoard
+	if (isCopying ()) // ClipBoard
 	{
 		m_exp_opt.bEmbedImages = true;
 		return _writeDocument (true, false);

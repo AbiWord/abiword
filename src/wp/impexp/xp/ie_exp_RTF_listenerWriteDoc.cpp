@@ -3942,29 +3942,31 @@ bool s_RTF_ListenerWriteDoc::signal(UT_uint32 /* iSignal */)
  */
 void s_RTF_ListenerWriteDoc::_rtf_info(void)
 {
-  UT_UTF8String propVal ;
-  
-  m_pie->_rtf_open_brace () ;
-  m_pie->_rtf_keyword("info");
-
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("title ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("author ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_CONTRIBUTOR, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("manager ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_PUBLISHER, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("company ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("category ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("keywords ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("comment ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-  if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
-    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("doccomm ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
-
-  m_pie->_rtf_close_brace();
+	if (!m_pie->isCopying ()) {
+		UT_UTF8String propVal ;
+		
+		m_pie->_rtf_open_brace () ;
+		m_pie->_rtf_keyword("info");
+		
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("title ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("author ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_CONTRIBUTOR, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("manager ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_PUBLISHER, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("company ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("category ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("keywords ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("comment ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
+		{ m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("doccomm ",propVal.utf8_str()); m_pie->_rtf_close_brace(); }
+		
+		m_pie->_rtf_close_brace();
+	}
 }
 
 void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
