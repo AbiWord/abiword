@@ -53,6 +53,7 @@
 static int
 s_mapMimeToUriType (const char * mime)
 {
+	UT_DEBUGMSG(("SEVIOR: mime %s dropped into AbiWord \n",mime));
 	if (!UT_strcmp (mime, "application/rtf")) 
 		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
 	if (!UT_strcmp (mime, "application/msword")) 
@@ -65,8 +66,20 @@ s_mapMimeToUriType (const char * mime)
 		return XAP_UnixGnomeFrame::TARGET_URI_LIST;
 	if (!UT_strcmp (mime, "image/png"))
 		return XAP_UnixGnomeFrame::TARGET_PNG;		
+	if (!UT_strcmp (mime, "image/jpeg"))
+		return XAP_UnixGnomeFrame::TARGET_JPG;		
+	if (!UT_strcmp (mime, "image/gif"))
+		return XAP_UnixGnomeFrame::TARGET_GIF;		
+	if (!UT_strcmp (mime, "image/x-xpixmap"))
+		return XAP_UnixGnomeFrame::TARGET_XPM;		
 	if (!UT_strcmp (mime, "image/bmp")) 
 		return XAP_UnixGnomeFrame::TARGET_BMP;
+	if (!UT_strcmp (mime, "image/x-bmp")) 
+		return XAP_UnixGnomeFrame::TARGET_BMP;
+	if (!UT_strcmp (mime, "image/x-cmu-raster")) 
+		return XAP_UnixGnomeFrame::TARGET_RAS;
+	if (!UT_strcmp (mime, "image/tiff")) 
+		return XAP_UnixGnomeFrame::TARGET_TIF;
 	if (!UT_strcmp (mime, "image/svg-xml")) 
 		return XAP_UnixGnomeFrame::TARGET_SVG;
 	if (!UT_strcmp (mime, "text/plain")) 
@@ -152,6 +165,8 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 			// TODO
 
 			UT_DEBUGMSG(("DOM: target url\n"));
+			FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
+			pView->cmdInsertHyperlink(filename);
 #if 0
 			error = pNewUnixFrame->loadDocument(filename, IEFT_Unknown);
 			
@@ -165,6 +180,11 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 		case TARGET_PNG:
 		case TARGET_SVG:
 		case TARGET_BMP:
+		case TARGET_JPG:
+		case TARGET_GIF:
+		case TARGET_XPM:
+		case TARGET_RAS:
+		case TARGET_TIF:
 		{
 			if (type == TARGET_PNG)
 			{
@@ -174,9 +194,13 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 			{
 				iegft = IEGFT_BMP;
 			}
-			else
+			else if (type == TARGET_SVG)
 			{
 				iegft = IEGFT_SVG;
+			}
+			else
+			{
+				iegft = IEGFT_Unknown;
 			}
 			
 			error = IE_ImpGraphic::constructImporter(filename, iegft, &pIEG);
@@ -249,7 +273,7 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	bool bResult;
 	static GtkTargetEntry drag_types[] =
 	{
-#if 0
+#if 1
 		// i'm concerned that DND doesn't work for mime-types other
 		// than text/uri-list. i can't get this to behave well with
         // nautilus or gmc
@@ -268,7 +292,8 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 		{"text/vnd.wap.wml", 0, TARGET_URI_LIST},
 		{"text/richtext", 0, TARGET_URI_LIST},
 		{"text/rtf", 0, TARGET_URI_LIST},
-		{"_NETSCAPE_URL", 0, TARGET_URL}
+		{"_NETSCAPE_URL", 0, TARGET_URL},
+		{"text/uri-list", 0, TARGET_URI_LIST}
 #else
 		{"text/uri-list", 0, TARGET_URI_LIST}
 #endif
@@ -299,6 +324,11 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 					   "drag_data_received",
                        GTK_SIGNAL_FUNC(_dnd_drop_event), 
 					   (gpointer)this);
+
+//  	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), 
+//  					   "drag_drop",
+//                         GTK_SIGNAL_FUNC(_dnd_real_drop_event), 
+//					   (gpointer)this);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);
