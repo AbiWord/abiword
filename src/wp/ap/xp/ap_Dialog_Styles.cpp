@@ -1189,7 +1189,7 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 	AP_Dialog_Paragraph::tSpacingState tSpacing = AP_Dialog_Paragraph::spacing_MULTIPLE;
 
 	const char * sz = NULL;
-	char * pPlusFound = NULL;
+	const char * pPlusFound = NULL;
 
 	UT_ASSERT(m_pParaPreview);
 

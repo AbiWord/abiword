@@ -220,7 +220,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			UT_uint32 nLen = strlen(sz);
 			if (nLen > 0)
 			{
-				char * pPlusFound = strrchr(sz, '+');
+				const char * pPlusFound = strrchr(sz, '+');
 				if (pPlusFound && *(pPlusFound + 1) == 0)
 				{
 					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, op_INIT);
