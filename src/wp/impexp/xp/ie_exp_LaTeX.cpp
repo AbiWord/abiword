@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -443,10 +444,18 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 
 void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
 {
-	/*
-	  TODO I've no clue about the colors in LaTeX
-	*/
-	strcpy(szDest, pszColor);
+	char colors[3][3];
+	for (int i=0;i<3;++i)
+	{
+		strncpy (colors[i],&pszColor[2*i],2);
+		colors[i][2]=0;
+	}
+	setlocale (LC_NUMERIC, "C");
+	sprintf (szDest, "%.3f,%.3f,%.3f",
+					strtol (&colors[0][0],NULL,16)/255.,
+					strtol (&colors[1][0],NULL,16)/255.,
+					strtol (&colors[2][0],NULL,16)/255.);
+	setlocale (LC_NUMERIC, "");
 }
 
 void s_LaTeX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
@@ -538,11 +547,14 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
 
+			// See the ulem.sty documentation (available at www.ctan.org)
+			// if you wish to include other kinds of underlines, such as
+			// double underlines or wavy underlines
 			while (q)
 			{
 			  if (0 == UT_strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
 				{
-					m_pie->write("\\underline{");
+					m_pie->write("\\uline{");
 				}
 
 				if (0 == UT_strcmp(q, "overline"))
@@ -552,7 +564,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 				if (0 == UT_strcmp(q, "line-through"))
 				{
-					m_pie->write("");	// TODO
+					m_pie->write("\\sout{");
 				}
 
 				q = strtok(NULL, " ");
@@ -573,9 +585,26 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 		}
 		
-		if (pAP->getProperty("color", szValue))
+		const XML_Char* pszColor = NULL;
+		pAP->getProperty("color", pszColor);
+		if (pszColor)
 		{
-			UT_DEBUGMSG (("Latex export: TODO: 'color' property\n"));
+			char szColor[18];
+			_convertColor(szColor,(char*)pszColor);
+			m_pie->write("\\textcolor[rgb]{");
+			m_pie->write(szColor);
+			m_pie->write("}{");
+		}
+		
+		const XML_Char* pszBgColor = NULL;
+		pAP->getProperty("bgcolor", pszBgColor);
+		if (pszBgColor)
+		{
+			char szColor[18];
+			_convertColor(szColor,(char*)pszBgColor);
+			m_pie->write("\\colorbox[rgb]{");
+			m_pie->write(szColor);
+			m_pie->write("}{");
 		}
 
 		if (pAP->getProperty("font-size", szValue))
@@ -611,8 +640,17 @@ void s_LaTeX_Listener::_closeSpan(void)
 	{
 		const XML_Char * szValue;
 		
-		if (// (pAP->getProperty("color", szValue)) ||    // TODO
-		    (pAP->getProperty("font-size", szValue))
+		if (pAP->getProperty("color", szValue))
+		{
+			m_pie->write("}");
+		}
+
+		if (pAP->getProperty("bgcolor", szValue))
+		{
+			m_pie->write("}");
+		}
+
+		if ((pAP->getProperty("font-size", szValue))
 //		    || (pAP->getProperty("font-family", szValue))  // TODO
 			)
 		{
@@ -651,7 +689,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 			{
 				if (0 == UT_strcmp(q, "line-through"))
 				{
-					m_pie->write("");	// TODO
+					m_pie->write("}");
 				}
 
 				q = strtok(NULL, " ");
@@ -906,6 +944,8 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("\\usepackage{calc}\n");
 	m_pie->write("\\usepackage{setspace}\n");
 	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
+	m_pie->write("\\usepackage[normalem]{ulem}\t% TODO: Package is only needed if you have underline/strikeout.\n");
+	m_pie->write("\\usepackage{color}\t% TODO: Package is only needed if you have color.\n");
 	{
 	    const char* misc = XAP_EncodingManager::get_instance()->getTexPrologue();
 	    if (misc)
@@ -2168,7 +2208,3 @@ static int wvConvertUnicodeToLaTeX(U16 char16,char*& out)
 	return(0);
 	}
 #undef printf
-
-
-
-
