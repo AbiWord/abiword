@@ -1219,12 +1219,12 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 
-		if (pAP->getProperty("text-position", szValue))
+		else if (pAP->getProperty("text-position", szValue))
 		{
 			closeSpan = true;
 		}
 
-		if (
+		else if (
 			(pAP->getProperty("text-decoration", szValue))
 			&& UT_strcmp(szValue, "none")
 			)
@@ -1232,7 +1232,7 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 
-		if (
+		else if (
 			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
@@ -1240,7 +1240,7 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 
-		if (
+		else if (
 			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
@@ -1248,7 +1248,7 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 
-		if(pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
+		else if(pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			closeSpan = true;
 		}

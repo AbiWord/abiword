@@ -256,7 +256,7 @@ ap_sb_Field_StatusMessage::~ap_sb_Field_StatusMessage(void)
 
 UT_uint32 ap_sb_Field_StatusMessage::getDesiredWidth(void)
 {
-	return 300;							// TODO define this somewhere
+	return 450;							// TODO define this somewhere
 }
 
 void ap_sb_Field_StatusMessage::draw(void)
