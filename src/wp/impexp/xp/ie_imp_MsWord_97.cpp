@@ -1470,9 +1470,11 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		
 		m_iTextBoxesStart = m_iEndnotesEnd;
 		m_iTextBoxesEnd = m_iTextBoxesStart + ps->fib.ccpTxbx;
+		UT_DEBUGMSG(("Size of text in textboxze %d \n", ps->fib.ccpTxbx));
+
 		if(m_iTextBoxesEnd == 0xffffffff)
 			m_iTextBoxesEnd = m_iTextBoxesStart;
-
+		UT_DEBUGMSG(("  Found %d Positioned TextBoxes \n",ps->nooffspa));
 		// now retrieve the note info ...
 		_handleNotes(ps);
 		_handleHeaders(ps);
@@ -4874,14 +4876,14 @@ void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
 
 	bool bNoteError = false;
 
-	if(ps->fib.lcbDggInfo)
+	if(ps->fib.ccpTxbx > 0)
 	{
 		if(wvGetPLCF((void **) &pPLCF_dgg, ps->fib.fcDggInfo, ps->fib.lcbDggInfo, ps->tablefd))
 		{
 			bNoteError = true;
 		}
 
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: dgginfo size %d bytes\n", ps->fib.lcbDggInfo));
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: dgginfo size %d bytes\n", ps->fib.ccpTxbx));
 	}
 	
 }
@@ -5353,7 +5355,8 @@ bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
 bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
-	UT_DEBUGMSG(("Inserting strux of type %d in HdrFtr \n",pts));
+	UT_DEBUGMSG(("Inserting strux of type %d in HdrFtr m_iCurrentHeader \n",pts,m_iCurrentHeader));
+	UT_ASSERT(m_bInSect);
 	bool bRet = true;
 	for(UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
 	{
@@ -5594,7 +5597,6 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 		if(!m_bInHeaders)
 		{
 			UT_DEBUGMSG(("In headers territory: pos %d\n", iDocPosition));
-			m_bInHeaders = true;
 			m_bInENotes = false;
 			m_bInFNotes = false;
 
@@ -5612,7 +5614,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 				m_iCurrentHeader++;
 			}
 		}
-
+		xxx_UT_DEBUGMSG(("CurrentHeader %d HeaderCount %d \n",m_iCurrentHeader,m_iHeadersCount));
 		if (m_iCurrentHeader < m_iHeadersCount) {
 
 			if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos +
@@ -5638,7 +5640,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 				
 				// do not return, processing needs to continue ...
 			}
-		
+			xxx_UT_DEBUGMSG(("iDocPosition %d m_pHeaders[m_iCurrentHeader].pos %d \n",iDocPosition,m_pHeaders[m_iCurrentHeader].pos));
 			if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos)
 			{
 				// need to insert our header/footer section, preserving
@@ -5715,6 +5717,8 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 					UT_DEBUGMSG(("Direct Appending HdrFtr in MSWord_import \n"));
 					getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
 					m_bInSect = true;
+					m_bInHeaders = true;
+
 					if(bDoBlockIns)
 					{
 						getDoc()->appendStrux(PTX_Block, attribsB);
@@ -5758,7 +5762,8 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 						UT_DEBUGMSG(("Appending Dirivative HdrFtr in MSWord_import \n"));
 					
 						getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
-						
+						m_bInHeaders = true;
+
 						// we need to remember the HdrFtr fragment for
 						// later ...
 						pf_Frag * pF = getDoc()->getLastFrag();

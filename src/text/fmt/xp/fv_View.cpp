@@ -9127,7 +9127,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 // Now the block strux for the content
 
 	m_pDoc->insertStrux(posBlock, PTX_Block,NULL, props);
-
+	setPoint(posBlock+1);
 // OK it's in!
  	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
 	return true;

@@ -342,7 +342,7 @@ void fl_TableLayout::format(void)
 //
 // OK on with the formatting
 //
-	UT_DEBUGMSG(("!!!!!!!!!!!!TableLayout format Table !!!!!!!!!\n"));
+	xxx_UT_DEBUGMSG(("!!!!!!!!!!!!TableLayout format Table !!!!!!!!!\n"));
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
@@ -372,7 +372,7 @@ void fl_TableLayout::format(void)
 	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
 		m_bIsDirty = false;
-		UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
 		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
 		setNeedsRedraw();
 		markAllRunsDirty();
@@ -384,7 +384,7 @@ void fl_TableLayout::format(void)
 	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
 		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
-		UT_DEBUGMSG(("SEVIOR: Layout pass 2 \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Layout pass 2 \n"));
 		setNeedsRedraw();
    		markAllRunsDirty();
 		m_bIsDirty = false;

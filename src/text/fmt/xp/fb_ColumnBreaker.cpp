@@ -70,7 +70,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	fl_ContainerLayout* pFirstLayout = NULL;
 	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
-	UT_DEBUGMSG(("Doing ColumnBreak for section %x at page %x \n",pSL,m_pStartPage));
+	xxx_UT_DEBUGMSG(("Doing ColumnBreak for section %x at page %x \n",pSL,m_pStartPage));
 //	UT_ASSERT(pSL->needsSectionBreak());
 	pSL->setNeedsSectionBreak(false,m_pStartPage);
 	pFirstLayout = pSL->getFirstLayout();
