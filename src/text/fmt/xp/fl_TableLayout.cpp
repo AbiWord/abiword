@@ -1048,10 +1048,10 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iTopStyle(LS_NORMAL),
 	  m_iBottomStyle(LS_NORMAL),
 	  m_iBgStyle(FS_OFF),
-m_iLeftLineThickness(0),
-m_iTopLineThickness(0),
-m_iRightLineThickness(0),
-m_iBottomLineThickness(0)
+	  m_iLeftLineThickness(-1),
+	  m_iTopLineThickness(-1),
+	  m_iRightLineThickness(-1),
+	  m_iBottomLineThickness(-1)
 {
 	createCellContainer();
 }
@@ -1629,7 +1629,6 @@ void fl_CellLayout::_lookupProperties(void)
 	if(pszRightStyle && pszRightStyle[0])
 	{
 		m_iRightStyle = atoi(pszRightStyle);
-
 	}
 	if(pszTopStyle && pszTopStyle[0])
 	{
@@ -1655,7 +1654,6 @@ void fl_CellLayout::_lookupProperties(void)
 	{
 		m_iBgStyle = atoi(pszBgStyle);
 	}
-
 	const char *pszLeftLineThickness = NULL;
 	const char *pszTopLineThickness = NULL;
 	const char *pszRightLineThickness = NULL;
@@ -1668,6 +1666,11 @@ void fl_CellLayout::_lookupProperties(void)
 	if (pszLeftLineThickness && pszLeftLineThickness[0]) 
 	{
 		m_iLeftLineThickness = pG->convertDimension(pszLeftLineThickness);
+		double res = UT_convertToInches(pszLeftLineThickness);
+		if(m_iLeftLineThickness == 0 && (res > 0.0001))
+		{
+			m_iLeftLineThickness = 1;
+		}
 	}
 	else
 	{
@@ -1676,6 +1679,11 @@ void fl_CellLayout::_lookupProperties(void)
 	if (pszTopLineThickness && pszTopLineThickness[0]) 
 	{
 		m_iTopLineThickness = pG->convertDimension(pszTopLineThickness);
+		double res = UT_convertToInches(pszTopLineThickness);
+		if(m_iTopLineThickness == 0 && (res > 0.0001))
+		{
+			m_iTopLineThickness = 1;
+		}
 	}
 	else
 	{
@@ -1684,6 +1692,11 @@ void fl_CellLayout::_lookupProperties(void)
 	if (pszRightLineThickness && pszRightLineThickness[0]) 
 	{
 		m_iRightLineThickness = pG->convertDimension(pszRightLineThickness);
+		double res = UT_convertToInches(pszRightLineThickness);
+		if(m_iRightLineThickness == 0 && (res > 0.0001))
+		{
+			m_iRightLineThickness = 1;
+		}
 	}
 	else
 	{
@@ -1692,6 +1705,11 @@ void fl_CellLayout::_lookupProperties(void)
 	if (pszBottomLineThickness && pszBottomLineThickness[0]) 
 	{
 		m_iBottomLineThickness = pG->convertDimension(pszBottomLineThickness);
+		double res = UT_convertToInches(pszBottomLineThickness);
+		if(m_iBottomLineThickness == 0 && (res > 0.0001))
+		{
+			m_iBottomLineThickness = 1;
+		}
 	}
 	else
 	{

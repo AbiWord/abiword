@@ -2842,7 +2842,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
     m_vecColumnWidths.clear ();
   }
 
-  props += UT_String_sprintf("table-line-ignore:0; table-line-type:1; table-line-thickness:0px; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
+  props += UT_String_sprintf("table-line-ignore:0; table-line-type:1; table-line-thickness:0.8pt; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
   
   // apply properties
   PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
@@ -2894,7 +2894,7 @@ sConvertLineStyle (short lineType)
 {
   switch (lineType) 
     {
-    case 0: return LS_OFF;
+    case 0: return LS_NORMAL;
     case 1: 
       return LS_NORMAL;
       
@@ -2954,7 +2954,6 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 
   propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoFore).c_str());
   propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoBack).c_str());
-  
   // so long as it's not the "auto" color
   if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
     propBuffer += "bg-style:1;";
@@ -2979,7 +2978,8 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
 
   setlocale (LC_NUMERIC, old_locale);
-
+ UT_DEBUGMSG(("propbuffer: %s \n",propBuffer.c_str()));
+ 
   const XML_Char* propsArray[3];
   propsArray[0] = (XML_Char*)"props";
   propsArray[1] = propBuffer.c_str();
