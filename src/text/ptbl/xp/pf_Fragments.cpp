@@ -60,6 +60,8 @@ void pf_Fragments::appendFrag(pf_Frag * pf)
 	}
 	else
 	{
+		UT_ASSERT(m_pLast->getType() != pf_Frag::PFT_EndOfDoc);
+		
 		m_pLast->setNext(pf);
 		pf->setPrev(m_pLast);
 		m_pLast = pf;
@@ -93,6 +95,8 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
 {
+	UT_ASSERT(pf->getType() != pf_Frag::PFT_EndOfDoc);
+	
 	pf_Frag * pn = pf->getNext();
 	pf_Frag * pp = pf->getPrev();
 

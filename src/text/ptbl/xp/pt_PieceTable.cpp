@@ -65,7 +65,16 @@ pt_PieceTable::~pt_PieceTable()
 void pt_PieceTable::setPieceTableState(PTState pts)
 {
 	UT_ASSERT(pts >= m_pts);
-	
+
+	if ((m_pts==PTS_Loading) && (pts==PTS_Editing))
+	{
+		// transition from loading to editing.
+		// tack on an EOD fragment to the fragment list.
+		// this allows us to safely go to the end of the document.
+		pf_Frag * pfEOD = new pf_Frag(this,pf_Frag::PFT_EndOfDoc,0);
+		m_fragments.appendFrag(pfEOD);
+	}
+
 	m_pts = pts;
 	m_varset.setPieceTableState(pts);
 }
@@ -249,7 +258,7 @@ PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 
 UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 										   pf_Frag ** ppf,
-										   PT_BlockOffset * pBlockOffset) const
+										   PT_BlockOffset * pFragOffset) const
 {
 	// return the frag at the given doc position.
 
@@ -261,8 +270,8 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 		if ((docPos >= sum) && (docPos < sum+pf->getLength()))
 		{
 			*ppf = pf;
-			if (pBlockOffset)
-				*pBlockOffset = docPos - sum;
+			if (pFragOffset)
+				*pFragOffset = docPos - sum;
 			return UT_TRUE;
 		}
 
@@ -272,22 +281,20 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 
 	// if we fall out of the loop, we didn't have a node
 	// at or around the document position requested.
-#if 1
-	// TODO this looks like it should be an error, for now we bail
-	// TODO and see if it ever goes off.  later we can just return
-	// TODO the last node in the list.
+	// since we now have an EOD fragment, we should not
+	// ever see this -- unless the caller sends a bogus
+	// doc position.
 
-	UT_ASSERT(0);
-	return UT_FALSE;
-#else
-	// TODO: Jeff, I tried this, but it made things even worse
-	UT_ASSERT(docPos==sum);	
+	UT_ASSERT(pfLast);
+	UT_ASSERT(pfLast->getType() == pf_Frag::PFT_EndOfDoc);
 
+	// TODO if (docPos > sum) we should probably complain...
+	
 	*ppf = pfLast;
-	if (pBlockOffset)
-		*pBlockOffset = docPos - sum;
+	if (pFragOffset)
+		*pFragOffset = docPos - sum;
+
 	return UT_TRUE;
-#endif 
 }
 	
 UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,

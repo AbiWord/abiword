@@ -89,6 +89,10 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 					return UT_FALSE;
 			}
 			break;
+
+		case pf_Frag::PFT_EndOfDoc:
+			// they don't get to know about this.
+			break;
 			
 		default:
 			UT_ASSERT(0);

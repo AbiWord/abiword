@@ -211,6 +211,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		
 		switch (pf_First->getType())
 		{
+		case pf_Frag::PFT_EndOfDoc:
 		default:
 			UT_ASSERT(0);
 			return UT_FALSE;

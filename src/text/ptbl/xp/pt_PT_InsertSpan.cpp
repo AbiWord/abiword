@@ -54,9 +54,10 @@ PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset
 		UT_ASSERT(0);
 		return diff;
 
+	case pf_Frag::PFT_EndOfDoc:
 	case pf_Frag::PFT_Strux:
 		{
-			// we are looking at a strux.  see if there is text
+			// we are looking at a strux or EOD.  see if there is text
 			// just before us and if it is different.
 			if (   (pf->getPrev())
 				&& (pf->getPrev()->getType()==pf_Frag::PFT_Text))
@@ -143,6 +144,9 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 			fragOffset = pft->getLength();
 			break;
 		}
+		//FALLTHRU INTENDED
+
+	case pf_Frag::PFT_EndOfDoc:
 
 		// empty paragraphs don't *have* anything to append to
 		fragOffset = 0;
@@ -297,7 +301,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// we just did a getFragFromPosition() which gives us the
 	// the thing *starting* at that position.  if we have a
 	// fragment boundary at that position, it's sort of arbitrary
-	// whether we treat it as a prepend to the one we just found
+	// whether we treat this insert as a prepend to the one we just found
 	// or an append to the previous one (when it's a text frag).
 	// in the normal case, we want the Attr/Prop of a character
 	// insertion to take the AP of the thing to the immediate

@@ -41,7 +41,7 @@ class PX_ChangeRecord;
 class pf_Frag
 {
 public:
-	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux } PFType;
+	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux, PFT_EndOfDoc } PFType;
 
 	pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length);
 	virtual ~pf_Frag();
@@ -60,9 +60,9 @@ public:
 	// is used to initialize the listeners.
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-													  PT_DocPosition dpos) const = 0;
+													  PT_DocPosition dpos) const;
 	
-	virtual void			dump(FILE * fp) const = 0;
+	virtual void			dump(FILE * fp) const;
 
 protected:
 	PFType					m_type;

@@ -100,12 +100,14 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 		UT_ASSERT(0);
 		return;
 
+	case pf_Frag::PFT_EndOfDoc:
 	case pf_Frag::PFT_Strux:
 		{
 			// insert pfsNew before pf.
 			// TODO this is probably ok for columns and columnsets, but
 			// TODO may introduce some oddities due to empty paragraphs.
 			// TODO investigate this later.
+			UT_ASSERT(fragOffset == 0);
 			m_fragments.insertFrag(pf->getPrev(),pfsNew);
 			return;
 		}
