@@ -40,9 +40,12 @@ public:
 
 	void event_Ok ();
 	void event_Cancel ();
-	void event_ToggleUseTemplate (const char * name);
+	void event_ClistClicked ( gint row, gint col )
+	  {
+	    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_radioNew), TRUE);
+	    mRow = row; mCol = col;
+	  }
 	void event_ToggleOpenExisting ();
-	void event_ToggleStartNew ();
 	
 protected:
 
@@ -64,6 +67,9 @@ private:
 	GtkWidget * m_radioNew;
 	GtkWidget * m_radioExisting;
 	GtkWidget * m_radioEmpty;
+	GtkWidget * m_choicesList;
+
+	gint mRow, mCol;
 };
 
 #endif /* AP_UNIXDIALOG_NEW_H */

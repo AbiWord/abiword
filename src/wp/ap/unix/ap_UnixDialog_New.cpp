@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2001, 2002 Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +18,8 @@
  */
 
 #include <stdlib.h>
+#include <unistd.h>
+#include <dirent.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -39,6 +41,8 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ie_imp.h"
 
+#include "ut_string_class.h"
+
 /*************************************************************************/
 
 XAP_Dialog * AP_UnixDialog_New::static_constructor(XAP_DialogFactory * pFactory,
@@ -50,7 +54,7 @@ XAP_Dialog * AP_UnixDialog_New::static_constructor(XAP_DialogFactory * pFactory,
 
 AP_UnixDialog_New::AP_UnixDialog_New(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_New(pDlgFactory,id), m_pFrame(0)
+  : AP_Dialog_New(pDlgFactory,id), m_pFrame(0), mRow(0), mCol(0)
 {
 }
 
@@ -109,7 +113,19 @@ void AP_UnixDialog_New::event_Ok ()
 	}
 	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioNew)))
 	{
-		setOpenType(AP_Dialog_New::open_Template);
+		gchar * tmpl = NULL;
+		int rtn = gtk_clist_get_text (GTK_CLIST(m_choicesList), 
+					      mRow, mCol, &tmpl);
+		if (rtn && tmpl)
+		  {
+		    setFileName (tmpl);
+		    setOpenType(AP_Dialog_New::open_Template);
+		  }
+		else
+		  {
+		    // fall back
+		    setOpenType(AP_Dialog_New::open_New);
+		  }
 	}
 	else
 	{
@@ -123,11 +139,6 @@ void AP_UnixDialog_New::event_Cancel ()
 {
 	setAnswer (AP_Dialog_New::a_CANCEL);
 	gtk_main_quit();
-}
-
-void AP_UnixDialog_New::event_ToggleUseTemplate (const char * name)
-{
-	setTemplateName (name);
 }
 
 void AP_UnixDialog_New::event_ToggleOpenExisting ()
@@ -187,34 +198,62 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 	pDialogFactory->releaseDialog(pDialog);
 }
 
-void AP_UnixDialog_New::event_ToggleStartNew ()
-{	
-	// nada
-}
-
 /*************************************************************************/
 /*************************************************************************/
 
-void s_ok_clicked (GtkWidget *, AP_UnixDialog_New * dlg)
+static void s_ok_clicked (GtkWidget *, AP_UnixDialog_New * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_Ok();
 }
 
-void s_cancel_clicked (GtkWidget *, AP_UnixDialog_New * dlg)
+static void s_cancel_clicked (GtkWidget *, AP_UnixDialog_New * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_Cancel();
 }
 
-void s_window_delete (GtkWidget *, gpointer, AP_UnixDialog_New * dlg)
+static void s_window_delete (GtkWidget *, gpointer, AP_UnixDialog_New * dlg)
 {
 	s_cancel_clicked (0, dlg);
 }
 
-void s_choose_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
+static void s_choose_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
 {
 	dlg->event_ToggleOpenExisting();
+}
+
+static void
+s_clist_clicked (GtkWidget *w, gint row, gint col, 
+		 GdkEvent *evt, gpointer d)
+{
+	AP_UnixDialog_New * dlg = static_cast <AP_UnixDialog_New *>(d);
+	dlg->event_ClistClicked (row, col);
+}
+
+/*************************************************************************/
+/*************************************************************************/
+
+// return > 0 for directory entries ending in ".awt" and ".dot"
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__)
+static int awt_only (struct dirent *d)
+#else
+static int awt_only (const struct dirent *d)
+#endif
+{
+  const char * name = d->d_name;
+
+  if ( name )
+    {
+      int len = strlen (name);
+
+      if (len >= 4)
+	{
+	  if(!strcmp(name+(len-4), ".awt") || !strcmp(name+(len-4), ".dot"))
+	    return 1;
+	}
+    }
+  return 0;
 }
 
 /*************************************************************************/
@@ -282,8 +321,7 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	GtkWidget *radio_empty;
 	GSList    *vbox1_group = NULL;
 
-	GtkWidget *notebook_choices;
-	GtkWidget *scrolledWindow;
+	GtkWidget *choicesList;
 
 	GtkWidget *label1;
 
@@ -293,6 +331,9 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 
 	GtkWidget *entry_filename;
 	GtkWidget *choose_btn;
+
+	GtkWidget *scrolledwindow1;
+	GtkWidget *viewport1;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -310,19 +351,73 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	gtk_widget_show (radio_new);
 	gtk_box_pack_start (GTK_BOX (vbox1), radio_new, FALSE, FALSE, 0);
 
-	notebook_choices = gtk_notebook_new ();
-	gtk_widget_show (notebook_choices);
-	gtk_box_pack_start (GTK_BOX (vbox1), notebook_choices, TRUE, TRUE, 0);
-	gtk_notebook_set_scrollable (GTK_NOTEBOOK (notebook_choices), TRUE);
+	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
+	gtk_widget_show (scrolledwindow1);
+	gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1),
+					GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-	scrolledWindow = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_show (scrolledWindow);
-	gtk_container_add (GTK_CONTAINER (notebook_choices), scrolledWindow);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledWindow), 
-									GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
+	viewport1 = gtk_viewport_new (NULL, NULL);
+	gtk_widget_show (viewport1);
+	gtk_container_add (GTK_CONTAINER (scrolledwindow1), viewport1);
 
-	// TODO: add templates here
+	choicesList = gtk_clist_new ( 1 );
+	gtk_clist_column_titles_passive (GTK_CLIST(choicesList));
+	gtk_widget_show (choicesList);
+	gtk_container_add (GTK_CONTAINER (viewport1), choicesList);
+
+	// TODO: find better size
+	gtk_widget_set_usize ( choicesList, 150, 150 ) ;
+
+	UT_String templateList[2];
+	UT_String templateDir;
+
+	// the locally installed templates (per-user basis)
+	templateDir = XAP_App::getApp()->getUserPrivateDirectory();
+	templateDir += "/templates/";
+	templateList[0] = templateDir;
 	
+	// the globally installed templates
+	templateDir = XAP_App::getApp()->getAbiSuiteLibDir();
+	templateDir += "/templates/";
+	templateList[1] = templateDir;
+
+	gtk_clist_freeze (GTK_CLIST (choicesList));
+	gtk_clist_clear (GTK_CLIST (choicesList));
+
+	for ( int i = 0; i < (sizeof(templateList)/sizeof(templateList[0])); i++ )
+	  {
+	    struct dirent **namelist = NULL;
+	    UT_sint32 n = 0;
+	    templateDir = templateList[i];
+
+	    n = scandir(templateDir.c_str(), &namelist, awt_only, alphasort);
+	    UT_DEBUGMSG(("DOM: found %d templates in %s\n", n, templateDir.c_str()));
+
+	    if (n > 0)
+	      {
+		while(n-- > 0) 
+		  {
+			  UT_String myTemplate (templateDir + namelist[n]->d_name);
+			  gchar * txt[2];
+			  txt[0] = (gchar*)myTemplate.c_str();
+			  txt[1] = NULL;
+
+			  gtk_clist_append ( GTK_CLIST(choicesList), txt ) ;
+			  free (namelist[n]);
+		  }
+	      }
+	  }
+
+	gtk_clist_thaw (GTK_CLIST (choicesList));
+	gtk_clist_select_row (GTK_CLIST (choicesList), 0, 0);
+
+	// connect the select_row signal to the clist
+	gtk_signal_connect (GTK_OBJECT (choicesList), "select_row",
+			    GTK_SIGNAL_FUNC (s_clist_clicked), (gpointer)this);
+
+	// TODO? Put clist inside of scrolled window
+
 	hseparator2 = gtk_hseparator_new ();
 	gtk_widget_show (hseparator2);
 	gtk_box_pack_start (GTK_BOX (vbox1), hseparator2, TRUE, TRUE, 0);
@@ -370,6 +465,7 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	m_radioExisting = radio_existing;
 	m_radioEmpty    = radio_empty;
 	m_entryFilename = entry_filename;
+	m_choicesList   = choicesList;
 }
 
 void AP_UnixDialog_New::_connectSignals ()

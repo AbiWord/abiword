@@ -42,7 +42,6 @@ public:
 	inline AP_Dialog_New::tAnswer	getAnswer(void) const {return m_answer;}
 	inline AP_Dialog_New::tOpenType getOpenType(void) const {return m_openType;}
 
-	inline const char * getTemplateName (void) const {return m_templateName;}
 	inline const char * getFileName (void) const {return m_fileName;}
 
 protected:
@@ -50,14 +49,12 @@ protected:
 	inline void setOpenType (AP_Dialog_New::tOpenType t) {m_openType = t;}
 
 
-	void setTemplateName (const char * name);
 	void setFileName (const char * name);
 
 private:
 	AP_Dialog_New::tAnswer		m_answer;
 	AP_Dialog_New::tOpenType    m_openType;
 
-	char * m_templateName;
 	char * m_fileName;
 };
 

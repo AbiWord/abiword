@@ -24,20 +24,13 @@
 AP_Dialog_New::AP_Dialog_New(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent (pDlgFactory, id), 
 	m_answer (AP_Dialog_New::a_CANCEL), m_openType (AP_Dialog_New::open_New),
-	m_templateName(0), m_fileName(0)
+	m_fileName(0)
 {
 }
 
 AP_Dialog_New::~AP_Dialog_New()
 {
-	FREEP(m_templateName);
 	FREEP(m_fileName);
-}
-
-void AP_Dialog_New::setTemplateName(const char * name)
-{
-	FREEP(m_templateName);
-	m_templateName = UT_strdup (name);
 }
 
 void AP_Dialog_New::setFileName(const char * name)

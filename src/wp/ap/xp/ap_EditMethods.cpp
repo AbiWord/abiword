@@ -2488,18 +2488,10 @@ Defun(fileNew)
 
 			// these two will open things as templates
 		case AP_Dialog_New::open_Existing : 
+		case AP_Dialog_New::open_Template : 
 			szStr = pDialog->getFileName();
 			if (szStr)
 				str += szStr;
-			break;
-
-		case AP_Dialog_New::open_Template : 
-			szStr = pDialog->getTemplateName();
-			if (szStr) {
-				str = pApp->getAbiSuiteLibDir();
-				str += "/templates/"; // todo: will this work for windoze et al?
-				str += szStr;
-			}
 			break;
 		}
 
