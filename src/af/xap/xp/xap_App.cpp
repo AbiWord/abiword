@@ -636,3 +636,23 @@ void XAP_App::notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame)
 		}
 	}
 }
+
+
+void XAP_App::_printUsage(void)
+{
+	// just print to stdout, not stderr
+	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
+	printf("  -to               The target format of the file\n");
+        printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
+	printf("  -verbose          The verbosity level (0, 1, 2)\n");
+	printf("  -show             If you really want to start the GUI\n");
+        printf("                    (even if you use the -to option)\n");
+#ifdef DEBUG
+	printf("  -dumpstrings      dump strings strings to file\n");
+#endif
+	printf("  -geometry geom    set initial frame geometry\n");
+	printf("  -lib dir          use dir for application components\n");
+	printf("  -nosplash         do not show splash screen\n");
+
+	printf("\n");
+}

@@ -54,9 +54,9 @@ public:
 	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
 	virtual UT_Bool					shutdown(void);
 	virtual UT_Bool					getPrefsValueDirectory(UT_Bool bAppSpecific,
-														   const XML_Char * szKey, const XML_Char ** pszValue) const;
-	virtual const XAP_StringSet *	getStringSet(void) const;
-	virtual const char *			getAbiSuiteAppDir(void) const;
+									       const XML_Char * szKey, const XML_Char ** pszValue) const;
+	virtual const XAP_StringSet *	                getStringSet(void) const;
+	virtual const char *			        getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard);
 	virtual UT_Bool					canPasteFromClipboard(void);
@@ -64,12 +64,12 @@ public:
 	virtual UT_Bool					parseCommandLine(void);
 
 	virtual void					setSelectionStatus(AV_View * pView);
-        virtual void                                            setViewSelection( AV_View * pView);
-        virtual AV_View *                                       getViewSelection( void);
+        virtual void                                    setViewSelection( AV_View * pView);
+        virtual AV_View *                               getViewSelection( void);
 	virtual void					clearSelection(void);
 	virtual UT_Bool					getCurrentSelection(const char** formatList,
-														void ** ppData, UT_uint32 * pLen,
-														const char **pszFormatFound);
+									    void ** ppData, UT_uint32 * pLen,
+									    const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);
 
 	static int main (const char * szAppName, int argc, char ** argv);
@@ -78,7 +78,6 @@ public:
 
 protected:
 
-	void							_printUsage(void);
 	static GR_Image *                                       _showSplash(UT_uint32);
 
 	XAP_StringSet *			m_pStringSet;
@@ -94,7 +93,7 @@ protected:
 	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
 };
 
-// What follows is an ugly hack. It is neccessitated by the 
+// HACK What follows is an ugly hack. It is neccessitated by the 
 // C/C++ conflict over pointers to member functions. It is,
 // however, what the C++ FAQ reccommends.
 

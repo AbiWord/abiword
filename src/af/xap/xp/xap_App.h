@@ -137,6 +137,8 @@ public:
 
 protected:
 	void				  _setAbiSuiteLibDir(const char * sz);
+	virtual void                      _printUsage(void);   
+	
 	
 	XAP_Args *						m_pArgs;
 	const char *					m_szAppName;
@@ -162,6 +164,7 @@ protected:
         
 	XAP_EncodingManager*				m_pEncMgr;
 	static XAP_App *				m_pApp;
+
 };
 
 #endif /* XAP_APP_H */
