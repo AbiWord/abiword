@@ -299,6 +299,7 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
+	SetupContextHelp(mainWindow,this);
 	PtAddHotkeyHandler(mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(mainWindow, Pt_CB_WINDOW_CLOSING, s_cancel_clicked, this);
 

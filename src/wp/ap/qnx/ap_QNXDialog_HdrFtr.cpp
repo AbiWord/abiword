@@ -193,7 +193,7 @@ PtWidget_t *RestartLabel;
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
 	mainWindow=PtCreateWidget( PtWindow,NULL,n,args);
 	PtAddHotkeyHandler(mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
-
+	SetupContextHelp(mainWindow,this);
 	n=0;
 
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);

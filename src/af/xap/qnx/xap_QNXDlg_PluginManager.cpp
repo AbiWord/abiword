@@ -370,6 +370,8 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_PLUGIN_MANAGER_TITLE) , 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowPlugins = PtCreateWidget(PtWindow, NULL, n, args);
+	SetupContextHelp(windowPlugins,this);
+	PtAddHotkeyHandler(windowPlugins,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowPlugins, Pt_CB_WINDOW_CLOSING, s_close_clicked, this);
 
 	n = 0;

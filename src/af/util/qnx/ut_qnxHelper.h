@@ -71,6 +71,9 @@ void connectFocus(PtWidget_t *widget, XAP_Frame *frame);
 */
 int pretty_group(PtWidget_t *w, const char *title);
 
+int OpenHelp(PtWidget_t *w,XAP_Dialog *,PtCallbackInfo_t *);
+int SetupContextHelp(PtWidget_t *w,void *Dlg);
+
 char * _ev_convert(char *,const char *);
 // a *huge* convenience macro
 static char _ev_buf[256];

@@ -14,7 +14,6 @@
 
 #include <stdio.h>
 
-
 int  UT_QNXCenterWindow(PtWidget_t *parent, PtWidget_t *widget) {
 	PhPoint_t pos;
 
@@ -225,5 +224,23 @@ _ev_convert (char * bufResult,
 
 	*pl = 0;
 	return bufResult;
+}
+
+int OpenHelp(PtWidget_t *w,XAP_Dialog *dlg,PtCallbackInfo_t *cbinfo)
+{
+
+char url[PATH_MAX] = "/usr/help/product/AbiWord/en-US/";
+strcat(url,dlg->getHelpUrl().c_str());
+
+PtHelpUrl(url);
+return 0;
+}
+
+int SetupContextHelp(PtWidget_t *w,void *dlg)
+{
+	PtAddCallback(w,Pt_CB_WINDOW,OpenHelp,dlg);
+	PtSetResource(w,Pt_ARG_WINDOW_RENDER_FLAGS,Pt_TRUE,Ph_WM_RENDER_HELP);
+	PtSetResource(w,Pt_ARG_WINDOW_NOTIFY_FLAGS,Pt_TRUE,Ph_WM_HELP);
+	return 0;
 }
 

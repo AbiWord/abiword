@@ -352,6 +352,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	else
 		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_FR_ReplaceTitle), 0);
 	windowReplace = PtCreateWidget(PtWindow, NULL, n, args);
+	SetupContextHelp(windowReplace,this);
 	PtAddHotkeyHandler(windowReplace,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowReplace, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 

@@ -156,6 +156,7 @@ PtWidget_t *btnOk,*btnCancel;
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 
 	mainwindow = PtCreateWidget(PtWindow,NULL,n,args);
+	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	n=0;
 

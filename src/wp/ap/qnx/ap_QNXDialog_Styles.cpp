@@ -556,6 +556,7 @@ _(AP,DLG_Styles_StylesTitle), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowStyles = PtCreateWidget(PtWindow, NULL, n, args);
+	SetupContextHelp(windowStyles,this);
 	PtAddHotkeyHandler(windowStyles,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
 	PtAddCallback(windowStyles, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);

@@ -153,6 +153,7 @@ PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertTable_TableTitle),0);
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_RESIZE_XY_AS_REQUIRED,Pt_RESIZE_XY_AS_REQUIRED);
 
 	mainwindow= PtCreateWidget(PtWindow,0,n,args);
+	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
 
