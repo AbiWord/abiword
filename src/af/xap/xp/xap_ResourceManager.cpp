@@ -33,6 +33,7 @@
 #include "xap_ResourceManager.h"
 
 XAP_ResourceManager::XAP_ResourceManager () :
+	m_current(0),
 	m_resource(0),
 	m_resource_count(0),
 	m_resource_max(0),
@@ -98,6 +99,8 @@ const UT_UTF8String XAP_ResourceManager::new_id (bool bInternal)
  */
 XAP_Resource * XAP_ResourceManager::resource (const char * href, bool bInternal, UT_uint32 * index)
 {
+	m_current = 0;
+
 	if ( href == 0) return 0;
 	if (*href == 0) return 0;
 
@@ -113,18 +116,16 @@ XAP_Resource * XAP_ResourceManager::resource (const char * href, bool bInternal,
 		}
 	if (*href != 'r') return 0;
 
-	XAP_Resource * match = 0;
-
 	for (UT_uint32 i = 0; i < m_resource_count; i++)
 		if (m_resource[i]->bInternal == bInternal)
 			if (strcmp (href, m_resource[i]->name().utf8_str()) == 0)
 				{
-					match = m_resource[i];
+					m_current = m_resource[i];
 					if (index) *index = i;
 					break;
 				}
 
-	return match;
+	return m_current;
 }
 
 /* resource objects are created/destroyed via ref/unref

@@ -78,6 +78,7 @@ protected:
     bool				_getDataItemEncoded(const XML_Char ** atts);
 
     bool				_handleImage(const XML_Char ** atts);
+    bool				_handleResource(const XML_Char ** atts, bool isResource);
 
  private:
     bool				m_bWroteSection;

@@ -45,10 +45,18 @@ public:
 
 	const UT_UTF8String new_id (bool bInternal = true);
 
-	/* returns resource corresponding to href
+	/* returns resource corresponding to href; sets m_current to the result
 	 * returns 0 if none is found
 	 */
 	XAP_Resource * resource (const char * href, bool bInternal, UT_uint32 * index = 0);
+	XAP_Resource * current () const
+	{
+		return m_current;
+	}
+	void clear_current ()
+	{
+		m_current = 0;
+	}
 
 	/* resource objects are created/destroyed via ref/unref
 	 * ref() returns false if href is not, and cannot be, created
@@ -82,6 +90,8 @@ public:
 	UT_Error write_xml (void * context, Writer & writer); // call's writer's write_xml() & write_base64() callbacks
 
 private:
+	XAP_Resource * m_current; // current resource
+
 	XAP_Resource ** m_resource;
 
 	UT_uint32 m_resource_count;

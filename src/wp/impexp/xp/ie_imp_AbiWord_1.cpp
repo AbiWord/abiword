@@ -204,6 +204,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_ENDENDNOTE        33 // <endendnote>
 #define TT_REVISIONSECTION 34 //<revisions>
 #define TT_REVISION        35 //<r>
+#define TT_RESOURCE        36 // <resource>
 
 /*
   TODO remove tag synonyms.  We're currently accepted
@@ -256,6 +257,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{   "pagesize",     TT_PAGESIZE     },
 	{	"pbr",			TT_PAGEBREAK	},
     {   "r",            TT_REVISION     },
+	{   "resource",     TT_RESOURCE     },
 	{   "revisions",    TT_REVISIONSECTION},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
@@ -449,10 +451,22 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataSec);
 		m_parseState = _PS_DataItem;
+#ifdef ENABLE_RESOURCE_MANAGER
+		_handleResource (atts, false);
+#else
 		m_currentDataItem.truncate(0);
 		X_CheckError(UT_XML_cloneString(m_currentDataItemName,_getDataItemName(atts)));
 		X_CheckError(UT_XML_cloneString(m_currentDataItemMimeType,_getDataItemMimeType(atts)));
 		m_currentDataItemEncoded = _getDataItemEncoded(atts);
+#endif
+		return;
+
+	case TT_RESOURCE:
+#ifdef ENABLE_RESOURCE_MANAGER
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_DataItem;
+		_handleResource (atts, true);
+#endif
 		return;
 
 	case TT_STYLESECTION:
@@ -698,6 +712,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataItem);
 		m_parseState = _PS_DataSec;
+#ifndef ENABLE_RESOURCEMANAGER
 #define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
 		trim = 0;
 		len = m_currentDataItem.getLength();
@@ -713,6 +728,14 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		FREEP(m_currentDataItemName);
 		// the data item will free the token we passed (mime-type)
 		m_currentDataItemMimeType = NULL;
+#endif
+ 		return;
+
+	case TT_RESOURCE:
+#ifdef ENABLE_RESOURCEMANAGER
+		X_VerifyParseState(_PS_DataItem);
+		m_parseState = _PS_Doc;
+#endif
  		return;
 
 	case TT_STYLESECTION:
@@ -926,6 +949,142 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 	free (new_atts);
 
 	return success;
+#else
+	return false;
+#endif
+}
+
+bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
+{
+#ifdef ENABLE_RESOURCE_MANAGER
+	if (atts == 0) return false;
+
+	XAP_ResourceManager & RM = getDoc()->resourceManager ();
+
+	if (isResource)
+		{
+			// <resource id="ID" type=""> ... </resource>
+
+			const XML_Char * r_id = 0;
+			const XML_Char * r_mt = 0;
+
+			const XML_Char ** attr = atts;
+			while (*attr)
+				{
+					if (strcmp (*attr, "id") == 0)
+						{
+							attr++;
+							r_id = *attr++;
+						}
+					else if (strcmp (*attr, "type") == 0)
+						{
+							attr++;
+							r_mt = *attr++;
+						}
+					else
+						{
+							attr++;
+							attr++;
+						}
+				}
+			if (r_id == 0) return false;
+
+			XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(RM.resource (r_id, true));
+			if (ri == 0) return false;
+
+			if (r_mt) ri->type (r_mt);
+
+			m_currentDataItemEncoded = true;
+
+			return true;
+		}
+	else
+		{
+			// <d name="ID" mime-type="image/png" base64="yes"> ... </d>
+			// <d name="ID" mime-type="image/svg-xml | text/mathml" base64="no"> <![CDATA[ ... ]]> </d>
+
+			const XML_Char * r_id = 0;
+			const XML_Char * r_64 = 0;
+
+			enum { mt_unknown, mt_png, mt_svg, mt_mathml } mt = mt_unknown;
+
+			const XML_Char ** attr = atts;
+			while (*attr)
+				{
+					if (strcmp (*attr, "name") == 0)
+						{
+							attr++;
+							r_id = *attr++;
+						}
+					else if (strcmp (*attr, "mime-type") == 0)
+						{
+							attr++;
+
+							if (strcmp (*attr, "image/png") == 0)
+								mt = mt_png;
+							else if (strcmp (*attr, "image/svg-xml") == 0)
+								mt = mt_svg;
+							else if (strcmp (*attr, "text/mathml") == 0)
+								mt = mt_mathml;
+
+							attr++;
+						}
+					else if (strcmp (*attr, "base64") == 0)
+						{
+							attr++;
+							r_64 = *attr++;
+						}
+					else
+						{
+							attr++;
+							attr++;
+						}
+				}
+			if (r_id == 0) return false;
+			if (r_64 == 0) return false;
+
+			/* map dataid to new resource ID
+			 */
+			const UT_UTF8String * new_id = reinterpret_cast<const UT_UTF8String *>(m_refMap->pick (r_id));
+			if (new_id == 0) return false;
+
+			XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(RM.resource (new_id->utf8_str (), true));
+			if (ri == 0) return false;
+
+			bool add_resource = false;
+			switch (mt)
+				{
+				case mt_png:
+					if (strcmp (r_64, "yes") == 0)
+						{
+							ri->type ("image/png");
+							m_currentDataItemEncoded = true;
+							add_resource = true;
+						}
+					break;
+				case mt_svg:
+					if (strcmp (r_64, "no") == 0) // hmm, CDATA fun
+						{
+							ri->type ("image/svg+xml"); // image/svg & image/svg-xml are possible but not recommended
+							m_currentDataItemEncoded = false;
+							add_resource = true;
+						}
+					break;
+				case mt_mathml:
+					if (strcmp (r_64, "no") == 0) // hmm, CDATA fun
+						{
+							ri->type ("application/mathml+xml"); // preferred by MathML 2.0
+							m_currentDataItemEncoded = false;
+							add_resource = true;
+						}
+					break;
+				default:
+					break;
+				}
+			if (!add_resource) RM.clear_current (); // not going to add the data :-(
+
+			return add_resource;
+		}
 #else
 	return false;
 #endif
