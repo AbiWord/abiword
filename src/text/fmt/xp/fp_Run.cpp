@@ -4905,7 +4905,7 @@ void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
     if(   iDir != m_iVisDirection
 	   && m_iVisDirection != FRIBIDI_TYPE_UNSET
-	   && m_eRefreshDrawBuffer == SR_BufferClean)
+		  /*&& m_eRefreshDrawBuffer == SR_BufferClean*/)
 	{
 		// the text in the buffer is in the wrong order, schedule it
 		// for refresh
