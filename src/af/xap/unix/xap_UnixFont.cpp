@@ -99,7 +99,7 @@ XAP_UnixFont::XAP_UnixFont(void)
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 
-	m_bIsTTF = false;
+	m_fontType = FONT_TYPE_UNKNOWN;
 }
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
@@ -119,8 +119,6 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 	m_PFFile = NULL;
 
 	m_fontKey = NULL;
-
-	//m_bIsTTF = comy.m_bIsTTF; not needed since it will be done by openFileAs
 
 	openFileAs(copy.getFontfile(),
 			   copy.getMetricfile(),
@@ -206,7 +204,15 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	// update our key so we can be identified
 	_makeFontKey();
 
-	m_bIsTTF = strstr(m_fontfile, ".ttf") ? true : false;
+	if(strstr(m_fontfile, ".ttf"))
+		m_fontType = FONT_TYPE_TTF;
+	else if(strstr(m_fontfile, ".pfa"))
+		m_fontType = FONT_TYPE_PFA;
+	else if(strstr(m_fontfile, ".pfb"))
+		m_fontType = FONT_TYPE_PFB;
+	else
+		m_fontType = FONT_TYPE_UNKNOWN;
+
 	return true;
 }
 
@@ -326,38 +332,42 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 	{
 		//if the file does not exist, we will load a generic one
 		//get the path from m_fontfile
-		// NB sometimes the file is separated from the file name by two slashes.
-		char * slash = strrchr(m_fontfile, '/');
-		char * full_name;
+		char * full_name = new char[strlen(XAP_App::getApp()->getAbiSuiteLibDir())+30];
+		strcpy(full_name, m_fontfile);
+
+		char * slash = strrchr(full_name, '/');
 		if(slash)
-		{
-			full_name = new char[(slash - m_fontfile) + 20];
-			strncpy(full_name, m_fontfile, (slash - m_fontfile)+1);
-			full_name[(slash - m_fontfile)+1] = 0;
-		}
-		else
-		{
-			full_name = new char[20];
-			*full_name = 0;
-		}
-			
-		if(XAP_EncodingManager::instance->isUnicodeLocale())
-			//unicode locale, use the complete table
-			strcat(full_name, "adobe-full.u2g");
-		else
-			strcat(full_name, "adobe-short.u2g");
-			
-		UT_DEBUGMSG(("UnixFont: loading generic encoding file [%s]\n", full_name));
+			*(slash+1) = 0;
 		
+		//first we look for a locale specific file locale.u2g in the same directory as this font
+		strcat(full_name, "locale.u2g");
+		UT_DEBUGMSG(("UnixFont: trying to open locale specific encoding file [%s]\n", full_name));
+
 		ef = fopen(full_name, "r");
-		
+
+		//if there is no locale.u2g, we will open one of the default Adobe encodings
 		if(!ef)
 		{
-			UT_DEBUGMSG(("UnixFont: could not load default encoding file [%s].\n", full_name));
-			char msg[300];
-			sprintf(msg, "AbiWord could not find required encoding file %s.", full_name);
-			messageBoxOK(msg);
-			return 0;
+			strcpy(full_name, XAP_App::getApp()->getAbiSuiteLibDir());
+
+			if(XAP_EncodingManager::instance->isUnicodeLocale())
+				//unicode locale, use the complete table
+				strcat(full_name, "/fonts/adobe-full.u2g");
+			else
+				strcat(full_name, "/fonts/adobe-short.u2g");
+			
+			UT_DEBUGMSG(("UnixFont: loading generic encoding file [%s]\n", full_name));
+		
+			ef = fopen(full_name, "r");
+		
+			if(!ef)
+			{
+				UT_DEBUGMSG(("UnixFont: could not load default encoding file [%s].\n", full_name));
+				char msg[300];
+				sprintf(msg, "AbiWord could not find required encoding file %s.", full_name);
+				messageBoxOK(msg);
+				return 0;
+			}
 		}
 	}
 
@@ -424,6 +434,49 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 	return m_pEncodingTable;
 };
 
+bool XAP_UnixFont::_createPsSupportFiles()
+{
+	if(!is_PS_font())
+		return false;
+
+	char fontfile[100];
+	char pfa2util[100];
+	char cmdline[400];
+	char buff[256];
+	
+	strcpy(pfa2util, XAP_App::getApp()->getAbiSuiteLibDir());
+	strcat(pfa2util, "/bin/pfa2afm");
+	
+	strcpy(fontfile, m_fontfile);
+	char * dot   = strrchr(fontfile, '.');
+	*(dot+1) = 0;
+
+	/*	now open a pipe to the pfa2afm program, and examine the output for
+		presence of error messages
+	*/
+	sprintf(cmdline, "%s -p %s -a %safm", pfa2util, m_fontfile, fontfile);
+	
+	UT_DEBUGMSG(("XAP_UnixFont::_createPsSupportFiles: running pfa2afm\n\t%s", cmdline));
+	FILE * p = popen(cmdline, "r");
+	if(!p)
+	{
+		UT_DEBUGMSG(("XAP_UnixFont::_createPsSupportFiles: unable to run pfa2afm\n"));
+		return false;
+	}
+	
+	while(!feof(p))
+	{
+		fgets(buff, 256, p);
+		if(strstr(buff, "Error"))
+		{
+			UT_DEBUGMSG(("XAP_UnixFont::_createPsSupportFiles: pfa2afm error:\n%s\n", buff));
+			return false;
+		}
+	}
+	pclose(p);
+
+	return true;
+}
 bool XAP_UnixFont::_createTtfSupportFiles()
 {
 	if(!is_TTF_font())
@@ -510,7 +563,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	*/
 	if (fp == NULL)
 	{
-		if(_createTtfSupportFiles())
+		if(_createTtfSupportFiles() || _createPsSupportFiles())
 			fp = fopen(m_metricfile, "r");
 	}
 	

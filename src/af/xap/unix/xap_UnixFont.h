@@ -41,6 +41,7 @@ struct uniWidth
 	UT_uint16  width;
 };
 
+typedef enum {FONT_TYPE_PFA, FONT_TYPE_PFB, FONT_TYPE_TTF, FONT_TYPE_UNKNOWN} font_type;
 
 class XAP_UnixFont
 {
@@ -92,8 +93,14 @@ class XAP_UnixFont
 	GdkFont *				getGdkFont(UT_uint32 pixelsize);
 
 	GdkFont *				getMatchGdkFont(UT_uint32 size);
+
+	bool					is_TTF_font() const {return (m_fontType == FONT_TYPE_TTF);}
+	bool					is_PS_font()  const {return ((m_fontType == FONT_TYPE_PFA) || (m_fontType == FONT_TYPE_PFB));}
+	font_type				getFontType() const {return m_fontType;}
+
 protected:
 	bool					_createTtfSupportFiles();
+	bool					_createPsSupportFiles();
 	struct allocFont
 	{
 		UT_uint32			pixelSize;
@@ -138,7 +145,8 @@ protected:
 	bool					m_is_cjk;
 	CJK_PSFontMetric			m_cjk_font_metric;
 
-	bool					m_bIsTTF;
+//	bool					m_bIsTTF;
+	font_type				m_fontType;
 public:
 	static XAP_UnixFont *			s_defaultNonCJKFont[4];
 	static XAP_UnixFont *			s_defaultCJKFont[4];
@@ -152,7 +160,6 @@ public:
 	void set_CJK_Descent(int i){ m_cjk_font_metric.descent=i; }
 	void set_CJK_Width(int i){ m_cjk_font_metric.width=i; }
 
-	bool is_TTF_font()const{return m_bIsTTF;}
 };
 
 /* Values found in PFB files */
