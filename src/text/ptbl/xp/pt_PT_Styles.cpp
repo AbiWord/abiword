@@ -117,6 +117,19 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
     _s("Numbered Heading 2","P","Heading 2","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
 
     _s("Numbered Heading 3","P","Heading 3","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
+
+    _s("Chapter Heading 1","P","Numbered Heading 1","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:NULL; list-decimal: ");
+
+    _s("Chapter Heading 2","P","Numbered Heading 2","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:NULL; list-decimal: ");
+
+    _s("Chapter Heading 3","P","Numbered Heading 3","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:NULL; list-decimal: ");
+
+    _s("Section Heading 1","P","Numbered Heading 1","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L Section; field-font:NULL; list-decimal: ");
+
+    _s("Section Heading 2","P","Numbered Heading 2","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L Section; field-font:NULL; list-decimal: ");
+
+    _s("Section Heading 3","P","Numbered Heading 3","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L Section; field-font:NULL; list-decimal: ");
+
 	return true;
 
 Failed:
@@ -133,7 +146,6 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 		return false;
 
 	// verify unique name
-
 	PD_Style * pStyle = NULL;
 	if (getStyle(szName,&pStyle) == true)
 		return false;		// duplicate name
