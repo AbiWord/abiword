@@ -221,7 +221,6 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
-
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	char key[500];
@@ -283,12 +282,9 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	char key[500];
 	if(pszField!="NULL" && pszField != NULL && isField==UT_TRUE)
 	{
-	        sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszField, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
+	        pszFamily = pszField;
 	}
-	else
-	{
-	        sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-	}
+	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
 	UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
 	if (!pEntry)
 	{

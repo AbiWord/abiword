@@ -326,7 +326,6 @@ inline void fl_AutoNum::_updateItems(UT_uint32 start)
 
 fl_Layout * fl_AutoNum::getNthBlock( UT_uint32 list_num)
 {
-  UT_DEBUGMSG(("Number of items in list = %d \n",m_pItems.getItemCount())); //SEVIOR
         if(list_num <0 || list_num >= m_pItems.getItemCount())
 	        return (fl_Layout *) NULL;
 	else

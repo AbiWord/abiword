@@ -323,7 +323,6 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 
 	// Request the appropriate XAP_UnixFont
 	XAP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);	
-
 	if (!unixfont)
 	{
 		// Oops!  We don't have that font here.  substitute something
