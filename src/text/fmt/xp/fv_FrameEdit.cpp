@@ -51,7 +51,10 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_pFrameImage(NULL),
 	  m_pAutoScrollTimer(NULL),
 	  m_xLastMouse(1),
-	  m_yLastMouse(1)
+	  m_yLastMouse(1),
+	  m_iFirstEverX(0),
+	  m_iFirstEverY(0),
+	  m_iGlobCount(0)
 {
 	UT_ASSERT (pView);
 }
@@ -167,8 +170,53 @@ void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
 
 }
 
+/*!
+ * Returns 0 if the frame has never been dragged at all.
+ * Returns 1 if the frame has been dragged a little bit
+ * Return 10 if the frame has been dragged a lot.
+ */
+UT_sint32 FV_FrameEdit::haveDragged(void) const
+{
+	if(!m_bFirstDragDone)
+	{
+		return 0;
+	}
+	if((abs(m_xLastMouse - m_iFirstEverX) + abs(m_yLastMouse - m_iFirstEverY)) <
+		getGraphics()->tlu(3))
+	{
+		return 1;
+	}
+	return 10;
+}
+
+UT_sint32 FV_FrameEdit::getGlobCount()
+{
+	return m_iGlobCount;
+}
+
+void  FV_FrameEdit::_beginGlob(void)
+{
+	getDoc()->beginUserAtomicGlob();
+	m_iGlobCount++;
+	UT_DEBUGMSG(("Begin Glob count %d \n",m_iGlobCount));
+}
+
+
+void  FV_FrameEdit::_endGlob(void)
+{
+	getDoc()->endUserAtomicGlob();
+	m_iGlobCount--;
+	UT_DEBUGMSG(("End Glob count %d \n",m_iGlobCount));
+}
+
+
 void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+	if(!m_bFirstDragDone)
+	{
+		m_iFirstEverX = x;
+		m_iFirstEverY = y;
+	}
 	m_bFirstDragDone = true;
 	UT_sint32 diffx = 0;
 	UT_sint32 diffy = 0;
@@ -794,6 +842,7 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
  */
 void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 {
+	m_bFirstDragDone = false;
 	if(!isActive())
 	{
 		setDragType(x,y,true);
@@ -807,6 +856,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		setDragType(x,y,true);
 		if(FV_FrameEdit_DragNothing == m_iDraggingWhat)
 		{
+			m_bFirstDragDone = false;
 			m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
 			drawFrame(false);
 			m_pFrameLayout = NULL;
@@ -823,6 +873,14 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 			}
 			m_pView->m_prevMouseContext = EV_EMC_TEXT;
 			m_pView->setCursorToContext();
+			m_recCurFrame.width = 0;
+			m_recCurFrame.height = 0;
+			m_iDraggingWhat = FV_FrameEdit_DragNothing;
+			m_iLastX = 0;
+			m_iLastY = 0;
+			while(m_iGlobCount > 0)
+				_endGlob();
+			m_pView->warpInsPtToXY(x,y,true);
 		}
 		else
 		{
@@ -835,28 +893,6 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 				m_iFrameEditMode = FV_FrameEdit_DRAG_EXISTING;
 				m_iInitialDragX = m_recCurFrame.left;
 				m_iInitialDragY = m_recCurFrame.top;
-#if 0
-//
-// Have to work out how to tell the difference between first click of
-// a whole frame drag and wanting to put the insertion point in the frame
-//
-				m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
-				drawFrame(false);
-				m_pFrameLayout = NULL;
-				m_pFrameContainer = NULL;
-				DELETEP(m_pFrameImage);
-				XAP_Frame * pFrame = static_cast<XAP_Frame*>(m_pView->getParentData());
-				if(pFrame)
-				{
-					EV_Mouse * pMouse = pFrame->getMouse();
-					if(pMouse)
-					{
-						pMouse->clearMouseContext();
-					}
-				}
-				m_pView->m_prevMouseContext = EV_EMC_TEXT;
-				m_pView->setCursorToContext();
-#endif
 			}
 		}
 		return;
@@ -882,7 +918,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 		m_recCurFrame.width = iSize;
 		m_recCurFrame.height = iSize;
 		m_iFrameEditMode = FV_FrameEdit_RESIZE_INSERT;
-		getDoc()->beginUserAtomicGlob();
+		_beginGlob();
 //		mouseRelease(x,y);
 		mouseRelease(origX,origY);
 		m_iFrameEditMode = FV_FrameEdit_RESIZE_EXISTING;
@@ -1050,7 +1086,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 	// Turn off list updates
 
 		getDoc()->disableListUpdates();
-		getDoc()->beginUserAtomicGlob();
+		_beginGlob();
 
 		UT_String sXpos("");
 		UT_String sYpos("");
@@ -1085,9 +1121,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_pView->setPoint(posFrame+2);
 
 // Finish up with the usual stuff
-		getDoc()->endUserAtomicGlob();
+
 		getDoc()->setDontImmediatelyLayout(false);
 		m_pView->_generalUpdate();
+
+		_endGlob();
 
 
 	// restore updates and clean up dirty lists
@@ -1122,6 +1160,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		UT_ASSERT(m_pFrameContainer);
 		drawFrame(true);
+		m_bFirstDragDone = false;
 		return;
 	}
 
@@ -1137,9 +1176,33 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // If there was no drag, the user just clicked and released the left mouse
 // no need to change anything.
 //
-		if(!m_bFirstDragDone)
+		if(haveDragged() < 10)
 		{
-			getDoc()->endUserAtomicGlob();
+			m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
+			m_iDraggingWhat = FV_FrameEdit_DragNothing;
+			drawFrame(false);
+			m_pFrameLayout = NULL;
+			m_pFrameContainer = NULL;
+			DELETEP(m_pFrameImage);
+			XAP_Frame * pFrame = static_cast<XAP_Frame*>(m_pView->getParentData());
+			if(pFrame)
+			{
+				EV_Mouse * pMouse = pFrame->getMouse();
+				if(pMouse)
+				{
+					pMouse->clearMouseContext();
+				}
+			}
+			m_pView->m_prevMouseContext = EV_EMC_TEXT;
+			m_pView->setCursorToContext();
+			m_recCurFrame.width = 0;
+			m_recCurFrame.height = 0;
+			m_iLastX = 0;
+			m_iLastY = 0;
+			m_bFirstDragDone = false;
+			while(m_iGlobCount > 0)
+				_endGlob();
+			m_pView->warpInsPtToXY(x,y,true);
 			return;
 		}
 //
@@ -1415,7 +1478,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 	// Turn off list updates
 
 		getDoc()->disableListUpdates();
-		getDoc()->beginUserAtomicGlob();
+		_beginGlob();
 
 		m_pView->_clearSelection();
 
@@ -1494,10 +1557,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			m_pView->_pasteFromLocalTo(posFrame+2);
 		}
 // Finish up with the usual stuff
-		getDoc()->endUserAtomicGlob();
 		getDoc()->setDontImmediatelyLayout(false);
 		m_pView->_generalUpdate();
-
 
 	// restore updates and clean up dirty lists
 		getDoc()->enableListUpdates();
@@ -1553,10 +1614,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // If this was a drag following the initial click, wrap it in a 
 // endUserAtomicGlob so it undo's in a single click.
 //
-		if(m_bFirstDragDone && m_bInitialClick)
-		{
-			getDoc()->endUserAtomicGlob();
-		}
+		while(m_iGlobCount > 0)
+			_endGlob();
+
 		m_bInitialClick = false;
 //
 // Finish up by putting the editmode back to existing selected.
@@ -1566,7 +1626,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
 		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);
+		m_bFirstDragDone = false;
 	}
+	m_bFirstDragDone = false;
 }
 
 
@@ -1588,7 +1650,7 @@ void FV_FrameEdit::deleteFrame(void)
 	// Turn off list updates
 
 	getDoc()->disableListUpdates();
-	getDoc()->beginUserAtomicGlob();
+	_beginGlob();
 	getDoc()->setDontImmediatelyLayout(true);
 
 // Delete the frame
@@ -1611,7 +1673,7 @@ void FV_FrameEdit::deleteFrame(void)
 	}
 
 // Finish up with the usual stuff
-	getDoc()->endUserAtomicGlob();
+
 	getDoc()->setDontImmediatelyLayout(false);
 	m_pView->_generalUpdate();
 
@@ -1625,6 +1687,8 @@ void FV_FrameEdit::deleteFrame(void)
 	m_pView->notifyListeners(AV_CHG_HDRFTR);
 	m_pView->_fixInsertionPointCoords();
 	m_pView->_ensureInsertionPointOnScreen();
+	while(m_iGlobCount > 0)
+		_endGlob();
 
 // Clear all internal variables
 
@@ -1638,6 +1702,7 @@ void FV_FrameEdit::deleteFrame(void)
 	m_iLastY = 0;
 
 	m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
+	m_bFirstDragDone = false;
 }
 
 /*!

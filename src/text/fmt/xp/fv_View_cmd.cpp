@@ -71,7 +71,7 @@
 #include "pp_Revision.h"
 
 #include "ap_Dialog_SplitCells.h"
-
+#include "ev_Mouse.h"
 #include "fv_View.h"
 
 #if 1

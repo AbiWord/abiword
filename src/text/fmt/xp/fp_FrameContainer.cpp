@@ -310,6 +310,7 @@ void fp_FrameContainer::_drawHandleBox(UT_Rect box)
  */
 void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 {
+	xxx_UT_DEBUGMSG(("FrameContainer %x called, page %x \n",this,getPage()));
 	if(getPage() == NULL)
 	{
 		return;
