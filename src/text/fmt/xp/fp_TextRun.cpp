@@ -348,9 +348,8 @@ bool fp_TextRun::canBreakAfter(void) const
 {
 	if (getLength() > 0)
 	{
-		PD_StruxIterator text(*getBlock()->getDocument(),
-						 getBlock()->getStruxDocHandle(),
-						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 		
@@ -376,9 +375,8 @@ bool fp_TextRun::canBreakBefore(void) const
 {
 	if (getLength() > 0)
 	{
-		PD_StruxIterator text(*getBlock()->getDocument(),
-						 getBlock()->getStruxDocHandle(),
-						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET );
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET );
 		
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 		
@@ -406,9 +404,8 @@ bool fp_TextRun::alwaysFits(void) const
 {
 	if (getLength() > 0)
 	{
-		PD_StruxIterator text(*getBlock()->getDocument(),
-						 getBlock()->getStruxDocHandle(),
-						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 		for (UT_uint32 i=0; i< getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 		{
@@ -517,8 +514,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 
 	UT_uint32 offset = getBlockOffset();
 
-	PD_StruxIterator text(*getBlock()->getDocument(),
-						  getBlock()->getStruxDocHandle(),
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  offset + fl_BLOCK_STRUX_OFFSET);
 
 	for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
@@ -558,8 +554,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 				{
 					// calculate with of previous continuous space
 					UT_sint32 iSpaceW = 0;
-					PD_StruxIterator text2(*getBlock()->getDocument(),
-										   getBlock()->getStruxDocHandle(),
+					PD_StruxIterator text2(getBlock()->getStruxDocHandle(),
 										   offset + fl_BLOCK_STRUX_OFFSET + i);
 
 					UT_uint32 j = i;
@@ -1110,57 +1105,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	return true;
 }
 
-#if 0
-void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths)
-{
-	UT_ASSERT(pCharWidths);
-	UT_ASSERT(pFont);
-
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-	UT_uint32 offset = getBlockOffset();
-	UT_uint32 len = getLength();
-	bool bContinue = true;
-
-	getGraphics()->setFont(pFont);
-
-	while (bContinue)
-	{
-		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
-
-		if(!bContinue)
-		{
-			// a bug, we have block with text runs, but no span ptr !!!
-			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			return;
-		}
-
-		UT_ASSERT(lenSpan>0);
-
-		if (len <= lenSpan)
-		{
-			getGraphics()->measureString(pSpan, 0, len, pCharWidths + offset);
-
-			bContinue = false;
-		}
-		else
-		{
-			getGraphics()->measureString(pSpan, 0, lenSpan, pCharWidths + offset);
-
-			offset += lenSpan;
-			len -= lenSpan;
-		}
-	}
-}
-void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
-{
-	if (getLength() == 0)
-	{
-		return;
-	}
-	return;
-}
-#endif
 
 UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 {
@@ -1792,152 +1736,34 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	if(getVisDirection() == FRIBIDI_TYPE_RTL) pRect->left = xoff + getWidth() - pRect->left - pRect->width;
 }
 
-
-inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
-									UT_uint32 lenSpan,
-									UT_uint32 len,
-									UT_uint32 offset,
-									UT_UCSChar * prev,
-									UT_UCSChar * after) const
-{
-#if 1
-	// first the char preceding this part of the run, which is simple
-	// NB. cannot call getSpanPtr with negative offset, or we will get
-	// into the undo buffer
-	const UT_UCSChar * pPrev = 0, * pNext = 0;
-	UT_uint32 lenPrev, lenAfter;
-	prev[0] = 0;
-	prev[1] = 0;
-	prev[2] = 0;
-
-	if(offset > 1)
-	{
-		if(getBlock()->getSpanPtr(offset - 2, &pPrev, &lenPrev))
-		{
-			prev[1] = *pPrev;
-			if(lenPrev > 1)
-				prev[0] = *(pPrev+1);
-			else if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
-				prev[0] = *pPrev;
-		}
-		else if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
-		{
-			prev[0] = *pPrev;
-		}
-	}
-	else if(offset > 0)
-	{
-		if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
-			prev[0] = *pPrev;
-	}
-
-	lenPrev = 2;
-
-	xxx_UT_DEBUGMSG(("fp_TextRun::_getContext: prev[0] %d, prev[1] %d\n"
-				 "		 getBlockOffset() %d, offset %d\n",
-				 prev[0],prev[1],getBlockOffset(),offset));
-
-	// how many characters at most can we retrieve?
-	UT_sint32 iStop = static_cast<UT_sint32>(CONTEXT_BUFF_SIZE) < static_cast<UT_sint32>(lenSpan - len) ? CONTEXT_BUFF_SIZE : lenSpan - len;
-	UT_sint32 i;
-	// first, getting anything that might be in the span buffer
-	for(i=0; i< iStop;i++)
-		after[i] = pSpan[len+i];
-
-	// for anything that we miss, we need to get it the hard way
-	// as it is located in different spans
-
-	while(i < CONTEXT_BUFF_SIZE && getBlock()->getSpanPtr(offset + UT_MIN(len,lenSpan) + i, &pNext, &lenAfter))
-	{
-		for(UT_uint32 j = 0; j < lenAfter && static_cast<UT_uint32>(i) < CONTEXT_BUFF_SIZE; j++,i++)
-			after[i] = pNext[j];
-	}
-
-	// now we have our trailing chars, so we null-terminate the array
-	after[i] = 0;
-	
-#else
-	prev[0] = 0;
-	after[0] = 0;
-#endif
-}
-
-
 void fp_TextRun::_refreshDrawBuffer()
 {
 	if(_getRefreshDrawBuffer())
 	{
-		FriBidiCharType iVisDir = getVisDirection();
-
-		const UT_UCSChar* pSpan = NULL;
-		UT_uint32 lenSpan = 0;
-		UT_uint32 offset = 0;
-		UT_uint32 len = getLength();
-		bool bContinue = true;
-
-		UT_contextGlyph cg;
-
-		if(getLength() > m_iSpanBuffSize) //the buffer too small, reallocate
+		UT_uint32 iLen = getLength();
+		
+		if(iLen > m_iSpanBuffSize) //buffer too small, reallocate
 		{
 			delete[] m_pSpanBuff;
-			m_pSpanBuff = new UT_UCSChar[getLength() + 1];
-			m_iSpanBuffSize = getLength();
+			m_pSpanBuff = new UT_UCSChar[iLen + 1];
+			m_iSpanBuffSize = iLen;
 			UT_ASSERT(m_pSpanBuff);
 		}
-
-		for(;;) // retrive the span and do any necessary processing
-		{
-			bContinue = getBlock()->getSpanPtr(offset + getBlockOffset(), &pSpan, &lenSpan);
-
-			//this sometimes happens with fields ...
-			if(!bContinue)
-				break;
-
-			UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
-
-			/*
-			  here we need to handle context glyph shapes. For that we will
-			  use our class UT_contextGlyph, for which we need to retrieve
-			  one character before the one in question and an unspecified
-			  number of chars to follow.
-			*/
-			// now we will retrieve 5 characters that follow this part of the run
-			// and two chars that precede it
-
-			// three small buffers, one to keep the chars past this part
-			// and one that we will use to create the "trailing" chars
-			// for each character in this fragment
-			UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
-			UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
-
-
-			// NB: _getContext requires block offset
-			_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
-#if 1
-			cg.renderString(pSpan, &m_pSpanBuff[offset],
-							iTrueLen,&prev[0],&next[0],m_pLanguage, iVisDir,
-							GR_Font::s_doesGlyphExist, (void*)getFont());
-#else
-			cg.renderString(pSpan, &m_pSpanBuff[offset],
-							iTrueLen,&prev[0],&next[0],m_pLanguage, iVisDir);
-
-#endif
-			if(iTrueLen == len)
-			{
-				break;
-			}
-
-			offset += iTrueLen;
-			len -= iTrueLen;
-
-		} // for(;;)
-
+		
+		FriBidiCharType iVisDir = getVisDirection();
+		UT_contextGlyph  cg;
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+		
+		cg.renderString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
+						GR_Font::s_doesGlyphExist, (void*)getFont());
+		
 		// if we are on a non-bidi OS, we have to reverse any RTL runs
 		// if we are on bidi OS, we have to reverse RTL runs that have direction
 		// override set to LTR, to preempty to OS reversal of such text
 		if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
 		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL))
-			UT_UCS4_strnrev(m_pSpanBuff, getLength());
+			UT_UCS4_strnrev(m_pSpanBuff, iLen);
 
 		// mark the draw buffer clean ...
 		_setRefreshDrawBuffer(false);
@@ -2147,8 +1973,7 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 	// NOTE: return value is block-relative (don't ask me why)
 	if ((getLength() > 0) && (startPosition < getLength()))
 	{
-		PD_StruxIterator text(*getBlock()->getDocument(),
-							  getBlock()->getStruxDocHandle(),
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + startPosition);
 
 		for(UT_uint32 i = startPosition; i < getLength() && text.getStatus() == UTIter_OK;
@@ -2168,9 +1993,8 @@ bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 	if(getLength() == 0)
 		return false;
 
-	PD_StruxIterator text(*getBlock()->getDocument(),
-					 getBlock()->getStruxDocHandle(),
-					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + run_offset);
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + run_offset);
 
 	UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 	
@@ -2210,8 +2034,7 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 {
 	if(getLength() > 0)
 	{
-		PD_StruxIterator text(*getBlock()->getDocument(),
-							  getBlock()->getStruxDocHandle(),
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 		for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
@@ -2248,9 +2071,8 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 	{
 		UT_sint32 i;
 
-		PD_StruxIterator text(*getBlock()->getDocument(),
-					 getBlock()->getStruxDocHandle(),
-					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 		
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
@@ -2390,9 +2212,8 @@ UT_uint32 fp_TextRun::countTrailingSpaces(void) const
 	{
 		UT_sint32 i;
 
-		PD_StruxIterator text(*getBlock()->getDocument(),
-					 getBlock()->getStruxDocHandle(),
-					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 		
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
@@ -2487,8 +2308,7 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 	if (len > 0)
 	{
 		UT_uint32 i;
-		PD_StruxIterator text(*getBlock()->getDocument(),
-							  getBlock()->getStruxDocHandle(),
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 		for(i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
@@ -2622,6 +2442,19 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
 
+/*! A word of explanaiton of the break*AtDirBoundaries() functions.
+    In order to reduce our memory use, we merge runs that resolve to
+    the same embeding level. For example, if we have the sequence 'RTL
+    white_space RTL', we will merge it into one run that gets treated
+    as RTL. However, if we insert a new character into this combined
+    run, or on its left or right, this might result in the embeding
+    level of the white_space segment changing. In order to handle
+    this, we have to break the present run into segments that contain
+    characters of the same type, do the bidi processing, and then we
+    can again merge anything that is on the same embeding level. The
+    two functions below are responsible for the breaking, and are
+    invoked from inside the fl_BlockLayout class.
+*/
 void fp_TextRun::breakNeighborsAtDirBoundaries()
 {
 	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
@@ -2629,9 +2462,6 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 
 	fp_TextRun *pNext = NULL, *pPrev = NULL, *pOtherHalf;
 	PT_BlockOffset curOffset = 0;
-	const UT_UCSChar* pSpan;
-	UT_uint32 spanOffset = 0;
-	UT_uint32 lenSpan = 0;
 
 	if(  getPrevRun()
 	  && getPrevRun()->getType() == FPRUN_TEXT
@@ -2641,21 +2471,26 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
 	}
 
+
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
 	while(pPrev)
 	{
-		getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
-		if ( pSpan == static_cast<UT_UCSChar *>(NULL) || !lenSpan )
-			break;
+		UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
+		UT_return_if_fail(text.getStatus() == UTIter_OK);
 
-		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
+		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 
-		if(getLength() > 1)
+		if(pPrev->getLength() > 1)
 		{
 			while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
 			{
 				curOffset--;
-				getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
-				iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
+				c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
+				UT_return_if_fail(text.getStatus() == UTIter_OK);
+				
+				iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 				if(iType != iPrevType)
 				{
 					pPrev->split(curOffset+1);
@@ -2699,30 +2534,24 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 
 	while(pNext)
 	{
-		getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
-		if ( pSpan == static_cast<UT_UCSChar *>(NULL) || !lenSpan )
-			break;
+		UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
+		UT_return_if_fail(text.getStatus() == UTIter_OK);
 		
-		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
+		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 		bool bDirSet = false;
 
 		if(pNext->getLength() > 1)
 		{
-			spanOffset = 0;
-			while(curOffset + spanOffset < pNext->getBlockOffset() + pNext->getLength() - 1
+			while(curOffset < pNext->getBlockOffset() + pNext->getLength() - 1
 				  && !FRIBIDI_IS_STRONG(iType))
 			{
-				spanOffset++;
-				if(spanOffset >= lenSpan)
-				{
-					curOffset += spanOffset;
-					spanOffset = 0;
-					getBlock()->getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
-				}
-				iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
+				curOffset++;
+				c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
+				iType = fribidi_get_type(static_cast<FriBidiChar>(c));
+				
 				if(iType != iPrevType)
 				{
-					pNext->split(curOffset + spanOffset);
+					pNext->split(curOffset);
 					pNext->setDirection(iPrevType, pNext->getDirOverride());
 
 					// now set direction of the second half
@@ -2777,43 +2606,36 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 		return;
 
 	PT_BlockOffset currOffset = getBlockOffset();
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan = 0;
-	UT_uint32 spanOffset = 0;
 	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
-	getBlock()->getSpanPtr(static_cast<UT_uint32>(currOffset), &pSpan, &lenSpan);
 
-	if (!pSpan) {
-		//UT_ASSERT_NOT_REACHED ();
-		return;
-	}
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-	iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
+	UT_UCS4Char c = text[currOffset + fl_BLOCK_STRUX_OFFSET];
+	UT_return_if_fail(text.getStatus() == UTIter_OK);
+	
+	iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 
-	while((currOffset + spanOffset) < (getBlockOffset() + iLen))
+	while(currOffset < (getBlockOffset() + iLen))
 	{
-		while(iPrevType == iType && ((currOffset + spanOffset) < (getBlockOffset() + iLen - 1)))
+		while(iPrevType == iType && (currOffset < (getBlockOffset() + iLen - 1)))
 		{
-			spanOffset++;
-			if(spanOffset >= lenSpan)
-			{
-				currOffset += spanOffset;
-				spanOffset = 0;
-				getBlock()->getSpanPtr(static_cast<UT_uint32>(currOffset), &pSpan, &lenSpan);
-			}
-
-			iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
+			currOffset++;
+			c = text[currOffset + fl_BLOCK_STRUX_OFFSET];
+			UT_return_if_fail(text.getStatus() == UTIter_OK);
+			
+			iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 		}
 
 		// if we reached the end of the origianl run, then stop
-		if((currOffset + spanOffset) > (getBlockOffset() + iLen - 1) || iType == iPrevType)
+		if(currOffset > (getBlockOffset() + iLen - 1) || iType == iPrevType)
 		{
 			pRun->setDirection(iPrevType, iNewOverride);
 			break;
 		}
 
 		// so we know where the continuos fragment ends ...
-		pRun->split(currOffset + spanOffset);
+		pRun->split(currOffset);
 		pRun->setDirection(iPrevType, iNewOverride);
 		UT_ASSERT(pRun->getNextRun() && pRun->getNextRun()->getType() == FPRUN_TEXT);
 		pRun = static_cast<fp_TextRun*>(pRun->getNextRun());
@@ -2872,6 +2694,9 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 		bReverse = true;
 	}
 	
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
 	for(UT_sint32 i = 0, j = 0; i < len; i++, j++)
 	{
 		// m is the logical offeset corresponding to the visual offest i
@@ -2900,7 +2725,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 			// into our output buffer
 			UT_uint32 iSplitOffset = bReverse ? iLen - j - 1: j;
 			
-			// scroll through the offest array; the offests define the
+			// scroll through the offset array; the offsets define the
 			// segments into which the run is split by the selection
 			// NB: there is always one more (dummy) offset than iOffsetCount
 			for(UT_sint32 k = 0; k <= (UT_sint32)iOffsetCount; k++)
@@ -2919,12 +2744,11 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 
 					// get the second decomposed character from our
 					// piece table
-					const UT_UCS4Char * pSpan = NULL;
-					UT_uint32 lenSpan;
-					bool bContinue = getBlock()->getSpanPtr(getBlockOffset()+m, &pSpan, &lenSpan);
-					if(bContinue && lenSpan > 0)
+					UT_UCS4Char c = text[getBlockOffset() + fl_BLOCK_STRUX_OFFSET + m];
+
+					if(text.getStatus() == UTIter_OK)
 					{
-						s_pCharBuff[j] = pSpan[0];
+						s_pCharBuff[j] = c;
 					}
 					else
 					{
@@ -2933,7 +2757,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 						UT_ASSERT(UT_NOT_REACHED );
 						s_pCharBuff[j] = '?';
 					}
-
+					
 					// set the width for this glyph
 					s_pWidthBuff[j] = pWidths[m];
 					
@@ -2945,10 +2769,11 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 					// we can only do this if it is not outside our run
 					if(m > 0 && n >= 0)
 					{
-						bContinue = getBlock()->getSpanPtr(getBlockOffset()+m-1, &pSpan, &lenSpan);
-						if(bContinue && lenSpan > 0)
+						c = text[getBlockOffset() + fl_BLOCK_STRUX_OFFSET + m - 1];
+
+						if(text.getStatus() == UTIter_OK)
 						{
-							s_pCharBuff[n] = pSpan[0];
+							s_pCharBuff[n] = c;
 						}
 						else
 						{
@@ -2957,7 +2782,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 							UT_ASSERT(UT_NOT_REACHED );
 							s_pCharBuff[n] = '?';
 						}
-
+						
 						if(bReverse)
 						{
 							//we have already processed the next
