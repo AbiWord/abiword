@@ -630,7 +630,7 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 
 #define DEFINE_GET_SET_BOOL(index,button)																	\
 	bool AP_Win32Dialog_Options::_gather##button(void)													\
-	{ return IsDlgButtonChecked((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button); }	\
+	{ return (IsDlgButtonChecked((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button) == BST_CHECKED); }	\
 	void AP_Win32Dialog_Options::_set##button(bool b)													\
 	{ CheckDlgButton((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 

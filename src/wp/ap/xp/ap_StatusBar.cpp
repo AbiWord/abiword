@@ -772,7 +772,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 	}
 	
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
-	if (redraw == true) {
+	if (redraw != 0) {
 		pf->draw();
 	}
 }

@@ -101,7 +101,7 @@ XAP_Win32PreviewWidget::~XAP_Win32PreviewWidget(void)
 	if(m_iInstanceCount == 0)
 	{
 		m_atomPreviewWidgetClass = NULL;
-		bool bResult = UnregisterClass(m_bufClassName,m_pWin32App->getInstance());
+		bool bResult = (UnregisterClass(m_bufClassName,m_pWin32App->getInstance()) == TRUE);
 		UT_ASSERT(bResult);
 	}
 

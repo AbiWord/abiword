@@ -567,9 +567,9 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 		// unequal to "0".
 		widowsorphans = false;
 		if (pAP->getProperty((XML_Char*)"widows",szValue)) 
-			widowsorphans |= UT_strcmp((const char *) szValue,"0");
+			widowsorphans |= (UT_strcmp((const char *) szValue,"0") != 0);
 		if (pAP->getProperty((XML_Char*)"orphans",szValue)) 
-			widowsorphans |= UT_strcmp((const char *) szValue,"0");
+			widowsorphans |= (UT_strcmp((const char *) szValue,"0") != 0);
 		m_currentParagraphPLayout->no_widow_protection = 
 		                   widowsorphans?psiconv_bool_false:psiconv_bool_true;
 		if (pAP->getProperty((XML_Char*)"default-tab-interval",szValue))  

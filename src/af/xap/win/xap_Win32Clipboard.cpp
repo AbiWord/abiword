@@ -57,12 +57,12 @@ bool XAP_Win32Clipboard::openClipboard(void)
 bool XAP_Win32Clipboard::closeClipboard(void)
 {
 	m_bOpen = false;
-	return (bool)CloseClipboard();
+	return (CloseClipboard() != 0);
 }
 
 bool XAP_Win32Clipboard::clearClipboard(void)
 {
-	return (bool)EmptyClipboard();
+	return (EmptyClipboard() != 0);
 }
 
 //////////////////////////////////////////////////////////////////

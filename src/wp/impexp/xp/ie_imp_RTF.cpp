@@ -869,7 +869,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case 'o': 
 	        if (strcmp((char*)pKeyword,"ol") == 0)
 	        {
-		         return HandleOverline(fParam ? param : 1);
+		         return HandleOverline(fParam ? (param != 0) : true);
 		}
 		break;
 	case 'p':
@@ -937,7 +937,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "strike") == 0  ||  strcmp((char*)pKeyword, "striked") == 0)
 		{
-			return HandleStrikeout(fParam ? param : 1);
+			return HandleStrikeout(fParam ? (param != 0) : true);
 		}
 		else if (strcmp((char*)pKeyword, "sect") == 0 )
 		{
@@ -995,7 +995,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			strcmp((char*)pKeyword, "ulth") == 0      ||  strcmp((char*)pKeyword, "ulw") == 0  ||
 			strcmp((char*)pKeyword, "ulwave") == 0)
 		{
-			return HandleUnderline(fParam ? param : 1);
+			return HandleUnderline(fParam ? (param != 0) : true);
 		}
 		else if (strcmp((char*)pKeyword, "ulnone") == 0)
 		{
@@ -1050,7 +1050,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
       		               if( strcmp((char*)keyword_star,"ol") == 0)
 			       { 
 			            return HandleOverline(parameterUsed_star ? 
-					      parameter_star : 1);
+					      (parameter_star != 0): true);
                                }
       		               else if( strcmp((char*)keyword_star,"pn") == 0)
 			       { 

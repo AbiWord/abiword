@@ -380,8 +380,8 @@ void AP_Win32Dialog_Lists::notifyCloseFrame(XAP_Frame *pFrame)
 void AP_Win32Dialog_Lists::_enableControls(void)
 {
 	bool bStartNew = _isNewList();
-	bool bAppend   = _win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST);
-	bool bStopCurr = _win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST);
+	bool bAppend   = (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST) != 0);
+	bool bStopCurr = (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST) != 0);
 	const int iType = _getTypeComboCurSel();
 
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, !bStopCurr);
@@ -443,7 +443,7 @@ void AP_Win32Dialog_Lists::_enableControls(void)
 void AP_Win32Dialog_Lists::_onApply()
 {
 	m_bStartList = _isNewList();
-	m_bStopList  = _win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST);
+	m_bStopList  = (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST) != 0);
 	m_bChangeStartValue = false;
 
 	if(m_bStartList)
@@ -520,7 +520,7 @@ void AP_Win32Dialog_Lists::_setStyleComboCurSel(int iSel)
 
 bool AP_Win32Dialog_Lists::_isNewList() const
 {
-	return _win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST);
+	return (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST) != 0);
 }
 
 void AP_Win32Dialog_Lists::_fillTypeList()

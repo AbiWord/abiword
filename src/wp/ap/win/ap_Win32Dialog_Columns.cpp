@@ -177,7 +177,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN:
-		setLineBetween(IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN));
+		setLineBetween( (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN) == BST_CHECKED) );
 		return 1;
 
 	default:							// we did not handle this notification
