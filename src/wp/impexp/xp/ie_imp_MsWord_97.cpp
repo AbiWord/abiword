@@ -49,6 +49,12 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Password.h"
 
+#ifdef DEBUG
+#define IE_IMP_MSWORD_DUMP
+#include "ie_imp_MsWord_dump.h"
+#undef IE_IMP_MSWORD_DUMP
+#endif
+
 #define X_CheckError(v)			do { if (!(v)) return 1; } while (0)
 
 // undef this to disable support for older images (<= Word95)
@@ -376,9 +382,9 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
   : IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false), m_bIsLower(false), m_bInSect(false), m_bInPara(false)
-#if 0//def BIDI_ENABLED
-	,m_pLastCharFmt(""), m_iPrevDir(-1), m_iCurrDir(-1)
-#endif	
+#ifdef BIDI_ENABLED
+	,m_bPrevStrongCharRTL(false)
+#endif
 {
 }
 
@@ -499,11 +505,15 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 void IE_Imp_MsWord_97::_flush ()
 {
-  // we've got to ensure that we're inside of a section & paragraph
 
+  if(!m_pTextRun.size())
+    return;
+
+  // we've got to ensure that we're inside of a section & paragraph
   if (!m_bInSect)
     {
       // append a blank default section - assume it works
+      UT_DEBUGMSG(("#TF: _flush: appending default section\n"));
       getDoc()->appendStrux(PTX_Section, NULL);
       m_bInSect = true;
     }
@@ -511,6 +521,7 @@ void IE_Imp_MsWord_97::_flush ()
   if(!m_bInPara)
     {
       // append a blank defaul paragraph - assume it works
+      UT_DEBUGMSG(("#TF: _flush: appending default block\n"));
       getDoc()->appendStrux(PTX_Block, NULL);
       m_bInPara = true;
     }
@@ -528,49 +539,6 @@ void IE_Imp_MsWord_97::_flush ()
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 {
-#if 0//def BIDI_ENABLED
-	XML_Char * propsArray[3];
-	UT_String props;
-	m_iCurrDir = fribidi_get_type((FriBidiCharType) ch);
-	
-	propsArray[0] = (XML_Char *)"props";
-	propsArray[2] = 0;
-	
-	if(m_iCurrDir != m_iPrevDir)
-	{
-		xxx_UT_DEBUGMSG(("MS Word Importer: change of direction: prev %d, curr %d, UCS 0x%x\n", m_iPrevDir, m_iCurrDir, ch));
-		
-		props = m_pLastCharFmt;
-				
-		switch (m_iCurrDir)
-		{
-			case FRIBIDI_TYPE_L:
-					props += "dir:ltr";
-					break;
-			case FRIBIDI_TYPE_R:
-					props += "dir:rtl";
-					break;
-			default:
-					props += "dir:ntrl";
-					break;
-			//case -3:
-			//		props += "dir:ontrl";
-			//		break;
-		}
-		m_iPrevDir = m_iCurrDir;
-		
-		propsArray[1] = (XML_Char *)props.c_str();
-		
-		this->_flush();
-		
-		if (!getDoc()->appendFmt((const XML_Char **)propsArray))
-		{
-			UT_DEBUGMSG(("_appendChar: error appending character formatting\n"));
-		}
-
-	}
-#endif
-
 	if ( m_bIsLower )
 	  ch = UT_UCS_tolower ( ch );
 	m_pTextRun += ch;
@@ -660,6 +628,12 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// Append the character to our character buffer
 	//
 	this->_appendChar ((UT_UCSChar) eachchar);
+#ifdef BIDI_ENABLED
+	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
+	if(FRIBIDI_IS_STRONG(cType))
+		m_bPrevStrongCharRTL = FRIBIDI_IS_RTL(cType);
+	UT_DEBUGMSG(("#TF: _charProc: c 0x%x\n",eachchar));
+#endif
 	return 0;
 }
 
@@ -993,6 +967,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 			UT_DEBUGMSG (("DOM: error appending new block\n"));
 			return 1;
 		}
+		m_bInPara = true;
 
 		UT_UCSChar ucs = UCS_FF;
 		switch (asep->bkc) {
@@ -1054,14 +1029,19 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	this->_flush ();
 
 #ifdef BIDI_ENABLED
+	UT_DEBUGMSG(("#TF: _beginPara: apap->fBidi %d\n",apap->fBidi));
 
+	if(apap->fBidi == 1)
+		m_bPrevStrongCharRTL = true;
+	else
+		m_bPrevStrongCharRTL = false;
+	
 	// DOM TODO: i think that this is right
 	if (apap->fBidi == 1) {
 		props += "dom-dir:rtl;";
 	} else {
 		props += "dom-dir:ltr;";
 	}
-
 #endif
 
 	// paragraph alignment/justification
@@ -1215,6 +1195,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 		return 1;
 	}
+	
 	m_bInPara = true;
 	return 0;
 }
@@ -1222,8 +1203,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 								void *prop, int dirty)
 {
-	// nothing is needed here
-  m_bInPara = false;
+	UT_DEBUGMSG(("#TF: _endPara\n"));
+	// have to flush here, otherwise flushing later on will result in
+	// an empty paragraph being inserted
+	this->_flush ();
+	m_bInPara = false;
 	return 0;
 }
 
@@ -1232,6 +1216,10 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 {
 	CHP *achp = static_cast <CHP *>(prop);
 
+#ifdef DEBUG
+	//s_dump_chp(achp);
+#endif
+	
 	XML_Char * propsArray[3];
 	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
 	UT_String props;
@@ -1278,14 +1266,32 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		getDoc()->setEncodingName(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
 	
 #ifdef BIDI_ENABLED
-
-	// Our textrun automatically sets "dir" for us. We just need too keep
-	// LTR runs separate from RTL runs
+	// after several hours of playing with this, I think I now undertand
+	// how achp->fBidi works:
+	// if it is 0, then treat the text as if it was LTR
+	// if it is 1, then apply bidi algorithm to the text
+	// effectively for 0 we should set dir-override to "ltr"
+	// but that is very uggly, since most of the time we will be
+	// applying this override to strong LTR characters that do not need
+	// it. Instead we will use special value "nobidi", which will be processed
+	// in our fp_TextRun, which will either remove it, or translate it to
+	// LTR override, depending on the text.
 	
-	if (achp->fBidi) {
-		//TODO: do we need to do anything?
-	}
-
+	// unfortunately there were problems with the code in fp_TextRun, so
+	// at the moment we will simply set "ltr"
+	
+	// if this segment of text is not bidi and it follows a segement that is
+	// not bidi either, we will do nothing, but if the previous segement was
+	// not bidi, we will set the nobidi value
+	
+	UT_DEBUGMSG(("#TF: _beginChar: [0x%x] achp->fBidi %d, m_bPrevStrongCharRTL %d\n",achp,achp->fBidi,m_bPrevStrongCharRTL));
+	if (!achp->fBidi && m_bPrevStrongCharRTL)
+		props += "dir-override:ltr;";
+	// not entirely sure about this second branch, leave it out for now
+#if 0
+	else if (achp->fBidi && !m_bPrevStrongCharRTL)
+		props += "dir-override:rtl;";
+#endif
 #endif
 
 	// bold text
@@ -1392,10 +1398,6 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
 
-#if 0 //def BIDI_ENABLED
-	m_pLastCharFmt = props;
-	m_pLastCharFmt += ";";
-#endif
 	if (!getDoc()->appendFmt((const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending character formatting\n"));

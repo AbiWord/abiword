@@ -114,11 +114,8 @@ private:
 
 	bool m_bInSect;
 	bool m_bInPara;
-
-#if 0//def BIDI_ENABLED
-	UT_String			m_pLastCharFmt;
-	UT_sint32			m_iPrevDir;
-	UT_sint32			m_iCurrDir;
+#ifdef BIDI_ENABLED
+	bool m_bPrevStrongCharRTL;
 #endif
 };
 
