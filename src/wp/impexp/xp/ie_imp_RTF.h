@@ -209,14 +209,18 @@ private:
 	bool PopRTFState();
 	bool ParseRTFKeyword();
 	bool ParseChar(UT_UCSChar ch,bool no_convert=1);
-  bool ReadCharFromFileWithCRLF(unsigned char* pCh);
+	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	bool ReadCharFromFile(unsigned char* pCh);
 	bool SkipBackChar(unsigned char ch);
-	bool ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed);
+	bool ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed, 
+					 UT_uint32 keywordBuffLen);
 	bool TranslateKeyword(unsigned char* pKeyword, long param, bool fParam);
 	bool ReadColourTable();
 	bool ReadFontTable();
 	bool ReadOneFontFromTable();
+	bool HandlePicture();
+	bool HandleObject();
+	bool SkipCurrentGroup();
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);
@@ -252,7 +256,6 @@ private:
 	// Section property handlers
 	bool ApplySectionAttributes();
 	bool ResetSectionAttributes();
-
 
 // import member vars
 private:

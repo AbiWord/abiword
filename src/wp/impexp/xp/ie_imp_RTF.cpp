@@ -41,6 +41,8 @@
 class fl_AutoNum;
 
 
+static const UT_uint32 MAX_KEYWORD_LEN = 256;
+
 //////////////////////////////////////////////////////////////////////
 // Two Useful List arrays
 /////////////////////////////////////////////////////////////////////
@@ -613,18 +615,18 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 //
 bool IE_Imp_RTF::ParseRTFKeyword()
 {
-	unsigned char keyword[256];
+	unsigned char keyword[MAX_KEYWORD_LEN];
 	long parameter = 0;
 	bool parameterUsed = false;
 
-	if (ReadKeyword(keyword, &parameter, &parameterUsed))
+	if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
 		return TranslateKeyword(keyword, parameter, parameterUsed);
 	else
 		return false;
 }
 
 
-bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed)
+bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed, UT_uint32 keywordBuffLen)
 {
 	bool fNegative = false;
 	*pParam = 0;
@@ -639,6 +641,9 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 	if (!ReadCharFromFileWithCRLF(&ch))
 		return false;
 
+	UT_ASSERT(keywordBuffLen > 1);
+	--keywordBuffLen;
+
 	// If it's a control symbol there is no delimiter, its just one character
 	if (!isalpha(ch))
 	{
@@ -650,6 +655,12 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 	// Read in the rest of the control word
 	while (isalpha(ch))
 	{
+		if (0 == --keywordBuffLen)
+		{
+			UT_DEBUGMSG(("Keyword too large. Bogus RTF!\n"));
+			return false;
+		}
+		
 		*pKeyword = ch;
 		pKeyword++;
 		if (!ReadCharFromFileWithCRLF(&ch))
@@ -756,6 +767,50 @@ bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
 	}
 }
 
+bool IE_Imp_RTF::SkipCurrentGroup()
+{
+	int nesting = 1;
+	unsigned char ch;
+
+	do {
+		if (!ReadCharFromFileWithCRLF(&ch))
+			return false;
+
+		if (ch == '{') 
+		{
+			++nesting;
+		}
+		else if (ch == '}')
+		{
+			--nesting;
+		}
+	} while (nesting > 0);
+
+	// to avoid corrupting the state stack
+	SkipBackChar(ch);
+
+	return true;
+}
+
+bool IE_Imp_RTF::HandlePicture()
+{
+	// in the future this method should load a picture from the file 
+	// and insert it in the document. To fix some open bugs, we just
+	// skip all the data and do nothing
+	
+	UT_DEBUGMSG(("TODO: Handle \\pict keyword properly\n"));
+	return SkipCurrentGroup();
+}
+
+bool IE_Imp_RTF::HandleObject()
+{
+	// in the future this method should load an object from the file 
+	// and insert it in the document. To fix some open bugs, we just
+	// skip all the data and do nothing
+	
+	UT_DEBUGMSG(("TODO: Handle \\object keyword properly\n"));
+	return SkipCurrentGroup();
+}
 
 // Test the keyword against all the known handlers
 bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fParam)
@@ -900,6 +955,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return HandleOverline(fParam ? (param != 0) : true);
 		}
+		else if (strcmp((char*)pKeyword, "object") == 0)
+		{
+			// get picture
+			return HandleObject();
+		}
 		break;
 	case 'p':
 		if (strcmp((char*)pKeyword, "par") == 0)
@@ -928,6 +988,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			//
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			return true;
+		}
+		else if (strcmp((char*)pKeyword, "pict") == 0)
+		{
+			// get picture
+			return HandlePicture();
 		}
 		else if (strcmp((char *)pKeyword, "pc") == 0) 
 		{
@@ -1090,17 +1155,19 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			//
 			// Code to handle overline importing.
 			//
-			unsigned char keyword_star[256];
+			unsigned char keyword_star[MAX_KEYWORD_LEN];
 			long parameter_star = 0;
 			bool parameterUsed_star = false;
 			//
 			// Look for \*\ol sequence. Ignore all others
 			// 
-			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
+			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
+							MAX_KEYWORD_LEN))
 		    {
 				if( strcmp((char*)keyword_star, "\\")== 0)
 				{
-					if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
+					if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
+									MAX_KEYWORD_LEN))
 		            { 		
 						if( strcmp((char*)keyword_star,"ol") == 0)
 						{ 
@@ -1763,7 +1830,7 @@ bool IE_Imp_RTF::ReadFontTable()
 //
 bool IE_Imp_RTF::ReadOneFontFromTable()
 {
-	unsigned char keyword[1024];
+	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
 	long parameter = 0;
 	bool paramUsed = false;
@@ -1780,7 +1847,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	char* pAlternativeFontName = NULL;
 
 	// Read the font index (must be specified)
-	if (!ReadKeyword(keyword, &parameter, &paramUsed)  ||
+	if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN)  ||
 		 (strcmp((char*)keyword, "f") != 0)  ||
 		!paramUsed)
 	{
@@ -1794,7 +1861,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	// Read the font family (must be specified)
 	if (!ReadCharFromFile(&ch)  ||
 		 ch != '\\'  ||
-	    !ReadKeyword(keyword, &parameter, &paramUsed))
+	    !ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 	{
 		return false;
 	}
@@ -1835,7 +1902,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 				return false;
 		}
 
-		if (!ReadKeyword(keyword, &parameter, &paramUsed))
+		if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 			return false;
 
 		if (strcmp((char*)keyword, "fcharset") == 0)
@@ -1954,7 +2021,7 @@ bool IE_Imp_RTF::ReadColourTable()
 	// Ensure the table is empty before we start
 	UT_ASSERT(m_colourTable.getItemCount() == 0);
 
-	unsigned char keyword[1024];
+	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
 	long parameter = 0;
 	bool paramUsed = false;
@@ -1982,7 +2049,7 @@ bool IE_Imp_RTF::ReadColourTable()
 				long blue = 0;
 
 				// read Red, Green and Blue values (will be in that order).
-				if (!ReadKeyword(keyword, &parameter, &paramUsed))
+				if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 					return false;
 				if (strcmp((char*)keyword, "red") == 0  &&  paramUsed)
 				{
@@ -1998,7 +2065,7 @@ bool IE_Imp_RTF::ReadColourTable()
 
 				if (!tableError)
 				{
-					if (!ReadKeyword(keyword, &parameter, &paramUsed))
+					if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 						return false;
 					if (strcmp((char*)keyword, "green") == 0  &&  paramUsed)
 					{
@@ -2012,7 +2079,7 @@ bool IE_Imp_RTF::ReadColourTable()
 
 				if (!tableError)
 				{
-					if (!ReadKeyword(keyword, &parameter, &paramUsed))
+					if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 						return false;
 					if (strcmp((char*)keyword, "blue") == 0  &&  paramUsed)
 					{
@@ -2057,7 +2124,7 @@ bool IE_Imp_RTF::ReadColourTable()
 
 bool IE_Imp_RTF::HandleLists()
 {
-	unsigned char keyword[1024];
+	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
 	long parameter = 0;
 	bool paramUsed = false;
@@ -2071,7 +2138,7 @@ bool IE_Imp_RTF::HandleLists()
 		{
 			if (!ReadCharFromFile(&ch))
 			         return false;
-			if(!ReadKeyword(keyword, &parameter, &paramUsed))
+			if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 			{
 		                 return false;
 			}
@@ -2118,7 +2185,7 @@ bool IE_Imp_RTF::HandleLists()
 			}
 			goto nextChar;
 		}
-		if(!ReadKeyword(keyword, &parameter, &paramUsed))
+		if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 		{
 		        return false;
 		}
@@ -2335,7 +2402,7 @@ bool IE_Imp_RTF::HandleLists()
 
 bool IE_Imp_RTF::HandleAbiLists()
 {
-	unsigned char keyword[1024];
+	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
 	long parameter = 0;
 	bool paramUsed = false;
@@ -2348,7 +2415,7 @@ bool IE_Imp_RTF::HandleAbiLists()
 		{
 			if (!ReadCharFromFile(&ch))
 			         return false;
-			if(!ReadKeyword(keyword, &parameter, &paramUsed))
+			if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 			{
 		                 return false;
 			}
@@ -2425,7 +2492,7 @@ bool IE_Imp_RTF::HandleAbiLists()
 			}
 			goto nextChar;
 		}
-		if(!ReadKeyword(keyword, &parameter, &paramUsed))
+		if(!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
 		{
 		        return false;
 		}
