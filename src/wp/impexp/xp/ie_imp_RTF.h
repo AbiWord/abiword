@@ -1,6 +1,7 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2004 Hubert Figuiere <hfiguiere@teaser.fr>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +45,8 @@ class RTF_msword97_list;
 class ie_imp_cell;
 class ie_imp_table;
 class ie_imp_table_control;
+class RTFProps_FrameProps;
+
 
 // Font table entry
 struct ABI_EXPORT RTFFontTableItem
@@ -409,25 +412,6 @@ struct ABI_EXPORT RTFProps_SectionProps
 	UT_BidiCharType m_dir;
 };
 
-// Frame properties
-class ABI_EXPORT RTFProps_FrameProps
-{
-public:
-	RTFProps_FrameProps();
-	virtual ~RTFProps_FrameProps(){};
-	void             clear();
-	UT_sint32        m_iLeftPos;
-	UT_sint32        m_iRightPos;
-	UT_sint32        m_iTopPos;
-	UT_sint32        m_iBotPos;
-	UT_sint32        m_iLeftPad;
-	UT_sint32        m_iRightPad;
-	UT_sint32        m_iTopPad;
-	UT_sint32        m_iBotPad;
-	UT_sint32        m_iFrameType;
-	UT_sint32        m_iFramePositionTo;
-	bool             m_bCleared;
-};
 
 /*!
   Stores a RTF header and footer.
@@ -542,11 +526,16 @@ public:
 	virtual bool supportsLoadStylesOnly() {return true;}
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
-	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
-	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return m_vecWord97Lists.getNthItem(i);}
-    bool  isWord97Lists(void) const { return (m_vecWord97Lists.getItemCount() > 0);}
-	
+										const unsigned char * pData, 
+                                        UT_uint32 lenData, 
+                                        const char * szEncoding = 0);
+	UT_sint32 get_vecWord97ListsCount(void) 
+        { return m_vecWord97Lists.getItemCount();}
+	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) 
+        { return m_vecWord97Lists.getNthItem(i);}
+    bool  isWord97Lists(void) const 
+        { return (m_vecWord97Lists.getItemCount() > 0);}
+
 	enum PictFormat {
 		picNone,
 		picPNG,
@@ -575,23 +564,36 @@ private:
 	} RTFBookmarkType;
 
 	bool AddChar(UT_UCSChar ch);
+public:
 	bool FlushStoredChars(bool forceInsertPara = false);
+private:
 	bool StartNewPara();
 	bool HandleParKeyword();
 	bool StartNewSection();
+public:
 	bool PushRTFState();
 	bool PopRTFState();
+private:
 	bool ParseRTFKeyword();
 	bool ParseChar(UT_UCSChar ch,bool no_convert=1);
 	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	bool ReadCharFromFile(unsigned char* pCh);
 	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
-	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, bool* pParamUsed,
+	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, 
+                     bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
-	bool TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool fParam);
+	bool TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, 
+                          bool fParam);
+public:
+	bool TranslateKeywordID(RTF_KEYWORD_ID keywordID, 
+							UT_sint32 param, bool fParam);
 
+	/*  Parser stuff */
+	bool StandardKeywordParser(IE_Imp_RTFGroupParser *parser);
+private:
 	RTF_KEYWORD_ID KeywordToID(const char * keyword);
+
 	bool HandleStarKeyword();
 
 	bool HandlePCData(UT_UTF8String & str);
@@ -605,7 +607,9 @@ private:
 	bool HandleField();
 	bool HandleStyleDefinition(void);
 	bool HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID);
+public:
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
+private:
 	bool StuffCurrentGroup(UT_ByteBuf & buf);
 	bool LoadPictData(PictFormat format, const char * image_name,
 					  struct RTFProps_ImageProps & imgProps,
@@ -622,7 +626,12 @@ private:
 	bool HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount  );
 	bool HandleTableList(void);
 	char * getCharsInsideBrace(void);
-	bool ParseCharParaProps( unsigned char * pKeyword, UT_sint32 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
+	bool ParseCharParaProps(unsigned char * pKeyword, 
+                            UT_sint32 param, bool fParam, 
+                            RTFProps_CharProps * pChars, 
+                            RTFProps_ParaProps * pParas, 
+                            RTFProps_bCharProps * pbChars, 
+                            RTFProps_bParaProps * pbParas);
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
@@ -669,7 +678,8 @@ private:
 	bool ApplyParagraphAttributes();
 	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
-	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
+	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, 
+                    eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
 
 // Paste AbiWord tables
 	bool HandleAbiTable(void);
@@ -703,17 +713,19 @@ private:
 	void           HandleNoteReference();
 // Shape handlers in ie_imp_RTFObjectsAndPicts.cpp
 	void           HandleShape(void);
+	void           HandleShapePict(void);
 
-	void           HandleShapeProp(void);
-	void           HandleShapeVal(void);
-	void           HandleShapeText(void);
-	void           HandleEndShape(void);
+public:
+	void           HandleShapeText(RTFProps_FrameProps & frame);
+private:
+//	void           HandleEndShape(void);
 // Meta data
 	bool           HandleInfoMetaData(void);
 
 	bool           bUseInsertNotAppend(void);
 // Little convience wrapper
-	void           _setStringProperty(UT_String & sPropString, const char * szProp, const char * szVal);
+	void           _setStringProperty(UT_String & sPropString, 
+                                      const char * szProp, const char * szVal);
 
 	// Section property handlers
 	bool ApplySectionAttributes();
@@ -727,7 +739,8 @@ private:
 	    RTF_TOKEN_ERROR = -1
 	} RTFTokenType;
 	RTFTokenType NextToken (unsigned char *pKeyword, UT_sint32* pParam,
-							bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace=false);
+							bool* pParamUsed, UT_uint32 len, 
+                            bool bIgnoreWhiteSpace = false);
 
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
@@ -789,7 +802,8 @@ private:
 		UT_uint32 mapped_parentid;
 	};
 	UT_GenericVector<_rtfAbiListTable *> m_vecAbiListTable;
-	_rtfAbiListTable * getAbiList( UT_uint32 i) {return m_vecAbiListTable.getNthItem(i);}
+	_rtfAbiListTable * getAbiList( UT_uint32 i) 
+        {return m_vecAbiListTable.getNthItem(i);}
 
 	RTF_msword97_listOverride* _getTableListOverride(UT_uint32 id);
 
@@ -811,10 +825,12 @@ private:
 	UT_uint32           m_icurOverride;
 	UT_uint32           m_icurOverrideLevel;
 	UT_GenericVector<RTF_msword97_list *> m_vecWord97Lists;
-	UT_GenericVector<RTF_msword97_listOverride*>           m_vecWord97ListOverride;
+	UT_GenericVector<RTF_msword97_listOverride*> m_vecWord97ListOverride;
 	void _appendHdrFtr ();
-	bool _appendField (const XML_Char *xmlField, const XML_Char ** pszAttribs=NULL);
-	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML);
+	bool _appendField (const XML_Char *xmlField, 
+                       const XML_Char ** pszAttribs=NULL);
+	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
+                                  bool & isXML);
 	bool                m_bAppendAnyway;
 	RTFProps_SectionProps m_sectdProps ;
 	ie_imp_table_control  m_TableControl;
@@ -843,11 +859,6 @@ private:
 	RTFStateStore         m_FootnoteRefState;
 	bool                  m_bFieldRecognized;
 	UT_sint32             m_iIsInHeaderFooter;
-	UT_sint32             m_iStackDepthAtFrame;
-	bool                  m_bFrameOpen;
-	UT_String             m_sPendingShapeProp;
-	RTFProps_FrameProps   m_currentFrame;
-	bool                  m_bEndFrameOpen;
 	bool                  m_bSectionHasPara;
 };
 

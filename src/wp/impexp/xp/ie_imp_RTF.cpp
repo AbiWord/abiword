@@ -87,7 +87,6 @@ class fl_AutoNum;
 }
 
 
-static const UT_uint32 MAX_KEYWORD_LEN = 256;
 // This should probably be defined in pt_Types.h
 // this used to be 8, which way to small ...
 static const UT_uint32 PT_MAX_ATTRIBUTES = 20;
@@ -1314,35 +1313,6 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_dir = UT_BIDI_UNSET;
 }
 
-RTFProps_FrameProps::RTFProps_FrameProps(void):
-	m_iLeftPos(0),
-	m_iRightPos(0),
-	m_iTopPos(0),
-	m_iBotPos(0),
-	m_iLeftPad(0),
-	m_iRightPad(0),
-	m_iTopPad(0),
-	m_iBotPad(0),
-	m_iFrameType(-1),
-	m_iFramePositionTo(-1),
-	m_bCleared(true)
-{
-}
-
-void RTFProps_FrameProps::clear(void)
-{
-	m_iLeftPos = 0;
-	m_iRightPos = 0;
-	m_iTopPos = 0;
-	m_iBotPos = 0;
-	m_iLeftPad = 0;
-	m_iRightPad = 0;
-	m_iTopPad = 0;
-	m_iBotPad = 0;
-	m_iFrameType = -1;
-	m_iFramePositionTo =1;
-	m_bCleared= true;
-}
 
 RTFStateStore::RTFStateStore()
 {
@@ -1406,10 +1376,6 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iNoCellsSinceLastRow(0),
 	m_bFieldRecognized(false),
 	m_iIsInHeaderFooter(0),
-	m_iStackDepthAtFrame(0),
-	m_bFrameOpen(false),
-	m_sPendingShapeProp(""),
-	m_bEndFrameOpen(false),
 	m_bSectionHasPara(false)
 {
 	if (!IE_Imp_RTF::keywordSorted) {
@@ -1952,7 +1918,8 @@ void IE_Imp_RTF::FlushCellProps(void)
  * Set a property, value pair in the supplied string. This is just a convience
  * wrapper function to use const char * strings
  */
-void IE_Imp_RTF::_setStringProperty(UT_String & sPropsString, const char * szProp, const char * szVal)
+void IE_Imp_RTF::_setStringProperty(UT_String & sPropsString, 
+                                    const char * szProp, const char * szVal)
 {
 	UT_String sProp(szProp);
 	UT_String sVal(szVal);
@@ -2055,67 +2022,67 @@ void IE_Imp_RTF::HandleRow(void)
 void IE_Imp_RTF::HandleNoteReference(void)
 {
 	// see if we have a reference marker pending ...
-		const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
+	const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
 
-		if(!m_bNoteIsFNote)
+	if(!m_bNoteIsFNote)
+	{
+		attribs[0] = "endnote-id";
+	}
+	UT_String footpid;
+	if(m_bInFootnote && !m_bFtnReferencePending)
+	{
+		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+		attribs[1] = footpid.c_str();
+
+		if(m_bNoteIsFNote)
 		{
-			attribs[0] = "endnote-id";
-		}
-		UT_String footpid;
-		if(m_bInFootnote && !m_bFtnReferencePending)
-		{
-			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
-			attribs[1] = footpid.c_str();
-
-			if(m_bNoteIsFNote)
-			{
-				_appendField ("footnote_anchor",attribs);
-				return;
-			}
-			else
-			{
-				_appendField ("endnote_anchor",attribs);
-				return;
-			}
-		}
-		else if(m_bInFootnote && m_bFtnReferencePending)
-		{
-			// we have a pending reference mark; since the \footnote
-			// has removed the RTF state, we need to temporarily
-			// place the saved RTF state on the stack. We pop it afterwards
-
-			m_stateStack.push(&m_currentRTFState);
-			m_stateStack.push(&m_FootnoteRefState);
-			m_currentRTFState = m_FootnoteRefState;
-			m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
-			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
-			attribs[1] = footpid.c_str();
-
-			if(m_bNoteIsFNote)
-			{
-				_appendField ("footnote_ref",attribs);
-			}
-			else
-			{
-				_appendField ("endnote_ref",attribs);
-			}
-			
-			m_bFtnReferencePending = false;
-
-			// now we pop the saved state off and restore the current state
-			RTFStateStore* pState = NULL;
-			m_stateStack.pop(reinterpret_cast<void**>(&pState));
-			m_stateStack.pop(reinterpret_cast<void**>(&pState));
-			m_currentRTFState = *pState;
+			_appendField ("footnote_anchor",attribs);
+			return;
 		}
 		else
 		{
-			m_bFtnReferencePending = true;
+			_appendField ("endnote_anchor",attribs);
+			return;
+		}
+	}
+	else if(m_bInFootnote && m_bFtnReferencePending)
+	{
+		// we have a pending reference mark; since the \footnote
+		// has removed the RTF state, we need to temporarily
+		// place the saved RTF state on the stack. We pop it afterwards
+
+		m_stateStack.push(&m_currentRTFState);
+		m_stateStack.push(&m_FootnoteRefState);
+		m_currentRTFState = m_FootnoteRefState;
+		m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
+		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+		attribs[1] = footpid.c_str();
+
+		if(m_bNoteIsFNote)
+		{
+			_appendField ("footnote_ref",attribs);
+		}
+		else
+		{
+			_appendField ("endnote_ref",attribs);
+		}
+			
+		m_bFtnReferencePending = false;
+
+		// now we pop the saved state off and restore the current state
+		RTFStateStore* pState = NULL;
+		m_stateStack.pop(reinterpret_cast<void**>(&pState));
+		m_stateStack.pop(reinterpret_cast<void**>(&pState));
+		m_currentRTFState = *pState;
+	}
+	else
+	{
+		m_bFtnReferencePending = true;
 //
 // Save current RTF state.
 //
-			m_FootnoteRefState = m_currentRTFState;
-		}
+		m_FootnoteRefState = m_currentRTFState;
+	}
 }
 
 void IE_Imp_RTF::HandleNote(void)
@@ -2267,10 +2234,6 @@ UT_Error IE_Imp_RTF::_parseText()
 						ok = true;
 						break;
 					}
-				}
-				if(m_bFrameOpen &&  static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame)
-				{
-					HandleEndShape(); // OK end of frame braces
 				}
 			}
 				break;
@@ -2633,15 +2596,15 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 			m_bSectionHasPara = true;
 			m_bEndTableOpen = false;
 		}
-		else if( ok && m_bEndFrameOpen)
-		{
-			UT_DEBUGMSG(("Append block for EndFrameOpen 12 \n"));
-			m_bSectionHasPara = true;
-			getDoc()->appendStrux(PTX_Block,NULL);
-		}
+//		else if( ok && m_bEndFrameOpen)
+//		{
+//			UT_DEBUGMSG(("Append block for EndFrameOpen 12 \n"));
+// CVS CONFLICT			m_bSectionHasPara = true;
+//			getDoc()->appendStrux(PTX_Block,NULL);
+//		}
 		ok = ApplyCharacterAttributes();
 		m_bCellBlank = false;
-		m_bEndFrameOpen = false;
+//		m_bEndFrameOpen = false;
 	}
 	if( ok && m_bInFootnote && (m_stateStack.getDepth() < m_iDepthAtFootnote))
 	{
@@ -2665,10 +2628,10 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
 	}
-	if( ok && m_bFrameOpen && (static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame))	
-	{
-		HandleEndShape();
-	}
+//	if( ok && m_bFrameOpen && (static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame))	
+//	{
+//		HandleEndShape();
+//	}
 	return ok;
 }
 
@@ -3761,7 +3724,14 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool
 	// (the docs say these can be scattered among the header tables)
 	xxx_UT_DEBUGMSG(("Translating keyword %s \n",pKeyword));
 	RTF_KEYWORD_ID keywordID = KeywordToID(reinterpret_cast<char *>(pKeyword));
+	return TranslateKeywordID(keywordID, param, fParam);
+}
 
+
+
+bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID, 
+								  UT_sint32 param, bool fParam)
+{
 	switch (keywordID)
 	{
 	case RTF_KW_ansicpg:
@@ -4616,32 +4586,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool
 		return true;
 	case RTF_KW_shp:
 // Found a positioned thingy
-		m_currentFrame.clear();
+		HandleShape();
 		return true;
-	case RTF_KW_sp:
-		return true;
-	case RTF_KW_sn:
-		HandleShapeProp();
-		return true;
-	case RTF_KW_sv:
-		HandleShapeVal();
-		return true;
-	case RTF_KW_shpleft:
-		m_currentFrame.m_iLeftPos= param;
-		return true;
-	case RTF_KW_shpright:
-		m_currentFrame.m_iRightPos= param;
-		return true;
-	case RTF_KW_shptop:
-		m_currentFrame.m_iTopPos= param;
-		return true;
-	case RTF_KW_shpbottom:
-		m_currentFrame.m_iBotPos= param;
-		return true;
-	case RTF_KW_shptxt:
-		HandleShapeText();
-		return true;
-	case RTF_KW_sl:
+ 	case RTF_KW_sl:
 		if (!fParam  ||  param == 0) {
 			m_currentRTFState.m_paraProps.m_lineSpaceVal = 360;
 		}
@@ -4872,10 +4819,8 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool
 		return StartNewPara();
 		break;
 	default:
-		UT_DEBUGMSG(("Unhandled keyword in dispatcher: %s\n", pKeyword));
+		UT_DEBUGMSG(("Unhandled keyword in dispatcher: %d\n", keywordID));
 	}
-
-	UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
 	return true;
 }
 
@@ -5021,9 +4966,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					break;
 				case RTF_KW_shppict:
 					UT_DEBUGMSG (("handling shppict\n"));
-					HandleShape();
-//					SkipCurrentGroup();
-//					m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+					HandleShapePict();
 					return true;
 					break;
 				case RTF_KW_shpinst:
@@ -7210,12 +7153,17 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 }
 
 /*!
- * OK this method parses the RTF against all the character and paragraph properties.
+ * OK this method parses the RTF against all the character and 
+ * paragraph properties.
  * and fills the pointers to the character and paragraph classes.
- * These are used by the list table
- * reader.
+ * These are used by the list table and stylesheet reader.
  */
-bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, UT_sint32 param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas)
+bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, 
+                                     UT_sint32 param, bool fParam, 
+                                     RTFProps_CharProps * pChars, 
+                                     RTFProps_ParaProps * pParas, 
+                                     RTFProps_bCharProps * pbChars, 
+                                     RTFProps_bParaProps * pbParas)
 {
 	if (strcmp(reinterpret_cast<char*>(pKeyword), "b") == 0) // bold
 	{
@@ -9179,12 +9127,13 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, UT_sint
 		// OK Sevior put in bool to choose this behaviour for some parts of documents
         // where we can work around this broken behaviour and still import the doc.
 
-		while( pKeyword[0] == ' ')
+		while(pKeyword[0] == ' ')
 		{
 			if (!ReadCharFromFile(pKeyword))
-				{
-					tokenType = RTF_TOKEN_ERROR;
-				}
+			{
+				tokenType = RTF_TOKEN_ERROR;
+				return tokenType;
+			}
 		}
 	}
 	else
@@ -9192,6 +9141,7 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, UT_sint
 		if (!ReadCharFromFile(pKeyword))
 		{
 			tokenType = RTF_TOKEN_ERROR;
+			return tokenType;
 		}
 	}
 
@@ -10387,7 +10337,7 @@ bool IE_Imp_RTF::HandlePCData(UT_UTF8String & str)
 			SkipBackChar('}');
 			break;
 		default:
-					
+			UT_DEBUGMSG(("Unknown token !!!!!!!!!!!\n"));
 			break;
 		}
 	}

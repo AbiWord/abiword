@@ -25,9 +25,10 @@
 /*
   This part contains all the code to handle pictures and objects inside 
   the RTF importer.
- */
+*/
 
 #include "ut_locale.h"
+#include "ut_pair.h"
 
 #include "ie_imp_RTF.h"
 #include "ie_imp_RTFParse.h"
@@ -46,14 +47,14 @@ static IEGraphicFileType
 iegftForRTF(IE_Imp_RTF::PictFormat format)
 {
 	switch (format) 
-		{
-		case IE_Imp_RTF::picPNG:  return IEGFT_PNG;
-		case IE_Imp_RTF::picJPEG: return IEGFT_JPEG;
-		case IE_Imp_RTF::picBMP:  return IEGFT_BMP;
-		case IE_Imp_RTF::picWMF:  return IEGFT_WMF;
-		default:
-			break;
-		}
+	{
+	case IE_Imp_RTF::picPNG:  return IEGFT_PNG;
+	case IE_Imp_RTF::picJPEG: return IEGFT_JPEG;
+	case IE_Imp_RTF::picBMP:  return IEGFT_BMP;
+	case IE_Imp_RTF::picWMF:  return IEGFT_WMF;
+	default:
+		break;
+	}
 
 	return IEGFT_Unknown;
 }
@@ -188,7 +189,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
   \return true is successful.
   Insert and image at the current position.
   Check whether we are pasting or importing
- */
+*/
 bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 							  const struct RTFProps_ImageProps & imgProps)
 {
@@ -371,7 +372,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
   the current group. Calls LoadPictData
   \see IE_Imp_RTF::LoadPictData
   \fixme TODO handle image size and other options in the future
- */
+*/
 bool IE_Imp_RTF::HandlePicture()
 {
 	// this method loads a picture from the file
@@ -509,89 +510,372 @@ bool IE_Imp_RTF::HandlePicture()
 	return true;
 }
 
-/*!
- * a "sp" keyword has been found the text following is the property.
- */
-void IE_Imp_RTF::HandleShapeProp(void)
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// Frame properties
+class ABI_EXPORT RTFProps_FrameProps
 {
-	UT_ASSERT_HARMLESS(m_sPendingShapeProp.size() == 0);
-	UT_Byte ch = 0;
-	xxx_UT_DEBUGMSG(("Handle sp \n"));
-	while (ch != '}')
-	{
-		if (!ReadCharFromFile(&ch)) 
-		{
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			return;
-		}
-		if (ch != '}' && (ch != ' ')) 
-		{
-			m_sPendingShapeProp += ch;
-		}
-	}
-	SkipBackChar (ch);
+public:
+	typedef UT_Pair<UT_UTF8String*,UT_UTF8String*> PropertyPair;
+
+	RTFProps_FrameProps();
+	virtual ~RTFProps_FrameProps()
+		{};
+	void _setProperty(const PropertyPair *pair);
+
+	void             clear();
+	UT_sint32        m_iLeftPos;
+	UT_sint32        m_iRightPos;
+	UT_sint32        m_iTopPos;
+	UT_sint32        m_iBotPos;
+	UT_sint32        m_iLeftPad;
+	UT_sint32        m_iRightPad;
+	UT_sint32        m_iTopPad;
+	UT_sint32        m_iBotPad;
+	UT_sint32        m_iFrameType;
+	UT_sint32        m_iFramePositionTo;
+	bool             m_bCleared;
+};
+
+
+RTFProps_FrameProps::RTFProps_FrameProps(void):
+	m_iLeftPos(0),
+	m_iRightPos(0),
+	m_iTopPos(0),
+	m_iBotPos(0),
+	m_iLeftPad(0),
+	m_iRightPad(0),
+	m_iTopPad(0),
+	m_iBotPad(0),
+	m_iFrameType(-1),
+	m_iFramePositionTo(-1),
+	m_bCleared(true)
+{
 }
 
-/*!
- * a "sv" keyword has been found. The text following is the value of the property
- */
-void IE_Imp_RTF::HandleShapeVal(void)
+void RTFProps_FrameProps::clear(void)
 {
-	UT_String sVal;
-	sVal.clear();
-	UT_Byte ch = 0;
-	UT_ASSERT_HARMLESS(m_sPendingShapeProp.size() > 0);
-	xxx_UT_DEBUGMSG(("Handle sp \n"));
-	while (ch != '}')
-	{
-		if (!ReadCharFromFile(&ch)) 
-		{
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			return;
-		}
-		if (ch != '}' && (ch != ' ')) 
-		{
-			sVal += ch;
-		}
-	}
-	SkipBackChar (ch);
-//
-// OK got the  prop,val pair. Do something with them!
-//	
+	m_iLeftPos = 0;
+	m_iRightPos = 0;
+	m_iTopPos = 0;
+	m_iBotPos = 0;
+	m_iLeftPad = 0;
+	m_iRightPad = 0;
+	m_iTopPad = 0;
+	m_iBotPad = 0;
+	m_iFrameType = -1;
+	m_iFramePositionTo =1;
+	m_bCleared= true;
+}
+
+
+/*!
+  Set the property from a property pair
+
+  \param pair the property pair
+ */
+void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
+{
+	const UT_UTF8String *propName = pair->first();
+	const UT_UTF8String *propValue = pair->second();
+
 	UT_sint32 ival = 0;
-	if(strcmp(m_sPendingShapeProp.c_str(),"dxTextLeft")== 0)
+	if(strcmp(propName->utf8_str(),"dxTextLeft")== 0)
 	{
-		ival = atoi(sVal.c_str());
-		m_currentFrame.m_iLeftPad = ival;
+		ival = atoi(propValue->utf8_str());
+		m_iLeftPad = ival;
 	}
-	else if(strcmp(m_sPendingShapeProp.c_str(),"dxTextRight")== 0)
+	else if(strcmp(propName->utf8_str(),"dxTextRight")== 0)
 	{
-		ival = atoi(sVal.c_str());
-		m_currentFrame.m_iRightPad = ival;
+		ival = atoi(propValue->utf8_str());
+		m_iRightPad = ival;
 	}
-	else if(strcmp(m_sPendingShapeProp.c_str(),"dxTextTop")== 0)
+	else if(strcmp(propName->utf8_str(),"dxTextTop")== 0)
 	{
-		ival = atoi(sVal.c_str());
-		m_currentFrame.m_iTopPad = ival;
+		ival = atoi(propValue->utf8_str());
+		m_iTopPad = ival;
 	}
-	else if(strcmp(m_sPendingShapeProp.c_str(),"dxTextBottom")== 0)
+	else if(strcmp(propName->utf8_str(),"dxTextBottom")== 0)
 	{
-		ival = atoi(sVal.c_str());
-		m_currentFrame.m_iBotPad = ival;
+		ival = atoi(propValue->utf8_str());
+		m_iBotPad = ival;
 	}
-	else if(strcmp(m_sPendingShapeProp.c_str(),"shapeType")== 0)
+	else if(strcmp(propName->utf8_str(),"shapeType")== 0)
 	{
-		ival = atoi(sVal.c_str());
+		ival = atoi(propValue->utf8_str());
 		if(ival == 202)
 		{
-			m_currentFrame.m_iFrameType = 0;
+			m_iFrameType = 0;
 		}
-		m_currentFrame.m_iFrameType = 0; // no others implemented
+		m_iFrameType = 0; // no others implemented
 	}
-	m_sPendingShapeProp.clear();
+	else {
+		UT_DEBUGMSG(("unknown property %s with value %s\n", propName->utf8_str(),
+					 propValue->utf8_str() ));
+	}
 }
 
-void IE_Imp_RTF::HandleShapeText(void)
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*!
+  Handle the \\sp keyword inside shapes
+*/
+
+class IE_Imp_ShpPropParser
+	: public IE_Imp_RTFGroupParser
+{
+public:
+
+
+	IE_Imp_ShpPropParser()
+		: m_propPair(NULL), 
+		  m_last_grp(0),
+		  m_last_kwID(RTF_UNKNOWN_KEYWORD),
+		  m_name(NULL),
+		  m_value(NULL), 
+		  m_lastData(NULL) 
+		{}
+	~IE_Imp_ShpPropParser()
+		{ 
+			DELETEP(m_propPair); 
+			DELETEP(m_name); 
+			DELETEP(m_value); 
+			DELETEP(m_lastData);
+		}
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
+							  UT_sint32 param, bool paramUsed);
+	virtual bool tokenOpenBrace(IE_Imp_RTF * ie);
+	virtual bool tokenCloseBrace(IE_Imp_RTF * ie);
+	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
+	
+	virtual bool finalizeParse(void);
+
+	/*!
+	  Fetch the property key/value pair
+	*/
+	RTFProps_FrameProps::PropertyPair *getProp(void)
+		{ return m_propPair; }
+
+private:
+
+	RTFProps_FrameProps::PropertyPair *m_propPair;
+	
+	int m_last_grp;
+	RTF_KEYWORD_ID m_last_kwID;
+	
+	UT_UTF8String *m_name, *m_value;
+	UT_UTF8String *m_lastData;
+};
+
+
+bool IE_Imp_ShpPropParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
+										UT_sint32 param, bool paramUsed)
+{
+	switch(kwID) {
+	case RTF_KW_sn:
+	case RTF_KW_sv:
+		UT_DEBUGMSG(("IE_Imp_ShpPropParser: found keyword %d\n", kwID));
+		m_last_grp = nested();
+		m_last_kwID = kwID;
+		break;
+	default:
+		break;
+	}
+	return true;
+}
+
+bool IE_Imp_ShpPropParser::tokenOpenBrace(IE_Imp_RTF * ie)
+{
+	return IE_Imp_RTFGroupParser::tokenOpenBrace(ie);
+}
+
+
+bool IE_Imp_ShpPropParser::tokenCloseBrace(IE_Imp_RTF * ie)
+{
+	UT_DEBUGMSG(("Prop::tokenCloseBrace() last group = %d, nested = %d\n", m_last_grp, nested()));
+	if(m_last_grp && (nested() == m_last_grp))
+	{
+		switch(m_last_kwID) {
+		case RTF_KW_sn:
+			UT_ASSERT(m_lastData);
+			DELETEP(m_name);
+			m_name = m_lastData;
+			m_lastData = NULL;
+			break;
+		case RTF_KW_sv:
+			UT_ASSERT(m_lastData);
+			DELETEP(m_value);
+			m_value = m_lastData;
+			m_lastData = NULL;
+			break;
+		default:
+			break;
+		}
+		m_last_grp = 0;
+	}
+
+	return IE_Imp_RTFGroupParser::tokenCloseBrace(ie);
+}
+
+bool IE_Imp_ShpPropParser::tokenData(IE_Imp_RTF * ie, UT_UTF8String & data)
+{
+	DELETEP(m_lastData);
+	m_lastData = new UT_UTF8String(data);
+	return true;
+}
+
+
+bool IE_Imp_ShpPropParser::finalizeParse(void)
+{
+	UT_ASSERT(m_name);
+	UT_ASSERT(m_value);
+	m_propPair = new RTFProps_FrameProps::PropertyPair(m_name, m_value);
+	return true;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// FIXME: move away from this file. Should belong to the main RTF import
+// or to ie_imp_RTFText.cpp
+
+class IE_Imp_TextParaPropParser
+	: public IE_Imp_RTFGroupParser
+{
+public:
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
+							  UT_sint32 param, bool paramUsed);
+
+ 	virtual bool tokenOpenBrace(IE_Imp_RTF * ie);
+	virtual bool tokenCloseBrace(IE_Imp_RTF * ie);
+//	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
+	
+//	virtual bool finalizeParse(void);
+};
+
+
+bool IE_Imp_TextParaPropParser::tokenKeyword(IE_Imp_RTF * ie, 
+										   RTF_KEYWORD_ID kwID, 
+										   UT_sint32 param, bool paramUsed)
+{
+	UT_DEBUGMSG(("IE_Imp_TextParPropParser::tokenKeyword()\n"));
+	return ie->TranslateKeywordID(kwID, param, paramUsed);
+}
+
+bool IE_Imp_TextParaPropParser::tokenOpenBrace(IE_Imp_RTF * ie)
+{
+	UT_DEBUGMSG(("IE_Imp_TextParPropParser::tokenOpenBrace()\n"));
+	ie->PushRTFState();
+	return IE_Imp_RTFGroupParser::tokenOpenBrace(ie);
+}
+
+
+bool IE_Imp_TextParaPropParser::tokenCloseBrace(IE_Imp_RTF * ie)
+{
+	UT_DEBUGMSG(("IE_Imp_TextParPropParser::tokenCloseBrace()\n"));
+	ie->PopRTFState();
+	return IE_Imp_RTFGroupParser::tokenCloseBrace(ie);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+class IE_Imp_ShpGroupParser
+	: public IE_Imp_RTFGroupParser
+{
+public:
+	IE_Imp_ShpGroupParser();
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
+							  UT_sint32 param, bool paramUsed);
+	
+	RTFProps_FrameProps & frame(void)
+		{ return m_currentFrame; }
+private:
+	RTFProps_FrameProps m_currentFrame;	
+};
+
+
+IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser()
+{
+	m_currentFrame.clear();
+}
+
+
+
+bool
+IE_Imp_ShpGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
+									UT_sint32 param, bool paramUsed)
+{
+	UT_DEBUGMSG(("IE_Imp_ShpGroupParser::tokenKeyword %d\n", kwID));
+	switch(kwID) {
+	case RTF_KW_shprslt:
+		UT_DEBUGMSG(("Found \\shprslt\n"));
+		ie->SkipCurrentGroup(false);
+		break;
+	case RTF_KW_sp:
+	{
+		IE_Imp_ShpPropParser *parser = new IE_Imp_ShpPropParser();
+		ie->StandardKeywordParser(parser);
+		RTFProps_FrameProps::PropertyPair *prop = parser->getProp();
+		m_currentFrame._setProperty(prop);
+		delete parser;
+	}
+	break;
+	case RTF_KW_shpleft:
+		m_currentFrame.m_iLeftPos = param;
+		break;
+	case RTF_KW_shpright:
+		m_currentFrame.m_iRightPos = param;
+		break;
+	case RTF_KW_shptop:
+		m_currentFrame.m_iTopPos = param;
+		break;
+	case RTF_KW_shpbottom:
+		m_currentFrame.m_iBotPos = param;
+		break;
+	case RTF_KW_shptxt:
+	{
+		ie->HandleShapeText(m_currentFrame);
+		IE_Imp_TextParaPropParser *parser = new IE_Imp_TextParaPropParser();
+		ie->StandardKeywordParser(parser);	
+		delete parser;
+		break;
+	}
+	default:
+		break;
+	};
+	return true;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+/*!
+  Handle the \shp keyword
+*/
+void IE_Imp_RTF::HandleShape(void)
+{
+	IE_Imp_ShpGroupParser *parser = new IE_Imp_ShpGroupParser();
+	StandardKeywordParser(parser);
+
+	// Formely in HandleEndFrame()
+	if(!bUseInsertNotAppend()) {
+		getDoc()->appendStrux(PTX_EndFrame, NULL);
+	}
+	else {
+		getDoc()->insertStrux(m_dposPaste, PTX_EndFrame);
+		m_dposPaste++;
+	}
+
+	delete parser;
+}
+
+
+/*!
+ * Handle the text inside the shape.
+ */
+void IE_Imp_RTF::HandleShapeText(RTFProps_FrameProps & frame)
 {
 
 // Ok this is the business end of the frame where we actually insert the
@@ -600,6 +884,7 @@ void IE_Imp_RTF::HandleShapeText(void)
 // Flush any stored chars now.
 	FlushStoredChars(true);
 	UT_DEBUGMSG(("Doing Handle shptxt \n"));
+
 // OK Assemble the attributes/properties for the Frame
 	const XML_Char * attribs[3] = {"props",NULL,NULL};
 	UT_UTF8String sPropString;
@@ -616,32 +901,32 @@ void IE_Imp_RTF::HandleShapeText(void)
 	{
 		UT_LocaleTransactor(LC_NUMERIC, "C");
 
-		double dV = static_cast<double>(m_currentFrame.m_iLeftPos)/1440.0;
+		double dV = static_cast<double>(frame.m_iLeftPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "xpos";
 		UT_UTF8String_setProperty(sPropString,sP,sV);
 		
-		dV = static_cast<double>(m_currentFrame.m_iTopPos)/1440.0;
+		dV = static_cast<double>(frame.m_iTopPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "ypos";
 		UT_UTF8String_setProperty(sPropString,sP,sV);
 		
-		dV = static_cast<double>(m_currentFrame.m_iRightPos - m_currentFrame.m_iLeftPos)/1440.0;
+		dV = static_cast<double>(frame.m_iRightPos - frame.m_iLeftPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "frame-width";
 		UT_UTF8String_setProperty(sPropString,sP,sV); 
 		
-		dV = static_cast<double>(m_currentFrame.m_iBotPos - m_currentFrame.m_iTopPos)/1440.0;
+		dV = static_cast<double>(frame.m_iBotPos - frame.m_iTopPos)/1440.0;
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "frame-height";
 		UT_UTF8String_setProperty(sPropString,sP,sV); 
 		
-		dV = static_cast<double>(m_currentFrame.m_iRightPad + m_currentFrame.m_iLeftPad)/9114400.0; // EMU
+		dV = static_cast<double>(frame.m_iRightPad + frame.m_iLeftPad)/9114400.0; // EMU
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "xpad";
 		UT_UTF8String_setProperty(sPropString,sP,sV); 
 		
-		dV = static_cast<double>(m_currentFrame.m_iBotPad + m_currentFrame.m_iTopPad)/9114400.0; //EMU
+		dV = static_cast<double>(frame.m_iBotPad + frame.m_iTopPad)/9114400.0; //EMU
 		sV= UT_UTF8String_sprintf("%fin",dV);
 		sP= "ypad";
 		UT_UTF8String_setProperty(sPropString,sP,sV); 
@@ -667,29 +952,11 @@ void IE_Imp_RTF::HandleShapeText(void)
 
 }
 
-void IE_Imp_RTF::HandleEndShape(void)
-{
-	UT_DEBUGMSG(("Doing HandleEndShape \n"));
-	if(!bUseInsertNotAppend())
-	{
-		getDoc()->appendStrux(PTX_EndFrame,NULL);
-		m_bEndFrameOpen = true;
-	}
-	else
-	{
-		getDoc()->insertStrux(m_dposPaste,PTX_EndFrame);
-		m_dposPaste++;
-		m_bEndFrameOpen = true;
-	}
-	m_bFrameOpen = false;
-	m_iStackDepthAtFrame = 0;
-}
-
 
 /*!
   Handle the shppict RTF keyword.
- */
-void IE_Imp_RTF::HandleShape()
+*/
+void IE_Imp_RTF::HandleShapePict()
 {
 	RTFTokenType tokenType;
 	unsigned char keyword[MAX_KEYWORD_LEN];
@@ -742,7 +1009,7 @@ void IE_Imp_RTF::HandleShape()
   \return false if failed
   \desc Once the \\object has been read, handle the object contained in
   the current group.  
- */
+*/
 bool IE_Imp_RTF::HandleObject()
 {	
 	RTFTokenType tokenType;
@@ -796,7 +1063,7 @@ bool IE_Imp_RTF::HandleObject()
 				break;
 			case RTF_KW_shppict:
 				if (beginResult <= nested) {
-					HandleShape();
+					HandleShapePict();
 				}
 				break;
 			case RTF_KW_nonshppict:

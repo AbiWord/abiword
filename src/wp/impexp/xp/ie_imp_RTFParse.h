@@ -22,6 +22,11 @@
 #ifndef _IE_IMP_RTFPARSE_H_
 #define _IE_IMP_RTFPARSE_H_
 
+#define MAX_KEYWORD_LEN 256
+
+class IE_Imp_RTF;
+
+
 typedef enum {
 	CONTEXT_FRAME,
 	CONTEXT_FONT_FORM_PROP,
@@ -39,5 +44,42 @@ typedef struct {
 	RTF_KEYWORD_ID id;
 } _rtf_keyword;
 
+
+
+/*!
+  This class is meant to implement callback for a standard group parser.
+
+  \note even though the methods could have been made as pure virtual, they
+  are not to ease subclassing parsers by "just what we need"
+ */
+class IE_Imp_RTFGroupParser
+{
+public:
+	IE_Imp_RTFGroupParser()
+		: m_nested(1) {}
+	virtual ~IE_Imp_RTFGroupParser()
+		{ }
+	/// called when parsing is in error
+	virtual bool tokenError(IE_Imp_RTF * ie);
+	/// called to parse a KeyWord
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
+							  UT_sint32 param, bool paramUsed);
+	/// called when a brace opens. Must be called by override
+	virtual bool tokenOpenBrace(IE_Imp_RTF * ie);
+	/// called when a brace close. Must be called by override
+	virtual bool tokenCloseBrace(IE_Imp_RTF * ie);
+	/// called to parse PCDATA to an UT_UTF8String
+	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
+	
+	/// called at the end of the group parsing to finalize stuff
+	virtual bool finalizeParse(void);
+	/// return the nesting level
+	int nested(void) const
+		{ return m_nested; }
+protected:
+	/// Netsing level, increase when a brace opens and decrease
+	/// when a brace close
+	int m_nested;
+};
 
 #endif
