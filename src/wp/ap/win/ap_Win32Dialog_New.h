@@ -51,6 +51,7 @@ protected:
 
 	void	_doChoose();
 	void	_updateControls();
+	void 	_setFileName( UT_sint32 nIndex );
 };
 
 #endif /* AP_WIN32DIALOG_NEW_H */

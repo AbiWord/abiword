@@ -104,6 +104,8 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	_win32Dialog.setControlText(AP_RID_DIALOG_NEW_EBX_EXISTING, 
   								pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile));
 
+	HWND hControl = GetDlgItem(hWnd, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
+
 	long findtag;
 	struct _finddata_t cfile;
 	UT_String templateName, searchDir;
@@ -119,7 +121,8 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName += "\\templates\\";
 			templateName += cfile.name;
 			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, UT_basename ( templateName.c_str() ) );
+			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
+			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 0 );
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
@@ -135,10 +138,9 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			templateName = XAP_App::getApp()->getAbiSuiteLibDir();
 			templateName += "\\templates\\";
 			templateName += cfile.name;
-
 			templateName = templateName.substr ( 0, templateName.size () - 4 ) ;
-
-			_win32Dialog.addItemToList( AP_RID_DIALOG_NEW_LBX_TEMPLATE, UT_basename ( templateName.c_str() ) );
+			UT_sint32 nIndex = SendMessage( hControl, LB_ADDSTRING, 0, (LPARAM) UT_basename( templateName.c_str() ) );
+			SendMessage( hControl, LB_SETITEMDATA, (WPARAM) nIndex, (LPARAM) 1 );
 		} while( _findnext( findtag, &cfile ) == 0 );
 	}
 	_findclose( findtag );
@@ -170,13 +172,8 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		switch (HIWORD(wParam))
 		{
 		case LBN_SELCHANGE:
-			int nIndex = _win32Dialog.getListSelectedIndex(wId);
-			if( nIndex != LB_ERR )
-			{
-				char buf[_MAX_PATH];
-				_win32Dialog.getListText( wId, nIndex, buf );
-				setFileName(buf);
-			}
+			UT_sint32 nIndex = _win32Dialog.getListSelectedIndex(wId);
+			_setFileName( nIndex );
 			return 1;
 		}
 		return 0;
@@ -192,6 +189,16 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case AP_RID_DIALOG_NEW_RDO_TEMPLATE:
 		setOpenType(AP_Dialog_New::open_Template);
+		{
+			int nIndex = _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_NEW_LBX_TEMPLATE);
+			if( nIndex == LB_ERR )
+			{
+				HWND hControl = GetDlgItem(hWnd, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
+				nIndex = SendMessage( hControl, LB_FINDSTRING , (WPARAM) -1, (LPARAM) "Normal" );
+				_win32Dialog.selectListItem(AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex);
+				_setFileName( nIndex );
+			}
+		}
 		_updateControls();
 		return 1;
 
@@ -293,3 +300,29 @@ void AP_Win32Dialog_New::_updateControls()
 	}
 }
 
+void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
+{
+	HWND hControl = GetDlgItem(m_hThisDlg, AP_RID_DIALOG_NEW_LBX_TEMPLATE);
+	if( nIndex != LB_ERR )
+	{
+		char buf[_MAX_PATH];
+		_win32Dialog.getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, buf );
+		UT_String templateName; 
+		switch ( SendMessage( hControl, LB_GETITEMDATA, nIndex, 0 ) )
+		{
+		case 0:
+			templateName = XAP_App::getApp()->getUserPrivateDirectory();
+			break;
+		case 1:
+			templateName = XAP_App::getApp()->getAbiSuiteLibDir();
+			break;
+		default:
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			break;
+		}
+		templateName += "\\templates\\";
+		templateName += buf;
+		templateName += ".awt";
+		setFileName(templateName.c_str());
+	}
+}
