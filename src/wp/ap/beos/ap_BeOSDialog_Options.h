@@ -21,6 +21,7 @@
 #define AP_BEOSDIALOG_OPTIONS_H
 
 #include "ap_Dialog_Options.h"
+#include <Pt.h>
 
 class XAP_BeOSFrame;
 
