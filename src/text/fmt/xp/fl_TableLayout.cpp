@@ -697,7 +697,7 @@ void fl_TableLayout::_lookupProperties(void)
 	*/
 
 	const char* pszHomogeneous = NULL;
-	pSectionAP->getProperty("homogeneuos", (const XML_Char *&)pszHomogeneous);
+	pSectionAP->getProperty("homogeneous", (const XML_Char *&)pszHomogeneous);
 	if (pszHomogeneous && pszHomogeneous[0])
 	{
 		if(atoi(pszHomogeneous) == 1)
