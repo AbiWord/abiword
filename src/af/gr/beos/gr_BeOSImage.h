@@ -20,6 +20,7 @@
 #ifndef GR_BEOSIMAGE_H
 #define GR_BEOSIMAGE_H
 
+#include <Bitmap.h>
 #include "gr_Image.h"
 
 class GR_BeOSImage : public GR_RasterImage
