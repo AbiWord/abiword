@@ -17,6 +17,7 @@ Justin Bradford <justin@ukans.edu>              Word8 import
 John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
 Heath D. Carr <heath@abisource.com>
+Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
@@ -35,6 +36,7 @@ translators
 albi <albi@linuxfan.com>                        Dutch
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
+Christian Terboven <cterboven@gmx.net>          German
 
 To get your name added to this list, see:
 
