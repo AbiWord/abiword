@@ -224,6 +224,12 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	UT_ASSERT(colorSelector);
 	gtk_widget_show(colorSelector);
 
+	// To make 8-bit visuals happy, we have to push a new visual on to the GTK
+	// visual stack, and push the new dialog's colormap onto the GTK colormap
+	// stack.
+	gtk_widget_push_visual(gdk_rgb_get_visual());
+	gtk_widget_push_colormap(gdk_window_get_colormap(GTK_WIDGET(colorSelector)->window));
+	
 	// Padded with spaces to fake min size without gtk_widget_set_usize()
 	GtkWidget * tabLabel = gtk_label_new("        Color        ");
 	UT_ASSERT(tabLabel);
@@ -289,13 +295,6 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 
 	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));
-
-	// To make 8-bit visuals happy, we have to push a new visual on to the GTK
-	// visual stack, and push the new dialog's colormap onto the GTK colormap
-	// stack.
-	gtk_widget_push_visual(gdk_rgb_get_visual());
-	gtk_widget_push_colormap(gdk_window_get_colormap(GTK_WIDGET(cf)->window));
-
 	gtk_grab_add(GTK_WIDGET(cf));
 	gtk_main();
 
