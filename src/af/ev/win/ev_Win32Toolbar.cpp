@@ -308,28 +308,18 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					FillRect(dis->hDC, &dis->rcItem, GetSysColorBrush(COLOR_WINDOW) );				
 				}
 
-				if (nCharset == SYMBOL_CHARSET)
-				{ 						
-					hUIFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+				hUIFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 
-					/*Fontname in regular font*/
-					hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
-					ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
-					
-					/*Font example after the name*/
-					const char* szSample="AbCEfGiHj";
-					GetTextExtentPoint32(dis->hDC, sz, lstrlen(sz), &size);
-					SelectObject (dis->hDC, hFont);
-					ExtTextOut(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, lstrlen(szSample), 0);					
-					SelectObject (dis->hDC, hfontSave);					
-				}
-				else
-				{						
-					hfontSave = (HFONT) SelectObject (dis->hDC, hFont);
-					ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
-					SelectObject (dis->hDC, hfontSave);					
-				}
-
+				/*Fontname in regular font*/
+				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
+				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+				
+				/*Font example after the name*/
+				const char* szSample="AbCEfGiHj";
+				GetTextExtentPoint32(dis->hDC, sz, lstrlen(sz), &size);
+				SelectObject (dis->hDC, hFont);
+				ExtTextOut(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, lstrlen(szSample), 0);					
+				SelectObject (dis->hDC, hfontSave);									
 				DeleteObject(hFont); 
 			}
 
