@@ -49,6 +49,9 @@ public:
 	void setMaxHeight ( double h ) { m_maxWidth = h; }
 	void setMaxWidth ( double w ) { m_maxHeight = w; }
 
+	double getMaxWidth () const { return m_maxWidth; }
+	double getMaxHeight () const { return m_maxHeight; }
+
  protected:	  
 	void setAnswer ( tAnswer ans ) { m_answer = ans; }
 

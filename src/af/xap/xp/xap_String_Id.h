@@ -182,6 +182,11 @@ dcl(DLG_CLIPART_Title, "Clip Art")
 /* About Dialog */
 dcl(DLG_ABOUT_Title,					"About %s")
 
+     /* image size dialog */
+     dcl(DLG_Image_Title, "Image Properties")
+     dcl(DLG_Image_Width, "Width:")
+     dcl(DLG_Image_Height, "Height:")
+
 /* Language property in different languages; alphabetical except English first */
 dcl(LANG_0,								"no proofing")
 dcl(LANG_EN_AU,								"English (Australia)")

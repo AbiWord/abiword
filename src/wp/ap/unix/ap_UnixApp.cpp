@@ -566,7 +566,8 @@ void AP_UnixApp::loadAllPlugins ()
   pluginList[0] = pluginDir;
 
   // the user-local plugin directory
-  pluginDir = "~/.AbiSuite/plugins/";
+  pluginDir = getenv("HOME");
+  pluginDir += "/.AbiSuite/plugins/";
   pluginList[1] = pluginDir;
 
   for(int i = 0; i < 2; i++)
