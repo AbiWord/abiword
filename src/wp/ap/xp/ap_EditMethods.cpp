@@ -9378,7 +9378,8 @@ Defun(style)
 	
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	const XML_Char * style = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION  | AV_CHG_HDRFTR);
 	
 	return true;
 }
@@ -10054,7 +10055,8 @@ Defun1(setStyleHeading1)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 1";
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
 }
 
@@ -10064,7 +10066,8 @@ Defun1(setStyleHeading2)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 2";
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
 }
 
@@ -10073,7 +10076,8 @@ Defun1(setStyleHeading3)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 3";
-	pView->setStyle(style);
+	pView->setStyle(style,false);
+	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return true;
 }
 

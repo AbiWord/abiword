@@ -1193,6 +1193,14 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 			return;
 		}
 		pInfo = &infoLocal;
+		if(pView->getDocument() == NULL)
+		{
+			return;
+		}
+		if(pView->getDocument()->isPieceTableChanging())
+		{
+			return;
+		}
 		pView->getTopRulerInfo(pInfo);
 	}
 
@@ -1921,6 +1929,10 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	m_bEventIgnored = false;
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
 	UT_sint32 y = pView->getGraphics()->tlu(s_iFixedHeight)/2;
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+		return 0;
+	}
 	pView->getTopRulerInfo(pos,&m_infoCache);
 	if(m_pG)
 		draw(NULL, &m_infoCache);
@@ -2037,6 +2049,10 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	m_bEventIgnored = false;
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
+    if(pView->getDocument()->isPieceTableChanging())
+	{
+		return;
+	}
 	pView->getTopRulerInfo(&m_infoCache);
 
 	// Set this in case we never get a mouse motion event

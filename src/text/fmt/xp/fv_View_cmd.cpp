@@ -650,15 +650,15 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 //
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 // Put the insertion point in a legal position
 //
 	setPoint(posFirstInsert);
@@ -1331,15 +1331,15 @@ bool FV_View::cmdAutoSizeCols(void)
 	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
@@ -1371,15 +1371,15 @@ bool FV_View::cmdAutoSizeRows(void)
 	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
@@ -1829,15 +1829,15 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 //
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 // Put the insertion point in a legal position
 //
 	setPoint(posFirstInsert);
@@ -2122,14 +2122,14 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	setPoint(posInsert);
     m_pDoc->endUserAtomicGlob();
     m_pDoc->setDontImmediatelyLayout(false);
+    
+    // Signal PieceTable Changes have finished
+    _restorePieceTableState();
     _generalUpdate();
     
     // restore updates and clean up dirty lists
     m_pDoc->enableListUpdates();
     m_pDoc->updateDirtyLists();
-    
-    // Signal PieceTable Changes have finished
-    _restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
     _ensureInsertionPointOnScreen();
@@ -2326,15 +2326,15 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 //
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
@@ -2387,14 +2387,14 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 //
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
@@ -2591,15 +2591,15 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 //
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
@@ -2664,15 +2664,15 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 //
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
@@ -2798,9 +2798,9 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_generalUpdate();
 	setPoint(pointTable);
 	_fixInsertionPointCoords();
-	_generalUpdate();
 	AV_View::notifyListeners (AV_CHG_ALL);
 	m_pG->getCaret()->setBlink(false);
 	focusChange(AV_FOCUS_HERE);
@@ -3515,20 +3515,20 @@ void FV_View::cmdCut(void)
 	m_pDoc->disableListUpdates();
 	cmdCopy(true);
 	_deleteSelection();
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
 	_generalUpdate();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+
+	_setPoint(getPoint());
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 
-
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
-	m_iPieceTableState = 0;
-
-	_setPoint(getPoint());
 }
 
 // bToClipboard is true if you want to copy to the CLIPBOARD
@@ -3830,10 +3830,10 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 	delete [] target;
 
-	_generalUpdate();
-
 	// Signal piceTable is stable again
 	_restorePieceTableState();
+
+	_generalUpdate();
 
 	return bRet;
 
@@ -3899,10 +3899,10 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttrs, pProps);
 	}
 
-	_generalUpdate();
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
+	_generalUpdate();
 
 	return bRet;
 
@@ -3928,7 +3928,6 @@ UT_Error FV_View::cmdInsertTOC(void)
 //
 // Close off the current block
 //
-	PT_DocPosition pos = getPoint(); 
 	insertParagraphBreak();
 //
 // insert just before this block to make the TOC gets inserted just BEFORE
@@ -3940,15 +3939,23 @@ UT_Error FV_View::cmdInsertTOC(void)
 //                                                        |
 // Point is here after insert TOC-------------------------|
 //
+	fl_BlockLayout * pBL = getCurrentBlock();
+	PT_DocPosition pos = pBL->getPosition(true) -1;
+	if(pBL->getNext() == NULL)
+	{
+		insertParagraphBreak();
+		pBL = getCurrentBlock();
+		pos = pBL->getPosition(true);
+	}
 	m_pDoc->insertStrux(pos,PTX_SectionTOC);
 	pos++;
 	m_pDoc->insertStrux(pos,PTX_EndTOC);
 	setPoint(getPoint()+1);
 	m_pDoc->endUserAtomicGlob();
-	_generalUpdate();
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
+	_generalUpdate();
 
 	return bRet;
 
@@ -4026,9 +4033,9 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
-	_generalUpdate();
-
 	_restorePieceTableState();
+
+	_generalUpdate();
 	_updateInsertionPoint();
 
 	delete [] szName;
@@ -4070,9 +4077,9 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
-	_generalUpdate();
-
 	_restorePieceTableState();
+
+	_generalUpdate();
 	_updateInsertionPoint();
 
 	delete [] szName;
@@ -4281,10 +4288,10 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 //
 	_setPoint(curPoint);
 
-	_generalUpdate();
-
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+
+	_generalUpdate();
 	updateScreen (); // fix 1803, force screen update/redraw
 
 	_updateInsertionPoint();
@@ -4353,9 +4360,8 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 	_clearSelection();
 	
 	m_pDoc->acceptRejectRevision(bReject,iStart,iEnd,m_iViewRevision);
-
-	_generalUpdate();
 	_restorePieceTableState();
+	_generalUpdate();
 }
 
 void FV_View::cmdSetRevisionLevel(UT_uint32 i)

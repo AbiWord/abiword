@@ -1150,8 +1150,8 @@ void FV_View::toggleCase (ToggleCase c)
 
 	delete[] pTemp;
 	m_pDoc->endUserAtomicGlob();
-	_generalUpdate();
 	_restorePieceTableState();
+	_generalUpdate();
 	if(origPos)
 		_setPoint(origPos);
 }
@@ -1707,10 +1707,10 @@ bool FV_View::setTOCProps(PT_DocPosition pos, const char * szProps)
 	const XML_Char * atts[3] ={"props",NULL,NULL};
 	atts[1] = szProps;
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,atts,NULL,PTX_SectionTOC);
-	_generalUpdate();
 	
 	// Signal piceTable is stable again
 	_restorePieceTableState();
+	_generalUpdate();
 	return bRet;
 }
 
@@ -2202,6 +2202,9 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 
 	m_pDoc->endUserAtomicGlob();
 
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
 	_generalUpdate();
 	if(!bNoSelection)
 	{
@@ -2211,14 +2214,12 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		setPoint(posEnd);
 		_drawSelection();
 	}
-
-	// Signal piceTable is stable again
-	_restorePieceTableState();
 	_fixInsertionPointCoords();
 	if (isSelectionEmpty())
 	{
 		_ensureInsertionPointOnScreen();
 	}
+	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	UT_DEBUGMSG(("Point %d anchor %d \n",getPoint(),m_Selection.getSelectionAnchor()));
 }
 
@@ -2459,7 +2460,7 @@ void FV_View::insertParagraphBreak(void)
 				UT_ASSERT((szValue));
 				if (UT_strcmp(static_cast<const char *>(szValue), static_cast<const char *>(style)) != 0)
 				{
-					setStyle(szValue);
+					setStyle(szValue,true);
 //
 // Stop a List if "followed-by" is not a list style
 //
@@ -2480,20 +2481,19 @@ void FV_View::insertParagraphBreak(void)
 		}
 	}
 
-	_generalUpdate();
+//	_generalUpdate();
 
+
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->notifyPieceTableChangeEnd();
+	// Signal piceTable is stable again
+	// Signal PieceTable Changes have finished
+	m_iPieceTableState = 0;
+
+	_generalUpdate();
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	m_pDoc->endUserAtomicGlob();
-
-	_generalUpdate();
-
-	// Signal piceTable is stable again
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
-	m_iPieceTableState = 0;
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	m_pLayout->considerPendingSmartQuoteCandidate();
@@ -2923,6 +2923,11 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	}
  finish_up:
 	setScreenUpdateOnGeneralUpdate( true);
+
+	m_pDoc->endUserAtomicGlob();
+	// Signal piceTable is stable again
+	UT_DEBUGMSG(("restoring PieceTable state GeneralUpdate %d \n",bDontGeneralUpdate));
+	_restorePieceTableState();
 	if(!bDontGeneralUpdate)
 	{
 		_generalUpdate();
@@ -2930,11 +2935,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 	}
-
-	m_pDoc->endUserAtomicGlob();
-	// Signal piceTable is stable again
-	UT_DEBUGMSG(("restoring PieceTable state\n"));
-	_restorePieceTableState();
 	UT_DEBUGMSG(("SEVIOR: posNewStart %d posNewEnd %d at end \n",posStart,posEnd));
 	if (posEnd != posStart)
 	{
@@ -3222,11 +3222,10 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 			}
 
 			m_pDoc->endUserAtomicGlob();
-			_generalUpdate();
 
 			// Signal piceTable is stable again
 			_restorePieceTableState();
-			
+			_generalUpdate();
 			return bRet;
 		}
 		if (m_Selection.getSelectionAnchor() < posStart)
@@ -3406,11 +3405,11 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	}
 
 	m_pDoc->endUserAtomicGlob();
-	_generalUpdate();
-	_fixInsertionPointCoords();
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
+	_generalUpdate();
+	_fixInsertionPointCoords();
 
 	return bRet;
 }
@@ -3896,14 +3895,14 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	//
 	// Moved outside the loop. Speeds things up and seems OK.
 	//
-	_generalUpdate();
-	_fixInsertionPointCoords();
 
 	m_pDoc->endUserAtomicGlob();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
+	_generalUpdate();
+	_fixInsertionPointCoords();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	return bRet;
 }
 
@@ -3921,11 +3920,10 @@ bool FV_View::removeStruxAttrProps(PT_DocPosition ipos1,
 	_clearIfAtFmtMark(getPoint());
 	bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,ipos1,ipos2,attributes,properties,iStrux);
 
-	_generalUpdate();
-	_fixInsertionPointCoords();
-
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_generalUpdate();
+	_fixInsertionPointCoords();
 
 	return bRet;
 }
@@ -4032,11 +4030,11 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
-	_generalUpdate();
-	_fixInsertionPointCoords();
-
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+
+	_generalUpdate();
+	_fixInsertionPointCoords();
 
 	return bRet;
 }
@@ -4058,11 +4056,11 @@ bool FV_View::setCollapsedRange(PT_DocPosition posLow,
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posLow,posHigh,NULL,properties);
 
-	_generalUpdate();
-	_fixInsertionPointCoords();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_generalUpdate();
+	_fixInsertionPointCoords();
 
 	return bRet;
 }
@@ -4163,8 +4161,8 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 		}
 
 		// Signal PieceTable Changes have finished
-		_generalUpdate();
 		_restorePieceTableState();
+		_generalUpdate();
 		return bRet;
 	}
 //
@@ -4207,10 +4205,10 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 		setHdrFtrEdit(pShadow);
 	}
 
-	_generalUpdate();
-
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+
+	_generalUpdate();
 	return bRet;
 }
 
@@ -4254,13 +4252,12 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 			m_pDoc->StopList(sdh);
 		}
 
-		_generalUpdate();
-
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 
 		// Signal PieceTable Changes have finished
 		_restorePieceTableState();
+		_generalUpdate();
 		return;
 	}
 
@@ -4331,12 +4328,12 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 		_generalUpdate();
 	}
 
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
 	_generalUpdate();
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 	_ensureInsertionPointOnScreen();
 	FREEP(attribs);
 	FREEP(props);
@@ -4713,11 +4710,10 @@ void FV_View::delTo(FV_DocPos dp)
 	_extSelToPos(iPos);
 	_deleteSelection();
 
-	_generalUpdate();
-
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
+	_generalUpdate();
 	_fixInsertionPointCoords();
 
 }
@@ -5219,14 +5215,14 @@ void FV_View::endDragSelection(UT_sint32 xpos, UT_sint32 ypos)
 
 	m_pDoc->setDontImmediatelyLayout(false);
 
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
 	_generalUpdate();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
 }
 
 void FV_View::extSelTo(FV_DocPos dp)
@@ -6656,7 +6652,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 	if (applyTo == FORMAT_TABLE_SELECTION)
 	{
 		PL_StruxDocHandle cellSDH;
-        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
+        bRet = m_pDoc->getStruxOfTypeFromPosition(posTable+1,PTX_SectionCell,&cellSDH);
         if(!bRet)
         {
 //
@@ -6854,14 +6850,14 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 	// Allow table updates
 	m_pDoc->setDontImmediatelyLayout(false);
 
-	_generalUpdate();
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+
+	_generalUpdate();
+	m_pDoc->updateDirtyLists();
 
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
@@ -7024,6 +7020,10 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 {
+	if(m_pDoc->isPieceTableChanging())
+	{
+		return;
+	}
 
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run * pRun = NULL;
@@ -7363,6 +7363,11 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 //
 // Clear out the old table info
 //
+	if(m_pDoc->isPieceTableChanging())
+	{
+		return;
+	}
+
 	if(pInfo->m_vecTableRowInfo)
 	{
 		UT_sint32 count = static_cast<UT_sint32>(pInfo->m_vecTableRowInfo->getItemCount());
@@ -8825,10 +8830,10 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 
 	if(!bSkipPTSaves)
 	{
-		_generalUpdate();
 
 		// Signal PieceTable Changes have finished
 		_restorePieceTableState();
+		_generalUpdate();
 		updateScreen (); // fix 1803, force screen update/redraw
 
 		_updateInsertionPoint();
@@ -9839,10 +9844,10 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const XML_Char * enpid)
 
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
 
-	_generalUpdate();
-
 	// Signal PieceTable Changes have Ended
 	_restorePieceTableState();
+
+	_generalUpdate();
 	_updateInsertionPoint();
 	UT_DEBUGMSG(("insertFootnoteSection: Finished point is %d \n",getPoint()));
 
@@ -9895,10 +9900,10 @@ bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	_generalUpdate();
-
 	// Signal PieceTable Changes have Ended
 	_restorePieceTableState();
+
+	_generalUpdate();
 	_updateInsertionPoint();
 	return bResult;
 }
@@ -10565,16 +10570,14 @@ void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
 	
 	// Allow updates
 
-	m_pDoc->setDontImmediatelyLayout(false);
-
-	_generalUpdate();
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
 }
 
 
