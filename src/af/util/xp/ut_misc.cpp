@@ -31,7 +31,8 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
-#include "fl_AutoLists.h" // need definition of AUTO_LIST_RESERVED
+//#include "fl_AutoLists.h" // need definition of AUTO_LIST_RESERVED
+#define AUTO_LIST_RESERVED 1000
 #include <limits.h>
 
 /*****************************************************************/
