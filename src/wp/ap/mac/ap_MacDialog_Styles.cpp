@@ -30,8 +30,6 @@
 #include "ap_Dialog_Styles.h"
 #include "ap_MacDialog_Styles.h"
 
-#include "ut_Rehydrate.h"
-
 /*****************************************************************/
 
 XAP_Dialog * AP_MacDialog_Styles::static_constructor(XAP_DialogFactory * pFactory,
