@@ -229,7 +229,6 @@ UT_Error PD_Document::newDocument(void)
   // the globally installed normal.awt file
   UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
   global_normal_awt += "/templates/normal.awt";
-  UT_DEBUGMSG(("SEVIOR: Local noraml.awt is %s Global normal.awt is %s !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n",users_normal_awt.c_str(),global_normal_awt.c_str()));
 
   if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
   {
@@ -1023,7 +1022,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			UT_uint32 i =0;
 			for(i=0; nAtts[i] != NULL; i+=2)
 			{
-				UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
+				xxx_UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
 			}
 			const_cast<PD_Style *>(cStyle)->addAttributes( (const XML_Char **) nAtts);
 		}
@@ -1565,7 +1564,6 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
-	UT_DEBUGMSG(("SEVIOR: Inserting name %s into data hash \n",szName));
 	m_hashDataItems.insert(szName, (void *)pPair);
 
 	// give them back a handle if they want one
@@ -2631,7 +2629,6 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		}
 		m_docPageSize.setScale(scale);
 	}
-	UT_DEBUGMSG(("SEVIOR: Filled PageSize \n"));
 	return true;
 }
 

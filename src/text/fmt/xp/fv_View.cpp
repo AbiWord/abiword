@@ -2523,7 +2523,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	UT_DEBUGMSG(("SEVIOR: Setting style %s \n",style));
+	UT_DEBUGMSG(("SEVIOR: Setting style %s start = %d end = %d \n",style,posStart,posEnd));
 	if(strcmp(style,"None") == 0)
 	{
 		m_pDoc->enableListUpdates();
@@ -2540,6 +2540,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	bool bisListStyle = false;
 	if(pszStyle)
 		bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( pszStyle));
+	UT_DEBUGMSG(("!!!!!!SEVIOR: List-style is %s bisListStyle %d \n",pszStyle,bisListStyle));
 //
 // Can't handle lists inside header/Footers. Bail out
 //
@@ -2563,22 +2564,55 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	bool bCharStyle = pStyle->isCharStyle();
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
+//
+// Need these to adjust the start and end positions of the style change.
+//
+	PT_DocPosition iDiffStartPos=0;
+	PT_DocPosition iDiffEndPos=0;
 	if(bisListStyle)
 	{
 //
 // Stop the Lists contained in the current selection.
 //
 		UT_uint32 i;
+		PT_DocPosition curPos=0;
+
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
 			pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+			curPos = pBL->getPosition();
+			if(pBL->isListItem())
+			{
+				if(curPos < posStart)
+				{
+					iDiffStartPos +=2;
+				}
+				if(curPos < posEnd)
+				{
+					iDiffEndPos += 2;
+				}
+			}
 			while(pBL->isListItem())
 			{
 				m_pDoc->StopList(pBL->getStruxDocHandle());
 			} 
+			const char * pszliststyle = pBL->getProperty("list-style",true);
+			UT_DEBUGMSG(("SEVIOR: list-style is %s \n",pszliststyle));
+			pszliststyle = pBL->getProperty("field-font",true);
+			UT_DEBUGMSG(("SEVIOR: field-font is %s \n",pszliststyle));
 		}
 	}
 
+	bool bHasNumberedHeading = false;
+	const XML_Char * pszCurStyle = style;
+	PD_Style * pCurStyle = pStyle;
+	UT_uint32 depth = 0;
+//
+// Adjust region of style for the deletion of the Field/Tab required for each list
+// element.
+//
+	posStart -= iDiffStartPos;
+	posEnd -= iDiffEndPos;
 	if (bCharStyle)
 	{
 		// set character-level style
@@ -2590,6 +2624,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		_eraseSelection();
 		UT_DEBUGMSG(("Applying Character style: start %d, end %d\n", posStart, posEnd));
 		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
+		goto finish_up;
 	}
 	else
 	{
@@ -2599,6 +2634,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		_eraseInsertionPoint();
 
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
+		UT_DEBUGMSG(("Applying Paragraph style: start %d, end %d\n", posStart, posEnd));
 
 		// NB: clear explicit props at both block and char levels
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
@@ -2609,10 +2645,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 // Look for Numbered Heading in the style or it's ancestry.
 //
-	bool bHasNumberedHeading = false;
-	const XML_Char * pszCurStyle = style;
-	PD_Style * pCurStyle = pStyle;
-	UT_uint32 depth = 0;
 	while(bisListStyle && pCurStyle && !bHasNumberedHeading && depth < 10)
 	{
 		bHasNumberedHeading = (strstr(pszCurStyle,"Numbered Heading") != NULL);
@@ -2672,13 +2704,70 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 				if(iprevDepth < icurDepth)
 				{
-					for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+//
+// Now look to see if the proposed parent item is already a list parent. In which
+// case we just add this iem to the already existing list. The list class will get
+// the order correct.
+//
+					UT_uint32 count = m_pDoc->getListsCount();
+					UT_uint32 i =0;
+					fl_AutoNum * pAuto = NULL;
+					bool bFoundPrevList = false;
+					for(i=0; (i< count) && !bFoundPrevList; i++)
 					{
-						pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
-						if(i == 0)
-							pBL->StartList(style,prevSDH);
-						else
-							pBL->resumeList(pBL->getPrev());
+						pAuto = m_pDoc->getNthList(i);
+						bFoundPrevList = (pAuto->getParentItem() == prevSDH);
+					}
+					if(bFoundPrevList)
+					{
+						PL_StruxDocHandle subSDH = pAuto->getFirstItem();
+						fl_BlockLayout * pSubBlock = NULL;
+						PL_StruxFmtHandle sfh = NULL;
+						bool bFound = false;
+//
+// Loop through all the format handles that match our sdh until we find the one
+// in our View. (Not that it really matter I suppose.)
+//
+						for(i = 0; !bFound; ++i)
+						{
+//
+// Cast it into a fl_BlockLayout and we're done!
+//
+							sfh = m_pDoc->getNthFmtHandle(subSDH, i);
+							if(sfh != NULL)
+							{
+								pSubBlock = (fl_BlockLayout *) sfh;
+								if(pSubBlock->getDocLayout() == m_pLayout)
+								{
+									bFound = true;
+								}
+							}
+							else
+							{
+								sfh = NULL;
+								bFound = true;
+							}
+						}
+						UT_ASSERT(sfh);
+						if(sfh == NULL || !bFound)
+							goto finish_up;
+						
+						for(i=0; i< vBlock.getItemCount(); i++)
+						{
+							pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+							pBL->prependList(pSubBlock);
+						}
+					}
+					else
+					{
+						for(i=0; i< vBlock.getItemCount(); i++)
+						{
+							pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+							if(i == 0)
+								pBL->StartList(style,prevSDH);
+							else
+								pBL->resumeList(pBL->getPrev());
+						}
 					}
 					bAttach = true;
 				}
@@ -2704,13 +2793,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				pNext = pNext->getNext();
 				if(pNext)
 				{
-					PT_DocPosition nextPos = pNext->getPosition(false);
+					PT_DocPosition nextPos = pNext->getPosition(false)+1;
+					UT_DEBUGMSG(("SEVIOR: POsition at start of search forward %d \n",nextPos));
 					sdh = m_pDoc->findForwardStyleStrux(style, nextPos);
 				}
 				if(sdh != NULL)
 				{
 					UT_DEBUGMSG(("SEVIOR: FOund style forward \n"));
-					UT_ASSERT(0);
 				}
 			}
 //
@@ -2721,6 +2810,10 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
 				{
 					pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+					while(pBL->isListItem())
+					{
+						m_pDoc->StopList(pBL->getStruxDocHandle());
+					} 
 					if(i == 0)
 						pBL->StartList(style);
 					else
@@ -2756,10 +2849,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					}
 					else
 					{
+						sfh = NULL;
 						bFound = true;
 					}
 				}
 				UT_ASSERT(sfh);
+				if(sfh == NULL)
+					goto finish_up;
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
 					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
@@ -2798,10 +2894,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					}
 					else
 					{
+						sfh = NULL;
 						bFound = true;
 					}
 				}
 				UT_ASSERT(sfh);
+				if(sfh == NULL)
+					goto finish_up;
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
 					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
@@ -2813,6 +2912,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			}
 		}
 	}
+ finish_up:
 	setScreenUpdateOnGeneralUpdate( true);
 	if(!bDontGeneralUpdate)
 	{

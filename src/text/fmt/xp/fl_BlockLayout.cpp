@@ -4771,7 +4771,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 		fp_Run* pRun = m_pFirstRun;
 		while (pRun)
 		{
-			if (pRun->getBlockOffset() == blockOffset)
+			if (pRun->getBlockOffset() == blockOffset && (pRun->getType()!= FPRUN_FMTMARK))
 			{
 				if(pRun->getType()!= FPRUN_FIELD)
 				{
@@ -6340,7 +6340,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 			pRun = pRun->getNext();
 		}
 		PT_DocPosition lastPos = getPosition() + pRun->getBlockOffset();
-		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, getPosition(), lastPos, pListAttrs, pListProps);
+		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, getPosition(false), lastPos, pListAttrs, pListProps);
 //
 // Set the indents to match.
 //
