@@ -54,7 +54,7 @@ void AP_UnixFrame::setZoomPercentage(UT_uint32 iZoom)
 
 UT_uint32 AP_UnixFrame::getZoomPercentage(void)
 {
-	return m_pData->m_pG->getZoomPercentage();
+	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
 }
 
 UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
@@ -65,7 +65,7 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		return UT_FALSE;
 	}
 
-	if (!m_pData)
+	if (!((AP_FrameData*)m_pData))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
@@ -160,13 +160,13 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	****************************************************************/
 	
 	// switch to new view, cleaning up previous settings
-	if (m_pData->m_pDocLayout)
+	if (((AP_FrameData*)m_pData)->m_pDocLayout)
 	{
-		pOldDoc = m_pData->m_pDocLayout->getDocument();
+		pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 	}
 
-	REPLACEP(m_pData->m_pG, pG);
-	REPLACEP(m_pData->m_pDocLayout, pDocLayout);
+	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
+	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
 	if (pOldDoc != m_pDoc)
 	{
 		DELETEP(pOldDoc);
@@ -186,8 +186,8 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	m_pData->m_pTopRuler->setView(pView, iZoom);
-	m_pData->m_pLeftRuler->setView(pView, iZoom);
+	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
@@ -212,8 +212,8 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	m_pView->draw();
 #endif	
 
-	m_pData->m_pTopRuler->draw(NULL);
-	m_pData->m_pLeftRuler->draw(NULL);
+	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
+	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
 	
 	return UT_TRUE;
 
@@ -228,14 +228,14 @@ Cleanup:
 
 	// change back to prior document
 	DELETEP(m_pDoc);
-	m_pDoc = m_pData->m_pDocLayout->getDocument();
+	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 
 	return UT_FALSE;
 }
 
 void AP_UnixFrame::setXScrollRange(void)
 {
-	int width = m_pData->m_pDocLayout->getWidth();
+	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
 	int windowWidth = GTK_WIDGET(m_dArea)->allocation.width;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
@@ -262,7 +262,7 @@ void AP_UnixFrame::setXScrollRange(void)
 
 void AP_UnixFrame::setYScrollRange(void)
 {
-	int height = m_pData->m_pDocLayout->getHeight();
+	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
 	int windowHeight = GTK_WIDGET(m_dArea)->allocation.height;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
@@ -323,11 +323,12 @@ UT_Bool AP_UnixFrame::initialize(void)
 
 UT_Bool AP_UnixFrame::initFrameData(void)
 {
-	UT_ASSERT(!m_pData);
+	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	m_pData = new AP_FrameData();
-	
-	return (m_pData ? UT_TRUE : UT_FALSE);
+	AP_FrameData* pData = new AP_FrameData();
+
+	m_pData = (void*)pData;
+	return (pData ? UT_TRUE : UT_FALSE);
 }
 
 void AP_UnixFrame::killFrameData(void)
@@ -366,7 +367,7 @@ UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename)
 	return UT_FALSE;
 
 ReplaceDocument:
-	// NOTE: prior document is bound to m_pData->m_pDocLayout, which gets discarded by subclass
+	// NOTE: prior document is bound to ((AP_FrameData*)m_pData)->m_pDocLayout, which gets discarded by subclass
 	m_pDoc = pNewDoc;
 	return UT_TRUE;
 }
@@ -461,13 +462,13 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	AP_UnixTopRuler * pUnixTopRuler = new AP_UnixTopRuler(this);
 	UT_ASSERT(pUnixTopRuler);
 	m_topRuler = pUnixTopRuler->createWidget();
-	m_pData->m_pTopRuler = pUnixTopRuler;
+	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
 
 	// create the left ruler
 	AP_UnixLeftRuler * pUnixLeftRuler = new AP_UnixLeftRuler(this);
 	UT_ASSERT(pUnixLeftRuler);
 	m_leftRuler = pUnixLeftRuler->createWidget();
-	m_pData->m_pLeftRuler = pUnixLeftRuler;
+	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
 
 	// get the width from the left ruler and stuff it into the top ruler.
 	

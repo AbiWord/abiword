@@ -35,7 +35,6 @@ class EV_Menu_Layout;
 class EV_Menu_LabelSet;
 class EV_EditBindingMap;
 class AV_ScrollObj;
-class AP_FrameData;
 class ap_Scrollbar_ViewListener;
 
 /*****************************************************************
@@ -99,7 +98,7 @@ public:
 	UT_uint32					getViewNumber(void) const;
 	const char *				getViewKey(void) const;
 
-	inline AP_FrameData *		getFrameData(void) const { return m_pData; }
+	inline void *				getFrameData(void) const { return m_pData; }
 
 	virtual AP_DialogFactory *	getDialogFactory(void) = 0;
 	virtual void				setXScrollRange(void) = 0;
@@ -129,7 +128,7 @@ protected:
 	ap_Scrollbar_ViewListener * m_pScrollbarViewListener;
 	AV_ListenerId				m_lidScrollbarViewListener;
 	
-	AP_FrameData *				m_pData;		/* app-specific frame data */
+	void *						m_pData;		/* app-specific frame data */
 
 	XAP_InputModes *			m_pInputModes;
 	

@@ -109,7 +109,7 @@ void AP_Win32Frame::setZoomPercentage(UT_uint32 iZoom)
 
 UT_uint32 AP_Win32Frame::getZoomPercentage(void)
 {
-	return m_pData->m_pG->getZoomPercentage();
+	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
 }
 
 UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
@@ -214,13 +214,13 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	****************************************************************/
 	
 	// switch to new view, cleaning up previous settings
-	if (m_pData->m_pDocLayout)
+	if (((AP_FrameData*)m_pData)->m_pDocLayout)
 	{
-		pOldDoc = m_pData->m_pDocLayout->getDocument();
+		pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 	}
 
-	REPLACEP(m_pData->m_pG, pG);
-	REPLACEP(m_pData->m_pDocLayout, pDocLayout);
+	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
+	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
 	if (pOldDoc != m_pDoc)
 	{
 		DELETEP(pOldDoc);
@@ -240,8 +240,8 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler here; that is done as the frame is
 	// created.
-	m_pData->m_pTopRuler->setView(pView, iZoom);
-	m_pData->m_pLeftRuler->setView(pView, iZoom);
+	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
+	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 
 	RECT r;
 	GetClientRect(hwnd, &r);
@@ -253,8 +253,8 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	
 	updateTitle();
 
-	m_pData->m_pTopRuler->draw(NULL);
-	m_pData->m_pLeftRuler->draw(NULL);
+	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
+	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
 	
 	return UT_TRUE;
 
@@ -269,7 +269,7 @@ Cleanup:
 	
 	// change back to prior document
 	DELETEP(m_pDoc);
-	m_pDoc = m_pData->m_pDocLayout->getDocument();
+	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 
 	return UT_FALSE;
 }
@@ -282,7 +282,7 @@ void AP_Win32Frame::setXScrollRange(void)
 	GetClientRect(m_hwndDocument, &r);
 	iWindowWidth = r.right - r.left;
 
-	iWidth = m_pData->m_pDocLayout->getWidth();
+	iWidth = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
 
 	SCROLLINFO si;
 	memset(&si, 0, sizeof(si));
@@ -306,7 +306,7 @@ void AP_Win32Frame::setYScrollRange(void)
 	GetClientRect(m_hwndDocument, &r);
 	iWindowHeight = r.bottom - r.top;
 
-	iHeight = m_pData->m_pDocLayout->getHeight();
+	iHeight = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
 
 	SCROLLINFO si;
 	memset(&si, 0, sizeof(si));
@@ -502,7 +502,7 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	UT_ASSERT(pWin32TopRuler);
 	m_hwndTopRuler = pWin32TopRuler->createWindow(hwndContainer,
 												  0,0, (r.right - cxVScroll));
-	m_pData->m_pTopRuler = pWin32TopRuler;
+	((AP_FrameData*)m_pData)->m_pTopRuler = pWin32TopRuler;
 	UT_uint32 yTopRulerHeight = pWin32TopRuler->getHeight();
 
 	// create the left ruler
@@ -511,7 +511,7 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	UT_ASSERT(pWin32LeftRuler);
 	m_hwndLeftRuler = pWin32LeftRuler->createWindow(hwndContainer,0,yTopRulerHeight,
 													r.bottom - yTopRulerHeight - cyHScroll);
-	m_pData->m_pLeftRuler = pWin32LeftRuler;
+	((AP_FrameData*)m_pData)->m_pLeftRuler = pWin32LeftRuler;
 	UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
 
 	// get the width from the left ruler and stuff it into the top ruler.
@@ -613,8 +613,8 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
-			int yTopRulerHeight = f->m_pData->m_pTopRuler->getHeight();
-			int xLeftRulerWidth = f->m_pData->m_pLeftRuler->getWidth();
+			int yTopRulerHeight = f->((AP_FrameData*)m_pData)->m_pTopRuler->getHeight();
+			int xLeftRulerWidth = f->((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth();
 			
 			MoveWindow(f->m_hwndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
 			MoveWindow(f->m_hwndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
@@ -864,11 +864,12 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 
 UT_Bool AP_Win32Frame::initFrameData(void)
 {
-	UT_ASSERT(!m_pData);
+	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	m_pData = new AP_FrameData();
+	AP_FrameData* pData = new AP_FrameData();
+	m_pData = (void*) pData;
 	
-	return (m_pData ? UT_TRUE : UT_FALSE);
+	return (pData ? UT_TRUE : UT_FALSE);
 }
 
 void AP_Win32Frame::killFrameData(void)
@@ -907,7 +908,7 @@ UT_Bool AP_Win32Frame::_loadDocument(const char * szFilename)
 	return UT_FALSE;
 
 ReplaceDocument:
-	// NOTE: prior document is bound to m_pData->m_pDocLayout, which gets discarded by subclass
+	// NOTE: prior document is bound to ((AP_FrameData*)m_pData)->m_pDocLayout, which gets discarded by subclass
 	m_pDoc = pNewDoc;
 	return UT_TRUE;
 }
