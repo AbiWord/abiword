@@ -1235,9 +1235,44 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 														 PL_StruxFmtHandle sfhNew))
 {
 	UT_DEBUGMSG(("fl_DocListener::insertStrux at pos %d \n",pcr->getPosition()));
-
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+#if DEBUG
+#if 1
+	if(pcrx->getStruxType() == PTX_Block)
+	{
+		UT_DEBUGMSG(("Inserting Block strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_Section)
+	{
+		UT_DEBUGMSG(("Inserting Section strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_SectionFootnote)
+	{
+		UT_DEBUGMSG(("Inserting SectionFootnote strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_EndFootnote)
+	{
+		UT_DEBUGMSG(("Inserting EndFootnote strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_SectionTable)
+	{
+		UT_DEBUGMSG(("Inserting SectionTable strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_EndTable)
+	{
+		UT_DEBUGMSG(("Inserting EndTable strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_SectionCell)
+	{
+		UT_DEBUGMSG(("Inserting Cell strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_EndCell)
+	{
+		UT_DEBUGMSG(("Inserting EndCell strux at pos %d \n",pcr->getPosition()));
+	}
+#endif
+#endif
 	fl_Layout * pL = (fl_Layout *)sfh;
 	xxx_UT_DEBUGMSG(("Previous strux %x type %d \n",pL, pL->getType()));
 	xxx_UT_DEBUGMSG(("Insert strux type %d \n",pcrx->getStruxType()));

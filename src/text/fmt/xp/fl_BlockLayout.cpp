@@ -814,16 +814,43 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	}
 	fp_Run * pPrev = pRun->getPrev();
 	UT_sint32 iDiff = 0;
+	PT_DocPosition posRun = 0;posInBlock + pRun->getBlockOffset();
 	if(pPrev == NULL)
 	{
 		iDiff = (UT_sint32) (pRun->getBlockOffset() - getPosition());
 	}
 	else
 	{
-		iDiff = (UT_sint32) (pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength());
+		posRun = posInBlock + pPrev->getBlockOffset();
+		if(posRun + pPrev->getLength() <= posEmbedded)
+		{
+			iDiff = (UT_sint32) (pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength());
+			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+		}
+		
+//
+// here if the last run starts beyond the point where the footnote is embedded
+// This means the previous run spans the embed point. 
+// So split the previous run at the
+// embed point and update the offsets of the following runs.
+//
+		else
+		{
+			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+			pRun = pRun->getPrev();
+			posRun = posInBlock + pRun->getBlockOffset();
+			fp_TextRun * pTRun = (fp_TextRun *) pRun;
+			UT_uint32 splitOffset = getPosition()+posEmbedded - posRun;
+			UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+			bool bres = pTRun->split(splitOffset);
+			UT_ASSERT(bres);
+			pRun = pTRun->getNext();
+			pPrev = pTRun;
+			iDiff = 0;
+		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	UT_DEBUGMSG(("Updating block %x with shift %d \n",this,iDiff));
+	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != (UT_sint32) iEmbeddedSize)
 	{
 //
@@ -873,6 +900,7 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 {
 	if(!isEmbeddedType())
 	{
+		UT_DEBUGMSG(("Block %x is Not enclosed - returning \n"));
 		return;
 	}
 	fl_ContainerLayout * pCL = myContainingLayout();
@@ -898,6 +926,7 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
 	UT_uint32 iSize = posEnd - posStart + 1;
 	fl_BlockLayout * pBL = m_pLayout->findBlockAtPosition(posStart-1);
+	UT_ASSERT(iSize > 1);
 	pBL->updateOffsets(posStart,iSize);
 }
 
@@ -2759,7 +2788,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	UT_uint32 i;
 	for (i=0; i<len; i++)
 	{
-		xxx_UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
+		UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
 		switch (pChars[i])
 		{
 			// see similar control characters in fl_DocLayout.cpp
@@ -3564,9 +3593,10 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	{
 		sqlist = new UT_uint32[len];
 	}
-	xxx_UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, c=|%c|\n", len, pChars[0]));
+	UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, pos %d \n", len, getPosition()+blockOffset));
 	for (i=0; i<len; i++)
 	{
+		UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
 		switch (pChars[i])
 		{
 		case UCS_FF:	// form feed, forced page break

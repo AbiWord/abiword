@@ -269,6 +269,22 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 
+	case PTX_SectionFootnote:
+        //
+        // deleting footnotes is a multi-step process that can't make 
+        // assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
+	case PTX_EndFootnote:
+        //
+        // deleting footnotes is a multi-step process that can't make 
+        // assumptions
+        // on a single step
+		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		return true;
+
 	case PTX_Section:
 		// there are no blocks (paragraphs) between this section
 		// and the previous section.  this is not possible.

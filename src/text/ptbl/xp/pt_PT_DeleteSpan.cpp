@@ -141,8 +141,10 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_SectionEndnote:
 					case PTX_SectionTable:
 					case PTX_SectionCell:
+					case PTX_SectionFootnote:
 					case PTX_EndCell:
 					case PTX_EndTable:
+				    case PTX_EndFootnote:
 						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
 						break;
 
@@ -494,7 +496,6 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	{
 //
 // Get the actual block strux container for the endnote. 
-// FIXME this might not be right
 //
 		UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
 		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
@@ -731,6 +732,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 
 	UT_uint32 length = dpos2 - dpos1;
 	UT_uint32 iTable = 0;
+	UT_sint32 iFootnoteCount = 0;
+	bool bPrevWasFootnote = false;
 	while (length > 0)
 	{
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
@@ -754,9 +757,11 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 			bool bResult = true;
 			if(_StruxIsNotTable(pfs))
 			{
-				if(bPrevWasCell && pfs->getStruxType()== PTX_Block)
+				if((bPrevWasCell || bPrevWasFootnote) 
+				   && pfs->getStruxType()== PTX_Block)
 				{
 					bPrevWasCell = false;
+					bPrevWasFootnote = false;
 					pfNewEnd = pfs->getNext();
 					fragOffsetNewEnd = 0;
 					pfsContainer = pfs;
@@ -765,15 +770,38 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				}
 				else
 				{
-					bResult = _deleteStruxWithNotify(dpos1,pfs,
+//
+// Now put in code to handle deleting footnote struxtures. We have to reverse
+// the order of deleting footnote and Endfootnotes.
+// 
+					if(!isFootnote(pfs) && !isFootnote(pfs))
+					{ 
+						bResult = _deleteStruxWithNotify(dpos1,pfs,
 												  &pfNewEnd,&fragOffsetNewEnd);
-					bPrevWasCell = false;
+						bPrevWasCell = false;
+					}
+					else
+					{
+						if(isFootnote(pfs))
+						{
+							pfNewEnd = pfs->getNext();
+							fragOffsetNewEnd = 0;
+							pfsContainer = pfs;
+							dpos1 = dpos1 +  lengthInFrag;
+							stDelayStruxDelete->push(pfs);
+							iFootnoteCount++;
+							bPrevWasFootnote = true;
+						}
+						else
+						{
+							stDelayStruxDelete->push(pfs);
+						}
+					}
 				}
 			}
 			else
 			{
 				if(pfs->getStruxType() == PTX_SectionCell)
-//				if((pfs->getStruxType() == PTX_SectionCell) || (pfs->getStruxType() == PTX_EndTable))
 				{
 					bPrevWasCell = true;
 				}
@@ -796,16 +824,16 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 // Look to see if we've reached the end of the table, if so delete it all now
 //
+			bool bSuccess = true;
+			pf_Frag *pff;
+			PT_DocPosition dpp;
 			if(pfs->getStruxType() == PTX_EndTable)
 			{
 				iTable--;
 				if(iTable==0)
 				{
 					UT_DEBUGMSG(("Doing Table delete immediately \n"));
-					bool bSuccess = true;
 					iTable = 1;
-					pf_Frag *pff;
-					PT_DocPosition dpp;
 //
 // First delete the EndTable Strux
 //
@@ -840,6 +868,48 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 				}
+			}
+//
+// Look to see if we've reached the end of a footnote section.
+//
+			if(isEndFootnote(pfs))
+			{
+//
+// First delete the EndFootnote Strux
+//
+				UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
+				stDelayStruxDelete->pop((void **) &pfs);
+				PT_DocPosition myPos = pfs->getPos();
+				_deleteFormatting(myPos - pfs->getLength(), myPos);
+				bSuccess = _deleteStruxWithNotify(myPos, pfs,
+												  &pfNewEnd,
+												  &fragOffsetNewEnd);
+//
+// Now delete the Footnote strux. Doing things in this order works for
+// the layout classes for both the delete (needs the endFootnote strux 
+// deleted first) and for
+// undo where we want the Footnote Strux inserted first.
+//
+				while(bSuccess && iFootnoteCount > 0)
+				{
+					stDelayStruxDelete->pop((void **) &pfs);
+					if(isFootnote(pfs))
+					{
+						iFootnoteCount--;
+					}
+					PT_DocPosition myPos = pfs->getPos();
+					_deleteFormatting(myPos - pfs->getLength(), myPos);
+					bSuccess = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
+//
+// Each strux is one in length, we've added one while delaying the delete
+// so subtract it now.
+//
+					dpos1 -= 1;
+				}
+//
+// Now we have to update pfsContainer from dpos1
+//
+				bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 			}
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.
