@@ -2006,7 +2006,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 			if(isMarkRevisions())
 			{
 				// need to set the revision attribute to current id
-				const XML_Char * pRevision;
+				const XML_Char * pRevision = NULL;
 				//XML_Char pTestRevision[] = "2{font-family:Arial},!3{font-family:Courier},-4";
 
 				pMyAP = new PP_AttrProp;
@@ -2015,10 +2015,6 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 				{
 					pAttrProp->getAttribute(rev_s, pRevision);
 					*pMyAP = *pAttrProp;
-				}
-				else
-				{
-					pRevision = NULL;
 				}
 
 				PP_RevisionAttr Revisions(pRevision);
