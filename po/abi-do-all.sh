@@ -29,6 +29,7 @@ echo ""
 ./abi-extract.pl -N bg-BG
 ./abi-extract.pl -N tr-TR
 ./abi-extract.pl -N de-CH
+./abi-extract.pl -N ta-IN
 ./abi-extract.pl -N qu-BO
 
 ./update.pl gl-ES
