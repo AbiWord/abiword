@@ -91,6 +91,8 @@ GR_Graphics::GR_Graphics()
 	_initFontManager();
 #endif
 
+	m_iFontAllocNo = 0;
+	
 	// init the prefs ...
 	if(!m_instanceCount)
 	{

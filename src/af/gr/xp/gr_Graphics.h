@@ -422,7 +422,7 @@ class ABI_EXPORT GR_Graphics
 	XAP_App	*	      m_pApp;
 	UT_uint32	      m_iZoomPercentage;
 	bool		      m_bLayoutResolutionModeEnabled;
-
+	UT_uint32         m_iFontAllocNo;
 #ifndef WITH_PANGO
 	static bool       m_bRemapGlyphsMasterSwitch;
 	static bool       m_bRemapGlyphsNoMatterWhat;
