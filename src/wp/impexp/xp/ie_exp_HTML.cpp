@@ -950,12 +950,17 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 		char* szStyle = NULL;
 		const XML_Char * pStyle;
+		PD_Style* s = NULL;
 		bool fnd = pAP->getAttribute("style", pStyle);
 		if(pStyle && fnd)
 		{
 			szStyle = removeWhiteSpace((const char *)pStyle);
 		}
-		
+		if(pStyle)
+		{
+			m_pDocument->getStyle((char*) pStyle, &s);
+		}
+
 		if (span)
 		{
 			m_pie->write("\"");
@@ -967,16 +972,16 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 			m_pie->write(">");
 		}
-		else if(szStyle)
+		else if(szStyle && s && s->isCharStyle())
 		{
 			m_pie->write("<span class=\"");
 			_outputInheritanceLine(szStyle);
 			m_pie->write("\">");
 		}
-		else
+		/* else
 		{
 			m_pie->write("<span>");
-		}
+		} */
 		FREEP(szStyle);
 		
 		m_bInSpan = true;
@@ -1407,7 +1412,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		}
 	}
 		
-	m_pie->write("-->\n</style>\n");
+	m_pie->write("//-->\n</style>\n");
 	m_pie->write("</head>\n");
 	m_pie->write("<body");
 	if(bHaveProp && pAP)

@@ -22,6 +22,7 @@
 #include "pt_PieceTable.h"
 #include "pp_Property.h"
 #include "ut_vector.h"
+#include "ut_debugmsg.h"
 
 PD_Style::PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP, const char * szName) :
   m_pPT(pPT), m_indexAP(indexAP), m_szName(NULL), 
@@ -94,7 +95,7 @@ bool PD_Style::isCharStyle(void) const
 	const XML_Char * szValue = NULL;
 	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
 		if (szValue && szValue[0])
-			return !UT_strcmp(szValue, "C");
+			return UT_strcmp(szValue, "c") == 0;
 
 	// default: no
 	return false;
