@@ -65,7 +65,7 @@ OS_INCLUDES		= -I/usr/local/include -I/System/Library/Frameworks/Carbon.framewor
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
-PLATFORM_FLAGS		= -DNO_SYS_ERRLIST $(OS_INCLUDES)
+PLATFORM_FLAGS		= -fpascal-strings -DCARBON_ON_MACH_O=1 -DXP_MAC_TARGET_CARBON -DNO_SYS_ERRLIST $(OS_INCLUDES)
 #PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
@@ -85,7 +85,7 @@ endif
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
 ABI_NATIVE	= mac
-ABI_FE		= mac
+ABI_FE		= Mac
 
 ##################################################################
 ## ABIPKGDIR defines the directory containing the Makefile to use to
