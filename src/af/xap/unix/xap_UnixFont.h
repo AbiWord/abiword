@@ -38,12 +38,9 @@
 
 #ifdef USE_XFT
 #include <X11/Xft/Xft.h>
-/* I don't think we should be including freetype/freetype.h,
- * and even if we should, shouldn't we be doing:
+
 #include <ft2build.h>
-#include FREETYPE_FREETYPE_H
- * or some such??
- */
+#include FT_FREETYPE_H
 #endif
 
 class ps_Generate;
