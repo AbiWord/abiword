@@ -32,13 +32,13 @@ UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	UT_ASSERT(m_undoPosition <= kLimit);
 	UT_uint32 k;
 
-	for (k=m_undoPosition+1; (k<kLimit); k++)
+	for (k=kLimit; (k>m_undoPosition+1); k--)
 	{
-		PX_ChangeRecord * pcrTemp = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(k);
+		PX_ChangeRecord * pcrTemp = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(k-1);
 		if (!pcrTemp)
 			break;
 		delete pcrTemp;
-		m_vecChangeRecords.setNthItem(k,NULL,NULL);
+		m_vecChangeRecords.deleteNthItem(k-1);
 	}
 	
 	UT_Bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
