@@ -32,7 +32,7 @@
 /*****************************************************************/
 
 UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
-				   UT_uint32 sizeofData,
+				   UT_uint32 sizeofData,	//USELESS
 				   PhImage_t ** ppImage) {
 	PhImage_t *pImage;
 

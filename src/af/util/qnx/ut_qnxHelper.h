@@ -22,6 +22,13 @@
 
 #include <Pt.h>
 
+#define ABI_DEFAULT_BUTTON_WIDTH 80
+#define ABI_MODAL_WINDOW_RENDER_FLAGS (Ph_WM_RENDER_RESIZE | Ph_WM_RENDER_MIN | \
+									   Ph_WM_RENDER_MAX | Ph_WM_RENDER_HELP | \
+									   Ph_WM_RENDER_COLLAPSE | Ph_WM_RENDER_MENU | \
+									   Ph_WM_RENDER_ASPALETTE )
+#define ABI_MODAL_WINDOW_MANAGE_FLAGS (Ph_WM_RESIZE | Ph_WM_HIDE | Ph_WM_MAX )
+
 /*
  This will center one window on another, if parent is NULL then
  the widget is centered on the screen.
