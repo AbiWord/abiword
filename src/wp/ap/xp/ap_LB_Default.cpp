@@ -122,7 +122,7 @@ static struct ap_bs_Mouse s_MouseTable[] =
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},
-	{_CU _B3 _A,	{ "Test_Dump",	"",				"",			"",			"",			""				}},
+	{_CU _B3 _A,	{ FN_TEST_DUMP,	"",				"",			"",			"",			""				}},
 #endif
 };
 
@@ -200,7 +200,7 @@ static struct ap_bs_NVK s_NVKTable[] =
 //	{EV_NVK_F11,		{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
 	{EV_NVK_F12,		{ "cycleInputMode",		"",					"",				"",
-						  "",					"",					"",				""					}},
+						  FN_TEST_DUMP,			"",					"",				""					}},
 // 	{EV_NVK_F13,		{
 // 	{EV_NVK_F14,		{
 // 	{EV_NVK_F15,		{

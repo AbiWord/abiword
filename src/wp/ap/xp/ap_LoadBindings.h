@@ -24,6 +24,14 @@
 class EV_EditMethodContainer;
 class EV_EditBindingMap;
 
+//////////////////////////////////////////////////////////////////
+#if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
+#  define FN_TEST_DUMP		"Test_Dump"
+#else
+#  define FN_TEST_DUMP		""
+#endif
+//////////////////////////////////////////////////////////////////
+
 struct ap_bs_Mouse						/* binding set table to describe mouse bindings */
 {
 	EV_EditBits			m_eb;			// sans emo
