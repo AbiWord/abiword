@@ -102,8 +102,17 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) 
 	{
 		lc_ctype[2] = '-';
-		char* dot = strrchr(lc_ctype,'.');
 
+		char* modifier = strrchr(lc_ctype,'@');
+		/*
+                  remove modifier field. It's a right thing since expat
+		  already converts data in stringset from ANY encoding to
+		  current one (if iconv knows this encoding).
+		*/
+		if (modifier)
+		  *modifier = '\0'; 
+
+		char* dot = strrchr(lc_ctype,'.');
 		/*
                   remove charset field. It's a right thing since expat
   		  already converts data in stringset from ANY encoding to
