@@ -247,8 +247,7 @@ dnl might not.
 dnl
 dnl check for an xml parser
 
-ABI_NEED_XML_PARSER="yes"
-ABI_XML_PARSER(${abs_srcdir}/../expat)
+ABI_XML_PARSER
 
 dnl check for wv
 
