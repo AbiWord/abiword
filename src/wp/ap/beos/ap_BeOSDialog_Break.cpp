@@ -30,6 +30,103 @@
 #include "ap_Dialog_Break.h"
 #include "ap_BeOSDialog_Break.h"
 
+#include "ut_Rehydrate.h"
+
+/*****************************************************************/
+#define RAD_ON(rad, str) ((rad = (BRadioButton *)FindView(str)) && \
+			  (rad->Value() == B_CONTROL_ON))
+
+class BreakWin:public BWindow {
+	public:
+		BreakWin(BMessage *data);
+		void SetDlg(AP_BeOSDialog_Break *brk);
+		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+		virtual bool QuitRequested(void);
+		
+	private:
+		int 			spin;
+		AP_BeOSDialog_Break 	*m_DlgBreak;
+};
+
+BreakWin::BreakWin(BMessage *data) 
+	  :BWindow(data) {
+	spin = 1;	
+} //BreakWin::BreakWin
+
+void BreakWin::SetDlg(AP_BeOSDialog_Break *brk) {
+	BRadioButton *on = NULL;
+
+	m_DlgBreak = brk;
+	switch(m_DlgBreak->getBreakType()) {
+	case  AP_Dialog_Break::b_PAGE:
+		on = (BRadioButton *)FindView("radPageBreak");
+		break;
+	case  AP_Dialog_Break::b_COLUMN:
+		on = (BRadioButton *)FindView("radColBreak");
+		break;
+	case  AP_Dialog_Break::b_NEXTPAGE:
+		on = (BRadioButton *)FindView("radNextBreak");
+		break;
+	case  AP_Dialog_Break::b_CONTINUOUS:
+		on = (BRadioButton *)FindView("radContBreak");
+		break;
+	case  AP_Dialog_Break::b_EVENPAGE:
+		on = (BRadioButton *)FindView("radEvenBreak");
+		break;
+	case  AP_Dialog_Break::b_ODDPAGE:
+		on = (BRadioButton *)FindView("radOddBreak");
+		break;
+	}
+
+	if (on) {
+		on->SetValue(B_CONTROL_ON);
+	}
+
+
+//	We need to tie up the caller thread for a while ...
+	Show();
+	while (spin) { snooze(1); }
+	Hide();
+}
+
+void BreakWin::DispatchMessage(BMessage *msg, BHandler *handler) {
+	BRadioButton *on = NULL;
+
+	switch(msg->what) {
+	case 'btok':
+		UT_DEBUGMSG(("BREAK: Set the page break \n"));
+		UT_ASSERT(m_DlgBreak);
+		if (RAD_ON(on, "radPageBreak"))
+ 			m_DlgBreak->setBreakType(AP_Dialog_Break::b_PAGE);
+		else if (RAD_ON(on, "radColBreak"))
+ 			m_DlgBreak->setBreakType(AP_Dialog_Break::b_COLUMN);
+		else if (RAD_ON(on, "radNextBreak"))
+ 			m_DlgBreak->setBreakType(AP_Dialog_Break::b_NEXTPAGE);
+		else if (RAD_ON(on, "radEvenBreak"))
+ 			m_DlgBreak->setBreakType(AP_Dialog_Break::b_EVENPAGE);
+		else if (RAD_ON(on, "radOddBreak"))
+ 			m_DlgBreak->setBreakType(AP_Dialog_Break::b_ODDPAGE);
+		else if (RAD_ON(on, "radContBreak"))
+ 			m_DlgBreak->setBreakType(AP_Dialog_Break::b_CONTINUOUS);
+
+		m_DlgBreak->setAnswer(AP_Dialog_Break::a_OK);
+		spin = 0;
+		break;
+	default:
+		BWindow::DispatchMessage(msg, handler);
+	}
+} 
+
+//Behave like a good citizen
+bool BreakWin::QuitRequested() {
+	UT_ASSERT(m_DlgBreak);
+	m_DlgBreak->setAnswer(AP_Dialog_Break::a_CANCEL);
+
+	spin = 0;
+	return(true);
+}
+
+
 /*****************************************************************/
 
 XAP_Dialog * AP_BeOSDialog_Break::static_constructor(XAP_DialogFactory * pFactory,
@@ -40,20 +137,17 @@ XAP_Dialog * AP_BeOSDialog_Break::static_constructor(XAP_DialogFactory * pFactor
 }
 
 AP_BeOSDialog_Break::AP_BeOSDialog_Break(XAP_DialogFactory * pDlgFactory,
-										   XAP_Dialog_Id id)
-	: AP_Dialog_Break(pDlgFactory,id)
-{
-}
+					 XAP_Dialog_Id id) 
+		   : AP_Dialog_Break(pDlgFactory,id) { 
+} 
 
-AP_BeOSDialog_Break::~AP_BeOSDialog_Break(void)
-{
+AP_BeOSDialog_Break::~AP_BeOSDialog_Break(void) {
 }
 
 /*****************************************************************/
 
 void AP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
 {
-
 	/*
 	  This dialog is non-persistent.
 	  
@@ -62,7 +156,7 @@ void AP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
 	  - Construct itself to represent the base-class breakTypes
 	    b_PAGE, b_COLUMN, b_NEXTPAGE, b_CONTINUOUS, b_EVENPAGE, b_ODDPAGE.
 		The Unix one looks just like Microsoft Word 97, with the preview
-		and all (even though it's not hooked up yet).
+		ind all (even though it's not hooked up yet).
 
 	  - Set break type to match "m_break"
 
@@ -75,10 +169,13 @@ void AP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
 	  - Just quit, the data items will be ignored by the caller.
 
 	*/
-
-	// TODO build the dialog, attach events, etc., etc.
-	m_answer = AP_Dialog_Break::a_CANCEL;
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	BMessage msg;
+	BreakWin  *newwin;
+	if (RehydrateWindow("BreakWindow", &msg)) {
+                newwin = new BreakWin(&msg);
+		newwin->SetDlg(this);
+		//Take the information here ...
+		newwin->Close();
+        }                                                
 }
 
-/*****************************************************************/

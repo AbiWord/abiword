@@ -115,6 +115,7 @@ UT_Bool AP_BeOSApp::initialize(void)
 	// initializes the spell checker.
 	//////////////////////////////////////////////////////////////////
 	
+#if 0
 	{
 		const char * szISpellDirectory = NULL;
 		getPrefsValueDirectory(AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
@@ -140,6 +141,7 @@ UT_Bool AP_BeOSApp::initialize(void)
 		
 		// we silently go on if we cannot load it....
 	}
+#endif
 	
 	//////////////////////////////////////////////////////////////////
 	// load the dialog and message box strings
@@ -244,9 +246,10 @@ UT_Bool AP_BeOSApp::getPrefsValueDirectory(const XML_Char * szKey, const XML_Cha
 	}
 
 	static XML_Char buf[1024];
-	UT_ASSERT((strlen(getAbiSuiteLibDir()) + strlen(psz) + 2) < sizeof(buf));
+	char *ld = getAbiSuiteLibDir();
+	UT_ASSERT(((ld) ? strlen(ld) : 0) + strlen(psz) + 2) < sizeof(buf));
 	
-	sprintf(buf,"%s/%s",getAbiSuiteLibDir(),psz);
+	sprintf(buf,"%s/%s",(ld) ? ld : "NULL" ,psz);
 	*pszValue = buf;
 	return UT_TRUE;
 }

@@ -35,6 +35,8 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+	virtual void 			setAnswer(AP_Dialog_Replace::tAnswer a) { m_answer = a; }; 
+
 protected:
 
 };

@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-// TODO get rid of this (it's used for printf, which should be changed to
-// UT_DEBUGMSG())
 #include <stdio.h>
 
 #include <stdlib.h>
@@ -33,24 +31,131 @@
 
 #include "ap_Dialog_Replace.h"
 #include "ap_BeOSDialog_Replace.h"
+#include "ap_Dialog_Id.h"
+
+#include "ut_Rehydrate.h"
+
+/* 
+ TF Note:
+  This class is totally screwed.  We halt the main thread while
+we run the dialog ... of course all hell breaks loose as a result
+because of the fact that we have halted the main thread. Sucks
+to be so damn fast and multithreaded.
+
+  This causes a crappy deadlock that I haven't figured out how 
+to fix just yet.
+*/
 
 /*****************************************************************/
+#define RAD_ON(rad, str) ((rad = (BRadioButton *)FindView(str)) && \
+			  (rad->Value() == B_CONTROL_ON))
+
+class FindWin:public BWindow {
+	public:
+		FindWin(BMessage *data);
+		void SetDlg(AP_BeOSDialog_Replace *repl);
+		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+		virtual bool QuitRequested(void);
+		
+	private:
+		int 			spin;
+		AP_BeOSDialog_Replace 	*m_DlgReplace;
+};
+
+FindWin::FindWin(BMessage *data) 
+	  :BWindow(data) {
+	spin = 1;	
+} //FindWin::FindWin
+
+void FindWin::SetDlg(AP_BeOSDialog_Replace *repl) {
+	m_DlgReplace = repl;
+	
+/*
+	BTextControl *txt = (BTextControl *)FindView("txtFind");
+	if (txt) txt->SetText(m_DlgReplace->getFindString());
+	txt = (BTextControl *)FindView("txtReplace");
+	if (txt) txt->SetText(m_DlgReplace->getReplaceString());
+*/
+	BCheckBox *chk = (BCheckBox *)FindView("chkCase");
+	if (chk) chk->SetValue(m_DlgReplace->getMatchCase());
+
+//	We need to tie up the caller thread for a while ...
+	Show();
+	//while (spin) { snooze(1); }
+	Hide();
+}
+
+void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
+	BTextControl 	*findtxt, *repltxt;
+     	UT_UCSChar 	*findString, *replaceString;
+	int		case_sensitive, replace_all;	
+
+	findtxt = repltxt = NULL;
+	BCheckBox *chk = (BCheckBox *)FindView("chkCase");
+	case_sensitive = (chk && chk->Value() == B_CONTROL_ON) ? 1 : 0;
+	replace_all = 0;
+	switch(msg->what) {
+	case 'rall':
+		replace_all = 1;
+		//Fall through
+	case 'repl':
+		if (!(repltxt = (BTextControl *)FindView("txtReplace")))
+			break;
+		UT_DEBUGMSG(("FIND: replace %s \n", repltxt->Text()));
+        	UT_UCS_cloneString_char(&replaceString, repltxt->Text());
+		UT_ASSERT(m_DlgReplace);
+        	m_DlgReplace->setReplaceString(replaceString);
+		//Fall through
+	case 'find':
+		if (!(findtxt = (BTextControl *)FindView("txtFind")))
+			break;
+		UT_DEBUGMSG(("FIND: find %s \n", findtxt->Text()));
+        	UT_UCS_cloneString_char(&findString, findtxt->Text());
+		UT_ASSERT(m_DlgReplace);
+        	m_DlgReplace->setFindString(findString);
+		m_DlgReplace->setMatchCase(case_sensitive);
+
+		spin = 0;		//Let the main thread free
+		sleep(1);
+		if (repltxt && replace_all)
+        		m_DlgReplace->findReplaceAll();                       
+		else if (repltxt)
+        		m_DlgReplace->findReplace();                       
+		else
+			m_DlgReplace->findNext();         
+		break;
+
+	default:
+		BWindow::DispatchMessage(msg, handler);
+	}
+} 
+
+//Behave like a good citizen
+bool FindWin::QuitRequested() {
+	UT_ASSERT(m_DlgReplace);
+	m_DlgReplace->setAnswer(AP_Dialog_Replace::a_CANCEL);
+
+	spin = 0;
+	return(true);
+}
+
+/*****************************************************************/
+
 XAP_Dialog * AP_BeOSDialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
 													  XAP_Dialog_Id id)
 {
-	//AP_BeOSDialog_Replace * p = new AP_BeOSDialog_Replace(pFactory,id);
-	//return p;
-	return(NULL);
+	AP_BeOSDialog_Replace * p = new AP_BeOSDialog_Replace(pFactory,id);
+	return p;
 }
 
 AP_BeOSDialog_Replace::AP_BeOSDialog_Replace(XAP_DialogFactory * pDlgFactory,
-														   XAP_Dialog_Id id)
+					   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 
 	m_findString = NULL;
 	m_replaceString = NULL;
-    m_matchCase = UT_TRUE;
+    	m_matchCase = UT_TRUE;
 }
 
 AP_BeOSDialog_Replace::~AP_BeOSDialog_Replace(void)
@@ -59,28 +164,24 @@ AP_BeOSDialog_Replace::~AP_BeOSDialog_Replace(void)
 
 void AP_BeOSDialog_Replace::runModal(XAP_Frame * pFrame)
 {
-/*
-	AP_Win32App * pWin32App = static_cast<AP_Win32App *>(pFrame->getApp());
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	BMessage msg;
+	FindWin  *newwin;
 
-	LPCTSTR lpTemplate = NULL;
-	if (m_id == AP_DIALOG_ID_REPLACE)
-		lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_REPLACE);
-	else if (m_id == AP_DIALOG_ID_FIND)
-		lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FIND);
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	
-		return;
+	// this dialogs needs this
+        setView(static_cast<FV_View *> (pFrame->getCurrentView()));          
+
+	if (m_id == AP_DIALOG_ID_FIND) {
+		if (RehydrateWindow("FindWindow", &msg)) {
+                	newwin = new FindWin(&msg);
+			newwin->SetDlg(this);
+		}
+        }                                                
+	else  {
+		if (RehydrateWindow("ReplaceWindow", &msg)) {
+                	newwin = new FindWin(&msg);
+			newwin->SetDlg(this);
+		}
 	}
-
-	setView(static_cast<FV_View *> (pFrame->getCurrentView()) );
-	
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
-*/
 }
 
 

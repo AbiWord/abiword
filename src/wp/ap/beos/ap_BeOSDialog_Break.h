@@ -32,8 +32,10 @@ public:
 	virtual ~AP_BeOSDialog_Break(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+	virtual void			setAnswer(AP_Dialog_Break::tAnswer a) { m_answer = a; };
+	virtual void			setBreakType(AP_Dialog_Break::breakType a) { m_break = a; };
 
 protected:
 
