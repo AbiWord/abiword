@@ -2196,7 +2196,7 @@ bool fl_HdrFtrSectionLayout::isPageHere(fp_Page * pPage)
 
 fl_HdrFtrShadow *  fl_HdrFtrSectionLayout::findShadow(fp_Page* pPage)
 {
-       UT_uint32 iPage = _findShadow(pPage);
+       UT_sint32 iPage = _findShadow(pPage);
        if(iPage < 0)
 	        return NULL;
        _PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(iPage);

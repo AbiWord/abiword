@@ -5651,7 +5651,7 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 
 	// These strings match piece table styles and should not be
 	// internationalized
-	UT_uint32 nlisttype = (UT_uint32) iListType;
+	UT_sint32 nlisttype = (UT_sint32) iListType;
 	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
 		style = (XML_Char *) NULL;
 	else
@@ -5681,7 +5681,7 @@ List_Type fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
 
 char *	fl_BlockLayout::getFormatFromListType( List_Type iListType)
 {
-	UT_uint32 nlisttype = (UT_uint32) iListType;
+	UT_sint32 nlisttype = (UT_sint32) iListType;
 	char * format = NULL;
 	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
 		return format;

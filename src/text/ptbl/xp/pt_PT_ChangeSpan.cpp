@@ -485,7 +485,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 	UT_uint32 fragOffsetNewEnd;
 
 	UT_uint32 length = dpos2 - dpos1;
-	while (length >= 0)
+	while (length != 0)
 	{
 		// FIXME: Special check to support a FmtMark at the end of the
 		// document. This is necessary because FmtMarks don't have a
