@@ -155,7 +155,6 @@ void AP_UnixDialog_MailMerge::event_AddClicked ()
 
 GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 {
-	GtkWidget * window;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our glade file is located
@@ -170,7 +169,7 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
-	window = glade_xml_get_widget(xml, "ap_UnixDialog_MailMerge");
+	m_windowMain = glade_xml_get_widget(xml, "ap_UnixDialog_MailMerge");
 	m_entry = glade_xml_get_widget(xml, "edFieldName");
 	m_treeview = glade_xml_get_widget(xml, "tvAvailableFields");
 
@@ -212,7 +211,7 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 			   
-	return window;			   
+	return m_windowMain;			   
 }
 
 void AP_UnixDialog_MailMerge::setFieldList()
