@@ -193,7 +193,8 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 89: return NULL /*"Document Map"*/;
 		case 90: return "Plain Text";
 		case 91: return NULL /*"Email Signature"*/;
-			
+	    case 92: return NULL /*"Index 1"*/;
+	    case 93: return NULL /*"List Bullet"*/;
 		case 94: return NULL /*"Normal (Web)"*/;
 		case 95: return NULL /*"HTML Acronym"*/;
 		case 96: return NULL /*"HTML Address"*/;
@@ -206,8 +207,14 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 103: return NULL /*"HTML Typewriter"*/;
 		case 104: return NULL /*"HTML Variable"*/;
 		case 105: return NULL /*"Table Normal"*/;
-
+    	case 106: return NULL /*"Comment Subject"*/;
 		case 107: return NULL /*"No List"*/;
+    	case 108: return NULL /*"Index Heading"*/;
+	    case 109: return NULL /*"Plain Text"*/;
+	    case 110: return NULL /*"Hyperlink"*/;
+	    case 111: return NULL /*"FollowedHyperlink"*/;
+    	case 112: return NULL /*"EnumList"*/;
+    	case 115: return NULL /*"Balloon Text"*/;
 
 		case 153: return NULL /*"Table of Authorities"*/;
 		case 154: return NULL /*"Grille du tableau" in fr_FR*/;
