@@ -1094,13 +1094,30 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 	UT_ASSERT(getFirstContainer() == NULL);
 	fp_Line* pLine = (fp_Line *) getNewContainer();
 	UT_ASSERT(pLine);
-
+	if(pLine->getContainer() == NULL)
+	{
+		fp_VerticalContainer * pContainer = NULL;
+		if(m_pSectionLayout->getFirstContainer())
+		{
+			// TODO assert something here about what's in that container
+			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getFirstContainer();
+		}
+		else
+		{
+			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getNewContainer();
+			UT_ASSERT(pContainer->getWidth() >0);
+		}
+		pContainer->insertContainer((fp_Container *) pLine);
+	}
 	fp_Run* pTempRun = m_pFirstRun;
 	while (pTempRun)
 	{
 		pLine->addRun(pTempRun);
 		pTempRun = pTempRun->getNext();
 	}
+	UT_ASSERT(pLine->getContainer());
+	UT_DEBUGMSG(("SEVIOR: Containing container for line is %x \n",pLine->getContainer()));
+	pLine->recalcMaxWidth();
 }
 
 /*!
@@ -1346,8 +1363,9 @@ fl_BlockLayout::formatLocal(fp_Line * pLineToStartAt)
 
 		// Create the first line if necessary.
 		if (!getFirstContainer())
+		{
 			_stuffAllRunsOnALine();
-
+		}
 		recalculateFields(0);
 
 		// Reformat paragraph
@@ -1533,7 +1551,7 @@ fp_Container* fl_BlockLayout::getNewContainerLocal(void)
 		else
 			pContainer->insertContainerAfter((fp_Container *)pLine, (fp_Container *) pPrevLine);
 	}
-
+	UT_ASSERT(pLine->getContainer());
 	return (fp_Container *) pLine;
 }
 
