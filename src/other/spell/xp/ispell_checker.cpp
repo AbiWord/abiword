@@ -116,7 +116,7 @@ ISpellChecker::ISpellChecker()
 	m_hashtbl(NULL),
 	m_pflaglist(NULL),
 	m_sflaglist(NULL),
-    m_chartypes(NULL),
+  m_chartypes(NULL),
 	m_infile(NULL),
 	m_outfile(NULL),
 	m_askfilename(NULL),
@@ -124,6 +124,7 @@ ISpellChecker::ISpellChecker()
 	m_translate_in(UT_ICONV_INVALID),
 	m_translate_out(UT_ICONV_INVALID)
 {
+	memset(m_sflagindex,0,sizeof(m_sflagindex));
   if (mRefCnt == 0)
     {
       // load the dictionary list
