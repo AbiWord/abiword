@@ -30,6 +30,9 @@ class ABI_EXPORT GR_Transform
 	GR_Transform (const GR_Transform & op2);
 
 	static GR_Transform scale (double x, double y);
+	static GR_Transform linearScale (double p) {
+		return scale (p, p);
+	}
 	static GR_Transform rotate (double theta);
 	static GR_Transform translate (double x, double y);
 
