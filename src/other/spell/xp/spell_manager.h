@@ -68,7 +68,7 @@ public:
 
 	virtual void ignoreWord (const UT_UCSChar *toCorrect, size_t toCorrectLen) = 0;
 
-	virtual bool isIgnored (const UT_UCSChar * pWord, UT_uint32 len) const = 0;
+	virtual bool isIgnored (const UT_UCSChar * pWord, size_t len) const = 0;
 
     const UT_String& getLanguage () const
     {

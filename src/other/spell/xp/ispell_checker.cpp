@@ -131,7 +131,7 @@ void ISpellChecker::ignoreWord (const UT_UCSChar *pWord, size_t len)
 	if (key != _key) DELETEPV(key);
 }
 
-bool ISpellChecker::isIgnored(const UT_UCSChar * pWord, UT_uint32 len) const
+bool ISpellChecker::isIgnored(const UT_UCSChar * pWord, size_t len) const
 {
 	UT_ASSERT(m_pIgnoreList);
 
