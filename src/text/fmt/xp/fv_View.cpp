@@ -69,7 +69,7 @@
 #include "xap_Dlg_Zoom.h"
 #include "ap_Frame.h"
 #include "ap_FrameData.h"
-
+#include "fp_FrameContainer.h"
 #include "xap_EncodingManager.h"
 
 #include "pp_Revision.h"
@@ -450,12 +450,26 @@ FV_FrameEdit * FV_View::getFrameEdit(void)
 
 void FV_View::btn0Frame(UT_sint32 x, UT_sint32 y)
 {
+	xxx_UT_DEBUGMSG(("btn0 called frameEdit mode %d \n",m_FrameEdit.getFrameEditMode()));
+	if(!m_FrameEdit.isActive())
+	{
+		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+		return;
+	}
+	else if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
+	{
+		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
+	}
+	else if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_EXISTING_SELECTED)
+	{
+		m_FrameEdit.setDragType(x,y,false);
+		setCursorToContext();
+	}
 }
 
 
 void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 {
-	getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
 	m_FrameEdit.mouseLeftPress(x,y);
 }
 
@@ -471,6 +485,32 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseRelease(x,y);
 }
 
+/*!
+ * Returns true if the supplied Doc Position is inside a frame.
+ */
+bool FV_View::isInFrame(PT_DocPosition pos)
+{
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+
+	if(pBlock)
+	{
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+		{
+			pCL = pCL->myContainingLayout();
+		}
+		if(pCL == NULL)
+		{
+			return false;
+		}
+		if(pCL->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
 
 UT_RGBColor FV_View::getColorSelBackground ()
 {
@@ -6904,11 +6944,53 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	{
 		return EV_EMC_FRAME;
 	}
-
+	UT_sint32 ires = 40;
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL, true);
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
 	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+//
+// Look if we're inside a frame
+//
+	if(isInFrame(pos))
+	{
+		//
+		// OK find the coordinates of the frame.
+		//
+		UT_sint32 xPage,yPage;
+		getPageScreenOffsets(pPage,xPage,yPage);
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pBlock->myContainingLayout());
+		fp_FrameContainer * pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
+		UT_sint32 iLeft = xPage + pFCon->getFullX();
+		UT_sint32 iRight = xPage + pFCon->getFullX() + pFCon->getFullWidth();
+		UT_sint32 iTop = yPage + pFCon->getFullY();
+		UT_sint32 iBot = yPage + pFCon->getFullY() + pFCon->getFullHeight();
+		bool bLeft = (iLeft - xPos < ires) && (xPos - iLeft < ires);
+		bool bRight = (iRight - xPos < ires) && (xPos - iRight < ires);
+		bool bTop = (iTop - yPos < ires) && (yPos - iTop < ires);
+		bool bBot = (iBot - yPos < ires) && (yPos - iBot < ires);
+		bool bX = (iLeft - ires < xPos) && (xPos < iRight + ires);
+		bool bY = (iTop - ires < yPos) && (iBot + ires > yPos);
+		if( (bLeft || bRight) && bY)
+		{
+// TODO put in some code to indicate which control of the frame is being
+// dragged. Maybe reuse topRuler stuff???
+//
+			xxx_UT_DEBUGMSG(("getContext: Found left frame line \n"));
+			m_prevMouseContext = EV_EMC_FRAME;
+			return EV_EMC_FRAME;
+		}
+		if( (bTop || bBot) && bX)
+		{
+// TODO put in some code to indicate which control of the frame is being
+// dragged. Maybe reuse topRuler stuff???
+//
+			xxx_UT_DEBUGMSG(("getContext: Found left frame line \n"));
+			m_prevMouseContext = EV_EMC_FRAME;
+			return EV_EMC_FRAME;
+		}
+
+	}	
 	if(isInTable(pos))
 	{
 		fp_Line * pLine = pRun->getLine();
@@ -6971,7 +7053,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				iTop += col_y +  offy;
 				iBot += col_y + offy;
 				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
-				UT_sint32 ires = 40;
 				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
 				{
 
@@ -7241,11 +7322,11 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopLeftCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopRightCorner)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotLeftCorner)
 		{
@@ -7270,6 +7351,14 @@ void FV_View::setCursorToContext()
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotEdge)
 		{
 			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragWholeFrame)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		}
+		else
+		{
+			cursor = GR_Graphics::GR_CURSOR_GRAB;
 		}
 		break;
 	default:

@@ -11609,10 +11609,9 @@ Defun(btn0Frame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	UT_DEBUGMSG(("Hover on Frame \n"));
+	xxx_UT_DEBUGMSG(("Hover on Frame \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
-	static_cast<FV_View *>(pView)->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
 	pView->btn0Frame(x,y);
 	return true;
 }

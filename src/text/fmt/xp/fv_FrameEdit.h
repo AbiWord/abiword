@@ -36,7 +36,7 @@ typedef enum _FV_FrameEditMode
 
 typedef enum _FV_FrameEditDragWhat
 {
-    FV_FrameEdit_DragNothing,
+	FV_FrameEdit_DragNothing,
     FV_FrameEdit_DragTopLeftCorner,
     FV_FrameEdit_DragTopRightCorner,
     FV_FrameEdit_DragBotLeftCorner,
@@ -74,8 +74,8 @@ public:
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
-	void                  drawFrame(void);
-	void                  setDragType(UT_sint32 x,UT_sint32 y);
+	void                  drawFrame(bool bWithHandles);
+	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawFrame);
 	bool                  getFrameStrings(UT_sint32 x, UT_sint32 y, 
 										  UT_String & sXpos,
 										  UT_String & sYpos,
@@ -84,8 +84,9 @@ public:
 										  PT_DocPosition & posAtXY);
 private:
     void                  _xorBox(UT_Rect & rect);
+    void                  _drawBox(UT_Rect & rect);
 	FV_View *             m_pView;
-	FV_FrameEditMode     m_iFrameEditMode;
+	FV_FrameEditMode      m_iFrameEditMode;
 	fl_FrameLayout *      m_pFrameLayout;
 	fp_FrameContainer *   m_pFrameContainer;
 	FV_FrameEditDragWhat  m_iDraggingWhat;
@@ -93,6 +94,8 @@ private:
 	UT_sint32             m_iLastY;
 	UT_Rect               m_recCurFrame;
 	bool                  m_bBoxOnOff;
+	UT_sint32             m_iInitialDragX;
+	UT_sint32             m_iInitialDragY;
 };
 
 #endif /* FV_FRAME_EDIT_H */

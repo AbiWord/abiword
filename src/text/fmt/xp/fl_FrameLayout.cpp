@@ -235,10 +235,10 @@ fl_SectionLayout * fl_FrameLayout::getSectionLayout(void) const
 bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
-
-
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
+	_lookupProperties();
+	format();
 	return true;
 }
 
@@ -309,14 +309,6 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	collapse();
 //	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFrame);
 //
-// Find the block that contains this layout.
-//
-	PT_DocPosition prevPos = pcrx->getPosition();
-	fl_BlockLayout * pEncBlock =  m_pLayout->findBlockAtPosition(prevPos);
-//
-// Fix the offsets for the block
-//
-	pEncBlock->updateOffsets(prevPos,0);
 
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
@@ -414,10 +406,6 @@ void fl_FrameLayout::format(void)
 	{
 		getNewContainer();
 	}
-	if(!m_bIsOnPage)
-	{
-		_insertFrameContainer(getFirstContainer());
-	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	
 	while (pBL)
@@ -438,6 +426,47 @@ void fl_FrameLayout::format(void)
 		pBL = pBL->getNext();
 	}
 	static_cast<fp_FrameContainer *>(getFirstContainer())->layout();
+	if(!m_bIsOnPage)
+	{
+//
+// Place it on the correct page.
+//
+		fl_ContainerLayout * pCL = getPrev();
+		while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			pCL = pCL->getPrev();
+		}
+		if(pCL == NULL)
+		{
+			UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
+		UT_sint32 count = pBL->getNumFrames();
+		if(count == 0)
+		{
+			UT_DEBUGMSG(("BlockLayout does not contain this frame! \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		UT_sint32 i =0;
+		for(i=0; i<count; i++)
+		{
+			fl_FrameLayout * pFL = pBL->getNthFrameLayout(i);
+			if(pFL == this)
+			{
+				break;
+			}
+		}
+		if(count == i)
+		{
+			UT_DEBUGMSG(("BlockLayout does not contain this frame! \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		pBL->setFramesOnPage(NULL);
+	}
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;
 }

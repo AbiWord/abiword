@@ -40,6 +40,8 @@
 class fl_TableLayout;
 class fl_DocSectionLayout;
 
+#define FRAME_HANDLE_SIZE 6
+
 class ABI_EXPORT fp_FrameContainer : public fp_VerticalContainer
 {
 public:
@@ -49,6 +51,7 @@ public:
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+	void                drawHandles(dg_DrawArgs * pDA);
 	void                drawBoundaries(dg_DrawArgs * pDA);
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual fp_Container * getNextContainerInSection(void) const;
@@ -83,6 +86,7 @@ private:
 									  UT_sint32 left, UT_sint32 top, 
 									  UT_sint32 right, UT_sint32 bot,
 									  GR_Graphics * pGr);
+	void                   _drawHandleBox(UT_Rect box); 
 	fp_Page * m_pPage;
 	UT_sint32 m_iXpad;
 	UT_sint32 m_iYpad;

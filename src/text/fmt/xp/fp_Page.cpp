@@ -1259,15 +1259,16 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 	fp_FrameContainer * pFrameC = NULL;
 	if(!bNotFrames)
 	{
+		UT_sint32 iextra = m_pLayout->getGraphics()->tlu(4);
 		for (i=0; i<static_cast<UT_sint32>(countFrameContainers()); i++)
 		{
 			pFrameC = getNthFrameContainer(i);
 			if (pFrameC->getFirstContainer())
 			{
-				if ((x >= pFrameC->getX())
-					&& (x < (pFrameC->getX() + pFrameC->getWidth()))
-					&& (y >= pFrameC->getY())
-					&& (y < (pFrameC->getY() + pFrameC->getHeight()))
+				if ((x >= (pFrameC->getFullX()- iextra))
+					&& (x < (pFrameC->getFullX() + pFrameC->getFullWidth()+iextra))
+					&& (y >= (pFrameC->getFullY() - iextra))
+					&& (y < (pFrameC->getFullY() + pFrameC->getFullHeight() + iextra))
 					)
 				{
 					pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL);

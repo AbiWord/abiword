@@ -132,7 +132,6 @@ public:
 	void                    addFrame(fl_FrameLayout * pFrame);
 	void                    removeFrame(fl_FrameLayout * pFrame);
 
-
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif

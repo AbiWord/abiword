@@ -365,7 +365,7 @@ public:
 	void            btn1Frame(UT_sint32 x, UT_sint32 y);
 	void            dragFrame(UT_sint32 x, UT_sint32 y);
 	void            releaseFrame(UT_sint32 x, UT_sint32 y);
-
+	bool            isInFrame(PT_DocPosition pos);
 // ----------------------
 
 	bool			isPosSelected(PT_DocPosition pos) const;

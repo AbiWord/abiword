@@ -92,15 +92,19 @@ void fp_FrameContainer::clearScreen(void)
 	{
 		return;
 	}
+	UT_sint32 iTopLWidth = m_lineTop.m_thickness;
+	UT_sint32 iBotLWidth = m_lineBottom.m_thickness;
+	UT_sint32 iRightLWidth = m_lineRight.m_thickness;
+	UT_sint32 iLeftLWidth = m_lineLeft.m_thickness;
 	UT_sint32 srcX,srcY;
-	srcX = getFullX();
-	srcY = getFullY();
+	srcX = -m_iXpad - iLeftLWidth;
+	srcY = -m_iYpad - iTopLWidth;
 	UT_sint32 xoff,yoff;
 	getView()->getPageScreenOffsets(pPage,xoff,yoff);
 	UT_DEBUGMSG(("pagescreenoffsets xoff %d yoff %d \n",xoff,yoff));
-	xoff += getFullX();
-	yoff += getFullY();
-	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth(),getFullHeight());
+	xoff += getFullX() -iLeftLWidth;
+	yoff += getFullY() - iTopLWidth;
+	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+iLeftLWidth+iRightLWidth,getFullHeight()+iTopLWidth+iBotLWidth);
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
@@ -226,6 +230,62 @@ void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
 	_drawLine(m_lineRight,iXhigh,iYlow,iXhigh,iYhigh,pDA->pG); // right
 	_drawLine(m_lineBottom,iXlow,iYhigh,iXhigh,iYhigh,pDA->pG); // bottom
 	_drawLine(m_lineLeft,iXlow,iYlow,iXlow,iYhigh,pDA->pG); // left
+}
+
+
+/*!
+ * Draw the frame handles
+ */
+void  fp_FrameContainer::drawHandles(dg_DrawArgs * pDA)
+{
+	UT_sint32 iXlow = pDA->xoff - m_iXpad;
+	UT_sint32 iXhigh = iXlow + getFullWidth() ;
+	UT_sint32 iYlow = pDA->yoff - m_iYpad;
+	UT_sint32 iYhigh = iYlow + getFullHeight();
+	UT_sint32 iXMid = (iXlow + iXhigh)/2;
+	UT_sint32 iYMid = (iYlow + iYhigh)/2;
+	GR_Graphics * pG = pDA->pG;
+	UT_sint32 res = pG->tlu(8);
+	_drawHandleBox(UT_Rect(iXlow,iYlow,res,res));
+	_drawHandleBox(UT_Rect(iXMid-res/2,iYlow,res,res));
+	_drawHandleBox(UT_Rect(iXhigh-res,iYlow,res,res));
+	_drawHandleBox(UT_Rect(iXlow,iYMid-res/2,res,res));
+	_drawHandleBox(UT_Rect(iXhigh-res,iYMid-res/2,res,res));
+	_drawHandleBox(UT_Rect(iXlow,iYhigh-res,res,res));
+	_drawHandleBox(UT_Rect(iXMid-res/2,iYhigh-res,res,res));
+	_drawHandleBox(UT_Rect(iXhigh-res,iYhigh-res,res,res));
+}
+
+void fp_FrameContainer::_drawHandleBox(UT_Rect box)
+{
+//
+// Code cut and pasted from uwog's handle boxes on images.
+//
+	UT_sint32 left = box.left;
+	UT_sint32 top = box.top;
+	UT_sint32 right = box.left + box.width - getGraphics()->tlu(1);
+	UT_sint32 bottom = box.top + box.height - getGraphics()->tlu(1);
+	
+	getGraphics()->setLineProperties(1.0,
+								 GR_Graphics::JOIN_MITER,
+								 GR_Graphics::CAP_BUTT,
+								 GR_Graphics::LINE_SOLID);	
+	
+	// draw some really fancy box here
+	getGraphics()->setColor(UT_RGBColor(98,129,131));
+	getGraphics()->drawLine(left, top, right, top);
+	getGraphics()->drawLine(left, top, left, bottom);
+	getGraphics()->setColor(UT_RGBColor(230,234,238));
+	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), top+getGraphics()->tlu(1));
+	getGraphics()->drawLine(box.left+getGraphics()->tlu(1), box.top + getGraphics()->tlu(1), left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	getGraphics()->setColor(UT_RGBColor(98,129,131));
+	getGraphics()->drawLine(right - getGraphics()->tlu(1), top + getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	getGraphics()->drawLine(left + getGraphics()->tlu(1), bottom - getGraphics()->tlu(1), right - getGraphics()->tlu(1), bottom - getGraphics()->tlu(1));
+	getGraphics()->setColor(UT_RGBColor(49,85,82));
+	getGraphics()->drawLine(right, top, right, bottom);
+	getGraphics()->drawLine(left, bottom, right, bottom);
+	getGraphics()->fillRect(UT_RGBColor(156,178,180),box.left + getGraphics()->tlu(2), box.top + getGraphics()->tlu(2), box.width - getGraphics()->tlu(4), box.height - getGraphics()->tlu(4));
+
 }
 
 /*!
