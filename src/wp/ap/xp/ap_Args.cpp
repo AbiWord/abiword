@@ -27,6 +27,10 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 
+#ifdef ABI_OPT_PERL
+#include "ut_PerlBindings.h"
+#endif
+
 #include <popt.h>
 
 /*****************************************************************/
@@ -53,7 +57,7 @@ const char * AP_Args::m_sDisplay = NULL;
 struct poptOption * AP_Args::options = NULL;
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
-	: XArgs (pArgs), m_pApp(pApp), m_bShowApp(true), m_bShowSplash(true)
+	: XArgs (pArgs), m_bShowApp(true), m_bShowSplash(true), m_pApp(pApp)
 {
 	pApp->initPopt (this);
 

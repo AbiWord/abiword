@@ -324,16 +324,14 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 					   theWord[iNewLength+1] = 0;
 
 					   // Configurably ignore upper-case words
-					   if (bAllUpperCase && 
-						   m_pView->getLayout()->getSpellCheckCaps())
+					   if (bAllUpperCase && checkCaps)
 					   {
 						   m_iWordOffset += (m_iWordLength + 1);
 						   continue;
 					   }
 
 					   // Configurably ignore words containing digits
-					   if (bHasNumeric && 
-						   m_pView->getLayout()->getSpellCheckNumbers())
+					   if (bHasNumeric && checkNumeric)
 					   {
 						   m_iWordOffset += (m_iWordLength + 1);
 						   continue;

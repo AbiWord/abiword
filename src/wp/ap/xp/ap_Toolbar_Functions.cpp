@@ -43,6 +43,8 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 
+#if 0
+
 static bool s_ToolbarFunctions_check_inc_load(FV_View * pView)
 {
   // todo: we probably need to make this function smarter.
@@ -58,12 +60,12 @@ static bool s_ToolbarFunctions_check_inc_load(FV_View * pView)
   return false ;
 }
 
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
-#if 0
 #define CHECK_INC_LOAD if(s_ToolbarFunctions_check_inc_load(pView)) return EV_TIS_Gray;
 #else
 #define CHECK_INC_LOAD
 #endif
+
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 /****************************************************************/
 
@@ -82,7 +84,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
-  ABIWORD_VIEW;
   CHECK_INC_LOAD;
 
   EV_Toolbar_ItemState s = EV_TIS_ZERO;

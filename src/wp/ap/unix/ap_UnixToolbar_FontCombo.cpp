@@ -81,7 +81,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 
 		int foundAt = -1;
 
-		for (int j = 0; j < m_vecContents.size(); j++)
+		for (UT_uint32 j = 0; j < m_vecContents.size(); j++)
 		{
 			// sort out dups
 			char * str = (char *)m_vecContents.getNthItem(j);
