@@ -135,7 +135,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	
 	const char** subdirs = localeinfo_combinations("","","");
 
-#if 1
+#if 0
     const char** subdir = subdirs;
     UT_uint32 subdircount  = 0;
 	
