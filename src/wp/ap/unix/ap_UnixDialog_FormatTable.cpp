@@ -17,21 +17,19 @@
  * 02111-1307, USA.
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
 #include <stdlib.h>
 #include <glade/glade.h>
+#include <gdk/gdk.h>
 #include "ut_locale.h"
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_unixMisc.h"
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
-
-#include "xap_UnixGtkColorPicker.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -94,9 +92,13 @@ static void s_border_color(GtkWidget *widget, gpointer data )
 	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	
-	guint8 r, g, b, a;
-	gtk_color_picker_get_i8 (GTK_COLOR_PICKER(widget), &r, &g, &b, &a);
-	dlg->setBorderColor(UT_RGBColor(r,g,b));
+	GdkColor color;
+	gtk_color_button_get_color(GTK_COLOR_BUTTON(widget), &color);
+
+	UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor(color);
+	dlg->setBorderColor(*rgb);
+	DELETEP(rgb);
+
 	dlg->event_previewExposed();
 }
 
@@ -113,9 +115,13 @@ static void s_background_color(GtkWidget *widget, gpointer data)
 	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	
-	guint8 r, g, b, a;
-	gtk_color_picker_get_i8 (GTK_COLOR_PICKER(widget), &r, &g, &b, &a);
-	dlg->setBackgroundColor(UT_RGBColor(r,g,b));
+	GdkColor color;
+	gtk_color_button_get_color (GTK_COLOR_BUTTON (widget), &color);
+
+	UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor(color);
+	dlg->setBackgroundColor(*rgb);
+	DELETEP(rgb);
+
 	dlg->event_previewExposed();
 }
 
@@ -291,7 +297,9 @@ void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 
 void AP_UnixDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
-	gtk_color_picker_set_i8(GTK_COLOR_PICKER(m_wBackgroundColorButton), clr.m_red, clr.m_grn, clr.m_blu, 0 /* unused */);
+	GdkColor* color = UT_UnixRGBColorToGdkColor(clr);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wBackgroundColorButton), color);
+	gdk_color_free(color);
 }
 
 void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
@@ -434,18 +442,9 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
 
 	localizeLabel(glade_xml_get_widget(xml, "lbApplyTo"), pSS, AP_STRING_ID_DLG_FormatTable_Apply_To);
-	
-	// add the custom color picker buttons to the dialog
-	m_wBorderColorButton = gtk_color_picker_new();
-	gtk_widget_show(m_wBorderColorButton);
-	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbBorder")), m_wBorderColorButton, 3, 4, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 
-					0, 0);
-					
-	// add the custom color picker buttons to the dialog
-	m_wBackgroundColorButton = gtk_color_picker_new();
-	gtk_widget_show(m_wBackgroundColorButton);
-	gtk_box_pack_start(GTK_BOX (glade_xml_get_widget(xml, "hbBackgroundColor")), m_wBackgroundColorButton, TRUE, TRUE, 0);	
+
+	m_wBorderColorButton = glade_xml_get_widget(xml, "cbtBorderColorButton");
+	m_wBackgroundColorButton = glade_xml_get_widget(xml, "cbtBackgroundColorButton");
 
 //
 // Now the Border Thickness Option menu
@@ -558,12 +557,12 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));		   
 						   
 	g_signal_connect(G_OBJECT(m_wBorderColorButton),
-							"color_set",
+							"color-set",
 							G_CALLBACK(s_border_color),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wBackgroundColorButton),
-							"color_set",
+							"color-set",
 							G_CALLBACK(s_background_color),
 							reinterpret_cast<gpointer>(this));	   
 						   
