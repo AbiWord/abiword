@@ -19,25 +19,25 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "ut_alphahash.cpp.o" ¶
-			"ut_base64.cpp.o" ¶
-			"ut_bytebuf.cpp.o" ¶
-			"ut_growbuf.cpp.o" ¶
-			"ut_hash.cpp.o" ¶
-			"ut_math.cpp.o" ¶
-			"ut_mbtowc.cpp.o" ¶
-			"ut_misc.cpp.o" ¶
-			"ut_pair.cpp.o" ¶
-			"ut_png.cpp.o" ¶
-			"ut_pool.cpp.o" ¶
-			"ut_stack.cpp.o" ¶
-			"ut_string.cpp.o" ¶
-			"ut_svg.cpp.o" ¶
-			"ut_test.cpp.o" ¶
-			"ut_timer.cpp.o" ¶
-			"ut_units.cpp.o" ¶
-			"ut_vector.cpp.o" ¶
-			"ut_wctomb.cpp.o"
+TARGETS = "ut_alphahash.o" ¶
+			"ut_base64.o" ¶
+			"ut_bytebuf.o" ¶
+			"ut_growbuf.o" ¶
+			"ut_hash.o" ¶
+			"ut_math.o" ¶
+			"ut_mbtowc.o" ¶
+			"ut_misc.o" ¶
+			"ut_pair.o" ¶
+			"ut_png.o" ¶
+			"ut_pool.o" ¶
+			"ut_stack.o" ¶
+			"ut_string.o" ¶
+			"ut_svg.o" ¶
+			"ut_test.o" ¶
+			"ut_timer.o" ¶
+			"ut_units.o" ¶
+			"ut_vector.o" ¶
+			"ut_wctomb.o"
 
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"

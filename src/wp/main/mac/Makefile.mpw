@@ -19,7 +19,7 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = MacMain.cpp.o
+TARGETS = MacMain.o
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 

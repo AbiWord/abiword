@@ -19,8 +19,8 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "{OBJDIR}gr_MacQDGraphics.cpp.o" ¶
-			"{OBJDIR}gr_MacImage.cpp.o"
+TARGETS = "gr_MacQDGraphics.o" ¶
+			"gr_MacImage.o"
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 

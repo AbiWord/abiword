@@ -19,49 +19,49 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "fd_Field.cpp.o" ¶
-			"pd_Document.cpp.o" ¶
-			"pd_Style.cpp.o" ¶
-			"pf_Frag.cpp.o" ¶
-			"pf_Frag_FmtMark.cpp.o" ¶
-			"pf_Frag_Object.cpp.o" ¶
-			"pf_Frag_Strux.cpp.o" ¶
-			"pf_Frag_Strux_Block.cpp.o" ¶
-			"pf_Frag_Strux_Section.cpp.o" ¶
-			"pf_Frag_TestRoutines.cpp.o" ¶
-			"pf_Frag_Text.cpp.o" ¶
-			"pf_Fragments.cpp.o" ¶
-			"pp_AttrProp.cpp.o" ¶
-			"pp_Property.cpp.o" ¶
-			"pp_TableAttrProp.cpp.o" ¶
-			"pt_PieceTable.cpp.o" ¶
-			"pt_PT_Append.cpp.o" ¶
-			"pt_PT_ChangeObject.cpp.o" ¶
-			"pt_PT_ChangeSpan.cpp.o" ¶
-			"pt_PT_ChangeStrux.cpp.o" ¶
-			"pt_PT_DeleteObject.cpp.o" ¶
-			"pt_PT_DeleteSpan.cpp.o" ¶
-			"pt_PT_DeleteStrux.cpp.o" ¶
-			"pt_PT_FmtMark.cpp.o" ¶
-			"pt_PT_Glob.cpp.o" ¶
-			"pt_PT_InsertObject.cpp.o" ¶
-			"pt_PT_InsertSpan.cpp.o" ¶
-			"pt_PT_InsertStrux.cpp.o" ¶
-			"pt_PT_Listener.cpp.o" ¶
-			"pt_PT_Styles.cpp.o" ¶
-			"pt_PT_Undo.cpp.o" ¶
-			"pt_VarSet.cpp.o" ¶
-			"px_ChangeHistory.cpp.o" ¶
-			"px_ChangeRecord.cpp.o" ¶
-			"px_CR_FmtMark.cpp.o" ¶
-			"px_CR_FmtMarkChange.cpp.o" ¶
-			"px_CR_Glob.cpp.o" ¶
-			"px_CR_Object.cpp.o" ¶
-			"px_CR_ObjectChange.cpp.o" ¶
-			"px_CR_Span.cpp.o" ¶
-			"px_CR_SpanChange.cpp.o" ¶
-			"px_CR_Strux.cpp.o" ¶
-			"px_CR_StruxChange.cpp.o"
+TARGETS = "fd_Field.o" ¶
+			"pd_Document.o" ¶
+			"pd_Style.o" ¶
+			"pf_Frag.o" ¶
+			"pf_Frag_FmtMark.o" ¶
+			"pf_Frag_Object.o" ¶
+			"pf_Frag_Strux.o" ¶
+			"pf_Frag_Strux_Block.o" ¶
+			"pf_Frag_Strux_Section.o" ¶
+			"pf_Frag_TestRoutines.o" ¶
+			"pf_Frag_Text.o" ¶
+			"pf_Fragments.o" ¶
+			"pp_AttrProp.o" ¶
+			"pp_Property.o" ¶
+			"pp_TableAttrProp.o" ¶
+			"pt_PieceTable.o" ¶
+			"pt_PT_Append.o" ¶
+			"pt_PT_ChangeObject.o" ¶
+			"pt_PT_ChangeSpan.o" ¶
+			"pt_PT_ChangeStrux.o" ¶
+			"pt_PT_DeleteObject.o" ¶
+			"pt_PT_DeleteSpan.o" ¶
+			"pt_PT_DeleteStrux.o" ¶
+			"pt_PT_FmtMark.o" ¶
+			"pt_PT_Glob.o" ¶
+			"pt_PT_InsertObject.o" ¶
+			"pt_PT_InsertSpan.o" ¶
+			"pt_PT_InsertStrux.o" ¶
+			"pt_PT_Listener.o" ¶
+			"pt_PT_Styles.o" ¶
+			"pt_PT_Undo.o" ¶
+			"pt_VarSet.o" ¶
+			"px_ChangeHistory.o" ¶
+			"px_ChangeRecord.o" ¶
+			"px_CR_FmtMark.o" ¶
+			"px_CR_FmtMarkChange.o" ¶
+			"px_CR_Glob.o" ¶
+			"px_CR_Object.o" ¶
+			"px_CR_ObjectChange.o" ¶
+			"px_CR_Span.o" ¶
+			"px_CR_SpanChange.o" ¶
+			"px_CR_Strux.o" ¶
+			"px_CR_StruxChange.o"
 			
 			
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"

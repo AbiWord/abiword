@@ -19,13 +19,13 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = correct.c.o ¶
-		   good.c.o ¶
-		   hash.c.o ¶
-		   lookup.c.o ¶
-		   makedent.c.o ¶
-		   newMain.c.o ¶
-		   tgood.c.o
+TARGETS = correct.o ¶
+		   good.o ¶
+		   hash.o ¶
+		   lookup.o ¶
+		   makedent.o ¶
+		   newMain.o ¶
+		   tgood.o
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 

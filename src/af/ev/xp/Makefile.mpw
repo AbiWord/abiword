@@ -19,21 +19,21 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "ev_EditBinding.cpp.o" ¶
-			"ev_EditEventMapper.cpp.o" ¶
-			"ev_EditMethod.cpp.o" ¶
-			"ev_Keyboard.cpp.o" ¶
-			"ev_Menu.cpp.o" ¶
-			"ev_Menu_Actions.cpp.o" ¶
-			"ev_Menu_Labels.cpp.o" ¶
-			"ev_Menu_Layouts.cpp.o" ¶
-			"ev_Mouse.cpp.o" ¶
-			"ev_NamedVirtualKey.cpp.o" ¶
-			"ev_Toolbar.cpp.o" ¶
-			"ev_Toolbar_Actions.cpp.o" ¶
-			"ev_Toolbar_Control.cpp.o" ¶
-			"ev_Toolbar_Labels.cpp.o" ¶
-			"ev_Toolbar_Layouts.cpp.o"
+TARGETS = "ev_EditBinding.o" ¶
+			"ev_EditEventMapper.o" ¶
+			"ev_EditMethod.o" ¶
+			"ev_Keyboard.o" ¶
+			"ev_Menu.o" ¶
+			"ev_Menu_Actions.o" ¶
+			"ev_Menu_Labels.o" ¶
+			"ev_Menu_Layouts.o" ¶
+			"ev_Mouse.o" ¶
+			"ev_NamedVirtualKey.o" ¶
+			"ev_Toolbar.o" ¶
+			"ev_Toolbar_Actions.o" ¶
+			"ev_Toolbar_Control.o" ¶
+			"ev_Toolbar_Labels.o" ¶
+			"ev_Toolbar_Layouts.o"
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 

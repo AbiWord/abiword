@@ -19,27 +19,27 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "fb_Alignment.cpp.o" ¶
-			"fb_LineBreaker.cpp.o" ¶
-			"fg_Graphic.cpp.o" ¶
-			"fg_GraphicRaster.cpp.o" ¶
-			"fg_GraphicVector.cpp.o" ¶
-			"fl_AutoNum.cpp.o" ¶
-			"fl_BlockLayout.cpp.o" ¶
-			"fl_DocLayout.cpp.o" ¶
-			"fl_DocListener.cpp.o" ¶
-			"fl_Layout.cpp.o" ¶
-			"fl_SectionLayout.cpp.o" ¶
-			"fl_TestRoutines.cpp.o" ¶
-			"fp_Column.cpp.o" ¶
-			"fp_FieldListLabelRun.cpp.o" ¶
-			"fp_FmtMarkRun.cpp.o" ¶
-			"fp_Line.cpp.o" ¶
-			"fp_Page.cpp.o" ¶
-			"fp_PageSize.cpp.o" ¶
-			"fp_Run.cpp.o" ¶
-			"fp_TextRun.cpp.o" ¶
-			"fv_View.cpp.o"
+TARGETS = "fb_Alignment.o" ¶
+			"fb_LineBreaker.o" ¶
+			"fg_Graphic.o" ¶
+			"fg_GraphicRaster.o" ¶
+			"fg_GraphicVector.o" ¶
+			"fl_AutoNum.o" ¶
+			"fl_BlockLayout.o" ¶
+			"fl_DocLayout.o" ¶
+			"fl_DocListener.o" ¶
+			"fl_Layout.o" ¶
+			"fl_SectionLayout.o" ¶
+			"fl_TestRoutines.o" ¶
+			"fp_Column.o" ¶
+			"fp_FieldListLabelRun.o" ¶
+			"fp_FmtMarkRun.o" ¶
+			"fp_Line.o" ¶
+			"fp_Page.o" ¶
+			"fp_PageSize.o" ¶
+			"fp_Run.o" ¶
+			"fp_TextRun.o" ¶
+			"fv_View.o"
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 

@@ -46,6 +46,8 @@
 
 ################################################################################
 
+clean Ä
+	Delete -i Å.o
 
 ################################################################################
 
@@ -55,8 +57,8 @@
 ## Rule for building .cpp sources in the current directory into .o's in {OBJDIR)
 ###############################################################################
 
-.cpp.o Ä .cpp {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
-	{CPP} "{Default}.cpp" -o "{OBJDIR}{Targ}"  {CPPOptions} {LocalCPPOptions}
+.o Ä .cpp {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+	{CPP} "{DepDir}{Default}.cpp" -o "{Targ}"  {CPPOptions} {LocalCPPOptions}
 
 ###############################################################################
 ## Rule for building generated .cpp sources (in {OBJDIR)) into .o's in {OBJDIR)
@@ -67,8 +69,8 @@
 ## Rule for building .c sources in the current directory into .o's in {OBJDIR)
 ###############################################################################
 
-.c.o Ä .c {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
-	{C} "{DepDir}{Default}.c" -o "{OBJDIR}{Targ}" {COptions}
+.o Ä .c {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+	{C} "{DepDir}{Default}.c" -o "{Targ}" {COptions}
 
 
 ###############################################################################

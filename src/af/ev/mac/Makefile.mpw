@@ -19,11 +19,11 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "ev_MacKeyboard.cpp.o" ¶
-			"ev_MacMenu.cpp.o" ¶
-			"ev_MacMouse.cpp.o" ¶
-			"ev_MacTlbr_ViewListener.cpp.o" ¶
-			"ev_MacToolbar.cpp.o" 
+TARGETS = "ev_MacKeyboard.o" ¶
+			"ev_MacMenu.o" ¶
+			"ev_MacMouse.o" ¶
+			"ev_MacTlbr_ViewListener.o" ¶
+			"ev_MacToolbar.o" 
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 

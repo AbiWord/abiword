@@ -19,36 +19,36 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "xad_Document.cpp.o" ¶
-			"xap_App.cpp.o" ¶
-			"xap_Args.cpp.o" ¶
-			"xap_Clipboard.cpp.o" ¶
-			"xap_Dialog.cpp.o" ¶
-			"xap_DialogFactory.cpp.o" ¶
-			"xap_Dictionary.cpp.o" ¶
-			"xap_Dlg_About.cpp.o" ¶
-			"xap_Dlg_About.cpp.o" ¶
-			"xap_Dlg_FileOpenSaveAs.cpp.o" ¶
-			"xap_Dlg_FontChooser.cpp.o" ¶
-			"xap_Dlg_Insert_Symbol.cpp.o" ¶
-			"xap_Dlg_MessageBox.cpp.o" ¶
-			"xap_Dlg_Print.cpp.o" ¶
-			"xap_Dlg_PrintPreview.cpp.o" ¶
-			"xap_Dlg_WindowMore.cpp.o" ¶
-			"xap_Dlg_Zoom.cpp.o" ¶
-			"xap_Draw_Symbol.cpp.o" ¶
-			"xap_EncodingManager.cpp.o" ¶
-			"xap_FakeClipboard.cpp.o" ¶
-			"xap_Frame.cpp.o" ¶
-			"xap_LoadBindings.cpp.o" ¶
-			"xap_Prefs.cpp.o" ¶
-			"xap_Preview.cpp.o" ¶
-			"xap_Preview_Zoom.cpp.o" ¶
-			"xap_Scrollbar_ViewListener.cpp.o" ¶
-			"xap_Strings.cpp.o" ¶
-			"xap_Toolbar_ControlFactory.cpp.o" ¶
-			"xap_ViewListener.cpp.o" ¶
-			"xav_View.cpp.o"
+TARGETS = "xad_Document.o" ¶
+			"xap_App.o" ¶
+			"xap_Args.o" ¶
+			"xap_Clipboard.o" ¶
+			"xap_Dialog.o" ¶
+			"xap_DialogFactory.o" ¶
+			"xap_Dictionary.o" ¶
+			"xap_Dlg_About.o" ¶
+			"xap_Dlg_About.o" ¶
+			"xap_Dlg_FileOpenSaveAs.o" ¶
+			"xap_Dlg_FontChooser.o" ¶
+			"xap_Dlg_Insert_Symbol.o" ¶
+			"xap_Dlg_MessageBox.o" ¶
+			"xap_Dlg_Print.o" ¶
+			"xap_Dlg_PrintPreview.o" ¶
+			"xap_Dlg_WindowMore.o" ¶
+			"xap_Dlg_Zoom.o" ¶
+			"xap_Draw_Symbol.o" ¶
+			"xap_EncodingManager.o" ¶
+			"xap_FakeClipboard.o" ¶
+			"xap_Frame.o" ¶
+			"xap_LoadBindings.o" ¶
+			"xap_Prefs.o" ¶
+			"xap_Preview.o" ¶
+			"xap_Preview_Zoom.o" ¶
+			"xap_Scrollbar_ViewListener.o" ¶
+			"xap_Strings.o" ¶
+			"xap_Toolbar_ControlFactory.o" ¶
+			"xap_ViewListener.o" ¶
+			"xav_View.o"
 
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"

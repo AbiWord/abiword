@@ -19,36 +19,36 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = ap_Dialog_Goto.cpp.o ¶
-		   ap_Mac_TB_CFactory.cpp.o ¶
-		   ap_MacApp.cpp.o ¶
-		   ap_MacClipboard.cpp.o ¶
-		   ap_MacDialog_Columns.cpp.o ¶
-		   ap_MacDialog_Field.cpp.o ¶
-		   ap_MacDialog_Goto.cpp.o ¶
-		   ap_MacDialog_Insert_Symbol.cpp.o ¶
-		   ap_MacDialog_Lists.cpp.o ¶
-		   ap_MacDialog_Options.cpp.o ¶
-		   ap_MacDialog_PageNumbers.cpp.o ¶
-		   ap_MacDialog_PageSetup.cpp.o ¶
-		   ap_MacDialog_Paragraph.cpp.o ¶
-		   ap_MacDialog_Spell.cpp.o ¶
-		   ap_MacDialog_Tab.cpp.o ¶
-		   ap_MacDialog_WordCount.cpp.o ¶
-		   ap_MacDialogFactory.cpp.o ¶
-		   ap_MacDlg_Break.cpp.o ¶
-		   ap_MacDlg_Insert_DateTime.cpp.o ¶
-		   ap_MacDlg_Replace.cpp.o ¶
-		   ap_MacFrame.cpp.o ¶
-		   ap_MacLeftRuler.cpp.o ¶
-		   ap_MacPrefs.cpp.o ¶
-		   ap_MacStatusBar.cpp.o ¶
-		   ap_MacTlbr_ControlFactory.cpp.o ¶
-		   ap_MacTlbr_FontCombo.cpp.o ¶
-		   ap_MacTlbr_SizeCombo.cpp.o ¶
-		   ap_MacToolbar_StyleCombo.cpp.o ¶
-		   ap_MacToolbar_ZoomCombo.cpp.o ¶
-		   ap_MacTopRuler.cpp.o
+TARGETS = ap_Dialog_Goto.o ¶
+		   ap_Mac_TB_CFactory.o ¶
+		   ap_MacApp.o ¶
+		   ap_MacClipboard.o ¶
+		   ap_MacDialog_Columns.o ¶
+		   ap_MacDialog_Field.o ¶
+		   ap_MacDialog_Goto.o ¶
+		   ap_MacDialog_Insert_Symbol.o ¶
+		   ap_MacDialog_Lists.o ¶
+		   ap_MacDialog_Options.o ¶
+		   ap_MacDialog_PageNumbers.o ¶
+		   ap_MacDialog_PageSetup.o ¶
+		   ap_MacDialog_Paragraph.o ¶
+		   ap_MacDialog_Spell.o ¶
+		   ap_MacDialog_Tab.o ¶
+		   ap_MacDialog_WordCount.o ¶
+		   ap_MacDialogFactory.o ¶
+		   ap_MacDlg_Break.o ¶
+		   ap_MacDlg_Insert_DateTime.o ¶
+		   ap_MacDlg_Replace.o ¶
+		   ap_MacFrame.o ¶
+		   ap_MacLeftRuler.o ¶
+		   ap_MacPrefs.o ¶
+		   ap_MacStatusBar.o ¶
+		   ap_MacTlbr_ControlFactory.o ¶
+		   ap_MacTlbr_FontCombo.o ¶
+		   ap_MacTlbr_SizeCombo.o ¶
+		   ap_MacToolbar_StyleCombo.o ¶
+		   ap_MacToolbar_ZoomCombo.o ¶
+		   ap_MacTopRuler.o
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 

@@ -40,8 +40,12 @@ INCLUDES	= "{ABI_ROOT}src:af:ev:xp:,{ABI_ROOT}src:af:ev:mac:, ¶
 DEFINES		= -define TARGET_OS_MAC
 
 COptions   	= -target ppc -includes unix -i {INCLUDES}	# MrC
-CPPOptions 	= -target ppc -bool on -includes unix -inclpath ignoresys ¶
+
+CPPOptions = -target ppc -bool on -includes unix -inclpath ignoresys ¶
 				-i {INCLUDES}  {DEFINES}	# MrCPP 
+
+#CPPOptions 	= -bool on -includes unix -inclpath ignoresys ¶
+#				-i {INCLUDES}  {DEFINES}	# SCPP 
 
 OBJDIR		= {ABI_ROOT}MACOS_OBJ_PPC:
 

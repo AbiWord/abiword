@@ -6,26 +6,19 @@ Set savedir "`Directory`"
 
 Set ThisScript "{0}"
 
-Set objdir ":MPW_OBJ_PPC"
-
-Set verify 0
-
-Set BuildTarget "none"
+Set verify 0		# set this to 1 for debug
 
 # Parse arguments.
 
 Loop
         Break If {#} == 0
-                If "{BuildTarget}" =~ /none/
-                        Set BuildTarget "{1}"
-                Else
-                        Echo Only one build target allowed, ignoring "{1}"
-                End If
+                Set BuildTarget "{1}"
         Shift 1
 End Loop
 
-If "{BuildTarget}" =~ /none/
-        Set BuildTarget "all"
+If "{BuildTarget}" == ""
+        Echo Must specify a build target
+        Exit
 End If
 
 If {verify} == 1
@@ -41,7 +34,6 @@ If "`Exists Makefile.mpw`" != ""
         Delete {BuildTarget}.makeout
         Set ranmake 1
 End If
-
 
 #only PPC is supported
 #
@@ -64,55 +56,37 @@ Export ABI_ROOT
 # Dispatch on various pseudo-targets.
 
 
-If "{BuildTarget}" =~ /all/
-        Echo Started `Date`
-#        "{ThisScript}" do-png
-#        "{ThisScript}" do-wv
-#        "{ThisScript}" do-expat
-#        "{ThisScript}" do-zlib
-        "{ThisScript}" do-abi
-        Echo Finished `Date`
-Else If "{BuildTarget}" =~ /do-abi/
-        SetDirectory "{ABI_ROOT}src:af:ev:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:af:ev:mac"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:af:gr:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:af:gr:mac"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:af:util:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:af:util:mac"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:af:xap:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:af:xap:mac"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:text:fmt:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:text:ptbl:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:wp:ap:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:wp:ap:mac"
-        {savedir}{ThisScript} build
-		SetDirectory "{ABI_ROOT}src:other:spell"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:wp:impexp:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:wp:main:xp"
-        {savedir}{ThisScript} build
-        SetDirectory "{ABI_ROOT}src:wp:main:mac"
-        {savedir}{ThisScript} build
-Else If "{BuildTarget}" =~ /do-png/
-#		SetDirectory "{ABI_ROOT}::zlib"
-		
-Else If "{BuildTarget}" =~ /do-wv/
-Else If "{BuildTarget}" =~ /do-expat/
-Else If "{BuildTarget}" =~ /do-zlib/
-Else
-        Echo {BuildTarget} not understood, ignoring
-End If
+SetDirectory "{ABI_ROOT}src:af:ev:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:af:ev:mac"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:af:gr:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:af:gr:mac"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:af:util:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:af:util:mac"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:af:xap:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:af:xap:mac"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:text:fmt:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:text:ptbl:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:wp:ap:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:wp:ap:mac"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:other:spell"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:wp:impexp:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:wp:main:xp"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
+SetDirectory "{ABI_ROOT}src:wp:main:mac"
+"{ABI_ROOT}{ThisScript}" {BuildTarget}
 
 SetDirectory "{savedir}"

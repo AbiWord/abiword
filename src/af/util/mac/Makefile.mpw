@@ -19,12 +19,12 @@
 
 !include "{ABI_ROOT}src:config:abi_defs.mk.mpw"
 
-TARGETS = "ut_debugmsg.cpp.o" ¶
-			"ut_MacAssert.cpp.o" ¶
-			"ut_MacFiles.cpp.o" ¶
-			"ut_MacString.cpp.o" ¶
-			"ut_MacTimer.cpp.o" ¶
-			"ut_Xpm2Bmp.cpp.o" 
+TARGETS = "ut_debugmsg.o" ¶
+			"ut_MacAssert.o" ¶
+			"ut_MacFiles.o" ¶
+			"ut_MacString.o" ¶
+			"ut_MacTimer.o" ¶
+			"ut_Xpm2Bmp.o" 
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
