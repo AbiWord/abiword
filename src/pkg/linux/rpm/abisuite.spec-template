@@ -4,8 +4,8 @@
 #
 # spec file for AbiSuite 
 #
-Summary: AbiSuite Office Applications
-Name: abisuite
+Summary: AbiWord Word Processor
+Name: abiword
 Version: %{version}
 Release: %{release}
 Copyright: GPL
@@ -28,8 +28,8 @@ Requires: glib >= 1.2.7
 #Requires: pspell >= 0.11.2
 
 %description
-AbiSuite is a collection of cross-platform, Open Source office
-productivity aplications developed by AbiSource, Inc. 
+AbiWord is a cross-platform, Open Source Word Processor developed
+by the people at AbiSource, Inc. and by developers from around the world.
 (http://www.abisource.com)
 
 %prep
