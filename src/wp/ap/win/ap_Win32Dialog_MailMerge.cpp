@@ -156,16 +156,22 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 				addClicked();
 			}
 			return 1;
-		}		
+		}
+		else
+		{
+			return 0;
+		}
 		
 		case AP_RID_DIALOG_MAILMERGE_BTN_INSERT:		
 		{	
 			char szBuff[255];
 			
-			GetDlgItemText(m_hwndDlg,  AP_RID_DIALOG_MAILMERGE_EDIT_FIELD, szBuff, 255);
-			
-			setMergeField(szBuff);
-			addClicked();
+			int nChars = GetDlgItemText(m_hwndDlg,  AP_RID_DIALOG_MAILMERGE_EDIT_FIELD, szBuff, 255);
+			if (nChars > 0)
+			{
+				setMergeField(szBuff);
+				addClicked();
+			}
 			return 1;
 		}
 		
@@ -175,8 +181,7 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 			SetFocus(m_hwndDlg);
 			return 1;
 		}	
-		
-		
+				
 		case AP_RID_DIALOG_MAILMERGE_BTN_CLOSE:		
 		case IDCANCEL:		// We want to close button work
 		{			
