@@ -319,7 +319,7 @@ public:
 	void                markSavedPositionAsNeeded(void);
 	bool                needSavedPosition(void);
 	void                insertHeaderFooter(HdrFtrType hfType);
-	bool				insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType);
+	bool				insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
 
 	void                cmdEditHeader(void);
 	void                cmdEditFooter(void);
@@ -331,6 +331,7 @@ public:
     void                removeThisHdrFtr(HdrFtrType hfType);
 	void                createThisHdrFtr(HdrFtrType hfType);
 	void                populateThisHdrFtr(HdrFtrType hfType);
+	void                _populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtrSectionLayout * pHdrFtrDest);
 //
 // ----------------------
 // Stuff for edittable endnotes

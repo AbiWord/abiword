@@ -61,7 +61,7 @@ static bool lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
 	return x_->first() < y_->first();
 }
 
-UT_Map::UT_Map()
+UT_Map::UT_Map(void)
 	: m_rbtree(lesser)
 {
 }
@@ -71,7 +71,7 @@ UT_Map::UT_Map(comparator comp)
 {
 }
 
-UT_Map::~UT_Map()
+UT_Map::~UT_Map(void)
 {
 	// that needs at least a comment...
 	// The UT_Pair object pointed by each iterator was born as a non

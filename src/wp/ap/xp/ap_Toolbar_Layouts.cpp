@@ -186,6 +186,11 @@ void XAP_Toolbar_Factory_vec::insertItemAfter(void * p, XAP_Toolbar_Id id)
 	UT_ASSERT(bFound);
 }
 
+void XAP_Toolbar_Factory_vec::insertLastItem(void * p)
+{
+	m_Vec_lt.addItem(p);
+}
+
 bool XAP_Toolbar_Factory_vec::removeToolbarId(XAP_Toolbar_Id id)
 {
 	UT_uint32 i = 0;
@@ -302,7 +307,10 @@ void XAP_Toolbar_Factory::restoreToolbarLayout(EV_Toolbar_Layout *pTB)
 	m_vecTT.setNthItem(i, (void *) pVec, NULL);
 }
 
-			
+
+/*!
+ * This method inserts an icon before the icon number beforeId
+ */			
 bool  XAP_Toolbar_Factory::addIconBefore(const char * szName,
 								   XAP_Toolbar_Id newId, 
 								   XAP_Toolbar_Id beforeId)
@@ -330,6 +338,38 @@ bool  XAP_Toolbar_Factory::addIconBefore(const char * szName,
 	plt->m_id = newId;
 	plt->m_flags = EV_TLF_Normal;
 	pVec->insertItemBefore((void *) plt, beforeId);
+	return true;
+}
+
+/*!
+ * This method adds an icon at the last position on a toolbar.
+ */			
+bool  XAP_Toolbar_Factory::addIconAtEnd(const char * szName,
+								   XAP_Toolbar_Id newId )
+{
+	UT_uint32 count = m_vecTT.getItemCount();  // NO toolabrs
+	UT_uint32 i = 0;
+	bool bFound = false;
+	XAP_Toolbar_Factory_vec * pVec = NULL;
+	for (i=0; !bFound && (i < count); i++)
+	{
+		pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
+		const char * szCurName =  pVec->getToolbarName();
+		if (UT_stricmp(szName,szCurName)==0)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	UT_ASSERT(bFound);
+	if(!bFound)
+	{
+		return false;
+	}
+	XAP_Toolbar_Factory_lt * plt = new  XAP_Toolbar_Factory_lt;
+	plt->m_id = newId;
+	plt->m_flags = EV_TLF_Normal;
+	pVec->insertLastItem((void *) plt);
 	return true;
 }
 

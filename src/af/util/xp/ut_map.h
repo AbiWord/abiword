@@ -39,9 +39,9 @@ public:
 	// you should also note that until I come up with a wrapper
 	// for comparator, UT_Map & UT_Set are exactly the same one
 	// (but the default constructor).
-	UT_Map();
+	UT_Map(void);
 	UT_Map(comparator comp);
-	~UT_Map();
+	~UT_Map(void);
 
 	bool insert(key_t key, data_t data);
 	void erase(key_t key);

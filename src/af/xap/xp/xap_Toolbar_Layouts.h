@@ -55,6 +55,7 @@ public:
   UT_uint32 getNrEntries(void);
   void add_lt(XAP_Toolbar_Factory_lt * plt);
   XAP_Toolbar_Factory_lt * getNth_lt(UT_uint32 i);
+  void insertLastItem(void * p);
   void insertItemBefore(void * p, XAP_Toolbar_Id id);
   void insertItemAfter(void * p, XAP_Toolbar_Id id);
   bool removeToolbarId(XAP_Toolbar_Id id);
@@ -79,6 +80,8 @@ public:
 	bool             addIconAfter(const char * szName,
 								  XAP_Toolbar_Id newId, 
 								  XAP_Toolbar_Id afterId);
+	bool             addIconAtEnd(const char * szName,
+								  XAP_Toolbar_Id newId);
     bool             removeIcon(const char * szName,
 									XAP_Toolbar_Id nukeId);
 	bool             resetToolbarToDefault(const char * szName);

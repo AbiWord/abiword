@@ -6417,7 +6417,6 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			buildAllProps((char *) &propBuffer ,pParas,pChars,pbParas,pbChars);
 			attribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
 			attribs[attribsCount++] = (const char *) &propBuffer;
-			UT_DEBUGMSG(("SEVIOR: Loading props definition %s \n",propBuffer));
 
 			attribs[attribsCount++] = PT_NAME_ATTRIBUTE_NAME;
 			attribs[attribsCount++] = (const char *)m_styleTable[styleNumber];
@@ -6539,11 +6538,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		{
 			getDoc()->appendStyle(attribs);
 		}
-		UT_DEBUGMSG(("SEVIOR: Defining style %s \n",szName)); 
 		for(j=0; j< nAtts; j++)
 		{
 			char * sz = (char *) pCurStyleVec->getNthItem(j);
-			UT_DEBUGMSG(("SEVIOR: Atrribute %d %s \n",j,sz));
 		}
 
 //
@@ -6796,7 +6793,6 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 	{
 		eol--;
 	}
-	UT_DEBUGMSG(("SEVIOR: char at eol = %c, eol = %d \n",propBuffer[eol],eol));
 	if(propBuffer[eol] == ';')
 	{
 		propBuffer[eol] = 0;

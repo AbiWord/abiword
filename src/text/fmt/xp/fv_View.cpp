@@ -1880,6 +1880,11 @@ void FV_View::_insertSectionBreak(void)
 	{
 		_eraseInsertionPoint();
 	}
+	//
+	// Get preview DocSectionLayout so we know what header/footers we have 
+        // to insert here.
+	//
+	fl_DocSectionLayout * pPrevDSL = (fl_DocSectionLayout *) getCurrentBlock()->getSectionLayout();
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
@@ -1888,7 +1893,66 @@ void FV_View::_insertSectionBreak(void)
 	
 	m_pDoc->insertStrux(iPoint, PTX_Block);
 	m_pDoc->insertStrux(iPoint, PTX_Section);
-
+	      
+	_generalUpdate();
+	_ensureThatInsertionPointIsOnScreen();
+	UT_uint32 oldPoint = getPoint();
+	fl_DocSectionLayout * pCurDSL = (fl_DocSectionLayout *) getCurrentBlock()->getSectionLayout();
+	//
+	// Duplicate previous header/footers for this section.
+	//
+	UT_Vector vecPrevHdrFtr;
+	pPrevDSL->getVecOfHdrFtrs( &vecPrevHdrFtr);
+	UT_uint32 i =0;
+	const XML_Char*	block_props[] = {
+		"text-align", "left",
+		NULL, NULL
+	};
+	HdrFtrType hfType;
+	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
+	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
+	setScreenUpdateOnGeneralUpdate(false);
+	for(i=0; i< vecPrevHdrFtr.getItemCount(); i++)
+	{
+		pHdrFtrSrc = (fl_HdrFtrSectionLayout *) vecPrevHdrFtr.getNthItem(i);	
+		hfType = pHdrFtrSrc->getHFType();
+		insertHeaderFooter(block_props, hfType, pCurDSL); // cursor is now in the header/footer
+		if(hfType == FL_HDRFTR_HEADER)
+		{
+			pHdrFtrDest = pCurDSL->getHeader();
+		}
+		else if(hfType == FL_HDRFTR_FOOTER)
+		{
+			pHdrFtrDest = pCurDSL->getFooter();
+		}
+		else if(hfType == FL_HDRFTR_HEADER_FIRST)
+		{
+			pHdrFtrDest = pCurDSL->getHeaderFirst();
+		}
+		else if( hfType == FL_HDRFTR_HEADER_EVEN)
+		{
+			pHdrFtrDest = pCurDSL->getHeaderEven();
+		}
+		else if( hfType == FL_HDRFTR_HEADER_LAST)
+		{
+			pHdrFtrDest = pCurDSL->getHeaderLast();
+		}
+		else if(hfType == FL_HDRFTR_FOOTER_FIRST)
+		{
+			pHdrFtrDest = pCurDSL->getFooterFirst();
+		}
+		else if( hfType == FL_HDRFTR_FOOTER_EVEN)
+		{
+			pHdrFtrDest = pCurDSL->getFooterEven();
+		}
+		else if( hfType == FL_HDRFTR_FOOTER_LAST)
+		{
+			  pHdrFtrDest = pCurDSL->getFooterLast();
+		}
+		_populateThisHdrFtr(pHdrFtrSrc,pHdrFtrDest);
+	}
+	setScreenUpdateOnGeneralUpdate(true);
+	_setPoint(oldPoint);      
 	_generalUpdate();
 
 	_ensureThatInsertionPointIsOnScreen();
@@ -9751,72 +9815,43 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType)
 //
 	PT_DocPosition oldPos = getPoint();
 
-	PD_DocumentRange dr_source;
-	PT_DocPosition iPos1,iPos2;
 	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) getCurrentBlock()->getSectionLayout();
-	fl_HdrFtrSectionLayout * pHFSL = NULL;
-	if(hfType<FL_HDRFTR_FOOTER)
+	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
+	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
+	if(hfType < FL_HDRFTR_FOOTER)
 	{
-		pHFSL = pDSL->getHeader();
+		pHdrFtrSrc = pDSL->getHeader();
 	}
 	else
 	{
-		pHFSL = pDSL->getFooter();
-	}
-	iPos1 = m_pDoc->getStruxPosition(pHFSL->getFirstBlock()->getStruxDocHandle());
-	fl_BlockLayout * pLast = pHFSL->getLastBlock();
-	iPos2 = pLast->getPosition(false);
-//
-// This code assumes there is an End of Block run at the end of the Block. 
-// Thanks to Jesper, there always is!
-//
-	while(pLast->getNext() != NULL)
-	{
-		pLast = pLast->getNext();
-	}
-	fp_Run * pRun = pLast->getFirstRun();
-	while( pRun->getNext() != NULL)
-	{
-		pRun = pRun->getNext();
-	}
-	iPos2 += pRun->getBlockOffset();
-//
-// OK got the doc range for the source. Set it and copy it.
-//
-	dr_source.set(m_pDoc,iPos1,iPos2);
-//
-// Copy to and from clipboard to populate the header/Footer
-//
-	m_pApp->copyToClipboard(&dr_source);
-	PT_DocPosition posDest = 0;
-	fl_HdrFtrSectionLayout * pHFDest = NULL;
-	if(hfType == FL_HDRFTR_HEADER_EVEN)
-	{
-		pHFDest = pDSL->getHeaderEven();
+		pHdrFtrSrc = pDSL->getFooter();
 	}
 	if(hfType == FL_HDRFTR_HEADER_FIRST)
 	{
-		pHFDest = pDSL->getHeaderFirst();
+		pHdrFtrDest = pDSL->getHeaderFirst();
 	}
-	if(hfType == FL_HDRFTR_HEADER_LAST)
+	else if( hfType == FL_HDRFTR_HEADER_EVEN)
 	{
-		pHFDest = pDSL->getHeaderLast();
+		pHdrFtrDest = pDSL->getHeaderEven();
 	}
-	if(hfType == FL_HDRFTR_FOOTER_EVEN)
+	else if( hfType == FL_HDRFTR_HEADER_LAST)
 	{
-		pHFDest = pDSL->getFooterEven();
+		pHdrFtrDest = pDSL->getHeaderLast();
 	}
-	if(hfType == FL_HDRFTR_FOOTER_LAST)
+	else if(hfType == FL_HDRFTR_FOOTER_FIRST)
 	{
-		pHFDest = pDSL->getFooterLast();
+		pHdrFtrDest = pDSL->getFooterFirst();
 	}
-	if(hfType == FL_HDRFTR_FOOTER_FIRST)
+	else if( hfType == FL_HDRFTR_FOOTER_EVEN)
 	{
-		pHFDest = pDSL->getFooterFirst();
+		pHdrFtrDest = pDSL->getFooterEven();
 	}
-	posDest = pHFDest->getFirstBlock()->getPosition(true);
-	PD_DocumentRange dr_dest(m_pDoc,posDest,posDest);
-	m_pApp->pasteFromClipboard(&dr_dest,true,true);
+	else if( hfType == FL_HDRFTR_FOOTER_LAST)
+	{
+		pHdrFtrDest = pDSL->getFooterLast();
+	}
+
+	_populateThisHdrFtr(pHdrFtrSrc, pHdrFtrDest);
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -9839,6 +9874,47 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType)
 		_drawInsertionPoint();
 	}
 
+}
+
+/*!
+ * Copy a header/footer from a pHdrFtrSrc to an empty pHdrFtrDest.
+ * into a new type of header/footer in the same section.
+ */ 
+void FV_View::_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtrSectionLayout * pHdrFtrDest)
+{
+	PD_DocumentRange dr_source;
+	PT_DocPosition iPos1,iPos2;
+	iPos1 = m_pDoc->getStruxPosition(pHdrFtrSrc->getFirstBlock()->getStruxDocHandle());
+	fl_BlockLayout * pLast = pHdrFtrSrc->getLastBlock();
+	iPos2 = pLast->getPosition(false);
+//
+// This code assumes there is an End of Block run at the end of the Block. 
+// Thanks to Jesper, there always is!
+//
+	while(pLast->getNext() != NULL)
+	{
+		pLast = pLast->getNext();
+	}
+	fp_Run * pRun = pLast->getFirstRun();
+	while( pRun->getNext() != NULL)
+	{
+		pRun = pRun->getNext();
+	}
+	iPos2 += pRun->getBlockOffset();
+//
+// OK got the doc range for the source. Set it and copy it.
+//
+	dr_source.set(m_pDoc,iPos1,iPos2);
+//
+// Copy to and from clipboard to populate the header/Footer
+//
+	UT_DEBUGMSG(("SEVIOR: Copy to clipboard making header/footer \n"));
+	m_pApp->copyToClipboard(&dr_source);
+	PT_DocPosition posDest = 0;
+	posDest = pHdrFtrDest->getFirstBlock()->getPosition(true);
+	PD_DocumentRange dr_dest(m_pDoc,posDest,posDest);
+	UT_DEBUGMSG(("SEVIOR: Pasting to clipboard making header/footer \n"));
+	m_pApp->pasteFromClipboard(&dr_dest,true,true);
 }
 
 /*!
@@ -10417,7 +10493,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	}
 }
 
-bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
+bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL)
 {
 //	UT_ASSERT(hfType == FL_HDRFTR_HEADER || hfType == FL_HDRFTR_FOOTER);
 
@@ -10492,10 +10568,14 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 		_eraseInsertionPoint();
 	}
 //
-// Find the section that owns this page.
+// Find the section that owns this page. 
 //
-	fp_Page* pCurrentPage = getCurrentPage();
-	fl_DocSectionLayout * pDocL = pCurrentPage->getOwningSection();
+	fl_DocSectionLayout * pDocL = pDSL;
+	if(pDocL == NULL)
+	{
+		fp_Page* pCurrentPage = getCurrentPage();
+		pDocL = pCurrentPage->getOwningSection();
+	}
 //
 // Now find the position of this section
 //

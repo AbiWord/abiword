@@ -851,7 +851,7 @@ void XAP_Frame::updateZoom(void)
 /*!
  * This method destroys toolbar number ibar, then rebuilds it and displays
  * as requested from the current toolbar layouts. Used for dynamic toolbars.
- * This viryual method is overidden by the platfrom classes.
+ * This virtual method is overidden by the platform classes.
  */ 
 void XAP_Frame::rebuildToolbar(UT_uint32 ibar)
 {
@@ -949,10 +949,7 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 		const char * szTBDestName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
 		const EV_Toolbar_Layout * pTBDest = getToolbar(m_idestTBNr)->getToolbarLayout();
-		UT_uint32 count = pTBDest->getLayoutItemCount();
-		EV_Toolbar_LayoutItem * pTbl =pTBDest->getLayoutItem(count - 1);
-		XAP_Toolbar_Id lastId = pTbl->getToolbarId();
-		getApp()->getToolbarFactory()->addIconAfter(szTBDestName,m_isrcId,lastId);
+		getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
 		rebuildToolbar(m_isrcTBNr);
 		if(m_isrcTBNr != m_idestTBNr)
 		{

@@ -101,7 +101,7 @@ public:
 	void setIdList(UT_uint32 id)
 	{
 		// UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXXXXX Setting id list: %d\n", id));
-		UT_Map::Iterator it(lists.find(reinterpret_cast<UT_Map::key_t> (id)));
+		UT_Map::Iterator it(myLists.find(reinterpret_cast<UT_Map::key_t> (id)));
 
 		if (it.is_valid())
 		{
@@ -127,10 +127,10 @@ public:
 		return int2label(next_nb);
 	}
 	
-	static void addList(fl_AutoNum* pAutoNum)
+    static void addList(fl_AutoNum* pAutoNum) 
 	{
-		// UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYY Adding list id: %d\n", pAutoNum->getID()));
-		lists.insert(reinterpret_cast<void*> (pAutoNum->getID()), pAutoNum);
+		//UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYY Adding list id: %d\n", pAutoNum->getID()));
+		myLists.insert(reinterpret_cast<void*> (pAutoNum->getID()), pAutoNum);
 	}
 
 private:
@@ -144,11 +144,10 @@ private:
 	const fl_AutoNum* m_pan;
 	UT_uint32 m_iNextNb;
 	UT_uint32 m_iInc;
-
-	static UT_Map lists;
+    static UT_Map myLists;
 };
 
-UT_Map ListHelper::lists;
+UT_Map  ListHelper::myLists;
 
 /************************************************************/
 /************************************************************/
@@ -1065,3 +1064,15 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 	m_pie->write(sBuf.c_str(), sBuf.size());
 }
+
+
+
+
+
+
+
+
+
+
+
+
