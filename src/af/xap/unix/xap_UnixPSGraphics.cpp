@@ -80,6 +80,7 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 PS_Graphics::~PS_Graphics()
 {
 	// TODO free stuff
+        FREEP(m_szPageSizeName);
 }
 
 bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -682,6 +683,11 @@ bool PS_Graphics::_startDocument(void)
 		m_ps->formatComment("Creator",&m_szSoftwareNameAndVersion,1);
 	if (m_szTitle && *m_szTitle)
 		m_ps->formatComment("Title",&m_szTitle,1);
+	m_ps->formatComment("Orientation", isPortrait() ? "Portrait" : "Landscape");
+
+	//TODO: emit iWidth and iHeight in BoundingBox somehow (what's a 
+	//factor between them and PS units (that are 1/72 of inch IIRC)
+	m_ps->formatComment("DocumentPaperSizes",m_szPageSizeName);
 
 	_emit_DocumentNeededResources();
 	
@@ -1307,4 +1313,11 @@ void PS_Graphics::explodePSFonts(PSFont*& pEnglishFont,PSFont*& pChineseFont)
 	  pEnglishFont=m_pCurrentFont;
 	  pChineseFont=findMatchPSFontCJK(pEnglishFont);
 	}
-};
+}
+
+void PS_Graphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 iheight)
+{
+	m_szPageSizeName = UT_strdup(pageSizeName);
+	m_iWidth = iwidth; 
+	m_iHeight = iheight;
+}

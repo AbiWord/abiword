@@ -686,7 +686,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_container_add (GTK_CONTAINER (notebook), tableMargin);
   gtk_container_set_border_width (GTK_CONTAINER (tableMargin), 8);
 
-  spinMarginBottom_adj = gtk_adjustment_new (99, 0, 100, 1, 10, 10);
+  spinMarginBottom_adj = gtk_adjustment_new (99, 0, 100, 0.1, 1, 1);
   spinMarginBottom = gtk_spin_button_new (GTK_ADJUSTMENT (spinMarginBottom_adj), 1, 1);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinMarginBottom), getMarginBottom ());
   gtk_widget_show (spinMarginBottom);
@@ -694,7 +694,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
 
-  spinMarginFooter_adj = gtk_adjustment_new (99, 0, 100, 1, 10, 10);
+  spinMarginFooter_adj = gtk_adjustment_new (99, 0, 100, 0.1, 1, 1);
   spinMarginFooter = gtk_spin_button_new (GTK_ADJUSTMENT (spinMarginFooter_adj), 1, 1);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinMarginFooter), getMarginFooter ());
   gtk_widget_show (spinMarginFooter);
@@ -738,7 +738,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
-  spinMarginTop_adj = gtk_adjustment_new (99, 0, 100, 1, 10, 10);
+  spinMarginTop_adj = gtk_adjustment_new (99, 0, 100, 0.1, 1, 1);
   spinMarginTop = gtk_spin_button_new (GTK_ADJUSTMENT (spinMarginTop_adj), 1, 1);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinMarginTop), getMarginTop ());
   gtk_widget_show (spinMarginTop);
@@ -746,7 +746,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
                     (GtkAttachOptions) (GTK_EXPAND),
                     (GtkAttachOptions) (0), 0, 0);
 
-  spinMarginHeader_adj = gtk_adjustment_new (99, 0, 100, 1, 10, 10);
+  spinMarginHeader_adj = gtk_adjustment_new (99, 0, 100, 0.1, 1, 1);
   spinMarginHeader = gtk_spin_button_new (GTK_ADJUSTMENT (spinMarginHeader_adj), 1, 1);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinMarginHeader), getMarginHeader ());
   gtk_widget_show (spinMarginHeader);
@@ -765,7 +765,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_box_pack_start (GTK_BOX (vbox3), labelRight, FALSE, FALSE, 0);
   gtk_misc_set_alignment (GTK_MISC (labelRight), 0.5, 1);
 
-  spinMarginRight_adj = gtk_adjustment_new (99, 0, 100, 1, 10, 10);
+  spinMarginRight_adj = gtk_adjustment_new (99, 0, 100, 0.1, 1, 1);
   spinMarginRight = gtk_spin_button_new (GTK_ADJUSTMENT (spinMarginRight_adj), 1, 1);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinMarginRight), getMarginRight ());
   gtk_widget_show (spinMarginRight);
@@ -782,7 +782,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_box_pack_start (GTK_BOX (vbox2), labelLeft, FALSE, FALSE, 0);
   gtk_misc_set_alignment (GTK_MISC (labelLeft), 0.5, 1);
 
-  spinMarginLeft_adj = gtk_adjustment_new (99, 0, 100, 1, 10, 10);
+  spinMarginLeft_adj = gtk_adjustment_new (99, 0, 100, 0.1, 1, 1);
   spinMarginLeft = gtk_spin_button_new (GTK_ADJUSTMENT (spinMarginLeft_adj), 1, 1);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinMarginLeft), getMarginLeft ());
   gtk_widget_show (spinMarginLeft);

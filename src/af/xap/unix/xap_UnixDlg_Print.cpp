@@ -585,7 +585,8 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 
 	// set the color mode
 	m_pPSGraphics->setColorSpace(m_cColorSpace);
-	
+	m_pPSGraphics->setPageSize(m_pageSize);
+
 	m_answer = a_OK;
 	return;
 
