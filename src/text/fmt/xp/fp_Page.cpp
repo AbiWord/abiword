@@ -185,10 +185,24 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
     }
 }
 
-void fp_Page::draw(dg_DrawArgs* pDA)
+void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 {
 	// draw each column on the page
 	int count = m_vecColumnLeaders.getItemCount();
+//
+// Fill the Page with the page color
+//
+	if(!bAlwaysUseWhiteBackground)
+	{
+		UT_RGBColor * pClr = getOwningSection()->getPaperColor();
+		double ScaleLayoutUnitsToScreen;
+		ScaleLayoutUnitsToScreen = (double)pDA->pG->getResolution() / UT_LAYOUT_UNITS;
+ 		UT_sint32 xmin = pDA->xoff;
+  		UT_sint32 ymin = pDA->yoff;
+		UT_sint32 height = (UT_sint32) getHeightInLayoutUnits() * ScaleLayoutUnitsToScreen;
+		UT_sint32 width = (UT_sint32) getWidthInLayoutUnits() * ScaleLayoutUnitsToScreen ;
+		pDA->pG->fillRect(*pClr,xmin,ymin,width,height);
+	}
 
     _drawCropMarks(pDA);
 

@@ -215,7 +215,7 @@ static struct xmlToIdMapping s_Tokens[] =
 
 void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 {
-	UT_DEBUGMSG(("startElement: %s\n", name));
+	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
@@ -384,7 +384,6 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 	case TT_PAGESIZE:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_PageSize;
-		UT_DEBUGMSG(("SEVIOR: Processing pagesize \n"));
 		X_CheckError(m_pDocument->setPageSizeFromFile(atts));
 		m_bDocHasPageSize = true;
 		return;
@@ -412,7 +411,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 
 void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 {
-  	UT_DEBUGMSG(("endElement %s\n", name));
+  	xxx_UT_DEBUGMSG(("endElement %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 

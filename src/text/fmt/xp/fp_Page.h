@@ -73,7 +73,7 @@ public:
 	void				getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 						
-	void				draw(dg_DrawArgs*);
+	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
 						
 	void 				columnHeightChanged(fp_Column* pLeader);
