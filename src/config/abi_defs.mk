@@ -334,9 +334,11 @@ HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/inclu
 
 ifeq ($(OS_NAME), WIN32)
 ABI_PEER_INCS+=/../../libiconv/include
+ABI_PEER_INCS+=/../../libiconv/libcharset/include
 else
 ifneq ($(HAVE_ICONV_SYSTEM),1)
 ABI_PEER_INCS+=/../../libiconv/include
+ABI_PEER_INCS+=/../../libiconv/libcharset/include
 endif
 endif
 
