@@ -36,6 +36,7 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 #include "fv_FrameEdit.h"
+#include "fv_VisualDragText.h"
 
 #define AUTO_SCROLL_MSECS	100
 
@@ -177,6 +178,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class fl_DocSectionLayout;
 	friend class GR_Caret;
 	friend class FV_FrameEdit;
+	friend class FV_VisualDragText;
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
@@ -357,6 +359,14 @@ public:
 
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
 	virtual void	updateScreen(bool bDirtyRunsOnly=true);
+
+//---------
+//Visual Drag stuff
+//
+	void            cutVisualText(UT_sint32 x, UT_sint32 y);
+	void            copyVisualText(UT_sint32 x, UT_sint32 y);
+	void            dragVisualText(UT_sint32 x, UT_sint32 y);
+	void            pasteVisualText(UT_sint32 x, UT_sint32 y);
 
 // -------
 // Frame stuff
@@ -825,6 +835,7 @@ private:
 	fv_PropCache        m_SecProps;
 	AV_ListenerId       m_CaretListID;
 	FV_FrameEdit        m_FrameEdit;
+	FV_VisualDragText   m_VisualDragText;
 };
 
 #endif /* FV_VIEW_H */

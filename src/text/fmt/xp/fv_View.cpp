@@ -205,7 +205,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iLowDrawPoint(0),
 		m_iHighDrawPoint(0),
 		m_CaretListID(0),
-		m_FrameEdit(this)
+		m_FrameEdit(this),
+		m_VisualDragText(this)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -442,6 +443,34 @@ void FV_View::setGraphics(GR_Graphics * pG)
 		m_caretListener = NULL;
 	}
 }
+
+//-------------------------
+// Visual Drag stuff
+//
+void FV_View::cutVisualText(UT_sint32 x, UT_sint32 y)
+{
+	m_VisualDragText.mouseCut(x,y);
+}
+
+void FV_View::copyVisualText(UT_sint32 x, UT_sint32 y)
+{
+	m_VisualDragText.mouseCopy(x,y);
+
+}
+
+
+void FV_View::dragVisualText(UT_sint32 x, UT_sint32 y)
+{
+	m_VisualDragText.mouseDrag(x,y);
+}
+
+
+void FV_View::pasteVisualText(UT_sint32 x, UT_sint32 y)
+{
+	m_VisualDragText.mouseRelease(x,y);
+}
+
+
 
 FV_FrameEdit * FV_View::getFrameEdit(void)
 {
@@ -7132,7 +7161,27 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
-
+	if(!isSelectionEmpty())
+	{
+		PT_DocPosition posLow = m_iSelectionAnchor;
+		PT_DocPosition posHigh = getPoint();
+		if(posLow > posHigh)
+		{
+			if((pos >= posHigh) && (pos <= posLow))
+			{
+				m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
+				return EV_EMC_VISUALTEXTDRAG;
+			}
+		}
+		else
+		{
+			if((pos >= posLow) && (pos <= posHigh))
+			{
+				m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
+				return EV_EMC_VISUALTEXTDRAG;
+			}
+		}
+	}
 	if(pRun->containsRevisions())
 	{
 		m_prevMouseContext = EV_EMC_REVISION;
@@ -7326,6 +7375,9 @@ void FV_View::setCursorToContext()
 		break;
 	case EV_EMC_HLINE:
 		cursor = GR_Graphics::GR_CURSOR_HLINE_DRAG;
+		break;
+	case EV_EMC_VISUALTEXTDRAG:
+		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
 	case EV_EMC_FRAME:
 		if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)

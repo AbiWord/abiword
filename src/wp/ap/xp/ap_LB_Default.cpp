@@ -62,6 +62,7 @@
 #define _CTV		EV_EMC_VLINE
 #define _CTH		EV_EMC_HLINE
 #define _CTF		EV_EMC_FRAME
+#define _CVD		EV_EMC_VISUALTEXTDRAG
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -94,7 +95,13 @@ ap_bs_Mouse MouseTable[] =
 	{_CTV _B0,	{ "",	"",			"cursorVline",	"",			"",			"",				}},
 	{_CTH _B0,	{ "",	"",			"cursorHline",	"",			"",			"",				}},
 	{_CTF _B0,	{ "",	"",			"btn0Frame",	"",			"",			"",				}},
+	{_CVD _B0,	{ "",	"",			"btn0VisualText",	"",			"",			"",				}},
 
+
+//	Button-1, VisualTextDrag context
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
+  { _CVD _B1,	{ "cutVisualText",  "copyVisualText",	 "dragVisualText", "dragVisualText",   "pasteVisualText",	   	"pasteVisualText" }},
+  { _CVD _B1 _C,  { "copyVisualText",  "cutVisualText",	 "dragVisualText", "dragVisualText",   "pasteVisualText",	   	"pasteVisualText" }},
 
 //	Button-1, Frame-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},

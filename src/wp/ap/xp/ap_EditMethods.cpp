@@ -302,6 +302,12 @@ public:
 	static EV_EditMethod_Fn dragImage;
 	static EV_EditMethod_Fn dropImage;
 
+	static EV_EditMethod_Fn cutVisualText;
+	static EV_EditMethod_Fn copyVisualText;
+	static EV_EditMethod_Fn dragVisualText;
+	static EV_EditMethod_Fn pasteVisualText;
+	static EV_EditMethod_Fn btn0VisualText;
+	
 
 	static EV_EditMethod_Fn btn1Frame;
 	static EV_EditMethod_Fn btn0Frame;
@@ -672,6 +678,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(beginHDrag), 0, ""),
 	EV_EditMethod(NF(beginVDrag), 0, ""),
 	EV_EditMethod(NF(btn0Frame), 0, ""),
+	EV_EditMethod(NF(btn0VisualText), 0, ""),
 	EV_EditMethod(NF(btn1Frame), 0, ""),
 
 	// c
@@ -688,6 +695,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextRevision),	    0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
+	EV_EditMethod(NF(copyVisualText),		0,	""),
 	EV_EditMethod(NF(cursorDefault),		0,	""),
 	EV_EditMethod(NF(cursorHline),      	0,	""),
 	EV_EditMethod(NF(cursorIBeam),			0,	""),
@@ -697,6 +705,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorRightArrow), 	0,	""),
 	EV_EditMethod(NF(cursorVline), 	        0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
+	EV_EditMethod(NF(cutVisualText),		0,	""),
 	EV_EditMethod(NF(cycleInputMode),		0,	""),
 	EV_EditMethod(NF(cycleWindows), 		0,	""),
 	EV_EditMethod(NF(cycleWindowsBck),		0,	""),
@@ -755,6 +764,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragSelectionEnd), 0, ""),
 	EV_EditMethod(NF(dragToXY), 			0,	""),
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
+	EV_EditMethod(NF(dragVisualText),       0, ""),
 	EV_EditMethod(NF(dragVline), 			0,	""),
 	EV_EditMethod(NF(dropImage),			0,	""),
 
@@ -950,6 +960,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 			// intended for X11 middle mouse
 	EV_EditMethod(NF(pasteSelection),		0,	""),
 	EV_EditMethod(NF(pasteSpecial), 		0,	""),
+	EV_EditMethod(NF(pasteVisualText), 		0,	""),
 	EV_EditMethod(NF(print),				0,	""),
 	EV_EditMethod(NF(printDirectly), 0, ""),
 	EV_EditMethod(NF(printPreview), 0, ""),
@@ -5968,7 +5979,7 @@ static bool s_doFontDlg(FV_View * pView)
 		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
 		pDialog->setColor(UT_getAttribute("color", props_in));
 		pDialog->setBGColor(UT_getAttribute("bgcolor", props_in));
-		
+	   
 //
 // Set the background color for the preview
 //
@@ -11650,5 +11661,64 @@ Defun(releaseFrame)
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->releaseFrame(x,y);
+	return true;
+}
+
+Defun(cutVisualText)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Cut on Selection \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	pView->cutVisualText(x,y);
+	return true;
+}
+
+
+Defun(copyVisualText)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	xxx_UT_DEBUGMSG(("Copy on Selection \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	pView->copyVisualText(x,y);
+	return true;
+}
+
+Defun(dragVisualText)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	xxx_UT_DEBUGMSG(("Drag Visual Text \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	pView->dragVisualText(x,y);
+	return true;
+}
+
+
+Defun(pasteVisualText)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Drop Visual Text \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->pasteVisualText(x,y);
+	return true;
+}
+
+
+Defun(btn0VisualText)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("In Visual Text \n"));
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
 	return true;
 }

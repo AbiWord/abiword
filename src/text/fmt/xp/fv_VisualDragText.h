@@ -1,0 +1,69 @@
+/* AbiWord
+ * Copyright (c) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
+#ifndef FV_VISUALDRAGTEXT_H
+#define FV_VISUALDRAGTEXT_H
+
+#include "pt_Types.h"
+#include "fl_FrameLayout.h"
+
+typedef enum _FV_VisualDragMode
+{
+	FV_VisualDrag_NOT_ACTIVE,
+	FV_VisualDrag_WAIT_FOR_MOUSE_CLICK,
+	FV_VisualDrag_DRAGGING
+} FV_VisualDragMode;
+
+class GR_Graphics;
+class GR_Image;
+class FV_View;
+
+class ABI_EXPORT FV_VisualDragText
+{
+	friend class fv_View;
+
+public:
+
+	FV_VisualDragText (FV_View * pView);
+	~FV_VisualDragText();
+	GR_Graphics *         getGraphics(void) const ;
+	bool                  isActive(void) const;
+    void                  setMode(FV_VisualDragMode iVisualDragMode);
+	FV_VisualDragMode      getVisualDragMode(void) const 
+		{ return m_iVisualDragMode;}
+	void                  mouseDrag(UT_sint32 x, UT_sint32 y);
+	void                  mouseCut(UT_sint32 x, UT_sint32 y);
+	void                  mouseCopy(UT_sint32 x, UT_sint32 y);
+	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
+	void                  drawImage(void);
+	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y); 	
+private:
+	FV_View *             m_pView;
+	FV_VisualDragMode     m_iVisualDragMode;
+	GR_Image *            m_pDragImage;
+	UT_sint32             m_iLastX;
+	UT_sint32             m_iLastY;
+	UT_Rect               m_recCurFrame;
+	UT_sint32             m_iInitialOffX;
+	UT_sint32             m_iInitialOffY;
+	UT_Rect               m_recOrigLeft;
+	UT_Rect               m_recOrigRight;
+};
+
+#endif /* FV_VISUALDRAGTEXT_H */
