@@ -70,7 +70,12 @@ UT_Bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
 
 	return UT_TRUE;
 }
-		
+
+UT_Bool UT_ByteBuf::append(const UT_Byte * pValue, UT_uint32 length)
+{
+	return ins(m_iSize,pValue,length);
+}
+
 UT_Bool UT_ByteBuf::ins(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length)
 {
 	// insert the given buffer into the bytebuf
