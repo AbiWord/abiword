@@ -2630,10 +2630,16 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	// Also get max width, height ready for generateImage.
 
-	fl_DocSectionLayout * pDSL = getBlock()->getSectionLayout()
-		                               ->getDocSectionLayout();
-	fp_Page * p = getBlock()->getSectionLayout()->
-		              getFirstContainer()->getPage();
+	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
+	fp_Page * p = NULL;
+	if(pDSL->getFirstContainer())
+	{
+		p = pDSL->getFirstContainer()->getPage();
+	}
+	else
+	{
+		p = pDSL->getDocLayout()->getNthPage(0);
+	}
 	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"), 
 		maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
 	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
