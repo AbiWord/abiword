@@ -33,6 +33,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_QNXDialog_Insert_DateTime.h"
+#include "ap_Dialog_Insert_DateTime.h"
 #include "ut_qnxHelper.h"
 
 #include <stdio.h>
