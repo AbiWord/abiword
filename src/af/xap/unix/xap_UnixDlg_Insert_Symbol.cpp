@@ -479,11 +479,15 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// and OK -Selected Symbol- Cancel
 	vboxInsertS = GTK_DIALOG(m_windowMain)->vbox ;
 
+	GtkWidget * hbox = gtk_hbox_new (FALSE, 4);
+	gtk_widget_show (hbox);
+	gtk_container_add (GTK_CONTAINER(vboxInsertS), hbox);
+
 	// Finally construct the combo box
 	m_fontcombo = _createComboboxWithFonts ();
 
 	// Now put the font combo box at the top of the dialog 
-	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_fontcombo, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), m_fontcombo, FALSE, FALSE, 0);
 
 #ifndef USE_GUCHARMAP
 	// Now the Symbol Map. 
@@ -495,12 +499,27 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(m_windowMain)->action_area),
 					   m_areaCurrentSym, TRUE, FALSE, 0);
 #else
+
+#if 0
+	// TODO: translate, connect signals
+	GtkWidget * lbl = gtk_label_new ("Search:");
+	gtk_box_pack_start (GTK_BOX(hbox), lbl, FALSE, TRUE, 0);
+
+	GtkWidget * entry = gtk_entry_new ();
+	gtk_box_pack_start (GTK_BOX(hbox), entry, FALSE, TRUE, 0);
+
+	GtkWidget * button = gtk_button_new_from_stock (GTK_STOCK_FIND);
+	gtk_box_pack_start (GTK_BOX(hbox), button, FALSE, TRUE, 0);
+#endif
+
 	m_SymbolMap = charmap_new ();
 	gtk_widget_show (m_SymbolMap);
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, TRUE, TRUE, 0);
 
 	gtk_widget_set_usize (m_windowMain, 700, 300);
 #endif
+
+	gtk_widget_show_all (hbox);
 
 	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_ADD, BUTTON_INSERT) ;
 	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE) ;
