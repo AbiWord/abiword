@@ -427,32 +427,21 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 // Radio buttons to position type of the Frame
 		
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPositionTo"), pSS, AP_STRING_ID_DLG_FormatFrame_PositionTo);
-	localizeLabel(glade_xml_get_widget(xml, "lbSetToParagraph"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
-	localizeLabel(glade_xml_get_widget(xml, "lbSetToColumn"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
-	localizeLabel(glade_xml_get_widget(xml, "lbSetToPage "), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
+	localizeButton(glade_xml_get_widget(xml, "rbSetToParagraph"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToParagraph);
+	localizeButton(glade_xml_get_widget(xml, "rbSetToColumn"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToColumn);
+	localizeButton(glade_xml_get_widget(xml, "rbSetToPage"), pSS, AP_STRING_ID_DLG_FormatFrame_SetToPage);
 	
 //  Button and label for text wrapping
 
-	m_wWrapButton = glade_xml_get_widget(xml, "bWrapButton");
+	m_wWrapButton = glade_xml_get_widget(xml, "btTextWrapState");
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
 
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapState"), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
 
 //	add the buttons for background image to the dialog.
 
-	m_wSelectImageButton = glade_xml_get_widget(xml, "btnSelectImage");
-	m_wNoImageButton = glade_xml_get_widget(xml, "btnNoImageBackground");
-
-	
-	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
-	gtk_container_remove(GTK_CONTAINER(m_wSelectImageButton), gtk_bin_get_child(GTK_BIN(m_wSelectImageButton)));
-	gtk_container_remove(GTK_CONTAINER(m_wNoImageButton), gtk_bin_get_child(GTK_BIN(m_wNoImageButton)));
-
-
-	label_button_with_abi_pixmap(m_wSelectImageButton, "tb_insert_graphic_xpm");
-	label_button_with_abi_pixmap(m_wNoImageButton, "tb_remove_graphic_xpm");
+	m_wSelectImageButton = glade_xml_get_widget(xml, "btSelectImage");
+	m_wNoImageButton = glade_xml_get_widget(xml, "btSetNoImage");
 	
 	localizeLabel(glade_xml_get_widget(xml, "lbSelectImage"), pSS, AP_STRING_ID_DLG_FormatFrame_SelectImage);
 	
