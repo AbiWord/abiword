@@ -83,6 +83,13 @@ UT_Bool IE_Exp_HTML::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 /*****************************************************************/
 
+#define BT_NORMAL		1
+#define BT_HEADING1		2
+#define BT_HEADING2		3
+#define BT_HEADING3		4
+#define BT_BLOCKTEXT	5
+#define BT_PLAINTEXT	6
+
 class s_HTML_Listener : public PL_Listener
 {
 public:
@@ -131,7 +138,7 @@ protected:
 
 	// Need to look up proper type, and place to stick #defines...
 
-	UT_uint16		m_iBlockType;
+	UT_uint16		m_iBlockType;	// BT_*
 
 };
 

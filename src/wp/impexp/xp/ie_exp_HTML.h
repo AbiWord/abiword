@@ -28,15 +28,6 @@ class s_HTML_Listener;
 
 // The exporter/writer for HTML
 
-// Not sure if these #defines should go in here or elsewhere...
-
-#define BT_NORMAL	1
-#define	BT_HEADING1	2
-#define	BT_HEADING2	3
-#define	BT_HEADING3	4
-#define	BT_BLOCKTEXT	5
-#define	BT_PLAINTEXT	6
-
 class IE_Exp_HTML : public IE_Exp
 {
 public:
