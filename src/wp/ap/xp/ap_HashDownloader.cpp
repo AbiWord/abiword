@@ -41,6 +41,8 @@
 
 #include "ut_string.h"
 #include "ut_path.h"
+#include "ut_decompress.h"
+
 
 AP_HashDownloader::AP_HashDownloader()
 {
@@ -227,198 +229,6 @@ AP_HashDownloader::installPackage(XAP_Frame *pFrame, const char *szFName, const 
 }
 
 
-/* Portions based on or from untgz.c in zlib contrib directory */
-#define BLOCKSIZE 512
-
-struct tar_header
-{				/* byte offset */
-  char name[100];		/*   0 */
-  char mode[8];			/* 100 */
-  char uid[8];			/* 108 */
-  char gid[8];			/* 116 */
-  char size[12];		/* 124 */
-  char mtime[12];		/* 136 */
-  char chksum[8];		/* 148 */
-  char typeflag;		/* 156 */
-  char linkname[100];		/* 157 */
-  char magic[6];		/* 257 */
-  char version[2];		/* 263 */
-  char uname[32];		/* 265 */
-  char gname[32];		/* 297 */
-  char devmajor[8];		/* 329 */
-  char devminor[8];		/* 337 */
-  char prefix[155];		/* 345 */
-				/* 500 */
-};
-
-union tar_buffer {
-  char               buffer[BLOCKSIZE];
-  struct tar_header  header;
-};
-
-
-static int getoct(char *p,int width)
-{
-  int result = 0;
-  char c;
-  
-  while (width --)
-    {
-      c = *p++;
-      if (c == ' ')
-	continue;
-      if (c == 0)
-	break;
-      result = result * 8 + (c - '0');
-    }
-  return result;
-}
-
-
-static bool matchname (const char *hashname, const char *fname)
-{
-	UT_String enc(hashname);
-	enc += "-encoding";
-
-	if ((UT_stricmp(fname, hashname) == 0) || 
-		(UT_stricmp(fname, enc.c_str()) == 0))
-		return true;
-	else
-		return false;
-}
-
-
-// we strip any path components
-static char * strippath(char *fname)
-{
-	const char * fn = UT_basename(fname);
-
-	// be sure terminating '\0' is copied and
-	// use ansi memcpy equivalent that handles overlapping regions
-	memmove(fname, fn, strlen(fn) + 1 );
-
-	return fname;
-}
-
-
-/* return 0 on success
- * extract files in tarball to appropriate directory, ignoring any paths in archive
- * extracts only the specified dictionary and its encoding (other files and paths ignored)
- * note that destpath lacks slash at end
- * szFName is package that was downloaded
- *
- * extraction routines derived from logic in zlib's contrib untgz.c program
- */
-UT_sint32 AP_HashDownloader::_untgz(XAP_Frame *pFrame, const char *szFName, const char *hashname, const char *destpath)
-{
-	gzFile tarball;
-	union  tar_buffer buffer;
-	int    getheader = 1;
-	int    remaining = 0;
-	int    len;
-	char   fname[BLOCKSIZE];
-	FILE   *outfile = NULL;
-
-
-	if ((tarball = gzopen(szFName, "rb")) == NULL)
-	{
-		showErrorMsg(pFrame, "untgz: Error while opening downloaded dictionary archive\n");
-		return 1;
-	}
-
-
-	bool done = false;
-	while (!done)
-	{
-		if ((len = gzread(tarball, &buffer, BLOCKSIZE)) != BLOCKSIZE)
-		{
-			// error (gzerror(in, &err));
-			showErrorMsg(pFrame, "untgz: gzread failed to read in complete block");
-			gzclose(tarball);
-			return 1;
-		}
-		
-		/*
-		 * If we have to get a tar header
-		 */
-		if (getheader == 1)
-		{
-			/*
-			 * if we met the end of the tar
-			 * or the end-of-tar block,
-			 * we are done
-			 */
-			if ((len == 0)  || (buffer.header.name[0]== 0)) 
-			{ 
-				done = true;
-				continue; 
-			}
-
-			// tartime = (time_t)getoct(buffer.header.mtime,12);
-			strcpy(fname, buffer.header.name);
-			strippath(fname);
-	  
-			if ((buffer.header.typeflag == '\0')	||	// [A]REGTYPE, ie regular files
-				(buffer.header.typeflag == '0') )
-			{
-				remaining = getoct(buffer.header.size, 12);
-
-				if ((remaining) && (matchname(hashname, fname)))
-				{
-					UT_String outfilename(destpath);
-					outfilename += "/";
-					outfilename += fname;
-					if ((outfile = fopen(outfilename.c_str(), "wb")) == NULL)
-					{
-						UT_String errMsg("untgz: Unable to extract ");
-						errMsg += outfilename;
-						showErrorMsg(pFrame, errMsg.c_str());
-					}
-				}
-				else
-					outfile = NULL;
-
-				/*
-				 * could have no contents
-				 */
-				getheader = (remaining) ? 0 : 1;
-			}
-		}
-		else // if (getheader != 1)
-		{
-			unsigned int bytes = (remaining > BLOCKSIZE) ? BLOCKSIZE : remaining;
-
-			if (outfile != NULL)
-			{
-				if (fwrite(&buffer,sizeof(char),bytes,outfile) != bytes)
-				{
-					UT_String errMsg("untgz: error writing, skipping ");
-					errMsg += fname;
-					showErrorMsg(pFrame, errMsg.c_str());
-					fclose(outfile);
-					UT_unlink(fname);
-				}
-			}
-			remaining -= bytes;
-			if (remaining == 0)
-			{
-				getheader = 1;
-				if (outfile != NULL)
-				{
-					// TODO: should actually set proper time from archive, oh well
-					fclose(outfile);
-					outfile = NULL;
-				}
-			}
-		} // if (getheader == 1) else end
-	}
-
-	if (tarball != NULL) gzclose(tarball);
-	return 0;
-}
-/* End from untgz.c */
-
-
 /*  Takes a already downloaded archive file and extracts the dictionary hash & encoding to proper location
  *  pFrame : useful for displaying dialog boxes or if other application data is needed
  *  szFName : the full path to the downloaded file (the archive with the dictionary that needs installed)
@@ -431,6 +241,7 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
 {
 	const char *name = NULL, *hname;
 	UT_String pName;
+	int ret;
 
 	if (pkgType == pkgType_Tarball) 
 	{
@@ -471,8 +282,19 @@ AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName
 			return (-1);
 		}
 
-		// actually extracts the hash file and encoding hname and hname-encoding
-		return _untgz(pFrame, szFName, hname, name);
+		// actually extracts the hash file
+		if ((ret = UT_untgz(szFName, hname, name, NULL, NULL))) {
+			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash\n");
+			return(ret);
+		}
+		
+		// ...and the -encoding file
+		UT_String enc(hname);
+		enc += "-encoding";
+		if ((ret = UT_untgz(szFName, enc.c_str(), name, NULL, NULL))) {
+			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash-encoding\n");
+			return(ret);
+		}
 	}
 	else	
 		return installPackageUnsupported(pFrame, szFName, szLName, pkgType);

@@ -48,6 +48,7 @@ libUtil_xp_a_SOURCES=\
 	ut_base64_TestRoutines.cpp	\
 	ut_bytebuf.cpp		\
 	ut_contextGlyph.cpp	\
+	ut_decompress.cpp	\
 	ut_growbuf.cpp		\
 	ut_hash.cpp		\
 	ut_Language.cpp		\
