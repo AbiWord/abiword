@@ -29,6 +29,7 @@ EXPORT_HEADERS=		pc_Column.h			\
 			pc_Column_Box.h			\
 			pc_Column_Circle.h		\
 			pd_Document.h			\
+			pl_Listener.h			\
 			pp_AttrProp.h			\
 			pp_Property.h			\
 			pt_Types.h			\
@@ -47,7 +48,6 @@ HEADERS=		$(EXPORT_HEADERS)		\
 			pf_Frag_Strux_Section.h		\
 			pf_Frag_Text.h			\
 			pf_Fragments.h			\
-			pl_Listener.h			\
 			pp_TableAttrProp.h		\
 			pt_PieceTable.h			\
 			px_ChangeHistory.h
