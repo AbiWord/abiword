@@ -28,7 +28,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 
-class DG_LayoutView;
+class FV_View;
 class fl_DocListener;
 class FL_BlockLayout;
 class FP_Page;
@@ -69,7 +69,7 @@ public:
 	FL_DocLayout(PD_Document* doc, DG_Graphics* pG);
 	~FL_DocLayout();
 
-	void setLayoutView(DG_LayoutView*);
+	void setView(FV_View*);
 
 	DG_Graphics*	getGraphics();
 	PD_Document*	getDocument() const;
@@ -92,7 +92,7 @@ public:
 protected:
 	DG_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
-	DG_LayoutView*      m_pLayoutView;
+	FV_View*			m_pView;
 	fl_DocListener*		m_pDocListener;
 	PL_ListenerId		m_lid;
 

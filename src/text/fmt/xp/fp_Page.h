@@ -31,8 +31,8 @@
 class FL_DocLayout;
 class FL_SectionLayout;
 class FP_SectionSlice;
+class FV_View;
 class DG_Graphics;
-class DG_LayoutView;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
@@ -52,7 +52,7 @@ class FP_Page
 {
  public:
 	FP_Page(FL_DocLayout*,
-			DG_LayoutView*,
+			FV_View*,
 			UT_uint32 iWidth,
 			UT_uint32 iHeight,
 			UT_uint32 iLeft,
@@ -68,7 +68,7 @@ class FP_Page
 	FP_Page*		getNext();
 	void			setNext(FP_Page*);
 	FL_DocLayout*	getLayout();
-	void            setLayoutView(DG_LayoutView*);
+	void            setView(FV_View*);
 
 	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
 	void			getOffsets(FP_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff);
@@ -79,7 +79,7 @@ class FP_Page
 	
  protected:
 	FL_DocLayout*		m_pLayout;
-	DG_LayoutView*      m_pLayoutView;
+	FV_View*      m_pView;
 	FP_Page*			m_pNext;
 
 	UT_sint32			m_iWidth;

@@ -23,7 +23,7 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=		readers guts
+DIRS=		docstrux impexp fmt guts
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

@@ -43,7 +43,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
 {
 	m_pDoc = doc;
 	m_pG = pG;
-	m_pLayoutView = NULL;
+	m_pView = NULL;
 
 	m_pDocListener = new fl_DocListener(doc, this);
 
@@ -67,13 +67,13 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pDoc;
 }
 
-void FL_DocLayout::setLayoutView(DG_LayoutView* pLayoutView)
+void FL_DocLayout::setView(FV_View* pView)
 {
 	FP_Page* pPage = getFirstPage();
 	
 	while (pPage)
 	{
-		pPage->setLayoutView(pLayoutView);
+		pPage->setView(pView);
 		
 		pPage = pPage->getNext();
 	}
@@ -144,7 +144,7 @@ FP_Page* FL_DocLayout::addNewPage()
 	}
 	
 	// TODO pass the margins.  which ones?
-	FP_Page*		pPage = new FP_Page(this, m_pLayoutView, 850, 1100, 100, 100, 100, 100);
+	FP_Page*		pPage = new FP_Page(this, m_pView, 850, 1100, 100, 100, 100, 100);
 	if (pLastPage)
 	{
 		UT_ASSERT(pLastPage->getNext() == NULL);

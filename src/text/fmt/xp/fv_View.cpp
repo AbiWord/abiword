@@ -27,7 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
 
-#include "dg_LayoutView.h"
+#include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Page.h"
@@ -40,7 +40,7 @@
 #include "dg_Graphics.h"
 #include "dg_DrawArgs.h"
 
-DG_LayoutView::DG_LayoutView(FL_DocLayout* pLayout)
+FV_View::FV_View(FL_DocLayout* pLayout)
 {
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
@@ -57,12 +57,12 @@ DG_LayoutView::DG_LayoutView(FL_DocLayout* pLayout)
 	m_iSelectionAnchor = 0;
 	m_bSelection = UT_FALSE;
 
-	pLayout->setLayoutView(this);
+	pLayout->setView(this);
 		
 	moveInsPtToBOD();
 }
 
-void DG_LayoutView::_swapSelectionOrientation(void)
+void FV_View::_swapSelectionOrientation(void)
 {
 	// reverse the direction of the current selection
 	// without changing the screen.
@@ -74,7 +74,7 @@ void DG_LayoutView::_swapSelectionOrientation(void)
 	m_iSelectionAnchor = curPos;
 }
 	
-void DG_LayoutView::_moveToSelectionEnd(UT_Bool bForward)
+void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 {
 	// move to the requested end of the current selection.
 	// NOTE: this must clear the selection.
@@ -100,20 +100,20 @@ void DG_LayoutView::_moveToSelectionEnd(UT_Bool bForward)
 	return;
 }
 
-void DG_LayoutView::_clearSelection(void)
+void FV_View::_clearSelection(void)
 {
 	_eraseSelection();
 
 	_resetSelection();
 }
 
-void DG_LayoutView::_resetSelection(void)
+void FV_View::_resetSelection(void)
 {
 	m_bSelection = UT_FALSE;
 	m_iSelectionAnchor = 0;
 }
 
-void DG_LayoutView::_eraseSelectionOrInsertionPoint()
+void FV_View::_eraseSelectionOrInsertionPoint()
 {
 	if (_isSelectionEmpty())
 	{
@@ -125,7 +125,7 @@ void DG_LayoutView::_eraseSelectionOrInsertionPoint()
 	}
 }
 
-void DG_LayoutView::_xorSelection()
+void FV_View::_xorSelection()
 {
 	UT_ASSERT(!_isSelectionEmpty());
 
@@ -141,7 +141,7 @@ void DG_LayoutView::_xorSelection()
 	}
 }
 
-void DG_LayoutView::_eraseSelection(void)
+void FV_View::_eraseSelection(void)
 {
 	UT_ASSERT(!_isSelectionEmpty());
 
@@ -153,13 +153,13 @@ void DG_LayoutView::_eraseSelection(void)
 	_xorSelection();
 }
 
-void DG_LayoutView::_setSelectionAnchor(void)
+void FV_View::_setSelectionAnchor(void)
 {
 	m_bSelection = UT_TRUE;
 	m_iSelectionAnchor = _getPoint();
 }
 
-void DG_LayoutView::_deleteSelection(void)
+void FV_View::_deleteSelection(void)
 {
 	// delete the current selection.
 	// NOTE: this must clear the selection.
@@ -187,7 +187,7 @@ void DG_LayoutView::_deleteSelection(void)
 	return;
 }
 
-UT_Bool DG_LayoutView::_isSelectionEmpty()
+UT_Bool FV_View::_isSelectionEmpty()
 {
 	if (!m_bSelection)
 	{
@@ -203,7 +203,7 @@ UT_Bool DG_LayoutView::_isSelectionEmpty()
 	return UT_FALSE;
 }
 
-void DG_LayoutView::moveInsPtToBOD()
+void FV_View::moveInsPtToBOD()
 {
 	PT_DocPosition posCur = 0;
 
@@ -215,7 +215,7 @@ void DG_LayoutView::moveInsPtToBOD()
 	_setPoint(posCur);
 }
 
-void DG_LayoutView::moveInsPtToBOL()
+void FV_View::moveInsPtToBOL()
 {
 	UT_uint32 xPoint;
 	UT_uint32 yPoint;
@@ -238,7 +238,7 @@ void DG_LayoutView::moveInsPtToBOL()
 	_updateInsertionPoint();
 }
 
-void DG_LayoutView::moveInsPtToEOL()
+void FV_View::moveInsPtToEOL()
 {
 	UT_uint32 xPoint;
 	UT_uint32 yPoint;
@@ -264,7 +264,7 @@ void DG_LayoutView::moveInsPtToEOL()
 	_updateInsertionPoint();
 }
 
-void DG_LayoutView::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
+void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 {
 	if (!_isSelectionEmpty())
 	{
@@ -283,12 +283,12 @@ void DG_LayoutView::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	}
 }
 
-FL_BlockLayout* DG_LayoutView::_findBlockAtPosition(PT_DocPosition pos)
+FL_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
 {
 	return m_pLayout->findBlockAtPosition(pos);
 }
 
-UT_Bool DG_LayoutView::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
+UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 {
 	if (!_isSelectionEmpty())
 	{
@@ -308,7 +308,7 @@ UT_Bool DG_LayoutView::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	return bResult;
 }
 
-void DG_LayoutView::insertParagraphBreak()
+void FV_View::insertParagraphBreak()
 {
 	if (!_isSelectionEmpty())
 	{
@@ -327,7 +327,7 @@ void DG_LayoutView::insertParagraphBreak()
 	_drawSelectionOrInsertionPoint();
 }
 
-void DG_LayoutView::insertCharacterFormatting(const XML_Char * properties[])
+void FV_View::insertCharacterFormatting(const XML_Char * properties[])
 {
 	_eraseSelectionOrInsertionPoint();
 
@@ -365,7 +365,7 @@ void DG_LayoutView::insertCharacterFormatting(const XML_Char * properties[])
 }
 
 #ifdef BUFFER	// top-down edit operations -- obsolete?
-UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char * properties[])
+UT_Bool FV_View::_insertFormatPair(const XML_Char * szName, const XML_Char * properties[])
 {
 	// insert an inline formatting pair.
 	
@@ -395,7 +395,7 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 		// typing anything, they won't be able to get the insertion point
 		// back in between these.  but that's ok.)
 
-		UT_DEBUGMSG(("LayoutView: before insert\n"));
+		UT_DEBUGMSG(("View: before insert\n"));
 		pBlock->dump();
 		
 		DG_DocMarkerId dmid_1;
@@ -416,7 +416,7 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 
 		m_pBuffer->warpToMarker(dmid_1,UT_FALSE);
 
-		UT_DEBUGMSG(("LayoutView: after insert\n"));
+		UT_DEBUGMSG(("View: after insert\n"));
 		pBlock->dump();
 
 		return UT_TRUE;
@@ -588,7 +588,7 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 }
 #endif /* BUFFER */
 
-void DG_LayoutView::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
+void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 {
 	if (!_isSelectionEmpty())
 	{
@@ -615,7 +615,7 @@ void DG_LayoutView::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	_drawSelectionOrInsertionPoint();
 }
 
-void DG_LayoutView::_moveInsPtNextPrevLine(UT_Bool bNext)
+void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 {
 	UT_uint32 xPoint;
 	UT_uint32 yPoint;
@@ -699,7 +699,7 @@ void DG_LayoutView::_moveInsPtNextPrevLine(UT_Bool bNext)
 	}
 }
 
-void DG_LayoutView::warpInsPtNextPrevLine(UT_Bool bNext)
+void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 {
 		if (!_isSelectionEmpty())
 		{
@@ -711,7 +711,7 @@ void DG_LayoutView::warpInsPtNextPrevLine(UT_Bool bNext)
 		_updateInsertionPoint();
 }
 
-void DG_LayoutView::extSelNextPrevLine(UT_Bool bNext)
+void FV_View::extSelNextPrevLine(UT_Bool bNext)
 {
 	if (_isSelectionEmpty())
 	{
@@ -745,7 +745,7 @@ void DG_LayoutView::extSelNextPrevLine(UT_Bool bNext)
 	}
 }
 
-void DG_LayoutView::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
+void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 {
 	if (_isSelectionEmpty())
 	{
@@ -781,7 +781,7 @@ void DG_LayoutView::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	}
 }
 
-void DG_LayoutView::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
+void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 {
 	/*
 	  Figure out which page we clicked on.
@@ -921,7 +921,7 @@ void DG_LayoutView::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 	_setPoint(iNewPoint);
 }
 
-void DG_LayoutView::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
+void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 {
 	/*
 	  Figure out which page we clicked on.
@@ -963,7 +963,7 @@ void DG_LayoutView::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	_updateInsertionPoint();
 }
 
-void DG_LayoutView::getPageScreenOffsets(FP_Page* pThePage, UT_sint32& xoff,
+void FV_View::getPageScreenOffsets(FP_Page* pThePage, UT_sint32& xoff,
 										 UT_sint32& yoff, UT_sint32& width,
 										 UT_sint32& height)
 {
@@ -987,7 +987,7 @@ void DG_LayoutView::getPageScreenOffsets(FP_Page* pThePage, UT_sint32& xoff,
 	width = m_iWindowWidth;
 }
 
-void DG_LayoutView::getPageYOffset(FP_Page* pThePage, UT_sint32& yoff)
+void FV_View::getPageYOffset(FP_Page* pThePage, UT_sint32& yoff)
 {
 	UT_uint32 y = 0;
 	
@@ -1009,7 +1009,7 @@ void DG_LayoutView::getPageYOffset(FP_Page* pThePage, UT_sint32& yoff)
 /*
   This functionality has moved into the run code.
 */
-void DG_LayoutView::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
+void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
 	UT_ASSERT(iPos1 < iPos2);
 	
@@ -1081,7 +1081,7 @@ void DG_LayoutView::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	}
 }
 
-void DG_LayoutView::_findPositionCoords(PT_DocPosition pos,
+void FV_View::_findPositionCoords(PT_DocPosition pos,
 										UT_Bool bRight,
 										UT_uint32& x,
 										UT_uint32& y,
@@ -1124,7 +1124,7 @@ void DG_LayoutView::_findPositionCoords(PT_DocPosition pos,
 	}
 }
 
-void DG_LayoutView::_drawSelectionOrInsertionPoint()
+void FV_View::_drawSelectionOrInsertionPoint()
 {
 	if (_isSelectionEmpty())
 	{
@@ -1136,7 +1136,7 @@ void DG_LayoutView::_drawSelectionOrInsertionPoint()
 	}
 }
 
-void DG_LayoutView::_updateInsertionPoint()
+void FV_View::_updateInsertionPoint()
 {
 	UT_ASSERT(_isSelectionEmpty());
 	
@@ -1147,7 +1147,7 @@ void DG_LayoutView::_updateInsertionPoint()
 	_xorInsertionPoint();
 }
 
-void DG_LayoutView::_xorInsertionPoint()
+void FV_View::_xorInsertionPoint()
 {
 	UT_ASSERT(_isSelectionEmpty());
 	
@@ -1159,7 +1159,7 @@ void DG_LayoutView::_xorInsertionPoint()
 	m_pG->xorLine(m_xPoint, m_yPoint, m_xPoint, m_yPoint + m_iPointHeight);
 }
 
-void DG_LayoutView::_eraseInsertionPoint()
+void FV_View::_eraseInsertionPoint()
 {
 	UT_ASSERT(_isSelectionEmpty());
 	
@@ -1170,7 +1170,7 @@ void DG_LayoutView::_eraseInsertionPoint()
 	_xorInsertionPoint();
 }
 
-void DG_LayoutView::setXScrollOffset(UT_sint32 v)
+void FV_View::setXScrollOffset(UT_sint32 v)
 {
 	UT_sint32 dx = v - m_xScrollOffset;
 
@@ -1197,7 +1197,7 @@ void DG_LayoutView::setXScrollOffset(UT_sint32 v)
     }
 }
 
-void DG_LayoutView::setYScrollOffset(UT_sint32 v)
+void FV_View::setYScrollOffset(UT_sint32 v)
 {
 	UT_sint32 dy = v - m_yScrollOffset;
 	if (dy != 0)
@@ -1223,18 +1223,18 @@ void DG_LayoutView::setYScrollOffset(UT_sint32 v)
     }
 }
 
-void DG_LayoutView::setWindowSize(UT_sint32 width, UT_sint32 height)
+void FV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 {
 	m_iWindowWidth = width;
 	m_iWindowHeight = height;
 }
 
-void DG_LayoutView::draw()
+void FV_View::draw()
 {
   draw(0, 0, m_iWindowWidth, m_iWindowHeight);
 }
 
-void DG_LayoutView::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
+void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 						 UT_sint32 height)
 {
 	UT_ASSERT(m_iWindowWidth > 0);
@@ -1309,7 +1309,7 @@ void DG_LayoutView::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 #include "rw_DocWriter.h"
 #endif /* BUFFER */
 #include "ps_Graphics.h"
-void DG_LayoutView::Test_Dump(void)
+void FV_View::Test_Dump(void)
 {
 	static int x = 0;
 	char buf[100];
@@ -1359,7 +1359,7 @@ void DG_LayoutView::Test_Dump(void)
 	x++;
 }
 
-void DG_LayoutView::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
+void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 {
 	UT_sint32 lineHeight = iPos;
 
@@ -1410,12 +1410,12 @@ void DG_LayoutView::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	}
 }
 
-void DG_LayoutView::addScrollListener(void (*pfn)(UT_sint32, UT_sint32))
+void FV_View::addScrollListener(void (*pfn)(UT_sint32, UT_sint32))
 {
 	m_scrollListeners.addItem((void *)pfn);
 }
 
-void DG_LayoutView::removeScrollListener(void (*pfn)(UT_sint32, UT_sint32))
+void FV_View::removeScrollListener(void (*pfn)(UT_sint32, UT_sint32))
 {
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
@@ -1431,7 +1431,7 @@ void DG_LayoutView::removeScrollListener(void (*pfn)(UT_sint32, UT_sint32))
 	}
 }
 
-void DG_LayoutView::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
+void FV_View::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
@@ -1443,7 +1443,7 @@ void DG_LayoutView::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
 	}
 }
 
-void DG_LayoutView::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
+void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 {
 	warpInsPtToXY(xPos, yPos);
 
@@ -1529,7 +1529,7 @@ void DG_LayoutView::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 #endif /* BUFFER */
 }
 
-void DG_LayoutView::cmdAlignBlock(UT_uint32 iAlignCmd)
+void FV_View::cmdAlignBlock(UT_uint32 iAlignCmd)
 {
 	PT_DocPosition iPoint = _getPoint();
 	
@@ -1577,22 +1577,22 @@ void DG_LayoutView::cmdAlignBlock(UT_uint32 iAlignCmd)
 }
 
 // -------------------------------------------------------------------------
-PT_DocPosition DG_LayoutView::_getPoint(void)
+PT_DocPosition FV_View::_getPoint(void)
 {
 	return m_iInsPoint;
 }
 
-void DG_LayoutView::_setPoint(PT_DocPosition pt)
+void FV_View::_setPoint(PT_DocPosition pt)
 {
 	m_iInsPoint = pt;
 }
 
-UT_uint32 DG_LayoutView::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
+UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 {
 	return pt2 - pt1;
 }
 
-UT_Bool DG_LayoutView::_charMotion(UT_Bool bForward,UT_uint32 countChars)
+UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 {
 #ifdef BUFFER	// _charMotion
 	// TODO: see if there are any additional semantics for return value

@@ -220,16 +220,16 @@ void FL_BlockLayout::setAlignment(UT_uint32 iAlignCmd)
 #ifdef PROPERTY
 	switch (iAlignCmd)
 	{
-	case DG_ALIGN_BLOCK_LEFT:
+	case FL_ALIGN_BLOCK_LEFT:
 		m_sdh->setProperty("text-align", "left");
 		break;
-	case DG_ALIGN_BLOCK_RIGHT:
+	case FL_ALIGN_BLOCK_RIGHT:
 		m_sdh->setProperty("text-align", "right");
 		break;
-	case DG_ALIGN_BLOCK_CENTER:
+	case FL_ALIGN_BLOCK_CENTER:
 		m_sdh->setProperty("text-align", "center");
 		break;
-	case DG_ALIGN_BLOCK_JUSTIFY:
+	case FL_ALIGN_BLOCK_JUSTIFY:
 		m_sdh->setProperty("text-align", "justify");
 		break;
 	default:
@@ -247,19 +247,19 @@ UT_uint32 FL_BlockLayout::getAlignment()
 
 	if (0 == UT_stricmp(pszAlign, "left"))
 	{
-		return DG_ALIGN_BLOCK_LEFT;
+		return FL_ALIGN_BLOCK_LEFT;
 	}
 	else if (0 == UT_stricmp(pszAlign, "center"))
 	{
-		return DG_ALIGN_BLOCK_CENTER;
+		return FL_ALIGN_BLOCK_CENTER;
 	}
 	else if (0 == UT_stricmp(pszAlign, "right"))
 	{
-		return DG_ALIGN_BLOCK_RIGHT;
+		return FL_ALIGN_BLOCK_RIGHT;
 	}
 	else if (0 == UT_stricmp(pszAlign, "justify"))
 	{
-		return DG_ALIGN_BLOCK_JUSTIFY;
+		return FL_ALIGN_BLOCK_JUSTIFY;
 	}
 	else
 	{

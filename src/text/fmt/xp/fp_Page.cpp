@@ -31,13 +31,13 @@
 #include "fl_DocLayout.h"
 #include "fp_SectionSlice.h"
 #include "dg_DrawArgs.h"
-#include "dg_LayoutView.h"
+#include "fv_View.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
 
-FP_Page::FP_Page(FL_DocLayout* pLayout, DG_LayoutView* pLayoutView,
+FP_Page::FP_Page(FL_DocLayout* pLayout, FV_View* pView,
 				 UT_uint32 iWidth, UT_uint32 iHeight,
 				 UT_uint32 iLeft,
 				 UT_uint32 iTop, 
@@ -47,7 +47,7 @@ FP_Page::FP_Page(FL_DocLayout* pLayout, DG_LayoutView* pLayoutView,
 	UT_ASSERT(pLayout);
 
 	m_pLayout = pLayout;
-	m_pLayoutView = pLayoutView;
+	m_pView = pView;
 	
 	DG_Graphics * pG = pLayout->getGraphics();
 	UT_ASSERT(pG);
@@ -100,9 +100,9 @@ void FP_Page::getScreenOffsets(FP_SectionSlice* pSS, void* pData, UT_sint32& xof
 	fp_SectionSliceInfo* pSSI = (fp_SectionSliceInfo*) pData;
 	UT_ASSERT(pSS == pSSI->pSlice);
 
-	UT_ASSERT(m_pLayoutView);
+	UT_ASSERT(m_pView);
 	
-	m_pLayoutView->getPageScreenOffsets(this, xoff, yoff, width, height);
+	m_pView->getPageScreenOffsets(this, xoff, yoff, width, height);
 
 	xoff += pSSI->xoff;
 	yoff += pSSI->yoff;
@@ -228,9 +228,9 @@ void FP_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	pMinDist->pSlice->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bRight);
 }
 
-void FP_Page::setLayoutView(DG_LayoutView* pLayoutView)
+void FP_Page::setView(FV_View* pView)
 {
-	m_pLayoutView = pLayoutView;
+	m_pView = pView;
 }
 
 

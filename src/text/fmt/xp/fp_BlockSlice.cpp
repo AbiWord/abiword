@@ -28,7 +28,6 @@
 #include "fl_BlockLayout.h"
 #include "fp_Column.h"
 #include "fp_Line.h"
-//#include "dg_Property.h"
 #include "dg_DrawArgs.h"
 #include "dg_Graphics.h"
 
@@ -497,16 +496,16 @@ void FP_BlockSlice::alignOneLine(fp_LineInfo* pLI)
 		*/
 		switch (iAlignCmd)
 		{
-		case DG_ALIGN_BLOCK_LEFT:
+		case FL_ALIGN_BLOCK_LEFT:
 			pLI->xoff = pLI->base_xoff;
 			break;
-		case DG_ALIGN_BLOCK_RIGHT:
+		case FL_ALIGN_BLOCK_RIGHT:
 			pLI->xoff = pLI->base_xoff + iExtraWidth;
 			break;
-		case DG_ALIGN_BLOCK_CENTER:
+		case FL_ALIGN_BLOCK_CENTER:
 			pLI->xoff = pLI->base_xoff + (iExtraWidth / 2);
 			break;
-		case DG_ALIGN_BLOCK_JUSTIFY:
+		case FL_ALIGN_BLOCK_JUSTIFY:
 			pLI->xoff = pLI->base_xoff;
 			// pLine->expandWidthTo(pSliver->iWidth);
 			break;

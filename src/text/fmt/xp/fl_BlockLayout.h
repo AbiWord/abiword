@@ -29,6 +29,7 @@
 #include "ut_vector.h"
 #include "ut_growbuf.h"
 #include "pt_Types.h"
+#include "fl_Types.h"
 #include "fl_Layout.h"
 
 class FL_DocLayout;
@@ -40,12 +41,6 @@ class FP_Run;
 class DG_Graphics;
 class PD_Document;
 class PP_Property;
-
-// TODO the following should be an enum
-#define DG_ALIGN_BLOCK_LEFT		1
-#define DG_ALIGN_BLOCK_RIGHT    2
-#define DG_ALIGN_BLOCK_CENTER   3
-#define DG_ALIGN_BLOCK_JUSTIFY  4
 	
 /*
 	A BlockLayout is the object which is responsible for keeping track of 

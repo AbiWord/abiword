@@ -21,9 +21,10 @@
 */
 
 
-#ifndef DG_LAYOUTVIEW_H
-#define DG_LAYOUTVIEW_H
+#ifndef FV_VIEW_H
+#define FV_VIEW_H
 
+#include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -50,10 +51,10 @@ enum
 	DG_SCROLLCMD_TOPOSITION
 };
 
-class DG_LayoutView
+class FV_View
 {
 public:
-	DG_LayoutView(FL_DocLayout*);
+	FV_View(FL_DocLayout*);
 	void setXScrollOffset(UT_sint32);
 	void setYScrollOffset(UT_sint32);
 	void setWindowSize(UT_sint32, UT_sint32);
@@ -150,4 +151,4 @@ protected:
 	UT_Vector           m_scrollListeners;
 };
 
-#endif /* DG_LAYOUTVIEW_H */
+#endif /* FV_View_H */
