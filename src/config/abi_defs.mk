@@ -576,6 +576,27 @@ endif
 
 ##################################################################
 ##################################################################
+## XML Parser
+## Default = libxml2, peer = expat
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+  ifeq ($(OS_NAME),WIN32)
+    EXTRA_LIBS += $(ABI_ROOT)/../expat/lib/.libs/libexpat.lib
+    LDFLAGS += /NODEFAULTLIB:LIBC
+  else
+    EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat
+  endif
+  CFLAGS += -DHAVE_EXPAT
+  ABI_OPTIONS+=XML:expat
+else
+  XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
+  XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
+  CFLAGS 	 +=	$(XML_CFLAGS)
+  EXTRA_LIBS +=	$(XML_LIBS)
+  ABI_OPTIONS+=XML:libxml2
+endif
+
+##################################################################
+##################################################################
 ## Generic Unix includes for Gtk, as it moves about installation paths.
 ## We should change this when get non-gtk versions on unix....
 
@@ -682,27 +703,6 @@ LIBCURL_LIBS    =       $(shell curl-config --libs)
 CFLAGS          +=      $(LIBCURL_CFLAGS) -DHAVE_CURLHASH=1
 EXTRA_LIBS      +=      $(LIBCURL_LIBS)
 endif
-endif
-
-##################################################################
-##################################################################
-## XML Parser
-## Default = libxml2, peer = expat
-ifeq ($(ABI_OPT_PEER_EXPAT),1)
-  ifeq ($(OS_NAME),WIN32)
-    EXTRA_LIBS += $(ABI_ROOT)/../expat/lib/.libs/libexpat.lib
-    LDFLAGS += /NODEFAULTLIB:LIBC
-  else
-    EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat
-  endif
-  CFLAGS += -DHAVE_EXPAT
-  ABI_OPTIONS+=XML:expat
-else
-  XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
-  XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
-  CFLAGS 	 +=	$(XML_CFLAGS)
-  EXTRA_LIBS +=	$(XML_LIBS)
-  ABI_OPTIONS+=XML:libxml2
 endif
 
 ##################################################################
