@@ -48,7 +48,7 @@ ifeq ($(OS_NAME),MINGW32)
 $(PROGRAM): $(OBJS)
     @$(MAKE_OBJDIR)
     @echo Linking $(PROGRAM)
-    @$(CCC) -o $@ $(CFLAGS)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS)
 else
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
