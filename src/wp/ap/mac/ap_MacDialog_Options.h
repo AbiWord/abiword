@@ -72,6 +72,11 @@ public:
  	SET_GATHER			(ViewUnprintable,	bool );
   
  	SET_GATHER			(NotebookPageNum,	int );
+	SET_GATHER			(AutoSaveFile, bool);
+	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
+	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
+	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
+	virtual void _setAutoSaveFileExt(const UT_String &stExt);
 
 #undef SET_GATHER
 	
