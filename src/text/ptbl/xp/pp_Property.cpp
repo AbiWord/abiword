@@ -77,7 +77,7 @@ UT_Bool PP_Property::canInherit() const
 	return m_bInherit;
 }
 
-const PP_Property * lookupProperty(const XML_Char * name)
+const PP_Property * PP_lookupProperty(const XML_Char * name)
 {
 	/*
 		TODO we can make this faster later by storing all the property names

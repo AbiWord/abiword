@@ -3,6 +3,8 @@
 #ifndef PT_TYPES_H
 #define PT_TYPES_H
 
+#include "ut_types.h"
+
 // TODO check and fix the prefix case on these 2 (they probably need to be public)
 typedef UT_uint32 pt_BufPosition;		/* offset in one of the VarSet buffers */
 typedef UT_uint32 pt_AttrPropIndex;		/* index in one of the VarSet AP Tables */
