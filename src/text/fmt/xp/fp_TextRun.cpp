@@ -1419,11 +1419,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	*/
 	UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
 	UT_RGBColor clrSelBackground(192, 192, 192);
+
 	if (m_pField)
 	{
 		UT_setColor(clrNormalBackground,220, 220, 220);
 		UT_setColor(clrSelBackground,112, 112, 112);
 	}
+
+	// test the nearness of our selection colour to text, highlight and page
+	// colours
+	if(clrSelBackground %= m_colorPG)
+		clrSelBackground += 20;
+	if(clrSelBackground %= m_colorHL)
+		clrSelBackground += 20;
+	if(clrSelBackground %= m_colorFG)
+		clrSelBackground += 20;
+
 
 	/*
 		the old way of doing things was very inefficient; for each chunk of this
