@@ -247,10 +247,10 @@ class ABI_EXPORT ie_exp_RTF_ListOveride
 public:
 	ie_exp_RTF_ListOveride(fl_AutoNum * pAuto);
 	~ie_exp_RTF_ListOveride(void);
-	void setOverideID(UT_uint32 id) {m_OverideID = id;}
+	void setOverideID(UT_uint32 ID) {m_OverideID = ID;}
 	UT_uint32 getOverideID(void) const { return m_OverideID;}
 	fl_AutoNum * getAutoNum(void) const { return m_pAutoNum;}
-	bool doesOverideMatch(UT_uint32 id) const { return (id == m_AbiListID);}
+	bool doesOverideMatch(UT_uint32 ID) const { return (ID == m_AbiListID);}
 	UT_uint32 getAbiListID(void) const { return m_AbiListID;}
 private:
 	UT_uint32 m_AbiListID;
