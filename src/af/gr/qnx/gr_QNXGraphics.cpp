@@ -411,6 +411,7 @@ UT_uint32 GR_QNXGraphics::getFontAscent()
 			return(0);
 		}
 		m_iAscentCache = MY_ABS(info.ascender);
+		m_iDescentCache = MY_ABS(info.descender);
 	}
 
 	return m_iAscentCache;
@@ -431,6 +432,7 @@ UT_uint32 GR_QNXGraphics::getFontDescent()
 			return(0);
 		}
 		m_iDescentCache = MY_ABS(info.descender);
+		m_iAscentCache = MY_ABS(info.ascender);
 	}
 
 	return m_iDescentCache;
