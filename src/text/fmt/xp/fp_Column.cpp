@@ -165,11 +165,14 @@ UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 //	UT_ASSERT(ndx >= 0);
 
 	if (
-		(ndx < 0)
-		|| (ndx == ((UT_sint32) (m_vecLines.getItemCount() - 1)))
+		(ndx == ((UT_sint32) (m_vecLines.getItemCount() - 1)))
 		)
 	{
 		m_vecLines.addItem(pNewLine);
+	}
+	else if (ndx == -1)
+	{
+		m_vecLines.insertItemAt(pNewLine, 0);
 	}
 	else
 	{
