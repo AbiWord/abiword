@@ -54,6 +54,10 @@ BeginSet(pt,PT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Gravar como",	tb_save_as_xpm,		NULL,	"Gravar o documento com um nome diferente")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimir",	tb_print_xpm,		NULL,	"Imprimir o docuemnto")
 
+#ifdef HAVE_GNOME
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,	"Ver Antes",	tb_print_preview_xpm,	NULL,	"Ver o documento antes de o imprimir")
+#endif
+
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Desfazer",	tb_undo_xpm,		NULL,	"Desfazer a edição")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Refazer",	tb_redo_xpm,		NULL,	"Refazer a edição")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Corta",	tb_cut_xpm,		NULL,	"Cortar")
@@ -93,6 +97,11 @@ BeginSet(pt,PT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Lista Pontuada",tb_lists_bullets_xpm,	NULL,	"Começar/Terminar listas pontuadas")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Lista Numerada",tb_lists_numbers_xpm,	NULL,	"Começar/Terminar listas numeradas")
 	
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Cor",		NoIcon,			NULL,	"Mudar a cor")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Cor de fundo",	NoIcon,			NULL,	"Mudar a cor de fundo")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Indentar",	tb_text_indent_xpm,	NULL,	"Aumentar indentação do parágrafo")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar",	tb_text_unindent_xpm,	NULL,	"Diminuir a indentação do parágrafo")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,	NULL)
