@@ -554,6 +554,13 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				bCheckWritePermission = false;
 				break;
 			}
+		case XAP_DIALOG_ID_INSERTMATHML:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertMath,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertMath,szFileTypeLabel);
+				bCheckWritePermission = false;
+				break;
+			}
 		case XAP_DIALOG_ID_INSERT_FILE:
 			{
 				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle,szTitle);

@@ -188,6 +188,9 @@ public:
 	UT_Error		cmdInsertHyperlink(const char* szName);
 	fp_Run *        getHyperLinkRun(PT_DocPosition pos);
 	UT_Error		cmdDeleteHyperlink();
+	bool                    cmdInsertMathML(const char * szFileName,
+						PT_DocPosition pos);
+
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 

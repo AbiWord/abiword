@@ -103,6 +103,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_Win32Dialog_About)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_Win32Dialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE, XAP_Win32Dialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERTMATHML,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,		XAP_Win32Dialog_Encoding)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_Win32Dialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_PASSWORD,		XAP_Win32Dialog_Password)

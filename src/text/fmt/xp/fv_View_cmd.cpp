@@ -1659,6 +1659,7 @@ bool FV_View::cmdAutoFitTable(void)
 }
 
 
+
 /*!
  * Insert a column containing the position posCol, insert the column before the
  * current column.
@@ -4784,6 +4785,50 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 	_updateInsertionPoint();
 
 	return errorCode;
+}
+
+
+/*!
+ * This method inserts a MathML object at the point presented.
+ * It assumes that a data item with a name of the supplied filename has
+ * already been inserted.
+ */
+bool FV_View::cmdInsertMathML(const char * szFileName,PT_DocPosition pos)
+{
+
+	const XML_Char * atts[5]={"dataid",NULL,NULL,NULL,NULL};
+	atts[1] = static_cast<const XML_Char *>(szFileName);
+	const XML_Char *cur_style = NULL;
+	getStyle(&cur_style);
+	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
+	{
+		atts[2] = PT_STYLE_ATTRIBUTE_NAME;
+		atts[3] = cur_style;
+	}
+	bool bDidGlob = false;
+	const XML_Char ** props = NULL;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	if (!isSelectionEmpty())
+	{
+		bDidGlob = true;
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+	}
+	getCharFormat(&props,false,pos);
+
+	m_pDoc->insertObject(pos,PTO_Math,atts,props);
+
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+
+	_restorePieceTableState();
+	_updateInsertionPoint();
+	return true;
 }
 
 /*!
