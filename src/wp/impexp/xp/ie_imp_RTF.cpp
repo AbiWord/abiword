@@ -1487,6 +1487,13 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 
 	fclose(fp);
 
+	// check if the doc is empty or not
+	if (getDoc()->getLastFrag() == NULL)
+	{
+		error = UT_IE_BOGUSDOCUMENT;
+	}
+
+
 	return error;
 }
 
