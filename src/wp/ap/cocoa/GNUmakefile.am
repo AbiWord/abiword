@@ -43,6 +43,8 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_InsertHyperlink.mm	\
 	ap_CocoaDialog_InsertTable.mm	\
 	ap_CocoaDialog_Lists.mm	\
+	ap_CocoaDialog_ListRevisions.mm	\
+	ap_CocoaDialog_MarkRevisions.mm	\
 	ap_CocoaDialog_MergeCells.mm	\
 	ap_CocoaDialog_MetaData.mm	\
 	ap_CocoaDialog_New.mm	\
