@@ -1088,7 +1088,7 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attribut
 
 /*!
  * This method appends a block strux to the end of the piecteable if
- * there is open non-contenct strux present. Really useful for
+ * there is an open strux present with no content. Really useful for
  * importers.
  */
 bool PD_Document::appendBlockIfNeeded(void)
