@@ -153,14 +153,11 @@ int XAP_QNXFrameImpl::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
 		pFrameImpl->m_iNewWidth = cbinfo->new_dim.w;
 		pFrameImpl->m_iNewHeight = cbinfo->new_dim.h;
-		
+		// Dynamic Zoom Implimentation
 
 	}
-
-	// Dynamic Zoom Implimentation
 	if(!pFrameImpl->m_bDoZoomUpdate && (pFrameImpl->m_pZoomUpdateID == 0))
-		pFrameImpl->m_pZoomUpdateID = PtAppAddWorkProc(NULL,do_ZoomUpdate,pFrameImpl);
-	
+		pFrameImpl->m_pZoomUpdateID = PtAppAddWorkProc(NULL,do_ZoomUpdate,pFrameImpl);	
 
 	return Pt_CONTINUE;
 }
@@ -207,9 +204,9 @@ int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
 		pView = pFrame->getCurrentView();
 		if(pView)
 		{
-			pQNXFrameImpl->_startViewAutoUpdater(); 
-			pView->setWindowSize(iNewWidth, iNewHeight);
 			pFrame->updateZoom();
+//			pQNXFrameImpl->_startViewAutoUpdater(); 
+//			pView->setWindowSize(iNewWidth, iNewHeight);
 			PtFlush();
 		}
 		else
