@@ -37,6 +37,8 @@ TARGETS = "ut_alphahash.o" ¶
 			"ut_timer.o" ¶
 			"ut_units.o" ¶
 			"ut_vector.o" ¶
+			"ut_string_class.o" ¶
+			"ut_stringbuf.o" ¶
 			"ut_wctomb.o"
 
 
