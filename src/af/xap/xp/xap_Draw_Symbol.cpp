@@ -95,7 +95,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 	{
 		sprintf(temp, "%ipt", PointSize);
 		font = p_gc->findFont(m_stFont.c_str(), "normal", "", "normal", "", temp);
-		/* findFont does a fuzzy match.  If the font found doesn't has the same family name
+		/* findFont does a fuzzy match.  If the font found doesn't have the same family name
 		 * that we asked for, we retrieve the new name and we use it */
 		if (font->getFamily())
 			m_stFont = font->getFamily();
@@ -266,7 +266,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	wheight = m_drawareaHeight;
 
 	// Center the character
-	// Note: That's boggus.  measureString will give us the horizontal advance of "c",
+	// Note: That's bogus.  measureString will give us the horizontal advance of "c",
 	// but we need the bounding box of "c" instead.  To get it, we should use with FreeType face->bbox,
 	// in windows we should use the (FIXME: find the right name, it was something as getCharABC(...)
 	// NOTE: The Pango version has the same problem
