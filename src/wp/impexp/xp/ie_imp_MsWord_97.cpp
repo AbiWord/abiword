@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -226,7 +226,19 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	ps->fieldstate--;
 	ps->fieldmiddle = 0;
 	return 0;
-
+     }
+   
+   /* it seems some fields characters slip through here which tricks
+    * the import into thinking it has an image with it really does
+    * not. this catches special characters in a field
+    */
+   if (ps->fieldstate) {
+      /* HACK: we should do something with these field characters... */
+      return 0;
+   }
+   
+   switch (eachchar) 
+     {
       case 0x01:
 	
 	if (achp->fOle2) {
