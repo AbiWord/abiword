@@ -501,9 +501,16 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getUnicodeForDingbats(UT_uint32 code)
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+#ifdef USE_XFT
+	UT_ASSERT(m_pCurrentFont);
+	XAP_UnixFont* pUFont = m_pCurrentPSFont->getUnixFont();
+	UT_sint32 iSize = m_pCurrentPSFont->getSize();
+	return (UT_uint32) (pUFont->measureUnRemappedChar(c, iSize) + 0.5);
+#else
+	
 	UT_uint32 width = 0;
 	
-        UT_ASSERT(m_pCurrentFont);
+	UT_ASSERT(m_pCurrentFont);
 
 	UT_UCSChar cc = c; 
 	//
@@ -529,6 +536,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 			xxx_UT_DEBUGMSG(("SEVIOR: Got Width %d from PS font \n",width));
 	}
 	return width;
+#endif
 }
 
 void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -1016,6 +1024,12 @@ void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 //
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 {
+#ifdef USE_XFT
+	PSFont * psfnt = static_cast<PSFont *>(fnt);
+	XAP_UnixFont* pUFont = psfnt->getUnixFont();
+	UT_sint32 iSize = psfnt->getSize();
+	return (UT_uint32) (pUFont->getAscender(iSize) + 0.5);
+#else
 	UT_uint32 asc;
 
 #if 0
@@ -1048,6 +1062,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent(GR_Font *fnt)
 		  asc = (UT_uint32) ( (double) gfi->fontBBox.ury * (double) psfnt->getSize() /1000.);
   }
   return asc;
+#endif
 }
 
 /* This function does not expect in return the font ascent,
@@ -1061,6 +1076,12 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 {
+#ifdef USE_XFT
+	PSFont * psfnt = static_cast<PSFont *>(fnt);
+	XAP_UnixFont* pUFont = psfnt->getUnixFont();
+	UT_sint32 iSize = psfnt->getSize();
+	return (UT_uint32) (pUFont->getAscender(iSize) + 0.5);
+#else
 	UT_uint32 des;
 
 #if 0
@@ -1076,26 +1097,26 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent(GR_Font *fnt)
 	gnome_font_unref (gfnt);
 #endif
 
-  PSFont * psfnt = static_cast<PSFont *>(fnt);
+	PSFont * psfnt = static_cast<PSFont *>(fnt);
 
-  XAP_UnixFont * pUFont = psfnt->getUnixFont();
-  UT_sint32 iSize = psfnt->getSize();
-  if(pUFont->isSizeInCache(iSize))
-  {
-		  XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
-		  GdkFont* pFont = pHndl->getGdkFont();
-		  GdkFont* pMatchFont=pHndl->getMatchGdkFont();
-		  des = MAX(pFont->descent, pMatchFont->descent);
-		  delete pHndl;
-  }
-  else
-  {
-		  GlobalFontInfo * gfi = psfnt->getMetricsData()->gfi;
-		  UT_ASSERT(gfi);
-		  des = (UT_uint32) ((double) -(gfi->fontBBox.lly) * (double) psfnt->getSize() / 1000.);
-  }
-  return des;
-  return des;
+	XAP_UnixFont * pUFont = psfnt->getUnixFont();
+	UT_sint32 iSize = psfnt->getSize();
+	if(pUFont->isSizeInCache(iSize))
+	{
+		XAP_UnixFontHandle * pHndl = new XAP_UnixFontHandle(pUFont, iSize);
+		GdkFont* pFont = pHndl->getGdkFont();
+		GdkFont* pMatchFont=pHndl->getMatchGdkFont();
+		des = MAX(pFont->descent, pMatchFont->descent);
+		delete pHndl;
+	}
+	else
+	{
+		GlobalFontInfo * gfi = psfnt->getMetricsData()->gfi;
+		UT_ASSERT(gfi);
+		des = (UT_uint32) ((double) -(gfi->fontBBox.lly) * (double) psfnt->getSize() / 1000.);
+	}
+	return des;
+#endif
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontDescent()
