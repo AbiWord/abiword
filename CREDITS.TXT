@@ -67,6 +67,7 @@ Mauro Colorio <macolori@tin.it>                 Italian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>    Norwegian
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
+Marco Innocenti <dot0037@iperbole.bologna.it>	Italian
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com> Norwegian
 Birger Langkjer <birger.langkjer@image.dk>      Danish
