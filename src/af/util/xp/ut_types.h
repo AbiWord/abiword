@@ -22,9 +22,10 @@
 #ifndef UT_TYPES_H
 #define UT_TYPES_H
 
-#ifndef NULL
-#define NULL 0
+#ifdef NULL
+#undef NULL
 #endif
+#define NULL 0
 
 #ifdef __cplusplus
 #define UT_BEGIN_EXTERN_C		extern "C" {
