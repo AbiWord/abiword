@@ -1764,7 +1764,19 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 	PT_DocPosition iPoint = getPoint();
 	if (!_charMotion(bForward, count))
 	{
-		_setPoint(iPoint);
+		if(bForward)
+		{
+//
+// Reached end of document.
+//
+			UT_DEBUGMSG(("SEVIOR: Reached end of document \n"));
+			m_bPointEOL = true;
+			_updateInsertionPoint();
+		}
+		else
+		{
+			_setPoint(iPoint);
+		}
 	}
 	else
 	{
@@ -4817,6 +4829,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			if (!_charMotion(bForward,count))
 			{
 				UT_ASSERT(getPoint() <= posCur);
+				UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
 				amt = posCur - getPoint();
 			}
 
@@ -7419,6 +7432,33 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
 
+//
+// Needed for piecetable fields. We don't have these in 1.0
+//
+// OK if we're at the end of document at the last run is a field we have to add
+// the width of the field run to xPoint, xPoint2.
+//
+	PT_DocPosition posEOD = 0;
+	getEditableBounds(true, posEOD);
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing posEOD =%d getPoint %d pRun->isField %d bEOL %d \n",posEOD,getPoint(),pRun->isField(),bEOL));
+
+	if(bEOL && pRun && posEOD == getPoint())
+	{
+		bool bBack = true;
+		while(pRun && !pRun->isField() && pRun->getWidth() == 0)
+		{
+			bBack = false;
+			pRun = pRun->getPrev();
+		}
+		if(pRun && pRun->isField() && bBack)
+		{
+			UT_DEBUGMSG(("SEVIOR: Doing EOD work aorund \n"));
+			static_cast<fp_FieldRun *>(pRun)->recalcWidth();
+			xPoint += pRun->getWidth();
+			xPoint2 += pRun->getWidth();
+		}
+	}
+
 	if (pRun)
 	{
 		// we now have coords relative to the page containing the ins pt
@@ -8425,23 +8465,31 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	{
 		m_iInsPoint += countChars;
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
-		//		while(pRun != NULL && (pRun->isField() == true || pRun->getType() == FPRUN_FIELD && m_iInsPoint < posEOD))
-		while(pRun != NULL && pRun->isField() == true && m_iInsPoint <= posEOD)
+
+#if 0
+    	while(pRun != NULL &&  pRun->isField() && m_iInsPoint <= posEOD)
 		{
 			m_iInsPoint++;
-			_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+			if(m_iInsPoint <= posEOD)
+			{
+				_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+			}
 		}
+#endif
 	}
 	else
 	{
 		m_iInsPoint -= countChars;
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+#if 0 
+// Needed for piecetable fields - we don't have these in 1.0
+
 		while(pRun != NULL && pRun->isField() == true && m_iInsPoint >= posBOD)
 		{
 			m_iInsPoint--;
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
-		}
-
+ 		}
+#endif
 		// if the run which declared itself for our position is end of paragraph run,
 		// we need to ensure that the position is just before the run, not after it
 		// (fixes bug 1120)
@@ -8463,6 +8511,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	}
 	else if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
 	{
+		m_bPointEOL = true;
 		m_iInsPoint = posEOD;
 		bRes = false;
 	}
@@ -9568,6 +9617,15 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
+//
+// Handle End of Paragraph case
+//
+		PT_DocPosition posEOD;
+		getEditableBounds(true, posEOD);
+		if(getPoint() == posEOD)
+		{
+			m_bPointEOL = true;
+		}
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}

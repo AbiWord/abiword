@@ -1013,7 +1013,6 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	// <docfmt> -- page information
 
 	char * old_locale;
-
 	old_locale = setlocale (LC_NUMERIC, "C");
 
 	double width = m_pDocument->m_docPageSize.Width(DIM_IN);
@@ -1151,61 +1150,55 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword("sbknone");								// no page break implied
 	m_pie->_rtf_keyword_ifnotdefault("cols",(char*)szColumns,1);
 	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",(char*)szColumnGap,720);
+	char * old_locale;
+	old_locale = setlocale (LC_NUMERIC, "C");
 
 	if (bColLine)
 	{
 		m_pie->_rtf_keyword ("linebetcol");
 	}
-	if(szHeaderExists && szMarginTop)
+	if(szHeaderExists)
 	{
-		UT_DEBUGMSG(("SEVIOR: szHeaderY = %s Margin Top %s \n",szHeaderY,szMarginTop));
 		double hMarg = UT_convertToInches(szHeaderY);
-		double tMarg = UT_convertToInches(szMarginTop);
-		double HeaderY = tMarg - hMarg;
-		if(HeaderY < 0.0)
-		{
-			HeaderY = 0.1;
-		}
 		UT_String sHeaderY;
-		UT_String_sprintf(sHeaderY,"%fin",HeaderY);
-		UT_DEBUGMSG(("SEVIOR: Header height is %s \n",sHeaderY.c_str()));
+
+		UT_String_sprintf(sHeaderY,"%fin",hMarg);
 		m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)sHeaderY.c_str(), 720);
-		UT_String sRtfTop;
-		UT_String_sprintf(sRtfTop,"%fin",hMarg);
-		UT_DEBUGMSG(("SEVIOR: Top margin is %s \n",sRtfTop.c_str()));
-		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)sRtfTop.c_str(), 1440);
+
 	}
-	else if(szMarginTop)
+	if(szMarginTop)
 	{
 		double tMarg = UT_convertToInches(szMarginTop);
 		UT_String sRtfTop;
+
+
 		UT_String_sprintf(sRtfTop,"%fin",tMarg);
 		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)sRtfTop.c_str(), 1440);
+		setlocale (LC_NUMERIC, old_locale);
 	}
 	if(szFooterExists  && szMarginBottom)
 	{
-		UT_DEBUGMSG(("SEVIOR: szFooterY = %s Margin Bot %s \n",szFooterY,szMarginBottom));
+
 		double bMarg = UT_convertToInches(szMarginBottom);
-		double FooterY = bMarg;
+		double FooterY = UT_convertToInches(szFooterY);
+		FooterY = bMarg - FooterY;
+		if(FooterY < 0.0)
+		{
+			FooterY = bMarg;
+		}
 		UT_String sFooterY;
 		UT_String_sprintf(sFooterY,"%fin",FooterY);
 		m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)sFooterY.c_str(), 720);
-		bMarg = bMarg - FooterY;
-		if(bMarg < 0.0)
-		{
-			bMarg = 0.0;
-		}
-		UT_String BotMrg;
-		UT_String_sprintf(BotMrg,"%fin",bMarg);
-		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", (char*)BotMrg.c_str(), 1440);
 	}
-	else if(szMarginBottom)
+	if(szMarginBottom)
 	{
 		double bMarg = UT_convertToInches(szMarginBottom);
 		UT_String sRtfBot;
 		UT_String_sprintf(sRtfBot,"%fin",bMarg);
 		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", (char*)sRtfBot.c_str(), 1440);
 	}
+	setlocale (LC_NUMERIC, old_locale);
+
 	if(szMarginLeft)
 	{
 		m_pie->_rtf_keyword_ifnotdefault_twips("marglsxn", (char*)szMarginLeft, 1440);
@@ -1303,17 +1296,14 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 //
 // This close span is an open span on a blank line.
 //
-	if(m_bBlankLine)
-	{
-		_closeSpan();
-		return;
-	}
+	_closeSpan();
+
 	UT_uint32 id = 0;
 	if(szListid != NULL)
 		id = atoi(szListid);
 	if(id == 0)
 	{
-		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
+//		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 	}
 	///
 	/// Output fallback numbered/bulleted label for rtf readers that don't 

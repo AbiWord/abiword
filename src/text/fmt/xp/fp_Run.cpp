@@ -2694,6 +2694,15 @@ bool fp_FieldRun::recalcWidth()
 	if (iNewWidth != m_iWidth)
 	{
 		clearScreen();
+		markAsDirty();
+		if(getLine())
+		{
+			getLine()->setNeedsRedraw();
+		}
+		if(getBlock())
+		{
+			getBlock()->setNeedsRedraw();
+		}
 		m_iWidth = iNewWidth;
 
 		m_pG->setFont(m_pFontLayout);
