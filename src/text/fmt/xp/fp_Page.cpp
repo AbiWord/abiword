@@ -67,6 +67,10 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	UT_ASSERT(pG);
 	m_vecColumnLeaders.clear();
 	m_iResolution = pG->getResolution();
+	m_rDamageRect.left = 0;
+	m_rDamageRect.top = 0;
+	m_rDamageRect.width = 0;
+	m_rDamageRect.height = 0;
 	UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!!!!!!!!!Created Page %x \n",this));
 }
 
@@ -534,6 +538,11 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	for (i=0; i<count; i++)
 	{
 		fp_FrameContainer* pFC = m_vecFrames.getNthItem(i);
+		UT_Rect r(pFC->getX(),pFC->getY(),pFC->getWidth(),pFC->getHeight());
+		if(m_rDamageRect.intersectsRect(&r))
+		{
+			pFC->setOverWrote();
+		}
 		dg_DrawArgs da = *pDA;
 		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
@@ -547,7 +556,69 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	}
 
 	m_bNeedsRedraw = false;
+	m_rDamageRect.left = 0;
+	m_rDamageRect.top = 0;
+	m_rDamageRect.width = 0;
+	m_rDamageRect.height = 0;
+
 }
+
+void   fp_Page::expandDamageRect(UT_sint32 x, UT_sint32 y, 
+										 UT_sint32 width, UT_sint32 height)
+{
+//
+// x and y and in screen offsets turn into page coords
+//
+	UT_sint32 xoff,yoff;
+	m_pView->getPageScreenOffsets(this, xoff, yoff);
+	x -= xoff;
+	y -= yoff;
+
+	if(m_rDamageRect.width == 0)
+	{
+		m_rDamageRect.left = x;
+		m_rDamageRect.top=y;
+		m_rDamageRect.width = width;
+		m_rDamageRect.height = height;
+		return;
+	}
+	UT_Rect r(x,y,width,height);
+	m_rDamageRect.unionRect(&r);
+	return;
+}
+
+void   fp_Page::redrawDamagedFrames(dg_DrawArgs* pDA)
+{
+	// draw Frames
+	UT_sint32 count = m_vecFrames.getItemCount();
+	UT_sint32 i = 0;
+	for (i=0; i<count; i++)
+	{
+		fp_FrameContainer* pFC = m_vecFrames.getNthItem(i);
+		UT_Rect r(pFC->getX(),pFC->getY(),pFC->getWidth(),pFC->getHeight());
+		if(m_rDamageRect.intersectsRect(&r))
+		{
+			pFC->setOverWrote();
+		}
+		dg_DrawArgs da = *pDA;
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+			da.yoff -= pFirstSectionLayout->getTopMargin();
+		}
+		da.xoff += pFC->getX();
+		da.yoff += pFC->getY();
+		pFC->draw(&da);
+	}
+
+	m_rDamageRect.left = 0;
+	m_rDamageRect.top = 0;
+	m_rDamageRect.width = 0;
+	m_rDamageRect.height = 0;
+}
+
+
 
 bool fp_Page::needsRedraw(void) const
 {

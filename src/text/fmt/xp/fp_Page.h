@@ -119,6 +119,10 @@ public:
 	UT_sint32           findFrameContainer(fp_FrameContainer * pFC);
 	void                clearScreenFrames(void);
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
+    void                expandDamageRect(UT_sint32 x, UT_sint32 y, 
+										 UT_sint32 width, UT_sint32 height);
+	void                redrawDamagedFrames(dg_DrawArgs* pDA);
+
 	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
 		{ m_pLastMappedTOC = pTOCL;}
 	fl_TOCLayout *      getLastMappedTOC(void)
@@ -160,6 +164,8 @@ private:
 	fg_FillType         m_FillType;
 	UT_GenericVector<fp_FrameContainer *> m_vecFrames;
 	fl_TOCLayout *      m_pLastMappedTOC;
+
+	UT_Rect             m_rDamageRect;
 };
 
 #endif /* PAGE_H */

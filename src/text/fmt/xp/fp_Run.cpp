@@ -178,7 +178,12 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	if(pLine)
 	{
 		pLine->getScreenOffsets(this,xoff,yoff);
+		fp_Page * pPage = pLine->getPage();
 		srcX = x - xoff;
+		if(pPage)
+		{
+			pPage->expandDamageRect(xoff+getX()+srcX,yoff+getY(),width,height);
+		}
 	}
 	bool bDoGrey = (pG->queryProperties(GR_Graphics::DGP_SCREEN) && 
 					((getType() ==  FPRUN_FIELD) || getBlock()->isContainedByTOC()));
@@ -329,11 +334,11 @@ fp_Run::_inheritProperties(void)
 	fp_Run* pRun = _findPrevPropertyRun();
 	if (pRun)
 	{
-		UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
+		xxx_UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
 		_setAscent(pRun->getAscent());
 		_setDescent(pRun->getDescent());
 		_setHeight(pRun->getHeight());
-		UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run height is %d \n",getHeight()));
+		xxx_UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run height is %d \n",getHeight()));
 		
 	}
 	else
@@ -783,10 +788,12 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 	{
 		UT_DEBUGMSG(("fpRun: Clearscreen on line without container \n"));
 	}
-	if(getLine())
+	fp_Line * pLine = getLine();
+	if(pLine)
     {
-		getLine()->setNeedsRedraw();
+		pLine->setNeedsRedraw();
 	}
+
 	xxx_UT_DEBUGMSG(("fp_Run: clearscreen applied \n"));
 }
 
@@ -865,8 +872,9 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	}
 	
 	m_bIsCleared = false;
-	if (getLine())
-		getLine()->setScreenCleared(false);
+	fp_Line * pLine = getLine();
+	if (pLine)
+		pLine->setScreenCleared(false);
 
 //	UT_usleep(100000); // 0.1 seconds useful for debugging
 	xxx_UT_DEBUGMSG(("SEVIOR: draw Run this %x \n",this));
@@ -886,7 +894,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	pG->setColor(getFGColor());
 
 	_draw(pDA);
-
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
 	bool bShowRevs = pView->isShowRevisions();

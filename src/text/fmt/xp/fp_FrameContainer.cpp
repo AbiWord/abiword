@@ -49,7 +49,8 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 	  m_pPage(NULL),
 	  m_iXpad(0),
 	  m_iYpad(0),
-	  m_bNeverDrawn(true)
+	  m_bNeverDrawn(true),
+	  m_bOverWrote(false)
 {
 }
 
@@ -232,6 +233,11 @@ void  fp_FrameContainer::drawBoundaries(dg_DrawArgs * pDA)
 	UT_sint32 iXhigh = iXlow + getFullWidth() ;
 	UT_sint32 iYlow = pDA->yoff - m_iYpad;
 	UT_sint32 iYhigh = iYlow + getFullHeight();
+	if(getPage())
+	{
+		getPage()->expandDamageRect(iXlow,iYlow,getFullWidth(),getFullHeight());
+	}
+
 	_drawLine(m_lineTop,iXlow,iYlow,iXhigh,iYlow,pDA->pG); // top
 	_drawLine(m_lineRight,iXhigh,iYlow,iXhigh,iYhigh,pDA->pG); // right
 	_drawLine(m_lineBottom,iXlow,iYhigh,iXhigh,iYhigh,pDA->pG); // bottom
@@ -320,6 +326,10 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 //
 // Only draw the lines in the clipping region.
 //
+	if(m_bOverWrote)
+	{
+		pDA->bDirtyRunsOnly = false;
+	}
 	dg_DrawArgs da = *pDA;
 	GR_Graphics * pG = da.pG;
 	if(!pDA->bDirtyRunsOnly || m_bNeverDrawn)
@@ -335,6 +345,10 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 
 		UT_sint32 x = pDA->xoff - m_iXpad;
 		UT_sint32 y = pDA->yoff - m_iYpad;
+		if(getPage())
+		{
+			getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
+		}
 		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),getFullHeight());
 	}
 	UT_uint32 count = countCons();
@@ -346,6 +360,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		pContainer->draw(&da);
 	}
 	m_bNeverDrawn = false;
+	m_bOverWrote = false;
 	drawBoundaries(pDA);
 }
 

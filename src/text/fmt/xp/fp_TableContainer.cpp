@@ -847,6 +847,10 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		{
 			getFillType()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
+		if(getPage())
+		{
+			getPage()->expandDamageRect(bRec.left,bRec.top,bRec.width,bRec.height);
+		}
 	}
 	m_bDirty = true;
 	m_bBgDirty = true;
@@ -1998,6 +2002,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		getFillType()->setWidthHeight(pG,bRec.width,bRec.height);
 		getLeftTopOffsets(srcX,srcY);
 		getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
+		if(getPage())
+		{
+			getPage()->expandDamageRect(bRec.left,bRec.top,bRec.width,bRec.height);
+		}
 		m_bBgDirty = false;
 	}
 	//
@@ -2013,6 +2021,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			xxx_UT_DEBUGMSG(("Drawing nested selected cell top %d height %d \n",bRec.top,bRec.height));
 		}
 		painter.fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
+		if(getPage())
+		{
+			getPage()->expandDamageRect(bRec.left,bRec.top,bRec.width,bRec.height);
+		}
 	}
 
 //

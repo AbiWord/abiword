@@ -3067,6 +3067,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	UT_sint32 yoff;
 	UT_uint32 uheight;
 	UT_GenericVector<CellLine *> vecTables;
+	UT_GenericVector<fp_Page *>vecPages;
 //
 // This fixes a bug from insert file, when the view we copy from is selected
 // If don't bail out now we get all kinds of crazy dirty on the screen.
@@ -3143,6 +3144,11 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 					pCellLine->m_pBrokenTable = pTab;
 					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
 					vecTables.addItem(pCellLine);
+					fp_Page * pPage = pTab->getPage();
+					if((pPage != NULL) && (vecPages.findItem(pPage) <0))
+					{
+						vecPages.addItem(pPage);
+					}
 				}
 			}
 			fl_CellLayout * pCellLayout = static_cast<fl_CellLayout *>(pCL);
@@ -3185,6 +3191,14 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 					pCell->clearSelection();
 					pCell->clearScreen();
 					pCell->draw(pCurRun->getLine());
+					if(pCurRun->getLine() != NULL)
+					{
+						fp_Page * pPage = pCurRun->getLine()->getPage();
+						if((pPage != NULL) && (vecPages.findItem(pPage) <0))
+						{
+							vecPages.addItem(pPage);
+						}
+					}
 				}
 			}
 		}
@@ -3199,7 +3213,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			pLine->getScreenOffsets(pCurRun, xoff, yoff);
 
 			dg_DrawArgs da;
-
+			da.bDirtyRunsOnly = false;
 			da.pG = m_pG;
 			da.xoff = xoff;
 			da.yoff = yoff + pLine->getAscent();
@@ -3211,6 +3225,11 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			{
 				pCurRun->Run_ClearScreen(bFullLineHeight);
 				pCurRun->draw(&da);
+			}
+			fp_Page * pPage = pLine->getPage();
+			if((pPage != NULL) && (vecPages.findItem(pPage) <0))
+			{
+				vecPages.addItem(pPage);
 			}
 		}
 
@@ -3246,6 +3265,18 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics());
 		pCellLine->m_pCell->drawLinesAdjacent();
 
+	}
+	for(i=0; i< static_cast<UT_sint32>(vecPages.getItemCount()); i++)
+	{
+		fp_Page * pPage = vecPages.getNthItem(i);
+		UT_sint32 xoff,yoff;
+		getPageScreenOffsets(pPage,xoff, yoff);
+		dg_DrawArgs da;
+		da.pG = m_pG;
+		da.xoff = xoff;
+		da.yoff = yoff;
+		da.bDirtyRunsOnly = true;
+		pPage->redrawDamagedFrames(&da);
 	}
 	UT_VECTOR_PURGEALL(CellLine *, vecTables);
 	xxx_UT_DEBUGMSG(("Finished Drawing lines in tables \n"));

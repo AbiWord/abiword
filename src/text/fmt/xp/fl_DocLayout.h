@@ -258,7 +258,8 @@ public:
 
 	void            updatePropsNoRebuild(void);
 	void            updatePropsRebuild(void);
-
+	PT_DocPosition  getDocSize(void) 
+		{ return m_iDocSize;}
 
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
@@ -327,6 +328,7 @@ private:
 	bool                m_bPlaceAtSecEnd;
 	UT_uint32           m_iGraphicTick;
 	UT_GenericVector<fl_TOCLayout *> m_vecTOC;
+	PT_DocPosition      m_iDocSize;
 };
 
 #endif /* DOCLAYOUT_H */

@@ -439,6 +439,7 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->setPoint(0);
 		m_pView->setLayoutIsFilling(true);
 	}
+	m_pDoc->getBounds(true,m_iDocSize);
 //
 // Make a document listner to get info pumped into the layouts.
 //
