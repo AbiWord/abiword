@@ -173,7 +173,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 
 		// get the name for the menu item
 		
-		const char * szLabelName = pAction->getDynamicLabel(m_pUnixApp);
+		const char * szLabelName = pAction->getDynamicLabel(m_pUnixApp, pLabel);
 		if (!szLabelName || !*szLabelName)
 			szLabelName = pLabel->getMenuLabel();
 

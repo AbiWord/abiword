@@ -1106,7 +1106,7 @@ Defun0(querySaveAndExit)
 	return UT_TRUE;
 }
 
-Defun(dlgFont)
+Defun1(dlgFont)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -1653,7 +1653,7 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 	return fileName;
 }
 
-UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
+UT_Bool _chooseFont(AP_Frame * /*pFrame*/, FV_View * /*pView*/)
 {
 	GtkFontSelectionDialog * cf;
 
