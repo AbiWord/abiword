@@ -257,7 +257,10 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
 		
 // only clear the lines if no background is set: the background clearing will also clear the lines
-		if (m_iBgStyle == FS_OFF)
+// FIXME MARCM: this switch SHOULD work but it doesn't... adding it will show clearing errors when moving
+// FIXME MARCM: tables around with cells in it that have their bgcolor set. 
+// FIXME MARCM: When the backgroud is on, it _should_ also clear the lines, but it doesn't
+		//if (m_iBgStyle == FS_OFF)
 		{
 			if(m_iLeftStyle != LS_OFF)
 				{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); }
