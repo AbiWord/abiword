@@ -269,7 +269,7 @@ void pt_PieceTable::_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock)
 	case pf_Frag::PFT_Strux:
 		{	
 			pf_Frag_Strux * pfPrevStrux = static_cast<pf_Frag_Strux *>(pfPrev);
-			switch (pfPrevStrux->getType())
+			switch (pfPrevStrux->getStruxType())
 			{
 			default:
 				return;
