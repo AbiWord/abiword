@@ -94,7 +94,7 @@ create_spinentry (float v)
   val = g_strdup_printf (FMT_STRING, v);
   gtk_entry_set_text (GTK_ENTRY (e), val);
   gtk_entry_set_editable (GTK_ENTRY (e), TRUE);
-  gtk_widget_set_usize (e, gdk_string_measure (e->style->private_font, val) + 15, 0);
+  // gtk_widget_set_usize (e, gdk_string_measure (e->style->private_font, val) + 15, 0);   Say, wha?!
   g_free (val);
 
   return e;
