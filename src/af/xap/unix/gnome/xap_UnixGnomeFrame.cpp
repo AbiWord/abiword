@@ -131,8 +131,8 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 
 	char * rawChar = (char *) selection_data->data;
 	UT_DEBUGMSG(("SEVIOR: text in selection = %s \n", rawChar));
-	names = gnome_uri_list_extract_filenames ((char *) selection_data->data);
-
+	names = gnome_uri_list_extract_filenames (rawChar);
+    bool bDropHTML = (strstr(rawChar,"html") !=0) || (strstr(rawChar,"htm") != 0);
 	if (!names)
 	{
 		UT_DEBUGMSG(("SEVIOR: No filename found in drop event \n"));
@@ -170,7 +170,7 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 			result = gnome_vfs_read (handle, buffer, sizeof buffer - 1,
 									 &bytes_read);
 		}
-		if(result==GNOME_VFS_OK)
+		if(result==GNOME_VFS_OK && !bDropHTML)
 		{
 			UT_DEBUGMSG(("SEVIOR:  uri %s read OK \n",stripped.c_str()));
 			UT_ByteBuf * Bytes = new UT_ByteBuf();
