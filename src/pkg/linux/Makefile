@@ -136,7 +136,7 @@ pack_rpm:
 	@mkdir -p $(PACK_ROOT)
 	@(cd $(ABI_ROOT)/..; tar --exclude=CVS -cf - $(MODULE_LIST)) | \
 		(cd $(PACK_ROOT); tar xf -)
-	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar
+#	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar
 	@(cd $(PACK_ROOT)/..; tar cf $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar \
 		 abisuite-$(ABI_BUILD_VERSION))
 	@rm -rf $(PACK_ROOT)
@@ -156,7 +156,7 @@ rpm: pack_rpm
 	@echo "Producing RPM..."
 	rpm -vvba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
 	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
-	rm -f $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm
+	mv $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm $(DIST)
 
 # We're using alien to convert from RPM to DEB package
 deb: rpm
