@@ -132,6 +132,10 @@ const UT_String & XAP_UnixFontHandle::hashKey(void) const
 	return m_hashKey;
 }
 
+bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
+{
+	return m_font->doesGlyphExist(g);
+}
 
 /*******************************************************************/
 
@@ -216,6 +220,15 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	  }
 
 	_deleteEncodingTable();
+}
+
+bool XAP_UnixFont::doesGlyphExist(UT_UCS4Char g)
+{
+	// possibly need to call:
+	// XftFontCheckGlyph or XftCharIndex instead
+
+	UT_return_val_if_fail (m_pXftFont, false);
+	return XftCharExists(GDK_DISPLAY(), m_pXftFont, (FcChar32)g);
 }
 
 bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, const char* family, const char *xlfd,

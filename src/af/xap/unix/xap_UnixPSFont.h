@@ -45,6 +45,8 @@ public:
 	virtual UT_sint32   measureUnremappedCharForCache(UT_UCSChar cChar) const;
 	float               measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
 
+	virtual bool doesGlyphExist(UT_UCS4Char g);
+
 protected:
 	XAP_UnixFont * 		m_hFont;
 	UT_uint32			m_pointSize;

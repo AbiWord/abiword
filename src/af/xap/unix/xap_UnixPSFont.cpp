@@ -96,3 +96,8 @@ float PSFont::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const
 
 	return width;
 }
+
+bool PSFont::doesGlyphExist(UT_UCS4Char g)
+{
+	return m_hFont->doesGlyphExist(g);
+}

@@ -126,6 +126,8 @@ class ABI_EXPORT XAP_UnixFont
 	
 	void					setFontManager(XAP_UnixFontManager * pFm);
 	
+	bool doesGlyphExist(UT_UCS4Char g);
+
 private:
 	bool					_createTtfSupportFiles();
 	bool					_createPsSupportFiles();
@@ -208,6 +210,9 @@ class XAP_UnixFontHandle : public GR_Font
 	virtual const UT_String & hashKey(void) const;
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 	float measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) const;
+
+	virtual bool doesGlyphExist(UT_UCS4Char g);
+
 private:
  	XAP_UnixFontHandle();
 	XAP_UnixFont*				m_font;
