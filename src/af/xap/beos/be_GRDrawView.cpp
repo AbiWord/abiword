@@ -20,8 +20,8 @@ void be_GRDrawView::FrameResized(float new_width, float new_height) {
 	if (m_pView) {
 		BRect r;
 		printf("GRDRAWVIEW: Resize Redrawing \n");
-		m_pView->setWindowSize(new_width, new_height);
-		m_pView->draw();
+		//m_pView->setWindowSize(new_width, new_height);
+		m_pView->draw(NULL);
 	}
 }
 
@@ -32,8 +32,8 @@ void be_GRDrawView::Draw(BRect updateRect) {
 		//TODO: Make the update more succinct with a rect
 		BRect r = Bounds();
    		UT_Rect rect(r.left,r.top, r.Width(), r.Height());
-		m_pView->draw(&rect);
-		//pRuler->draw(&r);           
+		//m_pView->draw(&rect);
+		m_pView->draw(NULL);
 	}
 }
 

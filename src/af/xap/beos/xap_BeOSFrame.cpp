@@ -232,7 +232,11 @@ UT_Bool XAP_BeOSFrame::updateTitle()
 	const char * szTitle = getTitle(len);
 
 	sprintf(buf, "%s - %s", szTitle, szAppName);
-	
+			
+	m_pBeWin->Lock();
+	m_pBeWin->SetTitle(buf);
+	m_pBeWin->Unlock();
+
 	return UT_TRUE;
 }
 
@@ -388,14 +392,13 @@ void be_DocView::FrameResized(float new_width, float new_height) {
 	if (!pG)
 		return;
 
-	BRect r = Bounds();
-	pG->ResizeBitmap(r);
+	BRect rect = Bounds();
+	pG->ResizeBitmap(rect);
 
 	//Only do this after we have resize the Graphics
 	AV_View *pView = pBWin->m_pBeOSFrame->getCurrentView();
-	//UT_ASSERT(pView);		
 	if (pView) {
-		pView->setWindowSize(r.Width(), r.Height());
+		pView->setWindowSize(rect.Width(), rect.Height());
 		pView->draw();
 	}
 }
@@ -417,11 +420,34 @@ void be_DocView::Draw(BRect updateRect) {
 	
 	DrawBitmap(pBitmap);
 #else
+/* 
+Things to do to speed this up, make it less flashy:
+ - Only invalidate/draw in the update rect 
+ - Draw everything to an offscreen buffer/picture
+ - Don't erase the background by default 
+*/
 	AV_View *pView = pBWin->m_pBeOSFrame->getCurrentView();
-	//UT_ASSERT(pView);		
 	if (pView) {
-		//TODO: Make the update more succinct with a rect
-		pView->draw();
+		BPicture *mypict;
+		BeginPicture(new BPicture);
+		
+		//Always erase the contents of the rect first
+		//NOTE: No need to do this
+		//SetHighColor(ViewColor());	
+		//FillRect(updateRect);
+		
+		//The tell AbiWord to draw us ...
+		UT_Rect r;
+		r.top = updateRect.top;
+		r.left = updateRect.left;
+		r.width = updateRect.Width();
+		r.height = updateRect.Height();
+		pView->draw(&r);
+
+		if ((mypict = EndPicture())) {
+			DrawPicture(mypict, BPoint(0,0));
+			delete mypict;
+		}
 	}
 #endif
 }
