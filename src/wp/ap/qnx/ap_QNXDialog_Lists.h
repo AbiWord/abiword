@@ -21,6 +21,8 @@
 #define AP_QNXDIALOG_LISTS_H
 
 #include "ap_Dialog_Lists.h"
+#include "ut_timer.h"
+
 class XAP_QNXFrame;
 
 /*****************************************************************/
@@ -31,38 +33,35 @@ public:
 	AP_QNXDialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_QNXDialog_Lists(void);
 
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			activate();
 	virtual void			destroy();
- 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
-    virtual void            notifyActiveFrame(XAP_Frame *pFrame){};
+    virtual void            notifyActiveFrame(XAP_Frame *pFrame);
 
 	// CALLBACKS 
 
-	virtual void 		startChanged(void);
-	virtual void		stopChanged(void);
-	virtual void		applyClicked(void);
-	virtual void		startvChanged(void);
+	virtual void 			startChanged(void);
+	virtual void			stopChanged(void);
+	virtual void			applyClicked(void);
+	virtual void			startvChanged(void);
 
 	// Just Plain Useful Functions 
 
-	void                            setAllSensitivity(void);
-	void                            updateDialog(void);
-	static void                     autoupdateLists(UT_Timer * pTimer);
+	void                    setAllSensitivity(void);
+	void                    updateDialog(void);
+	static void             autoupdateLists(UT_Timer * pTimer);
 
 protected:
 	PtWidget_t *	_constructWindow(void);
-	PtWidget_t *	_constructWindowContents(void);
 	void			_populateWindowData(void);
-	void			_connectSignals(void);
 
 	UT_Bool     m_bDestroy_says_stopupdating;
 	UT_Bool     m_bAutoUpdate_happening_now;
 	UT_Timer *  m_pAutoUpdateLists;
 
-	PtWidget_t *m_wMainWindow;
+	PtWidget_t *m_mainWindow;
 
 	PtWidget_t * m_wApply;
 	PtWidget_t * m_wClose;

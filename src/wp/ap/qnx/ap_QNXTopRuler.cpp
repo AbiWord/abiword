@@ -63,7 +63,7 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	pQNXFrame->m_AvailableArea.pos.y += area.size.h + 3;
 	pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	UT_DEBUGMSG(("TR: Offset %d,%d Size %d/%d \n",
+	UT_DEBUGMSG(("TR: Offset %d,%d Size %d/%d ",
 				area.pos.x, area.pos.y, area.size.w, area.size.h));
 	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
 #define _TR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
@@ -291,7 +291,7 @@ int AP_QNXTopRuler::_fe::resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *in
 		iWidth = cbinfo->new_size.lr.x - cbinfo->new_size.ul.x - (2 * *piBWidth); 
 		iHeight = cbinfo->new_size.lr.y - cbinfo->new_size.ul.y - (2 * *piBWidth);
 
-		UT_DEBUGMSG(("TR: Resize to %d,%d %d,%d [%dx%d] Border %d \n",
+		UT_DEBUGMSG(("TR: Resize to %d,%d %d,%d [%dx%d] Border %d ",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y,
 			iWidth, iHeight, *piBWidth));

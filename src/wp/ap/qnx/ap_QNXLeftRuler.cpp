@@ -52,10 +52,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
       UT_ASSERT(!m_pG && !m_wLeftRuler);
 
       XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)m_pFrame;
-      if (!m_pFrame) {
-              printf("NO FRAME \n");
-              exit(0);
-      }
+	  UT_ASSERT(m_pFrame);
 
       area.pos.x = 0;
       area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
@@ -64,7 +61,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
       pQNXFrame->m_AvailableArea.pos.x += area.size.w + 3;
       pQNXFrame->m_AvailableArea.size.w -= area.size.w + 3;
       PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
-	  UT_DEBUGMSG(("LR: Offset %d,%d Size %d/%d \n",
+	  UT_DEBUGMSG(("LR: Offset %d,%d Size %d/%d ",
                 area.pos.x, area.pos.y, area.size.w, area.size.h));
       PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
 #define _LR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_LEFT | \
@@ -75,6 +72,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
       PtSetArg(&args[n], Pt_ARG_BORDER_WIDTH, 2, 0); n++;
       PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); n++;
       PtWidget_t *cont = PtCreateWidget(PtGroup, pQNXFrame->getTopLevelWindow(), n, args);
+	  PtAddCallback(cont, Pt_CB_RESIZE, &(_fe::resize), this);
 
       n = 0;
       PtSetArg(&args[n], Pt_ARG_DIM, &area.size, 0); n++;
@@ -83,23 +81,6 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
       PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
       PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
       m_wLeftRuler = PtCreateWidget(PtRaw, cont, n, args);
-
-#if 0
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
-#endif
 
 	return m_wLeftRuler;
 }
@@ -145,26 +126,6 @@ int AP_QNXLeftRuler::_fe::motion_notify_event(GtkWidget* /* w */, GdkEventMotion
 	return 1;
 }
 		
-int AP_QNXLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
-{
-	// a static function
-	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-
-	// UT_DEBUGMSG(("QNXLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
-	//			 pQNXLeftRuler, e->width, e->height));
-
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	if (iHeight != pQNXLeftRuler->getHeight())
-		pQNXLeftRuler->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pQNXLeftRuler->getWidth())
-		pQNXLeftRuler->setWidth(iWidth);
-	
-	return 1;
-}
-	
-
 int AP_QNXLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
@@ -224,10 +185,39 @@ int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 
 	return 0;
 }
-
-#if 0
-void AP_QNXLeftRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
+	
+int AP_QNXLeftRuler::_fe::resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *info)
 {
+	PtContainerCallback_t *cbinfo = (PtContainerCallback_t *)(info->cbdata);
+
 	// a static function
+	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)data;
+
+	if (pQNXLeftRuler) {
+		UT_uint32 iHeight, iWidth, *piBWidth;
+
+		//TODO: We should probably just measure the proper widget.
+
+		//Do this since this size is the size of the group not the widget
+		PtGetResource(w, Pt_ARG_BORDER_WIDTH, &piBWidth, sizeof(piBWidth)); 
+
+		iWidth = cbinfo->new_size.lr.x - cbinfo->new_size.ul.x - (2 * *piBWidth); 
+		iHeight = cbinfo->new_size.lr.y - cbinfo->new_size.ul.y - (2 * *piBWidth);
+
+		UT_DEBUGMSG(("LR: Resize to %d,%d %d,%d [%dx%d] Border %d ",
+			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
+			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y,
+			iWidth, iHeight, *piBWidth));
+	
+		if (iHeight != pQNXLeftRuler->getHeight()) {
+			pQNXLeftRuler->setHeight(iHeight);
+		}
+	
+		if (iWidth != pQNXLeftRuler->getWidth()) {
+			pQNXLeftRuler->setWidth(iWidth);
+		}
+	}
+
+	return Pt_CONTINUE;
 }
-#endif
+

@@ -62,7 +62,6 @@ protected:
 //		static int key_press_event(GtkWidget* w, GdkEventKey* e);
 //		static int delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static int expose(PtWidget_t * w, PhTile_t* damage);
-//		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 	};
 
 };
