@@ -141,6 +141,8 @@ SectionEnd
 
 SubSection /e "Shortcuts"
 
+SubSection /e "Shortcuts (Current User)"
+
 ; OPTIONAL Start Menu Shortcut for the current user profile
 Section "Start Menu Shortcuts (Current User)"
 	SectionIn 1 2 3
@@ -156,6 +158,10 @@ Section "Desktop Shortcut (Current User)"
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	CreateShortCut "$DESKTOP\${UI_PRODUCT}.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
 SectionEnd
+
+
+SubSectionEnd ; Shortcuts (Current User)
+SubSection /e "Shortcuts (All Users)"
 
 
 ; OPTIONAL Start Menu Shortcut for the special All User profile (not used in win9x) 
@@ -177,7 +183,10 @@ Section "Desktop Shortcut (All Users)"
 	SetShellVarContext current  	; reset to current user
 SectionEnd
 
+SubSectionEnd ; Shortcuts (All Users)"
+
 SubSectionEnd ; Shortcuts
+
 
 ;SectionDivider " general file associations "
 SubSection /e "General file associations"
