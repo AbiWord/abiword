@@ -2957,11 +2957,22 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 			sTmp += pSpan[j];
 		}
 		UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
-#endif		
+#endif
+
+		//We need to do some bidi processing on the span; basically we
+		//have to break the text into chunks that each will go into a
+		//separate run in a manner that will ensure that the text will
+		//be correctly processed later. The most obvious way is to
+		//break every time we encounter a change of directional
+		//properties. Unfortunately that means breaking at each white
+		//space, which adds a huge amount of processing due to
+		//allocating and deleting the runs when loading a
+		//document. The following code tries to catch out the obvious
+		//cases when the span can remain intact. Tomas, Jan 28, 2003
 		for(i = 1; i < trueLen; i++)
 		{
 			iPrevType = iType;
-			if(FRIBIDI_IS_STRONG(iType))
+			if(!FRIBIDI_IS_NEUTRAL(iType))
 				iLastStrongType = iType;
 			
 			iType = fribidi_get_type((FriBidiChar)pSpan[i]);
@@ -2971,16 +2982,16 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 				// it
 				bool bIgnore = false;
 				
-				if(!FRIBIDI_IS_STRONG(iPrevType) && !FRIBIDI_IS_STRONG(iType))
+				if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
 				{
-					// two week characters in a row will have the same
+					// two neutral characters in a row will have the same
 					// direction
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->weak\n"));
 					bIgnore = true;
 				}
-				else if(FRIBIDI_IS_STRONG(iPrevType) && !FRIBIDI_IS_STRONG(iType))
+				else if(!FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
 				{
-					// we can ignore a week character following a
+					// we can ignore a neutral character following a
 					// strong one if it is followed by a strong
 					// character of identical type to the previous one
 					
@@ -2994,16 +3005,16 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 							break;
 						}
 
-						if(FRIBIDI_IS_STRONG(iNextType))
+						if(!FRIBIDI_IS_NEUTRAL(iNextType))
 							break;
 					}
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->weak\n"));
 					
 				}
-				else if(!FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_STRONG(iType))
+				else if(FRIBIDI_IS_NEUTRAL(iPrevType) && !FRIBIDI_IS_NEUTRAL(iType))
 				{
-					// a weak character followed by a strong one -- we
-					// can ignore it, if the week character was
+					// a neutral character followed by a strong one -- we
+					// can ignore it, if the neutral character was
 					// preceeded by a strong character of the same
 					// type
 					if(iType == iLastStrongType)
