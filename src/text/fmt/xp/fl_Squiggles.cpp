@@ -490,6 +490,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 			// pending word.
 			pPOB = new fl_PartOfBlock(pPending->getOffset(),
 									  pPending->getLength());
+			m_pOwner->getDocLayout()->setPendingWordForSpell(NULL, NULL);
 			m_pOwner->checkWord(pPOB);
 		}
 	}
