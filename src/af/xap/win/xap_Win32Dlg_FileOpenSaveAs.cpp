@@ -41,9 +41,9 @@
 #include "gr_Win32Image.h"
 #include "gr_Win32Graphics.h"
 
-#include "..\..\..\wp\impexp\xp\ie_types.h"
-#include "..\..\..\wp\impexp\xp\ie_imp.h"
-#include "..\..\..\wp\impexp\xp\ie_impGraphic.h"
+#include "ie_types.h"
+#include "ie_imp.h"
+#include "ie_impGraphic.h"
 
 #include "xap_Win32Resources.rc2"
 

@@ -33,7 +33,7 @@
 #include "xap_ViewListener.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
-#include "xap_prefs.h"
+#include "xap_Prefs.h"
 #include "ie_impGraphic.h"
 #include "fv_View.h"
 

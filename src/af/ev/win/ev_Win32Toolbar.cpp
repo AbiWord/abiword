@@ -42,7 +42,7 @@
 // The following are for the windows font colour dialog hack
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Background.h"
-#include "fv_view.h"
+#include "fv_View.h"
 #include "pt_PieceTable.h"
 #include "ap_Win32Toolbar_FontCombo.h"
 

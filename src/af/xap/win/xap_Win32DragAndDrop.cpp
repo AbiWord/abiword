@@ -29,7 +29,7 @@
 #include "xap_Win32FrameImpl.h"
 #include "xav_View.h"
 #include "xad_Document.h"
-#include "ap_framedata.h"
+#include "ap_FrameData.h"
 #include "ie_impexp_Register.h"
 #include "ie_imp.h"
 #include "xap_EncodingManager.h"

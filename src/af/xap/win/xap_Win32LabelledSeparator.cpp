@@ -21,7 +21,7 @@
 #include "ut_debugmsg.h"
 #include "xap_Win32App.h"
 #include "xap_Win32LabelledSeparator.h"
-#include <CommCtrl.h>
+#include <commctrl.h>
 
 /*****************************************************************/
 
