@@ -103,7 +103,7 @@ fi
 # Set run-time font path
 if [ -d \$ABISUITE_FONT_HOME ]
 then
-    xset fp+ \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
+#    xset fp+ \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
 fi
 
 # Figure out which binary to run
