@@ -785,19 +785,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged)
   
   if(pView->isInTable())
   {
-	  fp_CellContainer *  pCell = pView->getCellAtPos(pView->getPoint());
-	  if(pCell == NULL)
-	  {
-		  return EV_TIS_Gray;
-	  }
-	  if(pCell->getRightAttach() > (pCell->getLeftAttach() + 1))
-	  {
-		  return EV_TIS_ZERO;
-	  }
-	  if(pCell->getBottomAttach() > (pCell->getTopAttach() + 1))
-	  {
-		  return EV_TIS_ZERO;
-	  }
+	  return EV_TIS_ZERO;
   }
   return EV_TIS_Gray;
 }

@@ -1058,19 +1058,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
 
 	if(pView->isInTable())
 	{
-		fp_CellContainer *  pCell = pView->getCellAtPos(pView->getPoint());
-		if(pCell == NULL)
-		{
-			return EV_MIS_Gray;
-		}
-		if(pCell->getRightAttach() > (pCell->getLeftAttach() + 1))
-		{
-			return EV_MIS_ZERO;
-		}
-		if(pCell->getBottomAttach() > (pCell->getTopAttach() + 1))
-		{
-			return EV_MIS_ZERO;
-		}
+		return EV_MIS_ZERO;
 	}
     return EV_MIS_Gray;
 }

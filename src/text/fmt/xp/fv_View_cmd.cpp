@@ -147,7 +147,8 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,curSDH,endTableSDH;
-	PT_DocPosition posTable,posCell,posFirstInsert;
+	PL_StruxDocHandle prevCellSDH1,prevCellSDH2;
+	PT_DocPosition posTable,posCell,posFirstInsert,posEndTable;
 	posFirstInsert = 0;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	UT_sint32 jLeft,jRight,jTop,jBot;
@@ -172,6 +173,8 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
 	posCell = m_pDoc->getStruxPosition(cellSDH);
+	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+	posEndTable = m_pDoc->getStruxPosition(endTableSDH);
 //
 // Got all we need, now set things up to do the insert nicely
 //
@@ -214,7 +217,8 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 	UT_sint32 newLeft,newRight,newTop,newBot;	
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
-	UT_sint32 i = 0;
+	bool bDoSplitSolidHori = false;
+	bool bDoSplitSolidVert = false;
 //
 // OK now insert the cell and do the update
 //
@@ -233,7 +237,15 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 		else if(iSplitType ==  AP_Dialog_SplitCells::hori_mid)
 		{
 			splitLeft = iLeft;
-			splitRight = iLeft + colSpan/2;
+			if(colSpan == 1)
+			{
+				bDoSplitSolidHori = true;
+				splitRight = iLeft+1;
+			}
+			else
+			{
+				splitRight = iLeft + colSpan/2;
+			}
 		}
 		else if(iSplitType ==  AP_Dialog_SplitCells::hori_right)
 		{
@@ -242,10 +254,18 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 		}
 		splitTop = iTop;
 		splitBot = iBot;
-		newLeft = splitRight;
-		newRight = iRight;
 		newTop = iTop;
 		newBot = iBot;
+		if(!bDoSplitSolidHori)
+		{
+			newLeft = splitRight;
+			newRight = iRight;
+		}
+		else
+		{
+			newLeft = splitRight;
+			newRight = newLeft+1;
+		}
 
 	}
 	else
@@ -258,7 +278,15 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 		else if(iSplitType ==  AP_Dialog_SplitCells::vert_mid)
 		{
 			newTop = iTop;
-			newBot = iTop + rowSpan/2;
+			if(rowSpan == 1)
+			{
+				bDoSplitSolidVert = true;
+				newBot = newTop+1;
+			}
+			else
+			{
+				newBot = iTop + rowSpan/2;
+			}
 		}
 		else if(iSplitType ==  AP_Dialog_SplitCells::vert_below)
 		{
@@ -272,81 +300,101 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 		splitRight = iRight;
 		newLeft = iLeft;
 		newRight = iRight;
-		splitTop = newBot;
-		splitBot = iBot;
+		if(!bDoSplitSolidVert)
+		{
+			splitTop = newBot;
+			splitBot = iBot;
+		}
+		else
+		{
+			newTop = iTop;
+			newBot = newTop+1;
+			splitTop = newBot;
+			splitBot = splitTop+1;
+		}
 //
 // OK now we have to find the place to insert this. It should be the cell
 // immediately after (splitTop,splitLeft)
 //
-		jTop = splitTop;
-		jBot = jTop+1;
-		jLeft = splitRight;
-		if(jLeft >= numCols)
-		{
-			jLeft = 0;
-			jTop += 1;
-			jBot +=1;
-		}	
-		jRight = jLeft+1;
-		if(jTop >= numRows)
+//(except if it's a splitSolidVert in which case it should be placed as the
+// next next on the row in the first cell before (splitleft,splittop)
+//
+		if(bDoSplitSolidVert)
 		{
 //
-// Place right before endTable Strux
+// OK start with cellSDH and scan until we either reach the end of the table
+// or we find a cell past where splitcell should be. Then we insert the cell
+// at where cell just after splitcell is.
 //
-			endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
-			if(endTableSDH == NULL)
+			bool bStop = false;
+			curSDH = cellSDH;
+			while(!bStop)
 			{
-				//
-				// Disaster! the table structure in the piecetable is screwed.
-				// we're totally stuffed now.
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				return false;
+				posCell = m_pDoc->getStruxPosition(curSDH)+1;
+				bRes = getCellParams(posCell,&jLeft,&jRight,&jTop,&jBot);
+				UT_ASSERT(bRes);
+				if(jTop >= splitTop)
+				{
+//
+// Found it!
+//
+					bStop = true;
+					posCell = m_pDoc->getStruxPosition(curSDH);
+					break;
+				}
+				bRes = m_pDoc->getNextStruxOfType(curSDH,PTX_SectionCell,&curSDH);
+				if(!bRes)
+				{
+					bStop = true;
+					posCell = m_pDoc->getStruxPosition(endTableSDH);
+					break;
+				}
+				posCell = m_pDoc->getStruxPosition(curSDH);
+				if(posCell > posEndTable)
+				{
+					bStop = true;
+					posCell = m_pDoc->getStruxPosition(endTableSDH);
+					break;
+				}
 			}
-			posCell = m_pDoc->getStruxPosition(endTableSDH);
 		}
 		else
 		{
+			jTop = splitTop;
+			jBot = jTop+1;
+			jLeft = splitRight;
+			if(jLeft >= numCols)
+			{
+				jLeft = 0;
+				jTop += 1;
+				jBot +=1;
+			}	
+			jRight = jLeft+1;
+			if(jTop >= numRows)
+			{
+//
+// Place right before endTable Strux
+//
+				if(endTableSDH == NULL)
+				{
+					//
+					// Disaster! the table structure in the piecetable is screwed.
+					// we're totally stuffed now.
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
+				}
+				posCell = m_pDoc->getStruxPosition(endTableSDH);
+			}
+			else
+			{
 //
 // now we have to loop until we find a cell precisely at jLeft,jTop
 //
-			bool bFound = false;
-			while(!bFound)
-			{
-				curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,jTop,jLeft);
-				if(curSDH == NULL)
+				bool bFound = false;
+				while(!bFound)
 				{
-					endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
-					if(endTableSDH == NULL)
-					{
-						//
-						// Disaster! the table structure in the piecetable is screwed.
-						// we're totally stuffed now.
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						return false;
-					}
-					posCell = m_pDoc->getStruxPosition(endTableSDH);
-					bFound = true;
-				}
-				UT_sint32 kLeft,kRight,kTop,kBot;
-				PT_DocPosition posTmp = m_pDoc->getStruxPosition(curSDH)+1;
-				getCellParams(posTmp,&kLeft,&kRight,&kTop,&kBot);
-				if((kLeft == jLeft) && (kTop == jTop))
-				{
-					bFound = true;
-					posCell = m_pDoc->getStruxPosition(curSDH);
-				}
-				else
-				{
-					jLeft++;
-					jRight++;
-					if(jLeft >= numCols)
-					{
-						jLeft = 0;
-						jTop++;
-						jRight =1;
-						jBot++;
-					}
-					if(jTop >= numRows)
+					curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,jTop,jLeft);
+					if(curSDH == NULL)
 					{
 						endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
 						if(endTableSDH == NULL)
@@ -359,6 +407,40 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 						}
 						posCell = m_pDoc->getStruxPosition(endTableSDH);
 						bFound = true;
+					}
+					UT_sint32 kLeft,kRight,kTop,kBot;
+					PT_DocPosition posTmp = m_pDoc->getStruxPosition(curSDH)+1;
+					getCellParams(posTmp,&kLeft,&kRight,&kTop,&kBot);
+					if((kLeft == jLeft) && (kTop == jTop))
+					{
+						bFound = true;
+						posCell = m_pDoc->getStruxPosition(curSDH);
+					}
+					else
+					{
+						jLeft++;
+						jRight++;
+						if(jLeft >= numCols)
+						{
+							jLeft = 0;
+							jTop++;
+							jRight =1;
+							jBot++;
+						}
+						if(jTop >= numRows)
+						{
+							endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
+							if(endTableSDH == NULL)
+							{
+								//
+								// Disaster! the table structure in the piecetable is screwed.
+								// we're totally stuffed now.
+								UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+								return false;
+							}
+							posCell = m_pDoc->getStruxPosition(endTableSDH);
+							bFound = true;
+						}
 					}
 				}
 			}
@@ -381,7 +463,6 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 	UT_String_setProperty(sCellProps,sColLeft,sLeft);
 	UT_String_setProperty(sCellProps,sColRight,sRight);
 	UT_DEBUGMSG(("Cells props for new cell:\n  %s \n",sCellProps.c_str()));
-
 //
 // Insert the cell
 //
@@ -390,6 +471,11 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 	bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,atts,NULL);
 	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
 	posFirstInsert = posCell + 1;
+//
+// Save the cell SDH for later..
+//
+	m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&prevCellSDH1);	
+	
 	bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 
 // Changes the props of the new cell
@@ -404,8 +490,144 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 	posCell = m_pDoc->getStruxPosition(cellSDH)+1;
 	UT_DEBUGMSG(("New Cells props for old cell:\n  %s \n",sCellProps.c_str()));
 	atts[1] = sCellProps.c_str();
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
-	
+	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+	m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&prevCellSDH2);		if(bDoSplitSolidHori)
+	{
+//
+// OK now we have to adjust all the cells with left or right >= splitleft
+// If left of a given cell is < splitLeft it is not adjusted but the right
+// of the cell if it's > splitleft is incremented. In this way our new cell
+// span two columns
+//
+		UT_sint32 myleft,myright,mytop,mybot;
+//
+// start at the first cell and scan through the table adjusting each cell.
+//
+		bres = m_pDoc->getStruxOfTypeFromPosition(posTable+1,PTX_SectionCell,&cellSDH);
+		UT_ASSERT(bres);
+		bool bStop= false;
+		while(!bStop)
+		{
+			posCell = m_pDoc->getStruxPosition(cellSDH)+1;
+			bres = getCellParams(posCell,&myleft,&myright,&mytop,&mybot);
+			UT_ASSERT(bres);
+			bool bChange =false;
+			if((cellSDH == prevCellSDH1) || (cellSDH == prevCellSDH2))
+			{
+//
+// Igore me!
+//
+				bChange = false;
+			}
+			else 
+			{
+				if(myright> splitLeft)
+				{
+					myright++;
+					bChange = true;
+				}
+				if(myleft>splitLeft)
+				{
+					myleft++;
+					bChange = true;
+				}
+				if(bChange)
+				{
+// Changes the props of the cell
+					UT_String_sprintf(sTop,"%d",mytop);
+					UT_String_sprintf(sBot,"%d",mybot);
+					UT_String_sprintf(sLeft,"%d",myleft);
+					UT_String_sprintf(sRight,"%d",myright);
+					UT_String_setProperty(sCellProps,sRowTop,sTop);
+					UT_String_setProperty(sCellProps,sRowBot,sBot);
+					UT_String_setProperty(sCellProps,sColLeft,sLeft);
+					UT_String_setProperty(sCellProps,sColRight,sRight);
+					atts[1] = sCellProps.c_str();
+					m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+				}
+			}
+			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+			if(!bRes)
+			{
+				bStop = true;
+				break;
+			}
+			posCell = m_pDoc->getStruxPosition(cellSDH);
+			if(posCell > posEndTable)
+			{
+				bStop = true;
+				break;
+			}
+		}
+	}
+	if(bDoSplitSolidVert)
+	{
+//
+// OK now we have to adjust all the cells with top or bot >= newTop
+// If top of a given cell is < newTop it is not adjusted but the bot
+// of the cell if it's > newTop is incremented. In this way our new cell
+// spans two rows
+//
+		UT_sint32 myleft,myright,mytop,mybot;
+//
+// start at the first cell and scan through the table adjusting each cell.
+//
+		m_pDoc->getStruxOfTypeFromPosition(posTable+1,PTX_SectionCell,&cellSDH);
+		bool bStop= false;
+		while(!bStop)
+		{
+			posCell = m_pDoc->getStruxPosition(cellSDH) +1;
+			getCellParams(posCell,&myleft,&myright,&mytop,&mybot);
+			bool bChange =false;
+			if((cellSDH == prevCellSDH1) || (cellSDH == prevCellSDH2))
+			{
+//
+// Igore me!
+//
+				bChange = false;
+			}
+			else 
+			{
+				if(mytop>newTop)
+				{
+					mytop++;
+					bChange = true;
+				}
+				if(mybot>newTop)
+				{
+					mybot++;
+					bChange = true;
+				}
+				if(bChange)
+				{
+// Changes the props of the cell
+					UT_String_sprintf(sTop,"%d",mytop);
+					UT_String_sprintf(sBot,"%d",mybot);
+					UT_String_sprintf(sLeft,"%d",myleft);
+					UT_String_sprintf(sRight,"%d",myright);
+					UT_String_setProperty(sCellProps,sRowTop,sTop);
+					UT_String_setProperty(sCellProps,sRowBot,sBot);
+					UT_String_setProperty(sCellProps,sColLeft,sLeft);
+					UT_String_setProperty(sCellProps,sColRight,sRight);
+					atts[1] = sCellProps.c_str();
+					m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+				}
+			}
+			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+			if(!bRes)
+			{
+				bStop = true;
+				break;
+			}
+			posCell = m_pDoc->getStruxPosition(cellSDH);
+			if(posCell > posEndTable)
+			{
+				bStop = true;
+				break;
+			}
+		}
+	}
+
 //
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
 // with the restored line-type property it has before.

@@ -194,7 +194,7 @@ void AP_Dialog_SplitCells::setAllSensitivities(void)
 		setSensitivity(vert_below,false);
 	}
 	UT_sint32 diff = m_iBot - m_iTop;
-	if(m_iBot - m_iTop > 1 && 2*(diff/2) == diff)
+	if((m_iBot - m_iTop == 1) || (2*(diff/2) == diff))
 	{
 		setSensitivity(vert_mid,true);
 	}
@@ -213,7 +213,7 @@ void AP_Dialog_SplitCells::setAllSensitivities(void)
 		setSensitivity(hori_right,false);
 	}
 	diff = m_iRight - m_iLeft;
-	if(m_iRight - m_iLeft > 1 && 2*(diff/2) == diff)
+	if((m_iRight - m_iLeft == 1) || (2*(diff/2) == diff))
 	{
 		setSensitivity(hori_mid,true);
 	}

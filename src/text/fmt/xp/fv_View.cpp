@@ -9494,7 +9494,15 @@ bool FV_View::isInTable()
 bool FV_View::isInTable( PT_DocPosition pos)
 {
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	if(!pBL)
+	{
+		return false;
+	}
 	fl_ContainerLayout * pCL = pBL->myContainingLayout();
+	if(!pCL)
+	{
+		return false;
+	}
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		return true;
