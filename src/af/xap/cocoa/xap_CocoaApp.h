@@ -35,7 +35,6 @@ typedef double NSTimeInterval;
 class XAP_Args;
 class AP_CocoaToolbar_Icons;
 class AV_View;
-class XAP_CocoaFontManager;
 
 /*****************************************************************
 ******************************************************************
@@ -71,7 +70,7 @@ public:
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
-	XAP_CocoaFontManager *					getFontManager();
+//	XAP_CocoaFontManager *					getFontManager();
 
 	typedef enum
 	{
@@ -102,7 +101,7 @@ private:
 	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
 	AP_CocoaDialogFactory			m_dialogFactory;
 	AP_CocoaToolbar_ControlFactory	m_controlFactory;
-	XAP_CocoaFontManager *			m_fontManager;
+//	XAP_CocoaFontManager *			m_fontManager;
 
 	windowGeometry			m_geometry;
 	NSTimeInterval			m_eventTime; // e->time field of a recent X event

@@ -71,7 +71,6 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 XAP_CocoaApp::~XAP_CocoaApp()
 {
 	DELETEP(m_pCocoaToolbarIcons);
-	DELETEP(m_fontManager);
 }
 
 /*!
@@ -131,11 +130,6 @@ XAP_Toolbar_ControlFactory * XAP_CocoaApp::getControlFactory()
 	return &m_controlFactory;
 }
 
-XAP_CocoaFontManager * XAP_CocoaApp::getFontManager()
-{
-	return m_fontManager;
-}
-
 void XAP_CocoaApp::setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
 							  windowGeometryFlags flags)
 {
@@ -189,8 +183,8 @@ bool XAP_CocoaApp::_loadFonts()
 //	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
 //	UT_uint32 i = 0;
 	
-	m_fontManager = new XAP_CocoaFontManager();
-	UT_ASSERT(m_fontManager);
+//	m_fontManager = new XAP_CocoaFontManager();
+//	UT_ASSERT(m_fontManager);
 
 	// let it loose
 

@@ -160,9 +160,7 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);
 
-	XAP_CocoaApp * app = static_cast<XAP_CocoaApp *>(m_pFrame->getApp());
-	XAP_CocoaFontManager * fontManager = app->getFontManager();
-	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wTopRuler, fontManager, m_pFrame->getApp());
+	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wTopRuler, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);

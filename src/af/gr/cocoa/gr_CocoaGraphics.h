@@ -34,7 +34,7 @@ class GR_CocoaGraphics;
 class GR_CocoaGraphics : public GR_Graphics
 {
  public:
-	GR_CocoaGraphics(NSView * view, XAP_CocoaFontManager * fontManager, XAP_App *app);
+	GR_CocoaGraphics(NSView * view, /*XAP_CocoaFontManager * fontManager,*/ XAP_App *app);
 	~GR_CocoaGraphics();
 
     // HACK: I need more speed
@@ -141,17 +141,17 @@ private:
 
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 						*m_updateCBparam;
-	XAP_CocoaFontManager * 	m_pFontManager;
+//	XAP_CocoaFontManager * 	m_pFontManager;
 	XAP_CocoaNSView *  			m_pWin;
 	CGContextRef				m_CGContext;
 	NSImage*					m_offscreen;
 	NSColor *					m_currentColor;
 
 	// our currently requested font by handle
-	XAP_CocoaFontHandle *	m_pFont;
+	XAP_CocoaFont *	m_pFont;
 
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
-	static XAP_CocoaFontHandle *	s_pFontGUI;
+	static XAP_CocoaFont*	s_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
 	int          			m_iWindowHeight, m_iWindowWidth;		//FIXME unused?
@@ -161,6 +161,7 @@ private:
 	GR_Graphics::ColorSpace	m_cs;
 	
 	NSImage*				m_savedImage;
+	UT_uint32				m_screenResolution;
 public:		//HACK	
 	NSColor	*			m_3dColors[COUNT_3D_COLORS];
 };

@@ -61,41 +61,25 @@ AP_CocoaToolbar_FontCombo::~AP_CocoaToolbar_FontCombo(void)
 bool AP_CocoaToolbar_FontCombo::populate(void)
 {
 	UT_ASSERT(m_pToolbar);
+	NSString* item;
 	
 	// Things are relatively easy with the font manager.  Just
 	// request all fonts and ask them their names.
 	EV_CocoaToolbar * toolbar = static_cast<EV_CocoaToolbar *>(m_pToolbar);
 	
-	UT_Vector * list = toolbar->getApp()->getFontManager()->getAllFonts();
-	UT_ASSERT(list);
-
-	UT_uint32 count = list->size();
-
+	NSArray * list = [[NSFontManager sharedFontManager] availableFontFamilies];
+	
+	NSEnumerator*	enumerator = [list objectEnumerator];
 	m_vecContents.clear();
 
-	for (UT_uint32 i = 0; i < count; i++)
+	while (item = [enumerator nextObject])
 	{
 		// sort-out duplicates
-		XAP_CocoaFont * pFont = (XAP_CocoaFont *)list->getNthItem(i);
-		const char * fName = pFont->getName();
-
-		int foundAt = -1;
-
-		for (int j = 0; j < m_vecContents.size(); j++)
-		{
-			// sort out dups
-			char * str = (char *)m_vecContents.getNthItem(j);
-			if (str && !UT_strcmp (str, fName))
-			{
-				foundAt = j;
-				break;
-			}
-		}
-
-		if (foundAt == -1)
-			m_vecContents.addItem((void *)(fName));
+//		XAP_CocoaFont * pFont = [item font];
+		const char * fName = [item cString];
+		//pFont->getName();
+		m_vecContents.addItem((void *)(fName));
 	}
-	DELETEP(list);
 
 	return true;
 }

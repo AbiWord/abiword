@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,14 +31,25 @@
 
 #include "ut_AdobeEncoding.h"
 
+class XAP_CocoaFont;
 struct uniWidth
 {
 	UT_UCSChar ucs;
 	UT_uint16  width;
 };
 
-typedef enum {FONT_TYPE_PFA, FONT_TYPE_PFB, FONT_TYPE_TTF, FONT_TYPE_UNKNOWN} font_type;
+@interface XAP_NSCocoaFont : NSObject
+{
+	XAP_CocoaFont* _font;
+}
++ (XAP_NSCocoaFont*)fontWithName:(NSString*)name;
+- (id)init;
+- (void)dealloc;
+//- (NSString*)fontKey;
+- (XAP_CocoaFont*)font;
+@end
 
+#if 0
 class XAP_CocoaFont
 {
  public:
@@ -105,7 +116,7 @@ private:
 };
 
 /*****************************************************************/
-
+#endif
 /*
   We derive our handle from GR_Font so we can be passed around the GR
   contexts as a native Cocoa font, much like a Windows font handle.
@@ -113,28 +124,41 @@ private:
   its own.
 */
 
-class XAP_CocoaFontHandle : public GR_Font
+class XAP_CocoaFont : public GR_Font
 {
  public:
+	typedef enum
+	{
+		STYLE_NORMAL = 0,
+		STYLE_BOLD,
+		STYLE_ITALIC,
+		STYLE_BOLD_ITALIC,
+		STYLE_OUTLINE,
+		STYLE_BOLD_OUTLINE,
+		STYLE_LAST	// this must be last
+	} style;
 
-	XAP_CocoaFontHandle();
-	XAP_CocoaFontHandle(const XAP_CocoaFont * font, UT_uint32 size);	
-	XAP_CocoaFontHandle(const XAP_CocoaFontHandle & copy);
-	~XAP_CocoaFontHandle();
+	XAP_CocoaFont();
+//	XAP_CocoaFontHandle(const XAP_CocoaFont * font, UT_uint32 size);	
+	XAP_CocoaFont(NSFont *font);
+	XAP_CocoaFont(const XAP_CocoaFont & copy);
+	~XAP_CocoaFont();
 
 	NSFont * 		getNSFont(void);
 	UT_uint32		getSize(void);
+	const char * 			getName(void);
 	
 
-	inline const XAP_CocoaFont *getCocoaFont()	const { return m_font; }
+//	inline const XAP_CocoaFont *getCocoaFont()	const { return m_font; }
 //	inline NSFont      *getMatchNSFont()	{ return m_font? m_font->getMatchNSFont(m_size): NULL; }
 	
 //	void explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	
 //	void explodeCocoaFonts(XAP_CocoaFont**  pSingleByte, XAP_CocoaFont ** pMultiByte);	
 private:
 	// data items
-	XAP_CocoaFont *				m_font;
-	UT_uint32					m_size;
+//	XAP_CocoaFont *				m_font;
+//	UT_uint32					m_size;
+	NSFont*						m_font;
 };
 
 #endif /* XAP_COCOAFONT_H */

@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -71,78 +71,44 @@ static int s_compareUniWidthsChar(const void * c, const void * w)
 
 /*******************************************************************/
 
-XAP_CocoaFontHandle::XAP_CocoaFontHandle()
-  : m_font(NULL), m_size(0)
+XAP_CocoaFont::XAP_CocoaFont()
+  : m_font(NULL)
 {
 }
 
-XAP_CocoaFontHandle::XAP_CocoaFontHandle(const XAP_CocoaFont * font, UT_uint32 size)
-  : m_size(size)
+XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
 {
-	m_font = new XAP_CocoaFont (*font);
+	m_font = font;
+	[m_font retain];
 }
 
-XAP_CocoaFontHandle::XAP_CocoaFontHandle(const XAP_CocoaFontHandle & copy)
-  : GR_Font(copy),  m_size(copy.m_size)
+XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
+  : GR_Font(copy)
 {
-	m_font = new XAP_CocoaFont (*copy.m_font);
+	m_font = [copy.getNSFont() copy];
 }
 
-XAP_CocoaFontHandle::~XAP_CocoaFontHandle()
+XAP_CocoaFont::~XAP_CocoaFont()
 {
-	DELETEP (m_font);
+	[m_font release];
 }
 
-NSFont * XAP_CocoaFontHandle::getNSFont(void)
+NSFont * XAP_CocoaFont::getNSFont(void)
 {
-	if (m_font)
-		return m_font->getNSFont(m_size);
-	else
-		return NULL;
+	return m_font;
 }
 
-UT_uint32 XAP_CocoaFontHandle::getSize(void)
+UT_uint32 XAP_CocoaFont::getSize(void)
 {
-	return m_size;
+	return (UT_uint32)[m_font pointSize];
+}
+
+const char * XAP_CocoaFont::getName(void)
+{
+	return [[m_font fontName] cString];
 }
 
 #if 0
-void XAP_CocoaFontHandle::explodeCocoaFonts(XAP_CocoaFont ** pSingleByte, XAP_CocoaFont ** pMultiByte)
-{
-	if(m_font==NULL)
-	{
-		*pSingleByte = NULL;
-		*pMultiByte = NULL;
-		return;
-	}
-
-	if(m_font->is_CJK_font())
-	{
-		*pMultiByte = m_font;
-		*pSingleByte = m_font->getMatchCocoaFont();
-	}
-	else
-	{
-		*pSingleByte = m_font;
-		*pMultiByte = m_font->getMatchCocoaFont();
-	}		
-}
-
-void XAP_CocoaFontHandle::explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one)
-{
-	if(m_font->is_CJK_font())
-	  {
-		non_cjk_one=getMatchGdkFont();
-		cjk_one=getGdkFont();
-	  }
-	else
-	  {
-		non_cjk_one=getGdkFont();
-		cjk_one=getMatchGdkFont();
-	  }
-}
-#endif
-
 /*******************************************************************/		
 
 XAP_CocoaFont::XAP_CocoaFont(void)
@@ -316,4 +282,48 @@ void XAP_CocoaFont::_makeFontKey()
 	m_fontKey = key;
 }
 
+#endif
 
+  
+#if 0
+@implementation XAP_NSCocoaFont
++ (XAP_NSCocoaFont*)fontWithName:(NSString*)name
+{
+	XAP_NSCocoaFont* font = [[XAP_NSCocoaFont alloc] init];
+	
+	font->_font = new XAP_CocoaFont;
+	font->_font->setName ([name cString]);
+	
+	return [font autorelease];
+}
+
+
+- (id)init
+{
+	_font = nil;
+	self = [super init];
+	return self;
+}
+
+
+- (void)dealloc
+{
+	delete _font;
+	[super dealloc];
+}
+
+/*
+- (NSString*)fontKey
+{
+	return [NSString stringWithCString:_font->getFontKey()];
+}
+*/
+
+- (XAP_CocoaFont*)font
+{
+	return _font;
+}
+
+@end
+
+#endif

@@ -53,7 +53,7 @@ public:
 
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
-	XAP_CocoaFontManager * 	m_fontManager;
+//	XAP_CocoaFontManager * 	m_fontManager;
 #if 0
 	GtkWidget * 			m_fontList;
 	GtkWidget * 			m_styleList;

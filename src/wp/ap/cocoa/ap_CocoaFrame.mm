@@ -102,7 +102,7 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	NSRect rect;
 
 	bool bFocus;
-	XAP_CocoaFontManager * fontManager = ((XAP_CocoaApp *) getApp())->getFontManager();
+//	XAP_CocoaFontManager * fontManager = ((XAP_CocoaApp *) getApp())->getFontManager();
 	NSView*		docArea = [_getController() getMainView];
 	NSArray*	docAreaSubviews;
 	
@@ -153,7 +153,7 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	[m_docAreaGRView release];
 
 	
-	pG = new GR_CocoaGraphics(m_docAreaGRView, fontManager, getApp());
+	pG = new GR_CocoaGraphics(m_docAreaGRView, /*fontManager,*/ getApp());
 	ENSUREP(pG);
 	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	pG->setZoomPercentage(iZoom);

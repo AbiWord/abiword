@@ -24,7 +24,6 @@
 
 #include "ut_endian.h"
 #include "xap_CocoaApp.h"
-#include "xap_CocoaFontManager.h"
 #include "xap_CocoaFont.h"
 #include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
@@ -99,7 +98,7 @@ private:
 };
 
 
-XAP_CocoaFontHandle *	GR_CocoaGraphics::s_pFontGUI = NULL;
+XAP_CocoaFont *			GR_CocoaGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_CocoaGraphics::s_iInstanceCount = 0;
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
@@ -112,13 +111,13 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 	return pszFontFamily;
 }
 
-GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontManager, XAP_App * app)
+GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	: m_updateCallback(NULL),
 	m_updateCBparam (NULL),
-	m_pFontManager (fontManager),
 	m_offscreen (nil),
 	m_currentColor (nil),
-	m_pFont (NULL)
+	m_pFont (NULL),
+	m_screenResolution(0)
 {
 	m_pApp = app;
 	UT_ASSERT (win);
@@ -290,11 +289,13 @@ void GR_CocoaGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 
 	NSPoint point;
 	point.x = xoff;
-	point.y = yoff;
+	point.y = yoff + [font descender];
 
 	LOCK_CONTEXT__;
 	// TODO: set attributes
-	[string drawAtPoint:point withAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]];
+	NSMutableDictionary* fontProps = [NSMutableDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+	
+	[string drawAtPoint:point withAttributes:fontProps];
 	[string release];
 }
 
@@ -304,21 +305,19 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								 int * pCharWidths)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
-	if (!m_pFontManager)
-		return;
 	UT_ASSERT(m_pFont);
 	WCTOMB_DECLS;
 	NSFont *font = m_pFont->getNSFont();
-	UT_sint32 x;
+	float x;
 
 	// to be able to handle overstriking characters, we have to remember the width
 	// of the previous character printed
 	// NB: overstriking characters are only supported under UTF-8, since on 8-bit locales
 	// these are typically handled by combination glyphs
 
-	static UT_sint32 prevWidth = 0;
-	UT_sint32 curX;
-	UT_sint32 curWidth;
+	static float prevWidth = 0;
+	float curX;
+	float curWidth;
 
 	const UT_UCSChar *pC;
 
@@ -343,11 +342,16 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		//unicode font
 		//UT_DEBUGMSG(("CocoaGraphics::drawChars: utf-8\n"));
 
+		NSMutableDictionary* fontProps = [NSMutableDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+
 		switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 		{
 		case UT_NOT_OVERSTRIKING:
-			curWidth = (UT_sint32)[font widthOfString:string];
-			curX = x;
+			{
+				NSSize aSize = [string sizeWithAttributes:fontProps];
+				curWidth = aSize.width;
+				curX = x;
+			}
 			break;
 		case UT_OVERSTRIKING_RTL:
 			curWidth = 0;
@@ -361,10 +365,10 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 		NSPoint point;
 		point.x = curX;
-		point.y = yoff;
+		point.y = yoff + [font descender];
 
-		[string drawAtPoint:point withAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]];
-
+		[string drawAtPoint:point withAttributes:fontProps];
+		
 		//gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&beucs,2);
 		x+=curWidth;
 		prevWidth = curWidth;
@@ -390,7 +394,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 void GR_CocoaGraphics::setFont(GR_Font * pFont)
 {
-	XAP_CocoaFontHandle * pUFont = static_cast<XAP_CocoaFontHandle *> (pFont);
+	XAP_CocoaFont * pUFont = static_cast<XAP_CocoaFont *> (pFont);
 	UT_ASSERT (pUFont);
 	m_pFont = pUFont;
 }
@@ -399,11 +403,11 @@ UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
 
-	XAP_CocoaFontHandle * hndl = static_cast<XAP_CocoaFontHandle *>(fnt);
+	XAP_CocoaFont * hndl = static_cast<XAP_CocoaFont *>(fnt);
 
 	NSFont* pFont = hndl->getNSFont();
 //	printf ("line height %f\n", [pFont defaultLineHeightForFont]);
-	return (UT_uint32)[pFont defaultLineHeightForFont];
+	return (UT_uint32)[pFont ascender] + [pFont descender]; //[pFont defaultLineHeightForFont];
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
@@ -426,16 +430,27 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	NSFont * font = m_pFont->getNSFont();
 	NSString * string = [[NSString alloc] initWithData:[NSData dataWithBytes:&c length:sizeof(UT_UCSChar)]
 							encoding:NSUnicodeStringEncoding];
-	float w = [font widthOfString:string];
+	NSMutableDictionary* fontProps = [NSMutableDictionary dictionaryWithObject:font forKey:NSFontAttributeName];
+	NSSize aSize = [string sizeWithAttributes:fontProps];
+
 	[string release];
 
-	return (UT_uint32)w;
+	return (UT_uint32)aSize.width;
 }
 
 
 UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 {
-	return 75;
+	if (m_screenResolution)
+	{
+		return m_screenResolution;
+	}
+	NSScreen* mainScreen = [NSScreen mainScreen];
+	NSDictionary* desc = [mainScreen deviceDescription];
+	UT_ASSERT(desc);
+	NSValue* value = [desc objectForKey:NSDeviceResolution];
+	UT_ASSERT(value);
+	return [value sizeValue].height;
 }
 
 /*!
@@ -502,29 +517,13 @@ void GR_CocoaGraphics::_setColor(NSColor * c)
 
 GR_Font * GR_CocoaGraphics::getGUIFont(void)
 {
-	if (!m_pFontManager)
-		return NULL;
-
 	if (!s_pFontGUI)
 	{
 		// get the font resource		
 		UT_DEBUGMSG(("GR_CocoaGraphics::getGUIFont: getting default font\n"));
-		NSFont * myFont = [NSFont labelFontOfSize:[NSFont labelFontSize]];
-		NSString * myFontName = [myFont familyName];
-		char * name = (char *)malloc ([myFontName cStringLength] + 1);
-		[myFontName getCString:name];
-		UT_DEBUGMSG(("GUI font is %s\n", name));
-		// below we only set style to style last, but we should probably do otherwise
-		// -- Hub May 28th 2002.
-		XAP_CocoaFont * font = (XAP_CocoaFont *)m_pFontManager->getFont (name, XAP_CocoaFont::STYLE_LAST);
-		//(XAP_CocoaFont *) m_pFontManager->getDefaultFont();
-		UT_ASSERT(font);
-
 		// bury it in a new font handle
-		s_pFontGUI = new XAP_CocoaFontHandle(font, [NSFont labelFontSize]); // Hardcoded GUI font size
+		s_pFontGUI = new XAP_CocoaFont([NSFont labelFontOfSize:[NSFont labelFontSize]]); // Hardcoded GUI font size
 		UT_ASSERT(s_pFontGUI);
-		DELETEP (font);			// s_pFontGUI has duplicated the font object. Free it.
-		FREEP (name);
 	}
 
 	return s_pFontGUI;
@@ -538,8 +537,6 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 									const char* pszFontSize)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::findFont(%s, %s, %s)\n", pszFontFamily, pszFontStyle, pszFontSize));
-	if (!m_pFontManager)
-		return NULL;
 
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);
@@ -547,28 +544,28 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontSize);
 
 	// convert styles to XAP_CocoaFont:: formats
-	XAP_CocoaFont::style s = XAP_CocoaFont::STYLE_NORMAL;
+	NSFontTraitMask s = 0;
 
 	// this is kind of sloppy
 	if (!UT_strcmp(pszFontStyle, "normal") &&
 		!UT_strcmp(pszFontWeight, "normal"))
 	{
-		s = XAP_CocoaFont::STYLE_NORMAL;
+		s = 0;
 	}
 	else if (!UT_strcmp(pszFontStyle, "normal") &&
 			 !UT_strcmp(pszFontWeight, "bold"))
 	{
-		s = XAP_CocoaFont::STYLE_BOLD;
+		s = NSBoldFontMask;
 	}
 	else if (!UT_strcmp(pszFontStyle, "italic") &&
 			 !UT_strcmp(pszFontWeight, "normal"))
 	{
-		s = XAP_CocoaFont::STYLE_ITALIC;
+		s = NSItalicFontMask;
 	}
 	else if (!UT_strcmp(pszFontStyle, "italic") &&
 			 !UT_strcmp(pszFontWeight, "bold"))
 	{
-		s = XAP_CocoaFont::STYLE_BOLD_ITALIC;
+		s = NSBoldFontMask | NSItalicFontMask;
 	}
 	else
 	{
@@ -580,36 +577,21 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	// current forget about style.
 	// FIXME
 	// -- Hub May 28 2002.
-	const XAP_CocoaFont * cocoafont = m_pFontManager->getFont(pszFontFamily, XAP_CocoaFont::STYLE_LAST);//s);
-	if (!cocoafont)
+	NSFont*		nsfont;
+	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
+
+	nsfont = [NSFont fontWithName:[NSString stringWithCString:pszFontFamily] size:(float)iSize];
+	if (!nsfont)
 	{
 		// Oops!  We don't have that font here.
 		// first try "Times New Roman", which should be sensible, and should
 		// be there unless the user fidled with the installation
-		cocoafont = m_pFontManager->getFont("Times New Roman", s);
-
-		// Oh well, see if there are any fonts at all, and if so
-		// just take the first one ...
-		if(!cocoafont)
-		{
-				UT_Vector *	pVec = m_pFontManager->getAllFonts();
-				if(pVec && pVec->getItemCount() > 0)
-				{
-					// get the first font we have
-					cocoafont = static_cast<XAP_CocoaFont *>(pVec->getNthItem(0));
-				}
-
-		}
+		nsfont = [NSFont fontWithName:@"Times New Roman" size:(float)iSize];
 	}
 
+	[[NSFontManager sharedFontManager] convertFont:nsfont toHaveTrait:s];
 	// bury the pointer to our Cocoa font in a XAP_CocoaFontHandle with the correct size.
-
-//
-// This piece of code scales the FONT chosen at low resolution to that at high
-// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
-//
-	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
-	XAP_CocoaFontHandle * pFont = new XAP_CocoaFontHandle(cocoafont, iSize);
+	XAP_CocoaFont * pFont = new XAP_CocoaFont(nsfont);
 	UT_ASSERT(pFont);
 
 	return pFont;
@@ -619,7 +601,7 @@ UT_uint32 GR_CocoaGraphics::getFontAscent(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
 
-	XAP_CocoaFontHandle * hndl = static_cast<XAP_CocoaFontHandle *>(fnt);
+	XAP_CocoaFont* hndl = static_cast<XAP_CocoaFont *>(fnt);
 
 	NSFont* pFont = hndl->getNSFont();
 	return (UT_uint32)[pFont ascender];
@@ -634,7 +616,7 @@ UT_uint32 GR_CocoaGraphics::getFontDescent(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
 
-	XAP_CocoaFontHandle * hndl = static_cast<XAP_CocoaFontHandle *>(fnt);
+	XAP_CocoaFont* hndl = static_cast<XAP_CocoaFont*>(fnt);
 
 	NSFont* pFont = hndl->getNSFont();
 	return (UT_uint32)[pFont descender];
