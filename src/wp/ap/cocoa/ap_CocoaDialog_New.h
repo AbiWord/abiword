@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,8 +23,36 @@
 
 #include <Cocoa/Cocoa.h>
 #include "ap_Dialog_New.h"
+#import "xap_Cocoa_NSTableUtils.h"
 
 class XAP_CocoaFrame;
+class AP_CocoaDialog_New;
+
+@interface AP_CocoaDialog_NewController :  NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSButton *_chooseFileBtn;
+    IBOutlet NSButton *_createNewBtn;
+    IBOutlet NSTextField *_documentNameData;
+    IBOutlet NSButton *_okBtn;
+    IBOutlet NSButton *_openBtn;
+    IBOutlet NSButton *_startEmptyBtn;
+    IBOutlet NSTableView *_templateList;
+	AP_CocoaDialog_New*	_xap;
+	XAP_StringListDataSource* _dataSource;
+	NSMutableArray*	m_templates;
+}
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)radioButtonAction:(id)sender;
+- (IBAction)chooseAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (void)synchronizeGUI:(NSControl*)control;
+- (BOOL)existingBtnState;
+- (void)setExistingBtnState:(BOOL)state;
+- (BOOL)newBtnState;
+- (BOOL)emptyBtnState;
+- (void)setFileName:(NSString*)name;
+@end
 
 /*****************************************************************/
 
@@ -44,29 +72,10 @@ public:
 	void event_ToggleUseTemplate (const char * name);
 	void event_ToggleOpenExisting ();
 	void event_ToggleStartNew ();
-	
-protected:
-
-	virtual NSWindow * _constructWindow ();
-	virtual void _constructWindowContents (NSWindow * container);
-
-	void _connectSignals ();
 
 private:
-#if 0
-	/* private ... */
-	GtkWidget * m_mainWindow;
-	GtkWidget * m_buttonOk;
-	GtkWidget * m_buttonCancel;
-#endif
-
 	XAP_Frame * m_pFrame;
-#if 0
-	GtkWidget * m_entryFilename;
-	GtkWidget * m_radioNew;
-	GtkWidget * m_radioExisting;
-	GtkWidget * m_radioEmpty;
-#endif
+	AP_CocoaDialog_NewController*	m_dlg;
 };
 
 #endif /* AP_COCOADIALOG_NEW_H */

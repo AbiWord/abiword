@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,9 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -42,15 +41,15 @@
 /*************************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_New::static_constructor(XAP_DialogFactory * pFactory,
-												   XAP_Dialog_Id id)
+												   XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_New * p = new AP_CocoaDialog_New(pFactory,id);
+	AP_CocoaDialog_New * p = new AP_CocoaDialog_New(pFactory, dlgid);
 	return p;
 }
 
 AP_CocoaDialog_New::AP_CocoaDialog_New(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_New(pDlgFactory,id), m_pFrame(0)
+										 XAP_Dialog_Id dlgid)
+	: AP_Dialog_New(pDlgFactory, dlgid), m_pFrame(0)
 {
 }
 
@@ -60,40 +59,21 @@ AP_CocoaDialog_New::~AP_CocoaDialog_New(void)
 
 void AP_CocoaDialog_New::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-
 	m_pFrame = pFrame;
-	
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-	
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+	m_dlg = [[AP_CocoaDialog_NewController alloc] initFromNib];
+	[m_dlg setXAPOwner:this];
+	NSWindow* win = [m_dlg window];
 
-	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
+	// Populate the window's data items
+//	_populateWindowData();
 	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
+	[NSApp runModalForWindow:win];
 
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// Run into the GTK event loop for this window.
-	
-	gtk_main();
-	
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-		gtk_widget_destroy(mainWindow);
+//	_storeWindowData();
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
+	m_pFrame = NULL;
 }
 
 /*************************************************************************/
@@ -103,11 +83,11 @@ void AP_CocoaDialog_New::event_Ok ()
 {
 	setAnswer (AP_Dialog_New::a_OK);
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioExisting)))
+	if ([m_dlg existingBtnState])
 	{
 		setOpenType(AP_Dialog_New::open_Existing);
 	}
-	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioNew)))
+	else if ([m_dlg emptyBtnState])
 	{
 		setOpenType(AP_Dialog_New::open_Template);
 	}
@@ -116,29 +96,24 @@ void AP_CocoaDialog_New::event_Ok ()
 		setOpenType(AP_Dialog_New::open_New);
 	}
 
-	gtk_main_quit();
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_New::event_Cancel ()
 {
 	setAnswer (AP_Dialog_New::a_CANCEL);
-	gtk_main_quit();
-}
-
-void AP_CocoaDialog_New::event_ToggleUseTemplate (const char * name)
-{
-	setTemplateName (name);
+	[NSApp stopModal];
 }
 
 void AP_CocoaDialog_New::event_ToggleOpenExisting ()
 {
-	XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_OPEN;
+	XAP_Dialog_Id dlgid = XAP_DIALOG_ID_FILE_OPEN;
 
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *) m_pFrame->getDialogFactory();
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
-		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(dlgid));
 	UT_ASSERT(pDialog);
 
 	pDialog->setCurrentPathname(0);
@@ -173,11 +148,11 @@ void AP_CocoaDialog_New::event_ToggleOpenExisting ()
 		if (szResultPathname && *szResultPathname)
 		{
 			// update the entry box
-			gtk_entry_set_text (GTK_ENTRY(m_entryFilename), szResultPathname);
+			[m_dlg setFileName:[NSString stringWithUTF8String:szResultPathname]];
 			setFileName (szResultPathname);
 		}
 
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_radioExisting), TRUE);
+		[m_dlg setExistingBtnState:YES];
 	}
 
 	FREEP(szDescList);
@@ -195,205 +170,169 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 /*************************************************************************/
 /*************************************************************************/
 
-void s_ok_clicked (GtkWidget *, AP_CocoaDialog_New * dlg)
+@implementation AP_CocoaDialog_NewController
+
+- (void)dealloc
 {
-	UT_ASSERT(dlg);
-	dlg->event_Ok();
+	[m_templates release];
+	[_dataSource release];
+	[super dealloc];
 }
 
-void s_cancel_clicked (GtkWidget *, AP_CocoaDialog_New * dlg)
+
+- (id)initFromNib
 {
-	UT_ASSERT(dlg);
-	dlg->event_Cancel();
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_New"];
+	m_templates = [[NSMutableArray alloc] init];
+	return self;
 }
 
-void s_window_delete (GtkWidget *, gpointer, AP_CocoaDialog_New * dlg)
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	s_cancel_clicked (0, dlg);
+	_xap = dynamic_cast<AP_CocoaDialog_New*>(owner);
+	UT_ASSERT (_xap);
 }
 
-void s_choose_clicked (GtkWidget * w, AP_CocoaDialog_New * dlg)
+- (void)discardXAP
 {
-	dlg->event_ToggleOpenExisting();
+	_xap = nil;
 }
 
-/*************************************************************************/
-/*************************************************************************/
-
-GtkWidget * AP_CocoaDialog_New::_constructWindow ()
+- (void)windowDidLoad
 {
-	GtkWidget *mainWindow;
-	GtkWidget *dialog_vbox1;
-	GtkWidget *hbuttonbox1;
-	GtkWidget *dialog_action_area1;
-	GtkWidget *ok_btn;
-	GtkWidget *cancel_btn;
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	mainWindow = gtk_dialog_new ();
-	gtk_window_set_title (GTK_WINDOW (mainWindow), pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
-	gtk_window_set_policy (GTK_WINDOW (mainWindow), TRUE, TRUE, FALSE);
-
-	dialog_vbox1 = GTK_DIALOG (mainWindow)->vbox;
-	gtk_widget_show (dialog_vbox1);
-
-	dialog_action_area1 = GTK_DIALOG (mainWindow)->action_area;
-	gtk_widget_show (dialog_action_area1);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
-
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox1);
-	gtk_box_pack_start (GTK_BOX (dialog_action_area1), hbuttonbox1, TRUE, 
-						TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), 
-							   GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 0);
-
-	ok_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show (ok_btn);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), ok_btn);
-	GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
-
-	cancel_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (cancel_btn);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), cancel_btn);
-	GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
-
-	// assign pointers to widgets
-	m_mainWindow   = mainWindow;
-	m_buttonOk     = ok_btn;
-	m_buttonCancel = cancel_btn;
+	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_NEW_Title);
+	LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+	LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+	LocalizeControl(_chooseFileBtn, pSS, AP_STRING_ID_DLG_NEW_Choose);
+	LocalizeControl(_createNewBtn, pSS, AP_STRING_ID_DLG_NEW_Create);
+	LocalizeControl(_startEmptyBtn, pSS, AP_STRING_ID_DLG_NEW_StartEmpty);
+	LocalizeControl(_openBtn, pSS, AP_STRING_ID_DLG_NEW_Open);
+	[self synchronizeGUI:_startEmptyBtn];	// TODO check what is the default
 	
-	// construct the window contents
-	_constructWindowContents (dialog_vbox1);
-	_connectSignals ();
+	_dataSource = [[XAP_StringListDataSource alloc] init];
+	NSMutableArray *templateDirs = [[NSMutableArray alloc] init];
+	
+	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", XAP_App::getApp()->getUserPrivateDirectory()]];
+	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", XAP_App::getApp()->getAbiSuiteLibDir()]];
 
-	return mainWindow;
+	NSEnumerator* iter = [templateDirs objectEnumerator];
+	NSString * obj;
+	while (obj = [iter nextObject]) {
+		NSArray* files = [[NSFileManager defaultManager] directoryContentsAtPath:obj];
+		if (files) {
+			NSEnumerator *iter2 = [files objectEnumerator];
+			NSString* obj2;
+			while (obj2 = [iter2 nextObject]) {
+				[_dataSource addString:obj2];
+				[m_templates addObject:[NSString stringWithFormat:@"%@%@", obj, obj2]];
+			}
+		}
+	}
+	
+	[templateDirs release];
+	
+	[_templateList setDataSource:_dataSource];
 }
 
-void AP_CocoaDialog_New::_constructWindowContents (GtkWidget * container)
+
+- (IBAction)cancelAction:(id)sender
 {
-	GtkWidget *vbox1;
-	GtkWidget *hbox1;
-
-	GtkWidget *radio_new;
-	GtkWidget *radio_existing;
-	GtkWidget *radio_empty;
-	GSList    *vbox1_group = NULL;
-
-	GtkWidget *notebook_choices;
-	GtkWidget *scrolledWindow;
-
-	GtkWidget *label1;
-
-	GtkWidget *hseparator1;
-	GtkWidget *hseparator2;
-	GtkWidget *hseparator3;
-
-	GtkWidget *entry_filename;
-	GtkWidget *choose_btn;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	vbox1 = gtk_vbox_new (FALSE, 10);
-	gtk_widget_show (vbox1);
-	gtk_box_pack_start (GTK_BOX (container), vbox1, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), 6);
-
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, TRUE, TRUE, 0);
-
-	radio_new = gtk_radio_button_new_with_label (vbox1_group, pSS->getValue(AP_STRING_ID_DLG_NEW_Create));
-	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_new));
-	gtk_widget_show (radio_new);
-	gtk_box_pack_start (GTK_BOX (vbox1), radio_new, FALSE, FALSE, 0);
-
-	notebook_choices = gtk_notebook_new ();
-	gtk_widget_show (notebook_choices);
-	gtk_box_pack_start (GTK_BOX (vbox1), notebook_choices, TRUE, TRUE, 0);
-	gtk_notebook_set_scrollable (GTK_NOTEBOOK (notebook_choices), TRUE);
-
-	scrolledWindow = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_show (scrolledWindow);
-	gtk_container_add (GTK_CONTAINER (notebook_choices), scrolledWindow);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledWindow), 
-									GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
-
-	// TODO: add templates here
-	
-	hseparator2 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator2);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator2, TRUE, TRUE, 0);
-
-	radio_existing = gtk_radio_button_new_with_label (vbox1_group, pSS->getValue(AP_STRING_ID_DLG_NEW_Open));
-	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_existing));
-	gtk_widget_show (radio_existing);
-	gtk_box_pack_start (GTK_BOX (vbox1), radio_existing, FALSE, FALSE, 0);
-
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, TRUE, TRUE, 0);
-
-	entry_filename = gtk_entry_new ();
-	gtk_widget_show (entry_filename);
-	gtk_box_pack_start (GTK_BOX (hbox1), entry_filename, TRUE, TRUE, 0);
-	gtk_entry_set_editable (GTK_ENTRY (entry_filename), FALSE);
-	gtk_entry_set_text (GTK_ENTRY (entry_filename), pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile));
-
-	choose_btn = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_NEW_Choose));
-	gtk_widget_show (choose_btn);
-	gtk_box_pack_start (GTK_BOX (hbox1), choose_btn, FALSE, FALSE, 0);
-
-	hseparator3 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator3);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator3, TRUE, TRUE, 0);
-
-	radio_empty = gtk_radio_button_new_with_label (vbox1_group, 
-												   pSS->getValue(AP_STRING_ID_DLG_NEW_StartEmpty));
-	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_empty));
-	gtk_widget_show (radio_empty);
-	gtk_box_pack_start (GTK_BOX (vbox1), radio_empty, FALSE, FALSE, 0);
-
-	// make this one the default
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_empty), TRUE);
-
-	// connect signals
-	g_signal_connect (G_OBJECT(choose_btn), 
-						"clicked",
-						G_CALLBACK(s_choose_clicked), 
-						(gpointer)this);
-
-	// set the private pointers
-	m_radioNew      = radio_new;
-	m_radioExisting = radio_existing;
-	m_radioEmpty    = radio_empty;
-	m_entryFilename = entry_filename;
+	_xap->event_Cancel();
 }
 
-void AP_CocoaDialog_New::_connectSignals ()
+- (IBAction)radioButtonAction:(id)sender
 {
-  	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOk),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-	
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_mainWindow),
-					   "delete_event",
-					   G_CALLBACK(s_window_delete),
-					   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_mainWindow),
-							 "destroy",
-							 NULL,
-							 NULL);
+	[self synchronizeGUI:sender];
 }
+
+- (IBAction)chooseAction:(id)sender
+{
+	_xap->event_ToggleOpenExisting();
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_xap->event_Ok();
+}
+
+- (void)synchronizeGUI:(NSControl*)control
+{
+	enum { NONE, NEW, OPEN, EMPTY } selected;
+	
+	if (control == _createNewBtn) {
+		selected = NEW;
+	}
+	else if (control == _openBtn) {
+		selected = OPEN;
+	}
+	else if (control == _startEmptyBtn) {
+		selected = EMPTY;
+	}
+	else {
+		selected = NONE;
+	}
+	switch (selected) {
+	case NEW:
+		[_startEmptyBtn setState:NSOffState];
+		[_createNewBtn setState:NSOnState];
+		[_templateList setEnabled:YES];
+		[_openBtn setState:NSOffState];
+		[_documentNameData setEnabled:NO];
+		[_chooseFileBtn setEnabled:NO];
+		break;
+	case OPEN:
+		[_startEmptyBtn setState:NSOffState];
+		[_createNewBtn setState:NSOffState];
+		[_templateList setEnabled:NO];
+		[_openBtn setState:NSOnState];
+		[_documentNameData setEnabled:YES];
+		[_chooseFileBtn setEnabled:YES];
+		break;
+	case EMPTY:
+		[_startEmptyBtn setState:NSOnState];
+		[_createNewBtn setState:NSOffState];
+		[_templateList setEnabled:NO];
+		[_openBtn setState:NSOffState];
+		[_documentNameData setEnabled:NO];
+		[_chooseFileBtn setEnabled:NO];
+		break;
+	default:
+		break;
+	}
+}
+
+
+- (BOOL)existingBtnState
+{
+	return ([_openBtn state] == NSOnState);
+}
+
+- (void)setExistingBtnState:(BOOL)state
+{
+	if (state) {
+		[_openBtn setState:NSOnState];
+	}
+	else {
+		[_openBtn setState:NSOffState];
+	}
+}
+
+- (BOOL)newBtnState
+{
+	return ([_createNewBtn state] == NSOnState);
+}
+
+- (BOOL)emptyBtnState
+{
+	return ([_startEmptyBtn state] == NSOnState);
+}
+
+- (void)setFileName:(NSString*)name
+{
+	[_documentNameData setStringValue:name];
+}
+
+@end
