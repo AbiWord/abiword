@@ -113,6 +113,52 @@ UT_sint32 fp_Page::getAvailableHeight(void) const
 	return avail;
 }
 
+/*!
+ * This method returns the height available to the requested column. It 
+ * subtracts the height given to previous columns on the page as well as the 
+ * height given to footnotes.
+*/  
+UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
+{
+	fp_Column * pLeader = pColumn->getLeader();
+    fp_Column * pCurLeader = getNthColumnLeader(0);
+	fl_DocSectionLayout * pDSL = pCurLeader->getDocSectionLayout();
+	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	UT_sint32 i =0;
+	xxx_UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
+	UT_sint32 nLeaders = static_cast<UT_sint32>(countColumnLeaders()); 
+	while((pCurLeader != pLeader) && (nLeaders > 1))	
+	{
+		UT_sint32 iMostHeight = pCurLeader->getHeight();
+		fp_Column* pTmpCol = pCurLeader;
+		while(pTmpCol)
+		{
+			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
+			pTmpCol = pTmpCol->getFollower();
+		}
+		xxx_UT_DEBUGMSG(("fp_Page: Subtracting height %d from column %d \n",iMostHeight,i));
+		avail -= iMostHeight;
+		i++;
+		if( i < nLeaders)
+		{
+			pCurLeader = getNthColumnLeader(i);
+		}
+		else
+		{
+			break;
+		}
+	}
+//
+// Now subtract the footnotes on this page too
+//
+	for(i=0; i< static_cast<UT_sint32>(countFootnoteContainers()); i++)
+	{
+		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
+		avail -= pFC->getHeight();
+	}
+	return avail;
+
+}
 
 /*!
  * This method scans the page and returns the total height in layout units of all the columns

@@ -106,7 +106,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
 		UT_sint32 iFootnoteHeight = 0;
 		bool bEquivColumnBreak = false;
-		xxx_UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
+		xxx_UT_DEBUGMSG(("fb_ColumnBreaker: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
 		if((iMaxSecCol > 0) && (iMaxSecCol < iMaxColHeight))
 		{
 			iMaxColHeight = iMaxSecCol;
@@ -576,13 +576,13 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						UT_sint32 i =0;
 						for(i=0; i< static_cast<UT_sint32>(vecFootnotes.getItemCount());i++)
 						{
-							UT_DEBUGMSG(("Found reference %d in broken table %x \n",i,pCurTable));
+							xxx_UT_DEBUGMSG(("Found reference %d in broken table %x \n",i,pCurTable));
 							fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(vecFootnotes.getNthItem(i));
 							fp_Page * myPage = pFC->getPage();
-							UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
+							xxx_UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
 							if(myPage != pCurPage)
 							{
-								UT_DEBUGMSG((" Moving anchor from %x to %x \n",myPage,pCurPage));
+								xxx_UT_DEBUGMSG((" Moving anchor from %x to %x \n",myPage,pCurPage));
 								if(myPage == NULL)
 								{
 									pCurPage->insertFootnoteContainer(pFC);
@@ -787,7 +787,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 {
 	bool bDoTableBreak;
 
-    UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending container is table %x \n",pOffendingContainer));
+    xxx_UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending container is table %x \n",pOffendingContainer));
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pOffendingContainer);
 	if(!pTab->isThisBroken())
 	{
@@ -811,14 +811,14 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 	fp_TableContainer * pBroke = NULL;
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
-	UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
+	xxx_UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
 // Look to see if the table can be broken. If iBreakAt < 0 we have to bump 
 // the whole table into the next column.
 //
 	if(iBreakAt < 1)
 	{
-		UT_DEBUGMSG(("breakTable Col: Can't break this table %d \n",iBreakAt));
+		xxx_UT_DEBUGMSG(("breakTable Col: Can't break this table %d \n",iBreakAt));
 		return false;
 	}
 
@@ -838,7 +838,6 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // Break it at 0 first.
 //
 			xxx_UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
-			xxx_UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeight() , iContainerMarginAfter ));
 			fp_Container * pNext = static_cast<fp_Container *>(pTab->getNext());
 			xxx_UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
 			if(pNext)

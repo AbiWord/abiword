@@ -75,6 +75,7 @@ public:
 	bool				needsRedraw(void) const;
     UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
 	UT_sint32           getAvailableHeight(void) const;
+	UT_sint32           getAvailableHeightForColumn(const fp_Column * pColumn) const;
 
 	// Leader (e.g. column) functions.
 	void 				columnHeightChanged(fp_Column* pLeader);

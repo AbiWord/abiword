@@ -2634,7 +2634,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			da.pG = m_pG;
 			da.xoff = xoff;
 			da.yoff = yoff + pLine->getAscent();
-
+			UT_DEBUGMSG(("draw_between positions width is %d \n",pCurRun->getWidth()));
 			pCurRun->draw(&da);
 		}
 

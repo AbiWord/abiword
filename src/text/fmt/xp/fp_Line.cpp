@@ -1172,7 +1172,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	if(count <= 0)
 		return;
 
-	//xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA, width %d \n",getWidth()));
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
 

@@ -1127,7 +1127,7 @@ UT_sint32 fp_Column::getMaxHeight(void) const
 	{
 		return pVC->getMaxHeight();
 	}
-	return getPage()->getAvailableHeight();
+	return getPage()->getAvailableHeightForColumn(this);
 }
 
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
