@@ -1624,7 +1624,7 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 	*/
 	
 	const PP_AttrProp * pSpanAP = NULL;
-	UT_Bool bFoundSpanAP = getSpanAttrProp(blockOffset,UT_TRUE,&pSpanAP);
+	UT_Bool bFoundSpanAP = getSpanAttrProp(blockOffset,UT_FALSE,&pSpanAP);
 	if (bFoundSpanAP && pSpanAP)
 	{
 		const XML_Char* pszDataID = NULL;
