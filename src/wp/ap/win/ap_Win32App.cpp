@@ -1140,7 +1140,10 @@ __except (1)
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
 		UT_ASSERT(curFrame);
 		
-		curFrame->backup(".CRASHED");
+		if (NULL == curFrame->getFilename())
+		  curFrame->backup(".abw~");
+		else
+		  curFrame->backup(".CRASHED");
 	}	
 }// end of except
 #endif
