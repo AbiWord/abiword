@@ -62,7 +62,7 @@ SectionEnd
 ; OPTIONAL Start Menu Shortcut
 Section "Start Menu Shortcuts"
 	CreateDirectory "$SMPROGRAMS\Abiword"
-	CreateShortCut "$SMPROGRAMS\Abiword\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\UninstallAbiWord.exe" 0
+	CreateShortCut "$SMPROGRAMS\Abiword\Uninstall.lnk" "$INSTDIR\UninstallAbiWord.exe" "" "$INSTDIR\UninstallAbiWord.exe" 0
 	CreateShortCut "$SMPROGRAMS\Abiword\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
 SectionEnd
 
