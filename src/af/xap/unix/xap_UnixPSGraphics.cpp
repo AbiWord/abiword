@@ -348,8 +348,8 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	// TODO set the line width to m_iLineWidth
 	
 	char buf[OUR_LINE_LIMIT*2];
-	UT_sint32 nA = getFontAscent();
-	sprintf(buf,"%ld %ld %ld %ld ML\n", x2, y2-nA, x1, y1-nA);
+//	UT_sint32 nA = getFontAscent();
+	sprintf(buf,"%ld %ld %ld %ld ML\n", x2, y2, x1, y1);
 	m_ps->writeBytes(buf);
 }
 
