@@ -255,10 +255,12 @@ cd ../abi
 %{prefix}/share/pixmaps/abiword_48.png
 %{prefix}/share/applications/abiword.desktop
 
+%if %{enable_gnome}
 %files embeddable
 %defattr(644,root,root,755)
 %{ABIPREFIX}/oaf
 %{ABIPREFIX}/gnome-2.0/ui/
+%endif
 
 %if %{enable_tools}
 %files plugins-tools
@@ -336,6 +338,9 @@ cd ../abi
 #fi
 
 %changelog
+* Fri Sep 5 2002 Marc Maurer <j.m.maurer@student.utwente.nl>
+- Only generate the embeddable package when GNOME is enabled
+
 * Fri Aug 23 2002 Rui M. Silva Seabra <rms@1407.org>
 - Make spec compile abiword for gtk2.
 
