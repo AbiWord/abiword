@@ -71,7 +71,7 @@ extern "C" {
 #endif
 	{
 		char *file = __FILE__;
-		newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+		newXS("DynaLoader::boot_DynaLoader", (XSUBADDR_t) boot_DynaLoader, file);
 		/* we want to link to the module code, but until it's stable
 		   it's better to have it dynamically loaded...
 		   newXS("abi::boot_AbiWord", boot_AbiWord, file);*/
@@ -94,7 +94,7 @@ public:
 
 extern "C" {
 #if defined (__APPLE__) || defined (__FREEBSD__) || defined (__OpenBSD) \
-    || defined (_AIX)
+    || defined (_AIX) || defined(__osf__)
  static int perl_only (struct dirent *d)
 #else
  static int perl_only (const struct dirent *d)
