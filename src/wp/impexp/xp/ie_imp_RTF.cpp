@@ -1351,7 +1351,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bRowJustPassed(false),
 	m_iStackLevelAtRow(0),
 	m_bDoCloseTable(false),
-	m_iNoCellsSinceLastRow(0)
+	m_iNoCellsSinceLastRow(0),
+	m_bFieldRecognized(false)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -3333,6 +3334,7 @@ bool IE_Imp_RTF::HandleField()
 		fldAttrPriv = 8
 	} RTFFieldAttr;
 
+	m_bFieldRecognized = false;
 
 	UT_uint32 iHyperlinkOpen = m_iHyperlinkOpen;
 	
@@ -3475,6 +3477,14 @@ bool IE_Imp_RTF::HandleField()
 			{
 				UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n"));
 				// don't return as we simply skip it
+			}
+			else
+			{
+				if(m_bFieldRecognized && (m_iHyperlinkOpen== 0))
+				{
+					SkipCurrentGroup(false);
+					return true;
+				}
 			}
 		}
 		
@@ -4417,6 +4427,23 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "field") == 0)
 		{
 			return HandleField ();
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "fldrslt") == 0)
+		{
+			if(m_bFieldRecognized && (m_iHyperlinkOpen== 0))
+			{
+//
+// skip this until the next "}"
+//
+				SkipCurrentGroup();
+			}
+			else
+			{
+//
+// Just parse the text found
+//
+				return true;
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "footer") == 0)
 		{
@@ -9261,6 +9288,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		m_dposPaste++;
 	}
 	free(propsArray);
+	m_bFieldRecognized = true;
 	return ok;
 }
 

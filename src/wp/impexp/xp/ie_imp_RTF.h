@@ -782,6 +782,7 @@ private:
 	bool                  m_bDoCloseTable;
 	UT_sint32             m_iNoCellsSinceLastRow;
 	RTFStateStore         m_FootnoteRefState;
+	bool                  m_bFieldRecognized;
 };
 
 #endif /* IE_IMP_RTF_H */
