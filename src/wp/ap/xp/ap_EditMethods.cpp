@@ -7527,7 +7527,7 @@ Defun(dlgColumns)
 			UT_DEBUGMSG(("SEVIOR: Setting property %d to %s \n",i,props[i]));
 		}
 		pView->setSectionFormat(props);
-		free(props);
+		FREEP(props);
 	}
 
 	free(props_in);
