@@ -216,6 +216,7 @@ private:
 class ABI_EXPORT fl_CellLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
+	friend class fl_TableContainer;
 public:
 	fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_CellLayout();
@@ -242,7 +243,6 @@ public:
 	void                     createCellContainer(void);
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
-	void                     localCollapse();
 	virtual void             collapse(void);
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
@@ -311,6 +311,7 @@ private:
 	UT_sint32              m_iBgStyle;
 
 	void                   _updateCell(void);
+	void                   _localCollapse();
 };
 
 //

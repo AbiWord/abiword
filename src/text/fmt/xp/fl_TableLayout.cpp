@@ -1682,7 +1682,7 @@ UT_sint32 fl_CellLayout::getBottomOffsetInLayoutUnits(void) const
 #endif
 
 
-void fl_CellLayout::localCollapse(void)
+void fl_CellLayout::_localCollapse(void)
 {
 
 	// ClearScreen on our Cell. One Cell per layout.
@@ -1705,7 +1705,7 @@ void fl_CellLayout::localCollapse(void)
 
 void fl_CellLayout::collapse(void)
 {
-	localCollapse();
+	_localCollapse();
 
 	// Delete our Cell. One Cell per layout.
 
