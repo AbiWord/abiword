@@ -1509,25 +1509,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	if (x < xStartPixel)
 	{
-		m_dragging2Center += (xStartPixel - m_draggingCenter);
-		m_draggingCenter = xStartPixel;
-		if (m_dragging2Center < xStartPixel)
-		{
-			m_draggingCenter += (xStartPixel - m_dragging2Center);
-			m_dragging2Center = xStartPixel;
-		}
-		return;
+		x = xStartPixel;
 	}
 	else if (x > xAbsRight)
 	{
-		m_dragging2Center -= (xAbsRight - m_draggingCenter);
-		m_draggingCenter = xAbsRight;
-		if (m_dragging2Center > xAbsRight)
-		{
-			m_draggingCenter -= (xAbsRight - m_dragging2Center);
-			m_dragging2Center = xAbsRight;
-		}
-		return;
+		x = xAbsRight;
 	}
 
 	// mouse motion was in the ruler portion of the window, we cannot ignore it.
