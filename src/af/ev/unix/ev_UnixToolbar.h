@@ -28,6 +28,7 @@
 #include "xav_Listener.h"
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixToolbar_StyleCombo.h"
+#include "xap_FontPreview.h"
 
 class XAP_UnixApp;
 class XAP_UnixFrame;
@@ -58,6 +59,7 @@ public:
 	virtual void show(void);
 	virtual void hide(void);
 	
+	XAP_FontPreview *				m_pFontPreview;	
 protected:
 	void							_releaseListener(void);
 

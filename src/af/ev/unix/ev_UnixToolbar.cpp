@@ -38,6 +38,7 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_UnixFontPreview.h"
 
 // hack
 #include "ap_Toolbar_Id.h"
@@ -220,6 +221,27 @@ public:									// we create...
 					{					
 						UT_ASSERT(length < 1024);				       
 						strcpy(wd->m_comboEntryBuffer, buffer);
+						
+						// if this is the font combobox, then create and show the font preview window
+						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
+						{
+							if (wd->m_pUnixToolbar->m_pFontPreview == NULL)
+							{
+								int x,y;
+	
+								// this combo widget should have a parent widget which contains this combo widget _and_ the dropdown arrow
+								GtkWidget * parent = gtk_widget_get_parent(widget);
+								UT_ASSERT(parent);
+								gdk_window_get_origin(parent->window, &x,&y);
+								x += parent->allocation.x + parent->allocation.width;
+								y += parent->allocation.y + parent->allocation.height;
+								
+								XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
+								wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
+							}
+							wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
+							wd->m_pUnixToolbar->m_pFontPreview->draw();							
+						}
 					}				   
 				}
 			}
@@ -245,9 +267,17 @@ public:									// we create...
 					UT_ASSERT(text);					
 					wd->m_pUnixToolbar->toolbarEvent(wd, text, strlen((char*)text));
 				}
+				
+				// destroy the font preview window
+				if (
+					(wd->m_id == AP_TOOLBAR_ID_FMT_FONT) && // this first check isn't needed, but I put it here anyway for the general understanding of the public :)
+					(wd->m_pUnixToolbar->m_pFontPreview != NULL)
+					)
+				{
+					DELETEP(wd->m_pUnixToolbar->m_pFontPreview);
+				}
 			}
 		}
-			
 	};
 
 	// unblock when the menu goes away
