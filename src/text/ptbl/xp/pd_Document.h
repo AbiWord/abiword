@@ -173,7 +173,7 @@ public:
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	
 	// styles
-
+	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	size_t                                  getStyleCount(void);
 	bool					enumStyles(UT_uint32 k,
@@ -182,6 +182,8 @@ public:
 	bool					addStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
 	bool	                setAllStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
 	bool	                addStyleAttributes(const XML_Char * szStyleName, const XML_Char ** pAttribs);
+
+    PL_StruxDocHandle       findPreviousStyleStrux(const XML_Char * szStyle, PT_DocPosition pos);
 	bool					updateDocForStyleChange(const XML_Char * szStyleName,
 													bool isParaStyle);
 	void                    updateAllLayoutsInDoc( PL_StruxDocHandle sdh);

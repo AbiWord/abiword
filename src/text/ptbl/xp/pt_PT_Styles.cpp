@@ -109,7 +109,11 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	sprintf(list_fmt_tmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Heart List", "P", "Normal", "Current Settings", list_fmt_tmp);
 
+    _s("Numbered Heading 1","P","Heading 1","Normal","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
 
+    _s("Numbered Heading 2","P","Heading 2","Normal","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
+
+    _s("Numbered Heading 3","P","Heading 3","Normal","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
 	return true;
 
 Failed:

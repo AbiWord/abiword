@@ -870,6 +870,17 @@ bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * p
 	return true;
 }
 
+PL_StruxFmtHandle PD_Document::getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n)
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	UT_uint32 nListen = m_vecListeners.getItemCount();
+	if(n >= nListen)
+		return NULL;
+	PL_ListenerId lid = (PL_ListenerId) n;
+	PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
+	return sfh;
+}
+
 static void s_BindHandles(PL_StruxDocHandle sdhNew,
 						  PL_ListenerId lid,
 						  PL_StruxFmtHandle sfhNew)
@@ -1442,6 +1453,59 @@ bool	PD_Document::setAllStyleAttributes(const XML_Char * szStyleName, const XML_
 	(*ppS)->getFollowedBy();
 	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
 }
+
+/*!
+ * This method scans the document backwards for a struc with the style name szStyle in it.
+\params pStyle a pointer to style to be scanned for.
+\params pos the document position to start from.
+\return the sdh of the strux found.
+*/
+PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, PT_DocPosition pos)
+{
+	PL_StruxDocHandle sdh = NULL;
+	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
+	pf_Frag_Strux * pfs = NULL;
+	pf_Frag * currentFrag = (pf_Frag *) sdh;
+	bool bFound = false;
+    while (currentFrag != m_pPieceTable->getFragments().getFirst() && !bFound)
+	{
+		if (currentFrag->getType()==pf_Frag::PFT_Strux)
+		{
+//
+// All this code is used to find if this strux has our style in it
+//
+			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
+			PT_AttrPropIndex indexAP = pfs->getIndexAP();
+			const PP_AttrProp * pAP = NULL;
+			m_pPieceTable->getAttrProp(indexAP,&pAP);
+			UT_ASSERT(pAP);
+			const XML_Char * pszStyleName = NULL;
+			(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+//
+// It does so signal all the layouts to update themselves for the new definition
+// of the style.
+//
+			if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+			{
+				bFound = true;
+			}
+		}
+		if(!bFound)
+		{
+			currentFrag = currentFrag->getPrev();
+		}
+	}
+	if(bFound)
+	{
+		sdh = (PL_StruxDocHandle) currentFrag;
+	}
+	else
+	{
+		sdh = NULL;
+	}
+	return sdh;
+}
+
 
 /*!
  * This method loops through the entire document updating each location
