@@ -115,7 +115,6 @@
 #	include "tb_merge_cells.xpm"
 #	include "tb_split_cells.xpm"
 #	include "tb_transparent.xpm"
-#   include "stock_new-text.xpm"
 
 	// ... add new icons here (don't forget to add below the #else) ...
 
