@@ -4630,7 +4630,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	{
 		propBuffer += "; column-line:on";
 	}
-	if(m_currentRTFState.m_sectionProps.m_leftMargTwips != 0)
+	if(true /*m_currentRTFState.m_sectionProps.m_leftMargTwips != 0*/)
 	{
 		propBuffer += "; page-margin-left:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_leftMargTwips/1440.;
@@ -4640,7 +4640,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
-	if(m_currentRTFState.m_sectionProps.m_rightMargTwips != 0)
+	if(true /*m_currentRTFState.m_sectionProps.m_rightMargTwips != 0*/)
 	{
 		propBuffer += "; page-margin-right:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_rightMargTwips/1440.;
@@ -4650,7 +4650,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
-	if(m_currentRTFState.m_sectionProps.m_topMargTwips != 0)
+	if(true /*m_currentRTFState.m_sectionProps.m_topMargTwips != 0*/)
 	{
 		propBuffer += "; page-margin-top:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_topMargTwips/1440.;
@@ -4660,7 +4660,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
-	if(m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0)
+	if(true /*m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0*/)
 	{
 		propBuffer += "; page-margin-bottom:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_bottomMargTwips/1440.;
@@ -4670,7 +4670,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
-	if(m_currentRTFState.m_sectionProps.m_colSpaceTwips != 0)
+	if(true /*m_currentRTFState.m_sectionProps.m_colSpaceTwips != 0*/)
 	{
 		propBuffer += "; column-gap:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_colSpaceTwips/1440.;
@@ -4680,7 +4680,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
-	if(m_currentRTFState.m_sectionProps.m_headerYTwips != 0)
+	if(true /*m_currentRTFState.m_sectionProps.m_headerYTwips != 0*/)
 	{
 		UT_sint32 sheader = 0;
 //
@@ -4689,7 +4689,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 //
 // So the header margin = topmargin - header height.
 //
-		if(m_currentRTFState.m_sectionProps.m_topMargTwips != 0)
+		if(true/*m_currentRTFState.m_sectionProps.m_topMargTwips != 0*/)
 		{
 			sheader = m_currentRTFState.m_sectionProps.m_topMargTwips - m_currentRTFState.m_sectionProps.m_headerYTwips;
 			if(sheader < 0)
@@ -4705,7 +4705,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
-	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
+	if(true /*m_currentRTFState.m_sectionProps.m_footerYTwips != 0*/)
 	{
 		UT_sint32 sfooter = 0;
 //
@@ -4714,7 +4714,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 //
 // So the footer margin = bottom margin - footer height.
 //
-		if(m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0)
+		if(true /*m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0*/)
 		{
 			sfooter = m_currentRTFState.m_sectionProps.m_bottomMargTwips - m_currentRTFState.m_sectionProps.m_headerYTwips;
 			if(sfooter < 0)
