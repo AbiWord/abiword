@@ -140,6 +140,8 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 
 	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsLoad,
 							  &m_bLoadIgnoredWords);
+
+	_data_NewBlock ();
 }
 
 /*****************************************************************/
@@ -159,6 +161,12 @@ void IE_Imp_XML::endElement (const XML_Char * /*name*/)
 	m_error = UT_IE_UNSUPTYPE;
 	UT_DEBUGMSG(("you must override virtual method IE_Imp_XML::endElement\n"));
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+void IE_Imp_XML::_data_NewBlock ()
+{
+	m_iCharCount = 0;
+	m_bStripLeading = true; // only makes a difference if !m_bWhiteSignificant
 }
 
 void IE_Imp_XML::charData(const XML_Char *s, int len)
@@ -188,7 +196,20 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 				switch (m_parseState)
 					{
 					case _PS_Block:
-						X_CheckError(getDoc()->appendSpan(buf.ucs4_str(), buf.size()));
+						if (!m_bWhiteSignificant && m_bStripLeading && (buf[0] == UCS_SPACE))
+						{
+							if (buf.size () > 1)
+							{
+								X_CheckError(getDoc()->appendSpan (buf.ucs4_str()+1, buf.size()-1));
+								m_iCharCount += buf.size () - 1;
+							}
+						}
+						else
+						{
+							X_CheckError(getDoc()->appendSpan (buf.ucs4_str(), buf.size()));
+							m_iCharCount += buf.size ();
+						}
+						m_bStripLeading = (buf[buf.size()-1] == UCS_SPACE);
 						return;
 					case _PS_IgnoredWordsItem:
 						if (m_bLoadIgnoredWords)
