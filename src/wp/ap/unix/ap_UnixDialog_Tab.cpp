@@ -103,23 +103,12 @@ void AP_UnixDialog_Tab::runModal(XAP_Frame * pFrame)
 void AP_UnixDialog_Tab::event_OK(void)
 {
     m_answer = AP_Dialog_Tab::a_OK;
+	_storeWindowData();
 }
 
 void AP_UnixDialog_Tab::event_Cancel(void)
 {
     m_answer = AP_Dialog_Tab::a_CANCEL;
-}
-
-void AP_UnixDialog_Tab::event_Apply(void)
-{
-  _storeWindowData();
-}
-
-/*static*/ void AP_UnixDialog_Tab::s_apply_clicked(GtkWidget * widget, gpointer data )
-{ 
-  AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
-  UT_return_if_fail(widget && dlg); 
-  dlg->event_Apply(); 
 }
 
 /*****************************************************************/
@@ -160,24 +149,11 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	//
-	// Gnome buttons
-	//
-	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
-	gtk_widget_show(buttonApply);
-	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(windowTabs)->action_area), buttonApply);
-
 	buttonOK = abiAddStockButton(GTK_DIALOG(windowTabs), GTK_STOCK_OK, BUTTON_OK);
 	buttonCancel = abiAddStockButton(GTK_DIALOG(windowTabs), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
-	m_buttonApply = buttonApply;
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
-
-	g_signal_connect(G_OBJECT(m_buttonApply),
-			 "clicked",
-			 G_CALLBACK(s_apply_clicked),
-			 (gpointer) this);
 }
 
 void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
@@ -240,7 +216,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox4), 9);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox4), 0, 0);
 
-	buttonSet = gtk_button_new_from_stock(GTK_STOCK_APPLY); //pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
+	buttonSet = gtk_button_new_with_label(pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
 	gtk_widget_show (buttonSet);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
 	GTK_WIDGET_SET_FLAGS (buttonSet, GTK_CAN_DEFAULT);
@@ -507,8 +483,6 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	m_Widgets.setNthItem( id_BUTTON_OK,			m_buttonOK,					NULL);
 	m_Widgets.setNthItem( id_BUTTON_CANCEL,			m_buttonCancel,				NULL);
-	m_Widgets.setNthItem( id_BUTTON_APPLY,			m_buttonApply,				NULL);
-
 
 	// some lists of signals to set
 	tControl id;

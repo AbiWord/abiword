@@ -82,7 +82,6 @@ public:
 	eTabLeader	m_current_leader;
 	GtkWidget * m_GnomeButtons;
 	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonCancel;
 	GtkWidget * m_wTable;
 	UT_sint32 m_iDefaultSpin;
@@ -95,7 +94,6 @@ protected:
 	static void s_set_clicked		( GtkWidget *, gpointer );
 	static void s_clear_clicked		( GtkWidget *, gpointer );
 	static void s_clear_all_clicked		( GtkWidget *, gpointer );
-	static void s_apply_clicked		( GtkWidget *, gpointer );
 
 	static void s_list_select		( GtkWidget *, gpointer );
 	static void s_list_deselect		( GtkWidget *, gpointer );
@@ -114,7 +112,6 @@ protected:
 	// callbacks can fire these events
     void event_OK(void);
     void event_Cancel(void);
-    void event_Apply(void);
 };
 
 #endif /* AP_UNIXDIALOG_TAB_H */
