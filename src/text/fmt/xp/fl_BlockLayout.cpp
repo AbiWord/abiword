@@ -527,19 +527,30 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	{
 		const char* pszKeepTogether = getProperty("keep-together");
-		if (pszKeepTogether
-			&& (0 == UT_strcmp("yes", pszKeepTogether))
-			)
+		if (pszKeepTogether)
 		{
-			m_bKeepTogether = true;
+			if (0 == UT_strcmp("yes", pszKeepTogether))
+			{
+				m_bKeepTogether = true;
+			}
+			else
+			{
+				m_bKeepTogether = false;
+			}
 		}
+
 	
 		const char* pszKeepWithNext = getProperty("keep-with-next");
-		if (pszKeepWithNext
-			&& (0 == UT_strcmp("yes", pszKeepWithNext))
-			)
+		if (pszKeepWithNext)
 		{
-			m_bKeepWithNext = true;
+			if (0 == UT_strcmp("yes", pszKeepWithNext))
+			{
+				m_bKeepWithNext = true;
+			}
+			else
+			{
+				m_bKeepWithNext = false;
+			}
 		}
 	}
 	
@@ -2269,33 +2280,36 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 				wordLength++;
 			}
 
-			fl_PartOfBlock* pPOB = new fl_PartOfBlock(wordBeginning, 
-													  wordLength);
-			UT_ASSERT(pPOB);
+			if (wordLength)
+			{
+				fl_PartOfBlock* pPOB = new fl_PartOfBlock(wordBeginning, 
+														  wordLength);
+				UT_ASSERT(pPOB);
 
 #if 0 // TODO: turn this code on someday
-			FV_View* pView = m_pLayout->getView();
-			XAP_App * pApp = XAP_App::getApp();
-			XAP_Prefs *pPrefs = pApp->getPrefs();
-			UT_ASSERT(pPrefs);
+				FV_View* pView = m_pLayout->getView();
+				XAP_App * pApp = XAP_App::getApp();
+				XAP_Prefs *pPrefs = pApp->getPrefs();
+				UT_ASSERT(pPrefs);
 
-			bool b;
+				bool b;
 	
-			// possibly auto-replace the squiggled word with a suggestion
-			if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellAutoReplace, &b))
-			{
-				if (b && !bIsIgnored)
+				// possibly auto-replace the squiggled word with a suggestion
+				if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellAutoReplace, &b))
 				{
-					// todo: better cursor movement
-					pView->cmdContextSuggest(1, this, pPOB);
-					pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
-					DELETEP(pPOB);
+					if (b && !bIsIgnored)
+					{
+						// todo: better cursor movement
+						pView->cmdContextSuggest(1, this, pPOB);
+						pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+						DELETEP(pPOB);
+					}
 				}
-			}
 #endif
 
-			if (pPOB)
-				bScreenUpdated |= _doCheckWord(pPOB, pBlockText);
+				if (pPOB)
+					bScreenUpdated |= _doCheckWord(pPOB, pBlockText);
+			}
 
 			wordBeginning += (wordLength + 1);
 		}
@@ -3877,8 +3891,6 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 #endif
 	_lookupProperties();
 	xxx_UT_DEBUGMSG(("SEVIOR: Old Style = %s new style = %s \n",szOldStyle,m_szStyle));
-	if(ppView)
-		ppView->eraseInsertionPoint();
 //
 // Not sure why we need this IF - Sevior
 //	if ((szOldStyle != m_szStyle) &&

@@ -501,7 +501,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 	// Check pending word - this is necessary to avoid forgetting
 	// words after an undo operation (which undos a block
 	// merge). Unfortunately it makes the word under the cursor
-	// squiggles (if badly spelled) instead of just pending - but it's
+	// squiggled (if badly spelled) instead of just pending - but it's
 	// hard to do anything about.
 	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
 	{
@@ -516,12 +516,20 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 								  pPending->getLength());
 		// Clear pending word
 		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL, NULL);
-		// If pending word is in this block after split, adjust
-		// details of the copy
-		if (pBL == m_pOwner && pPOB->getOffset() >= iOffset)
+		if (pBL == m_pOwner)
 		{
-			pPOB->setOffset(pPOB->getOffset() + chg);
-			pBL = pNewBL;
+			if(pPOB->getOffset() >= iOffset)
+			{
+				// If pending word is in this block after split,
+				// adjust details of the copy
+				pPOB->setOffset(pPOB->getOffset() + chg);
+				pBL = pNewBL;
+			}
+			else if (pPOB->getOffset() + pPOB->getLength() > iOffset)
+			{
+				// If pending word spans offset, adjust its length
+				pPOB->setLength(iOffset - pPOB->getOffset());
+			}
 		}
 		pBL->checkWord(pPOB);
 	}
