@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 Hubert Figuière <hfiguiere@teaser.fr>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,23 +20,23 @@
  
 
 
-#include <windows.h>
-
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "ut_debugmsg.h"
 
-// TODO aaaaagh!  This is Win32-specific
-
 void _UT_OutputMessage(char *s, ...)
 {
-	char sBuf[1024];
+	Str255 sBuf;
 	va_list marker;
 
 	va_start(marker, s);
 
-	vsprintf(sBuf, s, marker);
+	vsprintf(&((char*)sBuf)[1], s, marker);
 
-	OutputDebugString(sBuf);
+	sBuf[0] = 1;
+	sBuf[0] = strlen ((char *)sBuf) - 1;
+
+	DebugStr(sBuf);
 }
