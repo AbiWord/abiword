@@ -451,7 +451,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 			DWORD placementResult;
 
-			if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_GUI)
+			if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, 0);
 			else
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER);
