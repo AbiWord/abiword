@@ -1112,9 +1112,9 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 			m_pie->write(" style=\"");
 
-		szValue = PP_evalProperty("bgcolor",
+		szValue = PP_evalProperty("background-color",
 			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("background-color: #");
+			m_pie->write("background-color: ");
 			char color[16];
 			_convertColor(color, szValue);
 			m_pie->write(color);
