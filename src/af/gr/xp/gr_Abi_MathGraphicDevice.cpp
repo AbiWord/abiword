@@ -18,31 +18,19 @@
  */
 
 #include <MathView/MathMLElement.hh>
+#include <MathView/SpaceShaper.hh>
 
 #include "gr_Abi_AreaFactory.h"
 #include "gr_Abi_MathGraphicDevice.h"
+#include "gr_Abi_DefaultShaper.h"
 
 GR_Abi_MathGraphicDevice::GR_Abi_MathGraphicDevice()
   : m_abiFactory(GR_Abi_AreaFactory::create())
 {
   setFactory(m_abiFactory);
 
-#if 0
-  GObjectPtr<PangoContext> context = gtk_widget_create_pango_context(widget);
-  SmartPtr<GR_Abi_DefaultPangoShaper> defaultPangoShaper = GR_Abi_DefaultPangoShaper::create();
-  defaultPangoShaper->setPangoContext(context);
-  getShaperManager()->registerShaper(defaultPangoShaper);
-
-  getShaperManager()->registerShaper(SpaceShaper::create());
-
-#if 1
-  SmartPtr<GR_Abi_PangoShaper> pangoShaper = GR_Abi_PangoShaper::create();
-  pangoShaper->setPangoContext(context);
-  getShaperManager()->registerShaper(pangoShaper);
-#else
-  getShaperManager()->registerShaper(GR_Abi_AdobeShaper::create());
-#endif
-#endif
+  getShaperManager()->registerShaper(GR_Abi_DefaultShaper::create());
+  //getShaperManager()->registerShaper(SpaceShaper::create());
 }
 
 GR_Abi_MathGraphicDevice::~GR_Abi_MathGraphicDevice()
