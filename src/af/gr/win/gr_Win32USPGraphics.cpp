@@ -1048,7 +1048,7 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 	if(!_scriptBreak(RI))
 		return false;
 
-	if(ri.m_iLength < RI.s_iAdvancesSize)
+	if(ri.m_iLength > RI.s_iAdvancesSize)
 	{
 		UT_return_val_if_fail( RI.allocStaticBuffers(ri.m_iLength),false );
 	}
