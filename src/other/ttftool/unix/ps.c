@@ -1,3 +1,4 @@
+/* Copyright (c) 1997-1998 by Juliusz Chroboczek */
 
 #include <sys/types.h>
 #include <stdio.h>
