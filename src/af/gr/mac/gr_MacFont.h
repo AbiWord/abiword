@@ -25,8 +25,6 @@
 #ifndef GR_MACFONT_h
 #define GR_MACFONT_h
  
-#include <QuickDraw.h>
-
 #include "ut_misc.h"
 #include "gr_Graphics.h"
 
@@ -36,6 +34,13 @@ class GR_MacFont : public GR_Font
 {
 public:
 	GR_MacFont(int font, int face, int pointSize);
+    virtual ~GR_MacFont ();
+    UT_uint32 getFontAscent()
+    	{};
+	UT_uint32 getFontDescent()
+		{};
+	UT_uint32 getFontHeight()
+		{};
 private:
 	int m_font;
 	int m_face;
