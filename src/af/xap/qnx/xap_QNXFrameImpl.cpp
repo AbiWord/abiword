@@ -461,7 +461,7 @@ void XAP_QNXFrameImpl::_initialize()
 	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
 
-	EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
+	EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 	UT_ASSERT(pEEM);
 
 	m_pKeyboard = new ev_QNXKeyboard(pEEM);
@@ -597,13 +597,13 @@ if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
 UT_sint32 XAP_QNXFrameImpl::_setInputMode(const char *szName)
 {
 	XAP_Frame*	pFrame = getFrame();
-	UT_sint32 result = pFrame->XAP_Frame::setInputMode(szName);
+	UT_sint32 result = XAP_App::getApp()->setInputMode(szName);
 
 	if (result == 1)
 	{
 		// if it actually changed we need to update keyboard and mouse
 
-		EV_EditEventMapper * pEEM = getFrame()->getEditEventMapper();
+		EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 		UT_ASSERT(pEEM);
 
 		m_pKeyboard->setEditEventMap(pEEM);
@@ -843,12 +843,6 @@ bool XAP_QNXFrameImpl::_runModalContextMenu(AV_View *pView,const char *szMenuNam
 	DELETEP(m_pQNXPopup);
 
 	return bResult;
-}
-
-bool XAP_QNXFrameImpl::_openURL(const char *szURL)
-{
-	spawnlp(P_NOWAITO,"voyager","voyager","-u",szURL,NULL);
-	return true;
 }
 
 void XAP_QNXFrameImpl::_setFullScreen(bool changeToFullScreen)
