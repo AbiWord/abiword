@@ -203,7 +203,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		int length;
 		for (int k=0; k<kLimit; k++)
 		{
-		    if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)p[k])) {
+		    if (wctomb_conv.wctomb(letter_buf,length, p[k])) {
 			str.append((const UT_Byte*)letter_buf,length);
 		    };
 		}
@@ -466,7 +466,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 
 				for(i = 0; i < j; i++)
 				{
-					if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)p[i]))
+					if (wctomb_conv.wctomb(letter_buf,length,p[i]))
 					{
 						for(k = 0; k < length; k++)
 							szValue[i++] = letter_buf[k];

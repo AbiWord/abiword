@@ -227,8 +227,8 @@ static bool fallback_used;
 		fallback_used = 0;				\
 	} else	{\
 		fallback_used = 0;	\
-		if (!w->wctomb(text,text_length,(wchar_t)c)) {	\
-		    w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
+		if (!w->wctomb(text,text_length,c)) {	\
+		    w->wctomb_or_fallback(text,text_length,c);	\
 		    fallback_used = 1;	\
 		}	\
 	}

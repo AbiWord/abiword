@@ -292,7 +292,7 @@ void Text_Listener::_genBOM(void)
 
 	for (pWC = wcBOM; *pWC; ++pwC)
 	{
-		if (_wctomb(pMB,mbLen,static_cast<wchar_t>(*pWC)))
+		if (_wctomb(pMB,mbLen,(*pWC)))
 			pMB += mbLen;
 		else
 			UT_ASSERT_NOT_REACHED();
@@ -344,7 +344,7 @@ void Text_Listener::_genLineBreak(void)
 
 	for (pWC = wcLineBreak; *pWC; ++pWC)
 	{
-		if (_wctomb(pMB,mbLen,static_cast<wchar_t>(*pWC)))
+		if (_wctomb(pMB,mbLen,*pWC))
 			pMB += mbLen;
 		else
 		  UT_ASSERT_NOT_REACHED();
@@ -391,7 +391,7 @@ void Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			bBuf.append(reinterpret_cast<UT_Byte *>(m_mbLineBreak),m_iLineBreakLen);
 		else
 		{
-			if (!_wctomb(pC,mbLen,static_cast<wchar_t>(*pData)))
+			if (!_wctomb(pC,mbLen,*pData))
 			{
 				UT_ASSERT_HARMLESS(!m_bIs16Bit);
 				mbLen=1;

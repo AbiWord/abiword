@@ -126,7 +126,7 @@ public:
 	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
-	virtual int			_wctomb(char * pC, int & length, wchar_t wc) { return m_wctomb.wctomb(pC,length,wc); }
+	virtual int			_wctomb(char * pC, int & length, UT_UCS4Char wc) { return m_wctomb.wctomb(pC,length,wc); }
 	void				_genBOM(void);
 	void				_genLineBreak(void);
 	virtual void		_outputData(const UT_UCSChar * p, UT_uint32 length);
