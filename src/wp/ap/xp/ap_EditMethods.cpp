@@ -7578,10 +7578,6 @@ Defun(dlgColumns)
 			props[i++] = pDialog->getHeightString();
 		}
 		props[i] = NULL;
-		for(i = 0; i< num_out_props; i++)
-		{
-			UT_DEBUGMSG(("SEVIOR: Setting property %d to %s \n",i,props[i]));
-		}
 		pView->setSectionFormat(props);
 		FREEP(props);
 	}
