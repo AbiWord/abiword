@@ -127,7 +127,7 @@ DEB_ROOT:=$(ABI_ROOT)/dist/abisuite-$(ABI_BUILD_VERSION)/debian/tmp
 
 PACK_ROOT:=$(ABI_ROOT)/../abiword-$(ABI_BUILD_VERSION)
 
-MODULE_LIST=abi expat unixfonts abidistfiles libpng zlib wv abiword-plugins
+MODULE_LIST=abi expat unixfonts abidistfiles libpng zlib wv abiword-plugins abispell
 
 # The following only works for RPM3.x
 #RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/.*topdir://"))
