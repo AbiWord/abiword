@@ -42,6 +42,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    
    virtual void runModal(XAP_Frame * pFrame) = 0;
 
+   bool isSelection(void) const { return m_bIsSelection; };
    bool isComplete(void) const { return !m_bCancelled; };
 
  protected:
@@ -76,6 +77,9 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    // add the word to current user dictionary
    bool addToDict(void);
 
+   // true if we're checking just a selction rather than entire doc
+   bool m_bIsSelection;
+
    // change/ignore all hash tables
    UT_StringPtrMap * m_pChangeAll;
    UT_StringPtrMap * m_pIgnoreAll;
@@ -87,8 +91,15 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    UT_sint32 m_iWordLength;
    UT_GrowBuf * m_pBlockBuf;
 
-   fl_DocSectionLayout * m_pSection;
-   fl_BlockLayout * m_pBlock;
+   // section & block pairs for start, end,
+   // and current position position within
+   // the part of the document being checked
+   fl_DocSectionLayout * m_pStartSection;
+   fl_BlockLayout      * m_pStartBlock;
+   fl_DocSectionLayout * m_pEndSection;
+   fl_BlockLayout      * m_pEndBlock;
+   fl_DocSectionLayout * m_pCurrSection;
+   fl_BlockLayout      * m_pCurrBlock;
    
    XAP_Frame * m_pFrame;
    FV_View * m_pView;
@@ -100,7 +111,6 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
 
    bool	m_bCancelled;
    short m_iSelectedRow;
-   
 };
 
 #endif /* AP_DIALOG_SPELL_H */

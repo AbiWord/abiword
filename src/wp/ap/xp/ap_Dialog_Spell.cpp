@@ -91,6 +91,8 @@ AP_Dialog_Spell::_spellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogspelling.html"), m_Suggestions(0)
 {
+   m_bIsSelection = false;
+
    m_iWordOffset = 0;
    m_iWordLength = -1;
 
@@ -99,8 +101,12 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
    
    m_pBlockBuf = NULL;
    m_pView = NULL;
-   m_pSection = NULL;
-   m_pBlock = NULL;
+   m_pStartSection = NULL;
+   m_pStartBlock = NULL;
+   m_pEndSection = NULL;
+   m_pEndBlock = NULL;
+   m_pCurrSection = NULL;
+   m_pCurrBlock = NULL;
    m_pChangeAll = NULL;
    m_pIgnoreAll = NULL;
 
@@ -109,9 +115,10 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 
 AP_Dialog_Spell::~AP_Dialog_Spell(void)
 {
+	// Why clear the selection?  MS Word doesn't either
 	if (m_pView) 
 	{
-		if (!m_pView->isSelectionEmpty())
+		if (m_bIsSelection)
 			m_pView->cmdUnselectSelection();
 
 		m_pView->moveInsPtTo( m_iOrigInsPoint );
@@ -148,11 +155,33 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    m_pDoc = frameData->m_pDocLayout->getDocument();
    m_pView = frameData->m_pDocLayout->getView();
    m_iOrigInsPoint = m_pView->getPoint();
-   m_pSection = frameData->m_pDocLayout->getFirstSection();
-   m_pBlock = (fl_BlockLayout *) m_pSection->getFirstLayout();
-			   
+
+   if (m_pView->isSelectionEmpty())
+   {
+	   m_pCurrSection = frameData->m_pDocLayout->getFirstSection();
+	   m_pCurrBlock = (fl_BlockLayout *) m_pCurrSection->getFirstLayout();
+   }
+   else
+   {
+	   PD_DocumentRange range;
+
+	   // If some text is selected we want to check just that (first)
+	   m_pView->getDocumentRangeOfCurrentSelection(&range);
+   
+	   m_pStartBlock = m_pView->getBlockAtPosition(range.m_pos1);
+	   m_pStartSection = m_pStartBlock->getDocSectionLayout();
+
+	   m_pEndBlock = m_pView->getBlockAtPosition(range.m_pos2);
+	   m_pEndSection = m_pEndBlock->getDocSectionLayout();
+
+	   m_pCurrBlock = m_pStartBlock;
+	   m_pCurrSection = m_pStartSection;
+
+	   m_bIsSelection = true;
+   }
+
    m_pBlockBuf = new UT_GrowBuf(1024);
-   bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
+   bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
    UT_ASSERT(bRes);
    
    m_pChangeAll = new UT_StringPtrMap(7); // is 7 buckets adequate? too much?
@@ -165,6 +194,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 {
    UT_ASSERT(m_pBlockBuf);
 
+   // TODO not always 0 when checking selection
    UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
 
@@ -183,7 +213,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   // since we're done with this current block, put it
 		   // in the block spell queue so squiggles will be updated
 	
-		   FL_DocLayout * docLayout = m_pSection->getDocLayout();
+		   FL_DocLayout * docLayout = m_pCurrSection->getDocLayout();
 		   
 		   // Makes this honor spelling prefs
 		   XAP_App * pApp = m_pFrame->getApp();
@@ -199,29 +229,40 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   
 		   if (b)
 		   {
-			   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pBlock);
+			   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pCurrBlock);
 		   }
-		   m_pBlock = (fl_BlockLayout *) m_pBlock->getNext();
+
+		   // was that the last block in the selection?
+		   if (m_bIsSelection && m_pCurrBlock == m_pEndBlock)
+			   return false;
+
+		   // no, so move on to the next block
+		   m_pCurrBlock = (fl_BlockLayout *) m_pCurrBlock->getNext();
 		   
 		   // next section, too?
-		   if (m_pBlock == NULL) 
+		   if (m_pCurrBlock == NULL) 
 		   {
-	 
-			   m_pSection = (fl_DocSectionLayout*) m_pSection->getNext();
-			   if (m_pSection == NULL)
-				   return false; // end of document
-			   m_pBlock = (fl_BlockLayout *) m_pSection->getFirstLayout();
+			   m_pCurrSection = (fl_DocSectionLayout*) m_pCurrSection->getNext();
+
+			   // end of document?
+			   if (m_pCurrSection == NULL)
+			   {
+				   return false;
+			   }
+
+			   m_pCurrBlock = (fl_BlockLayout *) m_pCurrSection->getFirstLayout();
 		   }
 	 
 		   // update the buffer with our new block
 		   m_pBlockBuf->truncate(0);
-		   bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
+		   bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
 		   UT_ASSERT(bRes);
 	     
 		   m_iWordOffset = 0;
 		   m_iSentenceStart = 0;
 		   m_iSentenceEnd = 0;
 		   iBlockLength = m_pBlockBuf->getLength();
+		   // TODO not always 0 when checking selection
 		   pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
 
 	   }
@@ -250,7 +291,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   m_iWordOffset++;
 		   }
 	     
-		   // ignore initial quote
+		   // ignore initial apostrophe
+		   // TODO i18n can be part of word
 		   if (pBlockText[m_iWordOffset] == '\'')
 		   {
 			   m_iWordOffset++;
@@ -283,7 +325,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   }
 			   }
 		  
-			   // ignore terminal quote
+			   // ignore terminal apostrophe
+			   // TODO i18n can be part of a word
 			   if (pBlockText[m_iWordOffset + m_iWordLength - 1] == '\'')
 			   {
 				   m_iWordLength--;
@@ -291,6 +334,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		  
 			   // for some reason, the spell checker fails on all 1-char words & really big ones
 			   // -this is a limitation in the underlying default checker ispell --JB
+			   // TODO query spell object about min word length
+			   // TODO i18n the CJK stuff here is a hack
 			   if ((m_iWordLength > 1) &&
 				   XAP_EncodingManager::get_instance()->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
 				   (!checkCaps || !bAllUpperCase) &&
@@ -396,6 +441,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   {
 					   // we changed the word, and the block buffer has
 					   // been updated, so reload the pointer and length
+					   // TODO not always 0 when checking selection
 					   pBlockText = (UT_UCS4Char*) m_pBlockBuf->getPointer(0);
 					   iBlockLength = m_pBlockBuf->getLength();
 					   // the offset shouldn't change
@@ -413,9 +459,11 @@ bool AP_Dialog_Spell::makeWordVisible(void)
 {
    UT_DEBUGMSG(("making misspelled word visible in main window\n"));
    
-   if (!m_pView->isSelectionEmpty())
+   // TODO why clear selection?
+   if (m_bIsSelection)
      m_pView->cmdUnselectSelection();
-   m_pView->moveInsPtTo( (PT_DocPosition) (m_pBlock->getPosition() + m_iWordOffset) );
+
+   m_pView->moveInsPtTo( (PT_DocPosition) (m_pCurrBlock->getPosition() + m_iWordOffset) );
    m_pView->extSelHorizontal(true, (UT_uint32) m_iWordLength);
    m_pView->updateScreen();
    
@@ -501,7 +549,7 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    
    // reload block into buffer, as we just changed it
    m_pBlockBuf->truncate(0);
-   bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
+   bool bRes = m_pCurrBlock->getBlockBuf(m_pBlockBuf);
    UT_ASSERT(bRes);
                  
    return result;
@@ -566,10 +614,15 @@ UT_UCSChar * AP_Dialog_Spell::_getPostWord(void)
 // TODO  algorithm to do so -- especially not one which could work with
 // TODO  other languages very well...
 // TODO  Anyone have something better?
+// TODO  Hipi: ICU includes an international sentence iterator
+// TODO  Hipi: Arabic / Hebrew reverse ? should count, Spanish upside-down
+// TODO  Hipi: ? should not count.  CJK scripts have their own equivalents
+// TODO  Hipi: to [.!?].  Indic languages can use a "danda" or "double danda".
+// TODO  Hipi: Unicode chartype functions may be useable
 
 void AP_Dialog_Spell::_updateSentenceBoundaries(void)
 {
-   
+   // TODO not always 0 when checking selection
    UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
    
@@ -586,6 +639,8 @@ void AP_Dialog_Spell::_updateSentenceBoundaries(void)
    }
    
    // skip back past any whitespace
+   // TODO Unicode has many new spacing characters - use some
+   // TODO UT_UCS_iswhite type function
    while (pBlockText[m_iSentenceStart] == ' ' ||
 	  pBlockText[m_iSentenceStart] == UCS_TAB ||
 	  pBlockText[m_iSentenceStart] == UCS_LF ||

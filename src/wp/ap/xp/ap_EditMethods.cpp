@@ -1424,9 +1424,9 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 				   fileName);
 }
 
-static void s_TellSpellDone(XAP_Frame * pFrame)
+static void s_TellSpellDone(XAP_Frame * pFrame, bool bIsSelection)
 {
-	pFrame->showMessageBox(AP_STRING_ID_MSG_SpellDone,
+	pFrame->showMessageBox(bIsSelection ? AP_STRING_ID_MSG_SpellSelectionDone : AP_STRING_ID_MSG_SpellDone,
 				   XAP_Dialog_MessageBox::b_O,
 				   XAP_Dialog_MessageBox::a_OK);
 }
@@ -5186,7 +5186,7 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    bool bOK = pDialog->isComplete();
 
    if (bOK)
-	   s_TellSpellDone(pFrame);
+	   s_TellSpellDone(pFrame, pDialog->isSelection());
 
    pDialogFactory->releaseDialog(pDialog);
 

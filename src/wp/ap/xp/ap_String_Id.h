@@ -43,6 +43,7 @@ dcl(MSG_IE_UnsupportedType, 	"File %s is not of a currently supported file type"
 dcl(MSG_IE_BogusDocument,		"AbiWord cannot open %s. It appears to be a bogus or invalid document")
 dcl(MSG_IE_CouldNotOpen,		"Could not open file %s for writing")
 dcl(MSG_IE_CouldNotWrite,		"Could not write to file %s")
+dcl(MSG_SpellSelectionDone,		"AbiWord finished checking the selection."/*" Do you want to continue checking the remainder of the document?"*/)
 dcl(MSG_SpellDone,				"The spelling check is complete.")
 dcl(MSG_PrintStatus,			"Printing page %d of %d")
 dcl(MSG_RevertFile, "Revert file to last unsaved state?")
