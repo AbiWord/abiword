@@ -28,6 +28,7 @@ libXap_mac_a_SOURCES=		\
 	xap_MacClipboard.cpp	\
 	xap_MacDlg_About.cpp	\
 	xap_MacDlg_WindowMore.cpp	\
+	xap_MacDlg_Encoding.cpp	\
 	xap_MacDlg_FileOpenSaveAs.cpp	\
 	xap_MacDlg_Zoom.cpp	\
 	xap_MacDlg_FontChooser.cpp	\
