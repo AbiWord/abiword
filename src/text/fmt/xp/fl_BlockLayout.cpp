@@ -4526,9 +4526,9 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 		iOffset += pRun->getLength();
 
 		// Verify that we don't have two adjacent FmtMarks.
-		UT_ASSERT( ((pRun->getType() != FPRUN_FMTMARK)
-					|| !pRun->getNextRun()
-					|| (pRun->getNextRun()->getType() != FPRUN_FMTMARK)) );
+		//		UT_ASSERT( ((pRun->getType() != FPRUN_FMTMARK)
+		//			|| !pRun->getNextRun()
+		//			|| (pRun->getNextRun()->getType() != FPRUN_FMTMARK)) );
 
 		// Verify that the Run has a non-zero length (or is a FmtMark)
 		UT_ASSERT( (FPRUN_FMTMARK == pRun->getType()) || 

@@ -621,7 +621,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	int failLine;
 	failLine = 0;
 	UT_DEBUGMSG(("startElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
-
+	UT_ASSERT(m_error == 0);
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
 #define NEW_ATTR_SZ 3
@@ -1232,11 +1232,13 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
 			m_TableHelperStack->trStart (static_cast<const char *>(szStyle));
+			UT_DEBUGMSG(("Finished TR process \n"));
 		}
 		break;
 	case TT_TH:
 	case TT_TD:
 		{
+			UT_DEBUGMSG(("Doing TD \n"));
 			m_parseState = _PS_Block;
 			const XML_Char * szStyle   = _getXMLPropValue (static_cast<const XML_Char *>("style"),   atts);
 			const XML_Char * szColSpan = _getXMLPropValue (static_cast<const XML_Char *>("colspan"), atts);
@@ -1287,7 +1289,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		return;
 	}
-
+	UT_ASSERT(m_error == 0);
 	return;
 X_Fail:
 	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
@@ -1701,14 +1703,18 @@ bool IE_Imp_XHTML::pushInline (const char * props)
 
 	UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
 	if (sz == NULL)
-		return false;
+		{
+			UT_return_val_if_fail(0,false);
+		}
 	api_atts[0] = sz;
 
 	sz = NULL;
 
 	UT_XML_cloneString (sz, props);
 	if (sz == NULL)
-		return false;
+		{
+			UT_return_val_if_fail(0,false);
+		}
 	api_atts[1] = sz;
 
 	api_atts[2] = NULL;
@@ -1719,7 +1725,11 @@ bool IE_Imp_XHTML::pushInline (const char * props)
 
 bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, const char * align)
 {
-	if (!requireSection ()) return false;
+	if (!requireSection ()) 
+		{
+			UT_return_val_if_fail(0,false);
+		}
+
 
 	UT_UTF8String * div_style = 0;
 	if (m_divStyles.getItemCount ())
@@ -1754,14 +1764,18 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 
 	UT_XML_cloneString (sz, PT_STYLE_ATTRIBUTE_NAME);
 	if (sz == NULL)
-		return false;
+		{
+			UT_return_val_if_fail(0,false);
+		}
 	api_atts[0] = sz;
 
 	sz = NULL;
 
 	UT_XML_cloneString (sz, style_name);
 	if (sz == NULL)
-		return false;
+		{
+			UT_return_val_if_fail(0,false);
+		}
 	api_atts[1] = sz;
 
 	if (utf8val.byteLength ())
@@ -1770,19 +1784,23 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 
 			UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
 			if (sz == NULL)
-				return false;
+				{
+					UT_return_val_if_fail(0,false);
+				}
 			api_atts[2] = sz;
 
 			sz = NULL;
 
 			UT_XML_cloneString (sz, utf8val.utf8_str ());
 			if (sz == NULL)
-				return false;
+				{
+					UT_return_val_if_fail(0,false);
+				}
 			api_atts[3] = sz;
 		}
 	if (!appendStrux (PTX_Block, api_atts))
 		{
-			return false;
+			UT_return_val_if_fail(0,false);
 		}
 	m_parseState = _PS_Block;
 
@@ -1813,7 +1831,7 @@ bool IE_Imp_XHTML::requireSection ()
 
 	if (!appendStrux (PTX_Section,NULL))
 		{
-			return false;
+			UT_return_val_if_fail(0,false);
 		}
 	m_parseState = _PS_Sec;
 
