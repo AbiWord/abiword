@@ -1550,6 +1550,27 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 	}
 	else
 	{
+//
+// Bookmarks need to be preceded by Blocks
+//
+		pf_Frag * pf = getDoc()->getLastFrag();
+		while(pf && pf->getType() != pf_Frag::PFT_Strux)
+		{
+			pf = pf->getPrev();
+		}
+		if(pf && (pf->getType() == pf_Frag::PFT_Strux) )
+		{
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+			if(pfs->getStruxType() != PTX_Block)
+			{
+				getDoc()->appendStrux(PTX_Block, NULL);
+			}
+		}
+		else if( pf == NULL)
+		{
+			getDoc()->appendStrux(PTX_Block, NULL);
+		}
+
 		if (!_appendObject (PTO_Bookmark, propsArray))
 		{
 			UT_DEBUGMSG (("Could not append bookmark object\n"));
