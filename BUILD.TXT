@@ -99,7 +99,7 @@ There are several ways to build and run AbiWord:
 	ABI_OPT_PEER_EXPAT=[1,0]    enable peer expat support over defaul LibXML2
     UNIX_CAN_BUILD_STATIC=[1,0]		Include all libraries within Abi's structure
     UNIX_CAN_BUILD_DYNAMIC=[1,0]	Link to libraries in Operating System
-    ABI_OPT_GNOME=[2,1,0]		enable Gnome or Gnome-2 support
+    ABI_OPT_GNOME=[1,0]		enable Gnome or Gnome-2 support
     ABI_OPT_LIBJPEG=[1,0]		enable LibJPEG support
     ABI_OPT_BIDI_ENABLED=[1,0]		enable Bidirectional text support
     ABI_OPT_BIDI_RTL_DOMINANT=[1,0]	enable Right-to-Left Bidirectional support
@@ -108,9 +108,9 @@ There are several ways to build and run AbiWord:
     ABI_OPT_PSPELL=[1,0]		enable Pspell
     ABI_OPT_PROF=[1,0]			for profiling flags
     ABI_OPT_WAY_TOO_MANY_WARNINGS=[1,0]	enable really superfluous warnings from Scott Meyer's Effective C++ book.
-    ABI_OPT_PACIFY_COMPILER		quiet down the compiler warnings and allow more bogus code, depending on platform.
-    ABI_OPT_EXCLUSIVE_OPT		tighter code, but will only work on that particular architecture and above.
-    ABI_OPT_TINY			Optimize for size.
+    ABI_OPT_PACIFY_COMPILER=[0,1]		quiet down the compiler warnings and allow more bogus code, depending on platform.
+    ABI_OPT_EXCLUSIVE_OPT=[0,1]		tighter code, but will only work on that particular architecture and above.
+    ABI_OPT_TINY=[0,1]			Optimize for size.
 
     Linux specific options
     ----------------------
