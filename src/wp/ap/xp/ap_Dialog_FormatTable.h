@@ -76,45 +76,40 @@ public:
 	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
 	
 	AP_Dialog_FormatTable::tAnswer		getAnswer(void) const;
-	PT_DocPosition						getCellSource(void);
-	PT_DocPosition						getCellDestination(void);
 	virtual void                        startUpdater(void);
 	virtual void                        stopUpdater(void);
 	static void                         autoUpdateMC(UT_Worker * pTimer);
-	void								addOrReplaceVecProp(UT_Vector &vec,
-															const XML_Char * pszProp,
-															const XML_Char * pszVal);
+
 	virtual void                        setSensitivity(bool bSens) = 0;
     virtual void                        setActiveFrame(XAP_Frame *pFrame);
 	void                                ConstructWindowName(void);
-	void                                setAllSensitivities(void);
 	void                                event_update(void);
 	void                                finalize(void);
+	
+	void								addOrReplaceVecProp(UT_Vector &vec,
+															const XML_Char * pszProp,
+															const XML_Char * pszVal);
+	void								getVecProp(UT_Vector &vec,
+												   const XML_Char * pszProp,
+												   const XML_Char * &pszVal);
+	void								removeVecProp(UT_Vector &vec, const XML_Char * pszProp);
+	
+	void                                setAllSensitivities(void);
+	void 								setCurCellProps(void);	
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
-	void								setBackgroundColor(UT_RGBColor clr);
+	void								setBGColor(UT_RGBColor clr);
+	
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
 				
 	UT_RGBColor							m_borderColor;
-	
-	XML_Char *							m_leftColor;
-	XML_Char *							m_rightColor;
-	XML_Char *							m_topColor;
-	XML_Char *							m_bottomColor;															 
-	
 	UT_sint32							m_lineStyle;
-	XML_Char *							m_leftStyle;
-	XML_Char *							m_rightStyle;
-	XML_Char *							m_topStyle;
-	XML_Char *							m_bottomStyle;
-	
-	XML_Char *							m_bgColor;
 	XML_Char *							m_bgFillStyle;
-													 
-													 
+										 
+	UT_Vector                           m_vecProps;													 
 protected:
 	AP_Dialog_FormatTable::tAnswer		m_answer;
 	char                                m_WindowName[100];
@@ -122,22 +117,11 @@ protected:
 	AP_FormatTable_preview_drawer		m_previewDrawer;
 		
 private:
-	void                                _generateSrcDest(void);
-	
-	PT_DocPosition                      m_iCellSource;
-	PT_DocPosition                      m_iCellDestination;
-	UT_Vector                           m_vecProps;
-	UT_Vector                           m_vecPropsRight;
-	UT_Vector                           m_vecPropsBottom;
+	bool								m_bSettingsChanged;
 
-	UT_sint32                           m_iLeftStyle;
-	UT_sint32                           m_iRightStyle;
-	UT_sint32                           m_iTopStyle;
-	UT_sint32                           m_iBottomStyle;
+	UT_Vector                           m_vecPropsAdjRight;
+	UT_Vector                           m_vecPropsAdjBottom;
 
-	UT_sint32                           m_iNumRows;
-	UT_sint32                           m_iNumCols;
-	fp_TableContainer *                 m_pTab;
 	UT_Timer *                          m_pAutoUpdaterMC;
 	
 	bool								m_borderToggled;

@@ -103,7 +103,7 @@ static void s_background_color(GtkWidget *widget, gpointer data )
 	
 	guint8 r, g, b, a;
 	gtk_color_picker_get_i8 (GTK_COLOR_PICKER(widget), &r, &g, &b, &a);
-	dlg->setBackgroundColor(UT_RGBColor(r,g,b));
+	dlg->setBGColor(UT_RGBColor(r,g,b));
 	dlg->event_previewExposed();
 }
 
