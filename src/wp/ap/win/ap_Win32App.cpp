@@ -1378,16 +1378,16 @@ __except (1)
 	UT_ASSERT(pApp);
 	
 	UT_uint32 i = 0;
-	
+	IEFileType abiType = IE_Imp::fileTypeForSuffix("abw");
 	for(;i<pApp->m_vecFrames.getItemCount();i++)
 	{
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
 		UT_ASSERT(curFrame);
 		
 		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw.saved");
+		  curFrame->backup(".abw.saved", abiType);
 		else
-		  curFrame->backup(".saved");
+		  curFrame->backup(".saved", abiType);
 
 	}	
 
@@ -1701,5 +1701,3 @@ UT_UTF8String	AP_Win32App::s_fromAnsiToUTF8(const char* szIn)
 
 	return sRslt;
 }
-
-
