@@ -6548,6 +6548,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 
 	double scale = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
 											(pageWidth * (double)resolution);
+	if (getWindowWidth()<=0) return (UT_uint32)temp_zoom;
 	return (UT_uint32)(scale * 100.0);
 }
 
@@ -6570,10 +6571,12 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 											(pageHeight * (double)resolution);
 	if(scaleWidth < scaleHeight)
 	{
+		if(getWindowWidth()<=0) return (UT_uint32)temp_zoom;
 		return (UT_uint32)(scaleWidth * 100.0);
 	}
 	else
 	{
+		if(getWindowHeight()<=0) return (UT_uint32)temp_zoom;
 		return(UT_uint32)(scaleHeight * 100.0);
 	}
 }
