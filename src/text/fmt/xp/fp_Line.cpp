@@ -21,6 +21,7 @@
 
 #include "fp_Line.h"
 #include "fp_BlockSlice.h"
+#include "fl_BlockLayout.h"
 #include "fp_Run.h"
 #include "gr_DrawArgs.h"
 
@@ -294,6 +295,16 @@ void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 	}
 	
 	m_iWidth += dx;
+
+	/*
+	  TODO we call _recalcHeight() here because when a run changes
+	  width it might be changing height too.  Unfortunately, just
+	  doing this is not sufficient.  We need a way to let the BlockSlice
+	  know that our line height changed, since that will require other
+	  adjustments in the BlockSlice.
+	*/
+
+	_recalcHeight();
 
 	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
 }

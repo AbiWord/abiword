@@ -429,7 +429,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 
 					pBL->minor_reformat();
-					// pBL->draw(m_pLayout->getGraphics());
 
 					// in case anything else moved
 					m_pLayout->reformat();
@@ -506,9 +505,25 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							pRun = pRun->getNext();
 						}
 
-						// TODO we should NOT be doing a complete format here.
-						pBL->minor_reformat();
-						// pBL->draw(m_pLayout->getGraphics());
+						/*
+						  TODO we should NOT be doing a complete format
+						  here.  The reason we're doing it now is to handle
+						  the case wherein a font size changes.  If you type
+						  a bunch of text in 14pt, then select one word in the
+						  middle and change it to 48pt, the height of that
+						  line should change.  This is not a problem, since
+						  runSizeChanged() now calls _recalcHeight() on that
+						  line.  However, the BlockSlice needs to be informed
+						  of the new line height so that it can adjust all the
+						  other lines in the slice appropriately, perhaps screaming
+						  if the slice no longer fits in its column.  This
+						  BlockSlice code is not there yet.  So for now, we are
+						  calling complete_format() and draw() below, when a
+						  simple minor_reformat() should suffice.
+						*/
+						pBL->complete_format();
+						// TODO remove the draw call below when the call above becomes minor_reformat()
+						pBL->draw(m_pLayout->getGraphics());
 
 						// in case anything else moved
 						m_pLayout->reformat();
