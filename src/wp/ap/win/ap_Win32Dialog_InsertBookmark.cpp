@@ -45,9 +45,7 @@ XAP_Dialog * AP_Win32Dialog_InsertBookmark::static_constructor(XAP_DialogFactory
 
 AP_Win32Dialog_InsertBookmark::AP_Win32Dialog_InsertBookmark(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_InsertBookmark(pDlgFactory,id),
-	_win32Dialog(this),
-	m_hThisDlg(NULL)
+	: AP_Dialog_InsertBookmark(pDlgFactory,id)
 {
 }
 
@@ -58,47 +56,34 @@ AP_Win32Dialog_InsertBookmark::~AP_Win32Dialog_InsertBookmark(void)
 void AP_Win32Dialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	_win32Dialog.runModal( pFrame, 
-						   AP_DIALOG_ID_INSERTBOOKMARK, 
-						   AP_RID_DIALOG_INSERTBOOKMARK, 
-						   this);
-
-
+	UT_ASSERT(m_id == AP_DIALOG_ID_INSERTBOOKMARK);
+	
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_INSERTBOOKMARK));	
 }
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 
 BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	m_hThisDlg = hWnd;
-
-	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	// localize dialog title
-	_win32Dialog.setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Title) );
+	localizeDialogTitle(AP_STRING_ID_DLG_InsertBookmark_Title);
 
 	// localize controls
-	_DSX(INSERTBOOKMARK_BTN_OK, 			DLG_OK);
-	_DSX(INSERTBOOKMARK_BTN_DELETE, 		DLG_Delete);
-	_DSX(INSERTBOOKMARK_BTN_CANCEL, 		DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, 		XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE, 	XAP_STRING_ID_DLG_Delete);
+	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_BTN_CANCEL, 	XAP_STRING_ID_DLG_Cancel);
 
-	_DS(INSERTBOOKMARK_LBL_MESSAGE, 		DLG_InsertBookmark_Msg);
+	localizeControlText(AP_RID_DIALOG_INSERTBOOKMARK_LBL_MESSAGE, 	AP_STRING_ID_DLG_InsertBookmark_Msg);
 
 	// initial data
-	_win32Dialog.resetComboContent(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK);
+	resetComboContent(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK);
 
 	UT_uint32 count = getExistingBookmarksCount();
 	for( UT_uint32 i = 0; i < count; i++)
 	{
-		_win32Dialog.addItemToCombo( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
-									 getNthExistingBookmark( i ) );
+		addItemToCombo( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
+						 getNthExistingBookmark( i ) );
 	}
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	return 1;
 }
 
@@ -118,9 +103,9 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	case IDOK:
 		{
 			XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
-			_win32Dialog.getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
-										 buf,
-										 BOOKMARK_SIZE_LIMIT );
+			getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
+							 buf,
+							 BOOKMARK_SIZE_LIMIT );
 			setBookmark(buf);
 		}
 		setAnswer( a_OK );
@@ -130,9 +115,9 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	case AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE:
 		{
 			XML_Char buf[BOOKMARK_SIZE_LIMIT+1];
-			_win32Dialog.getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
-										 buf,
-										 BOOKMARK_SIZE_LIMIT );
+			getControlText( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
+							 buf,
+							 BOOKMARK_SIZE_LIMIT );
 			setBookmark(buf);
 		}
 		setAnswer( a_DELETE );

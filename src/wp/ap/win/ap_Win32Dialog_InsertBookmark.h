@@ -21,13 +21,14 @@
 #define AP_WIN32DIALOG_INSERTBOOKMARK_H
 
 #include "ap_Dialog_InsertBookmark.h"
-#include "xap_Win32DialogHelper.h"
-#include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
+
+class XAP_Frame;
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_InsertBookmark: public AP_Dialog_InsertBookmark, XAP_Win32Dialog
+class AP_Win32Dialog_InsertBookmark: public XAP_Win32DialogBase, public AP_Dialog_InsertBookmark
 {
 public:
 	AP_Win32Dialog_InsertBookmark(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -38,13 +39,10 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
-	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
+	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL _onDeltaPos(NM_UPDOWN * pnmud);
 
-private:
-	HWND					m_hThisDlg;
-	XAP_Win32DialogHelper		_win32Dialog;	
 };
 
 #endif /* AP_WIN32DIALOG_INSERTBOOKMARK_H */

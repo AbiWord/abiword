@@ -59,54 +59,51 @@ protected:
 
 
 	// Control Functionality
-	void				checkButton(UT_sint32 controlId, bool bChecked = true);
-	void				enableControl(UT_sint32 controlId, bool bEnabled = true);
-	void				destroyWindow();
-	void				setDialogTitle(LPCSTR p_str);
-	void				localizeDialogTitle(UT_uint32 stringId);
-	int					showWindow( int Mode );
-	int					showControl(UT_sint32 controlId, int Mode);
-	int					bringWindowToTop();
+	void checkButton(UT_sint32 controlId, bool bChecked = true);
+	void enableControl(UT_sint32 controlId, bool bEnabled = true);
+	void destroyWindow();
+	void setDialogTitle(LPCSTR p_str);
+	void localizeDialogTitle(UT_uint32 stringId);
+	int	 showWindow( int Mode );
+	int	 showControl(UT_sint32 controlId, int Mode);
+	int	 bringWindowToTop();
 
 	// Combo boxes.
 
-	int					addItemToCombo(UT_sint32 controlId, LPCSTR p_str);
-	void				selectComboItem(UT_sint32 controlId, int index);
-	int 				setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
-	int 				getComboDataItem(UT_sint32 controlId, int nIndex);
-	int					getComboSelectedIndex(UT_sint32 controlId) const;
-	void				resetComboContent(UT_sint32 controlId);
+	int	 addItemToCombo(UT_sint32 controlId, LPCSTR p_str);
+	void selectComboItem(UT_sint32 controlId, int index);
+	int  setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
+	int  getComboDataItem(UT_sint32 controlId, int nIndex);
+	int	 getComboSelectedIndex(UT_sint32 controlId) const;
+	void resetComboContent(UT_sint32 controlId);
 
 	// List boxes
 
-	void				resetContent(UT_sint32 controlId);
-	int					addItemToList(UT_sint32 controlId, LPCSTR p_str);
-	int					getListSelectedIndex(UT_sint32 controlId) const;
-	int 				setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
-	int 				getListDataItem(UT_sint32 controlId, int nIndex);
-	void				selectListItem(UT_sint32 controlId, int index);
-	void				getListText(UT_sint32 controlId, int index, char *p_str) const;
+	void resetContent(UT_sint32 controlId);
+	int	 addItemToList(UT_sint32 controlId, LPCSTR p_str);
+	int	 getListSelectedIndex(UT_sint32 controlId) const;
+	int  setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
+	int  getListDataItem(UT_sint32 controlId, int nIndex);
+	void selectListItem(UT_sint32 controlId, int index);
+	void getListText(UT_sint32 controlId, int index, char *p_str) const;
 
 	// Controls
-	void				setControlText(UT_sint32 controlId, LPCSTR p_str);
-	void				localizeControlText(UT_sint32 controlId, UT_uint32 stringId);
-	void				setControlInt(UT_sint32 controlId, int value);
-	int					getControlInt(UT_sint32 controlId) const;
+	void setControlText(UT_sint32 controlId, LPCSTR p_str);
+	void localizeControlText(UT_sint32 controlId, UT_uint32 stringId);
+	void setControlInt(UT_sint32 controlId, int value);
+	int	 getControlInt(UT_sint32 controlId) const;
 	
-	void                selectControlText(UT_sint32 controlId,
-										  UT_sint32 start,
-										  UT_sint32 end);
+	void selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end);
 	
-	int					isChecked(UT_sint32 controlId) const;
-	void				getControlText(	UT_sint32	controlId,
-										LPSTR		p_buffer,
-										UT_sint32	Buffer_length) const;
+	int  isChecked(UT_sint32 controlId) const;
+	void getControlText(UT_sint32 controlId, LPSTR p_buffer, UT_sint32 Buffer_length) const;
 
-	bool				isControlVisible(UT_sint32	controlId) const;
+	bool isControlVisible(UT_sint32	controlId) const;
 
-	void 				centerDialog();
-	void				setHandle(HWND hWnd) { m_hDlg = hWnd; };
-	void				setDialog(XAP_Dialog * pDlg) { m_pDlg = pDlg; };
+	void centerDialog();
+	void setHandle(HWND hWnd) { m_hDlg = hWnd; };
+	void setDialog(XAP_Dialog * pDlg) { m_pDlg = pDlg; };
+	bool isDialogValid() const;
 	
 private:
 	static BOOL CALLBACK s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);

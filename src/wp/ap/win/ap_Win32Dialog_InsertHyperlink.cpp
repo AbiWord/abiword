@@ -45,8 +45,7 @@ XAP_Dialog * AP_Win32Dialog_InsertHyperlink::static_constructor(XAP_DialogFactor
 
 AP_Win32Dialog_InsertHyperlink::AP_Win32Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_InsertHyperlink(pDlgFactory,id),
-	_win32Dialog(this)
+	: AP_Dialog_InsertHyperlink(pDlgFactory,id)
 {
 }
 
@@ -57,53 +56,41 @@ AP_Win32Dialog_InsertHyperlink::~AP_Win32Dialog_InsertHyperlink(void)
 void AP_Win32Dialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-
-	_win32Dialog.runModal( pFrame,
-                           AP_DIALOG_ID_INSERTHYPERLINK,
-                           AP_RID_DIALOG_INSERTHYPERLINK,
-                           this);
-
-
+	UT_ASSERT(m_id == AP_DIALOG_ID_INSERTHYPERLINK);
+	
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_INSERTHYPERLINK));
 }
-
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	// localize dialog title
-	_win32Dialog.setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title) );
+	localizeDialogTitle(AP_STRING_ID_DLG_InsertHyperlink_Title);
 
 	// localize controls
-	_DSX(INSERTHYPERLINK_BTN_OK,			DLG_OK);
-	_DSX(INSERTHYPERLINK_BTN_CANCEL,		DLG_Cancel);
-
-	_DS(INSERTHYPERLINK_LBL_MSG,			DLG_InsertHyperlink_Msg);
+	localizeControlText(AP_RID_DIALOG_INSERTHYPERLINK_BTN_OK,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_INSERTHYPERLINK_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_INSERTHYPERLINK_LBL_MSG,		AP_STRING_ID_DLG_InsertHyperlink_Msg);
 
 	// initial data
-	_win32Dialog.resetContent(AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK);
+	resetContent(AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK);
 
 	UT_uint32 count = getExistingBookmarksCount();
 	for( UT_uint32 i = 0; i < count; i++)
 	{
-		_win32Dialog.addItemToList( AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK,
-                                    getNthExistingBookmark( i ) );
+		addItemToList( AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK,
+                       getNthExistingBookmark( i ) );
 	}
 
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK));
 
 	if(getHyperlink())
 	{
-		_win32Dialog.setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, getHyperlink());
-		_win32Dialog.selectControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, 0, -1);
+		setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, getHyperlink());
+		selectControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, 0, -1);
 	}
 
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	return 0; // 0 because we called set focus
 }
 
@@ -123,9 +110,9 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 	case IDOK:
 		{
 			char buf[_MAX_PATH];
-			_win32Dialog.getControlText( AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK,
-                            			 buf,
-                            			 _MAX_PATH );
+			getControlText( AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK,
+                			buf,
+                            _MAX_PATH );
 			setHyperlink(buf);
 		}
 		setAnswer( a_OK );
@@ -134,12 +121,12 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 
 	case AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK:
 		{
-			UT_sint32 result = _win32Dialog.getListSelectedIndex( wId );
+			UT_sint32 result = getListSelectedIndex( wId );
 			if( result != LB_ERR )
 			{
 				char buf[_MAX_PATH];
-				_win32Dialog.getListText( wId, result, buf );
-				_win32Dialog.setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, buf);
+				getListText( wId, result, buf );
+				setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, buf);
 			}
 		}
 		return 1;

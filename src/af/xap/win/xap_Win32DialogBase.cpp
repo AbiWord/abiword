@@ -316,6 +316,11 @@ int XAP_Win32DialogBase::isChecked(UT_sint32 controlId) const
 	return IsDlgButtonChecked(m_hDlg, controlId);
 }
 
+bool XAP_Win32DialogBase::isDialogValid() const
+{
+	return IsWindow(m_hDlg)!=0;
+}
+
 void XAP_Win32DialogBase::getControlText(	UT_sint32 controlId,
 											LPSTR p_buffer,
 											UT_sint32 Buffer_length) const

@@ -21,14 +21,15 @@
 #define AP_Win32Dialog_Columns_H
 
 #include "ap_Dialog_Columns.h"
-#include "xap_Win32DialogHelper.h"
 #include "xap_Win32PreviewWidget.h"
-#include "xap_Frame.h"
+#include "xap_Win32DialogBase.h"
+
+class XAP_Frame;
 
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Columns: public AP_Dialog_Columns, XAP_Win32Dialog
+class AP_Win32Dialog_Columns: public XAP_Win32DialogBase, public AP_Dialog_Columns
 {
 public:
 	AP_Win32Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -40,8 +41,6 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 private:
-	HWND					m_hThisDlg;
-	XAP_Win32DialogHelper		_win32Dialog;
 	XAP_Win32PreviewWidget *	m_pPreviewWidget;
 
 protected:

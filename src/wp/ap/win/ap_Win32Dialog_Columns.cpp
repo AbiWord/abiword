@@ -48,15 +48,10 @@ XAP_Dialog * AP_Win32Dialog_Columns::static_constructor(XAP_DialogFactory * pFac
 	return p;
 }
 
-#ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
-#pragma warning(disable: 4355)
-#endif
-
 AP_Win32Dialog_Columns::AP_Win32Dialog_Columns(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
-	: AP_Dialog_Columns(pDlgFactory,id), _win32Dialog(this)
+	: AP_Dialog_Columns(pDlgFactory,id)
 {
-	m_hThisDlg = NULL;
 	m_pPreviewWidget = NULL;
 }
 
@@ -69,11 +64,13 @@ AP_Win32Dialog_Columns::~AP_Win32Dialog_Columns(void)
 
 void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 {
+	UT_ASSERT(pFrame);
+	UT_ASSERT(m_id == AP_DIALOG_ID_COLUMNS);
+	
 	// raise the dialog
 	setViewAndDoc(pFrame);
-
-	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_COLUMNS, AP_RID_DIALOG_COLUMNS, this);
-
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(AP_RID_DIALOG_COLUMNS));
 }
 
 void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)
@@ -81,40 +78,31 @@ void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)
 	// As this function gets called prior to getting an hWnd for the dialog
 	// we check to see if the dialog has been initialized prior to
 	// running the conrol
-	if (m_hThisDlg)
+	if ( isDialogValid() )
 	{
-		_win32Dialog.enableControl(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, bState);
+		enableControl(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, bState);
 	}
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
-
-	m_hThisDlg = hWnd;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));
+	localizeDialogTitle(AP_STRING_ID_DLG_Column_ColumnTitle);
 
 	// localize controls
-	_DSX(COLUMN_BTN_OK,					DLG_OK);
-	_DSX(COLUMN_BTN_CANCEL,				DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_COLUMN_BTN_OK,			XAP_STRING_ID_DLG_OK);
+	localizeControlText(AP_RID_DIALOG_COLUMN_BTN_CANCEL,		XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(AP_RID_DIALOG_COLUMN_GROUP1,			AP_STRING_ID_DLG_Column_Number);
+	localizeControlText(AP_RID_DIALOG_COLUMN_GROUP2,			AP_STRING_ID_DLG_Column_Preview);
+	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_ONE,			AP_STRING_ID_DLG_Column_One);
+	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_TWO,			AP_STRING_ID_DLG_Column_Two);
+	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_THREE,		AP_STRING_ID_DLG_Column_Three);
+	localizeControlText(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN,AP_STRING_ID_DLG_Column_Line_Between);
+	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_NUMCOLUMNS,	AP_STRING_ID_DLG_Column_Number_Cols);
+	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_SPACEAFTER,	AP_STRING_ID_DLG_Column_Space_After);
+	localizeControlText(AP_RID_DIALOG_COLUMN_TEXT_MAXSIZE,		AP_STRING_ID_DLG_Column_Size);
+	localizeControlText(AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER,	AP_STRING_ID_DLG_Column_RtlOrder);
 
-	_DS(COLUMN_GROUP1,					DLG_Column_Number);
-	_DS(COLUMN_GROUP2,					DLG_Column_Preview);
-	_DS(COLUMN_TEXT_ONE,				DLG_Column_One);
-	_DS(COLUMN_TEXT_TWO,				DLG_Column_Two);
-	_DS(COLUMN_TEXT_THREE,				DLG_Column_Three);
-	_DS(COLUMN_CHECK_LINE_BETWEEN,		DLG_Column_Line_Between);
-	_DS(COLUMN_TEXT_NUMCOLUMNS,			DLG_Column_Number_Cols);
-	_DS(COLUMN_TEXT_SPACEAFTER,			DLG_Column_Space_After);
-	_DS(COLUMN_TEXT_MAXSIZE,			DLG_Column_Size);
-	_DS(COLUMN_CHECK_RTL_ORDER,			DLG_Column_RtlOrder);
-
+	// Do Bitmaps
 	RECT rect;
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE), &rect);
 	int iWidth = rect.right - rect.left;
@@ -125,33 +113,32 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	COLORREF ColorRef = GetSysColor(COLOR_BTNFACE);
 	UT_RGBColor Color(GetRValue(ColorRef), GetGValue(ColorRef), GetBValue(ColorRef));
 
-	bool bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "tb_1column_xpm",
+	bool bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "1COLUMN",
 																&hBitmap);
 	UT_ASSERT(bFoundIcon);
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 
-	bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "tb_2column_xpm",
+	bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "2COLUMN",
 																&hBitmap);
 	UT_ASSERT(bFoundIcon);
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 
-	bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "tb_3column_xpm",
+	bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "3COLUMN",
 																&hBitmap);
 	UT_ASSERT(bFoundIcon);
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 
 	// set initial state
 	char buf[BUFSIZE];
-	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE + getColumns() - 1, BST_CHECKED);
+	checkButton(AP_RID_DIALOG_COLUMN_RADIO_ONE + getColumns() - 1, true);
 	enableLineBetweenControl(getColumns() != 1);
-	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, getLineBetween() ? BST_CHECKED : BST_UNCHECKED);
-	SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS,itoa(getColumns(),buf,10));
-	SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
-	SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
+	checkButton(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, getLineBetween());
+	setControlText(AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS,itoa(getColumns(),buf,10));
+	setControlText(AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
+	setControlText(AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
 
-	HWND hRTL = GetDlgItem( hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER );
-	ShowWindow( hRTL, SW_NORMAL );
-	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER, getColumnOrder() ? BST_CHECKED : BST_UNCHECKED );
+	showControl( AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER, SW_NORMAL );
+	checkButton(AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER, getColumnOrder()!=false);
 
 	// Create a preview window.
 
@@ -165,9 +152,9 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);
 	m_pPreviewWidget->setPreview(m_pColumnsPreview);
 	
-	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
+	centerDialog();	
 	
-	return 1;							// 1 == we did not call SetFocus()
+	return 1;	// 1 == we did not call SetFocus()
 }
 
 BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -189,27 +176,27 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case AP_RID_DIALOG_COLUMN_RADIO_ONE:
 		setColumns(1);
-		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, BST_UNCHECKED);
-		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, BST_UNCHECKED);
-		SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_TWO, false);
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_THREE, false);
+		setControlText(AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_RADIO_TWO:
 		setColumns(2);
-		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, BST_UNCHECKED);
-		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, BST_UNCHECKED);
-		SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_ONE, false);
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_THREE, false);
+		setControlText(AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_RADIO_THREE:
 		setColumns(3);
-		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, BST_UNCHECKED);
-		CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, BST_UNCHECKED);
-		SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_ONE, false);
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_TWO, false);
+		setControlText(AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS, itoa(getColumns(),buf,10));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN:
-		setLineBetween( (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN) == BST_CHECKED) );
+		setLineBetween( isChecked(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN)==BST_CHECKED );
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS:
@@ -221,9 +208,9 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				setColumns( atoi(buf) );
 			}
 			SetDlgItemText(hWnd, wId, itoa(getColumns(),buf,10));
-			CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, (getColumns()==1)?BST_CHECKED:BST_UNCHECKED);
-			CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2)?BST_CHECKED:BST_UNCHECKED);
-			CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3)?BST_CHECKED:BST_UNCHECKED);
+			checkButton(AP_RID_DIALOG_COLUMN_RADIO_ONE, (getColumns()==1));
+			checkButton(AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2));
+			checkButton(AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3));
 		}
 		return 1;
 
@@ -233,7 +220,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			setSpaceAfter( buf );
-			SetDlgItemText(hWnd, wId, getSpaceAfterString());
+			setControlText(wId, getSpaceAfterString());
 		}
 		return 1;
 
@@ -243,12 +230,12 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			char buf[BUFSIZE];
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			setMaxHeight( buf );
-			SetDlgItemText(hWnd, wId, getHeightString());
+			setControlText( wId, getHeightString());
 		}
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER:
-		setColumnOrder( (UT_uint32) (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER) == BST_CHECKED) );
+		setColumnOrder( (UT_uint32) (isChecked(AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER) == BST_CHECKED) );
 		return 1;
 
 	default:							// we did not handle this notification
@@ -274,10 +261,10 @@ BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 				setColumns( getColumns() - 1 );
 			}
 		}
-		SetDlgItemText(m_hThisDlg, AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS,itoa(getColumns(),buf,10));
-		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_ONE, (getColumns()==1)?BST_CHECKED:BST_UNCHECKED);
-		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2)?BST_CHECKED:BST_UNCHECKED);
-		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3)?BST_CHECKED:BST_UNCHECKED);
+		setControlText(AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS,itoa(getColumns(),buf,10));
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_ONE, (getColumns()==1));
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2));
+		checkButton(AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3));
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_SPIN_SPACEAFTER:
@@ -289,7 +276,7 @@ BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 		{
 			incrementSpaceAfter( false );
 		}
-		SetDlgItemText(m_hThisDlg, AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
+		setControlText(AP_RID_DIALOG_COLUMN_EDIT_SPACEAFTER, getSpaceAfterString());
 		return 1;
 
 	case AP_RID_DIALOG_COLUMN_SPIN_MAXSIZE:
@@ -301,7 +288,7 @@ BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 		{
 			incrementMaxHeight( false );
 		}
-		SetDlgItemText(m_hThisDlg, AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
+		setControlText(AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
 		return 1;
 
 	default:

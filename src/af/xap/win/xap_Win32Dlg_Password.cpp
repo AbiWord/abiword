@@ -17,10 +17,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef _MSC_VER	 // MSVC++ warns about using 'this' in initializer list.
-#pragma warning(disable: 4355)
-#endif
-
 #include <windows.h>
 
 #include "ut_string.h"
@@ -49,9 +45,7 @@ XAP_Dialog * XAP_Win32Dialog_Password::static_constructor(XAP_DialogFactory * pF
 
 XAP_Win32Dialog_Password::XAP_Win32Dialog_Password(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: XAP_Dialog_Password(pDlgFactory,id), 
-      _win32Dialog(this),
-      m_hThisDlg(NULL)
+	: XAP_Dialog_Password(pDlgFactory,id)
 {
 }
 
@@ -62,29 +56,23 @@ XAP_Win32Dialog_Password::~XAP_Win32Dialog_Password(void)
 void XAP_Win32Dialog_Password::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
-	_win32Dialog.runModal( pFrame,
-						   XAP_DIALOG_ID_PASSWORD,
-                           XAP_RID_DIALOG_PASSWORD,
-	         		       this );
+	UT_ASSERT(m_id == XAP_DIALOG_ID_PASSWORD);
+	
+	setDialog(this);
+	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_PASSWORD));
 }
 
 #define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 BOOL XAP_Win32Dialog_Password::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
-	UT_ASSERT(app);
-
-	m_hThisDlg = hWnd;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
 	// localize dialog title
-	_win32Dialog.setDialogTitle( pSS->getValue(XAP_STRING_ID_DLG_Password_Title) );
+	localizeDialogTitle(XAP_STRING_ID_DLG_Password_Title);
 
 	// localize controls
-	_DSX(PASSWORD_BTN_OK,				DLG_OK);
-	_DSX(PASSWORD_BTN_CANCEL,			DLG_Cancel);
-	_DSX(PASSWORD_LBL_PASSWORD,			DLG_Password_Password);
+	localizeControlText(XAP_RID_DIALOG_PASSWORD_BTN_OK,		XAP_STRING_ID_DLG_OK);
+	localizeControlText(XAP_RID_DIALOG_PASSWORD_BTN_CANCEL,	XAP_STRING_ID_DLG_Cancel);
+	localizeControlText(XAP_RID_DIALOG_PASSWORD_LBL_PASSWORD,	XAP_STRING_ID_DLG_Password_Password);
 
 	return 1;
 }
@@ -105,7 +93,7 @@ BOOL XAP_Win32Dialog_Password::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	case XAP_RID_DIALOG_PASSWORD_BTN_OK:
 		{
 			char buf[1024];
-			_win32Dialog.getControlText(XAP_RID_DIALOG_PASSWORD_EBX_PASSWORD, buf, 1024);
+			getControlText(XAP_RID_DIALOG_PASSWORD_EBX_PASSWORD, buf, 1024);
 			setPassword( buf );
 		}
 		setAnswer( a_OK );
