@@ -828,7 +828,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 	// but copy the bitstream
 	while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
 	  buf->append((UT_Byte*)&data, 1);
-	mimetype = "image/png";
+	mimetype = strdup("image/png");
 	break;
       case msoblipWMF:
       case msoblipEMF:
@@ -850,8 +850,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    XML_Char propsName[32];
    propsName[0] = 0;
    sprintf(propsName, "image%d", m_iImageCount++);
+
    const XML_Char* propsArray[5];
-	   
    propsArray[0] = "PROPS";
    propsArray[1] = propBuffer;
    propsArray[2] = "DATAID";

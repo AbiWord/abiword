@@ -32,6 +32,7 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 #include "ie_imp_UTF8.h"
+#include "ie_imp_GraphicAsDocument.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -169,10 +170,29 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 			ieft = IE_Imp::fileTypeForContents(szBuf, iNumbytes);
 		}
 	}
-	// as a last resort, just try importing it as text  :(
 	if (ieft == IEFT_Unknown)
 	{
-		ieft = IEFT_Text ;
+	   	// maybe they're trying to open an image directly?
+	   	IE_ImpGraphic *pIEG;
+ 		UT_Error errorCode = IE_ImpGraphic::constructImporter(szFilename, IEGFT_Unknown, &pIEG);
+		if (!errorCode && pIEG) 
+ 		{
+		   	// create the importer 
+			*ppie = new IE_Imp_GraphicAsDocument(pDocument);
+		   	if (*ppie) {
+			   	// tell the importer where to get the graphic
+			   	((IE_Imp_GraphicAsDocument*)(*ppie))->setGraphicImporter(pIEG);
+			   	return UT_OK;
+			} else {
+			   	delete pIEG;
+				return UT_IE_NOMEMORY;
+			}
+		}
+		else
+ 		{
+	   		// as a last resort, just try importing it as text  :(
+			ieft = IEFT_Text ;
+		}
 	}
 
 	UT_ASSERT(ieft != IEFT_Unknown);
