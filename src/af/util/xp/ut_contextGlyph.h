@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2001 Tomas Frydrych
+ * Copyright (C) 2001, 2003 Tomas Frydrych
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,10 +39,19 @@ class XAP_Prefs;
 
 #define CONTEXT_BUFF_SIZE 5
 
-struct Letter
+struct LigatureData
 {
 	UT_UCSChar code_low;
 	UT_UCSChar code_high;
+	UT_UCSChar initial;
+	UT_UCSChar medial;
+	UT_UCSChar final;
+	UT_UCSChar alone;
+};
+
+struct LetterData
+{
+	UT_UCSChar code;
 	UT_UCSChar initial;
 	UT_UCSChar medial;
 	UT_UCSChar final;
@@ -67,33 +76,33 @@ public:
 						const XML_Char   * pLang) const;
 		
 	void renderString(const UT_UCSChar * src,
-					  UT_UCSChar *dest,
-					  UT_uint32 len,
+					  UT_UCSChar       * dest,
+					  UT_uint32          len,
 					  const UT_UCSChar * prev,
 					  const UT_UCSChar * next,
 					  const XML_Char   * pLang) const;
 		
-	const Letter * smartQuote(UT_UCS4Char c,
-				  const XML_Char * pLang) const;
+	const LetterData * smartQuote(UT_UCS4Char      c,
+								  const XML_Char * pLang) const;
 	
 		
-		private:
+private:
 	GlyphContext _evalGlyphContext( const UT_UCSChar * code,
 									const UT_UCSChar * prev,
 									const UT_UCSChar * next) const;
 
-	static void _prefsListener(	XAP_App *pApp,
-								XAP_Prefs *pPrefs,
-								UT_StringPtrMap *phChanges,
-								void *data);
+	static void _prefsListener(	XAP_App         * pApp,
+								XAP_Prefs       * pPrefs,
+								UT_StringPtrMap * phChanges,
+								void            * data);
 										
-	static Letter		*s_pGlyphTable;
-	static UCSRange 	*s_pIgnore;
-	static Letter		*s_pLigature;
-	static Letter		*s_pLigRev;
-	static bool 		s_bInit;
-	static UT_uint32	s_iGlyphTableSize;
-	static bool         s_bSmartQuotes;
+	static LetterData	  * s_pGlyphTable;
+	static UCSRange 	  * s_pIgnore;
+	static LigatureData	  * s_pLigature;
+	static LigatureData	  * s_pLigRev;
+	static bool 		    s_bInit;
+	static UT_uint32	    s_iGlyphTableSize;
+	static bool             s_bSmartQuotes;
 	static const XML_Char * s_pEN_US;
 };
 #endif
