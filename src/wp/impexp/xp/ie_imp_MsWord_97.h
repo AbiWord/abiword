@@ -28,7 +28,7 @@
 #include "ut_string_class.h"
 #include "fl_DocLayout.h"
 #include "fl_AutoLists.h"
-
+#include "ut_units.h"
 //
 // forward decls so that we don't have to #include "wv.h" here
 //
@@ -273,6 +273,7 @@ private:
 	bool        m_bPageBreakPending;
 	UT_NumberVector m_vListIdMap;
 	bool        m_bSymbolFont;
+	UT_Dimension m_dim;
 };
 
 #endif /* IE_IMP_MSWORD_H */

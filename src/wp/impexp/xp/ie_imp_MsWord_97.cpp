@@ -57,6 +57,8 @@
 #include "pt_PieceTable.h"
 #include "pd_Style.h"
 
+#include "fp_PageSize.h"
+
 #include "ut_Language.h"
 
 #ifdef DEBUG
@@ -204,6 +206,8 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 105: return NULL /*"Table Normal"*/;
 
 		case 107: return NULL /*"No List"*/;
+
+		case 153: return NULL /*"Table of Authorities"*/;
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
@@ -386,13 +390,29 @@ s_mapPageIdToString (UT_uint16 id)
 
 	switch (id)
 	{
-	case 0:
-		return "Letter";
-	case 9:
-		return "A4";
+		case 0:  return "Letter";
+		case 5:  return "Legal";
+		case 7:  return NULL; //"Executive";
+		case 9:  return "A4";
+		case 11: return "A5";
+		case 13: return "Folio";
+		case 14: return NULL; // in Word this is "B5" but the size
+							  // does not correspond to AW's B5
+		case 20: return "Envelope No10";
+		case 27: return "DL Envelope";
+		case 28: return "C5";
+		case 34: return "B5"; // in Word this is B5 Envelope ...
+		case 37: return NULL; //"Monarch Envelope";
 
-	default:
-		return 0;
+		case 0xffff:
+			// this is a value that wv uses to indicate that page size
+			// is customised, just return NULL
+			return NULL;
+			
+		default:
+			UT_DEBUGMSG(("Unknow page size: please submit this document with a bug report\n"));
+			UT_ASSERT( 0 );
+			return 0;
 	}
 }
 
@@ -445,6 +465,7 @@ s_mapDocToAbiListId (MSWordListIdType id)
 	case WLNF_HEBREW_NUMBERS:
 	  return "129";
 
+	case WLNF_EUROPEAN_ARABIC:
 	case WLNF_ORDINAL: // ordinal
 	default:
 	  return "0";
@@ -524,6 +545,7 @@ s_mapDocToAbiListStyle (MSWordListIdType id)
 	case WLNF_BULLETS: // bullet list
 	  return "Bullet List";
 
+	case WLNF_EUROPEAN_ARABIC:
 	case WLNF_ORDINAL: // ordinal
 	default:
 	  return "Numbered List";
@@ -554,6 +576,7 @@ s_fieldFontForListStyle (MSWordListIdType id)
 		UT_DEBUGMSG(("Fieldfont set to symbol \n"));
 	  return "Symbol";
 
+	case WLNF_EUROPEAN_ARABIC:
 	case WLNF_ORDINAL: // ordinal
 		return "Times New Roman";
 		
@@ -799,7 +822,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iTextStart(0xffffffff),
 	m_iTextEnd(0xffffffff),
 	m_bPageBreakPending(false),
-	m_bSymbolFont(false)
+	m_bSymbolFont(false),
+	m_dim(DIM_IN)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1833,105 +1857,12 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 	m_iCurrentSectId++;
 
-	// page-margin-left
-	UT_String_sprintf(propBuffer,
-		"page-margin-left:%s;",
-		UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dxaLeft) / 1440), "1.4"));
-	props += propBuffer;
-
-	// page-margin-right
-	UT_String_sprintf(propBuffer,
-		"page-margin-right:%s;",
-		UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dxaRight) / 1440), "1.4"));
-	props += propBuffer;
-
-	// page-margin-top
-	UT_String_sprintf(propBuffer,
-		"page-margin-top:%s;",
-		UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dyaTop) / 1440), "1.4"));
-	props += propBuffer;
-
-	// page-margin-bottom
-	UT_String_sprintf(propBuffer,
-		"page-margin-bottom:%s;",
-		UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dyaBottom) / 1440), "1.4"));
-	props += propBuffer;
-
-	// page-margin-header
-	UT_String_sprintf(propBuffer,
-		"page-margin-header:%s;",
-		UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dyaHdrTop) / 1440), "1.4"));
-	props += propBuffer;
-
-	// page-margin-footer (word's footer is measured from the bottom
-	// edge of the page -- contrary to the docs -- our's from the
-	// bottom margin of the page)
-	UT_String_sprintf(propBuffer,
-		"page-margin-footer:%s;",
-		UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dyaBottom - asep->dyaHdrBottom) / 1440),
-						  "1.4"));
-	props += propBuffer;
-
-	if(asep->fBidi)
-	{
-		// this is an RTL section, set dominant direction to rtl
-		props += "dom-dir:rtl;";
-	}
-	{
-		// this is an LTR section, we want to set the direction
-		// explicitely so that we do not end up with wrong default
-		props += "dom-dir:ltr;";
-	}
-
-
-	if(asep->fPgnRestart)
-	  {
-		// set to 1 when page numbering should be restarted at the beginning of this section
-		props += "section-restart:1;";
-	  }
-
-	// user specified starting page number
-	UT_String_sprintf(propBuffer, "section-restart-value:%d;", asep->pgnStart);
-	props += propBuffer;
-
-	// columns
-	if (asep->ccolM1) {
-		// number of columns
-		UT_String_sprintf(propBuffer,
-				"columns:%d;", (asep->ccolM1+1));
-		props += propBuffer;
-
-		// columns gap
-		UT_String_sprintf(propBuffer,
-				"column-gap:%s;",
-				UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dxaColumns) / 1440),
-												  "1.4"));
-		props += propBuffer;
-	}
-
-	// darw a vertical line between columns
-	if (asep->fLBetween == 1)
-	{
-		props += "column-line:on;";
-	}
-
-	// space after section (gutter)
-	UT_String_sprintf(propBuffer,
-			"section-space-after:%s",
-			UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(asep->dzaGutter) / 1440), "1.4"));
-	props += propBuffer;
-
-	//
-	// TODO: section breaks
-	//
-//
-// Sevior: Only do this ONCE!!! Abiword can only handle one page size.
-//
+	// first we need to deal with page size, because setting page size
+	// resets all margins to the AW defaults
+	// Sevior: Only do this ONCE!!! Abiword can only handle one page size.
 	if(!m_bSetPageSize)
 	{
-		//
 		// all of this data is related to Abi's <pagesize> tag
-		//
 		m_bSetPageSize = true;
 		double page_width  = 0.0;
 		double page_height = 0.0;
@@ -1945,25 +1876,190 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		page_width = asep->xaPage / 1440.0;
 		page_height = asep->yaPage / 1440.0;
 
-		UT_DEBUGMSG(("DOM: pagesize: (landscape: %d) (width: %f) (height: %f) (paper-type: %d)\n",
+		// PROBLEM: there are two separate and independent page sizes
+		// given to us, one by the explicit width and height and one
+		// by the requested paper size, and we need to decide which
+		// one we should follow. There are three scenarios
+		//   (1) the explicit size and paper match
+		//   (2) the explicit size and paper do not match
+		//       (a) the explicit size is the Word default (Letter)
+		//       (b) the explicit size is something else than the defaults
+		//
+		// In case (1) we use the requested paper. Case (2a) happens
+		// when the user changes the page size by requesting a
+		// different paper size but does not touch the width and
+		// height controls -- we use the paper size. Case (2b) happens
+		// when the user changes size by the with and height controls;
+		// the paper request stored is the one that was in place
+		// before the manual adjustment and is no longer valid, so we
+		// use the explicit width and height.
+
+		// decide if the explicit width and height are valid, i.e., if
+		// they contain the Word defaults the paper request has to be
+		// 0 (Letter)
+		bool bDoNotUseSize = (asep->xaPage == 12240 &&
+							  asep->yaPage == 15840 &&
+							  asep->dmPaperReq != 0);
+		
+
+		xxx_UT_DEBUGMSG(("DOM: pagesize: landscape: %d, width: %f, height: %f, paper-type: %d\n",
 					 asep->dmOrientPage, page_width, page_height, asep->dmPaperReq));
 
+		// map paper to AW page size name string ...
 		const char * paper_name = s_mapPageIdToString (asep->dmPaperReq);
 
-		if (paper_name)
-		  {
-			// we found a paper name, let's use it
-			getDoc()->m_docPageSize.Set (paper_name);
-		  }
-		else
-		  {
-			getDoc()->m_docPageSize.Set ("Custom");
-		  }
+		// check if the paper name is valid (i.e., there is a match
+		// between the name and the sizes; if not, we use only the sizes
+		bool bPaperNameValid = (paper_name != NULL);
+		
+		if(bPaperNameValid)
+		{
+			// construct an instance of fp_PageSize for this paper
+			// request; we will use this to verify whether its
+			// dimensions match those stored in the explicit width and
+			// height but also we will determine appropriate units to
+			// be used (i.e., we want to use inches for Letter but
+			// metric units for A4, etc.)
+			fp_PageSize PageSize(paper_name);
+			if(asep->dmOrientPage == 1)
+				PageSize.setLandscape();
 
-		// always use the passed size
-		getDoc()->m_docPageSize.Set (page_width, page_height, DIM_IN);
-		getDoc()->m_docPageSize.setScale(page_scale);
+			// if we know that the explicit size is not valid, we do
+			// not need any further checking
+			if(!bDoNotUseSize)
+			{
+				// in order to minimize effect of rounding errors, we are
+				// better doing the comparison in the twipses; the MS
+				// values suffer from rounding (?) error which is quite
+				// significant, so we will round to the second least
+				// significant digit
+			
+				double w = PageSize.Width(DIM_IN) * 1440.0;
+				double h = PageSize.Height(DIM_IN) * 1440.0;
+
+				UT_uint32 iPaperW10 = ((UT_uint32) w)/10 + (((UT_uint32) w)%10 >= 5 ? 1 : 0);
+				UT_uint32 iPaperH10 = ((UT_uint32) h)/10 + (((UT_uint32) h)%10 >= 5 ? 1 : 0);
+
+				UT_uint32 iPageW10 = asep->xaPage/10 + (asep->xaPage%10 >= 5 ? 1 : 0);
+				UT_uint32 iPageH10 = asep->yaPage/10 + (asep->yaPage%10 >= 5 ? 1 : 0);
+
+				if(iPageW10 != iPaperW10 ||
+				   iPageH10 != iPaperH10)
+				{
+					bPaperNameValid = false;
+				}
+			}
+
+			// if we are to use the paper name, then get the
+			// dimensions to be used ...
+			if(bPaperNameValid)
+			{
+				m_dim = PageSize.getDims();
+			}
+		}
+		
+		if (bPaperNameValid)
+		{
+			getDoc()->m_docPageSize.Set (paper_name);
+		}
+		else
+		{
+			getDoc()->m_docPageSize.Set ("Custom");
+			getDoc()->m_docPageSize.Set (page_width, page_height, DIM_IN);
+			getDoc()->m_docPageSize.setScale(page_scale);
+		}
+	} // end of page size stuff
+
+	if(asep->fBidi)
+	{
+		// this is an RTL section, set dominant direction to rtl
+		props += "dom-dir:rtl;";
 	}
+	else
+	{
+		// this is an LTR section, we want to set the direction
+		// explicitely so that we do not end up with wrong default
+		props += "dom-dir:ltr;";
+	}
+
+
+	if(asep->fPgnRestart)
+	{
+		// set to 1 when page numbering should be restarted at the beginning of this section
+		props += "section-restart:1;";
+	}
+
+	// user specified starting page number
+	UT_String_sprintf(propBuffer, "section-restart-value:%d;", asep->pgnStart);
+	props += propBuffer;
+
+	// columns
+	if (asep->ccolM1) {
+		// number of columns
+		UT_String_sprintf(propBuffer,"columns:%d;", (asep->ccolM1+1));
+		props += propBuffer;
+
+		// columns gap
+		UT_String_sprintf(propBuffer,"column-gap:%s;",
+			UT_convertInchesToDimensionString(m_dim,
+											  (static_cast<float>(asep->dxaColumns) / 1440)));
+		props += propBuffer;
+	}
+
+	// draw a vertical line between columns
+	if (asep->fLBetween == 1)
+	{
+		props += "column-line:on;";
+	}
+
+	// space after section (gutter)
+	UT_String_sprintf(propBuffer,"section-space-after:%s;",
+			UT_convertInchesToDimensionString(m_dim,
+											  (static_cast<float>(asep->dzaGutter) / 1440)));
+	props += propBuffer;
+
+	//
+	// TODO: section breaks
+	//
+
+	// page-margin-left
+	UT_String_sprintf(propBuffer, "page-margin-left:%s;",
+			UT_convertInchesToDimensionString(m_dim,
+											  (static_cast<float>(asep->dxaLeft) / 1440)));
+	props += propBuffer;
+
+	// page-margin-right
+	UT_String_sprintf(propBuffer, "page-margin-right:%s;",
+			UT_convertInchesToDimensionString(m_dim,
+											  (static_cast<float>(asep->dxaRight) / 1440)));
+	props += propBuffer;
+
+	// page-margin-top
+	UT_String_sprintf(propBuffer, "page-margin-top:%s;",
+			UT_convertInchesToDimensionString(m_dim,
+											  (static_cast<float>(asep->dyaTop) / 1440)));
+	props += propBuffer;
+
+	// page-margin-bottom
+	UT_String_sprintf(propBuffer, "page-margin-bottom:%s;",
+			UT_convertInchesToDimensionString(m_dim,
+											  (static_cast<float>(asep->dyaBottom)/1440)));
+	props += propBuffer;
+
+	// page-margin-header
+	UT_String_sprintf(propBuffer, "page-margin-header:%s;",
+			UT_convertInchesToDimensionString(m_dim,
+											  (static_cast<float>(asep->dyaHdrTop)/1440)));
+	props += propBuffer;
+
+	// page-margin-footer (word's footer is measured from the bottom
+	// edge of the page -- contrary to the docs -- our's from the
+	// bottom margin of the page)
+	UT_String_sprintf(propBuffer, "page-margin-footer:%s",
+			UT_convertInchesToDimensionString(m_dim,
+							(static_cast<float>(asep->dyaBottom - asep->dyaHdrBottom)/1440)));
+	
+	props += propBuffer;
 
 	xxx_UT_DEBUGMSG (("DOM:SEVIOR the section properties are: '%s'\n", props.c_str()));
 
@@ -2096,7 +2192,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	 * 4 Odd page
 	 */
 
-//	if (asep->bkc > 1 && m_nSections > 1) // don't apply on the 1st page
+	//	if (asep->bkc > 1 && m_nSections > 1) // don't apply on the 1st page
 	if (m_nSections > 1) // don't apply on the 1st page
 	{
 		// new sections always need a block
@@ -2109,26 +2205,26 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 		UT_UCSChar ucs = UCS_FF;
 		switch (asep->bkc) {
-		case 1:
-			ucs = UCS_VTAB;
-			X_CheckError(_appendSpan(&ucs,1));
-			break;
+			case 1:
+				ucs = UCS_VTAB;
+				X_CheckError(_appendSpan(&ucs,1));
+				break;
 
-		case 2:
-			X_CheckError(_appendSpan(&ucs,1));
-			break;
+			case 2:
+				X_CheckError(_appendSpan(&ucs,1));
+				break;
 
-		case 3: // TODO: handle me better (not even)
-			X_CheckError(_appendSpan(&ucs,1));
-			break;
+			case 3: // TODO: handle me better (not even)
+				X_CheckError(_appendSpan(&ucs,1));
+				break;
 
-		case 4: // TODO: handle me better (not odd)
-			X_CheckError(_appendSpan(&ucs,1));
-			break;
+			case 4: // TODO: handle me better (not odd)
+				X_CheckError(_appendSpan(&ucs,1));
+				break;
 
-		case 0:
-		default:
-			break;
+			case 0:
+			default:
+				break;
 		}
 	}
 
@@ -2189,7 +2285,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// the main stream always contains a paragraph marker; we do not
 	// want it to insert strux on those
 	if((ps->currentcp == m_iTextEnd - 1 && m_iTextEnd > m_iTextStart)                ||
-	   (ps->currentcp == m_iTextEnd - 2 && m_iTextEnd > m_iTextStart)                ||
+	   //(ps->currentcp == m_iTextEnd - 2 && m_iTextEnd > m_iTextStart)                ||
 	   (ps->currentcp == m_iFootnotesEnd - 1 && m_iFootnotesEnd > m_iFootnotesStart) ||
 	   (ps->currentcp == m_iEndnotesEnd - 1  && m_iEndnotesEnd > m_iEndnotesStart)   ||
 	   (ps->currentcp == m_iHeadersEnd - 1 && m_iHeadersEnd > m_iHeadersStart)       ||
@@ -2525,55 +2621,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		// field-font
 		m_paraProps += "field-font:";
 		m_paraProps += s_fieldFontForListStyle (static_cast<MSWordListIdType>(apap->linfo.format));
-		// Put in margin-left and text-indent - Use MS info if available or
-		// AbiWord defaults if these aren't present
-		//
-#if 0
-		UT_String sMargeLeft("margin-left"),sMargeLeftV;
-		UT_String sMargeLeftFirst("text-indent"),sMargeLeftFirstV;
-		// margin-left
-		if (apap->dxaLeft) {
-			UT_String_sprintf(sMargeLeftV,
-							  "margin-left:%s;",
-							  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft) / 1440),
-																"1.4"));
-			UT_DEBUGMSG(("Margin-left from MSWord Lists info %s \n",sMargeLeftV.c_str()));
-		}
-		//
-		// Overide the margin controls for lists.
-		// Abi's defaults for levels gives a better fit to average documents. We need
-		// to decypher where this info is stored in the MS Word document
-		// 
-		float fIndent = 0.5; // LIST_DEFAULT_INDENT
-		fIndent = static_cast<float>(apap->ilvl + 1) * fIndent;
-		if (apap->dxaLeft) 
-		{
-			fIndent += static_cast<float>(apap->dxaLeft)/(float)1440.0;
-		}
-		UT_String_sprintf(sMargeLeftV,"%fin",fIndent);
-
-		UT_String_setProperty(props,sMargeLeft,sMargeLeftV);
-
-		// margin-left first line (indent) text-indent
-
-		if (apap->dxaLeft1) {
-			UT_String_sprintf(sMargeLeftFirst,
-							  "%s",
-							  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft1) / 1440),"1.4"));
-
-			UT_DEBUGMSG(("Margin-left-first (text-indent)  from MSWord Lists info %s \n",sMargeLeftFirst.c_str()));
-			sMargeLeftFirst = "text-indent";
-		}
-
-		float fFirstIndent  = (float)-0.3; // LIST_DEFAULT_INDENT_LABEL
-		fFirstIndent = fFirstIndent - static_cast<float>(apap->ilvl) * (float)0.2;
-		UT_String_sprintf(sMargeLeftFirstV,"%fin;",fFirstIndent);
-
-
-		UT_String_setProperty(props,sMargeLeftFirst,sMargeLeftFirstV);
-		xxx_UT_DEBUGMSG(("props for MSWORD are %s \n",props.c_str()));
-#endif
-
 	} // end of list-related code
 
  	// props
@@ -3446,10 +3493,10 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
     UT_String propBuffer;
 
     for (UT_uint32 i = 0; i < m_vecColumnWidths.size(); i++) {
-      UT_String_sprintf(propBuffer,
-			"%s/",
-			UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(reinterpret_cast<int>(m_vecColumnWidths.getNthItem(i))))/1440.0, "1.4")
-			);
+      UT_String_sprintf(propBuffer,"%s/",
+		UT_convertInchesToDimensionString(m_dim,
+		  (static_cast<float>(reinterpret_cast<int>(m_vecColumnWidths.getNthItem(i))))/1440.0));
+	  
       props += propBuffer;
     }
 
@@ -3457,7 +3504,9 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
     m_vecColumnWidths.clear ();
   }
 
-  props += UT_String_sprintf("table-line-ignore:0; table-line-type:1; table-line-thickness:0.8pt; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
+  props += "table-line-ignore:0; table-line-type:1; table-line-thickness:0.8pt;";
+  
+  props += UT_String_sprintf("table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
 
   // apply properties
   PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
@@ -3867,8 +3916,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dxaRight) {
 		UT_String_sprintf(propBuffer,
 						  "margin-right:%s;",
-						  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaRight) / 1440),
-															"1.4"));
+						  UT_convertInchesToDimensionString(m_dim, (static_cast<float>(apap->dxaRight) / 1440)));
 		s += propBuffer;
 	}
 
@@ -3876,8 +3924,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dxaLeft) {
 		UT_String_sprintf(propBuffer,
 						  "margin-left:%s;",
-						  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft) / 1440),
-															"1.4"));
+						  UT_convertInchesToDimensionString(m_dim, (static_cast<float>(apap->dxaLeft) / 1440)));
 		s += propBuffer;
 	}
 
@@ -3885,8 +3932,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dxaLeft1) {
 		UT_String_sprintf(propBuffer,
 						  "text-indent:%s;",
-						  UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft1) / 1440),
-															"1.4"));
+						  UT_convertInchesToDimensionString(m_dim, (static_cast<float>(apap->dxaLeft1) / 1440)));
 		s += propBuffer;
 	}
 
@@ -3908,10 +3954,10 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 		propBuffer += "tabstops:";
 
 		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
-			propBuffer += UT_String_sprintf(
-											"%s/",
-											UT_convertInchesToDimensionString(DIM_IN, ((static_cast<float>(apap->rgdxaTab[iTab]))
-																					   / 1440), "1.4"));
+			propBuffer += UT_String_sprintf("%s/",
+						UT_convertInchesToDimensionString(m_dim,
+										((static_cast<float>(apap->rgdxaTab[iTab])) / 1440)));
+			
 			switch (apap->rgtbd[iTab].jc) {
 				case 1:
 					propBuffer += "C,";
