@@ -80,7 +80,7 @@ if test "$PLATFORM" = "unix"; then
 	dnl locate glib and gtk
 	ABI_GLIB_GTK
 elif test "$PLATFORM" = "mac" ; then
-
+	ABI_GLIB
 	ABI_FE="Mac"
 	AM_CONDITIONAL(WITH_MACOSX, true)
 fi
@@ -396,7 +396,7 @@ if test $peerconfig = "true"; then
 			echo "Running configure in ${i}"
 			config_flags='--disable-shared --enable-static'
 			if test `basename "$i"` = wv; then
-				config_flags="$config_flags --with-exporter"
+				config_flags="$config_flags --with-exporter --with-glib=$abi_glib_opt"
 			fi
 			(cd $i; ./configure $config_flags)
 		fi

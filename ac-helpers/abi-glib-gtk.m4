@@ -1,6 +1,178 @@
 
-# On unix, Check for glib and gtk libraries.  Ensure that the version
-# number of glib is >= 1.2.0 and the version number of gtk is >= 1.2.2
+# Check for optional glib
+
+# Usage: 
+# ABI_GLIB12_OPT(<micro-version>,<optional>) where <optional> = "no"|"yes"
+#
+# Pass "--with-glib=$abi_glib_opt" as option to peer wv's configure.
+
+AC_DEFUN([ABI_GLIB12_OPT], [	
+	if [ test "x$2" = "xyes" ]; then
+		abi_glib_opt=check
+	else
+		abi_glib_opt=required
+	fi
+	AC_ARG_WITH(glib,[  --with-glib[=DIR]  Use glib (v1.2) [in DIR] ],[
+		if [ test "x$withval" = "xno" ]; then
+			if [ test $abi_glib_opt = required ]; then
+				AC_MSG_ERROR([* * * glib-1.2 is not optional! * * *])
+			fi
+			abi_glib_opt=no
+		elif [ test "x$withval" = "xyes" ]; then
+			abi_glib_opt=required
+			GLIB_DIR=""
+		else
+			abi_glib_opt=required
+			GLIB_DIR="$withval"
+		fi
+	],[	GLIB_DIR=""
+	])
+	if [ test $abi_glib_opt != no ]; then
+		if [ test "x$GLIB_DIR" = "x" ]; then
+			AC_PATH_PROG(GLIB_CONFIG,glib12-config, ,[$PATH])
+		else
+			AC_PATH_PROG(GLIB_CONFIG,glib12-config, ,[$GLIB_DIR/bin:$PATH])
+		fi
+		if [ test "x$GLIB_CONFIG" = "x" ]; then
+			if [ test "x$GLIB_DIR" = "x" ]; then
+				AC_PATH_PROG(GLIB_CONFIG,glib-config, ,[$PATH])
+			else
+				AC_PATH_PROG(GLIB_CONFIG,glib-config, ,[$GLIB_DIR/bin:$PATH])
+			fi
+		fi
+		if [ test "x$GLIB_CONFIG" = "x" ]; then
+			if [ test $abi_glib_opt = required ]; then
+				AC_MSG_ERROR([* * * unable to find glib12-config or glib-config in path! * * *])
+			fi
+			abi_glib_opt=no
+		fi
+	fi
+	if [ test $abi_glib_opt != no ]; then
+	        if [ $GLIB_CONFIG --version > /dev/null 2>&1 ]; then
+			abi_glib_opt_version=`$GLIB_CONFIG --version`
+			abi_glib_opt_major=`echo $abi_glib_opt_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+			abi_glib_opt_minor=`echo $abi_glib_opt_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+			abi_glib_opt_micro=`echo $abi_glib_opt_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+
+			abi_glib_opt_version=""
+			if [ test $abi_glib_opt_major -eq 1 ]; then
+				if [ test $abi_glib_opt_minor -eq 2 ]; then
+					if [ test $abi_glib_opt_micro -ge "$1" ]; then
+						abi_glib_opt_version="1.2.$abi_glib_opt_micro"
+					fi
+				fi
+			fi
+			if [ test "x$abi_glib_opt_version" = "x" ]; then
+				if [ test $abi_glib_opt = required ]; then
+					AC_MSG_ERROR([* * * glib version is incompatible! require at least "1.2.$1" * * *])
+				fi
+				abi_glib_opt=no
+			fi
+		else
+			AC_MSG_WARN([* * * problem obtaining glib version... * * *])
+			if [ test $abi_glib_opt = required ]; then
+				AC_MSG_ERROR([* * * unable to determine glib version! * * *])
+			fi
+			abi_glib_opt=no
+		fi
+	fi
+	if [ test $abi_glib_opt != no ]; then
+		dnl Pass "--with-glib=$abi_glib_opt" as option to peer wv's configure
+		dnl 
+		if [ test "x$GLIB_DIR" = "x" ]; then
+			abi_glib_opt=yes
+		else
+			abi_glib_opt="$GLIB_DIR"
+		fi
+	fi
+])
+
+# Check for required gtk+
+
+# Usage: 
+# ABI_GTK12(<micro-version>)
+
+AC_DEFUN([ABI_GTK12], [	
+	AC_ARG_WITH(gtk,[  --with-gtk[=DIR]   Use gtk+ (v1.2) [in DIR] ],[
+		if [ test "x$withval" = "xno" ]; then
+			AC_MSG_ERROR([* * * gtk-1.2 is not optional! * * *])
+		elif [ test "x$withval" = "xyes" ]; then
+			GTK_DIR=""
+		else
+			GTK_DIR="$withval"
+		fi
+	],[	GTK_DIR=""
+	])
+	if [ test "x$GTK_DIR" = "x" ]; then
+		AC_PATH_PROG(GTK_CONFIG,gtk12-config, ,[$PATH])
+	else
+		AC_PATH_PROG(GTK_CONFIG,gtk12-config, ,[$GTK_DIR/bin:$PATH])
+	fi
+	if [ test "x$GTK_CONFIG" = "x" ]; then
+		if [ test "x$GTK_DIR" = "x" ]; then
+			AC_PATH_PROG(GTK_CONFIG,gtk-config, ,[$PATH])
+		else
+			AC_PATH_PROG(GTK_CONFIG,gtk-config, ,[$GTK_DIR/bin:$PATH])
+		fi
+	fi
+	if [ test "x$GTK_CONFIG" = "x" ]; then
+		AC_MSG_ERROR([* * * unable to find gtk12-config or gtk-config in path! * * *])
+	fi
+        if [ $GTK_CONFIG --version > /dev/null 2>&1 ]; then
+		abi_gtk_version=`$GTK_CONFIG --version`
+		abi_gtk_major=`echo $abi_gtk_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+		abi_gtk_minor=`echo $abi_gtk_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+		abi_gtk_micro=`echo $abi_gtk_version | sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+
+		abi_gtk_version=""
+		if [ test $abi_gtk_major -eq 1 ]; then
+			if [ test $abi_gtk_minor -eq 2 ]; then
+				if [ test $abi_gtk_micro -ge "$1" ]; then
+					abi_gtk_version="1.2.$abi_gtk_micro"
+				fi
+			fi
+		fi
+		if [ test "x$abi_gtk_version" = "x" ]; then
+			AC_MSG_ERROR([* * * gtk version is incompatible! require at least "1.2.$1" * * *])
+		fi
+	else
+		AC_MSG_ERROR([* * * unable to determine gtk version! * * *])
+	fi
+])
+
+# On unix, check for glib library.
+# On mac, check for glib, but it's optional; module support unnecessary.
+# Ensure that the version number of glib is >= 1.2.0
+
+# Usage: 
+# ABI_GLIB
+#
+
+AC_DEFUN([ABI_GLIB], [
+
+if test "$PLATFORM" = "unix"; then
+	ABI_GLIB12_OPT(0,no)
+
+        GMODULE_CFLAGS=`$GLIB_CONFIG --cflags gmodule`
+        GMODULE_LIBS=`$GLIB_CONFIG --libs gmodule`
+
+        AC_SUBST(GMODULE_CFLAGS)
+        AC_SUBST(GMODULE_LIBS)
+
+elif test "$PLATFORM" = "mac"; then
+	ABI_GLIB12_OPT(0,yes)
+
+        GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+        GLIB_LIBS=`$GLIB_CONFIG --libs`
+
+        AC_SUBST(GLIB_CFLAGS)
+        AC_SUBST(GLIB_LIBS)
+fi
+
+])
+
+# On unix, check gtk libraries.
+# Ensure that the version number of gtk is >= 1.2.2
 
 # Usage: 
 # ABI_GLIB_GTK
@@ -8,58 +180,16 @@
 
 AC_DEFUN([ABI_GLIB_GTK], [
 
-if test "$OS_NAME" = "FreeBSD"; then
-	GLIB_CONFIG=glib12-config
-	GTK_CONFIG=gtk12-config
-else
-	GLIB_CONFIG=glib-config
-	GTK_CONFIG=gtk-config
-fi
+ABI_GLIB
 
 if test "$PLATFORM" = "unix"; then
-        dnl ******************************
-        dnl glib checking
-        dnl ******************************
-        AC_MSG_CHECKING(for glib >= 1.2.0)
-        if $GLIB_CONFIG --version > /dev/null 2>&1; then 
-            dnl We need the "%d" in order not to get e-notation on hpux.
-            vers=`$GLIB_CONFIG --version | awk 'BEGIN { FS = "."; } { printf "%d", ($[1] * 1000 + $[2]) * 1000 + $[3];}'`
-            if test "$vers" -ge 1002000; then
-                AC_MSG_RESULT(found)
-            else
-	        AC_MSG_ERROR(You need at least glib 1.2.0 for this version of AbiWord)
-            fi
-        else
-            AC_MSG_ERROR(Did not find glib installed)
-        fi
-
-        dnl AM_PATH_GLIB(1.2.0)
-        GMODULE_CFLAGS=`$GLIB_CONFIG --cflags gmodule`
-        GMODULE_LIBS=`$GLIB_CONFIG --libs gmodule`
-
-        dnl ******************************
-        dnl gtk+ checking
-        dnl ******************************
-        AC_MSG_CHECKING(for GTK >= 1.2.2)
-        if $GTK_CONFIG --version > /dev/null 2>&1; then 
-            dnl We need the "%d" in order not to get e-notation on hpux.
-            vers=`$GTK_CONFIG --version | awk 'BEGIN { FS = "."; } { printf "%d", ($[1] * 1000 + $[2]) * 1000 + $[3];}'`
-            if test "$vers" -ge 1002002; then
-                AC_MSG_RESULT(found)
-            else
-                AC_MSG_ERROR(You need at least GTK+ 1.2.2 for this version of AbiWord)
-            fi
-        else
-            AC_MSG_ERROR(Did not find GTK+ installed)
-        fi
+	ABI_GTK12(2)
 
         GTK_CFLAGS=`$GTK_CONFIG --cflags`
         GTK_LIBS=`$GTK_CONFIG --libs`
 
         AC_SUBST(GTK_CFLAGS)
         AC_SUBST(GTK_LIBS)
-        AC_SUBST(GMODULE_CFLAGS)
-        AC_SUBST(GMODULE_LIBS)
 fi
 
 ])
