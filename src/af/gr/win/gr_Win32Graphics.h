@@ -162,6 +162,8 @@ public:
 	virtual UT_uint32		getFontDescent(GR_Font *);
 	virtual UT_uint32		getFontHeight(GR_Font *);
 	virtual UT_sint32       getScreenResolution(void){return s_iScreenResolution;};
+	virtual void		  saveRectangle(UT_Rect & r);
+	virtual void		  restoreRectangle();
 
 protected:
 	virtual UT_uint32 		_getResolution(void) const;
@@ -211,6 +213,8 @@ private:
 #endif
 
 	UT_RGBColor				m_curColor;
+	UT_Rect *				m_saveRect;
+	COLORREF *				m_saveRectBuf;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

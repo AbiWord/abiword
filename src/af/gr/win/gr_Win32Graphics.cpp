@@ -156,8 +156,11 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 #endif
 
 #ifndef USE_LAYOUT_UNITS
-	s_iInstanceCount++;
+	s_iInstanceCount++;	
 #endif
+
+	m_saveRect = NULL;
+	m_saveRectBuf = NULL;
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -177,6 +180,8 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * 
 
 GR_Win32Graphics::~GR_Win32Graphics()
 {
+	DELETEP(m_saveRect);
+	DELETEP(m_saveRectBuf);
 	DELETEP(m_pFontGUI);
 	if (m_hXorPen) {
 		DeleteObject(m_hXorPen);
@@ -573,7 +578,11 @@ UT_uint32 GR_Win32Graphics::getFontDescent()
 
 void GR_Win32Graphics::getCoverage(UT_Vector& coverage)
 {
-	UT_ASSERT(UT_TODO);
+	coverage.clear();
+	coverage.push_back((void*) ' ');
+	coverage.push_back((void*) (255 - ' '));
+	
+	//UT_ASSERT(UT_TODO);
 }
 
 UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -1452,6 +1461,46 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 #else
 	return true;
 #endif
+}
+
+
+void GR_Win32Graphics::saveRectangle(UT_Rect & r) {
+
+	static UT_Rect prevRect;
+	
+	if (m_saveRect && 
+		prevRect.left == r.left &&
+		prevRect.top == r.top &&
+		prevRect.width == r.width && 
+		prevRect.height == r.height) {
+		return;
+		}
+		
+	prevRect = r;	
+	
+	DELETEP(m_saveRect);
+	m_saveRect = new UT_Rect(r);
+
+	DELETEP(m_saveRectBuf);
+	m_saveRectBuf = new COLORREF[r.width * r.height];
+	
+	COLORREF *p = m_saveRectBuf;
+	for (int x = 0; x < r.width; x++) {
+		for (int y = 0; y < r.height; y++) {
+			*(p++) = GetPixel(m_hdc, r.left + x, r.top + y);
+			}
+		}
+	}
+
+void GR_Win32Graphics::restoreRectangle() {
+	if (m_saveRect && m_saveRectBuf) {
+		COLORREF *p = m_saveRectBuf;
+		for (int x = 0; x < m_saveRect->width; x++) {
+			for (int y = 0; y < m_saveRect->height; y++) {
+				SetPixel(m_hdc, m_saveRect->left + x, m_saveRect->top + y, *(p++));
+				}
+			}
+		}
 }
 
 #ifdef GR_WIN32_REDEF_UNITS
