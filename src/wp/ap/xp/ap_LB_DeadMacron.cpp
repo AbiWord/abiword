@@ -51,9 +51,8 @@
 static struct ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,						_C,		_A,		_A_C	}},
-#if 0
-	// TODO add these Latin-4 characters when we
-	// TODO fix the char widths calculations.
+
+	// Latin-4 characters
 	{0x41, /* A      */ { "insertMacronData",		"",		"",		""		}},
 	{0x45, /* E      */ { "insertMacronData",		"",		"",		""		}},
 	{0x49, /* I      */ { "insertMacronData",		"",		"",		""		}},
@@ -64,9 +63,6 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x69, /* i      */ { "insertMacronData",		"",		"",		""		}},
 	{0x6f, /* o      */ { "insertMacronData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertMacronData",		"",		"",		""		}},
-#else
-	{ 0 }
-#endif
 };
 
 

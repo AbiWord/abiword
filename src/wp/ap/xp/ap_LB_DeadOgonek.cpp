@@ -51,9 +51,8 @@
 static struct ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,						_C,		_A,		_A_C	}},
-#if 0
-	// TODO add these Latin-[24] characters when we
-	// TODO fix the char widths calculations.
+
+	// Latin-[24] characters
 	{0x41, /* A      */ { "insertOgonekData",		"",		"",		""		}},
 	{0x45, /* E      */ { "insertOgonekData",		"",		"",		""		}},
 	{0x49, /* I      */ { "insertOgonekData",		"",		"",		""		}},
@@ -62,9 +61,6 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x65, /* e      */ { "insertOgonekData",		"",		"",		""		}},
 	{0x69, /* i      */ { "insertOgonekData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertOgonekData",		"",		"",		""		}},
-#else
-	{ 0 }
-#endif
 };
 
 

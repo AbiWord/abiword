@@ -2323,9 +2323,7 @@ Defun(insertAcuteData)
 	case 0x75:		acuteChar=0x00fa;	break;	// uacute
 	case 0x79:		acuteChar=0x00fd;	break;	// yacute
 
-#if 0
-	// TODO add these Latin-2 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-2 characters
 	case 0x53:		acuteChar=0x01a6;	break;	// Sacute
 	case 0x5a:		acuteChar=0x01ac;	break;	// Zacute
 	case 0x52:		acuteChar=0x01c0;	break;	// Racute
@@ -2339,7 +2337,6 @@ Defun(insertAcuteData)
 	case 0x6c:		acuteChar=0x01e5;	break;	// lacute
 	case 0x63:		acuteChar=0x01e6;	break;	// cacute
 	case 0x6e:		acuteChar=0x01f1;	break;	// nacute
-#endif
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2377,9 +2374,7 @@ Defun(insertCircumflexData)
 	case 0x6f:		circumflexChar=0x00f4;	break;	// ocircumflex
 	case 0x75:		circumflexChar=0x00fb;	break;	// ucircumflex
 
-#if 0
-	// TODO add these Latin-3 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-3 characters
 	case 0x48:		circumflexChar=0x02a6;	break;	// Hcircumflex
 	case 0x4a:		circumflexChar=0x02ac;	break;	// Jcircumflex
 	case 0x43:		circumflexChar=0x02c6;	break;	// Ccircumflex
@@ -2391,7 +2386,6 @@ Defun(insertCircumflexData)
 	case 0x63:		circumflexChar=0x02e6;	break;	// ccircumflex
 	case 0x67:		circumflexChar=0x02f8;	break;	// gcircumflex
 	case 0x73:		circumflexChar=0x02fe;	break;	// scircumflex
-#endif
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2425,15 +2419,12 @@ Defun(insertTildeData)
 	case 0x6e:		tildeChar=0x00f1;	break;	// ntilde
 	case 0x6f:		tildeChar=0x00f5;	break;	// otilde
 
-#if 0
-	// TODO add these Latin-4 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-4 characters
 	case 0x49:		tildeChar=0x03a5;	break;	// Itilde
 	case 0x55:		tildeChar=0x03dd;	break;	// Utilde
 
 	case 0x69:		tildeChar=0x03b5;	break;	// itilde
 	case 0x75:		tildeChar=0x03fd;	break;	// utilde
-#endif
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2457,11 +2448,10 @@ Defun(insertMacronData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar macronChar = 0x0000;
-#if 0
+
 	switch (pCallData->m_pData[0])
 	{
-	// TODO add these Latin-4 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-4 characters
 	case 0x45:		macronChar=0x03aa;	break;	// Emacron
 	case 0x41:		macronChar=0x03c0;	break;	// Amacron
 	case 0x49:		macronChar=0x03cf;	break;	// Imacron
@@ -2475,9 +2465,6 @@ Defun(insertMacronData)
 	case 0x75:		macronChar=0x03fe;	break;	// umacron
 
 	default:
-#else
-	{
-#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -2499,11 +2486,10 @@ Defun(insertBreveData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar breveChar = 0x0000;
-#if 0
+
 	switch (pCallData->m_pData[0])
 	{
-	// TODO add these Latin-[23] characters when we
-	// TODO fix the char widths calculations.
+	// Latin-[23] characters
 	case 0x41:		breveChar=0x01c3;	break;	// Abreve
 	case 0x47:		breveChar=0x02ab;	break;	// Gbreve
 	case 0x55:		breveChar=0x02dd;	break;	// Ubreve
@@ -2513,9 +2499,6 @@ Defun(insertBreveData)
 	case 0x75:		breveChar=0x02fd;	break;	// ubreve
 
 	default:
-#else
-	{
-#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -2537,11 +2520,10 @@ Defun(insertAbovedotData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar abovedotChar = 0x0000;
-#if 0
+
 	switch (pCallData->m_pData[0])
 	{
-	// TODO add these Latin-[234] characters when we
-	// TODO fix the char widths calculations.
+	// Latin-[234] characters
 	case 0x5a:		abovedotChar=0x01af;	break;	// Zabovedot
 	case 0x49:		abovedotChar=0x02a9;	break;	// Iabovedot
 	case 0x43:		abovedotChar=0x02c5;	break;	// Cabovedot
@@ -2555,9 +2537,6 @@ Defun(insertAbovedotData)
 	case 0x65:		abovedotChar=0x03ec;	break;	// eabovedot
 
 	default:
-#else
-	{
-#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -2616,11 +2595,10 @@ Defun(insertDoubleacuteData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar doubleacuteChar = 0x0000;
-#if 0
+
 	switch (pCallData->m_pData[0])
 	{
-	// TODO add these Latin-2 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-2 characters
 	case 0x4f:		doubleacuteChar=0x01d5;	break;	// Odoubleacute
 	case 0x55:		doubleacuteChar=0x01db;	break;	// Udoubleacute
 
@@ -2628,9 +2606,6 @@ Defun(insertDoubleacuteData)
 	case 0x75:		doubleacuteChar=0x01fb;	break;	// udoubleacute
 
 	default:
-#else
-	{
-#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -2652,11 +2627,10 @@ Defun(insertCaronData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar caronChar = 0x0000;
-#if 0
+
 	switch (pCallData->m_pData[0])
 	{
-	// TODO add these Latin-2 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-2 characters
 	case 0x4c:		caronChar=0x01a5;	break;	// Lcaron
 	case 0x53:		caronChar=0x01a9;	break;	// Scaron
 	case 0x54:		caronChar=0x01ab;	break;	// Tcaron
@@ -2678,9 +2652,6 @@ Defun(insertCaronData)
 	case 0x72:		caronChar=0x01f8;	break;	// rcaron
 
 	default:
-#else
-	{
-#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
@@ -2707,9 +2678,7 @@ Defun(insertCedillaData)
 	case 0x43:		cedillaChar=0x00c7;	break;	// Ccedilla
 	case 0x63:		cedillaChar=0x00e7;	break;	// ccedilla
 
-#if 0
-	// TODO add these Latin-[24] characters when we
-	// TODO fix the char widths calculations.
+	// Latin-[24] characters
 	case 0x53:		cedillaChar=0x01aa;	break;	// Scedilla
 	case 0x54:		cedillaChar=0x01de;	break;	// Tcedilla
 	case 0x52:		cedillaChar=0x03a3;	break;	// Rcedilla
@@ -2725,7 +2694,6 @@ Defun(insertCedillaData)
 	case 0x67:		cedillaChar=0x03bb;	break;	// gcedilla
 	case 0x6e:		cedillaChar=0x03f1;	break;	// ncedilla
 	case 0x6b:		cedillaChar=0x03f3;	break;	// kcedilla
-#endif
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2749,11 +2717,10 @@ Defun(insertOgonekData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar ogonekChar = 0x0000;
-#if 0
+
 	switch (pCallData->m_pData[0])
 	{
-	// TODO add these Latin-[24] characters when we
-	// TODO fix the char widths calculations.
+	// Latin-[24] characters
 	case 0x41:		ogonekChar=0x01a1;	break;	// Aogonek
 	case 0x45:		ogonekChar=0x01ca;	break;	// Eogonek
 	case 0x49:		ogonekChar=0x03c7;	break;	// Iogonek
@@ -2765,9 +2732,6 @@ Defun(insertOgonekData)
 	case 0x75:		ogonekChar=0x03f9;	break;	// uogonek
 
 	default:
-#else
-	{
-#endif
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}

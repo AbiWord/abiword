@@ -63,9 +63,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x6f, /* o      */ { "insertCircumflexData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertCircumflexData",		"",		"",		""		}},
 
-#if 0
-	// TODO add these Latin-3 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-3 characters
 	{0x48, /* H      */ { "insertCircumflexData",		"",		"",		""		}},
 	{0x4a, /* J      */ { "insertCircumflexData",		"",		"",		""		}},
 	{0x43, /* C      */ { "insertCircumflexData",		"",		"",		""		}},
@@ -77,7 +75,6 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x63, /* c      */ { "insertCircumflexData",		"",		"",		""		}},
 	{0x67, /* g      */ { "insertCircumflexData",		"",		"",		""		}},
 	{0x73, /* s      */ { "insertCircumflexData",		"",		"",		""		}},
-#endif
 };
 
 

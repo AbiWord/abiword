@@ -52,9 +52,7 @@ static struct ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,						_C,		_A,		_A_C	}},
 
-#if 0
-	// TODO add these Latin-2 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-2 characters
 	{0x4c, /* L      */ { "insertCaronData",		"",		"",		""		}},
 	{0x53, /* S      */ { "insertCaronData",		"",		"",		""		}},
 	{0x54, /* T      */ { "insertCaronData",		"",		"",		""		}},
@@ -74,9 +72,6 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x64, /* d      */ { "insertCaronData",		"",		"",		""		}},
 	{0x6e, /* n      */ { "insertCaronData",		"",		"",		""		}},
 	{0x72, /* r      */ { "insertCaronData",		"",		"",		""		}},
-#else
-	{ 0 }
-#endif
 };
 
 

@@ -54,9 +54,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x43, /* C      */ { "insertCedillaData",		"",		"",		""		}},
 	{0x63, /* c      */ { "insertCedillaData",		"",		"",		""		}},
 
-#if 0
-	// TODO add these Latin-[24] characters when we
-	// TODO fix the char widths calculations.
+	// Latin-[24] characters
 	{0x53, /* S      */ { "insertCedillaData",		"",		"",		""		}},
 	{0x54, /* T      */ { "insertCedillaData",		"",		"",		""		}},
 	{0x52, /* R      */ { "insertCedillaData",		"",		"",		""		}},
@@ -72,7 +70,6 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x67, /* g      */ { "insertCedillaData",		"",		"",		""		}},
 	{0x6e, /* n      */ { "insertCedillaData",		"",		"",		""		}},
 	{0x6b, /* k      */ { "insertCedillaData",		"",		"",		""		}},
-#endif
 };
 
 

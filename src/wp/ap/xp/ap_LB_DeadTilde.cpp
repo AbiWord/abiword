@@ -58,14 +58,11 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x6e, /* n      */ { "insertTildeData",		"",		"",		""		}},
 	{0x6f, /* o      */ { "insertTildeData",		"",		"",		""		}},
 
-#if 0
-	// TODO add these Latin-4 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-4 characters
 	{0x49, /* I      */ { "insertTildeData",		"",		"",		""		}},
 	{0x55, /* U      */ { "insertTildeData",		"",		"",		""		}},
 	{0x69, /* i      */ { "insertTildeData",		"",		"",		""		}},
 	{0x75, /* u      */ { "insertTildeData",		"",		"",		""		}},
-#endif
 };
 
 

@@ -64,9 +64,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x75, /* u      */ { "insertAcuteData",		"",		"",		""		}},
 	{0x79, /* y      */ { "insertAcuteData",		"",		"",		""		}},
 
-#if 0
-	// TODO add these Latin-2 characters when we
-	// TODO fix the char widths calculations.
+	// Latin-2 characters
 	{0x53, /* S      */ { "insertAcuteData",		"",		"",		""		}},
 	{0x5a, /* Z      */ { "insertAcuteData",		"",		"",		""		}},
 	{0x52, /* R      */ { "insertAcuteData",		"",		"",		""		}},
@@ -80,7 +78,6 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x6c, /* l      */ { "insertAcuteData",		"",		"",		""		}},
 	{0x63, /* c      */ { "insertAcuteData",		"",		"",		""		}},
 	{0x6e, /* n      */ { "insertAcuteData",		"",		"",		""		}},
-#endif
 };
 
 /*****************************************************************
