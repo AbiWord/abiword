@@ -43,7 +43,7 @@ _EXPAT_:
 		echo "Found expat in peer directory";			\
 		if [ ! -r $(ABI_ROOT)/../expat/Makefile ]; then 	\
 			cd $(ABI_ROOT)/../expat; 			\
-			./configure --disable-shared --enable-static; 	\
+			$(EXPAT_PLATFORM_DEFS) ./configure --disable-shared --enable-static; 	\
 		fi; 							\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
 	elif [ -e /usr/include/expat.h -o -e /usr/local/include/expat.h ]; then 	\
@@ -64,7 +64,7 @@ _PSICONV_:
 		echo "Found psiconv in peer directory"; 		\
 		if [ ! -r $(ABI_ROOT)/../psiconv/Makefile ]; then 	\
 			cd $(ABI_ROOT)/../psiconv; 			\
-			./configure --disable-shared --enable-static; 	\
+			$(PSICONV_PLATFORM_DEFS) ./configure --disable-shared --enable-static; 	\
 		fi; 							\
 		$(MAKE) -f Makefile -C $(ABI_ROOT)/../psiconv; 		\
 	elif [ -d /usr/include/psiconv -o -d /usr/local/include/psiconv ]; then 			\
