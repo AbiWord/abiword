@@ -11,7 +11,7 @@
 <!-- General consulting provided by Francesco Cheratzu <f.cheratzu@tiscali.it> -->
 
 
-<AbiStrings app="AbiWord" ver="1.0" language="it-IT">
+<AbiStrings app="AbiWord" ver="1.0" language="sc-IT">
 
 <Strings	class="XAP"
 MSG_ShowUnixFontWarning="AbiWord no at pótidu annúnghere sos fonts suos a sa cabidhada de sos fonts de X. Abbàida &quot;Unix Font Path Problem&quot; in sa setzione de sas FAQ in su file de Agitóriu! de Abiword."
