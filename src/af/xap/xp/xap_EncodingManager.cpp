@@ -721,7 +721,8 @@ static const _map MSCodepagename_to_charset_name_map[]=
 
 	{ "CP1361",		"JOHAB" },				// Korean (Johab)
 
-	{ "CP10000",	"MACROMAN" },			// Macintosh Roman
+	{ "CP10000",	"MACINTOSH" },			// Macintosh Roman (alias name can be MACROMAN, 
+	                                        //  but iconv from glibc seems to not have clue
 	{ "CP10001",	"SJIS" },				// Macintosh Japanese	// ??
 	{ "CP10006",	"MACGREEK" },			// Macintosh Greek I
 	{ "CP10007",	"MACCYRILLIC" },		// Macintosh Cyrillic
