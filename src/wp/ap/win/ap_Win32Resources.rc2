@@ -71,7 +71,7 @@
 #define AP_RID_DIALOG_MAILMERGE					241 
 #define AP_RID_DIALOG_FORMATFRAME				242
 #define AP_RID_DIALOG_STYLIST				243
-
+#define AP_RID_DIALOG_SPLITCELLS			244
 
 // Menu bitmaps
 #define AP_RID_BITMAP_NEW			2500
@@ -125,3 +125,4 @@
 #include "ap_Win32Res_Manifest.rc2"
 #include "ap_Win32Res_FormatFrame.rc2"
 #include "ap_Win32Res_DlgStylist.rc2"
+#include "ap_Win32Res_SplitCells.rc2"

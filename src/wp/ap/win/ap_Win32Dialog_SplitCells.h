@@ -51,11 +51,13 @@ public:
 		
 protected:
 
-	HWND							m_hwndDlg;	//  dialog box Windows
-	HBITMAP						m_hBitmapLeft;
-	HBITMAP						m_hBitmapRight;
+	HWND						m_hwndDlg;	//  dialog box Windows
 	HBITMAP						m_hBitmapAbove;
+	HBITMAP						m_hBitmapHoriMid;
 	HBITMAP						m_hBitmapBelow;
+	HBITMAP						m_hBitmapLeft;
+	HBITMAP						m_hBitmapVertMid;
+	HBITMAP						m_hBitmapRight;
 	
 	typedef enum
 	{

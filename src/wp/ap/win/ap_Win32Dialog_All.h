@@ -141,7 +141,7 @@
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,	AP_Win32Dialog_InsertTable)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_Win32Dialog_MetaData)	
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_Win32Dialog_MergeCells)
-	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_Win32Dialog_SplitCells)
+	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_Win32Dialog_SplitCells)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_Win32Dialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,	AP_Win32Dialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,AP_Win32Dialog_FormatFootnotes)
