@@ -310,7 +310,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 */
 void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
 {
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
@@ -703,7 +703,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 
 	// this is a hack for the xp calculation; should really be moved
 	// into GR_Graphics::XYToPosition()
-    if(!m_pRenderInfo)
+    if(!m_pRenderInfo  || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
@@ -791,7 +791,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 xdiff = 0;
 	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
 
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		// this can happen immediately after run is inserted at the
 		// end of a paragraph.
@@ -1019,7 +1019,13 @@ void fp_TextRun::mergeWithNext(void)
 		m_pRenderInfo->m_iLength = iMyLen;
 		pNext->m_pRenderInfo->m_iLength = iNextLen;
 		
-		m_pRenderInfo->append(*(pNext->m_pRenderInfo), bReverse);
+		if(!m_pRenderInfo->append(*(pNext->m_pRenderInfo), bReverse))
+		{
+			// either the graphics class does not have append capabilities, or the append failed
+			// -- we mark the draw buffer for recalculation
+			_setRefreshDrawBuffer(GRSR_Unknown);
+		}
+		
 	}
 	
 
@@ -1841,7 +1847,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	pRect->left = 0;//#TF need 0 because of BiDi, need to calculate the width of the non-selected
 			//section first rather than the abs pos of the left corner
 
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
@@ -2297,7 +2303,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 void fp_TextRun::resetJustification(bool bPermanent)
 {
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
