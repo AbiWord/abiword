@@ -44,7 +44,13 @@ public:
 	UT_Bool				setSchemeName(const XML_Char * szNewSchemeName);
 	
 	UT_Bool				setValue(const XML_Char * szKey, const XML_Char * szValue);
+	UT_Bool				setValueBool(const XML_Char * szKey, UT_Bool bValue);
+	
+	// the get*Value*() functions return the answer in the last
+	// argument; they return error information as the function
+	// return value.
 	UT_Bool				getValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	UT_Bool				getValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
 	UT_Bool				getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const;
 	
 protected:
@@ -72,6 +78,7 @@ public:
 	UT_Bool					setCurrentScheme(const XML_Char * szSchemeName);
 
 	UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	UT_Bool					getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
 
 	UT_Bool					getAutoSavePrefs(void) const;
 	void					setAutoSavePrefs(UT_Bool bAuto);

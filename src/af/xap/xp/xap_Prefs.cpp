@@ -70,6 +70,11 @@ UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szVal
 	return UT_TRUE;
 }
 
+UT_Bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, UT_Bool bValue)
+{
+	return setValue(szKey, ((bValue) ? "1" : "0"));
+}
+
 UT_Bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	UT_HashEntry * pEntry = m_hash.findEntry(szKey);
@@ -79,6 +84,33 @@ UT_Bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszV
 	if (pszValue)
 		*pszValue = pEntry->pszRight;
 	return UT_TRUE;
+}
+
+UT_Bool XAP_PrefsScheme::getValueBool(const XML_Char * szKey, UT_Bool * pbValue) const
+{
+	*pbValue = UT_FALSE;				// assume something
+	
+	const XML_Char * szValue = NULL;
+	if (!getValue(szKey,&szValue))
+		return UT_FALSE;				// bogus keyword ??
+
+	if (!szValue || !*szValue)
+		return UT_FALSE;				// no value for known keyword ??
+
+	switch (szValue[0])
+	{
+	case '1':
+	case 't':
+	case 'T':
+	case 'y':
+	case 'Y':
+		*pbValue = UT_TRUE;
+		return UT_TRUE;
+
+	default:
+		*pbValue = UT_FALSE;
+		return UT_TRUE;
+	}
 }
 
 UT_Bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const
@@ -332,6 +364,21 @@ UT_Bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszVa
 	if (m_currentScheme->getValue(szKey,pszValue))
 		return UT_TRUE;
 	if (m_builtinScheme->getValue(szKey,pszValue))
+		return UT_TRUE;
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return UT_FALSE;
+}
+
+UT_Bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const
+{
+	// a convenient routine to get a name/value pair from the current scheme
+
+	UT_ASSERT(m_currentScheme);
+
+	if (m_currentScheme->getValueBool(szKey,pbValue))
+		return UT_TRUE;
+	if (m_builtinScheme->getValueBool(szKey,pbValue))
 		return UT_TRUE;
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
