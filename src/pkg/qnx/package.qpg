@@ -79,7 +79,7 @@
          </QPM:PackageManifest>
       </QPG:PackageFilter>
 
-      <QPG:PackageFilter proc="any" target="any">
+      <QPG:PackageFilter proc="any">
          <QPM:PackageManifest>
             <QPM:ProductInstallationDependencies>
                <QPM:ProductRequirements></QPM:ProductRequirements>
