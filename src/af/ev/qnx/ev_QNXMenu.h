@@ -98,7 +98,7 @@ public:
 	//virtual ~EV_QNXMenuPopup(void);
 	~EV_QNXMenuPopup(void);
 
-	UT_Bool				synthesizeMenuPopup(void);
+	UT_Bool				synthesizeMenuPopup();
 	virtual UT_Bool		refreshMenu(AV_View * pView);
 	virtual PtWidget_t *	getMenuHandle(void) const;
 

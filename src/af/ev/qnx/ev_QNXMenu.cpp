@@ -226,7 +226,10 @@ static char get_hotkey_key(const char *str) {
 	//Find the next character after the =
 	char *p;
 	if ((p = strchr(str, '+')) && *++p) {
-		return tolower(*p);
+		//This fixes problems like Alt-F4 for quitting ... for now
+		if (*(p+1) == '\0') {
+			return tolower(*p);
+		}
 	}	
 	return '\0';
 }
@@ -317,7 +320,7 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				mcb->qnxmenu = this;
 				PtAddCallback(wbutton, Pt_CB_ACTIVATE, menu_activate, mcb);
 
-				if (szMnemonicName && *szMnemonicName) {
+				if (szMnemonicName && *szMnemonicName && get_hotkey_key(szMnemonicName) != '\0') {
 					PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow),
 									   get_hotkey_key(szMnemonicName), 
 									   get_hotkey_code(szMnemonicName),
@@ -740,10 +743,16 @@ EV_QNXMenuBar::EV_QNXMenuBar(XAP_QNXApp * pQNXApp,
 							   const char * szMenuLabelSetName)
 	: EV_QNXMenu(pQNXApp,pQNXFrame,szMenuLayoutName,szMenuLabelSetName)
 {
+	m_wMenuBar = NULL;
 }
 
 EV_QNXMenuBar::~EV_QNXMenuBar(void)
 {
+	if (m_wMenuBar) {
+		PtDestroyWidget(m_wMenuBar);
+	}
+	m_wMenuBar = NULL;
+	//TODO: Keep track of our alloced strucutres and free them too
 }
 
 UT_Bool EV_QNXMenuBar::synthesizeMenuBar(void)
@@ -777,6 +786,7 @@ UT_Bool EV_QNXMenuBar::refreshMenu(AV_View * pView)
 	// this makes an exception for initialization where a view
 	// might not exist... silly to refresh the menu then; it will
 	// happen in due course to its first display
+	printf("TODO: normal menu! \n");
 	if (pView)
 		return _refreshMenu(pView,m_wMenuBar);
 
@@ -791,10 +801,16 @@ EV_QNXMenuPopup::EV_QNXMenuPopup(XAP_QNXApp * pQNXApp,
 								   const char * szMenuLabelSetName)
 	: EV_QNXMenu(pQNXApp,pQNXFrame,szMenuLayoutName,szMenuLabelSetName)
 {
+	m_wMenuPopup = NULL;
 }
 
 EV_QNXMenuPopup::~EV_QNXMenuPopup(void)
 {
+	if (m_wMenuPopup) {
+		PtDestroyWidget(m_wMenuPopup);
+	}
+	m_wMenuPopup = NULL;
+	//TODO: Keep track of our alloced strucutres and free them too
 }
 
 PtWidget_t * EV_QNXMenuPopup::getMenuHandle(void) const
@@ -808,7 +824,6 @@ static int popup_realized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	PtArg_t arg;
 	PtSetArg(&arg, Pt_ARG_FLAGS, Pt_BLOCKED, Pt_BLOCKED);
 	PtSetResources(pQNXFrame->getTopLevelWindow(), 1, &arg);
-	printf("Popup is realized! \n");
 
 	return Pt_CONTINUE;
 }
@@ -819,23 +834,22 @@ static int popup_unrealized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	PtArg_t arg;
 	PtSetArg(&arg, Pt_ARG_FLAGS, 0, Pt_BLOCKED);
 	PtSetResources(pQNXFrame->getTopLevelWindow(), 1, &arg);
-	printf("Popup is unrealized! \n");
+
+	pQNXFrame->setPopupDone(1);
 
 	return Pt_CONTINUE;
 }
 
 
-UT_Bool EV_QNXMenuPopup::synthesizeMenuPopup(void)
+UT_Bool EV_QNXMenuPopup::synthesizeMenuPopup()
 {
 	printf("Synthesizing pop-up menu \n");
 
     PtArg_t args[10];
 	int 	n = 0;
 
-	PtSetParentWidget(NULL);
 	m_wMenuPopup = PtCreateWidget(PtMenu, 
-								  /* PtContainerFindFocus(m_pQNXFrame->getTopLevelWindow()), */ 
-								  NULL,
+								  m_pQNXFrame->getTopLevelWindow(),
 								  n, args);
 	PtAddCallback(m_wMenuPopup, Pt_CB_REALIZED, popup_realized, m_pQNXFrame);
 	PtAddCallback(m_wMenuPopup, Pt_CB_UNREALIZED, popup_unrealized, m_pQNXFrame);
@@ -850,6 +864,7 @@ UT_Bool EV_QNXMenuPopup::refreshMenu(AV_View * pView)
 	// this makes an exception for initialization where a view
 	// might not exist... silly to refresh the menu then; it will
 	// happen in due course to its first display
+	printf("TODO: Popup refresh menu! \n");
 	if (pView)
 		return _refreshMenu(pView,m_wMenuPopup);
 

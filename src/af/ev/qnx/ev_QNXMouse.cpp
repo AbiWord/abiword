@@ -57,18 +57,18 @@ void EV_QNXMouse::mouseUp(AV_View* pView, PtCallbackInfo_t * e)
 	my = rect->ul.y;
 
 	if (e->event->subtype == Ph_EV_RELEASE_REAL) {
-    	UT_DEBUGMSG(("Mouse Real Release! (%d,%d)\n", mx, my));
+    	UT_DEBUGMSG(("Mouse Real Release! (%d,%d)", mx, my));
 	}
 	else if (e->event->subtype == Ph_EV_RELEASE_PHANTOM) {
-    	UT_DEBUGMSG(("Ignoring Mouse Phantom Release! (%d,%d)\n", mx, my));
+    	UT_DEBUGMSG(("Ignoring Mouse Phantom Release! (%d,%d)", mx, my));
 		return;
 	}
 	else if (e->event->subtype == Ph_EV_RELEASE_ENDCLICK) {
-    	UT_DEBUGMSG(("Ignoring Mouse Endclick Release! (%d,%d)\n", mx, my));
+    	UT_DEBUGMSG(("Ignoring Mouse Endclick Release! (%d,%d)", mx, my));
 		return;
 	}
 	else {
-		UT_DEBUGMSG(("Ignoring Unknown release type 0x%x (%d,%d)\n",e->event->subtype, mx, my));
+		UT_DEBUGMSG(("Ignoring Unknown release type 0x%x (%d,%d)",e->event->subtype, mx, my));
 		return;
 	}
 
@@ -138,7 +138,7 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
 
 	mx = rect->ul.x;
 	my = rect->ul.y;
-    UT_DEBUGMSG(("Mouse Click! (%d,%d)\n", mx, my));
+    UT_DEBUGMSG(("Mouse Click! (%d,%d)", mx, my));
 
 	if (ptrevent->key_mods & Pk_KM_Shift)
 		ems |= EV_EMS_SHIFT;
@@ -155,7 +155,7 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
 		emb = EV_EMB_BUTTON3;
 	else {
 		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_QNXMouse::mouseClick: unknown button %d\n", ptrevent->buttons));
+		UT_DEBUGMSG(("EV_QNXMouse::mouseClick: unknown button %d", ptrevent->buttons));
 		return;
 	}
 
@@ -166,7 +166,7 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
 	else
 	{
 		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_QNXMouse::mouseClick:: unknown type %d\n", ptrevent->click_count));
+		UT_DEBUGMSG(("EV_QNXMouse::mouseClick:: unknown type %d", ptrevent->click_count));
 		return;
 	}
 
@@ -182,11 +182,9 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		printf("Invoke Mouse Method \n");
 		invokeMouseMethod(pView,pEM,
 						  (UT_sint32)mx, 
 						  (UT_sint32)my);
-		printf("Finished Mouse Method \n");
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -218,7 +216,7 @@ void EV_QNXMouse::mouseMotion(AV_View* pView, PtCallbackInfo_t *e)
 
 	mx = rect->ul.x;
 	my = rect->ul.y;
-    UT_DEBUGMSG(("Mouse Move! (%d,%d)\n", mx, my));
+    UT_DEBUGMSG(("Mouse Move! (%d,%d)", mx, my));
 
 	if (ptrevent->key_mods & Pk_KM_Shift)
 		ems |= EV_EMS_SHIFT;
