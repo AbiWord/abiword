@@ -18,7 +18,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: abiword 1.0.x\n"
-"POT-Creation-Date: 2002-08-13 16:01+0200\n"
+"POT-Creation-Date: 2002-08-25 00:39+0200\n"
 "PO-Revision-Date: 2002-08-13 17:23+0100\n"
 "Last-Translator: Christian Neumair <christian-neumair@web.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -37,9 +37,11 @@ msgstr " "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h.h:9
-msgid " - Reserved. \n"
+msgid ""
+" - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr " - Reserviert.\n"
+msgstr ""
+" - Reserviert.\n"
 " Dieser Name kann nicht verwendet werden, bitte wählen Sie einen anderen\n"
 
 #. DLG_WordCount_Auto_Update
@@ -74,7 +76,8 @@ msgid ""
 msgstr ""
 "%s wurde noch nicht implementiert.\n"
 "\n"
-"Wenn Sie Programmierer sind, steht es Ihnen frei, Code in %s, Zeile %d hinzuzufügen\n"
+"Wenn Sie Programmierer sind, steht es Ihnen frei, Code in %s, Zeile %d "
+"hinzuzufügen\n"
 "und Patches an diese Adresse zu schicken: \n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -433,8 +436,7 @@ msgid "&Indents and Spacing"
 msgstr "&Einzüge und Abstände"
 
 #. MENU_LABEL_TABLE_INSERT
-#: po/tmp/ap_String_Id.h.h:155
-#: po/tmp/xap_String_Id.h.h:17
+#: po/tmp/ap_String_Id.h.h:155 po/tmp/xap_String_Id.h.h:17
 msgid "&Insert"
 msgstr "&Einfügen"
 
@@ -823,12 +825,14 @@ msgstr "VORSICHT:"
 #: po/tmp/ap_String_Id.h.h:309
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be a bogus or invalid document"
-msgstr "AbiWord kann %s nicht öffnen. Es scheint ein ungültiges Dokument zu sein"
+msgstr ""
+"AbiWord kann %s nicht öffnen. Es scheint ein ungültiges Dokument zu sein"
 
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:311
 #, c-format
-msgid "AbiWord has finished its search of the document and has made %d replacements."
+msgid ""
+"AbiWord has finished its search of the document and has made %d replacements."
 msgstr "AbiWord hat das Dokument durchsucht und %d Ersetzungen gemacht."
 
 #. DLG_FR_FinishedFind
@@ -839,9 +843,11 @@ msgstr "AbiWord hat das Dokument durchsucht."
 #. DLG_DlFile_Status
 #: po/tmp/ap_String_Id.h.h:315
 #, c-format
-msgid "Abiword is now downloading %s from:\n"
+msgid ""
+"Abiword is now downloading %s from:\n"
 "%s"
-msgstr "Abiword lädt gerade %s herunter von:\n"
+msgstr ""
+"Abiword lädt gerade %s herunter von:\n"
 "%s"
 
 #. MENU_LABEL_HELP_ABOUT_GNU
@@ -882,7 +888,9 @@ msgstr "Rahmen und Schattierung der Markierung bearbeiten"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:331
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Aufzählungszeichen oder Numerierung für ausgewählte Absätze hinzufügen oder ändern"
+msgstr ""
+"Aufzählungszeichen oder Numerierung für ausgewählte Absätze hinzufügen oder "
+"ändern"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:333
@@ -915,8 +923,7 @@ msgid "Alignment:"
 msgstr "Ausrichtung:"
 
 #. DLG_Styles_LBL_All
-#: po/tmp/ap_String_Id.h.h:345
-#: po/tmp/xap_String_Id.h.h:43
+#: po/tmp/ap_String_Id.h.h:345 po/tmp/xap_String_Id.h.h:43
 msgid "All"
 msgstr "Alles"
 
@@ -936,8 +943,7 @@ msgid "Application"
 msgstr "Anwendung"
 
 #. DLG_Options_Btn_Apply
-#: po/tmp/ap_String_Id.h.h:353
-#: po/tmp/xap_String_Id.h.h:51
+#: po/tmp/ap_String_Id.h.h:353 po/tmp/xap_String_Id.h.h:51
 msgid "Apply"
 msgstr "Übernehmen"
 
@@ -1096,14 +1102,12 @@ msgstr "Unterer Rand [%s]"
 
 # CHECK
 #. MENU_LABEL_FMT_BOTTOMLINE
-#: po/tmp/ap_String_Id.h.h:415
-#: po/tmp/xap_String_Id.h.h:89
+#: po/tmp/ap_String_Id.h.h:415 po/tmp/xap_String_Id.h.h:89
 msgid "Bottomline"
 msgstr "Untere Zeile"
 
 #. DLG_Lists_Box_List
-#: po/tmp/ap_String_Id.h.h:417
-#: po/tmp/xap_String_Id.h.h:91
+#: po/tmp/ap_String_Id.h.h:417 po/tmp/xap_String_Id.h.h:91
 msgid "Box List"
 msgstr "Kästchen-Liste"
 
@@ -1133,8 +1137,7 @@ msgid "Bullet"
 msgstr "Kugel(als Aufzählungszeichen)"
 
 #. DLG_Lists_Bullet_List
-#: po/tmp/ap_String_Id.h.h:429
-#: po/tmp/xap_String_Id.h.h:97
+#: po/tmp/ap_String_Id.h.h:429 po/tmp/xap_String_Id.h.h:97
 msgid "Bullet List"
 msgstr "Aufzählungsliste"
 
@@ -1235,9 +1238,11 @@ msgstr "Groß-/Kleinschreibung ändern"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:469
-msgid "Change Current \n"
+msgid ""
+"Change Current \n"
 "List"
-msgstr "aktuelle Liste \n"
+msgstr ""
+"aktuelle Liste \n"
 "ändern"
 
 #. DLG_Background_TitleHighlight
@@ -1368,10 +1373,18 @@ msgstr ""
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:521
-msgid "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
-msgstr "Wählen Sie das gewünschte Ziel auf der linken Seite.\n"
-"Wenn Sie den »Gehe zu«-Knopf verwenden wollen, geben Sie die gewünschte Zahl ein. Sie können + und - für relative Sprünge verwenden,\t wenn Sie beispielsweise »+2« schreiben und Sie »Zeile« auswählen, springen Sie zwei Zeilen unter Ihre aktuelle Position."
+msgid ""
+"Choose your target in the left side.\n"
+"If you want to use the \"Go To\" button, just fill the Number Entry with the "
+"desired number.  You can use + and - to perform relative movement.\tI.e., if "
+"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
+"below your current position."
+msgstr ""
+"Wählen Sie das gewünschte Ziel auf der linken Seite.\n"
+"Wenn Sie den »Gehe zu«-Knopf verwenden wollen, geben Sie die gewünschte Zahl "
+"ein. Sie können + und - für relative Sprünge verwenden,\t wenn Sie "
+"beispielsweise »+2« schreiben und Sie »Zeile« auswählen, springen Sie zwei "
+"Zeilen unter Ihre aktuelle Position."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:523
@@ -1596,8 +1609,7 @@ msgid "Cut the selection and put it on the Clipboard"
 msgstr "Markierung ausschneiden und in die Zwischenablage kopieren"
 
 #. DLG_Lists_Dashed_List
-#: po/tmp/ap_String_Id.h.h:609
-#: po/tmp/xap_String_Id.h.h:167
+#: po/tmp/ap_String_Id.h.h:609 po/tmp/xap_String_Id.h.h:167
 msgid "Dashed List"
 msgstr "Spiegelstriche"
 
@@ -1673,8 +1685,7 @@ msgid "Define or apply style for the selection"
 msgstr "Stil der Markierung festlegen"
 
 #. MENU_STATUSLINE_TABLE_DELETE
-#: po/tmp/ap_String_Id.h.h:639
-#: po/tmp/xap_String_Id.h.h:173
+#: po/tmp/ap_String_Id.h.h:639 po/tmp/xap_String_Id.h.h:173
 msgid "Delete"
 msgstr "Löschen"
 
@@ -1729,8 +1740,7 @@ msgid "Delete the selection"
 msgstr "Markierung löschen"
 
 #. DLG_Styles_ModifyDescription
-#: po/tmp/ap_String_Id.h.h:661
-#: po/tmp/xap_String_Id.h.h:175
+#: po/tmp/ap_String_Id.h.h:661 po/tmp/xap_String_Id.h.h:175
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -1745,8 +1755,7 @@ msgid "Determine correct glyph shapes from context"
 msgstr "Richtige Glyphen-Formen vom Zusammenhang bestimmen"
 
 #. DLG_Lists_Diamond_List
-#: po/tmp/ap_String_Id.h.h:667
-#: po/tmp/xap_String_Id.h.h:177
+#: po/tmp/ap_String_Id.h.h:667 po/tmp/xap_String_Id.h.h:177
 msgid "Diamond List"
 msgstr "Diamant-Liste"
 
@@ -1823,7 +1832,8 @@ msgstr "Möchten Sie die ignorierten Wörter von allen Dokumenten zurücksetzen?"
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h.h:697
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "Möchten Sie die ignorierten Wörter vom aktuellen Dokument zurücksetzen?"
+msgstr ""
+"Möchten Sie die ignorierten Wörter vom aktuellen Dokument zurücksetzen?"
 
 #. DLG_MetaData_Title
 #: po/tmp/ap_String_Id.h.h:699
@@ -2018,12 +2028,15 @@ msgstr "Feste Spaltenbreite:"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:771
-msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr "Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz"
+msgid ""
+"Following Paragraph Following Paragraph Following Paragraph Following "
+"Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr ""
+"Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster "
+"Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz"
 
 #. DLG_Styles_ModifyFont
-#: po/tmp/ap_String_Id.h.h:773
-#: po/tmp/xap_String_Id.h.h:231
+#: po/tmp/ap_String_Id.h.h:773 po/tmp/xap_String_Id.h.h:231
 msgid "Font"
 msgstr "Schrift"
 
@@ -2033,8 +2046,7 @@ msgid "Font..."
 msgstr "Schrift..."
 
 #. DLG_Lists_Font
-#: po/tmp/ap_String_Id.h.h:777
-#: po/tmp/xap_String_Id.h.h:233
+#: po/tmp/ap_String_Id.h.h:777 po/tmp/xap_String_Id.h.h:233
 msgid "Font:"
 msgstr "Schrift:"
 
@@ -2112,8 +2124,7 @@ msgid "Go to..."
 msgstr "Gehe zu..."
 
 #. DLG_Lists_Hand_List
-#: po/tmp/ap_String_Id.h.h:807
-#: po/tmp/xap_String_Id.h.h:269
+#: po/tmp/ap_String_Id.h.h:807 po/tmp/xap_String_Id.h.h:269
 msgid "Hand List"
 msgstr "Hand-Liste"
 
@@ -2141,17 +2152,19 @@ msgstr "Kopfzeile [%s]"
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:817
 msgid ""
-"Headers and Footers can only be created and edited while in Print View Mode. \n"
+"Headers and Footers can only be created and edited while in Print View "
+"Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Kopf- und Fußzeilen können nur im Druckansicht-Modus erstellt und bearbeitet werden. \n"
-" Um in diesen Modus zu wechseln, wählen Sie bitte Ansicht, dann Druckansicht aus dem Menü. \n"
+"Kopf- und Fußzeilen können nur im Druckansicht-Modus erstellt und bearbeitet "
+"werden. \n"
+" Um in diesen Modus zu wechseln, wählen Sie bitte Ansicht, dann Druckansicht "
+"aus dem Menü. \n"
 " Soll jetzt in den Druckansicht-Modus gewechselt werden?"
 
 #. DLG_Lists_Heart_List
-#: po/tmp/ap_String_Id.h.h:819
-#: po/tmp/xap_String_Id.h.h:277
+#: po/tmp/ap_String_Id.h.h:819 po/tmp/xap_String_Id.h.h:277
 msgid "Heart List"
 msgstr "Herz-Liste"
 
@@ -2226,8 +2239,7 @@ msgid "Ignored words:"
 msgstr "Ignorierte Wörter:"
 
 #. DLG_Lists_Implies_List
-#: po/tmp/ap_String_Id.h.h:849
-#: po/tmp/xap_String_Id.h.h:315
+#: po/tmp/ap_String_Id.h.h:849 po/tmp/xap_String_Id.h.h:315
 msgid "Implies List"
 msgstr "Schließt Liste ein"
 
@@ -2252,8 +2264,7 @@ msgid "Indentation"
 msgstr "Einzug"
 
 #. MENU_STATUSLINE_TABLE_INSERT
-#: po/tmp/ap_String_Id.h.h:859
-#: po/tmp/xap_String_Id.h.h:323
+#: po/tmp/ap_String_Id.h.h:859 po/tmp/xap_String_Id.h.h:323
 msgid "Insert"
 msgstr "Einfügen"
 
@@ -2438,8 +2449,7 @@ msgid "Ladies and Gentlemen:"
 msgstr "Meine Damen und Herren,"
 
 #. DLG_Styles_ModifyLanguage
-#: po/tmp/ap_String_Id.h.h:933
-#: po/tmp/xap_String_Id.h.h:363
+#: po/tmp/ap_String_Id.h.h:933 po/tmp/xap_String_Id.h.h:363
 msgid "Language"
 msgstr "Sprache"
 
@@ -2568,14 +2578,12 @@ msgid "Love,"
 msgstr "Dein"
 
 #. DLG_Lists_Lower_Case_List
-#: po/tmp/ap_String_Id.h.h:983
-#: po/tmp/xap_String_Id.h.h:371
+#: po/tmp/ap_String_Id.h.h:983 po/tmp/xap_String_Id.h.h:371
 msgid "Lower Case List"
 msgstr "Liste aus Kleinbuchstaben"
 
 #. DLG_Lists_Lower_Roman_List
-#: po/tmp/ap_String_Id.h.h:985
-#: po/tmp/xap_String_Id.h.h:373
+#: po/tmp/ap_String_Id.h.h:985 po/tmp/xap_String_Id.h.h:373
 msgid "Lower Roman List"
 msgstr "Liste aus römischen Zahlen"
 
@@ -2686,16 +2694,20 @@ msgstr "Neue Listenüberschrift"
 
 #. DLG_Lists_New_List_Type
 #: po/tmp/ap_String_Id.h.h:1029
-msgid "New List \n"
+msgid ""
+"New List \n"
 "Type"
-msgstr "Neuer Listen-\n"
+msgstr ""
+"Neuer Listen-\n"
 "Typ"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h.h:1031
-msgid "New Starting \n"
+msgid ""
+"New Starting \n"
 "Value"
-msgstr "Neuer \n"
+msgstr ""
+"Neuer \n"
 "Startwert"
 
 #. DLG_Styles_NewTitle
@@ -2720,9 +2732,11 @@ msgstr "Keine Datei"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1041
-msgid "No Style selected \n"
+msgid ""
+"No Style selected \n"
 " so it cannot be modified"
-msgstr "Kein Stil ausgewählt\n"
+msgstr ""
+"Kein Stil ausgewählt\n"
 " daher kann er auch nicht verändert werden"
 
 #. SCRIPT_NOSCRIPTS
@@ -2776,8 +2790,7 @@ msgid "Numbered"
 msgstr "Nummeriert"
 
 #. DLG_Lists_Numbered_List
-#: po/tmp/ap_String_Id.h.h:1063
-#: po/tmp/xap_String_Id.h.h:399
+#: po/tmp/ap_String_Id.h.h:1063 po/tmp/xap_String_Id.h.h:399
 msgid "Numbered List"
 msgstr "Nummerierte Liste"
 
@@ -2838,8 +2851,7 @@ msgid "Orientation..."
 msgstr "Ausrichtung..."
 
 #. DLG_Options_TabLabel_Other
-#: po/tmp/ap_String_Id.h.h:1087
-#: po/tmp/xap_String_Id.h.h:407
+#: po/tmp/ap_String_Id.h.h:1087 po/tmp/xap_String_Id.h.h:407
 msgid "Other"
 msgstr "Andere"
 
@@ -2996,8 +3008,7 @@ msgid "Preferences"
 msgstr "Vorlieben"
 
 #. DLG_PageNumbers_Preview
-#: po/tmp/ap_String_Id.h.h:1149
-#: po/tmp/xap_String_Id.h.h:431
+#: po/tmp/ap_String_Id.h.h:1149 po/tmp/xap_String_Id.h.h:431
 msgid "Preview"
 msgstr "Vorschaubild"
 
@@ -3013,8 +3024,12 @@ msgstr "Vorschau des Dokuments bevor gedruckt wird"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1155
-msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr "Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz"
+msgid ""
+"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
+"Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr ""
+"Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz "
+"Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz"
 
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1157
@@ -3110,9 +3125,8 @@ msgstr "Grüße,"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h.h:1193
-#, fuzzy
 msgid "Relation:"
-msgstr "Bezug:"
+msgstr "Verhältnis:"
 
 #. DLG_Styles_RemoveButton
 #: po/tmp/ap_String_Id.h.h:1195
@@ -3177,7 +3191,9 @@ msgstr "&Bugreport einsenden"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1219
 msgid "Report a bug and help AbiWord become a better product"
-msgstr "Einen Hinweis über einen Bug schicken und dazu beitragen, dass AbiWord ein besseres Produkt wird."
+msgstr ""
+"Einen Hinweis über einen Bug schicken und dazu beitragen, dass AbiWord ein "
+"besseres Produkt wird."
 
 #. MENU_LABEL_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:1221
@@ -3610,8 +3626,7 @@ msgid "Split Table"
 msgstr "Tabelle teilen"
 
 #. DLG_Lists_Square_List
-#: po/tmp/ap_String_Id.h.h:1391
-#: po/tmp/xap_String_Id.h.h:495
+#: po/tmp/ap_String_Id.h.h:1391 po/tmp/xap_String_Id.h.h:495
 msgid "Square List"
 msgstr "Kasten-Liste"
 
@@ -3626,8 +3641,7 @@ msgid "Standard Toolbar"
 msgstr "Standard-Werkzeugleiste"
 
 #. DLG_Lists_Star_List
-#: po/tmp/ap_String_Id.h.h:1397
-#: po/tmp/xap_String_Id.h.h:497
+#: po/tmp/ap_String_Id.h.h:1397 po/tmp/xap_String_Id.h.h:497
 msgid "Star List"
 msgstr "Stern-Liste"
 
@@ -3702,8 +3716,7 @@ msgid "Style name cannot be left blank"
 msgstr "Der Name des Stils darf nicht leer bleiben"
 
 #. DLG_Lists_Style
-#: po/tmp/ap_String_Id.h.h:1427
-#: po/tmp/xap_String_Id.h.h:501
+#: po/tmp/ap_String_Id.h.h:1427 po/tmp/xap_String_Id.h.h:501
 msgid "Style:"
 msgstr "Stil:"
 
@@ -3822,7 +3835,8 @@ msgstr "Danke,"
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:1473
 msgid "The margins selected are too large to fit on the page."
-msgstr "Die ausgewählten Seitenränder sind zu groß, um auf die Seite zu passen."
+msgstr ""
+"Die ausgewählten Seitenränder sind zu groß, um auf die Seite zu passen."
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:1475
@@ -3832,8 +3846,12 @@ msgstr "Die Rechtschreibprüfung ist abgeschlossen."
 # CHECK
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:1477
-msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
-msgstr "Der Text, an dem der Hyperlink angefügt wird, muss sich in einem einzigen Absatz befinden."
+msgid ""
+"The text to which the hyperlink is to be attached must be within a single "
+"paragraph."
+msgstr ""
+"Der Text, an dem der Hyperlink angefügt wird, muss sich in einem einzigen "
+"Absatz befinden."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:1479
@@ -3842,19 +3860,31 @@ msgstr "Der Wochentag"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:1481
-msgid "This change will only take effect when you restart AbiWord or create a new document."
-msgstr "Diese Änderung wird nur dann übernommen werden, wenn Sie AbiWord neu starten oder ein neues Dokument öffnen."
+msgid ""
+"This change will only take effect when you restart AbiWord or create a new "
+"document."
+msgstr ""
+"Diese Änderung wird nur dann übernommen werden, wenn Sie AbiWord neu starten "
+"oder ein neues Dokument öffnen."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:1483
-msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Dieser Absatz zeigt Wörter wie sie in Ihrem Dokument erscheinen könnten.  Um Text aus Ihrem Dokument in dieser Vorschau zu sehen, plazieren Sie den Cursor in einen Absatz, der etwas Text enthält und öffnen Sie diesen Dialog."
+msgid ""
+"This paragraph represents words as they might appear in your document.  To "
+"see text from your document used in this preview, position your cursor in a "
+"document paragraph with some text in it and open this dialog."
+msgstr ""
+"Dieser Absatz zeigt Wörter wie sie in Ihrem Dokument erscheinen könnten.  Um "
+"Text aus Ihrem Dokument in dieser Vorschau zu sehen, plazieren Sie den "
+"Cursor in einen Absatz, der etwas Text enthält und öffnen Sie diesen Dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:1485
-msgid "This style does not exist \n"
+msgid ""
+"This style does not exist \n"
 " so it cannot be modified"
-msgstr "Dieser Stil existiert nicht,\n"
+msgstr ""
+"Dieser Stil existiert nicht,\n"
 " daher kann er nicht geändert werden"
 
 #. DLG_Column_Three
@@ -3863,8 +3893,7 @@ msgid "Three"
 msgstr "Drei"
 
 #. DLG_Lists_Tick_List
-#: po/tmp/ap_String_Id.h.h:1489
-#: po/tmp/xap_String_Id.h.h:521
+#: po/tmp/ap_String_Id.h.h:1489 po/tmp/xap_String_Id.h.h:521
 msgid "Tick List"
 msgstr "Häckchen-Liste"
 
@@ -3905,14 +3934,12 @@ msgid "Top Margin [%s]"
 msgstr "Oberer Rand [%s]"
 
 #. MENU_LABEL_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:1505
-#: po/tmp/xap_String_Id.h.h:523
+#: po/tmp/ap_String_Id.h.h:1505 po/tmp/xap_String_Id.h.h:523
 msgid "Topline"
 msgstr "Obere Zeile"
 
 #. DLG_Lists_Triangle_List
-#: po/tmp/ap_String_Id.h.h:1507
-#: po/tmp/xap_String_Id.h.h:525
+#: po/tmp/ap_String_Id.h.h:1507 po/tmp/xap_String_Id.h.h:525
 msgid "Triangle List"
 msgstr "Dreiecksliste"
 
@@ -3924,7 +3951,9 @@ msgstr "Zwei"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:1511
 msgid "Type a name for the bookmark, or select existing one from the list."
-msgstr "Bitte einen Namen für das Lesezeichen eingeben, oder einen aus der Liste wählen."
+msgstr ""
+"Bitte einen Namen für das Lesezeichen eingeben, oder einen aus der Liste "
+"wählen."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:1513
@@ -3947,14 +3976,12 @@ msgid "Undo editing"
 msgstr "Letzte Bearbeitung rückgängig machen"
 
 #. DLG_Lists_Upper_Case_List
-#: po/tmp/ap_String_Id.h.h:1521
-#: po/tmp/xap_String_Id.h.h:577
+#: po/tmp/ap_String_Id.h.h:1521 po/tmp/xap_String_Id.h.h:577
 msgid "Upper Case List"
 msgstr "Liste aus Großbuchstaben"
 
 #. DLG_Lists_Upper_Roman_List
-#: po/tmp/ap_String_Id.h.h:1523
-#: po/tmp/xap_String_Id.h.h:579
+#: po/tmp/ap_String_Id.h.h:1523 po/tmp/xap_String_Id.h.h:579
 msgid "Upper Roman List"
 msgstr "Liste aus großen römischen Ziffern"
 
@@ -3989,8 +4016,7 @@ msgid "VIA OVERNIGHT MAIL"
 msgstr "PER 1-TAGE-POST"
 
 #. FIELD_Application_Version
-#: po/tmp/ap_String_Id.h.h:1537
-#: po/tmp/xap_String_Id.h.h:581
+#: po/tmp/ap_String_Id.h.h:1537 po/tmp/xap_String_Id.h.h:581
 msgid "Version"
 msgstr "Version"
 
@@ -4075,7 +4101,9 @@ msgstr "Sie haben den Richtungsmodus geändert."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:1569
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Ein Teil des Dokuments muss ausgewählt werden, bevor ein Hyperlink eingfügt werden kann."
+msgstr ""
+"Ein Teil des Dokuments muss ausgewählt werden, bevor ein Hyperlink eingfügt "
+"werden kann."
 
 #. AUTOTEXT_CLOSING_12
 #: po/tmp/ap_String_Id.h.h:1571
@@ -4575,7 +4603,8 @@ msgid ""
 msgstr ""
 "Herunterladen fehlgeschlagen!\n"
 "Soll es noch einmal versucht werden?\n"
-"Stellen Sie sicher, dass Sie mit dem Internet verbunden sind, falls Sie mit »Ja« antworten."
+"Stellen Sie sicher, dass Sie mit dem Internet verbunden sind, falls Sie mit "
+"»Ja« antworten."
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:183
@@ -4851,28 +4880,35 @@ msgstr "Ungarisch"
 #. DLG_HashDownloader_AskDownload
 #: po/tmp/xap_String_Id.h.h:299
 #, c-format
-msgid "I could not find a dictionary for %s.\n"
+msgid ""
+"I could not find a dictionary for %s.\n"
 "Would you like me to try downloading it from the internet?"
-msgstr "Es konnte kein Wörterbuch für %s gefunden werden.\n"
+msgstr ""
+"Es konnte kein Wörterbuch für %s gefunden werden.\n"
 "Soll versucht werden, dieses aus dem Internet herunterzuladen?"
 
 #. DLG_HashDownloader_DictNotAvailable
 #: po/tmp/xap_String_Id.h.h:301
 msgid "I'm sorry. The wanted dictionary is not available for download."
-msgstr "Leider ist das gewünschte Wörterbuch nicht zum Herunterladen verfügbar."
+msgstr ""
+"Leider ist das gewünschte Wörterbuch nicht zum Herunterladen verfügbar."
 
 #. DLG_HashDownloader_DictNotForThis
 #: po/tmp/xap_String_Id.h.h:303
-msgid "I'm sorry. The wanted dictionary is not available for this release.\n"
+msgid ""
+"I'm sorry. The wanted dictionary is not available for this release.\n"
 "Please consider upgrading AbiWord."
-msgstr "Leider ist das gewünschte Wörterbuch für diese Version nicht verfügbar.\n"
+msgstr ""
+"Leider ist das gewünschte Wörterbuch für diese Version nicht verfügbar.\n"
 "Bitte ziehen Sie in Erwägung, Abiword zu aktualisieren."
 
 #. DLG_HashDownloader_FeatureDisabledForThis
 #: po/tmp/xap_String_Id.h.h:305
-msgid "I'm sorry. This feature is disabled for this release.\n"
+msgid ""
+"I'm sorry. This feature is disabled for this release.\n"
 "Please consider upgrading AbiWord."
-msgstr "Leider ist dieses Feature für diese Version deaktiviert.\n"
+msgstr ""
+"Leider ist dieses Feature für diese Version deaktiviert.\n"
 "Bitte ziehen Sie in Erwägung, Abiword zu aktualisieren."
 
 #. DLG_HashDownloader_FeatureDisabled
@@ -5558,8 +5594,13 @@ msgstr "Breite:  "
 msgid "Yes"
 msgstr "Ja"
 
-#. DLG_HashDownloader_AskInstallGlobal
+#. LANG_YI
 #: po/tmp/xap_String_Id.h.h:609
+msgid "Yiddish"
+msgstr "Jiddisch"
+
+#. DLG_HashDownloader_AskInstallGlobal
+#: po/tmp/xap_String_Id.h.h:611
 #, c-format
 msgid ""
 "You seem to have permission to install the dictionary system-wide.\n"
@@ -5568,60 +5609,60 @@ msgid ""
 msgstr ""
 "Sie scheinen die Berechtigungen zu haben, das Wörterbuch systemweit\n"
 "zu installieren\n"
-"Soll das durchgeführt werden?Falls Sie mit »Ja« antworten, wird das Wörterbuch nach %s installiert"
+"Soll das durchgeführt werden?Falls Sie mit »Ja« antworten, wird das "
+"Wörterbuch nach %s installiert"
 
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/xap_String_Id.h.h:611
+#: po/tmp/xap_String_Id.h.h:613
 msgid "Zoom"
 msgstr "Zoom"
 
 #. DLG_Zoom_RadioFrameCaption
-#: po/tmp/xap_String_Id.h.h:613
+#: po/tmp/xap_String_Id.h.h:615
 msgid "Zoom to"
 msgstr "Zoom auf"
 
 #. DLG_UnixMB_No
-#: po/tmp/xap_String_Id.h.h:615
+#: po/tmp/xap_String_Id.h.h:617
 msgid "_No"
 msgstr "_Nein"
 
 #. DLG_UnixMB_Yes
-#: po/tmp/xap_String_Id.h.h:617
+#: po/tmp/xap_String_Id.h.h:619
 msgid "_Yes"
 msgstr "_Ja"
 
 #. DLG_Unit_cm
-#: po/tmp/xap_String_Id.h.h:619
+#: po/tmp/xap_String_Id.h.h:621
 msgid "cm"
 msgstr "cm"
 
 #. DLG_Unit_inch
-#: po/tmp/xap_String_Id.h.h:621
+#: po/tmp/xap_String_Id.h.h:623
 msgid "inch"
 msgstr "Zoll"
 
 #. DLG_Unit_mm
-#: po/tmp/xap_String_Id.h.h:623
+#: po/tmp/xap_String_Id.h.h:625
 msgid "mm"
 msgstr "mm"
 
 #. DLG_Unit_pico
-#: po/tmp/xap_String_Id.h.h:625
+#: po/tmp/xap_String_Id.h.h:627
 msgid "pica"
 msgstr "pica"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:627
+#: po/tmp/xap_String_Id.h.h:629
 msgid "points"
 msgstr "Punkte"
 
 #. DLG_HashDownloader_Dict
-#: po/tmp/xap_String_Id.h.h:629
+#: po/tmp/xap_String_Id.h.h:631
 msgid "the dictionary"
 msgstr "das Wörterbuch"
 
 #. DLG_HashDownloader_DictList
-#: po/tmp/xap_String_Id.h.h:631
+#: po/tmp/xap_String_Id.h.h:633
 msgid "the dictionary-list"
 msgstr "die Wörterbuch-Liste"
-
