@@ -136,8 +136,8 @@ public:
 
 	void checkSpelling(void);
 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
-	inline getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
-	inline getTabsCount(void) const { return m_vecTabs.getItemCount(); }
+	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
+	inline UT_sint32 getTabsCount(void) const { return (UT_sint32) m_vecTabs.getItemCount(); }
 
 	UT_Bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
