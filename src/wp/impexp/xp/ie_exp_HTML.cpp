@@ -1363,14 +1363,14 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 
 		case UCS_LF:			// LF -- representing a Forced-Line-Break
-		  if (!m_bIs4)
-		    {
-			sBuf += "<br />";
-		    }
-		  else
-		    {
-		      sBuf += "<br>";
-		    }
+			if (!m_bIs4)
+			{
+				sBuf += "<br />";
+			}
+			else
+			{
+				sBuf += "<br>";
+			}
 			pData++;
 			break;
 
@@ -1820,7 +1820,13 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->write(UT_basename(m_pie->getFileName()));
 					m_pie->write("_d/");
 					m_pie->write(buf);
-					m_pie->write("\" />\r\n");
+					// close the img tag with "/" only in XHTML
+					if (! m_bIs4) {
+						m_pie->write("\" />\r\n");
+					}
+					else {
+						m_pie->write("\">\r\n");
+					}
 				}
 				return true;
 
