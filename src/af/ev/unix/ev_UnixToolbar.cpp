@@ -46,6 +46,7 @@
 #include "xap_UnixFontPreview.h"
 #include "xap_FontPreview.h"
 #include "gr_UnixGraphics.h"
+#include "ut_string_class.h"
 
 // hack
 #include "ap_Toolbar_Id.h"
@@ -287,9 +288,6 @@ public:									// we create...
 			}
 			else // widget has no ->parent, so use the buffer's results
 			{
-
-				// TODO : do a real conversion to UT_UCSChar or figure out the casting
-
 				// Don't do changes for empty combo texts, or when the
 				// combo box selection has been aborted (by pressing
 				// outside the box - this appears to be recognizable
@@ -298,14 +296,15 @@ public:									// we create...
 				// jskov 2001.12.09)
 				if (UT_strcmp(wd->m_comboEntryBuffer, "") 
 					&& !(GTK_OBJECT_FLAGS(widget) & GTK_HAS_GRAB))
-				{
-					UT_UCSChar * text = (UT_UCSChar *) 
+				{ 
+					const char * text = 
 					    (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE ? 
 					    XAP_EncodingManager::fontsizes_mapping.lookupByTarget(wd->m_comboEntryBuffer) :
 					    wd->m_comboEntryBuffer);
-					
 					UT_ASSERT(text);					
-					wd->m_pUnixToolbar->toolbarEvent(wd, text, strlen(reinterpret_cast<char*>(text)));
+					
+					UT_UCS4String ucsText(text);
+					wd->m_pUnixToolbar->toolbarEvent(wd, ucsText.ucs4_str(), ucsText.length());
 				}				
 			}
 		}

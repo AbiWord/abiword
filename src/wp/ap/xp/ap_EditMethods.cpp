@@ -6289,9 +6289,12 @@ Defun(fontFamily)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	
 	const XML_Char * properties[] = { "font-family", NULL, 0};
-	properties[1] = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
+	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 	pView->setCharFormat(properties);
+	
 	return true;
 }
 
@@ -6299,10 +6302,10 @@ Defun(fontSize)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	
 	const XML_Char * properties[] = { "font-size", NULL, 0};
-
-	// BUGBUG: stupid casting trick will eventually bite us
-	const XML_Char * sz = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);	
+	const XML_Char * sz = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 
 	if (sz && *sz)
 	{
@@ -7057,58 +7060,58 @@ Defun1(zoomIn)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-  UT_ASSERT(pFrame);
-
-  pFrame->raise();
-  UT_uint32 newZoom = pFrame->getZoomPercentage() + 10;
-  UT_String tmp;
-  UT_String_sprintf(tmp,"%d",newZoom);
-  XAP_App * pApp = pFrame->getApp();
-  UT_ASSERT(pApp);
-  XAP_Prefs * pPrefs = pApp->getPrefs();
-  UT_ASSERT(pPrefs);
-  XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-  UT_ASSERT(pPrefsScheme);
-  pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+	
+	pFrame->raise();
+	UT_uint32 newZoom = pFrame->getZoomPercentage() + 10;
+	UT_String tmp;
+	UT_String_sprintf(tmp,"%d",newZoom);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pPrefsScheme);
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>(tmp.c_str()));
-
-  pFrame->setZoomType( XAP_Frame::z_PERCENT );
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
-
-  return true;
+	
+	pFrame->setZoomType( XAP_Frame::z_PERCENT );
+	
+	s_StartStopLoadingCursor(true, pFrame);
+	pFrame->setZoomPercentage(newZoom);
+	s_StartStopLoadingCursor(false, pFrame);
+	
+	return true;
 }
 
 Defun1(zoomOut)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-  UT_ASSERT(pFrame);
-
-  pFrame->raise();
-
-  UT_uint32 newZoom = pFrame->getZoomPercentage() - 10;
- UT_String tmp;
-  UT_String_sprintf(tmp,"%d",newZoom);
-  XAP_App * pApp = pFrame->getApp();
-  UT_ASSERT(pApp);
-  XAP_Prefs * pPrefs = pApp->getPrefs();
-  UT_ASSERT(pPrefs);
-  XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-  UT_ASSERT(pPrefsScheme);
-  pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+	
+	pFrame->raise();
+	
+	UT_uint32 newZoom = pFrame->getZoomPercentage() - 10;
+	UT_String tmp;
+	UT_String_sprintf(tmp,"%d",newZoom);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pPrefsScheme);
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>(tmp.c_str()));
-  pFrame->setZoomType( XAP_Frame::z_PERCENT );
-
-  s_StartStopLoadingCursor(true, pFrame);
-  pFrame->setZoomPercentage(newZoom);
-  s_StartStopLoadingCursor(false, pFrame);
-
-  return true;
+	pFrame->setZoomType( XAP_Frame::z_PERCENT );
+	
+	s_StartStopLoadingCursor(true, pFrame);
+	pFrame->setZoomPercentage(newZoom);
+	s_StartStopLoadingCursor(false, pFrame);
+	
+	return true;
 }
 
 static bool s_doBreakDlg(FV_View * pView)
@@ -7344,9 +7347,9 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) || (orig_ht != final_ht) || (orig_wid != final_wid) || (orig_ut != final_ut) )
 	{
-	  //
-	  // Set the new Page Stuff
-	  //
+		//
+		// Set the new Page Stuff
+		//
  		pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
  		pDoc->m_docPageSize.Set(final_unit);
 
@@ -8005,32 +8008,32 @@ Defun1(viewFullScreen)
 {
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-  AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 
-  if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
+	if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
 	{
-	  pFrameData->m_bIsFullScreen = true;
-	  pFrame->toggleBar(0, false);
-	  pFrame->toggleBar(1, false);
-	  pFrame->toggleBar(2, false);
-	  pFrame->toggleBar(3, false);
-	  pFrame->toggleStatusBar(false);
-	  pFrame->toggleRuler(false);
-	  pFrame->setFullScreen(true);
+		pFrameData->m_bIsFullScreen = true;
+		pFrame->toggleBar(0, false);
+		pFrame->toggleBar(1, false);
+		pFrame->toggleBar(2, false);
+		pFrame->toggleBar(3, false);
+		pFrame->toggleStatusBar(false);
+		pFrame->toggleRuler(false);
+		pFrame->setFullScreen(true);
 	}
-  else // we're (possibly) unhiding stuff
+	else // we're (possibly) unhiding stuff
 	{
-	  pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
-	  pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
-	  pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
-	  pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
-	  pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
-	  pFrame->toggleRuler(pFrameData->m_bShowRuler);
-	  pFrameData->m_bIsFullScreen = false;
-	  pFrame->setFullScreen(false);
+		pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
+		pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
+		pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
+		pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
+		pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+		pFrame->toggleRuler(pFrameData->m_bShowRuler);
+		pFrameData->m_bIsFullScreen = false;
+		pFrame->setFullScreen(false);
 	}
 
-  return true;
+	return true;
 }
 
 Defun1(viewPara)
@@ -8095,10 +8098,10 @@ Defun(zoom)
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
 
-	// TODO the cast below is ugly
-
 	UT_uint32 iZoom = 0;
-	char *p_zoom = reinterpret_cast<char*>(pCallData->m_pData);
+	
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
+	const XML_Char *p_zoom = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
@@ -8117,18 +8120,18 @@ Defun(zoom)
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
 	else if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent)) == 0)
-	  {
-	    // invoke the zoom dialog instead for some custom value
-	    return EX(dlgZoom);
-	  }
+	{
+		// invoke the zoom dialog instead for some custom value
+		return EX(dlgZoom);
+	}
 	else
 	{
-	  // we've gotten back a number - turn it into a zoom percentage
+		// we've gotten back a number - turn it into a zoom percentage
 		UT_String tmp;
 		UT_String_sprintf(tmp,"%d",p_zoom);
 		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>(tmp.c_str()));
-
+		
 		pFrame->setZoomType(XAP_Frame::z_PERCENT);
 		iZoom = atoi(p_zoom);
 	}
@@ -8367,18 +8370,18 @@ Defun1(insFile)
 	
 	if (s_AskForPathname (pFrame, false, XAP_DIALOG_ID_INSERT_FILE,
 			      NULL, &pathName, &fType))
-	  {
+	{
 	    UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
 	    
 	    PD_Document * newDoc = new PD_Document(pApp);
 	    UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
 	    
 	    if ( err != UT_OK )
-	      {
-		UNREFP(newDoc);
-		s_TellOpenFailed(pFrame, pathName, err);
-		return false;
-	      }
+		{
+			UNREFP(newDoc);
+			s_TellOpenFailed(pFrame, pathName, err);
+			return false;
+		}
 	    
 	    // create a new layout and view object for the doc
 	    FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
@@ -8394,7 +8397,7 @@ Defun1(insFile)
 	    DELETEP(pDocLayout);
 	    UNREFP(newDoc);
 	    return true;
-	  }
+	}
 	
 	return false;
 }
@@ -8528,7 +8531,7 @@ Defun(dlgFmtImage)
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
 		dim = UT_determineDimension(const_cast<char *>(pszRulerUnits));
-	};
+	}
 	pDialog->setPreferedUnits(dim);
 
 	const fp_PageSize & page = pView->getPageSize ();
@@ -8715,9 +8718,9 @@ Defun(dlgColumns)
 	}
 
 	if ( iColumns > 1 )
-	  {
+	{
 		EX(viewPrintLayout);
-	  }
+	}
 
 	if (props_in && props_in[0])
 		sz = UT_getAttribute("column-line", props_in);
@@ -8839,8 +8842,11 @@ Defun(style)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	const XML_Char * style = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
+	
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
+	const XML_Char * style = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 	pView->setStyle(style);
+	
 	return true;
 }
 
@@ -9341,9 +9347,9 @@ Defun(colorForeTB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
+	
 	const XML_Char * properties[] = { "color", NULL, 0};
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 	pView->setCharFormat(properties);
 
@@ -9354,9 +9360,9 @@ Defun(colorBackTB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
+	
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
 	properties[1] = reinterpret_cast<const XML_Char *>(utf8.utf8_str());
 	pView->setCharFormat(properties);
 
