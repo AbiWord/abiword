@@ -370,6 +370,7 @@ struct ABI_EXPORT RTFProps_SectionProps
 	UT_sint32       m_bottomMargTwips;     
 	UT_sint32       m_headerYTwips;     
 	UT_sint32       m_footerYTwips;     
+	UT_sint32       m_colSpaceTwips;     
 #ifdef BIDI_ENABLED
 	FriBidiCharType m_dir;
 #endif

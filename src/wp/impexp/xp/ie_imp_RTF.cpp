@@ -1206,7 +1206,8 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_topMargTwips = 0;     
 	m_bottomMargTwips = 0;     
 	m_headerYTwips = 0;     
-	m_footerYTwips = 0;   
+	m_footerYTwips = 0; 
+     m_colSpaceTwips = 0;
 #ifdef BIDI_ENABLED
 	m_dir = FRIBIDI_TYPE_UNSET;
 #endif
@@ -1476,8 +1477,8 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 bool IE_Imp_RTF::StartNewPara()
 {
 	
-	m_newParaFlagged = true;
 	bool ok = FlushStoredChars(true);
+	m_newParaFlagged = true;
 
 	return ok;
 }
@@ -3012,9 +3013,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_sectionProps.m_numCols = (UT_uint32)param;
 			return true;
 		}
-		else if (strcmp((char*)pKeyword, "linebetcol") == 0)
+		else if (strcmp((char*)pKeyword, "colsx") == 0)
 		{
-			m_currentRTFState.m_sectionProps.m_bColumnLine = true;
+			m_currentRTFState.m_sectionProps.m_colSpaceTwips = (UT_uint32)param;
+			return true;
 		}
 		else if (strcmp((char*)pKeyword, "column") == 0) // column break
 		{
@@ -3184,6 +3186,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return ParseChar(UCS_LF);
 		}	
+		else if (strcmp((char*)pKeyword, "linebetcol") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_bColumnLine = true;
+			return true;
+		}
 		else if (strcmp((char*)pKeyword, "lang") == 0)
 		{
 			UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter((unsigned short)param)));
@@ -4561,7 +4568,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 
 	if (m_currentRTFState.m_sectionProps.m_bColumnLine)
 	{
-		propBuffer += "; column-line:on ";
+		propBuffer += "; column-line:on";
 	}
 	if(m_currentRTFState.m_sectionProps.m_leftMargTwips != 0)
 	{
@@ -4597,6 +4604,16 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	{
 		propBuffer += "; page-margin-bottom:";
 		double inch = (double) m_currentRTFState.m_sectionProps.m_bottomMargTwips/1440.;
+		UT_String sinch;
+		setlocale(LC_NUMERIC, "C");
+		UT_String_sprintf(sinch,"%fin",inch);
+		setlocale(LC_NUMERIC, "");
+		propBuffer += sinch;
+	}
+	if(m_currentRTFState.m_sectionProps.m_colSpaceTwips != 0)
+	{
+		propBuffer += "; column-gap:";
+		double inch = (double) m_currentRTFState.m_sectionProps.m_colSpaceTwips/1440.;
 		UT_String sinch;
 		setlocale(LC_NUMERIC, "C");
 		UT_String_sprintf(sinch,"%fin",inch);
@@ -4653,7 +4670,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		setlocale(LC_NUMERIC, "");
 		propBuffer += sinch;
 	}
-			
+	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 		
 #ifdef BIDI_ENABLED
 	if(m_currentRTFState.m_sectionProps.m_dir != FRIBIDI_TYPE_UNSET)
@@ -4679,6 +4696,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
         UT_DEBUGMSG(("Apply sect prop: [%s]\n", tempBuffer.c_str()));
 	}
 #endif	
+	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 
 	const XML_Char* propsArray[15];
 	propsArray[0] = pProps;

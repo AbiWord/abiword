@@ -68,7 +68,7 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 	bool bInList = false;
 	const XML_Char * szListid=NULL;
 	const PP_AttrProp * pBlockAP = NULL;
-	UT_DEBUGMSG(("SEVIOR: Close Block \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: Close Block \n"));
 	if(nextApi != 0)
 	{
 		m_pDocument->getAttrProp(nextApi,&pBlockAP);
@@ -91,9 +91,8 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 //
 		const PP_AttrProp * pSpanAP = NULL;
 		m_pDocument->getSpanAttrProp(m_sdh,0,true,&pSpanAP);
-		UT_DEBUGMSG(("SEVIOR: Close Block -open span \n"));
-		//		_openSpan(m_apiThisBlock,pSpanAP);
-	
+		xxx_UT_DEBUGMSG(("SEVIOR: Close Block -open span \n"));
+		_openSpan(m_apiThisBlock,pSpanAP);
 	}
 	else
 	{
@@ -1144,7 +1143,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	// TODO add other properties here
 
 	m_pie->_rtf_nl();
-
+	_closeSpan();                   // In case it's open.
 	if (m_bJustStartingDoc)			// 'sect' is a delimiter, rather than a plain start
 		m_bJustStartingDoc = false;
 	else
@@ -1294,8 +1293,10 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 	if (m_bJustStartingSection)			// 'par' is a delimiter, rather than a plain start.
 		m_bJustStartingSection = false;
+		
 	else
-		m_pie->_rtf_keyword("pard");		// begin a new paragraph
+		m_pie->_rtf_keyword("par");		// begin a new paragraph. The previous
+	                                    // definitions get applied now.
 
 	UT_uint32 id = 0;
 	if(szListid != NULL)
@@ -1306,12 +1307,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 // If span was openned in a previous closeBlock because of a blank line
 // close it now.
 //
-//		_closeSpan();
+		_closeSpan();
 	}
-	if(!m_bBlankLine)
-	{
-		m_pie->_rtf_keyword("pard");		// begin a new paragraph
-	}		
+	m_pie->_rtf_keyword("pard");		// begin a new paragraph
+	m_pie->_rtf_keyword("plain");		// begin a new paragraph
+
 	///
 	/// Output fallback numbered/bulleted label for rtf readers that don't 
 	/// know /*/pn
@@ -1372,7 +1372,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 // Span was openned in a previous closeBlock because of a List item
 // close it now.
 //
-//		_closeSpan();
+		_closeSpan();
 		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 	}
 
@@ -1639,7 +1639,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword("keepn");
 
 	m_pie->_write_tabdef(szTabStops);
-	m_pie->_rtf_keyword("par");		// These controls define a new paragraph
 }
 
 //////////////////////////////////////////////////////////////////
