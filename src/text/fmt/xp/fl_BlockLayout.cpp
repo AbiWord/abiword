@@ -2357,21 +2357,28 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		XAP_App * pApp = XAP_App::getApp();
 
 		UT_UCSChar theWord[101];
-		// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+		UT_uint32 newLength = wordLength;
 		for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
-		{
-			UT_UCSChar currentChar;
-			currentChar = pBlockText[wordBeginning + ldex];
-			if (currentChar == UCS_RQUOTE) currentChar = '\'';
-			theWord[ldex] = currentChar;
-		}
+		  {
+		    UT_UCSChar currentChar;
+		    currentChar = pBlockText[wordBeginning + ldex];
+		    
+		    // remove UCS_ABI_OBJECT from the word
+		    if (currentChar == UCS_ABI_OBJECT) {
+		      newLength--; continue;
+		    }
+		    
+		    // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+		    if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		    theWord[ldex - (wordLength - newLength)] = currentChar;
+		  }
 
-		if (!SpellCheckNWord16(theWord, wordLength) &&
+		if (!SpellCheckNWord16(theWord, newLength) &&
 			!pApp->isWordInDict(theWord, wordLength))
 		{
 			// squiggle it
 			m_vecSquiggles.addItem(pPOB);
-			pPOB->bIsIgnored = pDoc->isIgnore(theWord, wordLength);
+			pPOB->bIsIgnored = pDoc->isIgnore(theWord, newLength);
 
 			_updateSquiggle(pPOB);
 
@@ -4696,30 +4703,35 @@ void fl_BlockLayout::recheckIgnoredWords()
 		wordLength = pPOB->iLength;
 
 		UT_UCSChar theWord[101];
-		if (wordLength < 100)
-		{
-			// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-			for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
-			{
-				UT_UCSChar currentChar;
-				currentChar = pBlockText[wordBeginning + ldex];
-				if (currentChar == UCS_RQUOTE) currentChar = '\'';
-				theWord[ldex] = currentChar;
-			}
-		}
+		UT_uint32 newLength = wordLength;
+		for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
+		  {
+		    UT_UCSChar currentChar;
+		    currentChar = pBlockText[wordBeginning + ldex];
+		    
+		    // remove UCS_ABI_OBJECT from the word
+		    if (currentChar == UCS_ABI_OBJECT) {
+		      newLength--; continue;
+		    }
+		    
+		    // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+		    if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		    theWord[ldex - (wordLength - newLength)] = currentChar;
+		  }
+
 		// for some reason, the spell checker fails on all 1-char words & really big ones
 		if ((wordLength > 1) &&
-			XAP_EncodingManager::instance->noncjk_letters(pBlockText+wordBeginning, wordLength) &&		
+			XAP_EncodingManager::instance->noncjk_letters(pBlockText+wordBeginning, newLength) &&		
 			(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
 			(!UT_UCS_isdigit(theWord[0])) &&			// still ignore first char==num words
 			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
-			(wordLength < 100) &&
+			(newLength < 100) &&
 
-			(!SpellCheckNWord16(theWord, wordLength)) &&
-			(!pApp->isWordInDict(theWord, wordLength)))
+			(!SpellCheckNWord16(theWord, newLength)) &&
+			(!pApp->isWordInDict(theWord, newLength)))
 		{
 			// squiggle it
-			pPOB->bIsIgnored = pDoc->isIgnore(theWord, wordLength);
+			pPOB->bIsIgnored = pDoc->isIgnore(theWord, newLength);
 			_updateSquiggle(pPOB);
 		}
 		else
