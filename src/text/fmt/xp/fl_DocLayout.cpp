@@ -488,38 +488,6 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->updateLayout();
 		m_pView->updateScreen(false);
 	}
-#if 0
-	// WHY would we want to do this ??? (either we are loading an
-	// existing document, and then the text in it has its own lang
-	// property or we are creating a new one, in which case this has
-	// already been taken care of when the document was created) Tomas
-
-
-	// what we want to do here is to set the default language
-	// that we're editing in
-	
-	// 27/10/2002 - If we do not have this piece of code, Abiword does not honor the documentlocale
-	// setting under win32 
-
-    // 11/11/2002 This code is crashing the unix build. If it MUST be in the
-    // windows build, move it into ap_Win32Frame::_showDOcument after 
-    // fillLayouts
-
-	const XML_Char * doc_locale = NULL;
-	if (m_pView && XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
-	{
-		if (doc_locale)
-		{
-			const XML_Char * props[3];
-			props[0] = "lang";
-			props[1] = doc_locale;
-			props[2] = 0;
-			m_pView->setCharFormat(props);
-		}
-		m_pView->notifyListeners(AV_CHG_ALL);
-	}
-#endif
-
 
 	setLayoutIsFilling(false);
 }

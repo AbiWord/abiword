@@ -173,42 +173,6 @@ void AP_Win32Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 							lid, lidScrollbarViewListener, 
 							iZoom
 	);
-
-	/* With the Frame refactoring into Frame & FrameImpl, the AP_Frame class
-	 * replaced _showDocument, however in the new calling hierarchy there was
-	 * no place for this chunk, given its former location, this is roughly the
-	 * the same place.
-	 * For now it seems appropriate here, however, feel free to move it
-	 * to somewhere you feel more appropriate and if so, remove _replaceView(...)
-	 * from ap_Win32Frame.   KJD
-	 */
-
-	// WHY would we want to do this ??? (either we have loading an
-	// existing document, and then the text in it has its own lang
-	// property or we are creating a new one, in which case this has
-	// already been taken care of when the document was created) Tomas
-
-	// what we want to do here is to set the default language
-	// that we're editing in
-	
-	// 27/10/2002 - If we do not have this piece of code, Abiword does not honor the documentlocale
-	// setting under win32 
-
-	const XML_Char * doc_locale = NULL;
-	if (pView && XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
-	{
-		if (doc_locale)
-		{
-			const XML_Char * props[3];
-			props[0] = "lang";
-			props[1] = doc_locale;
-			props[2] = 0;
-			static_cast<FV_View *>(pView)->setCharFormat(props);
-		}
-		
-		static_cast<FV_View *>(pView)->notifyListeners(AV_CHG_ALL);
-		static_cast<FV_View *>(pView)->focusChange(AV_FOCUS_HERE);
-	}	
 }
 
 void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 ylimit)
