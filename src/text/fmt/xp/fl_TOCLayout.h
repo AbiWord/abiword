@@ -55,8 +55,8 @@ public:
 	PT_DocPosition       getPositionInDoc(void);
 	UT_sint32            getLevel(void)
 		{ return m_iLevel;}
-	UT_UTF8String *      getDispStyle(void)
-		{ return & m_sDispStyle;}
+	UT_UTF8String &      getDispStyle(void)
+		{ return m_sDispStyle;}
 	bool                 hasLabel(void) const
 		{ return m_bHasLabel;}
 	bool                 doesInherit(void)
@@ -65,8 +65,8 @@ public:
 	UT_sint32            getPosInList(void)
 		{ return m_iPosInList;}
 	void                 calculateLabel(TOCEntry * pPrevLevel);
-    UT_UTF8String *      getNumLabel(void) 
-		{ return & m_sLabel;}
+    UT_UTF8String &      getNumLabel(void) 
+		{ return m_sLabel;}
 	UT_UTF8String       getFullLabel(void);
 private:
 	fl_BlockLayout *  m_pBlock;
@@ -91,9 +91,9 @@ class ABI_EXPORT fl_TOCLayout : public fl_SectionLayout
 
 public:
 	fl_TOCLayout(FL_DocLayout* pLayout,
-				   fl_DocSectionLayout * pDocSL, 
-				   PL_StruxDocHandle sdh, 
-				   PT_AttrPropIndex ap, 
+				 fl_DocSectionLayout * pDocSL, 
+				 PL_StruxDocHandle sdh, 
+				 PT_AttrPropIndex ap, 
 				 fl_ContainerLayout * pMyContainerLayout);
 
 	virtual ~fl_TOCLayout();
@@ -102,12 +102,12 @@ public:
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    doclistener_deleteEndTOC(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertEndTOC(fl_ContainerLayout*,
-											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
-											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+												const PX_ChangeRecord_Strux * pcrx,
+												PL_StruxDocHandle sdh,
+												PL_ListenerId lid,
+												void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																		PL_ListenerId lid,
+																		PL_StruxFmtHandle sfhNew));
 
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
@@ -118,33 +118,33 @@ public:
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
-	bool                     isEndTOCIn(void) const
-		{return m_bHasEndTOC;}
-	void                     setTOCEndIn(void)
-		{ m_bHasEndTOC = true;}
+	bool                     isEndTOCIn(void) const {return m_bHasEndTOC;}
+	void                     setTOCEndIn(void) { m_bHasEndTOC = true;}
 	TOCEntry *               createNewEntry(fl_BlockLayout * pBL);
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
     fl_BlockLayout  *        findMatchingBlock(fl_BlockLayout * pBlock);
 	UT_sint32                isInVector(fl_BlockLayout * pBlock, UT_GenericVector<TOCEntry *>* pVecBlocks);
-	UT_uint32                getTOCPID(void) const
-		{ return m_iTOCPID;}
+	UT_uint32                getTOCPID(void) const { return m_iTOCPID;}
 	bool                     isStyleInTOC(UT_UTF8String & sStyle);
 	bool                     isBlockInTOC(fl_BlockLayout * pBlock);
-	bool                     addBlock(fl_BlockLayout * pBlock);
+	bool                     addBlock(fl_BlockLayout * pBlock, bool bVerifyRange = true);
 	bool                     removeBlock(fl_BlockLayout * pBlock);
 	fl_BlockLayout *         getMatchingBlock(fl_BlockLayout * pBlock);
-	UT_UTF8String *          getTOCListLabel(fl_BlockLayout * pBlock);
-	UT_UTF8String *          getTOCHeading(void)
-		{ return &m_sTOCHeading;}
-	UT_sint32                getCurrentLevel(void) const
-		{ return m_iCurrentLevel;}
+	UT_UTF8String &          getTOCListLabel(fl_BlockLayout * pBlock);
+	UT_UTF8String &          getTOCHeading(void) { return m_sTOCHeading;}
+	UT_sint32                getCurrentLevel(void) const { return m_iCurrentLevel;}
 	FootnoteType             getNumType(UT_sint32 iLevel);
 	eTabLeader               getTabLeader(UT_sint32 iLevel);
 	UT_sint32                getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock);
 	void                     setSelected(bool bSetSelected);
-	bool                     isSelected(void)
-		{ return m_bIsSelected;}
+	bool                     isSelected(void) { return m_bIsSelected;}
+
+	const UT_UTF8String &    getRangeBookmarkName() const {return m_sRangeBookmark;}
+	bool                     verifyBookmarkAssumptions();
+
+	void                     purgeLayout(void) {_purgeLayout();}
+	
 private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
@@ -152,8 +152,13 @@ private:
 	bool                     _isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCStyle);
 	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);
 	void                     _localCollapse();
+
+	void                     _createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPosition posEnd,
+													fl_BlockLayout * pPrevBL, const char * pszStyle,
+													UT_sint32 iAllBlocks);
+	
 	void                     _addBlockInVec(fl_BlockLayout * pBlock,UT_UTF8String & sStyle);
-	void                     _removeBlockInVec(fl_BlockLayout * pBlock);
+	void                     _removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse = false);
 	void                     _calculateLabels(void);
 	UT_sint32                _getStartValue(TOCEntry * pEntry);
 	bool                     m_bNeedsRebuild;
@@ -201,6 +206,7 @@ private:
 	UT_UTF8String            m_sLabAfter2;
 	UT_UTF8String            m_sLabAfter3;
 	UT_UTF8String            m_sLabAfter4;
+	UT_UTF8String            m_sRangeBookmark;
 	bool                     m_bHasLabel1;
 	bool                     m_bHasLabel2;
 	bool                     m_bHasLabel3;
@@ -213,6 +219,9 @@ private:
 	UT_sint32                m_iStartAt2;
 	UT_sint32                m_iStartAt3;
 	UT_sint32                m_iStartAt4;
+	bool                     m_bMissingBookmark;
+	bool                     m_bFalseBookmarkEstimate;
+	UT_NumberVector          m_vecBookmarkPositions;
 };
 
 

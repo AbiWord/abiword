@@ -467,7 +467,73 @@ void FL_DocLayout::fillLayouts(void)
 	}
 
 	setLayoutIsFilling(false);
+
+	// Layout of any TOC that is built only from a restricted document range is tentative, because
+	// the information required by the TOC might not have been available during the incremental
+	// load.  In that case the TOCs made made certain assumptions about the presence of a given
+	// bookmark in the doc during the fill. These assumptions now need to be verified and, if
+	// required, fixed
+	
+	fl_TOCLayout* pBadTOC = NULL;
+	
+	for (UT_sint32 i = 0; i < getNumTOCs(); ++i)
+	{
+		fl_TOCLayout * pTOC = getNthTOC(i);
+		if(!pTOC)
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+
+		// because the incremental load is sequential, the TOCs are in the order they have in the
+		// document, so we just need to remember the first one.
+		if(pTOC->verifyBookmarkAssumptions() && !pBadTOC)
+		{
+			pBadTOC = pTOC;
+		}
+	}
+
+	if(pBadTOC)
+	{
+		// hard luck -- we need to redo the layout, since the TOC probably changed size
+		fl_SectionLayout * pSL = pBadTOC->getSectionLayout();
+		fl_DocSectionLayout * pDSL = NULL;
+		
+		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			pDSL = static_cast<fl_DocSectionLayout*>(pSL);
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		}
+
+		if(!pDSL)
+		{
+			formatAll();
+		}
+		else
+		{
+			while (pSL)
+			{
+				pSL->format();
+				if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+				{
+					static_cast<fl_DocSectionLayout *>(pSL)->completeBreakSection();
+					static_cast<fl_DocSectionLayout *>(pSL)->checkAndRemovePages();
+				}
+				pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
+			}
+		}
+		
+		if(m_pView)
+		{
+			m_pView->updateLayout();
+			m_pView->updateScreen(false);
+		}
+	}
 }
+
 
 void FL_DocLayout::setView(FV_View* pView)
 {
@@ -982,6 +1048,7 @@ bool FL_DocLayout::addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock)
 	UT_sint32 i = 0;
 	UT_sint32 inTOC = count;
 	UT_sint32 addTOC = 0;
+
 	for(i=0; i<count; i++)
 	{
 		fl_TOCLayout * pTOC = getNthTOC(i);
@@ -1131,18 +1198,121 @@ bool FL_DocLayout::fillTOC(fl_TOCLayout * pTOC)
 	UT_UTF8String sStyle;
 	pBlock = static_cast<fl_BlockLayout *>(pCL);
 	bool filled = false;
+
+	const XML_Char * pBookmark = pTOC->getRangeBookmarkName().size() ? pTOC->getRangeBookmarkName().utf8_str() : NULL;
+	
+	if(pBookmark)
+	{
+		if(m_pDoc->isBookmarkUnique(pBookmark))
+		{
+			// bookmark does not exist
+			pBookmark = NULL;
+		}
+	}
+
+	fl_BlockLayout * pBlockLast = NULL;
+	
+	if(pBookmark)
+	{
+		UT_uint32 i = 0;
+		fp_BookmarkRun * pB[2] = {NULL,NULL};
+		fp_Run * pRun;
+		fl_BlockLayout * pBlockStart = pBlock;
+		bool bFound = false;
+		
+		while(pBlock)
+		{
+			pRun = pBlock->getFirstRun();
+
+			while(pRun)
+			{
+				if(pRun->getType()== FPRUN_BOOKMARK)
+				{
+					fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
+					if(!strcmp(pBR->getName(),pBookmark))
+					{
+						pB[i] = pBR;
+						i++;
+						if(i>1)
+						{
+							bFound = true;
+							break;
+						}
+					}
+				}
+
+				pRun = pRun->getNextRun();
+			}
+			
+			if(bFound)
+				break;
+			
+			pBlock = pBlock->getNextBlockInDocument();
+		}
+
+		if(pB[0] && pB[1])
+		{
+			pBlockLast = pB[1]->getBlock();
+
+			pBlock = pB[0]->getBlock();
+			PT_DocPosition pos1 = pB[0]->getBookmarkedDocPosition(false);
+
+			if(pBlock->getPosition(true) < pos1)
+				pBlock = pBlock->getNextBlockInDocument();
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			pBlock = pBlockStart;
+		}
+	}
+
+	// clear any existing contents
+	pTOC->purgeLayout();
+
 	while(pBlock)
 	{
 		pBlock->getStyle(sStyle);
 		if(pTOC->isStyleInTOC(sStyle))
 		{
 			filled = true;
-			pTOC->addBlock(pBlock);
+			pTOC->addBlock(pBlock, false);
 		}
+
+		if(pBlockLast && pBlockLast == pBlock)
+			break;
+		
 		pBlock = pBlock->getNextBlockInDocument();
 	}
 	return filled;
 }
+
+/*
+   updates affected TOCs in response to bookmark operation
+   returns true if operation resulted in change, false otherwise
+*/
+bool FL_DocLayout::updateTOCsOnBookmarkChange(const XML_Char * pBookmark)
+{
+	UT_return_val_if_fail( pBookmark && !isLayoutFilling(), false );
+	bool bChange = false;
+	
+	for(UT_sint32 i = 0; i < getNumTOCs(); ++i)
+	{
+		fl_TOCLayout * pTOC = getNthTOC(i);
+		UT_return_val_if_fail( pTOC, false );
+
+		if(pTOC->getRangeBookmarkName().size() && !UT_strcmp(pTOC->getRangeBookmarkName().utf8_str(), pBookmark))
+		{
+			// this TOC depends on the given bookmark, update ...
+			fillTOC(pTOC);
+			bChange = true;
+		}
+	}
+
+	return bChange;
+}
+
+
 //------------------------------------------------------------------
 UT_sint32 FL_DocLayout::getHeight()
 {

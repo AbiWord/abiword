@@ -123,7 +123,7 @@ bool fp_FieldTOCListLabelRun::calculateValue(void)
 	UT_ASSERT(getLength() == 0);
 	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getBlock()->myContainingLayout());
 	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
-	UT_String str = pTOCL->getTOCListLabel(getBlock())->utf8_str();
+	UT_String str = pTOCL->getTOCListLabel(getBlock()).utf8_str();
 	if(str.size() == 0)
 	{
 		sz_ucs_FieldValue[0] = 0;
@@ -175,7 +175,7 @@ bool fp_FieldTOCHeadingRun::calculateValue(void)
 	UT_ASSERT(getLength() == 0);
 	fl_TOCLayout * pTOCL = static_cast<fl_TOCLayout *>(getBlock()->myContainingLayout());
 	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
-	UT_String str = pTOCL->getTOCHeading()->utf8_str();
+	UT_String str = pTOCL->getTOCHeading().utf8_str();
 	if(str.size() == 0)
 	{
 		sz_ucs_FieldValue[0] = 0;

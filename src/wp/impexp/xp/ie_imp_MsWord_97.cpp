@@ -1346,40 +1346,18 @@ static int s_cmp_bookmarks_bsearch(const void * a, const void * b)
 XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint32 pos)
 {
 	XML_Char *str;
-	UT_iconv_t ic_handle;
-	// word bookmarks can be at most 30 characters, so make a reasonable buffer
-	// for the UTF-8 version
-	char buff[200];
-	char *buff_ptr = &buff[0];
-	const char *in_ptr;
-	size_t out_left = sizeof(buff);
-	size_t in_left;
-
-	if (!XAP_EncodingManager::get_instance()->cjk_locale()
-	   &&(XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1))
-	{
-		ic_handle = UT_iconv_open(XAP_EncodingManager::get_instance()->getNativeEncodingName(), "UCS-2");
-	}
-	else
-	{
-		// use UTF-8
-		ic_handle = UT_iconv_open("UTF-8", "UCS-2");
-	}
+	UT_UTF8String sUTF8;
 
 	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)
 	{
 		// 16 bit stuff
-		in_ptr = reinterpret_cast<const char *>(ps->Sttbfbkmk.u16strings[pos]);
-
-		// TODO is this really UCS-2 or UTF-16?
-		// TODO and are we using strlen for the number of 16-bit words
-		// TODO or the number of characters?
-		// TODO Because UTF-16 characters are sometimes expressed as 2 words
-		in_left = 2 * UT_UCS2_strlen(static_cast<const UT_UCS2Char*>(ps->Sttbfbkmk.u16strings[pos])) + 2;
-
-		UT_iconv( ic_handle, &in_ptr, &in_left, &buff_ptr,&out_left);
-		str = new XML_Char[200 - out_left];
-		strcpy(str, buff);
+		const UT_UCS2Char * p = static_cast<const UT_UCS2Char *>(ps->Sttbfbkmk.u16strings[pos]);
+		UT_uint32 len  = UT_UCS2_strlen(static_cast<const UT_UCS2Char*>(ps->Sttbfbkmk.u16strings[pos]));
+		sUTF8.clear();
+		sUTF8.appendUCS2(p, len);
+		
+		str = new XML_Char[sUTF8.byteLength()+1];
+		strcpy(str, sUTF8.utf8_str());
 	}
 	else
 	{
@@ -1398,7 +1376,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 		else
 			str = NULL;
 	}
-	UT_iconv_close(ic_handle);
+	
 	return str;
 }
 
@@ -3415,7 +3393,28 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 			}
 		}
 	}
-	
+
+	if(t = strstr(params, "\\b"))
+	{
+		// a bookmark restricts the range from which the TOC is built
+		t1 = strchr(t, '\"');
+		if(t1)
+		{
+			t1++;
+
+			t2 = strchr(t1, '\"');
+
+			char c = *t2;
+			*t2 = 0;
+
+			sProps += "toc-range-bookmark:";
+			sProps += t1;
+			sProps += ";";
+
+			*t2 = c; // restore the string
+		}
+	}
+
 	if(t = strstr(params, "\\o"))
 	{
 		// heading-based TOC

@@ -2237,13 +2237,12 @@ void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
 
 fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 								UT_uint32 iOffsetFirst,
-								UT_uint32 /*iLen*/)
-	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_BOOKMARK)
+								UT_uint32 iLen)
+	: fp_Run(pBL, iOffsetFirst, iLen, FPRUN_BOOKMARK)
 {
 	m_pBookmark = getBlock()->getBookmark(iOffsetFirst);
 	UT_ASSERT(m_pBookmark);
 
-	_setLength(1);
 	_setDirty(true);
 
 	UT_ASSERT((pBL));
@@ -2283,6 +2282,71 @@ bool fp_BookmarkRun::canBreakBefore(void) const
 bool fp_BookmarkRun::_letPointPass(void) const
 {
 	return true;
+}
+
+/*!
+    When working with bookmarks, the run block offset does not always adequately represent the
+    location of the bookmark. For example, if the user bookmarks the same place in the doc with
+    several bookmarks, the run offsets for each associated run will be different, but most of the
+    time we are interested in the offset to the left or right of all stacked up bookmarks. Similarly,
+    a bookmark that is immediately after a start of block needs to be treated in certain situations
+    as if the block strux was also sellected. This function implements the necessary logic.
+
+    In general, when we jump to bookmarks, we go to the range in between the two bookmark
+    object. However, for purposes of TOCs, we are interested in the range that is just outside the
+    two objects.
+
+    \parameter bAfter: indicates if we want offset to the right (true) or left (false) of the
+                       bookmark
+
+    \return: the return value is document offset of the bookmarked position
+*/
+UT_uint32 fp_BookmarkRun::getBookmarkedDocPosition(bool bAfter) const
+{
+	if(bAfter)
+	{
+		fp_Run * pRun = getNextRun();
+		const fp_Run * pPrevRun = this;
+		
+		while(pRun)
+		{
+			switch (pRun->getType())
+			{
+				case FPRUN_BOOKMARK:
+				case FPRUN_FMTMARK:
+					pPrevRun = pRun;
+					pRun = pRun->getNextRun();
+					break;
+
+				default:
+					return getBlock()->getPosition(false) + pRun->getBlockOffset();
+			}
+		}
+
+		UT_ASSERT_HARMLESS( !pRun );
+		return getBlock()->getPosition(false) + pPrevRun->getBlockOffset() + pPrevRun->getLength();
+	}
+	else
+	{
+		fp_Run * pRun = getPrevRun();
+
+		while(pRun)
+		{
+			switch (pRun->getType())
+			{
+				case FPRUN_BOOKMARK:
+				case FPRUN_FMTMARK:
+					pRun = pRun->getPrevRun();
+					break;
+
+				default:
+					return getBlock()->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+			}
+		}
+
+		UT_ASSERT_HARMLESS( !pRun );
+		return getBlock()->getPosition(true); // offset of the block strux
+	}
 }
 
 void fp_BookmarkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC)

@@ -104,7 +104,7 @@ void TOCEntry::calculateLabel(TOCEntry * pPrevLevel)
 		m_sLabel = sVal.c_str();
 		return;
 	}
-	m_sLabel = *(pPrevLevel->getNumLabel());
+	m_sLabel = pPrevLevel->getNumLabel();
 	m_sLabel += ".";
 	m_sLabel += sVal.c_str();
 }
@@ -136,7 +136,9 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 	  m_iTabLeader2(FL_LEADER_DOT),
 	  m_iTabLeader3(FL_LEADER_DOT),
 	  m_iTabLeader4(FL_LEADER_DOT),
-	  m_iCurrentLevel(0)
+	  m_iCurrentLevel(0),
+	  m_bMissingBookmark(false),
+	  m_bFalseBookmarkEstimate(false)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 //	_createTOCContainer();
@@ -246,6 +248,7 @@ bool fl_TOCLayout::bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
 	m_bHasEndTOC = true;
+
 	m_pLayout->fillTOC(this);
 	return true;
 }
@@ -350,10 +353,235 @@ UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock
 	return iWidth;
 }
 
-bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock)
+/*
+   During the filling of the doc layout when the TOC layout is restricted by a bookmark, we have
+   made the assumption that if the bookmark was not in the doc when we are asked to add a particular
+   block, it was to come later in the filling process; in addition we assumed that the bookmark will
+   not immediately follow the block strux. We now need to verify these assumption and if either is
+   false, redo the TOC.
+*/
+bool fl_TOCLayout::verifyBookmarkAssumptions()
 {
+	UT_return_val_if_fail(!m_pLayout->isLayoutFilling(), false);
+
+	if((!m_bMissingBookmark && !m_bFalseBookmarkEstimate) || !m_sRangeBookmark.size())
+		return false;
+	
+	PD_Document * pDoc = m_pLayout->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+	if(m_bFalseBookmarkEstimate || (m_bMissingBookmark && m_pDoc->isBookmarkUnique(m_sRangeBookmark.utf8_str())))
+	{
+		// this bookmark either does not exist, or it was positioned earlier than we assumed
+		m_pLayout->fillTOC(this);
+	}
+
+	return true;
+}
+
+
+/*
+    bVerifyRange indicates whether the function should verify that pBlock is inside the range indicated
+    by associated bookmark. This parameter has default value true, but the caller can specify false
+    if the block is known to be inside the TOC range (the range checking is involved, so if this
+    function is called from a loop, it is desirable that most of the range verification is taken
+    outside the loop -- see for example fl_DocLayout::fillTOC())
+*/
+bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock, bool bVerifyRange)
+{
+	UT_return_val_if_fail( pBlock, false );
 	UT_UTF8String sStyle;
 	pBlock->getStyle(sStyle);
+
+	if(bVerifyRange && m_sRangeBookmark.size() /*&& !m_pLayout->isLayoutFilling()*/)
+	{
+		// we need to ascertain whether the block is in our range
+		PD_Document * pDoc = m_pLayout->getDocument();
+		UT_return_val_if_fail( pDoc, false );
+
+		const XML_Char * pBookmark = m_sRangeBookmark.utf8_str();
+	
+		if(!m_pDoc->isBookmarkUnique(pBookmark))
+		{
+			UT_uint32 i = 0;
+			fp_Run * pRun;
+			fl_BlockLayout * pBL;
+			fp_BookmarkRun * pB[2] = {NULL,NULL};
+			fl_ContainerLayout * pDSL = m_pLayout->getFirstSection();
+			fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pDSL);
+			bool bFound = false;
+			
+			while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+			{
+				pCL = pCL->getFirstLayout();
+			}
+			if(pCL == NULL)
+			{
+				return false;
+			}
+			if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
+			{
+				return false;
+			}
+
+			pBL = static_cast<fl_BlockLayout *>(pCL);
+			PT_DocPosition pos1 = 0, pos2 = 0xffffffff;
+
+			// during the fill process we will take advantage of the fact that the doc positions do
+			// not change, and will store the positions of our bookmarks; if the document is not
+			// filling, we will do this the hard way
+			
+			if(!m_pLayout->isLayoutFilling())
+				m_vecBookmarkPositions.clear();
+			
+			if(m_vecBookmarkPositions.getItemCount() < 2)
+			{
+				if(m_vecBookmarkPositions.getItemCount() == 1)
+				{
+					pos1  = m_vecBookmarkPositions.getNthItem(0);
+
+					if(m_bMissingBookmark)
+					{
+						// the stored position is only an estimate == strux offset + 1
+						// we have to substract the one
+						UT_ASSERT_HARMLESS( pos1 );
+						--pos1;
+
+						// we are still looking for the starting bookmark
+						i = 0;
+					}
+					else
+					{
+						// the stored position is the real position, so we only need to look for the
+						// end bookmark
+						i = 1;
+					}
+
+					// now jump to the block in question
+					while(pBL->getNextBlockInDocument() && pBL->getNextBlockInDocument()->getPosition(true) < pos1)
+						pBL = pBL->getNextBlockInDocument();
+				}
+			
+				while(pBL)
+				{
+					pRun = pBL->getFirstRun();
+
+					while(pRun)
+					{
+						if(pRun->getType()== FPRUN_BOOKMARK)
+						{
+							fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
+							bool bIsRight = (i == 0 && pBR->isStartOfBookmark()) || (i != 0 && !pBR->isStartOfBookmark());
+							
+							if(bIsRight && !strcmp(pBR->getName(),pBookmark))
+							{
+								pB[i] = pBR;
+								i++;
+								if(i>1)
+								{
+									bFound = true;
+									break;
+								}
+							}
+						}
+
+						pRun = pRun->getNextRun();
+					}
+			
+					if(bFound)
+						break;
+			
+					pBL = pBL->getNextBlockInDocument();
+				}
+
+				if(!pB[0] && !m_vecBookmarkPositions.getItemCount() && m_pLayout->isLayoutFilling())
+				{
+					// we will assume that the bookmark is still to come and that it is immediately
+					// after the strux, but we need to make note that we made that assumption ...
+					m_bMissingBookmark = true;
+					pos1 = pBlock->getPosition(false); // position immediately after the strux
+					m_vecBookmarkPositions.addItem(pos1);
+				}
+				else if(!pB[0] && m_vecBookmarkPositions.getItemCount())
+				{
+					// this is the case where we already knew the position and set it earlier
+					// do nothing
+					UT_ASSERT_HARMLESS( m_pLayout->isLayoutFilling() && m_vecBookmarkPositions.getItemCount() == 1 );
+				}
+				else if(!pB[0] && !m_pLayout->isLayoutFilling())
+				{
+					// the document does not contain this bookmark
+					// we build the toc from the whole document
+					pos1 = 0;
+				}
+				else if(pB[0])
+				{
+					pos1 = pB[0]->getBookmarkedDocPosition(false);
+					PT_DocPosition posOld = 0;
+					
+					if(m_vecBookmarkPositions.getItemCount())
+					{
+						// this is the case where we guessed the pos1
+						posOld = m_vecBookmarkPositions.getNthItem(0);
+						m_vecBookmarkPositions.clear();
+					}
+					
+					if(m_pLayout->isLayoutFilling())
+						m_vecBookmarkPositions.addItem(pos1);
+
+					m_bMissingBookmark = false; // this is the real thing
+					
+					if(pos1 < posOld)
+					{
+						// we assumed that the actual postion of the bookmark was after the strux
+						// which we were processing when we previously set pos1. This assumption was
+						// incorrect, so we will have to redo the layout later
+						m_bFalseBookmarkEstimate = true;
+					}
+				}
+			
+				if(!pB[1] && pos1 != 0)
+				{
+					// end bookmark not loaded yet
+					UT_ASSERT_HARMLESS( m_pLayout->isLayoutFilling() );
+					pos2 = 0xffffffff;
+				}
+				if(!pB[1] && pos1 == 0)
+				{
+					// this bookmark is not in the document, we will build the toc from the entire doc
+					pos2 = 0xffffffff;
+				}
+				else if(pB[1])
+				{
+					pos2 = pB[1]->getBookmarkedDocPosition(true);
+
+					if(m_pLayout->isLayoutFilling())
+					{
+						if(m_vecBookmarkPositions.getItemCount() != 1)
+						{
+							UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+							m_vecBookmarkPositions.clear();
+							m_vecBookmarkPositions.addItem(0);
+						}
+
+						m_vecBookmarkPositions.addItem(pos2);
+					}
+				}
+			}
+			else
+			{
+				UT_ASSERT_HARMLESS(m_vecBookmarkPositions.getItemCount() == 2 && m_pLayout->isLayoutFilling());
+				pos1 = m_vecBookmarkPositions.getNthItem(0);
+				pos2 = m_vecBookmarkPositions.getNthItem(1);
+			}
+			
+			
+			if(pBlock->getPosition(true) < pos1 || pBlock->getPosition(true) >= pos2)
+				return false;
+		}
+	}
+	
+	
 	if(_isStyleInTOC(sStyle,m_sSourceStyle1))
 	{
 		m_iCurrentLevel = 1;
@@ -381,22 +609,96 @@ bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock)
 	return false;
 }
 
-void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyle)
+/*
+    This function creates a TOC entry from the given document positions, with all the frills added
+    (this code used to be inside _addBlockInVec())
+*/
+void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPosition posEnd,
+										  fl_BlockLayout * pPrevBL, const char * pszStyle,
+										  UT_sint32 iAllBlocks)
 {
-// First find where to put the block.
+	UT_return_if_fail(pszStyle);
+	
+	PD_Style * pStyle = NULL;
+	m_pDoc->getStyle(pszStyle,&pStyle);
+
+	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
+	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
+	
+	m_pDoc->tellListenerSubset(pListen, docRange);
+	
+	delete docRange;
+	delete pListen;
+	
+	fl_BlockLayout * pNewBlock;
+	if(pPrevBL)
+	{
+		pNewBlock = static_cast<fl_BlockLayout *>(pPrevBL->getNext());
+	}
+	else
+	{
+		pNewBlock = static_cast<fl_BlockLayout *>(getFirstLayout());
+	}
+	UT_DEBUGMSG(("New TOC block in TOCLayout %x \n",pNewBlock));
+
+	// OK Now add the block to our vector.
+	TOCEntry *pNewEntry = createNewEntry(pNewBlock);
+	if(iAllBlocks == 0)
+	{
+		m_vecEntries.insertItemAt(pNewEntry,0);
+	}
+	else if (iAllBlocks < static_cast<UT_sint32>(m_vecEntries.getItemCount()))
+	{
+		m_vecEntries.insertItemAt(pNewEntry,iAllBlocks);
+	}
+	else
+	{
+		m_vecEntries.addItem(pNewEntry);
+	}
+	
+	_calculateLabels();
+
+	// Now append the tab and Field's to end of the new Block.
+	PT_DocPosition iLen = posEnd - posStart - 1; // subtract 1 for the inital strux
+	pNewBlock->_doInsertTOCTabRun(iLen);
+	
+	iLen++;
+	pNewBlock->_doInsertFieldTOCRun(iLen);
+
+	// Now Insert the TAB and TOCListLabel runs if requested.
+	if(pNewEntry->hasLabel())
+	{
+		pNewBlock->_doInsertTOCListTabRun(0);
+		pNewBlock->_doInsertTOCListLabelRun(0);
+	}
+	
+	fp_Container * pTOCC = getFirstContainer();
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	if(pTOCC && pTOCC->getPage())
+	{
+		fp_Page * pPage = pTOCC->getPage();
+		pDSL->setNeedsSectionBreak(true,pPage );
+	}
+
 	markAllRunsDirty();
 	setNeedsReformat(0);
 	setNeedsRedraw();
+}
+
+void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyle)
+{
+	// First find where to put the block.
 	PT_DocPosition posNew = pBlock->getPosition();
 	TOCEntry * pEntry = NULL;
 	fl_BlockLayout * pPrevBL = NULL;
 	UT_sint32 i = 0;
 	bool bFound = false;
+	
 	for(i=0; i< static_cast<UT_sint32>(m_vecEntries.getItemCount()); i++)
 	{
 		pEntry = m_vecEntries.getNthItem(i);
 		pPrevBL = pEntry->getBlock();
-		xxx_UT_DEBUGMSG(("Looking at Block %x pos %d \n",pPrevBL,pPrevBL->getPosition()));
+
 		if(pPrevBL->getPosition() > posNew)
 		{
 			bFound = true;
@@ -414,83 +716,71 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 		}
 		else
 		{
+			pEntry = NULL;
 			pPrevBL = NULL;
 		}
 	}
+	
 	iAllBlocks = i;
-	PD_Style * pStyle = NULL;
+
 	if(pPrevBL == NULL)
 	{
 		pPrevBL = static_cast<fl_BlockLayout *>(getFirstLayout());
 	}
-	m_pDoc->getStyle(sStyle.utf8_str(),&pStyle);
-	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
-	PT_DocPosition posStart,posEnd;
-	posStart = pBlock->getPosition(true);
-	posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength());
+	else if(!m_pLayout->isLayoutFilling())
+	{
+		// we have to redo the previous TOC block, if we have stolen some of its contents (i.e., if
+		// the new block was inserted into a heading block) -- we need to see if the new block comes
+		// immediately after the old block represented by pPrevBL
+		PT_DocPosition posStart2 = pPrevBL->getPosition(true);
+		PT_DocPosition posEnd2   = posStart2 + static_cast<PT_DocPosition>(pPrevBL->getLength());
+		PT_DocPosition posStart  = pBlock->getPosition(true);
+		UT_DEBUGMSG(("Prev. affected block is %d long \n",pPrevBL->getLength()));
+
+		if(posEnd2 == posStart)
+		{
+			fl_BlockLayout * pPrevBL2 = NULL;
+			UT_return_if_fail( pEntry && iAllBlocks > 0 );
+			UT_UTF8String sDispStyle = pEntry->getDispStyle();
+			UT_sint32 iNewLevel = pEntry->getLevel();
+			
+			if(i > 1)
+			{
+				pEntry =  m_vecEntries.getNthItem(i-2);
+				pPrevBL2 =  pEntry->getBlock();
+			}
+
+			// now get rid of the old TOC block (this locates the shaddow to be removed by shd, so
+			// it works whether passed the shaddow block or the main doc block)
+			_removeBlockInVec(pPrevBL, true);
+			pPrevBL = NULL;
+
+			UT_sint32 iOldLevel = m_iCurrentLevel;
+			m_iCurrentLevel = iNewLevel;
+			_createAndFillTOCEntry(posStart2, posEnd2, pPrevBL2, sDispStyle.utf8_str(), iAllBlocks - 1);
+			m_iCurrentLevel = iOldLevel;
+			
+			// we do not have to notify the orignal block that it is shaddowed, it knows already,
+			// but we need to obtain the new pPrevBL for further processing
+			if(pPrevBL2)
+			{
+				pPrevBL = static_cast<fl_BlockLayout *>(pPrevBL2->getNext());
+			}
+			else
+			{
+				pPrevBL = static_cast<fl_BlockLayout *>(getFirstLayout());
+			}
+		}
+	}
+
+	PT_DocPosition posStart = pBlock->getPosition(true);
+	PT_DocPosition posEnd = posStart + static_cast<PT_DocPosition>(pBlock->getLength());
 	UT_DEBUGMSG(("Block is %d long \n",pBlock->getLength()));
-	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
-	m_pDoc->tellListenerSubset(pListen, docRange);
-	delete docRange;
-	delete pListen;
-	fl_BlockLayout * pNewBlock;
-	if(pPrevBL)
-	{
-		pNewBlock = static_cast<fl_BlockLayout *>(pPrevBL->getNext());
-	}
-	else
-	{
-		pNewBlock = static_cast<fl_BlockLayout *>(getFirstLayout());
-	}
-	UT_DEBUGMSG(("New TOC block in TOCLayout %x \n",pNewBlock));
-//
-// OK Now add the block to our vector.
-//
-	TOCEntry *pNewEntry = createNewEntry(pNewBlock);
-	if(iAllBlocks == 0)
-	{
-		m_vecEntries.insertItemAt(pNewEntry,0);
-	}
-	else if (iAllBlocks < static_cast<UT_sint32>(m_vecEntries.getItemCount()))
-	{
-		m_vecEntries.insertItemAt(pNewEntry,iAllBlocks);
-	}
-	else
-	{
-		m_vecEntries.addItem(pNewEntry);
-	}
-	_calculateLabels();
-//
-// Tell the block it's shadowed in a TOC
-//
-	pBlock->setStyleInTOC(true);
-//
-// Now append the tab and Field's to end of the new Block.
-//
-	PT_DocPosition iLen = static_cast<PT_DocPosition>(pBlock->getLength());
-	iLen -=1; // subtract 1 for the inital strux
-	pNewBlock->_doInsertTOCTabRun(iLen);
-	iLen++;
-	pNewBlock->_doInsertFieldTOCRun(iLen);
-//
-// Now Insert the TAB and TOCListLabel runs if requested.
-//
-	if(pNewEntry->hasLabel())
-	{
-		pNewBlock->_doInsertTOCListTabRun(0);
-		pNewBlock->_doInsertTOCListLabelRun(0);
-	}
+
+	_createAndFillTOCEntry(posStart, posEnd, pPrevBL, sStyle.utf8_str(), iAllBlocks);
 	
-	fp_Container * pTOCC = getFirstContainer();
-	fl_DocSectionLayout * pDSL = getDocSectionLayout();
-	if(pTOCC && pTOCC->getPage())
-	{
-		fp_Page * pPage = pTOCC->getPage();
-		pDSL->setNeedsSectionBreak(true,pPage );
-	}
-	markAllRunsDirty();
-	setNeedsReformat(0);
-	setNeedsRedraw();
+	// Tell the block it's shadowed in a TOC
+	pBlock->setStyleInTOC(true);
 }
 
 UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock, 
@@ -551,7 +841,13 @@ fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 	return NULL;
 }
 
-void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock)
+/*
+    When a block is deleted from the TOC, it is sometimes necessary to redo the toc entry that
+    preceded it. We do this be removing and recreating this previous entry, which requires a
+    recursive call to ourselves. bDontRecurse indicates that the recursive processing should not be
+    done; it has a default value false.
+*/
+void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
 {
 	TOCEntry * pThisEntry = NULL;
 	fl_BlockLayout * pThisBL = NULL;
@@ -572,13 +868,66 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock)
 	{
 		return;
 	}
-//
-// Clear it!
-//
-	pBlock->clearScreen(m_pLayout->getGraphics());
-//
-// unlink it from the TOCLayout
-//
+	//
+	// Clear it!
+	//
+	if(!pBlock->isContainedByTOC())
+	{
+		// we only clear if the block passed to us is not one of our TOC blocks (i.e., if we are not
+		// called recursively by this funciton, or by _addBlockInVec())
+		pBlock->clearScreen(m_pLayout->getGraphics());
+	}
+	
+	//
+	// unlink it from the TOCLayout
+	//
+
+	if(!bDontRecurse && !m_pLayout->isLayoutDeleting())
+	{
+		// if the heading we are deleting is immediately preceded by another heading, the text of the
+		// old heading shifts into the preceding heading; in that case, we have to redo the previous TOC
+		// entry.
+		fl_BlockLayout * pPrevBL = static_cast<fl_BlockLayout *>(pThisBL->getPrev());
+		fl_BlockLayout * pNextBL = static_cast<fl_BlockLayout *>(pThisBL->getNext());
+		PT_DocPosition posStart1, posEnd1, posStart2;
+	
+		if(pPrevBL)
+		{
+			posStart1 = pPrevBL->getPosition(true);
+			posEnd1   = posStart1 + pPrevBL->getLength();
+		}
+	
+		if(pNextBL)
+		{
+			posStart2 = pNextBL->getPosition(true);
+		}
+		else
+		{
+			posStart2 = posEnd1;
+		}
+
+		if(pPrevBL && posEnd1 == posStart2)
+		{
+			TOCEntry * pEntry = NULL;
+			fl_BlockLayout * pPrevBL2 = static_cast<fl_BlockLayout *>(pPrevBL->getPrev());
+
+			UT_return_if_fail( i > 0 );
+			pEntry = m_vecEntries.getNthItem(i-1);
+			UT_return_if_fail( pEntry );
+			
+			UT_UTF8String sStyle = pEntry->getDispStyle();
+			UT_sint32 iNewLevel = pEntry->getLevel();
+			UT_sint32 iWhere = i - 1;
+			
+			_removeBlockInVec(pPrevBL, true);
+			UT_sint32 iOldLevel = m_iCurrentLevel;
+			m_iCurrentLevel = iNewLevel;
+			_createAndFillTOCEntry(posStart1, posEnd1, pPrevBL2, sStyle.utf8_str(), iWhere);
+			m_iCurrentLevel = iOldLevel;
+		}
+	
+	}
+	
 	if(static_cast<fl_BlockLayout *>(getFirstLayout()) == pThisBL)
 	{
 		setFirstLayout(pThisBL->getNext());
@@ -786,7 +1135,7 @@ bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 }
 
 
-UT_UTF8String * fl_TOCLayout::getTOCListLabel(fl_BlockLayout * pBlock)
+UT_UTF8String & fl_TOCLayout::getTOCListLabel(fl_BlockLayout * pBlock)
 {
 	static UT_UTF8String str;
 	str.clear();
@@ -807,10 +1156,10 @@ UT_UTF8String * fl_TOCLayout::getTOCListLabel(fl_BlockLayout * pBlock)
 	}
 	if(!bFound)
 	{
-		return &str;
+		return str;
 	}
 	str = pEntry->getFullLabel();
-	return &str;
+	return str;
 }
 
 fl_BlockLayout * fl_TOCLayout::getMatchingBlock(fl_BlockLayout * pBlock)
@@ -1800,6 +2149,15 @@ void fl_TOCLayout::_lookupProperties(void)
 		}
 	}
 
+	pszTOCTABTYPE = NULL;
+	if(pSectionAP && pSectionAP->getProperty("toc-range-bookmark",pszTOCTABTYPE))
+	{
+		m_sRangeBookmark = pszTOCTABTYPE;
+	}
+	else
+	{
+		m_sRangeBookmark.clear();
+	}
 }
 
 void fl_TOCLayout::_localCollapse(void)

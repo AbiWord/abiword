@@ -626,6 +626,9 @@ public:
 
 	// for the purposes of linebreaking, just whitespace
 	virtual bool doesContainNonBlankData(void) const { return false; }
+
+	UT_uint32 getBookmarkedDocPosition(bool bAfter) const;
+	
 	
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,

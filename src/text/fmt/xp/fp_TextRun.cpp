@@ -2840,10 +2840,15 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 			{
 				fp_TextRun * pT = static_cast<fp_TextRun*>(pRun);
 
-				if(pT->m_pRenderInfo->m_eShapingResult == GRSR_ContextSensitive)
+				if(pT->m_pRenderInfo && pT->m_pRenderInfo->m_eShapingResult == GRSR_ContextSensitive)
 				{
 					pT->orDrawBufferDirty(GRSR_ContextSensitive);
 				}
+				else if(!pT->m_pRenderInfo)
+				{
+					pT->orDrawBufferDirty(GRSR_Unknown);
+				}
+				
 			}
 			else
 				pRun->orDrawBufferDirty(GRSR_ContextSensitive);
@@ -2869,9 +2874,13 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 			{
 				fp_TextRun * pT = static_cast<fp_TextRun*>(pRun);
 
-				if(pT->m_pRenderInfo->m_eShapingResult == GRSR_ContextSensitive)
+				if(pT->m_pRenderInfo && pT->m_pRenderInfo->m_eShapingResult == GRSR_ContextSensitive)
 				{
 					pT->orDrawBufferDirty(GRSR_ContextSensitive);
+				}
+				else if(!pT->m_pRenderInfo)
+				{
+					pT->orDrawBufferDirty(GRSR_Unknown);
 				}
 			}
 			else

@@ -3477,8 +3477,17 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		pos--;
 	}
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
-	UT_ASSERT(pBlock->getContainerType() == FL_CONTAINER_BLOCK);
-	if(pBlock->getContainerType() != FL_CONTAINER_BLOCK)
+
+	// this assert makes debugging very hard ...
+#ifdef DEBUG
+	static bool bDoneTheAssert = false;
+	if(!bDoneTheAssert)
+	{
+		bDoneTheAssert = true;
+		UT_ASSERT_HARMLESS(pBlock && pBlock->getContainerType() == FL_CONTAINER_BLOCK);
+	}
+#endif
+	if(!pBlock || pBlock->getContainerType() != FL_CONTAINER_BLOCK)
 	{
 		x = x2 = 0;
 		y = y2 = 0;

@@ -170,6 +170,31 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		}
 		else
 			bResult = pCLSL->bl_doclistener_populateObject(pCL, blockOffset,pcro);
+
+#if 0
+		// if the inserted object is a bookmark, we have to notify TOCs of bookmark change in case
+		// any of them is restricted by the given bookmark
+		if(pcro->getObjectType() == PTO_Bookmark)
+		{
+			if(pL->getType() == PTX_Block)
+			{
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+				fp_Run * pRun = pBL->findRunAtOffset(pcro->getBlockOffset());
+				if(pRun && pRun->getType() == FPRUN_BOOKMARK)
+				{
+					fp_BookmarkRun * pB = static_cast<fp_BookmarkRun*>(pRun);
+
+					// only do this when the end-object is inserted ...
+					if(!pB->isStartOfBookmark())
+						m_pLayout->updateTOCsOnBookmarkChange(pB->getName());
+				}
+				else if(pRun && pRun->getType() != FPRUN_BOOKMARK)
+				{
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				}
+			}
+		}
+#endif
 		goto finish_up;
 	}
 
@@ -1316,6 +1341,30 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 		else
 			bResult = pCLSL->bl_doclistener_insertObject(pCL, pcro);
+
+		// if the inserted object is a bookmark, we have to notify TOCs of bookmark change in case
+		// any of them is restricted by the given bookmark
+		if(pcro->getObjectType() == PTO_Bookmark)
+		{
+			if(pL->getType() == PTX_Block)
+			{
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+				fp_Run * pRun = pBL->findRunAtOffset(pcro->getBlockOffset());
+				if(pRun && pRun->getType() == FPRUN_BOOKMARK)
+				{
+					fp_BookmarkRun * pB = static_cast<fp_BookmarkRun*>(pRun);
+
+					// only do this when the end-object is inserted ...
+					if(!pB->isStartOfBookmark())
+						m_pLayout->updateTOCsOnBookmarkChange(pB->getName());
+				}
+				else if(pRun && pRun->getType() != FPRUN_BOOKMARK)
+				{
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				}
+			}
+		}
+		
 		goto finish_up;
 	}
 	case PX_ChangeRecord::PXT_DeleteObject:
@@ -1324,6 +1373,37 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
+
+		// if the deleted object is a bookmark, we have to notify TOCs of bookmark change in case
+		// any of them is restricted by the given bookmark;
+		//
+		// this has to be done in two steps: before the layout is updated, we have to find out the
+		// name of the bookmark; after the layout is updated, we need to notify the TOCs.
+		UT_UTF8String sBookmark;
+		
+		if(pcro->getObjectType() == PTO_Bookmark)
+		{
+			if(pL->getType() == PTX_Block)
+			{
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+				fp_Run * pRun = pBL->findRunAtOffset(pcro->getBlockOffset());
+				if(pRun && pRun->getType() == FPRUN_BOOKMARK)
+				{
+					fp_BookmarkRun * pB = static_cast<fp_BookmarkRun*>(pRun);
+
+					// only do this when the end-object is deleted ...
+					// (in case of deletion, this is an arbitrary choice)
+					if(!pB->isStartOfBookmark())
+						sBookmark = pB->getName();
+				}
+				else if(pRun && pRun->getType() != FPRUN_BOOKMARK)
+				{
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				}
+			}
+		}
+
+		// now we can proceed to delete the object representation ...
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 		fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 		if(pCLSL->getType() == FL_SECTION_SHADOW)
@@ -1333,6 +1413,11 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 		else
 			bResult = pCLSL->bl_doclistener_deleteObject(pCL, pcro);
+
+		// now notify TOCs if necessary
+		if(sBookmark.size())
+			m_pLayout->updateTOCsOnBookmarkChange(sBookmark.utf8_str());
+
 		goto finish_up;
 	}
 

@@ -180,6 +180,17 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
+
+	// insert us into the list
+	if (pPrev)
+		pPrev->_insertIntoList(this);
+	else
+	{ 
+		setNext(myContainingLayout()->getFirstLayout()); 
+		if (myContainingLayout()->getFirstLayout())
+			myContainingLayout()->getFirstLayout()->setPrev(this); 
+	}
+	
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
 	{
 		m_bIsHdrFtr = true;
@@ -3557,7 +3568,17 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 {
-	fp_Run * pNewRun =	new fp_BookmarkRun(this, blockOffset, 1);
+	fp_Run * pNewRun;
+	
+	if(!isContainedByTOC())
+	{
+		pNewRun = new fp_BookmarkRun(this, blockOffset, 1);
+	}
+	else
+	{
+		pNewRun = new fp_DummyRun(this,blockOffset);
+	}
+	
 	UT_ASSERT(pNewRun);
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
@@ -3571,35 +3592,48 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 {
-	fp_HyperlinkRun * pNewRun =  new fp_HyperlinkRun(this, blockOffset, 1);
-	UT_ASSERT(pNewRun);
-	bool bResult = _doInsertRun(static_cast<fp_Run*>(pNewRun));
-	if (bResult)
+	bool bResult = false;
+	
+	if(!isContainedByTOC())
 	{
-		// if this is the start of the hyperlink, we need to mark all the runs
-		// till the end of it
-		// if this is because of an insert operation, the end run is already
-		// in place, because we insert them in that order; if it is because of
-		// append, ther is no end run, but then this is the last run; the other
-		// runs will get marked as they get appended (inside fp_Run::insertRun...)
-		// any hyperlink run will not get its m_pHyperlink set, so that
-		// runs that follow it would not be marked
+		fp_HyperlinkRun * pNewRun =  new fp_HyperlinkRun(this, blockOffset, 1);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
 
-		if(pNewRun->isStartOfHyperlink())
+		if (bResult)
 		{
-			fp_Run * pRun = pNewRun->getNextRun();
-			UT_ASSERT(pRun);
-			// when loading a document the opening hyperlink run is initially followed
-			// by ENDOFPARAGRAPH run; we do not want to set this one
-			while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
-			{
-				pRun->setHyperlink(pNewRun);
-				pRun = pRun->getNextRun();
-			}
-		}
+			// if this is the start of the hyperlink, we need to mark all the runs
+			// till the end of it
+			// if this is because of an insert operation, the end run is already
+			// in place, because we insert them in that order; if it is because of
+			// append, ther is no end run, but then this is the last run; the other
+			// runs will get marked as they get appended (inside fp_Run::insertRun...)
+			// any hyperlink run will not get its m_pHyperlink set, so that
+			// runs that follow it would not be marked
 
-		_breakLineAfterRun(pNewRun);
+			if(pNewRun->isStartOfHyperlink())
+			{
+				fp_Run * pRun = pNewRun->getNextRun();
+				UT_ASSERT(pRun);
+				// when loading a document the opening hyperlink run is initially followed
+				// by ENDOFPARAGRAPH run; we do not want to set this one
+				while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
+				{
+					pRun->setHyperlink(pNewRun);
+					pRun = pRun->getNextRun();
+				}
+			}
+
+			_breakLineAfterRun(pNewRun);
+		}
 	}
+	else
+	{
+		fp_Run * pNewRun = new fp_DummyRun(this,blockOffset);
+		UT_ASSERT(pNewRun);
+		bResult = _doInsertRun(pNewRun);
+	}
+	
 
 	return bResult;
 

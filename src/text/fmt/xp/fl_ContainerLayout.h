@@ -151,9 +151,11 @@ public:
 	virtual void		__dump(FILE * fp) const;
 #endif
 protected:
+	// need this to be protected, so fl_BlockLayout can call it
+	void	                _insertIntoList(fl_ContainerLayout * pL);
+
 private:
 	virtual bool            _canContainPoint() const {return true;}
-	void	                _insertIntoList(fl_ContainerLayout * pL);
 	void	                _insertFirst(fl_ContainerLayout * pL);
 
 	fl_ContainerType	        m_iConType;

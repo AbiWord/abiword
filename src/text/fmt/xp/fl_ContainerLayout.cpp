@@ -579,9 +579,11 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	switch (iType)
 	{
 	case FL_CONTAINER_BLOCK:
+		// we have a problem here -- the block needs to be in the list before the consturction is completed
 		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true));
+#if 0
 			if (pPrev)
 				pPrev->_insertIntoList(pL);
 			else
@@ -589,15 +591,19 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 				pL->setNext(getFirstLayout()); 
 				if (getFirstLayout()) getFirstLayout()->setPrev(pL); 
 			}
+#endif
 		}
 		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_TABLE))
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(pPrev->myContainingLayout()), indexAP));
+#if 0
 			pPrev->_insertIntoList(pL);
+#endif
 		}
 		else
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP));
+#if 0
 			if (pPrev)
 				pPrev->_insertIntoList(pL);
 			else
@@ -605,6 +611,7 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 				pL->setNext(getFirstLayout()); 
 				if (getFirstLayout()) getFirstLayout()->setPrev(pL); 
 			}
+#endif
 		}
 		break;
 	case FL_CONTAINER_TABLE:

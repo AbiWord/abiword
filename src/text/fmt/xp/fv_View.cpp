@@ -5525,8 +5525,8 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			if(pB[0] && pB[1])
 			{
 				_clearSelection();
-				PT_DocPosition dp1 = pB[0]->getBlock()->getPosition(false) + pB[0]->getBlockOffset();
-				PT_DocPosition dp2 = pB[1]->getBlock()->getPosition(false) + pB[1]->getBlockOffset();
+				PT_DocPosition dp1 = pB[0]->getBookmarkedDocPosition(true);
+				PT_DocPosition dp2 = pB[1]->getBookmarkedDocPosition(false);
 
 				if(dp2 - dp1 == 1)
 					moveInsPtTo (dp2);
