@@ -78,6 +78,7 @@ void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 	UT_return_if_fail ((hResult != NULL));
 
 	m_hwndDlg = hResult;
+	init();
 
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid =(UT_sint32)  getDialogId();
@@ -114,7 +115,7 @@ BOOL CALLBACK AP_Win32Dialog_MailMerge::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 // This handles the WM_INITDIALOG message for the top-level dialog.
 BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {		
-	init();
+	
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
@@ -132,8 +133,6 @@ BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_MAILMERGE_BTN_CLOSE));
 	return 0; // 0 because we called SetFocus
 }
-
-
 
 BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -171,7 +170,20 @@ BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 			{
 				setMergeField(szBuff);
 				addClicked();
+			} 
+			else
+			{
+				char szBuff[255];
+				int nItem = SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETCURSEL, 0, 0);
+			
+				if (nItem!=LB_ERR)
+				{	
+					SendMessage(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_GETTEXT, nItem,  (LPARAM)szBuff);			
+					setMergeField(szBuff);			
+					addClicked();
+				}				 
 			}
+
 			return 1;
 		}
 		
