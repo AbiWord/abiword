@@ -489,15 +489,16 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 			    AV_ListenerId lid, AV_ListenerId lidScrollbarViewListener,
 			    UT_uint32 iZoom)
 {
-	bool holdsSelection = false;
+	bool holdsSelection = false, hadView = true;
 	PD_DocumentRange range;
 	PT_DocPosition inspt = 0;
 	if (m_pView && !m_pView->isSelectionEmpty ()) {
 		holdsSelection = true;
 		static_cast<FV_View*>(m_pView)->getDocumentRangeOfCurrentSelection (&range);
-	} else if (m_pView) {
+	} else if (m_pView)
 		inspt = static_cast<FV_View*>(m_pView)->getInsPoint ();
-	}
+	else
+		hadView = false;
 
 	// switch to new view, cleaning up previous settings
 	if (((AP_FrameData*)m_pData)->m_pDocLayout)
@@ -549,8 +550,8 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 
 	if (holdsSelection)
 		static_cast<FV_View*>(m_pView)->cmdSelect (range.m_pos1, range.m_pos2);
-	else
-		static_cast<FV_View*>(m_pView)->moveInsPtTo(inspt);
+	else if (hadView)
+	   static_cast<FV_View*>(m_pView)->moveInsPtTo(inspt);
 }
 
 #else

@@ -41,9 +41,7 @@ SpellChecker *
 AP_Dialog_Spell::_getDict (void)
 {
 	if (m_pView)
-	{
 	  return m_pView->getDictForSelection ();
-	}
 	return NULL;
 }
 
@@ -52,11 +50,9 @@ AP_Dialog_Spell::_spellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 {
 	SpellChecker * checker = _getDict();
 
+	// no checker, don't mark as wrong
 	if (!checker)
-	{
-		// no checker, don't mark as wrong
 		return true;
-	}
 
 	if (checker->checkWord (word, len) == SpellChecker::LOOKUP_SUCCEEDED)
 		return true;
@@ -84,6 +80,7 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
    m_pCurrBlock = NULL;
    m_pChangeAll = NULL;
    m_pIgnoreAll = NULL;
+   m_pPreserver = NULL;
 
    m_bCancelled = false;
 }
@@ -98,6 +95,8 @@ AP_Dialog_Spell::~AP_Dialog_Spell(void)
 
 	  m_pView->moveInsPtTo( m_iOrigInsPoint );
 	}
+
+	DELETEP(m_pPreserver);
 
 	UT_HASH_PURGEDATA(UT_UCSChar*,m_pChangeAll, free);
 	DELETEP(m_pChangeAll);
@@ -130,6 +129,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    m_pDoc = frameData->m_pDocLayout->getDocument();
    m_pView = frameData->m_pDocLayout->getView();
    m_iOrigInsPoint = m_pView->getPoint();
+   m_pPreserver = new FL_SelectionPreserver (m_pView);
 
    if (m_pView->isSelectionEmpty())
    {
@@ -186,9 +186,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    // to rethink the iterator behaviour to match the requirement right
    // now. I'll fix it sometime in the future... FIXME:jskov
    if (!m_bSkipWord)
-   {
 	   m_pWordIterator->revertToPreviousWord();
-   }
    m_bSkipWord = false;
 
    // loop until a misspelled word or end of document is hit
@@ -235,9 +233,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   // unknown word... prepare list of possibilities
 				   SpellChecker * checker = _getDict();
 				   if (!checker)
-				   {
 					   return false;
-				   }
 				   makeWordVisible(); // display the word now.
 
 				   // Get suggestions from spell checker
@@ -276,10 +272,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   // accordingly (seeing as the change must have occured
 			   // before the end of the selection).
 			   if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
-			   {
 				   m_iEndLength += (m_pWordIterator->getBlockLength() - iOldLength);
-			   }
-
 		   }
 	   }
 
@@ -292,9 +285,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 	   // causes SEGV if a table is in the document!!!
 	   if (b)
-	   {
 		   docLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, m_pCurrBlock);
-	   }
 
 	   // was that the last block in the selection?
 	   if (m_bIsSelection && m_pCurrBlock == m_pEndBlock)
@@ -310,9 +301,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 		   // end of document?
 		   if (m_pCurrSection == NULL)
-		   {
 			   return false;
-		   }
 
 		   m_pCurrBlock = (fl_BlockLayout *) m_pCurrSection->getFirstLayout();
 	   }
@@ -357,7 +346,8 @@ bool AP_Dialog_Spell::inChangeAll(void)
 	const void * ent = m_pChangeAll->pick(bufferNormal);
 	FREEP(bufferNormal);
 
-	if (ent == NULL) return false;
+	if (ent == NULL) 
+		return false;
 	else {
 		makeWordVisible();
 		bool bRes = changeWordWith( (UT_UCSChar*) (ent) ); 
@@ -401,9 +391,7 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    // (seeing as the change must have occured before the end of the
    // selection).
    if (m_bIsSelection && m_pEndBlock == m_pCurrBlock)
-   {
 	   m_iEndLength += (iNewLength - m_iWordLength);
-   }
 
    m_pWordIterator->updateBlock();
                  

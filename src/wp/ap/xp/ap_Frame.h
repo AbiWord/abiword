@@ -69,7 +69,6 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual UT_sint32 _getDocumentAreaHeight() = 0;
 
  private:
-	void _resetInsertionPoint();
 };
 #else 
 class AP_Frame

@@ -25,6 +25,7 @@
 #include "fv_View.h"
 #include "xav_View.h"
 #include "fl_SectionLayout.h"
+#include "fl_SelectionPreserver.h"
 #include "fl_BlockLayout.h"
 #include "pt_Types.h"
 
@@ -99,6 +100,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    
    XAP_Frame * m_pFrame;
    FV_View * m_pView;
+	FL_SelectionPreserver * m_pPreserver;
    PD_Document * m_pDoc;
    
    // current suggested corrections to the 
