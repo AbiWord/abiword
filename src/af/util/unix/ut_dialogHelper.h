@@ -24,6 +24,7 @@
 #include <gdk/gdkx.h>
 #include"ut_types.h"
 
+
 class XAP_Frame;
 class XAP_App;
 
@@ -38,6 +39,7 @@ class XAP_App;
                                                     UT_XML_cloneNoAmpersands(newstr, pSS->getValue(id)); \
                                                     } while (0)
 												   
+
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
 void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
 void connectFocusModelessOther(GtkWidget *widget,const XAP_App *pApp,gboolean (*other_function)(void) );
@@ -61,5 +63,13 @@ gint searchCList(GtkCList * clist, char * compareText);
 // Converts all a given window's &'ed labels into accelerators for the
 //		checkbutton/button.  It will also set the accel-groups 
 void createLabelAccelerators( GtkWidget * widget );
-	
+
 #endif /* UT_DIALOGHELPER_H */
+
+
+
+
+
+
+
+

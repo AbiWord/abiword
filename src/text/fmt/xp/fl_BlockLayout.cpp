@@ -434,9 +434,9 @@ void fl_BlockLayout::_lookupProperties(void)
 			last_id = prevBlockInList->getAutoNum()->getID();
 		}
 	}
-	else 
+	else if(id != 0)
 	{
-		// This block does not have a list item.
+		// This block does not have an list item.
 
 		// Find the previous block with the same level
 
@@ -461,7 +461,6 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		last_level = 0;
 	}
-
 	if(id == 0 && level == 0 &&  m_pAutoNum != NULL)
 	{
 	        _stopList();

@@ -21,6 +21,112 @@
 #define AP_UnixDialog_Columns_H
 
 #include "ap_Dialog_Columns.h"
+#include "xap_UnixFontManager.h"
+#include "gr_UnixGraphics.h"
+
+#include "ut_types.h"
+#include "ut_string.h"
+
+
+/*****************************************************************
+******************************************************************
+** Here we begin a little CPP magic to load all of the icons.
+** It is important that all of the ..._Icon_*.{h,xpm} files
+** allow themselves to be included more than one time.
+******************************************************************
+*****************************************************************/
+// This comes from ap_Toolbar_Icons.cpp
+#include "xap_Toolbar_Icons.h"
+
+#include "ap_Toolbar_Icons_All.h"
+
+/*****************************************************************
+******************************************************************
+** Here we begin a little CPP magic to construct a table of
+** the icon names and pointer to the data.
+******************************************************************
+*****************************************************************/
+
+struct _it
+{
+	const char *				m_name;
+	const char **				m_staticVariable;
+	UT_uint32					m_sizeofVariable;
+};
+
+#define DefineToolbarIcon(name)		{ #name, (const char **) ##name, sizeof(##name)/sizeof(##name[0]) },
+
+static struct _it s_itTable[] =
+{
+
+#include "ap_Toolbar_Icons_All.h"
+	
+};
+
+#undef DefineToolbarIcon
+
+
+// Some convience functions to make Abi's pixmaps easily available to unix
+// dialogs
+
+static UT_Bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
+
+static UT_Bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName);
+
+
+//
+//--------------------------------------------------------------------------
+//
+// Code to make pixmaps for gtk buttons
+//
+// findIconDataByName stolen from ap_Toolbar_Icons.cpp
+//
+static UT_Bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
+{
+	// This is a static function.
+
+	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
+		return UT_FALSE;
+	
+	UT_uint32 kLimit = NrElements(s_itTable);
+	UT_uint32 k;
+
+	for (k=0; k < kLimit; k++)
+		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
+		{
+			*pIconData = s_itTable[k].m_staticVariable;
+			*pSizeofData = s_itTable[k].m_sizeofVariable;
+			return UT_TRUE;
+		}
+
+	return UT_FALSE;
+}
+
+static UT_Bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
+{
+        const char ** pIconData = NULL;
+	UT_uint32 sizeofIconData = 0;		// number of cells in the array
+	UT_Bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	if (!bFound)
+		return UT_FALSE;
+	//	UT_DEBUGMSG(("SEVIOR: found icon name %s \n",szIconName));
+	GdkBitmap * mask;
+	GdkColormap * colormap =  gtk_widget_get_colormap (button);
+	GdkPixmap * pixmap
+		= gdk_pixmap_colormap_create_from_xpm_d(button->window,colormap,
+							&mask, NULL, 
+							(char **)pIconData);
+	if (!pixmap)
+		return UT_FALSE;
+	GtkWidget * wpixmap = gtk_pixmap_new(pixmap,mask);
+	if (!wpixmap)
+		return UT_FALSE;
+	gtk_widget_show(wpixmap);
+	//	UT_DEBUGMSG(("SEVIOR: Adding pixmap to button now \n"));
+	gtk_container_add (GTK_CONTAINER (button), wpixmap);
+	return UT_TRUE;
+}
+//----------------------------------------------------------------
 
 class XAP_UnixFrame;
 
@@ -39,6 +145,9 @@ public:
 
 	// callbacks can fire these events
 
+	void                            checkLineBetween(void);
+	void                            event_Toggle( UT_uint32 icolumns);
+	void                            event_previewExposed(void);
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
 	virtual void			event_WindowDelete(void);
@@ -47,21 +156,34 @@ protected:
 
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
+	void            _constructWindowContents( GtkWidget * windowColumns);
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
+	void            _connectsignals(void);
 
-//	GtkWidget * _findRadioByID(AP_Dialog_Column::breakType b);
-//	AP_Dialog_Columns::breakType _getActiveRadioItem(void);
+	GR_UnixGraphics	* 		m_pPreviewWidget;
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
-	// group of radio buttons for easy traversal
-	GSList *	m_radioGroup;
+	GtkWidget * m_wbuttonOk;
+	GtkWidget * m_wbuttonCancel;
+	GtkWidget * m_wlineBetween;
+	GtkWidget * m_wtoggleOne;
+	GtkWidget * m_wtoggleTwo;
+	GtkWidget * m_wtoggleThree;
+        GtkWidget * m_wpreviewArea;
+	GtkWidget * m_wGnomeButtons;
 
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
+	guint m_oneHandlerID;
+	guint m_twoHandlerID;
+	guint m_threeHandlerID;
 };
 
 #endif /* AP_UnixDialog_Columns_H */
+
+
+
+
+
+

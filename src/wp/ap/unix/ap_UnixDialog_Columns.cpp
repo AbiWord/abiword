@@ -55,14 +55,22 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory,
 {
 	m_windowMain = NULL;
 
-	m_buttonOK = NULL;
-	m_buttonCancel = NULL;
+	m_wbuttonOk = NULL;
+	m_wbuttonCancel = NULL;
+	m_wlineBetween = NULL;
+	m_wtoggleOne = NULL;
+	m_wtoggleTwo = NULL;
+	m_wtoggleThree = NULL;
+	m_windowMain = NULL;
+        m_wpreviewArea = NULL;
+	m_wGnomeButtons = NULL;
+        m_pPreviewWidget = NULL;
 
-	m_radioGroup = NULL;
 }
 
 AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 {
+	DELETEP (m_pPreviewWidget);
 }
 
 /*****************************************************************/
@@ -73,15 +81,58 @@ static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 	dlg->event_OK();
 }
 
+
+static void s_one_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_Toggle(1);
+}
+
+
+static void s_two_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_Toggle(2);
+}
+
+
+static void s_three_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_Toggle(3);
+}
+
+
+static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->checkLineBetween();
+}
+
 static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Cancel();
 }
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixDialog_Columns * dlg)
+static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_previewExposed();
+	return FALSE;
+}
+
+
+static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_previewExposed();
+	return FALSE;
+}
+
+
+static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */,
+			     AP_UnixDialog_Columns * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_WindowDelete();
@@ -109,8 +160,9 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
+	centerDialog(parentWindow, mainWindow);
 	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+
 
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
@@ -118,13 +170,95 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
-	// Run into the GTK event loop for this window.
+
+
+	// *** this is how we add the gc for Column Preview ***
+	// attach a new graphics context to the drawing area
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+	UT_ASSERT(unixapp);
+
+	UT_ASSERT(m_wpreviewArea && m_wpreviewArea->window);
+
+	// make a new Unix GC
+	DELETEP (m_pPreviewWidget);
+	m_pPreviewWidget = new GR_UnixGraphics(m_wpreviewArea->window, unixapp->getFontManager(), m_pApp);
+
+	// let the widget materialize
+
+	_createPreviewFromGC(m_pPreviewWidget,
+			     (UT_uint32) m_wpreviewArea->allocation.width, 
+			     (UT_uint32) m_wpreviewArea->allocation.height);
+
+	setLineBetween(getLineBetween());
+	if(getLineBetween()==UT_TRUE)
+	{
+	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wlineBetween),TRUE);
+	}
+	// Now draw the columns
+
+	event_Toggle(getColumns());
+
+        // Run into the GTK event loop for this window.
+
 	gtk_main();
 
 	_storeWindowData();
+	DELETEP (m_pPreviewWidget);
 	
 	gtk_widget_destroy(mainWindow);
 }
+
+void AP_UnixDialog_Columns::checkLineBetween(void)
+{
+        if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
+        {
+	        setLineBetween(UT_TRUE);
+	}
+	else
+        {
+	        setLineBetween(UT_FALSE);
+	}
+}
+
+void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
+{
+	checkLineBetween();
+        gtk_signal_handler_block(GTK_OBJECT(m_wtoggleOne), 
+					  m_oneHandlerID);
+        gtk_signal_handler_block(GTK_OBJECT(m_wtoggleTwo), 
+					  m_twoHandlerID);
+        gtk_signal_handler_block(GTK_OBJECT(m_wtoggleThree), 
+					  m_threeHandlerID);
+	switch (icolumns)
+        {
+        case 1:
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),TRUE);
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
+		 break;
+        case 2:
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),TRUE);
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
+		 break;
+	case 3:
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
+		 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),TRUE);
+		 break;
+	default:
+	         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+        gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleOne), 
+					  m_oneHandlerID);
+        gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleTwo), 
+					  m_twoHandlerID);
+        gtk_signal_handler_unblock(GTK_OBJECT(m_wtoggleThree), 
+					  m_threeHandlerID);
+	setColumns( icolumns );
+	m_pColumnsPreview->draw();
+}
+
 
 void AP_UnixDialog_Columns::event_OK(void)
 {
@@ -141,8 +275,14 @@ void AP_UnixDialog_Columns::event_Cancel(void)
 
 void AP_UnixDialog_Columns::event_WindowDelete(void)
 {
-	m_answer = AP_Dialog_Columns::a_CANCEL;	
+	m_answer = AP_Dialog_Columns::a_CANCEL;
 	gtk_main_quit();
+}
+
+void AP_UnixDialog_Columns::event_previewExposed(void)
+{
+        if(m_pColumnsPreview)
+	       m_pColumnsPreview->draw();
 }
 
 /*****************************************************************/
@@ -151,208 +291,266 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 {
 
 	GtkWidget * windowColumns;
-	GtkWidget * vboxMain;
-	GtkWidget * tableInsert;
-	GtkWidget * labelInsert;
-	GSList * tableInsert_group = NULL;
-	GtkWidget * radiobuttonPageBreak;
-	GtkWidget * radiobuttonNextPage;
-	GtkWidget * radiobuttonContinuous;
-	GtkWidget * radiobuttonColumnBreak;
-	GtkWidget * radiobuttonEvenPage;
-	GtkWidget * radiobuttonOddPage;
-	GtkWidget * labelSectionBreaks;
-	GtkWidget * hseparator9;
-	GtkWidget * hseparator10;
-	GtkWidget * hbuttonboxBreak;
+
 	GtkWidget * buttonOK;
 	GtkWidget * buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
+	//	XML_Char * unixstr = NULL;	// used for conversions
 
 	windowColumns = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "windowColumns", windowColumns);
 	gtk_window_set_title (GTK_WINDOW (windowColumns), pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowColumns), FALSE, FALSE, FALSE);
 
-	
-	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "vboxMain", vboxMain);
-	gtk_widget_show (vboxMain);
-	gtk_container_add (GTK_CONTAINER (windowColumns), vboxMain);
-	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
-/*
+	_constructWindowContents(windowColumns);
 
-	tableInsert = gtk_table_new (7, 2, FALSE);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "tableInsert", tableInsert);
-	gtk_widget_show (tableInsert);
-	gtk_box_pack_start (GTK_BOX (vboxMain), tableInsert, FALSE, FALSE, 0);
+	// These buttons need to be gnomified
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Insert));
-	labelInsert = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "labelInsert", labelInsert);
-	gtk_widget_show (labelInsert);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelInsert, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-	gtk_widget_set_usize (labelInsert, 17, -1);
-	gtk_label_set_justify (GTK_LABEL (labelInsert), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelInsert), 0, 0.5);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_PageBreak));	
-	radiobuttonPageBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageBreak));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonPageBreak", radiobuttonPageBreak);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonPageBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
-	gtk_widget_show (radiobuttonPageBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonPageBreak, 0, 1, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_NextPage));	
-	radiobuttonNextPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonNextPage));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonNextPage", radiobuttonNextPage);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonNextPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
-	gtk_widget_show (radiobuttonNextPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonNextPage, 0, 1, 4, 5,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Continuous));	
-	radiobuttonContinuous = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonContinuous));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonContinuous", radiobuttonContinuous);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonContinuous), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
-	gtk_widget_show (radiobuttonContinuous);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonContinuous, 0, 1, 5, 6,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_ColumnBreak));	
-	radiobuttonColumnBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonColumnBreak));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonColumnBreak", radiobuttonColumnBreak);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonColumnBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
-	gtk_widget_show (radiobuttonColumnBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonColumnBreak, 1, 2, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_EvenPage));	
-	radiobuttonEvenPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonEvenPage));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonEvenPage", radiobuttonEvenPage);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonEvenPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
-	gtk_widget_show (radiobuttonEvenPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonEvenPage, 1, 2, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_OddPage));	
-	radiobuttonOddPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonOddPage));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonOddPage", radiobuttonOddPage);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonOddPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
-	gtk_widget_show (radiobuttonOddPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonOddPage, 1, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_SectionBreaks));	
-	labelSectionBreaks = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "labelSectionBreaks", labelSectionBreaks);
-	gtk_widget_show (labelSectionBreaks);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelSectionBreaks, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 4);
-	gtk_widget_set_usize (labelSectionBreaks, 76, -1);
-	gtk_label_set_justify (GTK_LABEL (labelSectionBreaks), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelSectionBreaks), 0, 0.5);
-	
-	hseparator9 = gtk_hseparator_new ();
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "hseparator9", hseparator9);
-	gtk_widget_show (hseparator9);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator9, 0, 2, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
+	buttonOK = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_OK));
+	gtk_widget_show(buttonOK );
+	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
+	gtk_widget_set_usize (buttonOK, 37, -2);
+	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 
-	hseparator10 = gtk_hseparator_new ();
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "hseparator10", hseparator10);
-	gtk_widget_show (hseparator10);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator10, 0, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
-*/
-	hbuttonboxBreak = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "hbuttonboxBreak", hbuttonboxBreak);
-	gtk_widget_show (hbuttonboxBreak);
-	gtk_box_pack_start (GTK_BOX (vboxMain), hbuttonboxBreak, FALSE, FALSE, 4);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxBreak), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxBreak), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxBreak), 85, 24);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxBreak), 0, 0);
+	buttonCancel = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	gtk_widget_show(buttonCancel );
+	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
+	gtk_widget_set_usize (buttonCancel, 37, -2);
+	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+
+	m_wbuttonOk = buttonOK;
+        m_wbuttonCancel = buttonCancel;
+
+	_connectsignals();
+	return windowColumns;
+}
+
+void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
+{
 
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonOK);
+	GtkWidget *frame2;
+	GtkWidget *vbox1;
+	GtkWidget *hbox1;
+	GtkWidget *wColumnFrame;
+	GtkWidget *wSelectFrame;
+	GtkWidget *vbox2;
+	GtkWidget *hbox3;
+	GtkWidget *wToggleOne;
+	GtkWidget *wLabelOne;
+	GtkWidget *hbox4;
+	GtkWidget *wToggleTwo;
+	GtkWidget *wLabelTwo;
+	GtkWidget *hbox5;
+	GtkWidget *wToggleThree;
+	GtkWidget *wLabelThree;
+	GtkWidget *wPreviewFrame;
+	GtkWidget *wDrawFrame;
+	GtkWidget *wPreviewArea;
+	GtkWidget *vbuttonbox1;
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonCancel);
+	GtkWidget *hbox2;
+	GtkWidget *wLineBtween;
+	GtkWidget *wLabelLineBetween;
 
-	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	frame2 = gtk_frame_new (NULL);
+	gtk_widget_show(frame2);
+	gtk_container_add (GTK_CONTAINER (windowColumns), frame2);
+	gtk_container_set_border_width (GTK_CONTAINER (frame2), 16);
+	gtk_frame_set_shadow_type (GTK_FRAME (frame2), GTK_SHADOW_NONE);
+
+	vbox1 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show(vbox1);
+	gtk_container_add (GTK_CONTAINER (frame2), vbox1);
+
+	hbox1 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hbox1);
+	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, TRUE, TRUE, 0);
+
+	wColumnFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Number));
+	gtk_widget_show(wColumnFrame);
+	gtk_box_pack_start (GTK_BOX (hbox1), wColumnFrame, TRUE, TRUE, 7);
+	gtk_widget_set_usize (wColumnFrame, 120, -2); // was -2
+
+	wSelectFrame = gtk_frame_new (NULL);
+	gtk_widget_show(wSelectFrame );
+	gtk_container_add (GTK_CONTAINER (wColumnFrame), wSelectFrame);
+	gtk_container_set_border_width (GTK_CONTAINER (wSelectFrame), 9);
+	gtk_frame_set_shadow_type (GTK_FRAME (wSelectFrame), GTK_SHADOW_NONE);
+
+	vbox2 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show(vbox2 );
+	gtk_container_add (GTK_CONTAINER (wSelectFrame), vbox2);
+
+	hbox3 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hbox3 );
+	gtk_box_pack_start (GTK_BOX (vbox2), hbox3, TRUE, TRUE, 0);
+
+	wToggleOne = gtk_toggle_button_new();
+	gtk_widget_show(wToggleOne );
+        UT_Bool butlab = label_button_with_abi_pixmap(wToggleOne, "tb_1column_xpm");
+	gtk_box_pack_start (GTK_BOX (hbox3), wToggleOne, FALSE, FALSE, 0);
+	gtk_widget_set_usize (wToggleOne, 44, 44);
+	GTK_WIDGET_SET_FLAGS (wToggleOne, GTK_CAN_DEFAULT);
+
+	wLabelOne = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_One));
+	gtk_widget_show(wLabelOne );
+	gtk_box_pack_start (GTK_BOX (hbox3), wLabelOne, FALSE, FALSE, 0);
 	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
+	hbox4 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hbox4 );
+	gtk_box_pack_start (GTK_BOX (vbox2), hbox4, TRUE, TRUE, 0);
 
-	// the catch-alls
+	wToggleTwo = gtk_toggle_button_new ();
+	gtk_widget_show(wToggleTwo );
+        label_button_with_abi_pixmap(wToggleTwo, "tb_2column_xpm");
+	gtk_box_pack_start (GTK_BOX (hbox4), wToggleTwo, FALSE, FALSE, 0);
+	gtk_widget_set_usize (wToggleTwo, 44, 44);
+	GTK_WIDGET_SET_FLAGS (wToggleTwo, GTK_CAN_DEFAULT);
+
+	wLabelTwo = gtk_label_new( pSS->getValue(AP_STRING_ID_DLG_Column_Two));
+	gtk_widget_show(wLabelTwo );
+	gtk_box_pack_start (GTK_BOX (hbox4), wLabelTwo, FALSE, FALSE, 0);
 	
-	gtk_signal_connect_after(GTK_OBJECT(windowColumns),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	hbox5 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hbox5 );
+	gtk_widget_show (hbox5);
+	gtk_box_pack_start (GTK_BOX (vbox2), hbox5, TRUE, TRUE, 0);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowColumns),
-							 "destroy",
-							 NULL,
-							 NULL);
+	wToggleThree = gtk_toggle_button_new ();
+	gtk_widget_show(wToggleThree );
+        label_button_with_abi_pixmap(wToggleThree, "tb_3column_xpm");
+	gtk_box_pack_start (GTK_BOX (hbox5), wToggleThree, FALSE, FALSE, 0);
+	gtk_widget_set_usize (wToggleThree, 44, 44);
+	GTK_WIDGET_SET_FLAGS (wToggleThree, GTK_CAN_DEFAULT);
+
+	wLabelThree = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Three));
+	gtk_widget_show(wLabelThree );
+	gtk_box_pack_start (GTK_BOX (hbox5), wLabelThree, FALSE, FALSE, 0);
+
+	wPreviewFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Preview));
+	gtk_widget_show(wPreviewFrame );
+	gtk_box_pack_start (GTK_BOX (hbox1), wPreviewFrame, TRUE, TRUE, 4);
+	gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
+
+	wDrawFrame = gtk_frame_new (NULL);
+	gtk_widget_show(wDrawFrame );
+	gtk_container_add (GTK_CONTAINER (wPreviewFrame), wDrawFrame);
+	gtk_container_set_border_width (GTK_CONTAINER (wDrawFrame), 4);
+	gtk_frame_set_shadow_type (GTK_FRAME (wDrawFrame), GTK_SHADOW_OUT);
+
+	wPreviewArea = gtk_drawing_area_new ();
+	gtk_widget_ref (wPreviewArea);
+	gtk_object_set_data_full (GTK_OBJECT (windowColumns), "wPreviewArea", wPreviewArea,
+								  (GtkDestroyNotify) gtk_widget_unref);
+
+       	gtk_widget_show(wPreviewArea);
+	gtk_container_add (GTK_CONTAINER (wDrawFrame), wPreviewArea);
+
+	vbuttonbox1 = gtk_vbutton_box_new ();
+	gtk_widget_show(vbuttonbox1 );
+	gtk_box_pack_end (GTK_BOX (hbox1), vbuttonbox1, FALSE, FALSE, 0);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonbox1), GTK_BUTTONBOX_START);
+	gtk_button_box_set_spacing (GTK_BUTTON_BOX (vbuttonbox1), 0);
+	gtk_button_box_set_child_size (GTK_BUTTON_BOX (vbuttonbox1), 74, 27);
+	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (vbuttonbox1), 0, 1);
+
+	m_wGnomeButtons = vbuttonbox1;
+
+	hbox2 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show(hbox2 );
+	gtk_box_pack_start (GTK_BOX (vbox1), hbox2, FALSE, FALSE, 0);
+
+	wLineBtween = gtk_check_button_new_with_label ("");
+	gtk_widget_show(wLineBtween );
+	gtk_box_pack_start (GTK_BOX (hbox2), wLineBtween, FALSE, FALSE, 3);
+
+	wLabelLineBetween = gtk_label_new ("Line Between");
+	gtk_widget_show(wLabelLineBetween );
+	gtk_box_pack_start (GTK_BOX (hbox2), wLabelLineBetween, FALSE, FALSE, 0);
+	gtk_label_set_justify (GTK_LABEL (wLabelLineBetween), GTK_JUSTIFY_LEFT);
+
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 
+	m_wlineBetween = wLineBtween;
+	m_wtoggleOne = wToggleOne;
+	m_wtoggleTwo = wToggleTwo;
+	m_wtoggleThree = wToggleThree;
 	m_windowMain = windowColumns;
+        m_wpreviewArea = wPreviewArea;
+}
 
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
+void AP_UnixDialog_Columns::_connectsignals(void)
+{
 
-	m_radioGroup = tableInsert_group;
+	// the control buttons
+	m_oneHandlerID = gtk_signal_connect(GTK_OBJECT(m_wtoggleOne),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_one_clicked),
+					   (gpointer) this);
+
+	m_twoHandlerID = gtk_signal_connect(GTK_OBJECT(m_wtoggleTwo),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_two_clicked),
+					   (gpointer) this);
+
+	m_threeHandlerID = gtk_signal_connect(GTK_OBJECT(m_wtoggleThree),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_three_clicked),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wlineBetween),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_line_clicked),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wbuttonOk),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   (gpointer) this);
 	
-	return windowColumns;
+	gtk_signal_connect(GTK_OBJECT(m_wbuttonCancel),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   (gpointer) this);
+
+	// the expose event of the preview
+	             gtk_signal_connect(GTK_OBJECT(m_wpreviewArea),
+					   "expose_event",
+					   GTK_SIGNAL_FUNC(s_preview_exposed),
+					   (gpointer) this);
+
+	
+		     gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+		     					 "expose_event",
+		     				 GTK_SIGNAL_FUNC(s_window_exposed),
+		    					 (gpointer) this);
+
+	// the catch-alls
+	
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+							 "delete_event",
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
+							 (gpointer) this);
+
+	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
+							 "destroy",
+							 NULL,
+							 NULL);
 }
 
 void AP_UnixDialog_Columns::_populateWindowData(void)
 {
 	// We're a pretty stateless dialog, so we just set up
 	// the defaults from our members.
-
-//	GtkWidget * widget = _findRadioByID(m_break);
-//	UT_ASSERT(widget);
-	
-//	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), TRUE);
 }
 
 void AP_UnixDialog_Columns::_storeWindowData(void)
 {
-//	m_break = _getActiveRadioItem();
 }
 
 void AP_UnixDialog_Columns::enableLineBetweenControl(UT_Bool bState)

@@ -35,6 +35,8 @@
 #include"xap_App.h"
 
 
+
+
 // default GTK message box button width, in GTK screen units (pixels)
 #define DEFAULT_BUTTON_WIDTH	85
 
@@ -643,3 +645,4 @@ void createLabelAccelerators( GtkWidget *widget )
 
 	gtk_window_add_accel_group (GTK_WINDOW (widget), data.accel_group);
 }
+

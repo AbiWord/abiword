@@ -33,3 +33,4 @@ protected:
 };
 
 #endif /* XAP_TOOLBAR_ICONS_H */
+
