@@ -215,8 +215,7 @@ esac
 
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
-		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS
-"
+		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS"
 		PLATFORM_LIBS=
 	else
 		PLATFORM_CFLAGS="$GMODULE_CFLAGS $GTK_CFLAGS"
@@ -225,12 +224,9 @@ if test "$PLATFORM" = "unix"; then
 fi
 dnl AUTOCONF SUCKS
 if test "$PLATFORM" = "mac"; then
-	A_CLETTERS=`echo -n 'A''C'`
 	PLATFORM_LIBS=-framework Carbon -framework CoreServices -framework ApplicationServices
 	PLATFORM_CFLAGS=-I'$(top_builddir)/src/af/util/unix' \
--DXP_M${A_CLETTERS}_TARGET_M${A_CLETTERS}OSX -DXP_M${A_CLETTERS}_TARGET_CARBON \
--DXP_M${A_CLETTERS}_TARGET_QUARTZ \
--fpascal-strings -DCARBON_ON_M${A_CLETTERS}H_O=1 -DNO_SYS_ERRLIST \
+-fpascal-strings -DCARBON_ON_MACH_O=1 -DNO_SYS_ERRLIST \
 -I/Developer/Headers/FlatCarbon
 fi
 
@@ -373,10 +369,10 @@ esac
 echo " "
 
 cat <<EOF
-  XML Parser:     \t${abi_xml_parser_message}
-  PNG Library:    \t${abi_libpng_message}
-  Psiconv Library:\t${abi_psiconv_message}
-  WV Library:     \t${abi_wv_message}
+  XML Parser:      ${abi_xml_parser_message}
+  PNG Library:     ${abi_libpng_message}
+  Psiconv Library: ${abi_psiconv_message}
+  WV Library:      ${abi_wv_message}
 
 EOF
 
