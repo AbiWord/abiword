@@ -30,7 +30,6 @@ TARGETS = "ut_alphahash.cpp.o" ¶
 			"ut_pair.cpp.o" ¶
 			"ut_png.cpp.o" ¶
 			"ut_pool.cpp.o" ¶
-			"ut_regex.c.o" ¶
 			"ut_stack.cpp.o" ¶
 			"ut_string.cpp.o" ¶
 			"ut_svg.cpp.o" ¶
