@@ -10222,7 +10222,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		xxx_UT_DEBUGMSG(("Get Next is NULL \n"));
 		return false;
 	}
-	UT_DEBUGMSG(("Get Next Containing Layout is %s \n",pCL->getContainerString()));
+	xxx_UT_DEBUGMSG(("Get Next Containing Layout is %s \n",pCL->getContainerString()));
 	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 	{
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
