@@ -43,6 +43,7 @@ HWND		g_hwndButtonNext;
 HWND		g_hwndButtonCancel;
 int 		g_iWhichButton;
 
+ASK_FileSet* g_pSet_BrowseDir;
 HWND		g_hwndStatic_BrowseDir;
 HWND		g_hwndStatic_DiskSpace;
 char		g_szBrowseDir[1024];
@@ -153,7 +154,7 @@ struct _bb
 	long			iCurPos;
 };
 
-void _updateDirAndSpace(void)
+void _updateDirAndSpace(char* pszPath)
 {
 	char szBuf[256];
 	char* p;
@@ -163,6 +164,15 @@ void _updateDirAndSpace(void)
 	DWORD iTotalNumberOfClusters;
 	DWORD iBytes;
 
+	if (g_pSet_BrowseDir->pszDirName &&g_pSet_BrowseDir->pszDirName[0])
+	{
+		sprintf(g_szBrowseDir, "%s/%s", pszPath, g_pSet_BrowseDir->pszDirName);
+	}
+	else
+	{
+		sprintf(g_szBrowseDir, "%s", pszPath);
+	}
+	
 	// first set the name of the dir
 	ASK_fixSlashes(g_szBrowseDir);
 	SetWindowText(g_hwndStatic_BrowseDir, g_szBrowseDir);
@@ -480,9 +490,11 @@ LRESULT CALLBACK WndProc_Pane(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case BN_CLICKED:
 			if (wID == ID_BTN_BROWSE)
 			{
-				BrowseDir(g_hwndMain, g_szBrowseDir);
+				char szPath[1024];
+				
+				BrowseDir(g_hwndMain, szPath);
 
-				_updateDirAndSpace();
+				_updateDirAndSpace(szPath);
 				
 				return 0;
 			}
@@ -617,7 +629,7 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 	g_wndclassMain.hInstance = hInstance;
 	g_wndclassMain.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	g_wndclassMain.hCursor = LoadCursor(NULL, IDC_ARROW);
-	g_wndclassMain.hbrBackground = (HBRUSH) GetStockObject(LTGRAY_BRUSH);
+	g_wndclassMain.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
 	g_wndclassMain.lpszMenuName = NULL;
 	g_wndclassMain.lpszClassName = "AbiSetup_MainWindow";
 
@@ -635,7 +647,7 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 	g_wndclassPane.hInstance = hInstance;
 	g_wndclassPane.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	g_wndclassPane.hCursor = LoadCursor(NULL, IDC_ARROW);
-	g_wndclassPane.hbrBackground = (HBRUSH) GetStockObject(LTGRAY_BRUSH);
+	g_wndclassPane.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
 	g_wndclassPane.lpszMenuName = NULL;
 	g_wndclassPane.lpszClassName = "AbiSetup_Pane";
 
@@ -1049,13 +1061,15 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 			buf2);
 	SetWindowText(hwndStatic_Top, buf);
 
-	strcpy(g_szBrowseDir, pSet->pszDefaultPath);
+	g_pSet_BrowseDir = pSet;
 	g_hwndStatic_BrowseDir = hwndStatic_Dir;
 	g_hwndStatic_DiskSpace = hwndStatic_Space;
-	_updateDirAndSpace();
+	
+	_updateDirAndSpace(g_pSet_BrowseDir->pszDefaultPath);
 
 	result = DoEventLoop();
 
+	g_pSet_BrowseDir = NULL;
 	g_hwndStatic_BrowseDir = NULL;
 	g_hwndStatic_DiskSpace = NULL;
 	

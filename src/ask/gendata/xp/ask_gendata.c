@@ -41,6 +41,7 @@ struct fileset
 {
 	char szName[511+1];
 	char szDefaultPath[511+1];
+	char szDirName[511+1];
 	char szKeyword[255+1];
 	struct data_file_list_node* pHead;
 	int iNumFiles;
@@ -61,6 +62,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 	{
 		const char* pszFileSetName = NULL;
 		const char* pszDefaultPath = NULL;
+		const char* pszDirName = NULL;
 		const char* pszKeyword = NULL;
 		int         bFixedPath = 0;
 		const char** ppAtt = atts;
@@ -81,6 +83,10 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 			else if (0 == strcmp(ppAtt[0], "defaultpath"))
 			{
 				pszDefaultPath = ppAtt[1];
+			}
+			else if (0 == strcmp(ppAtt[0], "dirname"))
+			{
+				pszDirName = ppAtt[1];
 			}
 			else if (0 == strcmp(ppAtt[0], "keyword"))
 			{
@@ -118,6 +124,15 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 		else
 		{
 			pCurrentSet->szDefaultPath[0] = 0;
+		}
+		
+		if (pszDirName)
+		{
+			strcpy(pCurrentSet->szDirName, pszDirName);
+		}
+		else
+		{
+			pCurrentSet->szDirName[0] = 0;
 		}
 		
 		if (pszKeyword)
@@ -463,6 +478,7 @@ int lib_main(int argc, char** argv)
 			fprintf(fpOut, "ASK_FileSet _fileset%05d = {\n", iSetNum);
 			fprintf(fpOut, "\t\"%s\",\n", pCurrentSet->szName);
 			fprintf(fpOut, "\t\"%s\",\n", pCurrentSet->szDefaultPath);
+			fprintf(fpOut, "\t\"%s\",\n", pCurrentSet->szDirName);
 			fprintf(fpOut, "\t\"%s\",\n", pCurrentSet->szKeyword);
 			fprintf(fpOut, "\t%d,\n", iNumFilesInSet);
 			fprintf(fpOut, "\t%d,\n", pCurrentSet->bFixedPath);

@@ -54,6 +54,7 @@ typedef struct
 {
 	char*			pszName;
 	char*			pszDefaultPath;
+	char*			pszDirName;
 	char*			pszKeyword;
 	long			iNumFilesInSet;
 	int				bFixedPath;
