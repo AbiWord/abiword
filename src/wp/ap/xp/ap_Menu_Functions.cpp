@@ -36,6 +36,7 @@
 #include "xav_View.h"
 #include "fv_View.h"
 #include "ap_FrameData.h"
+#include "ap_Prefs.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -413,8 +414,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 {
-	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+        ABIWORD_VIEW;
+	XAP_App * pApp = pView->getApp();
+	UT_ASSERT(pApp);
+
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -451,6 +456,39 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
+
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
+{
+        ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	XAP_App *pApp = pView->getApp();
+	UT_ASSERT(pApp);
+
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pPrefsScheme);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	bool b = false;
+
+	switch (id)
+	  {
+	  case AP_MENU_ID_TOOLS_AUTOSPELL:
+	    pPrefsScheme->getValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+	    s = (b ? EV_MIS_Toggled : EV_MIS_ZERO);
+	    break;
+
+	  default:
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    break;
+	  }
 
 	return s;
 }

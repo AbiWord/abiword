@@ -276,6 +276,7 @@ public:
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
+        static EV_EditMethod_Fn toggleAutoSpell;
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
@@ -283,7 +284,7 @@ public:
 	static EV_EditMethod_Fn toggleStrike;
 	static EV_EditMethod_Fn toggleSuper;
 	static EV_EditMethod_Fn toggleSub;
-	static EV_EditMethod_Fn togglePlain;
+        static EV_EditMethod_Fn togglePlain;
 #ifdef BIDI_ENABLED
 	static EV_EditMethod_Fn toggleDirection;
 	static EV_EditMethod_Fn toggleDomDirection;
@@ -639,6 +640,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(style),				_D_,	""),
 
 	// t
+	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
 #ifdef BIDI_ENABLED
 	EV_EditMethod(NF(toggleDirection),		0,		""),
@@ -5063,6 +5065,28 @@ Defun1(toggleStrike)
 {
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", true);
+}
+
+Defun1(toggleAutoSpell)
+{
+        ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	XAP_App *pApp = pView->getApp();
+	UT_ASSERT(pApp);
+
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pPrefsScheme);
+
+	bool b = false;
+	pPrefsScheme->getValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+	pPrefsScheme->setValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,
+				   !b);
+
+	return true;
 }
 
 // MSWord defines this to 1/2 an inch, so we do too
