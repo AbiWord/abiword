@@ -4671,6 +4671,20 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 					m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
 #endif /* HTML_META_SUPPORTED */
 				}
+			else if (m_utf8 == "creator")
+				{
+#ifdef HTML_META_SUPPORTED
+					m_utf8 = "";
+
+					m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, m_utf8);
+
+					if (m_utf8.byteLength ())
+						{
+							m_utf8.escapeXML ();
+							m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+						}
+#endif /* HTML_META_SUPPORTED */
+				}
 			else if (m_utf8 == "meta")
 				{
 #ifdef HTML_META_SUPPORTED
