@@ -75,6 +75,9 @@ public:
 										bool bClearProps) const;
 	PP_AttrProp * cloneWithElimination(const XML_Char ** attributes,
 									   const XML_Char ** properties) const;
+	PP_AttrProp * cloneWithEliminationIfEqual(const XML_Char ** attributes,
+									   const XML_Char ** properties) const;
+	
 	void markReadOnly(void);
 	UT_uint32 getCheckSum(void) const;
 

@@ -282,7 +282,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			}
 			sAttribs[i] = NULL;
 		
-			PP_AttrProp * pNew0 = papOld->cloneWithElimination(sAttribs,sProps);
+			PP_AttrProp * pNew0 = papOld->cloneWithEliminationIfEqual(sAttribs,sProps);
 			delete [] sProps;
 			delete [] sAttribs;
 			

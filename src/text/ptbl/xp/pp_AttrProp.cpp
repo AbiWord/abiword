@@ -736,6 +736,83 @@ void PP_AttrProp::markReadOnly(void)
 	_computeCheckSum();
 }
 
+PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attributes,
+												const XML_Char ** properties) const
+{
+	// create a new AttrProp based upon the given one
+	// and removing the items given.
+	// return FALSE on failure.
+
+	// first, create an empty AttrProp.
+
+	PP_AttrProp * papNew = new PP_AttrProp();
+	if (!papNew)
+		goto Failed;
+	
+	UT_uint32 k;
+	const XML_Char * n;
+	const XML_Char * v;
+	
+	k = 0;
+	while (getNthAttribute(k++,n,v))
+	{
+		// for each attribute in the old set, add it to the
+		// new set only if it is not present in the given array.
+
+		if (attributes && *attributes)
+		{
+			const XML_Char ** p = attributes;
+			while (*p)
+			{
+				UT_ASSERT(UT_XML_stricmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+				if (UT_XML_stricmp(n,p[0])==0 && UT_XML_stricmp(n,p[1])==0)		// found it, so we don't put it in the result.
+					goto DoNotIncludeAttribute;
+				p += 2;								// skip over value
+			}
+		}
+
+		// we didn't find it in the given array, add it to the new set.
+		
+		if (!papNew->setAttribute(n,v))
+			goto Failed;
+
+	DoNotIncludeAttribute:
+		;
+	}
+
+	k = 0;
+	while (getNthProperty(k++,n,v))
+	{
+		// for each property in the old set, add it to the
+		// new set only if it is not present in the given array.
+
+		if (properties && *properties)
+		{
+			const XML_Char ** p = properties;
+			while (*p)
+			{
+				if (UT_XML_stricmp(n,p[0])==0 && UT_XML_stricmp(n,p[1])==0)		// found it, so we don't put it in the result.
+					goto DoNotIncludeProperty;
+				p += 2;
+			}
+		}
+
+		// we didn't find it in the given array, add it to the new set.
+		
+		if (!papNew->setProperty(n,v))
+			goto Failed;
+
+	DoNotIncludeProperty:
+		;
+	}
+
+	return papNew;
+
+Failed:
+	DELETEP(papNew);
+	return NULL;
+}
+
 void PP_AttrProp::_computeCheckSum(void)
 {
 	m_checkSum = 0;
