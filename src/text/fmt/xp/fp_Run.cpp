@@ -478,6 +478,10 @@ void fp_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 
 	m_iWidth = 0;
 
+	// that's enough for zero-length run
+	if (m_iLen == 0)
+		return;
+
 	while (bContinue)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);

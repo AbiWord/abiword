@@ -110,10 +110,8 @@ UT_Bool PD_Document::newDocument(void)
 
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 
-#if 1//TODO check this.
 	// add just enough structure to empty document so we can edit
 	appendStrux(PTX_Section,NULL);
-	appendStrux(PTX_ColumnSet,NULL);
 
 	// need to set up a default column model, too
 	const XML_Char * properties[] = 
@@ -128,9 +126,12 @@ UT_Bool PD_Document::newDocument(void)
 
 	const XML_Char** atts = properties;
 
+	appendStrux(PTX_ColumnSet,NULL);
 	appendStrux(PTX_Column,atts);
 	appendStrux(PTX_Block,NULL);
 
+// TODO: Jeff, without this, the getFragFromPosition assert fires
+#if 1
 	// need one character so the formatter will create the first page
 	UT_UCSChar space = 0x0020;
 

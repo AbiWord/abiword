@@ -312,7 +312,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	}
 	else if (x >= (UT_sint32)m_iWidth)
 	{
-		x = m_iWidth - 1;
+		x = ((m_iWidth > 0) ? m_iWidth - 1 : 0);
 	}
 
 	// check all of the runs.
@@ -328,6 +328,20 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 			// when hit testing runs within a line, we ignore the Y coord
 //			if (((y2) >= 0) && ((y2) < (pRI->pRun->getHeight())))
 			{
+				pRI->pRun->mapXYToPosition(x - pRI->xoff, y2, pos, bEOL);
+
+				return;
+			}
+		}
+		else if (((x - pRI->xoff) == 0) && (pRI->pRun->getWidth() == 0))
+		{
+			// zero-length run
+			{
+				// this only happens in an empty line, right?
+				UT_ASSERT(m_iWidth==0);
+				UT_ASSERT(i==0);
+				UT_ASSERT(count==1);
+
 				pRI->pRun->mapXYToPosition(x - pRI->xoff, y2, pos, bEOL);
 
 				return;

@@ -73,8 +73,10 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 			fragOffset = pft->getLength();
 			break;
 		}
-		UT_ASSERT(0);
-		return UT_FALSE;
+
+		// empty paragraphs don't *have* anything to append to
+		fragOffset = 0;
+		break;
 		
 	case pf_Frag::PFT_Text:
 		pft = static_cast<pf_Frag_Text *>(pf);

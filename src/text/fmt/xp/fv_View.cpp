@@ -457,7 +457,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		UT_uint32 iNumCharsOnNewLine = pDestLine->getNumChars();
 		if (iNumChars >= (UT_sint32)iNumCharsOnNewLine)
 		{
-			iNumChars = iNumCharsOnNewLine - 1;
+			iNumChars = iNumCharsOnNewLine;
 		}
 		
 		_setPoint(iFirstPosOnNewLine);
