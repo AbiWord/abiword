@@ -127,8 +127,14 @@ UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf,
 
 UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-	if (UT_stricmp(szSuffix,".rtf") == 0)
+	if (!UT_stricmp(szSuffix, ".rtf"))
+	{
 		return UT_CONFIDENCE_PERFECT;
+	}
+	if (!UT_stricmp(szSuffix, ".doc"))
+	{
+		return UT_CONFIDENCE_SOSO;
+	}
 	return UT_CONFIDENCE_ZILCH;
 }
 
