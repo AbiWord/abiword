@@ -428,12 +428,14 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	if (bChar)
 	{
 		if ((shortcut >= 'A') && (shortcut <= 'Z')) {
-			/* always return an uppercase letter for the shortcut, unlike the mapper do */
-			shortcut += 32;
+			/* always return an uppercase letter for the shortcut, unlike the mapper do */			
 			if (!(ems&EV_EMS_SHIFT)) {
 				strcat(buf, "Shift+");
 			}
 		}
+		 else
+			shortcut = toupper (shortcut); 
+	            
 		int len = strlen(buf);
 		buf[len] = shortcut;
 	}
