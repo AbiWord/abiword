@@ -384,6 +384,9 @@ dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
+AC_CHECK_FUNC(setenv,,[
+	AC_DEFINE(SETENV_MISSING,1)
+])
 
 if test $peerconfig = "true"; then
 	dnl other configure scripts
