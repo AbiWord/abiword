@@ -70,6 +70,9 @@ BeginSet(ItIT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Sottolineato",	tb_text_underline_S_xpm,	NULL, "Sottolineato")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrato",		tb_text_strikeout_B_xpm,	NULL, "Barrato")
 
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Apice",  tb_text_superscript_xpm,        NULL, "Apice")
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,       "Pedice",    tb_text_subscript_xpm,          NULL, "Pedice")
+		
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Sinistra",		tb_text_align_left_xpm,	NULL, "Allineamento a sinistra")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centro",		tb_text_center_xpm,		NULL, "Allineamento al centro")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Destra",		tb_text_align_right_xpm,NULL, "Allineamento a destra")

@@ -103,7 +103,9 @@ BeginSet(ItIT,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Italico",				"Mette in italico la selezione (reversibile)")
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Sottolineato",		"Sottolinea la selezione (reversibile)")
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Barrato",				"Barra la selezione (reversibile)")
-
+        MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   "&Apice",         "Scrive in apice la selezione (reversibile)")                                                    
+        MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,             "P&edice",           "Scrive in pedice la selezione (reversibile)")                                              
+			
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Allinea",				NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Sinistra",			"Allinea a sinistra il paragrafo")
 	MenuLabel(AP_MENU_ID_ALIGN_CENTER,		"&Centro",				"Allinea al centro il paragrafo")
@@ -125,6 +127,19 @@ BeginSet(ItIT,UT_TRUE)
 
 	MenuLabel(AP_MENU_ID_HELP,				"&?",					NULL)
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Informazioni su %s",	"Visualizza le informazioni sul programma, numero di versione e copyright")
+
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_SUGGEST_9,   "%s",                           "Cambia in questa parola suggerita")                                                
+        MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,   "&Ignora Tutto",          "Ignora sempre questa parola nel documento")
+        MenuLabel(AP_MENU_ID_SPELL_ADD,                 "&Aggiungi",                         "Aggiungi questa parola ad vocabolario personale")
+										       
 
 	// ... add others here ...
 
