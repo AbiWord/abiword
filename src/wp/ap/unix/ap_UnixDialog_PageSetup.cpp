@@ -126,13 +126,15 @@ static char _ev_buf[256];
 #ifdef _
 #undef _
 #endif
-#define _(a, x)                                               \
-               {                                              \
-				   UT_UTF8String _s;                          \
-				   pSS->getValueUTF8 (a##_STRING_ID_##x,_s);  \
-				   _ev_convert (_ev_buf, _s.utf8_str());      \
-			   }
 
+inline char * _0(const XAP_StringSet * pSS, XAP_String_Id id)
+{
+	UT_UTF8String _s;
+	pSS->getValueUTF8 (id,_s);
+	return _ev_convert (_ev_buf, _s.utf8_str());
+} 
+
+#define _(a, x) _0(pSS, a##_STRING_ID_##x)
 
 // string tags to stuff stored in widget data
 #define WIDGET_MENU_OPTION_PTR		"menuoptionptr"
