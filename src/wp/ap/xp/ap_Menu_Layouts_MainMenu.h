@@ -227,6 +227,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
 		MenuItem(AP_MENU_ID_FMT_DOCUMENT)
 		MenuItem(AP_MENU_ID_FMT_FRAME)
+        MenuItem(AP_MENU_ID_FMT_IMAGE)
 #if 0 // someone code and turn this back on
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 #endif

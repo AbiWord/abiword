@@ -10410,6 +10410,26 @@ bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_
 	return false;
 }
 
+/*!
+  Check that an image is currently selected
+  
+  \return true if an image is selected otherwise false.
+  \todo eventually make it faster by not fetching the image data ID.
+ */
+bool FV_View::isImageSelected(void)
+{
+	const char * dataId;
+	PT_DocPosition pos = getSelectedImage(&dataId);
+
+	if (pos == 0) {
+		return false;
+	}
+	else { 
+		return true;
+	}
+	return false;
+}
+
 void FV_View::startImageResizing(UT_sint32 xPos, UT_sint32 yPos)
 {
 	m_ixResizeOrigin = xPos;

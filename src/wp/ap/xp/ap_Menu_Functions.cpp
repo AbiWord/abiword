@@ -1367,6 +1367,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	}
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	if(pView->isImageSelected())
+	{
+		return EV_MIS_ZERO;
+	}
+	return EV_MIS_Gray;
+}
+
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 {

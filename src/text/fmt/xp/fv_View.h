@@ -622,6 +622,8 @@ public:
 	void				drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos);
 	void				stopImageDrag(UT_sint32 xPos, UT_sint32 yPos);
 
+	bool                isImageSelected(void);
+
 //
 // Table resizing
 //
