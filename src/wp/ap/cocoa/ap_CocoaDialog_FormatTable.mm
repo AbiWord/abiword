@@ -101,6 +101,11 @@ void AP_CocoaDialog_FormatTable::setSensitivity(bool bSens)
 	[m_dlg setSensitivity:bSens];
 }
 
+void AP_CocoaDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
+{
+	UT_ASSERT_NOT_REACHED(); // TODO
+}
+
 void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
 	UT_ASSERT_NOT_REACHED();

@@ -47,6 +47,7 @@ public:
 	void					event_ApplyToChanged(void);
 	void 					event_previewExposed(void);
 	virtual void			setSensitivity(bool bSens);
+	virtual void            setBackgroundColorInGUI(UT_RGBColor clr);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
 	virtual void            destroy(void);
 	virtual void            activate(void);

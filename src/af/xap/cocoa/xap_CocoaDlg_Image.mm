@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2001 Dom Lachowicz
  * Copyright (C) 2003 Hubert Figuiere
@@ -43,6 +45,8 @@ void XAP_CocoaDialog_Image::event_Ok ()
 	setAnswer(XAP_Dialog_Image::a_OK);
 	setTitle ([[m_dlg titleEntry] UTF8String]);
 	setDescription ([[m_dlg altEntry] UTF8String]);
+	setWrapping([m_dlg textWrap]);
+	setPositionTo([m_dlg imagePlacement]);
 	[NSApp stopModal];
 }
 
@@ -65,55 +69,35 @@ void XAP_CocoaDialog_Image::aspectCheckbox()
 	setPreserveAspect(bAspect);
 }
 
-void XAP_CocoaDialog_Image::doHeightSpin(void)
+void XAP_CocoaDialog_Image::doHeightSpin(bool bIncrement)
 {
-	bool bIncrement = true;
-	UT_sint32 val = [m_dlg heightNum];
-	if (val == m_iHeight) {
-		return;
-	}
-	if(val < m_iHeight) {
-		bIncrement = false;
-	}
-	
-	m_iHeight = val;
 	incrementHeight(bIncrement);
 	adjustWidthForAspect();
 	[m_dlg setHeightEntry:[NSString stringWithUTF8String:getHeightString()]];
 }
 
-
-void XAP_CocoaDialog_Image::doWidthSpin(void)
-{
-	bool bIncrement = true;
-	UT_sint32 val = [m_dlg widthNum];
-	if (val == m_iWidth) {
-		return;	
-	}
-	if(val < m_iWidth) {
-		bIncrement = false;
-	}
-	m_iWidth = val;
-	incrementWidth(bIncrement);
-	adjustHeightForAspect();
-	[m_dlg setWidthEntry:[NSString stringWithUTF8String:getWidthString()]];
-}
-
 void XAP_CocoaDialog_Image::doHeightEntry(void)
 {
 	const char * szHeight = [[m_dlg heightEntry] UTF8String];
-	if(UT_determineDimension(szHeight,DIM_none) != DIM_none)
-	{
-		setHeight(szHeight);
 
-		[m_dlg setHeightEntry:[NSString stringWithUTF8String:getHeightString()]];
+	if(UT_determineDimension(szHeight, DIM_none) != DIM_none) {
+		setHeight(szHeight);
 	}
 	adjustWidthForAspect();
+
+	[m_dlg setHeightEntry:[NSString stringWithUTF8String:getHeightString()]];
 }
 
 void XAP_CocoaDialog_Image::setHeightEntry(void)
 {
 	[m_dlg setHeightEntry:[NSString stringWithUTF8String:getHeightString()]];
+}
+
+void XAP_CocoaDialog_Image::doWidthSpin(bool bIncrement)
+{
+	incrementWidth(bIncrement);
+	adjustHeightForAspect();
+	[m_dlg setWidthEntry:[NSString stringWithUTF8String:getWidthString()]];
 }
 
 void XAP_CocoaDialog_Image::setWidthEntry(void)
@@ -124,12 +108,13 @@ void XAP_CocoaDialog_Image::setWidthEntry(void)
 void XAP_CocoaDialog_Image::doWidthEntry(void)
 {
 	const char * szWidth = [[m_dlg widthEntry] UTF8String];
-	if(UT_determineDimension(szWidth,DIM_none) != DIM_none)
-	{
+
+	if(UT_determineDimension(szWidth, DIM_none) != DIM_none) {
 		setWidth(szWidth);
-		[m_dlg setWidthEntry:[NSString stringWithUTF8String:getWidthString()]];
 	}
 	adjustHeightForAspect();
+
+	[m_dlg setWidthEntry:[NSString stringWithUTF8String:getWidthString()]];
 }
 
 
@@ -159,8 +144,6 @@ XAP_Dialog * XAP_CocoaDialog_Image::static_constructor(XAP_DialogFactory * pFact
 XAP_CocoaDialog_Image::XAP_CocoaDialog_Image(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id dlgid)
   : XAP_Dialog_Image(pDlgFactory,dlgid),
-	m_iHeight(0),
-	m_iWidth(0),
 	m_dHeightWidth(0),
 	m_dlg(nil)
 {
@@ -229,44 +212,37 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 {
 	if (_xap) {
 		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		LocalizeControl([self window], pSS, XAP_STRING_ID_DLG_Image_Title);
-		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
-		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
-		LocalizeControl(_heightLabel, pSS, XAP_STRING_ID_DLG_Image_Height);
-		LocalizeControl(_widthLabel, pSS, XAP_STRING_ID_DLG_Image_Width);
-		LocalizeControl(_titleLabel, pSS, XAP_STRING_ID_DLG_Image_LblTitle);
-		LocalizeControl(_altLabel, pSS, XAP_STRING_ID_DLG_Image_LblDescription);
-		LocalizeControl(_preserveAspectBtn, pSS, XAP_STRING_ID_DLG_Image_Aspect);
-		[_preserveAspectBtn setState:(_xap->getPreserveAspect()?NSOnState:NSOffState)];
-		[_titleData setStringValue:[NSString stringWithUTF8String:_xap->getTitle().utf8_str()]];
-		[_altData setStringValue:[NSString stringWithUTF8String:_xap->getDescription().utf8_str()]];
-		/* FIXME: we probably have smarter default values Unix code doesn't.*/
+
+		LocalizeControl([self window],		pSS, XAP_STRING_ID_DLG_Image_Title);
+		LocalizeControl(_okBtn,				pSS, XAP_STRING_ID_DLG_OK);
+		LocalizeControl(_cancelBtn,			pSS, XAP_STRING_ID_DLG_Cancel);
+		LocalizeControl(_titleCell,			pSS, XAP_STRING_ID_DLG_Image_LblTitle);
+		LocalizeControl(_descriptionCell,	pSS, XAP_STRING_ID_DLG_Image_LblDescription);
+		LocalizeControl(_widthCell,			pSS, XAP_STRING_ID_DLG_Image_Width);
+		LocalizeControl(_heightCell,		pSS, XAP_STRING_ID_DLG_Image_Height);
+		LocalizeControl(_preserveAspectBtn,	pSS, XAP_STRING_ID_DLG_Image_Aspect);
+		LocalizeControl(_textWrapLabel,		pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
+		LocalizeControl(_textWrapInline,	pSS, XAP_STRING_ID_DLG_Image_InLine);
+		LocalizeControl(_textWrapRight,		pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
+		LocalizeControl(_textWrapLeft,		pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
+		LocalizeControl(_textWrapBoth,		pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
+		LocalizeControl(_imagePlaceLabel,	pSS, XAP_STRING_ID_DLG_Image_Placement);
+		LocalizeControl(_imagePlaceNearest,	pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
+		LocalizeControl(_imagePlaceColumn,	pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
+		LocalizeControl(_imagePlacePage,	pSS, XAP_STRING_ID_DLG_Image_PlacePage);
+
+		[_titleCell       setStringValue:[NSString stringWithUTF8String:_xap->getTitle().utf8_str()]];
+		[_descriptionCell setStringValue:[NSString stringWithUTF8String:_xap->getDescription().utf8_str()]];
+
+		[_preserveAspectBtn setState:(_xap->getPreserveAspect() ? NSOnState : NSOffState)];
+
+		[ _widthNumStepper setIntValue:1];
 		[_heightNumStepper setIntValue:1];
-		[_heightNumData setIntValue:1];
-		[_widthNumStepper setIntValue:1];
-		[_widthNumData setIntValue:1];
+
+		[self setTextWrap:(_xap->getWrapping()) isEnabled:YES];
+
+		[self setImagePlacement:(_xap->getPositionTo()) isEnabled:YES];
 	}
-}
-
-
-- (IBAction)cancelAction:(id)sender
-{
-	_xap->event_Cancel();
-}
-
-- (IBAction)heightChanged:(id)sender
-{
-	_xap->doHeightEntry();
-}
-
-- (IBAction)heightNumChanged:(id)sender
-{
-	_xap->doHeightSpin();
-}
-
-- (IBAction)heightNumStepperChanged:(id)sender
-{
-	_xap->doHeightSpin();
 }
 
 - (IBAction)okAction:(id)sender
@@ -274,68 +250,71 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 	_xap->event_Ok();
 }
 
-- (IBAction)preserveAction:(id)sender
+- (IBAction)cancelAction:(id)sender
 {
-	_xap->aspectCheckbox();
+	_xap->event_Cancel();
 }
+
 
 - (IBAction)widthChanged:(id)sender
 {
 	_xap->doWidthEntry();
 }
 
-- (IBAction)widthNumChanged:(id)sender
-{
-	_xap->doWidthSpin();
-}
-
 - (IBAction)widthNumStepperChanged:(id)sender
 {
-	_xap->doWidthSpin();
+	bool bIncrement = ([_widthNumStepper intValue] > 1);
+	[_widthNumStepper setIntValue:1];
+	_xap->doWidthSpin(bIncrement);
+}
+
+- (IBAction)heightChanged:(id)sender
+{
+	_xap->doHeightEntry();
+}
+
+- (IBAction)heightNumStepperChanged:(id)sender
+{
+	bool bIncrement = ([_heightNumStepper intValue] > 1);
+	[_heightNumStepper setIntValue:1];
+	_xap->doHeightSpin(bIncrement);
+}
+
+- (IBAction)preserveAction:(id)sender
+{
+	_xap->aspectCheckbox();
 }
 
 
 - (NSString*)titleEntry
 {
-	return [_titleData stringValue];
+	return [_titleCell stringValue];
 }
 
 - (NSString*)altEntry
 {
-	return [_altData stringValue];
+	return [_descriptionCell stringValue];
 }
 
 
 - (NSString*)widthEntry
 {
-	return [_widthData stringValue];
+	return [_widthCell stringValue];
 }
 
 - (void)setWidthEntry:(NSString*)entry
 {
-	[_widthData setStringValue:entry];
+	[_widthCell setStringValue:entry];
 }
-
-- (int)widthNum
-{
-	return [_widthNumData intValue];
-}
-
 
 - (NSString*)heightEntry
 {
-	return [_heightData stringValue];
+	return [_heightCell stringValue];
 }
 
 - (void)setHeightEntry:(NSString*)entry
 {
-	[_heightData setStringValue:entry];
-}
-
-
-- (int)heightNum
-{
-	return [_heightNumData intValue];
+	[_heightCell setStringValue:entry];
 }
 
 - (BOOL)preserveRatio
@@ -346,6 +325,98 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 - (void)setPreserveRatio:(BOOL)val
 {
 	[_preserveAspectBtn setState:(val?NSOnState:NSOffState)];
+}
+
+- (void)setTextWrap:(WRAPPING_TYPE)textWrap isEnabled:(BOOL)enabled
+{
+	switch (textWrap)
+		{
+		case WRAP_INLINE:
+			[_textWrapMatrix selectCellAtRow:0 column:0];
+			break;
+		case WRAP_TEXTRIGHT:
+			[_textWrapMatrix selectCellAtRow:1 column:0];
+			break;
+		case WRAP_TEXTLEFT:
+			[_textWrapMatrix selectCellAtRow:2 column:0];
+			break;
+		case WRAP_TEXTBOTH:
+			[_textWrapMatrix selectCellAtRow:3 column:0];
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+	[_textWrapLabel  setEnabled:enabled];
+	[_textWrapMatrix setEnabled:enabled];
+}
+
+- (WRAPPING_TYPE)textWrap
+{
+	WRAPPING_TYPE type = WRAP_INLINE;
+
+	switch ([_textWrapMatrix selectedRow])
+		{
+		case 0:
+			type = WRAP_INLINE;
+			break;
+		case 1:
+			type = WRAP_TEXTRIGHT;
+			break;
+		case 2:
+			type = WRAP_TEXTLEFT;
+			break;
+		case 3:
+			type = WRAP_TEXTBOTH;
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+	return type;
+}
+
+- (void)setImagePlacement:(POSITION_TO)imagePlacement isEnabled:(BOOL)enabled
+{
+	switch (imagePlacement)
+		{
+		case POSITION_TO_PARAGRAPH:
+			[_imagePlaceMatrix selectCellAtRow:0 column:0];
+			break;
+		case POSITION_TO_COLUMN:
+			[_imagePlaceMatrix selectCellAtRow:1 column:0];
+			break;
+		case POSITION_TO_PAGE:
+			[_imagePlaceMatrix selectCellAtRow:2 column:0];
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+	[_imagePlaceLabel  setEnabled:enabled];
+	[_imagePlaceMatrix setEnabled:enabled];
+}
+
+- (POSITION_TO)imagePlacement
+{
+	POSITION_TO type = POSITION_TO_PARAGRAPH;
+
+	switch ([_imagePlaceMatrix selectedRow])
+		{
+		case 0:
+			type = POSITION_TO_PARAGRAPH;
+			break;
+		case 1:
+			type = POSITION_TO_COLUMN;
+			break;
+		case 2:
+			type = POSITION_TO_PAGE;
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+	return type;
 }
 
 @end
