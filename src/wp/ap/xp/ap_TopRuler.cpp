@@ -196,7 +196,7 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// properties on the section (like the number of columns
 	// or the margins) or on the block (like the paragraph
 	// indents), then we redraw the ruler.
-	
+//#bidi	
 	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR ))
 	{
 		UT_Rect pClipRect;
@@ -422,24 +422,25 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	UT_sint32 xAbsTo     = xFixed + pInfo->m_xPageViewMargin + xTo     - m_xScrollOffset;
 
 	// we need to do our own clipping for the fixed area
-	
+	//UT_DEBUGMSG(("xAbsFrom %d, xAbsTo %d\n",xAbsFrom,xAbsTo));
+
 	if (xAbsFrom < xFixed)
 		xAbsFrom = xFixed;
 	if (xAbsTo < xFixed)
 		xAbsTo = xFixed;
 	if (xAbsFrom == xAbsTo)
 		return;							// everything clipped
-
+		
 	if (xAbsTo > xAbsFrom)
 	{
 		// draw increasing numbers to the right
-		
-		UT_sint32 k=0; 
+		UT_sint32 k=0;
 		while (1)
 		{
 			UT_sint32 xTick = xAbsOrigin + k*tick.tickUnit/tick.tickUnitScale;
 			if (xTick > xAbsTo)
 				break;
+			
 			if (xTick >= xAbsFrom)
 				_drawTickMark(pClipRect,pInfo,tick,clr3d,pFont,k,xTick);
 			k++;
@@ -467,15 +468,41 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 											  UT_sint32 * pLeft, UT_sint32 * pRight, UT_sint32 * pFirstLine)
 {
-	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
-	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
+	UT_sint32 xAbsLeft;
+	UT_sint32 xAbsRight;
+
+#ifdef BIDI_ENABLED	
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+
+/*	if(bRTL)
+	{
+		xAbsRight = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
+		xAbsLeft = xAbsRight - pInfo->u.c.m_xColumnWidth;
+	}
+	else  */
+#endif
+	{
+		xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
+		xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
+	}
 
 	if (pLeft)
 		*pLeft = xAbsLeft + pInfo->m_xrLeftIndent;
 	if (pRight)
 		*pRight = xAbsRight - pInfo->m_xrRightIndent;
+#ifdef BIDI_ENABLED
+	if (pFirstLine)
+	{
+		if(bRTL)
+			*pFirstLine = xAbsRight - pInfo->m_xrRightIndent - pInfo->m_xrFirstLineIndent;
+		else
+			*pFirstLine = xAbsLeft + pInfo->m_xrLeftIndent + pInfo->m_xrFirstLineIndent;
+	}
+#else
 	if (pFirstLine)
 		*pFirstLine = xAbsLeft + pInfo->m_xrLeftIndent + pInfo->m_xrFirstLineIndent;
+#endif
 	return;
 }
 
@@ -503,13 +530,31 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 	UT_uint32 yBottom = yTop + yBar;
 	UT_sint32 hs = 5;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;	        // fullSize
+	UT_sint32 ls, rs;                   // the sizes of left and right markers
 
+#ifdef BIDI_ENABLED
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+
+	if(bRTL)
+	{
+		ls = 9;
+		rs = 15;
+	}
+	else
+#endif	
+	{
+		ls = 15;
+		rs = 9;
+	}
 	if (prLeftIndent)
-		prLeftIndent->set(leftCenter - hs, yBottom - 8, fs, 15);
+		prLeftIndent->set(leftCenter - hs, yBottom - 8, fs, ls);
+	
 	if (prFirstLineIndent)
 		prFirstLineIndent->set(firstLineCenter - hs, yTop - 1, fs, 9);
+	
 	if (prRightIndent)
-		prRightIndent->set(rightCenter - hs, yBottom - 8, fs, 9);
+		prRightIndent->set(rightCenter - hs, yBottom - 8, fs, rs);
 }
 
 void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
@@ -524,12 +569,29 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 							 leftCenter, rightCenter, firstLineCenter,
 							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
 
+#ifdef BIDI_ENABLED	
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+#endif
+							
 	if (m_draggingWhat == DW_LEFTINDENTWITHFIRST)
 	{
-		_drawLeftIndentMarker(rLeftIndent, false); // draw hollow version at old location
-		_drawFirstLineIndentMarker(rFirstLineIndent, false);
-		_drawLeftIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
-		_drawFirstLineIndentMarker(m_dragging2Rect, true);
+#ifdef BIDI_ENABLED	
+		if(bRTL)
+		{
+			_drawRightIndentMarker(rLeftIndent, false); // draw hollow version at old location
+			_drawFirstLineIndentMarker(rFirstLineIndent, false);
+			_drawRightIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
+			_drawFirstLineIndentMarker(m_dragging2Rect, true);
+		}
+		else
+#endif
+		{
+			_drawLeftIndentMarker(rLeftIndent, false); // draw hollow version at old location
+			_drawFirstLineIndentMarker(rFirstLineIndent, false);
+			_drawLeftIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
+			_drawFirstLineIndentMarker(m_dragging2Rect, true);
+		}
 	}
 	else if (bDrawAll)
 	{
@@ -541,8 +603,18 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 	
 	if (m_draggingWhat == DW_LEFTINDENT)
 	{
-		_drawLeftIndentMarker(rLeftIndent, false); // draw hollow version at old location
-		_drawLeftIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
+#ifdef BIDI_ENABLED	
+		if(bRTL)
+		{
+			_drawRightIndentMarker(rLeftIndent, false); // draw hollow version at old location
+			_drawRightIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
+		}
+		else
+#endif
+		{
+			_drawLeftIndentMarker(rLeftIndent, false); // draw hollow version at old location
+			_drawLeftIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
+		}
 	}
 	else if (bDrawAll)
 	{
@@ -552,8 +624,18 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 	if (m_draggingWhat == DW_RIGHTINDENT)
 	{
-		_drawRightIndentMarker(rRightIndent, false);
-		_drawRightIndentMarker(m_draggingRect, true);
+#ifdef BIDI_ENABLED	
+		if(bRTL)
+		{
+			_drawLeftIndentMarker(rRightIndent, false);
+			_drawLeftIndentMarker(m_draggingRect, true);
+		}
+		else
+#endif
+		{
+			_drawRightIndentMarker(rRightIndent, false);
+			_drawRightIndentMarker(m_draggingRect, true);
+		}
 	}
 	else if (bDrawAll)
 	{
@@ -578,10 +660,23 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 l,xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+#if 0
+//#ifdef BIDI_ENABLED
+	bool bRTL;	
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTL);
 
+	if(bRTL)
+	{
+		xFixed += 17;
+		xFixed /= 2;
+		l = xFixed + (m_iWidth - m_iLeftRulerWidth);
+	}
+	else
+#endif	
+	    l = (xFixed - 17)/2;
+	
 	UT_sint32 t = (s_iFixedHeight - 17)/2;
-	UT_sint32 l = (xFixed - 17)/2;
 
 	if (prToggle)
 		prToggle->set(t, l, 17, 17);
@@ -619,8 +714,17 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 		iType = TabInfo.getType();
 		iLeader = TabInfo.getLeader();
 	}
-
+	
 	if (pTab)
+
+#ifdef BIDI_ENABLED
+	if((static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
+	{
+		UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
+		*pTab = xAbsRight - iPosition;
+	}
+	else
+#endif
 		*pTab = xAbsLeft + iPosition;
 
 	return;
@@ -831,8 +935,23 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	// from the right of the paper, we compute the right
 	// edge of the last column.
 
-	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
-	UT_sint32 xAbsRight = _getFirstPixelInColumn(pInfo, pInfo->m_iNumColumns - 1) + pInfo->u.c.m_xColumnWidth;
+	UT_sint32 xAbsLeft,xAbsRight;
+	
+#ifdef BIDI_ENABLED
+	bool bRTL;	
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTL);
+	
+	if(bRTL)
+	{
+		xAbsRight = _getFirstPixelInColumn(pInfo,0) + pInfo->u.c.m_xColumnWidth;
+		xAbsLeft = _getFirstPixelInColumn(pInfo, pInfo->m_iNumColumns - 1);
+	}
+	else
+#endif
+	{
+		xAbsLeft = _getFirstPixelInColumn(pInfo,0);
+		xAbsRight = _getFirstPixelInColumn(pInfo, pInfo->m_iNumColumns - 1) + pInfo->u.c.m_xColumnWidth;
+	}
 
 	UT_uint32 yTop = s_iFixedHeight / 4;
 	UT_sint32 hs = 3;					// halfSize
@@ -926,29 +1045,68 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// bars (columns).
 	
 	// draw a dark-gray bar over the left margin
+#ifdef BIDI_ENABLED
+	bool bRTL;	
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTL);
 
-	_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,0+1,pInfo->u.c.m_xaLeftMargin-1);
-	sum=pInfo->u.c.m_xaLeftMargin;
+    UT_sint32 xAbsRight = pInfo->u.c.m_xaLeftMargin + (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap) * pInfo->m_iNumColumns - pInfo->u.c.m_xColumnGap;
+	
+    if(bRTL)
+    {
+		sum = xAbsRight;
+		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,sum+1,pInfo->u.c.m_xaRightMargin-1);
+		//sum -= pInfo->u.c.m_xColumnWidth;
+    }
+    else
+#endif
+	{
+		_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,0+1,pInfo->u.c.m_xaLeftMargin-1);
+		sum=pInfo->u.c.m_xaLeftMargin;
+	}
+
 
 	for (k=0; k<pInfo->m_iNumColumns; k++)
 	{
 		// draw white bar over this column
+#ifdef BIDI_ENABLED
+		if(bRTL)
+			sum -= pInfo->u.c.m_xColumnWidth;
+#endif
 		
 		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_Highlight, sum+1, pInfo->u.c.m_xColumnWidth-1);
-		sum += pInfo->u.c.m_xColumnWidth;
+		
+#ifdef BIDI_ENABLED
+		if(!bRTL)
+#endif		
+			sum += pInfo->u.c.m_xColumnWidth;
 
 		// if another column after this one, draw dark gray-gap
 		
 		if (k+1 < pInfo->m_iNumColumns)
 		{
+#ifdef BIDI_ENABLED
+			if(bRTL)
+				sum -= pInfo->u.c.m_xColumnGap;
+#endif
+			
 			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1, pInfo->u.c.m_xColumnGap-1);
-			sum += pInfo->u.c.m_xColumnGap;
+#ifdef BIDI_ENABLED
+			if(!bRTL)
+#endif		
+				sum += pInfo->u.c.m_xColumnGap;
 		}
 	}
 
 	// draw dark-gray right margin
-	
-	_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1,pInfo->u.c.m_xaRightMargin-1);
+#ifdef BIDI_ENABLED
+			if(bRTL)
+			{
+				sum -= pInfo->u.c.m_xaLeftMargin;
+				_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1,pInfo->u.c.m_xaLeftMargin-1);
+			}
+			else
+#endif
+				_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1,pInfo->u.c.m_xaRightMargin-1);
 
 	// now draw tick marks on the bar, using the selected system of units.
 
@@ -961,44 +1119,102 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// to the right of this x-value will be drawn on a positive scale to the
 	// right.
 
-	UT_sint32 xTickOrigin = pInfo->u.c.m_xaLeftMargin;
+	UT_sint32 xTickOrigin;
+#ifdef BIDI_ENABLED
+	
+	if(bRTL)
+	{
+	    xTickOrigin = xAbsRight;
+		if (pInfo->m_iCurrentColumn > 0)
+			xTickOrigin -= pInfo->m_iCurrentColumn * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
+	}
+	else
+#endif
+	{	//do not remove!!!
+	xTickOrigin = pInfo->u.c.m_xaLeftMargin;	
 	if (pInfo->m_iCurrentColumn > 0)
 		xTickOrigin += pInfo->m_iCurrentColumn * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
+    }
 
 	sum = 0;
 
 	// draw negative ticks over left margin.  
-
-	if(pInfo->u.c.m_xaLeftMargin)
+#ifdef BIDI_ENABLED
+	if(bRTL)
 	{
+		sum = xTickOrigin + pInfo->u.c.m_xaRightMargin;
+		if(pInfo->u.c.m_xaRightMargin)
+			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin,xTickOrigin,sum);
+			sum -= pInfo->u.c.m_xaRightMargin;
+	}	
+	else
+#endif
+	{	//do not remove!!!
+	if(pInfo->u.c.m_xaLeftMargin)
 		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
+		sum += pInfo->u.c.m_xaLeftMargin;
 	}
-	sum += pInfo->u.c.m_xaLeftMargin;
+	
 	
 	for (k=0; k<pInfo->m_iNumColumns; k++)
 	{
 		// draw positive or negative ticks on this column.
 		
 		if (k < pInfo->m_iCurrentColumn)
-			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
+#ifdef BIDI_ENABLED
+			if(bRTL)
+			{
+				_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum-pInfo->u.c.m_xColumnWidth, sum);
+				sum -= pInfo->u.c.m_xColumnWidth;
+			}	
+			else
+#endif
+			{
+				_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
+				sum += pInfo->u.c.m_xColumnWidth;
+			}
 		else
-			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
-
-		sum += pInfo->u.c.m_xColumnWidth;
+#ifdef BIDI_ENABLED
+			if(bRTL)
+			{
+				_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum-pInfo->u.c.m_xColumnWidth);
+				sum -= pInfo->u.c.m_xColumnWidth;
+			}
+			else
+#endif
+			{
+				_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
+				sum += pInfo->u.c.m_xColumnWidth;
+			}
 
 		// if another column after this one, skip over the gap
 		// (we don't draw ticks on the gap itself).
 
 		if (k+1 < pInfo->m_iNumColumns)
+#ifdef BIDI_ENABLED
+			if(bRTL)
+				sum -= pInfo->u.c.m_xColumnGap;
+			else
+#endif
 			sum += pInfo->u.c.m_xColumnGap;
 	}
 
 	// draw ticks over the right margin
-
-	if(pInfo->u.c.m_xaRightMargin)
+#ifdef BIDI_ENABLED
+	if(bRTL)
+	{
+		if(pInfo->u.c.m_xaLeftMargin)
 		{
-		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin, 0);
+			//UT_DEBUGMSG(("drawn left margin\n"));
 		}
+	}
+	else
+#endif
+	if(pInfo->u.c.m_xaRightMargin)
+	{
+		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+	}
 
 	// draw the various widgets for the:
 	// 
@@ -1165,16 +1381,33 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
 	
-	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	pView->getTopRulerInfo(&m_infoCache);
 
 	// Set this in case we never get a mouse motion event
-    UT_sint32 xAbsLeft = _getFirstPixelInColumn(    &m_infoCache,
-                                                        m_infoCache.m_iCurrentColumn);
-    UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
+    UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+	UT_sint32 xrel;
+
+#ifdef BIDI_ENABLED
+    UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	if(bRTL)
+		xrel = xAbsRight - ((UT_sint32)x);	
+	else
+#endif
+		xrel = ((UT_sint32)x) - xAbsLeft;
+
     ap_RulerTicks tick(m_pG,m_dim);
     UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
-    m_draggingCenter = xAbsLeft + xgrid;
 
+#ifdef BIDI_ENABLED
+	if(bRTL)
+	    m_draggingCenter = xAbsRight - xgrid;
+	else
+#endif
+	    m_draggingCenter = xAbsLeft + xgrid;
+
+	xxx_UT_DEBUGMSG(("mousePress: m_draggingCenter (1) %d\n", m_draggingCenter));
 	m_oldX = xgrid; // used to determine if delta is zero on a mouse release
 
 	// first hit-test against the tab toggle control
@@ -1206,7 +1439,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	{
 		if(emb == EV_EMB_BUTTON1)
 		{
-			UT_DEBUGMSG(("hit tab %ld  x=%d y=%d \n",iTab,x,y));
+			//UT_DEBUGMSG(("hit tab %ld  x=%d y=%d \n",iTab,x,y));
 			m_bValidMouseClick = true;
 			m_draggingWhat = DW_TABSTOP;
 			m_draggingTab = iTab;
@@ -1243,7 +1476,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
 			m_draggingWhat = DW_NOTHING;
-			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+			pView->setBlockFormat(properties);
  			m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 		}
 
@@ -1262,7 +1495,18 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	{
 		UT_DEBUGMSG(("hit left indent block x= %d y=%d \n",x,y));
 		m_bValidMouseClick = true;
-		m_draggingWhat = ((_isInBottomBoxOfLeftIndent(y)) ? DW_LEFTINDENTWITHFIRST : DW_LEFTINDENT);
+#ifdef BIDI_ENABLED
+		/*
+			in RTL paragraphs we will throw right indent events for this box
+			the code which handles these events then ensure that we do in fact
+			modify the left margin
+		*/
+		if(bRTL)
+			m_draggingWhat = DW_RIGHTINDENT;
+		else
+#endif
+			m_draggingWhat = ((_isInBottomBoxOfLeftIndent(y)) ? DW_LEFTINDENTWITHFIRST : DW_LEFTINDENT);
+			
 		m_bBeforeFirstMotion = true;
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		return;
@@ -1271,7 +1515,18 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	{
 		UT_DEBUGMSG(("hit right indent block x=%d y=%d \n",x,y));
 		m_bValidMouseClick = true;
-		m_draggingWhat = DW_RIGHTINDENT;
+#ifdef BIDI_ENABLED
+		/*
+			in RTL paragraphs we will throw left indent events for this box
+			the code which handles these events then ensure that we do in fact
+			modify the right margin
+		*/
+		if(bRTL)
+			m_draggingWhat = _isInBottomBoxOfLeftIndent(y) ? DW_LEFTINDENTWITHFIRST : DW_LEFTINDENT;
+		else
+#endif
+			m_draggingWhat = DW_RIGHTINDENT;
+			
 		m_bBeforeFirstMotion = true;
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		return;
@@ -1318,7 +1573,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
-		//UT_DEBUGMSG(("hit right margin block\n"));
+		UT_DEBUGMSG(("hit right margin block\n"));
 		m_bValidMouseClick = true;
 		m_draggingWhat = DW_RIGHTMARGIN;
 		m_bBeforeFirstMotion = true;
@@ -1348,7 +1603,13 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 
 		UT_sint32 oldDraggingCenter = m_draggingCenter;
 		UT_Rect oldDraggingRect = m_draggingRect;
+#ifdef BIDI_ENABLED
+		if(bRTL)
+			m_draggingCenter = xAbsRight - xgrid;
+		else
+#endif		
 		m_draggingCenter = xAbsLeft + xgrid;
+		
 		_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 		if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 			draw(&oldDraggingRect,&m_infoCache);
@@ -1404,8 +1665,24 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	ap_RulerTicks tick(m_pG,m_dim);
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-	UT_sint32 xgrid = tick.snapPixelToGrid(((UT_sint32)x) - xAbsLeft);
 	
+    UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+	UT_sint32 xgrid;
+
+
+#ifdef BIDI_ENABLED
+	bool bRTLglobal;	
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTLglobal);
+	
+	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+
+	if(bRTLpara)
+		xgrid = tick.snapPixelToGrid(xAbsRight - ((UT_sint32)x));	
+	else
+#endif		
+		xgrid = tick.snapPixelToGrid(((UT_sint32)x) - xAbsLeft);
+
+				
 	_xorGuide (true);
 	
 	if (xgrid == m_oldX) // Not moved - clicked and released
@@ -1424,9 +1701,17 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		
 	case DW_LEFTMARGIN:
 		{
+		
+			// margins do not require any special bidi treatement; right
+			// edge of the page is always a right edge of the page ...
+			
 			UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-			UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
-			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+			UT_sint32 xAbsLeft;
+			double dxrel;
+			
+			xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
+			
+			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
 
 			const XML_Char * properties[3];
 			properties[0] = "page-margin-left";
@@ -1445,15 +1730,23 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	case DW_RIGHTMARGIN:
 		{
-			UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
-								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+			UT_sint32 xAbsRight;
+#ifdef BIDI_ENABLED
+			if(bRTLglobal)
+				xAbsRight = _getFirstPixelInColumn(&m_infoCache, 0)
+							+ m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+			else
+#endif
+				xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1)
+									+ m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+									
 			double dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
 
 			const XML_Char * properties[3];
 			properties[0] = "page-margin-right";
 			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
 			properties[2] = 0;
-			UT_DEBUGMSG(("TopRuler: page-margin-right [%s]\n",properties[1]));
+			UT_DEBUGMSG(("TopRuler: page-margin-right [%s] (x %d, xAbsRight %d)\n",properties[1], x, xAbsRight));
 
 			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
@@ -1489,54 +1782,86 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			// so, when we drop the left-indent, we need to reset the first-line
 			// so that the absolute position of the first-line has not changed.
 			// first-line is stored in relative terms, so we need to update it.
-			
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			double dxrel  = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
 
-			UT_sint32 xdelta = (m_draggingCenter-xAbsLeft) - m_infoCache.m_xrLeftIndent;
-			double dxrel2 = tick.scalePixelDistanceToUnits(m_infoCache.m_xrFirstLineIndent - xdelta);
+			
+			FV_View * pView = static_cast<FV_View *>(m_pView);			
+			
+			const XML_Char * properties[5];
+            double dxrel;
+            double dxrel2;
+            UT_sint32 xdelta;
+
+#ifdef BIDI_ENABLED
+			// in rtl block we drag the right indent
+			xxx_UT_DEBUGMSG(("DW_LEFTINDENT (release): m_draggingCenter %d\n", m_draggingCenter));
+			if(bRTLpara)
+			{
+				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
+				xdelta = (xAbsRight - m_draggingCenter) - m_infoCache.m_xrRightIndent;
+				properties[0] = "margin-right";
+			}
+			else
+#endif
+			{			
+				dxrel  = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+				xdelta = (m_draggingCenter-xAbsLeft) - m_infoCache.m_xrLeftIndent;
+				properties[0] = "margin-left";
+			}
+				
+			dxrel2 = tick.scalePixelDistanceToUnits(m_infoCache.m_xrFirstLineIndent - xdelta);
 
 			// invertDimension() returns pointer to static buffer, so
 			// we need to copy these for later use.
-			
 			char buf1[50];
 			strcpy(buf1,m_pG->invertDimension(tick.dimType,dxrel));
 			char buf2[50];
 			strcpy(buf2,m_pG->invertDimension(tick.dimType,dxrel2));
 			
-			const XML_Char * properties[5];
-			properties[0] = "margin-left";
 			properties[1] = buf1;
 			properties[2] = "text-indent";
 			properties[3] = buf2;
 			properties[4] = 0;
-			UT_DEBUGMSG(("TopRuler: LeftIndent [%s] TextIndent [%s]\n",
-						 properties[1],properties[3]));
-
+			UT_DEBUGMSG(("TopRuler: LeftIndent [%s] TextIndent [%s] (xAbsRight %d, dxrel %f, m_draggingCenter %d)\n",
+							 properties[1],properties[3],xAbsRight, dxrel,m_draggingCenter));
+				
 			m_draggingWhat = DW_NOTHING;
-			FV_View * pView = static_cast<FV_View *>(m_pView);
+			
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
-
+		
 	case DW_LEFTINDENTWITHFIRST:
 		{
 			// we are dragging both the left-indent and first-line in sync
 			// so that we do not change the first-line-indent relative to
 			// the paragraph.  since first-line-indent is stored in the
 			// document in relative coordinates, we don't need to do anything.
-			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
-
+			double dxrel;
 			const XML_Char * properties[3];
-			properties[0] = "margin-left";
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+						
+#ifdef BIDI_ENABLED
+			// in rtl block we drag the right margin, of course :-);
+			xxx_UT_DEBUGMSG(("DW_LEFTINDENTWITHFIRST (release): m_draggingCenter %d\n", m_draggingCenter));
+			if(bRTLpara)
+			{
+				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
+				properties[0] = "margin-right";
+			}
+			else
+#endif
+			{
+				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+				properties[0] = "margin-left";
+			}
+			
 			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: LeftIndent [%s]\n",properties[1]));
 
 			m_draggingWhat = DW_NOTHING;
-			FV_View * pView = static_cast<FV_View *>(m_pView);
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
@@ -1545,26 +1870,55 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		
 	case DW_RIGHTINDENT:
 		{
-			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-			double dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
-
+			
+			double dxrel;
+			FV_View * pView = static_cast<FV_View *>(m_pView);			
 			const XML_Char * properties[3];
-			properties[0] = "margin-right";
-			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+
+#ifdef BIDI_ENABLED
+			// in rtl block we drag the left indent
+			xxx_UT_DEBUGMSG(("DW_RIGHTINDENT (release): m_draggingCenter %d\n", m_draggingCenter));
+			if(bRTLpara)
+			{
+				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);				
+				properties[0] = "margin-left";
+			}
+			else
+#endif
+			{	
+				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);						
+				properties[0] = "margin-right";
+			}
+
+			// invertDimension() returns pointer to static buffer, so
+			// we need to copy these for later use.
+			char buf1[50];
+			strcpy(buf1,m_pG->invertDimension(tick.dimType,dxrel));
+							
+			properties[1] = buf1;
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: RightIndent [%s]\n",properties[1]));
 
+				
 			m_draggingWhat = DW_NOTHING;
-			FV_View * pView = static_cast<FV_View *>(m_pView);
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
 		}
 		return;
-
+	
 	case DW_FIRSTLINEINDENT:
 		{
-			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft-m_infoCache.m_xrLeftIndent);
+			double dxrel;
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter-m_infoCache.m_xrRightIndent);
+			else
+#endif
+				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft-m_infoCache.m_xrLeftIndent);
+
 
 			const XML_Char * properties[3];
 			properties[0] = "text-indent";
@@ -1573,7 +1927,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_DEBUGMSG(("TopRuler: FirstLineIndent [%s]\n",properties[1]));
 			
 			m_draggingWhat = DW_NOTHING;
-			FV_View * pView = static_cast<FV_View *>(m_pView);
 			pView->setBlockFormat(properties);
 			notify(pView, AV_CHG_HDRFTR);
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
@@ -1700,8 +2053,25 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
-	UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
-		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+	UT_sint32 xAbsRight;  	// NB !!! this variable is used by the page margins and
+							// refers to the very right edge of the page; it is not
+							// a right edge of the rightmost column.
+	
+#ifdef BIDI_ENABLED
+	bool bRTLglobal;	
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTLglobal);
+	
+	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	
+	if(bRTLglobal)
+		xAbsRight = _getFirstPixelInColumn(&m_infoCache, 0) +
+			m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+	else
+#endif
+		xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) +
+			m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+
+	//UT_DEBUGMSG(("mouseMotion: xAbsRight %d\n", xAbsRight));
 	ap_RulerTicks tick(m_pG,m_dim);
 	// now to test if we are on the view, and scroll if the mouse isn't
 	
@@ -1775,20 +2145,46 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		UT_sint32 oldDragCenter = m_draggingCenter;
-
 		UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
+		
+		UT_sint32 iAbsLeft;
+		UT_sint32 iAbsRight;
+		UT_sint32 iIndentShift;
+		UT_sint32 iRightIndentPos;
+		UT_sint32 iFirstIndentL, iFirstIndentR;
 
+#ifdef BIDI_ENABLED
+		UT_sint32 xAbsRight;
+		
+		if(bRTLglobal)
+		{
+			xAbsRight = _getFirstPixelInColumn(&m_infoCache,0) + m_infoCache.u.c.m_xColumnWidth;
+			iFirstIndentL = 0;
+			iFirstIndentR = m_infoCache.m_xrFirstLineIndent;
+	        iAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iNumColumns - 1);
+		}
+		else
+#endif		
+		{
+			iFirstIndentL = m_infoCache.m_xrFirstLineIndent;
+			iFirstIndentR = 0;
+	        iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
+		}
+			
 		m_draggingCenter = tick.snapPixelToGrid(x);
 
-        UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
-        UT_sint32 iAbsRight = iAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-        UT_sint32 iIndentShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
-        UT_sint32 iRightIndentPos = iAbsRight - UT_MAX(0,m_infoCache.m_xrRightIndent) - iIndentShift;
+
+   	    iAbsRight = iAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+       	iIndentShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + iFirstIndentL));
+        iRightIndentPos = iAbsRight - UT_MAX(0,m_infoCache.m_xrRightIndent + iFirstIndentR) - iIndentShift;
+
         if(iRightIndentPos - m_draggingCenter < m_minColumnWidth)
 		{
             m_draggingCenter = iRightIndentPos - m_minColumnWidth;
 		}
-        iIndentShift = UT_MIN(0,UT_MIN(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
+
+        iIndentShift = UT_MIN(0,UT_MIN(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + iFirstIndentL));
+
         m_draggingCenter = UT_MAX(m_draggingCenter, xAbsLeft - iIndentShift);
 
 		if(m_draggingCenter == oldDragCenter)
@@ -1801,11 +2197,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		UT_sint32 newMargin = m_draggingCenter - xAbsLeft;
 		UT_sint32 deltaLeftMargin = newMargin - m_infoCache.u.c.m_xaLeftMargin;
 		UT_sint32 newColumnWidth = m_infoCache.u.c.m_xColumnWidth - deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
-		if(m_infoCache.m_xrFirstLineIndent + m_infoCache.m_xrLeftIndent > m_infoCache.m_xrLeftIndent)
+		if(iFirstIndentL + m_infoCache.m_xrLeftIndent > m_infoCache.m_xrLeftIndent)
 		{
-			if(m_infoCache.m_xrFirstLineIndent + m_infoCache.m_xrLeftIndent > 0)
+			if(iFirstIndentL + m_infoCache.m_xrLeftIndent > 0)
 			{
-				newColumnWidth -= m_infoCache.m_xrFirstLineIndent + m_infoCache.m_xrLeftIndent;
+				newColumnWidth -= iFirstIndentL + m_infoCache.m_xrLeftIndent;
 			}
 		}
 		else if(m_infoCache.m_xrLeftIndent > 0)
@@ -1817,24 +2213,23 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			x -= (m_minColumnWidth - newColumnWidth) * (UT_sint32)m_infoCache.m_iNumColumns;
 
 			m_draggingCenter = tick.snapPixelToGrid(x);
+
 			newMargin = m_draggingCenter - xAbsLeft;
 			deltaLeftMargin = newMargin - m_infoCache.u.c.m_xaLeftMargin;
-			
+			m_infoCache.u.c.m_xaLeftMargin += deltaLeftMargin;
+			m_infoCache.u.c.m_xColumnWidth -= deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
+			draw(NULL, &m_infoCache);
+			m_infoCache.u.c.m_xaLeftMargin -= deltaLeftMargin;
+			m_infoCache.u.c.m_xColumnWidth += deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 		}
-		m_infoCache.u.c.m_xaLeftMargin += deltaLeftMargin;
-		m_infoCache.u.c.m_xColumnWidth -= deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 
-		draw(NULL, &m_infoCache);
-		m_infoCache.u.c.m_xaLeftMargin -= deltaLeftMargin;
-		m_infoCache.u.c.m_xColumnWidth += deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 		_xorGuide();
 		m_bBeforeFirstMotion = false;
 
 		// Display in margin in status bar.
-
-		double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
-
+        double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
 		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, dxrel);
+
 		}
 		return;
 
@@ -1842,13 +2237,29 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 		UT_sint32 oldDragCenter = m_draggingCenter;
-        UT_sint32 iRightShift = UT_MAX(0,m_infoCache.m_xrRightIndent);
-        UT_sint32 iLeftShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent));
+
+		UT_sint32 iFirstIndentL, iFirstIndentR;
+	
+#ifdef BIDI_ENABLED
+		if(bRTLglobal)
+		{
+			iFirstIndentR = m_infoCache.m_xrFirstLineIndent;
+			iFirstIndentL = 0;
+		}
+		else
+#endif
+		{
+			iFirstIndentR = 0;
+			iFirstIndentL = m_infoCache.m_xrFirstLineIndent;
+		}
+				
+        UT_sint32 iRightShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrRightIndent,m_infoCache.m_xrRightIndent + iFirstIndentR));
+        UT_sint32 iLeftShift = UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + iFirstIndentL));
         UT_sint32 newMargin;
         UT_sint32 deltaRightMargin;
         UT_sint32 newColumnWidth;
 
-        x = UT_MIN(x,xAbsRight + UT_MIN(0,m_infoCache.m_xrRightIndent));
+        x = UT_MIN(x,xAbsRight + UT_MIN(0,m_infoCache.m_xrRightIndent + iFirstIndentR));
         while(1)
 		{
             newMargin = xAbsRight - x;
@@ -1958,20 +2369,62 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			// paragraph in the document).
 
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
-			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
+			
+			UT_sint32 xAbsLeft, xAbsRight, xrel;
+			UT_sint32 oldDraggingCenter = m_draggingCenter;
+	 		xxx_UT_DEBUGMSG(("DW_LEFTINDENT (motion), m_draggingCenter (1) %d\n", m_draggingCenter));
+			
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+			{
+				xAbsRight = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn) + m_infoCache.u.c.m_xColumnWidth;
+				xrel = xAbsRight - ((UT_sint32)x);
+			}
+			else
+#endif		
+			{
+				xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
+				xrel = ((UT_sint32)x) - xAbsLeft;
+			}
+				
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			UT_DEBUGMSG(("SettingLeftIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
-			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsLeft + xgrid;
+			
+			UT_sint32 iRightPos;
+			
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+			{
+				m_draggingCenter = xAbsRight - xgrid;
+				iRightPos = xAbsRight - m_infoCache.u.c.m_xColumnWidth + m_infoCache.m_xrLeftIndent;
+			}
+			else
+#endif		
+			{	
+				m_draggingCenter = xAbsLeft + xgrid;
+    			iRightPos = m_infoCache.u.c.m_xColumnWidth + xAbsLeft - m_infoCache.m_xrRightIndent;
+			}
 
-            UT_sint32 iRightPos = m_infoCache.u.c.m_xColumnWidth + xAbsLeft - m_infoCache.m_xrRightIndent;
-            if(iRightPos - m_draggingCenter < m_minColumnWidth)
-            {
-                m_draggingCenter = iRightPos - m_minColumnWidth;
-            }
+
+#ifdef BIDI_ENABLED
+			xxx_UT_DEBUGMSG(("DW_LEFTINDENT (motion) (2): m_draggingCenter %d, iRightPos %d, m_minColumnWidth %d\n",m_draggingCenter,iRightPos,m_minColumnWidth));
+			if(bRTLpara)
+			{
+	            if(m_draggingCenter - iRightPos < m_minColumnWidth)
+	            {
+					m_draggingCenter = iRightPos + m_minColumnWidth;
+	            }
+	    	}
+	  		else
+#endif
+				if(iRightPos - m_draggingCenter < m_minColumnWidth)
+				{
+                	m_draggingCenter = iRightPos - m_minColumnWidth;
+				}
+			
+			xxx_UT_DEBUGMSG(("DW_LEFTINDENT (motion) (3): m_draggingCenter %d, iRightPos %d, m_minColumnWidth %d\n",m_draggingCenter,iRightPos,m_minColumnWidth));
 
 			_getParagraphMarkerRects(&m_infoCache,m_draggingCenter,0,0,&m_draggingRect,NULL,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
@@ -1979,13 +2432,31 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_drawParagraphProperties(NULL,&m_infoCache,false);
 			_xorGuide();
 
+		    double dxrel;
+		    UT_sint32 xdelta;
 		
-			double dxrel  = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
-
-			UT_sint32 xdelta = (m_draggingCenter-xAbsLeft) - m_infoCache.m_xrLeftIndent;
+#ifdef BIDI_ENABLED			
+			if(bRTLpara)
+			{
+				dxrel  = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
+				xdelta = (xAbsRight - m_draggingCenter) - m_infoCache.m_xrRightIndent;
+			}
+			else
+#endif
+			{
+				dxrel  = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+				xdelta = (m_draggingCenter-xAbsLeft) - m_infoCache.m_xrLeftIndent;
+			}
+			
 			double dxrel2 = tick.scalePixelDistanceToUnits(m_infoCache.m_xrFirstLineIndent - xdelta);
 
-			_displayStatusMessage(AP_STRING_ID_LeftIndentTextIndentStatus, tick, dxrel, dxrel2);
+#ifdef BIDI_ENABLED			
+			if(bRTLpara)
+				_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel, dxrel2);
+			else
+#endif				
+				_displayStatusMessage(AP_STRING_ID_LeftIndentTextIndentStatus, tick, dxrel, dxrel2);
+
 		}
 		m_bBeforeFirstMotion = false;
 		return;
@@ -1999,35 +2470,92 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
-			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
-			UT_sint32 xgridTagAlong = xgrid + m_infoCache.m_xrFirstLineIndent;
+			UT_sint32 xrel, xgrid, xgridTagAlong;
+			
+#ifdef BIDI_ENABLED
+            UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+
+            if(bRTLpara)
+            {
+				xrel = xAbsRight - ((UT_sint32)x);
+				xgrid = tick.snapPixelToGrid(xrel);
+                xgridTagAlong = xgrid + m_infoCache.m_xrFirstLineIndent;
+            }
+            else
+#endif			
+			{
+				xrel = ((UT_sint32)x) - xAbsLeft;
+				xgrid = tick.snapPixelToGrid(xrel);
+				xgridTagAlong = xgrid + m_infoCache.m_xrFirstLineIndent;
+			}
+			
+			
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			UT_DEBUGMSG(("SettingLeftIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_sint32 oldDragging2Center = m_dragging2Center;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			UT_Rect oldDragging2Rect = m_dragging2Rect;
-			m_draggingCenter  = xAbsLeft + xgrid;
-			m_dragging2Center = xAbsLeft + xgridTagAlong;
-
+			
+			UT_sint32 iRightIndentPos;
             UT_sint32 iFirstIndentShift = UT_MAX(0,m_infoCache.m_xrFirstLineIndent);
-            UT_sint32 iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent - iFirstIndentShift;
+			
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+			{
+				m_draggingCenter  = xAbsRight - xgrid;
+				m_dragging2Center = xAbsRight - xgridTagAlong;
+	            iRightIndentPos = xAbsRight - m_infoCache.u.c.m_xColumnWidth + m_infoCache.m_xrLeftIndent + iFirstIndentShift;
+			}
+			else
+#endif
+			{
+				m_draggingCenter  = xAbsLeft + xgrid;
+				m_dragging2Center = xAbsLeft + xgridTagAlong;
+	            iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent - iFirstIndentShift;
+			}
+			
 
 			// Prevent the first-line indent from being dragged off the page
-			if (m_dragging2Center < xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin)
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
 			{
-				m_dragging2Center = oldDragging2Center;
-				m_draggingCenter = oldDraggingCenter;
-				return;
+				if (m_dragging2Center > xAbsRight)
+				{
+					m_dragging2Center = oldDragging2Center;
+					m_draggingCenter = oldDraggingCenter;
+					return;
+				}
+				
 			}
+			else
+#endif
+				if (m_dragging2Center < xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin)
+				{
+					m_dragging2Center = oldDragging2Center;
+					m_draggingCenter = oldDraggingCenter;
+					return;
+				}
 
-            if(iRightIndentPos - m_draggingCenter < m_minColumnWidth)
-            {
-                m_draggingCenter = iRightIndentPos - m_minColumnWidth;
-                m_dragging2Center = m_draggingCenter + xgridTagAlong - xgrid;
-            }
+#ifdef BIDI_ENABLED
+			xxx_UT_DEBUGMSG(("m_draggingCenter %d, iRightIndentPos %d, m_minColumnWidth %d\n",m_draggingCenter,iRightIndentPos,m_minColumnWidth));
 
+			if(bRTLpara)
+			{
+	            if(m_draggingCenter - iRightIndentPos < m_minColumnWidth)
+	            {
+       	        	m_draggingCenter = iRightIndentPos + m_minColumnWidth;
+           	    	m_dragging2Center = m_draggingCenter - xgridTagAlong + xgrid;
+	            }
+	  		}
+	  		else
+#endif
+				if(iRightIndentPos - m_draggingCenter < m_minColumnWidth)
+				{
+       	        	m_draggingCenter = iRightIndentPos - m_minColumnWidth;
+           	    	m_dragging2Center = m_draggingCenter + xgridTagAlong - xgrid;
+				}
+			
 			_getParagraphMarkerRects(&m_infoCache,
 									 m_draggingCenter,0,m_dragging2Center,
 									 &m_draggingRect,NULL,&m_dragging2Rect);
@@ -2039,7 +2567,14 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_drawParagraphProperties(NULL,&m_infoCache,false);
 			_xorGuide();
 
-			double dxrel  = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+			double dxrel;
+
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
+			else
+#endif
+				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
 
 			_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick, dxrel);
 		}
@@ -2051,19 +2586,53 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-			UT_sint32 xrel = xAbsRight2 - ((UT_sint32)x);
+			UT_sint32 xrel;
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+			{
+				xrel = ((UT_sint32)x) - xAbsLeft;
+			}
+			else
+#endif			
+				xrel = xAbsRight2 - ((UT_sint32)x);
+				
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			UT_DEBUGMSG(("SettingRightIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsRight2 - xgrid;
-
-            UT_sint32 iLeftIndentPos = xAbsLeft + UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent);
-            if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
-            {
-                m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
-            }
+			UT_sint32 iLeftIndentPos;
+			
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+			{
+				m_draggingCenter = xAbsLeft + xgrid;
+				iLeftIndentPos = xAbsRight2 - UT_MAX(m_infoCache.m_xrRightIndent,m_infoCache.m_xrRightIndent);
+			}
+			else
+#endif
+			{
+				m_draggingCenter = xAbsRight2 - xgrid;
+				iLeftIndentPos = xAbsLeft + UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent);
+			}
+				
+#ifdef BIDI_ENABLED
+			UT_DEBUGMSG(("DW_RIGHTINDENT (motion) m_draggingCenter %d, iLeftIndentPos %d, m_minColumnWidth %d\n",m_draggingCenter,iLeftIndentPos,m_minColumnWidth));
+			if(bRTLpara)
+			{
+				if((UT_sint32)iLeftIndentPos - (UT_sint32)m_draggingCenter < (UT_sint32)m_minColumnWidth)
+	            {
+					m_draggingCenter = iLeftIndentPos - m_minColumnWidth;
+	            }
+	    	}
+	  		else
+#endif
+	            if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
+				{
+	                m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
+				}
+			
+			UT_DEBUGMSG(("DW_RIGHTINDENT (motion) (2) m_draggingCenter %d, iLeftIndentPos %d, m_minColumnWidth %d\n",m_draggingCenter,iLeftIndentPos,m_minColumnWidth));
 
 			_getParagraphMarkerRects(&m_infoCache,0,m_draggingCenter,0,NULL,&m_draggingRect,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
@@ -2071,8 +2640,20 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_drawParagraphProperties(NULL,&m_infoCache,false);
 			_xorGuide();
 
-			double dxrel = tick.scalePixelDistanceToUnits(xAbsRight2 - m_draggingCenter);
-			_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel);
+			double dxrel;
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+			else
+#endif
+				dxrel = tick.scalePixelDistanceToUnits(xAbsRight2 - m_draggingCenter);
+
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+				_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick, dxrel);
+			else
+				_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel);
+#endif
 		}
 		m_bBeforeFirstMotion = false;
 		return;
@@ -2081,22 +2662,60 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
-			UT_sint32 xrel = ((UT_sint32)x) - xAbsLeft;
-			// first-line-indent is relative to the left-indent
-			// not the left edge of the column.
-			UT_sint32 xrel2 = xrel - m_infoCache.m_xrLeftIndent;
+			UT_sint32 xrel;
+            UT_sint32 xrel2;
+
+#ifdef BIDI_ENABLED
+			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+			if(bRTLpara)
+			{
+				xrel = xAbsRight - ((UT_sint32)x);
+				xrel2 = xrel - m_infoCache.m_xrRightIndent;
+			}
+			else
+#endif			
+			{
+				// first-line-indent is relative to the left-indent
+				// not the left edge of the column.
+				xrel = ((UT_sint32)x) - xAbsLeft;				
+				xrel2 = xrel - m_infoCache.m_xrLeftIndent;
+			}
+
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel2);
 			double dgrid = tick.scalePixelDistanceToUnits(xrel2);
 			UT_DEBUGMSG(("SettingFirstLineIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
-			m_draggingCenter = xAbsLeft + m_infoCache.m_xrLeftIndent + xgrid;
-
-            UT_sint32 iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent;
-            if(iRightIndentPos - m_draggingCenter  < m_minColumnWidth)
-            {
-                m_draggingCenter = iRightIndentPos - m_minColumnWidth;
+			
+            UT_sint32 iRightIndentPos;
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+			{
+				m_draggingCenter = xAbsRight - m_infoCache.m_xrRightIndent - xgrid;
+				iRightIndentPos = xAbsRight - m_infoCache.u.c.m_xColumnWidth + m_infoCache.m_xrLeftIndent;			
+			}
+			else
+#endif
+			{
+				m_draggingCenter = xAbsLeft + m_infoCache.m_xrLeftIndent + xgrid;
+				iRightIndentPos = xAbsLeft + m_infoCache.u.c.m_xColumnWidth - m_infoCache.m_xrRightIndent;
             }
+			
+#ifdef BIDI_ENABLED
+			xxx_UT_DEBUGMSG(("m_draggingCenter %d, iRightIndentPos %d, m_minColumnWidth %d\n",m_draggingCenter,iRightIndentPos,m_minColumnWidth));
+			if(bRTLpara)
+			{
+	            if(m_draggingCenter - iRightIndentPos < m_minColumnWidth)
+	            {
+					m_draggingCenter = iRightIndentPos + m_minColumnWidth;
+	            }
+	    	}
+	  		else
+#endif
+				if(iRightIndentPos - m_draggingCenter < m_minColumnWidth)
+				{
+                	m_draggingCenter = iRightIndentPos - m_minColumnWidth;
+				}
 
 			_getParagraphMarkerRects(&m_infoCache,0,0,m_draggingCenter,NULL,NULL,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
@@ -2106,7 +2725,14 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
 			_xorGuide();
 
-			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft - m_infoCache.m_xrLeftIndent);
+			double dxrel;
+
+#ifdef BIDI_ENABLED
+			if(bRTLpara)
+				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter - m_infoCache.m_xrRightIndent);
+			else
+				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft - m_infoCache.m_xrLeftIndent);
+#endif
 
 			_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, dxrel);
 		}
@@ -2167,7 +2793,20 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	UT_sint32 xOrigin = pInfo->u.c.m_xaLeftMargin
 		+ kCol * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
 	UT_sint32 xAbsLeft = xFixed + pInfo->m_xPageViewMargin + xOrigin - m_xScrollOffset;
-
+#ifdef BIDI_ENABLED
+	bool bRTL;	
+	XAP_App::getApp()->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &bRTL);
+	
+	if(bRTL)
+	{
+		UT_sint32 xAbsRight = xFixed + pInfo->m_xPageViewMargin + pInfo->u.c.m_xaLeftMargin
+				+ pInfo->m_iNumColumns * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap)
+				/*- pInfo->u.c.m_xColumnGap*/ - m_xScrollOffset
+				- (kCol + 1) * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
+		return xAbsRight;
+	}
+	else
+#endif
 	return xAbsLeft;
 }
 
@@ -2275,39 +2914,73 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
-	// fill in the body
+#ifdef BIDI_ENABLED	
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	if(bRTL)	
+	{
+		// fill in the body
 	
-	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine( l+1,   t+13, l+10, t+13);
-	m_pG->drawLine( l+2,   t+12, l+10, t+12);
-	m_pG->drawLine( l+2,   t+11, l+10, t+11);
-	m_pG->drawLine( l+2,   t+10, l+10, t+10);
-	m_pG->drawLine( l+9,   t+9,  l+10, t+9 );
-	m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
-	m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
-	m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
-	m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
-	m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
-	m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
+		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
+		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
+		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
+		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
+		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
+		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
 
-	// draw 3d highlights
+		// draw 3d highlights
 	
-	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine( l+5,   t+1,  l,    t+6 );
-	m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
-	m_pG->drawLine( l+1,   t+9,  l+9,  t+9 );
-	m_pG->drawLine( l+1,   t+9,  l+1,  t+13);
+		m_pG->setColor3D(clr3dBevel);
+		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
+		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
 
-	// draw border
+		// draw border
 	
-	m_pG->setColor3D(clr3dBorder);
-	m_pG->drawLine(	l+5,   t,    l+11, t+6 );
-	m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
-	m_pG->drawLine(	l,     t+5,  l,    t+15);
-	m_pG->drawLine(	l+10,  t+5,  l+10, t+15);
-	m_pG->drawLine(	l,     t+14, l+11, t+14);
-	m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+		m_pG->setColor3D(clr3dBorder);
+		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
+		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
+		m_pG->drawLine(	l,     t+5,  l,    t+9 );
+		m_pG->drawLine(	l+10,  t+5,  l+10, t+9 );
+		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+	
+	}
+	else
+#endif
+	{
+		// fill in the body
+	
+		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
+		m_pG->drawLine( l+1,   t+13, l+10, t+13);
+		m_pG->drawLine( l+2,   t+12, l+10, t+12);
+		m_pG->drawLine( l+2,   t+11, l+10, t+11);
+		m_pG->drawLine( l+2,   t+10, l+10, t+10);
+		m_pG->drawLine( l+9,   t+9,  l+10, t+9 );
+		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
+		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
+		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
+		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
+		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
+		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
 
+		// draw 3d highlights
+	
+		m_pG->setColor3D(clr3dBevel);
+		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
+		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+		m_pG->drawLine( l+1,   t+9,  l+9,  t+9 );
+		m_pG->drawLine( l+1,   t+9,  l+1,  t+13);
+
+		// draw border
+	
+		m_pG->setColor3D(clr3dBorder);
+		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
+		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
+		m_pG->drawLine(	l,     t+5,  l,    t+15);
+		m_pG->drawLine(	l+10,  t+5,  l+10, t+15);
+		m_pG->drawLine(	l,     t+14, l+11, t+14);
+		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+    }
 }
 
 void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
@@ -2318,31 +2991,72 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
-	// fill in the body
+#ifdef BIDI_ENABLED	
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL;
+	if(bRTL)	
+	{
+		// fill in the body
 	
-	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
-	m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
-	m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
-	m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
-	m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
-	m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
+		m_pG->drawLine( l+1,   t+13, l+10, t+13);
+		m_pG->drawLine( l+2,   t+12, l+10, t+12);
+		m_pG->drawLine( l+2,   t+11, l+10, t+11);
+		m_pG->drawLine( l+2,   t+10, l+10, t+10);
+		m_pG->drawLine( l+9,   t+9,  l+10, t+9 );
+		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
+		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
+		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
+		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
+		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
+		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
 
-	// draw 3d highlights
+		// draw 3d highlights
 	
-	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine( l+5,   t+1,  l,    t+6 );
-	m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+		m_pG->setColor3D(clr3dBevel);
+		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
+		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+		m_pG->drawLine( l+1,   t+9,  l+9,  t+9 );
+		m_pG->drawLine( l+1,   t+9,  l+1,  t+13);
 
-	// draw border
+		// draw border
 	
-	m_pG->setColor3D(clr3dBorder);
-	m_pG->drawLine(	l+5,   t,    l+11, t+6 );
-	m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
-	m_pG->drawLine(	l,     t+5,  l,    t+9 );
-	m_pG->drawLine(	l+10,  t+5,  l+10, t+9 );
-	m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+		m_pG->setColor3D(clr3dBorder);
+		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
+		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
+		m_pG->drawLine(	l,     t+5,  l,    t+15);
+		m_pG->drawLine(	l+10,  t+5,  l+10, t+15);
+		m_pG->drawLine(	l,     t+14, l+11, t+14);
+		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+	}
+	else
+#endif
+	{
+		// fill in the body
+	
+		m_pG->setColor3D(GR_Graphics::CLR3D_Background);
+		m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
+		m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
+		m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
+		m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
+		m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
+		m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
 
+		// draw 3d highlights
+	
+		m_pG->setColor3D(clr3dBevel);
+		m_pG->drawLine( l+5,   t+1,  l,    t+6 );
+		m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+
+		// draw border
+	
+		m_pG->setColor3D(clr3dBorder);
+		m_pG->drawLine(	l+5,   t,    l+11, t+6 );
+		m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
+		m_pG->drawLine(	l,     t+5,  l,    t+9 );
+		m_pG->drawLine(	l+10,  t+5,  l+10, t+9 );
+		m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+    }
 }
 
 void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
