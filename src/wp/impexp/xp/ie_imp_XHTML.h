@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -71,6 +73,8 @@ private:
 	XML_Char *  m_szBookMarkName;
 
 	bool        m_addedPTXSection;
+
+	UT_String	m_dirname;
 };
 
 #endif /* IE_IMP_XHTML_H */

@@ -502,6 +502,17 @@ static void convertColor(UT_String & szDest, const char *szFrom, int dfl = 0x000
 
 UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 {
+	if ( szFilename == 0) return UT_IE_BOGUSDOCUMENT;
+	if (*szFilename == 0) return UT_IE_BOGUSDOCUMENT;
+
+	int path_length = strlen (szFilename);
+	int name_length = strlen (UT_basename (szFilename));
+
+	if (path_length > name_length)
+		m_dirname = UT_String(szFilename,path_length-name_length);
+	else
+		m_dirname = "";
+
 	UT_Error e = IE_Imp_XML::importFile(szFilename);
  	if (!m_addedPTXSection) e = UT_IE_BOGUSDOCUMENT;
 	return e;
@@ -1075,6 +1086,19 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		// TODO: this is a URL and may be encoded using %AC%BE%C1 etc.
 
+		UT_String extended_path;
+
+		if (*szFile != '/')
+			{
+				/* since this is a URL, directories should be delimited by '/'
+				 * anyway, this looks like a relative link, so prefix the dirname
+				 */
+				extended_path = m_dirname;
+			}
+		extended_path += szFile;
+
+		szFile = extended_path.c_str ();
+
 		if (!UT_isRegularFile (szFile))
 			{
 				UT_DEBUGMSG(("found image reference (%s) - not found! skipping... \n",szFile));
@@ -1116,15 +1140,35 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			}
 		if (szWidth && (strstr (utf8val.utf8_str (), "width") == 0))
 			{
-				if (utf8val.byteLength () == 0) utf8val += "; ";
-				utf8val += "width:";
-				utf8val += szWidth;
+				UT_Dimension units = UT_determineDimension (szWidth, DIM_PX);
+				double d = UT_convertDimensionless (szWidth);
+				float width = (float) UT_convertDimensions (d, units, DIM_IN);
+				UT_String tmp;
+				char * old_locale = setlocale (LC_NUMERIC, "C");
+				UT_String_sprintf (tmp, "%gin", width);
+				setlocale (LC_NUMERIC, old_locale);
+				if (!tmp.empty ())
+					{
+						if (utf8val.byteLength ()) utf8val += "; ";
+						utf8val += "width:";
+						utf8val += tmp.c_str ();
+					}
 			}
 		if (szHeight && (strstr (utf8val.utf8_str (), "height") == 0))
 			{
-				if (utf8val.byteLength () == 0) utf8val += "; ";
-				utf8val += "height:";
-				utf8val += szHeight;
+				UT_Dimension units = UT_determineDimension (szHeight, DIM_PX);
+				double d = UT_convertDimensionless (szHeight);
+				float height = (float) UT_convertDimensions (d, units, DIM_IN);
+				UT_String tmp;
+				char * old_locale = setlocale (LC_NUMERIC, "C");
+				UT_String_sprintf (tmp, "%gin", height);
+				setlocale (LC_NUMERIC, old_locale);
+				if (!tmp.empty ())
+					{
+						if (utf8val.byteLength ()) utf8val += "; ";
+						utf8val += "height:";
+						utf8val += tmp.c_str ();
+					}
 			}
 		if ((strstr (utf8val.utf8_str (), "width")  == 0) ||
 			(strstr (utf8val.utf8_str (), "height") == 0))
@@ -1178,7 +1222,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				X_CheckError(getDoc()->appendStrux (PTX_Block, NULL));
 				m_parseState = _PS_Block;
 			}
-		UT_DEBUGMSG(("inserting `%s' as `%s'\n",szFile,dataid.c_str()));
+		UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szFile,dataid.c_str(),utf8val.utf8_str()));
 
 		X_CheckError(getDoc()->appendObject (PTO_Image, api_atts));
 		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, (void*) mimetype, NULL));
@@ -1772,7 +1816,20 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 			if ((UT_strcmp (name, "width")  == 0) ||
 				(UT_strcmp (name, "height") == 0))
 				{
-					verbatim = value;
+					UT_Dimension units = UT_determineDimension (value, DIM_PX);
+					double d = UT_convertDimensionless (value);
+					float dim = (float) UT_convertDimensions (d, units, DIM_IN);
+					UT_String tmp;
+					char * old_locale = setlocale (LC_NUMERIC, "C");
+					UT_String_sprintf (tmp, "%gin", dim);
+					setlocale (LC_NUMERIC, old_locale);
+					if (!tmp.empty ())
+						{
+							if (props.byteLength ()) props += "; ";
+							props += name;
+							props += ":";
+							props += tmp.c_str ();
+						}
 				}
 		}
 	if (css_mask & CSS_MASK_BODY)

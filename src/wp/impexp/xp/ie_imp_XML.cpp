@@ -63,7 +63,7 @@ extern "C" { // for MRC compiler (Mac)
 	{
 		const char * name = (const char *)a;
 		const xmlToIdMapping * id = (const xmlToIdMapping *)b;
-		
+
 		return UT_strcmp (name, id->m_name);
 	}
 }
@@ -71,11 +71,9 @@ extern "C" { // for MRC compiler (Mac)
 int IE_Imp_XML::_mapNameToToken (const char * name, 
 								 struct xmlToIdMapping * idlist, int len)
 {
-	static UT_StringPtrMap tokens(30);
-
 	xmlToIdMapping * id = NULL;
 
-	const void * pEntry = tokens.pick (name);
+	const void * pEntry = m_tokens->pick (name);
 
 	if (pEntry)
 	{
@@ -86,7 +84,7 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 									sizeof (xmlToIdMapping), s_str_compare);
 	if (id)
     {
-		tokens.insert (name, (void *)id->m_type);
+		m_tokens->insert (name, (void *)id->m_type);
 		return id->m_type;
     }
 	return -1;
@@ -136,13 +134,20 @@ IE_Imp_XML::~IE_Imp_XML()
 }
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
-	: IE_Imp(pDocument), m_error(UT_OK), 
-          m_parseState(_PS_Init), m_bLoadIgnoredWords(false),
-	  m_lenCharDataSeen(0), m_lenCharDataExpected(0), 
-	  m_iOperationCount(0), m_bSeenCR(false), 
-	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL),
-	  m_pReader(NULL)
+	: IE_Imp(pDocument),
+	  m_pReader(0),
+	  m_tokens(new UT_StringPtrMap(30)),
+	  m_error(UT_OK), 
+	  m_parseState(_PS_Init),
+	  m_bLoadIgnoredWords(false),
+	  m_lenCharDataSeen(0),
+	  m_lenCharDataExpected(0), 
+	  m_iOperationCount(0),
+	  m_bSeenCR(false), 
+	  m_bWhiteSignificant(whiteSignificant),
+	  m_bWasSpace(false),
+	  m_currentDataItemName(NULL),
+	  m_currentDataItemMimeType(NULL)
 {
 	XAP_App *pApp = getDoc()->getApp();
 	UT_ASSERT(pApp);
