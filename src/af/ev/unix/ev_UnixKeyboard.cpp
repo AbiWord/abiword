@@ -189,11 +189,10 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			}
 			else
 			{
-				//UT_DEBUGMSG(("#TF: mLength = %d, ",mLength));
+				UT_Mbtowc m;
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{
-				        UT_Mbtowc m;
 					wchar_t wc;
 					if(m.mbtowc(wc,mbs[i]))
 					  ucs[uLength++]=wc;
