@@ -139,8 +139,12 @@ public:
 	~IE_Imp_WordPerfect_6() {}
 
 	virtual UT_Error	importFile(const char * szFilename);
-
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+						unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
  protected:
+   FILE *m_importFile;
+   UT_uint32 m_documentEnd;
+   UT_uint32 m_documentPointer;
    UT_Error _parseHeader();
    UT_Error _parseDocument();
    UT_Error _handleHardEndOfLine();
@@ -154,6 +158,7 @@ public:
    UT_Error _handleCharacterGroup();
    UT_Error _handleFootEndNoteGroup();
    UT_Error _handleExtendedCharacter();
+   UT_Error _handleUndo();
    UT_Error _handleAttribute(bool attributeOn);
    UT_Error _skipGroup(int groupByte);
    UT_Error _appendCurrentTextProperties();
@@ -162,10 +167,7 @@ public:
    UT_Error _flushParagraph();
    
  private:
-   FILE *m_importFile;
-   UT_uint32 m_documentEnd;
-   UT_uint32 m_documentPointer;
-
+   bool m_undoOn;
    bool m_firstParagraph; 
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;

@@ -47,16 +47,24 @@
 #define X_CheckWordPerfectError(v) if ((v != UT_OK)) return UT_IE_IMPORTERROR;
 
 WordPerfectTextAttributes::WordPerfectTextAttributes()
-  : m_extraLarge(false), m_veryLarge(false),
-    m_large(false), m_smallPrint(false),
-    m_finePrint(false), m_superScript(false),
-    m_subScript(false), m_outline(false),
-    m_italics(false), m_shadow(false),
-    m_redLine(false), m_bold(false),
-    m_strikeOut(false), m_underLine(false),
-    m_smallCaps(false), m_Blink(false),
-    m_reverseVideo(false)
 {
+   m_extraLarge = false;
+   m_veryLarge = false;
+   m_large = false;
+   m_smallPrint = false;
+   m_finePrint = false;
+   m_superScript = false;
+   m_subScript = false;
+   m_outline = false;
+   m_italics = false;
+   m_shadow = false;
+   m_redLine = false;
+   m_bold = false;
+   m_strikeOut = false;
+   m_underLine = false;
+   m_smallCaps = false;
+   m_Blink = false;
+   m_reverseVideo = false;
 }
 
 WordPerfectParagraphProperties::WordPerfectParagraphProperties()
@@ -91,7 +99,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	UT_ASSERT (m_sniffer);
 
 	mi->name    = "WordPerfect (tm) Importer";
-	mi->desc    = "Import WordPerfect (tm) Documents";
+	mi->desc    = "WordPerfect (tm) Documents";
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Abi the Ant";
 	mi->usage   = "No Usage";
@@ -181,16 +189,22 @@ bool	IE_Imp_WordPerfect_6_Sniffer::getDlgLabels (const char ** pszDesc,
 /****************************************************************************/
 /****************************************************************************/
 
+// just buffer sizes, arbitrarily chosen
+#define DOC_TEXTRUN_SIZE 2048
+#define DOC_PROPBUFFER_SIZE 1024
+
 IE_Imp_WordPerfect_6::IE_Imp_WordPerfect_6(PD_Document * pDocument)
-  : IE_Imp (pDocument), m_documentEnd(-1), m_documentPointer(0),
-    m_firstParagraph(true)
+  : IE_Imp (pDocument)
 {
+   m_firstParagraph = true;
+   m_undoOn = false;
 }
 
 /****************************************************************************/
 /****************************************************************************/
 #define DOCUMENT_POINTER_POSITION 4
 #define DOCUMENT_SIZE_POSITION 20
+
 
 UT_Error IE_Imp_WordPerfect_6::importFile(const char * szFilename)
 {
@@ -210,6 +224,12 @@ UT_Error IE_Imp_WordPerfect_6::importFile(const char * szFilename)
       
    fclose(m_importFile);
    return error;
+}
+
+void IE_Imp_WordPerfect_6::pasteFromBuffer (PD_DocumentRange *, 
+										unsigned char *, unsigned int, const char *)
+{
+	// nada
 }
 
 UT_Error IE_Imp_WordPerfect_6::_parseHeader()
@@ -242,24 +262,36 @@ UT_Error IE_Imp_WordPerfect_6::_parseDocument()
    if (fseek(m_importFile, m_documentPointer, SEEK_SET) != 0)
      return UT_IE_IMPORTERROR;
 
-   int readVal = fgetc(m_importFile);
-   X_CheckFileError(readVal);
+   //int readVal = fgetc(m_importFile);
+   //X_CheckFileError(readVal);
    
    while (ftell(m_importFile) < (int)m_documentEnd)
      {
+	int readVal = fgetc(m_importFile);
+	X_CheckFileError(readVal);
+
 	switch (readVal)
 	  { 
 	   case WP_TOP_HARD_HYPHEN:
-	     m_Mbtowc.mbtowc(wc, '-');
-	     m_textBuf.append( (UT_uint16 *)&wc, 1);
+	     if(!m_undoOn)
+	       {		  
+		  m_Mbtowc.mbtowc(wc, '-');
+		  m_textBuf.append( (UT_uint16 *)&wc, 1);
+	       }
 	     break;
 	   case WP_TOP_SOFT_SPACE:
-	     m_Mbtowc.mbtowc(wc, ' ');
-	     m_textBuf.append( (UT_uint16 *)&wc, 1);
+	     if(!m_undoOn)
+	       {		  
+		  m_Mbtowc.mbtowc(wc, ' ');
+		  m_textBuf.append( (UT_uint16 *)&wc, 1);
+	       }	     
 	     break;
 	   case WP_TOP_SOFT_EOL:
-	     m_Mbtowc.mbtowc(wc, ' ');
-	     m_textBuf.append( (UT_uint16 *)&wc, 1);
+	     if(!m_undoOn)
+	       {		  
+		  m_Mbtowc.mbtowc(wc, ' ');
+		  m_textBuf.append( (UT_uint16 *)&wc, 1);
+	       }
 	     break;
 	   case WP_TOP_DORMANT_HARD_RETURN:
 	   case WP_TOP_HARD_EOL: 
@@ -292,6 +324,9 @@ UT_Error IE_Imp_WordPerfect_6::_parseDocument()
 	   case WP_TOP_EXTENDED_CHARACTER:
 	     X_CheckWordPerfectError(_handleExtendedCharacter());
 	     break;
+	   case WP_TOP_UNDO:
+	     X_CheckWordPerfectError(_handleUndo());
+	     break;
 	   case WP_TOP_ATTRIBUTE_ON:
 	     X_CheckWordPerfectError(_handleAttribute(true));
 	     break;
@@ -299,7 +334,7 @@ UT_Error IE_Imp_WordPerfect_6::_parseDocument()
 	     X_CheckWordPerfectError(_handleAttribute(false));
 	     break;
 	   default:	     
-	     if( readVal > 32 && readVal < 127 ) // ASCII characters
+	     if(readVal > 32 && readVal < 127 && !m_undoOn) // ASCII characters
 	       {
 		  //UT_DEBUGMSG((" current char = %c \n",(char)readVal));
 		  m_Mbtowc.mbtowc(wc, (char)readVal);
@@ -307,8 +342,6 @@ UT_Error IE_Imp_WordPerfect_6::_parseDocument()
 	       }	     
 	     break;
 	  }
-	readVal = fgetc(m_importFile);
-	X_CheckFileError(readVal);
      }
 
    
@@ -324,9 +357,11 @@ UT_Error IE_Imp_WordPerfect_6::_handleHardEndOfLine()
 {
    // (TODO: eliminate a prev space if it's just before this)
    UT_DEBUGMSG(("WordPerfect: Handling a hard EOL \n"));
-
-   X_CheckWordPerfectError(_flushText());
-   X_CheckWordPerfectError(_appendCurrentParagraphProperties());
+   if(!m_undoOn)
+     {	
+	X_CheckWordPerfectError(_flushText());
+	X_CheckWordPerfectError(_appendCurrentParagraphProperties());
+     }
    
    return UT_OK;
 }
@@ -338,35 +373,38 @@ UT_Error IE_Imp_WordPerfect_6::_handleEndOfLineGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a EOL group\n"));
    
-   int type = fgetc(m_importFile); // TODO: handle case that we get eof?
+   int type = fgetc(m_importFile); 
    X_CheckFileError(type);   
    wchar_t wc = 0;
-   
-   switch (type)
+
+   if(!m_undoOn)
      {
-      case 0: // 0x00 (beginning of file)
-	break; // ignore
-      case 1: // 0x01 (soft EOL)
-      case 2: // 0x02 (soft EOC) 
-      case 3: // 0x03 (soft EOC at EOP) 
-      case 20: // 0x014 (deletable soft EOL)
-      case 21: // 0x15 (deletable soft EOC) 
-      case 22: // 0x16 (deleteable soft EOC at EOP) 
-	m_Mbtowc.mbtowc(wc, ' ');
-	m_textBuf.append( (UT_uint16 *)&wc, 1);
-	break;
-      case 4: // 0x04 (hard end-of-line)
-      case 5: // 0x05 (hard EOL at EOC) 
-      case 6: // 0x06 (hard EOL at EOP)
-      case 23: // 0x17 (deletable hard EOL)
-      case 24: // 0x18 (deletable hard EOL at EOC)
-      case 25: // 0x19 (deletable hard EOL at EOP)	
-	X_CheckWordPerfectError(_handleHardEndOfLine());
-	break;
-      case 9: // hard EOP (TODO: implement me)
-      case 28: // deletable hard EOP (TODO: treat as a hard end-of-page)
-      default: // something else we don't support yet
-	break;
+	switch (type)
+	  {
+	   case 0: // 0x00 (beginning of file)
+	     break; // ignore
+	   case 1: // 0x01 (soft EOL)
+	   case 2: // 0x02 (soft EOC) 
+	   case 3: // 0x03 (soft EOC at EOP) 
+	   case 20: // 0x014 (deletable soft EOL)
+	   case 21: // 0x15 (deletable soft EOC) 
+	   case 22: // 0x16 (deleteable soft EOC at EOP) 
+	     m_Mbtowc.mbtowc(wc, ' ');
+	     m_textBuf.append( (UT_uint16 *)&wc, 1);
+	     break;
+	   case 4: // 0x04 (hard end-of-line)
+	   case 5: // 0x05 (hard EOL at EOC) 
+	   case 6: // 0x06 (hard EOL at EOP)
+	   case 23: // 0x17 (deletable hard EOL)
+	   case 24: // 0x18 (deletable hard EOL at EOC)
+	   case 25: // 0x19 (deletable hard EOL at EOP)	
+	     X_CheckWordPerfectError(_handleHardEndOfLine());
+	     break;
+	   case 9: // hard EOP (TODO: implement me)
+	   case 28: // deletable hard EOP (TODO: treat as a hard end-of-page)
+	   default: // something else we don't support yet
+	     break;
+	  }
      }
    
    X_CheckWordPerfectError(_skipGroup(WP_TOP_EOL_GROUP));
@@ -403,7 +441,7 @@ UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroup()
    // flush what's come before this change
    //X_CheckWordPerfectError(_flushText());
 
-   int subGroup = fgetc(m_importFile); // TODO: handle case that we get eof?
+   int subGroup = fgetc(m_importFile); 
    X_CheckFileError(subGroup);
    
    unsigned short value;
@@ -416,14 +454,16 @@ UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroup()
    unsigned short numNonDeletableBytes; 
    if(fread( &numNonDeletableBytes, 2, 1, m_importFile) != 1)
      return UT_IE_IMPORTERROR;
-   
+
+   // dispatch to subgroup to handle the rest of the relevant properties within the
+   // group (and thus, read more of the file-- so we keep this even if undo is 'on')
    switch (subGroup)
      {
       case WP_PARAGRAPH_GROUP_JUSTIFICATION:
 	X_CheckWordPerfectError(_handleParagraphGroupJustification());
 	break;
      }
-      
+   
    X_CheckWordPerfectError(_skipGroup(WP_TOP_PARAGRAPH_GROUP));
    
    return UT_OK;
@@ -466,34 +506,40 @@ UT_Error IE_Imp_WordPerfect_6::_handleFootEndNoteGroup()
 UT_Error IE_Imp_WordPerfect_6::_handleAttribute(bool attributeOn)
 {   
    UT_DEBUGMSG(("WordPerfect: Handling an attribute\n"));
-   // flush what's come before this change (even if it's nothing, which
-   // IS a case we have to be worried about in case we are writing the first
-   // paragraph)
-   X_CheckWordPerfectError(_flushText());
-   
    int readVal = fgetc(m_importFile); // TODO: handle case that we get eof?
    X_CheckFileError(readVal);
    
-   switch (readVal)
-     { 
-      case 14: // underline
-	m_textAttributes.m_underLine = attributeOn;
-	break;
-      case 12: // bold
-	m_textAttributes.m_bold = attributeOn;
-	break;
-      default: // something we don't support yet
-	break;
+   if(!m_undoOn)
+     {
+	// flush what's come before this change (even if it's nothing, which
+	// IS a case we have to be worried about in case we are writing the first
+	// paragraph)
+	X_CheckWordPerfectError(_flushText());
+
+	switch (readVal)
+	  { 
+	   case 14: // underline
+	     m_textAttributes.m_underLine = attributeOn;
+	     break;
+	   case 12: // bold
+	     m_textAttributes.m_bold = attributeOn;
+	     break;
+	   default: // something we don't support yet
+	     break;
+	  }
+        
+	X_CheckWordPerfectError(_appendCurrentTextProperties());
      }
-   
-   X_CheckWordPerfectError(_appendCurrentTextProperties());
    
    // read the ending byte
    readVal = fgetc(m_importFile); 
    if((attributeOn && readVal != WP_TOP_ATTRIBUTE_ON) ||
       (!attributeOn && readVal != WP_TOP_ATTRIBUTE_OFF))
-     return UT_IE_IMPORTERROR;
-     
+     {
+	UT_DEBUGMSG(("WordPerfect: Error! Didn't receive the anticipated closing byte!\n"));
+	return UT_IE_IMPORTERROR;
+     }
+   
    return UT_OK;
 }
 
@@ -517,19 +563,49 @@ UT_Error IE_Imp_WordPerfect_6::_handleExtendedCharacter()
    int characterSet = fgetc(m_importFile);
    X_CheckFileError(characterSet);
    
-   // TODO: hack, hack, hack
-   // find out how to reliably map ALL characters between character sets and extended characters
-   if( character == 28 && characterSet == 4 )
-     wc = 39; // character: '
-   else
-     wc = m_Mbtowc.mbtowc(wc, ' ');
+   if(!m_undoOn)
+     {
+	// TODO: hack, hack, hack
+	// find out how to reliably map ALL characters between character sets and extended characters
+	if( character == 28 && characterSet == 4 )
+	  wc = 39; // character: '
+	else
+	  wc = m_Mbtowc.mbtowc(wc, ' ');
    
-   m_textBuf.append( (UT_uint16 *)&wc, 1);
-     
+	m_textBuf.append( (UT_uint16 *)&wc, 1);
+     }
+   
    int readVal = fgetc(m_importFile); // TODO: check for eof and also that the end byte is the extended character flag
    if(readVal != WP_TOP_EXTENDED_CHARACTER)
      return UT_IE_IMPORTERROR;
        
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect_6::_handleUndo()
+{
+   // this function isn't very well documented and could very well be buggy
+   // it is based off of my interpretation of a single test file
+   UT_DEBUGMSG(("WordPerfect: Handling an undo group\n"));
+
+   int undoType = fgetc(m_importFile);
+   X_CheckFileError(undoType);
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_UNDO));
+   
+   //X_CheckWordPerfectError(_flushText()); // flush text before the undo
+   
+   if(undoType==0 && !m_undoOn)
+     {	
+	m_undoOn=true;
+	UT_DEBUGMSG(("WordPerfect: undo is now ON\n"));
+     }
+   
+   else if(undoType==1 && m_undoOn)
+     {	
+	m_undoOn=false;
+	UT_DEBUGMSG(("WordPerfect: undo is now OFF\n"));
+     }
+   
    return UT_OK;
 }
 
@@ -540,30 +616,33 @@ UT_Error IE_Imp_WordPerfect_6::_handleParagraphGroupJustification()
    int paragraphJustification;
    paragraphJustification = fgetc(m_importFile);
    X_CheckFileError(paragraphJustification);
-		    
-   switch(paragraphJustification)
-     {
-      case WP_PARAGRAPH_GROUP_JUSTIFICATION_LEFT:
-	 m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::left;
-	break;
-      case WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL:
-	m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::full;
-	break;
-      case WP_PARAGRAPH_GROUP_JUSTIFICATION_CENTER:
-	m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::center;
-	break;
-      case WP_PARAGRAPH_GROUP_JUSTIFICATION_RIGHT:
-	m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::right;
-	break;
-      case WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL_ALL_LINES:
-	m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::fullAllLines;
-	break;
-      case WP_PARAGRAPH_GROUP_JUSTIFICATION_RESERVED:
-	m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::reserved;
-	break;
-     }
-   UT_DEBUGMSG(("Paragraph Justification is now: %i\n", paragraphJustification));
 
+   if(!m_undoOn)
+     {	
+	switch(paragraphJustification)
+	  {
+	   case WP_PARAGRAPH_GROUP_JUSTIFICATION_LEFT:
+	     m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::left;
+	     break;
+	   case WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL:
+	     m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::full;
+	     break;
+	   case WP_PARAGRAPH_GROUP_JUSTIFICATION_CENTER:
+	     m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::center;
+	     break;
+	   case WP_PARAGRAPH_GROUP_JUSTIFICATION_RIGHT:
+	     m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::right;
+	     break;
+	   case WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL_ALL_LINES:
+	     m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::fullAllLines;
+	     break;
+	   case WP_PARAGRAPH_GROUP_JUSTIFICATION_RESERVED:
+	     m_paragraphProperties.m_justificationMode = WordPerfectParagraphProperties::reserved;
+	     break;
+	  }
+	UT_DEBUGMSG(("Paragraph Justification is now: %i\n", paragraphJustification));
+     }
+   
    return UT_OK;
 }
 
@@ -592,7 +671,7 @@ UT_Error IE_Imp_WordPerfect_6::_skipGroup(int groupByte)
 UT_Error IE_Imp_WordPerfect_6::_flushText()
 {
    UT_DEBUGMSG(("WordPerfect: Flushing Text\n"));
-   
+   	
    // if this is the first time we're calling this, then we must append the current paragraph properties
    // so we will have a structure to insert into
    if(m_firstParagraph)
@@ -602,8 +681,9 @@ UT_Error IE_Imp_WordPerfect_6::_flushText()
      }
    
    if(m_textBuf.getLength() > 0)
-     X_CheckDocumentError(getDoc()->appendSpan(m_textBuf.getPointer(0), m_textBuf.getLength()));
+     X_CheckDocumentError(getDoc()->appendSpan(m_textBuf.getPointer(0), m_textBuf.getLength()));   
    m_textBuf.truncate(0);
+     
    
    return UT_OK;
 }
@@ -612,42 +692,40 @@ UT_Error IE_Imp_WordPerfect_6::_appendCurrentTextProperties()
 {
    UT_DEBUGMSG(("WordPerfect: Appending current text properties\n"));
    
-   UT_String pProps ("font-weight:");
+   XML_Char* pProps = "props";
+   XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
+   propBuffer[0] = 0;
    
    // bold 418
-   if(m_textAttributes.m_bold)
-     pProps += "bold";
-   else 
-     pProps += "normal";
-
+   strcat(propBuffer, "font-weight:");
+   strcat(propBuffer, m_textAttributes.m_bold ? "bold" : "normal");
    // italic
-   pProps += "; font-style:";   
-   if(m_textAttributes.m_italics)
-     pProps += "italic";
-   else
-     pProps += "normal"
-;
+   strcat(propBuffer, "; font-style:");
+   strcat(propBuffer, m_textAttributes.m_italics ? "italic" : "normal");
    // underline & overline & strike-out
-   pProps += "; text-decoration:";
-
+   strcat(propBuffer, "; text-decoration:");
+   static UT_String decors;
+   decors.clear();
    if (m_textAttributes.m_underLine)
      {
-	pProps += "underline ";
+	decors += "underline ";
      }
    if (m_textAttributes.m_strikeOut)
      {
-	pProps += "line-through ";
+	decors += "line-through ";
      }
    if(!m_textAttributes.m_underLine  &&  
       !m_textAttributes.m_strikeOut)
      {
-	pProps = "none";
+	decors = "none";
      }
+   strcat(propBuffer, decors.c_str());
+
    
-   UT_DEBUGMSG(("Appending Format: %s\n", pProps.c_str()));
+   UT_DEBUGMSG(("Appending Format: %s\n", propBuffer));
    const XML_Char* propsArray[3];
-   propsArray[0] = "props";
-   propsArray[1] = pProps.c_str();
+   propsArray[0] = pProps;
+   propsArray[1] = propBuffer;
    propsArray[2] = NULL;
    
    X_CheckDocumentError(getDoc()->appendFmt(propsArray));
@@ -659,30 +737,33 @@ UT_Error IE_Imp_WordPerfect_6::_appendCurrentParagraphProperties()
 {
    UT_DEBUGMSG(("WordPerfect: Appending Paragraph Properties\n"));
 
-   UT_String pProps ("text-align:");
+   XML_Char* pProps = "props";
+   XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
+   propBuffer[0] = 0;
 
+   strcat( propBuffer, "text-align:");
    switch( m_paragraphProperties.m_justificationMode )
      {
       case WordPerfectParagraphProperties::left:
-	pProps += "left";
+	strcat(propBuffer, "left");
 	break;
       case WordPerfectParagraphProperties::right:
-	pProps += "right";
+	strcat(propBuffer, "right");
 	break;
       case WordPerfectParagraphProperties::center:
-	pProps += "center";
+	strcat(propBuffer, "center");
 	break;
       case WordPerfectParagraphProperties::full:  	// either normal justification or something I don't understand yet. same deal.
       case WordPerfectParagraphProperties::fullAllLines:
       case WordPerfectParagraphProperties::reserved:
-	pProps += "justify";
+	strcat(propBuffer, "justify");
 	break;
      }
    
-   UT_DEBUGMSG(("Appending Style: %s\n", pProps.c_str()));
+   UT_DEBUGMSG(("Appending Style: %s\n", propBuffer));
    const XML_Char* propsArray[3];
-   propsArray[0] = "props";
-   propsArray[1] = pProps.c_str();
+   propsArray[0] = pProps;
+   propsArray[1] = propBuffer;
    propsArray[2] = NULL;
    
    X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, propsArray));   
