@@ -208,7 +208,7 @@ UT_sint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	}
 	float fWidth = m_pCurrentPSFont->measureUnRemappedChar(realChar, m_pCurrentPSFont->getSize())
 		* (float)getResolution() / (float)getDeviceResolution();
-	return static_cast<UT_uint32>(rintf(fWidth));
+	return static_cast<UT_uint32>(rint(fWidth));
 }
 
 void XAP_UnixGnomePrintGraphics::drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
