@@ -63,7 +63,7 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Klistra in", 	tb_paste_xpm,				NULL, "Klistra in")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 "Redigera sidhuvud",		tb_edit_editheader_xpm,			NULL, "Redigera sidhuvud")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 "Redigera sidfot",		tb_edit_editfooter_xpm,			NULL, "Redigera sidfot")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Ta bort sidhuvud",		tb_edit_removeheader_xpm, 	NULL, "Ta bort sidhuvud)
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Ta bort sidhuvud",		tb_edit_removeheader_xpm, 	NULL, "Ta bort sidhuvud")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, "Ta bort sidfot",		tb_edit_removefooter_xpm,		NULL, "Ta bort sidfot")
 
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,          "Stavningskontroll", tb_spellcheck_xpm,              NULL, "Kontrollera stavningen i dokumentet")
