@@ -152,7 +152,6 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 				int iWidth = 100;
 				if (pControl) {
 					iWidth = pControl->getPixelWidth();
-					printf("Width is %d \n", iWidth);
 					pControl->populate();
 
 					const UT_Vector * v = pControl->getContents();
