@@ -58,6 +58,7 @@ _GTK_:
 _ZLIB_:
 	@if [    -e /usr/lib/libz.a				\
 	      -o -e /usr/local/lib/libz.a			\
+	      -o -e /usr/X11R6/lib/libz.a			\
 	    ]; then						\
 		echo Found zlib in system directories;		\
 	elif [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
@@ -73,6 +74,7 @@ _ZLIB_:
 _LIBPNG_:
 	@if [    -e /usr/lib/libpng.a				\
 	      -o -e /usr/local/lib/libpng.a			\
+	      -o -e /usr/X11R6/lib/libpng.a			\
 	    ]; then						\
 		echo Found libpng in system directories;	\
 	elif [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
