@@ -616,7 +616,6 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 		if (m_pClipList || (m_pClipList = PhGetTile())) {
 			m_pClipList->rect = r;
 			m_pClipList->next = NULL; //One item list for now
-			fprintf(stderr,"Clip rect= %d,%d,%d,%d\n",r.ul.x,r.ul.y,r.lr.x,r.lr.y);
 		}
 	}
 	else
