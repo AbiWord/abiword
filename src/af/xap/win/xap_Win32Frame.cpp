@@ -207,12 +207,23 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 
 	// create a top-level window for us.
 	// TODO get the default window size from preferences or something.
-	// Handled in Win32App for 1st frame opened.
+	// Win32App will set position & size for 1st frame opened only.
+
+	// get window width & height from preferences
+	UT_sint32 t_x,t_y;  // dummy variables
+	UT_uint32 t_flag;
+	if ( !(this->getApp()->getGeometry(&t_x,&t_y,&iWidth,&iHeight,&t_flag)) ||
+           !((iWidth > 0) && (iHeight > 0)) )
+	{
+		iWidth = CW_USEDEFAULT;
+		iHeight = CW_USEDEFAULT;
+	}
+
 
 	m_hwndFrame = CreateWindow(m_pWin32App->getApplicationName(),
 							   m_pWin32App->getApplicationTitleForTitleBar(),
 							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-							   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+							   CW_USEDEFAULT, CW_USEDEFAULT, iWidth, iHeight,
 							   NULL, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndFrame);
 
