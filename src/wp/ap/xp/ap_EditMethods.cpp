@@ -2203,7 +2203,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	}
 
 	// Set up a nice sample string
-	gchar * sampleString = "Microsoft What?";
+	gchar * sampleString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijlkmnopqrstuvwxyz";
 	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
 	/* Run the dialog */
@@ -2360,18 +2360,175 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 
 }
 
+static void message_box_ok_clicked(GtkWidget * widget, dlg_Answer * answer)
+{
+	*answer = dlg_OK;
+	gtk_main_quit();
+}
+static void message_box_cancel_clicked(GtkWidget * widget, dlg_Answer * answer)
+{
+	*answer = dlg_CANCEL;
+	gtk_main_quit();
+}
+static void message_box_yes_clicked(GtkWidget * widget, dlg_Answer * answer)
+{
+	*answer = dlg_YES;
+	gtk_main_quit();
+}
+static void message_box_no_clicked(GtkWidget * widget, dlg_Answer * answer)
+{
+	*answer = dlg_NO;
+	gtk_main_quit();
+}
+
 dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton)
 {
-	dlg_Answer ans = dlg_OK;
-
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-	// const char * szCaption = pApp->getApplicationTitleForTitleBar();
+	const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
-	/* TODO */
+	// New GTK+ dialog window
+	GtkWidget * dialog_window = gtk_dialog_new();
+	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
+							  "destroy",
+							  GTK_SIGNAL_FUNC(message_box_cancel_clicked),
+							  NULL); 
 
-	return ans;
+	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
+	gtk_container_border_width (GTK_CONTAINER (dialog_window), 0);
+	gtk_widget_set_usize (dialog_window, 200, 110);
+
+	// Add our label string to the dialog in the message area
+	GtkWidget * label = gtk_label_new (szQ);
+	gtk_misc_set_padding (GTK_MISC (label), 10, 10);
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->vbox), 
+						label, TRUE, TRUE, 0);
+	gtk_widget_show (label);
+
+	// Build all the buttons, regardless of whether they're
+	// used.  This is much easier than creating the ones we know we
+	// need.  Trust me.
+	dlg_Answer answer;
+	GtkWidget * ok_button;
+	GtkWidget * cancel_button;	
+	GtkWidget * yes_button;
+	GtkWidget * no_button;
+	
+	// OK
+	ok_button = gtk_button_new_with_label ("OK");
+	gtk_signal_connect (GTK_OBJECT (ok_button),
+						"clicked",
+						GTK_SIGNAL_FUNC (message_box_ok_clicked),
+						&answer);
+	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
+	// Cancel
+	cancel_button = gtk_button_new_with_label ("Cancel");
+	gtk_signal_connect (GTK_OBJECT (cancel_button),
+						"clicked",
+						GTK_SIGNAL_FUNC (message_box_cancel_clicked),
+						&answer);
+	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
+	// Yes
+	yes_button = gtk_button_new_with_label ("Yes");
+	gtk_signal_connect (GTK_OBJECT (yes_button),
+						"clicked",
+						GTK_SIGNAL_FUNC (message_box_yes_clicked),
+						&answer);
+	GTK_WIDGET_SET_FLAGS (yes_button, GTK_CAN_DEFAULT);
+	// No
+	no_button = gtk_button_new_with_label ("No");
+	gtk_signal_connect (GTK_OBJECT (no_button),
+						"clicked",
+						GTK_SIGNAL_FUNC (message_box_no_clicked),
+						&answer);
+	GTK_WIDGET_SET_FLAGS (no_button, GTK_CAN_DEFAULT);
+
+	switch (b)
+	{
+	case dlg_O:
+		// OK
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							ok_button, TRUE, TRUE, 0);
+		if (defButton == 0)
+			gtk_widget_grab_default (ok_button);
+		gtk_widget_show (ok_button);
+
+		break;
+		
+	case dlg_OC:
+		// OK
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							ok_button, TRUE, TRUE, 0);
+		if (defButton == 0)
+			gtk_widget_grab_default (ok_button);
+		gtk_widget_show (ok_button);
+		// Cancel
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							cancel_button, TRUE, TRUE, 0);
+		if (defButton == 1)
+			gtk_widget_grab_default (cancel_button);
+		gtk_widget_show (cancel_button);
+
+		break;
+		
+	case dlg_YN:
+		// Yes
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							yes_button, TRUE, TRUE, 0);
+		if (defButton == 0)
+			gtk_widget_grab_default (yes_button);
+		gtk_widget_show (yes_button);
+		// No
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							no_button, TRUE, TRUE, 0);
+		if (defButton == 1)
+			gtk_widget_grab_default (no_button);
+		gtk_widget_show (no_button);
+
+		break;
+
+	case dlg_YNC:
+		// Yes
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							yes_button, TRUE, TRUE, 0);
+		if (defButton == 0)
+			gtk_widget_grab_default (yes_button);
+		gtk_widget_show (yes_button);
+		// No
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							no_button, TRUE, TRUE, 0);
+		if (defButton == 1)
+			gtk_widget_grab_default (no_button);
+		gtk_widget_show (no_button);
+		// Cancel
+		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area), 
+							cancel_button, TRUE, TRUE, 0);
+		if (defButton == 2)
+			gtk_widget_grab_default (cancel_button);
+		gtk_widget_show (cancel_button);
+
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	gtk_grab_add(GTK_WIDGET(dialog_window));
+	gtk_widget_show (dialog_window);
+
+	// TODO maybe add some key bindings so that escape will cancel, etc.
+	gtk_main();
+
+	gtk_widget_destroy(label);
+	gtk_widget_destroy(ok_button);
+	gtk_widget_destroy(cancel_button);
+	gtk_widget_destroy(yes_button);
+	gtk_widget_destroy(no_button);
+	gtk_widget_destroy(GTK_WIDGET(dialog_window));
+	
+	// answer should be set by the appropriate callback
+	return answer;
 }
 
 UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)

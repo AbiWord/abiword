@@ -79,17 +79,6 @@ public:									// we create...
 
 /*****************************************************************/
 
-/*
-  static gint _initMenuCallback(GtkWidget *widget, GdkEvent *event, gpointer wd)
-{
-	UT_DEBUGMSG(("Got signal to refresh dynamic menu for widget [%p], event [%p].\n", widget, event));
-
-	cb.pMenu->refreshMenu(cb.pFrame->getCurrentView());
-	
-	return NULL;
-}
-*/
-
 static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
 									 EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
@@ -487,30 +476,36 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						bCheck = UT_TRUE;
 				}
 
+				if (!szMenuFactoryItemPath)
+					break;
+				
+				// Get a pointer to the current item for later queries
+				gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+				// Strip out the underscores from the path
+				// or else the lookup in the hash will fail.
+				_ev_strip_accel(buf, szMenuFactoryItemPath);
+				GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+															   buf);
+				delete buf;	
+				UT_ASSERT(item);
+				
 				if (!pAction->hasDynamicLabel())
 				{
 					// if no dynamic label, all we need to do
 					// is enable/disable and/or check/uncheck it.
 
-					// Strip out the underscores from the path
-					// or else the lookup in the hash will fail.
-					gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
-					_ev_strip_accel(buf, szMenuFactoryItemPath);
-					GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
-																   buf);
-					delete buf;
-					UT_ASSERT(item);
-
-					// check boxes
-					gtk_menu_item_configure((GtkMenuItem *) item, bCheck, FALSE);
+					// check boxes 
+					if (GTK_IS_CHECK_MENU_ITEM(item))
+						gtk_check_menu_item_set_state((GtkCheckMenuItem *) item, bCheck);
+					// all get the gray treatment
 					gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
-
 					break;
 				}
 
 				// get the current menu info for this item.
-				
-				// TODO get state (enabled/grayed, checked/unchecked, pathname)
+
+				bEnable = GTK_WIDGET_SENSITIVE(item);
+//				bCheck = item->check
 				
 				// this item has a dynamic label...
 				// compute the value for the label.
@@ -538,17 +533,9 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						// dynamic label has not changed, all we need to do
 						// is enable/disable and/or check/uncheck it.
 
-						// Strip out the underscores from the path
-						// or else the lookup in the hash will fail.
-						gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
-						_ev_strip_accel(buf, szMenuFactoryItemPath);
-						GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
-																	   buf);
-						delete buf;
-						UT_ASSERT(item);
-
-						// check boxes
-						gtk_menu_item_configure((GtkMenuItem *) item, bCheck, FALSE);
+						// check boxes and disable
+						if (GTK_IS_CHECK_MENU_ITEM(item))
+							gtk_check_menu_item_set_state((GtkCheckMenuItem *) item, bCheck);
 						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 
 						// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
@@ -560,17 +547,9 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						
 						// TODO rename the item ???????????????????????
 
-						// Strip out the underscores from the path
-						// or else the lookup in the hash will fail.
-						gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
-						_ev_strip_accel(buf, szMenuFactoryItemPath);
-						GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
-																	   buf);
-						delete buf;
-						UT_ASSERT(item);
-
-						// check boxes
-						gtk_menu_item_configure((GtkMenuItem *) item, bCheck, FALSE);
+						// check boxes and disable
+						if (GTK_IS_CHECK_MENU_ITEM(item))
+							gtk_check_menu_item_set_state((GtkCheckMenuItem *) item, bCheck);
 						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 					}
 					break;

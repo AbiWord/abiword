@@ -19,6 +19,7 @@
 
 #include <gtk/gtk.h>
 #include "ut_types.h"
+#include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ap_ViewListener.h"
 #include "ap_UnixApp.h"
@@ -30,6 +31,7 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_UnixGraphics.h"
+#include "ev_EditMethod.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -85,11 +87,34 @@ public:
 		return 1;
 	};
 	
-	static gint delete_event(GtkWidget * /*widget*/, GdkEvent * /*event*/, gpointer /*data*/)
+	static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 	{
-		// TODO decide if we need this
+		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
+		AP_App * pApp = pUnixFrame->getApp();
+		UT_ASSERT(pApp);
 
-		return FALSE;
+		const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
+		UT_ASSERT(pMenuActionSet);
+
+		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+		UT_ASSERT(pEMC);
+
+		const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+		UT_ASSERT(pEM);
+
+		if (pEM)
+		{
+			if ((*pEM->getFn())(pUnixFrame->getCurrentView(),NULL))
+			{
+				// returning FALSE means destroy the window, continue along the
+				// chain of Gtk destroy events
+				return FALSE;
+			}
+		}
+		
+        // returning TRUE means do NOT destroy the window; halt the message
+		// chain so it doesn't see destroy
+		return TRUE;
 	};
 	
 	static gint expose(GtkWidget * w, gpointer /*data*/)
@@ -113,7 +138,7 @@ public:
 	
 	static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	{
-		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_uaser_data(GTK_OBJECT(w));
 		FV_View * pView = pUnixFrame->getCurrentView();
 
 		if (pView)
@@ -122,8 +147,16 @@ public:
 	
 	static void destroy (GtkWidget * /*widget*/, gpointer /*data*/)
 	{
-		// TODO decide if this is the right way to die....
-		gtk_main_quit ();
+		// I think this is right:
+		// 	We shouldn't have to call gtk_main_quit() here because
+		//  this signal catcher is only inserted before the GTK
+		//  default handler (which will continue to destroy the window
+		//  if we don't return TRUE).
+		//
+		//  This function should be for things to happen immediately
+		//  before a frame gets hosed once and for all.
+
+		//gtk_main_quit ();
 	};
 };
 	
@@ -455,7 +488,6 @@ void AP_UnixFrame::_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff)
 
 UT_Bool AP_UnixFrame::close()
 {
-	/* TODO */
 
 	return UT_TRUE;
 }
