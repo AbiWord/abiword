@@ -45,13 +45,16 @@ public:
 
   void lock ()
 		{
-			if ( mMutex ) 
+			if ( mMutex && mLocker != g_thread_self())
 				g_mutex_lock ( mMutex ) ;
+			mLocker = g_thread_self();
+			iLockCount++;
 		}
 	
   void unlock ()
 		{
-			if ( mMutex ) 
+			UT_ASSERT(mLocker == g_thread_self());
+			if (--iLockCount == 0 && mMutex)
 				g_mutex_unlock ( mMutex ) ;
 		}
 	
@@ -61,7 +64,11 @@ private:
 	UT_MutexImpl (const UT_MutexImpl & other);
 	UT_MutexImpl & operator=(const UT_MutexImpl & other);
 
-	GMutex *mMutex ;
+	GMutex *mMutex;
+
+	// Damn it, recursive locking is not guaranteed.
+	GThread *mLocker;
+	int iLockCount;
 };
 
 #endif /* UT_MUTEXIMPL_H */
