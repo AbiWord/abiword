@@ -122,7 +122,6 @@ bool UT_ByteBuf::ins(UT_uint32 position, UT_uint32 length)
 bool UT_ByteBuf::del(UT_uint32 position, UT_uint32 amount)
 {
 
-
 	if (!amount)
 		return true;
 
