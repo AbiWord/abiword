@@ -279,30 +279,28 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	// localize the strings in our dialog, and set tags for some widgets
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBorder"), pSS, AP_STRING_ID_DLG_FormatTable_Borders);
-	localizeLabel(glade_xml_get_widget(xml, "lbBorderColor"), pSS, AP_STRING_ID_DLG_FormatTable_Border_Color);
+	localizeLabel(glade_xml_get_widget(xml, "lbBorderColor"), pSS, AP_STRING_ID_DLG_FormatTable_Color);
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBackground"), pSS, AP_STRING_ID_DLG_FormatTable_Background);
-	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatTable_Background_Color);
+	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatTable_Color);
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
 	
 	// add the custom color picker buttons to the dialog
 	m_wBorderColorButton = gtk_color_picker_new();
 	gtk_widget_show(m_wBorderColorButton);
-	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbProperties")), m_wBorderColorButton, 1, 2, 1, 2,
+	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbBorderContent")), m_wBorderColorButton, 1, 2, 0, 1,
                     (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 
-					0, 6);
+					0, 0);
 					
 	// add the custom color picker buttons to the dialog
 	m_wBackgroundColorButton = gtk_color_picker_new();
 	gtk_widget_show(m_wBackgroundColorButton);
-	gtk_table_attach(GTK_TABLE (glade_xml_get_widget(xml, "tbProperties")), m_wBackgroundColorButton, 1, 2, 5, 6,
-                    (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (0), 
-					0, 6);
+	gtk_box_pack_start(GTK_BOX (glade_xml_get_widget(xml, "hbBackgroundColor")), m_wBackgroundColorButton, FALSE, TRUE, 0);
 	
 	// add the apply and ok buttons to the dialog
-	m_wCloseButton = abiAddStockButton ( GTK_DIALOG(window), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
-	m_wApplyButton = abiAddStockButton ( GTK_DIALOG(window), GTK_STOCK_APPLY, BUTTON_APPLY ) ;	
+	m_wCloseButton = glade_xml_get_widget(xml, "btClose");
+	m_wApplyButton = glade_xml_get_widget(xml, "btApply");
 	
 	return window;
 }
