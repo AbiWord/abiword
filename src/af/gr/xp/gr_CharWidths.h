@@ -30,6 +30,31 @@
 #define GR_UNKNOWN_BYTE 0x80
 #define GR_CW_UNKNOWN (UT_sint32)0x80808080
 
+/* EXPLANATION OF THE OVERSTRIKING (or COMBINING) CHARACTERS MECHANISM
+   (Tomas, Jan 26, 2003)
+   
+   We classify overstriking characters into three categories:
+   
+   1. Characters to be flushed with the near edge of the previous base
+      character, or, from the LTR point of view, right-flushed
+   2. Characters to be flushed with the far edge of the previous base
+      character, or, from the LTR point of view, left-flushed
+   3. Characters to be centered over the previous base character
+
+   Whether a Unicode character is overstriking, and if so of what
+   type, can be detemined by using the UT_isOverstrikingChar()
+   function. The width of the overstriking characters should be reported
+   as follows:
+   
+      Type 1 (right-flushed): width should be set to 0
+
+      Type 2 (left-flushed):  the width of the glyph should be or'ed
+                              with GR_OC_LEFT_FLUSHED (defined in gr_Graphics.h)
+
+      Type 3 (centered):      the with of the glyph should be reported
+                              as a negative number
+
+*/
 class ABI_EXPORT GR_CharWidths
 {
 public:

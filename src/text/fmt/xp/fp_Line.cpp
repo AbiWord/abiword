@@ -3348,7 +3348,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 		if(!m_iRunsRTLcount)
 		{
-			xxx_UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
+			UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
 			for (i = 0; i < count; i++)
 			{
 				//the map is actually never used, we only need to set the
@@ -3544,13 +3544,13 @@ void fp_Line::addDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
 		case FRIBIDI_TYPE_LTR:
 		case FRIBIDI_TYPE_EN:
 			m_iRunsLTRcount++;
-			//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::addDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 			break;
 
 		case FRIBIDI_TYPE_RTL:
 		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount++;
-			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::addDirectionUsed: increased RTL run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 			break;
 		default:;
 	}
@@ -3568,7 +3568,7 @@ void fp_Line::removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
 		case FRIBIDI_TYPE_LTR:
 		case FRIBIDI_TYPE_EN:
 			m_iRunsLTRcount--;
-			//UT_DEBUGMSG(("decreased LTR run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsLTRcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::removeDirectionUsed: decreased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 
 			if(m_iRunsLTRcount < 0)
 				m_iRunsLTRcount = 0;
@@ -3577,7 +3577,7 @@ void fp_Line::removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap)
 		case FRIBIDI_TYPE_RTL:
 		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount--;
-			//UT_DEBUGMSG(("decreased RTL run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsRTLcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::removeDirectionUsed: decreased RTL run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 
 			if(m_iRunsRTLcount < 0)
 				m_iRunsRTLcount = 0;
@@ -3601,13 +3601,13 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 		case FRIBIDI_TYPE_LTR:
 		case FRIBIDI_TYPE_EN:
 			m_iRunsLTRcount++;
-			//UT_DEBUGMSG(("increased LTR run count [%d, this=0x%x]\n", m_iRunsLTRcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 			break;
 
 		case FRIBIDI_TYPE_RTL:
 		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount++;
-			//UT_DEBUGMSG(("increased RTL run count [%d, this=0x%x]\n", m_iRunsRTLcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: increased RTL run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 			break;
 		default:;
 	}
@@ -3617,7 +3617,7 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 		case FRIBIDI_TYPE_LTR:
 		case FRIBIDI_TYPE_EN:
 			m_iRunsLTRcount--;
-			//UT_DEBUGMSG(("decreased LTR run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsLTRcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: decreased LTR run count (fp_Line::removeDirectionUsed) [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 
 			if(m_iRunsLTRcount < 0)
 				m_iRunsLTRcount = 0;
@@ -3626,7 +3626,7 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 		case FRIBIDI_TYPE_RTL:
 		case FRIBIDI_TYPE_AL:
 			m_iRunsRTLcount--;
-			//UT_DEBUGMSG(("decreased RTL run count (fp_Line::removeDirectionUsed) [%d, this=0x%x]\n", m_iRunsRTLcount, this));
+			xxx_UT_DEBUGMSG(("fp_Line::changeDirectionUsed: decreased RTL run count (fp_Line::removeDirectionUsed) [%d, this=0x%x, bRefresh=%d]\n", m_iRunsRTLcount, this, bRefreshMap));
 
 			if(m_iRunsRTLcount < 0)
 				m_iRunsRTLcount = 0;

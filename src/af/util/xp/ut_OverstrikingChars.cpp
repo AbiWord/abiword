@@ -31,6 +31,14 @@ typedef struct {UT_UCSChar min; UT_UCSChar max; UT_uint32 dir;} char_bounds;
 // are overstriking (this is inclusive of the two boundary values in the
 // table)
 
+// The 'rightness' and 'leftness' of an overstriking character is from
+// the point of view of logical space, i.e., right-flushed character
+// is one that is flushed with the near edge of its base character, and
+// left-flushed character is one that is flushed with the far edge of
+// its base character (in other words, if the characters are RTL,
+// UT_OVERSTRIKING_LEFT indicates that the character alings with the
+// *RIGHT* visual edge of the base character.
+
 // !!! the table MUST be sorted to allow binary search !!!
 char_bounds overstr_lut[]=
 {

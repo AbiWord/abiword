@@ -1838,8 +1838,19 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		return;
 	}
-	// should this prove to be too much of a performance bottleneck,
-	// we will cache this in a member array
+
+	// The following code calculates the advances for individual
+	// characters that are to be fed to gr_Graphics::drawChars()
+	// Note, that character advances are not necessarily identical to
+	// character widths; in the case of combining characters the
+	// required advance depends on the width of the base character and
+	// the properties of the combining character, and it can be both
+	// positive and negative.
+	// 
+	// At the moment, we calculate the advances here puting them into
+	// a static array. Should this prove to be too much of a
+	// performance bottleneck, we could cache this in a member array,
+	// and refresh it inside refreshDrawBuffer()
 
 	UT_uint32 iLen = getLength();
 	if(iLen > s_iCharAdvanceSize)

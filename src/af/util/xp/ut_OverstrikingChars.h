@@ -28,6 +28,8 @@
 #include "ut_types.h"
 #endif
 
+/* for comments on signficance of these constants see the cpp file */
+
 #define UT_NOT_OVERSTRIKING 0
 #define UT_OVERSTRIKING_LTR 1
 #define UT_OVERSTRIKING_RTL 2
