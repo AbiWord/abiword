@@ -60,13 +60,9 @@ IE_Imp_WML::IE_Imp_WML(PD_Document * pDocument)
 
 UT_Bool IE_Imp_WML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-  // first look that the first line is "<?xml "
-  // then search for "<wml"
+  // simply search for "<wml"
   // no doubt, this could be better
-  // but this should suffice
-
-  if(strncmp(szBuf, "<?xml ", strlen("<?xml ")))
-    return UT_FALSE;
+  // but this should sufficefor all I care
 
   if(strstr(szBuf, "<wml") == NULL)
     return UT_FALSE;

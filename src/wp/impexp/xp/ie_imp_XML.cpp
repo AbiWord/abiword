@@ -192,6 +192,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument)
 	m_lenCharDataExpected = 0;
 	m_bSeenCR = UT_FALSE;
 	m_bWhiteSignificant = UT_TRUE;
+	m_bWasSpace = UT_FALSE;
 
 	m_currentDataItemName = NULL;
 	m_currentDataItemMimeType = NULL;
@@ -228,6 +229,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 			//    [] convert LF to SP.
 
 			UT_Byte * ss = (UT_Byte *)s;
+			UT_Byte currentChar;
 			UT_UCSChar buf[1024];
 			int bufLen = 0;
 
@@ -239,6 +241,8 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 					bufLen = 0;
 				}
 
+				currentChar = ss[k];
+
 				if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
 				{
 					// is it us-ascii and we are in a UTF-8
@@ -246,14 +250,35 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 					X_CheckError(0);
 				}
 
-				if (ss[k] == UCS_CR)
+				if (currentChar == UCS_CR)
 				{
 					buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
 					m_bSeenCR = UT_TRUE;
 					continue;
 				}
 
-				if (ss[k] == UCS_LF)				// LF
+				// only honor one space
+				// if !m_bWhiteSignificant (XHTML, WML)
+				// else just blissfully ignore everything
+				// (ABW)
+				if (!m_bWhiteSignificant)
+				{
+				  if(UT_UCS_isspace(currentChar))
+				    {
+				      if(!m_bWasSpace)
+					{
+					  buf[bufLen++] = UCS_SPACE;
+					  m_bWasSpace = UT_TRUE;
+					}
+				      continue;
+				    }
+				  else
+				    {
+				      m_bWasSpace = UT_FALSE;
+				    }
+				}
+
+				if (currentChar == UCS_LF)				// LF
 				{
 					if (!m_bSeenCR)					// if not immediately after a CR,
 						buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
@@ -263,11 +288,11 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				
 				m_bSeenCR = UT_FALSE;
 
-				if (ss[k] < 0x80)					// plain us-ascii part of latin-1
+				if (currentChar < 0x80)					// plain us-ascii part of latin-1
 				{
 					buf[bufLen++] = ss[k];			// copy as is.
 				}
-				else if ((ss[k] & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
+				else if ((currentChar & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
 				{
 					// surrogate pairs are defined in section 3.7 of the
 					// unicode standard version 2.0 as an extension
@@ -276,22 +301,22 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 					UT_ASSERT(m_lenCharDataSeen == 0);
 					UT_ASSERT(UT_NOT_IMPLEMENTED);
 				}
-				else if ((ss[k] & 0xe0) == 0xe0)		// lead byte in 3-byte sequence
+				else if ((currentChar & 0xe0) == 0xe0)		// lead byte in 3-byte sequence
 				{
 					UT_ASSERT(m_lenCharDataSeen == 0);
 					m_lenCharDataExpected = 3;
-					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+					m_charDataSeen[m_lenCharDataSeen++] = currentChar;
 				}
-				else if ((ss[k] & 0xc0) == 0xc0)		// lead byte in 2-byte sequence
+				else if ((currentChar & 0xc0) == 0xc0)		// lead byte in 2-byte sequence
 				{
 					UT_ASSERT(m_lenCharDataSeen == 0);
 					m_lenCharDataExpected = 2;
-					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+					m_charDataSeen[m_lenCharDataSeen++] = currentChar;
 				}
-				else if ((ss[k] & 0x80) == 0x80)		// trailing byte in multi-byte sequence
+				else if ((currentChar & 0x80) == 0x80)		// trailing byte in multi-byte sequence
 				{
 					UT_ASSERT(m_lenCharDataSeen > 0);
-					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+					m_charDataSeen[m_lenCharDataSeen++] = currentChar;
 					if (m_lenCharDataSeen == m_lenCharDataExpected)
 					{
 						buf[bufLen++] = UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);

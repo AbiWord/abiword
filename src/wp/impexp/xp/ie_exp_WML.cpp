@@ -36,6 +36,8 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 
+#include "xap_EncodingManager.h"
+
 // first declare the listener
 
 /*****************************************************************/
@@ -80,8 +82,10 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_WML *		m_pie;
-	UT_Bool				m_bInBlock;
-	UT_Bool				m_bInSpan;
+	UT_Bool			m_bInBlock;
+	UT_Bool			m_bInSpan;
+        UT_Bool                 m_bWasSpace;
+
 	const PP_AttrProp*	m_pAP_Span;
 };
 
@@ -157,14 +161,14 @@ s_WML_Listener::s_WML_Listener(PD_Document * pDocument,
 	m_pie = pie;
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
-	
-	m_pie->write("<?xml version=\"1.0\"?>\n");
+	m_bWasSpace = UT_FALSE;
+
 	m_pie->write("<!DOCTYPE wml PUBLIC \"-//PHONE.COM//DTD WML 1.1//EN\"\n");
 	m_pie->write("\t\"http://www.phone.com/dtd/wml11.dtd\" >\n");
 
-	/* keep this to a minimum. size is at a premium */
+	/* keep ads to a minimum. size is at a premium */
 	m_pie->write("<!-- This WML file was created by AbiWord -->\n");
-	m_pie->write("<!-- See http://www.abisource.com -->\n\n");
+	m_pie->write("<!-- See http://www.abisource.com/ -->\n\n");
 
 	m_pie->write("<wml>\n");
 	m_pie->write("<card>\n");
@@ -471,7 +475,6 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			pBuf = buf;
 		}
 
-		UT_ASSERT(*pData < 256);
 		switch (*pData)
 		{
 		case '<':
@@ -500,26 +503,95 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
-			*pBuf++ = '<';				// these get mapped to <br />
+			*pBuf++ = '<';				// these get mapped to <br/>
 			*pBuf++ = 'b';
 			*pBuf++ = 'r';
-			*pBuf++ = ' ';
 			*pBuf++ = '/';
 			*pBuf++ = '>';
 			pData++;
 			break;
-			
+
+		case ' ':
+		case '\t':
+		  // try to honor multiple spaces
+		  // tabs get treated as a single space
+		  //
+		  if(m_bWasSpace)
+		    {
+		      *pBuf++ = '&';
+		      *pBuf++ = 'n';
+		      *pBuf++ = 'b';
+		      *pBuf++ = 's';
+		      *pBuf++ = 'p';
+		      *pBuf++ = ';';
+		      pData++;
+		    }
+		  else
+		    {
+		      // just tack on a single space to the textrun
+		      m_bWasSpace = UT_TRUE;
+		      *pBuf++ = ' ';
+		      pData++;
+		    }
+		  break;
+
 		default:
-			if (*pData > 0x007f)
-			{
+
+		  // reset this variable
+		  m_bWasSpace = UT_FALSE;
+
+		  // thanks for the international patch, vlad :-)
+		  if (*pData > 0x007f)
+		    {
+#if 1
+#	if 0
 				// convert non us-ascii into numeric entities.
-				// we could convert them into UTF-8 multi-byte
-				// sequences, but i prefer these.
+				// this has the advantage that our file format is
+				// 7bit clean and safe for email and other network
+				// transfers....
 				char localBuf[20];
 				char * plocal = localBuf;
-				sprintf(localBuf,"&#%d;",*pData++);
+				sprintf(localBuf,"&#x%x;",*pData++);
 				while (*plocal)
 					*pBuf++ = (UT_Byte)*plocal++;
+#	else
+				/*
+				Try to convert to native encoding and if
+				character fits into byte, output raw byte. This 
+				is somewhat essential for single-byte non-latin
+				languages like russian or polish - since
+				tools like grep and sed can be used then for
+				these files without any problem.
+				Networks and mail transfers are 8bit clean
+				these days.  - VH
+				*/
+				UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
+				if (c==0 || c>255)
+				{
+					char localBuf[20];
+					char * plocal = localBuf;
+					sprintf(localBuf,"&#x%x;",*pData++);
+					while (*plocal)
+						*pBuf++ = (UT_Byte)*plocal++;
+				}
+				else
+				{
+					*pBuf++ = (UT_Byte)c;
+					pData++;
+				}
+#	endif
+#else
+				// convert to UTF8
+				// TODO if we choose this, do we have to put the ISO header in
+				// TODO like we did for the strings files.... i hesitate to
+				// TODO make such a change to our file format.
+				XML_Char * pszUTF8 = UT_encodeUTF8char(*pData);
+				while (*pszUTF8)
+				{
+					*pBuf++ = (UT_Byte)*pszUTF8;
+					pszUTF8++;
+				}
+#endif
 			}
 			else
 			{

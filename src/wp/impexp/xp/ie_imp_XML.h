@@ -94,7 +94,8 @@ protected:
     UT_uint32			m_lenCharDataExpected;
     UT_Bool			m_bSeenCR;
     UT_Bool                     m_bWhiteSignificant;
-    
+    UT_Bool                     m_bWasSpace;
+
     UT_Vector			m_vecInlineFmt;
     UT_Stack			m_stackFmtStartIndex;
 
