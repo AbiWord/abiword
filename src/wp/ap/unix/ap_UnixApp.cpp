@@ -1222,7 +1222,7 @@ rms:  I'm adding something here to get a localized splash screen
 
 /*****************************************************************/
 
-int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
+int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 {
     // This is a static function.
     
@@ -1374,11 +1374,21 @@ bool AP_UnixApp::parseCommandLine(poptContext poptcon)
 
 void AP_UnixApp::initPopt(AP_Args *Args)
 {
-	int nextopt;
+	int nextopt, v, i;
 
-	Args->options = const_cast<poptOption*>(Args->const_opts);
+	for (i = 0; Args->const_opts[i].longName != NULL; i++)
+		;
+
+	v = i;
+
+	struct poptOption * opts = (struct poptOption *)
+		UT_calloc(v+1, sizeof(struct poptOption));
+	for (int j = 0; j < v; j++)
+		opts[j] = Args->const_opts[j];
+
+	Args->options = opts;
 	Args->poptcon = poptGetContext("AbiWord", 
-				       Args->XArgs->m_argc, (const char **)Args->XArgs->m_argv, 
+				       Args->XArgs->m_argc, Args->XArgs->m_argv, 
 				       Args->options, 0);
 
     while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 || 

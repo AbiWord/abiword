@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-XAP_Args::XAP_Args(int argc, char ** argv)
+XAP_Args::XAP_Args(int argc, const char ** argv)
 {
 	m_argc = argc;
 	m_argv = argv;

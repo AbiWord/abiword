@@ -39,7 +39,7 @@
 struct _AbiPrivData {
 	AP_UnixApp           * m_pApp;
 	AP_UnixFrame         * m_pFrame;
-	char                 * m_szFilename;
+	const char           * m_szFilename;
 	GdkICAttr            * ic_attr;
 	GdkIC                * ic;
 	bool                 externalApp;

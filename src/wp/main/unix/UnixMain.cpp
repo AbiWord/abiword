@@ -22,7 +22,7 @@
 #include "ap_UnixApp.h"
 #include <unistd.h>
 
-int main(int argc, char ** argv)
+int main(int argc, const char ** argv)
 {
 	if (getenv("TELLPID")) 
 	{	
