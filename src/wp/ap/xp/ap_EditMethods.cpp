@@ -649,9 +649,6 @@ public:
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 
-	static EV_EditMethod_Fn lockGUI;
-	static EV_EditMethod_Fn unlockGUI;
-
 	static EV_EditMethod_Fn textToTable;
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn toggleAutoRevision;
@@ -997,7 +994,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// l
 	EV_EditMethod(NF(language), 		0,	""),
-	EV_EditMethod(NF(lockGUI), 		0,	""),
 	EV_EditMethod(NF(lockToolbarLayout),	0,	""),
 
 	// m
@@ -1138,7 +1134,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// u
 	EV_EditMethod(NF(undo), 				0,	""),
-	EV_EditMethod(NF(unlockGUI), 		0,	""),
 
 	// v
 	EV_EditMethod(NF(viCmd_5e),		0,	""), //^ 
@@ -1303,7 +1298,7 @@ static bool s_EditMethods_check_frame(void)
 /*!
  * Call this if you want to prevent GUI operations on AbiWord.
  */
-Defun(lockGUI)
+static bool lockGUI(void)
 {
 	s_LockOutGUI = true;
 	return true;
@@ -1313,7 +1308,7 @@ Defun(lockGUI)
 /*!
  * Call this to allow GUI operations on AbiWord.
  */
-Defun(unlockGUI)
+static bool unlockGUI(void)
 {
 	s_LockOutGUI = false;
 	return true;
@@ -3641,6 +3636,7 @@ Defun1(warpInsPtRight)
 		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
 	
 	pView->cmdCharMotion(!bRTL,1);
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	return true;
 }
 

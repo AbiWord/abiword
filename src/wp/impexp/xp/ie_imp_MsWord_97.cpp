@@ -4891,6 +4891,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	if (apap->dyaAfter) {
 		UT_String_sprintf(propBuffer,
 						  "margin-bottom:%dpt;", (apap->dyaAfter / 20));
+		s += propBuffer;
 	}
 
 	// tab stops
