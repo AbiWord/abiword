@@ -126,6 +126,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_startPosition = 0;
 	m_bShowPara = UT_FALSE;
 	m_bCursorIsOn = UT_FALSE;
+	m_bdontSpellCheckRightNow = UT_FALSE;
 }
 
 FV_View::~FV_View()
@@ -1137,6 +1138,11 @@ void FV_View::insertSectionBreak(void)
 	}
 }
 
+UT_Bool FV_View::dontSpellCheckRightNow(void)
+{
+        return m_bdontSpellCheckRightNow;
+} 
+
 void FV_View::insertParagraphBreak(void)
 {
 	UT_Bool bDidGlob = UT_FALSE;
@@ -1152,6 +1158,10 @@ void FV_View::insertParagraphBreak(void)
 		_eraseInsertionPoint();
 	}
 
+	// Hold Spell checks until the paragraphs have stablized
+
+        m_bdontSpellCheckRightNow = UT_TRUE;
+
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
 
@@ -1166,6 +1176,11 @@ void FV_View::insertParagraphBreak(void)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
+
+	// Signal Spell checks are safe again
+
+        m_bdontSpellCheckRightNow = UT_FALSE;
+	_checkPendingWord();
 }
 
 
@@ -4671,6 +4686,10 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 
 void FV_View::_checkPendingWord(void)
 {
+        if(m_bdontSpellCheckRightNow == UT_TRUE)
+	{
+                return;
+	}
 	// deal with pending word, if any
 	if (m_pLayout->isPendingWord())
 	{

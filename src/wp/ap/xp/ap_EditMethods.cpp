@@ -4339,8 +4339,12 @@ Defun1(doBullets)
         fl_BlockLayout * pBlock = pView->getCurrentBlock();
 	if(pBlock->isListItem() == UT_TRUE)
 	{
-	        pBlock->listUpdate();
-	        pView->cmdStopList();
+	        const char * tmp = pBlock->getAutoNum()->getType();
+	        if(strstr(tmp,"%b")!= NULL)
+	        {
+       		       pBlock->listUpdate();
+	               pView->cmdStopList();
+		}
 	}
 	else
 	{
@@ -4364,8 +4368,12 @@ Defun1(doNumbers)
         fl_BlockLayout * pBlock = pView->getCurrentBlock();
 	if(pBlock->isListItem() == UT_TRUE)
 	{
-	        pBlock->listUpdate();
-	        pView->cmdStopList();
+	        const char * tmp = pBlock->getAutoNum()->getType();
+	        if(strstr(tmp,"%*%d.")!= NULL)
+	        {
+	       	       pBlock->listUpdate();
+	               pView->cmdStopList();
+		}
 	}
 	else
 	{

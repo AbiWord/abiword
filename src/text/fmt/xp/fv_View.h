@@ -168,6 +168,8 @@ public:
 	UT_Bool setStyle(const XML_Char * style);
 	UT_Bool getStyle(const XML_Char ** style);
 
+	UT_Bool dontSpellCheckRightNow(void);
+
 	void insertParagraphBreak(void);
 	void insertParagraphBreaknoListUpdate(void);
 	void insertSectionBreak(void);
@@ -354,7 +356,8 @@ protected:
 	UT_Bool				m_bCursorIsOn;
 	UT_Bool				m_bEraseSaysStopBlinking;
 	UT_Bool				m_bCursorBlink;
-	
+
+	UT_Bool                         m_bdontSpellCheckRightNow;
 	fv_ChangeState		m_chg;
 
 	// find and replace stuff

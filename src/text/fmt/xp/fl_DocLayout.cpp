@@ -609,6 +609,14 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 		return;
 	}
 
+	// SEVIOR: Code added to hold spell checks during block insertions
+
+	if(pDocLayout->m_pView->dontSpellCheckRightNow() == UT_TRUE)
+	{
+	        return;
+	}
+	
+
 	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
 	UT_ASSERT(vecToCheck);
 
@@ -718,6 +726,11 @@ UT_Bool FL_DocLayout::checkPendingWord(void)
 
 	if (!m_pPendingBlock)
 		return bUpdate;
+
+	if(m_pView->dontSpellCheckRightNow() == UT_TRUE)
+	{
+	        return bUpdate;
+	}
 
 	// check pending word
 	UT_ASSERT(m_pPendingWord);
