@@ -128,7 +128,10 @@ void fp_TextRun::lookupProperties(void)
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
-	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, pDoc, true), m_colorFG);
+	const PP_PropertyTypeColor *p_color = (const PP_PropertyTypeColor *)PP_evalPropertyType("color",pSpanAP,pBlockAP,pSectionAP, Property_type_color, pDoc, true);
+	UT_ASSERT(p_color);
+	m_colorFG = p_color->getColor();
+
 
 	getHighlightColor();
 	getPageColor();

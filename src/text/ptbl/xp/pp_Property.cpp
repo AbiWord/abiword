@@ -61,15 +61,15 @@
 
 static PP_Property _props[] =
 {
-	{ "background-color", "ffffff", false},
-	{ "bgcolor", "transparent", true},
+	{ "background-color", "ffffff", false, NULL},
+	{ "bgcolor", "transparent", true, NULL},
 
-	{ "color",   "000000", true},
-	{ "column-gap",	"0.25in", false},
-	{ "column-line", "off",	false},
-	{ "columns", "1", false},
+	{ "color",   "000000", true, NULL},
+	{ "column-gap",	"0.25in", false, NULL},
+	{ "column-line", "off",	false, NULL},
+	{ "columns", "1", false, NULL},
 
-	{ "default-tab-interval",  "0.5in", false},
+	{ "default-tab-interval",  "0.5in", false, NULL},
 
 #ifdef BIDI_ENABLED
 	/*	these two stand for "direction" and "dominant direction"; they were
@@ -77,61 +77,61 @@ static PP_Property _props[] =
 		set basically for each word and each chunk of whitespace, inflating
 		the ABW file
 	*/
-	{ "dir", default_direction,              true},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dir-override", "off",              true},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dom-dir", default_dominant_direction,              false},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
+	{ "dir", default_direction,              true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dir-override", "off",              true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dom-dir", default_dominant_direction,              false, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 #endif
 
-	{ "field-color", "dcdcdc", true},
-	{ "field-font",	"NULL",	true},	
-	{ "font-family", "Times New Roman", true},	// TODO this is Win32-specific.  must fix!
-	{ "font-size",	"12pt",	true},	// MS word defaults to 10pt, but it just seems too small
-	{ "font-stretch", "normal", true},
-	{ "font-style",	"normal", true},
-	{ "font-variant", "normal", true},
-	{ "font-weight", "normal", true},
-	{ "format","%*%d.", true},
+	{ "field-color", "dcdcdc", true, NULL},
+	{ "field-font",	"NULL",	true, NULL},	
+	{ "font-family", "Times New Roman", true, NULL},	// TODO this is Win32-specific.  must fix!
+	{ "font-size",	"12pt",	true, NULL},	// MS word defaults to 10pt, but it just seems too small
+	{ "font-stretch", "normal", true, NULL},
+	{ "font-style",	"normal", true, NULL},
+	{ "font-variant", "normal", true, NULL},
+	{ "font-weight", "normal", true, NULL},
+	{ "format","%*%d.", true, NULL},
 
-	{ "height", "",	false},
+	{ "height", "",	false, NULL},
 
-	{ "keep-together", "", false},
-	{ "keep-with-next", "",	false},
+	{ "keep-together", "", false, NULL},
+	{ "keep-with-next", "",	false, NULL},
 
-	{ "lang", "en-US", true},
+	{ "lang", "en-US", true, NULL},
 	
-	{ "line-height", "1.0", false},
-	{ "list-decimal", ".", true},
-	{ "list-delim", "%L", true},
+	{ "line-height", "1.0", false, NULL},
+	{ "list-decimal", ".", true, NULL},
+	{ "list-delim", "%L", true, NULL},
 
-	{ "margin-bottom", "0in", false},
-	{ "margin-left", "0in",	false},
-	{ "margin-right", "0in", false},
-	{ "margin-top",	"0in", false}, // zero to be consistent with other WPs
+	{ "margin-bottom", "0in", false, NULL},
+	{ "margin-left", "0in",	false, NULL},
+	{ "margin-right", "0in", false, NULL},
+	{ "margin-top",	"0in", false, NULL}, // zero to be consistent with other WPs
 
-	{ "orphans", "1", false},
+	{ "orphans", "1", false, NULL},
 
-	{ "page-margin-bottom",		"1in",				false},
-	{ "page-margin-footer",         "0in",                          false},
-	{ "page-margin-header",         "0in",                          false},
-	{ "page-margin-left",		"1in",				false},
-	{ "page-margin-right",		"1in",				false},
-	{ "page-margin-top",		"1in",				false},
+	{ "page-margin-bottom",		"1in",				false, NULL},
+	{ "page-margin-footer",         "0in",                          false, NULL},
+	{ "page-margin-header",         "0in",                          false, NULL},
+	{ "page-margin-left",		"1in",				false, NULL},
+	{ "page-margin-right",		"1in",				false, NULL},
+	{ "page-margin-top",		"1in",				false, NULL},
 
-	{ "section-space-after",	"0.25in",			false},
-   	{ "start-value",			"1",				true},
+	{ "section-space-after",	"0.25in",			false, NULL},
+   	{ "start-value",			"1",				true, NULL},
 
-	{ "tabstops", "", false},
+	{ "tabstops", "", false, NULL},
 #ifdef BIDI_ENABLED
-	{ "text-align", text_align,	true},
+	{ "text-align", text_align,	true, NULL},
 #else
-	{ "text-align", "left",	true},
+	{ "text-align", "left",	true, NULL},
 #endif	
-	{ "text-decoration", "none", true},
-	{ "text-indent", "0in", false},
-	{ "text-position", "normal", true},	
+	{ "text-decoration", "none", true, NULL},
+	{ "text-indent", "0in", false, NULL},
+	{ "text-position", "normal", true, NULL},	
 	
-	{ "widows", "2", false},
-	{ "width", "", false},
+	{ "widows", "2", false, NULL},
+	{ "width", "", false, NULL},
 
 };
 
@@ -316,3 +316,172 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 	return pProp->getInitial();
 }
 
+const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
+								 const PP_AttrProp * pSpanAttrProp,
+								 const PP_AttrProp * pBlockAttrProp,
+								 const PP_AttrProp * pSectionAttrProp,
+								 tProperty_type Type,
+								 PD_Document * pDoc,
+								 bool bExpandStyles)
+{
+	// find the value for the given property
+	// by evaluating it in the contexts given.
+	// use the CSS inheritance as necessary.
+
+	if (!pszName || !*pszName)
+	{
+		UT_DEBUGMSG(("PP_evalProperty: null property given\n"));
+		return NULL;
+	}
+
+	const PP_PropertyType * p_property;
+	const PP_Property * pProp = PP_lookupProperty(pszName);
+	if (!pProp)
+	{
+		UT_DEBUGMSG(("PP_evalProperty: unknown property \'%s\'\n",pszName));
+		return NULL;
+	}
+	
+	PD_Style * pStyle = NULL;
+
+	// TODO: make lookup more efficient by tagging each property with scope (block, char, section)
+		
+	// see if the property is on the Span item.
+	
+	if (pSpanAttrProp)
+	{
+		p_property = pSpanAttrProp->getPropertyType(pProp->getName(), Type);
+		if(p_property)
+			return p_property;
+
+		if (bExpandStyles)
+		{
+			pStyle = _getStyle(pSpanAttrProp, pDoc);
+
+			int i = 0;
+			while (pStyle && (i < pp_BASEDON_DEPTH_LIMIT))
+			{
+				p_property = pStyle->getPropertyType(pProp->getName(), Type);
+				if(p_property)
+					return p_property;
+
+				pStyle = pStyle->getBasedOn();
+				i++;
+			}
+		}
+	}
+
+	// otherwise, see if we can inherit it from the containing block or the section.
+
+	if (!pSpanAttrProp || pProp->canInherit())
+	{
+		if (pBlockAttrProp)
+		{
+			p_property = pBlockAttrProp->getPropertyType(pProp->getName(), Type);
+			if(p_property)
+				return p_property;
+			
+			if (bExpandStyles)
+			{
+				pStyle = _getStyle(pBlockAttrProp, pDoc);
+
+				int i = 0;
+				while (pStyle && (i < pp_BASEDON_DEPTH_LIMIT))
+				{
+					p_property = pStyle->getPropertyType(pProp->getName(),  Type);
+					if(p_property)
+						return p_property;
+
+					pStyle = pStyle->getBasedOn();
+					i++;
+				}
+			}
+		}
+
+		if (!pBlockAttrProp || pProp->canInherit())
+		{
+			if (pSectionAttrProp)
+			{
+				p_property =  pSectionAttrProp->getPropertyType(pProp->getName(), Type);
+				if(p_property)
+					return p_property;
+			}
+		}
+	}
+
+	if (pDoc->getStyle("Normal", &pStyle))
+	{
+		// next to last resort -- check for this property in the Normal style
+		p_property = pStyle->getPropertyType(pProp->getName(),  Type);
+		if(p_property)
+			return p_property;
+	}
+
+	// if no inheritance allowed for it or there is no
+	// value set in containing block or section, we return
+	// the default value for this property.
+	
+	return pProp->getInitialType(Type);
+}
+
+
+const PP_PropertyType *	PP_Property::getInitialType(tProperty_type Type) const
+{
+	if(!m_pProperty)
+	{
+		// TODO:: This is never freed.
+		((PP_Property *)this)->m_pProperty = PP_PropertyType::createPropertyType(Type, m_pszInitial);
+	}
+
+	return m_pProperty;
+}
+		
+PP_PropertyType *PP_PropertyType::createPropertyType(tProperty_type Type, const XML_Char *p_init)
+{
+	PP_PropertyType *p_property = NULL;
+	switch(Type)
+	{
+	case Property_type_color:
+		p_property = new PP_PropertyTypeColor(p_init);
+		break;
+
+	case Property_type_bool:
+		p_property = new PP_PropertyTypeBool(p_init);
+		break;
+
+	case Property_type_int:
+		p_property = new PP_PropertyTypeInt(p_init);
+		break;
+
+	case Property_type_size:
+		p_property = new PP_PropertyTypeSize(p_init);
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return p_property;
+}
+
+PP_PropertyTypeColor::PP_PropertyTypeColor(const XML_Char *p_init)
+{
+	UT_parseColor(p_init, Color);
+}
+
+PP_PropertyTypeBool::PP_PropertyTypeBool(const XML_Char *p_init)
+{
+	State = UT_strcmp("yes", p_init);
+}
+
+PP_PropertyTypeInt::PP_PropertyTypeInt(const XML_Char *p_init)
+{
+	Value = atoi(p_init);
+}
+
+PP_PropertyTypeSize::PP_PropertyTypeSize(const XML_Char *p_init)
+{
+	Value = UT_convertDimensionless(p_init);
+	Dim = UT_determineDimension(p_init);
+}

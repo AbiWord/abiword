@@ -25,6 +25,7 @@
 #include "ut_alphahash.h"
 #include "ut_vector.h"
 #include "ut_xml.h"
+#include "pp_Property.h"
 
 
 // PP_AttrProp captures the complete set of XML and CSS
@@ -60,6 +61,7 @@ public:
 
 	bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
 	bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
+	const PP_PropertyType *getPropertyType(const XML_Char * szName, tProperty_type Type) const;
 
 	bool hasProperties(void) const;
 	size_t getPropertyCount (void) const;

@@ -42,6 +42,22 @@ PP_AttrProp::PP_AttrProp()
 PP_AttrProp::~PP_AttrProp()
 {
 	DELETEP(m_pAttributes);
+
+	// delete any PP_Property_types;
+
+	if(m_pProperties)
+	{
+		int Count = m_pProperties->getEntryCount();
+		for(int i = 0; i < Count; i++)
+		{
+			UT_HashEntry *pEntry = m_pProperties->getNthEntry(i);
+
+			if(pEntry)
+			{
+				delete (PP_PropertyType *)pEntry->pData;
+			}
+		}
+	}
 	DELETEP(m_pProperties);
 }
 
@@ -207,9 +223,14 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 
 	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
 	if (pEntry)
+	{
+		delete (PP_PropertyType *)pEntry->pData;
 		return (m_pProperties->setEntry(pEntry, (char*)szValue, NULL) == 0);
+	}
 	else
+	{
 		return (m_pProperties->addEntry((char*)szName, (char*)szValue, NULL) == 0);
+	}
 }
 
 bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
@@ -252,6 +273,23 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	szValue = pEntry->pszRight;
 
 	return true;
+}
+
+const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tProperty_type Type) const
+{
+	if (!m_pProperties)
+		return NULL;
+	
+	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
+	if (!pEntry)
+		return NULL;
+
+	if(!pEntry->pData)
+	{
+		pEntry->pData = PP_PropertyType::createPropertyType(Type, pEntry->pszRight);
+	}
+
+	return (PP_PropertyType *)pEntry->pData;
 }
 
 bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const

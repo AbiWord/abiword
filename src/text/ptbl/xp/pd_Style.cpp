@@ -54,6 +54,17 @@ bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) c
 		return pAP->getProperty(szName, szValue);
 }
 
+const PP_PropertyType *	PD_Style::getPropertyType(const XML_Char * szName, tProperty_type Type) const
+{
+	const PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+		return NULL;
+	else
+		return pAP->getPropertyType(szName, Type);
+}
+
+
 bool PD_Style::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	const PP_AttrProp * pAP = NULL;

@@ -99,6 +99,7 @@ public:
 		const char* pszFontStretch, 
 		const char* pszFontSize) = 0;
 	UT_sint32 convertDimension(const char*) const;
+	UT_sint32 convertDimension(double Value, UT_Dimension Dim) const;
 	const char * invertDimension(UT_Dimension, double) const;
 	bool scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 				UT_uint32 iWidthAvail,

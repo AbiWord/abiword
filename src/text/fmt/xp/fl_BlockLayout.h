@@ -34,6 +34,7 @@
 #include "fl_DocLayout.h"		// FIXME: this is needed for the friend'ed function
 #include "fg_Graphic.h"
 #include "fl_AutoLists.h"
+#include "pp_Property.h"
 
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
@@ -175,6 +176,7 @@ public:
 	FV_View *       getView(void);
 
 	const char*	getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
+	const PP_PropertyType *	getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 
 	inline fl_BlockLayout* getNext(void) const { return m_pNext; }

@@ -87,6 +87,9 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_hXorPen = 0;
 
 	setCursor(GR_CURSOR_DEFAULT);
+
+	m_remapBuffer = NULL;
+	m_remapBufferSize = 0;
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -110,6 +113,8 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	if (m_hXorPen) {
 		DeleteObject(m_hXorPen);
 	}
+
+	delete [] m_remapBuffer;
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -276,11 +281,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	UT_UCSChar* currentChars = new UT_UCSChar[iLength];
-	for (int i = 0; i < iLength; ++i)
-	{
-		currentChars[i] = remapGlyph(pChars[iCharOffset + i], false);
-	}
+	UT_UCSChar* currentChars = _remapGlyphs(pChars, iCharOffset, iLength);
 
 	// Windows NT and Windows 95 support the Unicode Font file. 
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -308,7 +309,24 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
 	}
 
-	delete [] currentChars;
+}
+
+UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int iLength)
+{
+
+	if(iLength > m_remapBufferSize)
+	{
+		delete [] m_remapBuffer;
+		m_remapBuffer = new UT_UCSChar[iLength];
+		m_remapBufferSize = iLength;
+	}
+
+	for (int i = 0; i < iLength; ++i)
+	{
+		m_remapBuffer[i] = remapGlyph(pChars[iCharOffset + i], false);
+	}
+
+	return m_remapBuffer;
 }
 
 void GR_Win32Graphics::setFont(GR_Font* pFont)

@@ -433,13 +433,13 @@ void fl_BlockLayout::_lookupProperties(void)
 		m_bDomDirection = !UT_stricmp(getProperty("dom-dir", true), "rtl");
 		//UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s)\n", m_bDomDirection, getProperty("dom-dir", true)));
 #endif
-		const char* pszOrphans = getProperty("orphans");
-		UT_ASSERT(pszOrphans);
-		m_iOrphansProperty = atoi(pszOrphans);
+		const PP_PropertyTypeInt *pOrphans = (const PP_PropertyTypeInt *)getPropertyType("orphans", Property_type_int);
+		UT_ASSERT(pOrphans);
+		m_iOrphansProperty = pOrphans->getValue();
 
-		const char* pszWidows = getProperty("widows");
-		UT_ASSERT(pszWidows);
-		m_iWidowsProperty = atoi(pszWidows);
+		const PP_PropertyTypeInt *pWidows = (const PP_PropertyTypeInt *)getPropertyType("widows", Property_type_int);
+		UT_ASSERT(pWidows);
+		m_iWidowsProperty = pWidows->getValue();
 
 		if (m_iOrphansProperty < 1)
 		{
@@ -488,9 +488,9 @@ void fl_BlockLayout::_lookupProperties(void)
 	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
-		const char* pszProp = getProperty((XML_Char*)mai.szProp);
-		*mai.pVar	= pG->convertDimension(pszProp);
-		*mai.pVarLU	= UT_convertToLayoutUnits(pszProp);
+		const PP_PropertyTypeSize * pProp = (const PP_PropertyTypeSize *)getPropertyType((XML_Char*)mai.szProp, Property_type_size);
+		*mai.pVar	= pG->convertDimension(pProp->getValue(), pProp->getDim());
+		*mai.pVarLU	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 	}
 
 	{
@@ -535,8 +535,9 @@ void fl_BlockLayout::_lookupProperties(void)
 				 pG->getZoomPercentage()));
 #endif
 	
-	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
-	m_iDefaultTabIntervalLayoutUnits = UT_convertToLayoutUnits(getProperty("default-tab-interval"));
+	const PP_PropertyTypeSize * pProp = (const PP_PropertyTypeSize * )getPropertyType("default-tab-interval", Property_type_size);
+	m_iDefaultTabInterval = pG->convertDimension(pProp->getValue(), pProp->getDim());
+	m_iDefaultTabIntervalLayoutUnits = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 
 
 	const char * pszSpacing = getProperty("line-height");
@@ -1382,6 +1383,17 @@ const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 	getAttrProp(&pBlockAP);
 	
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+}
+
+const PP_PropertyType *	fl_BlockLayout::getPropertyType(const XML_Char * pszName, tProperty_type Type, bool bExpandStyles) const
+{
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+	
+	getAttrProp(&pBlockAP);
+	
+	return PP_evalPropertyType(pszName,pSpanAP,pBlockAP,pSectionAP,Type,m_pDoc,bExpandStyles);
 }
 
 /*!

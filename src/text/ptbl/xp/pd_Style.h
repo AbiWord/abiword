@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "ut_xml.h"
+#include "pp_Property.h"
 
 class pt_PieceTable;
 
@@ -40,6 +41,7 @@ public:
 	bool						setIndexAP(PT_AttrPropIndex indexAP);
 
 	bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
+	const PP_PropertyType *	getPropertyType(const XML_Char * szName, tProperty_type Type) const;
 	bool					getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
 	
 	PD_Style *				getBasedOn(void);

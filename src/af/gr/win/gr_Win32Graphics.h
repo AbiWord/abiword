@@ -155,6 +155,7 @@ protected:
 	virtual UT_uint32 		_getResolution(void) const;
 	void					_setColor(DWORD clrRef);
 
+
 	HDC						m_hdc;
 	HWND 					m_hwnd;
 	const DOCINFO *			m_pDocInfo;
@@ -173,9 +174,13 @@ protected:
 
 private:
 	void 					_constructorCommonCode(HDC);
+	UT_UCSChar*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int iLength);
 
 	DWORD					m_clrXorPen;
 	HPEN					m_hXorPen;
+	
+	UT_UCSChar*				m_remapBuffer;
+	UT_uint32				m_remapBufferSize;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

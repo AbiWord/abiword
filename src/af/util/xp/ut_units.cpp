@@ -371,6 +371,11 @@ UT_sint32 UT_convertToLayoutUnits(const char* s)
 	return (UT_sint32)(UT_convertToInches(s) * UT_LAYOUT_UNITS);
 }
 
+UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim)
+{
+	return (UT_sint32)(UT_convertDimToInches(Value, dim) * UT_LAYOUT_UNITS);
+}
+
 double UT_convertDimensionless(const char * sz)
 {
 	// convert given string into a number -- without using any dimension

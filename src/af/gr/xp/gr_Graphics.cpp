@@ -297,6 +297,22 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 	return (UT_sint32) (dInches * dResolution);
 }
 
+UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
+{
+	double dInches = UT_convertDimToInches(Value, dim);
+	double dResolution;
+	if(m_bLayoutResolutionModeEnabled)
+		{
+		dResolution = UT_LAYOUT_UNITS;
+		}
+	else
+		{
+		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
+		}
+
+	return (UT_sint32) (dInches * dResolution);
+}
+
 const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 {
 	// return pointer to static buffer -- use it quickly.
