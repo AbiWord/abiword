@@ -512,30 +512,34 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 
 #define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
 
-#define ErrorMessage(x) do { XAP_Frame *_pFrame = getDoc()->getApp()->getLastFocussedFrame(); _errorMessage (_pFrame, (x)); } while (0)
+#define ErrorMessage(x) do { XAP_Frame *_pFrame = getDoc()->getApp()->getLastFocussedFrame(); if ( _pFrame ) _errorMessage (_pFrame, (x)); } while (0)
 
 static UT_String _getPassword (XAP_Frame * pFrame)
 {
-  UT_String password;
-  pFrame->raise ();
+  UT_String password ( "" );
 
-  XAP_DialogFactory * pDialogFactory
+  if ( pFrame )
+    {
+      pFrame->raise ();
+      
+      XAP_DialogFactory * pDialogFactory
 	= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
-  XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
-  UT_ASSERT(pDlg);
-
-  pDlg->runModal (pFrame);
-
-  XAP_Dialog_Password::tAnswer ans = pDlg->getAnswer();
-  bool bOK = (ans == XAP_Dialog_Password::a_OK);
-
-  if (bOK)
+      
+      XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
+      UT_ASSERT(pDlg);
+      
+      pDlg->runModal (pFrame);
+      
+      XAP_Dialog_Password::tAnswer ans = pDlg->getAnswer();
+      bool bOK = (ans == XAP_Dialog_Password::a_OK);
+      
+      if (bOK)
 	password = pDlg->getPassword ();
-
-  UT_DEBUGMSG(("Password is %s\n", password.c_str()));
-
-  pDialogFactory->releaseDialog(pDlg);
+      
+      UT_DEBUGMSG(("Password is %s\n", password.c_str()));
+      
+      pDialogFactory->releaseDialog(pDlg);
+    }
 
   return password;
 }
@@ -553,75 +557,83 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
-	wvParseStruct ps;
-
-	int ret = wvInitParser (&ps, (char *)szFilename);
-	const char * password = NULL;
-
-	if (ret & 0x8000)		/* Password protected? */
-	  {
-		UT_String pass = GetPassword();
-		if ( pass.size () != 0 )
-		  password = pass.c_str();
-
-		if ((ret & 0x7fff) == WORD8)
-		  {
-		ret = 0;
-		if (password == NULL)
-		  {
-			ErrorMessage(AP_STRING_ID_WORD_PassRequired);
-			ErrCleanupAndExit(UT_IE_PROTECTED);
-		  }
-		else
-		  {
-			wvSetPassword (password, &ps);
-			if (wvDecrypt97 (&ps))
-			  {
-			ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
-			ErrCleanupAndExit(UT_IE_PROTECTED);
-			  }
-		  }
-		  }
-		else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
-		  {
-		ret = 0;
-		if (password == NULL)
-		  {
-			ErrorMessage(AP_STRING_ID_WORD_PassRequired);
-			ErrCleanupAndExit(UT_IE_PROTECTED);
-		  }
-		else
-		  {
-			wvSetPassword (password, &ps);
-			if (wvDecrypt95 (&ps))
-			  {
-			//("Incorrect Password\n"));
-			ErrCleanupAndExit(UT_IE_PROTECTED);
-			  }
-		  }
-		  }
-	  }
-
-	if (ret)
-	  ErrCleanupAndExit(UT_IE_BOGUSDOCUMENT);
-
-	// register ourself as the userData
-	ps.userData = this;
-
-	// register callbacks
-	wvSetElementHandler (&ps, eleProc);
-	wvSetCharHandler (&ps, charProc);
-	wvSetSpecialCharHandler(&ps, specCharProc);
-	wvSetDocumentHandler (&ps, docProc);
-	
-	wvText(&ps);
-	wvOLEFree();
-
-	// We can't be in a good state if we didn't add any sections!
-	if (m_nSections == 0)
-		return UT_IE_BOGUSDOCUMENT;
-
-	return UT_OK;
+  wvParseStruct ps;
+  
+  int ret = wvInitParser (&ps, (char *)szFilename);
+  const char * password = NULL;
+  
+  // HACK!!
+  bool decrypted = false ;
+  
+  if (ret & 0x8000)		/* Password protected? */
+    {
+      UT_String pass = GetPassword();
+      if ( pass.size () != 0 )
+	password = pass.c_str();
+      
+      if ((ret & 0x7fff) == WORD8)
+	{
+	  ret = 0;
+	  if (password == NULL)
+	    {
+	      ErrorMessage(AP_STRING_ID_WORD_PassRequired);
+	      ErrCleanupAndExit(UT_IE_PROTECTED);
+	    }
+	  else
+	    {
+	      wvSetPassword (password, &ps);
+	      if (wvDecrypt97 (&ps))
+		{
+		  ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
+		  ErrCleanupAndExit(UT_IE_PROTECTED);
+		}
+	      decrypted = true ;
+	    }
+	}
+      else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
+	{
+	  ret = 0;
+	  if (password == NULL)
+	    {
+	      ErrorMessage(AP_STRING_ID_WORD_PassRequired);
+	      ErrCleanupAndExit(UT_IE_PROTECTED);
+	    }
+	  else
+	    {
+	      wvSetPassword (password, &ps);
+	      if (wvDecrypt95 (&ps))
+		{
+		  //("Incorrect Password\n"));
+		  ErrCleanupAndExit(UT_IE_PROTECTED);
+		}
+	      decrypted = true ;
+	    }
+	}
+    }
+  
+  if (ret)
+    ErrCleanupAndExit(UT_IE_BOGUSDOCUMENT);
+  
+  // register ourself as the userData
+  ps.userData = this;
+  
+  // register callbacks
+  wvSetElementHandler (&ps, eleProc);
+  wvSetCharHandler (&ps, charProc);
+  wvSetSpecialCharHandler(&ps, specCharProc);
+  wvSetDocumentHandler (&ps, docProc);
+  
+  wvText(&ps);
+  
+  // HACK - this will do until i sort out some global stream ugliness in wv
+  if ( !decrypted )
+    wvOLEFree();
+  
+  // We can't be in a good state if we didn't add any sections!
+  if (m_nSections == 0)
+    return UT_IE_BOGUSDOCUMENT;
+  
+  return UT_OK;
 }
 
 void IE_Imp_MsWord_97::_flush ()
