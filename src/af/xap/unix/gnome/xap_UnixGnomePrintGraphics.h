@@ -111,6 +111,8 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
+
+    virtual GR_Image * genImageFromRectangle(UT_Rect & r) { return NULL;}
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) {}
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 

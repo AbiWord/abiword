@@ -80,7 +80,8 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 
 // Should clear the old box
 
-	if(FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT == m_iFrameEditMode)
+	if((FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT == m_iFrameEditMode) || 
+	   (FV_FrameEdit_RESIZE_INSERT == m_iFrameEditMode))
 	{
 		xxx_UT_DEBUGMSG(("width after drag %d \n",m_recCurFrame.width));
 		_xorBox(m_recCurFrame);
@@ -103,6 +104,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	UT_sint32 dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
 	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
+	UT_sint32 iext = getGraphics()->tlu(3);
 	switch (m_iDraggingWhat)
 	{
 	case FV_FrameEdit_DragTopLeftCorner:
@@ -114,6 +116,26 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		dy = -diffy;
 		m_recCurFrame.width += diffx;
 		m_recCurFrame.height += diffy;
+		if(diffx < 0)
+		{
+			expX.left = m_recCurFrame.left + diffx -iext;
+			expX.width = -diffx + iext;
+			if(diffy > 0)
+			{
+				expX.top -=  diffy + iext;
+				expX.height += diffy + 2*iext;
+			}
+			else
+			{
+				expX.top -=  iext;
+				expX.height += (-diffy + 2*iext);
+			}
+		}
+		if(diffy < 0)
+		{
+			expY.top = m_recCurFrame.top + diffy - iext;
+			expY.height = -diffy + 2*iext;
+		}
 		if(m_recCurFrame.width < 0)
 		{
 			m_recCurFrame.left = x;
@@ -136,6 +158,26 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		dy = -diffy;
 		m_recCurFrame.width -= diffx;
 		m_recCurFrame.height += diffy;
+		if(diffx > 0)
+		{
+			expX.left = m_recCurFrame.left + m_recCurFrame.width;
+			expX.width = diffx + iext;
+			if(diffy > 0)
+			{
+				expX.top -=  iext;
+				expX.height += diffy + 2*iext;
+			}
+			else
+			{
+				expX.top -=  iext;
+				expX.height += (-diffy + 2*iext);
+			}
+		}
+		if(diffy < 0)
+		{
+			expY.top = m_recCurFrame.top + diffy - iext;
+			expY.height = -diffy + iext;
+		}
 		if(m_recCurFrame.width < 0)
 		{
 			m_recCurFrame.left = x;
@@ -158,6 +200,26 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		dx = -diffx;
 		m_recCurFrame.width += diffx;
 		m_recCurFrame.height -= diffy;
+		if(diffx < 0)
+		{
+			expX.left = m_recCurFrame.left + diffx -iext;
+			expX.width = -diffx + iext;
+			if(diffy > 0)
+			{
+				expX.top -=  diffy + iext;
+				expX.height += diffy + 2*iext;
+			}
+			else
+			{
+				expX.top -=  iext;
+				expX.height += (-diffy + 2*iext);
+			}
+		}
+		if(diffy > 0)
+		{
+			expY.top = m_recCurFrame.top + m_recCurFrame.height - iext;
+			expY.height = diffy + 2*iext;
+		}
 		if(m_recCurFrame.width < 0)
 		{
 			m_recCurFrame.left = x;
@@ -179,6 +241,26 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 		m_recCurFrame.width -= diffx;
 		m_recCurFrame.height -= diffy;
+		if(diffx > 0)
+		{
+			expX.left = m_recCurFrame.left + m_recCurFrame.width;
+			expX.width = diffx + iext;
+			if(diffy > 0)
+			{
+				expX.top -=  iext;
+				expX.height += diffy + 2*iext;
+			}
+			else
+			{
+				expX.top -=  iext;
+				expX.height += (-diffy + 2*iext);
+			}
+		}
+		if(diffy > 0)
+		{
+			expY.top = m_recCurFrame.top + m_recCurFrame.height;
+			expY.height = diffy + iext;
+		}
 		if(m_recCurFrame.width < 0)
 		{
 			m_recCurFrame.left = x;
@@ -199,6 +281,13 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		m_recCurFrame.left -= diffx;
 		dx = -diffx;
 		m_recCurFrame.width += diffx;
+		if(diffx < 0)
+		{
+			expX.left = m_recCurFrame.left + diffx - iext;
+			expX.width = -diffx + iext;
+			expX.top -=  iext;
+			expX.height += 2*iext;
+		}
 		if(m_recCurFrame.width < 0)
 		{
 			m_recCurFrame.left = x;
@@ -210,6 +299,13 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	case FV_FrameEdit_DragRightEdge:
 		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 		m_recCurFrame.width -= diffx;
+		if(diffx > 0)
+		{
+			expX.left = m_recCurFrame.left + m_recCurFrame.width;
+			expX.width = diffx + iext;
+			expX.top -=  iext;
+			expX.height += 2*iext;
+		}
 		if(m_recCurFrame.width < 0)
 		{
 			m_recCurFrame.left = x;
@@ -223,6 +319,13 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		m_recCurFrame.top -= diffy;
 		dy = -diffy;
 		m_recCurFrame.height += diffy;
+		if(diffy < 0)
+		{
+			expY.top = m_recCurFrame.top + diffy - iext;
+			expY.height = -diffy + iext;
+			expY.left -= iext;
+			expY.width += 2*iext;
+		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
@@ -234,6 +337,13 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	case FV_FrameEdit_DragBotEdge:
 		diffy = m_recCurFrame.top + m_recCurFrame.height - y;
 		m_recCurFrame.height -= diffy;
+		if(diffy > 0)
+		{
+			expY.top = m_recCurFrame.top + m_recCurFrame.height;
+			expY.height = diffy + iext;
+			expY.left -= iext;
+			expY.width += 2*iext;
+		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
@@ -250,7 +360,6 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		dy = - diffy;
 		m_recCurFrame.left -= diffx;
 		m_recCurFrame.top -= diffy;
-		UT_sint32 iext = getGraphics()->tlu(2);
 		if(dx < 0)
 		{
 			expX.left = m_recCurFrame.left+m_recCurFrame.width -iext;
@@ -268,7 +377,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		}
 		else
 		{
-			expX.left = m_recCurFrame.left - dx -iext;
+			expX.left = m_recCurFrame.left - dx - iext;
 			expX.width = dx + 2*iext;
 			if(dy > 0)
 			{
@@ -281,14 +390,16 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 				expX.height += (-dy + 2*iext);
 			}
 		}
+		expY.left -= iext;
+		expY.width += 2*iext;
 		if(dy < 0)
 		{
-			expY.top = m_recCurFrame.top + m_recCurFrame.height + iext;
+			expY.top = m_recCurFrame.top + m_recCurFrame.height -iext;
 			expY.height = -dy + 2*iext;
 		}
 		else
 		{
-			expY.top = m_recCurFrame.top - dy -iext;
+			expY.top = m_recCurFrame.top - dy - iext;
 			expY.height = dy + 2*iext;
 		}
 	}
@@ -298,7 +409,7 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	}
 
 // Should draw the new box
-	if(FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT == m_iFrameEditMode)
+	if(FV_FrameEdit_RESIZE_INSERT == m_iFrameEditMode)
 	{
 		xxx_UT_DEBUGMSG(("width after drag %d \n",m_recCurFrame.width));
 		_xorBox(m_recCurFrame);
@@ -307,31 +418,19 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	{
 		UT_sint32 iW = m_recCurFrame.width;
 		UT_sint32 iH = m_recCurFrame.height;
-		m_pFrameContainer->clearScreen();
+		UT_sint32 newX = m_pFrameContainer->getFullX();
+		UT_sint32 newY = m_pFrameContainer->getFullY();
 		m_pFrameLayout->localCollapse();
 		m_pFrameLayout->setFrameWidth(iW);
 		m_pFrameLayout->setFrameHeight(iH);
 		m_pFrameContainer->_setWidth(iW);
 		m_pFrameContainer->_setHeight(iH);
 		m_pFrameLayout->miniFormat();
-		UT_sint32 newX = m_pFrameContainer->getFullX();
-		UT_sint32 newY = m_pFrameContainer->getFullY();
+		m_pFrameLayout->getDocSectionLayout()->setNeedsSectionBreak(false,NULL);
 		newX += dx;
 		newY += dy;
 		m_pFrameContainer->_setX(newX);
 		m_pFrameContainer->_setY(newY);
-		drawFrame(true);
-	}
-	else if (FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
-	{
-		UT_sint32 newX = m_pFrameContainer->getFullX();
-		UT_sint32 newY = m_pFrameContainer->getFullY();
-		newX += dx;
-		newY += dy;
-		m_pFrameContainer->clearScreen();
-		m_pFrameContainer->_setX(newX);
-		m_pFrameContainer->_setY(newY);
-		drawFrame(true);
 		if(expX.width > 0)
 		{
 			getGraphics()->setClipRect(&expX);
@@ -343,6 +442,29 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 			m_pView->updateScreen(false);
 		}
 		getGraphics()->setClipRect(NULL);
+
+		drawFrame(true);
+	}
+	else if (FV_FrameEdit_DRAG_EXISTING == m_iFrameEditMode)
+	{
+		UT_sint32 newX = m_pFrameContainer->getFullX();
+		UT_sint32 newY = m_pFrameContainer->getFullY();
+		newX += dx;
+		newY += dy;
+		m_pFrameContainer->_setX(newX);
+		m_pFrameContainer->_setY(newY);
+		if(expX.width > 0)
+		{
+			getGraphics()->setClipRect(&expX);
+			m_pView->updateScreen(false);
+		}
+		if(expY.height > 0)
+		{
+			getGraphics()->setClipRect(&expY);
+			m_pView->updateScreen(false);
+		}
+		getGraphics()->setClipRect(NULL);
+		drawFrame(true);
 	}
 	m_iLastX = x;
 	m_iLastY = y;
@@ -407,12 +529,22 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
 	//
 	// OK find the coordinates of the frame.
 	//
+	fp_FrameContainer * pFCon = NULL;
+	fl_FrameLayout * pFL = NULL;
 	UT_sint32 xPage,yPage;
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = m_pView->_getPageForXY(x, y, xClick, yClick);
 	m_pView->getPageScreenOffsets(pPage,xPage,yPage);
-	fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
-	fp_FrameContainer * pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
+	if(m_iFrameEditMode == FV_FrameEdit_EXISTING_SELECTED)
+	{
+		pFCon = m_pFrameContainer;
+		pFL = m_pFrameLayout;
+	}
+	else
+	{
+		pFL = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
+		pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
+	}
 	UT_sint32 ires = getGraphics()->tlu(FRAME_HANDLE_SIZE); // 6 pixels wide hit area
 	UT_sint32 iLeft = xPage + pFCon->getFullX();
 	UT_sint32 iRight = xPage + pFCon->getFullX() + pFCon->getFullWidth();
@@ -651,17 +783,16 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_DEBUGMSG(("Existing Frame selected now released button \n"));
 		return;
 	}
-// First update the drag box
-//
+
 	mouseDrag(x,y);
-//
-// Clear the drag box
-//
-	_xorBox(m_recCurFrame);
 	PT_DocPosition posAtXY = 0;
 
 	if(m_iFrameEditMode == 	FV_FrameEdit_RESIZE_INSERT)
 	{
+//
+// Clear the drag box
+//
+		_xorBox(m_recCurFrame);
 		// Signal PieceTable Change
 		m_pView->_saveAndNotifyPieceTableChange();
 
@@ -712,6 +843,30 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_pView->notifyListeners(AV_CHG_MOTION);
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();
+
+//
+		m_iFrameEditMode = 	FV_FrameEdit_EXISTING_SELECTED;
+		fl_BlockLayout * pBL = m_pView->_findBlockAtPosition(posFrame+2);
+		fl_ContainerLayout * pCL = pBL->myContainingLayout();
+		while(pCL && (pCL->getContainerType() != FL_CONTAINER_FRAME) && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+		{
+			pCL = pCL->myContainingLayout();
+		}
+		UT_ASSERT(pCL);
+		if(pCL == NULL)
+		{
+			return;
+		}
+		if(pCL->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			return;
+		}
+		m_pFrameLayout = static_cast<fl_FrameLayout *>(pCL);
+		UT_ASSERT(m_pFrameLayout->getContainerType() == FL_CONTAINER_FRAME);
+		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
+		UT_ASSERT(m_pFrameContainer);
+		drawFrame(true);
+		return;
 	}
 
 // Do Resize and Drag of frame
@@ -800,16 +955,13 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_pView->notifyListeners(AV_CHG_MOTION);
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();
-
-	}
 //
-// Finish up by clearing the editmode and dragging what modes
+// Finish up by putting the editmode back to existing selected.
 //	
-	m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
-	m_iDraggingWhat =  FV_FrameEdit_DragNothing;
-	m_pFrameLayout = NULL;
-	m_pFrameContainer = NULL;
-	m_pView->setCursorToContext();
+		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
+		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
+		drawFrame(true);
+	}
 }
 
 FV_FrameEditDragWhat FV_FrameEdit::mouseMotion(UT_sint32 x, UT_sint32 y)

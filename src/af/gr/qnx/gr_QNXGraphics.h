@@ -175,7 +175,10 @@ class GR_QNXGraphics : public GR_Graphics
 	UT_uint32			m_iShadowZoomPercentage;
  	bool             m_bPrintNextPage;    
 	PpPrintContext_t *  m_pPrintContext;
+
+    virtual GR_Image * genImageFromRectangle(UT_Rect & r) { return NULL;}
 private:
+
 	virtual void saveRectangle(UT_Rect &r, UT_uint32 iIndx);
 	virtual void restoreRectangle(UT_uint32 iIndx);
 

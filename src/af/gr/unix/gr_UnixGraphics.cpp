@@ -1747,9 +1747,25 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 }
 #endif
 
+/*!
+ * Take a screenshot of the graphics and convert it to an image.
+ */
+GR_Image * GR_UnixGraphics::genImageFromRectangle(UT_Rect &rec)
+{
+	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+												   m_pWin,
+												   NULL,
+												   tdu(rec.left), tdu(rec.top), 0, 0,
+												   tdu(rec.width), tdu(rec.height));
+	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");
+	pImg->m_image = pix;
+	return static_cast<GR_Image *>(pImg);
+}
+
 void GR_UnixGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 {
-	void * oldR = NULL;
+	void * oldR = NULL;	
+
 	m_vSaveRect.setNthItem(iIndx, static_cast<void*>(new UT_Rect(r)),&oldR);
 	if(oldR)
 		delete static_cast<UT_Rect*>(oldR);

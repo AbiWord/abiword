@@ -3474,7 +3474,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	curY = curY + nPage*totPageHeight;
 #endif
 	bool bNotEnd = false;
-	UT_DEBUGMSG(("Starting at page %x \n",pPage));
+	xxx_UT_DEBUGMSG(("Starting at page %x \n",pPage));
 	while (pPage)
 	{
 		UT_sint32 iPageWidth		= pPage->getWidth();

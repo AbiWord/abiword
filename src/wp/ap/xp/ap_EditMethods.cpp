@@ -11634,7 +11634,7 @@ Defun(dragFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	UT_DEBUGMSG(("Drag Frame \n"));
+	xxx_UT_DEBUGMSG(("Drag Frame \n"));
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->dragFrame(x,y);

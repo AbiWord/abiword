@@ -409,6 +409,8 @@ void fl_FrameLayout::miniFormat(void)
 		pBL = pBL->getNext();
 	}
 	static_cast<fp_FrameContainer *>(getFirstContainer())->layout();
+	m_bNeedsFormat = false;
+	m_bNeedsReformat = false;
 }
 
 void fl_FrameLayout::format(void)

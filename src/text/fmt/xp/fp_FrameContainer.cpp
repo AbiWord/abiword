@@ -101,7 +101,7 @@ void fp_FrameContainer::clearScreen(void)
 	srcY = -m_iYpad - iTopLWidth;
 	UT_sint32 xoff,yoff;
 	getView()->getPageScreenOffsets(pPage,xoff,yoff);
-	UT_DEBUGMSG(("pagescreenoffsets xoff %d yoff %d \n",xoff,yoff));
+	xxx_UT_DEBUGMSG(("pagescreenoffsets xoff %d yoff %d \n",xoff,yoff));
 	xoff += getFullX() -iLeftLWidth;
 	yoff += getFullY() - iTopLWidth;
 	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+iLeftLWidth+iRightLWidth,getFullHeight()+iTopLWidth+iBotLWidth);

@@ -262,8 +262,16 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	fl_DocSectionLayout * pDSL = NULL;
 	if(pColumnC->getContainerType() != FP_CONTAINER_FOOTNOTE)
 	{
-		fp_Column * pColumn = static_cast<fp_Column*>(pColumnC);
-		pDSL = pColumn->getDocSectionLayout();
+		if(pColumnC->getContainerType() == FP_CONTAINER_FRAME)
+		{
+			fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pColumnC);
+			pDSL = pFC->getDocSectionLayout();
+		}
+		else
+		{
+			fp_Column * pColumn = static_cast<fp_Column *>(pColumnC);
+			pDSL = pColumn->getDocSectionLayout();
+		}
 	}
 	else
 	{
