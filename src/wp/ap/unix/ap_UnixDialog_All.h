@@ -33,16 +33,12 @@
 
 #	include "xap_UnixDlg_MessageBox.h"
 #	include "xap_UnixDlg_FileOpenSaveAs.h"
-#	include "xap_UnixDlg_Print.h"
-#   include "xap_UnixDlg_PrintPreview.h"
 #	include "xap_UnixDlg_WindowMore.h"
 #	include "xap_UnixDlg_FontChooser.h"
-#	include "xap_UnixDlg_About.h"
 #	include "xap_UnixDlg_Zoom.h"
 #	include "xap_UnixDlg_Insert_Symbol.h"
 #	include "xap_UnixDlg_Language.h"
 #   include "xap_UnixDlg_PluginManager.h"
-#   include "xap_UnixDlg_ClipArt.h"
 #   include "xap_UnixDlg_Encoding.h"
 #   include "xap_UnixDlg_HTMLOptions.h"
 #   include "xap_UnixDlg_Password.h"
@@ -83,27 +79,32 @@
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
 #   include "xap_UnixGnomeDlg_ClipArt.h"
+#   include "xap_UnixGnomeDlg_Print.h"
+#   include "xap_UnixGnomeDlg_PrintPreview.h"
+#else
+#   include "xap_UnixDlg_ClipArt.h"
+#	include "xap_UnixDlg_About.h"
+#	include "xap_UnixDlg_Print.h"
+#   include "xap_UnixDlg_PrintPreview.h"
 #endif
 
 #else
-
-#if 0
-	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixGnomeDialog_Print)
-    DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,   XAP_UnixGnomeDialog_PrintPreview)
-#endif
 
 #ifdef HAVE_GNOME
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixGnomeDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixGnomeDialog_ClipArt)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixGnomeDialog_Print)
+    DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,   XAP_UnixGnomeDialog_PrintPreview)
 #else
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixDialog_ClipArt)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print)
+    DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,   XAP_UnixDialog_PrintPreview)
 #endif
 
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_UnixDialog_Language)
