@@ -344,6 +344,7 @@ void fp_Run::updateHighlightColor(void)
 	}
 	else
 	{
+		fp_Page * pPage = NULL;
 		fp_Line * pLine = getLine();
 		if(pLine != NULL)
 		{
@@ -352,13 +353,15 @@ void fp_Run::updateHighlightColor(void)
 			// if it is, then use the cell backgound color
 			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 			{
-					pClr = &((fp_CellContainer *) pCon)->getBgColor();
+				pClr = &((fp_CellContainer *) pCon)->getBgColor();
+				UT_setColor (m_pColorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
+				return;
 			} 
-			else
-			{
-				fp_Page * pPage = pCon->getPage();
-				pClr = pPage->getOwningSection()->getPaperColor();
-			}
+			pPage = pCon->getPage();
+		}
+		if (pPage != NULL)
+		{
+			pClr = pPage->getOwningSection()->getPaperColor();
 		}
 		else if(getBlock()->isHdrFtr())
 		{
@@ -380,34 +383,34 @@ void fp_Run::updateHighlightColor(void)
 void fp_Run::updatePageColor(void)
 {
 	UT_RGBColor * pClr = NULL;
+	fp_Page * pPage = NULL;
 	fp_Line * pLine = getLine();
 	
 	if(pLine != NULL)
 	{
 		fp_Container * pCon = pLine->getContainer();
-
 		// Check if we are in a table cell which has a NON-transparent background
 		// if it is, then use the cell backgound color
 		if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 		{
-				pClr = &((fp_CellContainer *) pCon)->getBgColor();
+			pClr = &((fp_CellContainer *) pCon)->getBgColor();
+			UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
+			return;
 		} 
-		else
-		{
-			fp_Page * pPage = pCon->getPage();
-			pClr = pPage->getOwningSection()->getPaperColor();
-		}
+		pPage = pCon->getPage();
+	}
+	if (pPage != NULL)
+	{
+		pClr = pPage->getOwningSection()->getPaperColor();
 	}
 	else if(getBlock()->isHdrFtr())
 	{
-		UT_setColor (m_pColorPG, 0, 0, 0);
+		UT_setColor (m_pColorPG, 255, 255, 255);
 		return;
 	}
 	else
 		pClr = getBlock()->getDocSectionLayout()->getPaperColor();
-		
 	UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
-	return;
 }
 
 /*!
