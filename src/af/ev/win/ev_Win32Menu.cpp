@@ -579,7 +579,18 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 					//UT_DEBUGMSG(("Menu adding menu->%s\n",szLabelName));
 					AppendMenu(m, MF_OWNERDRAW,cmd, (const char*) item);					
 				}
-
+				
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				
+				if (mis & EV_MIS_Gray)
+						uEnable |= MF_GRAYED;
+						
+				if (mis & EV_MIS_Toggled)
+						uCheck |= MF_CHECKED;
+						
+				EnableMenuItem(m,cmd,uEnable);
+				CheckMenuItem(m,cmd,uCheck);
+				
 			}
 			break;
 	
