@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- ==============================================================  -->
+<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
+<!-- word processor developed by AbiSource, Inc.  Information about  -->
+<!-- this application can be found at http://www.abisource.com       -->
+<!-- This file contains the string translations for one language.    -->
+<!-- This file is covered by the GNU Public License (GPL).           -->
+<!-- ==============================================================  -->
+
+<!-- portuguese translations provided by Rui M. Silva <rms@ssi.aaum.pt> -->
+
+
+<AbiStrings app="AbiWord Personal" ver="1.0" language="PtPT">
+
+<Strings	class="XAP"
+UntitledDocument="Documento%d"
+DLG_OK="Aceitar"
+DLG_Cancel="Cancelar"
+DLG_UnixMB_Yes="_Sim"
+DLG_UnixMB_No="_Não"
+DLG_MW_MoreWindows="Activar uma janela"
+DLG_MW_Activate="Activar::"
+DLG_UFS_FontTitle="Tipos"
+DLG_UFS_FontLabel="Tipo:"
+DLG_UFS_StyleLabel="Estilo:"
+DLG_UFS_SizeLabel="Tamanho:"
+DLG_UFS_EncodingLabel="Codificação:"
+DLG_UFS_EffectsFrameLabel="Efeitos"
+DLG_UFS_StrikeoutCheck="Riscado"
+DLG_UFS_UnderlineCheck="Sublinhado"
+DLG_UFS_FontTab="   Tipo   "
+DLG_UFS_ColorTab="   Cor   "
+DLG_UFS_StyleRegular="Normal"
+DLG_UFS_StyleItalic="Itálico"
+DLG_UFS_StyleBold="Negrito"
+DLG_UFS_StyleBoldItalic="Negrito itálico"
+DLG_FOSA_OpenTitle="Abrir"
+DLG_FOSA_SaveAsTitle="Guardar como"
+DLG_FOSA_PrintToFileTitle="Imprimir para um ficheiro"
+DLG_FOSA_FileOpenTypeLabel="Abrir um ficheiro do tipo:"
+DLG_FOSA_FileSaveTypeLabel="Guardar o ficheiro como o tipo:"
+DLG_FOSA_FilePrintTypeLabel="Imprimir para um ficheiro do tipo:"
+DLG_FOSA_FileTypeAutoDetect="Detecção automática"
+DLG_InvalidPathname="O nome do ficheiro ou directoria não esta certo"
+DLG_NoSaveFile_DirNotExist="Uma directoria onde quer gravar o ficheiro não existe"
+DLG_NoSaveFile_DirNotWriteable="A directoria '%s' esta protegida contra escita."
+DLG_OverwriteFile="O ficheiro '%s' já existe. Quer substituí-lo?"
+DLG_Zoom_ZoomTitle="Zoom"
+DLG_Zoom_RadioFrameCaption="Factor de zoom"
+DLG_Zoom_200="200%"
+DLG_Zoom_100="100%"
+DLG_Zoom_75="75%"
+DLG_Zoom_PageWidth="Comprimento da página"
+DLG_Zoom_WholePage="Toda a página"
+DLG_Zoom_Percent="Percentagem:"
+DLG_Zoom_PreviewFrame="Pré-visualização"
+DLG_UP_PrintTitle="Imprimir"
+DLG_UP_PrintTo="Imprimir em: "
+DLG_UP_Printer="Impressora"
+DLG_UP_File="Ficheiro"
+DLG_UP_PrinterCommand="Comando de impressão: "
+DLG_UP_PageRanges="Págines número ...:"
+DLG_UP_All="Todas"
+DLG_UP_From="De: "
+DLG_UP_To=" até "
+DLG_UP_Selection="Selecção"
+DLG_UP_Collate="Cópias classificadas"
+DLG_UP_Copies="Cópias: "
+DLG_UP_PrintButton="Imprimir"
+DLG_UP_InvalidPrintString="O comando de impressão não é valido."
+DLG_UP_PrintIn="Imprimir em: "
+DLG_UP_BlackWhite="Preto e branco"
+DLG_UP_Grayscale="Níveis de cinzentos"
+DLG_UP_Color="Cor"
+/>
+
+<Strings	class="AP"
+MSG_SaveFailed="Impossível escrever no ficheiro %s."
+MSG_RevertBuffer="Reabrir '%s' tal e qual como estava da ultima vez que foi guardado?"
+MSG_QueryExit="Fechar todas as janelas e sair?"
+MSG_ConfirmSave="Guardar alterações em %s?"
+MSG_ImportError="Erro de importação do fiehciero %s."
+PageInfoField="Página: %d/%d"
+DLG_FR_FindTitle="Procurar"
+DLG_FR_ReplaceTitle="Substituir"
+DLG_FR_FindLabel="P&amp;rocurar"
+DLG_FR_ReplaceWithLabel="Sub&amp;stituir por:"
+DLG_FR_MatchCase="&amp;Diferenciar maiúsculas/minúsculas"
+DLG_FR_FindNextButton="Procurar o &amp;seguinte"
+DLG_FR_ReplaceButton="S&amp;ubstituir"
+DLG_FR_ReplaceAllButton="Substituir t&amp;udo"
+DLG_Break_BreakTitle="Quebra"
+DLG_Break_Insert="Inserir"
+DLG_Break_SectionBreaks="Quebra de secção"
+DLG_Break_PageBreak="Quebra de &amp;página"
+DLG_Break_ColumnBreak="Quebra de &amp;coluna"
+DLG_Break_NextPage="Página &amp;seguinte"
+DLG_Break_Continuous="Con&amp;tínuo"
+DLG_Break_EvenPage="Página pa&amp;r"
+DLG_Break_OddPage="Página &amp;ímpar"
+/>
+
+</AbiStrings>
