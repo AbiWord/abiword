@@ -1438,16 +1438,14 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 
 void fl_HdrFtrSectionLayout::redrawUpdate(void)
 {
-	UT_ASSERT(UT_FALSE);
-/*
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
-		pPair->pShadow->updateLayout();
+		pPair->pShadow->redrawUpdate();
 	}
-*/
+
 }
 
 UT_Bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
