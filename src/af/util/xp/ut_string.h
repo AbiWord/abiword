@@ -85,6 +85,9 @@ XML_Char * UT_encodeUTF8char(UT_UCSChar cIn);
 
 #define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))
 #define UT_UCS_isupper(x)	(((x) >= 'A') && ((x) <= 'Z'))		// HACK: not UNICODE-safe
+#define UT_UCS_islower(x)	(((x) >= 'a') && ((x) <= 'z'))		// HACK: not UNICODE-safe
+#define UT_UCS_isalpha(x)	(UT_UCS_isupper(x) || UT_UCS_islower(x))		// HACK: not UNICODE-safe
+#define UT_UCS_isalnum(x)	(UT_UCS_isalpha(x) || UT_UCS_isdigit(x))		// HACK: not UNICODE-safe
 
 #ifdef WIN32
 #define snprintf _snprintf

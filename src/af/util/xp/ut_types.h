@@ -123,6 +123,7 @@ typedef		UT_sint32				UT_Error;
 #define UCS_RQUOTE			((UT_UCSChar)0x2019)
 #define UCS_LDBLQUOTE		((UT_UCSChar)0x201c)
 #define UCS_RDBLQUOTE		((UT_UCSChar)0x201d)
+#define UCS_UNKPUNK 		((UT_UCSChar)0xFFFF)  /* "unknown punctuation" used with UT_isWordDelimiter() */
 
 #else /* see bug 512 */
 
@@ -135,6 +136,7 @@ typedef		UT_sint32				UT_Error;
 #define UCS_RQUOTE			((UT_UCSChar)0x0027)
 #define UCS_LDBLQUOTE		((UT_UCSChar)0x0022)
 #define UCS_RDBLQUOTE		((UT_UCSChar)0x0022)
+#define UCS_UNKPUNK 		((UT_UCSChar)0x00FF)
 
 #endif
 

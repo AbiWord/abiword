@@ -784,11 +784,11 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				}
 			}
 
-			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[bKeepLooking ? offset-1 : offset]);
+			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[bKeepLooking ? offset-1 : offset], UCS_UNKPUNK);
 
 			for (offset--; offset > 0; offset--)
 			{
-				if (UT_isWordDelimiter(pSpan[offset]))
+				if (UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK))
 				{
 					if (bInWord)
 						break;
@@ -843,7 +843,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				}
 			}
 
-			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset]);
+			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
 			
 			// Needed so ctrl-right arrow will work
 			// This is the code that was causing bug 10
@@ -851,15 +851,19 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 			for (; offset < pgb.getLength(); offset++)
 			{
-		       	    if (!UT_isWordDelimiter(pSpan[offset]))
+				UT_UCSChar followChar;
+				followChar = ((offset + 1) < pgb.getLength())  ?  pSpan[offset+1]  :  UCS_UNKPUNK;
+				if (!UT_isWordDelimiter(pSpan[offset], followChar))
 				break;
 			}
 			
 			for (; offset < pgb.getLength(); offset++)
 			{
-				if (!UT_isWordDelimiter(pSpan[offset]))
+				UT_UCSChar followChar;
+				followChar = ((offset + 1) < pgb.getLength())  ?  pSpan[offset+1]  :  UCS_UNKPUNK;
+				if (!UT_isWordDelimiter(pSpan[offset], followChar))
 				{				  
-				  if (bBetween)
+					if (bBetween)
 				    break;
 				}
 				else if (pSpan[offset] != ' ')
@@ -911,7 +915,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				}
 			}
 
-			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset]);
+			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset], UCS_UNKPUNK);
 			
 			// Needed so ctrl-right arrow will work
 			// This is the code that was causing bug 10
@@ -925,7 +929,9 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			*/
 			for (; offset < pgb.getLength(); offset++)
 			{
-				if (UT_isWordDelimiter(pSpan[offset]))
+				UT_UCSChar followChar;
+				followChar = ((offset + 1) < pgb.getLength())  ?  pSpan[offset+1]  :  UCS_UNKPUNK;
+				if (UT_isWordDelimiter(pSpan[offset], followChar))
 				{				  
 				  if (bBetween)
 				    break;
@@ -5199,7 +5205,17 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 	sp_suggestions sg;
 	memset(&sg, 0, sizeof(sg));
 
-	SpellCheckSuggestNWord16(pWord, pPOB->iLength,&sg);
+	UT_UCSChar theWord[101];
+	// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+	for (int ldex=0; ldex<pPOB->iLength && ldex<100; ++ldex)
+	{
+		UT_UCSChar currentChar;
+		currentChar = *(pWord + ldex);
+		if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		theWord[ldex] = currentChar;
+	}
+				
+	SpellCheckSuggestNWord16(theWord, pPOB->iLength, &sg);
 
 	// we currently return all requested suggestions
 	// TODO: prune lower-weighted ones??
@@ -5402,9 +5418,11 @@ FV_DocCount FV_View::countWords(void)
 						wCount.ch_no++;
 					}
 				}
-				newWord = (delim && !UT_isWordDelimiter(pSpan[i]));
+				UT_UCSChar followChar;
+				followChar = (i+1 < len)  ?  pSpan[i+1]  :  UCS_UNKPUNK;
+				newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar));
 				
-				delim = UT_isWordDelimiter(pSpan[i]);
+				delim = UT_isWordDelimiter(pSpan[i], followChar);
 				
 				if (newWord)
 					wCount.word++;

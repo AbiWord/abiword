@@ -75,7 +75,7 @@ struct UT_Point
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
 const char * UT_pathSuffix(const char * path);
-UT_Bool UT_isWordDelimiter(UT_UCSChar);
+UT_Bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar);
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
 UT_sint32 signedHiWord(UT_uint32 dw);

@@ -220,14 +220,22 @@ const char * UT_pathSuffix(const char * path)
 		
 
 
-UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
+UT_Bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 {
+#if 1
+	/* wjc ... these UT_UCS_isXXX() functions aren't really right for UCS */
+	if (UT_UCS_isalnum(currentChar)) return UT_FALSE;
+	// the following case is for embedded apostrophe in a contraction
+	if ((currentChar == '\''  ||  currentChar == UCS_RQUOTE)  &&  UT_UCS_isalnum(followChar)) return UT_FALSE;
+	return UT_TRUE;
+
+#else
 	/*
 		TODO we need a more systematic way to handle this, instead 
 		TODO of just randomly adding more whitespace & punctuation
 		TODO on an as-discovered basis
 	*/
-	switch (ch)
+	switch (currentChar)
 	{
 	case ' ':
 	case ',':
@@ -235,7 +243,6 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 	case '"':
 	case '-':
 	case '_':
-//	case '\'':	// we want quotes inside words for contractions
 	case '(':
 	case ')':
 	case '[':
@@ -256,10 +263,24 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 	case UCS_LF:	// line break
 	case UCS_VTAB:	// column break
 	case UCS_FF:	// page break
+	case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
+	case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
+	case UCS_LQUOTE:    // smart quote, open single  /* wjc */
 		return UT_TRUE;
+	case '\'':	// we want quotes inside words for contractions
+	case UCS_RQUOTE:	// we want quotes inside words for contractions
+		if (UT_UCS_isalpha(followChar))
+		{
+			return UT_FALSE;
+		}
+		else
+		{
+			return UT_TRUE;
+		}
 	default:
 		return UT_FALSE;
 	}
+#endif
 }
 
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)

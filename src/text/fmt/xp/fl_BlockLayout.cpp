@@ -1614,7 +1614,7 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	  first, we expand this region outward until we get a word delimiter
 	  on each side
 	*/
-	while ((iFirst > 0) && !UT_isWordDelimiter(pBlockText[iFirst-1]))
+	while ((iFirst > 0) && !UT_isWordDelimiter(pBlockText[iFirst-1], pBlockText[iFirst]))
 	{
 		iFirst--;
 	}
@@ -1623,8 +1623,11 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	iLen += (iOffset-iFirst);
 
 	UT_uint32 iBlockSize = pgb.getLength();
-	while ((iFirst + iLen < iBlockSize) && !UT_isWordDelimiter(pBlockText[iFirst + iLen]))
+	while ((iFirst + iLen < iBlockSize))
 	{
+		UT_UCSChar followChar;
+		followChar = ((iFirst + iLen + 1) < iBlockSize)  ?  pBlockText[iFirst + iLen + 1]  : UCS_UNKPUNK;
+		if (UT_isWordDelimiter(pBlockText[iFirst + iLen], followChar)) break;
 		iLen++;
 	}
 
@@ -1635,8 +1638,9 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	{
 		// insert
 		UT_uint32 iLast = iOffset + chg;
-		while ((iLast > iFirst) && !UT_isWordDelimiter(pBlockText[iLast-1]))
+		while (iLast > iFirst)
 		{
+			if (UT_isWordDelimiter(pBlockText[iLast-1], pBlockText[iLast])) break;
 			iLast--;
 		}
 
@@ -1802,14 +1806,11 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 	while (wordBeginning < eor)
 	{
 		// skip delimiters...
-		while ((wordBeginning < eor) && (UT_isWordDelimiter(pBlockText[wordBeginning])))
+		while (wordBeginning < eor) 
 		{
+			if (!UT_isWordDelimiter(pBlockText[wordBeginning], UCS_UNKPUNK)) break;
 			wordBeginning++;
 		}
-
-		// ignore initial quote
-		if (pBlockText[wordBeginning] == '\'')
-			wordBeginning++;
 
 		if (wordBeginning < eor)
 		{
@@ -1820,7 +1821,9 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 			wordLength = 0;
 			while ((!bFound) && ((wordBeginning + wordLength) < eor))
 			{
-				if ( UT_TRUE == UT_isWordDelimiter(pBlockText[wordBeginning + wordLength] ))
+				UT_UCSChar followChar;
+				followChar = ((wordBeginning + wordLength + 1) < eor)  ?  pBlockText[wordBeginning + wordLength + 1]  :  UCS_UNKPUNK;
+				if ( UT_TRUE == UT_isWordDelimiter(pBlockText[wordBeginning + wordLength], followChar))
 				{
 					bFound = UT_TRUE;
 				}
@@ -1836,9 +1839,6 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 				}
 			}
 
-			// ignore terminal quote
-			if (pBlockText[wordBeginning + wordLength - 1] == '\'')
-				wordLength--;
 
 			// for some reason, the spell checker fails on all 1-char words & really big ones
 			if ((wordLength > 1) && 
@@ -1850,10 +1850,20 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 				PD_Document * pDoc = m_pLayout->getDocument();
 				XAP_App * pApp = m_pLayout->getView()->getApp();
 
-			   	if (!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength) &&
-					!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength))
+				UT_UCSChar theWord[101];
+				// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+				for (int ldex=0; ldex<wordLength; ++ldex)
 				{
-					UT_Bool bIsIgnored = pDoc->isIgnore(&(pBlockText[wordBeginning]), wordLength);
+					UT_UCSChar currentChar;
+					currentChar = pBlockText[wordBeginning + ldex];
+					if (currentChar == UCS_RQUOTE) currentChar = '\'';
+					theWord[ldex] = currentChar;
+				}
+				
+			   	if (!SpellCheckNWord16(theWord, wordLength) &&
+					!pApp->isWordInDict(theWord, wordLength))
+				{
+					UT_Bool bIsIgnored = pDoc->isIgnore(theWord, wordLength);
 
 					// unknown word...
 					if (bToggleIP && !bUpdateScreen)
@@ -1908,7 +1918,7 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 	while (!bAllUpperCase && ((wordBeginning + wordLength) < eor))
 	{
-		UT_ASSERT(!UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ));
+		UT_ASSERT(!UT_isWordDelimiter( pBlockText[wordBeginning + wordLength], 'a'));
 
 		if (bAllUpperCase)
 			bAllUpperCase = UT_UCS_isupper(pBlockText[wordBeginning + wordLength]);
@@ -1931,12 +1941,22 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		PD_Document * pDoc = m_pLayout->getDocument();
 		XAP_App * pApp = m_pLayout->getView()->getApp();
 
-		if (!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength) &&
-			!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength))
+		UT_UCSChar theWord[101];
+		// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+		for (int ldex=0; ldex<wordLength; ++ldex)
+		{
+			UT_UCSChar currentChar;
+			currentChar = pBlockText[wordBeginning + ldex];
+			if (currentChar == UCS_RQUOTE) currentChar = '\'';
+			theWord[ldex] = currentChar;
+		}
+
+		if (!SpellCheckNWord16(theWord, wordLength) &&
+			!pApp->isWordInDict(theWord, wordLength))
 		{
 			// squiggle it
 			m_vecSquiggles.addItem(pPOB);
-			pPOB->bIsIgnored = pDoc->isIgnore(    &(pBlockText[wordBeginning]), wordLength);
+			pPOB->bIsIgnored = pDoc->isIgnore(theWord, wordLength);
 
 			_updateSquiggle(pPOB);
 
@@ -3716,7 +3736,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 		while (!bAllUpperCase && ((wordBeginning + wordLength) < eor))
 		{
-			UT_ASSERT(!UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ));
+			UT_ASSERT(!UT_isWordDelimiter( pBlockText[wordBeginning + wordLength], 'a'));
 
 			if (bAllUpperCase)
 				bAllUpperCase = UT_UCS_isupper(pBlockText[wordBeginning + wordLength]);
@@ -3729,18 +3749,30 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 		wordLength = pPOB->iLength;
 
+		UT_UCSChar theWord[101];
+		if (wordLength < 100)
+		{
+			// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+			for (int ldex=0; ldex<wordLength; ++ldex)
+			{
+				UT_UCSChar currentChar;
+				currentChar = pBlockText[wordBeginning + ldex];
+				if (currentChar == UCS_RQUOTE) currentChar = '\'';
+				theWord[ldex] = currentChar;
+			}
+		}
 		// for some reason, the spell checker fails on all 1-char words & really big ones
 		if ((wordLength > 1) && 
 			(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
-			(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
+			(!UT_UCS_isdigit(theWord[0])) &&			// still ignore first char==num words
 			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
 			(wordLength < 100) &&
 
-			(!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength)) &&
-			(!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength)))
+			(!SpellCheckNWord16(theWord, wordLength)) &&
+			(!pApp->isWordInDict(theWord, wordLength)))
 		{
 				// squiggle it
-			pPOB->bIsIgnored = pDoc->isIgnore( &(pBlockText[wordBeginning]), wordLength);
+			pPOB->bIsIgnored = pDoc->isIgnore(theWord, wordLength);
 			_updateSquiggle(pPOB);
 		}
 		else

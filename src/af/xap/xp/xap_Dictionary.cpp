@@ -336,8 +336,12 @@ UT_Bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 
 	for (UT_uint32 i = 0; i < len; i++)
 	{
-		key[i] = (char) pWord[i];
-		copy[i] = (UT_UCSChar) pWord[i];
+		UT_UCSChar currentChar;
+		currentChar = pWord[i];
+		// map smart quote apostrophe to ASCII right single quote
+		if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		key[i] = (char) currentChar;
+		copy[i] = currentChar;
 	}
 
 	UT_sint32 iRes = m_hashWords.addEntry(key, NULL, (void*) copy);

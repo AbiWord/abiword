@@ -91,8 +91,12 @@ UT_Bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 
 	for (UT_uint32 i = 0; i < len; i++)
 	{
-		key[i] = (char) pWord[i];
-		copy[i] = (UT_UCSChar) pWord[i];
+		UT_UCSChar currentChar;
+		currentChar = pWord[i];
+		// convert smart quote apostrophe to ASCII single quote
+		if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		key[i] = (char) currentChar;
+		copy[i] = currentChar;
 	}
 
 	UT_sint32 iRes = m_pIgnoreList->addEntry(key, NULL, (void*) copy);

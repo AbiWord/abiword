@@ -163,9 +163,13 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
       while (m_iWordOffset < iBlockLength) {
 
 	 // skip delimiters...
-	 while ((m_iWordOffset < iBlockLength) && 
-		(UT_isWordDelimiter( pBlockText[m_iWordOffset])))
-	   m_iWordOffset++;
+	 while (m_iWordOffset < iBlockLength)
+	 {
+		 UT_UCSChar followChar;
+		 followChar = ((m_iWordOffset + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset+1]  :  UCS_UNKPUNK;
+		 if (!UT_isWordDelimiter( pBlockText[m_iWordOffset], followChar)) break;
+		 m_iWordOffset++;
+	 }
 	     
 	 // ignore initial quote
 	 if (pBlockText[m_iWordOffset] == '\'')
@@ -179,7 +183,9 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 	    m_iWordLength = 0;
 	    while ((!bFound) && (m_iWordOffset + m_iWordLength) < iBlockLength) {
 
-	       if ( UT_TRUE == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength] )) {
+			UT_UCSChar followChar;
+			followChar = ((m_iWordOffset + m_iWordLength + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset + m_iWordLength + 1]  :  UCS_UNKPUNK;
+	       if ( UT_TRUE == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar)) {
 
 		  bFound = UT_TRUE;
 
@@ -210,13 +216,23 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 		     // try ignore all list and user dictionaries here, too
 		     XAP_App * pApp = m_pFrame->getApp();
 
-		     if (!SpellCheckNWord16( &(pBlockText[m_iWordOffset]), m_iWordLength) &&
-				 !m_pDoc->isIgnore(  &(pBlockText[m_iWordOffset]), m_iWordLength) &&
-				 !pApp->isWordInDict(&(pBlockText[m_iWordOffset]), m_iWordLength)) {
+			 UT_UCSChar theWord[101];
+			 // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+			 for (int ldex=0; ldex<m_iWordLength; ++ldex)
+			 {
+				 UT_UCSChar currentChar;
+				 currentChar = pBlockText[m_iWordOffset + ldex];
+				 if (currentChar == UCS_RQUOTE) currentChar = '\'';
+				 theWord[ldex] = currentChar;
+			 }
+				
+		     if (!SpellCheckNWord16( theWord, m_iWordLength) &&
+				 !m_pDoc->isIgnore(  theWord, m_iWordLength) &&
+				 !pApp->isWordInDict(theWord, m_iWordLength)) {
 		  
 			// unknown word...
 			// prepare list of possibilities
-			SpellCheckSuggestNWord16( &(pBlockText[m_iWordOffset]), m_iWordLength,
+			SpellCheckSuggestNWord16(theWord, m_iWordLength,
 						 &m_Suggestions);
 			    
 			// update sentence boundaries (so we can display
