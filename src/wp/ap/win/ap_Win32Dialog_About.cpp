@@ -22,7 +22,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_dialogHelper.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"

@@ -51,7 +51,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
-	DeclareDialog(AP_DIALOG_ID_ABOUT,			AP_Win32Dialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_ABOUT,			AP_Win32Dialog_About)
 	
 	// ... also add new dialogs here ...
 

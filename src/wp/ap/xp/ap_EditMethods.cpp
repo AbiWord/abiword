@@ -37,6 +37,7 @@
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
+#include "ap_Dialog_About.h"
 #include "ap_Dialog_Goto.h"
 
 #include "xap_DialogFactory.h"
@@ -1205,8 +1206,8 @@ static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, AP_Dialog_Id id)
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_Replace * pDialog
-		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
+	AP_Dialog_About * pDialog
+		= (AP_Dialog_About *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
 	// run the dialog (it should really be modeless if anyone
