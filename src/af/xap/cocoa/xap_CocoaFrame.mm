@@ -892,6 +892,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
  */
 - (void)drawRect:(NSRect)aRect
 {
+	UT_DEBUGMSG(("called drawRect, pGR %s\n", m_pGR ? "non-null" : "null"));
 	if (m_pGR) {
 		m_pGR->_updateRect(self, aRect);
 	}
