@@ -178,18 +178,7 @@ int AP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 //	hwnd = pFirstMacFrame->getTopLevelWindow();
 
 	// turn over control to windows
-
-	unsigned short mask = 0;
-	EventRecord theEvent;
-	unsigned long delay = 0;
-	while (::WaitNextEvent(mask, &theEvent, delay, NULL))
-	{
-		// Note: we do not call TranslateMessage() because
-		// Note: the keybinding mechanism is responsible
-		// Note: for deciding if/when to do this.
-		pMyMacApp->DispatchEvent (theEvent);
-	}
-
+	pMyMacApp->run();
 	// destroy the App.  It should take care of deleting all frames.
 
 	pMyMacApp->shutdown();
