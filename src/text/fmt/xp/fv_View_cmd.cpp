@@ -711,6 +711,11 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 	{
 		return false;
 	}
+	if(!isSelectionEmpty())
+	{
+		_clearSelection();
+		_resetSelection();
+	}
 	getCellParams(posOfColumn, &iLeft, &iRight,&iTop,&iBot);
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posOfColumn,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posOfColumn,PTX_SectionTable,&tableSDH);
