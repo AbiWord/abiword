@@ -33,7 +33,7 @@
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection);
-Defun_EV_GetMenuItemState_Fn(ap_GetState_FontEffect);
-Defun_EV_GetMenuItemState_Fn(ap_GetState_Align);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt);
 
 #endif /* AP_MENU_FUNCTIONS_H */

@@ -35,6 +35,7 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
+#include "gr_Graphics.h"
 #include "fl_Types.h"
 #include "ap_App.h"
 #include "ap_Frame.h"
@@ -144,10 +145,6 @@ public:
 	static EV_EditMethod_Fn insertLineBreak;
 	static EV_EditMethod_Fn insertPageBreak;
 	static EV_EditMethod_Fn insertColumnBreak;
-	static EV_EditMethod_Fn insFmtBold;
-	static EV_EditMethod_Fn insFmtItalic;
-	static EV_EditMethod_Fn insFmtUline;
-	static EV_EditMethod_Fn insFmtStrike;
 
 	static EV_EditMethod_Fn insFmtFaceTimes; // TODO we need a better way of doing this
 	static EV_EditMethod_Fn insFmtFaceCourier; // TODO we need a better way of doing this
@@ -285,10 +282,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(insertLineBreak),		_M_,	""),
 		EV_EditMethod(NF(insertPageBreak),		_M_,	""),
 		EV_EditMethod(NF(insertColumnBreak),	_M_,	""),
-		EV_EditMethod(NF(insFmtBold),			_M_,	""),
-		EV_EditMethod(NF(insFmtItalic),			_M_,	""),
-		EV_EditMethod(NF(insFmtUline),			_M_,	""),
-		EV_EditMethod(NF(insFmtStrike),			_M_,	""),
 
 		EV_EditMethod(NF(insFmtFaceTimes),		_M_,	""),
 		EV_EditMethod(NF(insFmtFaceCourier),	_M_,	""),
@@ -783,114 +776,89 @@ Defun0(insertColumnBreak)
 	return UT_TRUE;
 }
 
-Defun1(insFmtBold)
-{
-	const XML_Char * properties[] =	{ "font-weight", "bold", 0};
-	pView->insertCharacterFormatting(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtItalic)
-{
-	const XML_Char * properties[] =	{ "font-style", "italic", 0};
-	pView->insertCharacterFormatting(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtUline)
-{
-	const XML_Char * properties[] =	{ "text-decoration", "underline", 0};
-	pView->insertCharacterFormatting(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtStrike)
-{
-	const XML_Char * properties[] =	{ "text-decoration", "line-through", 0};
-	pView->insertCharacterFormatting(properties);
-	return UT_TRUE;
-}
-
 Defun1(insFmtFaceTimes)
 {
 	const XML_Char * properties[] =	{ "font-family", "Times New Roman", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtFaceCourier)
 {
 	const XML_Char * properties[] =	{ "font-family", "Courier New", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtFaceArial)
 {
 	const XML_Char * properties[] =	{ "font-family", "Arial", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtSize08)
 {
 	const XML_Char * properties[] =	{ "font-size", "8pt", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtSize10)
 {
 	const XML_Char * properties[] =	{ "font-size", "10pt", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtSize12)
 {
 	const XML_Char * properties[] =	{ "font-size", "12pt", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtSize14)
 {
 	const XML_Char * properties[] =	{ "font-size", "14pt", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtSize16)
 {
 	const XML_Char * properties[] =	{ "font-size", "16pt", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtSize24)
 {
 	const XML_Char * properties[] =	{ "font-size", "24pt", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtSize36)
 {
 	const XML_Char * properties[] =	{ "font-size", "36pt", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 
 Defun1(insFmtColorBlack)
 {
 	const XML_Char * properties[] =	{ "color", "000000", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtColorRed)
 {
 	const XML_Char * properties[] =	{ "color", "ff0000", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtColorGreen)
 {
 	const XML_Char * properties[] =	{ "color", "00ff00", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 Defun1(insFmtColorBlue)
 {
 	const XML_Char * properties[] =	{ "color", "0000ff", 0};
-	pView->insertCharacterFormatting(properties);
+	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 
@@ -1036,53 +1004,77 @@ Defun(dlgFont)
 #endif /* DLGHACK */
 }
 
-// HACK: for now, map toggle* onto insFmt*
-// TODO: implement toggle semantics directly
-Defun(toggleBold)
+static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Char * vOn, const XML_Char * vOff)
 {
-	return EX(insFmtBold);
+	const XML_Char * props_out[] =	{ NULL, NULL, 0};
+
+	// get current font info from pView
+	const XML_Char ** props_in = NULL;
+	const XML_Char * s;
+
+	if (!pView->getCharFormat(&props_in))
+		return UT_FALSE;
+
+	props_out[0] = prop;
+	props_out[1] = vOn;
+
+	// TODO: some properties, espec. text-decoration, should *not* be mutually-exclusive
+	s = UT_getAttribute(prop, props_in);
+	if (s && (0 == UT_stricmp(s, vOn)))
+		props_out[1] = vOff;
+	
+	free(props_in);
+
+	// set it either way
+	pView->setCharFormat(props_out);
+	return UT_TRUE;
 }
 
-Defun(toggleItalic)
+Defun1(toggleBold)
 {
-	return EX(insFmtItalic);
+	return _toggleSpan(pView, "font-weight", "bold", "normal");
 }
 
-Defun(toggleUline)
+Defun1(toggleItalic)
 {
-	return EX(insFmtUline);
+	return _toggleSpan(pView, "font-style", "italic", "normal");
 }
 
-Defun(toggleStrike)
+Defun1(toggleUline)
 {
-	return EX(insFmtStrike);
+	return _toggleSpan(pView, "text-decoration", "underline", "none");
+}
+
+Defun1(toggleStrike)
+{
+	return _toggleSpan(pView, "text-decoration", "line-through", "none");
 }
 
 Defun1(alignLeft)
 {
 	const XML_Char * properties[] =	{ "text-align", "left", 0};
-	pView->cmdFormatBlock(properties);
+	pView->setBlockFormat(properties);
 	return UT_TRUE;
 }
 
 Defun1(alignCenter)
 {
 	const XML_Char * properties[] =	{ "text-align", "center", 0};
-	pView->cmdFormatBlock(properties);
+	pView->setBlockFormat(properties);
 	return UT_TRUE;
 }
 
 Defun1(alignRight)
 {
 	const XML_Char * properties[] =	{ "text-align", "right", 0};
-	pView->cmdFormatBlock(properties);
+	pView->setBlockFormat(properties);
 	return UT_TRUE;
 }
 
 Defun1(alignJustify)
 {
 	const XML_Char * properties[] =	{ "text-align", "justify", 0};
-	pView->cmdFormatBlock(properties);
+	pView->setBlockFormat(properties);
 	return UT_TRUE;
 }
 
@@ -1158,29 +1150,167 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
-#if 0
+	/* 
+		WARNING: any changes to this function should be closely coordinated 
+		with the equivalent logic in Win32Graphics::FindFont()
+	*/
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
 	AP_Win32App * pWin32App = static_cast<AP_Win32App *>(pFrame->getApp());
 	HWND hwnd = pWin32Frame->getTopLevelWindow();
 
 	CHOOSEFONT cf;				// common dialog box structure
-	static LOGFONT lf;			// logical font structure
-	static DWORD rgbCurrent;	// current text color
+	LOGFONT lf;					// logical font structure
 
-	// TODO: get current font info from pView
-	
 	// Initialize CHOOSEFONT
-	ZeroMemory(&cf, sizeof(CHOOSEFONT));
+	memset(&cf, 0, sizeof(CHOOSEFONT));
+	memset(&lf, 0, sizeof(lf));
 	cf.lStructSize = sizeof(CHOOSEFONT);
 	cf.hwndOwner = hwnd;
 	cf.lpLogFont = &lf;
-	cf.rgbColors = rgbCurrent;
-	cf.Flags = CF_SCREENFONTS | CF_EFFECTS;
+	cf.Flags = CF_SCREENFONTS | CF_EFFECTS | CF_INITTOLOGFONTSTRUCT;
 	cf.hInstance = pWin32App->getInstance();
 
+	// get current font info from pView
+	const XML_Char ** props_in = NULL;
+	const XML_Char * s;
+	DG_Graphics * pG = pView->getLayout()->getGraphics();
+
+	if (!pView->getCharFormat(&props_in))
+		return UT_FALSE;
+
+	// TODO: what about generic family names?
+	s = UT_getAttribute("font-family", props_in);
+	if (s)
+		strcpy(lf.lfFaceName, s);
+	else
+		cf.Flags |= CF_NOFACESEL;
+
+	s = UT_getAttribute("font-size", props_in);
+	if (s)
+		lf.lfHeight = -(pG->convertDimension(s));
+	else
+		cf.Flags |= CF_NOSIZESEL;
+
+	s = UT_getAttribute("font-weight", props_in);
+	if (s && (0 == UT_stricmp(s, "bold")))
+		lf.lfWeight = 700;
+
+	s = UT_getAttribute("font-style", props_in);
+	if (s && (0 == UT_stricmp(s, "italic")))
+		lf.lfItalic = TRUE;
+
+	s = UT_getAttribute("text-decoration", props_in);
+	if (s)
+	{
+		// TODO: these should *not* be mutually exclusive
+		if (0 == UT_stricmp(s, "underline"))
+			lf.lfUnderline = TRUE;
+
+		else if (0 == UT_stricmp(s, "line-through"))
+			lf.lfStrikeOut = TRUE;
+	}
+
+	s = UT_getAttribute("color", props_in);
+	if (s)
+	{
+		UT_RGBColor c;
+		UT_parseColor(s, c);
+		DWORD rgbCurrent;		// current text color
+
+		rgbCurrent = RGB(c.m_red, c.m_grn, c.m_blu);
+
+		cf.rgbColors = rgbCurrent;
+	}
+
+	free(props_in);
+
+	// raise the dialog
 	if (ChooseFont(&cf)==TRUE) 
 	{
-		// TODO: pView->insertCharacterFormatting() 
+		int i = 0;
+
+		// currently a maximum of six simultaneous properties
+		const XML_Char * props_out[] = { 
+			NULL, NULL, 
+			NULL, NULL, 
+			NULL, NULL, 
+			NULL, NULL, 
+			NULL, NULL, 
+			NULL, NULL, 
+			0 };
+
+		if (lf.lfFaceName)
+		{
+			props_out[i] = "font-family";
+			props_out[i+1] = lf.lfFaceName;
+			i += 2;
+		}
+
+		char buf_size[5];
+
+		if (cf.iPointSize)
+		{
+			sprintf(buf_size, "%dpt", cf.iPointSize/10);
+			props_out[i] = "font-size";
+			props_out[i+1] = buf_size;
+			i += 2;
+		}
+
+		if (cf.nFontType & BOLD_FONTTYPE)
+		{
+			props_out[i] = "font-weight";
+			props_out[i+1] ="bold";
+			i += 2;
+		}
+		else if (cf.nFontType & REGULAR_FONTTYPE)
+		{
+			props_out[i] = "font-weight";
+			props_out[i+1] ="normal";
+			i += 2;
+		}
+
+		if (cf.nFontType & ITALIC_FONTTYPE)
+		{
+			props_out[i] = "font-style";
+			props_out[i+1] ="italic";
+			i += 2;
+		}
+		else
+		{
+			props_out[i] = "font-style";
+			props_out[i+1] ="normal";
+			i += 2;
+		}
+
+		// TODO: these should *not* be mutually exclusive
+		if (lf.lfUnderline == TRUE)
+		{
+			props_out[i] = "text-decoration";
+			props_out[i+1] ="underline";
+			i += 2;
+		}
+		else if (lf.lfStrikeOut == TRUE)
+		{
+			props_out[i] = "text-decoration";
+			props_out[i+1] ="line-through";
+			i += 2;
+		}
+		else 
+		{
+			props_out[i] = "text-decoration";
+			props_out[i+1] ="none";
+			i += 2;
+		}
+
+		char buf_color[6];
+
+		sprintf(buf_color, "%02x%02x%02x", GetRValue(cf.rgbColors), GetGValue(cf.rgbColors), GetBValue(cf.rgbColors)); 
+
+		props_out[i] = "color";
+		props_out[i+1] = buf_color;
+
+		pView->setCharFormat(props_out);
+
 		return UT_TRUE;
 	}
 
@@ -1189,9 +1319,6 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	UT_ASSERT(!err);
 
 	return UT_FALSE;
-#endif
-	
-	return UT_TRUE;
 }
 
 // TODO: figure out what can be shared here and move it up 

@@ -20,9 +20,11 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_string.h"
 #include "ap_Menu_Id.h"
 #include "ap_Menu_Functions.h"
 #include "ev_Menu_Actions.h"
+#include "fv_View.h"
 
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
@@ -57,9 +59,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	{
 	case AP_MENU_ID_EDIT_CUT:
 	case AP_MENU_ID_EDIT_COPY:
-	case AP_MENU_ID_EDIT_CLEAR:
-		// TODO if (no selection)
-		// TODO     s |= EV_MIS_Gray;
+		if (pView->isSelectionEmpty())
+			s = EV_MIS_Gray;
 		break;
 
 	default:
@@ -70,20 +71,35 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	return s;
 }
 
-Defun_EV_GetMenuItemState_Fn(ap_GetState_FontEffect)
+Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 {
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	const XML_Char * prop = NULL;
+	const XML_Char * val  = NULL;
 
 	switch(id)
 	{
 	case AP_MENU_ID_FMT_BOLD:
+		prop = "font-weight";
+		val  = "bold";
+		break;
+
 	case AP_MENU_ID_FMT_ITALIC:
+		prop = "font-style";
+		val  = "italic";
+		break;
+
 	case AP_MENU_ID_FMT_UNDERLINE:
+		prop = "text-decoration";
+		val  = "underline";
+		break;
+
 	case AP_MENU_ID_FMT_STRIKE:
-		// TODO if (entire selection has this format)
-		// TODO     s |= EV_MIS_Toggled;
+		prop = "text-decoration";
+		val  = "line-through";
 		break;
 
 	default:
@@ -91,28 +107,72 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_FontEffect)
 		break;
 	}
 
+	if (prop && val)
+	{
+		// get current font info from pView
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz;
+
+		if (!pView->getCharFormat(&props_in))
+			return s;
+
+		// TODO: some properties, espec. text-decoration, should *not* be mutually-exclusive
+		sz = UT_getAttribute(prop, props_in);
+		if (sz && (0 == UT_stricmp(sz, val)))
+			s = EV_MIS_Toggled;
+		
+		free(props_in);
+	}
+
 	return s;
 }
 
-Defun_EV_GetMenuItemState_Fn(ap_GetState_Align)
+Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 {
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
+	const XML_Char * prop = "text-align";
+	const XML_Char * val  = NULL;
+
 	switch(id)
 	{
 	case AP_MENU_ID_ALIGN_LEFT:
+		val  = "left";
+		break;
+
 	case AP_MENU_ID_ALIGN_CENTER:
+		val  = "center";
+		break;
+
 	case AP_MENU_ID_ALIGN_RIGHT:
+		val  = "right";
+		break;
+
 	case AP_MENU_ID_ALIGN_JUSTIFY:
-		// TODO if (entire selection has this format)
-		// TODO     s |= EV_MIS_Toggled;
+		val  = "justify";
 		break;
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
+	}
+
+	if (prop && val)
+	{
+		// get current font info from pView
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz;
+
+		if (!pView->getBlockFormat(&props_in))
+			return s;
+
+		sz = UT_getAttribute(prop, props_in);
+		if (sz && (0 == UT_stricmp(sz, val)))
+			s = EV_MIS_Toggled;
+		
+		free(props_in);
 	}
 
 	return s;

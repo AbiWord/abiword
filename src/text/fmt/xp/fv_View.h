@@ -91,8 +91,13 @@ public:
 	void getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
 	void invertBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 
+	UT_Bool setBlockFormat(const XML_Char * properties[]);
+	UT_Bool getBlockFormat(const XML_Char *** properties);
+
+	UT_Bool setCharFormat(const XML_Char * properties[]);
+	UT_Bool getCharFormat(const XML_Char *** properties);
+
 	void insertParagraphBreak();
-	void insertCharacterFormatting(const XML_Char * properties[]);
 
 	void cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos = 0);
 //	void addScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32));
@@ -101,10 +106,10 @@ public:
 	void removeScrollListener(FV_ScrollObj*);
 	void sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff);
 
-	void cmdFormatBlock(const XML_Char * properties[]);
 
 // ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
+	UT_Bool			isSelectionEmpty();
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
 	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count);
@@ -143,7 +148,6 @@ protected:
 											fp_Run** ppRun);
 	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos);
 
-	UT_Bool				_isSelectionEmpty();
 	void				_moveToSelectionEnd(UT_Bool bForward);
 	void				_clearSelection(void);
 	void				_eraseSelection(void);

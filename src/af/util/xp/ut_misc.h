@@ -62,6 +62,6 @@ protected:
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
 UT_Bool UT_isWordDelimiter(UT_UCSChar);
-const XML_Char* UT_getAttribute(char* name, const XML_Char** atts);
+const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
 #endif /* UTMISC_H */

@@ -35,9 +35,28 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "pd_Document.h"
+#include "pp_Property.h"
 #include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 #include "ie_types.h"
+
+
+/****************************************************************/
+
+class _fmtPair
+{
+public:
+	_fmtPair(const XML_Char * p, const PP_AttrProp * c, const PP_AttrProp * b, const PP_AttrProp * s)
+	{
+		m_prop = p;
+		m_val  = PP_evalProperty(p,c,b,s);
+	}
+
+	const XML_Char *	m_prop;
+	const XML_Char *	m_val;
+};
+
+/****************************************************************/
 
 
 FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
@@ -80,7 +99,7 @@ void FV_View::_swapSelectionOrientation(void)
 	// reverse the direction of the current selection
 	// without changing the screen.
 
-	UT_ASSERT(!_isSelectionEmpty());
+	UT_ASSERT(!isSelectionEmpty());
 	PT_DocPosition curPos = _getPoint();
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	_setPoint(m_iSelectionAnchor);
@@ -92,7 +111,7 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 	// move to the requested end of the current selection.
 	// NOTE: this must clear the selection.
 	
-	UT_ASSERT(!_isSelectionEmpty());
+	UT_ASSERT(!isSelectionEmpty());
 	
 	PT_DocPosition curPos = _getPoint();
 	
@@ -124,7 +143,7 @@ void FV_View::_resetSelection(void)
 
 void FV_View::_eraseSelectionOrInsertionPoint()
 {
-	if (_isSelectionEmpty())
+	if (isSelectionEmpty())
 	{
 		_eraseInsertionPoint();
 	}
@@ -136,7 +155,7 @@ void FV_View::_eraseSelectionOrInsertionPoint()
 
 void FV_View::_xorSelection()
 {
-	UT_ASSERT(!_isSelectionEmpty());
+	UT_ASSERT(!isSelectionEmpty());
 
 	m_bSelectionVisible = !m_bSelectionVisible;
 	
@@ -152,7 +171,7 @@ void FV_View::_xorSelection()
 
 void FV_View::_eraseSelection(void)
 {
-	UT_ASSERT(!_isSelectionEmpty());
+	UT_ASSERT(!isSelectionEmpty());
 
 	if (!m_bSelectionVisible)
 	{
@@ -179,7 +198,7 @@ void FV_View::_deleteSelection(void)
 	  way later.
 	*/
 	
-	UT_ASSERT(!_isSelectionEmpty());
+	UT_ASSERT(!isSelectionEmpty());
 
 	_eraseSelection();
 
@@ -198,7 +217,7 @@ void FV_View::_deleteSelection(void)
 	return;
 }
 
-UT_Bool FV_View::_isSelectionEmpty()
+UT_Bool FV_View::isSelectionEmpty()
 {
 	if (!m_bSelection)
 	{
@@ -431,7 +450,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 void FV_View::moveInsPtTo(FV_DocPos dp)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
@@ -444,7 +463,7 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 
 void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_moveToSelectionEnd(bForward);
 	}
@@ -467,7 +486,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
 
 UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
 	}
@@ -485,7 +504,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 void FV_View::insertParagraphBreak()
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
 	}
@@ -502,14 +521,16 @@ void FV_View::insertParagraphBreak()
 	_drawSelectionOrInsertionPoint();
 }
 
-void FV_View::insertCharacterFormatting(const XML_Char * properties[])
+UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 {
+	UT_Bool bRet;
+
 	_eraseSelectionOrInsertionPoint();
 
 	PT_DocPosition posStart = _getPoint();
 	PT_DocPosition posEnd = posStart;
 
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
 			posStart = m_iSelectionAnchor;
@@ -517,9 +538,171 @@ void FV_View::insertCharacterFormatting(const XML_Char * properties[])
 			posEnd = m_iSelectionAnchor;
 	}
 
-	m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
 	_drawSelectionOrInsertionPoint();
+
+	return bRet;
+}
+
+UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
+{
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
+	UT_Vector v;
+
+	/*
+		IDEA: We want to know character-level formatting properties, iff
+		they're constant across the entire selection.  To do so, we start 
+		at the beginning of the selection, load 'em all into a vector, and 
+		then prune any property that collides.
+	*/
+	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+	}
+
+	// 1. assemble complete set at insertion point
+	UT_uint32 xPoint;
+	UT_uint32 yPoint;
+	UT_uint32 iPointHeight;
+
+	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
+										   xPoint, yPoint, iPointHeight);
+
+	pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
+	pBlock->getAttrProp(&pBlockAP);
+
+	v.addItem(new _fmtPair("font-family",pSpanAP,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP));
+
+	// TODO: 2. prune 'em as they vary across selection
+
+	// 3. export whatever's left
+	UT_uint32 count = v.getItemCount()*2 + 1;
+
+	// NOTE: caller must free this, but not the referenced contents
+	const XML_Char ** props = (const XML_Char **) calloc(count, sizeof(XML_Char *));
+	if (!props)
+		return UT_FALSE;
+
+	UT_uint32 i = v.getItemCount();
+	_fmtPair * f;
+	const XML_Char ** p = props;
+
+	while (i > 0)
+	{
+		f = (_fmtPair *)v.getNthItem(i-1);
+		i--;
+
+		p[0] = f->m_prop;
+		p[1] = f->m_val;
+		p += 2;
+	}
+
+	UT_VECTOR_PURGEALL(_fmtPair,v);
+
+	*pProps = props;
+
+	return UT_TRUE;
+}
+
+UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
+{
+	UT_Bool bRet;
+
+	_eraseSelectionOrInsertionPoint();
+
+	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+	}
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
+
+	_drawSelectionOrInsertionPoint();
+
+	return bRet;
+}
+
+UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
+{
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
+	UT_Vector v;
+
+	/*
+		IDEA: We want to know block-level formatting properties, iff
+		they're constant across the entire selection.  To do so, we start 
+		at the beginning of the selection, load 'em all into a vector, and 
+		then prune any property that collides.
+	*/
+	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+	}
+
+	// 1. assemble complete set at insertion point
+	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	pBlock->getAttrProp(&pBlockAP);
+
+	v.addItem(new _fmtPair("text-align",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP));
+
+	// TODO: 2. prune 'em as they vary across selection
+
+	// 3. export whatever's left
+	UT_uint32 count = v.getItemCount()*2 + 1;
+
+	// NOTE: caller must free this, but not the referenced contents
+	const XML_Char ** props = (const XML_Char **) calloc(count, sizeof(XML_Char *));
+	if (!props)
+		return UT_FALSE;
+
+	UT_uint32 i = v.getItemCount();
+	_fmtPair * f;
+	const XML_Char ** p = props;
+
+	while (i > 0)
+	{
+		f = (_fmtPair *)v.getNthItem(i-1);
+		i--;
+
+		p[0] = f->m_prop;
+		p[1] = f->m_val;
+		p += 2;
+	}
+
+	UT_VECTOR_PURGEALL(_fmtPair,v);
+
+	*pProps = props;
+
+	return UT_TRUE;
 }
 
 void FV_View::delTo(FV_DocPos dp)
@@ -536,7 +719,7 @@ void FV_View::delTo(FV_DocPos dp)
 
 void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
 	}
@@ -666,7 +849,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_moveToSelectionEnd(bNext);
 	}
@@ -678,7 +861,7 @@ void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 
 void FV_View::extSelNextPrevLine(UT_Bool bNext)
 {
-	if (_isSelectionEmpty())
+	if (isSelectionEmpty())
 	{
 		_setSelectionAnchor();
 		_moveInsPtNextPrevLine(bNext);
@@ -703,7 +886,7 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 			invertBetweenPositions(iNewPoint, iOldPoint);
 		}
 
-		if (_isSelectionEmpty())
+		if (isSelectionEmpty())
 		{
 			_resetSelection();
 		}
@@ -712,7 +895,7 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 
 void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 {
-	if (_isSelectionEmpty())
+	if (isSelectionEmpty())
 	{
 		_setSelectionAnchor();
 		_charMotion(bForward, count);
@@ -739,7 +922,7 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 			invertBetweenPositions(iNewPoint, iOldPoint);
 		}
 
-		if (_isSelectionEmpty())
+		if (isSelectionEmpty())
 		{
 			_resetSelection();
 		}
@@ -798,7 +981,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		return;
 	}
 	
-	if (_isSelectionEmpty())
+	if (isSelectionEmpty())
 	{
 		_setSelectionAnchor();
 		m_bSelectionVisible = UT_TRUE;
@@ -924,7 +1107,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 
 	UT_ASSERT(pPage);
 
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
@@ -1102,7 +1285,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_drawSelectionOrInsertionPoint()
 {
-	if (_isSelectionEmpty())
+	if (isSelectionEmpty())
 	{
 		_updateInsertionPoint();
 	}
@@ -1114,7 +1297,7 @@ void FV_View::_drawSelectionOrInsertionPoint()
 
 void FV_View::_updateInsertionPoint()
 {
-	UT_ASSERT(_isSelectionEmpty());
+	UT_ASSERT(isSelectionEmpty());
 	
 	_eraseInsertionPoint();
 
@@ -1125,7 +1308,7 @@ void FV_View::_updateInsertionPoint()
 
 void FV_View::_xorInsertionPoint()
 {
-	UT_ASSERT(_isSelectionEmpty());
+	UT_ASSERT(isSelectionEmpty());
 	
 	UT_ASSERT(m_iPointHeight > 0);
 	m_bPointVisible = !m_bPointVisible;
@@ -1137,7 +1320,7 @@ void FV_View::_xorInsertionPoint()
 
 void FV_View::_eraseInsertionPoint()
 {
-	UT_ASSERT(_isSelectionEmpty());
+	UT_ASSERT(isSelectionEmpty());
 	
 	if (!m_bPointVisible)
 	{
@@ -1487,7 +1670,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, UT_FALSE);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, UT_FALSE);
 
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
@@ -1504,22 +1687,6 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	m_bSelection = UT_TRUE;
 	
 	_xorSelection();
-}
-
-void FV_View::cmdFormatBlock(const XML_Char * properties[])
-{
-	PT_DocPosition posStart = _getPoint();
-	PT_DocPosition posEnd = posStart;
-
-	if (!_isSelectionEmpty())
-	{
-		if (m_iSelectionAnchor < posStart)
-			posStart = m_iSelectionAnchor;
-		else
-			posEnd = m_iSelectionAnchor;
-	}
-
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 }
 
 // -------------------------------------------------------------------------
@@ -1612,7 +1779,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 void FV_View::cmdUndo(UT_uint32 count)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
@@ -1628,7 +1795,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 void FV_View::cmdRedo(UT_uint32 count)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
@@ -1654,7 +1821,7 @@ void FV_View::cmdSaveAs(const char * szFilename)
 
 UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
 {
-	if (!_isSelectionEmpty())
+	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
 	}

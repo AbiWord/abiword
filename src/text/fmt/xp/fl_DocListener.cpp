@@ -528,7 +528,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				FV_View* pView = m_pLayout->m_pView;
 				if (pView)
 				{
-					UT_ASSERT(pView->_isSelectionEmpty());
+					UT_ASSERT(pView->isSelectionEmpty());
 					pView->_setPoint(pcrTSF->getPosition());
 					pView->_setPointAP(pcrTSF->getIndexAP());
 				}
