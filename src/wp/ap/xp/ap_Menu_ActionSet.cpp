@@ -185,7 +185,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_BACKGROUND, 1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR, 0,1,0,0, "dlgBackground", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_IMAGE, 0,1,0,0, "fileInsertPageBackgroundGraphic", NULL, NULL);
-	_s(AP_MENU_ID_FMT_HDRFTR,     0,1,0,0, "dlgHdrFtr", NULL, NULL);
+	_s(AP_MENU_ID_FMT_HDRFTR,     0,1,0,0, "dlgHdrFtr", ap_GetState_FmtHdrFtr, NULL);
 	_s(AP_MENU_ID_FMT_TABLEOFCONTENTS, 0,1,0,0, "formatTOC", ap_GetState_InTOC, NULL);
 	_s(AP_MENU_ID_FMT_FOOTNOTES,     0,1,0,0, "formatFootnotes", NULL, NULL);
 	_s(AP_MENU_ID_FMT_IMAGE, 0,1,0,0, "dlgFmtImage", ap_GetState_InImage, NULL);

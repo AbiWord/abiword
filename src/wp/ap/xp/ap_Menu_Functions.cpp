@@ -43,6 +43,7 @@
 #include "spell_manager.h"
 #include "ie_mailmerge.h"
 #include "fp_TableContainer.h"
+#include "fl_BlockLayout.h"
 
 #ifdef _WIN32
 #include "ap_Win32App.h" 
@@ -868,6 +869,38 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	    break;
 	  }
 
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_FmtHdrFtr)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+	if(pView->getPoint() == 0)
+	{
+		return EV_MIS_Gray;
+	}
+	fp_Page * pPage = pView->getCurrentPage();
+	if(pPage == NULL)
+	{
+		return EV_MIS_Gray;
+	}
+	fl_DocSectionLayout * pDSLP = pPage->getOwningSection();
+	if(pDSLP == NULL)
+	{
+		return EV_MIS_Gray;
+	}
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL == NULL)
+	{
+		return EV_MIS_Gray;
+	}
+	fl_DocSectionLayout	* pDSL = pBL->getDocSectionLayout();
+	if(pDSL != pDSLP)
+	{
+		return EV_MIS_Gray;
+	}
 	return s;
 }
 

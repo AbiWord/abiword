@@ -9049,6 +9049,19 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 		NULL, NULL
 	};
 	PT_DocPosition oldPos = getPoint();
+	fp_Page * pPage = getCurrentPage();
+	if(pPage == NULL)
+	{
+		clearCursorWait();
+		return;
+	}
+	fl_DocSectionLayout * pDSLP = pPage->getOwningSection();
+	fl_DocSectionLayout * pDSL = getCurrentBlock()->getDocSectionLayout();
+	if(pDSL != pDSLP)
+	{
+		clearCursorWait();
+		return;
+	}
 	if(!bSkipPTSaves)
 	{
 		if(isHdrFtrEdit())
@@ -9104,6 +9117,22 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
 //
+// This won't work if we're not allowed to insert a HdrFtr on the current page
+// Detect and abort if so.
+//
+	fp_Page * pPage = getCurrentPage();
+	if(pPage == NULL)
+	{
+		return;
+	}
+	fl_DocSectionLayout * pDSLP = pPage->getOwningSection();
+	fl_DocSectionLayout * pDSL = getCurrentBlock()->getDocSectionLayout();
+	if(pDSL != pDSLP)
+	{
+		return;
+	}
+
+//
 // Fix up the insertion point stuff.
 //
 	setCursorWait();
@@ -9123,17 +9152,12 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 // Save Old Position
 //
 	PT_DocPosition oldPos = getPoint();
-	
-	fl_DocSectionLayout * pDSL = NULL;
-	fp_Page *pPage = getCurrentPage();
+
 	if(pPage)
 	{
-		pDSL = pPage->getOwningSection();
+		pDSL = pDSLP;
 	}
-	else
-	{
-		pDSL = getCurrentBlock()->getDocSectionLayout();
-	}
+
 	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
 	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
