@@ -104,16 +104,6 @@ static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
 			   XML_BOX_LIST,
 			   XML_HAND_LIST,
 			   XML_HEART_LIST };
-#if 0
-// these aren't used currently but might be useful
-static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST, 
-			   fmt_LOWERCASE_LIST,
-			   fmt_UPPERCASE_LIST,
-			   fmt_UPPERROMAN_LIST,
-			   fmt_LOWERROMAN_LIST,
-			   fmt_BULLETED_LIST,
-			   fmt_DASHED_LIST };
-#endif
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -1917,6 +1907,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_sectionProps.m_numCols = (UT_uint32)param;
 			return true;
 		}
+		else if (strcmp((char*)pKeyword, "column") == 0) // column break
+		{
+			return ParseChar(UCS_VTAB);
+		}
 		else if (strcmp((char*)pKeyword, "chdate") == 0)
 		{
 			return _appendField ("date");
@@ -2553,15 +2547,15 @@ bool IE_Imp_RTF::ResetCharacterAttributes()
 	return ok;
 }
 
-  ///
-  /// OK if we are pasting into the text we have to decide if the list we paste
-  /// should be a new list or an old list. The user might want to swap paragraphs
-  /// in a list for example.
-  ///
-  /// Use the following algorithim to decide. If the docpos of the paste is 
-  /// within a list of the same ID as our list or if the docpos is immediately
-  /// before or after a list of the same ID reuse the ID. Otherwise change it.
-  ///
+/*!
+ *    OK if we are pasting into the text we have to decide if the list we paste
+ *    should be a new list or an old list. The user might want to swap paragraphs
+ *    in a list for example.
+  
+ *    Use the following algorithim to decide. If the docpos of the paste is 
+ *    within a list of the same ID as our list or if the docpos is immediately
+ *    before or after a list of the same ID reuse the ID. Otherwise change it.
+*/
 UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 {
 	UT_uint32 mappedID = id;
@@ -2570,7 +2564,16 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return id;
 	}
+	UT_DEBUGMSG(("SEVIOR: in mapID. Initial id = %d \n",id));
 	if (m_pImportFile)  // if we are reading a file - dont remap the ID
+	{
+	        return id;
+	}
+//
+// Handle case of no id in any lists. If this is the case no need to remap
+//
+	fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+	if(pAuto == NULL)
 	{
 	        return id;
 	}
@@ -2616,6 +2619,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 					mappedID = rand();
 				getAbiList(i)->hasBeenMapped = true;
 				getAbiList(i)->mapped_id = mappedID;	  
+				UT_DEBUGMSG(("SEVIOR: in mapID. id has been mapped to %d \n",mappedID));
 				if(highestLevel > 0)
 				{
 					getAbiList(i)->mapped_parentid =  getAbiList(i)->orig_parentid;
@@ -2626,30 +2630,34 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 					getAbiList(i)->orig_parentid = 0;
 					getAbiList(i)->level = 1;
 				}
+			}
 
-				///
-				/// Now look to see if the parent ID has been remapped, if so update mapped_parentid
-				///
-				for(j = 0;  j<m_numLists; j++)
+			///
+			/// Now look to see if the parent ID has been remapped, if so update mapped_parentid
+			///
+			for(j = 0;  j<m_numLists; j++)
+			{
+				if(getAbiList(j)->orig_id == getAbiList(i)->orig_parentid)
 				{
-					if(getAbiList(j)->orig_id == getAbiList(i)->orig_parentid)
-					{
-						getAbiList(i)->mapped_parentid = getAbiList(j)->mapped_id;
-					}
+					getAbiList(i)->mapped_parentid = getAbiList(j)->mapped_id;
+					UT_DEBUGMSG(("SEVIOR: in mapID Parent ID has been mapped to %d \n", getAbiList(j)->mapped_id));
 				}
 			}
+
 		}
 	}
+	UT_DEBUGMSG(("SEVIOR: in mapID. Finally id has been mapped to %d \n",mappedID));
 	return mappedID;
 
 }
 
+/*! 
+ *   OK if we are pasting into the text we have to decide if the list we paste
+ *   should be a new list or an old list. The user might want to swap paragraphs
+ *   for example.
+ */
 UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 {
-  //
-  // OK if we are pasting into the text we have to decide if the list we paste
-  // should be a new list or an old list. The user might want to swap paragraphs
-  // for example.
   //
   // For the parent ID we have to look to see if the parent ID has been remapped
   //
@@ -2890,7 +2898,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				m_dposPaste++;
 				PL_StruxDocHandle sdh_cur,sdh_next;
 				PT_DocPosition pos_next;
-				m_pDocument->getStruxOfTypeFromPosition(m_dposPaste, PTX_Block, & sdh_cur);
 				UT_uint32 j;
 				fl_AutoNum * pAuto = m_pDocument->getListByID(id);
 				if(pAuto == NULL) 
@@ -2946,13 +2953,15 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 						pAuto->addItem(sdh_cur);
 					}
 				}
+				UT_uint32 npid = 0;
 				if(pid != 0)
 				{
 					pAuto->findAndSetParentItem();
 					pAuto->markAsDirty();
-					pid = pAuto->getParentID();
-					sprintf(pszParentID,"%d",pid);
+					npid = pAuto->getParentID();
+					sprintf(pszParentID,"%d",npid);
 				}
+				UT_DEBUGMSG(("SEVIOR: Pasting list element pid =%d id= %d pszParentID = %s \n",pid,id,pszParentID));
 				bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
   				FREEP(attribs);
 			}
