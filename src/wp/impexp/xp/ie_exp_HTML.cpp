@@ -965,6 +965,7 @@ void s_HTML_Listener::tagPop ()
 			{
 				UT_DEBUGMSG(("tagPop: unhandled tag closure! %d\n",tagTop()));
 				m_utf8_1 ="error - not handled";
+				tagClose (getTop(), m_utf8_1); // prevents hangs see 7524
 			}
 			break;
 	}
