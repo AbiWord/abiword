@@ -128,9 +128,6 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 	return pLabel;
 }
 
-#define max(a, b) ((a) < (b) ? (b) : (a))
-#define min(a, b) ((a) < (b) ? (a) : (b))
-
 bool EV_Menu_LabelSet::addLabel(EV_Menu_Label *pLabel)
 {
 	UT_DEBUGMSG(("JCA: EV_Menu_LabelSet::addLabel\n"));

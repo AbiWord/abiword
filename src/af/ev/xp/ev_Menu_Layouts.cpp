@@ -51,8 +51,11 @@ EV_Menu_LayoutFlags EV_Menu_LayoutItem::getMenuLayoutFlags() const
 
 /*****************************************************************/
 
-#define max(a, b) ((a) < (b) ? (b) : (a))
-#define min(a, b) ((a) < (b) ? (a) : (b))
+static inline XAP_Menu_Id private_max(XAP_Menu_Id a, XAP_Menu_Id b)
+{
+	return a < b ? b : a;
+}
+
 
 EV_Menu_Layout::EV_Menu_Layout(const UT_String &stName, UT_uint32 nrLayoutItems)
 	: m_stName(stName),
@@ -152,7 +155,7 @@ XAP_Menu_Id EV_Menu_Layout::addLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_Lay
 bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
 {
 	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
-	m_iMaxId = max(m_iMaxId, id);
+	m_iMaxId = private_max(m_iMaxId, id);
 	void *old;
 	m_layoutTable.setNthItem(indexLayoutItem, new EV_Menu_LayoutItem(id, flags), &old);
 	EV_Menu_LayoutItem * pOld = static_cast<EV_Menu_LayoutItem *> (old);
