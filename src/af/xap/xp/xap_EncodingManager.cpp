@@ -344,12 +344,12 @@ static void init_values(const XAP_EncodingManager* that)
 			strcpy (lcbuf, latin);
 			naten = lcbuf;
 		}
-	else if ((strlen (naten) == 8) && (strncmp (naten, "iso", 3) == 0))
+	else if (((strlen(naten)==8) || (strlen(naten)==9)) && (strncmp (naten, "iso", 3) == 0))
 		{
 			strncpy (lcbuf,     "ISO-",    4);
-			strncat (lcbuf + 4, naten + 3, 4);
+			strncpy (lcbuf + 4, naten + 3, 4);
 			strncpy (lcbuf + 8, "-",       1);
-			strncpy (lcbuf + 9, naten + 7, 1);
+			strcpy  (lcbuf + 9, naten + 7);
 			naten = lcbuf;
 		}
 
