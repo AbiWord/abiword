@@ -38,6 +38,11 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	
  public:
 
+	typedef enum { align_LEFT = 0, align_CENTERED, align_RIGHT, align_JUSTIFIED } tAlignState;
+	typedef enum { indent_NONE = 0, indent_FIRSTLINE, indent_HANGING } tIndentState;
+	typedef enum { spacing_SINGLE = 0, spacing_ONEANDHALF, spacing_DOUBLE,
+				   spacing_ATLEAST, spacing_EXACTLY, spacing_MULTIPLE } tSpacingState;
+
 	AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Paragraph(void);
 
@@ -54,10 +59,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
  protected:
 
 	// enumerated types for drop-down lists (option menus)
-	typedef enum { align_LEFT = 0, align_CENTERED, align_RIGHT, align_JUSTIFIED } tAlignState;
-	typedef enum { indent_NONE = 0, indent_FIRSTLINE, indent_HANGING } tIndentState;
-	typedef enum { spacing_SINGLE = 0, spacing_ONEANDHALF, spacing_DOUBLE,
-				   spacing_ATLEAST, spacing_EXACTLY, spacing_MULTIPLE } tSpacingState;
+
 	typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
 	typedef enum { id_MENU_ALIGNMENT = 0, id_SPIN_LEFT_INDENT,
 				   id_SPIN_RIGHT_INDENT, id_MENU_SPECIAL_INDENT,

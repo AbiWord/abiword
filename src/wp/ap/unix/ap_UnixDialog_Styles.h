@@ -50,6 +50,7 @@ public:
 
 	void                            event_paraPreviewExposed(void);
 	void                            event_charPreviewExposed(void);
+	
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
 
@@ -66,11 +67,13 @@ protected:
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	GtkWidget * _constructWindowContents(GtkWidget * parent);
-	void				_populateWindowData(void);
-	void                            _populateCList(void);
-	void                            _populatePreviews(void);
-	void 				_storeWindowData(void);
-	void				_connectsignals(void);
+	void				_populateWindowData(void) const;
+	void                            _populateCList(void) const;
+	void 				_storeWindowData(void) const;
+	void				_connectsignals(void) const;
+
+	virtual const char * getCurrentStyle (void) const;
+	virtual void setDescription (const char * desc) const;
 
 	GR_UnixGraphics	* 		m_pParaPreviewWidget;
 	GR_UnixGraphics	* 		m_pCharPreviewWidget;

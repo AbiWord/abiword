@@ -38,12 +38,7 @@
 
 #include "fv_View.h"
 #include "pd_Style.h"
-
-/*****************************************************************/
-
-#define	WIDGET_ID_TAG_KEY "id"
-
-/*****************************************************************/
+#include "ut_string_class.h"
 
 XAP_Dialog * AP_UnixDialog_Styles::static_constructor(XAP_DialogFactory * pFactory,
 													   XAP_Dialog_Id id)
@@ -189,26 +184,24 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// Make it modal, and stick it up top
 	gtk_grab_add(mainWindow);
 
-
-
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
-	/*
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_ASSERT(unixapp);
-
+	
 	UT_ASSERT(m_wParaPreviewArea && m_wParaPreviewArea->window);
 
 	// make a new Unix GC
 	DELETEP (m_pParaPreviewWidget);
 	m_pParaPreviewWidget = new GR_UnixGraphics(m_wParaPreviewArea->window, unixapp->getFontManager(), m_pApp);
-
-	// let the widget materialize
+	
+        // let the widget materialize
 
 	_createParaPreviewFromGC(m_pParaPreviewWidget,
-			     (UT_uint32) m_wParaPreviewArea->allocation.width, 
-			     (UT_uint32) m_wParaPreviewArea->allocation.height);
+				 (UT_uint32) m_wParaPreviewArea->allocation.width, 
+				 (UT_uint32) m_wParaPreviewArea->allocation.height);
 
+	/*
 	UT_ASSERT(m_wCharPreviewArea && m_wCharPreviewArea->window);
 
 	// make a new Unix GC
@@ -233,6 +226,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	  gtk_widget_destroy(mainWindow);
 }
 
+/*****************************************************************/
 
 void AP_UnixDialog_Styles::event_OK(void)
 {
@@ -584,7 +578,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	return vboxContents;
 }
 
-void AP_UnixDialog_Styles::_connectsignals(void)
+void AP_UnixDialog_Styles::_connectsignals(void) const
 {
 
 	// the control buttons
@@ -629,65 +623,9 @@ void AP_UnixDialog_Styles::_connectsignals(void)
 				NULL);
 }
 
-void AP_UnixDialog_Styles::_populatePreviews(void)
-{
-	if (m_whichRow < 0)
-	  return;
+/*****************************************************************/
 
-        PD_Style * pStyle;
-
-	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	UT_ASSERT(pView);
-
-	PD_Document * pDoc = pView->getLayout()->getDocument();
-	UT_ASSERT(pDoc);
-	
-	char * szStyle = NULL;
-
-	int ret = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
-				      m_whichRow, m_whichCol, &szStyle);
-
-	if (!ret) // having nothing displayed is totally valid
-	  {
-	    return;
-	  }
-
-	// update the previews and the description label
-	if (pDoc->getStyle (szStyle, &pStyle))
-	  {
-	    int cnt = pStyle->getPropertyCount();
-
-	    UT_DEBUGMSG(("DOM: property count is: %d, style: %s\n", cnt, 
-			 szStyle));
-
-	    GString * gStr = g_string_new ("");
-
-	    // loop through and pass out each property:value combination
-	    for(int i = 0; i < cnt; i++)
-	      {
-		const XML_Char * szName = NULL;
-		const XML_Char * szValue = NULL;		
-
-		pStyle->getNthProperty(i, szName, szValue);
-
-		UT_DEBUGMSG(("DOM: property is: (%s, %s)\n", szName, szValue));
-
-		g_string_append (gStr, (const char *)szName);
-		g_string_append (gStr, ":");
-		g_string_append (gStr, (const char *)szValue);
-		g_string_append (gStr, "; ");
-	      }
-
-	    gtk_label_set_text (GTK_LABEL(m_wlabelDesc), gStr->str);
-	    
-	    event_paraPreviewExposed();
-	    event_charPreviewExposed();
-
-	    g_string_free (gStr, TRUE);
-	  }
-}
-
-void AP_UnixDialog_Styles::_populateCList(void)
+void AP_UnixDialog_Styles::_populateCList(void) const
 {
         const PD_Style * pStyle;
 	const char * name = NULL;
@@ -725,8 +663,35 @@ void AP_UnixDialog_Styles::_populateCList(void)
 	gtk_clist_select_row (GTK_CLIST (m_wclistStyles), 0, 0);
 }
 
-void AP_UnixDialog_Styles::_populateWindowData(void)
+void AP_UnixDialog_Styles::_populateWindowData(void) const
 {
         _populateCList();
 	_populatePreviews();
+}
+
+void AP_UnixDialog_Styles::setDescription(const char * desc) const
+{
+  UT_ASSERT(m_wlabelDesc);
+  gtk_label_set_text (GTK_LABEL(m_wlabelDesc), desc);
+}
+
+const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
+{
+  static UT_String szStyleBuf;
+
+  UT_ASSERT(m_wclistStyles);
+
+  if (m_whichRow < 0 || m_whichCol < 0)
+    return NULL;
+
+  char * szStyle = NULL;
+
+  int ret = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
+				m_whichRow, m_whichCol, &szStyle);
+
+  if (!ret)
+    return NULL;
+
+  szStyleBuf = szStyle;
+  return szStyleBuf.c_str();
 }

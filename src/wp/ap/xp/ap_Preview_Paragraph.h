@@ -92,10 +92,15 @@ class AP_Preview_Paragraph : public XAP_Preview
  public:
 
 	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
-						 AP_Dialog_Paragraph * dlg);
+			     AP_Dialog_Paragraph * parent);
+
+	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
+			     XAP_Dialog * parent);
+
 	AP_Preview_Paragraph(GR_Graphics * gc,
-					     const UT_UCSChar * text,
-					     AP_Dialog_Lists * dlg);
+			     const UT_UCSChar * text,
+			     AP_Dialog_Lists * dlg);
+
 	virtual ~AP_Preview_Paragraph(void);
 
 	void setFormat(const XML_Char * pageLeftMargin,
@@ -141,7 +146,6 @@ class AP_Preview_Paragraph : public XAP_Preview
 	AP_Preview_Paragraph_Block * m_activeBlock;
 	AP_Preview_Paragraph_Block * m_followingBlock;
 
-	AP_Dialog_Paragraph * m_dlg;
 	GR_Font * m_font;
 	UT_uint32 m_fontHeight;
 };

@@ -342,13 +342,73 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
-										   const UT_UCSChar * text,
-										   AP_Dialog_Paragraph * dlg)
+					   const UT_UCSChar * text,
+					   XAP_Dialog * dlg) : XAP_Preview(gc)
+{
+  // this method heavily relies upon the parent dlg to call setFormat()
+  // rather than auto-generating defaults
+	UT_ASSERT(text && dlg);
+
+	m_font = NULL;
+	m_fontHeight = 0;
+	
+	m_y = DEFAULT_TOP_MARGIN;
+		
+	m_clrWhite = new UT_RGBColor(255,255,255);
+	m_clrBlack = new UT_RGBColor(0,0,0);
+	m_clrGray = new UT_RGBColor(192,192,192);
+
+	// initialize font to start measuring with for following setText calls
+	_loadDrawFont();
+
+	{
+	  // this block is a dummy block
+	  m_previousBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
+							   m_gc,
+							   AP_Dialog_Paragraph::align_LEFT,
+							   m_fontHeight);
+	}
+
+	{
+	  // this block is our ACTIVE block
+	  m_activeBlock = new AP_Preview_Paragraph_Block(*m_clrBlack,
+							 m_gc,
+							 AP_Dialog_Paragraph::align_LEFT,
+							 m_fontHeight);
+	}
+
+	{
+	  // another dummy block
+	  m_followingBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
+							    m_gc,
+							    AP_Dialog_Paragraph::align_LEFT,
+							    m_fontHeight);
+	}
+
+	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
+	
+	UT_UCSChar * tmp = NULL;
+
+	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
+	m_previousBlock->setText(tmp);
+	FREEP(tmp);
+
+	// this text came from the current document, passed in as arg
+	m_activeBlock->setText(text);
+
+	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
+	m_followingBlock->setText(tmp);
+	FREEP(tmp);
+	  
+}
+
+AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
+					   const UT_UCSChar * text,
+					   AP_Dialog_Paragraph * dlg)
 	: XAP_Preview(gc)
 {
 	UT_ASSERT(text && dlg);
 
-	m_dlg = dlg;
 	m_font = NULL;
 	m_fontHeight = 0;
 	

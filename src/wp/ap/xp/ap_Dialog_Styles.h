@@ -27,19 +27,7 @@
 class XAP_Frame;
 
 #include "xap_Preview.h"
-
-class AP_Styles_ParaPreview : public XAP_Preview
-{
-public:
-
-	AP_Styles_ParaPreview(GR_Graphics * gc);
-	virtual ~AP_Styles_ParaPreview(void);
-				
-	void			draw(void);
-
-protected:
-};
-
+#include "ap_Preview_Paragraph.h"
 
 class AP_Styles_CharPreview : public XAP_Preview
 {
@@ -55,7 +43,7 @@ protected:
 
 class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 {
-public:
+ public:
 	AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Styles(void);
 
@@ -64,16 +52,33 @@ public:
 	typedef enum { a_OK, a_CANCEL }   tAnswer;
 	AP_Dialog_Styles::tAnswer	  getAnswer(void) const;
 
-protected:
+ protected:
+	void event_paraPreviewUpdated (const XML_Char * pageLeftMargin,
+				       const XML_Char * pageRightMargin,
+				       const XML_Char * align,
+				       const XML_Char * firstLineIndent,
+				       const XML_Char * leftIndent,
+				       const XML_Char * rightIndent,
+				       const XML_Char * beforeSpacing,
+				       const XML_Char * afterSpacing,
+				       const XML_Char * lineSpacing) const;
+	virtual void event_charPreviewUpdated (void) const; // this will change shortly
+
+	virtual const char * getCurrentStyle (void) const = 0;
+	virtual void setDescription (const char * desc) const = 0;
+	virtual void _populatePreviews(void) const;
+
+
+ protected:
 
 	void				  _createParaPreviewFromGC(GR_Graphics * gc,  UT_uint32 width,  UT_uint32 height);
 
 	void				  _createCharPreviewFromGC(GR_Graphics * gc,  UT_uint32 width, UT_uint32 height);
 
 	AP_Dialog_Styles::tAnswer	  m_answer;
-	AP_Styles_ParaPreview *		  m_pParaPreview;
+	AP_Preview_Paragraph  *		  m_pParaPreview;
 	AP_Styles_CharPreview *		  m_pCharPreview;
-private:
+ private:
 };
 
 #endif /* AP_Dialog_Styles_H */
