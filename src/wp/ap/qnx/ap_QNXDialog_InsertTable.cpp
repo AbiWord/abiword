@@ -191,14 +191,14 @@ PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertTable_TableTitle),0);
 	
 	n=0;
 	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,9999,0);
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,64,0);
 	PtSetArg(&args[n++],Pt_ARG_NUMERIC_VALUE,getNumCols(),0);
 	num_col=PtCreateWidget(PtNumericInteger,Pt_DEFAULT_PARENT,n,args);
 	n=0;
 
 	n=0;
 	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,9999,0);
+	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,500,0);
 	PtSetArg(&args[n++],Pt_ARG_NUMERIC_VALUE,getNumRows(),0);
 	num_row=PtCreateWidget(PtNumericInteger,Pt_DEFAULT_PARENT,n,args);
 
