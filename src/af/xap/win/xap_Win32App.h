@@ -70,8 +70,7 @@ public:
 	void									enableAllTopLevelWindows(bool);
 	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
-
-    virtual bool                            theOSHasBidiSupport() const {return m_bBidiOS;}
+    virtual XAP_App::BidiSupportType        theOSHasBidiSupport() const {return m_eBidiOS;}
 
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
@@ -84,7 +83,7 @@ protected:
 
 	XAP_Win32Slurp *						m_pSlurp;
 private:
-	bool									m_bBidiOS;
+	XAP_App::BidiSupportType		        m_eBidiOS;
 };
 
 #endif /* XAP_WIN32APP_H */

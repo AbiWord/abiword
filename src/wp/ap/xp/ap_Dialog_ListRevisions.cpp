@@ -90,7 +90,7 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n) const
 		return NULL;
 
 	// now we run this string through fribidi
-	if(!XAP_App::getApp()->theOSHasBidiSupport())
+	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 	{
 		FriBidiChar *fbdStr = (FriBidiChar *)pC;
 		FriBidiChar *fbdStr2 = 0;

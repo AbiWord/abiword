@@ -380,7 +380,7 @@ UT_sint32 XAP_Win32App::setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame)
 void XAP_Win32App::_setBidiOS(void)
 {
 
-	m_bBidiOS = false;
+	m_eBidiOS = XAP_App::BIDI_SUPPORT_NONE;
 /*
 	I have run into problems with the built-in win32 bidi support -- it is inconsistent
 	It treats some fonts (i.e., the MS fonts) correctly, but some common Hebrew fonts
@@ -421,7 +421,7 @@ void XAP_Win32App::_setBidiOS(void)
 	if (GetCharacterPlacementW(displayDC, (LPCWSTR)inStr, 2, 0, &gcpResult, GCP_REORDER)
 		&& (inStr[0] == outStr[1]) )
 	{
-		m_bBidiOS = true;
+		m_eBidiOS = XAP_App::BIDI_SUPPORT_FULL;
 		UT_DEBUGMSG(("System has bidi and glyph shaping\n"));
 	}
 	else
@@ -432,7 +432,7 @@ void XAP_Win32App::_setBidiOS(void)
 		if (GetCharacterPlacementW(displayDC, (LPCWSTR)inStr, 2, 0, &gcpResult, GCP_REORDER)
 			&& (inStr[0] == outStr[1]) )
 		{
-			m_bBidiOS = true;
+			m_eBidiOS = XAP_App::BIDI_SUPPORT_FULL;
 			UT_DEBUGMSG(("System has bidi\n"));
 		}
 	}

@@ -1169,7 +1169,7 @@ void AP_Lists_preview::draw(void)
 			{
 				len = UT_MIN(UT_UCS4_strlen(lv),51);
 
-				if(len > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
+				if(len > 1 && XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
 				{
 					FriBidiChar * fLogStr = new FriBidiChar[len+1];
 					FriBidiChar * fVisStr = new FriBidiChar[len+1];

@@ -61,7 +61,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 	// way; the menu mechanism is much cleaner and I think we should be
 	// using the string-set mechanism for toolbars as we do for menus.
 	// when/if we do, this whole bit can be removed
-	if(!XAP_App::getApp()->theOSHasBidiSupport())
+	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 	{
         UT_uint32 iOldLen = 0;
         FriBidiChar *fbdStr = 0, *fbdStr2 = 0;

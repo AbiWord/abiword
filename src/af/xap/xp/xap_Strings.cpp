@@ -211,7 +211,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		UT_ByteBuf str;
 
 		// now we run this string through fribidi
-		if(!XAP_App::getApp()->theOSHasBidiSupport())
+		if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 		{
 			if (p && *p)
 			{
@@ -461,7 +461,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 
 #if 0
 	// now we run this stringset through fribidi
-	if(!XAP_App::getApp()->theOSHasBidiSupport())
+	if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
 	{
 		UT_uint32 kLimit = _getStringCount();
 		UT_uint32 k;

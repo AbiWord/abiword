@@ -420,7 +420,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 #define s_pCharAdvances pCharWidths
 #endif
 		// Unicode font and default character set handling for WinNT and Win9x
-		if(XAP_App::getApp()->theOSHasBidiSupport())
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			UT_ASSERT(m_remapIndices);
 			GCP_RESULTSW gcpResult;
@@ -467,7 +467,7 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 	{
 		delete [] m_remapBuffer;
 
-		if(XAP_App::getApp()->theOSHasBidiSupport())
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			delete [] m_remapIndices;
 			m_remapIndices = new UT_UCS2Char[iLength];

@@ -99,6 +99,7 @@ public:
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
 	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
+    virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const {return BIDI_SUPPORT_GUI;}
 
 protected:
 #ifndef WITH_PANGO	

@@ -3052,7 +3052,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 		UT_uint32 iLen = UT_UCS4_strlen(p_new_value);
 		iLen = UT_MIN(iLen,FPFIELD_MAX_LENGTH);
 
-		if(iLen > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
+		if(iLen > 1 && XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_GUI)
 		{
 			FriBidiChar * fVisStr = new FriBidiChar[iLen+1];
 			FriBidiChar * fLogStr = new FriBidiChar[iLen+1];

@@ -230,7 +230,49 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 
 		int kLimit=gb.getLength();
 		UT_UCS4Char * p= (UT_UCS4Char*) gb.getPointer(0);
-		UT_ByteBuf str;		
+		UT_ByteBuf str;
+
+		// now we run this string through fribidi
+		if(XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_NONE)
+		{
+			if (p && *p)
+			{
+				FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
+				fbdStr   = new FriBidiChar [kLimit + 1];
+				UT_ASSERT(fbdStr);
+				fbdStr2  = new FriBidiChar [kLimit + 1];
+				UT_ASSERT(fbdStr2);
+
+				UT_sint32 i;
+				for(i = 0; i < kLimit; i++)
+				{
+					fbdStr[i] = (FriBidiChar) p[i];
+				}
+
+				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+
+				fribidi_log2vis (		/* input */
+				       fbdStr,
+				       kLimit,
+				       &fbdDomDir,
+				       /* output */
+				       fbdStr2,
+				       NULL,
+				       NULL,
+				       NULL);
+
+				for(i = 0; i < kLimit; i++)
+				{
+					p[i] = (UT_uint16) fbdStr2[i];
+				}
+
+				UT_ASSERT(p[i] == 0);
+				delete[] fbdStr;
+				delete[] fbdStr2;
+			}
+		}
+
+		
 		UT_Wctomb wctomb_conv(XAP_App::getApp()->getDefaultEncoding());
 		char letter_buf[20];
 		int length;
