@@ -24,7 +24,7 @@
 #include "gr_Graphics.h"
 
 #include "ut_assert.h"
-
+#include "ut_debugmsg.h"
 
 #define TT_SVG 0
 #define TT_GROUP 1
@@ -117,6 +117,7 @@ void GR_VectorImage::setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayH
 
 UT_Bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
+   UT_DEBUGMSG(("writing vector image data (TODO)\n"));
    return UT_FALSE;
 }
 
@@ -124,6 +125,8 @@ UT_Bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisp
 {
    m_iDisplayWidth = iDisplayWidth;
    m_iDisplayHeight = iDisplayHeight;
+
+   UT_DEBUGMSG(("reading vector image data (TODO)\n"));
    return UT_FALSE;
 /*
    XML_Parser parser = XML_CreateParser(NULL);
