@@ -172,8 +172,6 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
   	pretty_group(vboxMain, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangLabel));
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_pLanguageList = PtCreateWidget(PtList, vboxMain, n, args);
 
 	UT_uint32 k;
