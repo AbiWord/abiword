@@ -409,9 +409,15 @@ dcl(DLG_PageSetup_Left, "&Left:")
 dcl(DLG_PageSetup_Right, "&Right:")
 dcl(DLG_PageSetup_Margin, "&Margin")
 
-#ifdef BIDI_ENABLED
 dcl(MSG_DirectionModeChg,	"You have changed the direction mode.")
 dcl(MSG_DefaultDirectionChg,"You have changed the default direction.")
 dcl(MSG_AfterRestartNew, "This change will only take effect when you restart \
 AbiWord or create a new document.")
-#endif
+
+dcl(DLG_ToggleCase_Title, "Change Case")
+dcl(DLG_ToggleCase_SentenceCase, "Sentence Case")
+dcl(DLG_ToggleCase_LowerCase, "lowercase")
+dcl(DLG_ToggleCase_UpperCase, "UPPERCASE")
+dcl(DLG_ToggleCase_TitleCase, "Title Case")
+dcl(DLG_ToggleCase_ToggleCase, "tOGGLE cASE")
+
