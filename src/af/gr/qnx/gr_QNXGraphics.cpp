@@ -621,8 +621,6 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 		r.ul.y = _UD(pRect->top);
 		r.lr.x = r.ul.x + _UD(pRect->width);
 		r.lr.y = r.ul.y + _UD(pRect->height);
-		fprintf(stderr,"Set Cliprect to = %d,%d,%d,%d\n",pRect->left,pRect->top,pRect->width,pRect->height);
-		fprintf(stderr,"And in real numbers %d,%d,%d,%d\n",r.ul.x,r.ul.y,r.lr.x,r.lr.y);
 //		UT_ASSERT(!m_pClipList);		//Only one item for now
 
 		if (m_pClipList || (m_pClipList = PhGetTile())) {
