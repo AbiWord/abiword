@@ -91,6 +91,8 @@ public:
 
 	inline UT_sint32			getColumnGap(void) const	{ return m_pContainer->getColumnGap(); }
 	
+	void				setAssignedScreenHeight(UT_sint32);
+
 	void				setMaxWidth(UT_sint32);
 	void				setMaxWidthInLayoutUnits(UT_sint32);
 	void				setX(UT_sint32);

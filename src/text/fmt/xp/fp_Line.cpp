@@ -471,6 +471,49 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	yoff = my_yoff + pRun->getY();
 }
 
+/*!
+  Set height assigned to line on screen
+  \param iHeight Height in screen units
+
+  While recalcHeight computes the height of the line as it will render
+  on the screen, the fp_Column does the actual line layout and does so
+  with greater accuracy. In particular, the line may be assigned a
+  different height on the screen than what it asked for.
+
+  This function allows the line representation to reflect the actual
+  screen layout size, which improves the precision of XY/position
+  conversion functions.
+
+  \note This function is quite intentionally <b>not</b> called
+        setHeight. It should <b>only</b> be called from
+        fp_Column::layout.
+
+  \see fp_Column::layout 
+*/
+void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
+{
+	m_iHeight = iHeight;
+}
+
+/*!
+  Compute the height of the line
+
+  Note that while the line is asked to provide height/width and
+  computes this based on its content Runs, it may later be assigned
+  additional screen estate by having its height changed. That does not
+  affect or override layout details, but increases precision of
+  XY/position conversions.
+
+  \fixme I originally put in an assertion that checked that the line
+         was only ever asked to grow in size. But that fired a lot, so
+         it had to be removed. This suggests that we actually try to
+         render stuff to closely on screen - the fp_Line::recalcHeight
+         function should probably be fixed to round height and widths
+         up always. But it gets its data from Runs, so this is not
+         where the problem should be fixed.
+
+  \see fp_Column::layout, fp_Line::setAssignedScreenHeight
+*/
 void fp_Line::recalcHeight()
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
@@ -520,31 +563,26 @@ void fp_Line::recalcHeight()
 	UT_sint32 iNewAscent = iMaxAscent;
 	UT_sint32 iNewDescent = iMaxDescent;
 
+	// adjust line height to include leading
+	double dLineSpace, dLineSpaceLayout;
+	fl_BlockLayout::eSpacingPolicy eSpacing;
+	m_pBlock->getLineSpacing(dLineSpace, dLineSpaceLayout, eSpacing);
+
+	if (eSpacing == fl_BlockLayout::spacing_EXACT)
 	{
-		// adjust line height to include leading
-		double dLineSpace, dLineSpaceLayout;
-		fl_BlockLayout::eSpacingPolicy eSpacing;
-		m_pBlock->getLineSpacing(dLineSpace, dLineSpaceLayout, eSpacing);
-
-		if (eSpacing == fl_BlockLayout::spacing_EXACT)
-			{
-			iNewHeight = (UT_sint32) dLineSpace;
-			
-			iNewHeightLayoutUnits = (UT_sint32) dLineSpaceLayout;
-
-			}
-		else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
-			{
-			iNewHeight = UT_MAX(iNewHeight, (UT_sint32) dLineSpace);
-
-			iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, (UT_sint32) dLineSpaceLayout);
-			}
-		else
-			{
-			// multiple
-			iNewHeight = (UT_sint32) (iNewHeight * dLineSpace);
-			iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout);
-			}
+		iNewHeight = (UT_sint32) dLineSpace;
+		iNewHeightLayoutUnits = (UT_sint32) dLineSpaceLayout;
+	}
+	else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
+	{
+		iNewHeight = UT_MAX(iNewHeight, (UT_sint32) dLineSpace);
+		iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, (UT_sint32) dLineSpaceLayout);
+	}
+	else
+	{
+		// multiple
+		iNewHeight = (UT_sint32) (iNewHeight * dLineSpace);
+		iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout);
 	}
 
 	if (

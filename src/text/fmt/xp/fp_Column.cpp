@@ -543,26 +543,68 @@ void fp_Column::setPrev(fp_Column*p)
 	m_pPrev = p;
 }
 
+
+/*!
+  Layout lines in the column
+
+  This function iterates over the lines in the column and computes
+  their screen position from their accumulative heights in layout
+  units. 
+
+  Since this code accumulates fractions of the conversion process, the
+  difference between Y positions of two lines may differ from the
+  pre-computed height of the upper line. This is due to simple
+  rounding errors and general lack of precision (screen coordinates
+  are integer while the computation yields fractions).
+
+  To make XY/position conversion precise, remove the gaps by updating
+  the line heights. Note that the line heights get updated next time
+  there's a line lookup - so this does not in any way affect layout,
+  only the precision of the XY/position conversion code.
+
+  \see fp_Line::setAssignedScreenHeight, fp_Line::recalcHeight
+*/
 void fp_Column::layout(void)
 {
 	UT_sint32 iYLayoutUnits = 0;
+	UT_sint32 iY = 0, iPrevY = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	fp_Line *pLine, *pPrevLine = NULL;
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-		
+		pLine = (fp_Line*) m_vecLines.getNthItem(i);
+
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 //		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 
 //		iY += iLineMarginBefore;
-		pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+		pLine->setY(iY);
 		pLine->setYInLayoutUnits(iYLayoutUnits);
+
 		iYLayoutUnits += iLineHeightLayoutUnits;
 		iYLayoutUnits += iLineMarginAfterLayoutUnits;
+
+		// Update height of previous line now we know the gap between
+		// it and the current line.
+		if (pPrevLine)
+		{
+			pPrevLine->setAssignedScreenHeight(iY - iPrevY);
+		}
+		pPrevLine = pLine;
+		iPrevY = iY;
 	}
+
+	// Correct height position of the last line
+	if (pPrevLine)
+	{
+		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+		pPrevLine->setAssignedScreenHeight(iY - iPrevY);
+	}
+
 
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
 	if (m_iHeight == iNewHeight)

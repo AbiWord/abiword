@@ -3580,6 +3580,18 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 }
 
+/*!
+  Move insertion point to previous or next line
+  \param bNext True if moving to next line
+
+  This function moves the IP up or down one line, attempting to get as
+  close as possible to the prior "sticky" x position.  The notion of
+  "next" is strictly physical, not logical.
+
+  For example, instead of always moving from the last line of one
+  block to the first line of the next, you might wind up skipping over
+  a bunch of blocks to wind up in the first line of the second column.  
+*/
 void FV_View::_moveInsPtNextPrevLine(bool bNext)
 {
 	UT_sint32 xPoint;
@@ -3589,15 +3601,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	UT_sint32 xPoint2;
 	UT_sint32 yPoint2;
 	bool bDirection;
-	/*
-	  This function moves the IP up or down one line, attempting to get
-	  as close as possible to the prior "sticky" x position.  The notion
-	  of "next" is strictly physical, not logical.
 
-	  For example, instead of always moving from the last line of one block
-	  to the first line of the next, you might wind up skipping over a
-	  bunch of blocks to wind up in the first line of the second column.
-	*/
 	UT_sint32 xOldSticky = m_xPointSticky;
 
 	// first, find the line we are on now
@@ -3635,8 +3639,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		if (pOldLine != pOldContainer->getLastLine())
 		{
 			// just move off this line
-			// Sevior TODO the +2 is a work around. The problem is somewhere else
-			yPoint += (iLineHeight + pOldLine->getMarginAfter()+2);
+			yPoint += (iLineHeight + pOldLine->getMarginAfter()+1);
 		}
 		else if (bDocSection && (((fp_Column*) (pOldSL->getLastContainer()))->getLeader() == pOldLeader))
 		{
@@ -3671,8 +3674,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		if (pOldLine != pOldContainer->getFirstLine())
 		{
 			// just move off this line
-			// Sevior TODO the +2 is a work around. The problem is somewhere else
-			yPoint -= (pOldLine->getMarginBefore() + 2);
+			yPoint -= (pOldLine->getMarginBefore() + 1);
 		}
 		else if (bDocSection && (pOldSL->getFirstContainer() == pOldLeader))
 		{
