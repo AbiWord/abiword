@@ -6176,8 +6176,15 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 	properties[1] = szTabStops;
 	properties[2] = 0;
 	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1]));
-
-	pView->setBlockFormat(properties);
+	if(szTabStops && *szTabStops)
+	{
+		pView->setBlockFormat(properties);
+	}
+	else
+	{
+		properties[1] = " ";
+		pView->setBlockFormat(properties);
+	}
 
 	properties[0] = "default-tab-interval";
 	properties[1] = szDflTabStop;
