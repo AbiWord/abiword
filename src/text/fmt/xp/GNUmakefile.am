@@ -23,6 +23,7 @@ INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICO
 noinst_LIBRARIES = libFmt.a
 
 libFmt_a_SOURCES= \
+	fv_Caret.cpp			\
 	fv_View.cpp			\
 	fv_View_cmd.cpp			\
 	fv_View_protected.cpp			\
@@ -56,5 +57,4 @@ libFmt_a_SOURCES= \
 	fg_GraphicRaster.cpp		\
 	fp_ContainerObject.cpp		\
 	fg_GraphicVector.cpp		\
-	fb_ColumnBreaker.cpp
-
+	fb_ColumnBreaker.cpp		
