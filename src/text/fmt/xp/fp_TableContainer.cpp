@@ -510,19 +510,19 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		if(iTop < col_y)
 		{
 			iTop = col_y;
-//			bDrawTop = false;
+			bDrawTop = true;
 		}
 		UT_DEBUGMSG(("SEVIOR: After ibot = %d  sum %d \n",iBot,col_y + pCol->getHeight()));
 		if(iBot > col_y + pCol->getHeight())
 		{
 			iBot =  col_y + pCol->getHeight();
-//			bDrawBot = false;
+			bDrawBot = true;
 		}
 		if(m_bDrawLeft)
 		{
 			_drawLine(m_cLeftColor, m_iLeftStyle, iLeft,iTop, iLeft, iBot);
 		}
-		if(m_bDrawTop && bDrawTop)
+		if(m_bDrawTop || bDrawTop)
 		{
 			_drawLine(m_cTopColor, m_iTopStyle, iLeft, iTop, iRight, iTop);
 		}
@@ -531,7 +531,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
 		UT_DEBUGMSG(("SEVIOR: m_bDrawbot %d  bDrawBot %d \n",m_bDrawBot, bDrawBot));
-		if(m_bDrawBot && bDrawBot)
+		if(m_bDrawBot || bDrawBot)
 		{
 			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
 		}

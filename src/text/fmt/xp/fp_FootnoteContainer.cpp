@@ -103,14 +103,14 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
         ybot += ytop + 1;
-		UT_DEBUGMSG(("SEVIOR: clip top %d clip bot %d \n",ytop,ybot));
+		UT_DEBUGMSG(("Footnote: clip top %d clip bot %d \n",ytop,ybot));
 	}
 	else
 	{
 		ytop = 0;
 		ybot = imax;
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 }
 
 fp_Container * fp_FootnoteContainer::getNextContainerInSection() const
