@@ -419,11 +419,12 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	// Force the print command to default to "lpr" every time the print dialog is invoked.
 	// The mechanism for keeping persistant data seems to be broken.
 	
+	UT_UTF8String printer("lpr");
 	const char * printCmd;
 	printCmd = g_getenv("PRINTER");
 	if(!printCmd)
-		printCmd = "lpr";
-	UT_cloneString(m_persistPrintDlg.szPrintCommand, printCmd);
+		printer = UT_UTF8String_sprintf("lpr -P%s", printCmd);
+	UT_cloneString(m_persistPrintDlg.szPrintCommand, printer.utf8_str());
 
 	// Turn some widgets on or off based on settings
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonPrint), !m_persistPrintDlg.bDoPrintToFile);
