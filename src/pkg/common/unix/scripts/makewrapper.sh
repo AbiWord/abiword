@@ -54,10 +54,10 @@ fi
 # Figure out which binary to run
 if [ -f \$ABISUITE_HOME/bin/${PROGRAM_NAME}_d ]
 then
-    \$ABISUITE_HOME/bin/${PROGRAM_NAME}_d \$*
+    \$ABISUITE_HOME/bin/${PROGRAM_NAME}_d \"\$@\"
 elif [ -f \$ABISUITE_HOME/bin/${PROGRAM_NAME}_s ]
 then
-    \$ABISUITE_HOME/bin/${PROGRAM_NAME}_s \$*
+    \$ABISUITE_HOME/bin/${PROGRAM_NAME}_s \"\$@\"
 else
     echo ""
     echo "Error: can't find ${PROGRAM_NAME} executables:"
