@@ -95,6 +95,7 @@ public:
 	EV_EditEventMapper *		getEditEventMapper(void) const;
 	XAP_App *					getApp(void) const;
 	AV_View *					getCurrentView(void) const;
+	AD_Document *				getCurrentDoc(void) const;
 	const char *				getFilename(void) const;
 	const char *				getTitle(int len) const;
 	const char *				getTempNameFromTitle(void) const;

@@ -294,6 +294,11 @@ AV_View * XAP_Frame::getCurrentView(void) const
 	
 	return m_pView;
 }
+	
+AD_Document * XAP_Frame::getCurrentDoc(void) const
+{
+	return m_pDoc;
+}
 
 const char * XAP_Frame::getFilename(void) const
 {
