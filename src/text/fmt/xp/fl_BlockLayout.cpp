@@ -3002,7 +3002,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 				}
 				else if(!FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_STRONG(iType))
 				{
-					// a week character followed by a strong one -- we
+					// a weak character followed by a strong one -- we
 					// can ignore it, if the week character was
 					// preceeded by a strong character of the same
 					// type
@@ -3636,11 +3636,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 	}
 
-#ifdef SMART_RUN_MERGING
 	/*
 	  if we inserted a text run, and its direction is strong, then we might need to do
 	  some more work. Since a strong run can change the visual direction of adjucent
-	  weak characters, wen need to ensure that any weak characters on either side
+	  weak characters, we need to ensure that any weak characters on either side
 	  are in runs of their own.
 	*/
 	FriBidiCharType iDirection = pNewRun->getDirection();
@@ -3648,7 +3647,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	{
 		static_cast<fp_TextRun*>(pNewRun)->breakNeighborsAtDirBoundaries();
 	}
-#endif
+
 	_assertRunListIntegrity();
 
 	return true;
@@ -3915,6 +3914,12 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 	m_gbCharWidths.del(blockOffset, len);
 
+	// runs to do with bidi post-processing
+	fp_TextRun * pTR_del1 = NULL;
+	fp_TextRun * pTR_del2 = NULL;
+	fp_TextRun * pTR_next = NULL;
+	fp_TextRun * pTR_prev = NULL;
+	
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
@@ -3952,15 +3957,49 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				if ((blockOffset + len) < (iRunBlockOffset + iRunLength))
 				{
 					// the deleted section is entirely within this run
+					if(pRun->getType()== FPRUN_TEXT)
+					{
+						pTR_del1 = static_cast<fp_TextRun*>(pRun);
+
+						if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
+						{
+							pTR_next = static_cast<fp_TextRun*>(pRun->getNext());
+						}
+						
+						if(pRun->getPrev() && pRun->getPrev()->getType()== FPRUN_TEXT)
+						{
+							pTR_prev = static_cast<fp_TextRun*>(pRun->getPrev());
+						}
+					}
+					
 					pRun->setLength(iRunLength - len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
 				}
 				else
 				{
+					// the delete section crosses over the end of the
+					// run, but not the start; it can however, lead to
+					// deletion of an entire run
 					int iDeleted = iRunBlockOffset + iRunLength - blockOffset;
 					UT_ASSERT(iDeleted > 0);
 
+					if(pRun->getType()== FPRUN_TEXT)
+					{
+						if(!((iRunBlockOffset == blockOffset) && (iRunLength == len)))
+							pTR_del1 = static_cast<fp_TextRun*>(pRun);
+
+						if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
+						{
+							pTR_next = static_cast<fp_TextRun*>(pRun->getNext());
+						}
+						
+						if(pRun->getPrev() && pRun->getPrev()->getType()== FPRUN_TEXT)
+						{
+							pTR_prev = static_cast<fp_TextRun*>(pRun->getPrev());
+						}
+					}
+					
 					pRun->setLength(iRunLength - iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
@@ -3968,8 +4007,35 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 			}
 			else
 			{
+				// the deleted section crosses over the start of the
+				// run and possibly also the end; unless this is the
+				// first run in the block, then we have already deleted
+				// something
+				if(pRun->getType()== FPRUN_TEXT)
+				{
+					if(!pTR_del1 && pRun->getPrev() && pRun->getPrev()->getType()== FPRUN_TEXT)
+					{
+						pTR_prev = static_cast<fp_TextRun*>(pRun->getPrev());
+					}
+
+					if(pRun->getNext() && pRun->getNext()->getType()== FPRUN_TEXT)
+					{
+						pTR_next = static_cast<fp_TextRun*>(pRun->getNext());
+					}
+						
+				}
+
 				if ((blockOffset + len) < (iRunBlockOffset + iRunLength))
 				{
+					if(pTR_del1)
+					{
+						pTR_del2 = static_cast<fp_TextRun*>(pRun);
+					}
+					else
+					{
+						pTR_del1 = static_cast<fp_TextRun*>(pRun);
+					}
+					
 					int iDeleted = blockOffset + len - iRunBlockOffset;
 					UT_ASSERT(iDeleted > 0);
 					pRun->setBlockOffset(iRunBlockOffset - (len - iDeleted));
@@ -4013,6 +4079,23 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 		pRun = pNextRun;
 	}
+
+	// now that we have done the deleting, we have to do some bidi
+	// post processing, since the deletion might have seriously
+	// impacted the visual order of the line; we have to break all
+	// the text runs affected by this, plus the run before and after,
+	// so that the bidi algorithm can be properly applied
+	if(pTR_del1)
+		pTR_del1->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+	
+	if(pTR_del2)
+		pTR_del2->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+
+	if(pTR_prev)
+		pTR_prev->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+
+	if(pTR_next)
+		pTR_next->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
 
 	_assertRunListIntegrity();
 

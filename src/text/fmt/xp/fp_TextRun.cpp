@@ -316,9 +316,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	
 	
-#ifdef SMART_RUN_MERGING
 	FriBidiCharType iOldOverride = m_iDirOverride;
-#endif
 	FriBidiCharType iNewOverride;
 	const XML_Char *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	// the way MS Word handles bidi is peculiar and requires that we allow
@@ -333,7 +331,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	else
 		iNewOverride = FRIBIDI_TYPE_UNSET;
 
-#ifdef SMART_RUN_MERGING
 
 	bChanged |= (iOldOverride != iNewOverride);
 	
@@ -360,7 +357,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		breakNeighborsAtDirBoundaries();
 	}
 	else
-#endif
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
 
 	if(bChanged)
@@ -845,13 +841,9 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->_getColorFG() != _getColorFG())
 		|| (pNext->_getColorHL() != _getColorHL())
 		|| (pNext->m_fPosition != m_fPosition)
-#ifdef SMART_RUN_MERGING
 		|| (pNext->getVisDirection() != getVisDirection())
 		// we also want to test the override, because we do not want runs that have the same
 		// visual direction but different override merged
-#else
-		|| (pNext->_getDirection() != _getDirection())  //#TF cannot merge runs of different direction of writing
-#endif
 		|| (pNext->m_iDirOverride != m_iDirOverride)
 
 		// cannot merge two runs within different hyperlinks, but than
@@ -895,9 +887,6 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(_getLineWidth() == pNext->_getLineWidth());
 	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
 	UT_ASSERT(m_fPosition == pNext->m_fPosition);
-#ifndef SMART_RUN_MERGING
-	UT_ASSERT(_getDirection() == pNext->_getDirection()); //#TF
-#endif
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
 
@@ -1145,7 +1134,6 @@ void fp_TextRun::mergeWithNext(void)
 
 	pNext->getLine()->removeRun(pNext, false);
 
-#ifdef SMART_RUN_MERGING
 	// if appending a strong run onto a weak one, make sure the overall direction
 	// is that of the strong run, and tell the line about this, since the call
 	// to removeRun above decreased the line's direction counter
@@ -1154,7 +1142,6 @@ void fp_TextRun::mergeWithNext(void)
 		_setDirection(pNext->_getDirection());
 		getLine()->addDirectionUsed(_getDirection());
 	}
-#endif
 
 	delete pNext;
 }
@@ -1201,10 +1188,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_pLanguage = this->m_pLanguage;
 	pNew->_setDirection(this->_getDirection()); //#TF
 	pNew->m_iDirOverride = this->m_iDirOverride;
-#ifdef SMART_RUN_MERGING
 	// set the visual direction to same as that of the old run
 	pNew->setVisDirection(iVisDirection);
-#endif
 
 	pNew->_setHyperlink(this->getHyperlink());
 
@@ -3630,7 +3615,6 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
 
-#ifdef SMART_RUN_MERGING
 void fp_TextRun::breakNeighborsAtDirBoundaries()
 {
 	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
@@ -3814,7 +3798,6 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 		iPrevType = iType;
 	}
 }
-#endif
 
 
 #ifdef WITH_PANGO

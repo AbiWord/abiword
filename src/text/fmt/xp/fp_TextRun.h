@@ -35,12 +35,6 @@
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
 #include "ut_timer.h"
 
-//this turns on work in progress that reduces the number of runs used by the bidi
-//build
-#if 1 //def DEBUG
-#define SMART_RUN_MERGING
-#endif
-
 #ifdef WITH_PANGO
 #include "ut_abi-pango.h"
 #endif
@@ -125,10 +119,8 @@ public:
 	virtual FriBidiCharType getDirection() const { return m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;}
 	FriBidiCharType 		getDirOverride() const { return m_iDirOverride; }
 
-#ifdef SMART_RUN_MERGING
 	void					breakNeighborsAtDirBoundaries();
 	void					breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
-#endif
 
 
 #ifdef WITH_PANGO
