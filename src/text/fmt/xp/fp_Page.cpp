@@ -1423,10 +1423,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 				if(p == NULL || !p->getFirstContainer())
 					continue;
 
-				if ((x >= p->getX())
-					&& (x < (p->getX() + p->getWidth()))
-					&& (y >= p->getY())
-					&& (y < (p->getY() + p->getHeight())))
+				if ((y >= p->getY()) && (y < (p->getY() + p->getHeight())))
 				{
 					p->mapXYToPosition(x - p->getX(), y - p->getY(), pos, bBOL, bEOL,isTOC);
 					if (pShadow)
