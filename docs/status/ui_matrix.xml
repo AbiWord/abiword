@@ -582,7 +582,7 @@
           <cell value="yes"/>
           <cell value="yes"/>
           <cell value="yes"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="no"/>
           <cell value="no"/>
@@ -590,10 +590,10 @@
 
         <row>
           <cell>Edit / Goto</cell>
-          <cell value="no"><pow uri="http://www.abisource.com/mailinglists/abiword-dev/99/October/0009.html"/></cell>
           <cell value="yes"/>
-          <cell value="no"/>
-          <cell value="no"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
