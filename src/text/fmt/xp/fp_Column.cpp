@@ -1119,18 +1119,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	do 
 	{
 		pContainer = static_cast<fp_ContainerObject*>(getNthCon(i++));
-		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			iHeight = static_cast<fp_TableContainer *>(pContainer)->getHeight();
-		}
-		else if(pContainer->getContainerType() == FP_CONTAINER_TOC)
-		{
-			iHeight = static_cast<fp_TOCContainer *>(pContainer)->getHeight();
-		}
-		else
-		{
-			iHeight = pContainer->getHeight();
-		}
+		iHeight = pContainer->getHeight();
 		xxx_UT_DEBUGMSG(("SEVIOR: IN column looking at x %d y %d height %d \n",pContainer->getX(),pContainer->getY(),iHeight));
 	} while ((i < count)
 			 && (y > (pContainer->getY() + iHeight)));
@@ -1142,18 +1131,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	if (i > 0 && y < pContainer->getY())
 	{
 		fp_ContainerObject* pContainerUpper = static_cast<fp_ContainerObject*>(getNthCon(i-1));
-		if(pContainerUpper->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			iUHeight = static_cast<fp_TableContainer *>(pContainerUpper)->getHeight();
-		}
-		else if(pContainerUpper->getContainerType() == FP_CONTAINER_TOC)
-		{
-			iUHeight = static_cast<fp_TOCContainer *>(pContainerUpper)->getHeight();
-		}
-		else
-		{
-			iUHeight = pContainer->getHeight();
-		}
+		iUHeight = pContainer->getHeight();
 
 		// Be careful with the signedness here - bug 172 leared us a
 		// lesson!
@@ -1174,7 +1152,6 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 								y - pContainer->getY() , 
 								pos, bBOL, bEOL,isTOC);
 	}
-#if 1
 	else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(pContainer);
@@ -1192,7 +1169,6 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		}
 
 	}
-#endif
 	else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
 	{
 //

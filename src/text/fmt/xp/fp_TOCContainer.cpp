@@ -26,6 +26,7 @@
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
+#include "fp_Run.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
@@ -91,6 +92,36 @@ fp_TOCContainer::~fp_TOCContainer()
 	setNext(NULL);
 	m_pMasterTOC = NULL;
 
+}
+
+/*!
+  Find document position from X and Y coordinates.  Note that the TOC
+  only has one document position, so that mapXYToPosition is rather
+  unhelpful for scrolling purposes.
+ \param  x X coordinate
+ \param  y Y coordinate
+ \retval pos Document position
+ \retval bBOL True if position is at begining of line, otherwise false
+ \retval bEOL True if position is at end of line, otherwise false
+ */
+void fp_TOCContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, 
+									  PT_DocPosition& pos,
+									  bool& bBOL, bool& bEOL, bool &isTOC)
+{
+	fp_TOCContainer * pMaster = this;
+	if(getMasterTOC())
+	{
+		pMaster = getMasterTOC();
+	}
+
+	fp_ContainerObject * pC = pMaster->getContainer()->getNext();
+	if (!pC)
+	{
+		// this shouldn't really happen.
+		fp_VerticalContainer::mapXYToPosition(x, y, pos, bBOL, bEOL, isTOC);
+		return;
+	}
+	pC->mapXYToPosition(x, y, pos, bBOL, bEOL, isTOC);
 }
 
 /*! 

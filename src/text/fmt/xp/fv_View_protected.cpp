@@ -1745,91 +1745,37 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	else
 	{
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL,isTOC);
-		if(isTOC)
+		if (bNext)
 		{
-			if(bNext)
+			int delta = iLineHeight;
+			while (iNewPoint <= getPoint())
 			{
-				fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
-				fl_ContainerLayout * pCL = pTOCL->getNext();
-				if(pCL==NULL)
+				if (yClick+delta > pPage->getHeight())
 				{
-					fl_DocSectionLayout * pDSL = pTOCL->getDocSectionLayout();
-					pDSL = static_cast<fl_DocSectionLayout *>(pDSL->getNextDocSection());
-					if(pDSL== NULL)
-					{
-						return;
-					}
-					pCL = pDSL->getFirstLayout();
+					delta -= pPage->getHeight();
+					pPage = pPage->getNext();
 				}
-				fp_Container * pFC = pCL->getFirstContainer();
-				if(pFC == NULL)
-				{
-					return;
-				}
-				pPage = pFC->getPage();
-				if(pPage == NULL)
-				{
-					return;
-				}
-				UT_sint32 iY = 0;
-				do
-				{
-					iY += pFC->getY();
-					pFC = pFC->getContainer();
-				}
-				while(pFC && !pFC->isColumnType());
-				if(pFC == NULL)
-				{
-					return;
-				}
-				UT_sint32 xoff,yoff;
-				pPage->getScreenOffsets(pFC,xoff,yoff);
-				iY += m_pG->tlu(1);
-				yClick = iY + yoff;
-				iNewPoint = getDocPositionFromXY(xClick, yClick, true);
-			}
-			else
-			{
-				fl_TOCLayout * pTOCL = pPage->getLastMappedTOC();
-				fl_ContainerLayout * pCL = pTOCL->getPrev();
-				if(pCL==NULL)
-				{
-					fl_DocSectionLayout * pDSL = pTOCL->getDocSectionLayout();
-					pDSL = static_cast<fl_DocSectionLayout *>(pDSL->getPrevDocSection());
-					if(pDSL== NULL)
-					{
-						return;
-					}
-					pCL = pDSL->getLastLayout();
-				}
-				fp_Container * pFC = pCL->getLastContainer();
-				if(pFC == NULL)
-				{
-					return;
-				}
-				pPage = pFC->getPage();
-				if(pPage == NULL)
-				{
-					return;
-				}
-				UT_sint32 iY = 0;
-				do
-				{
-					iY += pFC->getY();
-					pFC = pFC->getContainer();
-				}
-				while(pFC && !pFC->isColumnType());
-				if(pFC == NULL)
-				{
-					return;
-				}
-				UT_sint32 xoff,yoff;
-				pPage->getScreenOffsets(pFC,xoff,yoff);
-				iY += m_pG->tlu(1);
-				yClick = iY + yoff;
-				iNewPoint = getDocPositionFromXY(xClick, yClick, true);
+				pPage->mapXYToPosition(xClick, yClick+delta, 
+									   iNewPoint, bBOL, bEOL,isTOC);
+				delta += iLineHeight;
 			}
 		}
+		else
+		{
+			int delta = iLineHeight;
+			while (iNewPoint >= getPoint())
+			{
+				if (yClick+delta < 0)
+				{
+					delta += pPage->getHeight();
+					pPage = pPage->getPrev();
+				}
+				pPage->mapXYToPosition(xClick, yClick-delta, 
+									   iNewPoint, bBOL, bEOL,isTOC);
+				delta += iLineHeight;
+			}
+		}
+
 		while(pPage && (iNewPoint == iOldPoint) && (yClick < m_pLayout->getHeight()) && (yClick > 0))
 		{
 			if (bNext)
@@ -2033,6 +1979,36 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 	if (iYnext < 0) iYnext = 0;
 	// convert the iYnext back into a point position, namely iNewPoint.
 	pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL,isTOC);
+	if (bMovingDown)
+	{
+		int delta = pPage->getHeight()/4;
+		while (iNewPoint <= getPoint())
+		{
+			if (iYnext+delta > pPage->getHeight())
+			{
+				delta -= pPage->getHeight();
+				pPage = pPage->getNext();
+			}
+			pPage->mapXYToPosition(x, iYnext+delta, 
+								   iNewPoint, bBOL, bEOL,isTOC);
+			delta += pPage->getHeight()/4;
+		}
+	}
+	else
+	{
+		int delta = pPage->getHeight()/4;
+		while (iNewPoint >= getPoint())
+		{
+			if (iYnext+delta < 0)
+			{
+				delta += pPage->getHeight();
+				pPage = pPage->getPrev();
+			}
+			pPage->mapXYToPosition(x, iYnext-delta, 
+								   iNewPoint, bBOL, bEOL,isTOC);
+			delta += pPage->getHeight()/4;
+		}
+	}
 
 	UT_sint32 newX,newY;
 	UT_uint32 newHeight;

@@ -43,6 +43,9 @@ public:
 	fp_TOCContainer(fl_SectionLayout* pSectionLayout);
 	fp_TOCContainer(fl_SectionLayout* pSectionLayout,fp_TOCContainer * pMaster);
 	virtual ~fp_TOCContainer();
+    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y, 
+										PT_DocPosition& pos,
+										bool& bBOL, bool& bEOL, bool &isTOC);
 	UT_sint32           getValue(void);
 	void				layout(void);
 	void		        forceClearScreen(void);
