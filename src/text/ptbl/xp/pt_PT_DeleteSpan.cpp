@@ -68,9 +68,15 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 		pf_Frag * pTemp;
 		pf_Frag * pEnd = pf2->getNext();
+		pf_Frag * pNext;
 
-		for(pTemp = pf1; pTemp != pEnd; pTemp = pTemp->getNext())
+
+		for(pTemp = pf1; pTemp != pEnd; pTemp = pNext)
 		{
+			// we cannot ask for the next in the for statement,
+			// because we might have deleted that fragment by then
+			pNext = pTemp->getNext();
+
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
 			pf_Frag::PFType eType = pTemp->getType();
@@ -123,13 +129,38 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				pRevision = NULL;
 
 			PP_RevisionAttr Revisions(pRevision);
-			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_DELETION,NULL,NULL);
+
+			// now we need to see if revision with this id is already
+			// present, and if it is, whether it might not be addition
+			UT_uint32 iId = m_pDocument->getRevisionId();
+			const PP_Revision * pRev = Revisions.getGreatestLesserOrEqualRevision(iId);
+
+			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
+
+			if(pRev && iId == pRev->getId())
+			{
+				// OK, we already have a revision with this id here,
+				// which means that the editor made a change earlier
+				// (insertion or format change) but now wants this deleted
+				//
+				// so if the previous revision is an addition, we just
+				// remove this fragment as if this was regular delete
+				if(   (pRev->getType() == PP_REVISION_ADDITION)
+				   || (pRev->getType() == PP_REVISION_ADDITION_AND_FMT ))
+				{
+					if(!_realDeleteSpan(dpos1, dposEnd, p_AttrProp_Before, bDontGlob))
+						return false;
+
+					dpos1 = dposEnd;
+					continue;
+				}
+			}
+
+			Revisions.addRevision(iId,PP_REVISION_DELETION,NULL,NULL);
 			const XML_Char * ppRevAttrib[3];
 			ppRevAttrib[0] = name;
 			ppRevAttrib[1] = Revisions.getXMLstring();
 			ppRevAttrib[2] = NULL;
-
-			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
 
 			switch (eType)
 			{

@@ -443,7 +443,8 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 	{
 		if(!m)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// this happens when there was no revision attribute
 			return NULL;
 		}
 
