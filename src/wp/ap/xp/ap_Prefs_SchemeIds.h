@@ -107,11 +107,6 @@
 #define AP_PREF_KEY_MenuLayout						"MenuLayouts"
 #define AP_PREF_DEFAULT_MenuLayout					"Main"						/* value in BeginLayout() */
 
-#define AP_PREF_KEY_MenuLabelSet					"MenuLabelSet"
-#define AP_PREF_DEFAULT_MenuLabelSet				"en-US"						/* value in BeginSet() */
-
-#define AP_PREF_KEY_ToolbarLabelSet					"ToolbarLabelSet"
-#define AP_PREF_DEFAULT_ToolbarLabelSet				"en-US"						/* value in BeginSet() */
 
 #define AP_PREF_KEY_ToolbarLayouts					"ToolbarLayouts"
 #define AP_PREF_DEFAULT_ToolbarLayouts				"FileEditOps FormatOps TableOps ExtraOps"		/* values in BeginLayout() */
@@ -171,8 +166,6 @@ dcl(KeyBindingsCycle)
 dcl(InsertMode)
 dcl(InsertModeToggle)
 dcl(MenuLayout)
-dcl(MenuLabelSet)
-dcl(ToolbarLabelSet)
 dcl(ToolbarLayouts)
 dcl(LayoutMode)
 dcl(AlwaysPromptEncoding)

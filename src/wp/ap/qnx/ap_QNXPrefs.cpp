@@ -85,8 +85,6 @@ if((ABLANG=getenv("ABLANG")))
 	}
 
 	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));
-	m_builtinScheme->setValue(AP_PREF_KEY_MenuLabelSet,szNewLang);
-	m_builtinScheme->setValue(AP_PREF_KEY_ToolbarLabelSet,szNewLang);
 	m_builtinScheme->setValue(AP_PREF_KEY_StringSet,szNewLang);
 
 	return;

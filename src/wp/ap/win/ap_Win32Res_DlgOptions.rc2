@@ -97,6 +97,13 @@
 #define AP_RID_DIALOG_OPTIONS_CHK_ShowSplash			1415
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs	  1416
 
+// Language
+#define AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG				1500
+#define AP_RID_DIALOG_OPTIONS_COMBO_UILANG				1501
+#define AP_RID_DIALOG_OPTIONS_LANGSETTINGS				1502
+#define AP_RID_DIALOG_OPTIONS_TEXT_DOCLANG				1503
+#define AP_RID_DIALOG_OPTIONS_TEXT_UILANG				1504
+
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
 // NOTE -- they're just here to make sizing easier
@@ -262,6 +269,26 @@ BEGIN
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,75,275,10
 
+	
+
+END
+
+// The sub-dialog for the PREFERENCES tab of the Language dialog
+AP_RID_DIALOG_OPT_LANGUAGE DIALOG DISCARDABLE  0, 0, 295, 135
+STYLE WS_CHILD
+FONT 8, "MS Sans Serif"
+BEGIN
+	GROUPBOX        "Language settings", 	AP_RID_DIALOG_OPTIONS_LANGSETTINGS,0,2,290,61
+    LTEXT           "Default language for documents", AP_RID_DIALOG_OPTIONS_TEXT_DOCLANG, 5,16,120,8
+    
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG,130,14,113,70,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+                    
+	LTEXT           "User Interface Language",AP_RID_DIALOG_OPTIONS_TEXT_UILANG, 5,36,106,8
+	
+	COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG, 130,32,113,70,CBS_DROPDOWNLIST | CBS_SORT | 
+		            WS_VSCROLL | WS_TABSTOP	
+
 	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,
 					2, 87, 290, 46
 	CONTROL 		"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
@@ -276,8 +303,6 @@ BEGIN
 	CONTROL 		"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,131, 285, 10
-
-
 END
 
 #endif /* RC_INVOKED */

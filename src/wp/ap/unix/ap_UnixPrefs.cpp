@@ -126,10 +126,8 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	}
 
 	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));
-	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_MenuLabelSet,
-				  (XML_Char*)szNewLang);
-	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_ToolbarLabelSet,
-				  (XML_Char*)szNewLang);
+
+
 	m_builtinScheme->setValue((XML_Char*)AP_PREF_KEY_StringSet,
 				  (XML_Char*)szNewLang);
 

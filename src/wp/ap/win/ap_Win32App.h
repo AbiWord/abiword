@@ -68,12 +68,14 @@ public:
 	virtual HICON							getSmallIcon(void);
 
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile);
+	UT_Vector*								getInstalledUILanguages(void);
+	
 	
 	bool handleModelessDialogMessage( MSG * msg );
 		
 	bool							parseCommandLine(void);
 	
-
+		
 protected:
 
 	void					_printUsage();   

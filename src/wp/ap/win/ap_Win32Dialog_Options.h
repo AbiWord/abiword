@@ -87,6 +87,11 @@ public:
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);
 	void _initializeTransperentToggle(void);
+	
+	virtual void _gatherDocLanguage(UT_String &stRetVal);
+	virtual void _setDocLanguage(const UT_String &stExt);
+	virtual void _gatherUILanguage(UT_String &stRetVal);
+	virtual void _setUILanguage(const UT_String &stExt);
 
 	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER
@@ -104,6 +109,7 @@ public:
 
 	int 						m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+	UT_Vector*					m_pVecUILangs;
 
 private:
 	XAP_DialogFactory * 		m_pDialogFactory;

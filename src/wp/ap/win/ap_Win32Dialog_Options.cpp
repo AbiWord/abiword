@@ -40,12 +40,13 @@
 #include "ap_Prefs_SchemeIds.h"
 
 #include "ap_Strings.h"
-
+#include "ap_Win32App.h"
 #include "ap_Win32Resources.rc2"
 #include "ap_Win32Dialog_Options.h"
 #include "ap_Win32Dialog_Background.h"
 #include "xap_Win32DialogHelper.h"
 #include "fp_PageSize.h"
+#include "ut_Language.h"
 
 /*****************************************************************/
 
@@ -65,10 +66,18 @@ AP_Win32Dialog_Options::AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Options(pDlgFactory,id),m_pDialogFactory(pDlgFactory)
 {
+	m_pVecUILangs = NULL;
 }
 
 AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
 {
+	if (m_pVecUILangs)
+	{		
+		for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
+			delete (char *)m_pVecUILangs->getNthItem(i);
+			
+		delete m_pVecUILangs;		
+	}
 }
 
 //////////////////////////////////////////////////////////////////
@@ -236,9 +245,10 @@ struct {
 // the order of the tabs
 
 #define TOOLBARS_INDEX		0
-#define SPELL_INDEX 		1
-#define LAYOUT_INDEX		2
-#define PREF_INDEX			3
+#define LANG_INDEX 			1
+#define SPELL_INDEX 		2
+#define LAYOUT_INDEX		3
+#define PREF_INDEX			4
 
  WNDPROC gLong;
 
@@ -338,6 +348,10 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Toolbars);
 		tie.lParam = AP_RID_DIALOG_OPT_TOOLBARS;
 		TabCtrl_InsertItem(m_hwndTab, TOOLBARS_INDEX, &tie);
+		
+		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Language);
+		tie.lParam = AP_RID_DIALOG_OPT_LANGUAGE;
+		TabCtrl_InsertItem(m_hwndTab, LANG_INDEX, &tie);
 
 		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Spelling);
 		tie.lParam = AP_RID_DIALOG_OPT_SPELL;
@@ -360,6 +374,14 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		UT_ASSERT((w
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
+				   
+		tp.which = AP_RID_DIALOG_OPT_LANGUAGE;
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
+										(DLGPROC)s_tabProc, (LPARAM)&tp);
+		UT_ASSERT((w
+				   && (m_vecSubDlgHWnd.getItemCount()>0)
+				   && (w == m_vecSubDlgHWnd.getLastItem())));				   				   
 
 		tp.which = AP_RID_DIALOG_OPT_SPELL;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
@@ -384,6 +406,9 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		UT_ASSERT((w
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
+				   
+		
+		
 	}
 
 	// let XP code tell us what all of the values should be.
@@ -551,6 +576,15 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			// Limit the extension to 5 characters (plus the period)
 			SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension),EM_LIMITTEXT,(WPARAM)6,(WPARAM)0);
 
+
+			// TODO need to populate values in the _COMBO_CURRENTSCHEME
+//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
+//			_CDB(OPTIONS_CHK_PrefsAutoSave, 		id_CHECK_PREFS_AUTO_SAVE);
+
+		}
+		break;
+	case AP_RID_DIALOG_OPT_LANGUAGE:
+		{
 			// Hidi Bidi Controls
 			HWND hwndBidiBox = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_FRM_BidiOptions);
 			HWND hwndBidiChk = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl);
@@ -573,13 +607,56 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_DS(OPTIONS_CHK_OtherUseContextGlyphs,	DLG_Options_Label_UseContextGlyphs);
 			_DS(OPTIONS_CHK_OtherSaveContextGlyphs, DLG_Options_Label_SaveContextGlyphs);
 			_DS(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
-
-			// TODO need to populate values in the _COMBO_CURRENTSCHEME
-//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
-//			_CDB(OPTIONS_CHK_PrefsAutoSave, 		id_CHECK_PREFS_AUTO_SAVE);
-
-		}
-		break;
+			
+			_DS(OPTIONS_TEXT_DOCLANG, 					DLG_Options_Label_DefLangForDocs);
+			_DS(OPTIONS_TEXT_UILANG,				 	DLG_Options_Label_UILang);
+			_DS(OPTIONS_LANGSETTINGS, 					DLG_Options_Label_LangSettings);
+			
+					
+			_DS(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
+			
+			/* Fill up document language*/			
+			{			
+				HWND	hCtrlUILang		= GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_UILANG);
+				
+				AP_Win32App * pApp = static_cast<AP_Win32App*>(XAP_App::getApp()); 
+				
+				// TODO: Vector should be global and deleted on destroy (free the elements...)
+				m_pVecUILangs = pApp->getInstalledUILanguages();			
+				int nIndex;
+				const XML_Char *pLangCode;
+				const XML_Char *pLang;
+				UT_Language	lang;
+				
+				/* Fill all up languages names for UI*/
+				for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
+				{
+					pLangCode = (const char *) m_pVecUILangs->getNthItem(i);
+					
+					int id = lang.getIndxFromProperty(pLangCode);
+					pLang =  	lang.getNthLanguage(id);
+					
+					nIndex = SendMessage(hCtrlUILang, CB_ADDSTRING, 0, (LPARAM)pLang);
+					SendMessage(hCtrlUILang, CB_SETITEMDATA, nIndex, id);
+				}							
+			}
+			
+			/* Fill up UI language*/
+			{				
+				int nIndex;				
+				const XML_Char *pLang;
+				UT_Language	lang;
+				HWND	hCtrlDOCLang		= GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG);
+				
+				for (UT_uint32 i=0; i < lang.getCount(); i++)
+				{					
+					pLang =  	lang.getNthLanguage(i);					
+					nIndex = SendMessage(hCtrlDOCLang, CB_ADDSTRING, 0, (LPARAM)pLang);
+					SendMessage(hCtrlDOCLang, CB_SETITEMDATA, nIndex, i);
+				}				
+			}
+			break;
+		}		
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -869,10 +946,10 @@ DEFINE_GET_SET_BOOL(LAYOUT_INDEX,SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 DEFINE_GET_SET_BOOL(PREF_INDEX,ShowSplash);
-DEFINE_GET_SET_BOOL(PREF_INDEX,OtherDirectionRtl);
-DEFINE_GET_SET_BOOL(PREF_INDEX,OtherUseContextGlyphs);
-DEFINE_GET_SET_BOOL(PREF_INDEX,OtherSaveContextGlyphs);
-DEFINE_GET_SET_BOOL(PREF_INDEX,OtherHebrewContextGlyphs);
+DEFINE_GET_SET_BOOL(LANG_INDEX,OtherDirectionRtl);
+DEFINE_GET_SET_BOOL(LANG_INDEX,OtherUseContextGlyphs);
+DEFINE_GET_SET_BOOL(LANG_INDEX,OtherSaveContextGlyphs);
+DEFINE_GET_SET_BOOL(LANG_INDEX,OtherHebrewContextGlyphs);
 
 #undef DEFINE_GET_SET_BOOL
 
@@ -1009,4 +1086,79 @@ void AP_Win32Dialog_Options::_initializeTransperentToggle(void)
 		CheckDlgButton( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable, false );
 		EnableWindow( GetDlgItem( hWnd, AP_RID_DIALOG_OPTIONS_BTN_BGColor), false );
 	}
+}
+
+/*
+	Gets the default document language
+*/
+void AP_Win32Dialog_Options::_gatherDocLanguage(UT_String &stRetVal)
+{
+	HWND		hCtrlDocLang	= GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LANG_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG);	
+	UT_Language	lang;
+	const char* pLang;
+	int nIndex;
+	
+	nIndex = SendMessage(hCtrlDocLang,  CB_GETCURSEL , 0,0);
+	
+	if (nIndex!=CB_ERR)
+	{
+		int nID = SendMessage(hCtrlDocLang,  CB_GETITEMDATA , nIndex,0);
+		pLang =  (const char*)lang.getNthProperty(nID);		
+		stRetVal = pLang;
+	}				
+}
+
+/*
+	Sets the default document language
+*/
+void AP_Win32Dialog_Options::_setDocLanguage(const UT_String &stExt)
+{	
+	UT_Language	lang;
+	int id = lang.getIndxFromProperty(stExt.c_str());
+	HWND hCtrlDocLang	= GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LANG_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG);	
+
+	int nCount = SendMessage(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
+	
+	for (int i=0; i<nCount;i++)
+	{
+		if (SendMessage(hCtrlDocLang,  CB_GETITEMDATA , i,0)==id)
+		{
+			SendMessage(hCtrlDocLang, CB_SETCURSEL, i, 0);				
+			break;
+		}
+	}	
+}
+
+void AP_Win32Dialog_Options::_gatherUILanguage(UT_String &stRetVal)
+{
+	HWND		hCtrlDocLang	= GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LANG_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);	
+	UT_Language	lang;
+	const char* pLang;
+	int nIndex;
+	
+	nIndex = SendMessage(hCtrlDocLang,  CB_GETCURSEL , 0,0);
+	
+	if (nIndex!=CB_ERR)
+	{
+		int nID = SendMessage(hCtrlDocLang,  CB_GETITEMDATA , nIndex,0);
+		pLang =  (const char*)lang.getNthProperty(nID);		
+		stRetVal = pLang;
+	}				
+}
+void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
+{
+	UT_Language	lang;
+	int id = lang.getIndxFromProperty(stExt.c_str());
+	HWND hCtrlDocLang	= GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LANG_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);	
+
+	int nCount = SendMessage(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
+	
+	for (int i=0; i<nCount;i++)
+	{
+		if (SendMessage(hCtrlDocLang,  CB_GETITEMDATA , i,0)==id)
+		{
+			SendMessage(hCtrlDocLang, CB_SETCURSEL, i, 0);				
+			break;
+		}
+	}		
 }

@@ -367,9 +367,9 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 
 	if (!XAP_UNIXBASEFRAME::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
-								   AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
+								   AP_PREF_KEY_StringSet, AP_PREF_KEY_StringSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
-								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
+								   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
 		return false;
 
 	UT_DEBUGMSG(("AP_UnixFrame:: Creating Toplevel Window!!!! \n"));

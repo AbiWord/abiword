@@ -260,11 +260,11 @@ bool AP_QNXApp::initialize(void)
     ///////////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_MenuLabelSet, (const XML_Char**)&szMenuLabelSetName) && (szMenuLabelSetName) && (*szMenuLabelSetName))
+	if (getPrefsValue( AP_PREF_KEY_StringSet, (const XML_Char**)&szMenuLabelSetName) && (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
 	}
 	else
-		szMenuLabelSetName = AP_PREF_DEFAULT_MenuLabelSet ;
+		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
 
 	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
 

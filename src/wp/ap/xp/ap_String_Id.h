@@ -297,6 +297,11 @@ dcl(DLG_Options_Label_UseContextGlyphs, "Determine correct glyph shapes from con
 dcl(DLG_Options_Label_SaveContextGlyphs, "Save visual glyph shapes")
 dcl(DLG_Options_Label_HebrewContextGlyphs, "Use glyph shaping for Hebrew")
 
+dcl(DLG_Options_Label_DefLangForDocs, 			"Default language for documents")
+dcl(DLG_Options_Label_UILang, 					"User Interface Language")
+dcl(DLG_Options_Label_LangSettings, 			"Language settings")
+
+
 dcl(DLG_Options_Label_AutoSave, 		"Auto Save")
 dcl(DLG_Options_Label_AutoSaveCurrent,	"Auto &save current file every")
 dcl(DLG_Options_Label_Minutes,			"minutes")
@@ -345,6 +350,7 @@ dcl(DLG_Options_Label_Ignore, "Ignore")
 dcl(DLG_Options_Label_CustomDict, "custom.dic")
 dcl(DLG_Options_Label_Layout, "Layout")
 dcl(DLG_Options_Label_Schemes, "Preference Schemes")
+dcl(DLG_Options_Label_Language, "Language")
 
 dcl(DLG_Tab_TabTitle,					"Tabs")
 dcl(DLG_Tab_Label_TabPosition,			"Tab stop position:")

@@ -133,6 +133,23 @@ void AP_Dialog_Options::_storeWindowData(void)
 	_gatherAutoSaveFilePeriod(stVal);
 	UT_DEBUGMSG(("Saving Auto Save File with a period of [%s]\n", stVal.c_str()));
 	pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, stVal.c_str());
+	
+	// Jordi: win32 specific for now
+	_gatherDocLanguage(stVal);
+	if (stVal.length())
+	{
+		UT_DEBUGMSG(("Setting default document language to [%s]\n", stVal.c_str()));
+		pPrefsScheme->setValue(XAP_PREF_KEY_DocumentLocale, stVal.c_str());
+	}
+	
+	_gatherUILanguage(stVal);
+	if (stVal.length())
+	{
+		UT_DEBUGMSG(("Setting default UI language to [%s]\n", stVal.c_str()));
+		pPrefsScheme->setValue(AP_PREF_KEY_StringSet, stVal.c_str());
+	}
+	
+	
 #endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible
@@ -331,6 +348,14 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stBuffer))
 		_setAutoSaveFilePeriod(stBuffer);
+		
+	//Just for win32 
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_DocumentLocale, stBuffer))
+		_setDocLanguage(stBuffer);
+		
+	if (pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, stBuffer))
+		_setUILanguage(stBuffer);
+		
 #endif
 
 	// ------------ Screen Color

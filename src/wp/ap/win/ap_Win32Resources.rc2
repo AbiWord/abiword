@@ -65,6 +65,7 @@
 #define AP_RID_DIALOG_META_SUMMARY				235	// Property Page
 #define AP_RID_DIALOG_META_PERMISSIONS			236	// Property Page
 #define AP_RID_DIALOG_MERGECELLS				237	
+#define AP_RID_DIALOG_OPT_LANGUAGE				238	// tab-sub-dlg
 
 
 // Menu bitmaps

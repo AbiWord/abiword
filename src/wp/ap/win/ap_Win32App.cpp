@@ -66,6 +66,7 @@
 #include "fp_Run.h"
 #include "ut_Win32OS.h"
 #include "ut_Win32Idle.h"
+#include "ut_Language.h"
 
 #include "ie_impexp_Register.h"
 
@@ -352,13 +353,13 @@ bool AP_Win32App::initialize(void)
     ///////////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_MenuLabelSet, (const XML_Char**)&szMenuLabelSetName)
+	if (getPrefsValue( AP_PREF_KEY_StringSet, (const XML_Char**)&szMenuLabelSetName)
 		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
 		;
 	}
 	else
-		szMenuLabelSetName = AP_PREF_DEFAULT_MenuLabelSet ;
+		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
 
 	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);	
 	
@@ -425,6 +426,7 @@ XAP_Frame * AP_Win32App::newFrame(AP_App *app)
 
 	return pWin32Frame;
 }
+
 
 bool AP_Win32App::shutdown(void)
 {
@@ -1330,4 +1332,51 @@ void AP_Win32App::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 {
 	return true;
+}
+
+
+/*
+	Get the user interface languages installed
+	Caller should delete the allocated vector
+*/	
+UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
+{		
+	const char * szDirectory = NULL;
+	const XML_Char * szStringSet = NULL;
+	UT_Vector* pVec = new UT_Vector();
+	UT_Language lang;
+	FILE* in;
+
+	if (!((getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
+		&& (szStringSet)
+		&& (*szStringSet)
+		&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0)))
+		return pVec;
+			
+	getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
+	UT_ASSERT((szDirectory) && (*szDirectory));
+
+	char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
+	UT_ASSERT(szPathname);	
+	
+	for (UT_uint32 i=0; i< lang.getCount(); i++)
+	{
+		szStringSet = lang.getNthProperty(i);
+
+		sprintf(szPathname,"%s%s%s.strings",
+				szDirectory,
+				((szDirectory[strlen(szDirectory)-1]=='\\') ? "" : "\\"),
+				szStringSet);				
+	
+		in =  fopen(szPathname, "r");
+		
+		if (in)
+		{
+			fclose(in);
+			pVec->addItem(strdup(szStringSet));
+		}							
+			
+	}	
+	free (szPathname);
+	return pVec;
 }

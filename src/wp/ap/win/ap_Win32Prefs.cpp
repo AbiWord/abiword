@@ -59,8 +59,6 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 
 		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
 
-		m_builtinScheme->setValue( AP_PREF_KEY_MenuLabelSet, szLocaleInfo );
-		m_builtinScheme->setValue( AP_PREF_KEY_ToolbarLabelSet, szLocaleInfo );
 		m_builtinScheme->setValue( AP_PREF_KEY_StringSet, szLocaleInfo );
 	}
 	else

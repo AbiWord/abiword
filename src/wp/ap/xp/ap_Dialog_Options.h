@@ -149,6 +149,13 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod) = 0;
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal) = 0;
 	virtual void _setAutoSaveFileExt(const UT_String &stExt) = 0;
+	
+	// Jordi: For now this is just implemented in win32, we should make it
+	// an abstract member if we decide to implemented in all platforms
+	virtual void _gatherDocLanguage(UT_String &stRetVal){};
+	virtual void _setDocLanguage(const UT_String &stExt) {};
+	virtual void _gatherUILanguage(UT_String &stRetVal){};
+	virtual void _setUILanguage(const UT_String &stExt) {};
 
 	// so we can save and restore to the same page - must be able to return
 	// the current page and reset it later (i.e., don't use a handle, but a
