@@ -32,6 +32,7 @@ public:
 
 	virtual SpellChecker::SpellCheckResult checkWord (const UT_UCSChar * word, size_t len);
 	virtual UT_Vector * suggestWord (const UT_UCSChar * word, size_t len);
+	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 
 protected:
 	virtual bool requestDictionary (const char * szLang);

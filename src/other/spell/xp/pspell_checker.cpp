@@ -256,3 +256,16 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 	
 	return sg;
 }
+
+bool 
+PSpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
+{
+  if (spell_manager && word && len) {
+    unsigned char *word8 = utf32_to_utf8(word, len);
+    UT_return_val_if_fail (word8, false) ;
+    pspell_speller_add_to_personal(spell_checker, (char *)word8, len);
+    FREEP(word8)
+    return true;
+  }
+  return false;
+}
