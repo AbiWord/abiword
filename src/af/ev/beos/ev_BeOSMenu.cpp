@@ -211,7 +211,7 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 
 	//Create the top level menubar
 	BRect all = pBWin->m_winRectAvailable;
-	all.bottom = all.top + 15;
+	all.bottom = all.top + 18;
 	pBWin->m_winRectAvailable.top = all.bottom + 1;
 	//printf("MENU: Set winRect to "); pBWin->m_winRectAvailable.PrintToStream();
 	pMenuBar = new BMenuBar(all, "Menubar");

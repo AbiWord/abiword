@@ -126,7 +126,8 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 			}
 			break;
 
-			//case EV_TBIT_GroupButton:
+			case EV_TBIT_GroupButton:
+				printf("EVTOOLBAR: Group Button \n");
 			case EV_TBIT_ToggleButton: {
 				DPRINTF(printf("EVTOOLBAR: Toggle button \n"));
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
@@ -177,9 +178,6 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 			}
 			break;
 
-			case EV_TBIT_GroupButton:
-				printf("TB: Group Button! \n");
-					
 			case EV_TBIT_EditText:
 			case EV_TBIT_DropDown:
 			case EV_TBIT_StaticLabel:
@@ -246,6 +244,8 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 				}
 				break;
 			
+				case EV_TBIT_GroupButton:
+					printf("Refresh Group->Toggle Button \n");
 				case EV_TBIT_ToggleButton: {
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
@@ -298,12 +298,11 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 				}
 				break;
 
-				case EV_TBIT_GroupButton:		
 				case EV_TBIT_EditText:
 				case EV_TBIT_DropDown:
 				case EV_TBIT_StaticLabel:
 				case EV_TBIT_Spacer:
-					printf("refreshToolbar: Update Text, DropDown, Label, Spacer, Group \n");
+					DPRINTF(printf("refreshToolbar: Update Text, DropDown, Label, Spacer \n"));
 					break;
 				case EV_TBIT_BOGUS:
 				default:
