@@ -13,23 +13,23 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package
-Scott Boesch <scott@abisource.com>		artist, trade shows
+Scott Boesch <scott@abisource.com>              artist, trade shows
 Brian Bosse <bhb002@drake.edu>
-Justin Bradford <justin@ukans.edu>              Word8 import
+Justin Bradford <justin@ukans.edu>              Word import
 John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
 Heath D. Carr <heath@abisource.com>
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
-Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD tools detection, getopt
-Richard Jefts <babs@cs.jhu.edu> 		layout navigation, font dialog
+Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
+Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 James Lefavour <James@albany.net>               Win98/VC6
 Lalo Martins <lalo@webcom.com>
-Caolan McNamara <Caolan.McNamara@ul.ie>		Microsoft Word Importer
+Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Pierre Sarrazin <ps@cam.org>            
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
@@ -43,6 +43,7 @@ translators
 -----------
 Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Frédéric CELLA <fcella@mahj.org>                French
+Mauro Colorio <macolori@tin.it>                 Italian
 Philippe Duperron <duperron@mail.dotcom.fr>     French
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish

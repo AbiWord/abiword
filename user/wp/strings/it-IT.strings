@@ -1,0 +1,98 @@
+<!-- ==============================================================  -->
+<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
+<!-- word processor developed by AbiSource, Inc.  Information about  -->
+<!-- this application can be found at http://www.abisource.com       -->
+<!-- This file contains the string translations for one language.    -->
+<!-- This file is covered by the GNU Public License (GPL).           -->
+<!-- ==============================================================  -->
+
+<!-- Italian translations provided by Mauro Colorio <macolori@tin.it> -->
+
+
+<AbiStrings app="AbiWord Personal" ver="1.0" language="ItIT">
+
+<Strings	class="XAP"
+UntitledDocument="Senza Titolo%d"
+DLG_OK="OK"
+DLG_Cancel="Annulla"
+DLG_UnixMB_Yes="_Si"
+DLG_UnixMB_No="_No"
+DLG_MW_MoreWindows="Attiva finestra"
+DLG_MW_Activate="Attivata:"
+DLG_UFS_FontTitle="Carattere"
+DLG_UFS_FontLabel="Carattere:"
+DLG_UFS_StyleLabel="Stile:"
+DLG_UFS_SizeLabel="Dimensione:"
+DLG_UFS_EncodingLabel="Codifica:"
+DLG_UFS_EffectsFrameLabel="Effetto"
+DLG_UFS_StrikeoutCheck="Barrato"
+DLG_UFS_UnderlineCheck="Sottolineato"
+DLG_UFS_FontTab="   Carattere   "
+DLG_UFS_ColorTab="   Colore   "
+DLG_UFS_StyleRegular="Regolare"
+DLG_UFS_StyleItalic="Italico"
+DLG_UFS_StyleBold="Grassetto"
+DLG_UFS_StyleBoldItalic="Grassetto Italico"
+DLG_FOSA_OpenTitle="Apri File"
+DLG_FOSA_SaveAsTitle="Salva Con Nome"
+DLG_FOSA_PrintToFileTitle="Stampa su File"
+DLG_FOSA_FileOpenTypeLabel="Apri file come tipo:"
+DLG_FOSA_FileSaveTypeLabel="Slava file come tipo:"
+DLG_FOSA_FilePrintTypeLabel="Stampa file come tipo:"
+DLG_FOSA_FileTypeAutoDetect="Individuato automaticamente"
+DLG_InvalidPathname="Indirizzo non valido."
+DLG_NoSaveFile_DirNotExist="Una directory contenuta nell'indirizzo non esiste."
+DLG_NoSaveFile_DirNotWriteable="La directory '%s' e' protetta in scrittura."
+DLG_OverwriteFile="File gia' esistente.  Sovrascrivere '%s'?"
+DLG_Zoom_ZoomTitle="Zoom"
+DLG_Zoom_RadioFrameCaption="Zoom a"
+DLG_Zoom_200="200%"
+DLG_Zoom_100="100%"
+DLG_Zoom_75="75%"
+DLG_Zoom_PageWidth="Larghezza pagina"
+DLG_Zoom_WholePage="Pagina completa"
+DLG_Zoom_Percent="Percentuale:"
+DLG_Zoom_PreviewFrame="Anteprima"
+DLG_UP_PrintTitle="Stampa"
+DLG_UP_PrintTo="Stampa su: "
+DLG_UP_Printer="Stampante"
+DLG_UP_File="File"
+DLG_UP_PrinterCommand="Comando stampante: "
+DLG_UP_PageRanges="Selezione pagina:"
+DLG_UP_All="Tutto"
+DLG_UP_From="Da: "
+DLG_UP_To=" a "
+DLG_UP_Selection="Selezione"
+DLG_UP_Collate="Collage"
+DLG_UP_Copies="Copie: "
+DLG_UP_PrintButton="Stampa"
+DLG_UP_InvalidPrintString="La stringa di comando per la stampa non e' valida."
+/>
+
+<Strings	class="AP"
+MSG_SaveFailed="Impossibile scrivere il file %s."
+MSG_RevertBuffer="Ripristina la copia salvato di %s?"
+MSG_QueryExit="Chiudere tutte le finestre ed uscire?"
+MSG_ConfirmSave="Salvare le modifice a %s?"
+MSG_ImportError="Errore di importazione del file %s."
+PageInfoField="Pagina: %d/%d"
+DLG_FR_FindTitle="Trova"
+DLG_FR_ReplaceTitle="Sostituisci"
+DLG_FR_FindLabel="Tr&amp;ova cosa:"
+DLG_FR_ReplaceWithLabel="Sost&amp;ituisci con:"
+DLG_FR_MatchCase="&amp;Parola esatta"
+DLG_FR_FindNextButton="&amp;Trova successivo"
+DLG_FR_ReplaceButton="&amp;Sostituisci"
+DLG_FR_ReplaceAllButton="Sostituisci T&amp;utto"
+DLG_Break_BreakTitle="Interruzione"
+DLG_Break_Insert="Inserisci"
+DLG_Break_SectionBreaks="Interruzioni di sessione"
+DLG_Break_PageBreak="Interruzione di &amp;Pagina"
+DLG_Break_ColumnBreak="Interruzione di &amp;Colonna"
+DLG_Break_NextPage="P&amp;rossima pagina"
+DLG_Break_Continuous="Con&amp;tinue"
+DLG_Break_EvenPage="Pagine &amp;Pari"
+DLG_Break_OddPage="Pagine &amp;Dispari"
+/>
+
+</AbiStrings>
