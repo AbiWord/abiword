@@ -835,6 +835,7 @@ void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, 
 	const COLORREF cr = ::SetBkColor(hdc,  clr);
 	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
+	setExposePending(false);
 }
 
 bool GR_Win32Graphics::startPrint(void)
@@ -917,6 +918,8 @@ void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		return;
 	}
 	GR_CaretDisabler caretDisabler(getCaret());
+
+	setExposePending(true);
 	ScrollWindowEx(m_hwnd, ddx, ddy, NULL, NULL, NULL, 0, SW_INVALIDATE);
 }
 
@@ -938,6 +941,7 @@ void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	
 	GR_CaretDisabler caretDisabler(getCaret());
 	
+	setExposePending(true);
 	ScrollWindowEx(m_hwnd, (x_dest - x_src), (y_dest - y_src),
 				   &r, NULL, NULL, NULL, SW_ERASE);
 }
@@ -1242,12 +1246,14 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 
 	FillRect(m_hdc, &r, hBrush);
 	DeleteObject(hBrush);
+	setExposePending(false);
 }
 
 void GR_Win32Graphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	fillRect(c,r.left,r.top,r.width,r.height);
+	setExposePending(false);
 }
 
 //////////////////////////////////////////////////////////////////
