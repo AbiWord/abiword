@@ -53,6 +53,14 @@ AC_DEFUN([ABI_GTK2],[
 	       GTK_CFLAGS="$GTK_CFLAGS -DG_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED -DGDK_PIXBUF_DISABLE_DEPRECATED -DGTK_DISABLE_DEPRECATED"
 		AC_SUBST(GTK_CFLAGS)
 	fi
+
+	dnl since gtk+ doesn't add the X libraries into its dependency list we
+	dnl need to add them here
+	dnl 
+	AC_PATH_X
+	AC_PATH_XTRA
+
+	GTK_LIBS="$GTK_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
 ])
 
 # Check for optional glib
