@@ -29,7 +29,7 @@ class GR_UnixImage : public GR_RasterImage
 public:
 	GR_UnixImage(const char* pszName, bool isPrintResolution=false);
 	GR_UnixImage(const char* pszName,  GRType imageType, bool isPrintResolution = false);
-	~GR_UnixImage();
+	virtual ~GR_UnixImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
