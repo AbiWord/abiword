@@ -205,4 +205,6 @@ class ABI_EXPORT UT_UniqueId
 	UT_uint32 m_iID[(UT_uint32)_Last];
 };
 
+bool UT_parseBool (const char * param, bool dfl);
+
 #endif /* UTMISC_H */
