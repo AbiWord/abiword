@@ -81,7 +81,6 @@ void AP_CocoaDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 void AP_CocoaDialog_FormatFootnotes::event_OK(void)
 {
 	setAnswer(AP_Dialog_FormatFootnotes::a_OK);
-	updateDocWithValues();
 	[NSApp stopModal];
 }
 

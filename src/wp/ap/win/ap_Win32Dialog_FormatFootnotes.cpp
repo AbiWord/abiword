@@ -245,7 +245,6 @@ BOOL AP_Win32Dialog_FormatFootnotes::_onCommand(HWND hWnd, WPARAM wParam, LPARAM
 				setEndnoteVal(atoi(szValue));
 		
 			setAnswer(AP_Dialog_FormatFootnotes::a_OK);
-			updateDocWithValues();
 			EndDialog(hWnd,0);
 			return 1;
 		}

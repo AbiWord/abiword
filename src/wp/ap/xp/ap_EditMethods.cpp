@@ -10137,6 +10137,7 @@ UT_return_val_if_fail(pDialog, false);	if(pView->isHdrFtrEdit())
 Defun1(formatFootnotes)
 {
 	CHECK_FRAME;
+	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 	pFrame->raise();
@@ -10146,38 +10147,23 @@ Defun1(formatFootnotes)
 
 	AP_Dialog_FormatFootnotes * pDialog
 		= static_cast<AP_Dialog_FormatFootnotes *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES));
-UT_return_val_if_fail(pDialog, false);	pDialog->runModal(pFrame);
-#if 0
+	UT_return_val_if_fail(pDialog, false);	
+	pDialog->runModal(pFrame);
 	AP_Dialog_FormatFootnotes::tAnswer ans = pDialog->getAnswer();
-	if(ans == b_OK)
+	if(ans == AP_Dialog_FormatFootnotes::a_OK)
 	{
 //
 // update all the layouts.
 //
-		XAP_App * pApp = pFrame->getApp();
-		UT_return_val_if_fail(pApp, false);
-	//
-	// Get all clones of this frame and reset the layouts
-	//
-		UT_Vector vClones;
-		if(pFrame->getViewNumber() > 0)
-		{
-			pApp->getClones(&vClones,pFrame);
-			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-			{
-				XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
-				FV_View * pV = f->getCurrentView();
-				pV->getLayout()->updatePropsNoRebuild();
-			}
-		}
-		else
-		{
-			FV_View * pV = pFrame->getCurrentView();
-			pV->getLayout()->updatePropsNoRebuild();
-			pFrame->repopulateCombos();
-		}
+// Clear out pending redraws...
+//
+		lockGUI();
+		pFrame->nullUpdate();
+		pDialog->updateDocWithValues();
+		pView->updateScreen(false);
+		unlockGUI();
 	}
-#endif
+	pDialogFactory->releaseDialog(pDialog);
 	return true;
 }
 

@@ -154,20 +154,21 @@ void AP_UnixDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 
 
 	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
-							 GTK_RESPONSE_OK, false))
+							 GTK_RESPONSE_OK, true))
 	  {
 	  case BUTTON_DELETE:
 		  UT_DEBUGMSG(("Doing Delete branch \n"));
-	    event_Delete () ; break ;
+		  event_Delete () ; 
+		  break ;
 	  case GTK_RESPONSE_OK:
 		  UT_DEBUGMSG(("Doing Apply (OK) branch \n"));
-		  event_Apply(); break;
+		  event_Apply(); 
+		  break;
 	  default:
 		  UT_DEBUGMSG(("Doing Default (NOT OK) branch \n"));
-	    event_Cancel () ; break ;
+		  event_Cancel () ; 
+		  break;
 	  }
-	
-	abiDestroyWidget ( m_windowMain ) ;
 }
 
 /*	g_signal_connect(G_OBJECT(m_wButtonApply),
@@ -179,7 +180,7 @@ void AP_UnixDialog_FormatFootnotes::event_Apply(void)
 {
 
 // Apply the current settings to the document
-	updateDocWithValues();
+	setAnswer(a_OK);
 }
 
 void AP_UnixDialog_FormatFootnotes::event_FootInitialValueChange(void)

@@ -915,7 +915,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				//
 				// Only CUSTOM encoding gives non-zero indexes
                 FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
-				pCharSpec[i].ucs4 = FT_Get_Char_Index(face,uChar);
+				pCharSpec[i].ucs4 = adobeDingbatsToUnicode(uChar);
 				//				FT_UInt   gindex;
 				//UT_sint32 charcode = FT_Get_First_Char( face, &gindex );
 				//pCharSpec[i].ucs4 = charcode +3;
@@ -947,6 +947,11 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				// Only CUSTOM encoding gives non-zero indexes
 			FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
 			XftDrawCharSpec (m_pXftDraw, &m_XftColor, m_pXftFontD, pCharSpec, iLength);
+			UT_uint32 i =0;
+			for(i=0;i<iLength;i++)
+				{
+					UT_DEBUGMSG(("Dingbat Draw index %d dec %d hex %x \n",i,pCharSpec[i].ucs4,pCharSpec[i].ucs4));
+				}
 			XftUnlockFace (m_pXftFontD);
 		}
 		else
