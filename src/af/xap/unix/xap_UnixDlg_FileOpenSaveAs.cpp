@@ -648,7 +648,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 									NULL)
 							);
 
-	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_CANCEL);
+	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, XAP_Dialog_FileOpenSaveAs::a_OK);
 #else	
 	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle.utf8_str()));
 	m_FS = pFS;
