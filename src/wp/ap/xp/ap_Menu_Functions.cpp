@@ -1479,6 +1479,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
 	{
 		return EV_MIS_Gray;
 	}
+	else if(pView->getEmbedDepth(pView->getPoint()) > 0)
+	{
+		return EV_MIS_Gray;
+	}
 	if(!pView->isInFootnote() && !pView->isHdrFtrEdit() && !pView->isInHdrFtr(pView->getPoint()) && !pView->isInFrame(pView->getPoint()) 
 		&& !pView->isTOCSelected())
 	{
