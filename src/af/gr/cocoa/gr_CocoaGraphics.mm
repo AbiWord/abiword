@@ -725,6 +725,9 @@ void GR_CocoaGraphics::_setClipRectImpl(const UT_Rect*)
 	}
 	else {
 		UT_DEBUGMSG (("ClipRect reset!!\n"));
+		NSRect bounds = [m_pWin bounds];
+		::CGContextClipToRect (m_CGContext,
+				::CGRectMake (bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height)); // ??
 	}
 }
 
@@ -765,9 +768,6 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	if (!dx && !dy) return;
-
-	GR_Caret * pC = getCaret ();
-	if (pC) pC->disable ();
 
 	UT_sint32 oldDY = tdu(getPrevYOffset());
 	UT_sint32 oldDX = tdu(getPrevXOffset());
@@ -882,8 +882,6 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		}
 	}
 	[m_pWin setNeedsDisplayInRect:bounds];
-
-	if (pC) pC->enable ();
 }
 
 void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -980,7 +978,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 	LOCK_CONTEXT__;
 	::CGContextSaveGState(m_CGContext);
-	::CGContextTranslateCTM (m_CGContext, -0.5, -0.5);
+//	::CGContextTranslateCTM (m_CGContext, -0.5, -0.5);
 	[image drawInRect:NSMakeRect(TDUX(xDest), _tduY(yDest), pCocoaImage->getDisplayWidth(), iImageHeight)
 	           fromRect:NSMakeRect(0, 0, size.width, size.height) operation:NSCompositeCopy fraction:1.0f];
 //	[image compositeToPoint:NSMakePoint(xDest, yDest + iImageHeight) operation:NSCompositeCopy fraction:1.0f];
@@ -1236,8 +1234,15 @@ GR_Image * GR_CocoaGraphics::genImageFromRectangle(const UT_Rect & r)
 void GR_CocoaGraphics::saveRectangle(UT_Rect & rect,  UT_uint32 iIndx)
 {
 	NSRect* cacheRect = new NSRect;
-	*cacheRect = NSMakeRect(TDUX(rect.left), _tduY(rect.top), 
-						  _tduR(rect.width), _tduR(rect.height));
+	cacheRect->origin.x = static_cast<float>(_tduX(rect.left)) - 1.0f;
+	cacheRect->origin.y = static_cast<float>(_tduY(rect.top )) - 1.0f;
+	cacheRect->size.width  = static_cast<float>(_tduR(rect.width )) + 2.0f;
+	cacheRect->size.height = static_cast<float>(_tduR(rect.height)) + 2.0f;
+
+	NSRect bounds = [m_pWin bounds];
+	if (cacheRect->size.height > bounds.size.height - cacheRect->origin.y)
+		cacheRect->size.height = bounds.size.height - cacheRect->origin.y;
+
     NSBitmapImageRep *imageRep;
 	{
 		LOCK_CONTEXT__;
@@ -1263,14 +1268,10 @@ void GR_CocoaGraphics::restoreRectangle(UT_uint32 iIndx)
 	NSRect* cacheRect = m_cacheRectArray.getNthItem(iIndx);
 	NSImage* cache = m_cacheArray.getNthItem(iIndx);
 	NSPoint pt = cacheRect->origin;
-	pt.x -= 1;		/* I don't know why this offset, but it is nicer no more pixeldirt */
-	pt.y += cacheRect->size.height - 1;
+	pt.y += cacheRect->size.height;
 	{
 		LOCK_CONTEXT__;
-		::CGContextSaveGState(m_CGContext); // ??
-		::CGContextTranslateCTM(m_CGContext, 0.5, 0.5);
 		[cache compositeToPoint:pt operation:NSCompositeCopy];
-		::CGContextRestoreGState(m_CGContext); // ??
 	}
 }
 
@@ -1286,7 +1287,6 @@ void GR_CocoaGraphics::_resetContext(CGContextRef context)
 	_setCapStyle(m_capStyle, &context);
 	_setJoinStyle(m_joinStyle, &context);
 	_setLineStyle(m_lineStyle, &context);
-	::CGContextTranslateCTM(context, 0.5, 0.5);
 	::CGContextSetShouldAntialias(context, false);
  	[m_currentColor set];
 }

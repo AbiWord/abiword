@@ -62,6 +62,40 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>bak~</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWBackup.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord Auto-Save Document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>TEXT</string>
+				<string>AbiW</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>CRASHED</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>ABWSaved.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord Auto-Save Document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>TEXT</string>
+				<string>AbiW</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>rtf</string>
 				<string>RTF</string>
 			</array>

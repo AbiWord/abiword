@@ -77,7 +77,6 @@
                 "oTB_para_12before" = NSButton; 
                 "oTB_paste" = NSButton; 
                 "oTB_print" = NSButton; 
-                "oTB_print_preview" = NSButton; 
                 "oTB_redo" = NSButton; 
                 "oTB_save" = NSButton; 
                 "oTB_save_as" = NSButton; 
@@ -92,7 +91,6 @@
                 "oTB_text_align_right" = NSButton; 
                 "oTB_text_bgcolor" = NSButton; 
                 "oTB_text_bold" = NSButton; 
-                "oTB_text_bottomline" = NSButton; 
                 "oTB_text_center" = NSButton; 
                 "oTB_text_direction_ltr" = NSButton; 
                 "oTB_text_direction_rtl" = NSButton; 
@@ -105,7 +103,6 @@
                 "oTB_text_strikeout" = NSButton; 
                 "oTB_text_subscript" = NSButton; 
                 "oTB_text_superscript" = NSButton; 
-                "oTB_text_topline" = NSButton; 
                 "oTB_text_underline" = NSButton; 
                 "oTB_text_unindent" = NSButton; 
                 "oTB_undo" = NSButton; 
