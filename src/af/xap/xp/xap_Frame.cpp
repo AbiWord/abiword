@@ -123,7 +123,7 @@ XAP_Frame::~XAP_Frame(void)
 
 	DELETEP(m_pScrollbarViewListener);
 
-	UT_VECTOR_PURGEALL(char *,m_vecToolbarLayoutNames);
+	UT_VECTOR_FREEALL(char *,m_vecToolbarLayoutNames);
 	
 	FREEP(m_szMenuLayoutName);
 	FREEP(m_szMenuLabelSetName);

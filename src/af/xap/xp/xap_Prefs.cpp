@@ -295,7 +295,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 XAP_Prefs::~XAP_Prefs(void)
 {
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecSchemes);
-	UT_VECTOR_PURGEALL(char *, m_vecRecent);
+	UT_VECTOR_FREEALL(char *, m_vecRecent);
 	UT_VECTOR_PURGEALL(tPrefsListenersPair *, m_vecPrefsListeners);
 }
 
