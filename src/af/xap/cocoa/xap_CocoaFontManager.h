@@ -21,7 +21,7 @@
 #ifndef XAP_COCOAFONTMANAGER_H
 #define XAP_COCOAFONTMANAGER_H
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -45,8 +45,10 @@ public:
 private:
 
 	void					_addFont(const XAP_CocoaFont * font);
+	void					_loadFontList ();
 
-	UT_StringPtrMap 			m_fontHash;
+	UT_StringPtrMap 		m_fontHash;
+	NSFontManager			*m_nsFontManager;
 };
 
 #endif /* XAP_COCOAFONTMANAGER_H */

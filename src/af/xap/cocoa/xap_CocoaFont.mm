@@ -159,6 +159,9 @@ XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
 	m_nsName = NULL;
 
 	m_fontKey = NULL;
+	setName (copy.getName());
+	m_style = copy.m_style;
+	m_bufpos = 0;
 
 	m_bisCopy = true;
 }
@@ -194,6 +197,7 @@ void XAP_CocoaFont::setName(const char * name)
 	else {
 		[m_nsName initWithCString:m_name];
 	}
+	_makeFontKey ();
 }
 
 const char * XAP_CocoaFont::getName(void) const
@@ -325,7 +329,7 @@ NSFont * XAP_CocoaFont::getNSFont(UT_uint32 pixelsize)
 	allocFont * item = new allocFont;
 	item->pixelSize = pixelsize;
 	item->nsFont = nsfont;
-	xxx_UT_DEBUGMSG(("SEVIOR: Allocated font of pixel size %d \n",pixelsize));
+	xxx_UT_DEBUGMSG(("HUB: Allocated font of pixel size %d \n",pixelsize));
 	m_allocFonts.addItem((void *) item);
 
 	return nsfont;

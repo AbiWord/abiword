@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,6 +41,8 @@
 
 XAP_CocoaFontManager::XAP_CocoaFontManager(void) : m_fontHash(256)
 {
+	m_nsFontManager = [NSFontManager sharedFontManager];
+	_loadFontList ();
 }
 
 XAP_CocoaFontManager::~XAP_CocoaFontManager(void)
@@ -139,5 +141,28 @@ void XAP_CocoaFontManager::_addFont(const XAP_CocoaFont * newfont)
 			  (void *) newfont);		
 }
 
+
+void XAP_CocoaFontManager::_loadFontList ()
+{
+	XAP_CocoaFont *theFont;
+	
+	NSString * fontName;
+	NSArray * fontFamilies = [m_nsFontManager availableFontFamilies];
+	
+	int i, count = [fontFamilies count];
+	UT_DEBUGMSG (("Cocoa Font Manager: found %d fonts\n", count));
+	for (i = 0; i < count; i++) {
+		fontName = [fontFamilies objectAtIndex:i];
+		const char * cFontName = [fontName cString];
+		if (*cFontName != '.') {
+			theFont = new XAP_CocoaFont;
+			UT_ASSERT (theFont);
+			theFont->setName (cFontName);
+			UT_DEBUGMSG (("Cocoa Font Manager: adding font %s\n", cFontName));
+			_addFont (theFont);
+		}
+		// we now own the font object
+	}
+}
 
 
