@@ -766,7 +766,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 		iLoopCount++;
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
-
+		
 		switch (pf_First->getType())
 		{
 		case pf_Frag::PFT_EndOfDoc:
@@ -781,7 +781,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // defiantely want to delete
 // them.
 //
-			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);			
 			bool bResult = true;
 			if(bPrevWasCell && (iLoopCount == 0))
 			{
@@ -821,6 +821,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 												  &pfNewEnd,&fragOffsetNewEnd);
 						bPrevWasCell = false;
 						bPrevWasEndTable = false;
+						break;
 					}
 					else
 					{
@@ -874,7 +875,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 // Look to see if we've reached the end of the table, if so delete it all now
 //
-			bool bSuccess = true;
 			pf_Frag *pff;
 			PT_DocPosition dpp;
 			if(pfs->getStruxType() == PTX_EndTable)
@@ -894,10 +894,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 					PT_DocPosition myPos = pfs->getPos();
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
-					bSuccess = _deleteStruxWithNotify(myPos, pfs,
+					bResult = _deleteStruxWithNotify(myPos, pfs,
 													  &pfNewEnd,
 													  &fragOffsetNewEnd);
-					while(bSuccess && iTable > 0)
+					while(bResult && iTable > 0)
 					{
 						stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 						if(pfs->getStruxType() == PTX_SectionTable)
@@ -910,7 +910,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 						}
 						PT_DocPosition myPos = pfs->getPos();
 						_deleteFormatting(myPos - pfs->getLength(), myPos);
-						bSuccess = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
+						bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
 //
 // Each strux is one in length, we've added one while delaying the delete
 // so subtract it now.
@@ -935,7 +935,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 				PT_DocPosition myPos = pfs->getPos();
 				_deleteFormatting(myPos - pfs->getLength(), myPos);
-				bSuccess = _deleteStruxWithNotify(myPos, pfs,
+				bResult = _deleteStruxWithNotify(myPos, pfs,
 												  &pfNewEnd,
 												  &fragOffsetNewEnd);
 //
@@ -944,7 +944,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // deleted first) and for
 // undo where we want the Footnote Strux inserted first.
 //
-				while(bSuccess && iFootnoteCount > 0)
+				while(bResult && iFootnoteCount > 0)
 				{
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 					if(isFootnote(pfs))
@@ -953,7 +953,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 					}
 					PT_DocPosition myPos = pfs->getPos();
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
-					bSuccess = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
+					bResult = _deleteStruxWithNotify(myPos, pfs, &pff, &dpp);
 //
 // Each strux is one in length, we've added one while delaying the delete
 // so subtract it now.
@@ -1408,7 +1408,9 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		UT_uint32 oldDepth = stDelayStruxDelete.getDepth();
 		bSuccess = _deleteFormatting(dpos1, dpos2);
 		if (bSuccess)
+		{
 			bSuccess = _deleteComplexSpan(dpos1, dpos2, &stDelayStruxDelete);
+		}
 
 		bool prevDepthReached = false;
 		PT_DocPosition finalPos = dpos1;
@@ -1577,8 +1579,3 @@ void pt_PieceTable::_tweakFieldSpan(PT_DocPosition & dpos1,
         dpos2 = getFragPosition(pf_Other);
     }
 }
-
-
-
-
-
