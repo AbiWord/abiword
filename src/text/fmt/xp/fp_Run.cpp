@@ -1177,11 +1177,7 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
-	if (pView->getShowPara())
-	{
-		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, 
-					   m_iWidth, m_iHeight);
-	}
+	m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iWidth, m_iHeight);
 }
 
 /*!
