@@ -1522,6 +1522,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	}
 
 	// now convert the whole lot to layout units
+	double dWidth = 0;
+	double dDeviceWidth = 0;
+	double dPrevDeviceWidth = 0;
+	
 	if(getPrintDC())
 	{
 		double fXYRatio = m_fXYRatio * m_fXYRatioPrint;
@@ -1529,8 +1533,11 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
-			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()
+			dWidth += (double)RI.m_pAdvances[i];
+			dDeviceWidth = (UT_sint32)(dWidth*(double)getResolution()
 											/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
+			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth);
+			dPrevDeviceWidth = dDeviceWidth;
 
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()
 											/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
@@ -1553,8 +1560,13 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
-			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/
+			dWidth += (double)RI.m_pAdvances[i];
+			dDeviceWidth = (UT_sint32)(dWidth*(double)getResolution()/
 											((double)getDeviceResolution()*m_fXYRatio) + 0.5);
+			
+			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth);
+			dPrevDeviceWidth = dDeviceWidth;
+
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
 											((double)getDeviceResolution()*m_fXYRatio) + 0.5);
 			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()/
@@ -1576,8 +1588,13 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
-			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/
+			dWidth += (double)RI.m_pAdvances[i];
+			dDeviceWidth = (UT_sint32)(dWidth*(double)getResolution()/
 											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
+			
+			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth);
+			dPrevDeviceWidth = dDeviceWidth;
+
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
 											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
 			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()/
