@@ -230,31 +230,19 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 // from the current style if any, only then we can proceed
 #if 1
 		const XML_Char * szStyle;
-		const XML_Char * szSName;
-		bool bFound = false;
-		//there is something wrong with getAttribute
-        //papOld->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szStyle);
-		for(UT_uint32 k = 0; k < papOld->getAttributeCount();k++)
-		{
-			papOld->getNthAttribute(k, szSName, szStyle);
-			if(!UT_strcmp(PT_STYLE_ATTRIBUTE_NAME, szSName))
-			{
-				bFound = true;
-				break;
-			}
-		}
-		
+		bool bFound = papOld->getAttribute
+			(PT_STYLE_ATTRIBUTE_NAME, szStyle);
 
 		PP_AttrProp * pNew1 = NULL;
 		PD_Style * pStyle = NULL;
 
-        if(bFound && szStyle && UT_strcmp(szStyle, "None"))
+        if(bFound && szStyle && (UT_strcmp(szStyle, "None") != 0))
         {
 	        UT_DEBUGMSG(("current style [%s]\n",szStyle));
 			pDoc->getStyle(szStyle,&pStyle);
 		}
 
-		if (!pStyle)
+		if (bFound && !pStyle)
 		{
 			UT_DEBUGMSG(("oops! tried to change from a nonexistent style [%s]!\n", szStyle));
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
