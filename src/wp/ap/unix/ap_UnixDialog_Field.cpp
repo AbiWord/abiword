@@ -98,7 +98,7 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 	_populateCatogries();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain), pFrame, this,
-								 GTK_RESPONSE_CANCEL, false ) )
+								 GTK_RESPONSE_OK, false ) )
 	{
 		case GTK_RESPONSE_OK:
 			event_OK();
@@ -288,13 +288,13 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_listFields)), GTK_SELECTION_SINGLE);	
 
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle).c_str());	
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle_Capital).c_str());	
 	
 	// localize the strings in our dialog, and set some userdata for some widg
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTypes"), pSS, AP_STRING_ID_DLG_Field_Types);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFields"), pSS, AP_STRING_ID_DLG_Field_Fields);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbExtraParameters"), pSS, AP_STRING_ID_DLG_Field_Parameters);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTypes"), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFields"), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbExtraParameters"), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
 
 	// add a column to our TreeViews
 
