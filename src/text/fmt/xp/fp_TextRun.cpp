@@ -140,17 +140,11 @@ bool fp_TextRun::hasLayoutProperties(void) const
 	return true;
 }
 
-
-void fp_TextRun::lookupProperties(void)
+/*! a private method used internally by lookupProperties() */
+void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
+									const PP_AttrProp * pBlockAP,
+									const PP_AttrProp * pSectionAP)
 {
-
-	clearScreen();
-
-	const PP_AttrProp * pSpanAP = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-	m_pBL->getAttrProp(&pBlockAP);
 	static_cast<fl_Layout *>(m_pBL)->getField(m_iOffsetFirst,m_pField);
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
@@ -330,28 +324,86 @@ void fp_TextRun::lookupProperties(void)
 	else
 #endif
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
+}
+
+/*! returns PP_AttrProp associated with this span, taking on board the
+    presence of revisions
+    \param pSpan : location to store the PP_AttrProp
+    \param bDeleteAfter : indicates whether the caller should free the
+    pointer when no longer needed
+*/
+void fp_TextRun::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
+{
+	PP_AttrProp * pMySpanAP;
+
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+
+	/**************************************************************************
+	 * revision handling
+	 * -----------------
+	 *
+	 * if there is a revision attribute in our span AP we have to
+	 * superimpose any props contained in that attribute over the span props
+	 *
+	 */
+
+	bDeleteAfter = false;
 
 	const XML_Char* pRevision = NULL;
 	if(pSpanAP && pSpanAP->getAttribute("revision", pRevision))
 	{
 		if(!m_pRevisions)
 			m_pRevisions = new PP_RevisionAttr(pRevision);
-		else
-			m_pRevisions->setRevision(pRevision);
 
 		//next step is to parse any properties associated with this
 		//revision
-		if((m_pRevisions->getType() == PP_REVISION_FMT_CHANGE)
-		 ||(m_pRevisions->getType() == PP_REVISION_ADDITION_AND_FMT))
+
+		const PP_Revision * pRev = m_pRevisions->getLastRevision();
+
+		if( pRev &&
+		  ((pRev->getType() == PP_REVISION_FMT_CHANGE)
+		 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)))
 		{
-			// TODO implement this
+			// create copy of span AP and then set all props contained
+			// in our revision;
+			pMySpanAP = new PP_AttrProp;
+
+			(PP_AttrProp)(*pMySpanAP) = *pSpanAP;
+			pMySpanAP->setProperties(pRev->getPropsVector());
+			pSpanAP = pMySpanAP;
+			bDeleteAfter = true;
 		}
 	}
-	else if(m_pRevisions)
+}
+
+
+void fp_TextRun::lookupProperties(void)
+{
+	clearScreen();
+
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	bool bDelete;
+
+	m_pBL->getAttrProp(&pBlockAP);
+
+	// examining the m_pRevisions contents is too involved, it is
+	// faster to delete it and create a new instance if needed
+	if(m_pRevisions)
 	{
 		delete m_pRevisions;
 		m_pRevisions = NULL;
 	}
+
+	// NB this call will recreate m_pRevisions for us
+	getSpanAP(pSpanAP,bDelete);
+
+	_processProperties(pSpanAP, pBlockAP, pSectionAP);
+
+	//if we are responsible for deleting pSpanAP, then just do so
+	if(bDelete)
+		delete pSpanAP;
 }
 
 bool fp_TextRun::canBreakAfter(void) const
@@ -1521,12 +1573,18 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	if(m_pRevisions)
 	{
 		PD_Document * pDoc = m_pBL->getDocument();
-		UT_uint32 iId = pDoc->getRevisionId();
+		//UT_uint32 iId = pDoc->getRevisionId();
 		UT_RGBColor clrRevision(255,0,0);
+		const PP_Revision * r = m_pRevisions->getLastRevision();
+		PP_RevisionType r_type = r->getType();
 
-		if(m_pRevisions->isVisible(iId))
+		if(r_type == PP_REVISION_ADDITION)
 		{
 			UT_setColor(clrRevision,0,255,0);
+		}
+		else if(r_type == PP_REVISION_FMT_CHANGE)
+		{
+			UT_setColor(clrRevision,171,15,233);
 		}
 
 		m_pG->setColor(clrRevision);

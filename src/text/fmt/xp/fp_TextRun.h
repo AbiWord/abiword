@@ -127,10 +127,10 @@ public:
 	void					breakNeighborsAtDirBoundaries();
 	void					breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
 #endif
-	/* needed for handling BiDi text, static because we need only one buffer
-	   for all the instances, public so that we could inicialised them in the cpp file outside of the
-	   constructor in order that the constructor can decide whether it is creating the first instance
-	   or not*/
+
+	void                    getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
+
+
 #ifdef WITH_PANGO
  private:
 	void _freeGlyphString();
@@ -165,8 +165,9 @@ private:
 
 private:
 	bool				_addupCharWidths(void);
-
-
+	void                _processProperties(const PP_AttrProp * pSpanAP,
+										   const PP_AttrProp * pBlockAP,
+										   const PP_AttrProp * pSectionAP);
 
 #ifdef FMT_TEST
 public:
