@@ -166,7 +166,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	// font will bring it back to the correct position.
 	yoff += getFontAscent();
 
-	UT_UTF8String utf8 (pChars + iCharOffset);
+	UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 
 	// push a graphics state & save it. then set the font
 	gnome_print_gsave (m_gpc);
@@ -176,7 +176,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	gnome_print_show_sized (m_gpc, (const guchar *)utf8.utf8_str(), utf8.byteLength());
 
 	// pop the graphics state
-	gnome_print_grestore ( m_gpc ) ;
+	gnome_print_grestore (m_gpc);
 }
 
 void XAP_UnixGnomePrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
@@ -225,9 +225,9 @@ void XAP_UnixGnomePrintGraphics::setColor(const UT_RGBColor& clr)
 
 	m_currentColor = clr;
 
-	double red   = (double)(m_currentColor.m_red << 8);
-	double green = (double)(m_currentColor.m_grn << 8);
-	double blue  = (double)(m_currentColor.m_blu << 8);
+	double red   = (double)(m_currentColor.m_red / 255.0);
+	double green = (double)(m_currentColor.m_grn / 255.0);
+	double blue  = (double)(m_currentColor.m_blu / 255.0);
 	gnome_print_setrgbcolor(m_gpc,red,green,blue);
 }
 
@@ -277,7 +277,7 @@ GR_Graphics::ColorSpace XAP_UnixGnomePrintGraphics::getColorSpace(void) const
 
 UT_uint32 XAP_UnixGnomePrintGraphics::getDeviceResolution(void) const
 {
-	return 300;
+	return 72; // 300
 }
 
 void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg, 
