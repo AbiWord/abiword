@@ -69,6 +69,10 @@ protected:
 	void                _check_revs_for_color(const PP_AttrProp * pAP1,
 											  const PP_AttrProp * pAP2,
 											  const PP_AttrProp * pAP3);
+
+	void                _check_revs_for_font (const PP_AttrProp * pAP1,
+											  const PP_AttrProp * pAP2,
+											  const PP_AttrProp * pAP3);
 	
 	void                _searchTableAPI(PT_AttrPropIndex api);
 	void                _searchCellAPI(PT_AttrPropIndex api);
