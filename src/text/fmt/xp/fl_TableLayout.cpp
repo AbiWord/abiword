@@ -54,31 +54,26 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
-fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
+fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, 
+			       PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TABLE,FL_CONTAINER_TABLE,PTX_SectionTable, pMyContainerLayout),
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
-      m_iJustification(FL_TABLE_FULL),
+	  m_iJustification(FL_TABLE_FULL),
 	  m_iLeftOffset(0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iLeftOffsetLayoutUnits(0),
-#endif
 	  m_dLeftOffsetUserUnits(0.0),
 	  m_iRightOffset(0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iRightOffsetLayoutUnits(0),
-#endif
 	  m_dRightOffsetUserUnits(0.0),
 	  m_iTopOffset(0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iTopOffsetLayoutUnits(0),
-#endif
 	  m_dTopOffsetUserUnits(0.0),
 	  m_iBottomOffset(0),
+	  m_dBottomOffsetUserUnits(0.0),
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	  m_iLeftOffsetLayoutUnits(0),
+	  m_iRightOffsetLayoutUnits(0),
+	  m_iTopOffsetLayoutUnits(0),
 	  m_iBottomOffsetLayoutUnits(0),
 #endif
-	  m_dBottomOffsetUserUnits(0.0),
 	  m_bIsHomogeneous(true),
 	  m_bSameRowOnTopOfPage(false),
 	  m_iRowNumberForTop(0),
@@ -1013,22 +1008,16 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
 	  m_iLeftOffset(0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iLeftOffsetLayoutUnits(0),
-#endif
 	  m_dLeftOffsetUserUnits(0.0),
 	  m_iRightOffset(0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iRightOffsetLayoutUnits(0),
-#endif
 	  m_dRightOffsetUserUnits(0.0),
 	  m_iTopOffset(0),
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	  m_iTopOffsetLayoutUnits(0),
-#endif
 	  m_dTopOffsetUserUnits(0.0),
 	  m_iBottomOffset(0),
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	  m_iLeftOffsetLayoutUnits(0),
+	  m_iRightOffsetLayoutUnits(0),
+	  m_iTopOffsetLayoutUnits(0),
 	  m_iBottomOffsetLayoutUnits(0),
 #endif
 	  m_dBottomOffsetUserUnits(0.0),

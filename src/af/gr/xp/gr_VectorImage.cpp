@@ -201,7 +201,7 @@ static void _endElement(void* userdata, const char* name)
 {
   GR_VectorImage* pImage = (GR_VectorImage*) userdata;
 
-  UT_svg* pSVG = pImage->getSVG();
+  //UT_svg* pSVG = pImage->getSVG();
 
   if (pImage->m_iTreeLevel > 0)
     {
@@ -218,7 +218,7 @@ static void _endElement(void* userdata, const char* name)
 
 static void _charData(void* userdata, UT_ByteBuf* pBB)
 {
-  GR_VectorImage* pImage = (GR_VectorImage*) userdata;
+  //GR_VectorImage* pImage = (GR_VectorImage*) userdata;
 
   // ByteBuf holds complete text, probably in UTF-8
 
@@ -230,7 +230,7 @@ static void render_init(GR_VectorImage* pImage)
   UT_svg* pSVG = pImage->getSVG();
 
   // White backgound (I think)
-  GR_Graphics* pGR = pSVG->m_pG;
+  //GR_Graphics* pGR = pSVG->m_pG;
 
   // UT_RGBColor col(0xff,0xff,0xff);
 

@@ -115,7 +115,6 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	GtkWidget * radiobuttonEvenPage;
 	GtkWidget * radiobuttonOddPage;
 	GtkWidget * labelSectionBreaks;
-	GtkWidget * hseparator9;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions

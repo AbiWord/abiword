@@ -409,8 +409,6 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	}
 
 	// insert this frag into the fragment list. Update the container strux as needed
-
-	pf_Frag_Strux * pfsActualContainer = pfsContainer;
 	_insertStrux(pf,fragOffset,pfsNew);
 
 	// create a change record to describe the change, add

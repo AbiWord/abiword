@@ -214,9 +214,6 @@ void   XAP_UnixDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 
 void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 {
-	// First see if the dialog is already running
-	UT_sint32 sid =(UT_sint32)  getDialogId();
-	  
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_return_if_fail(mainWindow);
@@ -442,8 +439,6 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 {
 	GtkWidget * vboxInsertS;
 	GtkWidget * vhbox;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * tmp = NULL;
 
 	ConstructWindowName();
 

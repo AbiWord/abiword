@@ -559,7 +559,6 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	UT_uint32 tmp = 0;
 	bool bResult;
 	UT_Stack stack;
 	stack.push(wMenuRoot);

@@ -73,8 +73,8 @@ public:
 					  const UT_UCSChar * next,
 					  const XML_Char   * pLang) const;
 		
-	const Letter * UT_contextGlyph::smartQuote(UT_UCS4Char c,
-											   const XML_Char * pLang) const;
+	const Letter * smartQuote(UT_UCS4Char c,
+				  const XML_Char * pLang) const;
 	
 		
 		private:

@@ -134,7 +134,6 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   GtkWidget *labelTitle;
   GtkWidget *labelVersion;
   GtkWidget *textCopyright;
-  GtkWidget *hbox2;
   
   // we use this for all sorts of strings that can't appear in the string sets
   char buf[4096];

@@ -51,7 +51,7 @@ protected:
 	virtual GtkWidget *		_constructWindowContents(void);
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
-	AP_Dialog_InsertTable::columnType AP_UnixDialog_InsertTable::_getActiveRadioItem(void);
+	AP_Dialog_InsertTable::columnType _getActiveRadioItem(void);
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;

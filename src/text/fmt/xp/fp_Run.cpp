@@ -106,6 +106,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
 		m_iVisDirection(FRIBIDI_TYPE_UNSET),
 		m_bRefreshDrawBuffer(true),
+		m_pColorHL(255,255,255,true), // set highlight colour to transparent
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_pScreenFont(0),
 		m_pLayoutFont(0),
@@ -123,8 +124,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iOverlineXoff(0),
 		m_pHyperlink(0),
 		m_pRevisions(NULL),
-		m_eHidden(FP_VISIBLE),
-		m_pColorHL(255,255,255,true) // set highlight colour to transparent
+		m_eHidden(FP_VISIBLE)
 {
         // set the default background color and the paper color of the
 	    // section owning the run.

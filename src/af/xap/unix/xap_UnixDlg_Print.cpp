@@ -37,14 +37,6 @@
 #include "xap_Prefs.h"
 
 /*****************************************************************/
-
-static void _notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
-{
-	pFrame->showMessageBox(message,
-			       XAP_Dialog_MessageBox::b_O,
-			       XAP_Dialog_MessageBox::a_OK);
-}
-
 /*****************************************************************/
 
 XAP_Dialog * XAP_UnixDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
@@ -166,7 +158,6 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	GtkWidget *buttonAll;
 	GtkWidget *buttonRange;
 	GtkWidget *buttonSelection;
-	GtkWidget *button;
 	GtkWidget *buttonCollate;
 	GtkWidget *buttonEmbedFonts;
 	

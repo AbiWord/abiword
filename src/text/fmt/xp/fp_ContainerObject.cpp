@@ -165,8 +165,6 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	r.width  = getDrawingWidth();
 	r.height = getHeight();
 
-	const fp_Container * pC = this;
-
 	r.left += getX();
 	r.top  += getY();
 	return true;

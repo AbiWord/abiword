@@ -523,7 +523,7 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 		xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 		xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 	}
-	UT_sint32 i =0;
+
 	AP_TopRulerTableInfo *pTInfo = NULL;
 	if(pInfo->m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
 	{
@@ -2007,7 +2007,6 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 				bFound = true;
 				
 				// determine the range in which this cell marker can be dragged
-				UT_sint32 nCells = m_infoCache.m_vecTableColInfo->getItemCount();
 				UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 				UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 				UT_sint32 xExtraMargin = 3; // keep an extra margin 3 pixels; there must be some space left to enter text in

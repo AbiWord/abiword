@@ -241,64 +241,66 @@ AP_HashDownloader::installPackage(XAP_Frame *pFrame, UT_String szFName, const ch
 UT_sint32
 AP_HashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType)
 {
-	const char *name = NULL, *hname;
-	UT_String pName;
-	int ret;
-
-	if (pkgType == pkgType_Tarball) 
-	{
+  const char *name = NULL, *hname;
+  UT_String pName;
+  int ret;
+  
+  if (pkgType == pkgType_Tarball) 
+    {
 #ifdef CURLHASH_INSTALL_SYSTEMWIDE
-		if (getInstallSystemWide())
-			pName = XAP_App::getApp()->getAbiSuiteLibDir();
-		else
+      if (getInstallSystemWide())
+	pName = XAP_App::getApp()->getAbiSuiteLibDir();
+      else
 #endif
-			pName = XAP_App::getApp()->getUserPrivateDirectory();
-
-		// try to make sure the base path exists (e.g. while testing Debug builds)
-		XAP_App::getApp()->makeDirectory(pName.c_str(), 0750);
-		if (!UT_directoryExists(pName.c_str())) 
-		{
-			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error base abisuite directory does not exist\n");
-			return (-1);
-		}
-
-		pName += "/dictionary";
-		//name = UT_strdup(pName.c_str());
-		name = pName.c_str();
-		
-		UT_sint32 langNdx;
-		if ((langNdx = getLangNum(szLName)) == -1) 
-		{
-			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): No matching hashname to that language\n");
-			return (-1);
-		}
-		hname = m_mapping[langNdx].dict;
-
-		UT_DEBUGMSG(("AP_XXXHashDownloader::installPackage(): extracting %s to %s\n",hname, name));
-
-		// ensure the dictionary directory exists
-		XAP_App::getApp()->makeDirectory(name, 0750);
-		if (!UT_directoryExists(name)) 
-		{
-			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while creating dictionary-directory\n");
-			return (-1);
-		}
-
-		// actually extracts the hash file
-		if ((ret = UT_untgz(szFName, hname, name, NULL, NULL))) {
-			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash\n");
-			return(ret);
-		}
-		
-		// ...and the -encoding file
-		UT_String enc(hname);
-		enc += "-encoding";
-		if ((ret = UT_untgz(szFName, enc.c_str(), name, NULL, NULL))) {
-			showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash-encoding\n");
-			return(ret);
-		}
+	pName = XAP_App::getApp()->getUserPrivateDirectory();
+      
+      // try to make sure the base path exists (e.g. while testing Debug builds)
+      XAP_App::getApp()->makeDirectory(pName.c_str(), 0750);
+      if (!UT_directoryExists(pName.c_str())) 
+	{
+	  showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error base abisuite directory does not exist\n");
+	  return (-1);
 	}
-	else	
-		return installPackageUnsupported(pFrame, szFName, szLName, pkgType);
+      
+      pName += "/dictionary";
+      //name = UT_strdup(pName.c_str());
+      name = pName.c_str();
+      
+      UT_sint32 langNdx;
+      if ((langNdx = getLangNum(szLName)) == -1) 
+	{
+	  showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): No matching hashname to that language\n");
+	  return (-1);
+	}
+      hname = m_mapping[langNdx].dict;
+      
+      UT_DEBUGMSG(("AP_XXXHashDownloader::installPackage(): extracting %s to %s\n",hname, name));
+      
+      // ensure the dictionary directory exists
+      XAP_App::getApp()->makeDirectory(name, 0750);
+      if (!UT_directoryExists(name)) 
+	{
+	  showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while creating dictionary-directory\n");
+	  return (-1);
+	}
+      
+      // actually extracts the hash file
+      if ((ret = UT_untgz(szFName, hname, name, NULL, NULL))) {
+	showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash\n");
+	return(ret);
+      }
+      
+      // ...and the -encoding file
+      UT_String enc(hname);
+      enc += "-encoding";
+      if ((ret = UT_untgz(szFName, enc.c_str(), name, NULL, NULL))) {
+	showErrorMsg(pFrame, "AP_XXXHashDownloader::installPackage(): Error while extracting hash-encoding\n");
+	return(ret);
+      }
+    }
+  else
+    {	
+      return installPackageUnsupported(pFrame, szFName, szLName, pkgType);
+    }
 }
 

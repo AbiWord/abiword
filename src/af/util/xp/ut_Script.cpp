@@ -235,8 +235,6 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
 										   UT_Script ** ppscript, 
 										   UT_ScriptIdType * pieft)
 {
-	bool bUseGuesswork = (ieft != -1);
-  
 	UT_ASSERT(ieft != -1 || (szFilename && *szFilename));
 	UT_ASSERT(ppscript);
   

@@ -96,6 +96,8 @@ XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
 
 /*****************************************************************/
 
+#if ABI_GTK_DEPRECATED
+
 // This is a little UI hack.  Check the widget callback connect point
 // for more info.
 
@@ -139,6 +141,8 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 
 	return FALSE;
 }
+
+#endif
 
 static gint s_color_update(GtkWidget * /* widget */,
 						   GdkEvent * /* event */,

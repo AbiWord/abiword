@@ -938,15 +938,15 @@ void fp_TextRun::mergeWithNext(void)
 		
 			// NB: the following offsets are relative to their
 			// respective runs, not the block
-			UT_sint32 iOrigSpaceWidth = (UT_sint32) m_pJustifiedSpaces->getNthItem(0);
+			//UT_sint32 iOrigSpaceWidth = (UT_sint32) m_pJustifiedSpaces->getNthItem(0);
+			//UT_sint32 iNOrigSpaceWidth = (UT_sint32) m_pJustifiedSpaces->getNthItem(0);
 			UT_sint32 iOrigOffset = (UT_sint32) m_pJustifiedSpaces->getNthItem(1);
 			UT_uint32 iBlOffset = getBlockOffset();
 			UT_sint32 iDelta = iBlOffset - iOrigOffset;
 			UT_uint32 iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 4) + iDelta;
 			UT_uint32 iSpaceLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 3);
-
-			UT_sint32 iNOrigSpaceWidth = (UT_sint32) m_pJustifiedSpaces->getNthItem(0);
 			UT_sint32 iNOrigOffset = (UT_sint32) pNext->m_pJustifiedSpaces->getNthItem(1);
+
 			UT_uint32 iNBlOffset = pNext->getBlockOffset();
 			UT_sint32 iNDelta = iNBlOffset - iNOrigOffset;
 			UT_uint32 iNSpaceOffset = (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(2) + iNDelta;
@@ -1837,7 +1837,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		{
 			if(pCWThis[iLen - n - 1] < 0 || pCWThis[iLen - n - 1] >= GR_OC_LEFT_FLUSHED)
 			{
-				UT_sint32 iWidth = 0;
 				UT_sint32 iCumAdvance = 0;
 
 				UT_sint32 m = iLen - n - 2;
@@ -2718,9 +2717,9 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	UT_uint32 iy = yoff + getAscent() * 2 / 3;
 
-	UT_sint32 i = getVisDirection() == FRIBIDI_TYPE_LTR ? 0 : iLen - 1;
-	UT_sint32 iStop = getVisDirection() == FRIBIDI_TYPE_LTR ? iLen : -1;
-	UT_sint32 iInc = getVisDirection() == FRIBIDI_TYPE_LTR ? 1 : -1;
+	UT_sint32 i = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? 0 : iLen - 1);
+	UT_sint32 iStop = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? iLen : -1);
+	UT_sint32 iInc = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? 1 : -1);
 
 	for (; i != iStop; i += iInc)
 	{
@@ -3256,8 +3255,8 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 				// we have a proper slot, see if our space fits in it
 				UT_uint32 iRunOffset = i - iBlockOffset;
 				
-				UT_ASSERT( iRunOffset >= (UT_sint32)(iSpaceOffset + iSpaceLength));
-				if(iRunOffset == (UT_sint32)(iSpaceOffset + iSpaceLength))
+				UT_ASSERT( iRunOffset >= (UT_uint32)(iSpaceOffset + iSpaceLength));
+				if(iRunOffset == (UT_uint32)(iSpaceOffset + iSpaceLength))
 				{
 					// this space is immediately after the end of this
 					// slot, so we append it

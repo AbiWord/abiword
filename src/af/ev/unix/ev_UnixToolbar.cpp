@@ -731,10 +731,10 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_widget_show(comboBox);
 
 				// stick it in the toolbar
-				GtkWidget * evBox = toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-									     comboBox,
-									     szToolTip,
-									     (const char *)NULL);
+				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+							     comboBox,
+							     szToolTip,
+							     (const char *)NULL);
 				wd->m_widget = comboBox;
 
 				// for now, we never repopulate, so can just toss it

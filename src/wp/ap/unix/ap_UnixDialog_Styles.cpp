@@ -1034,7 +1034,6 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 	GtkWidget *cancelButton;
 	GtkWidget *FormatMenu;
 	GtkWidget *shortCutButton = 0;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	buttonOK = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_OK, BUTTON_MODIFY_OK);
 	cancelButton = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_CANCEL, BUTTON_MODIFY_CANCEL);

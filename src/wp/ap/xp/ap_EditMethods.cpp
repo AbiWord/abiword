@@ -8281,8 +8281,6 @@ Defun1(toggleIndent)
   s_getPageMargins (pView, margin_left, margin_right,
 					page_margin_left, page_margin_right);
 
-  FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
-
   allowed = page_size - page_margin_left - page_margin_right;
   if (margin_left >= allowed)
 	  return true;

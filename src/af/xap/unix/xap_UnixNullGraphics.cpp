@@ -300,7 +300,7 @@ void UnixNull_Graphics::setColor(const UT_RGBColor& clr)
 
 void UnixNull_Graphics::getColor(UT_RGBColor& clr)
 {
-	return m_currentColor;
+	clr = m_currentColor;
 }
 
 GR_Font* UnixNull_Graphics::getGUIFont()

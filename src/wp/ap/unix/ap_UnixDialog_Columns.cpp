@@ -133,12 +133,6 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 	dlg->checkLineBetween();
 }
 
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
-{
-	UT_return_if_fail(widget && dlg);
-	dlg->event_Cancel();
-}
-
 static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);

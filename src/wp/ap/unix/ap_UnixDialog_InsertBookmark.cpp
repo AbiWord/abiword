@@ -154,7 +154,6 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
 {
   GtkWidget *frame1;
   GtkWidget *vbox2;
-  GtkWidget *hbox1;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 

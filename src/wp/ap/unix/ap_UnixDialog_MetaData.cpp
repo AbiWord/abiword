@@ -437,7 +437,6 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
 
   #undef SET_ENTRY_TXT
 
-  gint unused_pos = 0 ;
   prop = getDescription () ;
   if ( prop.size () )
     {

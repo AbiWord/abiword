@@ -38,13 +38,13 @@
   \param pSectionLayout Section layout type used for this container
  */
 fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout) : fp_Container(iType, pSectionLayout),
-	        m_iWidth(0),
+												       m_iWidth(0),
 			m_iHeight(0),
 			m_iMaxHeight(0),
 			m_iX(0),
 			m_iY(0),
 			m_bIntentionallyEmpty(0),
- 		    m_imaxContainerHeight(0)
+												       m_imaxContainerHeight(0)
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		   ,m_iWidthLayoutUnits(0),
 			m_iHeightLayoutUnits(0),
@@ -991,7 +991,7 @@ void fp_Column::layout(void)
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	long imax = (1<<30) -1;
  
-	for (UT_uint32 i=0; i < (UT_sint32) countCons() ; i++)
+	for (UT_uint32 i=0; i < iCountContainers ; i++)
 	{
 		pContainer = (fp_Container*) getNthCon(i);
 		

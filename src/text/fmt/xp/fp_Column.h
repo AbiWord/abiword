@@ -195,12 +195,6 @@ private:
 	*/
 	UT_sint32 				m_iWidth;
 	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	/*!
-	  Width in layout units of the container
-	*/
-	UT_sint32 				m_iWidthLayoutUnits;
-#endif
 	/*!
 	  Height of the container
 	*/
@@ -209,17 +203,6 @@ private:
 	  Maximum height of the container
 	*/
 	UT_sint32				m_iMaxHeight;
-	
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	/*!
-	  Height in layout units of the container
-	*/
-	UT_sint32 				m_iHeightLayoutUnits;
-	/*!
-	  Maximum height in layout units of the container
-	*/
-	UT_sint32				m_iMaxHeightLayoutUnits;
-#endif
 
 	/*!
 	  X coordinate of container
@@ -240,6 +223,21 @@ private:
 	 */
 	bool					m_bIntentionallyEmpty;
 	UT_sint32               m_imaxContainerHeight;
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	/*!
+	  Width in layout units of the container
+	*/
+	UT_sint32 				m_iWidthLayoutUnits;
+	/*!
+	  Height in layout units of the container
+	*/
+	UT_sint32 				m_iHeightLayoutUnits;
+	/*!
+	  Maximum height in layout units of the container
+	*/
+	UT_sint32				m_iMaxHeightLayoutUnits;
+#endif
 };
 
 class ABI_EXPORT fp_Column : public fp_VerticalContainer

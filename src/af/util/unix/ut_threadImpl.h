@@ -48,13 +48,8 @@ class ABI_EXPORT UT_ThreadImpl
 	void start ()
     {
 		 if (!g_thread_supported ()) g_thread_init (NULL);
-
-		 UT_Thread::Priority pri = mOwner->getPriority () ;
 		 
-		 GError * err = NULL ;
-		
-		 // TODO: use the priority
-			
+		 GError * err = NULL ;		
 		 if ( (mThread = g_thread_create ( start_routine, this, TRUE, &err ) ) == NULL )
 		 {
 			  UT_DEBUGMSG(( "Thread create failed: %s!!\n", err->message ));

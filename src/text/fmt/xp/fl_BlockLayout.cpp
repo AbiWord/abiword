@@ -5652,7 +5652,7 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 	// These strings match piece table styles and should not be
 	// internationalized
 	UT_sint32 nlisttype = (UT_sint32) iListType;
-	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
+	if(nlisttype < 0 || nlisttype >= (UT_sint32) NOT_A_LIST)
 		style = (XML_Char *) NULL;
 	else
 	{
@@ -5683,7 +5683,7 @@ char *	fl_BlockLayout::getFormatFromListType( List_Type iListType)
 {
 	UT_sint32 nlisttype = (UT_sint32) iListType;
 	char * format = NULL;
-	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
+	if(nlisttype < 0 || nlisttype >= (UT_sint32) NOT_A_LIST)
 		return format;
 	fl_AutoLists al;
 	format = const_cast<char *>(al.getFmtList(nlisttype));

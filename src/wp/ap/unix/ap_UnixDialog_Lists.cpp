@@ -133,11 +133,6 @@ static void s_closeClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
 	me->closeClicked();
 }
 
-static void s_deleteClicked (GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
-{
-	me->destroy();
-}
-
 static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
 {
 	UT_ASSERT(widget && me);

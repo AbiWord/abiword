@@ -163,8 +163,6 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 // Run the Background dialog over the options? No the title is wrong.
 //
   GtkWidget * dlg;
-  GtkWidget * k;
-  GtkWidget * actionarea;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 

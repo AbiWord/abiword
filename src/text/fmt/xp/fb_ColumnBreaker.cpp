@@ -121,7 +121,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		bool bBreakOnColumnBreak = false;
 		bool bBreakOnPageBreak = false;
 		// plam: this var is redundant if the #if 0 remains dead.
-		bool bDoTableBreak = false;
+		//bool bDoTableBreak = false;
 		UT_sint32 iTotalContainerSpace = 0;
 		while (pCurContainer)
 		{
@@ -403,7 +403,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					// will actually contain a bunch of otherwise nonadjacent
 					// layouts.
 					
-					fp_Page* pCurPage = pCurColumn->getPage();
+					//fp_Page* pCurPage = pCurColumn->getPage();
 // 					fp_FootnoteContainer *pFC = 
 // 						static_cast<fp_FootnoteContainer*>(
 // 						   pSL->getFootnoteContainer(pCurContainer, pCurPage));

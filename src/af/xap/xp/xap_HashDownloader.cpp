@@ -271,7 +271,7 @@ XAP_HashDownloader::getComparableBuildDate()
 UT_uint32
 XAP_HashDownloader::dlg_askDownload(XAP_Frame *pFrame, const char *szLang)
 {
-	UT_return_val_if_fail((pFrame != NULL), -1);
+	UT_return_val_if_fail((pFrame != NULL), 0);
 
 	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_AskDownload
 				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES, szLang))
@@ -333,7 +333,7 @@ XAP_HashDownloader::tryToDownloadHash(XAP_Frame *pFrame, const char *szFName, XA
 UT_sint32
 XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 {
-	char buff[512], buff2[512], szFName[256], *endptr;
+	char buff[512], szFName[256], *endptr;
 	UT_sint32 i, ret;
 	FILE *fp;
 	tPkgType pkgType;

@@ -104,7 +104,7 @@ static bool findIconDataByName(const char * szName, const char *** pIconData, UT
 	return false;
 }
 
-static bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
+static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
 {
         const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
