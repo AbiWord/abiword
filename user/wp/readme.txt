@@ -1,8 +1,8 @@
 
 ----------------
 Release Notes
-AbiWord 0.7.2
-13 July 1999
+AbiWord 0.7.3
+14 July 1999
 ----------------
 
 Thank you for your interest in this Preview Release of AbiWord!
