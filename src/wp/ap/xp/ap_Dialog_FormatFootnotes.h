@@ -74,6 +74,9 @@ public:
 	void                recalcTextValues(void);
 	void                updateDocWithValues(void);
 	void                setInitialValues(void);
+	
+	static UT_Vector*	getFootnoteTypeLabelList(void);
+	
 private:
 	tAnswer         m_answer;
 	FL_DocLayout *  m_pDocLayout;

@@ -348,3 +348,21 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 	m_pDoc->setProperties(pProps);
 	m_pDoc->signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_REBUILD);
 }	
+
+
+UT_Vector*			AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList(void)
+{
+	static UT_Vector* vec = NULL;
+	if (vec == NULL) {
+		const char **current = s_FootnoteTypeDesc;
+		vec = new UT_Vector();
+		while (*current) {
+			vec->addItem(*current);
+			current++;
+		}
+	}
+	
+	return vec;
+}
+
+

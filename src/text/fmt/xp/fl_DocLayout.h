@@ -32,7 +32,7 @@
 
 typedef enum _FootnoteType
 {
-	FOOTNOTE_TYPE_NUMERIC,
+	FOOTNOTE_TYPE_NUMERIC = 0,
 	FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS,
 	FOOTNOTE_TYPE_NUMERIC_PAREN,
 	FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN,
@@ -47,6 +47,8 @@ typedef enum _FootnoteType
 	FOOTNOTE_TYPE_UPPER_ROMAN,
 	FOOTNOTE_TYPE_UPPER_ROMAN_PAREN
 } FootnoteType;
+
+extern const char * s_FootnoteTypeDesc[];
 
 class FV_View;
 class fl_DocListener;

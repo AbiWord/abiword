@@ -50,6 +50,25 @@
 
 #define REDRAW_UPDATE_MSECS	500
 
+const char * s_FootnoteTypeDesc[] = {
+	"1, 2, 3,...",
+	"[1], [2], [3],...",
+	"(1), (2), (3),...",
+	"1), 2), 3),...",
+	"a, b, c,...",
+	"(a), (b), (c),...",
+	"a), b), c)...",
+	"A, B, C,...",
+	"(A), (B), (C)...",
+	"A), B), C),...",
+	"i, ii, iii,...",
+	"(i), (ii), (iii),...",
+	"I, II, III,...",
+	"(I), (II), (III),...",
+	NULL
+};
+
+
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	:	m_hashFontCache(19)
 {
