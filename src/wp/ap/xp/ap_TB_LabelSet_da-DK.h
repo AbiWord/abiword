@@ -20,6 +20,7 @@
 // Danish translations provided by Martin Willemoes Hansen <mwh@stampede.org>
 //                             , Birger Langkjer <birger.langkjer@image.dk>
 //                             and Rasmus Toftdahl Olesen <rto@post.tele.dk>
+//                             Kenneth Christiansen <kenneth@gnu.org>
 
 /*****************************************************************
 ******************************************************************
@@ -97,7 +98,8 @@ BeginSet(da,DK,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",		NoIcon,			NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Punktliste",		tb_lists_bullets_xpm,		NULL,		"Indsæt punktliste")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Nummerliste",		tb_lists_numbers_xpm,		NULL,		"Indsæt nummereret liste")
-
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,          "Foreground Color",     NoIcon,                 NULL, "Change Foreground Color")
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,          "Background Color",     NoIcon,                 NULL, "Change Background Color")
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
