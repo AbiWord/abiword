@@ -287,6 +287,10 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 	{
 		_rtf_keyword("footerf");
 	}
+	_rtf_keyword("pard");
+	_rtf_keyword("plain");
+	m_pListenerWriteDoc->m_bBlankLine = false;
+	UT_DEBUGMSG(("SEVIOR: Doing header \n"));
 //
 // Now pump out the contents of the HdrFtr
 //

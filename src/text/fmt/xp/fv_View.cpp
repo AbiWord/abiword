@@ -8523,7 +8523,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}
-
+	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	return bRes;
 }
 // -------------------------------------------------------------------------

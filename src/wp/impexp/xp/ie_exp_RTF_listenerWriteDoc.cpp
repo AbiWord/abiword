@@ -68,6 +68,7 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 	bool bInList = false;
 	const XML_Char * szListid=NULL;
 	const PP_AttrProp * pBlockAP = NULL;
+	UT_DEBUGMSG(("SEVIOR: Close Block \n"));
 	if(nextApi != 0)
 	{
 		m_pDocument->getAttrProp(nextApi,&pBlockAP);
@@ -90,7 +91,8 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 //
 		const PP_AttrProp * pSpanAP = NULL;
 		m_pDocument->getSpanAttrProp(m_sdh,0,true,&pSpanAP);
-  		_openSpan(m_apiThisBlock,pSpanAP);
+		UT_DEBUGMSG(("SEVIOR: Close Block -open span \n"));
+		//		_openSpan(m_apiThisBlock,pSpanAP);
 	
 	}
 	else
@@ -862,7 +864,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			{
 				m_pie->exportHdrFtr("header",pszHdrFtrID);
 			}
-
 			pszHdrFtrID = NULL;
 			pAP->getAttribute("footer", pszHdrFtrID);
 			if(pszHdrFtrID != NULL)
@@ -1174,7 +1175,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 		UT_String_sprintf(sRtfTop,"%fin",tMarg);
 		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)sRtfTop.c_str(), 1440);
-		setlocale (LC_NUMERIC, old_locale);
 	}
 	if(szFooterExists  && szMarginBottom)
 	{
@@ -1291,20 +1291,23 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if (m_bJustStartingSection)			// 'par' is a delimiter, rather than a plain start.
 		m_bJustStartingSection = false;
 	else
-		m_pie->_rtf_keyword("par");		// begin a new paragraph
-	
-//
-// This close span is an open span on a blank line.
-//
-	_closeSpan();
+		m_pie->_rtf_keyword("pard");		// begin a new paragraph
 
 	UT_uint32 id = 0;
 	if(szListid != NULL)
 		id = atoi(szListid);
 	if(id == 0)
 	{
-//		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
+//
+// If span was openned in a previous closeBlock because of a blank line
+// close it now.
+//
+//		_closeSpan();
 	}
+	if(!m_bBlankLine)
+	{
+		m_pie->_rtf_keyword("pard");		// begin a new paragraph
+	}		
 	///
 	/// Output fallback numbered/bulleted label for rtf readers that don't 
 	/// know /*/pn
@@ -1362,11 +1365,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_chardata(&tab,1);
 		m_pie->_rtf_close_brace();
 //
-// Span was openned in a previous closeBlock because this is a list
-// Item.
+// Span was openned in a previous closeBlock because of a List item
+// close it now.
 //
-		_closeSpan();
-//		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
+//		_closeSpan();
+		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 	}
 
 	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
@@ -1578,7 +1581,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
     /// a new list list structure. We need m_currID to track the previous list
     /// we were in. 
 	///
-	UT_DEBUGMSG(("SEVIOR: Doing output of list structure id = %d\n",id));
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing output of list structure id = %d\n",id));
 	if(id != 0 )
 	{
 		UT_uint32 iOver = m_pie->getMatchingOverideNum(id);
@@ -1632,6 +1635,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword("keepn");
 
 	m_pie->_write_tabdef(szTabStops);
+	m_pie->_rtf_keyword("par");		// These controls define a new paragraph
 }
 
 //////////////////////////////////////////////////////////////////
