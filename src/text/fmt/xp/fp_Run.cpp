@@ -144,6 +144,8 @@ fp_Run::~fp_Run()
 	m_pBL = NULL;
 	m_pLine = NULL;
 #endif
+
+	DELETEP(m_pRevisions);
 }
 
 void fp_Run::lookupProperties()

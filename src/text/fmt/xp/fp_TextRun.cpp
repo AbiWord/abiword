@@ -138,8 +138,6 @@ fp_TextRun::~fp_TextRun()
 #else
 	pango_glyph_string_free();
 #endif
-
-	delete getRevisions();
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const

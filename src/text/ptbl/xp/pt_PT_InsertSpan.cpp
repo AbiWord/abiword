@@ -65,7 +65,49 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib,NULL);
 	}
+	else if(bAddChangeRec)
+	{
+		// When the revision marking is not on, we need to make sure
+		// that the text does not get inserted with a leftover
+		// revision attribute (e.g., if we are inserting it next to
+		// revisioned text
+		const XML_Char name[] = "revision";
+		const XML_Char * ppRevAttrib[3];
+		ppRevAttrib[0] = name;
+		ppRevAttrib[1] = NULL;
+		ppRevAttrib[2] = NULL;
+		
+		const XML_Char * pRevision = NULL;
 
+		// first retrive the fmt we have (_realChangeSpanFmt()) is
+		// quite involved, so we want to avoid calling it, if we can)
+		pf_Frag * pf1;
+		PT_BlockOffset Offset1;
+
+		if(!getFragFromPosition(dpos, &pf1, &Offset1))
+			return false;
+
+		const PP_AttrProp * pAP;
+		if(_getSpanAttrPropHelper(pf1, &pAP))
+		{
+			if(!pAP->getAttribute(name, pRevision))
+			{
+				// if we have no revision attribute, then everything
+				// is OK
+				return true;
+			}
+
+			if(!_realChangeSpanFmt(PTC_RemoveFmt, dpos, dpos+length, ppRevAttrib,NULL))
+				return false;
+		}
+		else
+		{
+			// no AP, this is probably OK
+			UT_DEBUGMSG(("pt_PieceTable::insertSpan: no AP\n"));
+			return true;
+		}
+	}
+	
 	return true;
 }
 
