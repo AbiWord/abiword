@@ -83,7 +83,7 @@
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_CocoaDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_CocoaDialog_FileOpenSaveAs)
-//PORT	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_CocoaDialog_Print)
+	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_CocoaDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_CocoaDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_CocoaDialog_Language)
