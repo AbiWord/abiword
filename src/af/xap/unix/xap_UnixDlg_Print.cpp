@@ -74,6 +74,20 @@ void XAP_UnixDialog_Print::useStart(void)
 		m_persistPrintDlg.colorSpace = m_cColorSpace;
 		m_persistPrintDlg.szPrintCommand = m_szPrintCommand;
 	}
+	else
+	  {
+	    m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
+	    m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
+	    m_persistPrintDlg.bDoPrintToFile = m_bDoPrintToFile;
+	    m_persistPrintDlg.bDoCollate = m_bCollate;
+	    m_persistPrintDlg.nCopies = m_nCopies;
+	    m_persistPrintDlg.nFromPage = m_nFirstPage;
+	    m_persistPrintDlg.nToPage = m_nLastPage;
+	    
+	    m_persistPrintDlg.colorSpace = m_cColorSpace;
+	    
+	    UT_cloneString(m_persistPrintDlg.szPrintCommand, m_szPrintCommand);
+	  }
 }
 
 void XAP_UnixDialog_Print::useEnd(void)
@@ -90,6 +104,7 @@ void XAP_UnixDialog_Print::useEnd(void)
 
 	m_persistPrintDlg.colorSpace = m_cColorSpace;
 	
+	FREEP(m_persistPrintDlg.szPrintCommand);
 	UT_cloneString(m_persistPrintDlg.szPrintCommand, m_szPrintCommand);
 }
 

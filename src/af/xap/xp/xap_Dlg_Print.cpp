@@ -37,7 +37,7 @@ XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 {
 	m_bPersistValid = false;
 	m_persistNrCopies = 1;
-	m_persistCollate = false;
+	m_persistCollate = true;
 	m_persistColorSpace = GR_Graphics::GR_COLORSPACE_COLOR;	/* full color is default */
 	m_persistPrintToFile = false;
 
