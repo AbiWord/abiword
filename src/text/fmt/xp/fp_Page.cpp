@@ -366,6 +366,7 @@ void fp_Page::_reformat(void)
 	if(i<count)
 	{
 		fl_DocSectionLayout * pCurSL = NULL;
+		UT_uint32 numValidLeaders = (UT_uint32) i;
 		while (i < count)
 		{
 			fp_Column* pLeader = getNthColumnLeader(i);
@@ -408,6 +409,7 @@ void fp_Page::_reformat(void)
 				}
 				pLeader = pLeader->getFollower();
 			}
+
 			if(pSL != pCurSL)
 			{
 				pCurSL = pSL;
@@ -416,6 +418,27 @@ void fp_Page::_reformat(void)
 			UT_DEBUGMSG((" fp_Page::_reformat i < count, i= %d count= %d \n",i,count)); 
 			i++;
 		}
+
+//
+// Remove these from our vector of leaders and delete the containers.
+//
+  		while(m_vecColumnLeaders.getItemCount() > numValidLeaders)
+  		{
+  			fp_Column* pLeader = getNthColumnLeader(numValidLeaders);
+
+  			// Delete leader from list
+  			m_vecColumnLeaders.deleteNthItem(numValidLeaders);
+//  			fp_Column * pFollower = pLeader;
+//  			while(pLeader)
+//  			{
+//  				pFollower = pLeader->getFollower();
+//  				delete pLeader;
+//  				pLeader = pFollower;
+//  			}
+  		}
+//  
+// Now reformat
+//
 		pCurSL = m_pOwner->getNextDocSection();
 		while(pCurSL != NULL)
 		{
@@ -532,6 +555,7 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 // Change ownership of the page. First remove this page from the set owned by
 // the old docSectionLayout.
 //
+			UT_DEBUGMSG(("SEVIOR: Deleting owned Page from Page \n"));
 			if(m_pOwner)
 				m_pOwner->deleteOwnedPage(this);
 			fl_DocSectionLayout * pDSLNew = pLeader->getDocSectionLayout();
@@ -819,6 +843,7 @@ const fp_PageSize&	fp_Page::getPageSize(void) const
 
 void fp_Page::removeHeader(void)
 {
+	UT_DEBUGMSG(("SEVIOR: Deleting header from page m_pHeader = %x \n",m_pHeader));
 	if(m_pHeader == NULL)
 		return;
 	delete m_pHeader;
@@ -828,6 +853,7 @@ void fp_Page::removeHeader(void)
 
 void fp_Page::removeFooter(void)
 {
+	UT_DEBUGMSG(("SEVIOR: Deleting header from page m_pFooter = %x \n",m_pFooter));
 	if(m_pFooter == NULL)
 		return;
 	delete m_pFooter;

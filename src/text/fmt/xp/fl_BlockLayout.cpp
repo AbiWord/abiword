@@ -990,9 +990,11 @@ void fl_BlockLayout::purgeLayout(void)
 	while (m_pFirstRun)
 	{
 		fp_Run* pNext = m_pFirstRun->getNext();
+		m_pFirstRun->setBlock(NULL);
 		delete m_pFirstRun;
 		m_pFirstRun = pNext;
 	}
+	
 }
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
@@ -2378,6 +2380,9 @@ void fl_BlockLayout::checkSpelling(void)
 //
 // Dont spell check non formatted blocks!
 //
+	if(m_pFirstRun == NULL)
+		return;
+
 	if( m_pFirstRun->getLine() == NULL)
 		return;
 
@@ -3449,8 +3454,10 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				// Remove Run from line
 				fp_Line* pLine = pRun->getLine();
 				UT_ASSERT(pLine);
-				pLine->removeRun(pRun, true);
-
+				if(pLine)
+				{
+					pLine->removeRun(pRun, true);
+				}
 				// Unlink Run and delete it
 				if (m_pFirstRun == pRun)
 				{

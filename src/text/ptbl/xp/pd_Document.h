@@ -225,6 +225,8 @@ public:
 	void					clearDoingPaste(void);
 	bool					isDoingPaste(void);
 
+	void                    setRedrawHappenning(bool bIsHappening) {m_bRedrawHappenning  = bIsHappening;}
+
 	// PageSize functions
 	fp_PageSize				m_docPageSize;
 	void					setDefaultPageSize(void);
@@ -260,6 +262,7 @@ private:
 	bool					m_bPieceTableChanging;
 	bool					m_bDoingPaste;
 	bool					m_bAllowInsertPointChange;
+	bool                    m_bRedrawHappenning;
 };
 
 #endif /* PD_DOCUMENT_H */

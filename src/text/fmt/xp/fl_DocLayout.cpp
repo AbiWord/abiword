@@ -1316,6 +1316,10 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 		return;
 	}
 //
+// Lock out PieceTable changes till we finished.
+//
+	pDoc->setRedrawHappenning(true);
+//
 // Check if we've been asked to wait for a while..
 //
 	UT_uint32 skip = pDocLayout->getSkipUpdates();
@@ -1323,6 +1327,7 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 	{
 		skip--;
 		pDocLayout->setSkipUpdates(skip);
+		pDoc->setRedrawHappenning(false);
 		return;
 	}
 //
@@ -1330,6 +1335,7 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 //
 	if(pDocLayout->m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
+		pDoc->setRedrawHappenning(false);
 		return;
 	}
 
@@ -1337,41 +1343,19 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 	while (pSL)
 	{
 		if(pDoc->isPieceTableChanging())
+		{
+			pDoc->setRedrawHappenning(false);
 			return;
+		}
 		pSL->redrawUpdate();
 		pSL = pSL->getNext();
 	}
 
 	pDocLayout->deleteEmptyColumnsAndPages();
-	
-
-/*
-  UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
-  UT_ASSERT(vecToCheck);
-
-  UT_uint32 i = vecToCheck->getItemCount();
-
-  if (i > 0)
-  {
-  fl_BlockLayout *pB = (fl_BlockLayout *) vecToCheck->getFirstItem();
-
-  if (pB != NULL)
-  {
-  vecToCheck->deleteNthItem(0);
-  i--;
-
-  //	note that we remove this block from queue before checking it
-  //	(otherwise asserts could trigger redundant recursive calls)
-  pB->checkSpelling();
-  }
-  }
-
-  if (i == 0)
-  {
-  // timer not needed any more, so suspend it
-  pDocLayout->m_pSpellCheckTimer->stop();
-  }
-*/
+//
+// we've finished
+//
+	pDoc->setRedrawHappenning(false);
 }
 
 void FL_DocLayout::setPendingSmartQuote(fl_BlockLayout *bl, UT_uint32 of)

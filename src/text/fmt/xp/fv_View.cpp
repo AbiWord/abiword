@@ -7547,7 +7547,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		//PT_DocPosition pos = getPoint();
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
-		UT_ASSERT(pRun);
+//		UT_ASSERT(pRun); // We always recover after this so no assert.
 //
 // No useful info here. Just return 0
 //

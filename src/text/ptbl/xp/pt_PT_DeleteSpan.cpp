@@ -795,8 +795,9 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		xxx_UT_DEBUGMSG(("pt_PieceTable::deleteSpan Paragraph empty\n"));
 
 		// All text in paragraph is deleted so insert a text format.
-
-		_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, &AttrProp_Before);
+		// Except if we're realy don't want it. We know we dont if bDontGlob is true.
+		if(!bDontGlob)
+			_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, &AttrProp_Before);
 
 	}
 

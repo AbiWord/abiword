@@ -417,12 +417,12 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 //
 	if(TextEndPos > TextStartPos)
 	{
-		deleteSpan(TextStartPos,TextEndPos,NULL,false);
+		deleteSpan(TextStartPos,TextEndPos,NULL,true);
 	}
 //
 // Now delete the struxes at the start.
 //
-	deleteSpan(HdrFtrPos,TextStartPos,NULL,false);
+	deleteSpan(HdrFtrPos,TextStartPos,NULL,true);
 }
 
 

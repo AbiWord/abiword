@@ -52,6 +52,7 @@
 #include "xap_App.h"
 #include "ut_units.h"
 #include "ut_string_class.h"
+#include "ut_sleep.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -78,7 +79,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_lastSavedAsType(IE_Exp::fileTypeForSuffix(".abw")),
 	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
-	m_bAllowInsertPointChange(true)
+	m_bAllowInsertPointChange(true),
+	m_bRedrawHappenning(false)
 {
 	m_pApp = pApp;
 
@@ -1742,7 +1744,19 @@ bool PD_Document::getAllowChangeInsPoint(void) const
 
 void PD_Document::notifyPieceTableChangeStart(void)
 {
-        m_bPieceTableChanging = true;
+//
+// Wait for all redraws to finish before starting.
+//
+	UT_uint32 i = 0;
+	while(m_bRedrawHappenning && i < 10000)
+	{
+		UT_usleep(100); // wait 100 microseonds
+		i++;
+	}
+	if(i>0)
+		UT_DEBUGMSG(("!!!!Waited %d microseconds for redraw to finish \m",i*100));
+	m_bRedrawHappenning = false;
+	m_bPieceTableChanging = true;
 }
 
 

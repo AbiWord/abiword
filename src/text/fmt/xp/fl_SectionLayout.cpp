@@ -1334,24 +1334,29 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 	
 	if (m_pHeaderSL)
 	{
+		UT_DEBUGMSG(("SEVIOR: Deleting header from DocSecition Layout\n"));
 		m_pHeaderSL->deletePage(pPage);
 	}
 
 	if (m_pFooterSL)
 	{
+		UT_DEBUGMSG(("SEVIOR: Deleting footer from DocSection Layout \n"));
 		m_pFooterSL->deletePage(pPage);
 	}
 //
 // Remove this page from the list of owned pages
 //
-	fp_Page * pNext = pPage->getNext();
-	if(pNext && pNext->getOwningSection() == this)
+	if(m_pFirstOwnedPage == pPage)
 	{
-		m_pFirstOwnedPage = pNext;
-	}
-	else
-	{
-		m_pFirstOwnedPage = NULL;
+		fp_Page * pNext = pPage->getNext();
+		if(pNext && pNext->getOwningSection() == this)
+		{
+			m_pFirstOwnedPage = pNext;
+		}
+		else
+		{
+			m_pFirstOwnedPage = NULL;
+		}
 	}
 }
 
@@ -2049,7 +2054,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 //
 // This shadow might have already been deleted via the collapse method
 //
-	if(iShadow <= 0)
+	if(iShadow <  0)
 		return;
 	struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(iShadow);
 	UT_ASSERT(pPair);
@@ -2061,10 +2066,12 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	delete pPair->pShadow;
 	if (getHFType() == FL_HDRFTR_HEADER)
 	{
+		UT_DEBUGMSG(("SEVIOR: Remove header from shadow \n"));
 		ppPage->removeHeader();
 	}
 	else 
 	{
+		UT_DEBUGMSG(("SEVIOR: Remove footer form shadow \n"));
 		ppPage->removeFooter();
 	}
 
