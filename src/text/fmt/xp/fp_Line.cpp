@@ -169,10 +169,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 		x = getX();
 		bBOL = UT_TRUE;
 	}
-	else if (x >= (UT_sint32)m_iWidth)
-	{
-		x = ((m_iWidth > 0) ? m_iWidth - 1 : 0);
-	}
 
 	// check all of the runs.
 	int count = m_vecRuns.getItemCount();

@@ -534,6 +534,12 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 		return;
 	}
 
+	if (x >= m_iWidth)
+	{
+		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen - 1;
+		return;
+	}
+
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
