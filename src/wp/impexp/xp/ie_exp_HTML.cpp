@@ -596,7 +596,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 				// sequences, but i prefer these.
 				char localBuf[20];
 				char * plocal = localBuf;
-				sprintf(localBuf,"&#x%x;",*pData++);
+				sprintf(localBuf,"&#%d;",*pData++);
 				while (*plocal)
 					*pBuf++ = (UT_Byte)*plocal++;
 			}
