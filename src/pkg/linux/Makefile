@@ -125,9 +125,9 @@ DEB_ROOT:=$(ABI_ROOT)/dist/abisuite-$(ABI_BUILD_VERSION)/debian/tmp
 
 
 
-PACK_ROOT:=$(ABI_ROOT)/../abisuite-$(ABI_BUILD_VERSION)
+PACK_ROOT:=$(ABI_ROOT)/../abiword-$(ABI_BUILD_VERSION)
 
-MODULE_LIST=abi-$(ABI_BUILD_VERSION) expat unixfonts abidistfiles libpng zlib wv
+MODULE_LIST=abi expat unixfonts abidistfiles libpng zlib wv
 
 # The following only works for RPM3.x
 #RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/.*topdir://"))
@@ -144,9 +144,9 @@ pack_rpm:
 	@mkdir -p $(PACK_ROOT)
 	@(cd $(ABI_ROOT)/..; tar --exclude=CVS -cf - $(MODULE_LIST)) | \
 		(cd $(PACK_ROOT); tar xf -)
-#	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar
-	@(cd $(PACK_ROOT)/..; tar cf $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar \
-		 abisuite-$(ABI_BUILD_VERSION))
+#	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abiword-$(ABI_BUILD_VERSION).tar
+	@(cd $(PACK_ROOT)/..; tar cf $(RPM_SOURCE_DIR)/SOURCES/abiword-$(ABI_BUILD_VERSION).tar \
+		 abiword-$(ABI_BUILD_VERSION))
 	@rm -rf $(PACK_ROOT)
 
 ########################################################################
@@ -158,13 +158,13 @@ rpm: pack_rpm
 # so rip the spec template through some sed magic and run with it.
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))	
 	@echo "Exporting spec file to [$(RPM_SOURCE_DIR)/SPECS]..."
-	@(sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" rpm/abisuite.spec-template \
+	@(sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" rpm/abiword.spec-template \
 		| sed "s/__ABI_RELEASE_NUMBER__/$(ABI_RELEASE_NUMBER)/" \
-		> $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec)
+		> $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec)
 	@echo "Producing RPM..."
-	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
-	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
-	mv $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm $(DIST)
+	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abiword-$(ABI_BUILD_VERSION).spec
+	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abiword-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
+	mv $(RPM_SOURCE_DIR)/SRPMS/abiword-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).src.rpm $(DIST)
 
 deb::
 	@echo "Producing Deb..."

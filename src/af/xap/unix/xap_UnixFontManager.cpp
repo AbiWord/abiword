@@ -86,10 +86,10 @@ static int s_xerror_handler(Display *dsp, XErrorEvent *e)
 
 unhandled:
 	// on everything else we will call the previous handler.
-	UT_DEBUGMSG(("Unhandled X error: %c\n"
-				 "          display %c, serial %ld, request %c:%c, XID %d\n"
+	UT_DEBUGMSG(("Unhandled X error: %d\n"
+				 "          display %s, serial %lu, request %d:%d, XID %lu\n"
 				 "          AbiWord will terminate\n",
-				 e->error_code, e->display, e->serial, e->request_code, e->minor_code, e->resourceid));
+				 (int) e->error_code, DisplayString (e->display), e->serial, (int) e->request_code, (int) e->minor_code, (unsigned long) e->resourceid));
 	
 	if(!s_oldErrorHandler)
 	{
