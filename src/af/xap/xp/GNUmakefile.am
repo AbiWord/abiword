@@ -20,12 +20,6 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES = $(AF_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES) $(MATHVIEW_CFLAGS)
 
-if WITH_RESOURCE_MANAGER
-RESOURCE_MANAGER_OBJ = xap_Resource.cpp xap_ResourceManager.cpp
-else
-RESOURCE_MANAGER_OBJ = 
-endif
-
 noinst_LIBRARIES = libXap_xp.a
 
 libXap_xp_a_SOURCES=\
@@ -73,7 +67,6 @@ libXap_xp_a_SOURCES=\
 	xap_Toolbar_ControlFactory.cpp	\
 	xap_ViewListener.cpp		\
 	xav_View.cpp			\
-	$(RESOURCE_MANAGER_OBJ)		\
 	xap_EncodingManager.cpp \
 	xap_Dlg_ListDocuments.cpp \
 	xap_Dlg_History.cpp \

@@ -38,7 +38,6 @@
 #include "time.h"
 
 // fwd. decl.
-class XAP_ResourceManager;
 class UT_UUID;
 class XAP_Frame;
 class AV_View;
@@ -131,8 +130,6 @@ public:
 
 	virtual AD_DOCUMENT_TYPE getType() const = 0;
 	
-	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
-
 	const char *			getFilename(void) const;
 	// TODO - this should be returning IEFileType, 
 	// but that's AP stuff, so it's not here
@@ -262,8 +259,6 @@ protected:
 	virtual ~AD_Document();		//  Use unref() instead.
 
 private:
-	XAP_ResourceManager *	m_pResourceManager;
-	
 	int				m_iRefCount;
 	const char *	m_szFilename;
 	UT_String		m_szEncodingName;

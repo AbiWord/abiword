@@ -43,16 +43,8 @@
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 
-#ifdef ENABLE_RESOURCE_MANAGER
-#include "xap_ResourceManager.h"
-#endif
 
 AD_Document::AD_Document() :
-#ifdef ENABLE_RESOURCE_MANAGER
-	m_pResourceManager(new XAP_ResourceManager),
-#else
-	m_pResourceManager(0),
-#endif
 	m_iRefCount(1),
 	m_szFilename(NULL),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
@@ -88,9 +80,6 @@ AD_Document::~AD_Document()
    	// NOTE: let subclass clean up m_szFilename, so it matches the alloc mechanism
 
 	// & finally...
-#ifdef ENABLE_RESOURCE_MANAGER
-	DELETEP(m_pResourceManager);
-#endif
 
 	UT_VECTOR_PURGEALL(AD_VersionData*, m_vHistory);
 	UT_VECTOR_PURGEALL(AD_Revision*, m_vRevisions);

@@ -168,18 +168,6 @@ ABI_FRIBIDI
 
 ABI_PLUGINS
 
-dnl The resource manager is a class (XAP_ResourceManager) designed to handle
-dnl images/objects/hyperlinks included by the document. Disabled by default.
-dnl 
-abi_resource_manager=no
-dnl AC_ARG_ENABLE(resource-manager,[  --enable-resource-manager  Use the resource manager (experimental)],[
-dnl 	if test "x$enableval" = "xyes"; then
-dnl 		abi_resource_manager=yes
-dnl 		ABI_FEATURE_DEFS="$ABI_FEATURE_DEFS -DENABLE_RESOURCE_MANAGER=1"
-dnl 	fi
-dnl ])
-AM_CONDITIONAL(WITH_RESOURCE_MANAGER,[test "x$abi_resource_manager" = "xyes"])
-
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],
      [case "${enableval}" in

@@ -34,9 +34,6 @@
 #include "ut_hash.h"
 
 #include "xap_EncodingManager.h"
-#ifdef ENABLE_RESOURCE_MANAGER
-#include "xap_ResourceManager.h"
-#endif
 
 #include "pd_Document.h"
 #include "pd_Style.h"
@@ -586,11 +583,6 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 
 	case TT_RESOURCE:
-#ifdef ENABLE_RESOURCE_MANAGER
-		X_VerifyParseState(_PS_Doc);
-		m_parseState = _PS_DataItem;
-		_handleResource (atts, true);
-#endif
 		return;
 
 	case TT_STYLESECTION:
@@ -982,7 +974,6 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataItem);
 		m_parseState = _PS_DataSec;
-#ifndef ENABLE_RESOURCEMANAGER
 #define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
 		trim = 0;
 		len = m_currentDataItem.getLength();
@@ -998,14 +989,9 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		FREEP(m_currentDataItemName);
 		// the data item will free the token we passed (mime-type)
 		m_currentDataItemMimeType = NULL;
-#endif
  		return;
 
 	case TT_RESOURCE:
-#ifdef ENABLE_RESOURCEMANAGER
-		X_VerifyParseState(_PS_DataItem);
-		m_parseState = _PS_Doc;
-#endif
  		return;
 
 	case TT_STYLESECTION:

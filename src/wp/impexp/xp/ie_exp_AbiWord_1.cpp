@@ -31,10 +31,6 @@
 #include "ut_string_class.h"
 #include "ut_uuid.h"
 
-#ifdef ENABLE_RESOURCE_MANAGER
-#include "xap_ResourceManager.h"
-#endif
-
 #include "xap_App.h"
 
 #include "pt_Types.h"
@@ -119,11 +115,7 @@ IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
 /*****************************************************************/
 /*****************************************************************/
 
-#ifdef ENABLE_RESOURCE_MANAGER
-class s_AbiWord_1_Listener : public PL_Listener, XAP_ResourceManager::Writer
-#else
 class s_AbiWord_1_Listener : public PL_Listener
-#endif
 {
 public:
 	s_AbiWord_1_Listener(PD_Document * pDocument,
@@ -299,69 +291,6 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 								   bool bNewLineAfter, PT_AttrPropIndex api,
 								   bool bIgnoreProperties)
 {
-#ifdef ENABLE_RESOURCE_MANAGER
-	UT_ASSERT_HARMLESS (!m_bOpenChar);
-
-	UT_UTF8String tag("<");
-	tag += szPrefix;
-
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
-	if (bHaveProp && pAP)
-		{
-			const XML_Char * szName = 0;
-			const XML_Char * szValue = 0;
-
-			UT_uint32 k = 0;
-			while (pAP->getNthAttribute (k++, szName, szValue))
-				{
-					tag += " ";
-					tag += szName;
-					tag += "=\"";
-
-					if ((*szValue == '/') && ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0)))
-						{
-							XAP_ResourceManager & RM = m_pDocument->resourceManager ();
-							XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (szValue, false));
-							if (re) tag += re->URL ();
-						}
-					else _outputXMLChar (szValue, strlen (szValue));
-
-					tag += "\"";
-				}
-			if (!bIgnoreProperties)
-				{
-					k = 0;
-					while (pAP->getNthProperty (k++, szName, szValue))
-						{
-							if (k == 1)
-								{
-									tag += " ";
-									tag += PT_PROPS_ATTRIBUTE_NAME;
-									tag += "=\"";
-								}
-							else tag += "; ";
-
-							tag += szName;
-							tag += ":";
-
-							_outputXMLChar (szValue, strlen (szValue));
-						}
-					if (k > 1) tag += "\"";
-				}
-		}
-
-	if (szSuffix)
-		if (*szSuffix == '/')
-			tag += "/";
-	tag += ">";
-	if (bNewLineAfter) tag += "\n";
-
-	m_pie->write (tag.utf8_str (), tag.byteLength());
-
-	if (strcmp (szPrefix, "c") == 0) m_bOpenChar = true;
-
-#else /* ENABLE_RESOURCE_MANAGER */
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
@@ -424,7 +353,6 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 		m_pie->write("\n");
 
 	//	m_bInTag = true;
-#endif /* ENABLE_RESOURCE_MANAGER */
 }
 
 // This method is very much like _outputData but uses XML_Chars instead of UT_UCS4_Char's.
@@ -642,11 +570,9 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				{
 				_closeSpan();
                 _closeField();
-#ifndef ENABLE_RESOURCE_MANAGER
 				const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
 				if (image_name)
 					m_pUsedImages.insert(image_name);
-#endif
 				_openTag("image","/",false,api);
 
 				return true;
@@ -665,11 +591,9 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     _closeSpan();
                     _closeField();
                     _openTag("math","/",false,api);
-#ifndef ENABLE_RESOURCE_MANAGER
 				const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
 				if (image_name)
 					m_pUsedImages.insert(image_name);
-#endif
                     return true;
                 }
    			case PTO_Bookmark:
@@ -741,12 +665,10 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
-#ifndef ENABLE_RESOURCE_MANAGER
 	PT_AttrPropIndex api = pcr->getIndexAP();
 	const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>(PT_STRUX_IMAGE_DATAID));
 	if (image_name)
 		m_pUsedImages.insert(image_name);
-#endif
 
 	switch (pcrx->getStruxType())
 	{
