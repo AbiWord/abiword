@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
+ * Copyright (C) 2004 Martin Sevior
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -96,8 +97,6 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_St
 	  dlg->event_Apply();
 	else if ( resp == GTK_RESPONSE_CLOSE )
 	  abiDestroyWidget(widget);
-	else
-		UT_DEBUGMSG(("Call Help!\n"));
 }
 
 XAP_Dialog * AP_UnixDialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
@@ -113,7 +112,6 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 	  m_wStyleList(NULL),
 	  m_wApply(NULL),
 	  m_wClose(NULL),
-	  m_wHelp(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
 	  m_wStyleListContainer(NULL)
@@ -234,16 +232,10 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	m_wStyleListContainer  = glade_xml_get_widget(xml,"TreeViewContainer");
 	m_wApply = glade_xml_get_widget(xml,"btApply");
 	m_wClose = glade_xml_get_widget(xml,"btClose");
-	m_wHelp = glade_xml_get_widget(xml,"btHelp");
 
 	// set the dialog title
 	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title).utf8_str());
 	
-	// localize the strings in our dialog, and set tags for some widgets
-
-	localizeButtonUnderline(m_wApply, pSS, AP_STRING_ID_DLG_ApplyButton);
-	localizeButtonUnderline(m_wClose, pSS, AP_STRING_ID_DLG_CloseButton);
-	localizeButtonUnderline(m_wHelp, pSS, AP_STRING_ID_DLG_HelpButton);
 	return m_windowMain;
 }
 
