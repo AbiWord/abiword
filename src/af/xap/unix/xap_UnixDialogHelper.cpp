@@ -493,12 +493,9 @@ static void sDoHelp ( XAP_Dialog * pDlg )
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame () ;
 	
 	// should always be valid, but just in case...
-	UT_return_if_fail(pFrame);
-	UT_return_if_fail(pDlg);
+	if (!pDlg || !pFrame)
+		return;
 
-	xxx_UT_DEBUGMSG(("DOM: doing help: %d %s\n", pDlg->getHelpUrl().size (),
-					 pDlg->getHelpUrl().c_str ()));
-	
 	// open the url
 	if ( pDlg->getHelpUrl().size () > 0 )
     {
@@ -558,7 +555,7 @@ static void help_button_cb (GObject * button, XAP_Dialog * pDlg)
 
 static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 {
-  if (pDlg->getHelpUrl().size () > 0) {
+  if (pDlg && pDlg->getHelpUrl().size () > 0) {
     GtkWidget * button = gtk_button_new_from_stock (GTK_STOCK_HELP);
 
     gtk_box_pack_start(GTK_BOX(me->action_area),
