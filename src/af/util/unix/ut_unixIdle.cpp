@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
+#include <glib.h>
 
 #include "ut_unixIdle.h"
 #include "ut_assert.h"
@@ -56,7 +56,8 @@ UT_UnixIdle::UT_UnixIdle ( UT_WorkerCallback cb, void * data )
  */
 UT_UnixIdle::~UT_UnixIdle ()
 {
-  stop ();
+  if ( m_id > 0 )
+    stop ();
 }
 
 /*!
@@ -64,7 +65,9 @@ UT_UnixIdle::~UT_UnixIdle ()
  */
 void UT_UnixIdle::start ()
 {
-  m_id = gtk_idle_add(_Timer_Proc, this);
+  UT_ASSERT(m_id == -1);
+  m_id = g_idle_add(_Timer_Proc, this);
+  UT_ASSERT(m_id > 0);
 }
 
 /*!
@@ -72,6 +75,9 @@ void UT_UnixIdle::start ()
  */
 void UT_UnixIdle::stop ()
 {
-  if ( m_id > 0 )
-    gtk_idle_remove(m_id);
+  UT_ASSERT(m_id > 0);
+
+  gboolean b = g_idle_remove_by_data(this);
+  UT_ASSERT(TRUE == b);
+  m_id = -1;
 }

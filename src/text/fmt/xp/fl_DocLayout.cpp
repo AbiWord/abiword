@@ -927,13 +927,20 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 		// this is really a timer, so it's safe to static_cast it
 		static_cast<UT_Timer*>(m_pBackgroundCheckTimer)->set(BACKGROUND_CHECK_MSECS);
 	      }
+#if 1
+	    m_bStopSpellChecking = false;
+	    m_pBackgroundCheckTimer->start();
+#endif
+
 	}
+#if 0
 	else
 	{
 		//		m_pBackgroundCheckTimer->stop();
 		m_bStopSpellChecking = false;
 		m_pBackgroundCheckTimer->start();
 	}
+#endif
 
 	if (hasBackgroundCheckReason(bgcrDebugFlash))
 	{

@@ -1636,7 +1636,9 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			return false;
 		}
 		
-		errorCode = pNewFrame->importDocument(pNewFile, ieft);
+		// treat import as creating a new, dirty document that
+		// must be saved to be made 'clean'
+		errorCode = pNewFrame->importDocument(pNewFile, ieft, false);
 		if (!errorCode)
 		{
 			pNewFrame->show(); // don't add to the MRU

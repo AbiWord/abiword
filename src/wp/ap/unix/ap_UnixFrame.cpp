@@ -513,11 +513,10 @@ UT_Error AP_UnixFrame::_importDocument(const char * szFilename, int ieft,
 
 	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
-	
+
 	if (!szFilename || !*szFilename)
 	{
 		pNewDoc->newDocument();
-		m_iUntitled = _getNextUntitledNumber();
 		goto ReplaceDocument;
 	}
 	UT_Error errorCode;
@@ -532,6 +531,8 @@ UT_Error AP_UnixFrame::_importDocument(const char * szFilename, int ieft,
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
+
+	m_iUntitled = _getNextUntitledNumber();
 
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = pNewDoc;

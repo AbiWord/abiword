@@ -81,7 +81,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_bDoingPaste(false),
 	m_bAllowInsertPointChange(true),
 	m_bRedrawHappenning(false),
-	m_bLoading(false)
+  m_bLoading(false),
+  m_bForcedDirty(false)
 {
 	m_pApp = pApp;
 
@@ -150,8 +151,10 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	m_bLoading = false;
 	updateFields();
 
-	if(markClean)	
+	if(markClean)
 		_setClean();
+	else
+	  m_bForcedDirty = true; // force this to be dirty
 
 	return UT_OK;
 }
@@ -325,13 +328,14 @@ UT_Error PD_Document::save(void)
 
 bool PD_Document::isDirty(void) const
 {
-	return m_pPieceTable->isDirty();
+	return m_pPieceTable->isDirty() || m_bForcedDirty;
 }
 
 void PD_Document::_setClean(void)
 {
 	m_pPieceTable->setClean();
 	m_pPieceTable->getFragments().cleanFrags();
+	m_bForcedDirty = false;
 }
 
 //////////////////////////////////////////////////////////////////

@@ -265,6 +265,7 @@ private:
 	bool					m_bAllowInsertPointChange;
 	bool                    m_bRedrawHappenning;
 	bool                    m_bLoading;
+	bool m_bForcedDirty;
 };
 
 #endif /* PD_DOCUMENT_H */
