@@ -90,7 +90,6 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 
 AP_Dialog_Lists::~AP_Dialog_Lists(void)
 {
-//	DELETEP(m_paragraphPreview);
  	DELETEP(m_pListsPreview);
 	for(UT_uint32 i=0; i<4; i++)
 	{
@@ -112,11 +111,12 @@ AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
 
 /************************************************************************/
 
-// how many characters do we want to pull from the current paragraph
-// to fill our preview
-
-#define NUM_CHARS_FOR_SAMPLE 100
-
+/*!
+ * Create the preview from the Graphics Context provided by the platform code.
+ \params gc the Platform Graphics Context cast into the a XP handle.
+ \params width the width of the gc
+ \params height the height of the gc
+ */
 void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 										   UT_uint32 width,
 										   UT_uint32 height)
@@ -144,46 +144,11 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 	{
 		m_NewListType = NOT_A_LIST;
 	}
-
-	// Mike: I added the "#if 0" to make it perfectly clear that
-	// this code is not currently used.
-	// Please remove this comment if this code gets reactivated.
-#if 0
-	// This is Thomas Code. I'll do a fake preview instead
-// Martin
-// free any attached preview
-
-	DELETEP(m_paragraphPreview);
-
-	UT_GrowBuf gb;
-	bool hadMem = getBlock()->getBlockBuf(&gb);
-
-	UT_UCSChar * tmp = NULL;
-	if (hadMem && gb.getLength() > 0)
-	{
-		gb.truncate(NUM_CHARS_FOR_SAMPLE);
-		UT_UCS_cloneString(&tmp, (UT_UCSChar *) gb.getPointer(0));
-	}
-	else
-	{
-		const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
-		// if the paragraph was empty, use our sample
-		UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
-	}
-
-	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this);
-
-	FREEP(tmp);
-	
-	UT_ASSERT(m_paragraphPreview);
-	
-	m_paragraphPreview->setWindowSize(width, height);
-#endif
-
-	// TODO : any setup of the GC for drawing
 }
 
+/*!
+ * Actually draw the preview.
+ */
 void AP_Dialog_Lists::event_PreviewAreaExposed(void)
 {
 	if (m_pListsPreview) 
@@ -218,25 +183,45 @@ fl_AutoNum * AP_Dialog_Lists::getAutoNum(void)
 	return getBlock()->getAutoNum();
 }
 
-
+/*!
+ * Returns the block at the current point.
+ */
 fl_BlockLayout * AP_Dialog_Lists::getBlock(void)
 {
 	return getView()->getCurrentBlock();
 }
 
+/*!
+ * This is the local cache of the change number reported in the AV_View. Only
+ * do an auto update if this number is different from the AV_View.
+ */ 
 UT_uint32 AP_Dialog_Lists::getTick(void)
 {
 	return m_iLocalTick;
 }
 
+/*!
+ * This is the local cache of the change number reported in the AV_View. Only
+ * do an auto update if this number is different from the AV_View.
+ */ 
 void AP_Dialog_Lists::setTick(UT_uint32 iTick)
 {
 	m_iLocalTick = iTick;
 }
 
+/*!
+ * This method Does the stuff requested on the "action" button, "Apply" in the 
+ * Modeless dialog and "OK" in the Modal dialog.
+ * Read comments with for all the stuff that can happen.
+ */
 void AP_Dialog_Lists::Apply(void)
 {
 	XML_Char szStart[20];
+/*!
+ *
+ * OK this is failsafe code incase the user has changed the font but wants a
+ * bullet list anyway. We don't let then!
+ */
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
@@ -246,6 +231,12 @@ void AP_Dialog_Lists::Apply(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
 
+/*!
+ * Just to make things even more confusing this method is also used in a Modal
+ * mannor by the styles dialog. This method is called when the users clicks "OK"
+ * on the modal dialog. When that happens we fill an output vector with all the
+ * properties currently defined.
+ */
 	if(isModal())
 	{
 //
@@ -276,6 +267,13 @@ void AP_Dialog_Lists::Apply(void)
 		m_OutProps.addItem((void *) m_Output[3].c_str());
 		return;
 	}
+/*!
+ * If the "Apply to current" radio buton is chosen we have two options.
+ * 1. If "No list" is chosen we stop the current list at on this block.
+ * 2. Otherwise we change the current list to the type requested here.
+ * This piece of code changes the list style at the current point to the
+ * Style requested by the user.
+ */
 	if(m_bApplyToCurrent == true && m_isListAtPoint == true &&  m_NewListType != NOT_A_LIST)
 	{
 		getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
@@ -286,6 +284,9 @@ void AP_Dialog_Lists::Apply(void)
 		clearDirty();
 		return;
 	}
+/*!
+ * This code stops the list at the current point.
+ */
 	else if ( m_isListAtPoint == true &&  m_NewListType == NOT_A_LIST)
 	{
 		if(getBlock()->isListItem() == true)
@@ -295,10 +296,23 @@ void AP_Dialog_Lists::Apply(void)
 		clearDirty();
 		return;
 	}
+/*!
+ * Start new list. 3 Possibilities.
+ * 1. If there is a list at the current point and the user choose no list, stop
+ *    the list the current point. 
+ *
+ * 2. start a new list with the properties given if there is not a 
+ * list at the current point.
+ *
+ * 3. Start a sublist at the current point if a list already exists there.
+ */
 	if(m_bStartNewList == true)
 	{ 
 		if(m_isListAtPoint == true && m_NewListType == NOT_A_LIST)
 		{
+//
+// This stops the current list.
+//
 			if(getBlock()->isListItem() == true)
 			{
 				getBlock()->StopList();
@@ -308,19 +322,29 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		else if ( m_isListAtPoint != true && m_NewListType != NOT_A_LIST )
 		{
-		        getBlock()->getDocument()->disableListUpdates();
+//
+// This starts the new list
+//
+			getBlock()->getDocument()->disableListUpdates();
 			getBlock()->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
 			getBlock()->getDocument()->enableListUpdates();
 			getBlock()->getDocument()->updateDirtyLists();
 			clearDirty();
 			return;
 		}
-		else if( m_NewListType != NOT_A_LIST )
+		else if( m_isListAtPoint == true && m_NewListType != NOT_A_LIST )
 		{
+//
+// This starts a sublist.
+//
 			UT_uint32 curlevel = getBlock()->getLevel();
 			UT_uint32 currID = getBlock()->getAutoNum()->getID();
 			curlevel++;
-		        getBlock()->getDocument()->disableListUpdates();
+			getBlock()->getDocument()->disableListUpdates();
+//
+// Need to update m_fAlign and m_fIndent to reflect the higher level of indentation.
+//
+			m_fAlign = m_fAlign + (float) LIST_DEFAULT_INDENT;
 			getBlock()->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
 			getBlock()->getDocument()->enableListUpdates();
 			getBlock()->getDocument()->updateDirtyLists();
@@ -328,6 +352,9 @@ void AP_Dialog_Lists::Apply(void)
 			return;
 		}
 	}
+/*!
+ * OK Attach the block at this point to the previous list of the same margin.
+ */
 	if(m_bResumeList == true &&  m_isListAtPoint != true )
 	{ 
 		fl_BlockLayout * rBlock = getBlock()->getPreviousListOfSameMargin();
@@ -345,15 +372,15 @@ void AP_Dialog_Lists::Apply(void)
 	clearDirty();
 }
 
-
+/*!
+ *
+ * This function loads the standard values into Delim, decimal, format
+ * m_fAlign, m_iLevel and m_iStarValue based on m_NewListType
+ *
+ * m_fAlign and m_fIndent should be in inches
+ */
 void  AP_Dialog_Lists::fillUncustomizedValues(void)
 {
-  //
-  // This function loads the standard values into Delim, decimal, format
-  // m_fAlign, m_iLevel and m_iStarValue based on m_NewListType
-  //
-  // m_fAlign and m_fIndent should be in inches
-  //
 	if(m_NewListType == NOT_A_LIST)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
@@ -422,9 +449,18 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	}
 }
 
+/*!
+ * This method sets the parameters of the "Fake" list shown in the preview.
+ * The values display are theones the user should expect to get in their document
+ * should they press "Apply"
+ */
 void  AP_Dialog_Lists::fillFakeLabels(void)
 {
-
+/*!
+ * m_bisCustomized is true if the user has changed anything in the dialog without
+ * pressing "Apply". If this variable is false we should just display what is
+ * in the document at the list point.
+ */
 	if(m_bisCustomized == false && !isModal())
 	{
 		m_iLevel = getBlock()->getLevel();
@@ -432,11 +468,23 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 		{
 			m_iLevel++;
 		}
+/*!
+ * This method loads the list info from the document at the current point
+ * into the XP member variables.
+ */
 		PopulateDialogData();
+//
+// We may not need this. Will check. Sevior 18/7/2001
+//
 		if(m_bguiChanged == false)
 			m_NewListType = m_DocListType;
 		m_bguiChanged = false;
 	}
+/*!
+ * For Bullet type lists we don't allow the user to set either the delimimiter
+ * or font from their specified values. Here we override whatever was in them
+ * to the values they SHOULD be given the list type.
+ */
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
@@ -452,6 +500,10 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
 	}
+/*!
+ * OK fill the preview variables with what they need and load them into 
+ * the preview class.
+ */
 	m_pFakeAuto->setListType(m_NewListType);
 	m_pFakeAuto->setDelim(m_pszDelim);
 	m_pFakeAuto->setDecimal(m_pszDecimal);
@@ -459,12 +511,13 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 	m_pListsPreview->setData(m_pszFont,m_fAlign,m_fIndent);
 }
 
+/*!
+ *
+ * This routine generates it's own AutoNum's and Layout pointers 
+ * for use in the preview
+ */
 void  AP_Dialog_Lists::generateFakeLabels(void)
 {
-  //
-  // This routine generates it's own AutoNum's and Layout pointers 
-  // for use in the preview
-  //
 	UT_uint32 i;
 	//
 	// Start by generating 4 fake (PL_StruxDocHandle and fl_Layout pointers
@@ -494,7 +547,10 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	}
 }
 
-
+/*!
+ * Little convienence method to get the List label from the FakeAutoNum used in the
+ * Preview.
+ */
 UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
 {
 	UT_ASSERT(itemNo < 4);
@@ -511,6 +567,11 @@ UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
 	return lab;
 }
 
+/*!
+ * The vector vp contains all the properties we need to fill our dialog variables.
+ * Fill our variables from this vector.
+ * This is used by the Modal dialog and is filled from the styles dialog.
+ */
 void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 {
 	UT_sint32 i;
@@ -588,6 +649,10 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 	}
 }
 
+/*!
+ * This method reads all the List info from the document at the curent point 
+ * and loads it into the dialog member variables.
+ */
 void AP_Dialog_Lists::fillDialogFromBlock(void)
 {
 	UT_Vector va,vp;
@@ -638,8 +703,17 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 			m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 		}
 
+//
+// OK for list-delim it is better to use what is in fl_AutoNum first then the
+// the paraprops then the defaults. The value for fl_AutoNum is what ends up in
+// the users doc.
+//
 		i = findVecItem(&vp,"list-delim");
-		if(i >=0 )
+		if(getAutoNum())
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, getAutoNum()->getDelim());
+		}
+		else if(i >=0 )
 		{
 			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) vp.getNthItem(i+1));
 		}
@@ -648,8 +722,18 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
 		}
 
+
+//
+// OK for list-delim it is better to use what is in fl_AutoNum first then the
+// the paraprops then the defaults. The value for fl_AutoNum is what ends up in
+// the users doc.
+//
 		i = findVecItem(&vp,"list-decimal");
-		if( i>= 0)
+		if(getAutoNum())
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, getAutoNum()->getDecimal());
+		}
+		else if( i>= 0)
 		{
 			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) vp.getNthItem(i+1));
 		}
@@ -716,6 +800,11 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	}
 }
 
+/*!
+ * This method looks to see if there is a list at the current point. If so
+ * fill the dialog with that stuff, otherwise fill the dialog with the uncustomized
+ * values corresponding to m_NewListType.
+ */
 void AP_Dialog_Lists::PopulateDialogData(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();

@@ -130,7 +130,7 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
  * This method clears out and repopulates the vector of pointers to fragments.
  * It also sets the doc Positions of all the fragments.
  */
-void pf_Fragments::cleanFrags() const
+void pf_Fragments::cleanFrags(void) const
 {
 	if (m_vecFrags.getItemCount() > 0)
 		m_vecFrags.clear();

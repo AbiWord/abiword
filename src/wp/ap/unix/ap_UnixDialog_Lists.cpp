@@ -794,6 +794,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_table_attach (GTK_TABLE (table2), decimal_en, 1, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
+	gtk_entry_set_text (GTK_ENTRY (format_en), "");
 
 	start_sb_adj = gtk_adjustment_new (1, 0, 100, 1, 10, 10);
 	start_sb = gtk_spin_button_new (GTK_ADJUSTMENT (start_sb_adj), 1, 0);
@@ -921,7 +922,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	m_wAlignListSpin = text_align_sb;
 	m_oIndentAlign_adj = label_align_sb_adj;
 	m_wIndentAlignSpin = label_align_sb;
-	m_wDecimalEntry = gtk_entry_new();  
+	m_wDecimalEntry = decimal_en; 
 	m_oStartSpin_adj = start_sb_adj;
 	m_wStartSpin = start_sb;
 
