@@ -62,7 +62,7 @@ bool BarbarismChecker::load(const char *szLang)
 
 	parser.setListener (this);
 
-	if ((parser.parse (fullPath.c_str()) != UT_OK))
+	if ((parser.parse (fullPath.c_str())) != UT_OK)
 		return false; // cannot parse the file
 
 	UT_DEBUGMSG(("SPELL: barbar %s loaded %u\n", szLang, m_map.size()));
