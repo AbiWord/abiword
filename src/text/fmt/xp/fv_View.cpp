@@ -1111,6 +1111,12 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 {
 	UT_Bool bResult;
 
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+
 	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();
@@ -1142,6 +1148,15 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 	}
 
 	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
