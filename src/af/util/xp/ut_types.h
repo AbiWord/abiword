@@ -20,8 +20,8 @@ typedef		signed long			UT_sint32;
 */
 
 typedef		unsigned char		UT_Bool;
-#define		UT_TRUE				(1)
-#define		UT_FALSE			(0)
+#define		UT_TRUE				((UT_Bool) 1)
+#define		UT_FALSE			((UT_Bool) 0)
 
 /*
 	UT_ErrorCode should be used far more than it is.  Any function
@@ -30,7 +30,7 @@ typedef		unsigned char		UT_Bool;
 	should be propogated properly.
 */
 typedef		UT_sint32			UT_ErrorCode;
-#define		UT_OK				(0)
-#define		UT_OUTOFMEM			(-100)
+#define		UT_OK				((UT_ErrorCode) 0)
+#define		UT_OUTOFMEM			((UT_ErrorCode) -100)
 
 #endif /* UT_TYPES_H */
