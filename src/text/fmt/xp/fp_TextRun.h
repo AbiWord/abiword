@@ -72,7 +72,13 @@ public:
 	{
 		Calculate_full_width = -1
 	};
-	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width) const;
+	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width)
+#ifndef BIDI_ENABLED
+// the BIDI version of simpleRecalcWidth can modify m_pSpanBuff
+// this is ugly but necessary
+							const
+#endif
+							;
 
 	void					resetJustification();
 	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
@@ -203,9 +209,6 @@ protected:
 	UT_sint32 m_iOldSpaceWidthBeforeJustification;
 #endif
 
-#ifdef BIDI_ENABLED
-	bool m_bRefreshDrawBuffer;
-#endif	
 };
 
 #endif /* FP_TEXTRUN_H */

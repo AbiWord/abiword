@@ -53,8 +53,6 @@
 /*****************************************************************/
 
 #ifdef BIDI_ENABLED
-//the size of temp buffers used for evaluation of the context of glyphs
-#define CONTEXT_BUFF_SIZE 5
 
 //we cache pref value UseContextGlyphs; the following defines how often
 //to refresh the cache (in miliseconds)
@@ -782,6 +780,8 @@ void fp_TextRun::mergeWithNext(void)
 #ifdef BIDI_ENABLED
 	m_bRefreshDrawBuffer = true;
 #endif
+	m_bRecalcWidth = true;
+	recalcWidth();
 }
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
@@ -920,7 +920,10 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 #endif
 }
 
-UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength) const
+UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
+#ifndef BIDI_ENABLED
+const
+#endif
 {
 
 	if(iLength == Calculate_full_width)
@@ -935,6 +938,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 
 	if (iLength == 0)
 		return 0;
+		
 
 	UT_GrowBuf * pgbCharWidths;
 	switch(iWidthType)
@@ -958,6 +962,26 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 	UT_sint32 iWidth = 0;
 
 	{
+#ifdef BIDI_ENABLED
+		_refreshDrawBuffer();
+
+		if(iWidthType == Width_type_display)
+			m_pG->setFont(m_pScreenFont);
+		else
+			m_pG->setFont(m_pLayoutFont);
+		
+		
+		for (UT_sint32 i=0; i<iLength; i++)
+		{
+			if(s_bUseContextGlyphs)
+			{
+				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_uint16*)pCharWidths + m_iOffsetFirst + i);
+			}
+			iWidth += pCharWidths[i + m_iOffsetFirst];
+		}
+
+		m_pG->setFont(m_pScreenFont);
+#else		
 		const UT_UCSChar* pSpan;
 		UT_uint32 lenSpan;
 		UT_uint32 offset = m_iOffsetFirst;
@@ -980,23 +1004,9 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 			}
 			else
 				iTrueLen = lenSpan;
-#ifdef BIDI_ENABLED			
-			UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
-			UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
-
-			if(s_bUseContextGlyphs)
-				_getContext(pSpan,lenSpan,len,offset,&prev[0],&next[0]);
-#endif
+			
 			for (UT_uint32 i=0; i<iTrueLen; i++)
 			{
-#ifdef BIDI_ENABLED
-				if(s_bUseContextGlyphs)
-				{
-					UT_UCSChar c = _getContextGlyph(pSpan,iTrueLen,i,&prev[0],&next[0]);
-					UT_DEBUGMSG(("fp_TextRun::simpleRecalcWidth: glyph 0x%x\n", c));
-					m_pG->measureString((const UT_UCSChar *)&c, 0, 1, (UT_uint16*)pCharWidths + offset+i);
-				}
-#endif				
 				iWidth += pCharWidths[i + offset];
 			}
 
@@ -1010,6 +1020,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 				len -= iTrueLen;
 			}
 		}
+#endif
 	}
  	//UT_DEBUGMSG(("fp_TextRun (0x%x)::simpleRecalcWidth: width %d\n", this, iWidth));
 	return iWidth;
@@ -1060,7 +1071,13 @@ bool fp_TextRun::recalcWidth(void)
 	if(m_bRecalcWidth)
 	{
 		m_bRecalcWidth = false;
+		
 #ifdef BIDI_ENABLED		
+		// we will call _refreshDrawBuffer() to ensure that the cache of the
+		// visual characters is uptodate and then we will measure the chars
+		// in the cache
+		_refreshDrawBuffer();
+		
 		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
 		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 
@@ -1068,68 +1085,25 @@ bool fp_TextRun::recalcWidth(void)
 		UT_uint16* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0);
 		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
 	
-		UT_sint32 iWidthD = 0, iWidthL = 0;
-
-		const UT_UCSChar* pSpan;
-		UT_uint32 lenSpan;
-		UT_uint32 offset = m_iOffsetFirst;
-		UT_uint32 len = m_iLen;
-		bool bContinue = true;
-
-		while (bContinue)
+		m_iWidth = 0;
+		m_iWidthLayoutUnits = 0;
+		
+		for (UT_uint32 i = 0; i < m_iLen; i++)
 		{
-			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
-			if (!bContinue)		// if this fails, we are out of sync with the PTbl.
-			{					// this probably means we are the right half of a split
-				break;			// made to break a paragraph.
-			}
-			UT_ASSERT(lenSpan>0);
-
-			UT_uint32 iTrueLen;
-			if (lenSpan > len)
-			{
-				iTrueLen = len;
-			}
-			else
-				iTrueLen = lenSpan;
-			
-			UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
-			UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
-
 			if(s_bUseContextGlyphs)
-				_getContext(pSpan,lenSpan,len,offset,&prev[0],&next[0]);
-			
-			for (UT_uint32 i=0; i<iTrueLen; i++)
 			{
-				if(s_bUseContextGlyphs)
-				{
-					UT_UCSChar c = _getContextGlyph(pSpan,iTrueLen,i,&prev[0],&next[0]);
+				m_pG->setFont(m_pLayoutFont);
+				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_uint16*)pCharWidthsLayout + m_iOffsetFirst + i);
 					
-					m_pG->setFont(m_pLayoutFont);
-					m_pG->measureString((const UT_UCSChar *)&c, 0, 1, (UT_uint16*)pCharWidthsLayout + offset+i);
-					
-					m_pG->setFont(m_pScreenFont);
-					m_pG->measureString((const UT_UCSChar *)&c, 0, 1, (UT_uint16*)pCharWidthsDisplay + offset+i);
+				m_pG->setFont(m_pScreenFont);
+				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_uint16*)pCharWidthsDisplay + m_iOffsetFirst + i);
 				
-				}
-				iWidthD += pCharWidthsDisplay[i + offset];
-				iWidthL += pCharWidthsLayout[i + offset];
+			}
+				m_iWidth += pCharWidthsDisplay[i + m_iOffsetFirst];
+				m_iWidthLayoutUnits += pCharWidthsLayout[i + m_iOffsetFirst];
 
-			}
-
-			if (len <= lenSpan)
-			{
-				bContinue = false;
-			}
-			else
-			{
-				offset += iTrueLen;
-				len -= iTrueLen;
-			}
 		}
 		
-		m_iWidth = iWidthD;
-		m_iWidthLayoutUnits = iWidthL;
 #else
 		m_iWidth = simpleRecalcWidth(Width_type_display);
 		m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
@@ -1548,6 +1522,8 @@ void fp_TextRun::_refreshDrawBuffer()
 		UT_uint32 offset = 0;
 		UT_uint32 len = m_iLen;
 		bool bContinue = true;
+		
+		UT_contextGlyph cg;
 	
 		if(m_iLen > m_iSpanBuffSize) //the buffer too small, reallocate
 		{
@@ -1587,7 +1563,7 @@ void fp_TextRun::_refreshDrawBuffer()
 					
 				    // NB: _getContext requires block offset
 					_getContext(pSpan,lenSpan,len,offset+m_iOffsetFirst,&prev[0],&next[0]);
-					
+#if 0					
 					for(UT_uint32 k =0; k < iTrueLen; k++)
 					{
 						m_pSpanBuff[offset + k] = _getContextGlyph(pSpan,iTrueLen,k,&prev[0],&next[0]);
@@ -1598,7 +1574,9 @@ void fp_TextRun::_refreshDrawBuffer()
 							*pS = m_pSpanBuff[offset + k];
 						}
 					}
-			
+#else
+					cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0]);
+#endif			
 				}
 				else //do not use context glyphs
 				{

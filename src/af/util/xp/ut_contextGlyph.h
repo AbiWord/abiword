@@ -22,6 +22,8 @@
 
 #include "ut_misc.h"
 
+#define CONTEXT_BUFF_SIZE 5
+
 struct Letter
 {
 	UT_UCSChar code_low;
@@ -47,6 +49,13 @@ class UT_contextGlyph
 		UT_UCSChar getGlyph(const UT_UCSChar * code,
 							const UT_UCSChar * prev,
 							const UT_UCSChar * next) const;
+		
+		void renderString(const UT_UCSChar * src,
+							UT_UCSChar *dest,
+							UT_uint32 len,
+							const UT_UCSChar * prev,
+							const UT_UCSChar * next) const;
+		
 	private:
 		GlyphContext _evalGlyphContext( const UT_UCSChar * code,
 										const UT_UCSChar * prev,

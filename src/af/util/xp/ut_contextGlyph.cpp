@@ -584,3 +584,172 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
    	
    	return 0;
 }
+
+void UT_contextGlyph::renderString(const UT_UCSChar * src,
+							UT_UCSChar *dest,
+							UT_uint32 len,
+							const UT_UCSChar * prev,
+							const UT_UCSChar * next) const
+{
+	UT_ASSERT(src);
+	UT_ASSERT(dest);
+	
+	const UT_UCSChar * src_ptr = src;
+	UT_UCSChar * dst_ptr = dest;
+	const UT_UCSChar * next_ptr;
+	UT_UCSChar prev_tmp[2] = {0,0};
+	UT_UCSChar next_tmp[CONTEXT_BUFF_SIZE + 1] = {0,0,0,0,0,0};
+	const UT_UCSChar * prev_ptr;
+    UT_UCSChar glyph = 0;
+	
+	for(UT_uint32 i = 0; i < len; i++, src_ptr++)	
+	{
+		// first, decide if this is a part of a ligature
+    	// first check for a ligature form
+	    LigatureData Lig;
+    	Letter *pL = 0;
+	    bool bIsSecond = false;
+		GlyphContext context = GC_NOT_SET;
+
+		//get the current context
+		if(len > CONTEXT_BUFF_SIZE && i < len - CONTEXT_BUFF_SIZE)
+			next_ptr = src_ptr + 1;
+		else
+		{
+			next_ptr = next_tmp;
+			UT_uint32 j;
+			for(j = 0; j < len - i - 1 && j < CONTEXT_BUFF_SIZE; j++)
+				next_tmp[j] = *(src_ptr + 1 + j);
+			for(; j < CONTEXT_BUFF_SIZE; j++)
+				next_tmp[j] = *(next + (j + i + 1 - len));
+		}
+		
+		if(i == 0)
+    		prev_ptr = prev;
+	 	else if(i == 1)
+ 		{
+ 			prev_tmp[0] = *src;
+	 		prev_tmp[1] = *prev;
+ 			prev_ptr = prev_tmp;
+	 	}
+ 		else
+	 	{
+ 			prev_tmp[0] = *(src_ptr - 1);
+ 			prev_tmp[1] = *(src_ptr - 2);
+	 		//no need to set prev_ptr, since this has been done when i == 1
+ 		}
+			
+	    Lig.next = next_ptr ? *next_ptr : 0;
+		Lig.code = *src_ptr;
+    	
+	   	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
+
+    	if(pL)
+	    {
+	    	// we need the context of the whole pair not just of this character
+			next_ptr++;
+   			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));			
+	    }
+    	else
+	    {
+    		//we only check that this is not a second part of a ligature for the
+    		//first character, for the rest we will handle that in the previous
+	    	//cycle of the loop
+    		if(i == 0)
+    		{
+    			Lig.next = prev ? *prev : 0;
+		   		pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
+				if(pL)
+				{
+		   			xxx_UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
+		   			bIsSecond = true;
+			 	}
+	 		}
+	    }
+
+		// if this is a ligature, handle it
+	    if(pL)
+    	{
+	    	context = bIsSecond ? _evalGlyphContext(prev, prev+1, next_ptr)
+	    									: _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
+	    	switch (context)
+    		{
+    			case GC_INITIAL:
+    				glyph = pL->initial;
+    				break;
+	    		case GC_MEDIAL:
+    				glyph = pL->medial;
+    				break;
+    			case GC_FINAL:
+	    			glyph = pL->final;
+    				break;
+    			case GC_ISOLATE:
+    				glyph = pL->alone;
+    				break;
+	    		default:
+		    		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    		}
+    	
+	    	UT_DEBUGMSG(("UT_contextGlyph::getGlyph: ligature (%d), glyph 0x%x\n", bIsSecond, glyph));
+    		if(!bIsSecond && glyph != 1) //first part of a ligature
+    		{
+    			// we set both this and the next char if we can
+	    		*dst_ptr++ = glyph;
+    			if(i < len - 1)
+    			{
+    				*dst_ptr++ = 0xFEFF;
+    				src_ptr++;
+	    			i++;
+    				continue;
+    			}
+    			continue;
+	    	}
+    		else if(bIsSecond && glyph != 1)
+    		{
+    			// a special ligature glyph was used, map this to a 0-width non breaking space
+	    		*dst_ptr++ = 0xFEFF;
+    			continue;
+    		}
+
+	    	// if we got here, the glyph was 1, which means this form is to be just
+    		// treated as an ordinary letter, also if this was a first part of the ligature
+    		// we already know its context, but not if it was a second part of lig.
+	    }
+
+
+    	// if we have no pL we are dealing with an ordinary letter
+		pL = (Letter*) bsearch((void*)src_ptr, (void*)s_pGlyphTable, NrElements(s_table),sizeof(Letter),s_comp);
+	
+		// if we still have no pL, it means the letter has only one form
+		// so we return it back
+		if(!pL)
+		{
+			*dst_ptr++ = *src_ptr;
+			continue;
+		}
+
+	    if(context == GC_NOT_SET || bIsSecond)
+    	   	context = _evalGlyphContext(src_ptr, prev_ptr, next_ptr);
+       	
+	   	switch (context)
+   		{
+   			case GC_INITIAL:
+	   			glyph = pL->initial;
+	   			break;
+   			case GC_MEDIAL:
+   				glyph = pL->medial;
+   				break;
+	   		case GC_FINAL:
+   				glyph = pL->final;
+   				break;
+   			case GC_ISOLATE:
+   				glyph = pL->alone;
+   				break;
+	   		default:
+    			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	   	}
+   	
+   		*dst_ptr++ = glyph;
+	}   	
+
+}

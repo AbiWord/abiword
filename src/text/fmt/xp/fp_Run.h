@@ -159,12 +159,14 @@ public:
 	void					setNext(fp_Run*);
 	void					setPrev(fp_Run*);
 	void					setHyperlink(fp_HyperlinkRun * pH);
+	void					markWidthDirty() {m_bRecalcWidth = true;}
 	bool					isFirstRunOnLine(void) const;
 	bool					isLastRunOnLine(void) const;
 	bool					isOnlyRunOnLine(void) const;
 #ifdef BIDI_ENABLED
 	bool					isFirstVisRunOnLine(void) const;
 	bool					isLastVisRunOnLine(void) const;
+	void					markDrawBufferDirty() {m_bRefreshDrawBuffer = true;}
 #endif
 
 	void					draw(dg_DrawArgs*);
@@ -256,6 +258,7 @@ protected:
 #ifdef BIDI_ENABLED
 	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
 	FriBidiCharType			m_iVisDirection;
+	bool 					m_bRefreshDrawBuffer;
 #endif
 
 	// the run highlight color. If the property is transparent use the page color

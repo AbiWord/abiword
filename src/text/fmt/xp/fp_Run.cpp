@@ -104,16 +104,17 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iminOverline(0),
 		m_iOverlineXoff(0),
 		m_pHyperlink(0)
+#ifdef BIDI_ENABLED
+		,m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
+		m_iVisDirection(FRIBIDI_TYPE_UNSET),
+		m_bRefreshDrawBuffer(true)
+#endif
 {
         // set the default background color and the paper color of the 
 	    // section owning the run.
 	getHighlightColor();
 	getPageColor();
 	
-#ifdef BIDI_ENABLED
-	m_iDirection = FRIBIDI_TYPE_WS; //by default all runs are whitespace
-	m_iVisDirection = FRIBIDI_TYPE_UNSET;
-#endif
 }
 
 fp_Run::~fp_Run()
@@ -307,30 +308,30 @@ void fp_Run::updateBackgroundColor(void)
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
 {
 	newRun.unlinkFromRunList();
-	newRun.m_pNext = this;
+	newRun.setNext(this);
 	if (m_pPrev)
 	{
-		m_pPrev->m_pNext = &newRun;
+		m_pPrev->setNext(&newRun);
 		if(newRun.getType()!= FPRUN_HYPERLINK)
 		newRun.setHyperlink( m_pPrev->getHyperlink());
 	}
-	newRun.m_pPrev = m_pPrev;
-	m_pPrev = &newRun;
+	newRun.setPrev(m_pPrev);
+	setPrev(&newRun);
 
 }
 
 void fp_Run::insertIntoRunListAfterThis(fp_Run& newRun)
 {
 	newRun.unlinkFromRunList();
-	newRun.m_pPrev = this;
+	newRun.setPrev(this);
 	if(newRun.getType()!= FPRUN_HYPERLINK)
 		newRun.setHyperlink(m_pHyperlink);
 	if (m_pNext)
 	{
-		m_pNext->m_pPrev = &newRun;
+		m_pNext->setPrev(&newRun);
 	}
-	newRun.m_pNext = m_pNext;
-	m_pNext = &newRun;
+	newRun.setNext(m_pNext);
+	setNext(&newRun);
 }
 
 void fp_Run::unlinkFromRunList()
@@ -354,14 +355,14 @@ void fp_Run::unlinkFromRunList()
 	
 	if (m_pPrev)
 	{
-		m_pPrev->m_pNext = m_pNext;
+		m_pPrev->setNext(m_pNext);
 	}
 	if (m_pNext)
 	{
-		m_pNext->m_pPrev = m_pPrev;
-		m_pNext = 0;
+		m_pNext->setPrev(m_pPrev);
+		setNext(0);
 	}
-	m_pPrev = 0;
+	setPrev(0);
 }
 
 void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
@@ -439,12 +440,47 @@ void fp_Run::setBlock(fl_BlockLayout * pBL)
 
 void fp_Run::setNext(fp_Run* p)
 {
-	m_pNext = p;
+#ifdef BIDI_ENABLED
+	if(p != m_pNext)
+	{
+		m_bRefreshDrawBuffer = true;
+		m_bRecalcWidth = true;
+		// because we support 2-char ligatures, the change of next
+		// can also influence the run ahead of us
+		// we will just mark it
+		if(m_pPrev)
+		{
+			m_pPrev->markDrawBufferDirty();
+			m_pPrev->markWidthDirty();
+		}
+#endif
+		m_pNext = p;
+#ifdef BIDI_ENABLED
+	}
+#endif
 }
 
 void fp_Run::setPrev(fp_Run* p)
 {
-	m_pPrev = p;
+#ifdef BIDI_ENABLED
+	if(p != m_pPrev)
+	{
+		m_bRefreshDrawBuffer = true;
+		m_bRecalcWidth = true;
+		// because we support 2-char ligatures, the change of prev
+		// can also influence the run that follows us
+		// we will just mark it
+		if(m_pNext)
+		{
+			m_pNext->markDrawBufferDirty();
+			m_pNext->markWidthDirty();
+		}
+
+#endif
+		m_pPrev = p;
+#ifdef BIDI_ENABLED
+	}
+#endif
 }
 
 bool fp_Run::isLastRunOnLine(void) const
@@ -492,6 +528,9 @@ void fp_Run::setLength(UT_uint32 iLen)
 	clearScreen();
 	
 	m_iLen = iLen;
+#ifdef BIDI_ENABLED
+	m_bRefreshDrawBuffer = true;
+#endif
 }
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
