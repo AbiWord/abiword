@@ -58,9 +58,6 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 DYNAMIC_LDFLAGS=	$(addprefix -l,$(DL_LIBS))
 STATIC_LDFLAGS =	
 
-# We need to add pf.o as a temporary fix for the object
-OBJS += pf.o
-
 # we override the $(PROGRAM) rule.
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
