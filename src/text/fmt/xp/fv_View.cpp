@@ -341,7 +341,9 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 {
 	// move to the requested end of the current selection.
 	// NOTE: this must clear the selection.
-	
+	// NOTE: we do not draw the insertion point
+	//       after clearing the selection.
+
 	UT_ASSERT(!isSelectionEmpty());
 	
 	PT_DocPosition curPos = _getPoint();
@@ -706,6 +708,9 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	if (!isSelectionEmpty())
 	{
 		_moveToSelectionEnd(bForward);
+		// Note: _moveToSelectionEnd() clears the selection
+		//       but does not redraw the insertion point.
+		_drawInsertionPoint();
 	}
 
 	PT_DocPosition iPoint = _getPoint();
