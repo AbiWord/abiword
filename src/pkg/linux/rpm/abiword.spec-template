@@ -20,6 +20,8 @@
 %define enable_imagemagick 0
 %define enable_gdkpixbuf 1
 %define enable_openwriter 0
+%define enable_eml 0
+%define enable_html 0
 %define enable_eg 0
 
 %define name abiword
@@ -89,6 +91,18 @@
 %define plugin_openwriter --enable-OpenWriter
 %else
 %define plugin_openwriter --disable-OpenWriter
+%endif
+
+%if %{enable_eml}
+%define plugin_eml --enable-eml
+%else
+%define plugin_eml --disable-eml
+%endif
+
+%if %{enable_html}
+%define plugin_html --enable-html
+%else
+%define plugin_html --disable-html
 %endif
 
 %if %{enable_eg}
@@ -242,6 +256,7 @@ Plugin to allow abiword to connect with freetranslation.
 %package fonts
 Summary: AbiWord Fonts
 Group: Applications/Productivity
+Serial: 1
 
 %description fonts
 These are the basic fonts used by AbiWord.
@@ -286,7 +301,7 @@ make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2
 
 cd ../abiword-plugins
 
-./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite %{plugin_aiksaurus} %{plugin_gdict} %{plugin_babelfish} %{plugin_urldict} %{plugin_wikipedia} %{plugin_freetranslation} %{plugin_bz2abw} %{plugin_imagemagick} %{plugin_gdkpixbuf} %{plugin_openwriter} %{plugin_tests}
+./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite %{plugin_aiksaurus} %{plugin_gdict} %{plugin_babelfish} %{plugin_urldict} %{plugin_wikipedia} %{plugin_freetranslation} %{plugin_bz2abw} %{plugin_imagemagick} %{plugin_gdkpixbuf} %{plugin_openwriter} %{plugin_eml} %{plugin_html} %{plugin_tests}
 make
 
 cd ../abi
@@ -304,10 +319,6 @@ make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2
 
 # Fixes Abi start script
 perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord
-
-# Fixes for symlink in {prefix}/bin
-mkdir -p $RPM_BUILD_ROOT%{prefix}/bin
-ln -s $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord $RPM_BUILD_ROOT%{prefix}/bin/abiword
 
 # Creates GNOME menu entries
 mkdir -p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
@@ -351,7 +362,6 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %{ABIPREFIX}/AbiSuite/dictionary
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
-%attr(755,root,root) %{prefix}/bin/abiword
 %attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
 %if %{enable_gnome}
 %{prefix}/share/gnome/apps/Applications/abiword.desktop
@@ -412,6 +422,13 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %files help-fr-FR
 %defattr(-,root,root)
 %{ABIPREFIX}/AbiSuite/AbiWord/help/fr-FR
+
+%post
+
+# Fixes for symlink in {prefix}/bin
+mkdir -p %{prefix}/bin
+ln -s %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
+
 
 %changelog
 * Thu Dec 27 2001 Rui M. Silva Seabra <rms@multicert.com>
