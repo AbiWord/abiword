@@ -905,6 +905,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	}
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
+	m_pLayout->dequeueBlockForBackgroundCheck(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
 	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
@@ -5421,6 +5422,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 
 	m_pSpellSquiggles->textInserted(blockOffset, len);
 	m_pGrammarSquiggles->textInserted(blockOffset, len);
+	xxx_UT_DEBUGMSG(("Set pending block for grammar - insertSpan \n"));
 	m_pLayout->setPendingBlockForGrammar(this);
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -5862,6 +5864,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 
 	m_pSpellSquiggles->textDeleted(blockOffset, len);
 	m_pGrammarSquiggles->textDeleted(blockOffset, len);
+	xxx_UT_DEBUGMSG(("Set pending block for grammar - deleteSpan \n"));
 	m_pLayout->setPendingBlockForGrammar(this);
 
 	FV_View* pView = getView();

@@ -250,6 +250,7 @@ public:
 	    return m_PendingBlockForGrammar;
 	  }
 	void        setPendingBlockForGrammar(fl_BlockLayout * pBL);
+	void        triggerPendingBlock(fl_BlockLayout * pBL);
 
 	// These are used as bit flags in a UT_uint32.  The enum is here just
 	// to get the namespace protection.

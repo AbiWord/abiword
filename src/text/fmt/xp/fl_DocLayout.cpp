@@ -2500,6 +2500,8 @@ void FL_DocLayout::dequeueAll(void)
 	{
 		m_vecUncheckedBlocks.deleteNthItem(i);	
 	}
+	UT_DEBUGMSG(("Dequeue all \n"));
+
 	m_PendingBlockForGrammar = NULL;
 	m_bStopSpellChecking = true;
 	if(m_pBackgroundCheckTimer)
@@ -2519,13 +2521,32 @@ void FL_DocLayout::dequeueAll(void)
  */
 void FL_DocLayout::setPendingBlockForGrammar(fl_BlockLayout * pBL)
 {
+  xxx_UT_DEBUGMSG(("Pending called with block %x pending %x \n",pBL,m_PendingBlockForGrammar));
+  if(!m_bAutoGrammarCheck)
+    return;
+  if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
+    {
+      xxx_UT_DEBUGMSG(("Block %x queued \n",m_PendingBlockForGrammar));
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+    }
+  m_PendingBlockForGrammar = pBL;
+}
+
+
+/*!
+ * This is called from fv_View::_fixPointCoords to actually queue a grammar 
+ * check a pending block.
+ */
+void FL_DocLayout::triggerPendingBlock(fl_BlockLayout * pBL)
+{
+  xxx_UT_DEBUGMSG(("Trigger called with block %x pending %x \n",pBL,m_PendingBlockForGrammar));
   if(!m_bAutoGrammarCheck)
     return;
   if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
     {
       queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
-    }
-  m_PendingBlockForGrammar = pBL;
+      m_PendingBlockForGrammar = NULL;
+     }
 }
 
 /*!
@@ -2550,6 +2571,7 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	}
 	if(pBlock == m_PendingBlockForGrammar)
 	  {
+	    xxx_UT_DEBUGMSG(("Dequeue block %x in dequeue \n",pBlock));
 	    m_PendingBlockForGrammar = NULL;
 	  }
 	// When queue is empty, kill timer

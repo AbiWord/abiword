@@ -3984,7 +3984,7 @@ void FV_View::_fixInsertionPointCoords()
 	}
 	if(pBlock)
 	{
-		m_pLayout->setPendingBlockForGrammar(pBlock);
+		m_pLayout->triggerPendingBlock(pBlock);
 	}
 }
 

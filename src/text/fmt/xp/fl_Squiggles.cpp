@@ -206,7 +206,7 @@ fl_Squiggles::_move(UT_sint32 iOffset, UT_sint32 chg,
 		if (pPOB->getOffset() < target) break;
 
 		// Clear the squiggle before moving it
-	    clear(pPOB);
+		clear(pPOB);
 		pPOB->setOffset(pPOB->getOffset() + chg);
 
 		// Move squiggle to another block if requested
@@ -311,8 +311,8 @@ fl_Squiggles::_deleteNth(UT_sint32 iIndex)
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::delelteNth(%d)\n", iIndex));
 	fl_PartOfBlock* pPOB = getNth(iIndex);
-	clear(pPOB);
 	m_vecSquiggles.deleteNthItem(iIndex);
+	clear(pPOB);
 	delete pPOB;
 }
 
@@ -386,16 +386,17 @@ fl_Squiggles::get(UT_sint32 iOffset) const
 void
 fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 {
-	xxx_UT_DEBUGMSG(("fl_Squiggles::clear(%p)\n", pPOB));
 	if(!m_pOwner->isOnScreen())
 	{
 		return;
 	}
 	FV_View* pView = m_pOwner->getDocLayout()->getView();
+#if 1
 	if(pView->getDocument()->isPieceTableChanging())
 	{
 		return;
 	}
+#endif
 	PT_DocPosition pos1 = m_pOwner->getPosition() + pPOB->getOffset();
 	PT_DocPosition pos2 = pos1 + pPOB->getLength();
 	PT_DocPosition posEOD = 0;
@@ -409,6 +410,7 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 		pos1 = pos2 -1;
 	}
 	pView->_clearBetweenPositions(pos1, pos2, true);
+	UT_DEBUGMSG(("fl_Squiggles::clear posl %d pos2 %d \n", pos1,pos2));
 }
 
 /*!
@@ -439,7 +441,8 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 	_move(iOffset, chg);
 
 	// Deal with pending word, if any
-	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+  
+	if (m_pOwner->getDocLayout()->isPendingWordForSpell() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 	{
 		// If not affected by insert, check it
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, 0))
@@ -466,7 +469,10 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 	}
 
 	// Recheck word at boundary
-	m_pOwner->_recalcPendingWord(iOffset, chg);
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	{
+	  m_pOwner->_recalcPendingWord(iOffset, chg);
+	}
 }
 
 /*!
@@ -503,7 +509,7 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 	_move(iOffset, chg);
 
 	// Deal with pending word, if any
-	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+	if (m_pOwner->getDocLayout()->isPendingWordForSpell() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 	{
 		// If not affected by delete, check it
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, chg))
@@ -528,7 +534,8 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 	}
 
 	// Recheck at boundary
-	m_pOwner->_recalcPendingWord(iOffset, chg);
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	  m_pOwner->_recalcPendingWord(iOffset, chg);
 }
 
 /*!
@@ -554,7 +561,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		return;
 
 	// Return if auto spell-checking disabled
-	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
+	if (!m_pOwner->getDocLayout()->getAutoSpellCheck() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 		return;
 
 	xxx_UT_DEBUGMSG(("fl_Squiggles::split(%d, %p)\n", iOffset, pNewBL));
@@ -567,7 +574,8 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 	// merge). Unfortunately it makes the word under the cursor
 	// squiggled (if badly spelled) instead of just pending - but it's
 	// hard to do anything about.
-	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+
+	if (m_pOwner->getDocLayout()->isPendingWordForSpell()&& (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 	{
 		fl_PartOfBlock *pPending, *pPOB;
 		fl_BlockLayout *pBL;
@@ -598,19 +606,21 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		pBL->checkWord(pPOB);
 	}
 
-	if (m_pOwner->getDocLayout()->dequeueBlockForBackgroundCheck(m_pOwner))
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL)
 	{
+	  if (m_pOwner->getDocLayout()->dequeueBlockForBackgroundCheck(m_pOwner))
+	  {
 		// This block was queuing for spell-checking. Do a check of
 		// both blocks, but clear any squiggle added at IP.
-		deleteAll();
-		m_pOwner->checkSpelling();
-		pNewBL->checkSpelling();
-		fl_Squiggles * pSq = pNewBL->getSpellSquiggles();
-		UT_return_if_fail( pSq );
-		pSq->_deleteAtOffset(0);
-	}
-	else
-	{
+	    deleteAll();
+	    m_pOwner->checkSpelling();
+	    pNewBL->checkSpelling();
+	    fl_Squiggles * pSq = pNewBL->getSpellSquiggles();
+	    UT_return_if_fail( pSq );
+	    pSq->_deleteAtOffset(0);
+	  }
+	  else
+	  {
 		// This block was already spell-checked, so just move the
 		// squiggles around.
 
@@ -623,8 +633,9 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		// Find bounds of word at end of this block and check it.
 		// Use _recalcPendingWord which is a bit overkill, but gets
 		// the job done.
-		m_pOwner->_recalcPendingWord(iOffset, 0);
-		if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+		if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+		  m_pOwner->_recalcPendingWord(iOffset, 0);
+		if (m_pOwner->getDocLayout()->isPendingWordForSpell() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 		{
 			fl_PartOfBlock *pPending, *pPOB;
 			pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
@@ -636,10 +647,13 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 			m_pOwner->getDocLayout()->setPendingWordForSpell(NULL, NULL);
 			m_pOwner->checkWord(pPOB);
 		}
+	  }
+	  m_pOwner->getDocLayout()->setPendingBlockForGrammar(m_pOwner);
 	}
 
 	// Set start of new block to be pending word.
-	pNewBL->_recalcPendingWord(0, 0);
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	  pNewBL->_recalcPendingWord(0, 0);
 }
 
 
@@ -667,7 +681,7 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 		return;
 
 	// Return if auto spell-checking disabled
-	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
+	if (!m_pOwner->getDocLayout()->getAutoSpellCheck() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 		return;
 
 	xxx_UT_DEBUGMSG(("fl_Squiggles::join(%d, %p)\n", iOffset, pPrevBL));
@@ -694,15 +708,20 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 		// Move all squiggles from this block to the previous block.
 		_move(0, iOffset, pPrevBL);
 	}
+	m_pOwner->getDocLayout()->setPendingBlockForGrammar(m_pOwner);
 
 	// Delete squiggle touching IP
-	fl_Squiggles * pSq = pPrevBL->getSpellSquiggles();
-	UT_return_if_fail( pSq );
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	{
+	  fl_Squiggles * pSq = pPrevBL->getSpellSquiggles();
+	  UT_return_if_fail( pSq );
 	
-	pSq->_deleteAtOffset(iOffset);
+	  pSq->_deleteAtOffset(iOffset);
 
 	// Update pending word
-	pPrevBL->_recalcPendingWord(iOffset, 0);
+
+	  pPrevBL->_recalcPendingWord(iOffset, 0);
+	}
 }
 
 /*!
