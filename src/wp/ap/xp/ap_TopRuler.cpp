@@ -2195,7 +2195,16 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iL
 void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
 {
 	// The X and Y that are passed to this function are x and y on the screen, not on the ruler.
-	
+	if(m_pG == NULL)
+	{
+		return;
+	}
+	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView && pView->isLayoutFilling())
+	{
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		return;
+	}
 	if (!m_bValidMouseClick)
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
@@ -2224,7 +2233,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// for example, it will not let a left indent be moved to a place before the end of the left page view margin
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	FV_View * pView = static_cast<FV_View *>(m_pView);
+
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
 		xFixed = s_iFixedWidth;
