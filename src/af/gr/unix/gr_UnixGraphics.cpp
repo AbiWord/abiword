@@ -800,33 +800,40 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 		return;
 
 	m_pFont = pUFont;
-	const char * szFontName = UT_lowerString(m_pFont->getUnixFont()->getName());
-	if(strstr(szFontName,"symbol") != NULL)
+	char * szUnixFontName = UT_strdup(m_pFont->getUnixFont()->getName());
+	const char * szFontName = UT_lowerString(szUnixFontName);
+
+	if (szFontName)
 	{
-		m_bIsSymbol = true;
-		if(strstr(szFontName,"star") != NULL)
+		if(strstr(szFontName,"symbol") != NULL)
 		{
-			m_bIsSymbol = false;
+			m_bIsSymbol = true;
+			if(strstr(szFontName,"star") != NULL)
+			{
+				m_bIsSymbol = false;
+			}
+			UT_DEBUGMSG(("UnixGraphics: Found Symbol font \n"));
 		}
-		UT_DEBUGMSG(("UnixGraphics: Found Symbol font \n"));
-	}
-	if(strstr(szFontName,"dingbat") != NULL)
-	{
-		m_bIsDingbat = true;
+		if(strstr(szFontName,"dingbat") != NULL)
+		{
+			m_bIsDingbat = true;
+		}
 	}
 #ifdef USE_XFT
 	UT_uint32 size = pUFont->getSize();
-	if(strstr(szFontName,"Symbol") != NULL)
+	if (szFontName)
 	{
-		m_bIsSymbol = true;
-		UT_DEBUGMSG(("unixGraphics: Found Symbol Font! \n"));
+		if(strstr(szFontName,"Symbol") != NULL)
+		{
+			m_bIsSymbol = true;
+			UT_DEBUGMSG(("unixGraphics: Found Symbol Font! \n"));
+		}
 	}
 	if (size < MAX_ABI_GDK_FONT_SIZE)
 	{
 		m_bLayoutUnits = false;
 		m_pXftFont = m_pFont->getXftFont();
 		m_XftFaceLocker = XftFaceLocker(m_pXftFont);
-
 	}
 	else
 	{
