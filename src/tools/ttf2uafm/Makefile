@@ -18,10 +18,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_ROOT:=$(shell pwd)/../..
+ABI_ROOT:=$(shell pwd)/../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-DIRS=		cdump ttf2uafm
+DIRS=	$(ABI_NATIVE)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
