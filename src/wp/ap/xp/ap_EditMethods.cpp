@@ -6466,6 +6466,8 @@ Defun1(dlgPlugins)
 	if (pDialog)
 	{
 		pDialog->runModal (pFrame);
+		// simple non-persisten dialogues have to be deleted after use!
+		delete pDialog;
 		return true;
 	}
 
