@@ -409,6 +409,7 @@ protected:
 	
 	void					_lookupProperties(void);
 	void					_removeLine(fp_Line*);
+	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 
 	bool					_checkMultiWord(const UT_UCSChar* pBlockText,

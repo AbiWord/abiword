@@ -1002,7 +1002,7 @@ void fl_BlockLayout::purgeLayout(void)
 //	}
 	while (pLine)
 	{
-		_removeLine(pLine);
+		_purgeLine(pLine);
 		pLine = m_pFirstLine;
 	}
 
@@ -1041,6 +1041,24 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 
 	delete pLine;
 }
+
+void fl_BlockLayout::_purgeLine(fp_Line* pLine)
+{
+	if (m_pLastLine == pLine)
+	{
+		m_pLastLine = m_pLastLine->getPrev();
+	}
+
+	if (m_pFirstLine == pLine)
+	{
+		m_pFirstLine = m_pFirstLine->getNext();
+	}
+	pLine->setBlock(NULL);
+	pLine->remove();
+
+	delete pLine;
+}
+
 
 void fl_BlockLayout::_removeAllEmptyLines(void)
 {
