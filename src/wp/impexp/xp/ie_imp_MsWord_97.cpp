@@ -943,6 +943,16 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
 
+#ifdef BIDI_ENABLED
+	// deal with the thorny problem of mirror characters
+	if(m_bPrevStrongCharRTL)
+	{
+		FriBidiChar mirror_char;
+		if(fribidi_get_mirror_char((FriBidiChar)eachchar, &mirror_char))
+			eachchar = (U16)mirror_char;
+	}
+#endif
+	
 	//
 	// Append the character to our character buffer
 	//
@@ -952,8 +962,9 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 #ifdef BIDI_ENABLED
 	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
 	if(FRIBIDI_IS_STRONG(cType))
+	{
 		m_bPrevStrongCharRTL = FRIBIDI_IS_RTL(cType);
-	xxx_UT_DEBUGMSG(("#TF: _charProc: c 0x%x\n",eachchar));
+	}
 #endif
 	return 0;
 }
