@@ -129,7 +129,7 @@ void AP_Dialog_Stylist::autoUpdate(UT_Worker * pTimer)
 void AP_Dialog_Stylist::updateDialog(void)
 {
 	// Handshaking code
-	FV_View * pView = static_cast<FV_View *>(getApp()->getLastFocussedFrame()->getCurrentView());
+	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	if(pView->getPoint() == 0)
 	{
 		return;

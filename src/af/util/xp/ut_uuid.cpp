@@ -24,6 +24,8 @@
 #include "ut_assert.h"
 #include "ut_string_class.h"
 #include "ut_rand.h"
+#include <ctype.h>
+#include "ut_misc.h"
 
 //static UT_UUID _null();
 
@@ -364,7 +366,7 @@ UT_sint32 UT_UUID::_getType(const struct uuid &uuid) const
 */
 UT_UUIDVariant UT_UUID::getVariant() const
 {
-	UT_return_val_if_fail(m_bIsValid, UUID_VARIANT_ERROR);
+	UT_return_val_if_fail(m_bIsValid, UT_UUID_VARIANT_ERROR);
 
 	return _getVariant(m_uuid);
 }
@@ -373,7 +375,7 @@ UT_UUIDVariant UT_UUID::getVariant(const uuid_t &uu) const
 {
     struct uuid uuid;
 	bool bValid = _unpack(uu, uuid);
-	UT_return_val_if_fail(bValid, UUID_VARIANT_ERROR);
+	UT_return_val_if_fail(bValid, UT_UUID_VARIANT_ERROR);
 
 	return _getVariant(uuid);
 }
@@ -384,12 +386,12 @@ UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid) const
     UT_sint32 var = uuid.clock_seq;
 
     if ((var & 0x8000) == 0)
-        return UUID_VARIANT_NCS;
+        return UT_UUID_VARIANT_NCS;
     if ((var & 0x4000) == 0)
-        return UUID_VARIANT_DCE;
+        return UT_UUID_VARIANT_DCE;
     if ((var & 0x2000) == 0)
-        return UUID_VARIANT_MICROSOFT;
-    return UUID_VARIANT_OTHER;
+        return UT_UUID_VARIANT_MICROSOFT;
+    return UT_UUID_VARIANT_OTHER;
 }
 
 /*!
@@ -691,7 +693,11 @@ UT_uint32 UT_UUID::hash32() const
  */
 UT_uint64 UT_UUID::hash64() const
 {
+#if defined(WIN32) && !defined(__GNUC__)	
 	static UT_uint64 hval = 0xcbf29ce484222325; // value FNV1_64_INIT;
+#else
+	static UT_uint64 hval = 0xcbf29ce484222325LL; // value FNV1_64_INIT;
+#endif
     unsigned char *bp = (unsigned char *) &m_uuid;
 
     /*
@@ -700,7 +706,11 @@ UT_uint64 UT_UUID::hash64() const
 	for(UT_uint32 i = 0; i < sizeof(m_uuid); ++i)
 	{
 		/* multiply by the 64 bit FNV magic prime mod 2^64 */
+#if defined(WIN32) && !defined(__GNUC__)	
 		hval *= 0x100000001b3;
+#else
+		hval *= 0x100000001b3LL;
+#endif
 		/* xor the bottom with the current octet */
 		hval ^= (UT_uint64)*bp++;
     }
@@ -712,7 +722,7 @@ UT_uint64 UT_UUID::hash64() const
 
 #ifdef DEBUG
 #include "ut_endian.h"
-UT_UUID::__test()
+void UT_UUID::__test()
 {
 #if 0
 	// test hashes ...

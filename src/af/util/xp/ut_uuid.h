@@ -41,20 +41,22 @@
 #  include <rpc.h>     // this is where uuid_t is defined ...
 #else
 #  include <sys/time.h> // this is where timeval should be ...
-#  include <sys/uuid.h> // this is where uuid_t should be ...
+#  include <uuid/uuid.h> // this is where uuid_t should be ...
 #endif
 
 class UT_String;
 
+
 /* UUID Variant definitions */
 typedef enum
 {
-	UUID_VARIANT_NCS = 0,
-	UUID_VARIANT_DCE = 1,
-	UUID_VARIANT_MICROSOFT = 2,
-	UUID_VARIANT_OTHER = 3,
-	UUID_VARIANT_ERROR = 0xffffffff
+	UT_UUID_VARIANT_NCS = 0,
+	UT_UUID_VARIANT_DCE = 1,
+	UT_UUID_VARIANT_MICROSOFT = 2,
+	UT_UUID_VARIANT_OTHER = 3,
+	UT_UUID_VARIANT_ERROR = 0xffffffff
 } UT_UUIDVariant;
+
 
 #if 0
 // this is what uuid_t is supposed to look; if it is not defined for
@@ -204,7 +206,7 @@ class ABI_EXPORT UT_UUID
 
 #ifdef DEBUG
   public:
-	                __test();
+void	                __test();
 #endif
   private:	
 	uuid                   m_uuid;

@@ -18,7 +18,8 @@
  */
 
 #include "ut_misc.h"
-
+#include "ut_assert.h"
+#include <sys/time.h>
 /*!
     UT_gettimeofday() fills in the timeval structure with current
     time; the platform implementation needs to be as accurate as

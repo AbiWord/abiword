@@ -1204,28 +1204,36 @@ void FV_View::focusChange(AV_Focus focus)
 	switch(focus)
 	{
 	case AV_FOCUS_HERE:
+		if(getPoint() > 0)
+		{
+			m_pG->getCaret()->enable();
+		}
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
 			m_pG->getCaret()->setBlink(m_bCursorBlink);
+			_setPoint(getPoint());
 		}
 		m_pApp->rememberFocussedFrame(m_pParentData);
 		break;
 	case AV_FOCUS_NEARBY:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
- 			m_pG->getCaret()->setBlink(false);
+			m_pG->getCaret()->disable(true);
+			m_countDisable++;
 		}
 		break;
 	case AV_FOCUS_MODELESS:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
- 			m_pG->getCaret()->setBlink(false);
+			m_pG->getCaret()->setBlink(false);
+			_setPoint(getPoint());
 		}
 		break;
 	case AV_FOCUS_NONE:
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
-			m_pG->getCaret()->setBlink(false);
+			m_pG->getCaret()->disable(true);
+			m_countDisable++;
 		}
 		break;
 	}
