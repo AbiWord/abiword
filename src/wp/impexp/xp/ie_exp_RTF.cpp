@@ -38,9 +38,7 @@
 
 #include "wv.h" //for wvLIDToCodePageConverter
 #include "xap_EncodingManager.h"
-#ifdef DEBUG
 #include "ut_debugmsg.h"
-#endif
 
 /*****************************************************************/
 /*****************************************************************/
