@@ -69,6 +69,8 @@ BeginSet(DaDK,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",	tb_text_italic_K_xpm,	NULL, "Kursiv")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Understreget",	tb_text_underline_xpm,	NULL, "Understreget")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Gennemstreget",tb_text_strikeout_G_xpm,	NULL, "Gennemstreget")
+    ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Hævet",		tb_text_superscript_xpm,        NULL, "Hævet")
+    ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Sænket",		tb_text_subscript_xpm,          NULL, "Sænket")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Venstre",	tb_text_align_left_xpm,	NULL, "Venstrestillet")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centreret",	tb_text_center_xpm,	NULL, "Centreret")
