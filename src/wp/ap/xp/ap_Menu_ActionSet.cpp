@@ -123,7 +123,14 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,	"viewPara",			ap_GetState_View,		NULL);
 //	_s(AP_MENU_ID_VIEW_HEADFOOT,	0,0,1,	"viewHeadFoot",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_FULLSCREEN, 0,0,1, "viewFullScreen", ap_GetState_View, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_MENU, 1,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,	"dlgZoom",			NULL,					NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_200, 0,0,0, "zoom200", NULL, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_100, 0,0,0, "zoom100", NULL, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_75, 0,0,0, "zoom75", NULL, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_50, 0,0,0, "zoom50", NULL, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_WHOLE, 0,0,0, "zoomWhole", NULL, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_WIDTH, 0,0,0, "zoomWidth", NULL, NULL);
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,	"insBreak",			NULL,					NULL);
@@ -169,6 +176,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_SPELLING,	        1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_SPELL,	        0,1,0,	"dlgSpell",		NULL,					NULL);
+	_s(AP_MENU_ID_TOOLS_SPELLPREFS, 0,1,0, "dlgSpellPrefs", NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_AUTOSPELL,          0,0,1,  "toggleAutoSpell",      ap_GetState_Prefs, NULL);
 	_s(AP_MENU_ID_TOOLS_LANGUAGE, 1,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_WORDCOUNT,		0,1,0,	"dlgWordCount",			NULL,					NULL);

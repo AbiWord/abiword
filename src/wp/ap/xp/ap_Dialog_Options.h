@@ -39,6 +39,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
 	virtual void	runModal(XAP_Frame * pFrame) = 0;
 
+	virtual void setInitialPageNum ( int which ) { m_pageNum = which; }
+	virtual int getInitialPageNum () { return m_pageNum; }
+
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL, a_SAVE, a_APPLY } tAnswer;
 
@@ -140,7 +143,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal) = 0;
 	virtual void _setAutoSaveFileExt(const UT_String &stExt) = 0;
 #endif
-	
+
  	// so we can save and restore to the same page - must be able to return
   	// the current page and reset it later (i.e., don't use a handle, but a
   	// page index)
@@ -159,6 +162,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	tAnswer				m_answer;
 	XAP_Frame *			m_pFrame;
 	XML_Char            m_CurrentTransparentColor[10];
+
+	int m_pageNum;
 
 	// AP level handlers
 	void _event_SetDefaults(void);

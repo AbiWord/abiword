@@ -281,6 +281,13 @@ public:
 	static EV_EditMethod_Fn dlgZoom;
 	static EV_EditMethod_Fn viewFullScreen;
 
+  static EV_EditMethod_Fn zoom100;
+  static EV_EditMethod_Fn zoom200;
+  static EV_EditMethod_Fn zoom75;
+  static EV_EditMethod_Fn zoom50;
+  static EV_EditMethod_Fn zoomWidth;
+  static EV_EditMethod_Fn zoomWhole;
+
 	static EV_EditMethod_Fn insBreak;
 	static EV_EditMethod_Fn insPageNo;
 	static EV_EditMethod_Fn insDateTime;
@@ -289,6 +296,7 @@ public:
 	static EV_EditMethod_Fn insEndnote;
 
 	static EV_EditMethod_Fn dlgSpell;
+        static EV_EditMethod_Fn dlgSpellPrefs;
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
   
@@ -577,6 +585,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgParagraph),			0,		""),
 	EV_EditMethod(NF(dlgPlugins), 0, ""),
 	EV_EditMethod(NF(dlgSpell),			0,		""),
+	EV_EditMethod(NF(dlgSpellPrefs), 0, ""),
 	EV_EditMethod(NF(dlgStyle),		       	0,		""),
 	EV_EditMethod(NF(dlgTabs),		       	0,		""),
 	EV_EditMethod(NF(dlgToggleCase),                0,              ""),
@@ -895,7 +904,13 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// y
 
 	// z
-	EV_EditMethod(NF(zoom),			        0,     	"")
+	EV_EditMethod(NF(zoom),			        0,     	""),
+	EV_EditMethod(NF(zoom100), 0, ""),
+	EV_EditMethod(NF(zoom200), 0, ""),
+	EV_EditMethod(NF(zoom50), 0, ""),
+	EV_EditMethod(NF(zoom75), 0, ""),
+	EV_EditMethod(NF(zoomWhole), 0, ""),
+	EV_EditMethod(NF(zoomWidth), 0, "") 
 };
 
 
@@ -4377,7 +4392,7 @@ static bool s_doParagraphDlg(FV_View * pView)
 }
 
 
-static bool s_doOptionsDlg(FV_View * pView)
+static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -4392,6 +4407,11 @@ static bool s_doOptionsDlg(FV_View * pView)
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
+
+	if ( which != -1 )
+	  pDialog->setInitialPageNum(which);
+	else
+	  pDialog->setInitialPageNum(0);
 
 	// run the dialog
 	pDialog->runModal(pFrame);
@@ -4837,6 +4857,97 @@ static bool s_doZoomDlg(FV_View * pView)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+}
+
+Defun1(zoom100)
+{
+  ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  UT_uint32 newZoom = 100;
+  pFrame->setZoomType( XAP_Frame::z_100 );
+
+  pFrame->setZoomPercentage(newZoom);
+  return true;
+}
+
+Defun1(zoom200)
+{
+  ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  UT_uint32 newZoom = 200;
+  pFrame->setZoomType( XAP_Frame::z_200 );
+
+  pFrame->setZoomPercentage(newZoom);
+  return true;
+}
+
+Defun1(zoom50)
+{
+  ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  UT_uint32 newZoom = 50;
+  pFrame->setZoomType( XAP_Frame::z_PERCENT );
+
+  pFrame->setZoomPercentage(newZoom);
+  return true;
+}
+
+Defun1(zoom75)
+{
+  ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  UT_uint32 newZoom = 75;
+  pFrame->setZoomType(  XAP_Frame::z_75 );
+
+  pFrame->setZoomPercentage(newZoom);
+  return true;
+}
+
+Defun1(zoomWidth)
+{
+  ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  pFrame->setZoomType( XAP_Frame::z_PAGEWIDTH );
+
+  UT_uint32 newZoom = pView->calculateZoomPercentForPageWidth();
+  pFrame->setZoomPercentage(newZoom);
+
+  return true;
+}
+
+Defun1(zoomWhole)
+{
+  ABIWORD_VIEW;
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  pFrame->raise();
+
+  pFrame->setZoomType( XAP_Frame::z_WHOLEPAGE );
+
+  UT_uint32 newZoom = pView->calculateZoomPercentForWholePage();
+  pFrame->setZoomPercentage(newZoom);
+  return true;
 }
 
 static bool s_doBreakDlg(FV_View * pView)
@@ -5341,6 +5452,12 @@ Defun1(dlgOptions)
 	return s_doOptionsDlg(pView);
 }
 
+Defun1(dlgSpellPrefs)
+{
+  ABIWORD_VIEW;
+
+  return s_doOptionsDlg(pView, 1); // spelling tab
+}
 
 /*****************************************************************/
 /*****************************************************************/

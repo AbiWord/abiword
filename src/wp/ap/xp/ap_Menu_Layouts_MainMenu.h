@@ -100,7 +100,15 @@ BeginLayout(Main,0)
 //		MenuItem(AP_MENU_ID_VIEW_HEADFOOT)
         Separator()
         MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
+           BeginSubMenu(AP_MENU_ID_VIEW_ZOOM_MENU)
 		MenuItem(AP_MENU_ID_VIEW_ZOOM)
+                MenuItem(AP_MENU_ID_VIEW_ZOOM_200)
+                MenuItem(AP_MENU_ID_VIEW_ZOOM_100)
+                MenuItem(AP_MENU_ID_VIEW_ZOOM_75)
+                MenuItem(AP_MENU_ID_VIEW_ZOOM_50)
+                MenuItem(AP_MENU_ID_VIEW_ZOOM_WIDTH)
+                MenuItem(AP_MENU_ID_VIEW_ZOOM_WHOLE)
+           EndSubMenu()
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_INSERT)
@@ -175,13 +183,16 @@ BeginLayout(Main,0)
                      EndSubMenu()
                 EndSubMenu()     
 
+#ifdef HAVE_GNOME 
+                // only enabled for GNOME builds in the 0.9.x releases
                 Separator()
                 BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
-#ifdef HAVE_GNOME // only enabled for GNOME builds in the 0.9.0 release
 	                MenuItem(AP_MENU_ID_INSERT_CLIPART)
-#endif
                         MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
                 EndSubMenu()
+#else
+                MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
+#endif
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_FORMAT)
@@ -221,6 +232,7 @@ BeginLayout(Main,0)
                 BeginSubMenu(AP_MENU_ID_TOOLS_SPELLING)
 		        MenuItem(AP_MENU_ID_TOOLS_SPELL)
                         MenuItem(AP_MENU_ID_TOOLS_AUTOSPELL)
+                        MenuItem(AP_MENU_ID_TOOLS_SPELLPREFS)
                 EndSubMenu()
                 MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)

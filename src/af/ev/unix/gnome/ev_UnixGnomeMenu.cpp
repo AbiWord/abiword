@@ -91,6 +91,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 			UT_ASSERT(pEMC);
 
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+			//UT_DEBUGMSG(("Method name is: %s\n", szMethodName));
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
 			const EV_EditEventMapper * pEEM = pUnixFrame->getEditEventMapper();

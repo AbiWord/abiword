@@ -1136,6 +1136,7 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 
 	shortCutButton = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyShortCut));
 	gtk_widget_show (shortCutButton);
+	gtk_widget_set_sensitive ( shortCutButton, FALSE );
 	gtk_box_pack_start (GTK_BOX (bottomButtons), shortCutButton, TRUE, TRUE, 0);
 
 	m_wModifyOk = buttonOK;

@@ -43,7 +43,8 @@
 AP_Dialog_Options::AP_Dialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id),
 	  m_answer(a_OK),
-	  m_pFrame(0)	// needs to be set from runModal for some of the event_'s to work
+	  m_pFrame(0),	// needs to be set from runModal for some of the event_'s to work
+	  m_pageNum(-1)
 {
 }
 
@@ -317,8 +318,11 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 			
 	// ------------ the page tab number 
-	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
+	int which = getInitialPageNum ();
+	if ((which == -1) && pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
 		_setNotebookPageNum (atoi(pszBuffer));
+	else
+	  _setNotebookPageNum(which);
 #ifdef BIDI_ENABLED
 	//------------- other
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
