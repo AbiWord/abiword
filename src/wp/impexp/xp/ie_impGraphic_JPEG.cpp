@@ -195,7 +195,7 @@ UT_Error IE_ImpGraphic_JPEG::_convertGraphic (UT_ByteBuf* pJpegBB)
 		png_write_row(m_pPNG, pngScanline);
 	}
 
-	DELETEP (pngScanline);
+	DELETEPV (pngScanline);
 	jpeg_finish_decompress(&cinfo);
 	/* This is an important step since it will release a good deal of memory. */
 	jpeg_destroy_decompress(&cinfo);
@@ -330,7 +330,7 @@ boolean IE_ImpGraphic_JPEG::_jpegFillInputBuffer (j_decompress_ptr cinfo)
 {
 	bytebuf_jpeg_source_ptr src = (bytebuf_jpeg_source_ptr) cinfo->src;
 	
-	// WARNING ! this assumes that the BytBuuf will NOT change during JPEG reading.
+	// WARNING ! this assumes that the ByteBuf will NOT change during JPEG reading.
 	src->pub.next_input_byte = src->sourceBuf->getPointer (src->pos);
 	src->pub.bytes_in_buffer = src->sourceBuf->getLength ();
 	

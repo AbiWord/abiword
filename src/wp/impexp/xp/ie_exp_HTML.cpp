@@ -111,7 +111,7 @@ bool IE_Exp_HTML4_Sniffer::getDlgLabels(const char ** pszDesc,
 IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument, bool is4)
   : IE_Exp(pDocument), m_pListener(0), m_bIs4(is4)
 {
-	m_error = 0;
+	m_error = UT_OK;
 }
 
 IE_Exp_HTML::~IE_Exp_HTML()
@@ -2033,7 +2033,7 @@ bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
-  UT_Error err = UT_OK;
+  bool err = true;
 	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
@@ -2043,7 +2043,9 @@ UT_Error IE_Exp_HTML::_writeDocument(void)
 	  err = getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)) ;
 	DELETEP(m_pListener);
 	
-	return ((m_error != UT_OK || err != UT_OK) ? UT_IE_COULDNOTWRITE : UT_OK);
+	if ( m_error == UT_OK && err == true )
+	  return UT_OK;
+	return UT_IE_COULDNOTWRITE;
 }
 
 /*****************************************************************/
