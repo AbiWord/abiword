@@ -341,8 +341,35 @@ UT_Bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 }
 
 
-XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(void) const
+XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(UT_Bool bCreate)
 {
+	if (bCreate)
+	{
+		// the builtin scheme is not updatable, 
+		// so we may need to create one that is
+		if ( !strcmp(m_currentScheme->getSchemeName(), "_builtin_") ) 
+		{
+			const XML_Char new_name[] = "_custom_";
+
+			if (setCurrentScheme(new_name))
+			{
+				// unused _custom_ scheme is lying around, so recycle it
+				UT_ASSERT(UT_TODO);
+
+				// HYP: reset the current scheme's hash table contents?
+				// ALT: replace the existing scheme with new empty one
+			}
+			else
+			{
+				// we need to create it
+				XAP_PrefsScheme * pNewScheme = new XAP_PrefsScheme(this, new_name);
+				UT_ASSERT(pNewScheme);	
+				addScheme(pNewScheme);
+				setCurrentScheme(new_name);
+			}
+		}
+	}
+
 	return m_currentScheme;
 }
 

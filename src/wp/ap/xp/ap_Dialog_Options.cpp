@@ -72,7 +72,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	UT_ASSERT(pFrameData);
 
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
-	UT_ASSERT(pPrefs->getCurrentScheme());
+	UT_ASSERT(pPrefsScheme);
 
 	// turn off all notification to PrefListeners via XAP_Prefs
 	pPrefs->startBlockChange();
@@ -90,17 +90,9 @@ void AP_Dialog_Options::_storeWindowData(void)
 		pPrefs->setAutoSavePrefs( _gatherPrefsAutoSave() );
 	}
 
-	// check to see if there is any other scheme besides _buildin_
-	UT_ASSERT( pPrefsScheme );	
-	if ( !strcmp( pPrefs->getCurrentScheme()->getSchemeName(), "_builtin_") ) {
-		// TODO: need to decide on a scheme default name
-		const XML_Char new_name[] = "user_prefs";
-		
-		pPrefsScheme = new XAP_PrefsScheme(pPrefs, new_name);
-		UT_ASSERT( pPrefsScheme );	
-		pPrefs->addScheme( pPrefsScheme );
-		pPrefs->setCurrentScheme( new_name );
-	}
+	// try again to make sure we've got an updatable scheme
+	pPrefsScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	UT_ASSERT(pPrefsScheme);
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// save the values to the Prefs classes
@@ -259,7 +251,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 	// SetDefaults
 	//	To set the defaults, save the scheme name and notebook page number,
-	//  re-populate the window with the _buildit_ scheme, then reset the 
+	//  re-populate the window with the _builtin_ scheme, then reset the 
 	//	scheme name and page number.
 	// If the user hits cancel, then nothing is saved in user_prefs
 

@@ -3861,12 +3861,11 @@ Defun1(viewRuler)
 
 #if 1
 	// POLICY: make this the default for new frames, too
-	// TODO: consider hiding this pointer chase behind a higher-level API
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme();
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool(AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler); 
@@ -4333,6 +4332,15 @@ Defun1(cycleInputMode)
 		return UT_FALSE;
 	
 	UT_Bool bResult = (pFrame->setInputMode(szNextInputMode) != 0);
+
+#if 1
+	// POLICY: make this the default for new frames, too
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValue(AP_PREF_KEY_KeyBindings, szNextInputMode); 
+#endif
+
 	return bResult;
 }
 

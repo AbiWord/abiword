@@ -82,7 +82,7 @@ public:
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
 	XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
 	UT_Bool					addScheme(XAP_PrefsScheme * pNewScheme);
-	XAP_PrefsScheme *		getCurrentScheme(void) const;
+	XAP_PrefsScheme *		getCurrentScheme(UT_Bool bCreate = UT_FALSE);
 	UT_Bool					setCurrentScheme(const XML_Char * szSchemeName);
 
 	UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
