@@ -162,7 +162,7 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	fileData.data = NULL;
 	i = 0;
 	/* Find out how many bytes the uncompressed file is */
-	while ((ret = gzread(gzfp, szURL.c_str(), 1)))
+	while ((ret = gzread(gzfp, const_cast<char *>(szURL.c_str()), 1)))
 		i += ret;
 
 	fileData.data = (char *)malloc(i);
