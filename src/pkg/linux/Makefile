@@ -47,7 +47,7 @@ install:
 
 install_redhat:
 	@strip $(OUTDIR)/bin/AbiWord_d $(OUTDIR)/bin/AbiWord_s
-	@TARGET=/usr/share/abisuite BINDIR=/usr/bin/X11 SRCDIR=$(OUTDIR) \
+	@TARGET=/usr/share/abisuite BINDIR=/usr/bin SRCDIR=$(OUTDIR) \
 		DOCDIR=/usr/doc LIBDIR=/usr/lib \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/linux/scripts/install_redhat.sh 
@@ -129,7 +129,11 @@ PACK_ROOT:=$(ABI_ROOT)/../abisuite-$(ABI_BUILD_VERSION)
 
 MODULE_LIST=abi-$(ABI_BUILD_VERSION) expat unixfonts abidistfiles libpng zlib wv
 
-RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/.*topdir://"))
+# The following only works for RPM3.x
+#RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/.*topdir://"))
+
+# This should work for RPM 3.x and RPM 4.x on stock redhat systems
+RPM_SOURCE_DIR=/usr/src/redhat
 
 # TODO : should this be specified outside the build process?  
 ABI_RELEASE_NUMBER=1
@@ -158,7 +162,7 @@ rpm: pack_rpm
 		| sed "s/__ABI_RELEASE_NUMBER__/$(ABI_RELEASE_NUMBER)/" \
 		> $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec)
 	@echo "Producing RPM..."
-	rpm -vvba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
+	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
 	mv $(RPM_SOURCE_DIR)/RPMS/$(OS_ARCH)/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
 	mv $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm $(DIST)
 

@@ -13,16 +13,19 @@ Group: Applications/Editors
 Source: abisuite-%{version}.tar
 URL: http://www.abisource.com/
 Vendor: AbiSource, Inc.
-Packager: Shaw Terwilliger <sterwill@abisource.com>
+Packager: Dom Lachowicz <dominicl@seas.upenn.edu>
 AutoReqProv: yes
 
 Requires: gtk+ >= 1.2.7
 Requires: glib >= 1.2.7
 
-# TODO: get these following requirements in for *Gnome Only*
-# Requires: gnome-libs >= 1.0.57
-# Requires: gnome-print >= 0.25
-# Requires: gal >= 0.0.1
+# TODO: requirements in for *Gnome Only*
+#Requires: gnome-libs >= 1.0.57
+#Requires: gnome-print >= 0.25
+#Requires: gal >= 0.0.1
+
+# TODO: requirements for pspell only
+#Requires: pspell >= 0.11.2
 
 %description
 AbiSuite is a collection of cross-platform, Open Source office
@@ -51,9 +54,9 @@ find /usr/share/abisuite -type d -exec chmod 0755 {} \;
 find /usr/share/abisuite -type f -exec chown root.root {} \;
 find /usr/share/abisuite -type f -exec chmod 0644 {} \;
 
-# symlinks in /usr/bin/X11 0777 by default ; own by root.root
-chown root.root /usr/bin/X11/AbiWord
-chown root.root /usr/bin/X11/abiword
+# symlinks in /usr/bin 0777 by default ; own by root.root
+chown root.root /usr/bin/AbiWord
+chown root.root /usr/bin/abiword
 
 # exception to find above, bins 0755
 chown root.root /usr/share/abisuite/bin/AbiWord*
@@ -80,8 +83,8 @@ chown root.root /usr/share/gnome/apps/Applications/abiword.desktop
 chmod 0644 /usr/share/gnome/apps/Applications/abiword.desktop
 
 %files
-/usr/bin/X11/AbiWord
-/usr/bin/X11/abiword
+/usr/bin/AbiWord
+/usr/bin/abiword
 %docdir /usr/doc/abisuite
 /usr/lib/menu/abisuite
 /usr/share/pixmaps/abiword_48.png
@@ -91,8 +94,8 @@ chmod 0644 /usr/share/gnome/apps/Applications/abiword.desktop
 %clean
 rm -rf /usr/share/abisuite
 rm -rf /usr/doc/abisuite
-rm -f /usr/bin/X11/AbiWord
-rm -f /usr/bin/X11/abiword
+rm -f /usr/bin/AbiWord
+rm -f /usr/bin/abiword
 rm -f /usr/lib/menu/abisuite
 rm -f /usr/share/pixmaps/abiword_48.png
 rm -f /usr/share/gnome/apps/Applications/abiword.desktop
