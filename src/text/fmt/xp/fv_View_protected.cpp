@@ -3976,6 +3976,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// point, but but have non-zero length, such as any hidden text;
 	// if this is the case, we need to adjust the document position accordingly
 
+	UT_return_val_if_fail(pBlock, false);
+	UT_return_val_if_fail(pRun, false);
+	
 	PT_DocPosition iRunStart = pBlock->getPosition(false) + pRun->getBlockOffset();
 	PT_DocPosition iRunEnd = iRunStart + pRun->getLength();
 
