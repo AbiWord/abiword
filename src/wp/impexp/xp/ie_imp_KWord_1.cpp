@@ -515,36 +515,43 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 	pVal = _getXMLPropValue("format", atts);
 	if(pVal)
 	  {
-	    // we now have the paper type. remap
+	    // set the page size - we still set width&height below
+	    getDoc()->m_docPageSize.Set(kPageToFpPageSize(pVal));
 	  }
-
 
 	pVal = _getXMLPropValue("orientation", atts);
 	if(pVal)
 	  {
 	    if(strcmp(pVal, "1") == 0)
 	      {
-		// landscape
+		// set to landscape
+		getDoc()->m_docPageSize.setLandscape();
 	      }
 	    else
 	      {
-		// portrait
+		// set to portrait
+		getDoc()->m_docPageSize.setPortrait();
 	      }
 	  }
 
+	double page_width, page_height;
+	page_width = page_height = 0.0;
 	pVal = _getXMLPropValue("width", atts);
 	if(pVal)
 	  {
-	    // paper width from mm
+	    // get the page width
+	    page_width = atof(pVal);
 	  }
-
+	
 	pVal = _getXMLPropValue("height", atts);
 	if(pVal)
 	  {
-	    // paper height from mm
+	    // get the page height
+	    page_height = atof(pVal);
 	  }
 
-        break;
+	getDoc()->m_docPageSize.Set(page_width, page_height, fp_PageSize::mm);
+	break;
       }
       
     case TT_PAPERBORDERS:
