@@ -149,281 +149,174 @@ PtWidget_t *mainwindow;
 PtWidget_t *panelgrp;
 PtWidget_t *btnOk,*btnCancel;
 	  
-	static const PhDim_t dim = {361,317};
-	static const PtArg_t args[] = {
-     		Pt_ARG(Pt_ARG_DIM,&dim,0),
-		Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title).c_str(),0),
-		Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
-		Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
-	};
-
-	static const PhArea_t area1 = { { 3, 2 }, { 355, 283 } };
-	static const PtArg_t args1[] = {
-		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
-		};
-
-	static const PhArea_t area2 = { { 0, 0 }, { 345, 247 } };
-	static const PtArg_t args2[] = {
-		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-Pt_ARG( Pt_ARG_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_General).c_str(), 0 ),
-		};
-
-	static const PhArea_t area3 = { { 92, 6 }, { 247, 27 } };
-	static const PtArg_t args3[] = {
-		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area4 = { { 7, 9 }, { 61, 21 } };
-	static const PtArg_t args4[] = {
-		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area5 = { { 92, 38 }, { 247, 27 } };
-	static const PtArg_t args5[] = {
-		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area6 = { { 7, 41 }, { 61, 21 } };
-	static const PtArg_t args6[] = {
-		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Subject_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area7 = { { 92, 70 }, { 247, 27 } };
-	static const PtArg_t args7[] = {
-		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area8 = { { 7, 73 }, { 61, 21 } };
-	static const PtArg_t args8[] = {
-		Pt_ARG( Pt_ARG_AREA, &area8, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Author_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area9 = { { 92, 102 }, { 247, 27 } };
-	static const PtArg_t args9[] = {
-		Pt_ARG( Pt_ARG_AREA, &area9, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area10 = { { 7, 105 }, { 62, 21 } };
-	static const PtArg_t args10[] = {
-		Pt_ARG( Pt_ARG_AREA, &area10, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Publisher_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area11 = { { 92, 134 }, { 247, 27 } };
-	static const PtArg_t args11[] = {
-		Pt_ARG( Pt_ARG_AREA, &area11, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area12 = { { 7, 137 }, { 75, 21 } };
-	static const PtArg_t args12[] = {
-		Pt_ARG( Pt_ARG_AREA, &area12, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_CoAuthor_LBL).c_str() , 0 ),
-		};
-
-	static const PhArea_t area13 = { { -32768, -32768 }, { 345, 247 } };
-	static const PtArg_t args13[] = {
-		Pt_ARG( Pt_ARG_AREA, &area13, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-Pt_ARG( Pt_ARG_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Summary).c_str(), 0 ),
-		};
-
-	static const PhArea_t area14 = { { 5, 9 }, { 61, 21 } };
-	static const PtArg_t args14[] = {
-		Pt_ARG( Pt_ARG_AREA, &area14, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Category_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area15 = { { 93, 6 }, { 247, 27 } };
-	static const PtArg_t args15[] = {
-		Pt_ARG( Pt_ARG_AREA, &area15, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area16 = { { 93, 38 }, { 247, 27 } };
-	static const PtArg_t args16[] = {
-		Pt_ARG( Pt_ARG_AREA, &area16, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area17 = { { 5, 41 }, { 70, 21 } };
-	static const PtArg_t args17[] = {
-		Pt_ARG( Pt_ARG_AREA, &area17, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Keywords_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area18 = { { 93, 70 }, { 247, 27 } };
-	static const PtArg_t args18[] = {
-		Pt_ARG( Pt_ARG_AREA, &area18, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area19 = { { 5, 73 }, { 91, 21 } };
-	static const PtArg_t args19[] = {
-		Pt_ARG( Pt_ARG_AREA, &area19, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Languages_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area20 = { { 5, 163 }, { 74, 22 } };
-	static const PtArg_t args20[] = {
-		Pt_ARG( Pt_ARG_AREA, &area20, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Description_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area21 = { { 92, 121 }, { 248, 116 } };
-	static const PtArg_t args21[] = {
-		Pt_ARG( Pt_ARG_AREA, &area21, 0 ),
-		Pt_ARG(Pt_ARG_TEXT_STRING,"",0),
-		};
-
-	static const PhArea_t area22 = { { -32768, -32768 }, { 345, 247 } };
-	static const PtArg_t args22[] = {
-		Pt_ARG( Pt_ARG_AREA, &area22, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-Pt_ARG( Pt_ARG_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Permission).c_str(), 0 ),
-		};
-
-	static const PhArea_t area23 = { { 93, 5 }, { 247, 27 } };
-	static const PtArg_t args23[] = {
-		Pt_ARG( Pt_ARG_AREA, &area23, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area24 = { { 7, 8 }, { 61, 21 } };
-	static const PtArg_t args24[] = {
-		Pt_ARG( Pt_ARG_AREA, &area24, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Source_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area25 = { { 93, 42 }, { 247, 27 } };
-	static const PtArg_t args25[] = {
-		Pt_ARG( Pt_ARG_AREA, &area25, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area26 = { { 7, 45 }, { 61, 21 } };
-	static const PtArg_t args26[] = {
-		Pt_ARG( Pt_ARG_AREA, &area26, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Relation_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area27 = { { 93, 74 }, { 247, 27 } };
-	static const PtArg_t args27[] = {
-		Pt_ARG( Pt_ARG_AREA, &area27, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area28 = { { 7, 77 }, { 65, 21 } };
-	static const PtArg_t args28[] = {
-		Pt_ARG( Pt_ARG_AREA, &area28, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Coverage_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area29 = { { 93, 106 }, { 247, 27 } };
-	static const PtArg_t args29[] = {
-		Pt_ARG( Pt_ARG_AREA, &area29, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, "", 0 ),
-		};
-
-	static const PhArea_t area30 = { { 7, 109 }, { 61, 21 } };
-	static const PtArg_t args30[] = {
-		Pt_ARG( Pt_ARG_AREA, &area30, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Rights_LBL).c_str(), 0 ),
-		};
-
-	static const PhArea_t area31 = { { 288, 290 }, { 70, 27 } };
-	static const PtArg_t args31[] = {
-		Pt_ARG( Pt_ARG_AREA, &area31, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
-		};
-
-	static const PhArea_t area32 = { { 214, 290 }, { 70, 27 } };
-	static const PtArg_t args32[] = {
-		Pt_ARG( Pt_ARG_AREA, &area32, 0 ),
-Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str() , 0 ),
-		};
-
-	mainwindow = PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
-	panelgrp=PtCreateWidget( PtPanelGroup, NULL, sizeof(args1) / sizeof(PtArg_t), args1 );
-
-      PtCreateWidget( PtPane,panelgrp , sizeof(args2) / sizeof(PtArg_t), args2 );
-
-PtWidget_t *title_entry=PtCreateWidget( PtText, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
-
-PtWidget_t *subject_entry=PtCreateWidget( PtText, NULL, sizeof(args5) / sizeof(PtArg_t), args5 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args6) / sizeof(PtArg_t), args6 );
-
-PtWidget_t *author_entry = PtCreateWidget( PtText, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args8) / sizeof(PtArg_t), args8 );
-
-PtWidget_t * publisher_entry =PtCreateWidget( PtText, NULL, sizeof(args9) / sizeof(PtArg_t), args9 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args10) / sizeof(PtArg_t), args10 );
-
-PtWidget_t *coauthor_entry =PtCreateWidget( PtText, NULL, sizeof(args11) / sizeof(PtArg_t), args11 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args12) / sizeof(PtArg_t), args12 );
-
-	PtCreateWidget( PtPane,panelgrp, sizeof(args13) / sizeof(PtArg_t), args13 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args14) / sizeof(PtArg_t), args14 );
-
-PtWidget_t *category_entry = PtCreateWidget( PtText, NULL, sizeof(args15) / sizeof(PtArg_t), args15 );
-
-PtWidget_t *keywords_entry = PtCreateWidget( PtText, NULL, sizeof(args16) / sizeof(PtArg_t), args16 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args17) / sizeof(PtArg_t), args17 );
-
-PtWidget_t *languages_entry = PtCreateWidget( PtText, NULL, sizeof(args18) / sizeof(PtArg_t), args18 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args19) / sizeof(PtArg_t), args19 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args20) / sizeof(PtArg_t), args20 );
-
-PtWidget_t *description_txt = PtCreateWidget( PtMultiText, NULL, sizeof(args21) / sizeof(PtArg_t), args21 );
-
-	PtCreateWidget( PtPane, panelgrp, sizeof(args22) / sizeof(PtArg_t), args22 );
-
-PtWidget_t *source_entry = PtCreateWidget( PtText, NULL, sizeof(args23) / sizeof(PtArg_t), args23 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args24) / sizeof(PtArg_t), args24 );
-
-PtWidget_t *relation_entry = PtCreateWidget( PtText, NULL, sizeof(args25) / sizeof(PtArg_t), args25 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args26) / sizeof(PtArg_t), args26 );
-
-PtWidget_t * coverage_entry = PtCreateWidget( PtText, NULL, sizeof(args27) / sizeof(PtArg_t), args27 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args28) / sizeof(PtArg_t), args28 );
-
-PtWidget_t *rights_entry = PtCreateWidget( PtText, NULL, sizeof(args29) / sizeof(PtArg_t), args29 );
-
-	PtCreateWidget( PtLabel, NULL, sizeof(args30) / sizeof(PtArg_t), args30 );
-
-	btnOk = PtCreateWidget( PtButton, mainwindow, sizeof(args31) / sizeof(PtArg_t), args31 );
-
-	btnCancel = PtCreateWidget( PtButton, mainwindow, sizeof(args32) / sizeof(PtArg_t), args32 );
+	PtArg_t args[10];
+	int n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_MetaData_Title),0);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
+//	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_MANAGED_FLAGS);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+
+	mainwindow = PtCreateWidget(PtWindow,NULL,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
+	PtWidget_t *grp =	PtCreateWidget(PtGroup,NULL,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_AUTO_EXTENT);
+	panelgrp=PtCreateWidget( PtPanelGroup, NULL, n,args);
+
+
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_General),0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_SHOW_TITLE);
+  PtCreateWidget( PtPane,panelgrp ,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,5,0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Title_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Subject_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Author_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Publisher_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_CoAuthor_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *title_entry=PtCreateWidget( PtText, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *subject_entry=PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *author_entry = PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *publisher_entry =PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *coauthor_entry =PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args );
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Summary),0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_SHOW_TITLE);
+	PtCreateWidget( PtPane,panelgrp,n,args );
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Category_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Keywords_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Languages_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Description_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *category_entry = PtCreateWidget( PtText, NULL, n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *keywords_entry = PtCreateWidget( PtText, NULL, n,args );
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *languages_entry = PtCreateWidget( PtText, NULL, n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtSetArg(&args[n++],Pt_ARG_MULTITEXT_ROWS,5,0);
+	PtWidget_t *description_txt = PtCreateWidget( PtMultiText, NULL, n,args );
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Permission),0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_SHOW_TITLE);
+	PtCreateWidget( PtPane, panelgrp, n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);
+	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Source_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;	
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Relation_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Coverage_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Rights_LBL),0);
+	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
+	n=0;
+	
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *source_entry = PtCreateWidget( PtText, NULL,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *relation_entry = PtCreateWidget( PtText, NULL,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t * coverage_entry = PtCreateWidget( PtText, NULL,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	PtWidget_t *rights_entry = PtCreateWidget( PtText, NULL, n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
+	PtCreateWidget(PtGroup,grp,n,args);
+	n=0;
+
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	btnOk = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
+	n=0;	
+
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	btnCancel = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
 
 	PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
 	PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);
 	PtAddCallback(btnCancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
-
-
 
   m_entryTitle = title_entry;
   m_entrySubject = subject_entry;
