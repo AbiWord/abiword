@@ -56,6 +56,8 @@ BeginSetEnc(nl,NL,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Opslaan als", 		tb_save_as_xpm,			NULL, "Document opslaan onder een andere naam")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Print",		tb_print_xpm,			NULL, "Print het document")
 
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Spellingscontrole",	tb_spellcheck_xpm,		NULL, "Controleer de spelling van het document")
+
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Ongedaan maken",	tb_undo_xpm,			NULL, "Ongedaan maken")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Opnieuw",		tb_redo_xpm,			NULL, "Terugzetten bewerking")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Knippen",			tb_cut_xpm,			NULL, "Knippen")
@@ -64,7 +66,7 @@ BeginSetEnc(nl,NL,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stijl",		NoIcon,				NULL, "Stijl")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Lettertype",		NoIcon,				NULL, "Lettertype")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Letter Grootte",	NoIcon,				NULL, "Lettertype Grootte")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Lettergrootte",	NoIcon,				NULL, "Lettergrootte")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Vetgedrukt",		tb_text_bold_xpm,		NULL, "Vetgedrukt")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Schuingedrukt",	tb_text_italic_xpm,		NULL, "Schuingedrukt")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Onderstreep",		tb_text_underline_xpm,		NULL, "Onderstrepen")
@@ -89,9 +91,14 @@ BeginSetEnc(nl,NL,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 Kolommen",		tb_2column_xpm,			NULL, "2 Kolommen")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Kolommen",		tb_3column_xpm,			NULL, "3 Kolommen")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"In- en uitzoomen",		NoIcon,			NULL, "In- en uitzoomen")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"In- en uitzoomen",	NoIcon,				NULL, "In- en uitzoomen")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Opsommingstekens",	tb_lists_bullets_xpm,		NULL, "Opsommingstekens")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Nummering",		tb_lists_numbers_xpm,		NULL, "Nummering")
 	
 	// ... add others here ...
+
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Inspring vergroten",	tb_text_indent_xpm, 	NULL, "Inspring vergroten")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Inspring verkleinen",	tb_text_unindent_xpm,	NULL, "Inspring verkleinen")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 

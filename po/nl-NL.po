@@ -160,7 +160,7 @@ msgstr "&Toevoegen"
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:49
 msgid "&Adjust to:"
-msgstr ""
+msgstr "&Aanpassen naar:"
 
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:51
@@ -186,7 +186,7 @@ msgstr "&Automatische spellingscontrole"
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:59
 msgid "&Automatically save this Scheme"
-msgstr ""
+msgstr "Schema &automatisch opslaan"
 
 #. MENU_LABEL_INSERT_AUTOTEXT
 #: po/tmp/ap_String_Id.h.h:61
@@ -256,9 +256,9 @@ msgstr "&Kopiëren"
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:87
 msgid "&Current Preferences Scheme"
-msgstr ""
+msgstr "&Huidige voorkeur schema"
 
-#. MENU_LABEL_INSERT_DELETE_HYPERLINK
+#. MENU_LABEL_INSERT_/DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:89
 #, fuzzy
 msgid "&Delete hyperlink"
@@ -277,7 +277,7 @@ msgstr "&Document"
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:95
 msgid "&Don't hyphenate"
-msgstr ""
+msgstr "&Niet afbreken"
 
 #. MENU_LABEL_EDIT
 #: po/tmp/ap_String_Id.h.h:97
@@ -848,7 +848,7 @@ msgstr "Alle"
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:315
 msgid "Allow Custom Toolbars"
-msgstr "Aangepaste Werkbalken toestaan"
+msgstr "Aangepaste werkbalken toestaan"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:317
@@ -1704,8 +1704,9 @@ msgstr "Email:"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:641
+#, fuzzy
 msgid "Endnote anchor"
-msgstr ""
+msgstr "Eindnoot anker"
 
 #. FIELD_Numbers_EndnoteReference
 #: po/tmp/ap_String_Id.h.h:643
@@ -2157,7 +2158,7 @@ msgstr "Niet opgemaakte prikbord inhoud invoegen"
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:811
 msgid "Invisible &Layout Marks"
-msgstr "Inzichtbare &Lay-out Markeringen"
+msgstr "Onzichtbare opmaak tekens"
 
 #. DLG_Para_AlignJustified
 #: po/tmp/ap_String_Id.h.h:813
@@ -2282,9 +2283,8 @@ msgstr "Het geselecteerde doorhalen (omschakelen)"
 
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h.h:859
-#, fuzzy
 msgid "Line between"
-msgstr "Regel tussen"
+msgstr "Scheidingslijn"
 
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h.h:861
@@ -2309,7 +2309,7 @@ msgstr "Lijsten voor "
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:869
 msgid "Lock out non-style formatting commands"
-msgstr ""
+msgstr "Niet-stijl opmaak commando's uitsluiten"
 
 #. AUTOTEXT_CLOSING_4
 #: po/tmp/ap_String_Id.h.h:871
@@ -2370,7 +2370,7 @@ msgstr "Martin's Test"
 #: po/tmp/ap_String_Id.h.h:891
 #, fuzzy
 msgid "Max Column size"
-msgstr "&Max Kolom grootte"
+msgstr "Max kolom grootte"
 
 #. FIELD_DateTime_MilTime
 #: po/tmp/ap_String_Id.h.h:893
@@ -2489,7 +2489,7 @@ msgstr "Not in &woorderlijst:"
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:933
 msgid "Number of Columns"
-msgstr "Aantal Kolommen"
+msgstr "Aantal kolommen"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h.h:935
@@ -2657,8 +2657,9 @@ msgstr "Pagina's"
 
 #. DLG_Para_LabelPagination
 #: po/tmp/ap_String_Id.h.h:997
+#, fuzzy
 msgid "Pagination"
-msgstr ""
+msgstr "Paginering"
 
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h.h:999
@@ -2718,7 +2719,7 @@ msgstr "Webpagina &Voorbeeld"
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1021
 msgid "Preference Schemes"
-msgstr ""
+msgstr "Voorkeur schema's"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1023
@@ -2734,7 +2735,7 @@ msgstr "Voorbeeld"
 #: po/tmp/ap_String_Id.h.h:1027
 #, fuzzy
 msgid "Preview the document as a web page"
-msgstr "Bewaar bestand onder andere naam"
+msgstr "Bekijk het document als een voorbeeld webpagina"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1029
@@ -2906,28 +2907,28 @@ msgstr ""
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1093
 msgid "Restart numbering at:"
-msgstr ""
+msgstr "Opnieuw nummeren vanaf:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1095
 msgid "Resume Previous List"
-msgstr ""
+msgstr "Vorige lijst hervatten"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1097
 msgid "Revert file to last unsaved state?"
-msgstr ""
+msgstr "Document terugdraaien naar laatste opgeslagen toestand?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1099
 msgid "Revert the document to the last saved state"
-msgstr ""
+msgstr "Document terugdraaien naar de laaste opgeslagen toestand"
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1101
 #, c-format
 msgid "Revert to saved copy of %s?"
-msgstr "Bewaarde copie van %s openen?"
+msgstr "Terugdraaien naar opgeslagen kopie van %s?"
 
 #. DLG_PageNumbers_Right
 #: po/tmp/ap_String_Id.h.h:1103
@@ -3035,8 +3036,9 @@ msgstr ""
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:1141
+#, fuzzy
 msgid "Scale..."
-msgstr ""
+msgstr "Schalen..."
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:1143
@@ -3119,7 +3121,7 @@ msgstr "Spelling instellingen"
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:1173
 msgid "Setup your document's page properties such as page size and margins"
-msgstr ""
+msgstr "Pagina instellingen van het document aanpassen, zoals pagina grootte en marges"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1175
@@ -3140,7 +3142,7 @@ msgstr "&Lineaal"
 #: po/tmp/ap_String_Id.h.h:1181
 #, fuzzy
 msgid "Show For&matting Marks"
-msgstr "&Opmaak"
+msgstr "Op&maaktekens tonen"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:1183
@@ -3197,7 +3199,7 @@ msgstr "Enkel"
 #: po/tmp/ap_String_Id.h.h:1203
 #, fuzzy
 msgid "Space after Column"
-msgstr "Bewaar bestand"
+msgstr "Afstand na kolom"
 
 #. DLG_Para_LabelSpacing
 #: po/tmp/ap_String_Id.h.h:1205
@@ -3380,12 +3382,12 @@ msgstr "Tekst"
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h.h:1275
 msgid "Text Align:"
-msgstr ""
+msgstr "Tekst uitlijning:"
 
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:1277
 msgid "Text and Icon"
-msgstr ""
+msgstr "Tekst en icoon"
 
 #. AUTOTEXT_CLOSING_10
 #: po/tmp/ap_String_Id.h.h:1279
@@ -3400,7 +3402,7 @@ msgstr "Dank je,"
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:1283
 msgid "The margins selected are too large to fit on the page."
-msgstr ""
+msgstr "De geselecteerde marges zijn te groot om op de pagina te passen."
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:1285
@@ -3545,7 +3547,7 @@ msgstr "Romeinse-Hoofdletter Lijst"
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:1333
 msgid "Use RTL Order"
-msgstr ""
+msgstr "Gebruik RnL volgorde"
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1335
@@ -3555,7 +3557,7 @@ msgstr ""
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h.h:1337
 msgid "User-defined styles"
-msgstr ""
+msgstr "Eigen stijlen"
 
 #. AUTOTEXT_MAIL_6
 #: po/tmp/ap_String_Id.h.h:1339
@@ -3565,7 +3567,7 @@ msgstr "VIA LUCHTPOST"
 #. AUTOTEXT_MAIL_7
 #: po/tmp/ap_String_Id.h.h:1341
 msgid "VIA FACSIMILE"
-msgstr ""
+msgstr "VIA FAX"
 
 #. AUTOTEXT_MAIL_8
 #: po/tmp/ap_String_Id.h.h:1343
@@ -3602,7 +3604,7 @@ msgstr "Weergeven..."
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:1355
 msgid "Visible"
-msgstr "Zichtbaar"
+msgstr "Weergave"
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h.h:1357
@@ -4088,27 +4090,27 @@ msgstr "Kroatisch, Macintosh"
 #. ENC_CYRL_ISO
 #: po/tmp/xap_String_Id.h.h:135
 msgid "Cyrillic, ISO-8859-5"
-msgstr ""
+msgstr "Cyrillisch, ISO-8859-5"
 
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h.h:137
 msgid "Cyrillic, KOI8-R"
-msgstr ""
+msgstr "Cyrillisch, KOI8-R"
 
 #. ENC_CYRL_MAC
 #: po/tmp/xap_String_Id.h.h:139
 msgid "Cyrillic, Macintosh"
-msgstr ""
+msgstr "Cyrillisch, Macintosh"
 
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr ""
+msgstr "Cyrillisch, Windows Code Pagina 1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h.h:143
 msgid "Czech"
-msgstr ""
+msgstr "Tsjechisch"
 
 #. LANG_DA_DK
 #: po/tmp/xap_String_Id.h.h:145
@@ -4203,7 +4205,7 @@ msgstr "Wachtwoord invoeren"
 #. LANG_EO
 #: po/tmp/xap_String_Id.h.h:185
 msgid "Esperanto"
-msgstr ""
+msgstr "Esperanto"
 
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:187
@@ -4213,7 +4215,7 @@ msgstr "Bestand exporteren"
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:189
 msgid "Farsi"
-msgstr ""
+msgstr "Perzisch"
 
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:191
@@ -4490,7 +4492,7 @@ msgstr "Litouws"
 #: po/tmp/xap_String_Id.h.h:305
 #, fuzzy
 msgid "Modify Unix Font Path"
-msgstr "Unix Lettertype Pad Aanpassen"
+msgstr "Unix lettertype pad aanpassen"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:307
@@ -4516,7 +4518,7 @@ msgstr "Geen plugin geselecteerd"
 #: po/tmp/xap_String_Id.h.h:315
 #, fuzzy
 msgid "Norwegian Bokmal"
-msgstr "Noors Bormal"
+msgstr "Noors Bokmal"
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h.h:317
@@ -5004,21 +5006,3 @@ msgstr "pica"
 #: po/tmp/xap_String_Id.h.h:517
 msgid "points"
 msgstr "punten"
-
-#~ msgid "&Bookmark"
-#~ msgstr "&Bladwijzer"
-
-#~ msgid "Import the document"
-#~ msgstr "Open een document door een kopie te maken"
-
-#, fuzzy
-#~ msgid "Show Para&graphs"
-#~ msgstr "&Paragraven tonen"
-
-#, fuzzy
-#~ msgid "Zoom to &200"
-#~ msgstr "Zoom naar &200%"
-
-#, fuzzy
-#~ msgid "   Color   "
-#~ msgstr "   Lettertype   "
