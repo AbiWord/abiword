@@ -91,17 +91,22 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 
 	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	UT_sint32 ndxColor = m_pie->_findOrAddColor((char*)szColor);
+	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
 	UT_ASSERT(ndxColor != -1);
-	if (ndxColor != 0)
+
+	if (ndxColor != 0) // black text, the default
 		m_pie->_rtf_keyword("cf",ndxColor);
 
 	szColor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-	ndxColor = m_pie->_findOrAddColor((char*)szColor);
-	UT_ASSERT(ndxColor != -1);
-	if (ndxColor != 0)
+
+	if (UT_stricmp (szColor, "transparent") != 0)
 	{
-		m_pie->_rtf_keyword("cb",ndxColor);
+		ndxColor = m_pie->_findColor((char*)szColor);
+		UT_ASSERT(ndxColor != -1);
+		if (ndxColor != 1) // white background, the default
+		{
+			m_pie->_rtf_keyword("cb",ndxColor);
+		}
 	}
 
    	_rtf_font_info fi(pSpanAP,pBlockAP,pSectionAP);

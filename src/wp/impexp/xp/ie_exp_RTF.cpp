@@ -148,6 +148,7 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 	// and the color table.
 
 	_addColor("000000");				// load black as color 0.
+	_addColor("ffffff");                // load white as color 1.
 		
 	m_pListenerGetProps = new s_RTF_ListenerGetProps(m_pDocument,this);
 	if (!m_pListenerGetProps)

@@ -287,9 +287,15 @@ RTFStateStore::RTFStateStore()
 	m_unicodeInAlternate = 0;
 }
 
+static double _twips2inch (const char * szTwips)
+{
+	if (!szTwips)
+		return 0;
 
+	UT_sint32 twips = atoi (szTwips);
 
-
+	return (twips/720);
+}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -559,7 +565,7 @@ UT_sint32 IE_Imp_RTF::GetNthTableBgColour(UT_uint32 colNum)
 {
 	if (colNum < m_colourTable.getItemCount())
 	{
-		return (UT_uint32)m_colourTable.getNthItem(colNum);
+		return (UT_sint32)m_colourTable.getNthItem(colNum);
 	}
 	else
 	{

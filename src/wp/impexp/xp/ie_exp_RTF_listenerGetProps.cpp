@@ -258,7 +258,16 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
 	if (ndxColor == -1)
 		m_pie->_addColor((char*)szColor);
+	
+	szColor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 
+	if (UT_stricmp (szColor, "transparent") != 0)
+	{
+		ndxColor = m_pie->_findColor((char*)szColor);
+		if (ndxColor == -1)
+			m_pie->_addColor((char*)szColor);
+	}
+	
 	// convert our font properties into an item for the rtf font table.
 	// in this pass thru the document we are just collecting all the
 	// info that we need to put into the rtf header, so we can't just
