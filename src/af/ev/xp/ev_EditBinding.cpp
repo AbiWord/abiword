@@ -47,11 +47,6 @@ EV_EditBinding::EV_EditBinding(EV_EditMethod * pem)
 	u.m_pem = pem;
 }
 
-EV_EditBindingType EV_EditBinding::getType(void) const
-{
-	return m_ebt;
-}
-
 EV_EditBindingMap * EV_EditBinding::getMap(void) const
 {
 	UT_ASSERT(m_ebt == EV_EBT_PREFIX);

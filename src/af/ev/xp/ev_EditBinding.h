@@ -43,7 +43,7 @@ public:
 	EV_EditBinding(EV_EditBindingMap * pebm);
 	EV_EditBinding(EV_EditMethod * pem);
 
-	EV_EditBindingType				getType(void) const;
+	EV_EditBindingType				getType() const { return m_ebt; }
 	EV_EditBindingMap *				getMap(void) const;
 	EV_EditMethod *					getMethod(void) const;
 
