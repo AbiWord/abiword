@@ -387,7 +387,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	int		n;
 
 #define WIN_WIDTH  450	
-#define WIN_HEIGHT 320	
+#define WIN_HEIGHT 350	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);

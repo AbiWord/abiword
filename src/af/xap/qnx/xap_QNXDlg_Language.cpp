@@ -163,16 +163,17 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 					Pt_GROUP_EQUAL_SIZE_HORIZONTAL); 
 	vboxOuter = PtCreateWidget(PtGroup, windowLangSelection, n, args);
 
+
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
-	vboxMain =  PtCreateWidget(PtGroup, vboxOuter, n, args);
+		PtSetArg(&args[n++],Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
+		vboxMain =  PtCreateWidget(PtGroup, vboxOuter, n, args);
   	pretty_group(vboxMain, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangLabel));
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_pLanguageList = PtCreateWidget(PtList, vboxMain, n, args);
