@@ -377,12 +377,13 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 0, 0);
 	PtSetResources(m_textWord, n, args);
    
-	UT_UCS4Char *p;
+	const UT_UCSChar *p;
 	char 		*str;
 	int		   len;
 
 	// insert start of sentence
 	UT_sint32 iLength;
+	PtMultiTextAttributes_t attrs;
 
     p = m_pWordIterator->getPreWord(iLength);
 	if (0 < iLength)
@@ -442,7 +443,7 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
 
 	PtListDeleteAllItems(m_clistSuggestions); 
 	for (unsigned int i = 0; i < m_Suggestions->getItemCount(); i++) {
-		suggest[0] = _convertToMB((UT_UCS4Char *)m_Suggestions->getNthItem(i));
+		suggest[0] = _convertToMB((UT_UCSChar *)m_Suggestions->getNthItem(i));
 		PtListAddItems(m_clistSuggestions, (const char **)suggest, 1, 0);
 		if (i==0) {
 			set_text_string(m_entryChange, suggest[0]);
@@ -486,10 +487,10 @@ void AP_QNXDialog_Spell::_storeWindowData(void)
 
 void AP_QNXDialog_Spell::event_Change()
 {
-	UT_UCS4Char * replace = NULL;
+	UT_UCSChar * replace = NULL;
 
    	if (m_iSelectedRow != -1) {
-		replace = (UT_UCS4Char*) m_Suggestions->getNthItem(m_iSelectedRow);
+		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		changeWordWith(replace);
 	}
 	else {
@@ -507,10 +508,10 @@ void AP_QNXDialog_Spell::event_Change()
 
 void AP_QNXDialog_Spell::event_ChangeAll()
 {
-	UT_UCS4Char * replace = NULL;
+	UT_UCSChar * replace = NULL;
 
 	if (m_iSelectedRow != -1) {
-		replace = (UT_UCS4Char*) m_Suggestions->getNthItem(m_iSelectedRow);
+		replace = (UT_UCSChar*) m_Suggestions->getNthItem(m_iSelectedRow);
 		addChangeAll(replace);
 		changeWordWith(replace);
 	}
@@ -600,37 +601,22 @@ void AP_QNXDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_QNXDialog_Spell::_convertToMB(const UT_UCS4Char *wword)
 {
-char *str;
-UT_UTF8String *utf8 = new UT_UTF8String(wword,0);
-
-str=strdup(utf8->utf8_str());
-delete utf8;
-return str;
+    UT_UCS4String ucs4(wword);
+    return UT_strdup(ucs4.utf8_str());
 }
 
 // make a multibyte encoded version of a string
 char * AP_QNXDialog_Spell::_convertToMB(const UT_UCS4Char *wword, UT_sint32 iLength)
 {
-char *str;
-UT_UTF8String *utf8 = new UT_UTF8String(wword,iLength);
-
-str=strdup(utf8->utf8_str());
-delete utf8;
-return str;
+   UT_UCS4String ucs4(wword, iLength);
+   return UT_strdup(ucs4.utf8_str());
 }
 
 // make a wide string from a multibyte string
 UT_UCSChar * AP_QNXDialog_Spell::_convertFromMB(const char *word)
 {
-UT_UCSChar *wcstr;
-UT_UCS2String str;
-UT_UTF8String *wc = new UT_UTF8String(word);
-
-str=wc->ucs2_str();
-wcstr=(UT_UCSChar*)calloc(str.size()+1,sizeof(UT_UCSChar));
-
-memcpy(wcstr,str.ucs4_str(),(sizeof(UT_UCSChar)*str.size()));
-wcstr[(str.size())+1]='\0';
-delete wc;
-return wcstr;
+    UT_UCS4Char * str = 0;
+    UT_UCS4String ucs4(word);
+    UT_UCS4_cloneString(&str, ucs4.ucs4_str());
+    return str;
 }
