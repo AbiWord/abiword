@@ -144,6 +144,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 	char buf[MY_BUFFER_SIZE];
 	char * pBuf;
 	const UT_UCSChar * pData;
+	char mbbuf[30];
+	int mblen;
 
 	for (pBuf=buf, pData=data; (pData<data+length); /**/)
 	{
@@ -190,7 +192,19 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			break;
 
 		default:
-			if (!m_pie->m_atticFormat) 
+			if (XAP_EncodingManager::instance->cjk_locale())
+			{
+				/*FIXME: can it happen that wctomb will fail under CJK locales? */
+				m_wctomb.wctomb_or_fallback(mbbuf,mblen,*pData++);
+				for(int i=0;i<mblen;++i) {
+					unsigned char c = mbbuf[i];
+					if ( c > 0x007f)
+						m_pie->_rtf_nonascii_hex2(c);
+					else
+						*pBuf++ = c;
+					
+				};
+			} else if (!m_pie->m_atticFormat) 
 			{
 				if (*pData > 0x00ff)		// emit unicode character
 				{
@@ -312,7 +326,8 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	// and block.  when going to a file we should not.
 	m_bJustStartingDoc = !m_bToClipboard;
 	m_bJustStartingSection = !m_bToClipboard;
-	
+
+	m_wctomb.setOutCharset(XAP_EncodingManager::instance->WindowsCharsetName());
 	// TODO emit <info> if desired
 
 	_rtf_docfmt();						// deal with <docfmt>

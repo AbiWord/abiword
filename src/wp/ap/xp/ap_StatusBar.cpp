@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <limits.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -778,7 +779,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 {
 	UT_uint32 len = ((pBuf && *pBuf) ? strlen(pBuf) : 0);
-	UT_ASSERT(len < AP_MAX_MESSAGE_FIELD);
+	UT_ASSERT(len*MB_LEN_MAX < AP_MAX_MESSAGE_FIELD);
 
 	UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD];
 

@@ -29,7 +29,7 @@
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
-
+#include "ut_mbtowc.h"
 
 // Font table entry
 class RTFFontTableItem
@@ -261,6 +261,7 @@ private:
 	unsigned char *		m_pCurrentCharInPasteBuffer;
 	PT_DocPosition		m_dposPaste;
 	UT_uint32		deflangid;
+	UT_Mbtowc		m_mbtowc;
 };
 
 #endif /* IE_IMP_RTF_H */

@@ -35,6 +35,7 @@
 
 #include "ap_Dialog_Spell.h"
 
+#include "xap_EncodingManager.h"
 
 AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id)
@@ -206,6 +207,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 	    // for some reason, the spell checker fails on all 1-char words & really big ones
 	    // -this is a limitation in the underlying default checker ispell --JB
 	    if ((m_iWordLength > 1) &&
+		XAP_EncodingManager::instance->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
 		(!checkCaps || !bAllUpperCase) &&             // TODO: iff relevant Option is set
 		(!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
 		 (m_iWordLength < 100))) {

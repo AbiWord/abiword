@@ -62,6 +62,8 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
+#include "xap_EncodingManager.h"
+
 //////////////////////////////////////////////////////////////////////
 // Two Useful List arrays
 /////////////////////////////////////////////////////////////////////
@@ -2067,7 +2069,8 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 
 
 			// for some reason, the spell checker fails on all 1-char words & really big ones
-			if ((wordLength > 1) && 
+			if ((wordLength > 1) &&
+				XAP_EncodingManager::instance->noncjk_letters(pBlockText+wordBeginning, wordLength) &&
 				(!bAllUpperCase || !m_pLayout->getSpellCheckCaps()) &&		
 				(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
 				(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
@@ -2159,6 +2162,7 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 	// for some reason, the spell checker fails on all 1-char words & really big ones
 	if ((wordLength > 1) && 
+		XAP_EncodingManager::instance->noncjk_letters(pBlockText+wordBeginning, wordLength) &&	
 		(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
 		(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
 		(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
@@ -4129,6 +4133,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 		}
 		// for some reason, the spell checker fails on all 1-char words & really big ones
 		if ((wordLength > 1) && 
+			XAP_EncodingManager::instance->noncjk_letters(pBlockText+wordBeginning, wordLength) &&		
 			(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
 			(!UT_UCS_isdigit(theWord[0])) &&			// still ignore first char==num words
 			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?

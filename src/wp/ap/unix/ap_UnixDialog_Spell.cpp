@@ -475,6 +475,7 @@ void AP_UnixDialog_Spell::event_Change()
 		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
 		UT_DEBUGMSG(("Replacing with %s\n", (char*) replace));
 		//fprintf(stderr, "Replacing with %s\n", replace);
+		changeWordWith(replace);		
 	}
 	else
 	  {

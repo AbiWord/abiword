@@ -67,28 +67,6 @@ endif
 ### add this to the OBJS when we need it for calc.
 ###		$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
 
-ifdef __FreeBSD__
-
-OBJS=		$(PLATFORM_OBJS)						\
-		$(OBJDIR)/ut_alphahash.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_svg.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)			
-
-else
-
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_alphahash.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
@@ -107,9 +85,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_pair.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_wctomb.$(OBJ_SUFFIX)
-
-endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

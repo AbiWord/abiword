@@ -20,6 +20,7 @@
 #ifndef IE_EXP_RTF_LISTENERWRITEDOC
 #define IE_EXP_RTF_LISTENERWRITEDOC
 #include "ie_exp_RTF.h"
+#include "ut_wctomb.h"
 class PX_ChangeRecord_Object;
 
 /******************************************************************
@@ -80,6 +81,7 @@ protected:
 
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
+	UT_Wctomb		m_wctomb;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

@@ -25,6 +25,7 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_units.h"
+#include "ut_wctomb.h"
 #include "pt_Types.h"
 #include "ie_exp_LaTeX.h"
 #include "pd_Document.h"
@@ -155,7 +156,7 @@ protected:
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
-
+	UT_Wctomb		m_wctomb;
 };
 
 void s_LaTeX_Listener::_closeSection(void)
@@ -773,9 +774,12 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			}
 			else 
 			{
-				UT_UCSChar c = XAP_EncodingManager::instance->UToNative(*pData++);
-				if (c<256)
-					*pBuf++ = (UT_Byte)c;
+				char buf[30];
+				int len;
+				if (m_wctomb.wctomb(buf,len,(wchar_t)*pData++)) {
+				    for(int i=0;i<len;++i)
+					*pBuf++ = buf[i];
+				};
 			}
 			break;
 		}
@@ -846,19 +850,9 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("\\usepackage{setspace}\n");
 	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
 	{
-	    XAP_EncodingManager* em = XAP_EncodingManager::instance;
-	    const char* enc =  em->getNativeTexEncodingName();
-	    if (enc) {
-		m_pie->write("\\usepackage[");
-		m_pie->write(enc);
-		m_pie->write("]{inputenc}\n");
-	    }
-	    const char* babelarg = em->getNativeBabelArgument();
-	    if (babelarg) {
-		m_pie->write("\\usepackage[");
-		m_pie->write(babelarg);
-		m_pie->write("]{babel}\n");
-	    };
+	    const char* misc = XAP_EncodingManager::instance->getTexPrologue();
+	    if (misc)
+		m_pie->write(misc);
 	}
 	m_pie->write("\n");
 	//	m_pie->write("\\begin{document}\n");  // I've to leave this step to the openSection, and that implies
@@ -2084,3 +2078,7 @@ static int wvConvertUnicodeToLaTeX(U16 char16,char*& out)
 	return(0);
 	}
 #undef printf
+
+
+
+

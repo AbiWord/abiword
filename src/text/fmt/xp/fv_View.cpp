@@ -56,6 +56,8 @@
 
 #include "sp_spell.h"
 
+#include "xap_EncodingManager.h"
+
 /****************************************************************/
 
 class _fmtPair
@@ -6210,7 +6212,11 @@ FV_DocCount FV_View::countWords(void)
 				
 				delim = UT_isWordDelimiter(pSpan[i], followChar);
 				
-				if (newWord)
+				/* 
+				    CJK-FIXME: this can work incorrectly under CJK locales since it can
+				    give 'true' for UCS with value >0xff (like quotes, etc).
+			         */
+				if (newWord || XAP_EncodingManager::instance->is_cjk_letter(pSpan[i]))
 					wCount.word++;
 			
 			}

@@ -6,6 +6,7 @@
 #include "iconv.h"
 
 
+
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
 /***************************************************************************/
@@ -50,7 +51,9 @@ ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 
 /*this is used for converting form unsigned short to UCS-2*/
 static unsigned short  ucs2[INPUTWORDLEN + MAXAFFIXLEN];
-/*this one copies to 'ucs2' from word16 swapping bytes if necessary*/
+
+extern int XAP_EncodingManager__swap_utos, XAP_EncodingManager__swap_stou;
+/*this one fills ucs2 with values that iconv will treat as UCS-2. */
 static void toucs2(const unsigned short *word16, int length)
 {
 	int i = 0;
@@ -58,8 +61,10 @@ static void toucs2(const unsigned short *word16, int length)
 	unsigned short* out = ucs2;
 	for(;i<length;++i)
 	{
-		/*warning - we should inspect whether we need to do this on MSB arches*/
-		out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+		if (XAP_EncodingManager__swap_utos)
+		    out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+		else
+		    out[i] = in[i];
 	}
 	out[i]= 0;
 }
@@ -71,8 +76,10 @@ static void fromucs2(unsigned short *word16, int length)
 	unsigned short* in = ucs2,*out = word16;
 	for(;i<length;++i)
 	{
-		/*warning - we should inspect whether we need to do this on MSB arches*/
-		out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+		if (XAP_EncodingManager__swap_stou)
+			out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+		else
+			out[i] = in[i];
 	}
 	out[i]= 0;
 }

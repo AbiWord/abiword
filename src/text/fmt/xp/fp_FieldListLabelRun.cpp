@@ -46,7 +46,7 @@ UT_Bool fp_FieldListLabelRun::calculateValue(void)
 		UT_uint32 len = UT_MIN(strlen(listlabel),FPFIELD_MAX_LENGTH + 1)  ;
 		for(i=0; i<=len;i++)
 		{
-		        sz_ucs_FieldValue[i] = (UT_UCSChar) *listlabel++;
+		        sz_ucs_FieldValue[i] = (UT_UCSChar) (unsigned char) *listlabel++;
 		}
 		sz_ucs_FieldValue[len] = NULL;
 		m_sFieldValue[0] =  NULL; // Force an update!!!

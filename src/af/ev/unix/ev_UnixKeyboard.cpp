@@ -19,7 +19,7 @@
  
 
 #include <gdk/gdk.h>
-
+#include <string.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -30,8 +30,7 @@
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
 
-#include "xap_App.h"
-#include "xap_EncodingManager.h"
+#include"ut_mbtowc.h"
 
 //////////////////////////////////////////////////////////////////
 
@@ -124,31 +123,18 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	}
 	else
 	{
-		UT_uint16 charData = 0;
-		
-		if (e->length==0) /* shouldn't happen. But let it crash somewhere else.*/
-			charData = e->keyval;
-		else 
-	    	{
-		    GdkWChar wc;
-		    if ( (state & EV_EMS_CONTROL) || (state & EV_EMS_ALT))
-		    {
-			    charData = e->keyval;
-		    }
-		    else {
-			    if (e->length==1)
-				    /* straightforward */
-				    wc = (unsigned char)(*e->string);
-			    else 
-			    {	
-				    int ret = gdk_mbstowcs(&wc,e->string,1);
-				    UT_ASSERT(ret==1);
-			    };
-			    charData = XAP_App::getApp()->getEncodingManager()->nativeToU(wc);
-		    }
-		}		
+		UT_uint16 charData = e->keyval;
+		UT_Mbtowc m;
+		wchar_t wc;
+	  	UT_UCSChar *ucs;
+	  	char *mbs=e->string;
+	  	int mLength=strlen(mbs);
+	  	int uLength;
 
-		result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
+		if(charData>0xff)
+		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|'a',&pEM);
+		else
+		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
 
 		switch (result)
 		{
@@ -168,8 +154,18 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			
 		case EV_EEMR_COMPLETE:
 			UT_ASSERT(pEM);
-			invokeKeyboardMethod(pView,pEM,&charData,1); // no char data to offer
-			return UT_TRUE;
+
+			uLength=0;
+			ucs=new UT_UCSChar[mLength];
+			for(int i=0;i<mLength;++i)
+			  {
+				if(m.mbtowc(wc,mbs[i]))
+				  ucs[uLength++]=wc;
+			  }					
+			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
+			delete ucs;
+ 			return UT_TRUE;
+	
 			
 		case EV_EEMR_INCOMPLETE:
 			return UT_TRUE;
@@ -403,7 +399,7 @@ static UT_Bool s_isVirtualKeyCode(gint keyval)
 	// for now, we will ignore these.
 
 	if (keyval > 0x0000FFFF)
-		return UT_TRUE;					// yes, it is a virtual key.
+		return UT_FALSE;//was UT_TRUE before CJK patch
 	
 	if (keyval > 0xFF00)				// see the above table
 		return UT_TRUE;

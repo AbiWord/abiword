@@ -1,6 +1,7 @@
 #include "xap_EncodingManager.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_assert.h"
 
 #ifdef __FreeBSD__
 extern "C" {
@@ -77,7 +78,7 @@ UT_UCSChar XAP_EncodingManager::nativeToU(UT_UCSChar c) const
 UT_UCSChar XAP_EncodingManager::UToNative(UT_UCSChar c)  const
 {
     UT_UCSChar ret = try_UToNative(c);
-    if (!ret) 
+    if (!ret || ret>0xff) 
     {
     	char repl;
 	int repl_len = approximate(&repl,1,c);
@@ -97,13 +98,13 @@ UT_UCSChar XAP_EncodingManager::WindowsToU(UT_UCSChar c) const
 UT_UCSChar XAP_EncodingManager::UToWindows(UT_UCSChar c)  const
 {
     UT_UCSChar ret = try_UToWindows(c);
-    return ret ? ret : fallbackChar(c);	
+    return ret && ret<=0xff ? ret : fallbackChar(c);	
 };
 
 
 const char* XAP_EncodingManager::strToNative(const char* in,const char* charset) const
 {
-	static char buf[2000];
+	static char buf[8000];
 	return strToNative(in,charset,buf,sizeof(buf));
 };
 
@@ -117,7 +118,7 @@ const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,
 	const char* inptr = in;
 	char* outptr = buf;
 	size_t inbytes = strlen(in), outbytes = bufsz;	
-	size_t donecnt = iconv(iconv_handle,(const char**)&inptr,&inbytes,&outptr,&outbytes);
+	size_t donecnt = iconv(iconv_handle,const_cast< char**>(&inptr),&inbytes,&outptr,&outbytes);
 	const char* retstr = in;
 	if (donecnt!=(size_t)-1 && inbytes==0) {
 		retstr = buf;
@@ -133,6 +134,8 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
                                           const XML_Char *name,
                                           XML_Encoding *info)
 {
+	if (instance->cjk_locale())
+	    return 0;/*this handler doesn't support multibyte encodings*/
 	iconv_t iconv_handle = iconv_open("UCS-2",name);
 	if (iconv_handle == (iconv_t)-1)
 		return 0;
@@ -146,13 +149,13 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 			const char* iptr = ibuf;
 			char* optr = obuf;
 			ibuf[0] = (unsigned char)i;
-			size_t donecnt = iconv(iconv_handle,(const char**)&iptr,&ibuflen,&optr,&obuflen);			
+			size_t donecnt = iconv(iconv_handle,const_cast< char**>(&iptr),&ibuflen,&optr,&obuflen);			
 			if (donecnt!=(size_t)-1 && ibuflen==0) 
 			{
 				unsigned short uval;
-				unsigned short b1 = (unsigned char)obuf[0];
-				unsigned short b2 = (unsigned char)obuf[1];
-				uval = (b1<<8) | b2;
+				unsigned short b0 = (unsigned char)obuf[swap_stou];
+				unsigned short b1 = (unsigned char)obuf[!swap_stou];
+				uval =  b0 | (b1<<8);
 				info->map[i] = (unsigned int) uval;
 			}
 			else
@@ -196,13 +199,13 @@ static UT_UCSChar try_CToU(UT_UCSChar c,iconv_t iconv_handle)
 	const char* iptr = ibuf;
 	char* optr = obuf;
 	ibuf[0]	= (unsigned char)c;	
-	size_t donecnt = iconv(iconv_handle,(const char**)&iptr,&ibuflen,&optr,&obuflen);			
+	size_t donecnt = iconv(iconv_handle,const_cast<char**>(&iptr),&ibuflen,&optr,&obuflen);			
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		unsigned short uval;
-		unsigned short b1 = (unsigned char)obuf[0];
-		unsigned short b2 = (unsigned char)obuf[1];
-		uval = (b1<<8) | b2;
+		unsigned short b0 = (unsigned char)obuf[XAP_EncodingManager::swap_stou];
+		unsigned short b1 = (unsigned char)obuf[!XAP_EncodingManager::swap_stou];
+		uval = (b1<<8) | b0;
 		return uval;
 	} else
 		return  0;
@@ -217,18 +220,18 @@ static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
 	const char* iptr = ibuf;
 	char* optr = obuf;
 	{
-		ibuf[0] = (unsigned char)(c>>8);
-		ibuf[1] = (unsigned char)(c & 0xff);
+		unsigned char b0 = c & 0xff, b1 = c >>8;
+		ibuf[XAP_EncodingManager::swap_utos] = b0;
+		ibuf[!XAP_EncodingManager::swap_utos] = b1;
 	}
-	size_t donecnt = iconv(iconv_handle,(const char**)&iptr,&ibuflen,&optr,&obuflen);			
+	size_t donecnt = iconv(iconv_handle,const_cast< char**>(&iptr),&ibuflen,&optr,&obuflen);
+	/* reset state */
+	iconv(iconv_handle,NULL,NULL,NULL,NULL);
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		int len = sizeof(obuf) - obuflen;
 		if (len!=1)
-	 		/* 
-	   		 We don't support multibyte chars yet. mbstowcs should be used.
-	 		*/			
-			return 0;
+			return 0x1ff;/* tell that singlebyte encoding can't represent it*/
 		else
 			return (unsigned char)*obuf;
 	} else
@@ -286,13 +289,13 @@ static const char* search_rmap(const _rmap* m,const char* key,UT_Bool* is_defaul
 	return m->value;
 };
 
-static const char* search_rmap_with_opt_suffix(const _rmap* m,const char* key,const char* fallback_key=NULL)
+static const char* search_rmap_with_opt_suffix(const _rmap* m,const char* key,const char* fallback_key=NULL,const char* fallback_key_final=NULL)
 {
 	UT_Bool is_default;
 	const char* value = search_rmap(m,key,&is_default);
 	if (!is_default || !fallback_key)
 		return value;
-	return search_rmap(m,fallback_key);
+	return search_rmap_with_opt_suffix(m,fallback_key,fallback_key_final);
 };
 
 
@@ -314,13 +317,13 @@ static const char* search_map(const _map* m,const char* key,UT_Bool* is_default 
 	return m->value;
 };
 
-static const char* search_map_with_opt_suffix(const _map* m,const char* key,const char* fallback_key=NULL)
+static const char* search_map_with_opt_suffix(const _map* m,const char* key,const char* fallback_key=NULL,const char* fallback_key_final=NULL)
 {
 	UT_Bool is_default;
 	const char* value = search_map(m,key,&is_default);
 	if (!is_default || !fallback_key)
 		return value;
-	return search_map(m,fallback_key);
+	return search_map_with_opt_suffix(m,fallback_key,fallback_key_final);
 };
 
 /* ************************* here begin tables *************************/
@@ -385,6 +388,84 @@ static const _rmap langcode_to_wincharsetcode[]=
 	{"222",wincharsetcode_th},	
 	{NULL}
 };
+
+static const UT_Pair::pair_data zh_CN_big5[]=
+{
+/*
+    This data was constructed from the HJ's patch for support  of Big5 to 
+    AW-0.7.10 - VH
+*/
+    {"song","\xe5\xae\x8b\xe4\xbd\x93"},
+    {"fangsong","\xe4\xbb\xbf\xe5\xae\x8b"},
+    {"hei","\xe9\xbb\x91\xe4\xbd\x93"},
+    {"kai","\xe6\xa5\xb7\xe4\xbd\x93"},
+    {NULL,NULL}
+};
+
+static const char* zh_CN_big5_keys[]=
+{  "zh_CN.BIG5", NULL };
+
+static const _rmap cjk_word_fontname_mapping_data[]=
+{
+    {NULL},
+    {(char*)zh_CN_big5,zh_CN_big5_keys},
+    {NULL}
+};
+
+
+/*all CJK language codes should be listed here to be marked as CJK*/
+static const char* cjk_languages[]=
+{ "zh","ja","ko",NULL}; 
+
+static const _rmap langcode_to_cjk[]=
+{
+	{"0"}, /* default value - non-CJK environment */    
+	{"1",cjk_languages},
+	{NULL}
+};
+
+
+static const _rmap can_break_words_data[]=
+{
+	{"0"}, /* default value - can't break words at any character. */    
+	{"1",cjk_languages},
+	{NULL}
+};
+
+static const _map MSCodepagename_to_charset_name_map[]=
+{
+/*key, value*/
+    {NULL,NULL},
+    {"CP936","BIG5"}, /* most probably it's correct  - VH*/
+    {"CP950","GB2312"},    /* 100% correct */
+    {NULL,NULL}
+};
+
+/*warning: 0x400 won't be added to the values in this table. */
+static const _map langcode_to_winlangcode[]=
+{
+/*key, value*/
+    {NULL},
+/*   {"0x404","zh_CN"},*/  /*I guess - VH*/
+    {NULL}
+};
+
+#undef v
+#define v(x) #x
+static const char* non_cjk_fontsizes[]=
+{
+    /* this is a list of sizes AW 0.7.11 had */
+    v(8),v(9),v(10),v(11),v(12),v(14),v(16),v(18),v(20),v(22),v(24),v(26),
+    v(28),v(36),v(48),v(72),NULL
+};
+
+static const char* cjk_fontsizes[]=
+{
+    /* this list of font sizes was in HJ's Big5 patch to AW-0.7.10 */
+    v(5),v(5.5),v(6.5),v(7.5),v(9),v(10.5),v(12),v(14),v(15),v(16),v(18),
+    v(22),v(24),v(26),v(36),v(42),NULL
+};
+#undef v
 
 /* This structure is built from 
 	http://www.unicode.org/unicode/onlinedat/languages.html 
@@ -566,22 +647,35 @@ const XAP_LangInfo* XAP_EncodingManager::findLangInfo(const char* key,XAP_LangIn
 	return NULL;
 };
 
-static const char* NativeTexEncodingName,*NativeBabelArgument;
+static const char* TexPrologue;
 static UT_uint32 WinLanguageCode,WinCharsetCode;
+static bool is_cjk_,can_break_words_;
+
+bool XAP_EncodingManager::swap_utos = 0;
+bool XAP_EncodingManager::swap_stou = 0;
+
+UT_Pair XAP_EncodingManager::cjk_word_fontname_mapping;
+UT_Pair XAP_EncodingManager::fontsizes_list;
 
 void XAP_EncodingManager::initialize()
 {	
 	const char* isocode = getLanguageISOName(), 
-		   *terrname = getLanguageISOTerritory();
-	char fulllocname[30];
-	if (terrname)
-		sprintf(fulllocname,"%s_%s",isocode,terrname);
-	else
-		strcpy(fulllocname,isocode);
-	NativeTexEncodingName = search_rmap(native_tex_enc_map,getNativeEncodingName());
-	NativeBabelArgument = search_map_with_opt_suffix(langcode_to_babelarg,fulllocname,isocode);
+		   *terrname = getLanguageISOTerritory(),
+		   *enc = getNativeEncodingName();
+#define SEARCH_PARAMS  fulllocname, langandterr, isocode
+	char fulllocname[40],langandterr[40];
+	if (terrname) {
+		sprintf(langandterr,"%s_%s",isocode,terrname);
+		sprintf(fulllocname,"%s_%s.%s",isocode,terrname,enc);		
+	}
+	else {
+		strcpy(langandterr,isocode);
+		sprintf(fulllocname,"%s.%s",isocode,enc);
+	}
+	const char* NativeTexEncodingName = search_rmap_with_opt_suffix(native_tex_enc_map,enc);
+	const char* NativeBabelArgument = search_map_with_opt_suffix(langcode_to_babelarg,SEARCH_PARAMS);
 	{
-		const char* str = search_rmap_with_opt_suffix(langcode_to_wincharsetcode,fulllocname,isocode);
+		const char* str = search_rmap_with_opt_suffix(langcode_to_wincharsetcode,SEARCH_PARAMS);
 		WinCharsetCode = str ? atoi(str) : 0;			
 	}
 	{
@@ -594,18 +688,125 @@ void XAP_EncodingManager::initialize()
 			if (sscanf(str,"%i",&val)==1)
 				WinLanguageCode	= 0x400 + val;
 		}
-	}	
+		str = search_map_with_opt_suffix(langcode_to_winlangcode,SEARCH_PARAMS);
+		if (str) {
+			int val;
+			if (sscanf(str,"%i",&val)==1)
+				WinLanguageCode	= val;
+		};
+	}
+	{	
+	    const char* str = search_rmap_with_opt_suffix(langcode_to_cjk,SEARCH_PARAMS);
+	    is_cjk_ = *str == '1';
+	    str = search_rmap_with_opt_suffix(can_break_words_data,SEARCH_PARAMS);
+	    can_break_words_ = *str == '1';
+	}
+	{
+	    if (cjk_locale()) {
+		/* CJK guys should do something similar to 'else' branch */	
+	    } else {
+		char buf[500];
+		int len = 0;
+		if (NativeTexEncodingName)
+		    len += sprintf(buf+len,"\\usepackage[%s]{inputenc}\n",NativeTexEncodingName);
+		if (NativeBabelArgument)
+		    len += sprintf(buf+len,"\\usepackage[%s]{babel}\n",NativeBabelArgument);
+		TexPrologue = len ? strdup(buf)  : "";
+	    };
+	}
+	if (cjk_locale()) {
+	    /* load fontname mapping */
+	    UT_Pair::pair_data* data = (UT_Pair::pair_data* )search_rmap_with_opt_suffix(
+		    cjk_word_fontname_mapping_data,SEARCH_PARAMS);
+	    if (data)
+		cjk_word_fontname_mapping.add(data);
+	};
+	{
+	    fontsizes_list.clear();
+	    const char** fontsizes = cjk_locale() ? cjk_fontsizes: non_cjk_fontsizes;
+	    char buf[30];
+	    for(const char** cur=fontsizes; *cur; ++cur) {
+		sprintf(buf," %s ",*cur);
+		fontsizes_list.add(*cur,buf);
+	    };
+	};
+	
 	init_values(this); /*do this unconditionally! */	
+	{
+	    swap_utos = swap_stou = 0;
+	    swap_utos = UToNative(0x20) != 0x20;
+	    swap_stou = nativeToU(0x20) != 0x20;
+	    
+	    XAP_EncodingManager__swap_stou = swap_stou;
+	    XAP_EncodingManager__swap_utos = swap_utos;
+	}
 }
 
-const char* XAP_EncodingManager::getNativeTexEncodingName() const
+int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
+
+bool XAP_EncodingManager::can_break_words() const
 {
-	return NativeTexEncodingName;
+    return can_break_words_;
 };
 
-const char* XAP_EncodingManager::getNativeBabelArgument() const
+bool XAP_EncodingManager::cjk_locale() const
 {
-	return NativeBabelArgument;	
+    return is_cjk_;
+};
+
+/*
+    I'm not sure whether any non-cjk language doesn't make distinction
+    between upper and lower case of the letter, but let's be prepared.
+*/
+bool XAP_EncodingManager::single_case() const { return cjk_locale(); }
+
+bool XAP_EncodingManager::is_cjk_letter(UT_UCSChar c) const
+{
+    if (!cjk_locale())
+	return 0;
+    return (c>0xff);
+};
+
+bool XAP_EncodingManager::noncjk_letters(const UT_UCSChar* str,int len) const
+{
+    if (!cjk_locale())
+	return 1;
+    for(int i=0;i<len;++i) {
+	if (is_cjk_letter(str[i]))
+	    return 0;
+    };
+    return 1;
+};
+
+/*
+    This one correlates with can_break_words() very tightly.
+        Under CJK locales it returns 1 for cjk letters. 
+    Under non-CJK locales returns 0.
+*/
+bool XAP_EncodingManager::can_break_at(const UT_UCSChar c) const
+{
+    if (c == UCS_SPACE)
+	return 1;
+    return is_cjk_letter(c);
+};
+
+
+const char* XAP_EncodingManager::getTexPrologue() const
+{
+    return TexPrologue;
+};
+
+const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
+{
+    char* cpname = wvLIDToCodePageConverter(lid);
+    UT_Bool is_default;
+    const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
+    return is_default ? cpname : ret;
+};
+
+const char* XAP_EncodingManager::WindowsCharsetName() const
+{
+    return charsetFromCodepage( getWinLanguageCode() );
 };
 
 UT_uint32  XAP_EncodingManager::getWinLanguageCode() const
@@ -622,12 +823,57 @@ void 	XAP_EncodingManager::describe()
 {
 	UT_DEBUGMSG(("EncodingManager reports the following:\n"
 		"	NativeEncodingName is %s, LanguageISOName is %s,\n"
-		"	LanguageISOTerritory is %s, NativeTexEncodingName is %s\n"
-		"	NativeBabelArgument is [%s], fallbackchar is '%c'\n"
-		"	WinLanguageCode is 0x%04x, WinCharsetCode is %d\n",	
-		getNativeEncodingName(),getLanguageISOName(),
+		"	LanguageISOTerritory is %s,  fallbackchar is '%c'\n"		
+		"	TexPrologue follows:\n"
+		"---8<--------------\n" 
+			"%s" 
+		"--->8--------------\n"
+		
+		"	WinLanguageCode is 0x%04x, WinCharsetCode is %d\n"
+		"	cjk_locale %d, can_break_words %d, swap_utos %d, swap_stou %d\n"
+		,getNativeEncodingName(),getLanguageISOName(),
 		getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
-		getNativeTexEncodingName() ? getNativeTexEncodingName() : "NULL",
-		getNativeBabelArgument() ? getNativeBabelArgument() : "NULL",
-		fallbackChar(1072), getWinLanguageCode(), getWinCharsetCode()   ));
+		fallbackChar(1072), getTexPrologue(),getWinLanguageCode(),
+		 getWinCharsetCode(),
+		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)
+		));
+	UT_ASSERT( (iconv_handle_N2U!=(iconv_t)-1) && (iconv_handle_U2N!=(iconv_t)-1));
+};
+
+
+/*
+    This one returns NULL-terminated vector of strings in static buffers (i.e.
+	don't try to free anything). On next call, filled data will be lost.
+    returns the following strings surrounded by prefix and suffix:
+    if (!skip_fallback)
+	"";
+    "%s"	XAP_E..M..::instance->getLanguageISOName()
+    "%s"	XAP_E..M..::getNativeEncodingName()
+    "%s-%s"	XAP_E..M..::getLanguageISOName(),XAP_E..M..::getLanguageISOTerritory()
+    "%s-%s.%s"  XAP_E..M..::getLanguageISOName(), \
+	    XAP_E..M..::getLanguageISOTerritory(), XAP_E..M..::getNativeEncodingName()
+    
+*/
+const char** localeinfo_combinations(const char* prefix,const char* suffix,const char* sep, bool skip_fallback)
+{
+    typedef char buf_t[1024];
+    static buf_t bufs[6];
+    static char* ptrs[7];
+    int idx = 0;
+    if (!skip_fallback)
+	if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s",prefix,suffix)!=-1)
+	    ++idx;
+    const char* lang = XAP_EncodingManager::instance->getLanguageISOName(),
+	*territory = XAP_EncodingManager::instance->getLanguageISOTerritory(),
+	*enc = XAP_EncodingManager::instance->getNativeEncodingName();
+    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s%s",prefix,sep,lang,suffix)!=-1)
+	++idx;
+    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s%s",prefix,sep,enc,suffix)!=-1)
+	++idx;	
+    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s-%s%s",prefix,sep,lang,territory,suffix)!=-1)
+	++idx;
+    if (snprintf(ptrs[idx]=bufs[idx],sizeof(buf_t),"%s%s%s-%s.%s%s",prefix,sep,lang,territory,enc,suffix)!=-1)
+	++idx;
+    ptrs[idx]=NULL;
+    return (const char **)ptrs;
 };

@@ -107,9 +107,8 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 
 UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, UT_Bool noMatterWhat)
 {
-	UT_UCSChar actual = m_pApp->getEncodingManager()->try_UToNative(actual_);
-        if (!actual)
-               actual = actual_;
+	UT_UCSChar actual = actual_;
+
 	// Here is how the remapGlyph works.
 
 	// * If preference value RemapGlyphsMasterSwitch is not true, no

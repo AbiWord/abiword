@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include "ie_imp.h"
+#include"ut_mbtowc.h"
 class PD_Document;
 
 // The importer/reader for Plain Text Files.
@@ -49,6 +50,7 @@ public:
 protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
+	UT_Mbtowc 		m_Mbtowc;
 };
 
 #endif /* IE_IMP_TEXT_H */

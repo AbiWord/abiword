@@ -62,36 +62,25 @@ UT_Bool XAP_UnixFontManager::setFontPath(const char * searchpath)
 
 UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 {
-	UT_uint32 i = 0, j;
+	UT_uint32 i = 0;
 	UT_uint32 count = m_searchPaths.getItemCount();
 
 	UT_uint32 totaldirs = 0;
 	UT_uint32 totalfonts = 0;
 	
+	const char** subdirs = localeinfo_combinations("","","");
 	/* If j is even, we open fonts.dir in encoding-specific directory */
-	for (j = 0; j < 2*count; j++)
+	for (i = 0; i < count; i++)
 	{
-		i = j/2;
-		/* odd numbers mean should open encoding-specific directory*/
-		UT_Bool encspecific = j & 1; 
-
-		UT_ASSERT(m_searchPaths.getNthItem(i));
-
-		char* basedirname = (char *) m_searchPaths.getNthItem(i);
-		int basedirname_len = strlen(basedirname);
-		char* filename;
-	
-		if (encspecific)
-		{	
-			const char* encname = XAP_EncodingManager::instance->getNativeEncodingName();
-			filename = (char *) calloc(basedirname_len + 1 + strlen(encname) + strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
-			sprintf(filename, "%s/%s%s", basedirname , encname ,FONTS_DIR_FILE);
-		}
-		else
-		{
-			filename = (char *) calloc(basedirname_len + strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
-			sprintf(filename, "%s%s", basedirname , FONTS_DIR_FILE);
-		}		
+	    UT_ASSERT(m_searchPaths.getNthItem(i));	
+	    char* basedirname = (char *) m_searchPaths.getNthItem(i);
+	    int basedirname_len = strlen(basedirname);
+	    char* filename;
+	    
+	    for(const char** subdir = subdirs;*subdir;++subdir)
+	    {	    	
+		filename = (char *) calloc(basedirname_len + 1 + strlen(*subdir) + strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
+		sprintf(filename, "%s/%s%s", basedirname, *subdir, FONTS_DIR_FILE);
 
 		FILE * file;
 
@@ -151,7 +140,10 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 					fclose(file);
 					return UT_TRUE;
 				}
-				_allocateThisFont((const char *) buffer, filename);
+				if (subdir != subdirs && XAP_EncodingManager::instance->cjk_locale())
+				    _allocateCJKFont((const char *) buffer,line);
+				else
+				    _allocateThisFont((const char *) buffer, filename,line);
 			}
 
 			totalfonts += line;
@@ -164,6 +156,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 		FREEP(filename);
 		if (file)
 			fclose(file);
+	    }
 	}
 
 	if (totaldirs == 0)
@@ -297,7 +290,7 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 }
 
 void XAP_UnixFontManager::_allocateThisFont(const char * line,
-											const char * workingdir)
+											const char * workingdir,int iLine)
 {
 	/*
 	  Each line comes in as:
@@ -385,27 +378,20 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	UT_ASSERT(slant);
 
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
-	// sort from most common down
-	if (!UT_stricmp(weight, "regular") &&
-		!UT_stricmp(slant, "r"))
-	{
-		s = XAP_UnixFont::STYLE_NORMAL;
-	}
-	else if (!UT_stricmp(weight, "bold") &&
-			!UT_stricmp(slant, "r"))
-	{
-		s = XAP_UnixFont::STYLE_BOLD;
-	}
-	else if (!UT_stricmp(weight, "regular") &&
-			!UT_stricmp(slant, "i"))
-	{
-		s = XAP_UnixFont::STYLE_ITALIC;
-	}
-	else if (!UT_stricmp(weight, "bold") &&
-			!UT_stricmp(slant, "i"))
-	{
-		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
-	}
+	if(!UT_stricmp(slant, "r"))
+	  {
+		if(!UT_stricmp(weight, "bold"))
+		  s = XAP_UnixFont::STYLE_BOLD;
+		else
+		  s = XAP_UnixFont::STYLE_NORMAL;
+	  }
+	else if(!UT_stricmp(slant, "i"))
+	  {
+		if(!UT_stricmp(weight, "bold"))
+		  s = XAP_UnixFont::STYLE_BOLD_ITALIC;
+		else
+		  s= XAP_UnixFont::STYLE_ITALIC;
+	  }
     else
     {
         UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - can't guess "
@@ -437,11 +423,15 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 
 	// build a font and load it up
 	XAP_UnixFont * font = new XAP_UnixFont;
+	font->set_CJK_font(0);
 	if (font->openFileAs((const char *) fontfile,
 						 (const char *) metricfile,
 						 (const char *) xlfd,
 						 s))
 	{
+		UT_ASSERT(iLine>=0);
+		if(iLine<4)
+			XAP_UnixFont::s_defaultNonCJKFont[iLine]=font;
 		_addFont(font);
 	}
 	else
@@ -479,3 +469,75 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 	       
 	}
 }
+
+void XAP_UnixFontManager::_allocateCJKFont(const char * line,
+											   int iLine)
+{
+	gchar **sa= g_strsplit(line,",",5);
+
+	g_strstrip(sa[0]);
+		
+	gchar * xlfd =sa[1];
+	if (!xlfd)
+	{
+		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - missing XLFD "
+					 "file name at second position in line.\n"));
+		g_strfreev(sa);
+		return;		
+	}
+	// clean up that XLFD by removing surrounding spaces
+	xlfd = g_strstrip(xlfd);
+
+	// let this class munch on all the fields
+	XAP_UnixFontXLFD descriptor(xlfd);
+
+	// get the weight (should be "regular" or "bold") and the slant (should be
+	// "r" for Roman or "i" for Italic) to discern an internal "style"
+	const char * weight = descriptor.getWeight();
+	UT_ASSERT(weight);
+	const char * slant = descriptor.getSlant();
+	UT_ASSERT(slant);
+
+	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
+	// sort from most common down
+
+	if(!UT_stricmp(slant, "r"))
+	  {
+		if(!UT_stricmp(weight, "bold"))
+		  s = XAP_UnixFont::STYLE_BOLD;
+		else
+		  s = XAP_UnixFont::STYLE_NORMAL;
+	  }
+	else if(!UT_stricmp(slant, "i"))
+	  {
+		if(!UT_stricmp(weight, "bold"))
+		  s = XAP_UnixFont::STYLE_BOLD_ITALIC;
+		else
+		  s= XAP_UnixFont::STYLE_ITALIC;
+	  }
+	
+	// build a font and load it up
+	XAP_UnixFont * font = new XAP_UnixFont;
+	font->set_CJK_Ascent(atoi(sa[2]));
+	font->set_CJK_Descent(atoi(sa[3]));
+	font->set_CJK_Width(atoi(sa[4]));
+	font->set_CJK_font(1);
+	if (font->openFileAs((const char *) sa[0],
+						 (const char *) sa[0],
+						 (const char *) xlfd,
+						 s))
+	{
+	  
+	  UT_ASSERT(iLine>=0);
+	  if(iLine<4)
+		XAP_UnixFont::s_defaultCJKFont[iLine]=font;
+	  _addFont(font);
+	}
+	else
+	{
+		DELETEP(font);
+	}
+
+	g_strfreev(sa);
+}
+

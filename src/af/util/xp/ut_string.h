@@ -121,4 +121,10 @@ UT_Bool UT_UCS_isalpha(UT_UCSChar c);
 #endif /* WIN32 */
 UT_END_EXTERN_C
 
+/*
+ this one prints floating point value but using dot as fractional serparator
+ independent of the current locale's settings.
+*/
+const char* std_size_string(float f);
+
 #endif /* UT_STRING_H */

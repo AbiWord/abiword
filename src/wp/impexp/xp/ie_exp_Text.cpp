@@ -29,8 +29,7 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
-
-#include "xap_EncodingManager.h"
+#include"ut_wctomb.h"
 
 //////////////////////////////////////////////////////////////////
 // a private listener class to help us translate the document
@@ -73,6 +72,7 @@ protected:
 	IE_Exp_Text *		m_pie;
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bToClipboard;
+	UT_Wctomb 		m_wctomb;
 };
 
 /*****************************************************************/
@@ -163,7 +163,10 @@ void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	char buf[MY_BUFFER_SIZE];
 	char * pBuf;
 	const UT_UCSChar * pData;
-
+	
+	int mbLen;
+	char pC[MB_LEN_MAX];
+	
 	for (pBuf=buf, pData=data; (pData<data+length); /**/)
 	{
 		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
@@ -171,20 +174,26 @@ void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			m_pie->write(buf,(pBuf-buf));
 			pBuf = buf;
 		}
-
-		if (*pData > 0x00ff)
+		if(!m_wctomb.wctomb(pC,mbLen,(wchar_t)*pData))
 		{
-			*pBuf++ = XAP_EncodingManager::instance->UToNative(*pData);
-			pData++;
+		    mbLen=1;
+		    pC[0]='?';
+		    m_wctomb.initialize();
+		}
+    		pData++;		
+		if (mbLen>1)		
+		{
+			memcpy(pBuf,pC,mbLen*sizeof(char));
+			pBuf+= mbLen;		
 		}
 		else
 		{
 			// We let any UCS_LF's (forced line breaks) go out as is.
 #ifdef WIN32
-			if (m_bToClipboard && *pData==UCS_LF)
+			if (m_bToClipboard && pC[0]==UCS_LF)
 				*pBuf++ = '\r';
 #endif
-			*pBuf++ = (UT_Byte)*pData++;
+			*pBuf++ = (UT_Byte)pC[0];
 		}
 	}
 

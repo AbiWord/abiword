@@ -468,7 +468,8 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 
 	_rtf_keyword("deff",0);				// default font is index 0 aka black
 	if (m_atticFormat)
-	{
+	{	
+		/* I'm not sure whether this makes any sense - VH */
 		if (langcode)
 			_rtf_keyword("deflang",langcode);
 	}

@@ -390,9 +390,13 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
 	// is a strict subset of UTF-8. 
 
-	m_pie->write("<?xml version=\"1.0\" encoding=\"");
-	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
-	m_pie->write("\"?>\n");
+	if (!XAP_EncodingManager::instance->cjk_locale()) {
+	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
+	    m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
+	    m_pie->write("\"?>\n");
+	} else {
+	    m_pie->write("<?xml version=\"1.0\"?>\n");
+	};
 
 	// We write this first so that the sniffer can detect AbiWord 
 	// documents more easily.   

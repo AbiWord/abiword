@@ -20,6 +20,14 @@
 #include <string.h>
 #include "ut_wctomb.h"
 
+#if 0
+/*
+    old version using wcrtomb. Implementation used on *BSD systems is plain 
+    wrong since it seems to always assume utf8 as mbs. It seems it won't work 
+    for non-utf8 locales (e.g. CJK native encodings and non-latin1 singlebyte 
+    encodings. - hvv@hippo.ru
+*/
+
 void UT_Wctomb::initialize()
 {
   memset (&m_state, '\0', sizeof (m_state)); 
@@ -141,3 +149,71 @@ int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
   length=len;
   return 1;
 }
+#else
+
+#include "ut_assert.h"
+#include "xap_EncodingManager.h"
+void UT_Wctomb::initialize()
+{
+    iconv(cd,NULL,NULL,NULL,NULL);
+};
+
+void UT_Wctomb::setOutCharset(const char* charset)
+{
+    iconv_close(cd);
+    cd = iconv_open(charset,"UCS-2");
+    //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
+};
+
+UT_Wctomb::UT_Wctomb(const char* to_charset)
+{
+    cd = iconv_open(to_charset,"UCS-2");
+    //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
+};
+
+UT_Wctomb::UT_Wctomb()
+{
+    cd = iconv_open(XAP_EncodingManager::instance->getNativeEncodingName(),"UCS-2");
+    UT_ASSERT(cd!=(iconv_t)-1);
+};
+
+UT_Wctomb::UT_Wctomb(const UT_Wctomb& v)
+{
+    cd = iconv_open(XAP_EncodingManager::instance->getNativeEncodingName(),"UCS-2");
+    UT_ASSERT(cd!=(iconv_t)-1);
+};
+
+UT_Wctomb::~UT_Wctomb()
+{
+    iconv_close(cd);
+};
+
+int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
+{
+    char buf[sizeof(short)];
+    char* obuf = pC;
+    const char* ibuf = buf;
+    {
+        bool swap = XAP_EncodingManager::swap_utos;
+	unsigned short val = wc;
+	unsigned char b0 = val&0xff, b1 = val>>8;
+	buf[swap ] = b0;
+	buf[!swap] = b1;
+    }
+    size_t inlen = 2, outlen = 100;
+    size_t len = iconv(cd,const_cast<char **>(&ibuf),&inlen,&obuf,&outlen);
+    if (len==(size_t)-1)
+	return 0;
+    length = 100-outlen;
+    return 1;
+};
+
+void UT_Wctomb::wctomb_or_fallback(char * pC,int &length,wchar_t wc)
+{
+    if (!wctomb(pC,length,wc)) {
+	pC[0]='?';
+	length=1;
+    };
+};
+
+#endif

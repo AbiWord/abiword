@@ -519,11 +519,13 @@ UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 			// Insert a character into the story
             if ((ch >= 32  ||  ch == 9 || ch == UCS_FF || ch == UCS_LF)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
-				if (no_convert==0 && deflangid) 
-				{	/*note: we don't handle commands like 'lang'. */
-					ch = wvHandleCodePage(ch,deflangid);
-				}
-				return AddChar(ch);
+				if (no_convert==0 && ch<=0xff) 
+				{	
+					wchar_t wc;
+					if (m_mbtowc.mbtowc(wc,(UT_Byte)ch))
+						return AddChar(wc);
+				} else
+					return AddChar(ch);
 			}
 		default:
 			// handle other destinations....
@@ -682,26 +684,7 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 	case 'a':
 		if (strcmp((char*)pKeyword, "ansicpg") == 0)
 		{
-			/*
-			 HACK: the proper way would be to open iconv_t, but
-			 we just compute MS codepage from getWinLanguageCode()
-			 and if it's equal to parameters of "\ansicpg" then
-			 we treat as \deflang was encountered setting 
-			 deflangid to the getWinLanguageCode()			 
-			*/
-			int langcode = XAP_EncodingManager::instance->getWinLanguageCode();
-			char* charsetname = wvLIDToCodePageConverter(langcode);
-			if (fParam && langcode && charsetname && UT_strnicmp(charsetname,"cp",2)==0 && UT_UCS_isdigit(charsetname[2])) 
-			{
-                        	int cpg;
-                        	if (sscanf(charsetname+2,"%d",&cpg)==1)
-				{
-					if (cpg == ((UT_uint32)param))
-						deflangid = langcode;
-					else
-						deflangid = 1033; /*cp1252*/
-				}				
-			}
+			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage((UT_uint32)param));
 		}
 		break;		
 	case 'b':
@@ -1035,7 +1018,7 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 {
 	XML_Char* pProps = "PROPS";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
-	XML_Char tempBuffer[128];
+	XML_Char tempBuffer[130];
 
 	propBuffer[0] = 0;
 
@@ -1095,7 +1078,7 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 	}
 
 	// font size
-	sprintf(tempBuffer, "; font-size:%dpt", (int)(m_currentRTFState.m_charProps.m_fontSize+0.5));
+	sprintf(tempBuffer, "; font-size:%spt", std_size_string(m_currentRTFState.m_charProps.m_fontSize));	
 	strcat(propBuffer, tempBuffer);
 	// typeface
 	RTFFontTableItem* pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);

@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
  
-
+#include <stdio.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +34,13 @@
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
 
-#ifndef __FreeBSD__
+/*
+    If WITHOUT_MB is defined, UT_Mbtowc and UT_Wctomb won't be used.
+    I don't there there could be reason for defining WITHOUT_MB, since
+    UT_Mbtowc and UT_Wctomb use iconv internally, which works fine everywhere.
+*/
+
+#ifndef WITHOUT_MB
 #include "ut_mbtowc.h"
 #include "ut_wctomb.h"
 #endif
@@ -470,11 +476,15 @@ UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
 		return c + 0x20;
 	return c;
 #else
+	if (c < 128)
+		return tolower(c);
+	if (XAP_EncodingManager::instance->single_case())
+		return c;
 	/*let's trust libc!*/
 	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
-	if (!local)
+	if (!local || local>0xff)
 		return c;
-	local = XAP_EncodingManager::instance->try_UToNative(tolower(local));
+	local = XAP_EncodingManager::instance->try_nativeToU(tolower(local));
 	return local ? local : c;
 #endif
 }
@@ -605,14 +615,14 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	UT_UCSChar * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
-#ifndef __FreeBSD__
+#ifndef WITHOUT_MB
 	UT_Mbtowc m;
 	wchar_t wc;
 #endif
 
 	while (*s != 0)
 	  {
-#ifdef __FreeBSD__
+#ifdef WITHOUT_MB
 	    *d++ = *s++;   
 #else
 		if(m.mbtowc(wc,*s))*d++=wc;
@@ -632,13 +642,13 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	char * 			d = dest;
 	UT_UCSChar * 	s = (UT_UCSChar *) src;
 
-#ifndef __FreeBSD__
+#ifndef WITHOUT_MB
 	UT_Wctomb w;
 #endif
 
 	while (*s != 0)
 	  {
-#ifdef __FreeBSD__
+#ifdef WITHOUT_MB
 	    *d++ = *s++;   
 #else
 		int length;
@@ -665,7 +675,7 @@ UT_Bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
 UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 {
 
-#ifdef __FreeBSD__
+#ifdef WITHOUT_MB
 
 		UT_uint32 length = strlen(src) + 1;   
 		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar)); 
@@ -940,18 +950,41 @@ UT_Bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 
 UT_Bool UT_UCS_isupper(UT_UCSChar c)
 {
+	if (XAP_EncodingManager::instance->single_case())
+	    return 1;/* FIXME: anyone has better idea? */
 	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
-	return local ? isupper(local)!=0 : 0;
+	return local && local <0xff ? isupper(local)!=0 : 0;
 };
 
 UT_Bool UT_UCS_islower(UT_UCSChar c)
 {
+	if (XAP_EncodingManager::instance->single_case())
+	    return 1;/* FIXME: anyone has better idea? */
 	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
-	return local ? islower(local)!=0 : 0;
+	return local && local <0xff ? islower(local)!=0 : 0;
 };
 
 UT_Bool UT_UCS_isalpha(UT_UCSChar c)
 {
 	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
-	return local ? isalpha(local)!=0 : 0;
+	return local && local < 0xff ? 
+		isalpha(local)!=0 : 
+		local > 0xff /* we consider it alpha if it's > 0xff */;
+};
+
+/*
+ this one prints floating point value but using dot as fractional serparator
+ independent of the current locale's settings.
+*/
+const char* std_size_string(float f)
+{
+  static char string[10];
+  int i=(int)f;
+  if(f-i<0.1)
+	sprintf(string, "%d", i);
+  else {
+          int fr = int(10*(f-i));
+	sprintf(string,"%d.%d", i,fr);
+  };
+  return string;
 };

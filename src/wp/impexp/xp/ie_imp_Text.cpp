@@ -27,6 +27,7 @@
 #include "ie_imp_Text.h"
 #include "pd_Document.h"
 #include "ut_growbuf.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -96,21 +97,27 @@ UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 	UT_GrowBuf gbBlock(1024);
 	UT_Bool bEatLF = UT_FALSE;
 	UT_Bool bEmptyFile = UT_TRUE;
-	unsigned char c;
+	unsigned char b;
+	UT_UCSChar c;
+	wchar_t wc;
 
-	while (fread(&c, 1, sizeof(c), fp) > 0)
+	while (fread(&b, 1, sizeof(b), fp) > 0)
 	{
+		if(!m_Mbtowc.mbtowc(wc,b))
+		    continue;
+		c = (UT_UCSChar)wc;
 		switch (c)
 		{
-		case '\r':
-		case '\n':
-			if ((c == '\n') && bEatLF)
+		case (UT_UCSChar)'\r':
+		case (UT_UCSChar)'\n':
+			
+			if ((c == (UT_UCSChar)'\n') && bEatLF)
 			{
 				bEatLF = UT_FALSE;
 				break;
 			}
 
-			if (c == '\r')
+			if (c == (UT_UCSChar)'\r')
 			{
 				bEatLF = UT_TRUE;
 			}
@@ -130,15 +137,7 @@ UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 
 		default:
 			bEatLF = UT_FALSE;
-
-			// deal with plain character.
-			// this cast is OK.  we have US-ASCII (actually Latin-1) character
-			// data, so we can do this.
-
-			// TODO consider scanning for UTF8...
-			
-			UT_UCSChar uc = (UT_UCSChar) c;
-			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&uc,1));
+			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&c,1));
 			break;
 		}
 	} 
@@ -178,19 +177,24 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	
 	for (pc=pData; (pc<pData+lenData); pc++)
 	{
-		unsigned char c = *pc;
+		unsigned char b = *pc;
+		UT_UCSChar c;
+		wchar_t wc;
+		if(!m_Mbtowc.mbtowc(wc,b))
+		    continue;
+		c = (UT_UCSChar)wc;
 		
 		switch (c)
 		{
-		case '\r':
-		case '\n':
-			if ((c == '\n') && bEatLF)
+		case (UT_UCSChar)'\r':
+		case (UT_UCSChar)'\n':
+			if ((c == (UT_UCSChar)'\n') && bEatLF)
 			{
 				bEatLF = UT_FALSE;
 				break;
 			}
 
-			if (c == '\r')
+			if (c == (UT_UCSChar)'\r')
 			{
 				bEatLF = UT_TRUE;
 			}
@@ -215,12 +219,7 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				dpos++;
 			}
 			
-			// deal with plain character.
-			// this cast is OK.  we have US-ASCII (actually Latin-1) character
-			// data, so we can do this.
-			
-			UT_UCSChar uc = (UT_UCSChar) c;
-			gbBlock.ins(gbBlock.getLength(),&uc,1);
+			gbBlock.ins(gbBlock.getLength(),&c,1);
 
 			bInColumn1 = UT_FALSE;
 			bSuppressLeadingParagraph = UT_FALSE;

@@ -31,7 +31,9 @@
 #include "gr_Graphics.h"
 
 #include "xap_UnixPSParseAFM.h"
+#include "xap_UnixFontXLFD.h"
   
+
 class XAP_UnixFont
 {
  public:
@@ -77,8 +79,8 @@ class XAP_UnixFont
 	const char * 			getFontKey(void);
 	GdkFont *				getGdkFont(UT_uint32 pixelsize);
 
+	GdkFont *				getMatchGdkFont(UT_uint32 size);
 protected:
-
 	struct allocFont
 	{
 		UT_uint32			pixelSize;
@@ -108,6 +110,27 @@ protected:
 	UT_ByteBuf				m_buffer;
 	UT_uint32				m_bufpos;
 	char					_getPFBChar(void);
+
+	struct CJK_PSFontMetric
+	{
+          int ascent;
+          int descent;
+          int width;
+	};
+	bool					m_is_cjk;
+	CJK_PSFontMetric			m_cjk_font_metric;
+public:
+	static XAP_UnixFont *			s_defaultNonCJKFont[4];
+	static XAP_UnixFont *			s_defaultCJKFont[4];
+
+	bool is_CJK_font()const{ return m_is_cjk; }
+	void set_CJK_font(bool v){ m_is_cjk=v; }
+	int get_CJK_Ascent(){ return m_cjk_font_metric.ascent; }
+	int get_CJK_Descent(){ return m_cjk_font_metric.descent; }
+	int get_CJK_Width(){ return m_cjk_font_metric.width; }
+	void set_CJK_Ascent(int i){ m_cjk_font_metric.ascent=i; }
+	void set_CJK_Descent(int i){ m_cjk_font_metric.descent=i; }
+	void set_CJK_Width(int i){ m_cjk_font_metric.width=i; }
 };
 
 /* Values found in PFB files */
@@ -140,6 +163,12 @@ class XAP_UnixFontHandle : public GR_Font
 	// data items
 	XAP_UnixFont *				m_font;
 	UT_uint32					m_size;
+
+	XAP_UnixFont *getUnixFont()	const{ return m_font; }
+	GdkFont      *getMatchGdkFont()	{ return m_font? m_font->getMatchGdkFont(m_size): NULL; }
+	
+	GdkFont      *getGdkFontForUCSChar(UT_UCSChar Char);
+	void explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	
 };
 
 #endif /* XAP_UNIXFONT_H */

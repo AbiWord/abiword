@@ -34,6 +34,8 @@
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_dialogHelper.h"
+#include "ut_wctomb.h"
+#include "xap_EncodingManager.h"
 
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
 {
@@ -93,14 +95,33 @@ UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+/* let's cache this, since construction of UT_Wctomb is rather slow */
+static UT_Wctomb* w = NULL;
+static char text[MB_LEN_MAX];
+static int text_length;
+
+#define WCTOMB_DECLS \
+	if (!w) {	\
+	    w = new UT_Wctomb;	\
+	} else	\
+	    w->initialize();	
+	    
+#define CONVERT_TO_MBS(c)	\
+    	if (c<=0xff) {	\
+		/* this branch is to allow Lists to function */	\
+		text[0] = (unsigned char)c;			\
+		text_length = 1;				\
+	} else	\
+		w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
+
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	GdkWChar Wide_char = remapGlyph(Char, UT_FALSE);
-	
-	GdkFont *font = m_pFont->getGdkFont();
-	gdk_draw_text_wc (m_pWin, font, m_pGC,
-				   xoff, yoff + font->ascent, &Wide_char, 1);
+	UT_UCSChar Wide_char = remapGlyph(Char, UT_FALSE);
+	WCTOMB_DECLS;
+	CONVERT_TO_MBS(Wide_char);
+	GdkFont *font = m_pFont->getGdkFontForUCSChar(Wide_char);
+	gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
@@ -108,29 +129,22 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
 	if (!m_pFontManager)
 		return;
-
 	UT_ASSERT(m_pFont);
-
-	GdkFont *font = m_pFont->getGdkFont();
-	// Blargh... GDK wants strings in 32 bits, we use 16 internally
-	GdkWChar *pNChars, utb[150];  // arbitrary biggish size for utb
-	if ((unsigned)iLength < (sizeof(utb) / sizeof(utb[0])))
-	{
-		// avoid new/delete overhead for most cases via ubiquitous temp buf
-		pNChars = utb;
-	}
-	else
-	{
-		pNChars = new GdkWChar[iLength];
-	}
-	for (int i = 0; i < iLength; i++)
-	{
-		pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
-	}
-	// Use "wide-char" function
-	gdk_draw_text_wc(m_pWin, font, m_pGC, xoff, yoff + font->ascent, pNChars, iLength);
-	if (pNChars != utb) delete pNChars;
-
+	WCTOMB_DECLS;
+	GdkFont *font;
+	GdkFont *EnglishFont;
+	GdkFont *ChineseFont;
+	m_pFont->explodeGdkFonts(EnglishFont,ChineseFont);
+	UT_sint32 x;
+	const UT_UCSChar *pC;
+  	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
+	  {
+		UT_UCSChar actual = remapGlyph(*pC,UT_FALSE);
+		font=XAP_EncodingManager::instance->is_cjk_letter(actual)? ChineseFont: EnglishFont;
+		CONVERT_TO_MBS(actual);
+		gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,text,text_length);
+		x+=gdk_text_width(font, text, text_length);
+	  }	
 	flush();
 }
 
@@ -166,8 +180,7 @@ UT_uint32 GR_UnixGraphics::getFontHeight()
 
 	UT_ASSERT(m_pFont);
 
-	GdkFont* font = m_pFont->getGdkFont();
-	return font->ascent + font->descent;
+	return getFontAscent()+getFontDescent();
 }
 
 UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -181,15 +194,18 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
+	UT_UCSChar Wide_char = c;
+	WCTOMB_DECLS;
+	CONVERT_TO_MBS(Wide_char);
+	GdkFont *font = m_pFont->getGdkFontForUCSChar(Wide_char);
+	return gdk_text_width(font, text, text_length);
 
-	int width;
-	GdkWChar cChar = c;
-
-	GdkFont* pFont = m_pFont->getGdkFont();
-	width = gdk_char_width_wc (pFont, cChar);
-	return width;
 }
+
 #if 0
+/*
+    WARNING: this code doesn't support non-latin1 chars.
+*/
 UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 										 int num,  unsigned short* pWidths)
 {
@@ -360,8 +376,8 @@ UT_uint32 GR_UnixGraphics::getFontAscent()
 	UT_ASSERT(m_pGC);
 
 	GdkFont* pFont = m_pFont->getGdkFont();
-
-	return pFont->ascent;
+	GdkFont* pMatchFont=m_pFont->getMatchGdkFont();
+	return MAX(pFont->ascent, pMatchFont->ascent);
 }
 
 UT_uint32 GR_UnixGraphics::getFontDescent()
@@ -373,8 +389,8 @@ UT_uint32 GR_UnixGraphics::getFontDescent()
 	UT_ASSERT(m_pGC);
 
 	GdkFont* pFont = m_pFont->getGdkFont();
-
-	return pFont->descent;
+	GdkFont* pMatchFont=m_pFont->getMatchGdkFont();
+	return MAX(pFont->descent, pMatchFont->descent);
 }
 
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,

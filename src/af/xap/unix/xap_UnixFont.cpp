@@ -79,6 +79,7 @@ UT_uint32 XAP_UnixFontHandle::getSize(void)
 
 XAP_UnixFont::XAP_UnixFont(void)
 {
+	m_is_cjk=0;
 	m_name = NULL;
 	m_style = STYLE_LAST;
 	m_xlfd = NULL;
@@ -96,6 +97,9 @@ XAP_UnixFont::XAP_UnixFont(void)
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 {
+	m_is_cjk=copy.m_is_cjk;
+	m_cjk_font_metric =copy.m_cjk_font_metric;
+	
 	m_name = NULL;
 	m_style = STYLE_LAST;
 	m_xlfd = NULL;
@@ -147,22 +151,21 @@ UT_Bool XAP_UnixFont::openFileAs(const char * fontfile,
 	struct stat buf;
 	int err;
 	
-	err = stat(fontfile, &buf);
-	UT_ASSERT(err == 0 || err == -1);
-
-	if (! (err == 0 || S_ISREG(buf.st_mode)) )
+	if (!m_is_cjk) //HJ's patch had this logic
 	{
+	    err = stat(fontfile, &buf);
+	    UT_ASSERT(err == 0 || err == -1);
+
+	    if (! (err == 0 || S_ISREG(buf.st_mode)) )
 		return UT_FALSE;
-	}
 	
-	err = stat(metricfile, &buf);
-	UT_ASSERT(err == 0 || err == -1);
+	    err = stat(metricfile, &buf);
+	    UT_ASSERT(err == 0 || err == -1);
 
-	if (! (err == 0 || S_ISREG(buf.st_mode)) )
-	{
+	    if (! (err == 0 || S_ISREG(buf.st_mode)) )
 		return UT_FALSE;
-	}
-
+	};
+	
 	// strip our proper face name out of the XLFD
 	char * newxlfd;
 	UT_cloneString(newxlfd, xlfd);
@@ -772,6 +775,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
            /* it's iso8859-1 or cp1252 encoding - glyphs in font are in wrong
                order - we have to map them by name.
            */
+	    int numfound = 0;
            for (UT_sint32 i=0; i != m_metricsData->numOfChars && i<256; ++i)
            {
 
@@ -788,8 +792,21 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 		{
 			UT_ASSERT (unicode < 256); // TODO: support multibyte chars
 			m_uniWidths[unicode] = m_metricsData->cmi[i].wx;
+			++numfound;
 		}
            }
+	   if (numfound < 127) 
+	   {
+	       /*
+	         it looks like font has a broken glyph names. Dingbats is one 
+		 of them.
+	       */
+               for (UT_sint32 i=0; i != m_metricsData->numOfChars && i<256; ++i)
+               {     
+		    if (m_metricsData->cmi[i].code<256 && m_metricsData->cmi[i].code>=0)
+			    m_uniWidths[m_metricsData->cmi[i].code] = m_metricsData->cmi[i].wx;
+               }	   
+	   }
        } 
        else
        {
@@ -951,7 +968,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	UT_uint32 l = 0;
 	UT_uint32 count = m_allocFonts.getItemCount();
 	allocFont * entry;
-
+        char buf[1000];
 	while (l < count)
 	{
 		entry = (allocFont *) m_allocFonts.getNthItem(l);
@@ -1049,3 +1066,53 @@ void XAP_UnixFont::_makeFontKey(void)
 	// point member our way
 	m_fontKey = key;
 }
+
+XAP_UnixFont *XAP_UnixFont::s_defaultNonCJKFont[4];
+XAP_UnixFont *XAP_UnixFont::s_defaultCJKFont[4];
+
+GdkFont * XAP_UnixFont::getMatchGdkFont(UT_uint32 size)
+{
+  if (!XAP_EncodingManager::instance->cjk_locale())
+      return getGdkFont(size);
+  int s;
+  switch(m_style)
+	{
+	case XAP_UnixFont::STYLE_NORMAL:
+	  s=0;
+	  break;
+	case XAP_UnixFont::STYLE_BOLD:
+	  s=1;
+	  break;
+	case XAP_UnixFont::STYLE_ITALIC:
+	  s=2;
+	  break;
+	case XAP_UnixFont::STYLE_BOLD_ITALIC:
+	  s=3;
+	  break;
+	default:
+	  s=0;
+	}
+  XAP_UnixFont *pMatchUnixFont=is_CJK_font()? s_defaultNonCJKFont[s]: s_defaultCJKFont[s];
+  return pMatchUnixFont ? pMatchUnixFont->getGdkFont(size) : getGdkFont(size);
+}
+
+GdkFont      * XAP_UnixFontHandle::getGdkFontForUCSChar(UT_UCSChar Char)
+{
+    GdkFont* non_cjk_font,* cjk_font;
+    explodeGdkFonts(non_cjk_font,cjk_font);
+    return XAP_EncodingManager::instance->is_cjk_letter(Char)? cjk_font : non_cjk_font;
+};
+
+void XAP_UnixFontHandle::explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one)
+{
+	if(m_font->is_CJK_font())
+	  {
+		non_cjk_one=getMatchGdkFont();
+		cjk_one=getGdkFont();
+	  }
+	else
+	  {
+		non_cjk_one=getGdkFont();
+		cjk_one=getMatchGdkFont();
+	  }
+};

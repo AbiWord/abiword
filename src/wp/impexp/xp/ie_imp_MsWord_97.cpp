@@ -30,6 +30,8 @@
 #include "ut_units.h"
 #include "pd_Document.h"
 
+#include "xap_EncodingManager.h"
+
 #include "ie_types.h"
 #include "ie_imp_MsWord_97.h"
 
@@ -615,6 +617,21 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   } else {
 		     fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
 		      UT_DEBUGMSG(("FE font id = %d\n", achp->ftcFE));
+		      {
+			   if(strlen(fname)>6)
+				 fname[6]='\0';
+			   const char *f=XAP_EncodingManager::cjk_word_fontname_mapping.getFirst(fname);
+			   if(f==fname)
+				 {
+				   FREEP(fname);
+				   fname=strdup("song");
+				 }
+			   else
+				 {
+				   FREEP(fname);
+				   fname=strdup(f);
+				 }			   
+		      }
 		   }
 		   // there are times when we should use the third, Other font, 
 		   // and the logic to know when somehow depends on the

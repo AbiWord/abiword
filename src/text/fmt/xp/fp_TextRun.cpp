@@ -37,6 +37,7 @@
 #include "ut_growbuf.h"
 #include "ut_units.h"
 
+#include "xap_EncodingManager.h"
 /*****************************************************************/
 
 fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
@@ -166,7 +167,7 @@ UT_Bool fp_TextRun::canBreakAfter(void) const
 			{
 				UT_ASSERT(len>0);
 
-				if (pSpan[len-1] == UCS_SPACE)
+				if (XAP_EncodingManager::instance->can_break_at(pSpan[len-1]))
 				{
 					return UT_TRUE;
 				}
@@ -204,7 +205,7 @@ UT_Bool fp_TextRun::canBreakBefore(void) const
 		{
 			UT_ASSERT(lenSpan>0);
 
-			if (pSpan[0] == UCS_SPACE)
+			if (XAP_EncodingManager::instance->can_break_at(pSpan[0]))
 			{
 				return UT_TRUE;
 			}
@@ -286,10 +287,18 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 		{
 			iLeftWidth += pCharWidths[i + offset];
 			iRightWidth -= pCharWidths[i + offset];
-
-			if (
+#if 1
+    /*
+	FIXME: this is a direct equivalent to HJ's patch, but other branch
+	could be more correct than this one. - VH
+    */
+			if ( (XAP_EncodingManager::instance->can_break_at(pSpan[i]) && pSpan[i]!=UCS_SPACE) ||
 				(
 					(UCS_SPACE == pSpan[i])
+#else
+			if (
+				(XAP_EncodingManager::instance->can_break_at(pSpan[i]) 
+#endif					
 					&& ((i + offset) != (m_iOffsetFirst + m_iLen - 1))
 					)
 				|| bForce

@@ -721,7 +721,7 @@ void AP_Lists_preview::draw(void)
 		        len = UT_MIN(strlen(lv),51)  ;
 			for(j=0; j<=len;j++)
 			{
-		               ucs_label[j] = (UT_UCSChar) *lv++;
+		               ucs_label[j] = (UT_UCSChar) (unsigned char)*lv++;
 			}
 			ucs_label[len] = NULL;
 			len = UT_UCS_strlen(ucs_label);

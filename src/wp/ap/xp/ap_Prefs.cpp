@@ -24,6 +24,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 
+#include "xap_EncodingManager.h"
 /*****************************************************************/
 
 AP_Prefs::AP_Prefs(XAP_App * pApp)
@@ -144,7 +145,11 @@ void AP_Prefs::overlaySystemPrefs(void)
 	const char * szSystemDefaultPrefsDir = m_pApp->getAbiSuiteAppDir();
 	char buf[1024];
 	sprintf(buf,"%s/%s",szSystemDefaultPrefsDir,"system.profile");
-
-	loadSystemDefaultPrefsFile(buf);
+	const char** items = localeinfo_combinations(buf,"","-",0);
+	while(*items) {
+	    loadSystemDefaultPrefsFile(*items);
+	    ++items;
+	};
 }
+
 

@@ -23,6 +23,7 @@
 #include "ut_mbtowc.h"
 
 
+#if 0 /* big if 0 */
 #if defined(__OpenBSD__) || defined(__FreeBSD__)
 #include <errno.h>
 enum
@@ -206,3 +207,68 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
   m_bufLen-=thisLen;
   return 1;
 }
+
+#else /* big if 0 */
+#include "ut_assert.h"
+#include "xap_EncodingManager.h"
+#include "errno.h"
+
+void UT_Mbtowc::initialize()
+{
+    iconv(cd,NULL,NULL,NULL,NULL);
+    m_bufLen = 0;
+};
+
+void UT_Mbtowc::setInCharset(const char* charset)
+{
+    m_bufLen = 0;
+    iconv_close(cd);
+    cd = iconv_open("UCS-2", charset );
+};
+
+UT_Mbtowc::UT_Mbtowc(): m_bufLen(0)
+{
+    cd = iconv_open("UCS-2", XAP_EncodingManager::instance->getNativeEncodingName() );
+    UT_ASSERT(cd!=(iconv_t)-1);    
+};
+
+UT_Mbtowc::UT_Mbtowc(const UT_Mbtowc& v): m_bufLen(0)
+{
+    cd = iconv_open("UCS-2", XAP_EncodingManager::instance->getNativeEncodingName() );
+    UT_ASSERT(cd!=(iconv_t)-1);    
+};
+
+UT_Mbtowc::~UT_Mbtowc()
+{
+    iconv_close(cd);
+};
+
+int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
+{
+    if(++m_bufLen>MB_LEN_MAX) {
+      initialize();
+      return 0;
+    }
+    m_buf[m_bufLen-1]=mb;
+    const char* inptr = m_buf;
+    unsigned char outbuf[2];
+    char* outptr = (char* )outbuf;
+    size_t inlen = m_bufLen, outlen = 2;
+    size_t len  = iconv(cd,const_cast<char **>(&inptr),&inlen,&outptr,&outlen);
+    if (len!=(size_t)-1) {
+	bool swap = XAP_EncodingManager::swap_stou;
+	unsigned short val = outbuf[swap] | (outbuf[!swap]<<8);
+	wc = (wchar_t )val;
+	m_bufLen = 0;
+	return 1;
+    } else {
+	if (errno==EINVAL)
+	    return 0; /* need more chars */
+	else {
+	    initialize();/*wrong seq*/
+	    return 0;
+	};
+    };
+};
+
+#endif /* big if 0 */

@@ -137,7 +137,12 @@ protected:
 	GR_Graphics::ColorSpace	m_cs;
 	
 	XAP_UnixFontManager *	m_fm;
-	
+
+	PSFont *findMatchPSFontCJK(PSFont * pFont);
+	void emit_SetFontCJK(PSFont *pFont);
+	void drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset, 
+								 int iLength, UT_sint32 xoff, UT_sint32 yoff);
+	void explodePSFonts(PSFont*& non_cjk_font,PSFont*& cjk_font);
 };
 
 #endif /* XAP_UNIXPSGRAPHICS_H */

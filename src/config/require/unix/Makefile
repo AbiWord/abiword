@@ -163,6 +163,23 @@ _ABIDISTFILES_:
 # was something you installed yourself.  
 
 _LIBICONV_:
+
+ifdef __FreeBSD__
+		@if [ -d $(ABI_ROOT)/../libiconv ]; then                        	\
+			echo Found libiconv in peer directory;                  \
+			if [ ! -r $(ABI_ROOT)/../libiconv/src/config.h ]; then  \
+				cd $(ABI_ROOT)/../libiconv;                     \
+				./configure;                                    \
+			fi;                                                     \
+			$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;     \
+		else                                                            \
+			echo libiconv not found;                                \
+			echo TODO provide a nicer error message;                \
+			echo TODO with instructions for obtaining it;           \
+			exit 1;                                                 \
+		fi								
+
+else
 	@if [ ! -r /usr/include/iconv.h -a ! -r /usr/local/include/iconv.h ]; then	\
 		if [ -d $(ABI_ROOT)/../libiconv ]; then                        	\
 			echo Found libiconv in peer directory;                  \
@@ -183,6 +200,7 @@ _LIBICONV_:
 		echo "*** are the versions of the libraries we should link against.";			\
 		echo ;								\
 	fi
+endif
 
 #################################################################
 

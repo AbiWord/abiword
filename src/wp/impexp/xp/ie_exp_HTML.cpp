@@ -25,6 +25,7 @@
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_units.h"
+#include "ut_wctomb.h"
 #include "pt_Types.h"
 #include "ie_exp_HTML.h"
 #include "pd_Document.h"
@@ -141,7 +142,7 @@ protected:
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
-
+	UT_Wctomb		m_wmctomb;
 };
 
 void s_HTML_Listener::_closeSection(void)
@@ -730,6 +731,8 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	char buf[MY_BUFFER_SIZE];
 	char * pBuf;
 	const UT_UCSChar * pData;
+	char mbbuf[30];
+	int mblen;
 
 	for (pBuf=buf, pData=data; (pData<data+length); /**/)
 	{
@@ -800,27 +803,16 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  break;
 			
 		default:
-			if (*pData > 0x007f)
-			{
-				UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
-				if (c!=0 && c<256)
-				{
-					*pBuf++ = (unsigned char)c;
-				}
-				else
-				{
-					char localBuf[20];
-					char * plocal = localBuf;
-					sprintf(localBuf,"&#%d;",*pData);
-					while (*plocal)
-						*pBuf++ = (UT_Byte)*plocal++;
-				};
-				pData++;
-			}
-			else
-			{
-				*pBuf++ = (UT_Byte)*pData++;
-			}
+			if (m_wmctomb.wctomb(mbbuf,mblen,(wchar_t)*pData++)) {
+				for(int i=0;i<mblen;++i)
+					*pBuf++ = mbbuf[i];
+			} else {
+				char localBuf[20];
+				char * plocal = localBuf;
+				sprintf(localBuf,"&#%d;",*pData);
+				while (*plocal)
+					*pBuf++ = (UT_Byte)*plocal++;
+			};
 			break;
 		}
 	}
@@ -888,11 +880,9 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
 	m_pie->write("<html>\n");
 	m_pie->write("<head>\n");
-#if 0
 	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html;charset=");
 	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
-	m_pie->write("\"/>\n");
-#endif // 0
+	m_pie->write("\"></meta>\n");//</meta> looks ugly, but it should work.
 	m_pie->write("<title>AbiWord Document</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!-- \n P.norm { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");

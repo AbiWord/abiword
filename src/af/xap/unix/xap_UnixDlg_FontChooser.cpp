@@ -30,10 +30,10 @@
 #include "xap_UnixDlg_FontChooser.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
-
+#include "xap_EncodingManager.h"
 #include "gr_UnixGraphics.h"
 
-#define SIZE_STRING_SIZE	10
+#define SIZE_STRING_SIZE	(10+2)	
 
 #define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
 #define PREVIEW_BOX_HEIGHT_PIXELS	80
@@ -691,23 +691,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	
     gtk_clist_clear(GTK_CLIST(m_sizeList));
 	// TODO perhaps populate the list based on the selected font/style?
-	text[0] = "8"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "9"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "10"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "11"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "12"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "14"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "16"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "18"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "20"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "22"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "24"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "26"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "28"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "36"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "48"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	text[0] = "72"; gtk_clist_append(GTK_CLIST(m_sizeList), text);
-	
+	{
+	    int sz = XAP_EncodingManager::fontsizes_list.size();
+	    for(int i=0;i<sz;++i) {
+		text[0]=(char*)XAP_EncodingManager::fontsizes_list.nth2(i);
+		gtk_clist_append(GTK_CLIST(m_sizeList), text);
+	    };
+	}
 	return vboxMain;
 }
 
@@ -828,9 +818,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
 	gtk_clist_moveto(GTK_CLIST(m_styleList), st, 0, 0, -1);
 	
-	double size = UT_convertToPoints(m_pFontSize);
-	g_snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
-	foundAt = searchCList(GTK_CLIST(m_sizeList), sizeString);
+	g_snprintf(sizeString, SIZE_STRING_SIZE, "%s", std_size_string(UT_convertToPoints(m_pFontSize)));
+	foundAt = searchCList(GTK_CLIST(m_sizeList), (char *)XAP_EncodingManager::fontsizes_list.getSecond(sizeString));
+	
 
 	if (foundAt >= 0)
 	{
@@ -982,7 +972,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, text);
 			UT_ASSERT(text && text[0]);
 
-			g_snprintf(sizeString, SIZE_STRING_SIZE, "%spt", text[0]);
+			g_snprintf(sizeString, SIZE_STRING_SIZE, "%spt", 
+			    XAP_EncodingManager::fontsizes_list.getFirst(text[0]));
 
 			if (!m_pFontSize || UT_stricmp(m_pFontSize, sizeString))
 			{

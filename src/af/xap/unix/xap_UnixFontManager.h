@@ -55,7 +55,8 @@ public:
 protected:
 
 	void					_allocateThisFont(const char * line,
-											  const char * workingdir);
+	    						                              const char * workingdir, int iLine);
+	void 				_allocateCJKFont(const char * line, int iLine);
 	void					_addFont(XAP_UnixFont * font);
 
 	// perhaps this should be a hash to avoid duplicates?

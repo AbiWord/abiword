@@ -20,6 +20,7 @@
 #ifndef AP_STATUSBAR_H
 #define AP_STATUSBAR_H
 
+#include <limits.h>
 // Class for dealing with the status bar at the bottom of
 // the frame.
 
@@ -31,10 +32,11 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "xav_Listener.h"
 
+
 class XAP_Frame;
 class GR_Graphics;
 
-#define AP_MAX_MESSAGE_FIELD			256
+#define AP_MAX_MESSAGE_FIELD			(256*MB_LEN_MAX)
 
 /*****************************************************************/
 /*****************************************************************/

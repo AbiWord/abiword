@@ -22,6 +22,7 @@
 #include "ap_UnixToolbar_SizeCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_UnixToolbar_SizeCombo::static_constructor(EV_Toolbar * pToolbar,
@@ -36,9 +37,8 @@ AP_UnixToolbar_SizeCombo::AP_UnixToolbar_SizeCombo(EV_Toolbar * pToolbar,
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_SIZE);
-
-	m_nPixels = 30;		// TODO: do a better calculation
-	m_nLimit = 4;
+	m_nPixels =60;		// TODO: do a better calculation
+	m_nLimit = 10;    
 }
 
 AP_UnixToolbar_SizeCombo::~AP_UnixToolbar_SizeCombo(void)
@@ -52,25 +52,13 @@ UT_Bool AP_UnixToolbar_SizeCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
-
-	// populate the vector
-	m_vecContents.addItem((void *) "8");
-	m_vecContents.addItem((void *) "9");
-	m_vecContents.addItem((void *) "10");
-	m_vecContents.addItem((void *) "11");
-	m_vecContents.addItem((void *) "12");
-	m_vecContents.addItem((void *) "14");
-	m_vecContents.addItem((void *) "16");
-	m_vecContents.addItem((void *) "18");
-	m_vecContents.addItem((void *) "20");
-	m_vecContents.addItem((void *) "22");
-	m_vecContents.addItem((void *) "24");
-	m_vecContents.addItem((void *) "26");
-	m_vecContents.addItem((void *) "28");
-	m_vecContents.addItem((void *) "36");
-	m_vecContents.addItem((void *) "48");
-	m_vecContents.addItem((void *) "72");
-
+	{
+	    // populate the vector	
+	    int sz = XAP_EncodingManager::fontsizes_list.size();
+	    for(int i=0;i<sz;++i) {
+		m_vecContents.addItem((void *) XAP_EncodingManager::fontsizes_list.nth2(i));
+	    };
+	}
 	// TODO: may want to populate this based on current font instead?
 	return UT_TRUE;
 }

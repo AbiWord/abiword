@@ -19,11 +19,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
+#include "ut_bytebuf.h"
+#include "ut_wctomb.h"
 #include "ap_Strings.h"
 #include "xap_EncodingManager.h"
 
@@ -224,42 +227,22 @@ UT_Bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 
 		int kLimit=gb.getLength();
 		UT_uint16 * p=gb.getPointer(0);
+		UT_ByteBuf str;		
+		UT_Wctomb wctomb_conv;
+		char letter_buf[20];
+		int length;
 		for (int k=0; k<kLimit; k++)
 		{
-			UT_uint16 j = XAP_EncodingManager::instance->UToNative(p[k]);
-			if (j > 0xff)
-			{
-				bFoundMultiByte = UT_TRUE;
-				p[k] = '@';
-			} 
-			else
-				p[k] = j;
+		    if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)p[k])) {
+			str.append((UT_Byte*)letter_buf,length);
+		    };
 		}
-
-		szDup = (XML_Char *)malloc((gb.getLength()+1)*sizeof(XML_Char));
+		length = str.getLength();
+		szDup = (XML_Char *)malloc(length+1);
 		if (!szDup)
 			return UT_FALSE;
-#if 0
-		UT_UCS_strcpy_to_char(szDup,gb.getPointer(0));
-#else		
-		/* 
-		  Since we insure above that chars <0xff (i.e.
-		  single-byte) it's safe to convert them using plain assignment.
-		  Otherwise there will be a lot of troubles with any non-latin1
-		  single-byte encodings, (e.g. any russian encoding).
-		  It's harmless to do so.
-		 */
-		{
-			int k;
-			int kLimit=gb.getLength();
-			UT_uint16 * p=gb.getPointer(0);
-			for (k=0; k<kLimit; k++)
-			{
-				szDup[k] = (unsigned char)p[k];
-			}
-			szDup[k] = '\0';
-		}
-#endif
+		memcpy(szDup,str.getPointer(0),length);
+		szDup[length]='\0';
 	}
 
 	void * pOldValue = NULL;

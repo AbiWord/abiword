@@ -6,6 +6,7 @@
 #define XAP_ENCMGR_H
 
 #include "ut_types.h"
+#include "ut_pair.h"
 
 #ifdef HAVE_GNOME_XML2
 #include <libxml/parser.h>
@@ -49,28 +50,42 @@ public:
     */    
 
     virtual const char* getLanguageISOTerritory() const;
+
+#if 0
     /*
 	for exporting to Tex - in order to provide proper argument for 
 	{inputenc}, e.g. \usepackage[koi8-r]{inputenc}
 	If NULL is returned, then package 'inputenc' is not used at all.
     */
     virtual const char* getNativeTexEncodingName() const;
+#else
+    virtual void placeholder() {};//to be removed
+#endif    
     /*
-	For exporting to Text - in order to provide argument for package
-	'babel', e.g. \usepackage[english,russian]{babel}. The returned
-	value is inserted between square brackets - nothing is appended or
-	prepended. If NULL is returned, entire line "\usepackage" is not
-	emitted.
+	Should return "\n"-terminated prologue that loads required packages, 
+	etc.
     */
-    virtual const char* getNativeBabelArgument() const;
+    virtual const char* getTexPrologue() const;
     
     /*these return 0 if they can't convert*/
+    /*
+	This won't work for c>0xff. Use UT_Mbtowc!
+    */
     virtual UT_UCSChar try_nativeToU(UT_UCSChar c) const;
+    /*
+	If returned value is > 0xff, then multibyte seq is returned by iconv
+	and return value mean nothing (except that it notes that singlebyte 
+	encoding can't be used for this character.
+    */
     virtual UT_UCSChar try_UToNative(UT_UCSChar c)  const;
 
     /*these are used for reading/writing of doc and rtf files. */
     virtual UT_UCSChar try_WindowsToU(UT_UCSChar c) const;
     virtual UT_UCSChar try_UToWindows(UT_UCSChar c)  const;
+    
+    
+    
+    
     virtual char fallbackChar(UT_UCSChar c) const;
 
     virtual ~XAP_EncodingManager();
@@ -101,8 +116,53 @@ public:
 	/*can be called several times - e.g. by constructor of port-specific
 	 implementation. */
 	virtual void initialize();
+	/*
+	    returns 1 if current langauge is CJK (chinese, japanese, korean)
+	*/
+	virtual bool cjk_locale() const;
 
+	/*  whether words can be broken at any character of the word (wide 
+	    character, not byte). True for japanese.
+	*/
+	virtual bool can_break_words() const;
 
+	/*
+	    returns true if there is no distinction between upper and lower
+	    letters.
+	*/
+	virtual bool single_case() const;	
+
+	/*
+	    returns true if all letters are non-CJK. Under non-cjk locales
+	    it returns 1. Under cjk locales, returns 1 if all chars <0xff 
+	    in that range.
+	*/
+	virtual bool noncjk_letters(const UT_UCSChar* str,int len) const;
+
+	/*
+	    This one correlates with can_break_words() very tightly.
+            Under CJK locales it returns 1 for cjk letters. 
+	    Under non-CJK locales returns 0.
+	*/
+	virtual bool can_break_at(const UT_UCSChar c) const;
+
+	/*
+	    This should be as precise as possible.
+	*/
+	virtual bool is_cjk_letter(UT_UCSChar c) const;
+	
+	/*
+	    This is rather smart wrapper for wvLIDToCodePageConverter.
+	    Not all CP* are known by current iconv's, so this function
+	    will try first to return charset string that iconv knows.
+	*/
+	virtual const char* charsetFromCodepage(int lid) const;
+
+	/*
+	    returns charsetFromCodepage( getWinLanguageCode() )
+	*/
+	virtual const char* WindowsCharsetName() const;
+	
         /* these use try_ methods, and if they fail, fallbackChar() is returned*/
 	UT_UCSChar nativeToU(UT_UCSChar c) const;
 	UT_UCSChar UToNative(UT_UCSChar c)  const;
@@ -137,14 +197,55 @@ public:
 	static XAP_EncodingManager*		instance;	
 	
 	/*it's terminated with the record with NULL in language name. */
-	static const XAP_LangInfo			langinfo[];
+	static const XAP_LangInfo		langinfo[];
+	/*
+	    Precise meaning:
+		swap_utos: the following seq should produce a seq in buf that
+			    iconv will understand correctly when converting
+			    from UCS to mbs.
+		    unsigned short V;
+		    char buf[2];
+		    b0 = V&0xff, b1 = V>>8;
+		    buf[swap_utos]=b0;
+		    buf[!swap_utos]=b1;
+		swap_stou: the following seq should produce a correct value V
+		    that iconv will understand correctly when converting
+			    from mbs to UCS (i.e. return value).
+		    iconv(cd,&inptr,&inlen,&outptr,&outlen);
+		    unsigned short V;
+		    b0 = outptr_orig[swap_stou],b1 = outptr_orig[!swap_stou];
+		    V = b0 | (b1<<8);		    
+	*/
+	static bool 				swap_utos,swap_stou;
 	
 	/* these are utility functions. Since all fields are strings, 
 	we can use the same routine. Returns NULL if nothing was found. */
 	static const XAP_LangInfo* findLangInfo(const char* key,
 		XAP_LangInfo::fieldidx column);
+		
+			/*word uses non-ascii names of fonts in .doc*/
+	static UT_Pair				cjk_word_fontname_mapping,
+			/* CJK users need slightly different set of fontsizes*/
+						fontsizes_list;
 protected:
 	void describe();		
 };
 
+/*
+    This one returns NULL-terminated vector of strings in static buffers (i.e.
+	don't try to free anything). On next call, filled data will be lost.
+    returns the following strings surrounded by prefix and suffix:
+    if (!skip_fallback)
+	"";
+	//next ones also include 'sep' to the left of them
+    "%s"	XAP_E..M..::instance->getLanguageISOName()
+    "%s"	XAP_E..M..::getNativeEncodingName()    
+    "%s-%s"	XAP_E..M..::getLanguageISOName(),XAP_E..M..::getLanguageISOTerritory()
+    "%s-%s.%s"  XAP_E..M..::getLanguageISOName(), \
+	    XAP_E..M..::getLanguageISOTerritory(), getNativeEncodingName()
+*/
+const char** localeinfo_combinations(const char* prefix,const char* suffix,const char* sep, bool skip_fallback=0);
+
+/*these one are used by ispell*/
+extern int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
 #endif /* XAP_APP_H */

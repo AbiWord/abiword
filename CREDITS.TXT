@@ -138,7 +138,8 @@ Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>		Welsh
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>   Indonesian
 Javier Yáñez <javier@cibal.es>                  Spanish
-
+hj <huangj@citiz.net>				Chinese (zh-CN)
+John Profic <profic@linux.ru.net>		Russian
 
 unsung heroes
 -------------

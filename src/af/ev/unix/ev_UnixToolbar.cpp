@@ -41,7 +41,8 @@
 #include "xmlparse.h"
 #endif
 #include "xap_Prefs.h"
-
+#include "xap_EncodingManager.h"
+#include"ap_Toolbar_Id.h"
 
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
@@ -99,17 +100,19 @@ public:									// we create...
 			}
 			else // widget has no ->parent, so use the buffer's results
 			{
-				UT_uint32 size = strlen(wd->m_comboEntryBuffer);
 
 				// TODO : do a real conversion to UT_UCSChar or figure out the casting
 
 				// don't do changes for empty combo texts
 				if (UT_stricmp(wd->m_comboEntryBuffer, ""))
 				{
-					UT_UCSChar * text = (UT_UCSChar *) wd->m_comboEntryBuffer;
-					UT_ASSERT(text);
-
-					wd->m_pUnixToolbar->toolbarEvent(wd, text, size);
+					UT_UCSChar * text = (UT_UCSChar *) 
+					    (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE ? 
+					    XAP_EncodingManager::fontsizes_list.getFirst(wd->m_comboEntryBuffer) :
+					    wd->m_comboEntryBuffer);
+					
+					UT_ASSERT(text);					
+					wd->m_pUnixToolbar->toolbarEvent(wd, text, strlen((char*)text));
 				}
 			}
 		}
@@ -605,9 +608,12 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					// Block the signal, set the contents
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
-					if (szState)
-						gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
-					else
+					if (szState) {
+						gtk_entry_set_text(GTK_ENTRY(item->entry), 
+						    wd->m_id==AP_TOOLBAR_ID_FMT_SIZE ?
+						    XAP_EncodingManager::fontsizes_list.getSecond(szState) 
+						    : szState);
+					} else
 						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
 					wd->m_blockSignal = wasBlocked;
 					

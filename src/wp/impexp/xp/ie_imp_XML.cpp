@@ -34,6 +34,7 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
+#include "xap_EncodingManager.h"
 /*****************************************************************/	
 /*****************************************************************/	
 
@@ -133,6 +134,7 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	XML_SetUserData(parser, this);
 	XML_SetElementHandler(parser, startElement, endElement);
 	XML_SetCharacterDataHandler(parser, charData);
+	XML_SetUnknownEncodingHandler(parser,XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
 
 	while (!done)
 	{
