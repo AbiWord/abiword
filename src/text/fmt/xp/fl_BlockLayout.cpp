@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-//#include <unistd.h>
 
 #include "fl_BlockLayout.h"
 #include "fl_Layout.h"
@@ -53,6 +52,7 @@
 #include "xap_App.h"
 #include "xap_Clipboard.h"
 #include "ut_png.h"
+#include "ut_sleep.h"
 #include "fg_Graphic.h"
 #include "ap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -4351,7 +4351,6 @@ void fl_BlockLayout::setStopping( UT_Bool bValue)
 
 void fl_BlockLayout::debugFlashing(void)
 {
-/*
 	// Trivial background checker which puts on and takes off squiggles from
 	// the entire block that's being checked.  This sort of messes up the
 	// spelling squiggles, but it's just a debug thing anyhow.  Enable it
@@ -4369,7 +4368,7 @@ void fl_BlockLayout::debugFlashing(void)
 	pView->_eraseInsertionPoint();
 	pView->updateScreen();
 	pView->_drawInsertionPoint();
-	usleep(250000);
+	UT_usleep(250000);
 
 	//_deleteSquiggles(0, eor);
 
@@ -4378,5 +4377,4 @@ void fl_BlockLayout::debugFlashing(void)
 	pView->_drawInsertionPoint();
 
 	return;
-*/
 }
