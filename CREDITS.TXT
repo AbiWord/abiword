@@ -298,6 +298,7 @@ Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>	Malay
 Raphael Finkel <raphael@cs.uky.edu>			Yiddish
 Besnik Bleta <besnikbleta@hotmail.com>			Albanian
 Alberto Cabello Sánchez <alberto@unex.es> 
+Vital Khilko <dojlid@mova.org>				Belarusian
 
 unsung heroes
 -------------
