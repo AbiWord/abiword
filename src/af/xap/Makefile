@@ -45,7 +45,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX)
 
 # gnome has its own about dialog
-ifndef ABI_OPT_GNOME
+ifneq ($(ABI_OPT_GNOME),1)
 PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)			\
 		 $(OBJDIR)/xap_$(ABI_FE)Dlg_ClipArt.$(OBJ_SUFFIX)		\
 		 $(OBJDIR)/xap_$(ABI_FE)Dlg_PrintPreview.$(OBJ_SUFFIX)
@@ -82,7 +82,7 @@ PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)DialogHelper.$(OBJ_SUFFIX)
 endif
 
-ifdef ABI_OPT_GNOME
+ifeq ($(ABI_OPT_GNOME),1)
 PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_About.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_ClipArt.$(OBJ_SUFFIX)	\
