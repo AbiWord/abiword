@@ -6,7 +6,7 @@ AbiWord is a C++ application. Its build system is based on the GNU automake tool
 
 	A reasonably working C and C++ compiler (GNU's gcc and g++ come to mind, though others should work as well)
 	GNU's make (called gmake sometimes)1
-	A Bourne compatible shell, such as sh, bash, zsh, ksh, csh...
+	A Bourne compatible shell, such as sh, bash, zsh, ksh...
 
 AbiWord-2.0's Unix GUI is GTK+-2.0 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.0 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at http://www.gtk.org. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a "distribution") . We always recommend going with the tools your distribution provides, but you are in no means required to do so.
 
