@@ -95,8 +95,14 @@ private:
 	int        _endChar (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
 
+	int        _beginComment (wvParseStruct *ps, UT_uint32 tag,
+						   void *props, int dirty);
+	int        _endComment (wvParseStruct *ps, UT_uint32 tag,
+						 void *props, int dirty);
+
    	UT_Error   _handleImage (Blip *, long width, long height);
 	bool       _handleCommandField (char *command);
+	bool       _handleFieldEnd (char * command);
 	int        _fieldProc (wvParseStruct *ps, UT_uint16 eachchar, 
 						   UT_Byte chartype, UT_uint16 lid);
 	void       _appendChar (UT_UCSChar ch);

@@ -779,6 +779,21 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	return 0;
 }
 
+int IE_Imp_MsWord_97::_beginComment(wvParseStruct *ps, UT_uint32 tag, 
+				    void *props, int dirty)
+{
+  UT_DEBUGMSG(("DOM: begin comment\n"));
+  return 0;
+}
+
+int IE_Imp_MsWord_97::_endComment(wvParseStruct *ps, UT_uint32 tag, 
+				  void *props, int dirty)
+{
+  UT_DEBUGMSG(("DOM: begin comment\n"));
+  return 0;
+}
+
+
 int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag, 
 							   void *props, int dirty)
 {
@@ -807,6 +822,12 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 	case CHARPROPEND:
 		return _endChar (ps, tag, props, dirty);
 
+	case COMMENTBEGIN:
+	  return _beginComment (ps, tag, props, dirty);
+
+	case COMMENTEND:
+	  return _endComment (ps, tag, props, dirty);
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
@@ -819,7 +840,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 /****************************************************************************/
 
 int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
-								  void *prop, int dirty)
+				  void *prop, int dirty)
 {
 	SEP * asep = static_cast <SEP *>(prop);
 
@@ -832,40 +853,52 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		
 	// page-margin-left
 	sprintf(propBuffer,
-			"page-margin-left:%s;", 
-			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaLeft) / 1440), "1.4"));
+		"page-margin-left:%s;", 
+		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaLeft) / 1440), "1.4"));
 	props += propBuffer;
-
+	
 	// page-margin-right
 	sprintf(propBuffer,
-			"page-margin-right:%s;", 
-			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaRight) / 1440), "1.4"));
+		"page-margin-right:%s;", 
+		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaRight) / 1440), "1.4"));
 	props += propBuffer;
-
+	
 	// page-margin-top
 	sprintf(propBuffer,
-			"page-margin-top:%s;", 
-			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaTop) / 1440), "1.4"));
+		"page-margin-top:%s;", 
+		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaTop) / 1440), "1.4"));
 	props += propBuffer;
-
+	
 	// page-margin-bottom
 	sprintf(propBuffer,
-			"page-margin-bottom:%s;", 
-			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaBottom) / 1440), "1.4"));
+		"page-margin-bottom:%s;", 
+		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaBottom) / 1440), "1.4"));
 	props += propBuffer;
-
+	
 	// page-margin-header
 	sprintf(propBuffer,
-			"page-margin-header:%s;",
-			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrTop) / 1440), "1.4"));
+		"page-margin-header:%s;",
+		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrTop) / 1440), "1.4"));
 	props += propBuffer;
-
+	
 	// page-margin-footer
 	sprintf(propBuffer,
-			"page-margin-footer:%s;",
-			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrBottom) / 1440), 
-											  "1.4"));
+		"page-margin-footer:%s;",
+		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrBottom) / 1440), 
+						  "1.4"));
 	props += propBuffer;
+	
+	if(asep->fPgnRestart)
+	  {
+	    // set to 1 when page numbering should be restarted at the beginning of this section
+	    props += "section-restart:1;";
+	  }
+
+	{
+	  // user specified starting page number
+	  sprintf(propBuffer, "section-restart-value:%d;", asep->pgnStart);
+	  props += propBuffer;
+	}
 
 	// columns
 	if (asep->ccolM1) {
@@ -1188,6 +1221,23 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		props += propBuffer;
 	}
 
+#if 0
+	// precursor to list handling
+
+	// when non-zero, list level for this paragraph
+	if ( apap->ilvl )
+	  {
+	    //level=
+	    sprintf(propBuffer, "%d", apap->ilvl);
+	  }
+
+	if ( apap->ilfo )
+	  {
+	    //listid=
+	    sprintf(propBuffer, "%d", apap->ilfo);
+	  }
+#endif
+
 	// remove the trailing semi-colon
 	props [props.size()-1] = 0;
 
@@ -1231,9 +1281,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
 	UT_String props;
 
-	//
-	// TODO: set char tolower if fSmallCaps && fLowerCase, possibly some list stuff
-	//
+	// set char tolower if fSmallCaps && fLowerCase
 	if ( achp->fSmallCaps && achp->fLowerCase )
 	  m_bIsLower = true;
 	else
@@ -1497,9 +1545,40 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	    if (depth == 0)
 		{
 			which[i] = 0;
+			a = wvWideStrToMB (m_argument);
+			c = wvWideStrToMB (m_command);
+			_handleFieldEnd (c);
+			wvFree (c);
 		}
 	}
 	return ret;
+}
+
+bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
+{
+  Doc_Field_t tokenIndex = F_OTHER;
+    char *token;
+
+    if (*command != 0x13)
+      {
+	  UT_DEBUGMSG (("field did not begin with 0x13\n"));
+	  return true;
+      }
+    strtok (command, "\t, ");
+    while ((token = strtok (NULL, "\t, ")))
+      {
+	tokenIndex = s_mapNameToField (token);
+	switch (tokenIndex)
+	    {
+	    case FC_HYPERLINK:
+		token = strtok (NULL, "\"\" ");		
+		getDoc()->appendObject(PTO_Hyperlink,NULL);
+		break;
+	    default:
+		break;
+	    }
+      }
+    return false;
 }
 
 bool IE_Imp_MsWord_97::_handleCommandField (char *command)
@@ -1528,7 +1607,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		switch (tokenIndex)
 	    {
 		case F_EDITTIME:
-	    case F_TIME:
+	        case F_TIME:
 			atts[1] = "time";
 			break;
 
@@ -1556,6 +1635,30 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		case F_FILENAME: 
 			atts[1] = "file_name";
 			break;
+
+	    case F_HYPERLINK:
+	      {
+		const XML_Char *new_atts[3];
+		token = strtok (NULL, "\"\" ");
+
+		// hyperlink or hyperlink to bookmark
+		new_atts[0] = "xlink:href";
+		UT_String href;
+		if ( !strcmp(token, "\\l") )
+		  {
+		    token = strtok (NULL, "\"\" ");
+		    href = "#";
+		    href += token;
+		  }
+		else
+		  {
+		    href = token;
+		  }
+		new_atts[1] = href.c_str();
+		new_atts[2] = 0;
+		getDoc()->appendObject(PTO_Hyperlink, new_atts);
+		return true;
+	      }
 
 	    default:
 			// unhandled field type
