@@ -344,7 +344,7 @@ void be_Window::MessageReceived(BMessage *pMsg)
 		case 'inme': // Inme is a "Create Menu" message sent when the view is established.
 			m_pBeOSMenu->synthesize();
 			break;
-		
+#if (B_BEOS_VERSION > B_BEOS_VERSION_4_5)		
 		case B_MOUSE_WHEEL_CHANGED:
 		
 			if( pMsg->FindFloat("be:wheel_delta_y" , &deltaY) == B_OK)
@@ -360,6 +360,9 @@ void be_Window::MessageReceived(BMessage *pMsg)
 			}
 
 			break;
+#else
+#warning "You should really upgrade your BeOS version to get wheel support"
+#endif
 	}
 	
 	BWindow::MessageReceived(pMsg);
