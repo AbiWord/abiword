@@ -21,6 +21,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_WIN32)
+#define _STATIC
+#endif /* _WIN32 */
+
 #include <expat.h>
 
 #include "ut_assert.h"
