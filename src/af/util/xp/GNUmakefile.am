@@ -43,6 +43,7 @@ libUtil_xp_a_SOURCES=\
 	ut_svg.cpp		\
 	ut_rbtree.cpp		\
 	ut_set.cpp		\
+	ut_Script.cpp		\
 	ut_stack.cpp		\
 	ut_string.cpp		\
 	ut_string_class.cpp	\
@@ -81,6 +82,7 @@ libUtil_xp_a_SOURCES=\
 	ut_png.cpp		\
 	ut_svg.cpp		\
 	ut_rbtree.cpp	\
+	ut_Script.cpp		\
 	ut_set.cpp		\
 	ut_stack.cpp		\
 	ut_string.cpp		\
