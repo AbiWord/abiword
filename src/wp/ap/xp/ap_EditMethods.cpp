@@ -4303,8 +4303,15 @@ Defun1(dlgBullets)
   //
   // Dialog for Bullets and Lists
   //
+  //#ifdef NDEBUG
+  //	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+  //	UT_ASSERT(pFrame);
+  //
+  //	s_TellNotImplemented(pFrame, "Bullets and Numbering dialog", __LINE__);
+  //#else
         ABIWORD_VIEW;
 	return s_doBullets(pView);
+	//#endif
 }
 
 Defun1(dlgBorders)

@@ -171,53 +171,73 @@ void    fl_AutoNum::markAsDirty(void)
 
 void    fl_AutoNum::findAndSetParentItem(void)
 {
-	if(m_pParent != NULL)
-	{
+	if(m_pParent == NULL)
+	        return;
 	//	fixListOrder();
 	//	m_pParent->fixListOrder();
-		m_pParent->update(0);
+	//	m_pParent->update(0);
 
-		if (m_pItems.getItemCount() == 0)
-		{
-			return;
-		}
+	if (m_pItems.getItemCount() == 0)
+	{
+		return;
+	}
+	PL_StruxDocHandle pCurFirst =  (PL_StruxDocHandle) m_pItems.getFirstItem();
+	if(pCurFirst == NULL)
+	        return;
+	PT_DocPosition posCur = m_pDoc->getStruxPosition(pCurFirst);
 
-		PL_StruxDocHandle pCurFirst =  (PL_StruxDocHandle) m_pItems.getFirstItem();
-		if(pCurFirst == NULL)
-		       return;
-		PT_DocPosition posCur = m_pDoc->getStruxPosition(pCurFirst);
-
+	UT_uint32 cnt = m_pDoc->getListsCount();
+	UT_ASSERT(cnt);
+        UT_uint32 iList;
+	fl_AutoNum * pClosestAuto = NULL;
+        PT_DocPosition posClosest = 0;
+        PL_StruxDocHandle pClosestItem = NULL;
+	for(iList = 0; iList < cnt; iList++) 
+	{
+	        fl_AutoNum * pParent = m_pDoc->getNthList(iList);
 		UT_uint32 i=0;
-		PL_StruxDocHandle pParentItem = m_pParent->getNthBlock(i);
+		PL_StruxDocHandle pParentItem = pParent->getNthBlock(i);
 		PT_DocPosition posParent=0;
 		if(pParentItem != NULL)
-		{
-			posParent = m_pDoc->getStruxPosition(pParentItem);
+	        {
+		        posParent = m_pDoc->getStruxPosition(pParentItem);
 		}
 		while(pParentItem != NULL && (posParent < posCur))
 		{
-			i++;
-			pParentItem = m_pParent->getNthBlock(i);
+	                i++;
+			pParentItem = pParent->getNthBlock(i);
 			if(pParentItem != NULL)
-			{
-				posParent = m_pDoc->getStruxPosition(pParentItem);
+		        {
+		                posParent = m_pDoc->getStruxPosition(pParentItem);
 			}
 		}
 		if( i > 0)
-		{
-			i--;
-			m_pParentItem = m_pParent->getNthBlock(i);
+	        {
+	                i--;
+			pParentItem = pParent->getNthBlock(i);;
+			posParent = m_pDoc->getStruxPosition(pParentItem);
+			if( posParent > posClosest)
+			{
+			        posClosest = posParent;
+                                pClosestAuto = pParent;
+				pClosestItem = pParentItem;
+			}
 		}
-		else
-		{
-			m_pParentItem = NULL;
-			m_pParent = NULL;
-			m_iParentID = 0;
-			m_iLevel = 1;
-		}
-		m_bDirty = UT_TRUE;
-		update(0);
 	}
+	m_pParentItem = pClosestItem;
+	m_pParent = pClosestAuto;
+	if(m_pParent != NULL)
+	{
+	        m_iParentID = m_pParent->getID();
+		m_iLevel = m_pParent->getLevel()+ 1;
+	}
+	else
+	{
+	        m_iParentID = 0;
+		m_iLevel = 0;
+	}
+	m_bDirty = UT_TRUE;
+	update(0);
 }
 
 void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint, 

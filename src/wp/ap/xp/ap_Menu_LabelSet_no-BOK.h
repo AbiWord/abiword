@@ -101,11 +101,9 @@ BeginSet(no,BOK,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kursiv",			"Gjør markert tekst kursiv (skift)")
 	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Understreket",                "Understrek markert tekst (skift)")
      	MenuLabel(AP_MENU_ID_FMT_OVERLINE,		"&Overstreket",                 "Overstreke markert tekst (skift)")
-     	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"Stry&k ut",                    "Stryk ut markert tekst (skift)")
+     	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Gjennomstrekning",            "Gjennomstrek markert tekst (skift)")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	        "&Hevet",                       "Hev markert tekst (skift)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"S&enket",                      "Senk markert tekst (skift)")
-
-	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Gjennomstreket",		"Gjennomstrek markert tekst (skift)")
 
         MenuLabel(AP_MENU_ID_TOOLS,                     "&Verktøy",			NULL)   
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Stavekontroll",               "Sjekk dokumentet for stavefeil")

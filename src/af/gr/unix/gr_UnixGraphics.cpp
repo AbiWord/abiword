@@ -569,7 +569,7 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height)
 {
-//	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
+  //	UT_DEBUGMSG(("ClearArea: %d %d %d %d\n", x, y, width, height));
 	if (width > 0)
 	{
 #define TURBOSLOW	0

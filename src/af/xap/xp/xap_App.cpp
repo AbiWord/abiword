@@ -41,6 +41,7 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 
+
 /*****************************************************************/
 
 XAP_App * XAP_App::m_pApp = NULL;
