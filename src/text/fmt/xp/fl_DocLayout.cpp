@@ -183,7 +183,6 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pSectionAP)
 {
 	GR_Font* pFont;
-	char buf[10];
 
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
@@ -197,13 +196,8 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	if ((0 == UT_stricmp(pszPosition, "superscript")) ||
 		(0 == UT_stricmp(pszPosition, "subscript")))
 	{
-		double newSize;
-
-		newSize = UT_convertToPoints(pszSize);
-		newSize *= (double)2/(double)3;
-		sprintf(buf, "%fpt", newSize);
-
-		pszSize = buf;
+		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
+		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
 
 	// NOTE: we currently favor a readable hash key to make debugging easier

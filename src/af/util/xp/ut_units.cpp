@@ -348,3 +348,20 @@ UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits)
 
 	return (pG->getResolution() * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
 }
+
+const char * UT_formatDimensionedValue(double value,
+									   const char * szUnits,
+									   const char * szPrecision)
+{
+	// format the given value into a static buffer with
+	// the optional format precision and using the given
+	// physical units.
+
+	static char buf[100];
+
+	const char * szValue = UT_convertToDimensionlessString(value,szPrecision);
+
+	sprintf(buf,"%s%s",szValue,szUnits);
+
+	return buf;
+}

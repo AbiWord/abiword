@@ -43,6 +43,7 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_
 const char * UT_dimensionName(UT_Dimension dim);
 const char * UT_convertToDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
 const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);
+const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
 
 UT_Bool UT_hasDimensionComponent(const char * sz);
 
