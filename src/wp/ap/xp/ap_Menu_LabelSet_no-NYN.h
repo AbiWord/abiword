@@ -133,7 +133,7 @@ BeginSet(no,NYN,UT_TRUE)
 	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Innhald i Hjelp",	"Viser innhaldet i Hjelp")
 	MenuLabel(AP_MENU_ID_HELP_INDEX,		"&Stikkordregister i Hjelp",		"Viser stikkordregisteret i Hjelp")
 	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"Kontroller &versjon",	"Kontrollerer versjonsnummeret til AbiWord")
-	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Søk etter hjelp om ...",	"Søker etter eit emne i Hjelp")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"Søk &etter hjelp om ...",	"Søker etter eit emne i Hjelp")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Om %s ",		"Viser informasjon om programmet, versjonsnummer og opphavsrett")
 	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Om o&pen kjeldekode ",	"Viser informasjon om open kjeldekode-prinsippet")
 
