@@ -4301,6 +4301,13 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	if (!isSelectionEmpty())
 	{
 		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
+		UT_ASSERT_HARMLESS( pBlockEnd );
+		if(!pBlockEnd)
+		{
+			UT_VECTOR_PURGEALL(_fmtPair *,v);
+			return false;
+		}
+		
 		fl_SectionLayout *pSectionEnd = pBlockEnd->getSectionLayout();
 
 		while (pSection && (pSection != pSectionEnd))

@@ -1165,7 +1165,17 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 			return pBL;
 	}
 	pBL = m_pLayout->findBlockAtPosition(pos);
-	UT_ASSERT(pBL);
+
+	// This assert makes debugging virtually impossible; this is a hack to make it assert only once ...
+	//UT_ASSERT(pBL);
+#ifdef DEBUG
+	static bool bAss = false;
+	if(!pBL && !bAss)
+	{
+		UT_ASSERT_HARMLESS( pBL );
+		bAss = true;
+	}
+#endif
 	if(!pBL)
 		return NULL;
 
@@ -3085,6 +3095,8 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 		_findPositionCoords(iPos2, false, x, y, x2, y2, uheight, bDirection, &pBlock2, &pRun2);
 	}
 
+	UT_return_val_if_fail(pRun1 && pRun2, false );
+	
 	bool bDone = false;
 	bool bIsDirty = false;
 	fp_Run* pCurRun = pRun1;
@@ -3416,7 +3428,16 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	if(!pBlock)
 	{
 		// Do the assert. Want to know from debug builds when this happens.
-		UT_ASSERT(pBlock);
+		// This assert makes debuging virtuall impossible; the hack below makes it assert only once.
+		// UT_ASSERT(pBlock);
+#ifdef DEBUG
+		static bool bAss = false;
+		if(!pBlock && !bAss)
+		{
+			UT_ASSERT_HARMLESS( pBlock );
+			bAss = true;
+		}
+#endif
 
 		x = x2 = 0;
 		y = y2 = 0;

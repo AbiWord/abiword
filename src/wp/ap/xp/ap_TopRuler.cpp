@@ -600,7 +600,12 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 	UT_sint32 xAbsRight;
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout *pBlock = pView->getCurrentBlock();
+	
+	bool bRTL = false;
+
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
 
 /*	if(bRTL)
 	{
@@ -712,7 +717,11 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 	UT_sint32 ls, rs;                   // the sizes of left and right markers
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	bool bRTL = false;
+
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
 
 	if(bRTL)
 	{
@@ -747,7 +756,12 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 							 &rLeftIndent, &rRightIndent, &rFirstLineIndent);
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	bool bRTL = false;
+
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
+	
 	xxx_UT_DEBUGMSG(("ap_TopRulerDrawPara: bRTL = %d \n",bRTL));
 	if (m_draggingWhat == DW_LEFTINDENTWITHFIRST)
 	{
@@ -891,14 +905,16 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 	}
 
 	if (pTab)
-
-	if((static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL)
+	{
+		fl_BlockLayout * pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	if(pBlock && pBlock->getDominantDirection() == UT_BIDI_RTL)
 	{
 		UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 		*pTab = xAbsRight - iPosition;
 	}
 	else
 		*pTab = xAbsLeft + iPosition;
+	}
 }
 
 void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
@@ -1928,7 +1944,12 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	UT_sint32 xrel;
 
     UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+    bool bRTL = false;
+
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
+	
 	xxx_UT_DEBUGMSG(("setTableLineDrag: x = %d \n",x));
 	if(bRTL)
 		xrel = xAbsRight - static_cast<UT_sint32>(x);
@@ -2030,7 +2051,12 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	UT_sint32 xrel;
 
     UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-    bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout *pBlock = pView->getCurrentBlock();
+	
+	bool bRTL = false;
+
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
 
 	if(bRTL)
 		xrel = xAbsRight - static_cast<UT_sint32>(x);
@@ -2399,9 +2425,15 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	bool bRTLglobal;
 	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+	bool bRTL = false;
 
-	if(bRTLpara)
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
+
+
+	if(bRTL)
 		xgrid = tick.snapPixelToGrid(xAbsRight - static_cast<UT_sint32>(x));
 	else
 		xgrid = tick.snapPixelToGrid(static_cast<UT_sint32>(x) - xAbsLeft);
@@ -2647,7 +2679,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 			// in rtl block we drag the right indent
 			xxx_UT_DEBUGMSG(("DW_LEFTINDENT (release): m_draggingCenter %d\n", m_draggingCenter));
-			if(bRTLpara)
+			if(bRTL)
 			{
 				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
 				xdelta = (xAbsRight - m_draggingCenter) - m_infoCache.m_xrRightIndent;
@@ -2699,7 +2731,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 			// in rtl block we drag the right margin, of course :-);
 			xxx_UT_DEBUGMSG(("DW_LEFTINDENTWITHFIRST (release): m_draggingCenter %d\n", m_draggingCenter));
-			if(bRTLpara)
+			if(bRTL)
 			{
 				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
 				properties[0] = "margin-right";
@@ -2733,7 +2765,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 			// in rtl block we drag the left indent
 			xxx_UT_DEBUGMSG(("DW_RIGHTINDENT (release): m_draggingCenter %d\n", m_draggingCenter));
-			if(bRTLpara)
+			if(bRTL)
 			{
 				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
 				properties[0] = "margin-left";
@@ -2767,7 +2799,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			double dxrel;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 
-			if(bRTLpara)
+			if(bRTL)
 				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter-m_infoCache.m_xrRightIndent);
 			else
 				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft-m_infoCache.m_xrLeftIndent);
@@ -2794,9 +2826,15 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			eTabLeader iLeader;
     		UT_sint32 xrel;
 
-			bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+			fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+			bool bRTL = false;
 
-			if(bRTLpara)
+			if(pBlock)
+				bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
+
+
+			if(bRTL)
 				xrel = xAbsRight - xgrid;
 			else
 				xrel = xgrid + xAbsLeft;
@@ -2970,11 +3008,17 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iL
 {
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
     UT_sint32 xrel;
+	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+	bool bRTL = false;
 
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
+
+
 	UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 
-	if(bRTLpara)
+	if(bRTL)
 		xrel = xAbsRight - m_draggingCenter;
 	else
 		xrel = m_draggingCenter-xAbsLeft;
@@ -3090,8 +3134,14 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	bool bRTLglobal;
 	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_DefaultDirectionRtl), &bRTLglobal);
 
-	bool bRTLpara = (static_cast<FV_View *>(m_pView))->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+	bool bRTL = false;
 
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
+
+	
 	if(bRTLglobal)
 		xAbsRight = _getFirstPixelInColumn(&m_infoCache, 0) +
 			m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
@@ -3398,7 +3448,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 	 		xxx_UT_DEBUGMSG(("DW_LEFTINDENT (motion), m_draggingCenter (1) %d\n", m_draggingCenter));
 
-			if(bRTLpara)
+			if(bRTL)
 			{
 				xAbsRight = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn) + m_infoCache.u.c.m_xColumnWidth;
 				xrel = xAbsRight - static_cast<UT_sint32>(x);
@@ -3416,7 +3466,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			UT_sint32 iRightPos;
 
-			if(bRTLpara)
+			if(bRTL)
 			{
 				m_draggingCenter = xAbsRight - xgrid;
 				iRightPos = xAbsRight - m_infoCache.u.c.m_xColumnWidth + m_infoCache.m_xrLeftIndent;
@@ -3429,7 +3479,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 
 			xxx_UT_DEBUGMSG(("DW_LEFTINDENT (motion) (2): m_draggingCenter %d, iRightPos %d, m_minColumnWidth %d\n",m_draggingCenter,iRightPos,m_minColumnWidth));
-			if(bRTLpara)
+			if(bRTL)
 			{
 	            if(m_draggingCenter - iRightPos < m_minColumnWidth)
 					m_draggingCenter = iRightPos + m_minColumnWidth;
@@ -3453,7 +3503,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		    double dxrel;
 		    UT_sint32 xdelta;
 
-			if(bRTLpara)
+			if(bRTL)
 			{
 				dxrel  = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
 				xdelta = (xAbsRight - m_draggingCenter) - m_infoCache.m_xrRightIndent;
@@ -3466,7 +3516,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			double dxrel2 = tick.scalePixelDistanceToUnits(m_infoCache.m_xrFirstLineIndent - xdelta);
 
-			if(bRTLpara)
+			if(bRTL)
 				_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel, dxrel2);
 			else
 				_displayStatusMessage(AP_STRING_ID_LeftIndentTextIndentStatus, tick, dxrel, dxrel2);
@@ -3489,7 +3539,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
             UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 
-            if(bRTLpara)
+            if(bRTL)
             {
 				xrel = xAbsRight - static_cast<UT_sint32>(x);
 				xgrid = tick.snapPixelToGrid(xrel);
@@ -3513,7 +3563,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 iRightIndentPos;
             UT_sint32 iFirstIndentShift = UT_MAX(0,m_infoCache.m_xrFirstLineIndent);
 
-			if(bRTLpara)
+			if(bRTL)
 			{
 				m_draggingCenter  = xAbsRight - xgrid;
 				m_dragging2Center = xAbsRight - xgridTagAlong;
@@ -3528,7 +3578,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 
 			// Prevent the first-line indent from being dragged off the page
-			if(bRTLpara)
+			if(bRTL)
 			{
 				if (m_dragging2Center > xAbsRight)
 				{
@@ -3552,7 +3602,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			xxx_UT_DEBUGMSG(("m_draggingCenter %d, iRightIndentPos %d, m_minColumnWidth %d\n",m_draggingCenter,iRightIndentPos,m_minColumnWidth));
 
-			if(bRTLpara)
+			if(bRTL)
 			{
 	            if(m_draggingCenter - iRightIndentPos < m_minColumnWidth)
 	            {
@@ -3582,7 +3632,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			double dxrel;
 
-			if(bRTLpara)
+			if(bRTL)
 				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter);
 			else
 				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
@@ -3601,7 +3651,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 			UT_sint32 xAbsRight2 = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
 			UT_sint32 xrel;
-			if(bRTLpara)
+			if(bRTL)
 			{
 				xrel = static_cast<UT_sint32>(x) - xAbsLeft;
 			}
@@ -3618,7 +3668,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_Rect oldDraggingRect = m_draggingRect;
 			UT_sint32 iLeftIndentPos;
 
-			if(bRTLpara)
+			if(bRTL)
 			{
 				m_draggingCenter = xAbsLeft + xgrid;
 				iLeftIndentPos = xAbsRight2 - UT_MAX(m_infoCache.m_xrRightIndent,m_infoCache.m_xrRightIndent);
@@ -3630,7 +3680,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			}
 
 			UT_DEBUGMSG(("DW_RIGHTINDENT (motion) m_draggingCenter %d, iLeftIndentPos %d, m_minColumnWidth %d\n",m_draggingCenter,iLeftIndentPos,m_minColumnWidth));
-			if(bRTLpara)
+			if(bRTL)
 			{
 				if(static_cast<UT_sint32>(iLeftIndentPos) - static_cast<UT_sint32>(m_draggingCenter) < static_cast<UT_sint32>(m_minColumnWidth))
 					m_draggingCenter = iLeftIndentPos - m_minColumnWidth;
@@ -3652,12 +3702,12 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			double dxrel;
 
-			if(bRTLpara)
+			if(bRTL)
 				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
 			else
 				dxrel = tick.scalePixelDistanceToUnits(xAbsRight2 - m_draggingCenter);
 
-			if(bRTLpara)
+			if(bRTL)
 				_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick, dxrel);
 			else
 				_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel);
@@ -3676,7 +3726,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
             UT_sint32 xrel2;
 
 			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-			if(bRTLpara)
+			if(bRTL)
 			{
 				xrel = xAbsRight - static_cast<UT_sint32>(x);
 				xrel2 = xrel - m_infoCache.m_xrRightIndent;
@@ -3697,7 +3747,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
             UT_sint32 iRightIndentPos;
 
-			if(bRTLpara)
+			if(bRTL)
 			{
 				m_draggingCenter = xAbsRight - m_infoCache.m_xrRightIndent - xgrid;
 				iRightIndentPos = xAbsRight - m_infoCache.u.c.m_xColumnWidth + m_infoCache.m_xrLeftIndent;
@@ -3709,7 +3759,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
             }
 
 			xxx_UT_DEBUGMSG(("m_draggingCenter %d, iRightIndentPos %d, m_minColumnWidth %d\n",m_draggingCenter,iRightIndentPos,m_minColumnWidth));
-			if(bRTLpara)
+			if(bRTL)
 			{
 	            if(m_draggingCenter - iRightIndentPos < m_minColumnWidth)
 					m_draggingCenter = iRightIndentPos + m_minColumnWidth;
@@ -3731,7 +3781,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			double dxrel;
 
-			if(bRTLpara)
+			if(bRTL)
 				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter - m_infoCache.m_xrRightIndent);
 			else
 				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft - m_infoCache.m_xrLeftIndent);
@@ -3982,7 +4032,12 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 t = rect.top;
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+	bool bRTL = false;
+
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
 
 	GR_Painter painter(m_pG);
 
@@ -4062,7 +4117,12 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 t = rect.top;
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	bool bRTL = pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL;
+	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+	bool bRTL = false;
+
+	if(pBlock)
+		bRTL = (pBlock->getDominantDirection() == UT_BIDI_RTL);
 
 	GR_Painter painter(m_pG);
 

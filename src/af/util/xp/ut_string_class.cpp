@@ -706,6 +706,7 @@ UT_uint32 hashcode(const UT_String& string)
 UT_uint32 hashcode(const char *p)
 {
 	// from glib
+	UT_return_val_if_fail(p,0);
 	UT_uint32 h = (UT_uint32)*p;
 	
 	if (h)

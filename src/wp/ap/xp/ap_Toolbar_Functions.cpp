@@ -331,7 +331,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 	s_getPageMargins(pView, margin_left, margin_right,
 					 page_margin_left, page_margin_right);
 
-	UT_BidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
+	UT_BidiCharType iBlockDir = UT_BIDI_LTR;
+	if(pView->getCurrentBlock())
+		iBlockDir = pView->getCurrentBlock()->getDominantDirection();
 
 	switch(id)
 	{

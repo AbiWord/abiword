@@ -3519,7 +3519,9 @@ Defun1(fileInsertPageBackgroundGraphic)
 
 	ABIWORD_VIEW;
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	UT_return_val_if_fail( pBlock, false );
 	fl_DocSectionLayout * pDSL = pBlock->getDocSectionLayout();
+	UT_return_val_if_fail( pDSL, false );
 	PT_DocPosition iPos = pDSL->getPosition();
 	errorCode = pView->cmdInsertGraphicAtStrux(pFG, pNewFile, iPos, PTX_Section);
 
@@ -3591,7 +3593,12 @@ Defun1(warpInsPtLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() == UT_BIDI_RTL,1);
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
+	pView->cmdCharMotion(bRTL,1);
 	return true;
 }
 
@@ -3599,7 +3606,12 @@ Defun1(warpInsPtRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() != UT_BIDI_RTL,1);
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
+	pView->cmdCharMotion(bRTL,1);
 	return true;
 }
 
@@ -3639,8 +3651,13 @@ Defun1(warpInsPtBOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
 
-	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
+	if(bRTL)
 		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
 	else
 		pView->moveInsPtTo(FV_DOCPOS_BOW);
@@ -3652,8 +3669,13 @@ Defun1(warpInsPtEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
 
-	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
+	if(bRTL)
 		pView->moveInsPtTo(FV_DOCPOS_BOW);
 	else
 		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
@@ -4208,8 +4230,13 @@ Defun1(extSelLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
 
-	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL,1);
+	pView->extSelHorizontal(bRTL,1);
 
 	return true;
 }
@@ -4218,8 +4245,13 @@ Defun1(extSelRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
 
-	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()!=UT_BIDI_RTL,1);
+	pView->extSelHorizontal(bRTL,1);
 
 	return true;
 }
@@ -4244,8 +4276,13 @@ Defun1(extSelBOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
 
-	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
+	if(bRTL)
 		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
 	else
 		pView->extSelTo(FV_DOCPOS_BOW);
@@ -4257,8 +4294,13 @@ Defun1(extSelEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	bool bRTL = false;
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	if(pBL)
+		bRTL = pBL->getDominantDirection() == UT_BIDI_RTL;
+	
 
-	if(pView->getCurrentBlock()->getDominantDirection()==UT_BIDI_RTL)
+	if(bRTL)
 		pView->extSelTo(FV_DOCPOS_BOW);
 	else
 		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
@@ -9678,8 +9720,9 @@ Defun1(toggleIndent)
   allowed = page_size - page_margin_left - page_margin_right;
   if (margin_left >= allowed)
 	  return true;
-  
-  if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
+
+  fl_BlockLayout * pBL = pView->getCurrentBlock();
+  if(pBL && pBL->isListItem() || !pView->isSelectionEmpty() )
   {
 	  doLists = false;
   }
@@ -9700,12 +9743,17 @@ Defun1(toggleUnIndent)
   s_getPageMargins (pView, margin_left, margin_right,
 					page_margin_left, page_margin_right);
 
-  UT_BidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
+  fl_BlockLayout * pBL = pView->getCurrentBlock();
+  UT_BidiCharType iBlockDir = UT_BIDI_LTR;
+
+  if(pBL)
+	  iBlockDir = pBL->getDominantDirection();
+  
   allowed = iBlockDir == UT_BIDI_LTR ? margin_left : margin_right;
   if ( allowed <= 0. )
 	  return true ;
 
-  if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
+  if(pBL && !pBL->isListItem() || !pView->isSelectionEmpty() )
   {
 	 doLists = false;
   }
@@ -9756,7 +9804,7 @@ Defun1(toggleDomDirection)
 	XML_Char cur_alignment[10];
 
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
-
+	UT_return_val_if_fail( pBl, false );
 	strcpy(cur_alignment,pBl->getProperty("text-align"));
 	properties[3] = static_cast<XML_Char *>(&cur_alignment[0]);
 
@@ -11096,7 +11144,10 @@ UT_return_val_if_fail(pDialog, false);//
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pView->getCurrentBlock()->getSectionLayout());
+
+	fl_BlockLayout *pBL = pView->getCurrentBlock();
+	UT_return_val_if_fail( pBL, false );
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pBL->getSectionLayout());
 
 	bool bOldHdr = false;
 	bool bOldHdrEven = false;
