@@ -92,6 +92,8 @@ public:
 	virtual void					perlEvalFile(const UT_String &filename);
 #endif
 
+	void loadAllPlugins ();
+
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);
 

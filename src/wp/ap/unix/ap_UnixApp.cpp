@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
@@ -95,6 +96,8 @@
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "gr_Image.h"
+
+#include "xap_ModuleManager.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -343,6 +346,8 @@ bool AP_UnixApp::initialize(void)
     }
 
     //////////////////////////////////////////////////////////////////
+
+    loadAllPlugins();
 
     return true;
 }
@@ -604,6 +609,57 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 #else
     return true;
 #endif
+}
+
+// return > 0 for directory entries ending in ".so"
+static int so_only (const struct dirent *d)
+{
+  const char * name = d->d_name;
+
+  if ( name )
+    {
+      int len = strlen (name);
+      if (len >= 3)
+	{
+	  UT_DEBUGMSG(("DOM: name is %s (%d)\n", name, len));
+	  if(!strcmp(name+(len-3), ".so"))
+	    return 1;
+	}
+    }
+  return 0;
+}
+
+void AP_UnixApp::loadAllPlugins ()
+{
+  struct dirent **namelist;
+  int n = 0;
+  
+  UT_String pluginDir (getAbiSuiteAppDir());
+  pluginDir += "/plugins/";
+
+  UT_DEBUGMSG(("DOM: leading plugins from %s\n", pluginDir.c_str()));
+
+  n = scandir(pluginDir.c_str(), &namelist, so_only, alphasort);
+  if (n < 0)
+    {
+      UT_DEBUGMSG(("DOM: no plugins found\n"));
+      return;
+    }
+  else {
+    while(n--) {
+      UT_String plugin (pluginDir + namelist[n]->d_name);
+      if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
+	{
+	  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
+	}
+      else
+	{
+	  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
+	}
+      free(namelist[n]);
+    }
+    free(namelist);
+  }
 }
 
 /*****************************************************************/
