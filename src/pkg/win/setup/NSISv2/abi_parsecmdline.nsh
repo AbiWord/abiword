@@ -9,6 +9,18 @@
 !include "abi_util_getcmdlnparams.nsh"
 
 
+; /S
+; Silent install, mostly a NSIS handled switch.
+; When nonzero, the installer should assume the installer is being
+; ran in an unattended mode and not force any user interaction.
+; See also /RESPONSEFILE
+Var v_silent
+
+; /RESPONSEFILE=filename
+; Indicates responses to use (instead of defaults) for various
+; prompts.  Not yet implemented
+Var v_responsefile
+
 ; /M or /MODIFYINSTALL
 ; This should passed on command line when installer is to work in modify mode
 ; If invoked with /MODIFYINSTALL, then installer will assume AbiWord has been
@@ -28,7 +40,7 @@ Var v_modifyinstall
 ; values are actual _no_modify registry entry, 0 (enable modify option), 1 (disable modify [enable nomodify])
 Var v_opt_modify_reg
 
-; /OPT_MODIFY_PATH
+; /OPT_MODIFY_PATH=path
 ; Override the path stored in the registry, default to installer.
 Var v_opt_modify_path
 
@@ -58,6 +70,7 @@ Var v_opt_enable_win95only
   StrCpy $R0 "\
   Support options are $\r$\n  \
   /S silent install $\r$\n  \
+  /RESPONSEFILE=filename indicates choices to use instead of defaults (TODO) $\r$\n	\
   /M or /MODIFYINSTALL invokes installer in modify mode$\r$\n        \
         ( change components installed for current installation of AbiWord$\r$\n  \
   /OPT_ENABLE_MODIFY add modify entry to add/remove in control panel$\r$\n  \
@@ -82,6 +95,10 @@ Var v_opt_enable_win95only
   ${Select} ${cmdarg}
     ${Case2} "/HELP" "/?"
       ${DoHelpCmd}
+    $(Case) "/S"
+      StrCpy $v_silent "1"
+    $(Case2) "/RESPONSEFILE" "/R"
+      StrCpy $v_responsefile "${optval}"
     ${Case2} "/MODIFYINSTALL" "/M"
       StrCpy $v_modifyinstall "1"              ; set installer into change/modify mode
     ${Case} "/OPT_ENABLE_MODIFY"
@@ -210,6 +227,9 @@ Var v_opt_enable_win95only
   !ifdef OPT_CRTL_WIN95ONLY  ; change as needed if any other Win95 only options added
     StrCpy $v_opt_enable_win95only "0"
   !endif
+
+  StrCpy $v_silent "0"
+  StrCpy $v_responsefile ""
 
   ; now cycle through all the cmd line options and set the values
   ${ProcessParameters}
