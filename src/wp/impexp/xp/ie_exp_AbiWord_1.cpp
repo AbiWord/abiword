@@ -30,6 +30,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "xap_App.h"
+#include "pd_Style.h"
 
 #define MyMin(a,b)		(((a)<(b)) ? (a) : (b))
 
@@ -154,6 +155,7 @@ protected:
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	void				_handleStyles(void);
 	void				_handleDataItems(void);
 	
 	PD_Document *		m_pDocument;
@@ -434,6 +436,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// TODO add application name and version name/value pairs to this tag.
 	
 	m_pie->write("<awml>\n");
+	_handleStyles();
 }
 
 s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
@@ -573,6 +576,34 @@ IEStatus IE_Exp_AbiWord_1::_writeDocument(void)
 
 /*****************************************************************/
 /*****************************************************************/
+
+void s_AbiWord_1_Listener::_handleStyles(void)
+{
+	UT_Bool bWroteOpenStyleSection = UT_FALSE;
+
+	const char * szName;
+	const PD_Style * pStyle;
+
+	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	{
+		if (!pStyle->isUsed())
+			continue;
+
+		if (!bWroteOpenStyleSection)
+		{
+			m_pie->write("<styles>\n");
+			bWroteOpenStyleSection = UT_TRUE;
+		}
+
+		PT_AttrPropIndex api = pStyle->getIndexAP();
+		_openTag("s","/",UT_TRUE,api);
+	}
+
+	if (bWroteOpenStyleSection)
+		m_pie->write("</styles>\n");
+
+	return;
+}
 
 void s_AbiWord_1_Listener::_handleDataItems(void)
 {

@@ -20,6 +20,7 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
+#include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
@@ -35,6 +36,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
+#include "pd_Style.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -125,7 +127,7 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 
 	m_fragments.appendFrag(pft);
 
-	// becauase we are loading, we do not create change
+	// because we are loading, we do not create change
 	// records or any of the other stuff that an insertSpan
 	// would do.
 
@@ -151,3 +153,121 @@ UT_Bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attribut
 	m_fragments.appendFrag(pfo);
 	return UT_TRUE;
 }
+
+
+///////////////////////////////////////////////////////////////////
+// Styles represent named collections of formatting properties.
+
+UT_Bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
+{
+	// this function can only be called while loading the document.
+	UT_ASSERT(m_pts==PTS_Loading);
+
+	// first, store the attributes and properties and get an index to them.
+	
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.storeAP(attributes,&indexAP))
+		return UT_FALSE;
+
+	// verify unique name
+
+	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+	const char * szName = UT_getAttribute("name", attributes);
+	if (!szName || !*szName)
+		return UT_TRUE;		// silently ignore unnamed styles
+
+	PD_Style * pStyle = NULL;
+	if (getStyle(szName,&pStyle) == UT_TRUE)
+	{
+		// duplicate name
+		UT_ASSERT(pStyle);
+		if (pStyle->isUserDefined())
+			return UT_TRUE;	// already loaded, ignore redefinition
+
+		// override builtin definition
+		return pStyle->setIndexAP(indexAP);
+	}
+	else
+	{
+		// this is a new name
+		pStyle = new PD_Style(this, indexAP);
+		if (pStyle)
+			if (m_hashStyles.addEntry(szName,NULL,(void *)pStyle) != -1)
+				return UT_TRUE;
+
+		// cleanup after failure
+		if (pStyle)
+			delete pStyle;
+		return UT_FALSE;
+	}
+}
+
+UT_Bool pt_PieceTable::_createBuiltinStyle(const char * szName, PT_AttrPropIndex indexAP)
+{
+	// this function can only be called while loading the document.
+	UT_ASSERT(m_pts==PTS_Loading);
+
+	// verify unique name
+
+	PD_Style * pStyle = NULL;
+	if (getStyle(szName,&pStyle) == UT_TRUE)
+		return UT_FALSE;		// duplicate name
+
+	pStyle = new PD_BuiltinStyle(this, indexAP);
+	if (pStyle)
+		if (m_hashStyles.addEntry(szName,NULL,(void *)pStyle) != -1)
+			return UT_TRUE;
+
+	// cleanup after failure
+	if (pStyle)
+		delete pStyle;
+	return UT_FALSE;
+}
+
+UT_Bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
+{
+	UT_ASSERT(szName && *szName);
+	
+	UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashStyles.findEntry(szName);
+	if (!pHashEntry)
+		return UT_FALSE;
+
+	PD_Style * pStyle = (PD_Style *) pHashEntry->pData;
+	UT_ASSERT(pStyle);
+	
+	if (ppStyle)
+	{
+		*ppStyle = pStyle;
+	}
+	
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::enumStyles(UT_uint32 k,
+								const char ** pszName, const PD_Style ** ppStyle) const
+{
+	// return the kth style.
+
+	UT_uint32 kLimit = m_hashStyles.getEntryCount();
+	if (k >= kLimit)
+		return UT_FALSE;
+	
+	const UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashStyles.getNthEntryAlpha(k);
+	UT_ASSERT(pHashEntry);
+
+	PD_Style * pStyle = (PD_Style *) pHashEntry->pData;
+	UT_ASSERT(pStyle);
+	
+	if (ppStyle)
+	{
+		*ppStyle = pStyle;
+	}
+
+	if (pszName)
+	{
+		*pszName = pHashEntry->pszLeft;
+	}
+	
+	return UT_TRUE;
+}
+	

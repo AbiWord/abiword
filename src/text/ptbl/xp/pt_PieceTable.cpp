@@ -35,6 +35,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
+#include "pd_Style.h"
 
 
 #define NrElements(a)		(sizeof(a)/sizeof(a[0]))
@@ -45,7 +46,8 @@
 /*****************************************************************/
 /*****************************************************************/
 
-pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
+pt_PieceTable::pt_PieceTable(PD_Document * pDocument) 
+	: m_hashStyles(11)
 {
 	m_pts = PTS_Loading;
 	m_pDocument = pDocument;
@@ -56,6 +58,7 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 
 pt_PieceTable::~pt_PieceTable()
 {
+	UT_HASH_PURGEDATA(PD_Style *, m_hashStyles);
 }
 
 void pt_PieceTable::setPieceTableState(PTState pts)

@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_growbuf.h"
+#include "ut_alphahash.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
 #include "px_ChangeHistory.h"
@@ -34,6 +35,7 @@ class pf_Frag_Text;
 class pf_Frag_Strux;
 class pf_Frag_Strux_Block;
 class PX_ChangeRecord_Span;
+class PD_Style;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -100,6 +102,7 @@ public:
 	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
+	UT_Bool					appendStyle(const XML_Char ** attributes);
 
 	UT_Bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);
@@ -136,6 +139,11 @@ public:
 												  pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const;
 	
 	// TODO add stuff for objects like in-line images.
+
+	// styles
+	UT_Bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
+	UT_Bool					enumStyles(UT_uint32 k,
+										  const char ** pszName, const PD_Style ** ppStyle) const;
 
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
@@ -256,10 +264,13 @@ protected:
 	UT_Bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
+	UT_Bool					_createBuiltinStyle(const char * szName, PT_AttrPropIndex indexAP);
+
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
+	UT_AlphaHashTable		m_hashStyles;
 	
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;

@@ -125,7 +125,10 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 
 			// if there was no colon, this is invalid
 			if (!*q)
+			{
+				free(pOrig);
 				return UT_FALSE;
+			}
 
 			// zero-out the colon, thus separating into two strings.
 			*q = 0;
@@ -156,7 +159,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 		free(pOrig);
 		return UT_TRUE;
 	}
-	else								// not "PRPOS" -- add to attribute list
+	else								// not "PROPS" -- add to attribute list
 	{
 		if (!m_pAttributes)
 		{

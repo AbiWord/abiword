@@ -24,6 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		pd_Document.cpp			\
 			pd_Document_TestRoutines.cpp	\
+			pd_Style.cpp		\
 			pf_Frag.cpp			\
 			pf_Frag_Object.cpp		\
 			pf_Frag_Strux.cpp		\

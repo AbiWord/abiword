@@ -39,6 +39,7 @@ class pt_PieceTable;
 class PP_AttrProp;
 class pf_Frag_Strux;
 class PX_ChangeRecord;
+class PD_Style;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -90,6 +91,7 @@ public:
 										  PT_DocPosition dpos2,
 										  const XML_Char ** attributes,
 										  const XML_Char ** properties);
+	// TODO: need change{Span/Strux}Style, too?  or just another attribute?  
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts);
@@ -101,6 +103,7 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts);
 
+
 	// the append- methods are only available while importing
 	// the document.
 
@@ -109,6 +112,7 @@ public:
 	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
+	UT_Bool					appendStyle(const XML_Char ** attributes);
 
 	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	UT_Bool					removeListener(PL_ListenerId listenerId);
@@ -138,6 +142,7 @@ public:
 
 	void					clearTemporarySpanFmt(void);
 
+	// data items
 	UT_Bool					createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
 										   void* pToken, void ** ppHandle);
 	UT_Bool					getDataItemDataByName(const char * szName,
@@ -147,6 +152,11 @@ public:
 											const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	UT_Bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
+	
+	// styles
+	UT_Bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
+	UT_Bool					enumStyles(UT_uint32 k,
+										  const char ** pszName, const PD_Style ** ppStyle) const;
 	
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;

@@ -34,6 +34,7 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "pf_Frag_Strux.h"
+#include "pd_Style.h"
 
 struct _dataItemPair
 {
@@ -55,7 +56,7 @@ PD_Document::~PD_Document()
 		delete m_pPieceTable;
 
 	_destroyDataItemData();
-	
+
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 }
@@ -301,6 +302,15 @@ UT_Bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendObject(pto,attributes);
+}
+
+UT_Bool PD_Document::appendStyle(const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+	
+	// can only be used while loading the document
+
+	return m_pPieceTable->appendStyle(attributes);
 }
 
 UT_Bool PD_Document::addListener(PL_Listener * pListener,
@@ -724,4 +734,19 @@ void PD_Document::_destroyDataItemData(void)
 
 		pHE->pData = NULL;
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////
+// Styles represent named collections of formatting properties.
+
+UT_Bool PD_Document::getStyle(const char * szName, PD_Style ** ppStyle) const
+{
+	return m_pPieceTable->getStyle(szName, ppStyle);
+}
+
+UT_Bool PD_Document::enumStyles(UT_uint32 k,
+								const char ** pszName, const PD_Style ** ppStyle) const
+{
+	return m_pPieceTable->enumStyles(k, pszName, ppStyle);
 }

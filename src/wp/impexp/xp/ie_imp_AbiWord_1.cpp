@@ -201,6 +201,8 @@ UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 #define TT_DATAITEM		9		// a data item <d> within a data section
 #define TT_COLBREAK		10		// a forced column-break <cbr>
 #define TT_PAGEBREAK	11		// a forced page-break <pbr>
+#define TT_STYLESECTION	12		// a style section <styles>
+#define TT_STYLE		13		// a style <s> within a style section
 
 struct _TokenTable
 {
@@ -220,6 +222,8 @@ static struct _TokenTable s_Tokens[] =
 	{	"d",			TT_DATAITEM		},
 	{	"cbr",			TT_COLBREAK		},
 	{	"pbr",			TT_PAGEBREAK	},
+	{	"styles",		TT_STYLESECTION	},
+	{	"s",			TT_STYLE		},
 	{	"*",			TT_OTHER		}};	// must be last
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -364,6 +368,19 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_CheckError(UT_XML_cloneString(m_currentDataItemName,_getDataItemName(atts)));
 		return;
 		
+	case TT_STYLESECTION:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_StyleSec;
+		// We don't need to notify the piece table of the style section,
+		// it will get the hint when we begin sending styles.
+		return;
+
+	case TT_STYLE:
+		X_VerifyParseState(_PS_StyleSec);
+		m_parseState = _PS_Style;
+		X_CheckError(m_pDocument->appendStyle(atts));
+		return;
+		
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -440,6 +457,17 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		m_parseState = _PS_DataSec;
 		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,UT_TRUE,&m_currentDataItem,NULL,NULL));
 		FREEP(m_currentDataItemName);
+		return;
+		
+	case TT_STYLESECTION:
+		X_VerifyParseState(_PS_StyleSec);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_STYLE:
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Style);
+		m_parseState = _PS_StyleSec;
 		return;
 		
 	case TT_OTHER:
