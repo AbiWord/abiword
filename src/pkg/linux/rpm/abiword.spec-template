@@ -210,6 +210,8 @@ cd ../abi
 %__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/oaf
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/*.oaf $RPM_BUILD_ROOT/%{prefix}/share/oaf
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{prefix}/share/oaf
+# change above to below when gtk2 lands
+#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{prefix}/share/gnome-2.0/ui/
 %endif
 
 # Copies all clipart
@@ -225,7 +227,7 @@ cd ../abi
 %__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 
 %files
-%defattr(-,root,root)
+%defattr(644,root,root,755)
 %{prefix}/bin/abiword
 %{prefix}/bin/AbiWord
 %{ABIPREFIX}/AbiSuite/COPYING
@@ -235,18 +237,22 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
 %{ABIPREFIX}/AbiSuite/bin
-%attr(644,root,root) %{ABIPREFIX}/AbiSuite/dictionary/*american*.hash*
+%{ABIPREFIX}/AbiSuite/dictionary/*american*.hash*
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
-%attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
+%{prefix}/share/pixmaps/abiword_48.png
 %{ABIPREFIX}/oaf
 %if %{enable_gnome}
-%attr(644,root,root) %{prefix}/share/gnome/apps/Applications/abiword.desktop
+%{prefix}/share/gnome/apps/Applications/abiword.desktop
+
+%files embeddable
+%defattr(644,root,root,755)
+%{ABIPREFIX}/oaf
 %endif
 
 %if %{enable_tools}
 %files plugins-tools
-%defattr(644,root,root)
+%defattr(644,root,root,755)
 # comment if not working
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiCommand.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGimp.*
@@ -264,7 +270,7 @@ cd ../abi
 
 %if %{enable_impexp}
 %files plugins-impexp
-%defattr(644,root,root)
+%defattr(644,root,root,755)
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiApplix.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBZ2.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiClarisWorks.*
@@ -290,11 +296,11 @@ cd ../abi
 %endif
 
 %files clipart
-%defattr(-,root,root)
+%defattr(644,root,root,755)
 %{ABIPREFIX}/AbiSuite/clipart
 
 %files fonts
-%defattr(-,root,root)
+%defattr(644,root,root,755)
 %config(noreplace) %{ABIPREFIX}/AbiSuite/fonts/fonts.dir
 %config(noreplace) %{ABIPREFIX}/AbiSuite/fonts/fonts.scale
 %{ABIPREFIX}/AbiSuite/fonts/*.afm
@@ -318,6 +324,14 @@ if test ! -e %{ABIPREFIX}/AbiSuite/fonts/fonts.dir ; then
 fi
 
 %changelog
+* Fri Jun 14 2002 Rui M. Silva Seabra <rms@1407.org>
+- Make rpm set better permissions on files AND dirs
+
+* Thu Jun 13 2002 Rui M. Silva Seabra <rms@1407.org>
+- Make rpm spec work again.
+- Include all plugins that seem to build
+- fix package embeddable (wasn't created)
+  
 * Sun Jun  9 2002 Mark Gilbert <webmaster@dofty.zzn.com>
                   Rui M. Silva Seabra <rms@1407.org>
 - Pretty much a total rewrite of the way plugins are handled.
