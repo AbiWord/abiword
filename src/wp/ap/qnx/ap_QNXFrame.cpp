@@ -284,15 +284,28 @@ void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
 	unsigned short *height;
 	AP_QNXTopRuler *pTopRuler = (AP_QNXTopRuler *)(((AP_FrameData *)m_pData)->m_pTopRuler);
 	PtGetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler, Pt_ARG_HEIGHT, &height, 0);
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 
 	if (bRulerOn) {
+		    AP_TopRuler * pTop = pFrameData->m_pTopRuler;
+			if(pTop)
+			{
+				delete pTop;
+			}
 			PtRealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler);
 			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, -(*height), 0);
-			pTopRuler->setView(m_pView);
+			FV_View * pView = static_cast<FV_View *>(m_pView);
+			UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
+			static_cast<AP_TopRuler *>(pTopRuler)->setView(m_pView,iZoom);
 	} else {
 			PtUnrealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler);
 			PtSetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+			DELETEP(pFrameDate->m_pTopRuler);
 			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, *height, 0);
+
+			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler = NULL;
+			static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
+
 	}
 }
 

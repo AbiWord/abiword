@@ -421,7 +421,11 @@ void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 
 	if (bRulerOn)
 	{
-		UT_ASSERT(!pFrameData->m_pTopRuler);
+		AP_TopRuler * pTop = pFrameData->m_pTopRuler;
+		if(pTop)
+		{
+			delete pTop;
+		}
 
 		_createTopRuler(pFrame);
 
@@ -434,6 +438,7 @@ void AP_Win32FrameImpl::_toggleTopRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 			DestroyWindow(m_hwndTopRuler);
 
 		DELETEP(pFrameData->m_pTopRuler);
+		static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
 
 		m_hwndTopRuler = NULL;
 	}

@@ -182,6 +182,7 @@ public:
 	virtual ~AP_TopRuler(void);
 
 	virtual void	setView(AV_View * pView);
+    void	        setViewHidden(AV_View * pView);
 	void			setView(AV_View* pView, UT_uint32 iZoom);
 	AV_View *       getView(void) const { return m_pView;}
 	void			setOffsetLeftRuler(UT_uint32 iLeftRulerWidth);
@@ -190,6 +191,8 @@ public:
 	void			setWidth(UT_uint32 iWidth);
 	UT_uint32		getWidth(void) const;
 	GR_Graphics *	getGR(void) const { return m_pG;}
+	bool            isHidden(void) const
+		{ return m_bIsHidden;}
 	void			draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo = NULL);
 	void			scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 
@@ -355,6 +358,7 @@ private:
 	AV_ListenerId		m_lidTopRuler;		/* need to save the view/listenerID so we can removeListener in destructor */
 	UT_sint32           m_iCellContainerLeftPos; // position of the left side of the container
                                                  // holding the cell
+	bool                m_bIsHidden;
 };
 
 #endif /* AP_TOPRULER_H */

@@ -323,8 +323,11 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 
 	if ( bRulerOn )
 	{
-		UT_ASSERT(!pFrameData->m_pTopRuler);
-
+		AP_TopRuler * pTop = pFrameData->m_pTopRuler;
+		if(pTop)
+		{
+			delete pTop;
+		}
 		pUnixTopRuler = new AP_UnixTopRuler(this);
 		UT_ASSERT(pUnixTopRuler);
 		pFrameImpl->m_topRuler = pUnixTopRuler->createWidget();
@@ -335,8 +338,9 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL),
 				 0, 0);
-
-		pUnixTopRuler->setView(m_pView);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
+		static_cast<AP_TopRuler *>(pUnixTopRuler)->setView(m_pView,iZoom);
 
 		// get the width from the left ruler and stuff it into the 
 		// top ruler.
@@ -348,9 +352,14 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 	else
 	  {
 		// delete the actual widgets
-		gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
-		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
-		pFrameImpl->m_topRuler = NULL;
+		  AP_TopRuler * pTop = pFrameData->m_pTopRuler;
+		  if(pTop && !pTop->isHidden())
+		  {
+			  gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
+		  }
+		  DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
+		  pFrameImpl->m_topRuler = NULL;
+		  static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
 	  }
 
 	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;

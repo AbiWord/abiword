@@ -301,7 +301,11 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 #if 0
 	if ( bRulerOn )
 	{
-		UT_ASSERT(!pFrameData->m_pTopRuler);
+		AP_TopRuler * pTop = pFrameData->m_pTopRuler;
+		if(pTop)
+		{
+			delete pTop;
+		}
 
 		pCocoaTopRuler = new AP_CocoaTopRuler(this);
 		UT_ASSERT(pCocoaTopRuler);
@@ -320,8 +324,10 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 				 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL),
 				 0, 0);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
+		static_cast<AP_TopRuler *>(pUnixTopRuler)->setView(m_pView,iZoom);
 
-		pCocoaTopRuler->setView(m_pView);
 	}
 	else
 	{
@@ -329,6 +335,7 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 		g_object_destroy( G_OBJECT(m_topRuler) );
 		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
 		m_topRuler = NULL;
+	        static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
 	}
 #endif
 	((AP_FrameData*)m_pData)->m_pTopRuler = pCocoaTopRuler;

@@ -10641,7 +10641,16 @@ Defun(beginVDrag)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
-	if(!pTopRuler)
+	if(pTopRuler == NULL)
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+		pTopRuler = new AP_TopRuler(pFrame);
+		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+		pFrameData->m_pTopRuler = pTopRuler;
+		pView->setTopRuler(pTopRuler);
+		pTopRuler->setViewHidden(pView);
+	}
+	if(pTopRuler->getView() == NULL)
 	{
 		return true;
 	}
@@ -10649,6 +10658,7 @@ Defun(beginVDrag)
 	UT_sint32 x = pCallData->m_xPos;
 	UT_sint32 y = pCallData->m_yPos;
 	PT_DocPosition pos = pView->getDocPositionFromXY(x, y);
+	xxx_UT_DEBUGMSG(("ap_EditMethods.cpp:: VDrag begin \n"));
 	sTopRulerHeight = pTopRuler->setTableLineDrag(pos,x,siFixed);
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 	return true;
@@ -10695,8 +10705,17 @@ Defun(dragVline)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	UT_DEBUGMSG(("Doing Line drag \n"));
+	xxx_UT_DEBUGMSG(("Doing Line drag \n"));
+
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
+	if(pTopRuler == NULL)
+	{
+		return true;
+	}
+	if(pTopRuler->getView() == NULL)
+	{
+		pTopRuler->setViewHidden(pView);
+	}
 	if(!pTopRuler)
 	{
 		return true;
@@ -10704,6 +10723,7 @@ Defun(dragVline)
 	UT_sint32 x = pCallData->m_xPos + siFixed;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 	EV_EditModifierState ems = 0; 
+	xxx_UT_DEBUGMSG(("ap_EditMethods.cpp:: DRagging VLine \n"));
 	pTopRuler->mouseMotion(ems, x, sTopRulerHeight);
 	return true;
 }
@@ -10733,6 +10753,10 @@ Defun(endDragVline)
 	if(!pTopRuler)
 	{
 		return true;
+	}
+	if(pTopRuler->getView() == NULL)
+	{
+		pTopRuler->setView(pView);
 	}
 	UT_sint32 x = pCallData->m_xPos;
 	EV_EditModifierState ems = 0; 
