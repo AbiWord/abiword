@@ -30,6 +30,8 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 
+#include "xap_EncodingManager.h"
+
 //////////////////////////////////////////////////////////////////
 // a private listener class to help us translate the document
 // into a text stream.  code is at the bottom of this file.
@@ -172,17 +174,7 @@ void s_Text_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 		if (*pData > 0x00ff)
 		{
-			// TODO how should we deal with non-Latin-1 chars ?
-			// TODO some other applications try to map it to
-			// TODO some latin char that approximates it.  for
-			// TODO example, strip off the accent marks; for
-			// TODO other chars, replace with a slug character.
-			// TODO anything i do here is bound to be wrong,
-			// TODO so i'm going to do something stupid and
-			// TODO easy.  i'll defer to the judgement of folks
-			// TODO in europe or asia -- jeff
-
-			*pBuf++ = '?';
+			*pBuf++ = XAP_EncodingManager::instance->UToNative(*pData);
 			pData++;
 		}
 		else

@@ -766,8 +766,9 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	}
 	m_uniWidths = (UT_uint16 *) malloc (sizeof (UT_uint16) * 256);
 	memset (m_uniWidths, 0, 256 * sizeof(UT_uint16)); // Clear array - i would hope that sizeof(UT_uint16) == 16
-	for (UT_sint32 i=0; i != m_metricsData->numOfChars; ++i)
+	for (UT_sint32 i=0; i != m_metricsData->numOfChars && i<256; ++i)
 	{
+#if 0
 		UT_sint32 unicode = -1;
 		for (UT_uint32 j = 0; the_enc[j].type1_name != NULL; j++)
 		{
@@ -782,6 +783,11 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 			UT_ASSERT (unicode < 256); // TODO: support multibyte chars
 			m_uniWidths[unicode] = m_metricsData->cmi[i].wx;
 		}
+#else
+		/*let's assume that we have all characters we need in the font. */
+		if (m_metricsData->cmi[i].code<256 && m_metricsData->cmi[i].code>=0)
+			m_uniWidths[m_metricsData->cmi[i].code] = m_metricsData->cmi[i].wx;
+#endif
 	}
 
 	fclose(fp);

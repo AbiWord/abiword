@@ -98,9 +98,16 @@ UT_Bool UT_isSmartQuotableCharacter(UT_UCSChar c);
 UT_Bool UT_isSmartQuotedCharacter(UT_UCSChar c);
 
 #define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
+#if 0
 #define UT_UCS_isupper(x)	(((x) >= 'A') && ((x) <= 'Z'))		// HACK: not UNICODE-safe
 #define UT_UCS_islower(x)	(((x) >= 'a') && ((x) <= 'z'))		// HACK: not UNICODE-safe
 #define UT_UCS_isalpha(x)	(UT_UCS_isupper(x) || UT_UCS_islower(x))		// HACK: not UNICODE-safe
+#else
+	/*these are unicode-safe*/
+UT_Bool UT_UCS_isupper(UT_UCSChar c);
+UT_Bool UT_UCS_islower(UT_UCSChar c);
+UT_Bool UT_UCS_isalpha(UT_UCSChar c);
+#endif
 #define UT_UCS_isalnum(x)	(UT_UCS_isalpha(x) || UT_UCS_isdigit(x))		// HACK: not UNICODE-safe
 #define UT_UCS_isspace(x)   (((x)==' '||((x)=='\r')||((x)=='\n')||((x)=='\t')||((x)=='\f')))  // HACK: not UNICODE safe
 #define UT_UCS_ispunct(x)   ((!UT_UCS_isspace(x)  &&  !UT_UCS_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe

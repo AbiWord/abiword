@@ -35,7 +35,8 @@
 #include "ie_types.h"
 #include "ie_imp_RTF.h"
 #include "pd_Document.h"
-
+#include "wv.h"
+#include "xap_EncodingManager.h"
 
 // Font table items
 RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int codepage, FontPitch pitch,
@@ -174,7 +175,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_newParaFlagged(UT_FALSE),
 	m_newSectionFlagged(UT_FALSE),
 	m_cbBin(0),
-	m_pImportFile(NULL)
+	m_pImportFile(NULL),
+	deflangid(0)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -291,7 +293,7 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 					cNibble--;
 					if (!cNibble  &&  ok)
 					{
-						ok = ParseChar(b);
+						ok = ParseChar(b,0);
 						cNibble = 2;
 						b = 0;
 						m_currentRTFState.m_internalState = RTFStateStore::risNorm;
@@ -495,7 +497,7 @@ UT_Bool IE_Imp_RTF::PopRTFState(void)
 
 // Process a single character from the RTF stream
 //
-UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch)
+UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 {
     // Have we reached the end of the binary skip?
 	if (m_currentRTFState.m_internalState == RTFStateStore::risBin  && --m_cbBin <= 0)
@@ -517,6 +519,10 @@ UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch)
 			// Insert a character into the story
             if ((ch >= 32  ||  ch == 9 || ch == UCS_FF || ch == UCS_LF)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
+				if (no_convert==0 && deflangid) 
+				{	/*note: we don't handle commands like 'lang'. */
+					ch = wvHandleCodePage(ch,deflangid);
+				}
 				return AddChar(ch);
 			}
 		default:
@@ -673,6 +679,31 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 	// NB. all RTF keywords are lowercase.
 	switch (*pKeyword)
 	{
+	case 'a':
+		if (strcmp((char*)pKeyword, "ansicpg") == 0)
+		{
+			/*
+			 HACK: the proper way would be to open iconv_t, but
+			 we just compute MS codepage from getWinLanguageCode()
+			 and if it's equal to parameters of "\ansicpg" then
+			 we treat as \deflang was encountered setting 
+			 deflangid to the getWinLanguageCode()			 
+			*/
+			int langcode = XAP_EncodingManager::instance->getWinLanguageCode();
+			char* charsetname = wvLIDToCodePageConverter(langcode);
+			if (fParam && langcode && charsetname && UT_strnicmp(charsetname,"cp",2)==0 && UT_UCS_isdigit(charsetname[2])) 
+			{
+                        	int cpg;
+                        	if (sscanf(charsetname+2,"%d",&cpg)==1)
+				{
+					if (cpg == ((UT_uint32)param))
+						deflangid = langcode;
+					else
+						deflangid = 1033; /*cp1252*/
+				}				
+			}
+		}
+		break;		
 	case 'b':
 		if (strcmp((char*)pKeyword, "b") == 0)
 		{
@@ -706,7 +737,7 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			// bold - either on or off depending on the parameter
 			return HandleDeleted(fParam ? UT_FALSE : UT_TRUE);
 		}
-
+		break;
 	case 'e':
 		if (strcmp((char*)pKeyword, "emdash") == 0)
 		{
@@ -1383,10 +1414,12 @@ UT_Bool IE_Imp_RTF::ReadOneFontFromTable()
 	// Now (possibly) comes some optional keyword before the fontname
 	if (!ReadCharFromFile(&ch))
 		return UT_FALSE;
+	int nesting = 0;
 	while (ch == '\\'  ||  ch == '{')
 	{
 		if (ch == '{')
 		{
+			++nesting;
 			if (!ReadCharFromFile(&ch))
 				return UT_FALSE;
 		}
@@ -1419,6 +1452,7 @@ UT_Bool IE_Imp_RTF::ReadOneFontFromTable()
 				unsigned char val = (unsigned char)(atoi((char*)buf));
 				panose[i] = val;
 			}
+			--nesting;/*since this loop will break on '}'*/
 		}
 
 		//TODO - handle the other keywords
@@ -1426,27 +1460,39 @@ UT_Bool IE_Imp_RTF::ReadOneFontFromTable()
 		if (!ReadCharFromFile(&ch))
 			return UT_FALSE;
 	}
-
+	//we fall back here when space between parameter of keyword and font name
+	//is seen
 	// Now comes the font name, terminated by either a close brace or a slash or a semi-colon
 	int count = 0;
-	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' )
+	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{')
 	{
 		keyword[count++] = ch;
 		if (!ReadCharFromFile(&ch))
 			return UT_FALSE;
 	}
+	if (ch=='{')
+		++nesting;
+		
 	keyword[count] = 0;
+	/*work around "helvetica" font name -replace it with "Helvetic"*/
+	if (!UT_stricmp((const char*)keyword,"helvetica"))
+		strcpy((char*)keyword,"Helvetic");
 
 	if (!UT_cloneString(pFontName, (char*)keyword))
 	{
 		// TODO outofmem
 	}			
-
-	// Munch the remaining control words down to the close brace
-	while (ch != '}')
+	for(int i=0;i<=nesting;++i)
 	{
-		if (!ReadCharFromFile(&ch))
-			return UT_FALSE;
+		// Munch the remaining control words down to the close brace
+		while (ch != '}')
+		{
+			if (!ReadCharFromFile(&ch))
+				return UT_FALSE;
+		}
+		if (nesting>0 && i!=nesting) //we need to skip '}' we've just seen.
+			if (!ReadCharFromFile(&ch))
+				return UT_FALSE;		
 	}
 
 	// Create the font entry and put it into the font table

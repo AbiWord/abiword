@@ -31,7 +31,6 @@
 #include "pd_Document.h"
 
 
-
 // Font table entry
 class RTFFontTableItem
 {
@@ -198,7 +197,7 @@ private:
 	UT_Bool PushRTFState();
 	UT_Bool PopRTFState();
 	UT_Bool ParseRTFKeyword();
-	UT_Bool ParseChar(UT_UCSChar ch);
+	UT_Bool ParseChar(UT_UCSChar ch,bool no_convert=1);
   UT_Bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	UT_Bool ReadCharFromFile(unsigned char* pCh);
 	UT_Bool SkipBackChar(unsigned char ch);
@@ -261,6 +260,7 @@ private:
 	UT_uint32 			m_lenPasteBuffer;
 	unsigned char *		m_pCurrentCharInPasteBuffer;
 	PT_DocPosition		m_dposPaste;
+	UT_uint32		deflangid;
 };
 
 #endif /* IE_IMP_RTF_H */

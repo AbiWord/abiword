@@ -34,6 +34,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "xap_App.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -736,8 +737,6 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			m_pie->write(buf,(pBuf-buf));
 			pBuf = buf;
 		}
-
-		UT_ASSERT(*pData < 256);
 		switch (*pData)
 		{
 		case '<':
@@ -778,14 +777,20 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		default:
 			if (*pData > 0x007f)
 			{
-				// convert non us-ascii into numeric entities.
-				// we could convert them into UTF-8 multi-byte
-				// sequences, but i prefer these.
-				char localBuf[20];
-				char * plocal = localBuf;
-				sprintf(localBuf,"&#%d;",*pData++);
-				while (*plocal)
-					*pBuf++ = (UT_Byte)*plocal++;
+				UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
+				if (c!=0 && c<256)
+				{
+					*pBuf++ = (unsigned char)c;
+				}
+				else
+				{
+					char localBuf[20];
+					char * plocal = localBuf;
+					sprintf(localBuf,"&#%d;",*pData);
+					while (*plocal)
+						*pBuf++ = (UT_Byte)*plocal++;
+				};
+				pData++;
 			}
 			else
 			{
@@ -857,6 +862,9 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
 	m_pie->write("<html>\n");
 	m_pie->write("<head>\n");
+	m_pie->write("<META http-equiv=\"content-type\" content=\"text/html;charset=");
+	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
+	m_pie->write("\">\n");
 	m_pie->write("<title>AbiWord Document</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!-- \n P.norm { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");

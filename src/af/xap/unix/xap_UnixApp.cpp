@@ -38,6 +38,7 @@
 #include "xap_UnixToolbar_Icons.h"
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
+#include "xap_UnixEncodingManager.h"
 
 /*****************************************************************/
 
@@ -58,6 +59,8 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	// specify a --geometry argument, we only want to obey the
 	// size (which is set above), not a position.
 	m_geometry.flags = GEOMETRY_FLAG_SIZE;
+	DELETEP(m_pEncMgr);
+	m_pEncMgr = new XAP_UnixEncodingManager();
 }
 
 XAP_UnixApp::~XAP_UnixApp(void)

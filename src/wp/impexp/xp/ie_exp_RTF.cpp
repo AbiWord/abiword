@@ -36,6 +36,9 @@
 #include "pd_Style.h"
 #include "gr_Graphics.h"
 
+#include "wv.h" //for wvLIDToCodePageConverter
+#include "xap_EncodingManager.h"
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -54,6 +57,19 @@ IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument)
 	m_bNeedUnicodeText = UT_FALSE;
 	m_braceLevel = 0;
 	m_bLastWasKeyword = UT_FALSE;
+	m_atticFormat = UT_FALSE;
+}
+
+IE_Exp_RTF::IE_Exp_RTF(PD_Document * pDocument,UT_Bool atticFormat)
+	: IE_Exp(pDocument)
+{
+	m_error = 0;
+	m_pListenerWriteDoc = NULL;
+	m_pListenerGetProps = NULL;
+	m_bNeedUnicodeText = UT_FALSE;
+	m_braceLevel = 0;
+	m_bLastWasKeyword = UT_FALSE;
+	m_atticFormat = atticFormat;
 }
 
 IE_Exp_RTF::~IE_Exp_RTF()
@@ -91,6 +107,35 @@ UT_Bool	IE_Exp_RTF::GetDlgLabels(const char ** pszDesc,
 UT_Bool IE_Exp_RTF::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_RTF == ft);
+}
+
+/*for attic*/
+UT_Bool IE_Exp_RTF::RecognizeSuffix_attic(const char * szSuffix)
+{
+	return (UT_stricmp(szSuffix,".rtf") == 0);
+}
+
+UT_Error IE_Exp_RTF::StaticConstructor_attic(PD_Document * pDocument,
+									   IE_Exp ** ppie)
+{
+	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument,1);
+	*ppie = p;
+	return UT_OK;
+}
+
+UT_Bool	IE_Exp_RTF::GetDlgLabels_attic(const char ** pszDesc,
+								 const char ** pszSuffixList,
+								 IEFileType * ft)
+{
+	*pszDesc = "Rich Text Format for old apps (.rtf)";
+	*pszSuffixList = "*.rtf";
+	*ft = IEFT_RTF_attic;
+	return UT_TRUE;
+}
+
+UT_Bool IE_Exp_RTF::SupportsFileType_attic(IEFileType ft)
+{
+	return (IEFT_RTF_attic == ft);
 }
 	  
 /*****************************************************************/
@@ -357,7 +402,25 @@ void IE_Exp_RTF::_rtf_semi(void)
 void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 {
 	write(" ");
-	write(szFontName);
+#if 0 
+	/*we handle 'helvetica' in a special way on import - so it's safe
+	 to output "Helvetica" unconditionally.
+	*/	
+	if (!m_atticFormat && 0)
+	    write(szFontName);
+	else
+#endif	
+	{
+		/*  map "Helvetic" to "Helvetica", since on Windows
+		    font "Helvetic" contains only Latin1 chars, while 
+		    "Helvetica" contains all needed chars. This is innocient
+		    since we do this when attic format is requested.
+		*/
+		if (UT_stricmp(szFontName,"helvetic")==0)
+			write("Helvetica");
+		else
+			write(szFontName);
+	}
 	_rtf_semi();
 }
 
@@ -377,7 +440,8 @@ void IE_Exp_RTF::_rtf_nl(void)
 UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 {
 	UT_uint32 k,kLimit;
-	
+
+	UT_uint32 langcode = XAP_EncodingManager::instance->getWinLanguageCode();	
 	// write <rtf-header>
 	// return UT_FALSE on error
 
@@ -385,9 +449,29 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_keyword("rtf",1);				// major version number of spec version 1.5
 	
 	_rtf_keyword("ansi");
-	_rtf_keyword("ansicpg",1252);		// TODO what CodePage do we want here ??
+	UT_Bool wrote_cpg = 0;
+	if (langcode) 
+	{
+		char* cpgname = wvLIDToCodePageConverter(langcode);
+		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS_isdigit(cpgname[2])) 
+		{
+			int cpg;
+			if (sscanf(cpgname+2,"%d",&cpg)==1) 
+			{
+				_rtf_keyword("ansicpg",cpg);
+				wrote_cpg = 1;
+			}
+		};
+	};
+	if (!wrote_cpg)
+	    _rtf_keyword("ansicpg",1252);		// TODO what CodePage do we want here ??
 
 	_rtf_keyword("deff",0);				// default font is index 0 aka black
+	if (m_atticFormat)
+	{
+		if (langcode)
+			_rtf_keyword("deflang",langcode);
+	}
 
 	// write the "font table"....
 
@@ -395,6 +479,7 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_nl();
 	_rtf_open_brace();
 	_rtf_keyword("fonttbl");
+	UT_uint32 charsetcode = XAP_EncodingManager::instance->getWinCharsetCode();
 	for (k=0; k<kLimit; k++)
 	{
 		const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
@@ -409,7 +494,7 @@ UT_Bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_open_brace();
 		_rtf_keyword("f",k);								// font index number
 		_rtf_keyword(szFamily);								// {\fnil,\froman,\fswiss,...}
-		_rtf_keyword("fcharset",0);							// TODO find correct value here
+		_rtf_keyword("fcharset",charsetcode);
 		_rtf_keyword("fprq",pitch);							// {0==default,1==fixed,2==variable}
 		_rtf_keyword((bTrueType) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
 		

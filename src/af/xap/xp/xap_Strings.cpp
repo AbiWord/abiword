@@ -28,6 +28,7 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 #include "xap_Strings.h"
+#include "xap_EncodingManager.h"
 
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings
@@ -143,25 +144,45 @@ UT_Bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		UT_decodeUTF8string(szString,UT_XML_strlen(szString),&gb);
 
 		// TODO The strings that we use (for dialogs and etc) are currently
-		// TODO limited to Latin-1 by the GUI.  Therefore, we convert them
-		// TODO back to a single-byte string.
+		// TODO limited to single-byte encodings by the code below.  
 
 		int kLimit=gb.getLength();
 		UT_uint16 * p=gb.getPointer(0);
 		for (int k=0; k<kLimit; k++)
 		{
-			UT_uint16 j = p[k];
+			UT_uint16 j = XAP_EncodingManager::instance->UToNative(p[k]);
 			if (j > 0xff)
 			{
 				bFoundMultiByte = UT_TRUE;
 				p[k] = '@';
-			}
+			} 
+			else
+				p[k] = j;
 		}
 
 		szDup = (XML_Char *)malloc((gb.getLength()+1)*sizeof(XML_Char));
 		if (!szDup)
 			return UT_FALSE;
+#if 0
 		UT_UCS_strcpy_to_char(szDup,gb.getPointer(0));
+#else		
+		/* 
+		  Since we insure above that chars <0xff (i.e.
+		  single-byte) it's safe to convert them using plain assignment.
+		  Otherwise there will be a lot of troubles with any non-latin1
+		  single-byte encodings, (e.g. any russian encoding).
+		  It's harmless to do so.
+		 */
+		{
+			int kLimit=gb.getLength();
+			UT_uint16 * p=gb.getPointer(0);
+			for (int k=0; k<kLimit; k++)
+			{
+				szDup[k] = (unsigned char)p[k];
+			}
+			szDup[k] = '\0';
+		}
+#endif
 	}
 
 	void * pOldValue = NULL;
@@ -400,6 +421,7 @@ UT_Bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	XML_SetUserData(parser, this);
 	XML_SetElementHandler(parser, startElement, endElement);
 	XML_SetCharacterDataHandler(parser, charData);
+	XML_SetUnknownEncodingHandler(parser,XAP_EncodingManager::XAP_XML_UnknownEncodingHandler,NULL);
 
 	while (!done)
 	{

@@ -118,7 +118,7 @@ UT_Bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)
 	UT_ASSERT(m_fp);
 	UT_ASSERT(pBytes && (length>0));
 
-	UT_ASSERT(length<256);				// DSC3.0 requirement
+//	UT_ASSERT(length<256);				// DSC3.0 requirement
 	
 	doProtectFromPipe();
 	UT_Bool bSuccess = (fwrite(pBytes,sizeof(UT_Byte),length,m_fp)==length);

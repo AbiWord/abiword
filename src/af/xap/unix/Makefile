@@ -45,7 +45,8 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixPSGenerate.cpp			\
 			xap_UnixPSParseAFM.cpp			\
 			xap_UnixPSImage.cpp			\
-			xap_UnixPSGraphics.cpp
+			xap_UnixPSGraphics.cpp			\
+			xap_UnixEncodingManager.cpp
 
 TARGETS=		$(OBJS)
 INCLUDES=		-I/usr/X11R6/include

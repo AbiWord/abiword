@@ -370,9 +370,15 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 	// paste from the system clipboard using the best-for-us format
 	// that is present.  try to get the content in the order listed.
 
+	/*
+	    I've reordered AP_CLIPBOARD_STRING and AP_CLIPBOARD_TEXTPLAIN_8BIT
+	    since for non-Latin1 text the data in AP_CLIPBOARD_TEXTPLAIN_8BIT
+	    format has name of encoding as prefix, and AP_CLIPBOARD_STRING
+	    doesn't - hvv.
+	*/
 	static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
-												 AP_CLIPBOARD_TEXTPLAIN_8BIT,
 												 AP_CLIPBOARD_STRING,
+												 AP_CLIPBOARD_TEXTPLAIN_8BIT,
 												 0 /* must be last */ };
 
 	// TODO currently i have this set so that a ^v or Menu[Edit/Paste] will

@@ -40,6 +40,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 
+#include "xap_EncodingManager.h"
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
 	m_apiThisSection = 0;
@@ -189,41 +190,96 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			break;
 
 		default:
-			if (*pData > 0x00ff)		// emit unicode character
+			if (!m_pie->m_atticFormat) 
 			{
-				FlushBuffer();
+				if (*pData > 0x00ff)		// emit unicode character
+				{
+					FlushBuffer();
 
-				// RTF spec says that we should emit an ASCII-equivalent
-				// character for each unicode character, so that dumb/older
-				// readers don't lose a char.  i don't have a good algorithm
-				// for deciding how to do this, so i'm not going to put out
-				// any chars.  so i'm setting \uc0 before emitting \u<u>.
-				// TODO decide if we should be smarter here and do a \uc1\u<u><A> ??
-				// TODO if so, we may need to begin a sub-brace level to avoid
-				// TODO polluting the global context w/r/t \uc.
-				
-				m_pie->_rtf_keyword("uc",0);
-				unsigned short ui = ((unsigned short)(*pData));	// RTF is limited to +/-32K ints
-				signed short si = *((signed short *)(&ui));		// so we need to write negative
-				m_pie->_rtf_keyword("u",si);					// numbers for large unicode values.
-				pData++;
-			}
-			else if (*pData > 0x007f)
-			{
-				FlushBuffer();
+					// RTF spec says that we should emit an ASCII-equivalent
+					// character for each unicode character, so that dumb/older
+					// readers don't lose a char.  i don't have a good algorithm
+					// for deciding how to do this, so i'm not going to put out
+					// any chars.  so i'm setting \uc0 before emitting \u<u>.
+					// TODO decide if we should be smarter here and do a \uc1\u<u><A> ??
+					// TODO if so, we may need to begin a sub-brace level to avoid
+					// TODO polluting the global context w/r/t \uc.
+					
+					UT_UCSChar lc = XAP_EncodingManager::instance->try_UToWindows(*pData);
+					m_pie->_rtf_keyword("uc",lc && lc<256 ? 1 : 0);
+					unsigned short ui = ((unsigned short)(*pData));	// RTF is limited to +/-32K ints
+					signed short si = *((signed short *)(&ui));		// so we need to write negative
+					m_pie->_rtf_keyword("u",si);					// numbers for large unicode values.
+					if (lc && lc <256)
+						m_pie->_rtf_nonascii_hex2(lc);
+					pData++;
+				}
+				else if (*pData > 0x007f)
+				{
+					FlushBuffer();
 
-				// for chars between 7f and ff, we could just send them
-				// out as is, or we could send them out in hex or as a
-				// unicode sequence.  when i originally did this, i chose
-				// hex, so i'm not going to change it now.
+					// for chars between 7f and ff, we could just send them
+					// out as is, or we could send them out in hex or as a
+					// unicode sequence.  when i originally did this, i chose
+					// hex, so i'm not going to change it now.
 				
-				m_pie->_rtf_nonascii_hex2(*pData);
-				pData++;
-			}
-			else
-			{
-				*pBuf++ = (UT_Byte)*pData++;
-			}
+					m_pie->_rtf_nonascii_hex2(*pData);
+					pData++;
+				}
+				else
+				{
+					*pBuf++ = (UT_Byte)*pData++;
+				}
+			} else {
+				/* 
+				    wordpad (and probably word6/7 don't understand
+				    \uc0\u<UUUU> format at all.
+				*/
+				UT_UCSChar c = *pData++;
+				UT_UCSChar lc = XAP_EncodingManager::instance->try_UToWindows(c);
+				if (lc==0 || lc >255) 
+				{
+					/*
+					    can't be represented in windows encoding. 
+					    So emit unicode (though attic apps won't understand it.
+					    This branch is shamelessly copied from
+					    branch if (*pData > 0x00ff) above.
+					*/
+					FlushBuffer();
+
+					// RTF spec says that we should emit an ASCII-equivalent
+					// character for each unicode character, so that dumb/older
+					// readers don't lose a char.  i don't have a good algorithm
+					// for deciding how to do this, so i'm not going to put out
+					// any chars.  so i'm setting \uc0 before emitting \u<u>.
+					// TODO decide if we should be smarter here and do a \uc1\u<u><A> ??
+					// TODO if so, we may need to begin a sub-brace level to avoid
+					// TODO polluting the global context w/r/t \uc.
+					
+					m_pie->_rtf_keyword("uc",0);
+					unsigned short ui = ((unsigned short)(*pData));	// RTF is limited to +/-32K ints
+					signed short si = *((signed short *)(&ui));		// so we need to write negative
+					m_pie->_rtf_keyword("u",si);					// numbers for large unicode values.
+				}
+				else 
+				{
+					if (lc > 0x007f) 
+					{
+						FlushBuffer();
+
+						// for chars between 7f and ff, we could just send them
+						// out as is, or we could send them out in hex or as a
+						// unicode sequence.  when i originally did this, i chose
+						// hex, so i'm not going to change it now.
+				
+						m_pie->_rtf_nonascii_hex2(lc);
+					}
+					else
+					{
+						*pBuf++ = (UT_Byte)lc;
+					}
+				}
+			};
 			break;
 		}
 	}

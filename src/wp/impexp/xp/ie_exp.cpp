@@ -60,6 +60,7 @@ struct _xp
 };
 
 #define DeclareExporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
+#define DeclareExporter_sub(n,subfmt)	{ n::RecognizeSuffix_##subfmt, n::StaticConstructor_##subfmt, n::GetDlgLabels_##subfmt, n::SupportsFileType_##subfmt }
 
 static struct _xp s_expTable[] =
 {
@@ -70,6 +71,7 @@ static struct _xp s_expTable[] =
 	//	Don't declare until it works
 #endif
 	DeclareExporter(IE_Exp_RTF),
+	DeclareExporter_sub(IE_Exp_RTF,attic),
 	DeclareExporter(IE_Exp_Text),
 	DeclareExporter(IE_Exp_UTF8),
 	DeclareExporter(IE_Exp_HTML),

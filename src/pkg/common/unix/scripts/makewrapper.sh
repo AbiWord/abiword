@@ -55,10 +55,39 @@ ABISUITE_LIBEXEC=$LIBEXECDIR
 # Change this if you move your fonts.
 ABISUITE_FONT_HOME=\$ABISUITE_HOME/fonts
 
+#locale-specific dirs could be added to it.
+ABISUITE_FONT_PATH=\$ABISUITE_FONT_HOME
+
+#now try to guess locale
+locale=\$LC_ALL	#it's incorrect to set this variable, but someone
+		#might set it incorrectly.
+if [ -z \$locale ]
+then
+    locale=\$LANG
+fi
+
+if [ ! -z \$locale ]
+then
+    #now guess encoding
+    encoding=\`echo \$locale | sed -e 's/^.*\.\(.*\)\$/\1/'\`
+    if [ ! -z \$encoding ]
+    then
+	addfontdir=\$ABISUITE_FONT_HOME/\$encoding
+	if [ ! -z \$addfontdir ]
+	then
+	    if [ -d \$addfontdir ]
+	    then
+	    	#add directory with locale-specific fonts to font path
+	    	ABISUITE_FONT_PATH=\$ABISUITE_FONT_PATH,\$addfontdir
+	    fi
+	fi
+    fi
+fi
+
 # Set run-time font path
 if [ -d \$ABISUITE_FONT_HOME ]
 then
-    xset fp+ \$ABISUITE_FONT_HOME 1>/dev/null 2>/dev/null
+    xset fp+ \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
 fi
 
 # Figure out which binary to run
@@ -83,7 +112,7 @@ then
     # Set post run-time font path
     if [ -d \$ABISUITE_FONT_HOME ]
     then
-	xset fp- $ABISUITE_FONT_HOME 1>/dev/null 2>/dev/null
+	xset fp- \$ABISUITE_FONT_PATH 1>/dev/null 2>/dev/null
     fi
 fi
 EOF

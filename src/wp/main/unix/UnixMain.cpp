@@ -18,8 +18,14 @@
  */
 
 #include "ap_UnixApp.h"
+#include <unistd.h>
 
 int main(int argc, char ** argv)
 {
+	if (getenv("TELLPID")) 
+	{	
+		printf("pid is %d\n",getpid());
+		getc(stdin);
+	}
 	return AP_UnixApp::main(ABIWORD_APP_NAME, argc, argv);
 }

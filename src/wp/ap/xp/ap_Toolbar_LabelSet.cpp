@@ -24,6 +24,7 @@
 #include "ev_Toolbar_Labels.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "ap_Toolbar_Id.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************
 ******************************************************************
@@ -33,14 +34,23 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginSet(Language,Locale,bIsDefaultSetForLanguage)										\
+#define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)										\
 	static EV_Toolbar_LabelSet * _ap_CreateLabelSet_##Language##Locale(void)					\
 	{	EV_Toolbar_LabelSet * pLabelSet =														\
 			new EV_Toolbar_LabelSet(#Language"-"#Locale,AP_TOOLBAR_ID__BOGUS1__,AP_TOOLBAR_ID__BOGUS2__);	\
-		UT_ASSERT(pLabelSet);
+		UT_ASSERT(pLabelSet);											\
+		char* encoding = (Encoding);										\
+		char namebuf[2000], tooltipbuf[2000], statusmsgbuf[2000];
+
+#define BeginSet(Language,Locale,bIsDefaultSetForLanguage) \
+		BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,"")
 	
 #define ToolbarLabel(id,szName,iconName,szToolTip,szStatusMsg)									\
-		pLabelSet->setLabel((id),(szName),(#iconName),(szToolTip),(szStatusMsg));
+		pLabelSet->setLabel((id),											\
+			XAP_EncodingManager::instance->strToNative((szName),encoding,namebuf,sizeof(namebuf)),(#iconName),	\
+			XAP_EncodingManager::instance->strToNative((szToolTip),encoding,tooltipbuf,sizeof(tooltipbuf)),		\
+			XAP_EncodingManager::instance->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
+		);
 			
 #define EndSet()																				\
 		return pLabelSet;																		\
@@ -50,6 +60,7 @@
 #include "ap_TB_LabelSet_Languages.h"
 
 #undef BeginSet
+#undef BeginSetEnc
 #undef ToolbarLabel
 #undef EndSet
 
@@ -70,7 +81,9 @@ struct _lt
 	UT_Bool						m_bIsDefaultSetForLanguage;
 };
 
-#define BeginSet(Language,Locale,bIsDefaultSetForLanguage)	{ #Language"-"#Locale, _ap_CreateLabelSet_##Language##Locale, bIsDefaultSetForLanguage },
+#define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)	{ #Language"-"#Locale, _ap_CreateLabelSet_##Language##Locale, bIsDefaultSetForLanguage },
+#define BeginSet(Language,Locale,bIsDefaultSetForLanguage) \
+		BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,"")
 #define ToolbarLabel(id,szName,iconName,szToolTip,szStatusMsg)	/*nothing*/
 #define EndSet()												/*nothing*/
 
@@ -82,6 +95,7 @@ static struct _lt s_ltTable[] =
 };
 
 #undef BeginSet
+#undef BeginSetEnc
 #undef ToolbarLabel
 #undef EndSet
 
@@ -91,8 +105,16 @@ static struct _lt s_ltTable[] =
 ******************************************************************
 *****************************************************************/
 
-EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage)
+EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage_)
 {
+	char buf[300];
+	strcpy(buf,szLanguage_ ? szLanguage_ : "");
+	char* szLanguage = buf;
+
+	char* dot = strrchr(szLanguage,'.');
+	if (dot)
+		*dot = '\0'; /* remove encoding part from locale name */
+
 	if (szLanguage && *szLanguage)
 	{
 		UT_uint32 k;

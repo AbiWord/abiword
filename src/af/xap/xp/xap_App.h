@@ -47,6 +47,7 @@ class XAP_StringSet;
 class XAP_Dictionary;
 class PD_DocumentRange;
 class AV_View;
+class XAP_EncodingManager;
 
 /*****************************************************************
 ******************************************************************
@@ -92,6 +93,7 @@ public:
 	EV_EditBindingMap *				getBindingMap(const char * szName);
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
 	const EV_Toolbar_ActionSet *	getToolbarActionSet(void) const;
+	const XAP_EncodingManager*			getEncodingManager(void) const;
 
 	XAP_Args *						getArgs(void) const;
 
@@ -162,6 +164,7 @@ protected:
 	       XAP_Dialog_Modeless * pDialog;
         } m_IdTable[NUM_MODELESSID+1]; 
         
+	XAP_EncodingManager*				m_pEncMgr;
 	static XAP_App *				m_pApp;
 };
 

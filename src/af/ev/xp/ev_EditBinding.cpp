@@ -190,11 +190,20 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 				return 0;				// no bindings of anykind for non-nvk keys
 
 			UT_uint32 n_evk = EV_EVK_ToNumber(eb);
-                      if (n_evk >= 257)
-                      {
-                              n_evk = n_evk - 65280;  // quick fix
-                      }
-			UT_ASSERT(n_evk < 256);		// TODO see note [1] above.
+			if (n_evk >= 257) 
+			{
+				if ( n_evk >= 257 && (n_evk - 65280) < 256)
+					n_evk -= 65280;  // quick fix
+				else
+				{
+					n_evk = 'a'; 
+					/* in hopes that there will be 
+					   'insertData' method assigned to 	
+					    plain 'a'
+					*/
+				}
+			};
+
 			UT_uint32 n_ems = EV_EMS_ToNumberNoShift(eb);
 			return m_pebChar->m_peb[n_evk][n_ems];
 		}

@@ -40,6 +40,7 @@ class IE_Exp_RTF : public IE_Exp
 
 public:
 	IE_Exp_RTF(PD_Document * pDocument);
+	IE_Exp_RTF(PD_Document * pDocument,UT_Bool atticFormat);
 	virtual ~IE_Exp_RTF();
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
@@ -49,6 +50,18 @@ public:
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
 	static UT_Bool 		SupportsFileType(IEFileType ft);
+
+	/*
+	    these group for exporting to RTF understood by attic software
+	    like WordPad and probably Word6.0.
+	*/
+	static UT_Bool		RecognizeSuffix_attic(const char * szSuffix);
+	static UT_Error		StaticConstructor_attic(PD_Document * pDocument,
+										  IE_Exp ** ppie);
+	static UT_Bool		GetDlgLabels_attic(const char ** pszDesc,
+									 const char ** pszSuffixList,
+									 IEFileType * ft);
+	static UT_Bool 		SupportsFileType_attic(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);
@@ -84,6 +97,7 @@ protected:
 	UT_Bool						m_bNeedUnicodeText;		/* doc has unicode chars */
 	UT_sint32					m_braceLevel;			/* nesting depth of {} braces */
 	UT_Bool						m_bLastWasKeyword;		/* just wrote a keyword, so need space before text data */
+	UT_Bool						m_atticFormat; 		/* whether to use unicode for all characters >0xff or convert to native windows encoding*/
 };
 
 /*****************************************************************/

@@ -185,7 +185,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 
 	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
-	gtk_widget_set_usize (windowMain, 270, 240);
+//	gtk_widget_set_usize (windowMain, 270 , 240);
 	gtk_container_set_border_width (GTK_CONTAINER (windowMain), 10);
 	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowMain), FALSE, FALSE, FALSE);
@@ -221,7 +221,8 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (scrolledwindowFormats);
 	gtk_box_pack_start (GTK_BOX (vboxFormats), scrolledwindowFormats, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_widget_set_usize(scrolledwindowFormats,-1,240);
 
 	viewportFormats = gtk_viewport_new (NULL, NULL);
 	gtk_widget_ref (viewportFormats);

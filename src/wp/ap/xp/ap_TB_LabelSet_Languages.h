@@ -45,3 +45,4 @@
 #include "ap_TB_LabelSet_sv-SE.h"
 #include "ap_TB_LabelSet_pl-PL.h"
 #include "ap_TB_LabelSet_pt-PT.h"
+#include "ap_TB_LabelSet_ru-RU.h"

@@ -30,6 +30,7 @@
 #include "ie_types.h"
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************/
 /*****************************************************************/

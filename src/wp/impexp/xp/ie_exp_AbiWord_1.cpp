@@ -32,6 +32,7 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 #include "pd_Style.h"
+#include "xap_EncodingManager.h"
 #include "fl_AutoNum.h"
 
 /*****************************************************************/
@@ -313,6 +314,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 			if (*pData > 0x007f)
 			{
 #if 1
+#	if 0
 				// convert non us-ascii into numeric entities.
 				// this has the advantage that our file format is
 				// 7bit clean and safe for email and other network
@@ -322,6 +324,32 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 				sprintf(localBuf,"&#x%x;",*pData++);
 				while (*plocal)
 					*pBuf++ = (UT_Byte)*plocal++;
+#	else
+				/*
+				Try to convert to native encoding and if
+				character fits into byte, output raw byte. This 
+				is somewhat essential for single-byte non-latin
+				languages like russian or polish - since
+				tools like grep and sed can be used then for
+				these files without any problem.
+				Networks and mail transfers are 8bit clean
+				these days.  - VH
+				*/
+				UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
+				if (c==0 || c>255)
+				{
+					char localBuf[20];
+					char * plocal = localBuf;
+					sprintf(localBuf,"&#x%x;",*pData++);
+					while (*plocal)
+						*pBuf++ = (UT_Byte)*plocal++;
+				}
+				else
+				{
+					*pBuf++ = (UT_Byte)c;
+					pData++;
+				}
+#	endif
 #else
 				// convert to UTF8
 				// TODO if we choose this, do we have to put the ISO header in
@@ -362,7 +390,9 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
 	// is a strict subset of UTF-8. 
 
-	m_pie->write("<?xml version=\"1.0\"?>\n");
+	m_pie->write("<?xml version=\"1.0\" encoding=\"");
+	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
+	m_pie->write("\"?>\n");
 
 	// We write this first so that the sniffer can detect AbiWord 
 	// documents more easily.   

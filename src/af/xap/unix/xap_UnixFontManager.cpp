@@ -31,6 +31,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFontXLFD.h"
+#include "xap_EncodingManager.h"
 
 
 // TODO get this from some higher-level place
@@ -61,20 +62,36 @@ UT_Bool XAP_UnixFontManager::setFontPath(const char * searchpath)
 
 UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 {
-	UT_uint32 i = 0;
+	UT_uint32 i = 0, j;
 	UT_uint32 count = m_searchPaths.getItemCount();
 
 	UT_uint32 totaldirs = 0;
 	UT_uint32 totalfonts = 0;
 	
-	for (i = 0; i < count; i++)
+	/* If j is even, we open fonts.dir in encoding-specific directory */
+	for (j = 0; j < 2*count; j++)
 	{
+		i = j/2;
+		/* odd numbers mean should open encoding-specific directory*/
+		UT_Bool encspecific = j & 1; 
+
 		UT_ASSERT(m_searchPaths.getNthItem(i));
 
-		char * filename = (char *) calloc(strlen((char *) m_searchPaths.getNthItem(i)) +
-										  strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
-
-		sprintf(filename, "%s%s", (char *) m_searchPaths.getNthItem(i), FONTS_DIR_FILE);
+		char* basedirname = (char *) m_searchPaths.getNthItem(i);
+		int basedirname_len = strlen(basedirname);
+		char* filename;
+	
+		if (encspecific)
+		{	
+			const char* encname = XAP_EncodingManager::instance->getNativeEncodingName();
+			filename = (char *) calloc(basedirname_len + 1 + strlen(encname) + strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
+			sprintf(filename, "%s/%s%s", basedirname , encname ,FONTS_DIR_FILE);
+		}
+		else
+		{
+			filename = (char *) calloc(basedirname_len + strlen((char *) FONTS_DIR_FILE) + 1, sizeof(char));
+			sprintf(filename, "%s%s", basedirname , FONTS_DIR_FILE);
+		}		
 
 		FILE * file;
 
@@ -112,6 +129,10 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 				UT_DEBUGMSG(("File says %d fonts should follow...\n", fontcount));
 			}
 #endif
+
+			char* lastslash = strrchr(filename,'/');
+			if (lastslash)
+				*lastslash = '\0';
 			
 			// every line after is a font name / XLFD pair
 			UT_sint32 line;
@@ -130,8 +151,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 					fclose(file);
 					return UT_TRUE;
 				}
-				_allocateThisFont((const char *) buffer,
-								  (const char *) m_searchPaths.getNthItem(i));
+				_allocateThisFont((const char *) buffer, filename);
 			}
 
 			totalfonts += line;
@@ -434,9 +454,28 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	FREEP(linedup);
 }
 	  
-void XAP_UnixFontManager::_addFont(XAP_UnixFont * font)
+void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 {
 	// we index fonts by a combined "name" and "style"
+	const char* fontkey = newfont->getFontKey();
+	UT_HashEntry* curfont_entry = m_fontHash.findEntry(fontkey);
+	if (!curfont_entry || !curfont_entry->pData)
+	{
+		m_fontHash.addEntry(fontkey, NULL, (void *) newfont);
+	} 
+	else 
+	{
+		/* 
+                  since "standard fonts" folder is read first and then
+                  current charset-specific subdirectory, it's obvious that
+                  the recent version is current charset-specific font, 
+                  so we replace original font (that is standard) 
+                  unconditionally.
+		*/
+                XAP_UnixFont* curfont = static_cast<XAP_UnixFont*>(curfont_entry->pData);               
+                delete curfont;
+                curfont_entry->pData = (void*)newfont;
 
-	m_fontHash.addEntry(font->getFontKey(), NULL, (void *) font);
+	       
+	}
 }

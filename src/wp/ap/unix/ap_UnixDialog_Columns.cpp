@@ -309,13 +309,11 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	buttonOK = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_widget_show(buttonOK );
 	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
-	gtk_widget_set_usize (buttonOK, 37, -2);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 
 	buttonCancel = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_widget_show(buttonCancel );
 	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
-	gtk_widget_set_usize (buttonCancel, 37, -2);
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
 
 	m_wbuttonOk = buttonOK;
@@ -372,7 +370,6 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wColumnFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Number));
 	gtk_widget_show(wColumnFrame);
 	gtk_box_pack_start (GTK_BOX (hbox1), wColumnFrame, TRUE, TRUE, 7);
-	gtk_widget_set_usize (wColumnFrame, 120, -2); // was -2
 
 	wSelectFrame = gtk_frame_new (NULL);
 	gtk_widget_show(wSelectFrame );
@@ -392,7 +389,6 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(wToggleOne );
         UT_Bool butlab = label_button_with_abi_pixmap(wToggleOne, "tb_1column_xpm");
 	gtk_box_pack_start (GTK_BOX (hbox3), wToggleOne, FALSE, FALSE, 0);
-	gtk_widget_set_usize (wToggleOne, 44, 44);
 	GTK_WIDGET_SET_FLAGS (wToggleOne, GTK_CAN_DEFAULT);
 
 	wLabelOne = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_One));
@@ -407,7 +403,6 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(wToggleTwo );
         label_button_with_abi_pixmap(wToggleTwo, "tb_2column_xpm");
 	gtk_box_pack_start (GTK_BOX (hbox4), wToggleTwo, FALSE, FALSE, 0);
-	gtk_widget_set_usize (wToggleTwo, 44, 44);
 	GTK_WIDGET_SET_FLAGS (wToggleTwo, GTK_CAN_DEFAULT);
 
 	wLabelTwo = gtk_label_new( pSS->getValue(AP_STRING_ID_DLG_Column_Two));
@@ -423,7 +418,6 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(wToggleThree );
         label_button_with_abi_pixmap(wToggleThree, "tb_3column_xpm");
 	gtk_box_pack_start (GTK_BOX (hbox5), wToggleThree, FALSE, FALSE, 0);
-	gtk_widget_set_usize (wToggleThree, 44, 44);
 	GTK_WIDGET_SET_FLAGS (wToggleThree, GTK_CAN_DEFAULT);
 
 	wLabelThree = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Three));
@@ -433,7 +427,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wPreviewFrame = gtk_frame_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Preview));
 	gtk_widget_show(wPreviewFrame );
 	gtk_box_pack_start (GTK_BOX (hbox1), wPreviewFrame, TRUE, TRUE, 4);
-	gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
+//	gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
 
 	wDrawFrame = gtk_frame_new (NULL);
 	gtk_widget_show(wDrawFrame );
@@ -454,7 +448,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_box_pack_end (GTK_BOX (hbox1), vbuttonbox1, FALSE, FALSE, 0);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonbox1), GTK_BUTTONBOX_START);
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (vbuttonbox1), 0);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (vbuttonbox1), 74, 27);
+//	gtk_button_box_set_child_size (GTK_BUTTON_BOX (vbuttonbox1), 74, 27);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (vbuttonbox1), 0, 1);
 
 	m_wGnomeButtons = vbuttonbox1;
@@ -467,7 +461,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(wLineBtween );
 	gtk_box_pack_start (GTK_BOX (hbox2), wLineBtween, FALSE, FALSE, 3);
 
-	wLabelLineBetween = gtk_label_new ("Line Between");
+	wLabelLineBetween = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Column_Line_Between));
 	gtk_widget_show(wLabelLineBetween );
 	gtk_box_pack_start (GTK_BOX (hbox2), wLabelLineBetween, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (wLabelLineBetween), GTK_JUSTIFY_LEFT);

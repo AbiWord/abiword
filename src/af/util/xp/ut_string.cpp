@@ -39,6 +39,7 @@
 #include "ut_wctomb.h"
 #endif
 
+#include "xap_EncodingManager.h"
 
 //////////////////////////////////////////////////////////////////
 // char * UT_catPathname(const char * szPath, const char * szFile);
@@ -462,11 +463,20 @@ UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
 {
 	if (c < 128)
 		return tolower(c);
+#if 0		
 	if (c >= 256)
 		return c;  /* Unicode but not Latin-1 - don't know what to do */
 	if (c >= 0xC0 && c <= 0xDE && c != 0xD7)  /* uppercase Latin-1 chars */
 		return c + 0x20;
 	return c;
+#else
+	/*let's trust libc!*/
+	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	if (!local)
+		return c;
+	local = XAP_EncodingManager::instance->try_UToNative(tolower(local));
+	return local ? local : c;
+#endif
 }
 
 
@@ -927,3 +937,21 @@ UT_Bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 	}
 	return (result);
 }
+
+UT_Bool UT_UCS_isupper(UT_UCSChar c)
+{
+	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	return local ? isupper(local)!=0 : 0;
+};
+
+UT_Bool UT_UCS_islower(UT_UCSChar c)
+{
+	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	return local ? islower(local)!=0 : 0;
+};
+
+UT_Bool UT_UCS_isalpha(UT_UCSChar c)
+{
+	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	return local ? isalpha(local)!=0 : 0;
+};

@@ -24,6 +24,7 @@
 #include "ev_Menu_Labels.h"
 #include "xap_Menu_ActionSet.h"
 #include "ap_Menu_Id.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************
 ******************************************************************
@@ -33,19 +34,29 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginSet(Language,Locale,bIsDefaultSetForLanguage)								\
+#define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)								\
 	static EV_Menu_LabelSet * _ap_CreateLabelSet_##Language##Locale(void)				\
 	{	EV_Menu_LabelSet * pLabelSet =													\
 			new EV_Menu_LabelSet(#Language"-"#Locale,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	\
-		UT_ASSERT(pLabelSet);
+		UT_ASSERT(pLabelSet);									\
+		char* encoding = (Encoding);								\
+		char namebuf[2000],statusmsgbuf[2000];
+
+#define BeginSet(Language,Locale,bIsDefaultSetForLanguage) \
+		BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,"")
 	
-#define MenuLabel(id,szName,szStatusMsg)			pLabelSet->setLabel((id),(szName),(szStatusMsg));
-			
+#define MenuLabel(id,szName,szStatusMsg) \
+		pLabelSet->setLabel((id),											\
+			XAP_EncodingManager::instance->strToNative((szName),encoding,namebuf,sizeof(namebuf)),			\
+			XAP_EncodingManager::instance->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
+		);
+
 #define EndSet()									return pLabelSet; }
 
 
 #include "ap_Menu_LabelSet_Languages.h"
 
+#undef BeginSetEnc
 #undef BeginSet
 #undef MenuLabel
 #undef EndSet
@@ -67,7 +78,10 @@ struct _lt
 	UT_Bool						m_bIsDefaultSetForLanguage;
 };
 
-#define BeginSet(Language,Locale,bIsDefaultSetForLanguage)	{ #Language"-"#Locale, _ap_CreateLabelSet_##Language##Locale, bIsDefaultSetForLanguage },
+
+#define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)	{ #Language"-"#Locale, _ap_CreateLabelSet_##Language##Locale, bIsDefaultSetForLanguage },
+#define BeginSet(Language,Locale,bIsDefaultSetForLanguage) \
+		BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,"")
 #define MenuLabel(id,szName,szStatusMsg)			/*nothing*/
 #define EndSet()									/*nothing*/
 
@@ -78,6 +92,7 @@ static struct _lt s_ltTable[] =
 	
 };
 
+#undef BeginSetEnc
 #undef BeginSet
 #undef MenuLabel
 #undef EndSet
@@ -87,8 +102,16 @@ static struct _lt s_ltTable[] =
 ** Put it all together and have a "load LabelSet by Language"
 ******************************************************************
 *****************************************************************/
-EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage)
+EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage_)
 {
+	char buf[300];
+	strcpy(buf,szLanguage_ ? szLanguage_ : "");
+	char* szLanguage = buf;
+
+	char* dot = strrchr(szLanguage,'.');
+	if (dot)
+		*dot = '\0'; /* remove encoding part from locale name */
+
 	if (szLanguage && *szLanguage)
 	{
 		UT_uint32 k;

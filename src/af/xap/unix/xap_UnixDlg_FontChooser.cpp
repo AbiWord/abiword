@@ -303,28 +303,25 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
 	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, FALSE, FALSE);
+	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, TRUE, FALSE);
 
 	vboxOuter = gtk_vbox_new (FALSE, 0);
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "vboxOuter", vboxOuter);
 	gtk_widget_show (vboxOuter);
 	gtk_container_add (GTK_CONTAINER (windowFontSelection), vboxOuter);
-	gtk_widget_set_usize (vboxOuter, 469, -1);
 
 	vboxMain = constructWindowContents(GTK_OBJECT (windowFontSelection));
-	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
 	fixedButtons = gtk_fixed_new ();
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "fixedButtons", fixedButtons);
 	gtk_widget_show (fixedButtons);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), fixedButtons, FALSE, TRUE, 0);
-	gtk_widget_set_usize (fixedButtons, -1, 43);
 
 	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
-	gtk_widget_set_usize (buttonOK, 85, 35);	//extra height for "default" border; it's silly
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonOK);
 
@@ -332,7 +329,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
-	gtk_widget_set_usize (buttonCancel, 85, 24);
 
 	gtk_signal_connect_after(GTK_OBJECT(windowFontSelection),
 							  "destroy",
@@ -393,61 +389,158 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	vboxMain = gtk_vbox_new (FALSE, 0);
 	gtk_object_set_data (parent, "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
-	gtk_widget_set_usize (vboxMain, 469, -1);
 
 	notebookMain = gtk_notebook_new ();
 	gtk_object_set_data (parent, "notebookMain", notebookMain);
 	gtk_widget_show (notebookMain);
-	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, FALSE, FALSE, 0);
-	gtk_widget_set_usize (notebookMain, 418, 247);
+	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, 1, 1, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
 
-	fixedFont = gtk_fixed_new ();
-	gtk_object_set_data (parent, "fixedFont", fixedFont);
-	gtk_widget_show (fixedFont);
-	gtk_container_add (GTK_CONTAINER (notebookMain), fixedFont);
-	gtk_widget_set_usize (fixedFont, -1, 191);
+	GtkObject *window1 = parent;	
+  	GtkWidget *table1;
+  	GtkWidget *vbox1;
+  
+ 	GtkWidget *scrolledwindow1;
+  	GtkWidget *vbox2;
+  	GtkWidget *scrolledwindow2;
+  	GtkWidget *vbox3;
+  	GtkWidget *scrolledwindow3;
+  	GtkWidget *vboxmisc;
+  	GtkWidget *hboxForEncoding;
+
+	table1 = gtk_table_new (2, 3, FALSE);
+	gtk_widget_set_name (table1, "table1");
+	gtk_widget_ref (table1);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "table1", table1,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (table1);
+	gtk_container_add (GTK_CONTAINER (notebookMain), table1);
+
+	vbox1 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_set_name (vbox1, "vbox1");
+	gtk_widget_ref (vbox1);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "vbox1", vbox1,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (vbox1);
+	gtk_table_attach (GTK_TABLE (table1), vbox1, 0, 1, 0, 2,
+	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
 	labelFont = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_FontLabel));
-	gtk_object_set_data (parent, "labelFont", labelFont);
+	gtk_widget_set_name (labelFont, "labelFont");
+	gtk_widget_ref (labelFont);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "labelFont", labelFont,
+	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (labelFont);
-	gtk_fixed_put (GTK_FIXED (fixedFont), labelFont, 5, 8);
-	gtk_widget_set_usize (labelFont, 34, 16); 
+	gtk_box_pack_start (GTK_BOX (vbox1), labelFont, FALSE, FALSE, 0);
 
-	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
-	gtk_object_set_data (parent, "labelStyle", labelStyle);
-	gtk_widget_show (labelStyle);
-	gtk_fixed_put (GTK_FIXED (fixedFont), labelStyle, 209, 8); 
-	gtk_widget_set_usize (labelStyle, 34, 16); 
-
-	frameFonts = gtk_scrolled_window_new(NULL, NULL);
-	gtk_object_set_data(parent, "frameFonts", frameFonts);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameFonts), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
-	gtk_fixed_put(GTK_FIXED(fixedFont), frameFonts, 8, 24);
-	gtk_widget_set_usize(frameFonts, 195, 167);
-	gtk_widget_show(frameFonts);
+	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
+	gtk_widget_set_name (scrolledwindow1, "scrolledwindow1");
+	gtk_widget_ref (scrolledwindow1);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "scrolledwindow1", scrolledwindow1,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (scrolledwindow1);
+	gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow1), 3);
 
 	listFonts = gtk_clist_new (1);
-	gtk_object_set_data (parent, "listFonts", listFonts);
-	gtk_clist_set_selection_mode (GTK_CLIST(listFonts), GTK_SELECTION_SINGLE);
-	gtk_clist_set_shadow_type (GTK_CLIST(listFonts), GTK_SHADOW_IN);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
+	gtk_widget_set_name (listFonts, "listFonts");
+	gtk_widget_ref (listFonts);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "listFonts", listFonts,
+	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listFonts);
-	gtk_container_add (GTK_CONTAINER (frameFonts), listFonts);
+	gtk_container_add (GTK_CONTAINER (scrolledwindow1), listFonts);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);	
+
+	vbox2 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_set_name (vbox2, "vbox2");
+	gtk_widget_ref (vbox2);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "vbox2", vbox2,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (vbox2);
+	gtk_table_attach (GTK_TABLE (table1), vbox2, 1, 2, 0, 1,
+	                  (GtkAttachOptions) (GTK_FILL),
+	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
+
+	labelStyle = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleLabel));
+	gtk_widget_set_name (labelStyle, "labelStyle");
+	gtk_widget_ref (labelStyle);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "labelStyle", labelStyle,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (labelStyle);
+	gtk_box_pack_start (GTK_BOX (vbox2), labelStyle, FALSE, FALSE, 0);
+
+	scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
+	gtk_widget_set_name (scrolledwindow2, "scrolledwindow2");
+	gtk_widget_ref (scrolledwindow2);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "scrolledwindow2", scrolledwindow2,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (scrolledwindow2);
+	gtk_box_pack_start (GTK_BOX (vbox2), scrolledwindow2, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow2), 3);
+
+	listStyles = gtk_clist_new (1);
+	gtk_widget_set_name (listStyles, "listStyles");
+	gtk_widget_ref (listStyles);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "listStyles", listStyles,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (listStyles);
+	gtk_container_add (GTK_CONTAINER (scrolledwindow2), listStyles);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
+
+	vbox3 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_set_name (vbox3, "vbox3");
+	gtk_widget_ref (vbox3);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "vbox3", vbox3,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (vbox3);
+	gtk_table_attach (GTK_TABLE (table1), vbox3, 2, 3, 0, 1,
+	                  (GtkAttachOptions) (GTK_FILL),
+	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 	labelSize = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_SizeLabel));
-	gtk_object_set_data (parent, "labelSize", labelSize);
+	gtk_widget_set_name (labelSize, "labelSize");
+	gtk_widget_ref (labelSize);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "labelSize", labelSize,
+	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (labelSize);
-	gtk_fixed_put (GTK_FIXED (fixedFont), labelSize, 356, 8);
-	gtk_widget_set_usize (labelSize, 50, 16); 
+	gtk_box_pack_start (GTK_BOX (vbox3), labelSize, FALSE, FALSE, 0);
 
-	/*************************************/
+	scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
+	gtk_widget_set_name (scrolledwindow3, "scrolledwindow3");
+	gtk_widget_ref (scrolledwindow3);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "scrolledwindow3", scrolledwindow3,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (scrolledwindow3);
+	gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow3, TRUE, TRUE, 0);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow3), 3);
 	
+	listSizes = gtk_clist_new (1);
+	gtk_widget_set_name (listSizes, "listSizes");
+	gtk_widget_ref (listSizes);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "listSizes", listSizes,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (listSizes);
+	gtk_container_add (GTK_CONTAINER (scrolledwindow3), listSizes);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
+
+	vboxmisc = gtk_vbox_new (FALSE, 0);
+	gtk_widget_set_name (vboxmisc, "vboxmisc");
+	gtk_widget_ref (vboxmisc);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "vboxmisc", vboxmisc,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (vboxmisc);
+	gtk_table_attach (GTK_TABLE (table1), vboxmisc, 1, 3, 1, 2,
+	                  (GtkAttachOptions) (GTK_FILL),
+	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
+
 	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel));
 	gtk_object_set_data (parent, "frameEffects", frameEffects);
 	gtk_widget_show (frameEffects);
-	gtk_fixed_put (GTK_FIXED (fixedFont), frameEffects, 216, 117);
-	gtk_widget_set_usize (frameEffects, 225, 45); 
+	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
 
 	hboxDecorations = gtk_hbox_new (FALSE, 0);
 	gtk_object_set_data (parent, "hboxDecorations", hboxDecorations);
@@ -466,21 +559,26 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_widget_show (checkbuttonUnderline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
 
-	/*************************************/
 
+	hboxForEncoding = gtk_hbox_new (FALSE, 0);
+	gtk_widget_set_name (hboxForEncoding, "hboxForEncoding");
+	gtk_widget_ref (hboxForEncoding);
+	gtk_object_set_data_full (GTK_OBJECT (window1), "hboxForEncoding", hboxForEncoding,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (hboxForEncoding);
+	gtk_box_pack_start (GTK_BOX (vboxmisc), hboxForEncoding, TRUE, TRUE, 0);
+	
 	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EncodingLabel));
 	gtk_object_set_data (parent, "labelEncoding", labelEncoding);
 	gtk_widget_show (labelEncoding);
-	gtk_fixed_put (GTK_FIXED (fixedFont), labelEncoding, 216, 170);
-	gtk_widget_set_usize (labelEncoding, 70, 22); 
+	gtk_box_pack_start (GTK_BOX (hboxForEncoding), labelEncoding, 1,1, 2);
 	gtk_label_set_justify (GTK_LABEL (labelEncoding), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelEncoding), 0, 0.5);
-
+	
 	comboEncoding = gtk_combo_new ();
 	gtk_object_set_data (parent, "comboEncoding", comboEncoding);
 	gtk_widget_show (comboEncoding);
-	gtk_fixed_put (GTK_FIXED (fixedFont), comboEncoding, 290, 170); 
-	gtk_widget_set_usize (GTK_WIDGET (comboEncoding), 150, 22); 
+	gtk_box_pack_start(GTK_BOX (hboxForEncoding), comboEncoding, 1, 1, 0); 
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (GTK_COMBO (comboEncoding)->popup),
 									GTK_POLICY_NEVER,
 									GTK_POLICY_AUTOMATIC);
@@ -493,50 +591,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 //	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");	
 	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
 	g_list_free (comboEncoding_items);
-	
-	/*************************************/
-	
-	frameStyle = gtk_scrolled_window_new(NULL, NULL);
-	gtk_object_set_data(parent, "frameStyle", frameStyle);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameStyle), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
-	gtk_fixed_put(GTK_FIXED(fixedFont), frameStyle, 216, 24);
-	gtk_widget_set_usize(frameStyle, 126, 85);
-	gtk_widget_show(frameStyle);
-
-	listStyles = gtk_clist_new (1);
-	gtk_object_set_data (parent, "listStyles", listStyles);
-	gtk_clist_set_selection_mode (GTK_CLIST(listStyles), GTK_SELECTION_SINGLE);
-	gtk_clist_set_shadow_type (GTK_CLIST(listStyles), GTK_SHADOW_IN);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listStyles), 0, TRUE);
-	gtk_widget_show (listStyles);
-	gtk_container_add (GTK_CONTAINER (frameStyle), listStyles);
-
-	frameSize = gtk_scrolled_window_new(NULL, NULL);
-	gtk_object_set_data(parent, "frameSize", frameSize);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(frameSize), GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
-	gtk_fixed_put(GTK_FIXED(fixedFont), frameSize, 356, 24);
-	gtk_widget_set_usize(frameSize, 84, 85);
-	gtk_widget_show(frameSize);
-
-	listSizes = gtk_clist_new (1);
-	gtk_object_set_data (parent, "listSizes", listSizes);
-	gtk_clist_set_selection_mode (GTK_CLIST(listSizes), GTK_SELECTION_SINGLE);
-	gtk_clist_set_shadow_type (GTK_CLIST(listSizes), GTK_SHADOW_IN);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listSizes), 0, TRUE);
-	gtk_widget_show (listSizes);
-	gtk_container_add (GTK_CONTAINER (frameSize), listSizes);
-
-	fixedColor = gtk_fixed_new ();
-	gtk_object_set_data (parent, "fixedColor", fixedColor);
-	gtk_widget_show (fixedColor);
-	gtk_container_add (GTK_CONTAINER (notebookMain), fixedColor);
-	gtk_widget_set_usize (fixedColor, 421, 187);
-
+	/*another Notebook page*/
 	hbox1 = gtk_hbox_new (FALSE, 0);
 	gtk_object_set_data (parent, "hbox1", hbox1);
 	gtk_widget_show (hbox1);
-	gtk_fixed_put (GTK_FIXED (fixedColor), hbox1, 8, 10);
-	gtk_widget_set_usize (hbox1, 426, 186);	
+	gtk_container_add (GTK_CONTAINER (notebookMain),hbox1);
 
 	colorSelector = gtk_color_selection_new ();
 	gtk_object_set_data (parent, "colorSelector", colorSelector);
@@ -553,10 +612,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_widget_show (labelTabColor);
 	set_notebook_tab (notebookMain, 1, labelTabColor);
 
+	/* frame with preview */
 	frame4 = gtk_frame_new (NULL);
 	gtk_object_set_data (parent, "frame4", frame4);
 	gtk_widget_show (frame4);
-	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, TRUE, PREVIEW_BOX_BORDER_WIDTH_PIXELS);
+	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, FALSE, PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 	// setting the height takes into account the border applied on all
 	// sides, so we need to double the single border width
 	gtk_widget_set_usize (frame4, -1, PREVIEW_BOX_HEIGHT_PIXELS + (PREVIEW_BOX_BORDER_WIDTH_PIXELS * 2));

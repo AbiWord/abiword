@@ -30,6 +30,9 @@
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
 
+#include "xap_App.h"
+#include "xap_EncodingManager.h"
+
 //////////////////////////////////////////////////////////////////
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval);
@@ -121,7 +124,30 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	}
 	else
 	{
-		UT_uint16 charData = e->keyval;
+		UT_uint16 charData = 0;
+		
+		if (e->length==0) /* shouldn't happen. But let it crash somewhere else.*/
+			charData = e->keyval;
+		else 
+	    	{
+		    GdkWChar wc;
+		    if ( (state & EV_EMS_CONTROL) || (state & EV_EMS_ALT))
+		    {
+			    charData = e->keyval;
+		    }
+		    else {
+			    if (e->length==1)
+				    /* straightforward */
+				    wc = (unsigned char)(*e->string);
+			    else 
+			    {	
+				    int ret = gdk_mbstowcs(&wc,e->string,1);
+				    UT_ASSERT(ret==1);
+			    };
+			    charData = XAP_App::getApp()->getEncodingManager()->nativeToU(wc);
+		    }
+		}		
+
 		result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
 
 		switch (result)
@@ -389,12 +415,6 @@ static UT_Bool s_isVirtualKeyCode(gint keyval)
 	if (keyval == 0x0020)				// special handling for ASCII-Space
 		return UT_TRUE;
 
-	// TODO for now, verify Latin-1
-	// TODO we don't currently know what to
-	// TODO do with the other character sets.
-	
-	UT_ASSERT(keyval <= 0x00FF);
-	
 	return UT_FALSE;
 }
 

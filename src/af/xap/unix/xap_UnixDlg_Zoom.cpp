@@ -411,7 +411,10 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "frameSampleText", frameSampleText);
 	gtk_widget_show (frameSampleText);
 	gtk_container_add (GTK_CONTAINER (framePreview), frameSampleText);
+#if 0	
+	/*setting size of 'frameSampleText' makes no sense - VH*/
 	gtk_widget_set_usize (frameSampleText, 221, 97);
+#endif	
 	gtk_container_border_width (GTK_CONTAINER (frameSampleText), 10);
 
 	// *** This is how we do a preview widget ***

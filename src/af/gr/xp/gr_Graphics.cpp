@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "xap_App.h"
+#include "xap_EncodingManager.h"
 #include "xap_Prefs.h"
 #include "gr_Graphics.h"
 #include "ut_assert.h"
@@ -104,9 +105,11 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	return stringWidth;
 }
 
-UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat)
+UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, UT_Bool noMatterWhat)
 {
-
+	UT_UCSChar actual = m_pApp->getEncodingManager()->try_UToNative(actual_);
+        if (!actual)
+               actual = actual_;
 	// Here is how the remapGlyph works.
 
 	// * If preference value RemapGlyphsMasterSwitch is not true, no
@@ -213,7 +216,8 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat
 		UT_Bool try_default = UT_TRUE;
 		for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
 		{
-			if (actual == m_pRemapGlyphsTableSrc[tdex])
+			/*compare with character in unicode, not in current locale*/
+			if (actual_ == m_pRemapGlyphsTableSrc[tdex])
 			{
 				remap = m_pRemapGlyphsTableDst[tdex];
 				try_default = UT_FALSE;

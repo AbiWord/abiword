@@ -102,9 +102,19 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// en-US, es-ES, pt-PT
 
 	// we'll try this quick conversion
-	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) {
-	   lc_ctype[2] = '-';
-	   szNewLang = lc_ctype;
+	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) 
+	{
+		lc_ctype[2] = '-';
+		char* dot = strrchr(lc_ctype,'.');
+
+		/*
+                  remove charset field. It's a right thing since expat
+  		  already converts data in stringset from ANY encoding to
+		  current one (if iconv knows this encoding).
+		 */
+		if (dot)
+			*dot = '\0'; 
+		szNewLang = lc_ctype;	
 	}
 
 	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));

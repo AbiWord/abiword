@@ -39,6 +39,7 @@
 #include "xap_LoadBindings.h"
 #include "xap_Dictionary.h"
 #include "xap_Prefs.h"
+#include "xap_EncodingManager.h"
 
 /*****************************************************************/
 
@@ -57,6 +58,11 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 	m_pToolbarActionSet = NULL;
 	m_pDict = NULL;
 	m_prefs = NULL;
+	m_pEncMgr = new XAP_EncodingManager();/* HACK: this is done in order 
+		not to update the code for each platform. If platform specific
+		code has its own implementation of EncodingManager, then it
+		should just simply delete an instance pointed by this member
+		and assign ptr to platform-specific implementation. - hvv */
        
 	m_pApp = this;
 	m_lastFocussedFrame = NULL;
@@ -80,7 +86,13 @@ XAP_App::~XAP_App(void)
 	DELETEP(m_pToolbarActionSet);
 	DELETEP(m_pDict);
 	DELETEP(m_prefs);
+	DELETEP(m_pEncMgr);
 }
+
+const XAP_EncodingManager* XAP_App::getEncodingManager(void) const 
+{ 
+    return m_pEncMgr;
+};
 
 UT_Bool XAP_App::initialize(void)
 {

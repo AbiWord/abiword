@@ -48,8 +48,72 @@ iconv_t  translate_out = (iconv_t)-1;
 int      Trynum;         /* Size of "Try" array */
 ichar_t  Try[SET_SIZE + MAXSTRINGCHARS];
 
+/*this is used for converting form unsigned short to UCS-2*/
+static unsigned short  ucs2[INPUTWORDLEN + MAXAFFIXLEN];
+/*this one copies to 'ucs2' from word16 swapping bytes if necessary*/
+static void toucs2(const unsigned short *word16, int length)
+{
+	int i = 0;
+	const unsigned short* in = word16;
+	unsigned short* out = ucs2;
+	for(;i<length;++i)
+	{
+		/*warning - we should inspect whether we need to do this on MSB arches*/
+		out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+	}
+	out[i]= 0;
+}
 
+/*this one copies from 'ucs2' to word16 swapping bytes if necessary */
+static void fromucs2(unsigned short *word16, int length)
+{
+	int i = 0;
+	unsigned short* in = ucs2,*out = word16;
+	for(;i<length;++i)
+	{
+		/*warning - we should inspect whether we need to do this on MSB arches*/
+		out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+	}
+	out[i]= 0;
+}
 
+#ifndef __GLIBC__
+#	define UCS_2_INTERNAL "UCS-2-INTERNAL"
+#else
+#	define UCS_2_INTERNAL "UCS-2"
+#endif
+
+static void try_autodetect_charset(char* hashname)
+{
+	int len;
+	char buf[3000];
+	FILE* f;
+	if (strlen(hashname)>(3000-15))
+		return;
+	sprintf(buf,"%s-%s",hashname,"encoding");
+	f = fopen(buf,"r");
+	if (!f)
+		return;
+	len = fread(buf,1,sizeof(buf),f);
+	if (len<=0)
+		return;
+	buf[len]=0;
+	fclose(f);
+	{
+		char* start, *p = buf;
+		while (*p==' ' || *p=='\t' || *p=='\n')
+			++p;
+		start = p;
+		while (!(*p==' ' || *p=='\t' || *p=='\n' || *p=='\0'))
+			++p;
+		*p = '\0';
+		if (!*start) /* empty enc */
+			return;
+        	translate_in = iconv_open(start, UCS_2_INTERNAL);
+        	translate_out = iconv_open(UCS_2_INTERNAL, start);
+	}
+	
+}
 /***************************************************************************/
 
 
@@ -70,8 +134,8 @@ int SpellCheckInit(char *hashname)
     prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
     if (prefstringchar >= 0)
     {
-        translate_in = iconv_open("utf-8", "UCS-2-INTERNAL");
-        translate_out = iconv_open("UCS-2-INTERNAL", "utf-8");
+        translate_in = iconv_open("utf-8", UCS_2_INTERNAL);
+        translate_out = iconv_open(UCS_2_INTERNAL, "utf-8");
     }
 
     /* Test for "latinN" */
@@ -87,29 +151,30 @@ int SpellCheckInit(char *hashname)
             prefstringchar = findfiletype(teststring, 1, deftflag < 0 ? &deftflag : (int *) NULL);
             if (prefstringchar >= 0)
             {
-                translate_in = iconv_open(teststring, "UCS-2-INTERNAL");
-                translate_out = iconv_open("UCS-2-INTERNAL", teststring);
+                translate_in = iconv_open(teststring, UCS_2_INTERNAL);
+                translate_out = iconv_open(UCS_2_INTERNAL, teststring);
                 break;
             }
         }
     }
+    try_autodetect_charset(hashname);
 
     /* Test for known "hashname"s */
     if(translate_in == (iconv_t)-1)
     {
-        if( strstr( hashname, "russian.hash" ) )
+        if( strstr( hashname, "russian.hash" ))
         {
             /* ISO-8859-5, CP1251 or KOI8-R */
-            translate_in = iconv_open("CP1251", "UCS-2-INTERNAL");
-            translate_out = iconv_open("UCS-2-INTERNAL", "CP1251");
+            translate_in = iconv_open("KOI8-R", UCS_2_INTERNAL);
+            translate_out = iconv_open(UCS_2_INTERNAL, "KOI8-R");
         }
     }
 
     /* If nothing found, use latin1 */
     if(translate_in == (iconv_t)-1)
     {
-        translate_in = iconv_open("latin1", "UCS-2-INTERNAL");
-        translate_out = iconv_open("UCS-2-INTERNAL", "latin1");
+        translate_in = iconv_open("latin1", UCS_2_INTERNAL);
+        translate_out = iconv_open(UCS_2_INTERNAL, "latin1");
     }
 
     if (prefstringchar < 0)
@@ -159,10 +224,11 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
 		/* TF CHANGE: Use the right types 
         unsigned int len_in, len_out; 
 		*/
-		size_t len_in, len_out;
-        const char *In = (const char *)word16;
+	size_t len_in, len_out;
+        const char *In = (const char *)ucs2;
         char *Out = word8;
 
+	toucs2(word16,length);
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
         iconv(translate_in, &In, &len_in, &Out, &len_out);
@@ -208,9 +274,9 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
         unsigned int len_in, len_out; 
 		*/
         size_t len_in, len_out; 
-        const char *In = (const char *)word16;
+        const char *In = (const char *)ucs2;
         char *Out = word8;
-
+	toucs2(word16,length);	
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
         iconv(translate_in, &In, &len_in, &Out, &len_out);
@@ -264,12 +330,13 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
 			*/
 			size_t len_in, len_out; 
             const char *In = possibilities[c];
-            char *Out = (char *)sg->word[c];
+            char *Out = (char *)ucs2;
 
             len_in = l;
             len_out = sizeof(unsigned short) * l;
-            iconv(translate_out, &In, &len_in, &Out, &len_out);
+            iconv(translate_out, &In, &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
+	    fromucs2(sg->word[c], (unsigned short*)Out-ucs2);
         }
     }
 

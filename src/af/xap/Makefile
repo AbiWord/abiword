@@ -54,7 +54,8 @@ PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSImage.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)PSGraphics.$(OBJ_SUFFIX)
+			$(OBJDIR)/xap_$(ABI_FE)PSGraphics.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_FE), Win32)
@@ -101,7 +102,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Strings.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Toolbar_ControlFactory.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_ViewListener.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xav_View.$(OBJ_SUFFIX)
+		$(OBJDIR)/xav_View.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_EncodingManager.$(OBJ_SUFFIX)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
