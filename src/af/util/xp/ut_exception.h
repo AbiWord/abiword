@@ -58,6 +58,8 @@
 // d'oh! please list platforms/compilers here which have 
 // issues with exceptions here for future reference
 
+// MSVC5: has issues with Class::method() throw(ex)
+
 // btw, this is nasty-as-shit for a reason -
 // 1) first off, what i'm doing is just plain ugly
 // 2) secondly, the preprocessor can't spit-out other preprocessor codes
