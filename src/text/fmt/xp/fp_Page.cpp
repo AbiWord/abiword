@@ -154,7 +154,7 @@ UT_sint32 fp_Page::getColumnGap(void) const
  */
 fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 {
-	if(m_iCountWrapPasses > 100)
+	if(m_iCountWrapPasses > 199)
 	{
 		return NULL;
 	}
@@ -302,11 +302,12 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								j--;
 								bFoundOne = true;
 							}
-							else
+							else if(m_iCountWrapPasses < 101)
 							{
 //
 // Look to see if the wrapped line has no white space that overlaps
-// a wrapped object
+// a wrapped object. We don't do this if we've tried more than 100
+// time to layout the page.
 //
 								
 								if(!overlapsWrappedFrame(recLeft) &&
@@ -380,6 +381,13 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	{
 		_BL * pBLine = vecBL.getNthItem(i);
 		xxx_UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));
+#if DEBUG
+		if(m_iCountWrapPasses > 100)
+		{
+			xxx_UT_DEBUGMSG(("Not converging \n"));
+		}
+#endif
+		xxx_UT_DEBUGMSG(("Do regular rebreak \n"));
 		pBLine->m_pBL->formatWrappedFromHere(pBLine->m_pL,this);
 	}
 	UT_VECTOR_PURGEALL(_BL *, vecBL);
@@ -424,7 +432,7 @@ bool fp_Page::overlapsWrappedFrame(UT_Rect & rec)
 		}
 		UT_Rect * pMyFrameRec = pFC->getScreenRect();
 		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-		UT_sint32 iextra = pFL->getBoundingSpace();
+		UT_sint32 iextra = pFL->getBoundingSpace() -2;
 		pMyFrameRec->left -= iextra;
 		pMyFrameRec->top -= iextra;
 		pMyFrameRec->width += 2*iextra;

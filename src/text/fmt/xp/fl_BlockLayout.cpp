@@ -2054,10 +2054,6 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	{
 		return;
 	}
-	while(pLine->getPrev() && pLine->isSameYAsPrevious())
-	{
-		pLine = static_cast<fp_Line *>(pLine->getPrev());
-	}
 	fp_Run * pRun = pLine->getLastRun();
 	pRun = pRun->getNextRun();
 	m_pVertContainer = static_cast<fp_VerticalContainer *>(pLine->getContainer());
@@ -2146,7 +2142,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	UT_sint32 xoff = rec.left - pLine->getX();
 	if(iWidth < 20*4)
 	{
-		UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
+		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
 		//
 		// Can't fit on this line.
 		// transfer to new wrapped line and delete the old one
@@ -2255,6 +2251,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	// 
 		// Reformat paragraph
 	m_Breaker.breakParagraph(this, pLine,pPage);
+	pLine = static_cast<fp_Line *>(getFirstContainer());
 	while(pLine)
 	{
 		pLine->recalcHeight();
@@ -2305,7 +2302,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	fp_Line * pLine = NULL;
 	if((iMaxX - iX) < 20*4)
 	{
-		UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
+		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
 		iX = getLeftMargin();
 		m_iAccumulatedHeight += iHeight;
 		m_bSameYAsPrevious = false;
@@ -2396,7 +2393,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
 				m_bSameYAsPrevious = true;
 			}
-			UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+			xxx_UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 			pLine->setHeight(iHeight);
 			return pLine;
 		}
@@ -2446,7 +2443,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		{
 			if(pOldLastLine == NULL)
 			{
-				UT_DEBUGMSG(("Old Lastline NULL?????? \n"));
+				xxx_UT_DEBUGMSG(("Old Lastline NULL?????? \n"));
 				setFirstContainer(pLine);
 				setLastContainer(pLine);
 				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
@@ -2476,7 +2473,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
 				m_bSameYAsPrevious = true;
 			}
-			UT_DEBUGMSG(("-2- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+			xxx_UT_DEBUGMSG(("-2- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 			pLine->setHeight(iHeight);
 			return pLine;
 		}
@@ -2509,7 +2506,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		iX = getLeftMargin();
 		m_iAccumulatedHeight += iHeight;
 	}
-	UT_DEBUGMSG(("-3- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+	xxx_UT_DEBUGMSG(("-3- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 	pLine->setHeight(iHeight);
 	return pLine;
 }

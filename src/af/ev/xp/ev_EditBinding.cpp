@@ -91,8 +91,8 @@ public:
 		};
 	~ev_EB_NVK_Table()
 		{
-			for (UT_uint32 i=0; i < EV_COUNT_NVK; i++)
-				for (UT_uint32 j=0; j < EV_COUNT_EMS; j++)
+			for (UT_sint32 i=0; i < static_cast<UT_sint32>(EV_COUNT_NVK); i++)
+				for (UT_sint32 j=0; j < EV_COUNT_EMS; j++)
 					if (m_peb[i][j])
 						delete m_peb[i][j];
 		}
@@ -109,8 +109,8 @@ public:
 		};
 	~ev_EB_Char_Table()
 		{
-			for (UT_uint32 i=0; i < 256; i++)
-				for (UT_uint32 j=0; j < EV_COUNT_EMS_NoShift; j++)
+			for (UT_sint32 i=0; i < 256; i++)
+				for (UT_sint32 j=0; j < EV_COUNT_EMS_NoShift; j++)
 					if (m_peb[i][j])
 						delete m_peb[i][j];
 		}
@@ -130,7 +130,8 @@ EV_EditBindingMap::EV_EditBindingMap(EV_EditMethodContainer * pemc)
 {
 	UT_ASSERT(pemc);
 	m_pemc = pemc;
-	for (int i=0; i<EV_COUNT_EMB; i++)
+	UT_sint32 i = 0;
+	for (i=0; i<EV_COUNT_EMB; i++)
 	{
 		m_pebMT[i] = NULL;
 	}
@@ -140,7 +141,8 @@ EV_EditBindingMap::EV_EditBindingMap(EV_EditMethodContainer * pemc)
 
 EV_EditBindingMap::~EV_EditBindingMap()
 {
-	for (UT_uint32 i=0; i<EV_COUNT_EMB; i++)
+	UT_sint32 i = 0;
+	for (i=0; i<EV_COUNT_EMB; i++)
 	{
 		if (m_pebMT[i])
 			delete m_pebMT[i];
@@ -354,7 +356,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	EV_EditModifierState ems = 0;
 	EV_EditBinding * pEB;
-	UT_uint32 i, j;
+	UT_sint32 i, j;
 	char shortcut = 0;
 
 	// search characters first
@@ -386,7 +388,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	if (!bChar)
 	{
 		// then search NVKs
-		for (i=0; (i < EV_COUNT_NVK) && !bNVK; i++)
+		for (i=0; (i < static_cast<UT_sint32>(EV_COUNT_NVK)) && !bNVK; i++)
 			for (j=0; j < EV_COUNT_EMS; j++)
 				if (m_pebNVK->m_peb[i][j])
 				{

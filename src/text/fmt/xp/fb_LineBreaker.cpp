@@ -610,13 +610,11 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			}
 			else
 			{
-				//fp_Run * pRun = pLine->getFirstRun();
 				UT_sint32 iX = pLine->getX();
 				iX += pLine->getMaxWidth();
-				pLine->recalcHeight();
+				pLine->recalcHeight(m_pLastRunToKeep);
 				UT_sint32 iHeight = pLine->getHeight() + pLine->getMarginAfter();
 				pNewLine = pBlock->getNextWrappedLine(iX,iHeight,pPage);
-				
 			}
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
 			pNextLine = pNewLine;

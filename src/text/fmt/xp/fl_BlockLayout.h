@@ -320,6 +320,10 @@ public:
 	FootnoteType            getTOCNumType(void);
 	eTabLeader              getTOCTabLeader(UT_sint32 iOff);
 	UT_sint32               getTOCTabPosition(UT_sint32 iOff);
+	void                    setAccumHeight(UT_sint32 i)
+	{ m_iAccumulatedHeight =i;}
+	UT_sint32               getAccumHeight(void) const
+	{ return m_iAccumulatedHeight;}
 	static bool 		s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 
 	inline void 		addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}

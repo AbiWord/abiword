@@ -170,7 +170,7 @@ public:
 	void		align(void);
 	void		layout(void);
 	bool		recalculateFields(UT_uint32 iUpdateCount);
-	void		recalcHeight();
+	void		recalcHeight(fp_Run * pLast = NULL);
 	void		recalcMaxWidth(bool bDontClearIfNeeded = false);
 	void		coalesceRuns(void);
 

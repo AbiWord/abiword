@@ -775,7 +775,7 @@ void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
 
   \see fp_Column::layout, fp_Line::setAssignedScreenHeight
 */
-void fp_Line::recalcHeight()
+void fp_Line::recalcHeight(fp_Run * pLastRun)
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i;
@@ -793,12 +793,13 @@ void fp_Line::recalcHeight()
 		iMaxText = pPrev->getHeight();
 	}
 	bool bSetByImage = false;
-	for (i=0; i<count; i++)
+	fp_Run* pRun = m_vecRuns.getNthItem(0);
+	for (i=0; (i<count && (pRun != pLastRun)); i++)
 	{
 		UT_sint32 iAscent;
 		UT_sint32 iDescent;
 
-		fp_Run* pRun = m_vecRuns.getNthItem(i);
+		pRun = m_vecRuns.getNthItem(i);
 
 		iAscent = pRun->getAscent();
 		iDescent = pRun->getDescent();

@@ -77,10 +77,13 @@ TOCEntry::TOCEntry(fl_BlockLayout * pBlock,
 	m_bInherit(bInherit),
 	m_iStartAt(iStartAt)
 {
+	UT_DEBUGMSG(("created entry %x \n",this));
 }
 
 TOCEntry::~TOCEntry(void)
 {
+	m_iLevel = -1;
+	UT_DEBUGMSG(("Deleteing entry %x \n",this));
 }
 
 PT_DocPosition TOCEntry::getPositionInDoc(void)
@@ -931,6 +934,8 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
 
 	if(!bDontRecurse && !m_pLayout->isLayoutDeleting())
 	{
+		fp_TOCContainer * pTOCC = static_cast<fp_TOCContainer *>(getFirstContainer());
+		pTOCC->clearScreen();
 		// if the heading we are deleting is immediately preceded by another heading, the text of the
 		// old heading shifts into the preceding heading; in that case, we have to redo the previous TOC
 		// entry.
@@ -993,7 +998,14 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
 	}
 	delete pThisBL;
 	delete pThisEntry;
-	m_vecEntries.deleteNthItem(iAllVec);
+	UT_sint32 k = m_vecEntries.findItem(pThisEntry);
+	UT_ASSERT(k >= 0);
+	while(k >= 0)
+	{
+		m_vecEntries.deleteNthItem(k);
+		k = m_vecEntries.findItem(pThisEntry);
+		UT_ASSERT(k== -1);
+	}
 	markAllRunsDirty();
 	setNeedsReformat(0);
 	setNeedsRedraw();
@@ -1026,6 +1038,7 @@ void fl_TOCLayout::_calculateLabels(void)
 	TOCEntry * pThisEntry = NULL;
 	TOCEntry * pPrevEntry = NULL;
 	UT_Stack stEntry;
+	stEntry.push(NULL);
 	UT_sint32 iCount = static_cast<UT_sint32>(m_vecEntries.getItemCount());
 	if(iCount == 0)
 	{
@@ -1043,14 +1056,18 @@ void fl_TOCLayout::_calculateLabels(void)
 			continue;
 		}
 		pThisEntry = m_vecEntries.getNthItem(i);
+		UT_ASSERT(pThisEntry->getLevel() >= 0);
 		if(pThisEntry->getLevel() == pPrevEntry->getLevel())
 		{
 			pThisEntry->setPosInList(pPrevEntry->getPosInList()+1);
-			void * pTmp;
+			void * pTmp = NULL;
+			UT_ASSERT(stEntry.getDepth() > 0);
 			stEntry.viewTop(&pTmp);
 			TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
+			UT_DEBUGMSG(("Using prevLevel %x thisentry %x \n",pPrevLevel,pThisEntry));
 			if(pPrevLevel && pPrevLevel->getLevel() < pThisEntry->getLevel())
 			{
+				UT_ASSERT(pPrevLevel->getLevel() >= 0);
 				pThisEntry->calculateLabel(pPrevLevel);
 			}
 			else
@@ -1069,9 +1086,10 @@ void fl_TOCLayout::_calculateLabels(void)
 		else
 		{
 			bool bStop = false;
-			while((stEntry.getDepth()>0) && !bStop)
+			while((stEntry.getDepth()>1) && !bStop)
 			{
 				void * pTmp;
+				UT_ASSERT(stEntry.getDepth() > 0);
 				stEntry.pop(&pTmp);
 				pPrevEntry = static_cast<TOCEntry*>(pTmp);
 				if(pPrevEntry->getLevel() == pThisEntry->getLevel())
@@ -1083,6 +1101,7 @@ void fl_TOCLayout::_calculateLabels(void)
 			{
 				pThisEntry->setPosInList(pPrevEntry->getPosInList()+1);
 				void * pTmp;
+				UT_ASSERT(stEntry.getDepth() > 0);
 				stEntry.viewTop(&pTmp);
 				TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
 				if(pPrevLevel && pPrevLevel->getLevel() < pThisEntry->getLevel())
