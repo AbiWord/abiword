@@ -160,7 +160,7 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName());
 
 	gtk_drag_dest_set (m_wTopLevelWindow,
-					   GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
+					   (GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION|GTK_DEST_DEFAULT_DROP),
 					   drag_types, n_drag_types, GDK_ACTION_COPY);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "drag_data_received",

@@ -265,17 +265,17 @@ void EV_UnixGnomeMenu::_convertString2Accel(const char *str, guint &accel_key, G
 		return;
 
 	if (strncmp (str, "Ctrl+", 5) == 0) {
-		ac_mods |= GDK_CONTROL_MASK;
+		ac_mods = (GdkModifierType)(ac_mods|GDK_CONTROL_MASK);
 		str += 5;
 	}
 
 	if (strncmp (str, "Alt+", 4) == 0) {
-		ac_mods |= GDK_MOD1_MASK;
+		ac_mods = (GdkModifierType)(ac_mods|GDK_MOD1_MASK);
 		str += 4;
 	}
 
 	if (strncmp (str, "Shift+", 6) == 0) {
-		ac_mods |= GDK_SHIFT_MASK;
+		ac_mods = (GdkModifierType)(ac_mods|GDK_SHIFT_MASK);
 		str += 6;
 	}
 
