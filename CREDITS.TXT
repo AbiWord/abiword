@@ -28,6 +28,7 @@ Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Danny Faught <faught@rstcorp.com>               
 Harald Fernengel <harry@bnro.de>                RTF compatability fixes
+Hubert Figuiere	(hfiguiere@teaser.fr)		RTF export fixes
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
