@@ -407,11 +407,10 @@ void AP_FormatTable_preview::draw(void)
 	UT_RGBColor tmpCol;
 	
 	UT_RGBColor black(0, 0, 0);
-//	UT_RGBColor write(0, 0, 0);
 	m_gc->setLineWidth(m_gc->tlu(1));
 	
-	int whiteBorder = 20;
-	int cornerLength = 5;
+	int border = m_gc->tlu(20);
+	int cornerLength = m_gc->tlu(5);
 
 //
 //  Draw the cell background
@@ -422,7 +421,7 @@ void AP_FormatTable_preview::draw(void)
 	if (pszBGCol && *pszBGCol)
 	{
 		UT_parseColor(pszBGCol, tmpCol);
-		m_gc->fillRect(tmpCol, 0 + whiteBorder, 0 + whiteBorder, iWidth - 2*whiteBorder, iHeight - 2*whiteBorder);
+		m_gc->fillRect(tmpCol, 0 + border, 0 + border, iWidth - 2*border, iHeight - 2*border);
 	}
 
 //
@@ -432,28 +431,28 @@ void AP_FormatTable_preview::draw(void)
 	m_gc->setColor(UT_RGBColor(127,127,127));
 	
 	// top left corner
-	m_gc->drawLine(pageRect.left + whiteBorder - cornerLength, pageRect.top + whiteBorder,
-				   pageRect.left + whiteBorder, pageRect.top + whiteBorder);
-	m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + whiteBorder  - cornerLength,
-				   pageRect.left + whiteBorder, pageRect.top + whiteBorder);
+	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
+				   pageRect.left + border, pageRect.top + border);
+	m_gc->drawLine(pageRect.left + border, pageRect.top + border  - cornerLength,
+				   pageRect.left + border, pageRect.top + border);
 
 	// top right corner
-	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder + cornerLength, pageRect.top + whiteBorder,
-				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder);
-	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder - cornerLength,
-				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder);
+	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + border,
+				   pageRect.left + pageRect.width - border, pageRect.top + border);
+	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border - cornerLength,
+				   pageRect.left + pageRect.width - border, pageRect.top + border);
 
 	// bottom left corner
-	m_gc->drawLine(pageRect.left + whiteBorder - cornerLength, pageRect.top + pageRect.height - whiteBorder,
-				   pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder);
-	m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder + cornerLength,
-				   pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+	m_gc->drawLine(pageRect.left + border - cornerLength, pageRect.top + pageRect.height - border,
+				   pageRect.left + border, pageRect.top + pageRect.height - border);
+	m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border + cornerLength,
+				   pageRect.left + border, pageRect.top + pageRect.height - border);
 
 	// bottom right corner
-	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder + cornerLength, pageRect.top + pageRect.height - whiteBorder,
-				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
-	m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder + cornerLength,
-				   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+	m_gc->drawLine(pageRect.left + pageRect.width - border + cornerLength, pageRect.top + pageRect.height - border,
+				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
+	m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border + cornerLength,
+				   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 
 //
 //  Draw the cell borders
@@ -476,8 +475,8 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + whiteBorder,
-					   pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder);
+		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
+					   pageRect.left + pageRect.width - border, pageRect.top + border);
 	}
 
 	// left border
@@ -495,8 +494,8 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + whiteBorder,
-					   pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+		m_gc->drawLine(pageRect.left + border, pageRect.top + border,
+					   pageRect.left + border, pageRect.top + pageRect.height - border);
 	}
 	
 	// right border
@@ -514,8 +513,8 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + pageRect.width - whiteBorder, pageRect.top + whiteBorder,
-					   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+		m_gc->drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
+					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
 	
 	// bottom border
@@ -533,10 +532,8 @@ void AP_FormatTable_preview::draw(void)
 		}
 		else
 			m_gc->setColor(black);
-		m_gc->drawLine(pageRect.left + whiteBorder, pageRect.top + pageRect.height - whiteBorder,
-					   pageRect.left + pageRect.width - whiteBorder, pageRect.top + pageRect.height - whiteBorder);
+		m_gc->drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
+					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
-	
-	//m_previewDrawer.draw(m_gc, pageRect);
 }
 
