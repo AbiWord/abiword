@@ -725,7 +725,7 @@ static void zoom_out_func(GtkObject * z, gpointer data)
   UT_return_if_fail ( pFrame != NULL ) ;
 
   UT_sint32 zoom_lvl = pFrame->getZoomPercentage();
-  zoom_lvl += ZOOM_PCTG ;
+  zoom_lvl -= ZOOM_PCTG ;
 
   if ( zoom_lvl <= 0 )
     return ;
