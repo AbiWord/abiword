@@ -23,7 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		ut_debugmsg.cpp		\
-			ut_iconv.cpp		\
+			ut_win_iconv.cpp	\
 			ut_Win32OS.cpp		\
 			ut_Win32String.cpp	\
 			ut_Win32Timer.cpp	\

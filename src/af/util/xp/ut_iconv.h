@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
 #ifndef UT_ICONV_H
 #define UT_ICONV_H
 
+#include "ut_types.h"
 typedef void* UT_iconv_t;
 
 UT_BEGIN_EXTERN_C
@@ -28,7 +29,15 @@ UT_iconv_t  UT_iconv_open( const char* to, const char* from );
 size_t      UT_iconv( UT_iconv_t cd, const char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft );
 int         UT_iconv_close( UT_iconv_t cd );
 
+bool      UT_convert                       (const char *str,
+					    UT_uint32 len,
+					    const char *to_codeset,
+					    const char *from_codeset,
+					    UT_uint32 *bytes_read,
+					    UT_uint32 *bytes_written);
+
 UT_END_EXTERN_C
 
 #endif /* UT_ICONV_H */
+
 

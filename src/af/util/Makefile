@@ -51,7 +51,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Locale.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ut_iconv.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_win_iconv.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
 
@@ -85,6 +85,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_AbiObject.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_iconv.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_mbtowc.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
