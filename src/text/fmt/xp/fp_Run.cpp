@@ -1451,7 +1451,7 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 	_inheritProperties();
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
-	if (pView /*&& pView->getShowPara()*/)
+	if (pView && pView->getShowPara())
 	{
 		// Find width of Pilcrow
 		UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
@@ -1486,7 +1486,13 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 		// document to the right of the pilcrow, see Paul's suggested
 		// selection behaviors. Doesn't matter until we get selection
 		// support though (which requires PT changes).
-		m_iWidth = 8;
+		
+		// I have changed this to 0, because otherwise it figures in
+		// calculation of line width, and the last line in righ-aligned
+		// paragraphs is shifted by the width of the pilcrow.
+		// this required some additional changes to the _draw function
+		// Tomas
+		m_iWidth = 0;
 	}
 }
 
@@ -1560,8 +1566,6 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	FV_View* pView = m_pBL->getDocLayout()->getView();
-		
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, m_pLine->getHeight());
@@ -1579,11 +1583,25 @@ void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 */
 void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 {
+	// if showPara is turned off we will not draw anything at all; however,
+	// we will ensure that the width is set to 0, and if it is currently not
+	// we will get our line to redo its layout and redraw.
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+    if(!pView || !pView->getShowPara())
+    {
+    	if(m_iWidth)
+    	{
+    		m_iWidth = 0;
+    		m_pLine->layout();
+    		m_pLine->redrawUpdate();
+    	}
+    	return;
+    }
+    	
 	UT_ASSERT(pDA->pG == m_pG);
 
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 
-	FV_View* pView = m_pBL->getDocLayout()->getView();
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
 
@@ -1630,11 +1648,26 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		m_pG->setFont(pFont);
 		iAscent = m_pG->getFontAscent();
 	}
+	
+	// if we currently have a 0 width, i.e., we draw in response to the
+	// showPara being turned on, then we obtain the new width, and then
+	// tell the line to redo its layout and redraw instead of drawing ourselves
+	bool bWidthChange = false;
+	if(!m_iWidth)
+		bWidthChange = true;
 
 	m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+ 	if(bWidthChange)
+	{
+		m_pLine->layout();
+		m_pLine->redrawUpdate();
+		return;
+	}
+	
 	m_iHeight = m_pG->getFontHeight();
 	m_iXoffText = pDA->xoff;
-	m_iYoffText = pDA->yoff - iAscent; 
+	
+	m_iYoffText = pDA->yoff - iAscent;
 	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
 
 	if (bIsSelected)

@@ -30,18 +30,38 @@
 // Alignment left
 /////////////////////////////////////////////////////////////
 
-void fb_Alignment_left::initialize(fp_Line * /*pLine*/ )
+void fb_Alignment_left::initialize(fp_Line * pLine )
 {
+#ifdef BIDI_ENABLED
+		if(pLine->getBlock()->getDominantDirection())
+		{
+	    	m_iStartPosition = 0 - pLine->calculateWidthOfTrailingSpaces();
+	    	m_iStartPositionLayoutUnits = 0 - pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
+	 	}
+	 	else
+	 	{
+	 		m_iStartPosition = 0;
+	 		m_iStartPositionLayoutUnits = 0;
+	 	}
+#endif
 }
 
 UT_sint32 fb_Alignment_left::getStartPosition()
 {
+#ifdef BIDI_ENABLED
+	return m_iStartPosition;
+#else	
 	return 0;
+#endif
 }
 
 UT_sint32 fb_Alignment_left::getStartPositionInLayoutUnits()
 {
+#ifdef BIDI_ENABLED
+	return m_iStartPositionLayoutUnits;
+#else	
 	return 0;
+#endif
 }
 
 void fb_Alignment_left::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
@@ -99,13 +119,23 @@ void fb_Alignment_center::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 
 void fb_Alignment_right::initialize(fp_Line *pLine)
 {
-	UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
+	UT_sint32 iTrailing = pLine->calculateWidthOfTrailingSpaces();
+	UT_sint32 iWidth = pLine->calculateWidthOfLine() - iTrailing;
 
 	m_startPosition = pLine->getMaxWidth() - iWidth;
 
-	UT_sint32 iWidthLayoutUnits = pLine->calculateWidthOfLineInLayoutUnits() - pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
+    UT_sint32 iTrailingLayoutUnits = pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
+	UT_sint32 iWidthLayoutUnits = pLine->calculateWidthOfLineInLayoutUnits() - iTrailingLayoutUnits;
 
 	m_startPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits() - iWidthLayoutUnits;
+
+#ifdef BIDI_ENABLED
+		if(pLine->getBlock()->getDominantDirection())
+		{
+			m_startPosition -= iTrailing;
+			m_startPositionLayoutUnits -= iTrailingLayoutUnits;
+		}
+#endif	
 }
 
 UT_sint32 fb_Alignment_right::getStartPosition()
@@ -149,8 +179,16 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 		pLine->distributeJustificationAmongstSpaces(m_iExtraWidth);
 
 #ifdef BIDI_ENABLED
-	    m_iStartPosition = 0;
-	    m_iStartPositionLayoutUnits = 0;
+		if(pLine->getBlock()->getDominantDirection())
+		{
+	    	m_iStartPosition = 0 - pLine->calculateWidthOfTrailingSpaces();
+	    	m_iStartPositionLayoutUnits = 0 - pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
+	 	}
+	 	else
+	 	{
+	 		m_iStartPosition = 0;
+	 		m_iStartPositionLayoutUnits = 0;
+	 	}
 #endif
 
 #ifndef NDEBUG	

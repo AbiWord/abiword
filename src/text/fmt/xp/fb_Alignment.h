@@ -58,6 +58,13 @@ public:
 	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
 
+#ifdef BIDI_ENABLED
+private:
+
+	UT_sint32	m_iStartPosition;
+	UT_sint32	m_iStartPositionLayoutUnits;
+#endif
+
 };
 
 class fb_Alignment_center : public fb_Alignment
