@@ -120,6 +120,7 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 	m_pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(m_pUnixFrame);
 	
+#if 0
 	// see if they just want the properties of the printer without
 	// bothering the user.
 	
@@ -129,6 +130,7 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 		_getGraphics();
 	}
 	else
+#endif
 	{
 		_raisePrintDialog(pFrame);		
 		if (m_answer == a_OK)

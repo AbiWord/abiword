@@ -1223,7 +1223,8 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	    break;
 
 	  case -303:
-	    String_id = AP_STRING_ID_MSG_IE_UnknownType;
+	    String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
+	    //AP_STRING_ID_MSG_IE_UnknownType;
 	    break;
 
 	  case -304:
