@@ -192,7 +192,7 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 	UT_uint32 cumOffset = 0;
 	UT_uint32 cumEndOffset = 0;
 	pf_Frag * pfTemp = NULL;
-	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); cumOffset=cumEndOffset, pfTemp=pfTemp->getNext())
+	for (pfTemp=pfsBlock->getNext(); (pfTemp); cumOffset=cumEndOffset, pfTemp=pfTemp->getNext())
 	{
 		cumEndOffset = cumOffset+pfTemp->getLength();
 
