@@ -50,20 +50,56 @@ tScriptIsComplex     GR_Win32USPGraphics::fScriptIsComplex     = NULL;
 tScriptGetProperties GR_Win32USPGraphics::fScriptGetProperties = NULL;
 tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstitution = NULL;
 
-class usp_exception : public exception
-{
-  public:
-	usp_exception(const char * s):exception(s){};
-	virtual ~usp_exception(){};
-};
+// some macros to ease logging of critical exceptions
+// all of these macros log the file name and line where the exception occured, plus some
+// additional information
 
-#define THROW_WIN32_USP_EXCP(msg)                                  \
-{                                                                  \
-    UT_String __s;                                                 \
-    UT_String_sprintf(__s, "%s (%d): %s",__FILE__, __LINE__, msg); \
-	UT_DEBUGMSG(("%s",__s.c_str()));                               \
-	usp_exception e(__s.c_str());                                  \
-    throw (e);                                                     \
+// log single string
+#define LOG_USP_EXCPT(msg)                                                      \
+{                                                                               \
+    UT_String __s;                                                              \
+    UT_String_sprintf(__s, "%s (%d): %s",__FILE__, __LINE__, msg);              \
+	UT_DEBUGMSG(("%s",__s.c_str()));                                            \
+    if(XAP_App::getApp()->getPrefs())                                           \
+    {                                                                           \
+	    XAP_App::getApp()->getPrefs()->log("USPGraphics", __s.c_str());         \
+    }                                                                           \
+}
+
+// log string and a numerical parameter ("msg [0xpar]")
+#define LOG_USP_EXCPT_X(msg, par)                                               \
+{                                                                               \
+    UT_String __s;                                                              \
+    UT_String_sprintf(__s, "%s (%d): %s [0x%x]",__FILE__, __LINE__, msg, par);  \
+	UT_DEBUGMSG(("%s",__s.c_str()));                                            \
+    if(XAP_App::getApp()->getPrefs())                                           \
+    {                                                                           \
+	    XAP_App::getApp()->getPrefs()->log("USPGraphics", __s.c_str());         \
+    }                                                                           \
+}
+
+// log message consisting of two strings ("msg [str]")
+#define LOG_USP_EXCPT_S(msg, str)                                               \
+{                                                                               \
+    UT_String __s;                                                              \
+    UT_String_sprintf(__s, "%s (%d): %s [%s]",__FILE__, __LINE__, msg, str);    \
+	UT_DEBUGMSG(("%s",__s.c_str()));                                            \
+    if(XAP_App::getApp()->getPrefs())                                           \
+    {                                                                           \
+	    XAP_App::getApp()->getPrefs()->log("USPGraphics", __s.c_str());         \
+    }                                                                           \
+}
+
+// log string, with additional string and numerical parameters ("msg [str, 0xpar]")
+#define LOG_USP_EXCPT_SX(msg, str, par)                                                  \
+{                                                                                        \
+    UT_String __s;                                                                       \
+    UT_String_sprintf(__s, "%s (%d): %s [%s, 0x%x]",__FILE__, __LINE__, msg, str, par);  \
+	UT_DEBUGMSG(("%s",__s.c_str()));                                                     \
+    if(XAP_App::getApp()->getPrefs())                                                    \
+    {                                                                                    \
+	    XAP_App::getApp()->getPrefs()->log("USPGraphics", __s.c_str());                  \
+    }                                                                                    \
 }
 
 class GR_Win32USPItem: public GR_Item
@@ -227,52 +263,45 @@ GR_RenderInfo * GR_Win32USPRenderInfo::s_pOwnerChar         = NULL;
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
-	:GR_Win32Graphics(hdc, hwnd, pApp), m_iDCFontAllocNo(0)
+	:GR_Win32Graphics(hdc, hwnd, pApp),
+	 m_iDCFontAllocNo(0),
+	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
 	{
 		// we should only get here if exceptions were not enabled
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		return;
 	}
+
+	m_bConstructorSucceeded = true;
 }
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App * pApp,
 										 HGLOBAL hDevMode)
-	:GR_Win32Graphics(hdc, pDI, pApp, hDevMode), m_iDCFontAllocNo(0)
+	:GR_Win32Graphics(hdc, pDI, pApp, hDevMode),
+	 m_iDCFontAllocNo(0),
+	 m_bConstructorSucceeded(false)
 {
 	if(!_constructorCommonCode())
 	{
 		// we should only get here if exceptions were not enabled
-		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		return;
 	}
+
+	m_bConstructorSucceeded = true;
 }
 
 GR_Win32Font * GR_Win32USPGraphics::_newFont(LOGFONT & lf)
 {
-	GR_Win32Font * f = NULL;
-
-	try
-	{
-		f = new GR_Win32USPFont(lf);
-	}
-	catch (_win32FntExcpt e)
-	{
-		f = NULL;
-	    if(XAP_App::getApp()->getPrefs())
-	    {
-		   XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", e.what());
-	    }
-	}
-
-	return f;
+	return GR_Win32USPFont::newFont(lf);
 }
 
 #define loadUSPFunction(name)                           \
 f##name = (t##name)GetProcAddress(s_hUniscribe, #name); \
 if(!f##name)                                            \
 {                                                       \
-	THROW_WIN32_USP_EXCP(#name)                         \
+	LOG_USP_EXCPT(#name)                                \
 	return false;                                       \
 }
 
@@ -319,7 +348,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 
 		if(!s_hUniscribe)
 		{
-			THROW_WIN32_USP_EXCP("could not load usp10.dll")
+			LOG_USP_EXCPT("could not load usp10.dll")
 			return false;
 		}
 		
@@ -387,7 +416,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		HRESULT hRes = fScriptGetProperties(&s_ppScriptProperties, & s_iMaxScript);
 		if(hRes)
 		{
-			THROW_WIN32_USP_EXCP("no script properties")
+			LOG_USP_EXCPT_X("no script properties", hRes)
 			return false;
 		}
 #ifdef DEBUG
@@ -401,7 +430,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 	{
 		if(!s_hUniscribe)
 		{
-			THROW_WIN32_USP_EXCP("no USP HINST")
+			LOG_USP_EXCPT("no USP HINST")
 			return false;
 		}
 	}
@@ -447,49 +476,24 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 	
 	GR_Win32AllocInfo &AI = (GR_Win32AllocInfo&)info;
 
-	try
-	{
-		if(AI.m_pDocInfo)
-		{
-			// printer graphics required
-			return new GR_Win32USPGraphics(AI.m_hdc, AI.m_pDocInfo,
-										   AI.m_pApp,AI.m_hDevMode);
-		}
-		else
-		{
-			// screen graphics required
-			return new GR_Win32USPGraphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
-		}
-	}
-	catch (usp_exception &e)
-	{
-		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: error 0x%04x\n",e.what()));
+	GR_Win32USPGraphics * pG = NULL;
 
-		if(XAP_App::getApp()->getPrefs())
-	    {
-			XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", e.what());
-	    }
-		return NULL;
-	}
-	catch (std::exception &e)
+	if(AI.m_pDocInfo)
 	{
-		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: %s\n",e.what()));
+		// printer graphics required
+		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_pDocInfo,
+									   AI.m_pApp,AI.m_hDevMode);
+	}
+	else
+	{
+		// screen graphics required
+		pG = new GR_Win32USPGraphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
+	}
 
-		if(XAP_App::getApp()->getPrefs())
-	    {
-			XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", e.what());
-	    }
+	if(pG->m_bConstructorSucceeded)
+		return pG;
+	else
 		return NULL;
-	}
-	catch (...)
-	{
-		UT_DEBUGMSG(("GR_Win32USPGraphics::graphicsAllocator: unknown error\n"));
-		if(XAP_App::getApp()->getPrefs())
-	    {
-			XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", "unhandled exception");
-	    }
-		return NULL;
-	}
 }
 
 /*!
@@ -519,7 +523,22 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont)
 	if(pFont->getAllocNumber() != m_iDCFontAllocNo ||
 	   (HFONT) GetCurrentObject(m_hdc, OBJ_FONT) != pFont->getFontHandle())
 	{
-		UT_ASSERT_HARMLESS( SelectObject(m_hdc, pFont->getFontHandle()) );
+		if(NULL == SelectObject(m_hdc, pFont->getFontHandle()))
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			LOGFONT lf;
+			if(GetObject(m_pFont->getFontHandle(), sizeof(LOGFONT), &lf))
+			{
+				// this assumes that the lfFaceName is a char string; it could be wchar in
+				// fact but it seems to work elsewhere in the win32 graphics class
+				LOG_USP_EXCPT_SX("Could not select font into DC", lf.lfFaceName, lf.lfHeight)
+			}
+			else
+			{
+				LOG_USP_EXCPT("Could not select font into DC")
+			}
+		}
+		
 		m_iDCFontAllocNo = pFont->getAllocNumber();
 	}
 }
@@ -1083,8 +1102,12 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 	pItem->m_si.a.eScript = eScript;
 	//RI.m_bRejustify = false; -- the docs are misleading; rejustification is always needed
-	
-	UT_ASSERT_HARMLESS( !hRes );
+
+	if(hRes)
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		LOG_USP_EXCPT_X("fScriptTextOut failed", hRes)
+	}
 }
 
 void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
@@ -1170,7 +1193,12 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 	RI.m_bRejustify = true;
 	
-	UT_ASSERT_HARMLESS( !hRes );
+
+	if(hRes)
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		LOG_USP_EXCPT_X("fScriptPlace failed", hRes)
+	}
 }
 
 void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const
@@ -1667,7 +1695,12 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 								RI.m_pVisAttr, pAdvances,
 								& pItem->m_si.a, &iPos, &iTrail);
 
-	UT_ASSERT_HARMLESS( !hRes );
+	if(hRes)
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		LOG_USP_EXCPT_X("fScriptXtoCP failed", hRes)
+	}
+
 	return iPos + iTrail;
 }
 
@@ -1710,7 +1743,13 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 							   pAdvances, & pItem->m_si.a, &x);
 
 	
-	UT_ASSERT_HARMLESS( !hRes );
+
+	if(hRes)
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		LOG_USP_EXCPT_X("fScriptCPtoX failed", hRes)
+	}
+
 	x = x;
 	x2 = x;
 }
@@ -1755,11 +1794,19 @@ void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
 	HRESULT hRes = fScriptStringAnalyse(m_hdc, pwChars, iLength, iLength*3/2 + 1,
 						-1, flags, 0, NULL, NULL, NULL, NULL, NULL, &SSA);
 
-	UT_ASSERT_HARMLESS( !hRes );
+	if(hRes)
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		LOG_USP_EXCPT_X("fScriptStringAnalyse failed", hRes)
+	}
 	
 	hRes = fScriptStringOut(SSA, _tduX(xoff), _tduY(yoff), 0, NULL, 0, 0, FALSE);
 
-	UT_ASSERT_HARMLESS( !hRes );
+	if(hRes)
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		LOG_USP_EXCPT_X("fScriptStringOut failed", hRes)
+	}
 
 	if(SSA)
 		fScriptStringFree(&SSA);
@@ -1936,6 +1983,19 @@ bool GR_Win32USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 bool GR_Win32USPRenderInfo::isJustified() const
 {
 	return (m_pJustify != NULL);
+}
+
+GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf)
+{
+	GR_Win32USPFont * f = new GR_Win32USPFont(lf);
+
+	if(!f || !f->getFontHandle())
+	{
+		delete f;
+		f = NULL;
+	}
+
+	return f;
 }
 
 void GR_Win32USPFont::_clearAnyCachedInfo()

@@ -38,12 +38,15 @@
 class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 {
   public:
-	GR_Win32USPFont(LOGFONT & lf): GR_Win32Font(lf), m_sc(NULL){};
+	static  GR_Win32USPFont * newFont(LOGFONT & lf);
 	virtual ~GR_Win32USPFont();
 
 	SCRIPT_CACHE * getScriptCache() {return &m_sc;}
 
   protected:
+	// all construction has to be done via the graphics class
+	GR_Win32USPFont(LOGFONT & lf): GR_Win32Font(lf), m_sc(NULL){};
+	
 	virtual void _clearAnyCachedInfo();
 
   private:
@@ -119,11 +122,12 @@ public:
 	
   private:
 	bool      _constructorCommonCode();
-	virtual GR_Win32Font * _newFont(LOGFONT & lf) throw (_win32FntExcpt);
+	virtual GR_Win32Font * _newFont(LOGFONT & lf);
 
 	void   _setupFontOnDC(GR_Win32USPFont *pFont);
 
 	UT_uint32 m_iDCFontAllocNo;
+	bool   m_bConstructorSucceeded;
 
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;

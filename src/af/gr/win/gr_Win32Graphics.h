@@ -26,8 +26,6 @@
 #include "gr_Win32CharWidths.h"
 #include "ut_vector.h"
 
-#include <stdexcpt.h>
-
 class UT_ByteBuf;
 
 #define _MAX_CACHE_PENS 64
@@ -35,17 +33,10 @@ class UT_ByteBuf;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class _win32FntExcpt : public exception
-{
-  public:
-	_win32FntExcpt(const char * msg): exception(msg){};
-	virtual ~_win32FntExcpt(){};
-};
-
 class ABI_EXPORT GR_Win32Font : public GR_Font
 {
 public:
-	GR_Win32Font(LOGFONT & lf) throw (_win32FntExcpt);
+	static GR_Win32Font * newFont(LOGFONT & lf);
 	virtual ~GR_Win32Font();
 
 	// make GR_Win32Graphics an "aquaintance" of GR_Win32Font
@@ -69,7 +60,7 @@ public:
 		static void	 selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc);
 	};
 	friend class Acq;
-
+	
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 	virtual GR_CharWidths* newFontWidths(void) const;
 	void markGUIFont() {m_bGUIFont = true;}
@@ -78,6 +69,9 @@ public:
 	HFONT getFontHandle() const {return m_layoutFont;}
 	
 protected:
+	// all construction has to be done via the graphics class
+	GR_Win32Font(LOGFONT & lf);
+
 	GR_Win32CharWidths * _getCharWidths() const
 	{
 #ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
@@ -253,7 +247,7 @@ protected:
 	void					_setColor(DWORD clrRef);
 
   private:
-	virtual GR_Win32Font *          _newFont(LOGFONT & lf)throw (_win32FntExcpt);
+	virtual GR_Win32Font *          _newFont(LOGFONT & lf);
 
   protected:
 

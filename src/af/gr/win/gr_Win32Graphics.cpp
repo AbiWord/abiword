@@ -43,13 +43,15 @@
 #endif
 
 
-#define THROW_WIN32_FNT_EXCP(msg)                                  \
-{                                                                  \
-    UT_String __s;                                                 \
-    UT_String_sprintf(__s, "%s (%d): %s",__FILE__, __LINE__, msg); \
-	UT_DEBUGMSG(("%s",__s.c_str()));                               \
-	_win32FntExcpt e(__s.c_str());                                 \
-    throw (e);                                                     \
+#define LOG_WIN32_EXCPT(msg)                                                  \
+{                                                                             \
+    UT_String __s;                                                            \
+    UT_String_sprintf(__s, "%s (%d): %s",__FILE__, __LINE__, msg);            \
+	UT_DEBUGMSG(("%s",__s.c_str()));                                          \
+    if(XAP_App::getApp()->getPrefs())                                         \
+    {                                                                         \
+	    XAP_App::getApp()->getPrefs()->log("gr_Win32Graphics", __s.c_str());  \
+    }                                                                         \
 }
 
 //#define GR_GRAPHICS_DEBUG	1
@@ -205,22 +207,7 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 
 GR_Win32Font * GR_Win32Graphics::_newFont(LOGFONT & lf)
 {
-	GR_Win32Font * f = NULL;
-
-	try
-	{
-		f = new GR_Win32Font(lf);
-	}
-	catch (_win32FntExcpt e)
-	{
-		f = NULL;
-	    if(XAP_App::getApp()->getPrefs())
-	    {
-		   XAP_App::getApp()->getPrefs()->log("gr_Win32Graphics", e.what());
-	    }
-	}
-
-	return f;
+	return GR_Win32Font::newFont(lf);
 }
 
 GR_Font* GR_Win32Graphics::getGUIFont(void)
@@ -1380,7 +1367,8 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 
 	if(!m_layoutFont)
 	{
-		THROW_WIN32_FNT_EXCP("CreateFontIndirectFailed")
+		LOG_WIN32_EXCPT("CreateFontIndirectFailed")
+		return;
 	}
 	
 	insertFontInCache (m_iHeight, m_layoutFont);
@@ -1394,7 +1382,9 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 	{
 		// NOW what? We can't throw an exeption, and this object isn't
 		// legal yet...
-		THROW_WIN32_FNT_EXCP("No DC")
+		LOG_WIN32_EXCPT("No DC")
+		m_layoutFont = NULL;
+		return;
 	}
 	else
 	{
@@ -1402,7 +1392,9 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 		HFONT hOldFont = (HFONT)SelectObject(hDC, m_layoutFont);
 		if (hOldFont == (HFONT)GDI_ERROR)
 		{
-			THROW_WIN32_FNT_EXCP("Could not select font into DC.")
+			LOG_WIN32_EXCPT("Could not select font into DC.")
+			m_layoutFont = NULL;
+			return;
 		}
 		else
 		{
@@ -1426,6 +1418,20 @@ GR_Win32Font::GR_Win32Font(LOGFONT & lf)
 		ReleaseDC(0, hDC);
 	}
 }
+
+GR_Win32Font * GR_Win32Font::newFont(LOGFONT &lf)
+{
+	GR_Win32Font * f = new GR_Win32Font(lf);
+
+	if(!f || !f->getFontHandle())
+	{
+		delete f;
+		f = NULL;
+	}
+
+	return f;
+}
+
 
 GR_Win32Font::~GR_Win32Font()
 {
