@@ -60,14 +60,11 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG );
 
 	// Ensure that common control DLL is loaded
-#ifdef REBAR
+
 	INITCOMMONCONTROLSEX icex;
 	icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
 	icex.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES;	// load the rebar and toolbar
 	InitCommonControlsEx(&icex);
-#else
-	InitCommonControls();
-#endif
 
 	// initialize our application.
 

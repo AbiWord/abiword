@@ -260,7 +260,6 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	UT_Bool bResult = m_pWin32Menu->synthesize();
 	UT_ASSERT(bResult);
 
-#ifdef REBAR
 	// create a rebar container for all the toolbars
 	m_hwndRebar = CreateWindowEx( 
 				0L,
@@ -276,7 +275,6 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				NULL );
 
 	UT_ASSERT(m_hwndRebar);
-#endif
 
 	// create a toolbar instance for each toolbar listed in our base class.
 	m_iBarHeight = 0;
@@ -301,12 +299,6 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 		GetClientRect(hwndBar, &r);
 		iHeight = r.bottom - r.top;
 
-#ifndef REBAR
-		GetClientRect(m_hwndFrame, &r);
-		iWidth = r.right - r.left;
-
-		MoveWindow(hwndBar, r.left, m_iBarHeight, iWidth, iHeight, TRUE);
-#endif
 		m_iBarHeight += iHeight;
 	}
 
@@ -318,7 +310,6 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	m_iSizeWidth = iWidth;
 	m_iSizeHeight = iHeight;
 	
-#ifdef REBAR
 	// force rebar to resize itself
 	// TODO for some reason, we give REBAR the height of the FRAME
 	// TODO and let it decide how much it actually needs....
@@ -327,7 +318,6 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	// ask rebar how tall it is
 	GetClientRect(m_hwndRebar, &r);
 	m_iBarHeight = r.bottom - r.top + 6;
-#endif
 
 	UT_ASSERT(iHeight > m_iBarHeight);
 	iHeight -= m_iBarHeight;
@@ -518,7 +508,6 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 			}
 			break;
 
-#ifdef REBAR
 		case RBN_HEIGHTCHANGE:
 			{
 				RECT r;
@@ -538,7 +527,6 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 				}
 			}
 			break;
-#endif
 
 		// Process other notifications here
         default:
@@ -551,29 +539,10 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		int nWidth = LOWORD(lParam);
 		int nHeight = HIWORD(lParam);
 
-#ifdef REBAR
 		if (nWidth != f->m_iSizeWidth)
 		{
 			MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
 		}
-#else
-		// keep toolbars full width
-		f->m_iBarHeight = 0;
-	
-		UT_uint32 nrToolbars, k;
-		nrToolbars = f->m_vecWin32Toolbars.getItemCount();
-		for (k=0; k < nrToolbars; k++)
-		{
-			EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
-			HWND hwndBar = t->getWindow();
-
-			RECT r;
-			GetClientRect(hwndBar, &r);
-			MoveWindow(hwndBar, 0, f->m_iBarHeight, nWidth, r.bottom - r.top, TRUE);
-
-			f->m_iBarHeight += r.bottom - r.top;
-		}
-#endif
 
 		if (f->m_hwndChild)
 		{

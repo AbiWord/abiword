@@ -263,11 +263,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	AP_Toolbar_ControlFactory * pFactory = m_pWin32App->getControlFactory();
 	UT_ASSERT(pFactory);
 
-#ifdef REBAR
 	HWND hwndParent = m_pWin32Frame->getToolbarWindow();
-#else
-	HWND hwndParent = m_pWin32Frame->getTopLevelWindow();
-#endif
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
@@ -275,17 +271,10 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 				TOOLBARCLASSNAME,		// window class name
 				(LPSTR) NULL,			// window caption
 				WS_CHILD | WS_VISIBLE 
-#ifndef REBAR
-				| WS_BORDER 
-#endif
 				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
 				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
 				| CCS_NOPARENTALIGN | CCS_NODIVIDER
-#ifdef REBAR
 				| CCS_NORESIZE
-#else
-				| CCS_NOMOVEY
-#endif
 				,						// window style
 				0,						// initial x position
 				0,						// initial y position
@@ -574,7 +563,6 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 		}
 	}
 
-#ifdef REBAR
 	// Get the height of the toolbar.
 	DWORD dwBtnSize = SendMessage(m_hwnd, TB_GETBUTTONSIZE, 0,0);
 
@@ -608,7 +596,6 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 
 	// Add it at the the end
 	SendMessage(hwndParent, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
-#endif
 
 	return UT_TRUE;
 }
