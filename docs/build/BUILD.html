@@ -1,15 +1,16 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
-<html>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:awml="http://www.abisource.com/awml.dtd">
  <head>
   <!-- ================================================================================  -->
   <!-- This HTML file was created by AbiWord.                                            -->
   <!-- AbiWord is a free, Open Source word processor.                                    -->
   <!-- More information about AbiWord is available at http://www.abisource.com                -->
   <!-- ================================================================================  -->
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
   <title>AbiWord Build Guide</title>
-  <meta name="Title" content="AbiWord Build Guide">
-  <meta name="Subject" content="Instructions for building AbiWord from source">
+  <meta name="Title" content="AbiWord Build Guide" />
+  <meta name="Subject" content="Instructions for building AbiWord from source" />
   <style type="text/css">
    <!--
 @media print {
@@ -48,19 +49,19 @@ p, h1, h2, h3, li {
 	text-align: left;
 	vertical-align: normal;
 }
-*.Plain_Text {
-	font-family: 'Courier New';
-}
-*.Command_Text {
-	color: #0000ff;
-	font-size: 10pt;
-}
 h1 {
 	font-family: 'Luxi Sans';
 	font-size: 17pt;
 	font-weight: bold;
 	margin-bottom: 0.2056in;
 	margin-top: 0.1389in;
+}
+*.Plain_Text {
+	font-family: 'Courier New';
+}
+*.Command_Text {
+	color: #0000ff;
+	font-size: 10pt;
 }
 h2 {
 	font-family: 'Luxi Sans';
@@ -88,7 +89,7 @@ h3 {
   <div>
    <h1>AbiWord Build Instructions</h1>
    <p>AbiWord is a C++ application which has a cross-platform architecture consisting of a large platform-independent core and a number of front-ends which use the native GUI of each of the platforms it supports. As a consequence of this, there are a number of different build systems used by AbiWord and a large number of build options. This document gives an introductory guide to building AbiWord and attempts to cover these various build options. However, the build changes often and inevitably there will be discrepancies between this guide and the reality of building AbiWord. If you find any errors or omissions, don't be afraid to ask about them on the mailing lists, or to file bugs at <a href="http://bugzilla.abisource.com/">http://bugzilla.abisource.com/</a>.</p>
-   <h2>Contents<a name="unix"></a></h2>
+   <h2>Contents<a name="unix" id="unix"></a></h2>
    <ul>
     <li class="Normal_Unspaced">	<a href="#unix">Unix</a></li>
     <li class="Normal_Unspaced">	<a href="#windows">Windows</a></li>
@@ -104,27 +105,29 @@ h3 {
     <li>	GNU's make (called gmake sometimes); see <a href="#nongnumake">Notes on using non-GNU make</a> below.</li>
     <li>	A Bourne compatible shell, such as sh, bash, zsh, ksh...</li>
    </ol>
-   <p class="Heading_4">GTK+-2.0</p>
+   <p class="Heading_4" awml:style="Heading 4">GTK+-2.0</p>
    <p>AbiWord-2.0's Unix GUI is GTK+-2.0 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.0 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at <a href="http://www.gtk.org/">http://www.gtk.org/</a>. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a "distribution") . We always recommend going with the tools your distribution provides, but you are in no means required to do so.</p>
-   <p class="Heading_4">zlib</p>
+   <p class="Heading_4" awml:style="Heading 4">zlib</p>
    <p>AbiWord also requires zlib. Zlib is usually installed on every machine under the sun, even those sold by Sun<span style="vertical-align: superscript">TM</span>. But, if for some reason you don't have it or you just want to get it anyway, <a href="http://www.gzip.org/zlib/">http://www.gzip.org/zlib/</a> is the place for you. See also: <span class="Command_Text Plain_Text">configure --with-zlib</span></p>
-   <p class="Heading_4" dir="ltr">libpng</p>
+   <p class="Heading_4" awml:style="Heading 4" dir="ltr">libpng</p>
    <p>AbiWord also requires libpng. Like zlib, libpng is installed on most machines already. However, you may get the latest and greatest libpng here:<a href=" http://www.libpng.org/pub/png/ "> http://www.libpng.org/pub/png/</a>. See also: <span class="Command_Text Plain_Text">configure --with-libpng</span></p>
-   <p class="Heading_4" dir="ltr">iconv</p>
+   <p class="Heading_4" awml:style="Heading 4" dir="ltr">iconv</p>
    <p>AbiWord also requires a <span style="font-style: italic">working</span> iconv implementation. Note, that thing that ships on your Solaris 8, HP/UX, or AIX box isn't considered "working." AbiWord requires GNU libiconv 1.8 or later to be installed. Most every Linux box and some BSD boxen should be in the clear here, as the standard C library ships with an equivalent version of this package. If you're not on Linux or BSD, get libiconv here: <a href="http://www.gnu.org/software/libiconv/">http://www.gnu.org/software/libiconv/</a>. See also: <span class="Command_Text Plain_Text">configure --with-libiconv</span></p>
-   <p class="Heading_4" dir="ltr">fribidi</p>
+   <p class="Heading_4" awml:style="Heading 4" dir="ltr">fribidi</p>
    <p>AbiWord also requires the Fribidi library, version 0.10.4 or higher, which is available at <a href="http://sourceforge.net/projects/fribidi/">http://sourceforge.net/projects/fribidi/</a>. (Note: Do not use the fribidi in AbiWord's CVS since that is for Windows only!) See also: <span class="Command_Text Plain_Text">configure --with-fribidi</span></p>
-   <p class="Heading_4">expat/libxml2</p>
+   <p class="Heading_4" awml:style="Heading 4">expat/libxml2</p>
    <p>AbiWord also requires an XML parser in order to work. Don't be too worried about what that means - your system probably already has a working one installed. If you're in doubt, you can go grab expat (<a href="http://sourceforge.net/projects/expat/">http://sourceforge.net/projects/expat/</a>) or (preferably) libxml2 (<a href="http://xmlsoft.org/">http://xmlsoft.org/</a>) or you can also get expat from AbiWord's CVS (<span class="Command_Text Plain_Text">cvs co expat</span>). See also: <span class="Command_Text Plain_Text">configure --with-expat</span> and <span class="Command_Text Plain_Text">configure --with-libxml2</span></p>
-   <p class="Heading_4" dir="ltr">popt</p>
+   <p class="Heading_4" awml:style="Heading 4" dir="ltr">popt</p>
    <p>AbiWord also requires a little library called POPT to parse through command line arguments. POPT is probably installed on your Linux box, but if not, or if you are on most BSD or many &nbsp;Solaris or something else entirely that doesn't have it, you can get it here (<a href="http://developer.gnome.org/arch/misc/popt.html">http://developer.gnome.org/arch/misc/popt.html</a>) or you can also get popt from AbiWord's CVS (<span class="Command_Text Plain_Text">cvs co popt</span>). See also: <span class="Command_Text Plain_Text">configure --with-popt</span></p>
-   <p class="Heading_4">aspell/pspell</p>
+   <p class="Heading_4" awml:style="Heading 4">aspell/pspell</p>
    <p>AbiWord can optionally take advantage of the Aspell/Pspell spell checkers. Get them at <a href="http://aspell.net/">http://aspell.net/</a> if you're so inclined. A lot of newer distributions ship aspell/pspell. Don't worry if you don't get this, AbiWord will fall back to using its built-in ispell spell checker. Dictionaries for our ispell checker can be found at <a href="http://www.abisource.com/download/abispell.phtml">http://www.abisource.com/download/abispell.phtml</a>. See also: <span class="Command_Text Plain_Text">configure --with-pspell</span></p>
-   <p class="Heading_4">enchant</p>
+   <p class="Heading_4" awml:style="Heading 4">enchant</p>
    <p>enchant is a new wrapper library that provides a tidy, single interface around the various dictionary libraries available, such as aspell, ispell, uspsell, myspell,... See description of enchant at <a href="http://www.abisource.com/enchant/">http://www.abisource.com/enchant/</a>. AbiWord will use the enchant library if it finds it.</p>
-   <p class="Heading_4">Xft2/fontconfig</p>
+   <p class="Heading_4" awml:style="Heading 4">Xft2/fontconfig</p>
    <p>AbiWord takes advantage of the Xft2/FontConfig X11 font extensions. Your copy of AbiWord will look so pretty that you'll be the envy of all of your friends, peers, and coworkers. Get these at <a href="http://www.fontconfig.org/">http://www.fontconfig.org/</a>.</p>
-   <p class="Heading_4">perl</p>
+   <p class="Heading_4" awml:style="Heading 4">LibGlade</p>
+   <p>Libglade is a powerful and easy way to build GTK+ dialogs. AbiWord requires libglade &gt;= 2.0.</p>
+   <p class="Heading_4" awml:style="Heading 4">perl</p>
    <p>AbiWord can be scripted (controlled and added onto via extensions) via a PERL interface if you so wish. PERL is available from <a href="http://www.perl.org/">http://www.perl.org/</a>. See also: <span class="Command_Text Plain_Text">configure --enable-scripting</span></p>
    <h3>Getting the source:</h3>
    <p>Well, if you're here, you've probably downloaded the latest and greatest AbiWord sources. If not, you can always get the latest AbiWord source and binary packages from <a href="http://sourceforge.net/projects/abiword/">http://sourceforge.net/projects/abiword/</a>. If you're more of the CVS type, you can find CVS instructions for checking out AbiWord here: <a href="http://www.abisource.com/developers/download.phtml">http://www.abisource.com/developers/download.phtml</a>.</p>
@@ -149,8 +152,8 @@ h3 {
    <h3>Configuring what you want built:</h3>
    <p>Because AbiWord uses the automake/autoconf build tools, you may already be familiar with this step and some of its more-common behaviors, quirks, and options.</p>
    <p>If you enter the "abi" directory, you'll find a little (big) shell script there named "configure." This program will help you determine what features get built into AbiWord. If you're in a rush, uninterested, or clueless, you might just try:</p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">./configure</span></p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">make</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">./configure</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">make</span></p>
    <p>	<span class="Command_Text Plain_Text">make install</span></p>
    <p>which is also known as the "standard unix build practice." If you do this, more power to you. If you're interested in what you can play with, however, read on.</p>
    <p>Common build options:</p>
@@ -172,11 +175,11 @@ h3 {
    <p>When the '<span class="Command_Text Plain_Text">make</span>' part of this process is finished, you will want to install AbiWord. You can achieve this through typing '<span class="Command_Text Plain_Text">make install</span>' - this part may require you to be superuser (root), depending on your permissions and where you chose as your prefix (the default, /usr/local, usually requires superuser permission). You can do this through typing '<span class="Command_Text Plain_Text">su</span>' or '<span class="Command_Text Plain_Text">sudo</span>'. Please consult your manual pages or local system(s) administrator if you have questions.</p>
    <h3>NOTES FOR SOLARIS USERS:</h3>
    <p>If using the original "diving make" build system, it may be necessary to suppress the static build ("<span class="Command_Text Plain_Text">make UNIX_CAN_BUILD_STATIC=0</span>") and also, if the wv library is to be made correctly, to set "<span class="Command_Text Plain_Text">CC=gcc</span>" and "<span class="Command_Text Plain_Text">export CC</span>" &nbsp;even though the path is set to /usr/local/bin:$PATH. Please see <a href="http://bugzilla.abisource.com/show_bug.cgi?id=4200">bug 4200</a>.</p>
-   <h3><a name="nongnumake">NOTES ON USING NON-GNU MAKE</a>:</h3>
+   <h3><a name="nongnumake" id="nongnumake">NOTES ON USING NON-GNU MAKE</a>:</h3>
    <p>Some incarnations of '<span class="Command_Text Plain_Text">make</span>', even though they are not GNU's, understand (or have an option to understand) GNU's syntax. &nbsp;This will work fine, if it either can be told to use GNUmakefile (as the makefile input), or (if it looks for Makefile) from wherever you've run configure do:</p>
    <p><span class="Command_Text Plain_Text">for d in `find -name GNUmakefile | tr -d "GNUmakefile"`; do mv -f $d/GNUmakefile $d/Makefile; done</span></p>
    <p>This will change all files in that directory and its subdirectories named GNUmakefile to Makefile, overwriting any files named Makefile that are in the way. &nbsp;(Note: If you do this in abi/, and later want to try the diving make build system, you must re-extract the Makefiles or first move them to a safe place.)</p>
-   <h2><a name="windows"><span style="text-decoration: underline">Windows</span></a><span style="text-decoration: underline">:</span></h2>
+   <h2><a name="windows" id="windows"><span style="text-decoration: underline">Windows</span></a><span style="text-decoration: underline">:</span></h2>
    <h3>Prerequisites</h3>
    <ol>
     <li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in">	MSYS and MinGW free GNU build tools</li>
@@ -185,9 +188,9 @@ h3 {
    <ol>
     <li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in">	Microsoft Visual C++ 5.0 or greater and cygwin unix shell layer</li>
    </ol>
-   <p class="Heading_4" dir="ltr">MSYS/MingW</p>
+   <p class="Heading_4" awml:style="Heading 4" dir="ltr">MSYS/MingW</p>
    <p>MSYS and MinGW provide a Windows port of popular GNU building tools and compilers. &nbsp;MinGW provides the compiler, headers, and libraries to build Window binaries. &nbsp;Information about it and how to download it can be found at <a href="http://www.mingw.org/">http://www.mingw.org/</a>. &nbsp;MSYS was developed &nbsp;&nbsp;to provide MinGW an operating shell compliant with various GNU building scripts. &nbsp;Information on MSYS can be found at <a href="http://www.mingw.org/msys.shtml">http://www.mingw.org/msys.shtml</a>.</p>
-   <p class="Heading_4" dir="ltr">Microsoft Visual C++</p>
+   <p class="Heading_4" awml:style="Heading 4" dir="ltr">Microsoft Visual C++</p>
    <p dir="ltr">For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two methods for building AbiWord; &nbsp;command line with cygwin tools (actively maintained, and will work) or the Microsoft Developer Project files (intermittently maintained, and may not work). &nbsp;MSVC 5 building is not actively done and will minimally require an updated Win32 platform SDK.</p>
    <p dir="ltr">Building via MSVC command line using cygwin tools is the traditional method for building AbiWord and is used for the release builds. &nbsp;You can find information about the cygwin tools at <a href="http://www.cygwin.com/">http://www.cygwin.com/</a>. &nbsp;Beyond the packages in the Base category during the Cygwin installation, only the "libintl1", "libiconv2" and "make" packages are required to build AbiWord. &nbsp;The exact programs required are: cp, cut, echo, expr, make, mkdir, pwd, rm, sed, sh (bash), tar, uname, along with cygwin specific cygpath.exe and cygwin1.dll. &nbsp;To obtain the source you may also want the cvs client.</p>
    <p>The second method is to try the MSVC6 project files that have been generated. &nbsp;These project files are not actively maintained, and are only available for MSVC 6.0 and greater. &nbsp;We are looking for volunteers to keep them in sync with development. &nbsp;See the "Getting the sources" section below to use CVS to download the latest versions of these project files.</p>
@@ -199,12 +202,12 @@ h3 {
    <p dir="ltr" style="text-align: center"><span class="Command_Text Plain_Text"> :pserver:anoncvs@cvs.abisource.com:/cvsroot</span></p>
    <p dir="ltr">The password for the anoncvs user is anoncvs.</p>
    <p dir="ltr">From the command line version of CVS, a user would </p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">cd c:\existing_dir_for_cvs_download</span></p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">set CVSROOT=:pserver:anoncvs@cvs.abisource.com:/cvsroot</span></p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">set HOME=c:\existing_dir_for_.cvspass_file</span></p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">set HOMEDRIVE=c:\</span></p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">set HOMEPATH=\existing_dir_for_.cvspass_file</span></p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">cvs login</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">cd c:\existing_dir_for_cvs_download</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">set CVSROOT=:pserver:anoncvs@cvs.abisource.com:/cvsroot</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">set HOME=c:\existing_dir_for_.cvspass_file</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">set HOMEDRIVE=c:\</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">set HOMEPATH=\existing_dir_for_.cvspass_file</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">cvs login</span></p>
    <p>	<span class="Command_Text Plain_Text">cvs checkout &lt;modules listed below&gt;</span></p>
    <p dir="ltr">CVS modules required to check out are:</p>
    <ul>
@@ -239,13 +242,13 @@ h3 {
    <p dir="ltr">Several build options are available and are detailed in the BUILD.txt file. &nbsp;They are used by during the build by replacing the make command above with:</p>
    <p dir="ltr">	<span class="Command_Text Plain_Text">make option1 option2</span></p>
    <p dir="ltr">The following are common for the Windows build:</p>
-   <p class="Normal_Unspaced">ABI_BUILD_VERSION=x.y.z  &nbsp;Set the version number for the build</p>
-   <p class="Normal_Unspaced">ABI_OPT_DEBUG=1 &nbsp;&nbsp;&nbsp;Builds a debug version of AbiWord</p>
-   <p class="Normal_Unspaced">ABI_OPT_PERL=1	&nbsp;&nbsp;Enables Perl scripting</p>
-   <p class="Normal_Unspaced">ABI_OPT_LIBJPEG=1	&nbsp;Enables you to view JPEG images</p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">ABI_BUILD_VERSION=x.y.z  &nbsp;Set the version number for the build</p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">ABI_OPT_DEBUG=1 &nbsp;&nbsp;&nbsp;Builds a debug version of AbiWord</p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">ABI_OPT_PERL=1	&nbsp;&nbsp;Enables Perl scripting</p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">ABI_OPT_LIBJPEG=1	&nbsp;Enables you to view JPEG images</p>
    <p>ABI_OPT_CURL=1	&nbsp;&nbsp;Enables automatic dictionary downloading</p>
    <p dir="ltr">If attempting to use the MSVC6 project files, follow the instructions in its README.TXT file. </p>
-   <h2><a name="qnx"><span style="text-decoration: underline">QNX</span></a><span style="text-decoration: underline">:</span></h2>
+   <h2><a name="qnx" id="qnx"><span style="text-decoration: underline">QNX</span></a><span style="text-decoration: underline">:</span></h2>
    <h3>Prerequisites: </h3>
    <p>(See also: <a href="#windows">Windows</a> and <a href="#unix">Unix</a> requirements for more information)</p>
    <ul>
@@ -260,7 +263,7 @@ h3 {
     <li>	Developer Style: &nbsp;just cd to abi and type '<span class="Command_Text Plain_Text">make</span>'. &nbsp;To run AbiWord, <span class="Command_Text Plain_Text">cd</span> to the bin directory and type '<span class="Command_Text Plain_Text">AbiWord -lib ../AbiSuite</span>' -- this will help AbiWord find the dictionary and other support files.</li>
     <li>	End-User Style: &nbsp;just <span class="Command_Text Plain_Text">cd</span> to abi and type '<span class="Command_Text Plain_Text">make distribution ABI_BUILD_VERSION=x.y.z</span>' This will build a QNX 'Repository in a File' (src/pkg/qnx/abiword-x.y.z.qpr). Install this with '<span class="Command_Text Plain_Text">pkg-installer -u abiword-x.y.z.qpr</span>'.</li>
    </ol>
-   <h2><a name="beos"><span style="text-decoration: underline">BeOS:</span></a></h2>
+   <h2><a name="beos" id="beos"><span style="text-decoration: underline">BeOS:</span></a></h2>
    <h3>Prerequisites:</h3>
    <p>(See <a href="#qnx">QNX</a> requirements)</p>
    <p>Building on BeOS is similar to the other platforms. &nbsp;We rely on the GNU command line utilities &nbsp;bash, sed, gawk, etc. &nbsp;On Intel systems we use GCC and on PPC we use MWCC.</p>
@@ -269,13 +272,13 @@ h3 {
     <li>	Developer Style: &nbsp;just <span class="Command_Text Plain_Text">cd</span> to abi and type '<span class="Command_Text Plain_Text">make</span>'. &nbsp;To run AbiWord, <span class="Command_Text Plain_Text">cd</span> to the bin directory and type '<span class="Command_Text Plain_Text">AbiWord -lib ../AbiSuite</span>' -- this will help AbiWord find the dictionary and other support files.</li>
     <li>	End-User Style: &nbsp;just <span class="Command_Text Plain_Text">cd</span> to abi and type '<span class="Command_Text Plain_Text">make distribution ABI_BUILD_VERSION=x.y.z</span>' This will build a distribution zip file (abi/dist/AbiSuite-x.y.z-$(arch).zip). Expand this in /boot/apps. &nbsp;You can then run <span class="Command_Text Plain_Text">/boot/apps/AbiSuite/bin/AbiWord</span>.</li>
    </ol>
-   <h2><a name="macosx"><span style="text-decoration: underline">Mac OS X</span></a><span style="text-decoration: underline">:</span></h2>
-   <p class="Heading_4">X11 AbiWord</p>
+   <h2><a name="macosx" id="macosx"><span style="text-decoration: underline">Mac OS X</span></a><span style="text-decoration: underline">:</span></h2>
+   <p class="Heading_4" awml:style="Heading 4">X11 AbiWord</p>
    <p>The official build method on Mac OS X is to use Project Builder to build the Cocoa front end. However, it is possible also to build for X11 - see the section on building for <a href="#unix">Unix</a>. Note: You will need to specify <span class="Command_Text Plain_Text">--disable-Cocoa</span> to configure. Apple's X11.app and X11 SDK betas are one source of X11, unfortunately based on XFree86 4.2 and lacking fontconfig/Xft2 - hopefully Apple will get its act together. XDarwin may be a better choice until then. fink (<a href="http://fink.sourceforge.net/">http://fink.sourceforge.net/</a>) provides most of the packages needed by AbiWord.</p>
    <h3>Prerequisites (Cocoa):</h3>
    <p>Currently fink (<a href="http://fink.sourceforge.net/">http://fink.sourceforge.net/</a>), in particular the libiconv and glib2 packages, is required in order to build the Cocoa port. Other dependencies are covered by modules in AbiWord's CVS. To get the source do:</p>
-   <p class="Normal_Unspaced">	<span class="Command_Text Plain_Text">cvs -d:pserver:anoncvs@anoncvs.abisource.com:/cvsroot login</span></p>
-   <p class="Normal_Unspaced">	CVS password:	(<span class="Command_Text Plain_Text">anoncvs</span>)</p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	<span class="Command_Text Plain_Text">cvs -d:pserver:anoncvs@anoncvs.abisource.com:/cvsroot login</span></p>
+   <p class="Normal_Unspaced" awml:style="Normal Unspaced">	CVS password:	(<span class="Command_Text Plain_Text">anoncvs</span>)</p>
    <p>	<span class="Command_Text Plain_Text">cvs -d:pserver:anoncvs@anoncvs.abisource.com:/cvsroot -z3 co abicocoa</span></p>
    <p>This will check out a number of modules, including several which end in "pbx" - these contain the Project Builder files.<a href="http://fink.sourceforge.net/"></a></p>
    <p></p>
