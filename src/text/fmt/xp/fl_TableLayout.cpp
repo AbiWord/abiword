@@ -374,6 +374,10 @@ bool fl_TableLayout::doSimpleChange(void)
 	{
 		return false;
 	}
+	if(pCell && (pCell->getTopAttach() != iBot))
+	{
+		return false;
+	}
 	fp_TableRowColumn * pRow = pTab->getNthRow(iTop);
 	UT_sint32 iAlloc = pRow->allocation;	
 	iMaxHeight = pTab->getRowHeight(iTop,iMaxHeight);
