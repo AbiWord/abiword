@@ -99,11 +99,11 @@ class ABI_EXPORT GR_Font
 		return pThis->doesGlyphExist(g);
 	}
 	
-	virtual ~GR_Font();
+	
 	
   protected:
 
-	
+	virtual ~GR_Font();
 
 	GR_CharWidths * _getCharWidths() const {return m_pCharWidths;}
 	/*! 
