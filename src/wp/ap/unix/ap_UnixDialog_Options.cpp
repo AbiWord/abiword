@@ -94,59 +94,22 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     GtkWidget * mainWindow = _constructWindow();
     UT_ASSERT(mainWindow);
 
-    connectFocus(GTK_WIDGET(mainWindow),pFrame);
     // save for use with event
     m_pFrame = pFrame;
 
     // Populate the window's data items
     _populateWindowData();
-	_initUnixOnlyPrefs();
+    _initUnixOnlyPrefs();
 
-    // To center the dialog, we need the frame of its parent.
-    XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-    UT_ASSERT(pUnixFrame);
+    switch ( abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false ) )
+      {
+      case BUTTON_OK:
+	event_OK (); break ;
+      default:
+	event_Cancel(); break ;
+      }
 
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
-
-    // Run into the GTK event loop for this window.
-    do {
-	gtk_main();
-
-	switch ( m_answer )
-	{
-	case AP_Dialog_Options::a_OK:
-	    _storeWindowData();
-	    break;
-
-	case AP_Dialog_Options::a_APPLY:
-	    UT_DEBUGMSG(("Applying changes\n"));
-	    _storeWindowData();
-	    break;
-
-	case AP_Dialog_Options::a_CANCEL:
-	    break;
-
-	default:
-	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	    break;
-	};
-
-    } while ( m_answer == AP_Dialog_Options::a_APPLY );
-
-    if (mainWindow && GTK_IS_WIDGET(mainWindow))
-	gtk_widget_destroy(mainWindow);
+    abiDestroyWidget ( mainWindow ) ;
 }
 
 void AP_UnixDialog_Options::event_clistClicked (int row, int col)
@@ -155,7 +118,6 @@ void AP_UnixDialog_Options::event_clistClicked (int row, int col)
   bool b = (bool)GPOINTER_TO_INT(gtk_clist_get_row_data (clist, row));
 
   gtk_object_set_user_data (GTK_OBJECT(m_checkbuttonViewShowTB), GINT_TO_POINTER(row));
-  xxx_UT_DEBUGMSG (("DOM: setting row %d to %d\n", row, b));
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonViewShowTB), (b ? TRUE : FALSE));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonViewHideTB), (b ? FALSE : TRUE));
@@ -206,28 +168,9 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dlg = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW(dlg),
-						pSS->getValue(AP_STRING_ID_DLG_Options_Label_ColorChooserLabel));
+  dlg = abiDialogNew(true, pSS->getValue(AP_STRING_ID_DLG_Options_Label_ColorChooserLabel));
 
-  actionarea = GTK_DIALOG (dlg)->action_area;
-
-  k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Close));
-  gtk_widget_show(k);
-  gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->action_area),
-                               k, TRUE, TRUE, 0);
-  g_signal_connect (G_OBJECT(k), "clicked",
-		      G_CALLBACK(gtk_main_quit), (gpointer)this);
-
-  g_signal_connect_after(G_OBJECT(dlg),
-			   "destroy",
-			   NULL,
-			   NULL);
-
-  g_signal_connect(G_OBJECT(dlg),
-		     "delete_event",
-		     G_CALLBACK(gtk_main_quit),
-		     (gpointer) this);
+  abiAddStockButton(GTK_DIALOG(dlg), GTK_STOCK_CLOSE, GTK_RESPONSE_CANCEL);
 
   GtkWidget *colorsel;
 
@@ -266,13 +209,12 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor(void)
 	gtk_grab_add(dlg);
 
 	// run into the gtk main loop for this window
-	gtk_main();
+	gtk_dialog_run(GTK_DIALOG(dlg));
 
 //
 // Finish up here after a close or window delete signal.
 //
-	if(dlg && GTK_IS_WIDGET(dlg))
-		gtk_widget_destroy(dlg);
+	abiDestroyWidget(dlg);
 
 }
 
@@ -293,25 +235,18 @@ void AP_UnixDialog_Options::event_AllowTransparentColor(void)
 void AP_UnixDialog_Options::event_OK(void)
 {
     m_answer = AP_Dialog_Options::a_OK;
-    gtk_main_quit();
+    _storeWindowData () ;
 }
 
 void AP_UnixDialog_Options::event_Cancel(void)
 {
     m_answer = AP_Dialog_Options::a_CANCEL;
-    gtk_main_quit();
 }
 
 void AP_UnixDialog_Options::event_Apply(void)
 {
     m_answer = AP_Dialog_Options::a_APPLY;
-    gtk_main_quit();
-}
-
-void AP_UnixDialog_Options::event_WindowDelete(void)
-{
-    m_answer = AP_Dialog_Options::a_CANCEL;
-    gtk_main_quit();
+    _storeWindowData () ;
 }
 
 /*****************************************************************/
@@ -1098,67 +1033,29 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	GtkWidget * mainWindow;
-	GtkWidget * hbuttonbox;
 	GtkWidget * buttonApply;
-	GtkWidget * buttonDefaults;
 	GtkWidget * buttonOk;
 	GtkWidget * buttonCancel;
+	GtkWidget * buttonDefaults;
 
-	mainWindow = gtk_dialog_new ();
-	gtk_window_set_title (GTK_WINDOW (mainWindow), pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle));
-	gtk_window_set_policy (GTK_WINDOW (mainWindow), TRUE, TRUE, FALSE);
+	mainWindow = abiDialogNew(true, pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle));
 
-	hbuttonbox = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (mainWindow)->action_area), hbuttonbox);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox), 10);
-
-	buttonApply = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Apply ));
+	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
 	gtk_widget_show (buttonApply);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox), buttonApply);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonApply);
 	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
 
-	buttonDefaults = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default));
+	buttonDefaults = gtk_button_new_from_stock (GTK_STOCK_REVERT_TO_SAVED);
 	gtk_widget_show (buttonDefaults);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox), buttonDefaults);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonDefaults);
 	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
 
-	buttonOk = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show (buttonOk);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox), buttonOk);
-	GTK_WIDGET_SET_FLAGS (buttonOk, GTK_CAN_DEFAULT);
+	buttonOk = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
-
-	// the catch-alls
-	g_signal_connect(G_OBJECT(mainWindow),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-
-	g_signal_connect_after(G_OBJECT(mainWindow),
-				 "destroy",
-				 NULL,
-				 NULL);
+	buttonCancel = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
 	//////////////////////////////////////////////////////////////////////
 	// the control buttons
-	g_signal_connect(G_OBJECT(buttonOk),
-			   "clicked",
-			   G_CALLBACK(s_ok_clicked),
-			   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(buttonCancel),
-			   "clicked",
-			   G_CALLBACK(s_cancel_clicked),
-			   (gpointer) this);
-
 	g_signal_connect(G_OBJECT(buttonDefaults),
 			   "clicked",
 			   G_CALLBACK(s_defaults_clicked),
@@ -1562,36 +1459,12 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 
 /*****************************************************************/
 
-// sample callback function
-/*static*/ void AP_UnixDialog_Options::s_ok_clicked(GtkWidget * /*widget*/, gpointer data)
-{
-	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
-	UT_ASSERT(dlg);
-	dlg->event_OK();
-}
-
-/*static*/ void AP_UnixDialog_Options::s_cancel_clicked(GtkWidget * widget, gpointer data )
-{
-	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
 /*static*/ void AP_UnixDialog_Options::s_apply_clicked(GtkWidget * widget, gpointer data )
 {
 	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
 	UT_ASSERT(widget && dlg);
 	dlg->event_Apply();
 }
-
-/*static*/ void AP_UnixDialog_Options::s_delete_clicked(GtkWidget * /* widget */, GdkEvent * /*event*/, gpointer data )
-{
-	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
-	UT_ASSERT(dlg);
-	UT_DEBUGMSG(("AP_UnixDialog_Options::s_delete_clicked\n"));
-	dlg->event_WindowDelete();
-}
-
 
 /*static*/ void AP_UnixDialog_Options::s_ignore_reset_clicked( GtkWidget * /* widget */, gpointer  data )
 {
@@ -1619,6 +1492,12 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
 	UT_ASSERT(widget && dlg);
 	dlg->_event_SetDefaults();
+
+#if 0
+	// repopulate controls
+	dlg->_populateWindowData();
+	dlg->_initUnixOnlyPrefs();
+#endif
 }
 
 

@@ -102,6 +102,12 @@ public:
 
  protected:
 
+	enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
+
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	GtkWidget *         _constructWindowContents(GtkWidget *);
@@ -169,14 +175,11 @@ public:
 
 protected:
 	// Unix call back handlers
-	static void s_ok_clicked			( GtkWidget *, gpointer );
-	static void s_cancel_clicked		( GtkWidget *, gpointer );
 	static void s_apply_clicked			( GtkWidget *, gpointer );
-	static void s_delete_clicked		( GtkWidget *, GdkEvent *, gpointer );
+	static void s_defaults_clicked		( GtkWidget *, gpointer );
 	static void s_ignore_reset_clicked	( GtkWidget *, gpointer );
 	static void s_ignore_edit_clicked	( GtkWidget *, gpointer );
 	static void s_dict_edit_clicked		( GtkWidget *, gpointer );
-	static void s_defaults_clicked		( GtkWidget *, gpointer );
 	static void s_chooseTransparentColor( GtkWidget *, gpointer );
 	static void s_allowTransparentColor ( GtkWidget *, gpointer );
 	static void s_color_changed(GtkWidget * csel,  AP_UnixDialog_Options * dlg);
@@ -189,7 +192,6 @@ protected:
     virtual void event_OK(void);
     virtual void event_Cancel(void);
     virtual void event_Apply(void);
-    virtual void event_WindowDelete(void);
     virtual void event_clistClicked (int row, int col);
     void _saveUnixOnlyPrefs();
     void _initUnixOnlyPrefs();
