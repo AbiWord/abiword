@@ -44,7 +44,7 @@
 
 #include "ut_OverstrikingChars.h"
 #include "ut_Language.h"
-#include "fribidi.h"
+#include <fribidi/fribidi.h>
 #include "ut_contextGlyph.h"
 #include "ap_Prefs.h"
 

@@ -314,8 +314,7 @@ ABI_XAP_INCS+= /af/util/unix
 endif
 
 ABI_OTH_INCS=	/other/spell/xp \
-                /other/fribidi/xp \
-		/other/pango
+				/other/pango
 
 ifeq ($(OS_NAME), WIN32)
 ABI_OTH_INCS+=	/../../wv/glib-wv
@@ -807,8 +806,8 @@ CFLAGS += -DSUPPORTS_UT_IDLE=1
 endif
 
 ifeq ($(OS_NAME), WIN32)
-	EXTRA_LIBS += $(LIBDIR)/libAbi_fribidi_s.lib
+	EXTRA_LIBS += $(LIBDIR)/fribidi.lib
 else
-	EXTRA_LIBS += -lAbi_fribidi
+	EXTRA_LIBS += -lfribidi
 endif
 

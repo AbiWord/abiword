@@ -33,7 +33,7 @@
 #include "ut_assert.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
-#include "fribidi.h"
+#include <fribidi/fribidi.h>
 #include "pp_Revision.h"
 
 class UT_GrowBuf;

@@ -21,7 +21,7 @@
 ABI_ROOT:=$(shell pwd)/../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-DIRS=		spell fribidi ttftool
+DIRS=		spell ttftool
 
 # libmswordview
 

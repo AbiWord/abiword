@@ -17,6 +17,6 @@
 ## 02111-1307, USA.
 
 
-SUBDIRS = spell fribidi ttftool
+SUBDIRS = spell ttftool
 
 

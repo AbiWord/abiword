@@ -1277,6 +1277,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 bool FV_View::_ensureThatInsertionPointIsOnScreen(bool bDrawIP)
 {
+	xxx_UT_DEBUGMSG(("FV_View::_ensureThatInsertionPointIsOnScreen called\n"));
+
 	bool bRet = false;
 
 	if (m_iWindowHeight <= 0)
@@ -2335,6 +2337,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 */
 bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bFullLineHeightRect)
 {
+	xxx_UT_DEBUGMSG(("FV_View::_clearBetweenPositions called\n"));
 	if (iPos1 >= iPos2)
 	{
 		return true;
@@ -2699,6 +2702,7 @@ void FV_View::_xorInsertionPoint()
 
 void FV_View::_eraseInsertionPoint()
 {
+	UT_DEBUGMSG(("_eraseInsertionPointCalled()\n"));
 	m_bEraseSaysStopBlinking = true;
 	if (_hasPointMoved() == true)
 	{
@@ -2724,6 +2728,7 @@ void FV_View::_eraseInsertionPoint()
 void FV_View::_drawInsertionPoint()
 {
 //	CHECK_WINDOW_SIZE
+	UT_DEBUGMSG(("_drawInsertionPointCalled()\n"));
 
 	if(m_focus==AV_FOCUS_NONE || !shouldScreenUpdateOnGeneralUpdate())
 	{
@@ -2760,7 +2765,7 @@ void FV_View::_drawInsertionPoint()
 void FV_View::_autoDrawPoint(UT_Worker * pWorker)
 {
 	UT_ASSERT(pWorker);
-
+	xxx_UT_DEBUGMSG(("FV_View::_autoDrawPoint()\n"));
 	FV_View * pView = (FV_View *) pWorker->getInstanceData();
 	UT_ASSERT(pView);
 
@@ -2776,6 +2781,7 @@ void FV_View::_autoDrawPoint(UT_Worker * pWorker)
 	if (pView->m_bEraseSaysStopBlinking == false)
 	{
 		pView->_xorInsertionPoint();
+		xxx_UT_DEBUGMSG(("FV_View::_autoDrawPoint(): erase does not say stop blinking\n"));
 	}
 }
 
@@ -3520,6 +3526,7 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 	// aren't, then it's safe to delete the FmtMark. Else we could
 	// wipe out the placeholder FmtMark for our attributes.
 	// Fix for Bug #863
+	xxx_UT_DEBUGMSG(("FV_View::_clearIfAtFmtMark called\n"));
 	if ( ( dpos != _getDocPosFromPoint(dpos,FV_DOCPOS_BOL) ))
 	{
 		m_pDoc->clearIfAtFmtMark(dpos);

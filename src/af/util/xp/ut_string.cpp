@@ -30,7 +30,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
-#include "fribidi.h"
+#include <fribidi/fribidi.h>
 /*
     If WITHOUT_MB is defined, UT_Mbtowc and UT_Wctomb won't be used.
     I don't there there could be reason for defining WITHOUT_MB, since

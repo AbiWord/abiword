@@ -30,7 +30,7 @@
 #include "ap_Preview_Paragraph.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Lists.h"
-#include "fribidi.h"
+#include <fribidi/fribidi.h>
 
 /************************************************************************/
 

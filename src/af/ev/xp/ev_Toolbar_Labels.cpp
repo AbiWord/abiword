@@ -27,7 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ev_Toolbar_Labels.h"
-#include "fribidi.h"
+#include <fribidi/fribidi.h>
 #include "ut_wctomb.h"
 #include "ut_mbtowc.h"
 #include "xap_App.h"

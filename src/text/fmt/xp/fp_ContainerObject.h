@@ -55,7 +55,7 @@
 #include "gr_Graphics.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
-#include "fribidi_types.h"
+#include <fribidi/fribidi.h>
 
 typedef struct _fp_Requisition	  fp_Requisition;
 typedef struct _fp_Allocation    fp_Allocation;

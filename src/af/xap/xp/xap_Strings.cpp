@@ -30,7 +30,7 @@
 #include "ut_wctomb.h"
 #include "xap_Strings.h"
 #include "xap_EncodingManager.h"
-#include "fribidi.h"
+#include <fribidi/fribidi.h>
 
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings

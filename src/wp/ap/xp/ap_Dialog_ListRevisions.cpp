@@ -22,7 +22,7 @@
 #include "ap_Dialog_ListRevisions.h"
 #include "ut_string.h"
 #include "ap_Strings.h"
-#include "fribidi.h"
+#include <fribidi/fribidi.h>
 
 AP_Dialog_ListRevisions::AP_Dialog_ListRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
