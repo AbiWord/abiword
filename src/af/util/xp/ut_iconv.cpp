@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <ut_debugmsg.h>
+
 
 /*!
  * This class is a nice wrapper around an iconv_t type
@@ -81,19 +83,22 @@ bool auto_iconv::is_valid() const
  * from_codeset - The "codeset" we want for the output.
  * bytes_read - optional, supply NULL if you don't want this.
  * bytes_written - optional, supply NULL if you don't want this.
- *
+ * Returns a freshly allocated output string, which is 0-terminated
+ * (though I am not sure that has any significance in the general case).
+ * TODO: Check for out-of-memory allocations etc.
  */
 extern "C"
-bool UT_convert(const char*	str,
+char *UT_convert(const char*	str,
 		UT_uint32	len,
 		const char*	to_codeset,
 		const char*	from_codeset,
 		UT_uint32*	bytes_read_arg,
 		UT_uint32*	bytes_written_arg)
 {
+
 	if (!str || !to_codeset || !from_codeset)
 	{
-		return 0;
+		return NULL;
 	}
 
 	// The following two variables are used to be used in absence of given arguments
@@ -123,7 +128,7 @@ bool UT_convert(const char*	str,
 
 	/* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
 	/* + 1 for nul in case len == 1 */
-	size_t outbuf_size = ((len + 3) & ~3) + 1;
+	size_t outbuf_size = ((len + 3) & ~3) + 15;
 	size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
 
 	char* pDest = (char*)malloc(outbuf_size);
@@ -145,6 +150,7 @@ bool UT_convert(const char*	str,
 			{
 			case EINVAL:
 				/* Incomplete text, do not report an error */
+				bAgain = false;
 				break;
 			case E2BIG:
 				{
@@ -157,20 +163,23 @@ bool UT_convert(const char*	str,
 					*/
 					if (used + 16 > outbuf_size)
 					{
-						outbuf_size = (outbuf_size - 1) * 2 + 1;
+						outbuf_size = outbuf_size  + 15;
 						pDest = (char*)realloc(pDest, outbuf_size);
 						
 						outp = pDest + used;
 						outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
 					}
 
-					bAgain = false;
+					bAgain = true;
 					break;
 				}
 			default:
 				have_error = true;
+				bAgain = false;
 				break;
 			}
+		} else {
+		  bAgain = false;
 		}
 	}
 
@@ -197,5 +206,5 @@ bool UT_convert(const char*	str,
 		free(pDest);
 	}
 
-	return have_error;
+	return have_error?NULL:pDest;
 }

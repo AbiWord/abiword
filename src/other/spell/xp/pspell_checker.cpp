@@ -1,4 +1,5 @@
 /* AbiSuite
+ * UT_DEBUGMESG(
  * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -6,7 +7,6 @@
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -36,70 +36,102 @@
 #include "ut_iconv.h"
 #include "ut_string.h"
 
-#define WORD_SIZE 256 /* or whatever */
 #define UCS_2_INTERNAL "UCS-2"
 
-/* this one fills ucs2 with values that iconv will treat as UCS-2. */
-static void toucs2(const unsigned short *word16, int length, unsigned short *out)
+/*!
+ * Convert a word16 to an UCS2 value by byteswapping if needed
+ *
+ * \param word16 The input string
+ * \param len The lengh of the input string
+ */
+static void toucs2(unsigned short *word16, int length)
 {
 	int i = 0;
-	const unsigned short* in = word16;
-/*	unsigned short* out = ucs2; */
-	for(;i<length;++i)
-	{
-		if (XAP_EncodingManager__swap_utos)
-		    out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
-		else
-		    out[i] = in[i];
+	if (XAP_EncodingManager__swap_utos) {
+		for(;i<length;++i)
+		{
+			word16[i] = ((word16[i]>>8) & 0xff) | ((word16[i]&0xff)<<8);
+		}
 	}
-	out[i]= 0;
 }
 
-/* this one copies from 'ucs2' to word16 swapping bytes if necessary */
-static void fromucs2(unsigned short *word16, int length, unsigned short *ucs2)
+/*!
+ * Convert an UCS2 value to word16 by byteswapping if needed
+ *
+ * \param word16 The input string
+ * \param len The lengh of the input string
+ */
+static void fromucs2(unsigned short *word16, int length)
 {
 	int i = 0;
-	unsigned short *in = ucs2;
-	unsigned short *out = word16; 
-	for(;i<length;++i)
-	{
-		if (XAP_EncodingManager__swap_stou)
-			out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
-		else
-			out[i] = in[i];
+	if (XAP_EncodingManager__swap_stou) {
+		for(;i<length;++i)
+		{
+			word16[i] = ((word16[i]>>8) & 0xff) | ((word16[i]&0xff)<<8);
+		}
 	}
-	out[i]= 0;
 }
 
-static void 
-utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
-	      int length)
+/*!
+ * Convert an UTF16 string to an UTF8 string
+ *
+ * \param word16 The zero-terminated input string in UTF16 format
+ * \param length The lengh of the input string
+ * \return A zero-terminated UTF8 string
+ */
+static unsigned char*
+utf16_to_utf8(const unsigned short *word16, int length)
 {
   UT_uint32 len_out;
 
   UT_UCSChar * ucs2;
+  unsigned char *result;
 
   UT_UCS_cloneString (&ucs2, word16);
 
-  toucs2 (ucs2, length, ucs2);
-  UT_convert ((const char *)ucs2, length, "utf-8", UCS_2_INTERNAL,
-	      (UT_uint32 *)word8, &len_out);
+  toucs2 (ucs2, length);
+  /* Note that length is in shorts, so we have to double it here */
+  (char *) result = UT_convert ((const char *)ucs2, length*2, UCS_2_INTERNAL,
+                                "utf-8", NULL, &len_out);
+
+  /* We assume that UT_convert creates a buffer big enough for this: */
+  result[len_out] = 0;
 
   FREEP (ucs2);
-
-  word8[len_out] = '\0';
+  
+  return result;
 }
 
-static void 
-utf8_to_utf16(const char *word8, unsigned short *word16, 
-	      int length)
+/*!
+ * Convert an UTF8 string to an UTF16 string
+ *
+ * \param word16 The zero-terminated input string in UTF8 format
+ * \param length The lengh of the input string
+ * \return A zero-terminated UTF16 string
+ */
+static unsigned short *
+utf8_to_utf16(const char *word8, int length)
 {
   UT_uint32 len_out;
+  unsigned char *result;
+  UT_UCSChar * word16;
 
-  UT_convert ((const char *) word8, length, UCS_2_INTERNAL, "utf-8",
-	      (UT_uint32 *)word16, &len_out);
-  word16[len_out] = '\0';
-  fromucs2 (word16, len_out, word16);
+  (char *) result = UT_convert (word8, length, "utf-8",UCS_2_INTERNAL,
+		              NULL, &len_out);
+  if (! result)
+    return NULL;
+
+  word16 = (UT_UCSChar *)result;
+
+  /* Hack: len_out is in bytes */
+  len_out /= 2;
+
+  /* We assume that UT_convert creates result big enough for this: */
+  word16[len_out] = 0;
+
+  fromucs2 (word16, len_out);
+
+  return word16;
 }
 
 PSpellChecker::PSpellChecker ()
@@ -167,7 +199,6 @@ SpellChecker::SpellCheckResult
 PSpellChecker::checkWord (const UT_UCSChar * szWord, 
 			  size_t len)
 {
-	unsigned char  word8[WORD_SIZE];
 	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
 
 	/* pspell segfaults if we don't pass it a valid spell_manager */
@@ -179,7 +210,9 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord,
 	if(szWord == NULL || len == 0)
 		return SpellChecker::LOOKUP_FAILED;
 
-	utf16_to_utf8(szWord, word8, len);
+	unsigned char *word8 = utf16_to_utf8(szWord, len);
+	if (! word8) 
+		return SpellChecker::LOOKUP_ERROR;
 
 	switch (pspell_manager_check(spell_manager, (char*)word8))
 	{
@@ -190,6 +223,8 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord,
 	default:
 		ret = SpellChecker::LOOKUP_ERROR; break;
 	}
+
+	free(word8);
 
 	return ret;
 }
@@ -209,7 +244,6 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 	PspellStringEmulation *suggestions = NULL;
 	const PspellWordList *word_list = NULL;
 	const char *new_word = NULL;
-	unsigned char word8[WORD_SIZE];
 	int count = 0, i = 0;
 
 	/* pspell segfaults if we don't pass it a valid spell_manager */
@@ -223,10 +257,14 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 		return 0;
 	}
 
-	utf16_to_utf8(szWord, word8, len);
+	unsigned char *word8 = utf16_to_utf8(szWord, len);
+	if (! word8) {
+		return 0;
+	}
 	word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
 	suggestions = pspell_word_list_elements(word_list);
 	count       = pspell_word_list_size(word_list);
+	free(word8);
 
 	if(count == 0)
 	{
@@ -239,16 +277,11 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
     {
 		int len = strlen(new_word);
 
-		UT_UCSChar * word = (UT_UCSChar *)malloc(sizeof(UT_UCSChar) * len + 2);
-		if (word == NULL) 
-		{
-			// out of memory, but return what was copied so far
-			return sg;
+		UT_UCSChar *word = utf8_to_utf16(new_word, len);
+		if (word) {
+			sg->addItem ((void *)word);
+			i++;
 		}
-      
-		utf8_to_utf16(new_word, word, len);
-		sg->addItem ((void *)word);
-		i++;
     }
 
 	return sg;

@@ -48,7 +48,7 @@ UT_iconv_t  UT_iconv_open( const char* to, const char* from );
 size_t      UT_iconv( UT_iconv_t cd, const char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft );
 int         UT_iconv_close( UT_iconv_t cd );
 
-bool      UT_convert                       (const char *str,
+char *      UT_convert                       (const char *str,
 					    UT_uint32 len,
 					    const char *to_codeset,
 					    const char *from_codeset,
