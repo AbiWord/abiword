@@ -804,8 +804,9 @@ bool EV_CocoaToolbar::bindListenerToView(AV_View * pView)
 	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
-	refreshToolbar(pView, AV_CHG_ALL);
-
+	if (pView->isDocumentPresent()) {
+		refreshToolbar(pView, AV_CHG_ALL);
+	}
 	return true;
 }
 
