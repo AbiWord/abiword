@@ -18,6 +18,7 @@
  */
 
 #include <string.h>
+#include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
