@@ -161,7 +161,10 @@ bool	XAP_MacFrame::close(void)
 
 bool	XAP_MacFrame::raise(void)
 {
+#if defined(USE_CARBON_EVENTS)
+	// only needed if not doing Carbon Events. Otherwise done automatically
 	::BringToFront ((WindowPtr)m_MacWindow);
+#endif
 	return true;
 }
 
@@ -278,11 +281,10 @@ pascal OSStatus XAP_MacFrame::HandleCarbonWindowEvent (EventHandlerCallRef nextH
 		frame->_macUpdate ();
 		break;
 	case kEventWindowBoundsChanged:
-		err = ::CallNextEventHandler (nextHandler, theEvent);
-		UT_ASSERT (err == noErr);
-		if (err == noErr) {
-			frame->_macGrow ();
-		}
+		frame->_macGrow ();
+		break;
+	case kEventWindowActivated:
+		frame->raise ();
 		break;
 	default:
 		err = ::CallNextEventHandler (nextHandler, theEvent);
@@ -321,16 +323,18 @@ void XAP_MacFrame::_createTopLevelWindow(void)
 	UT_ASSERT (m_MacWindow != NULL);
 
 #if defined(USE_CARBON_EVENTS)
-	EventTypeSpec eventTypes[2];
+	EventTypeSpec eventTypes[4];
 	eventTypes[0].eventClass = kEventClassWindow;
 	eventTypes[0].eventKind = kEventWindowClose;
 	eventTypes[1].eventClass = kEventClassWindow;
 	eventTypes[1].eventKind = kEventWindowUpdate;
 	eventTypes[2].eventClass = kEventClassWindow;
 	eventTypes[2].eventKind = kEventWindowBoundsChanged;
+	eventTypes[3].eventClass = kEventClassWindow;
+	eventTypes[3].eventKind = kEventWindowActivated;
 	EventHandlerRef handlerRef;
 	EventHandlerUPP handlerUPP = NewEventHandlerUPP (HandleCarbonWindowEvent);
-	err = ::InstallWindowEventHandler (m_MacWindow, handlerUPP, 3, eventTypes, (void*)this, &handlerRef);
+	err = ::InstallWindowEventHandler (m_MacWindow, handlerUPP, 4, eventTypes, (void*)this, &handlerRef);
 #endif	
 	
 	err = ::CreateRootControl (m_MacWindow, &m_rootControl);
