@@ -24,6 +24,8 @@
 
 #include "xap_App.h"
 #include "xap_Strings.h"
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
 
 // Please keep the list below alphabetised by the lang; even though 
 // this is not required for it to work, it will make it easier to maintain.
