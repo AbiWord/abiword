@@ -37,7 +37,7 @@ IEStatus IE_Imp_Text::importFile(const char * szFilename)
 
 	IEStatus iestatus;
 	const char *attr[] = {"type", "Box", "left", "0pt", "top", "0pt", "width", "*", "height", "*", NULL};
-	UT_GrowBuf gbBlock;
+	UT_GrowBuf gbBlock(1024);
 	int idx;
 	unsigned char c;
 

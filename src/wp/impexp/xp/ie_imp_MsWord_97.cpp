@@ -37,7 +37,7 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	unsigned long header[2];
 	FIB fib;
 	int nBytes;
-	UT_GrowBuf gbBlock;
+	UT_GrowBuf gbBlock(1024);
 	int offset = 0;
 
 	UT_Bool bResult;

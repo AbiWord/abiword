@@ -498,7 +498,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 	case FV_DOCPOS_BOW:
 		{
-			UT_GrowBuf pgb;
+			UT_GrowBuf pgb(1024);
 
 			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
 			UT_ASSERT(bRes);
@@ -557,7 +557,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 	case FV_DOCPOS_EOW:
 		{
-			UT_GrowBuf pgb;
+			UT_GrowBuf pgb(1024);
 
 			UT_Bool bRes = pBlock->getBlockBuf(&pgb);
 			UT_ASSERT(bRes);

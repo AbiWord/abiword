@@ -45,7 +45,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fb_LineBreaker* pBreaker,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout)
-	: fl_Layout(PTX_Block, sdh)
+	: fl_Layout(PTX_Block, sdh), m_gbCharWidths(256)
 {
 	m_pSectionLayout = pSectionLayout;
 	m_pBreaker = pBreaker;
