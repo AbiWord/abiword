@@ -136,7 +136,7 @@ protected:
 	UT_Bool				m_bInSection;
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
-        UT_Bool m_bWasSpace;
+	UT_Bool				m_bNextIsSpace;
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
@@ -167,7 +167,7 @@ void s_HTML_Listener::_closeBlock(void)
        	if(m_iBlockType == BT_NORMAL)
        	m_pie->write("</p>\n");
 
-	else if(m_iBlockType == BT_HEADING1)
+		else if(m_iBlockType == BT_HEADING1)
 		m_pie->write("</h1>\n");
 
         else if(m_iBlockType == BT_HEADING2)
@@ -179,7 +179,7 @@ void s_HTML_Listener::_closeBlock(void)
         else if(m_iBlockType == BT_BLOCKTEXT)
 		m_pie->write("</blockquote>\n");
 
-	else if(m_iBlockType == BT_PLAINTEXT)
+		else if(m_iBlockType == BT_PLAINTEXT)
 		m_pie->write("</pre>\n");
 
         // Add "catchall" for now
@@ -283,9 +283,9 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 			m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && (pAP->getProperty((XML_Char*)"text-align", szValue))
 			)
 		{
-			m_pie->write(" align=\"");
+			m_pie->write(" style=\"text-align: ");
 			m_pie->write((char*)szValue);
-			m_pie->write("\"");
+			m_pie->write(";\"");
 		}
 	}
 	else 
@@ -577,7 +577,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 			  if (!span)
 				    {
-					m_pie->write("<span style=\"color: ");	
+					m_pie->write("<span style=\"color: #");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszColor);
 					m_pie->write(szColor);
@@ -586,7 +586,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    }
 				  else 
 				    {
-					m_pie->write(" color: ");	
+					m_pie->write("; color: #");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszColor);
 					m_pie->write(szColor);
@@ -741,6 +741,16 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			m_pie->write(buf,(pBuf-buf));
 			pBuf = buf;
 		}
+		pData++;
+		if (*pData == ' ' || *pData == '\t')
+		{
+			m_bNextIsSpace = UT_TRUE;
+		}
+		else
+		{
+			m_bNextIsSpace = UT_FALSE;
+		}
+		pData--;
 		switch (*pData)
 		{
 		case '<':
@@ -783,7 +793,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  // try to honor multiple spaces
 		  // tabs get treated as a single space
 		  //
-		  if(m_bWasSpace)
+		  if(m_bNextIsSpace)
 		    {
 		      *pBuf++ = '&';
 		      *pBuf++ = 'n';
@@ -796,7 +806,6 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  else
 		    {
 		      // just tack on a single space to the textrun
-		      m_bWasSpace = UT_TRUE;
 		      *pBuf++ = ' ';
 		      pData++;
 		    }
@@ -829,7 +838,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bInSection = UT_FALSE;
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
-	m_bWasSpace = UT_FALSE;
+	m_bNextIsSpace = UT_FALSE;
 	
 	m_pie->write("<!-- ================================================================================  -->\n");
 	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\n");
