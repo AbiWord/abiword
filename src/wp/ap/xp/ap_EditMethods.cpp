@@ -741,7 +741,7 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 
 	char buf[1024];
 	// THIS ONE IS NOT LOCALIZED
-	sprintf(buf, "%s not implemented yet.\n\nAdd code in %s, line %d and mail patches to:\n\n\tabiword-dev@abisource.com", szWhat, __FILE__, iLine);
+	sprintf(buf, "%s not implemented yet.\n\nIf you are a programmer, please add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise, please be patient.", szWhat, __FILE__, iLine);
 
 	pDialog->setMessage(buf);
 	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
