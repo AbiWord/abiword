@@ -104,6 +104,7 @@ private:
 	XAP_ModuleInfo        m_info;
 };
 
+#ifndef ABI_PLUGIN_SOURCE
 static inline bool
 _isCurrentAbiVersion(int a, int b, int c)
 {
@@ -119,6 +120,7 @@ _isCurrentAbiVersion(int a, int b, int c)
 
        return true;
 }
+#endif /* ! ABI_PLUGIN_SOURCE */
 
 #define ABI_VERSION_STRING ABI_BUILD_VERSION
 #define isCurrentAbiVersion(a,b,c) _isCurrentAbiVersion(a, b, c)
