@@ -62,7 +62,7 @@
 #define _B4		| EV_EMB_BUTTON4
 #define _B5		| EV_EMB_BUTTON5
 
-static struct ap_bs_Mouse s_MouseTable[] =
+const ap_bs_Mouse s_MouseTable[] =
 {
 
 	// TODO some of these bindings are what i think they
@@ -167,7 +167,7 @@ static struct ap_bs_Mouse s_MouseTable[] =
 ******************************************************************
 *****************************************************************/
 
-static struct ap_bs_NVK s_NVKTable[] =
+const ap_bs_NVK s_NVKTable[] =
 {
 //	{nvk,				{ none,					_S,					_C,				_S_C,		
 //  					  _A,					_A_S,				_A_C,			_A_C_S				}},
@@ -261,7 +261,7 @@ static struct ap_bs_NVK s_NVKTable[] =
 ******************************************************************
 *****************************************************************/
 
-static struct ap_bs_NVK_Prefix s_NVKTable_P[] =
+const ap_bs_NVK_Prefix s_NVKTable_P[] =
 {
 //	{nvk,						{ none,					_S,					_C,				_S_C,		
 //  							  _A,					_A_S,				_A_C,			_A_C_S	}},
@@ -292,7 +292,7 @@ static struct ap_bs_NVK_Prefix s_NVKTable_P[] =
 
 #define PREFIX_KEY	""
 
-static struct ap_bs_Char s_CharTable[] =
+const ap_bs_Char s_CharTable[] =
 {
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
 	{0x21, /* !      */ { "insertData",			"",					"",				""					}},
@@ -508,7 +508,7 @@ static struct ap_bs_Char s_CharTable[] =
  ** non-nvk table of prefix keys
  ****************************************************************/
 
-static struct ap_bs_Char_Prefix s_CharPrefixTable[] =
+const ap_bs_Char_Prefix s_CharPrefixTable[] =
 {
 //  Warning: case is significant here Ctrl-x and Ctrl-X are different :-)	
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},

@@ -169,8 +169,9 @@ EV_EditBindingMap * AP_BindingSet::getMap(const char * szName)
 
 /*****************************************************************/
 
-void AP_BindingSet::_loadMouse(EV_EditBindingMap * pebm,
-							   ap_bs_Mouse * pMouseTable, UT_uint32 cMouseTable)
+void AP_BindingSet::_loadMouse(EV_EditBindingMap* pebm,
+							   const ap_bs_Mouse* pMouseTable,
+							   UT_uint32 cMouseTable)
 {
 	UT_uint32 k, m;
 
@@ -183,9 +184,11 @@ void AP_BindingSet::_loadMouse(EV_EditBindingMap * pebm,
 			}
 }
  
-void AP_BindingSet::_loadNVK(EV_EditBindingMap * pebm,
-							 ap_bs_NVK * pNVK, UT_uint32 cNVK,
-							 ap_bs_NVK_Prefix * pNVKPrefix, UT_uint32 cNVKPrefix)
+void AP_BindingSet::_loadNVK(	EV_EditBindingMap*		pebm,
+								const ap_bs_NVK*		pNVK,
+								UT_uint32				cNVK,
+								const ap_bs_NVK_Prefix*	pNVKPrefix,
+								UT_uint32				cNVKPrefix)
 {
 	UT_uint32 k, m;
 
@@ -216,9 +219,11 @@ void AP_BindingSet::_loadNVK(EV_EditBindingMap * pebm,
 			}
 }
 
-void AP_BindingSet::_loadChar(EV_EditBindingMap * pebm,
-							  ap_bs_Char * pCharTable, UT_uint32 cCharTable,
-							  ap_bs_Char_Prefix * pCharPrefixTable, UT_uint32 cCharPrefixTable)
+void AP_BindingSet::_loadChar(	EV_EditBindingMap*			pebm,
+								const ap_bs_Char*			pCharTable,
+								UT_uint32					cCharTable,
+								const ap_bs_Char_Prefix*	pCharPrefixTable,
+								UT_uint32					cCharPrefixTable)
 {
 	UT_uint32 k, m;
 

@@ -35,31 +35,38 @@ class EV_EditBindingMap;
 
 //////////////////////////////////////////////////////////////////
 
-struct ap_bs_Mouse						/* binding set table to describe mouse bindings */
+// binding set table to describe mouse bindings
+struct ap_bs_Mouse
 {
 	EV_EditBits			m_eb;			// sans emo
 	const char *		m_szMethod[EV_COUNT_EMO];
 };
 
-struct ap_bs_NVK						/* binding set table to describe NVK bindings */
+// binding set table to describe NVK bindings
+struct ap_bs_NVK
 {
 	EV_EditBits			m_eb;			// sans ems
 	const char *		m_szMethod[EV_COUNT_EMS];
 };
 
-struct ap_bs_NVK_Prefix					/* binding set table to describe NVK bindings which are prefixes to other maps */
+// binding set table to describe NVK bindings which are
+// prefixes to other maps
+struct ap_bs_NVK_Prefix
 {
 	EV_EditBits			m_eb;			// sans ems
 	const char *		m_szMapName[EV_COUNT_EMS];
 };
 
-struct ap_bs_Char						/* binding set table to describe non-nvk bindings */
+// binding set table to describe non-nvk bindings
+struct ap_bs_Char
 {
 	EV_EditBits			m_eb;			// sans ems & shift
 	const char *		m_szMethod[EV_COUNT_EMS_NoShift];
 };
 
-struct ap_bs_Char_Prefix				/* binding set table to describe non-nvk bindings which are prefixes to other maps */
+// binding set table to describe non-nvk bindings which are
+// prefixes to other maps
+struct ap_bs_Char_Prefix
 {
 	EV_EditBits			m_eb;			// sans ems & shift
 	const char *		m_szMapName[EV_COUNT_EMS_NoShift];
@@ -75,14 +82,19 @@ public:
 
 	virtual EV_EditBindingMap *	getMap(const char * szName);
 
-	void _loadChar(EV_EditBindingMap * pebm,
-				   ap_bs_Char * pCharTable, UT_uint32 cCharTable,
-				   ap_bs_Char_Prefix * pCharPrefixTable, UT_uint32 cCharPrefixTable);
-	void _loadNVK(EV_EditBindingMap * pebm,
-				  ap_bs_NVK * pNVK, UT_uint32 cNVK,
-				  ap_bs_NVK_Prefix * pNVKPrefix, UT_uint32 cNVKPrefix);
-	void _loadMouse(EV_EditBindingMap * pebm,
-					ap_bs_Mouse * pMouseTable, UT_uint32 cMouseTable);
+	void _loadChar(	EV_EditBindingMap*			pebm,
+					const ap_bs_Char*			pCharTable,
+					UT_uint32					cCharTable,
+					const ap_bs_Char_Prefix*	pCharPrefixTable,
+					UT_uint32					cCharPrefixTable);
+	void _loadNVK(	EV_EditBindingMap*			pebm,
+					const ap_bs_NVK*			pNVK,
+					UT_uint32					cNVK,
+					const ap_bs_NVK_Prefix*		pNVKPrefix,
+					UT_uint32					cNVKPrefix);
+	void _loadMouse(EV_EditBindingMap*			pebm,
+					const ap_bs_Mouse*			pMouseTable,
+					UT_uint32					cMouseTable);
 
 	static const char * s_getNextInCycle(const char * szCurrent);
 };
