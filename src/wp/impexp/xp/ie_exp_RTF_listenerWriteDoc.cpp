@@ -3418,7 +3418,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		UT_return_if_fail(pAuto);
 		m_pie->_rtf_keyword("pnql");
 		m_pie->_rtf_keyword("pnstart",pAuto->getStartValue32());
-		List_Type lType = pAuto->getType();
+		FL_ListType lType = pAuto->getType();
 
 		///
 		/// extract text before and after numbering symbol

@@ -253,7 +253,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 // List Style
 //
-    List_Type abiListType;
+    FL_ListType abiListType;
 	if(m_RTFListType == 0)
     {
         abiListType = NUMBERED_LIST;
@@ -6741,7 +6741,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			* been remapped.
 			*/
 			{
-				List_Type lType = NOT_A_LIST;
+				FL_ListType lType = NOT_A_LIST;
 				fl_AutoLists al;
 				UT_uint32 size_xml_lists = al.getXmlListsSize();
 				for(j=0; j< size_xml_lists; j++)
@@ -6752,9 +6752,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					}
 				}
 				if(j < size_xml_lists)
-					lType = static_cast<List_Type>(j);
+					lType = static_cast<FL_ListType>(j);
 				else
-					lType = static_cast<List_Type>(0);
+					lType = static_cast<FL_ListType>(0);
 				pAuto = new fl_AutoNum(id, pid, lType, startValue,static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc());
 				getDoc()->addList(pAuto);
 				pAuto->fixHierarchy();

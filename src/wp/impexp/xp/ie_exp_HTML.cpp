@@ -648,7 +648,7 @@ private:
 
 	UT_uint32		m_tlistIndent;
 	UT_uint32		m_tlistListID;
-	List_Type		m_tlistType;
+	FL_ListType		m_tlistType;
 
 	UT_StringPtrMap	m_SavedURLs;
 

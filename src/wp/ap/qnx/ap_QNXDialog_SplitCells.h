@@ -38,7 +38,7 @@ public:
 
 	// callbacks can fire these events
 	virtual void			event_Close(void);
-	virtual void            setSensitivity( AP_Dialog_SplitCells::SplitType splitThis, bool bSens);
+	virtual void            setSensitivity( AP_CellSplitType splitThis, bool bSens);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);

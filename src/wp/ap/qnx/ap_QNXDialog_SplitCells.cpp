@@ -46,25 +46,25 @@ return Pt_CONTINUE;
 
 int s_merge_left(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(AP_Dialog_SplitCells::radio_left);
+mc->setMergeType(radio_left);
 mc->onMerge();
 return Pt_CONTINUE;
 }
 int s_merge_right(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(AP_Dialog_SplitCells::radio_right);
+mc->setMergeType(radio_right);
 mc->onMerge();
 return Pt_CONTINUE;
 }
 int s_merge_below(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(AP_Dialog_SplitCells::radio_below);
+mc->setMergeType(radio_below);
 mc->onMerge();
 return Pt_CONTINUE;
 }
 int s_merge_above(PtWidget_t *w,AP_QNXDialog_SplitCells *mc,PtCallbackInfo_t *cbinfo)
 {
-mc->setMergeType(AP_Dialog_SplitCells::radio_above);
+mc->setMergeType(radio_above);
 mc->onMerge();
 return Pt_CONTINUE;
 }
@@ -101,7 +101,7 @@ void AP_QNXDialog_SplitCells::runModeless(XAP_Frame * pFrame)
 	startUpdater();
 }
 
-void AP_QNXDialog_SplitCells::setSensitivity(AP_Dialog_SplitCells::plitType splitThis, bool bSens)
+void AP_QNXDialog_SplitCells::setSensitivity(AP_CellSplitType splitThis, bool bSens)
 {
 int status;
 if(bSens==true)

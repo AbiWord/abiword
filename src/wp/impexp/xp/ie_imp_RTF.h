@@ -133,7 +133,7 @@ struct ABI_EXPORT _rtfListTable
 	bool simple;
 	bool continueList;
 	bool hangingIndent;
-	List_Type type;
+	FL_ListType type;
 	bool bold;
 	bool italic;
 	bool caps;
