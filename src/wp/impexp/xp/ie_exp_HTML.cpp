@@ -2565,6 +2565,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	const char * dataid = UT_basename ((const char *) szDataID);
 
 	const char * suffix = dataid + strlen (dataid);
+	const char * suffid = suffix;
 	const char * ptr = 0;
 
 	/* Question: What does the DataID look like for images pasted
@@ -2575,6 +2576,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		if (*--ptr == '_')
 			{
 				suffix = ptr;
+				suffid = suffix;
 				break;
 			}
 	ptr = suffix;
@@ -2592,6 +2594,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	imagedir += "_data";
 
 	UT_String filename(dataid,suffix-dataid);
+	filename += suffid;
 	filename += ".png";
 
 	UT_UTF8String url;
