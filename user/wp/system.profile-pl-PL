@@ -15,5 +15,6 @@
 <SystemDefaults
 	DocumentLocale="pl-PL"
 	RulerUnits="cm"
+	AutoSpellCheck="0"
     	DefaultPageSize="A4"
 />
