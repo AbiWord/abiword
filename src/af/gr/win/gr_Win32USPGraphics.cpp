@@ -1449,6 +1449,11 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()
 											/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
+
+			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()
+											/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
+			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()
+											/((double)m_nPrintLogPixelsY) + 0.5);
 		}
 
 		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
@@ -1467,6 +1472,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/
+											((double)getDeviceResolution()*m_fXYRatio) + 0.5);
+			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
+											((double)getDeviceResolution()*m_fXYRatio) + 0.5);
+			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()/
 											((double)getDeviceResolution()) + 0.5);
 		}
 
@@ -1487,6 +1496,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			RI.m_pAdvances[i] = (UT_sint32)((double)RI.m_pAdvances[i]*(double)getResolution()/
 											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
+			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
+											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
+			RI.m_pGoffsets[i].dv = (UT_sint32)((double)RI.m_pGoffsets[i].dv*(double)getResolution()/
+											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING) + 0.5);
 		}
 
 		//RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
