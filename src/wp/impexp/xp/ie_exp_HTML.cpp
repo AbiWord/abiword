@@ -4967,7 +4967,10 @@ bool s_StyleTree::add (const char * style_name, PD_Document * pDoc)
 
 	PD_Style * basis = style->getBasedOn ();
 
-	if (basis)
+	const XML_Char * parent_name = NULL;
+	if (basis && 
+		basis->getAttribute (PT_NAME_ATTRIBUTE_NAME, parent_name) &&
+		UT_XML_strcmp(style_name, parent_name) != 0)
 	{
 		parent = const_cast<s_StyleTree *>(find (basis));
 		if (parent == 0)
