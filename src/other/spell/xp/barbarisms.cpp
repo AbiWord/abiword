@@ -45,7 +45,7 @@ BarbarismChecker::~BarbarismChecker()
 				
 			delete pVec;			
 		}
-	} 
+	} 	
 }
 
 
@@ -232,10 +232,16 @@ void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
 
 	if (strcmp(name, "barbarism")==0)
 	{
-		m_pCurVector = new UT_Vector();
+		
 		const char * word = UT_getAttribute ("word", atts);
 		if (word != NULL)
+		{
+			m_pCurVector = new UT_Vector();
 			m_map.insert (word, m_pCurVector);
+		}
+		else
+			m_pCurVector = NULL;
+			
 	}
 	else if (strcmp(name, "suggestion")==0)
 	{

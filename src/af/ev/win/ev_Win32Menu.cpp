@@ -236,6 +236,8 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 			m_nBitmapCX = bitmap.bmWidth+2;
 			m_nBitmapCY = bitmap.bmHeight+2;
 		}
+
+		DeleteObject(hBitmap);
 	}						
 	
 }

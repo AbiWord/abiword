@@ -87,6 +87,7 @@ bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNu
 	// TODO if SetClipboardData() fails, do we need to GlobalFree(hData) ??
 }
 
+// Caller should release using GlobalUnlock the memory handle returned 
 HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 {
 	UINT iFormat = convertFormatString(format);
@@ -100,6 +101,7 @@ HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 bool XAP_Win32Clipboard::hasFormat(const char * format)
 {
 	HANDLE hData = getHandleInFormat(format);
+	GlobalUnlock(hData);
 	return (hData != NULL);
 }
 
