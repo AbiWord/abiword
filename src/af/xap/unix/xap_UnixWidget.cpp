@@ -63,14 +63,14 @@ void XAP_UnixWidget::setValueInt(int val)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_widget), (val?TRUE:FALSE));
 	}
 	else if (GTK_IS_LABEL(m_widget)) {
-        char str[60];
-		g_snprintf(str, sizeof(str), "%d", val);
-		gtk_label_set_text(GTK_LABEL(m_widget), str);
+	  UT_UTF8String str;
+	  UT_UTF8String_sprintf(str,"%d",val);
+	  gtk_label_set_text(GTK_LABEL(m_widget), str.utf8_str());
 	}
 	else if (GTK_IS_ENTRY(m_widget)) {
-        char str[60];
-		g_snprintf(str, sizeof(str), "%d", val);
-		gtk_entry_set_text(GTK_ENTRY(m_widget), str);
+	  UT_UTF8String str;
+	  UT_UTF8String_sprintf(str,"%d",val);
+	  gtk_entry_set_text(GTK_ENTRY(m_widget), str.utf8_str());
 	}
 	else {
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -125,9 +125,9 @@ void XAP_UnixWidget::getValueString(UT_UTF8String &val)
 void XAP_UnixWidget::setValueFloat(float val)
 {
 	if (GTK_IS_ENTRY(m_widget)) {
-        char str[128];
-		snprintf(str, sizeof(str), "%f", val);
-		gtk_entry_set_text(GTK_ENTRY(m_widget), str);
+        UT_UTF8String str;
+	UT_UTF8String_sprintf(str,"%f",val);
+	gtk_entry_set_text(GTK_ENTRY(m_widget), str.utf8_str());
 	}
 }
 
