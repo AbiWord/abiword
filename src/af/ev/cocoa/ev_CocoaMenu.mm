@@ -602,16 +602,6 @@ void EV_CocoaMenu::addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pActi
 							// TODO: setKeyEquivalent (usually Cmd-Q)
 						}
 						break;
-
-					case AP_MENU_ID_FMT_FONT:
-						if (!m_bContextMenu)
-							{
-								NSString * strippedItemName = convertToString(szLabelName, true);
-
-								NSMenuItem * item = [m_fontTarget fontMenuItem:strippedItemName];
-
-								addToAppMenu(item);
-							}
 						// fall through...
 
 					default:
