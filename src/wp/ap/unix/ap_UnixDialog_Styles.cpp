@@ -231,6 +231,61 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	GtkWidget * windowStyles;
 
 	GtkWidget * vboxContents;
+
+	GtkWidget * buttonBoxGlobal;
+	GtkWidget * buttonOK;
+	GtkWidget * buttonCancel;
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	windowStyles = gtk_window_new (GTK_WINDOW_DIALOG);
+	gtk_window_set_title (GTK_WINDOW (windowStyles), 
+		pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
+	gtk_window_set_policy (GTK_WINDOW (windowStyles), FALSE, FALSE, TRUE);
+	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
+	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
+
+	vboxContents = _constructWindowContents(windowStyles);
+
+	// These buttons need to be gnomified
+
+	buttonBoxGlobal = gtk_hbutton_box_new();
+	gtk_hbutton_box_set_spacing_default(0);
+	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
+	gtk_widget_show(buttonBoxGlobal);
+
+	buttonOK = gtk_button_new_with_label ( 
+		pSS->getValue(XAP_STRING_ID_DLG_OK) );
+	gtk_widget_show(buttonOK);
+	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
+	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonOK);
+	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
+
+	buttonCancel = gtk_button_new_with_label ( 
+		pSS->getValue(XAP_STRING_ID_DLG_Cancel) );
+	gtk_widget_show(buttonCancel);
+	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
+	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonCancel);
+	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+
+	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxGlobal, FALSE, FALSE, 0);
+
+	// done packing buttons
+
+	gtk_widget_show(vboxContents);
+	gtk_container_add(GTK_CONTAINER(windowStyles), vboxContents);
+
+	m_wbuttonOk = buttonOK;
+	m_wbuttonCancel = buttonCancel;
+
+	_connectsignals();
+	return windowStyles;
+}
+
+GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
+									GtkWidget * windowStyles)
+{
+	GtkWidget * vboxContents;
 	GtkWidget * hboxContents;
 	GtkWidget * vboxTopLeft;
 	GtkWidget * vboxTopRight;
@@ -256,24 +311,12 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	GtkWidget * hsepBot;
 
 	GtkWidget * buttonBoxStyleManip;
-	GtkWidget * buttonBoxGlobal;
 
 	GtkWidget * buttonNew;
 	GtkWidget * buttonModify;
 	GtkWidget * buttonDelete;
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	windowStyles = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_window_set_title (GTK_WINDOW (windowStyles), 
-		pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowStyles), FALSE, FALSE, TRUE);
-	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
-	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
-
-	_constructWindowContents(windowStyles);
 
 	vboxContents = gtk_vbox_new(FALSE, 0);
 
@@ -352,8 +395,6 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 
 	// Pack buttons at the bottom of the dialog
 
-	// These buttons need to be gnomified
-
 	buttonBoxStyleManip = gtk_hbutton_box_new();
 	gtk_hbutton_box_set_spacing_default(0);
 	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
@@ -385,51 +426,14 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	gtk_widget_show(hsepMid);
 
 
-	buttonBoxGlobal = gtk_hbutton_box_new();
-	gtk_hbutton_box_set_spacing_default(0);
-	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
-	gtk_widget_show(buttonBoxGlobal);
-
-	buttonOK = gtk_button_new_with_label ( 
-		pSS->getValue(XAP_STRING_ID_DLG_OK) );
-	gtk_widget_show(buttonOK);
-	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
-	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonOK);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label ( 
-		pSS->getValue(XAP_STRING_ID_DLG_Cancel) );
-	gtk_widget_show(buttonCancel);
-	//gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
-	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
-	gtk_box_pack_start(GTK_BOX(vboxContents), buttonBoxGlobal, FALSE, FALSE, 0);
-
-	// done packing buttons
-
-	gtk_widget_show(vboxContents);
-	gtk_container_add(GTK_CONTAINER(windowStyles), vboxContents);
-
-	m_wbuttonOk = buttonOK;
-	m_wbuttonCancel = buttonCancel;
+	m_windowMain = windowStyles;
 	m_wbuttonNew = buttonNew;
 	m_wbuttonModify = buttonModify;
 	m_wbuttonDelete = buttonDelete;
 	m_wParaPreviewArea = ParaPreviewArea;
 	m_wCharPreviewArea = CharPreviewArea;
 
-	_connectsignals();
-	return windowStyles;
-}
-
-void AP_UnixDialog_Styles::_constructWindowContents(GtkWidget * windowStyles)
-{
-	m_windowMain = windowStyles;
-	/*GtkWidget * wParaPreviewArea = NULL;
-        GtkWidget * wCharPreviewArea = NULL;
-        m_wParaPreviewArea = wParaPreviewArea;
-        m_wCharPreviewArea = wCharPreviewArea;*/
+	return vboxContents;
 }
 
 void AP_UnixDialog_Styles::_connectsignals(void)

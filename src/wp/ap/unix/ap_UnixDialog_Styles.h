@@ -55,10 +55,10 @@ protected:
 
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
-	void            _constructWindowContents( GtkWidget * windowStyles);
-	void		_populateWindowData(void);
-	void 		_storeWindowData(void);
-	void            _connectsignals(void);
+	GtkWidget * _constructWindowContents(GtkWidget * parent);
+	void				_populateWindowData(void);
+	void 				_storeWindowData(void);
+	void				_connectsignals(void);
 
 	GR_UnixGraphics	* 		m_pParaPreviewWidget;
 	GR_UnixGraphics	* 		m_pCharPreviewWidget;

@@ -45,12 +45,16 @@ XAP_Dialog * AP_UnixGnomeDialog_Styles::static_constructor(XAP_DialogFactory *pD
 GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 {
   	GtkWidget * windowStyles;
+	GtkWidget * vboxContents;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	windowStyles = gnome_dialog_new (pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle), NULL);
 
-	_constructWindowContents(GNOME_DIALOG(windowStyles)->vbox);
+	vboxContents = _constructWindowContents(GNOME_DIALOG(windowStyles)->vbox);
+	gtk_widget_show (vboxContents);
+	gtk_container_add(GTK_CONTAINER(GNOME_DIALOG(windowStyles)->vbox), 
+			  vboxContents);
 
 	// ok button
 	//
