@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-// TODO change this file to not reference GR_Graphics.
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -32,7 +30,6 @@
 #include "ut_string.h"
 #include "ut_units.h"
 #include "ut_debugmsg.h"
-#include "gr_Graphics.h"
 
 const char * UT_dimensionName(UT_Dimension dim)
 {
@@ -532,16 +529,6 @@ UT_sint32 UT_paperUnitsFromInches(double dInches)
 	double dResolution = UT_PAPER_UNITS_PER_INCH;
 
 	return static_cast<UT_sint32>(dInches * dResolution);
-}
-
-UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits)
-{
-	// convert number in paper units (see above) into
-	// "document" units in the given graphics context.
-
-	UT_ASSERT(pG);
-
-	return (pG->getResolution() * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
 }
 
 UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits)

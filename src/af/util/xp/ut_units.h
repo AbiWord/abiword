@@ -28,8 +28,6 @@
 #include "ut_types.h"
 #endif
 
-class GR_Graphics;
-
 UT_BEGIN_EXTERN_C
 
 #define UT_PAPER_UNITS_PER_INCH				100
@@ -60,7 +58,6 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim);
 UT_sint32 UT_paperUnits(const char * sz);
 double    UT_inchesFromPaperUnits(UT_sint32 iPaperUnits);
 UT_sint32 UT_paperUnitsFromInches(double dInches);
-UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
 
 const char * UT_incrementDimString(const char * dimString, double inc);
 const char * UT_multiplyDimString(const char * dimString, double mult);
