@@ -2946,6 +2946,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 				s_pMapOfRunsL2V[count - i - 1] = i;
 				s_pMapOfRunsV2L[count - i - 1] = i;
 				(static_cast<fp_Run*>(m_vecRuns.getNthItem(i)))->setVisDirection(FRIBIDI_TYPE_RTL);
+				(static_cast<fp_Run*>(m_vecRuns.getNthItem(count - i - 1)))->setVisDirection(FRIBIDI_TYPE_RTL);
 			}
 
 			if(count % 2)	//the run in the middle

@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
- * Copyright (C) 2001 Tomas Frydrych
+ * Copyright (C) 2001-2003 Tomas Frydrych
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -527,10 +527,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bIsLower(false),
 	m_bInSect(false),
 	m_bInPara(false),
-	m_bPrevStrongCharRTL(false),
 	m_bLTRCharContext(true),
-	m_bLTROverrideIssued(false),
-	m_bLanguageRTL(false),
+	m_iOverrideIssued(FRIBIDI_TYPE_UNSET),
 	m_bBidiDocument(false),
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
@@ -1143,16 +1141,8 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
 
-	// deal with the thorny problem of mirror characters and languge
-	// as direction override
+	// deal with the thorny problem of languge as direction override
 	FriBidiCharType cType = fribidi_get_type(static_cast<FriBidiChar>(eachchar));
-
-#if 0
-	FriBidiChar dbg_mirror_char;
-	fribidi_get_mirror_char(static_cast<FriBidiChar>(eachchar), &dbg_mirror_char);
-	UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: 0x%04x, LTR=%d, RTL lang=%d\n",
-						 eachchar,m_bLTRCharContext,m_bLanguageRTL));
-#endif
 
 	// bidi adjustments for neutrals
 	// 
@@ -1164,139 +1154,93 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// there are some cases when we need to jump through hoops to get
 	// sensible layout out of the document.
 
-	UT_UCS4Char cMarker = 0;
-	bool bPrefixMarker = false;
-	
+	// It seems that we will have to use the overrides after all,
+	// there is just no way we can catch all the cases (Tomas, May 7, 2003)
+
 	if(m_bBidiDocument)
 	{
 		if(FRIBIDI_IS_NEUTRAL(cType))
 		{
-			// A. Other-Neutral characters
-			//    Sometimes Other-Neutral characters will have to be given
-			//    explicit direction based on the language
-			//    
-			// A.1 Parenthesis, braces, brackets
-			//     Closing parenthesis braces and brackets need to be
-			//     treated as strong characters; we will achieve this by
-			//     inserting UCS_LRM and UCS_RLM after them
-			if(eachchar == ')' || eachchar == '}' || eachchar == ']')
+			this->_flush();
+
+			const XML_Char * propsArray[5];
+			memset (propsArray, 0, sizeof(propsArray));
+
+			XML_Char prop[]="props";
+			XML_Char rev[] ="revision";
+
+			UT_String props = m_charProps;
+
+			if(m_bLTRCharContext && m_iOverrideIssued != FRIBIDI_TYPE_LTR)
 			{
-				if(m_bLanguageRTL)
+				props +=";dir-override:ltr";
+				m_iOverrideIssued = FRIBIDI_TYPE_LTR;
+			}
+			else if(!m_bLTRCharContext && m_iOverrideIssued != FRIBIDI_TYPE_RTL)
+			{
+				props +=";dir-override:rtl";
+				m_iOverrideIssued = FRIBIDI_TYPE_RTL;
+			}
+			else
+			{
+				goto override_not_needed;
+			}
+			
+			propsArray[0] = static_cast<const XML_Char*>(&prop[0]);
+			propsArray[1] = props.c_str();
+
+			if(m_charRevs.size())
+			{
+				propsArray[2] = static_cast<const XML_Char*>(&rev[0]);
+				propsArray[3] = m_charRevs.c_str();
+			}
+
+			if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
+			{
+				UT_DEBUGMSG(("#TF: error appending bidi override\n"));
+			}
+		}
+		else
+		{
+			// strong character; if we previously issued an override,
+			// we need to cancel it
+			if(m_iOverrideIssued != FRIBIDI_TYPE_UNSET)
+			{
+				m_iOverrideIssued = FRIBIDI_TYPE_UNSET;
+
+				this->_flush();
+
+				const XML_Char * propsArray[5];
+				memset (propsArray, 0, sizeof(propsArray));
+
+				XML_Char prop[]="props";
+				XML_Char rev[] ="revision";
+
+				UT_String props = m_charProps;
+
+				props +=";dir-override:";
+			
+				propsArray[0] = static_cast<const XML_Char*>(&prop[0]);
+				propsArray[1] = props.c_str();
+
+				if(m_charRevs.size())
 				{
-					cMarker = UCS_RLM;
+					propsArray[2] = static_cast<const XML_Char*>(&rev[0]);
+					propsArray[3] = m_charRevs.c_str();
 				}
-				else
+
+				if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
 				{
-					cMarker = UCS_LRM;
+					UT_DEBUGMSG(("#TF: error appending bidi override\n"));
 				}
 			}
-			else if(eachchar == '(' || eachchar == '{' || eachchar == '[')
-			{
-				bPrefixMarker = true;
-				if(m_bLanguageRTL)
-				{
-					cMarker = UCS_RLM;
-				}
-				else
-				{
-					cMarker = UCS_LRM;
-				}
-			}
 		}
 	}
+override_not_needed:
 	
-#if 0
-	// I am going to disable this for now, to simplify debugging
-	// processing of numbers in RTL context (Tomas, Jan 30, 2003)
-	//
-	// I do not think this will be needed after all (Tomas, Apr 11, 2003)
-
-	// if the character is a European number and we are in LTR context
-	// then we need to issue a direction override; we will cancel this
-	// override when we reach either any strong character or a
-	// character that has a directional property RTL, i.e., any
-	// neutral characters enclosed in a sequence of numbers will also
-	// be subject to the override.
-	
-	if(cType == FRIBIDI_TYPE_EN && m_bLTRCharContext && !m_bLTROverrideIssued)
-	{
-		this->_flush();
-
-		const XML_Char * propsArray[5];
-		memset (propsArray, 0, sizeof(propsArray));
-
-		XML_Char prop[]="props";
-		XML_Char rev[] ="revision";
-
-		UT_String props = m_charProps;
-
-		props +=";dir-override:ltr";
-		propsArray[0] = static_cast<const XML_Char*>(&prop);
-		propsArray[1] = props.c_str();
-
-		if(m_charRevs.size())
-		{
-			propsArray[2] = static_cast<const XML_Char*>(&rev);
-			propsArray[3] = m_charRevs.c_str();
-		}
-
-		if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
-		{
-			UT_DEBUGMSG(("#TF: error appending LTR override\n"));
-		}
-		m_bLTROverrideIssued = true;
-	}
-	// if we previously issued an LTR
-	// override, and this is either a strong character or any RTL
-	// character we need to cancel it.
-	else if(m_bLTROverrideIssued && (FRIBIDI_IS_STRONG(cType) || FRIBIDI_IS_RTL(cType)))
-	{
-		this->_flush();
-
-		const XML_Char * propsArray[5];
-		memset (propsArray, 0, sizeof(propsArray));
-
-		XML_Char prop[]="props";
-		XML_Char rev[] ="revision";
-
-		propsArray[0] = static_cast<const XML_Char*>(&prop);
-		propsArray[1] = m_charProps.c_str();
-
-		if(m_charRevs.size())
-		{
-			propsArray[2] = static_cast<const XML_Char*>(&rev);
-			propsArray[3] = m_charRevs.c_str();
-		}
-
-		if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
-		{
-			UT_DEBUGMSG(("#TF: error appending LTR override\n"));
-		}
-		m_bLTROverrideIssued = false;
-	}
-#endif
-	//
-	// Append the character to our character buffer
-	//
-	if(cMarker && bPrefixMarker)
-	{
-		this->_appendChar (cMarker);
-		m_iDocPosition++;
-	}
-
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 	m_iDocPosition++;
 
-	if(cMarker && !bPrefixMarker)
-	{
-		this->_appendChar (cMarker);
-		m_iDocPosition++;
-	}
-	
-	if(FRIBIDI_IS_STRONG(cType))
-	{
-		m_bPrevStrongCharRTL = FRIBIDI_IS_RTL(cType);
-	}
 	return 0;
 }
 
@@ -1799,11 +1743,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	UT_String propBuffer;
 	UT_String props;
-
-	if(apap->fBidi == 1)
-		m_bPrevStrongCharRTL = true;
-	else
-		m_bPrevStrongCharRTL = false;
 
 	// DOM TODO: i think that this is right
 	if (apap->fBidi == 1) {
@@ -2465,8 +2404,6 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		iLid = achp->lidDefault;
 	
 	m_charProps += wvLIDToLangConverter (iLid);
-	m_bLanguageRTL = s_isLanguageRTL(iLid);
-
 	m_charProps += ";";
 
 	// decide best codepage based on the lid (as lang code above)
@@ -2487,20 +2424,6 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		getDoc()->setEncodingName(codepage.c_str());
 	else if (getDoc()->getEncodingName() != codepage)
 		getDoc()->setEncodingName(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
-
-	// after several hours of playing with this, I think I now undertand
-	// how achp->fBidi works:
-	// if it is 0, then treat the text as if it was LTR
-	// if it is 1, then apply bidi algorithm to the text
-	// effectively for 0 we should set dir-override to "ltr"
-	// but that is very uggly, since most of the time we will be
-	// applying this override to strong LTR characters that do not need
-	// it. So, instead we will do the processing in the character
-	// procedure; if the character is strong we will do nothing, but
-	// if it is weak, we will set the override
-
-	// first of all, cancel any leftover LTR override indicator
-	m_bLTROverrideIssued = false;
 
 	if (!achp->fBidi)
 		m_bLTRCharContext = true;

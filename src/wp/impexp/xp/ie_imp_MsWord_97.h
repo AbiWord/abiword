@@ -151,10 +151,8 @@ private:
 
 	bool m_bInSect;
 	bool m_bInPara;
-	bool m_bPrevStrongCharRTL;
 	bool m_bLTRCharContext;
-	bool m_bLTROverrideIssued;
-	bool m_bLanguageRTL;
+	FriBidiCharType  m_iOverrideIssued;
 	bool m_bBidiDocument;
 	UT_uint32 m_iDocPosition;
 	bookmark * m_pBookmarks;
