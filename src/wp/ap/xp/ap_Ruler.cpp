@@ -25,10 +25,10 @@
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 
-#define SCALE_IN 1
-#define SCALE_CM 1
-#define SCALE_MM 1
-#define SCALE_PT 1
+#define SCALE_IN 10
+#define SCALE_CM 10
+#define SCALE_MM 10
+#define SCALE_PT 10
 
 ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 {

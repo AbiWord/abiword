@@ -1826,7 +1826,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			if(pCon && pCon != pLastLine && yoff >= yFpos)
 			{
-				if(pCon->getPrev())
+				while(pCon && pCon->getPrev())
 				{
 					pCon = static_cast<fp_Line *>(pCon->getPrev());
 				}
@@ -1853,6 +1853,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			UT_sint32 pageHeight = 0;
 			UT_sint32 yLineOff,xLineOff;
 			fp_VerticalContainer * pVCon = NULL;
+			yoff = 0;
 			if(iThisPageNo > iFirstPageNo)
 			{
 				//

@@ -31,6 +31,7 @@
 #include "fp_FrameContainer.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+#include "xap_App.h"
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: m_pView (pView), 
@@ -752,12 +753,17 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_sint32 yBlockOff = 0;
 		bool bValid = false;
 		bValid = pBL->getXYOffsetToLine(xBlockOff,yBlockOff,pLine);
+		fp_Line * pFirstL = static_cast<fp_Line *>(pBL->getFirstContainer());
+		UT_sint32 xFirst,yFirst;
+		pFirstL->getScreenOffsets(pFirstL->getFirstRun(),xFirst,yFirst);
+		UT_DEBUGMSG(("xBlockOffset %d yBlockOffset %d \n",xBlockOff,yBlockOff));
 		UT_sint32 xLineOff = 0;
 		UT_sint32 yLineOff = 0;
 		pLine->getScreenOffsets(pRun, xLineOff,yLineOff);
 		UT_DEBUGMSG(("Raw yLineoff %d \n",yLineOff));
 		xLineOff = x + pRun->getX() - xLineOff  + xBlockOff;
-		yLineOff = y + pRun->getY() - yLineOff  + yBlockOff;
+//		yLineOff = y + pRun->getY() - yLineOff  + yBlockOff;
+		yLineOff = y - yFirst;
 		UT_DEBUGMSG(("fv_FrameEdit: (x,y) %d %d xLineOff %d yLineOff %d \n",x,y,xLineOff,yLineOff));
 //
 // The sXpos and sYpos values are the numbers that need to be added from the
@@ -874,9 +880,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 	{
 		const PP_AttrProp* pSectionAP = NULL;
 		m_pFrameLayout->getAP(pSectionAP);
-		const XML_Char * pszXpos = NULL;
-		const XML_Char * pszYpos = NULL;
-		UT_sint32 iX,iY;
+
 //
 // If there was no drag, the user just clicked and released the left mouse
 // no need to change anything.
@@ -887,32 +891,245 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			return;
 		}
 
-// Xpos
-		if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
+//
+// OK get the properties of the current frame, update them with the new
+// the position and size of this drag.
+//
+
+//  Frame Image
+
+		const XML_Char * pszDataID = NULL;
+		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
+
+		UT_String sFrameProps;
+		UT_String sProp;
+		UT_String sVal;
+
+		const XML_Char *pszFrameType = NULL;
+		const XML_Char *pszPositionTo = NULL;
+		const XML_Char *pszXpad = NULL;
+		const XML_Char *pszYpad = NULL;
+
+		const XML_Char * pszColor = NULL;
+		const XML_Char * pszBorderColor = NULL;
+		const XML_Char * pszBorderStyle = NULL;
+		const XML_Char * pszBorderWidth = NULL;
+
+
+// Frame Type
+
+		sProp = "frame-type";
+		if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
 		{
-			UT_DEBUGMSG(("No xpos defined for Frame in FrameEdit !\n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return;
+			sVal = "textbox";
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		else 
+		{
+			sVal = pszFrameType;
+		}
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		
+
+// Position-to
+
+		sProp = "position-to";
+		if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
+		{
+			sVal = "block-above-text";
 		}
 		else
 		{
-			iX = UT_convertToLogicalUnits(pszXpos);
+			sVal = pszPositionTo;
 		}
-// Ypos
-		if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+// Xpadding
+
+		sProp = "xpad";
+		if(!pSectionAP || !pSectionAP->getProperty("xpad",pszXpad))
 		{
-			UT_DEBUGMSG(("No ypos defined for Frame in FrameEdit !\n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return;
+			sVal = "0.03in";
 		}
 		else
 		{
-			iY = UT_convertToLogicalUnits(pszYpos);
+			sVal= pszXpad;
 		}
-		UT_sint32 xdiff = m_recCurFrame.left - m_iInitialDragX;
-		UT_sint32 ydiff = m_recCurFrame.top - m_iInitialDragY;
-		iX += xdiff;
-		iY += ydiff;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+// Ypadding
+
+		sProp = "ypad";
+		if(!pSectionAP || !pSectionAP->getProperty("ypad",pszYpad))
+		{
+			sVal = "0.03in";
+		}
+		else
+		{
+			sVal = pszYpad;
+		}
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+
+	/* Frame-border properties:
+	 */
+
+		pSectionAP->getProperty ("color", pszColor);
+		if(pszColor)
+		{
+			sProp = "color";
+			sVal = pszColor;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+
+		pSectionAP->getProperty ("bot-color",pszBorderColor);
+		pSectionAP->getProperty ("bot-style",pszBorderStyle);
+		pSectionAP->getProperty ("bot-thickness",pszBorderWidth);
+		if(pszBorderColor)
+		{
+			sProp = "bot-color";
+			sVal = pszBorderColor;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderStyle)
+		{
+			sProp = "bot-style";
+			sVal = pszBorderStyle;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderWidth)
+		{
+			sProp = "bot-thickness";
+			sVal = pszBorderWidth;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+
+		pSectionAP->getProperty ("left-color", pszBorderColor);
+		pSectionAP->getProperty ("left-style", pszBorderStyle);
+		pSectionAP->getProperty ("left-thickness", pszBorderWidth);
+		if(pszBorderColor)
+		{
+			sProp = "left-color";
+			sVal = pszBorderColor;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderStyle)
+		{
+			sProp = "left-style";
+			sVal = pszBorderStyle;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderWidth)
+		{
+			sProp = "left-thickness";
+			sVal = pszBorderWidth;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+
+		pSectionAP->getProperty ("right-color",pszBorderColor);
+		pSectionAP->getProperty ("right-style",pszBorderStyle);
+		pSectionAP->getProperty ("right-thickness", pszBorderWidth);
+		if(pszBorderColor)
+		{
+			sProp = "right-color";
+			sVal = pszBorderColor;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderStyle)
+		{
+			sProp = "right-style";
+			sVal = pszBorderStyle;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderWidth)
+		{
+			sProp = "right-thickness";
+			sVal = pszBorderWidth;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+
+		pszBorderColor = NULL;
+		pszBorderStyle = NULL;
+		pszBorderWidth = NULL;
+
+		pSectionAP->getProperty ("top-color",  pszBorderColor);
+		pSectionAP->getProperty ("top-style",  pszBorderStyle);
+		pSectionAP->getProperty ("top-thickness",pszBorderWidth);
+		if(pszBorderColor)
+		{
+			sProp = "top-color";
+			sVal = pszBorderColor;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderStyle)
+		{
+			sProp = "top-style";
+			sVal = pszBorderStyle;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBorderWidth)
+		{
+			sProp = "top-thickness";
+			sVal = pszBorderWidth;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+
+	/* Frame fill
+	 */
+
+		const XML_Char * pszBgStyle = NULL;
+		const XML_Char * pszBgColor = NULL;
+		const XML_Char * pszBackgroundColor = NULL;
+
+		pSectionAP->getProperty ("bg-style",    pszBgStyle);
+		pSectionAP->getProperty ("bgcolor",     pszBgColor);
+		pSectionAP->getProperty ("background-color", pszBackgroundColor);
+		if(pszBgStyle)
+		{
+			sProp = "bg-style";
+			sVal = pszBgStyle;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBgColor)
+		{
+			sProp = "bgcolor";
+			sVal = pszBgColor;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		if(pszBackgroundColor)
+		{
+			sProp = "background-color";
+			sVal = pszBackgroundColor;
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+
+		UT_String sXpos("");
+		UT_String sYpos("");
+		UT_String sWidth("");
+		UT_String sHeight("");
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,posAtXY);
+		
+		sProp = "xpos";
+		sVal = sXpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		sProp = "ypos";
+		sVal = sYpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+		sProp = "frame-width";
+		sVal = sWidth;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		sProp = "frame-height";
+		sVal = sHeight;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
 
 
 		// Signal PieceTable Change
@@ -923,34 +1140,63 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		getDoc()->disableListUpdates();
 		getDoc()->beginUserAtomicGlob();
 
-		UT_String sXpos("");
-		UT_String sYpos("");
-		UT_String sWidth("");
-		UT_String sHeight("");
+// Copy the content of the frame to the clipboard
 
+		PT_DocPosition posStart = m_pFrameLayout->getPosition(true);
+		PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength();
 
-		double dX = static_cast<double>(iX)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		double dY = static_cast<double>(iY)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		sXpos = UT_formatDimensionedValue(dX,"in", NULL);
-		sYpos = UT_formatDimensionedValue(dY,"in", NULL);
+		PD_DocumentRange dr_oldFrame;
+		dr_oldFrame.set(getDoc(),posStart+2,posEnd-1);
+		UT_DEBUGMSG(("SEVIOR: Copy to clipboard changing frame \n"));
+		getDoc()->getApp()->copyToClipboard(&dr_oldFrame);
 
-		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
-		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
+// Delete the frame
+
+		posStart = m_pFrameLayout->getPosition(true);
+		posEnd = posStart + m_pFrameLayout->getLength();
+		UT_uint32 iRealDeleteCount;
+		PP_AttrProp * p_AttrProp_Before = NULL;
+
+		getDoc()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
+
+		m_pFrameLayout = NULL;
+
+// Insert the new frame struxes
 //
-// m_pFrameLayout will be set to NULL during the changeStrux
+// This should place the the frame strux immediately after the block containing
+// position posXY.
+// It returns the Frag_Strux of the new frame.
 //
-		fl_FrameLayout * pOldLayout = m_pFrameLayout;
+		const XML_Char ** atts = NULL;
+		if( pszDataID == NULL)
+		{
+			atts = new const XML_Char * [3];
+			atts[0] = "props";
+			atts[1] = sFrameProps.c_str();
+			atts[2] =  NULL;
+		}
+		else
+		{
+			atts = new const XML_Char * [5];
+			atts[0] = PT_STRUX_IMAGE_DATAID;
+			atts[1] = pszDataID;
+			atts[2] = "props";
+			atts[3] = sFrameProps.c_str();
+			atts[4] =  NULL;
+		}
+		pf_Frag_Strux * pfFrame = NULL;
+		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,atts,NULL,&pfFrame);
+		PT_DocPosition posFrame = pfFrame->getPos();
+		getDoc()->insertStrux(posFrame+1,PTX_Block);
+		getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+		delete [] atts;
 
-		const XML_Char * props[10] = { "frame-width",sWidth.c_str(),
-									  "frame-height",sHeight.c_str(),
-									  "xpos",sXpos.c_str(),
-									  "ypos",sYpos.c_str(),
-									  NULL,NULL};
-		PT_DocPosition pos = m_pFrameLayout->getPosition()+1;
-		getDoc()->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,props,PTX_SectionFrame);
-		m_pFrameLayout = pOldLayout;
+// paste in the contents of the new frame.
+//
+		PD_DocumentRange dr_dest(getDoc(),posFrame+2,posFrame+2);
+		UT_DEBUGMSG(("SEVIOR: Pasting from clipboard Frame changed \n"));
+		getDoc()->getApp()->pasteFromClipboard(&dr_dest,true,true);
+
 // Finish up with the usual stuff
 		getDoc()->endUserAtomicGlob();
 		getDoc()->setDontImmediatelyLayout(false);
@@ -979,6 +1225,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // Finish up by putting the editmode back to existing selected.
 //	
 		DELETEP(m_pFrameImage);
+//
+// OK get a pointer to the new frameLayout
+//
+		m_pFrameLayout = m_pView->getFrameLayout(posFrame+2);
+		UT_ASSERT(m_pFrameLayout);
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
 		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);

@@ -634,7 +634,12 @@ void FV_View::deleteFrame(void)
 
 fl_FrameLayout * FV_View::getFrameLayout(void)
 {
-	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
+	return getFrameLayout(getPoint());
+}
+
+fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
+{
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
 	if(pBlock)
 	{
