@@ -80,7 +80,7 @@ protected:
 
 private:
 
-	UT_Vector					m_vCharSet;
+	UT_NumberVector				m_vCharSet;
 	UT_String					m_stFont;
 };
 

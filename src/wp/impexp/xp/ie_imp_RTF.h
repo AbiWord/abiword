@@ -197,9 +197,9 @@ struct ABI_EXPORT RTFProps_ParaProps
     UT_sint32	m_indentFirst;	// first line indent in twips
 	double	m_lineSpaceVal;		// line spaceing value
 	bool	m_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
-	UT_Vector m_tabStops;
-	UT_Vector m_tabTypes;
-	UT_Vector m_tabLeader;
+	UT_NumberVector m_tabStops;
+	UT_NumberVector m_tabTypes;
+	UT_NumberVector m_tabLeader;
 	bool         m_isList;       // TRUE if para is an element of a list
 	UT_sint32       m_level;        // Level of list in para
 	char            m_pszStyle[30]; // Type of List
@@ -326,9 +326,9 @@ public:
 	RTFProps_bCharProps * m_pbCharProps;
 	bool setList(void);
 	bool isTab(UT_uint32 iLevel);
-	UT_Vector * getTabStopVect(UT_uint32 iLevel);
-	UT_Vector * getTabTypeVect(UT_uint32 iLevel);
-	UT_Vector * getTabLeaderVect(UT_uint32 iLevel);
+	UT_NumberVector * getTabStopVect(UT_uint32 iLevel);
+	UT_NumberVector * getTabTypeVect(UT_uint32 iLevel);
+	UT_NumberVector * getTabLeaderVect(UT_uint32 iLevel);
 	bool isDeletedChanged(UT_uint32 iLevel);
 	bool getDeleted(UT_uint32 iLevel);
 	bool isBoldChanged(UT_uint32 iLevel);
@@ -716,7 +716,7 @@ private:
 	RTFStateStore m_currentRTFState;
 
 	UT_Vector m_fontTable;
-	UT_Vector m_colourTable;
+	UT_NumberVector m_colourTable;
 	UT_Vector m_hdrFtrTable;
 	UT_Vector m_styleTable;
 

@@ -160,7 +160,7 @@ UT_uint32 PS_Graphics::getFontDescent()
 }
 
 
-void PS_Graphics::getCoverage(UT_Vector& coverage)
+void PS_Graphics::getCoverage(UT_NumberVector& coverage)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
