@@ -32,23 +32,34 @@ typedef enum {
 } PP_RevisionType;
 
 /*! PP_Revision is a class that encapsulates a single revision,
-    holding its id, type and associated properties. It provides
-    functions for retrieving information and from merging properties
+    holding its id, type and associated properties and attributes. It
+    provides functions for retrieving information and from merging
+    properties
 */
 class PP_Revision
 {
   public:
-	PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char *  props);
-	PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** props);
+	PP_Revision(UT_uint32 Id,
+				PP_RevisionType eType,
+				const XML_Char *  props,
+				const XML_Char * attrs);
+
+	PP_Revision(UT_uint32 Id,
+				PP_RevisionType eType,
+				const XML_Char ** props,
+				const XML_Char ** attrs);
+
 	~PP_Revision();
 
 	UT_uint32        getId()    const {return m_iID;}
 	PP_RevisionType  getType()  const {return m_eType;}
 	const XML_Char * getPropsString();
 	const UT_Vector* getPropsVector() const {return (const UT_Vector*)& m_vProps;}
+	const UT_Vector* getAttrsVector() const {return (const UT_Vector*)& m_vAttrs;}
 
 	void             mergeProps(const XML_Char * pProps);
 	void             mergeProps(const XML_Char ** pProps);
+	void             mergeAttrs(const XML_Char ** pAttrs);
 
 	bool             hasProperty(const XML_Char * pName, const XML_Char *& pValue) const;
 
@@ -61,6 +72,7 @@ class PP_Revision
 	UT_uint32        m_iID;
 	PP_RevisionType  m_eType;
 	UT_Vector        m_vProps;
+	UT_Vector        m_vAttrs;
 	UT_String        m_sXMLstring;
 	bool             m_bDirty;
 };
@@ -76,9 +88,11 @@ class PP_Revision
       R1, etc., conform to the following syntax (items in square
       brackets are optional):
 
-      [+]n[{props}]     -- addition with optional properties
-      -n                -- deletion
-      !n{props}         -- formating change only
+      [+]n[{props}[{atrrs}]]    -- addition with optional properties
+                                   and attributes; props and attrs
+                                   are formed as `name:value'
+      -n                        -- deletion
+      !n{props}                 -- formating change only
 
       where n is a numerical id of the revision and props is regular
       property string, for instance
@@ -99,7 +113,11 @@ class PP_RevisionAttr
 
 	void                  setRevision(const XML_Char * r);
 
-	void                  addRevision(UT_uint32 iId, PP_RevisionType eType, const XML_Char * pProp);
+	void                  addRevision(UT_uint32 iId,
+									  PP_RevisionType eType,
+									  const XML_Char ** pProp,
+									  const XML_Char ** pAttrs);
+
 	void                  removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType);
 	void                  removeRevisionIdTypeless(UT_uint32 iId);
 	void                  removeAllLesserOrEqualIds(UT_uint32 id);

@@ -22,64 +22,123 @@
 #include "ut_debugmsg.h"
 //#include <limits.h>
 
-PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * props):
+PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * props, const XML_Char * attrs):
 	m_iID(Id), m_eType(eType), m_bDirty(true)
 {
-	if(!props)
+	if(!props && !attrs)
 		return;
 
-	char * pProps = UT_strdup(props);
-
-	UT_ASSERT(pProps);
-	if(!pProps)
+	if(props)
 	{
-		UT_DEBUGMSG(("PP_Revision::PP_Revision: out of memory\n"));
-		return;
-	}
+		char * pProps = UT_strdup(props);
 
-	char * p = strtok(pProps, ":");
-
-	while(p)
-	{
-		char * n = UT_strdup(p);
-		p = strtok(NULL, ";");
-		UT_ASSERT(p && n);
-
-		if(p && n)
+		UT_ASSERT(pProps);
+		if(!pProps)
 		{
-			m_vProps.addItem((void*)n);
-			m_vProps.addItem((void*)UT_strdup(p));
-			p = strtok(NULL,":");
+			UT_DEBUGMSG(("PP_Revision::PP_Revision: out of memory\n"));
+			return;
 		}
-		else
-		{
-			// malformed property
-			UT_DEBUGMSG(("PP_Revision::PP_Revision: malformed props string [%s]\n", props));
-			FREEP(n);
 
-			// if we have not reached the end, we will keep trying ...
-			if(p)
+		char * p = strtok(pProps, ":");
+
+		while(p)
+		{
+			char * n = UT_strdup(p);
+			p = strtok(NULL, ";");
+			UT_ASSERT(p && n);
+
+			if(p && n)
+			{
+				m_vProps.addItem((void*)n);
+				m_vProps.addItem((void*)UT_strdup(p));
 				p = strtok(NULL,":");
+			}
+			else
+			{
+				// malformed property
+				UT_DEBUGMSG(("PP_Revision::PP_Revision: malformed props string [%s]\n", props));
+				FREEP(n);
+
+				// if we have not reached the end, we will keep trying ...
+				if(p)
+					p = strtok(NULL,":");
+			}
 		}
+
+		FREEP(pProps);
+		UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
 	}
 
-	FREEP(pProps);
-	UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
+	if(attrs)
+	{
+		char * pAttrs = UT_strdup(attrs);
+
+		UT_ASSERT(pAttrs);
+		if(!pAttrs)
+		{
+			UT_DEBUGMSG(("PP_Revision::PP_Revision: out of memory\n"));
+			return;
+		}
+
+		char * p = strtok(pAttrs, ":");
+
+		while(p)
+		{
+			char * n = UT_strdup(p);
+			p = strtok(NULL, ";");
+			UT_ASSERT(p && n);
+
+			if(p && n)
+			{
+				m_vAttrs.addItem((void*)n);
+				m_vAttrs.addItem((void*)UT_strdup(p));
+				p = strtok(NULL,":");
+			}
+			else
+			{
+				// malformed property
+				UT_DEBUGMSG(("PP_Revision::PP_Revision: malformed props string [%s]\n", props));
+				FREEP(n);
+
+				// if we have not reached the end, we will keep trying ...
+				if(p)
+					p = strtok(NULL,":");
+			}
+		}
+
+		FREEP(pAttrs);
+		UT_ASSERT(m_vAttrs.getItemCount() % 2 == 0);
+	}
+
 }
 
-PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** props):
+PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** props, const XML_Char ** attrs):
 	m_iID(Id), m_eType(eType), m_bDirty(true)
 {
-	if(!props)
+	if(!props && !attrs)
 		return;
 
-	const XML_Char ** pProps = props;
-
-	while(*pProps)
+	if(props)
 	{
-		m_vProps.addItem((void*) UT_strdup(*pProps++));
+		const XML_Char ** pProps = props;
+
+		while(*pProps)
+		{
+			m_vProps.addItem((void*) UT_strdup(*pProps++));
+		}
+		UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
 	}
-	UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
+
+	if(attrs)
+	{
+		const XML_Char ** pAttrs = attrs;
+
+		while(*pAttrs)
+		{
+			m_vAttrs.addItem((void*) UT_strdup(*pAttrs++));
+		}
+		UT_ASSERT(m_vAttrs.getItemCount() % 2 == 0);
+	}
 }
 
 PP_Revision::~PP_Revision()
@@ -89,12 +148,22 @@ PP_Revision::~PP_Revision()
 
 void PP_Revision::_clear()
 {
-	for (UT_uint32 i = 0; i < m_vProps.getItemCount(); i++)
+	UT_uint32 i;
+
+	for (i = 0; i < m_vProps.getItemCount(); i++)
 	{
 		XML_Char * p = (XML_Char *)m_vProps.getNthItem(i);
 		FREEP(p);
 	}
 	m_vProps.clear();
+
+	for (i = 0; i < m_vAttrs.getItemCount(); i++)
+	{
+		XML_Char * p = (XML_Char *)m_vAttrs.getNthItem(i);
+		FREEP(p);
+	}
+	m_vAttrs.clear();
+
 	m_bDirty = true;
 }
 
@@ -167,31 +236,47 @@ void PP_Revision::mergeProps(const XML_Char ** pProps)
 
 	UT_ASSERT(m_vProps.getItemCount() % 2 == 0);
 
-	for(UT_uint32 i = 0; i < m_vProps.getItemCount(); i += 2)
-	{
-		attrProp.setProperty((const XML_Char *) m_vProps.getNthItem(i),
-							 (const XML_Char *) m_vProps.getNthItem(i+1));
-	}
-
-	const XML_Char ** ppProps = pProps;
-
-	while(*ppProps && *(ppProps+1))
-	{
-		attrProp.setProperty(*ppProps, *(ppProps+1));
-		ppProps += 2;
-	}
+	attrProp.setProperties((const UT_Vector *)& m_vProps);
+	attrProp.setProperties(pProps);
 
 	// now refil our vector
 	_clear();
 	const XML_Char * n, *v;
 
-	for(UT_uint32 j = 0; i < attrProp.getPropertyCount(); i++)
+	for(UT_uint32 i = 0; i < attrProp.getPropertyCount(); i++)
 	{
 		attrProp.getNthProperty(i, n, v);
 		m_vProps.addItem((void*)UT_strdup(n));
 		m_vProps.addItem((void*)UT_strdup(v));
 	}
+}
 
+/*! merges pProps with the properties aready stored in this
+    revision
+*/
+void PP_Revision::mergeAttrs(const XML_Char ** pAttrs)
+{
+	// first the simple cases
+	if((pAttrs == NULL) || *pAttrs == NULL)
+		return;
+
+	PP_AttrProp attrProp;
+
+	UT_ASSERT(m_vAttrs.getItemCount() % 2 == 0);
+
+	attrProp.setAttributes((const UT_Vector *)&m_vAttrs);
+	attrProp.setAttributes(pAttrs);
+
+	// now refil our vector
+	_clear();
+	const XML_Char * n, *v;
+
+	for(UT_uint32 i = 0; i < attrProp.getAttributeCount(); i++)
+	{
+		attrProp.getNthAttribute(i, n, v);
+		m_vAttrs.addItem((void*)UT_strdup(n));
+		m_vAttrs.addItem((void*)UT_strdup(v));
+	}
 }
 
 /*! converts the internal vector of properties into XML string */
@@ -234,19 +319,22 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 
 
 	// OK, so we have the same type and id, do we have the same props ???
-	UT_uint32 iCount1 = m_vProps.getItemCount();
-	UT_uint32 iCount2 = op2.m_vProps.getItemCount();
+	UT_uint32 iPCount1 = m_vProps.getItemCount();
+	UT_uint32 iPCount2 = op2.m_vProps.getItemCount();
+	UT_uint32 iACount1 = m_vAttrs.getItemCount();
+	UT_uint32 iACount2 = op2.m_vAttrs.getItemCount();
 
-	if(iCount1 != iCount2)
+	if((iPCount1 != iPCount2) || (iACount1 != iACount2))
 		return false;
 
 	// now the lengthy comparison
-	for(UT_uint32 i = 0; i < iCount1; i += 2)
+	UT_uint32 i,j;
+	for(i = 0; i < iPCount1; i += 2)
 	{
 		const XML_Char * n1 = (const XML_Char *) m_vProps.getNthItem(i);
 		const XML_Char * v1 = (const XML_Char *) m_vProps.getNthItem(i+1);
 
-		for(UT_uint32 j = 0; j < iCount2; j += 2)
+		for(j = 0; j < iPCount2; j += 2)
 		{
 			const XML_Char * n2 = (const XML_Char *) op2.m_vProps.getNthItem(j);
 			const XML_Char * v2 = (const XML_Char *) op2.m_vProps.getNthItem(j+1);
@@ -256,6 +344,20 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 		}
 	}
 
+	for(i = 0; i < iACount1; i += 2)
+	{
+		const XML_Char * n1 = (const XML_Char *) m_vAttrs.getNthItem(i);
+		const XML_Char * v1 = (const XML_Char *) m_vAttrs.getNthItem(i+1);
+
+		for(j = 0; j < iACount2; j += 2)
+		{
+			const XML_Char * n2 = (const XML_Char *) op2.m_vAttrs.getNthItem(j);
+			const XML_Char * v2 = (const XML_Char *) op2.m_vAttrs.getNthItem(j+1);
+
+			if(!UT_strcmp(n1,n2) && UT_strcmp(v1,v2))
+				return false;
+		}
+	}
 	return true;
 }
 
@@ -332,7 +434,9 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 
 	UT_sint32 iId;
 	PP_RevisionType eType;
-	XML_Char * pProps, * cl_brace = 0, * op_brace = 0;
+	XML_Char * pProps, * pAttrs,
+		     * cl_brace = 0, * op_brace = 0,
+		     * cl_brace2 = 0;
 
 	char * t = strtok(s,",");
 
@@ -393,6 +497,24 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 			*cl_brace = 0;
 			pProps = op_brace+1;
 
+			// now see if the props are followed by attributes
+			if(*(cl_brace + 1) == '{')
+			{
+				cl_brace2 = strchr(cl_brace + 2,'}');
+				if(cl_brace2)
+				{
+					pAttrs = cl_brace + 2;
+					*cl_brace2 = 0;
+				}
+				else
+				{
+					UT_DEBUGMSG(( "PP_RevisionAttr::_init: invalid token - [%s]\n", t ));
+					pAttrs = NULL;
+				}
+			}
+			else
+				pAttrs = NULL;
+
 			if(eType == PP_REVISION_ADDITION)
 				eType = PP_REVISION_ADDITION_AND_FMT;
 		}
@@ -400,7 +522,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 		// now we can retrieve the id
 		iId = atol(t);
 
-		PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps);
+		PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
 
 		m_vRev.addItem((void*)pRevision);
 
@@ -428,8 +550,8 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 
 // these are special instances of PP_Revision that are used to in the
 // following function to handle special cases
-static const PP_Revision s_hidden(0, PP_REVISION_DELETION, (XML_Char*)0);
-static const PP_Revision s_visible(0, PP_REVISION_ADDITION, (XML_Char*)0);
+static const PP_Revision s_hidden(0, PP_REVISION_DELETION, (XML_Char*)0, (XML_Char*)0);
+static const PP_Revision s_visible(0, PP_REVISION_ADDITION, (XML_Char*)0, (XML_Char*)0);
 
 const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32 id) const
 {
@@ -536,7 +658,7 @@ bool PP_RevisionAttr::isVisible() const
 /*! adds id to the revision vector handling the special cases where id
     is already present in this attribute.
 */
-void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XML_Char * pProps)
+void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XML_Char ** pProps, const XML_Char ** pAttrs)
 {
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
@@ -565,7 +687,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 
 				m_iSuperfluous = iId;
 
-				const PP_Revision * pRevision = new PP_Revision(iId, eType, (XML_Char*)0);
+				const PP_Revision * pRevision = new PP_Revision(iId, eType, (XML_Char*)0, (XML_Char*)0);
 				m_vRev.addItem((void*)pRevision);
 			}
 			else if((eType == PP_REVISION_ADDITION) && (r_type == PP_REVISION_DELETION))
@@ -596,7 +718,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 
 				m_vRev.deleteNthItem(i);
 
-				const PP_Revision * pRevision = new PP_Revision(iId, eType, (XML_Char*)0);
+				const PP_Revision * pRevision = new PP_Revision(iId, eType, (XML_Char*)0, (XML_Char*)0);
 				m_vRev.addItem((void*)pRevision);
 			}
 			else if((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_DELETION))
@@ -607,7 +729,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 
 				m_vRev.deleteNthItem(i);
 
-				const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps);
+				const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
 				m_vRev.addItem((void*)pRevision);
 			}
 			else if((eType == PP_REVISION_FMT_CHANGE) && (r_type == PP_REVISION_ADDITION))
@@ -622,6 +744,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 				// really be handled higher up and the property
 				// changes should be applied directly to the fragments props
 				r->mergeProps(pProps);
+				r->mergeAttrs(pAttrs);
 			}
 
 			m_bDirty = true;
@@ -637,7 +760,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 	}
 
 	// if we got here then the item is not in our vector so add it
-	const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps);
+	const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
 	m_vRev.addItem((void*)pRevision);
 	m_bDirty = true;
 }

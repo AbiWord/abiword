@@ -370,6 +370,7 @@ void fp_TextRun::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 
 			(PP_AttrProp)(*pMySpanAP) = *pSpanAP;
 			pMySpanAP->setProperties(pRev->getPropsVector());
+			pMySpanAP->setAttributes(pRev->getAttrsVector());
 			pSpanAP = pMySpanAP;
 			bDeleteAfter = true;
 		}

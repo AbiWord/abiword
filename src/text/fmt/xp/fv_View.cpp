@@ -1228,7 +1228,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 			p_AttrProp_Before->getAttribute("revision", pRevision);
 
 		PP_RevisionAttr Revisions(pRevision);
-		Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL);
+		Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL,NULL);
 
 		ppRevAttrib[0] = name;
 		ppRevAttrib[1] = Revisions.getXMLstring();
@@ -1931,7 +1931,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 			AttrProp_Before.getAttribute("revision", pRevision);
 
 			PP_RevisionAttr Revisions(pRevision);
-			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_ADDITION,NULL);
+			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
 
 			AttrProp_Before.setAttribute("revision", Revisions.getXMLstring());
 		}
@@ -2027,7 +2027,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 				}
 
 				PP_RevisionAttr Revisions(pRevision);
-				Revisions.addRevision(m_pDoc->getRevisionId(), PP_REVISION_ADDITION, NULL);
+				Revisions.addRevision(m_pDoc->getRevisionId(), PP_REVISION_ADDITION, NULL, NULL);
 
 				pMyAP->setAttribute("revision", Revisions.getXMLstring());
 			}
@@ -4958,7 +4958,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				pAttrProp->getAttribute(name, pRevision);
 
 			Revisions.setRevision(pRevision);
-			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL);
+			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL,NULL);
 
 			ppRevAttrib[0] = name;
 			ppRevAttrib[1] = Revisions.getXMLstring();
