@@ -137,10 +137,8 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
 		{
 			[menuItem setTitle:(m_menu->convertToString(szLabel))];
 		}
-	if (bChecked)
-		{
-			[menuItem setState:(bChecked ? NSOnState : NSOffState)];
-		}
+	[menuItem setState:(bChecked ? NSOnState : NSOffState)];
+
 	return bEnabled ? YES : NO;
 }
 
