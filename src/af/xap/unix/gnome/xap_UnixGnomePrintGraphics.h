@@ -118,7 +118,6 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 
 	virtual UT_uint32 getDeviceResolution(void) const;
 
-	static const guchar * s_map_page_size (const char * abi);
 	static GnomePrintConfig * s_setup_config (XAP_Frame * pFrame);
 
 protected:
@@ -135,6 +134,7 @@ protected:
 private:
 
 	UT_sint32 scale_ydir (UT_sint32 in);
+	UT_sint32 scale_xdir (UT_sint32 in);
 
 	GnomeFont * _allocGnomeFont(PSFont* pFont);
 	void _drawAnyImage (GR_Image* pImg, 

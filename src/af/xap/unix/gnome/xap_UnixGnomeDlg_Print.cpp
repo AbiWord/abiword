@@ -78,10 +78,12 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
+	GnomePrintJob * job = gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config (pFrame));
+
 	// 1.  Create the dialog widget
-	gpd = gnome_print_dialog_new (gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config (pFrame)),
-								  reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle)),
-								  GNOME_PRINT_DIALOG_RANGE|GNOME_PRINT_DIALOG_COPIES);
+	gpd = gnome_print_dialog_new (job,
+				      reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle)),
+				      GNOME_PRINT_DIALOG_RANGE|GNOME_PRINT_DIALOG_COPIES);
 
 	/* sorry about the ugly C-style cast -- ignore the "_Active Page" too */
 	gnome_print_dialog_construct_range_page(GNOME_PRINT_DIALOG(gpd),
@@ -107,7 +109,7 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gnome_print_dialog_get_copies(GNOME_PRINT_DIALOG(gpd), &copies, &collate);
 	range = gnome_print_dialog_get_range_page(GNOME_PRINT_DIALOG(gpd), &first, &end);
 
-	m_gpm = gnome_print_job_new (gnome_print_dialog_get_config (GNOME_PRINT_DIALOG(gpd)));
+	m_gpm = GNOME_PRINT_JOB(g_object_ref(G_OBJECT(job))); //gnome_print_job_new (gnome_print_dialog_get_config (GNOME_PRINT_DIALOG(gpd)));
 
 	// Record outputs
 	m_bDoPrintRange				= (range == GNOME_PRINT_RANGE_RANGE);

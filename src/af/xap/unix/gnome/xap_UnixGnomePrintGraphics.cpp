@@ -72,47 +72,31 @@ static const struct {
 	{"Envelope 6x9",   "Envelope_6x9"},
 };
 
-const guchar * XAP_UnixGnomePrintGraphics::s_map_page_size (const char * abi)
-{
-	if (!abi && !*abi)
-		return gnome_print_paper_get_default ()->name;
-	
-	for (gsize i = 0; i < NrElements(paperMap); i++)
-		if (paperMap[i].abi && !g_ascii_strcasecmp (abi, paperMap [i].abi))
-			return reinterpret_cast<const guchar *>(paperMap[i].gp_id);
-
-	// default to whatever was passed in
-	return reinterpret_cast<const guchar *>(abi);
-}
-
 GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFrame)
 {
 	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 	GnomePrintConfig * cfg = gnome_print_config_default();
 	
-	// TODO: be smarter, damnit!
+	const GnomePrintUnit *unit = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
+	
+	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_SIZE), reinterpret_cast<const guchar *>("Custom"));
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_TOP), pView->getPageSize().MarginTop(DIM_MM), unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_BOTTOM), pView->getPageSize().MarginBottom(DIM_MM), unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_LEFT), pView->getPageSize().MarginLeft(DIM_MM), unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAGE_MARGIN_RIGHT), pView->getPageSize().MarginRight(DIM_MM), unit);
+	gnome_print_config_set_int (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_NUM_COPIES), 1);	
 
-	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAPER_SIZE),
-							XAP_UnixGnomePrintGraphics::s_map_page_size (pView->getPageSize().getPredefinedName ()));
-	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) ,
-							pView->getPageSize().isPortrait () ? reinterpret_cast<const guchar *>("R0") : reinterpret_cast<const guchar *>("R90"));
+	if (pView->getPageSize().isPortrait()) {
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), pView->getPageSize().Width (DIM_MM), unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), pView->getPageSize().Height (DIM_MM), unit);
 
-	//   	if (!strcmp (pView->getPageSize().getPredefinedName (), "Custom")) 
-	{
+		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) , reinterpret_cast<const guchar *>("R0"));
+	}
+	else {
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), pView->getPageSize().Height (DIM_MM), unit);
+	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), pView->getPageSize().Width (DIM_MM), unit);
 
-		const GnomePrintUnit *from = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
-		
-		double width, height;
-		width = pView->getPageSize().Width (DIM_MM);
-		height = pView->getPageSize().Height (DIM_MM);
-		if(!pView->getPageSize().isPortrait())
-		{
-			height = pView->getPageSize().Width (DIM_MM);
-			width = pView->getPageSize().Height (DIM_MM);
-		}
-		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_WIDTH), width, from);
-		
-		gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_PAPER_HEIGHT), height, from);
+		gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) , reinterpret_cast<const guchar *>("R90"));
 	}
 
 	return cfg;
@@ -137,12 +121,6 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm, bool 
 	gnome_print_convert_distance (&m_height, from, to);
 	m_height = getDeviceResolution()*m_height/72.;
 	m_width = getDeviceResolution()*m_width/72.;
-	//
-	// Scale the height and widths by the requested device resolution
-	//
-	//gnome_print_config_set_int (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_RESOLUTION_DPI), getDeviceResolution());
-	//	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_LAYOUT_WIDTH), m_width, to);
-	//	gnome_print_config_set_length (cfg, reinterpret_cast<const guchar*>(GNOME_PRINT_KEY_LAYOUT_HEIGHT), m_height, to);
 
 	m_bIsPreview     = isPreview;
 	m_fm             = static_cast<XAP_UnixApp *>(m_pApp)->getFontManager();
@@ -275,7 +253,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			else
 				glyph_index = FT_Get_Char_Index(pFace, pChars[iCharOffset + i]);
 
-			gnome_glyphlist_moveto (pGL, tdu (xoff + advance), yoff);
+			gnome_glyphlist_moveto (pGL, scale_xdir (tdu (xoff + advance)), yoff);
 			gnome_glyphlist_glyph (pGL, glyph_index);
 
 			if (pCharWidths)
@@ -297,8 +275,8 @@ void XAP_UnixGnomePrintGraphics::drawLine (UT_sint32 x1, UT_sint32 y1,
 	if (!m_bStartPage)
 		return;
 
-	gnome_print_moveto (m_gpc, tdu(x1), scale_ydir (tdu(y1)));
-	gnome_print_lineto (m_gpc, tdu(x2), scale_ydir (tdu(y2)));
+	gnome_print_moveto (m_gpc, scale_xdir (tdu(x1)), scale_ydir (tdu(y1)));
+	gnome_print_lineto (m_gpc, scale_xdir (tdu(x2)), scale_ydir (tdu(y2)));
 	gnome_print_stroke (m_gpc);
 }
 
@@ -456,7 +434,7 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
 	if (!m_bStartPage)
 		return;
 
-	xDest = tdu(xDest);
+	xDest = scale_xdir (tdu(xDest));
 	yDest = scale_ydir (tdu(yDest));
 
    	if (pImg->getType() != GR_Image::GRT_Raster) 
@@ -510,6 +488,7 @@ bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 		return true ;
 	
 	gnome_print_beginpage(m_gpc, reinterpret_cast<const guchar *>(szPageLabel));
+
 	return true;
 }
 
@@ -520,7 +499,7 @@ bool XAP_UnixGnomePrintGraphics::_endPage(void)
 	
 	if (!m_gpm)
 		return true;
-	
+
 	gnome_print_showpage(m_gpc);
 	return true;
 }
@@ -562,7 +541,7 @@ void XAP_UnixGnomePrintGraphics::fillRect(const UT_RGBColor& c,
 	UT_RGBColor old (m_currentColor);
 	setColor (c);
 	
-	x = tdu(x); y = scale_ydir (tdu(y)); w = tdu(w); h = tdu(h);
+	x = scale_xdir (tdu(x)); y = scale_ydir (tdu(y)); w = scale_xdir (tdu(w)); h = tdu(h);
 
 	gnome_print_newpath (m_gpc);
 	gnome_print_moveto (m_gpc, x,   y);		
@@ -801,11 +780,6 @@ void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 
 	dash = dashToPS (inLineStyle, n_values, offset);
 	gnome_print_setdash (m_gpc, n_values, dash, offset);
-
-#if 0
-	// rounded up and most certainly ignored for now!!!
-	setLineWidth (ceil(inWidthPixels));
-#endif
 }
 
 /***********************************************************************/
@@ -814,10 +788,17 @@ void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 
 UT_sint32 XAP_UnixGnomePrintGraphics::scale_ydir (UT_sint32 in)
 {
-	UT_sint32 height = static_cast<UT_sint32>(m_height);
+	double height;
 
-	if (!isPortrait ())
-		height = static_cast<UT_sint32>(m_width);
+	if (isPortrait())
+		height = m_height;
+	else
+		height = m_width;
 
 	return static_cast<UT_sint32>(height - in);
+}
+
+UT_sint32 XAP_UnixGnomePrintGraphics::scale_xdir (UT_sint32 in)
+{
+	return static_cast<UT_sint32>(in);
 }
