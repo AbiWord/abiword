@@ -39,14 +39,9 @@
 
 /*****************************************************************/
 
-#define	WIDGET_ID_TAG_KEY "id"
-
-/*****************************************************************/
-
 XAP_Dialog * AP_UnixDialog_Columns::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
-	AP_UnixDialog_Columns * p = new AP_UnixDialog_Columns(pFactory,id);
-	return p;
+	return new AP_UnixDialog_Columns(pFactory,id);
 }
 
 AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
@@ -233,13 +228,9 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 void AP_UnixDialog_Columns::checkLineBetween(void)
 {
   if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
-    {
       setLineBetween(true);
-    }
   else
-    {
       setLineBetween(false);
-    }
 }
 
 void AP_UnixDialog_Columns::doHeightSpin(void)
@@ -250,9 +241,7 @@ void AP_UnixDialog_Columns::doHeightSpin(void)
 	if (val == m_iMaxColumnHeight)
 		return;
 	if(val < m_iMaxColumnHeight)
-	{
 		bIncrement = false;
-	}
 	m_iMaxColumnHeight = val;
 	incrementMaxHeight(bIncrement);
 	//g_signal_handler_block(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
@@ -268,10 +257,8 @@ void  AP_UnixDialog_Columns::doSpaceAfterSpin(void)
 	UT_DEBUGMSG(("MARCM: spin Height %d old value = %d \n",val,m_iSpaceAfter));
 	if (val == m_iSpaceAfter)
 		return;
-	if(val < m_iSpaceAfter)
-    {
+	else if(val < m_iSpaceAfter)
 		bIncrement = false;
-    }
 	m_iSpaceAfter = val;
 	incrementSpaceAfter(bIncrement);
 	//g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
@@ -522,17 +509,17 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 		if(height > width)
 		{
 			rat = static_cast<gint>( 100.0 *height/width);
-			gtk_window_set_default_size (GTK_WINDOW(wPreviewFrame), 100, rat); // was -2
+			gtk_widget_set_size_request (wPreviewFrame, 100, rat); // was -2
 		}
 		else
 		{
 			rat = static_cast<gint>( 200.* height/width);
-			gtk_window_set_default_size (GTK_WINDOW(wPreviewFrame), 200, rat);
+			gtk_widget_set_size_request (wPreviewFrame, 200, rat);
 		}
 	}
 	else
 	{
-		gtk_widget_set_usize (wPreviewFrame, 100, -2); // was -2
+		gtk_widget_set_size_request (wPreviewFrame, 100, -2); // was -2
 	}
 
 	wDrawFrame = gtk_frame_new (NULL);
