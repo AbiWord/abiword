@@ -208,7 +208,7 @@ class ABI_EXPORT UT_UniqueId
 bool UT_parseBool (const char * param, bool dfl);
 
 
-#ifdef WIN32
+#if 0
 /*
    if your platform does not define timeval, turn on the following definitions
 */
