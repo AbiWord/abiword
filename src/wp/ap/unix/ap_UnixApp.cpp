@@ -1456,9 +1456,8 @@ bool AP_UnixApp::parseCommandLine()
 				XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
 		
 				// use both by default
-				XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
-					(XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
-					 | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
+				UT_uint32 f = (XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
+						| XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
 		
 				// if pos (x and y) weren't provided just use size
 				if (x == dummy || y == dummy)
