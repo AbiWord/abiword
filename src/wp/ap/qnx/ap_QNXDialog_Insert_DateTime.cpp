@@ -197,7 +197,7 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-#define MARGIN_SIZE 10 
+#define MARGIN_SIZE 2 
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -214,13 +214,14 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
 				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
+	PtSetArg(&args[n++],Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
+	PtSetArg(&args[n++],Pt_ARG_WIDTH,ABI_DEFAULT_BUTTON_WIDTH,0);
 	vboxGroup =  PtCreateWidget(PtGroup, vboxMain, n, args);
-  	pretty_group(vboxGroup, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
+  	pretty_group(vboxGroup, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats)));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	listFormats = PtCreateWidget(PtList, vboxGroup, n, args);
 	PtAddCallback(listFormats, Pt_CB_SELECTION, s_item_selected, this);
