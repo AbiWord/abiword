@@ -93,10 +93,16 @@ static bool SuffixInList(const char *haystack, const char *needle)
  */
 char * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
 {
-	// copy at most 4 characters from the suffix;
-	strncpy(m_szDefaultExtension, m_szSuffixes[indx] + 2, 4);
+	static char abw_sfx[] = "abw";
 	
-	m_szDefaultExtension[4] = 0;
+	UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
+	if(indx >= end)
+		return abw_sfx;
+	
+	// copy at most DEFAULT_EXT_SIZE characters from the suffix;
+	strncpy(m_szDefaultExtension, m_szSuffixes[indx] + 2, DEFAULT_EXT_SIZE);
+	
+	m_szDefaultExtension[DEFAULT_EXT_SIZE] = 0;
 	
 	// make sure that we get rid off the semicolon if it got copied
 	char * semicolon = strchr(m_szDefaultExtension, ';');
@@ -360,13 +366,21 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
 
 		if ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) &&
-			(!UT_pathSuffix(szFile)) &&
-			(ofn.nFilterIndex <= end))
+			(!UT_pathSuffix(szFile)))
 		{
 			// add suffix based on selected file type
+			// if selected file is "all documents" or "all"
+			// default to .abw, since that is how it will get saved
 			UT_ASSERT(ofn.nFilterIndex > 0);
 
-			const char * szSuffix = UT_pathSuffix(m_szSuffixes[ofn.nFilterIndex - 1]);
+			const char * szSuffix = NULL;
+			char abw_sfx[] = ".abw";
+			
+			if(ofn.nFilterIndex <= end)
+				szSuffix = UT_pathSuffix(m_szSuffixes[ofn.nFilterIndex - 1]);
+			else
+				szSuffix = abw_sfx;
+			
 			UT_ASSERT(szSuffix);
 
 			UT_uint32 length = strlen(szFile) + strlen(szSuffix) + 1;
@@ -441,21 +455,22 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 							{
 								UT_ASSERT(strlen(buff) < MAX_DLG_INS_PICT_STRING);
 								dot = buff + strlen(buff);
-								*dot++ = '.';
-								*dot = 0;
+								*dot = '.';
+								*(dot+1) = 0;
 							}
 
 							if(dot)
 							{
 								UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING);
-								strcat(buff,pNotify->lpOFN->lpstrDefExt);
 
-								//SendMessage(hDlg,CDM_SETDEFEXT,0,(LPARAM)ext);
-								//SendMessage(hDlg,CDM_SETCONTROLTEXT, edt1,(LPARAM)buff);
-								CommDlg_OpenSave_SetDefExt(GetParent(hDlg), ext);
+								if(ext)
+									strcat(buff,ext);
+								else
+									*dot = 0;
+						
 								CommDlg_OpenSave_SetControlText(GetParent(hDlg), edt1, buff);
 							}
-				
+							CommDlg_OpenSave_SetDefExt(GetParent(hDlg), ext);
 						}
 						break;
 				}

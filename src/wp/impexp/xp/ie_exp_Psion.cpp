@@ -366,7 +366,7 @@ bool IE_Exp_Psion_Word_Sniffer::getDlgLabels(const char ** pszDesc,
 									  IEFileType * ft)
 {
 	*pszDesc = "Psion Word (.psiword)";
-	*pszSuffixList = "*.mif";
+	*pszSuffixList = "*.psiword";
 	*ft = getFileType();
 	return true;
 }

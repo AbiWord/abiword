@@ -137,7 +137,7 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 										 IEFileType * ft)
 {
 	*pszDesc = "Human Readable Text (.txt, .text)";
-	*pszSuffixList = "*.text; *.txt";
+	*pszSuffixList = "*.txt; *.text";
 	*ft = getFileType();
 	return true;
 }

@@ -25,6 +25,8 @@
 class UT_String;
 class XAP_Win32Frame;
 
+#define DEFAULT_EXT_SIZE 15
+
 /*****************************************************************/
 
 class XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
@@ -48,7 +50,7 @@ protected:
 	void _buildFilterList(UT_String& sFilter);
 private:
 	char * _getDefaultExtension(UT_uint32 indx);
-	char m_szDefaultExtension[5];
+	char m_szDefaultExtension[DEFAULT_EXT_SIZE + 1];
 };
 
 #endif /* XAP_WIN32DIALOG_FILEOPENSAVEAS_H */
