@@ -91,15 +91,15 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			// YES - NO - CANCEL
         	// this is only used for saving files. Warning looks good here, but possibly should change to a Question
 	        message = gtk_message_dialog_new ( toplevel, GTK_DIALOG_MODAL,
-											   GTK_MESSAGE_WARNING,
-											   GTK_BUTTONS_NONE,
-											   m_szMessage ) ;
+						   GTK_MESSAGE_WARNING,
+						   GTK_BUTTONS_NONE,
+						   m_szMessage ) ;
+			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_CLOSE,
+					    GTK_RESPONSE_NO);
 			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_CANCEL,
-								GTK_RESPONSE_CANCEL ) ;
-			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_NO,
-								GTK_RESPONSE_NO ) ;
-			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_YES,
-								GTK_RESPONSE_YES ) ;			
+					    GTK_RESPONSE_CANCEL);
+			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_SAVE,
+					    GTK_RESPONSE_YES ) ;			
 			break;
 			
 		default:
