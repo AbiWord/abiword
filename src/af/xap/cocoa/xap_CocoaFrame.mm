@@ -485,11 +485,10 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	NSString * str = [NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()];	// autoreleased
-	[theWindow setTitle:str];
-	NSScrollView * scroller = [m_frameController getMainView];
-  	[scroller setHasHorizontalScroller:YES];
-  	[scroller setHasVerticalScroller:YES];
+	[theWindow setTitle:[NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()]];
+//	NSView * docArea = [m_frameController getMainView];
+/*  	[scroller setHasHorizontalScroller:YES];
+  	[scroller setHasVerticalScroller:YES];*/
 
 	// synthesize a menu from the info in our base class.
 
@@ -533,10 +532,10 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 
 	// set the icon
 	_setWindowIcon();
-#if 0
+
 	// set geometry hints as the user requested
-	gint x, y;
-	guint width, height;
+	int x, y;
+	UT_uint32 width, height;
 	XAP_CocoaApp::windowGeometryFlags f;
 
 	m_pCocoaApp->getGeometry(&x, &y, &width, &height, &f);
@@ -545,13 +544,15 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 
 	if (f & XAP_CocoaApp::GEOMETRY_FLAG_SIZE)
 	{
-                gint abi_width = UT_MIN( gdk_screen_width() - 30, 813);
-                gint abi_height = UT_MIN( gdk_screen_height() - 100, 836);
-	        gtk_widget_set_usize(m_wTopLevelWindow,
-							 abi_width,
-							 abi_height);
+		NSRect windowFrame;
+		NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
+
+		windowFrame.size.width = UT_MIN( screenFrame.size.width - 30, 813);
+		windowFrame.size.height = UT_MIN( screenFrame.size.height - 100, 836);
+		windowFrame.origin.x = 0;
+		windowFrame.origin.y = 0;
+		[theWindow setFrame:windowFrame display:YES];
 	}
-#endif
 
 
 	// Because we're clever, we only honor this flag when we
@@ -659,12 +660,13 @@ bool XAP_CocoaFrame::show()
 
 bool XAP_CocoaFrame::openURL(const char * szURL)
 {  
-	NSString * nsURL = [NSString stringWithCString:szURL];	// autoreleased
-	NSURL *URL = [[NSURL alloc] initWithString:nsURL];		// autoreleased
+	NSURL *URL = [[NSURL alloc] initWithString:[NSString stringWithCString:szURL]];		
 	
 	NSWorkspace * space = [NSWorkspace sharedWorkspace];
 	[space openURL:URL];
 
+	[URL release];
+	
 	return true;
 }
 
@@ -883,10 +885,11 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaFrameController initWith:frame\n"));
 	m_frame = frame;
+	[self initWithWindowNibName:frame->_getNibName()];	/* this one will make the call to [super init]  */
 	return self;
 }
 
-- (NSScrollView *)getMainView
+- (NSView *)getMainView
 {
 	return mainView;
 }
@@ -920,13 +923,13 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 @end
 
 @implementation XAP_CocoaNSView
-- (id)initWith:(XAP_CocoaFrame *)frame
+- (id)initWith:(XAP_CocoaFrame *)frame andFrame:(NSRect)windowFrame
 {
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaNSView initWith:Frame\n"));
 	UT_ASSERT (frame);
 	m_pFrame = frame;
 	m_pGR = NULL;
-	return self;
+	return [super initWithFrame:windowFrame];
 }
 
 - (BOOL)acceptsFirstResponder
@@ -936,14 +939,18 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 
 - (BOOL)becomeFirstResponder
 {
-	UT_ASSERT (m_pFrame);
+	if (m_pFrame) {
+		UT_ASSERT (m_pFrame);
+		
+		if (m_pFrame->getCurrentView()) {
+			m_pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE);
+		}
 	
-	if (m_pFrame->getCurrentView()) {
-		m_pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE);
+		UT_DEBUGMSG(("became first responder!\n"));
+		return YES;
 	}
-
-	UT_DEBUGMSG(("became first responder!\n"));
-	return YES;
+	UT_DEBUGMSG (("refused to become first responder, because gr_Graphics is not setup.\n"));
+	return NO;
 }
 
 - (void)setXAPFrame:(XAP_CocoaFrame *)frame

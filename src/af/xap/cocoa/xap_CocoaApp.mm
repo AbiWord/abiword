@@ -186,8 +186,8 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 bool XAP_CocoaApp::_loadFonts()
 {
 	// create a font manager for our app to use
-	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
-	UT_uint32 i = 0;
+//	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
+//	UT_uint32 i = 0;
 	
 	m_fontManager = new XAP_CocoaFontManager();
 	UT_ASSERT(m_fontManager);

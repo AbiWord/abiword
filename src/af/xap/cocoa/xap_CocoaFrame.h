@@ -55,7 +55,8 @@ class FV_View;
 	XAP_CocoaFrame 		*m_pFrame;
 	GR_CocoaGraphics	*m_pGR;
 }
-- (id)initWith:(XAP_CocoaFrame *)frame;
+//- (id)initWith:(XAP_CocoaFrame *)frame;
+- (id)initWith:(XAP_CocoaFrame *)frame andFrame:(NSRect)windowFrame;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
 - (void)setXAPFrame:(XAP_CocoaFrame *)frame;
@@ -68,7 +69,7 @@ class FV_View;
 @interface XAP_CocoaFrameController : NSWindowController
 {
 	XAP_CocoaFrame *m_frame;
-    IBOutlet NSScrollView *mainView;
+    IBOutlet NSView *mainView;
     IBOutlet XAP_CocoaNSView *statusBar;
 	IBOutlet NSMenu *menuBar;
 	IBOutlet NSMenuItem *m_preferenceMenu;
@@ -77,7 +78,7 @@ class FV_View;
 }
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
 - (id)initWith:(XAP_CocoaFrame *)frame;
-- (NSScrollView *)getMainView;
+- (NSView *)getMainView;
 - (NSMenu *)getMenuBar;
 - (XAP_CocoaNSView *)getStatusBar;
 - (NSMenuItem *)_aboutMenu;
@@ -145,13 +146,12 @@ protected:
 
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 private:
+	AP_CocoaDialogFactory		m_dialogFactory;
 	XAP_CocoaApp *				m_pCocoaApp;
 	EV_CocoaMenuBar *			m_pCocoaMenu;
 	EV_CocoaMenuPopup *			m_pCocoaPopup; /* only valid while a context popup is up */
 	
 	XAP_CocoaFrameController *		m_frameController;
-
-	AP_CocoaDialogFactory		m_dialogFactory;
 
 	UT_uint32					m_iAbiRepaintID;
 
