@@ -171,7 +171,8 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 							  NULL);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
-	gtk_widget_set_usize (dialog_window, 400, 110);
+	// the size of the dialog is set after we know what's
+	// going to be in it.
 
 	// Intercept key strokes
 	gtk_signal_connect(GTK_OBJECT(dialog_window),
@@ -328,11 +329,16 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
+	// set the size of the dialog to size with the label inside
+	gtk_widget_size_request(dialog_window, &dialog_window->requisition);
+	gtk_widget_set_usize(dialog_window, dialog_window->requisition.width + 40, 110);
+	
 	// get top level window and it's GtkWidget *
 	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);
+
 	// center it
     centerDialog(parent, dialog_window);
 

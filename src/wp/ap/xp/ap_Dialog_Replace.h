@@ -20,6 +20,7 @@
 #ifndef AP_DIALOG_FILE_H
 #define AP_DIALOG_FILE_H
 
+#include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "fv_View.h"
 #include "xav_View.h"
@@ -93,6 +94,10 @@ public:
 	// on conditions that action functions or other
 	// non-accessor methods are invoked.
 	UT_Bool					m_didSomething;
+
+	// Message boxes for events during search
+	AP_Frame *				m_pFrame;
+	void					_messageBoxWrapped(void);
 	
 	// is this used in a non-persistent dialog like this?
 	tAnswer					m_answer;

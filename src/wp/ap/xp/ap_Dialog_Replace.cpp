@@ -25,6 +25,10 @@
 #include "ut_debugmsg.h"
 #include "ap_Dialog_Replace.h"
 
+#include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dialog_MessageBox.h"
+
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 
@@ -110,6 +114,9 @@ UT_Bool AP_Dialog_Replace::setView(AV_View * view)
 	// outline view, etc.
 	UT_ASSERT(view);
 
+	m_pFrame = (AP_Frame *) view->getParentData();
+	UT_ASSERT(m_pFrame);
+	
 	m_pView = static_cast<FV_View *>(view);
 	return UT_TRUE;
 }
@@ -186,9 +193,16 @@ UT_Bool AP_Dialog_Replace::findNext()
 	
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
+
+	UT_Bool bWrapped = UT_FALSE;
 	
 	// call view to do the work
-	return m_pView->findNext(m_findString, UT_TRUE);
+	UT_Bool result = m_pView->findNext(m_findString, UT_TRUE, &bWrapped);
+
+	if (bWrapped == UT_TRUE)
+		_messageBoxWrapped();
+
+	return result;
 }
 
 UT_Bool AP_Dialog_Replace::findReplace()
@@ -200,9 +214,16 @@ UT_Bool AP_Dialog_Replace::findReplace()
 	
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
+
+	UT_Bool bWrapped = UT_FALSE;
 	
 	// call view to do the work
-	return m_pView->findReplace(m_findString, m_replaceString);
+	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, &bWrapped);
+
+	if (bWrapped == UT_TRUE)
+		_messageBoxWrapped();
+
+	return result;
 }
 
 UT_Bool AP_Dialog_Replace::findReplaceAll()
@@ -215,7 +236,38 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
 
+	UT_Bool bWrapped = UT_FALSE;
 	
 	// call view to do the work
-	return m_pView->findReplace(m_findString, m_replaceString);
+	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, &bWrapped);
+
+	// Do we want "you got wrapped" dialogs for a "replace all?"
+//	if (bWrapped == UT_TRUE)
+//		_messageBoxWrapped();
+
+	return result;
+}
+
+void AP_Dialog_Replace::_messageBoxWrapped()
+{
+	UT_DEBUGMSG(("Wrapped around end of search area.\n"));
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(m_pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage("The search has reached the end of the searchable region.");
+	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+
+	pDialog->runModal(m_pFrame);
+
+	//AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	//return (ans == AP_Dialog_MessageBox::a_YES);	
 }

@@ -1753,7 +1753,7 @@ void FV_View::findReset(void)
   It's a mess, but so is Find UI logic.  
 */
 
-UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
+UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * bWrapped)
 {
 	UT_ASSERT(string);
 
@@ -1863,11 +1863,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 			else
 			{
 			FetchNextBlock:				
-				// the string wasn't found in the remaining part of the buffer, so
-				// fetch the next block
-				UT_Bool bWrapped = UT_FALSE;
-
-				block = _findGetNextBlock(&bWrapped);
+				block = _findGetNextBlock(bWrapped);
 
 				if (!block)
 				{
@@ -1882,12 +1878,6 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
 				// when we get a new block, we start the internal offset over
 				m_iFindBufferOffset = 0;
 				
-				if (bWrapped)
-				{
-					UT_DEBUGMSG(("Wrapped around end of search area.\n"));
-					// TODO: fire off some "you just got wrapped" message box
-				}
-
 				// wipe the old buffer, since we fetch new contents into it
 				// for the next block
 				buffer.truncate(0);//(0, buffer.getLength());
@@ -1906,7 +1896,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect)
   simply did a search to mimic the behavior of popular find/replace dialogs.
 */
 
-UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace)
+UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped)
 {
 	
 	// if we have done a find, and there is a selection, then replace what's in the
@@ -1928,8 +1918,10 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 		// a replace, but account for the 1 that the find advanced.
 		m_iFindBufferOffset += (UT_UCS_strlen(replace) - 1);
 
+		m_iFindPosEnd += labs(UT_UCS_strlen(find) - UT_UCS_strlen(replace));
+						  
 		// we find the next occurance after our insertion.
-		findNext(find, UT_TRUE);
+		findNext(find, UT_TRUE, bWrapped);
 		
 		return result;
 	}
@@ -1953,7 +1945,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	return UT_FALSE;
 }
 
-UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace)
+UT_Bool FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped)
 {
 	return UT_FALSE;
 }

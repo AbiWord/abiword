@@ -129,9 +129,9 @@ public:
 
 	// find and replace 
 	void 			findReset(void);
-	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE);
-	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace);
-	UT_Bool			findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace);	
+	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE, UT_Bool * bWrapped = NULL);
+	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped = NULL);
+	UT_Bool			findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped = NULL);	
 		
 // ----------------------
 
@@ -234,8 +234,6 @@ protected:
 	void                addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked);
 	UT_Timer *          spellCheckTimer;
 	UT_DLList           listOfBlocksToBeSpellChecked;
-
-	
 };
 
 #endif /* FV_VIEW_H */

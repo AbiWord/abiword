@@ -78,12 +78,19 @@ static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 
 	UT_UCS_cloneString_char(&findString, findEntryText);
 	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+
+	// do we need to free this?
+	
+//	FREEP(findEntryText);
+//	FREEP(replaceEntryText);
 	
 	repDialog->setFindString(findString);
 	repDialog->setReplaceString(replaceString);
 	
 	repDialog->findNext();
-	// TODO do you need to delete findString, replaceString, findEntryText,replaceEntryText ??
+
+	FREEP(findString);
+	FREEP(replaceString);
 }
 
 
@@ -106,13 +113,19 @@ static void ReplaceCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialo
 
 	UT_UCS_cloneString_char(&findString, findEntryText);
 	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+
+	// do we need to free this?
+	
+//	FREEP(findEntryText);
+//	FREEP(replaceEntryText);
 	
 	repDialog->setFindString(findString);
 	repDialog->setReplaceString(replaceString);
 	
 	repDialog->findReplace();
-	// TODO do you need to delete findString, replaceString, findEntryText,replaceEntryText ??
-	
+
+	FREEP(findString);
+	FREEP(replaceString);
 }
 
 static void ReplaceAllCallback(GtkWidget *widget, 
@@ -197,17 +210,15 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	// this dialog is persistent, so we set our text to what
 	// it was last time
 	{
-		// TODO do you need a +1 on the new char[...]
-
 		UT_UCSChar * bufferUnicode = getFindString();
-		char * bufferNormal = new char [UT_UCS_strlen(bufferUnicode)];
+		char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
 		gtk_entry_set_text(GTK_ENTRY(findEntry), bufferNormal);
 		gtk_entry_select_region(GTK_ENTRY(findEntry), 0, GTK_ENTRY(findEntry)->text_length);
 
-		DELETEP(bufferNormal);
+		FREEP(bufferNormal);
 	}
 
 	// create the find label
@@ -242,16 +253,14 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	replaceEntry = gtk_entry_new_with_max_length(50);
 	
 	{
-		// TODO do you need a +1 on the new char[...]
-
 		UT_UCSChar * bufferUnicode = getReplaceString();
-		char * bufferNormal = new char [UT_UCS_strlen(bufferUnicode)];
+		char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
 		gtk_entry_set_text(GTK_ENTRY(replaceEntry), bufferNormal);
 
-		DELETEP(bufferNormal);
+		FREEP(bufferNormal);
 	}
 		
 	gtk_box_pack_end (GTK_BOX (replaceBox), replaceEntry, TRUE, TRUE, 10);
