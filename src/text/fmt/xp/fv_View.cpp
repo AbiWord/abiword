@@ -675,6 +675,25 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 // position posXY.
 // It returns the Frag_Strux of the new frame.
 //
+	fl_BlockLayout * pBL = pBlock;
+	if((pBL == NULL) || (pRun == NULL))
+	{
+	  return;
+	}
+	fl_BlockLayout * pPrevBL = pBL;
+	while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) )
+	{
+	        UT_DEBUGMSG(("Skipping Block %x \n",pBL));
+		pPrevBL = pBL;
+		pBL = pBL->getPrevBlockInDocument();
+	}
+	if(pBL == NULL)
+	{
+	        pBL = pPrevBL;
+	}
+	UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
+		  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
+	pos = pBL->getPosition();
 	m_pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
 	PT_DocPosition posFrame = pfFrame->getPos();
 //	m_pDoc->insertStrux(posFrame+1,PTX_Block); // might need this later!
@@ -10470,6 +10489,10 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	  return false;
 	}
 	if(pos == posEnd && m_pDoc->isEndFrameAtPos(pos-1))
+	{
+	  return false;
+	}
+	if((pos+1) == posEnd && m_pDoc->isEndFrameAtPos(pos))
 	{
 	  return false;
 	}

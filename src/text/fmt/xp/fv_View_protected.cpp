@@ -5528,6 +5528,18 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 		{
 			bOK = _charMotion(false,1);
 		}
+		if(posEnd-1 == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd == getPoint() && m_pDoc->isTOCAtPos(getPoint()-2))
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd-1 == getPoint() && m_pDoc->isEndFrameAtPos(getPoint()))
+		{
+			bOK = _charMotion(false,1);
+		}
 		bool bOverwrite = (!m_bInsertMode && !bForce);
 
 		if (bOverwrite)
