@@ -76,4 +76,9 @@ typedef		UT_sint32			UT_ErrorCode;
 #endif /* _MSC_VER && _DEBUG && _CRTDBG_MAP_ALLOC */
 
 
+#define UCS_LF				((UT_UCSChar)0x000a)
+#define UCS_CR				((UT_UCSChar)0x000d)
+#define UCS_SPACE			((UT_UCSChar)0x0020)
+
+
 #endif /* UT_TYPES_H */

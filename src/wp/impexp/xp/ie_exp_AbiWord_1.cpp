@@ -288,7 +288,7 @@ void ie_Exp_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			pData++;
 			break;
 
-		case 0x000a:					// LF -- representing a Forced-Line-Break
+		case UCS_LF:					// LF -- representing a Forced-Line-Break
 			*pBuf++ = '<';				// these get mapped to <br/>
 			*pBuf++ = 'b';
 			*pBuf++ = 'r';

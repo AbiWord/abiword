@@ -315,7 +315,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		// TODO just inherit everything from the surrounding
 		// TODO spans.
 		{
-			UT_UCSChar ucs = 0x000a;	// LF
+			UT_UCSChar ucs = UCS_LF;
 			X_CheckError(m_pDocument->appendSpan(&ucs,1));
 		}
 		return;
@@ -456,17 +456,17 @@ void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 					X_CheckError(0);
 				}
 
-				if (ss[k] == 0x0d)					// CR
+				if (ss[k] == UCS_CR)
 				{
-					buf[bufLen++] = 0x20;			// substitute a SPACE
+					buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
 					m_bSeenCR = UT_TRUE;
 					continue;
 				}
 
-				if (ss[k] == 0x0a)					// LF
+				if (ss[k] == UCS_LF)				// LF
 				{
 					if (!m_bSeenCR)					// if not immediately after a CR,
-						buf[bufLen++] = 0x20;		// substitute a SPACE.  otherwise, eat.
+						buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
 					m_bSeenCR = UT_FALSE;
 					continue;
 				}
