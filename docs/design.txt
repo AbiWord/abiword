@@ -1,4 +1,8 @@
 
+[ NOTE -- as of 21 August, this file is not completely up-to-date.  As
+far as I can tell from a quick skim, the information here is accurate,
+but there are pieces missing. ]
+
 AbiWord Design Notes
 --------
 
@@ -213,6 +217,14 @@ anything inside it.
 --------------------------------
 --------------------------------
 $Log$
+Revision 1.3  1998/08/19 02:47:25  eric
+added some code to merge two blocks together.  Used when you go to the
+end of a block and hit the forward-delete key.
+
+also fixed the blockpiece code to allow deleting of a blockpiece from
+a column, and to allow a blockpiece with no lines in it.  This is a first
+step toward allowing a paragraph with nothing in it.
+
 Revision 1.2  1998/08/12 15:41:14  eric
 Partial work updating the README files and build instructions in the tree.
 
