@@ -10286,11 +10286,9 @@ Defun(resizeImage)
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::resizing image! Origin at pos: (x:%d,y:%d) - mouse at pos (x:%d,y:%d)\n", xOrigin, yOrigin, pCallData->m_xPos, pCallData->m_yPos));
 	
-		UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+		UT_sint32 x1,x2,y1,y2,iHeight;
 		bool bEOL = false;
 		bool bDir = false;
-	
-		const fp_PageSize & page = pView->getPageSize ();
 	
 		PT_DocPosition pos = pView->getDocPositionFromXY(xOrigin, yOrigin);
 	
@@ -10425,7 +10423,7 @@ Defun(endResizeImage)
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
 	
-		UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+		UT_sint32 x1,x2,y1,y2,iHeight;
 		bool bEOL = false;
 		bool bDir = false;
 	
