@@ -405,19 +405,19 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				int n = 0;
 				PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0); 
 				PtSetArg(&args[n++], Pt_ARG_ACCEL_KEY, accel, 0);
-				if (wParent != wMenuRoot) {
+				if ((PtGetParent(wParent,PtMenuBar) == NULL) || wParent != wMenuRoot) {
 					PtSetArg(&args[n++], Pt_ARG_BUTTON_TYPE, Pt_MENU_RIGHT, Pt_MENU_RIGHT);
 				}
 				wbutton = PtCreateWidget(PtMenuButton, wParent, n, args); 
 
 				n = 0;
-				if (wParent != wMenuRoot) {
+				if ((PtGetParent(wParent,PtMenuBar) == NULL) || wParent != wMenuRoot) {
 					PtSetArg(&args[n], Pt_ARG_MENU_FLAGS, 
 							Pt_MENU_CHILD|Pt_MENU_AUTO, 
 							Pt_MENU_CHILD|Pt_MENU_AUTO); n++;
 				}
 				wmenu =  PtCreateWidget(PtMenu, wbutton, n, args); 
-				if (wParent == wMenuRoot) {
+				if ((PtGetParent(wParent,PtMenuBar) && wParent == wMenuRoot)) {
 					PtAddCallback(wbutton, Pt_CB_ARM, s_menu_init, this);
 					PtAddCallback(wbutton, Pt_CB_ARM, s_menu_appear, wmenu);
 					PtAddHotkeyHandler(PtGetParent(wMenuRoot, PtWindow), 
@@ -440,7 +440,11 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 			PtWidget_t * w;
 			bResult = stack.pop((void **)&w);
 			UT_ASSERT(bResult);
-
+			
+			if(w == NULL) {
+			stack.push(wMenuRoot);
+			w= wMenuRoot;
+			}
 			//Add the same widget that was the start of the menu
 			m_vecMenuWidgets.addItem(w);
 			break;
@@ -456,14 +460,8 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 			m_vecMenuWidgets.addItem(w);
 			break;
 		}
-//Adding 0 so we can still use the same logic wParent == wMenuRoot in the submenu.
 		case EV_MLF_BeginPopupMenu:
-			stack.push(NULL);
-			break;
 		case EV_MLF_EndPopupMenu:
-			PtWidget_t *woid;
-			//Reserve slot for later
-			stack.pop((void**)&woid);
 			m_vecMenuWidgets.addItem(NULL);	
 			break;
 			
