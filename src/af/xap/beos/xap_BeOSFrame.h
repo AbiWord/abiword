@@ -131,6 +131,7 @@ public:
 	virtual bool				close(void);
 	virtual bool				raise(void);
 	virtual bool				show(void);
+	virtual void setFullScreen(bool isFullScreen) {}
 	virtual bool				openURL(const char * szURL);
 	virtual bool				updateTitle(void);
 	virtual void                            nullUpdate () const {}

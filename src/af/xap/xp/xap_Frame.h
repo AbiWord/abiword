@@ -120,6 +120,7 @@ public:
 	virtual bool				close() = 0;
 	virtual bool				raise() = 0;
 	virtual bool				show() = 0;
+	virtual void setFullScreen(bool isFullScreen) = 0;
 	virtual bool				openURL(const char * szURL) = 0;
 	virtual bool				updateTitle();
 	virtual UT_sint32			setInputMode(const char * szName);

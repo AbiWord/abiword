@@ -917,6 +917,11 @@ bool XAP_UnixFrame::raise()
 	return true;
 }
 
+void XAP_UnixFrame::setFullScreen(bool isFullScreen)
+{
+  // SCOTT: TODO
+}
+
 bool XAP_UnixFrame::show()
 {
 	if(m_wTopLevelWindow)

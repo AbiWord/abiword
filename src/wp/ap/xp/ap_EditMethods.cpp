@@ -7208,12 +7208,13 @@ Defun1(viewFullScreen)
 
   if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
 	{
+	  pFrameData->m_bIsFullScreen = true;
 	  pFrame->toggleBar(0, false);
 	  pFrame->toggleBar(1, false);
 	  pFrame->toggleBar(2, false);
 	  pFrame->toggleStatusBar(false);
 	  pFrame->toggleRuler(false);
-	  pFrameData->m_bIsFullScreen = true;
+	  pFrame->setFullScreen(true);
 	}
   else // we're (possibly) unhiding stuff
 	{
@@ -7223,6 +7224,7 @@ Defun1(viewFullScreen)
 	  pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
 	  pFrame->toggleRuler(pFrameData->m_bShowRuler);
 	  pFrameData->m_bIsFullScreen = false;
+	  pFrame->setFullScreen(false);
 	}
 
   return true;
