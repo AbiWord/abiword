@@ -19,6 +19,7 @@
 #include <image.h>
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_string.cpp"
 #include "xap_BeOSModule.h"
 
 XAP_BeOSModule::XAP_BeOSModule () : m_module (-1), m_szname (NULL)
