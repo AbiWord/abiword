@@ -1612,6 +1612,10 @@ void FV_View::processSelectedBlocks(List_Type listType)
 		else
 		{
 			fl_BlockLayout * pPrev = (fl_BlockLayout *) pBlock->getPrev();
+			while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
+			{
+				pPrev = (fl_BlockLayout *) pPrev->getPrev();
+			}
 //
 // Only attach block to previous list if the margin of the current block < the
 // previous block.
@@ -1709,7 +1713,10 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 	}
 	while( pBlock != NULL && pBlock->getPosition() <= endpos)
 	{
-		vBlock->addItem(pBlock);
+		if(pBlock->getContainerType()== FL_CONTAINER_BLOCK)
+		{
+			vBlock->addItem(pBlock);
+		}
 		pBlock = (fl_BlockLayout *) pBlock->getNext();
 	}
 	return;
@@ -1844,7 +1851,7 @@ void FV_View::insertParagraphBreak(void)
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
-
+	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	m_pLayout->considerPendingSmartQuoteCandidate();
 }

@@ -63,7 +63,6 @@ class fl_FootnoteLayout;
 class ABI_EXPORT FL_DocLayout
 {
 	friend class fl_DocListener;
-
 public:
 	FL_DocLayout(PD_Document* doc, GR_Graphics* pG);
 	~FL_DocLayout();

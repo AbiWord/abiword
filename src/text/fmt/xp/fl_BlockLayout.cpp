@@ -6877,14 +6877,14 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
 	//
 	fl_BlockLayout * pNext = (fl_BlockLayout *) getNext();
 	bool bmatchLevel =	false;
-	if( pNext != NULL && pNext->isListItem())
+	if( pNext != NULL && pNext->isListItem()&& (pNext->getAutoNum() != NULL))
 	{
 		bmatchLevel = (bool) (id == pNext->getAutoNum()->getID());
 	}
 	while(pNext != NULL && bmatchLevel == false)
 	{
 		pNext = (fl_BlockLayout *) pNext->getNext() ;
-		if( pNext != NULL && pNext->isListItem())
+		if( pNext != NULL && pNext->isListItem() && (pNext->getAutoNum() != NULL))
 		{
 			bmatchLevel = (bool) (id == pNext->getAutoNum()->getID());
 		}

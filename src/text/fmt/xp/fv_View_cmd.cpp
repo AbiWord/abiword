@@ -97,6 +97,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 	if (!isSelectionEmpty())
 	{
 		_moveToSelectionEnd(bForward);
+		_fixInsertionPointCoords();
 		_ensureInsertionPointOnScreen();
 		return;
 	}
@@ -125,12 +126,14 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 			if(!_charMotion(bForward, count))
 			{
 				_setPoint(iPoint);
+				_fixInsertionPointCoords();
 				_ensureInsertionPointOnScreen();
 				notifyListeners(AV_CHG_MOTION);
 				return;
 			}
 		}
 	}
+	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -491,7 +494,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	setPoint(posDestination);
 //	_charMotion(true,1);
 	notifyListeners(AV_CHG_MOTION);
-
+	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	return true;
 }
@@ -530,6 +533,7 @@ bool FV_View::cmdAutoSizeTable(void)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	return true;
 }
@@ -937,6 +941,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	return true;
 }
@@ -1207,6 +1212,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
     // Signal PieceTable Changes have finished
     _restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
     _ensureInsertionPointOnScreen();
     return true;
 }
@@ -1411,6 +1417,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
 	return true;
@@ -1470,6 +1477,7 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 
 	return true;
@@ -1674,6 +1682,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
 	return true;
@@ -1746,6 +1755,7 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
     notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
 	return true;
@@ -1870,8 +1880,9 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	notifyListeners(AV_CHG_MOTION);
-	_ensureInsertionPointOnScreen();
 	setPoint(pointTable);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 	notifyListeners (AV_CHG_ALL);
 	_generalUpdate();
 
@@ -1982,8 +1993,9 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_ensureInsertionPointOnScreen();
 	_setPoint(getPoint());
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 
 	return bResult;
 }
@@ -2041,7 +2053,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		// restore updates and clean up dirty lists
 		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
-
+		_fixInsertionPointCoords();
 		_ensureInsertionPointOnScreen();
 	}
 	else
@@ -2191,6 +2203,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		_generalUpdate();
 		free(props_in);
 
+		_fixInsertionPointCoords();
 		_ensureInsertionPointOnScreen();
 
 		//special handling is required for delete in revisions mode
@@ -2574,6 +2587,7 @@ void FV_View::cmdCut(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 
 
@@ -3001,7 +3015,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
+	_fixInsertionPointCoords();
 	if (!_ensureInsertionPointOnScreen())
 	{
 //

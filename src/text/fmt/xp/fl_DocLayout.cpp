@@ -1690,6 +1690,18 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 	}
 	bool bStopOnRebuild = false;
 	fl_SectionLayout* pSL = pDocLayout->m_pFirstSection;
+//
+// This bit is to make sure the insertionPoint is always on screen.
+//
+	FV_View * pView = pDocLayout->getView();
+	bool bEnd,bDir;
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run *pRun = NULL;
+	UT_sint32 x1,x2,y1,y2;
+	UT_uint32 height;
+	UT_sint32 origY;
+	pView->_findPositionCoords(pView->getPoint(),bEnd,x1,y1,x2,y2,height,bDir,&pBlock,&pRun);
+	origY = y1;
 	while (pSL && !bStopOnRebuild)
 	{
 		if(pDoc->isPieceTableChanging())
@@ -1719,6 +1731,17 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 		UT_DEBUGMSG(("SEVIOR: Rebuilding from docLayout \n"));
 		pDocLayout->rebuildFromHere((fl_DocSectionLayout *) pSL);
 	}
+	pView->_findPositionCoords(pView->getPoint(),bEnd,x1,y1,x2,y2,height,bDir,&pBlock,&pRun);
+//
+// If Y location has changed make sure it's still on screen
+//
+	if(y1 != origY)
+	{
+		UT_DEBUGMSG(("Line pos changed \n"));
+		UT_ASSERT(0);
+		pView->_ensureInsertionPointOnScreen();
+	}
+
 //
 // we've finished
 //

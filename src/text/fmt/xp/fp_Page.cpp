@@ -993,10 +993,10 @@ void fp_Page::_reformatFootnotes(void)
 
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pageHeightLayoutUnits -= iFootnoteHeightLayoutUnits;
-	UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeightLayoutUnits, iFootnoteHeightLayoutUnits));
+	xxx_UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeightLayoutUnits, iFootnoteHeightLayoutUnits));
 #endif
 	pageHeight -= iFootnoteHeight;
-	UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeight, iFootnoteHeight));
+	xxx_UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeight, iFootnoteHeight));
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);

@@ -146,6 +146,7 @@ class ABI_EXPORT FV_View : public AV_View
 {
 	friend class fl_DocListener;
 	friend class fl_BlockLayout;
+	friend class FL_DocLayout;
 	friend class fl_Squiggles;
 	friend class fl_DocSectionLayout;
 	friend class GR_Caret;

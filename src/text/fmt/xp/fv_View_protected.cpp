@@ -1468,7 +1468,7 @@ bool FV_View::_ensureInsertionPointOnScreen()
 		return false;
 
     // If == 0 no layout information is present. Don't scroll.
-	if(m_iPointHeight == 0)
+	if(getPoint() == 0)
 		return false;
 
 	xxx_UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,m_iWindowWidth,m_iWindowHeight));
