@@ -51,18 +51,6 @@ static int s_compareUniWidths(const void *w1, const void *w2)
 	return 0;
 }
 
-//this one is for use with bsearch
-static int s_compareUniWidthsChar(const void *c, const void *w)
-{
-	const UT_UCSChar *C = (const UT_UCSChar *)c;
-	const uniWidth *W = (const uniWidth *)w;
-	if (*C < W->ucs)
-		return -1;
-	if (*C > W->ucs)
-		return 1;
-	return 0;
-}
-
 #ifdef USE_XFT
 /* Xft face locker impl. */
 XftFaceLocker::XftFaceLocker(XftFont * pFont):m_pFont(pFont)
@@ -528,6 +516,18 @@ UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
 	return (UT_uint16) width;
 }
 #else
+
+//this one is for use with bsearch
+static int s_compareUniWidthsChar(const void *c, const void *w)
+{
+	const UT_UCSChar *C = (const UT_UCSChar *)c;
+	const uniWidth *W = (const uniWidth *)w;
+	if (*C < W->ucs)
+		return -1;
+	if (*C > W->ucs)
+		return 1;
+	return 0;
+}
 
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c)
 {
