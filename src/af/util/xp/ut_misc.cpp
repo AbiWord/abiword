@@ -45,6 +45,14 @@ UT_Rect::UT_Rect(int iLeft, int iTop, int iWidth, int iHeight)
 	height = iHeight;
 }
 
+UT_Rect::UT_Rect(const UT_Rect & r)
+{
+	left = r.left;
+	top = r.top;
+	width = r.width;
+	height = r.height;
+}
+
 UT_Bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const
 {
 	// return true iff the given (x,y) is inside the rectangle.

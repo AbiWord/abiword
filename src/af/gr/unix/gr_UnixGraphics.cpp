@@ -372,8 +372,8 @@ UT_uint32 GR_UNIXGraphics::getFontDescent()
 	return pXFont->descent;
 }
 
-void GR_UNIXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
-							UT_sint32 y2)
+void GR_UNIXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
+							   UT_sint32 x2, UT_sint32 y2)
 {
 	// TODO set the line width according to m_iLineWidth
 	gdk_draw_line(m_pWin, m_pGC, x1, y1, x2, y2);
@@ -392,6 +392,7 @@ void GR_UNIXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
+#if 0
 	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
 	UT_ASSERT(points);
 
@@ -410,6 +411,10 @@ void GR_UNIXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
 
 	FREEP(points);
+#else
+	for (UT_uint32 k=1; k<nPoints; k++)
+		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y);
+#endif
 }
 
 void GR_UNIXGraphics::invertRect(const UT_Rect* pRect)
