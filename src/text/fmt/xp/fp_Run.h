@@ -735,7 +735,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);
-	virtual UT_UCSChar *    getValue(void) const { return static_cast<UT_UCSChar *>(m_sFieldValue);}
+	virtual const UT_UCSChar *    getValue(void) const { return reinterpret_cast<const UT_UCSChar *>(m_sFieldValue);}
 	virtual UT_uint32		needsFrequentUpdates() {return 0;}
 
 protected:
