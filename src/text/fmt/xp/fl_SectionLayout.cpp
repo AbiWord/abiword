@@ -1142,7 +1142,7 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 
 	pPrevSL->format();
 	
-	FV_View* pView = m_pLayout->getView();
+//	FV_View* pView = m_pLayout->getView();
 //      if (pView)
 //  	{
 //  		pView->_setPoint(pcrx->getPosition());
@@ -1674,7 +1674,7 @@ void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 
 	UT_ASSERT(pBL);
 
-	FV_View* pView = m_pLayout->getView();
+//	FV_View* pView = m_pLayout->getView();
 //  	if (pView)
 //  	{
 //  	        UT_uint32 pos = (UT_uint32) pBL->getPosition(true);
@@ -2300,7 +2300,10 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	UT_DEBUGMSG(("fl_ShadowListener::populate\n"));
 
 	bool bResult = false;
-
+	//	bool curInsPoint = m_pDoc->getAllowChangeInsPoint();
+	//	m_pDoc->setDontChangeInsPoint();
+	FV_View* pView = m_pHFSL->getDocLayout()->getView();
+	PT_DocPosition oldPos = pView->getPoint();
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
@@ -2356,10 +2359,16 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	default:
 	        UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType())); 
 		UT_ASSERT(0);
+		pView->setPoint(oldPos);
+		//		if(curInsPoint)
+		//        m_pDoc->allowChangeInsPoint();
 		return false;
 	}
 
 finish_up:
+	pView->setPoint(oldPos);
+	//	if(curInsPoint)
+	// 	 m_pDoc->allowChangeInsPoint();
 	
 	return bResult;
 }
@@ -2373,6 +2382,11 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
+
+	//	bool curInsPoint = m_pDoc->getAllowChangeInsPoint();
+	//m_pDoc->setDontChangeInsPoint();
+	FV_View* pView = m_pHFSL->getDocLayout()->getView();
+	PT_DocPosition oldPos = pView->getPoint();
 
 	switch (pcrx->getStruxType())
 	{
@@ -2444,8 +2458,14 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			
 	default:
 		UT_ASSERT(0);
+		//     	        if(curInsPoint)
+	 	//        m_pDoc->allowChangeInsPoint();
+		pView->setPoint(oldPos);
 		return false;
 	}
+	pView->setPoint(oldPos);
+	//	if(curInsPoint)
+	// 	 m_pDoc->allowChangeInsPoint();
 
 	return true;
 }
@@ -2477,3 +2497,4 @@ bool fl_ShadowListener::signal(UT_uint32 /*iSignal*/)
 
 	return false;
 }
+

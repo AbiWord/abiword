@@ -89,7 +89,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_xPointSticky(0),
 	m_bPointVisible(false),
 	m_bPointEOL(false),
-	m_bDontChangeInsPoint(false),
 	m_pLayout(pLayout),
 	m_pDoc(pLayout->getDocument()),
 	m_pG(m_pLayout->getGraphics()),
@@ -5684,7 +5683,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
 	UT_ASSERT(bEOL == true || bEOL == false);
 
-	if (m_bDontChangeInsPoint == true)
+	if (!m_pDoc->getAllowChangeInsPoint())
 	{
 		return;
 	}
@@ -5699,7 +5698,7 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 
 void FV_View::setPoint(PT_DocPosition pt)
 {
-	if (m_bDontChangeInsPoint == true)
+	if (!m_pDoc->getAllowChangeInsPoint())
 	{
 		return;
 	}
@@ -5713,18 +5712,18 @@ void FV_View::setPoint(PT_DocPosition pt)
 
 void FV_View::setDontChangeInsPoint(void)
 {
-	m_bDontChangeInsPoint = true;
+	m_pDoc->setDontChangeInsPoint();
 }
 
 void FV_View::allowChangeInsPoint(void)
 {
-	m_bDontChangeInsPoint = false;
+	m_pDoc->allowChangeInsPoint();
 }
 
 
 bool FV_View::isDontChangeInsPoint(void)
 {
-	return m_bDontChangeInsPoint;
+	return !m_pDoc->getAllowChangeInsPoint();
 }
 
 void FV_View::_checkPendingWordForSpell(void)
@@ -6103,7 +6102,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 	//
 	// Insertion point should not change during this.
 	//
-	m_pDoc->setDontChangeInsPoint();
+	// m_pDoc->setDontChangeInsPoint();
 	// Signal PieceTable Change 
 	m_pDoc->notifyPieceTableChangeStart();
 
@@ -6134,7 +6133,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 	//
 	// Restore insertion point motion
 	//
-	m_pDoc->allowChangeInsPoint();
+	// m_pDoc->allowChangeInsPoint();
 
 	_fixInsertionPointCoords();
 	if (isSelectionEmpty())

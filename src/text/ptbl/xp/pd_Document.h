@@ -185,6 +185,7 @@ bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
                                      fd_Field * &pField);
 	void                    setDontChangeInsPoint(void);
 	void                    allowChangeInsPoint(void);
+	bool                    getAllowChangeInsPoint(void) const;
 	bool                 isPieceTableChanging(void);
         void                    notifyPieceTableChangeStart(void);
         void                    notifyPieceTableChangeEnd(void);
@@ -233,6 +234,8 @@ protected:
 	IEFileType				m_lastSavedAsType;
 	bool                                 m_bPieceTableChanging;
 	bool                                 m_bDoingPaste;
+private:
+        bool                                 m_bAllowInsertPointChange;
 };
 
 

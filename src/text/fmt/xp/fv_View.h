@@ -375,7 +375,6 @@ protected:
 
 	bool				m_bPointVisible;
 	bool				m_bPointEOL;
-	bool				m_bDontChangeInsPoint;
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	GR_Graphics*		m_pG;

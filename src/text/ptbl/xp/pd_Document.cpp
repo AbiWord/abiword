@@ -61,7 +61,10 @@ struct _dataItemPair
 //////////////////////////////////////////////////////////////////
 
 PD_Document::PD_Document()
-  : AD_Document(),  m_docPageSize(getDefaultPageSize()),m_hashDataItems(11)
+  : AD_Document(),  
+  m_docPageSize(getDefaultPageSize()),
+  m_hashDataItems(11),
+  m_bAllowInsertPointChange(true)
 {
 	m_pPieceTable = NULL;
 
@@ -981,76 +984,17 @@ bool PD_Document::updateFields(void)
 
 void PD_Document::setDontChangeInsPoint(void)
 {
-	//
-	// Notify all views that they cannot change the insertion point
-	//
-	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	//
-	//Look for the first strux so we can notify the views via a strux listner
-	//
-	while (currentFrag!=m_pPieceTable->getFragments().getLast())
-	{
-		if (currentFrag->getType()==pf_Frag::PFT_Strux)
-		{
-			break;
-		}
-		currentFrag = currentFrag->getNext();
-	}
-	if(currentFrag!=m_pPieceTable->getFragments().getLast())
-	{
-		pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
-		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-		PT_DocPosition pos = getStruxPosition(pfs);
-#ifndef __MRC__
-		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_DontChangeInsPoint,pos,pAppIndex);
-#else
-		PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_DontChangeInsPoint,pos,pAppIndex);
-#endif
-		notifyListeners(pfs, pcr);
-		delete pcr;		
-	}
-	else
-	{
-		UT_DEBUGMSG(("setDontChangeInsPoint: No strux in document!! \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
+        m_bAllowInsertPointChange = false;
 }
 
 void PD_Document::allowChangeInsPoint(void)
 {
-  //
-  // Notify all views that they can change the insertion point
-  //
-	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	//
-	//Look for the first strux so we can notify the views via a strux listner
-	//
-	while (currentFrag!=m_pPieceTable->getFragments().getLast())
-	{
-		if (currentFrag->getType()==pf_Frag::PFT_Strux)
-		{
-			break;
-		}
-		currentFrag = currentFrag->getNext();
-	}
-	if(currentFrag!=m_pPieceTable->getFragments().getLast())
-	{
-		pf_Frag_Strux * pfs = ( pf_Frag_Strux *) currentFrag;
-		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-		PT_DocPosition pos = getStruxPosition(pfs);
-#ifndef __MRC__
-		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_AllowChangeInsPoint,pos,pAppIndex);
-#else
-		PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_AllowChangeInsPoint,pos,pAppIndex);
-#endif
-		notifyListeners(pfs, pcr);
-		delete pcr;
-	}
-	else
-	{
-		UT_DEBUGMSG(("allowChangeInsPoint: No strux in document!! \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
+        m_bAllowInsertPointChange = true;
+}
+
+bool PD_Document::getAllowChangeInsPoint(void) const
+{
+        return m_bAllowInsertPointChange;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
