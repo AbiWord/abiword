@@ -4379,7 +4379,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		break;
 	case RTF_KW_ltrpar:
 		xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
-		m_currentRTFState.m_paraProps.m_dir = UT_BIDI_RTL;
+		m_currentRTFState.m_paraProps.m_dir = UT_BIDI_LTR;
 		//reset doc bidi attribute
 		m_bBidiMode = false;
 		return true;
