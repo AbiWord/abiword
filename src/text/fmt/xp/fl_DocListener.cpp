@@ -339,7 +339,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						pBL->draw(m_pLayout->getGraphics());
 					}
 					else
-						pBL->setNeedsReformat(UT_TRUE);
+					{
+//						pBL->setNeedsReformat(UT_TRUE);
+						pBL->reformat();
+					}
 
 					// in case anything else moved
 					m_pLayout->reformat();

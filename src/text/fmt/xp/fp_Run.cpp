@@ -810,13 +810,13 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 	
 	if ((m_iOffsetFirst + m_iLen) <= iOffset)
 	{
-		// nothing to do.  the insert occurred AFTER this run
+		// nothing to do.  the delete occurred AFTER this run
 		return UT_FALSE;
 	}
 
 	if (m_iOffsetFirst >= (iOffset + iCount))
 	{
-		// the insert occurred entirely before this run.
+		// the delete occurred entirely before this run.
 		
 		m_iOffsetFirst -= iCount;
 		return UT_FALSE;
