@@ -54,6 +54,14 @@ typedef signed short        UT_sint16;
 typedef unsigned int		UT_uint32;
 typedef signed int		    UT_sint32;
 
+#ifdef  WIN32
+typedef DWORDLONG           UT_uint64;
+typedef LONGLONG            UT_sint64;
+#else
+typedef unsigned long long  UT_uint64;
+typedef long long           UT_sint64;
+#endif
+
 /* If expat is in use, include <expat.h> before "ut_types.h"
  */
 #ifndef XML_Char
