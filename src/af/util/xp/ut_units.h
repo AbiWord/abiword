@@ -72,6 +72,8 @@ ABI_EXPORT const char * UT_formatDimensionedValue(double value, const char * szU
 ABI_EXPORT bool UT_hasDimensionComponent(const char * sz);
 ABI_EXPORT bool UT_isValidDimensionString(const char * sz, UT_sint32 max_length = 0);
 
+ABI_EXPORT UT_uint32 UT_getDimensionPrecisicion (UT_Dimension dim);
+ABI_EXPORT double UT_getDimensionResolution (UT_Dimension dim);
 
 UT_END_EXTERN_C
 

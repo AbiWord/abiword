@@ -219,6 +219,9 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 	return buf;
 }
 
+/*!
+* FIXME ROB this should be in sync with UT_getDimensionPrecisicion
+*/
 const char * UT_formatDimensionString(UT_Dimension dim, double value, const char * szPrecision)
 {
 	// return pointer to static buffer -- use it quickly.
@@ -610,4 +613,55 @@ bool UT_isValidDimensionString(const char * sz, UT_sint32 max_length)
 		p++;
 	}
 	return valChars > 0;
+}
+
+/*!
+* Returns the user visible precisition (number of decimal digits)
+* for a certain dimension.
+*/
+UT_uint32 UT_getDimensionPrecisicion (UT_Dimension dim)
+{
+	switch (dim)
+	{
+		case DIM_IN:	
+			return 2;
+		case DIM_CM:	
+			return 1;
+		case DIM_MM:	
+		case DIM_PI:	
+		case DIM_PT:	
+		case DIM_PX:
+			return 0;
+		default:
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			return 1;
+	}	
+}
+
+/*!
+* Returns the user visible resolution
+* for a certain dimension.
+*/
+double UT_getDimensionResolution (UT_Dimension dim)
+{
+	switch (dim)
+	{
+		case DIM_IN:	
+			return 0.1;
+		case DIM_CM:	
+			return 0.5;
+		case DIM_PI:
+			return 1;
+		case DIM_MM:
+			return 5;
+		case DIM_PT:	
+			return 10;
+		case DIM_PX:
+			return 10;
+		case DIM_PERCENT:
+			return 1;
+		default:
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			return 1;
+	}	
 }
