@@ -897,7 +897,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 			// (Both m_geom and the temporary variables are
 			// initialized so partial/invalid preference data from the
 			// file will still have sensible fall-back defaults).
-			UT_uint32 width = 800, height = 600, flags = PREF_FLAG_GEOMETRY_SIZE;
+			UT_uint32 width = 600, height = 800, flags = PREF_FLAG_GEOMETRY_SIZE;
 			UT_sint32 posx = 0, posy = 0;
 
 			m_geom.m_width = width;
