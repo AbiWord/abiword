@@ -185,7 +185,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
 
-				gtk_object_set_data(GTK_OBJECT(wTLW), szLabelName, w);
+				gtk_object_set_data(GTK_OBJECT(m_wMenuBar), szLabelName, w);
 				gtk_widget_show(w);
 				gtk_container_add(GTK_CONTAINER(wParent),w);
 				gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate),wd);
@@ -198,8 +198,10 @@ UT_Bool EV_UnixMenu::synthesize(void)
 					_wd * wdsub = new _wd(id,wsub);
 					UT_ASSERT(wdsub);
 					m_vecMenuWidgets.addItem(wdsub);
-					gtk_object_set_data(GTK_OBJECT(wTLW), _ev_FakeName(szLabelName,tmp++), wsub);
-					gtk_widget_show(wsub);
+					gtk_object_set_data(GTK_OBJECT(m_wMenuBar), _ev_FakeName(szLabelName,tmp++), wsub);
+					// note: for GTK 1.0.6, we don't call "gtk_widget_show(wsub);"
+					// note: on the popup's (else we get weird stuff on the screen).
+					// note: this doesn't seem to matter for 1.1.2....
 					gtk_menu_item_set_submenu(GTK_MENU_ITEM(w),wsub);
 					stack.push(wsub);
 				}
@@ -208,8 +210,8 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	
 		case EV_MLF_EndSubMenu:
 			{
-				GtkWidget * w = NULL;
-				bResult = stack.pop((void **)&w);
+				GtkWidget * wsub = NULL;
+				bResult = stack.pop((void **)&wsub);
 				UT_ASSERT(bResult);
 			}
 			break;
@@ -226,7 +228,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				bResult = stack.viewTop((void **)&wParent);
 				UT_ASSERT(bResult);
 
-				gtk_object_set_data(GTK_OBJECT(wTLW), _ev_FakeName("separator",tmp++), w);
+				gtk_object_set_data(GTK_OBJECT(m_wMenuBar), _ev_FakeName("separator",tmp++), w);
 				gtk_widget_show(w);
 				gtk_container_add(GTK_CONTAINER(wParent),w);
 			}

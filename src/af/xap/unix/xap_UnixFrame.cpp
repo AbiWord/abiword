@@ -235,7 +235,6 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
 	gtk_object_set_user_data(GTK_OBJECT(m_wVBox),this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
-	gtk_widget_show(m_wVBox);
 
 	// TODO get the following values from a preferences or something.
 	gtk_container_border_width(GTK_CONTAINER(m_wVBox), 4);
@@ -315,6 +314,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	gtk_widget_show(m_vScroll);
 	gtk_widget_show(m_dArea);
 	gtk_widget_show(m_table);
+	gtk_widget_show(m_wVBox);
 
 	// we let our caller decide when to show m_wTopLevelWindow.
 
