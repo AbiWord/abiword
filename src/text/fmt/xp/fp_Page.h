@@ -33,10 +33,12 @@ class fp_Column;
 class fp_Container;
 class fp_ShadowContainer;
 class fp_FootnoteContainer;
+class fp_FrameContainer;
 class fl_DocSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_HdrFtrShadow;
 class fl_FootnoteLayout;
+class fl_FrameLayout;
 class FV_View;
 class GR_Graphics;
 class fp_TableContainer;
@@ -90,7 +92,6 @@ public:
 	bool				isEmpty(void) const;
 
 	// Header/Footer functions.
-	void 				footnoteHeightChanged(void);
 	void                removeHdrFtr(HdrFtrType hfType);
 	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType) const;
 	fp_ShadowContainer*	getHdrFtrContainer(fl_HdrFtrSectionLayout*);
@@ -98,6 +99,7 @@ public:
 											 HdrFtrType hfType);
 
 	// Footnote functions.
+	void 				footnoteHeightChanged(void);
 	UT_uint32			countFootnoteContainers(void) const;
 	fp_FootnoteContainer* getNthFootnoteContainer(UT_sint32 n) const; 
 	bool				insertFootnoteContainer(fp_FootnoteContainer * pFC);
@@ -105,6 +107,17 @@ public:
 	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
 	void                clearScreenFootnotes(void);
 	UT_sint32           getFootnoteHeight(void);
+
+	// Frame functions.
+	void 				frameHeightChanged(void);
+	UT_uint32			countFrameContainers(void) const;
+	fp_FrameContainer*  getNthFrameContainer(UT_sint32 n) const; 
+	bool				insertFrameContainer(fp_FrameContainer * pFC);
+	void				removeFrameContainer(fp_FrameContainer * pFC);
+	UT_sint32           findFrameContainer(fp_FrameContainer * pFC);
+	void                clearScreenFrames(void);
+
+
 	fg_FillType *       getFillType(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
@@ -140,6 +153,7 @@ private:
 
 	UT_Vector			m_vecFootnotes;
 	fg_FillType         m_FillType;
+	UT_Vector           m_vecFrames;
 };
 
 #endif /* PAGE_H */

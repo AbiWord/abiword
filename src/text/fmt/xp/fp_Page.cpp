@@ -35,6 +35,8 @@
 #include "fv_View.h"
 #include "fp_FootnoteContainer.h"
 #include "fl_FootnoteLayout.h"
+#include "fp_FrameContainer.h"
+#include "fl_FrameLayout.h"
 #include "fp_TableContainer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -87,7 +89,7 @@ fg_FillType * fp_Page::getFillType(void)
 
 bool fp_Page::isEmpty(void) const
 {
-	if((m_vecColumnLeaders.getItemCount() == 0) && (m_vecFootnotes.getItemCount() == 0))
+	if((m_vecColumnLeaders.getItemCount() == 0) && (m_vecFootnotes.getItemCount() == 0) && (m_vecFrames.getItemCount() == 0))
 	{
 		return true;
 	}
@@ -449,8 +451,25 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
     _drawCropMarks(pDA);
 
+	// draw Frames
+	UT_sint32 count = m_vecFrames.getItemCount();
+	for (i=0; i<count; i++)
+	{
+		fp_FrameContainer* pFC = static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(i));
+		dg_DrawArgs da = *pDA;
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+			da.yoff -= pFirstSectionLayout->getTopMargin();
+		}
+		da.xoff += pFC->getX();
+		da.yoff += pFC->getY();
+		pFC->draw(&da);
+	}
+
 	// draw each column on the page
-	int count = m_vecColumnLeaders.getItemCount();
+	count = m_vecColumnLeaders.getItemCount();
 	for (i=0; i<count; i++)
 	{
 		fp_Column* pCol = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
@@ -1217,6 +1236,45 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 	UT_uint32 iDist = 0;
 	fp_Column* pLeader = NULL;
 //
+// Start by looking in Frames for this point.
+//
+	UT_sint32 i =0;
+	fp_FrameContainer * pFrameC = NULL;
+	for (i=0; i<static_cast<UT_sint32>(countFrameContainers()); i++)
+	{
+		pFrameC = getNthFrameContainer(i);
+		if (pFrameC->getFirstContainer())
+		{
+			if ((x >= pFrameC->getX())
+				&& (x < (pFrameC->getX() + pFrameC->getWidth()))
+				&& (y >= pFrameC->getY())
+				&& (y < (pFrameC->getY() + pFrameC->getHeight()))
+				)
+			{
+				pFrameC->mapXYToPosition(x - pFrameC->getX(), y - pFrameC->getY(), pos, bBOL, bEOL);
+					return;
+			}
+
+			iDist = pFrameC->distanceFromPoint(x, y);
+			if (iDist < iMinDist)
+			{
+				iMinDist = iDist;
+				pMinDist = static_cast<fp_VerticalContainer *>(pFrameC);
+			}
+
+			if ( (y >= pFrameC->getY())
+				 && (y < (pFrameC->getY() + pFrameC->getHeight()))) 
+			{
+				if (iDist < iMinXDist)
+				{
+					iMinXDist = iDist;
+					pMinXDist = static_cast<fp_VerticalContainer *>(pFrameC);
+				}
+			}
+		}
+	}
+
+//
 // Look in header for insertion point
 //
 	if (bUseHdrFtr)
@@ -1250,7 +1308,6 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 //
 // Now look in page
 //
-	UT_sint32 i =0;
 	for (i=0; i<count; i++)
 	{
 		pLeader = static_cast<fp_Column*>(m_vecColumnLeaders.getNthItem(i));
@@ -1455,6 +1512,93 @@ fp_ShadowContainer* fp_Page::getHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL)
 			return buildHdrFtrContainer(pHFSL, FL_HDRFTR_FOOTER);
 	}
 }
+
+// Frame methods
+
+void fp_Page::frameHeightChanged(void)
+{
+}
+
+void fp_Page::clearScreenFrames(void)
+{
+	UT_sint32 i =0;
+	for (i = 0; i < static_cast<UT_sint32>(countFrameContainers()); i++)
+	{
+		getNthFrameContainer(i)->clearScreen();
+	}
+}
+
+UT_uint32 fp_Page::countFrameContainers(void) const
+{
+	return m_vecFrames.getItemCount();
+}
+
+UT_sint32 fp_Page::findFrameContainer(fp_FrameContainer * pFC)
+{
+	UT_sint32 i = m_vecFrames.findItem(static_cast<void *>(pFC));
+	return i;
+}
+
+fp_FrameContainer* fp_Page::getNthFrameContainer(UT_sint32 n) const 
+{
+	return static_cast<fp_FrameContainer*>(m_vecFrames.getNthItem(n));
+} 
+
+bool fp_Page::insertFrameContainer(fp_FrameContainer * pFC)
+{
+	UT_uint32 i =0;
+	UT_uint32 loc =0;
+	UT_sint32 fVal = pFC->getValue();
+	fp_FrameContainer * pFTemp = NULL;
+	for(i=0; i< m_vecFrames.getItemCount();i++)
+	{
+		pFTemp = static_cast<fp_FrameContainer *>(m_vecFrames.getNthItem(i));
+		if(fVal < pFTemp->getValue())
+		{
+			loc = i;
+			break;
+		}
+	}
+	if(pFTemp == NULL)
+	{
+		m_vecFrames.addItem(static_cast<void *>(pFC));
+	}
+	else if( i>= m_vecFrames.getItemCount())
+	{
+		m_vecFrames.addItem(static_cast<void *>(pFC));
+	}
+	else
+	{
+		m_vecFrames.insertItemAt(pFC, loc);
+	}
+	if(pFC)
+	{
+		pFC->setPage(this);
+	}
+	_reformat();
+	return true;
+}
+
+void fp_Page::removeFrameContainer(fp_FrameContainer * pFC)
+{
+	UT_sint32 ndx = m_vecFrames.findItem(pFC);
+	if(ndx>=0)
+	{
+		m_vecFrames.deleteNthItem(ndx);
+		for(ndx=0; ndx < static_cast<UT_sint32>(countFrameContainers());ndx++)
+		{			
+			fp_FrameContainer * pFC = getNthFrameContainer(ndx);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+			pFC->clearScreen();
+			pFL->markAllRunsDirty();
+		}
+		_reformat();
+		return;
+	}
+	return;
+}
+
+// Footnote methods
 
 UT_uint32 fp_Page::countFootnoteContainers(void) const
 {

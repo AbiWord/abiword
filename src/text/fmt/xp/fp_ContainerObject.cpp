@@ -599,7 +599,6 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 {
 				 _regenerateImage(pG);
 			 }
-			 m_iGraphicTick = 99999999;
 			 src.left = srcX;
 			 src.top = srcY;
 			 src.width = width;

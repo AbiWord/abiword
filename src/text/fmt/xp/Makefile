@@ -36,6 +36,7 @@ CPPSRCS=		fv_View.cpp			\
 			fl_Layout.cpp			\
 			fl_SectionLayout.cpp		\
 			fl_FootnoteLayout.cpp           \
+			fl_FrameLayout.cpp           \
 			fl_AutoNum.cpp			\
 			fl_AutoLists.cpp		\
 			fl_SelectionPreserver.cpp	\
@@ -52,6 +53,7 @@ CPPSRCS=		fv_View.cpp			\
 			fp_TestRoutines.cpp		\
 	                fp_TableContainer.cpp           \
 			fp_FootnoteContainer.cpp        \
+			fp_FrameContainer.cpp        \
 			fg_Graphic.cpp			\
 			fg_GraphicRaster.cpp		\
 			fg_GraphicVector.cpp		\
