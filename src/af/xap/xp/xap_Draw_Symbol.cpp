@@ -340,5 +340,5 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 
 void XAP_Draw_Symbol::onLeftButtonDown(UT_sint32 x, UT_sint32 y)
 {
-	setCurrent(calcSymbol(m_areagc->tlu(x), m_areagc->tlu(y)));
+	setCurrent(calcSymbol(x, y));
 }
