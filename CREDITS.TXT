@@ -154,6 +154,7 @@ Robert Wilhelm <robert.wilhelm@gmx.net>			Word import fixes
 Alec Wolman <wolman@cs.washington.edu>			Various autoconf fixes
 John Wood <jyonw@asu.edu>						NetBSD
 Alan Young <ayoung@teleport.com>				Alpha/NT
+Justin Zaun <jzaun@telerama.com> Some templates
 Belcon Zhao <rainfall@yeah.net> 				Testing/fixing CJK support
 
 translators
