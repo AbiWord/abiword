@@ -3262,13 +3262,14 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		//
 		if((bForward == false) && (count == 1))
 		{
-			if(isTabListBehindPoint() == true)
+		        UT_sint32 myCount= 0;
+			if(isTabListBehindPoint(myCount) == true)
 			{
 				curBlock = _findBlockAtPosition(getPoint());
-				nBlock = _findBlockAtPosition(getPoint()-2);
+				nBlock = _findBlockAtPosition(getPoint()-myCount);
 				if(nBlock == curBlock)
 				{
-					count = 2;
+					count = myCount;
 					bisList = true;
 				}
 			}

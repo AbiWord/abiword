@@ -485,6 +485,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	{
 		setPoint(origPos);
 	}
+	UT_sint32 iCount = 0;
 	if(isTabListAheadPoint() == true)
 	{
 		UT_uint32 iRealDeleteCount2;
@@ -5562,7 +5563,8 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			// Were inserting a TAB. Handle special case of TAB
 			// right after a list-label combo
 			//
-			if((   isTabListBehindPoint() == true || isTabListAheadPoint() == true)
+			UT_sint32 iCount=0;
+			if((   ((isTabListBehindPoint(iCount) == true) && (iCount == 2)) || isTabListAheadPoint() == true)
 			    && getCurrentBlock()->isFirstInList() == false)
 			{
 				//

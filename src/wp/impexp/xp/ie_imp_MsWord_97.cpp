@@ -1964,7 +1964,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					{
 						sVal = "wrapped-both; ";
 					}
-					if(fspa->fBelowText == 1)
+       					if(fspa->fBelowText == 1 && fspa->wr == 3)
 				        {
 					     UT_DEBUGMSG(("Set Below Text \n"));
 					     sVal = "below-text; ";

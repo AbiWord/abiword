@@ -5883,7 +5883,7 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	return bufferRet;
 }
 
-bool FV_View::isTabListBehindPoint(void)
+bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete)
 {
 	PT_DocPosition cpos = getPoint();
 	PT_DocPosition ppos = cpos - 1;
@@ -5893,7 +5893,7 @@ bool FV_View::isTabListBehindPoint(void)
 	UT_uint32 iPointHeight;
 	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
 	bool   bDirection;
-
+	iNumToDelete = 0;
 	bRes = getEditableBounds(false, posBOD);
 	UT_ASSERT(bRes);
 	if (cpos <= posBOD - 1)
@@ -5917,7 +5917,24 @@ bool FV_View::isTabListBehindPoint(void)
 	{
 		return false;
 	}
-
+	while(pRun && pRun->getLength() == 0)
+	{
+		pRun = pRun->getPrevRun();
+	}
+	if(pRun == NULL)
+	{
+		return false;
+	}
+	if(pRun->getType() == FPRUN_FIELD)
+	{
+		fp_FieldRun * pFRun = static_cast<fp_FieldRun *>(pRun);
+		if (pFRun->getFieldType() != FPFIELD_list_label)
+		{
+			return false;
+		}
+		iNumToDelete = 1;
+		return true;
+	}
 	if(pRun->getType() != FPRUN_TAB)
 	{
 		return false;
@@ -5938,6 +5955,7 @@ bool FV_View::isTabListBehindPoint(void)
 		{
 			return false;
 		}
+		iNumToDelete = 2;
 		return true;
 	}
 }

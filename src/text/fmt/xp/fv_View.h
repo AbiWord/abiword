@@ -272,7 +272,7 @@ public:
 	bool	processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
 
 	bool	isTextMisspelled()const ;
-	bool	isTabListBehindPoint(void);
+	bool	isTabListBehindPoint(UT_sint32 & iNumToDelete);
 	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(FL_ListType listType);
 	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock);
