@@ -8770,6 +8770,13 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		m_dposPaste = pfs->getPos()+1;
 		return res;
 	}
+	//
+	// Can't  paste sections in HdrFtrs
+	//
+	if(pts == PTX_Section && (pView->getEmbedDepth(pView->getPoint()) > 0))
+	{
+		return true;
+	}
 	res = getDoc()->insertStrux(m_dposPaste,pts,attrs,props);
 	m_dposPaste++;
 	if(	bInHyperlink)

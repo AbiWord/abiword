@@ -1054,6 +1054,14 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		sYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
+		{
+		    dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
+		}
+		if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
+		{
+		    dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
+		}
 		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
 		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
 		return true;
