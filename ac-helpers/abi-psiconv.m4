@@ -44,7 +44,7 @@ if test "$abi_found_psiconv" = "yes"; then
 	[abi_found_psiconvincs="yes"])
 	if test "$abi_found_psiconvincs" = "yes"; then
 		PSICONV_CFLAGS=""
-		abi_psiconv_message="psiconv in $abi_psiconv_libs"
+		abi_psiconv_message="psiconv in -lpsiconv"
 	else 
 		#AC_MSG_WARN([psiconv library found but header file missing])
 		abi_found_psiconv="no"
