@@ -1186,10 +1186,10 @@ static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 		// create a centered window the size of our bitmap
 		hwndSplash = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST,s_SplashWndClassName, 
 								  NULL, WS_POPUP | WS_BORDER,
-								  (rect.right  / 2) - (iSplashWidth  / 2),
-								  (rect.bottom / 2) - (iSplashHeight / 2),
-								  iSplashWidth,
-								  iSplashHeight,
+								  (rect.right  / 2) - (iSplashWidth  / 2) - 1, // subtract 1 pixel to account for WS_BORDER
+								  (rect.bottom / 2) - (iSplashHeight / 2) - 1, // subtract 1 pixel to account for WS_BORDER
+								  iSplashWidth + 2, // must add 2 to window size, WS_BORDER takes up one pixel on each side
+								  iSplashHeight + 2, // must add 2 to window size, WS_BORDER takes up one pixel on each side
 								  NULL, NULL, hInstance, NULL);
 		UT_ASSERT_HARMLESS(hwndSplash);
     
