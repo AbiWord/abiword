@@ -1200,9 +1200,12 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
 
-			UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
-					ps.rcPaint.right-ps.rcPaint.left,
-					ps.rcPaint.bottom-ps.rcPaint.top);
+			FV_View * pFV = static_cast<FV_View *>(pView);
+			GR_Graphics * pG = pFV->getGraphics();
+
+			UT_Rect r(pG->tlu(ps.rcPaint.left), pG->tlu(ps.rcPaint.top),
+					pG->tlu(ps.rcPaint.right-ps.rcPaint.left),
+					pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top));
 			pView->draw(&r);
 
 			EndPaint(hwnd, &ps);
