@@ -86,7 +86,7 @@ XAP_UnixApp::~XAP_UnixApp()
 #endif	
 }
 
-bool XAP_UnixApp::initialize()
+bool XAP_UnixApp::initialize(bool have_display)
 {
 	if (!g_thread_supported ()) g_thread_init (NULL);
 
@@ -107,15 +107,15 @@ bool XAP_UnixApp::initialize()
 	/*******************************/
 
 	// set up new widgets so that they work well with gdkrgb functions
-	//gtk_widget_push_visual(gtk_preview_get_visual());
-	//gtk_widget_push_colormap(gtk_preview_get_cmap());
 
-	gdk_rgb_init();
-	gtk_widget_set_default_colormap(gdk_rgb_get_cmap());
-	gtk_widget_set_default_visual(gdk_rgb_get_visual());
+	if (have_display) {
+		gdk_rgb_init();
+		gtk_widget_set_default_colormap(gdk_rgb_get_cmap());
+		gtk_widget_set_default_visual(gdk_rgb_get_visual());
+	}
 
 	/*******************************/
-  
+	
 	// load only one copy of the platform-specific icons.
 	
 	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();

@@ -53,7 +53,7 @@ public:
 	AP_UnixApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_UnixApp();
 
-	virtual bool					initialize(void);
+	virtual bool					initialize(bool has_display);
 	virtual XAP_Frame *				newFrame(void);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					shutdown(void);

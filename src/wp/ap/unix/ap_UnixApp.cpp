@@ -206,14 +206,14 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
   \bug This function is 136 lines - way too long.  Needs to be
   refactored, to use a buzzword.  
 */
-bool AP_UnixApp::initialize(void)
+bool AP_UnixApp::initialize(bool has_display)
 {
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
     bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 
     if (!bVerified)
       {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       }
 
     // load the preferences.
@@ -276,11 +276,12 @@ bool AP_UnixApp::initialize(void)
     }
 
     // now that preferences are established, let the xap init
-		   
-    m_pClipboard = new AP_UnixClipboard(this);
-    UT_ASSERT(m_pClipboard);
-    m_pClipboard->initialize();
-    
+	if (has_display) {	   
+		m_pClipboard = new AP_UnixClipboard(this);
+		UT_ASSERT(m_pClipboard);
+		m_pClipboard->initialize();
+    }
+
     m_pEMC = AP_GetEditMethods();
     UT_ASSERT(m_pEMC);
     
@@ -293,7 +294,7 @@ bool AP_UnixApp::initialize(void)
     m_pToolbarActionSet = AP_CreateToolbarActionSet();
     UT_ASSERT(m_pToolbarActionSet);
     
-    if (! XAP_UNIXBASEAPP::initialize())
+    if (! XAP_UNIXBASEAPP::initialize(has_display))
 		return false;
 
 	//////////////////////////////////////////////////////////////////
@@ -1180,9 +1181,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
     
 	// Step 1: Initialize GTK and create the APP.
-    // HACK: these calls to gtk reside properly in 
-    // HACK: XAP_UNIXBASEAPP::initialize(), but need to be here 
-    // HACK: to throw the splash screen as soon as possible.
 	// hack needed to intialize gtk before ::initialize
     gtk_set_locale();
     gboolean have_display = gtk_init_check(&XArgs.m_argc,(char ***)&XArgs.m_argv);
@@ -1192,7 +1190,17 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
       gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
 	  Args.parsePoptOpts();
 #else
-	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv), GNOME_PARAM_POPT_TABLE, AP_Args::options, GNOME_PARAM_NONE);
+	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, 
+												   LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv), 
+#if 0
+												   // TODO: we need to fill these things in
+												   GNOME_PARAM_APP_PREFIX, "/usr",
+												   GNOME_PARAM_APP_SYSCONFDIR, "/etc",
+												   GNOME_PARAM_APP_DATADIR,	"/usr/share/AbiWord",
+												   GNOME_PARAM_APP_LIBDIR, "/usr/lib/AbiWord",
+#endif
+												   GNOME_PARAM_POPT_TABLE, AP_Args::options, 
+												   GNOME_PARAM_NONE);
 
 	  g_object_get (G_OBJECT (program),
 					GNOME_PARAM_POPT_CONTEXT, &Args.poptcon,
@@ -1204,65 +1212,21 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     }
 
     // if the initialize fails, we don't have icons, fonts, etc.
-    if (!pMyUnixApp->initialize())
+    if (!pMyUnixApp->initialize(have_display))
 	{
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	}
-
-
-#ifdef HAVE_GNOME
-	//
-	// Check to see if we've been activated as a control by OAF
-	//
-	bool bControlFactory = false;
-  	for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
-		if (*XArgs.m_argv[k] == '-')
-			if (strstr(XArgs.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
-			{
-				bControlFactory = true;
-				break;
-			}
-
-	if(bControlFactory)
-	  {
-		  int rtn = mainBonobo(XArgs.m_argc, XArgs.m_argv);
-		  pMyUnixApp->shutdown();
-		  delete pMyUnixApp;
-		  return rtn;
-	  }
-#endif
-
-    // Step 2: Handle all non-window args.
-    
-    if (!Args.doWindowlessArgs())
-      return false;
-
-    // do we show the splash?
-    bool bShowSplash = Args.getShowSplash();
-
-    const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
-    UT_ASSERT(pPrefs);
-    bool bSplashPref = true;
-    if (pPrefs && 
-		pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-	{
-		bShowSplash = bShowSplash && bSplashPref;
-	}
-    
-    if (bShowSplash)
-      _showSplash(1500);
-
-    // Setup signal handlers, primarily for segfault
-    // If we segfaulted before here, we *really* blew it
-    
-    struct sigaction sa;
-    
-    sa.sa_handler = signalWrapper;
+	
+	// Setup signal handlers, primarily for segfault
+	// If we segfaulted before here, we *really* blew it
+	
+	struct sigaction sa;
+	
+	sa.sa_handler = signalWrapper;
     
     sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
     sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
-    /* #ifndef AIX - I presume these are always #define not extern... -fjf */
 #if defined (SA_NODEFER) && defined (SA_RESETHAND)
     sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
 #else
@@ -1275,29 +1239,70 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     sigaction(SIGQUIT, &sa, NULL);
     sigaction(SIGFPE, &sa, NULL);
     // TODO: handle SIGABRT
+	
+    // Step 2: Handle all non-window args.
     
-    // Step 3: Create windows as appropriate.
-    // if some args are botched, it returns false and we should
-    // continue out the door.
-	// We used to check for bShowApp here.  It shouldn't be needed
-	// anymore, because doWindowlessArgs was supposed to bail already. -PL
-    if (pMyUnixApp->openCmdLineFiles(Args.poptcon))
-	{
-		// turn over control to gtk
-		gtk_main();
-	}
-    else
-	{
-		UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-	}
-    
-    // Step 4: Destroy the App.  It should take care of deleting all frames.
-    pMyUnixApp->shutdown();
-    delete pMyUnixApp;
-    
-    return 0;
-}
+    if (!Args.doWindowlessArgs())
+      return false;
 
+	if (have_display) {
+
+#ifdef HAVE_GNOME
+		//
+		// Check to see if we've been activated as a control by OAF
+		//
+		bool bControlFactory = false;
+		for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
+			if (*XArgs.m_argv[k] == '-')
+				if (strstr(XArgs.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
+				{
+					bControlFactory = true;
+					break;
+				}
+		
+		if(bControlFactory)
+		{
+			int rtn = mainBonobo(XArgs.m_argc, XArgs.m_argv);
+			pMyUnixApp->shutdown();
+			delete pMyUnixApp;
+		  return rtn;
+		}
+#endif
+		
+		// do we show the splash?
+		bool bShowSplash = Args.getShowSplash();
+		
+		const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
+		UT_ASSERT(pPrefs);
+		bool bSplashPref = true;
+		if (pPrefs && 
+			pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+			bShowSplash = bShowSplash && bSplashPref;
+		
+		if (bShowSplash)
+			_showSplash(1500);	   
+    
+		// Step 3: Create windows as appropriate.
+		// if some args are botched, it returns false and we should
+		// continue out the door.
+		// We used to check for bShowApp here.  It shouldn't be needed
+		// anymore, because doWindowlessArgs was supposed to bail already. -PL
+		if (pMyUnixApp->openCmdLineFiles(Args.poptcon))
+			// turn over control to gtk
+			gtk_main();
+		else
+		{
+			UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+		}
+	}		
+
+	// Step 4: Destroy the App.  It should take care of deleting all frames.
+	pMyUnixApp->shutdown();
+	delete pMyUnixApp;
+	
+	return 0;
+}
+	
 XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
 {
   AP_UnixFrame * pFrame = new AP_UnixFrame(app);

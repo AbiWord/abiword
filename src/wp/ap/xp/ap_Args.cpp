@@ -192,7 +192,5 @@ const struct poptOption AP_Args::const_opts[] =
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},
  	 {"help", '?', POPT_ARG_NONE, &m_iHelp, 0, "Display help", NULL},
-//      {"display", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN,
-//                          &m_sDisplay, 0, "X display to use", "DISPLAY"},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};

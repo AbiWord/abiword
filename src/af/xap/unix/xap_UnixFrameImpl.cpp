@@ -1574,9 +1574,9 @@ EV_Menu* XAP_UnixFrameImpl::_getMainMenu()
 UT_String XAP_UnixFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBefore, 
 											   const char * pathAfter)
 {
-#if 0 //def HAVE_GNOME
+#ifdef HAVE_GNOME
 	UT_String path (pathAfter);
-	path += ".dbk";
+	path += ".xml";
 	return path;
 #else
 	return XAP_FrameImpl::_localizeHelpUrl (bLocal, pathBefore, pathAfter);
@@ -1587,8 +1587,10 @@ bool XAP_UnixFrameImpl::_openHelpURL(const char * szURL)
 {
 #ifdef HAVE_GNOME
 	GError * err = NULL;	
-	gnome_help_display_uri (szURL, &err);
-	//gnome_help_display (szURL, NULL, &err);
+
+	UT_DEBUGMSG(("DOM: Help URL: %s\n", szURL));
+
+	gnome_help_display (szURL, NULL, &err);
 	if (err != NULL) {
 		UT_DEBUGMSG(("DOM: help error: %s\n", err->message));
 		g_error_free (err);

@@ -30,6 +30,3 @@ libXap_Gnome_a_SOURCES=\
 	xap_UnixGnomeDlg_PrintPreview.cpp  \
 	xap_UnixGnomeDlg_Print.cpp	\
 	xap_UnixGnomePrintGraphics.cpp
-
-#	xap_UnixGnomeApp.cpp               \
-#	xap_UnixGnomeFrame.cpp 	           \

@@ -1468,7 +1468,7 @@ abi_widget_map_to_screen(AbiWidget * abi)
 
 		UT_ASSERT(pApp);
 		pApp->setBonoboRunning();
-		pApp->initialize();
+		pApp->initialize(true);
 		abi->priv->m_pApp     = pApp;
 	}
 

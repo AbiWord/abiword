@@ -81,8 +81,6 @@ GtkWidget * AP_UnixTopRuler::createWidget(void)
 	
 	m_wTopRuler = createDrawingArea ();
 
-	//UT_DEBUGMSG(("AP_UnixTopRuler::createWidget - [w=%p] [this=%p]\n", m_wTopRuler,this));
-
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopRuler),this);
 	gtk_widget_show(m_wTopRuler);
 	gtk_widget_set_usize(m_wTopRuler, -1, s_iFixedHeight);
@@ -176,7 +174,6 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	if (e->state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-
 	if (1 == e->button )
 		emb = EV_EMB_BUTTON1;
 	else if (2 == e->button )
@@ -254,8 +251,6 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 		ems |= EV_EMS_ALT;
 
 	// Map the mouse into coordinates relative to our window.
-	//gint xrel, yrel;
-	//s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
 
 	pUnixTopRuler->mouseMotion(ems, 
 				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
@@ -269,17 +264,12 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	
 gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
-	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixTopRuler: [p %p] received key_press_event\n",pUnixTopRuler));
 	return 1;
 }
 	
 gint AP_UnixTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("UnixTopRuler: [p %p] received delete_event\n",pUnixTopRuler));
 	return 1;
 }
 	
