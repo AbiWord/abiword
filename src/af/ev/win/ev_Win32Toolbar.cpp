@@ -44,6 +44,7 @@
 #include "ap_Dialog_Background.h"
 #include "fv_view.h"
 #include "pt_PieceTable.h"
+#include "ap_Win32Toolbar_FontCombo.h"
 
 #ifndef TBSTYLE_AUTOSIZE
 #define TBSTYLE_AUTOSIZE  0x10
@@ -107,6 +108,7 @@ EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Frame * pFrame,
 	m_pWin32Frame(pFrame),
 	m_pViewListener(NULL),
 	m_lid(0),				// view listener id
+	m_pFontCtrl(NULL),
 	m_hwnd(0)
 {
 }
@@ -114,6 +116,9 @@ EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Frame * pFrame,
 EV_Win32Toolbar::~EV_Win32Toolbar(void)
 {
 	_releaseListener();
+
+	if (m_pFontCtrl)
+		delete m_pFontCtrl;
 }
 
 bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
@@ -224,10 +229,112 @@ WHICHPROC s_lpfnDefComboEdit;
 
 #define COMBO_BUF_LEN 256
 
+
+
 LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMessage)
-	{		
+	{
+		/* Draws the font preview in the font selection combobox*/
+		case WM_DRAWITEM:
+		{						
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);			
+			UINT u = GetDlgCtrlID(hWnd);
+			XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
+						
+			if (id!=AP_TOOLBAR_ID_FMT_FONT)	/* Only owner draw the font selection*/
+			{
+				UT_ASSERT(0);
+				break;
+			}
+								
+			DRAWITEMSTRUCT* dis = (DRAWITEMSTRUCT*)lParam;			
+			XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
+
+			if (!t->m_pFontCtrl)
+			{	
+				EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_FONT);                                                                         						
+				t->m_pFontCtrl = static_cast<AP_Win32Toolbar_FontCombo *>(pControl);
+				t->m_pFontCtrl->populate();
+			}
+
+			HFONT hFont, hUIFont;
+			LOGFONT logfont;
+			SIZE size;
+			HFONT hfontSave;
+			const UT_Vector * v = t->m_pFontCtrl->getContents();
+			const UT_Vector * vcharSet = t->m_pFontCtrl->getFontsCharset();						
+			const char * sz  = (const char *)v->getNthItem(dis->itemData);			
+			const int nCharset = (int)vcharSet->getNthItem(dis->itemData);						
+			
+			if(dis->itemState & ODS_COMBOBOXEDIT)
+			{
+				HFONT hUIFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+				hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
+				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+				SelectObject (dis->hDC, hfontSave);				
+			}
+			else
+			{	
+				memset (&logfont, 0, sizeof (logfont));
+
+				/* Create current font */
+				logfont.lfHeight = 18;
+				logfont.lfWidth = 0;
+				logfont.lfEscapement = 0;
+				logfont.lfOrientation = 0;
+				logfont.lfWeight = FW_BOLD;
+				logfont.lfItalic = FALSE;
+				logfont.lfUnderline = FALSE;
+				logfont.lfStrikeOut = FALSE;
+				logfont.lfCharSet = DEFAULT_CHARSET;
+				logfont.lfOutPrecision = OUT_DEFAULT_PRECIS;
+				logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+				logfont.lfQuality = DEFAULT_QUALITY;
+				logfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;			  
+				strcpy (logfont.lfFaceName, sz);   
+				hFont = CreateFontIndirect (&logfont);			
+
+				if(dis->itemState & ODS_SELECTED) /* HighLight the selected text*/
+				{
+					SetTextColor(dis->hDC, GetSysColor(COLOR_HIGHLIGHTTEXT));
+					SetBkColor(dis->hDC, GetSysColor(COLOR_HIGHLIGHT));
+					FillRect(dis->hDC, &dis->rcItem, GetSysColorBrush(COLOR_HIGHLIGHT));
+				}
+				else
+				{
+					SetTextColor(dis->hDC, GetSysColor(COLOR_WINDOWTEXT));
+					SetBkColor(dis->hDC, GetSysColor(COLOR_WINDOW));
+					FillRect(dis->hDC, &dis->rcItem, GetSysColorBrush(COLOR_WINDOW) );				
+				}
+
+				if (nCharset == SYMBOL_CHARSET)
+				{ 						
+					hUIFont = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
+
+					/*Fontname in regular font*/
+					hfontSave = (HFONT) SelectObject (dis->hDC, hUIFont);
+					ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+					
+					/*Font example after the name*/
+					const char* szSample="AbCEfGiHj";
+					GetTextExtentPoint32(dis->hDC, sz, lstrlen(sz), &size);
+					SelectObject (dis->hDC, hFont);
+					ExtTextOut(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, lstrlen(szSample), 0);					
+					SelectObject (dis->hDC, hfontSave);					
+				}
+				else
+				{						
+					hfontSave = (HFONT) SelectObject (dis->hDC, hFont);
+					ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
+					SelectObject (dis->hDC, hfontSave);					
+				}
+
+				DeleteObject(hFont); 
+			}
+
+			return TRUE;
+		}
 		
 		case WM_MOUSEMOVE:
 		case WM_LBUTTONDOWN:
@@ -270,7 +377,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 						EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
 						UT_ASSERT(t);
 
-						//HWND hwndParent = GetParent(hWnd);
+						
 						UINT u = GetDlgCtrlID(hWnd);
 						XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
 
@@ -526,7 +633,11 @@ bool EV_Win32Toolbar::synthesize(void)
 						{
 							dwStyle |= CBS_SORT;
 						}
-
+						
+						if (id==AP_TOOLBAR_ID_FMT_FONT)
+							dwStyle |= CBS_OWNERDRAWFIXED;
+							
+							
 						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
 							"COMBOBOX",						// Class name.
 							"",								// Default text.
@@ -550,15 +661,21 @@ bool EV_Win32Toolbar::synthesize(void)
 							const UT_Vector * v = pControl->getContents();
 							UT_ASSERT(v);
 
+							SendMessage(hwndCombo, WM_SETREDRAW, FALSE,0);
+
 							if (v)
 							{
 								UT_uint32 items = v->getItemCount();
+								int nIndex;
 								for (UT_uint32 k=0; k < items; k++)
 								{
 									char * sz = (char *)v->getNthItem(k);
-									SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
+									nIndex = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
+									SendMessage(hwndCombo,CB_SETITEMDATA, nIndex, k);
 								}
 							}
+
+							SendMessage(hwndCombo, WM_SETREDRAW, TRUE,0);
 						}
 
 						// override the window procedure for the combo box

@@ -544,8 +544,7 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 }
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
-{	
-	UT_DEBUGMSG(("GR_Win32Graphics::drawLine->%d %d, %d %d %x\n", x1, y1, x2, y2, m_clrCurrent));
+{		
 	
 	if (m_eLineStyle == LINE_SOLID &&
 		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))

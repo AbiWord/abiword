@@ -29,6 +29,7 @@
 #include "xav_Listener.h"
 #include "ap_Toolbar_Id.h"
 #include "ap_Win32Toolbar_StyleCombo.h"
+#include "ap_Win32Toolbar_FontCombo.h"
 
 class XAP_Win32App;
 class XAP_Frame;
@@ -97,7 +98,7 @@ private:
 
 	HWND							m_hwnd;
 	UT_Vector						m_vecToolbarWidgets;
-
+	AP_Win32Toolbar_FontCombo*		m_pFontCtrl;
 	bool							m_bVisible;
 };
 

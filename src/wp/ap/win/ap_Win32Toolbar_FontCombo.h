@@ -37,12 +37,15 @@ public:
 
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 	virtual UT_uint32   getDroppedWidth() const;
+	UT_Vector*	 getFontsCharset(){return &m_vecFontCharSet;};
 
 protected:
 	static int CALLBACK				_EnumFontsProc(LPLOGFONT lplf, 
 												   LPTEXTMETRIC lptm,
 												   DWORD dwStyle, 
 												   LONG lParam);
+
+	UT_Vector			m_vecFontCharSet;
 };
 
 #endif /* AP_WIN32TOOLBAR_FONTCOMBO_H */

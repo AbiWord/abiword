@@ -41,6 +41,14 @@
 #pragma warning(disable: 4355)	// 'this' used in base member initializer list
 #endif
 
+#ifdef STRICT   
+#define WHICHPROC	WNDPROC
+#else   
+#define WHICHPROC	FARPROC
+#endif
+
+WHICHPROC s_oldRedBar; 
+
 extern "C" const char * wvLIDToLangConverter(unsigned short langID);
 
 // Where the heck is this function????
@@ -48,6 +56,38 @@ extern "C" const char * wvLIDToLangConverter(unsigned short langID);
 // TODO #include <ap_EditMethods.h>
 // TODO In the mean time, define the needed function by hand
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
+
+/*
+	Owner drawn for child font combo box
+*/
+LRESULT CALLBACK s_rebarWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMessage)
+	{		
+		case WM_DRAWITEM:
+		{
+			 DRAWITEMSTRUCT* pDrawItem = (DRAWITEMSTRUCT*)lParam;
+			 SendMessage(pDrawItem->hwndItem, WM_DRAWITEM, wParam, lParam);
+			 return TRUE;
+		}
+
+		case WM_MEASUREITEM:
+		{							   			
+			MEASUREITEMSTRUCT*	mesure = (MEASUREITEMSTRUCT*) lParam;
+
+			if (mesure->CtlType==ODT_COMBOBOX)
+			{
+				mesure->itemHeight = 16;										
+				return TRUE;
+			}
+			break;
+		}
+		
+		default:
+			break;		
+	}	
+	return CallWindowProc(s_oldRedBar, hWnd, uMessage, wParam, lParam);
+}
 
 
 
@@ -203,6 +243,10 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 								 0, 0, 0, 0,
 								 m_hwndFrame, NULL, pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndRebar);
+	
+	/* override the window procedure*/
+	s_oldRedBar = (WHICHPROC)GetWindowLong(m_hwndRebar, GWL_WNDPROC);
+	SetWindowLong(m_hwndRebar, GWL_WNDPROC, (LONG)s_rebarWndProc);
 
 	// create a toolbar instance for each toolbar listed in our base class.
 

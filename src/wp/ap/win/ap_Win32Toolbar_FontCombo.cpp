@@ -26,6 +26,7 @@
 #include "ap_Win32Toolbar_FontCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
+#include "ut_debugmsg.h"
 
 /*****************************************************************/
 
@@ -50,6 +51,7 @@ AP_Win32Toolbar_FontCombo::AP_Win32Toolbar_FontCombo(EV_Toolbar * pToolbar,
 AP_Win32Toolbar_FontCombo::~AP_Win32Toolbar_FontCombo(void)
 {
 	UT_VECTOR_FREEALL(char *, m_vecContents);
+	
 }
 
 /*****************************************************************/
@@ -58,6 +60,7 @@ bool AP_Win32Toolbar_FontCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
+	m_vecFontCharSet.clear();
 
 	// populate the vector
 	HWND hwnd = NULL;
@@ -90,11 +93,13 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf,
 	// here.  Perhaps use EnumFontFamiliesEx instead?
 	if (lplf->lfCharSet != ANSI_CHARSET)
 		return 1 ;
-#endif
+#endif	
+
 	char * p;
 	UT_cloneString(p, lplf->lfFaceName);
 
 	ctl->m_vecContents.addItem(p);
+	ctl->m_vecFontCharSet.addItem((void*)lplf->lfCharSet);
 
 	return 1;
 }
