@@ -1307,6 +1307,7 @@ void s_HTML_Listener::_closeSpan(void)
 			(pAP->getProperty("color", szValue))
 		    || (pAP->getProperty("font-size", szValue))
 		    || (pAP->getProperty("font-family", szValue))
+		    || (pAP->getProperty("bgcolor", szValue))
 			)
 		{
 			closeSpan = true;
