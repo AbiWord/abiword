@@ -22,7 +22,7 @@
 #ifdef WIN32
 #include <windows.h>	// needs to be first
 #endif
-#ifdef UNIX
+#ifdef LINUX
 #include <gtk/gtk.h>
 #endif
 #endif /* DLGHACK */
@@ -1003,7 +1003,7 @@ Defun(querySaveAndExit)
 #ifdef WIN32
 	PostQuitMessage (0);
 #endif
-#ifdef UNIX
+#ifdef LINUX
 	gtk_main_quit();	// what miguel uses
 //	exit(0);			// what Andy had
 #endif
@@ -1198,7 +1198,7 @@ return UT_TRUE;
 /*****************************************************************/
 /*****************************************************************/
 
-#ifdef UNIX
+#ifdef LINUX
 
 static void set_ok (GtkWidget *widget, UT_Bool *dialog_result)
 {
@@ -1243,7 +1243,7 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 	return (fileName ? strdup(fileName) : NULL);
 }
 
-#endif /* UNIX */
+#endif /* LINUX */
 
 /*****************************************************************/
 /*****************************************************************/

@@ -27,6 +27,7 @@
 #include "ev_UnixMenu.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
+#include "pd_Document.h"
 #include "gr_UnixGraphics.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
