@@ -1,5 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+
 #include <glib.h>
 
 #include "xap_UnixEncodingManager.h"
@@ -410,7 +414,7 @@ const char* XAP_UnixEncodingManager::getNativeEncodingName() const
 
 const char* XAP_UnixEncodingManager::getNativeUnicodeEncodingName() const
 {     
-  return NativeEncodingName; 
+  return NativeUnicodeEncodingName; 
 }
 
 const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
@@ -445,85 +449,108 @@ void  XAP_UnixEncodingManager::initialize()
 	}
 	else
 	{
-		char* lang,*terr,*cs,*mod;
+		char * lang = 0;
+		char * terr = 0;
+		char * cs   = 0;
+		char * mod  = 0;
+
 		int mask = explode_locale (locname,&lang,&terr,&cs,&mod);
+
 		LanguageISOName = lang;
-		if (mask & COMPONENT_TERRITORY)
+
+		if ((mask & COMPONENT_TERRITORY) && terr)
 		{
-			LanguageISOTerritory = terr+1;/*yes, +1*/
+			LanguageISOTerritory = terr + 1; /* yes, +1 */
 		}
-		if (mask & COMPONENT_CODESET)
+		if ((mask & COMPONENT_CODESET) && cs)
 		{
-			NativeEncodingName = cs+1;
-			if (!strncmp(cs+1,"ISO8859",strlen("ISO8859"))) {
-				/*
-			 	work around glibc bug - its iconv doesn't know
-			 	ISO8859-* - ISO-8859-1 should be used (we encounter this 
-			 	since locale.alias aliases en_US.ISO8859-1 to 'en'
-			 	PS: This is true for my RH6.0 system - VH
-				*/
-				static char buf[40];
-				strcpy(buf,"ISO-");
-				strcat(buf,cs+1+3);
-				NativeEncodingName = buf;
-			}
+			if (cs[1])
+				{
+					int length = strlen (cs + 1);
+					char * name = (char *) malloc (length + 3);
+					if (name)
+						{
+							strcpy (name, cs + 1);
+
+							/* make the encoding name upper-case
+							 */
+							for (int i = 0; i < length; i++)
+								if (islower ((int)((unsigned char)(name[i]))))
+									name[i] = (char) toupper ((int)((unsigned char)(name[i])));
+
+							/* encoding names may be presented as iso88591 or ISO8859-1,
+							 * but we need both hyphens for iconv
+							 */
+							if (strncmp (name, "ISO8859", 7) == 0)
+								{
+									memmove (name + 4, name + 3, length + 1 - 3);
+									length++;
+									name[3] = '-';
+									if (name[8] != '-')
+										{
+											memmove (name + 9, name + 8, length + 1 - 8);
+											length++;
+											name[8] = '-';
+										}
+								}
+							NativeEncodingName = name;
+						}
+				}
 			Native8BitEncodingName = NativeEncodingName;
-			
+#if 0
+			/* This seems to be obsolete. 8Bit encoding can be UTF-8 if it wants... */
+
 			// need to get 8bit encoding if encoding is utf-8
 			if(!strcmp(NativeEncodingName, "utf-8") || !strcmp(NativeEncodingName, "UTF-8"))
-			{
-				// we want to get the encoding that would be used for the given
-				// language/territory if the utf-8 encoding was not specified
-				// by LANG
-
-			  UT_String OLDLANG (getenv("LANG"));
-#if defined(SETENV_MISSING) 
-			  UT_String MYLANG ("LANG=");
-			  
-			  MYLANG += LanguageISOName;
-			  MYLANG += "_";
-			  MYLANG += LanguageISOTerritory;
-			  putenv(MYLANG.c_str());
-#else
-			  UT_String MYLANG (LanguageISOName);
-			  MYLANG += "_";
-			  MYLANG += LanguageISOTerritory;
-			  setenv ("LANG", MYLANG.c_str(), 1);
-#endif
-			
-				const GList* my_lst = g_i18n_get_language_list ("LANG");
-				const char* my_locname = (char*)my_lst->data;
-				
-	    		char* my_lang,*my_terr,*my_cs,*my_mod;
-    			int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
-				
-				if (my_mask & COMPONENT_CODESET)
 				{
-					Native8BitEncodingName = my_cs+1;
-					xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
-					if (!strncmp(my_cs+1,"ISO8859",strlen("ISO8859")))
-					{
-						static char buf[40];
-						strcpy(buf,"ISO-");
-						strcat(buf,my_cs+1+3);
-						Native8BitEncodingName = buf;
-					}
-					xxx_UT_DEBUGMSG(("Native8BitEncodingName (2) %s\n", Native8BitEncodingName));
-				
-				}
+					// we want to get the encoding that would be used for the given
+					// language/territory if the utf-8 encoding was not specified
+					// by LANG
 
-#if defined(SETENV_MISSING)
-				MYLANG = "LANG=";
-				MYLANG += OLDLANG;
-				putenv(MYLANG.c_str());
+					UT_String OLDLANG (getenv("LANG"));
+#if defined(SETENV_MISSING) 
+					UT_String MYLANG ("LANG=");
+
+					MYLANG += LanguageISOName;
+					MYLANG += "_";
+					MYLANG += LanguageISOTerritory;
+					putenv(MYLANG.c_str());
 #else
-				setenv("LANG", OLDLANG.c_str(), 1);
+					UT_String MYLANG (LanguageISOName);
+					MYLANG += "_";
+					MYLANG += LanguageISOTerritory;
+					setenv ("LANG", MYLANG.c_str(), 1);
+#endif
+					const GList* my_lst = g_i18n_get_language_list ("LANG");
+					const char* my_locname = (char*)my_lst->data;
+
+					char* my_lang,*my_terr,*my_cs,*my_mod;
+					int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
+
+					if (my_mask & COMPONENT_CODESET)
+						{
+							Native8BitEncodingName = my_cs+1;
+							xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
+							if (!strncmp(my_cs+1,"ISO8859",strlen("ISO8859")))
+								{
+									static char buf[40];
+									strcpy(buf,"ISO-");
+									strcat(buf,my_cs+1+3);
+									Native8BitEncodingName = buf;
+								}
+							xxx_UT_DEBUGMSG(("Native8BitEncodingName (2) %s\n", Native8BitEncodingName));
+						}
+#if defined(SETENV_MISSING)
+					MYLANG = "LANG=";
+					MYLANG += OLDLANG;
+					putenv(MYLANG.c_str());
+#else
+					setenv("LANG", OLDLANG.c_str(), 1);
 #endif			
-			}
+				}
+#endif			/* End of obsolete 8Bit work-around for UTF-8 */
 		}
 	};	
 	XAP_EncodingManager::initialize();
 	describe();
 };
-
-
