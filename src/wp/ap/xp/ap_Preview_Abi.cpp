@@ -61,7 +61,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 //
 // set the size of the window in pixels
 //
-	setWindowSize(iWidth,iHeight);
+	setWindowSize(gc->tlu(iWidth),gc->tlu(iHeight));
 //
 // code to create an empty blank document to draw into
 //
@@ -79,7 +79,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 	}
 	else
 	{
-	// DOM: evil hack
+		// DOM: evil hack
 		curWidth = 8.5;
 		curHeight = 11.0;
 	}

@@ -1174,7 +1174,7 @@ void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_Graphics * gc,
 	UT_ASSERT(gc);
 	if(m_pAbiPreview)
 		DELETEP(m_pAbiPreview);
-	m_pAbiPreview = new AP_Preview_Abi(gc,width,height,getFrame(),PREVIEW_ZOOMED);
+	m_pAbiPreview = new AP_Preview_Abi(gc,gc->tlu(width),gc->tlu(height),getFrame(),PREVIEW_ZOOMED);
 	UT_ASSERT(m_pAbiPreview);
 }
 
