@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,16 +18,15 @@
  */
 
 
-#ifndef IE_EXP_PALMDOC_H
-#define IE_EXP_PALMDOC_H
+#ifndef IE_IMP_PALMDOC_H
+#define IE_IMP_PALMDOC_H
 
-#include "limits.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include "ie_exp_Text.h"
+#include <stdio.h>
+#include "ie_imp.h"
+#include"ut_mbtowc.h"
+class PD_Document;
 
-// The exporter/writer for PalmDoc file format.
+// The importer/reader for Palm Doc Database Files.
 
 /*****************************************************************************
  *
@@ -127,39 +126,38 @@ typedef struct {
     UT_uint32	position;
 } buffer;
 
-#define	PUT_Word(f,n)	{  Word n1 = _swap_Word ( n ); fwrite( &n1, 2, 1, f ); }
-#define	PUT_DWord(f,n)	{ DWord n1 = _swap_DWord( n ); fwrite( &n1, 4, 1, f ); }
+#define	GET_Word(f,n)	{ fread( &n, 2, 1, f ); n = _swap_Word ( n ); }
+#define	GET_DWord(f,n)	{ fread( &n, 4, 1, f ); n = _swap_DWord( n ); }
 
-/*****************************************************************/
-/*****************************************************************/
-
-class IE_Exp_PalmDoc : public IE_Exp_Text
+class IE_Imp_PalmDoc : public IE_Imp
 {
 public:
-	IE_Exp_PalmDoc(PD_Document * pDocument);
-	virtual ~IE_Exp_PalmDoc();
+	IE_Imp_PalmDoc(PD_Document * pDocument);
+	~IE_Imp_PalmDoc();
 
+	virtual UT_Error	importFile(const char * szFilename);
+	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+										unsigned char * pData, UT_uint32 lenData);
+
+	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
-						  IE_Exp ** ppie);
+										  IE_Imp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
-				             const char ** pszSuffixList,
-					     IEFileType * ft);
+									 const char ** pszSuffixList,
+									 IEFileType * ft);
 	static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	UT_Bool				_openFile(const char * szFilename);
-	UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	UT_Bool				_writeBytes(const UT_Byte * sz);
-	UT_Bool				_closeFile(void);
+	UT_Error			_parseFile(FILE * fp);
+	UT_Error			_writeHeader(FILE * fp);
+	UT_Mbtowc 			m_Mbtowc;
 
         void				_selectSwap();
-	void				_compress( buffer* );
+	void				_uncompress( buffer* );
 	Byte*				_mem_find( Byte *t, int t_len, Byte *m, int m_len );
 	Word				_swap_Word( Word );
 	DWord				_swap_DWord( DWord );
-//	void				_uncompress( buffer* );
-	void				_zero_fill( char*, int len );
 
 private:
     
@@ -174,7 +172,6 @@ private:
 	UT_uint32			m_bufLen;
         UT_uint32			m_bufPosition;
 	UT_Bool				m_littlendian;	
-
 };
 
-#endif /* IE_EXP_PALMDOC */
+#endif /* IE_IMP_PALMDOC_H */
