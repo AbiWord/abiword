@@ -24,7 +24,7 @@
 #include "fp_SectionSlice.h"
 #include "fp_Column.h"
 #include "fp_Page.h"
-#include "dg_DrawArgs.h"
+#include "gr_DrawArgs.h"
 
 #include "ut_assert.h"
 

@@ -53,6 +53,11 @@ AP_Menu_Id EV_Menu_Label::getMenuId(void) const
 	return m_id;
 }
 
+const char * EV_Menu_Label::getMenuLabel(void) const
+{
+	return m_szMenuLabel;
+}
+
 /*****************************************************************/
 
 EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,

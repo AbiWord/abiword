@@ -26,8 +26,8 @@
 #include "fl_BlockLayout.h"
 #include "fp_Column.h"
 #include "fp_Line.h"
-#include "dg_DrawArgs.h"
-#include "dg_Graphics.h"
+#include "gr_DrawArgs.h"
+#include "gr_Graphics.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

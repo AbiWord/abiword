@@ -44,6 +44,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 #define _s(id,a,b,c,d,e,f) pActionSet->setAction(id,a,b,c,d,e,f)
 
+	// TODO add comment to describe what these fields are....
+	
 	_s(AP_MENU_ID__BOGUS1__,		0,0,0,	NULL,				NULL,				NULL);
 
 	_s(AP_MENU_ID_FILE,				1,0,0,	NULL,				NULL,				NULL);

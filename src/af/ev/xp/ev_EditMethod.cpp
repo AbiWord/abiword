@@ -135,7 +135,7 @@ EV_EditMethod * EV_EditMethodContainer::getNthEditMethod(UT_uint32 ndx)
 		return (EV_EditMethod *)m_vecDynamicEditMethods.getNthItem(ndx-m_countStatic);
 }
 
-EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName)
+EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName) const
 {
 	UT_uint32 k, kLast;
 	for (k=0; k<m_countStatic; k++)

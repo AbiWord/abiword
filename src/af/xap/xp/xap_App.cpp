@@ -35,15 +35,19 @@ AP_Ap::AP_Ap(void)
 {
 	m_pEMC = NULL;
 	m_pMenuActionSet = NULL;
+
+	// TODO initialize window list to null.
 }
 
 AP_Ap::~AP_Ap(void)
 {
+	// TODO run thru and destroy all frames on our window list.
+	
 	DELETEP(m_pEMC);
 	DELETEP(m_pMenuActionSet);
 }
 
-UT_Bool AP_Ap::initialize(int argc, char ** argv)
+UT_Bool AP_Ap::initialize(int * pArgc, char *** pArgv)
 {
 	// create application-wide resources that
 	// are shared by everything.
@@ -60,6 +64,25 @@ UT_Bool AP_Ap::initialize(int argc, char ** argv)
 	return UT_TRUE;
 }
 
+const char * AP_Ap::getApplicationTitleForTitleBar(void) const
+{
+	// return a string that the platform-specific code
+	// can copy to the title bar of a window.
+
+	// TODO fix the following...
+	return "...AbiWord 0.1.x";
+}
+
+const char * AP_Ap::getApplicationName(void) const
+{
+	// return a string that the platform-specific code
+	// can use as a class name for various window-manager-like
+	// operations.
+
+	// TODO fix the following...
+	return "AbiWord";
+}
+
 EV_EditMethodContainer * AP_Ap::getEditMethodContainer(void) const
 {
 	return m_pEMC;
@@ -70,4 +93,18 @@ const EV_Menu_ActionSet * AP_Ap::getMenuActionSet(void) const
 	return m_pMenuActionSet;
 }
 
+UT_Bool AP_Ap::rememberFrame(AP_Frame * pFrame)
+{
+	// add this frame to our window list
 
+	// TODO do something here...
+	return UT_TRUE;
+}
+
+UT_Bool AP_Ap::forgetFrame(AP_Frame * pFrame)
+{
+	// remove this frome from our window list
+
+	// TODO do something here...
+	return UT_TRUE;
+}

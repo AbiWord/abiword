@@ -21,7 +21,13 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=		ap ptbl impexp fmt guts
+## TODO remove the win32 version of this once we get guts gutted.
+ifeq ($(ABI_NATIVE), win)
+DIRS=		ap ptbl impexp fmt gr guts
+endif
+ifeq ($(ABI_NATIVE), unix)
+DIRS=		ap ptbl impexp fmt gr main
+endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

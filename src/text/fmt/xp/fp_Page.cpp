@@ -28,7 +28,7 @@
 #include "fp_Page.h"
 #include "fl_DocLayout.h"
 #include "fp_SectionSlice.h"
-#include "dg_DrawArgs.h"
+#include "gr_DrawArgs.h"
 #include "fv_View.h"
 
 #include "ut_debugmsg.h"

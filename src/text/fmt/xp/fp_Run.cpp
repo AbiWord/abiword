@@ -27,9 +27,9 @@
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "pp_Property.h"
-#include "dg_Graphics.h"
+#include "gr_Graphics.h"
 #include "pd_Document.h"
-#include "dg_DrawArgs.h"
+#include "gr_DrawArgs.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

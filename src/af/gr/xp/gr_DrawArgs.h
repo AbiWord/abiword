@@ -17,32 +17,26 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
-#include <gtk/gtk.h>
-#include "ap_UnixAp.h"
+// TODO change the name of all dg_ and DG_ classes to gr_ and GR_
 
-/*****************************************************************/
+#ifndef GR_DRAWARGS_H
+#define GR_DRAWARGS_H
 
-AP_UnixAp::AP_UnixAp(void)
+#include "ut_types.h"
+
+class DG_Graphics;
+
+struct dg_DrawArgs
 {
-}
-
-AP_UnixAp::~AP_UnixAp(void)
-{
-}
-
-UT_Bool AP_UnixAp::initialize(int * pArgc, char *** pArgv)
-{
-	// initialize GTK first.
+	dg_DrawArgs();
 	
-	gtk_set_locale();
-	gtk_init(pArgc,pArgv);
+	DG_Graphics*	pG;
+	UT_sint32		xoff;
+	UT_sint32		yoff;
+	UT_sint32		x;
+	UT_sint32		y;
+	UT_sint32		width;
+	UT_sint32		height;
+};
 
-	// let our base class do it's thing.
-	
-	AP_Ap::initialize(pArgc,pArgv);
-
-	// do any thing we need here...
-	
-	return UT_TRUE;
-}
-
+#endif /* GR_DRAWARGS_H */

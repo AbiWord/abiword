@@ -35,8 +35,8 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "pd_Document.h"
-#include "dg_Graphics.h"
-#include "dg_DrawArgs.h"
+#include "gr_Graphics.h"
+#include "gr_DrawArgs.h"
 #include "ie_types.h"
 
 

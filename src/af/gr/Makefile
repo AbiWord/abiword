@@ -1,5 +1,5 @@
 #! gmake
-
+ 
 ## AbiWord
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
@@ -22,7 +22,7 @@ ABI_DEPTH=		../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 DIRS=			xp $(ABI_NATIVE)
-LIBRARY_NAME=		AbiAp
+LIBRARY_NAME=		AbiGr
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
@@ -36,20 +36,12 @@ ifeq ($(ABI_NATIVE), win)
 PLATFORM_OBJS=
 endif
 ifeq ($(ABI_NATIVE), unix)
-PLATFORM_OBJS=	unix/$(OBJDIR)/ap_UnixAp.$(OBJ_SUFFIX)			\
-		unix/$(OBJDIR)/ap_UnixFrame.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	unix/$(OBJDIR)/gr_UnixGraphics.$(OBJ_SUFFIX)
 endif
 
 OBJS=		$(PLATFORM_OBJS)					\
-		xp/$(OBJDIR)/ap_Ap.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)
+		xp/$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

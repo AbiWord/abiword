@@ -88,3 +88,9 @@ const char * EV_Menu_Layout::getName(void) const
 {
 	return m_szName;
 }
+
+UT_uint32 EV_Menu_Layout::getLayoutItemCount(void) const
+{
+	return m_nrLayoutItems;
+}
+

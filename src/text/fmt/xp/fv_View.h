@@ -26,7 +26,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
-#include "dg_DrawArgs.h"
+#include "gr_DrawArgs.h"
 
 class FL_DocLayout;
 class fl_DocListener;
@@ -63,6 +63,8 @@ typedef enum _FVDocPos
 class FV_ScrollObj
 {
  public:
+	FV_ScrollObj(void * pData, void (*pfn)(void *,UT_sint32,UT_sint32)) { m_pData=pData; m_pfn=pfn; };
+	
 	void* m_pData;
 	void (*m_pfn)(void *, UT_sint32, UT_sint32);
 };

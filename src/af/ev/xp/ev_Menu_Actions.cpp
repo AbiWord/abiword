@@ -62,6 +62,19 @@ AP_Menu_Id EV_Menu_Action::getMenuId(void) const
 	return m_id;
 }
 
+const char * EV_Menu_Action::getDynamicLabel(AP_Ap * pAp) const
+{
+	if (m_pfnGetLabel)
+		return m_pfnGetLabel(pAp,m_id);
+	else
+		return NULL;
+}
+
+const char * EV_Menu_Action::getMethodName(void) const
+{
+	return m_szMethodName;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 

@@ -22,7 +22,7 @@
 #include "fp_Line.h"
 #include "fp_BlockSlice.h"
 #include "fp_Run.h"
-#include "dg_DrawArgs.h"
+#include "gr_DrawArgs.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"

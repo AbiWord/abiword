@@ -1,6 +1,6 @@
 #! gmake
-
-## AbiSource Program Utilities
+ 
+## AbiWord
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This library is free software; you can redistribute it and/or
@@ -18,25 +18,21 @@
 ## Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ## Boston, MA 02111-1307, USA.
 
-ABI_DEPTH = ../..
+ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 ## TODO: decide if all of these need to be exported.
 ## TODO: move the ones which dont to the HEADERS definition
 
-EXPORT_HEADERS=		ev_UnixKeyboard.h		\
-			ev_UnixMenu.h			\
-			ev_UnixMouse.h
+EXPORT_HEADERS=		gr_UnixGraphics.h
 
 HEADERS=		$(EXPORT_HEADERS)
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		ev_UnixKeyboard.cpp		\
-			ev_UnixMenu.cpp			\
-			ev_UnixMouse.cpp
+CPPSRCS=		gr_UnixGraphics.cpp
 
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG

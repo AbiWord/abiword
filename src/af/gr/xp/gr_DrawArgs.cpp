@@ -17,32 +17,15 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
-#include <gtk/gtk.h>
-#include "ap_UnixAp.h"
+#include "gr_DrawArgs.h"
 
-/*****************************************************************/
-
-AP_UnixAp::AP_UnixAp(void)
+dg_DrawArgs::dg_DrawArgs()
 {
+	pG = NULL;
+	xoff = 0;
+	yoff = 0;
+	x = 0;
+	y = 0;
+	height = 0;
+	width = 0;
 }
-
-AP_UnixAp::~AP_UnixAp(void)
-{
-}
-
-UT_Bool AP_UnixAp::initialize(int * pArgc, char *** pArgv)
-{
-	// initialize GTK first.
-	
-	gtk_set_locale();
-	gtk_init(pArgc,pArgv);
-
-	// let our base class do it's thing.
-	
-	AP_Ap::initialize(pArgc,pArgv);
-
-	// do any thing we need here...
-	
-	return UT_TRUE;
-}
-

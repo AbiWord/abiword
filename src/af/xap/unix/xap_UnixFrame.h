@@ -21,10 +21,12 @@
 #ifndef AP_UNIXFRAME_H
 #define AP_UNIXFRAME_H
 
+#include <gtk/gtk.h>
 #include "ap_Frame.h"
 class AP_UnixAp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;
+class EV_UnixMenu;
 
 /*****************************************************************
 ******************************************************************
@@ -41,13 +43,34 @@ public:
 	AP_UnixFrame(AP_UnixAp * ap);
 	~AP_UnixFrame(void);
 
-	virtual UT_Bool				initialize(int argc, char ** argv);
+	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool				loadDocument(const char * szFilename);
 
+	GtkWidget *					getTopLevelWindow(void) const;
+	GtkWidget *					getVBoxWidget(void) const;
+	EV_UnixMouse *				getUnixMouse(void);
+	ev_UnixKeyboard *			getUnixKeyboard(void);
+	
 protected:
+	void						_createTopLevelWindow(void);
+	static void					_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff);
+
 	// TODO see why ev_UnixKeyboard has lowercase prefix...
 	AP_UnixAp *					m_pUnixAp;
 	ev_UnixKeyboard *			m_pUnixKeyboard;
 	EV_UnixMouse *				m_pUnixMouse;
+	EV_UnixMenu *				m_pUnixMenu;
+	
+	GtkWidget *					m_wTopLevelWindow;
+	GtkWidget *					m_wVBox;
+
+	GtkAdjustment *				m_pVadj;
+	GtkAdjustment *				m_pHadj;
+	GtkWidget *					m_hScroll;
+	GtkWidget *					m_vScroll;
+	GtkWidget *					m_dArea;
+	GtkWidget *					m_table;
+	GtkAcceleratorTable *		m_accel;
 };
 
 #endif /* AP_UNIXFRAME_H */

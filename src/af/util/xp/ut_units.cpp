@@ -31,7 +31,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
-#include "dg_Graphics.h"
+#include "gr_Graphics.h"
 
 
 double UT_convertToInches(const char* s)

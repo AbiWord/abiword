@@ -30,8 +30,8 @@
 #include "fp_SectionSlice.h"
 #include "fp_BlockSlice.h"
 #include "pp_AttrProp.h"
-#include "dg_Graphics.h"
-#include "dg_DrawArgs.h"
+#include "gr_Graphics.h"
+#include "gr_DrawArgs.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

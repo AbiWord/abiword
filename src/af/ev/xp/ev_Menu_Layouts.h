@@ -72,9 +72,10 @@ public:
 	UT_Bool					setLayoutItem(UT_uint32 indexLayoutItem, AP_Menu_Id id, EV_Menu_LayoutFlags flags);
 	EV_Menu_LayoutItem *	getLayoutItem(UT_uint32 indexLayoutItem) const;
 	const char *			getName(void) const;
+	UT_uint32				getLayoutItemCount(void) const;
 
 protected:
-	char *					m_szName;
+	char *					m_szName;			/* the name of our layout (like "MainMenu") */
 	UT_uint32				m_nrLayoutItems;
 	EV_Menu_LayoutItem **	m_layoutTable;
 };

@@ -20,6 +20,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ap_Ap.h"
 #include "ap_Frame.h"
 #include "ev_EditBinding.h"
@@ -30,6 +31,7 @@
 #include "ap_LoadBindings.h"
 #include "ap_Menu_Layouts.h"
 #include "ap_Menu_LabelSet.h"
+#include "pd_Document.h"
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
@@ -46,10 +48,14 @@ AP_Frame::AP_Frame(AP_Ap * ap)
 	m_pEEM = NULL;
 	m_pMenuLayout = NULL;
 	m_pMenuLabelSet = NULL;
+
+	m_ap->rememberFrame(this);
 }
 
 AP_Frame::~AP_Frame(void)
 {
+	m_ap->forgetFrame(this);
+	
 	// only delete the things that we created...
 
 	DELETEP(m_pEBM);
@@ -58,7 +64,7 @@ AP_Frame::~AP_Frame(void)
 	DELETEP(m_pMenuLabelSet);
 }
 
-UT_Bool AP_Frame::initialize(int argc, char ** argv)
+UT_Bool AP_Frame::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 {
 	UT_Bool bResult;
 
@@ -91,3 +97,58 @@ UT_Bool AP_Frame::initialize(int argc, char ** argv)
 
 	return UT_TRUE;
 }
+
+const EV_Menu_Layout * AP_Frame::getMenuLayout(void) const
+{
+	return m_pMenuLayout;
+}
+
+const EV_Menu_LabelSet * AP_Frame::getMenuLabelSet(void) const
+{
+	return m_pMenuLabelSet;
+}
+
+const EV_EditEventMapper * AP_Frame::getEditEventMapper(void) const
+{
+	return m_pEEM;
+}
+
+FV_View * AP_Frame::getCurrentView(void) const
+{
+	// TODO i called this ...Current... in anticipation of having
+	// TODO more than one view (think splitter windows) in this
+	// TODO frame.  but i'm just guessing right now....
+	
+	return m_pView;
+}
+
+UT_Bool AP_Frame::loadDocument(const char * szFilename)
+{
+	// load a document into the current frame.
+	// if no filename, create a new document.
+
+	PD_Document * pNewDoc = new PD_Document();
+	UT_ASSERT(pNewDoc);
+	
+	if (!szFilename || !*szFilename)
+	{
+		pNewDoc->newDocument();
+		goto ReplaceDocument;
+	}
+
+	if (pNewDoc->readFromFile(szFilename))
+		goto ReplaceDocument;
+	
+	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+	delete pNewDoc;
+	return UT_FALSE;
+
+ReplaceDocument:
+	UT_ASSERT(!m_pDoc);					// TODO deal with discarding current document
+										// TODO and possibly querying user if dirty...
+
+	m_pDoc = pNewDoc;
+	return UT_TRUE;
+}
+
+

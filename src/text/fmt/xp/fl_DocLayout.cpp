@@ -33,7 +33,7 @@
 #include "fp_Page.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
-#include "dg_Graphics.h"
+#include "gr_Graphics.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"

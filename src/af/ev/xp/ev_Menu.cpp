@@ -30,20 +30,20 @@
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 
+/*****************************************************************/
+
 EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC)
 {
-	// TODO decide if we really need to remember pEMC
-	
 	UT_ASSERT(pEMC);
 
 	m_pEMC = pEMC;
 }
 
 UT_Bool EV_Menu::invokeMenuMethod(FV_View * pView,
-										  EV_EditMethod * pEM,
-										  UT_uint32 iPrefixCount,
-										  UT_UCSChar * pData,
-										  UT_uint32 dataLength)
+								  EV_EditMethod * pEM,
+								  UT_uint32 iPrefixCount,
+								  UT_UCSChar * pData,
+								  UT_uint32 dataLength)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);

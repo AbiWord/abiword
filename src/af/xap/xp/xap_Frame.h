@@ -30,6 +30,7 @@ class EV_EditBindingMap;
 class EV_EditEventMapper;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
+class FV_ScrollObj;
 
 /*****************************************************************
 ******************************************************************
@@ -47,12 +48,19 @@ public:
 	AP_Frame(AP_Ap * ap);
 	virtual ~AP_Frame(void);
 
-	virtual UT_Bool				initialize(int argc, char ** argv);
+	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool				loadDocument(const char * szFilename);
 
+	const EV_Menu_Layout *		getMenuLayout(void) const;
+	const EV_Menu_LabelSet *	getMenuLabelSet(void) const;
+	const EV_EditEventMapper *	getEditEventMapper(void) const;
+	FV_View *					getCurrentView(void) const;
+	
 protected:
 	AP_Ap *						m_ap;			/* handle to application-specific data */
 	PD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	FV_View *					m_pView;		/* to our view on the document */
+	FV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
 	EV_EditBindingMap *			m_pEBM;			/* the key/mouse bindings for this frame */
 	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */
 	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */

@@ -22,7 +22,7 @@
 #define AP_AP_H
 
 #include "ut_types.h"
-
+class AP_Frame;
 class EV_EditMethodContainer;
 class EV_Menu_ActionSet;
 
@@ -40,7 +40,13 @@ public:
 	AP_Ap(void);
 	virtual ~AP_Ap(void);
 
-	virtual UT_Bool					initialize(int argc, char ** argv);
+	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
+	virtual UT_Bool					rememberFrame(AP_Frame * pFrame);
+	virtual UT_Bool					forgetFrame(AP_Frame * pFrame);
+	
+	const char *					getApplicationTitleForTitleBar(void) const;
+	const char *					getApplicationName(void) const;
+	
 	EV_EditMethodContainer *		getEditMethodContainer(void) const;
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
 

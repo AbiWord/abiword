@@ -25,8 +25,9 @@
 #include <gdk/gdk.h>
 
 #include "ut_types.h"
-
 #include "ev_Mouse.h"
+
+/*****************************************************************/
 
 class EV_UnixMouse : public EV_Mouse
 {

@@ -126,7 +126,7 @@ public:
 	UT_Bool				addEditMethod(EV_EditMethod * pem);
 	UT_uint32			countEditMethods(void);
 	EV_EditMethod *		getNthEditMethod(UT_uint32 ndx);
-	EV_EditMethod *		findEditMethodByName(const char * szName);
+	EV_EditMethod *		findEditMethodByName(const char * szName) const;
 
 protected:
 	UT_uint32			m_countStatic;

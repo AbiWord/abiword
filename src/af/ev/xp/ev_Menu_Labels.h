@@ -51,6 +51,7 @@ public:
 	~EV_Menu_Label(void);
 
 	AP_Menu_Id						getMenuId(void) const;
+	const char *					getMenuLabel(void) const;
 
 protected:
 	AP_Menu_Id						m_id;

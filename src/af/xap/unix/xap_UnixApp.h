@@ -38,7 +38,7 @@ public:
 	AP_UnixAp(void);
 	virtual ~AP_UnixAp(void);
 
-	virtual UT_Bool					initialize(int argc, char ** argv);
+	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
 
 protected:
 
