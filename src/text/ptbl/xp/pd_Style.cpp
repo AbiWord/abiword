@@ -150,15 +150,17 @@ bool PD_Style::setProperties(const XML_Char ** pProperties)
 		return pAP->setProperties(pProperties);
 }
 
-
 bool PD_Style::setAttributes(const XML_Char ** pAtts)
 {
 	PP_AttrProp * pAP = NULL;
-	
+	bool bres = false;
 	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
 		return false;
 	else
-		return pAP->setAttributes(pAtts);
+		bres = pAP->setAttributes(pAtts);
+	m_pFollowedBy = NULL;
+	m_pBasedOn = NULL;
+	return bres;
 }
 
 size_t PD_Style::getPropertyCount(void) const

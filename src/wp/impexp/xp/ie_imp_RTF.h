@@ -314,7 +314,7 @@ private:
 	} RTFTokenType;
 	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam, 
 							bool* pParamUsed, UT_uint32 len);
-
+	
 // import member vars
 private:
 	UT_GrowBuf m_gbBlock;
@@ -332,43 +332,48 @@ private:
 	UT_Vector m_colourTable;
 
 	struct _rtfAbiListTable
-        {      
-	       UT_uint32 orig_id;
-	       UT_uint32 orig_parentid;
-	       UT_uint32 start_value;
-	       UT_uint32 level;
-	       bool hasBeenMapped;
-	       UT_uint32 mapped_id;
-	       UT_uint32 mapped_parentid;
+	{      
+		UT_uint32 orig_id;
+		UT_uint32 orig_parentid;
+		UT_uint32 start_value;
+		UT_uint32 level;
+		bool hasBeenMapped;
+		UT_uint32 mapped_id;
+		UT_uint32 mapped_parentid;
 	};
-	_rtfAbiListTable m_rtfAbiListTable[2000]; // this will be a vector eventually
+	UT_Vector m_vecAbiListTable;
+//	_rtfAbiListTable m_rtfAbiListTable[2000]; // this will be a vector eventually
+	_rtfAbiListTable * getAbiList( UT_uint32 i) {return (_rtfAbiListTable *) m_vecAbiListTable.getNthItem(i);}
+
 	UT_uint32 m_numLists;
 	bool m_bisAbiList;
-        
+	bool m_bisNOTList; // true if the current stream does not have  abi list extensions
+	bool m_bParaHasRTFList;
+	bool m_bParaHasRTFContinue;
 	struct _rtfListTable
-        {      
-	       UT_uint32 start_value;
-	       UT_uint32 level;
-	       bool bullet;
-	       bool simple;
-	       bool continueList;
-	       bool hangingIndent;
-	       List_Type type;
-	       bool bold;
-	       bool italic;
-	       bool caps;
-	       bool scaps;
-	       bool underline;
-	       bool nounderline;
-	       bool strike;
-	       bool isList;
-	       UT_uint32 forecolor;
-	       UT_uint32 font;
-	       UT_uint32 fontsize;
-	       UT_uint32 indent;
-	       bool prevlist;
-	       char textbefore[129];
-	       char textafter[129];
+	{      
+		UT_uint32 start_value;
+		UT_uint32 level;
+		bool bullet;
+		bool simple;
+		bool continueList;
+		bool hangingIndent;
+		List_Type type;
+		bool bold;
+		bool italic;
+		bool caps;
+		bool scaps;
+		bool underline;
+		bool nounderline;
+		bool strike;
+		bool isList;
+		UT_uint32 forecolor;
+		UT_uint32 font;
+		UT_uint32 fontsize;
+		UT_uint32 indent;
+		bool prevlist;
+		char textbefore[129];
+		char textafter[129];
 	};
 	_rtfListTable m_rtfListTable; 
  
@@ -385,4 +390,6 @@ private:
 };
 
 #endif /* IE_IMP_RTF_H */
+
+
 

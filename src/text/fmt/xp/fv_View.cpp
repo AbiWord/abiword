@@ -2391,19 +2391,41 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair("font-family",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("font-size",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("font-weight",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("font-style",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("text-position",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("color",			pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("bgcolor",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	f = new _fmtPair("font-family",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem((void *) f);
+	f = new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("bgcolor",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
 #ifdef BIDI_ENABLED
-	v.addItem(new _fmtPair("dir",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("dir-override",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	f = new _fmtPair("dir",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("dir-override",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
 #endif
-	v.addItem(new _fmtPair("lang",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	f = new _fmtPair("lang",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
 
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)
@@ -3116,7 +3138,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	UT_Vector v;
 	UT_uint32 i;
-	_fmtPair * f;
+	_fmtPair * f = NULL;
 
 	/*
 	  IDEA: We want to know block-level formatting properties, if
@@ -3139,21 +3161,49 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair("text-align",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("text-indent",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-left",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-right",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-top",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-bottom",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("line-height",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("tabstops",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("default-tab-interval",	NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("keep-together",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("keep-with-next",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("orphans",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("widows",					NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	f = new _fmtPair("text-align",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("text-indent",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("margin-right",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("margin-top",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("margin-bottom",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("line-height",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("tabstops",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("default-tab-interval",	NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("keep-together",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("keep-with-next",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("orphans",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
+	f = new _fmtPair("widows",					NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
 #ifdef BIDI_ENABLED
-	v.addItem(new _fmtPair("dom-dir",		NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	f = new _fmtPair("dom-dir",		NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	if(f->m_val != NULL)
+		v.addItem( (void *) f);
 #endif
 
 	// 2. prune 'em as they vary across selection

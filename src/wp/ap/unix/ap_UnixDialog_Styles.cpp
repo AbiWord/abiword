@@ -412,7 +412,8 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
 		getDoc()->updateDocForStyleChange(getCurrentStyle(),true);
-		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+//		getView()->getCurrentBlock()->setNeedsRedraw();
+//		getDoc()->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}
 	if(mainWindow && GTK_IS_WIDGET(mainWindow)) 
 	    gtk_widget_destroy(mainWindow);
@@ -1607,8 +1608,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
 	}
 	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
-	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
-
+	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
 	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
 	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
  

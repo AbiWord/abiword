@@ -2277,6 +2277,8 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 
 		case FL_TAB_BAR:
 			l += 4;
+			r = l+2;
+			break;
 			// fall through
 
 		case FL_TAB_RIGHT:

@@ -23,7 +23,7 @@
 #include "ut_debugmsg.h"
 #include "pt_Types.h"
 #include "pt_VarSet.h"
-
+#include "pd_Style.h"
 
 pt_VarSet::pt_VarSet()
 {
@@ -174,7 +174,7 @@ bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) 
 
 bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 						   const XML_Char ** attributes, const XML_Char ** properties,
-						   PT_AttrPropIndex * papiNew)
+						   PT_AttrPropIndex * papiNew,PD_Document * pDoc)
 {
 	// merge the given attr/props with set referenced by apiOld
 	// under the operator ptc giving a new set to be returned in
@@ -182,6 +182,10 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	// referenced in apiOld, just return it.
 	// return false only if we had an error.
 
+//
+// Modification by Sevior 16/5/2001. If ptc is an addstyle and the basedon
+// style is a NULL, do a merge of the current properties with the style 
+//
 	const PP_AttrProp * papOld = getAP(apiOld);
 	switch (ptc)
 	{
@@ -219,6 +223,29 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// the args.  we then use it to find an existing match 
 			// or use the new one.
 			
+//
+// Look if the "basedon" style exists. If it doesn't do a merge
+//
+			if(attributes && *attributes)
+			{
+				const char * pszStyle = UT_getAttribute("style",attributes);
+				if(pszStyle)
+				{
+					PD_Style * pStyle = NULL;
+					pDoc->getStyle(pszStyle,&pStyle);
+					PD_Style *pBasedOn = pStyle->getBasedOn();
+					if(pBasedOn == NULL)
+					{
+						PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, false);
+						if (!pNew)
+							return false;
+
+						pNew->markReadOnly();
+						return addIfUniqueAP(pNew,papiNew);
+					}
+				}
+			}
+
 			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, true);
 			if (!pNew)
 				return false;

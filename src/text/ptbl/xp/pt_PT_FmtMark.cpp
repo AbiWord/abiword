@@ -84,7 +84,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	PT_AttrPropIndex indexOldAP = _chooseIndexAP(pf,fo);
 	PT_AttrPropIndex indexNewAP;
 	bool bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -244,7 +244,7 @@ bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pffm->getIndexAP();
 	bool bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.

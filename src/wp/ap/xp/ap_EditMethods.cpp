@@ -5861,8 +5861,7 @@ static bool s_doStylesDlg(FV_View * pView)
 // Now update all views on the document.
 //
 		PD_Document * pDoc = pView->getLayout()->getDocument();
-		PL_StruxDocHandle sdh = pView->getCurrentBlock()->getStruxDocHandle();
-		pDoc->updateAllLayoutsInDoc(sdh);
+		pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}
 	return bOK;
 }

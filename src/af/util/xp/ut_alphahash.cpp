@@ -65,8 +65,11 @@ UT_sint32 UT_AlphaHashTable::addEntry(const char* psLeft, const char* psRight, v
 		else if (cmp == 0)
 		{
 			// added duplicate key
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return -1;
+			//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// return -1;
+			// I think this should be allowed now that ut_hastable handles
+			// duplicated entries. Sevior 16/5/2001
+			return 0;
 		}
 		else
 		{

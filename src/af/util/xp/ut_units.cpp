@@ -103,8 +103,8 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 
 	   	if (STR_COMPARE(p,"%") == 0)
 			return DIM_PERCENT;
-	   
-		UT_ASSERT(UT_TODO);
+		UT_DEBUGMSG(("ut_units - unknown unit presented %s \n",p));
+//		UT_ASSERT(UT_TODO);
 	}
 
 	return fallback;

@@ -79,6 +79,14 @@ UT_sint32 UT_HashTable::addEntry(const char* pszLeft,
 	UT_ASSERT(pszLeft);
 
 	// TODO check to see if the entry is already there.
+	// Done! Sevior 16/5/2001
+	UT_HashEntry * pEntry = findEntry(pszLeft);
+	if(pEntry != NULL)
+	{
+		pEntry->pszRight = m_pool.addString(pszRight);
+		pEntry->pData = pData;
+		return 0;
+	}
 
 	if (0 != verifySpaceToAddOneEntry())
 	{

@@ -301,6 +301,13 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 				return szValue;
 		}
 	}
+//
+// If expandstyles is false we stop here
+//
+	if(!bExpandStyles)
+	{
+		return NULL;
+	}
 
 	if (pDoc->getStyle("Normal", &pStyle))
 	{

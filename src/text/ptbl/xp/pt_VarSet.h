@@ -25,7 +25,7 @@
 #include "ut_growbuf.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
-
+#include "pd_Document.h"
 
 class pt_VarSet
 {
@@ -50,7 +50,7 @@ public:
 	}
 	bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
 									const XML_Char ** attributes, const XML_Char ** properties,
-									PT_AttrPropIndex * papiNew);
+									PT_AttrPropIndex * papiNew, PD_Document * pDoc);
 	bool					addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi);
     bool                 overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
 
@@ -77,7 +77,7 @@ private:
 	inline PT_BufIndex _makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const
 	{
 	    return ((varset<<31)|subscript);
-		}
+	}
 
 	inline PT_AttrPropIndex _makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const
 	{

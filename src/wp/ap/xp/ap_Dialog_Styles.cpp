@@ -172,12 +172,12 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 {
 	const XML_Char ** paraProps = NULL;
-	getView()->getBlockFormat(&paraProps);
+	getView()->getBlockFormat(&paraProps,false);
 //
 // This line expands all styles
 //	getView()->getBlockFormat(&paraProps,true);
 	const XML_Char ** charProps = NULL;
-	getView()->getCharFormat(&charProps);
+	getView()->getCharFormat(&charProps,false);
 //
 // This line expans all styles..
 //
@@ -840,7 +840,6 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	for(i=0; i<counta; i++)
 	{
 		attribs[i] = (const XML_Char *) m_vecAllAttribs.getNthItem(i);
-		UT_DEBUGMSG(("SEVIOR: Applying modified attribute %s \n",attribs[i]));
 	}
 	attribs[i] = NULL;
 //
@@ -865,8 +864,8 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	const XML_Char * szStyle = getCurrentStyle();
 	if(szStyle == NULL)
 		return false;
-	bool bres = getDoc()->setStyleProperties(szStyle,props);
-	bres = getDoc()->setStyleAttributes(szStyle,attribs);
+	bool bres = getDoc()->setStyleAttributes(szStyle,attribs);
+	bres = getDoc()->setStyleProperties(szStyle,props);
 	DELETEP(props);
 	DELETEP(attribs);
 	return bres;
@@ -1110,6 +1109,8 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 
 	if( pStyle == NULL)
 	{
+		if(strlen(m_curStyleDesc.c_str()) == 0)
+			m_curStyleDesc += "font-style:normal";
 		const XML_Char * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",PT_TYPE_ATTRIBUTE_NAME,"P","basedon","None","followedby","Current Settings","props",m_curStyleDesc.c_str(),NULL,NULL};
 		getLDoc()->appendStyle(attrib);
 	}
