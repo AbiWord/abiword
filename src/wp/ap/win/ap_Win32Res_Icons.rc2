@@ -37,20 +37,20 @@
 
 // Menu bitmaps
 
-AP_RID_BITMAP_CUT			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_cut.bmp"
-AP_RID_BITMAP_COPY			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_copy.bmp"
-AP_RID_BITMAP_PASTE			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_paste.bmp"
-AP_RID_BITMAP_NEW			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_new.bmp"
-AP_RID_BITMAP_OPEN			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_open.bmp"
-AP_RID_BITMAP_PRINT			BITMAP  DISCARDABLE		"..\\..\\..\\af\\ev\\win\\stock\\menu_print.bmp"
-AP_RID_BITMAP_FIND			BITMAP  DISCARDABLE		"..\\..\\..\\af\\ev\\win\\stock\\menu_search.bmp"
-AP_RID_BITMAP_SYMBOL		BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_insert_symbol.bmp"
-AP_RID_BITMAP_PICTURE		BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_insert_image.bmp"
-AP_RID_BITMAP_SPELL			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_spellcheck.bmp"
-AP_RID_BITMAP_OPTIONS		BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_preferences.bmp"
-AP_RID_BITMAP_HELP			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_help.bmp"
-AP_RID_BITMAP_REDO			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_redo.bmp"
-AP_RID_BITMAP_UNDO			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\stock\\menu_undo.bmp"
+AP_RID_BITMAP_CUT			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_cut.bmp"
+AP_RID_BITMAP_COPY			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_copy.bmp"
+AP_RID_BITMAP_PASTE			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_paste.bmp"
+AP_RID_BITMAP_NEW			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_new.bmp"
+AP_RID_BITMAP_OPEN			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_open.bmp"
+AP_RID_BITMAP_PRINT			BITMAP  DISCARDABLE		"..\\..\\..\\af\\ev\\win\\bmp\\menu_print.bmp"
+AP_RID_BITMAP_FIND			BITMAP  DISCARDABLE		"..\\..\\..\\af\\ev\\win\\bmp\\menu_search.bmp"
+AP_RID_BITMAP_SYMBOL		BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_insert_symbol.bmp"
+AP_RID_BITMAP_PICTURE		BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_insert_image.bmp"
+AP_RID_BITMAP_SPELL			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_spellcheck.bmp"
+AP_RID_BITMAP_OPTIONS		BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_preferences.bmp"
+AP_RID_BITMAP_HELP			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_help.bmp"
+AP_RID_BITMAP_REDO			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_redo.bmp"
+AP_RID_BITMAP_UNDO			BITMAP  DISCARDABLE     "..\\..\\..\\af\\ev\\win\\bmp\\menu_undo.bmp"
 
 
 
