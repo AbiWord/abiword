@@ -87,7 +87,7 @@ typedef enum {
 class ABI_EXPORT fl_CharWidths
 {
 public:
-	fl_CharWidths()	: m_gbCharWidths(256), m_gbCharWidthsLayoutUnits(256)
+	fl_CharWidths() : m_gbCharWidths(256), m_gbCharWidthsLayoutUnits(256)
 		{
 		}
 
@@ -171,16 +171,16 @@ public:
 		spacing_ATLEAST
 	} eSpacingPolicy;
 
-	int 		format();
+	int 		format(fp_Line * pLineToStartWith = NULL);
 	bool		recalculateFields(bool bLayoutDependentOnly);
 	
 	void		redrawUpdate();
 
 	fp_Line*	getNewLine(void);
-	FV_View *       getView(void);
+	FV_View *		getView(void);
 
-	const char*	getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
-	const PP_PropertyType *	getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
+	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
+	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 
 	inline fl_BlockLayout* getNext(void) const { return m_pNext; }
@@ -205,10 +205,10 @@ public:
 	inline bool isListItem(void) const { return m_bListItem; }
 	bool isFirstInList(void);
 //	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
-	void    getListAttributesVector( UT_Vector * va);
+	void	getListAttributesVector( UT_Vector * va);
 	void  getListPropertyVector( UT_Vector * vp);
 
-	char *  getFormatFromListType(List_Type iListType);
+	char *	getFormatFromListType(List_Type iListType);
 	void remItemFromList(void);
 	virtual void listUpdate(void);
 	void resumeList( fl_BlockLayout * prevList);
@@ -264,8 +264,8 @@ public:
 	void				setRightMargin(UT_sint32 i);
 #endif
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
-	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
-	inline fl_SectionLayout* 	getSectionLayout(void) const { return m_pSectionLayout;}
+	inline FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
+	inline fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
 	fl_DocSectionLayout * getDocSectionLayout(void) const;
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
@@ -291,17 +291,17 @@ public:
 
 	void checkSpelling(void);
 	void debugFlashing(void);
- 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
+	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType, 
 							eTabLeader &iLeader );
- 	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
+	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
 										 UT_sint32& iPosition, 
 										 eTabType& iType, 
 										 eTabLeader &iLeader);
- 	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
+	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,
 							eTabLeader &iLeader );
- 	bool	findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
+	bool	findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
 										 UT_sint32& iPosition,
 										 eTabType& iType,
 										 eTabLeader &iLeader);
@@ -346,26 +346,26 @@ public:
 	
 	void					purgeLayout(void);
 	void					collapse(void);
-	bool                    isCollapsed(void) const {return m_bIsCollapsed;}
+	bool					isCollapsed(void) const {return m_bIsCollapsed;}
 	void					coalesceRuns(void);
 
 	void					setNeedsReformat(void) { m_bNeedsReformat = true; }
-	inline bool			needsReformat(void) const { return m_bNeedsReformat; }
+	inline bool 		needsReformat(void) const { return m_bNeedsReformat; }
 
 	void					setNeedsRedraw(void) { m_bNeedsRedraw = true; }
-	inline bool			needsRedraw(void) const { return m_bNeedsRedraw; }
-    void                    markAllRunsDirty(void);
+	inline bool 		needsRedraw(void) const { return m_bNeedsRedraw; }
+	void					markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
 
-	static bool			s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
+	static bool 		s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 	
-	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
-	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
-	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uBackgroundCheckReasons & reason) ? true : false);}
+	inline void 		addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
+	inline void 		removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
+	inline bool 	hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uBackgroundCheckReasons & reason) ? true : false);}
 
 	// The following is a set of bit flags giving the reason this block is
-	// queued for background checking.  See specific values in fl_DocLayout.h
+	// queued for background checking.	See specific values in fl_DocLayout.h
 	UT_uint32				m_uBackgroundCheckReasons;
 
 #ifdef FMT_TEST
@@ -379,16 +379,16 @@ protected:
 										 const UT_UCSChar* pBlockText,
 										 bool bAddSquiggle = true);
 
-	bool                    _spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos);
+	bool					_spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos);
 
 	bool					_truncateLayout(fp_Run* pTruncRun);
 
 #ifndef NDEBUG
 	void					_assertRunListIntegrityImpl(void);
 #endif
-	inline void				_assertRunListIntegrity(void);
+	inline void 			_assertRunListIntegrity(void);
 	
-	void 					_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge);
+	void					_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge);
 	
 	bool					_doInsertRun(fp_Run* pNewRun);
 	bool					_delete(PT_BlockOffset blockOffset, UT_uint32 len);
@@ -421,27 +421,27 @@ protected:
 	void					_purgeEndOfParagraphRun(void);
 	void					_breakLineAfterRun(fp_Run* /*pRun*/);
 
-	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void * data);
+	static void 			_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void * data);
 
 	void					_createListLabel(void);
 	void					_deleteListLabel(void);
-	inline void				_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);	
-	inline void				_prependBlockToPrevList( fl_BlockLayout * nextBlockInList);	
+	inline void 			_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);	
+	inline void 			_prependBlockToPrevList( fl_BlockLayout * nextBlockInList); 
 
 	bool					m_bNeedsReformat;
 	bool					m_bNeedsRedraw;
 	bool					m_bFixCharWidths;
-	bool                                 m_bCursorErased;
-	bool                                 m_bIsHdrFtr;
+	bool								 m_bCursorErased;
+	bool								 m_bIsHdrFtr;
 	fl_CharWidths			m_gbCharWidths;
 
-	FL_DocLayout*	       	m_pLayout;
-	fb_LineBreaker*			m_pBreaker;
+	FL_DocLayout*			m_pLayout;
+	fb_LineBreaker* 		m_pBreaker;
 
-	fl_BlockLayout*			m_pPrev;
-	fl_BlockLayout*			m_pNext;
+	fl_BlockLayout* 		m_pPrev;
+	fl_BlockLayout* 		m_pNext;
 
-	fp_Run*					m_pFirstRun;
+	fp_Run* 				m_pFirstRun;
 	fl_SectionLayout*		m_pSectionLayout;
 
 	fp_Line*				m_pFirstLine;
@@ -478,10 +478,10 @@ protected:
 	bool					m_bStartList;
 	bool					m_bStopList;
 	bool					m_bListLabelCreated;
-	bool                    m_bIsCollapsed;
+	bool					m_bIsCollapsed;
 #ifdef BIDI_ENABLED
-	FriBidiCharType			m_iDomDirection;
-	FriBidiCharType			m_iDirOverride;
+	FriBidiCharType 		m_iDomDirection;
+	FriBidiCharType 		m_iDirOverride;
 #endif
 
 	fl_Squiggles*			m_pSquiggles;
@@ -503,11 +503,11 @@ public:
 
 	inline UT_sint32 getOffset(void) const { return m_iOffset; }
 	inline UT_sint32 getLength(void) const { return m_iLength; }
-	inline bool      getIsIgnored(void) const { return m_bIsIgnored; }
+	inline bool 	 getIsIgnored(void) const { return m_bIsIgnored; }
 
-	inline void      setOffset(UT_sint32 iOffset) { m_iOffset = iOffset; }
-	inline void      setLength(UT_sint32 iLength) { m_iLength = iLength; }
-	inline void      setIsIgnored(bool bIsIgnored) { m_bIsIgnored = bIsIgnored; }
+	inline void 	 setOffset(UT_sint32 iOffset) { m_iOffset = iOffset; }
+	inline void 	 setLength(UT_sint32 iLength) { m_iLength = iLength; }
+	inline void 	 setIsIgnored(bool bIsIgnored) { m_bIsIgnored = bIsIgnored; }
 
 private:
 	UT_sint32	m_iOffset;

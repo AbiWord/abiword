@@ -50,19 +50,25 @@ fb_LineBreaker::fb_LineBreaker()
   All trailing spaces should remain on the end of the line.
 */
 UT_sint32
-fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
+fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 {
 	// FIXME: This should:
-	//   o Check the Runs for state signalling if they changed since
-	//     last paragraph layout.
-	//   o Only layout lines starting with, and below, the first line
-	//     which contain changed Runs.
-	//   o If the block bounding box or layout properties change, it
-	//     should force a full layout.
-	//   o Also see fix me at end of loop
+	//	 o Check the Runs for state signalling if they changed since
+	//	   last paragraph layout.
+	//	 o Only layout lines starting with, and below, the first line
+	//	   which contain changed Runs.
+	//	 o If the block bounding box or layout properties change, it
+	//	   should force a full layout.
+	//	 o Also see fix me at end of loop
 
 	fp_Line* pLine = pBlock->getFirstLine();
 	UT_ASSERT(pLine);
+
+	if(pLineToStartAt)
+	{
+		while(pLine && pLine != pLineToStartAt)
+			pLine = pLine->getNext();
+	}
 
 	while (pLine)
 	{
@@ -104,7 +110,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						bRunIsNonBlank = false;
 					}
 				}
-				if (bRunIsNonBlank && (m_iWorkingLineWidth  > m_iMaxLineWidth))
+				if (bRunIsNonBlank && (m_iWorkingLineWidth	> m_iMaxLineWidth))
 				{
 					// This is the first run which will start past the
 					// end of the line
@@ -113,7 +119,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);
 					iTrailingSpace = _moveBackToFirstNonBlankData(pArun,
-										      &pOffendingRun);
+											  &pOffendingRun);
 
 					m_iWorkingLineWidth -= iTrailingSpace;
 					if (m_iWorkingLineWidth > m_iMaxLineWidth)
@@ -178,7 +184,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					if(pRunsLine != pLine)
 					{
 						UT_DEBUGMSG(("fb_LineBreaker::breakLine: Tab run (0x%x) belonging to different line\n"
-									 "       pLine 0x%x, pRunsLine 0x%x\n"
+									 "		 pLine 0x%x, pRunsLine 0x%x\n"
 									 ,pCurrentRun, pLine, pRunsLine));
 									
 						pRunsLine->removeRun(pCurrentRun,true);
@@ -224,8 +230,8 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 		done_with_run_loop:
 			/*
-			  OK, we've gone through the run loop.  If a run was to
-			  be split, it has already been split.  m_pLastRunToKeep
+			  OK, we've gone through the run loop.	If a run was to
+			  be split, it has already been split.	m_pLastRunToKeep
 			  should now be set to the last run which should be on
 			  this line.  We need to make sure that all runs from
 			  the first one on the line up until m_pLastRunToKeep are
@@ -237,7 +243,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			
 			/*
 			  Now we know all the runs which belong on this line.
-			  However, those runs are not properly positioned.  We
+			  However, those runs are not properly positioned.	We
 			  call the line to do the actual layout.
 			*/
 
@@ -336,15 +342,15 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 			
 			if ( !pRunLookingBackwards )
 			  {
-			    bFoundBreakAfter = false;
-			    m_pLastRunToKeep = pCurrentRun;
-			    break;
+				bFoundBreakAfter = false;
+				m_pLastRunToKeep = pCurrentRun;
+				break;
 			  }
 			else if (pRunLookingBackwards->canBreakAfter())
 			{
 				/*
 				  OK, we can break after this
-				  run.  Move all the runs after this one
+				  run.	Move all the runs after this one
 				  onto the next line.
 				*/
 
@@ -393,7 +399,7 @@ bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 		else
 		{
 			/*
-			  Wow!  This is a very resilient run.  It is the
+			  Wow!	This is a very resilient run.  It is the
 			  run which no longer fits, and yet it cannot be
 			  split.  It might be a single-character run.
 			  Perhaps it's an image.  Anyway, we still have to
@@ -506,7 +512,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	}
 
 	fp_Line* pNextLine = NULL;
-    xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... \n"));
+	xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... \n"));
 	if ( m_pLastRunToKeep != NULL
 		&& (pLine->getLastRun() != m_pLastRunToKeep)
 		)

@@ -1052,7 +1052,7 @@ void fl_BlockLayout::purgeLayout(void)
 
 	UT_ASSERT(m_pFirstLine == NULL);
 	UT_ASSERT(m_pLastLine == NULL);
-	
+
 	while (m_pFirstRun)
 	{
 		fp_Run* pNext = m_pFirstRun->getNext();
@@ -1060,7 +1060,7 @@ void fl_BlockLayout::purgeLayout(void)
 		delete m_pFirstRun;
 		m_pFirstRun = pNext;
 	}
-	
+
 }
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
@@ -1069,7 +1069,7 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 	{
 		m_pFirstLine = m_pFirstLine->getNext();
 	}
-			
+
 	if (m_pLastLine == pLine)
 	{
 		m_pLastLine = m_pLastLine->getPrev();
@@ -1300,6 +1300,10 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	fp_Line* pLine = pRun->getLine();
 	pNewLine->setPrev(pLine);
 	pNewLine->setNext(pLine->getNext());
+
+	if(pLine->getNext())
+		pLine->getNext()->setPrev(pNewLine);
+
 	pLine->setNext(pNewLine);
 	// Update LastLine if necessary
 	if (m_pLastLine == pLine)
@@ -1318,7 +1322,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 		pNewLine->addRun(pCurrentRun);
 		pCurrentRun = pCurrentRun->getNext();
 	}
-	
+
 	// Update the layout information in the lines.
 	pLine->layout();
 	pNewLine->layout();
@@ -1347,10 +1351,10 @@ void fl_BlockLayout::updateBackgroundColor(void)
   Formatting a paragraph means splitting the content into lines which
   will fit in the container.  */
 int
-fl_BlockLayout::format()
+fl_BlockLayout::format(fp_Line * pLineToStartAt)
 {
 	_assertRunListIntegrity();
-
+	fp_Run *pRunToStartAt = pLineToStartAt ? pLineToStartAt->getFirstRun() : NULL;
 	// Remember state of cursor
 	m_bCursorErased = false;
 	FV_View* pView = m_pLayout->getView();
@@ -1370,10 +1374,18 @@ fl_BlockLayout::format()
 		if (m_bFixCharWidths)
 		{
 			fp_Run* pRun = m_pFirstRun;
+			bool bDoit = false;
 			while (pRun)
 			{
-				pRun->recalcWidth();
-				pRun = pRun->getNext();
+				if(pRunToStartAt && pRun == pRunToStartAt)
+					bDoit = true;
+
+				if(bDoit)
+				{
+					pRun->recalcWidth();
+				}
+					pRun = pRun->getNext();
+
 			}
 		}
 
@@ -1384,7 +1396,7 @@ fl_BlockLayout::format()
 		recalculateFields(false);
 
 		// Reformat paragraph
-		m_pBreaker->breakParagraph(this);
+		m_pBreaker->breakParagraph(this, pLineToStartAt);
 		_removeAllEmptyLines();
 	}
 	else
@@ -3213,7 +3225,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_InsertSpan);
 	//UT_ASSERT(pcrs->getPosition() >= getPosition());		/* valid assert, but very expensive */
-	
+
 	PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
@@ -3249,11 +3261,11 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		case UCS_BOOKMARKSTART:
 		case UCS_BOOKMARKEND:
 		case UCS_TAB:	// tab
-#ifdef BIDI_ENABLED 	
+#ifdef BIDI_ENABLED
 		case UCS_LRO:	// explicit direction overrides
 		case UCS_RLO:
 		case UCS_PDF:
-#endif					
+#endif
 			if (bNormal)
 			{
 				_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
@@ -3269,11 +3281,11 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 			case UCS_FF:
 				_doInsertForcedPageBreakRun(i + blockOffset);
 				break;
-				
+
 			case UCS_VTAB:
 				_doInsertForcedColumnBreakRun(i + blockOffset);
 				break;
-				
+
 			case UCS_LF:
 				_doInsertForcedLineBreakRun(i + blockOffset);
 				break;
@@ -3281,7 +3293,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 			case UCS_FIELDSTART:
 				_doInsertFieldStartRun(i + blockOffset);
 				break;
-				
+
 			case UCS_FIELDEND:
 				_doInsertFieldEndRun(i + blockOffset);
 				break;
@@ -3711,9 +3723,12 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// deleted.
 
 	fl_BlockLayout* pPrevBL = m_pPrev;
+	fp_Line* pLastLine = NULL;
+
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
+		pLastLine = pPrevBL->getLastLine();
 		fp_Run* pPrevRun = NULL;
 		fp_Run* pNukeRun = pPrevBL->m_pFirstRun;
 		for (; pNukeRun->getNext(); pNukeRun = pNukeRun->getNext())
@@ -3725,7 +3740,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 		// Detach from the line
 		fp_Line* pLine = pNukeRun->getLine();
-		UT_ASSERT(pLine);
+		UT_ASSERT(pLine && pLine == pLastLine);
 		pLine->removeRun(pNukeRun);
 
 		// Unlink and delete it
@@ -3742,7 +3757,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	else
 	{
 		// Delete end-of-paragraph Run in this strux
-		UT_ASSERT(m_pFirstRun 
+		UT_ASSERT(m_pFirstRun
 				  && (FPRUN_ENDOFPARAGRAPH == m_pFirstRun->getType()));
 
 		fp_Run* pNukeRun = m_pFirstRun;
@@ -3792,15 +3807,13 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 		pPrevBL->m_gbCharWidths.ins(offset, m_gbCharWidths, 0, lenNew);
 
-		fp_Line* pLastLine = pPrevBL->getLastLine();
-		
 		// Tell all the new runs where they live
 		pRun = m_pFirstRun;
 		while (pRun)
 		{
 			pRun->setBlockOffset(pRun->getBlockOffset() + offset);
 			pRun->setBlock(pPrevBL);
-			
+
 			// Detach from their line
 			fp_Line* pLine = pRun->getLine();
 			UT_ASSERT(pLine);
@@ -3833,11 +3846,11 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	pSL->removeBlock(this);
 
 	if (pPrevBL)
-	{	
+	{
 		// Update the display
 //		pPrevBL->_lookupProperties();	// TODO: this may be needed
 //		pPrevBL->setNeedsReformat(); // Sevior 4/6/2001
-		pPrevBL->format();
+		pPrevBL->format(pLastLine);
 
 		// This call will dequeue the block from background checking
 		// if necessary

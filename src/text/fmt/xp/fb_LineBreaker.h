@@ -37,7 +37,7 @@ class ABI_EXPORT fb_LineBreaker
 {
 public:
 	fb_LineBreaker();
-	UT_sint32	breakParagraph(fl_BlockLayout*);
+	UT_sint32	breakParagraph(fl_BlockLayout*, fp_Line * pLineToStartAt);
 
 protected:
 	void		_breakTheLineAtLastRunToKeep(fp_Line *pLine, fl_BlockLayout *pBlock);
@@ -47,8 +47,8 @@ protected:
 	void		_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo);
 
 private:
-	fp_Run*		m_pFirstRunToKeep;
-	fp_Run*		m_pLastRunToKeep;
+	fp_Run* 	m_pFirstRunToKeep;
+	fp_Run* 	m_pLastRunToKeep;
 	
 	UT_sint32	m_iMaxLineWidth;
 	UT_sint32	m_iWorkingLineWidth;
