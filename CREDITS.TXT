@@ -41,6 +41,7 @@ David Chart <linux@dchart.demon.co.uk>          User documentation
 Allan Clark <shark@blueyonder.co.uk>            StringPool fixes, Find algorithm
 John L. Clark <jlc6@po.cwru.edu>                XHMTL exporter maintainer
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter, perl bindings, misc. fixes
+Kenneth J. Davis <jeremyd@computer.org>			Bidi fixes
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Andrew Dunbar <falconsquire@start.com.au>       UTF-8 text recognition, encoding stuff
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
