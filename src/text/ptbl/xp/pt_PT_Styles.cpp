@@ -30,7 +30,7 @@
 #include "ut_hash.h"
 // that's only to use the findNearestFont method
 #include "gr_Graphics.h"
-#include "Xap_Strings.h"
+#include "xap_Strings.h"
 #include "xap_App.h"
 
 
