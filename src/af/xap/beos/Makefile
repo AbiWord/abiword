@@ -24,6 +24,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		xap_BeOSApp.cpp			\
+			xap_BeOSClipboard.cpp		\
 			xap_BeOSDlg_WindowMore.cpp	\
 			xap_BeOSDlg_About.cpp		\
 			xap_BeOSDlg_FileOpenSaveAs.cpp	\

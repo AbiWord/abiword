@@ -55,8 +55,6 @@ UT_Bool XAP_BeOSApp::initialize(void)
 	m_pBeOSToolbarIcons = new AP_BeOSToolbar_Icons();
 	
 	// do any thing we need here...
-
-	_pClipboard = new AP_FakeClipboard();
 	
 	return UT_TRUE;
 }

@@ -29,6 +29,8 @@
 #include "xap_Args.h"
 #include "xap_BeOSApp.h"
 #include "ap_BeOSPrefs.h"
+#include "ap_BeOSClipboard.h"
+class PD_DocumentRange;
 class XAP_StringSet;
 
 
@@ -46,6 +48,8 @@ public:
 	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual UT_Bool					getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange);
 	
 	void							ParseCommandLine(void);
 	
@@ -54,6 +58,7 @@ public:
 protected:
 	AP_BeOSPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
+	AP_BeOSClipboard *		m_pClipboard;
 };
 
 #endif /* AP_BEOSAPP_H */
