@@ -254,6 +254,7 @@ Rasmus Toftdahl Olesen <rto@post.tele.dk>		Danish
 Alan Horkan <horkana@maths.tcd.ie>			Irish (ga-IE), en-GB,
 							en-IE
 hj <huangj@citiz.net>					Chinese (zh-CN)
+Funda Wang <fundawang@linux.net.cn>			Chinese (zh-CN)
 Chih-Wei Huang <cwhuang@linux.org.tw>			Chinese (zh-TW)
 Mauro Colorio <macolori@tin.it> 			Italian
 Marco Innocenti <dot0037@iperbole.bologna.it>		Italian
