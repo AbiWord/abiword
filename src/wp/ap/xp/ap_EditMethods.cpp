@@ -1075,11 +1075,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
-	EV_EditMethod(NF(viewTable),			0,		""),
 	EV_EditMethod(NF(viewTB1),			0,		""),
 	EV_EditMethod(NF(viewTB2),			0,		""),
 	EV_EditMethod(NF(viewTB3),			0,		""),
 	EV_EditMethod(NF(viewTB4),			0,		""),
+	EV_EditMethod(NF(viewTable),			0,		""),	
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
