@@ -1484,3 +1484,15 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 	}
 }
 
+void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
+	{
+	if(pBlock == m_pPendingBlockForSpell)
+		{
+		m_pPendingBlockForSpell = NULL;
+		}
+
+	if(pBlock == m_pPendingBlockForSmartQuote)
+		{
+		m_pPendingBlockForSmartQuote = NULL;
+		}
+	}

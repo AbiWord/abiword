@@ -615,6 +615,10 @@ fl_BlockLayout::~fl_BlockLayout()
 		if (m_pAutoNum->isEmpty())
 			DELETEP(m_pAutoNum);
 	}
+
+	UT_ASSERT(m_pLayout != NULL);
+
+	m_pLayout->notifyBlockIsBeingDeleted(this);
 }
 
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)

@@ -100,6 +100,8 @@ public:
 	void considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset);
 	inline void considerPendingSmartQuoteCandidate() {considerSmartQuoteCandidateAt(m_pPendingBlockForSmartQuote, m_uOffsetForSmartQuote); }
 
+	void			notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock);
+
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 
