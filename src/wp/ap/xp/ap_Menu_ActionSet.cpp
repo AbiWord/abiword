@@ -128,12 +128,12 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_FULLSCREEN, 0,0,1,0, "viewFullScreen", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM_MENU, 1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,0,	"dlgZoom",			NULL,					NULL);
-	_s(AP_MENU_ID_VIEW_ZOOM_200, 0,0,0,0, "zoom200", NULL, NULL);
-	_s(AP_MENU_ID_VIEW_ZOOM_100, 0,0,0,0, "zoom100", NULL, NULL);
-	_s(AP_MENU_ID_VIEW_ZOOM_75, 0,0,0,0, "zoom75", NULL, NULL);
-	_s(AP_MENU_ID_VIEW_ZOOM_50, 0,0,0,0, "zoom50", NULL, NULL);
-	_s(AP_MENU_ID_VIEW_ZOOM_WHOLE, 0,0,0,0, "zoomWhole", NULL, NULL);
-	_s(AP_MENU_ID_VIEW_ZOOM_WIDTH, 0,0,0,0, "zoomWidth", NULL, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_200, 0,0,0,1, "zoom200", ap_GetState_Zoom, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_100, 0,0,0,1, "zoom100", ap_GetState_Zoom, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_75, 0,0,0,1, "zoom75", ap_GetState_Zoom, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_50, 0,0,0,1, "zoom50", ap_GetState_Zoom, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_WHOLE, 0,0,0,1, "zoomWhole", ap_GetState_Zoom, NULL);
+	_s(AP_MENU_ID_VIEW_ZOOM_WIDTH, 0,0,0,1, "zoomWidth", ap_GetState_Zoom, NULL);
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,0,	"insBreak",			NULL,					NULL);

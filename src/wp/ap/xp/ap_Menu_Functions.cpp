@@ -1028,3 +1028,49 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Recent)
 	
 	return EV_MIS_Gray;
 }
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Zoom)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, EV_MIS_ZERO);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+
+	switch(id)
+	{
+	case AP_MENU_ID_VIEW_ZOOM_200:
+		if (pFrame->getZoomPercentage() == 200)
+			s = EV_MIS_Toggled;
+		break;
+	case AP_MENU_ID_VIEW_ZOOM_100:
+		if (pFrame->getZoomPercentage() == 100)
+			s = EV_MIS_Toggled;
+		break;
+	case AP_MENU_ID_VIEW_ZOOM_75:
+		if (pFrame->getZoomPercentage() == 75)
+			s = EV_MIS_Toggled;
+		break;
+	case AP_MENU_ID_VIEW_ZOOM_50:
+		if (pFrame->getZoomPercentage() == 50)
+			s = EV_MIS_Toggled;
+		break;
+	case AP_MENU_ID_VIEW_ZOOM_WHOLE:
+		xxx_UT_DEBUGMSG(("Whole: %d %d\n", pFrame->getZoomPercentage(), pView->calculateZoomPercentForWholePage()));
+		if (pFrame->getZoomPercentage() == pView->calculateZoomPercentForWholePage())
+			s = EV_MIS_Toggled;
+		break;
+	case AP_MENU_ID_VIEW_ZOOM_WIDTH:
+		xxx_UT_DEBUGMSG(("Width: %d %d\n", pFrame->getZoomPercentage(), pView->calculateZoomPercentForPageWidth()));
+		if (pFrame->getZoomPercentage() == pView->calculateZoomPercentForPageWidth())
+			s = EV_MIS_Toggled;
+		break;
+	default:
+		UT_ASSERT_NOT_REACHED ();
+	}
+
+	return s;
+}
+
