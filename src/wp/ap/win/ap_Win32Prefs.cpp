@@ -17,8 +17,11 @@
  * 02111-1307, USA.
  */
 
-#include "stdlib.h"
-#include "string.h"
+#include <windows.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "ut_debugmsg.h"
 #include "ap_Win32Prefs.h"
 
 /*****************************************************************/
@@ -39,21 +42,24 @@ const char * AP_Win32Prefs::getPrefsPathname(void) const
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 
-	// TODO what should the filename be on win32 ??
-		   
-	char * szHome = getenv("HOME");
 	char * szFile = "abiword.txt";
-
-	if (strlen(szHome) + strlen(szFile) + 2 >= PATH_MAX)
-		return NULL;
-
-	strcpy(buf,szHome);
-	int len = strlen(buf);
-	if ((len > 0) && (buf[len-1] == '\\'))
-		;
+	int lenFile = strlen(szFile);
+	
+	DWORD len = GetEnvironmentVariable("HOMEPATH",buf,PATH_MAX-lenFile-2);
+	if (len == 0)
+	{
+		UT_DEBUGMSG(("HOMEPATH not set\n"));
+		strcpy(buf,"C:\\");
+		strcat(buf,szFile);
+	}
 	else
-		strcat(buf,"\\");
-	strcat(buf,szFile);
+	{
+		if (buf[len-1] != '\\')
+			strcat(buf,"\\");
+		strcat(buf,szFile);
+	}
 
+	UT_DEBUGMSG(("Constructed preference file name [%s]\n",buf));
+	
 	return buf;
 }

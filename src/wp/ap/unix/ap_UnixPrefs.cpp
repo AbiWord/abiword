@@ -40,6 +40,8 @@ const char * AP_UnixPrefs::getPrefsPathname(void) const
 	memset(buf,0,sizeof(buf));
 	
 	char * szHome = getenv("HOME");
+	if (!szHome)
+		szHome = "./";
 	char * szFile = ".abiword";
 
 	if (strlen(szHome) + strlen(szFile) + 2 >= PATH_MAX)

@@ -404,6 +404,11 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	int done = 0;
 	char buf[4096];
 
+	m_parserState.m_parserStatus = UT_TRUE;
+	m_parserState.m_bFoundAbiPreferences = UT_FALSE;
+	m_parserState.m_bFoundSelect = UT_FALSE;
+	m_parserState.m_szSelectedSchemeName = NULL;
+
 	szFilename = getPrefsPathname();
 	if (!szFilename)
 	{
@@ -424,11 +429,6 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 		UT_DEBUGMSG(("could not create parser for preferences file.\n"));
 		goto Cleanup;
 	}
-
-	m_parserState.m_parserStatus = UT_TRUE;
-	m_parserState.m_bFoundAbiPreferences = UT_FALSE;
-	m_parserState.m_bFoundSelect = UT_FALSE;
-	m_parserState.m_szSelectedSchemeName = NULL;
 	
 	XML_SetUserData(parser, this);
 	XML_SetElementHandler(parser, startElement, endElement);
