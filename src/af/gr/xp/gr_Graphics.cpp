@@ -1071,8 +1071,9 @@ void GR_Graphics::renderChars(GR_RenderInfo & ri)
 
 /*!
     return true if linebreak at character c is permissible
+    the built-in class is too simple to differentiate between breaks before and after character
 */
-bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
+bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool /* bAfter */)
 {
 	iNext = -1; // we do not bother with this
 	UT_return_val_if_fail(ri.m_pText && ri.m_pText->getStatus() == UTIter_OK, false);

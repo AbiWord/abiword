@@ -357,7 +357,7 @@ bool fp_TextRun::canBreakAfter(void) const
 		m_pRenderInfo->m_iLength = getLength();
 
 		UT_sint32 iNext;
-		if (getGraphics()->canBreak(*m_pRenderInfo, iNext))
+		if (getGraphics()->canBreak(*m_pRenderInfo, iNext, true))
 		{
 			return true;
 		}
@@ -391,7 +391,7 @@ bool fp_TextRun::canBreakBefore(void) const
 		m_pRenderInfo->m_iLength = getLength();
 		UT_sint32 iNext;
 		
-		if (getGraphics()->canBreak(*m_pRenderInfo, iNext))
+		if (getGraphics()->canBreak(*m_pRenderInfo, iNext, false))
 		{
 			return true;
 		}
@@ -507,6 +507,9 @@ bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
  \retval si Split information (left width, right width, and position)
  \param bForce Force a split at first opportunity (max width)
  \return True if split point was found in this Run, otherwise false.
+
+ NB: the offset returned is the offset of the character the after which the break occurs,
+     not at which the break occurs
 */
 bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
@@ -550,7 +553,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			
 			m_pRenderInfo->m_iLength = getLength();
 			m_pRenderInfo->m_iOffset = i;
-			bCanBreak = getGraphics()->canBreak(*m_pRenderInfo, iNext);
+			bCanBreak = getGraphics()->canBreak(*m_pRenderInfo, iNext, true);
 
 			text.setPosition(iPos);
 		}
@@ -628,7 +631,6 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			UT_return_val_if_fail(text.getStatus()==UTIter_OK, false);
 		}
 	}
-	
 
 	if ((si.iOffset == -1) || (si.iLeftWidth == getWidth()))
 	{

@@ -1102,8 +1102,11 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 	return true;
 }
 
-
-bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
+/*!
+    this function should return true if break can occur AFTER the character at indicated
+    position; Uniscribe functions indicate if break can occur BEFORE the character
+*/
+bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
 {
 	// for now we will call ScriptBreak from here; should this be too
 	// much of a bottle neck, we will store the values (but we are
@@ -1111,7 +1114,7 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_iOffset < ri.m_iLength, false);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 	iNext = -1;
-	
+
 	if(!_scriptBreak(RI))
 		return false;
 
@@ -1123,26 +1126,44 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 	
 	if(_needsSpecialBreaking(RI))
 	{
-		if(RI.s_pLogAttr[ri.m_iOffset].fSoftBreak)
+		UT_uint32 iDelta  = 0;
+#if 1
+		if(bAfter)
+		{
+			// the caller wants to know if break can occur on the (logically) right edge of the given
+			// character
+			if(ri.m_iOffset + 1 == ri.m_iLength)
+			{
+				// we are quering the last char of a run, for which we do not have the info
+				// we will return false, which should force the next run to be examined ...
+				return false;
+			}
+
+			// we will examine the next character, since USP tells us about breaking on the left edge
+			iDelta = 1;
+		}
+#endif
+		if(RI.s_pLogAttr[ri.m_iOffset + iDelta].fSoftBreak)
 			return true;
 
 		// find the next break
-		for(UT_uint32 i = RI.m_iOffset; i < RI.m_iLength; ++i)
+		for(UT_uint32 i = ri.m_iOffset + iDelta + 1; i < RI.m_iLength; ++i)
 		{
 			if(RI.s_pLogAttr[i].fSoftBreak)
 			{
-				iNext = i;
+				iNext = i - iDelta;
 				break;
 			}
 		}
 	}
 	else
 	{
+		// we look for white-space break points, so we do not adjust the offset for bAfter
 		if(RI.s_pLogAttr[ri.m_iOffset].fWhiteSpace)
 			return true;
 
 		// find the next break
-		for(UT_uint32 i = RI.m_iOffset; i < RI.m_iLength; ++i)
+		for(UT_uint32 i = ri.m_iOffset; i < RI.m_iLength; ++i)
 		{
 			if(RI.s_pLogAttr[i].fWhiteSpace)
 			{

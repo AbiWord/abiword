@@ -597,7 +597,15 @@ class ABI_EXPORT GR_Graphics
 	//          (not relative to m_iOffset); if the class does not
 	//          know where the next break point lies, it should set
 	//          iNext to -1
-	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext) VIRTUAL_SFX;
+	// bAfter indicates whether we are quering for a break after the character at given offset
+	
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter) VIRTUAL_SFX;
+
+	// the AbiWord line breaking was designed looking for breaks at the right edge of a character,
+	// i.e., the character that can break is included with the left part of the split run.
+	// the Uniscribe library, however, holds breaking info for left edge, and sometimes it is useful
+	// to know what system we are dealing with.
+	virtual bool nativeBreakInfoForRightEdge() VIRTUAL_SFX {return true;}
 
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent) VIRTUAL_SFX;
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const VIRTUAL_SFX;

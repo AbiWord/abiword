@@ -77,7 +77,9 @@ public:
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
 
-	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext);
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter);
+
+	virtual bool nativeBreakInfoForRightEdge() {return false;}
 
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
