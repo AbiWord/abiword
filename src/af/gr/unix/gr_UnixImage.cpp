@@ -23,6 +23,8 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 #include "ut_debugmsg.h"
+#include "gr_Graphics.h"
+#include "ut_string_class.h"
 
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
 
@@ -70,6 +72,40 @@ UT_sint32  GR_UnixImage::getDisplayWidth(void) const
 {
 	UT_return_val_if_fail(m_image, 0);
 	return gdk_pixbuf_get_width (m_image);
+}
+/*!
+ * The idea is to create a
+ * new image from the rectangular segment in device units defined by 
+ * UT_Rect rec. The Image should be deleted by the calling routine.
+ */
+GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
+{
+	UT_sint32 x = pG->tdu(rec.left);
+	UT_sint32 y = pG->tdu(rec.top);
+	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 height = pG->tdu(rec.height);
+	UT_String sName("");
+	getName(sName);
+    UT_String sSub("");
+	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
+	sName += sSub;
+	GR_UnixImage * pImage = new GR_UnixImage(sName.c_str());
+	pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
+	return static_cast<GR_Image *>(pImage);
+}
+/*!
+ * Scale our image to rectangle given by rec. The dimensions of rec
+ * are calculated in logical units.
+ */
+void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
+{
+	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 height = pG->tdu(rec.height);
+	if((width == getDisplayWidth()) && (height == getDisplayHeight()))
+	{
+		return;
+	}
+	scale(width,height);
 }
 
 UT_sint32  GR_UnixImage::getDisplayHeight(void) const

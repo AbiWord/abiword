@@ -1332,7 +1332,6 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	geom.base_height = user_h;
 	geom.width_inc  = 1;
 	geom.height_inc = 1;
-
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,

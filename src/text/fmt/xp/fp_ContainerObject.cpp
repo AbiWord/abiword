@@ -30,6 +30,7 @@
 #include "fv_View.h"
 #include "fp_FootnoteContainer.h"
 #include "fl_FootnoteLayout.h"
+#include "fl_DocLayout.h"
 
 /*!
   Create container
@@ -87,9 +88,11 @@ fp_Container::fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLay
 			m_pContainer(NULL),
 			m_pNext(NULL),
 			m_pPrev(NULL),
-			m_pMyBrokenContainer(NULL)
+			m_pMyBrokenContainer(NULL),
+			m_FillType(NULL,this,FG_FILL_TRANSPARENT)
 {
 	m_vecContainers.clear();
+	m_FillType.setDocLayout(pSectionLayout->getDocLayout());
 }
 
 /*!
@@ -147,6 +150,14 @@ void fp_Container::clearBrokenContainers(void)
 void fp_Container::setContainer(fp_Container * pCO)
 {
 	m_pContainer = pCO;
+	if(pCO != NULL)
+	{
+		m_FillType.setParent(pCO->getFillType()->getParent());
+	}
+	else
+	{
+		m_FillType.setParent(NULL);
+	}
 }
 
 /*!
@@ -253,51 +264,217 @@ bool fp_Container::isOnScreen() const
 	{
 		return false;
 	}
-	
-	UT_Vector vRect;
-	UT_Vector vPages;
-
-	pView->getVisibleDocumentPagesAndRectangles(vRect, vPages);
-
-	UT_uint32 iCount = vPages.getItemCount();
-	bool bRet = false;
-
-	if(iCount)
+	if(getPage())
 	{
-		fp_Page * pMyPage = getPage();
-
-		if(pMyPage)
-		{
-			for(UT_uint32 i = 0; i < iCount; i++)
-			{
-				fp_Page * pPage = static_cast<fp_Page*>(vPages.getNthItem(i));
-
-				if(pPage == pMyPage)
-				{
-//
-// Just getting an on screen page is enough for now I think.
-//
-					bRet = true;
-					break;
-#if 0
-					UT_Rect r;
-					UT_Rect *pR = static_cast<UT_Rect*>(vRect.getNthItem(i));
-
-					if(!getPageRelativeOffsets(r))
-						break;
-
-					bRet = r.intersectsRect(pR);
-#endif
-					break;
-				}
-		
-			}
-		}
-		
-		UT_VECTOR_PURGEALL(UT_Rect*,vRect);
+		return getPage()->isOnScreen();
 	}
-	
-	return bRet;
+	return false;
 }
 
+/*!
+ * Need to be able to fiddle with the fillType so don't do a const return;
+ */
+fg_FillType * fp_Container::getFillType(void)
+{
+	return & m_FillType;
+}
+
+/*!
+ * To draw the background under text. Basic idea is to draw the colour
+ * or image defined here unless the fill type is transparent. If't transparent
+ * we recursively call it's parents until it's not transparent.
+ */
+fg_FillType::fg_FillType(fg_FillType *pParent, fp_Container * pContainer, FG_Fill_Type iType):
+	m_pParent(pParent),
+	m_pContainer(pContainer),
+	m_pDocLayout(NULL),
+	m_FillType(iType),
+	m_pImage(NULL),
+	m_pGraphic(NULL),
+	m_iGraphicTick(0),
+	m_bTransparentForPrint(false),
+	m_color(255,255,255)
+{
+}
+
+fg_FillType::~fg_FillType(void)
+{
+	DELETEP(m_pImage);
+	DELETEP(m_pGraphic);
+}
+
+/*!
+ * Set the parent of this fill class.
+ */
+void  fg_FillType::setParent(fg_FillType * pParent)
+{
+	m_pParent = pParent;
+}
+
+/*!
+ * set this class to have a solid color fill
+ */
+void fg_FillType::setColor(UT_RGBColor & color)
+{
+	m_FillType = FG_FILL_COLOR;
+	m_color = color;
+	DELETEP(m_pImage);
+	DELETEP(m_pGraphic);
+}
+
+/*!
+ * set this class to be transparent.
+ */
+void fg_FillType::setTransparent(void)
+{
+	m_FillType = FG_FILL_TRANSPARENT;
+	DELETEP(m_pImage);
+	DELETEP(m_pGraphic);	
+}
+
+/*!
+ * set this class to have an image background for fills.
+ */
+void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage)
+{
+	m_FillType = FG_FILL_IMAGE;
+	DELETEP(m_pImage);
+	DELETEP(m_pGraphic);	
+	m_pImage = pImage;
+	m_pGraphic = pGraphic;
+}
+
+/*!
+ * Set the doc layout for this class.
+ */
+void  fg_FillType::setDocLayout(FL_DocLayout * pDocLayout)
+{
+	m_pDocLayout = pDocLayout;
+	if(m_pDocLayout)
+	{
+		m_iGraphicTick = m_pDocLayout->getGraphicTick();
+	}
+}
+
+/*!
+ * Set that the fill should be transperent if we're printing.
+ */
+void fg_FillType::setTransparentForPrint(bool bTransparentForPrint)
+{
+	m_bTransparentForPrint = bTransparentForPrint;
+}
+
+/*!
+ * Return the parent of this class.
+ */
+fg_FillType * fg_FillType::getParent(void) const
+{
+	return m_pParent;
+}
+
+/*!
+ * Return the filltype of this class.
+ */
+FG_Fill_Type fg_FillType::getFillType(void) const
+{
+	return m_FillType;
+}
+
+void fg_FillType::_regenerateImage(GR_Graphics * pG)
+{
+	UT_return_if_fail(m_pGraphic);
+	UT_return_if_fail(m_pDocLayout);
+	DELETEP(m_pImage);
+	m_pImage = m_pGraphic->regenerateImage(pG);
+	m_iGraphicTick = m_pDocLayout->getGraphicTick();
+}
+
+/*!
+ * Actually do the fill for this class.
+ */
+void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
+{
+	UT_Rect src;
+	UT_Rect dest;
+	if(!pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		if(m_bTransparentForPrint)
+		{
+			if(getParent())
+			{
+				 UT_sint32 newX = x - (m_pContainer->getX());
+				 UT_sint32 newY = y - (m_pContainer->getY());
+				 getParent()->Fill(pG,newX,newY,x,y,width,height);
+				 return;
+			 }
+			 return;
+		 }
+		 if(m_FillType == FG_FILL_TRANSPARENT)
+		 {
+			 if(getParent())
+			 {
+				 UT_sint32 newX = srcX - (m_pContainer->getX());
+				 UT_sint32 newY = srcY - (m_pContainer->getY());
+				 getParent()->Fill(pG,newX,newY,x,y,width,height);
+				 return;
+			 }
+			 return;
+		 }
+		 if(m_FillType == FG_FILL_IMAGE)
+		 {
+			 _regenerateImage(pG);
+			 m_iGraphicTick = 99999999;
+			 src.left = srcX;
+			 src.top = srcY;
+			 src.width = width;
+			 src.height = height;
+			 dest.left = x;
+			 dest.top = y;
+			 dest.width = width;
+			 dest.height = height;
+			 pG->fillRect(m_pImage,src,dest);
+			 return;
+		 }
+		 if(m_FillType == FG_FILL_COLOR)
+		 {
+			 pG->fillRect(m_color,x,y,width,height);
+			 return;
+		 }
+	 }
+	 if(m_FillType == FG_FILL_TRANSPARENT)
+	 {
+		 if(getParent())
+		 {
+			 UT_sint32 newX = srcX - (m_pContainer->getX());
+			 UT_sint32 newY = srcY - (m_pContainer->getY());
+			 getParent()->Fill(pG,newX,newY,x,y,width,height);
+			 return;
+		 }
+		 UT_RGBColor white(255,255,255);
+		 pG->fillRect(white,x,y,width,height);
+		 return;
+	 }
+	 if(m_FillType == FG_FILL_COLOR)
+	 {
+		 pG->fillRect(m_color,x,y,width,height);
+		 return;
+	 }
+	 if(m_FillType == FG_FILL_IMAGE)
+	 {
+		 if(m_pDocLayout->getGraphicTick() != m_iGraphicTick)
+		 {
+			 _regenerateImage(pG);
+		 }
+		src.left = srcX;
+		src.top = srcY;
+		src.width = width;
+		src.height = height;
+		dest.left = x;
+		dest.top = y;
+		dest.width = width;
+		dest.height = height;
+		pG->fillRect(m_pImage,src,dest);
+	}		
+	return;
+}
 

@@ -2639,24 +2639,8 @@ fp_ImageRun::~fp_ImageRun()
 
 void fp_ImageRun::regenerateImage(GR_Graphics * pG)
 {
-	// Also get max width, height ready for generateImage.
-
-	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
-	fp_Page * p = NULL;
-	if(pDSL->getFirstContainer())
-	{
-		p = pDSL->getFirstContainer()->getPage();
-	}
-	else
-	{
-		p = pDSL->getDocLayout()->getNthPage(0);
-	}
-	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in");
-	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
-	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
-	maxH -= pDSL->getTopMargin() + pDSL->getBottomMargin();
 	DELETEP(m_pImage);
-	m_pImage = m_pFGraphic->generateImage(pG, m_pSpanAP, maxW, maxH);
+	m_pImage = m_pFGraphic->regenerateImage(pG);
 	m_iGraphicTick = getBlock()->getDocLayout()->getGraphicTick();
 
 }

@@ -58,6 +58,7 @@ public:
 //
 	virtual const char * getWidthProp(void) = 0;
 	virtual const char * getHeightProp(void) = 0;
+	virtual GR_Image *   regenerateImage(GR_Graphics * pG) = 0;
 
 	//  generate an image for display in the specified graphics object
 	virtual GR_Image* generateImage(GR_Graphics* pG,

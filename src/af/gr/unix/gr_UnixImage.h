@@ -40,6 +40,8 @@ public:
 	virtual UT_sint32  rowStride (void) const;
     virtual GR_Image::GRType getType(void) const;
    	GdkPixbuf *			getData(void) const { return m_image; }
+    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
+    virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 
 private:
 	GdkPixbuf * m_image;

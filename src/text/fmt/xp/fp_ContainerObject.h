@@ -55,7 +55,15 @@
 #include "gr_Graphics.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
+
 #include <fribidi.h>
+
+typedef enum {
+	FG_FILL_TRANSPARENT,
+	FG_FILL_COLOR,
+	FG_FILL_IMAGE
+} FG_Fill_Type;
+		
 
 typedef struct _fp_Requisition	  fp_Requisition;
 typedef struct _fp_Allocation    fp_Allocation;
@@ -84,7 +92,9 @@ struct _fp_Allocation
 };
 
 class GR_Graphics;
+class FG_Graphic;
 class fl_SectionLayout;
+class FL_DocLayout;
 class fp_Page;
 class fp_Container;
 struct dg_DrawArgs;
@@ -106,6 +116,35 @@ typedef enum {
 	FP_CONTAINER_COLUMN_POSITIONED,
 	FP_CONTAINER_COLUMN_SHADOW
 } FP_ContainerType;
+
+class ABI_EXPORT fg_FillType
+{
+public:
+	fg_FillType(fg_FillType *pParent, fp_Container * pContainer, FG_Fill_Type iType);
+	virtual ~ fg_FillType(void);
+	void           setParent(fg_FillType * pParent);
+	void           setColor(UT_RGBColor & color);
+	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage);
+	void           setTransparent(void);
+	void           setDocLayout(FL_DocLayout * pDocLayout);
+	void           setTransparentForPrint(bool bTransparentForPrint);
+	void           Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
+	fg_FillType *  getParent(void) const;
+	FG_Fill_Type   getFillType(void) const;
+	FL_DocLayout * getDocLayout(void);
+private:
+    void        	_regenerateImage(GR_Graphics * pG);
+	fg_FillType *   m_pParent;
+	fp_Container *  m_pContainer;
+	FL_DocLayout *  m_pDocLayout;
+	FG_Fill_Type    m_FillType;
+	GR_Image *      m_pImage;
+	FG_Graphic *    m_pGraphic;    
+	UT_uint32       m_iGraphicTick;
+	bool            m_bTransparentForPrint;
+	UT_RGBColor     m_color;
+};
+
 
 class ABI_EXPORT fp_ContainerObject
 {
@@ -213,13 +252,16 @@ public:
 	fp_Container *      getMyBrokenContainer(void) const;
 	void                setMyBrokenContainer(fp_Container * pMyBroken);
 	void                clearBrokenContainers(void);
+	fg_FillType *       getFillType(void);
 private:
 	fp_Container*          m_pContainer;
 	fp_ContainerObject *   m_pNext;
 	fp_ContainerObject *   m_pPrev;
 	UT_Vector              m_vecContainers;
 	fp_Container *         m_pMyBrokenContainer;
+    fg_FillType            m_FillType;                        
 };
+
 
 #endif /*  CONTAINEROBJECT_H */
 

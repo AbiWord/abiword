@@ -22,6 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_string_class.h"
+#include "ut_misc.h"
 
 class GR_Graphics;
 class UT_ByteBuf;
@@ -37,7 +38,8 @@ public:
 
    	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-
+    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
+    virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 	void				getName(char* szName) const;
 	void getName ( UT_String & copy ) const;
 								

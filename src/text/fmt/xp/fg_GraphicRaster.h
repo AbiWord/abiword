@@ -40,6 +40,7 @@ public:
 	virtual double		getWidth(void);
 	virtual double		getHeight(void);
 	virtual const char * getDataId(void) const;
+	virtual GR_Image*	regenerateImage(GR_Graphics* pG);
 	virtual GR_Image*	generateImage(GR_Graphics* pG,
 									  const PP_AttrProp * pSpanAP,
 									  UT_sint32 maxW, UT_sint32 maxH);
@@ -58,6 +59,8 @@ protected:
 	bool m_bOwnPNG;
 
 	UT_sint32 m_iWidth, m_iHeight;
+	UT_sint32 m_iMaxW;
+	UT_sint32 m_iMaxH;
 	const PP_AttrProp* m_pSpanAP;
 	const XML_Char* m_pszDataID;
 };

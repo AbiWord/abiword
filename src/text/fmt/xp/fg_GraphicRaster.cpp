@@ -133,6 +133,15 @@ const char * FG_GraphicRaster::getHeightProp(void)
 	return szHeight;
 }
 
+/*!
+ * If either the graphics class or graphics resolution changes, regenerate
+ * the image.
+ */
+GR_Image * FG_GraphicRaster::regenerateImage(GR_Graphics * pG)
+{
+	return generateImage(pG,m_pSpanAP,m_iMaxW,m_iMaxH);
+}
+
 //
 //  We will generate an image at the proper resolution for display in the
 //  graphics object we are given.
@@ -180,7 +189,8 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 
 	if (maxW != 0 && iDisplayWidth > maxW) iDisplayWidth = maxW;
 	if (maxH != 0 && iDisplayHeight > maxH)	iDisplayHeight = maxH;
-
+	m_iMaxW = maxW;
+	m_iMaxH = maxH;
    	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
 
 	return pImage;

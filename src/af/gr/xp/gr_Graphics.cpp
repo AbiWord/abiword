@@ -321,13 +321,22 @@ void GR_Graphics::flush(void)
 {
 	// default implementation does nothing
 }
-
+/*!
+ * Draw the specified image at the location specified in local units 
+ * (xDest,yDest). xDest and yDest are in logical units.
+ */
 void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
    if (pImg)
      pImg->render(this, xDest, yDest);
 }
 
+/*!
+ * Create a new image from the Raster rgba byte buffer defined by pBB.
+ * The dimensions of iWidth and iHeight are in logical units but the image
+ * doesn't scale if the resolution or zoom changes. Instead you must create
+ * a new image.
+ */
 GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
    GR_VectorImage * vectorImage = NULL;
@@ -587,6 +596,24 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 //
 }
 
+/*!
+ * This method fills the distination rectangle with a piece of the image pImg.
+ * The size and location of the piece of the image is defined by src. If the
+ * internal dimensions of src and dest are not the same, the image is scaled 
+ * from src to fit into dest. src and dest are in logical units.
+*/
+void GR_Graphics::fillRect(GR_Image * pImg, const UT_Rect & src, const UT_Rect & dest)
+{
+	GR_Image * pImageSection = pImg->createImageSegment(this, src);
+	UT_return_if_fail(pImageSection);
+	pImageSection->scaleImageTo(this,dest);
+	drawImage(pImageSection,dest.left,dest.top);
+	delete pImageSection;
+}
+/*!
+ * Fill the specified rectangle with color defined by "c". The dimensions
+ * of UT_Rect are in logical units.
+ */
 void GR_Graphics::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 {
 	fillRect(c, r.left, r.top, r.width, r.height);

@@ -269,6 +269,7 @@ class ABI_EXPORT GR_Graphics
 							   UT_sint32 y,
 							   UT_sint32 w,
 							   UT_sint32 h) = 0;
+	virtual void      fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & dest);
 
 	void      fillRect(const UT_RGBColor& c, const UT_Rect &r);
 	virtual void      invertRect(const UT_Rect* pRect) = 0;

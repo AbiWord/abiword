@@ -55,6 +55,8 @@ typedef enum {FP_VISIBLE = 0,
 #include "fl_Layout.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h" // for UT_RGBColor
+#include "gr_Image.h"
+#include "gr_Graphics.h"
 
 class FL_DocLayout;
 class PD_Document;

@@ -1455,7 +1455,12 @@ bool GR_UnixGraphics::endPrint(void)
 }
 
 // gdk-pixbuf based routines
-
+/*!
+ * Create a new image from the Raster rgba byte buffer defined by pBB.
+ * The dimensions of iWidth and iHeight are in logical units but the image
+ * doesn't scale if the resolution or zoom changes. Instead you must create
+ * a new image.
+ */
 GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iWidth, UT_sint32 iHeight, GR_Image::GRType iType)
 {
    	GR_Image* pImg = NULL;
@@ -1470,7 +1475,10 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
 // and that values < than the alpha threshold are painted as 0s
 // this seems to work for me, so I'm happy - Dom
 #define ABI_ALPHA_THRESHOLD 100
-
+/*!
+ * Draw the specified image at the location specified in local units 
+ * (xDest,yDest). xDest and yDest are in logical units.
+ */
 void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
