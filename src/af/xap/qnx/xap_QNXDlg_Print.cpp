@@ -105,10 +105,6 @@ void XAP_QNXDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pContext)
 
 	GR_QNXGraphics *gr = (GR_QNXGraphics *)pQNXFrameImpl->getGraphics();
 	gr->setPrintContext(NULL);
-/*
-	PpPrintReleasePC(m_pPrintContext);
-	m_pPrintContext = NULL;
-*/
 }
 
 /*****************************************************************/
@@ -142,6 +138,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	if (m_pPrintContext) {
 		PpReleasePC(m_pPrintContext);
+		m_pPrintContext = NULL;
 	}
 
 	/*TODO: Map the user choices from persistPrintDlg to the current dialog */
