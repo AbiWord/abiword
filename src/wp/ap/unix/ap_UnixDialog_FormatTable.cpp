@@ -178,7 +178,6 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 	m_wLineTop = NULL;
 	m_wLineBottom = NULL;
 	m_wApplyToMenu = NULL;	
-	m_wSetImageButton = NULL;
 	m_wSelectImageButton = NULL;
 	m_wNoImageButton = NULL;
 	m_wBorderThickness = NULL;
