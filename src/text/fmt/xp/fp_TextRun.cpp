@@ -1687,20 +1687,41 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(pNext && pNext->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pNext);
-			if(pT->m_bIsOverhanging)
-				pT->_drawFirstChar(pDA->xoff + m_iWidth,yTopOfRun);
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->m_iAscent-1;
+ 			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+ 			{
+ 				ytemp -= pT->m_iAscent * 1/2;
+ 			}
+ 			else if (pT->m_fPosition == TEXT_POSITION_SUBSCRIPT)
+ 			{
+ 				ytemp += pT->m_iDescent /* * 3/2 */;
+ 			}
+
+ 			if(pT->m_bIsOverhanging)
+ 				pT->_drawFirstChar(pDA->xoff + m_iWidth,ytemp);
 		}
 
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pPrev);
-			if(pT->m_bIsOverhanging)
-				pT->_drawLastChar(pDA->xoff,yTopOfRun, pgbCharWidths);
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->m_iAscent-1;
+ 			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
+ 			{
+ 				ytemp -= pT->m_iAscent * 1/2;
+ 			}
+ 			else if (pT->m_fPosition == TEXT_POSITION_SUBSCRIPT)
+ 			{
+ 				ytemp += pT->m_iDescent /* * 3/2 */;
+ 			}
+
+ 			if(pT->m_bIsOverhanging)
+ 				pT->_drawLastChar(pDA->xoff,ytemp, pgbCharWidths);
 		}
 	}
 
 	// now draw the whole string
 	m_pG->setFont(m_pScreenFont);
+
 #ifdef BIDI_ENABLED
 	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
 	m_pG->drawChars(m_pSpanBuff, 0, m_iLen, pDA->xoff, yTopOfRun);	
@@ -2162,9 +2183,9 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		else
 		{
 			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff);
-			for(i = 0; i < lenSpan; i++)
+			for(int j = 0; j < lenSpan; j++)
 			{
-				iLeftWidth += pCharWidths[offset + i];
+				iLeftWidth += pCharWidths[offset + j];
 			}
 
 
