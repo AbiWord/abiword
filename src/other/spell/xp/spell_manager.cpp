@@ -59,6 +59,7 @@ typedef ISpellChecker SpellCheckerClass;
 /* private */ SpellManager::SpellManager ()
 	: m_map (NBUCKETS), m_lastDict(0)
 {
+	m_missingHashs += "-none-";
 }
 
 /*!
