@@ -3871,14 +3871,6 @@ static bool s_doParagraphDlg(FV_View * pView)
 		return false;
 
 	FREEP(props);
-
-	if (!pView->getSectionFormat(&props))
-		return false;
-
-	if (!pDialog->setDialogData(props))
-		return false;
-
-	FREEP(props);
 	
 	// run the dialog
 	pDialog->runModal(pFrame);
