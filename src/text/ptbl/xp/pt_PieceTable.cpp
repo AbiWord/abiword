@@ -942,6 +942,10 @@ bool pt_PieceTable::_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** pp
 	{
 		countFoots++;
 	}
+	if(isFootnote(pf))
+	{
+		countFoots--;
+	}
 	xxx_UT_DEBUGMSG(("_getStruxFromFragStrux: 1 countFoots %d \n",countFoots));
 	while(pf && ((pf->getType() != pf_Frag::PFT_Strux) || (countFoots > 0) 
 				 || isFootnote(pf) || isEndFootnote(pf)))
