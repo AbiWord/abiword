@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,10 +36,6 @@ class AP_CocoaClipboard : public XAP_CocoaClipboard
 public:
 	AP_CocoaClipboard();
 
-static const char *	AP_CLIPBOARD_TEXTPLAIN_8BIT;
-static const char *	AP_CLIPBOARD_STRING;
-static const char *	AP_CLIPBOARD_COMPOUND_TEXT;
-static const char *	AP_CLIPBOARD_RTF;
 };
 
 #endif /* AP_COCOACLIPBOARD_H */

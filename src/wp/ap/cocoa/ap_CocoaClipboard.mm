@@ -29,10 +29,6 @@
 #include "ap_CocoaClipboard.h"
 
 //////////////////////////////////////////////////////////////////
-const char *	AP_CocoaClipboard::AP_CLIPBOARD_TEXTPLAIN_8BIT =		"TEXT";
-const char *	AP_CocoaClipboard::AP_CLIPBOARD_STRING			=		"STRING";
-const char *	AP_CocoaClipboard::AP_CLIPBOARD_COMPOUND_TEXT	=		"COMPOUND_TEXT";
-const char *	AP_CocoaClipboard::AP_CLIPBOARD_RTF 			=		"text/rtf";
 //////////////////////////////////////////////////////////////////
 
 AP_CocoaClipboard::AP_CocoaClipboard()

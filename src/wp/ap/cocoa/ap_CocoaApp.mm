@@ -502,10 +502,14 @@ void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboa
     // NOTE: (like adding the new stuff).
     // m_pClipboard->clearData(true,false);
 	
-    if (bufRTF.getLength() > 0)
-		m_pClipboard->addData(AP_CocoaClipboard::AP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
-    if (bufTEXT.getLength() > 0)
-		m_pClipboard->addData(AP_CocoaClipboard::AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
+	
+	m_pClipboard->prepareForText();
+    if (bufRTF.getLength() > 0) {
+		m_pClipboard->addData(XAP_CocoaClipboard::XAP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
+	}
+    if (bufTEXT.getLength() > 0) {
+		m_pClipboard->addData(XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
+	}
 
     return;
 }
@@ -516,12 +520,12 @@ void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboa
   format has name of encoding as prefix, and AP_CLIPBOARD_STRING
   doesn't - hvv.
 */
-static const char * aszFormatsAccepted[] = { AP_CocoaClipboard::AP_CLIPBOARD_RTF,
-											 AP_CocoaClipboard::AP_CLIPBOARD_STRING,
-											 AP_CocoaClipboard::AP_CLIPBOARD_TEXTPLAIN_8BIT,
+static const char * aszFormatsAccepted[] = { XAP_CocoaClipboard::XAP_CLIPBOARD_RTF,
+											 XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
+											 XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT,
 											 0 /* must be last */ };
-static const char * txtszFormatsAccepted[] = { AP_CocoaClipboard::AP_CLIPBOARD_STRING,
-											   AP_CocoaClipboard::AP_CLIPBOARD_TEXTPLAIN_8BIT,
+static const char * txtszFormatsAccepted[] = { XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
+											   XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT,
 											   0 };
 
 /*!
@@ -554,7 +558,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		return;
     }
 	
-    if (strcmp(szFormatFound,AP_CocoaClipboard::AP_CLIPBOARD_RTF) == 0 && bHonorFormatting)
+    if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_RTF) == 0 && bHonorFormatting)
     {
 		iLen = UT_MIN(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -574,8 +578,8 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		return;
 	}
 
-    if (   (strcmp(szFormatFound,AP_CocoaClipboard::AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-		   || (strcmp(szFormatFound,AP_CocoaClipboard::AP_CLIPBOARD_STRING) == 0))
+    if (   (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+		   || (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_STRING) == 0))
     {
 		iLen = UT_MIN(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -823,7 +827,7 @@ void AP_CocoaApp::setSelectionStatus(AV_View * pView)
     else
     {
 		m_bHasSelection = bSelectionStateInThisView;
-		m_pClipboard->clearClipboard();
+//		m_pClipboard->clearClipboard();
     }
 	
     xxx_UT_DEBUGMSG(("here we go whooooo\n"));
@@ -986,7 +990,7 @@ bool AP_CocoaApp::getCurrentSelection(const char** formatList,
     {
 		UT_DEBUGMSG(("Clipboard::getCurrentSelection: considering format [%s]\n",formatList[j]));
 
-		if (strcmp(formatList[j],AP_CocoaClipboard::AP_CLIPBOARD_RTF) == 0)
+		if (strcmp(formatList[j], XAP_CocoaClipboard::XAP_CLIPBOARD_RTF) == 0)
 		{
 			IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
 			if (!pExpRtf)
@@ -997,8 +1001,8 @@ bool AP_CocoaApp::getCurrentSelection(const char** formatList,
 			goto ReturnThisBuffer;
 		}
 			
-		if (   (strcmp(formatList[j],AP_CocoaClipboard::AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-			   || (strcmp(formatList[j],AP_CocoaClipboard::AP_CLIPBOARD_STRING) == 0))
+		if (   (strcmp(formatList[j], XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+			   || (strcmp(formatList[j], XAP_CocoaClipboard::XAP_CLIPBOARD_STRING) == 0))
 		{
 			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
 			if (!pExpText)
