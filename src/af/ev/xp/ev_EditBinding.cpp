@@ -246,12 +246,13 @@ bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 		}
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
-		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
-		if (p->m_peb[n_emo][n_ems][n_emc]) {
+		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
+		UT_return_val_if_fail(n_emc != 0, 0);
+		if (p->m_peb[n_emo][n_ems][n_emc-1]) {
 			delete peb;
 			return false;
 		}
-		p->m_peb[n_emo][n_ems][n_emc] = peb;
+		p->m_peb[n_emo][n_ems][n_emc-1] = peb;
 		return true;
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
@@ -314,8 +315,9 @@ bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 			return false;
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
-		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
-		p->m_peb[n_emo][n_ems][n_emc] = 0;
+		UT_uint32 n_emc = EV_EMC_ToNumber(eb);
+		UT_return_val_if_fail(n_emc != 0, 0);
+		p->m_peb[n_emo][n_ems][n_emc-1] = 0;
 		return true;
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
