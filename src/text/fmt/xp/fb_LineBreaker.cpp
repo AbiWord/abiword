@@ -148,7 +148,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					
 					m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
 
-					UT_Bool bRes = pLine->findNextTabStop(m_iWorkingLineWidth, iPos, iType, iLeader);
+					UT_Bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType, iLeader);
 					if (bRes)
 					{
 						UT_DEBUGMSG(("%s:%d tab run: p=%p type=%d leader=%d height=%d width=%d offset=%d length=%d\n",
