@@ -454,7 +454,7 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
   server (well sorta) all at one time.
   \param pDocRange a range of the document to be copied
 */
-void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
+void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
 
     UT_ByteBuf bufRTF;
@@ -481,9 +481,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
         UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in HTML format.\n", bufHTML.getLength()));
     }
 
-    //bufHTML.writeToFile("clipboard.html");
-    
-    // create raw 8bit text buffer to put on the clipboard
+    // create UTF-8 text buffer to put on the clipboard
 		
     IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc, "UTF-8");
     if (pExpText)
@@ -500,12 +498,17 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
     // NOTE: (like adding the new stuff).
     // m_pClipboard->clearData(true,false);
 	
+    // TODO: handle CLIPBOARD vs PRIMARY
+    XAP_UnixClipboard::T_AllowGet target = ((bUseClipboard)
+					    ? XAP_UnixClipboard::TAG_ClipboardOnly
+					    : XAP_UnixClipboard::TAG_PrimaryOnly);
+
     if (bufRTF.getLength() > 0)
-		m_pClipboard->addRichTextData((UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
+		m_pClipboard->addRichTextData(target, (UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
     if (bufHTML.getLength() > 0)
-                m_pClipboard->addHtmlData((UT_Byte *)bufHTML.getPointer(0), bufHTML.getLength());
+                m_pClipboard->addHtmlData(target, (UT_Byte *)bufHTML.getPointer(0), bufHTML.getLength());
     if (bufTEXT.getLength() > 0)
-		m_pClipboard->addTextData((UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
+		m_pClipboard->addTextData(target, (UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
 
     return;
 }
@@ -523,13 +526,11 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
   for investigation or some usability testing.
 */
 void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard,
-									bool bHonorFormatting)
+				    bool bHonorFormatting)
 {
     XAP_UnixClipboard::T_AllowGet tFrom = ((bUseClipboard)
-										   ? XAP_UnixClipboard::TAG_ClipboardOnly
-										   : XAP_UnixClipboard::TAG_PrimaryOnly);
-
-    UT_DEBUGMSG(("PASTING FROM '%s' CLIPBOARD\n", bUseClipboard ? "CLIPBOARD" : "PRIMARY"));
+					   ? XAP_UnixClipboard::TAG_ClipboardOnly
+					   : XAP_UnixClipboard::TAG_PrimaryOnly);
 
     const char * szFormatFound = NULL;
     unsigned char * pData = NULL;
@@ -790,7 +791,6 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
     // that will immediately follow will short circut to us
     // rather than going to the server).
 
-
     if (bSelectionStateInThisView)
     {
 		m_bHasSelection = bSelectionStateInThisView;
@@ -811,24 +811,13 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		m_pClipboard->clearData(false,true);
     }
 	
-    UT_DEBUGMSG(("here we go whooooo\n"));
     setViewSelection(pView);
     m_pFrameSelection = (XAP_Frame *)pView->getParentData();
 
     m_bSelectionInFlux = false;
     return;
 }
-#if 0
-void    AP_UnixApp::setViewSelection( AV_View * pView)
-{
-    m_pViewSelection = pView;
-}
 
-AV_View* AP_UnixApp::getViewSelection(void)
-{
-    return m_pViewSelection;
-}
-#endif
 /*!
   we intercept this so that we can erase our
   selection-related variables if necessary.

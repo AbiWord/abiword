@@ -442,7 +442,7 @@ const XAP_StringSet * AP_CocoaApp::getStringSet(void) const
   server (well sorta) all at one time.
   \param pDocRange a range of the document to be copied
 */
-void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange)
+void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
 
     UT_ByteBuf bufRTF;

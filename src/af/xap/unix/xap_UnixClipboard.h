@@ -42,13 +42,13 @@ public:
 
 	void				initialize(void);
 
-	bool				addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	bool				addData(T_AllowGet tTo, const char* format, void* pData, UT_sint32 iNumBytes);
 	void				clearData(bool bClipboard, bool bPrimary);
 	bool				getData(T_AllowGet tFrom, const char** formatList,
 						void ** ppData, UT_uint32 * pLen,
 						const char **pszFormatFound);
 
-	bool addTextUTF8(void * pData, UT_sint32 iNumBytes);
+	bool addTextUTF8(T_AllowGet tTo, void * pData, UT_sint32 iNumBytes);
 	bool getTextUTF8(T_AllowGet tFrom, void ** ppData, UT_uint32 * pLen);
 
 	bool				assertSelection(void);

@@ -64,7 +64,7 @@ public:
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
-	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
 	//virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool) = 0;
 	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;

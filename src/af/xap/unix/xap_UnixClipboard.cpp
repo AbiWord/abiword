@@ -25,6 +25,8 @@
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_UnixClipboard.h"
+#include "xap_Frame.h"
+#include "xav_View.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -176,22 +178,30 @@ static void s_selrcv(GtkWidget * widget, GtkSelectionData *selectionData, guint3
    	return;
 }
 
+static GtkClipboard* gtkClipboardForTarget(XAP_UnixClipboard::_T_AllowGet get)
+{
+  static GtkClipboard * sClipboard = 0 ;
+
+  switch( get )
+    {
+    case XAP_UnixClipboard::TAG_ClipboardOnly:
+      sClipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+      break;
+
+    case XAP_UnixClipboard::TAG_PrimaryOnly:
+      sClipboard = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+      break;
+
+    case XAP_UnixClipboard::TAG_MostRecent:
+    default:
+	break;
+    }
+
+  return sClipboard ;
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
-
-// DOM: TEMPORARY HACK
-#define	XAP_CLIPBOARD_TEXTPLAIN_8BIT 		"TEXT"
-#define XAP_CLIPBOARD_STRING			"STRING"
-#define XAP_CLIPBOARD_COMPOUND_TEXT		"COMPOUND_TEXT"
-#define XAP_CLIPBOARD_TEXT_PLAIN                 "text/plain"
-
-// DOM: TEMPORARY HACK
-static const char * txtszFormatsAccepted[] = { 
-  XAP_CLIPBOARD_TEXT_PLAIN,
-  XAP_CLIPBOARD_STRING,
-  XAP_CLIPBOARD_TEXTPLAIN_8BIT,
-  XAP_CLIPBOARD_COMPOUND_TEXT,
-  0 };
 
 void XAP_UnixClipboard::AddFmt(const char * szFormat)
 {
@@ -205,12 +215,6 @@ XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
 	// caller must call initialize()
 
 	m_pUnixApp = pUnixApp;
-
-	// DOM: TEMPORARY HACK
-	AddFmt(XAP_CLIPBOARD_TEXT_PLAIN);
-	AddFmt(XAP_CLIPBOARD_TEXTPLAIN_8BIT);
-	AddFmt(XAP_CLIPBOARD_STRING);
-	AddFmt(XAP_CLIPBOARD_COMPOUND_TEXT);
 }
 
 XAP_UnixClipboard::~XAP_UnixClipboard()
@@ -307,29 +311,50 @@ bool XAP_UnixClipboard::assertSelection(void)
 	m_bOwnPrimary = gtk_selection_owner_set(m_myWidget,m_atomPrimary,m_timePrimary);
 	UT_DEBUGMSG(("Clipboard: took ownership of PRIMARY property [%s][timestamp %08lx]\n",
 				 ((m_bOwnPrimary) ? "successful" : "failed"),m_timePrimary));
+
 	return m_bOwnPrimary;
 }
 
-bool XAP_UnixClipboard::addTextUTF8(void * pData, UT_sint32 iNumBytes)
+bool XAP_UnixClipboard::addTextUTF8(T_AllowGet tTo, 
+				    void * pData, UT_sint32 iNumBytes)
 {
-  // DOM: TEMPORARY HACK
-  if ( addData ( XAP_CLIPBOARD_TEXTPLAIN_8BIT, pData, iNumBytes ) &&
-       addData ( XAP_CLIPBOARD_STRING, pData, iNumBytes ) &&
-       addData ( XAP_CLIPBOARD_TEXT_PLAIN, pData, iNumBytes ) &&
-       addData ( XAP_CLIPBOARD_COMPOUND_TEXT, pData, iNumBytes ) )
-    return true ;
-  return false ;
+  GtkClipboard * clipboard = 0 ;
+
+  clipboard = gtkClipboardForTarget ( tTo ) ;
+  gtk_clipboard_set_text ( clipboard, (const gchar *)pData, (gint)iNumBytes ) ;
+
+  return true ;
 }
 
 bool XAP_UnixClipboard::getTextUTF8(T_AllowGet tFrom, void ** ppData, UT_uint32 * pLen)
 {
-  // DOM: TEMPORARY HACK
-  const char *pszFormatFound = NULL;
-  return getData ( tFrom, txtszFormatsAccepted, ppData, pLen, &pszFormatFound ) ;
+  GtkClipboard * clipboard = 0 ;
+
+  clipboard = gtkClipboardForTarget ( tFrom ) ;
+  gchar * text = gtk_clipboard_wait_for_text ( clipboard ) ;
+
+  if ( !text )
+    {
+      *pLen   = 0;
+      *ppData = 0;
+      return false ;
+    }
+  size_t length = strlen ( text ) ;
+
+  m_databuf.truncate(0);
+  m_databuf.append((UT_Byte *)text, (UT_uint32)length ) ;
+  g_free(text);
+
+  *pLen   = m_databuf.getLength();
+  *ppData = (void *)m_databuf.getPointer(0);
+
+  return true ;
 }
 	
-bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pData, UT_sint32 iNumBytes)
 {
+  // TODO: HONOR tFrom!!!!! CLIPBOARD VS PRIMARY
+
 	// This is an EXPLICIT Cut or Copy from the User.
 	// First, we stick a copy of the data onto our internal clipboard.
 	// Then, we assert ownership of the CLIPBOARD property.

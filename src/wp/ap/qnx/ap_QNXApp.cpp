@@ -356,7 +356,7 @@ const XAP_StringSet * AP_QNXApp::getStringSet(void) const
 #define Ph_CLIPBOARD_RTF "RTF"
 #define Ph_CLIPBOARD_TEXT "TEXT"
 
-void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange)
+void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
 	UT_ByteBuf rtfbuf, txtbuf;
 

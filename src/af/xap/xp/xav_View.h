@@ -133,6 +133,12 @@ public:
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
 	virtual bool 	isSelectionEmpty(void) const = 0;
+
+	virtual void	cmdCopy(bool bToClipboard = true) = 0;
+	virtual void	cmdCut(void) = 0;
+	virtual void	cmdPaste(bool bHonorFormatting = true) = 0;
+	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos) = 0;
+
 //
 // Let subclasses override but this is here to avoid a crash on frame closing.
 // With a selection in place. (Rather than pure virtual.)

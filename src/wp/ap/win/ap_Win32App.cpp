@@ -498,7 +498,7 @@ const XAP_StringSet * AP_Win32App::getStringSet(void) const
 	return m_pStringSet;
 }
 
-void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
+void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.

@@ -423,7 +423,7 @@ const XAP_StringSet * AP_BeOSApp::getStringSet(void) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void AP_BeOSApp::copyToClipboard(PD_DocumentRange * pDocRange)
+void AP_BeOSApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.

@@ -48,7 +48,7 @@ public:
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
-	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
+	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool, bool = true);
 	virtual bool					canPasteFromClipboard(void);
 	virtual void					cacheCurrentSelection(AV_View *) {};

@@ -81,26 +81,25 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
 	AddFmt ( AP_CLIPBOARD_IMAGE_TIFF ) ;
 }
 
-bool AP_UnixClipboard::addTextData(void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
 {
-  return addTextUTF8(pData, iNumBytes);
+  return addTextUTF8(tTo, pData, iNumBytes);
 }
 
-bool AP_UnixClipboard::addRichTextData(void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addRichTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
 {
-  if ( addData ( AP_CLIPBOARD_TXT_RTF, pData, iNumBytes ) && 
-       addData ( AP_CLIPBOARD_APPLICATION_RTF, pData, iNumBytes ) )
+  if ( addData ( tTo, AP_CLIPBOARD_TXT_RTF, pData, iNumBytes ) && 
+       addData ( tTo, AP_CLIPBOARD_APPLICATION_RTF, pData, iNumBytes ) )
     return true ;
   return false ;
 }
 
-bool AP_UnixClipboard::addHtmlData(void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
 {
-  if ( addData ( AP_CLIPBOARD_TXT_HTML, pData, iNumBytes ) &&
-        addData ( AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes ) )
+  if ( addData ( tTo, AP_CLIPBOARD_TXT_HTML, pData, iNumBytes ) &&
+        addData ( tTo, AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes ) )
     return true ;
   return false ;
-
 }
 
 bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,

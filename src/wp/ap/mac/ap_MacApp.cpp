@@ -164,7 +164,7 @@ const XAP_StringSet * AP_MacApp::getStringSet(void) const
 	return m_pStringSet;
 }
 
-void AP_MacApp::copyToClipboard(PD_DocumentRange * /*pDocRange*/)
+void AP_MacApp::copyToClipboard(PD_DocumentRange * /*pDocRange*/, , bool bUseClipboard)
 {
 }
 

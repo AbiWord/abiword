@@ -2457,7 +2457,7 @@ void FV_View::cmdCut(void)
 	// Disable list updates until after we've finished
 	//
 	m_pDoc->disableListUpdates();
-	cmdCopy();
+	cmdCopy(true);
 	_deleteSelection();
 
 	// restore updates and clean up dirty lists
@@ -2475,7 +2475,9 @@ void FV_View::cmdCut(void)
 	m_iPieceTableState = 0;
 }
 
-void FV_View::cmdCopy(void)
+// bToClipboard is true if you want to copy to the CLIPBOARD
+// selection on UNIX, as opposed to some PRIMARY selection
+void FV_View::cmdCopy(bool bToClipboard)
 {
 	if (isSelectionEmpty())
 	{
@@ -2485,7 +2487,7 @@ void FV_View::cmdCopy(void)
 
 	PD_DocumentRange dr;
 	getDocumentRangeOfCurrentSelection(&dr);
-	m_pApp->copyToClipboard(&dr);
+	m_pApp->copyToClipboard(&dr, bToClipboard);
 	notifyListeners(AV_CHG_CLIPBOARD);
 }
 

@@ -188,7 +188,7 @@ public:
 	virtual void	setPaperColor(const XML_Char * clr);
 
 	virtual bool    isDocumentPresent(void);
-	virtual void	cmdCopy(void);
+	virtual void	cmdCopy(bool bToClipboard = true);
 	virtual void	cmdCut(void);
 	virtual void	cmdPaste(bool bHonorFormatting = true);
 	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos);

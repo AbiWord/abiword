@@ -131,7 +131,7 @@ public:
 	virtual const char *					getUserPrivateDirectory() = 0;
 	virtual const char *					getAbiSuiteLibDir() const;
 	virtual const char *					getAbiSuiteAppDir() const = 0;
-	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool							canPasteFromClipboard() = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
