@@ -562,7 +562,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 #endif
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
-	m_iBookmarksCount(0)
+	m_iBookmarksCount(0),
+	m_iMSWordListId(0)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1642,7 +1643,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  myLFO = &ps->lfo[apap->ilfo - 1];
 
 	  UT_uint32 i = 0, j = 0, k = 0;
-	  while(i < apap->ilfo - 1 && i < ps->nolfo)
+	  while((UT_sint32)i < apap->ilfo - 1 && i < ps->nolfo)
 		{
 		  j += ps->lfo[i].clfolvl;
 		  i++;
@@ -1790,6 +1791,19 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  myCHPX.cbGrpprl = mygCHPX_count;
 	  myCHPX.grpprl = mygCHPX;
 	  myCHPX.istd = 4095; // no style
+
+
+	  // if we are in a new list, then do some clean up first and remember the list id
+	  if(m_iMSWordListId != myListId)
+	  {
+		  m_iMSWordListId = myListId;
+
+		  for(UT_uint32 i = 0; i < 9; i++)
+			  m_iListIdIncrement[i] = 0;
+
+		  UT_VECTOR_PURGEALL(ListIdLevelPair *, m_vLists);
+		  m_vLists.clear();
+	  }
 
 	  // a hack -- see the note on myListId below
 	  myListId += myLVLF->nfc;
