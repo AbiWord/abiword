@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
- *  
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -27,9 +27,9 @@ class fp_Line;
 class fp_Run;
 
 /*
-	fb_Alignment is an abstract worker class that encapsulates the 
-	alignment policy in effect for the current fp_Line of an individual 
-	fl_Block during formatting. 
+	fb_Alignment is an abstract worker class that encapsulates the
+	alignment policy in effect for the current fp_Line of an individual
+	fl_Block during formatting.
 
 	Each policy is implemented in its own subclass:
 
@@ -38,9 +38,9 @@ class fp_Run;
 		fb_Alignment_right
 		fb_Alignment_justify
 */
-enum FB_AlignmentType { FB_ALIGNMENT_LEFT, 
-                        FB_ALIGNMENT_RIGHT, 
-                        FB_ALIGNMENT_CENTER, 
+enum FB_AlignmentType { FB_ALIGNMENT_LEFT,
+                        FB_ALIGNMENT_RIGHT,
+                        FB_ALIGNMENT_CENTER,
                         FB_ALIGNMENT_JUSTIFY
                         };
 
@@ -54,7 +54,7 @@ public:
 	virtual UT_sint32	getStartPosition() = 0;
 	virtual UT_sint32	getStartPositionInLayoutUnits() = 0;
 	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
-    virtual FB_AlignmentType getType() = 0;        
+    virtual FB_AlignmentType getType() = 0;
 
 };
 
@@ -68,13 +68,10 @@ public:
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
     FB_AlignmentType getType(){return FB_ALIGNMENT_LEFT;};
 
-#ifdef BIDI_ENABLED
 private:
 
 	UT_sint32	m_iStartPosition;
 	UT_sint32	m_iStartPositionLayoutUnits;
-#endif
-
 };
 
 class ABI_EXPORT fb_Alignment_center : public fb_Alignment
@@ -126,10 +123,8 @@ private:
 	int			m_iSpaceCountLeft;
 	int			m_iSpaceCount;
 	int			m_iExtraWidth;
-#ifdef BIDI_ENABLED
 	UT_sint32	m_iStartPosition;
 	UT_sint32	m_iStartPositionLayoutUnits;
-#endif
 
 #ifndef NDEBUG
 	void _confirmJustification(fp_Line *pLine);

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -74,7 +74,7 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 		m_pDocument->getAttrProp(nextApi,&pBlockAP);
 
 		if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"listid", szListid))
-		{		
+		{
 			szListid = NULL;
 		}
 		if(szListid != NULL)
@@ -173,13 +173,13 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			m_pie->_rtf_keyword("line");
 			pData++;
 			break;
-			
+
 		case UCS_VTAB:					// VTAB -- representing a Forced-Column-Break
 			FlushBuffer();
 			m_pie->_rtf_keyword("column");
 			pData++;
 			break;
-			
+
 		case UCS_FF:					// FF -- representing a Forced-Page-Break
 			FlushBuffer();
 			m_pie->_rtf_keyword("page");
@@ -214,7 +214,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 				else
 				{
 					for(int i=0;i<mblen;++i) {
-						switch (mbbuf[i]) 
+						switch (mbbuf[i])
 						{
 							case '\\':
 							case '{':
@@ -224,7 +224,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 						sBuf += mbbuf[i];
 					}
 				}
-			} else if (!m_pie->m_atticFormat) 
+			} else if (!m_pie->m_atticFormat)
 			{
 				if (*pData > 0x00ff)		// emit unicode character
 				{
@@ -238,7 +238,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 					// TODO decide if we should be smarter here and do a \uc1\u<u><A> ??
 					// TODO if so, we may need to begin a sub-brace level to avoid
 					// TODO polluting the global context w/r/t \uc.
-					
+
 					UT_UCSChar lc = XAP_EncodingManager::get_instance()->try_UToWindows(*pData);
 					m_pie->_rtf_keyword("uc",lc && lc<256 ? 1 : 0);
 					unsigned short ui = ((unsigned short)(*pData));	// RTF is limited to +/-32K ints
@@ -256,7 +256,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 					// out as is, or we could send them out in hex or as a
 					// unicode sequence.  when i originally did this, i chose
 					// hex, so i'm not going to change it now.
-				
+
 					m_pie->_rtf_nonascii_hex2(*pData);
 					pData++;
 				}
@@ -265,16 +265,16 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 					sBuf += (char)*pData++;
 				}
 			} else {
-				/* 
+				/*
 				    wordpad (and probably word6/7) don't understand
 				    \uc0\u<UUUU> format at all.
 				*/
 				UT_UCSChar c = *pData++;
 				UT_UCSChar lc = XAP_EncodingManager::get_instance()->try_UToWindows(c);
-				if (lc==0 || lc >255) 
+				if (lc==0 || lc >255)
 				{
 					/*
-					    can't be represented in windows encoding. 
+					    can't be represented in windows encoding.
 					    So emit unicode (though attic apps won't understand it.
 					    This branch is shamelessly copied from
 					    branch if (*pData > 0x00ff) above.
@@ -289,15 +289,15 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 					// TODO decide if we should be smarter here and do a \uc1\u<u><A> ??
 					// TODO if so, we may need to begin a sub-brace level to avoid
 					// TODO polluting the global context w/r/t \uc.
-					
+
 					m_pie->_rtf_keyword("uc",0);
 					unsigned short ui = ((unsigned short)(*pData));	// RTF is limited to +/-32K ints
 					signed short si = *((signed short *)(&ui));		// so we need to write negative
 					m_pie->_rtf_keyword("u",si);					// numbers for large unicode values.
 				}
-				else 
+				else
 				{
-					if (lc > 0x007f) 
+					if (lc > 0x007f)
 					{
 						FlushBuffer();
 
@@ -305,7 +305,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 						// out as is, or we could send them out in hex or as a
 						// unicode sequence.  when i originally did this, i chose
 						// hex, so i'm not going to change it now.
-				
+
 						m_pie->_rtf_nonascii_hex2(lc);
 					}
 					else
@@ -332,7 +332,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	// We are responsible for <document>
 	//
 	// <document> := <info>? <docfmt>* <section>+
-	
+
 	m_pDocument = pDocument;
 	m_pie = pie;
 	m_bInSpan = false;
@@ -345,7 +345,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_bBlankLine = false;
 	_setTabEaten(false);
 	_setListBlock(false);
-	
+
 	// when we are going to the clipboard, we should implicitly
 	// assume that we are starting in the middle of a section
 	// and block.  when going to a file we should not.
@@ -378,7 +378,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			
+
 			PT_BufIndex bi = pcrs->getBufIndex();
 			const UT_UCSChar * pData = m_pDocument->getPointer(bi);
 //
@@ -388,7 +388,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			if(_isListBlock() && !_isTabEaten())
 			{
 				if(*pData == UCS_TAB)
-				{	
+				{
 					_setTabEaten(true);
 					pData++;
 					length--;
@@ -415,14 +415,14 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 
 				//#if 0
 			// TODO deal with these other inline objects....
-			
+
 			case PTO_Field:
 				_closeSpan();
 				_openTag("field","/",false,api);
 				return true;
 
 				//#endif
-				
+
 			case PTO_Bookmark:
 				_closeSpan ();
 				_writeBookmark(pcro);
@@ -439,7 +439,7 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
 		return true;
-		
+
 	default:
 		UT_ASSERT(0);
 		return false;
@@ -492,7 +492,7 @@ void s_RTF_ListenerWriteDoc::_writeFieldTrailer(void)
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
 }
-	
+
 /*!
  * This method returns the field value at the current document location.
  * If there is not a field at the current document location return NULL.
@@ -816,7 +816,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
 			 return;
 		 }
-		 else 
+		 else
 		 {
 			 UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			 return;
@@ -843,7 +843,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			// <section> := <secfmt>* <hdrftr>? <para>+ (\sect <section>)?
 			//
 			// here we deal with everything except for the <para>+
-// 
+//
 // OK first we have so see if there is a header/footer associated with this section
 //
 			PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -900,7 +900,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			return true;
 		}
 
-	case PTX_SectionHdrFtr: 
+	case PTX_SectionHdrFtr:
 		{
 			_closeSpan();
 			_closeBlock();
@@ -915,8 +915,8 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			//
 			// {' <hdrctl> <para>+ '}' where <hdrctl> is one of
 			// \header or \footer for headers or footers on all pages
-			// \headerl or \headerr or \headerf for headers on left, right, and first pages 
-			// \footerl or \footerr or \footerf for footers on left, right, and first pages 
+			// \headerl or \headerr or \headerf for headers on left, right, and first pages
+			// \footerl or \footerr or \footerf for footers on left, right, and first pages
 			//
 			// here we deal with everything except for the <para>+
 			m_sdh = sdh;
@@ -991,14 +991,14 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	const PP_AttrProp * pSectionAP = NULL;
 
 	// <docfmt>
-	
+
 	const XML_Char * szDefaultTabs = PP_evalProperty("default-tab-interval",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",(char*)szDefaultTabs,720);
 
 	// <docfmt> -- document views and zoom level
-	
+
 	m_pie->_rtf_keyword("viewkind",1);	/* PageLayout */
 
 	// TODO <docfmt> -- footnotes and endnotes
@@ -1019,10 +1019,10 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	UT_String_sprintf(szPaperHeight, "%fin", height);
 
 	setlocale (LC_NUMERIC, old_locale);
-	
+
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",szPaperWidth.c_str(),0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",szPaperHeight.c_str(),0);
-	
+
 	const XML_Char * szLeftMargin = PP_evalProperty("page-margin-left",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,true);
@@ -1043,7 +1043,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	if (landscape)
 		m_pie->_rtf_keyword("landscape");
 	m_pie->_rtf_keyword("widowctl");	// enable widow and orphan control
-	
+
 	// TODO <docfmt> -- linked styles
 	// TODO <docfmt> -- compatibility options
 	// TODO <docfmt> -- forms
@@ -1117,18 +1117,16 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	pSectionAP->getAttribute("header", szHeaderExists);
 	const XML_Char * szFooterExists = NULL;
 	pSectionAP->getAttribute("footer", szFooterExists);
-#ifdef BIDI_ENABLED
 	const XML_Char * szDomDir = PP_evalProperty("dom-dir",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
-	
+
 	bool bSectRTL = UT_strcmp (szDomDir,"rtl") == 0;
-#endif
 
 	bool bColLine = false;
 	if (szColumnLine && !UT_strcmp (szColumnLine, "on"))
 		bColLine = true;
-		
+
 	// TODO add other properties here
 
 	m_pie->_rtf_nl();
@@ -1218,14 +1216,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	{
 		m_pie->_rtf_keyword("pgncont");
 	}
-		
-#ifdef BIDI_ENABLED
+
 	if (bSectRTL)
 		m_pie->_rtf_keyword("rtlsect");
 	else
 		m_pie->_rtf_keyword("ltrsect");
-#endif
-
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1287,7 +1282,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 	if (m_bJustStartingSection)			// 'par' is a delimiter, rather than a plain start.
 		m_bJustStartingSection = false;
-		
+
 	else
 	{
 		// begin a new paragraph. The previous
@@ -1319,7 +1314,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_bStartedList = true;
 	}
 	///
-	/// Output fallback numbered/bulleted label for rtf readers that don't 
+	/// Output fallback numbered/bulleted label for rtf readers that don't
 	/// know /*/pn
 	///
 	if(id != 0 )
@@ -1368,7 +1363,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			}
 		}
 		//
-        // Put in Tab for braindead RTF importers (like Ted) that can't 
+        // Put in Tab for braindead RTF importers (like Ted) that can't
         // do numbering.
 		//
 		char tab = (char) 9;
@@ -1402,7 +1397,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
 
-#ifdef BIDI_ENABLED
 		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 		xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
 		if (szBidiDir)
@@ -1413,10 +1407,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 				m_pie->_rtf_keyword ("rtlpar");
 		}
 
-#endif
-	
 	const XML_Char * szStyle = NULL;
-	if (pBlockAP->getAttribute("style", szStyle)) 
+	if (pBlockAP->getAttribute("style", szStyle))
 	{
 	    m_pie->_rtf_keyword("s", m_pie->_getStyleNumber(szStyle));
 	}
@@ -1444,7 +1436,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("*");
-		m_pie->_rtf_keyword("abilist"); 
+		m_pie->_rtf_keyword("abilist");
 		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",szLevel.c_str(),-1);
@@ -1457,28 +1449,28 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_close_brace();
 
 		/// list decimal
-	        
+
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("abilistdecimal");
 		m_pie->_rtf_chardata((const char *)  szAbiListDecimal ,strlen(szAbiListDecimal));
 		m_pie->_rtf_close_brace();
 
 		/// list delim
-	        
+
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("abilistdelim");
 		m_pie->_rtf_chardata((const char *)  szAbiListDelim ,strlen( szAbiListDelim));
 		m_pie->_rtf_close_brace();
 
 		/// list style
-	        
+
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("abiliststyle");
 		m_pie->_rtf_chardata((const char *)  szListStyle ,strlen( szListStyle));
 		m_pie->_rtf_close_brace();
-		
+
 		/// Finished!
-		
+
 		m_pie->_rtf_close_brace();
 
 	}
@@ -1504,9 +1496,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		static XML_Char p[80],leftDelim[80],rightDelim[80];
 		sprintf(p, "%s",pAuto->getDelim());
 		UT_uint32 rTmp;
-	
+
 		UT_uint32 i = 0;
-	
+
 		while (p[i] && p[i] != '%' && p[i+1] != 'L')
 		{
 			leftDelim[i] = p[i];
@@ -1607,7 +1599,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	///
 	/// OK Now output word-97 style lists. First detect if we've moved to
     /// a new list list structure. We need m_currID to track the previous list
-    /// we were in. 
+    /// we were in.
 	///
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing output of list structure id = %d\n",id));
 	if(id != 0 )
@@ -1633,9 +1625,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			}
 			m_currID = id;
 		}
-		/* This is changed so that Word97 can see the numbers in 
+		/* This is changed so that Word97 can see the numbers in
 		   numbered lists */
-		if(pAuto->getType() < BULLETED_LIST) 
+		if(pAuto->getType() < BULLETED_LIST)
 		{
 	        	m_pie->_rtf_keyword_ifnotdefault_twips("fn",(char*)szFirstLineIndent,0);
 	        	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
@@ -1672,7 +1664,7 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 	PT_AttrPropIndex api = pcro->getIndexAP();
 	const PP_AttrProp * pBookmarkAP = NULL;
 	m_pDocument->getAttrProp(api,&pBookmarkAP);
-	
+
 	const XML_Char * szType = NULL;
 	bool bFound = pBookmarkAP->getAttribute("type", szType);
 	if (!bFound) {
@@ -1708,10 +1700,10 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	PT_AttrPropIndex api = pcro->getIndexAP();
 	const PP_AttrProp * pHyperlinkAP = NULL;
 	m_pDocument->getAttrProp(api,&pHyperlinkAP);
-	
+
 	const XML_Char * szHyper = NULL;
 	bool bFound = pHyperlinkAP->getAttribute("xlink:href", szHyper);
-	if (!bFound) 
+	if (!bFound)
 	{
 		UT_DEBUGMSG (("RTF_Export: cannot get address for hyperlink\n"));
 		return;
@@ -1736,7 +1728,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	m_pDocument->getAttrProp(api,&pImageAP);
 
 	// fetch the "name" of the image and use it to fetch the actual image data.
-	
+
 	const XML_Char * szDataID = NULL;
 	bool bFoundDataID = pImageAP->getAttribute("dataid",szDataID);
 	if (!bFoundDataID)
@@ -1753,10 +1745,10 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 		UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
 		return;
 	}
-	
+
 	// see if the image has a width/height attribute that should
 	// override the actual pixel size of the image.
-	
+
 	const XML_Char * szWidthProp = NULL;
 	const XML_Char * szHeightProp = NULL;
 	bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
@@ -1792,7 +1784,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			//              here -- word97 seems to, but this really bloats the file.
 
 			m_pie->_rtf_keyword("pngblip");
-			
+
 			// <pictsize>
 
 			m_pie->_rtf_keyword("picw",iImageWidth);
@@ -1802,7 +1794,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			if (bFoundHeightProperty)
 				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",(char*)szHeightProp,0);
 			// we use the default values for picscale[xy]==100, piccrop[tblr]==0
-			
+
 			// TODO deal with <metafileinfo>
 
 			// <data>

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -49,7 +49,7 @@ BeginSetEnc(hu,HU,true,"iso-8859-2")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Új", 		tb_new_xpm,		NULL, "Új dokumentum létrehozása")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Új", 		tb_new_xpm,		NULL, "Új dokumentum létrehozása")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Megnyit",		tb_open_xpm,	NULL, "Meglévõ dokumentum megnyitása")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Ment", 	tb_save_xpm,	NULL, "A dokumentum mentése")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Mentés másként", 	tb_save_as_xpm,	NULL, "A dokumentum mentése más néven")
@@ -112,11 +112,9 @@ BeginSetEnc(hu,HU,true,"iso-8859-2")
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Makró",	tb_script_play_xpm,		NULL, "Makró futtatása")
 
      // ... add others here ...
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Mindenképp Balról Jobbra",		tb_text_direction_ltr_xpm,	NULL, "A szöveg irány mindenképp balról jobbra legyen")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Mindenképp Jobbról Balra",		tb_text_direction_rtl_xpm,	NULL, "A szöveg irány mindenképp jobbról balra legyen")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Bekezdés Iránya",	tb_text_dom_direction_rtl_xpm,	NULL, "A bekezdés domináns irányának megváltoztatása")
-#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

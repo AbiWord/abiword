@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -50,7 +50,7 @@ BeginSetEnc(nb,NO,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ny",                   tb_new_xpm,                     NULL, "Nytt dokument")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ny",                   tb_new_xpm,                     NULL, "Nytt dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Åpne",                 tb_open_xpm,                    NULL, "Åpne et eksisterende dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Lagre",                tb_save_xpm,                    NULL, "Lagre dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Lagre som",            tb_save_as_xpm,                 NULL, "Lagre dokumentet med et nytt navn")
@@ -111,19 +111,17 @@ BeginSetEnc(nb,NO,true,"iso-8859-1")
 
    	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Forgrunnsfarge",	tb_text_fgcolor_xpm,			        NULL, "Endre forgrunnsfarge")
         ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Bakgrunnsfarge",	tb_text_bgcolor_xpm,			        NULL, "Endre bakgrunnsfarge")
-   
+
         ToolbarLabel(AP_TOOLBAR_ID_INDENT,              "Øk innrykk",           tb_text_indent_xpm,             NULL, "Øker avsnittsinnrykk")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,            "Reduser innrykk",      tb_text_unindent_xpm,           NULL, "Reduserer avsnittsinnrykk")
 
    	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,         "Kjør skript",          tb_script_play_xpm,             NULL, "Kjør skript")
 
-#ifdef BIDI_ENABLED
 	//ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,         "Tekstretning",	tb_text_direction_rtl_xpm,	NULL, "Endre retning på tekst")
    	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Tving VTH-retning",    tb_text_direction_ltr_xpm,      NULL, "Tvingar venstre til høgre-retning for tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Tving HTV-retning",    tb_text_direction_rtl_xpm,      NULL, "Tvingar høgre til venstre-retning for tekst")
 
         ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,   "Avsnittretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endre dominant retning på avsnitt")
-#endif
 
    // ... add others here ...
 

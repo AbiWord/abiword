@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -105,22 +105,22 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 	// the OK/Cancel buttons and the Tab-control).
 
 	AP_Win32Dialog_Options * pThis;
-	
+
 	switch (msg)
 	{
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Options *)lParam;
 		SWL(hWnd,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
+
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
-		
+
 	case WM_NOTIFY:
 		pThis = GWL(hWnd);
 		return pThis->_onNotify(hWnd,lParam);
-		
+
 	default:
 		return 0;
 	}
@@ -132,7 +132,7 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam
 BOOL AP_Win32Dialog_Options::_onNotify(HWND hWnd, LPARAM lParam)
 {
 	// This handles WM_NOTIFY messages for the top-level dialog.
-	
+
 	LPNMHDR pNmhdr = (LPNMHDR)lParam;
 
 	switch (pNmhdr->code)
@@ -143,16 +143,16 @@ BOOL AP_Win32Dialog_Options::_onNotify(HWND hWnd, LPARAM lParam)
 
 	case TCN_SELCHANGE:
 		{
-			UT_uint32 iTo = TabCtrl_GetCurSel(pNmhdr->hwndFrom);  
+			UT_uint32 iTo = TabCtrl_GetCurSel(pNmhdr->hwndFrom);
 			for (UT_uint32 k=0; k<m_vecSubDlgHWnd.getItemCount(); k++)
 				ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(k), ((k==iTo) ? SW_SHOW : SW_HIDE));
 			break;
 		}
-		
+
 	// Process other notifications here
 	default:
 		break;
-	} 
+	}
 
 	return 0;
 }
@@ -162,7 +162,7 @@ BOOL AP_Win32Dialog_Options::_onNotify(HWND hWnd, LPARAM lParam)
 
 // this little struct gets passed into s_tabProc
 // it's on the stack so don't rely on it to be valid later.
-typedef struct _tabParam 
+typedef struct _tabParam
 {
 	AP_Win32Dialog_Options *	pThis;
 	WORD which;
@@ -181,12 +181,12 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_tabProc(HWND hWnd,UINT msg,WPARAM wParam
 		{
 			TabParam * pTP = (TabParam *) lParam;
 
-			// from now on, we can just remember pThis 
+			// from now on, we can just remember pThis
 			pThis = pTP->pThis;
 			SWL(hWnd,pThis);
 			return pThis->_onInitTab(hWnd,wParam,lParam);
 		}
-		
+
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		UT_DEBUGMSG(("s_tabProc: received WM_COMMAND [wParam 0x%08lx][lParam 0x%08lx]\n",wParam,lParam));
@@ -200,7 +200,7 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_tabProc(HWND hWnd,UINT msg,WPARAM wParam
 struct {
 	UT_Dimension  dim;
 	int 		  id;
-} s_aAlignUnit[] = 
+} s_aAlignUnit[] =
 {
 	{ DIM_IN, XAP_STRING_ID_DLG_Unit_inch },
 	{ DIM_CM, XAP_STRING_ID_DLG_Unit_cm },
@@ -239,9 +239,9 @@ struct {
 BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	// This handles the WM_INITDIALOG message for the top-level dialog.
-	
+
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle));
 
 	// localize controls
@@ -253,7 +253,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	// setup the tabs
 	{
 		TabParam tp;
-		TCITEM tie; 
+		TCITEM tie;
 
 		XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 		HINSTANCE hinst = pWin32App->getInstance();
@@ -262,37 +262,37 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 		tp.pThis = this;
 
-		// remember the windows we're using 
-		
+		// remember the windows we're using
+
 		m_hwndDlg = hWnd;
 		m_hwndTab = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_TAB);
 
 		// add a tab for each of the child dialog boxes
-	
-		tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM; 
-		tie.iImage = -1; 
 
-		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Toolbars); 
+		tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM;
+		tie.iImage = -1;
+
+		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Toolbars);
 		tie.lParam = AP_RID_DIALOG_OPT_TOOLBARS;
-		TabCtrl_InsertItem(m_hwndTab, TOOLBARS_INDEX, &tie); 
+		TabCtrl_InsertItem(m_hwndTab, TOOLBARS_INDEX, &tie);
 
-		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Spelling); 
+		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Spelling);
 		tie.lParam = AP_RID_DIALOG_OPT_SPELL;
-		TabCtrl_InsertItem(m_hwndTab, SPELL_INDEX, &tie); 
+		TabCtrl_InsertItem(m_hwndTab, SPELL_INDEX, &tie);
 
-		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Layout); 
+		tie.pszText = (LPSTR) _GV(DLG_Options_Label_Layout);
 		tie.lParam = AP_RID_DIALOG_OPT_LAYOUT;
-		TabCtrl_InsertItem(m_hwndTab, LAYOUT_INDEX, &tie); 
+		TabCtrl_InsertItem(m_hwndTab, LAYOUT_INDEX, &tie);
 
-		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Preferences); 
+		tie.pszText = (LPSTR) _GV(DLG_Options_TabLabel_Preferences);
 		tie.lParam = AP_RID_DIALOG_OPT_PREF;
-		TabCtrl_InsertItem(m_hwndTab, PREF_INDEX, &tie); 
+		TabCtrl_InsertItem(m_hwndTab, PREF_INDEX, &tie);
 
 		// finally, create the (modeless) child dialogs
-		
+
 		tp.which = AP_RID_DIALOG_OPT_TOOLBARS;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
-		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
 										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT((w
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
@@ -300,24 +300,24 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 		tp.which = AP_RID_DIALOG_OPT_SPELL;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
-		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
-										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
+										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT((w
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
 
 		tp.which = AP_RID_DIALOG_OPT_LAYOUT;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
-		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
-										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
+										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT((w
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
-		
+
 		tp.which = AP_RID_DIALOG_OPT_PREF;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
-		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
-										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
+										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT((w
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
@@ -348,16 +348,16 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	// This handles the WM_INITDIALOG message for the tab-control
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	// position ourselves w.r.t. containing tab
 
 	RECT r;
 	GetClientRect(m_hwndTab, &r);
 	TabCtrl_AdjustRect(m_hwndTab, FALSE, &r);
-	SetWindowPos(hWnd, HWND_TOP, r.left, r.top, 0, 0, SWP_NOSIZE); 
+	SetWindowPos(hWnd, HWND_TOP, r.left, r.top, 0, 0, SWP_NOSIZE);
 
 	m_vecSubDlgHWnd.addItem(hWnd);
-	
+
 	TabParam * pTP = (TabParam *) lParam;
 	switch (pTP->which)
 	{
@@ -378,10 +378,10 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			EnableWindow( GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_RDO_Text), 		false );
 			EnableWindow( GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_RDO_IconsAndText), false );
 			EnableWindow( GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips), false );
-			
+
 		}
 		break;
-			
+
 	case AP_RID_DIALOG_OPT_SPELL:
 		{
 			// localize controls
@@ -435,22 +435,22 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 			// Populate values in the _COMBO_UNITS
 			HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
-			for( int n1 = 0; n1 < SIZE_aAlignUnit; n1++ ) 
+			for( int n1 = 0; n1 < SIZE_aAlignUnit; n1++ )
 			{
 				SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)pSS->getValue(s_aAlignUnit[n1].id));
 			}
 
 			HWND hwndPaperSize = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
-			for( int n2 = (int)fp_PageSize::_first_predefined_pagesize_; n2 < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; n2++ ) 
+			for( int n2 = (int)fp_PageSize::_first_predefined_pagesize_; n2 < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; n2++ )
 			{
-				SendMessage( hwndPaperSize, 
-							 CB_INSERTSTRING, 
+				SendMessage( hwndPaperSize,
+							 CB_INSERTSTRING,
 							 (WPARAM) n2,
 							 (LPARAM) fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)n2) );
 			}
 		}
 		break;
-	
+
 	case AP_RID_DIALOG_OPT_PREF:
 		{
 			// localize controls
@@ -487,18 +487,15 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			ShowWindow( hwndBidiHebrewContextGlyphs, SW_HIDE);
 			ShowWindow( hwndBidiSaveContextGlyphs, SW_HIDE);
 
-#ifdef BIDI_ENABLED
 			ShowWindow( hwndBidiBox, SW_SHOW);
 			ShowWindow( hwndBidiChk, SW_SHOW);
 			ShowWindow( hwndBidiUseContextGlyphs, SW_SHOW);
-			//ShowWindow( hwndBidiSaveContextGlyphs, SW_SHOW);
 			ShowWindow( hwndBidiHebrewContextGlyphs, SW_SHOW);
 			_DS(OPTIONS_FRM_BidiOptions,			DLG_Options_Label_BiDiOptions);
 			_DS(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
 			_DS(OPTIONS_CHK_OtherUseContextGlyphs,	DLG_Options_Label_UseContextGlyphs);
 			_DS(OPTIONS_CHK_OtherSaveContextGlyphs, DLG_Options_Label_SaveContextGlyphs);
 			_DS(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
-#endif
 
 			// TODO need to populate values in the _COMBO_CURRENTSCHEME
 //			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
@@ -524,7 +521,7 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	BOOL bChecked;
 	AP_Dialog_Background *pColorDialog;
 	UT_RGBColor rgbColor;
-	
+
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
@@ -535,13 +532,13 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar: _enableDisableLogic(id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR);	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR); 	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR);		return 0;
-	// TODO:  Enable the following 4 contrils														
-//	case AP_RID_DIALOG_OPTIONS_RDO_Icons:				_enableDisableLogic(id_XXXX);								retrun 0;											
-//	case AP_RID_DIALOG_OPTIONS_RDO_Text:				_enableDisableLogic(id_XXXX);								retrun 0;											
-//	case AP_RID_DIALOG_OPTIONS_RDO_IconAndTexts:		_enableDisableLogic(id_XXXX);								retrun 0;											
+	// TODO:  Enable the following 4 contrils
+//	case AP_RID_DIALOG_OPTIONS_RDO_Icons:				_enableDisableLogic(id_XXXX);								retrun 0;
+//	case AP_RID_DIALOG_OPTIONS_RDO_Text:				_enableDisableLogic(id_XXXX);								retrun 0;
+//	case AP_RID_DIALOG_OPTIONS_RDO_IconAndTexts:		_enableDisableLogic(id_XXXX);								retrun 0;
 //	case AP_RID_DIALOG_OPTIONS_CHK_ViewToolTips:		_enableDisableLogic(id_XXXX);								return 0;
 
-	// SPELL TAB														
+	// SPELL TAB
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellCheckAsType:	_enableDisableLogic(id_CHECK_SPELL_CHECK_AS_TYPE);	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellHideErrors: 	_enableDisableLogic(id_CHECK_SPELL_HIDE_ERRORS);	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellSuggest:		_enableDisableLogic(id_CHECK_SPELL_SUGGEST);		return 0;
@@ -555,7 +552,7 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 		UT_DEBUGMSG(("WM_Command for BtnCustomDict\n"));
 		return 0;
 	case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET:
-		//_event_IgnoreReset(); 
+		//_event_IgnoreReset();
 		UT_DEBUGMSG(("WM_Command for BtnIgnoreReset\n"));
 		return 0;
 	case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT:
@@ -570,7 +567,7 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		_enableDisableLogic(id_CHECK_VIEW_HIDDEN_TEXT); 	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable: 	_enableDisableLogic(id_CHECK_VIEW_UNPRINTABLE); 	return 0;
 	case AP_RID_DIALOG_OPTIONS_COMBO_UNITS: 																return 0;
-	case AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize:														return 0;																											
+	case AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize:														return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable:	_enableDisableLogic(id_CHECK_SMART_QUOTES_ENABLE);	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable:
 		bChecked = (IsDlgButtonChecked( hWnd, AP_RID_DIALOG_OPTIONS_CHK_BGColorEnable ) == BST_CHECKED);
@@ -598,12 +595,10 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	case AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave:		_enableDisableLogic(id_CHECK_PREFS_AUTO_SAVE);		return 0;
 	case AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME:
 		return 0;
-#ifdef BIDI_ENABLED
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl:	_enableDisableLogic(id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);	return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs:	_enableDisableLogic(id_CHECK_OTHER_USE_CONTEXT_GLYPHS); return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs:	_enableDisableLogic(id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs:  _enableDisableLogic(id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);return 0;
-#endif
 	case AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile:
 		_enableDisableLogic(id_CHECK_AUTO_SAVE_FILE);
 
@@ -623,7 +618,7 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 BOOL AP_Win32Dialog_Options::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	// This handles WM_COMMAND message for the top-level dialog.
-	
+
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
@@ -638,7 +633,7 @@ BOOL AP_Win32Dialog_Options::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		UT_DEBUGMSG(("OptionsBtnDefault\n"));
 		_event_SetDefaults();
 		return 0;
-		
+
 	case IDCANCEL:								// also AP_RID_DIALOG_OPTIONS_BTN_CANCEL
 		m_answer = a_CANCEL;
 		EndDialog(hWnd,0);
@@ -744,7 +739,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ShowSplash),value);
 		return;
 
-#ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs),value);
 		return;
@@ -752,7 +746,6 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs),value);
 		return;
-#endif
 
 	case id_CHECK_AUTO_SAVE_FILE:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX),AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile),value);
@@ -777,8 +770,8 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 	void AP_Win32Dialog_Options::_set##button(const bool b) 												\
 	{ CheckDlgButton((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 
-DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowStandardBar);									   
-DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowFormatBar);										   
+DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowStandardBar);
+DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowFormatBar);
 DEFINE_GET_SET_BOOL(TOOLBARS_INDEX,ViewShowExtraBar);
 
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellCheckAsType);
@@ -799,12 +792,10 @@ DEFINE_GET_SET_BOOL(LAYOUT_INDEX,SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 DEFINE_GET_SET_BOOL(PREF_INDEX,ShowSplash);
-#ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherDirectionRtl);
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherUseContextGlyphs);
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherSaveContextGlyphs);
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherHebrewContextGlyphs);
-#endif
 
 #undef DEFINE_GET_SET_BOOL
 
@@ -850,7 +841,7 @@ void AP_Win32Dialog_Options::_setAutoSaveFile(const bool b)
 void AP_Win32Dialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
 	char szExtension[ 10 ];
-	
+
 	GetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX), AP_RID_DIALOG_OPTIONS_TXT_AutoSaveExtension, szExtension, 7 );
 
 	stRetVal = szExtension;
@@ -866,7 +857,7 @@ void AP_Win32Dialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 	int iValue = GetDlgItemInt((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, NULL, FALSE );
 	char szTemp[10];
 
-	snprintf( szTemp, 10, "%d", iValue );											 
+	snprintf( szTemp, 10, "%d", iValue );
 
 	stRetVal = szTemp;
 }
@@ -876,7 +867,7 @@ void AP_Win32Dialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 	SetDlgItemInt((HWND)m_vecSubDlgHWnd.getNthItem(PREF_INDEX), AP_RID_DIALOG_OPTIONS_TXT_AutoSavePeriod, atoi(stPeriod.c_str()), FALSE );
 }
 
-UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void) 
+UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void)
 {
 	HWND hwndAlign = GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
 	int nSel = SendMessage(hwndAlign, CB_GETCURSEL, 0, 0);
@@ -886,10 +877,10 @@ UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void)
 	return DIM_IN;
 }
 
-void  AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim) 
+void  AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim)
 {
 	int n1;
-	for( n1 = 0; n1 < SIZE_aAlignUnit; n1++ ) 
+	for( n1 = 0; n1 < SIZE_aAlignUnit; n1++ )
 		if( s_aAlignUnit[n1].dim == dim )
 			break;
 	if( n1 == SIZE_aAlignUnit )
@@ -899,25 +890,25 @@ void  AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim)
 	SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM)n1, 0);
 }
 
-int AP_Win32Dialog_Options::_gatherNotebookPageNum(void) 
+int AP_Win32Dialog_Options::_gatherNotebookPageNum(void)
 {
 	return 0;
 }
 
-void AP_Win32Dialog_Options::_setNotebookPageNum(const int pn) 
+void AP_Win32Dialog_Options::_setNotebookPageNum(const int pn)
 {
 }
 
 void AP_Win32Dialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
 {
-	HWND hwndPaperSize = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), 
+	HWND hwndPaperSize = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),
 									 AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
 	SendMessage(hwndPaperSize, CB_SETCURSEL, (WPARAM)pre, 0);
 }
 
 fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
 {
-	HWND hwndPaperSize = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), 
+	HWND hwndPaperSize = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX),
 									 AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
 	int nSel = SendMessage(hwndPaperSize, CB_GETCURSEL, 0, 0);
 

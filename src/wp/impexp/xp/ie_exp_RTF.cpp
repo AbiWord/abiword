@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -132,7 +132,7 @@ bool IE_Exp_RTF_attic_Sniffer::getDlgLabels(const char ** pszDesc,
 	*ft = getFileType();
 	return true;
 }
-	
+
 
 #if !defined(DEBUG)
 
@@ -160,7 +160,7 @@ bool IE_Exp_MsWord_Hack_Sniffer::getDlgLabels(const char ** pszDesc,
 }
 
 #endif
-  
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -180,7 +180,7 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 
 	_addColor("000000");				// load black as color 0.
 	_addColor("ffffff");                // load white as color 1.
-		
+
 	m_pListenerGetProps = new s_RTF_ListenerGetProps(getDoc(),this);
 	if (!m_pListenerGetProps)
 		return UT_IE_NOMEMORY;
@@ -198,10 +198,10 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 
 	if (!_write_rtf_header())
 		return UT_IE_COULDNOTWRITE;
-	
+
 	// create and install a listener to receive the document
 	// and write its content in rtf.
-	
+
 	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(getDoc(),this, (getDocRange()!=NULL));
 	if (!m_pListenerWriteDoc)
 		return UT_IE_NOMEMORY;
@@ -215,7 +215,7 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 
 	if (!_write_rtf_trailer())
 		return UT_IE_COULDNOTWRITE;
-	
+
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
 }
 
@@ -247,7 +247,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 	PT_DocPosition posEnd = 0;
 	PL_StruxDocHandle nextSDH = NULL;
 	bool found = getDoc()->getNextStruxOfType(hdrSDH,PTX_SectionHdrFtr ,&nextSDH);
-	
+
 	if(!found || (nextSDH == NULL ))
 	{
 		getDoc()->getBounds(true, posEnd);
@@ -363,7 +363,7 @@ UT_sint32 IE_Exp_RTF::_findColor(const char * szColor) const
 {
 	if (!szColor || !*szColor)
 		return 0;						// black
-	
+
 	UT_uint32 k;
 	UT_uint32 kLimit = m_vecColors.getItemCount();
 
@@ -488,7 +488,7 @@ void IE_Exp_RTF::_rtf_keyword_ifnotdefault_twips(const char * szKey, const char 
 	// convert dimensioned value into twips (twentieths of a point) (aka 720 twips/inch)
 	double dbl = UT_convertToPoints(szValue);
 	UT_sint32 d = (UT_sint32)(dbl * 20.0);
-	
+
 	if (d == defaultValue)
 		return;
 
@@ -507,17 +507,17 @@ void IE_Exp_RTF::_rtf_semi(void)
 void IE_Exp_RTF::_rtf_fontname(const char * szFontName)
 {
 	write(" ");
-#if 0 
+#if 0
 	/*we handle 'helvetica' in a special way on import - so it's safe
 	 to output "Helvetica" unconditionally.
-	*/	
+	*/
 	if (!m_atticFormat && 0)
 	    write(szFontName);
 	else
-#endif	
+#endif
 	{
 		/*  map "Helvetic" to "Helvetica", since on Windows
-		    font "Helvetic" contains only Latin1 chars, while 
+		    font "Helvetic" contains only Latin1 chars, while
 		    "Helvetica" contains all needed chars. This is innocient
 		    since we do this when attic format is requested.
 		*/
@@ -536,7 +536,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 		write(" ");
 		m_bLastWasKeyword = false;
 	}
-	
+
 	if(0 == buflen)
 		return;
 	write(pbuf,buflen);
@@ -558,17 +558,17 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 
 	_rtf_open_brace();
 	_rtf_keyword("rtf",1);				// major version number of spec version 1.5
-	
+
 	_rtf_keyword("ansi");
 	bool wrote_cpg = 0;
-	if (langcode) 
+	if (langcode)
 	{
 		char* cpgname = wvLIDToCodePageConverter(langcode);
 		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
-		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2])) 
+		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2]))
 		{
 			int cpg;
-			if (sscanf(cpgname+2,"%d",&cpg)==1) 
+			if (sscanf(cpgname+2,"%d",&cpg)==1)
 			{
 				_rtf_keyword("ansicpg",cpg);
 				wrote_cpg = 1;
@@ -597,7 +597,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 
 	_rtf_keyword("deff",0);				// default font is index 0 aka black
 	if (m_atticFormat)
-	{	
+	{
 		/* I'm not sure whether this makes any sense - VH */
 		if (langcode)
 			_rtf_keyword("deflang",langcode);
@@ -624,21 +624,21 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 			_rtf_keyword("fcharset",pk->getFontCharset());
 			_rtf_keyword("fprq",pk->getFontPitch());							// {0==default,1==fixed,2==variable}
 			_rtf_keyword((pk->isTrueType()) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
-			
+
 			// we do nothing with or use default values for
 			// \falt \panose \fname \fbias \ftnil \fttruetype \fontfile
-			
+
 			// after we write the various generic font properties, we write
 			// the actual font name and a semicolon -- i couldn't see this
 			// described in the specification, but it was in other RTF files
 			// that i saw and really seems to help Word and WordPad....
 			_rtf_fontname(pk->getFontName());
-			
+
 			_rtf_close_brace();
 		}
 		_rtf_close_brace();
 	}
-	
+
 	// TODO write the "file table" if necessary...
 
 	kLimit = m_vecColors.getItemCount();
@@ -670,7 +670,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_nl();
 	_rtf_keyword("kerning",0);			// turn off kerning
 	_rtf_keyword("cf",0);				// set color 0 -- black
-	
+
 	return (m_error == 0);
 }
 
@@ -683,8 +683,8 @@ bool IE_Exp_RTF::_write_rtf_header(void)
  * !param szRTFName    The RTF keyword to use if the property
  *                     doesn't have the default value.
  */
-void IE_Exp_RTF::_write_prop_ifnotdefault(const PD_Style * pStyle, 
-					  const XML_Char * szPropName, 
+void IE_Exp_RTF::_write_prop_ifnotdefault(const PD_Style * pStyle,
+					  const XML_Char * szPropName,
 					  const char * szRTFName)
 {
 	const XML_Char * sz = NULL;
@@ -696,8 +696,8 @@ void IE_Exp_RTF::_write_prop_ifnotdefault(const PD_Style * pStyle,
 /*!
  * Write an RTF keyword if the given property is "yes".
  */
-void IE_Exp_RTF::_write_prop_ifyes(const PD_Style * pStyle, 
-				   const XML_Char * szPropName, 
+void IE_Exp_RTF::_write_prop_ifyes(const PD_Style * pStyle,
+				   const XML_Char * szPropName,
 				   const char * szRTFName)
 {
     const XML_Char * sz = NULL;
@@ -709,7 +709,7 @@ void IE_Exp_RTF::_write_prop_ifyes(const PD_Style * pStyle,
 /*
  * Used to hold tab information by _write_tabdef.
  */
-class _t 
+class _t
 {
 public:
 	_t(const char * szTL, const char * szTT, const char * szTK, UT_sint32 tp)
@@ -749,7 +749,7 @@ void IE_Exp_RTF::_write_tabdef(const char * szTabStops)
 		// TODO we should extract both of them and share the code.
 
 		UT_Vector vecTabs;
-		
+
 		const char* pStart = szTabStops;
 		while (*pStart)
 		{
@@ -796,7 +796,7 @@ void IE_Exp_RTF::_write_tabdef(const char * szTabStops)
 			// convert position into twips
 			double dbl = UT_convertToPoints(pszPosition);
 			UT_sint32 d = (UT_sint32)(dbl * 20.0);
-			
+
 			_t * p_t = new _t(szTL,szTT,szTK,d);
 			vecTabs.addItem(p_t);
 
@@ -915,14 +915,12 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	if ( szLang )
 	  {
 	    UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
-	    _rtf_keyword("lang", wvLangToLIDConverter(szLang)); 
+	    _rtf_keyword("lang", wvLangToLIDConverter(szLang));
 	  }
-
-#ifdef BIDI_ENABLED
 
 	//###TF const XML_Char * szDir = apa.getProperty("dir");
 	const XML_Char * szDirOvrr = apa.getProperty("dir-override");
-	
+
 	bool bProceed = true;
 	if (szDirOvrr)
 	{
@@ -946,7 +944,6 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword ("rtlch");
 	}  */
 
-#endif
 	const XML_Char * szListTag = apa.getProperty("list-tag");
 	if (szListTag && *szListTag)
 	{
@@ -976,25 +973,25 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
     _write_prop_ifyes(pStyle, "keep-with-next", "keepn");
 
     const XML_Char * sz = NULL;
-    if (pStyle->getProperty((const XML_Char *)"text-align", sz)) 
+    if (pStyle->getProperty((const XML_Char *)"text-align", sz))
 	{
-		if (UT_strcmp(sz, "left") == 0) 
+		if (UT_strcmp(sz, "left") == 0)
 		{
 			// Default, so no need to print anything
-		} 
-		else if (UT_strcmp(sz, "right") == 0) 
+		}
+		else if (UT_strcmp(sz, "right") == 0)
 		{
 			_rtf_keyword("qr");
-		} 
-		else if (UT_strcmp(sz, "center") == 0) 
+		}
+		else if (UT_strcmp(sz, "center") == 0)
 		{
 			_rtf_keyword("qc");
 		}
-		else if (UT_strcmp(sz, "justify") == 0) 
+		else if (UT_strcmp(sz, "justify") == 0)
 		{
 			_rtf_keyword("qj");
-		} 
-		else 
+		}
+		else
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
@@ -1002,10 +999,10 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
 
     const XML_Char * szLineHeight = NULL;
     if (pStyle->getProperty((const XML_Char *) "line-height", szLineHeight)
-		&& strcmp(szLineHeight,"1.0") != 0) 
+		&& strcmp(szLineHeight,"1.0") != 0)
 	{
 		double f = UT_convertDimensionless(szLineHeight);
-		if (f != 0.0) 
+		if (f != 0.0)
 		{
 			UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
 			_rtf_keyword("sl",dSpacing);
@@ -1023,7 +1020,7 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
 
     // tabdef
     if (pStyle->getProperty((const XML_Char *) "tabstops", sz)) _write_tabdef(sz);
-    
+
 
     // shading
 
@@ -1035,12 +1032,12 @@ void IE_Exp_RTF::_write_style_fmt(const PD_Style * pStyle)
  * This is just a pair: style and style number. It is used for
  * two-way association of PD_Style and RTF style number.
  */
-struct NumberedStyle 
+struct NumberedStyle
 {
     const PD_Style * pStyle;
     UT_uint32 n;
 
-    NumberedStyle(const PD_Style * pStyle, UT_uint32 n) : 
+    NumberedStyle(const PD_Style * pStyle, UT_uint32 n) :
 	pStyle(pStyle), n(n) {}
 };
 
@@ -1067,13 +1064,13 @@ void IE_Exp_RTF::_selectStyles()
     const PD_Style * pStyle;
 	UT_Vector vecStyles;
 	getDoc()->getAllUsedStyles(&vecStyles);
-    for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i) 
+    for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i)
 	{
 	  // DOM: hack for 2069 - we'll export all styles instead of just
 	  // user-defined styles and used styles. To fix it (and export fewer
 	  // styles in general) make this routine recursive to include
 	  // parent (basedon) styles as well...
-	  if (true /* pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)*/) 
+	  if (true /* pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)*/)
 		{
 //
 // Add this style to the hash
@@ -1157,40 +1154,40 @@ void IE_Exp_RTF::_write_stylesheets(void)
 
     UT_StringPtrMap::UT_Cursor hc(&m_hashStyles);
     const NumberedStyle * pns;
-    for (pns = reinterpret_cast<const NumberedStyle *>(hc.first()); 
-		 hc.is_valid(); 
-		 pns = reinterpret_cast<const NumberedStyle *>(hc.next())) 
+    for (pns = reinterpret_cast<const NumberedStyle *>(hc.first());
+		 hc.is_valid();
+		 pns = reinterpret_cast<const NumberedStyle *>(hc.next()))
 	{
 		const PD_Style * pStyle = pns->pStyle;
 		_rtf_nl();
 		_rtf_open_brace();
-		
-		if (pStyle->isCharStyle()) 
+
+		if (pStyle->isCharStyle())
 		{
 			_rtf_keyword("*");
 			_rtf_keyword("cs", pns->n);
-		} 
-		else 
+		}
+		else
 		{
 			_rtf_keyword("s", pns->n);
 		}
-		
+
 		_write_style_fmt(pStyle);
-		
+
 		const PD_Style * pStyleBasedOn =  reinterpret_cast<const PD_Style *> (const_cast<PD_Style *>(pStyle)->getBasedOn());
 		// TODO: Can this really return NULL?
-		if (pStyleBasedOn != NULL) 
+		if (pStyleBasedOn != NULL)
 		{
 			_rtf_keyword("sbasedon", _getStyleNumber(pStyleBasedOn));
 		}
-		
+
 		const PD_Style * pStyleNext = reinterpret_cast<const PD_Style *> (const_cast<PD_Style *>(pStyle)->getFollowedBy());
 		// TODO: Can this really return NULL?
-		if (pStyleNext != NULL) 
+		if (pStyleNext != NULL)
 		{
 			_rtf_keyword("snext", _getStyleNumber(pStyleNext));
 		}
-	
+
 		_rtf_chardata(pStyle->getName(), strlen(pStyle->getName()));
 		_rtf_chardata(";",1);
 		_rtf_close_brace();
@@ -1200,7 +1197,7 @@ void IE_Exp_RTF::_write_stylesheets(void)
 }
 
 /*!
- * Write the listatble group of the RTF header. 
+ * Write the listatble group of the RTF header.
  */
 void IE_Exp_RTF::_write_listtable(void)
 {
@@ -1252,7 +1249,7 @@ void IE_Exp_RTF::_write_listtable(void)
 //
 // OK now fill the MultiLevel list structure.
 //
-	
+
 	for(k=0; k < m_vecMultiLevel.getItemCount(); k++)
 	{
 		pList97 = (ie_exp_RTF_MsWord97ListMulti *) m_vecMultiLevel.getNthItem(k);
@@ -1277,7 +1274,7 @@ void IE_Exp_RTF::_write_listtable(void)
 				pList97->addLevel(depth, pCur97);
 			}
 			else
-			{	
+			{
 				bFoundAtPrevLevel = false;
 				for(i=0; i < iCount; i++)
 				{
@@ -1359,47 +1356,47 @@ void IE_Exp_RTF::_write_listtable(void)
 /*!
  * Get ith Multilevel list
  */
-ie_exp_RTF_MsWord97ListMulti * IE_Exp_RTF::getNthMultiLevel(UT_uint32 i) const 
-{ 
+ie_exp_RTF_MsWord97ListMulti * IE_Exp_RTF::getNthMultiLevel(UT_uint32 i) const
+{
 	return (ie_exp_RTF_MsWord97ListMulti *) m_vecMultiLevel.getNthItem(i);
-} 
+}
 
 /*!
  * Get ith Simple list
  */
-ie_exp_RTF_MsWord97ListSimple *  IE_Exp_RTF::getNthSimple(UT_uint32 i) const 
-{ 
+ie_exp_RTF_MsWord97ListSimple *  IE_Exp_RTF::getNthSimple(UT_uint32 i) const
+{
 	return (ie_exp_RTF_MsWord97ListSimple *) m_vecSimpleList.getNthItem(i);
-} 
+}
 
 /*!
  * Get ith Overide
  */
-ie_exp_RTF_ListOveride *  IE_Exp_RTF::getNthOveride(UT_uint32 i) const 
-{ 
+ie_exp_RTF_ListOveride *  IE_Exp_RTF::getNthOveride(UT_uint32 i) const
+{
 	return (ie_exp_RTF_ListOveride *) m_vecOverides.getNthItem(i);
 }
 
 /*!
  * Get Number of multilevel lists in the document
  */
-UT_uint32  IE_Exp_RTF::getMultiLevelCount(void) const 
-{ 
+UT_uint32  IE_Exp_RTF::getMultiLevelCount(void) const
+{
 	return m_vecMultiLevel.getItemCount();
 }
 
 /*!
  * Get Number of simple lists in the document
  */
-UT_uint32  IE_Exp_RTF::getSimpleListCount(void) const 
-{ 
+UT_uint32  IE_Exp_RTF::getSimpleListCount(void) const
+{
 	return m_vecSimpleList.getItemCount();
 }
 /*!
  * Get Number of overides in the document
  */
-UT_uint32  IE_Exp_RTF::getOverideCount(void) const 
-{ 
+UT_uint32  IE_Exp_RTF::getOverideCount(void) const
+{
 	return m_vecOverides.getItemCount();
 }
 
@@ -1450,7 +1447,7 @@ void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
 //
 // Strategy: Dump out all the list info for the first list in each level. Then
 // use the overides to redefine subsequent lists at each level.
-// 
+//
 			pAuto = pList97->getAuto();
 			if(i==0 && pAuto->getParent() != NULL)
 			{
@@ -1484,7 +1481,7 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
 	_rtf_open_brace();
 	_rtf_keyword("leveltext");
 	if(bulletsym == 0)
-	{ 
+	{
 		_generate_level_Text(pAuto,LevelText,LevelNumbers,lenText,ifoundLevel);
 		UT_String tmp;
 		_rtf_nonascii_hex2(lenText,tmp);
@@ -1690,11 +1687,9 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	case UPPERCASE_LIST:
 		Param = 3;
 		break;
-#ifdef BIDI_ENABLED
 	case HEBREW_LIST:
 		Param = 45;
 		break;
-#endif
 	case LOWERCASE_LIST:
 		Param = 4;
 		break;
@@ -1793,12 +1788,12 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 			if(bres)
 			{
 				_rtf_keyword_ifnotdefault_twips("fi",(char*)szIndent,0);
-			}		
+			}
 			bres = getDoc()->getPropertyFromSDH(sdh,"margin-left",&szAlign);
 			if(bres)
 			{
 				_rtf_keyword_ifnotdefault_twips("li",(char*)szAlign,0);
-			}		
+			}
 		}
 	}
 
@@ -1842,7 +1837,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 	_rtf_keyword("listlevel");
 //
 // Strategy: Dump out all the list info for the first list in each level.
-// 
+//
 	_output_ListRTF(pAuto,0);
 	_rtf_close_brace();
 	_rtf_keyword("listid",pSimple->getID());
@@ -1867,7 +1862,7 @@ void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 i
 	_rtf_keyword("listid",pTop->getID());
 //
 // Strategy: Dump out all the list info for the first list in each level.
-// 
+//
 	_output_ListRTF(pAuto,0);
 	_rtf_keyword("ls",pOver->getOverideID());
 	_rtf_close_brace();
@@ -1931,7 +1926,7 @@ void IE_Exp_RTF::_addFont(const _rtf_font_info * pfi)
 	return;
 }
 
-_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont) 
+_rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldFont)
 	UT_THROWS((_rtf_no_font))
 {
     // Not a typo. The AbiWord "font-family" property is what RTF
@@ -1957,7 +1952,7 @@ _rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldF
 	{
 		_rtf_no_font e;
 		UT_THROW(e);
-	}    
+	}
 
     static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
     GR_Font::FontFamilyEnum ff;
@@ -1975,11 +1970,11 @@ _rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa, bool bDoFieldF
 }
 
 
-_rtf_font_info::~_rtf_font_info(void) 
+_rtf_font_info::~_rtf_font_info(void)
 {
 }
 
-_rtf_font_info::_rtf_font_info(const char * szFontName) 
+_rtf_font_info::_rtf_font_info(const char * szFontName)
 	UT_THROWS((_rtf_no_font))
 {
     // Not a typo. The AbiWord "font-family" property is what RTF
@@ -1988,7 +1983,7 @@ _rtf_font_info::_rtf_font_info(const char * szFontName)
 	{
 		_rtf_no_font e;
 		UT_THROW(e);
-	}    
+	}
 
 	m_szName = szFontName;
 

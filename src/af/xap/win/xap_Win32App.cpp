@@ -1,20 +1,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -63,7 +63,7 @@ HINSTANCE XAP_Win32App::getInstance() const
 bool XAP_Win32App::initialize(void)
 {
 	// let our base class do it's thing.
-	
+
 	XAP_App::initialize();
 
 	// do anything else we need here...
@@ -76,7 +76,7 @@ bool XAP_Win32App::initialize(void)
 	// TODO these are Application-Specific values.  Move them out of here.
 	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname,"application/abiword");
 	m_pSlurp->stuffRegistry(".zabw",getApplicationName(),bufExePathname,"application/abiword-compressed");
-	
+
 	return true;
 }
 
@@ -119,7 +119,7 @@ UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
 const char * XAP_Win32App::getUserPrivateDirectory(void)
 {
 	/* return a pointer to a static buffer */
-	
+
 	char * szAbiDir = "AbiSuite";
 
 #ifndef PATH_MAX
@@ -133,7 +133,7 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 
 	// On NT, USERPROFILE seems to be set to the directory containing per-user
 	// information.  we'll try that first.
-	
+
 	len = GetEnvironmentVariable("USERPROFILE",buf,PATH_MAX);
 	if (len)
 	{
@@ -144,7 +144,7 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 		// If that doesn't work, look for HOMEDRIVE and HOMEPATH.  HOMEPATH
 		// is mentioned in the GetWindowsDirectory() documentation at least.
 		// These may be set if the SysAdmin did so in the Admin tool....
-	
+
 		len1 = GetEnvironmentVariable("HOMEDRIVE",buf,PATH_MAX);
 		len2 = GetEnvironmentVariable("HOMEPATH",&buf[len1],PATH_MAX-len1);
 		if (len1 && len2)
@@ -210,7 +210,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	int kLimit = m_pArgs->m_argc;
 	int nFirstArg = 0;	// Win32 does not put the program name in argv[0], so [0] is the first argument
 	int k;
-	
+
 	for (k=nFirstArg; k<kLimit; k++)
 		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
 		{
@@ -221,7 +221,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 			XAP_App::_setAbiSuiteLibDir(buf);
 			return;
 		}
-	
+
 	// if not, see if ABISUITE_HOME was set in the environment
 
 	if (GetEnvironmentVariable("ABISUITE_HOME",buf,sizeof(buf)) > 0)
@@ -274,7 +274,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	// in this case, we want to set the library directory to
 	// $(OUT)/$os_..._$dbg/AbiSuite
 	// (aka "getExeDir()/../AbiSuite")
-	
+
 	if (_getExeDir(buf,sizeof(buf)) > 0)
 	{
 		int len = strlen(buf);
@@ -282,7 +282,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 			buf[len-1] = 0;
 
 		strcpy(buf2,buf);
-		
+
 		UT_Vector v;
 		char * p = strtok(buf2,"\\");
 		v.addItem(p);
@@ -324,7 +324,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 void XAP_Win32App::enableAllTopLevelWindows(bool b)
 {
 	UT_uint32 iCount = m_vecFrames.getItemCount();
-	
+
 	for (UT_uint32 ndx=0; ndx<iCount; ndx++)
 	{
 		XAP_Win32Frame * pFrame = (XAP_Win32Frame *) m_vecFrames.getNthItem(ndx);
@@ -386,14 +386,13 @@ void XAP_Win32App::_setBidiOS(void)
 	the win32 bidi altogether and treating it as a non-bidi system, but there does
 	not seem to be a simple way of doing this
 */
-#ifdef BIDI_ENABLED
 	const UT_UCS2Char araAin  = 0x0639;
 	const UT_UCS2Char one     = 0x0031;
 
 	int distanceArray[2];
 	UT_UCS2Char glyphArray[2];
 	UT_UCS2Char outStr[] = {0, 0};
-	
+
 	GCP_RESULTSW gcpResult;
 	gcpResult.lStructSize = sizeof(GCP_RESULTS);
 	gcpResult.lpOutString = outStr;     // Output string
@@ -403,7 +402,7 @@ void XAP_Win32App::_setBidiOS(void)
 	gcpResult.lpClass = NULL;         // Character classifications
 	gcpResult.lpGlyphs = glyphArray;    // Character glyphs
 	gcpResult.nGlyphs = 2;              // Array size
- 
+
 	UT_UCS2Char inStr[] = {araAin, one};
 
 	HDC displayDC = GetDC(NULL);
@@ -413,8 +412,8 @@ void XAP_Win32App::_setBidiOS(void)
 		return;
 	}
 
-	if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER) 
-		&& (inStr[0] == outStr[1]) ) 
+	if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER)
+		&& (inStr[0] == outStr[1]) )
 	{
 		m_bBidiOS = true;
 		UT_DEBUGMSG(("System has bidi and glyph shaping\n"));
@@ -424,7 +423,7 @@ void XAP_Win32App::_setBidiOS(void)
 		const UT_UCSChar hebAlef = 0x05D0;
 		inStr[0] = hebAlef;
 		inStr[1] = one;
-		if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER) 
+		if (GetCharacterPlacementW(displayDC, inStr, 2, 0, &gcpResult, GCP_REORDER)
 			&& (inStr[0] == outStr[1]) )
 		{
 			m_bBidiOS = true;
@@ -433,5 +432,4 @@ void XAP_Win32App::_setBidiOS(void)
 	}
 
 	ReleaseDC(NULL,displayDC);
-#endif
 }

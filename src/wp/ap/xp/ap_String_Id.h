@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -78,7 +78,7 @@ dcl(DLG_NEW_StartEmpty, 		"Start with an empty document")
 dcl(DLG_NEW_Tab1,				"Wordprocessing")
 dcl(DLG_NEW_Tab1_WP1,			"Create a new blank document")
 dcl(DLG_NEW_Tab1_FAX1,			"Create a fax")
-	
+
 /* Tab Types - the order here must be consistent with the
    order in fl_BlockLayout.h*/
 dcl(TabToggleLeftTab,			"Left Tab")
@@ -121,7 +121,7 @@ dcl(DLG_WordCount_Paragraphs,		"Paragraphs")
 dcl(DLG_WordCount_Lines,			"Lines")
 dcl(DLG_WordCount_Update_Rate,		"Seconds between updates")
 dcl(DLG_WordCount_Auto_Update,		" Auto Update")
-	
+
 /* Spell dialog */
 dcl(DLG_Spell_SpellTitle,		"Spelling")
 dcl(DLG_Spell_UnknownWord,		"Not in dictionary&:")
@@ -226,9 +226,7 @@ dcl(DLG_Para_PushKeepWithNext,			"Keep with ne&xt")
 
 dcl(DLG_Para_ButtonTabs,		"&Tabs...")
 
-#ifdef BIDI_ENABLED
 dcl(DLG_Para_DomDirection,				"Right-to-left &dominant")
-#endif
 
 /* Columns dialog */
 dcl(DLG_Column_ColumnTitle, 	"Columns")
@@ -242,10 +240,7 @@ dcl(DLG_Column_Number_Cols, 	"Number of Columns")
 dcl(DLG_Column_Space_After, 	"Space after Column")
 dcl(DLG_Column_Size,			"Max Column size")
 
-#ifdef BIDI_ENABLED
 dcl(DLG_Column_RtlOrder,		"Use RTL Order")
-#endif
-
 
 /* when translating these, the important thing to remember is to get a
    similar amount of text in the translation.  Microsoft Word uses
@@ -286,13 +281,11 @@ dcl(DLG_Options_Label_SpellAutoReplace, "Auto replace misspelled words")
 dcl(DLG_Options_Label_SmartQuotesEnable,"&Enable smart quotes")
 dcl(DLG_Options_Label_DefaultPageSize, "Default page size")
 
-#ifdef BIDI_ENABLED
 dcl(DLG_Options_Label_DirectionRtl, "Default to right-to-left direction of text")
 dcl(DLG_Options_Label_BiDiOptions, "Bi-Directional Options")
 dcl(DLG_Options_Label_UseContextGlyphs, "Determine correct glyph shapes from context")
 dcl(DLG_Options_Label_SaveContextGlyphs, "Save visual glyph shapes")
 dcl(DLG_Options_Label_HebrewContextGlyphs, "Use glyph shaping for Hebrew")
-#endif
 
 dcl(DLG_Options_Label_AutoSave, 		"Auto Save")
 dcl(DLG_Options_Label_AutoSaveCurrent,	"Auto &save current file each")

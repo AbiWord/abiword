@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -73,7 +73,7 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 {
 	/*
 	  This dialog is non-persistent.
-	  
+
 	  This dialog should do the following:
 
 	  - Construct itself to represent the paragraph properties
@@ -89,7 +89,7 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	  - Save all the data to the m_paragraphData struct so it
 	    can be queried by the caller (edit methods routines).
-	  
+
 	  On "Cancel" the dialog should:
 
 	  - Just quit, the data items will be ignored by the caller.
@@ -103,7 +103,7 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	// store frame for later use
 	m_pFrame = pFrame;
-	
+
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
@@ -127,54 +127,54 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	// This is a static function.
 
 	AP_Win32Dialog_Paragraph * pThis;
-	
+
 	switch (msg)
 	{
 	case WM_INITDIALOG:
 		pThis = (AP_Win32Dialog_Paragraph *)lParam;
 		SWL(hWnd,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
+
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
-		
+
 	case WM_NOTIFY:
 		{
 			pThis = GWL(hWnd);
 
-			switch (((LPNMHDR) lParam)->code) 
-			{ 
+			switch (((LPNMHDR) lParam)->code)
+			{
 			case TCN_SELCHANGING:
 				{
 					// TODO: validate data before leaving page
 				}
 				break;
 
-			case TCN_SELCHANGE:             
-				{             
-					int iTo = TabCtrl_GetCurSel(pThis->m_hwndTab);  
+			case TCN_SELCHANGE:
+				{
+					int iTo = TabCtrl_GetCurSel(pThis->m_hwndTab);
 
 					// a more general solution would be better here
-					ShowWindow(pThis->m_hwndSpacing, (iTo ? SW_HIDE : SW_SHOW)); 
-					ShowWindow(pThis->m_hwndBreaks, (!iTo ? SW_HIDE : SW_SHOW)); 
+					ShowWindow(pThis->m_hwndSpacing, (iTo ? SW_HIDE : SW_SHOW));
+					ShowWindow(pThis->m_hwndBreaks, (!iTo ? SW_HIDE : SW_SHOW));
 				}
 				break;
 
 			// Process other notifications here
 			default:
 				break;
-			} 
+			}
 		}
 		return 0;
-		
+
 	default:
 		return 0;
 	}
 }
 
 // this little struct gets passed into s_tabProc
-typedef struct _tabParam 
+typedef struct _tabParam
 {
 	AP_Win32Dialog_Paragraph *	pThis;
 	WORD which;
@@ -192,12 +192,12 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_tabProc(HWND hWnd,UINT msg,WPARAM wPar
 		{
 			TabParam * pTP = (TabParam *) lParam;
 
-			// from now on, we can just remember pThis 
+			// from now on, we can just remember pThis
 			pThis = pTP->pThis;
 			SWL(hWnd,pThis);
 			return pThis->_onInitTab(hWnd,wParam,lParam);
 		}
-		
+
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
@@ -224,7 +224,7 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_tabProc(HWND hWnd,UINT msg,WPARAM wPar
 BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Para_ParaTitle));
 
 	// localize controls
@@ -236,7 +236,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	// setup the tabs
 	{
 		TabParam tp;
-		TCITEM tie; 
+		TCITEM tie;
 
 		XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 		HINSTANCE hinst = pWin32App->getInstance();
@@ -245,34 +245,34 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 		tp.pThis = this;
 
-		// remember the windows we're using 
-		
+		// remember the windows we're using
+
 		m_hwndDlg = hWnd;
-		m_hwndTab = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_TAB);  
+		m_hwndTab = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_TAB);
 
 		// add a tab for each of the child dialog boxes
-    
-		tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM; 
-		tie.iImage = -1; 
-		tie.pszText = (LPSTR) _GV(DLG_Para_TabLabelIndentsAndSpacing); 
+
+		tie.mask = TCIF_TEXT | TCIF_IMAGE | TCIF_PARAM;
+		tie.iImage = -1;
+		tie.pszText = (LPSTR) _GV(DLG_Para_TabLabelIndentsAndSpacing);
 		tie.lParam = AP_RID_DIALOG_PARA_TAB1;
-		TabCtrl_InsertItem(m_hwndTab, 0, &tie); 
-		tie.pszText = (LPSTR) _GV(DLG_Para_TabLabelLineAndPageBreaks); 
+		TabCtrl_InsertItem(m_hwndTab, 0, &tie);
+		tie.pszText = (LPSTR) _GV(DLG_Para_TabLabelLineAndPageBreaks);
 		tie.lParam = AP_RID_DIALOG_PARA_TAB2;
-		TabCtrl_InsertItem(m_hwndTab, 1, &tie); 
+		TabCtrl_InsertItem(m_hwndTab, 1, &tie);
 
 		// finally, create the (modeless) child dialogs
-		
+
 		tp.which = AP_RID_DIALOG_PARA_TAB1;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
-		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
-										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
+										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT((w && (w == m_hwndSpacing)));
 
 		tp.which = AP_RID_DIALOG_PARA_TAB2;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
-		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
-										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab,
+										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT((w && (w == m_hwndBreaks)));
 	}
 
@@ -296,16 +296,16 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	// position ourselves w.r.t. containing tab
 
 	RECT r;
 	GetClientRect(m_hwndTab, &r);
 	TabCtrl_AdjustRect(m_hwndTab, FALSE, &r);
-    SetWindowPos(hWnd, HWND_TOP, r.left, r.top, 0, 0, SWP_NOSIZE); 
+    SetWindowPos(hWnd, HWND_TOP, r.left, r.top, 0, 0, SWP_NOSIZE);
 
 	// remember which window is which tab
-	
+
 	TabParam * pTP = (TabParam *) lParam;
 	switch (pTP->which)
 	{
@@ -317,9 +317,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			{
 				HWND hwndBidi = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_CHECK_BIDI);
 				ShowWindow(hwndBidi,SW_HIDE);
-#ifdef BIDI_ENABLED
 				ShowWindow(hwndBidi,SW_SHOW);
-#endif
 			}
 
 			// localize controls
@@ -334,34 +332,32 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PARA_TEXT_AFTER,		DLG_Para_LabelAfter);
 			_DS(PARA_TEXT_LEAD,			DLG_Para_LabelLineSpacing);
 			_DS(PARA_TEXT_AT,			DLG_Para_LabelAt);
-#ifdef BIDI_ENABLED
 			_DS(PARA_CHECK_BIDI,		DLG_Para_DomDirection);
-#endif
 
 			// populate fixed choices
 			{
-				HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_ALIGN);  
+				HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_ALIGN);
 				_CAS(hwndAlign, DLG_Para_AlignLeft);
 				_CAS(hwndAlign, DLG_Para_AlignCentered);
 				_CAS(hwndAlign, DLG_Para_AlignRight);
 				_CAS(hwndAlign, DLG_Para_AlignJustified);
-				SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_ALIGNMENT), 0);	
+				SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_ALIGNMENT), 0);
 
-				HWND hwndHang = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_HANG);  
+				HWND hwndHang = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_HANG);
 				_CAS(hwndHang, DLG_Para_SpecialNone);
 				_CAS(hwndHang, DLG_Para_SpecialFirstLine);
 				_CAS(hwndHang, DLG_Para_SpecialHanging);
-				SendMessage(hwndHang, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_INDENT), 0);	
+				SendMessage(hwndHang, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_INDENT), 0);
 
-				HWND hwndLead = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_LEAD);  
+				HWND hwndLead = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_LEAD);
 				_CAS(hwndLead, DLG_Para_SpacingSingle);
 				_CAS(hwndLead, DLG_Para_SpacingHalf);
 				_CAS(hwndLead, DLG_Para_SpacingDouble);
 				_CAS(hwndLead, DLG_Para_SpacingAtLeast);
 				_CAS(hwndLead, DLG_Para_SpacingExactly);
 				_CAS(hwndLead, DLG_Para_SpacingMultiple);
-				SendMessage(hwndLead, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_SPACING), 0);	
-			}		
+				SendMessage(hwndLead, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_SPACING), 0);
+			}
 
 			// set initial state
 			_SST(PARA_EDIT_LEFT,	id_SPIN_LEFT_INDENT);
@@ -370,9 +366,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_SST(PARA_EDIT_BEFORE,	id_SPIN_BEFORE_SPACING);
 			_SST(PARA_EDIT_AFTER,	id_SPIN_AFTER_SPACING);
 			_SST(PARA_EDIT_AT,		id_SPIN_SPECIAL_SPACING);
-#ifdef BIDI_ENABLED
 			_CDB(PARA_CHECK_BIDI,	id_CHECK_DOMDIRECTION);
-#endif
 		}
 		break;
 
@@ -410,10 +404,10 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 	if (!m_pPreviewWidget)
 	{
-		// for XP purposes, life is simplest if we only have one preview 
-		// widget which "floats" above both tabs.  to get the window 
-		// parentage right, we use the dimensions and location of the 
-		// owner-draw control on the tab to position *another* dummy 
+		// for XP purposes, life is simplest if we only have one preview
+		// widget which "floats" above both tabs.  to get the window
+		// parentage right, we use the dimensions and location of the
+		// owner-draw control on the tab to position *another* dummy
 		// window which is parented by the main dialog instead.
 
 		HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_PREVIEW);
@@ -427,7 +421,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 		pt.y = r2.top;
 		ScreenToClient(m_hwndDlg, &pt);
 
-		SetWindowPos(hwndFloater, HWND_TOP, pt.x, pt.y, 
+		SetWindowPos(hwndFloater, HWND_TOP, pt.x, pt.y,
 					 r2.right - r2.left, r2.bottom - r2.top, SWP_NOREDRAW);
 
 		// use this floater window as a parent to the widget that we create
@@ -439,10 +433,10 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 		// instantiate the XP preview object using the win32 preview widget (window)
 		// we just created.  we seem to have a mish-mash of terms here, sorry.
-		
+
 		UT_uint32 w,h;
 		m_pPreviewWidget->getWindowSize(&w,&h);
-		
+
 		_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
 		m_pPreviewWidget->setPreview(m_paragraphPreview); // we need this to call draw() on WM_PAINTs
 //		_updatePreview();
@@ -523,9 +517,7 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	_CHECK(PARA_CHECK_BREAK,	id_CHECK_PAGE_BREAK);
 	_CHECK(PARA_CHECK_SUPPRESS,	id_CHECK_SUPPRESS);
 	_CHECK(PARA_CHECK_NOHYPHEN,	id_CHECK_NO_HYPHENATE);
-#ifdef BIDI_ENABLED
 	_CHECK(PARA_CHECK_BIDI,		id_CHECK_DOMDIRECTION);
-#endif
 
 	case IDCANCEL:						// also AP_RID_DIALOG_PARA_BTN_CANCEL
 		m_answer = a_CANCEL;
@@ -570,7 +562,7 @@ BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
 
 	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
 				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
-				
+
 	char buf[SPIN_BUF_TEXT_SIZE];
 
 	switch(pnmud->hdr.idFrom)
@@ -598,7 +590,7 @@ BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
 			break;			\
 
 void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
-{ 
+{
 	// let parent sync any member variables first
 
 	AP_Dialog_Paragraph::_syncControls(changed, bAll);
@@ -612,7 +604,7 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
 		{
-			HWND h = GetDlgItem(m_hwndSpacing, AP_RID_DIALOG_PARA_COMBO_HANG);							
+			HWND h = GetDlgItem(m_hwndSpacing, AP_RID_DIALOG_PARA_COMBO_HANG);
 			SendMessage(h, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_INDENT), 0);
 		}
 	}
@@ -639,7 +631,7 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fa
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
 		{
-			HWND h = GetDlgItem(m_hwndSpacing, AP_RID_DIALOG_PARA_COMBO_LEAD);							
+			HWND h = GetDlgItem(m_hwndSpacing, AP_RID_DIALOG_PARA_COMBO_LEAD);
 			SendMessage(h, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_SPACING), 0);
 		}
 	}

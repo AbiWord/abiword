@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -47,8 +47,8 @@ public:
 				XAP_App *pApp);
 	virtual ~PS_Graphics();
 
-#ifndef WITH_PANGO	
-	virtual void drawChars(const UT_UCSChar* pChars, 
+#ifndef WITH_PANGO
+	virtual void drawChars(const UT_UCSChar* pChars,
 						   int iCharOffset, int iLength,
 						   UT_sint32 xoff, UT_sint32 yoff);
 	virtual void setFont(GR_Font* pFont);
@@ -56,7 +56,7 @@ public:
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
-	
+
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
@@ -64,14 +64,14 @@ public:
 	// virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 #endif
-	
+
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
-	virtual GR_Font* findFont(const char* pszFontFamily, 
-							  const char* pszFontStyle, 
-							  const char* pszFontVariant, 
-							  const char* pszFontWeight, 
-							  const char* pszFontStretch, 
+	virtual GR_Font* findFont(const char* pszFontFamily,
+							  const char* pszFontStyle,
+							  const char* pszFontVariant,
+							  const char* pszFontWeight,
+							  const char* pszFontStretch,
 							  const char* pszFontSize);
 	virtual void drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2);
 	virtual void setLineWidth(UT_sint32);
@@ -90,11 +90,11 @@ public:
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);	
+	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
    	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
-	
+
 	virtual bool queryProperties(GR_Graphics::Properties gp) const;
-	
+
 	virtual bool startPrint(void);
 	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
@@ -102,7 +102,7 @@ public:
 
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
-	
+
 	virtual void setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
@@ -116,7 +116,7 @@ public:
 #ifdef WITH_PANGO
  private:
 	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
-#endif	
+#endif
 
 protected:
 	UT_uint32		_scale(UT_uint32 units) const;
@@ -141,30 +141,28 @@ protected:
 								 	UT_uint32			iLength,
 								 	UT_sint32 			xoff,
 								 	UT_sint32 			yoff);
-	
+
 	void 			_drawCharsNonCJK(const UT_UCSChar*	pChars,
 									UT_uint32			iCharOffset,
 								 	UT_uint32			iLength,
 								 	UT_sint32 			xoff,
 								 	UT_sint32 			yoff);
-	
+
 	void 			_drawCharsUTF8(const UT_UCSChar*	pChars,
 									UT_uint32			iCharOffset,
 								 	UT_uint32			iLength,
 								 	UT_sint32 			xoff,
 								 	UT_sint32 			yoff);
-								 	
-#ifdef BIDI_ENABLED
+
 	void 			_drawCharsOverstriking(const UT_UCSChar*	pChars,
 									UT_uint32			iCharOffset,
 								 	UT_uint32			iLength,
 								 	UT_sint32 			xoff,
 								 	UT_sint32 			yoff);
 
-#endif
 
-	void 			_explodePSFonts(PSFont *current, PSFont*& non_cjk_font,PSFont*& cjk_font);	
-	
+	void 			_explodePSFonts(PSFont *current, PSFont*& non_cjk_font,PSFont*& cjk_font);
+
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;
@@ -181,10 +179,10 @@ protected:
 	UT_uint32		m_iHeight;
 	char*			m_szPageSizeName;
 	UT_uint32       m_iPageCount;
-	
+
 
 	GR_Graphics::ColorSpace	m_cs;
-	
+
 	XAP_UnixFontManager *	m_fm;
 
 };

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -91,7 +91,7 @@ static gint s_spin_focus_out(GtkWidget * widget,
 							 AP_UnixDialog_Paragraph * dlg)
 {
 	dlg->event_SpinFocusOut(widget);
-	
+
 	// do NOT let GTK do its own update (which would erase the text we just
 	// put in the entry area
 	return FALSE;
@@ -107,7 +107,7 @@ static void s_spin_changed(GtkWidget * widget,
 static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
-	
+
 	dlg->event_MenuChanged(widget);
 }
 
@@ -131,7 +131,7 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 {
 	m_pFrame = pFrame;
-	
+
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -147,11 +147,11 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(pUnixFrame);
-	
+
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
-	
+
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
 	centerDialog(parentWindow, mainWindow);
@@ -172,7 +172,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 		// make a new Unix GC
 		m_unixGraphics = new GR_UnixGraphics(m_drawingareaPreview->window, unixapp->getFontManager(), m_pApp);
-		
+
 		// let the widget materialize
 		_createPreviewFromGC(m_unixGraphics,
 							 (UT_uint32) m_drawingareaPreview->allocation.width,
@@ -212,7 +212,7 @@ void AP_UnixDialog_Paragraph::event_Tabs(void)
 
 void AP_UnixDialog_Paragraph::event_WindowDelete(void)
 {
-	m_answer = AP_Dialog_Paragraph::a_CANCEL;	
+	m_answer = AP_Dialog_Paragraph::a_CANCEL;
 	gtk_main_quit();
 }
 
@@ -255,7 +255,7 @@ void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 		// to ensure the massaged value is reflected back up
 		// to the screen, we repaint from the member variable
 		_syncControls(id);
-		
+
 		m_bEditChanged = false;
 	}
 }
@@ -264,7 +264,7 @@ void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
 {
 	m_bEditChanged = true;
 }
-	   
+
 void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
@@ -282,7 +282,7 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 		cs = check_TRUE;
 	else
 		cs = check_FALSE;
-	
+
 	_setCheckItemValue(id, cs);
 }
 
@@ -312,7 +312,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * buttonCancel;
 
 	XML_Char * unixstr = NULL;
-	
+
 
 	windowParagraph = gtk_window_new (GTK_WINDOW_DIALOG);
 	g_object_set_data (G_OBJECT (windowParagraph), "windowParagraph", windowParagraph);
@@ -468,13 +468,10 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	GtkWidget * hseparator6;
 	GtkWidget * checkbuttonKeepNext;
 	GtkWidget * labelBreaks;
-
-#ifdef BIDI_ENABLED
 	GtkWidget * checkbuttonDomDirection;
-#endif
 
 	XML_Char * unixstr = NULL;
-	
+
 	vboxContents = gtk_vbox_new (FALSE, 0);
 	gtk_widget_ref (vboxContents);
 	g_object_set_data_full (G_OBJECT (vboxContents), "vboxContents", vboxContents,
@@ -546,7 +543,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	FREEP(unixstr);
 	/**/ m_menuitemLeft = glade_menuitem;
 	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
-	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);	
+	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignCentered));
@@ -576,7 +573,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listAlignment), listAlignment_menu);
 
 
-#ifdef BIDI_ENABLED
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_DomDirection));
 	checkbuttonDomDirection = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -588,7 +584,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_table_attach ( GTK_TABLE(boxSpacing), checkbuttonDomDirection, 3,4,0,1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
-#endif
 
 	hboxIndentation = gtk_hbox_new (FALSE, 5);
 	gtk_widget_ref (hboxIndentation);
@@ -642,7 +637,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_table_attach ( GTK_TABLE(boxSpacing), spinbuttonLeft, 1,2, 2,3,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
-	
+
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelRight));
 	labelRight = gtk_label_new (unixstr);
 	FREEP(unixstr);
@@ -939,7 +934,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (labelBreaks);
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (tabMain), boxBreaks, labelBreaks);
-	
+
 
 	// Pagination headline
 	hboxPagination = gtk_hbox_new (FALSE, 5);
@@ -1091,7 +1086,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	g_object_set_data_full (G_OBJECT (windowMain), "framePreview", framePreview,
 							  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (framePreview);
-	
+
 	gtk_box_pack_start (GTK_BOX (hboxPreviewFrame), framePreview, TRUE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vboxContents), hboxPreviewFrame, FALSE, TRUE, 0);
 	gtk_widget_set_usize (framePreview, 400, 150);
@@ -1114,7 +1109,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 //	m_spinbuttonLeft_adj = spinbuttonLeft_adj;
 	m_spinbuttonLeft = spinbuttonLeft;
-	
+
 //	m_spinbuttonRight_adj = spinbuttonRight_adj;
 	m_spinbuttonRight = spinbuttonRight;
 	m_listSpecial = listSpecial;
@@ -1138,10 +1133,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	m_checkbuttonSuppress = checkbuttonSuppress;
 	m_checkbuttonHyphenate = checkbuttonHyphenate;
 	m_checkbuttonKeepNext = checkbuttonKeepNext;
-
-#ifdef BIDI_ENABLED
 	m_checkbuttonDomDirection = checkbuttonDomDirection;
-#endif
 
 	return vboxContents;
 }
@@ -1174,7 +1166,7 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 					   "clicked",
 					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
-	
+
 	g_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
 					   G_CALLBACK(s_cancel_clicked),
@@ -1191,14 +1183,14 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonRight);
 	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBy);
 	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBefore);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAfter);	
+	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAfter);
 	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAt);
-	
+
 	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonLeft);
 	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonRight);
 	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBy);
 	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBefore);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAfter);	
+	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAfter);
 	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAt);
 
 	// connect to option menus
@@ -1209,15 +1201,15 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemNone);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemFirstLine);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemHanging);	
-	
+	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemHanging);
+
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemSingle);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemOneAndHalf);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemDouble);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemAtLeast);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemExactly);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemMultiple);
-	
+
 	// all the checkbuttons
 	g_signal_connect(G_OBJECT(m_checkbuttonWidowOrphan), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
@@ -1231,10 +1223,8 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
 	g_signal_connect(G_OBJECT(m_checkbuttonKeepNext), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
-#ifdef BIDI_ENABLED
 	g_signal_connect(G_OBJECT(m_checkbuttonDomDirection), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
-#endif	
 	// the catch-alls
 	g_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
@@ -1256,7 +1246,7 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 void AP_UnixDialog_Paragraph::_populateWindowData(void)
 {
 
-	// alignment option menu 
+	// alignment option menu
 	UT_ASSERT(m_listAlignment);
 	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listAlignment),
 								(gint) _getMenuItemValue(id_MENU_ALIGNMENT));
@@ -1310,10 +1300,8 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 								 (_getCheckItemValue(id_CHECK_NO_HYPHENATE) == check_TRUE));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepNext)),
 								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
-#ifdef BIDI_ENABLED
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonDomDirection)),
 								 (_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE));
-#endif
 }
 
 void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
@@ -1344,7 +1332,7 @@ void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = fal
 
 		default:
 			// set the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), _getSpinItemValue(id_SPIN_SPECIAL_INDENT));			
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 			break;
 		}
 	}

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -49,7 +49,7 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nowy", 		tb_new_xpm,		NULL, "Tworzy nowy dokument")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nowy", 		tb_new_xpm,		NULL, "Tworzy nowy dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Otwórz",		tb_open_xpm,	NULL, "Otwiera dokument z pliku...")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Zapisz", 	tb_save_xpm,	NULL, "Zapisuje")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Zapisz jako", 	tb_save_as_xpm,	NULL, "Zapisuje jako...")
@@ -109,11 +109,9 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Skrypt",	tb_script_play_xpm,		NULL, "Uruchamia skrypt")
 
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Tekst L->P",		tb_text_direction_ltr_xpm,	NULL, "Wymusza kierunek z lewej do prawej")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Tekst P->L",		tb_text_direction_rtl_xpm,	NULL, "Wymusza kierunek z prawej do lewej")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Kierunek tekstu",	tb_text_dom_direction_rtl_xpm,	NULL, "Zmienia kierunek tekstu w akapicie")
-#endif
 
 	// ... add others here ...
 

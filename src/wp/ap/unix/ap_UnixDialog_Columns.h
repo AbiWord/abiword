@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -60,7 +60,7 @@ static struct _it s_itTable[] =
 {
 
 #include "ap_Toolbar_Icons_All.h"
-	
+
 };
 
 #undef DefineToolbarIcon
@@ -87,7 +87,7 @@ static bool findIconDataByName(const char * szName, const char *** pIconData, UT
 
 	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
 		return false;
-	
+
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
 
@@ -114,7 +114,7 @@ static bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIco
 	GdkColormap * colormap =  gtk_widget_get_colormap (button);
 	GdkPixmap * pixmap
 		= gdk_pixmap_colormap_create_from_xpm_d(button->window,colormap,
-							&mask, NULL, 
+							&mask, NULL,
 							(char **)pIconData);
 	if (!pixmap)
 		return false;
@@ -166,7 +166,7 @@ protected:
 	void            _connectsignals(void);
 
 	GR_UnixGraphics	* 		m_pPreviewWidget;
-	
+
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
@@ -184,21 +184,18 @@ protected:
 	guint m_twoHandlerID;
 	guint m_threeHandlerID;
 	guint m_spinHandlerID;
-	UT_sint32 m_iSpaceAfter;	
+	UT_sint32 m_iSpaceAfter;
 	guint m_iSpaceAfterID;
 	GtkWidget * m_wSpaceAfterSpin;
 	GtkWidget * m_wSpaceAfterEntry;
 	GtkObject * m_oSpaceAfter_adj;
-	UT_sint32 m_iMaxColumnHeight;	
+	UT_sint32 m_iMaxColumnHeight;
 	guint m_iMaxColumnHeightID;
 	GtkWidget * m_wMaxColumnHeightSpin;
 	GtkWidget * m_wMaxColumnHeightEntry;
 	GtkObject * m_oSpinSize_adj;
 	UT_sint32 m_iSizeHeight;
-#ifdef BIDI_ENABLED
     GtkWidget * m_checkOrder;
-#endif
-	
 };
 
 #endif /* AP_UnixDialog_Columns_H */

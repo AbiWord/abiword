@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -121,7 +121,7 @@ private:
 	UT_RGBColor Color;
 };
 
-	
+
 
 
 
@@ -134,7 +134,7 @@ public:
 	bool				m_bInherit;
 	PP_PropertyType *	m_pProperty;
 	~PP_Property();
-	
+
 	inline const XML_Char *	getName() const {return m_pszName;}
 	inline const XML_Char *	getInitial() const {return m_pszInitial;}
 	const PP_PropertyType *	getInitialType(tProperty_type Type) const;
@@ -143,9 +143,7 @@ public:
 
 const PP_Property * PP_lookupProperty(const XML_Char * pszName);
 
-#ifdef BIDI_ENABLED
 void PP_resetInitialBiDiValues(const XML_Char * pszValue);
-#endif
 
 ABI_EXPORT const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 const PP_AttrProp * pSpanAttrProp,

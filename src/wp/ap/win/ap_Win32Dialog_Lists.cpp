@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -368,7 +368,7 @@ void AP_Win32Dialog_Lists::destroy(void)
 	m_bDestroy_says_stopupdating = true;
 	while (m_bAutoUpdate_happening_now == true) ;
 	m_pAutoUpdateLists->stop();
-	setAnswer(AP_Dialog_Lists::a_CLOSE);	
+	setAnswer(AP_Dialog_Lists::a_CLOSE);
 	if (IsWindow(m_hThisDlg))
 	{
 		_win32Dialog.destroyWindow();
@@ -520,7 +520,7 @@ void AP_Win32Dialog_Lists::_onApply()
 	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, false);
 	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, true);
 	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, false);
-	
+
 	_enableControls();
 
 	PopulateDialogData();
@@ -630,11 +630,9 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 		AP_STRING_ID_DLG_Lists_Lower_Roman_List,
 		AP_STRING_ID_DLG_Lists_Upper_Roman_List
 /*
-#ifdef BIDI_ENABLED
 		,AP_STRING_ID_DLG_Lists_Arabic_List,
 
 		AP_STRING_ID_DLG_Lists_Hebrew_List
-#endif
 */
 	};
 
@@ -665,7 +663,7 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 	HDC hDCcombo = GetDC(hComboStyle);
 	HDC hDC = CreateCompatibleDC(hDCcombo);
 	ReleaseDC(hComboStyle, hDCcombo);
-	
+
 	HFONT hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
 	SelectObject(hDC, hFont);
 
@@ -717,13 +715,9 @@ void AP_Win32Dialog_Lists::_styleChanged()
 	setNewListType(_getListTypeFromCombos());
 	setbisCustomized(false);
 /*
-#ifdef BIDI_ENABLED
-
 	// have to do this, since for instance the decimal delimter can change
 
 	fillUncustomizedValues();
-
-#endif
 */
 	_previewExposed();
 	_setDisplayedData();
@@ -848,7 +842,7 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 	if (controlId == -1 || controlId == AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN)
 	{
 		_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN, szTmp, 30);
-		setfAlign((float)UT_convertDimensionless(szTmp));	
+		setfAlign((float)UT_convertDimensionless(szTmp));
 	}
 
 	if (controlId == -1 || controlId == AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN)
@@ -862,11 +856,11 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 		controlId == AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN)
 	{
 		if( getfAlign() < 0.0 )
-		{	
+		{
 			setfAlign(0.0);
 			_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN,
 								UT_convertToDimensionlessString(0.0, ".2"));
-		}                                       
+		}
 
 		if ( (getfIndent() + getfAlign()) < 0.0 )
 		{
@@ -1045,7 +1039,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 	pDialog->setGraphicsContext(pView->getGraphics());
 	pDialog->runModal(pFrame);
 
-	if (pDialog->getAnswer() != XAP_Dialog_FontChooser::a_OK && 
+	if (pDialog->getAnswer() != XAP_Dialog_FontChooser::a_OK &&
 		pDialog->getAnswer() != XAP_Dialog_FontChooser::a_YES)
 	{
 		return;

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -79,7 +79,7 @@ void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)
 {
 	// As this function gets called prior to getting an hWnd for the dialog
-	// we check to see if the dialog has been initialized prior to 
+	// we check to see if the dialog has been initialized prior to
 	// running the conrol
 	if (m_hThisDlg)
 	{
@@ -97,13 +97,13 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	m_hThisDlg = hWnd;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));
 
 	// localize controls
 	_DSX(COLUMN_BTN_OK,					DLG_OK);
 	_DSX(COLUMN_BTN_CANCEL,				DLG_Cancel);
-										
+
 	_DS(COLUMN_GROUP1,					DLG_Column_Number);
 	_DS(COLUMN_GROUP2,					DLG_Column_Preview);
 	_DS(COLUMN_TEXT_ONE,				DLG_Column_One);
@@ -113,9 +113,7 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	_DS(COLUMN_TEXT_NUMCOLUMNS,			DLG_Column_Number_Cols);
 	_DS(COLUMN_TEXT_SPACEAFTER,			DLG_Column_Space_After);
 	_DS(COLUMN_TEXT_MAXSIZE,			DLG_Column_Size);
-#ifdef BIDI_ENABLED
 	_DS(COLUMN_CHECK_RTL_ORDER,			DLG_Column_RtlOrder);
-#endif
 
 	RECT rect;
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE), &rect);
@@ -152,11 +150,8 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	SetDlgItemText(hWnd, AP_RID_DIALOG_COLUMN_EDIT_MAXSIZE, getHeightString());
 
 	HWND hRTL = GetDlgItem( hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER );
-	ShowWindow( hRTL, SW_HIDE );
-#ifdef BIDI_ENABLED
 	ShowWindow( hRTL, SW_NORMAL );
 	CheckDlgButton(hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER, getColumnOrder() ? BST_CHECKED : BST_UNCHECKED );
-#endif
 
 	// Create a preview window.
 
@@ -219,7 +214,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_COLUMN_EDIT_NUMCOLUMNS:
 		if( wNotifyCode == EN_KILLFOCUS )
 		{
-			GetDlgItemText( hWnd, wId, buf, BUFSIZE );		
+			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			if( atoi( buf ) > 0 && atoi(buf) != (signed) getColumns() )
 			{
 				setColumns( atoi(buf) );
@@ -251,11 +246,9 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		}
 		return 1;
 
-#ifdef BIDI_ENABLED
 	case AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER:
 		setColumnOrder( (UT_uint32) (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_COLUMN_CHECK_RTL_ORDER) == BST_CHECKED) );
 		return 1;
-#endif
 
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
@@ -285,7 +278,7 @@ BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
 		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_TWO, (getColumns()==2)?BST_CHECKED:BST_UNCHECKED);
 		CheckDlgButton(m_hThisDlg, AP_RID_DIALOG_COLUMN_RADIO_THREE, (getColumns()==3)?BST_CHECKED:BST_UNCHECKED);
 		return 1;
-			
+
 	case AP_RID_DIALOG_COLUMN_SPIN_SPACEAFTER:
 		if( pnmud->iDelta < 0 )
 		{

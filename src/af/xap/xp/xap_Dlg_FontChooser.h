@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -46,7 +46,7 @@ protected:
 	const UT_UCSChar * m_pszChars;
 #ifdef WITH_PANGO
 	GList * m_pGlyphString;
-#endif	
+#endif
 };
 
 /*****************************************************************/
@@ -72,7 +72,7 @@ public:
 	    return m_drawString;
 	  }
 
-	void                            addOrReplaceVecProp(const XML_Char * pszProp, 
+	void                            addOrReplaceVecProp(const XML_Char * pszProp,
 														const XML_Char * pszVal);
 	void                            event_previewExposed(const UT_UCSChar * pszChars);
 	void                            event_previewClear(void);
@@ -89,16 +89,9 @@ public:
 	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut, bool bTopline, bool bBottomline);
 	void                            setBackGroundColor (const XML_Char * pBackGroundColor);
 
-	
-/*
-#ifdef BIDI_ENABLED
-	void                            setDirection(bool bDirection);
-#endif
-*/
-
 
 	XAP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
-	
+
 	// the following return TRUE iff the user changed the value
 	// of the control in the dialog.  they also return the value
 	// of the field in the supplied argument w/o regard to whether
@@ -116,11 +109,6 @@ public:
 	bool							getChangedStrikeOut(bool * pbStrikeOut) const;
 	bool							getChangedTopline(bool * pbTopline) const;
 	bool							getChangedBottomline(bool * pbBottomline) const;
-/*
-#ifdef BIDI_ENABLED
-	bool                         	getChangedDirection(bool * pbDirection) const;
-#endif
-*/
 
 protected:
 	void                            _createFontPreviewFromGC(GR_Graphics * gc,
@@ -128,12 +116,6 @@ protected:
 															 UT_uint32 height);
 
 	XAP_Dialog_FontChooser::tAnswer	m_answer;
-/*
-#ifdef BIDI_ENABLED
-	virtual void _enableDirectionCheck(bool b) = 0;
-	void _initEnableControls();
-#endif
-*/
 	GR_Graphics *					m_pGraphics;			/* input */
 	const XML_Char *                m_pColorBackground;
 	XML_Char *						m_pFontFamily;			/* input/output */
@@ -149,12 +131,7 @@ protected:
 	bool							m_bBottomline;			/* input/output */
 
 	UT_Vector                       m_vecProps; // Holds the current
-/*
-#ifdef BIDI_ENABLED
-	bool							m_bDirection;
-#endif
-*/
-	XAP_Preview_FontPreview *          m_pFontPreview;
+	XAP_Preview_FontPreview *       m_pFontPreview;
 
 	bool							m_bChangedFontFamily;	/* output */
 	bool							m_bChangedFontSize;		/* output */
@@ -167,12 +144,7 @@ protected:
 	bool							m_bChangedStrikeOut;	/* output */
 	bool							m_bChangedTopline;	    /* output */
 	bool							m_bChangedBottomline;	/* output */
-/*
-#ifdef BIDI_ENABLED
-	bool							m_bChangedDirection;
-#endif
-*/
-	UT_UCSChar * m_drawString;
+	UT_UCSChar *                    m_drawString;
 };
 
 #endif /* XAP_DIALOG_FONTCHOOSER_H */

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2000-2002 Rui Miguel Seabra <rms@greymalkin.yi.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -48,7 +48,7 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Novo",		tb_new_xpm,		NULL,	"Criar novo documento")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Novo",		tb_new_xpm,		NULL,	"Criar novo documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Abrir",	tb_open_xpm,		NULL,	"Abrir documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Gravar",	tb_save_xpm,		NULL,	"Gravar documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Gravar como",	tb_save_as_xpm,		NULL,	"Gravar documento com um nome diferente")
@@ -110,11 +110,9 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executar Script",tb_script_play_xpm,	NULL,	"Executar script")
 
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Esquerda para a Direita", tb_text_direction_ltr_xpm,	NULL, "Forçar orientação da Esquerda para a Direita")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Direita para a Esquerda", tb_text_direction_rtl_xpm,	NULL, "Forçar orientação da Direita para a Esquerda")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Orientação do parágrafo",    tb_text_dom_direction_rtl_xpm,	NULL, "Forçar orientação normal do parágrafo")
-#endif
 
 	// ... add others here ...
 

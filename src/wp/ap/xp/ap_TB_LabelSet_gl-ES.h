@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -52,13 +52,13 @@ BeginSetEnc(gl,ES,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Novo", 	tb_new_xpm,	NULL, "Criar un	documento novo")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Novo", 	tb_new_xpm,	NULL, "Criar un	documento novo")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Abrir",	tb_open_xpm,	NULL, "Abrir un documento existente")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Gardar", 	tb_save_xpm,	NULL, "Gardar o documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Gardar Como", 	tb_save_as_xpm,	NULL, "Gardar o documento con un nome diferente")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimir",	tb_print_xpm,	NULL, "Imprimir o documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,	"Pre-visualización",	tb_print_preview_xpm,	NULL,	"Pré-visualización do documento antes de o imprimir")
-	
+
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Desfacer",		tb_undo_xpm,	NULL, "Desfai edición")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Refacer",		tb_redo_xpm,	NULL, "Refai edición")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Cortar",		tb_cut_xpm,		NULL, "Cortar")
@@ -70,11 +70,11 @@ BeginSetEnc(gl,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER,	"Eliminar Rodapé", tb_edit_removefooter_xpm, NULL, "Eliminar Rodapé")
 	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Ortografia",	tb_spellcheck_xpm,	NULL,	"Verifición ortográfica do documento")
 	ToolbarLabel(AP_TOOLBAR_ID_IMG,			"Inserir Imaxe", tb_insert_graphic_xpm,NULL,	"Inserir imaxe")
-	
+
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estilo",	NoIcon,			NULL, "Estilo")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Fonte",		NoIcon,			NULL, "Tipo de letra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK,	"Inserir Ligazón", tb_hyperlink,	NULL,	"Inserir unha ligazón no documento")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK,	"Inserir Áncora", tb_anchor,		NULL,	"Inserir unha áncora no documento")	
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK,	"Inserir Áncora", tb_anchor,		NULL,	"Inserir unha áncora no documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Tamaño", NoIcon,		NULL, "Tamaño de letra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Negrito",		tb_text_bold_xpm,		NULL, "Negrito")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Itálico",	tb_text_italic_xpm,	NULL, "Itálico")
@@ -84,7 +84,7 @@ BeginSetEnc(gl,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Liña Superior",tb_text_topline_pt_PT_xpm,	NULL,	"Liña Superior")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	"Liña Inferior",tb_text_bottomline_pt_PT_xpm,NULL,	"Liña Inferior")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,		"Axuda",	tb_help_xpm,		NULL,	"Axuda")
-	
+
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superíndice",	tb_text_superscript_xpm,	NULL, "Superíndice")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Subíndice",	tb_text_subscript_xpm,		NULL, "Subíndice")
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Símbolo",	tb_symbol_xpm,		NULL,	"Inserir símbolo")
@@ -116,13 +116,11 @@ BeginSetEnc(gl,ES,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executar Script",tb_script_play_xpm,	NULL,	"Executar script")
 
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Esquerda para Direita", tb_text_direction_ltr_xpm,	NULL, "Forzar orientación da Esquerda para a Direita")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Direita para Esquerda", tb_text_direction_rtl_xpm,	NULL, "Forzar orientación da Direita para a Esquerda")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Orientación do parágrafo",    tb_text_dom_direction_rtl_xpm,	NULL, "Forzar orientación normal do parágrafo")
-#endif
 
-	
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)

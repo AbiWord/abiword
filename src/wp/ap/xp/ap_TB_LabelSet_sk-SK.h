@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -95,18 +95,16 @@ BeginSetEnc(sk,SK,true,"UTF-8")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zväčšenie",		NoIcon,			NULL,	"Zväčšenie")
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Odrážky",		tb_lists_bullets_xpm,	NULL,	"Začať/Ukončiť odrážkové zoznamy")
-        ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Číslovaný zoznam",	tb_lists_numbers_xpm,	NULL,	"Začať/Ukončiť číslovaný zoznam") 
+        ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Číslovaný zoznam",	tb_lists_numbers_xpm,	NULL,	"Začať/Ukončiť číslovaný zoznam")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Farba písma",		tb_text_fgcolor_xpm,	NULL,	"Farba písma")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Zvýraznanie",		tb_text_bgcolor_xpm,	NULL,	"Zvýraznenie")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Zväčšiť odsadenie",	tb_text_indent_xpm,	NULL,	"Zväčšiť odsadenie")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,            "Zmenšiť odsadenie",	tb_text_unindent_xpm,	NULL,	"Zmenšiť odsadenie")
-	
+
 	// ... add others here ...
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR, "Text z ľava do prava", tb_text_direction_ltr_xpm, NULL, "")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL, "Text z prava do ľava", tb_text_direction_rtl_xpm, NULL, "")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION, "Smer odstavca",  tb_text_dom_direction_rtl_xpm,  NULL, "")
-#endif
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 

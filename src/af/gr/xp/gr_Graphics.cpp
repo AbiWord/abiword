@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2002 Tomas Frydrych, <tomas@frydrych.uklinux.net> 
- * 
+ * Copyright (C) 2002 Tomas Frydrych, <tomas@frydrych.uklinux.net>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -32,10 +32,7 @@
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
 #include "ut_sleep.h"
-
-#ifdef BIDI_ENABLED
 #include "ut_OverstrikingChars.h"
-#endif
 
 // static class member initializations
 #ifndef WITH_PANGO
@@ -57,11 +54,11 @@ UT_uint32 GR_Graphics::m_instanceCount = 0;
 UT_uint32 GR_Graphics::s_iScreenResolution = 100;
 
 #ifndef WITH_PANGO
-GR_Font::GR_Font() 
+GR_Font::GR_Font()
 {
 }
 
-GR_Font::~GR_Font() 
+GR_Font::~GR_Font()
 {
 	// need this so children can clean up
 }
@@ -108,7 +105,7 @@ GR_Graphics::~GR_Graphics()
 	}
 }
 
-UT_uint32 GR_Graphics::s_getScreenResolution() 
+UT_uint32 GR_Graphics::s_getScreenResolution()
 {
   return s_iScreenResolution ;
 }
@@ -154,7 +151,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	for (int i = 0; i < num; i++)
     {
 		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], false);
-#ifdef BIDI_ENABLED
+
 		if(isOverstrikingChar(currentChar) == UT_NOT_OVERSTRIKING)
 		{
 			charWidth = measureUnRemappedChar(currentChar);
@@ -162,10 +159,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 		}
 		else
 			charWidth = 0;
-#else
-		charWidth = measureUnRemappedChar(currentChar);
-		stringWidth += charWidth;
-#endif
+
 		if (pWidths) pWidths[i] = charWidth;
     }
 	return stringWidth;
@@ -281,7 +275,7 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 	{
 		return (actual);
 	}
-	
+
 	UT_uint32 width = 0xFFFF;
 	if (noMatterWhat  ||  m_bRemapGlyphsNoMatterWhat  ||  !(width = measureUnRemappedChar(actual)))
 	{
@@ -325,7 +319,7 @@ UT_sint32 GR_Graphics::getApproxCharWidth()
 void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 {
 	UT_ASSERT(iZoom > 0);
-	
+
 	m_iZoomPercentage = iZoom;
 }
 
@@ -359,7 +353,7 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 			iSizeLayout = (UT_uint32) ((double ) UT_LAYOUT_UNITS * UT_convertToInches(pszFontSize) +0.05);
 			xxx_UT_DEBUGMSG(("SEVIOR: iSizeLayout in gr_graphics = %d \n",iSizeLayout));
 			return iSizeLayout;
-		} 
+		}
 		return iSize;
 	}
 //
@@ -374,7 +368,7 @@ UT_uint32 GR_Graphics::getAppropriateFontSizeFromString(const char * pszFontSize
 		{
 			iSizeLayout = (UT_uint32) ((double ) UT_LAYOUT_UNITS * UT_convertToInches(pszFontSize) +0.05);
 			return iSizeLayout;
-		} 
+		}
 		return iSize;
 	}
 }
@@ -397,7 +391,7 @@ UT_sint32 GR_Graphics::convertDimension(const char * s) const
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 	}
 
-	/* 
+	/*
 	 We do this because the convert Dimension code is actually
 	 lossy in that when we put a conversion of 12pt in at 72DPI
 	 then we end up getting 11pt back which really kind of licks.
@@ -419,7 +413,7 @@ UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
 		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
 		}
 
-	/* 
+	/*
 	 We do this because the convert Dimension code is actually
 	 lossy in that when we put a conversion of 12pt in at 72DPI
 	 then we end up getting 11pt back which really kind of licks.
@@ -430,7 +424,7 @@ UT_sint32 GR_Graphics::convertDimension(double Value, UT_Dimension dim) const
 const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 {
 	// return pointer to static buffer -- use it quickly.
-	
+
 	double dResolution;
 	if(m_bLayoutResolutionModeEnabled)
 		{
@@ -492,7 +486,7 @@ void GR_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
    GR_VectorImage * vectorImage = NULL;
-   
+
    if (iType == GR_Image::GRT_Unknown) {
       if (GR_Image::getBufferType(pBB) == GR_Image::GRT_Vector)
 	vectorImage = new GR_VectorImage(pszName);
@@ -500,11 +494,11 @@ GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB
    else if (iType == GR_Image::GRT_Vector) {
       vectorImage = new GR_VectorImage(pszName);
    }
-   
+
    if (vectorImage) {
       vectorImage->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
    }
-   
+
    return vectorImage;
 }
 
@@ -551,14 +545,14 @@ void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
  * Returns true if the exposed redraw method is running.
  */
 const bool  GR_Graphics::isSpawnedRedraw(void) const
-{ 
+{
 	return m_bSpawnedRedraw;
 }
 
 /*!
  * sets/clears the redraw running variable
  */
-void  GR_Graphics::setSpawnedRedraw( bool exposeState) 
+void  GR_Graphics::setSpawnedRedraw( bool exposeState)
 {
 	m_bSpawnedRedraw = exposeState;
 }
@@ -575,7 +569,7 @@ const bool GR_Graphics::isExposePending(void) const
 /*!
  * sets the exposed Pending state.
  */
-void GR_Graphics::setExposePending(bool exposeState) 
+void GR_Graphics::setExposePending(bool exposeState)
 {
 	m_bExposePending = exposeState;
 	if(!exposeState)
@@ -598,7 +592,7 @@ void GR_Graphics::setRecentRect(UT_Rect * pRect)
 	    m_RecentExposeArea.width = pRect->width;
 		m_RecentExposeArea.height = pRect->height;
 }
- 
+
 
 /*!
  * Informs if a process is accessing the global merged expose area.
@@ -610,9 +604,9 @@ const bool GR_Graphics::isExposedAreaAccessed(void) const
 }
 
 /*!
- * sets the varaible explaining the state of the Merged area 
+ * sets the varaible explaining the state of the Merged area
  */
-void GR_Graphics::setExposedAreaAccessed(bool exposeState) 
+void GR_Graphics::setExposedAreaAccessed(bool exposeState)
 {
 	m_bIsExposedAreaAccessed = exposeState;
 }
@@ -634,20 +628,20 @@ void  GR_Graphics::setPendingRect( UT_sint32 x, UT_sint32 y, UT_sint32 width, UT
 }
 
 /*!
- * Do a union of the current rectangle with the one presented in the 
- * parameter list. The makes the new rectangle the smallest possible that 
+ * Do a union of the current rectangle with the one presented in the
+ * parameter list. The makes the new rectangle the smallest possible that
  * covers both rectangles.
 \param  UT_Rect * pRect pointer to the rectangle to merge with.
 */
-void  GR_Graphics::unionPendingRect( UT_Rect * pRect) 
-{ 
+void  GR_Graphics::unionPendingRect( UT_Rect * pRect)
+{
 	m_PendingExposeArea.unionRect(pRect);
 }
 
 /*!
 \returns a const pointer to the PendingExposeArea.
 */
-const UT_Rect * GR_Graphics::getPendingRect(void) const 
+const UT_Rect * GR_Graphics::getPendingRect(void) const
 {
 	return & m_PendingExposeArea;
 }
@@ -672,9 +666,9 @@ bool GR_Graphics::isDontRedraw(void)
 }
 /*!
  * Alternate method to tell the doRepaint to merge the next expose so that
- * expands of exposed area due to scrolls can be merged without doing a 
- * display update. 
- \returns the doMerge boolean (set from scroll) 
+ * expands of exposed area due to scrolls can be merged without doing a
+ * display update.
+ \returns the doMerge boolean (set from scroll)
 */
 bool GR_Graphics::doMerge(void) const
 {
@@ -692,9 +686,9 @@ void GR_Graphics::setDoMerge( bool bMergeState)
 
 /*!
  * Method to handle expose events with a background repainter. Events that
- * Pass through here are rapidly delt with by either expanding an 
- * already existing expose rectangle to cover the expose rectangle of 
- *  the current event or if there is no pending expose rectangle, because 
+ * Pass through here are rapidly delt with by either expanding an
+ * already existing expose rectangle to cover the expose rectangle of
+ *  the current event or if there is no pending expose rectangle, because
  *  the background repainter has cleared it, set a new expose rectangle.
 \params UT_Rect *rClip the rectangle of the expose event.
 */
@@ -756,7 +750,7 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 // OK this event is handled.
 //
 }
-	
+
 
 #ifdef WITH_PANGO
 /*!
@@ -770,15 +764,15 @@ void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 	FT_Bitmap FTBitmap;
 	UT_sint32 iWidth = 0;
 	UT_sint32 iHeight = 0;
-	
+
 	PangoRectangle inkRect;
 
 	// iterate over the list calculating the total width of the bitmap, keeping track of the
 	// intermediate cumulative widths
-	
+
 	GList * pListItem = g_list_first(pGlyphString);
 	GList * pWidthList = NULL;
-	
+
 	while (pListItem)
 	{
 		PangoGlyphString * pGString = (PangoGlyphString *) pListItem->data;
@@ -792,8 +786,8 @@ void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 
 		pListItem = pListItem->next;
 	}
-	
-	
+
+
 	FTBitmap.rows       = PANGO_PIXELS(iHeight);
 	FTBitmap.width      = PANGO_PIXELS(iWidth);
 	FTBitmap.pixel_mode = ft_pixel_mode_grays;
@@ -804,20 +798,20 @@ void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 	// now itterate again, creating composite bitmap
 	pListItem = g_list_first(pGlyphString);
 	GList * pWidthItem = g_list_first(pWidthList);
-	
+
 	while (pListItem)
 	{
 		UT_ASSERT(pWidthItem);
-		
+
 		PangoGlyphString * pGString = (PangoGlyphString *) pListItem->data;
 		UT_sint32 iCumWidth = (UT_sint32) pWidthItem->data;
-		
+
 		pango_ft2_render(&FTBitmap, m_pPangoFont, pGString, iCumWidth , 0 /*??*/);
-		
+
 		pListItem = pListItem->next;
 		pWidthItem = pWidthItem->next;
 	}
-	
+
 
 	// now draw it
 	_drawFT2Bitmap(xoff, yoff, &FTBitmap);
@@ -847,7 +841,7 @@ void GR_Graphics::drawPangoGlyphString(PangoGlyphString * pGlyphString,
 	FTBitmap.buffer     = (unsigned char*)UT_calloc(FTBitmap.rows * FTBitmap.width, 1);
 
 	pango_ft2_render(&FTBitmap, m_pPangoFont, pGlyphString, 0 , 0 /*??*/);
-		
+
 	// now draw it
 	_drawFT2Bitmap(xoff, yoff, &FTBitmap);
 
@@ -875,7 +869,7 @@ UT_uint32 GR_Graphics::getFontAscent(PangoFont * pFont)
 	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, m_pLanguage);
 	UT_uint32 iAscent = pMetrics->ascent;
 	pango_font_metrics_unref(pMetrics);
-	
+
 	return iAscent;
 }
 
@@ -889,7 +883,7 @@ UT_uint32 GR_Graphics::getFontDescent(PangoFont * pFont)
 	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, m_pLanguage);
 	UT_uint32 iDescent = pMetrics->descent;
 	pango_font_metrics_unref(pMetrics);
-	
+
 	return iDescent;
 }
 
@@ -903,15 +897,15 @@ UT_uint32 GR_Graphics::getFontHeight(PangoFont * pFont)
 	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, m_pLanguage);
 	UT_uint32 iHeight = pMetrics->ascent + pMetrics->descent;
 	pango_font_metrics_unref(pMetrics);
-	
+
 	return iHeight;
 }
 
-PangoFont* GR_Graphics::findFont(const char* pszFontFamily, 
-								 const char* pszFontStyle, 
-								 const char* pszFontVariant, 
-								 const char* pszFontWeight, 
-								 const char* pszFontStretch, 
+PangoFont* GR_Graphics::findFont(const char* pszFontFamily,
+								 const char* pszFontStyle,
+								 const char* pszFontVariant,
+								 const char* pszFontWeight,
+								 const char* pszFontStretch,
 								 const char* pszFontSize)
 {
 	return s_pPangoFontManager->findFont(pszFontFamily, pszFontStyle, pszFontVariant,
@@ -923,13 +917,13 @@ void GR_Graphics::_initPangoContext()
 {
 	if(!s_pPangoContext)
 	{
-		
+
 		s_pPangoContext = _createPangoContext();
-	
+
 		// here we need to do some extra processing, such as setting the base direction
 		// default font, etc.
 	}
-	
+
 }
 
 void  GR_Graphics::_initFontManager()
@@ -942,7 +936,7 @@ PangoContext * GR_Graphics::_createPangoContext()
 {
 	double x_dpi = (double)_getResolution();
 	double y_dpi = (double)_getResolution();
-	
+
 	return pango_ft2_get_context(x_dpi, y_dpi);
 }
 
@@ -957,17 +951,17 @@ GList *  GR_Graphics::getPangoGlyphString(const UT_UCS4Char * pChars, UT_uint32 
 	UT_UTF8String text(pChars);
 
 	GList * pGStringList = NULL;
-	
+
 	GList * pItems = pango_itemize(s_pPangoContext, text.utf8_str(), 0, text.byteLength(), NULL, NULL);
 
 	GList * pListItem = g_list_first(pItems);
-	
+
 	while(pListItem)
 	{
 		PangoItem * pItem = (PangoItem*) pListItem->data;
 		PangoGlyphString * pGlyphString = pango_glyph_string_new();
 		pGStringList = g_list_append(pGStringList, (gpointer)pGlyphString);
-		
+
 		pango_shape(text.utf8_str() + pItem->offset,pItem->length, &pItem->analysis, pGlyphString);
 
 		pango_item_free(pItem);
@@ -976,7 +970,7 @@ GList *  GR_Graphics::getPangoGlyphString(const UT_UCS4Char * pChars, UT_uint32 
 	}
 
 	g_list_free(pItems);
-	
+
 	return pGStringList;
 }
 
@@ -988,14 +982,14 @@ PangoGlyphString * GR_Graphics::getPangoGlyphString(const UT_UCS4Char iChar) con
 	GList * pItems = pango_itemize(s_pPangoContext, text.utf8_str(), 0, text.byteLength(), NULL, NULL);
 
     // since there is only one char, we can use pItem directly
-	
+
 	PangoItem * pItem = (PangoItem*) pItems->data;
 	PangoGlyphString * pGlyphString = pango_glyph_string_new();
 	pango_shape(text.utf8_str(),pItem->length, &pItem->analysis, pGlyphString);
 
 	pango_item_free(pItem);
 	g_list_free(pItems);
-	
+
 	return pGlyphString;
 }
 
@@ -1006,17 +1000,12 @@ void GR_Graphics::setLanguage(const char * lang)
 	m_pLanguage = pango_language_from_string(lang);
 }
 
-static void s_free1PangoGlyph(gpointer data, gpointer /*unused*/)
-{
-	pango_glyph_string_free((PangoGlyphString *)data);
-}
-
 /*!
   This function will draw a Unicode string; however, it is very inefficient
   and should be used only for drawing into the GUI; it must not be used for
   drawing the text in the main editing window !!!
 */
-void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars, 
+void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars,
 									UT_uint32 iCharOffset,
 									UT_uint32 iLength,
 									UT_sint32 xoff,
@@ -1025,7 +1014,7 @@ void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars,
 	GList * pGlyphs = getPangoGlyphString(pChars + iCharOffset, iLength);
 	drawPangoGlyphString(pGlyphs, xoff, yoff);
 
-	g_list_foreach(pGlyphs,s_free1PangoGlyph,NULL);
+	g_list_foreach(pGlyphs, UT_free1PangoGlyphString, NULL);
 	g_list_free(pGlyphs);
 }
 

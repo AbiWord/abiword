@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -46,23 +46,19 @@
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	/* 	
+	/*
 		!!! if adding or removing properties to the list_fmt, you have to make also changes to
 		pt_VarSet.cpp mergeAP()
 	*/
 
 	setlocale (LC_NUMERIC, "C");
-	
+
 	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
 	char list_fmt_tmp[1024];
-#ifdef BIDI_ENABLED
 #ifdef BIDI_RTL_DOMINANT
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; dom-dir:rtl; text-align:right; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; line-height:1.0; color:000000; bgcolor:transparent; widows:2");	
+	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; dom-dir:rtl; text-align:right; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; line-height:1.0; color:000000; bgcolor:transparent; widows:2");
 #else
 	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; dom-dir:ltr; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; text-align:left; line-height:1.0; color:000000; bgcolor:transparent; widows:2");
-#endif	
-#else
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; text-align:left; line-height:1.0; color:000000; bgcolor:transparent; widows:2");
 #endif
 	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1");
 	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1");
@@ -173,7 +169,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
   //UT_ASSERT(m_pts==PTS_Loading);
 
 	// first, store the attributes and properties and get an index to them.
-	
+
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
 		return false;
@@ -197,7 +193,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		{
 			// already loaded, ignore redefinition
 			UT_DEBUGMSG(("appendStyle[%s]: duplicate definition ignored\n", szName));
-			return true;	
+			return true;
 		}
 
 		// override builtin definition
@@ -232,7 +228,7 @@ bool pt_PieceTable::removeStyle (const XML_Char * szName)
 {
 	UT_ASSERT(szName);
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	
+
 	UT_DEBUGMSG(("DOM: remove the style, maybe recode the hash-table\n"));
 
 	PD_Style * pStyle;
@@ -241,7 +237,7 @@ bool pt_PieceTable::removeStyle (const XML_Char * szName)
 	{
 		if (!pStyle->isUserDefined())
 			return false; // can't destroy a builtin style
-		
+
 		delete pStyle;
 
 		m_hashStyles.remove (szName, NULL);
@@ -254,19 +250,19 @@ bool pt_PieceTable::removeStyle (const XML_Char * szName)
 bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	UT_ASSERT(szName && *szName);
-	
+
 	const void * pHashEntry = m_hashStyles.pick (szName);
 	if (!pHashEntry)
 		return false;
 
 	PD_Style * pStyle = (PD_Style *) pHashEntry;
 	UT_ASSERT(pStyle);
-	
+
 	if (ppStyle)
 	{
 		*ppStyle = pStyle;
 	}
-	
+
 	return true;
 }
 
@@ -294,7 +290,7 @@ static UT_sint32 compareStyleNames(const void * vS1, const void * vS2)
 }
 
 bool pt_PieceTable::enumStyles(UT_uint32 k,
-							   const char ** pszName, 
+							   const char ** pszName,
 							   const PD_Style ** ppStyle) const
 {
 	// return the kth style.
@@ -302,13 +298,13 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	UT_uint32 kLimit = m_hashStyles.size();
 	if (k >= kLimit)
 		return false;
-	
+
 	UT_Vector * vStyle = m_hashStyles.enumerate() ;
 	vStyle->qsort(compareStyleNames);
 
 	PD_Style * pStyle = (PD_Style *) vStyle->getNthItem(k);
 	UT_ASSERT(pStyle);
-	
+
 	if (ppStyle)
 	{
 		*ppStyle = pStyle;

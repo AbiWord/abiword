@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -100,7 +100,7 @@ FL_DocLayout::~FL_DocLayout()
 	m_bDeletingLayout = true;
 	if (m_pPrefs)
 	{
-		m_pPrefs->removeListener ( _prefsListener, this ); 
+		m_pPrefs->removeListener ( _prefsListener, this );
 	}
 
 	if (m_pDoc)
@@ -123,7 +123,7 @@ FL_DocLayout::~FL_DocLayout()
 #endif
 		}
 	}
-	
+
 	DELETEP(m_pBackgroundCheckTimer);
 	DELETEP(m_pPendingWordForSpell);
 
@@ -131,7 +131,7 @@ FL_DocLayout::~FL_DocLayout()
 	{
 		m_pRedrawUpdateTimer->stop();
 	}
-	
+
 	DELETEP(m_pRedrawUpdateTimer);
 
 	UT_sint32 count = (UT_sint32) m_vecPages.getItemCount() -1;
@@ -146,7 +146,7 @@ FL_DocLayout::~FL_DocLayout()
 		delete pPage;
 		count--;
 	}
-	
+
 	while (m_pFirstSection)
 	{
 		fl_DocSectionLayout* pNext = m_pFirstSection->getNextDocSection();
@@ -194,11 +194,11 @@ void FL_DocLayout::setView(FV_View* pView)
 	m_pView = pView;
 
 	fp_Page* pPage = getFirstPage();
-	
+
 	while (pPage)
 	{
 		pPage->setView(pView);
-		
+
 		pPage = pPage->getNext();
 	}
 
@@ -217,8 +217,8 @@ void FL_DocLayout::setView(FV_View* pView)
 			// initialize the vars here
 			_prefsListener( pApp, pPrefs, NULL, this );
 
-			// keep updating itself	
-			pPrefs->addListener ( _prefsListener, this ); 
+			// keep updating itself
+			pPrefs->addListener ( _prefsListener, this );
 			bool b;
 			if (m_pPrefs->getPrefsValueBool((const XML_Char *)"DebugFlash",&b)  &&  b == true)
 			{
@@ -246,7 +246,7 @@ UT_sint32 FL_DocLayout::getHeight()
 
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		// add page view dimensions 
+		// add page view dimensions
 		FV_View * pView = getView();
 		if(pView)
 		{
@@ -282,7 +282,7 @@ UT_sint32 FL_DocLayout::getWidth()
 
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		// add page view dimensions 
+		// add page view dimensions
 		if(getView())
 			iWidth += getView()->getPageViewLeftMargin();
 		else
@@ -314,7 +314,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
 	// NOTE: we currently favor a readable hash key to make debugging easier
-	// TODO: speed things up with a smaller key (the three AP pointers?) 
+	// TODO: speed things up with a smaller key (the three AP pointers?)
 	UT_String key;
 	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
 	xxx_UT_DEBUGMSG(("pszSize = %s \n",pszSize));
@@ -333,7 +333,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		m_hashFontCache.insert(key.c_str(), 
+		m_hashFontCache.insert(key.c_str(),
 				       (void *)pFont);
 	}
 	else
@@ -368,7 +368,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
 	}
 	// NOTE: we currently favor a readable hash key to make debugging easier
-	// TODO: speed things up with a smaller key (the three AP pointers?) 
+	// TODO: speed things up with a smaller key (the three AP pointers?)
 	UT_String key;
 	if(pszField!="NULL" && pszField != NULL && isField==true)
 	{
@@ -390,7 +390,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		m_hashFontCache.insert(key.c_str(), 
+		m_hashFontCache.insert(key.c_str(),
 				       (void *)pFont);
 	}
 	else
@@ -446,7 +446,7 @@ fp_Page* FL_DocLayout::getFirstPage()
 	{
 		return NULL;
 	}
-	
+
 	return (fp_Page*) m_vecPages.getNthItem(0);
 }
 
@@ -456,7 +456,7 @@ fp_Page* FL_DocLayout::getLastPage()
 	{
 		return NULL;
 	}
-	
+
 	return (fp_Page*) m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
 }
 
@@ -477,7 +477,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 
 	m_vecPages.deleteNthItem(ndx);
 	delete pPage;
-		
+
 	// let the view know that we deleted a page,
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.
@@ -525,7 +525,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
-	
+
 	return pPage;
 }
 
@@ -561,16 +561,16 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		fl_Layout * pL = (fl_Layout *)sfh;
 		if(!pL)
 			return NULL;
-		
+
 		switch (pL->getType())
 		{
 		case PTX_Block:
 			pBL = static_cast<fl_BlockLayout *>(pL);
 			break;
-				
+
 		case PTX_Section:
 		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); 
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			// We asked for a block, and we got a section.  Bad
 		}
 	}
@@ -603,8 +603,8 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 					return pBL;
 				}
 				pBL = NULL;
-			}   
-					
+			}
+
 		}
 		else
 		{
@@ -699,7 +699,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 //		pStart = pFirstDSL;
 //	}
 	fl_DocSectionLayout * pDSL = pStart;
-	// add page view dimensions 
+	// add page view dimensions
 #if 1
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
 	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
@@ -715,7 +715,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	deleteEmptyColumnsAndPages();
 	while (pDSL)
 	{
-		
+
 		pDSL->collapseDocSection();
 		pDSL = pDSL->getNextDocSection();
 	}
@@ -797,7 +797,7 @@ void FL_DocLayout::updateColor()
 // Save the new preference color
 //
 		strncpy(m_szCurrentTransparentColor,pszTransparentColor,9);
-	}  
+	}
 //
 // Now loop through the document and update the Background color
 //
@@ -855,7 +855,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 		removeBackgroundCheckReason(bgcrSpelling);
 	}
 
-	xxx_UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", 
+	xxx_UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n",
 					 bSpell ? "true" : "false" ));
 
 	if (bSpell)
@@ -984,7 +984,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 			// don't define meaning for most of the bits, but it's
 			// small effort compared to all that squiggle stuff that
 			// goes on for the spelling stuff.
-			for (UT_uint32 bitdex = 0; 
+			for (UT_uint32 bitdex = 0;
 				 bitdex < 8*sizeof(pB->m_uBackgroundCheckReasons);
 				 bitdex++)
 			{
@@ -1022,7 +1022,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 		}
 	}
 	else
-	{ 
+	{
 		// No blocks to spellcheck so stop the idle/timer. Otherwise
 		// we consume 100% CPU.
 		pDocLayout->m_pBackgroundCheckTimer->stop();
@@ -1037,8 +1037,8 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
  \param pBlock Block to enqueue
  \param bHead When true, insert block at head of queue
 
- This routine queues up blocks for timer-driven spell checking, etc.  
- By default, this is a FIFO queue, but it can be explicitly 
+ This routine queues up blocks for timer-driven spell checking, etc.
+ By default, this is a FIFO queue, but it can be explicitly
  reprioritized by setting bHead to true.
 */
 void
@@ -1149,14 +1149,14 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 
   If called with NULL arguments, any prior marked region will be
   freed. Callers must reuse pWord (by calling getPendingWordForSpell)
-  when set.  
+  when set.
 */
-void 
+void
 FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
 									 fl_PartOfBlock* pWord)
 {
 	// Return if matching the existing marked region
-	if ((pBlock == m_pPendingBlockForSpell) && 
+	if ((pBlock == m_pPendingBlockForSpell) &&
 		(pWord == m_pPendingWordForSpell))
 		return;
 
@@ -1232,8 +1232,8 @@ FL_DocLayout::isPendingWordForSpell(void) const
  FIXME: why this function/chg? Caller uses result for what?
 */
 bool
-FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
-										 UT_sint32 iOffset, 
+FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
+										 UT_sint32 iOffset,
 										 UT_sint32 chg) const
 {
 	UT_uint32 len = (chg < 0) ? -chg : 0;
@@ -1254,7 +1254,7 @@ FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
 
 /*!
  * This method appends a DocSectionLayout onto the linked list of SectionLayout's
- * and updates the m_pFirstSection and m_pLastSection member variables 
+ * and updates the m_pFirstSection and m_pLastSection member variables
  * accordingly.
  * The structure of this linked list is as follows.
  *    pDSL->pDSL->....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->NULL
@@ -1285,7 +1285,7 @@ void FL_DocLayout::addSection(fl_DocSectionLayout* pSL)
 
 /*!
  * This method inserts a DocSectionLayout into the linked list of SectionLayout's
- * and updates the m_pFirstSection and m_pLastSection member variables 
+ * and updates the m_pFirstSection and m_pLastSection member variables
  * accordingly
 \param  fl_DocSectionLayout * pNewSL the DocSectionLayout to be inserted.
 \param  fl_DocSectionLayout* pAfter the DocSectionLayout after which our new
@@ -1300,7 +1300,7 @@ void FL_DocLayout::insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSection
 		pAfter->getNext()->setPrev(pNewSL);
 	}
 	pAfter->setNext(pNewSL);
-	
+
 	if (m_pLastSection == pAfter)
 	{
 		m_pLastSection = pNewSL;
@@ -1309,7 +1309,7 @@ void FL_DocLayout::insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSection
 
 /*!
  * This method removes a DocSectionLayout from the linked list of SectionLayout's
- * and updates the m_pFirstSection and m_pLastSection member variables 
+ * and updates the m_pFirstSection and m_pLastSection member variables
  * accordingly
 \param  fl_DocSectionLayout * pSL the DocSectionLayout to be removed.
 */
@@ -1318,7 +1318,7 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 {
 	UT_ASSERT(pSL);
 	UT_ASSERT(m_pFirstSection);
-	
+
 	if (pSL->getPrev())
 	{
 		pSL->getPrev()->setNext(pSL->getNext());
@@ -1328,7 +1328,7 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 	{
 		pSL->getNext()->setPrev(pSL->getPrev());
 	}
-	
+
 	if (pSL == m_pFirstSection)
 	{
 		m_pFirstSection = m_pFirstSection->getNextDocSection();
@@ -1365,7 +1365,7 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
  *ie we have all the DocSections in a linked list followed by all the Header/
  * Footer sections. This reflects the locations in the piece table where
  * the header/footer sections are located at the end of the document.
-*/ 
+*/
 void FL_DocLayout::addHdrFtrSection(fl_SectionLayout* pHdrFtrSL)
 {
 	UT_ASSERT(m_pLastSection);
@@ -1423,7 +1423,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		{
 			return pDocSL;
 		}
-		
+
 		pszAtt = pDocSL->getAttribute("footer");
 		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
 		{
@@ -1434,7 +1434,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		{
 			return pDocSL;
 		}
-		
+
 		pszAtt = pDocSL->getAttribute("footer-even");
 		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
 		{
@@ -1445,7 +1445,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		{
 			return pDocSL;
 		}
-		
+
 		pszAtt = pDocSL->getAttribute("footer-last");
 		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
 		{
@@ -1456,13 +1456,13 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		{
 			return pDocSL;
 		}
-		
+
 		pszAtt = pDocSL->getAttribute("footer-first");
 		if (pszAtt && (0 == UT_stricmp(pszAtt, pszHdrFtrID)))
 		{
 			return pDocSL;
 		}
-		
+
 		pDocSL = pDocSL->getNextDocSection();
 	}
 
@@ -1480,9 +1480,9 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
  *m_pFirstSection   m_pLastSection
  *
  *ie we have all the DocSections in a linked list followed by the
- * endnote sections followed by the Header/Footer sections. 
+ * endnote sections followed by the Header/Footer sections.
  * This reflects the locations in the piece table.
-*/ 
+*/
 void FL_DocLayout::addEndnoteSection(fl_SectionLayout* pEndnoteSL)
 {
 	UT_ASSERT(m_pLastSection);
@@ -1540,7 +1540,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForEndnotes(const char* pszEndnote
 		{
 			return pDocSL;
 		}
-		
+
 		pDocSL = pDocSL->getNextDocSection();
 	}
 
@@ -1552,16 +1552,16 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForEndnotes(const char* pszEndnote
 	XAP_Prefs			*pPrefs,
 	UT_StringPtrMap	* /*phChanges*/,  // not used
 	void				*data
-	) 
+	)
 {
 	bool b;
 	FL_DocLayout *pDocLayout = (FL_DocLayout *)data;
 
-	// UT_DEBUGMSG(("spell_prefsListener\n"));		
+	// UT_DEBUGMSG(("spell_prefsListener\n"));
 	UT_ASSERT( pApp && pPrefs && data );
 
 	// caps/number/internet
-	bool changed = false;	
+	bool changed = false;
 	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckCaps, &b );
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
 	pDocLayout->m_bSpellCheckCaps = b;
@@ -1573,7 +1573,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForEndnotes(const char* pszEndnote
 	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckInternet, &b );
 	changed = changed || (b != pDocLayout->getSpellCheckInternet());
 	pDocLayout->m_bSpellCheckInternet = b;
-	
+
 	// auto spell
 	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_AutoSpellCheck, &b );
 	pDocLayout->_toggleAutoSpell( b );
@@ -1591,7 +1591,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForEndnotes(const char* pszEndnote
 	const XML_Char * pszTransparentColor = NULL;
 	pPrefs->getPrefsValue((const XML_Char *)XAP_PREF_KEY_ColorForTransparent,&pszTransparentColor);
 	if(UT_strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
-	{   
+	{
 		if(pDocLayout->getView() && (pDocLayout->getView()->getPoint() > 0))
 		{
 			pDocLayout->updateColor();
@@ -1636,7 +1636,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 //
 	PD_Document * pDoc = pDocLayout->getDocument();
 	if(pDoc->isPieceTableChanging())
-	{  
+	{
 		UT_DEBUGMSG(("PieceTable changing don't redraw \n"));
 		return;
 	}
@@ -1729,8 +1729,8 @@ sqBREAK  A structural break in a document.  For example, a paragraph
   changes (which are completely ignored for the purposes of this
   algorithm).
 
-sqFOLLOWPUNCT A subset of layman's "punctuation".  I include only 
-  things that can normally occur after a quote mark with no intervening 
+sqFOLLOWPUNCT A subset of layman's "punctuation".  I include only
+  things that can normally occur after a quote mark with no intervening
   white space.  Includes period, exclamation point, question mark,
   semi-colon, colon, comma (but not parentheses, square and curly
   brackets, which are treated specially below).  There may be a few
@@ -1765,7 +1765,7 @@ QUOTE  Any of ASCII double quote, ASCII quote (which many people call
   backquote, so I treat them the same in the algorithm.  The majority
   of people use ASCII quote for both opening and closing single quote.
 
-PARITY  Whether a quote is single or double.  For ease of description, 
+PARITY  Whether a quote is single or double.  For ease of description,
   I'll say that the parity of single and double quotes are opposites
   of each other.  When QUOTEs are converted to curly form, the parity
   never changes.
@@ -1809,7 +1809,7 @@ or sqWHITE.  The things before and after it don't have to be of
 the same type.
 
 8.  If a QUOTE is immediately preceded by a sqBREAK or sqWHITE and
-is immediately followed by anything other than a sqBREAK or sqWHITE, 
+is immediately followed by anything other than a sqBREAK or sqWHITE,
 it is converted to the opening form of curly quote.
 
 9.  If a QUOTE is immediately followed by a sqBREAK, sqWHITE, or
@@ -1825,7 +1825,7 @@ as an inches indicator (there are other uses, like lat/long minutes;
 ditto for the ASCII quote) because it is tough to tell if some numbers
 with an ASCII double quote after them are intended to be one of those
 "other things" or is just the end of a very long quote.  So, the
-algorithm will be wrong sometimes in those cases.  
+algorithm will be wrong sometimes in those cases.
 
 It is otherwise sort of conservative, preferring to not convert things
 it doesn't feel confident about.  The reason for that is that there is
@@ -1910,7 +1910,7 @@ struct sqTable
 	UT_UCSChar replacement;
 };
 // The idea of the table is to drive the algorithm without lots of
-// cluttery code.  Something using this table pre-computes what the 
+// cluttery code.  Something using this table pre-computes what the
 // things are before and after the character in question, and then
 // dances through this table looking for a match on all three.
 // The final item in each row is the character to use to replace
@@ -2015,7 +2015,6 @@ static struct sqTable sqTable_en[] =
 	{sqDONTCARE, 0, sqDONTCARE, UCS_UNKPUNK}  // signals end of table
 };
 
-#ifdef BIDI_ENABLED
 static void s_swapQuote(UT_UCSChar & c)
 {
     if(c == UCS_LQUOTE)
@@ -2027,11 +2026,10 @@ static void s_swapQuote(UT_UCSChar & c)
     else if(c == UCS_RDBLQUOTE)
         c = UCS_LDBLQUOTE;
 }
-#endif
 
 void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset)
 {
-	if (!block) 
+	if (!block)
 		return;
 	if (m_pView->isHdrFtrEdit())
 		return;
@@ -2118,7 +2116,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			}
 		}
 
-		// we now know what the before and after things are, so 
+		// we now know what the before and after things are, so
 		// spin through the table.
 		UT_UCSChar replacement = UCS_UNKPUNK;  // means don't replace
 		// TODO:  select a table based on default locale or on the locale
@@ -2140,16 +2138,16 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		UT_DEBUGMSG(("before %d, after %d, replace %x\n", before, after, replacement));
 		if (replacement != UCS_UNKPUNK)
 		{
-#ifdef BIDI_ENABLED
+
             UT_sint32 s1,s2,s3,s4,s5;
             bool b1;
             fp_Run * pThisRun = block->findPointCoords(block->getPosition() + offset,false,s1,s2,s3,s4,s5,b1);
-            
+
             xxx_UT_DEBUGMSG(("pThisRun [0x%x], vis dir. %d\n", pThisRun, pThisRun->getVisDirection()));
-            
+
             if(pThisRun && pThisRun->getVisDirection() == FRIBIDI_TYPE_RTL)
                 s_swapQuote(replacement);
-#endif
+
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;
 			saved_pos = m_pView->getPoint();

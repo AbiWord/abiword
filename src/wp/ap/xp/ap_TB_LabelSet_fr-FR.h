@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -82,7 +82,7 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Haut ligne",		tb_text_topline_xpm,	NULL, "Ligne au-dessus")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	"Bas ligne",		tb_text_bottomline_xpm,	NULL, "Ligne au-dessous")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP, 		"Aide", 			tb_help_xpm, 			NULL, "Aide sur AbiWord")
-	
+
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Exposant",			tb_text_superscript_xpm,	NULL, "Exposant")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indice",			tb_text_subscript_xpm,		NULL, "Indice")
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbole",			tb_symbol_xpm,			NULL, "Insérer un symbole")
@@ -116,11 +116,9 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
 
 	// ... add others here ...
 
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Oriente le texte de gauche à droite",		tb_text_direction_ltr_xpm,	NULL, "Forcer la direction du texte de gauche à droite")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Oriente le texte de droite à gauche",		tb_text_direction_rtl_xpm,	NULL, "Forcer la direction du texte de droite à gauche")	
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Oriente le texte de droite à gauche",		tb_text_direction_rtl_xpm,	NULL, "Forcer la direction du texte de droite à gauche")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Orientation des paragraphes",			tb_text_dom_direction_rtl_xpm,	NULL, "Changer l'orientation dominante des paragraphes")
-#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

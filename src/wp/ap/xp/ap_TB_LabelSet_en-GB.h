@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -48,7 +48,7 @@ BeginSetEnc(en,GB,false,"iso-8859-1")
 
 	//          (id, 		                    szLabel,		IconName,     			szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"New", 			tb_new_xpm,				NULL, "Create a new document")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"New", 			tb_new_xpm,				NULL, "Create a new document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Open",			tb_open_xpm,			NULL, "Open an existing document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Save", 		tb_save_xpm,			NULL, "Save the document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Save As", 		tb_save_as_xpm,			NULL, "Save the document under a different name")
@@ -105,11 +105,9 @@ BeginSetEnc(en,GB,false,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Ex. script",	tb_script_play_xpm,		NULL, "Execute script")
 
      // ... add others here ...
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Force text LTR",		tb_text_direction_ltr_xpm,	NULL, "Force LTR direction of text")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Force text RTL",		tb_text_direction_rtl_xpm,	NULL, "Force RTL direction of text")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Paragraph Direction",	tb_text_dom_direction_rtl_xpm,	NULL, "Change dominant direction of paragraph")
-#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,			NULL,NULL)
 
 EndSet()

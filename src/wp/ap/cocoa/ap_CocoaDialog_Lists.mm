@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -84,9 +84,7 @@ static void s_styleChangedNone (GtkWidget * widget, AP_CocoaDialog_Lists * me)
 static void s_styleChangedBullet (GtkWidget * widget, AP_CocoaDialog_Lists * me)
 {
   	me->setDirty();
-#ifdef BIDI_ENABLED
 	me->fillUncustomizedValues(); // Use defaults to start.
-#endif
 	me->styleChanged ( 1 );
 }
 
@@ -94,9 +92,7 @@ static void s_styleChangedBullet (GtkWidget * widget, AP_CocoaDialog_Lists * me)
 static void s_styleChangedNumbered (GtkWidget * widget, AP_CocoaDialog_Lists * me)
 {
   	me->setDirty();
-#ifdef BIDI_ENABLED
 	me->fillUncustomizedValues(); // Use defaults to start.
-#endif
 	me->styleChanged ( 2 );
 }
 
@@ -190,11 +186,11 @@ void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
 	// To center the dialog, we need the frame of its parent.
 	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
 	UT_ASSERT(pCocoaFrame);
-	
+
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
-	
+
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
 	centerDialog(parentWindow, m_wMainWindow);
@@ -221,7 +217,7 @@ void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
 	// let the widget materialize
 
 	_createPreviewFromGC(m_pPreviewWidget,
-						 (UT_uint32) m_wPreviewArea->allocation.width, 
+						 (UT_uint32) m_wPreviewArea->allocation.width,
 						 (UT_uint32) m_wPreviewArea->allocation.height);
         // Run into the GTK event loop for this window.
 //
@@ -249,7 +245,7 @@ void AP_CocoaDialog_Lists::runModeless (XAP_Frame * pFrame)
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid = (UT_sint32) getDialogId ();
 	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
- 
+
 	// This magic command displays the frame that characters will be
 	// inserted into.
 	// This variation runs the additional static function shown afterwards.
@@ -277,7 +273,7 @@ void AP_CocoaDialog_Lists::runModeless (XAP_Frame * pFrame)
 	// let the widget materialize
 
 	_createPreviewFromGC(m_pPreviewWidget,
-						 (UT_uint32) m_wPreviewArea->allocation.width, 
+						 (UT_uint32) m_wPreviewArea->allocation.width,
 						 (UT_uint32) m_wPreviewArea->allocation.height);
 
 	// Next construct a timer for auto-updating the dialog
@@ -292,7 +288,7 @@ void AP_CocoaDialog_Lists::runModeless (XAP_Frame * pFrame)
 
 }
 
-         
+
 void AP_CocoaDialog_Lists::autoupdateLists(UT_Worker * pWorker)
 {
 	UT_ASSERT(pWorker);
@@ -316,8 +312,8 @@ void AP_CocoaDialog_Lists::autoupdateLists(UT_Worker * pWorker)
 			pDialog->m_bAutoUpdate_happening_now = false;
 		}
 	}
-}   
-     
+}
+
 
 void AP_CocoaDialog_Lists::previewExposed(void)
 {
@@ -325,7 +321,7 @@ void AP_CocoaDialog_Lists::previewExposed(void)
 	{
 		setbisCustomized(true);
 		event_PreviewAreaExposed();
-	} 
+	}
 }
 
 void AP_CocoaDialog_Lists::destroy(void)
@@ -341,7 +337,7 @@ void AP_CocoaDialog_Lists::destroy(void)
 		m_bDestroy_says_stopupdating = true;
 		while (m_bAutoUpdate_happening_now == true) ;
 		m_pAutoUpdateLists->stop();
-		setAnswer(AP_Dialog_Lists::a_CLOSE);	
+		setAnswer(AP_Dialog_Lists::a_CLOSE);
 
 		g_list_free( m_glFonts);
 		modeless_cleanup();
@@ -376,7 +372,7 @@ void AP_CocoaDialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 
 void  AP_CocoaDialog_Lists::styleChanged(gint type)
 {
-	// 
+	//
 	// code to change list list
 	//
 	gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
@@ -390,12 +386,12 @@ void  AP_CocoaDialog_Lists::styleChanged(gint type)
 
 		g_signal_handler_block(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 		g_signal_handler_block_by_data(  G_OBJECT(m_wListStyleBox), (gpointer) this );
-		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
+		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox),
 								  m_wListStyleNone_menu);
 		g_signal_handler_unblock(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 
 
-		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
+		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
 								  0);
 		setNewListType(NOT_A_LIST);
 	}
@@ -409,12 +405,12 @@ void  AP_CocoaDialog_Lists::styleChanged(gint type)
 
 		g_signal_handler_block(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 
-		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
+		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox),
 								  m_wListStyleBulleted_menu);
 		g_signal_handler_unblock(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
 
 
-		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
+		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
 								  1);
 		setNewListType(BULLETED_LIST);
 	}
@@ -424,14 +420,14 @@ void  AP_CocoaDialog_Lists::styleChanged(gint type)
 	  	m_wListStyleNumbered_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNumbered_menu;
 		_fillNumberedStyleMenu(m_wListStyleNumbered_menu);
- 
+
 		// Block events during this manual change
 
 		g_signal_handler_block(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), 
+		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox),
 								  m_wListStyleNumbered_menu);
 		g_signal_handler_unblock(  G_OBJECT(m_wListStyleBox), m_iStyleBoxID );
-		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox), 
+		gtk_option_menu_set_history (GTK_OPTION_MENU(m_wListTypeBox),
 								  2);
 		setNewListType(NUMBERED_LIST);
 	}
@@ -472,7 +468,7 @@ void  AP_CocoaDialog_Lists::setXPFromLocal(void)
 // Read out GUI stuff in the customize box and load their values into the member
 // variables.
 //
-	_gatherData(); 
+	_gatherData();
 //
 // Now read the toggle button state and set the member variables from them
 //
@@ -537,7 +533,7 @@ void AP_CocoaDialog_Lists::updateDialog(void)
 }
 
 void AP_CocoaDialog_Lists::setAllSensitivity(void)
-{ 
+{
 	PopulateDialogData();
 	if(getisListAtPoint())
 	{
@@ -580,7 +576,7 @@ GtkWidget * AP_CocoaDialog_Lists::_constructWindow (void)
 	gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (hbuttonbox1), 4);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
-	
+
 	if(!isModal())
 		m_wApply = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Apply));
 	else
@@ -617,8 +613,8 @@ void AP_CocoaDialog_Lists::_fillFontMenu(GtkWidget* menu)
 
 	// somebody can explain me (jca) the reason of these 6 lines?
 	// it seems to me like if we were inserting two times the current font in the menu
-	// Sevior: This is not a valid font name. However if you select 
-        // this you get whatever font is in the document at the point the 
+	// Sevior: This is not a valid font name. However if you select
+        // this you get whatever font is in the document at the point the
         // list is inserted.
 
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Lists_Current_Font));
@@ -885,7 +881,7 @@ GtkWidget *AP_CocoaDialog_Lists::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (vbox3), preview_frame, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (preview_frame), 3);
 	gtk_frame_set_shadow_type (GTK_FRAME (preview_frame), GTK_SHADOW_IN);
-	
+
 	preview_area = createDrawingArea ();
         gtk_drawing_area_size (GTK_DRAWING_AREA(preview_area),180,225);
 	//	gtk_widget_set_usize(preview_area, 180, 225);
@@ -930,7 +926,7 @@ GtkWidget *AP_CocoaDialog_Lists::_constructWindowContents (void)
 	m_wAlignListSpin = text_align_sb;
 	m_oIndentAlign_adj = label_align_sb_adj;
 	m_wIndentAlignSpin = label_align_sb;
-	m_wDecimalEntry = decimal_en; 
+	m_wDecimalEntry = decimal_en;
 	m_oStartSpin_adj = start_sb_adj;
 	m_wStartSpin = start_sb;
 
@@ -953,7 +949,7 @@ GtkWidget *AP_CocoaDialog_Lists::_constructWindowContents (void)
 	return m_wContents;
 }
 
-	
+
 /*
   This code is to suck all the available fonts and put them in a GList.
   This can then be displayed on a combo box at the top of the dialog.
@@ -963,15 +959,15 @@ GtkWidget *AP_CocoaDialog_Lists::_constructWindowContents (void)
    box */
 
 GList *  AP_CocoaDialog_Lists::_getGlistFonts (void)
-{	  
+{
 	XAP_CocoaApp * unixapp = static_cast<XAP_CocoaApp *> (m_pApp);
 	UT_Vector * list = unixapp->getFontManager()->getAllFonts();
 	UT_uint32 count = list->size();
-		
+
 	GList *glFonts = NULL;
 	gchar currentfont[50] = "\0";
 	gchar * nextfont;
-	
+
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		XAP_CocoaFont * pFont = (XAP_CocoaFont *)list->getNthItem(i);
@@ -1056,7 +1052,6 @@ void AP_CocoaDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
 	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
 						G_CALLBACK (s_typeChanged), this);
 
-#ifdef BIDI_ENABLED
 	glade_menuitem = gtk_menu_item_new_with_label (
 		pSS->getValue(AP_STRING_ID_DLG_Lists_Hebrew_List));
 	gtk_widget_show (glade_menuitem);
@@ -1065,8 +1060,6 @@ void AP_CocoaDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
 	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
 	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
 						G_CALLBACK (s_typeChanged), this);
-#endif
-
 }
 
 
@@ -1184,7 +1177,7 @@ void AP_CocoaDialog_Lists::_fillBulletedStyleMenu( GtkWidget *listmenu)
 
 }
 
-void AP_CocoaDialog_Lists::_setRadioButtonLabels(void) 
+void AP_CocoaDialog_Lists::_setRadioButtonLabels(void)
 {
 	//	char *tmp;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -1231,7 +1224,7 @@ void AP_CocoaDialog_Lists::_connectSignals(void)
 
 	m_iStyleBoxID = g_signal_connect (G_OBJECT(m_wListStyleBox),
 					    "configure_event",
-					    G_CALLBACK (s_typeChanged), 
+					    G_CALLBACK (s_typeChanged),
 					    this);
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
@@ -1239,7 +1232,7 @@ void AP_CocoaDialog_Lists::_connectSignals(void)
 					   G_CALLBACK(s_preview_exposed),
 					   (gpointer) this);
 
-	
+
 	g_signal_connect_after(G_OBJECT(m_wMainWindow),
 							 "expose_event",
 		     				 G_CALLBACK(s_window_exposed),

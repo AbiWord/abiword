@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -40,67 +40,67 @@
 
 /*****************************************************************/
 int AP_QNXDialog_Options::s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->event_OK(); 
+	UT_ASSERT(dlg);
+	dlg->event_OK();
 	return Pt_CONTINUE;
 }
 
 int AP_QNXDialog_Options::s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_Cancel(); 
+	UT_ASSERT(widget && dlg);
+	dlg->event_Cancel();
 	return Pt_CONTINUE;
 }
 
 int AP_QNXDialog_Options::s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_Apply(); 
+	UT_ASSERT(widget && dlg);
+	dlg->event_Apply();
 	return Pt_CONTINUE;
 }
 
 int AP_QNXDialog_Options::s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->event_WindowDelete(); 
+	UT_ASSERT(dlg);
+	dlg->event_WindowDelete();
 	return Pt_CONTINUE;
 }
 
 int AP_QNXDialog_Options::s_ignore_reset_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->_event_IgnoreReset(); 
+	UT_ASSERT(dlg);
+	dlg->_event_IgnoreReset();
 	return Pt_CONTINUE;
 }
 
 int AP_QNXDialog_Options::s_ignore_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->_event_IgnoreEdit(); 
+	UT_ASSERT(dlg);
+	dlg->_event_IgnoreEdit();
 	return Pt_CONTINUE;
 }
 
 int AP_QNXDialog_Options::s_dict_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
+	UT_ASSERT(dlg);
 	printf("dict edit clicked \n");
-	dlg->_event_DictionaryEdit(); 
+	dlg->_event_DictionaryEdit();
 	return Pt_CONTINUE;
 }
 
 int AP_QNXDialog_Options::s_defaults_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->_event_SetDefaults(); 
+	UT_ASSERT(widget && dlg);
+	dlg->_event_SetDefaults();
 	return Pt_CONTINUE;
 }
 
@@ -108,10 +108,10 @@ int AP_QNXDialog_Options::s_defaults_clicked(PtWidget_t *widget, void *data, PtC
 // these function will allow multiple widget to tie into the same logic
 // function (at the AP level) to enable/disable stuff
 int AP_QNXDialog_Options::s_checkbutton_toggle(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 #if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
+	UT_ASSERT(dlg);
 	UT_ASSERT( w && GTK_IS_WIDGET(w));
 	int i = (int) g_object_get_data( G_OBJECT(w), "tControl" );
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
@@ -142,19 +142,19 @@ int AP_QNXDialog_Options::s_menu_item_activate(PtWidget_t *widget, void *data, P
 
 
 int AP_QNXDialog_Options::s_chooseTransparentColor(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_ChooseTransparentColor(); 
+	UT_ASSERT(widget && dlg);
+	dlg->event_ChooseTransparentColor();
 	return Pt_CONTINUE;
 }
 
 
 int AP_QNXDialog_Options::s_allowTransparentColor(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
+{
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_AllowTransparentColor(); 
+	UT_ASSERT(widget && dlg);
+	dlg->event_AllowTransparentColor();
 	return Pt_CONTINUE;
 }
 
@@ -180,7 +180,7 @@ void AP_QNXDialog_Options::_setAutoLoadPlugins(const bool b)
 
 /*****************************************************************/
 
-#define TR(str) UT_XML_transNoAmpersands((str)) 
+#define TR(str) UT_XML_transNoAmpersands((str))
 
 XAP_Dialog * AP_QNXDialog_Options::static_constructor(XAP_DialogFactory * pFactory,
                                                          XAP_Dialog_Id id)
@@ -208,7 +208,7 @@ AP_QNXDialog_Options::AP_QNXDialog_Options(XAP_DialogFactory * pDlgFactory,
 	XAP_PrefsScheme *ps;
 	for ( i = 0; (ps = prefs->getNthScheme(i)) != 0; i++ ) {
 		UT_DEBUGMSG(("    %d [%s]\n", i, ps->getSchemeName() ));
-	
+
 		XML_Char const *pszKey, *pszValue;
 		for ( UT_uint32 j = 0; ps->getNthValue(j, &pszKey, &pszValue ); j++ ) {
 			UT_DEBUGMSG(("        %x %-30s : %s\n", j, pszKey, pszValue ));
@@ -284,13 +284,13 @@ one_more_time:
 
 void AP_QNXDialog_Options::event_OK(void)
 {
-	if (!done++) 
+	if (!done++)
 	    m_answer = AP_Dialog_Options::a_OK;
 }
 
 void AP_QNXDialog_Options::event_Cancel(void)
 {
-	if (!done++) 
+	if (!done++)
 	    m_answer = AP_Dialog_Options::a_CANCEL;
 }
 
@@ -303,7 +303,7 @@ void AP_QNXDialog_Options::event_Apply(void)
 void AP_QNXDialog_Options::event_WindowDelete(void)
 {
 	if (!done++)
-	    m_answer = AP_Dialog_Options::a_CANCEL;    
+	    m_answer = AP_Dialog_Options::a_CANCEL;
 }
 
 void AP_QNXDialog_Options::event_AllowTransparentColor(void)
@@ -343,9 +343,9 @@ void AP_QNXDialog_Options::initializeTransperentToggle(void)
 /*****************************************************************/
 PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 {
-	// for the internationalization	
+	// for the internationalization
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	PtWidget_t *windowOptions;
 	PtWidget_t *buttonSave;
 	PtWidget_t *buttonDefaults;
@@ -386,8 +386,8 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	const char *item;
 	int		n;
 
-#define WIN_WIDTH  450	
-#define WIN_HEIGHT 350	
+#define WIN_WIDTH  450
+#define WIN_HEIGHT 350
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
@@ -412,7 +412,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_POS, &pos, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PANEL_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, PANEL_HEIGHT, 0);
-	PtWidget_t *panelGroup = PtCreateWidget(PtPanelGroup, vallgroup, n, args);	
+	PtWidget_t *panelGroup = PtCreateWidget(PtPanelGroup, vallgroup, n, args);
 
 #define TAB_WIDTH  (PANEL_WIDTH - 30)
 #define TAB_HEIGHT (PANEL_HEIGHT - 50)
@@ -452,7 +452,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellInternet)), 0);
 	checkbuttonSpellInternet = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
- 
+
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellCheckAsType)), 0);
 	checkbuttonSpellCheckAsType = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
@@ -546,7 +546,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	/** View View Show/Hide **/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewShowHide)), 0);
-	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 
+	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA,
 												 Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 //	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
@@ -588,7 +588,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	/*
 	TODO: Page Size
 	*/
-	
+
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)), 0);
 	checkbuttonViewStandard = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
@@ -612,7 +612,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	/** View View Frame **/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewViewFrame)), 0);
-	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 
+	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA,
 												 Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 //	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
@@ -646,23 +646,23 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
 	/** SmartQuotes Enable **/
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_checkbuttonSmartQuotesEnable = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 
-	/** Autosave Options **/	
+	/** Autosave Options **/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
 	PtWidget_t *hautosavegroup = PtCreateWidget (PtGroup, vmiscgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent)), 0);
 	m_checkbuttonAutoSaveFile = PtCreateWidget(PtToggleButton, hautosavegroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX, 
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_Minutes)), 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN, 0, 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, 60, 0);
@@ -673,7 +673,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	hautosavegroup = PtCreateWidget (PtGroup, vmiscgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_WithExtension)), 0);
 	PtCreateWidget(PtLabel, hautosavegroup, n, args);
 
@@ -681,14 +681,14 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_wAutoSaveFileExt = PtCreateWidget(PtText, hautosavegroup, n, args);
 
-	/** Colour Selector Options **/	
+	/** Colour Selector Options **/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, Pt_GROUP_EQUAL_SIZE_VERTICAL);
 	PtWidget_t *hcolorgroup = PtCreateWidget (PtGroup, vmiscgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 				pSS->getValue(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent), 0);
 	PtCreateWidget(PtLabel, hcolorgroup, n, args);
 
@@ -699,32 +699,30 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	//PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent)), 0);
 	m_wCheckWhiteTransparent = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 	PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
 
-	/** Colour Selector Options **/	
+	/** Colour Selector Options **/
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ShowSplash)), 0);
 	PtWidget_t *check_splash = PtCreateWidget (PtToggleButton, vmiscgroup, n, args);
 
 
-#ifdef BIDI_ENABLED
 /*
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_BiDiOptions)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtCreateWidget(PtGroup, vmiscgroup, n, args);
 */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
 		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *rtl_dominant = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
-#endif		
 
 
 	/*** Create the horizontal button group ***/
@@ -769,9 +767,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
     m_windowMain = windowOptions;
 	m_notebook = notebook1 = NULL;
-#ifdef BIDI_ENABLED
 	m_checkbuttonOtherDirectionRtl = rtl_dominant;
-#endif
 
     m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
     m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
@@ -879,7 +875,7 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 
 	case id_TEXT_AUTO_SAVE_FILE_EXT:
 		return m_wAutoSaveFileExt;
-		
+
 	case id_TEXT_AUTO_SAVE_FILE_PERIOD:
 		return m_wAutoSaveFilePeriod;
 
@@ -889,10 +885,8 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 	case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
 		return  m_wChooseColorForTransparent;
 
-#ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
-#endif
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
@@ -904,7 +898,7 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		return m_comboPrefsScheme;
 		break;
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// view
 	case id_CHECK_VIEW_SHOW_RULER:
 		return m_checkbuttonViewShowRuler;
@@ -986,7 +980,7 @@ void AP_QNXDialog_Options::_controlEnable( tControl id, bool value )
 	}
 
 	PtArg_t arg;
-	PtSetArg(&arg, Pt_ARG_FLAGS, 
+	PtSetArg(&arg, Pt_ARG_FLAGS,
 				(value) ? (Pt_BLOCKED | Pt_GHOST) : 0,
 				Pt_BLOCKED | Pt_GHOST|Pt_SET);
 	PtSetResources(w, 1, &arg);
@@ -1015,13 +1009,8 @@ DEFINE_GET_SET_BOOL(SpellUppercase);
 DEFINE_GET_SET_BOOL(SpellNumbers);
 DEFINE_GET_SET_BOOL(SpellInternet);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable);
-
-#ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
-#endif
-
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
-
 DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStandardBar);
 DEFINE_GET_SET_BOOL(ViewShowFormatBar);
@@ -1058,8 +1047,8 @@ void AP_QNXDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 	PtSetResource(m_wAutoSaveFilePeriod, Pt_ARG_NUMERIC_VALUE, atoi(stPeriod.c_str()), 0);
 }
 
-UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void) 
-{				
+UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void)
+{
 	int selection;
     selection = UT_QNXComboGetPos(m_listViewRulerUnits);
 
@@ -1068,8 +1057,8 @@ UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void)
  	return (UT_Dimension)((int)m_vecUnits.getNthItem(selection - 1));
 }
 
-void    AP_QNXDialog_Options::_setViewRulerUnits(UT_Dimension dim) 
-{	
+void    AP_QNXDialog_Options::_setViewRulerUnits(UT_Dimension dim)
+{
 	UT_uint32 i;
 
 	for(i = 0; i < m_vecUnits.getItemCount(); i++) {
@@ -1089,14 +1078,14 @@ DEFINE_GET_SET_BOOL	(ViewUnprintable);
 
 #undef DEFINE_GET_SET_BOOL
 
-int AP_QNXDialog_Options::_gatherNotebookPageNum(void) 
-{				
+int AP_QNXDialog_Options::_gatherNotebookPageNum(void)
+{
 	UT_DEBUGMSG(("TODO: _gatherNotebookPageNum "));
 	return 0;
-}			
+}
 
-void    AP_QNXDialog_Options::_setNotebookPageNum(int pn) 
-{	
+void    AP_QNXDialog_Options::_setNotebookPageNum(int pn)
+{
 	UT_DEBUGMSG(("TODO: _gatherNotebookPageNum "));
 }
 

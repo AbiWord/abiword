@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 ##############################################################################
@@ -40,12 +40,12 @@ OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.
 i386_ARCH_FLAGS		=
 
 # Jerry LeVan <levan@eagle.eku.edu> provided the PPC flags
-# Gary Thomas <gdt@linuxppc.org> suggests using -fno-schedule-insns2 
+# Gary Thomas <gdt@linuxppc.org> suggests using -fno-schedule-insns2
 # for some EGCS builds
 PPC_ARCH_FLAGS		= -fsigned-char -fno-schedule-insns2
 
-ALPHA_ARCH_FLAGS 	= 
-SPARC_ARCH_FLAGS 	= 
+ALPHA_ARCH_FLAGS 	=
+SPARC_ARCH_FLAGS 	=
 IA64_ARCH_FLAGS		=
 S390_ARCH_FLAGS		=
 
@@ -64,7 +64,7 @@ AR		= ar cr $@
 
 ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER   	= -pg -Wall -ansi -pedantic -fprofile-arcs -ftest-coverage
-DEFINES  	= 
+DEFINES  	=
 OBJ_DIR_SFX	= PRF
 ABI_OPT_DEBUG 	= ""
 ABI_OPT_OPTIMIZE= ""
@@ -77,11 +77,11 @@ else
 	OBJ_DIR_SFX	= OPT
 	ABI_OPTIONS	+= Optimize:On
 	ABI_OPT_DEBUG	= ""
-	else #/* OPTIMIZE*/	
+	else #/* OPTIMIZE*/
 
 	ifeq ($(ABI_OPT_DEBUG),1)
-#	OPTIMIZER	= -g -Wall -ansi -pedantic 
-	OPTIMIZER	= -g -Wall -pedantic -Wno-long-long 
+#	OPTIMIZER	= -g -Wall -ansi -pedantic
+	OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
 	DEFINES		= -DDEBUG -UNDEBUG
 	OBJ_DIR_SFX	= DBG
 		ifeq ($(ABI_OPT_GNOME),1)
@@ -96,7 +96,7 @@ else
 	OPTIMIZER	= -O2 -Wall -ansi -pedantic
 	DEFINES		=
 	OBJ_DIR_SFX	= OBJ
-	endif #/* DEBUG */ 
+	endif #/* DEBUG */
 	endif #/* OPTIMIZE */
 	ifeq ($(ABI_OPT_GNOME),1)
 		ifeq ($(ABI_OPT_PEER_EXPAT),1)
@@ -124,6 +124,9 @@ ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 OS_INCLUDES		+= -I$(ABI_ROOT)/../libiconv/include
 endif
 G++INCLUDES		= -I/usr/include/g++
+ifeq ($(ABI_OPT_PANGO),1)
+OS_INCLUDES += -I/usr/local/include/pango-1.0 -I/usr/local/include/freetype2 -I/usr/local/include/glib-2.0
+endif
 
 # Compiler flags
 PLATFORM_FLAGS		= -pipe -DLINUX -Dlinux

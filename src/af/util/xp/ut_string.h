@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 #ifndef UT_STRING_H
 #define UT_STRING_H
@@ -40,12 +40,12 @@ ABI_EXPORT int  unichar_to_utf8 (int c, unsigned char *outbuf);
 ///////////////////////////////////////////////////////////////////////////////
 // Replacements for common non-ANSI functions
 
-ABI_EXPORT char *  UT_strdup(const char * szSource); 
+ABI_EXPORT char *  UT_strdup(const char * szSource);
 
 // Below are case-insensitive strcmp-like functions prototypes.  The functions
 // lexographically compare strings, returning <0, 0, >0 as strcmp(...) does.
 // For strings containing characters between 'Z' and 'a' in the ASCII table,
-// the strings /do/ compare differently depending on case.  For example, 
+// the strings /do/ compare differently depending on case.  For example,
 // "ABCDE" < "ABCD^", but "abcde" > "abcd^".
 // This functionality is comparable with the 'standard' GNU strcasecmp(...)
 // and the Microsoft stricmp functions.
@@ -84,11 +84,8 @@ ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * 
 ABI_EXPORT char *			 UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src);
 ABI_EXPORT bool			 UT_UCS2_cloneString(UT_UCS2Char ** dest, const UT_UCS2Char * src);
 ABI_EXPORT bool			 UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src);
-
-#ifdef BIDI_ENABLED
 ABI_EXPORT UT_UCS2Char *     UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_uint32 n);
 ABI_EXPORT UT_UCS2Char *     UT_UCS2_strnrev(UT_UCS2Char * dest, UT_uint32 n);
-#endif
 
 ABI_EXPORT UT_UCS2Char		 UT_UCS2_tolower(UT_UCS2Char c);
 ABI_EXPORT UT_UCS2Char       UT_UCS2_toupper(UT_UCS2Char c);
@@ -102,11 +99,8 @@ ABI_EXPORT UT_UCS4Char * 	 UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * 
 ABI_EXPORT char *			 UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src);
 ABI_EXPORT bool			     UT_UCS4_cloneString(UT_UCS4Char ** dest, const UT_UCS4Char * src);
 ABI_EXPORT bool			     UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src);
-
-#ifdef BIDI_ENABLED
 ABI_EXPORT UT_UCS4Char *     UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_uint32 n);
 ABI_EXPORT UT_UCS4Char *     UT_UCS4_strnrev(UT_UCS4Char * dest, UT_uint32 n);
-#endif
 
 ABI_EXPORT UT_UCS4Char		 UT_UCS4_tolower(UT_UCS4Char c);
 ABI_EXPORT UT_UCS4Char       UT_UCS4_toupper(UT_UCS4Char c);

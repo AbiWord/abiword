@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -57,8 +57,8 @@ AP_Dialog_Options::tAnswer AP_Dialog_Options::getAnswer(void) const
 	return m_answer;
 }
 
-inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme, 
-							 XML_Char const * key, 
+inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme,
+							 XML_Char const * key,
 							 bool var )
 {
 	XML_Char szBuffer[2] = {0,0};
@@ -115,12 +115,10 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
-#ifdef BIDI_ENABLED
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseContextGlyphs, _gatherOtherUseContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
-#endif
 
 #if 1
 	// JOAQUIN - fix this: Dom
@@ -348,7 +346,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setNotebookPageNum (atoi(pszBuffer));
 	else
 	  _setNotebookPageNum(which);
-#ifdef BIDI_ENABLED
+
 	//------------- other
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
 		_setOtherDirectionRtl (b);
@@ -358,7 +356,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 		_setOtherSaveContextGlyphs (b);
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,&b))
 		_setOtherHebrewContextGlyphs (b);
-#endif
 
 	// enable/disable controls
 	_initEnableControls();
@@ -367,32 +364,28 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 void AP_Dialog_Options::_enableDisableLogic( tControl id )
 {
-#if 1
-#ifdef BIDI_ENABLED
 	UT_DEBUGMSG(("_enableDisableLogic: id %d, myId %d\n", id,id_CHECK_OTHER_USE_CONTEXT_GLYPHS));
-#endif
+
 	switch (id)
 	{
 
 /*	- Since HIDE_ERRORS is not implemented, no need to toggle it on/off
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		// if we 'check as we type', then enable the 'hide' option
-		_controlEnable( id_CHECK_SPELL_HIDE_ERRORS, 
+		_controlEnable( id_CHECK_SPELL_HIDE_ERRORS,
 						_gatherSpellCheckAsType() );
 		break;
 */
-#ifdef BIDI_ENABLED
+
 	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
 		_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 		_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 		break;
-#endif
 
 	default:
 		// do nothing
 		break;
-	}	
-#endif
+	}
 }
 
 // The initialize the controls (i.e., disable controls not coded yet)
@@ -416,15 +409,13 @@ void AP_Dialog_Options::_initEnableControls()
 
 	// general
 	_controlEnable( id_BUTTON_SAVE, 				false );
-	
-#ifdef BIDI_ENABLED
 	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
 	_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
-#endif
-//
-// If the prefs color for transparent is white initially disable the choose
-// color button
-//
+
+	//
+	// If the prefs color for transparent is white initially disable the choose
+	// color button
+	//
 	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, false);
@@ -433,7 +424,7 @@ void AP_Dialog_Options::_initEnableControls()
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, true);
 	}
-	
+
 }
 
 void AP_Dialog_Options::_event_SetDefaults(void)
@@ -447,7 +438,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 	// SetDefaults
 	//	To set the defaults, save the scheme name and notebook page number,
-	//	re-populate the window with the _builtin_ scheme, then reset the 
+	//	re-populate the window with the _builtin_ scheme, then reset the
 	//	scheme name and page number.
 	// If the user hits cancel, then nothing is saved in user_prefs
 
@@ -455,8 +446,8 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 	currentPage = _gatherNotebookPageNum();
 
-	pPrefs->setCurrentScheme("_builtin_");		
-	
+	pPrefs->setCurrentScheme("_builtin_");
+
 	_populateWindowData();
 
 	// TODO i'm not sure you want to do the following at this
@@ -464,7 +455,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 	// TODO set us to "_builtin_" and that's it.  if the user
 	// TODO then changes something, we should create a new
 	// TODO scheme and fill in the new value.  --jeff
-	_setNotebookPageNum( currentPage ); 	
+	_setNotebookPageNum( currentPage );
 	pPrefs->setCurrentScheme(old_name);
 }
 
@@ -475,7 +466,7 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 
 	// TODO:  shack@uiuc.edu: waiting for a vote for reset strings...
 
-	// Ask "Do you want to reset ignored words in the current document?" 
+	// Ask "Do you want to reset ignored words in the current document?"
 	XAP_Dialog_MessageBox::tAnswer ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent,
 								XAP_Dialog_MessageBox::b_YNC,
 								XAP_Dialog_MessageBox::a_NO); // should this be YES?
@@ -500,19 +491,19 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 	UT_ASSERT(pApp);
 	if (pApp->getFrameCount() > 1)
 	{
-		
+
 		ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetAll,
 									XAP_Dialog_MessageBox::b_YNC,
 									XAP_Dialog_MessageBox::a_NO); // should this be YES?
 
 
-		// if cancel, don't to ANYTHING 
+		// if cancel, don't to ANYTHING
 		if (ans == XAP_Dialog_MessageBox::a_CANCEL )
 		{
 			UT_DEBUGMSG(("No/Canceled\n"));
 			return;
 		}
-	} 
+	}
 
 	// ------------------------- actually do it
 	if ( ans == XAP_Dialog_MessageBox::a_NO )
@@ -522,8 +513,8 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 		m_pFrame->getCurrentDoc()->clearIgnores();
 
 		((FV_View *)m_pFrame->getCurrentView())->getLayout()->recheckIgnoredWords();
-	}	
-	else 
+	}
+	else
 	{
 		// reset all doc's ignored words
 		UT_uint32 ndx;

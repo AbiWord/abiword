@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -49,7 +49,7 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 
 	//          (id,						szLabel,		IconName,					szToolTip, szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nytt", 		tb_new_xpm,					NULL, "Skapar ett nytt tomt dokument")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nytt", 		tb_new_xpm,					NULL, "Skapar ett nytt tomt dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Öppna",		tb_open_xpm,				NULL, "Öppnar ett befintligt dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Spara", 		tb_save_xpm,				NULL, "Sparar dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Spara...", 	tb_save_as_xpm, 				NULL, "Sparar dokumentet med ett nytt namn")
@@ -117,11 +117,10 @@ BeginSetEnc(sv,SE,true,"iso-8859-1")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Kör skript",	tb_script_play_xpm,		NULL, "Utför skript")
 
-#ifdef BIDI_ENABLED
         ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,        "Force text LTR",               tb_text_direction_ltr_xpm,      NULL, "Vänster till höger")
         ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,        "Force text RTL",               tb_text_direction_rtl_xpm,      NULL, "Höger till vänster")
         ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION, "Textriktning", tb_text_dom_direction_rtl_xpm,  NULL, "Ändra dominant riktning på stycke")
-#endif
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,						NULL, NULL)

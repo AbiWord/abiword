@@ -1,20 +1,20 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -86,7 +86,7 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf, 
+UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf,
 													  UT_uint32 iNumbytes)
 {
 	if ( iNumbytes < 5 )
@@ -163,21 +163,21 @@ RTF_msword97_level::~RTF_msword97_level(void)
 	DELETEP(m_pbCharProps);
 }
 
-void RTF_msword97_level::buildAbiListProperties( const char ** szListID, 
-								 const char ** szParentID, 
+void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
+								 const char ** szParentID,
 								 const char ** szLevel,
-								 const char ** szStartat, 
-								 const char ** szFieldFont, 
-								 const char ** szListDelim, 
-								 const char ** szListDecimal, 
-								 const char ** szAlign, 
-								 const char ** szIndent, 
+								 const char ** szStartat,
+								 const char ** szFieldFont,
+								 const char ** szListDelim,
+								 const char ** szListDecimal,
+								 const char ** szAlign,
+								 const char ** szIndent,
 								 const char ** szListStyle)
 {
 	static UT_String buf;
 	static UT_String ListID, ParentID, Level, StartAt, FieldFont, ListDelim, ListDecimal,Align,Indent;
 //
-// Start with List ID. 
+// Start with List ID.
 //
 //
 // HACKALERT - this is ugly. We need to restart the list numbering if
@@ -191,7 +191,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //   2. Some more level one text
 //          i. Some level three text
 //      b. Some more level two text - note the label was not reset!!!
-// 
+//
 	if (m_bRestart && (m_sPreviousLevel < m_localLevel))
 	{
 		m_AbiLevelID = m_sLastAssignedLevelID++;
@@ -217,14 +217,14 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 // level
 //
 	UT_String_sprintf(buf,"%d",m_localLevel);
-    Level = buf; 
+    Level = buf;
     *szLevel = Level.c_str();
     buf[0] = 0;
 //
 // Start At.
 //
 	UT_String_sprintf(buf,"%d",m_levelStartAt);
-    StartAt = buf; 
+    StartAt = buf;
     *szStartat = StartAt.c_str();
     buf[0] = 0;
 //
@@ -265,23 +265,21 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 		*szStartat = "1";
         abiListType = IMPLIES_LIST;
 	}
-#ifdef BIDI_ENABLED
 	else if (m_RTFListType == 45)
 	{
 		abiListType = HEBREW_LIST;
 	}
-#endif
 	else
 	{
 		abiListType = NUMBERED_LIST;
 	}
 
-	
+
 	fl_AutoLists al;
     *szListStyle = al.getXmlList(abiListType);
 //
 // Field Font
-//	
+//
     FieldFont = "NULL";
     if(m_pParaProps &&  m_pParaProps->m_pszFieldFont)
 	    FieldFont = m_pParaProps->m_pszFieldFont;
@@ -303,7 +301,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 	*szListDecimal = ".";
 //
-// szAlign - left position of the paragraph 
+// szAlign - left position of the paragraph
 //
 	if(m_pbParaProps && m_pbParaProps->bm_indentLeft)
 	{
@@ -331,12 +329,12 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 /*!
   Parse the leveltext and levelnumbers values.
   The idea is to translate the strings into AbiWord compatible format.
-  
-  From the RTF standard: "... a level three number such as '1.a.(i)' would 
+
+  From the RTF standard: "... a level three number such as '1.a.(i)' would
   generate the following RTF: '{\leveltext \'07\'00.\'01.(\'02)'}' where \'07
   is the string length, the \'00 \'01 and \'02 are level place holders, and the
   rest is surrounding text. The corresponding levelnumbers would be
-  {\levelnumbers \'01\'03\'06} because the level place holders have indices 
+  {\levelnumbers \'01\'03\'06} because the level place holders have indices
   1,3,6.
 
   In AbiWord, either this level resuses the parent label and adds on more text, or
@@ -346,7 +344,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
  */
 bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_String & szLevelNumbers, UT_uint32 iLevel)
 {
-	//read the text string into a int array, set the place holders to 
+	//read the text string into a int array, set the place holders to
 	//values less than zero.
 	UT_sint32 iLevelText[1000];
 	char const * pText = szLevelText.c_str();
@@ -416,7 +414,7 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 		if (iLevelText[icurrent]<=0 && !bFound)
 		{
 
-#if 0 
+#if 0
 // Matti's code
 			m_listDelim += "%L";
 			UT_ASSERT(-iLevelText[icurrent] == (UT_sint32)iLevel);
@@ -596,7 +594,7 @@ bool RTF_msword97_listOveride::isUnderlineChanged(UT_uint32 iLevel)
  */
 bool RTF_msword97_listOveride::getUnderline(UT_uint32 iLevel)
 {
-	
+
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_underline);
 }
@@ -633,7 +631,7 @@ bool RTF_msword97_listOveride::getSuperscript(UT_uint32 iLevel)
 	return (pLevel->m_pCharProps->m_superscript);
 }
 /*!
- * This function returns true if Superscript Position is changed in the list 
+ * This function returns true if Superscript Position is changed in the list
  * definition.
  */
 bool RTF_msword97_listOveride::isSuperscriptPosChanged(UT_uint32 iLevel)
@@ -782,19 +780,19 @@ UT_uint32 RTF_msword97_listOveride::getFontNumber(UT_uint32 iLevel)
 /*!
  * This method returns all the stuff Abi needs to reconstruct a list
  */
-void RTF_msword97_listOveride::buildAbiListProperties( const char ** szListID, 
-								 const char ** szParentID, 
+void RTF_msword97_listOveride::buildAbiListProperties( const char ** szListID,
+								 const char ** szParentID,
 								 const char ** szLevel,
-								 const char ** szStartat, 
-								 const char ** szFieldFont, 
-								 const char ** szListDelim, 
-								 const char ** szListDecimal, 
-								 const char ** szAlign, 
-								 const char ** szIndent, 
+								 const char ** szStartat,
+								 const char ** szFieldFont,
+								 const char ** szListDelim,
+								 const char ** szListDecimal,
+								 const char ** szAlign,
+								 const char ** szIndent,
 								 const char ** szListStyle,
 								 UT_uint32 iLevel)
 {
-	m_pList->m_RTF_level[iLevel]->buildAbiListProperties(szListID, szParentID, szLevel, szStartat, szFieldFont, 
+	m_pList->m_RTF_level[iLevel]->buildAbiListProperties(szListID, szParentID, szLevel, szStartat, szFieldFont,
 									 szListDelim, szListDecimal, szAlign, szIndent, szListStyle);
 
 }
@@ -832,28 +830,26 @@ RTFProps_bCharProps::~RTFProps_bCharProps(void)
 // These are set true if changed in list definitions.
 RTFProps_bParaProps::RTFProps_bParaProps(void):
     bm_justification(false),
-	    	bm_spaceBefore(false),
-	    	bm_spaceAfter(false),
-        	bm_indentLeft(false),
-        	bm_indentRight(false),
-        	bm_indentFirst(false),
-		    bm_lineSpaceVal(false),
-		    bm_lineSpaceExact(false),
-	        bm_tabStops(false),
-	        bm_tabTypes(false),
-	        bm_tabLeader(false),
-	        bm_curTabType(false),
-	        bm_curTabLeader(false),
-	        bm_rtfListTable(false)
-#ifdef BIDI_ENABLED
-			,bm_dom_dir(false)
-#endif
-{ 
-};                  
+	bm_spaceBefore(false),
+	bm_spaceAfter(false),
+	bm_indentLeft(false),
+	bm_indentRight(false),
+	bm_indentFirst(false),
+	bm_lineSpaceVal(false),
+	bm_lineSpaceExact(false),
+	bm_tabStops(false),
+	bm_tabTypes(false),
+	bm_tabLeader(false),
+	bm_curTabType(false),
+	bm_curTabLeader(false),
+	bm_rtfListTable(false),
+	bm_dom_dir(false)
+{
+};
 
 RTFProps_bParaProps::~RTFProps_bParaProps(void)
-{ 
-};                  
+{
+};
 
 
 
@@ -935,19 +931,19 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 		case 1251:
 			m_szEncoding = "CP1251";	// MS-CYRL
 			break;
-			
+
 			// These were produced by MS WordPad 5.0 on Win2K
 			// TODO What do we do with negative values?
-			// -8534 - Devanagari	(57002) 
-			// -8533 - Bengali		(57003) 
-			// -8532 - Tamil		(57004) 
-			// -8531 - Telugu		(57005) 
-			// -8530 - Assamese		(57006) 
-			// -8529 - Oriya		(57007) 
-			// -8528 - Kannada		(57008) 
-			// -8527 - Malayalam	(57009) 
-			// -8526 - Gujarathi	(57010) 
-			// -8525 - Panjabi		(57011) 
+			// -8534 - Devanagari	(57002)
+			// -8533 - Bengali		(57003)
+			// -8532 - Tamil		(57004)
+			// -8531 - Telugu		(57005)
+			// -8530 - Assamese		(57006)
+			// -8529 - Oriya		(57007)
+			// -8528 - Kannada		(57008)
+			// -8527 - Malayalam	(57009)
+			// -8526 - Gujarathi	(57010)
+			// -8525 - Panjabi		(57011)
 			// -7536 - Georgian		(58000)
 			// -7535 - Armenian		(58001)
 		default:
@@ -1092,7 +1088,7 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_lineSpaceVal = 240;
 	m_isList = false;
 	m_level = 0;
-	memset(&m_pszStyle, 0, sizeof(m_pszStyle)); 
+	memset(&m_pszStyle, 0, sizeof(m_pszStyle));
 	m_rawID = 0;
 	m_rawParentID = 0;
 	memset(m_pszListDecimal,0,sizeof(m_pszListDecimal)) ;
@@ -1104,10 +1100,8 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_iOveride = 0;
 	m_iOverideLevel = 0;
 	m_styleNumber = -1;
-#ifdef BIDI_ENABLED
 	m_dom_dir = FRIBIDI_TYPE_UNSET;
-#endif
-};                  
+};
 
 
 RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& other)
@@ -1154,12 +1148,12 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 
 		m_isList = other.m_isList;
 		m_level = other.m_level;
-		strcpy((char *) m_pszStyle, (char *) other.m_pszStyle); 
+		strcpy((char *) m_pszStyle, (char *) other.m_pszStyle);
 		m_rawID = other.m_rawID;
 		m_rawParentID = other.m_rawParentID;
-		strcpy((char *) m_pszListDecimal, (char *) other.m_pszListDecimal); 
-		strcpy((char *) m_pszListDelim, (char *) other.m_pszListDelim); 
-		strcpy((char *) m_pszFieldFont, (char *) other.m_pszFieldFont); 
+		strcpy((char *) m_pszListDecimal, (char *) other.m_pszListDecimal);
+		strcpy((char *) m_pszListDelim, (char *) other.m_pszListDelim);
+		strcpy((char *) m_pszFieldFont, (char *) other.m_pszFieldFont);
 		m_startValue = other.m_startValue;
 		m_iOveride = other.m_iOveride;
 		m_iOverideLevel = other.m_iOverideLevel;
@@ -1178,10 +1172,8 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		m_rtfListTable = other.m_rtfListTable;
 		m_styleNumber = other.m_styleNumber;
 	}
-	
-#ifdef BIDI_ENABLED
-		m_dom_dir = other.m_dom_dir;
-#endif
+
+	m_dom_dir = other.m_dom_dir;
 
 	return *this;
 }
@@ -1201,16 +1193,14 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_breakType = sbkNone;
 	m_pageNumFormat = pgDecimal;
 	m_bColumnLine = false;
-	m_leftMargTwips = 1800;     
-	m_rightMargTwips = 1800;     
-	m_topMargTwips = 1440;     
-	m_bottomMargTwips = 1440;     
-	m_headerYTwips = 0;     
-	m_footerYTwips = 0; 
-     m_colSpaceTwips = 0;
-#ifdef BIDI_ENABLED
+	m_leftMargTwips = 1800;
+	m_rightMargTwips = 1800;
+	m_topMargTwips = 1440;
+	m_bottomMargTwips = 1440;
+	m_headerYTwips = 0;
+	m_footerYTwips = 0;
+    m_colSpaceTwips = 0;
 	m_dir = FRIBIDI_TYPE_UNSET;
-#endif
 };
 
 RTFStateStore::RTFStateStore()
@@ -1298,10 +1288,10 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 {
 	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
-	
+
 	m_szFileDirName = UT_strdup (szFilename);
 	// UT_basename returns a point INSIDE the passed string.
-	// the trick is to truncate the string by setting the char pointed 
+	// the trick is to truncate the string by setting the char pointed
 	// by tmp to NULL. This IS useful code. (2 LOC)
 	char * tmp = (char *)UT_basename (m_szFileDirName);
 	*tmp = 0;
@@ -1311,7 +1301,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
 		return UT_errnoToUTError ();
 	}
-	
+
 	UT_Error error = _writeHeader(fp);
 
 	if (!error)
@@ -1322,7 +1312,7 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 	}
 
 	fclose(fp);
-	
+
 	return error;
 }
 
@@ -1447,10 +1437,10 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 // flush any remaining text in the previous para and flag
 // a new para to be started.  Don't actually start a new
 // para as it may turn out to be empty
-// 
+//
 bool IE_Imp_RTF::StartNewPara()
 {
-	
+
 	bool ok = FlushStoredChars(true);
 	m_newParaFlagged = true;
 
@@ -1459,13 +1449,13 @@ bool IE_Imp_RTF::StartNewPara()
 
 
 // flush any remaining text in the previous sction and
-// flag a new section to be started.  Don't actually 
+// flag a new section to be started.  Don't actually
 // start a new section as it may turn out to be empty
-// 
+//
 bool IE_Imp_RTF::StartNewSection()
 {
 	bool ok = FlushStoredChars(true);
-	
+
 	m_newParaFlagged = true;
 	m_newSectionFlagged = true;
 
@@ -1473,9 +1463,9 @@ bool IE_Imp_RTF::StartNewSection()
 }
 
 
-// add a new character.  Characters are actually cached and 
+// add a new character.  Characters are actually cached and
 // inserted into the document in batches - see FlushStoredChars
-// 
+//
 bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 {
 	return m_gbBlock.ins(m_gbBlock.getLength(), (UT_GrowBufElement*)&ch, 1);
@@ -1483,7 +1473,7 @@ bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 
 
 // flush any stored text into the document
-// 
+//
 bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 {
 	// start a new para if we have to
@@ -1591,7 +1581,7 @@ bool IE_Imp_RTF::PopRTFState(void)
 		delete pState;
 
 		m_currentRTFState.m_unicodeInAlternate = 0;
-		
+
 		return ok;
 	}
 	else
@@ -1626,8 +1616,8 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 			// Insert a character into the story
             if ((ch >= 32  ||  ch == 9 || ch == UCS_FF || ch == UCS_LF || ch == UCS_VTAB)  &&  !m_currentRTFState.m_charProps.m_deleted)
 			{
-				if (no_convert==0 && ch<=0xff) 
-				{	
+				if (no_convert==0 && ch<=0xff)
+				{
 					wchar_t wc;
 					// TODO Doesn't handle multibyte encodings (CJK)
 					if (m_mbtowc.mbtowc(wc,(UT_Byte)ch))
@@ -1681,7 +1671,7 @@ bool IE_Imp_RTF::ParseRTFKeyword()
   otherwise (pParam is 0 then).
   \param keywordBuffLen the length of the pKeyword memory block
   \return false if any problem
-  \desc This function parse and read the keyword. It is called if a 
+  \desc This function parse and read the keyword. It is called if a
   \\ is encountered in the flow. *pKeyword never contains the \\
  */
 bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed, UT_uint32 keywordBuffLen)
@@ -1718,7 +1708,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 			UT_DEBUGMSG(("Keyword too large. Bogus RTF!\n"));
 			return false;
 		}
-		
+
 		*pKeyword = ch;
 		pKeyword++;
 		if (!ReadCharFromFileWithCRLF(&ch))
@@ -1776,7 +1766,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 */
 bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 {
-	
+
 	bool ok = false;
 
 	if (m_pImportFile)					// if we are reading a file
@@ -1784,7 +1774,7 @@ bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 		if (fread(pCh, 1, sizeof(unsigned char), m_pImportFile) > 0)
 		{
 			ok = true;
-		}		
+		}
 	}
 	else								// else we are pasting from a buffer
 	{
@@ -1809,12 +1799,12 @@ bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
 	// line feed and cr should be ignored in RTF files
 	do
 	{
-		if (ReadCharFromFileWithCRLF(pCh) == false) 
+		if (ReadCharFromFileWithCRLF(pCh) == false)
 		{
 			return false;
 		}
 	} while (*pCh == 10  ||  *pCh == 13);
-	
+
 	return true;
 
 }
@@ -1850,7 +1840,7 @@ bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
   Skip the current group
   \param  bConsumeLastBrace pass true to discard the last }
   \return false if any problem raised
-  \desc This function read until the current group and all nested 
+  \desc This function read until the current group and all nested
   subgroups are passed. This allow skipping a chunk of the RTF file
   we do not understand.
  */
@@ -1863,7 +1853,7 @@ bool IE_Imp_RTF::SkipCurrentGroup(bool bConsumeLastBrace)
 		if (!ReadCharFromFileWithCRLF(&ch))
 			return false;
 
-		if (ch == '{') 
+		if (ch == '{')
 		{
 			++nesting;
 		}
@@ -1886,8 +1876,8 @@ bool IE_Imp_RTF::SkipCurrentGroup(bool bConsumeLastBrace)
   Stuff the current group into the buffer
   \param  buf the buffer to stuff RTF in.
   \return false if any problem raised
-  \desc This function read until the current group and all nested 
-  subgroups are passed and stuff them into the buffer. This allow saving a 
+  \desc This function read until the current group and all nested
+  subgroups are passed and stuff them into the buffer. This allow saving a
   chunk of the RTF file for future use.
  */
 bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
@@ -1903,7 +1893,7 @@ bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
 		if (!ReadCharFromFileWithCRLF(&ch))
 			return false;
 
-		if (ch == '{') 
+		if (ch == '{')
 		{
 			++nesting;
 		}
@@ -1913,7 +1903,7 @@ bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
 		}
 		buf.append(&ch, 1);
 	} while (nesting > 0);
-	
+
 	// we don't want the last }
 	SkipBackChar(ch);
 
@@ -1979,25 +1969,25 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 	// TODO: investigate whether pictData is leaking memory or not
 	IE_ImpGraphic * pGraphicImporter = NULL;
-	
+
 	UT_Error error = IE_ImpGraphic::constructImporter(pictData, IEGFT_Unknown, &pGraphicImporter);
-	
-	if ((error == UT_OK) && pGraphicImporter) 
+
+	if ((error == UT_OK) && pGraphicImporter)
 	{
 		FG_Graphic* pFG = 0;
-		
+
 		// TODO: according with IE_ImpGraphic header, we shouldn't free
 		// TODO: the buffer. Confirm that.
 		error = pGraphicImporter->importGraphic(pictData, &pFG);
 		DELETEP(pGraphicImporter);
-		
-		if (error != UT_OK || !pFG) 
+
+		if (error != UT_OK || !pFG)
 		{
 			UT_DEBUGMSG(("Error parsing embedded PNG\n"));
 			// Memory for pictData was destroyed if not properly loaded.
 			return false;
 		}
-		
+
 		UT_ByteBuf * buf = 0;
 		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 		imgProps.width = (UT_uint32)static_cast<FG_GraphicRaster *>(pFG)->getWidth ();
@@ -2009,10 +1999,10 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 			UT_DEBUGMSG(("Error flushing stored chars just before inserting a picture\n"));
 			delete pictData;
 			return false;
-		} 
-		
+		}
+
 		ok = InsertImage (buf, image_name, imgProps);
-		if (!ok) 
+		if (!ok)
 		{
 			delete pictData;
 			return false;
@@ -2034,21 +2024,21 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
   \param image_name the image name inside the XML file or the piecetable.
   \param imgProps the RTF image properties.
   \return true is successful.
-  Insert and image at the current position. 
+  Insert and image at the current position.
   Check whether we are pasting or importing
  */
 bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 							  const struct RTFProps_ImageProps & imgProps)
 {
 	UT_String propBuffer;
-	double wInch = 0.0f; 
+	double wInch = 0.0f;
 	double hInch = 0.0f;
 	bool resize = false;
 	if ((m_pImportFile != NULL) || (m_parsingHdrFtr))
-	{	
+	{
 		// non-null file, we're importing a doc
 		// Now, we should insert the picture into the document
-		
+
 		const char * mimetype = NULL;
 		mimetype = UT_strdup("image/png");
 
@@ -2074,7 +2064,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		if (resize) {
 			UT_DEBUGMSG (("resizing...\n"));
 			setlocale(LC_NUMERIC, "C");
-			UT_String_sprintf(propBuffer, "width:%fin; height:%fin", 
+			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
 							  wInch, hInch);
 			setlocale(LC_NUMERIC, "");
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
@@ -2083,25 +2073,25 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		const XML_Char* propsArray[5];
 		propsArray[0] = (XML_Char *)"dataid";
 		propsArray[1] = (XML_Char *) image_name;
-		if (resize) 
+		if (resize)
 		{
 			propsArray[2] = (XML_Char *)"props";
 			propsArray[3] = propBuffer.c_str();
 			propsArray[4] = NULL;
 		}
-		else 
+		else
 		{
 			propsArray[2] = NULL;
 		}
-		
-		if (!getDoc()->appendObject(PTO_Image, propsArray)) 
+
+		if (!getDoc()->appendObject(PTO_Image, propsArray))
 		{
 			FREEP(mimetype);
 			return false;
 		}
-		
+
 		if (!getDoc()->createDataItem(image_name, false,
-									  buf, (void*)mimetype, NULL)) 
+									  buf, (void*)mimetype, NULL))
 		{
 			// taken care of by createDataItem
 			//FREEP(mimetype);
@@ -2112,7 +2102,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 	{
 		// null file, we're pasting an image. this really makes
 		// quite a difference to the piece table
-		
+
 		// Get a unique name for image.
 		UT_ASSERT(image_name);
 		UT_String szName;
@@ -2146,7 +2136,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		  Insert the object into the document.
 		*/
 		bool resize = false;
-		
+
 		switch (imgProps.sizeType)
 		{
 		case RTFProps_ImageProps::ipstGoal:
@@ -2166,11 +2156,11 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			break;
 		}
 
-		if (resize) 
+		if (resize)
 		{
 			UT_DEBUGMSG (("resizing...\n"));
 			setlocale(LC_NUMERIC, "C");
-			UT_String_sprintf(propBuffer, "width:%fin; height:%fin", 
+			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
 							  wInch, hInch);
 			setlocale(LC_NUMERIC, "");
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
@@ -2179,13 +2169,13 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		const XML_Char* propsArray[5];
 		propsArray[0] = (XML_Char *)"dataid";
 		propsArray[1] = (XML_Char *) szName.c_str();
-		if (resize) 
+		if (resize)
 		{
 			propsArray[2] = (XML_Char *)"props";
 			propsArray[3] = propBuffer.c_str();
 			propsArray[4] = NULL;
 		}
-		else 
+		else
 		{
 			propsArray[2] = NULL;
 		}
@@ -2205,8 +2195,8 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
  */
 bool IE_Imp_RTF::HandlePicture()
 {
-	// this method loads a picture from the file 
-	// and insert it in the document. 
+	// this method loads a picture from the file
+	// and insert it in the document.
 	static UT_uint32 nImage = 0;
 
 	unsigned char ch;
@@ -2222,7 +2212,7 @@ bool IE_Imp_RTF::HandlePicture()
 		if (!ReadCharFromFile(&ch))
 			return false;
 
-		switch (ch) 
+		switch (ch)
 		{
 		case '\\':
 			UT_ASSERT(!bPictProcessed);
@@ -2241,34 +2231,34 @@ bool IE_Imp_RTF::HandlePicture()
 			{
 				format = picJPEG;
 			}
-			else if (strcmp((char *)keyword, "picwgoal") == 0) 
+			else if (strcmp((char *)keyword, "picwgoal") == 0)
 			{
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal)) 
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal))
 				{
-					if (parameterUsed) 
+					if (parameterUsed)
 					{
 						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 						imageProps.wGoal = parameter;
 					}
 				}
 			}
-			else if (strcmp((char *)keyword, "pichgoal") == 0) 
+			else if (strcmp((char *)keyword, "pichgoal") == 0)
 			{
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal)) 
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal))
 				{
-					if (parameterUsed) 
+					if (parameterUsed)
 					{
 						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 						imageProps.hGoal = parameter;
 					}
 				}
 			}
-			else if (strcmp((char *)keyword, "picscalex") == 0) 
+			else if (strcmp((char *)keyword, "picscalex") == 0)
 			{
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale)) 
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
 				{
 					if ((parameterUsed) && (parameter != 100))
 					{
@@ -2277,10 +2267,10 @@ bool IE_Imp_RTF::HandlePicture()
 					}
 				}
 			}
-			else if (strcmp((char *)keyword, "picscaley") == 0) 
+			else if (strcmp((char *)keyword, "picscaley") == 0)
 			{
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale)) 
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
 				{
 					if ((parameterUsed) && (parameter != 100))
 					{
@@ -2310,13 +2300,13 @@ bool IE_Imp_RTF::HandlePicture()
 			UT_ASSERT(!bPictProcessed);
 			// It this a conforming rtf, this should be the pict data
 			// if we know how to handle this format, we insert the picture
-		
+
 			UT_String image_name;
 			UT_String_sprintf(image_name,"image_%d",++nImage);
-			
+
 			// the first char belongs to the picture too
 			SkipBackChar(ch);
-			
+
 			if (!LoadPictData(format, image_name.c_str(), imageProps))
 				if (!SkipCurrentGroup())
 					return false;
@@ -2327,7 +2317,7 @@ bool IE_Imp_RTF::HandlePicture()
 
 	// The last brace is put back on the stream, so that the states stack
 	// doesn't get corrupted
-	SkipBackChar(ch);  
+	SkipBackChar(ch);
 
 	return true;
 }
@@ -2337,7 +2327,7 @@ bool IE_Imp_RTF::HandlePicture()
   \return false if failed
   \desc Once the \\object has been read, handle the object contained in
   the current group.
-  \todo in the future this method should load an object from the file 
+  \todo in the future this method should load an object from the file
   and insert it in the document. To fix some open bugs, we just
   skip all the data and do nothing
  */
@@ -2354,7 +2344,7 @@ bool IE_Imp_RTF::HandleObject()
   the current group. This is really tricky as fields are really
   hard to handle since most writers do whatever they want, including
   RTF code interleaved with field instruction. Thank you Microsoft
-  (sorry for the rant). Call IE_Imp_RTF::_parseFldinstBlock to 
+  (sorry for the rant). Call IE_Imp_RTF::_parseFldinstBlock to
   parse field instructions
   See p44 for specs.
   \see IE_Imp_RTF::_parseFldinstBlock
@@ -2370,14 +2360,14 @@ bool IE_Imp_RTF::HandleField()
 	int nested = 0;           // nesting level
 
 	int rtfFieldAttr = 0;
-	
+
 	typedef enum {
 		fldAttrDirty = 1,
 		fldAttrEdit = 2,
 		fldAttrLock = 4,
 		fldAttrPriv = 8
 	} RTFFieldAttr;
-	
+
 
 	tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
 	if (tokenType == RTF_TOKEN_ERROR)
@@ -2404,18 +2394,18 @@ bool IE_Imp_RTF::HandleField()
 		{
 			rtfFieldAttr &= fldAttrPriv;
 		}
-		else 
+		else
 		{
 			UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n"));
 			// don't return as we simply skip it
 		}
-		
-		
+
+
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
 	}
 
 	// field instruction
-	if (tokenType == RTF_TOKEN_OPEN_BRACE) 
+	if (tokenType == RTF_TOKEN_OPEN_BRACE)
 	{
 		UT_ByteBuf fldBuf;
 		XML_Char * xmlField = NULL;
@@ -2437,15 +2427,15 @@ bool IE_Imp_RTF::HandleField()
 				return false;
 				break;
 			case RTF_TOKEN_KEYWORD:
-				if (strcmp((const char *)keyword, "*") == 0) 
+				if (strcmp((const char *)keyword, "*") == 0)
 				{
-					if (gotStarKW) 
+					if (gotStarKW)
 					{
 						UT_DEBUGMSG (("RTF: was not supposed to get '*' here\n"));
 					}
 					gotStarKW = true;
 				}
-				else if (strcmp((const char *)keyword, "fldinst") == 0) 
+				else if (strcmp((const char *)keyword, "fldinst") == 0)
 				{
 					if (!gotStarKW)
 					{
@@ -2478,7 +2468,7 @@ bool IE_Imp_RTF::HandleField()
 		bool isXML = false;
 		xmlField = _parseFldinstBlock (fldBuf, xmlField, isXML);
 		bUseResult = (xmlField == NULL) && (!isXML);
-		if (!bUseResult) 
+		if (!bUseResult)
 		{
 			bool ok;
 			ok = _appendField (xmlField);
@@ -2487,7 +2477,7 @@ bool IE_Imp_RTF::HandleField()
 			FREEP (xmlField);
 		}
 	}
-	else 
+	else
 	{
 		UT_DEBUGMSG (("RTF: Field instruction not present. Found '%s' in stream\n", keyword));
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
@@ -2502,7 +2492,7 @@ bool IE_Imp_RTF::HandleField()
 
 	// field result
 	// TODO: push and pop the state as expected.
-	if (tokenType == RTF_TOKEN_OPEN_BRACE) 
+	if (tokenType == RTF_TOKEN_OPEN_BRACE)
 	{
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
 		if (tokenType == RTF_TOKEN_ERROR)
@@ -2534,14 +2524,14 @@ bool IE_Imp_RTF::HandleField()
 				UT_DEBUGMSG (("RTF Field: found %s\n", keyword));
 				if (strcmp ((char *)keyword, "\\") == 0)
 				{
-					if (bUseResult) 
-					{ 
+					if (bUseResult)
+					{
 						ok = ParseChar (keyword [0]);
 						if (!ok)
 							return false;
 					}
 				}
-				else 
+				else
 				{
 					UT_DEBUGMSG (("RTF: unexpected keyword\n"));
 				}
@@ -2554,8 +2544,8 @@ bool IE_Imp_RTF::HandleField()
 				nested--;
 				break;
 			default:
-				if (bUseResult) 
-				{ 
+				if (bUseResult)
+				{
 					ok = ParseChar (*keyword);
 					if (!ok)
 						return false;
@@ -2564,13 +2554,13 @@ bool IE_Imp_RTF::HandleField()
 		} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
 		// no need to skip back ch because we handled it ourselves
 	}
-	else 
+	else
 	{
 		UT_DEBUGMSG (("RTF: Field result not present. Found '%s' in stream. Ignoring.\n", keyword));
 		// UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 		// continue
 	}
-	
+
 	return true;
 }
 
@@ -2587,7 +2577,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	// we will guess as much us possible.
 	// thing that complexify is that a field instruction can contain nested block and
 	// DATA blocks. We will try to limit first to the standard fields.
-	
+
 	// Here are a couple of examples from the spec
 	/*
 	  {\field {\*\fldinst AUTHOR \\*MERGEFORMAT    }{\fldrslt Joe Smith}}\par\pard
@@ -2616,14 +2606,14 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	UT_String Instr;
 	UT_uint32  len;
 	isXML = false;
-	
+
 	// buffer is empty, nothing to parse
-	if (buf.getLength() == 0) 
+	if (buf.getLength() == 0)
 	{
 		FREEP (xmlField);
 		return NULL;
 	}
-	
+
 	len = buf.getLength ();
 	const UT_Byte *pBuf = buf.getPointer (0);
 
@@ -2635,14 +2625,14 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	instr = strtok (instr, " \\{}"); // This writes a NULL into Instr somewhere
 	                                 // I assume this is OK since the char storage
 	                                 // Within the class is contiguous.
-	if (instr == NULL) 
+	if (instr == NULL)
 	{
 		free (newBuf);
 		free (xmlField);
 		return NULL;
 	}
-	
-	switch (*instr) 
+
+	switch (*instr)
 	{
 	case 'A':
 		if (strcmp (instr, "AUTHOR") == 0)
@@ -2673,7 +2663,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		break;
 	case 'P':
 		if (strcmp (instr, "PAGE") == 0)
-		{ 
+		{
 			xmlField = UT_strdup ("page_number");
 			UT_ASSERT (xmlField);
 			isXML = (xmlField != NULL);
@@ -2685,7 +2675,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		break;
 	case 'N':
 		if (strcmp (instr, "NUMCHARS") == 0)
-		{ 
+		{
 			xmlField = UT_strdup ("char_count");
 			UT_ASSERT (xmlField);
 			isXML = (xmlField != NULL);
@@ -2698,7 +2688,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			isXML = (xmlField != NULL);
 		}
 		else if (strcmp (instr, "NUMWORDS") == 0)
-		{ 
+		{
 			xmlField = UT_strdup ("word_count");
 			UT_ASSERT (xmlField);
 			isXML = (xmlField != NULL);
@@ -2706,7 +2696,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		break;
 	case 'S':
 		if (strcmp (instr, "SAVEDATE") == 0)
-		{ 
+		{
 			xmlField = UT_strdup ("date_dfl");
 			UT_ASSERT (xmlField);
 			isXML = (xmlField != NULL);
@@ -2714,7 +2704,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		break;
 	case 'T':
 		if (strcmp (instr, "TIME") == 0)
-		{ 
+		{
 			// Some Parameters from MS Word 2000 output
 
 			if(strstr(newBuf,"dddd, MMMM dd, yyyy") != NULL)
@@ -2784,7 +2774,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		break;
 	case 'd':
 		if (strcmp (instr, "date") == 0)
-		{ 
+		{
 			// TODO handle parameters
 			xmlField = UT_strdup ("date");
 			UT_ASSERT (xmlField);
@@ -2804,24 +2794,24 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			// need to read the filename.
 			UT_DEBUGMSG (("importing StarOffice image\n"));
 
-			if (m_szFileDirName	!= NULL) 
+			if (m_szFileDirName	!= NULL)
 			{
 				char * fileName = NULL;
 				char * tok  = strtok (NULL, " ");
 				fileName = UT_catPathname (m_szFileDirName, tok);
 				UT_DEBUGMSG (("fileName is %s\n", fileName));
-								
+
 				bool ok = FlushStoredChars ();
-				if (ok) 
+				if (ok)
 				{
 					// insert the image in the piece table AFTER flushing
 					// current output
 					IE_ImpGraphic * pGraphicImporter = NULL;
 					FG_Graphic* pFG;
 					UT_Error error = IE_ImpGraphic::constructImporter(fileName, IEGFT_JPEG, &pGraphicImporter);
-					
+
 					// load file to buffer
-					if (error == UT_OK) 
+					if (error == UT_OK)
 					{
 						RTFProps_ImageProps imgProps;
 						error = pGraphicImporter->importGraphic(fileName, &pFG);
@@ -2830,7 +2820,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 						buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 						ok = InsertImage (buf, fileName, imgProps);
 					}
-					else 
+					else
 					{
 						UT_DEBUGMSG (("RTF: error while importing SO image: %d\n", error));
 					}
@@ -2843,7 +2833,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			}
 		}
 		else if (strcmp (instr, "\\page") == 0)
-		{ 
+		{
 			xmlField = UT_strdup ("page_number");
 			UT_ASSERT (xmlField);
 			isXML = (xmlField != NULL);
@@ -2867,7 +2857,7 @@ bool IE_Imp_RTF::HandleHyperlink()
 
 /*!
   Handle a header
-  \retvalue header return the created header, for information 
+  \retvalue header return the created header, for information
   purpose since it belongs to the header/footer table
   \note it does not set the RTF state.
  */
@@ -2888,7 +2878,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 	m_hdrFtrTable.addItem (header);
 	headerID = header->m_id;
 
-	switch (hftype) 
+	switch (hftype)
 	{
 	case RTFHdrFtr::hftHeader:
 		UT_DEBUGMSG(("RTF: \\header stuffed into %d\n",headerID));
@@ -2926,7 +2916,7 @@ bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & he
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
 
-	// read the whole group content and put it into a buffer to 
+	// read the whole group content and put it into a buffer to
 	// decode it later, when appending footer to the document.
 	return StuffCurrentGroup (header->m_buf);
 }
@@ -2948,15 +2938,15 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
-		else if (strcmp((char*)pKeyword, "abitopline") == 0) 
+		else if (strcmp((char*)pKeyword, "abitopline") == 0)
 		{
 			return HandleTopline(true);
 		}
-		else if (strcmp((char*)pKeyword, "abibotline") == 0) 
+		else if (strcmp((char*)pKeyword, "abibotline") == 0)
 		{
 			return HandleBotline(true);
 		}
-		else if (strcmp((char*)pKeyword, "ansi") == 0) 
+		else if (strcmp((char*)pKeyword, "ansi") == 0)
 		{
 			// this is charset Windows-1252
 			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(1252);
@@ -2964,7 +2954,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
-		break;		
+		break;
 	case 'b':
 		if (strcmp((char*)pKeyword, "b") == 0)
 		{
@@ -3074,26 +3064,26 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_paraProps.m_indentFirst = param;
 			return true;
 		}
-		else if (strcmp((char*)pKeyword, "field") == 0) 
+		else if (strcmp((char*)pKeyword, "field") == 0)
 		{
 			return HandleField ();
 		}
-		else if (strcmp((char*)pKeyword, "footer") == 0) 
+		else if (strcmp((char*)pKeyword, "footer") == 0)
 		{
 			UT_uint32 footerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
 		}
-		else if (strcmp((char*)pKeyword, "footerf") == 0) 
+		else if (strcmp((char*)pKeyword, "footerf") == 0)
 		{
 			UT_uint32 footerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftFooterFirst, footerID);
 		}
-		else if (strcmp((char*)pKeyword, "footerr") == 0) 
+		else if (strcmp((char*)pKeyword, "footerr") == 0)
 		{
 			UT_uint32 footerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
 		}
-		else if (strcmp((char*)pKeyword, "footerl") == 0) 
+		else if (strcmp((char*)pKeyword, "footerl") == 0)
 		{
 			UT_uint32 footerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
@@ -3110,27 +3100,27 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// Height ot the header in twips
 			m_currentRTFState.m_sectionProps.m_headerYTwips = param;
 		}
-		else if (strcmp((char*)pKeyword, "header") == 0) 
+		else if (strcmp((char*)pKeyword, "header") == 0)
 		{
 			UT_uint32 headerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
 		}
-		else if (strcmp((char*)pKeyword, "headerf") == 0) 
+		else if (strcmp((char*)pKeyword, "headerf") == 0)
 		{
 			UT_uint32 headerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftHeaderFirst, headerID);
 		}
-		else if (strcmp((char*)pKeyword, "headerr") == 0) 
+		else if (strcmp((char*)pKeyword, "headerr") == 0)
 		{
 			UT_uint32 headerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
 		}
-		else if (strcmp((char*)pKeyword, "headerl") == 0) 
+		else if (strcmp((char*)pKeyword, "headerl") == 0)
 		{
 			UT_uint32 headerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftHeaderEven, headerID);
 		}
-		else if (strcmp((char*)pKeyword, "highlight") == 0) 
+		else if (strcmp((char*)pKeyword, "highlight") == 0)
 		{
 			return HandleBackgroundColour(param);
 		}
@@ -3171,7 +3161,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "line") == 0)
 		{
 			return ParseChar(UCS_LF);
-		}	
+		}
 		else if (strcmp((char*)pKeyword, "linebetcol") == 0)
 		{
 			m_currentRTFState.m_sectionProps.m_bColumnLine = true;
@@ -3204,7 +3194,6 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 			getDoc()->m_docPageSize.setLandscape();
 		}
-#ifdef BIDI_ENABLED
 		else if (strcmp((char*)pKeyword, "ltrpar") == 0)
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
@@ -3217,11 +3206,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_LTR;
 			return true;
 		}
-		
-#endif		
 		break;
+
 	case 'm':
-		if (strcmp((char *)pKeyword, "mac") == 0) 
+		if (strcmp((char *)pKeyword, "mac") == 0)
 		{
 			// TODO some iconv's may have a different name - "MacRoman"
 			// TODO EncodingManager should handle encoding names
@@ -3259,7 +3247,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if ( strcmp((char *)pKeyword, "margt") == 0 )
 			{
 				m_sectdProps.m_topMargTwips = param;
-			} 
+			}
 
 		else if( strcmp((char *)pKeyword, "margbsxn") == 0 )
 		{
@@ -3272,7 +3260,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			}
 		break;
 
-	case 'o': 
+	case 'o':
 		if (strcmp((char*)pKeyword,"ol") == 0)
 		{
 			return HandleOverline(fParam ? (param != 0) : true);
@@ -3317,17 +3305,17 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// get picture
 			return HandlePicture();
 		}
-		else if (strcmp((char *)pKeyword, "pc") == 0) 
+		else if (strcmp((char *)pKeyword, "pc") == 0)
 		{
 			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(437));
 			return true;
 		}
-		else if (strcmp((char *)pKeyword, "pca") == 0) 
+		else if (strcmp((char *)pKeyword, "pca") == 0)
 		{
 			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(850));
 			return true;
 		}
-		else if (strcmp((char *)pKeyword, "paperw") == 0) 
+		else if (strcmp((char *)pKeyword, "paperw") == 0)
 		{
 //
 // Just set the page width
@@ -3336,7 +3324,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			double width = ((double) param)/1440.0;
 			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
 		}
-		else if (strcmp((char *)pKeyword, "paperh") == 0) 
+		else if (strcmp((char *)pKeyword, "paperh") == 0)
 		{
 //
 // Just set the page height
@@ -3379,11 +3367,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_paraProps.m_indentRight = param;
 			return true;
 		}
-		else if (strcmp((char*)pKeyword, "rtf") == 0) 
+		else if (strcmp((char*)pKeyword, "rtf") == 0)
 		{
 			return true;
 		}
-#ifdef BIDI_ENABLED
 		else if (strcmp((char*)pKeyword, "rtlpar") == 0)
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: rtlpar\n"));
@@ -3396,8 +3383,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_sectionProps.m_dir = FRIBIDI_TYPE_RTL;
 			return true;
 		}
-		
-#endif		
+
 		break;
 
 	case 's':
@@ -3466,7 +3452,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "super") == 0)
 		{
 			return HandleSuperscript(fParam ? false : true);
-		}	
+		}
 		else if (strcmp((char*)pKeyword, "sub") == 0)
 		{
 			return HandleSubscript(fParam ? false : true);
@@ -3564,7 +3550,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// or something like that.
 			//
 			// this is bullshit (IMHO) -- jeff
-			
+
 			m_currentRTFState.m_unicodeAlternateSkipCount = param;
 			m_currentRTFState.m_unicodeInAlternate = 0;
 			return true;
@@ -3597,40 +3583,40 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 				{
 					if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
 									MAX_KEYWORD_LEN))
-		            { 		
+		            {
 						if( strcmp((char*)keyword_star,"ol") == 0)
-						{ 
-							return HandleOverline(parameterUsed_star ? 
+						{
+							return HandleOverline(parameterUsed_star ?
 												  (parameter_star != 0): true);
 						}
 						else if( strcmp((char*)keyword_star,"pn") == 0)
-						{ 
+						{
 							return HandleLists( m_currentRTFState.m_paraProps.m_rtfListTable);
 						}
 						else if( strcmp((char*)keyword_star,"listtable") == 0)
-						{ 
+						{
 							return ReadListTable();
 						}
 						else if( strcmp((char*)keyword_star,"listoverridetable") == 0)
-						{ 
+						{
 							return ReadListOverideTable();
 						}
 						else if( strcmp((char*)keyword_star,"abilist") == 0)
-						{ 
+						{
 							return HandleAbiLists();
 						}
 						else if( strcmp((char*)keyword_star,"topline") == 0)
-						{ 
-							return HandleTopline(parameterUsed_star ? 
+						{
+							return HandleTopline(parameterUsed_star ?
 												  (parameter_star != 0): true);
 						}
 						else if( strcmp((char*)keyword_star,"botline") == 0)
-						{ 
-							return HandleBotline(parameterUsed_star ? 
+						{
+							return HandleBotline(parameterUsed_star ?
 												  (parameter_star != 0): true);
 						}
 						else if( strcmp((char*)keyword_star,"listtag") == 0)
-						{ 
+						{
 							return HandleListTag(parameter_star);
 						}
 						else if (strcmp((char*)keyword_star,"shppict") == 0)
@@ -3673,7 +3659,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 				}
 				UT_DEBUGMSG (("RTF: star keyword %s not handled\n", keyword_star));
 		    }
-			
+
 			// Ignore all other \* tags
 			// TODO different destination (all unhandled at the moment, so enter skip mode)
 			//m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip; was this
@@ -3749,8 +3735,8 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	{
 		decors += "bottomline";
 	}
-	if(!m_currentRTFState.m_charProps.m_underline  &&  
-	   !m_currentRTFState.m_charProps.m_strikeout && 
+	if(!m_currentRTFState.m_charProps.m_underline  &&
+	   !m_currentRTFState.m_charProps.m_strikeout &&
 	   !m_currentRTFState.m_charProps.m_overline &&
 	   !m_currentRTFState.m_charProps.m_topline &&
 	   !m_currentRTFState.m_charProps.m_botline)
@@ -3763,7 +3749,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	propBuffer += "; text-position:";
 	if (m_currentRTFState.m_charProps.m_superscript)
 	{
-		if (m_currentRTFState.m_charProps.m_superscript != 0.0) 
+		if (m_currentRTFState.m_charProps.m_superscript != 0.0)
 		{
 			UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
 		}
@@ -3771,7 +3757,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	}
 	else if (m_currentRTFState.m_charProps.m_subscript)
 	{
-		if (m_currentRTFState.m_charProps.m_subscript != 0.0) 
+		if (m_currentRTFState.m_charProps.m_subscript != 0.0)
 		{
 			UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
 		}
@@ -3782,7 +3768,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 		propBuffer += "normal";
 	}
 	// font size
-	UT_String_sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_currentRTFState.m_charProps.m_fontSize));	
+	UT_String_sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_currentRTFState.m_charProps.m_fontSize));
 	propBuffer += tempBuffer;
 	// typeface
 	RTFFontTableItem* pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);
@@ -3800,21 +3786,21 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 		else
 			propBuffer += "Times New Roman";
 	}
-	if (m_currentRTFState.m_charProps.m_hasColour) 
+	if (m_currentRTFState.m_charProps.m_hasColour)
 	{
 		// colour, only if one has been set. See bug 1324
 		UT_uint32 colour = GetNthTableColour(m_currentRTFState.m_charProps.m_colourNumber);
 		UT_String_sprintf(tempBuffer, "; color:%06x", colour);
 		propBuffer += tempBuffer;
 	}
-	
+
 	if (m_currentRTFState.m_charProps.m_hasBgColour)
 	{
 		// colour, only if one has been set. See bug 1324
-		UT_sint32 bgColour = GetNthTableBgColour(m_currentRTFState.m_charProps.m_bgcolourNumber);		
+		UT_sint32 bgColour = GetNthTableBgColour(m_currentRTFState.m_charProps.m_bgcolourNumber);
 
 		if (bgColour != -1) // invalid and should be white
-		{		
+		{
 			UT_String_sprintf(tempBuffer, "; bgcolor:%06x", bgColour);
 			propBuffer += tempBuffer;
 		}
@@ -3896,8 +3882,8 @@ bool IE_Imp_RTF::ResetCharacterAttributes()
  *    OK if we are pasting into the text we have to decide if the list we paste
  *    should be a new list or an old list. The user might want to swap paragraphs
  *    in a list for example.
-  
- *    Use the following algorithim to decide. If the docpos of the paste is 
+
+ *    Use the following algorithim to decide. If the docpos of the paste is
  *    within a list of the same ID as our list or if the docpos is immediately
  *    before or after a list of the same ID reuse the ID. Otherwise change it.
 */
@@ -3928,7 +3914,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 	for(i=0; i<m_numLists; i++)
 	{
 		if(getAbiList(i)->orig_id == id)
-		{ 
+		{
 			if(getAbiList(i)->hasBeenMapped == true )
 			{
 				mappedID =  getAbiList(i)->mapped_id;
@@ -3962,11 +3948,11 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 				else
 					mappedID = UT_rand();
 				getAbiList(i)->hasBeenMapped = true;
-				getAbiList(i)->mapped_id = mappedID;	  
+				getAbiList(i)->mapped_id = mappedID;
 				if(highestLevel > 0)
 				{
 					getAbiList(i)->mapped_parentid =  getAbiList(i)->orig_parentid;
-				}				   
+				}
 				else
 				{
 					getAbiList(i)->mapped_parentid = 0;
@@ -3992,7 +3978,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 
 }
 
-/*! 
+/*!
  *   OK if we are pasting into the text we have to decide if the list we paste
  *   should be a new list or an old list. The user might want to swap paragraphs
  *   for example.
@@ -4000,8 +3986,8 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
 {
   //
-  // For the parent ID we have to look to see if the parent ID has been 
-  // remapped or if the id 
+  // For the parent ID we have to look to see if the parent ID has been
+  // remapped or if the id
   //
 	UT_uint32 mappedID;
 	mappedID = id;
@@ -4033,7 +4019,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	bool bWord97List = m_currentRTFState.m_paraProps.m_isList && isWord97Lists();
 	bool bAbiList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
 	bWord97List = bWord97List && !bAbiList;
-	RTF_msword97_listOveride * pOver = NULL;	
+	RTF_msword97_listOveride * pOver = NULL;
 	UT_uint32 iLevel = 0;
 	UT_uint32 iOveride = 0;
 //
@@ -4120,7 +4106,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 			char cLeader = '0' + (char) tabLeader;
-			UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader); 
+			UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);
 			propBuffer += tempBuffer;
 		}
 
@@ -4155,7 +4141,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	propBuffer += tempBuffer;
 
 
-#ifdef BIDI_ENABLED
 	if(m_currentRTFState.m_paraProps.m_dom_dir != FRIBIDI_TYPE_UNSET)
 	{
 		propBuffer += "dom-dir:";
@@ -4164,10 +4149,10 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		else
 			propBuffer += "ltr; ";
 	}
-#endif
-//
-// Filled from List deefinition
-//
+
+	//
+	// Filled from List deefinition
+	//
 	if(!bWord97List || bAbiList)
 	{
 		UT_String_sprintf(tempBuffer, "margin-left:%s; ",		UT_convertInchesToDimensionString(DIM_IN, (double)m_currentRTFState.m_paraProps.m_indentLeft/1440));
@@ -4237,18 +4222,18 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 //
 // Now get the properties we've painstakingly put together.
 //
-		const char * szListID = NULL; 
-		const char * szParentID = NULL; 
+		const char * szListID = NULL;
+		const char * szParentID = NULL;
 		const char * szLevel = NULL;
-		const char * szStartat = NULL; 
+		const char * szStartat = NULL;
 		const char * szFieldFont = NULL;
-		const char * szListDelim = NULL; 
-		const char * szListDecimal = NULL; 
-		const char * szAlign = NULL; 
-		const char * szIndent = NULL; 
+		const char * szListDelim = NULL;
+		const char * szListDecimal = NULL;
+		const char * szAlign = NULL;
+		const char * szIndent = NULL;
 		const char * szListStyle = NULL;
-		pOver->buildAbiListProperties( &szListID, &szParentID, &szLevel, &szStartat, &szFieldFont, 
-									   &szListDelim, &szListDecimal, &szAlign, &szIndent, 
+		pOver->buildAbiListProperties( &szListID, &szParentID, &szLevel, &szStartat, &szFieldFont,
+									   &szListDelim, &szListDecimal, &szAlign, &szIndent,
 									   &szListStyle, iLevel);
 
 //
@@ -4282,7 +4267,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		attribs[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
 		attribs[attribsCount++] = szLevel;
 		attribs[attribsCount]   = NULL;
-		
+
 //
 // Next do character properties redefined in this list
 //
@@ -4320,8 +4305,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			{
 				decors += "line-through ";
 			}
-			if(!pOver->getUnderline(iLevel)  &&  
-			   !pOver->getStrikeout(iLevel)) 
+			if(!pOver->getUnderline(iLevel)  &&
+			   !pOver->getStrikeout(iLevel))
 			{
 				decors = "none";
 			}
@@ -4334,7 +4319,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			propBuffer += " text-position:";
 			if (pOver->getSuperscript(iLevel))
 			{
-				if (pOver->getSuperscriptPos(iLevel) != 0.0) 
+				if (pOver->getSuperscriptPos(iLevel) != 0.0)
 				{
 					UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
 				}
@@ -4342,7 +4327,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			}
 			else if (pOver->getSubscript(iLevel))
 			{
-				if (pOver->getSubscriptPos(iLevel) != 0.0) 
+				if (pOver->getSubscriptPos(iLevel) != 0.0)
 				{
 					UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
 				}
@@ -4357,7 +4342,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		// font size
 		if(pOver->isFontSizeChanged(iLevel))
 		{
-			UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string((float)pOver->getFontSize(iLevel)));	
+			UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string((float)pOver->getFontSize(iLevel)));
 			propBuffer += tempBuffer;
 			UT_DEBUGMSG(("RTF: IMPORT!!!!! font sized changed in overide %d \n",pOver->getFontSize(iLevel)));
 		}
@@ -4375,7 +4360,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		// Foreground Colour
 		if(pOver->isHasColourChanged(iLevel))
 		{
-			if (pOver->getHasColour(iLevel)) 
+			if (pOver->getHasColour(iLevel))
 			{
 				// colour, only if one has been set. See bug 1324
 				UT_uint32 colour = GetNthTableColour(pOver->getColourNumber(iLevel));
@@ -4389,9 +4374,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			if(pOver->getHasBgColour(iLevel))
 			{
 				// colour, only if one has been set. See bug 1324
-				UT_sint32 bgColour = GetNthTableBgColour(pOver->getBgColourNumber(iLevel));		
+				UT_sint32 bgColour = GetNthTableBgColour(pOver->getBgColourNumber(iLevel));
 				if (bgColour != -1) // invalid and should be white
-				{		
+				{
 					UT_String_sprintf(tempBuffer, " bgcolor:%06x;", bgColour);
 					propBuffer += tempBuffer;
 				}
@@ -4518,9 +4503,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			PL_StruxDocHandle sdh_cur;
 			UT_uint32 j;
 			fl_AutoNum * pAuto = getDoc()->getListByID(id);
-			if(pAuto == NULL) 
+			if(pAuto == NULL)
 			/*
-			* Got to create a new list here. 
+			* Got to create a new list here.
 			* Old one may have been cut out or ID may have
 			* been remapped.
 			*/
@@ -4612,7 +4597,7 @@ bool IE_Imp_RTF::ResetSectionAttributes()
 
 	// not quite correct. a sectd will reset the section defaults
 	// to the previously acquired page defaults
-	
+
 	// margr, margl, margt, margb, paperh, gutter
 
 	m_currentRTFState.m_sectionProps = m_sectdProps ;
@@ -4700,8 +4685,8 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	{
 		UT_sint32 sheader = 0;
 //
-// The RTF spec is to define a fixed height for the header. We calculate 
-// the header height as Top margin - header margin. 
+// The RTF spec is to define a fixed height for the header. We calculate
+// the header height as Top margin - header margin.
 //
 // So the header margin = topmargin - header height.
 //
@@ -4725,8 +4710,8 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	{
 		UT_sint32 sfooter = 0;
 //
-// The RTF spec is to define a fixed height for the footer. We calculate 
-// the footer height as Bottom margin - footer margin. 
+// The RTF spec is to define a fixed height for the footer. We calculate
+// the footer height as Bottom margin - footer margin.
 //
 // So the footer margin = bottom margin - footer height.
 //
@@ -4747,8 +4732,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += sinch;
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
-		
-#ifdef BIDI_ENABLED
+
 	if(m_currentRTFState.m_sectionProps.m_dir != FRIBIDI_TYPE_UNSET)
 	{
 		const char r[] = "rtl";
@@ -4766,19 +4750,19 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 			d = l;
 			a = al;
 		}
-			
+
 		UT_String_sprintf(tempBuffer, "; dom-dir:%s; text-align:%s",d,a);
         propBuffer += tempBuffer;
         UT_DEBUGMSG(("Apply sect prop: [%s]\n", tempBuffer.c_str()));
 	}
-#endif	
+
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 
 	const XML_Char* propsArray[15];
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer.c_str();
 	paramIndex = 2;
-	if (m_currentHdrID != 0) 
+	if (m_currentHdrID != 0)
 	{
 		UT_DEBUGMSG (("Applying header\n"));
 		propsArray [paramIndex] = "header";
@@ -4787,7 +4771,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrID.c_str();
 		paramIndex++;
 	}
-	if (m_currentHdrEvenID != 0) 
+	if (m_currentHdrEvenID != 0)
 	{
 		UT_DEBUGMSG (("Applying header even\n"));
 		propsArray [paramIndex] = "header-even";
@@ -4796,7 +4780,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrEvenID.c_str();
 		paramIndex++;
 	}
-	if (m_currentHdrFirstID != 0) 
+	if (m_currentHdrFirstID != 0)
 	{
 		UT_DEBUGMSG (("Applying header first\n"));
 		propsArray [paramIndex] = "header-first";
@@ -4805,7 +4789,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrFirstID.c_str();
 		paramIndex++;
 	}
-	if (m_currentHdrLastID != 0) 
+	if (m_currentHdrLastID != 0)
 	{
 		UT_DEBUGMSG (("Applying header last\n"));
 		UT_ASSERT(0);
@@ -4815,7 +4799,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrLastID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrID != 0) 
+	if (m_currentFtrID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer\n"));
 		propsArray [paramIndex] = "footer";
@@ -4824,7 +4808,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrEvenID != 0) 
+	if (m_currentFtrEvenID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer even\n"));
 		propsArray [paramIndex] = "footer-even";
@@ -4833,7 +4817,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrEvenID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrFirstID != 0) 
+	if (m_currentFtrFirstID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer first\n"));
 		propsArray [paramIndex] = "footer-first";
@@ -4842,7 +4826,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrFirstID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrLastID != 0) 
+	if (m_currentFtrLastID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer last\n"));
 		propsArray [paramIndex] = "footer-last";
@@ -4882,7 +4866,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 // List Table reader
 /////////////////////////////////////////////////////////////////////////////
 
-/*! 
+/*!
  * This is a general purpose parameter reader. It returns the value of a keyword
  * surrounded by a brace. For a construct of the form...
  * {\mehere fred}
@@ -4898,7 +4882,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
  * {\mehere {\key1 fred;} {\key2 fred2} {\key3 {\key4 fred}}}
  *         ^
  *         Current read point.
- * It will return {\key1 fred;} {\key2 fred2} {\key3 {\key4 fred}}  and 
+ * It will return {\key1 fred;} {\key2 fred2} {\key3 {\key4 fred}}  and
  * swallow the closing brace.
  * returns NULL on error.
  */
@@ -5007,7 +4991,7 @@ bool IE_Imp_RTF::HandleTableList(void)
 	UT_uint32 levelCount = 0;
 //
 // Increment list counting vector
-//	
+//
 	RTF_msword97_list * pList = new  RTF_msword97_list(this);
 	m_vecWord97Lists.addItem((void *) pList);
 //
@@ -5103,7 +5087,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 		pLevel->m_AbiLevelID = UT_rand();
 #else
 	pLevel->m_AbiLevelID = pLevel->m_sLastAssignedLevelID++;
-#endif	
+#endif
 	while(nesting > 0)
 	{
 		if (!ReadCharFromFile(&ch))
@@ -5215,7 +5199,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 
 /*!
  * OK this method parses the RTF against all the character and paragraph properties.
- * and fills the pointers to the character and paragraph classes. 
+ * and fills the pointers to the character and paragraph classes.
  * These are used by the list table
  * reader.
  */
@@ -5224,7 +5208,7 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 	if (strcmp((char*)pKeyword, "b") == 0) // bold
 	{
 		pbChars->bm_bold = true;
-		pChars->m_bold = fParam ? false : true; 
+		pChars->m_bold = fParam ? false : true;
 		return true;
 	}
 	else if (strcmp((char*)pKeyword, "cf") == 0) // color
@@ -5259,7 +5243,7 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 		}
 		return ok;
 	}
-	else if (strcmp((char*)pKeyword, "fs") == 0) 
+	else if (strcmp((char*)pKeyword, "fs") == 0)
 	{
 		pbChars->bm_fontSize = true;
 		return HandleFloatCharacterProp ((fParam ? param : 24)*0.5, &(pChars->m_fontSize));
@@ -5383,7 +5367,7 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 	else if (strcmp((char*)pKeyword, "tb") == 0)
 	{
 		UT_ASSERT(fParam);	// tabstops should have parameters
-		
+
 		bool bres = AddTabstop(param,FL_TAB_BAR,
 							   pParas->m_curTabLeader,pParas);
 		pParas->m_curTabType = FL_TAB_LEFT;
@@ -5520,7 +5504,7 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 	RTF_msword97_listOveride * pLOver = new  RTF_msword97_listOveride(this);
 //
 // Increment overide counting vector
-//	
+//
 	m_vecWord97ListOveride.addItem((void *) pLOver);
     RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
@@ -5591,16 +5575,16 @@ bool IE_Imp_RTF::ReadFontTable()
 	if (m_fontTable.getItemCount() != 0) {
 		UT_DEBUGMSG (("Font table already contains %d items !\n", m_fontTable.getItemCount()));
 	}
-	
+
 // don't purge the vector as we may have several fonttable....
 // just handle dupes as seen below.
 
-//	UT_VECTOR_PURGEALL(RTFFontTableItem*, m_fontTable);	
+//	UT_VECTOR_PURGEALL(RTFFontTableItem*, m_fontTable);
 
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
 		return false;
-	
+
 	if (ch == '\\')
 	{
 		// one entry in the font table
@@ -5614,7 +5598,7 @@ bool IE_Imp_RTF::ReadFontTable()
 		{                                   // see bug 1383 and 1384
 			return false;
 		}
-		
+
 		// multiple entries in font table
 		while (ch != '}')
 		{
@@ -5622,7 +5606,7 @@ bool IE_Imp_RTF::ReadFontTable()
 			{
 					return false;
 			}
-			
+
 			if (!ReadOneFontFromTable())
 				return false;
 
@@ -5731,7 +5715,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 			pValue = (int*)keywordMap.pick((char*)keyword);
 			if (pValue != NULL)
 			{
-				UT_ASSERT(paramUsed);	
+				UT_ASSERT(paramUsed);
 				*pValue = parameter;
 			}
 			if (strcmp((char*)keyword,"panose") == 0)
@@ -5740,16 +5724,16 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 				// Panose numbers are used to classify Latin-1 fonts for matching
 				// If you are really interested, see
 				// http://www.w3.org/TR/REC-CSS2/notes.html#panose
-				if (!ReadCharFromFile(&ch)) 
+				if (!ReadCharFromFile(&ch))
 				{
 					return false;
 				}
-				
+
 				if (isdigit(ch))
 				{
 					SkipBackChar(ch);
 				}
-				
+
 				for (int i = 0; i < 10; i++)
 				{
 					// TODO: Matti Picus commented out the original code
@@ -5770,7 +5754,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 						return false;
 					}
 					panose[i] = ch;
-				}				
+				}
 			}
 			break;
 		default:
@@ -5786,7 +5770,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	ch = keyword[0];
 	int count = 0;
 	/*
-	    FIXME: CJK font names come in form \'aa\'cd\'ef - so we have to 
+	    FIXME: CJK font names come in form \'aa\'cd\'ef - so we have to
 	    parse \'HH correctly (currently we ignore them!) - VH
 	*/
 	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{')
@@ -5801,7 +5785,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	{
 		++nesting;
 	}
-		
+
 	keyword[count] = 0;
 	/*work around "helvetica" font name -replace it with "Helvetic"*/
 	if (!UT_stricmp((const char*)keyword,"helvetica"))
@@ -5812,7 +5796,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	if (!UT_cloneString(pFontName, (char*)keyword))
 	{
 		// TODO outofmem
-	}			
+	}
 	for (int i=0; i <= nesting; ++i)
 	{
 		// Munch the remaining control words down to the close brace
@@ -5837,9 +5821,9 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	}
 
 	// Create the font entry and put it into the font table
-	RTFFontTableItem* pNewFont = new RTFFontTableItem(fontFamily, charSet, 
+	RTFFontTableItem* pNewFont = new RTFFontTableItem(fontFamily, charSet,
 													  codepage, pitch,
-													  panose, pFontName, 
+													  panose, pFontName,
 													  pAlternativeFontName);
 	if (pNewFont == NULL)
 	{
@@ -5860,7 +5844,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 		UT_ASSERT(res == 0);
 		UT_ASSERT(pOld == NULL);
 	}
-	else 
+	else
 	{
 		UT_DEBUGMSG (("RTF: font %d (named %s) already defined. Ignoring\n", fontIndex, pFontName));
 		DELETEP (pNewFont);
@@ -6395,7 +6379,7 @@ bool IE_Imp_RTF::HandleAbiLists()
 	// Increment the list mapping table if necessary
 	//
 	UT_uint32 i;
-	if(m_currentRTFState.m_paraProps.m_rawID != 0) 
+	if(m_currentRTFState.m_paraProps.m_rawID != 0)
 	{
 		for(i=0; i < m_numLists; i++)
 		{
@@ -6405,7 +6389,7 @@ bool IE_Imp_RTF::HandleAbiLists()
 		if(i >= m_numLists)
 		{
 			m_vecAbiListTable.addItem( (void *) new _rtfAbiListTable);
-			getAbiList(m_numLists)->orig_id = m_currentRTFState.m_paraProps.m_rawID ; 
+			getAbiList(m_numLists)->orig_id = m_currentRTFState.m_paraProps.m_rawID ;
 			getAbiList(m_numLists)->orig_parentid = m_currentRTFState.m_paraProps.m_rawParentID ;
 			getAbiList(m_numLists)->level = m_currentRTFState.m_paraProps.m_level ;
 			getAbiList(m_numLists)->hasBeenMapped = false;
@@ -6590,7 +6574,7 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
 	{
 		m_currentRTFState.m_paraProps.m_tabLeader.addItem((void*) FL_LEADER_NONE);
 	}
- 
+
 	return true;
 }
 
@@ -6615,7 +6599,7 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
 	{
 		pParas->m_tabLeader.addItem((void*) FL_LEADER_NONE);
 	}
- 
+
 	return true;
 }
 
@@ -6623,23 +6607,23 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
   Get the next token, put it into buf, if there is an error return RTF_TOKEN_ERROR
   otherwise returns the RTFTokenType
   If it is RTF_TOKEN_DATA, data is returned byte by byte.
-  RTF_TOKEN_KEYWORD includes control words and control symbols 
-  (like hex char). 
+  RTF_TOKEN_KEYWORD includes control words and control symbols
+  (like hex char).
   It is up to the caller to distinguish beetween them and parse them.
   \retval pKeyword is the data
   \retval pParam is the keyword parameter if any, otherwise ""
   \retval pParamUsed is a flag to tell whether there is a parameter.
   \return the type of the next token parsed.
-  \note Both pParam amd pParamUsed are only used if tokenType is 
+  \note Both pParam amd pParamUsed are only used if tokenType is
   RTF_TOKEN_KEYWORD
   \note this changes the state of the file
 */
-IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* pParam, 
+IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* pParam,
 									bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace)
 {
 	RTFTokenType tokenType = RTF_TOKEN_NONE;
 	bool ok;
-	
+
 	UT_ASSERT (pKeyword);
 	UT_ASSERT (len);
 	UT_ASSERT (pParamUsed);
@@ -6653,9 +6637,9 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 		// see bug 1211 and bug 1207.rtf - invalid RTF coming in
 		// this code instead violates the RTF spec in order to fix that problem,
 		// but instead breaks other things like field values:
-		// If a space delimits the control word, the space does not appear in the 
+		// If a space delimits the control word, the space does not appear in the
 		// document. Any characters following the delimiter, including spaces, will
-		// appear in the document. For this reason, you should use spaces only 
+		// appear in the document. For this reason, you should use spaces only
 		// where necessary; do not use spaces merely to break up RTF code.
 
 		// OK Sevior put in bool to choose this behaviour for some parts of documents
@@ -6697,7 +6681,7 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 		tokenType = RTF_TOKEN_DATA;
 		break;
 	}
-		
+
 	return tokenType;
 }
 
@@ -6742,7 +6726,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	props [3] = bookmarkName.c_str();
 	props [4] = NULL;
 
-	if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) {	
+	if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) {
 		getDoc()->appendObject(PTO_Bookmark, props);
 	}
 	else {
@@ -6766,7 +6750,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 	numHdrFtr = m_hdrFtrTable.getItemCount();
 
 	for (i = 0; i < numHdrFtr; i++)
-	{ 
+	{
 		header = (const RTFHdrFtr *)m_hdrFtrTable[i];
 
 		m_pPasteBuffer = (unsigned char *)header->m_buf.getPointer (0);
@@ -6854,15 +6838,15 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 	propsArray [0] = "type";
 	propsArray [1] = xmlField;
 	propsArray [2] = NULL;
-	
+
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
 	UT_ASSERT (ok);
-	if (m_pImportFile != NULL || m_bAppendAnyway) 
-	{	
+	if (m_pImportFile != NULL || m_bAppendAnyway)
+	{
 		getDoc()->appendObject(PTO_Field, propsArray);
 	}
-	else 
+	else
 	{
 		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
 		m_dposPaste++;
@@ -6888,17 +6872,17 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	m_lenPasteBuffer = lenData;
 	m_pCurrentCharInPasteBuffer = pData;
 	m_dposPaste = pDocRange->m_pos1;
-	
+
 	// to do a paste, we set the fp to null and let the
 	// read-a-char routines know about our paste buffer.
-	
+
 	UT_ASSERT(m_pImportFile==NULL);
 
 	// note, we skip the _writeHeader() call since we don't
 	// want to assume that selection starts with a section
 	// break.
 	_parseFile(NULL);
-	
+
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
 	m_pCurrentCharInPasteBuffer = NULL;
@@ -6909,7 +6893,7 @@ void IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 /*!
 Define a new style, here is the formal syntax:
-<style>	'{' <styledef>?<keycode>? <formatting> <additive>? <based>? <next>? 
+<style>	'{' <styledef>?<keycode>? <formatting> <additive>? <based>? <next>?
             <stylename>? ';' '}'
 <styledef>	\s  |\*\cs  | \ds
 <keycode>	'{' \keycode <keys> '}'
@@ -6926,7 +6910,7 @@ Define a new style, here is the formal syntax:
 The style definition is located within a {\stylesheet } sequence.
 
 The minimum (useless) example would be {}
-A more typical set of styles would be 
+A more typical set of styles would be
 {\stylesheet
     {\fs20 \sbasedon222\snext0{\*\keycode \shift\ctrl n} Normal;}
 	{\s1\qr \fs20 \sbasedon0\snext1 FLUSHRIGHT;}
@@ -6964,15 +6948,15 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
         unsigned char keyword[MAX_KEYWORD_LEN];
         long parameter = 0;
 	    bool parameterUsed = false;
-        
+
 		if (!ReadCharFromFile(&ch))
 		    return false;
-		
+
 		switch(ch)
 		{
 		case '\\':
             status = ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN);
-			if (!status) 
+			if (!status)
 			{
 				return status;
 			}
@@ -6982,7 +6966,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					(parameter != RTF_BASEDON_NONE))
 				{
 //
-// Have to deal with out of sequence styles. ie A style maybe basedon a style that 
+// Have to deal with out of sequence styles. ie A style maybe basedon a style that
 // has not yet been seen.
 //
 // So remember it and fill it later..
@@ -7009,7 +6993,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				if (parameter != styleNumber)
 				{
 //
-// Have to deal with out of sequence styles. ie A style may have a followed-by style 
+// Have to deal with out of sequence styles. ie A style may have a followed-by style
 // that has not yet been seen.
 //
 // So remember it and fill it later..
@@ -7045,7 +7029,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 
 			}
-			else 
+			else
 			{
 			    status = ParseCharParaProps((unsigned char *) keyword, parameter, parameterUsed,pChars,pParas,pbChars,pbParas);
 			}
@@ -7153,7 +7137,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			const char * szAtt = (const char *) pCurStyleVec->getNthItem(j++);
 			attribs[attribsCount++] = szAtt;
 			if( UT_strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
-			{ 
+			{
 				szName = (const char *) pCurStyleVec->getNthItem(j++);
 				attribs[attribsCount++] = szName;
 			}
@@ -7193,7 +7177,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			{
 				szAtt = (const char *) pCurStyleVec->getNthItem(j++);
 				attribs[attribsCount++] = szAtt;
-			}	
+			}
 			attribs[attribsCount] = NULL;
 		}
 //
@@ -7233,9 +7217,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
  * This method builds the property list from Paragraph and character classes pParas
  * and pChars
  */
-bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas, 
-							   RTFProps_CharProps * pChars, 
-							   RTFProps_bParaProps * pbParas, 
+bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
+							   RTFProps_CharProps * pChars,
+							   RTFProps_bParaProps * pbParas,
 							   RTFProps_bCharProps * pbChars)
 {
 //
@@ -7250,7 +7234,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 	{
 		if (i > 0)
 			strcat(propBuffer, ",");
-		
+
 		UT_sint32 tabTwips = (UT_sint32) pParas->m_tabStops.getNthItem(i);
 		double tabIn = tabTwips/(20.0*72.);
 		UT_uint32 idum = (UT_uint32)  pParas->m_tabTypes.getNthItem(i);
@@ -7279,7 +7263,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 		char cLeader = '0' + (char) tabLeader;
-		UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader); 
+		UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);
 		strcat(propBuffer, tempBuffer.c_str());
 	}
 	if( count > 0)
@@ -7367,8 +7351,8 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 		{
 			decors += "line-through ";
 		}
-		if(!pChars->m_underline  &&  
-		   !pChars->m_strikeout && 
+		if(!pChars->m_underline  &&
+		   !pChars->m_strikeout &&
 		   !pChars->m_overline &&
 		   !pChars->m_topline &&
 		   !pChars->m_botline)
@@ -7384,7 +7368,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 		strcat(propBuffer, " text-position:");
 		if (pChars->m_superscript)
 		{
-			if (pbChars->bm_superscript_pos) 
+			if (pbChars->bm_superscript_pos)
 			{
 				UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
 			}
@@ -7392,7 +7376,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 		}
 		else if (pChars->m_subscript)
 		{
-			if (pbChars->bm_subscript_pos) 
+			if (pbChars->bm_subscript_pos)
 			{
 				UT_DEBUGMSG (("RTF: TODO: Handle text position in pt.\n"));
 			}
@@ -7407,7 +7391,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 	// font size
 	if(pbChars->bm_fontSize)
 	{
-		UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string((float)pChars->m_fontSize));	
+		UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string((float)pChars->m_fontSize));
 		strcat(propBuffer, tempBuffer.c_str());
 	}
 	// typeface
@@ -7424,7 +7408,7 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 	// Foreground Colour
 	if(pbChars->bm_hasColour)
 	{
-		if (pChars->m_hasColour) 
+		if (pChars->m_hasColour)
 		{
 			// colour, only if one has been set. See bug 1324
 			UT_uint32 colour = GetNthTableColour(pChars->m_colourNumber);
@@ -7438,9 +7422,9 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
 		if(pbChars->bm_hasBgColour)
 		{
 			// colour, only if one has been set. See bug 1324
-			UT_sint32 bgColour = GetNthTableBgColour(pChars->m_bgcolourNumber);		
+			UT_sint32 bgColour = GetNthTableBgColour(pChars->m_bgcolourNumber);
 			if (bgColour != -1) // invalid and should be white
-			{		
+			{
 				UT_String_sprintf(tempBuffer, " bgcolor:%06x;", bgColour);
 				strcat(propBuffer, tempBuffer.c_str());
 			}

@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #include <stdio.h>
 
 #include <stdlib.h>
@@ -30,10 +30,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
-
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
 /*
     If WITHOUT_MB is defined, UT_Mbtowc and UT_Wctomb won't be used.
     I don't there there could be reason for defining WITHOUT_MB, since
@@ -63,7 +60,7 @@ bool UT_isUrl ( const char * szName )
 
   if ( NULL != strstr ( szName, "://") ) // dumb check, but probably true
     return true;
-  else if ( ( len >= mailto_len ) && 
+  else if ( ( len >= mailto_len ) &&
 	    !UT_XML_strnicmp ( "mailto:", szName, mailto_len ) )
     return true;
   else
@@ -130,8 +127,8 @@ unichar_to_utf8 (int c, unsigned char *outbuf)
 // is defined in platform-specific code.
 //////////////////////////////////////////////////////////////////
 
-char * UT_strdup(const char * szSource) 
-{ 
+char * UT_strdup(const char * szSource)
+{
 	UT_ASSERT(szSource);
 
 	int len = strlen(szSource)+1;
@@ -255,7 +252,7 @@ bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource)
 
 	return UT_XML_cloneList(rszDest, szSource);
 }
-	
+
 bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 {
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
@@ -356,7 +353,7 @@ UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szS
 {
 	if (!szSource)
 		return 0;
-	
+
 	UT_ASSERT(szDest);
 
 	UT_uint32 i = 0;
@@ -368,7 +365,7 @@ UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szS
 		// if we just wrote NULL, return
 		if (szDest[i] == 0)
 			return i;
-		
+
 		i++;
 	}
 
@@ -509,7 +506,7 @@ UT_sint32 UT_UCS2_strcmp(const UT_UCS2Char* left, const UT_UCS2Char* right)
 {
 	UT_ASSERT(left);
 	UT_ASSERT(right);
-	
+
 	while (*left && *right)
 	{
 		if (*left < *right)
@@ -686,7 +683,7 @@ UT_UCS2Char * UT_UCS2_strcpy(UT_UCS2Char * dest, const UT_UCS2Char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
-	
+
 	UT_UCS2Char * d = dest;
 	UT_UCS2Char * s = (UT_UCS2Char *) src;
 
@@ -703,7 +700,7 @@ UT_UCS2Char * UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
-	
+
 	UT_UCS2Char * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
@@ -749,7 +746,7 @@ char * UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src)
 #endif
 	  }
 	*d = 0;
-	
+
 	return dest;
 }
 
@@ -784,17 +781,17 @@ bool UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src)
 				return false;
 		UT_UCS2Char * d= *dest;
 		unsigned char * s	= (unsigned char *) src;
-		
+
 		UT_Mbtowc m;
 		wchar_t wc;
-		
+
 		while (*s != 0)
 		{
 				if(m.mbtowc(wc,*s))*d++=wc;
 				s++;
 		}
 		*d = 0;
-		
+
 		return true;
 
 #endif
@@ -831,7 +828,7 @@ char * UT_lowerString(char * string)
 UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
 {
 	UT_UCSChar ucs, ucs1, ucs2, ucs3;
-	
+
 	switch (len)
 	{
 	case 2:
@@ -839,14 +836,14 @@ UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
 		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
 		ucs  = (ucs1 << 6) | ucs2;
 		return ucs;
-		
+
 	case 3:
 		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
 		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
 		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
 		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
 		return ucs;
-		
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
@@ -859,11 +856,11 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 
 	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
 	UT_Byte * p = (UT_Byte *)pString;	// XML_Char is signed...
-	
+
 	int bytesInSequence = 0;
 	int bytesExpectedInSequence = 0;
 	XML_Char buf[5];
-	
+
 	for (UT_uint32 k=0; k<len; k++)
 	{
 		if (p[k] < 0x80)						// plain us-ascii part of latin-1
@@ -993,7 +990,7 @@ bool UT_UCS2_islower(UT_UCS2Char c)
 {
 	if(c < 127)
 		return islower(c)!=0;
-		
+
     case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
     if(!letter || letter->type == 0)
         return true;
@@ -1015,29 +1012,10 @@ bool UT_UCS2_isspace(UT_UCS2Char c)
 	return false;
 };
 
-/*
-	TODO: proper Unicode implementation required
-	This function is not working -- it assumes that c can be translated to the
-	native encoding, which does not have to be always true. We will treat all
-	non-translatable characters as alpha characters, because more often than
-	not this will be true, but we need a proper Unicode implementation here
-*/
-
 bool UT_UCS2_isalpha(UT_UCS2Char c)
 {
-#ifdef BIDI_ENABLED
     FriBidiCharType type = fribidi_get_type(c);
     return FRIBIDI_IS_LETTER(type);
-#else
-	UT_UCS2Char local = XAP_EncodingManager::get_instance()->try_UToNative(c);
-    if(!local)
-        return true;
-        
-    xxx_UT_DEBUGMSG(("UT_UCS_isalpha: c 0x%x, local 0x%x\n",c, loacal));
-	return local && local < 0xff ? 
-		isalpha(local)!=0 : 
-		local > 0xff /* we consider it alpha if it's > 0xff */;
-#endif
 };
 
 bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
@@ -1046,7 +1024,7 @@ bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
 	{
 		case '.':
 			return true;
-			
+
 		default:
 			return false;
 	}
@@ -1068,7 +1046,7 @@ bool UT_UCS4_islower(UT_UCS4Char c)
 {
 	if(c < 127)
 		return islower(c)!=0;
-		
+
     case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
     if(!letter || letter->type == 0)
         return true;
@@ -1090,29 +1068,10 @@ bool UT_UCS4_isspace(UT_UCS4Char c)
 	return false;
 };
 
-/*
-	TODO: proper Unicode implementation required
-	This function is not working -- it assumes that c can be translated to the
-	native encoding, which does not have to be always true. We will treat all
-	non-translatable characters as alpha characters, because more often than
-	not this will be true, but we need a proper Unicode implementation here
-*/
-
 bool UT_UCS4_isalpha(UT_UCS4Char c)
 {
-#ifdef BIDI_ENABLED
     FriBidiCharType type = fribidi_get_type(c);
     return FRIBIDI_IS_LETTER(type);
-#else
-	UT_UCS4Char local = XAP_EncodingManager::get_instance()->try_UToNative(c);
-    if(!local)
-        return true;
-        
-    xxx_UT_DEBUGMSG(("UT_UCS_isalpha: c 0x%x, local 0x%x\n",c, loacal));
-	return local && local < 0xff ? 
-		isalpha(local)!=0 : 
-		local > 0xff /* we consider it alpha if it's > 0xff */;
-#endif
 };
 
 bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
@@ -1121,7 +1080,7 @@ bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
 	{
 		case '.':
 			return true;
-			
+
 		default:
 			return false;
 	}
@@ -1145,14 +1104,13 @@ const char* std_size_string(float f)
   return string;
 };
 
-#ifdef BIDI_ENABLED
 /* copies exactly n-chars from src to dest; NB! does not check for 00 i src
 */
 UT_UCS2Char * UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_uint32 n)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
-	
+
 	UT_UCS2Char * d = dest;
 	UT_UCS2Char * s = (UT_UCS2Char *) src;
 
@@ -1186,7 +1144,7 @@ UT_UCS4Char * UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_ui
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
-	
+
 	UT_UCSChar * d = dest;
 	UT_UCSChar * s = (UT_UCS4Char *) src;
 
@@ -1213,7 +1171,6 @@ UT_UCS4Char * UT_UCS4_strnrev(UT_UCS4Char * src, UT_uint32 n)
     }
     return src;
 }
-#endif
 
 
 UT_UCS4Char * UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle)
@@ -1304,7 +1261,7 @@ UT_sint32 UT_UCS4_strcmp(const UT_UCS4Char* left, const UT_UCS4Char* right)
 {
 	UT_ASSERT(left);
 	UT_ASSERT(right);
-	
+
 	while (*left && *right)
 	{
 		if (*left < *right)
@@ -1482,7 +1439,7 @@ UT_UCS4Char * UT_UCS4_strcpy(UT_UCS4Char * dest, const UT_UCS4Char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
-	
+
 	UT_UCS4Char * d = dest;
 	UT_UCS4Char * s = (UT_UCS4Char *) src;
 
@@ -1499,7 +1456,7 @@ UT_UCS4Char * UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src)
 {
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
-	
+
 	UT_UCS4Char * d 		= dest;
 	unsigned char * s	= (unsigned char *) src;
 
@@ -1545,7 +1502,7 @@ char * UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src)
 #endif
 	  }
 	*d = 0;
-	
+
 	return dest;
 }
 
@@ -1580,17 +1537,17 @@ bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
 				return false;
 		UT_UCS4Char * d= *dest;
 		unsigned char * s	= (unsigned char *) src;
-		
+
 		UT_Mbtowc m;
 		wchar_t wc;
-		
+
 		while (*s != 0)
 		{
 				if(m.mbtowc(wc,*s))*d++=wc;
 				s++;
 		}
 		*d = 0;
-		
+
 		return true;
 
 #endif

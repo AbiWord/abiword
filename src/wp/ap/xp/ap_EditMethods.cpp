@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -136,7 +136,7 @@ public:
 	static EV_EditMethod_Fn scrollToBottom;
 	static EV_EditMethod_Fn scrollWheelMouseDown;
 	static EV_EditMethod_Fn scrollWheelMouseUp;
-	
+
 	static EV_EditMethod_Fn warpInsPtToXY;
 	static EV_EditMethod_Fn warpInsPtLeft;
 	static EV_EditMethod_Fn warpInsPtRight;
@@ -162,9 +162,7 @@ public:
 	static EV_EditMethod_Fn cursorDefault;
 	static EV_EditMethod_Fn cursorIBeam;
 	static EV_EditMethod_Fn cursorRightArrow;
-#ifdef BIDI_ENABLED
 	static EV_EditMethod_Fn cursorLeftArrow;
-#endif	
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
@@ -229,7 +227,7 @@ public:
 	static EV_EditMethod_Fn delEOD;
 	static EV_EditMethod_Fn deleteBookmark;
 	static EV_EditMethod_Fn deleteHyperlink;
-	
+
 
 	static EV_EditMethod_Fn insertData;
 	static EV_EditMethod_Fn insertTab;
@@ -241,7 +239,7 @@ public:
 	static EV_EditMethod_Fn insertColumnBreak;
 	static EV_EditMethod_Fn insertBookmark;
 	static EV_EditMethod_Fn insertHyperlink;
-	
+
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
 
@@ -332,7 +330,7 @@ public:
 	static EV_EditMethod_Fn dlgSpellPrefs;
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
-  
+
 	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
 	static EV_EditMethod_Fn dlgBullets;
@@ -363,11 +361,10 @@ public:
 	static EV_EditMethod_Fn toggleSuper;
 	static EV_EditMethod_Fn toggleSub;
 	static EV_EditMethod_Fn togglePlain;
-#ifdef BIDI_ENABLED
 	static EV_EditMethod_Fn toggleDirOverrideLTR;
 	static EV_EditMethod_Fn toggleDirOverrideRTL;
 	static EV_EditMethod_Fn toggleDomDirection;
-#endif
+
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
 
@@ -484,7 +481,7 @@ public:
 
 	static EV_EditMethod_Fn insAutotext_attn_1;
 	static EV_EditMethod_Fn insAutotext_attn_2;
-	
+
 	static EV_EditMethod_Fn insAutotext_closing_1;
 	static EV_EditMethod_Fn insAutotext_closing_2;
 	static EV_EditMethod_Fn insAutotext_closing_3;
@@ -527,7 +524,7 @@ public:
 
 	static EV_EditMethod_Fn scriptPlay;
 	static EV_EditMethod_Fn executeScript;
-	
+
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 
@@ -601,9 +598,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorIBeam),			0,	""),
 	EV_EditMethod(NF(cursorImage),			0,	""),
 	EV_EditMethod(NF(cursorImageSize),		0,	""),
-#ifdef BIDI_ENABLED
 	EV_EditMethod(NF(cursorLeftArrow),		0,	""),
-#endif	
 	EV_EditMethod(NF(cursorRightArrow), 	0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
 	EV_EditMethod(NF(cycleInputMode),		0,	""),
@@ -691,7 +686,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileSaveAsWeb),				0, ""),
 	EV_EditMethod(NF(fileSaveImage),		0,	""),
 	EV_EditMethod(NF(find), 				0,	""),
-	EV_EditMethod(NF(findAgain),			0,	""),	
+	EV_EditMethod(NF(findAgain),			0,	""),
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize), 			_D_,	""),
 	EV_EditMethod(NF(formatPainter),		0,	""),
@@ -852,7 +847,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(sectColumns2), 		0,		""),
 	EV_EditMethod(NF(sectColumns3), 		0,		""),
 	EV_EditMethod(NF(selectAll),			0,	""),
-	EV_EditMethod(NF(selectBlock),			0,	""),   
+	EV_EditMethod(NF(selectBlock),			0,	""),
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
 	EV_EditMethod(NF(selectWord),			0,	""),
@@ -879,11 +874,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
 	EV_EditMethod(NF(toggleBottomline), 	0,		""),
-#ifdef BIDI_ENABLED
 	EV_EditMethod(NF(toggleDirOverrideLTR), 	0,		""),
 	EV_EditMethod(NF(toggleDirOverrideRTL), 	0,		""),
 	EV_EditMethod(NF(toggleDomDirection),	0,		""),
-#endif
 	EV_EditMethod(NF(toggleIndent), 0, ""),
 	EV_EditMethod(NF(toggleInsertMode), 		0,	""),
 	EV_EditMethod(NF(toggleItalic), 		0,		""),
@@ -982,7 +975,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(zoom50), 0, ""),
 	EV_EditMethod(NF(zoom75), 0, ""),
 	EV_EditMethod(NF(zoomIn), 0, ""),
-	EV_EditMethod(NF(zoomOut), 0, ""), 
+	EV_EditMethod(NF(zoomOut), 0, ""),
 	EV_EditMethod(NF(zoomWhole), 0, ""),
 	EV_EditMethod(NF(zoomWidth), 0, "")
 };
@@ -1021,7 +1014,7 @@ static AD_Document * s_pLoadingDoc = NULL;
 static bool s_LockOutGUI = false;
 
 /*!
-This little macro locks out loading frames from any activity thus preventing 
+This little macro locks out loading frames from any activity thus preventing
 segfaults.
 */
 
@@ -1038,7 +1031,7 @@ static bool s_EditMethods_check_frame(void)
 	{
 		pView = pFrame->getCurrentView();
 	}
-	if(s_pLoadingFrame && (pFrame == s_pLoadingFrame)) 
+	if(s_pLoadingFrame && (pFrame == s_pLoadingFrame))
 	{
 		result = true;
 	}
@@ -1284,7 +1277,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	}
 }
 
-/*! 
+/*!
  * Control Method for the updating loader.
 \params bool bStartStop true to start the updating loader, flase to stop it
              after the document has loaded.
@@ -1358,7 +1351,7 @@ static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
 	XAP_String_Id String_id;
-	
+
 	if (errorCode == -201) // We have a write error
 	  String_id = AP_STRING_ID_MSG_SaveFailedWrite;
 
@@ -1367,7 +1360,7 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 
 	else if (errorCode == -203) // We have an export error
 	  String_id = AP_STRING_ID_MSG_SaveFailedExport;
-	
+
 	else // The generic case - should be eliminated eventually
 	  String_id = AP_STRING_ID_MSG_SaveFailed;
 
@@ -1492,7 +1485,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		filterCount = IE_Exp::getExporterCount();
 	else
 		filterCount = IE_Imp::getImporterCount();
-	
+
 	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 													  sizeof(char *));
 	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
@@ -1527,13 +1520,13 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		UT_ASSERT(pApp);
 		XAP_Prefs * pPrefs = pApp->getPrefs();
 		UT_ASSERT(pPrefs);
-		
+
 		const XML_Char * ftype = 0;
-		
+
 		pPrefs->getPrefsValue ((XML_Char*)AP_PREF_KEY_DefaultSaveFormat, &ftype);
 		if (!ftype)
 		  ftype = ".abw";
-		
+
 		// load the default file format
 		dflFileType = IE_Exp::fileTypeForSuffix (ftype);
 		UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
@@ -1541,11 +1534,11 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	else
 	  {
 		// try to load ABW by default
-		dflFileType = IE_Imp::fileTypeForSuffix (".abw"); 
+		dflFileType = IE_Imp::fileTypeForSuffix (".abw");
 	  }
 
 	pDialog->setDefaultFileType(dflFileType);
-		
+
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
@@ -1582,7 +1575,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	FREEP(szDescList);
 	FREEP(szSuffixList);
 	FREEP(nTypeList);
-	
+
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -1622,7 +1615,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	// ImpGraphic descriptions, suffixes, and types into strings.
 
 	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
-	
+
 	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
 							  sizeof(char *));
 	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
@@ -1672,7 +1665,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	FREEP(szDescList);
 	FREEP(szSuffixList);
 	FREEP(nTypeList);
-	
+
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -1882,7 +1875,7 @@ Defun1(fileOpen)
 
 	if (!bOK || !pNewFile)
 	  return false;
-	
+
 	// we own storage for pNewFile and must free it.
 
 	UT_Error error = ::fileOpen(pFrame, pNewFile, ieft);
@@ -1921,7 +1914,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			s_StartStopLoadingCursor( false,NULL);
 			return false;
 		}
-		
+
 		// treat import as creating a new, dirty document that
 		// must be saved to be made 'clean'
 		s_StartStopLoadingCursor( true,pNewFrame);
@@ -1972,7 +1965,7 @@ Defun1(openTemplate)
 
 	if (!bOK || !pNewFile)
 	  return false;
-	
+
 	// we own storage for pNewFile and must free it.
 
 	UT_Error error = s_importFile(pFrame, pNewFile, ieft);
@@ -2035,7 +2028,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 		return false;
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
-	
+
 	UT_Error errSaved;
 	errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft, overwriteName);
 	if (errSaved)
@@ -2085,7 +2078,7 @@ Defun1(fileImport)
 
 	if (!bOK || !pNewFile)
 	  return false;
-	
+
 	// we own storage for pNewFile and must free it.
 
 	UT_Error error = s_importFile(pFrame, pNewFile, ieft);
@@ -2107,7 +2100,7 @@ Defun1(fileSaveAsWeb)
   IEFileType ieft = IE_Exp::fileTypeForSuffix (".xhtml");
   char * pNewFile = NULL;
   bool bOK = s_AskForPathname(pFrame,true, XAP_DIALOG_ID_FILE_SAVEAS, pFrame->getFilename(),&pNewFile,&ieft);
-  
+
   if (!bOK || !pNewFile)
 	return false;
 
@@ -2132,28 +2125,28 @@ Defun1(fileSaveImage)
 
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *) pFrame->getDialogFactory();
-	
+
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_SAVEAS));
 	UT_ASSERT(pDialog);
-	
+
 	UT_uint32 filterCount = 1;
 	const char ** szDescList = (const char **) UT_calloc(filterCount + 1, sizeof(char *));
 	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1, sizeof(char *));
 	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1, sizeof(IEFileType));
-	
+
 	// we only support saving images in png format for now
 	szDescList[0] = "Portable Network Graphics (.png)";
 	szSuffixList[0] = "*.png";
-	nTypeList[0] = (IEFileType)1;	
-	
-	pDialog->setFileTypeList(szDescList, szSuffixList, 
+	nTypeList[0] = (IEFileType)1;
+
+	pDialog->setFileTypeList(szDescList, szSuffixList,
 							 (const UT_sint32 *) nTypeList);
-	
-	pDialog->setDefaultFileType((IEFileType)1);	
-	
+
+	pDialog->setDefaultFileType((IEFileType)1);
+
 	pDialog->runModal(pFrame);
-	
+
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
@@ -2166,13 +2159,13 @@ Defun1(fileSaveImage)
 			pView->saveSelectedImage (szResultPathname);
 		}
 	}
-	
+
 	FREEP(szDescList);
 	FREEP(szSuffixList);
 	FREEP(nTypeList);
-	
+
 	pDialogFactory->releaseDialog(pDialog);
-	
+
 	return true;
 }
 
@@ -2280,7 +2273,7 @@ static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 	// BROKEN: IEFT_Unknown will detect what the user saved it as,
 	// BROKEN: since the user can explictly export as any type.
 	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
-	
+
 	UT_Error error = fileOpen(pFrame, szRecent, IEFT_Unknown);
 
 	if (error)
@@ -2345,7 +2338,7 @@ static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 	UT_ASSERT(ndx > 0);
 	UT_ASSERT(ndx <= pApp->getFrameCount());
 
-	
+
 	XAP_Frame * pSelFrame = pApp->getFrame(ndx - 1);
 
 	if (pSelFrame)
@@ -2418,7 +2411,7 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	// run the dialog
 	pDialog->runModal(pFrame);
 
-	XAP_Frame * pSelFrame = NULL;	
+	XAP_Frame * pSelFrame = NULL;
 	bool bOK = (pDialog->getAnswer() == XAP_Dialog_WindowMore::a_OK);
 
 	if (bOK)
@@ -2461,7 +2454,7 @@ static bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
 	pDialog->runModal(pFrame);
-	
+
 	bool bOK = true;
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -2474,7 +2467,7 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
-	
+
 #if 0
 	// we do not need selection (if there is none, we will try to apply
 	// the case to the word at editing position)
@@ -2482,7 +2475,7 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 	  {
 		pFrame->showMessageBox(AP_STRING_ID_MSG_EmptySelection,
 				   XAP_Dialog_MessageBox::b_O,
-				   XAP_Dialog_MessageBox::a_OK); 
+				   XAP_Dialog_MessageBox::a_OK);
 		return false;
 	  }
 #endif
@@ -2505,7 +2498,7 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 	  pView->toggleCase(pDialog->getCase());
 
 	pDialogFactory->releaseDialog(pDialog);
-  
+
 		return bOK;
 }
 
@@ -2523,7 +2516,7 @@ Defun1(rotateCase)
 	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->toggleCase(CASE_ROTATE);
-	
+
 	return true;
 }
 
@@ -2571,12 +2564,12 @@ Defun(fileNew)
 		switch(pDialog->getOpenType())
 		{
 			// this will just open up a blank document
-		case AP_Dialog_New::open_New : 
+		case AP_Dialog_New::open_New :
 			break;
 
 			// these two will open things as templates
-		case AP_Dialog_New::open_Existing : 
-		case AP_Dialog_New::open_Template : 
+		case AP_Dialog_New::open_Existing :
+		case AP_Dialog_New::open_Template :
 			szStr = pDialog->getFileName();
 			if (szStr)
 				str += szStr;
@@ -2595,7 +2588,7 @@ Defun(fileNew)
 		{
 			// we want a new blank doc
 			XAP_Frame * pNewFrame = pApp->newFrame();
-			
+
 			if (pNewFrame)
 				pFrame = pNewFrame;
 
@@ -2632,7 +2625,7 @@ inline void _catPath(UT_String& st, const char* st2)
 
 	st += st2;
 }
-		
+
 bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {
 	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
@@ -2707,15 +2700,15 @@ Defun1(helpCheckVer)
 Defun1(helpReportBug)
 {
 	CHECK_FRAME;
-	UT_String bugURL = "http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord"; 
-  
-  bugURL += "&version="; 
-  bugURL += XAP_App::s_szBuild_Version; 
-  bugURL += "&comment=("; 
-  bugURL += XAP_App::s_szBuild_Options; 
-  bugURL += ")%0d%0a%0d%0a"; 
- 
-  return _helpOpenURL(pAV_View, bugURL.c_str()); 
+	UT_String bugURL = "http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord";
+
+  bugURL += "&version=";
+  bugURL += XAP_App::s_szBuild_Version;
+  bugURL += "&comment=(";
+  bugURL += XAP_App::s_szBuild_Options;
+  bugURL += ")%0d%0a%0d%0a";
+
+  return _helpOpenURL(pAV_View, bugURL.c_str());
 }
 
 Defun1(helpSearch)
@@ -2727,7 +2720,7 @@ Defun1(helpSearch)
 Defun1(helpCredits)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits.html"); 
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits.html");
 }
 
 Defun1(helpAboutGnu)
@@ -2863,7 +2856,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 	}
 
 	// nuke the window
-	
+
 	pApp->forgetFrame(pFrame);
 	pFrame->close();
 	delete pFrame;
@@ -2947,7 +2940,7 @@ Defun(querySaveAndExit)
 
 /*
 	NOTE: This file should really be split in two:
-	
+
 		1.	XAP methods (above)
 		2.	AbiWord-specific methods (below)
 
@@ -3011,16 +3004,16 @@ Defun1(insertClipart)
 		IEGraphicFileType iegft = IEGFT_Unknown;
 		IE_ImpGraphic *pIEG;
 		FG_Graphic* pFG;
-		
+
 		UT_Error errorCode;
-		
+
 		errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
 		if(errorCode)
 		{
 			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 			goto Cleanup;
 		}
-		
+
 		errorCode = pIEG->importGraphic(pNewFile, &pFG);
 		if(errorCode)
 		{
@@ -3028,9 +3021,9 @@ Defun1(insertClipart)
 			DELETEP(pIEG);
 			goto Cleanup;
 		}
-		
+
 		DELETEP(pIEG);
-		
+
 		errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
 		if (errorCode)
 		{
@@ -3038,8 +3031,8 @@ Defun1(insertClipart)
 			DELETEP(pFG);
 			goto Cleanup;
 		}
-		
-		DELETEP(pFG);		
+
+		DELETEP(pFG);
 		ret = true; // goes to Cleanup
 	}
 
@@ -3079,7 +3072,7 @@ Defun1(fileInsertGraphic)
 		FREEP(pNewFile);
 		return false;
 	  }
-	
+
 	errorCode = pIEG->importGraphic(pNewFile, &pFG);
 	if(errorCode != UT_OK || !pFG)
 	  {
@@ -3090,7 +3083,7 @@ Defun1(fileInsertGraphic)
 	  }
 
 	DELETEP(pIEG);
-	
+
 	ABIWORD_VIEW;
 
 	errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
@@ -3105,7 +3098,7 @@ Defun1(fileInsertGraphic)
 
 	FREEP(pNewFile);
 	DELETEP(pFG);
-	
+
 	return true;
 }
 
@@ -3117,7 +3110,7 @@ Defun(selectObject)
 	pView->extSelHorizontal(true, 1); // move point forward one
 	return true;
 }
-	
+
 Defun(warpInsPtToXY)
 {
 	CHECK_FRAME;
@@ -3131,11 +3124,7 @@ Defun1(warpInsPtLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
 	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL,1);
-#else	
-	pView->cmdCharMotion(false,1);
-#endif
 	return true;
 }
 
@@ -3143,11 +3132,7 @@ Defun1(warpInsPtRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
 	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() != FRIBIDI_TYPE_RTL,1);
-#else	
-	pView->cmdCharMotion(true,1);
-#endif	
 	return true;
 }
 
@@ -3187,14 +3172,12 @@ Defun1(warpInsPtBOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
+
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
 		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
 	else
 		pView->moveInsPtTo(FV_DOCPOS_BOW);
-#else	
-	pView->moveInsPtTo(FV_DOCPOS_BOW);
-#endif
+
 	return true;
 }
 
@@ -3202,14 +3185,12 @@ Defun1(warpInsPtEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
+
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
 		pView->moveInsPtTo(FV_DOCPOS_BOW);
 	else
 		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
-#else	
-	pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
-#endif
+
 	return true;
 }
 
@@ -3341,7 +3322,6 @@ Defun1(cursorRightArrow)
 	return true;
 }
 
-#ifdef BIDI_ENABLED
 Defun1(cursorLeftArrow)
 {
 	CHECK_FRAME;
@@ -3353,7 +3333,6 @@ Defun1(cursorLeftArrow)
 	}
 	return true;
 }
-#endif
 
 Defun1(cursorImage)
 {
@@ -3390,7 +3369,7 @@ Defun1(contextMenu)
 	// intended for use by the keyboard accelerator rather than
 	// the other "targeted" context{...} methods which are bound
 	// to the mouse.
-	
+
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3467,7 +3446,7 @@ CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
-	
+
 	if ( pView->isSelectionEmpty () )
 	  {
 		// select the image if it isn't already
@@ -3488,12 +3467,12 @@ Defun(contextHyperlink)
 	// move the IP so actions have the right context
 	if (!pView->isXYSelected(pCallData->m_xPos, pCallData->m_yPos))
 		EX(warpInsPtToXY);
-	
+
 	if(pView->isTextMisspelled())
 		return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 	else
 		return s_doContextMenu_no_move(EV_EMC_HYPERLINKTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
-	
+
 }
 
 static bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
@@ -3590,7 +3569,7 @@ Defun(endDrag)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
 pView->endDrag(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
@@ -3607,11 +3586,9 @@ Defun1(extSelLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
+
 	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL,1);
-#else	
-	pView->extSelHorizontal(false,1);
-#endif
+
 	return true;
 }
 
@@ -3619,11 +3596,9 @@ Defun1(extSelRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
+
 	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()!=FRIBIDI_TYPE_RTL,1);
-#else	
-	pView->extSelHorizontal(true,1);
-#endif
+
 	return true;
 }
 
@@ -3647,14 +3622,12 @@ Defun1(extSelBOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
+
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
 		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
 	else
 		pView->extSelTo(FV_DOCPOS_BOW);
-#else	
-	pView->extSelTo(FV_DOCPOS_BOW);
-#endif
+
 	return true;
 }
 
@@ -3662,14 +3635,12 @@ Defun1(extSelEOW)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-#ifdef BIDI_ENABLED
+
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
 		pView->extSelTo(FV_DOCPOS_BOW);
 	else
 		pView->extSelTo(FV_DOCPOS_EOW_MOVE);
-#else	
-	pView->extSelTo(FV_DOCPOS_EOW_MOVE);
-#endif
+
 	return true;
 }
 
@@ -3967,7 +3938,7 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
-		
+
 	pDialog->setDoc(pView);
 
 	pDialog->runModal(pFrame);
@@ -3994,12 +3965,12 @@ Defun1(insertHyperlink)
 		//No selection
 		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 		UT_ASSERT((pFrame));
-		
+
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection);
-		
+
 		UT_ASSERT(pMsg1);
-		
+
 		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
@@ -4136,7 +4107,7 @@ Defun(insertGraveData)
 	// to be specified along with the function binding, so that
 	// we could have bound 'A' on the DeadGrave map to
 	// "insertData(0x00c0)", for example.
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar graveChar = 0x0000;
 	switch (pCallData->m_pData[0])
@@ -4156,7 +4127,7 @@ Defun(insertGraveData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&graveChar, 1);
 	return true;
 }
@@ -4172,7 +4143,7 @@ Defun(insertAcuteData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar acuteChar = 0x0000;
 	switch (pCallData->m_pData[0])
@@ -4210,7 +4181,7 @@ Defun(insertAcuteData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&acuteChar, 1);
 	return true;
 }
@@ -4226,7 +4197,7 @@ Defun(insertCircumflexData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar circumflexChar = 0x0000;
 	switch (pCallData->m_pData[0])
@@ -4260,7 +4231,7 @@ Defun(insertCircumflexData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&circumflexChar, 1);
 	return true;
 }
@@ -4276,7 +4247,7 @@ Defun(insertTildeData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar tildeChar = 0x0000;
 	switch (pCallData->m_pData[0])
@@ -4300,7 +4271,7 @@ Defun(insertTildeData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&tildeChar, 1);
 	return true;
 }
@@ -4316,7 +4287,7 @@ Defun(insertMacronData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar macronChar = 0x0000;
 
@@ -4339,7 +4310,7 @@ Defun(insertMacronData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&macronChar, 1);
 	return true;
 }
@@ -4355,7 +4326,7 @@ Defun(insertBreveData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar breveChar = 0x0000;
 
@@ -4374,7 +4345,7 @@ Defun(insertBreveData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&breveChar, 1);
 	return true;
 }
@@ -4390,7 +4361,7 @@ Defun(insertAbovedotData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar abovedotChar = 0x0000;
 
@@ -4413,7 +4384,7 @@ Defun(insertAbovedotData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&abovedotChar, 1);
 	return true;
 }
@@ -4429,7 +4400,7 @@ Defun(insertDiaeresisData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar diaeresisChar = 0x0000;
 	switch (pCallData->m_pData[0])
@@ -4451,7 +4422,7 @@ Defun(insertDiaeresisData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&diaeresisChar, 1);
 	return true;
 }
@@ -4467,7 +4438,7 @@ Defun(insertDoubleacuteData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar doubleacuteChar = 0x0000;
 
@@ -4484,7 +4455,7 @@ Defun(insertDoubleacuteData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&doubleacuteChar, 1);
 	return true;
 }
@@ -4500,7 +4471,7 @@ Defun(insertCaronData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar caronChar = 0x0000;
 
@@ -4531,7 +4502,7 @@ Defun(insertCaronData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&caronChar, 1);
 	return true;
 }
@@ -4547,7 +4518,7 @@ Defun(insertCedillaData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar cedillaChar = 0x0000;
 	switch (pCallData->m_pData[0])
@@ -4576,7 +4547,7 @@ Defun(insertCedillaData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&cedillaChar, 1);
 	return true;
 }
@@ -4592,7 +4563,7 @@ Defun(insertOgonekData)
 	// We do the character mapping here.
 	//
 	// See note in Defun(insertGraveData)
-	
+
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar ogonekChar = 0x0000;
 
@@ -4613,7 +4584,7 @@ Defun(insertOgonekData)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	
+
 	pView->cmdCharInsert(&ogonekChar, 1);
 	return true;
 }
@@ -4625,7 +4596,7 @@ Defun1(cut)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdCut();
-	
+
 	return true;
 }
 
@@ -4634,7 +4605,7 @@ Defun1(copy)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdCopy();
-	
+
 	return true;
 }
 
@@ -4643,7 +4614,7 @@ Defun1(paste)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdPaste();
-	
+
 	return true;
 }
 
@@ -4653,7 +4624,7 @@ Defun(pasteSelection)
 // this is intended for the X11 middle mouse thing.
 	ABIWORD_VIEW;
 	pView->cmdPasteSelectionAt(pCallData->m_xPos, pCallData->m_yPos);
-	
+
 	return true;
 }
 
@@ -4662,7 +4633,7 @@ Defun1(pasteSpecial)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdPaste(false);
-	
+
 	return true;
 }
 
@@ -4759,18 +4730,18 @@ static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
-	
+
 	pFrame->raise();
-	
+
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-	
+
 	AP_Dialog_Goto * pDialog
 		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
-		
+
 	if(pDialog->isRunning() == true)
 	{
 		pDialog->activate();
@@ -4799,18 +4770,18 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 {
    XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
    UT_ASSERT(pFrame);
-	
+
    pFrame->raise();
-	
+
    XAP_DialogFactory * pDialogFactory
 	 = (XAP_DialogFactory *)(pFrame->getDialogFactory());
-	
+
    AP_Dialog_Spell * pDialog
 	 = (AP_Dialog_Spell *)(pDialogFactory->requestDialog(id));
    UT_ASSERT(pDialog);
    if (!pDialog)
 	   return false;
-	
+
    // run the dialog (it probably should be modeless if anyone
    // gets the urge to make it safe that way)
    pDialog->runModal(pFrame);
@@ -4820,7 +4791,7 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 	   s_TellSpellDone(pFrame);
 
    pDialogFactory->releaseDialog(pDialog);
-	
+
    return bOK;
 }
 
@@ -4860,12 +4831,12 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	if (!pView->isSelectionEmpty())
 	{
 		UT_UCSChar * buffer = pView->getSelectionText();
-		
+
 		pDialog->setFindString(buffer);
 
 		FREEP(buffer);
 	}
-	
+
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
 	// OK I Will
@@ -4960,7 +4931,7 @@ static bool s_doLangDlg(FV_View * pView)
 		}
 
 		props_out[k] = 0;						// put null after last pair.
-		
+
 		if (k > 0)								// if something changed
 			pView->setCharFormat(props_out);
 	}
@@ -5021,7 +4992,7 @@ static bool s_doFontDlg(FV_View * pView)
 		sprintf(background, "%02x%02x%02x",bgCol->m_red,
 				bgCol->m_grn,bgCol->m_blu);
 		pDialog->setBackGroundColor( (const XML_Char *) background);
-		
+
 		// these behave a little differently since they are
 		// probably just check boxes and we don't have to
 		// worry about initializing a combo box with a choice
@@ -5146,7 +5117,7 @@ static bool s_doFontDlg(FV_View * pView)
 }
 
 static void
-s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView, 
+s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 				   const char * szTabStops, const char * szDflTabStop,
 				   void * closure)
 {
@@ -5181,7 +5152,7 @@ static bool s_doTabDlg(FV_View * pView)
 
 	AP_Dialog_Tab * pDialog
 		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(AP_DIALOG_ID_TAB));
-	
+
 	if(pDialog)
 	{
 		// setup the callback function, no closure
@@ -5202,14 +5173,14 @@ static bool s_doTabDlg(FV_View * pView)
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
-				
+
 		pDialogFactory->releaseDialog(pDialog);
 	}
 	else
 	{
 		s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
 	}
-	return true;	
+	return true;
 }
 
 
@@ -5284,23 +5255,23 @@ static bool s_doParagraphDlg(FV_View * pView)
 		FREEP(props);
 
 		break;
-		
+
 	case AP_Dialog_Paragraph::a_TABS:
 
 		s_doTabDlg(pView);
 
 		break;
-		
+
 	case AP_Dialog_Paragraph::a_CANCEL:
 		// do nothing
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-			
+
 	pDialogFactory->releaseDialog(pDialog);
 
-	return true;	
+	return true;
 }
 
 
@@ -5334,19 +5305,19 @@ static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 	switch (answer)
 	{
 	case AP_Dialog_Options::a_OK:
-		
+
 		break;
-		
+
 	case AP_Dialog_Options::a_CANCEL:
 		// do nothing
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-			
+
 	pDialogFactory->releaseDialog(pDialog);
 
-	return true;	
+	return true;
 }
 
 /****************************************************************/
@@ -5454,7 +5425,7 @@ Defun(formatPainter)
 
   xxx_UT_DEBUGMSG(("DOM: Selected and copied\n"));
 
-  // get the paragraph and span/character formatting properties of 
+  // get the paragraph and span/character formatting properties of
   // the clipboard selection
   if (!pPasteView.getBlockFormat(&block_properties))
     {
@@ -5576,7 +5547,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 
 
 	// set it either way
-	
+
 	if (isSpan)
 	  pView->setCharFormat(props_out);
 	else // isBlock
@@ -5634,7 +5605,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 			for (j=1; (j <= nCopies); j++)
 				for (k=nFromPage; (k <= nToPage); k++)
 				{
-					sprintf (msgBuf, msgTmpl, k, nToPage);					
+					sprintf (msgBuf, msgTmpl, k, nToPage);
 					pFrame->setStatusMessage ( msgBuf );
 					pFrame->nullUpdate();
 
@@ -5724,7 +5695,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
-		
+
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 		FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
 		pDocLayout->fillLayouts();
@@ -5735,7 +5706,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		{
 			nToPage = pDocLayout->countPages();
 		}
-		
+
 		// TODO add code to handle getDoPrintSelection()
 
 		UT_uint32 nCopies = pDialog->getNrCopies();
@@ -5803,34 +5774,34 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
-	
+
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 	FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
 	pDocLayout->fillLayouts();
 	pDocLayout->formatAll();
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages();
-	
+
 	if (nToPage > pDocLayout->countPages())
 	  {
 		nToPage = pDocLayout->countPages();
 	  }
-		
+
 	UT_uint32 nCopies = 1;
 	bool bCollate  = false;
-	
+
 	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 	// BUGBUG assumes all pages are same size and orientation
 	UT_sint32 iWidth = pDocLayout->getWidth();
 	UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
-	
+
 	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
-	
+
 	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 			iWidth,  iHeight, nToPage, nFromPage);
 
 	delete pDocLayout;
 	delete pPrintView;
-	
+
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -5839,7 +5810,7 @@ static bool s_doPrintPreview(FV_View * pView)
 //
 	pView->clearCursorWait();
 	s_pLoadingDoc = NULL;
-	
+
 	return true;
 }
 
@@ -5861,7 +5832,7 @@ static bool s_doZoomDlg(FV_View * pView)
 
 	pDialog->setZoomPercent(pFrame->getZoomPercentage());
 	pDialog->setZoomType(pFrame->getZoomType());
-	
+
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_Zoom::tAnswer ans = pDialog->getAnswer();
@@ -5904,7 +5875,7 @@ Defun1(zoom100)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   UT_uint32 newZoom = 100;
@@ -5923,7 +5894,7 @@ Defun1(zoom200)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   UT_uint32 newZoom = 200;
@@ -5942,7 +5913,7 @@ Defun1(zoom50)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   UT_uint32 newZoom = 50;
@@ -5961,7 +5932,7 @@ Defun1(zoom75)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   UT_uint32 newZoom = 75;
@@ -5980,7 +5951,7 @@ Defun1(zoomWidth)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   pFrame->setZoomType( XAP_Frame::z_PAGEWIDTH );
@@ -6001,7 +5972,7 @@ Defun1(zoomWhole)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   pFrame->setZoomType( XAP_Frame::z_WHOLEPAGE );
@@ -6021,7 +5992,7 @@ Defun1(zoomIn)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   UT_uint32 newZoom = pFrame->getZoomPercentage() + 10;
@@ -6040,7 +6011,7 @@ Defun1(zoomOut)
 	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
-  
+
   pFrame->raise();
 
   UT_uint32 newZoom = pFrame->getZoomPercentage() - 10;
@@ -6148,7 +6119,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	{
 		orig_ut = pDoc->m_docPageSize.getDims();
 		orig_ht = pDoc->m_docPageSize.Width(orig_ut);
-		orig_wid = pDoc->m_docPageSize.Height(orig_ut); 
+		orig_wid = pDoc->m_docPageSize.Height(orig_ut);
 		pSize.Set(orig_ht, orig_wid, orig_ut);
 	}
 	pDialog->setPageSize(pSize);
@@ -6177,7 +6148,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	const char* pszFooterMargin = NULL;
 	const char* pszHeaderMargin = NULL;
 	double dLeftMargin = 1.0;
-	double dRightMargin=1.0; 
+	double dRightMargin=1.0;
 	double dTopMargin = 1.0;
 	double dBottomMargin = 1.0;
 	double dFooterMargin= 0.0;
@@ -6281,7 +6252,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	{
 		final_ut = pDialog->getPageSize().getDims();
 		final_wid = pDialog->getPageSize().Width(final_ut);
-		final_ht = pDialog->getPageSize().Height(final_ut); 
+		final_ht = pDialog->getPageSize().Height(final_ut);
 	}
 
 	if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) || (orig_ht != final_ht) || (orig_wid != final_wid) || (orig_ut != final_ut) )
@@ -6300,11 +6271,11 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
 		if( p == true)
-		{ 
+		{
 			pDoc->m_docPageSize.setPortrait();
 		}
 		else
-		{ 
+		{
 			pDoc->m_docPageSize.setLandscape();
 		}
 		pDoc->m_docPageSize.setScale(final_scale);
@@ -6312,7 +6283,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		//
 		// Get all clones of this frame and set the new page dimensions
 		//
-		  
+
 		UT_Vector vClones;
 		if(pFrame->getViewNumber() > 0)
 		{
@@ -6348,7 +6319,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	}
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);	
+	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
 
@@ -6362,7 +6333,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	// Now gather all the margin properties...
 	//
-	
+
 	UT_String szLeftMargin;
 	UT_String szTopMargin;
 	UT_String szRightMargin;
@@ -6483,13 +6454,13 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	pFrame->raise();
 	XAP_DialogFactory * pDialogFactory
 	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
-	
+
 	XAP_Dialog_Insert_Symbol * pDialog
 		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
-	
+
 	if(pDialog->isRunning() == true)
 	{
 		   pDialog->activate();
@@ -6498,7 +6469,7 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	{
 		   pDialog->setListener(&symbol_Listener);
 		   pDialog->runModeless(pFrame);
-		
+
 	}
 	return true;
 }
@@ -6553,7 +6524,7 @@ Defun1(dlgPlugins)
 	pFrame->raise();
 	XAP_DialogFactory * pDialogFactory
 	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
-	
+
 	XAP_Dialog_PluginManager * pDialog
 		= (XAP_Dialog_PluginManager *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PLUGIN_MANAGER));
 	UT_ASSERT(pDialog);
@@ -6575,7 +6546,7 @@ Defun1(dlgOptions)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
 	return s_doOptionsDlg(pView);
 }
 
@@ -6941,7 +6912,7 @@ Defun(zoom)
 	char *p_zoom = (char*) (pCallData->m_pData);
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	
+
 	if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth)) == 0)
 	{
 		pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
@@ -7043,11 +7014,11 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 	const XML_Char * right_attributes [] = {
 	  "text-align", "right", NULL, NULL
 	};
-	
+
 	const XML_Char * left_attributes [] = {
 	  "text-align", "left", NULL, NULL
 	};
-	
+
 	const XML_Char * center_attributes [] = {
 	  "text-align", "center", NULL, NULL
 	};
@@ -7082,7 +7053,7 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 		case AP_Dialog_PageNumbers::id_CALIGN : atts = center_attributes; break;
 		default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
 	}
-	pView->processPageNumber(pDialog->isFooter() ? 
+	pView->processPageNumber(pDialog->isFooter() ?
 								  FL_HDRFTR_FOOTER : FL_HDRFTR_HEADER,
 							 atts);
 	pDialogFactory->releaseDialog(pDialog);
@@ -7123,7 +7094,7 @@ static bool s_doField(FV_View * pView)
 		pAttr[0] = (const XML_Char *)&param_name;
 		pAttr[1] = pParam;
 		pAttr[2] = 0;
-		
+
 		if(pParam)
 			pView->cmdInsertField(pDialog->GetFieldFormat(),(const XML_Char **)&pAttr[0]);
 		else
@@ -7178,15 +7149,15 @@ Defun1(insFile)
 	  // create a new layout and view object for the doc
 	  FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
 	  pDocLayout->fillLayouts();
-	 
+
 	  UT_DEBUGMSG(("DOM: new pDocLayout and formatted\n"));
 
-	  FV_View copyView(pApp,0,pDocLayout); 
+	  FV_View copyView(pApp,0,pDocLayout);
 	  copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
 	  copyView.cmdCopy(); // copy the contents of the new document
 	  pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
 	  UT_DEBUGMSG(("DOM: copied and pasted\n"));
-	  
+
 	  DELETEP(pDocLayout);
 	  UNREFP(newDoc);
 	  return true;
@@ -7198,7 +7169,7 @@ Defun1(insFile)
 Defun1(insSymbol)
 {
 	CHECK_FRAME;
-	
+
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = XAP_DIALOG_ID_INSERT_SYMBOL;
 
@@ -7220,7 +7191,7 @@ Defun1(dlgParagraph)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
 	return s_doParagraphDlg(pView);
 }
 
@@ -7228,9 +7199,9 @@ static bool s_doBullets(FV_View *pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
-	
+
 	pFrame->raise();
-	
+
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 	AP_Dialog_Lists * pDialog
@@ -7314,11 +7285,11 @@ Defun(dlgFmtImage)
 	pDialog->setPreferedUnits(dim);
 
 	const fp_PageSize & page = pView->getPageSize ();
-	
+
 	// an approximate... TODO: make me more accurate
 	max_width  = page.Width (DIM_IN) * 72.0;
 	max_height = page.Height (DIM_IN) * 72.0;
-	
+
 	pDialog->setMaxWidth (max_width);
 	pDialog->setMaxHeight (max_height);
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
@@ -7417,10 +7388,10 @@ Defun(dlgFmtImage)
 	  FREEP(props_in);
 
 	  pDialog->runModal(pFrame);
-	  
+
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
 	  bool bOK = (ans == XAP_Dialog_Image::a_OK);
-	  
+
 	  if (bOK)
 	  {
 		  // now get them back in inches
@@ -7443,7 +7414,7 @@ Defun(dlgFmtImage)
 		  pView->setCharFormat(properties);
 		  pView->updateScreen();
 		}
-	  
+
 	  pDialogFactory->releaseDialog(pDialog);
 	  return true;
 	}
@@ -7512,15 +7483,14 @@ Defun(dlgColumns)
 		}
 	}
 
-#ifdef BIDI_ENABLED /* column-order */
 	UT_uint32 iOrder = 0;
 	if (props_in && props_in[0])
 		sz = UT_getAttribute("dom-dir", props_in);
 	if (sz)
 		iOrder = strcmp(sz, "ltr") ? 1 : 0;
-		
+
 	pDialog->setColumnOrder(iOrder);
-#endif	
+
 	if(props_in && props_in[0])
 	{
 		sz = UT_getAttribute("section-space-after",props_in);
@@ -7558,7 +7528,7 @@ Defun(dlgColumns)
 		}
 		bMaxHeight = bMaxHeight || pDialog->isMaxHeightChanged();
 		bSpaceAfter = bSpaceAfter || pDialog->isSpaceAfterChanged();
-#ifdef BIDI_ENABLED
+
 		char buf3[4];
 		char buf4[6];
 		if(pDialog->getColumnOrder())
@@ -7581,17 +7551,6 @@ Defun(dlgColumns)
 		properties [7] = buf4;
 #endif
 
-#else //not BIDI
-
-
-#ifndef __MRC__
-		const XML_Char * properties[] = { "columns", buf, "column-line", buf2, 0};
-#else
-		const XML_Char * properties[] = { "columns", NULL, "column-line", NULL, 0};
-		properties [1] = buf;
-		properties [3] = buf2;
-#endif
-#endif //not BIDI
 		UT_sint32 num_in_props = sizeof(properties)/sizeof(XML_Char *);
 		UT_sint32 num_out_props = num_in_props;
 		if(bMaxHeight)
@@ -7666,7 +7625,7 @@ static bool s_doStylesDlg(FV_View * pView)
 	bool bOK = true;
 //
 // update the combo box with the new styles.
-//	
+//
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	//
@@ -7713,7 +7672,7 @@ Defun1(dlgTabs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
 	return s_doTabDlg(pView);
 }
 
@@ -7758,7 +7717,7 @@ Defun1(dlgWordCount)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
 	return s_doWordCountDlg(pView);
 }
 
@@ -7864,7 +7823,6 @@ Defun1(toggleSub)
 	return _toggleSpan(pView, "text-position", "subscript", "normal");
 }
 
-#ifdef BIDI_ENABLED
 Defun1(toggleDirOverrideLTR)
 {
 	CHECK_FRAME;
@@ -7889,7 +7847,7 @@ Defun1(toggleDomDirection)
 	const XML_Char aright[] = "right";
 	const XML_Char aleft[]	= "left";
 	XML_Char cur_alignment[10];
-	
+
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
 
 	strcpy(cur_alignment,pBl->getProperty("text-align"));
@@ -7908,7 +7866,7 @@ Defun1(toggleDomDirection)
 		properties[1] = (XML_Char *) &drtl;
 		pBl->getLastLine()->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
 	}
-	
+
 	// if the paragraph is was aligned either left or right, then
 	// toggle the alignment as well; if it was anything else
 	// i.e., justfied or centered, then leave it
@@ -7919,14 +7877,14 @@ Defun1(toggleDomDirection)
 	else if(!strcmp(properties[3],aright))
 	{
 		properties[3] = (XML_Char *) &aleft;
-	
+
 	}
 
 	pView->setBlockFormat(properties);
-	
+
 	return true;
 }
-#endif
+
 
 Defun1(doBullets)
 {
@@ -8144,7 +8102,7 @@ Defun1(setEditVI)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	// enter "VI Edit Mode" (only valid when VI keys are loaded)
-	
+
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -8159,7 +8117,7 @@ Defun1(setInputVI)
 {
 	CHECK_FRAME;
 // enter "VI Input Mode" (only valid when VI keys are loaded)
-	
+
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -8189,7 +8147,7 @@ Defun1(cycleInputMode)
 	const char * szNextInputMode = AP_BindingSet::s_getNextInCycle(szCurrentInputMode);
 	if (!szNextInputMode)				// probably an error....
 		return false;
-	
+
 	bool bResult = (pFrame->setInputMode(szNextInputMode) != 0);
 
 #if 1
@@ -8233,7 +8191,7 @@ Defun1(toggleInsertMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode);
 #endif
 
 	return true;
@@ -8521,7 +8479,7 @@ bool _insAutotext (FV_View *pView, int id)
 	const char * text = (const char *)pSS->getValue(id);
 	UT_uint32 len = strlen (text);
 
-	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
+	UT_UCSChar * ucstext = new UT_UCSChar [len + 1];
 	UT_UCS4_strcpy_char (ucstext, text);
 
 	pView->cmdCharInsert(ucstext, len);
@@ -8534,147 +8492,147 @@ bool _insAutotext (FV_View *pView, int id)
 Defun(insAutotext_attn_1)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_ATTN_1);
 }
 
 Defun(insAutotext_attn_2)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_ATTN_2);
 }
 
 Defun(insAutotext_closing_1)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_1);
 }
 
 Defun(insAutotext_closing_2)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_2);
 }
 
 Defun(insAutotext_closing_3)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_3);
 }
 
 Defun(insAutotext_closing_4)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_4);
 }
 
 Defun(insAutotext_closing_5)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_5);
 }
 
 Defun(insAutotext_closing_6)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_6);
 }
 
 Defun(insAutotext_closing_7)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_7);
 }
 
 Defun(insAutotext_closing_8)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_8);
 }
 
 Defun(insAutotext_closing_9)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_9);
 }
 
 Defun(insAutotext_closing_10)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_10);
 }
 
 Defun(insAutotext_closing_11)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_11);
 }
 
 Defun(insAutotext_closing_12)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_CLOSING_12);
 }
 
 Defun(insAutotext_email_1)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_EMAIL_1);
 }
 
 Defun(insAutotext_email_2)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_EMAIL_2);
 }
 
 Defun(insAutotext_email_3)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_EMAIL_3);
 }
 
 Defun(insAutotext_email_4)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_EMAIL_4);
 }
 
 Defun(insAutotext_email_5)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_EMAIL_5);
 }
 
 Defun(insAutotext_email_6)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_EMAIL_6);
 }
 
 Defun(insAutotext_mail_1)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_1);
 }
 
@@ -8682,105 +8640,105 @@ Defun(insAutotext_mail_1)
 Defun(insAutotext_mail_2)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_2);
 }
 
 Defun(insAutotext_mail_3)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_3);
 }
 
 Defun(insAutotext_mail_4)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_4);
 }
 
 Defun(insAutotext_mail_5)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_5);
 }
 
 Defun(insAutotext_mail_6)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_6);
 }
 
 Defun(insAutotext_mail_7)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_7);
 }
 
 Defun(insAutotext_mail_8)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_MAIL_8);
 }
 
 Defun(insAutotext_reference_1)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_REFERENCE_1);
 }
 
 Defun(insAutotext_reference_2)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_REFERENCE_2);
 }
 
 Defun(insAutotext_reference_3)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_REFERENCE_3);
 }
 
 Defun(insAutotext_salutation_1)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_1);
 }
 
 Defun(insAutotext_salutation_2)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_2);
 }
 
 Defun(insAutotext_salutation_3)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_3);
 }
 
 Defun(insAutotext_salutation_4)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_4);
 }
 
 Defun(insAutotext_subject_1)
 {
 	CHECK_FRAME;
-	return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	return _insAutotext(static_cast<FV_View *>(pAV_View),
 			  AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }
 
@@ -8817,16 +8775,16 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 								 sizeof(UT_ScriptIdType));
 	UT_uint32 k = 0;
 
-	while (instance.enumerateDlgLabels(k, &szDescList[k], 
+	while (instance.enumerateDlgLabels(k, &szDescList[k],
 					   &szSuffixList[k], &nTypeList[k]))
 		k++;
-	
-	pDialog->setFileTypeList(szDescList, szSuffixList, 
+
+	pDialog->setFileTypeList(szDescList, szSuffixList,
 							 (const UT_sint32 *) nTypeList);
 
-	UT_ScriptIdType dflFileType = -1; 
+	UT_ScriptIdType dflFileType = -1;
 	pDialog->setDefaultFileType(dflFileType);
-		
+
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
@@ -8870,7 +8828,7 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	FREEP(szDescList);
 	FREEP(szSuffixList);
 	FREEP(nTypeList);
-	
+
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -8925,7 +8883,7 @@ Defun(executeScript)
 	XAP_Frame* pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	UT_DEBUGMSG(("executeScript (trying to execute [%s])\n", pCallData->getScriptName().c_str()));
-	
+
 	UT_ScriptLibrary &instance = UT_ScriptLibrary::instance ();
 
 	if (UT_OK != instance.execute(pCallData->getScriptName().c_str()))
@@ -8934,14 +8892,14 @@ Defun(executeScript)
 			pFrame->showMessageBox(instance.errmsg().c_str(),
 								   XAP_Dialog_MessageBox::b_O,
 								   XAP_Dialog_MessageBox::a_OK);
-								   
+
 		else
 			pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
 								   XAP_Dialog_MessageBox::b_O,
 								   XAP_Dialog_MessageBox::a_OK,
 								   pCallData->getScriptName().c_str());
 	}
-	
+
 	return true;
 }
 
@@ -9169,7 +9127,7 @@ Defun(dlgHdrFtr)
 	}
 	for(i =0; i < 6; i++)
 	{
-		pDialog->setValue((AP_Dialog_HdrFtr::HdrFtr_Control) i, 
+		pDialog->setValue((AP_Dialog_HdrFtr::HdrFtr_Control) i,
 						  bOldBools[i], false);
 	}
 	const XML_Char ** propsSectionIn = NULL;
@@ -9335,7 +9293,7 @@ Defun(hyperlinkStatusBar)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
-	
+
 	pView->cmdHyperlinkStatusBar(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }

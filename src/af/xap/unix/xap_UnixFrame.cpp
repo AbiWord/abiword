@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -95,7 +95,7 @@ void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /
 			}
 
 		  gdk_window_get_size (widget->window, &width, &height);
-		  
+
 		  attrmask |= GDK_IC_PREEDIT_POSITION_REQ;
 		  attr->spot_location.x = 0;
 		  attr->spot_location.y = height;
@@ -104,11 +104,11 @@ void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /
 		  attr->preedit_area.width = width;
 		  attr->preedit_area.height = height;
 		  attr->preedit_fontset = widget->style->font;
-		  
+
 		  break;
 		}
       ic = gdk_ic_new (attr, (GdkICAttributesType)attrmask);
-	  
+
       if (ic == NULL)
 		g_warning ("Can't create input context.");
       else
@@ -204,7 +204,7 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 
 	//UT_DEBUGMSG(("Grabbing mouse.\n"));
 	gtk_grab_add(w);
-	
+
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
 	return 1;
@@ -220,16 +220,16 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 
 	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
 	gtk_grab_remove(w);
-	
+
 	if (pView)
 		pUnixMouse->mouseUp(pView,e);
-	
+
 	return 1;
 }
 
 /*!
  * Background zoom updater. It updates the view zoom level after all configure
- * events have been processed. This is 
+ * events have been processed. This is
  */
 gint XAP_UnixFrame::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrame * */ p)
 {
@@ -292,7 +292,7 @@ gint XAP_UnixFrame::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrame * */ p)
 gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// This is basically a resize event.
-		
+
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
 
@@ -308,27 +308,27 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	}
 	return 1;
 }
-	
+
 gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
-	
+
 	if (pView)
 		pUnixMouse->mouseMotion(pView, e);
-	
+
 	return 1;
 }
-	
+
 gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
 	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pUnixFrame->getKeyboard());
-	
+
 	if (pView)
 		pUnixKeyboard->keyPressEvent(pView, e);
 
@@ -339,9 +339,9 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	// HACK : in the document, but GTK will let space mean "open the menu"
 	// HACK : to a combo).  The user is confused and things are annoying.
 	// HACK :
-	// HACK : We _could_ block all GTK key handling, and do everything 
+	// HACK : We _could_ block all GTK key handling, and do everything
 	// HACK : ourselves, but then we lose the automatic menu accelerator
-	// HACK : bindings (Alt-F for File menu).  
+	// HACK : bindings (Alt-F for File menu).
 	// HACK :
 	// HACK : What we do is let ONLY Alt-modified keys through to GTK.
 
@@ -352,7 +352,7 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	// What's "LOCK_MASK"?  I can't seem to trigger it with caps lock, scroll lock, or
 	// num lock.
 //		(e->state & GDK_LOCK_MASK))		// catch all keys with "num lock" down for now
-	
+
 	if ((e->state & GDK_MOD1_MASK) ||
 		(e->state & GDK_MOD3_MASK) ||
 		(e->state & GDK_MOD4_MASK))
@@ -364,7 +364,7 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	g_signal_emit_stop_by_name(G_OBJECT(w), "key_press_event");
 	return 1;
 }
-	
+
 gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(G_OBJECT(w));
@@ -376,10 +376,10 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
-	
+
 	const EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindowX");
 	UT_ASSERT(pEM);
-	
+
 	if (pEM)
 	{
 		if ((*pEM->getFn())(pUnixFrame->getCurrentView(),NULL))
@@ -390,12 +390,12 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 			return FALSE;
 		}
 	}
-		
+
 	// returning TRUE means do NOT destroy the window; halt the message
 	// chain so it doesn't see destroy
 	return TRUE;
 }
-	
+
 gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	UT_Rect rClip;
@@ -411,7 +411,7 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		GR_Graphics * pG = pView->getGraphics();
 		pG->doRepaint(&rClip);
 	}
-	return 0; 
+	return 0;
 }
 
 /*!
@@ -428,7 +428,7 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 	XAP_UnixFrame * pF = static_cast<XAP_UnixFrame *>(p);
 	FV_View * pV = (FV_View *) pF->getCurrentView();
 	if(!pV || (pV->getPoint() == 0))
-	{ 
+	{
 		return TRUE;
 	}
 	GR_Graphics * pG = pV->getGraphics();
@@ -469,22 +469,22 @@ void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
-	
+
 	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
-	
+
 	if (pView)
 		pView->sendVerticalScrollEvent((UT_sint32) w->value);
 }
-	
+
 void XAP_UnixFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(G_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
-	
+
 	if (pView)
 		pView->sendHorizontalScrollEvent((UT_sint32) w->value);
 }
-	
+
 void XAP_UnixFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {
 	// I think this is right:
@@ -495,10 +495,10 @@ void XAP_UnixFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	//
 	//  This function should be for things to happen immediately
 	//  before a frame gets hosed once and for all.
-	
+
 	//gtk_main_quit ();
 }
-	
+
 /*****************************************************************/
 
 XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
@@ -556,7 +556,7 @@ bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKey
 	bool bResult;
 
 	// invoke our base class first.
-	
+
 	bResult = XAP_Frame::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue,
 									szMenuLayoutKey, szMenuLayoutDefaultValue,
 									szMenuLabelSetKey, szMenuLabelSetDefaultValue,
@@ -572,7 +572,7 @@ bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKey
 
 	m_pKeyboard = new ev_UnixKeyboard(pEEM);
 	UT_ASSERT(m_pKeyboard);
-	
+
 	m_pMouse = new EV_UnixMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
@@ -587,7 +587,7 @@ bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKey
 	{
 		gtk_timeout_remove(m_iAbiRepaintID);
 		m_iAbiRepaintID = gtk_timeout_add(100,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-	}		
+	}
 	return true;
 }
 
@@ -611,7 +611,7 @@ void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
 		return;
 	}
 	GdkCursorType cursor_number;
-	
+
 	switch (c)
 	{
 	default:
@@ -620,7 +620,7 @@ void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
 	case GR_Graphics::GR_CURSOR_DEFAULT:
 		cursor_number = GDK_TOP_LEFT_ARROW;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IBEAM:
 		cursor_number = GDK_XTERM;
 		break;
@@ -628,54 +628,51 @@ void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
 	//I have changed the shape of the arrow so get a consistent
 	//behaviour in the bidi build; I think the new arrow is better
 	//for the purpose anyway
-	
+
 	case GR_Graphics::GR_CURSOR_RIGHTARROW:
 		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
 		break;
 
-#ifdef BIDI_ENABLED
-//#error choose a suitable cursor; this is just a placeholder !!!		
 	case GR_Graphics::GR_CURSOR_LEFTARROW:
 		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
 		break;
-#endif		
 
 	case GR_Graphics::GR_CURSOR_IMAGE:
 		cursor_number = GDK_FLEUR;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
 		cursor_number = GDK_TOP_LEFT_CORNER;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
 		cursor_number = GDK_TOP_SIDE;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
 		cursor_number = GDK_TOP_RIGHT_CORNER;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_E:
 		cursor_number = GDK_RIGHT_SIDE;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
 		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_S:
 		cursor_number = GDK_BOTTOM_SIDE;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:
 		cursor_number = GDK_BOTTOM_LEFT_CORNER;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_IMAGESIZE_W:
 		cursor_number = GDK_LEFT_SIDE;
 		break;
-		
+
 	case GR_Graphics::GR_CURSOR_LEFTRIGHT:
 		cursor_number = GDK_SB_H_DOUBLE_ARROW;
 		break;
@@ -792,7 +789,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "delete_event",
 					   G_CALLBACK(_fe::delete_event), NULL);
-	// here we connect the "destroy" event to a signal handler.  
+	// here we connect the "destroy" event to a signal handler.
 	// This event occurs when we call gtk_widget_destroy() on the window,
 	// or if we return 'FALSE' in the "delete_event" callback.
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "destroy",
@@ -804,7 +801,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 					   G_CALLBACK(_fe::focus_out_event), NULL);
 
 	// create a VBox inside it.
-	
+
 	m_wVBox = gtk_vbox_new(FALSE,0);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "vbox", m_wVBox);
 	gtk_object_set_user_data(G_OBJECT(m_wVBox),this);
@@ -856,9 +853,9 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 		gtk_widget_show(m_wStatusBar);
 		gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0);
 	}
-	
+
 	gtk_widget_show(m_wVBox);
-	
+
 	// set the icon
 	_setWindowIcon();
 
@@ -969,7 +966,7 @@ bool XAP_UnixFrame::raise()
 {
 	GtkWidget * tlw = getTopLevelWindow();
 	UT_ASSERT(tlw);
-	
+
 	gdk_window_raise(tlw->window);
 
 	return true;
@@ -985,7 +982,7 @@ bool XAP_UnixFrame::show()
 }
 
 bool XAP_UnixFrame::openURL(const char * szURL)
-{	
+{
 	static char *fmtstring = NULL;
   	char *execstring = NULL;
 
@@ -1100,11 +1097,11 @@ bool XAP_UnixFrame::updateTitle()
 	const char * szAppName = m_pUnixApp->getApplicationTitleForTitleBar();
 
 	int len = 256 - strlen(szAppName) - 4;
-	
+
 	const char * szTitle = getTitle(len);
 
 	sprintf(buf, "%s - %s", szTitle, szAppName);
-	
+
 	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
 
 	return true;
@@ -1115,7 +1112,7 @@ bool XAP_UnixFrame::updateTitle()
 static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gpointer user_data)
 {
 	struct UT_Point * p = (struct UT_Point *)user_data;
-	
+
 	*x = p->x;
 	*y = p->y;
 }
@@ -1153,7 +1150,7 @@ bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMe
 // From the gtk FAQ.
 //
 		GdkEvent * event = gtk_get_current_event();
-		GdkEventButton *bevent = (GdkEventButton *) event; 
+		GdkEventButton *bevent = (GdkEventButton *) event;
 		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
 					   s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
 
@@ -1180,14 +1177,14 @@ EV_Toolbar * XAP_UnixFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 					const char *szLayout,
 					const char *szLanguage)
 {
-	return (new EV_UnixToolbar(static_cast<XAP_UnixApp *>(app), 
-							   static_cast<XAP_UnixFrame *>(frame), 
+	return (new EV_UnixToolbar(static_cast<XAP_UnixApp *>(app),
+							   static_cast<XAP_UnixFrame *>(frame),
 							   szLayout, szLanguage));
 }
 
 void XAP_UnixFrame::queue_resize()
 {
-	xxx_UT_DEBUGMSG(("XAP_UnixFrame::queue_resize\n"));	
+	xxx_UT_DEBUGMSG(("XAP_UnixFrame::queue_resize\n"));
 	gtk_widget_queue_resize(m_wTopLevelWindow);
 }
 

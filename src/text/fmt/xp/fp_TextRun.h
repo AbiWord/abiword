@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -32,7 +32,6 @@
 	fp_TextRun represents a run of contiguous text sharing the same
 	properties.
 */
-#ifdef BIDI_ENABLED
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
 #include "ut_timer.h"
 
@@ -45,7 +44,6 @@
 #ifdef WITH_PANGO
 #include "ut_abi-pango.h"
 #endif
-#endif // BIDI_ENABLED
 
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
@@ -61,12 +59,12 @@ public:
 	virtual bool			alwaysFits(void) const;
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
-#endif	
+#endif
 	UT_uint32				countTrailingSpaces(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
-	
+
 	bool					split(UT_uint32 iSplitOffset);
 
 	virtual bool			hasLayoutProperties(void) const;
@@ -90,14 +88,8 @@ public:
 		Calculate_full_width = -1
 	};
 #ifndef WITH_PANGO
-	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width)
+	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width);
 #endif
-#ifndef BIDI_ENABLED
-// the BIDI version of simpleRecalcWidth can modify m_pSpanBuff
-// this is ugly but necessary
-							const
-#endif
-							;
 
 	void					resetJustification();
 	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
@@ -118,7 +110,6 @@ public:
 	const XML_Char *			getLanguage() const
 		{ return m_pLanguage; }
 
-#ifdef BIDI_ENABLED
 	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
 	void					setDirection(FriBidiCharType dir, FriBidiCharType override);
 	static bool 			getUseContextGlyphs(){return s_bUseContextGlyphs;};
@@ -138,7 +129,7 @@ public:
 #ifdef WITH_PANGO
  private:
 	void _freeGlyphString();
-	
+
 	GList *             m_pGlyphString;
 #else
 	UT_UCSChar *		m_pSpanBuff;
@@ -166,7 +157,7 @@ private:
 #ifndef WITH_PANGO
 	void				_refreshDrawBuffer();
 #endif
-#endif
+
 private:
 	bool				_addupCharWidths(void);
 
@@ -175,8 +166,8 @@ private:
 #ifdef FMT_TEST
 public:
 	virtual void			__dump(FILE * fp) const;
-#endif	
-	
+#endif
+
 protected:
 	void					_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
@@ -192,7 +183,7 @@ protected:
 										 UT_uint32 iStart,
 										 UT_uint32 iLen,
 										 const UT_GrowBuf * pgbCharWidths);
-	
+
 	void					_drawPart(UT_sint32 xoff,
 									  UT_sint32 yoff,
 									  UT_uint32 iStart,
@@ -201,7 +192,7 @@ protected:
 
 	void					_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths);
 	void					_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff);
-	
+
 	void					_fillRect(UT_RGBColor& clr,
 									  UT_sint32 xoff,
 									  UT_sint32 yoff,
@@ -217,7 +208,7 @@ protected:
 		TEXT_POSITION_SUBSCRIPT
 	};
 	UT_Byte 			m_fPosition;
-	
+
 	/*
 	  This makes the assumption that all characters in a given run
 	  can be obtained from the same font.  This may not be true.
@@ -234,7 +225,7 @@ protected:
 	enum
 	{
 	    JUSTIFICATION_NOT_USED = -1,
-		JUSTIFICATION_FAKE = -2	  
+		JUSTIFICATION_FAKE = -2
 	};
 	UT_sint32				m_iSpaceWidthBeforeJustification;
 
@@ -242,16 +233,6 @@ protected:
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *		m_pLanguage;
 	bool					m_bIsOverhanging;
-
-#if 0	
-#ifdef BIDI_ENABLED
-	fp_Run* m_pOldPrev;
-	fp_Run* m_pOldNext;
-#endif
-	UT_uint32 m_iOldLen;
-	GR_Font *m_pOldScreenFont;
-	UT_sint32 m_iOldSpaceWidthBeforeJustification;
-#endif
 
 };
 

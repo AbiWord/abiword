@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -59,14 +59,14 @@ public:
  	SET_GATHER			(SpellUppercase,	bool );
  	SET_GATHER			(SpellNumbers,		bool );
  	SET_GATHER			(SpellInternet,		bool );
- 
- 	SET_GATHER			(ShowSplash,	bool);	
-	
+
+ 	SET_GATHER			(ShowSplash,	bool);
+
 	SET_GATHER			(SmartQuotesEnable,	bool );
 	SET_GATHER			(DefaultPageSize,  fp_PageSize::Predefined);
 
  	SET_GATHER			(PrefsAutoSave,		bool );
- 
+
  	SET_GATHER			(ViewShowRuler,		bool );
 
  	SET_GATHER			(ViewShowStandardBar,	bool );
@@ -75,10 +75,10 @@ public:
 
  	SET_GATHER			(ViewShowStatusBar,	bool );
 
-	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
 
- 
+
  	SET_GATHER			(ViewAll,			bool );
  	SET_GATHER			(ViewHiddenText,	bool );
  	SET_GATHER			(ViewUnprintable,	bool );
@@ -86,12 +86,10 @@ public:
     SET_GATHER          (AutoLoadPlugins,    bool);
  	SET_GATHER			(NotebookPageNum,	int );
 
-#ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
 	SET_GATHER			(OtherUseContextGlyphs, bool);
 	SET_GATHER			(OtherSaveContextGlyphs, bool);
 	SET_GATHER			(OtherHebrewContextGlyphs, bool);
-#endif
 
 	SET_GATHER			(AutoSaveFile, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
@@ -100,7 +98,7 @@ public:
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);
 
 #undef SET_GATHER
-	
+
  protected:
 #if 0
 	// private construction functions
@@ -152,12 +150,11 @@ public:
     GtkWidget * m_checkbuttonViewHiddenText;
     GtkWidget * m_checkbuttonViewUnprintable;
 
-#ifdef BIDI_ENABLED
     GtkWidget * m_checkbuttonOtherDirectionRtl;
     GtkWidget * m_checkbuttonOtherUseContextGlyphs;
     GtkWidget * m_checkbuttonOtherSaveContextGlyphs;
     GtkWidget * m_checkbuttonOtherHebrewContextGlyphs;
-#endif
+
 	GtkWidget * m_checkbuttonAutoSaveFile;
 	GtkWidget * m_textAutoSaveFilePeriod;
 	GtkWidget * m_textAutoSaveFileExt;

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -39,10 +39,7 @@
 #include "fl_BlockLayout.h"
 #include "ap_Preview_Paragraph.h"
 #include "xad_Document.h"
-
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 :	XAP_Dialog_Modeless(pDlgFactory, id),
@@ -103,7 +100,7 @@ AP_Dialog_Lists::~AP_Dialog_Lists(void)
 	// Maybe we need another constrcutor
 
 	DELETEP(m_pFakeAuto);
-	
+
 	UNREFP(m_pFakeDoc);
 }
 
@@ -133,13 +130,13 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 // free any attached preview
 
 	DELETEP(m_pListsPreview);
-	
+
 	m_pListsPreview = new AP_Lists_preview(gc, this);
 	UT_ASSERT(m_pListsPreview);
-	
+
 	m_pListsPreview->setWindowSize(width, height);
 	//
-	// Generate the fake layout pointers and autonum we need for the 
+	// Generate the fake layout pointers and autonum we need for the
 	// preview
 	//
 	generateFakeLabels();
@@ -155,12 +152,12 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
  */
 void AP_Dialog_Lists::event_PreviewAreaExposed(void)
 {
-	if (m_pListsPreview) 
+	if (m_pListsPreview)
 	{
 		fillFakeLabels();
 		m_pListsPreview->draw();
 	}
-	else 
+	else
 	{
 		UT_ASSERT(0);
 	}
@@ -198,7 +195,7 @@ fl_BlockLayout * AP_Dialog_Lists::getBlock(void)
 /*!
  * This is the local cache of the change number reported in the AV_View. Only
  * do an auto update if this number is different from the AV_View.
- */ 
+ */
 UT_uint32 AP_Dialog_Lists::getTick(void)
 {
 	return m_iLocalTick;
@@ -207,14 +204,14 @@ UT_uint32 AP_Dialog_Lists::getTick(void)
 /*!
  * This is the local cache of the change number reported in the AV_View. Only
  * do an auto update if this number is different from the AV_View.
- */ 
+ */
 void AP_Dialog_Lists::setTick(UT_uint32 iTick)
 {
 	m_iLocalTick = iTick;
 }
 
 /*!
- * This method Does the stuff requested on the "action" button, "Apply" in the 
+ * This method Does the stuff requested on the "action" button, "Apply" in the
  * Modeless dialog and "OK" in the Modal dialog.
  * Read comments with for all the stuff that can happen.
  */
@@ -250,10 +247,10 @@ void AP_Dialog_Lists::Apply(void)
 		if(m_OutProps.getItemCount() > 0)
 			m_OutProps.clear();
 		sprintf(szStart,"%d",m_iStartValue);
-		m_OutProps.addItem((void *) "start-value"); 
+		m_OutProps.addItem((void *) "start-value");
 		m_Output[0] = (XML_Char *) szStart;
 		m_OutProps.addItem((void *) m_Output[0].c_str());
-		m_OutProps.addItem((void *) "list-style"); 
+		m_OutProps.addItem((void *) "list-style");
 		m_Output[1] = getBlock()->getListStyleString(m_NewListType);
 		m_OutProps.addItem((void *) m_Output[1].c_str());
 		m_OutProps.addItem((void *) "list-delim");
@@ -312,9 +309,9 @@ void AP_Dialog_Lists::Apply(void)
 /*!
  * Start new list. 4 Possibilities.
  * 1. If there is a list at the current point and the user choose no list, stop
- *    the list the current point. 
+ *    the list the current point.
  *
- * 2. start a new list with the properties given if there is not a 
+ * 2. start a new list with the properties given if there is not a
  * list at the current point.
  *
  * 3. Start a sublist at the current point if a list already exists there and
@@ -324,7 +321,7 @@ void AP_Dialog_Lists::Apply(void)
  *    has one item in it.
  */
 	if(m_bStartNewList == true)
-	{ 
+	{
 		for(i=0;i < count; i++)
 		{
 			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
@@ -346,7 +343,7 @@ void AP_Dialog_Lists::Apply(void)
 				pBlock->getDocument()->disableListUpdates();
 				if(i == 0)
 				{
-					pBlock->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
+					pBlock->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1);
 					pBlock->getDocument()->enableListUpdates();
 					pBlock->getDocument()->updateDirtyLists();
 				}
@@ -414,7 +411,7 @@ void AP_Dialog_Lists::Apply(void)
  * OK Attach the block at this point to the previous list of the same margin.
  */
 	if(m_bResumeList == true &&  m_isListAtPoint != true )
-	{ 
+	{
 		for(i=0;i < count; i++)
 		{
 			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
@@ -457,49 +454,47 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
-	}	       
+	}
 
 	if(m_iLevel <= 0)
 	{
 		m_iLevel = 1;
 	}
-	
+
 	UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
 	m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
 	m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 
 	if( m_NewListType == NUMBERED_LIST)
-	{   
+	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L.");
 	}
 	else if( m_NewListType == LOWERCASE_LIST)
-	{   
+	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
 	}
 	else if( m_NewListType == UPPERCASE_LIST)
-	{   
+	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
 	}
-#ifdef BIDI_ENABLED
 	else if( m_NewListType == HEBREW_LIST)
-	{   
+	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) "");
 		m_iStartValue = 1;
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
 	}
-#endif
 	else if( m_NewListType < BULLETED_LIST)
-	{   
+	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
@@ -510,7 +505,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 0;
-	}	       
+	}
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
@@ -564,8 +559,8 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
  * or font from their specified values. Here we override whatever was in them
  * to the values they SHOULD be given the list type.
  */
-	if(  m_NewListType == BULLETED_LIST || 
-		 m_NewListType == IMPLIES_LIST  || 
+	if(  m_NewListType == BULLETED_LIST ||
+		 m_NewListType == IMPLIES_LIST  ||
 		 m_NewListType == DASHED_LIST )
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
@@ -582,7 +577,7 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
 	}
 /*!
- * OK fill the preview variables with what they need and load them into 
+ * OK fill the preview variables with what they need and load them into
  * the preview class.
  */
 	m_pFakeAuto->setListType(m_NewListType);
@@ -594,7 +589,7 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 
 /*!
  *
- * This routine generates it's own AutoNum's and Layout pointers 
+ * This routine generates it's own AutoNum's and Layout pointers
  * for use in the preview
  */
 void  AP_Dialog_Lists::generateFakeLabels(void)
@@ -610,7 +605,7 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	{
 		DELETEP(m_pFakeLayout[i]);
 		m_pFakeSdh[i] = (PL_StruxDocHandle) fakeApp++;
-		m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] ); 
+		m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] );
 	}
 	//
 	// Now generate the AutoNum
@@ -731,7 +726,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 }
 
 /*!
- * This method reads all the List info from the document at the curent point 
+ * This method reads all the List info from the document at the curent point
  * and loads it into the dialog member variables.
  */
 void AP_Dialog_Lists::fillDialogFromBlock(void)
@@ -846,13 +841,13 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	// Now Do the Attributes first
 	//
 	if(va.getItemCount()>0)
-	{	
+	{
 //  		i = findVecItem(&va,PT_STYLE_ATTRIBUTE_NAME);
 //  		if( i>= 0)
 //  		{
 //  			m_DocListType = getBlock()->getListTypeFromStyle( (const XML_Char *) va.getNthItem(i+1));
 //  		}
-//  		else 
+//  		else
 //  		{
 //  			m_DocListType = NUMBERED_LIST;
 //  		}
@@ -872,10 +867,10 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		m_iID = getAutoNum()->getID();
 		m_DocListType = getAutoNum()->getType();
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) getAutoNum()->getDecimal());
-		
+
 	}
 	else
-	{	       
+	{
 		m_iID = 0;
 		m_DocListType = NOT_A_LIST;
 	}
@@ -933,7 +928,7 @@ UT_uint32 AP_Dialog_Lists::getID(void)
 }
 
 /*!
- * This method returns the index to the value corresponding to the 
+ * This method returns the index to the value corresponding to the
  * key in this props vector
  */
 UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
@@ -943,13 +938,13 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
 }
 
 /*!
- * This method returns the index to the value corresponding to the 
+ * This method returns the index to the value corresponding to the
  * key in this props vector
  */
 UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, const char * key)
 {
 	UT_sint32 i = v->getItemCount();
-	if(i < 0) 
+	if(i < 0)
 		return i;
 	UT_sint32 j;
 	const char * pszV = NULL;
@@ -1053,7 +1048,7 @@ void AP_Lists_preview::draw(void)
 	UT_sint32 iWidth = getWindowWidth();
 	UT_sint32 iHeight = getWindowHeight();
 	UT_UCSChar ucs_label[50];
-	
+
 	//
 	// we draw at 16 points in this preview
 	//
@@ -1090,7 +1085,7 @@ void AP_Lists_preview::draw(void)
 	float pagew = 2.0;
 	aheight = 16;
 	fwidth = static_cast<float>(iWidth);
-	
+
 	z = (float)((fwidth - 2.0*static_cast<float>(xoff)) /pagew);
         UT_sint32 indent = static_cast<UT_sint32>( z*(m_fAlign+m_fIndent));
 
@@ -1102,7 +1097,7 @@ void AP_Lists_preview::draw(void)
 		UT_UCSChar * lv = getLists()->getListLabel(i);
 		UT_sint32 len =0;
 
-		if(lv != NULL) 
+		if(lv != NULL)
 		{
 			//
 			// This code is here because UT_UCS_copy_char is broken
@@ -1112,7 +1107,7 @@ void AP_Lists_preview::draw(void)
 			{
 				ucs_label[j] = *lv++;
 			}
-			
+
 			ucs_label[len] = NULL;
 
 			len = UT_UCS4_strlen(ucs_label);
@@ -1127,16 +1122,16 @@ void AP_Lists_preview::draw(void)
 	// Work out where to put grey areas to represent text
 	//
 	UT_sint32 xx,yy;
-	if(maxw > 0) 
+	if(maxw > 0)
 		maxw++;
-	
+
         // UT_sint32 vspace = (iHeight - 2*yoff -iFont)*i/16;
 	z = (float)((fwidth - 2.0*static_cast<float>(xoff)) /(float)pagew);
 	UT_sint32 ialign = static_cast<UT_sint32>( z*m_fAlign);
 
 	xx = xoff + ialign;
 	xy = xoff + ialign;
-	
+
 	if(xx < (xoff + maxw + indent))
 		xy = xoff + maxw + indent + 1;
 	ii = 0;
@@ -1153,11 +1148,9 @@ void AP_Lists_preview::draw(void)
 	//
 	// Now finally draw the preview
 	//
-	
-#ifdef BIDI_ENABLED
+
 	FriBidiCharType iDirection = getLists()->getBlock()->getDominantDirection();
-#endif
-	
+
 	for(i=0; i<8; i++)
 	{
 		//
@@ -1171,20 +1164,20 @@ void AP_Lists_preview::draw(void)
 			//
 			UT_UCSChar * lv = getLists()->getListLabel(i/2);
 			UT_sint32 len =0;
-			
-			if(lv != NULL) 
+
+			if(lv != NULL)
 			{
 				len = UT_MIN(UT_UCS4_strlen(lv),51);
-#ifdef BIDI_ENABLED
+
 				if(len > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
 				{
 					FriBidiChar * fLogStr = new FriBidiChar[len];
 					FriBidiChar * fVisStr = new FriBidiChar[len];
 					UT_ASSERT(fLogStr && fVisStr);
-			
+
 					for(j=0; j<=len;j++)
 						fLogStr[j] = lv[j];
-				
+
 					fribidi_log2vis(/* input */
 			    		 fLogStr,
 					     len,
@@ -1198,56 +1191,52 @@ void AP_Lists_preview::draw(void)
 
 					for(j=0; j<=len;j++)
 						ucs_label[j] = (UT_UCSChar)fVisStr[j];
-				
+
 					delete [] fLogStr;
 					delete [] fVisStr;
 				}
 				else
-#endif
 				{
 					for(j=0; j<=len;j++)
 						ucs_label[j] = *lv++;
 				}
-				
+
 				ucs_label[len] = NULL;
 				len = UT_UCS4_strlen(ucs_label);
 				yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
-#ifdef BIDI_ENABLED
+
 				if(iDirection == FRIBIDI_TYPE_RTL)
 					m_gc->drawChars(ucs_label,0,len,iWidth - xoff - indent - maxw,yloc);
 				else
-#endif
 					m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
+
 				yy = m_iLine_pos[i];
 				awidth = iWidth - 2*xoff - xy;
-#ifdef BIDI_ENABLED
+
 				if(iDirection == FRIBIDI_TYPE_RTL)
 					m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 				else
-#endif
 					m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 			else
 			{
 				yy = m_iLine_pos[i];
 				awidth = iWidth - 2*xoff - xy;
-#ifdef BIDI_ENABLED
-			if(iDirection == FRIBIDI_TYPE_RTL)
-				m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
-			else
-#endif
-				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
+
+				if(iDirection == FRIBIDI_TYPE_RTL)
+					m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
+				else
+					m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 		}
 		else
 		{
 			yy = m_iLine_pos[i];
 			awidth = iWidth - 2*xoff - xx;
-#ifdef BIDI_ENABLED
+
 			if(iDirection == FRIBIDI_TYPE_RTL)
 				m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
 			else
-#endif
 				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 		}
 	}

@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -34,7 +34,7 @@
 #include "xap_EncodingManager.h"
 #include "gr_CocoaGraphics.h"
 
-#define SIZE_STRING_SIZE	(10+2)	
+#define SIZE_STRING_SIZE	(10+2)
 
 #define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
 #define PREVIEW_BOX_HEIGHT_PIXELS	80
@@ -81,17 +81,11 @@ XAP_CocoaDialog_FontChooser::XAP_CocoaDialog_FontChooser(XAP_DialogFactory * pDl
 	m_pCocoaFrame = NULL;
 	m_doneFirstFont = false;
 	for(UT_sint32 i = 0; i < 4;i++)
-	{	
+	{
 		m_currentFGColor[i] = 0.0;
 		m_currentBGColor[i] = -1.0;
 		m_funkyColor[i] = -1.0;
 	}
-
-/*
-#ifdef BIDI_ENABLED
-	m_checkDirection = NULL;
-#endif
-*/
 }
 
 XAP_CocoaDialog_FontChooser::~XAP_CocoaDialog_FontChooser(void)
@@ -100,14 +94,6 @@ XAP_CocoaDialog_FontChooser::~XAP_CocoaDialog_FontChooser(void)
 	DELETEP(m_lastFont);
 }
 
-/*
-#ifdef BIDI_ENABLED
-void XAP_CocoaDialog_FontChooser::_enableDirectionCheck(bool b)
-{
-	gtk_widget_set_sensitive(m_checkDirection, b);
-}
-#endif
-*/
 
 /*****************************************************************/
 
@@ -120,7 +106,7 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 	GtkColorSelection * colorSelector;
 
 	colorSelector = (GtkColorSelection *) g_object_get_data(G_OBJECT(area), "_GtkColorSelection");
-  
+
 	// these were stolen from gtkcolorsel.c, are private data,
 	// and as such are subject to immediate change and breakage
 	// without any warning.  the things we do for the user.  :)
@@ -317,7 +303,7 @@ void XAP_CocoaDialog_FontChooser::transparencyChanged(void)
 	if(bTrans)
 	{
 		addOrReplaceVecProp("bgcolor","transparent");
-		m_currentBGColor[RED]  = -1; 
+		m_currentBGColor[RED]  = -1;
 		m_currentBGColor[GREEN] = -1;
 		m_currentBGColor[BLUE] = -1;
 	}
@@ -333,14 +319,14 @@ void XAP_CocoaDialog_FontChooser::fontRowChanged(void)
 
 	GList * selectedRow = NULL;
 	gint rowNumber = 0;
-	
+
 	selectedRow = GTK_CLIST(m_fontList)->selection;
 	if (selectedRow)
 	{
 		rowNumber = GPOINTER_TO_INT(selectedRow->data);
 		gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, text);
 		UT_ASSERT(text && text[0]);
-		g_snprintf(szFontFamily, 50, "%s",text[0]); 
+		g_snprintf(szFontFamily, 50, "%s",text[0]);
 		addOrReplaceVecProp("font-family",(XML_Char*)szFontFamily);
 	}
 	updatePreview();
@@ -408,12 +394,12 @@ void XAP_CocoaDialog_FontChooser::sizeRowChanged(void)
 		rowNumber = GPOINTER_TO_INT(selectedRow->data);
 		gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, text);
 		UT_ASSERT(text && text[0]);
-		
-		g_snprintf(szFontSize, 50, "%spt", 
+
+		g_snprintf(szFontSize, 50, "%spt",
 				   (XML_Char *)XAP_EncodingManager::fontsizes_mapping.lookupByTarget(text[0]));
 
-//		g_snprintf(szFontSize, 50, "%spt",(UT_convertToPoints(text[0]))); 
-//		g_snprintf(szFontSize, 50, "%spt",text[0]); 
+//		g_snprintf(szFontSize, 50, "%spt",(UT_convertToPoints(text[0])));
+//		g_snprintf(szFontSize, 50, "%spt",text[0]);
 
 		addOrReplaceVecProp("font-size",(XML_Char *)szFontSize);
 	}
@@ -444,7 +430,7 @@ void XAP_CocoaDialog_FontChooser::bgColorChanged(void)
 {
 	static char buf_color[8];
 	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);	
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
 	// test for funkyColor-has-been-changed-to-sane-color case
 	if (m_currentBGColor[RED] >= 0 &&
 		m_currentBGColor[GREEN] >= 0 &&
@@ -454,7 +440,7 @@ void XAP_CocoaDialog_FontChooser::bgColorChanged(void)
 				(unsigned int) (m_currentBGColor[RED] 	* (gdouble) 255.0),
 				(unsigned int) (m_currentBGColor[GREEN]	* (gdouble) 255.0),
 				(unsigned int) (m_currentBGColor[BLUE] 	* (gdouble) 255.0));
-		
+
 		addOrReplaceVecProp("bgcolor",(XML_Char *)buf_color);
 	}
 	updatePreview();
@@ -565,11 +551,6 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	GtkWidget *labelTabColor;
 	GtkWidget *labelTabBGColor;
 	GtkWidget *frame4;
-/*
-#ifdef BIDI_ENABLED
-	GtkWidget *checkbuttonDirection;
-#endif
-*/
 	/*
 	  GtkWidget *fixedFont;
 	  GtkWidget *frameStyle;
@@ -583,7 +564,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	GtkWidget *entryArea;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 	vboxMain = gtk_vbox_new (FALSE, 0);
 	g_object_set_data (parent, "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
@@ -594,10 +575,10 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, 1, 1, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
 
-	GObject *window1 = parent;	
+	GObject *window1 = parent;
   	GtkWidget *table1;
   	GtkWidget *vbox1;
-  
+
  	GtkWidget *scrolledwindow1;
   	GtkWidget *vbox2;
   	GtkWidget *scrolledwindow2;
@@ -656,7 +637,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow1), listFonts);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);	
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
 
 	vbox2 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox2, "vbox2");
@@ -722,7 +703,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow3, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow3), 3);
-	
+
 	listSizes = gtk_clist_new (1);
 	gtk_widget_set_name (listSizes, "listSizes");
 	gtk_widget_ref (listSizes);
@@ -767,16 +748,6 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	gtk_widget_show (checkbuttonOverline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonOverline, TRUE, TRUE, 0);
 
-/*
-#ifdef BIDI_ENABLED
-	checkbuttonDirection = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_Direction));
-	g_object_set_data (parent, "checkbuttonDirection", checkbuttonDirection);
-	gtk_container_border_width (GTK_CONTAINER (checkbuttonDirection), 5);
-	gtk_widget_show (checkbuttonDirection);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonDirection, TRUE, TRUE, 0);
-#endif
-*/
-
 	hboxForEncoding = gtk_hbox_new (FALSE, 0);
 	gtk_widget_set_name (hboxForEncoding, "hboxForEncoding");
 	gtk_widget_ref (hboxForEncoding);
@@ -784,18 +755,18 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hboxForEncoding);
 	gtk_box_pack_start (GTK_BOX (vboxmisc), hboxForEncoding, TRUE, TRUE, 0);
-	
+
 	labelEncoding = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EncodingLabel));
 	g_object_set_data (parent, "labelEncoding", labelEncoding);
 	gtk_widget_show (labelEncoding);
 	gtk_box_pack_start (GTK_BOX (hboxForEncoding), labelEncoding, 1,1, 2);
 	gtk_label_set_justify (GTK_LABEL (labelEncoding), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelEncoding), 0, 0.5);
-	
+
 	comboEncoding = gtk_combo_new ();
 	g_object_set_data (parent, "comboEncoding", comboEncoding);
 	gtk_widget_show (comboEncoding);
-	gtk_box_pack_start(GTK_BOX (hboxForEncoding), comboEncoding, 1, 1, 0); 
+	gtk_box_pack_start(GTK_BOX (hboxForEncoding), comboEncoding, 1, 1, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (GTK_COMBO (comboEncoding)->popup),
 									GTK_POLICY_NEVER,
 									GTK_POLICY_AUTOMATIC);
@@ -805,7 +776,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 //	comboEncoding_items = g_list_append (comboEncoding_items, "British");
 //	comboEncoding_items = g_list_append (comboEncoding_items, "Irish");
 //	comboEncoding_items = g_list_append (comboEncoding_items, "Broken English");
-//	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");	
+//	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");
 	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
 	g_list_free (comboEncoding_items);
 
@@ -885,11 +856,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	m_checkUnderline = checkbuttonUnderline;
 	m_checkOverline = checkbuttonOverline;
 	m_checkTransparency = checkbuttonTrans;
-/*
-#ifdef BIDI_ENABLED
-	m_checkDirection = checkbuttonDirection;
-#endif
-*/
+
 	// bind signals to things
 	g_signal_connect(G_OBJECT(m_checkUnderline),
 					   "toggled",
@@ -925,7 +892,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 					   "select_row",
 					   G_CALLBACK(s_select_row_size),
 					   (gpointer) this);
-	
+
 	// we catch the color tab's wheel click event so we can do some nasty
 	// trickery with the value slider, so that when the user first does
 	// some wheel work, the value soars to 100%, instead of 0%, so the
@@ -956,7 +923,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 					   "event",
 					   G_CALLBACK(s_bgcolor_update),
 					   (gpointer) this);
-	
+
 	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
 	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
 	GTK_WIDGET_SET_FLAGS(listSizes, GTK_CAN_FOCUS);
@@ -969,7 +936,7 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleRegular); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
 	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleItalic); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
 	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBold); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);	
+	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);
 	gtk_clist_thaw(GTK_CLIST(m_styleList));
 
 	gtk_clist_freeze(GTK_CLIST(m_sizeList));
@@ -985,11 +952,6 @@ GtkWidget * XAP_CocoaDialog_FontChooser::constructWindowContents(GObject *parent
 	}
 	gtk_clist_thaw(GTK_CLIST(m_sizeList));
 
-/*
-#ifdef BIDI_ENABLED
-	_initEnableControls();
-#endif	
-*/
 	return vboxMain;
 }
 
@@ -1005,7 +967,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gchar * text[2] = {NULL, NULL};
 	// used similarly to convert between text and numeric arguments
 	static char sizeString[50];
-	
+
 	// Set up our own color space so we work well on 8-bit
 	// displays.
 //    gtk_widget_push_visual(gtk_preview_get_visual());
@@ -1046,7 +1008,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	DELETEP(fonts);
-	
+
 	gtk_clist_thaw(GTK_CLIST(m_fontList));
 
 	// Set the defaults in the list boxes according to dialog data
@@ -1059,7 +1021,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
 	}
-	
+
 	// this is pretty messy
 	listStyle st = LIST_STYLE_NORMAL;
 	if (!getVal("font-style") || !getVal("font-weight"))
@@ -1079,12 +1041,12 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	else if (!UT_stricmp(getVal("font-style"), "italic") &&
 			 !UT_stricmp(getVal("font-weight"), "normal"))
 	{
-		st = LIST_STYLE_ITALIC;		
+		st = LIST_STYLE_ITALIC;
 	}
 	else if (!UT_stricmp(getVal("font-style"), "italic") &&
 			 !UT_stricmp(getVal("font-weight"), "bold"))
 	{
-		st = LIST_STYLE_BOLD_ITALIC;		
+		st = LIST_STYLE_BOLD_ITALIC;
 	}
 	else
 	{
@@ -1100,7 +1062,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
 	}
-	
+
 	// Set color in the color selector
 	if (getVal("color"))
 	{
@@ -1133,7 +1095,7 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		m_currentBGColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
 		m_currentBGColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
 		m_currentBGColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);	
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_currentBGColor);
 	}
 	else
@@ -1143,19 +1105,15 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		// the cases except where the user specifically enters -1 for
 		// all Red, Green and Blue attributes manually.  This user
 		// should expect it not to touch the color.  :)
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);	
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_bgcolorSelector), m_funkyColor);
 	}
 
 	// set the strikeout and underline check buttons
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeout);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);	
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkOverline), m_bOverline);	
-/*
-#ifdef BIDI_ENABLED
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkDirection), m_bDirection);	
-#endif	
-*/
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkOverline), m_bOverline);
+
 	// get top level window and its GtkWidget *
 	XAP_CocoaFrame * frame = static_cast<XAP_CocoaFrame *>(pFrame);
 	UT_ASSERT(frame);
@@ -1163,28 +1121,28 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(parent);
 	// center it
     centerDialog(parent, GTK_WIDGET(cf));
-	
+
 	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 
 	m_doneFirstFont = true;
-	
+
 	// attach a new graphics context
 	XAP_App *pApp = frame->getApp();
 	m_gc = new GR_CocoaGraphics(m_preview->window, m_fontManager, pApp);
 	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
 //
-// This enables callbacks on the preview area with a widget pointer to 
+// This enables callbacks on the preview area with a widget pointer to
 // access this dialog.
 //
 	g_object_set_user_data(G_OBJECT(m_preview), this);
-	
+
 	// unfreeze updates of the preview
 	m_blockUpdate = false;
 	// manually trigger an update
 	updatePreview();
-	
+
 	gtk_main();
 
 //
@@ -1192,25 +1150,16 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 // values from event callbacks.
 //
 
-/*
-#ifdef BIDI_ENABLED
-		m_bChangedDirection = (m_bDirection != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkDirection)));
-		if (m_bChangedDirection)
-			m_bDirection = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkDirection));
-#endif
-*/
- 
-
 	if(cf && GTK_IS_WIDGET(cf))
 	  gtk_widget_destroy (GTK_WIDGET(cf));
 
 	// these dialogs are cached around through the dialog framework,
 	// and this variable needs to get set back
 	m_doneFirstFont = false;
-	
+
 //    gtk_widget_pop_visual();
 //    gtk_widget_pop_colormap();
-	
+
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
 				 ((getVal("font-family")) ? getVal("font-family") : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),
 				 ((getVal("font-size")) ? getVal("font-size") : ""),		((m_bChangedFontSize) ? "(chg)" : ""),

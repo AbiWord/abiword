@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,7 +45,7 @@ public:
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
 						virtual void	_set##a(const t)
- 
+
 	SET_GATHER			(SpellCheckAsType,	bool );
 	SET_GATHER			(SpellHideErrors,	bool );
 	SET_GATHER			(SpellSuggest,		bool );
@@ -55,32 +55,30 @@ public:
 	SET_GATHER			(SpellInternet, 	bool );
 
 	SET_GATHER			(ShowSplash,		bool );
- 
-	SET_GATHER			(SmartQuotesEnable, bool ); 
-	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined ); 
+
+	SET_GATHER			(SmartQuotesEnable, bool );
+	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined );
 
 	SET_GATHER			(PrefsAutoSave, 	bool );
- 
+
 	SET_GATHER			(ViewShowRuler, 	bool );
-	SET_GATHER			(ViewShowStandardBar,bool );	  
-	SET_GATHER			(ViewShowFormatBar, bool ); 	 
+	SET_GATHER			(ViewShowStandardBar,bool );
+	SET_GATHER			(ViewShowFormatBar, bool );
 	SET_GATHER			(ViewShowExtraBar,	bool );
 	SET_GATHER			(ViewShowStatusBar, bool );
-	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
- 
+
 	SET_GATHER			(ViewAll,			bool );
 	SET_GATHER			(ViewHiddenText,	bool );
 	SET_GATHER			(ViewUnprintable,	bool );
 	SET_GATHER			(AllowCustomToolbars, bool);
 	SET_GATHER			(AutoLoadPlugins, bool);
 
-#ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool );
 	SET_GATHER			(OtherUseContextGlyphs, bool );
 	SET_GATHER			(OtherSaveContextGlyphs,bool );
 	SET_GATHER			(OtherHebrewContextGlyphs,bool );
-#endif
 
 	SET_GATHER			(AutoSaveFile, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
@@ -91,10 +89,10 @@ public:
 
 	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER
-	
+
  protected:
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
 	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
@@ -105,7 +103,7 @@ public:
 
 	int 						m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
-	
+
 private:
 	XAP_DialogFactory * 		m_pDialogFactory;
 };

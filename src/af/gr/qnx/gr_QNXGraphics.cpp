@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,11 +45,11 @@ struct _fcache {
 	struct _fcache *next;
 	struct _fcache *prev;
 	char 		   name[36];
-} *g_pFCache = NULL;	
+} *g_pFCache = NULL;
 
 
 /***
- Initialization/Teardown for drawing on a widget outside of the normal 
+ Initialization/Teardown for drawing on a widget outside of the normal
  stream of "damage" events
 ***/
 int GR_QNXGraphics::DrawSetup() {
@@ -60,41 +60,41 @@ int GR_QNXGraphics::DrawSetup() {
 	}
 
 	//Set the region and the draw offset
-	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));	
-	PtWidgetOffset(m_pDraw, &m_OffsetPoint);					
-	PgSetTranslation (&m_OffsetPoint, 0 /* Pg_RELATIVE */);	
+	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
+	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
+	PgSetTranslation (&m_OffsetPoint, 0 /* Pg_RELATIVE */);
 
 	//Always clip to the canvas
-	PhRect_t _rdraw;									
-	PtBasicWidgetCanvas(m_pDraw, &_rdraw);				
+	PhRect_t _rdraw;
+	PtBasicWidgetCanvas(m_pDraw, &_rdraw);
 /*
-	printf("Widget Rect %d,%d %d,%d \n", 
+	printf("Widget Rect %d,%d %d,%d \n",
 		_rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y);
 */
 
 	//Add additional user clipping areas (only one for now)
 	if (m_pClipList) {
 /* This doesn't work right ... so just do the intersect ourselves
-		printf("Add Clip Rect %d,%d %d,%d \n", 
-			m_pClipList->rect.ul.x, m_pClipList->rect.ul.y, 
+		printf("Add Clip Rect %d,%d %d,%d \n",
+			m_pClipList->rect.ul.x, m_pClipList->rect.ul.y,
 			m_pClipList->rect.lr.x, m_pClipList->rect.lr.y);
 		PtClipAdd(m_pDraw, &m_pClipList->rect);
 */
 		//Instead use this
 		if (PtRectIntersect(&_rdraw, &m_pClipList->rect) == 0) {
 			//This should never happen!
-			UT_DEBUGMSG(("No intersection of widget %d,%d %d,%d ", 
+			UT_DEBUGMSG(("No intersection of widget %d,%d %d,%d ",
 						  _rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y));
 			UT_DEBUGMSG(("and clip list %d,%d %d,%d ",
-						  m_pClipList->rect.ul.x, m_pClipList->rect.ul.y, 
+						  m_pClipList->rect.ul.x, m_pClipList->rect.ul.y,
 						  m_pClipList->rect.lr.x, m_pClipList->rect.lr.y));
 			//Instead set a 0,0 area
-			//PtBasicWidgetCanvas(m_pDraw, &_rdraw);				
-			memset(&_rdraw, 0, sizeof(_rdraw));				
+			//PtBasicWidgetCanvas(m_pDraw, &_rdraw);
+			memset(&_rdraw, 0, sizeof(_rdraw));
 		}
 	}
 
-	PgSetUserClip(&_rdraw); 
+	PgSetUserClip(&_rdraw);
 	return 0;
 }
 
@@ -104,14 +104,14 @@ int GR_QNXGraphics::DrawTeardown() {
 	if (m_pPrintContext) {
 		return 0;
 	}
-	
+
 	//Remove the clipping (only one for now)
-	PgSetUserClip(NULL); 
-	
+	PgSetUserClip(NULL);
+
 	//Reset the translation
-	m_OffsetPoint.x *= -1; 							
-	m_OffsetPoint.y *= -1; 									
-	PgSetTranslation(&m_OffsetPoint, 0); 						
+	m_OffsetPoint.x *= -1;
+	m_OffsetPoint.y *= -1;
+	PgSetTranslation(&m_OffsetPoint, 0);
 
 	return 0;
 }
@@ -142,7 +142,7 @@ GR_QNXGraphics::~GR_QNXGraphics()
 }
 
 /***
- Miscellaneous functions 
+ Miscellaneous functions
 ***/
 bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
@@ -167,7 +167,7 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
       Photon old fonts were 72dpi, the new ones are 96dpi
       so we will use that.
 
-      In reality we should use a value which doesn't change 
+      In reality we should use a value which doesn't change
       and is based on something other than the changing font
       values.  Also should something different be used for
       the printing values vs the screen values?
@@ -185,12 +185,12 @@ void GR_QNXGraphics::flush(void)
 }
 
 /***
- Character Operations 
+ Character Operations
 ***/
 /*
  This function gets called a lot ... ideally it should be as fast as
-possible, but due to the fact that we call it outside of the normal 
-draw stream, we can't always assume that other things are properly 
+possible, but due to the fact that we call it outside of the normal
+draw stream, we can't always assume that other things are properly
 set (ie font, colour etc) so we end up doing it again ourselves. It
 also licks that we have to do the translation at this layer.
 */
@@ -199,8 +199,8 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
 	PhPoint_t pos;
 	int i;
-	
-	pos.x = xoff; 
+
+	pos.x = xoff;
 	pos.y = yoff + getFontAscent();
 
 	DRAW_START
@@ -208,7 +208,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
 
-	/* We have no idea in advance how big this result is going 
+	/* We have no idea in advance how big this result is going
 	   to convert into, so we will guestimate with the MB_CUR_MAX,
        which in theory is the max number of characters a wc will expand to.
 	*/
@@ -235,7 +235,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	//Faster to copy and not flush or to not copy and flush?
 /*
 	Each flush causes two messages to be sent.  Since AbiWord is stupid about sending
-    entire runs of text, we don't do this but do the copy instead if it is required.  
+    entire runs of text, we don't do this but do the copy instead if it is required.
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
@@ -254,7 +254,7 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 }
 
 /*
- This function is also called a ton of times.  We need to make it 
+ This function is also called a ton of times.  We need to make it
  as fast a possible.
 */
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -269,8 +269,8 @@ if (!m_pFont || !(font = m_pFont->getFont())) {
 		return 0;
 	}
 
-	indices = 1;			
-	penpos = 0;			
+	indices = 1;
+	penpos = 0;
 /*
 	printf("wide character %d (0x%x) [%c] in %s ==\n", c, c, (char)c, font);
 	printf("multi byte char 0x%x 0x%x 0x%x 0x%x (%d) \n", buffer[0], buffer[1], buffer[2], buffer[3], len);
@@ -289,12 +289,12 @@ if (!m_pFont || !(font = m_pFont->getFont())) {
 /*
 	printf("gives width %d and char = 0x%x\n", penpos,c);
 */
-	
+
 	return penpos;
 }
 
-/*** 
- Font Operations 
+/***
+ Font Operations
 ***/
 GR_Font * GR_QNXGraphics::getGUIFont(void)
 {
@@ -307,19 +307,19 @@ GR_Font * GR_QNXGraphics::getGUIFont(void)
 }
 
 
-GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily, 
-									const char* pszFontStyle, 
-									const char* /*pszFontVariant*/, 
-									const char* pszFontWeight, 
-									const char* /*pszFontStretch*/, 
+GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
+									const char* pszFontStyle,
+									const char* /*pszFontVariant*/,
+									const char* pszFontWeight,
+									const char* /*pszFontStretch*/,
 									const char* pszFontSize)
 {
 	UT_ASSERT(pszFontFamily);
 	UT_ASSERT(pszFontStyle);
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
-	
-	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] ", 
+
+	UT_DEBUGMSG(("GR: findFont [%s] [%s] [%s] [%s] ",
 			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize));
 
 	char fname[MAX_FONT_TAG];
@@ -333,13 +333,13 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	if (UT_strcmp(pszFontStyle, "italic") == 0) {
 		style |= PF_STYLE_ITALIC;
 	}
-	style|=PF_STYLE_ANTIALIAS; 
+	style|=PF_STYLE_ANTIALIAS;
 
-//	printf("Looking for font [%s]@%d w/0x%x\n", pszFontFamily, size, style); 
-	if (PfGenerateFontName((const char *)pszFontFamily, 
+//	printf("Looking for font [%s]@%d w/0x%x\n", pszFontFamily, size, style);
+	if (PfGenerateFontName((const char *)pszFontFamily,
 							style, size, (char *)fname) == NULL) {
 		//Punt ... give us another chance with a default font
-		sprintf(fname, "%s%d", "helv", size); 
+		sprintf(fname, "%s%d", "helv", size);
 		switch (style & (PF_STYLE_BOLD | PF_STYLE_ITALIC)) {
 		case (PF_STYLE_BOLD | PF_STYLE_ITALIC):
 			strcat(fname, "bi"); break;
@@ -392,7 +392,7 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 		strcpy(tmp->name, font);
 		tmp->next = g_pFCache;
 		tmp->prev = NULL;
-		g_pFCache = tmp;	
+		g_pFCache = tmp;
 
 //		PfLoadMetrics(font);
 	} else if (tmp && tmp->prev) {
@@ -435,7 +435,7 @@ UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
 {
 	QNXFont *pQNXFont = (QNXFont *)fnt;
 	UT_ASSERT(pQNXFont);
-		
+
 	FontQueryInfo info;
 	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
@@ -449,7 +449,7 @@ UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
 {
 	QNXFont *pQNXFont = (QNXFont *)fnt;
 	UT_ASSERT(pQNXFont);
-		
+
 	FontQueryInfo info;
 	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
@@ -466,7 +466,7 @@ UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 */
 	QNXFont *pQNXFont = (QNXFont *)fnt;
 	UT_ASSERT(pQNXFont);
-		
+
 	FontQueryInfo info;
 	if (PfQueryFontInfo(pQNXFont->getFont(), &info) == -1) {
 		UT_ASSERT(0);
@@ -542,7 +542,7 @@ void GR_QNXGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 {
 	int old;
 	old = PgSetDrawMode(Pg_DRAWMODE_XOR);
-	drawLine(x1, y1, x2, y2);	
+	drawLine(x1, y1, x2, y2);
 	PgSetDrawMode(old);
 }
 
@@ -561,7 +561,7 @@ void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 		// that the poly line is in the correct place relative to where
 		// the rest of GR_QNXGraphics:: does things (drawing text, clearing
 		// areas, etc.).
-		points[i].y = pts[i].y - 1;	
+		points[i].y = pts[i].y - 1;
 	}
 
 	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
@@ -576,7 +576,7 @@ void GR_QNXGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 void GR_QNXGraphics::invertRect(const UT_Rect* pRect)
 {
 	UT_ASSERT(pRect);
-	
+
 	int old;
 	old = PgSetDrawMode(Pg_DRAWMODE_XOR);
 	UT_RGBColor c;
@@ -599,8 +599,8 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 		r.lr.x = r.ul.x + pRect->width;
 		r.lr.y = r.ul.y + pRect->height;
 
-//		UT_ASSERT(!m_pClipList);		//Only one item for now	
-	
+//		UT_ASSERT(!m_pClipList);		//Only one item for now
+
 		if (m_pClipList || (m_pClipList = PhGetTile())) {
 			m_pClipList->rect = r;
 			m_pClipList->next = NULL; //One item list for now
@@ -671,13 +671,13 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	UT_DEBUGMSG(("GR Scroll1 Before %d,%d %d,%d  by %d,%d",
 			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 */
-	
+
 	//This does the blit on the region, so the rect must be in
 	//the windows co-ordinates.  But it doesn't automatically
 	//generate a damage event like PtBlit does so we only re-draw once.
 	PhPoint_t shift;
 	PtWidgetOffset(m_pDraw, &shift);
-	PtTranslateRect(&rect, &shift);					
+	PtTranslateRect(&rect, &shift);
 
 	//The problem here is with clipping ... can I clip the the rect?
 	//Alternately, I should be able to adjust the rect by the offset
@@ -703,7 +703,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	PtBasicWidgetCanvas(m_pDraw, &widgetrect);
 
 /*
-	UT_DEBUGMSG(("GR Scroll2 dest:%d,%d src:%d,%d %dx%d ", 
+	UT_DEBUGMSG(("GR Scroll2 dest:%d,%d src:%d,%d %dx%d ",
 					x_dest, y_dest, x_src, y_src, width, height));
 */
 	if (width < 0) {
@@ -740,7 +740,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 
 	PhPoint_t shift;
 	PtWidgetOffset(m_pDraw, &shift);
-	PtTranslateRect(&rect, &shift);					
+	PtTranslateRect(&rect, &shift);
 
 /*
 	UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
@@ -769,7 +769,7 @@ GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* 
      		pImg = new GR_QNXImage(pszName);
    	else
      		pImg = new GR_VectorImage(pszName);
-   
+
 	pImg->convertFromBuffer(pBBPNG, iDisplayWidth, iDisplayHeight);
 	return pImg;
 }
@@ -782,7 +782,7 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
       		pImg->render(this, xDest, yDest);
       		return;
    	}
-   
+
 	GR_QNXImage * pQNXImage = (GR_QNXImage *)(pImg);
 	Fatmap * image = pQNXImage->getData();
 	PhPoint_t pos;
@@ -791,13 +791,13 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	size.w = pQNXImage->getDisplayWidth();
 	size.h = pQNXImage->getDisplayHeight();
 
-	DRAW_START 
+	DRAW_START
 
 	pos.x = xDest; pos.y = yDest;
 
 	UT_ASSERT(image->data);
 	PgDrawImagemx(image->data,			/* Data */
-				Pg_IMAGE_DIRECT_888,  	/* Type */ 
+				Pg_IMAGE_DIRECT_888,  	/* Type */
 				&pos,					/* Position */
 				&size,					/* Size */
 				3 /* 24 bit image */ * size.w,	/* BPL */
@@ -824,7 +824,7 @@ void GR_QNXGraphics::setCursor(GR_Graphics::Cursor c)
 unsigned short cursor_number=0;
 	if (m_cursor == c)
 		return;
-	
+
 	m_cursor = c;
 
 	switch (c)
@@ -835,53 +835,51 @@ unsigned short cursor_number=0;
 	case GR_CURSOR_DEFAULT:
 		cursor_number = Ph_CURSOR_POINTER;
 		break;
-		
+
 	case GR_CURSOR_IBEAM:
 		cursor_number = Ph_CURSOR_POINTER; //XXX: Wtf is IBEAM ?
 		break;
 
 	case GR_CURSOR_RIGHTARROW:
-		cursor_number = Ph_CURSOR_DRAG_RIGHT; 
+		cursor_number = Ph_CURSOR_DRAG_RIGHT;
 		break;
-		
-#ifdef BIDI_ENABLED
+
 	case GR_CURSOR_LEFTARROW:
 		cursor_number = Ph_CURSOR_DRAG_LEFT; //GDK_ARROW;
 		break;
-#endif
 
 	case GR_CURSOR_IMAGE:
 		cursor_number = Ph_CURSOR_POINTER; //XXX: ???
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_NW:
 		cursor_number = Ph_CURSOR_DRAG_TL;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_N:
 		cursor_number = Ph_CURSOR_DRAG_TOP;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_NE:
 		cursor_number = Ph_CURSOR_DRAG_TR;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_E:
 		cursor_number = Ph_CURSOR_DRAG_RIGHT;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_SE:
 		cursor_number = Ph_CURSOR_DRAG_BR;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_S:
 		cursor_number = Ph_CURSOR_DRAG_BOTTOM;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_SW:
 		cursor_number = Ph_CURSOR_DRAG_BL;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_number = Ph_CURSOR_DRAG_LEFT;
 		break;
@@ -900,7 +898,7 @@ unsigned short cursor_number=0;
 		break;
 	case GR_CURSOR_LINK:
 		cursor_number=Ph_CURSOR_FINGER;
-		break;	
+		break;
 	case GR_CURSOR_WAIT:
 		cursor_number= Ph_CURSOR_WAIT;
 		break;
@@ -949,7 +947,7 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 	fillRect(c, r.left, r.top, r.width, r.height);
 }
 
-/*** 
+/***
  Printing operations
 ***/
 PpPrintContext_t * GR_QNXGraphics::getPrintContext() {
@@ -964,7 +962,7 @@ void GR_QNXGraphics::setPrintContext(PpPrintContext_t *context) {
 		setZoomPercentage(m_iShadowZoomPercentage);
 		m_iShadowZoomPercentage = 100;
 	}
-		
+
 	 m_pPrintContext = context;
 }
 
@@ -973,18 +971,18 @@ bool GR_QNXGraphics::startPrint(void) {
 	UT_ASSERT(m_pPrintContext);
 
 	if (m_pPrintContext) {
-		PpStartJob(m_pPrintContext);	
-		PpContinueJob(m_pPrintContext);	
+		PpStartJob(m_pPrintContext);
+		PpContinueJob(m_pPrintContext);
 	}
 
- 	m_bPrintNextPage = false;    
+ 	m_bPrintNextPage = false;
 	return true;
 }
 
 bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) {
 
-	UT_DEBUGMSG(("GR: Start Page %d W/H %d/%d (portrait:%d label:%s nextpage:%d)", 
+	UT_DEBUGMSG(("GR: Start Page %d W/H %d/%d (portrait:%d label:%s nextpage:%d)",
 		pageNumber, iWidth, iHeight, bPortrait, (szPageLabel) ? szPageLabel : "", m_bPrintNextPage));
 	UT_ASSERT(m_pPrintContext);
 
@@ -996,22 +994,22 @@ bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 #if 0
 		PhDim_t 	size;
 
-#define DPI_LEVEL 92 
+#define DPI_LEVEL 92
 		/* Adjust for non-printable margins? */
 		size.w = ((iWidth) * DPI_LEVEL) / 1000;
 		size.h = ((iHeight) * DPI_LEVEL) / 1000;
 		UT_DEBUGMSG(("Source size %d/%d \n", size.w, size.h));
 		PpPrintSetPC(m_pPrintContext, INITIAL_PC, 0, Pp_PC_SOURCE_SIZE, &size);
 
-		PpPrintOpen(m_pPrintContext);	
-		PpPrintStart(m_pPrintContext);	
+		PpPrintOpen(m_pPrintContext);
+		PpPrintStart(m_pPrintContext);
 #endif
 	} else {
 		PpPrintNewPage(m_pPrintContext);
 	}
 
 	m_bPrintNextPage = true;
-	return true;	
+	return true;
 }
 
 bool GR_QNXGraphics::endPrint(void) {
@@ -1021,8 +1019,8 @@ bool GR_QNXGraphics::endPrint(void) {
 	if (m_pPrintContext) {
 		PpSuspendJob(m_pPrintContext);
 		PpEndJob(m_pPrintContext);
-		PtDamageWidget(m_pWin);		
-		PtFlush();	
+		PtDamageWidget(m_pWin);
+		PtFlush();
 	}
 	return true;
 }

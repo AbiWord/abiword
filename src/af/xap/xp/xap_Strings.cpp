@@ -1,20 +1,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * BIDI Copyright (C) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -30,9 +30,7 @@
 #include "ut_wctomb.h"
 #include "xap_Strings.h"
 #include "xap_EncodingManager.h"
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
 
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings
@@ -41,7 +39,7 @@
 XAP_StringSet::XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName)
 {
 	m_pApp = pApp;
-	
+
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
 		UT_XML_cloneString((XML_Char *&)m_szLanguageName,szLanguageName);
@@ -105,7 +103,7 @@ XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
 	: XAP_StringSet(pApp,NULL)
 {
 	m_pFallbackStringSet = NULL;
-	
+
 	setValue(XAP_STRING_ID__FIRST__,0);			// bogus zero element
 }
 
@@ -150,32 +148,31 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		UT_decodeUTF8string(szString,UT_XML_strlen(szString),&gb);
 
 		// TODO The strings that we use (for dialogs and etc) are currently
-		// TODO limited to single-byte encodings by the code below.  
+		// TODO limited to single-byte encodings by the code below.
 
 		int kLimit=gb.getLength();
 		UT_UCS4Char * p = (UT_UCS4Char*) gb.getPointer(0);
 		UT_ByteBuf str;
 
-#ifdef BIDI_ENABLED
 		// now we run this string through fribidi
 		if(!XAP_App::getApp()->theOSHasBidiSupport())
 		{
 			if (p && *p)
-			{	
+			{
 				FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
 				fbdStr   = new FriBidiChar [kLimit];
 				UT_ASSERT(fbdStr);
 				fbdStr2  = new FriBidiChar [kLimit];
 				UT_ASSERT(fbdStr2);
-				
+
 				UT_sint32 i;
 				for(i = 0; i < kLimit; i++)
 				{
 					fbdStr[i] = (FriBidiChar) p[i];
 				}
-	
+
 				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
-	
+
 				fribidi_log2vis (		/* input */
 				       fbdStr,
 				       kLimit,
@@ -184,8 +181,8 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 				       fbdStr2,
 				       NULL,
 				       NULL,
-				       NULL);	
-	
+				       NULL);
+
 				for(i = 0; i < kLimit; i++)
 				{
 					p[i] = (UT_uint16) fbdStr2[i];
@@ -196,7 +193,6 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 				delete[] fbdStr2;
 			}
 		}
-#endif
 
 		const char * encoding = (XAP_EncodingManager::get_instance()->getNativeSystemEncodingName()) ?
 		  XAP_EncodingManager::get_instance()->getNativeSystemEncodingName() :
@@ -258,7 +254,7 @@ static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
 {
 #include "xap_String_Id.h"
 };
-			
+
 #undef dcl
 
 //////////////////////////////////////////////////////////////////
@@ -267,7 +263,7 @@ bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szStrin
 {
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
-	
+
 	UT_uint32 kLimit = NrElements(s_map);
 	UT_uint32 k;
 
@@ -349,7 +345,7 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 
 			if (strcmp((char*)a[0], "class") == 0)
 				continue;
-			
+
 			if (!setValue(a[0], a[1]))
 			{
 				UT_DEBUGMSG(("UNKNOWN StringId [%s] value [%s]\n", a[0], a[1]));
@@ -427,9 +423,9 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 		{
 			XML_Char * szValue = const_cast<XML_Char *>(_getNthString(k));
 			if (szValue && *szValue)
-			{	
+			{
 				UT_uint32 iStrLen  = strlen(szValue);
-	
+
 				if(iStrLen > iOldLen)
 				{
 					if(fbdStr)
@@ -437,14 +433,14 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 						delete [] fbdStr;
 						delete [] fbdStr2;
 					}
-					
+
 					fbdStr   = new FriBidiChar [iStrLen];
 					UT_ASSERT(fbdStr);
 					fbdStr2  = new FriBidiChar [iStrLen];
 					UT_ASSERT(fbdStr2);
 					iOldLen = iStrLen;
 				}
-				
+
 				UT_uint32 i;
 				UT_uint32 j = 0;
 				UT_uint32 k = 0;
@@ -455,9 +451,9 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 						fbdStr[j++] = (FriBidiChar) wc;
 					}
 				}
-	
+
 				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
-	
+
 				fribidi_log2vis (		/* input */
 				       fbdStr,
 				       j,
@@ -466,8 +462,8 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 				       fbdStr2,
 				       NULL,
 				       NULL,
-				       NULL);	
-	
+				       NULL);
+
 				for(i = 0; i < j; i++)
 				{
 					if (wctomb_conv.wctomb(letter_buf,length,(wchar_t)p[i]))
@@ -481,16 +477,16 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 				UT_ASSERT(szValue[i] == 0);
 			}
 		}
-		
+
 		delete[] fbdStr;
 		delete[] fbdStr2;
 	}
 #endif
-	
+
 	// we succeeded in parsing the file,
 	// now check for higher-level consistency.
 
-#ifdef DEBUG	
+#ifdef DEBUG
 	{
 		// TODO should we promote this test to be production code
 		// TODO and maybe raise a message box ??

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -40,9 +40,7 @@ AP_Dialog_Columns::AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 	m_bLineBetween = false;
 	m_HeightString = "0.0in";
 	m_SpaceAfterString = "0pt";
-#ifdef BIDI_ENABLED
 	m_iColumnOrder = 0;
-#endif
 	m_pDoc = NULL;
 	m_pView = NULL;
 	m_dMarginTop = 0.0;
@@ -69,7 +67,7 @@ void AP_Dialog_Columns::_createPreviewFromGC(GR_Graphics * gc,
 
 	m_pColumnsPreview = new AP_Columns_preview(gc,this);
 	UT_ASSERT(m_pColumnsPreview);
-	
+
 	m_pColumnsPreview->setWindowSize(width, height);
 	m_pColumnsPreview->set(m_iColumns, m_bLineBetween);
 
@@ -85,37 +83,35 @@ void AP_Dialog_Columns::setColumns(UT_uint32 iColumns)
 	enableLineBetweenControl(m_iColumns != 1);
 }
 
-#ifdef BIDI_ENABLED
-void AP_Dialog_Columns::setColumnOrder(UT_uint32 iOrder)	
+void AP_Dialog_Columns::setColumnOrder(UT_uint32 iOrder)
 {
 	m_iColumnOrder = iOrder;
 }
-#endif
 
 /*!
  * Returns the dimensioned string that defines the maximum height of the
  * Column.
 \returns const char * dimensioned string which is the max height of the column.
-*/ 
+*/
 const char * AP_Dialog_Columns::getHeightString(void)
 {
-	return m_HeightString.c_str(); 
+	return m_HeightString.c_str();
 }
 
 /*!
  * Returns the dimensioned string that defines the space between Columns.
 \returns const char * dimensioned string which is the space between columns.
-*/ 
+*/
 const char * AP_Dialog_Columns::getSpaceAfterString(void)
 {
-	return m_SpaceAfterString.c_str(); 
+	return m_SpaceAfterString.c_str();
 }
 
 /*!
  * Returns the increment associated with the dimension defined in the string.
 \params const char * sz the dimensioned string.
 \returns double -  the increment associated with the dimension in sz
-*/ 
+*/
 double AP_Dialog_Columns::getIncrement(const char * sz)
 {
 	double inc = 0.1;
@@ -160,17 +156,17 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 {
 	XML_Char  pszAfter[25];
 	XML_Char  pszMaxHeight[25];
-	
+
 	m_pView = (FV_View *) pFrame->getCurrentView();
 	m_pDoc = m_pView->getDocument();
 	const XML_Char ** pszSecProps = NULL;
 	m_pView->getSectionFormat(&pszSecProps);
-		
+
 	_convertToPreferredUnits( pFrame, (const XML_Char *)
 	UT_getAttribute("section-space-after",pszSecProps), (const XML_Char *)pszAfter);
 	_convertToPreferredUnits( pFrame, (const XML_Char *)
 	UT_getAttribute("section-max-column-height",pszSecProps), (const XML_Char *)pszMaxHeight);
-	
+
 	if(pszAfter && *pszAfter)
 	{
 		m_SpaceAfterString =  (const char *) pszAfter;
@@ -369,7 +365,7 @@ void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *
 {
 	UT_Dimension PreferedUnits = DIM_none;
 	const XML_Char * pszRulerUnits = NULL;
-	
+
 	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
 		PreferedUnits = UT_determineDimension((char *)pszRulerUnits);
@@ -377,7 +373,7 @@ void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *
 	UT_XML_strncpy((XML_Char *) pRet, 25, (const XML_Char *) UT_reformatDimensionString(PreferedUnits,sz));
 }
 
-	
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -402,21 +398,21 @@ void AP_Columns_preview::draw(void)
 	UT_Rect pageRect(5, 5, iWidth - 10, iHeight - 10);
 
 	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, 
+	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width,
 					pageRect.height);
 
 	m_gc->setLineWidth(1);
-	m_gc->drawLine(pageRect.left, pageRect.top, 
+	m_gc->drawLine(pageRect.left, pageRect.top,
 				   pageRect.left + pageRect.width, pageRect.top);
-	m_gc->drawLine(pageRect.left, pageRect.top, 
+	m_gc->drawLine(pageRect.left, pageRect.top,
 				   pageRect.left, pageRect.top + pageRect.height);
 
 	m_gc->setLineWidth(3);
-	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + 1, 
-				   pageRect.left + pageRect.width, 
+	m_gc->drawLine(pageRect.left + pageRect.width, pageRect.top + 1,
+				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
-	m_gc->drawLine(pageRect.left + 1, pageRect.top + pageRect.height, 
-				   pageRect.left + pageRect.width, 
+	m_gc->drawLine(pageRect.left + 1, pageRect.top + pageRect.height,
+				   pageRect.left + pageRect.width,
 				   pageRect.top + pageRect.height);
 
 

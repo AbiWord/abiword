@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -83,13 +83,13 @@ AP_Dialog_Styles::tAnswer AP_Dialog_Styles::getAnswer(void) const
 }
 
 /*!
- * This method adds the key,value pair pszProp,pszVal to the Vector of 
+ * This method adds the key,value pair pszProp,pszVal to the Vector of
  * all properties of the current style.
  * If the Property already exists it's value is replaced with pszVal
 \param const XML_Char * pszProp the property name
 \param const XML_Char * pszVal the value of this property.
 */
-void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp, 
+void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 												 const XML_Char * pszVal)
 {
 	UT_sint32 iCount = m_vecAllProps.getItemCount();
@@ -127,7 +127,7 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 
 
 /*!
- * This method removes the key,value pair  (pszProp,pszVal) given by pszProp 
+ * This method removes the key,value pair  (pszProp,pszVal) given by pszProp
  * from the Vector of all properties of the current style.
  * If the Property does not exists nothing happens
 \param const XML_Char * pszProp the property name
@@ -160,13 +160,13 @@ void AP_Dialog_Styles::removeVecProp(const XML_Char * pszProp)
 }
 
 /*!
- * This method adds the key,value pair pszProp,pszVal to the Vector of 
+ * This method adds the key,value pair pszProp,pszVal to the Vector of
  * all attributes of the current style.
  * If the Property already exists it's value is replaced with pszVal
 \param const XML_Char * pszProp the property name
 \param const XML_Char * pszVal the value of this property.
 */
-void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp, 
+void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 												 const XML_Char * pszVal)
 {
 	UT_sint32 iCount = m_vecAllAttribs.getItemCount();
@@ -264,13 +264,13 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 
-	const static XML_Char * charFields[] = 
-	{"bgcolor","color","font-family","font-size","font-stretch","font-style", 
+	const static XML_Char * charFields[] =
+	{"bgcolor","color","font-family","font-size","font-stretch","font-style",
 	 "font-variant", "font-weight","text-decoration","lang"};
 
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 
-	const static XML_Char * attribs[] = 
+	const static XML_Char * attribs[] =
 	{PT_FOLLOWEDBY_ATTRIBUTE_NAME,PT_BASEDON_ATTRIBUTE_NAME,PT_LISTID_ATTRIBUTE_NAME,PT_PARENTID_ATTRIBUTE_NAME,PT_LEVEL_ATTRIBUTE_NAME,PT_NAME_ATTRIBUTE_NAME,PT_STYLE_ATTRIBUTE_NAME,PT_TYPE_ATTRIBUTE_NAME};
 
 	const size_t nattribs = sizeof(attribs)/sizeof(attribs[0]);
@@ -281,7 +281,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 	for(i = 0; i < nParaFlds; i++)
 	{
 		const XML_Char * szName = paraFields[i];
-		const XML_Char * szValue = NULL;		
+		const XML_Char * szValue = NULL;
 		pStyle->getProperty(szName,szValue);
 		if(szValue)
 			addOrReplaceVecProp(szName, szValue);
@@ -292,7 +292,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 	for(i = 0; i < nCharFlds; i++)
 	{
 		const XML_Char * szName = charFields[i];
-		const XML_Char * szValue = NULL;		
+		const XML_Char * szValue = NULL;
 		pStyle->getProperty(szName,szValue);
 		if(szValue)
 			addOrReplaceVecProp(szName, szValue);
@@ -305,7 +305,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 		for(i = 0; i < nattribs; i++)
 		{
 			const XML_Char * szName = attribs[i];
-			const XML_Char * szValue = NULL;		
+			const XML_Char * szValue = NULL;
 			pStyle->getAttribute(szName,szValue);
 			if(szValue)
 				addOrReplaceVecAttribs(szName, szValue);
@@ -324,7 +324,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 const XML_Char * AP_Dialog_Styles::getPropsVal(const XML_Char * szProp) const
 {
 	UT_sint32 i = m_vecAllProps.getItemCount();
-	if(i <= 0) 
+	if(i <= 0)
 		return NULL;
 	UT_sint32 j;
 	const XML_Char * pszV = NULL;
@@ -351,7 +351,7 @@ const XML_Char * AP_Dialog_Styles::getPropsVal(const XML_Char * szProp) const
 const XML_Char * AP_Dialog_Styles::getAttsVal(const XML_Char * szProp) const
 {
 	UT_sint32 i = m_vecAllAttribs.getItemCount();
-	if(i <= 0) 
+	if(i <= 0)
 		return NULL;
 	UT_sint32 j;
 	const XML_Char * pszV = NULL;
@@ -379,7 +379,7 @@ const XML_Char * AP_Dialog_Styles::getAttsVal(const XML_Char * szProp) const
 const XML_Char * AP_Dialog_Styles::getVecVal(const UT_Vector *v, const XML_Char * szProp) const
 {
 	UT_sint32 i = v->getItemCount();
-	if(i <= 0) 
+	if(i <= 0)
 		return NULL;
 	UT_sint32 j;
 	const XML_Char * pszV = NULL;
@@ -396,7 +396,7 @@ const XML_Char * AP_Dialog_Styles::getVecVal(const UT_Vector *v, const XML_Char 
 }
 
 /*!
- * This method runs the language dialog to allow the user to set the language 
+ * This method runs the language dialog to allow the user to set the language
  * property of their style.
  */
 void AP_Dialog_Styles::ModifyLang(void)
@@ -437,7 +437,7 @@ void AP_Dialog_Styles::ModifyLang(void)
 }
 
 /*!
- * This method runs the tabs dialog to allow the user to edit the character 
+ * This method runs the tabs dialog to allow the user to edit the character
  * properties of their style.
  */
 void AP_Dialog_Styles::ModifyFont(void)
@@ -482,7 +482,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 	sprintf(background, "%02x%02x%02x",bgCol->m_red,
 			bgCol->m_grn,bgCol->m_blu);
 	pDialog->setBackGroundColor( (const XML_Char *) background);
-		
+
 	// these behave a little differently since they are
 	// probably just check boxes and we don't have to
 	// worry about initializing a combo box with a choice
@@ -504,7 +504,6 @@ void AP_Dialog_Styles::ModifyFont(void)
 	}
 	pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopline,bBottomline);
 /*
-#ifdef BIDI_ENABLED
     bool bDirection;
 	s = UT_getAttribute("dir", props_in);
 	if (s)
@@ -512,7 +511,6 @@ void AP_Dialog_Styles::ModifyFont(void)
 	     bDirection = (strstr(s, "rtl") != NULL);
 	}
 	pDialog->setDirection(bDirection);
-#endif
 */
 
 	// run the dialog
@@ -568,10 +566,8 @@ void AP_Dialog_Styles::ModifyFont(void)
 		bool bBottomline = false;
 		bool bChangedBottomline = pDialog->getChangedBottomline(&bBottomline);
 /*
-#ifdef BIDI_ENABLED
 		bool bDirection = false;
 		bool bChangedDirection = pDialog->getChangedDirection(&bDirection);
-#endif
 */
 
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline || bChangedTopline || bChangedBottomline)
@@ -595,17 +591,15 @@ void AP_Dialog_Styles::ModifyFont(void)
 			addOrReplaceVecProp("text-decoration", s);
 		}
 /*
-#ifdef BIDI_ENABLED
 		if(bChangedDirection)
 		{
 		    if (bDirection == 1)
 		        s = "rtl";
 		    else
 		        s = "ltr";
-		
+
 			addOrReplaceVecProp("dir", s);
 		}
-#endif
 */
 	}
 	pDialogFactory->releaseDialog(pDialog);
@@ -628,7 +622,7 @@ void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
  * Used to extract data out of the Tabs dialog.
  */
 static void
-s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView, 
+s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 				   const char * szTabStops, const char * szDflTabStop,
 				   void * closure)
 {
@@ -682,7 +676,7 @@ void AP_Dialog_Styles::ModifyLists(void)
   		= (XAP_DialogFactory *) getFrame()->getDialogFactory();
 
 //
-// Use this method so that we can have modeless Lists dialog and this 
+// Use this method so that we can have modeless Lists dialog and this
 // modal version simultaneously
 //
 	AP_Dialog_Lists * pDialog
@@ -692,7 +686,7 @@ void AP_Dialog_Styles::ModifyLists(void)
 
 //
 // Fill input list for Lists dialog
-// 
+//
 	if(getPropsVal("list-style"))
 	{
 		vp.addItem((void *) "list-style");
@@ -781,7 +775,7 @@ void AP_Dialog_Styles::ModifyLists(void)
 		}
 //
 // Whew we're done!
-//		
+//
 	}
 	delete pDialog;
 }
@@ -870,7 +864,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 
 			while (propitem[0] && propitem[1])
 			{
-				
+
 				FREEP(propitem[0]);
 				FREEP(propitem[1]);
 				propitem += 2;
@@ -885,7 +879,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 
 /*!
  * Extract all the props from the vector and apply them to the abi preview. We use
- * the style "tmp" to display the current style in the preview. 
+ * the style "tmp" to display the current style in the preview.
  */
 void AP_Dialog_Styles::updateCurrentStyle(void)
 {
@@ -980,7 +974,7 @@ bool AP_Dialog_Styles::createNewStyle(const XML_Char * szName)
 // Append the new style to the main document
 //
 	PD_Style * pStyle = NULL;
-	
+
 	UT_ASSERT(szName);
 	if(szName == NULL)
 		return false;
@@ -1132,7 +1126,7 @@ void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
 	UT_ASSERT(m_pParaPreview);
 
 	FREEP(str);
-	
+
 	m_pParaPreview->setWindowSize(width, height);
 }
 
@@ -1154,7 +1148,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 
 	m_pCharPreview = new XAP_Preview_FontPreview(gc,background);
 	UT_ASSERT(m_pCharPreview);
-	
+
 	m_pCharPreview->setWindowSize(width, height);
 //
 // Text for the Preview
@@ -1251,7 +1245,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 							   "page-margin-header","0.0in",NULL};
 	getLView()->setSectionFormat(props);
 //
-// First Paragraph 
+// First Paragraph
 //
 	m_posBefore = getLView()->getPoint();
 	UT_uint32 i=0;
@@ -1305,7 +1299,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 	const XML_Char * GreyCol[3] = {"color",(const XML_Char *) Grey,NULL};
 	getLDoc()->changeSpanFmt(PTC_AddFmt,m_posBefore,getLView()->getPoint(),NULL,GreyCol);
-	
+
 	getLView()->insertParagraphBreak();
 //
 // Second Paragraph in focus. Our Vectors containing the current settings have
@@ -1398,7 +1392,7 @@ void AP_Dialog_Styles::destroyAbiPreview(void)
 void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin,
 						 const XML_Char * pageRightMargin,
 						 const XML_Char * align,
-						 const XML_Char * firstLineIndent,						 
+						 const XML_Char * firstLineIndent,
 						 const XML_Char * leftIndent,
 						 const XML_Char * rightIndent,
 						 const XML_Char * beforeSpacing,
@@ -1474,7 +1468,7 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 							   afterSpacing,
 							   lineSpacing,
 							   tSpacing);
-	
+
 	// force a redraw
 	m_pParaPreview->draw();
 }
@@ -1487,7 +1481,7 @@ void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 	UT_ASSERT (m_pCharPreview); // add this when we make a char preview
 
 	// force a redraw
-	if(m_pCharPreview) 
+	if(m_pCharPreview)
 	{
 		m_pCharPreview->setVecProperties( &m_vecCharProps);
 		m_pCharPreview->draw();
@@ -1503,13 +1497,13 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 	PD_Style * pStyle = NULL;
 	const char * szStyle = NULL;
 
-	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", 
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right",
 											"margin-top", "margin-bottom", "line-height"};
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 	const XML_Char * paraValues [nParaFlds];
 
-	const static XML_Char * charFields[] = 
-	{"bgcolor","color","font-family","font-size","font-stretch","font-style", 
+	const static XML_Char * charFields[] =
+	{"bgcolor","color","font-family","font-size","font-stretch","font-style",
 	 "font-variant", "font-weight","text-decoration"};
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
 	const XML_Char * charValues [nCharFlds];
@@ -1539,7 +1533,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		for(i = 0; i < nParaFlds; i++)
 		{
 			const XML_Char * szName = paraFields[i];
-			const XML_Char * szValue = NULL;		
+			const XML_Char * szValue = NULL;
 
 			if (!pStyle->getProperty(szName, szValue))
 				if (!pStyle->getAttribute(szName, szValue))
@@ -1547,7 +1541,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 					paraValues[i] = 0;
 					continue;
 				}
-				
+
 			m_curStyleDesc += (const char *)szName;
 			m_curStyleDesc += ":";
 			m_curStyleDesc += (const char *)szValue;
@@ -1565,7 +1559,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		for(i = 0; i < nCharFlds; i++)
 		{
 			const XML_Char * szName = charFields[i];
-			const XML_Char * szValue = NULL;		
+			const XML_Char * szValue = NULL;
 
 			if (!pStyle->getProperty(szName, szValue))
 				if (!pStyle->getAttribute(szName, szValue))
@@ -1585,7 +1579,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 //
 			m_vecCharProps.addItem((void *) szName);
 			m_vecCharProps.addItem((void *) szValue);
-					
+
 		}
 
 		if (!m_curStyleDesc.empty())
@@ -1601,12 +1595,12 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 			// these aren't set at a style level, but we need to put them in there anyway
 			const XML_Char ** props_in = NULL;
 			getView()->getSectionFormat(&props_in);
-			
+
 			if(!isModify)
-				event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in), 
+				event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in),
 									 UT_getAttribute("page-margin-right", props_in),
 									 (const XML_Char *)paraValues[0], (const XML_Char *)paraValues[1],
-									 (const XML_Char *)paraValues[2], (const XML_Char *)paraValues[3], 
+									 (const XML_Char *)paraValues[2], (const XML_Char *)paraValues[3],
 									 (const XML_Char *)paraValues[4], (const XML_Char *)paraValues[5],
 									 (const XML_Char *)paraValues[6]);
 			if(!isModify)

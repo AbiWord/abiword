@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -48,7 +48,7 @@ BeginSetEnc(cs,CZ,true,"iso-8859-2")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nový",		tb_new_xpm,	NULL, "Vytvoøit nový dokument")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nový",		tb_new_xpm,	NULL, "Vytvoøit nový dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Otevøít",	tb_open_xpm,	NULL, "Otevøít ulo¾ený dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Ulo¾it", 	tb_save_xpm,	NULL, "Ulo¾it dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Ulo¾it jako", 	tb_save_as_xpm,	NULL, "Ulo¾it dokument pod jiným jménem")
@@ -95,18 +95,16 @@ BeginSetEnc(cs,CZ,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zvìt¹ení",		NoIcon,			NULL,	"Zvìt¹ení")
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Odrá¾ky",		tb_lists_bullets_xpm,	NULL,	"Start/Stop Bullet Lists")
-        ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Èíslovaný seznam",	tb_lists_numbers_xpm,	NULL,	"Start/Stop Numbered Lists") 
+        ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Èíslovaný seznam",	tb_lists_numbers_xpm,	NULL,	"Start/Stop Numbered Lists")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Barva písma",		tb_text_fgcolor_xpm,	NULL,	"Barva písma")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Highlight",		tb_text_bgcolor_xpm,	NULL,	"Highlight")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Zvìt¹it odsazení",	tb_text_indent_xpm,	NULL,	"Zvìt¹it odsazení")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,            "Zmen¹it odsazení",	tb_text_unindent_xpm,	NULL,	"Zmen¹it odsazení")
-	
+
 	// ... add others here ...
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR, "Text z leva do prava", tb_text_direction_ltr_xpm, NULL, "")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL, "Text z prava do leva", tb_text_direction_rtl_xpm, NULL, "")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION, "Smìr odstavce",  tb_text_dom_direction_rtl_xpm,  NULL, "")
-#endif
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 

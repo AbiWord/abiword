@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -56,10 +56,10 @@ public:
 		virtual void event_SpinDecrement(GtkWidget * widget);
 		virtual void event_SpinFocusOut(GtkWidget * widget);
 		virtual void event_SpinChanged(GtkWidget * widget);
-		
+
 		// checks are just "toggled"
 		virtual void event_CheckToggled(GtkWidget * widget);
-	
+
 	// Preview
 	virtual void event_PreviewAreaExposed(void);
 
@@ -67,19 +67,19 @@ public:
 
 	GR_UnixGraphics	* 		m_unixGraphics;
 	bool					m_bEditChanged;
-	
+
 	// private construction functions
 	virtual GtkWidget *  _constructWindow(void);
 	GtkWidget *          _constructWindowContents(GtkWidget *);
 	void                 _connectCallbackSignals(void);
-	
+
 	void                 _populateWindowData(void);
 
 	virtual void         _syncControls(tControl changed, bool bAll = false);
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog
-	
+
 	GtkWidget * m_windowMain;
 	GtkWidget * m_windowContents;
 
@@ -97,8 +97,8 @@ public:
 	GtkWidget * m_listSpecial_menu;
 	GtkWidget * m_menuitemNone;
 	GtkWidget * m_menuitemFirstLine;
-	GtkWidget * m_menuitemHanging;	
-	
+	GtkWidget * m_menuitemHanging;
+
 	GtkWidget * m_spinbuttonBefore;
 	GtkWidget * m_spinbuttonAfter;
 	GtkWidget * m_spinbuttonAt;
@@ -125,9 +125,7 @@ public:
 	GtkWidget * m_buttonCancel;
 	GtkWidget * m_buttonTabs;
 
-#ifdef BIDI_ENABLED
 	GtkWidget * m_checkbuttonDomDirection;
-#endif
 };
 
 #endif /* XAP_UNIXDIALOG_PARAGRAPH_H */

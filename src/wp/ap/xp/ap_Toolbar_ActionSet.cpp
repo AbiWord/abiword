@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -62,12 +62,12 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	//              the toolbar widget;  whether enabled/disabled,
 	//              grayed/ungrayed, and for text or combo objects, the value
 	//              of string.
-	
+
 #define _s(id,type,szMethodName,maskOfInterest,pfnGetState)		\
 	pActionSet->setAction(id,type,szMethodName,maskOfInterest,pfnGetState)
 
 	//( __id__,          			type,					szMethodName,	mask,				pfn);
-	
+
 	_s(AP_TOOLBAR_ID__BOGUS1__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 
 	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"toolbarNew",		AV_CHG_NONE,		NULL);
@@ -110,7 +110,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_UNINDENT,		EV_TBIT_PushButton,		"toggleUnIndent",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_Indents);
 
 	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);	
+	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_INSERT_SYMBOL,		EV_TBIT_PushButton,	"insSymbol",	AV_CHG_NONE,		NULL);
 
 	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_GroupButton,	"alignLeft",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
@@ -146,16 +146,14 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	   AV_CHG_ALL, ap_ToolbarGetState_Clipboard);
 
 	// ... add others here ...
-#ifdef BIDI_ENABLED
 	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	EV_TBIT_ToggleButton,	"toggleDirOverrideLTR",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	EV_TBIT_ToggleButton,	"toggleDirOverrideRTL",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDomDirection",	AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION,		ap_ToolbarGetState_BlockFmt);
-#endif
-	
+
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 
 #undef _s
-	
+
 	return pActionSet;
 }
 

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -27,10 +27,7 @@
 
 #include "xap_Preview.h"
 #include "ap_Dialog_Paragraph.h"
-
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
 
 // fwd decl.
 class AP_Dialog_Lists;
@@ -62,7 +59,7 @@ class AP_Preview_Paragraph_Block
 						const XML_Char * afterSpacing,
 						const XML_Char * lineSpacing,
 						AP_Dialog_Paragraph::tSpacingState spacing);
-	
+
 	// absolute pixel positions (relative to respective sides)
 	// at which we'll start/stop drawing.  The firstLine element
 	// applies to the first line in a block only.  The others
@@ -74,23 +71,23 @@ class AP_Preview_Paragraph_Block
 	UT_uint32 m_beforeSpacing;
 	UT_uint32 m_afterSpacing;
 	UT_uint32 m_lineSpacing;
-	
+
 	AP_Dialog_Paragraph::tAlignState m_align;
 	AP_Dialog_Paragraph::tIndentState m_indent;
 	AP_Dialog_Paragraph::tSpacingState m_spacing;
 
 	UT_uint32 m_fontHeight;
 	UT_RGBColor m_clr;
-	
+
 	GR_Graphics * m_gc;
-	
+
 	// when a string is set, we break it into words for
 	// easy layout, and store the word content (UT_UCSChar *)
 	// and its measured length in pixels (UT_uint32)
 	UT_Vector m_words;
 	UT_Vector m_widths;
 };
-		
+
 class AP_Preview_Paragraph : public XAP_Preview
 {
  public:
@@ -118,11 +115,11 @@ class AP_Preview_Paragraph : public XAP_Preview
 						const XML_Char * afterSpacing,
 						const XML_Char * lineSpacing,
 						AP_Dialog_Paragraph::tSpacingState spacing);
-	
+
 	virtual void draw(void);
-	
+
  protected:
-	
+
 	// standard colors to draw with
 	UT_RGBColor * m_clrWhite;
 	UT_RGBColor * m_clrBlack;
@@ -130,8 +127,8 @@ class AP_Preview_Paragraph : public XAP_Preview
 
 	// we flow using this as a current position
 	UT_uint32 m_x;
-	UT_uint32 m_y;	
-	
+	UT_uint32 m_y;
+
 	virtual bool _loadDrawFont(void);
 	virtual void 	_drawPageBackground(void);
 	virtual void	_drawPageBorder(void);
@@ -143,7 +140,7 @@ class AP_Preview_Paragraph : public XAP_Preview
 								  UT_uint32 right,
 								  AP_Dialog_Paragraph::tAlignState align,
 								  UT_uint32 y);
-	
+
 	// mini-classes to hold some general data about these three
 	// blocks
 	AP_Preview_Paragraph_Block * m_previousBlock;
@@ -152,9 +149,7 @@ class AP_Preview_Paragraph : public XAP_Preview
 
 	GR_Font * m_font;
 	UT_uint32 m_fontHeight;
-#ifdef BIDI_ENABLED
 	FriBidiCharType m_dir;
-#endif
 };
 
 #endif /* AP_PREVIEW_PARAGRAPH_H */

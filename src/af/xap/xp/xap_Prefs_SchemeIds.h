@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -31,7 +31,7 @@
 // The following are the set of scheme-based application-independent preference keys
 // and the set of default values for them.	Each item must have the XAP_PREF_KEY_ prefix
 // and each value must have the XAP_PREF_DEFAULT_ prefix.  Default values *must* obey
-// XML encoding rules if they contain any double quote (&quot;), ampersand (&amp;), 
+// XML encoding rules if they contain any double quote (&quot;), ampersand (&amp;),
 // or angle bracket (&lt; and &gt;) characters.
 //
 // ***FOR EACH PAIR DEFINED, ADD A 'dcl(basename)' TO THE BOTTOM HALF OF THIS FILE***
@@ -74,20 +74,20 @@
 #define XAP_PREF_KEY_DefaultPageSize				"DefaultPageSize"
 #define XAP_PREF_DEFAULT_DefaultPageSize			 "Letter"
 
-#ifdef BIDI_ENABLED
 #define XAP_PREF_KEY_DefaultDirectionRtl	"DefaultDirectionRtl"
+
 #ifndef BIDI_RTL_DOMINANT
 #define XAP_PREF_DEFAULT_DefaultDirectionRtl		 "0"
 #else
 #define XAP_PREF_DEFAULT_DefaultDirectionRtl		 "1"
 #endif
+
 #define XAP_PREF_KEY_UseContextGlyphs				 "UseContextGlyphs"
 #define XAP_PREF_DEFAULT_UseContextGlyphs			 "1"
 #define XAP_PREF_KEY_SaveContextGlyphs				 "SaveContextGlyphs"
 #define XAP_PREF_DEFAULT_SaveContextGlyphs			 "0"
 #define XAP_PREF_KEY_UseHebrewContextGlyphs 		 "UseGlyphShapingForHebrew"
 #define XAP_PREF_DEFAULT_UseHebrewContextGlyphs 	 "0"
-#endif	/* BIDI_ENABLED */
 
 #define XAP_PREF_KEY_AutoSaveFile					"AutoSaveFile"
 #define XAP_PREF_DEFAULT_AutoSaveFile				"0" 						/* Auto save files by default */
@@ -121,7 +121,7 @@
 #define XAP_PREF_DEFAULT_AllowCustomToolbars		 "1"
 
 #define XAP_PREF_KEY_AutoLoadPlugins				 "AutoLoadPlugins"
-#define XAP_PREF_DEFAULT_AutoLoadPlugins			 "1"				 
+#define XAP_PREF_DEFAULT_AutoLoadPlugins			 "1"
 
 #define XAP_PREF_KEY_ToolbarNumEntries "Toolbar_NumEntries_"
 #define XAP_PREF_KEY_ToolbarID "Toolbar_ID_"
@@ -145,12 +145,10 @@ dcl(SmartQuotesEnable)
 dcl(UseSuffix)
 dcl(DefaultPageSize)
 
-#ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
 dcl(UseContextGlyphs)
 dcl(SaveContextGlyphs)
 dcl(UseHebrewContextGlyphs)
-#endif
 
 dcl(AutoSaveFile)
 dcl(AutoSaveFilePeriod)

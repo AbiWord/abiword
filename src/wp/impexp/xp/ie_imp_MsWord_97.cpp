@@ -2,20 +2,20 @@
  * Copyright (C) 1998-2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
  * Copyright (C) 2001 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -62,15 +62,7 @@
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
 
-//
-// Just FYI, "dir" and "dom-dir" only get set if BIDI_ENABLED is set.
-// Regardless of BIDI_ENABLED, if CHP::fBidi == 1, the BiDi versions
-// Of the ico, hps, ftc, lid, etc... are used in place of their "normal"
-// Counterparts
-//
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
 
 //
 // Forward decls. to wv's callbacks
@@ -110,7 +102,7 @@ static Doc_Color_t word_colors [][3] = {
 //
 // Field Ids that are useful later for mapping
 //
-typedef enum { 
+typedef enum {
 	F_TIME,
 	F_DATE,
 	F_EDITTIME,
@@ -201,7 +193,7 @@ s_mapPageIdToString (UT_uint16 id)
 
 /*!
   Surprise, surprise, there are more list numerical formats than the 5 the
-  MS documentation states happens to mention, so here I will put what I found 
+  MS documentation states happens to mention, so here I will put what I found
   out (latter we will move it to some better place)
 */
 typedef enum
@@ -214,7 +206,7 @@ typedef enum
   WLNF_LOWER_LETTER    = 4,
   WLNF_ORDINAL		   = 5,
   WLNF_BULLETS		   = 23,
-  WLNF_HEBREW_NUMBERS  = 45  
+  WLNF_HEBREW_NUMBERS  = 45
 } MSWordListIdType;
 
 typedef struct{
@@ -245,10 +237,9 @@ s_mapDocToAbiListId (MSWordListIdType id)
 	case WLNF_BULLETS: // bullet list
 	  return "5";
 
-#ifdef BIDI_ENABLED
 	case WLNF_HEBREW_NUMBERS:
 	  return "129";
-#endif
+
 	case WLNF_ORDINAL: // ordinal
 	default:
 	  return "0";
@@ -279,9 +270,9 @@ s_mapDocToAbiListDelim (MSWordListIdType id)
 	  return "%L";
 
 	case WLNF_ORDINAL: // ordinal
-#ifdef BIDI_ENABLED
+
 	case WLNF_HEBREW_NUMBERS:
-#endif
+
 	default:
 	  return "%L.";
 	}
@@ -348,7 +339,7 @@ s_fieldFontForListStyle (MSWordListIdType id)
 /****************************************************************************/
 /****************************************************************************/
 
-UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf, 
+UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 												  UT_uint32 iNumbytes)
 {
 	char * magic	= 0;
@@ -428,7 +419,7 @@ UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeSuffix (const char * szSuffix)
 {
 	// We recognize both word documents and their template versions
-	if (!UT_stricmp(szSuffix,".doc") || 
+	if (!UT_stricmp(szSuffix,".doc") ||
 			!UT_stricmp(szSuffix,".dot"))
 	  return UT_CONFIDENCE_PERFECT;
 	return UT_CONFIDENCE_ZILCH;
@@ -493,9 +484,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bIsLower(false),
 	m_bInSect(false),
 	m_bInPara(false),
-#ifdef BIDI_ENABLED
 	m_bPrevStrongCharRTL(false),
-#endif
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
@@ -521,23 +510,23 @@ static UT_String _getPassword (XAP_Frame * pFrame)
   if ( pFrame )
     {
       pFrame->raise ();
-      
+
       XAP_DialogFactory * pDialogFactory
 	= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-      
+
       XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
       UT_ASSERT(pDlg);
-      
+
       pDlg->runModal (pFrame);
-      
+
       XAP_Dialog_Password::tAnswer ans = pDlg->getAnswer();
       bool bOK = (ans == XAP_Dialog_Password::a_OK);
-      
+
       if (bOK)
 	password = pDlg->getPassword ();
-      
+
       UT_DEBUGMSG(("Password is %s\n", password.c_str()));
-      
+
       pDialogFactory->releaseDialog(pDlg);
     }
 
@@ -558,19 +547,19 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
   wvParseStruct ps;
-  
+
   int ret = wvInitParser (&ps, (char *)szFilename);
   const char * password = NULL;
-  
+
   // HACK!!
   bool decrypted = false ;
-  
+
   if (ret & 0x8000)		/* Password protected? */
     {
       UT_String pass = GetPassword();
       if ( pass.size () != 0 )
 	password = pass.c_str();
-      
+
       if ((ret & 0x7fff) == WORD8)
 	{
 	  ret = 0;
@@ -610,29 +599,29 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	    }
 	}
     }
-  
+
   if (ret)
     ErrCleanupAndExit(UT_IE_BOGUSDOCUMENT);
-  
+
   // register ourself as the userData
   ps.userData = this;
-  
+
   // register callbacks
   wvSetElementHandler (&ps, eleProc);
   wvSetCharHandler (&ps, charProc);
   wvSetSpecialCharHandler(&ps, specCharProc);
   wvSetDocumentHandler (&ps, docProc);
-  
+
   wvText(&ps);
-  
+
   // HACK - this will do until i sort out some global stream ugliness in wv
   if ( !decrypted )
     wvOLEFree();
-  
+
   // We can't be in a good state if we didn't add any sections!
   if (m_nSections == 0)
     return UT_IE_BOGUSDOCUMENT;
-  
+
   return UT_OK;
 }
 
@@ -967,7 +956,6 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
 
-#ifdef BIDI_ENABLED
 	// deal with the thorny problem of mirror characters
 	if(m_bPrevStrongCharRTL)
 	{
@@ -975,21 +963,18 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		if(fribidi_get_mirror_char((FriBidiChar)eachchar, &mirror_char))
 			eachchar = (U16)mirror_char;
 	}
-#endif
-	
+
 	//
 	// Append the character to our character buffer
 	//
 	this->_appendChar ((UT_UCSChar) eachchar);
 	m_iDocPosition++;
 
-#ifdef BIDI_ENABLED
 	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
 	if(FRIBIDI_IS_STRONG(cType))
 	{
 		m_bPrevStrongCharRTL = FRIBIDI_IS_RTL(cType);
 	}
-#endif
 	return 0;
 }
 
@@ -1119,31 +1104,31 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 			else
 			{
 				xxx_UT_DEBUGMSG(("nooffspa was <= 0 -- ignoring"));
-			} 
+			}
 		}
 		else
 		{
 			UT_DEBUGMSG(("pre Word8 0x08 graphic -- unsupported at the moment"));
-			fdoa = wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos, 
+			fdoa = wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos,
 								   ps->nooffdoa);
-			
-			// TODO: do something with the data in this fdoa someday... 	 
+
+			// TODO: do something with the data in this fdoa someday...
 		}
-		
+
 		return 0;
 	}
-	
+
 	return 0;
 }
 
-int IE_Imp_MsWord_97::_beginComment(wvParseStruct *ps, UT_uint32 tag, 
+int IE_Imp_MsWord_97::_beginComment(wvParseStruct *ps, UT_uint32 tag,
 					void *props, int dirty)
 {
   UT_DEBUGMSG(("DOM: begin comment\n"));
   return 0;
 }
 
-int IE_Imp_MsWord_97::_endComment(wvParseStruct *ps, UT_uint32 tag, 
+int IE_Imp_MsWord_97::_endComment(wvParseStruct *ps, UT_uint32 tag,
 				  void *props, int dirty)
 {
   UT_DEBUGMSG(("DOM: begin comment\n"));
@@ -1151,7 +1136,7 @@ int IE_Imp_MsWord_97::_endComment(wvParseStruct *ps, UT_uint32 tag,
 }
 
 
-int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag, 
+int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 							   void *props, int dirty)
 {
 	//
@@ -1207,44 +1192,44 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 	// flush any character runs
 	this->_flush ();
-		
+
 	// page-margin-left
 	UT_String_sprintf(propBuffer,
-		"page-margin-left:%s;", 
+		"page-margin-left:%s;",
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaLeft) / 1440), "1.4"));
 	props += propBuffer;
-	
+
 	// page-margin-right
 	UT_String_sprintf(propBuffer,
-		"page-margin-right:%s;", 
+		"page-margin-right:%s;",
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaRight) / 1440), "1.4"));
 	props += propBuffer;
-	
+
 	// page-margin-top
 	UT_String_sprintf(propBuffer,
-		"page-margin-top:%s;", 
+		"page-margin-top:%s;",
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaTop) / 1440), "1.4"));
 	props += propBuffer;
-	
+
 	// page-margin-bottom
 	UT_String_sprintf(propBuffer,
-		"page-margin-bottom:%s;", 
+		"page-margin-bottom:%s;",
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaBottom) / 1440), "1.4"));
 	props += propBuffer;
-	
+
 	// page-margin-header
 	UT_String_sprintf(propBuffer,
 		"page-margin-header:%s;",
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrTop) / 1440), "1.4"));
 	props += propBuffer;
-	
+
 	// page-margin-footer
 	UT_String_sprintf(propBuffer,
 		"page-margin-footer:%s;",
-		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrBottom) / 1440), 
+		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrBottom) / 1440),
 						  "1.4"));
 	props += propBuffer;
-	
+
 	if(asep->fPgnRestart)
 	  {
 		// set to 1 when page numbering should be restarted at the beginning of this section
@@ -1266,8 +1251,8 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 		// columns gap
 		UT_String_sprintf(propBuffer,
-				"column-gap:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaColumns) / 1440), 
+				"column-gap:%s;",
+				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaColumns) / 1440),
 												  "1.4"));
 		props += propBuffer;
 	}
@@ -1277,7 +1262,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	{
 		props += "column-line:on;";
 	}
-	
+
 	// space after section (gutter)
 	UT_String_sprintf(propBuffer,
 			"section-space-after:%s",
@@ -1313,7 +1298,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 		const char * paper_name = s_mapPageIdToString (asep->dmPaperReq);
 
-		if (paper_name) 
+		if (paper_name)
 		  {
 			// we found a paper name, let's use it
 			getDoc()->m_docPageSize.Set (paper_name);
@@ -1368,27 +1353,27 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 		UT_UCSChar ucs = UCS_FF;
 		switch (asep->bkc) {
-		case 1: 
+		case 1:
 			ucs = UCS_VTAB;
 			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
-			
+
 		case 2:
 			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
-			
+
 		case 3: // TODO: handle me better (not even)
 			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
-			
+
 		case 4: // TODO: handle me better (not odd)
 			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
-			
+
 		case 0:
 		default:
 			break;
-		}		
+		}
 	}
 
 	return 0;
@@ -1396,11 +1381,11 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
 								void *prop, int dirty)
-{		
+{
 	// if we're at the end of a section, we need to check for a section mark
 	// at the end of our character stream and remove it (to prevent page breaks
 	// between sections)
-	if (m_pTextRun.size() && 
+	if (m_pTextRun.size() &&
 		m_pTextRun[m_pTextRun.size()-1] == UCS_FF)
 	  {
 		m_pTextRun[m_pTextRun.size()-1] = 0;
@@ -1424,7 +1409,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// first, flush any character data in any open runs
 	this->_flush ();
 
-#ifdef BIDI_ENABLED
 	xxx_UT_DEBUGMSG(("#TF: _beginPara: apap->fBidi %d\n",apap->fBidi));
 
 	if(apap->fBidi == 1)
@@ -1438,7 +1422,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	} else {
 		props += "dom-dir:ltr;";
 	}
-#endif
 
 	// paragraph alignment/justification
 	switch(apap->jc)
@@ -1509,8 +1492,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// margin-right
 	if (apap->dxaRight) {
 		UT_String_sprintf(propBuffer,
-				"margin-right:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaRight) / 1440), 
+				"margin-right:%s;",
+				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaRight) / 1440),
 												  "1.4"));
 		props += propBuffer;
 	}
@@ -1518,8 +1501,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// margin-left
 	if (apap->dxaLeft) {
 		UT_String_sprintf(propBuffer,
-				"margin-left:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft) / 1440), 
+				"margin-left:%s;",
+				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft) / 1440),
 												  "1.4"));
 		props += propBuffer;
 	}
@@ -1527,8 +1510,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// margin-left first line (indent)
 	if (apap->dxaLeft1) {
 		UT_String_sprintf(propBuffer,
-				"text-indent:%s;", 
-				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft1) / 1440), 
+				"text-indent:%s;",
+				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft1) / 1440),
 												  "1.4"));
 		props += propBuffer;
 	}
@@ -1553,7 +1536,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
 			propBuffer += UT_String_sprintf(
 							"%s/",
-							UT_convertInchesToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab]) 
+							UT_convertInchesToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab])
 												   / 1440), "1.4"));
 			switch (apap->rgtbd[iTab].jc) {
 			case 1:
@@ -1564,7 +1547,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 				break;
 			case 3:
 				propBuffer += "D,";
-				break;	
+				break;
 			case 4:
 				propBuffer += "B,";
 				break;
@@ -1760,7 +1743,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  myPAPX.cb = mygPAPX_count;
 	  myPAPX.grpprl = mygPAPX;
 	  myPAPX.istd = 4095; // no style
-	  
+
 	  myCHPX.cbGrpprl = mygCHPX_count;
 	  myCHPX.grpprl = mygCHPX;
 	  myCHPX.istd = 4095; // no style
@@ -1781,15 +1764,15 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  // a hack -- see the note on myListId below
 	  myListId += myLVLF->nfc;
 	  myListId += apap->ilvl;
-	  
+
 	  /*
 		IMPORTANT now we have the list formatting sutff retrieved; it is found in several
 		different places:
 		apap->ilvl - the level of this list (0-8)
-		
+
 		myStartAt	- the value at which the numbering for this listshould start
 		(i.e., the number of the first item on the list)
-		
+
 		myListId	- the id of this list, we need this to know to which list this
 		paragraph belongs; unfortunately, there seem to be some cases where separate
 		lists *share* the same id, for instance when two lists, of different formatting,
@@ -1800,45 +1783,45 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list elements on the same level, while in Word the id is that of the entire list. The
 		easiest way to tranform the Word id to AW id is to add the level to the id, which
 		is what has been done above
-		
+
 		PAPX		- the formatting information that needs to be added to the format
 		of this list
-		
+
 		CHPX		- the formatting of the list number
-		
+
 		myNumberStr - the actual number string to display (XCHAR *); we probably need
 		this to work out the number separator, since there does not seem
 		to be any reference to this anywhere
-		
+
 		myNumberStr_count - length of the number string
-		
+
 		myLVLF->nfc - number format (see the enum below)
-		
+
 		myLVLF->jc	- number alignment [0: lft, 1: rght, 2: cntr]
-		
+
 		myLVLF->ixchFollow - what character stands between the number and the para
 		[0:= tab, 1: spc, 2: none]
-		
+
 	  */
 	  UT_DEBUGMSG(("list: id %d \n",myListId));
 	  UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
 	  UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
 	  UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
 	  UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
-	  
+
 	  // If a given list id has already been defined, appending a new list with
 	  // same values will have a harmless effect
 
 	  // id, parentid, type, start value, list-delim, NULL
 	  const XML_Char * list_atts[13];
-	  
+
 
 	  // we will use this to keep track of how many entries of given level we have had
 	  // every time we get here, we increase the counter for all levels lower that ours
 	  // then we will add the counter for our level to myListId; this way subsections of
 	  // the list separated by a higher level list entry will have different id's
-	  
-	  
+
+
 	  for(j = apap->ilvl + 1; j < 9; j++)
 		  m_iListIdIncrement[j]++;
 
@@ -1849,7 +1832,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  UT_String_sprintf(propBuffer, "%d", myListId);
 	  szListId = propBuffer;
 	  list_atts[1] = szListId.c_str();
-	  
+
 	  // parent id
 	  list_atts[2] = "parentid";
 
@@ -1872,13 +1855,13 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  // list type
 	  list_atts[4] = "type";
 	  list_atts[5] = s_mapDocToAbiListId ((MSWordListIdType)myLVLF->nfc);
-	  
+
 	  // start value
 	  list_atts[6] = "start-value";
 	  UT_String_sprintf(propBuffer, "%d", myStartAt);
 	  szStartValue = propBuffer;
 	  list_atts[7] = szStartValue.c_str();
-	  
+
 	  // list delimiter
 	  list_atts[8] = "list-delim";
 	  list_atts[9] = s_mapDocToAbiListDelim ((MSWordListIdType)myLVLF->nfc);
@@ -1887,22 +1870,22 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
 	  szLevel = propBuffer;
 	  list_atts[11] = szLevel.c_str();
-	  
+
 	  // NULL
 	  list_atts[12] = 0;
 
 	  // now add this to our vector of lists
 	  ListIdLevelPair * llp = new ListIdLevelPair;
 	  llp->listId = myListId;
-	  llp->level = apap->ilvl; 
+	  llp->level = apap->ilvl;
 	  m_vLists.addItem((void*)llp);
 
 	  getDoc()->appendList(list_atts);
 	  UT_DEBUGMSG(("DOM: appended a list\n"));
-	  
-	  // TODO: merge in list properties and such here with the variable 'props', 
+
+	  // TODO: merge in list properties and such here with the variable 'props',
 	  // such as list-style, field-font, ...
-	  
+
 	  // start-value
 	  props += "start-value:";
 	  props += szStartValue;
@@ -1912,7 +1895,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  props += "list-style:";
 	  props += s_mapDocToAbiListStyle ((MSWordListIdType)myLVLF->nfc);
 	  props += ";";
-	  
+
 	  // field-font
 	  props += "field-font:";
 	  props += s_fieldFontForListStyle ((MSWordListIdType)myLVLF->nfc);
@@ -1947,7 +1930,7 @@ list_error:
 
 	// NULL
 	propsArray[i] = 0;
-	
+
 	if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
@@ -1995,7 +1978,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 								  void *prop, int dirty)
 {
 	CHP *achp = static_cast <CHP *>(prop);
-	
+
 	XML_Char * propsArray[3];
 	UT_String propBuffer;
 	UT_String props;
@@ -2038,8 +2021,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		getDoc()->setEncodingName(codepage.c_str());
 	else if (getDoc()->getEncodingName() != codepage)
 		getDoc()->setEncodingName(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
-	
-#ifdef BIDI_ENABLED
+
 	// after several hours of playing with this, I think I now undertand
 	// how achp->fBidi works:
 	// if it is 0, then treat the text as if it was LTR
@@ -2050,14 +2032,14 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// it. Instead we will use special value "nobidi", which will be processed
 	// in our fp_TextRun, which will either remove it, or translate it to
 	// LTR override, depending on the text.
-	
+
 	// unfortunately there were problems with the code in fp_TextRun, so
 	// at the moment we will simply set "ltr"
-	
+
 	// if this segment of text is not bidi and it follows a segement that is
 	// not bidi either, we will do nothing, but if the previous segement was
 	// not bidi, we will set the nobidi value
-	
+
 	xxx_UT_DEBUGMSG(("#TF: _beginChar: [0x%x] achp->fBidi %d, m_bPrevStrongCharRTL %d\n",achp,achp->fBidi,m_bPrevStrongCharRTL));
 	if (!achp->fBidi && m_bPrevStrongCharRTL)
 		props += "dir-override:ltr;";
@@ -2066,31 +2048,30 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	else if (achp->fBidi && !m_bPrevStrongCharRTL)
 		props += "dir-override:rtl;";
 #endif
-#endif
 
 	// bold text
 	bool fBold = (achp->fBidi ? achp->fBoldBidi : achp->fBold);
-	if (fBold) { 
+	if (fBold) {
 		props += "font-weight:bold;";
 	}
-		
+
 	// italic text
 	bool fItalic = (achp->fBidi ? achp->fItalicBidi : achp->fItalic);
 	if (fItalic) {
 		props += "font-style:italic;";
 	}
-	
+
 	// foreground color
 	U8 ico = (achp->fBidi ? achp->icoBidi : achp->ico);
 	if (ico) {
-		UT_String_sprintf(propBuffer, 
-				"color:%02x%02x%02x;", 
-				word_colors[ico-1][0], 
-				word_colors[ico-1][1], 
+		UT_String_sprintf(propBuffer,
+				"color:%02x%02x%02x;",
+				word_colors[ico-1][0],
+				word_colors[ico-1][1],
 				word_colors[ico-1][2]);
 		props += propBuffer;
 	}
-	
+
 	// underline and strike-through
 	if (achp->fStrike || achp->kul) {
 		props += "text-decoration:";
@@ -2102,13 +2083,13 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 			props += "line-through;";
 		}
 	}
-	
+
 	// background color
 	if (achp->fHighlight) {
-		UT_String_sprintf(propBuffer, 
-				"bgcolor:%02x%02x%02x;", 
-				word_colors[achp->icoHighlight-1][0], 
-				word_colors[achp->icoHighlight-1][1], 
+		UT_String_sprintf(propBuffer,
+				"bgcolor:%02x%02x%02x;",
+				word_colors[achp->icoHighlight-1][0],
+				word_colors[achp->icoHighlight-1][1],
 				word_colors[achp->icoHighlight-1][2]);
 		props += propBuffer;
 	}
@@ -2123,7 +2104,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// font size (hps is half-points)
 	// I have seen a bidi doc that had hpsBidi == 0, and the actual size in hps
 	U16 hps = (achp->fBidi &&  achp->hpsBidi ? achp->hpsBidi : achp->hps);
-	UT_String_sprintf(propBuffer, 
+	UT_String_sprintf(propBuffer,
 			"font-size:%dpt;", (int)(hps/2));
 	props += propBuffer;
 
@@ -2153,7 +2134,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		{
 			FREEP (fname);
 			fname = UT_strdup (f ? f : "helvetic");
-		}			   
+		}
 	}
 
 	// there are times when we should use the third, Other font,

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -21,7 +21,7 @@
  *                 ThizLinux Laboratory Ltd.  http://www.thizlinux.com/
  *                 Anthony Fok <anthony@thizlinux.com>
  */
- 
+
 /*****************************************************************
 ******************************************************************
 ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
@@ -118,11 +118,9 @@ BeginSetEnc(zh,CN,true,"GB2312")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"减小缩进",	tb_text_unindent_xpm,	NULL, "减小缩进")
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"执行脚本",	tb_script_play_xpm, 	NULL, "执行脚本")
 
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"强制文字左至右排",	tb_text_direction_ltr_xpm,	NULL, "强制文字从左至右排列")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,        "强制文字右至左排",	tb_text_direction_rtl_xpm,	NULL, "强制文字从右至左排列")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"段落方向",	tb_text_dom_direction_rtl_xpm,	NULL, "改变段落文字的主要方向")
-#endif
 
 	// ... add others here ...
 

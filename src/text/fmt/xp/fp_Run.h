@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -33,10 +33,8 @@
 #include "ut_assert.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
-
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
+
 class UT_GrowBuf;
 class fl_BlockLayout;
 class fp_Line;
@@ -100,7 +98,7 @@ enum FPRUN_CLEAR_SCREEN
 };
 
 /*
-	fp_Run represents a contiguous homogenous chunk on a single line.  
+	fp_Run represents a contiguous homogenous chunk on a single line.
 	This file also defines the following subclasses:
 
 		fp_TabRun
@@ -115,9 +113,9 @@ enum FPRUN_CLEAR_SCREEN
 		fp_BookmarkRun
 		fp_HyperlinkRun
 
-	As far as the formatter's concerned, each subclass behaves somewhat 
-	differently, but they can all be treated like rectangular blocks to 
-	be arranged.  
+	As far as the formatter's concerned, each subclass behaves somewhat
+	differently, but they can all be treated like rectangular blocks to
+	be arranged.
 */
 class ABI_EXPORT fp_Run
 {
@@ -136,13 +134,13 @@ public:
 	UT_sint32		getWidth() const				{ return m_iWidth; }
 	UT_uint32		getAscent() const				{ return m_iAscent; }
 	UT_uint32		getDescent() const 				{ return m_iDescent; }
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_sint32		getHeightInLayoutUnits() const	{ return m_iHeightLayoutUnits; }
 	UT_sint32		getWidthInLayoutUnits() const	{ return m_iWidthLayoutUnits; }
 	UT_uint32		getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
 	UT_uint32		getDescentInLayoutUnits() const	{ return m_iDescentLayoutUnits; }
 #endif
-	
+
 	fp_Run* 		getNext() const					{ return m_pNext; }
 	fp_Run*			getPrev() const					{ return m_pPrev; }
 	UT_uint32		getBlockOffset() const			{ return m_iOffsetFirst; }
@@ -160,7 +158,7 @@ public:
 	UT_RGBColor *           getPageColor(void);
 
 	virtual bool			hasLayoutProperties(void) const;
-	
+
 	void					setLine(fp_Line*);
 	void					setBlock(fl_BlockLayout *);
 	void					setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
@@ -174,12 +172,9 @@ public:
 	bool					isFirstRunOnLine(void) const;
 	bool					isLastRunOnLine(void) const;
 	bool					isOnlyRunOnLine(void) const;
-#ifdef BIDI_ENABLED
 	bool					isFirstVisRunOnLine(void) const;
 	bool					isLastVisRunOnLine(void) const;
 	void					markDrawBufferDirty() {m_bRefreshDrawBuffer = true;}
-#endif
-
 	void					draw(dg_DrawArgs*);
 	void            		clearScreen(bool bFullLineHeightRect = false);
 	void					markAsDirty(void)	{ m_bDirty = true; }
@@ -188,7 +183,7 @@ public:
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual	bool			recalcWidth(void);
-	
+
 	virtual void			_draw(dg_DrawArgs*) = 0;
     void                    _drawTextLine(UT_sint32, UT_sint32, UT_uint32, UT_uint32, UT_UCSChar *);
 	virtual void       		_clearScreen(bool bFullLineHeightRect) = 0;
@@ -199,7 +194,7 @@ public:
 	virtual bool			alwaysFits(void) const { return false; }
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }
 #endif
 	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
@@ -227,7 +222,6 @@ public:
 	UT_sint32		        getMinOverline(void) ;
 	UT_sint32               getToplineThickness(void);
 
-#ifdef BIDI_ENABLED
 	virtual FriBidiCharType	getDirection() const {return m_iDirection; };
 	FriBidiCharType			getVisDirection();
 	virtual void            setDirection(FriBidiCharType iDirection = FRIBIDI_TYPE_WS);
@@ -239,12 +233,11 @@ public:
 	//virtual void            setDirectionProperty(FriBidiCharType dir);
 	fp_Run *				getNextVisual();
 	fp_Run *				getPrevVisual();
-#endif	
 
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
-#endif	
-	
+#endif
+
 protected:
 	void					_inheritProperties(void);
 	fp_Run*					_findPrevPropertyRun(void) const;
@@ -272,24 +265,22 @@ protected:
 	GR_Graphics*			m_pG;
 	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field*				m_pField;
-#ifdef BIDI_ENABLED
 	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
 	FriBidiCharType			m_iVisDirection;
 	bool 					m_bRefreshDrawBuffer;
-#endif
 
 	// the run highlight color. If the property is transparent use the page color
 	UT_RGBColor             m_colorHL;
 	// A local cache of the page color. This makes clearscreen() a bit faster
 	UT_RGBColor             m_colorPG;
 
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	GR_Font * m_pScreenFont;
 	GR_Font * m_pLayoutFont;
 #else
 	PangoFont * m_pPangoFont;
-#endif	
-	
+#endif
+
 	bool	m_bRecalcWidth;
 
 //
@@ -425,7 +416,7 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
-	
+
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -443,9 +434,9 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 //
-// Tomas this breaks line breaking.... 
+// Tomas this breaks line breaking....
 //	virtual bool			doesContainNonBlankData(void) const { return false; }	// Things like text whould return false if it is all spaces.
-	
+
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
@@ -461,22 +452,22 @@ class ABI_EXPORT fp_BookmarkRun : public fp_Run
 {
 public:
 	fp_BookmarkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
-	
+
 	bool 				isStartOfBookmark() const {return m_bIsStart;};
 	const XML_Char * 	getName() const {return m_pName;};
 	bool 				isComrade(fp_BookmarkRun *pBR) const;
-	
+
 	virtual void lookupProperties(void);
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
 	virtual bool letPointPass(void) const;
-	
+
 	virtual void mapXYToPosition(UT_sint32 x,
 								 UT_sint32 y,
 								 PT_DocPosition& pos,
 								 bool& bBOL,
 								 bool& bEOL);
-								
+
 	virtual void findPointCoords(UT_uint32 iOffset,
 								 UT_sint32& x,
 								 UT_sint32& y,
@@ -484,8 +475,8 @@ public:
 								 UT_sint32& y2,
 								 UT_sint32& height,
 								 bool& bDirection);
-	
-	
+
+
 private:
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
@@ -503,18 +494,18 @@ public:
 	~fp_HyperlinkRun();
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
 	const XML_Char * 	getTarget() const {return (const XML_Char *)m_pTarget;};
-	
+
 	virtual void lookupProperties(void);
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
 	virtual bool letPointPass(void) const;
-	
+
 	virtual void mapXYToPosition(UT_sint32 x,
 								 UT_sint32 y,
 								 PT_DocPosition& pos,
 								 bool& bBOL,
 								 bool& bEOL);
-								
+
 	virtual void findPointCoords(UT_uint32 iOffset,
 								 UT_sint32& x,
 								 UT_sint32& y,
@@ -522,8 +513,8 @@ public:
 								 UT_sint32& y2,
 								 UT_sint32& height,
 								 bool& bDirection);
-	
-	
+
+
 private:
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
@@ -558,7 +549,7 @@ protected:
 #ifndef WITH_PANGO
 	UT_sint32               m_iImageWidthLayoutUnits;
 	UT_sint32               m_iImageHeightLayoutUnits;
-#endif	
+#endif
 	UT_String               m_WidthProp;
 	UT_String               m_HeightProp;
 };
@@ -614,7 +605,7 @@ extern fp_FieldData fp_FieldFmts[];
 // (in 1/2 seconds)
 #define FIELD_UPDATE_ENDNOTE       3
 #define FIELD_UPDATE_TIME          1
-#define FIELD_UPDATE_DATE        240 
+#define FIELD_UPDATE_DATE        240
 #define FIELD_UPDATE_PAGE         20
 #define FIELD_UPDATE_LINE_COUNT   10
 #define FIELD_UPDATE_WORD_COUNT    4
@@ -638,13 +629,13 @@ public:
 	virtual bool			isSuperscript(void) const;
 	virtual bool			isSubscript(void) const;
 
-	bool					_setValue(UT_UCSChar *p_new_value);					
+	bool					_setValue(UT_UCSChar *p_new_value);
 
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);
 	virtual UT_UCSChar *    getValue(void) const { return (UT_UCSChar *) m_sFieldValue;}
 	virtual UT_uint32		needsFrequentUpdates() {return 0;}
-	
+
 protected:
 	virtual void			_draw(dg_DrawArgs*) {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
@@ -656,7 +647,7 @@ protected:
 #else
 	//PangoFont *           m_pPangoFont; // I do not think we need this, just refer to fp_Run
 #endif
-	
+
 	UT_RGBColor				m_colorFG;
 	UT_RGBColor				m_colorBG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
@@ -674,13 +665,13 @@ protected:
 class ABI_EXPORT fp_FieldEndnoteRefRun : public fp_FieldRun
 {
 public:
-	
+
 	fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
-#if 0	
+#if 0
 	UT_uint32				getPID() const {return m_iPID;}
 private:
 	UT_uint32 m_iPID;
@@ -690,13 +681,13 @@ private:
 class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
 {
 public:
-	
+
 	fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
-#if 0	
+#if 0
 	UT_uint32				getPID() const {return m_iPID;}
 private:
 	UT_uint32 m_iPID;
@@ -706,7 +697,7 @@ private:
 class ABI_EXPORT fp_FieldTimeRun : public fp_FieldRun
 {
 public:
-	
+
 	fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
@@ -717,7 +708,7 @@ public:
 class ABI_EXPORT fp_FieldPageNumberRun : public fp_FieldRun
 {
 public:
-	
+
 	fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
@@ -728,7 +719,7 @@ public:
 class ABI_EXPORT fp_FieldPageReferenceRun : public fp_FieldRun
 {
 public:
-	
+
 	fp_FieldPageReferenceRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
@@ -739,7 +730,7 @@ public:
 class ABI_EXPORT fp_FieldPageCountRun : public fp_FieldRun
 {
 public:
-	
+
 	fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);

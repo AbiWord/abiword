@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -41,10 +41,9 @@ struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
 /*
-	fp_Line represents a single line.  A fp_Line is a collection of 
+	fp_Line represents a single line.  A fp_Line is a collection of
 	Runs.
 */
-#ifdef BIDI_ENABLED
 //these are the initial sizes of the temp buffers
 #define TEMP_LINE_BUFFER_SIZE 512
 
@@ -68,14 +67,6 @@ struct dg_DrawArgs;
 */
 #define USE_STATIC_MAP
 
-//#define FP_LINE_DIRECTION_USED_NONE 0X00
-//#define FP_LINE_DIRECTION_USED_LTR	0X01
-//#define FP_LINE_DIRECTION_USED_RTL  0x02
-//#define FP_LINE_DIRECTION_USED_BOTH 0x04
-
-#endif //BIDI_ENABLED
-
-
 enum FL_WORKING_DIRECTION {WORK_FORWARD = 1,WORK_BACKWARD = -1,WORK_CENTER = 0};
 enum FL_WHICH_TABSTOP {USE_PREV_TABSTOP,USE_NEXT_TABSTOP,USE_FIXED_TABWIDTH};
 
@@ -92,11 +83,11 @@ public:
 	//! Return height of line as it will appear on screen
 	inline UT_sint32 			getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
 	inline UT_sint32 			getHeightInLayoutUnits(void) const 		{ return m_iHeightLayoutUnits; }
-	
+
 	inline UT_sint32			getX(void) const 			{ return m_iX; }
 	inline UT_sint32			getXInLayoutUnits(void) const 	{ return m_iXLayoutUnits; }
 	inline UT_sint32			getY(void) const 			{ return m_iY; }
-	
+
 	inline fp_Line*				getNext(void) const 		{ return m_pNext; }
 	inline fp_Line*    			getPrev(void) const 		{ return m_pPrev; }
 
@@ -107,7 +98,7 @@ public:
 	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
 	UT_sint32                   getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
 	inline UT_sint32			getColumnGap(void) const	{ return m_pContainer->getColumnGap(); }
-	
+
 	void				setAssignedScreenHeight(UT_sint32);
 
 	void				setMaxWidth(UT_sint32);
@@ -126,30 +117,30 @@ public:
 	fp_Run *    getRunFromIndex( UT_uint32 runIndex);
 	bool		containsForcedColumnBreak(void) const;
 	bool		containsForcedPageBreak(void) const;
-	
+
 	void        updateBackgroundColor();
 	void 		addRun(fp_Run*);
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
 	void        insertRun(fp_Run*);
     bool     removeRun(fp_Run*, bool bTellTheRunAboutIt=false);
-	
+
 	inline	bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
 	inline	fp_Run*     getFirstRun(void) const			{ if(countRuns() > 0)  return ((fp_Run*) m_vecRuns.getFirstItem()); else return NULL; }
 	fp_Run*     getLastRun(void) const ;
 	fp_Run*     getLastTextRun(void) const ;
-	
+
 	fp_Run*	calculateWidthOfRun(UT_sint32 &iXLayoutUnits,
 								UT_uint32 iIndxVisual,
 								FL_WORKING_DIRECTION eWorkingDirection,
 								FL_WHICH_TABSTOP eUseTabStop);
-							
+
 	void		getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirection, FL_WHICH_TABSTOP &eUseTabStop) const;
 
 	inline	bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
 	inline	bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }
-	
+
 	void		remove(void);
 	UT_sint32	getMarginBefore(void) const;
 	UT_sint32	getMarginAfter(void) const;
@@ -177,12 +168,7 @@ public:
 	UT_sint32	calculateWidthOfTrailingSpacesInLayoutUnits(void);
 	void		resetJustification();
 	void		distributeJustificationAmongstSpaces(UT_sint32 iAmount);
-	UT_uint32	countJustificationPoints(void)
-#ifndef BIDI_ENABLED
-                                              const;
-#else
-	                                               ;
-#endif
+	UT_uint32	countJustificationPoints(void);
 
 	bool		isLastCharacter(UT_UCSChar Character) const;
 
@@ -190,12 +176,11 @@ public:
 	bool		findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
 	bool		findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
 	bool		findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
-	
+
 	void		setNeedsRedraw(void);
 	//void		setRedoLayout(void){ m_bRedoLayout = true; }
 	bool		needsRedraw(void) { return m_bNeedsRedraw; }
 	void		redrawUpdate(void);
-#ifdef BIDI_ENABLED
 	fp_Run *	getLastVisRun();
 	fp_Run *	getFirstVisRun();
 	UT_uint32	getVisIndx(fp_Run* pRun);
@@ -205,32 +190,27 @@ public:
 	void		removeDirectionUsed(FriBidiCharType dir, bool bRefreshMap = true);
 	void		changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir, bool bRefreshMap = true);
 
-
-#endif
-
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
-#endif	
+#endif
 
 protected:
 	void 	_calculateWidthOfRun(UT_sint32 &iX,
-							  UT_sint32 &iXLayoutUnits,
-							  fp_Run * pRun,
-							  UT_uint32 iIndx,
-							  UT_uint32 iCountRuns,
-							  FL_WORKING_DIRECTION eWorkingDirection,
-							  FL_WHICH_TABSTOP eUseTabStop
-#ifdef BIDI_ENABLED
-							  ,FriBidiCharType iDomDirection
-#endif							
-							  );
+								 UT_sint32 &iXLayoutUnits,
+								 fp_Run * pRun,
+								 UT_uint32 iIndx,
+								 UT_uint32 iCountRuns,
+								 FL_WORKING_DIRECTION eWorkingDirection,
+								 FL_WHICH_TABSTOP eUseTabStop,
+								 FriBidiCharType iDomDirection
+								 );
 private:
 void		_splitRunsAtSpaces(void);
 
 
 	fl_BlockLayout*	m_pBlock;
 	fp_Container*	m_pContainer;
-	
+
 	UT_sint32	 	m_iWidth;
 	UT_sint32	 	m_iWidthLayoutUnits;
 	UT_sint32	 	m_iMaxWidth;
@@ -249,7 +229,7 @@ void		_splitRunsAtSpaces(void);
 	UT_sint32		m_iXLayoutUnits;
 	UT_sint32		m_iY;
 	UT_sint32		m_iYLayoutUnits;
-	
+
 	UT_Vector		m_vecRuns;
 
 	fp_Line*		m_pNext;
@@ -259,34 +239,32 @@ void		_splitRunsAtSpaces(void);
 	//bool			m_bRedoLayout;
 	static UT_sint32 * s_pOldXs;
 	static UT_uint32   s_iOldXsSize;
-	static UT_uint32   s_iClassInstanceCounter;	
-	
-#ifdef BIDI_ENABLED
+	static UT_uint32   s_iClassInstanceCounter;
+
 	UT_uint32       _getRunVisIndx(UT_uint32 indx);
 	UT_uint32       _getRunLogIndx(UT_uint32 indx);
-	UT_sint32       _createMapOfRuns();	
-	
+	UT_sint32       _createMapOfRuns();
+
 #ifdef USE_STATIC_MAP
 	static UT_Byte *   s_pEmbeddingLevels;
 	static UT_uint16 * s_pMapOfRunsL2V;
 	static UT_uint16 * s_pMapOfRunsV2L;
 	static UT_uint32 * s_pPseudoString;
-	
-	
+
+
 	static UT_uint32   s_iMapOfRunsSize;
 	static fp_Line   * s_pMapOwner;
 	bool            m_bMapDirty;
-#else	
+#else
 	UT_sint32  * 	m_pMapOfDirs;
 	UT_sint32  *    m_pMapOfRunsL2V;
 	UT_sint32  *    m_pMapOfRunsV2L;
-	
+
 	UT_uint32       m_iMapOfRunsSize;
 #endif
 	UT_uint32		m_iRunsRTLcount;
 	UT_uint32		m_iRunsLTRcount;
 	UT_sint32		m_iMaxDirLevel;
-#endif //BIDI_ENABLED
 };
 
 #endif /* FP_LINE_H */

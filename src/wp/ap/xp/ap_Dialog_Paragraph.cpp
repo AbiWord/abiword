@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -50,11 +50,11 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	m_answer = a_OK;
 	m_paragraphPreview = NULL;
 	m_pFrame = NULL;
-	
+
 	// determine unit system to use in this dialog
 	const XML_Char * szRulerUnits;
 	UT_ASSERT(m_pApp);
-	
+
 	XAP_Prefs* pPrefs = m_pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 
@@ -96,10 +96,8 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 		{id_CHECK_PAGE_BREAK,		(void*)check_INDETERMINATE},
 		{id_CHECK_SUPPRESS,			(void*)check_INDETERMINATE},
 		{id_CHECK_NO_HYPHENATE,		(void*)check_INDETERMINATE},
-		{id_CHECK_KEEP_NEXT,		(void*)check_INDETERMINATE}
-#ifdef BIDI_ENABLED		
-		,{id_CHECK_DOMDIRECTION,	(void*)check_TRUE}
-#endif		
+		{id_CHECK_KEEP_NEXT,		(void*)check_INDETERMINATE},
+		{id_CHECK_DOMDIRECTION,	(void*)check_TRUE}
 	};
 
 	for (unsigned int i = 0; i < NrElements(rgPairs); ++i)
@@ -130,11 +128,11 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 	// NOTICE : _set[thing]ItemValue() with the bToggleDirty flag
 	// NOTICE : set to false, because these are the "un-dirty"
 	// NOTICE : values.
-	
+
 	if (pProps[0])
 	{
 		const XML_Char * sz;
-		
+
 		sz = UT_getAttribute("text-align", pProps);
 		if (sz)
 		{
@@ -151,10 +149,10 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			else
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-			_setMenuItemValue(id_MENU_ALIGNMENT, t, op_INIT);			
+			_setMenuItemValue(id_MENU_ALIGNMENT, t, op_INIT);
 		}
-#ifdef BIDI_ENABLED		
-		sz = UT_getAttribute("dom-dir", pProps);						
+
+		sz = UT_getAttribute("dom-dir", pProps);
 		if (sz)
 		{
 			tCheckState t = check_FALSE;
@@ -166,9 +164,9 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			else
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-			_setCheckItemValue(id_CHECK_DOMDIRECTION, t, op_INIT);			
+			_setCheckItemValue(id_CHECK_DOMDIRECTION, t, op_INIT);
 		}
-#endif		
+
 		sz = UT_getAttribute("margin-left", pProps);
 		if (sz)
 			_setSpinItemValue(id_SPIN_LEFT_INDENT, sz, op_INIT);
@@ -210,7 +208,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 
 			if (sz[0] == '-')
 				newSz++;
-			
+
 			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, newSz, op_INIT);
 		}
 
@@ -259,11 +257,11 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		sz = UT_getAttribute("margin-top", pProps);
 		if (sz)
 			_setSpinItemValue(id_SPIN_BEFORE_SPACING, sz, op_INIT);
-			
+
 		sz = UT_getAttribute("margin-bottom", pProps);
 		if (sz)
 			_setSpinItemValue(id_SPIN_AFTER_SPACING, sz, op_INIT);
-		
+
 		{
 			// NOTE : "orphans" and "widows" hold a number specifying the number
 			// NOTE : of lines to consider an orphaned or widowed piece of text.
@@ -277,13 +275,13 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			bool bNoWidows = false;
 
 			double orphans = 0, widows = 0;
-			
+
 			sz = UT_getAttribute("orphans", pProps);
 			if (sz)
 				orphans = UT_convertDimensionless(sz);
 			else
 				bNoOrphans = true;
-			
+
 			sz = UT_getAttribute("widows", pProps);
 			if (sz)
 				widows = UT_convertDimensionless(sz);
@@ -331,7 +329,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		  	UT_XML_cloneString(m_pageLeftMargin,
 					   PP_lookupProperty("page-margin-left")->getInitial());
 		}
-			
+
 		sz = UT_getAttribute("page-margin-right", pProps);
 		if (sz)
 		{
@@ -342,7 +340,7 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		  	UT_XML_cloneString(m_pageRightMargin,
 					   PP_lookupProperty("page-margin-right")->getInitial());
 		}
-			
+
 		// TODO : add these to PP_Property (pp_Property.cpp) !!!
 		// TODO : and to FV_View::getBlockFormat (or else they won't come in)
 		/*
@@ -378,7 +376,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	};
 
 	propPair * p;
-		
+
 	if (_wasChanged(id_MENU_ALIGNMENT))
 	{
 		ALLOC_PROP_PAIR(p);
@@ -404,7 +402,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		v.addItem(p);
 	}
 
-#ifdef BIDI_ENABLED
+
 	if (_wasChanged(id_CHECK_DOMDIRECTION))
 	{
 		ALLOC_PROP_PAIR(p);
@@ -418,8 +416,8 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		v.addItem(p);
 
 	}
-#endif
-	
+
+
 	if (_wasChanged(id_SPIN_LEFT_INDENT))
 	{
 		ALLOC_PROP_PAIR(p);
@@ -428,7 +426,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 		v.addItem(p);
 	}
-	
+
 	if (_wasChanged(id_SPIN_RIGHT_INDENT))
 	{
 		ALLOC_PROP_PAIR(p);
@@ -482,7 +480,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 		v.addItem(p);
 	}
-	
+
 	if (_wasChanged(id_SPIN_AFTER_SPACING))
 	{
 		ALLOC_PROP_PAIR(p);
@@ -491,7 +489,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 		v.addItem(p);
 	}
-	
+
 	// TODO : The logic here might not be bulletproof.  If the user triggers
 	// TODO : a change in the TYPE of special indent (single, double, etc.)
 	// TODO : we will always save what's in the box as a property.
@@ -502,7 +500,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	{
 		ALLOC_PROP_PAIR(p);
 		UT_XML_cloneString(p->prop, "line-height");
-		
+
 		// normal spacings (single, 1.5, double) are just simple numbers.
 		// "at least" needs a "+" at the end of the number (no units).
 		// "exactly" simply has units.
@@ -511,7 +509,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		XML_Char * pTmp = NULL;
 		const XML_Char * pString = _getSpinItemValue(id_SPIN_SPECIAL_SPACING);
 		UT_uint32 nSize = 0;
-		
+
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
 		{
 		case spacing_SINGLE:
@@ -559,11 +557,11 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		// TODO : fix this!  we stomp on both properties (setting them
 		// TODO : to "2"s or "0"s) if the one check box was ever
 		// TODO : changed
-		
+
 		{
 			ALLOC_PROP_PAIR(p);
 			UT_XML_cloneString(p->prop, "orphans");
-		
+
 			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
 				UT_XML_cloneString(p->val, "2");
 			else
@@ -571,11 +569,11 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 			v.addItem(p);
 		}
-		
+
 		{
 			ALLOC_PROP_PAIR(p);
 			UT_XML_cloneString(p->prop, "widows");
-		
+
 			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
 				UT_XML_cloneString(p->val, "2");
 			else
@@ -584,7 +582,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			v.addItem(p);
 		}
 	}
-	
+
 	if (_wasChanged(id_CHECK_KEEP_LINES))
 	{
 		ALLOC_PROP_PAIR(p);
@@ -597,7 +595,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 		v.addItem(p);
 	}
-	
+
 	if (_wasChanged(id_CHECK_KEEP_NEXT))
 	{
 		ALLOC_PROP_PAIR(p);
@@ -646,7 +644,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 	// by the pointers we just copied into memory typed (XML_Char **)
 
 	pProps = newprops;
-	
+
 	return true;
 }
 
@@ -697,7 +695,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	else
 	{
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
+
 		// if the paragraph was empty, use our sample
 		UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
 	}
@@ -705,9 +703,9 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this);
 
 	FREEP(tmp);
-	
+
 	UT_ASSERT(m_paragraphPreview);
-	
+
 	m_paragraphPreview->setWindowSize(width, height);
 
 	// TODO : any setup of the GC for drawing
@@ -743,7 +741,7 @@ UT_uint32 AP_Dialog_Paragraph::_getMenuItemValue(tControl item)
 
 	return (UT_uint32) pItem->pData;
 }
-		
+
 void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
 											tOperation op /* = op_UICHANGE */)
 {
@@ -801,12 +799,12 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 
 	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
 	UT_ASSERT(pItem);
-	
+
 	// spin items have pointers to static XML_Char buffers as data, so we
 	// don't free them, but extract a pointer and copy the string contents
 
 	UT_ASSERT(pItem->pData && value);
-	
+
 	// some spinbuttons have special data requirements
 	switch(item)
 	{
@@ -819,16 +817,16 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 
 	case id_SPIN_SPECIAL_INDENT:
 
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, value));			
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(m_dim, value));
 		break;
-		
+
 	case id_SPIN_BEFORE_SPACING:
 	case id_SPIN_AFTER_SPACING:
 		// NOTE : line spacing can't be negative, so make absolut
 
 		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_PT, _makeAbsolute(value)));
 		break;
-		
+
 	case id_SPIN_SPECIAL_SPACING:
 		if(_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
 		{
@@ -859,7 +857,7 @@ const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 
 	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
 	UT_ASSERT(pItem && pItem->pData);
-	
+
 	return (const XML_Char *) pItem->pData;
 }
 
@@ -995,8 +993,8 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 // must be to call the XP (parent) implementation
 //
 // also, the platform code has to call _syncControls() once with
-// bAll set to true.  this should happen *after* all of the 
-// member variables have been copied to the screen for the first 
+// bAll set to true.  this should happen *after* all of the
+// member variables have been copied to the screen for the first
 // time, but before the dialog is displayed.
 
 void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
@@ -1094,9 +1092,9 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 			{
 				if (m_dim != DIM_IN)
 					dDefault = UT_convertInchesToDimension(dDefault, m_dim);
-	
+
 				const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1");
-	
+
 				_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
 			}
 		}
@@ -1107,7 +1105,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 			case indent_NONE:
 				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_SYNC);
 				break;
-	
+
 			default:
 				break;
 			}
@@ -1218,7 +1216,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 									_getSpinItemValue(id_SPIN_AFTER_SPACING),
 									_getSpinItemValue(id_SPIN_SPECIAL_SPACING),
 									(AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
-	
+
 	m_paragraphPreview->draw();
 }
 
@@ -1228,7 +1226,7 @@ bool AP_Dialog_Paragraph::_wasChanged(tControl item)
 
 	sControlData * pItem = (sControlData *) m_vecProperties.getNthItem((UT_uint32) item);
 	UT_ASSERT(pItem);
-	
+
 	return pItem->bChanged;
 }
 

@@ -1,23 +1,23 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * BIDI Copyright (C) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 
 #include <stdlib.h>
@@ -27,13 +27,11 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ev_Toolbar_Labels.h"
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
 #include "ut_wctomb.h"
 #include "ut_mbtowc.h"
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
-#endif
 
 /*****************************************************************/
 
@@ -58,8 +56,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 	// to the temp we overwrite the runlist
 	// I do not know how to fix this and as we do not need it yet,
 	// I am going to turn it off for the moment
-	
-#ifdef BIDI_ENABLED
+
 	// TODO I wish we did not have to do this here, but I see no other
 	// way; the menu mechanism is much cleaner and I think we should be
 	// using the string-set mechanism for toolbars as we do for menus.
@@ -85,9 +82,9 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
         for(UT_uint32 l = 0; l < 2; l++)
         {
 			if (szStr && *szStr)
-			{	
+			{
 				UT_uint32 iStrLen  = strlen(szStr);
-	
+
 				if(iStrLen > iOldLen)
 				{
 					if(fbdStr)
@@ -95,14 +92,14 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 						delete [] fbdStr;
 						delete [] fbdStr2;
 					}
-					
+
 					fbdStr   = new FriBidiChar [iStrLen];
 					UT_ASSERT(fbdStr);
 					fbdStr2  = new FriBidiChar [iStrLen];
 					UT_ASSERT(fbdStr2);
 					iOldLen = iStrLen;
 				}
-				
+
 				UT_uint32 i;
 				UT_uint32 j = 0;
 				UT_uint32 k = 0;
@@ -127,8 +124,8 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 				       fbdStr2,
 				       NULL,
 				       NULL,
-				       NULL);	
-#endif	
+				       NULL);
+#endif
 
 				for(i = 0; i < j; i++)
 				{
@@ -142,15 +139,13 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 
 				UT_ASSERT(szStr[i] == 0);
 			}
-			
+
 			szStr = m_szStatusMsg;
 		}
-		
+
 		delete[] fbdStr;
 		delete[] fbdStr2;
 	}
-	
-#endif
 }
 
 EV_Toolbar_Label::~EV_Toolbar_Label(void)
@@ -233,7 +228,7 @@ EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(XAP_Toolbar_Id id)
 		return NULL;
 
 	UT_uint32 index = (id - m_first);
-	
+
 	EV_Toolbar_Label * pLabel = m_labelTable[index];
 
 #if 0

@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 #### To get a debug build:  add the following line back to the
@@ -45,7 +45,7 @@
 #### ABI_OPT_GNOME=1
 ####
 
-#### To use the peer library expat over the default 
+#### To use the peer library expat over the default
 #### build with libxml2 (aka gnome-xml version 2)
 #### add the following line back to the
 #### Makefile, add the variable to the make command line, or set
@@ -72,20 +72,17 @@
 #### ABI_OPT_CYGWIN_UNIX=1
 ####
 
-#### To build with the bidi-rectional support enabled add the following
-#### line back to the Makefile, add the variable to the make command line
-#### or set this variable as an environment variable. If you wish to
-#### default to RTL direction of text, do the same with the second
-#### variable
-####
-#### ABI_OPT_BIDI_ENABLED=1
+#### If you wish to default to RTL direction of text, uncomment the
+#### following line; to use the experimental Pango front-end uncomment
+#### the second variable
 ####
 #### ABI_OPT_BIDI_RTL_DOMINANT=1
+#### ABI_OPT_PANGO=1
 ####
 
 #### To build with the JPEG support with libjpeg enabled add the following
 #### line back to the Makefile, add the variable to the make command line
-#### or set this variable as an environment variable. 
+#### or set this variable as an environment variable.
 ####
 #### ABI_OPT_LIBJPEG=1
 ####
@@ -199,8 +196,8 @@ endif
 
 ##################################################################
 ##################################################################
-#### if it is Darwin, we suspect taht we have MacOS X, hence we 
-#### build MacOS version using Carbon. Change later when we 
+#### if it is Darwin, we suspect taht we have MacOS X, hence we
+#### build MacOS version using Carbon. Change later when we
 #### support Darwin running X and other varieties (like MacOS X
 #### using Cocoa). <hfiguiere@teaser.fr>
 ifeq ($(OS_NAME), Darwin)
@@ -221,11 +218,11 @@ if test ! -d xxxx; then rm -rf xxxx; mkdir -p  xxxx; fi
 endef
 
 ifeq ($(OS_NAME), WIN32)
- ifeq ($(OS_RELEASE), 4.0) 
+ ifeq ($(OS_RELEASE), 4.0)
   # HACK: for old B19 users
-  define TRANSFORM_TO_DOS_PATH 
-  sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g' 
-  endef 
+  define TRANSFORM_TO_DOS_PATH
+  sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g'
+  endef
  else
 CYGWIN_ROOT := $(shell cygpath -w / | sed 's|\\|/|g')
   ifeq ($(CYGWIN_MAJOR_VERSION),1)
@@ -257,7 +254,7 @@ CYGWIN_ROOT := $(shell cygpath -w / | sed 's|\\|/|g')
    endif
   endif
  endif
-endif 
+endif
 
 ##################################################################
 ##################################################################
@@ -304,19 +301,21 @@ ABI_XAP_INCS=	/config						\
 ifeq ($(ABI_OPT_GNOME),1)
 ABI_OPT_GNOMEVFS := 1
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
-		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR) 
+		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
 
 
 # consider adding some UNIX native includes because MacOS X is really hybrid.
 ifeq ($(OS_NAME), MACOSX)
 ABI_XAP_INCS+= /af/util/unix
-endif 
+endif
 
 ABI_OTH_INCS=	/other/spell/xp \
-                /other/fribidi/xp
+                /other/fribidi/xp \
+		/other/pango
+
 ifeq ($(OS_NAME), WIN32)
-ABI_OTH_INCS+=	/../../wv/glib-wv 
+ABI_OTH_INCS+=	/../../wv/glib-wv
 endif
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
@@ -366,18 +365,20 @@ ABI_OPTIONS+=Debug:Off
 endif
 
 ## BIDI options
-
-ifeq ($(ABI_OPT_BIDI_ENABLED),1)
-ABI_BIDI_ENABLED=-DBIDI_ENABLED
 ABI_OPTIONS+=BiDi:On
+
+ifeq ($(ABI_OPT_PANGO),1)
+ABI_BIDI_ENABLED=-DWITH_PANGO
+ABI_OPTIONS+=Pango:On
+else
+ABI_OPTIONS+=Pango:Off
+endif
+
 ifeq ($(ABI_OPT_BIDI_RTL_DOMINANT),1)
 ABI_BIDI_ENABLED+=-DBIDI_RTL_DOMINANT
 ABI_OPTIONS+=/RTL dominant/
 else
 ABI_OPTIONS+=/LTR dominant/
-endif
-else
-ABI_OPTIONS+=BiDi:Off
 endif
 
 ifeq ($(ABI_OPT_LIBJPEG),1)
@@ -435,7 +436,7 @@ ifeq ($(OS_NAME), procnto)
 include $(ABI_ROOT)/src/config/platforms/nto.mk
 endif
 ifeq ($(OS_NAME), QNX)
-ifeq (,$(suffix $(OS_RELEASE))) 
+ifeq (,$(suffix $(OS_RELEASE)))
 # QNX 4 not supported
 else
 include $(ABI_ROOT)/src/config/platforms/nto.mk
@@ -613,7 +614,7 @@ GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
 GTK_CFLAGS      := $(shell $(GTK_CONFIG) --cflags)
 GNOME_CFLAGS += $(GTK_CFLAGS)
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L gnome gal gdk_pixbuf)
-GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
+GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg
 #
 # Enable this line for electric fence.
 #
@@ -629,7 +630,7 @@ endif
 
 GNOME_CFLAGS += $(shell nautilus-config --cflags)
 GNOME_CFLAGS += -DHAVE_NAUTILUS
-GNOME_LIBS   += $(shell nautilus-config --libs) 
+GNOME_LIBS   += $(shell nautilus-config --libs)
 
 GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 
@@ -692,14 +693,14 @@ ifeq ($(ABI_OPT_PEER_EXPAT),1)
     EXTRA_LIBS += $(ABI_ROOT)/../expat/lib/.libs/libexpat.lib
     LDFLAGS += /NODEFAULTLIB:LIBC
   else
-    EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat 
+    EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat
   endif
   CFLAGS += -DHAVE_EXPAT
   ABI_OPTIONS+=XML:expat
 else
   XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
   XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
-  CFLAGS 	 +=	$(XML_CFLAGS) 
+  CFLAGS 	 +=	$(XML_CFLAGS)
   EXTRA_LIBS +=	$(XML_LIBS)
   ABI_OPTIONS+=XML:libxml2
 endif
@@ -754,27 +755,25 @@ CFLAGS += -DMAXSTRINGCHARS=100
 endif
 
 
-# 
-# yep, this is an egregiously ugly place to hardwire this, but 
-# it's the easiest way to ensure that we always include iconv.h 
+#
+# yep, this is an egregiously ugly place to hardwire this, but
+# it's the easiest way to ensure that we always include iconv.h
 # with it set (to prevent linker mismatches with wv's version)
-#  
+#
 # fjf: I'm commenting it. wv should be using the same iconv as
 #      AbiWord, and both should be using libiconv-1.7 or equiv.
 #      LIBICONV_PLUG should be set *only* if building against
 #      peer libiconv
-#  
+#
 # CFLAGS += -DLIBICONV_PLUG
 
 ifeq ($(ABI_NATIVE),unix)
 CFLAGS += -DSUPPORTS_UT_IDLE=1
 endif
 
-ifeq ($(ABI_OPT_BIDI_ENABLED),1)
-	ifeq ($(OS_NAME), WIN32)
-		EXTRA_LIBS += $(LIBDIR)/libAbi_fribidi_s.lib
-	else
-		EXTRA_LIBS += -lAbi_fribidi
-	endif
+ifeq ($(OS_NAME), WIN32)
+	EXTRA_LIBS += $(LIBDIR)/libAbi_fribidi_s.lib
+else
+	EXTRA_LIBS += -lAbi_fribidi
 endif
 

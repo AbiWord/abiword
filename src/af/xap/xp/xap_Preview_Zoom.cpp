@@ -45,16 +45,11 @@ XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 }
 
 #ifdef WITH_PANGO
-static void s_free1PangoGlyphString(gpointer pGlyphString, gpointer /*data*/)
-{
-	pango_glyph_string_free((PangoGlyphString*)pGlyphString);
-}
-
 void XAP_Preview_Zoom::_freeGlyphString()
 {
 	if(m_pGlyphString)
 	{
-		g_list_foreach(m_pGlyphString, s_free1PangoGlyphString, NULL);
+		g_list_foreach(m_pGlyphString, UT_free1PangoGlyphString, NULL);
 		g_list_free(m_pGlyphString);
 		m_pGlyphString = NULL;
 	}

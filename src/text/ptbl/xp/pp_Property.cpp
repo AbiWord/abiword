@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -43,18 +43,15 @@
 	Therefore cannot use constants for these three, since those are stored in
 	read-only segment.
 */
-#ifdef BIDI_ENABLED
-	#ifndef BIDI_RTL_DOMINANT
+#ifndef BIDI_RTL_DOMINANT
 	XML_Char default_dominant_direction[]="ltr";
 	XML_Char default_direction[]="ltr";
 	XML_Char text_align[]="left\0";		//the '\0' is needed so that we can copy
 										//the word 'right' here
-	#else
+#else
 	XML_Char default_dominant_direction[]="rtl";
 	XML_Char default_direction[]="rtl";
 	XML_Char text_align[]="right";
-	#endif
-	
 #endif
 
 // KEEP THIS ALPHABETICALLY ORDERED UNDER PENALTY OF DEATH!
@@ -71,26 +68,14 @@ static PP_Property _props[] =
 	{ "color",   "000000", true, NULL},
 	{ "column-gap",	"0.25in", false, NULL},
 	{ "column-line", "off",	false, NULL},
-#ifdef BIDI_ENABLED
 	//{ "column-order", default_dominant_direction, false, NULL},
-#endif	
 	{ "columns", "1", false, NULL},
 
 	{ "default-tab-interval",  "0.5in", false, NULL},
-
-#ifdef BIDI_ENABLED
-	/*	these two stand for "direction" and "dominant direction"; they were
-		intentionally abreviated, because the direction property has to be
-		set basically for each word and each chunk of whitespace, inflating
-		the ABW file
-	*/
-	//###TF{ "dir", default_direction, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dir-override", NULL, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dir-override", NULL, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl
 	{ "dom-dir", default_dominant_direction, true, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
-#endif
-
 	{ "field-color", "dcdcdc", true, NULL},
-	{ "field-font",	"NULL",	true, NULL},	
+	{ "field-font",	"NULL",	true, NULL},
 	{ "font-family", "Times New Roman", true, NULL},	// TODO this is Win32-specific.  must fix!
 	{ "font-size",	"12pt",	true, NULL},	// MS word defaults to 10pt, but it just seems too small
 	{ "font-stretch", "normal", true, NULL},
@@ -117,7 +102,7 @@ static PP_Property _props[] =
 	{ "keep-with-next", "",	false, NULL},
 
 	{ "lang", "en-US", true, NULL},
-	
+
 	{ "line-height", "1.0", false, NULL},
 	{ "list-decimal", ".", true, NULL},
 	{ "list-delim", "%L", true, NULL},
@@ -145,15 +130,11 @@ static PP_Property _props[] =
    	{ "start-value",			"1",				true, NULL},
 
 	{ "tabstops", "", false, NULL},
-#ifdef BIDI_ENABLED
 	{ "text-align", text_align,	true, NULL},
-#else
-	{ "text-align", "left",	true, NULL},
-#endif	
 	{ "text-decoration", "none", true, NULL},
 	{ "text-indent", "0in", false, NULL},
-	{ "text-position", "normal", true, NULL},	
-	
+	{ "text-position", "normal", true, NULL},
+
 	{ "widows", "2", false, NULL},
 	{ "width", "0in", false, NULL},
 
@@ -184,7 +165,6 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 	return prop;
 }
 
-#ifdef BIDI_ENABLED
 //allows us to reset the default value for the direction settings;
 void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 {
@@ -212,7 +192,7 @@ void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 		}
 	}
 }
-#endif
+
 
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 {
@@ -222,7 +202,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 //
 // SHIT. This is where the style/name split gets really hairy. This index AP MIGHT be
 // from a style definition in which case the name of the style is PT_NAME_ATTRIBUTE_NAME
-// or it might be from the document in which case the attribute is  
+// or it might be from the document in which case the attribute is
 // PT_STYLE_ATTRIBUTE_NAME. Fuck it, try both. - MES.
 //
 	if (pAttrProp->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue))
@@ -244,7 +224,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 	return pStyle;
 }
- 
+
 const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
@@ -269,13 +249,13 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		UT_DEBUGMSG(("PP_evalProperty: unknown property \'%s\'\n",pszName));
 		return NULL;
 	}
-	
+
 	PD_Style * pStyle = NULL;
 
 	// TODO: make lookup more efficient by tagging each property with scope (block, char, section)
-		
+
 	// see if the property is on the Span item.
-	
+
 	if (pSpanAttrProp)
 	{
 		if (pSpanAttrProp->getProperty(pProp->getName(),szValue))
@@ -305,7 +285,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		{
 			if (pBlockAttrProp->getProperty(pProp->getName(),szValue))
 				return szValue;
-			
+
 			if (bExpandStyles)
 			{
 				pStyle = _getStyle(pBlockAttrProp, pDoc);
@@ -350,7 +330,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 	// if no inheritance allowed for it or there is no
 	// value set in containing block or section, we return
 	// the default value for this property.
-	
+
 	return pProp->getInitial();
 }
 
@@ -379,13 +359,13 @@ const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
 		UT_DEBUGMSG(("PP_evalProperty: unknown property \'%s\'\n",pszName));
 		return NULL;
 	}
-	
+
 	PD_Style * pStyle = NULL;
 
 	// TODO: make lookup more efficient by tagging each property with scope (block, char, section)
-		
+
 	// see if the property is on the Span item.
-	
+
 	if (pSpanAttrProp)
 	{
 		p_property = pSpanAttrProp->getPropertyType(pProp->getName(), Type);
@@ -418,7 +398,7 @@ const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
 			p_property = pBlockAttrProp->getPropertyType(pProp->getName(), Type);
 			if(p_property)
 				return p_property;
-			
+
 			if (bExpandStyles)
 			{
 				pStyle = _getStyle(pBlockAttrProp, pDoc);
@@ -458,7 +438,7 @@ const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
 	// if no inheritance allowed for it or there is no
 	// value set in containing block or section, we return
 	// the default value for this property.
-	
+
 	return pProp->getInitialType(Type);
 }
 
@@ -478,7 +458,7 @@ const PP_PropertyType *	PP_Property::getInitialType(tProperty_type Type) const
 
 	return m_pProperty;
 }
-		
+
 PP_PropertyType *PP_PropertyType::createPropertyType(tProperty_type Type, const XML_Char *p_init)
 {
 	PP_PropertyType *p_property = NULL;

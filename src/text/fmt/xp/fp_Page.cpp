@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -54,7 +54,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
-	
+
 	GR_Graphics * pG = pLayout->getGraphics();
 	UT_ASSERT(pG);
 
@@ -106,7 +106,7 @@ UT_sint32 fp_Page::getAvailableHeightInLayoutUnits(void) const
 }
 
 /*!
- * This method scans the page and returns the total height in layout units of all the columns 
+ * This method scans the page and returns the total height in layout units of all the columns
  * on it.
  * If prevLine is non-NULL the maximum column height up to this line is calculated.
  */
@@ -172,9 +172,9 @@ UT_sint32 fp_Page::getBottom(void) const
 
 //	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
-	
+
 	return getHeight() - iBottomMargin;
-}	
+}
 
 void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff)
 {
@@ -215,7 +215,7 @@ FL_DocLayout* fp_Page::getDocLayout()
 
 void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 {
-    if(m_pView->getShowPara() 
+    if(m_pView->getShowPara()
 	   && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN)
 	   && countColumnLeaders() > 0)
 	{
@@ -308,7 +308,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			pTmpCol = pNextCol;
 		}
 	}
-    if(m_pView->getViewMode() == VIEW_PRINT) 
+    if(m_pView->getViewMode() == VIEW_PRINT)
 	{
 		if (m_pHeader)
 		{
@@ -317,7 +317,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			da.yoff += m_pHeader->getY();
 			m_pHeader->draw(&da);
 		}
-	
+
 		if (m_pFooter)
 		{
 			dg_DrawArgs da = *pDA;
@@ -440,7 +440,7 @@ bool fp_Page::breakPage(void)
 		if((iYPrev + 2*maxLineHeight) < availHeight)
 		{
 //
-// OK we want to delete this column if the docsection of the 
+// OK we want to delete this column if the docsection of the
 // previous column continues onto the next or even subsequent pages.
 //
 			fp_Page * pPNext = getNext();
@@ -483,7 +483,7 @@ bool fp_Page::isDSLOnPage(fl_DocSectionLayout * pDSLToFind)
 	{
 		return;
 	}
-	UT_uint32 i = 0; 
+	UT_uint32 i = 0;
 	for(i=0; i< count)
 	{
 		fl_DocSectionLayout * pDSL = getNthColumnLeader(i)->getDocSectionLayout();
@@ -552,7 +552,7 @@ void fp_Page::_reformat(void)
 	fp_Column * pLastCol = NULL;
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
-	
+
 
 	UT_sint32 iLeftMargin = 0;
 	UT_sint32 iRightMargin = 0;
@@ -565,10 +565,10 @@ void fp_Page::_reformat(void)
 
 	UT_sint32 iTopMarginLayoutUnits = pFirstSectionLayout->getTopMarginInLayoutUnits();
 	UT_sint32 iBottomMarginLayoutUnits = pFirstSectionLayout->getBottomMarginInLayoutUnits();
-	
+
 	UT_sint32 iY = iTopMargin;
 	UT_sint32 iYLayoutUnits = iTopMarginLayoutUnits;
-	
+
 	int i;
 	for (i=0; i<count; i++)
 	{
@@ -582,7 +582,7 @@ void fp_Page::_reformat(void)
 
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
-	
+
 		iLeftMargin = pSL->getLeftMargin();
 		iRightMargin = pSL->getRightMargin();
 
@@ -599,8 +599,7 @@ void fp_Page::_reformat(void)
 		UT_uint32 iSpaceLayoutUnits = getWidthInLayoutUnits() - iLeftMarginLayoutUnits - iRightMarginLayoutUnits;
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 		UT_uint32 iColWidthLayoutUnits = (iSpaceLayoutUnits - ((iNumColumns - 1) * iColumnGapLayoutUnits)) / iNumColumns;
-		
-#ifdef BIDI_ENABLED
+
 		UT_sint32 iX;
 		if(pSL->getColumnOrder())
 		{
@@ -610,10 +609,7 @@ void fp_Page::_reformat(void)
 		{
 			iX = iLeftMargin;
 		}
-#else		
-		UT_sint32 iX = iLeftMargin;
-#endif
-		
+
 		fp_Column* pTmpCol = pLeader;
 		UT_sint32 iMostHeight = 0;
 		UT_sint32 iMostHeightLayoutUnits = 0;
@@ -625,18 +621,16 @@ void fp_Page::_reformat(void)
 			pTmpCol->setMaxHeightInLayoutUnits(getHeightInLayoutUnits() - iBottomMarginLayoutUnits - iYLayoutUnits);
 			pTmpCol->setWidth(iColWidth);
 			pTmpCol->setWidthInLayoutUnits(iColWidthLayoutUnits);
-#ifdef BIDI_ENABLED			
-		if(pSL->getColumnOrder())
-		{
-			iX -= (iColWidth + iColumnGap);
-		}
-		else
-		{
-			iX += (iColWidth + iColumnGap);
-		}		
-#else
-			iX += (iColWidth + iColumnGap);
-#endif
+
+			if(pSL->getColumnOrder())
+			{
+				iX -= (iColWidth + iColumnGap);
+			}
+			else
+			{
+				iX += (iColWidth + iColumnGap);
+			}
+
 			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
 			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
 			pLastCol = pTmpCol;
@@ -731,7 +725,7 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 	// Update owner and reformat
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 //
-// Handle change of Page ownership. This can happen when the the previous 
+// Handle change of Page ownership. This can happen when the the previous
 // Section expands it's text onto a page owned by the next docsection.
 //
 // An alternative is to destroy and recreate the page but this will be much nicer
@@ -777,7 +771,7 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 		// Update owner and reformat
 
 //
-// Handle change of Page ownership. This can happen when the the previous 
+// Handle change of Page ownership. This can happen when the the previous
 // Section expands it's text onto a page owned by the next docsection.
 //
 // An alternative is to destroy and recreate the page but this will be much nicer
@@ -805,7 +799,7 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 	while (pTmpCol)
 	{
 		pTmpCol->setPage(this);
-		
+
 		pTmpCol = pTmpCol->getFollower();
 	}
 
@@ -879,10 +873,10 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 }
 
 /*!
- * This method maps an x,y location on the page to the position in the 
+ * This method maps an x,y location on the page to the position in the
  * document of the corrsponding element.
- * This variation looks in the header/footer region and returns the 
- * SectionLayout shadow of the 
+ * This variation looks in the header/footer region and returns the
+ * SectionLayout shadow of the
  \param x coordinate
  \param y coordinate
  \param bBOL
@@ -968,14 +962,14 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 					pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
 					return;
 				}
-				
+
 				iDist = pColumn->distanceFromPoint(x, y);
 				if (iDist < iMinDist)
 				{
 					iMinDist = iDist;
 					pMinDist = pColumn;
 				}
-				
+
 				if (
 					(y >= pColumn->getY())
 					&& (y < (pColumn->getY() + pColumn->getHeight()))
@@ -988,7 +982,7 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 					}
 				}
 			}
-			
+
 			pColumn = pColumn->getFollower();
 		}
 
@@ -1039,14 +1033,14 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 					pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
 					return;
 				}
-				
+
 				iDist = pColumn->distanceFromPoint(x, y);
 				if (iDist < iMinDist)
 				{
 					iMinDist = iDist;
 					pMinDist = pColumn;
 				}
-				
+
 				if (
 					(y >= pColumn->getY())
 					&& (y < (pColumn->getY() + pColumn->getHeight()))
@@ -1059,7 +1053,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 					}
 				}
 			}
-			
+
 			pColumn = pColumn->getFollower();
 		}
 
@@ -1150,7 +1144,7 @@ fp_ShadowContainer* fp_Page::buildHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_pHeader->getHdrFtrSectionLayout()->deletePage(this);
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Building header container. page = %x hdrftr = %x \n",this,pHFSL)); 
+	xxx_UT_DEBUGMSG(("SEVIOR: Building header container. page = %x hdrftr = %x \n",this,pHFSL));
 	// TODO fix these coordinates - Done!
 	//
 	// headerMargin is the height from the top of the page.

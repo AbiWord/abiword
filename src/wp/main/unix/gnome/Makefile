@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 ABI_ROOT:=$(shell pwd)/../../../../..
@@ -34,13 +34,7 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 # TODO several times.  see if there is a better way of doing this.
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
-
-# fribidi library
-ifeq ($(ABI_OPT_BIDI_ENABLED),1)
-LoadOrder += Abi_fribidi
-endif
-
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv Abi_fribidi
 
 ifdef ABI_REQUIRE_PEER_ICONV
 LoadOrder+= Abi_libiconv

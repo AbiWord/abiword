@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -49,7 +49,7 @@ BeginSetEnc(nn,NO,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,		IconName,		szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ny", 			tb_new_xpm,		NULL, "Opprettar eit nytt dokument")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ny", 			tb_new_xpm,		NULL, "Opprettar eit nytt dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Opn",			tb_open_xpm,		NULL, "Opnar eit eksisterande dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Lagr", 		tb_save_xpm,		NULL, "Lagrar dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Lagr som", 		tb_save_as_xpm,		NULL, "Lagrar dokumentet med eit anna namn")
@@ -108,13 +108,11 @@ BeginSetEnc(nn,NO,true,"iso-8859-1")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Reduser innrykk", tb_text_unindent_xpm, NULL, "Reduserer avsnittsinnrykk")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Kjør skript",	tb_script_play_xpm,		NULL, "Kjør skript")
-	
+
      // ... add others here ...
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Tving VTH-retning",		tb_text_direction_ltr_xpm,	NULL, "Tvingar venstre til høgre-retning for tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Tving HTV-retning",		tb_text_direction_rtl_xpm,	NULL, "Tvingar høgre til venstre-retning for tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Avsnittsretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endrar hovudtekstretning for avsnitt")
-#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

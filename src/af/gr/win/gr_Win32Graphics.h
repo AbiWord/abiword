@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -36,7 +36,7 @@ class GR_Win32Font : public GR_Font
 public:
 	GR_Win32Font(HFONT hFont);
 	~GR_Win32Font();
-	
+
 private:
 	void					setupFontInfo();
 
@@ -97,11 +97,11 @@ public:
 	virtual UT_uint32		measureUnRemappedChar(const UT_UCSChar c);
 	virtual void			setColor(const UT_RGBColor& clr);
 	virtual GR_Font*		getGUIFont();
-	virtual GR_Font*		findFont(const char* pszFontFamily, 
-									 const char* pszFontStyle, 
-									 const char* pszFontVariant, 
-									 const char* pszFontWeight, 
-									 const char* pszFontStretch, 
+	virtual GR_Font*		findFont(const char* pszFontFamily,
+									 const char* pszFontStyle,
+									 const char* pszFontVariant,
+									 const char* pszFontWeight,
+									 const char* pszFontStretch,
 									 const char* pszFontSize);
 	virtual UT_uint32		getFontAscent();
 	virtual UT_uint32		getFontDescent();
@@ -124,7 +124,7 @@ public:
 	virtual void			drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual GR_Image*		createNewImage(const char* pszName, const UT_ByteBuf* pBB,
 						       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GR_Image::GRT_Raster);
-	
+
 	virtual bool			queryProperties(GR_Graphics::Properties gp) const;
 
 	virtual bool			startPrint(void);
@@ -136,7 +136,7 @@ public:
 
 	virtual void			setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace		getColorSpace(void) const;
-	
+
 	virtual void			setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor			getCursor(void) const;
 	virtual void			handleSetCursorMessage(void);
@@ -152,7 +152,7 @@ public:
 	virtual UT_uint32		getFontDescent(GR_Font *);
 	virtual UT_uint32		getFontHeight(GR_Font *);
 	virtual UT_sint32       getScreenResolution(void){return s_iScreenResolution;};
-	
+
 protected:
 	virtual UT_uint32 		_getResolution(void) const;
 	void					_setColor(DWORD clrRef);
@@ -180,17 +180,14 @@ private:
 
 	DWORD					m_clrXorPen;
 	HPEN					m_hXorPen;
-	
+
 	UT_UCS2Char*				m_remapBuffer;
 	UT_uint32				m_remapBufferSize;
 	// we will make this static, so that it gets initialized by the first instance of the class
 	// since we have to construct a screen graphics before we can print, this should guarantee
 	// us the correct hdc
 	static UT_sint32        s_iScreenResolution;
-	
-#ifdef BIDI_ENABLED
 	UT_UCS2Char*				m_remapIndices;
-#endif
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

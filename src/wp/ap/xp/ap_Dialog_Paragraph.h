@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -34,8 +34,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// the preview's block classes want to use some of our protected enums
 	// below for similar alignment, etc.
 	friend class AP_Preview_Paragraph;
-	friend class AP_Preview_Paragraph_Block;	
-	
+	friend class AP_Preview_Paragraph_Block;
+
  public:
 
 	typedef enum { align_LEFT = 0, align_CENTERED, align_RIGHT, align_JUSTIFIED } tAlignState;
@@ -58,7 +58,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	void setMaxWidth(UT_sint32 width) { m_iMaxWidth = UT_inchesFromPaperUnits(width); }
 
 	AP_Dialog_Paragraph::tAnswer	getAnswer(void) const;
-	
+
  protected:
 
 	// enumerated types for drop-down lists (option menus)
@@ -71,10 +71,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 				   id_SPIN_SPECIAL_SPACING, id_CHECK_WIDOW_ORPHAN,
 				   id_CHECK_KEEP_LINES, id_CHECK_PAGE_BREAK,
 				   id_CHECK_SUPPRESS, id_CHECK_NO_HYPHENATE,
-				   id_CHECK_KEEP_NEXT
-#ifdef BIDI_ENABLED
-				   ,id_CHECK_DOMDIRECTION
-#endif
+				   id_CHECK_KEEP_NEXT,
+				   id_CHECK_DOMDIRECTION
 				   } tControl;
 
 	typedef enum { op_INIT = 0, op_UICHANGE, op_SYNC } tOperation;
@@ -85,7 +83,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 		bool bChanged;
 	};
 	typedef struct _sControlData sControlData;
-	
+
 	// handle the XP-job of attaching something to our m_paragraphPreview
 	void _createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 
@@ -101,11 +99,11 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	virtual void		_syncControls(tControl changed, bool bAll = false);
 
 	bool				_wasChanged(tControl item);
-	
+
 	// final dialog answer
 	tAnswer					m_answer;
 
-	// properties stored as a vector 
+	// properties stored as a vector
 	UT_Vector				m_vecProperties;
 
 	XML_Char				m_bufRightIndent[SPIN_BUF_TEXT_SIZE];
@@ -117,7 +115,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 
 	XML_Char *				m_pageLeftMargin;
 	XML_Char *				m_pageRightMargin;
-	
+
 	// store a pointer to our preview control
 	AP_Preview_Paragraph *	m_paragraphPreview;
 

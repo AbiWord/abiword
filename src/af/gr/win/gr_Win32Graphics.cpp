@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -94,15 +94,14 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 
 	m_remapBuffer = NULL;
 	m_remapBufferSize = 0;
-#ifdef BIDI_ENABLED
 	m_remapIndices = NULL;
-#endif
+
 	if(!s_iScreenResolution)
 	{
 		s_iScreenResolution = _getResolution();
 		setStaticScreenResolution(s_iScreenResolution);
 	}
-	
+
 	UT_DEBUGMSG(("GR_Win32Graphics: screen resolution %d\n", s_iScreenResolution));
 }
 
@@ -129,9 +128,8 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	}
 
 	delete [] m_remapBuffer;
-#ifdef BIDI_ENABLED
+
 	delete [] m_remapIndices;
-#endif
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -178,11 +176,11 @@ win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
 }
 
 
-GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily, 
-									const char* pszFontStyle, 
-									const char* pszFontVariant, 
-									const char* pszFontWeight, 
-									const char* pszFontStretch, 
+GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
+									const char* pszFontStyle,
+									const char* pszFontVariant,
+									const char* pszFontWeight,
+									const char* pszFontStretch,
 									const char* pszFontSize)
 {
 	LOGFONT lf = { 0 };
@@ -240,7 +238,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	LOGFONT enumlf = { 0 };
 	enumlf.lfCharSet = DEFAULT_CHARSET;
 	strcpy(enumlf.lfFaceName, lf.lfFaceName);
-	EnumFontFamiliesEx(GetDC(NULL), &enumlf, 
+	EnumFontFamiliesEx(GetDC(NULL), &enumlf,
 		(FONTENUMPROC)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
 
 	lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;		// Choose only True Type fonts.
@@ -267,9 +265,9 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 
 	if(currentChar == 0x200B || currentChar == 0xFEFF)
 		return;
-	// Windows NT and Windows 95 support the Unicode Font file. 
+	// Windows NT and Windows 95 support the Unicode Font file.
 	// All of the Unicode glyphs can be rendered if the glyph is found in
-	// the font file. However, Windows 95 does  not support the Unicode 
+	// the font file. However, Windows 95 does  not support the Unicode
 	// characters other than the characters for which the particular codepage
 	// of the font file is defined.
 	// Reference Microsoft knowledge base:
@@ -281,8 +279,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	{
 		// Symbol character handling for Win9x
 		char str[sizeof(UT_UCS2Char)];
-		
-		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
+
+		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
 			&aChar, 1,
 			str, sizeof(str), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
@@ -308,9 +306,9 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 	UT_uint16* currentChars = _remapGlyphs(pChars, iCharOffset, iLength);
 
-	// Windows NT and Windows 95 support the Unicode Font file. 
+	// Windows NT and Windows 95 support the Unicode Font file.
 	// All of the Unicode glyphs can be rendered if the glyph is found in
-	// the font file. However, Windows 95 does  not support the Unicode 
+	// the font file. However, Windows 95 does  not support the Unicode
 	// characters other than the characters for which the particular codepage
 	// of the font file is defined.
 	// Reference Microsoft knowledge base:
@@ -323,8 +321,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	{
 		// Symbol character handling for Win9x
 		char* str = new char[iLength * sizeof(UT_UCS2Char)];
-		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
-			currentChars, iLength, 
+		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
+			currentChars, iLength,
 			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 		delete [] str;
@@ -332,7 +330,6 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	else
 	{
 		// Unicode font and default character set handling for WinNT and Win9x
-#ifdef BIDI_ENABLED
 		if(XAP_App::getApp()->theOSHasBidiSupport())
 		{
 			UT_ASSERT(m_remapIndices);
@@ -345,7 +342,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lpClass = NULL;				// Character classifications
 			gcpResult.lpGlyphs = m_remapIndices;	// Character glyphs
 			gcpResult.nGlyphs = m_remapBufferSize;  // Array size
- 
+
 			if(GetCharacterPlacementW(m_hdc, currentChars, iLength, 0, &gcpResult, GCP_REORDER))
 			{
 				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, m_remapIndices, gcpResult.nGlyphs, NULL);
@@ -357,11 +354,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			}
 		}
 		else
-#endif
 		{
-#ifdef BIDI_ENABLED
 simple_exttextout:
-#endif
 			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
 		}
 	}
@@ -374,13 +368,13 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 	if (iLength > (int)m_remapBufferSize)
 	{
 		delete [] m_remapBuffer;
-#ifdef BIDI_ENABLED
+
 		if(XAP_App::getApp()->theOSHasBidiSupport())
 		{
 			delete [] m_remapIndices;
 			m_remapIndices = new UT_UCS2Char[iLength];
 		}
-#endif
+
 		m_remapBuffer = new UT_UCS2Char[iLength];
 		m_remapBufferSize = iLength;
 	}
@@ -393,7 +387,7 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF)
 			j--;
 	}
- 
+
 	iLength -= (i - j);
 
 	return m_remapBuffer;
@@ -422,8 +416,8 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 	}
 }
 
-UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)                         
-{   
+UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)
+{
 	private_FontReverter janitor_(*this, m_pFont);
 
 	setFont(fnt);
@@ -439,7 +433,7 @@ UT_uint32 GR_Win32Graphics::getFontHeight()
 UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
 {
 	private_FontReverter janitor_(*this, m_pFont);
-	
+
 	setFont(fnt);
 
 	return getFontAscent();
@@ -453,7 +447,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent()
 UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 {
 	private_FontReverter janitor_(*this, m_pFont);
-	
+
 	setFont(fnt);
 
 	return getFontDescent();
@@ -721,21 +715,21 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 {
 
 //	UT_ASSERT((x + width) < 800);
-	
+
 	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);
 	RECT r;
 	r.left = x;
 	r.top = y;
 	r.right = r.left + width;
 	r.bottom = r.top + height;
-	
+
 	FillRect(m_hdc, &r, hBrush);
 }
 
 void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 {
 	RECT r;
-	
+
 	r.left = pRect->left;
 	r.top = pRect->top;
 	r.right = pRect->left + pRect->width;
@@ -746,7 +740,7 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 
 void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 {
-	// This causes a lot of drawing and screen refresh problems.  
+	// This causes a lot of drawing and screen refresh problems.
 	// It can be removed from here without problems, but may
 	// not work for other things.  For now leave code in place.
 	// return;
@@ -757,7 +751,7 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	{
 		// set the clip rectangle
 		HRGN hrgn = CreateRectRgn(pRect->left,
-								  pRect->top, 
+								  pRect->top,
 								  pRect->left + pRect->width,
 								  pRect->top + pRect->height);
 		UT_ASSERT(hrgn);
@@ -793,7 +787,7 @@ GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf
 void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
-	
+
 	if (pImg->getType() != GR_Image::GRT_Raster)
 	{
 		pImg->render(this, xDest, yDest);
@@ -801,7 +795,7 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	}
 
 	// When Printing yDest must be within Page Height for each
-	// Page.   
+	// Page.
 	if (queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		UT_sint32 nPageHeight = GetDeviceCaps(m_hdc, PHYSICALHEIGHT);
@@ -814,14 +808,14 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 	UT_uint32 iSizeOfColorData = pDIB->bmiHeader.biClrUsed * sizeof(RGBQUAD);
 	UT_Byte* pBits = ((unsigned char*) pDIB) + pDIB->bmiHeader.biSize + iSizeOfColorData;
-	
+
 	int iRes = StretchDIBits(m_hdc,
 							 xDest, yDest,
 							 pImg->getDisplayWidth(), pImg->getDisplayHeight(),
 							 0, 0,
 							 pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
 							 pBits, pDIB, DIB_RGB_COLORS, SRCCOPY);
-	
+
 	if (iRes == GDI_ERROR)
 	{
 		DWORD err = GetLastError();
@@ -836,7 +830,7 @@ HWND GR_Win32Graphics::getHwnd(void) const
 
 void GR_Win32Graphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
-	// TODO:  maybe? 
+	// TODO:  maybe?
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
@@ -864,7 +858,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	HINSTANCE hinst = pWin32App->getInstance();
 	LPCTSTR cursor_name;
-	
+
 	switch (m_cursor)
 	{
 	default:
@@ -874,8 +868,8 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		cursor_name = IDC_ARROW;		// top-left arrow
 		hinst = NULL;
 		break;
-	
-	case GR_CURSOR_LINK:	
+
+	case GR_CURSOR_LINK:
 	case GR_CURSOR_GRAB:
 		cursor_name = MAKEINTRESOURCE(IDC_ABIHAND);
 		break;
@@ -893,39 +887,36 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		cursor_name = IDC_ARROW;		// TODO change this
 		hinst = NULL;
 		break;
-		
-#ifdef BIDI_ENABLED
-//#error choose a suitable cursor; this is just a placeholder !!!		
+
 	case GR_CURSOR_LEFTARROW:
 		cursor_name = IDC_ARROW;		// TODO change this
 		hinst = NULL;
 		break;
-#endif
 
 	case GR_CURSOR_IMAGE:
 		cursor_name = IDC_SIZEALL;
 		hinst = NULL;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_NW:
 	case GR_CURSOR_IMAGESIZE_SE:
 		cursor_name = IDC_SIZENWSE;
 		hinst = NULL;
 		break;
-		
+
 	case GR_CURSOR_UPDOWN:
 	case GR_CURSOR_IMAGESIZE_N:
 	case GR_CURSOR_IMAGESIZE_S:
 		cursor_name = IDC_SIZENS;
 		hinst = NULL;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_NE:
 	case GR_CURSOR_IMAGESIZE_SW:
 		cursor_name = IDC_SIZENESW;
 		hinst = NULL;
 		break;
-		
+
 	case GR_CURSOR_LEFTRIGHT:
 	case GR_CURSOR_IMAGESIZE_E:
 	case GR_CURSOR_IMAGESIZE_W:
@@ -993,7 +984,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 bool * pbTrueType)
 {
 	// describe in generic terms the named font.
-	
+
 	// we borrow some code from GR_Win32Graphics::findFont()
 
 	LOGFONT lf = { 0 };
@@ -1001,7 +992,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	// TODO i'm not sure why we special case these, but the other
 	// TODO code did, so i'm going to here.
-	
+
 	if (UT_stricmp(szFontName, "serif") == 0)
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_ROMAN;
 	else if (UT_stricmp(szFontName, "sans-serif") == 0)
@@ -1019,7 +1010,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	// properties and then query it and see what was actually
 	// created.  hopefully, this will let us more accurately
 	// reflect what is being seen on screen.
-	
+
 	HFONT hFont = CreateFontIndirect(&lf);
 	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
 	HFONT hFontOld = (HFONT) SelectObject(hdc,hFont);
@@ -1029,7 +1020,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	DeleteDC(hdc);
 
 	BYTE xx = tm.tmPitchAndFamily;
-	
+
 	switch (xx & 0xf0)
 	{
 	default:
@@ -1047,7 +1038,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 		*pfp = FP_Fixed;				// defines the bits...
 
 	*pbTrueType = ((xx & TMPF_TRUETYPE) == TMPF_TRUETYPE);
-	
+
 	return;
 }
 
@@ -1114,9 +1105,9 @@ void GR_Win32Font::setupFontInfo()
 	// load the other half of latin-1 as well as
 	// the rest of unicode.
 	//m_cw.setCharWidthsOfRange(hdc,0,255);
-	
+
 	m_cw.setCharWidthsOfRange(m_oldHDC, 0x20, 0x7f);
-	
+
 	GetTextMetrics(m_oldHDC, &m_tm);
 
 	UINT d = m_tm.tmDefaultChar;
@@ -1169,7 +1160,7 @@ UT_uint32 GR_Win32Font::Acq::measureString(GR_Win32Font& font, const UT_UCSChar*
 			font.m_cw.setCharWidthsOfRange(font.m_oldHDC,currentChar,currentChar);
 			iWidth = font.m_cw.getWidth(currentChar);
 		}
-		
+
 		iCharWidth += iWidth;
 		if (pWidths)
 			pWidths[i] = iWidth;
@@ -1190,7 +1181,7 @@ void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, HDC hdc)
 		// TODO consider changing our invalidate test
 		// TODO to not invalidate if old and new are
 		// TODO both on screen.
-		
+
 		font.m_oldHDC = hdc;
 
 		font.setupFontInfo();

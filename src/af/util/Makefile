@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 ABI_ROOT:=$(shell pwd)/../../..
@@ -54,7 +54,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Idle.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)Locale.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_sleep.$(OBJ_SUFFIX)            \
-		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)			
+		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_NATIVE), beos)
@@ -117,17 +117,14 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_Language.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_Encoding.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)                 \
-		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)                 
+		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)         \
+		$(OBJDIR)/ut_xml.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
 
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  OBJS += $(OBJDIR)/ut_xml_expat.$(OBJ_SUFFIX)
 else
  OBJS += $(OBJDIR)/ut_xml_libxml2.$(OBJ_SUFFIX)
-endif
-
-ifeq ($(ABI_OPT_BIDI_ENABLED),1)
-OBJS +=	$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_OPT_PERL),1)

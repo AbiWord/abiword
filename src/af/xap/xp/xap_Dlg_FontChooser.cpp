@@ -399,19 +399,12 @@ XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Cha
 	
 }
 
-#ifdef WITH_PANGO
-static void s_free1PangoGlyphString(gpointer pGlyphString, gpointer /*data*/)
-{
-	pango_glyph_string_free((PangoGlyphString*)pGlyphString);
-}
-#endif
-
 XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 {
 #ifdef WITH_PANGO
 	if(m_pGlyphString)
 	{
-		g_list_foreach(m_pGlyphString, s_free1PangoGlyphString, NULL);
+		g_list_foreach(m_pGlyphString, UT_free1PangoGlyphString, NULL);
 		g_list_free(m_pGlyphString);
 	}
 #endif	

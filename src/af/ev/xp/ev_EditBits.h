@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 
 
@@ -47,10 +47,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x60000000)
 #define EV_EMC_FIELD			((EV_EditMouseContext) 0x70000000)
 #define EV_EMC_HYPERLINK		((EV_EditMouseContext) 0x80000000)
-
-#ifdef BIDI_ENABLED
 #define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x90000000)
-#endif
 
 // NB: the following two values are not included in EV_COUNT_EMC
 // because they are not used in the bindings, and are, therefore,
@@ -124,11 +121,7 @@ typedef UT_uint32 EV_EditBits;	/* union of all the above bits */
 
 #define EV_COUNT_EMB			6		// simple count (not 'OR')
 #define EV_COUNT_EMO			6		// simple count (not 'OR')
-#ifdef BIDI_ENABLED
 #define EV_COUNT_EMC			9		// simple count (not 'OR')
-#else
-#define EV_COUNT_EMC			8		// simple count (not 'OR')
-#endif
 
 #define EV_IsMouse(eb)			(((eb) & EV_EMO__MASK__))
 #define EV_IsKeyboard(eb)		(((eb) & EV_EKP__MASK__))

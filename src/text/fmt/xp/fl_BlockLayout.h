@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -36,10 +36,8 @@
 #include "fg_Graphic.h"
 #include "fl_AutoLists.h"
 #include "pp_Property.h"
-
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
+
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
 
@@ -89,47 +87,47 @@ class ABI_EXPORT fl_CharWidths
 {
 public:
 	fl_CharWidths() : m_gbCharWidths(256)
-#ifndef WITH_PANGO		
+#ifndef WITH_PANGO
 		, m_gbCharWidthsLayoutUnits(256)
-#endif		
+#endif
 		{
 		}
 
 private:
 
 	UT_GrowBuf m_gbCharWidths;
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_GrowBuf m_gbCharWidthsLayoutUnits;
-#endif	
+#endif
 
 public:
 
 	bool ins(UT_uint32 position, UT_uint32 length)
 		{
-#ifndef WITH_PANGO			
+#ifndef WITH_PANGO
 			m_gbCharWidthsLayoutUnits.ins(position, length);
-#endif			
+#endif
 			return m_gbCharWidths.ins(position, length);
-			
+
 		}
 
 	bool del(UT_uint32 position, UT_uint32 amount)
 		{
-#ifndef WITH_PANGO			
+#ifndef WITH_PANGO
 			m_gbCharWidthsLayoutUnits.del(position, amount);
-#endif			
+#endif
 			return m_gbCharWidths.del(position, amount);
 		}
 	UT_uint32 getLength(void) const
 		{
 #ifndef WITH_PANGO
 			UT_ASSERT(m_gbCharWidths.getLength() == m_gbCharWidthsLayoutUnits.getLength());
-#endif			
+#endif
 			return m_gbCharWidths.getLength();
 		}
 	bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
 		{
-#ifndef WITH_PANGO			
+#ifndef WITH_PANGO
 			m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
 #endif
 			return m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
@@ -137,7 +135,7 @@ public:
 	void truncate(UT_uint32 position)
 		{
 			m_gbCharWidths.truncate(position);
-#ifndef WITH_PANGO			
+#ifndef WITH_PANGO
 			m_gbCharWidthsLayoutUnits.truncate(position);
 #endif
 		}
@@ -146,12 +144,12 @@ public:
 		{
 			return &m_gbCharWidths;
 		}
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_GrowBuf *getCharWidthsLayoutUnits()
 		{
 			return &m_gbCharWidthsLayoutUnits;
 		}
-#endif	
+#endif
 };
 
 
@@ -174,11 +172,11 @@ class ABI_EXPORT fl_BlockLayout : public fl_Layout
 	friend void FL_DocLayout::_toggleAutoSpell(bool bSpell);
 
 public:
-	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, 
-				   fl_BlockLayout*, fl_SectionLayout*, 
+	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*,
+				   fl_BlockLayout*, fl_SectionLayout*,
 				   PT_AttrPropIndex indexAP, bool bIsHdrFtr);
-	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, 
-				   fl_BlockLayout*, fl_SectionLayout*, 
+	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*,
+				   fl_BlockLayout*, fl_SectionLayout*,
 				   PT_AttrPropIndex indexAP);
 	~fl_BlockLayout();
 
@@ -191,7 +189,7 @@ public:
 
 	int 		format(fp_Line * pLineToStartWith = NULL);
 	bool		recalculateFields(UT_uint32 iUpdateCount);
-	
+
 	void		redrawUpdate();
 
 	fp_Line*	getNewLine(void);
@@ -209,7 +207,7 @@ public:
 
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;
-	
+
 	inline fp_Line* getFirstLine(void) const { return m_pFirstLine; }
 	inline fp_Line* getLastLine(void) const { return m_pLastLine; }
 	inline void setLastLine(fp_Line * pLine) {m_pLastLine = pLine;}
@@ -252,7 +250,7 @@ public:
 	fl_BlockLayout * getPreviousList(void);
 	fl_BlockLayout * getPreviousListOfSameMargin(void);
 	inline fl_BlockLayout * getParentItem(void);
-	
+
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
@@ -271,13 +269,13 @@ public:
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	inline UT_sint32	getTextIndentInLayoutUnits(void) const { return m_iTextIndentLayoutUnits; }
 	inline UT_sint32	getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32	getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
 	inline UT_sint32	getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
 	inline UT_sint32	getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
-#endif	
+#endif
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	inline FL_DocLayout*		getDocLayout(void) const { return m_pLayout; }
 	inline fl_SectionLayout*	getSectionLayout(void) const { return m_pSectionLayout;}
@@ -286,17 +284,16 @@ public:
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
 	void getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const;
-						
+
 	void updateBackgroundColor(void);
 
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
 	inline bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
 	inline bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
-#ifdef BIDI_ENABLED
+
 	inline FriBidiCharType getDominantDirection(void) const { return m_iDomDirection; }
 	void setDominantDirection(FriBidiCharType iDirection);
-#endif
 
 	inline fl_Squiggles* getSquiggles(void) const { return m_pSquiggles; }
 
@@ -307,21 +304,21 @@ public:
 	void checkSpelling(void);
 	void debugFlashing(void);
 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
-							UT_sint32& iPosition, eTabType& iType, 
+							UT_sint32& iPosition, eTabType& iType,
 							eTabLeader &iLeader );
 	bool	findPrevTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 							UT_sint32& iPosition, eTabType& iType,
 							eTabLeader &iLeader );
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
-										 UT_sint32& iPosition, 
-										 eTabType& iType, 
+										 UT_sint32& iPosition,
+										 eTabType& iType,
 										 eTabLeader &iLeader);
 	bool	findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
 										 UT_sint32& iPosition,
 										 eTabType& iType,
 										 eTabLeader &iLeader);
-#endif	
+#endif
 	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
 	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
@@ -329,7 +326,7 @@ public:
 
 	bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
-	
+
 	bool doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs);
 	bool doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs);
 	bool doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc);
@@ -361,7 +358,7 @@ public:
 	bool doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
 	bool doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
 	bool doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc);
-	
+
 	void					purgeLayout(void);
 	void					collapse(void);
 	bool					isCollapsed(void) const {return m_bIsCollapsed;}
@@ -377,7 +374,7 @@ public:
 	void					recheckIgnoredWords();
 
 	static bool 		s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
-	
+
 	inline void 		addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
 	inline void 		removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
 	inline bool 	hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uBackgroundCheckReasons & reason) ? true : false);}
@@ -405,9 +402,9 @@ protected:
 	void					_assertRunListIntegrityImpl(void);
 #endif
 	inline void 			_assertRunListIntegrity(void);
-	
+
 	void					_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge);
-	
+
 	bool					_doInsertRun(fp_Run* pNewRun);
 	bool					_delete(PT_BlockOffset blockOffset, UT_uint32 len);
 	bool					_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len);
@@ -423,14 +420,14 @@ protected:
 	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG);
 	bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
-	
+
 	void					_lookupProperties(void);
 	void					_removeLine(fp_Line*);
 	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
 
 	bool					_checkMultiWord(const UT_UCSChar* pBlockText,
-											UT_uint32 iStart, 
+											UT_uint32 iStart,
 											UT_uint32 eor,
 											bool bToggleIP);
 
@@ -444,8 +441,8 @@ protected:
 
 	void					_createListLabel(void);
 	void					_deleteListLabel(void);
-	inline void 			_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);	
-	inline void 			_prependBlockToPrevList( fl_BlockLayout * nextBlockInList); 
+	inline void 			_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);
+	inline void 			_prependBlockToPrevList( fl_BlockLayout * nextBlockInList);
 
 	bool					m_bNeedsReformat;
 	bool					m_bNeedsRedraw;
@@ -468,7 +465,7 @@ protected:
 
 	UT_Vector				m_vecTabs;
 	UT_sint32				m_iDefaultTabInterval;
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_sint32				m_iDefaultTabIntervalLayoutUnits;
 #endif
 	// read-only caches of the underlying properties
@@ -479,18 +476,18 @@ protected:
 	UT_sint32				m_iLeftMargin;
 	UT_sint32				m_iRightMargin;
 	UT_sint32				m_iTextIndent;
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_sint32				m_iTopMarginLayoutUnits;
 	UT_sint32				m_iBottomMarginLayoutUnits;
 	UT_sint32				m_iLeftMarginLayoutUnits;
 	UT_sint32				m_iRightMarginLayoutUnits;
 	UT_sint32				m_iTextIndentLayoutUnits;
-#endif	
+#endif
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	double					m_dLineSpacingLayoutUnits;
-#endif	
+#endif
 	//bool					m_bExactSpacing;
 	eSpacingPolicy			m_eSpacingPolicy;
 	bool					m_bKeepTogether;
@@ -504,10 +501,9 @@ protected:
 	bool                    m_bListItem;
 	bool                    m_bIsCollapsed;
 	bool                    m_bHasUpdatableField;
-#ifdef BIDI_ENABLED
+
 	FriBidiCharType 		m_iDomDirection;
 	FriBidiCharType 		m_iDirOverride;
-#endif
 };
 
 /*
@@ -519,7 +515,7 @@ class ABI_EXPORT fl_PartOfBlock
 {
 public:
 	fl_PartOfBlock();
-	fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength, 
+	fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
 				   bool bIsIgnored = false);
 
 	bool doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const;
@@ -542,15 +538,15 @@ private:
 class ABI_EXPORT fl_TabStop
 {
 public:
-	
+
 	fl_TabStop();
-	
+
 	UT_sint32		getPosition() { return iPosition;}
 	void			setPosition(UT_sint32 value) { iPosition = value;}
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_sint32		getPositionLayoutUnits() { return iPositionLayoutUnits;}
 	void			setPositionLayoutUnits(UT_sint32 value) { iPositionLayoutUnits = value;}
-#endif	
+#endif
 	eTabType		getType() { return iType;}
 	void			setType(eTabType type) { iType = type;}
 	eTabLeader		getLeader() { return iLeader;};
@@ -561,9 +557,9 @@ public:
 	void operator = (const fl_TabStop &Other)
 		{
 			iPosition = Other.iPosition;
-#ifndef WITH_PANGO			
+#ifndef WITH_PANGO
 			iPositionLayoutUnits = Other.iPositionLayoutUnits;
-#endif			
+#endif
 			iType = Other.iType;
 			iLeader = Other.iLeader;
 			iOffset = Other.iOffset;
@@ -572,9 +568,9 @@ public:
 protected:
 
 	UT_sint32		iPosition;
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_sint32		iPositionLayoutUnits;
-#endif	
+#endif
 	eTabType		iType;
 	eTabLeader		iLeader;
 	UT_uint32		iOffset;

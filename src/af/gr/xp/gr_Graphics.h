@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Tomas Frydrych, <tomas@frydrych.uklinux.net>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -60,7 +60,7 @@ class ABI_EXPORT GR_Font
 										   FontFamilyEnum * pff,
 										   FontPitchEnum * pfp,
 										   bool * pbTrueType);
-	
+
 };
 #else
 #define GR_Font PangoFont
@@ -97,7 +97,7 @@ class ABI_EXPORT GR_Graphics
 
 #ifndef WITH_PANGO
 	virtual void      drawChar (UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
-	virtual void      drawChars(const UT_UCSChar* pChars, 
+	virtual void      drawChars(const UT_UCSChar* pChars,
 								int iCharOffset,
 								int iLength,
 								UT_sint32 xoff,
@@ -114,7 +114,7 @@ class ABI_EXPORT GR_Graphics
 	virtual void      drawPangoGlyphString(PangoGlyphString * pGlyphString,
 										   UT_sint32 xoff,
 										   UT_sint32 yoff) const;
-	
+
 
 	// the caller must free the glyph strings using pango_glyph_string_free() and the GList
 	GList * getPangoGlyphString(const UT_UCS4Char * pChars, UT_uint32 iLen) const;
@@ -126,35 +126,35 @@ class ABI_EXPORT GR_Graphics
 	// this method can be used to directly draw Unicode strings; it is very inefficient
 	// and should be used only where this is not an issue (i.e., drawing GUI strings, etc.
 	// it must not be used in the main editing window !!!
-	void      drawCharsDirectly(const UT_UCS4Char* pChars, 
+	void      drawCharsDirectly(const UT_UCS4Char* pChars,
 								UT_uint32 iCharOffset,
 								UT_uint32 iLength,
 								UT_sint32 xoff,
 								UT_sint32 yoff) const;
-	
+
 #endif
-	
+
 	virtual void      setFont(GR_Font* pFont) PURE_VIRTUAL_IF_NOT_PANGO;
 
 	virtual UT_uint32 getFontAscent()         PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontDescent()        PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontHeight()         PURE_VIRTUAL_IF_NOT_PANGO;
 
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	virtual UT_uint32 measureString(const UT_UCSChar*s,
 									int iOffset,
 									int num,
 									UT_GrowBufElement* pWidths);
-	
+
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c) = 0;
 #endif
-	
+
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
 	virtual UT_uint32 getFontAscent(GR_Font *)  PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontDescent(GR_Font *) PURE_VIRTUAL_IF_NOT_PANGO;
 	virtual UT_uint32 getFontHeight(GR_Font *)  PURE_VIRTUAL_IF_NOT_PANGO;
 
-#ifndef WITH_PANGO	
+#ifndef WITH_PANGO
 	UT_UCSChar        remapGlyph(const UT_UCSChar actual, bool noMatterWhat);
 	UT_uint32         getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 #else
@@ -163,20 +163,20 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32         getAppropriateFontSizeFromString(const char * pszFontSize);
 
 	virtual void      setColor(const UT_RGBColor& clr) = 0;
-	
+
 	virtual GR_Font*  getGUIFont() = 0;
-	
-	virtual GR_Font*  findFont(const char* pszFontFamily, 
-							   const char* pszFontStyle, 
-							   const char* pszFontVariant, 
-							   const char* pszFontWeight, 
-							   const char* pszFontStretch, 
+
+	virtual GR_Font*  findFont(const char* pszFontFamily,
+							   const char* pszFontStyle,
+							   const char* pszFontVariant,
+							   const char* pszFontWeight,
+							   const char* pszFontStretch,
 							   const char* pszFontSize) PURE_VIRTUAL_IF_NOT_PANGO;
-	
+
 	UT_sint32         convertDimension(const char*) const;
 	UT_sint32         convertDimension(double Value, UT_Dimension Dim) const;
 	const char *      invertDimension(UT_Dimension, double) const;
-	
+
 	bool              scaleDimensions(const char * szLeftIn,
 									  const char * szWidthIn,
 									  UT_uint32 iWidthAvail,
@@ -184,13 +184,13 @@ class ABI_EXPORT GR_Graphics
 									  UT_uint32 * piWidth) const;
 
 	virtual void      drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	
+
    	virtual GR_Image* createNewImage(const char* pszName,
 									 const UT_ByteBuf* pBB,
 									 UT_sint32 iDisplayWidth,
 									 UT_sint32   iDisplayHeight,
 									 GR_Image::GRType iType = GR_Image::GRT_Raster);
-	
+
 	/* For drawLine() and xorLine():
 	**   x0,y0 give the starting pixel.
 	**   x1,y1 give the first pixel ***not drawn***.
@@ -199,36 +199,36 @@ class ABI_EXPORT GR_Graphics
 	virtual void      xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void      setLineWidth(UT_sint32) = 0;
 	virtual void      polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
-	
+
 	virtual void      fillRect(UT_RGBColor& c,
 							   UT_sint32 x,
 							   UT_sint32 y,
 							   UT_sint32 w,
 							   UT_sint32 h) = 0;
-	
+
 	virtual void      fillRect(UT_RGBColor& c, UT_Rect &r) = 0;
 	virtual void      invertRect(const UT_Rect* pRect) = 0;
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
 	const UT_Rect *   getClipRect(void) const { return m_pRect;}
 	virtual void      scroll(UT_sint32, UT_sint32) = 0;
-	
+
 	virtual void      scroll(UT_sint32 x_dest,
 							 UT_sint32 y_dest,
 							 UT_sint32 x_src,
 							 UT_sint32 y_src,
 							 UT_sint32 width,
 							 UT_sint32 height) = 0;
-	
+
 	virtual void      clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
-	
+
 	typedef enum { DGP_SCREEN, DGP_PAPER, DGP_OPAQUEOVERLAY } Properties;
-	
+
 	virtual bool      queryProperties(GR_Graphics::Properties gp) const = 0;
 	virtual UT_sint32 getScreenResolution(void) {return 100;} //subclasses to overide
 	static  UT_uint32 s_getScreenResolution();
 	virtual UT_sint32 getPaperResolution(void) {return 7200;} // subclasses to override
 	/* the following 3 are only used for printing */
-	
+
 	virtual bool      startPrint(void) = 0;
 
 	virtual bool      startPage(const char * szPageLabel,
@@ -236,7 +236,7 @@ class ABI_EXPORT GR_Graphics
 								bool bPortrait,
 								UT_uint32 iWidth,
 								UT_uint32 iHeight) = 0;
-	
+
 	virtual bool      endPrint(void) = 0;
 
 	virtual void      flush(void);
@@ -250,9 +250,9 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void      setColorSpace(GR_Graphics::ColorSpace c) = 0;
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const = 0;
-	
+
 	/* multiple cursor support */
-	
+
 	typedef enum { GR_CURSOR_INVALID=0,
 				   GR_CURSOR_DEFAULT,
 				   GR_CURSOR_IBEAM,
@@ -271,10 +271,8 @@ class ABI_EXPORT GR_Graphics
 				   GR_CURSOR_EXCHANGE,
 				   GR_CURSOR_GRAB,
 				   GR_CURSOR_LINK,
-				   GR_CURSOR_WAIT
-#ifdef BIDI_ENABLED
-				  ,GR_CURSOR_LEFTARROW
-#endif
+				   GR_CURSOR_WAIT,
+				   GR_CURSOR_LEFTARROW
 	} Cursor;
 
 	virtual void      setCursor(GR_Graphics::Cursor c) = 0;
@@ -296,14 +294,14 @@ class ABI_EXPORT GR_Graphics
 				   CLR3D_Highlight=4				/* color half-way between up and down */
 	} GR_Color3D;
 #define COUNT_3D_COLORS 5
-	
+
 	virtual void      setColor3D(GR_Color3D c) = 0;
 	virtual void      fillRect(GR_Color3D c,
 							   UT_sint32 x,
 							   UT_sint32 y,
 							   UT_sint32 w,
 							   UT_sint32 h) = 0;
-	
+
 	virtual void	  fillRect(GR_Color3D c, UT_Rect &r) = 0;
 
     virtual void      polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
@@ -313,12 +311,12 @@ class ABI_EXPORT GR_Graphics
 	//
 	const bool        isSpawnedRedraw(void) const;
 	void              setSpawnedRedraw(bool exposeState);
-	
+
 	void              setPendingRect(UT_sint32 x,
 									 UT_sint32 y,
 									 UT_sint32 width,
 									 UT_sint32 height);
-	
+
 	void              unionPendingRect( UT_Rect * pRect);
 	void              setRecentRect( UT_Rect * pRect);
 	const UT_Rect *   getPendingRect(void) const;
@@ -347,7 +345,7 @@ class ABI_EXPORT GR_Graphics
 
  public:
 	void                           setLanguage(const char * lang);
-	
+
  	static const XAP_PangoFontManager * getFontManager()
 		{
 			return const_cast<const XAP_PangoFontManager *>(s_pPangoFontManager);
@@ -357,23 +355,23 @@ class ABI_EXPORT GR_Graphics
 		{
 			return const_cast<const PangoContext *>(s_pPangoContext);
 		}
-	
+
 #endif
 
  public:
 	// TODO -- this should not be public, create access methods !!!
-	// 
+	//
 	// Postscript context positions graphics wrt top of current PAGE, NOT
 	// wrt top of document. The screen graphics engine, though positions
 	// graphics wrt the top of the document, therefore if we are printing
-	// page 5 we need to adjust the vertical position of the graphic in the 
+	// page 5 we need to adjust the vertical position of the graphic in the
 	// postscript image printing routine by (current_page_number-1) * page_height
 	// I'm going to call this variable m_iRasterPosition, for want of a better name,
 	// it's not acutally a rasterposition --- any better names would be a good idea,
 	// I jusy can't think of one right now.
 	UT_uint32         m_iRasterPosition;
- 	
- protected:	
+
+ protected:
 	XAP_App	*	      m_pApp;
 	UT_uint32	      m_iZoomPercentage;
 	bool		      m_bLayoutResolutionModeEnabled;
@@ -385,7 +383,7 @@ class ABI_EXPORT GR_Graphics
 	static UT_UCSChar* m_pRemapGlyphsTableSrc;
 	static UT_UCSChar* m_pRemapGlyphsTableDst;
 	static UT_uint32  m_iRemapGlyphsTableLen;
-#endif	
+#endif
 
 	static XAP_PrefsScheme *m_pPrefsScheme;
 	static UT_uint32 m_uTick;

@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) Luke Jordan, Martin Sevior.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -67,7 +67,7 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
- 	addItem(pFirst);	
+ 	addItem(pFirst);
 
 	m_pDoc->addList(this);
 	// New 6/11/2000. m_pParentItem is the item in the parent list
@@ -134,7 +134,7 @@ void fl_AutoNum::fixHierarchy(void)
 		if(bFound)
 		{
 			docParentID= atoi(pszParentID);
-		} 
+		}
 	}
 	if((m_iID != 0) && (docParentID != 0) &&  (docParentID != m_iParentID) && (docParentID != m_iID))
 	{
@@ -180,7 +180,7 @@ static int compareListItems(const void* p1, const void* p2)
 {
 	//
 	// Fun with (void *) pointers!
-	// 
+	//
 	//	pf_Frag * pf1 = (pf_Frag *) p1;
 	//	PD_Document * pDoc = pf1->getPieceTable()->getDocument();
 	PL_StruxDocHandle * sdh1 = (PL_StruxDocHandle *) p1;
@@ -213,7 +213,7 @@ void    fl_AutoNum::markAsDirty(void)
 void    fl_AutoNum::findAndSetParentItem(void)
 {
 	if(m_iParentID == 0)
-	{		
+	{
 		return;
 	}
 	else if( m_pParent == NULL)
@@ -275,7 +275,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 //
 	if((m_pParent == NULL) || (posClosest == 0))
 	{
-		for(iList = 0; iList < cnt; iList++) 
+		for(iList = 0; iList < cnt; iList++)
 		{
 			fl_AutoNum * pParent = m_pDoc->getNthList(iList);
 			UT_uint32 i=0;
@@ -338,7 +338,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 		update(0);
 }
 
-void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint, 
+void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 								  UT_uint32 depth, PL_StruxDocHandle pLayout) const
 {
 	// This method recursively calculates a label based on the type of label
@@ -365,12 +365,12 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 //		return;
 //	}
 
-	// TODO This is a bit of a hack to split the delim string. It would be 
+	// TODO This is a bit of a hack to split the delim string. It would be
 	// TODO nice to clear it up.
 
 	sprintf(p, "%s", m_pszDelim);
 	UT_uint32 rTmp;
-	
+
 	i = 0;
 
 	while (p[i] && p[i] != '%' && p[i+1] != 'L')
@@ -388,7 +388,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	}
 	rightDelim[i - rTmp] = '\0';
 	//UT_DEBUGMSG(("Left Delim: %s, Right Delim: %s\n", leftDelim, rightDelim));
-	
+
 	if(m_pParent != NULL  && m_List_Type < BULLETED_LIST)
 	{
 		m_pParent->_getLabelstr( labelStr, insPoint, depth+1,getParentItem());
@@ -400,9 +400,9 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 				labelStr[(*insPoint)++] = CONV_TO_UCS m_pszDecimal[i];
 			}
 			(*insPoint)--;
-		}	       
+		}
 	}
-	
+
 	UT_sint32 place = getPositionInList(pLayout,depth);
 	if(place == -1)
 	{
@@ -412,7 +412,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		return;
 	}
 	place += m_iStartValue;
- 
+
 	//	if (depth == 0 )
 	if(IS_NUMBERED_LIST_TYPE(m_List_Type))
 	{
@@ -422,9 +422,9 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 			labelStr[(*insPoint)++] = CONV_TO_UCS leftDelim[i];
 		}
 	}
-		
+
 	switch( m_List_Type)
-	{ 
+	{
 	case NUMBERED_LIST:
 		sprintf(p,"%i",place);
 		psz = UT_XML_strlen( p);
@@ -469,7 +469,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
-#ifdef BIDI_ENABLED
+
 	case ARABICNUMBERED_LIST:
 		sprintf(p,"%i",place);
 		psz = UT_XML_strlen( p);
@@ -478,10 +478,11 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 			labelStr[(*insPoint)++] =  (CONV_TO_UCS p[i]) + 0x0660 - (CONV_TO_UCS '0');
 		}
 		break;
+
 	case HEBREW_LIST:
 		dec2hebrew(labelStr,insPoint,place);
 		break;
-#endif
+
 	case BULLETED_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xb7; // was UCS_BULLET;
 		break;
@@ -530,8 +531,8 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-	
-	if( m_List_Type < BULLETED_LIST && 
+
+	if( m_List_Type < BULLETED_LIST &&
 	    (UT_XML_strnicmp(m_pszDecimal,rightDelim,4) != 0 || depth == 0) )
 	{
 		psz = UT_XML_strlen(rightDelim);
@@ -627,7 +628,7 @@ UT_uint32 fl_AutoNum::getStartValue32() const
 
 void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLast, UT_uint32 depth, bool bDoFix)
 {
-	UT_sint32 i = -1; 
+	UT_sint32 i = -1;
 	if(m_pItems.getItemCount() > 0)
 		i = m_pItems.findItem((void *) pItem);
 	if(i < 0)
@@ -678,7 +679,7 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev, bo
 		return;
 
 	// scan through all the lists and update parent pointers
-        
+
 	UT_sint32 numlists = m_pDoc->getListsCount();
 	for(i=0; i<numlists; i++)
 	{
@@ -718,7 +719,7 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext, b
 	if(pPrev != NULL)
 	{
 		// scan through all the lists and update parent pointers
-        
+
 		UT_sint32 numlists = m_pDoc->getListsCount();
 		for(i=0; i<numlists; i++)
 		{
@@ -740,7 +741,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	UT_sint32 i;
 	//
 	// For multi-views we might have already deleted pItem from the
-	// fl_AutoNum 
+	// fl_AutoNum
 	//
 	//
 	UT_ASSERT(ndx != -1);
@@ -749,7 +750,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 		m_bDirty = true;
 		_updateItems(0,NULL);
 		return;
-	}        
+	}
 	PL_StruxDocHandle ppItem = NULL;
 	if(ndx > 0)
 	{
@@ -759,7 +760,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	m_bDirty = true;
 
 	// scan through all the lists and update parent pointers
-	
+
 	UT_sint32 numlists = m_pDoc->getListsCount();
 	for(i=0; i<numlists; i++)
 	{
@@ -798,13 +799,13 @@ UT_uint32 fl_AutoNum::getNumLabels() const
 UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth) const
 {
 	UT_ASSERT(m_pItems.getItemCount() > 0);
-	
+
 	PL_StruxDocHandle pTmp;
 	UT_uint32 ndx = 0;
 	UT_uint32 count = m_pItems.getItemCount();
 	bool bOnLevel = true;
 	bool bFirstItem = false;
-	
+
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
@@ -823,7 +824,7 @@ UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth
 			ndx++;
 		}
 	}
-	
+
 	return -1;
 	// return m_pItems.findItem(pItem);
 }
@@ -889,7 +890,7 @@ const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
 		return true;
 }
 
-const bool fl_AutoNum::isEmpty() 
+const bool fl_AutoNum::isEmpty()
 {
 	if (m_pItems.getItemCount() > 0)
 		return false;
@@ -941,7 +942,7 @@ bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 }
 
 
-bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem) 
+bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
 {
 	UT_sint32 itemloc = m_pItems.findItem((void *) pItem);
 	if (itemloc == -1)
@@ -952,7 +953,7 @@ bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
 		return false;
 }
 
-fl_AutoNum * fl_AutoNum::getActiveParent(void) 
+fl_AutoNum * fl_AutoNum::getActiveParent(void)
 {
 	fl_AutoNum * pAutoNum = m_pParent;
 
@@ -1036,10 +1037,10 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 			PL_StruxDocHandle pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
 			UT_ASSERT(pTmp);
 			m_pDoc->listUpdate(pTmp);
-			
+
 			// scan through all the lists and update child lists if connected to this item
-	
-			PL_StruxDocHandle pItem =  (PL_StruxDocHandle) m_pItems.getNthItem(i);  
+
+			PL_StruxDocHandle pItem =  (PL_StruxDocHandle) m_pItems.getNthItem(i);
 			for(j=0; j<numlists; j++)
 			{
 				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
@@ -1192,11 +1193,11 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower)
 
 	char * rmn = UT_strdup (roman.c_str());
 
-	if (lower == true) 
+	if (lower == true)
 	{
 		int len;
 		len = roman.size();
-		while (--len >= 0) 
+		while (--len >= 0)
 		{
 			UT_sint32 r = (UT_sint32) roman[len];
 			if( (r >= (UT_sint32) 'A') && (r <= (UT_sint32) 'Z'))
@@ -1212,24 +1213,24 @@ char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset)
 {
 	char ascii[30];
 	UT_uint32 ndx, count, i;
-	
+
 	ascii[0] = '\0';
 	ndx = abs(value % 26);
 	count = abs(value / 26);
-	
+
 	// For now, we do this like Word. A preference would be nice.
 	for (i = 0; i <= count; i++)
 	{
 		ascii[i] = (char)(ndx + offset);
 	}
 	ascii[i] = '\0';
-	
+
 	return UT_strdup(ascii);
 }
-#ifdef BIDI_ENABLED
+
 void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value)
 {
-	UT_UCSChar gHebrewDigit[22] = 
+	UT_UCSChar gHebrewDigit[22] =
 	{
 		//   1       2       3       4       5       6       7       8       9
 		0x05D0, 0x05D1, 0x05D2, 0x05D3, 0x05D4, 0x05D5, 0x05D6, 0x05D7, 0x05D8,
@@ -1271,7 +1272,7 @@ void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint
 				// 15 is represented by 9 and 6, not 10 and 5
 				// 16 is represented by 9 and 7, not 10 and 6
 				n2 = 9;
-				digit = gHebrewDigit[ n2 - 1];    
+				digit = gHebrewDigit[ n2 - 1];
 			} else {
 				n2 = n3 - (n3 % 10);
 				digit = gHebrewDigit[(n2/10)-1+9];
@@ -1280,8 +1281,8 @@ void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint
 			n3 -= n2;
 			labelStr[(*insPoint)++] = digit;
 		} // if
-  
-		// Process digit for 1 - 9 
+
+		// Process digit for 1 - 9
 		if ( n3 > 0)
 		{
 			labelStr[(*insPoint)++] = gHebrewDigit[n3-1];
@@ -1289,31 +1290,32 @@ void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint
 		value /= 1000;
 	} while (value >= 1);
 }
-#endif
-const char ** fl_AutoNum::getAttributes(void) 
+
+
+const char ** fl_AutoNum::getAttributes(void)
 {
 	static char  szID[15], szPid[15], szType[5], szStart[5];
 	UT_Vector va;
- 
+
 	sprintf(szID, "%i", m_iID);
 	va.addItem( (void *) "id"); va.addItem( (void *) szID);
-        
+
 	if (m_pParent)
 		sprintf(szPid, "%i", m_pParent->getID());
 	else
 		sprintf(szPid, "0");
 	va.addItem( (void *) "parentid"); va.addItem( (void *) szPid);
-                
+
 	sprintf(szType, "%i", m_List_Type);
 	va.addItem( (void *) "type"); va.addItem(szType);
-        
+
 	sprintf(szStart, "%i", m_iStartValue);
 	va.addItem( (void *) "start-value"); va.addItem(szStart);
-	
+
 	va.addItem( (void *) "list-delim"); va.addItem( (void *) m_pszDelim);
-	
+
 	va.addItem( (void *) "list-decimal"); va.addItem( (void *) m_pszDecimal);
-	
+
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 i;
 	const char ** attribs = (const char **) UT_calloc(counta, sizeof(char *));

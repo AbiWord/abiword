@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -50,7 +50,7 @@ BeginSetEnc(it,IT,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,		IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nuovo", 		tb_new_xpm,		NULL, "Crea un nuovo documento")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nuovo", 		tb_new_xpm,		NULL, "Crea un nuovo documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Apri",			tb_open_xpm,	NULL, "Apre un documento esistente")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Salva", 		tb_save_xpm,	NULL, "Salva il documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Salva con nome", 	tb_save_as_xpm,	NULL, "Salva il documento con un altro nome")
@@ -82,7 +82,7 @@ BeginSetEnc(it,IT,true,"iso-8859-1")
         ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,     "Apice",  	tb_text_superscript_xpm,        NULL, "Apice")
         ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,       "Pedice",    	tb_text_subscript_xpm,          NULL, "Pedice")
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Simbolo",	tb_symbol_xpm,		NULL, "Inserisci simbolo")
-		
+
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Sinistra",		tb_text_align_left_xpm,	NULL, "Allineamento a sinistra")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centro",		tb_text_center_xpm,		NULL, "Allineamento al centro")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Destra",		tb_text_align_right_xpm,NULL, "Allineamento a destra")
@@ -103,7 +103,7 @@ BeginSetEnc(it,IT,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",			NoIcon,			NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Liste puntate",		tb_lists_bullets_xpm,		NULL,		"Liste ed elenchi puntati")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Liste numerate",		tb_lists_numbers_xpm,		NULL,		"Liste ed elenchi numerati")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Colore",	tb_text_fgcolor_xpm,			NULL, "Cambia il colore")	
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Colore",	tb_text_fgcolor_xpm,			NULL, "Cambia il colore")
         ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Colore dello sfondo",	tb_text_bgcolor_xpm,			NULL, "Cambia il colore dello sfondo")
         ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Aumenta il rientro", tb_text_indent_xpm, NULL, "Aumenta la distanza del rientro dal margine")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Diminuisci il rientro", tb_text_unindent_xpm, NULL, "Diminuisci la distanza del rientro dal margine")
@@ -111,11 +111,9 @@ BeginSetEnc(it,IT,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Esegui script",	tb_script_play_xpm,		NULL, "Esegui script")
 
 	// ... add others here ...
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Forza il testo da sinistra a destra",	tb_text_direction_ltr_xpm,	NULL, "Forza la direzione del testo da sinistra a destra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Forza il testo da destra a sinistra",	tb_text_direction_rtl_xpm,	NULL, "Forza la direzione del testo da destra a sinistra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Direzione del paragrafo",	tb_text_dom_direction_rtl_xpm,	NULL, "Cambia la direzione dominante del paragrafo")
-#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -49,7 +49,7 @@ public:
 
 	AP_Columns_preview(GR_Graphics * gc, AP_Dialog_Columns * pColumns);
 	virtual ~AP_Columns_preview(void);
-				
+
 	// data twiddlers
 	void			draw(void);
 
@@ -90,17 +90,14 @@ public:
 	bool			   getLineBetween(void) const { return m_bLineBetween;}
 	double             getMaxHeightPercent(void);
 	double             getSpaceAfterPercent(void);
-
-#ifdef BIDI_ENABLED
 	void			   setColumnOrder(UT_uint32 iOrder);
 	UT_uint32		   getColumnOrder(void) const {return m_iColumnOrder;}
-#endif
 	const char *       getHeightString(void);
 	const char *       getSpaceAfterString(void);
 	bool               isSpaceAfterChanged(void) const {return m_bSpaceAfterChanged;}
 	bool               isMaxHeightChanged(void) const {return m_bMaxHeightChanged;}
+
 protected:
-	
 	void			   _createPreviewFromGC(GR_Graphics * gc,
 							UT_uint32 width,
 							UT_uint32 height);
@@ -120,11 +117,9 @@ protected:
 	void                       setSpaceAfter( const char * szAfter);
 private:
 
-	UT_uint32		   m_iColumns;
-	bool			   m_bLineBetween;
-#ifdef BIDI_ENABLED
-	UT_uint32		   m_iColumnOrder;
-#endif
+	UT_uint32		           m_iColumns;
+	bool			           m_bLineBetween;
+	UT_uint32		           m_iColumnOrder;
 	UT_String                  m_HeightString;
 	UT_String                  m_SpaceAfterString;
 	PD_Document *              m_pDoc;

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,7 +45,7 @@
 
 static bool s_ToolbarFunctions_check_inc_load(FV_View * pView)
 {
-  // todo: we probably need to make this function smarter. 
+  // todo: we probably need to make this function smarter.
   // see ap_EditMethods.cpp around line 1024
 
   //XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -110,7 +110,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 
 	if (pszState)
 		*pszState = NULL;
-	
+
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	switch (id)
@@ -166,7 +166,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 {
-	ABIWORD_VIEW;	
+	ABIWORD_VIEW;
 
 	if (pszState)
 		*pszState = NULL;
@@ -210,12 +210,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr)
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_REMOVEHEADER:
-		if (!pView->isHeaderOnPage()) 
+		if (!pView->isHeaderOnPage())
 		  s = EV_TIS_Gray;
 		break;
 
 	case AP_TOOLBAR_ID_EDIT_REMOVEFOOTER:
-		if (!pView->isFooterOnPage()) 
+		if (!pView->isFooterOnPage())
 		  s = EV_TIS_Gray;
 		break;
 	default:
@@ -245,7 +245,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 			}
 
 			if (sz)
-			{	
+			{
 				static const char * sz2;
 				sz2 = sz;
 				*pszState = sz2;
@@ -274,12 +274,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-	if(pView->getDocument()->areStylesLocked()) 
+	if(pView->getDocument()->areStylesLocked())
 	{
 		return EV_TIS_Gray;
 	}
 
-	if(pView->isHdrFtrEdit()) 
+	if(pView->isHdrFtrEdit())
 	{
 		return EV_TIS_Gray;
 	}
@@ -300,11 +300,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-	if(pView->getDocument()->areStylesLocked()) 
+	if(pView->getDocument()->areStylesLocked())
 	{
 		return EV_TIS_Gray;
 	}
-	if(pView->isHdrFtrEdit()) 
+	if(pView->isHdrFtrEdit())
 	{
 		return EV_TIS_Gray;
 	}
@@ -323,19 +323,19 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 	ABIWORD_VIEW;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-	
+
 	// get current char properties from pView
 	const XML_Char * prop = NULL;
 	const XML_Char ** props_in = NULL;
 	const XML_Char * sz = NULL;
-	
-	double margin_left = 0., margin_right = 0., allowed = 0., 
+
+	double margin_left = 0., margin_right = 0., allowed = 0.,
 		page_margin_left = 0., page_margin_right = 0.;
-	
+
 	{
 		pView->getBlockFormat(&props_in);
 		prop = "margin-left";
-		sz = UT_getAttribute(prop, props_in);	    
+		sz = UT_getAttribute(prop, props_in);
 		margin_left = UT_convertToInches(sz);
 		FREEP(props_in);
 	}
@@ -343,11 +343,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 	{
 		pView->getBlockFormat(&props_in);
 		prop = "margin-right";
-		sz = UT_getAttribute(prop, props_in);	    
+		sz = UT_getAttribute(prop, props_in);
 		margin_right = UT_convertToInches(sz);
 		FREEP(props_in);
 	}
-	
+
 	{
 		prop = "page-margin-left";
 		pView->getSectionFormat(&props_in);
@@ -355,7 +355,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 		page_margin_left = UT_convertToInches(sz);
 		FREEP(props_in);
 	}
-	
+
 	{
 		prop = "page-margin-right";
 		pView->getSectionFormat(&props_in);
@@ -364,10 +364,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 		FREEP(props_in);
 	}
 
-#ifdef BIDI_ENABLED
 	FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
-#endif
-	
+
 	switch(id)
 	{
 		case AP_TOOLBAR_ID_INDENT:
@@ -377,17 +375,14 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 			break;
 		case AP_TOOLBAR_ID_UNINDENT:
 			allowed = 0.;
-#ifdef BIDI_ENABLED
+
 			double margin = iBlockDir == FRIBIDI_TYPE_LTR ? margin_left : margin_right;
-#else
-			double margin = margin_left;
-#endif
 
 			if (margin <= allowed)
 				s = EV_TIS_Gray;
 			break;
 	}
-	
+
 	return s;
 }
 
@@ -476,7 +471,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		val  = "subscript";
 		bMultiple = true;
 		break;
-#ifdef BIDI_ENABLED
+
 	case AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR:
 		prop = "dir-override";
 		val  = "ltr";
@@ -486,7 +481,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		prop = "dir-override";
 		val  = "rtl";
 		break;
-#endif	
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -508,21 +503,21 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		if (sz)
 		{
 			if (bSize)
-			{	
+			{
 				static char buf[7];
 				sprintf(buf, "%s", std_size_string((float)UT_convertToPoints(sz)));
 				*pszState = buf;
 				s = EV_TIS_UseString;
 			}
 			else if (bString)
-			{	
+			{
 				static const char * sz2;
 				sz2 = sz;
 				*pszState = sz2;
 				s = EV_TIS_UseString;
 			}
 			else if (bMultiple)
-			{	
+			{
 				// some properties have multiple values
 				if (strstr(sz, val))
 					s = EV_TIS_Toggled;
@@ -533,7 +528,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 					s = EV_TIS_Toggled;
 			}
 		}
-		
+
 		free(props_in);
 	}
 
@@ -556,7 +551,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	if(pView->isHdrFtrEdit())
 	  {
 	    switch(id)
-	      {	
+	      {
 		// only 1 column allowed
 	      case AP_TOOLBAR_ID_1COLUMN:
 		return EV_TIS_Toggled;
@@ -614,7 +609,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 				s = EV_TIS_ZERO;
 			}
 		}
-		
+
 		free(props_in);
 	}
 
@@ -639,7 +634,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
         if(pView->getDocument()->areStylesLocked()) {
 	    return EV_TIS_Gray;
         }
-	
+
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_ALIGN_LEFT:
@@ -684,20 +679,19 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		prop = "line-height";
 		val = "2.0";
 		break;
-#ifdef BIDI_ENABLED
+
 	case AP_TOOLBAR_ID_FMT_DOM_DIRECTION:
 		prop = "dom-dir";
 		val = "rtl";
 		xxx_UT_DEBUGMSG(("ap_ToolbarGetState_BlockFmt: dom-dir\n"));
 		break;
-#endif
 
 	default:
 		UT_DEBUGMSG(("id=%d", id));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-	
+
 	if (prop && val)
 	{
 		// get current block properties from pView
@@ -710,7 +704,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		// NB: maybe *no* properties are consistent across the selection
 		if (props_in && props_in[0])
 			sz = UT_getAttribute(prop, props_in);
-	
+
 		if (sz)
 		{
 			if (bPoints)
@@ -724,7 +718,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 					s = EV_TIS_Toggled;
 			}
 		}
-		
+
 		free(props_in);
 	}
 
@@ -738,7 +732,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	
+
 	EV_Toolbar_ItemState s = EV_TIS_UseString;
 
 	static char buf[10];
@@ -754,7 +748,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 		sprintf(buf, "%s", pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage));
 		break;
 	default:
-	  iZoom = pView->getGraphics()->getZoomPercentage();	
+	  iZoom = pView->getGraphics()->getZoomPercentage();
 	  sprintf(buf, "%d%%", iZoom);
 	  break;
 	}

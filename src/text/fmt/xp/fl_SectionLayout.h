@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -55,7 +55,7 @@ class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_HdrFtrSectionLayout;
 
-typedef enum 
+typedef enum
 {
 	FL_SECTION_DOC,
     FL_SECTION_HDRFTR,
@@ -64,8 +64,8 @@ typedef enum
 } SectionType;
 
 
-typedef enum 
-{       
+typedef enum
+{
 	FL_HDRFTR_HEADER,
 	FL_HDRFTR_HEADER_EVEN,
 	FL_HDRFTR_HEADER_FIRST,
@@ -88,7 +88,7 @@ public:
 	SectionType     	getType(void) const { return m_iType; }
 
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
-	
+
 	FL_DocLayout*		getDocLayout(void) const;
 
 	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL) = 0;
@@ -109,7 +109,7 @@ public:
 	inline fl_SectionLayout*	getNext(void) const { return m_pNext; }
 	void				setPrev(fl_SectionLayout*);
 	void				setNext(fl_SectionLayout*);
-	
+
 	fl_BlockLayout *	getFirstBlock(void) const;
 	fl_BlockLayout *	getLastBlock(void) const;
 	void                setLastBlock(fl_BlockLayout * pLast) { m_pLastBlock = pLast;}
@@ -121,7 +121,7 @@ public:
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) = 0;
 
 	const char*			getAttribute(const char* pszName) const;
-	
+
 	virtual bool bl_doclistener_populateSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	virtual bool bl_doclistener_populateObject(fl_BlockLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_insertSpan(fl_BlockLayout*, const PX_ChangeRecord_Span * pcrs);
@@ -135,7 +135,7 @@ public:
 											void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	PL_ListenerId lid,
 																	PL_StruxFmtHandle sfhNew));
-	virtual bool bl_doclistener_insertSection(fl_BlockLayout*, 
+	virtual bool bl_doclistener_insertSection(fl_BlockLayout*,
 											  SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
@@ -154,18 +154,18 @@ public:
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
-	
+
 protected:
 	virtual void		_lookupProperties(void) = 0;
-	
+
 	void				_purgeLayout();
 	fb_LineBreaker *	_getLineBreaker(void);
 
 	SectionType			m_iType;
-	
+
 	fl_SectionLayout*	m_pPrev;
 	fl_SectionLayout*	m_pNext;
-	
+
 	FL_DocLayout*		m_pLayout;
 	fb_LineBreaker*		m_pLB;
 
@@ -184,7 +184,7 @@ public:
 
 	fl_DocSectionLayout* getNextDocSection(void) const;
 	fl_DocSectionLayout* getPrevDocSection(void) const;
-	
+
 	virtual void		format(void);
 	virtual void		updateLayout(void);
 	void                updateDocSection(void);
@@ -193,7 +193,7 @@ public:
 	void                markAllRunsDirty(void);
 
 	virtual void		redrawUpdate(void);
-	
+
 	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL);
 
 	virtual fp_Container*		getFirstContainer();
@@ -221,9 +221,7 @@ public:
 	UT_uint32			getColumnGap(void) const;
 	UT_uint32			getColumnGapInLayoutUnits(void) const;
 	bool				getColumnLineBetween(void) const {return m_bColumnLineBetween;}
-#ifdef BIDI_ENABLED	
 	UT_uint32			getColumnOrder(void) const;
-#endif
 	void                setPaperColor();
 	UT_RGBColor *       getPaperColor(void);
 	void				deleteEmptyColumns(void);
@@ -276,14 +274,12 @@ protected:
 	fl_HdrFtrSectionLayout*		m_pFooterFirstSL;
 	fl_HdrFtrSectionLayout*		m_pHeaderLastSL;
 	fl_HdrFtrSectionLayout*		m_pFooterLastSL;
-	
+
 	UT_uint32			m_iNumColumns;
 	UT_uint32			m_iColumnGap;
 	UT_uint32			m_iColumnGapLayoutUnits;
 	bool				m_bColumnLineBetween;
-#ifdef BIDI_ENABLED
 	UT_uint32			m_iColumnOrder;
-#endif
 
 	UT_sint32			m_iSpaceAfter;
 	UT_sint32			m_iSpaceAfterLayoutUnits;
@@ -336,7 +332,7 @@ class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout
 public:
 	fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
 	virtual ~fl_HdrFtrSectionLayout();
-	
+
 	inline fl_DocSectionLayout*	getDocSectionLayout(void) const { return m_pDocSL; }
 	HdrFtrType      			getHFType(void) const { return m_iHFType; }
 	void                        setDocSectionLayout(fl_DocSectionLayout * pDSL) { m_pDocSL = pDSL;}
@@ -357,7 +353,7 @@ public:
 	fl_BlockLayout *            findMatchingBlock( fl_BlockLayout * pBL);
 	virtual void				redrawUpdate(void);
 	void                        updateBackgroundColor(void);
-	
+
 	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL);
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
@@ -396,11 +392,11 @@ public:
 	virtual bool bl_doclistener_insertFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
 	virtual bool bl_doclistener_deleteFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
 	virtual bool bl_doclistener_changeFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
-	
+
 protected:
 	UT_sint32					_findShadow(fp_Page * pPage);
 	virtual void				_lookupProperties(void);
-	
+
 	fl_DocSectionLayout*		m_pDocSL;
 	HdrFtrType					m_iHFType;
 	UT_Vector					m_vecPages;
@@ -417,7 +413,7 @@ class ABI_EXPORT fl_HdrFtrShadow : public fl_SectionLayout
 public:
 	fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
 	virtual ~fl_HdrFtrShadow();
-	
+
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
 	fl_BlockLayout *			findMatchingBlock(fl_BlockLayout * pBL);
 	fl_BlockLayout *			findBlockAtPosition(PT_DocPosition pos);
@@ -435,7 +431,7 @@ public:
 protected:
 	virtual void				_lookupProperties(void);
 	void						_createContainer(void);
-	
+
 	fp_ShadowContainer*			m_pContainer;
 	fp_Page*					m_pPage;
 };

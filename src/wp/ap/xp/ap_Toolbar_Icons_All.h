@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -52,11 +52,9 @@
 #	include "tb_text_superscript.xpm"
 #	include "tb_text_subscript.xpm"
 #	include "tb_help.xpm"
-#ifdef BIDI_ENABLED
-#	include "tb_text_direction_rtl.xpm" 
-#	include "tb_text_direction_ltr.xpm" 
-#	include "tb_text_dom_direction_rtl.xpm" 
-#endif
+#	include "tb_text_direction_rtl.xpm"
+#	include "tb_text_direction_ltr.xpm"
+#	include "tb_text_dom_direction_rtl.xpm"
 #	include "tb_symbol.xpm"
 #	include "tb_para_0before.xpm"
 #	include "tb_para_12before.xpm"
@@ -142,7 +140,7 @@
 #else
 
 	// Declare each toolbar icon that we are building.
-	
+
 	DefineToolbarIcon(tb_text_center_xpm)
 	DefineToolbarIcon(tb_text_justify_xpm)
 	DefineToolbarIcon(tb_text_align_left_xpm)
@@ -155,18 +153,18 @@
 	DefineToolbarIcon(tb_text_bottomline_xpm)
 	DefineToolbarIcon(tb_text_underline_xpm)
 	DefineToolbarIcon(tb_text_overline_xpm)
-	DefineToolbarIcon(tb_text_superscript_xpm)	
+	DefineToolbarIcon(tb_text_superscript_xpm)
 	DefineToolbarIcon(tb_text_subscript_xpm)
 	DefineToolbarIcon(tb_help_xpm)
-#ifdef BIDI_ENABLED
+
 	//DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_direction_ltr_xpm)
 	DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_dom_direction_rtl_xpm)
-#endif
-     DefineToolbarIcon(tb_smiley)
-     DefineToolbarIcon(tb_anchor)
-     DefineToolbarIcon(tb_hyperlink)
+
+    DefineToolbarIcon(tb_smiley)
+    DefineToolbarIcon(tb_anchor)
+    DefineToolbarIcon(tb_hyperlink)
 	DefineToolbarIcon(tb_symbol_xpm)
 	DefineToolbarIcon(tb_para_0before_xpm)
 	DefineToolbarIcon(tb_para_12before_xpm)
@@ -220,7 +218,7 @@
 	DefineToolbarIcon(tb_text_underline_P_xpm)
 	DefineToolbarIcon(tb_text_overline_P_xpm)
 	// Danish translations
-	DefineToolbarIcon(tb_text_bold_F_xpm)	
+	DefineToolbarIcon(tb_text_bold_F_xpm)
 	DefineToolbarIcon(tb_text_strikeout_G_xpm)
 	// Hungarian translations
 		//DefineToolbarIcon(tb_text_bold_F_xpm)

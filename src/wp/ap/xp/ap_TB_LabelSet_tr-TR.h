@@ -111,11 +111,9 @@ BeginSetEnc(tr,TR,true,"cp1254")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Betik yürüt",	    tb_script_play_xpm,		NULL, "Betiði yürüt")
 
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Soldan-saða metin",		tb_text_direction_ltr_xpm,	NULL, "Soldan-saða metin zorunlu")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Saðdan-sola metin",		tb_text_direction_rtl_xpm,	NULL, "Saðdan-sola metin zorunlu")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Paragraf Yönü",	        tb_text_dom_direction_rtl_xpm,	NULL, "Baskýn paragraf yönünü deðiþtir")
-#endif
 
      // ... add others here ...
 

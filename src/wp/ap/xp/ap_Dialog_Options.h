@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -47,20 +47,19 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
 	// control ids
 	typedef enum { id_CHECK_SPELL_CHECK_AS_TYPE = 0, id_CHECK_SPELL_HIDE_ERRORS,
-				   id_CHECK_SPELL_SUGGEST, id_CHECK_SPELL_MAIN_ONLY, 
-				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS, 
+				   id_CHECK_SPELL_SUGGEST, id_CHECK_SPELL_MAIN_ONLY,
+				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS,
 				   id_CHECK_SPELL_INTERNET, id_LIST_DICTIONARY,
 				   id_BUTTON_DICTIONARY_EDIT, id_BUTTON_IGNORE_RESET,
 				   id_BUTTON_IGNORE_EDIT, id_BUTTON_SPELL_AUTOREPLACE,
 
 				   id_CHECK_SMART_QUOTES_ENABLE, id_LIST_DEFAULT_PAGE_SIZE,
-#ifdef BIDI_ENABLED
-//				   id_CHECK_OTHER_USE_UNICODE_DIRECTION,
+
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
 				   id_CHECK_OTHER_USE_CONTEXT_GLYPHS,
 				   id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS,
 				   id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS,
-#endif
+
 				   id_CHECK_AUTO_SAVE_FILE,
 				   id_TEXT_AUTO_SAVE_FILE_EXT,
 				   id_TEXT_AUTO_SAVE_FILE_PERIOD,
@@ -72,7 +71,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR,
 				   id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR,
 				   id_CHECK_VIEW_SHOW_STATUS_BAR,
-				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT, 
+				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT,
 				   id_CHECK_VIEW_UNPRINTABLE,
 				   id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE,
 				   id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT,
@@ -117,7 +116,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 #if 0
 	SET_GATHER			(SpellAutoReplace,	bool);
 #endif
-	
+
 	SET_GATHER			(ShowSplash,bool);
 	SET_GATHER			(SmartQuotesEnable, bool);
 	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
@@ -129,7 +128,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(ViewShowFormatBar, bool);
 	SET_GATHER			(ViewShowExtraBar,	bool);
 	SET_GATHER			(ViewShowStatusBar, bool);
-	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
 
 	SET_GATHER			(ViewAll,			bool);
@@ -138,12 +137,10 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(AllowCustomToolbars, bool);
 	SET_GATHER			(AutoLoadPlugins, bool);
 
-#ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
 	SET_GATHER			(OtherUseContextGlyphs, bool);
 	SET_GATHER			(OtherSaveContextGlyphs, bool);
 	SET_GATHER			(OtherHebrewContextGlyphs, bool);
-#endif
 
 	SET_GATHER			(AutoSaveFile,		bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal) = 0;
@@ -156,7 +153,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	// page index)
 	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER
-	
+
  protected:
 
 
@@ -164,7 +161,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 // Screen Color stuff
 	const XML_Char * _gatherColorForTransparent(void);
 	void _setColorForTransparent(const XML_Char * pzsColorForTransparent);
-	
+
 
 	tAnswer 			m_answer;
 	XAP_Frame * 		m_pFrame;

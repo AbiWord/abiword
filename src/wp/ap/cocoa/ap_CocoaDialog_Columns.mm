@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -74,10 +74,7 @@ AP_CocoaDialog_Columns::AP_CocoaDialog_Columns(XAP_DialogFactory * pDlgFactory,
 	m_iMaxColumnHeight = 0;
 	m_iMaxColumnHeightID = 0;
 	m_wMaxColumnHeightSpin = NULL;
-
-#ifdef BIDI_ENABLED
     m_checkOrder = NULL;
-#endif
 }
 
 AP_CocoaDialog_Columns::~AP_CocoaDialog_Columns(void)
@@ -188,7 +185,7 @@ static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */,
 
 void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
 {
-	
+
 	setViewAndDoc(pFrame);
 
 	// Build the window's widgets and arrange them
@@ -210,11 +207,11 @@ void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
 
 	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
 	UT_ASSERT(pCocoaFrame);
-	
+
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
-	
+
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
 	centerDialog(parentWindow, mainWindow);
@@ -237,14 +234,14 @@ void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
 	m_pPreviewWidget = new GR_CocoaGraphics(m_wpreviewArea->window, unixapp->getFontManager(), m_pApp);
 
 	// Todo: we need a good widget to query with a probable
-	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget) 
+	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
 	m_pPreviewWidget->init3dColors(m_wpreviewArea->style);
 
 	// let the widget materialize
 
 	_createPreviewFromGC(m_pPreviewWidget,
-			     (UT_uint32) m_wpreviewArea->allocation.width, 
+			     (UT_uint32) m_wpreviewArea->allocation.width,
 			     (UT_uint32) m_wpreviewArea->allocation.height);
 
 	setLineBetween(getLineBetween());
@@ -259,13 +256,13 @@ void AP_CocoaDialog_Columns::runModal(XAP_Frame * pFrame)
         // Run into the GTK event loop for this window.
 
 	gtk_main();
-#ifdef BIDI_ENABLED
-	setColumnOrder (gtk_toggle_button_get_active(								
+
+	setColumnOrder (gtk_toggle_button_get_active(
 				GTK_TOGGLE_BUTTON(m_checkOrder)));
-#endif
+
 	_storeWindowData();
 	DELETEP (m_pPreviewWidget);
-	
+
 	if(mainWindow && GTK_IS_WIDGET(mainWindow))
 	  gtk_widget_destroy(mainWindow);
 }
@@ -324,21 +321,21 @@ void AP_CocoaDialog_Columns::readSpin(void)
 		event_Toggle(val);
 		return;
 	}
-	g_signal_handler_block(G_OBJECT(m_wtoggleOne), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
 							 m_oneHandlerID);
-	g_signal_handler_block(G_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleTwo),
 							 m_twoHandlerID);
-	g_signal_handler_block(G_OBJECT(m_wtoggleThree), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleThree),
 							 m_threeHandlerID);
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleOne),FALSE);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleOne), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleOne),
 							   m_oneHandlerID);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleTwo),
 							   m_twoHandlerID);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree),
 							   m_threeHandlerID);
 	setColumns( val );
 	m_pColumnsPreview->draw();
@@ -347,18 +344,18 @@ void AP_CocoaDialog_Columns::readSpin(void)
 void AP_CocoaDialog_Columns::event_Toggle( UT_uint32 icolumns)
 {
 	checkLineBetween();
-	g_signal_handler_block(G_OBJECT(m_wtoggleOne), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
 							 m_oneHandlerID);
-	g_signal_handler_block(G_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleTwo),
 							 m_twoHandlerID);
-	g_signal_handler_block(G_OBJECT(m_wtoggleThree), 
+	g_signal_handler_block(G_OBJECT(m_wtoggleThree),
 							 m_threeHandlerID);
 
 		// DOM: TODO: rewrite me
-	g_signal_handler_block(G_OBJECT(m_wSpin), 
+	g_signal_handler_block(G_OBJECT(m_wSpin),
 							 m_spinHandlerID);
 	gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
-	g_signal_handler_unblock(G_OBJECT(m_wSpin), 
+	g_signal_handler_unblock(G_OBJECT(m_wSpin),
 							   m_spinHandlerID);
 
 	switch (icolumns)
@@ -383,11 +380,11 @@ void AP_CocoaDialog_Columns::event_Toggle( UT_uint32 icolumns)
 		// TODO: make these insenstive and update a spin control
 
 	}
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleOne), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleOne),
 							   m_oneHandlerID);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleTwo), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleTwo),
 							   m_twoHandlerID);
-	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree), 
+	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree),
 							   m_threeHandlerID);
 	setColumns( icolumns );
 	m_pColumnsPreview->draw();
@@ -555,7 +552,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wLabelOne = gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_One));
 	gtk_widget_show(wLabelOne );
 	gtk_box_pack_start (GTK_BOX (hbox3), wLabelOne, FALSE, FALSE, 0);
-	
+
 	hbox4 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show(hbox4 );
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox4, TRUE, TRUE, 0);
@@ -569,7 +566,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	wLabelTwo = gtk_label_new( pSS->getValue(AP_STRING_ID_DLG_Column_Two));
 	gtk_widget_show(wLabelTwo );
 	gtk_box_pack_start (GTK_BOX (hbox4), wLabelTwo, FALSE, FALSE, 0);
-	
+
 	hbox5 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show(hbox5 );
 	gtk_widget_show (hbox5);
@@ -636,7 +633,6 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(wLineBtween );
 	gtk_box_pack_start (GTK_BOX (hbox2), wLineBtween, FALSE, FALSE, 3);
 
-#ifdef BIDI_ENABLED
 	GtkWidget *hbox6 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show(hbox6 );
 	gtk_box_pack_start (GTK_BOX (vbox1), hbox6, FALSE, FALSE, 0);
@@ -646,7 +642,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_toggle_button_set_active (										\
 				GTK_TOGGLE_BUTTON(checkOrder), getColumnOrder() );
 	m_checkOrder = checkOrder;
-#endif	
+
 
 /////////////////////////////////////////////////////////
 // Spin Button for Columns
@@ -662,7 +658,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	SpinLabel =  gtk_label_new ( pSS->getValue(AP_STRING_ID_DLG_Column_Number_Cols));
 	gtk_widget_show(SpinLabel);
 	gtk_box_pack_start(GTK_BOX(hboxSpin),SpinLabel,FALSE,FALSE,0);
-		
+
 	SpinAdj = (GtkAdjustment *) gtk_adjustment_new( 1.0, 1.0, 20., 1.0,10.0,0.0);
 	Spinbutton = gtk_spin_button_new( SpinAdj, 1.0,0);
 	gtk_widget_show(Spinbutton);
@@ -686,7 +682,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	GtkWidget * SpinAfter = gtk_entry_new();
 	gtk_widget_show (SpinAfter);
 	gtk_box_pack_start (GTK_BOX (hboxSpinAfter), SpinAfter, TRUE, TRUE, 0);
-		
+
 	GtkWidget * SpinAfter_dum = gtk_spin_button_new( GTK_ADJUSTMENT(SpinAfterAdj), 1.0,0);
 	gtk_widget_show(SpinAfter_dum);
 	gtk_widget_set_usize(SpinAfter_dum,10,-2);
@@ -709,7 +705,7 @@ void AP_CocoaDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	GtkWidget * SpinSize = gtk_entry_new();
 	gtk_widget_show (SpinSize);
 	gtk_box_pack_start (GTK_BOX (hboxSpinSize), SpinSize, TRUE, TRUE, 0);
-		
+
 	GtkWidget * SpinSize_dum = gtk_spin_button_new( GTK_ADJUSTMENT(SpinSizeAdj), 1.0,0);
 	gtk_widget_show(SpinSize_dum);
 	gtk_widget_set_usize(SpinSize_dum,10,-2);
@@ -805,7 +801,7 @@ void AP_CocoaDialog_Columns::_connectsignals(void)
 					   "clicked",
 					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
-	
+
 	g_signal_connect(G_OBJECT(m_wbuttonCancel),
 					   "clicked",
 					   G_CALLBACK(s_cancel_clicked),
@@ -817,14 +813,14 @@ void AP_CocoaDialog_Columns::_connectsignals(void)
 					   G_CALLBACK(s_preview_exposed),
 					   (gpointer) this);
 
-	
+
 		     g_signal_connect_after(G_OBJECT(m_windowMain),
 		     					 "expose_event",
 		     				 G_CALLBACK(s_window_exposed),
 		    					 (gpointer) this);
 
 	// the catch-alls
-	
+
 	g_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
 			   G_CALLBACK(s_delete_clicked),

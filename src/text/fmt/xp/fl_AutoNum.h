@@ -2,23 +2,23 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych, Yaacov Akiba Slama
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-		 
+
 #ifndef FL_AUTONUM_H
 #define FL_AUTONUM_H
 
@@ -57,7 +57,7 @@ public:
 	~fl_AutoNum();
 
 	void						fixHierarchy(void);
-		
+
 	const UT_UCSChar *			getLabel(PL_StruxDocHandle) const;
 	void						addItem(PL_StruxDocHandle pItem);
 	List_Type					getType() const;
@@ -80,7 +80,7 @@ public:
 
 	void						insertFirstItem(PL_StruxDocHandle pItem,
 												PL_StruxDocHandle pLast,
-												UT_uint32 depth, 
+												UT_uint32 depth,
 												bool bDoFix=true);
 	void						insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pBefore, bool bDoFix = true);
 	void						prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pAfter, bool bDoFix = true);
@@ -113,11 +113,9 @@ public:
 	UT_uint32					getParentID() const { return m_iParentID; }
 	static char *				dec2roman(UT_sint32 value, bool lower);
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
-#ifdef BIDI_ENABLED
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
-#endif
 	const char **				getAttributes(void) ;
-	
+
 protected:
 	void                        _setParent(fl_AutoNum * pParent);
 	void                        _setParentID(UT_uint32 iParentID);
@@ -127,10 +125,10 @@ protected:
 												UT_uint32 depth,
 												PL_StruxDocHandle pLayout) const;
 	void						_updateItems(UT_uint32 start, PL_StruxDocHandle notMe );
-	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum); 
+	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum);
 
 	fl_AutoNum *				m_pParent;
-	
+
 	UT_Vector					m_pItems;
 	PD_Document *				m_pDoc;
 	List_Type					m_List_Type;

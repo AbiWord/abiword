@@ -1,17 +1,17 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -114,7 +114,7 @@ typedef enum _AP_JumpTarget
 	AP_JUMPTARGET_BOOKMARK,
 	AP_JUMPTARGET_PICTURE // TODO
 } AP_JumpTarget;
-		
+
 struct fv_ChangeState
 {
 	bool				bUndo;
@@ -143,7 +143,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class fl_BlockLayout;
 	friend class fl_Squiggles;
 	friend class fl_DocSectionLayout;
-	
+
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
@@ -157,7 +157,7 @@ public:
 	virtual void	setXScrollOffset(UT_sint32);
 	virtual void	setYScrollOffset(UT_sint32);
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
-	
+
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 
 	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL);
@@ -202,7 +202,7 @@ public:
 	virtual bool		isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
-	
+
 	PT_DocPosition saveSelectedImage (const char * toFile );
 	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
 
@@ -215,13 +215,13 @@ public:
 	void draw(int page, dg_DrawArgs* da);
 
 	// TODO some of these functions should move into protected
-	
+
 	void	getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
 	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
 	virtual UT_sint32 getPageViewLeftMargin(void) const;
 	virtual UT_sint32 getPageViewTopMargin(void) const;
 	virtual UT_sint32 getPageViewSep(void) const;
-	
+
 	bool	setSectionFormat(const XML_Char * properties[]);
 	bool	getSectionFormat(const XML_Char *** properties);
 
@@ -289,7 +289,7 @@ public:
 	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar *	getSelectionText(void);
-#if 0	
+#if 0
 	UT_UCSChar *	getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2);
 #endif
 	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
@@ -309,7 +309,7 @@ public:
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 	PT_DocPosition  getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos);
 	PT_DocPosition  getDocPositionFromLastXY(void);
-	
+
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
 	virtual void	updateScreen(bool bDirtyRunsOnly=true);
 
@@ -365,11 +365,11 @@ public:
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
 
 	void			changeNumColumns(UT_uint32 iNumColumns);
-	
+
 // ----------------------
 
 	// find and replace
-	
+
 	bool			findSetNextString(UT_UCSChar* string, bool bMatchCase);
 	bool			findAgain(void);
 
@@ -379,25 +379,25 @@ public:
 							 bool& bDoneEntireDocument);
 	UT_uint32*		_computeFindPrefix(const UT_UCSChar* pFind,
 									   bool bMatchCase);
-	bool			_findNext(const UT_UCSChar* pFind, 
+	bool			_findNext(const UT_UCSChar* pFind,
 							  UT_uint32* pPrefix,
 							  bool bMatchCase,
 							  bool& bDoneEntireDocument);
 
 	bool			_findReplace(const UT_UCSChar* pFind,
-								 const UT_UCSChar* pReplace, 
+								 const UT_UCSChar* pReplace,
 								 UT_uint32* pPrefix,
-								 bool bMatchCase, 
+								 bool bMatchCase,
 								 bool& bDoneEntireDocument);
 	bool			findReplace(const UT_UCSChar* pFind,
 								const UT_UCSChar* pReplace,
-								bool bMatchCase, 
+								bool bMatchCase,
 								bool& bDoneEntireDocument);
 
 	UT_uint32		findReplaceAll(const UT_UCSChar* pFind,
 								   const UT_UCSChar* pReplace,
 								   bool bMatchCase);
-		
+
 // ----------------------
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
@@ -417,7 +417,7 @@ public:
 
 	void				setShowPara(bool);
 	inline bool 	getShowPara(void) const { return m_bShowPara; };
-	
+
 	const fp_PageSize&	getPageSize(void) const;
 	UT_uint32			calculateZoomPercentForPageWidth();
 	UT_uint32			calculateZoomPercentForPageHeight();
@@ -428,9 +428,9 @@ public:
 	void				setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
 	PreViewMode 		getPreviewMode(void) { return m_previewMode;}
 
-	void				setScreenUpdateOnGeneralUpdate( bool bDoit) 
+	void				setScreenUpdateOnGeneralUpdate( bool bDoit)
 		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
-	bool				shouldScreenUpdateOnGeneralUpdate(void) const 
+	bool				shouldScreenUpdateOnGeneralUpdate(void) const
 		{ return !m_bDontUpdateScreenOnGeneralUpdate;}
 
 	inline PD_Document * getDocument (void) const {return m_pDoc;}
@@ -439,12 +439,12 @@ protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
 	void				_generalUpdate(void);
-	
+
 	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
-	
+
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
-	
+
 	bool				_ensureThatInsertionPointIsOnScreen(bool bDrawIP = true);
 	void				_moveInsPtNextPrevPage(bool bNext);
 	void				_moveInsPtNextPrevScreen(bool bNext);
@@ -467,7 +467,7 @@ protected:
 											bool& bDirection,
 											fl_BlockLayout** ppBlock,
 											fp_Run** ppRun);
-	
+
 	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos) const;
 
 	fp_Page*			_getPageForXY(UT_sint32 xPos,
@@ -488,8 +488,8 @@ protected:
 	void				_fixInsertionPointCoords();
 	void				_xorInsertionPoint();
 	bool				_hasPointMoved(void);
-	void				_saveCurrentPoint(void); 
-	void				_clearOldPoint(void); 
+	void				_saveCurrentPoint(void);
+	void				_clearOldPoint(void);
 	void				_drawSelection();
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
@@ -514,7 +514,7 @@ protected:
 	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 
 	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
-	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);	
+	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
 	PT_DocPosition		m_iInsPoint;
@@ -526,12 +526,9 @@ protected:
 	UT_sint32			m_yPoint2;
 	UT_sint32			m_oldxPoint2;
 	UT_sint32			m_oldyPoint2;
-	bool			 m_bPointDirection;
-
-#ifdef BIDI_ENABLED
+	bool			    m_bPointDirection;
 	bool				m_bDefaultDirectionRtl;
 	bool				m_bUseHebrewContextGlyphs;
-#endif
 	UT_uint32			m_iPointHeight;
 	UT_sint32			m_oldxPoint;
 	UT_sint32			m_oldyPoint;
@@ -574,9 +571,9 @@ protected:
 	PT_DocPosition		m_iSavedPosition;
 	bool				m_bNeedSavedPosition;
 	PT_DocPosition		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
-	
+
 	fl_BlockLayout *	_findGetCurrentBlock(void);
-	PT_DocPosition		_findGetCurrentOffset(void);	
+	PT_DocPosition		_findGetCurrentOffset(void);
 	UT_UCSChar *		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
 
 	bool				_m_matchCase;
@@ -590,7 +587,7 @@ protected:
 	bool				 m_bShowPara;
 	ViewMode			 m_viewMode;
 	PreViewMode 		 m_previewMode;
-	bool				 m_bDontUpdateScreenOnGeneralUpdate; 
+	bool				 m_bDontUpdateScreenOnGeneralUpdate;
 	//#TF had to change the whole logic of storing PT state, since
 	//the earlier implementation did not work with nested calls to
 	//_saveAndNotifyPieceTableChange();

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -30,10 +30,8 @@
 #include "ap_Preview_Paragraph.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Lists.h"
-
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
+
 /************************************************************************/
 
 // all of these are measured in pixels
@@ -53,7 +51,7 @@ AP_Preview_Paragraph_Block::AP_Preview_Paragraph_Block(UT_RGBColor & clr,
 													   UT_uint32 fontHeight)
 {
 	UT_ASSERT(gc);
-	
+
 	m_clr.m_red = clr.m_red;
 	m_clr.m_grn = clr.m_grn;
 	m_clr.m_blu = clr.m_blu;
@@ -71,7 +69,7 @@ AP_Preview_Paragraph_Block::AP_Preview_Paragraph_Block(UT_RGBColor & clr,
 	m_align = AP_Dialog_Paragraph::align_LEFT;
 	m_indent = AP_Dialog_Paragraph::indent_NONE;
 	m_spacing = AP_Dialog_Paragraph::spacing_SINGLE;
-	
+
 	m_fontHeight = fontHeight;
 }
 
@@ -103,7 +101,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 
 	// clear the widths vector (has no memory at each item)
 	m_widths.clear();
-	
+
 	// dup the string for harmful chunkification
 	UT_UCSChar * clone = NULL;
 	UT_UCS4_cloneString(&clone, text);
@@ -179,7 +177,7 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 		// NOTE : if we recomputed the leftIndent, we have to recompute
 		// NOTE : the firstLineLeftStop below
 	}
-	
+
 	if(pageRightMargin)
 	{
 		m_rightStop = SCALE_TO_PIXELS(pageRightMargin);
@@ -231,8 +229,8 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 		case AP_Dialog_Paragraph::spacing_ATLEAST:
 			// TODO : THIS IS BROKEN SOMEHOW.  m_lineSpacing should be the number
 			// TODO : of pixels needed to place before the line (of height
-			// TODO : m_fontHeight pixels).  
-			
+			// TODO : m_fontHeight pixels).
+
 			// we measure from top to top here, and use a minimum of the current
 			// line height
 			if (SCALE_TO_PIXELS(lineSpacing) > m_fontHeight)
@@ -253,32 +251,29 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 	}
 
 }
-		
+
 
 /************************************************************************/
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 										   const UT_UCSChar * text,
 										   AP_Dialog_Lists * dlg)
-  : XAP_Preview(gc)
-#ifdef BIDI_ENABLED
-	  ,m_dir(FRIBIDI_TYPE_LTR)
-#endif
+  : XAP_Preview(gc), m_dir(FRIBIDI_TYPE_LTR)
 {
 	UT_ASSERT(text && dlg);
 
 	m_font = NULL;
 	m_fontHeight = 0;
-	
+
 	m_y = DEFAULT_TOP_MARGIN;
-		
+
 	m_clrWhite = new UT_RGBColor(255,255,255);
 	m_clrBlack = new UT_RGBColor(0,0,0);
 	m_clrGray = new UT_RGBColor(192,192,192);
 
 	// initialize font to start measuring with for following setText calls
 	_loadDrawFont();
-	
+
 	{
 		// this block is a dummy block
 		m_previousBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
@@ -293,7 +288,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									NULL,NULL,NULL,NULL,NULL,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
-	
+
 	{
 		// this block is our ACTIVE block
 		m_activeBlock = new AP_Preview_Paragraph_Block(*m_clrBlack,
@@ -308,14 +303,14 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
 									(AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT),
-									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),								 
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
 									(AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
 #endif
 	}
-	
+
 	{
 		// another dummy block
 		m_followingBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
@@ -332,7 +327,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
-	
+
 	UT_UCSChar * tmp = NULL;
 
 	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
@@ -349,10 +344,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   const UT_UCSChar * text,
-										   XAP_Dialog * dlg) : XAP_Preview(gc)
-#ifdef BIDI_ENABLED
-	  ,m_dir(FRIBIDI_TYPE_LTR)
-#endif
+										   XAP_Dialog * dlg) : XAP_Preview(gc), m_dir(FRIBIDI_TYPE_LTR)
 {
   // this method heavily relies upon the parent dlg to call setFormat()
   // rather than auto-generating defaults
@@ -360,9 +352,9 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 	m_font = NULL;
 	m_fontHeight = 0;
-	
+
 	m_y = DEFAULT_TOP_MARGIN;
-		
+
 	m_clrWhite = new UT_RGBColor(255,255,255);
 	m_clrBlack = new UT_RGBColor(0,0,0);
 	m_clrGray = new UT_RGBColor(192,192,192);
@@ -395,7 +387,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
-	
+
 	UT_UCSChar * tmp = NULL;
 
 	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
@@ -408,31 +400,28 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
 	m_followingBlock->setText(tmp);
 	FREEP(tmp);
-	  
+
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   const UT_UCSChar * text,
 					   AP_Dialog_Paragraph * dlg)
-	: XAP_Preview(gc)
-#ifdef BIDI_ENABLED
-	  ,m_dir(FRIBIDI_TYPE_LTR)
-#endif
+	: XAP_Preview(gc),m_dir(FRIBIDI_TYPE_LTR)
 {
 	UT_ASSERT(text && dlg);
 
 	m_font = NULL;
 	m_fontHeight = 0;
-	
+
 	m_y = DEFAULT_TOP_MARGIN;
-		
+
 	m_clrWhite = new UT_RGBColor(255,255,255);
 	m_clrBlack = new UT_RGBColor(0,0,0);
 	m_clrGray = new UT_RGBColor(192,192,192);
 
 	// initialize font to start measuring with for following setText calls
 	_loadDrawFont();
-	
+
 	{
 		// this block is a dummy block
 		m_previousBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
@@ -447,7 +436,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									NULL,NULL,NULL,NULL,NULL,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
-	
+
 	{
 		// this block is our ACTIVE block
 		m_activeBlock = new AP_Preview_Paragraph_Block(*m_clrBlack,
@@ -461,18 +450,16 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
 									(AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_LEFT_INDENT),
-									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),								 
+									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_RIGHT_INDENT),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_BEFORE_SPACING),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
 									(AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
 
-#ifdef BIDI_ENABLED
 		if(dlg->_getCheckItemValue(AP_Dialog_Paragraph::id_CHECK_DOMDIRECTION) == AP_Dialog_Paragraph::check_TRUE)
 			m_dir = FRIBIDI_TYPE_RTL;
-#endif
 	}
-	
+
 	{
 		// another dummy block
 		m_followingBlock = new AP_Preview_Paragraph_Block(*m_clrGray,
@@ -490,7 +477,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
 
-	
+
 	UT_UCSChar * tmp = NULL;
 
 	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
@@ -515,7 +502,7 @@ AP_Preview_Paragraph::~AP_Preview_Paragraph()
 
 	DELETEP(m_previousBlock);
 	DELETEP(m_activeBlock);
-	DELETEP(m_followingBlock);	
+	DELETEP(m_followingBlock);
 }
 
 void AP_Preview_Paragraph::setFormat(const XML_Char * pageLeftMargin,
@@ -552,7 +539,7 @@ void AP_Preview_Paragraph::draw(void)
 	_appendBlock(m_followingBlock);
 
 	_drawPageBorder();
-	
+
 	m_y = DEFAULT_TOP_MARGIN;
 }
 
@@ -560,7 +547,7 @@ bool AP_Preview_Paragraph::_loadDrawFont(void)
 {
 	// we draw at 7 points in this preview
 	GR_Font * font = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "7pt");
-	
+
 	if (font)
 	{
 		REPLACEP(m_font, font);
@@ -595,10 +582,10 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 
 	UT_uint32 ypre = 0;
 	UT_uint32 ypost = 0;
-	
+
 	UT_uint32 wordCounter = 0;
 	UT_uint32 wordCount = block->m_words.getItemCount();
-		
+
 	m_gc->setColor(block->m_clr);
 
 	{
@@ -620,13 +607,13 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
-	
+
 	// start y at m_y;
 	UT_uint32 y = m_y;
 
 	// do before block spacing
 	y += block->m_beforeSpacing;
-	
+
 	// handle any spacing before first line
 	y += ypre;
 	// draw first line
@@ -640,7 +627,7 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 	y += block->m_fontHeight;
 	// handle any spacing after first line
 	y += ypost;
-	
+
 	// handle all other lines until out of words
 	UT_uint32 newWords = 1;
 	while (wordCounter < wordCount && newWords > 0)
@@ -665,7 +652,7 @@ void AP_Preview_Paragraph::_appendBlock(AP_Preview_Paragraph_Block * block)
 
 	// do after block spacing
 	y += block->m_afterSpacing;
-	
+
 	// record the changes
 	m_y = y;
 }
@@ -687,9 +674,9 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	UT_uint32 i = 0;
 	UT_uint32 totalWords = words->getItemCount();
-	
+
 	UT_sint32 pixelsForThisLine = 0;
-	
+
 	// max length of first line is the diff between the (special)
 	// left stop and the (normal) right stop
 	UT_sint32 maxPixelsForThisLine = getWindowWidth() - left - right;
@@ -723,40 +710,37 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	// TODO : maybe rework following code to remove this variable for more speed
 
 	UT_uint32 willDrawAt = left;
-#ifdef BIDI_ENABLED
+
 	if(m_dir == FRIBIDI_TYPE_RTL)
 		willDrawAt += maxPixelsForThisLine;
-#endif
 
  	spaceCharWidth <<= 8;	// Calculate spacing at 256 times the resolution
-		
+
 	// obey alignment requests
  	switch(align)
  	{
  	case AP_Dialog_Paragraph::align_RIGHT:
-#ifdef BIDI_ENABLED
 		if(m_dir == FRIBIDI_TYPE_LTR)
-#endif
+
 	    // for right, we just draw at the difference in spaces added onto the first line stop.
 	    willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine);
 		break;
 	case AP_Dialog_Paragraph::align_CENTERED:
-		// for centered, we split the difference 
+		// for centered, we split the difference
 		willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine) / 2;
 		break;
 	case AP_Dialog_Paragraph::align_JUSTIFIED:
 		if(i < totalWords)
 		{
-			spaceCharWidth += (UT_sint32)((double)(maxPixelsForThisLine - pixelsForThisLine) / 
+			spaceCharWidth += (UT_sint32)((double)(maxPixelsForThisLine - pixelsForThisLine) /
 														(i - startWithWord) * 256);
 		}
 		break;
 	default:
 		// aligh_LEFT is caught here
-#ifdef BIDI_ENABLED
 		if(m_dir == FRIBIDI_TYPE_RTL)
 			willDrawAt =  pixelsForThisLine + left;
-#endif
+
 		break;
 	}
 
@@ -764,16 +748,13 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	UT_uint32 k;
 
-#ifdef BIDI_ENABLED
 	FriBidiChar fb1[100];
 	FriBidiChar fb2[100];
 	UT_UCSChar  str[100];
 	UT_uint32 j, iLen;
-#endif
 
 	for (k = startWithWord; k < i; k++)
 	{
-#ifdef BIDI_ENABLED
 		// this will not produce correct results in true bidi text, since the words that are inconsistend
 		// with the overall pargraph direction will be in wrong order, but that is not a big deal
   	    iLen = UT_UCS4_strlen((UT_UCSChar *) words->getNthItem(k));
@@ -800,11 +781,6 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 		if(m_dir == FRIBIDI_TYPE_LTR)
 		    willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
-#else
-		m_gc->drawChars((UT_UCSChar *) words->getNthItem(k), 0,
-						UT_UCS4_strlen((UT_UCSChar *) words->getNthItem(k)), willDrawAt >> 8, y);
-		willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
-#endif
 	}
 
 	// return number of words drawn

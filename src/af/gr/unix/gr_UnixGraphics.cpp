@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -54,10 +54,10 @@ static bool isFontUnicode(GdkFont *font)
 		UT_DEBUGMSG(("gr_UnixGraphics: isFontUnicode: font is NULL !!!\n"));
 		return false;
 	}
-	
+
 	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
 	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
-	
+
 	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
 }
 #endif
@@ -72,15 +72,15 @@ static bool isFontUnicode(GdkFont *font)
 XAP_UnixFontHandle *	GR_UnixGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
 
-#ifndef WITH_PANGO 
+#ifndef WITH_PANGO
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
 #else
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
-#endif	
+#endif
 {
 	m_pApp = app;
 	m_pWin = win;
-#ifndef WITH_PANGO 
+#ifndef WITH_PANGO
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
 #endif
@@ -110,7 +110,7 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 	// We force the line width to be zero because the CAP_NOT_LAST
 	// stuff does not seem to work correctly when the width is set
 	// to one.
-	
+
 	gdk_gc_set_line_attributes(m_pGC,   0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
 	gdk_gc_set_line_attributes(m_pXORGC,0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
 
@@ -118,14 +118,14 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_App * app)
 	// obscured regions rather than just tiling in the default background.
 	gdk_gc_set_exposures(m_pGC,1);
 	gdk_gc_set_exposures(m_pXORGC,1);
-	
+
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
 
-#ifndef WITH_PANGO 	
+#ifndef WITH_PANGO
 	m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(), FALLBACK_FONT_SIZE);
-#endif	
+#endif
 }
 
 GR_UnixGraphics::~GR_UnixGraphics()
@@ -135,7 +135,7 @@ GR_UnixGraphics::~GR_UnixGraphics()
 		DELETEP(s_pFontGUI);
 #ifndef WITH_PANGO
 	delete m_pFallBackFontHandle;
-#endif	
+#endif
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -164,8 +164,8 @@ static bool fallback_used;
 	if (!w) {	\
 	    w = new UT_Wctomb;	\
 	} else	\
-	    w->initialize();	
-	    
+	    w->initialize();
+
 #define CONVERT_TO_MBS(c)	\
     	if (c<=0xff) {	\
 		/* this branch is to allow Lists to function */	\
@@ -178,7 +178,7 @@ static bool fallback_used;
 		    w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
 		    fallback_used = 1;	\
 		}	\
-	}	
+	}
 
 
 // HACK: I need more speed
@@ -187,7 +187,7 @@ void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	UT_UCSChar Wide_char = remapGlyph(Char, false);
 	if(Wide_char == 0x200B || Wide_char == 0xFEFF) //zero width spaces
 		return;
-		
+
 	GdkFont *font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
 	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
@@ -210,7 +210,7 @@ void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 		}
 	}
 	else
-	{	
+	{
 		WCTOMB_DECLS;
 		CONVERT_TO_MBS(Wide_char);
 		gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
@@ -226,10 +226,9 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	WCTOMB_DECLS;
 	GdkFont *font;
 	UT_sint32 x;
-	
+
 	static bool bFontSizeWarning = true;
 
-#ifdef BIDI_ENABLED	
 	// to be able to handle overstriking characters, we have to remember the width
 	// of the previous character printed
 	// NB: overstriking characters are only supported under UTF-8, since on 8-bit locales
@@ -238,14 +237,14 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	static UT_sint32 prevWidth = 0;
 	UT_sint32 curX;
 	UT_sint32 curWidth;
-#endif
+
 	const UT_UCSChar *pC;
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
 	{
 		UT_UCSChar actual = remapGlyph(*pC,false);
 		if(actual == 0x200B || actual == 0xFEFF) //zero width spaces
 			continue;
-			
+
 		font=XAP_EncodingManager::get_instance()->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
 
 		if(!font)
@@ -265,25 +264,25 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				bFontSizeWarning = false;
 				messageBoxOK(msg);
 			}
-			
+
 			UT_DEBUGMSG(("gr_UnixGraphics::drawChars: no font to draw with, using default !!!\n"));
 			UT_sint32 iSize = m_pFallBackFontHandle ? m_pFallBackFontHandle->getSize() : 0;
 			UT_sint32 iMySize = FALLBACK_FONT_SIZE * getZoomPercentage() / 100;
-				
+
 			if(iSize != iMySize)
 			{
 				delete m_pFallBackFontHandle;
 				m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(),iMySize);
 			}
-			
+
 			setFont(m_pFallBackFontHandle);
 			font=XAP_EncodingManager::get_instance()->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
-			
+
 			UT_ASSERT(font);
 			if(!font)
 				return;
 		}
-		
+
 		if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 		{
 			/*	if the locale is unicode (i.e., utf-8) then we do not want
@@ -297,7 +296,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				//UT_DEBUGMSG(("UnixGraphics::drawChars: utf-8\n"));
 				UT_UCSChar beucs;
 				LE2BE16((pC),(&beucs))  //declared in ut_endian.h
-#ifdef BIDI_ENABLED
+
 				switch(isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
@@ -313,21 +312,17 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					curX = x - prevWidth;
 					break;
 				}
-			
+
 				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&beucs,2);
 				x+=curWidth;
 				prevWidth = curWidth;
-#else
-				gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&beucs,2);
-                x+=gdk_text_width(font, (gchar*)&beucs, 2);
-#endif
 			}
 			else
 			{
 				// not a unicode font; actual is guaranteed to be <=0xff
 				// (this happens typically when drawing the interface)
 				gchar gc = (gchar) actual;
-#ifdef BIDI_ENABLED				
+
 				switch(isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
@@ -343,14 +338,10 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					curX = x - prevWidth;
 					break;
 				}
-				
+
 				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&gc,1);
 				x += curWidth;
 				prevWidth = curWidth;
-#else
-				gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&gc,1);
-                x += gdk_text_width(font, (gchar*)&gc, 1);
-#endif
 			}
 		}
 		else
@@ -366,12 +357,12 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 void GR_UnixGraphics::setFont(GR_Font * pFont)
 {
 	XAP_UnixFontHandle * pUFont = static_cast<XAP_UnixFontHandle *> (pFont);
-#if 1	
+#if 1
 	// this is probably caching done on the wrong level
 	// but it's currently faster to shortcut
 	// than to call explodeGdkFonts
 	// TODO: turn this off when our text runs get a bit smarter
-	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) && 
+	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
 	  return;
 #endif
@@ -405,10 +396,10 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// but its not (for presumed performance reasons).  Also, a difference
 	// is that measureString() uses remapping to get past zero-width
 	// character cells.
-	
+
 	if(c == 0x200B || c == 0xFEFF) // 0-with spaces
 		return 0;
-		
+
 	if (!m_pFontManager)
 		return 0;
 
@@ -420,13 +411,13 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 //
 // Use GDK at Low resolutions, Metrics at high resolution. This saves tons
 // of memory on the X server and speeds up things enormously.
-//	
+//
 	if(m_pFont->getSize() <  MAX_ABI_GDK_FONT_SIZE)
 	{
 		if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 		{
 			font = m_pSingleByteFont;
-		
+
 			if(isFontUnicode(font))
 			{
 				//this is a unicode font
@@ -442,7 +433,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 				{
 					gchar gc = (gchar) c;
 					return gdk_text_width(font, (gchar*)&gc, 1);
-				}		
+				}
 			}
 		}
 		else
@@ -468,15 +459,15 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 //
 // The metrics are in 1/1000th's of an inch, we need to convert these to
 // pixels.  Try this....
-//	
-		double fFactor; 
+//
+		double fFactor;
 		fFactor = (double) 1.0/1000.0;
 		if (XAP_EncodingManager::get_instance()->is_cjk_letter(c))
 		{
 			return (UT_uint32) ( fFactor * dsize * (double) pChineseFont->get_CJK_Width());
 		}
 		else
-		{	
+		{
 			UT_uint32 width;
 			width = (UT_uint32) (fFactor * dsize * (double) pEnglishFont->getCharWidth(c));
 			return width;
@@ -498,7 +489,7 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	// unlike XQueryText...() which cause a round trip to the XServer.
 	// and i'm tired of having semi-bogus local caches which are more
 	// trouble (and cost more cycles) to maintain than they save.... -- jeff
-	
+
 	if (!m_pFontManager)
 		return 0;
 
@@ -510,19 +501,19 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	GdkWChar cChar;
 
 	GdkFont* pFont = m_pFont->getGdkFont();
-	
+
 	for (int i = 0; i < num; i++)
     {
 		cChar = remapGlyph(s[i + iOffset], true);
 		if(cChar == 0x200B || cChar == 0xFEFF)
 			continue;
-			
+
 		width = gdk_char_width_wc (pFont, cChar);
 		charWidth += width;
 		if (pWidths)
 			pWidths[i] = width;
     }
-  
+
 	return charWidth;
 }
 #endif
@@ -572,7 +563,7 @@ void GR_UnixGraphics::_setColor(GdkColor & c)
 
 GR_Font * GR_UnixGraphics::getGUIFont(void)
 {
-#ifndef WITH_PANGO 	
+#ifndef WITH_PANGO
 	if (!m_pFontManager)
 		return NULL;
 	if (!s_pFontGUI)
@@ -587,16 +578,16 @@ GR_Font * GR_UnixGraphics::getGUIFont(void)
 		UT_ASSERT(s_pFontGUI);
 	}
 #endif
-	// TODO provide PANGO implementation	
+	// TODO provide PANGO implementation
 	return s_pFontGUI;
 }
 
 #ifndef WITH_PANGO
-GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily, 
-									const char* pszFontStyle, 
-									const char* /*pszFontVariant*/, 
-									const char* pszFontWeight, 
-									const char* /*pszFontStretch*/, 
+GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
+									const char* pszFontStyle,
+									const char* /*pszFontVariant*/,
+									const char* pszFontWeight,
+									const char* /*pszFontStretch*/,
 									const char* pszFontSize)
 {
 	if (!m_pFontManager)
@@ -606,7 +597,7 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontStyle);
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
-	
+
 	// convert styles to XAP_UnixFont:: formats
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
@@ -637,14 +628,14 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 	}
 
 	// Request the appropriate XAP_UnixFont
-	XAP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);	
+	XAP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);
 	if (!unixfont)
 	{
 		// Oops!  We don't have that font here.
 		// first try "Times New Roman", which should be sensible, and should
 		// be there unless the user fidled with the installation
 		unixfont = m_pFontManager->getFont("Times New Roman", s);
-		
+
 		// Oh well, see if there are any fonts at all, and if so
 		// just take the first one ...
 		if(!unixfont)
@@ -658,12 +649,12 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 
 				// free the returned vector
 				DELETEP(pVec);
-		
+
 		}
-			
+
 		// this is really desperate, we do not seem to have any fonts
 		// we cannot be blamed if we just give up
-		
+
 		if (!unixfont)
 		{
 			char message[1024];
@@ -675,10 +666,10 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 					   "\n"
 					   "AbiWord cannot continue without this font.", pszFontFamily);
 			messageBoxOK(message);
-			
+
 			exit(1);
 		}
-		
+
 	}
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
@@ -781,7 +772,7 @@ UT_uint32 GR_UnixGraphics::getFontDescent()
 {
 	return getFontDescent(m_pFont);
 }
-#endif //#ifndef WITH_PANGO 
+#endif //#ifndef WITH_PANGO
 
 
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -831,7 +822,7 @@ void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 		// that the poly line is in the correct place relative to where
 		// the rest of GR_UnixGraphics:: does things (drawing text, clearing
 		// areas, etc.).
-		points[i].y = pts[i].y - 1;	
+		points[i].y = pts[i].y - 1;
 	}
 
 	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
@@ -846,7 +837,7 @@ void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 {
 	UT_ASSERT(pRect);
-	
+
 	gdk_draw_rectangle(m_pWin, m_pXORGC, 1, pRect->left, pRect->top,
 					   pRect->width, pRect->height);
 }
@@ -888,7 +879,7 @@ void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	GdkColor oColor;
 
 	memset(&oColor, 0, sizeof(GdkColor));
-  
+
 	gdk_gc_get_values(m_pGC, &gcValues);
 
 	oColor.pixel = gcValues.foreground.pixel;
@@ -901,10 +892,10 @@ void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	nColor.green = c.m_grn << 8;
 
 	gdk_color_alloc(m_pColormap, &nColor);
-  
+
 	gdk_gc_set_foreground(m_pGC, &nColor);
 
-	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h); 
+	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
@@ -1027,20 +1018,20 @@ void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 #if TURBOSLOW
 		gdk_flush();
 		usleep(TURBOSLOW);
-		
+
 		UT_RGBColor clr(255,0,0);
 		fillRect(clr, x, y, width, height);
 		gdk_flush();
 		usleep(TURBOSLOW);
 #endif
-		
+
 		UT_RGBColor clrWhite(255,255,255);
 		fillRect(clrWhite, x, y, width, height);
 
-#if TURBOSLOW		
+#if TURBOSLOW
 		gdk_flush();
 		usleep(TURBOSLOW);
-#endif		
+#endif
 	}
 }
 
@@ -1072,7 +1063,7 @@ GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf*
    		pImg = new GR_UnixImage(pszName);
    	else
 	   	pImg = new GR_VectorImage(pszName);
-	     
+
 	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
    	return pImg;
 }
@@ -1085,7 +1076,7 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	   	pImg->render(this, xDest, yDest);
 	   	return;
 	}
-	   
+
    	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
 
    	Fatmap * image = pUnixImage->getData();
@@ -1119,8 +1110,8 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
    	GR_Image* pImg = NULL;
-	
-	
+
+
 	pImg = new GR_UnixGnomeImage(pszName,false);
 	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
    	return pImg;
@@ -1144,16 +1135,16 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
    	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
    	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
-	
+
 	if (gdk_pixbuf_get_has_alpha (image))
 		gdk_pixbuf_render_to_drawable_alpha (image, m_pWin,
 											 0, 0,
 											 xDest, yDest,
 											 iImageWidth, iImageHeight,
-											 GDK_PIXBUF_ALPHA_BILEVEL, 
+											 GDK_PIXBUF_ALPHA_BILEVEL,
 											 ABI_ALPHA_THRESHOLD,
 											 GDK_RGB_DITHER_NORMAL,
-											 0, 0); 
+											 0, 0);
 	else
 		gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
 									   0, 0,
@@ -1186,11 +1177,11 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 {
 	if (m_cursor == c)
 		return;
-	
+
 	m_cursor = c;
-	
+
 	GdkCursorType cursor_number;
-	
+
 	switch (c)
 	{
 	default:
@@ -1199,7 +1190,7 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_DEFAULT:
 		cursor_number = GDK_TOP_LEFT_ARROW;
 		break;
-		
+
 	case GR_CURSOR_IBEAM:
 		cursor_number = GDK_XTERM;
 		break;
@@ -1207,54 +1198,51 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	//I have changed the shape of the arrow so get a consistent
 	//behaviour in the bidi build; I think the new arrow is better
 	//for the purpose anyway
-	
+
 	case GR_CURSOR_RIGHTARROW:
 		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
 		break;
 
-#ifdef BIDI_ENABLED
-//#error choose a suitable cursor; this is just a placeholder !!!		
 	case GR_CURSOR_LEFTARROW:
 		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
 		break;
-#endif		
 
 	case GR_CURSOR_IMAGE:
 		cursor_number = GDK_FLEUR;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_NW:
 		cursor_number = GDK_TOP_LEFT_CORNER;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_N:
 		cursor_number = GDK_TOP_SIDE;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_NE:
 		cursor_number = GDK_TOP_RIGHT_CORNER;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_E:
 		cursor_number = GDK_RIGHT_SIDE;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_SE:
 		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_S:
 		cursor_number = GDK_BOTTOM_SIDE;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_SW:
 		cursor_number = GDK_BOTTOM_LEFT_CORNER;
 		break;
-		
+
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_number = GDK_LEFT_SIDE;
 		break;
-		
+
 	case GR_CURSOR_LEFTRIGHT:
 		cursor_number = GDK_SB_H_DOUBLE_ARROW;
 		break;
@@ -1325,7 +1313,7 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	GdkColor oColor;
 
 	memset(&oColor, 0, sizeof(GdkColor));
-  
+
 	gdk_gc_get_values(m_pGC, &gcValues);
 
 	oColor.pixel = gcValues.foreground.pixel;
@@ -1338,7 +1326,7 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	nColor.green = c.m_grn << 8;
 
 	gdk_color_alloc(m_pColormap, &nColor);
-  
+
 	gdk_gc_set_foreground(m_pGC, &nColor);
 
 	GdkPoint* points = new GdkPoint[nPoints];
@@ -1354,7 +1342,7 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-#ifndef WITH_PANGO 
+#ifndef WITH_PANGO
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
 // in platform code.
@@ -1378,4 +1366,4 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
-#endif 
+#endif

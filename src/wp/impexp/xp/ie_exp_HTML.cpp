@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -175,7 +175,7 @@ protected:
 	void				_convertColor(UT_String& szDest, const char* pszColor);
 	void				_storeStyles(void);
 	char *				_stripSuffix(const char* from, char delimiter);
-	
+
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
 	bool				m_bInSection;
@@ -188,7 +188,7 @@ protected:
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
-  
+
 	UT_uint16		m_iBlockType;	// BT_*
 	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
 	UT_uint16		m_iPrevListDepth;
@@ -227,20 +227,20 @@ static char* removeWhiteSpace(const char * text)
  */
 static bool is_CSS(const char* property)
 {
-	static const char * prop_list [] = {"background-color", "color", 
-										"font-family", "font-size", 
-										"font-stretch", "font-style", 
+	static const char * prop_list [] = {"background-color", "color",
+										"font-family", "font-size",
+										"font-stretch", "font-style",
 										"font-variant", "font-weight",
-										"height", "margin-bottom", 
+										"height", "margin-bottom",
 										"margin-left", "margin-right",
 										"margin-top",
-										"orphans", "text-align", 
+										"orphans", "text-align",
 										"text-decoration", "text-indent",
 										"widows", "width"};
 
 	#define PropListLen sizeof(prop_list)/sizeof(prop_list[0])
 
-	for (UT_uint32 i = 0; i < PropListLen; i++) 
+	for (UT_uint32 i = 0; i < PropListLen; i++)
 	{
 		if (!UT_strcmp (property, prop_list[i]))
 			return true;
@@ -257,7 +257,7 @@ void s_HTML_Listener::_closeSection(void)
 	{
 		return;
 	}
-	
+
 	m_pie->write("</div>\r\n");
 	m_bInSection = false;
 	return;
@@ -285,7 +285,7 @@ void s_HTML_Listener::_closeTag(void)
 		}
 		m_pie->write("</p>\r\n");
 	}
-	else if(m_iBlockType == BT_HEADING1) 
+	else if(m_iBlockType == BT_HEADING1)
 	{
 		m_pie->write("</h1>\r\n");
 	}
@@ -306,15 +306,15 @@ void s_HTML_Listener::_closeTag(void)
 		m_pie->write("</pre>\r\n");
 	}
 	else if(m_iBlockType == BT_NUMBEREDLIST || m_iBlockType == BT_BULLETLIST)
-	{	
-/* do nothing, lists are handled differently, as they have multiple tags */ 
+	{
+/* do nothing, lists are handled differently, as they have multiple tags */
 	}
 	// Add "catchall" for now
  	else
 	{
 		m_pie->write("</p>\r\n");
 	}
-	
+
 	m_bInBlock = false;
 	return;
 }
@@ -330,12 +330,12 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	{
 		return;
 	}
-	
+
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	bool wasWritten = false;
 	m_bWroteText = false;
-	
+
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
@@ -360,7 +360,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 		if (
 		   (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue) ||
-		   	(pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szListID) && 
+		   	(pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szListID) &&
 			 0 != UT_strcmp(szListID, "0")))
 		   )
 		{
@@ -373,7 +373,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 				/*	Specify a default style name for this list item if it
 				 *	doesn't already have one.	*/
-				if(!pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue)) 
+				if(!pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 					szValue = szDefault;
 
 				/*	Find out how deeply nested this list item is.	*/
@@ -393,7 +393,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						m_iBlockType = BT_NUMBEREDLIST;
 						m_pie->write("\r\n<ol class=\"");
 					}
-					else 
+					else
 					{
 						m_iBlockType = BT_BULLETLIST;
 						m_pie->write("\r\n<ul class=\"");
@@ -410,11 +410,11 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				 *	once, if we are already at the same depth. */
 				else if(m_iPrevListDepth > 0 && (
 					(m_iBlockType == BT_BULLETLIST && (
-					 UT_strcmp((const char*) szStyleType, 
+					 UT_strcmp((const char*) szStyleType,
 					 	"Numbered List") == 0 ||
 					 _inherits((const char*) szStyleType, "NumberedList"))) ||
 					(m_iBlockType == BT_NUMBEREDLIST && (
-					 UT_strcmp((const char*) szStyleType, 
+					 UT_strcmp((const char*) szStyleType,
 					 	"Bullet List") == 0 ||
 					 _inherits((const char*) szStyleType, "BulletList"))) ) )
 				{
@@ -461,7 +461,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 						if(--m_iPrevListDepth > 0) m_pie->write("</li>\r\n");
 					}
-							
+
 				}
 				else
 				{
@@ -486,7 +486,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				m_iPrevListDepth = m_iListDepth;
 				wasWritten = true;
 			}
-			else 
+			else
 			{
 				for(UT_uint16 i = 0; i < m_iPrevListDepth; i++)
 				{	// we're no longer in a list, close it
@@ -504,7 +504,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				m_iPrevListDepth = m_iListDepth = 0;
 
 				if(UT_strcmp((const char*) szValue, "Heading 1") == 0 ||
-					_inherits((const char*) szValue, "Heading1")) 
+					_inherits((const char*) szValue, "Heading1"))
 				{
 					// <p style="Heading 1"> ...
 
@@ -519,7 +519,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					wasWritten = true;
 				}
 				else if(UT_strcmp((const char*) szValue, "Heading 2") == 0 ||
-					_inherits((const char*) szValue, "Heading2")) 
+					_inherits((const char*) szValue, "Heading2"))
 				{
 					// <p style="Heading 2"> ...
 
@@ -534,7 +534,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					wasWritten = true;
 				}
 				else if(UT_strcmp((const char*) szValue, "Heading 3") == 0 ||
-					_inherits((const char*) szValue, "Heading3")) 
+					_inherits((const char*) szValue, "Heading3"))
 				{
 					// <p style="Heading 3"> ...
 
@@ -593,7 +593,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					}
 					wasWritten = true;
 				}
-				else 
+				else
 				{
 					// <p style="<anything else!>"> ...
 
@@ -602,10 +602,10 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					_outputInheritanceLine((const char*) szValue);
 					m_pie->write("\"");
 					wasWritten = true;
-				}	
+				}
 			}
 		}
-		else 
+		else
 		{
 			for(UT_uint16 i = 0; i < m_iPrevListDepth; i++)
 			{	// we're no longer in a list, close it
@@ -631,27 +631,24 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 		/* Assumption: never get property set with block text, plain text. Probably true. */
 		bool css = false;
-	
-		if ( m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && 
-				(pAP->getProperty("text-align", szValue) 
+
+		if ( m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT &&
+				(pAP->getProperty("text-align", szValue)
 				|| pAP->getProperty("margin-bottom", szValue)
 				|| pAP->getProperty("margin-top", szValue)
 				|| pAP->getProperty("margin-left", szValue)
 				|| pAP->getProperty("margin-right", szValue)
-				|| pAP->getProperty("text-indent", szValue) 
-#ifdef BIDI_ENABLED
+				|| pAP->getProperty("text-indent", szValue)
 				|| pAP->getProperty("dom-dir", szValue)
-#endif
 ))
 		{
-#ifdef BIDI_ENABLED
 			if(pAP->getProperty("dom-dir", szValue))
 			{
 				m_pie->write(" dir=\"");
 				m_pie->write((char*)szValue);
 				m_pie->write("\"");
 			}
-#endif
+
 			bool validProp = false;
 			if(pAP->getProperty("text-align", szValue))
 			{
@@ -665,7 +662,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				validProp = true;
 				if (css)
 					m_pie->write("; margin-bottom: ");
-				else 
+				else
 					m_pie->write(" style=\"margin-bottom: ");
 				m_pie->write((char*)szValue);
 				css = true;
@@ -697,9 +694,9 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 			   significant clutter.  These are all manually taken care of
 			   below.  I think that the computation of these attributes
 			   needs to be rethought. - John */
-			if(pAP->getProperty("margin-left", szValue) 
+			if(pAP->getProperty("margin-left", szValue)
 				&& (!pAP->getAttribute("listid", szListID) ||
-					0 == UT_strcmp(szListID, "0")) && 
+					0 == UT_strcmp(szListID, "0")) &&
 					strstr(szValue, "0.0000") == 0)
 			{	// HACK: extra cond ensures that we're not in a list
 				validProp = true;
@@ -712,7 +709,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 			}
 			if(pAP->getProperty("text-indent", szValue)
 				&& (!pAP->getAttribute("listid", szListID) ||
-					0 == UT_strcmp(szListID, "0")) && 
+					0 == UT_strcmp(szListID, "0")) &&
 					strstr(szValue, "0.0000") == 0)
 			{	// HACK: extra cond ensures that we're not in a list
 				validProp = true;
@@ -724,13 +721,13 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				css = true;
 			}
 
-			if(validProp) 
+			if(validProp)
 			  m_pie->write("\"");
 		}
 	}
-	else 
+	else
 	{
-		
+
 		// <p> with no style attribute, and no properties either
 
 		m_iBlockType = BT_NORMAL;
@@ -774,7 +771,7 @@ void s_HTML_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSiz
 	  TODO we can probably come up with a mapping of font sizes that
 	  is more accurate than the code below.  I just guessed.
 	*/
-	
+
 	if (fSizeInPoints <= 7)
 	{
 		szDest = "1";
@@ -828,16 +825,14 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	{
 		return;
 	}
-	
+
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	
+
 	bool span = false;
 	bool textD = false;
-#ifdef BIDI_ENABLED
 	bool bDir = false;
-#endif
-	
+
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
@@ -848,7 +843,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			if (!span)
 			{
-			    m_pie->write("<span style=\"font-weight: bold");	
+			    m_pie->write("<span style=\"font-weight: bold");
 			    span = true;
 			}
 			else
@@ -856,7 +851,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			    m_pie->write("; font-weight: bold");
 			}
 		}
-		
+
 		if (
 			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
@@ -864,7 +859,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			if (!span)
 			{
-			    m_pie->write("<span style=\"font-style: italic");	
+			    m_pie->write("<span style=\"font-style: italic");
 			    span = true;
 			}
 			else
@@ -872,30 +867,30 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			    m_pie->write("; font-style: italic");
 			}
 		}
-		
-		
+
+
 		if (
 			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
-			
+
 			XML_Char* p;
 			if (!UT_cloneString((char *&)p, pszDecor))
 			{
 				// TODO outofmem
 			}
-			
+
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
-			
+
 			while (q)
 			{
 				if (0 == UT_strcmp(q, "underline"))
 				{
 					if (!span)
 				    {
-						m_pie->write("<span style=\"text-decoration: underline");	
+						m_pie->write("<span style=\"text-decoration: underline");
 						span = true;
 						textD = true;
 				    }
@@ -909,35 +904,35 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 						m_pie->write(" underline");
 				    }
 				}
-				
+
 				q = strtok(NULL, " ");
 			}
-			
+
 			free(p);
 		}
-		
+
 		if (
 			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
-			
+
 			XML_Char* p;
 			if (!UT_cloneString((char *&)p, pszDecor))
 			{
 				// TODO outofmem
 			}
-			
+
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
-			
+
 			while (q)
 			{
 				if (0 == UT_strcmp(q, "line-through"))
 				{
 					if (!span)
 				    {
-						m_pie->write("<span style=\"text-decoration: line-through");	
+						m_pie->write("<span style=\"text-decoration: line-through");
 						span = true;
 						textD = true;
 				    }
@@ -951,35 +946,35 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				        m_pie->write(" line-through");
 				    }
 				}
-				
+
 				q = strtok(NULL, " ");
 			}
-			
+
 			free(p);
 		}
-		
+
 		if (
 			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
-			
+
 			XML_Char* p;
 			if (!UT_cloneString((char *&)p, pszDecor))
 			{
 				// TODO outofmem
 			}
-			
+
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
-			
+
 			while (q)
 			{
 				if (0 == UT_strcmp(q, "overline"))
 				{
 					if (!span)
 				    {
-						m_pie->write("<span style=\"text-decoration: overline");	
+						m_pie->write("<span style=\"text-decoration: overline");
 						span = true;
 						textD = true;
 				    }
@@ -993,21 +988,21 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				        m_pie->write("; overline");
 				    }
 				}
-				
+
 				q = strtok(NULL, " ");
 			}
-			
+
 			free(p);
 		}
-		
+
 		if (pAP->getProperty("text-position", szValue))
 		{
 		  if (!span)
 		    {
-		      m_pie->write("<span style=\"text-position: ");	
+		      m_pie->write("<span style=\"text-position: ");
 		      span = true;
 		    }
-		  else 
+		  else
 		    {
 		      m_pie->write("; text-position: ");
 		    }
@@ -1021,7 +1016,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				m_pie->write("sub");
 			}
 		}
-		
+
 		if (
 			(pAP->getProperty("color", szValue))
 		    || (pAP->getProperty("font-size", szValue))
@@ -1052,28 +1047,28 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				      }
 				    span = true;
 				}
-				else 
+				else
 				{
 				  if(!IS_TRANSPARENT_COLOR(pszColor))
 				    {
-				      m_pie->write("; color:#");	
+				      m_pie->write("; color:#");
 				      m_pie->write(pszColor);
 				    }
 				}
 			}
-			
+
 			if (pszFontFamily)
 			{
 				if (!span)
 				{
-					m_pie->write("<span style=\"font-family: ");	
+					m_pie->write("<span style=\"font-family: ");
 					span = true;
 				}
-				else 
+				else
 				{
-					m_pie->write("; font-family: ");	
+					m_pie->write("; font-family: ");
 				}
-				
+
 				if(UT_strcmp((char*)pszFontFamily, "serif") != 0 ||
 				   UT_strcmp((char*)pszFontFamily, "sans-serif") != 0 ||
 				   UT_strcmp((char*)pszFontFamily, "cursive") != 0 ||
@@ -1084,13 +1079,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					m_pie->write(pszFontFamily);
 					m_pie->write("\'");
 				}						// only quote non-keyword family names
-				else 
+				else
 				{
 					m_pie->write(pszFontFamily);
 				}
-	
+
 			}
-			
+
 			if (pszFontSize)
 			{
 				if (!span)
@@ -1100,23 +1095,23 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					setlocale (LC_NUMERIC, "");
 					span = true;
 				}
-				else 
+				else
 				{
 					setlocale (LC_NUMERIC, "C");
 					m_pie->write(UT_String_sprintf("; font-size: %fpt", UT_convertToPoints(pszFontSize)));
 					setlocale (LC_NUMERIC, "");
 				}
 			}
-			
+
 			if (pszBgColor && !IS_TRANSPARENT_COLOR(pszBgColor))
 			{
 				if (!span)
 				{
-					m_pie->write("<span style=\"background: #");	
+					m_pie->write("<span style=\"background: #");
 					m_pie->write(pszBgColor);
 					span = true;
 				}
-				else 
+				else
 				{
 					m_pie->write("; background: #");
 					m_pie->write(pszBgColor);
@@ -1140,15 +1135,14 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 
 		m_bInSpan = true;
-#ifdef BIDI_ENABLED
 /*
 	if the dir-override is set, or dir is 'rtl' or 'ltr', we will output
-	the dir property; however, this property cannot be within a style 
-	sheet, so anything that needs to be added to this code and belongs 
-	withing a style property must be above us; further it should be noted 
-	that there is a good chance that the html browser will not handle it 
-	correctly. For instance IE will take dir=rtl as an indication that 
-	the span should have rtl placement on a line, but it will ignore this 
+	the dir property; however, this property cannot be within a style
+	sheet, so anything that needs to be added to this code and belongs
+	withing a style property must be above us; further it should be noted
+	that there is a good chance that the html browser will not handle it
+	correctly. For instance IE will take dir=rtl as an indication that
+	the span should have rtl placement on a line, but it will ignore this
 	value when printing the actual span.
 */
 		if(!span && (pAP->getProperty("dir-override", szValue) /*|| pAP->getProperty("dir", szValue)###TF*/))
@@ -1162,11 +1156,10 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 		}
 
-#endif
 		if (span)
 		{
 			m_pie->write("\"");
-#ifdef BIDI_ENABLED
+
 			if (!bDir && (pAP->getProperty("dir-override", szValue) /*|| pAP->getProperty("dir", szValue)###TF*/))
 			{
 				if(*szValue == 'r' || *szValue == 'l')
@@ -1177,7 +1170,6 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					m_pie->write("\"");
 				}
 			}
-#endif
 
 			if(szStyle)
 			{
@@ -1199,7 +1191,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			m_bInSpan = false;
 		}
 		FREEP(szStyle);
-		
+
 		m_pAP_Span = pAP;
 	}
 }
@@ -1210,13 +1202,13 @@ void s_HTML_Listener::_closeSpan(void)
 		return;
 
 	const PP_AttrProp * pAP = m_pAP_Span;
-	
+
 	if (pAP)
 	{
 
 		bool closeSpan = false;
 		const XML_Char * szValue;
-		
+
 		if (
 			(pAP->getProperty("color", szValue))
 		    || (pAP->getProperty("font-size", szValue))
@@ -1226,7 +1218,7 @@ void s_HTML_Listener::_closeSpan(void)
 		{
 			closeSpan = true;
 		}
-		
+
 		if (pAP->getProperty("text-position", szValue))
 		{
 			closeSpan = true;
@@ -1247,7 +1239,7 @@ void s_HTML_Listener::_closeSpan(void)
 		{
 			closeSpan = true;
 		}
-		
+
 		if (
 			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
@@ -1290,8 +1282,8 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		if (*pData != ' ' && *pData != '\t')
 			// There has been some non-whitespace data output
 			m_bWroteText = true;
-		
-		// Check to see if the character which follows this one is whitespace 
+
+		// Check to see if the character which follows this one is whitespace
 		pData++;
 		if (*pData == ' ' || *pData == '\t')
 		{
@@ -1309,12 +1301,12 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			sBuf += "&lt;";
 			pData++;
 			break;
-			
+
 		case '>':
 			sBuf += "&gt;";
 			pData++;
 			break;
-			
+
 		case '&':
 			sBuf += "&amp;";
 			pData++;
@@ -1386,13 +1378,13 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			}
 			pData++;
 			break;
-		
+
 		default:
 			if (*pData > 0x007f)
 			{
 #ifdef IE_EXP_HTML_UTF8_OPTIONAL
 				// "try_nativeToU(0xa1) == 0xa1" looks dodgy to me (fjf)
-				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || 
+				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() ||
 				   (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) == 0xa1))
 				{
 #endif /* IE_EXP_HTML_UTF8_OPTIONAL */
@@ -1408,7 +1400,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 				{
 					/*
 					  Try to convert to native encoding and if
-					  character fits into byte, output raw byte. This 
+					  character fits into byte, output raw byte. This
 					  is somewhat essential for single-byte non-latin
 					  languages like russian or polish - since
 					  tools like grep and sed can be used then for
@@ -1451,9 +1443,9 @@ bool s_HTML_Listener::_inherits(const char* style, const char* from)
 	PD_Style* pStyle = NULL;
 	char* szName = NULL;
 	const XML_Char * pName = NULL;
-	
+
 	if (m_pDocument->getStyle (style, &pStyle)) {
-		
+
 		if(pStyle && pStyle->getBasedOn())
 		{
 			pStyle = pStyle->getBasedOn();
@@ -1461,13 +1453,13 @@ bool s_HTML_Listener::_inherits(const char* style, const char* from)
 // The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
 // style
 //
-			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, 
+			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME,
 								 pName);
 			szName = removeWhiteSpace(pName);
-			
+
 			if(UT_strcmp(from, szName) == 0)
 				bret = true;
-			
+
 			FREEP(szName);
 		}
 	}
@@ -1492,7 +1484,7 @@ void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 // style
 //
 				pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szName);
-				
+
 				UT_ASSERT((szName));
 				char * pName = removeWhiteSpace((const char*) szName);
 				_outputInheritanceLine(pName);
@@ -1522,14 +1514,14 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	{
 	    m_pie->write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\r\n");
 	}
-	
+
 	m_pie->write("<!-- ================================================================================  -->\r\n");
 	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\r\n");
 	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                    -->\r\n");
 	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com                -->\r\n");
 	m_pie->write("<!-- ================================================================================  -->\r\n");
 	m_pie->write("\r\n");
-	
+
 	if ( !m_bIs4 )
 	{
 	    m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n");
@@ -1538,9 +1530,9 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	{
 	    m_pie->write("<html>\r\n");
 	}
-	
+
 	m_pie->write("<head>\r\n");
-	
+
 	// we always encode as UTF-8
 	if ( !m_bIs4 )
 	{
@@ -1550,7 +1542,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	{
 	    m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" >\r\n");
 	}
-	
+
 	m_pie->write("<title>");
 	m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\r\n");
@@ -1564,7 +1556,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		m_pie->write("body\r\n{\r\n\t");
 		if(pStyle)				// Add normal styles to any descendent of the
 								// body for global effect
-		{						
+		{
 			const XML_Char *szName;
 			for(UT_uint16 i = 0; i < pStyle->getPropertyCount(); i++)
 			{
@@ -1610,7 +1602,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		    m_pie->write(szValue);
 		  }
 		m_pie->write(";\r\n}\r\n\r\n@media print\r\n{\r\n\tbody\r\n\t{\r\n\t\t");
-		
+
 		szValue = PP_evalProperty("page-margin-top",
 								  NULL, NULL, pAP, m_pDocument, true);
 		m_pie->write("padding-top: ");
@@ -1620,7 +1612,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 								  NULL, NULL, pAP, m_pDocument, true);
 		m_pie->write("; padding-bottom: ");
 		m_pie->write(szValue);
-		
+
 		szValue = PP_evalProperty("page-margin-left",
 								  NULL, NULL, pAP, m_pDocument, true);
 		m_pie->write(";\r\n\t\tpadding-left: ");
@@ -1630,7 +1622,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 								  NULL, NULL, pAP, m_pDocument, true);
 		m_pie->write("; padding-right: ");
 		m_pie->write(szValue);
-		
+
 		m_pie->write(";\r\n\t}\r\n}\r\n\r\n");
 	}
 
@@ -1647,7 +1639,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		bool bHaveProp = m_pDocument->getAttrProp(api,&pAP_style);
 
 		if(bHaveProp && pAP_style && p_pds->isUsed())
-		{	
+		{
 			char * myStyleName = removeWhiteSpace ((const char *)szStyleName);
 
 			if(UT_strcmp(myStyleName, "Heading1") == 0)
@@ -1676,12 +1668,12 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 					strstr(szName, "margin") || UT_strcmp(szName, "text-indent") == 0))
 					continue;
 					// see line 770 of this file for reasoning behind skipping here
-				
+
 				m_pie->write("\r\n\t");
 				m_pie->write(szName);
 				m_pie->write(": ");
 				m_pie->write(szValue);
-				
+
 				m_pie->write(";");
 			}
 			while(pAP_style->getNthProperty(j++, szName, szValue))
@@ -1707,7 +1699,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 					m_pie->write(szValue);
 					m_pie->write("\"");
 				}						// only quote non-keyword family names
-				else 
+				else
 				{
 				  if(strstr(szName, "color") && !IS_TRANSPARENT_COLOR(szValue))
 				    {
@@ -1719,7 +1711,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				      m_pie->write(szValue);
 				    }
 				}
-				
+
 				m_pie->write(";");
 			}
 			FREEP(myStyleName);
@@ -1727,7 +1719,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			m_pie->write("\r\n}\r\n\r\n");
 		}
 	}
-		
+
 	m_pie->write("</style>\r\n");
 	m_pie->write("</head>\r\n");
 	m_pie->write("<body>");
@@ -1779,7 +1771,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
 		{
-			const PX_ChangeRecord_Span * pcrs = 
+			const PX_ChangeRecord_Span * pcrs =
 				static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
@@ -1787,7 +1779,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 				_openSpan(api);
 			}
-			
+
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
@@ -1799,7 +1791,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 			m_bWroteText = true;
-			const PX_ChangeRecord_Object * pcro = 
+			const PX_ChangeRecord_Object * pcro =
 				static_cast<const PX_ChangeRecord_Object *> (pcr);
 			const XML_Char* szValue;
 			UT_String buf;
@@ -1919,7 +1911,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
 		return true;
-		
+
 	default:
 		UT_ASSERT(0);
 		return false;
@@ -1973,7 +1965,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		{
 			m_bInSection = false;
 		}
-		
+
 		return true;
 	}
 
@@ -2028,10 +2020,10 @@ UT_Error IE_Exp_HTML::_writeDocument(void)
 		return UT_IE_NOMEMORY;
 	if (getDocRange())
 	  err = getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
-	else 
+	else
 	  err = getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)) ;
 	DELETEP(m_pListener);
-	
+
 	if ( m_error == UT_OK && err == true )
 	  return UT_OK;
 	return UT_IE_COULDNOTWRITE;
@@ -2041,26 +2033,26 @@ UT_Error IE_Exp_HTML::_writeDocument(void)
 /*****************************************************************/
 
 /*!
-   removes the suffix from a string by searching backwards for the specified 
-   character delimiter. If the delimiter is not found, a copy of the original 
+   removes the suffix from a string by searching backwards for the specified
+   character delimiter. If the delimiter is not found, a copy of the original
    string is returned
-   
-   eg. _stripSuffix("/home/user/file.png, '.') returns "/home/user/file" 
-       _stripSuffix("/home/user/foo_bar, '_') returns /home/user/foo 
+
+   eg. _stripSuffix("/home/user/file.png, '.') returns "/home/user/file"
+       _stripSuffix("/home/user/foo_bar, '_') returns /home/user/foo
        _stripSuffix("/home/user/file.png, '_') returns /home/user/file.png"
 */
 char *s_HTML_Listener::_stripSuffix(const char* from, char delimiter)
 {
     char * fremove_s = (char *)malloc(strlen(from)+1);
-    strcpy(fremove_s, from);   
+    strcpy(fremove_s, from);
 
     char * p = fremove_s + strlen(fremove_s);
     while ((p >= fremove_s) && (*p != delimiter))
         p--;
-	
+
     if (p >= fremove_s)
 	*p = '\0';
-    
+
     return fremove_s;
 }
 
@@ -2069,7 +2061,7 @@ void s_HTML_Listener::_handleDataItems(void)
  	const char * szName;
 	const char * szMimeType;
 	const UT_ByteBuf * pByteBuf;
-	
+
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
 	{
 		UT_sint32 loc = -1;
@@ -2081,50 +2073,50 @@ void s_HTML_Listener::_handleDataItems(void)
 				break;
 			}
 		}
-		
+
 		if(loc > -1)
 		{
 			FILE *fp;
 			UT_String fname; // EVIL EVIL bad hardcoded buffer size
-#ifndef LEGIONS			
+#ifndef LEGIONS
 			UT_String_sprintf(fname, "%s_data", m_pie->getFileName());
 #else
 			fname = "images";
-#endif			
+#endif
 			int result = m_pDocument->getApp()->makeDirectory(fname.c_str(), 0750);
-			
+
 			if (!UT_strcmp(szMimeType, "image/svg-xml"))
 				UT_String_sprintf(fname, "%s/%s_%d.svg", fname.c_str(), szName, loc);
 			if (!UT_strcmp(szMimeType, "text/mathml"))
 				UT_String_sprintf(fname, "%s/%s_%d.mathml", fname.c_str(), szName, loc);
 			else // PNG Image
-			{  
+			{
 				char * temp = _stripSuffix(UT_basename(szName), '_');
 				char * fstripped = _stripSuffix(temp, '.');
 				FREEP(temp);
 				UT_String_sprintf(fname, "%s/%s.png", fname.c_str(), fstripped);
 				FREEP(fstripped);
 			}
-			
+
 			if (!UT_isRegularFile(fname.c_str()))
 			{
 			    fp = fopen (fname.c_str(), "wb+");
-			
+
 			    if(!fp)
 				    continue;
-			
+
 			    int cnt = 0, len = pByteBuf->getLength();
-			
+
 			    while (cnt < len)
 			    {
-				    cnt += fwrite (pByteBuf->getPointer(cnt), 
+				    cnt += fwrite (pByteBuf->getPointer(cnt),
 							     sizeof(UT_Byte), len-cnt, fp);
 			    }
-			
+
 			    fclose(fp);
 			}
 		}
 	}
-	
+
 	return;
 }

@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -38,7 +38,7 @@ dcl(MSG_UnixFontSizeWarning, "The operating system was unable to allocate a font
 							 "properly. Using a smaller zoom factor may resolve this problem.")
 dcl(MSG_ImportingDoc, "Importing Document..")
 dcl(MSG_BuildingDoc, "Building Document..")
-							
+
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")
 
@@ -67,7 +67,7 @@ dcl(DLG_UnixMB_No,				"_No")
 
 dcl(DLG_QNXMB_Yes,				"Yes")
 dcl(DLG_QNXMB_No,				"No")
-	
+
 /* More Windows dialog */
 dcl(DLG_MW_MoreWindows, 		"Activate Window")
 dcl(DLG_MW_Activate,			"Activate:")
@@ -99,9 +99,7 @@ dcl(DLG_UFS_SmallCapsCheck, 	"Small Caps")
 dcl(DLG_UFS_ColorLabel, 		"Color:")
 dcl(DLG_UFS_ScriptLabel,		"Script:")
 dcl(DLG_UFS_SampleFrameLabel,	"Sample")
-#ifdef BIDI_ENABLED
-dcl(DLG_UFS_Direction,	   "Right-to-left")
-#endif
+
 
 /* Unix FileOpenSaveAs dialog */
 dcl(DLG_FOSA_OpenTitle, 				"Open File")
@@ -133,7 +131,7 @@ dcl(DLG_Zoom_100,						"&100%")
 dcl(DLG_Zoom_75,						"&75%")
 dcl(DLG_Zoom_PageWidth, 				"&Page width")
 dcl(DLG_Zoom_WholePage, 				"&Whole page")
-dcl(DLG_Zoom_Percent,					"P&ercent:")	
+dcl(DLG_Zoom_Percent,					"P&ercent:")
 dcl(DLG_Zoom_PreviewFrame,				"Preview")
 
 /* Zoom tool bar -- Truncated to fit small combobox size*/
@@ -191,7 +189,7 @@ dcl(DICTIONARY_CANTLOAD, "Could not load the dictionary for the %s language")
 
 /* plugin error messages */
 dcl(DLG_PLUGIN_MANAGER_COULDNT_LOAD,	"Could not activate/load plugin")
-dcl(DLG_PLUGIN_MANAGER_COULDNT_UNLOAD,	"Could not deactivate plugin") 
+dcl(DLG_PLUGIN_MANAGER_COULDNT_UNLOAD,	"Could not deactivate plugin")
 dcl(DLG_PLUGIN_MANAGER_NONE_SELECTED,	"No plugin selected")
 
 /* Language Dialog */

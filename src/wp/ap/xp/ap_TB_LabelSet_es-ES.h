@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -48,7 +48,7 @@ BeginSetEnc(es,ES,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nuevo", 			tb_new_xpm,		NULL, "Crear un nuevo documento")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nuevo", 			tb_new_xpm,		NULL, "Crear un nuevo documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Abrir",			tb_open_xpm,	NULL, "Abrir un documento existente")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Guardar",			tb_save_xpm,	NULL, "Guardar el documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Guardar como",		tb_save_as_xpm,	NULL, "Guardar el documento con un nombre diferente")
@@ -97,16 +97,14 @@ BeginSetEnc(es,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,					NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Viñetas",			tb_lists_bullets_xpm,	NULL, "Viñetas")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Listas",			tb_lists_numbers_xpm,	NULL, "Listas numeradas")
-	
+
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color de la tinta",	tb_text_fgcolor_xpm,				NULL, "Cambiar el color de la tinta")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fondo",	tb_text_bgcolor_xpm,					NULL, "Cambiar el color del fondo")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Indentar párrafo", tb_text_indent_xpm,		NULL, "Incrementar la indentación del párrafo")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar párrafo", tb_text_unindent_xpm,	NULL, "Reducir la indentación del párrafo")
 
 	// ... add others here ...
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Dirección de párrafo",	tb_text_dom_direction_rtl_xpm,	NULL, "Change dominant direction of paragraph")
-#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

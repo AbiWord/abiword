@@ -40,12 +40,10 @@ static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
 										XML_BOX_LIST,
 										XML_HAND_LIST,
 										XML_HEART_LIST,
-#ifdef BIDI_ENABLED
 										XML_ARABICNUM_LIST,
 										XML_HEBREW_LIST
-#endif
 };
-										
+
 const XML_Char * fl_AutoLists::getXmlList(UT_uint32 i)
 {
     UT_uint32 j = i;
@@ -66,10 +64,8 @@ static const char	  * fmt_Lists[] = { fmt_NUMBERED_LIST,
 										fmt_LOWERROMAN_LIST,
 										fmt_BULLETED_LIST,
 										fmt_DASHED_LIST,
-#ifdef BIDI_ENABLED
 										fmt_ARABICNUM_LIST,
 										fmt_HEBREW_LIST
-#endif
 };
 
 const char * fl_AutoLists::getFmtList(UT_uint32 i)

@@ -19,11 +19,23 @@
 
 #include "ut_abi-pango.h"
 
+/*!
+  \param data: pointer to PangoGlyphString
+  \param unused: not used, should be NULL
+  Will free a single PagonGlyphString object; it is intended to be used
+  in calls to g_list_foreach for freeing list of PangoGlyphString's
+*/
 void UT_free1PangoGlyphString(gpointer data, gpointer /*unused*/)
 {
 	pango_glyph_string_free((PangoGlyphString*)data);
 }
 
+/*!
+  \param data: pointer to PangoItem
+  \param unused: not used, should be NULL
+  Will free a single PagonItem object; it is intended to be used
+  in calls to g_list_foreach for freeing list of PangoItem's
+*/
 void UT_free1PangoItem(gpointer data, gpointer /*unused*/)
 {
 	pango_item_free((PangoItem*)data);

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  *
  * Translation by SoftCatalà (jesus@softcatala.org)
@@ -50,7 +50,7 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nou", 			tb_new_xpm,			NULL, "Crea un nou document")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nou", 			tb_new_xpm,			NULL, "Crea un nou document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Obre",			tb_open_xpm,			NULL, "Obre un document existent")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Desa", 		tb_save_xpm,			NULL, "Desa el document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Anomena i desa", 	tb_save_as_xpm,			NULL, "Desa el document amb un altre nom")
@@ -105,21 +105,19 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",			NoIcon,				NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Vinyetes",		tb_lists_bullets_xpm,		NULL, "Vinyetes")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Llistes",		tb_lists_numbers_xpm,		NULL, "Llistes numerades")
-	
+
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color",		tb_text_fgcolor_xpm,		NULL, "Canvia el color")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fons",	tb_text_bgcolor_xpm,		NULL, "Canvia el color de fons")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Identació",		tb_text_indent_xpm,		NULL, "Augmenta la identació del paràgraf")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desidentació",		tb_text_unindent_xpm,		NULL, "Disminueix la identació del paràgraf")
-	
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executa extensió",	tb_script_play_xpm,		NULL, "Executa l'extensió")
 
-#ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Força text EAD",	tb_text_direction_ltr_xpm,	NULL, "Força direcció del text d'esquerra a dreta")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Força text DAE",	tb_text_direction_rtl_xpm,	NULL, "Força direcció del text de dreta a esquerra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Direcció del paràgraf",tb_text_dom_direction_rtl_xpm,	NULL, "Canvia la direcció dominant del paràgraf")
-#endif
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 

@@ -1,20 +1,20 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -35,10 +35,7 @@
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
-
-#ifdef BIDI_ENABLED
 #include "fribidi.h"
-#endif
 
 class IE_Imp_RTF;
 class RTF_msword97_list;
@@ -81,7 +78,7 @@ public:
 	bool    m_superscript;
 	double    m_superscript_pos;       // unit is pt. if 0.0, ignore
 	bool    m_subscript;
-	double    m_subscript_pos;         // unit is pt. if 0.0, ignore	
+	double    m_subscript_pos;         // unit is pt. if 0.0, ignore
 	double    m_fontSize;			// font size in points
 	UT_uint32    m_fontNumber;		// index into font table
 	bool    m_hasColour;        // if false, ignore colour number
@@ -110,7 +107,7 @@ public:
 	bool bm_superscript;
 	bool bm_superscript_pos;       // unit is pt. if 0.0, ignore
 	bool bm_subscript;
-	bool bm_subscript_pos;         // unit is pt. if 0.0, ignore	
+	bool bm_subscript_pos;         // unit is pt. if 0.0, ignore
 	bool bm_fontSize;			// font size in points
 	bool bm_fontNumber;		// index into font table
 	bool    bm_hasColour;        // if false, ignore colour number
@@ -121,7 +118,7 @@ public:
 };
 
 struct ABI_EXPORT _rtfListTable
-{      
+{
 	UT_uint32 start_value;
 	UT_uint32 level;
 	bool bullet;
@@ -181,12 +178,10 @@ struct ABI_EXPORT RTFProps_ParaProps
 	eTabLeader      m_curTabLeader;       // Current Tab Leader
 	UT_uint32       m_iOveride;          // 1's index to overide table
 	UT_uint32       m_iOverideLevel;     // 0's index to the level
-	_rtfListTable   m_rtfListTable; 
+	_rtfListTable   m_rtfListTable;
 	UT_sint32  m_styleNumber ; //index into the style table
-#ifdef BIDI_ENABLED
 	FriBidiCharType m_dom_dir;
-#endif
-};                  
+};
 
 // These are set true if changed in list definitions.
 class ABI_EXPORT RTFProps_bParaProps
@@ -208,10 +203,8 @@ public:
 	bool        bm_tabLeader;
 	bool        bm_curTabType;        // Current Tab type
 	bool        bm_curTabLeader;       // Current Tab Leader
-	bool        bm_rtfListTable; 
-#ifdef BIDI_ENABLED
-	bool bm_dom_dir;
-#endif
+	bool        bm_rtfListTable;
+	bool        bm_dom_dir;
 };
 
 
@@ -231,15 +224,15 @@ class ABI_EXPORT RTF_msword97_level
 public:
     RTF_msword97_level(	RTF_msword97_list * pmsword97List, UT_uint32 level);
 	~RTF_msword97_level();
-	void buildAbiListProperties( const char ** szListID, 
-								 const char ** szParentID, 
+	void buildAbiListProperties( const char ** szListID,
+								 const char ** szParentID,
 								 const char ** szLevel,
-								 const char ** szStartat, 
-								 const char ** szFieldFont, 
-								 const char ** szListDelim, 
-								 const char ** szListDecimal, 
-								 const char ** szAlign, 
-								 const char ** szIndent, 
+								 const char ** szStartat,
+								 const char ** szFieldFont,
+								 const char ** szListDelim,
+								 const char ** szListDecimal,
+								 const char ** szAlign,
+								 const char ** szIndent,
 								 const char ** szListStyle);
 	bool ParseLevelText(const UT_String & szLevelText,const UT_String & szLevelNumbers, UT_uint32 iLevel);
 	UT_sint32 m_levelStartAt;
@@ -279,15 +272,15 @@ class ABI_EXPORT RTF_msword97_listOveride
 public:
 	RTF_msword97_listOveride(	IE_Imp_RTF * pie_rtf);
     ~RTF_msword97_listOveride();
-	void buildAbiListProperties( const char ** szListID, 
-								 const char ** szParentID, 
+	void buildAbiListProperties( const char ** szListID,
+								 const char ** szParentID,
 								 const char ** szLevel,
-								 const char ** szStartat, 
-								 const char ** szFieldFont, 
-								 const char ** szListDelim, 
-								 const char ** szListDecimal, 
-								 const char ** szAlign, 
-								 const char ** szIndent, 
+								 const char ** szStartat,
+								 const char ** szFieldFont,
+								 const char ** szListDelim,
+								 const char ** szListDecimal,
+								 const char ** szAlign,
+								 const char ** szIndent,
 								 const char ** szListStyle,
 								 UT_uint32 iLevel);
 	UT_uint32 m_RTF_listID;
@@ -340,7 +333,7 @@ private:
 struct ABI_EXPORT RTFProps_ImageProps
 {
 	enum IPSizeType { ipstNone, ipstGoal, ipstScale };
-	
+
 	RTFProps_ImageProps ();
 	IPSizeType sizeType;
 	UT_uint32 wGoal;
@@ -363,16 +356,14 @@ struct ABI_EXPORT RTFProps_SectionProps
 	bool m_bColumnLine;
 	ESectionBreak	m_breakType;
 	EPageNumber		m_pageNumFormat;
-	UT_sint32       m_leftMargTwips;     
-	UT_sint32       m_rightMargTwips;     
-	UT_sint32       m_topMargTwips;     
-	UT_sint32       m_bottomMargTwips;     
-	UT_sint32       m_headerYTwips;     
-	UT_sint32       m_footerYTwips;     
-	UT_sint32       m_colSpaceTwips;     
-#ifdef BIDI_ENABLED
+	UT_sint32       m_leftMargTwips;
+	UT_sint32       m_rightMargTwips;
+	UT_sint32       m_topMargTwips;
+	UT_sint32       m_bottomMargTwips;
+	UT_sint32       m_headerYTwips;
+	UT_sint32       m_footerYTwips;
+	UT_sint32       m_colSpaceTwips;
 	FriBidiCharType m_dir;
-#endif
 };
 
 
@@ -385,27 +376,27 @@ struct ABI_EXPORT RTFProps_SectionProps
 struct ABI_EXPORT RTFHdrFtr
 {
 	enum HdrFtrType {hftNone,
-					 hftHeader, 
-					 hftHeaderEven, 
-					 hftHeaderFirst, 
-					 hftHeaderLast,  
-					 hftFooter, 
-					 hftFooterEven, 
-					 hftFooterFirst, 
+					 hftHeader,
+					 hftHeaderEven,
+					 hftHeaderFirst,
+					 hftHeaderLast,
+					 hftFooter,
+					 hftFooterEven,
+					 hftFooterFirst,
 					 hftFooterLast };
 
 	RTFHdrFtr () : m_type(hftNone), m_id(0), m_buf(1024) {}
-	
+
 	HdrFtrType      m_type;
 	UT_uint32       m_id;
 	UT_ByteBuf      m_buf;
-};	
+};
 
 // RTFStateStore
 struct ABI_EXPORT RTFStateStore
 {
 	RTFStateStore();
-	
+
 //	RTFStateStore& operator=(const RTFStateStore&);
 
 	enum DestinationStateTypes { rdsNorm, rdsSkip, rdsFootnote, rdsHeader, rdsFooter, rdsField };
@@ -449,7 +440,7 @@ public:
 	IE_Imp_RTF_Sniffer() {}
 	virtual ~IE_Imp_RTF_Sniffer() {}
 
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -480,13 +471,13 @@ protected:
 // importer helper methods
 private:
 	enum PictFormat {
-		picNone, 
+		picNone,
 		picPNG,
-		picJPEG, 
-		picBMP, 
-		picWMF, 
-		picPICT, 
-		picEMF, 
+		picJPEG,
+		picBMP,
+		picWMF,
+		picPICT,
+		picEMF,
 		picGIF
 	};
 
@@ -506,7 +497,7 @@ private:
 	bool ReadCharFromFileWithCRLF(unsigned char* pCh);
 	bool ReadCharFromFile(unsigned char* pCh);
 	bool SkipBackChar(unsigned char ch);
-	bool ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed, 
+	bool ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
 	bool TranslateKeyword(unsigned char* pKeyword, long param, bool fParam);
 	bool ReadColourTable();
@@ -520,11 +511,11 @@ private:
 	bool HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID);
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
 	bool StuffCurrentGroup(UT_ByteBuf & buf);
-	bool LoadPictData(PictFormat format, const char * image_name, 
+	bool LoadPictData(PictFormat format, const char * image_name,
 					  struct RTFProps_ImageProps & imgProps);
 	bool InsertImage (const UT_ByteBuf * buf, const char * image_name,
 					  const struct RTFProps_ImageProps & imgProps);
-	
+
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);
 	UT_sint32 GetNthTableBgColour(UT_uint32 colNum);
@@ -537,10 +528,10 @@ private:
 	bool ParseCharParaProps( unsigned char * pKeyword, long param, bool fParam, RTFProps_CharProps * pChars, RTFProps_ParaProps * pParas, RTFProps_bCharProps * pbChars, RTFProps_bParaProps * pbParas);
 	bool ReadListOverideTable(void);
 	bool HandleTableListOveride(void);
-	
-	bool buildAllProps( char * propBuffer,  RTFProps_ParaProps * pParas, 
-					   RTFProps_CharProps * pChars, 
-					   RTFProps_bParaProps * pbParas, 
+
+	bool buildAllProps( char * propBuffer,  RTFProps_ParaProps * pParas,
+					   RTFProps_CharProps * pChars,
+					   RTFProps_bParaProps * pbParas,
 					   RTFProps_bCharProps * pbChars);
 
 
@@ -595,7 +586,7 @@ private:
 	    RTF_TOKEN_DATA,
 	    RTF_TOKEN_ERROR = -1
 	} RTFTokenType;
-	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam, 
+	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam,
 							bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace=false);
 
 
@@ -633,7 +624,7 @@ private:
 	UT_Vector m_styleTable;
 
 	struct _rtfAbiListTable
-	{      
+	{
 		UT_uint32 orig_id;
 		UT_uint32 orig_parentid;
 		UT_uint32 start_value;
@@ -650,7 +641,7 @@ private:
 	bool m_bisNOTList; // true if the current stream does not have  abi list extensions
 	bool m_bParaHasRTFList;
 	bool m_bParaHasRTFContinue;
- 
+
 	FILE* m_pImportFile;
 
 	unsigned char *		m_pPasteBuffer;

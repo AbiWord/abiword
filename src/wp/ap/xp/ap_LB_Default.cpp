@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -53,11 +53,7 @@
 #define _CT		EV_EMC_TEXT
 #define _CM		EV_EMC_MISSPELLEDTEXT
 #define _CL		EV_EMC_LEFTOFTEXT
-
-#ifdef BIDI_ENABLED
 #define _CR		EV_EMC_RIGHTOFTEXT
-#endif
-
 #define _CI		EV_EMC_IMAGE
 #define _CZ		EV_EMC_IMAGESIZE
 #define _CF		EV_EMC_FIELD
@@ -77,7 +73,7 @@ ap_bs_Mouse MouseTable[] =
 	// TODO should be and some are just for testing until
 	// TODO the full features are implemented.  some i've
 	// TODO just filled in some guesses, but never used.
-	
+
 //	Button-0 (no buttons pressed)
 //  { context	{ click	dblclick	drag,				dbldrag,	release,	doublerelease	}},
 	{_CU _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
@@ -87,10 +83,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CI _B0,	{ "",	"",			"cursorImage",		"",			"",			""				}},
 	{_CZ _B0,	{ "",	"",			"cursorImageSize",	"",			"",			""				}},
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
-#ifdef BIDI_ENABLED
 	{_CR _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
-#endif
-
 	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
 
 //	Button-1, Image-context
@@ -108,16 +101,13 @@ ap_bs_Mouse MouseTable[] =
 //	Button-1, Left-of-Text-context (left-margin)
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
 	{_CL _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
-	
+
 //	Button-1, Misspelled-Word-Text-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
 	{_CM _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 	{_CM _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"		}},
 	{_CM _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"		}},
-
-#ifdef BIDI_ENABLED
 	{_CR _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
-#endif
 
 //  button-1, hyperlink context
 	{_CH _B1,	{ "warpInsPtToXY",	"hyperlinkJump",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
@@ -153,7 +143,7 @@ ap_bs_Mouse MouseTable[] =
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
 	{_CH _B3,	{ "contextHyperlink",		"",			"",		"",			"",			""				}},
-	
+
 //  Button-4, Mouse wheel (3 lines up)... yes, a hack.
 	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CU _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
@@ -161,9 +151,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CT _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CL _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CL _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
-#ifdef BIDI_ENABLED
 	{_CR _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
-#endif	
 	{_CM _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 	{_CM _B4 _C,{ "zoomIn",		            "zoomIn",           			"",		"",			"",			""				}},
 	{_CI _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
@@ -219,9 +207,9 @@ DEFLEN(MouseTable);
 
 ap_bs_NVK NVKTable[] =
 {
-//	{nvk,				{ none,					_S,					_C,				_S_C,		
+//	{nvk,				{ none,					_S,					_C,				_S_C,
 //  					  _A,					_A_S,				_A_C,			_A_C_S				}},
-	{EV_NVK_BACKSPACE,	{ "delLeft", 			"delLeft",			"delBOW",		"",			
+	{EV_NVK_BACKSPACE,	{ "delLeft", 			"delLeft",			"delBOW",		"",
 						  "",					"",					"",				""					}},
 	{EV_NVK_SPACE,		{ "insertSpace",		"insertSpace",		"togglePlain",	"insertNBSpace",
 						  "",					"",					"",				""					}},
@@ -315,7 +303,7 @@ DEFLEN(NVKTable);
 
 ap_bs_NVK_Prefix NVKTable_P[] =
 {
-//	{nvk,						{ none,					_S,					_C,				_S_C,		
+//	{nvk,						{ none,					_S,					_C,				_S_C,
 //  							  _A,					_A_S,				_A_C,			_A_C_S	}},
 
 	{EV_NVK_DEAD_GRAVE,			{ "deadgrave",			"deadgrave",		"",	"", "",	"",	"",	""	}},
@@ -445,7 +433,7 @@ ap_bs_Char CharTable[] =
 //	Here are bindings for the portion of Latin-1 with the high-bit set.
 //	I'm taking the list from /usr/include/X11/keysymdef.h, so I think
 //	that the set is reasonably complete.
-//	
+//
 //	I don't know how to test these on my en-US system with my en-US keyboard,
 //	but I think they will work.
 //

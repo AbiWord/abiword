@@ -1,21 +1,21 @@
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
- * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu> 
+ * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
  * Copyright (C) 2001 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -53,7 +53,7 @@ public:
 	IE_Imp_MsWord_97_Sniffer() {}
 	virtual ~IE_Imp_MsWord_97_Sniffer() {}
 
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -78,13 +78,13 @@ public:
 	UT_Error			importFile (const char * szFilename);
 
 	// wv's callbacks need access to these, so they have to be public
-	int 			_specCharProc (wvParseStruct *ps, UT_uint16 eachchar, 
+	int 			_specCharProc (wvParseStruct *ps, UT_uint16 eachchar,
 								   CHP * achp);
 	int 			_charProc (wvParseStruct *ps, UT_uint16 eachchar,
 							   UT_Byte chartype,  UT_uint16 lid);
 	int 			_docProc  (wvParseStruct *ps, UT_uint32 tag);
 	int 			_eleProc  (wvParseStruct *ps, UT_uint32 tag,
-							   void *props, int dirty); 
+							   void *props, int dirty);
 
 private:
 
@@ -135,9 +135,7 @@ private:
 
 	bool m_bInSect;
 	bool m_bInPara;
-#ifdef BIDI_ENABLED
 	bool m_bPrevStrongCharRTL;
-#endif
 	UT_uint32 m_iDocPosition;
 	bookmark * m_pBookmarks;
 	UT_uint32  m_iBookmarksCount;

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -31,7 +31,7 @@
 // The following are the set of application-dependent preference keys and the
 // set of default values for them.  Each item must have the AP_PREF_KEY_ prefix
 // and each value must have the XAP_PREF_DEFAULT_ prefix.  Default values *must* obey
-// XML encoding rules if they contain any double quote (&quot;), ampersand (&amp;), 
+// XML encoding rules if they contain any double quote (&quot;), ampersand (&amp;),
 // or angle bracket (&lt; and &gt;) characters.
 //
 // ***FOR EACH PAIR DEFINED, ADD A 'dcl(basename)' TO THE BOTTOM HALF OF THIS FILE***
@@ -126,14 +126,12 @@
 #define AP_PREF_KEY_AlwaysPromptEncoding			"AlwaysPromptEncoding"		/* if true, always show encoding dialog when importing/exporting text */
 #define AP_PREF_DEFAULT_AlwaysPromptEncoding		"0"
 
-#ifdef BIDI_ENABLED
 #define AP_PREF_KEY_DefaultDirectionRtl             "DefaultDirectionRtl"       /* the deafault direction of text is rtl */
 #ifndef BIDI_RTL_DOMINANT
 #define AP_PREF_DEFAULT_DefaultDirectionRtl         "0"
 #else
 #define AP_PREF_DEFAULT_DefaultDirectionRtl         "1"
 #endif
-#endif /*BIDI_ENABLED*/
 
 #define AP_PREF_KEY_ShowSplash     "ShowSplash"
 #define AP_PREF_DEFAULT_ShowSplash "1"
@@ -180,9 +178,7 @@ dcl(SpellDirectory)
 dcl(StringSetDirectory)
 dcl(ShowSplash)
 
-#ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
-#endif
 
 #endif /* dcl */
 #endif /* AP_PREFS_SCHEMEIDS_H */

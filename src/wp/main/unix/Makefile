@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 ABI_ROOT:=$(shell pwd)/../../../..
@@ -34,13 +34,7 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 # TODO several times.  see if there is a better way of doing this.
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv
-
-# fribidi library
-ifeq ($(ABI_OPT_BIDI_ENABLED),1)
-LoadOrder += Abi_fribidi
-endif
-
+			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv Abi_fribidi
 
 ifdef ABI_REQUIRE_PEER_ICONV
 LoadOrder+= Abi_libiconv
@@ -48,12 +42,12 @@ endif
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
- 
+
 # libdl flags go into the process later
 #ifeq (0,1)
 ABI_LIBS=		png z
 #else
-#ABI_LIBS=		png z iconv 
+#ABI_LIBS=		png z iconv
 #endif
 
 ifdef __FreeBSD__
@@ -85,8 +79,8 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(UNIX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
-	@echo $(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS) 
+	@echo $(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
 
 else
 	@echo "Not linking dynamic $(PROGRAM)"
