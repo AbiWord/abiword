@@ -1508,8 +1508,15 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	ap_RulerTicks tick(m_pG,m_dim);
-	if ((x < xFixed + m_infoCache.m_xPageViewMargin + tick.tickUnit/tick.tickUnitScale)
-		|| (x > (UT_sint32)m_iWidth))
+	if ((x < xFixed + m_infoCache.m_xPageViewMargin)
+		// Make sure it is not dragged off the page to the right... the easiest way to get the
+		// coordinate of the right of the page is to add up all the X coordinates of the margin,
+		// page, etc.
+		|| (x > m_infoCache.m_xPageViewMargin
+			+ m_infoCache.u.c.m_xaLeftMargin
+			+ m_infoCache.u.c.m_xColumnWidth
+			+ m_infoCache.u.c.m_xColumnGap
+			+ m_infoCache.u.c.m_xaRightMargin))
 	{
 		if(!m_bEventIgnored)
 		{
