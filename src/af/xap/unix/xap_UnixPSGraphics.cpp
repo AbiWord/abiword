@@ -401,6 +401,34 @@ GR_Font* PS_Graphics::getGUIFont()
 	return NULL;
 }
 
+#ifdef USE_XFT
+/**
+ * Finds a font which match the family, style, variant, weight and size
+ * asked.  It will do a fuzzy match to find the font (using the aliases
+ * found in fonts.conf
+ */
+GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
+								const char* pszFontStyle,
+								const char* pszFontVariant,
+								const char* pszFontWeight,
+								const char* pszFontStretch,
+								const char* pszFontSize)
+{
+	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
+																   pszFontStretch, pszFontSize);
+
+	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
+	// This piece of code scales the FONT chosen at low resolution to that at high
+	// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
+	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
+	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
+	UT_ASSERT(pFont);
+
+	return pFont;
+}
+
+#else
+
 GR_Font* PS_Graphics::findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 
 							   const char* /* pszFontVariant */,
@@ -498,6 +526,7 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	
 	return pFont;
 }
+#endif // USE_XFT
 
 #ifndef WITH_PANGO
 void PS_Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
