@@ -598,11 +598,10 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 						si.iRightWidth = iRightWidth;
 						si.iOffset = i + offset;
 					}
-					else
-						break;
 				}
-				else
-					break;
+
+				// no matter how we got here, we are now done ...
+				break;
 			}
 			xxx_UT_DEBUGMSG(("Candidate Slit point is %d \n",	si.iLeftWidth));
 		}
@@ -623,8 +622,10 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 				iRightWidth -= iCW;
 			}
 
-			i = iNext - 1;
-			text += (iNext - i - 1); // -1 because of the loop increment
+			// advance iterator and index by number of chars processed
+			UT_uint32 iAdvance = n - i - 1;
+			i += iAdvance;
+			text += iAdvance; 
 			UT_return_val_if_fail(text.getStatus()==UTIter_OK, false);
 		}
 	}
