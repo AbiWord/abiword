@@ -78,7 +78,7 @@ bool AP_QNXToolbar_FontCombo::populate(void)
 
 	if ((count = PfQueryFonts(FONT_QUERY_CHAR, FONT_TYPES, font_list, alloc)) < 0) {
 		if (font_list) {
-			free(font_list);
+			FREEP(font_list);
 		}
 		return false;
 	}
@@ -93,7 +93,7 @@ bool AP_QNXToolbar_FontCombo::populate(void)
 
 	/* Is this a safe thing to do? */
 	if (font_list) {
-		free(font_list);
+		FREEP(font_list);
 	}
 	return true;
 }
