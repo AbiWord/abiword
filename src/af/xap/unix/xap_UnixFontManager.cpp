@@ -738,7 +738,7 @@ bool XAP_UnixFontManager::scavengeFonts()
 	return true;
 }
 
-XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName) const
+XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 {
 	FcPattern* fp;
 	FcPattern* result_fp;
@@ -772,7 +772,7 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName) const
 		return NULL;
 	}
 
-	XAP_UnixFont* pFont = buildFont((XAP_UnixFontManager *)this, result_fp);
+	XAP_UnixFont* pFont = buildFont(this, result_fp);
 	FcPatternDestroy(result_fp);
 	return pFont;
 }
