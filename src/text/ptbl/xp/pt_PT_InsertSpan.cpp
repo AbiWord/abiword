@@ -45,13 +45,14 @@
 
 
 bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
-								  const UT_UCSChar * p,
-							   UT_uint32 length, fd_Field * pField)
+							   const UT_UCSChar * p,
+							   UT_uint32 length, fd_Field * pField,
+							   bool bAddChangeRec)
 {
-	if(!_realInsertSpan(dpos, p, length, pField))
+	if(!_realInsertSpan(dpos, p, length, pField, bAddChangeRec))
 		return false;
 
-	if(m_pDocument->isMarkRevisions())
+	if(bAddChangeRec && m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
 		Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
@@ -222,6 +223,9 @@ bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	// fragment(s) into the list.  first we construct a new text fragment
 	// for the data that we inserted.
 
+	// PLAM: This is where we need to get a new AP, I think
+   	// PLAM: I mean, indexAP has all sorts of cruft left over, we should zap it.
+
 	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,indexAP,pField);
 	if (!pftNew)
 		return false;
@@ -299,8 +303,9 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 }
 
 bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
-								  const UT_UCSChar * p,
-								  UT_uint32 length, fd_Field * pField)
+									const UT_UCSChar * p,
+									UT_uint32 length, fd_Field * pField,
+									bool bAddChangeRec)
 {
 	// insert character data into the document at the given position.
 
@@ -431,7 +436,7 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 		  // is existing fragment a field? If so do nothing
 		  // Or should we display a message to the user?
 
-		        if(pf->getField() != NULL)
+			if(pf->getField() != NULL)
 			{
 				return false;
 			}
@@ -441,14 +446,13 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	}
 	else
 	{
-  	         // is existing fragment a field? If so do nothing
-	  // Or should we display a message to the user?
+		// is existing fragment a field? If so do nothing
+		// Or should we display a message to the user?
 
-                if(pf->getField() != NULL)
+		if(pf->getField() != NULL)
 		{
 		       return false;
 		}
-
 
 		indexAP = _chooseIndexAP(pf,fragOffset);
 	}
@@ -469,9 +473,11 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
                                    blockOffset, pField);
 	UT_ASSERT(pcr);
 
-	if (_canCoalesceInsertSpan(pcr))
+	if (!bAddChangeRec || _canCoalesceInsertSpan(pcr))
 	{
-		m_history.coalesceHistory(pcr);
+		if (bAddChangeRec)
+			m_history.coalesceHistory(pcr);
+
 		m_pDocument->notifyListeners(pfs,pcr);
 		delete pcr;
 	}
@@ -487,192 +493,6 @@ Finish:
 	if (bNeedGlob)
 		endMultiStepGlob();
 
-	return bSuccess;
-}
-
-
-bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
-								  const UT_UCSChar * p,
-								  UT_uint32 length, fd_Field * pField)
-{
-	// insert character data into the document at the given position.
-  //No not throw a change record.
-  // We need this to getupdate fields working correctly
-
-	UT_ASSERT(m_pts==PTS_Editing);
-	// get the fragment at the given document position.
-
-	pf_Frag * pf = NULL;
-	PT_BlockOffset fragOffset = 0;
-	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
-	UT_ASSERT(bFound);
-
-
-	// append the text data to the end of the current buffer.
-
-	PT_BufIndex bi;
-	if (!m_varset.appendBuf(p,length,&bi))
-		return false;
-
-	bool bSuccess = false;
-	pf_Frag_Strux * pfs = NULL;
-	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-	UT_ASSERT(bFoundStrux);
-
-	// we just did a getFragFromPosition() which gives us the
-	// the thing *starting* at that position.  if we have a
-	// fragment boundary at that position, it's sort of arbitrary
-	// whether we treat this insert as a prepend to the one we just found
-	// or an append to the previous one (when it's a text frag).
-	// in the normal case, we want the Attr/Prop of a character
-	// insertion to take the AP of the thing to the immediate
-	// left (seems to be what MS-Word and MS-WordPad do).  It's also
-	// useful when the user hits the BOLD button (without a)
-	// selection) and then starts typing -- ideally you'd like
-	// all of the text to have bold not just the first.  therefore,
-	// we will see if we are on a text-text boundary and backup
-	// (and thus appending) to the previous.
-
-	bool bNeedGlob = false;
-	PT_AttrPropIndex indexAP = 0;
-
-	if ( (fragOffset==0) && (pf->getPrev()) )
-	{
-		bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
-		if (bRightOfFmtMark)
-		{
-			// if we're just to the right of a _FmtMark, we want to replace
-			// it with a _Text frag with the same attr/prop (we
-			// only used the _FmtMark to remember a toggle format
-			// before we had text for it).
-
-			pf_Frag_FmtMark * pfPrevFmtMark = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
-			indexAP = pfPrevFmtMark->getIndexAP();
-
-			if (_lastUndoIsThisFmtMark(dpos))
-			{
-				// if the last thing in the undo history is the insertion of this
-				// _FmtMark, then let's remember the indexAP, do an undo, and then
-				// insert the text.  this way the only thing remaining in the undo
-				// is the insertion of this text (with no globbing around it).  then
-				// a user-undo will undo all of the coalesced text back to this point
-				// and leave the insertion point as if the original InsertFmtMark
-				// had never happened.
-				//
-				// we don't allow consecutive FmtMarks, but the undo may be a
-				// changeFmtMark and thus just re-change the mark frag rather
-				// than actually deleting it.  so we loop here to get back to
-				// the original insertFmtMark (this is the case if the user hit
-				// BOLD then ITALIC then UNDERLINE then typed a character).
-
-				do { undoCmd(); } while (_lastUndoIsThisFmtMark(dpos));
-			}
-			else
-			{
-				// for some reason, something else has happened to the document
-				// since this _FmtMark was inserted (perhaps it was one that we
-				// inserted when we did a paragraph break and inserted several
-				// to remember the current inline formatting).
-				//
-				// here we have to do it the hard way and use a glob and an
-				// explicit deleteFmtMark.  note that this messes up the undo
-				// coalescing.  that is, if the user starts typing at this
-				// position and then hits UNDO, we will erase all of the typing
-				// except for the first character.  the second UNDO, will erase
-				// the first character and restores the current FmtMark.  if the
-				// user BACKSPACES instead of doing the second UNDO, both the
-				// first character and the FmtMark would be gone.
-				//
-				// TODO decide if we like this...
-				// NOTE this causes BUG#431.... :-)
-
-				bNeedGlob = true;
-				beginMultiStepGlob();
-				_deleteFmtMarkWithNotify(dpos,pfPrevFmtMark,pfs,&pf,&fragOffset);
-			}
-
-			// we now need to consider pf invalid, since the fragment list may have
-			// been coalesced as the FmtMarks were deleted.  let's recompute them
-			// but with a few shortcuts.
-
-			bFound = getFragFromPosition(dpos,&pf,&fragOffset);
-			UT_ASSERT(bFound);
-			bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			UT_ASSERT(bFoundStrux);
-
-			// with the FmtMark now gone, we make a minor adjustment so that we
-			// try to append text to the previous rather than prepend to the current.
-			// this makes us consistent with other places in the code.
-
-			if ( (fragOffset==0) && (pf->getPrev()) && (pf->getPrev()->getType() == pf_Frag::PFT_Text) && pf->getPrev()->getField()== NULL )
-			{
-				// append to the end of the previous frag rather than prepend to the current one.
-				pf = pf->getPrev();
-				fragOffset = pf->getLength();
-			}
-		}
-		else if (pf->getPrev()->getType() == pf_Frag::PFT_Text && pf->getPrev()->getField()==NULL)
-		{
-			pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pf->getPrev());
-			indexAP = pfPrevText->getIndexAP();
-
-			// append to the end of the previous frag rather than prepend to the current one.
-			pf = pf->getPrev();
-			fragOffset = pf->getLength();
-		}
-		else
-		{
-		  // is existing fragment a field? If so do nothing
-		  // Or should we display a message to the user?
-
-		        if(pf->getField() != NULL)
-			{
-				return false;
-			}
-
-			indexAP = _chooseIndexAP(pf,fragOffset);
-		}
-	}
-	else
-	{
-  	         // is existing fragment a field? If so do nothing
-	  // Or should we display a message to the user?
-
-                if(pf->getField() != NULL)
-		{
-		       return false;
-		}
-
-
-		indexAP = _chooseIndexAP(pf,fragOffset);
-	}
-
-	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
-	PX_ChangeRecord_Span * pcr = NULL;
-
-	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
-		goto Finish;
-
-	// note: because of coalescing, pf should be considered invalid at this point.
-
-	// create a change record, add it to the history, and notify
-	// anyone listening.
-
-	pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   dpos,indexAP,bi,length,
-                                   blockOffset, pField);
-	UT_ASSERT(pcr);
-
-	// Need this to update formatting
-	m_pDocument->notifyListeners(pfs,pcr);
-	// We've finished with this now so delete it
-
-	delete pcr;
-	bSuccess = true;
-
-Finish:
-	if (bNeedGlob)
-		endMultiStepGlob();
 	return bSuccess;
 }
 

@@ -105,11 +105,11 @@ bool fd_Field::update(void)
         
 	      // insert new span
 	      bool returnValue;
-	      returnValue =  m_pPieceTable->insertSpan_norec
+	      returnValue =  m_pPieceTable->insertSpan
 		(dPos,
 		 testUCSFieldText,
 		 UT_UCS4_strlen(testUCSFieldText),
-		 this);
+		 this, false);
 	      _throwChangeRec(dPos);
 	      dPos = m_pPieceTable->getFragPosition(&m_fragObject)
 		+ m_fragObject.getLength();
@@ -152,11 +152,11 @@ bool fd_Field::update(void)
         
 	      // insert new span
 	      bool returnValue;
-	      returnValue =  m_pPieceTable->insertSpan_norec
+	      returnValue =  m_pPieceTable->insertSpan
 		(dPos,
 		 testUCSFieldText,
 		 UT_UCS4_strlen(testUCSFieldText),
-		 this);
+		 this, false);
 	      _throwChangeRec(dPos);
 	      dPos = m_pPieceTable->getFragPosition(&m_fragObject)
 		+ m_fragObject.getLength();

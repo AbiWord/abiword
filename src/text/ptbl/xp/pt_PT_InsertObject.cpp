@@ -69,12 +69,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	UT_ASSERT(m_pts==PTS_Editing);
 
 	// store the attributes and properties and get an index to them.
-
-	PT_AttrPropIndex indexAP;
-	if (!m_varset.storeAP(attributes,&indexAP))
-		return false;
-
-	// get the fragment at the given document position.
+	PT_AttrPropIndex apiOld = 0, indexAP;
 
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
@@ -84,6 +79,15 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
+
+	apiOld = _chooseIndexAP(pf,fragOffset);
+
+	PT_AttrPropIndex ;
+	if (!m_varset.mergeAP(PTC_AddFmt, apiOld, attributes, properties, &indexAP, m_pDocument))
+		return false;
+
+	// get the fragment at the given document position.
+
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
         pf_Frag_Object * pfo = NULL;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))

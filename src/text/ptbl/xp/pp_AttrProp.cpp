@@ -463,7 +463,12 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 		const XML_Char ** p = attributes;
 		while (*p)
 		{
-			UT_ASSERT(p[1] && *p[1]);	// require value for each name
+			/*
+			    It seems that we also want empty strings for attributes,
+				at least for the 'param' attribute which goes with fields.
+				Is this bogus too? -PL
+			*/
+			UT_ASSERT(p[1] /* && *p[1]*/);	// require value for each name
 			const XML_Char * szValue = NULL;
 			if (!getAttribute(p[0],szValue))
 				return false;		// item not present

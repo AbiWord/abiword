@@ -82,7 +82,9 @@ protected:
 
 	bool					_realInsertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
-									   UT_uint32 length, fd_Field * pField = NULL);
+									   UT_uint32 length, 
+									   fd_Field * pField = NULL,
+									   bool bAddChangeRec = true);
 
 	bool					_realDeleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
@@ -135,17 +137,12 @@ public:
 
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
-									   UT_uint32 length, fd_Field * pField = NULL);
+									   UT_uint32 length, fd_Field * pField = NULL,
+									   bool bAddChangeRec = true);
 
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before, bool bDontGlob=false);
-
-	//if I understand this correctly, this is only used by fields and
-	//we do not want field updates behaving as revisions
-	bool					insertSpan_norec(PT_DocPosition dpos,
-											 const UT_UCSChar * p,
-											 UT_uint32 length, fd_Field * pField = NULL);
 
 	bool                	deleteFieldFrag(pf_Frag * pf);
 
