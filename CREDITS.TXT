@@ -20,6 +20,7 @@ Ithamar R. Adema <ithamar@dds.nl>				BeOS fixes
 Matthew Allen <fret@ozemail.com.au> 			MouseWheel fix
 Robert Altenburg <rca@xlation.com>				Unix font warning patch
 John Anderson <panic-abi@semiosix.com>			Win32 Slurp functionality
+Calvin Arndt <calarndt@yahoo.com>                       Some AbiWord-docs script stuff
 Peter Arnold <petera@intrinsica.co.uk>			RTF import
 Nils Barth <nils_barth@post.harvard.edu>		LaTeX exporter improvements, cntrl-Q
 Darren Benham <gecko@benham.net>				Debian package, ispell whiz

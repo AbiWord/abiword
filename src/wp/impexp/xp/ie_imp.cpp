@@ -30,6 +30,8 @@
 #include "ie_imp_GraphicAsDocument.h"
 #include "pd_Document.h"
 
+#include "ut_debugmsg.h"
+
 static const UT_uint32 importer_size_guess = 20;
 static UT_Vector m_sniffers (importer_size_guess);
 
@@ -243,6 +245,12 @@ const char * IE_Imp::suffixesForFileType(IEFileType ieft)
 	return 0;
 }
 
+static UT_Confidence_t s_condfidence_heuristic ( UT_Confidence_t content_confidence, 
+						 UT_Confidence_t suffix_confidence )
+{
+  return (UT_Confidence_t) ( ((double)content_confidence * 0.85) + ((double)suffix_confidence * 0.15) ) ;
+}
+
 /*! 
   Construct an importer of the right type.
  \param pDocument Document
@@ -267,27 +275,51 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	UT_ASSERT(ieft != IEFT_Unknown || (szFilename && *szFilename));
 	UT_ASSERT(ppie);
 
+	UT_uint32 nrElements = getImporterCount();
+
 	// no filter will support IEFT_Unknown, so we try to detect
 	// from the contents of the file or the filename suffix
 	// the importer to use and assign that back to ieft.
 	// Give precedence to the file contents
 	if (ieft == IEFT_Unknown && szFilename && *szFilename)
 	{
-		char szBuf[4096];  // 4096 ought to be enough
-		int iNumbytes;
-		FILE *f;
+		char szBuf[4096] = "";  // 4096 ought to be enough
+		UT_uint32 iNumbytes = 0;
+		FILE *f = NULL;
+
 		// we must open in binary mode for UCS-2 compatibility
 		if ( ( f = fopen( szFilename, "rb" ) ) != (FILE *)0 )
 		{
 			iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
 			fclose(f);
-			ieft = IE_Imp::fileTypeForContents(szBuf, iNumbytes);
 		}
+
+		UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+
+		for (UT_uint32 k=0; k < nrElements; k++)
+		  {
+		    IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		    UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
+		    UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
+
+		    if ( iNumbytes > 0 )
+		      content_confidence = s->recognizeContents(szBuf, iNumbytes);
+		    
+		    const char * suffix = UT_pathSuffix(szFilename) ;
+		    if ( suffix != NULL )
+		      suffix_confidence = s->recognizeSuffix(UT_pathSuffix(szFilename));
+		    
+		    UT_Confidence_t confidence = s_condfidence_heuristic ( content_confidence, 
+									   suffix_confidence ) ;
+		    
+		    if ( confidence != 0 && confidence >= best_confidence )
+		      {
+			best_confidence = confidence;
+			ieft = (IEFileType)(k+1);
+		      }
+		  }
 	}
-	if (ieft == IEFT_Unknown && szFilename && *szFilename)
-	{
-		ieft = IE_Imp::fileTypeForSuffix(UT_pathSuffix(szFilename));
-	}
+
 	if (ieft == IEFT_Unknown)
 	{
 	   	// maybe they're trying to open an image directly?
@@ -322,9 +354,6 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	if (pieft != NULL) 
 		*pieft = ieft;
 
-	// use the importer for the specified file type
-	UT_uint32 nrElements = getImporterCount();
-
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
 		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
@@ -346,9 +375,9 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 }
 
 bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
-								const char ** pszDesc,
-								const char ** pszSuffixList,
-								IEFileType * ft)
+				const char ** pszDesc,
+				const char ** pszSuffixList,
+				IEFileType * ft)
 {
 	UT_uint32 nrElements = getImporterCount();
 	if (ndx < nrElements)

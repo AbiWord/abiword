@@ -388,7 +388,7 @@ UT_Confidence_t IE_Imp_ISCII_Sniffer::recognizeContents(const char * szBuf,
 										   UT_uint32 iNumbytes)
 {
   // We don't attempt to identify the contents.
-  return UT_CONFIDENCE_SOSO;
+  return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Confidence_t IE_Imp_ISCII_Sniffer::recognizeSuffix(const char * szSuffix)

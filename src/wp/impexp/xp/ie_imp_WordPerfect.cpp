@@ -234,7 +234,7 @@ UT_Confidence_t IE_Imp_WordPerfect_Sniffer::recognizeContents (const char * szBu
 UT_Confidence_t IE_Imp_WordPerfect_Sniffer::recognizeSuffix (const char * szSuffix)
 {
   // We recognize both word documents and their template versions
-  if (!UT_stricmp(szSuffix,".wpd"))
+  if (!UT_stricmp(szSuffix,".wpd") || !UT_stricmp(szSuffix, ".wp"))
     return UT_CONFIDENCE_PERFECT;
   return UT_CONFIDENCE_ZILCH;
 }

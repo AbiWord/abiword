@@ -9407,10 +9407,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
-#ifdef BIDI_ENABLED 
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
-#endif
 	
 	if (isLeftMargin(xPos,yPos))
 	{
@@ -9432,10 +9430,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 #endif
 	}
 
-#ifndef BIDI_ENABLED	
-	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
-	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
-#endif
 	if (!pBlock)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (5)\n"));
@@ -9454,7 +9448,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
 		return EV_EMC_HYPERLINK;
 	}
-		
+	
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
@@ -9477,11 +9471,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_FORCEDLINEBREAK:
 	case FPRUN_FORCEDCOLUMNBREAK:
 	case FPRUN_FORCEDPAGEBREAK:
-	case FPRUN_FMTMARK:
 	case FPRUN_ENDOFPARAGRAPH:
+	case FPRUN_FMTMARK:
 	case FPRUN_BOOKMARK:
 	case FPRUN_HYPERLINK:
-		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (10)\n"));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (10): %d\n", pRun->getType()));
 		return EV_EMC_TEXT;
 		
 	case FPRUN_FIELD:
@@ -9648,8 +9642,8 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	case FPRUN_FORCEDLINEBREAK:
 	case FPRUN_FORCEDCOLUMNBREAK:
 	case FPRUN_FORCEDPAGEBREAK:
-	case FPRUN_FMTMARK:
 	case FPRUN_ENDOFPARAGRAPH:
+	case FPRUN_FMTMARK: 
 	case FPRUN_BOOKMARK:
 	case FPRUN_HYPERLINK:
 		return EV_EMC_TEXT;
@@ -10064,10 +10058,8 @@ void FV_View::cmdContextAdd(void)
 
 /******************************************************
  *****************************************************/
-bool s_notChar(UT_UCSChar c)
+static bool s_notChar(UT_UCSChar c)
 {
-	bool res = false;
-
 	switch (c)
 	{
 	case UCS_TAB:
@@ -10076,13 +10068,11 @@ bool s_notChar(UT_UCSChar c)
 	case UCS_FF:
 	case UCS_CR:
 	{
-		res = true;
-		break;
+		return true;
 	}
 	default:
-		break;
+	  return false;
 	}
-	return res;
 }
 
 /*!

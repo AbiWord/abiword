@@ -255,7 +255,7 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
 UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
 											UT_uint32 /* iNumbytes */)
 {
-  return UT_CONFIDENCE_POOR; // anything can be a text document - we'll unfairly weight this down
+  return UT_CONFIDENCE_ZILCH; // anything can be a text document - we'll unfairly weight this down
 }
 
 /*!
@@ -412,13 +412,10 @@ IE_Imp_Text_Sniffer::UCS2_Endian IE_Imp_Text_Sniffer::_recognizeUCS2(const char 
  */
 UT_Confidence_t IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
+  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text") || !UT_stricmp (szSuffix, ".doc"))
     return UT_CONFIDENCE_PERFECT;
 
-  if (!UT_stricmp (szSuffix, ".doc"))
-    return UT_CONFIDENCE_SOSO;
-
-  return UT_CONFIDENCE_SOSO;
+  return UT_CONFIDENCE_ZILCH;
 }
 
 UT_Error IE_Imp_Text_Sniffer::constructImporter(PD_Document * pDocument,
@@ -447,7 +444,7 @@ bool IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 UT_Confidence_t IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
 												   UT_uint32 /* iNumbytes */)
 {
-	return UT_CONFIDENCE_POOR;
+	return UT_CONFIDENCE_ZILCH;
 }
 
 /*!

@@ -202,47 +202,76 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 	return UT_IE_UNKNOWNTYPE;
 }
 
+static UT_Confidence_t s_condfidence_heuristic ( UT_Confidence_t content_confidence, 
+						 UT_Confidence_t suffix_confidence )
+{
+  return (UT_Confidence_t) ( ((double)content_confidence * 0.85) + ((double)suffix_confidence * 0.15) ) ;
+}
+
 UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
 					  IEGraphicFileType ft,
 					  IE_ImpGraphic **ppieg)
 {
-	// construct an importer of the right type.
-	// caller is responsible for deleting the importer object
-	// when finished with it.
-	UT_ASSERT(ppieg);
-
-	// no filter will support IEGFT_Unknown, so we detect from the
-	// suffix of the filename and the contents of the file, the real 
-        // importer to use and assign that back to ieft.
-	if (ft == IEGFT_Unknown)
+  // construct an importer of the right type.
+  // caller is responsible for deleting the importer object
+  // when finished with it.
+  UT_ASSERT(ppieg);
+  
+  UT_uint32 nrElements = s_impGraphicTable.size();
+  
+  // no filter will support IEGFT_Unknown, so we detect from the
+  // suffix of the filename and the contents of the file, the real 
+  // importer to use and assign that back to ft.
+  if (ft == IEGFT_Unknown)
+    {
+      UT_ASSERT(szFilename && *szFilename);
+      char szBuf[4096] = "";
+      UT_uint32 iNumbytes = 0;
+      FILE *f = NULL;
+      if ( ( f= fopen( szFilename, "rb" ) ) != (FILE *)0 )
 	{
-		UT_ASSERT(szFilename && *szFilename);
-		char szBuf[4096];
-	   	UT_uint32 iNumbytes;
-	   	FILE *f;
-	   	if ( ( f= fopen( szFilename, "rb" ) ) != (FILE *)0 )
-	     	{
-		   	iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
-		   	fclose(f);
-	   		ft = IE_ImpGraphic::fileTypeForContents(szBuf, iNumbytes);
-		}
+	  iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
+	  fclose(f);
 	}
-	if (ft == IEGFT_Unknown)
-     	{
-	   	ft = IE_ImpGraphic::fileTypeForSuffix(UT_pathSuffix(szFilename));
+      
+      UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
+      
+      for (UT_uint32 k=0; k < nrElements; k++)
+	{
+	  IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer*)s_impGraphicTable[k];
+	  
+	  UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
+	  UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
+	  
+	  if ( iNumbytes > 0 )
+	    content_confidence = s->recognizeContents(szBuf, iNumbytes);
+	  
+	  const char * suffix = UT_pathSuffix(szFilename) ;
+	  if ( suffix != NULL )
+	    suffix_confidence = s->recognizeSuffix(UT_pathSuffix(szFilename));
+	  
+	  UT_Confidence_t confidence = s_condfidence_heuristic ( content_confidence, 
+								 suffix_confidence ) ;
+	  
+	  if ( confidence != 0 && confidence >= best_confidence )
+	    {
+	      best_confidence = confidence;
+	      ft = (IEGraphicFileType)(k+1);
+	    }
 	}
+    }
    
-	// use the importer for the specified file type
-	for (UT_uint32 k=0; (k < s_impGraphicTable.size()); k++)
-	{
-		IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer*)s_impGraphicTable[k];
-		if (s->supportsType(ft))
-			return s->constructImporter(ppieg);
-	}
-
-	// if we got here, no registered importer handles the
-	// type of file we're supposed to be reading.
-	return UT_IE_UNKNOWNTYPE;
+  // use the importer for the specified file type
+  for (UT_uint32 k=0; (k < nrElements); k++)
+    {
+      IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer*)s_impGraphicTable[k];
+      if (s->supportsType(ft))
+	return s->constructImporter(ppieg);
+    }
+  
+  // if we got here, no registered importer handles the
+  // type of file we're supposed to be reading.
+  return UT_IE_UNKNOWNTYPE;
 }
 
 

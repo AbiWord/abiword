@@ -1668,7 +1668,6 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 
 	// find the run which has this offset inside it.
 	PT_DocPosition dPos = getPosition();
-	//UT_ASSERT(iPos >= dPos);
 	const UT_uint32 iRelOffset = iPos - dPos;
 
 	// By default, the Run just before the one we find is the one we
@@ -4804,6 +4803,9 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
+
+			UT_DEBUGMSG(("DOM: %d %d\n", pFieldRun==0, pFieldRun->needsFrequentUpdates()));
+
 			if((!iUpdateCount || !(iUpdateCount % pFieldRun->needsFrequentUpdates())))
 			{
 				const bool bSizeChanged = pFieldRun->calculateValue();
