@@ -377,7 +377,7 @@ GR_Font* GR_BeOSGraphics::findFont(const char* pszFontFamily,
 	BFont 	*aFont;
 	//int 	size = atoi(pszFontSize);
 	//UT_sint32 iHeight = convertDimension(pszFontSize);
-	int		size = convertDimension(pszFontSize);
+	double	size = UT_convertToPoints(pszFontSize);
 
 	DPRINTF(printf("GR Find Font:\n\tFamily: %s ", pszFontFamily));
 	DPRINTF(printf("\n\tStyle: %s ", pszFontStyle));
@@ -1021,4 +1021,34 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	*pff = FF_Unknown;
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
+}
+
+UT_sint32 BeOSFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
+{
+	// first of all, handle 0-width spaces ...
+	if(cChar == 0xFEFF || cChar == 0x200b || cChar == UCS_LIGATURE_PLACEHOLDER)
+		return 0;
+
+ 	//We need to convert the string from UCS-X to UTF-8 before
+ 	//we use the BeOS string operations on it.
+ 	char buffer[10];
+ 
+ 	BPoint escapementArray[1];
+ 	
+ 	char * utf8char;
+ 	utf8char =  UT_encodeUTF8char(cChar);
+ 	strcpy(buffer, utf8char);						
+ 
+ 	escapement_delta tempdelta;
+ 	tempdelta.space=0.0;
+ 	tempdelta.nonspace=0.0;
+ 	float fontsize=0.0f;
+ 
+ 	m_pBFont->SetSpacing(B_BITMAP_SPACING);
+ 
+ 	//Hope this works on UTF-8 characters buffers
+ 	m_pBFont->GetEscapements(buffer,1,&tempdelta,escapementArray);
+ 	fontsize=m_pBFont->Size();
+ 
+ 	return (UT_uint32)(escapementArray[0].x *fontsize);
 }

@@ -20,8 +20,10 @@
 #ifndef GR_BEOSGRAPHICS_H
 #define GR_BEOSGRAPHICS_H
 
+#include <Font.h>
 #include <GraphicsDefs.h>
 #include <Point.h>
+#include <View.h>
 #include "gr_Graphics.h"
 #include "ut_assert.h"
 
@@ -33,6 +35,8 @@ public:
 	BFont *get_font(void) 	{ return(m_pBFont); };
 	
 private:
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
+	
 	BFont	*m_pBFont;
 };
 
