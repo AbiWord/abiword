@@ -42,6 +42,11 @@ public:
 
 protected:
 
+	static void s_date_dblclicked(GtkTreeView *treeview,
+								  GtkTreePath *arg1,
+								  GtkTreeViewColumn *arg2,
+								  AP_UnixDialog_Insert_DateTime * me);
+
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	void				_populateWindowData(void);

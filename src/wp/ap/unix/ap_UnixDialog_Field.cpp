@@ -76,6 +76,14 @@ static void s_types_clicked(GtkTreeView *treeview,
 	dlg->types_changed(treeview);
 }
 
+void AP_UnixDialog_Field::s_field_dblclicked(GtkTreeView *treeview,
+											 GtkTreePath *arg1,
+											 GtkTreeViewColumn *arg2,
+											 AP_UnixDialog_Field * me)
+{
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
+}
+
 /*****************************************************************/
 
 void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
@@ -102,7 +110,6 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 
 	abiDestroyWidget ( m_windowMain ) ;
 }
-
 
 void AP_UnixDialog_Field::event_OK(void)
 {
@@ -312,6 +319,11 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	g_signal_connect_after(G_OBJECT(m_listTypes),
 						   "cursor-changed",
 						   G_CALLBACK(s_types_clicked),
+						   static_cast<gpointer>(this));
+
+	g_signal_connect_after(G_OBJECT(m_listFields),
+						   "row-activated",
+						   G_CALLBACK(s_field_dblclicked),
 						   static_cast<gpointer>(this));
 
 	return window;

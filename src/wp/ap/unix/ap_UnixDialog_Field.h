@@ -47,6 +47,11 @@ protected:
 	virtual GtkWidget *		_constructWindow(void);
 	void					_populateCatogries(void);
 
+	static void s_field_dblclicked(GtkTreeView *treeview,
+								   GtkTreePath *arg1,
+								   GtkTreeViewColumn *arg2,
+								   AP_UnixDialog_Field * me);
+
 	GtkWidget * m_windowMain;
 
 	GtkWidget * m_listTypes;

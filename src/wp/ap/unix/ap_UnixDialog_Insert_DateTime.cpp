@@ -91,6 +91,14 @@ void AP_UnixDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 	abiDestroyWidget ( m_windowMain ) ;
 }
 
+void AP_UnixDialog_Insert_DateTime::s_date_dblclicked(GtkTreeView *treeview,
+													  GtkTreePath *arg1,
+													  GtkTreeViewColumn *arg2,
+													  AP_UnixDialog_Insert_DateTime * me)
+{
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
+}
+
 void AP_UnixDialog_Insert_DateTime::event_OK(void)
 {
 	UT_ASSERT(m_windowMain && m_tvFormats);
@@ -155,6 +163,11 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 							 0,
 							 NULL);
 	gtk_tree_view_append_column( GTK_TREE_VIEW(m_tvFormats), column);	
+
+	g_signal_connect_after(G_OBJECT(m_tvFormats),
+						   "row-activated",
+						   G_CALLBACK(s_date_dblclicked),
+						   static_cast<gpointer>(this));
 	
 	return window;
 }

@@ -67,6 +67,16 @@ static void s_types_clicked(GtkTreeView *treeview,
 	dlg->fieldClicked(typeIndex);
 }
 
+static void s_types_dblclicked(GtkTreeView *treeview,
+							   GtkTreePath *arg1,
+							   GtkTreeViewColumn *arg2,
+							   AP_UnixDialog_MailMerge * me)
+{
+	// simulate the effects of a single click
+	s_types_clicked (treeview, me);
+	me->event_AddClicked ();
+}
+
 /*****************************************************************/
 
 XAP_Dialog * AP_UnixDialog_MailMerge::static_constructor(XAP_DialogFactory * pFactory,
@@ -160,6 +170,9 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 	m_open = glade_xml_get_widget(xml, "loadBtn");
 	m_treeview = glade_xml_get_widget(xml, "tvFields");
 
+	// set the single selection mode for the TreeView
+    gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_treeview)), GTK_SELECTION_SINGLE);	
+
 	// set the dialog title
 	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_MailMerge_MailMergeTitle).c_str());
 	
@@ -171,6 +184,10 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 	g_signal_connect_after(G_OBJECT(m_treeview),
 						   "cursor-changed",
 						   G_CALLBACK(s_types_clicked),
+						   static_cast<gpointer>(this));
+	g_signal_connect_after(G_OBJECT(m_treeview),
+						   "row-activated",
+						   G_CALLBACK(s_types_dblclicked),
 						   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_windowMain), "response", 
