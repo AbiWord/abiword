@@ -52,7 +52,6 @@ protected:
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff);
 
 	static LRESULT CALLBACK		_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK		_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK		_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
