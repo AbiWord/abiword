@@ -8,6 +8,7 @@
 ; Section titles, what user sees to select components for installation
 ${LSTR} TITLE_ssection_core                 "Primary components"
 ${LSTR} TITLE_section_abi                   "${PROGRAMEXE} (required)"
+${LSTR} TITLE_section_abi_req               "${PRODUCT} support files (required)"
 ${LSTR} TITLE_section_shellupdate           "Update Registry Settings"
 ${LSTR} TITLE_ssection_shortcuts            "Shortcuts"
 ${LSTR} TITLE_ssection_shortcuts_cu         "Shortcuts (Current User)"
@@ -42,6 +43,7 @@ ${LSTR} TITLE_ssection_plugins              "Plugins"
 ; Section descriptions displayed to user when mouse hovers over a section
 ${LSTR} DESC_ssection_core            "Primary (core) set of components for AbiWord to run well."
 ${LSTR} DESC_section_abi              "Required.  Installs the actual ${PROGRAMEXE} program."
+${LSTR} DESC_section_abi_req          "Required.  Installs the basic support files, e.g. stringsets, BMP clipboard support, etc."
 ${LSTR} DESC_section_shellupdate      "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
 ${LSTR} DESC_ssection_shortcuts       "Installs shortcuts in various places to allow starting AbiWord through additional locations."
 ${LSTR} DESC_ssection_shortcuts_cu    "Installs shortcuts for the currently logged on user."

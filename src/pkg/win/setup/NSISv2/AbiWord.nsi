@@ -174,23 +174,21 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 
+!ifdef RESERVE_PLUGINS
   ; Reserve Files to possibly aid in starting faster
   !insertmacro MUI_RESERVEFILE_LANGDLL
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
   !insertmacro MUI_RESERVEFILE_SPECIALINI
   !insertmacro MUI_RESERVEFILE_SPECIALBITMAP
 
-; reserve room at start of compressed archive for plugins (not already reserved by Modern UI)
-!define RESERVE_PLUGINS
-!ifdef RESERVE_PLUGINS
+  ; reserve room at start of compressed archive for plugins (not already reserved by Modern UI)
   ; ReserveFile [/nonfatal] [/r] file [file...]
   !ifndef NODOWNLOADS
     ReserveFile "${NSISDIR}\Plugins\dialer.dll"
     ReserveFile "${NSISDIR}\Plugins\NSISdl.dll"
   !endif
   !ifdef OPT_DICTIONARIES
-    ;ReserveFile "${NSISDIR}\Plugins\untgz.dll"
-    ReserveFile "untgz.dll"
+    ReserveFile "${NSISDIR}\Plugins\untgz.dll"
   !endif
 !endif ; RESERVE_PLUGINS
 
@@ -247,20 +245,21 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 ;!include "abi_lng_Ukrainian.nsh"
 
 
-VIProductVersion "${VERSION}.0"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "${PRODUCT}"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "http://www.abisource.com/"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" ""
-VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "AbiWord, AbiSource are trademarks of SourceGear Inc."
-VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© AbiSource"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" ""
-VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${VERSION}"
+; add a version resource to installer corresponding to version of app we're installing
+!include "abi_version.nsh"
 
 
 ; Install types 
 InstType "Typical (default)"              ;Section 1
 InstType "Full (with File Associations)"  ;Section 2
 InstType "Minimal"                        ;Section 3
+InstType "Tiny - ${PROGRAMEXE} only"	;Section 4
+!ifndef NODOWNLOADS
+InstType "Full plus Downloads"		;Section 5
+!define DLSECT 5
+!else
+!define DLSECT
+!endif
 ; any other combination is "Custom"
 
 
@@ -329,7 +328,7 @@ SubSection /e "$(TITLE_ssection_core)" ssection_core
 
 ; The stuff that must be installed
 Section "$(TITLE_section_abi)" section_abi
-	SectionIn 1 2 3 RO	; included in Typical, Full, Minimal, Required
+	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 	;;
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\${MAINPROGRAM}" 0 DoInstall
@@ -347,6 +346,39 @@ Section "$(TITLE_section_abi)" section_abi
 	!ifdef MINGW32
 		File "libAbiWord.dll"
 	!endif
+SectionEnd
+
+
+Section "" ; invisible section that must also be installed, sets installer information
+	SectionIn 1 2 3 4 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
+
+	; TODO: determine if we should be using HKCU instead of HKLM for some of these
+	; or see if user has permission and ask them...
+
+	; Write the language used during installation into the registry for uninstall to use
+	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Installer Language" "$LANGUAGE"
+
+	; Write the installation path into the registry
+	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir" "$INSTDIR"
+
+	; (User Informational Purposes ONLY!!!)
+	; Write the current version installed to the registery
+	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Version" "${VERSION}"
+
+	; Write the uninstall keys for Windows
+	; N.B. This needs to include a version number or unique identifier.  
+	; More than one version of Abiword but only one Control Panel.  
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "UninstallString" '"$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe"'
+
+	; New Uninstaller
+	WriteUninstaller "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
+
+SectionEnd
+
+
+Section "$(TITLE_section_abi_req)" section_abi_req
+	SectionIn 1 2 3 ${DLSECT} RO	; included in Typical, Full, Minimal, Required
 
 	; We need BMP plugin for cut-n-paste of images on Windows
 	SetOutPath $INSTDIR\${PRODUCT}\plugins
@@ -368,27 +400,6 @@ Section "$(TITLE_section_abi)" section_abi
 	EraseTemp:
 	Delete $TEMP\Dingbats.ttf
   
-	; TODO: determine if we should be using HKCU instead of HKLM for some of these
-
-	; Write the language used during installation into the registry for uninstall to use
-	; WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Installer Language" "$LANGUAGE"
-
-	; Write the installation path into the registry
-	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir" "$INSTDIR"
-
-	; (User Informational Purposes ONLY!!!)
-	; Write the current version installed to the registery
-	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Version" "${VERSION}"
-
-	; Write the uninstall keys for Windows
-	; N.B. This needs to include a version number or unique identifier.  
-	; More than one version of Abiword but only one Control Panel.  
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "UninstallString" '"$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe"'
-
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\${PROGRAMEXE}" "" '"$INSTDIR\${MAINPROGRAM}"'
-
-
 	; Write the start menu entry (if user selected to do so)
 	!ifndef CLASSIC_UI
 	  !insertmacro MUI_STARTMENU_WRITE_BEGIN
@@ -399,14 +410,11 @@ Section "$(TITLE_section_abi)" section_abi
 	  !insertmacro MUI_STARTMENU_WRITE_END
 	!endif
 
-	; New Uninstaller
-	WriteUninstaller "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
-
 SectionEnd
 
 ; OPTIONAL Registry Settings
 Section "$(TITLE_section_shellupdate)" section_shellupdate
-	SectionIn 1 2 3
+	SectionIn 1 2 3 ${DLSECT}
 	; Write the AbiSuite.AbiWord Keys
 	WriteRegStr HKCR "${APPSET}.${PRODUCT}" "" "${PRODUCT} Document"
 	WriteRegStr HKCR "${APPSET}.${PRODUCT}\DefaultIcon" "" "$INSTDIR\${MAINPROGRAM},2"
@@ -436,7 +444,7 @@ SubSection /e "$(TITLE_ssection_shortcuts_cu)" ssection_shortcuts_cu
 
 ; OPTIONAL Start Menu Shortcut for the current user profile
 Section "$(TITLE_section_sm_shortcuts_cu)" section_sm_shortcuts_cu
-	SectionIn 1 2 3
+	SectionIn 1 2 3 ${DLSECT}
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	${lngCreateSMGroup}  "$(SM_PRODUCT_GROUP)"
 	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
@@ -445,7 +453,7 @@ SectionEnd
 
 ; OPTIONAL Desktop Shortcut for the current user profile
 Section "$(TITLE_section_desktop_shortcuts_cu)" section_desktop_shortcuts_cu
-	SectionIn 1 2 3
+	SectionIn 1 2 3 ${DLSECT}
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
 	${lngCreateShortCut} "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 SectionEnd
@@ -457,7 +465,7 @@ SubSection /e "$(TITLE_ssection_shortcuts_au)" ssection_shortcuts_au
 
 ; OPTIONAL Start Menu Shortcut for the special All User profile (not used in win9x) 
 Section "$(TITLE_section_sm_shortcuts_au)" section_sm_shortcuts_au
-	SectionIn 2		; off by default, included in 2 Full Install
+	SectionIn 2	${DLSECT}	; off by default, included in 2 Full Install
 	SetShellVarContext all  	; set to all, reset at end of section
 	${lngCreateSMGroup}  "$(SM_PRODUCT_GROUP)"
 	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
@@ -468,7 +476,7 @@ SectionEnd
 
 ; OPTIONAL Desktop Shortcut for All Users
 Section "$(TITLE_section_desktop_shortcuts_au)" section_desktop_shortcuts_au
-	SectionIn 2	; not in default, included in 2 Full Install
+	SectionIn 2	${DLSECT}	; not in default, included in 2 Full Install
 	SetShellVarContext all  	;  All users 
 	${lngCreateShortCut} "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 	SetShellVarContext current  	; reset to current user
@@ -487,13 +495,13 @@ SubSection /e "$(TITLE_ssection_gen_file_assoc)" ssection_gen_file_assoc
 
 ; OPTIONAL 
 Section "$(TITLE_section_fa_doc)" section_fa_doc
-	SectionIn 2
+	SectionIn 2 ${DLSECT}
 	${CreateFileAssociation} ".doc"  "${APPSET}.${PRODUCT}" "application/abiword"
 SectionEnd
 
 ; OPTIONAL 
 Section "$(TITLE_section_fa_rtf)" section_fa_rtf
-	SectionIn 2
+	SectionIn 2 ${DLSECT}
 	${CreateFileAssociation} ".rtf"  "${APPSET}.${PRODUCT}" "application/abiword"
 SectionEnd
 
@@ -510,7 +518,7 @@ SubSection /e "$(TITLE_ssection_helper_files)" ssection_helper_files
 
 ; OPTIONAL Installation of Help Files
 Section "$(TITLE_section_help)" section_help
-	SectionIn 1 2
+	SectionIn 1 2 ${DLSECT}
 	SetOutPath $INSTDIR\AbiWord
 	; help documents may not be created if peer abiword-docs not found
 	File /nonfatal /r "..\abisuite\abiword\help"
@@ -518,69 +526,35 @@ SectionEnd
 
 ; OPTIONAL Installation of Templates
 Section "$(TITLE_section_templates)" section_templates
-	SectionIn 1 2
+	SectionIn 1 2 ${DLSECT}
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\templates"
 SectionEnd
 
 ; OPTIONAL Installation of Samples - REMOVED
 ;Section "$(TITLE_section_samples)" section_samples
-;	SectionIn 1 2
+;	SectionIn 1 2 ${DLSECT}
 ;	SetOutPath $INSTDIR\AbiWord
 ;	File /r "..\AbiSuite\AbiWord\sample"
 ;SectionEnd
 
 ; OPTIONAL Installation of Clipart
 Section "$(TITLE_section_clipart)" section_clipart
-	SectionIn 1 2
+	SectionIn 1 2 ${DLSECT}
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\clipart"
 SectionEnd
 
 
-!ifndef NODOWNLOADS
-; ConnectInternet (uses Dialer plugin)
-; Originally Written by Joost Verburg 
-;
-; This function attempts to make a connection to the internet if there is
-; no connection available. If you are not sure that a system using the
-; installer has an active internet connection, call this function before
-; downloading files with NSISdl.
-; 
-; The function requires Internet Explorer 3, but asks to connect manually
-; if IE3 is not installed.
-;
-; On return $0 is set to "online" or error value
- 
-Function ConnectInternet
-	ClearErrors
-	Dialer::AttemptConnect
-	IfErrors noie3
-    
-	Pop $0	; $0 is set to "online"
-	StrCmp $0 "online" connected
-		DetailPrint "Unable to establish Internet connection, aborting download"
-		;MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet."
-     
-     noie3:
-   
-     ; IE3 not installed
-     MessageBox MB_OK|MB_ICONINFORMATION \
-     "Please connect to the internet now."
-     
-     connected:
-   
-   ;Pop $R0
-   
- FunctionEnd
-!endif
+; include function to determine if user is connected to Internet/has networking enabled computer
+!include "abi_util_connected.nsh"
 
 
 !ifdef OPT_CRTL_LOCAL
 ; OPTIONAL Installation of c runtime library dll
 ; TODO: this is really only needed for Win95, so hide on all other OSes
 Section "$(TITLE_section_crtlib_local)" section_crtlib_local
-	SectionIn 2	; select if full installation choosen
+	SectionIn 2 ${DLSECT}	; select if full installation choosen
 	SetOutPath $INSTDIR\${PRODUCT}\bin
 	File "${OPT_CRTL_LOCAL}${OPT_CRTL_FILENAME}"
 SectionEnd
@@ -595,7 +569,7 @@ SectionEnd
 ; OPTIONAL Installation of c runtime library dll
 ; TODO: this is really only needed for Win95, so hide on all other OSes
 Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
-	SectionIn 2	; select if full installation choosen
+	SectionIn 2	${DLSECT}	; select if full installation choosen
 	Call ConnectInternet	; try to establish connection if not connected
 	StrCmp $0 "online" 0 connected
 		DetailPrint "Unable to establish Internet connection, aborting download"
@@ -616,249 +590,14 @@ SubSection /e "$(TITLE_ssection_dictionary)" ssection_dictionary
 
 ; OPTIONAL Installation of Default Dictionary
 Section "$(TITLE_section_dictinary_def_English)" section_dictinary_def_English
-	SectionIn 1 2
+	SectionIn 1 2 ${DLSECT}
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\dictionary"
 SectionEnd
 
 
 !ifdef OPT_DICTIONARIES
-
-!ifndef NODOWNLOADS
-; NOTE: these just reference files for download, once download installs(extracts) them
-
-; WARNING: ${ssection_dl_opt_dict}+1 is assumed to be 1st section of downloadable dictionaries
-SubSection /e "$(TITLE_ssection_dl_opt_dict)" ssection_dl_opt_dict
-
-; we attempt to let user pick, but this is our fallback/default entry
-!ifndef DICTIONARY_BASE_DEFAULT
-!define DICTIONARY_BASE_DEFAULT "http://dl.sourceforge.net/abiword"
-!endif
-
-; this is the count of dictionaries available for download [count of sections defined]
-!define DICTIONARY_COUNT 27	; used to query sections & set description text
-
-
-; creates an .ini file for use by custom download InstallOption dialog
-; $R0 is set to temp file used
-; $R1 is default/fallback entry
-; $R2 is URL list except for default entry
-Function createDLIni
-  ; create .ini file used for custom dialog
-  GetTempFileName $R0
-
-  ; write out our fields  
-  WriteINIStr $R0 "Settings" NumFields "2"
-  WriteINIStr $R0 "Settings" CancelEnabled "1"
-  WriteINIStr $R0 "Settings" CancelShow "1"
-  WriteINIStr $R0 "Settings" BackEnabled "0"
-
-  WriteINIStr $R0 "Field 1" Type "Label"
-  WriteINIStr $R0 "Field 1" Text "$(MSG_SELECT_DL_MIRROR)"
-  WriteINIStr $R0 "Field 1" Left   "0"
-  WriteINIStr $R0 "Field 1" Right  "-1"
-  WriteINIStr $R0 "Field 1" Top    "15"
-  WriteINIStr $R0 "Field 1" Bottom "35"
-
-  WriteINIStr $R0 "Field 2" Type "combobox"
-  WriteINIStr $R0 "Field 2" Text "sel"
-  WriteINIStr $R0 "Field 2" Left   "0"
-  WriteINIStr $R0 "Field 2" Right  "-1"
-  WriteINIStr $R0 "Field 2" Top    "39"
-  WriteINIStr $R0 "Field 2" Bottom "-1"
-  WriteINIStr $R0 "Field 2" minLen "8"
-  WriteINIStr $R0 "Field 2" listItems "$R1|$R2"
-  WriteINIStr $R0 "Field 2" state "$R1"
-FunctionEnd
-
-; determines where to download from
-; $R9 is set to base URL
-Function getDLMirror
-  ; save callees registers
-  Push $R0
-  Push $R1
-  Push $R2
-
-  ; see if any of the DL dictionaries are selected (subsection partially selected)
-  !insertmacro SectionFlagIsSet ${ssection_dl_opt_dict} ${SF_PSELECTED} isSel checkAll
-  checkAll: !insertmacro SectionFlagIsSet ${ssection_dl_opt_dict} ${SF_SELECTED} isSel noUpDate
-  isSel:
-
-!ifndef CLASSIC_UI
-  !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
-!else
-  ;Set text on the white rectangle
-  Push $R0
-
-    GetDlgItem $R0 $HWNDPARENT 1037
-    SendMessage $R0 ${WM_SETTEXT} 0 "STR:$(TEXT_IO_TITLE)"
-    GetDlgItem $R0 $HWNDPARENT 1038
-    SendMessage $R0 ${WM_SETTEXT} 0 "STR:$(TEXT_IO_SUBTITLE)"
-
-  Pop $R0
-!endif
-
-
-  ; "Selecting download mirror ..."
-  ; use install options to allow custom entry or select from list
-
-  ; create the inifile used to specify our custom dialog
-  StrCpy $R1 "${DICTIONARY_BASE_DEFAULT}"
-  StrCpy $R2 "http://unc.dl.sourceforge.net/abiword|http://telia.dl.sourceforge.net/abiword|http://umn.dl.sourceforge.net/abiword|http://twtelecom.dl.sourceforge.net/abiword|http://easynews.dl.sourceforge.net/abiword|http://belnet.dl.sourceforge.net/abiword|http://cesnet.dl.sourceforge.net/abiword|http://switch.dl.sourceforge.net/abiword"
-  Call createDLIni ; sets $R0 to inifilename
-
-  ; create the dialog and wait for user's response
-!ifndef CLASSIC_UI
-  ; for now manually call, as the macro doesn't work as expected
-  ;  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "$R0"
-  InstallOptions::dialog $R0
-!else
-  InstallOptions::dialog $R0
-!endif
-
-  ; pop return status and use default value on anything other than success
-  ; else read back user's choice
-  Pop $R9
-  StrCmp $R9 "success" 0 useDefaultURL
-    ReadINIStr $R9 $R0 "Field 2" State ; $R9 = URL field's state
-    Goto Next1
-  useDefaultURL:
-    DetailPrint "$(MSG_ERROR_SELECTING_DL_MIRROR)"
-    StrCpy $R9 "${DICTIONARY_BASE_DEFAULT}"
-  Next1:
-
-  ; remove .ini file
-  Delete $R0
-
-  ; $R9 is the base URL chosen
-
-  noUpDate:
-
-  ; restore callees registers
-  Pop $R2
-  Pop $R1
-  Pop $R0
-FunctionEnd
-
-
-!endif  ; NODOWNLOADS
-
-; $R3 is set to the filename used
-Function getDictionary
-      !define DICTIONARY_BASE $R9
-
-	!define DICT_LANG $R0
-	!define DICT_LOCALE $R1
-	!define DICT_ARCH $R2
-
-!ifndef NODOWNLOADS
-	; set filename, handle files without locale portion (represented by Xx)
-	StrCmp ${DICT_LOCALE} "Xx" noLocale 0
-		StrCpy $R3 "abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
-      Goto Skip1
-	noLocale:
-		StrCpy $R3 "abispell-${DICT_LANG}.${DICT_ARCH}.tar.gz"
-	Skip1:
-!else ; for files included in setup we just leave the -Xx tacked on
-		StrCpy $R3 "abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
-!endif
-	!define DICT_FILENAME $R3
-
-
-!ifndef NODOWNLOADS
-	; download the file
-	Call ConnectInternet	; try to establish connection if not connected
-	Pop $0
-	StrCmp $0 "online" 0 connected
-		DetailPrint "Unable to establish Internet connection, aborting download"
-		Goto Finish
-	connected:
-	DetailPrint "NSISdl::download '${DICTIONARY_BASE}/${DICT_FILENAME}' '$TEMP\${DICT_FILENAME}'"
-	NSISdl::download "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}"
-	Pop $0 ;Get the return value
-	StrCmp $0 "success" doDictInst
-		; Couldn't download the file
-		DetailPrint "Could not download requested dictionary:"
-		DetailPrint "  ${DICTIONARY_BASE}/${DICT_FILENAME}"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/${DICT_FILENAME}"
-	Goto Finish
-!endif
-
-	doDictInst:
-		; Unzip dictionary into dictionary subdirecotry
-		untgz::extract "-j" "-d" "$INSTDIR\dictionary" "$TEMP\${DICT_FILENAME}"
-		StrCmp $0 "success" doCleanup
-			DetailPrint "  Failed to extract ${DICT_FILENAME}"
-			MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "  Failed to extract ${DICT_FILENAME}"
-		
-		doCleanup:
-		; Delete temporary files
-		Delete "$TEMP\${DICT_FILENAME}"
-
-	Finish:
-		!undef DICT_LANG
-		!undef DICT_LOCALE
-		!undef DICT_ARCH
-FunctionEnd
-
-; used to define a section containing an optional dictionary for downloading & installation
-!macro SectionDict DICT_NAME DICT_LANG DICT_LOCALE DICT_ARCH DICT_SIZE
-Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}' section_dl_opt_dict_${DICT_LANG}_${DICT_LOCALE}
-!ifdef NODOWNLOADS
-	SectionIn 2	; Full only
-	SetOutPath $TEMP
-	File "abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
-!else
-	AddSize ${DICT_SIZE}
-!endif
-
-	DetailPrint "Installing dictionary for: '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}'"
-
-	StrCpy $R0 ${DICT_LANG}
-	StrCpy $R1 ${DICT_LOCALE}
-	StrCpy $R2 ${DICT_ARCH}
-	Call getDictionary
-SectionEnd
-!macroend
-!define SectionDict "!insertmacro SectionDict"
-
-
-; These are listed alphabetically based on English LANG-LOCALE
-; NOTE: if the dictinaries are updated so to should these sizes (KB)
-; Be sure to update DICTIONARY_COUNT above (so description & selection query work correctly)
-${SectionDict} "Catalan"      "ca" "ES" "i386"  4324
-${SectionDict} "Czech"        "cs" "DZ" "i386"  2558
-${SectionDict} "Danish"       "da" "DK" "i386"  1580
-${SectionDict} "Swiss"        "de" "CH" "i386"  8501
-${SectionDict} "Deutsch"      "de" "DE" "i386"  2277
-${SectionDict} "Ellhnika"     "el" "GR" "i386"  2049  ;Greek
-${SectionDict} "English"      "en" "GB" "i386"  2109
-${SectionDict} "Esperanto"    "eo" "Xx" "i386"   942  ;no locale...
-${SectionDict} "Español"      "es" "ES" "i386"  2632
-${SectionDict} "Finnish"      "fi" "FI" "i386" 10053
-${SectionDict} "Français"     "fr" "FR" "i386"  1451
-${SectionDict} "Hungarian"    "hu" "HU" "i386"  8086
-${SectionDict} "Irish gaelic" "ga" "IE" "i386"   587
-${SectionDict} "Galician"     "gl" "ES" "i386"   807
-${SectionDict} "Italian"      "it" "IT" "i386"  1638
-${SectionDict} "Latin"        "la" "IT" "i386"  2254  ;mlatin
-${SectionDict} "Lietuviu"     "lt" "LT" "i386"  1907  ;Lithuanian
-${SectionDict} "Dutch"        "nl" "NL" "i386"  1079  ;nederlands
-${SectionDict} "Norsk"        "nb" "NO" "i386"  2460  ;Norwegian
-${SectionDict} "Nynorsk"      "nn" "NO" "i386"  3001  ;Norwegian(nynorsk)
-${SectionDict} "Polish"       "pl" "PL" "i386"  4143
-${SectionDict} "Portugues"    "pt" "PT" "i386"  1117  ;Portuguese
-${SectionDict} "Brazilian"    "pt" "BR" "i386"  1244  ;Portuguese
-${SectionDict} "Russian"      "ru" "RU" "i386"  8307
-${SectionDict} "Slovensko"    "sl" "SI" "i386"   857  ;Slovenian
-${SectionDict} "Svenska"      "sv" "SE" "i386"   753  ;Swedish
-${SectionDict} "Ukrainian"    "uk" "UA" "i386"  3490
-
-
-!ifndef NODOWNLOADS
-SubSectionEnd ; DL Optional downloads
-!endif
-
+!include "abi_dict_misc.nsh"
 !endif ; OPT_DICTIONARIES
 
 
@@ -870,92 +609,7 @@ SubSectionEnd ; helper files
 ; *********************************************************************
 
 
-; GetWindowsVersion
- ;
- ; Based on Yazno's function, http://yazno.tripod.com/powerpimpit/
- ; Updated by Joost Verburg
- ;
- ; Returns on top of stack
- ;
- ; Windows Version (95, 98, ME, NT x.x, 2000, XP, 2003)
- ; or
- ; '' (Unknown Windows Version)
- ;
- ; Usage:
- ;   Call GetWindowsVersion
- ;   Pop $R0
- ;   ; at this point $R0 is "NT 4.0" or whatnot
- Function GetWindowsVersion
- 
-   Push $R0
-   Push $R1
- 
-   ReadRegStr $R0 HKLM \
-   "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-
-   IfErrors 0 lbl_winnt
-   
-   ; we are not NT
-   ReadRegStr $R0 HKLM \
-   "SOFTWARE\Microsoft\Windows\CurrentVersion" VersionNumber
- 
-   StrCpy $R1 $R0 1
-   StrCmp $R1 '4' 0 lbl_error
- 
-   StrCpy $R1 $R0 3
- 
-   StrCmp $R1 '4.0' lbl_win32_95
-   StrCmp $R1 '4.9' lbl_win32_ME lbl_win32_98
- 
-   lbl_win32_95:
-     StrCpy $R0 '95'
-   Goto lbl_done
- 
-   lbl_win32_98:
-     StrCpy $R0 '98'
-   Goto lbl_done
- 
-   lbl_win32_ME:
-     StrCpy $R0 'ME'
-   Goto lbl_done
- 
-   lbl_winnt:
- 
-   StrCpy $R1 $R0 1
- 
-   StrCmp $R1 '3' lbl_winnt_x
-   StrCmp $R1 '4' lbl_winnt_x
- 
-   StrCpy $R1 $R0 3
- 
-   StrCmp $R1 '5.0' lbl_winnt_2000
-   StrCmp $R1 '5.1' lbl_winnt_XP
-   StrCmp $R1 '5.2' lbl_winnt_2003 lbl_error
- 
-   lbl_winnt_x:
-     StrCpy $R0 "NT $R0" 6
-   Goto lbl_done
- 
-   lbl_winnt_2000:
-     Strcpy $R0 '2000'
-   Goto lbl_done
- 
-   lbl_winnt_XP:
-     Strcpy $R0 'XP'
-   Goto lbl_done
- 
-   lbl_winnt_2003:
-     Strcpy $R0 '2003'
-   Goto lbl_done
- 
-   lbl_error:
-     Strcpy $R0 ''
-   lbl_done:
- 
-   Pop $R1
-   Exch $R0
- 
- FunctionEnd
+!include "abi_util_winver.nsh"
 
 
 !macro SectionDisable SECTIONID
@@ -972,51 +626,25 @@ Function .onInit
 !endif
 
 
-!ifdef OPT_DICTIONARIES
-!macro cycle_over_dictionary_sections CMD
-		; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
-		push $R1	; the 1st section
-		push $R2	; the last section
-		StrCpy $R1 ${ssection_dl_opt_dict}
-		IntOp $R1 $R1 + 1                   ; order here
-		IntOp $R2 $R1 + ${DICTIONARY_COUNT}	; matters  $R2 = ${ssection_dl_opt_dict} + 1 + ${DICTIONARY_COUNT}
-		; $R1=section of 1st downloadable dictionary
-		"loop_start:"
-			${CMD}
-			IntOp $R1 $R1 + 1  
-			IntCmpU $R1 $R2 "loop_end"
-		Goto "loop_start"
-		"loop_end:"
-		pop $R2
-		pop $R1
-!macroend
-!endif
-
 !ifndef NODOWNLOADS
   ; Disable all downloads if not connected
   ; Query system, requires IE4 installed, errors treated as not available
   Dialer::GetConnectedState
   Pop $R0               ;Get the return value from the stack
-  ;StrCpy $R0 "offline"
-  ;MessageBox MB_OKCANCEL "Connected State: $R0" IDOK 0
   StrCmp $R0 "online" connected 0
   !ifdef OPT_DICTIONARIES
 	${SectionDisable} ${ssection_dl_opt_dict}
 	!insertmacro cycle_over_dictionary_sections "${SectionDisable} $R1"
   !endif
-
   !ifdef OPT_CRTL_URL
   	${SectionDisable} ${section_crtlib_dl}
   !endif
-
   connected:
-!endif
+!endif ;NODOWNLOADS
 
 ; Disable Windows 95 specific sections
 Call GetWindowsVersion
 Pop $R0
-;StrCpy $R0 '95'
-;MessageBox MB_OKCANCEL "WinVer: $R0" IDOK 0
 StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
   !ifdef OPT_CRTL_URL
      ${SectionDisable} ${section_crtlib_dl}
@@ -1034,6 +662,7 @@ FunctionEnd
 	!define MUI_DESCRIPTION_TEXT "!insertmacro MUI_DESCRIPTION_TEXT"
 	!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 		${MUI_DESCRIPTION_TEXT} ${section_abi} $(DESC_section_abi)
+		${MUI_DESCRIPTION_TEXT} ${section_abi_req} $(DESC_section_abi_req)
 		${MUI_DESCRIPTION_TEXT} ${section_shellupdate} $(DESC_section_shellupdate)
 
 		!ifdef CLASSIC_UI

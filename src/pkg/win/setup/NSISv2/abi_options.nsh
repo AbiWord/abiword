@@ -33,3 +33,13 @@
 
 ; Specify this one only if you are the TradeMark holder!!!
 ;!define TRADEMARKED_BUILD
+
+; Initially selected/default download location for dictionary files
+; we attempt to let user pick, but this is our fallback/default entry
+!define DICTIONARY_BASE_DEFAULT "http://dl.sourceforge.net/abiword"
+
+; The other/mirror locations for downloading dictionary files
+!define DICTIONARY_BASE_MIRRORS "http://unc.dl.sourceforge.net/abiword|http://telia.dl.sourceforge.net/abiword|http://umn.dl.sourceforge.net/abiword|http://twtelecom.dl.sourceforge.net/abiword|http://easynews.dl.sourceforge.net/abiword|http://belnet.dl.sourceforge.net/abiword|http://cesnet.dl.sourceforge.net/abiword|http://switch.dl.sourceforge.net/abiword"
+
+; reserve room at start of compressed archive for plugins [leave defined]
+!define RESERVE_PLUGINS
