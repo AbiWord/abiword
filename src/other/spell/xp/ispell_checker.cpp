@@ -278,7 +278,7 @@ static const Ispell2Lang_t m_mapping[] = {
   { "catala.hash",     "ca-ES" },
   { "czech.hash",      "cs-CZ" },
   { "dansk.hash",      "da-DK" },
-  { "deutsch.hash",    "de-CH" },
+  { "swiss.hash",      "de-CH" },
   { "deutsch.hash",    "de-DE" },
   { "deutsch.hash",    "de-AT" },
   { "ellhnika.hash",   "el-GR" },
