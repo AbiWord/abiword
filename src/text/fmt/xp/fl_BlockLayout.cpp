@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "fl_BlockLayout.h"
 #include "fl_Layout.h"
@@ -5536,6 +5537,11 @@ void    fl_BlockLayout::StopList(void)
 	DELETEP(props);
 }
 
+/*!
+ * Find the most recent block with the list ID given.
+\param UT_uint32 id the identifier of the list
+\returns fl_BlockLayout *
+*/
 fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 {
 	//
@@ -5607,6 +5613,10 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
 	return pNext;
 }
 
+/*!
+ * Find the most recent block with a list item.
+\returns fl_BlockLayout *
+*/
 fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 {
 	//
@@ -5618,6 +5628,52 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 		pPrev = pPrev->getPrev() ;
 	}
 	return pPrev;
+}
+
+/*!
+ * Returns the most recent Block containing a list item of the closest match
+ * of left-margin to this one.
+ \returns fl_BlockLayout *
+*/
+fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
+{
+	const char * szAlign = getProperty("margin-left",true);
+	double dAlignMe = UT_convertToDimension(szAlign,DIM_IN); 
+	//
+	// Find the most recent block with a list
+	//
+	fl_BlockLayout * pClosest = NULL;
+	float dClosest = 100000.;
+	bool bFound = false;
+	fl_BlockLayout * pPrev = getPrev();
+	while(pPrev != NULL && !bFound)
+	{
+		if(pPrev->isListItem())
+		{
+			szAlign = pPrev->getProperty("margin-left",true);
+			double dAlignThis = UT_convertToDimension(szAlign,DIM_IN);
+			float diff = fabs( (float) dAlignThis-dAlignMe);
+			if(diff < 0.01)
+			{
+				pClosest = pPrev;
+				bFound = true;
+			}
+			else
+			{
+				if(diff < dClosest)
+				{
+					pClosest = pPrev;
+					dClosest = diff;
+				}
+				pPrev = pPrev->getPrev();
+			}
+		}
+		else
+		{
+			pPrev = pPrev->getPrev();
+		}
+	}
+	return pClosest;
 }
 
 inline fl_BlockLayout * fl_BlockLayout::getParentItem(void)

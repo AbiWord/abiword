@@ -68,7 +68,10 @@ typedef enum
 //
 // MS Word uses 0.5 inches so we do too.
 #define  LIST_DEFAULT_INDENT 0.50
-#define  LIST_DEFAULT_INDENT_LABEL 0.50
+
+// May need to tweak this some more...
+
+#define  LIST_DEFAULT_INDENT_LABEL 0.30
 
 //
 // Reserved the first 10000 id's for useful purposes....

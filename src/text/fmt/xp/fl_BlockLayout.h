@@ -226,6 +226,7 @@ public:
 	void setStopping( bool bValue);
 	fl_BlockLayout * getPreviousList(UT_uint32 id);
 	fl_BlockLayout * getPreviousList(void);
+	fl_BlockLayout * getPreviousListOfSameMargin(void);
 	inline fl_BlockLayout * getParentItem(void);
 	
 	void findSquigglesForRun(fp_Run* pRun);

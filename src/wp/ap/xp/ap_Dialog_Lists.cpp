@@ -302,13 +302,15 @@ void AP_Dialog_Lists::Apply(void)
 	}
 	if(m_bStartSubList == true &&  m_isListAtPoint != true )
 	{ 
-		fl_BlockLayout * rBlock = getBlock()->getPreviousList();
+		fl_BlockLayout * rBlock = getBlock()->getPreviousListOfSameMargin();
 		if(rBlock == NULL)
 		{
 			clearDirty();
 			return;
 		}
 		getBlock()->resumeList(rBlock);
+		getBlock()->getDocument()->enableListUpdates();
+		getBlock()->getDocument()->updateDirtyLists();
 		clearDirty();
 		return;
 	}
@@ -339,6 +341,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	{
 		m_iLevel = 1;
 	}
+	
 	UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
 	m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
 	m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
