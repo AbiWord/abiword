@@ -421,8 +421,7 @@ static GdkModifierType s_getAltMask(void)
 	// find out what modifier mask XL_Alt_{L,R} are bound to.
 	//////////////////////////////////////////////////////////////////
 	
-	GdkModifierType altL_mask = GDK_MOD1_MASK;			// assume MOD1 until we find out
-	GdkModifierType altR_mask = GDK_MOD1_MASK;			// assume MOD1 until we find out
+	int alt_mask = 0;
 
 	Display * display = GDK_DISPLAY();
 
@@ -440,9 +439,9 @@ static GdkModifierType s_getAltMask(void)
 		for (k=0; k<mkpm; k++)
 		{
 			KeyCode code = pModMap->modifiermap[m*mkpm + k];
-			if (code == kcAltL)
+			if (kcAltL && (code == kcAltL))
 				mAltL = m;
-			if (code == kcAltR)
+			if (kcAltR && (code == kcAltR))
 				mAltR = m;
 		}
 	}
@@ -456,11 +455,11 @@ static GdkModifierType s_getAltMask(void)
 	case 2:								// Alt_L is mapped to CONTROL ??
 		break;							// ... ignore this key.
 		
-	case 3: altL_mask = GDK_MOD1_MASK; break;
-	case 4: altL_mask = GDK_MOD2_MASK; break;
-	case 5: altL_mask = GDK_MOD3_MASK; break;
-	case 6: altL_mask = GDK_MOD4_MASK; break;
-	case 7: altL_mask = GDK_MOD5_MASK; break;
+	case 3: alt_mask |= GDK_MOD1_MASK; break;
+	case 4: alt_mask |= GDK_MOD2_MASK; break;
+	case 5: alt_mask |= GDK_MOD3_MASK; break;
+	case 6: alt_mask |= GDK_MOD4_MASK; break;
+	case 7: alt_mask |= GDK_MOD5_MASK; break;
 	}
 
 	switch (mAltR)
@@ -472,16 +471,19 @@ static GdkModifierType s_getAltMask(void)
 	case 2:								// Alt_R is mapped to CONTROL ??
 		break;							// ... ignore this key.
 		
-	case 3: altR_mask = GDK_MOD1_MASK; break;
-	case 4: altR_mask = GDK_MOD2_MASK; break;
-	case 5: altR_mask = GDK_MOD3_MASK; break;
-	case 6: altR_mask = GDK_MOD4_MASK; break;
-	case 7: altR_mask = GDK_MOD5_MASK; break;
+	case 3: alt_mask |= GDK_MOD1_MASK; break;
+	case 4: alt_mask |= GDK_MOD2_MASK; break;
+	case 5: alt_mask |= GDK_MOD3_MASK; break;
+	case 6: alt_mask |= GDK_MOD4_MASK; break;
+	case 7: alt_mask |= GDK_MOD5_MASK; break;
 	}
 
 	XFreeModifiermap(pModMap);
 
-	UT_DEBUGMSG(("Keycodes for alt [l 0x%x][r 0x%x] using modifiers [%d %d]\n",kcAltL,kcAltR,mAltL-2,mAltR-2));
+	if (!alt_mask)						// if nothing set, fall back to MOD1
+		alt_mask = GDK_MOD1_MASK;
+	
+	UT_DEBUGMSG(("Keycodes for alt [l 0x%x][r 0x%x] using modifiers [%d %d] yields [0x%x]\n",kcAltL,kcAltR,mAltL-2,mAltR-2,alt_mask));
 
-	return (GdkModifierType)(altL_mask | altR_mask);
+	return (GdkModifierType)alt_mask;
 }
