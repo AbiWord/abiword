@@ -22,16 +22,10 @@
 #include "xap_BeOSAppImpl.h"
 
 
-bool XAP_BeOSAppImpl::openURL(const char * url)
+bool XAP_BeOSAppImpl::openURL(const char * szURL)
 {
-	char *url;
-	url = szURL;
 
-	printf("OpenURL= ");
-	printf(url);
-	printf("\n");
-
-	be_roster->Launch("text/html", 1, &url);
+	be_roster->Launch("text/html", 1, (char **)&szURL);
 	return true;
 }
 
