@@ -344,7 +344,9 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 				while (*plocal)
 					*pBuf++ = (UT_Byte)*plocal++;
 #	else
-				if(XAP_EncodingManager::instance->isUnicodeLocale())
+				if(XAP_EncodingManager::instance->isUnicodeLocale() || 
+				   (XAP_EncodingManager::instance->try_nativeToU(0xa1) == 0xa1))
+
 				{
 					XML_Char * pszUTF8 = UT_encodeUTF8char(*pData++);
 					while (*pszUTF8)
@@ -415,19 +417,22 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInBlock = false;
 	m_bInSpan = false;
 	m_apiLastSpan = 0;
-    m_pCurrentField = 0;
+	m_pCurrentField = 0;
+
 	// Be nice to XML apps.  See the notes in _outputData() for more 
 	// details on the charset used in our documents.  By not declaring 
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
 	// is a strict subset of UTF-8. 
 
-	if (!XAP_EncodingManager::instance->cjk_locale()) {
+	if (!XAP_EncodingManager::instance->cjk_locale() &&
+	    (XAP_EncodingManager::instance->try_nativeToU(0xa1) != 0xa1)) {
+	    // use utf8 for CJK locales and latin1 locales and unicode locales
 	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
 	    m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
 	    m_pie->write("\"?>\n");
 	} else {
 	    m_pie->write("<?xml version=\"1.0\"?>\n");
-	};
+	}
 
 	// We write this first so that the sniffer can detect AbiWord 
 	// documents more easily.   

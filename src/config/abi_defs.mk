@@ -567,7 +567,7 @@ GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
 # These also might be needed: -lSM -lICE
 GTK_CFLAGS      := $(shell $(GTK_CONFIG) --cflags)
 GNOME_CFLAGS += $(GTK_CFLAGS)
-GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L)
+GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L gnome gal)
 GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
 
 ifdef ABI_OPT_GNOMEVFS
