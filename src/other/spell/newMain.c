@@ -88,7 +88,7 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
 	/* TODO: modify good() to take a non-null terminated string so
 		we don't have to malloc() for this check */
 
-	if (!(iWord = (ichar_t *) malloc( (length+1))))
+	if (!(iWord = (ichar_t *) malloc( ( sizeof(ichar_t) * (length+1)))))
 	{
 			return -1;
 	}
