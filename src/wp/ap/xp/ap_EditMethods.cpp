@@ -5016,6 +5016,15 @@ Defun1(insertSectionBreak)
 							   XAP_Dialog_MessageBox::a_OK);
 		return true;
 	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
 
 	pView->insertSectionBreak();
 	return true;
@@ -5069,6 +5078,23 @@ Defun1(insertLineBreak)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_LF;
+	if(pView->isInTable())
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
 	pView->cmdCharInsert(&c,1);
 	return true;
 }
@@ -5087,6 +5113,15 @@ Defun1(insertColumnBreak)
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
 		return true;
@@ -5383,6 +5418,15 @@ Defun1(insertPageBreak)
 		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 		UT_return_val_if_fail(pFrame, false);
 		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+	if(pView->isInFrame(pView->getPoint()))
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+		UT_return_val_if_fail(pFrame, false);
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideFrame,
 							   XAP_Dialog_MessageBox::b_O,
 							   XAP_Dialog_MessageBox::a_OK);
 		return true;

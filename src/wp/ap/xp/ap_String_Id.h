@@ -51,6 +51,7 @@ dcl(MSG_PrintStatus,			"Printing page %d of %d")
 dcl(MSG_RevertFile, "Revert file to last unsaved state?")
 dcl(MSG_PrintingDoc, "Printing Document..")
 dcl(MSG_NoBreakInsideTable, "Can not insert a Break inside a table")
+dcl(MSG_NoBreakInsideFrame, "Can not insert a Break inside a text box")
 dcl(MSG_MergeDocsNotRelated, "The documents you are trying to merge are unrelated. AbiWord will attempt to merge them, but the result might be meaningless.")
 dcl(MSG_AutoRevisionOffWarning, "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document.")
 
