@@ -20,6 +20,8 @@
  */
 
 #include <gtk/gtk.h>
+#undef GTK_DISABLE_DEPRECATED
+#include <gtk/gtkoptionmenu.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

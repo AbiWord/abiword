@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
 #include <stdlib.h>
 #include <glade/glade.h>
 

@@ -904,7 +904,7 @@ bool EV_UnixToolbar::synthesize(void)
 					pixbuf = gdk_pixbuf_new_from_xpm_data ((const char **)(tb_text_bgcolor_xpm));
 					combo = color_combo_new (pixbuf, szToolTip, NULL, color_group_fetch("background_color", NULL));
 				}
-			    gtk_combo_box_set_title (GTK_COMBO_BOX (combo),
+			    gal_combo_box_set_title (GAL_COMBO_BOX (combo),
 										 szToolTip);
 
 				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
