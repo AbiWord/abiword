@@ -29,13 +29,11 @@
 #include "ut_bytebuf.h"
 #include "ut_growbuf.h"
 
-#ifdef LIBMSWORDVIEW
 // Includes for libmswordview
-#include <mswordview/roman.h>
-#include <mswordview/utf.h>
-#include <mswordview/config.h>
-#include <mswordview/mswordview.h>
-#endif /* LIBMSWORDVIEW */
+#include "roman.h"
+#include "utf.h"
+#include "config.h"
+#include "mswordview.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -156,15 +154,12 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 	bigbuf.truncate(0);
 
-#ifdef LIBMSWORDVIEW	
 	decodeWordFile(4, argv, buf, 4096, (void *) parser, s_readBuffer);
-#endif /* LIBMSWORDVIEW */
-
 	free(argv);
 	
-#ifdef DEBUG
+#if 0
 	// dump out byte buffer to file
-	FILE * out = fopen("dump.xml", "w");
+	FILE * out = fopen("mswordparsedump.abw", "w");
 	fwrite(bigbuf.getPointer(0), sizeof(UT_Byte), bigbuf.getLength(), out);
 	fclose(out);
 #endif

@@ -35,6 +35,7 @@ CPPSRCS=		ie_exp.cpp		\
 LIBRARY_NAME=		AbiImpExp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
+INCLUDES=		-I$(ABI_DEPTH)/other/libmswordview
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
