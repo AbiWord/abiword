@@ -1396,9 +1396,9 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iFootnoteLineThickness = m_pLayout->getGraphics()->convertDimension("0.05in");
+		m_iFootnoteLineThickness = m_pLayout->getGraphics()->convertDimension("0.005in");
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-		m_iFootnoteLineThicknessLayoutUnits = UT_convertToLayoutUnits("0.05in");
+		m_iFootnoteLineThicknessLayoutUnits = UT_convertToLayoutUnits("0.005in");
 #endif
 	}
 
