@@ -20,6 +20,7 @@
 #ifndef IE_EXP_RTF_LISTENERWRITEDOC
 #define IE_EXP_RTF_LISTENERWRITEDOC
 #include "ie_exp_RTF.h"
+class PX_ChangeRecord_Object;
 
 /******************************************************************
 ** This file is considered private to ie_exp_RTF.cpp
@@ -67,6 +68,7 @@ protected:
 	void				_rtf_docfmt(void);
 	void				_rtf_open_section(PT_AttrPropIndex api);
 	void				_rtf_open_block(PT_AttrPropIndex api);
+	void				_writeImageInRTF(const PX_ChangeRecord_Object * pcro);
 
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;

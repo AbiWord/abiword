@@ -25,8 +25,12 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+#include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_units.h"
+#include "ut_png.h"
+#include "ut_bytebuf.h"
 #include "ie_exp_RTF_listenerWriteDoc.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
@@ -252,18 +256,18 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-#if 0
-			// TODO deal with inline objects....
-			
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
 				_closeSpan();
-				_openTag("image","/",UT_FALSE,api);
+				_writeImageInRTF(pcro);
 				return UT_TRUE;
 
+#if 0
+			// TODO deal with these other inline objects....
+			
 			case PTO_Field:
 				_closeSpan();
 				_openTag("field","/",UT_FALSE,api);
@@ -271,9 +275,9 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 
 			default:
 				UT_ASSERT(0);
+#endif
 				return UT_FALSE;
 			}
-#endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
@@ -618,5 +622,121 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			delete p_t;
 		}
 	}
+}
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcro)
+{
+	PT_AttrPropIndex api = pcro->getIndexAP();
+	const PP_AttrProp * pImageAP = NULL;
+	m_pDocument->getAttrProp(api,&pImageAP);
+
+	// fetch the "name" of the image and use it to fetch the actual image data.
+	
+	const XML_Char * szDataID = NULL;
+	UT_Bool bFoundDataID = pImageAP->getAttribute("dataid",szDataID);
+	if (!bFoundDataID)
+	{
+		UT_DEBUGMSG(("RTF_Export: cannot get dataid for image\n"));
+		return;
+	}
+	const UT_ByteBuf * pbb = NULL;
+	void * pToken = NULL;
+	void * pHandle = NULL;
+	UT_Bool bFoundDataItem = m_pDocument->getDataItemDataByName(szDataID,&pbb,&pToken,&pHandle);
+	if (!bFoundDataItem)
+	{
+		UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
+		return;
+	}
+	
+	// see if the image has a width/height attribute that should
+	// override the actual pixel size of the image.
+	
+	const XML_Char * szWidthProp = NULL;
+	const XML_Char * szHeightProp = NULL;
+	UT_Bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
+	UT_Bool bFoundHeightProperty = pImageAP->getProperty("height",szHeightProp);
+
+	// get the width/height of the image from the image itself.
+
+	UT_sint32 iImageWidth, iImageHeight;
+	UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
+
+	// TODO compute scale factors...
+
+	// if everything is ok, we need to dump the image data (in hex)
+	// to the RTF stream with some screwy keywords...
+	//
+	// we need to emit:     {\*\shppict{\pict <stuff>}}
+	// we do not deal with: {\*\nonshppict...}
+	//
+	// <stuff> ::= <brdr>? <shading>? <pictype> <pictsize> <metafileinfo>? <data>
+
+	m_pie->_rtf_open_brace();
+	{
+		m_pie->_rtf_keyword("*");
+		m_pie->_rtf_keyword("shppict");
+		m_pie->_rtf_open_brace();
+		{
+			m_pie->_rtf_keyword("pict");
+			// TODO deal with <brdr>
+			// TODO deal with <shading>
+
+			// <pictype> -- we store everything internall as PNG, so that's all
+			//              we output here.  TODO consider listing multiple formats
+			//              here -- word97 seems to, but this really bloats the file.
+
+			m_pie->_rtf_keyword("pngblip");
+			
+			// <pictsize>
+
+			m_pie->_rtf_keyword("picw",iImageWidth);
+			m_pie->_rtf_keyword("pich",iImageHeight);
+			if (bFoundWidthProperty)
+				m_pie->_rtf_keyword_ifnotdefault_twips("picwgoal",szWidthProp,0);
+			if (bFoundHeightProperty)
+				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",szHeightProp,0);
+			// we use the default values for picscale[xy]==100, piccrop[tblr]==0
+			
+			// TODO deal with <metafileinfo>
+
+			// <data>
+
+			// TODO create meaningful values for bliptag and bliduid...
+			// we emit "\bliptag<N>{\*\blipuid <N16>}"
+			// where <N> is an integer.
+			// where <N16> is a 16-byte integer in hex.
+
+			m_pie->_rtf_nl();
+			UT_uint32 tag = time(NULL);
+			m_pie->_rtf_keyword("bliptag",tag);
+			m_pie->_rtf_open_brace();
+			{
+				m_pie->_rtf_keyword("*");
+				m_pie->_rtf_keyword("blipuid");
+				char buf[100];
+				sprintf(buf,"%032x",tag);
+				m_pie->_rtf_chardata(buf,strlen(buf));
+			}
+			m_pie->_rtf_close_brace();
+
+			UT_uint32 lenData = pbb->getLength();
+			const UT_Byte * pData = pbb->getPointer(0);
+			UT_uint32 k;
+
+			for (k=0; k<lenData; k++)
+			{
+				if (k%32==0)
+					m_pie->_rtf_nl();
+				char buf[10];
+				sprintf(buf,"%02x",pData[k]);
+				m_pie->_rtf_chardata(buf,2);
+			}
+		}
+		m_pie->_rtf_close_brace();
+	}
+	m_pie->_rtf_close_brace();
 }
