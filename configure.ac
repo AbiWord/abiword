@@ -125,16 +125,7 @@ ABI_GNOME_QUICK
 ABI_CURLHASH
 AM_CONDITIONAL(WITH_CURL, test x$abi_curlhash = xtrue)
 
-AC_ARG_WITH(pspell,
-    [  --with-pspell    Turn on pspell ],
-     [case "${withval}" in
-       yes) PSPELL_LIBS="-lpspell -lpspell-modules -lltdl" ;
-            pspell=true ;;
-       no)  PSPELL_LIBS="" ;
-	    pspell=false ;;
-       *) AC_MSG_ERROR(bad value ${withval} for --with-pspell) ;;
-     esac],[PSPELL_LIBS=""])
-AM_CONDITIONAL(WITH_PSPELL, test x$pspell = xtrue)
+ABI_SPELL
 
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],
@@ -230,7 +221,6 @@ fi
 dnl SUBST all the variables we just defined
 AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
-AC_SUBST(PSPELL_LIBS)
 AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
@@ -394,11 +384,6 @@ case "$gnome" in
         AC_MSG_RESULT([Configured with GNOME support.]) ;;
 esac
 
-case "$pspell" in
-     "true" )
-        AC_MSG_RESULT([Configured with Pspell support.]) ;;
-esac
-
 case "$libjpeg" in
      "true" )
         AC_MSG_RESULT([Configured with libjpeg support.]) ;;
@@ -428,6 +413,7 @@ cat <<EOF
   popt:		   ${abi_libpopt_message}
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
+  spelling:        ${abi_spell_message}
 
 EOF
 
