@@ -637,7 +637,8 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(wvParseStruct * ps, UT_uint32 pos)
 		{
 			UT_uint32 len = strlen(ps->Sttbfbkmk.s8strings[pos]);
 			str = new XML_Char[len + 1];
-			for(UT_uint32 i = 0; i < len; i++)
+			UT_uint32 i = 0;
+			for(i = 0; i < len; i++)
 				str[i] = ps->Sttbfbkmk.s8strings[pos][i];
 			str[i] = 0;
 		}
@@ -1937,28 +1938,79 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 	return true;
 }
 
+typedef enum {
+  MSWord_UnknownImage,
+  MSWord_VectorImage,
+  MSWord_RasterImage
+} MSWord_ImageType;
+
+static MSWord_ImageType s_determineImageType ( Blip * b )
+{
+  if ( !b )
+    return MSWord_UnknownImage;
+
+  switch ( b->type )
+    {
+    case msoblipEMF:
+    case msoblipWMF:
+    case msoblipPICT:
+      return MSWord_VectorImage;
+
+    case msoblipJPEG:
+    case msoblipPNG:
+    case msoblipDIB:
+      return MSWord_RasterImage;
+
+    case msoblipERROR:
+    case msoblipUNKNOWN:
+    default:
+      return MSWord_UnknownImage;
+    }
+}
+
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
   const char * mimetype 	= UT_strdup ("image/png");
   IE_ImpGraphic * importer	= 0;
-  FG_Graphic* pFG			= 0;
-  UT_Error error			= UT_OK;
-  UT_ByteBuf * buf			= 0;
+  FG_Graphic* pFG		= 0;
+  UT_Error error		= UT_OK;
+  UT_ByteBuf * buf		= 0;
   UT_ByteBuf * pictData 	= new UT_ByteBuf();
 
   // suck the data into the ByteBuffer
 
   int data = 0;
 
+  MSWord_ImageType imgType = s_determineImageType ( b );
+
+    // will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
+
+  if ( imgType == MSWord_RasterImage )
+    {
 #if 0
-  // will load Caolan's example graphic inclusion stuff
-  while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+      while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
 #else
-	// will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
-  while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
+      while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
 #endif
 	pictData->append((UT_Byte*)&data, 1);
-  
+    }
+  else if ( imgType == MSWord_VectorImage )
+    {
+#if 0
+      while (EOF != (data = getc((FILE*)(b->blip.metafile.m_pvBits))))
+#else
+      while (EOF != (data = getc(((wvStream*)(b->blip.metafile.m_pvBits))->stream.file_stream)))
+#endif
+	pictData->append((UT_Byte*)&data, 1);
+    }
+  else
+    {
+      UT_DEBUGMSG(("UNKNOWN IMAGE TYPE!!"));
+      DELETEP(pictData);
+      FREEP(mimetype);
+      return UT_ERROR;
+    }
+
   error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
   if ((error != UT_OK) || !importer)
 	{
