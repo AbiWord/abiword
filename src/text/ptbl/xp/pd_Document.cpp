@@ -760,13 +760,29 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getLast();
 	pf_Frag_Strux * pfSecLast = NULL;
 	bool bFound = false;
+	UT_sint32 nest = 0;
+	if(pts == PTX_SectionTable)
+	{
+		nest = 1;
+	}
 	while (!bFound && currentFrag!=m_pPieceTable->getFragments().getFirst())
 	{
 		UT_ASSERT(currentFrag);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
 		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
-		     if(pfSec->getStruxType() == pts)
+			 if(pts != PTX_EndTable)
+			 { 
+				 if(pfSec->getStruxType() == PTX_EndTable)
+				 {
+					 nest++;
+				 }
+				 if(pfSec->getStruxType() == PTX_SectionTable)
+				 {
+					 nest--;
+				 }
+			 }
+		     if((pfSec->getStruxType() == pts) && (nest == 0))
 		     {
 				 pfSecLast = pfSec;
 				 bFound = true;

@@ -237,7 +237,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
-		xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate Section in DocListener \n"));
+		UT_DEBUGMSG(("SEVIOR: Doing Populate Section in DocListener \n"));
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;

@@ -1249,6 +1249,7 @@ RTFStateStore::RTFStateStore()
 	m_unicodeInAlternate = 0;
 }
 
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -1263,7 +1264,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	deflangid(0),
 	m_TableControl(pDocument),
 	m_lastBlockSDH(NULL),
-	m_lastCellSDH(NULL)
+	m_lastCellSDH(NULL),
+	m_bNestTableProps(false)
 {
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
@@ -1412,7 +1414,9 @@ void IE_Imp_RTF::OpenTable(void)
 {
 	m_TableControl.OpenTable();
 	getDoc()->appendStrux(PTX_SectionTable,NULL);
+	UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
 	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
+	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %x \n",sdh));
 	getTable()->setTableSDH(sdh);
 	getTable()->OpenCell();
 	getDoc()->appendStrux(PTX_SectionCell,NULL);
@@ -1442,9 +1446,15 @@ void IE_Imp_RTF::CloseTable(void)
 
 	if(getTable() && getTable()->wasTableUsed())
 	{
+		UT_DEBUGMSG(("SEVIOR: Table used appened end Table, block \n"));
 		m_TableControl.CloseTable();
 		getDoc()->appendStrux(PTX_EndTable,NULL);
 		getDoc()->appendStrux(PTX_Block,NULL);
+	}
+	else if(getTable())
+	{
+		m_TableControl.CloseTable();
+		UT_DEBUGMSG(("SEVIOR: Table not used. \n"));
 	}
 }
 
@@ -1453,7 +1463,7 @@ void IE_Imp_RTF::HandleCell(void)
 //
 // Flush out anything we've been holding
 //	
-	FlushStoredChars(true);
+	FlushStoredChars();
 	if(getTable() == NULL)
 	{
 		OpenTable();
@@ -1466,15 +1476,16 @@ void IE_Imp_RTF::HandleCell(void)
 // Cell class doesn't exist so create it.
 //
 		getTable()->OpenCell();
-		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
+		UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: set cell sdh %x  at pos %d on row %d \n",sdh,getTable()->getPosOnRow(),getTable()->getRow()));
+	UT_DEBUGMSG(("SEVIOR: set cell sdh %x  at pos %d on row %d \n",sdh,getTable()->getPosOnRow(),getTable()->getRow()));
 	getTable()->setNthCellOnThisRow(getTable()->getPosOnRow());
 	if(!getCell()->isMergedAbove())
 	{
 		getCell()->setCellSDH(sdh);
 		getTable()->incPosOnRow();
-		xxx_UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
+		FlushStoredChars();		
+		UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
 		getDoc()->appendStrux(PTX_EndCell,NULL);
 		getTable()->CloseCell();
 		getDoc()->appendStrux(PTX_SectionCell,NULL);
@@ -1523,7 +1534,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	if(!pOldCell)
 	{
 		pOldCell = getTable()->getNthCellOnRow(getTable()->getCellXOnRow());
-		xxx_UT_DEBUGMSG(("SEVIOR: Looking for cellx num %d on row %d found %x \n",getTable()->getCellXOnRow(),iRow,pOldCell));
+		UT_DEBUGMSG(("SEVIOR: Looking for cellx num %d on row %d found %x \n",getTable()->getCellXOnRow(),iRow,pOldCell));
 		if(pOldCell)
 		{
 			bNewCell = false;
@@ -1533,10 +1544,10 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	if(bNewCell)
 	{
 		getTable()->OpenCell();
-		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
+		UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
 	}
 	getTable()->setCellX(cellx);
-	xxx_UT_DEBUGMSG(("set cellx for class %x to %d \n",getCell(),cellx));
+	UT_DEBUGMSG(("set cellx for class %x to %d \n",getCell(),cellx));
 	FlushCellProps();
 	ResetCellAttributes();
 	getTable()->incCellXOnRow();
@@ -1544,7 +1555,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 
 void IE_Imp_RTF::HandleRow(void)
 {
-	xxx_UT_DEBUGMSG(("SEVIOR: Handle Row now \n"));
+	UT_DEBUGMSG(("SEVIOR: Handle Row now \n"));
 	getTable()->removeExtraneousCells();
 	getTable()->NewRow();
 }
@@ -1674,6 +1685,7 @@ bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 //
 bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 {
+
 	// start a new para if we have to
 	bool ok = true;
 	if (m_newSectionFlagged && (forceInsertPara || (m_gbBlock.getLength() > 0)) )
@@ -1681,7 +1693,10 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		ok = ApplySectionAttributes();
 		m_newSectionFlagged = false;
 	}
-
+	if(forceInsertPara)
+	{
+		UT_DEBUGMSG(("SEVIOR: Forced para inserted \n"));
+	} 
 	if (ok  &&  m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
 	{
 		ok = ApplyParagraphAttributes();
@@ -1759,7 +1774,6 @@ bool IE_Imp_RTF::PushRTFState(void)
 
 	// Reset the current state
 	m_currentRTFState.m_internalState = RTFStateStore::risNorm;
-
 	return true;
 }
 
@@ -1779,7 +1793,6 @@ bool IE_Imp_RTF::PopRTFState(void)
 		delete pState;
 
 		m_currentRTFState.m_unicodeInAlternate = 0;
-
 		return ok;
 	}
 	else
@@ -3209,6 +3222,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
  		}
 		else if (strcmp((char*)pKeyword, "cell") == 0)
 		{
+			UT_DEBUGMSG(("SEVIOR: Processing cell \n"));
 			HandleCell();
 			return true;
 		}
@@ -3364,11 +3378,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // Look to see if the nesting level of our tables has changed.
 //
-			UT_DEBUGMSG(("SEVIOR!!! m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			UT_DEBUGMSG(("SEVIOR!!! itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 			{
 				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 				{
+					UT_DEBUGMSG(("SEVIOR: Doing itap OpenTable \n"));
 					OpenTable();
 				}
 			}
@@ -3379,7 +3394,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 					CloseTable();
 				}
 			}
-			UT_DEBUGMSG(("SEVIOR!!! After m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			UT_DEBUGMSG(("SEVIOR!!! After itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			return true;
 		}
 		break;
@@ -3507,12 +3522,22 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case 'n':
 		if( strcmp((char *)pKeyword, "nestrow") == 0 )
 		{
-			CloseTable();
+			HandleRow();
 			return true;
 		}
 		else if( strcmp((char *)pKeyword, "nestcell") == 0 )
 		{
+			UT_DEBUGMSG(("SEVIOR: Processing nestcell \n"));
 			HandleCell();
+			return true;
+		}
+		else if( strcmp((char *)pKeyword, "nonesttables") == 0 )
+		{
+			//
+			// skip this!
+			//
+			UT_DEBUGMSG(("SEVIOR: doing nonesttables \n"));
+			SkipCurrentGroup();
 			return true;
 		}
 		break;
@@ -3541,7 +3566,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "pard") == 0)
 		{
 			// reset paragraph attributes
-			return ResetParagraphAttributes();
+			bool bres = ResetParagraphAttributes();
+
+			return bres;
 		}
 		else if (strcmp((char*)pKeyword, "page") == 0)
 		{
@@ -3781,10 +3808,47 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "trowd") == 0)
 		{
+			UT_DEBUGMSG(("SEVIOR: handling trowd paraprops %x \n",m_currentRTFState.m_paraProps));
 			if(getTable() == NULL)
 			{
 				OpenTable();
+				m_currentRTFState.m_paraProps.m_tableLevel = m_TableControl.getNestDepth();
 			}
+//
+// Look to see if the nesting level of our tables has changed.
+//
+			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+			{
+				UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+				{
+					UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+					OpenTable();
+				}
+				UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				
+			}
+			else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+			{
+				UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+				{
+					CloseTable();
+				}
+				UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			}
+//
+// Look to see if m_bNestTableProps is true for nested tables.
+//
+			if((m_TableControl.getNestDepth() > 1) && !m_bNestTableProps)
+			{
+				while(m_TableControl.getNestDepth() > 1)
+				{
+					CloseTable();
+				}
+				m_currentRTFState.m_paraProps.m_tableLevel = 1;
+			}
+			m_bNestTableProps = false;
 			ResetCellAttributes();
 			ResetTableAttributes();
 		}
@@ -3897,6 +3961,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						else if (strcmp((char*)keyword_star,"shpinst") == 0)
 						{
 							UT_DEBUGMSG (("ignoring shpinst\n"));
+							return true;
+						}
+						else if (strcmp((char*)keyword_star,"nesttableprops") == 0)
+						{
+							UT_DEBUGMSG(("SEVIOR: Doing nestableprops opentable \n"));
+							m_bNestTableProps = true;
+							// OpenTable();
 							return true;
 						}
 						else if (strcmp((char*)keyword_star, "bkmkstart") == 0)
@@ -4281,6 +4352,31 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 {
 	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
+
+//
+// Look to see if the nesting level of our tables has changed.
+//
+	if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+	{
+		UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+		while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+		{
+			UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+			OpenTable();
+		}
+		UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+
+	}
+	else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+	{
+		UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+		while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
+		{
+			CloseTable();
+		}
+		UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+	}
+
 
 	UT_String propBuffer;
 	UT_String tempBuffer;
@@ -4735,6 +4831,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else
 		{
+			UT_DEBUGMSG(("SEVIOR: Apply Para's append strux \n"));
 			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
 			return ok;
 		}
@@ -4845,7 +4942,6 @@ bool IE_Imp_RTF::ResetCellAttributes(void)
 bool IE_Imp_RTF::ResetTableAttributes(void)
 {
 	bool ok = FlushStoredChars();
-	UT_DEBUGMSG(("SEVIOR: Reset table atts \n"));
 	m_currentRTFState.m_tableProps = RTFProps_TableProps();
 	return ok;
 }

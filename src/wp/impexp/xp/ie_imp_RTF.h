@@ -701,6 +701,7 @@ private:
 	ie_imp_table_control  m_TableControl;
 	PL_StruxDocHandle     m_lastBlockSDH;
 	PL_StruxDocHandle     m_lastCellSDH;
+	bool                  m_bNestTableProps;
 };
 
 #endif /* IE_IMP_RTF_H */

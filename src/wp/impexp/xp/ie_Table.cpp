@@ -691,7 +691,7 @@ ie_imp_table::ie_imp_table(PD_Document * pDoc):
 
 ie_imp_table::~ie_imp_table(void)
 {
-	xxx_UT_DEBUGMSG(("SEVIOR: deleteing table %x table used %d \n",this,m_bTableUsed));
+	UT_DEBUGMSG(("SEVIOR: deleteing table %x table used %d \n",this,m_bTableUsed));
 	if(!m_bTableUsed)
 	{
 		_removeAllStruxes();
@@ -776,6 +776,7 @@ PL_StruxDocHandle ie_imp_table::getTableSDH(void)
 void ie_imp_table::setTableSDH(PL_StruxDocHandle sdh)
 {
 	m_tableSDH = sdh;
+	UT_DEBUGMSG(("SEVIOR: Table sdh set to %x \n",sdh));
 }
 
 /*!
@@ -851,12 +852,12 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
 		if(!pCell->isMergedAbove() && !pCell->isMergedRight())
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
+			UT_DEBUGMSG(("SEVIOR: pCell %d row %d left %d right %d top %d bot %d sdh %x \n",i,pCell->getRow(),pCell->getLeft(),pCell->getRight(),pCell->getTop(),pCell->getBot(),pCell->getCellSDH())); 
 			pCell->writeCellPropsInDoc();
 		}
 		if(pCell->isMergedAbove() && (pCell->getCellSDH() != NULL))
 		{
-			xxx_UT_DEBUGMSG(("BUG!BUG! found a sdh is merged above cell! removing it \n"));
+			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged above cell! removing it \n"));
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 		}
 	}
@@ -1042,7 +1043,7 @@ void ie_imp_table::buildTableStructure(void)
 //
 // This cell is vertically merged. Advance the left pointer to the position after this cell.
 //
-			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d \n",cellx));
+			UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d \n",cellx));
 			iLeft = getColNumber(pCell);
 			bSkipThis = true;
 		}
@@ -1055,10 +1056,10 @@ void ie_imp_table::buildTableStructure(void)
 			//
 			UT_sint32 newRow = curRow+1;
 			ie_imp_cell * pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
-			xxx_UT_DEBUGMSG(("SEVIOR: This cell is first vertical mereged cell class %x cellx %d \n",pNewCell,cellx));
+			UT_DEBUGMSG(("SEVIOR: This cell is first vertical mereged cell class %x cellx %d \n",pNewCell,cellx));
 			if(pNewCell)
 			{
-				xxx_UT_DEBUGMSG(("SEVIOR: this cellx %d, found cellx %d, found row %d \n",cellx,pNewCell->getCellX(),pNewCell->getRow()));
+				UT_DEBUGMSG(("SEVIOR: this cellx %d, found cellx %d, found row %d \n",cellx,pNewCell->getCellX(),pNewCell->getRow()));
 			}
 			while(pNewCell && (pNewCell->isMergedAbove()) )
 			{
@@ -1066,7 +1067,7 @@ void ie_imp_table::buildTableStructure(void)
 				pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
 			}
 			iBot = newRow;
-			xxx_UT_DEBUGMSG(("SEVIOR: This cell bottom is %d \n",iBot));
+			UT_DEBUGMSG(("SEVIOR: This cell bottom is %d \n",iBot));
 		}
 		else
 		{
@@ -1081,7 +1082,7 @@ void ie_imp_table::buildTableStructure(void)
 			pCell->setRight(iRight);
 			pCell->setTop(iTop);
 			pCell->setBot(iBot);
-			xxx_UT_DEBUGMSG(("SEVIOR: Left %d Right %d top %d bot %d \n",iLeft,iRight,iTop,iBot));
+			UT_DEBUGMSG(("SEVIOR: Left %d Right %d top %d bot %d \n",iLeft,iRight,iTop,iBot));
 		}
 //
 // Advance left attach to the right most cell.
@@ -1148,12 +1149,15 @@ void ie_imp_table::_removeAllStruxes(void)
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
 		if(pCell->getCellSDH())
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: Removing cell strux %x from PT \n",pCell->getCellSDH())); 
+			UT_DEBUGMSG(("SEVIOR: Removing cell strux %x from PT \n",pCell->getCellSDH())); 
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 		}
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Removing table strux %x from PT \n",m_tableSDH)); 
-	m_pDoc->deleteStruxNoUpdate(m_tableSDH);
+	if(m_tableSDH)
+	{
+		UT_DEBUGMSG(("SEVIOR: Removing table strux %x from PT \n",m_tableSDH)); 
+		m_pDoc->deleteStruxNoUpdate(m_tableSDH);
+	}
 }
 
 /*!
@@ -1210,7 +1214,7 @@ ie_imp_table_control::~ie_imp_table_control(void)
 			pT->writeTablePropsInDoc();
 			pT->writeAllCellPropsInDoc();
 		}			
-		xxx_UT_DEBUGMSG(("SEVIOR: Deleting table %x \n",pT));
+		UT_DEBUGMSG(("SEVIOR: Deleting table %x \n",pT));
 		delete pT;
 	}
 }
