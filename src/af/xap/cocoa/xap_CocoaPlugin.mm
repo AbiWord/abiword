@@ -51,10 +51,11 @@
 				if (Class bundleClass = [bundle principalClass])
 					if (id <NSObject, XAP_CocoaPluginDelegate> instance = [[bundleClass alloc] init])
 					{
-						if ([instance respondsToSelector:@selector(pluginCanRegisterForAbiWord:)])
+						if ([instance respondsToSelector:@selector(pluginCanRegisterForAbiWord:interfaceVersion:)])
 						{
 							[self setDelegate:instance];
-							bLoaded = [instance pluginCanRegisterForAbiWord:self];
+							unsigned long version = XAP_COCOAPLUGIN_INTERFACEVERSION;
+							bLoaded = [instance pluginCanRegisterForAbiWord:self interfaceVersion:version];
 						}
 						if (!bLoaded)
 						{

@@ -22,6 +22,8 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
+#define XAP_COCOAPLUGIN_INTERFACEVERSION 20050301 /** The current version of the CocoaPlugin API. */
+
 #import <Cocoa/Cocoa.h>
 
 @class XAP_CocoaPlugin;
@@ -172,7 +174,8 @@
  * 
  * In order for AbiWord to interact with the plug-in, the plug-in needs to implement
  * this protocol. As a minimum, the bundle's principal class must implement the
- * NSObject protocol and the XAP_CocoaPluginDelegate's pluginCanRegisterForAbiWord: method.
+ * NSObject protocol and the XAP_CocoaPluginDelegate's
+ * pluginCanRegisterForAbiWord:interfaceVersion: method.
  */
 @protocol XAP_CocoaPluginDelegate
 
@@ -187,11 +190,12 @@
  * method to be called.
  * 
  * \param AbiWord The main interface to AbiWord.
+ * \param version This is the date (YYYYMMDD) that the CocoaPlugin API was last changed.
  * 
  * \return Should return NO if for some reason the plug-in won't work with the current
  *         version of AbiWord.
  */
-- (BOOL)pluginCanRegisterForAbiWord:(XAP_CocoaPlugin *)AbiWord;
+- (BOOL)pluginCanRegisterForAbiWord:(XAP_CocoaPlugin *)AbiWord interfaceVersion:(unsigned long)version;
 
 /**
  * \return Should return YES if the plug-in is active; otherwise NO.
@@ -277,14 +281,14 @@
  * returns NO if the bundle is already loaded (to avoid duplication) or if it can't be loaded.
  * The plug-in's principal class is initialized with init and is set as the delegate, and must
  * conform therefore to the XAP_CocoaPluginDelegate protocol (or set a new delegate when
- * pluginCanRegisterForAbiWord: is called).
+ * pluginCanRegisterForAbiWord:interfaceVersion: is called).
  */
 - (BOOL)loadBundleWithPath:(NSString *)path;
 
 /**
  * If the plug-in bundle's principal class does not implement the XAP_CocoaPluginDelegate
- * protocol, then, when the pluginCanRegisterForAbiWord: method is called, it should set a new
- * delegate object which does implement the protocol.
+ * protocol, then, when the pluginCanRegisterForAbiWord:interfaceVersion: method is called, it
+ * should set a new delegate object which does implement the protocol.
  * 
  * \param delegate The new delegate (must not be nil). The delegate is not retained.
  * 
