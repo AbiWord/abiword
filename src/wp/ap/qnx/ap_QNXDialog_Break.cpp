@@ -139,20 +139,23 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 void AP_QNXDialog_Break::event_OK(void)
 {
 	// TODO save out state of radio items
-	m_answer = AP_Dialog_Break::a_OK;
-	done = 1;
+	if (!done++) {
+		m_answer = AP_Dialog_Break::a_OK;
+	}
 }
 
 void AP_QNXDialog_Break::event_Cancel(void)
 {
-	m_answer = AP_Dialog_Break::a_CANCEL;
-	done = 1;
+	if (!done++) {
+		m_answer = AP_Dialog_Break::a_CANCEL;
+	}
 }
 
 void AP_QNXDialog_Break::event_WindowDelete(void)
 {
-	m_answer = AP_Dialog_Break::a_CANCEL;	
-	done = 1;
+	if (!done++) {
+		m_answer = AP_Dialog_Break::a_CANCEL;	
+	}
 }
 
 /*****************************************************************/
@@ -340,6 +343,7 @@ AP_Dialog_Break::breakType AP_QNXDialog_Break::_getActiveRadioItem(void)
 			return ( AP_Dialog_Break::breakType)(bm[i].type);
 		}
 	}
+	m_answer = AP_Dialog_Break::a_CANCEL;
 	return AP_Dialog_Break::b_PAGE;
 }
 

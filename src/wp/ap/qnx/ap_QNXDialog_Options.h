@@ -110,20 +110,18 @@ public:
 	PtWidget_t * m_buttonCancel;
 
 protected:
-#if 0
 	// QNX call back handlers
-	static void s_ok_clicked			( PtWidget_t *, gpointer );
-	static void s_cancel_clicked		( PtWidget_t *, gpointer );
-	static void s_apply_clicked			( PtWidget_t *, gpointer );
-	static void s_delete_clicked		( PtWidget_t *, GdkEvent *, gpointer );
-	static void s_ignore_reset_clicked	( PtWidget_t *, gpointer );
-	static void s_ignore_edit_clicked	( PtWidget_t *, gpointer );
-	static void s_dict_edit_clicked		( PtWidget_t *, gpointer );
-	static void s_defaults_clicked		( PtWidget_t *, gpointer );
+	static void s_ok_clicked			( PtWidget_t *, void * );
+	static void s_cancel_clicked		( PtWidget_t *, void * );
+	static void s_apply_clicked			( PtWidget_t *, void * );
+	static void s_delete_clicked		( PtWidget_t *, void *, void * );
+	static void s_ignore_reset_clicked	( PtWidget_t *, void * );
+	static void s_ignore_edit_clicked	( PtWidget_t *, void * );
+	static void s_dict_edit_clicked		( PtWidget_t *, void * );
+	static void s_defaults_clicked		( PtWidget_t *, void * );
 
-	static void s_checkbutton_toggle	( PtWidget_t *, gpointer );
-	static gint s_menu_item_activate	( PtWidget_t *, gpointer );
-#endif
+	static void s_checkbutton_toggle	( PtWidget_t *, void * );
+	static int s_menu_item_activate	( PtWidget_t *, void * );
 
 	// callbacks can fire these events
     virtual void event_OK(void);

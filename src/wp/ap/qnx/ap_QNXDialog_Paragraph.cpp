@@ -128,9 +128,9 @@ static int s_preview_exposed(PtWidget_t * /* widget */,
 
 void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 {
-#if 0
 	m_pFrame = pFrame;
 	
+#if 0
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -187,6 +187,7 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_destroy(mainWindow);
 #endif
+	m_answer = AP_Dialog_Paragraph::a_CANCEL;
 }
 
 /*****************************************************************/
@@ -311,9 +312,9 @@ void AP_QNXDialog_Paragraph::event_PreviewAreaExposed(void)
 
 /*****************************************************************/
 
-#if 0
 PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 {
+#if 0
 	// grab the string set
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -1088,31 +1089,12 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	m_buttonTabs = buttonTabs;
 
 	return windowParagraph;
+#endif
 }
-
-#define CONNECT_SPIN_SIGNAL_CHANGED(w)				\
-        do {												\
-	        gtk_signal_connect(GTK_OBJECT(w), "changed",	\
-                GTK_SIGNAL_FUNC(s_spin_changed),			\
-                (gpointer) this);							\
-        } while (0)
-
-#define CONNECT_SPIN_SIGNAL_FOCUS_OUT(w)			\
-        do {												\
-	        gtk_signal_connect(GTK_OBJECT(w), "focus_out_event",	\
-                GTK_SIGNAL_FUNC(s_spin_focus_out),			\
-                (gpointer) this);							\
-        } while (0)
-
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
-        do {												\
-	        gtk_signal_connect(GTK_OBJECT(w), "activate",	\
-                GTK_SIGNAL_FUNC(s_menu_item_activate),		\
-                (gpointer) this);							\
-        } while (0)
 
 void AP_QNXDialog_Paragraph::_connectCallbackSignals(void)
 {
+#if 0
 	// the control buttons
 	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
 					   "clicked",
@@ -1192,10 +1174,12 @@ void AP_QNXDialog_Paragraph::_connectCallbackSignals(void)
 					   "expose_event",
 					   GTK_SIGNAL_FUNC(s_preview_exposed),
 					   (gpointer) this);
+#endif
 }
 
 void AP_QNXDialog_Paragraph::_populateWindowData(void)
 {
+#if 0
 
 	// alignment option menu 
 	UT_ASSERT(m_listAlignment);
@@ -1251,10 +1235,12 @@ void AP_QNXDialog_Paragraph::_populateWindowData(void)
 								 (_getCheckItemValue(id_CHECK_NO_HYPHENATE) == check_TRUE));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepNext)),
 								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
+#endif
 }
 
 void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
 {
+#if 0
 	// let parent sync any member variables first
 	AP_Dialog_Paragraph::_syncControls(changed, bAll);
 
@@ -1338,5 +1324,5 @@ void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = U
 			break;
 		}
 	}
-}
 #endif
+}

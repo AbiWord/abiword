@@ -149,6 +149,7 @@ void AP_QNXDialog_Options::runModal(XAP_Frame * pFrame)
 	
 	gtk_widget_destroy(mainWindow);
 #endif
+    m_answer = AP_Dialog_Options::a_CANCEL;
 }
 
 void AP_QNXDialog_Options::event_OK(void)
@@ -183,16 +184,10 @@ void AP_QNXDialog_Options::event_WindowDelete(void)
 #endif
 }
 
-#if 0
 /*****************************************************************/
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
-        do {												\
-	        gtk_signal_connect(GTK_OBJECT(w), "activate",	\
-                GTK_SIGNAL_FUNC(s_menu_item_activate),		\
-                (gpointer) this);							\
-        } while (0)
 PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 {
+#if 0
     //////////////////////////////////////////////////////////////////////
 	// BEGIN: glade stuff (interface.c)
 
@@ -570,43 +565,43 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	gtk_box_pack_start (GTK_BOX (hbox10), listViewRulerUnit, FALSE, FALSE, 0);
 	listViewRulerUnit_menu = gtk_menu_new ();
 	glade_menuitem = gtk_menu_item_new_with_label (_("inch"));		// TODO
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_IN );	
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_IN );	
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
  	
  	// glade_menuitem = gtk_menu_item_new_with_label (_("mm"));
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_CM );	
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_CM );	
  	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
  	// gtk_widget_show (glade_menuitem);
  	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
  
 	glade_menuitem = gtk_menu_item_new_with_label (_("cm"));		// TODO
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_CM );	
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_CM );	
  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
  
  	// glade_menuitem = gtk_menu_item_new_with_label (_("twips"));
  	// gtk_widget_show (glade_menuitem);
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer)  );	
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
+ 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *)  );	
  	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
  	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
  
 	glade_menuitem = gtk_menu_item_new_with_label (_("points"));	// TODO
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
-  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_PT );	
+ 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
+  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_PT );	
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
   
   	glade_menuitem = gtk_menu_item_new_with_label (_("pico"));
-  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listViewRulerUnit );
-  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (gpointer) DIM_PI  );	
+  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
+  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_PI  );	
   	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
   	gtk_widget_show (glade_menuitem);
   	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
@@ -676,7 +671,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
     gtk_signal_connect_after(GTK_OBJECT(windowOptions),
                              "delete_event",
                              GTK_SIGNAL_FUNC(s_delete_clicked),
-                             (gpointer) this);
+                             (void *) this);
 
 
     gtk_signal_connect_after(GTK_OBJECT(windowOptions),
@@ -689,43 +684,43 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
     gtk_signal_connect(GTK_OBJECT(buttonOk),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_ok_clicked),
-                       (gpointer) this);
+                       (void *) this);
     
     gtk_signal_connect(GTK_OBJECT(buttonCancel),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_cancel_clicked),
-                       (gpointer) this);
+                       (void *) this);
 
     gtk_signal_connect(GTK_OBJECT(buttonDefaults),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_defaults_clicked),
-                       (gpointer) this);
+                       (void *) this);
 
     gtk_signal_connect(GTK_OBJECT(buttonApply),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_apply_clicked),
-                       (gpointer) this);
+                       (void *) this);
 
     gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreEdit),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
-                       (gpointer) this);
+                       (void *) this);
 
     gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreReset),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_ignore_reset_clicked),
-                       (gpointer) this);
+                       (void *) this);
 
     gtk_signal_connect(GTK_OBJECT(buttonSpellDictionary),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_dict_edit_clicked),
-                       (gpointer) this);
+                       (void *) this);
 
 	// to enable/disable other controls (hide errors)
 	gtk_signal_connect(GTK_OBJECT(checkbuttonSpellCheckAsType),
 						"toggled",
                        GTK_SIGNAL_FUNC(s_checkbutton_toggle),
-                       (gpointer) this);
+                       (void *) this);
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
@@ -776,14 +771,17 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 		 * not work if 0's is stored in multiple places  */
 		UT_ASSERT( gtk_object_get_data(GTK_OBJECT(w), "tControl" ) == NULL);
 
-		gtk_object_set_data( GTK_OBJECT(w), "tControl", (gpointer) i );
+		gtk_object_set_data( GTK_OBJECT(w), "tControl", (void *) i );
 	}
 
     return windowOptions;
+#endif
+    return NULL;
 }
 
 PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 {
+#if 0
 	switch (id)
 	{
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -899,25 +897,25 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		return 0;
 		break;
 	}
+#endif
 }
 
 void AP_QNXDialog_Options::_controlEnable( tControl id, UT_Bool value )
 {
+#if 0
 	PtWidget_t *w = _lookupWidget(id);
 	UT_ASSERT( w && GTK_IS_WIDGET(w) );
 	gtk_widget_set_sensitive( w, value );
+#endif
 }
 
 
 #define DEFINE_GET_SET_BOOL(button) \
 UT_Bool     AP_QNXDialog_Options::_gather##button(void) {				\
-	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
-	return gtk_toggle_button_get_active(								\
-				GTK_TOGGLE_BUTTON(m_checkbutton##button) ); }			\
+	UT_ASSERT(m_checkbutton##button); \
+	return 0; }			\
 void        AP_QNXDialog_Options::_set##button(UT_Bool b) {	\
-	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
-	gtk_toggle_button_set_active (										\
-				GTK_TOGGLE_BUTTON(m_checkbutton##button), b ); }
+	UT_ASSERT(m_checkbutton##button); }
 
 DEFINE_GET_SET_BOOL(SpellCheckAsType);
 DEFINE_GET_SET_BOOL(SpellHideErrors);
@@ -933,8 +931,10 @@ DEFINE_GET_SET_BOOL	(ViewShowRuler);
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void) 
 {				
+#if 0
 	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
 	return (UT_Dimension)((gint)gtk_object_get_data( GTK_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )); 
+#endif
 }			
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -944,12 +944,13 @@ UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void)
 typedef struct {
 	int index;
 	int found;
-	gchar *key;
-	gpointer data;
+	char *key;
+	void *data;
 } search_data;
 
-static void search_for_value ( PtWidget_t *widget, gpointer _value )
+static void search_for_value ( PtWidget_t *widget, void * _value )
 {
+#if 0
 	search_data *value = (search_data *)_value;
 
 	if ( !GTK_IS_MENU_ITEM(widget))
@@ -963,11 +964,13 @@ static void search_for_value ( PtWidget_t *widget, gpointer _value )
 		// UT_DEBUGMSG(("search_for_value [%d]", (gint) value->data ));
 		value->found = value->index;
 	}
+#endif
 }
 
 // returns -1 if not found
-int option_menu_set_by_key ( PtWidget_t *option_menu, gpointer value, gchar *key )
+int option_menu_set_by_key ( PtWidget_t *option_menu, void * value, char *key )
 {
+#if 0
 	UT_ASSERT( option_menu && key && GTK_IS_OPTION_MENU(option_menu));
 
 	// lookup for the key with the value of dim
@@ -977,7 +980,7 @@ int option_menu_set_by_key ( PtWidget_t *option_menu, gpointer value, gchar *key
 	UT_ASSERT(menu&&GTK_IS_MENU(menu));
 
 	// iterate through all the values
-	gtk_container_forall ( GTK_CONTAINER(menu), search_for_value, (gpointer) &data );
+	gtk_container_forall ( GTK_CONTAINER(menu), search_for_value, (void *) &data );
 
 	// if we found a value that matches, then say select it
 	if ( data.found >= 0 )
@@ -989,16 +992,20 @@ int option_menu_set_by_key ( PtWidget_t *option_menu, gpointer value, gchar *key
 		UT_DEBUGMSG(("%s:%f search NOT found (searched %d indexes)\n", __FILE__, __LINE__, data.index ));
 
 	return data.found;
+#endif
+	return 0;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 void    AP_QNXDialog_Options::_setViewRulerUnits(UT_Dimension dim) 
 {	
+#if 0
 	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
 
-	int r = option_menu_set_by_key ( m_listViewRulerUnits, (gpointer)dim, WIDGET_MENU_VALUE_TAG ); 
+	int r = option_menu_set_by_key ( m_listViewRulerUnits, (void *)dim, WIDGET_MENU_VALUE_TAG ); 
 	UT_ASSERT( r != -1 );
+#endif
 }
 
 DEFINE_GET_SET_BOOL	(ViewCursorBlink);
@@ -1012,91 +1019,114 @@ DEFINE_GET_SET_BOOL	(ViewUnprintable);
 
 int AP_QNXDialog_Options::_gatherNotebookPageNum(void) 
 {				
+#if 0
 	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
 	return gtk_notebook_get_current_page( GTK_NOTEBOOK(m_notebook) ); 
+#endif
 }			
 
 void    AP_QNXDialog_Options::_setNotebookPageNum(int pn) 
 {	
+#if 0
 	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
 	gtk_notebook_set_page( GTK_NOTEBOOK(m_notebook), pn ); 
+#endif
 }
 
 /*****************************************************************/
 
 // sample callback function
-/*static*/ void AP_QNXDialog_Options::s_ok_clicked(PtWidget_t * /*widget*/, gpointer data)
+/*static*/ void AP_QNXDialog_Options::s_ok_clicked(PtWidget_t * /*widget*/, void * data)
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
 	dlg->event_OK(); 
+#endif
 }
 
-/*static*/ void AP_QNXDialog_Options::s_cancel_clicked(PtWidget_t * widget, gpointer data )
+/*static*/ void AP_QNXDialog_Options::s_cancel_clicked(PtWidget_t * widget, void * data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
 	dlg->event_Cancel(); 
+#endif
 }
 
-/*static*/ void AP_QNXDialog_Options::s_apply_clicked(PtWidget_t * widget, gpointer data )
+/*static*/ void AP_QNXDialog_Options::s_apply_clicked(PtWidget_t * widget, void * data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
 	dlg->event_Apply(); 
+#endif
 }
 
-/*static*/ void AP_QNXDialog_Options::s_delete_clicked(PtWidget_t * /* widget */, GdkEvent * /*event*/, gpointer data )
+/*static*/ void AP_QNXDialog_Options::s_delete_clicked(PtWidget_t * /* widget */, void * /*event*/, void * data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
 	UT_DEBUGMSG(("AP_QNXDialog_Options::s_delete_clicked\n"));
 	dlg->event_WindowDelete(); 
+#endif
 }
 
 
-/*static*/ void AP_QNXDialog_Options::s_ignore_reset_clicked( PtWidget_t * /* widget */, gpointer  data )
+/*static*/ void AP_QNXDialog_Options::s_ignore_reset_clicked( PtWidget_t * /* widget */, void *  data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
 	dlg->_event_IgnoreReset(); 
+#endif
 }
 
-/*static*/ void AP_QNXDialog_Options::s_ignore_edit_clicked( PtWidget_t * /* widget */, gpointer  data )
+/*static*/ void AP_QNXDialog_Options::s_ignore_edit_clicked( PtWidget_t * /* widget */, void *  data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
 	dlg->_event_IgnoreEdit(); 
+#endif
 }
 
-/*static*/ void AP_QNXDialog_Options::s_dict_edit_clicked( PtWidget_t * /* widget */, gpointer  data )
+/*static*/ void AP_QNXDialog_Options::s_dict_edit_clicked( PtWidget_t * /* widget */, void *  data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
 	dlg->_event_DictionaryEdit(); 
+#endif
 }
 
-/*static*/ void AP_QNXDialog_Options::s_defaults_clicked( PtWidget_t *widget, gpointer data )
+/*static*/ void AP_QNXDialog_Options::s_defaults_clicked( PtWidget_t *widget, void * data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
 	dlg->_event_SetDefaults(); 
+#endif
 }
 
 
 // these function will allow multiple widget to tie into the same logic
 // function (at the AP level) to enable/disable stuff
-/*static*/ void AP_QNXDialog_Options::s_checkbutton_toggle( PtWidget_t *w, gpointer data )
+/*static*/ void AP_QNXDialog_Options::s_checkbutton_toggle( PtWidget_t *w, void * data )
 { 
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
 	UT_ASSERT( w && GTK_IS_WIDGET(w));
 	int i = (int) gtk_object_get_data( GTK_OBJECT(w), "tControl" );
 	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
+#endif
 }
 
-/*static*/ gint AP_QNXDialog_Options::s_menu_item_activate(PtWidget_t * widget, gpointer data )
+/*static*/ int AP_QNXDialog_Options::s_menu_item_activate(PtWidget_t * widget, void * data )
 {
+#if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 
 	UT_ASSERT(widget && dlg);
@@ -1105,14 +1135,13 @@ void    AP_QNXDialog_Options::_setNotebookPageNum(int pn)
 												 WIDGET_MENU_OPTION_PTR);
 	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
 
-	gpointer p = gtk_object_get_data( GTK_OBJECT(widget),
+	void * p = gtk_object_get_data( GTK_OBJECT(widget),
 												WIDGET_MENU_VALUE_TAG);
 
 	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
 
 	UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
-
-	return TRUE;
+#endif
+	return UT_TRUE;
 }
 
-#endif

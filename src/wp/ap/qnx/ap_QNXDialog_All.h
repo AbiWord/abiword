@@ -45,6 +45,8 @@
 #	include "ap_QNXDialog_Replace.h"
 #	include "ap_QNXDialog_Break.h"
 #	include "ap_QNXDialog_Spell.h"
+#	include "ap_QNXDialog_Paragraph.h"
+#	include "ap_QNXDialog_Options.h"
 
 	// ... add new dialogs here ...
 
@@ -64,6 +66,8 @@
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_QNXDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_QNXDialog_Spell)
+	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)	
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)	
 
 	// ... also add new dialogs here ...
 
