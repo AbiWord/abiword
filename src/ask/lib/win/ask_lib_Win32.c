@@ -665,7 +665,7 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 	g_wndclassGraphic.hInstance = hInstance;
 	g_wndclassGraphic.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	g_wndclassGraphic.hCursor = LoadCursor(NULL, IDC_ARROW);
-	g_wndclassGraphic.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
+	g_wndclassGraphic.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
 	g_wndclassGraphic.lpszMenuName = NULL;
 	g_wndclassGraphic.lpszClassName = "AbiSetup_Graphic";
 
