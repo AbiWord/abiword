@@ -210,6 +210,8 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
 {
+	UT_DEBUGMSG(("Requested to open untitled file...\n"));
+
 	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
 	if (!pEMC)
 		return NO;
@@ -218,7 +220,13 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	if (!pEM)
 		return NO;
 
-	return (pEM->Fn(0,0) ? YES : NO);
+	bool result = pEM->Fn(0,0);
+	if (result)
+	{
+		if (m_bApplicationLaunching == YES)
+			m_bFileOpenedDuringLaunch = YES;
+	}
+	return (result ? YES : NO);
 }
 
 - (BOOL)applicationOpenFile:(NSApplication *)theApplication
