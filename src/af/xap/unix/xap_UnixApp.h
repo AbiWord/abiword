@@ -26,6 +26,7 @@
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_UnixFontManager.h"
 #include "xap_Strings.h"
+#include "xap_UnixModule.h"
 
 #include <gdk/gdk.h>
 
@@ -45,6 +46,7 @@ public:
 	XAP_UnixApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_UnixApp(void);
 
+	virtual inline XAP_Module * createModule (void) {return new XAP_UnixModule ();}
 	virtual bool							initialize(void);
 	virtual XAP_Frame * 					newFrame(void) = 0;
 	virtual void							reallyExit(void);

@@ -25,7 +25,7 @@
 #include "xap_QNXDialogFactory.h"
 #include "xap_QNX_TB_CFactory.h"
 #include "xap_Strings.h"
-
+#include "xap_QNXModule.h"
 
 class XAP_Args;
 class AP_QNXToolbar_Icons;
@@ -43,6 +43,7 @@ public:
 	XAP_QNXApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_QNXApp(void);
 
+	virtual inline XAP_Module * createModule (void) {return new XAP_QNXModule();}
 	virtual bool							initialize(void);
 	virtual XAP_Frame * 					newFrame(void) = 0;
 	virtual void							reallyExit(void);

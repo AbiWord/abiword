@@ -44,6 +44,7 @@ class XAP_Dictionary;
 class PD_DocumentRange;
 class AV_View;
 class XAP_EncodingManager;
+class XAP_Module;
 
 /*****************************************************************
 ******************************************************************
@@ -137,6 +138,8 @@ public:
 													UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 		virtual void 					parseAndSetGeometry(const char *string);
 
+
+		virtual XAP_Module * createModule (void) = 0;
 
 protected:
 	void				  _setAbiSuiteLibDir(const char * sz);

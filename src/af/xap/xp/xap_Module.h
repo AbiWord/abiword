@@ -29,11 +29,11 @@ class XAP_Module {
 
  protected:
   // protected contstructor
-  XAP_Module ();
+  XAP_Module () {}
 
  public:
    // Delete (and unload) the module
-   virtual ~XAP_Module (void) = 0;
+  virtual ~XAP_Module (void) {}
 
    // load this module into memory. true on success
    virtual bool load (const char * name) = 0;
