@@ -47,6 +47,7 @@
 #   include "xap_CocoaDlg_Encoding.h"
 #	include "xap_CocoaDlg_Password.h"
 #	include "xap_CocoaDlg_Image.h"
+#   include "xap_CocoaDlg_HTMLOptions.h"
 
 #	include "ap_CocoaDialog_Replace.h"
 #	include "ap_CocoaDialog_Break.h"
@@ -98,6 +99,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_CocoaDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_CocoaDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,	XAP_CocoaDialog_HTMLOptions)
 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_CocoaDialog_About)
 
