@@ -26,8 +26,8 @@
 /****************************************************************
 *****************************************************************
 ** EditEventMapper, EditBinding, and EditMethod form the basis for
-** all editing operations.  All keystrokes, mouse events, menu
-** picks, and toolbar picks are directed thru here.  These are
+** all editing operations.  All keystrokes and mouse events
+** are directed thru here.  These are
 ** defined as classes outside of the document so that we may switch
 ** between different implementations as we want.
 **
@@ -76,8 +76,7 @@
 ** status bar when the menu item is highlighted).
 **
 ** The EditEventMapper has seperate event methods for keystrokes,
-** mouse operations, menu (both menu-bar and pop-up) selections,
-** and toolbar selections.
+** and mouse operations.
 **
 ** Keystroke Events:
 **
@@ -101,6 +100,11 @@
 **   mouse button is pressed during a drag (while the first
 **   mouse button is still down).
 **
+**   We now support mouse events for button-up-motion events.
+**   (These are primarily used for context cursors.)
+**
+**   We now suport the notion of mouse contexts.
+**
 **   TODO Question: If another event (keystroke, mouse click)
 **   TODO           occurs during a drag, do we:
 **   TODO           (1) end the drag with or without issuing an
@@ -111,53 +115,10 @@
 **   TODO           drag active until the actual release, or
 **   TODO           (3) ??
 **
-** Menu Events:
-**   We allow menus (both the menu-bar and pop-ups) to register
-**   the EditMethods to be invoked when menu item is selected.
-**   We allow menus to be registered by name.  For cascaded
-**   (ie nested (ie pull-right)) menus we allow a hierarchy
-**   of names.  Since menu selections hit in a single event
-**   (rather than a sequence of selections in the case of a
-**   cascaded menu), we will use the menu "pathname" to generate
-**   the complete mapping in a single call (or return bogus);
-**   that is, it would be an error for a menu selection to
-**   return an incomplete status.
-**
-**   We use a standard (unix) pathname model for the menu
-**   naming.  For example:
-**     result = pEEM->Menu("MenuBar/File/Open",&pEM);
-**     result = pEEM->Menu("Popup-Foo/xyzzy/Open",&pEM);
-**
-**   We allow a menu event to complete an incomplete sequence
-**   of events -- just as any other type of event, an incomming
-**   menu event is interpreted in the context of the inprogress
-**   sequence.  For example, the user could press Control-x and
-**   then hit "MenuBar/File/Open" (assuming that Control-x was a
-**   defined prefix key).
-**
-** Toolbar Events:
-**   Toolbars operate in much the same fashion as menus in that
-**   we only receive a single selection.  Although cascaded
-**   toolbars are not common, we will use the same naming scheme
-**   to allow multiple toolbars to maintain their own namespaces.
-**   For example, the "Find" button on the "Normal" toolbar may
-**   map to a different EditMethod than the "Find" button on the
-**   "Advanced" toolbar.
-**     result = pEEM->Toolbar("Normal/Find",&pEM);
-**
-**   Like with menus, we allow a toolbar event to complete an
-**   incomplete sequence.  For example, Control-x and then "Normal/Find".
 **
 ** TODO Question: Should Menus and Toolbars recognize keyboard
 ** TODO           modifiers (control, shift, etc) like keystroke
 ** TODO           and mouse events ??
-**
-** TODO Issue: We should use the EditEventMapper mechanism to
-** TODO        handle all keystrokes and not use the GUI native
-** TODO        menu keys (accelerators) in order to allow us to map
-** TODO        Alt-F to NextWord() rather to raise the File menu.  We
-** TODO        should provide a set of Win32 compatibility bindings
-** TODO        to map Alt-F to something like RaiseMenu("MenuBar/File")
 **
 ** TODO Question: Should we distinguish between left- and right-versions
 ** TODO           of SHFIT, CONTROL, ALT, etc ??
@@ -185,8 +146,6 @@ public:
 
 	EV_EditEventMapperResult Keystroke(EV_EditBits eb, EV_EditMethod ** ppEM);
 	EV_EditEventMapperResult Mouse(EV_EditBits eb, EV_EditMethod ** ppEM);
-	EV_EditEventMapperResult Menu(const char * szName, EV_EditMethod ** ppEM);
-	EV_EditEventMapperResult Toolbar(const char * szName, EV_EditMethod ** ppEM);
 
 	const char *			getShortcutFor(const EV_EditMethod * pEM) const;
 

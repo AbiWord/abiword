@@ -145,7 +145,10 @@
 ** that the shift is implied in the latter set.
 **
 ** Note: If the user presses ALT and releases it, focus moves
-** to the menu bar.  We don't have control of it.
+** to the menu bar.  We don't have control of it.  This should
+** be considered a feature because it lets the user have access
+** to the menu bar from the keyboard even when most of the typical
+** menu accelerators are bound -- as is the case in EMACS mode.
 **
 ******************************************************************
 *****************************************************************/

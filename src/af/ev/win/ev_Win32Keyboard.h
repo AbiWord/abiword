@@ -26,10 +26,6 @@
 #include "ev_Keyboard.h"
 #include "ev_EditBits.h"
 
-// TODO should pView be passed in on each method or
-// TODO should we pass it to the ev_keyboard base class on the
-// TODO constructor ??
-
 class AV_View;
 
 class ev_Win32Keyboard : public EV_Keyboard

@@ -26,8 +26,6 @@
 #include "ev_Mouse.h"
 #include "ev_EditBits.h"
 
-// TODO should pView be passed in on each method or
-// TODO should we pass it into EV_Mouse on the constructor ??
 // TODO EV_<platform>Mouse and EV_EditEventMapper are
 // TODO unique for each document, although the EditBindings
 // TODO may be global.  (ev_<platform>Mouse could be global
