@@ -324,12 +324,14 @@ AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * app)
 	: XAP_UNIXBASEFRAME(app)
 {
 	// TODO
+	m_pData = NULL;
 }
 
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
 	: XAP_UNIXBASEFRAME(static_cast<XAP_UNIXBASEFRAME *>(f))
 {
 	// TODO
+	m_pData = NULL;
 }
 
 AP_UnixFrame::~AP_UnixFrame(void)

@@ -62,23 +62,4 @@ protected:
 	UT_Vector			m_vecMenuWidgets;
 };
 
-/*****************************************************************/
-
-class EV_UnixMenuPopup : public EV_UnixMenu
-{
-public:
-	EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
-					 XAP_UnixFrame * pUnixFrame,
-					 const char * szMenuLayoutName,
-					 const char * szMenuLabelSetName);
-	virtual ~EV_UnixMenuPopup(void);
-
-	UT_Bool				synthesizeMenuPopup(void);
-	virtual UT_Bool		refreshMenu(AV_View * pView);
-	virtual GtkWidget *	getMenuHandle(void) const;
-
-protected:
-	GtkWidget *			m_wMenuPopup;
-};
-
 #endif /* EV_UNIXMENU_H */

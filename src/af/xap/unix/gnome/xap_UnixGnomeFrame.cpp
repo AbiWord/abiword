@@ -30,6 +30,7 @@
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
 #include "ev_UnixGnomeMenuBar.h"
+#include "ev_UnixGnomeMenuPopup.h"
 #include "ev_UnixGnomeToolbar.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
@@ -181,7 +182,6 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	gnome_app_set_contents(GNOME_APP(m_wTopLevelWindow), m_wVBox);
 
 	// synthesize a menu from the info in our base class.
-
 	m_pUnixMenu = new EV_UnixGnomeMenuBar(m_pUnixApp,this,
 										  m_szMenuLayoutName,
 										  m_szMenuLabelSetName);
@@ -272,51 +272,40 @@ UT_Bool XAP_UnixGnomeFrame::openURL(const char * szURL)
 
 /*****************************************************************/
 
-//  UT_Bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
-//  												UT_sint32 x, UT_sint32 y)
-//  {
-//  	UT_Bool bResult = UT_TRUE;
+UT_Bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
+ 												UT_sint32 x, UT_sint32 y)
+{
+ 	UT_Bool bResult = UT_TRUE;
+ 	UT_ASSERT(!m_pUnixPopup);
+	
+	EV_UnixGnomeMenuPopup *pUnixPopup = new EV_UnixGnomeMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);
 
-//  	UT_ASSERT(!m_pUnixPopup);
+ 	if (pUnixPopup && pUnixPopup->synthesizeMenuPopup())
+ 	{
+		fflush (stdout);
+ 		GtkWidget * w = gtk_grab_get_current();
+ 		if (w)
+ 		{
+ 			//UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
+ 			gtk_grab_remove(w);
+ 		}
+		
+		// the popup will steal the mouse and so we won't get the
+ 		// button_release_event and we won't know to release our
+ 		// grab.  so let's do it here.  (when raised from a keyboard
+ 		// context menu, we may not have a grab, but that should be ok.
+		gnome_popup_menu_do_popup_modal (GTK_WIDGET (pUnixPopup->getMenuHandle ()),
+										 NULL, NULL, NULL, NULL);
+ 	}
 
-//  	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);
-//  	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
-//  	{
-//  		// the popup will steal the mouse and so we won't get the
-//  		// button_release_event and we won't know to release our
-//  		// grab.  so let's do it here.  (when raised from a keyboard
-//  		// context menu, we may not have a grab, but that should be ok.
-
-//  		GtkWidget * w = gtk_grab_get_current();
-//  		if (w)
-//  		{
-//  			//UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
-//  			gtk_grab_remove(w);
-//  		}
-
-//  		translateDocumentToScreen(x,y);
-
-//  		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
-//  		UT_Point pt;
-//  		pt.x = x;
-//  		pt.y = y;
-//  		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
-//  					   s_gtkMenuPositionFunc, &pt, 3, 0);
-
-//  		// We run this menu synchronously, since GTK doesn't.
-//  		// Popup menus have a special "unmap" function to call
-//  		// gtk_main_quit() when they're done.
-//  		gtk_main();
-//  	}
-
-//  	DELETEP(m_pUnixPopup);
-//  	return bResult;
-//  }
+ 	DELETEP(pUnixPopup);
+ 	return bResult;
+}
 
 
 EV_Toolbar * XAP_UnixGnomeFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
-					const char *szLayout,
-					const char *szLanguage)
+											 const char *szLayout,
+											 const char *szLanguage)
 {
 	return (new EV_UnixGnomeToolbar(static_cast<XAP_UnixGnomeApp *>(app), 
 									static_cast<XAP_UnixGnomeFrame *>(frame), 

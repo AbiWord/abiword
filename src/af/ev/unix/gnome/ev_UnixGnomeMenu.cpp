@@ -35,6 +35,7 @@
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_UnixGnomeMenuBar.h"
+#include "ev_UnixGnomeMenuPopup.h"
 #include "xap_UnixGnomeApp.h"
 #include "xap_UnixGnomeFrame.h"
 #include "ev_UnixKeyboard.h"
@@ -249,13 +250,14 @@ void EV_UnixGnomeMenu::s_onDestroyMenu(GtkMenuItem * menuItem, gpointer data)
 // GTK wants to run popup menus asynchronously, but we want synchronous,
 // so we need to do a gtk_main_quit() on our own to show we're done
 // with our modal work.
+#if 0
 void EV_UnixGnomeMenu::s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data)
 {
 	// do the grunt work
 	s_onDestroyMenu(menuItem, callback_data);
 	gtk_main_quit();
 };
-
+#endif
 
 void EV_UnixGnomeMenu::_convertString2Accel(const char *str, guint &accel_key, GdkModifierType &ac_mods)
 {
@@ -345,7 +347,6 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 				retval[i].hint = g_strdup (tooltip);
 				retval[i].moreinfo = menuEvent;
 				retval[i].user_data = g_malloc (sizeof(__Aux));
-				UT_ASSERT (this);
 				((__Aux *) retval[i].user_data)->me = this;
 				((__Aux *) retval[i].user_data)->id = id;
 			}
@@ -375,7 +376,6 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 				retval[i].label = g_strdup (buf);
 				
 				retval[i].user_data = g_malloc (sizeof(__Aux));
-				UT_ASSERT (this);
 				((__Aux *) retval[i].user_data)->me = this;
 				((__Aux *) retval[i].user_data)->id = id;
 				retval[i].moreinfo = _convertMenu2UIInfo (++pos);
@@ -396,7 +396,10 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 			break;
 		}
 		case EV_MLF_BeginPopupMenu:
+			i--;
+			break;
 		case EV_MLF_EndPopupMenu:
+			endofsubmenu = UT_TRUE;
 			break;
 			
 		default:
@@ -520,16 +523,11 @@ UT_Bool EV_UnixGnomeMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	int i = 0;
 	GtkWidget *app;
 
-	UT_ASSERT (this);
 	m_pUIInfo = _convertMenu2UIInfo (i);
-	UT_ASSERT (this);
 	app = m_pUnixFrame->getTopLevelWindow ();
-	UT_ASSERT (this);
 	gnome_app_fill_menu (GTK_MENU_SHELL (wMenuRoot), m_pUIInfo,
 						 GNOME_APP (app)->accel_group, TRUE, 0);
-	UT_ASSERT (this);
 	_attachWidgetsAndSignals (wMenuRoot, m_pUIInfo);
-	UT_ASSERT (this);
 
 	return UT_TRUE;
 }
@@ -553,7 +551,6 @@ void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIIn
 			if ((uiinfo->type == GNOME_APP_UI_ITEM) ||
 			    (uiinfo->type == GNOME_APP_UI_TOGGLEITEM)) {
 				// connect callbacks
-				UT_ASSERT (this);
 				gtk_signal_connect(GTK_OBJECT(uiinfo->widget), "select",
 								   GTK_SIGNAL_FUNC(s_onMenuItemSelect), uiinfo->user_data);
 				gtk_signal_connect(GTK_OBJECT(uiinfo->widget), "deselect",
@@ -567,7 +564,6 @@ void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIIn
 		}
 
 		if (uiinfo->type == GNOME_APP_UI_SUBTREE) {
-			UT_ASSERT (this);
 			gtk_signal_connect(GTK_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "map",
 							   GTK_SIGNAL_FUNC(s_onInitMenu), uiinfo->user_data);
 			gtk_signal_connect(GTK_OBJECT(((GnomeUIInfo *) uiinfo->moreinfo)->widget), "unmap",
@@ -628,10 +624,36 @@ UT_Bool EV_UnixGnomeMenuBar::synthesizeMenuBar(void)
 	return UT_TRUE;
 }
 
-UT_Bool	EV_UnixGnomeMenuBar::refreshMenu(AV_View * pView)
+UT_Bool EV_UnixGnomeMenuBar::refreshMenu(AV_View * pView)
 {
 	if (pView)
-		return _refreshMenu(pView,m_wMenuBar);
+		return _refreshMenu(pView, m_wMenuBar);
+
+	return UT_TRUE;
+}
+
+/***********************************************************************/
+
+EV_UnixGnomeMenuPopup::EV_UnixGnomeMenuPopup(XAP_UnixApp * pUnixApp,
+											 XAP_UnixFrame * pUnixFrame,
+											 const char * szMenuLayoutName,
+											 const char * szMenuLabelSetName)
+	: EV_UnixMenuPopup(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+{
+	m_wMenuPopup = NULL;
+}
+
+EV_UnixGnomeMenuPopup::~EV_UnixGnomeMenuPopup(void)
+{
+	if (m_wMenuPopup != NULL)
+		gtk_widget_destroy (m_wMenuPopup);
+}
+
+UT_Bool EV_UnixGnomeMenuPopup::synthesizeMenuPopup(void)
+{
+	m_wMenuPopup = gtk_menu_new();
+
+	synthesizeMenu(m_wMenuPopup);
 
 	return UT_TRUE;
 }

@@ -143,7 +143,6 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
   			}
  
  	// Do a quick and dirty find for "--nosplash"
- 	UT_Bool bShowSplash = UT_TRUE;
  	for (int k = 1; k < Args.m_argc; k++)
  		if (*Args.m_argv[k] == '-')
  			if ((UT_stricmp(Args.m_argv[k],"--nosplash") == 0) ||

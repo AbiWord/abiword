@@ -53,10 +53,11 @@ public:
 	virtual ~XAP_UnixGnomeFrame(void);
 
 	virtual UT_Bool				openURL(const char * szURL);
+	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
+													UT_sint32 x, UT_sint32 y);
 
 protected:
 	virtual void				_createTopLevelWindow(void);
-
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
   	enum

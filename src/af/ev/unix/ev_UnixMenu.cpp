@@ -31,6 +31,7 @@
 #include "xap_Types.h"
 #include "ev_UnixMenu.h"
 #include "ev_UnixMenuBar.h"
+#include "ev_UnixMenuPopup.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 #include "ev_UnixKeyboard.h"
@@ -1098,7 +1099,7 @@ EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 								   XAP_UnixFrame * pUnixFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
-	: EV_UnixMenu(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+	: EV_UNIXBASEMENU(pUnixApp,pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
 {
 }
 

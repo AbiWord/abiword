@@ -17,35 +17,39 @@
  * 02111-1307, USA.
  */
 
-#ifndef EV_UNIXGNOMEMENUBAR_H
-#define EV_UNIXGNOMEMENUBAR_H
+#ifndef EV_UNIXMENUPOPUP_H
+#define EV_UNIXMENUPOPUP_H
 
-#include "ev_UnixMenuBar.h"
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "xap_Types.h"
-#include "ev_Menu.h"
+#include "ev_UnixMenu.h"
 
+#ifdef HAVE_GNOME
+#include "gnome/ev_UnixGnomeMenu.h"
+#define EV_UNIXBASEMENU EV_UnixGnomeMenu
+#else
+#define EV_UNIXBASEMENU EV_UnixMenu
+#endif
+
+class AV_View;
 class XAP_UnixApp;
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class EV_UnixGnomeMenuBar : public EV_UnixMenuBar
+class EV_UnixMenuPopup : public EV_UNIXBASEMENU
 {
 public:
-	EV_UnixGnomeMenuBar(XAP_UnixApp * pUnixApp,
-						XAP_UnixFrame * pUnixFrame,
-						const char * szMenuLayoutName,
-						const char * szMenuLabelSetName);
-	virtual ~EV_UnixGnomeMenuBar(void);
+	EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
+					 XAP_UnixFrame * pUnixFrame,
+					 const char * szMenuLayoutName,
+					 const char * szMenuLabelSetName);
+	virtual ~EV_UnixMenuPopup(void);
 
-	virtual UT_Bool     synthesizeMenuBar(void);
-    UT_Bool             refreshMenu(AV_View * pView);
+	virtual UT_Bool		synthesizeMenuPopup(void);
+	virtual UT_Bool		refreshMenu(AV_View * pView);
+	virtual GtkWidget *	getMenuHandle(void) const;
 
 protected:
-	GtkWidget *			m_wMenuBar;
-	GtkWidget * 		m_wHandleBox;
+	GtkWidget *			m_wMenuPopup;
 };
 
-#endif /* EV_UNIXGNOMEMENUBAR_H */
+#endif /* EV_UNIXMENUPOPUP_H */

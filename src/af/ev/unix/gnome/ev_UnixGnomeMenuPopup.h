@@ -17,35 +17,28 @@
  * 02111-1307, USA.
  */
 
-#ifndef EV_UNIXGNOMEMENUBAR_H
-#define EV_UNIXGNOMEMENUBAR_H
+#ifndef EV_UNIXGNOMEMENUPOPUP_H
+#define EV_UNIXGNOMEMENUPOPUP_H
 
-#include "ev_UnixMenuBar.h"
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "xap_Types.h"
-#include "ev_Menu.h"
+#include "ev_UnixGnomeMenu.h"
+#include "ev_UnixMenuPopup.h"
 
+class AV_View;
 class XAP_UnixApp;
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class EV_UnixGnomeMenuBar : public EV_UnixMenuBar
+class EV_UnixGnomeMenuPopup : public EV_UnixMenuPopup
 {
 public:
-	EV_UnixGnomeMenuBar(XAP_UnixApp * pUnixApp,
-						XAP_UnixFrame * pUnixFrame,
-						const char * szMenuLayoutName,
-						const char * szMenuLabelSetName);
-	virtual ~EV_UnixGnomeMenuBar(void);
+	EV_UnixGnomeMenuPopup(XAP_UnixApp * pUnixApp,
+						  XAP_UnixFrame * pUnixFrame,
+						  const char * szMenuLayoutName,
+						  const char * szMenuLabelSetName);
+	virtual ~EV_UnixGnomeMenuPopup(void);
 
-	virtual UT_Bool     synthesizeMenuBar(void);
-    UT_Bool             refreshMenu(AV_View * pView);
-
-protected:
-	GtkWidget *			m_wMenuBar;
-	GtkWidget * 		m_wHandleBox;
+	UT_Bool				synthesizeMenuPopup(void);
 };
 
-#endif /* EV_UNIXGNOMEMENUBAR_H */
+#endif /* EV_UNIXGNOMEMENUPOPUP_H */

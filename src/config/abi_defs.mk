@@ -353,8 +353,8 @@ endif
 
 ifeq ($(ABI_NATIVE),unix)
 ifdef ABI_OPT_GNOME
-GNOME_CFLAGS	:=	$(shell $(GNOME_CONFIG) --cflags gnorba gnomeui)
-GNOME_LIBS	:=	$(shell $(GNOME_CONFIG) --libs gnorba gnomeui)
+GNOME_CFLAGS	:=	$(shell $(GNOME_CONFIG) --cflags gnomeui)
+GNOME_LIBS	:=	$(shell $(GNOME_CONFIG) --libs gnomeui)
 CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
 EXTRA_LIBS	+=	$(GNOME_LIBS)
 ABI_GNOME_DIR		= gnome

@@ -59,7 +59,7 @@ protected:
 	static void         s_onMenuItemDeselect(GtkWidget * widget, gpointer data);
 	static void         s_onInitMenu(GtkMenuItem * menuItem, gpointer data);
 	static void         s_onDestroyMenu(GtkMenuItem * menuItem, gpointer data);
-	static void         s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data);
+	//	static void         s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data);
 
 	GnomeUIInfo *       m_pUIInfo;
 };

@@ -30,6 +30,7 @@
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
 #include "ev_UnixMenuBar.h"
+#include "ev_UnixMenuPopup.h"
 #include "ev_UnixToolbar.h"
 #include "ev_EditMethod.h"
 #include "xav_View.h"
