@@ -32,7 +32,7 @@
 class PP_Revision
 {
   public:
-	PP_Revision():m_bDirty(true){};
+	PP_Revision():m_bDirty(true),m_iSuperfluous(0){};
 	PP_Revision(const XML_Char * r);
 	/*~PP_Revision();*/
 
@@ -45,6 +45,7 @@ class PP_Revision
 
 	UT_sint32        getGreatestLesserOrEqualRevision(UT_uint32 id) const;
 	bool             isVisible(UT_uint32 id) const;
+	bool             isFragmentSuperfluous() const;
 
 	const XML_Char * getXMLstring();
 
@@ -57,7 +58,7 @@ class PP_Revision
 	UT_String m_sXMLstring;
 	bool      m_bDirty; // indicates whether m_sXMLstring corresponds
 						// to current state of the instance
-
+	UT_sint32 m_iSuperfluous;
 };
 
 #endif // #ifndef PT_REVISION_H

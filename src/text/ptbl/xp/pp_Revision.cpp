@@ -52,6 +52,7 @@ void PP_Revision::_setVector(const XML_Char *r)
 
 	FREEP(s);
 	m_bDirty = true;
+	m_iSuperfluous = 0;
 }
 
 
@@ -115,8 +116,8 @@ bool PP_Revision::isVisible(UT_uint32 id) const
 	return (getGreatestLesserOrEqualRevision(id) >= 0);
 }
 
-/*! adds id to the revision vector, ignoring identical ids, but
-    changing sign when needed
+/*! adds id to the revision vector handling the special cases where id
+    is already present in this attribute.
 */
 void PP_Revision::addRevisionId(UT_sint32 id)
 {
@@ -126,11 +127,43 @@ void PP_Revision::addRevisionId(UT_sint32 id)
 
 		if(id == -r)
 		{
-			// we are trying to add revision id already in the vector
-			// but with a different sign -- this is probably legal,
-			// i.e., the editor just changed his mind
+			// we are trying to add a revision id already in the vector
+			// but with a different sign -- this is legal, i.e., the
+			// editor just changed his mind
+			// we need to make distinction between changing - to +
+			// and changing + to -
+
+			// in all cases the existing id must go
 			m_vRev.deleteNthItem(i);
-			m_vRev.addItem((void*)id);
+
+			if(id <  r)
+			{
+				// the editor originally inserted a new segment of
+				// text but now wants it out; we cannot just remove
+				// the id, because the original operation resulted in
+				// a new fragment in the piece table; rather we will
+				// mark this with '-' and will remember the superfluous
+				// id, so if queried later we can work out if this
+				// whole fragment should in fact go
+				m_iSuperfluous = abs(id);
+				m_vRev.addItem((void*)id);
+			}
+			else
+			{
+				// in the opposite case, when the editor originally marked the
+				// text for removal but now wants it back, we just remove
+				// the attribute (which we have done)
+				// this also happens when we have been left with a
+				// superfluous negative id in the vector; if that is
+				// the case we need to reset m_iSuperfluous, since
+				// this fragment can no more be superfluous
+				if(m_iSuperfluous == id)
+				{
+					// the editor has had another change of heart
+					m_iSuperfluous  = 0;
+				}
+			}
+
 			m_bDirty = true;
 			return;
 		}
@@ -229,3 +262,22 @@ const XML_Char * PP_Revision::getXMLstring()
 
 	return (const XML_Char*) m_sXMLstring.c_str();
 }
+
+/*! returns true if the fragment marked by this attribute is
+    superfluous, i.e, it was created in the process of the present
+    revision but the editor has later changed his/her mind and decided
+    it should go back
+*/
+bool PP_Revision::isFragmentSuperfluous() const
+{
+	// the fragment is superfluous if the superfluous flag is set
+	// and the fragment belongs only to a single revision level
+	if(m_iSuperfluous != 0 && m_vRev.getItemCount() == 1)
+	{
+		UT_ASSERT((UT_sint32)m_vRev.getNthItem(0) == -m_iSuperfluous);
+		return true;
+	}
+	else
+		return false;
+}
+
