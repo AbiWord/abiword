@@ -25,25 +25,20 @@
 
 AP_Dialog_PageSetup::AP_Dialog_PageSetup (XAP_DialogFactory * pDlgFactory,
 					  XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id)
+:	XAP_Dialog_NonPersistent(pDlgFactory,id),
+	m_answer(a_OK),
+	m_PageSize(fp_PageSize::Letter),
+	m_PageUnits(fp_PageSize::inch),
+	m_PageOrientation(PORTRAIT),
+	m_PageScale(100),
+	m_MarginUnits(fp_PageSize::inch),
+	m_MarginTop(1.0f),
+	m_MarginBottom(1.0f),
+	m_MarginLeft(1.0f),
+	m_MarginRight(1.0f),
+	m_MarginHeader(0.0f),
+	m_MarginFooter(0.0f)
 { 
-	fp_PageSize ps(fp_PageSize::Letter);
-
-	m_PageSize        = fp_PageSize::Letter;
-	m_PageWidth       = (float) ps.Width (fp_PageSize::inch);
-	m_PageHeight      = (float) ps.Height (fp_PageSize::inch);
-	m_PageUnits       = DIM_IN;
-	m_PageOrientation = PORTRAIT;
-	m_PageScale       = 100;
-	m_MarginUnits     = DIM_IN;
-	m_MarginTop       = 1.0;
-	m_MarginBottom    = 1.0;
-	m_MarginLeft      = 1.0;
-	m_MarginRight     = 1.0;
-	m_MarginHeader    = 0.0;
-	m_MarginFooter    = 0.0;
-
-	m_answer          = a_OK;
 }
 
 AP_Dialog_PageSetup::~AP_Dialog_PageSetup(void)

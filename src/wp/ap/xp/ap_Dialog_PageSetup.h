@@ -30,7 +30,7 @@ class AP_Dialog_PageSetup : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_PageSetup(XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_Dialog_PageSetup(void);
+	virtual ~AP_Dialog_PageSetup() = 0;
 
 	virtual void runModal(XAP_Frame *pFrame) = 0;
 
@@ -38,21 +38,20 @@ public:
 	typedef enum { PORTRAIT, LANDSCAPE } Orientation;
 
 	// declare JavaBean-like accessors for our properties
+	// TMN: I'm not sure about the virtuality of these accessors/mutators
 #define SET_GATHER(a, u)  virtual inline u get##a(void) const {return m_##a;} \
 			  virtual inline void set##a(u p##a) {m_##a = p##a;}
-	SET_GATHER(PageSize,		fp_PageSize::Predefined);
-	SET_GATHER(PageWidth,		float);
-	SET_GATHER(PageHeight,		float);
-	SET_GATHER(PageUnits,		UT_Dimension);
-	SET_GATHER(PageOrientation,     Orientation);
+	SET_GATHER(PageSize,		fp_PageSize);
+	SET_GATHER(PageUnits,		fp_PageSize::Unit);
+	SET_GATHER(PageOrientation,	Orientation);
 	SET_GATHER(PageScale,		int);
-	SET_GATHER(MarginUnits,		UT_Dimension);
+	SET_GATHER(MarginUnits,		fp_PageSize::Unit);
 	SET_GATHER(MarginTop,		float);
 	SET_GATHER(MarginBottom,	float);
 	SET_GATHER(MarginLeft,		float);
 	SET_GATHER(MarginRight,		float);
 	SET_GATHER(MarginHeader,	float);
-	SET_GATHER(MarginFooter,        float);
+	SET_GATHER(MarginFooter,	float);
 #undef SET_GATHER
 
 	virtual inline tAnswer getAnswer (void) const {return m_answer;}
@@ -64,19 +63,17 @@ public:
  private:
 	AP_Dialog_PageSetup::tAnswer m_answer;
 
-	fp_PageSize::Predefined   m_PageSize;
-	float                     m_PageWidth;
-	float                     m_PageHeight;
-	UT_Dimension              m_PageUnits;
-	Orientation               m_PageOrientation;
-	int                       m_PageScale;
-	UT_Dimension              m_MarginUnits;
-	float                     m_MarginTop;
-	float                     m_MarginBottom;
-	float                     m_MarginLeft;
-	float                     m_MarginRight;
-	float                     m_MarginHeader;
-	float                     m_MarginFooter;	
+	fp_PageSize             m_PageSize;
+	fp_PageSize::Unit       m_PageUnits;
+	Orientation             m_PageOrientation;
+	int                     m_PageScale;
+	fp_PageSize::Unit       m_MarginUnits;
+	float                   m_MarginTop;
+	float                   m_MarginBottom;
+	float                   m_MarginLeft;
+	float                   m_MarginRight;
+	float                   m_MarginHeader;
+	float                   m_MarginFooter;	
 };
 
 #endif // AP_Dialog_PageSetup_H
