@@ -118,13 +118,14 @@ tar xf ${INSTALL_DATA_FILE}
 # If we're on Solaris, run makepsres (for DPS X servers)
 ########################################################################
 
-OS_NAME=`uname -s`
-OS_RELEASE_MAJOR=`uname -r | sed -e "s/\..*//")
+#OS_NAME=`uname -s`
+#OS_RELEASE_MAJOR=`uname -r | sed -e "s/\..*//"`
 
-if [ OS_NAME == "SunOS" && OS_RELEASE_MAJOR == "5" ]
-    cd ${INSTALL_BASE}/fonts
-    makepsres 1>/dev/null 2>/dev/null
-endif
+#if [ OS_NAME == "SunOS" && OS_RELEASE_MAJOR == "5" ]
+#then
+#    cd ${INSTALL_BASE}/fonts
+#    makepsres 1>/dev/null 2>/dev/null
+#endif
 
 ########################################################################
 # Dynamically construct a wrapper for AbiSuite binaries
@@ -132,39 +133,48 @@ endif
 
 # do AbiWord
 
-cat > ${INSTALL_BASE}/bin/AbiWord <<EOF
+cat >${INSTALL_BASE}/bin/AbiWord<<EOF
 #!/bin/sh
-# change this if you move the AbiSuite tree
+
+# AbiWord wrapper script.
+b
+# Change this if you move the AbiSuite tree.
 ABISUITE_HOME=${INSTALL_BASE}
-# change this if you move your fonts
-ABISUITE_FONTHOME=\$\(ABISUITE_HOME\)/fonts
-# set font path
-if [ -d \$\(ABISUITE_FONT_HOME\) ]
+
+# Change this if you move your fonts
+ABISUITE_FONTHOME=\$ABISUITE_HOME/fonts
+
+# Set run-time font path
+if [ -d \$ABISUITE_FONT_HOME ]
 then
-    xset fp+ \$\(ABISUITE_FONT_HOME\)
+    xset fp+ \$ABISUITE_FONT_HOME
 endif
-# which binary to run?
-if [ -f \$\(ABISUITE_HOME\)/bin/AbiWord_d ]
+
+# Figure out which binary to run
+if [ -f \$ABISUITE_HOME/bin/AbiWord_d ]
 then
-    \$\(ABISUITE_HOME\)/bin/AbiWord_d
-elif [ -f \$\(ABISUITE_HOME\)/bin/AbiWord_s ]
+    \$ABISUITE_HOME/bin/AbiWord_d
+elif [ -f \$ABISUITE_HOME/bin/AbiWord_s ]
 then
-    \$\(ABISUITE_HOME\)/bin/AbiWord_s
+    \$ABISUITE_HOME/bin/AbiWord_s
 else
     echo "Can't find AbiWord executables:"
-    echo "    \$\(ABISUITE_HOME\)/bin/AbiWord_d"
-    echo "    \$\(ABISUITE_HOME\)/bin/AbiWord_s"
+    echo "    \$ABISUITE_HOME/bin/AbiWord_d"
+    echo "    \$ABISUITE_HOME/bin/AbiWord_s"
     echo ""
     echo "Where did they go?"
+    exit
 endif
-# remove font path
-if [ -d \$\(ABISUITE_FONT_HOME\) ]
+
+# Set post run-time font path
+if [ -d \$ABISUITE_FONT_HOME ]
 then
-    xset fp- \$\(ABISUITE_FONT_HOME\)
+    xset fp- \$ABISUITE_FONT_HOME
 endif
 EOF
+
 chmod 755 ${INSTALL_BASE}/bin/AbiWord
 
 echo ""
-echo "Done!  A total of [${TOTALNUM}] files were successfully installed."
+echo "Done!"
 echo ""
