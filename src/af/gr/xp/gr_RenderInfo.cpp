@@ -440,6 +440,15 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 		// if we got here, we just need to cut out a bit of the draw
 		// buffer
 		UT_sint32 iLenToCopy = m_iLength - ioffset - jLen;
+
+		if(m_iVisDir == UT_BIDI_RTL)
+		{
+			// if this is an rtl run, the end of the draw buffer corresponds to the start
+			// section of the run, so we are moving not what is left after the deletion,
+			// but what preceeds it
+			iLenToCopy = ioffset;
+		}
+			
 		UT_return_val_if_fail(iLenToCopy >= 0, false);
 		if(iLenToCopy)
 		{
@@ -448,7 +457,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 
 			if(m_iVisDir == UT_BIDI_RTL)
 			{
-				d = m_pChars + (m_iLength - (ioffset + jLen - 1));
+				d = m_pChars + (m_iLength - (ioffset + jLen));
 				s = m_pChars + (m_iLength - ioffset);
 			}
 
@@ -460,7 +469,7 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 
 			if(m_iVisDir == UT_BIDI_RTL)
 			{
-				d = (UT_UCS4Char *) m_pWidths + (m_iLength - ioffset + jLen - 1);
+				d = (UT_UCS4Char *) m_pWidths + (m_iLength - (ioffset + jLen));
 				s = (UT_UCS4Char *) m_pWidths + (m_iLength - ioffset);
 			}
 

@@ -1896,6 +1896,11 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	m_pRenderInfo->m_iOffset = iStart - getBlockOffset();
 	m_pRenderInfo->m_iLength = iLen;
 	pRect->width = getGraphics()->getTextWidth(*m_pRenderInfo);
+
+	//in case of rtl we are now in the position to calculate the position of the the left corner
+	if(getVisDirection() == UT_BIDI_RTL)
+		pRect->left = xoff + getWidth() - pRect->left - pRect->width;
+
 //
 // This code makes sure we don't fill past the right edge of text.
 // Full Justified text often as a space at the right edge of the text.
@@ -1911,9 +1916,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 		}
 		delete pLRec;
 	}
-	//in case of rtl we are now in the position to calculate the position of the the left corner
-	if(getVisDirection() == UT_BIDI_RTL)
-		pRect->left = xoff + getWidth() - pRect->left - pRect->width;
+	
 }
 
 /*!
