@@ -17,9 +17,9 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <signal.h>
-#include <stdio.h>
 
 #include "ut_assert.h"
 #include "xap_UnixPSGenerate.h"

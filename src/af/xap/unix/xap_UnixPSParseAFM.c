@@ -68,7 +68,12 @@
 #include <errno.h>
 #include <string.h>
 #include <memory.h>
+
+/* malloc.h is depricated ; use stdlib.h instead */
+/* 
 #include <malloc.h>
+*/
+
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
