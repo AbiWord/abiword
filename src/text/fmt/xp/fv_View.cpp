@@ -990,25 +990,12 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 			*/
 			posStart++;
 
-#if 0
 			/*
 				Likewise, findPointCoords will return the run to the right 
 				of the specified position, so we need to stop looking one 
 				position to the left. 
 			*/
-
-			/*
-			  TODO -- the following line looks a bit suspicious.  Is it is
-			  valid to decrement posEnd without checking to see what kind
-			  of structure posEnd will then point to?  Specifically, if you
-			  load Interview.abw (the new 2-section version), and with the
-			  ins pt at the very beginning of the document, hold down the
-			  shift key and press the down arrow (to select the line), an
-			  assertion fires.  I have traced the root of that problem to
-			  the following line, but I'm not quite sure how to change it.
-			*/
 			posEnd--;
-#endif
 		}
 
 		pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
