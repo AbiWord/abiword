@@ -50,6 +50,11 @@ protected:
 	GnomeUIInfo *       _convertMenu2UIInfo (int &pos);
 	void                _destroyUIInfo (GnomeUIInfo *uiinfo);
 	void                _attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIInfo * uiinfo);
+	GnomeUIInfo *       _generateMenuItem(UT_uint32 nLabelItemInLayout);
+	void                _addNewItemEntry(GtkWidget * wMenuRoot,
+					     GtkWidget * wParent, 
+					     UT_uint32 nLabelItemInLayout,
+					     gint nPositionInThisMenu);
 	bool             _refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	void                _convertString2Accel(const char *s, guint &accel_key, GdkModifierType &ac_mods);
 

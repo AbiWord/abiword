@@ -140,6 +140,25 @@ static void _ev_convert(char * bufResult,
 	}
 }
 
+static void _ev_extract_char(char * bufResult,
+							 const char * szString,
+							 char cToExtract)
+{
+	UT_ASSERT(szString && bufResult);
+
+	// char * pSrc = szString;
+
+	while (*szString)
+	{
+		if (*szString != cToExtract)
+			*bufResult++ = *szString;
+
+		szString++;
+	}
+
+	*bufResult = 0;
+}
+
 /**********************************************************************/
 
 EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
@@ -438,7 +457,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 				// convert label into underscored version
 				_ev_convert(buf, szLabelName);
 				tooltip = pLabel->getMenuStatusMessage();
-				
+
 				if ( !pAction->isCheckable() ) {
 					retval[i].type = GNOME_APP_UI_ITEM;
 					retval[i].pixmap_type = GNOME_APP_PIXMAP_STOCK;
@@ -480,7 +499,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 
 				retval[i].type = GNOME_APP_UI_SUBTREE;
 				retval[i].label = g_strdup (buf);
-				
+
 				retval[i].user_data = g_new0 (__Aux, 1);
 				((__Aux *) retval[i].user_data)->me = this;
 				((__Aux *) retval[i].user_data)->id = id;
@@ -523,7 +542,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 /**
  * Free the mem associate with the uiinfo structure (in a recursive way).
  */
-void EV_UnixGnomeMenu::_destroyUIInfo(GnomeUIInfo * uiinfo)
+static void _ImpDestroyUIInfo(GnomeUIInfo * uiinfo)
 {
 	g_return_if_fail (uiinfo != NULL);
 
@@ -539,7 +558,7 @@ void EV_UnixGnomeMenu::_destroyUIInfo(GnomeUIInfo * uiinfo)
 
 		switch (uiinfo->type) {
 		case GNOME_APP_UI_SUBTREE:
-			_destroyUIInfo ((GnomeUIInfo *) uiinfo->moreinfo);
+			_ImpDestroyUIInfo ((GnomeUIInfo *) uiinfo->moreinfo);
 		case GNOME_APP_UI_ITEM:
 		case GNOME_APP_UI_TOGGLEITEM:
 			g_free(uiinfo->user_data);
@@ -554,6 +573,152 @@ void EV_UnixGnomeMenu::_destroyUIInfo(GnomeUIInfo * uiinfo)
 	g_free (first);
 }
 
+void EV_UnixGnomeMenu::_destroyUIInfo(GnomeUIInfo * uiinfo)
+{
+	_ImpDestroyUIInfo( uiinfo );
+}
+
+bool _updateLabel(XAP_Menu_Id menu_id, const char * caption,
+									GtkWidget * item)
+{
+	GtkWidget * tmp_label = (GTK_BIN(item)->child);
+
+	char buffer[1024];
+	_ev_extract_char( buffer, caption, '_');
+
+	char * pLabelString;
+	
+	gtk_label_get(GTK_LABEL(tmp_label), &pLabelString);
+
+	if (strcmp(pLabelString, buffer) == 0)
+		return false;
+
+	gtk_label_set_text (GTK_LABEL(tmp_label), g_strdup (buffer));
+
+	return true;
+}
+
+GnomeUIInfo * EV_UnixGnomeMenu::_generateMenuItem(UT_uint32 nLabelItemInLayout)
+{
+	EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(nLabelItemInLayout);
+
+	UT_ASSERT(pLayoutItem);
+
+	XAP_Menu_Id id = pLayoutItem->getMenuId();
+
+	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
+
+	EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+	EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+
+	UT_ASSERT(pAction);
+	UT_ASSERT(pLabel);
+
+	// This is the only case the code is prepared to handle
+	UT_ASSERT(pLayoutItem->getMenuLayoutFlags() == EV_MLF_Normal);
+
+	const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, 
+										  pAction, pLabel);
+
+	const char *szLabelName = data[0];
+	const char *szMnemonicName = data[1];
+		
+	if (!szLabelName || !(*szLabelName))
+		return NULL;
+
+	GnomeUIInfo * retval = NULL;
+	retval = g_new0 (GnomeUIInfo, 2);
+
+	char buf[1024];
+	const char *tooltip;
+	int i = 0;
+
+	// convert label into underscored version
+	_ev_convert(buf, szLabelName);
+	tooltip = pLabel->getMenuStatusMessage();
+
+	if ( !pAction->isCheckable() ) {
+		retval[i].type = GNOME_APP_UI_ITEM;
+		retval[i].pixmap_type = GNOME_APP_PIXMAP_STOCK;
+		retval[i].pixmap_info = g_new0 (char, 64);
+		s_getStockPixmapFromName (id, buf, (char *) retval[i].pixmap_info, 64);
+	}
+	else 
+	{
+		retval[i].type = GNOME_APP_UI_TOGGLEITEM;
+	}
+				
+	retval[i].label = g_strdup (buf);
+	retval[i].hint = g_strdup (tooltip);
+	retval[i].moreinfo = (void*)menuEvent;
+	retval[i].user_data = g_new0 (__Aux, 1);
+	((__Aux *) retval[i].user_data)->me = this;
+	((__Aux *) retval[i].user_data)->id = id;
+
+	_convertString2Accel (szMnemonicName, retval[i].accelerator_key, 
+											retval[i].ac_mods);
+	 	
+	return retval;
+}
+
+
+bool _hasTearOff(GtkMenuShell * wParent)
+{
+	// We don't use gnome_preferences_get_menus_have_tearoff () because
+	// we don't want to know the current setting for this preference but 
+	// whether this specific Drop Down has a tear off ( however this would be
+	// right if this setting wasn't changed since wParent was created )
+	//	
+	// The code is borrowed from gnome-libs' libgnomeui/gnome-app-helper.c
+	GList * children;
+
+	children = GTK_MENU_SHELL (wParent)->children;
+
+	return (children && GTK_IS_TEAROFF_MENU_ITEM(children->data));
+}
+
+void EV_UnixGnomeMenu::_addNewItemEntry(GtkWidget * wMenuRoot,
+										GtkWidget * wParent, 
+										UT_uint32 nLabelItemInLayout,
+										gint nPositionInThisMenu)
+{
+	GtkWidget * app = m_pUnixFrame->getTopLevelWindow ();
+
+
+	GnomeUIInfo * pUIInfo = _generateMenuItem(nLabelItemInLayout);
+
+	// If parent has a TearOff, it's the first menu item, and we haven't
+	// counted it
+	bool bParentHasTearOff = _hasTearOff(GTK_MENU_SHELL (wParent));
+
+	gnome_app_fill_menu (GTK_MENU_SHELL (wParent), pUIInfo,
+						 GNOME_APP (app)->accel_group, TRUE, 
+						 nPositionInThisMenu + (bParentHasTearOff ? 1 : 0));
+
+	_attachWidgetsAndSignals(wMenuRoot, pUIInfo);
+
+	// This hack is to clear pUIInfo when the widget gets destroyed
+	gtk_object_set_data_full (GTK_OBJECT (pUIInfo->widget), "pUIInfo",
+							  pUIInfo, (GtkDestroyNotify) _ImpDestroyUIInfo);
+}
+
+/*! This helper function removes a menu item. As we can't use the gnome stuff
+  because we don't have a *path* [i.e. _File/_Print], I borrowed the remotion
+  code used by gnome [cf. libgnomeui/gnome-app-helper.c]
+*/
+void _removeEntry (GtkWidget * parent, GtkWidget * child)
+{
+    /* if this item contains a gtkaccellabel, we have to set its
+       accel_widget to NULL so that the item gets unrefed. */
+    if(GTK_IS_ACCEL_LABEL(GTK_BIN(child)->child))
+		gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(GTK_BIN(child)->child), NULL);
+
+	gtk_container_remove(GTK_CONTAINER(parent), child);
+	
+	gtk_widget_queue_resize(parent);
+}
+
 bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 {
 	// update the status of stateful items on menu bar.
@@ -561,6 +726,17 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	UT_ASSERT(pMenuActionSet);
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	GtkWidget *item;
+
+	// we keep a stack of the widgets so that we can properly
+	// parent the menu items and deal with nested pull-rights.
+	bool bResult;
+	UT_Stack stack;
+	stack.push(wMenuRoot);
+
+	// -1 will catch the case where we're inserting and haven't actually
+	// entered into a real menu (only at a top level menu)
+	
+	gint nPositionInThisMenu = -1;
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -577,6 +753,10 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			// see if we need to enable/disable and/or check/uncheck it.
 			bool bEnable = true;
 			bool bCheck = false;
+
+			// Keep track of where we are in this menu; we get cut down
+			// to zero on the creation of each new submenu.
+			nPositionInThisMenu++;
 			
 			if (pAction->hasGetStateFunction())
 			{
@@ -591,28 +771,115 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
 			const char * szLabelName = data[0];
 
-			if (szLabelName && *szLabelName)
+			if (!szLabelName || !(*szLabelName))
 			{
-				char buf[1024];
+				// The menu item should not exist. If it does, we have to
+				// remove it
+				char * strId = g_strdup_printf("%d", id);
+				item = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (wMenuRoot), strId);
 				
-				_ev_convert(buf, szLabelName);
-				item = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (wMenuRoot), buf);
+				if (item)
+				{
+					GtkWidget * wParent;
+
+					bResult = stack.viewTop((void **)&wParent);
+					UT_ASSERT(bResult);
+
+					_removeEntry(GTK_MENU_ITEM(wParent)->submenu,
+								 item);
+				
+					// we have to disconnect it from wMenuRoot so we didn't find
+					// it next time
+					gtk_object_remove_data (GTK_OBJECT (wMenuRoot), strId);
+				}
+
+				g_free (strId);
+
+				// We should count this item as it doesn't exist
+				nPositionInThisMenu--;
+
+				continue;
+			}
+
+			char buf[1024];
+			char * strId = g_strdup_printf("%d", id);
+			
+			_ev_convert(buf, szLabelName);
+			item = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (wMenuRoot), strId);
+			g_free (strId);
+
+			if (!item)
+			{
+				// A new item: we should create it
+				GtkWidget * wParent;
+
+				bResult = stack.viewTop((void **)&wParent);
+				UT_ASSERT(bResult);
+
+				// TODO modify the function so that it returns the item
+				// created ( or NULL if it couldn't ) and remove the
+				// continue statement below
+				_addNewItemEntry(wMenuRoot, GTK_MENU_ITEM(wParent)->submenu,
+									 k, nPositionInThisMenu);
+				continue;
 			}
 			else
-				item = NULL;
+				if (_updateLabel(id, buf, item)) 
+				{ 
+					// A new item: we should create it
+					GtkWidget * wParent;
+
+					bResult = stack.viewTop((void **)&wParent);
+					UT_ASSERT(bResult);
+					
+					gtk_widget_queue_resize( GTK_MENU_ITEM(wParent)->submenu );
+				}
+			//;
 			
 			if (item == NULL)
+			{
+				// the item doesn't exist and couldn't be created, so
+				// we adjust nPositionInThisMenu accordingly
+				nPositionInThisMenu--;
 				break;
-			
+			}
+
 			if (GTK_IS_CHECK_MENU_ITEM(item))
 				GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-			
+
+
 			gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);			
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
+		{
+			nPositionInThisMenu = -1;
+
+			// we need to nest sub menus to have some sort of context so
+			// we can parent menu items
+			char * strId = g_strdup_printf("%d",id);
+			item = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (wMenuRoot), strId);
+			g_free (strId);
+			UT_ASSERT(item);
+
+			stack.push(item);
+			break;
+		}
 		case EV_MLF_EndSubMenu:
+		{
+			GtkWidget * item = NULL;
+			bResult = stack.pop((void **)&item);
+			UT_ASSERT(bResult);
+
+			break;
+		}
 		case EV_MLF_Separator:
+		{
+			nPositionInThisMenu++;
+			
+			break;
+
+		}
 		case EV_MLF_BeginPopupMenu:
 		case EV_MLF_EndPopupMenu:
 			break;
@@ -622,6 +889,12 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			break;
 		}	
 	}
+
+	// sanity check
+	GtkWidget * wDbg = NULL;
+	bResult = stack.pop((void **)&wDbg);
+	UT_ASSERT(bResult);
+	UT_ASSERT(wDbg == wMenuRoot);
 
 	return true;
 }
@@ -651,9 +924,15 @@ void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIIn
 			if (uiinfo->label != NULL) {
 				gtk_widget_ref (uiinfo->widget);
 				
-				gtk_object_set_data_full (GTK_OBJECT (wMenuRoot), uiinfo->label,
+				char * strId = g_strdup_printf("%d", ((__Aux *) 
+									uiinfo->user_data)->id);
+				gtk_object_set_data_full (GTK_OBJECT (wMenuRoot), strId,
 										  uiinfo->widget,
 										  (GtkDestroyNotify) gtk_widget_unref);
+			
+				// This hack is to clear strId when the widget gets destroyed
+				gtk_object_set_data_full (GTK_OBJECT (uiinfo->widget), "strId",
+										  strId, (GtkDestroyNotify) g_free);
 			}
 			
 			if ((uiinfo->type == GNOME_APP_UI_ITEM) ||
