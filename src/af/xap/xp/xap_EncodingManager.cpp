@@ -1210,9 +1210,9 @@ void 	XAP_EncodingManager::describe()
 		"	WinLanguageCode is 0x%04x, WinCharsetCode is %d\n"
 		"	cjk_locale %d, can_break_words %d, swap_utos %d, swap_stou %d\n"
 		,getLanguageISOName(), getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
-		,getNativeEncodingName(),getNativeSystemEncodingName(),
-		,getNative8BitEncodingName(),getNativeNonUnicodeEncodingName(),
-		,getNativeUnicodeEncodingName(),
+		getNativeEncodingName(),getNativeSystemEncodingName(),
+		getNative8BitEncodingName(),getNativeNonUnicodeEncodingName(),
+		getNativeUnicodeEncodingName(),
 		fallbackChar(1072), getTexPrologue(),getWinLanguageCode(),
 		 getWinCharsetCode(),
 		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)
