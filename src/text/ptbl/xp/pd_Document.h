@@ -64,7 +64,7 @@ public:
 	UT_Bool					getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
-									   UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
+									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 
 	void					dump(FILE * fp) const;
 	

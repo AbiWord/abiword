@@ -269,7 +269,7 @@ UT_Bool PD_Document::getAttrProp(PT_VarSetIndex vsIndex, PT_AttrPropIndex indexA
 }
 
 UT_Bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
-								UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
+								const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
 	return m_pPieceTable->getSpanPtr(sdh,offset,ppSpan,pLength);
 }

@@ -22,6 +22,21 @@ pf_Frag_Text::~pf_Frag_Text()
 {
 }
 
+pt_BufPosition pf_Frag_Text::getOffset(void) const
+{
+	return m_offset;
+}
+
+UT_uint32 pf_Frag_Text::getLength(void) const
+{
+	return m_length;
+}
+
+PT_VarSetIndex pf_Frag_Text::getVSindex(void) const
+{
+	return m_vsIndex;
+}
+
 UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 {
 	UT_ASSERT(ppcr);
