@@ -102,14 +102,18 @@ UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) co
 	UT_sint32 width;
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
-
+	if(m_font->isDingbat())
+	{
+		FT_Select_Charmap(pFace,FT_ENCODING_ADOBE_CUSTOM);
+	}
 	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
 	FT_Error error =
 		FT_Load_Glyph(pFace, glyph_index,
 					FT_LOAD_LINEAR_DESIGN |
 					FT_LOAD_IGNORE_TRANSFORM |
 					FT_LOAD_NO_BITMAP | FT_LOAD_NO_SCALE);
-	if (error) {
+	if (error != 0) 
+	{
 		return 0;
 	}
 

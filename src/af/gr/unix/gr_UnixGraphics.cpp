@@ -811,16 +811,14 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		iChar = adobeToUnicode(Char);
 		xxx_UT_DEBUGMSG(("DrawGlyph 1 Symbol remapped %d to %d \n",Char,iChar));
 	}
-	if(isDingbat() && (iChar < 255)  && (iChar >= 32))
+	if(isDingbat())
 	{
 		FT_Face face = XftLockFace(m_pXftFontD);
 		//
 		// Only CUSTOM encoding gives non-zero indexes
 		FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
-		UT_uint32 iFTChar =  FT_Get_Char_Index(face,iChar);
+		iChar =  FT_Get_Char_Index(face,Char);
 		XftUnlockFace (m_pXftFontD);
-		UT_DEBUGMSG(("DrawGlyph 1 remapped %d to my %d  FT %d \n",Char,iChar,iFTChar));
-		iChar = iFTChar;
 	}
 	
 	// FIXME ascent in wrong unit
@@ -869,24 +867,20 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		else if(isDingbat())
 		{
-			UT_DEBUGMSG(("Doing draw Dingbat length %d offset %d \n",iLength,iCharOffset));
-			UT_uint32 * uChars = new UT_uint32[iLength];
+			xxx_UT_DEBUGMSG(("Doing draw Dingbat length %d offset %d \n",iLength,iCharOffset));
+			FT_UInt * uChars = new FT_UInt[iLength];
 			FT_Face face = XftLockFace(m_pXftFontD);
 		//
 		// Only CUSTOM encoding gives non-zero indexes
 			FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
 			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
 			{
-				uChars[i] = static_cast<UT_uint32>(pChars[iCharOffset + i]);
-				if((uChars[i] < 255) && (uChars[i] >= 32))
-				{
-					uChars[i] = XftCharIndex(XftDrawDisplay(m_pXftDraw),m_pXftFontD,uChars[i]);
-					UT_DEBUGMSG(("drawchars: mapped Dingbat %d to %d \n",pChars[iCharOffset + i],uChars[i]));
-				}
+				uChars[i] = static_cast<FT_UInt>(FT_Get_Char_Index(face,pChars[iCharOffset + i]));
 			}
 			XftUnlockFace (m_pXftFontD);
-			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(iAscent + m_iYoff)+idy,
-							const_cast<XftChar32*> (uChars), iLength);
+			XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, 
+						  tdu(m_iXoff) +idx, tdu(iAscent + m_iYoff)+idy,
+						  uChars, iLength);
 			delete [] uChars;
 		}
 	}
@@ -895,8 +889,18 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		UT_uint32 uChar;
 		XftCharSpec aCharSpec[256];
 		XftCharSpec* pCharSpec = aCharSpec;
-		UT_sint32 currentYoff = idy +tdu(iAscent);
+		XftGlyphSpec * pGlyphSpec = NULL;
+		FT_Face face = NULL;
 
+		UT_sint32 currentYoff = idy +tdu(iAscent);
+		if(isDingbat())
+		{
+			face = XftLockFace(m_pXftFontD);
+			//
+			// Only CUSTOM encoding gives non-zero indexes
+			FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
+			pGlyphSpec = new XftGlyphSpec[iLength];
+		}
 		if (iLength > 256)
 			pCharSpec = new XftCharSpec[iLength];
 
@@ -907,20 +911,12 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			if(isSymbol() && uChar < 255 && uChar >=32)
 			{
 				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
-				UT_DEBUGMSG(("DrawGlyph 2 Symbol remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+				xxx_UT_DEBUGMSG(("DrawGlyph 2 Symbol remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
 			}
-			else if(isDingbat() && uChar < 255 && uChar >=32)
+			else if(isDingbat())
 			{
-				FT_Face face = XftLockFace(m_pXftFontD);
-				//
-				// Only CUSTOM encoding gives non-zero indexes
-                FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
-				pCharSpec[i].ucs4 = adobeDingbatsToUnicode(uChar);
-				//				FT_UInt   gindex;
-				//UT_sint32 charcode = FT_Get_First_Char( face, &gindex );
-				//pCharSpec[i].ucs4 = charcode +3;
-				XftUnlockFace (m_pXftFontD);
-				UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+				pGlyphSpec[i].glyph = static_cast<FT_UInt>(FT_Get_Char_Index(face,uChar));
+				xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pGlyphSpec[i].glyph));
 
 			}
 			else
@@ -932,27 +928,23 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			// or we can keep it in an int array, then transfer to shorts.
 			// that's probably better.
 			idx = _tduX(xPos);
-			pCharSpec[i].x = idx;
-			pCharSpec[i].y = currentYoff;
+			if(!isDingbat())
+			{
+				pCharSpec[i].x = idx;
+				pCharSpec[i].y = currentYoff;
+			}
+			else
+			{
+				pGlyphSpec[i].x = idx;
+				pGlyphSpec[i].y = currentYoff;
+			}
 			if (i < iLength - 1) {
 				xPos += pCharWidths[iCharOffset+i];
 			}
 		}
 		if(isDingbat())
 		{
-			FT_Face face = XftLockFace(m_pXftFontD);
-				//
-				// Only CUSTOM encoding gives non-zero indexes
-				//
-				// Only CUSTOM encoding gives non-zero indexes
-			FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
-			XftDrawCharSpec (m_pXftDraw, &m_XftColor, m_pXftFontD, pCharSpec, iLength);
-			UT_uint32 i =0;
-			for(i=0;i<iLength;i++)
-				{
-					UT_DEBUGMSG(("Dingbat Draw index %d dec %d hex %x \n",i,pCharSpec[i].ucs4,pCharSpec[i].ucs4));
-				}
-			XftUnlockFace (m_pXftFontD);
+			XftDrawGlyphSpec (m_pXftDraw, &m_XftColor, m_pXftFontD, pGlyphSpec, iLength);
 		}
 		else
 		{
@@ -960,6 +952,11 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		if (pCharSpec != aCharSpec)
 			delete[] pCharSpec;
+		if(isDingbat())
+		{
+			XftUnlockFace (m_pXftFontD);
+			delete [] pGlyphSpec;
+		}
 	}
 }
 
@@ -1086,21 +1083,14 @@ UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	}
 	else
 	{
-		FT_Face face = XftLockFace(m_pXftFontD);
-		//
-		// Only CUSTOM encoding gives non-zero indexes
-		FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
-		newChar = FT_Get_Char_Index(face,c);
-		XftUnlockFace (m_pXftFontD);
-		//		newChar = static_cast<UT_UCSChar>(adobeDingbatsToUnicode(c));
-		UT_DEBUGMSG(("Measure width of remapped Dingbat %x \n",newChar));
+		newChar = c;
 	}
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
 
 	fWidth = m_pFont->measureUnRemappedChar(newChar, m_pFont->getSize())
 		* ((double)getResolution() / (double)s_getDeviceResolution());
-	xxx_UT_DEBUGMSG(("width = %d \n",rint(fWidth)));
+	UT_DEBUGMSG(("char %d width = %d \n",newChar,rint(fWidth)));
 	return static_cast<UT_uint32>(rint(fWidth));
 }
 
