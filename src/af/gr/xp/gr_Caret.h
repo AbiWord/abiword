@@ -84,6 +84,8 @@ private:
 	bool		m_bPositionSet;
 	bool		m_bRecursiveDraw;
 	bool        m_bSplitCaret;
+	bool        m_bCaret1OnScreen;
+	bool        m_bCaret2OnScreen;
 };
 
 class GR_CaretDisabler

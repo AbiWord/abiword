@@ -49,7 +49,9 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 	    m_bCursorIsOn(false),
 	    m_bPositionSet(false),
 		m_bRecursiveDraw(false),
-		m_bSplitCaret(false)	
+		m_bSplitCaret(false),
+		m_bCaret1OnScreen(false),
+		m_bCaret2OnScreen(false)
 {
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
@@ -108,6 +110,13 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 			 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
 			 bool bPointDirection, UT_RGBColor * pClr)
 {
+#if 0
+	if(x < 0 || y < 0 || x2 < 0 || y2 < 0)
+	{
+		UT_DEBUGMSG(("GR_Caret::setCoords: negative value, x=%d, y=%d, x2=%d, y2=%d\n",x,y,x2,y2));
+	}
+#endif
+	
 	// if visible, then hide while we change positions.
 	_erase();
 
@@ -115,6 +124,21 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	m_xPoint2 = x2; m_yPoint2 = y2; m_iPointHeight2 = h2;
 	m_bPointDirection = bPointDirection; m_pClr = pClr;
 	m_bPositionSet = true;
+
+	// This is a partial on-screen logic; we currently only check for
+	// negative coordinances, i.e., caret above and/or to the left of
+	// the editing window. To check for the other side would be more
+	// complicated, we would need to have a listener watching for
+	// window resizing. Tomas Jan 18, 2003
+	if(x < 0 || y < 0)
+		m_bCaret1OnScreen = false;
+	else
+		m_bCaret1OnScreen = true;
+	
+	if(x2 < 0 || y2 < 0)
+		m_bCaret2OnScreen = false;
+	else
+		m_bCaret2OnScreen = true;
 
 	// now show the caret, if it's enabled, and restart the timer.
 	// if we don't do this, the caret is invisible during caret motion.
@@ -220,6 +244,15 @@ void GR_Caret::_blink(bool bExplicit)
 		}
 		else
 		{
+			// if neither caret is on screen, quit
+			xxx_UT_DEBUGMSG(("gr_Caret:_blink: m_bCaret1OnScreen=%d, m_bCaret2OnScreen=%d\n", m_bCaret1OnScreen, m_bCaret2OnScreen));
+			if(!m_bCaret1OnScreen && !m_bCaret2OnScreen)
+			{
+				m_bCursorIsOn = false;
+				m_bRecursiveDraw = false;
+				return;
+			}
+			
 			xxx_UT_DEBUGMSG(("gr_Caret: Drawing cursor NOW!!! \n"));
 			UT_Rect r0(m_xPoint-3, m_yPoint+1, 7, m_iPointHeight);
 			m_pG->saveRectangle(r0,0);
@@ -237,63 +270,72 @@ void GR_Caret::_blink(bool bExplicit)
 				UT_Rect r2(xmin-1, ymin + m_iPointHeight, xmax - xmin + 2, ymax - ymin + 1);
 				m_pG->saveRectangle(r2,2);
 			}
-			
 			else
 				m_bSplitCaret = false;
 
 			static const UT_RGBColor black (0,0,0);
 			m_pG->setColor(black);
 
-			m_pG->drawLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, 
-					  m_yPoint + m_iPointHeight+1);
-			m_pG->drawLine(m_xPoint, m_yPoint+1, m_xPoint, 
- 					  m_yPoint + m_iPointHeight+1);
-
+			if(m_bCaret1OnScreen)
+			{
+				m_pG->drawLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, 
+							   m_yPoint + m_iPointHeight+1);
+				m_pG->drawLine(m_xPoint, m_yPoint+1, m_xPoint, 
+							   m_yPoint + m_iPointHeight+1);
+			}
+			
 			if(m_bSplitCaret)
 			{
-			// #TF the caret will have a small flag at the top 
-			// indicating the direction of writing
-			if(m_bPointDirection)
-			{
+				// #TF the caret will have a small flag at the top 
+				// indicating the direction of writing
+				if(m_bCaret1OnScreen)
+				{
+					if(m_bPointDirection)
+					{
+						m_pG->drawLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
+						m_pG->drawLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
+					}
+					else
+					{
+						m_pG->drawLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
+						m_pG->drawLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
+					}
+				}
 				
-				m_pG->drawLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
-				m_pG->drawLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
-			}
-			else
-			{
-				m_pG->drawLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
-				m_pG->drawLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
-			}
+				// This is the second caret on ltr-rtl boundary
 
-			// This is the second caret on ltr-rtl boundary
-			UT_Rect r1(m_xPoint2-3, m_yPoint2+1, 7, m_iPointHeight);
-			m_pG->saveRectangle(r1,1);
+				if(m_bCaret2OnScreen)
+				{
+					UT_Rect r1(m_xPoint2-3, m_yPoint2+1, 7, m_iPointHeight);
+					m_pG->saveRectangle(r1,1);
 				
 			
-			m_pG->drawLine(m_xPoint2-1, m_yPoint2+1, 
-						  m_xPoint2-1, m_yPoint2 + m_iPointHeight + 1);
-			m_pG->drawLine(m_xPoint2, m_yPoint2+1, 
-						  m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
+					m_pG->drawLine(m_xPoint2-1, m_yPoint2+1, 
+								   m_xPoint2-1, m_yPoint2 + m_iPointHeight + 1);
+					m_pG->drawLine(m_xPoint2, m_yPoint2+1, 
+								   m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
 
-			// This is the line that links the two carets
-			m_pG->drawLine(m_xPoint, m_yPoint + m_iPointHeight, 
-						  m_xPoint2, m_yPoint2 + m_iPointHeight);
+					// This is the line that links the two carets
+					m_pG->drawLine(m_xPoint, m_yPoint + m_iPointHeight, 
+								   m_xPoint2, m_yPoint2 + m_iPointHeight);
 
-			if(m_bPointDirection)
-			{
-				m_pG->drawLine(m_xPoint2+1, m_yPoint2+1, 
-							  m_xPoint2+3, m_yPoint2+1);
-				m_pG->drawLine(m_xPoint2+1, m_yPoint2+2, 
-							  m_xPoint2+2, m_yPoint2+2);
+					if(m_bPointDirection)
+					{
+						m_pG->drawLine(m_xPoint2+1, m_yPoint2+1, 
+									   m_xPoint2+3, m_yPoint2+1);
+						m_pG->drawLine(m_xPoint2+1, m_yPoint2+2, 
+									   m_xPoint2+2, m_yPoint2+2);
+					}
+					else
+					{
+						m_pG->drawLine(m_xPoint2-3, m_yPoint2+1, 
+									   m_xPoint2-1, m_yPoint2+1);
+						m_pG->drawLine(m_xPoint2-2, m_yPoint2+2, 
+									   m_xPoint2-1, m_yPoint2+2);
+					}
+				}
+				
 			}
-			else
-			{
-				m_pG->drawLine(m_xPoint2-3, m_yPoint2+1, 
-							  m_xPoint2-1, m_yPoint2+1);
-				m_pG->drawLine(m_xPoint2-2, m_yPoint2+2, 
-							  m_xPoint2-1, m_yPoint2+2);
-			}
-		}
 			
 		}
 
