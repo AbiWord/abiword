@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -67,7 +67,7 @@ PP_AttrProp::~PP_AttrProp()
 	{
 		UT_StringPtrMap::UT_Cursor c(m_pProperties);
 		UT_Pair * entry = NULL;
-		for (entry = (UT_Pair*)c.first(); c.is_valid(); 
+		for (entry = (UT_Pair*)c.first(); c.is_valid();
 		     entry = (UT_Pair*)c.next())
 		{
 			if(entry)
@@ -170,9 +170,29 @@ bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 }
 
 /*!
+ * Sets properties as given in the UT_Vector of strings, read as
+ * (property, value) pairs.
+ *
+ * \param pVector A UT_Vector of strings, read in (properties, value) form.
+ */
+bool PP_AttrProp::setProperties(const UT_Vector * pVector)
+{
+	UT_uint32 kLimit = pVector->getItemCount();
+	for (UT_uint32 k=0; k+1<kLimit; k+=2)
+	{
+		const XML_Char * pName = (const XML_Char *)pVector->getNthItem(k);
+		const XML_Char * pValue = (const XML_Char *)pVector->getNthItem(k+1);
+		if (!setProperty(pName,pValue))
+			return false;
+	}
+	return true;
+}
+
+
+/*!
  * Sets given attribute in this PP_AttrProp bundle.
  * Deals correctly with setting the PT_PROPS_ATTRIBUTE_NAME property:
- * intercepts this call and appends properties instead. 
+ * intercepts this call and appends properties instead.
  *
  * Because all mutations of attributes go through here, it is always the
  * case that the props attribute is correctly handled.
@@ -181,7 +201,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 {
 	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
 	UT_ASSERT(sizeof(char)==sizeof(XML_Char));
-	
+
 	if (0 == UT_strcmp(szName, PT_PROPS_ATTRIBUTE_NAME))	// PROPS -- cut value up into properties
 	{
 		char * pOrig = NULL;
@@ -218,7 +238,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			// zero-out the colon, thus separating into two strings.
 			*q = 0;
 			q++;
-			
+
 			// now, search ahead for the next semicolon, and separate this property from the next
 			z = q;
 			while (*z && (*z != ';'))
@@ -268,10 +288,10 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		UT_lowerString(copy);
 
 		char * szDupValue = UT_strdup(szValue);
-		
+
 		if(!m_pAttributes->insert(copy, (void *)szDupValue))
 			FREEP(szDupValue);
-		
+
 		FREEP(copy);
 
 		return true;
@@ -303,12 +323,12 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 
 		delete p;
 
-		m_pProperties->set(szName, 
+		m_pProperties->set(szName,
 				   (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 	}
 	else
 	{
-		m_pProperties->insert(szName, 
+		m_pProperties->insert(szName,
 				      (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 	}
 	return true;
@@ -346,7 +366,7 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
 
  	if ((UT_uint32)ndx >= m_pProperties->size())
   		return false;
- 
+
  	int i = 0;
  	UT_StringPtrMap::UT_Cursor c(m_pProperties);
  	const void * val = NULL;
@@ -355,7 +375,7 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
  	{
 	  // noop
  	}
- 
+
 	if ( (i == ndx) && c.is_valid())
  		{
 		  szName = (XML_Char*) c.key().c_str();
@@ -369,7 +389,7 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 {
 	if (!m_pProperties)
 		return false;
-	
+
 	const void * pEntry = m_pProperties->pick(szName);
 	if (!pEntry)
 		return false;
@@ -383,7 +403,7 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 {
 	if (!m_pProperties)
 		return NULL;
-	
+
 	UT_Pair * pEntry = (UT_Pair *)m_pProperties->pick(szName);
 	if (!pEntry)
 		return NULL;
@@ -391,8 +411,8 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 	if(!pEntry->second())
 	{
 		m_pProperties->set(szName, new UT_Pair
-				   (pEntry->first(), 
-				    PP_PropertyType::createPropertyType(Type, 
+				   (pEntry->first(),
+				    PP_PropertyType::createPropertyType(Type,
 									(XML_Char *)pEntry->first())));
 		delete pEntry;
 		pEntry = (UT_Pair *)m_pProperties->pick(szName);
@@ -404,7 +424,7 @@ bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValu
 {
 	if (!m_pAttributes)
 		return false;
-	
+
 	const void * pEntry = m_pAttributes->pick(szName);
 	if (!pEntry)
 		return false;
@@ -412,7 +432,7 @@ bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValu
 	szValue = (XML_Char *)pEntry;
 
 
-	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue)); 
+	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue));
 
 	return true;
 }
@@ -433,7 +453,7 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 	// TODO consider using the fact that we are now (Dec 12 1998) using
 	// TODO alpha-hash-table rather than just a hash-table to optimize
 	// TODO these loops somewhat.
-	
+
 	if (attributes && *attributes)
 	{
 		const XML_Char ** p = attributes;
@@ -455,7 +475,7 @@ bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char
 		while (*p)
 		{
 			/*
-				Jeff, I weakened the following assert because we 
+				Jeff, I weakened the following assert because we
 				*want* to represent no tabstops as an empty string.
 				If this isn't safe, let me know.   -- PCR
 			*/
@@ -549,21 +569,21 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 		const void * v1 = ca1.first();
 		const void * v2 = ca2.first();
-	
+
 		do
 		{
 			XML_Char *l1 = (XML_Char *)ca1.key().c_str();
 			XML_Char *l2 = (XML_Char *)ca2.key().c_str();
-	
+
 			if (UT_XML_stricmp(l1, l2) != 0)
 				return false;
-			
+
 			l1 = (XML_Char *)v1;
 			l2 = (XML_Char *)v2;
-	
+
 			if (UT_XML_stricmp(l1,l2) != 0)
 				return false;
-	
+
 			v1 = ca1.next();
 			v2 = ca2.next();
 		} while (ca1.is_valid());
@@ -573,28 +593,28 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	{
 		UT_StringPtrMap::UT_Cursor cp1(m_pProperties);
 		UT_StringPtrMap::UT_Cursor cp2(pMatch->m_pProperties);
-	
+
 		const void * v1 = cp1.first();
 		const void * v2 = cp2.first();
-	
+
 		do
 		{
 			XML_Char *l1 = (XML_Char *)cp1.key().c_str();
 			XML_Char *l2 = (XML_Char *)cp2.key().c_str();
-	
+
 			if (UT_XML_stricmp(l1, l2) != 0)
 				return false;
-			
+
 			l1 = (XML_Char *) ((UT_Pair*)v1)->first();;
 			l2 = (XML_Char *) ((UT_Pair*)v2)->first();;
-	
+
 			if (UT_XML_stricmp(l1,l2) != 0)
 				return false;
-	
+
 			v1 = cp1.next();
 			v2 = cp2.next();
 		} while (cp1.is_valid());
-	
+
 	#ifdef PT_TEST
 		s_Matches++;
 	#endif
@@ -618,7 +638,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 		goto Failed;
 	if (!papNew->setAttributes(attributes) || !papNew->setProperties(properties))
 		goto Failed;
-	
+
 	// next, add any items that we have that are not present
 	// (have not been overridden) in the new one.
 
@@ -626,7 +646,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 	const XML_Char * n;
 	const XML_Char * v;
 	const XML_Char * vNew;
-	
+
 	k = 0;
 	while (getNthAttribute(k++,n,v))
 	{
@@ -636,7 +656,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 		// TODO properties.  if we allow it to be given here, should
 		// TODO we blowaway all of the existing properties and create
 		// TODO them from this?  or should we expand it and override
-		// TODO individual properties?  
+		// TODO individual properties?
 		// TODO for now, we just barf on it.
 		UT_ASSERT(UT_XML_stricmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
 		if (!papNew->getAttribute(n,vNew))
@@ -658,7 +678,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 	// the following will remove all properties set to ""; this allows us
 	// to remove properties with the by setting them to ""
 	papNew->_clearEmptyProperties();
-	
+
 	return papNew;
 
 Failed:
@@ -676,7 +696,7 @@ void PP_AttrProp::_clearEmptyProperties()
 
 	UT_StringPtrMap::UT_Cursor _hc1(m_pProperties);
 	void * pEntry;
-	
+
 	for ( pEntry  = (UT_Pair*) _hc1.first(); _hc1.is_valid(); pEntry = (UT_Pair*) _hc1.next() )
 	{
 		if (pEntry)
@@ -685,7 +705,7 @@ void PP_AttrProp::_clearEmptyProperties()
 
 			if(*((XML_Char *)p->first()) == 0)
 			{
-				
+
 				void* tmp = const_cast<void*> (p->first());
 				FREEP(tmp);
 				if (p->second())
@@ -711,11 +731,11 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
-	
+
 	UT_uint32 k;
 	const XML_Char * n;
 	const XML_Char * v;
-	
+
 	k = 0;
 	while (getNthAttribute(k++,n,v))
 	{
@@ -735,7 +755,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 		}
 
 		// we didn't find it in the given array, add it to the new set.
-		
+
 		if (!papNew->setAttribute(n,v))
 			goto Failed;
 
@@ -761,7 +781,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 		}
 
 		// we didn't find it in the given array, add it to the new set.
-		
+
 		if (!papNew->setProperty(n,v))
 			goto Failed;
 
@@ -795,11 +815,11 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attribu
 	PP_AttrProp * papNew = new PP_AttrProp();
 	if (!papNew)
 		goto Failed;
-	
+
 	UT_uint32 k;
 	const XML_Char * n;
 	const XML_Char * v;
-	
+
 	k = 0;
 	while (getNthAttribute(k++,n,v))
 	{
@@ -819,7 +839,7 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attribu
 		}
 
 		// we didn't find it in the given array, add it to the new set.
-		
+
 		if (!papNew->setAttribute(n,v))
 			goto Failed;
 
@@ -845,7 +865,7 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attribu
 		}
 
 		// we didn't find it in the given array, add it to the new set.
-		
+
 		if (!papNew->setProperty(n,v))
 			goto Failed;
 
@@ -944,6 +964,6 @@ void PP_AttrProp::operator = (const PP_AttrProp &Other)
 			setProperty(szName, szValue);
 		}
 	}
-		
+
 }
 

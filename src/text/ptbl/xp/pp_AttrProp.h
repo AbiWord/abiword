@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -48,10 +48,11 @@ public:
 	// multiple sets of name/value pairs.  names are in the
 	// even cells; values are in the odd.  the list is
 	// terminated by a null name.
-	
+
 	bool	setAttributes(const XML_Char ** attributes);
-	bool setAttributes(const UT_Vector * pVector);
+	bool    setAttributes(const UT_Vector * pVector);
 	bool	setProperties(const XML_Char ** properties);
+	bool	setProperties(const UT_Vector * pVector);
 
 	bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
 	bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
@@ -77,7 +78,7 @@ public:
 									   const XML_Char ** properties) const;
 	PP_AttrProp * cloneWithEliminationIfEqual(const XML_Char ** attributes,
 									   const XML_Char ** properties) const;
-	
+
 	void markReadOnly(void);
 	UT_uint32 getCheckSum(void) const;
 
@@ -87,8 +88,8 @@ protected:
 	void _computeCheckSum(void);
  private:
 	void _clearEmptyProperties();
-	
-	
+
+
 	UT_StringPtrMap * m_pAttributes;
 	UT_StringPtrMap * m_pProperties;
 	bool				m_bIsReadOnly;
