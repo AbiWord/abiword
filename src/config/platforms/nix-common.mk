@@ -79,6 +79,9 @@ ifeq ($(ABI_OPT_PANGO),1)
 else
 	OBJ_DIR_SFX	=
 endif
+ifeq ($(ABI_OPT_XFT),1)
+	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)XFT_
+endif
 
 DEFINES		=
 OPTIMIZER	=
@@ -139,9 +142,6 @@ OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
 endif
 
 
-ifeq ($(ABI_OPT_GNOME),2)
-OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME2_
-endif	
 ifeq ($(ABI_OPT_GNOME),1)
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
 endif	
@@ -240,6 +240,7 @@ GTK_CONFIG	= pkg-config gtk+-2.0 gthread-2.0
 # Do we need one for oaf?  No, we _should_ use bonobo-activation for that. -MG
 GNOME_CONFIG    = pkg-config libgnome-2.0 bonobo-activation-2.0 libgnomeprint-2.0 gal-2.0 libbonobo-2.0
 LIBXML_CONFIG	= xml2-config
+XFT_CONFIG	= xft-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
