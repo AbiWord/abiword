@@ -48,6 +48,13 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 	[str release];
 }
 
+NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
+{
+	char buf [1024];
+	_convertLabelToMac(buf, sizeof (buf), pSS->getValueUTF8(stringId));
+	return [NSString stringWithUTF8String:buf];
+}
+
 
 /*
 	Strip the '&' et '_' from the label

@@ -29,6 +29,7 @@
 class XAP_Dialog;
 
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId);
+NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId);
 void _convertLabelToMac (char * buf, size_t bufSize, const UT_String & label);
 
 @protocol XAP_CocoaDialogProtocol
