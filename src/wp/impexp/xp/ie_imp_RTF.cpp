@@ -2048,14 +2048,14 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 							  const struct RTFProps_ImageProps & imgProps)
 {
+	UT_String propBuffer;
+	double wInch = 0.0f; 
+	double hInch = 0.0f;
+	bool resize = false;
 	if ((m_pImportFile != NULL) || (m_parsingHdrFtr))
 	{	
 		// non-null file, we're importing a doc
 		// Now, we should insert the picture into the document
-		UT_String propBuffer;
-		double wInch = 0.0f; 
-		double hInch = 0.0f;
-		bool resize = false;
 		
 		const char * mimetype = NULL;
 		mimetype = UT_strdup("image/png");
@@ -2153,13 +2153,51 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		/*
 		  Insert the object into the document.
 		*/
-		const XML_Char * attributes[] = {
-			"dataid", NULL,
-			NULL, NULL
-		};
-		attributes [1] = szName.c_str();
+		bool resize = false;
 		
-		getDoc()->insertObject(m_dposPaste, PTO_Image, attributes, NULL);
+		switch (imgProps.sizeType)
+		{
+		case RTFProps_ImageProps::ipstGoal:
+			UT_DEBUGMSG (("Goal\n"));
+			resize = true;
+			wInch = (double)imgProps.wGoal / 1440.0f;
+			hInch = (double)imgProps.hGoal / 1440.0f;
+			break;
+		case RTFProps_ImageProps::ipstScale:
+			UT_DEBUGMSG (("Scale: x=%d, y=%d, w=%d, h=%d\n", imgProps.scaleX, imgProps.scaleY, imgProps.width, imgProps.height));
+			resize = true;
+			wInch = (((double)imgProps.scaleX / 100.0f) * imgProps.width);
+			hInch = (((double)imgProps.scaleY / 100.0f) * imgProps.height);
+			break;
+		default:
+			resize = false;
+			break;
+		}
+
+		if (resize) 
+		{
+			UT_DEBUGMSG (("resizing...\n"));
+			setlocale(LC_NUMERIC, "C");
+			UT_String_sprintf(propBuffer, "width:%fin; height:%fin", 
+							  wInch, hInch);
+			setlocale(LC_NUMERIC, "");
+			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
+		}
+
+		const XML_Char* propsArray[5];
+		propsArray[0] = (XML_Char *)"dataid";
+		propsArray[1] = (XML_Char *) szName.c_str();
+		if (resize) 
+		{
+			propsArray[2] = (XML_Char *)"props";
+			propsArray[3] = propBuffer.c_str();
+			propsArray[4] = NULL;
+		}
+		else 
+		{
+			propsArray[2] = NULL;
+		}
+		getDoc()->insertObject(m_dposPaste, PTO_Image, propsArray, NULL);
 		m_dposPaste++;
 	}
 	return true;
