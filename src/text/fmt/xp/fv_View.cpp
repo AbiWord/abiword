@@ -2017,7 +2017,21 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
 	if(bisListStyle)
+	{
+//
+// Stop the Lists contained in the current selection.
+//
 		m_pDoc->beginUserAtomicGlob();
+		UT_uint32 i;
+		for(i=0; i< vBlock.getItemCount(); i++)
+		{
+			pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+			while(pBL->isListItem())
+			{
+				m_pDoc->StopList(pBL->getStruxDocHandle());
+			} 
+		}
+	}
 
 	if (bCharStyle)
 	{
