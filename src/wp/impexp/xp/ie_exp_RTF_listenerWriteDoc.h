@@ -76,6 +76,7 @@ protected:
 		                             { m_bIsListBlock = bListBlock;}
 	void                _setTabEaten( bool bTabEaten)
 		                             { m_bIsTabEaten = bTabEaten;} 
+	void                            _rtf_info (void);
 	void				_rtf_docfmt(void);
 	void				_rtf_open_section(PT_AttrPropIndex api);
 	void				_rtf_open_block(PT_AttrPropIndex api);

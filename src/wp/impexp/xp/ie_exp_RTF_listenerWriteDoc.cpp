@@ -363,6 +363,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_wctomb.setOutCharset(XAP_EncodingManager::get_instance()->WindowsCharsetName());
 	// TODO emit <info> if desired
 	m_currID = 0;
+	_rtf_info ();
 	_rtf_docfmt();						// deal with <docfmt>
 
 	// <section>+ will be handled by the populate code.
@@ -1426,6 +1427,53 @@ bool s_RTF_ListenerWriteDoc::signal(UT_uint32 /* iSignal */)
 }
 
 //////////////////////////////////////////////////////////////////
+
+/*
+  {info
+
+  {\title     #PCDATA}
+  {\author    #PCDATA}
+  {\manager   #PCDATA}
+  {\company   #PCDATA}
+  {\category  #PCDATA}
+  {\keywords  #PCDATA}
+  {\comment   #PCDATA}
+  {\doccomm   #PCDATA}
+
+  TODO:
+  \userprops
+    \propname
+    \proptype
+    \staticval
+
+  }
+ */
+void s_RTF_ListenerWriteDoc::_rtf_info(void)
+{
+  UT_String propVal ;
+  
+  m_pie->_rtf_open_brace () ;
+  m_pie->_rtf_keyword("info");
+
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("title ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("author ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_CONTRIBUTOR, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("manager ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_PUBLISHER, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("company ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("category ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("keywords ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("comment ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+  if(m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, propVal) && propVal.size())
+    { m_pie->_rtf_open_brace () ; m_pie->_rtf_keyword("doccomm ",propVal.c_str()); m_pie->_rtf_close_brace(); }
+
+  m_pie->_rtf_close_brace();
+}
 
 void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 {
