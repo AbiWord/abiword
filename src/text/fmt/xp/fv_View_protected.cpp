@@ -2971,7 +2971,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
 			  UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
-			  m_pG->fillRect(*pClr,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
+			  m_pG->fillRect(*pClr,adjustedLeft+_UL(1),adjustedTop+_UL(1),iPageWidth-_UL(1),iPageHeight-_UL(1));
 //
 // Since we're clearing everything we have to draw every run no matter
 // what.

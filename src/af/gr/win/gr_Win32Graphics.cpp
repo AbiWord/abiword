@@ -50,6 +50,13 @@
 /*****************************************************************/
 UT_sint32 GR_Win32Graphics::s_iScreenResolution = 0;
 
+#ifndef USE_LAYOUT_UNITS
+UT_sint32* GR_Win32Graphics::s_pCharAdvances = NULL;
+UT_uint32  GR_Win32Graphics::s_iCharAdvancesSize = 0;
+UT_uint32  GR_Win32Graphics::s_iInstanceCount = 0;
+#endif
+
+
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
 										 const char* pszFontVariant,
@@ -147,6 +154,10 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	_setTransform(getTransform());
 #endif
 #endif
+
+#ifndef USE_LAYOUT_UNITS
+	s_iInstanceCount++;
+#endif
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -173,6 +184,18 @@ GR_Win32Graphics::~GR_Win32Graphics()
 
 	delete [] m_remapBuffer;
 	delete [] m_remapIndices;
+
+
+#ifndef USE_LAYOUT_UNITS
+	s_iInstanceCount--;
+
+	if(!s_iInstanceCount)
+	{
+		delete [] s_pCharAdvances;
+		s_pCharAdvances = NULL;
+		s_iCharAdvancesSize = 0;
+	}
+#endif
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -364,7 +387,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	UT_uint16* currentChars = _remapGlyphs(pChars, iCharOffset, iLength);
+	UT_uint16* currentChars = _remapGlyphs(pChars, iCharOffset, iLength, pCharWidths);
 
 	// Windows NT and Windows 95 support the Unicode Font file.
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -389,6 +412,9 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	}
 	else
 	{
+#ifdef USE_LAYOUT_UNITS
+#define s_pCharAdvances pCharWidths
+#endif
 		// Unicode font and default character set handling for WinNT and Win9x
 		if(XAP_App::getApp()->theOSHasBidiSupport())
 		{
@@ -397,7 +423,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lStructSize = sizeof(GCP_RESULTS);
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
-			gcpResult.lpDx = pCharWidths;		    // Distances between character cells
+			gcpResult.lpDx = s_pCharAdvances;	    // Distances between character cells
 			gcpResult.lpCaretPos = NULL;			// Caret positions
 			gcpResult.lpClass = NULL;				// Character classifications
 			gcpResult.lpGlyphs = m_remapIndices;	// Character glyphs
@@ -405,7 +431,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 			if(GetCharacterPlacementW(m_hdc, currentChars, iLength, 0, &gcpResult, GCP_REORDER))
 			{
-				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, m_remapIndices, gcpResult.nGlyphs, pCharWidths);
+				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, m_remapIndices, gcpResult.nGlyphs, s_pCharAdvances);
 			}
 			else
 			{
@@ -416,13 +442,17 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		else
 		{
 simple_exttextout:
-			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, pCharWidths);
+			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, s_pCharAdvances);
 		}
 	}
 
 }
+#ifdef USE_LAYOUT_UNITS
+#undef s_pCharAdvances
+#endif
 
-UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
+
+UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength, int * pCharWidths)
 {
 	// TODO -- make this handle 32-bit chars properly
 	if (iLength > (int)m_remapBufferSize)
@@ -439,11 +469,26 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 		m_remapBufferSize = iLength;
 	}
 
+#ifndef USE_LAYOUT_UNITS
+	if(pCharWidths && iLength > (int) s_iCharAdvancesSize)
+	{
+		delete [] s_pCharAdvances;
+		s_pCharAdvances = new UT_sint32 [iLength];
+		s_iCharAdvancesSize = iLength;
+	}
+#endif
+
     // Need to handle zero-width spaces correctly
 	int i, j;
 	for (i = 0, j = 0; i < iLength; ++i, ++j)
 	{
 		m_remapBuffer[j] = (UT_UCS2Char)remapGlyph(pChars[iCharOffset + i], false);
+
+#ifndef USE_LAYOUT_UNITS
+		if(pCharWidths)
+			s_pCharAdvances[j] = _UD(pCharWidths[iCharOffset + i]);
+#endif
+		
 		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF)
 			j--;
 	}

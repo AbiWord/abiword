@@ -191,7 +191,7 @@ protected:
 
 private:
 	void 					_constructorCommonCode(HDC);
-	UT_uint16*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength);
+	UT_uint16*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength, int * pCharWidths);
 	virtual bool            _setTransform(const GR_Transform & tr);
 	
 	DWORD					m_clrXorPen;
@@ -204,6 +204,12 @@ private:
 	// us the correct hdc
 	static UT_sint32        s_iScreenResolution;
 	UT_UCS2Char*				m_remapIndices;
+
+#ifndef USE_LAYOUT_UNITS
+	static UT_sint32*       s_pCharAdvances;
+	static UT_uint32        s_iCharAdvancesSize;
+	static UT_uint32        s_iInstanceCount;
+#endif
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

@@ -4958,7 +4958,7 @@ UT_sint32 FV_View::getPageViewSep(void) const
 		return 0;
 	else if (getViewMode() != VIEW_PRINT)
 	{
-		return 1;
+		return _UL(1);
 	}
 	else
 		return fl_PAGEVIEW_PAGE_SEP;

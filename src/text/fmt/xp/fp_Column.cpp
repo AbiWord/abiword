@@ -571,7 +571,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	{
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
-        ybot += ytop + 1;
+        ybot += ytop + _UL(1);
 	}
 	else
 	{

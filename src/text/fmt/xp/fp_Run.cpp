@@ -811,7 +811,12 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("SEVIOR: draw this %x \n"));
 
 	// shortcircuit drawing if we're way off base.
+#ifdef USE_LAYOUT_UNITS
 	long imax = (1 << 15) - 1;
+#else
+	// lets assume 5000 pixel screen
+	long imax = _UL(5000);
+#endif
 	if (((pDA->yoff < -imax) || (pDA->yoff > imax)) && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	     return;
 
