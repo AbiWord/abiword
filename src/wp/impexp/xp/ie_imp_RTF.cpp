@@ -7277,6 +7277,14 @@ bool IE_Imp_RTF::ReadListTable()
 			{
 				if(!HandleTableList())
 					return false;
+
+// HandleTableList eats the last "}"
+
+				nesting--;
+			}
+			else
+			{
+				UT_DEBUGMSG(("Unexpected keyword in listable %s Here \n",keyword));
 			}
 		}
 		else if(ch == '}')
