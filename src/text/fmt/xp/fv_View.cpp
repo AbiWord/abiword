@@ -97,7 +97,9 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_iSelectionAnchor = _getPoint();
 	_resetSelection();
 	_fixInsertionPointCoords();
+#if 0
 	spellCheckTimer = NULL;
+#endif
 
 	findReset();
 }
@@ -109,7 +111,9 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
 
+#if 0
 	DELETEP(spellCheckTimer);
+#endif
 }
 	
 FL_DocLayout* FV_View::getLayout() const
@@ -1567,6 +1571,7 @@ static void _spellCheckBlockCallBack(UT_Timer * pTimer)
 
 #define SPELL_CHECK_MSECS 100
 
+#if 0
 void FV_View::addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked)
 {
 	fl_BlockLayout *pB;
@@ -1599,7 +1604,7 @@ void FV_View::addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked)
 	
 	listOfBlocksToBeSpellChecked.append(pBlockToBeChecked);
 }
-
+#endif
 
 
 fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& yClick)
