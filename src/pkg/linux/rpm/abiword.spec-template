@@ -239,7 +239,6 @@ cd ../abi
 %files
 %defattr(755,root,root,755)
 %{_bindir}/*
-%{_libdir}/*
 %{_datadir}/%{AbiSuite}/AbiWord/scripts/*
 %defattr(644,root,root,755)
 %{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
