@@ -756,7 +756,7 @@ void AP_UnixApp::loadAllPlugins ()
 
   // the user-local plugin directory
   pluginDir = getUserPrivateDirectory ();
-  pluginDir += "/AbiWord-2.2/plugins/";
+  pluginDir += "/AbiWord-2.4/plugins/";
   pluginList[1] = pluginDir;
 
   for(UT_uint32 i = 0; i < (sizeof(pluginList)/sizeof(pluginList[0])); i++)

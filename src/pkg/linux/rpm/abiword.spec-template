@@ -236,14 +236,14 @@ cd ../abi
 %__make DESTDIR=$RPM_BUILD_ROOT install
 
 # Manual fixes to Abi package
-%__ln_s -f %{_bindir}/AbiWord-2.2 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.2
+%__ln_s -f %{_bindir}/AbiWord-2.4 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.4
 
 # Creates GNOME menu entries
 %__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/icons
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_datadir}/icons/abiword_48.png
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/applications/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
-%__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.2|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
+%__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.4|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/COPYING $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/COPYING
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/README.TXT $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/README
 %if %{enable_gnome}

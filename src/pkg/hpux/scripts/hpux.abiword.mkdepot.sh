@@ -134,7 +134,7 @@ product
     #  The name of the configure script:
     configure     $HPUXCONFIGURE
     file_permissions -o root -g root
-    file ${BINDIR}/AbiWord-2.2
+    file ${BINDIR}/AbiWord-2.4
     file ${BINDIR}/abiword
     # Note: "file *" isn't really a glob pattern, despite appearances.
     directory $TARGET
