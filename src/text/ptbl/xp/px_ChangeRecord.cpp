@@ -27,17 +27,11 @@
 
 PX_ChangeRecord::PX_ChangeRecord(PXType type,
 								 PT_DocPosition position,
-								 PT_AttrPropIndex indexOldAP,
-								 PT_AttrPropIndex indexNewAP,
-								 UT_Bool bTempBefore,
-								 UT_Bool bTempAfter)
+								 PT_AttrPropIndex indexNewAP)
 {
 	m_type = type;
 	m_position = position;
-	m_indexOldAP = indexOldAP;
 	m_indexAP = indexNewAP;
-	m_bTempBefore = bTempBefore;
-	m_bTempAfter = bTempAfter;
 }
 
 PX_ChangeRecord::~PX_ChangeRecord()
@@ -59,28 +53,12 @@ PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 	return m_indexAP;
 }
 
-PT_AttrPropIndex PX_ChangeRecord::getOldIndexAP(void) const
-{
-	return m_indexOldAP;
-}
-
-UT_Bool PX_ChangeRecord::getTempBefore(void) const
-{
-	return m_bTempBefore;
-}
-
-UT_Bool PX_ChangeRecord::getTempAfter(void) const
-{
-	return m_bTempAfter;
-}
-
 PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 {
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord(getRevType(),
 							  m_position,
-							  m_indexAP,m_indexOldAP,
-							  m_bTempAfter,m_bTempBefore);
+							  m_indexAP);
 	UT_ASSERT(pcr);
 	return pcr;
 }
@@ -109,6 +87,9 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 
 	case PX_ChangeRecord::PXT_ChangeStrux:
 		return PX_ChangeRecord::PXT_ChangeStrux;			// we are our own inverse
+
+	case PX_ChangeRecord::PXT_TempSpanFmt:
+		return PX_ChangeRecord::PXT_TempSpanFmt;			// we are our own inverse
 		
 	default:
 		UT_ASSERT(0);

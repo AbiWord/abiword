@@ -40,6 +40,7 @@
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
+#include "px_ChangeRecord_TempSpanFmt.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -59,8 +60,7 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 {
 	// create an unreferenced indexAP containing the merger of the
 	// given attributes/properties and the current A/P at the given
-	// text position.  fire a change record to the listeners of a
-	// zero length changeSpan at the position.
+	// text position.  create a _TempSpanFmt ChangeRecord.
 	//
 	// the listeners will have to cache this value to let them know
 	// how to toggle the various toolbar and menu items state.
@@ -73,6 +73,15 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	// we do add a change record to the history to allow us to undo/redo
 	// this.
 
+	// first, see if we already have a temporary span fmt.  if so, and
+	// we are at the same document position, we do a join on the A/P.
+	// if it is at a different position, we clear it.
+	
+	PT_DocPosition dposTemp;
+	if (_haveTempSpanFmt(&dposTemp,NULL))
+		if (dposTemp != dpos)
+			clearTemporarySpanFmt();
+
 	// get the fragment at the given document position.
 	
 	pf_Frag * pf = NULL;
@@ -80,20 +89,27 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
-	// we want to bases things off the attributes of the the
-	// text immediately to our left, if present.
-	if ((fragOffset == 0) && pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
-	{
-		pf = pf->getPrev();
-		fragOffset = pf->getLength();
-	}
-
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = 0;
-	if (m_bHaveTemporarySpanFmt)
-		indexOldAP = m_indexAPTemporarySpanFmt;
-	else if (pf->getType() == pf_Frag::PFT_Text)
-		indexOldAP = (static_cast<pf_Frag_Text *>(pf))->getIndexAP();
+
+	if (_haveTempSpanFmt(NULL,&indexOldAP))
+	{
+		// we were given what we need.
+	}
+	else
+	{
+		// we want to bases things off the attributes of the the
+		// text immediately to our left, if present.
+		if ((pf->getType() == pf_Frag::PFT_Text) && (fragOffset > 0))
+		{
+			indexOldAP = (static_cast<pf_Frag_Text *>(pf))->getIndexAP();
+		}
+		// TODO make this look-back cross a paragraph boundary...
+		else if (pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
+		{
+			indexOldAP = (static_cast<pf_Frag_Text *>(pf->getPrev()))->getIndexAP();
+		}
+	}
 
 	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
@@ -101,16 +117,11 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return UT_TRUE;
 
-	PX_ChangeRecord_SpanChange * pcr
-		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
-										 dpos,
-										 indexOldAP,indexNewAP,
-										 m_bHaveTemporarySpanFmt,UT_TRUE,
-										 ptc,
-										 0,0); // bufIndex,length are zero
+	PX_ChangeRecord_TempSpanFmt * pcr
+		= new PX_ChangeRecord_TempSpanFmt(PX_ChangeRecord::PXT_TempSpanFmt,
+										  dpos,indexNewAP,UT_TRUE);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
-	_setTemporarySpanFmt(indexNewAP,dpos);
 
 	pf_Frag_Strux * pfs = NULL;
 	UT_Bool bFoundStrux = _getStruxFromPosition(dpos,&pfs);
@@ -121,17 +132,9 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	return UT_TRUE;
 }
 
-void pt_PieceTable::_setTemporarySpanFmt(PT_AttrPropIndex indexNewAP,
-										 PT_DocPosition dpos)
-{
-	m_bHaveTemporarySpanFmt = UT_TRUE;
-	m_indexAPTemporarySpanFmt = indexNewAP;
-	m_dposTemporarySpanFmt = dpos;
-}
-
 void pt_PieceTable::clearTemporarySpanFmt(void)
 {
-	// we put zero length SpanChange ChangeRecords in the history
+	// we put _TempSpanFmt ChangeRecords into the history
 	// so that things like
 	//    <bold><italic>X<undo><undo>Y<undo><undo><undo>Z
 	// will produce a bold-italic 'X' then a bold 'Y' and then a plain 'Z'.
@@ -145,21 +148,19 @@ void pt_PieceTable::clearTemporarySpanFmt(void)
 	// of stale toolbars when we have multiple windows/views on the document,
 	// but i'm not sure if it will ever happen.
 	// TODO verify this once we get multiple windows working.
-	if (!m_bHaveTemporarySpanFmt)
-		return;
 
-	PX_ChangeRecord * pcr;
-	while (m_bHaveTemporarySpanFmt && m_history.getUndo(&pcr))
-	{
-		UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_ChangeSpan);
-		PX_ChangeRecord_SpanChange * pcrs = static_cast<PX_ChangeRecord_SpanChange *>(pcr);
-
-		UT_ASSERT(pcrs->getLength() == 0);
-		UT_ASSERT(pcrs->getBufIndex() == 0);
-		
-		m_bHaveTemporarySpanFmt = pcrs->getTempBefore();
+	while (_haveTempSpanFmt(NULL,NULL))
 		m_history.didUndo();
-	}
+}
 
-	UT_ASSERT(!m_bHaveTemporarySpanFmt);
+UT_Bool pt_PieceTable::_haveTempSpanFmt(PT_DocPosition * pdpos, PT_AttrPropIndex * papi) const
+{
+	PX_ChangeRecord * pcr;
+	UT_Bool bResult = (m_history.getUndo(&pcr) && (pcr->getType() == PX_ChangeRecord::PXT_TempSpanFmt));
+	if (bResult && papi)
+		*papi = pcr->getIndexAP();
+	if (bResult && pdpos)
+		*pdpos = pcr->getPosition();
+	
+	return bResult;
 }

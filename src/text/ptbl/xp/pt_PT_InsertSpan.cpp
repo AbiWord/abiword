@@ -283,8 +283,10 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	if (m_bHaveTemporarySpanFmt && (dpos != m_dposTemporarySpanFmt))
-		clearTemporarySpanFmt();
+	PT_DocPosition dposTemp;
+	if (_haveTempSpanFmt(&dposTemp,NULL))
+		if (dposTemp != dpos)
+			clearTemporarySpanFmt();
 
 	// append the text data to the end of the current buffer.
 
@@ -320,8 +322,10 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	}
 	
 	PT_AttrPropIndex indexAP = 0;
-	if (m_bHaveTemporarySpanFmt)
-		indexAP = m_indexAPTemporarySpanFmt;
+	if (_haveTempSpanFmt(NULL,&indexAP))
+	{
+		// we were given what we need.
+	}
 	else if (pf->getType() == pf_Frag::PFT_Text)
 	{
 		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
@@ -338,14 +342,9 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// create a change record, add it to the history, and notify
 	// anyone listening.
 
-	// TODO decide what indexAP's should be in the before and after.
-	
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   dpos,
-								   indexAP,indexAP,
-								   m_bHaveTemporarySpanFmt,UT_FALSE,
-								   bi,length,isDifferentFmt);
+								   dpos,indexAP,bi,length,isDifferentFmt);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 
@@ -354,7 +353,6 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	UT_ASSERT(bFoundStrux);
 
 	m_pDocument->notifyListeners(pfs,pcr);
-	m_bHaveTemporarySpanFmt = UT_FALSE;
 
 	return UT_TRUE;
 }

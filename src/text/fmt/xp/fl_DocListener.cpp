@@ -34,6 +34,7 @@
 #include "px_ChangeRecord_Strux.h"
 #include "px_ChangeRecord_StruxChange.h"
 #include "px_ChangeRecord_Glob.h"
+#include "px_ChangeRecord_TempSpanFmt.h"
 #include "fv_View.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
@@ -450,7 +451,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 					UT_uint32 len = pcrsc->getLength();
-
+					UT_ASSERT(len > 0);
+					
 					if (len > 0)
 					{
 						/*
@@ -497,18 +499,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 					else
 					{
-						/*
-							This is just a temporary change at the insertion 
-							point.  It won't take effect unless something's 
-							typed. 
-						*/
-						FV_View* pView = m_pLayout->m_pView;
-						if (pView)
-						{
-							UT_ASSERT(pView->_isSelectionEmpty());
-							pView->_setPoint(pcr->getPosition());
-							pView->_setPointAP(pcr->getIndexAP());
-						}
+						UT_ASSERT(0);
 					}
 				}
 				return UT_TRUE;
@@ -522,7 +513,33 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			}
 		}
 		break;
-		
+
+	case PX_ChangeRecord::PXT_TempSpanFmt:
+		{
+			const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
+			if (pcrTSF->getEnabled())
+			{
+				/*
+				  This is just a temporary change at the insertion 
+				  point.  It won't take effect unless something's 
+				  typed. 
+				*/
+
+				FV_View* pView = m_pLayout->m_pView;
+				if (pView)
+				{
+					UT_ASSERT(pView->_isSelectionEmpty());
+					pView->_setPoint(pcrTSF->getPosition());
+					pView->_setPointAP(pcrTSF->getIndexAP());
+				}
+			}
+			else
+			{
+				// TODO decide if we care....
+			}
+		}
+		break;
+
 	case PX_ChangeRecord::PXT_DeleteStrux:
 		{
 			const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

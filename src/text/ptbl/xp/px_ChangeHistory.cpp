@@ -25,6 +25,11 @@
 #include "px_ChangeRecord.h"
 #include "px_ChangeHistory.h"
 
+// m_undoPosition is the position of the undo pointer.
+// a value of zero means no undo history.
+// the first undo item is at ...[m_undoPosition-1]
+// the first redo item is at ...[m_undoPosition] if present.
+
 px_ChangeHistory::px_ChangeHistory()
 {
 	m_undoPosition = 0;
@@ -53,7 +58,11 @@ UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 	UT_ASSERT(m_undoPosition <= kLimit);
 	UT_uint32 k;
 
-	for (k=kLimit; (k>m_undoPosition+1); k--)
+	// walk backwards (most recent to oldest) from the end of the
+	// history and delete any redo records.
+	// we do the math a little odd here because they are unsigned.
+	
+	for (k=kLimit; (k > m_undoPosition); k--)
 	{
 		PX_ChangeRecord * pcrTemp = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(k-1);
 		if (!pcrTemp)
@@ -99,6 +108,8 @@ UT_Bool px_ChangeHistory::didUndo(void)
 
 UT_Bool px_ChangeHistory::didRedo(void)
 {
+	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
+		return UT_FALSE;
 	m_undoPosition++;
 	return UT_TRUE;
 }

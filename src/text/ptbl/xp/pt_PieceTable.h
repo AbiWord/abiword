@@ -191,9 +191,7 @@ protected:
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd);
 	
-	void					_setTemporarySpanFmt(PT_AttrPropIndex indexNewAP,
-												 PT_DocPosition dpos);
-
+	UT_Bool					_haveTempSpanFmt(PT_DocPosition * pdpos, PT_AttrPropIndex * papi) const;
 	UT_Bool					_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 														   PT_DocPosition dpos,
 														   const XML_Char ** attributes,
@@ -204,9 +202,6 @@ protected:
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
-	UT_Bool					m_bHaveTemporarySpanFmt;
-	PT_AttrPropIndex		m_indexAPTemporarySpanFmt;
-	PT_DocPosition			m_dposTemporarySpanFmt;
 	
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;

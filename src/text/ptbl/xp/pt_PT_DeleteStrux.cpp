@@ -130,14 +130,10 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
-									dpos,
-									m_indexAPTemporarySpanFmt,pfs->getIndexAP(),
-									m_bHaveTemporarySpanFmt,UT_FALSE,
-									pfs->getStruxType());
+									dpos, pfs->getIndexAP(), pfs->getStruxType());
 	UT_ASSERT(pcrs);
 	m_history.addChangeRecord(pcrs);
 	m_pDocument->notifyListeners(pfs,pcrs);
-	m_bHaveTemporarySpanFmt = UT_FALSE;
 
 	delete pfs;
 

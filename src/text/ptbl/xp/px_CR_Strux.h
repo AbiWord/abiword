@@ -45,10 +45,7 @@ class PX_ChangeRecord_Strux : public PX_ChangeRecord
 public:
 	PX_ChangeRecord_Strux(PXType type,
 						  PT_DocPosition position,
-						  PT_AttrPropIndex indexOldAP,
 						  PT_AttrPropIndex indexAP,
-						  UT_Bool bTempBefore,
-						  UT_Bool bTempAfter,
 						  PTStruxType struxType);
 	~PX_ChangeRecord_Strux();
 

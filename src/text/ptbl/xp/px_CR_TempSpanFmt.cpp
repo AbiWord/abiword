@@ -23,37 +23,31 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_StruxChange.h"
+#include "px_ChangeRecord_TempSpanFmt.h"
 
-PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
+PX_ChangeRecord_TempSpanFmt::PX_ChangeRecord_TempSpanFmt(PXType type,
 														 PT_DocPosition position,
-														 PT_AttrPropIndex indexOldAP,
 														 PT_AttrPropIndex indexNewAP,
-														 PTChangeFmt ptc)
+														 UT_Bool bEnableTempSpanFmt)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
-	m_ptc = ptc;
-	m_indexOldAP = indexOldAP;
+	m_bEnableTempSpanFmt = bEnableTempSpanFmt;
 }
 
-PX_ChangeRecord_StruxChange::~PX_ChangeRecord_StruxChange()
+PX_ChangeRecord_TempSpanFmt::~PX_ChangeRecord_TempSpanFmt()
 {
 }
 
-PX_ChangeRecord * PX_ChangeRecord_StruxChange::reverse(void) const
+PX_ChangeRecord * PX_ChangeRecord_TempSpanFmt::reverse(void) const
 {
-	PTChangeFmt ptcRev = (PTChangeFmt)( ! ((UT_Bool) m_ptc));
-	
-	PX_ChangeRecord_StruxChange * pcr
-		= new PX_ChangeRecord_StruxChange(getRevType(),
-										  m_position,
-										  m_indexAP,m_indexOldAP,
-										  ptcRev);
+	PX_ChangeRecord_TempSpanFmt * pcr
+		= new PX_ChangeRecord_TempSpanFmt(getRevType(),m_position,m_indexAP,!m_bEnableTempSpanFmt);
+
 	UT_ASSERT(pcr);
 	return pcr;
 }
 
-PT_AttrPropIndex PX_ChangeRecord_StruxChange::getOldIndexAP(void) const
+UT_Bool PX_ChangeRecord_TempSpanFmt::getEnabled(void) const
 {
-	return m_indexOldAP;
+	return m_bEnableTempSpanFmt;
 }

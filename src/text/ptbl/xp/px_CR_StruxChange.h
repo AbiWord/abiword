@@ -49,15 +49,15 @@ public:
 								PT_DocPosition position,
 								PT_AttrPropIndex indexOldAP,
 								PT_AttrPropIndex indexNewAP,
-								UT_Bool bTempBefore,
-								UT_Bool bTempAfter,
 								PTChangeFmt ptc);
 	~PX_ChangeRecord_StruxChange();
 
 	virtual PX_ChangeRecord * reverse(void) const;
+	PT_AttrPropIndex		getOldIndexAP(void) const;
 	
 protected:
 	PTChangeFmt				m_ptc;
+	PT_AttrPropIndex		m_indexOldAP;
 };
 
 #endif /* PX_CHANGERECORD_STRUXCHANGE_H */

@@ -27,7 +27,7 @@
 
 PX_ChangeRecord_Glob::PX_ChangeRecord_Glob(PXType type,
 										   UT_Byte flags)
-	: PX_ChangeRecord(type, 0,0,0,0,0)
+	: PX_ChangeRecord(type, 0,0)
 {
 	m_flags = flags;
 }

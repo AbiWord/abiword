@@ -42,6 +42,7 @@
 #include "px_ChangeRecord_Strux.h"
 #include "px_ChangeRecord_StruxChange.h"
 #include "px_ChangeRecord_Glob.h"
+#include "px_ChangeRecord_TempSpanFmt.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -216,7 +217,20 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
-		
+
+	case PX_ChangeRecord::PXT_TempSpanFmt:
+		{
+			// TempSpanFmt is it's own inverse.
+			// We don't really have anything to do here other than notify the listeners.
+
+			const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
+			pf_Frag_Strux * pfs;
+			UT_Bool bFound = _getStruxFromPosition(pcrTSF->getPosition(),&pfs);
+			UT_ASSERT(bFound);
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+	
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
@@ -232,8 +246,6 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 #define GETREVGLOBFLAGS(pcr)		(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)			\
 									 ? (static_cast<PX_ChangeRecord_Glob *>((pcr))->getRevFlags())	\
 									 : PX_ChangeRecord_Glob::PXF_Null)
-#define SHOULDUPDATETEMPSPAN(pcr)	(pcr->getType() != PX_ChangeRecord::PXT_GlobMarker)
-
 
 /*****************************************************************/
 /*****************************************************************/
@@ -267,13 +279,6 @@ UT_Bool pt_PieceTable::undoCmd(void)
 		UT_ASSERT(pcrRev);
 		UT_Byte flagsRev = GETGLOBFLAGS(pcrRev);
 		UT_Bool bResult = _doTheDo(pcrRev);
-
-		if (SHOULDUPDATETEMPSPAN(pcrRev))
-		{
-			m_bHaveTemporarySpanFmt = pcrRev->getTempAfter();
-			m_indexAPTemporarySpanFmt = pcrRev->getIndexAP();
-			m_dposTemporarySpanFmt = pcrRev->getPosition();
-		}
 		delete pcrRev;
 		
 		if (!bResult)
@@ -314,13 +319,6 @@ UT_Bool pt_PieceTable::redoCmd(void)
 	{
 		if (!_doTheDo(pcr))
 			return UT_FALSE;
-
-		if (SHOULDUPDATETEMPSPAN(pcr))
-		{
-			m_bHaveTemporarySpanFmt = pcr->getTempAfter();
-			m_indexAPTemporarySpanFmt = pcr->getIndexAP();
-			m_dposTemporarySpanFmt = pcr->getPosition();
-		}
 		
 		m_history.didRedo();
 		if (flagsRevFirst == GETGLOBFLAGS(pcr))		// stop when we have a matching end

@@ -20,14 +20,18 @@
 **  
 */
 
-#ifndef PX_CHANGERECORD_SPAN_H
-#define PX_CHANGERECORD_SPAN_H
+#ifndef PX_CHANGERECORD_TEMPSPANFMT_H
+#define PX_CHANGERECORD_TEMPSPANFMT_H
 
 #include "ut_types.h"
 #include "px_ChangeRecord.h"
 
-// PX_ChangeRecord_Span describes an insertSpan or
-// deleteSpan change made to the document.
+// PX_ChangeRecord_TempSpanFmt describes a temporary
+// span format applied to the document.  this is used
+// for toggling on a format style (like hitting the BOLD
+// button on the tool bar) without a selection and then
+// start typing.
+//
 // This description should be sufficient to allow undo to
 // work and sufficient to allow the formatter to do a
 // partial format and screen update (if appropriate).
@@ -44,27 +48,22 @@
 // of the text span.
 
 
-class PX_ChangeRecord_Span : public PX_ChangeRecord
+class PX_ChangeRecord_TempSpanFmt : public PX_ChangeRecord
 {
 public:
-	PX_ChangeRecord_Span(PXType type,
-						 PT_DocPosition position,
-						 PT_AttrPropIndex indexAP,
-						 PT_BufIndex bufIndex,
-						 UT_uint32 length,
-						 PT_Differences bDifferentFmt);
-	~PX_ChangeRecord_Span();
+	PX_ChangeRecord_TempSpanFmt(PXType type,
+								PT_DocPosition position,
+								PT_AttrPropIndex indexAP,
+								UT_Bool bEnableTempSpanFmt);
+
+	~PX_ChangeRecord_TempSpanFmt();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 
-	UT_uint32				getLength(void) const;
-	PT_BufIndex				getBufIndex(void) const;
-	PT_Differences			isDifferentFmt(void) const;
-	
+	UT_Bool	getEnabled(void) const;
+
 protected:
-	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
-	UT_uint32				m_length;	/* length of our text */
-	PT_Differences			m_DifferentFmt;
+	UT_Bool m_bEnableTempSpanFmt;
 };
 
-#endif /* PX_CHANGERECORD_SPAN_H */
+#endif /* PX_CHANGERECORD_TEMPSPANFMT_H */

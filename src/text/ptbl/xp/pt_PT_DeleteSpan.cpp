@@ -138,16 +138,13 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
-								   dpos,
-								   pft->getIndexAP(),pft->getIndexAP(),
-								   UT_FALSE,UT_FALSE,
+								   dpos, pft->getIndexAP(),
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 								   length,isDifferentFmt);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
 	m_pDocument->notifyListeners(pfs,pcr);
-	m_bHaveTemporarySpanFmt = UT_FALSE;
 
 	return bResult;
 }
@@ -162,7 +159,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	UT_ASSERT(dpos2 > dpos1);
 	UT_uint32 length = dpos2 - dpos1;
 
-	if (m_bHaveTemporarySpanFmt)
+	if (_haveTempSpanFmt(NULL,NULL))
 		clearTemporarySpanFmt();
 
 	pf_Frag * pf_First;

@@ -47,22 +47,18 @@ class PX_ChangeRecord
 public:
 	typedef enum _PXType { PXT_GlobMarker=-1,
 						   PXT_InsertSpan=0, 	PXT_DeleteSpan=1,	PXT_ChangeSpan=2,
-						   PXT_InsertStrux=3,	PXT_DeleteStrux=4,	PXT_ChangeStrux=5	} PXType;
+						   PXT_InsertStrux=3,	PXT_DeleteStrux=4,	PXT_ChangeStrux=5,
+						   PXT_TempSpanFmt=6	} PXType;
 
 	PX_ChangeRecord(PXType type,
 					PT_DocPosition position,
-					PT_AttrPropIndex indexOldAP,
-					PT_AttrPropIndex indexNewAP,
-					UT_Bool bTempBefore,
-					UT_Bool bTempAfter);
+					PT_AttrPropIndex indexNewAP);
+
 	virtual ~PX_ChangeRecord();
 
 	PXType					getType(void) const;
 	PT_DocPosition			getPosition(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
-	PT_AttrPropIndex		getOldIndexAP(void) const;
-	UT_Bool					getTempBefore(void) const;
-	UT_Bool					getTempAfter(void) const;
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	PXType					getRevType(void) const;
@@ -75,9 +71,6 @@ protected:
 	PXType					m_type;
 	PT_DocPosition			m_position;			/* absolute document position of the change */
 	PT_AttrPropIndex		m_indexAP;
-	PT_AttrPropIndex		m_indexOldAP;
-	UT_Bool					m_bTempBefore;
-	UT_Bool					m_bTempAfter;
 };
 
 #endif /* PX_CHANGERECORD_H */

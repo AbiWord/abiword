@@ -176,9 +176,6 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	if (m_bHaveTemporarySpanFmt)		// TODO decide if this is correct.  if the user
-		clearTemporarySpanFmt();		// TODO hits BOLD, RETURN, and 'X', shouldn't 'X' be bold...
-
 	// get the fragment at the doc postion containing the given
 	// document position.
 
@@ -219,14 +216,10 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
-									dpos,
-									m_indexAPTemporarySpanFmt,indexAP,
-									m_bHaveTemporarySpanFmt,UT_FALSE,
-									pts);
+									dpos,indexAP,pts);
 	UT_ASSERT(pcrs);
 	m_history.addChangeRecord(pcrs);
 	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);
-	m_bHaveTemporarySpanFmt = UT_FALSE;
 	
 	return UT_TRUE;
 }

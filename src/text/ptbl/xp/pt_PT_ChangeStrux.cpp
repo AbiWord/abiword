@@ -67,19 +67,17 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  getFragPosition(pfs),
 										  indexOldAP,indexNewAP,
-										  m_bHaveTemporarySpanFmt,UT_FALSE,
 										  ptc);
 	UT_ASSERT(pcr);
 
-	if (m_bHaveTemporarySpanFmt)		// TODO decide if it correct to clear this.  if the user
-		clearTemporarySpanFmt();		// TODO hits BOLD, RETURN, 'X', shouldn't 'X' be bold...
+	if (_haveTempSpanFmt(NULL,NULL))
+		clearTemporarySpanFmt();
 
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);
 	UT_ASSERT(bResult);
 
 	m_pDocument->notifyListeners(pfs,pcr);
-	m_bHaveTemporarySpanFmt = UT_FALSE;
 
 	return UT_TRUE;
 }

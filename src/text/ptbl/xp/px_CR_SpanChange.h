@@ -51,8 +51,6 @@ public:
 							   PT_DocPosition position,
 							   PT_AttrPropIndex indexOldAP,
 							   PT_AttrPropIndex indexNewAP,
-							   UT_Bool bTempBefore,
-							   UT_Bool bTempAfter,
 							   PTChangeFmt ptc,
 							   PT_BufIndex bufIndex,
 							   UT_uint32 length);
@@ -62,11 +60,13 @@ public:
 
 	UT_uint32				getLength(void) const;
 	PT_BufIndex				getBufIndex(void) const;
+	PT_AttrPropIndex		getOldIndexAP(void) const;
 	
 protected:
 	PTChangeFmt				m_ptc;
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
+	PT_AttrPropIndex		m_indexOldAP;
 };
 
 #endif /* PX_CHANGERECORD_SPANCHANGE_H */

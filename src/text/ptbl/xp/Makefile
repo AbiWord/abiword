@@ -34,7 +34,8 @@ EXPORT_HEADERS=		pd_Document.h			\
 			px_ChangeRecord_Span.h		\
 			px_ChangeRecord_SpanChange.h	\
 			px_ChangeRecord_Strux.h		\
-			px_ChangeRecord_StruxChange.h
+			px_ChangeRecord_StruxChange.h	\
+			px_ChangeRecord_TempSpanFmt.h
 
 HEADERS=		$(EXPORT_HEADERS)		\
 			pf_Frag.h			\
@@ -90,6 +91,7 @@ CPPSRCS=		pd_Document.cpp			\
 			px_ChangeRecord_SpanChange.cpp	\
 			px_ChangeRecord_Strux.cpp	\
 			px_ChangeRecord_StruxChange.cpp	\
+			px_ChangeRecord_TempSpanFmt.cpp	\
 			px_ChangeRecord_TestRoutines.cpp
 
 

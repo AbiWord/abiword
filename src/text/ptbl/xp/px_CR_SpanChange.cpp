@@ -29,16 +29,15 @@ PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   PT_DocPosition position,
 													   PT_AttrPropIndex indexOldAP,
 													   PT_AttrPropIndex indexNewAP,
-													   UT_Bool bTempBefore,
-													   UT_Bool bTempAfter,
 													   PTChangeFmt ptc,
 													   PT_BufIndex bufIndex,
 													   UT_uint32 length)
-	: PX_ChangeRecord(type, position, indexOldAP, indexNewAP, bTempBefore, bTempAfter)
+	: PX_ChangeRecord(type, position, indexNewAP)
 {
 	m_ptc = ptc;
 	m_bufIndex = bufIndex;
 	m_length = length;
+	m_indexOldAP = indexOldAP;
 }
 
 PX_ChangeRecord_SpanChange::~PX_ChangeRecord_SpanChange()
@@ -53,7 +52,6 @@ PX_ChangeRecord * PX_ChangeRecord_SpanChange::reverse(void) const
 		= new PX_ChangeRecord_SpanChange(getRevType(),
 										 m_position,
 										 m_indexAP,m_indexOldAP,
-										 m_bTempAfter,m_bTempBefore,
 										 ptcRev,m_bufIndex,m_length);
 	UT_ASSERT(pcr);
 	return pcr;
@@ -67,4 +65,9 @@ UT_uint32 PX_ChangeRecord_SpanChange::getLength(void) const
 PT_BufIndex PX_ChangeRecord_SpanChange::getBufIndex(void) const
 {
 	return m_bufIndex;
+}
+
+PT_AttrPropIndex PX_ChangeRecord_SpanChange::getOldIndexAP(void) const
+{
+	return m_indexOldAP;
 }
