@@ -59,6 +59,7 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "ut_mbtowc.h"
 
 #include "fd_Field.h"
 
@@ -538,6 +539,7 @@ private:
 	void	_handleField (const PX_ChangeRecord_Object * pcro, PT_AttrPropIndex api);
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
+	void	_handleMath (PT_AttrPropIndex api);
 
 #ifdef HTML_META_SUPPORTED
 	void    _handleMetaTag (const char * key, UT_UTF8String & value);
@@ -4374,6 +4376,44 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 	}
 }
 
+
+void s_HTML_Listener::_handleMath (PT_AttrPropIndex api)
+{
+
+	m_utf8_1 = "a";
+	if (tagTop () == TT_A)
+	{
+		tagClose (TT_A, m_utf8_1, ws_None);
+	}
+	m_utf8_1 = "";
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	const XML_Char * szDataID = 0;
+	bool bFound = pAP->getAttribute ("dataid", szDataID);
+
+	if (szDataID == 0) return; // ??
+	UT_UTF8String sMathML;
+	//
+	// OK shovel the mathml into the HTML stream
+	//
+	if (bFound && szDataID)
+	{
+		const UT_ByteBuf * pByteBuf = NULL;
+		bFound = m_pDocument->getDataItemDataByName(szDataID, 
+													 const_cast<const UT_ByteBuf **>(&pByteBuf),
+													 NULL, NULL);
+		if(bFound)
+		{
+			UT_UCS4_mbtowc myWC;
+			sMathML.appendBuf( *pByteBuf, myWC);
+			tagRaw(sMathML);
+		}
+	}
+}
+
 #ifdef HTML_META_SUPPORTED
 
 void s_HTML_Listener::_handleMetaTag (const char * key, UT_UTF8String & value)
@@ -4484,6 +4524,10 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 	
 						case PTO_Bookmark:
 							_handleBookmark (api);
+							return true;
+
+						case PTO_Math:
+							_handleMath (api);
 							return true;
 
 						case PTO_Embed:
