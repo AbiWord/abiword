@@ -19,7 +19,7 @@
 
 
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -41,8 +41,8 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	int offset = 0;
 
 	UT_Bool bResult;
-	const char *attr[] = {"type", "Box", "left", "0pt", "top", "0pt", "width", "*", "height", "*", NULL};
-
+	//const char *attr[] = {"type", "Box", "left", "0pt", "top", "0pt", "width", "*", "height", "*", NULL};
+	
 	FILE *fp = NULL;
 
 	fp = fopen(szFilename, "rb");

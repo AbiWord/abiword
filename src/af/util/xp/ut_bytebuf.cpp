@@ -19,8 +19,7 @@
  
 
 
-#include <malloc.h>
-#include <memory.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "ut_assert.h"

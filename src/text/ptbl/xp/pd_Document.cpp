@@ -19,8 +19,7 @@
 
 
 #include <stdio.h>
-#include <memory.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include "ut_types.h"
 #include "ut_string.h"

@@ -18,9 +18,7 @@
  */
  
 
-#include <memory.h>
-#include <malloc.h>
-
+#include <stdlib.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
