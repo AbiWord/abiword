@@ -454,7 +454,7 @@ msgstr "&Marginal"
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:167
 msgid "&Match case"
-msgstr "Mat&cha gemena/VERSALER"
+msgstr "Mat&cha gemener/VERSALER"
 
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:169
@@ -1089,12 +1089,12 @@ msgstr "Ändra skiftläge"
 msgid ""
 "Change Current \n"
 "List"
-msgstr "Ändra på nuvarande lista"
+msgstr "Ändra nuvarande lista"
 
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:421
 msgid "Change Highlight Color"
-msgstr "Ändra markeringsfärg"
+msgstr "Ändra bakgrundsfärg"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:423
@@ -1250,7 +1250,7 @@ msgstr "Töm bakgrundsfärg"
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h.h:479
 msgid "Clear Highlight Color"
-msgstr "Ta bort markeringsfärg"
+msgstr "Ta bort bakgrundsfärg"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h.h:481
@@ -1565,7 +1565,7 @@ msgstr "Visar hjälp Contents"
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:603
 msgid "Display Help Index"
-msgstr "Visar hjälp Index"
+msgstr "Visar hjälp index"
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:605
@@ -3560,12 +3560,12 @@ msgstr "Zooma till &75%"
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:1373
 msgid "Zoom to &Page Width"
-msgstr "Zooma till &Sidbredd"
+msgstr "Zooma till &sidbredd"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1375
 msgid "Zoom to &Whole Page"
-msgstr "Zooma till &Hel sida"
+msgstr "Zooma till &hel sida"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:1377
