@@ -60,6 +60,9 @@ class AP_UnixDialog_PageNumbers : public AP_Dialog_PageNumbers
 
   GtkWidget * m_previewArea;
 
+  GtkWidget * m_combo1;
+  GtkWidget * m_combo2;
+
   GR_UnixGraphics * m_unixGraphics;
 };
 

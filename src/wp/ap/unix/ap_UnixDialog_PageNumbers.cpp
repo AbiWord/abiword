@@ -172,28 +172,32 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
     gtk_grab_add(mainWindow);
 
     // *** this is how we add the gc ***
-	{
-	  // attach a new graphics context to the drawing area
-	  XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+    {
+      // attach a new graphics context to the drawing area
+      XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+    
+      UT_ASSERT(unixapp);
+      UT_ASSERT(m_previewArea && m_previewArea->window);
+      DELETEP (m_unixGraphics);
+      
+      // make a new Unix GC
+      m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, 
+					   unixapp->getFontManager(), 
+					   m_pApp);
+    
+      // let the widget materialize
+      _createPreviewFromGC(m_unixGraphics,
+			   (UT_uint32) m_previewArea->allocation.width,
+			   (UT_uint32) m_previewArea->allocation.height);
+      
+      // hack in a quick draw here
+      _updatePreview(m_recentAlign, m_recentControl);
+      event_PreviewExposed ();
+    }
 
-	  UT_ASSERT(unixapp);
-	  UT_ASSERT(m_previewArea && m_previewArea->window);
-	  DELETEP (m_unixGraphics);
-	  
-	  // make a new Unix GC
-	  m_unixGraphics = new GR_UnixGraphics(m_previewArea->window, 
-					       unixapp->getFontManager(), 
-					       m_pApp);
-	  
-	  // let the widget materialize
-	  _createPreviewFromGC(m_unixGraphics,
-			       (UT_uint32) m_previewArea->allocation.width,
-			       (UT_uint32) m_previewArea->allocation.height);
-
-	  // hack in a quick draw here
-	  _updatePreview(m_recentAlign, m_recentControl);
-	  event_PreviewExposed ();
-	}
+    // properly set the controls
+    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo1)->list), (int)m_control);
+    gtk_list_select_item (GTK_LIST (GTK_COMBO (m_combo2)->list), (int)m_align);
 
     // Run into the GTK event loop for this window.
     gtk_main();
@@ -227,7 +231,6 @@ void AP_UnixDialog_PageNumbers::_connectSignals (void)
 				 "destroy",
 				 NULL,
 				 NULL);
-
 }
 
 void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
@@ -274,23 +277,22 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
   gtk_box_pack_start (GTK_BOX (vbox1), combo1, FALSE, FALSE, 0);
 
   combo_entry1 = GTK_COMBO (combo1)->entry;
-  //gtk_entry_set_text (GTK_ENTRY (combo_entry1), "Center");
   gtk_entry_set_editable (GTK_ENTRY (combo_entry1), FALSE);
   gtk_widget_ref (combo_entry1);
   gtk_widget_show (combo_entry1);
+
+  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
+  gtk_widget_show(li);
+  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
+  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
+  gtk_signal_connect (GTK_OBJECT (li), "select",
+		      GTK_SIGNAL_FUNC (s_position_changed),
+		      (gpointer) this);
 
   li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer));
   gtk_widget_show(li);
   gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
   gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_FTR));
-  gtk_signal_connect (GTK_OBJECT (li), "select",
-		      GTK_SIGNAL_FUNC (s_position_changed),
-		      (gpointer) this);
-  
-  li = gtk_list_item_new_with_label(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header));
-  gtk_widget_show(li);
-  gtk_container_add (GTK_CONTAINER(GTK_COMBO(combo1)->list), li);
-  gtk_object_set_user_data (GTK_OBJECT (li), GINT_TO_POINTER (AP_Dialog_PageNumbers::id_HDR));
   gtk_signal_connect (GTK_OBJECT (li), "select",
 		      GTK_SIGNAL_FUNC (s_position_changed),
 		      (gpointer) this);
@@ -310,7 +312,6 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
   gtk_box_pack_start (GTK_BOX (vbox1), combo2, FALSE, FALSE, 0);
 
   combo_entry2 = GTK_COMBO (combo2)->entry;
-  //gtk_entry_set_text (GTK_ENTRY (combo_entry2), "Footer");
   gtk_entry_set_editable (GTK_ENTRY (combo_entry2), FALSE);
   gtk_widget_ref (combo_entry2);
   gtk_widget_show (combo_entry2);
@@ -356,6 +357,9 @@ void AP_UnixDialog_PageNumbers::_constructWindowContents (GtkWidget *box)
 		     "expose_event",
 		     GTK_SIGNAL_FUNC(s_preview_exposed),
 		     (gpointer) this);
+
+  m_combo1 = combo1;
+  m_combo2 = combo2;
 }
 
 GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
