@@ -59,6 +59,8 @@ bool fp_TextRun::s_bSaveContextGlyphs = false;
 bool fp_TextRun::s_bBidiOS = false;
 UT_Timer * fp_TextRun::s_pPrefsTimer = 0;
 UT_uint32  fp_TextRun::s_iClassInstanceCount = 0;
+UT_sint32 * fp_TextRun::s_pCharAdvance = NULL;
+UT_uint32  fp_TextRun::s_iCharAdvanceSize = 0;
 UT_UCSChar getMirrorChar(UT_UCSChar c);
 
 
@@ -124,6 +126,9 @@ fp_TextRun::~fp_TextRun()
 	if(!s_iClassInstanceCount)
 	{
 		DELETEP(s_pPrefsTimer);
+		delete [] s_pCharAdvance;
+		s_pCharAdvance = NULL;
+		s_iCharAdvanceSize = 0;
 	}
 
 #ifndef WITH_PANGO
@@ -515,8 +520,9 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 
 		for (UT_uint32 i=0; i<lenSpan; i++)
 		{
-			iLeftWidth += pCharWidths[i + offset];
-			iRightWidth -= pCharWidths[i + offset];
+			UT_sint32 iCW = pCharWidths[i + offset] > 0 ? pCharWidths[i + offset] : 0;
+			iLeftWidth += iCW;
+			iRightWidth -= iCW;
 #if 0
 	/*
 	FIXME: this is a direct equivalent to HJ's patch, but other branch
@@ -534,7 +540,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 				|| bForce
 				)
 			{
-				if (iLeftWidth - pCharWidths[i + offset] <= iMaxLeftWidth)
+				if (iLeftWidth - iCW <= iMaxLeftWidth)
 				{
 					si.iLeftWidth = iLeftWidth;
 					si.iRightWidth = iRightWidth;
@@ -636,8 +642,11 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
-	// catch the case of a click directly on the left half of the first character in the run
-	if (x < (pCharWidths[getBlockOffset()] / 2))
+	// catch the case of a click directly on the left half of the
+	// first character in the run
+	UT_sint32 iCW = pCharWidths[getBlockOffset()] > 0 ? pCharWidths[getBlockOffset()] : 0;
+	
+	if (x < (iCW / 2))
 	{
 		pos = getBlock()->getPosition() + getOffsetFirstVis();
 
@@ -656,8 +665,9 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	{
 		// i represents VISUAL offset but the CharWidths array uses logical order of indexing
 		UT_uint32 iLog = getOffsetLog(i);
+		UT_uint32 iCW = pCharWidths[iLog] > 0 ? pCharWidths[iLog] : 0;
 
-		iWidth += pCharWidths[iLog];
+		iWidth += iCW;
 
 		if (iWidth > x)
 		{
@@ -698,7 +708,8 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 	for (UT_uint32 i=getBlockOffset(); i<offset; i++)
 	{
-			xdiff += pCharWidths[i];
+		UT_uint32 iCW = pCharWidths[i] > 0 ? pCharWidths[i] : 0;
+		xdiff += iCW;
 	}
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
@@ -933,8 +944,11 @@ void fp_TextRun::mergeWithNext(void)
 				UT_uint32 iTextWidth = (UT_uint32)pNext->m_pJustifiedSpaces->getNthItem(iVectIndx+3);
 
 				for(UT_uint32 k = iTextBlOffset; k < iLastBlOffset; k++)
-					iTextWidth += pCharWidths[k];
-
+				{
+					UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
+					iTextWidth += iCW;
+				}
+				
 				// we also have to adjust offsets so they are relative to
 				// iDelta, not iNDelta
 				UT_sint32 iMyOffset = (UT_uint32)pNext->m_pJustifiedSpaces->getNthItem(iVectIndx);
@@ -1235,8 +1249,11 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 					UT_uint32 iTextWidth = (UT_uint32)pNew->m_pJustifiedSpaces->getNthItem(5);
 
 					for(UT_uint32 k = iTextBlOffset; k < iLastBlOffset; k++)
-						iTextWidth -= pCharWidths[k];
-
+					{
+						UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
+						iTextWidth -= iCW;
+					}
+					
 					pNew->m_pJustifiedSpaces->setNthItem(5, (void*)iTextWidth, NULL);
 					
 
@@ -1492,7 +1509,9 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 				getGR()->measureString(m_pSpanBuff + i, 0, 1, (UT_GrowBufElement*)pCharWidths + getBlockOffset() + i);
 			}
 #endif
-			iWidth += pCharWidths[i + getBlockOffset()];
+			UT_uint32 iCW = pCharWidths[i + getBlockOffset()] > 0 ? pCharWidths[i + getBlockOffset()] : 0;
+			
+			iWidth += iCW;
 		}
 #ifndef WITH_PANGO
 		getGR()->setFont(_getScreenFont());
@@ -1570,7 +1589,8 @@ bool fp_TextRun::recalcWidth(void)
 			{
 				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsLayout + k);
 			}
-			_setWidthLayoutUnits(getWidthInLayoutUnits()+pCharWidthsLayout[k]);
+			UT_uint32 iCW = pCharWidthsLayout[k] > 0 ? pCharWidthsLayout[k] : 0;
+			_setWidthLayoutUnits(getWidthInLayoutUnits() + iCW);
 		}
 
 		getGR()->setFont(_getScreenFont());
@@ -1587,7 +1607,8 @@ bool fp_TextRun::recalcWidth(void)
 			{
 				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
 			}
-			_setWidth(getWidth() + pCharWidthsDisplay[k]);
+			UT_uint32 iCW = pCharWidthsDisplay[k] > 0 ? pCharWidthsDisplay[k] : 0;
+			_setWidth(getWidth() + iCW);
 		}
 		
 #endif // #ifndef WITH_PANGO
@@ -1621,9 +1642,12 @@ bool fp_TextRun::_addupCharWidths(void)
 
 	for (UT_uint32 i = getBlockOffset(); i < getLength() + getBlockOffset(); i++)
 	{
-		iWidth += pCharWidthsDisplay[i];
+		UT_uint32 iCW = pCharWidthsDisplay[i] > 0 ? pCharWidthsDisplay[i] : 0;
+		iWidth += iCW;
+		
 #ifndef WITH_PANGO
-		iWidthLayoutUnits += pCharWidthsLayout[i];
+		iCW = pCharWidthsLayout[i] > 0 ? pCharWidthsLayout[i] : 0;
+		iWidthLayoutUnits += iCW;
 #endif
 	}
 
@@ -1730,24 +1754,127 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	UT_ASSERT(pDA->pG == getGR());
+
+	
+	////////////////////////////////////////////////////////////////////
+	// 
+	// This section deals with calculating character advances so that
+	// overstriking characters get handled correctly
+	//
+	
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	const UT_GrowBuf * pgbCharWidthsLayout = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
-	UT_sint32 * pCharWidths = getGR()->queryProperties(GR_Graphics::DGP_SCREEN) ?
-		pgbCharWidths->getPointer(0) :
-		pgbCharWidthsLayout->getPointer(0);
+	UT_sint32 * pCWThis = getGR()->queryProperties(GR_Graphics::DGP_SCREEN) ?
+		pgbCharWidths->getPointer(getBlockOffset()) :
+		pgbCharWidthsLayout->getPointer(getBlockOffset());
+
 
 	// should this prove to be too much of a performance bottleneck,
 	// we will cache this in a member array
-	UT_sint32 * pCW2 = NULL;
+
+	UT_uint32 iLen = getLength();
+	if(iLen > s_iCharAdvanceSize)
+	{
+		delete [] s_pCharAdvance;
+		s_pCharAdvance = new UT_sint32 [iLen];
+		UT_return_if_fail(s_pCharAdvance);
+		s_iCharAdvanceSize = iLen;
+	}
+
+	UT_sint32 xoff_draw = pDA->xoff;
+	
 	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL )
 	{
-		UT_uint32 iLen = getLength();
-		pCW2 = new UT_sint32[iLen];
-		for(UT_uint32 n = 0; n < iLen; n++)
+		for(UT_uint32 n = 0; n < iLen - 1; n++)
 		{
-			pCW2[n] = pCharWidths[iLen - n - 1];
+			if(pCWThis[iLen - n - 1] < 0)
+			{
+				UT_sint32 iWidth = 0;
+				UT_sint32 iCumAdvance = 0;
+
+				UT_sint32 m = iLen - n - 2;
+				while(m >= 0 && pCWThis[m] < 0)
+					m--;
+
+				if(m < 0)
+				{
+					// problem: this run does not contain the
+					// character over which we are meant to be
+					// overimposing our overstriking chars
+					// we will have to set the offsets to 0
+					for(UT_uint32 k = n; k < iLen - 1; k++)
+						s_pCharAdvance[k] = 0;
+
+					n = iLen - 1;
+				}
+				else
+				{
+					UT_uint32 k;
+					for(k = n; k < iLen - m -1; k++)
+					{
+						UT_sint32 iAdv = (pCWThis[m] + pCWThis[iLen - k - 1])/2 - iCumAdvance;
+						if(k == 0)
+						{
+							// k == 0, this is the leftmost character,
+							// so we have no advance to set, but we
+							// can adjust the starting point of the drawing
+							xoff_draw += iAdv;
+						}
+						else if(k == n)
+						{
+							// this is a special case; we have already
+							// calculated the advance in previous
+							// round of the main loop, and this is
+							// only adjustment
+							s_pCharAdvance[k-1] += iAdv;
+						}
+						else
+							s_pCharAdvance[k-1] = iAdv;
+
+						iCumAdvance += iAdv;
+					}
+
+					s_pCharAdvance[k-1] = -iCumAdvance;
+					s_pCharAdvance[k]   = pCWThis[m];
+					n = k; // should be k+1, but there will be n++ in
+					       // the for loop
+				}
+
+			}
+			else
+			{
+				s_pCharAdvance[n] = pCWThis[iLen - n - 1];
+			}
 		}
-		pCharWidths = pCW2;
+	}
+	else
+	{
+		for(UT_uint32 n = 0; n < iLen - 1; n++)
+		{
+			if(pCWThis[n+1] < 0)
+			{
+				// remember the width of the non-zero character
+				UT_sint32 iWidth = pCWThis[n];
+				UT_sint32 iCumAdvance = 0;
+				
+				// find the next non-zerow char
+				UT_uint32 m  = n + 1;
+				while(m < iLen && pCWThis[m] < 0)
+				{
+					// plus because pCharWidths[m] < 0
+					// -1 because it is between m-1 and m
+					s_pCharAdvance[m-1] = iWidth - (iWidth + pCWThis[m])/2 + iCumAdvance;
+					iCumAdvance += s_pCharAdvance[m-1];
+					m++;
+				}
+
+				n = m-1; // this is the last 0-width char
+				s_pCharAdvance[n] = iWidth - iCumAdvance;
+			}
+			else
+				s_pCharAdvance[n] = pCWThis[n];
+		}
+
 	}
 	
 	UT_uint32 iBase = getBlock()->getPosition();
@@ -1915,7 +2042,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		// this is the case of non-justified run or fakly-justified run
 		// since we have the visual string in the draw buffer, we just call getGR()r->drawChars()
-		getGR()->drawChars(m_pSpanBuff, 0, getLength(), pDA->xoff, yTopOfRun,pCharWidths);
+		getGR()->drawChars(m_pSpanBuff, 0, getLength(), xoff_draw, yTopOfRun,s_pCharAdvance);
 	}
 	else
 	{
@@ -1936,7 +2063,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 		UT_uint32 iOffset = 0;
 		UT_uint32 iLength = getLength();
-		UT_sint32 iX = pDA->xoff;
+		UT_sint32 iX = xoff_draw;
 		UT_uint32 i = 2;
 
 		do
@@ -1946,7 +2073,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			iSpaceWidth  = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+2);
 			iTextWidth   = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+3);
 
-			getGR()->drawChars(m_pSpanBuff, iOffset, iSpaceOffset - iOffset, iX, yTopOfRun, pCharWidths + iOffset);
+			getGR()->drawChars(m_pSpanBuff, iOffset, iSpaceOffset - iOffset, iX, yTopOfRun, s_pCharAdvance + iOffset);
 			xxx_UT_DEBUGMSG(( "fp_TextRun::_draw: iOffset %d, iSpaceOffset %d, iSpaceLength %d, iDelta %d, iCurrOffset %d, iSpaceWidth %d, iTextWidth %d\n", iOffset, iSpaceOffset, iSpaceLength, iDelta, iCurrOffset, iSpaceWidth, iTextWidth ));
 
 			iOffset = iSpaceOffset + iSpaceLength;
@@ -1959,7 +2086,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(iOffset < iLength)
 		{
 			// draw the section of the run past the last space segment
-			getGR()->drawChars(m_pSpanBuff, iOffset, iLength - iOffset, iX, yTopOfRun, pCharWidths + iOffset);
+			getGR()->drawChars(m_pSpanBuff, iOffset, iLength - iOffset, iX, yTopOfRun, s_pCharAdvance + iOffset);
 		}
 	}
 
@@ -1974,9 +2101,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// TODO: draw this underneath (ie, before) the text and decorations
 	m_bSquiggled = false;
 	getBlock()->findSquigglesForRun(this);
-
-	if(pCW2)
-		delete[]pCW2;
 }
 
 void fp_TextRun::_fillRect(UT_RGBColor& clr,
@@ -2047,7 +2171,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	{
 		for (i=getBlockOffset(); i<iStart; i++)
 		{
-			pRect->left += pCharWidths[i];
+			UT_uint32 iCW = pCharWidths[i] > 0 ? pCharWidths[i] : 0;
+			pRect->left += iCW;
 		}
 	}
 
@@ -2058,7 +2183,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 
 	for (i=iStart; i<(iStart + iLen); i++)
 	{
-		pRect->width += pCharWidths[i];
+		UT_uint32 iCW = pCharWidths[i] > 0 ? pCharWidths[i] : 0;
+		pRect->width += iCW;
 	}
 
 	//in case of rtl we are now in the position to calculate the position of the the left corner
@@ -2300,7 +2426,7 @@ void fp_TextRun::shape()
 		// now convert the whole span into utf8
 		UT_UTF8String wholeStringUtf8 (pWholeString, getLength());
 
-		// let Panog to analyse the string
+		// let Pango to analyse the string
 		GList * pItems = pango_itemize(getGR()->getPangoContext(),
 									   wholeStringUtf8.utf8_str(),
 									   0,
@@ -2562,7 +2688,8 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 			   {
 				   getGR()->fillRect(pView->getColorShowPara(), xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
 			   }
-			   iWidth += pCharWidths[i + offset];
+			   UT_uint32 iCW = pCharWidths[i + offset] > 0 ? pCharWidths[i + offset] : 0;
+			   iWidth += iCW;
 			}
 			if (len <= lenSpan){
 				bContinue = false;

@@ -21,39 +21,12 @@
 #include "ut_Win32OS.h"
 #include "gr_Win32CharWidths.h"
 #include "ut_debugmsg.h"
+#include "ut_OverstrikingChars.h"
 
 //////////////////////////////////////////////////////////////////
 //#define USE_HIGH_RESOLUTION
 void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1)
 {
-#if 0
-	UT_uint32 loc0 = (c0 & 0xff);
-	UT_uint32 loc1 = (c1 & 0xff);
-	UT_uint32 hic0 = ((c0 >> 8) & 0xff);
-	UT_uint32 hic1 = ((c1 >> 8) & 0xff);
-
-	if (hic0 == hic1)					// we are contained within one page
-	{
-		Array256 * pA = NULL;
-		if (hic0 == 0)
-			pA = &m_aLatin1;
-		else if (m_vecHiByte.getItemCount() > hic0)
-			pA = (Array256 *)m_vecHiByte.getNthItem(hic0);
-		if (pA)
-		{
-			if (UT_IsWinNT())
-				GetCharWidth32(hdc, loc0, loc1, &(pA->aCW[loc0]));
-			else
-				// GetCharWidth(hdc, loc0, loc1, &(pA->aCW[loc0]));
-				GetTextExtentPoint32W( ...se below... );
-			return;
-		}
-	}
-
-	// if we fall out of the above, we're either spanning
-	// different pages or we are on a page that hasn't
-	// be loaded yet.  do it the hard way....
-#endif
 	UINT k;
 	int w;
 	//float f=0;
@@ -74,10 +47,16 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 			else
 			{
 				GetCharWidth32W(hdc,k,k,&w);
-#if 0
-				bool res = GetCharWidthFloatW(hdc,k,k,&f);
-				UT_DEBUGMSG(("char width1 (%d): 0x%x, int %d, float %f\n", res, k, w, f));
-#endif
+
+				// handle overstriking chars here
+				if(!w || isOverstrikingChar(k) != UT_NOT_OVERSTRIKING)
+				{
+					ABC abc;
+					int iRes = GetCharABCWidths(hdc,k,k,&abc);
+					UT_ASSERT( iRes );
+					w -= abc.abcB;
+				}
+				
 				setWidth(k,w);
 			}
 		}
@@ -89,13 +68,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 		int iRes = GetObject(hFont, sizeof(LOGFONT), &aLogFont);
 		UT_ASSERT(iRes);
 
-#ifdef USE_HIGH_RESOLUTION
-		aLogFont.lfHeight *= 100;
-		HFONT hBigFont = CreateFontIndirect(&aLogFont);
-		UT_sint32 iOrigWidth;
-		
-#endif
-		UT_DEBUGMSG(("gr_Win32Graphics::getCharWidth: extra interchar. spacing %d\n", GetTextCharacterExtra(hdc)));
+		xxx_UT_DEBUGMSG(("gr_Win32Graphics::getCharWidth: extra interchar. spacing %d\n", GetTextCharacterExtra(hdc)));
 		
 		if(aLogFont.lfCharSet == SYMBOL_CHARSET)
 		{
@@ -107,17 +80,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 				int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
 					(unsigned short*) &k, 1, str, sizeof(str), NULL, NULL);
 				GetTextExtentPoint32A(hdc, str, iConverted, &Size);
-#if 0
-				bool res = GetCharWidthFloat(hdc,k,k,&f);
-				UT_DEBUGMSG(("char width2 (%d): 0x%x, int %d, float %f\n", res, k, Size.cx, f));
-#endif
-#ifdef USE_HIGH_RESOLUTION
-				UT_sint32 myWidth = (Size.cx / 100) + ((Size.cx % 100 > 50)? 1:0);
-				setWidth(k,myWidth);
-				UT_DEBUGMSG(("gr_Win32Graphics::getCharWidths: myWidth %d, Size.cx %d\n", myWidth, Size.cx));
-#else
 				setWidth(k,Size.cx);
-#endif					
 			}
 		}
 		else
@@ -132,21 +95,19 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					SIZE Size;
 					wchar_t sz1[2];
 					sz1[0] = k;
-#ifdef USE_HIGH_RESOLUTION					
-					SelectObject(hdc, (HGDIOBJ) hFont);
-#endif
 					
 					GetTextExtentPoint32W(hdc, sz1, 1, &Size);
-#ifdef USE_HIGH_RESOLUTION
-					iOrigWidth = Size.cx;
-					
-					SelectObject(hdc, (HGDIOBJ) hBigFont);
-					GetTextExtentPoint32W(hdc, sz1, 1, &Size);
-#endif					
-#if 0
-					bool res = GetCharWidthFloat(hdc,k,k,&f);
-					UT_DEBUGMSG(("char width3 (%d): 0x%x, int %d, float %f\n", res, k, Size.cx, f));
 
+					// handle overstriking chars here
+					if(!Size.cx || isOverstrikingChar(k) != UT_NOT_OVERSTRIKING)
+					{
+						ABC abc;
+						int iRes = GetCharABCWidths(hdc,k,k,&abc);
+						UT_ASSERT( iRes );
+						Size.cx -= abc.abcB;
+					}
+				
+#if 0
 					if(!res)
 					{
 						LPVOID lpMsgBuf;
@@ -170,21 +131,11 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 						LocalFree( lpMsgBuf );
 					}
 #endif
-#ifdef USE_HIGH_RESOLUTION
-					UT_sint32 myWidth = (Size.cx / 100) + ((Size.cx % 100 > 50)? 1:0);
-					setWidth(k,myWidth);
-					UT_DEBUGMSG(("gr_Win32Graphics::getCharWidths: 0x%x: orig. width %d, myWidth %d, Size.cx %d\n", k, iOrigWidth, myWidth, Size.cx));
-#else
 					setWidth(k,Size.cx);
-					UT_DEBUGMSG(("gr_Win32Graphics::getCharWidths: 0x%x: Size.cx %d\n", k, Size.cx));
-#endif					
+					xxx_UT_DEBUGMSG(("gr_Win32Graphics::getCharWidths: 0x%x: Size.cx %d\n", k, Size.cx));
 				}
 			}
 		}
-#ifdef USE_HIGH_RESOLUTION
-		SelectObject(hdc, (HGDIOBJ)hFont);
-		DeleteObject((HGDIOBJ)hBigFont);
-#endif	
 	}
 }
 

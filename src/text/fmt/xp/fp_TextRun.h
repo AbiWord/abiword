@@ -236,6 +236,10 @@ private:
 	const XML_Char *		m_pLanguage;
 	bool					m_bIsOverhanging;
 	UT_Vector *             m_pJustifiedSpaces;
+
+	// these can be static as for now we do not want to chache anything
+	static UT_sint32 *      s_pCharAdvance;
+	static UT_uint32        s_iCharAdvanceSize;
 };
 
 #endif /* FP_TEXTRUN_H */
