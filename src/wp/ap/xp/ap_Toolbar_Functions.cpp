@@ -40,11 +40,25 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "ap_FrameData.h"
 #include "pd_Document.h"
+#include "ut_Script.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 
 /****************************************************************/
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive)
+{
+  EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+  UT_ScriptLibrary& instance = UT_ScriptLibrary::instance ();
+  UT_uint32 filterCount = instance.getNumScripts ();
+
+  if ( filterCount == 0 )
+    s = EV_TIS_Gray;
+
+  return s;
+}
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 {

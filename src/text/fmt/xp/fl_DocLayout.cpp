@@ -498,7 +498,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 {
 	fl_BlockLayout* pBL = NULL;
-	PL_StruxFmtHandle sfh;
+	PL_StruxFmtHandle sfh = 0;
 
 	PT_DocPosition posEOD;
 	bool bRes;

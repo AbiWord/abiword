@@ -6627,6 +6627,14 @@ Defun(dlgFmtImage)
 		  properties[1] = widthBuf;
 		  properties[3] = heightBuf;
 		  pView->setCharFormat(properties);
+
+		  //
+		  // Now update all views on the document. Do this always to be safe.
+		  //
+		  {
+		    PD_Document * pDoc = pView->getLayout()->getDocument();
+		    pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+		  }
 		}
 	  
 	  pDialogFactory->releaseDialog(pDialog);

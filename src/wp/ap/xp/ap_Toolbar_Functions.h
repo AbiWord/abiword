@@ -30,6 +30,7 @@
 
 #include "ev_Toolbar_Actions.h"
 
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard);
