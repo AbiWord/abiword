@@ -2810,6 +2810,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 			return 1;
 		}
+		m_bInPara = true;
 	}
 	
 	if (myListId > 0 && !bDoNotInsertStrux)
@@ -2819,7 +2820,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_field_fmt[0] = "type";
 		list_field_fmt[1] = "list_label";
 		list_field_fmt[2] = 0;
-
 		_appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
 
 		// the character following the list label - 0=tab, 1=space, 2=none

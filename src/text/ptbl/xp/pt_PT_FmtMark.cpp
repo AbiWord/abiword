@@ -242,7 +242,6 @@ bool pt_PieceTable::purgeFmtMarks()
 	{
 		if (pfTemp->getType() == pf_Frag::PFT_EndOfDoc)
 			break;
-
 		if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
 		{
 			pf_Frag * pfNewTemp;
@@ -254,7 +253,6 @@ bool pt_PieceTable::purgeFmtMarks()
 
 			// FmtMarks have length zero, so we don't need to update dposTemp.
 			pfTemp = pfNewTemp;
-
 #ifdef DEBUG
 			++iCount;
 #endif
@@ -264,7 +262,6 @@ bool pt_PieceTable::purgeFmtMarks()
 			pfTemp = pfTemp->getNext();
 		}
 	}
-
 	UT_DEBUGMSG(("pt_PieceTable::purgeFmtMarks: removed %d marks\n", iCount));
 	return true;
 }

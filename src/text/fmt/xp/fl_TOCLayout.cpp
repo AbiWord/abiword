@@ -621,7 +621,10 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 	
 	PD_Style * pStyle = NULL;
 	m_pDoc->getStyle(pszStyle,&pStyle);
-
+	if(pStyle == NULL)
+	{
+		m_pDoc->getStyle("Normal",&pStyle);
+	}
 	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
 	PD_DocumentRange * docRange = new PD_DocumentRange(m_pDoc,posStart,posEnd);
 	
