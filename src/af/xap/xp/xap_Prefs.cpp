@@ -28,10 +28,6 @@
 #include "ut_string.h"
 #include "xap_Prefs.h"
 
-#ifdef HAVE_LIBXML2
-#include <libxml/parserInternals.h>
-#endif
-
 /*****************************************************************/
 
 XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeName)
@@ -477,12 +473,6 @@ static void startElement_SystemDefaultFile(void *userData, const XML_Char *name,
 	pPrefs->_startElement_SystemDefaultFile(name,atts);
 }
 
-
-#ifdef HAVE_LIBXML2
-static xmlEntityPtr my_getEntity(void *user_data, const CHAR *name) {
-      return xmlGetPredefinedEntity(name);
-}
-#endif
 
 /*****************************************************************/
 
@@ -1214,6 +1204,12 @@ void XAP_Prefs::_sendPrefsSignal( UT_AlphaHashTable *hash  )
 }
 
 #ifdef HAVE_LIBXML2
+#include <libxml/parserInternals.h>
+
+static xmlEntityPtr _getEntity(void *user_data, const CHAR *name) {
+      return xmlGetPredefinedEntity(name);
+}
+
 UT_Bool XAP_Prefs::_sax (const char *path, UT_Bool sys)
 {
 	xmlSAXHandler hdl;
@@ -1222,7 +1218,7 @@ UT_Bool XAP_Prefs::_sax (const char *path, UT_Bool sys)
 	hdl.hasInternalSubset = NULL;
 	hdl.hasExternalSubset = NULL;
 	hdl.resolveEntity = NULL;
-	hdl.getEntity = my_getEntity;
+	hdl.getEntity = _getEntity;
 	hdl.entityDecl = NULL;
 	hdl.notationDecl = NULL;
 	hdl.attributeDecl = NULL;

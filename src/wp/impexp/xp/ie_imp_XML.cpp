@@ -81,7 +81,6 @@ int mapNameToToken (const char * name, struct xmlToIdMapping * idlist, int len)
 ******************************************************************
 *****************************************************************/
 
-#ifndef HAVE_LIBXML2
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
@@ -99,7 +98,6 @@ static void charData(void* userData, const XML_Char *s, int len)
 	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
 	pDocReader->_charData(s, len);
 }
-#endif /* HAVE_LIBXML2 */
 
 /*****************************************************************/
 /*****************************************************************/
@@ -122,23 +120,11 @@ void IE_Imp_XML::_closeFile(void)
     }
 }
 
+// should we use throw/catch here for errors? -aaronl
 UT_Error IE_Imp_XML::importFile(const char * szFilename)
 {
 #ifdef HAVE_LIBXML2
-	xmlDocPtr dok = xmlParseFile(szFilename);
-	if (dok == NULL)
-	  {
-	    UT_DEBUGMSG(("Could not open and parse file %s\n",
-			 szFilename));
-	    m_error = UT_IE_FILENOTFOUND;
-	  }
-	else
-	  {
-	    xmlNodePtr node = xmlDocGetRootElement(dok);
-	    _scannode(dok,node,0);
-	    xmlFreeDoc(dok);
-	    m_error = UT_OK;
-	  }
+	m_error = _sax (szFilename);
 #else
 	XML_Parser parser = NULL;
 	int done = 0;
@@ -473,31 +459,61 @@ void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 }
 
 #ifdef HAVE_LIBXML2
-void IE_Imp_XML::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
+#include <libxml/parserInternals.h>
+
+static xmlEntityPtr _getEntity(void *user_data, const CHAR *name) {
+      return xmlGetPredefinedEntity(name);
+}
+
+UT_Error IE_Imp_XML::_sax(const char *path)
 {
-  while (cur != NULL)
-    {
-      if (strcmp("text", (char*) cur->name) == 0)
+	UT_Error ret = UT_OK;
+	xmlSAXHandler hdl;
+	hdl.internalSubset = NULL;
+	hdl.isStandalone = NULL;
+	hdl.hasInternalSubset = NULL;
+	hdl.hasExternalSubset = NULL;
+	hdl.resolveEntity = NULL;
+	hdl.getEntity = _getEntity;
+	hdl.entityDecl = NULL;
+	hdl.notationDecl = NULL;
+	hdl.attributeDecl = NULL;
+	hdl.elementDecl = NULL;
+	hdl.unparsedEntityDecl = NULL;
+	hdl.setDocumentLocator = NULL;
+	hdl.startDocument = NULL;
+	hdl.endDocument = NULL;
+	hdl.startElement = startElement;
+	hdl.endElement = endElement;
+	hdl.reference = NULL;
+	hdl.characters = charData;
+	hdl.ignorableWhitespace = NULL;
+	hdl.processingInstruction = NULL;
+	hdl.comment = NULL;
+	hdl.warning = NULL;
+	hdl.error = NULL;
+	hdl.fatalError = NULL;
+
+	xmlParserCtxtPtr ctxt;
+
+	ctxt = xmlCreateFileParserCtxt(path);
+	if (ctxt == NULL)
 	{
-	  XML_Char* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
-	  _charData(s, strlen((char*) s));
+		UT_DEBUGMSG(("Could not open and parse file %s\n",
+					 path));
+		// by this point we haven't allocated anything so we can just return right here
+		return UT_IE_FILENOTFOUND;
 	}
-      else
-	{
-	  XML_Char *prop = NULL;
-	  const XML_Char* props[3] = { NULL, NULL, NULL };
-	  if (cur->properties)
-	    {
-	      props[0] = cur->properties->name;
-	      props[1] = cur->properties->children->content;
-	    }
-	  _startElement(cur->name, props);
-	  if (prop) g_free(prop);
-	}
-      _scannode(dok, cur->children, c + 1);
-      if (strcmp("text", (char*) cur->name) != 0)
-	_endElement(cur->name);
-      cur = cur->next;
-    }
+	ctxt->sax = &hdl;
+	ctxt->userData = (void *) this;
+
+	xmlParseDocument(ctxt);
+
+
+	if (!ctxt->wellFormed)
+		ret = UT_IE_IMPORTERROR;
+	ctxt->sax = NULL;
+	xmlFreeParserCtxt(ctxt);
+	return ret;
 }
 #endif /* HAVE_LIBXML2 */

@@ -55,9 +55,6 @@ public:
 
     // the following are public only so that the
     // XML parser callback routines can access them.
-#ifdef HAVE_LIBXML2
-    void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c);
-#endif	
 
     // you *must* override these next two methods
     virtual void	_startElement(const XML_Char *name, 
@@ -108,6 +105,9 @@ protected:
     UT_Bool			m_currentDataItemEncoded;
 
     FILE *			m_fp;
+#ifdef HAVE_LIBXML2
+    UT_Error _sax(const char *path);
+#endif	
 };
 
 #endif /* IE_IMP_XML_H */
