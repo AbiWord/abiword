@@ -73,22 +73,22 @@ public:
 //! PTStruxType tells the sub-type of a FragStrux.
 typedef enum _PTStruxType
 {
-	PTX_Section = 0,         // 0 -- maker sure that we can cast into uint
-	PTX_Block,           // 1
-	PTX_SectionHdrFtr,   // 2
-	PTX_SectionEndnote,  // 3
-	PTX_SectionTable,    // 4
-	PTX_SectionCell,     // 5
-	PTX_SectionFootnote, // 6
-	PTX_SectionMarginnote, // 7
-	PTX_SectionFrame,      // 8
-	PTX_EndCell,           // 9
-	PTX_EndTable,          // 10
+	PTX_Section = 0,       	// 0 -- maker sure that we can cast into uint
+	PTX_Block,           	// 1
+	PTX_SectionHdrFtr,   	// 2
+	PTX_SectionEndnote,  	// 3
+	PTX_SectionTable,    	// 4
+	PTX_SectionCell,     	// 5
+	PTX_SectionFootnote, 	// 6
+	PTX_SectionMarginnote, 	// 7
+	PTX_SectionFrame,      	// 8
+	PTX_SectionTOC,			// 9
+	PTX_EndCell,          	// 10
+	PTX_EndTable,
     PTX_EndFootnote,
     PTX_EndMarginnote,
     PTX_EndEndnote,
     PTX_EndFrame,
-	PTX_SectionTOC,
 	PTX_EndTOC,
 	PTX_StruxDummy
 } PTStruxType;
@@ -142,11 +142,3 @@ typedef const void * PL_StruxFmtHandle;
 
 
 #endif /* PT_TYPES_H */
-
-
-
-
-
-
-
-
