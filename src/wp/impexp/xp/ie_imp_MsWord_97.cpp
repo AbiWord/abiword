@@ -500,7 +500,7 @@ s_mapDocToAbiListId (MSWordListIdType id)
 /*!
  * form AW list deliminator string
  */
-static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String &sDelim)
+static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_UTF8String &sDelim)
 {
 	// the Word format string looks like this
 	//    prefix '\0' suffix
@@ -542,9 +542,9 @@ static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String 
 		pSfx++;
 	}
 
-	sDelim.clear();
-
-	UT_String_sprintf(sDelim, "%s%%L%s",sUtf8Pfx.utf8_str(), sUtf8Sfx.utf8_str());
+	sDelim = sUtf8Pfx;
+	sDelim += "%L";
+	sDelim += sUtf8Sfx;
 }
 
 /*!
@@ -1911,8 +1911,8 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					}
 					UT_DEBUGMSG((" clienttextbox %x clientdata %x \n",answer->clienttextbox,answer->clientdata));
 				}
-//				if(isTextBox)
-//				{
+				if(isTextBox)
+				{
 //				if(answer != NULL)
 //				{
 					UT_DEBUGMSG(("Found a Text box! text offset is.. %d \n",textOff));
@@ -1985,7 +1985,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					m_vecTextboxPos.addItem(pPos);
 					wvReleaseEscher (&item);
 					return true;
-//				}
+				}
 				wvReleaseEscher (&item);
 			}
 			else
@@ -2856,10 +2856,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_atts[iOffset++] = szStartValue.c_str();
 
 		// list delimiter
-		UT_String sDelim;
+		UT_UTF8String sDelim;
 		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
 		list_atts[iOffset++] = "list-delim";
-		list_atts[iOffset++] = sDelim.c_str();
+		list_atts[iOffset++] = sDelim.utf8_str();
 
 		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1

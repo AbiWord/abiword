@@ -47,9 +47,9 @@
 %endif
 
 %if %{enable_tools}
-%define plugin_tools --enable-abicommand --enable-abigimp --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots} %{?_with_aiksaurus:--enable-aiksaurus} %{!?_with_aiksaurus:--disable-aiksaurus} %{?_with_gda:--enable-gda} %{!?_with_gda:--disable-gda}
+%define plugin_tools --enable-abicommand --enable-abigimp --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots} %{?_with_aiksaurus:--enable-aiksaurus} %{!?_with_aiksaurus:--disable-aiksaurus} %{?_with_gda:--enable-gda} %{!?_with_gda:--disable-gda}
 %else
-%define plugin_tools --disable-abicommand --disable-abigimp --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell --disable-ots --disable-aiksaurus --disable-gda
+%define plugin_tools --disable-abicommand --disable-abigimp --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-shell --disable-ots --disable-aiksaurus --disable-gda
 %endif
 
 %if %{enable_impexp}
@@ -161,7 +161,6 @@ This is a set of plugins for AbiWord.  It includes
         eml: Use mathematical notation in AbiWord.
  abicommand: Perform AbiWord operations from the command prompt.
     abigimp: Process images in AbiWord using the Gimp.
-  abimagick: Process images in AbiWord using ImageMagick.
   wikipedia: Access the Wikipedia reference from AbiWord.
     urldict: Cross-platform url dictionary plugin.
       gdict: Use the gnome dictionary application from within AbiWord.
@@ -294,7 +293,6 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/templates
 %{_datadir}/icons/*
 %{_datadir}/applications/abiword.desktop
-%{ABIPREFIX}/plugins/libAbiGdkPixbuf.so
 
 
 %files embeddable

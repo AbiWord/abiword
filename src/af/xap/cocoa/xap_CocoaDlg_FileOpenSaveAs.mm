@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -18,8 +20,6 @@
  * 02111-1307, USA.
  */
 
-#import <Cocoa/Cocoa.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,238 +27,432 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "ut_string.h"
-#include "ut_assert.h"
 
-#include "xap_Dialog_Id.h"
-#include "xap_Dlg_MessageBox.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include "ut_misc.h"
+#include "ut_png.h"
+#include "ut_string.h"
+#include "ut_svg.h"
+
 #include "xap_CocoaDlg_FileOpenSaveAs.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
-#include "xap_Strings.h"
+#include "xap_Dialog_Id.h"
+#include "xap_Dlg_MessageBox.h"
 #include "xap_Prefs.h"
-#include "ut_debugmsg.h"
+#include "xap_Strings.h"
 
-#include "ut_png.h"
-#include "ut_svg.h"
-#include "ut_misc.h"
 #include "gr_CocoaGraphics.h"
+#include "gr_CocoaImage.h"
+
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 
-#include "gr_CocoaImage.h"
+#include "ie_imp.h"
+#include "ie_impGraphic.h"
+#include "ie_types.h"
 
-#include <sys/stat.h>
+@implementation XAP_CocoaOpenPanel
 
-#include "../../../wp/impexp/xp/ie_types.h"
-#include "../../../wp/impexp/xp/ie_imp.h"
-#include "../../../wp/impexp/xp/ie_impGraphic.h"
+- (id)init
+{
+	if (self = [super init])
+		{
+			m_bPanelCanOrderOut = YES;
+		}
+	return self;
+}
+
+- (BOOL)panelCanOrderOut
+{
+	return m_bPanelCanOrderOut;
+}
+
+- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut
+{
+	m_bPanelCanOrderOut = panelCanOrderOut;
+}
+
+- (void)orderOut:(id)sender
+{
+	if ([self panelCanOrderOut])
+		{
+			[super orderOut:sender];
+		}
+}
+
+@end
+
+@implementation XAP_CocoaSavePanel
+
+- (id)init
+{
+	if (self = [super init])
+		{
+			m_bPanelCanOrderOut = YES;
+		}
+	return self;
+}
+
+- (BOOL)panelCanOrderOut
+{
+	return m_bPanelCanOrderOut;
+}
+
+- (void)setPanelCanOrderOut:(BOOL)panelCanOrderOut
+{
+	m_bPanelCanOrderOut = panelCanOrderOut;
+}
+
+- (void)orderOut:(id)sender
+{
+	if ([self panelCanOrderOut])
+		{
+			[super orderOut:sender];
+		}
+}
+
+@end
 
 #define PREVIEW_WIDTH  100
 #define PREVIEW_HEIGHT 100
 
-// NSFileHandlingPanelBrowser
-
 @implementation XAP_OpenSavePanel_AccessoryController
 
--(id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap
+- (id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap
 {
-	self = [super init];
-	_xap = xap;
+	if (self = [super init])
+		{
+			_xap = xap;
+			m_bInsertGraphic = NO;
+		}
 	return self;
 }
 
--(NSView*)fileTypeAcessoryView
+- (void)setInsertGraphic:(BOOL)insertGraphic
 {
-	return _fileTypeAcessoryView;
+	m_bInsertGraphic = insertGraphic;
 }
 
--(void)setFileTypeLabel:(NSString*)label
+- (void)setPreviewImage:(NSImage *)image
 {
-	[_fileTypeLabel setStringValue:label];
+	if (m_bInsertGraphic)
+		{
+			if (image)
+				[oFTIImageView setImage:image];
+			else
+				[oFTIImageView setImage:[NSImage imageNamed:@"NSApplicationIcon"]];
+		}
 }
 
--(void)setSelectedFileType:(int)type
+- (NSSize)previewSize
 {
-	[_fileTypePopup selectItem:[[_fileTypePopup menu] itemWithTag:type]];
+	return [oFTIImageView frame].size;
 }
 
--(NSMenu*)fileTypesMenu
+- (NSView *)fileTypeAccessoryView
 {
-	return [_fileTypePopup menu];
+	return (m_bInsertGraphic ? oFTIAccessoryView : oFTAccessoryView);
 }
 
--(void)removeItemsOfFileTypesMenu
+- (void)setFileTypeLabel:(NSString*)label
 {
-	[_fileTypePopup removeAllItems];
+	if (m_bInsertGraphic)
+		[oFTILabel setStringValue:label];
+	else
+		[oFTLabel setStringValue:label];
 }
 
--(IBAction)selectFileType:(id)sender
+- (void)setSelectedFileType:(int)type
+{
+	if (m_bInsertGraphic)
+		[oFTIPopUp selectItem:[[oFTIPopUp menu] itemWithTag:type]];
+	else
+		[oFTPopUp selectItem:[[oFTPopUp menu] itemWithTag:type]];
+}
+
+- (void)removeItemsOfFileTypesMenu
+{
+	if (m_bInsertGraphic)
+		[oFTIPopUp removeAllItems];
+	else
+		[oFTPopUp removeAllItems];
+}
+
+- (void)addItemWithTitle:(NSString *)title fileType:(int)type
+{
+	if (m_bInsertGraphic)
+		{
+			[oFTIPopUp addItemWithTitle:title];
+			[[oFTIPopUp lastItem] setTag:type];
+		}
+	else
+		{
+			[oFTPopUp addItemWithTitle:title];
+			[[oFTPopUp lastItem] setTag:type];
+		}
+}
+
+- (IBAction)selectFileType:(id)sender
 {
 	_xap->_setSelectedFileType([[sender selectedItem] tag]);
 }
 
+- (void)panelSelectionDidChange:(id)sender
+{
+	if (m_bInsertGraphic)
+		_xap->_updatePreview();
+}
 
 @end
+
 /*****************************************************************/
-XAP_Dialog * XAP_CocoaDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
-															 XAP_Dialog_Id dlgid)
+
+XAP_Dialog * XAP_CocoaDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
 	XAP_CocoaDialog_FileOpenSaveAs * p = new XAP_CocoaDialog_FileOpenSaveAs(pFactory,dlgid);
 	return p;
 }
 
-XAP_CocoaDialog_FileOpenSaveAs::XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
-														   XAP_Dialog_Id dlgid)
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,dlgid),
-	m_accessoryViewsController(nil)
+XAP_CocoaDialog_FileOpenSaveAs::XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	XAP_Dialog_FileOpenSaveAs(pDlgFactory,dlgid),
+	m_accessoryViewsController(0),
+	m_OpenPanel(0),
+	m_SavePanel(0),
+	m_panel(0),
+	m_FileTypes(0),
+	m_szFileTypeDescription(0),
+	m_szFileTypeCount(0)
 {
+	// 
 }
 
 XAP_CocoaDialog_FileOpenSaveAs::~XAP_CocoaDialog_FileOpenSaveAs(void)
 {
-	[m_accessoryViewsController release];
+	if (m_accessoryViewsController)
+		{
+			[m_accessoryViewsController release];
+			m_accessoryViewsController = 0;
+		}
+	if (m_OpenPanel)
+		{
+			[m_OpenPanel release];
+			m_OpenPanel = 0;
+		}
+	if (m_SavePanel)
+		{
+			[m_SavePanel release];
+			m_SavePanel = 0;
+		}
+	if (m_FileTypes)
+		{
+			[m_FileTypes release];
+			m_FileTypes = 0;
+		}
 }
 
 /*****************************************************************/
 
 void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	
+	if (!m_accessoryViewsController)
+		if (m_accessoryViewsController = [[XAP_OpenSavePanel_AccessoryController alloc] initWithXAP:this]) {
+			if (![NSBundle loadNibNamed:@"xap_CocoaFileOpen_Views" owner:m_accessoryViewsController]) {
+				NSLog (@"Couldn't load nib xap_CocoaFileOpen_Views");
+				[m_accessoryViewsController release];
+				m_accessoryViewsController = 0;
+			}
+		}
+	UT_ASSERT(m_accessoryViewsController);
+	if (!m_accessoryViewsController)
+		return;
+
+	if (!m_OpenPanel)
+		m_OpenPanel = [[XAP_CocoaOpenPanel alloc] init];
+	UT_ASSERT(m_OpenPanel);
+	if (!m_OpenPanel)
+		return;
+
+	if (!m_SavePanel)
+		m_SavePanel = [[XAP_CocoaSavePanel alloc] init];
+	UT_ASSERT(m_SavePanel);
+	if (!m_SavePanel)
+		return;
+
+	if (!m_FileTypes)
+		m_FileTypes = [[NSMutableArray alloc] initWithCapacity:4];
+	UT_ASSERT(m_FileTypes);
+	if (!m_FileTypes)
+		return;
+
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	if (m_accessoryViewsController == nil) {
-		m_accessoryViewsController = [[XAP_OpenSavePanel_AccessoryController alloc] initWithXAP:this];
-		if (![NSBundle loadNibNamed:@"xap_CocoaFileOpen_Views" owner:m_accessoryViewsController]) {
-			NSLog (@"Couldn't load nib xap_CocoaFileOpen_Views");
-			return;
-		}
-	}
 	// do we want to let this function handle stating the Cocoa
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
 
 	bool bCheckWritePermission = false;
+	bool bOpenPanel = false;
+	bool bSavePanel = false;
 
 	UT_UTF8String szTitle;
 	UT_UTF8String szFileTypeLabel;
+
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:
-	  {
-		m_panel = [NSOpenPanel openPanel];
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title, szTitle);
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
-		bCheckWritePermission = false;    
-	  }
+		{
+			bOpenPanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+
+			bCheckWritePermission = false;
+			break;
+		}
 	case XAP_DIALOG_ID_FILE_OPEN:
-	{
-		m_panel = [NSOpenPanel openPanel];
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle, szTitle);
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
-		bCheckWritePermission = false;
-		break;
-	}
+		{
+			bOpenPanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+
+			bCheckWritePermission = false;
+			break;
+		}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
-	{
-		m_panel = [NSSavePanel savePanel];
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle, szTitle);
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
-		bCheckWritePermission = true;
-		break;
-	}
+		{
+			bSavePanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
+
+			bCheckWritePermission = true;
+			break;
+		}
 	case XAP_DIALOG_ID_FILE_IMPORT:
-	  {
-	  	m_panel = [NSOpenPanel openPanel];
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle, szTitle);
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
-		bCheckWritePermission = false;
-	    break;
-	  }
+		{
+			bOpenPanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+
+			bCheckWritePermission = false;
+			break;
+		}
 	case XAP_DIALOG_ID_FILE_EXPORT:
-	  {
-		m_panel = [NSSavePanel savePanel];
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle, szTitle);
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
-		bCheckWritePermission = true;
-	    break;
-	  }
+		{
+			bSavePanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel, szFileTypeLabel);
+
+			bCheckWritePermission = true;
+			break;
+		}
 	case XAP_DIALOG_ID_INSERT_FILE:
-	  {
-		m_panel = [NSOpenPanel openPanel];
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle, szTitle);
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
-		bCheckWritePermission = false;
-		break;
-	  }
+		{
+			bOpenPanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+
+			bCheckWritePermission = false;
+			break;
+		}
 	case XAP_DIALOG_ID_PRINTTOFILE:
-	{
-		m_panel = [NSSavePanel savePanel];
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle, szTitle);
-		pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel, szFileTypeLabel);
-		bCheckWritePermission = true;
-		break;
-	}
+		{
+			bSavePanel = true;
+
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle, szTitle);
+			pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel, szFileTypeLabel);
+
+			bCheckWritePermission = true;
+			break;
+		}
 	default:
-		m_panel = nil;
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
-	UT_ASSERT (m_panel);
-	// NOTE: we use our string mechanism to localize the dialog's
-	// NOTE: title and the error/confirmation message boxes.  we
-	// NOTE: let Cocoa take care of the localization of the actual
-	// NOTE: buttons and labels on the FileSelection dialog.
-	NSString * str;
-	str = [[NSString alloc] initWithUTF8String:szTitle.utf8_str()];
-	[m_panel setTitle:str];
-	[str release];
-	[m_panel setExtensionHidden:NO];
-	str = [[NSString alloc] initWithUTF8String:szFileTypeLabel.utf8_str()];
-	[m_accessoryViewsController setFileTypeLabel:str];
-	[str release];
+	m_panel = 0;
+
+	if (bOpenPanel) {
+		m_panel = m_OpenPanel;
+
+		if ([m_panel respondsToSelector:@selector(setAllowsMultipleSelection:)])
+			[m_panel setAllowsMultipleSelection:NO];
+		if ([m_panel respondsToSelector:@selector(setCanChooseDirectories:)])
+			[m_panel setCanChooseDirectories:NO];
+		if ([m_panel respondsToSelector:@selector(setCanChooseFiles:)])
+			[m_panel setCanChooseFiles:YES];
+		if ([m_panel respondsToSelector:@selector(setCanCreateDirectories:)])
+			[m_panel setCanCreateDirectories:NO];
+
+		[m_panel setCanSelectHiddenExtension:NO];
+		[m_panel setExtensionHidden:NO];
+	}
+	else if (bSavePanel) {
+		m_panel = m_SavePanel;
+
+		if ([m_panel respondsToSelector:@selector(setCanCreateDirectories:)])
+			[m_panel setCanCreateDirectories:YES];
+
+		[m_panel setCanSelectHiddenExtension:YES];
+		[m_panel setExtensionHidden:NO];
+	}
+	UT_ASSERT(m_panel);
+	if (!m_panel)
+		return;
+
+	if (m_id == XAP_DIALOG_ID_INSERT_PICTURE) {
+		[m_accessoryViewsController setInsertGraphic:YES];
+		[m_accessoryViewsController setPreviewImage:nil];
+	}
+	else {
+		[m_accessoryViewsController setInsertGraphic:NO];
+	}
+
+	[m_accessoryViewsController setFileTypeLabel:[NSString stringWithUTF8String:(szFileTypeLabel.utf8_str())]];
+
+	[m_panel setTitle:[NSString stringWithUTF8String:(szTitle.utf8_str())]];
+	[m_panel setDelegate:m_accessoryViewsController];
+
+	/* File-types PopUp:
+	 */
+
 	[m_accessoryViewsController removeItemsOfFileTypesMenu];
-	NSMenuItem*	item;
-	NSMenu* fileTypesMenu = [m_accessoryViewsController fileTypesMenu];
+
 	UT_UTF8String label;
-	pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect, label);
-	item = [[NSMenuItem alloc]	initWithTitle:
-			[NSString stringWithUTF8String:label.utf8_str()]
-			action:nil 
-			keyEquivalent:@""];
-	[item setTag:XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO];
-	[fileTypesMenu addItem:item];
-	{
-		UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes))) ==
-					UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
-		UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
-		
-		for (UT_uint32 i = 0; i < end; i++)
-		{
-			// If this type is default, save its index (i) for later use
-			item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithUTF8String:m_szDescriptions[i]]
-					action:nil 
-					keyEquivalent:@""];
-			[item setTag:m_nTypeList[i]];
-			[fileTypesMenu addItem:item];
-			[item release];
-		}
-		[m_accessoryViewsController setSelectedFileType:m_nDefaultFileType];
+	if (pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect, label)) {
+		NSString * title = [NSString stringWithUTF8String:(label.utf8_str())];
+		int type = (int) XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
+		[m_accessoryViewsController addItemWithTitle:title fileType:type];
 	}
+
+	UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes    ))) ==
+			  UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
+
+	m_szFileTypeCount = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
+
+	UT_sint32 defaultFileType = m_nDefaultFileType;
+
+	for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
+		NSString * title = [NSString stringWithUTF8String:m_szDescriptions[i]];
+		int type = m_nTypeList[i];
+		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE) {
+			if ([title isEqualToString:@"Cocoa-Readable Image"])
+				defaultFileType = m_nTypeList[i];
+		}
+		[m_accessoryViewsController addItemWithTitle:title fileType:type];
+	}
+
+	[m_accessoryViewsController setSelectedFileType:defaultFileType];
+	_setSelectedFileType(defaultFileType);
 	
-	[m_panel setAccessoryView:[m_accessoryViewsController fileTypeAcessoryView]];
-#if 0
-	{
-		NSView* topView = [[[m_accessoryViewsController fileTypeAcessoryView] window] contentView];
-		id obj = [topView viewWithTag:NSFileHandlingPanelBrowser];
-		if ([obj isKindOfClass:[NSBrowser class]]) {
-			NSBrowser* browser = obj;
-			id delegate = [browser delegate];
-			UT_ASSERT(delegate);
-		}
-	}
-#endif
+	[m_panel setAccessoryView:[m_accessoryViewsController fileTypeAccessoryView]];
+
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
 	
@@ -309,139 +503,215 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		}
 	}
 
+	int result;
 
-	int result = [m_panel runModalForDirectory:szPersistDirectory file:szPersistFile];
-	
-	if (result == NSFileHandlingPanelOKButton)
+	m_bOpenPanel   = bOpenPanel;
+	m_bPanelActive = true;
+
+	do
+	{
+		m_bIgnoreCancel = false;
+
+		if (m_bOpenPanel)
+		{
+			[m_OpenPanel setPanelCanOrderOut:YES];
+
+			if ([m_FileTypes count])
+			{
+				NSString * type = (NSString *) [m_FileTypes objectAtIndex:0];
+				if (szPersistFile)
+				{
+					NSString * extension = [szPersistFile pathExtension];
+					if (![extension isEqualToString:type])
+						szPersistFile = nil;
+				}
+			}
+
+			if ([m_FileTypes count])
+				result = [m_OpenPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:m_FileTypes];
+			else
+				result = [m_OpenPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:nil];
+
+			result = (result == NSOKButton) ? NSFileHandlingPanelOKButton : NSFileHandlingPanelCancelButton;
+		}
+		else
+		{
+			if ([m_FileTypes count])
+			{
+				NSString * type = (NSString *) [m_FileTypes objectAtIndex:0];
+				[m_SavePanel setRequiredFileType:type];
+
+				if (szPersistFile)
+				{
+					NSString * extension = [szPersistFile pathExtension];
+					if ([extension length])
+					{
+						if (![extension isEqualToString:type])
+						{
+							szPersistFile = [szPersistFile stringByDeletingPathExtension];
+							szPersistFile = [szPersistFile stringByAppendingPathExtension:type];
+						}
+					}
+					else
+					{
+						szPersistFile = [szPersistFile stringByAppendingPathExtension:type];
+					}
+				}
+			}
+			else
+			{
+				[m_SavePanel setRequiredFileType:nil];
+			}
+
+			[m_SavePanel setPanelCanOrderOut:YES];
+			result = [m_SavePanel runModalForDirectory:szPersistDirectory file:szPersistFile];
+		}
+
+		szPersistDirectory = [m_panel directory];
+		szPersistFile      = [m_panel filename];
+
+		if (szPersistFile)
+			szPersistFile = [szPersistFile lastPathComponent];
+	}
+	while (m_bIgnoreCancel);
+
+	m_bPanelActive = false;
+
+	szPersistFile = [m_panel filename];
+
+	if ((result == NSFileHandlingPanelOKButton) && szPersistFile)
 	{
 		FREEP (m_szFinalPathname);	// free before reassigning
-		m_szFinalPathname = UT_strdup([[m_panel filename] UTF8String]);
+		m_szFinalPathname = UT_strdup([szPersistFile UTF8String]);
 		m_answer = a_OK;
 	}
-			  
-	return;
 }
 
-#if 0
-int 
-XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
-{
-        UT_ASSERT (m_FS && m_preview);
-
-	XAP_CocoaApp * unixapp = static_cast<XAP_CocoaApp *> (m_pApp);
-	UT_ASSERT(unixapp);
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	// attach and clear the area immediately
-	//GR_CocoaGraphics* pGr = new GR_CocoaGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
-	GR_CocoaAllocInfo ai(m_preview->window, unixapp->getFontManager(), m_pApp);
-	pGr = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
-
-	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
-
-	gchar * buf = gtk_file_selection_get_filename (m_FS);
-
-	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
-	UT_ASSERT (fnt);		// not good if we don't have it.
-	pGr->setFont(fnt);
-
-	const XML_Char * str = pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label);
-	int len = strlen (str);
-	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
-	UT_UCS4_strcpy_char (ucstext, str);
-
-	int answer = 0;
-
-	UT_ByteBuf *pBB = NULL;
-	FG_Graphic * pGraphic = 0;
-	IE_ImpGraphic* pIEG = NULL;
-	UT_Error errorCode = UT_OK;
-	GR_Image *pImage = NULL;
-
-	double		scale_factor = 0.0;
-	UT_sint32     scaled_width,scaled_height;
-	UT_sint32     iImageWidth,iImageHeight;
-
-	if (!buf)
-	  {
-	    pGr->drawChars (ucstext, 0, len, 12, 35);
-	    goto Cleanup;
-	  }
-
-	// are we dealing with a file or directory here?
-	struct stat st;
-	if (!stat (buf, &st)) {
-		if (!S_ISREG(st.st_mode)) {
-			pGr->drawChars (ucstext, 0, len, 12, 35);
-			goto Cleanup;
-		}
-	}
-	else {
-		pGr->drawChars (ucstext, 0, len, 12, 35);
-		goto Cleanup;
-	}
-
-	// Load File into memory
-	pBB     = new UT_ByteBuf(0);
-	pBB->insertFromFile(0, buf);
-
-	// Build an Import Graphic based on file type
-	errorCode = IE_ImpGraphic::constructImporter(buf, IEGFT_Unknown, &pIEG);
-	if ((errorCode != UT_OK) || !pIEG)
-	{
-		DELETEP(pBB);
-		pGr->drawChars (ucstext, 0, len, 12, 35);
-		goto Cleanup;
-	}
-
-	errorCode = pIEG->importGraphic (pBB, &pGraphic);
-
-	if ((errorCode != UT_OK) || !pGraphic)
-	  {
-	    pGr->drawChars (ucstext, 0, len, 12, 35);
-	    goto Cleanup;
-	  }
-
-	if ( FGT_Raster == pGraphic->getType () )
-	{
-		pImage = new GR_CocoaImage(NULL);
-		UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
-		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
-
-		if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
-		  scale_factor = 1.0;
-		else
-		  scale_factor = MIN( (double) m_preview->allocation.width/iImageWidth,
-				      (double) m_preview->allocation.height/iImageHeight);
-		
-		scaled_width  = (int)(scale_factor * iImageWidth);
-		scaled_height = (int)(scale_factor * iImageHeight);
-
-		pImage->convertFromBuffer(png, scaled_width, scaled_height);
-		
-		pGr->drawImage(pImage,
-			       (int)((m_preview->allocation.width  - scaled_width ) / 2),
-			       (int)((m_preview->allocation.height - scaled_height) / 2));
-		
-		answer = 1;
-	}
-	else // if ( FGT_Vector == pGraphic->getType () )
-	{
-	  //pImage = new GR_VectorImage(NULL);
-	}
-
- Cleanup:
-	DELETEP(pImage);
-	DELETEP(pGr);
-	DELETEP(fnt);
-	DELETEPV(ucstext);
-
-	return answer;
-}
-#endif
-
-void	XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
+void XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
 {
 	m_nFileType = type;
+	m_szFileTypeDescription = 0;
+
+	[m_FileTypes removeAllObjects];
+
+	if (m_nFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) {
+		for (UT_uint32 i = 0; i < m_szFileTypeCount; i++) {
+			if (m_nFileType == m_nTypeList[i]) {
+				m_szFileTypeDescription = m_szDescriptions[i];
+
+				UT_UTF8String suffix;
+				const char * suffix_list = m_szSuffixes[i];
+				while (const char * ptr1 = strstr(suffix_list, "*.")) {
+					ptr1 += 2;
+					bool bSingleExtension = true;
+					const char * ptr2 = ptr1;
+					while (*ptr2 && (*ptr2 != ';'))
+						if (*ptr2++ == '.')
+							bSingleExtension = false;
+					suffix.assign(ptr1, ptr2 - ptr1);
+					if (bSingleExtension)
+						[m_FileTypes addObject:[NSString stringWithUTF8String:(suffix.utf8_str())]];
+					suffix_list = ptr2;
+				}
+			}
+		}
+	}
+
+	if (m_bPanelActive) {
+		if (m_bOpenPanel)
+			[m_OpenPanel setPanelCanOrderOut:NO];
+		else
+			[m_SavePanel setPanelCanOrderOut:NO];
+
+		m_bIgnoreCancel = true;
+		[NSApp stopModal];
+	}
+}
+
+void XAP_CocoaDialog_FileOpenSaveAs::_updatePreview ()
+{
+	if (m_id != XAP_DIALOG_ID_INSERT_PICTURE)
+		return;
+
+	NSImage * image = nil;
+	NSArray * array = [m_OpenPanel filenames];
+
+	if ([array count]) {
+		NSString * filename = (NSString *) [array objectAtIndex:0];
+
+		UT_ByteBuf * pBB = new UT_ByteBuf(0);
+
+		if (pBB->insertFromFile(0, [filename UTF8String])) {
+			IE_ImpGraphic * pIEG = 0;
+
+			UT_Error errorCode;
+			if (m_szFileTypeDescription) { // i.e., if (m_nFileType != XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO)
+				errorCode = IE_ImpGraphic::constructImporterWithDescription(m_szFileTypeDescription, &pIEG);
+			}
+			else {
+				errorCode = IE_ImpGraphic::constructImporter([filename UTF8String], IEGFT_Unknown, &pIEG);
+			}
+			if ((errorCode == UT_OK) && pIEG) {
+				FG_Graphic * pGraphic = 0;
+
+				errorCode = pIEG->importGraphic(pBB, &pGraphic);
+				pBB = 0;
+
+				if ((errorCode == UT_OK) && pGraphic) {
+					if (FGT_Raster == pGraphic->getType()) {
+
+						UT_ByteBuf * png = static_cast<FG_GraphicRaster *>(pGraphic)->getRaster_PNG();
+
+						UT_sint32 iImageWidth;
+						UT_sint32 iImageHeight;
+
+						UT_PNG_getDimensions(png, iImageWidth, iImageHeight);
+
+						double dImageWidth  = static_cast<double>(iImageWidth);
+						double dImageHeight = static_cast<double>(iImageHeight);
+
+						NSSize previewSize = [m_accessoryViewsController previewSize];
+
+						double dPreviewWidth  = static_cast<double>(previewSize.width);
+						double dPreviewHeight = static_cast<double>(previewSize.height);
+
+						if ((dPreviewWidth < dImageWidth) || (dPreviewHeight < dImageHeight)) {
+							double factor_width  = dPreviewWidth  / dImageWidth;
+							double factor_height = dPreviewHeight / dImageHeight;
+
+							double scale_factor = MIN(factor_width, factor_height);
+
+							iImageWidth  = static_cast<UT_sint32>(scale_factor * dImageWidth);
+							iImageHeight = static_cast<UT_sint32>(scale_factor * dImageHeight);
+						}
+
+						GR_CocoaImage * pImage = new GR_CocoaImage(0);
+
+						pImage->convertFromBuffer(png, iImageWidth, iImageHeight); // this flips the NSImage but doesn't actually scale it
+		
+						if (image = pImage->getNSImage()) {
+							NSSize imageSize;
+							imageSize.width  = static_cast<float>(iImageWidth);
+							imageSize.height = static_cast<float>(iImageHeight);
+
+							[image setScalesWhenResized:YES];
+							[image setSize:imageSize];
+							[image setFlipped:NO];
+							[image retain];
+						}
+						DELETEP(pImage);
+					}
+					else { // if (FGT_Vector == pGraphic->getType())
+						// pImage = new GR_VectorImage(NULL);
+					}
+					DELETEP(pGraphic);
+				}
+				DELETEP(pIEG);
+			}
+		}
+		DELETEP(pBB);
+	}
+	[m_accessoryViewsController setPreviewImage:image];
+	if (image)
+		[image release];
 }

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2004 Hubert Figuiere
@@ -128,6 +130,8 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
+	void			setGrabCursor(GR_Graphics::Cursor c) { m_GrabCursor = c; }
+
 	virtual void		setColor3D(GR_Color3D c);
 	void				init3dColors();
 	virtual void		fillRect(GR_Color3D c,
@@ -219,7 +223,28 @@ private:
 	CapStyle m_capStyle;
 	LineStyle m_lineStyle;
 
+	NSCursor *	m_Cursor_E;
+	NSCursor *	m_Cursor_N;
+	NSCursor *	m_Cursor_NE;
+	NSCursor *	m_Cursor_NW;
+	NSCursor *	m_Cursor_S;
+	NSCursor *	m_Cursor_SE;
+	NSCursor *	m_Cursor_SW;
+	NSCursor *	m_Cursor_W;
+
+	NSCursor *	m_Cursor_Wait;
+	NSCursor *	m_Cursor_LeftArrow;
+	NSCursor *	m_Cursor_RightArrow;
+	NSCursor *	m_Cursor_Compass;
+	NSCursor *	m_Cursor_Exchange;
+	NSCursor *	m_Cursor_LeftRight;
+	NSCursor *	m_Cursor_UpDown;
+	NSCursor *	m_Cursor_Crosshair;
+	NSCursor *	m_Cursor_HandPointer;
+	NSCursor *	m_Cursor_DownArrow;
+
 	GR_Graphics::Cursor		m_cursor;
+	GR_Graphics::Cursor		m_GrabCursor;
 
 	GR_Graphics::ColorSpace	m_cs;
 	

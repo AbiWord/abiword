@@ -38,9 +38,6 @@ AC_ARG_ENABLE(gnome,[  --enable-gnome    Turn on gnome ],[
 ])
 
 if test "$gnome" = true ; then
-	NAUTILUS_CFLAGS=""
-	NAUTILUS_LIBS=""
-
 	PKG_CHECK_MODULES(GNOME,[
 		libbonobo-2.0 >= 2.0
 		libgnomeui-2.0 >= 2.0
@@ -48,17 +45,8 @@ if test "$gnome" = true ; then
 		libgnomeprintui-2.2 >= 2.2.1
 		libglade-2.0 >= 2.0
 	])
-	PKG_CHECK_MODULES(NAUTILUS,[
-		libnautilus >= 2.0
-	],[	gnome_nautilus=yes
-	],[	gnome_nautilus=no
-	])
-	if test "x$gnome_nautilus" = "xyes"; then
-		NAUTILUS_CFLAGS="$NAUTILUS_CFLAGS -DHAVE_NAUTILUS=1"
-	fi
-
-	GNOME_CFLAGS="$NAUTILUS_CFLAGS $GNOME_CFLAGS -DHAVE_GNOME=1"
-	GNOME_LIBS="$NAUTILUS_LIBS $GNOME_LIBS"
+	GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME=1"
+	GNOME_LIBS="$GNOME_LIBS"
 fi
 
 #GNOME_CFLAGS="-DGNOME_DISABLE_DEPRECATED $GNOME_CFLAGS"

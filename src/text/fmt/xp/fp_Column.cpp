@@ -2116,7 +2116,7 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 //
 //	if(m_bHdrFtrBoxDrawn)
 //		return;
-	UT_RGBColor clrDrawHdrFtr(0,0,0);
+	UT_RGBColor clrDrawHdrFtr(127,127,127);
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	getGraphics()->setColor(clrDrawHdrFtr);
 //

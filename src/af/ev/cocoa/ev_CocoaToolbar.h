@@ -45,7 +45,10 @@ class EV_CocoaToolbar;
 {
 	EV_CocoaToolbar*	_xap;
 }
-- (id)toolbarSelected:(id)sender;
+- (void)setColor:(XAP_Toolbar_Id)tlbrid;
+- (IBAction)aColor_FG:(id)sender;
+- (IBAction)aColor_BG:(id)sender;
+- (void)toolbarSelected:(id)sender;
 - (void)setXAPOwner:(EV_CocoaToolbar*)owner;
 @end
 
@@ -71,9 +74,9 @@ public:
 	virtual void hide(void);
 
 	static	float	getButtonWidth (void)
-					{ return 32.0f; };
+					{ return 28.0f; };
 	static	float	getButtonHeight (void)
-					{ return 32.0f; };
+					{ return 28.0f; };
 
 	static float  getToolbarHeight(void)
 					{ return getButtonHeight(); };

@@ -27,7 +27,8 @@ DIRS=		$(ABI_GNOME_DIR)
 endif
 
 
-CPPSRCS=		ie_impexp_RegisterUnix.cpp
+CPPSRCS=		ie_impexp_RegisterUnix.cpp \
+			ie_impGraphic_GdkPixbuf.cpp
 
 
 TARGETS=                $(OBJS)

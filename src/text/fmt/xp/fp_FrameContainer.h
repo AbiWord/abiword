@@ -39,6 +39,7 @@
 
 class fl_TableLayout;
 class fl_DocSectionLayout;
+class fl_BlockLayout;
 
 #define FRAME_HANDLE_SIZE 6
 
@@ -75,7 +76,7 @@ public:
 	UT_sint32           getYPad(void) { return m_iYpad;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
-		
+	void                getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> & vecBlocks);
 	PP_PropertyMap::Background getBackground () const;
 
 	void setBackground (const PP_PropertyMap::Background & style);

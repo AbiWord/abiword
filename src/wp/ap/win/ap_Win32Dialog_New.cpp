@@ -95,7 +95,6 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	// localize controls
 	_DSX(NEW_BTN_OK,		DLG_OK);
 	_DSX(NEW_BTN_CANCEL,	DLG_Cancel);
-	_DS(NEW_RDO_BLANK,		DLG_NEW_StartEmpty);
 	_DS(NEW_RDO_TEMPLATE,	DLG_NEW_Create);
 	_DS(NEW_RDO_EXISTING,	DLG_NEW_Open);
     _DS(NEW_BTN_EXISTING,	DLG_NEW_Choose);
@@ -181,11 +180,6 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case AP_RID_DIALOG_NEW_BTN_EXISTING:
 		_doChoose();
-		return 1;
-
-	case AP_RID_DIALOG_NEW_RDO_BLANK:
-		setOpenType(AP_Dialog_New::open_New);
-		_updateControls();
 		return 1;
 
 	case AP_RID_DIALOG_NEW_RDO_TEMPLATE:
@@ -280,7 +274,6 @@ void AP_Win32Dialog_New::_updateControls()
 		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
 		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
 		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, true );
 		break;
 	case AP_Dialog_New::open_Template:
 		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, false );
@@ -288,7 +281,6 @@ void AP_Win32Dialog_New::_updateControls()
 		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, true );
 		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, false );
 		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, true );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
 		break;
 	case AP_Dialog_New::open_Existing:
 		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_EBX_EXISTING, true );
@@ -296,7 +288,6 @@ void AP_Win32Dialog_New::_updateControls()
 		_win32Dialog.enableControl( AP_RID_DIALOG_NEW_LBX_TEMPLATE, false );
 		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_EXISTING, true );
 		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_TEMPLATE, false );
-		_win32Dialog.checkButton( AP_RID_DIALOG_NEW_RDO_BLANK, false );
 		break;
 	}
 }
