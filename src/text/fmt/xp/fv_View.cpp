@@ -5353,6 +5353,12 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
+
+		pInfo->m_xrPoint = xCaret - pContainer->getX();
+		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
+		
 	}
 	else if(isHdrFtrEdit())
 	{
@@ -5454,7 +5460,6 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	else
 	{
 		// fill in the details
-
 	}
 
 	static char buf[20];
