@@ -82,11 +82,11 @@ _LIBICONV_:
 _LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then			\
 		echo Found libwv in peer directory;		\
-		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
-			cd $(ABI_ROOT)/../wv; 			\
-			$(ABICOPY) config.h.msvc config.h;	\
-		fi;						\
-		$(MAKE) -fMakefile.abi -C $(ABI_ROOT)/../wv;  	\
+		cd $(ABI_ROOT)/../wv; 			\
+		$(ABICOPY) config.h.msvc config.h;	\
+		echo PLEASE verify that VERSION in version.c is correct!!!;	\
+		$(ABICOPY) version.c.win32 version.c;	\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
 		echo peer wv not found.  You can check it out of cvs by; \
 		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout wv; \
