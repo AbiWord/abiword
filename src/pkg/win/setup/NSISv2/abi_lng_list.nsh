@@ -6,6 +6,7 @@
 !include "abi_lng_misc.nsh"
 
 ; load each [partially] supported language 
+${LANG_LOAD} "Albanian"
 ${LANG_LOAD} "Arabic"
 ${LANG_LOAD} "Bulgarian"
 ${LANG_LOAD} "Catalan"
