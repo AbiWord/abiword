@@ -178,7 +178,6 @@ UT_sint32 fp_Page::getBottom(void) const
 
 void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff)
 {
-	UT_ASSERT(m_pView);
 	if(!m_pView)
 	{
 	    return;

@@ -856,7 +856,8 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		cursor_name = IDC_ARROW;		// top-left arrow
 		hinst = NULL;
 		break;
-		
+	
+	case GR_CURSOR_LINK:	
 	case GR_CURSOR_GRAB:
 		cursor_name = MAKEINTRESOURCE(IDC_ABIHAND);
 		break;
