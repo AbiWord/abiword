@@ -27,6 +27,7 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <math.h>
+#include "iconv.h"
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"

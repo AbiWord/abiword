@@ -47,6 +47,12 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.5  2001/08/10 09:57:49  hub
+ * Patch by sobomax@FreeBSD.org
+ * #include "iconv.h" directive is missed from src/other/spell/xp/lookup.c and
+ * src/wp/impexp/xp/ie_imp_RTF.cpp.
+ * See bug 1823
+ *
  * Revision 1.4  2001/07/18 17:46:01  dom
  * Module changes, and fix compiler warnings
  *
@@ -137,6 +143,7 @@ static char Rcs_Id[] =
 #include <ctype.h>
 
 #include "ispell.h"
+#include "iconv.h"
 #include "msgs.h"
 
 #if 0
