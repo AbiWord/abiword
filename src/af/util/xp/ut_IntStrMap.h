@@ -205,7 +205,7 @@ public:
 
 	/* deletes all key/value pairs, but doesn't free() array of pointers
 	 */
-	void clear ();
+	void clear (bool delete_values = true);
 
 	inline UT_uint32 count () const { return m_pair_count; }
 
@@ -260,8 +260,10 @@ public:
 	{
 		return value ? UT_GenericUTF8Hash::ins (key, value) : false;
 	}
+
+	bool ins (const UT_UTF8String & key, const UT_UTF8String & value);
 	bool ins (const char *  key, const char * value); // make sure you provide valid UTF-8!
-	bool ins (const char ** attrs);
+	bool ins (const char ** attrs); // attribute pairs with a 0 value are ignored
 
 	/* returns false if no such key-value
 	 */

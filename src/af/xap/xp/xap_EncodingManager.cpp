@@ -663,14 +663,76 @@ static const _rmap can_break_words_data[]=
 */
 static const _map MSCodepagename_to_charset_name_map[]=
 {
-/*key, value*/
-    {NULL,NULL},
-	// libiconv also lists "SHIFT_JIS", "SHIFT-JIS", "MS_KANJI", "csShiftJIS"
-	{"CP932","SJIS"},
-    {"CP936","GBK"},
-    {"CP950","BIG5"},  
-	{"CP1361","JOHAB"},
-    {NULL,NULL}
+	/*key,		value*/
+	{ NULL,			NULL },
+
+//	{ "CP0",		?? },					// ANSI code page
+//	{ "CP1",		?? },					// OEM code page
+//	{ "CP2",		?? },					// Macintosh code page
+//	{ "CP3",		?? },					// The current thread's ANSI code page (Win2k)
+
+//	{ "CP42",		?? },					// Symbol code page (Win2k)
+
+//	{ "CP037",		?? },					// EBCDIC
+
+	{ "CP437",		"CP437" },				// MS-DOS United States
+
+//	{ "CP500",		?? },					// EBCDIC "500V1"
+
+	{ "CP708",		"ASMO-708" },			// Arabic (ASMO 708)
+//	{ "CP709",		?? },					// Arabic (ASMO 449+, BCON V4)
+//	{ "CP710",		?? },					// Arabic (Transparent Arabic)
+//	{ "CP720",		?? },					// Arabic (Transparent ASMO)
+
+	{ "CP737",		"CP737" },				// Greek (formerly 437G)
+	{ "CP775",		"CP775" },				// Baltic
+	{ "CP850",		"CP850" },				// MS-DOS Multilingual (Latin I)
+	{ "CP852",		"CP852" },				// MS-DOS Slavic (Latin II)
+	{ "CP855",		"CP855" },				// IBM Cyrillic (primarily Russian)
+	{ "CP857",		"CP857" },				// IBM Turkish
+	{ "CP860",		"CP861" },				// MS-DOS Portuguese
+	{ "CP861",		"CP861" },				// MS-DOS Icelandic
+	{ "CP862",		"CP862" },				// Hebrew
+	{ "CP863",		"CP863" },				// MS-DOS Canadian-French
+	{ "CP864",		"CP864" },				// Arabic
+	{ "CP865",		"CP865" },				// MS-DOS Nordic
+	{ "CP866",		"CP866" },				// MS-DOS Russian
+	{ "CP869",		"CP869" },				// IBM Modern Greek
+	{ "CP874",		"CP874" },				// Thai
+//	{ "CP875",		?? },					// EBCDIC
+
+	{ "CP932",		"SJIS" },				// Japanese
+	{ "CP936",		"GBK" },				// Chinese (PRC, Singapore)
+	{ "CP949",		"CP949" },				// Korean
+	{ "CP950",		"BIG5" },				// Chinese (Taiwan; Hong Kong SAR, PRC)
+
+//	{ "CP1026",		?? },					// EBCDIC
+
+	{ "CP1200",		"UCS-2" },				// Unicode (BMP of ISO 10646)	// ??
+
+	{ "CP1250",		"CP1250" },				// Windows 3.1 Eastern European
+	{ "CP1251",		"CP1251" },				// Windows 3.1 Cyrillic
+	{ "CP1252",		"CP1252" },				// Windows 3.1 US (ANSI)
+	{ "CP1253",		"CP1253" },				// Windows 3.1 Greek
+	{ "CP1254",		"CP1254" },				// Windows 3.1 Turkish
+	{ "CP1255",		"CP1255" },				// Hebrew
+	{ "CP1256",		"CP1256" },				// Arabic
+	{ "CP1257",		"CP1257" },				// Baltic
+
+	{ "CP1361",		"JOHAB" },				// Korean (Johab)
+
+	{ "CP10000",	"MACROMAN" },			// Macintosh Roman
+	{ "CP10001",	"SJIS" },				// Macintosh Japanese	// ??
+	{ "CP10006",	"MACGREEK" },			// Macintosh Greek I
+	{ "CP10007",	"MACCYRILLIC" },		// Macintosh Cyrillic
+	{ "CP10029",	"MACCENTRALEUROPE" },	// Macintosh Latin 2
+	{ "CP10079",	"MACICELAND" },			// Macintosh Icelandic
+	{ "CP10081",	"MACTURKISH" },			// Macintosh Turkish
+
+	{ "CP65000",	"UTF-7" },				// Translate using UTF-7 (Win2k, NT 4.0)	// ??
+	{ "CP65001",	"UTF-8" },				// Translate using UTF-8 (Win2k, NT 4.0)	// ??
+
+    { NULL,			NULL }
 };
 
 /*

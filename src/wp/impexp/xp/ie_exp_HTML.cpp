@@ -327,8 +327,9 @@ static const char * s_prop_list[] = {
 	"vertical-align",	"baseline",
 	"widows",			"2",
 	"width"				"auto",
+	0,					0
 };
-static UT_uint32 s_PropListLen = sizeof s_prop_list / sizeof (char *);
+static UT_uint32 s_PropListLen = sizeof s_prop_list / sizeof (char *) - 2; // don't include zeros in this size
 
 /*!	This function returns true if the given property is a valid CSS
 	property.  It is based on the list in pp_Property.cpp, and, as such,
@@ -413,7 +414,7 @@ private:
 
 	PD_Style *		m_style;
 
-	UT_StringPtrMap	m_map;
+	UT_UTF8Hash		m_map;
 
 	s_StyleTree (s_StyleTree * parent, const char * name, PD_Style * style);
 public:
@@ -443,7 +444,7 @@ public:
 	const UT_UTF8String & class_name () const { return m_class_name; }
 	const UT_UTF8String & class_list () const { return m_class_list; }
 
-	const char * lookup (const char * prop_name) const;
+	const UT_UTF8String * lookup (const UT_UTF8String & prop_name);
 };
 
 class s_HTML_Listener : public PL_Listener
@@ -3959,16 +3960,12 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 						}
 				}
 
-			const char * cascade_value = lookup (name.utf8_str ());
+			const UT_UTF8String * cascade_value = lookup (name);
 			if (cascade_value)
-				if (value == cascade_value)
+				if (value == *cascade_value)
 					continue;
 
-			char * copy = UT_strdup (value.utf8_str ());
-			if (copy)
-				{
-					m_map.insert (name.utf8_str (), copy);
-				}
+			m_map.ins (name, value);
 		}
 }
 
@@ -3982,7 +3979,10 @@ s_StyleTree::s_StyleTree () :
 	m_class_list(""),
 	m_style(0)
 {
-	// 
+	if (!m_map.ins (s_prop_list))
+		{
+			UT_DEBUGMSG(("failed to add CSS defaults to map in root style-tree element!\n"));
+		}
 }
 
 s_StyleTree::~s_StyleTree ()
@@ -3992,25 +3992,20 @@ s_StyleTree::~s_StyleTree ()
 			DELETEP(m_list[i]);
 		}
 	FREEP (m_list);
-
-	if (m_parent)
-		{
-			UT_HASH_PURGEDATA (char *, &m_map, free);
-		}
 }
 
 bool s_StyleTree::add (const char * style_name, PD_Style * style)
 {
 	if (m_list == 0)
 		{
-			m_list = static_cast<s_StyleTree **>(malloc (8 * sizeof (s_StyleTree *)));
+			m_list = reinterpret_cast<s_StyleTree **>(malloc (8 * sizeof (s_StyleTree *)));
 			if (m_list == 0) return false;
 			m_max = 8;
 		}
 	if (m_count == m_max)
 		{
 			s_StyleTree ** more = 0;
-			more = static_cast<s_StyleTree **>(realloc (m_list, (m_max + 8) * sizeof (s_StyleTree *)));
+			more = reinterpret_cast<s_StyleTree **>(realloc (m_list, (m_max + 8) * sizeof (s_StyleTree *)));
 			if (more == 0) return false;
 			m_list = more;
 			m_max += 8;
@@ -4104,7 +4099,7 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 {
 	if (strstr (m_style_name.utf8_str (), "List")) return;
 
-	if (m_parent && m_map.size ())
+	if (m_parent)
 		{
 			UT_UTF8String selector("*.");
 			if (m_class_name.byteLength ())
@@ -4124,16 +4119,17 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 				}
 			listener->styleOpen (selector);
 
-			UT_StringPtrMap::UT_Cursor _hc1(&m_map);
+			UT_uint32 count = m_map.count ();
 
-			UT_UTF8String value = reinterpret_cast<const char *>(_hc1.first ());
-			while (_hc1.is_valid ())
+			for (UT_uint32 index = 0; index < count; index++)
 				{
-					listener->styleNameValue (_hc1.key().c_str (), value);
+					const UT_UTF8String * key   = 0;
+					const UT_UTF8String * value = 0;
 
-					value = reinterpret_cast<const char *>(_hc1.next ());
+					m_map.pair (index, key, value);
+
+					listener->styleNameValue (key->utf8_str (), *value);
 				}
-
 			listener->styleClose ();
 		}
 	for (UT_uint32 i = 0; i < m_count; i++)
@@ -4142,19 +4138,14 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 		}
 }
 
-const char * s_StyleTree::lookup (const char * prop_name) const
+const UT_UTF8String * s_StyleTree::lookup (const UT_UTF8String & prop_name)
 {
-	const char * prop_value = 0;
+	const UT_UTF8String * prop_value = 0;
 
-	if (m_parent)
-		{
-			const void * vptr = m_map.pick (prop_name);
-			if (vptr)
-				prop_value = reinterpret_cast<const char *>(vptr);
-			else
-				prop_value = m_parent->lookup (prop_name);
-		}
-	else is_CSS (prop_name, &prop_value); // get default value (if any) for CSS property
+	prop_value = m_map[prop_name];
+
+	if (!prop_value && m_parent)
+		prop_value = m_parent->lookup (prop_name);
 
 	return prop_value;
 }

@@ -55,7 +55,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_Cocoa_TB_CFactory.mm		\
 	$(CURL_SOURCE_OBJ)
 
-#	ap_CocoaDialog_MailMerge.mm	\
+#	ap_CocoaDialog_MailMerge.mm
 
 EXTRA_DIST = \
 	ap_CocoaDialog_Break.nib \

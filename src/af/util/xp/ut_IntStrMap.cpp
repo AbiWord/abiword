@@ -474,9 +474,14 @@ UT_GenericUTF8Hash::~UT_GenericUTF8Hash ()
 
 /* deletes all key/value pairs, but doesn't free() array of pointers
  */
-void UT_GenericUTF8Hash::clear ()
+void UT_GenericUTF8Hash::clear (bool delete_values)
 {
-	for (UT_uint32 i = 0; i < m_pair_count; i++) delete m_pair[i];
+	for (UT_uint32 i = 0; i < m_pair_count; i++)
+		{
+			if (!delete_values)
+				m_pair[i]->getValue (); // detach value, if any, so not deleted
+			delete m_pair[i];
+		}
 	m_pair_count = 0;
 }
 
@@ -703,8 +708,27 @@ bool UT_UTF8Hash::pair (UT_uint32 index, const UT_UTF8String *& key, const UT_UT
 	return found;
 }
 
+bool UT_UTF8Hash::ins (const UT_UTF8String & key, const UT_UTF8String & value)
+{
+	UT_UTF8String * utf8_value = 0;
+	UT_TRY
+		{
+			utf8_value = new UT_UTF8String(value);
+		}
+	UT_CATCH(...)
+		{
+			utf8_value = 0;
+		}
+	if (utf8_value == 0) return false;
+
+	return ins (key, utf8_value);
+}
+
 bool UT_UTF8Hash::ins (const char * key, const char * value)
 {
+	if (value == 0)
+		return false;
+
 	UT_UTF8String utf8_key(key);
 
 	UT_UTF8String * utf8_value = 0;
@@ -731,10 +755,14 @@ bool UT_UTF8Hash::ins (const char ** attrs)
 		{
 			utf8_key = *attrs++;
 
+			const char * value = *attrs++;
+
+			if (value == 0) continue;
+
 			UT_UTF8String * utf8_value = 0;
 			UT_TRY
 				{
-					utf8_value = new UT_UTF8String(*attrs++);
+					utf8_value = new UT_UTF8String(value);
 				}
 			UT_CATCH(...)
 				{
