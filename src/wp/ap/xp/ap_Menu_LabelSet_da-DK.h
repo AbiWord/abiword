@@ -40,7 +40,11 @@ BeginSet(da,DK,true)
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 
 	//       (id,                       	szLabel,           	szStatusMsg)
-
+        MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL, "&Auto stavekontrol", "Automatisk stavekontrol af dokumentet")
+        MenuLabel(AP_MENU_ID_VIEW_FULLSCREEN, "&Fuldskærmsvisning", "Vis i fuldskærmstilstand")
+        MenuLabel(AP_MENU_ID_TOOLS_SPELLING, "&Stavning", NULL)
+        MenuLabel(AP_MENU_ID_FMT_DOCUMENT,              "&Dokument",             "Indstil egenskaber for dokument")
+	MenuLabel(AP_MENU_ID_FILE_PRINT_DIRECTLY,		"Udskriv direkte",			"Udskriv via den interne PS-driver")
 	MenuLabel(AP_MENU_ID_FILE,				"&Filer",			NULL)
 	MenuLabel(AP_MENU_ID_FILE_NEW,			"&Ny", 				"Nyt dokument")	
 	MenuLabel(AP_MENU_ID_FILE_OPEN,			"Å&bn",				"Åbn et eksisterende dokument")

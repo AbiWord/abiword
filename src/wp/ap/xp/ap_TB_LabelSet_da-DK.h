@@ -52,6 +52,8 @@ BeginSet(da,DK,true)
 
 	//          (id, 		                    szLabel,	IconName,     	szToolTip,      szStatusMsg)
 
+        ToolbarLabel(AP_TOOLBAR_ID_HELP, "Hjælp", tb_help_xpm, NULL, "Hjælp")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, "Indsæt billede", tb_insert_graphic_xpm, NULL, "Indsæt et billede i dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ny", 		tb_new_xpm,	NULL, "Nyt dokument")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Åbn",		tb_open_xpm,	NULL, "Åbn et eksisterende dokument")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Gem",	 	tb_save_xpm,	NULL, "Gem dokumentet")
