@@ -189,6 +189,8 @@ void ColumnWin::SetDlg(AP_BeOSDialog_Columns *brk)
 		preview->Window()->Unlock();
 	}
 	
+	UpdateIfNeeded();
+	
 	modalSem = create_sem(0,"ColumnWindowSem");
 	WaitForDelete(modalSem);
 	
