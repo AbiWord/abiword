@@ -160,7 +160,7 @@ UINT UT_Win32Timer::_createWin32Identifier(void)
 	if (this->getHWnd() == 0) return 0;
 
 	// sort the timers so arranged by hWnd and for a given hWnd by OS identifier
-	UT_Timer::static_vecTimers.qsort(UT_Win32Timer::_compareIdentifiers);
+	_getVecTimers().qsort(UT_Win32Timer::_compareIdentifiers);
 
 	// Take the first unused identifier number different from zero (for a given Handle)
 	UINT iIdentifier = 1;

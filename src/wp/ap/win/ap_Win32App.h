@@ -71,6 +71,8 @@ protected:
 													 const char * szType, bool bWide);
 
 	IEFileType 				_getFileTypeFromDesc(const char *desc);
+	
+	static BOOL 	getCommCtrlVersion(HINSTANCE hInst, LPDWORD pdwMajor, LPDWORD pdwMinor);
 
 	XAP_StringSet *			m_pStringSet;
 	AP_Win32Clipboard *		m_pClipboard;

@@ -171,6 +171,7 @@ bool XAP_Win32LabelledSeparator_RegisterClass(XAP_Win32App * app)
 	HINSTANCE hinst = app->getInstance();
 	ATOM a;
 
+	wndclass.cbSize = sizeof(WNDCLASSEX);
 	if(GetClassInfoEx(hinst, s_LabelledSeparatorWndClassName, &wndclass))
 	{
 		// class information already registered
