@@ -175,7 +175,6 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// HACK : but need to be here to throw the splash screen as
 	// HACK : soon as possible.
 	gtk_set_locale();
-	//gnome_init(pMyUnixApp->m_szAppName, "0.9.0", Args.m_argc, Args.m_argv);
 	gtk_init(&Args.m_argc,&Args.m_argv);
 
 #ifdef HAVE_GNOMEVFS
@@ -186,18 +185,19 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	  }
 #endif
 
-	// set the default icon
-	UT_String s = pMyUnixApp->getAbiSuiteLibDir();
-	s += "/icons/abiword_48.png";
-	gnome_window_icon_init ();
-	gnome_window_icon_set_default_from_file (s.c_str());
-
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
 	{
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	}
+
+	// set the default icon - must be after the call to ::initialize
+	// because that's where we call gnome_init()
+	UT_String s = pMyUnixApp->getAbiSuiteLibDir();
+	s += "/icons/abiword_48.png";
+	gnome_window_icon_init ();
+	gnome_window_icon_set_default_from_file (s.c_str());
 
 	const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
 
