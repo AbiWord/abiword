@@ -44,7 +44,9 @@ abicalc:	$(DEPENDS_ABICALC)
 
 _JS_:
 	@echo Building JavaScript...
-	sh BUILD_JS.sh  &&  echo JavaScript build complete.
+	sh ./src/other/buildscripts/BUILD_JS.sh 		\
+		&& sh ./src/other/buildscripts/GET_JS.sh	\
+		&& echo JavaScript build complete.
 
 _GXML_:
 	@echo Building GXML...
