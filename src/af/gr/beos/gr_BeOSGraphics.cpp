@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <Debug.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -27,6 +28,8 @@
 #include "xap_BeOSFrame.h"	//For be_DocView 
 #include <limits.h>
 #include <Font.h>
+#include <Debug.h> // Remove me?
+
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
@@ -212,6 +215,8 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	}
 	
 	if (!m_pShadowView->Window()->Lock()) {
+		printf("Lock fail\n");
+		DEBUGGER("Lock fail");
 		return;
 	}
 
@@ -248,13 +253,14 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		/*Measure the width of the previous character, draw char at new
 		 * offset
 		 */
-		widthAbiWants=(unsigned short int)ceil(escapementArray[i-1].x*fontsize - 1.0f);
+		widthAbiWants=(unsigned short int)(escapementArray[i-1].x*fontsize);
 		xoff+=widthAbiWants;
 		m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], UT_FALSE)),
 								  BPoint(xoff,yoff+offset));
 	}
 
 	m_pShadowView->Window()->Unlock();
+
 	delete [] escapementArray;
 	delete [] buffer;
 	UPDATE_VIEW
@@ -411,7 +417,7 @@ UT_uint32 GR_BeOSGraphics::getFontHeight()
 		m_pShadowView->GetFontHeight(&fh);
 		m_pShadowView->Window()->Unlock();
 	}
-	DPRINTF(printf("GR: Get Font Height %d\n",(int)(fh.ascent + fh.descent + fh.leading + 0.5)));
+	//printf("GR: Get Font Height %d\n",(int)(fh.ascent + fh.descent + fh.leading + 0.5));
 	//Gives ascent, descent, leading
 	return((UT_uint32)(fh.ascent + fh.descent + fh.leading + 0.5));
 }
@@ -426,7 +432,7 @@ UT_uint32 GR_BeOSGraphics::getFontAscent()
 		m_pShadowView->Window()->Unlock();
 	}
 	//Gives ascent, descent, leading
-	DPRINTF(printf("GR: Font Ascent %d\n",(int)(fh.ascent + 0.5)));
+	//printf("GR: Font Ascent %d\n",(int)(fh.ascent + 0.5));
 	return((UT_uint32)(fh.ascent + 0.5));
 }
 
@@ -439,7 +445,7 @@ UT_uint32 GR_BeOSGraphics::getFontDescent()
 		m_pShadowView->Window()->Unlock();
 	}
 	//Gives ascent, descent, leading
-	DPRINTF(printf("GR: Font Descent %d\n",(int)(fh.descent + 0.5)));
+	//printf("GR: Font Descent %d\n",(int)(fh.descent + 0.5));
 	return((UT_uint32)(fh.descent + 0.5));
 }
 
@@ -451,14 +457,7 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	BFont viewFont;
 	BPoint escapementArray[1];
-
-	m_pShadowView->GetFont(&viewFont);
-	viewFont.SetSpacing(B_BITMAP_SPACING);
-	if (m_pShadowView->Window()->Lock()) {
-		m_pShadowView->SetFont(&viewFont);
-		m_pShadowView->Window()->Unlock();
-	}
-
+	
 	char * utf8char;
 	utf8char =  UT_encodeUTF8char(c);
 	strcpy(buffer, utf8char);						
@@ -466,12 +465,30 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	escapement_delta tempdelta;
 	tempdelta.space=0.0;
 	tempdelta.nonspace=0.0;
-	//Hope this works on UTF8 characters buffers
-	viewFont.GetEscapements(buffer,1,&tempdelta,escapementArray);
-	float fontsize=viewFont.Size();
+	float fontsize=0.0f;
+	
+//	m_pShadowView->GetFont(&viewFont);
+//	viewFont.SetSpacing(B_BITMAP_SPACING); // moved inside of lock call..
 
-	return ceil(escapementArray[0].x *fontsize - 1.0f);
+	if (m_pShadowView->Window()->Lock()) {
+		
+		m_pShadowView->GetFont(&viewFont);
+		viewFont.SetSpacing(B_BITMAP_SPACING);
+
+		m_pShadowView->SetFont(&viewFont);
+		
+		//Hope this works on UTF8 characters buffers
+		viewFont.GetEscapements(buffer,1,&tempdelta,escapementArray);
+		fontsize=viewFont.Size();
+
+		m_pShadowView->Window()->Unlock();
+
+		return (escapementArray[0].x *fontsize);
+	}
+	
+	return 1.0f; // Shouldn't happen.
 }
+
 #if 0
 UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									  int num,  unsigned short* pWidths)
@@ -577,8 +594,14 @@ void GR_BeOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 void GR_BeOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	DPRINTF(printf("GR: Poly Line \n"));
+	if (m_pShadowView->Window()->Lock())
+        {
 	for (UT_uint32 k=1; k<nPoints; k++)
 		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y); 
+	
+		m_pShadowView->Window()->Unlock();
+	}
+	
 	UPDATE_VIEW
 }
 
@@ -606,7 +629,7 @@ void GR_BeOSGraphics::invertRect(const UT_Rect* pRect)
 	{
 		/*Dan thinks StrokeRect is only getting the outer edges, when we don't really want that. we'll see in a sec*/
 		drawing_mode oldmode = m_pShadowView->DrawingMode();
-		printf("Inverting rect\n");
+		//printf("Inverting rect\n");
 		m_pShadowView->SetDrawingMode(B_OP_INVERT);	//or B_OP_BLEND
 		m_pShadowView->/*Stroke*/FillRect(BRect(pRect->left, pRect->top,
 									pRect->left + pRect->width,
@@ -702,7 +725,8 @@ void GR_BeOSGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 			  UT_sint32 x_src, UT_sint32 y_src,
 			  UT_sint32 width, UT_sint32 height)
 {
-	printf("GR: Move Area\n");
+//	DEBUGGER("GR: MoveArea\n");
+//	printf("GR: Move Area\n");
 	UT_ASSERT(0);
 }
 
