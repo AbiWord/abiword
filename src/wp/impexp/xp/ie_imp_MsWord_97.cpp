@@ -866,19 +866,17 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    int data = 0;
    const char * mimetype = NULL;
    
-   UT_ByteBuf * buf = new UT_ByteBuf();
+   UT_ByteBuf * buf = NULL;
    IE_ImpGraphic * converter = NULL;
    UT_Error err = UT_OK;
 
-   while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
-     buf->append((UT_Byte*)&data, 1);
-   
+   // short-circuit this method if we don't support
+   // the incoming format
    switch(b->type)
      {
       case msoblipDIB:
 	// this is just a BMP file, so we'll use the BMP image importer
 	// to convert it to a PNG for us.
-	err = IE_ImpGraphic::constructImporter("", IEGFT_DIB, &converter);
 	mimetype = UT_strdup("image/png");
 	break;
       case msoblipPNG:
@@ -891,8 +889,19 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
       case msoblipJPEG:
       default:
 	// TODO: support other image types
-	goto HandleImgEnd;
-	break;
+	return;
+     }
+
+   buf = new UT_ByteBuf();
+
+   while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+     buf->append((UT_Byte*)&data, 1);
+   
+   if(b->type == msoblipDIB)
+     {
+	// this is just a BMP file, so we'll use the BMP image importer
+	// to convert it to a PNG for us.
+	err = IE_ImpGraphic::constructImporter("", IEGFT_DIB, &converter);
      }
 
    if (err != UT_OK)
@@ -931,6 +940,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 					     pBBPNG, (void*)mimetype, NULL));
 
  HandleImgEnd:
+
+   // TODO: free mimetype??
 
    DELETEP(buf);
    return err;
