@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <gnome.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -33,8 +34,9 @@
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
-#include "ap_Dialog_InsertTable.h"
-#include "ap_UnixDialog_InsertTable.h"
+#include "ap_Dialog_Break.h"
+#include "ap_UnixDialog_Break.h"
+#include "ap_UnixGnomeDialog_InsertTable.h"
 
 /*****************************************************************/
 
@@ -42,36 +44,32 @@
 
 /*****************************************************************/
 
-XAP_Dialog * AP_UnixDialog_InsertTable::static_constructor(XAP_DialogFactory * pFactory,
-													       XAP_Dialog_Id id)
+XAP_Dialog * AP_UnixGnomeDialog_InsertTable::static_constructor(XAP_DialogFactory * pFactory,
+															    XAP_Dialog_Id id)
 {
-	AP_UnixDialog_InsertTable * p = new AP_UnixDialog_InsertTable(pFactory,id);
+	AP_UnixGnomeDialog_InsertTable * p = new AP_UnixGnomeDialog_InsertTable(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_InsertTable::AP_UnixDialog_InsertTable(XAP_DialogFactory * pDlgFactory,
-										             XAP_Dialog_Id id)
-	: AP_Dialog_InsertTable(pDlgFactory,id)
+AP_UnixGnomeDialog_InsertTable::AP_UnixGnomeDialog_InsertTable(XAP_DialogFactory * pDlgFactory,
+														       XAP_Dialog_Id id)
+	: AP_UnixDialog_InsertTable(pDlgFactory, id)
 {
-	m_windowMain = NULL;
-
-	m_buttonOK = NULL;
-	m_buttonCancel = NULL;
 }
 
-AP_UnixDialog_InsertTable::~AP_UnixDialog_InsertTable(void)
+AP_UnixGnomeDialog_InsertTable::~AP_UnixGnomeDialog_InsertTable(void)
 {
 }
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_InsertTable * dlg)
+static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Break * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_OK();
 }
 
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_InsertTable * dlg)
+static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Break * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Cancel();
@@ -91,7 +89,7 @@ static void s_col_spin(GtkWidget * widget, AP_UnixDialog_InsertTable * dlg)
 
 static void s_delete_clicked(GtkWidget * /* widget */,
 							 gpointer /* data */,
-							 AP_UnixDialog_InsertTable * dlg)
+							 AP_UnixDialog_Break * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_WindowDelete();
@@ -99,75 +97,7 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 
 /*****************************************************************/
 
-void AP_UnixDialog_InsertTable::runModal(XAP_Frame * pFrame)
-{
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	// Populate the window's data items
-	_populateWindowData();
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	_storeWindowData();
-	
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
-}
-
-void AP_UnixDialog_InsertTable::event_OK(void)
-{
-	// TODO save out state of radio items
-	m_answer = AP_Dialog_InsertTable::a_OK;
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_InsertTable::event_Cancel(void)
-{
-	m_answer = AP_Dialog_InsertTable::a_CANCEL;
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_InsertTable::event_SpinRows(void)
-{
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowspin));
-}
-
-void AP_UnixDialog_InsertTable::event_SpinCols(void)
-{
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColspin));
-}
-
-void AP_UnixDialog_InsertTable::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_InsertTable::a_CANCEL;	
-	gtk_main_quit();
-}
-
-/*****************************************************************/
-
-GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
+GtkWidget * AP_UnixGnomeDialog_InsertTable::_constructWindow(void)
 {
 	GtkWidget * windowInsertTable;
 	GtkWidget * vboxMain;
@@ -315,20 +245,4 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	m_pColspin = spinNumCols;
 
 	return windowInsertTable;
-}
-
-void AP_UnixDialog_InsertTable::_populateWindowData(void)
-{
-	// We're a pretty stateless dialog, so we just set up
-	// the defaults from our members.
-
-	//GtkWidget * widget = _findRadioByID(m_break);
-	//UT_ASSERT(widget);
-	
-	//gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), TRUE);
-}
-
-void AP_UnixDialog_InsertTable::_storeWindowData(void)
-{
-	//m_break = _getActiveRadioItem();
 }

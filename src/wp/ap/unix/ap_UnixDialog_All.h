@@ -173,6 +173,7 @@
      DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixGnomeDialog_Image)
      DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
      DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
+     DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_UnixGnomeDialog_InsertTable)
      // ... also add new dialogs here ...
 #   else
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)

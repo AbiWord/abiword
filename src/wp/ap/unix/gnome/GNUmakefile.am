@@ -29,6 +29,7 @@ noinst_LIBRARIES = libWpAp_Gnome.a
 libWpAp_Gnome_a_SOURCES=\
 		ap_@ABI_FE@GnomeApp.cpp				\
 		ap_@ABI_FE@GnomeDialog_Break.cpp		\
+		ap_@ABI_FE@GnomeDialog_InsertTable.cpp		\
 		ap_@ABI_FE@GnomeDialog_Columns.cpp		\
 		ap_@ABI_FE@GnomeDialog_InsertBookmark.cpp	\
 		ap_@ABI_FE@GnomeDialog_InsertHyperlink.cpp	\
