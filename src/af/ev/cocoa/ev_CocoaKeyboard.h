@@ -37,7 +37,6 @@ public:
 	virtual ~ev_CocoaKeyboard(void);
 
 	bool keyPressEvent(AV_View * pView, NSEvent* e);
-//	static GdkModifierType getAltModifierMask(void);
 };
 
 #endif // EV_COCOAKEYBOARD_H
