@@ -43,6 +43,15 @@ public:
 		CACHE_FONT_SIZE = 120
 	};
 
+	static void destroyCharWidthsCache()
+	{
+		if(s_pInstance)
+		{
+			delete s_pInstance;
+			s_pInstance = NULL;
+		}
+	}
+
 protected:
 	bool addFont (const GR_Font* pFont);
 	/*!
