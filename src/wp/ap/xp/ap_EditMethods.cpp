@@ -579,19 +579,21 @@ Defun1(fileSaveAs)
 	char * pNewFile = NULL;
 #endif /* DLGHACK */
 
-	if (pNewFile)
+	if (!pNewFile)
 	{
-		UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
-		pAV_View->cmdSaveAs(pNewFile);
-		free(pNewFile);
+		return UT_FALSE;
+	}
 
-		if (pFrame->getViewNumber() > 0)
-		{
-			AP_App * pApp = pFrame->getApp();
-			UT_ASSERT(pApp);
+	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
+	pAV_View->cmdSaveAs(pNewFile);
+	free(pNewFile);
 
-			pApp->updateClones(pFrame);
-		}
+	if (pFrame->getViewNumber() > 0)
+	{
+		AP_App * pApp = pFrame->getApp();
+		UT_ASSERT(pApp);
+
+		pApp->updateClones(pFrame);
 	}
 
 	return UT_TRUE;
@@ -759,7 +761,8 @@ Defun(closeWindow)
 
 			if (!bRet)
 			{
-				/* TODO */
+				// didn't successfully save, so don't close
+				return UT_FALSE;
 			}
 		}
 		else if (ans == dlg_CANCEL)
