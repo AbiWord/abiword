@@ -38,13 +38,11 @@ LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			Abi_libpng Abi_zlib
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
-#ABI_APPLIBS=		$(LoadOrder) 
 ABI_APPLIBDEP=		$(LoadOrder)
 
 # libdl flags go into the process later
-#ABI_LIBS=		png z stdc++ 
-#ABI_LIBS=		photon
 ABI_LIBS=		stdc++ ph phrender m
+STUPID_STATIC_LIBS= -Bstatic -lph
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)
@@ -57,7 +55,6 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 # One build gets dynamic libdl flags, the other gets static flags
 DYNAMIC_LDFLAGS=	$(addprefix -l,$(DL_LIBS))
-#STATIC_LDFLAGS =	$(STATIC_FLAGS)
 STATIC_LDFLAGS =	
 
 # we override the $(PROGRAM) rule.
@@ -66,7 +63,7 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(QNX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
 	@bindres -q $@ Icon.wgti
 else
 	@echo "Not linking dynamic $(PROGRAM)"
@@ -77,7 +74,7 @@ $(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(QNX_CAN_BUILD_STATIC),1)
 	$(MAKE_OBJDIR)
 	echo Linking static $(PROGRAM_S)
-	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
 	@bindres -q $@ Icon.wgti
 else
 	@echo "Not linking static $(PROGRAM)"

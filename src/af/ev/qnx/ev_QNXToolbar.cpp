@@ -188,6 +188,7 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 	m_wToolbarGroup = PtCreateWidget(PtToolbarGroup, wTLW, n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_FLAGS, 0, Pt_TOOLBAR_FOLLOW_FOCUS);
 	m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
 	UT_ASSERT(m_wToolbar);
 	
