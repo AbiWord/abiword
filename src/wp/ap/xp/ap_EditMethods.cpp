@@ -8378,11 +8378,18 @@ Defun(colorBackTB)
 	return true;
 }
 
-Defun0(togglePlain)
+/*! removes the "props" attribute, i.e., all non-style based formatting
+ */
+Defun1(togglePlain)
 {
 	CHECK_FRAME;
-// TODO: remove all character-level formatting
-	// HYP: explicitly delete it, to get back to defaults, styles
+	ABIWORD_VIEW;
+
+	const XML_Char p[] = "props";
+	const XML_Char v[] = "";
+	const XML_Char * props_out[3] = {p,v,NULL};
+	pView->setCharFormat(NULL,props_out);
+		
 	return true;
 }
 
