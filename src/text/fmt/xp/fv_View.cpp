@@ -9064,44 +9064,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	if(!isSelectionEmpty())
 	{
-		if(pRun->getType() == FPRUN_IMAGE)
-		{
-			// clear the image selection rect
-			setImageSelRect(UT_Rect(-1,-1,-1,-1));
-		
-			// check if this image is selected
-			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
-	
-			UT_uint32 iSelAnchor = getSelectionAnchor();
-			UT_uint32 iPoint = getPoint();
-	
-			UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
-			UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
-	
-			UT_ASSERT(iSel1 <= iSel2);
-	
-			if (
-			    /* getFocus()!=AV_FOCUS_NONE && */
-				(iSel1 <= iRunBase)
-				&& (iSel2 > iRunBase)
-				)
-			{
-				// This image is selected. Now get the image size.
-				
-				UT_sint32 xoff = 0, yoff = 0;
-				pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
-	
-				// Sevior's infamous + 1....
-				yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
-				
-				// Set the image size in the image selection rect
-				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
-			}
-			m_prevMouseContext = EV_EMC_IMAGESIZE;
-			//			m_InlineImage.mouseLeftPress(xPos, yPos);
-			return EV_EMC_IMAGESIZE;
-		}
-		if(m_Selection.isPosSelected(pos))
+		if (pRun->getType() != FPRUN_IMAGE &&
+			m_Selection.isPosSelected(pos))
 		{
 			m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
 			return EV_EMC_VISUALTEXTDRAG;
