@@ -165,7 +165,7 @@ void XAP_Preview_Zoom::draw(void)
 	UT_ASSERT(m_string);
 	
 	// TODO : replace 5,5 with real coordinates
-	m_gc->clearArea(0, 0, getWindowWidth(), getWindowHeight());
+	m_gc->clearArea(0, 0, _UL(getWindowWidth()), _UL(getWindowHeight()));
 
 #ifndef WITH_PANGO	
 	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), 5, 5);
