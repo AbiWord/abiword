@@ -2318,6 +2318,269 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+/*!
+    If the input pAP contains revision attribute, this function
+    returns AP in which the revision attribute has been inflated into
+    actual properties and attributes; the caller is responsible for
+    deleting both the returned AP and pRevisions
+    
+    bShow indicates whether revisions are shown or hidden (view - dependent)
+    iId is the id of revision to be shown (view - dependent)
+
+    on return bHiddenRevision indicates if the element associated with
+    pAP is to be hidden or visible
+*/
+const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
+												  bool bShow, UT_uint32 iId, bool &bHiddenRevision)
+{
+	PP_AttrProp * pNewAP = NULL;
+	const XML_Char* pRevision = NULL;
+	bHiddenRevision = false;
+	
+	bool bMark = isMarkRevisions();
+	
+	if(pAP && pAP->getAttribute("revision", pRevision))
+	{
+		if(!pRevisions)
+			pRevisions = new PP_RevisionAttr(pRevision);
+
+		UT_return_val_if_fail(pRevisions, NULL);
+		
+		//first we need to ascertain if this revision is visible
+		bool bDeleted = false;
+
+		const PP_Revision * pRev;
+		UT_uint32 i = 0;
+		UT_uint32 iMinId;
+
+		pRev = pRevisions->getLastRevision();
+		UT_return_val_if_fail(pRev, NULL);
+		
+		UT_uint32 iMaxId = pRev->getId();
+
+		if(!bMark && !bShow && iId == 0)
+		{
+			// revisions are not to be shown, and the document to be
+			// shown in the state before the first revision, i.e.,
+			// additions are to be hidden, fmt changes ignored, and
+			// deletions will be visible
+
+			// see if the first revision is an addition ...
+			i = 1;
+			do
+			{
+				pRev = pRevisions->getRevisionWithId(i, iMinId);
+
+				if(!pRev)
+				{
+					UT_DEBUGMSG(("PD_Document::inflateRevisions: iMinId %d\n", iMinId));
+					
+					if(iMinId == 0xffffffff)
+					{
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						return NULL;
+					}
+
+					// jump directly to the first revision ...
+					i = iMinId;
+				}
+			}
+			while(!pRev && i <= (UT_sint32)iMaxId);
+			
+				
+			if(  (pRev->getType() == PP_REVISION_ADDITION)
+			   ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+			{
+				bHiddenRevision = true;
+				return NULL;
+			}
+
+			bHiddenRevision = false;
+			return NULL;
+		}
+		
+		if((bMark || !bShow) && iId != 0)
+		{
+			// revisions not to be shown, but document to be presented
+			// as it looks after the revision iId
+			UT_ASSERT( bMark || iId == 0xffffffff );
+			
+			UT_uint32 iMyMaxId = bMark ? UT_MIN(iId,iMaxId) : iMaxId;
+
+			// we need to loop through subsequent revisions,
+			// working out the their cumulative effect
+			i = 1;
+			
+			for(i = 1; i <= iMyMaxId; i++)
+			{
+				pRev = pRevisions->getRevisionWithId(i,iMinId);
+
+				if(!pRev)
+				{
+					if(iMinId == 0xffffffff)
+					{
+						UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+						break;
+					}
+
+					// advance i so that we do not waste our time, -1
+					// because of i++ in loop
+					i = iMinId - 1;
+					continue;
+				}
+			
+			
+				if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
+					 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+				{
+					// create copy of span AP and then set all props contained
+					// in our revision;
+					if(!pNewAP)
+					{
+						pNewAP = new PP_AttrProp;
+						UT_return_val_if_fail(pNewAP,NULL);
+				
+						(*pNewAP) = *pAP;
+						(*pNewAP) = *pRev;
+					}
+					else
+					{
+						// add fmt to our AP
+						pNewAP->setAttributes(pRev->getAttributes());
+						pNewAP->setProperties(pRev->getProperties());
+					}
+				}
+				else if(pRev->getType() == PP_REVISION_DELETION)
+				{
+					// deletion means resetting all previous fmt
+					// changes
+					if(pNewAP)
+					{
+						delete pNewAP;
+						pNewAP = NULL;
+					}
+
+					bDeleted = true;
+				}
+				else if(pRev->getType() == PP_REVISION_ADDITION)
+				{
+					bDeleted = false;
+				}
+			} // for
+
+			if(bDeleted)
+			{
+				bHiddenRevision = true;
+			}
+			else
+			{
+				bHiddenRevision = false;
+			}
+
+			if(!bMark || iId == 0xffffffff)
+			{
+				if(pNewAP)
+				{
+					// store the AP
+					pNewAP->markReadOnly();
+					
+					PT_AttrPropIndex api;
+					UT_return_val_if_fail(getPieceTable()->getVarSet().addIfUniqueAP(pNewAP, &api), NULL);
+					pAP->setRevisedIndex(api,iId,bShow,bMark,bHiddenRevision);
+
+					// the above might have resulted in the deletion
+					// of pNewAP -- retrieve it by the index
+					getAttrProp(api, const_cast<const PP_AttrProp **>(&pNewAP));
+				}
+				
+				return pNewAP;
+			}
+			
+			// if we are in Mark mode, we need to process the last
+			// revision ... 
+		}
+		else if(!pRevisions->isVisible(iId))
+		{
+			// we are to show revisions with id <= iId
+			bHiddenRevision = true;
+			UT_ASSERT(!pNewAP);
+			return NULL;
+		}
+
+		//next step is to find any fmt changes, layering them as
+		//subsequent revisions come
+		if(bMark && iId != 0)
+		{
+			// we are in Mark mode and only interested in the last
+			// revision; the loop below will run only once
+			i = UT_MIN(iId+1,iMaxId);
+		}
+		else
+		{
+			i = 1;
+		}
+		
+
+		for(i = 1; i <= iMaxId; i++)
+		{
+			pRev = pRevisions->getRevisionWithId(i,iMinId);
+
+			if(!pRev)
+			{
+				if(iMinId == 0xffffffff)
+				{
+					UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+					break;
+				}
+
+				// advance i so that we do not waste our time, -1
+				// because of i++ in loop
+				i = iMinId - 1;
+				continue;
+			}
+			
+			
+			if(  (pRev->getType() == PP_REVISION_FMT_CHANGE && !bDeleted)
+				 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT))
+			{
+				// create copy of span AP and then set all props contained
+				// in our revision;
+				if(!pNewAP)
+				{
+					pNewAP = new PP_AttrProp;
+					UT_return_val_if_fail(pNewAP, NULL);
+				
+					(*pNewAP) = *pAP;
+					(*pNewAP) = *pRev;
+					bDeleted = false;
+				}
+				else
+				{
+					// add fmt to our AP
+					pNewAP->setAttributes(pRev->getAttributes());
+					pNewAP->setProperties(pRev->getProperties());
+					bDeleted = false;
+				}
+			}
+		} // for
+	} // if "revision"
+
+	if(pNewAP)
+	{
+		// store the AP
+		pNewAP->markReadOnly();
+					
+		PT_AttrPropIndex api;
+		UT_return_val_if_fail(getPieceTable()->getVarSet().addIfUniqueAP(pNewAP, &api), NULL);
+		pAP->setRevisedIndex(api,iId,bShow,bMark,bHiddenRevision);
+
+		// the above might have resulted in the deletion
+		// of pNewAP -- retrieve it by the index
+		getAttrProp(api, const_cast<const PP_AttrProp**>(&pNewAP));
+	}
+				
+	return pNewAP;
+}
 
 bool PD_Document::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {

@@ -382,6 +382,97 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 	m_pLastRevision = NULL;
 }
 
+/*!
+    changes the type of revision with id iId to eType; if revision
+    with that id is not present, returns false
+ */
+bool PP_RevisionAttr::changeRevisionType(UT_uint32 iId, PP_RevisionType eType)
+{
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
+
+		if(iId == r->getId())
+		{
+			r->setType(eType);
+			m_bDirty = true;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool PP_RevisionAttr::changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId)
+{
+	UT_return_val_if_fail(iNewId >= iOldId, false);
+	
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
+
+		if(iOldId == r->getId())
+		{
+			r->setId(iNewId);
+			m_bDirty = true;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*!
+    this function removes any revisions that no-longer contribute to the cumulative effect
+    it is used in full-history mode when transfering attrs and props from the revision attribute
+    into the main attrs and props
+*/
+void PP_RevisionAttr::pruneForCumulativeResult()
+{
+	// first we are looking for any deletions which cancel anything below them
+	bool bDelete = false;
+	UT_sint32 i;
+	
+	for(i = m_vRev.getItemCount()-1; i >=0; --i)
+	{
+		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
+		
+		if(r->getType() == PP_REVISION_DELETION)
+			bDelete = true;
+
+		if(bDelete)
+		{
+			delete r;
+			m_vRev.deleteNthItem(i);
+		}
+	}
+
+	// now we merge props and attrs in what is left
+	if(m_vRev.getItemCount() < 2)
+		return;
+	
+	PP_Revision * r0 = (PP_Revision *)m_vRev.getNthItem(0);
+	UT_return_if_fail(r0);
+	
+	for(i = 1; i < (UT_sint32)m_vRev.getItemCount(); ++i)
+	{
+		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
+		UT_return_if_fail( r );
+		
+		r0->setProperties(r->getProperties());
+		r0->setAttributes(r->getAttributes());
+
+		delete r;
+		m_vRev.deleteNthItem(i);
+		--i;
+	}
+
+	// finally, remove the revision attribute if present
+	r0->setAttribute("revision", NULL);
+
+	UT_ASSERT( m_vRev.getItemCount() == 1 );
+}
+
 
 /*! return highest revision associated with this revision attribute
     that has ID at most equal to id; the returned PP_Revision can be
@@ -798,12 +889,15 @@ void PP_RevisionAttr::_refreshString()
 		sprintf(buf,"%d",r->getId()* ((r_type == PP_REVISION_DELETION)?-1:1));
 		m_sXMLstring += buf;
 
-		if((r_type == PP_REVISION_FMT_CHANGE)||(r_type == PP_REVISION_ADDITION_AND_FMT))
+		if(r_type != PP_REVISION_DELETION)
 		{
-			m_sXMLstring += "{";
-			m_sXMLstring += r->getPropsString();
-			m_sXMLstring += "}";
-
+			if(r->hasProperties())
+			{
+				m_sXMLstring += "{";
+				m_sXMLstring += r->getPropsString();
+				m_sXMLstring += "}";
+			}
+			
 			if(r->hasAttributes())
 			{
 				m_sXMLstring += "{";

@@ -46,6 +46,9 @@ PP_AttrProp::PP_AttrProp()
 	m_bIsReadOnly = false;
 	m_checkSum = 0;
 	xxx_UT_DEBUGMSG(("creating pp_AttrProp %x \n",this));
+
+	m_iRevisedIndex = 0xffffffff;
+	m_bRevisionHidden = false;
 }
 
 PP_AttrProp::~PP_AttrProp()
@@ -76,6 +79,7 @@ PP_AttrProp::~PP_AttrProp()
 	{
 		UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
 		const PropertyPair * entry = NULL;
+
 		for (entry = c.first(); c.is_valid(); entry = c.next())
 		{
 			if(entry)
@@ -92,7 +96,6 @@ PP_AttrProp::~PP_AttrProp()
 		delete m_pProperties;
 		m_pProperties = NULL;
 	}
-
 }
 
 /*!
@@ -311,7 +314,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 {
 	if (!m_pProperties)
 	{
-		m_pProperties = new 	UT_GenericStringMap<PropertyPair*>(5);
+		m_pProperties = new UT_GenericStringMap<PropertyPair*>(5);
 		if (!m_pProperties)
 		{
 			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));
@@ -355,7 +358,6 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		{
 			m_pProperties->set(szName, new PropertyPair(UT_strdup(szValue), NULL));
 		}
-		
 	}
 	else
 	{
@@ -403,7 +405,7 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
   		return false;
 
  	int i = 0;
- 	UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
+	UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
  	const PropertyPair * val = NULL;
 
 	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
@@ -424,15 +426,34 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 {
 	if (!m_pProperties)
 		return false;
-
 	const PropertyPair * pEntry = m_pProperties->pick(szName);
+
 	if (!pEntry)
 		return false;
 
 	szValue = pEntry->first();
-
 	return true;
 }
+
+const XML_Char ** PP_AttrProp::getProperties () const
+{
+	if(!m_pProperties)
+		return NULL;
+	
+	UT_uint32 iPropsCount = m_pProperties->size();
+
+	const XML_Char ** pList = m_pProperties->list();
+
+	// where the values should be, we actually have pointers to PropertyPair;
+	for(UT_uint32 i = 1; i < iPropsCount * 2; i += 2)
+	{
+		PropertyPair * pP = (PropertyPair *) pList[i];
+		pList[i] = pP->first();
+	}
+
+	return pList;
+}
+
 
 const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tProperty_type Type) const
 {

@@ -27,6 +27,33 @@
 #include "ut_pair.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
+#include "pt_types.h"
+
+// the following class holds the state of the view when we set
+// m_iRevisionIndex
+class ABI_EXPORT PP_RevisionState
+{
+  public:
+	PP_RevisionState(){m_iId = 0; m_bShow = false; m_bMark = false;};
+
+	bool operator == (const PP_RevisionState & rs) const
+	     {
+			 if(rs.m_iId == m_iId && rs.m_bShow == m_bShow && rs.m_bMark == m_bMark)
+				 return true;
+			 return false;
+		 }
+
+	bool isEqual(UT_uint32 iId, bool bShow, bool bMark) const
+	     {
+			 if(m_iId == iId && m_bShow == bShow && m_bMark == bMark)
+				 return true;
+			 return false;
+		 }
+	
+	UT_uint32 m_iId;
+	bool      m_bShow;
+	bool      m_bMark;
+};
 
 
 // PP_AttrProp captures the complete set of XML and CSS
@@ -43,7 +70,7 @@ class ABI_EXPORT PP_AttrProp
 {
 public:
 	PP_AttrProp();
-	~PP_AttrProp();
+	virtual ~PP_AttrProp();
 
 	// The "XML_Char **" is an argv-like thing containing
 	// multiple sets of name/value pairs.  names are in the
@@ -56,7 +83,7 @@ public:
 	bool	setProperties(const UT_GenericVector<XML_Char*> * pVector);
 
 	const XML_Char ** getAttributes () const { return m_pAttributes ? m_pAttributes->list () : 0; }
-	const XML_Char ** getProperties () const { return m_pProperties ? m_pProperties->list () : 0; }
+	const XML_Char ** getProperties () const;
 
 	bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
 	bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
@@ -92,6 +119,22 @@ public:
 	UT_uint32 getIndex(void);	//$HACK
 	void setIndex(UT_uint32 i);	//$HACK
 
+	/* m_iRevisionIndex points to a AP that has our revision attribute
+	   inflated into actual attributes and properties; since the
+	   inflation is view-dependent, we need to keep track of the view
+	   state */
+	PT_AttrPropIndex   getRevisedIndex() const {return m_iRevisedIndex;}
+	PP_RevisionState & getRevisionState() const {return m_RevisionState;}
+	
+	void               setRevisedIndex (PT_AttrPropIndex i, UT_uint32 iId, bool bShow, bool bMark, bool bHidden) const
+	                       {
+							   m_iRevisedIndex = i; m_RevisionState.m_iId = iId;
+							   m_RevisionState.m_bShow = bShow; m_RevisionState.m_bMark = bMark;
+							   m_bRevisionHidden = bHidden;
+						   }
+
+	bool               getRevisionHidden() const {return m_bRevisionHidden;}
+
 protected:
 	void _computeCheckSum(void);
  private:
@@ -103,9 +146,14 @@ protected:
 
 	UT_GenericStringMap<XML_Char*> * m_pAttributes; // of XML_Char*
 	UT_GenericStringMap<PropertyPair*> * m_pProperties; // of PropertyPair
+	
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 	UT_uint32			m_index;	//$HACK
+	
+	mutable PT_AttrPropIndex    m_iRevisedIndex;
+	mutable PP_RevisionState    m_RevisionState;
+	mutable bool                m_bRevisionHidden;
 };
 
 #endif /* PP_ATTRPROP_H */

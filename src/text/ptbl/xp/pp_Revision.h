@@ -50,8 +50,14 @@ class PP_Revision: public PP_AttrProp
 				const XML_Char ** props,
 				const XML_Char ** attrs);
 
+	virtual ~PP_Revision(){};
+	
 	UT_uint32        getId()    const {return m_iID;}
+	void             setId(UT_uint32 iId) {UT_ASSERT( iId >= m_iID); m_iID = iId;}
+	
 	PP_RevisionType  getType()  const {return m_eType;}
+	void             setType(PP_RevisionType t) {m_eType = t; m_bDirty = true;}
+	
 	const XML_Char * getPropsString();
 	const XML_Char * getAttrsString();
 
@@ -110,6 +116,9 @@ class PP_RevisionAttr
 									  const XML_Char ** pAttrs,
 									  const XML_Char ** pProps);
 
+	bool                  changeRevisionType(UT_uint32 iId, PP_RevisionType eType);
+	bool                  changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId);
+
 	void                  removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType);
 	void                  removeRevisionIdTypeless(UT_uint32 iId);
 	void                  removeAllLesserOrEqualIds(UT_uint32 id);
@@ -121,6 +130,10 @@ class PP_RevisionAttr
 	
 	const PP_Revision *   getLastRevision();
 	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId);
+
+	UT_uint32             getRevisionsCount() const {return m_vRev.getItemCount();}
+
+	void                  pruneForCumulativeResult();
 	
 	/*! please not that the following are convenience functions; if
 	    you need to make repeated enqueries, it is better to call

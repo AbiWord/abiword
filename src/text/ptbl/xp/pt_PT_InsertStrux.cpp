@@ -51,15 +51,128 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	if(m_pDocument->isMarkRevisions())
 	{
+		pf_Frag_Strux * pfsContainer = NULL;
+		bool bFoundContainer = _getStruxFromPosition(dpos-1,&pfsContainer); // the orig. strux
+		UT_ASSERT(bFoundContainer);
+	
+		if(isEndFootnote(pfsContainer))
+		{
+			bFoundContainer = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
+		}
+
 		PP_RevisionAttr Revisions(NULL);
-		Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
+		PP_RevisionAttr Revisions2(NULL);
 
+		PT_AttrPropIndex indexAP = 0;
+		if (pfsContainer->getStruxType() == pts)
+		{
+			indexAP = pfsContainer->getIndexAP();
+		}
+
+		const PP_AttrProp * pRevisedAP = NULL;
+		const PP_AttrProp * pAP = NULL;
+		getAttrProp(indexAP, &pAP);
 		const XML_Char name[] = "revision";
-		const XML_Char * ppRevAttrib[3];
-		ppRevAttrib[0] = name;
-		ppRevAttrib[1] = Revisions.getXMLstring();
-		ppRevAttrib[2] = NULL;
 
+		bool bAddRevision = true;
+		if(pAP)
+		{
+			const XML_Char * pRev = NULL;
+			if(pAP->getAttribute(name, pRev))
+			{
+				// OK, the previous strux had a revision attribute, which was copied into the new
+				// strux. This revision attribute can contain significant properties and attributes
+				// which need to be preserved (such as list ids). If we are in a simple revisions
+				// mode, we will preserve these as a part of the revisions attribute, and if the
+				// revisions contain record with the same id as the current one, we will ensure that
+				// the record for this strux has the correct type, i.e., addition.
+				//
+				// If, however, we are in full-history mode, we want the revision attributes from
+				// the addition and fmt records to be transfered into the regular attrs and props
+				
+				if(m_pDocument->isAutoRevisioning())
+				{
+					Revisions2.setRevision(pRev);
+#ifdef DEBUG
+					UT_uint32 i;
+					pRevisedAP = Revisions2.getLastRevision();
+					for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
+					{
+						const XML_Char * pName, *pValue;
+						pRevisedAP->getNthProperty(i,pName,pValue);
+						UT_DEBUGMSG(("Revised props1: %s : %s\n", pName, pValue));
+					}
+#endif
+
+					Revisions2.pruneForCumulativeResult();
+					pRevisedAP = Revisions2.getLastRevision();
+					UT_return_val_if_fail( pRevisedAP, false );
+#ifdef DEBUG
+					for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
+					{
+						const XML_Char * pName, *pValue;
+						pRevisedAP->getNthProperty(i,pName,pValue);
+						UT_DEBUGMSG(("Revised props2: %s : %s\n",pName, pValue));
+					}
+#endif
+					// now add the revision attribute
+					Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
+					const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions.getXMLstring());
+
+#ifdef DEBUG
+					for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
+					{
+						const XML_Char * pName, *pValue;
+						pRevisedAP->getNthProperty(i,pName,pValue);
+						UT_DEBUGMSG(("Revised props3: %s : %s\n",pName, pValue));
+					}
+#endif
+					bAddRevision = false;
+				}
+				else
+				{
+					Revisions.setRevision(pRev); // init with current attribute
+	
+					if(Revisions.changeRevisionType(m_pDocument->getRevisionId(), PP_REVISION_ADDITION))
+					{
+						bAddRevision = false;
+					}
+				}
+			}
+		}
+
+		if(bAddRevision)
+		{
+			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
+		}
+
+		const XML_Char ** ppRevAttrib = NULL;
+		const XML_Char ** ppRevProps  = NULL;
+		const XML_Char * ppRevAttrib1[3];
+
+		if(m_pDocument->isAutoRevisioning())
+		{
+			ppRevAttrib = pRevisedAP->getAttributes();
+			ppRevProps  = pRevisedAP->getProperties();
+#ifdef DEBUG
+			UT_uint32 i;
+			for(i = 0; i < pRevisedAP->getPropertyCount(); ++i)
+			{
+				const XML_Char * pName, *pValue;
+				pRevisedAP->getNthProperty(i,pName,pValue);
+				UT_DEBUGMSG(("Revised props4: %s : %s\n", pName, pValue));
+			}
+#endif
+		}
+		else
+		{
+			ppRevAttrib1[0] = name;
+			ppRevAttrib1[1] = Revisions.getXMLstring();
+			ppRevAttrib1[2] = NULL;
+
+			ppRevAttrib = ppRevAttrib1;
+		}
+		
 		UT_uint32 iLen;
 
 		switch (pts)
@@ -96,7 +209,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		dpos += iLen; // we want to change the format of the new
 					  // strux, not the old one
 
-		return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
+		return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,ppRevProps,pts);
 	}
 
 	return true;
