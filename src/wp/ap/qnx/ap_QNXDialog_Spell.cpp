@@ -98,7 +98,7 @@ void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
 			while(!done) {
 				PtProcessEvent();
 			}
-			PtModalEnd(count);
+			PtModalEnd(MODAL_END_ARG(count));
 		 
 			for (int i = 0; i < m_Suggestions.count; i++) {
 				FREEP(m_Suggestions.word[i]);

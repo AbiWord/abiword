@@ -169,7 +169,7 @@ void AP_QNXDialog_Replace::runModal(XAP_Frame * pFrame)
 	while(!done) {
 		PtProcessEvent();
 	}
-	PtModalEnd(count);
+	PtModalEnd(MODAL_END_ARG(count));
 
 	_storeWindowData();
 	

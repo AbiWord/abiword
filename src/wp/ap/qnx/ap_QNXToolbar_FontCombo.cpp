@@ -56,6 +56,8 @@ AP_QNXToolbar_FontCombo::~AP_QNXToolbar_FontCombo(void)
 	// nothing to purge.  contents are static strings
 }
 
+#define FONT_QUERY_CHAR 'A'
+#define FONT_TYPES (PHFONT_SCALABLE | PHFONT_BITMAP | PHFONT_PROP  /* | PHFONT_FIXED*/)
 UT_Bool AP_QNXToolbar_FontCombo::populate(void)
 {
 	FontDetails *font_list;
@@ -63,34 +65,31 @@ UT_Bool AP_QNXToolbar_FontCombo::populate(void)
 
 	UT_ASSERT(m_pToolbar);
 
-	/* This is stupid, we need to do this by trial and error */
-	alloc = PfQueryFonts(' ', PHFONT_ALL_FONTS, NULL, 0) + 1;
+	/* We should provide more than just the latin fonts */
+	alloc = PfQueryFonts(FONT_QUERY_CHAR, FONT_TYPES, NULL, 0) + 10;
 
-	for (count = 0, font_list = NULL; font_list == NULL || count == alloc; alloc += 50) {
+	if (!(font_list = (FontDetails *)malloc(alloc * sizeof(*font_list)))) {
+		fprintf(stderr, "ERROR GETTING FONT LIST \n");
+		return UT_FALSE;
+	}
+	memset(font_list, 0, alloc * sizeof(*font_list));
 
-		if (!(font_list = (FontDetails *)realloc(font_list, alloc * sizeof(*font_list)))) {
-			fprintf(stderr, "ERROR GETTING FONT LIST \n");
-			return UT_FALSE;
+	if ((count = PfQueryFonts(FONT_QUERY_CHAR, FONT_TYPES, font_list, alloc)) < 0) {
+		if (font_list) {
+			free(font_list);
 		}
-		memset(font_list, 0, alloc * sizeof(*font_list));
-
-		if ((count = PfQueryFonts(' ', PHFONT_ALL_FONTS, font_list, alloc)) < 0) {
-			if (font_list) {
-				free(font_list);
-			}
-			return UT_FALSE;
-		}
+		return UT_FALSE;
 	}
 
+	/* Now add the contents into the vector that we use as a reference */
 	m_vecContents.clear();
-	for (index = 0; index < count; index++)
-	{
-		//printf("FONT %d : [%s] \n", index, font_list[index].desc);
+	for (index = 0; index < count; index++) {
 		if (*font_list[index].desc) {
 			m_vecContents.addItem(font_list[index].desc);
 		}
 	}
 
+	/* Is this a safe thing to do? */
 	if (font_list) {
 		free(font_list);
 	}

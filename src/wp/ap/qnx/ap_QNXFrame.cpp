@@ -582,6 +582,7 @@ void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*
 	pView->setYScrollOffset(yoff);
 }
 	
+#if 0
 static int _resize_mda(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 {
 	PtWidget_t *raw = (PtWidget_t *)data;
@@ -596,6 +597,7 @@ static int _resize_mda(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 	PtSetResources(raw, 2, args);
 	return Pt_CONTINUE;
 }
+#endif
 
 PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 {
@@ -681,11 +683,10 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	area.size.w = m_AvailableArea.size.w; 
 	area.size.h = m_AvailableArea.size.h;
 
-#if 0		//WHY DOES THIS NOT WORK ALL OF A SUDDEN?
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL);
-	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_RED, 0); 
+	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); 
 #define _DA_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _DA_ANCHOR_, _DA_ANCHOR_);
@@ -693,16 +694,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _DA_STRETCH_, _DA_STRETCH_);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-#else
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); 
-#define _DA_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-		             Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _DA_ANCHOR_, _DA_ANCHOR_);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-#endif
 	if (!group) {
 		printf("Can't get the MDA group \n");
 	}
@@ -723,10 +714,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	PtAddEventHandler(m_dArea, Ph_EV_PTR_MOTION_BUTTON, _fe::motion_notify_event, this);
 	PtAddEventHandler(m_dArea, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
 	PtAddEventHandler(m_dArea, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
-	//PtContainerGiveFocus(m_dArea, NULL);
-
-	//DOING THIS MANUALLY SUCKS!
-	PtAddCallback(group, Pt_CB_RESIZE, _resize_mda, m_dArea);
 
 	return(group);
 }

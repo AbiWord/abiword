@@ -48,7 +48,7 @@ public:
 	// base class "tControl" IDs for data operations.
 
 		// menus take a "changed" event
-		virtual void event_MenuChanged(PtWidget_t * widget);
+		virtual void event_MenuChanged(PtWidget_t * widget, int value);
 
 		// spin buttons can take "increment", "decrement", and "changed"
 		virtual void event_SpinIncrement(PtWidget_t * widget);
@@ -81,10 +81,10 @@ public:
 	PtWidget_t * m_windowMain;
 
 	PtWidget_t * m_listAlignment;
-	 PtWidget_t * m_menuitemLeft;
-	 PtWidget_t * m_menuitemCentered;
-	 PtWidget_t * m_menuitemRight;
-	 PtWidget_t * m_menuitemJustified;
+	PtWidget_t * m_menuitemLeft;
+	PtWidget_t * m_menuitemCentered;
+	PtWidget_t * m_menuitemRight;
+	PtWidget_t * m_menuitemJustified;
 
 	PtWidget_t * m_spinbuttonLeft;
 	PtWidget_t * m_spinbuttonRight;
@@ -92,9 +92,9 @@ public:
 
 	PtWidget_t * m_listSpecial;
 	PtWidget_t * m_listSpecial_menu;
-	 PtWidget_t * m_menuitemNone;
-	 PtWidget_t * m_menuitemFirstLine;
-	 PtWidget_t * m_menuitemHanging;	
+	PtWidget_t * m_menuitemNone;
+	PtWidget_t * m_menuitemFirstLine;
+	PtWidget_t * m_menuitemHanging;	
 	
 	PtWidget_t * m_spinbuttonBefore;
 	PtWidget_t * m_spinbuttonAfter;
@@ -102,13 +102,12 @@ public:
 
 	PtWidget_t * m_listLineSpacing;
 	PtWidget_t * m_listLineSpacing_menu;
-	 PtWidget_t * m_menuitemSingle;
-	 PtWidget_t * m_menuitemOneAndHalf;
-	 PtWidget_t * m_menuitemDouble;
-	 PtWidget_t * m_menuitemAtLeast;
-	 PtWidget_t * m_menuitemExactly;
-	 PtWidget_t * m_menuitemMultiple;
-
+	PtWidget_t * m_menuitemSingle;
+	PtWidget_t * m_menuitemOneAndHalf;
+	PtWidget_t * m_menuitemDouble;
+	PtWidget_t * m_menuitemAtLeast;
+	PtWidget_t * m_menuitemExactly;
+	PtWidget_t * m_menuitemMultiple;
 	PtWidget_t * m_drawingareaPreview;
 
 	PtWidget_t * m_checkbuttonWidowOrphan;
@@ -121,6 +120,8 @@ public:
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
 	PtWidget_t * m_buttonTabs;
+
+	GR_QNXGraphics * m_qnxGraphics;
 
 	int 		 done;
 };

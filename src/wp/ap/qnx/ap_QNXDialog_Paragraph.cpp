@@ -40,11 +40,60 @@
 #include "ut_qnxHelper.h"
 
 /*****************************************************************/
+/* Why aren't these Photon calls? */
+/* For combo boxes */
+void TFComboBoxGotoPos(PtWidget_t *cb, int item) {
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_CBOX_SEL_ITEM, item, 0);
+	PtSetResources(cb, 1, &arg);
+}
+/* For normal strings */
+void TFSetTextString(PtWidget_t *cb, char *str) {
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_TEXT_STRING, str, 0);
+	PtSetResources(cb, 1, &arg);
+}
+/* For integer controls */
+void TFSetTextStringInt(PtWidget_t *sp, char *str) {
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, strtoul(str, NULL, 10), 0);
+	PtSetResources(sp, 1, &arg);
+}
+int TFGetNumericInt(PtWidget_t *sp) {
+	int     *value;
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, &value, 0);
+	PtGetResources(sp, 1, &arg);
+	return *value;
+}
+/* For toggle buttons */
+void TFToggleSetState(PtWidget_t *toggle, int on) {
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_FLAGS, (on) ? Pt_SET : 0, Pt_SET);
+	PtSetResources(toggle, 1, &arg);
+}
 
-#define WIDGET_MENU_PARENT_ID_TAG	"parentmenu"
-#define WIDGET_MENU_VALUE_TAG		"menuvalue"
-#define WIDGET_DIALOG_TAG 			"dialog"
-#define WIDGET_ID_TAG				"id"
+/* For setting/getting data */
+void TFSetData(PtWidget_t *widget, void *data, int len) {
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_USER_DATA, data, len);
+	PtSetResources(widget, 1, &arg);
+}
+void TFSetDataInt(PtWidget_t *widget, int value) {
+	TFSetData(widget, &value, sizeof(value));
+}
+void *TFGetData(PtWidget_t *widget) {
+	void    *data;
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_USER_DATA, &data, 0);
+	PtGetResources(widget, 1, &arg);
+	return data;
+}
+int TFGetDataInt(PtWidget_t *widget) {
+	int *id;
+	id = (int *)TFGetData(widget);
+	return *id;
+}
 
 /*****************************************************************/
 
@@ -107,7 +156,9 @@ static int s_menu_item_activate(PtWidget_t * widget, void *data, PtCallbackInfo_
 	UT_ASSERT(widget && data);
 	
 	AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data;
-	dlg->event_MenuChanged(widget);
+	PtListCallback_t *linfo = (PtListCallback_t *)info->cbdata;
+
+	dlg->event_MenuChanged(widget, linfo->item_pos - 1);
 	return Pt_CONTINUE;
 }
 
@@ -153,28 +204,36 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// updates yet)
 	_connectCallbackSignals();
 
-#if 0
 	// *** this is how we add the gc ***
 	{
-		// attach a new graphics context to the drawing area
-		XAP_QNXApp * unixapp = static_cast<XAP_QNXApp *> (m_pApp);
-		UT_ASSERT(unixapp);
+		PtArg_t args[2];
 
-		UT_ASSERT(m_drawingareaPreview && m_drawingareaPreview->window);
+		// attach a new graphics context to the drawing area
+		XAP_QNXApp * qnxapp = static_cast<XAP_QNXApp *> (m_pApp);
+		UT_ASSERT(qnxapp);
+
+		UT_ASSERT(m_drawingareaPreview);
 
 		// make a new QNX GC
-		m_unixGraphics = new GR_QNXGraphics(m_drawingareaPreview->window, unixapp->getFontManager());
-		
+		m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_drawingareaPreview);
+
+		PtExtentWidget(mainWindow);
+		PtExtentWidget(m_drawingareaPreview);	
+		PtSetArg(&args[0], Pt_ARG_WIDTH, 0, 0);
+		PtSetArg(&args[1], Pt_ARG_HEIGHT, 0, 0);
+		PtGetResources(m_drawingareaPreview, 2, args);
+		printf("Width %d height %d \n", args[0].value, args[1].value);
+
 		// let the widget materialize
-		_createPreviewFromGC(m_unixGraphics,
-							 (UT_uint32) m_drawingareaPreview->allocation.width,
-							 (UT_uint32) m_drawingareaPreview->allocation.height);
+		_createPreviewFromGC(m_qnxGraphics,
+					 		args[0].value,	/* Width */
+					 		args[1].value);/* Height */
 	}
 
+#if 0
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
-
 #endif
 
 	UT_QNXCenterWindow(parentWindow, mainWindow);
@@ -186,7 +245,7 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	while(!done) {
 		PtProcessEvent();
 	}
-	PtModalEnd(count);
+	PtModalEnd(MODAL_END_ARG(count));
 
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
@@ -220,19 +279,13 @@ void AP_QNXDialog_Paragraph::event_WindowDelete(void)
 	done = 1;
 }
 
-void AP_QNXDialog_Paragraph::event_MenuChanged(PtWidget_t * widget)
+void AP_QNXDialog_Paragraph::event_MenuChanged(PtWidget_t * widget, int value)
 {
-#if 0
 	UT_ASSERT(widget);
 
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_MENU_PARENT_ID_TAG);
-
-	UT_uint32 value = (UT_uint32) gtk_object_get_data(GTK_OBJECT(widget),
-													  WIDGET_MENU_VALUE_TAG);
+	tControl id = (tControl) TFGetDataInt(widget); 
 
 	_setMenuItemValue(id, value);
-#endif
 }
 
 void AP_QNXDialog_Paragraph::event_SpinIncrement(PtWidget_t * widget)
@@ -247,34 +300,28 @@ void AP_QNXDialog_Paragraph::event_SpinDecrement(PtWidget_t * widget)
 
 void AP_QNXDialog_Paragraph::event_SpinFocusOut(PtWidget_t * widget)
 {
-#if 0
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_ID_TAG);
+	tControl id = (tControl) TFGetDataInt(widget); 
 
-	if (m_bEditChanged)
-	{
+	if (m_bEditChanged) {
 		// this function will massage the contents for proper
 		// formatting for spinbuttons that need it.  for example,
 		// line spacing can't be negative.
-		_setSpinItemValue(id, (const XML_Char *)
-						  gtk_entry_get_text(GTK_ENTRY(widget)));
+		printf("Got value %d \n", TFGetNumericInt(widget));
+#if 0
+		_setSpinItemValue(id, (const XML_Char *) gtk_entry_get_text(GTK_ENTRY(widget)));
 
 		// to ensure the massaged value is reflected back up
 		// to the screen, we repaint from the member variable
 		_syncControls(id);
-		
+#endif		
 		m_bEditChanged = UT_FALSE;
 	}
-#endif
 }
 
 void AP_QNXDialog_Paragraph::event_SpinChanged(PtWidget_t * widget)
 {
-#if 0
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_ID_TAG);
+	tControl id = (tControl) TFGetDataInt(widget); 
 	m_bEditChanged = UT_TRUE;
-#endif
 }
 	   
 void AP_QNXDialog_Paragraph::event_CheckToggled(PtWidget_t * widget)
@@ -307,7 +354,6 @@ void AP_QNXDialog_Paragraph::event_PreviewAreaExposed(void)
 }
 
 /*****************************************************************/
-
 PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 {
 	// grab the string set
@@ -577,6 +623,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtListAddItems(listAlignment, litem, 1, 0); FREEP(unixstr);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignJustified)); litem[0]= unixstr;
 	PtListAddItems(listAlignment, litem, 1, 0); FREEP(unixstr);
+	TFSetDataInt(listAlignment, id_MENU_ALIGNMENT);
 
 	labelAlignment = PtCreateWidget( PtLabel, NULL, sizeof(args5) / sizeof(PtArg_t), args5 );
 
@@ -585,15 +632,19 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	labelRight = PtCreateWidget( PtLabel, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
 
 	spinbuttonLeft = PtCreateWidget( PtNumericInteger, NULL, sizeof(args8) / sizeof(PtArg_t), args8 );
+	TFSetDataInt(spinbuttonLeft, id_SPIN_LEFT_INDENT);
 
 	spinbuttonRight = PtCreateWidget( PtNumericInteger, NULL, sizeof(args9) / sizeof(PtArg_t), args9 );
+	TFSetDataInt(spinbuttonRight, id_SPIN_RIGHT_INDENT);
 
 	listSpecial = PtCreateWidget( PtComboBox, NULL, sizeof(args10) / sizeof(PtArg_t), args10 );
 	PtListDeleteAllItems(listSpecial);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpecialNone)); litem[0]= unixstr;
 	PtListAddItems(listSpecial, litem, 1, 0); FREEP(unixstr);
+	TFSetDataInt(listSpecial, id_MENU_SPECIAL_INDENT);
 
 	spinbuttonBy = PtCreateWidget( PtNumericInteger, NULL, sizeof(args11) / sizeof(PtArg_t), args11 );
+	TFSetDataInt(spinbuttonBy, id_SPIN_SPECIAL_INDENT);
 
 	labelBy = PtCreateWidget( PtLabel, NULL, sizeof(args12) / sizeof(PtArg_t), args12 );
 
@@ -608,10 +659,12 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	labelAt = PtCreateWidget( PtLabel, NULL, sizeof(args17) / sizeof(PtArg_t), args17 );
 
 	spinbuttonBefore = PtCreateWidget( PtNumericInteger, NULL, sizeof(args18) / sizeof(PtArg_t), args18 );
+	TFSetDataInt(spinbuttonBefore, id_SPIN_BEFORE_SPACING);
 
 	labelBefore = PtCreateWidget( PtLabel, NULL, sizeof(args19) / sizeof(PtArg_t), args19 );
 
 	spinbuttonAt = PtCreateWidget( PtNumericInteger, NULL, sizeof(args20) / sizeof(PtArg_t), args20 );
+	TFSetDataInt(spinbuttonAt, id_SPIN_SPECIAL_SPACING);
 
 	listLineSpacing = PtCreateWidget( PtComboBox, NULL, sizeof(args21) / sizeof(PtArg_t), args21 );
 	PtListDeleteAllItems(listLineSpacing);
@@ -627,8 +680,10 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingMultiple)); litem[0]= unixstr;
 	PtListAddItems(listLineSpacing, litem, 1, 0); FREEP(unixstr);
+	TFSetDataInt(listLineSpacing, id_MENU_SPECIAL_SPACING);
 
 	spinbuttonAfter = PtCreateWidget( PtNumericInteger, NULL, sizeof(args22) / sizeof(PtArg_t), args22 );
+	TFSetDataInt(spinbuttonAt, id_SPIN_AFTER_SPACING);
 
 	labelAfter = PtCreateWidget( PtLabel, NULL, sizeof(args23) / sizeof(PtArg_t), args23 );
 
@@ -706,19 +761,19 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 		Pt_ARG( Pt_ARG_AREA, &area10, 0 ),
 		};
 
-	static const PhArea_t area11 = { { 71, 224 }, { 452, 12 } };
+	static const PhArea_t area11 = { { 65, 223 }, { 455, 12 } };
 	static const PtArg_t args11[] = {
 		Pt_ARG( Pt_ARG_AREA, &area11, 0 ),
 		};
 
-	static const PhArea_t area12 = { { 7, 220 }, { 79, 20 } };
+	static const PhArea_t area12 = { { 4, 219 }, { 76, 20 } };
 	static const PtArg_t args12[] = {
 		Pt_ARG( Pt_ARG_AREA, &area12, 0 ),
 		Pt_ARG( Pt_ARG_TEXT_STRING, "Preview", 0 ),
 		Pt_ARG( Pt_ARG_TEXT_FONT, "TextFont10", 0 ),
 		};
 
-	static const PhArea_t area13 = { { 22, 244 }, { 493, 96 } };
+	static const PhArea_t area13 = { { 19, 243 }, { 493, 96 } };
 	static const PtArg_t args13[] = {
 		Pt_ARG( Pt_ARG_AREA, &area13, 0 ),
 		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
@@ -732,16 +787,22 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	PtCreateWidget( PtSeparator, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
 
 	checkbuttonWindowOrphan = PtCreateWidget( PtToggleButton, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
+	TFSetDataInt(checkbuttonWindowOrphan, id_CHECK_WIDOW_ORPHAN);
 
 	checkbuttonKeepLines = PtCreateWidget( PtToggleButton, NULL, sizeof(args5) / sizeof(PtArg_t), args5 );
+	TFSetDataInt(checkbuttonKeepLines, id_CHECK_KEEP_LINES);
 
 	checkbuttonKeepNext = PtCreateWidget( PtToggleButton, NULL, sizeof(args6) / sizeof(PtArg_t), args6 );
+	TFSetDataInt(checkbuttonKeepNext, id_CHECK_KEEP_NEXT);
 
 	checkbuttonPagebreak = PtCreateWidget( PtToggleButton, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
+	TFSetDataInt(checkbuttonPagebreak, id_CHECK_PAGE_BREAK);
 
 	checkbuttonSuppress = PtCreateWidget( PtToggleButton, NULL, sizeof(args8) / sizeof(PtArg_t), args8 );
+	TFSetDataInt(checkbuttonSuppress, id_CHECK_SUPPRESS);
 
 	checkbuttonHyphenate = PtCreateWidget( PtToggleButton, NULL, sizeof(args9) / sizeof(PtArg_t), args9 );
+	TFSetDataInt(checkbuttonHyphenate, id_CHECK_NO_HYPHENATE);
 
 	PtCreateWidget( PtSeparator, NULL, sizeof(args10) / sizeof(PtArg_t), args10 );
 
@@ -785,80 +846,6 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	buttonOK = PtCreateWidget(PtButton, windowParagraph, n, args);
 	FREEP(unixstr);
 
-#if 0
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignLeft));
-	FREEP(unixstr);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignCentered));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignRight));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_AlignJustified));
-	FREEP(unixstr);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpecialNone));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpecialFirstLine));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpecialHanging));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingSingle));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingHalf));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingDouble));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingAtLeast));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingExactly));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_SpacingMultiple));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelAlignment));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelBy));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelIndentation));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelLeft));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelRight));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelSpecial));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelSpacing));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelAfter));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelLineSpacing));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelAt));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelPreview));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelBefore));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelPagination));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_LabelPreview));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushWidowOrphanControl));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushKeepLinesTogether));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushPageBreakBefore));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushSuppressLineNumbers));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushNoHyphenate));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_PushKeepWithNext));
-	FREEP(unixstr);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks));
-	FREEP(unixstr);
-#endif
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 
@@ -899,6 +886,18 @@ void AP_QNXDialog_Paragraph::_connectCallbackSignals(void)
 	PtAddCallback(m_buttonTabs, Pt_CB_ACTIVATE, s_tabs_clicked, this);
 	PtAddCallback(m_buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
+
+	PtAddCallback(m_listLineSpacing, Pt_CB_SELECTION, s_menu_item_activate, this);
+	PtAddCallback(m_listSpecial, Pt_CB_SELECTION, s_menu_item_activate, this);
+	PtAddCallback(m_listAlignment, Pt_CB_SELECTION, s_menu_item_activate, this);
+
+	PtAddCallback(m_spinbuttonLeft, Pt_CB_ACTIVATE, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonRight, Pt_CB_ACTIVATE, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonBy, Pt_CB_ACTIVATE, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonBefore, Pt_CB_ACTIVATE, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonAfter, Pt_CB_ACTIVATE, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonAt, Pt_CB_ACTIVATE, s_spin_changed, this);
+
 #if 0
 	// we have to handle the changes in values for spin buttons
 	// to preserve units
@@ -968,67 +967,56 @@ void AP_QNXDialog_Paragraph::_connectCallbackSignals(void)
 
 void AP_QNXDialog_Paragraph::_populateWindowData(void)
 {
-#if 0
 	// alignment option menu 
 	UT_ASSERT(m_listAlignment);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listAlignment),
-								(int) _getMenuItemValue(id_MENU_ALIGNMENT));
+	//Photon lists are 1 based
+	TFComboBoxGotoPos(m_listAlignment, _getMenuItemValue(id_MENU_ALIGNMENT) + 1);
 
 	// indent and paragraph margins
 	UT_ASSERT(m_spinbuttonLeft);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft),
-					   (const gchar *) _getSpinItemValue(id_SPIN_LEFT_INDENT));
+	TFSetTextStringInt(m_spinbuttonLeft, (char *)_getSpinItemValue(id_SPIN_LEFT_INDENT));
 
 	UT_ASSERT(m_spinbuttonRight);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight),
-					   (const gchar *) _getSpinItemValue(id_SPIN_RIGHT_INDENT));
+	TFSetTextStringInt(m_spinbuttonRight, (char *)_getSpinItemValue(id_SPIN_RIGHT_INDENT));
 
 	UT_ASSERT(m_spinbuttonBy);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy),
-					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+	TFSetTextStringInt(m_spinbuttonBy, (char *)_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 
 	UT_ASSERT(m_listSpecial);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
-								(int) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
+	TFComboBoxGotoPos(m_listSpecial, _getMenuItemValue(id_MENU_SPECIAL_INDENT) + 1);
 
 	// spacing
 	UT_ASSERT(m_spinbuttonLeft);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBefore),
-					   (const gchar *) _getSpinItemValue(id_SPIN_BEFORE_SPACING));
+	TFSetTextStringInt(m_spinbuttonLeft, (char *)_getSpinItemValue(id_SPIN_BEFORE_SPACING));
 
 	UT_ASSERT(m_spinbuttonRight);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAfter),
-					   (const gchar *) _getSpinItemValue(id_SPIN_AFTER_SPACING));
+	TFSetTextStringInt(m_spinbuttonRight, (char *)_getSpinItemValue(id_SPIN_AFTER_SPACING));
 
 	UT_ASSERT(m_spinbuttonAt);
-	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt),
-					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+	TFSetTextStringInt(m_spinbuttonAt, (char *)_getSpinItemValue(id_SPIN_SPECIAL_SPACING));
 
 	UT_ASSERT(m_listLineSpacing);
-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
-								(int) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+	TFComboBoxGotoPos(m_listLineSpacing, _getMenuItemValue(id_MENU_SPECIAL_SPACING) + 1);
 
 	// set the check boxes
 	// TODO : handle tri-state boxes !!!
+	TFToggleSetState(m_checkbuttonWidowOrphan,
+						 (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE));
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonWidowOrphan)),
-								 (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepLines)),
+	TFToggleSetState(m_checkbuttonKeepLines,
 								 (_getCheckItemValue(id_CHECK_KEEP_LINES) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonPageBreak)),
+	TFToggleSetState(m_checkbuttonPageBreak,
 								 (_getCheckItemValue(id_CHECK_PAGE_BREAK) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonSuppress)),
+	TFToggleSetState(m_checkbuttonSuppress,
 								 (_getCheckItemValue(id_CHECK_SUPPRESS) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonHyphenate)),
+	TFToggleSetState(m_checkbuttonHyphenate,
 								 (_getCheckItemValue(id_CHECK_NO_HYPHENATE) == check_TRUE));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepNext)),
+	TFToggleSetState(m_checkbuttonKeepNext,
 								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
-#endif
 }
 
 void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
 {
-#if 0
 	// let parent sync any member variables first
 	AP_Dialog_Paragraph::_syncControls(changed, bAll);
 
@@ -1040,8 +1028,7 @@ void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = U
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
 		{
-			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
-										(int) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
+			TFComboBoxGotoPos(m_listSpecial, _getMenuItemValue(id_MENU_SPECIAL_INDENT) + 1);
 		}
 	}
 	if (bAll || (changed == id_MENU_SPECIAL_INDENT))
@@ -1050,12 +1037,12 @@ void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = U
 		{
 		case indent_NONE:
 			// clear the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), "");
+			TFSetTextStringInt(m_spinbuttonBy, "0");
 			break;
 
 		default:
 			// set the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), _getSpinItemValue(id_SPIN_SPECIAL_INDENT));			
+			TFSetTextStringInt(m_spinbuttonBy, (char *)_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 			break;
 		}
 	}
@@ -1067,8 +1054,7 @@ void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = U
 		// typing in the control can change the associated combo
 		if (_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
 		{
-			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
-										(int) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+			TFComboBoxGotoPos(m_listLineSpacing, _getMenuItemValue(id_MENU_SPECIAL_SPACING) + 1);
 		}
 	}
 	if (bAll || (changed == id_MENU_SPECIAL_SPACING))
@@ -1079,12 +1065,12 @@ void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = U
 		case spacing_ONEANDHALF:
 		case spacing_DOUBLE:
 			// clear the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), "");
+			TFSetTextStringInt(m_spinbuttonAt, "0");
 			break;
 
 		default:
 			// set the spin control
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			TFSetTextStringInt(m_spinbuttonAt, (char *)_getSpinItemValue(id_SPIN_SPECIAL_SPACING));
 			break;
 		}
 	}
@@ -1097,20 +1083,19 @@ void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = U
 		switch (changed)
 		{
 		case id_SPIN_LEFT_INDENT:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft), 	_getSpinItemValue(id_SPIN_LEFT_INDENT));
+			TFSetTextStringInt(m_spinbuttonLeft, 	(char *)_getSpinItemValue(id_SPIN_LEFT_INDENT));
 		case id_SPIN_RIGHT_INDENT:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight), 	_getSpinItemValue(id_SPIN_RIGHT_INDENT));
+			TFSetTextStringInt(m_spinbuttonRight, 	(char *)_getSpinItemValue(id_SPIN_RIGHT_INDENT));
 		case id_SPIN_SPECIAL_INDENT:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), 		_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			TFSetTextStringInt(m_spinbuttonBy, 		(char *)_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 		case id_SPIN_BEFORE_SPACING:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBefore), 	_getSpinItemValue(id_SPIN_BEFORE_SPACING));
+			TFSetTextStringInt(m_spinbuttonBefore, 	(char *)_getSpinItemValue(id_SPIN_BEFORE_SPACING));
 		case id_SPIN_AFTER_SPACING:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAfter), 	_getSpinItemValue(id_SPIN_AFTER_SPACING));
+			TFSetTextStringInt(m_spinbuttonAfter, 	(char *)_getSpinItemValue(id_SPIN_AFTER_SPACING));
 		case id_SPIN_SPECIAL_SPACING:
-			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), 		_getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			TFSetTextStringInt(m_spinbuttonAt, 	(char *)_getSpinItemValue(id_SPIN_SPECIAL_SPACING));
 		default:
 			break;
 		}
 	}
-#endif
 }

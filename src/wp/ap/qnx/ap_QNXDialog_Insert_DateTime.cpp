@@ -128,7 +128,7 @@ void AP_QNXDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 	while(!done) {
 		PtProcessEvent();
 	}
-	PtModalEnd(count);
+	PtModalEnd(MODAL_END_ARG(count));
 
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
