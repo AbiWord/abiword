@@ -4553,15 +4553,29 @@ void fl_BlockLayout::remItemFromList(void)
 		}
 		if (currLevel == 0)
 		{
+#ifndef __MRC__
 	               const XML_Char * attribs[] = { 	"listid", lid,
 							"level", buf,"style","normal", NULL, NULL };
+#else
+	               const XML_Char * attribs[] = { 	"listid", NULL,
+							"level", NULL,"style","normal", NULL, NULL };
+				   attribs [1] = lid;
+				   attribs [3] = buf;
+#endif
 		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 		       m_bListItem = false;
 		}
 		else
 		{
+#ifndef __MRC__
 	               const XML_Char * attribs[] = { 	"listid", lid,
 							"level", buf,NULL,NULL };
+#else
+	               const XML_Char * attribs[] = { 	"listid", NULL,
+							"level", NULL, NULL, NULL };
+				   attribs [1] = lid;
+				   attribs [3] = buf;
+#endif
 		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		       m_pDoc->listUpdate(getStruxDocHandle());
 		}
@@ -4996,14 +5010,26 @@ void    fl_BlockLayout::StopList(void)
 
 	if (id == 0)
 	{
+#ifndef _MRC_
 	        const XML_Char * attribs[] = { 	"listid", lid,
 					"style","normal", NULL, NULL };
+#else
+	        const XML_Char * attribs[] = { 	"listid", NULL,
+					"style","normal", NULL, NULL };
+			attribs [1] = lid;
+#endif
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 		m_bListItem = false;
 	}
 	else
 	{
+#ifndef _MRC_
 	        const XML_Char * attribs[] = { 	"listid", lid,"level",pszlevel, NULL,NULL };
+#else
+	        const XML_Char * attribs[] = { 	"listid", NULL,"level",NULL, NULL,NULL };
+	        attribs [1] = lid;
+	        attribs [3] = pszlevel;
+#endif
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		m_pDoc->listUpdate(getStruxDocHandle());
 	}

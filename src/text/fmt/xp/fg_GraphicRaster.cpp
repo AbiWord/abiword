@@ -192,11 +192,22 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	strcat(szProps,"; height:");
 	strcat(szProps,UT_convertInchesToDimensionString(DIM_IN, (double)m_iHeight/fDPI, "3.2"));
 
+#ifndef __MRC__
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
 		"PROPS", szProps,
 	   	NULL, NULL
 	};
+#else
+	// MrCPP does not like the above
+	const XML_Char * attributes[] = {
+		"dataid", NULL,
+		"PROPS", NULL,
+	   	NULL, NULL
+	};
+	attributes [1] = szName;
+	attributes [3] = szProps;
+#endif
 
 	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
 

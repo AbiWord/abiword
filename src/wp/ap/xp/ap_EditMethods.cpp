@@ -4885,7 +4885,13 @@ static bool s_doColumnsDlg(FV_View * pView)
 			strcpy(buf2, "off");
 		}
 
+#ifndef __MRC__
 		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, 0};
+#else
+		const XML_Char * properties[] =	{ "columns", NULL, "column-line", NULL, 0};
+		properties [1] = buf;
+		properties [3] = buf2;
+#endif
 		pView->setSectionFormat(properties);
 	}
 
