@@ -1,5 +1,6 @@
 /* AbiWord - Win32 PageNumbers Dialog
  * Copyright (C) 2001 Mike Nordell
+ * Copyright (C) 2003 Jordi Mas i Hernàndez
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -75,6 +76,10 @@ void AP_Win32Dialog_PageNumbers::runModal(XAP_Frame* pFrame)
 }
 
 
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+
 BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hThisDlg = hWnd;
@@ -84,55 +89,25 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	// Update the caption
 	m_helper.setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
 
-#define LOC_CTRL_STR_PAIR(x,y)	\
-	AP_RID_DIALOG_PAGENUMBERS_ ## x, AP_STRING_ID_DLG_PageNumbers_ ## y
-
-	struct {
-		UT_sint32		m_idControl;
-		XAP_String_Id	m_idString;
-	} static const mappings[] =
-	{
-		LOC_CTRL_STR_PAIR(COMBO_POSITION, Header),
-		LOC_CTRL_STR_PAIR(COMBO_POSITION, Footer),
-		LOC_CTRL_STR_PAIR(COMBO_ALIGN, Left),
-		LOC_CTRL_STR_PAIR(COMBO_ALIGN, Right),
-		LOC_CTRL_STR_PAIR(COMBO_ALIGN, Center)
-	};
-#undef LOC_CTRL_STR_PAIR
-
-	for (int i=0; i < NrElements(mappings); ++i)
-	{
-		m_helper.addItemToCombo(mappings[i].m_idControl,
-								pSS->getValue(mappings[i].m_idString));
-	}
-
-	// default to footer, center
-	m_helper.selectComboItem(AP_RID_DIALOG_PAGENUMBERS_COMBO_POSITION, 1);
-	m_helper.selectComboItem(AP_RID_DIALOG_PAGENUMBERS_COMBO_ALIGN, 2);
-
-	// localize controls
-// As Tabbed Dialogs have problems with HotKeys, these macros have been replaced to remove &
-//#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
-//#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-#define _DS(c,s)  { \
-                    XML_Char* p = NULL; \
-                    UT_XML_cloneNoAmpersands( p, pSS->getValue(AP_STRING_ID_##s));\
-                    SetDlgItemText(hWnd,AP_RID_DIALOG_##c,p); \
-					FREEP(p); \
-                  }
-#define _DSX(c,s) { \
-                    XML_Char* p = NULL; \
-                    UT_XML_cloneNoAmpersands( p, pSS->getValue(XAP_STRING_ID_##s));\
-                    SetDlgItemText(hWnd,AP_RID_DIALOG_##c,p); \
-					FREEP(p); \
-                  }
+	/* Localise controls*/
 	_DSX(PAGENUMBERS_BTN_OK,				DLG_OK);
 	_DSX(PAGENUMBERS_BTN_CANCEL,			DLG_Cancel);
 	_DS(PAGENUMBERS_STATIC_ALIGNMENT,		DLG_PageNumbers_Alignment);
 	_DS(PAGENUMBERS_STATIC_POSITION,		DLG_PageNumbers_Position);
 	_DS(PAGENUMBERS_STATIC_PREVIEW,			DLG_PageNumbers_Preview);
-#undef _DS
-#undef _DSX
+	
+	_DS(PAGENUMBERS_RADIO_POSITIONLEFT,		DLG_PageNumbers_Left);
+	_DS(PAGENUMBERS_RADIO_POSITIONRIGHT,	DLG_PageNumbers_Right);
+	_DS(PAGENUMBERS_RADIO_POSITIONCENTER,	DLG_PageNumbers_Center);
+	_DS(PAGENUMBERS_RADIO_ALIGNFOOTER,		DLG_PageNumbers_Footer);
+	_DS(PAGENUMBERS_RADIO_ALIGNHEADER,		DLG_PageNumbers_Header);
+	
+	/*Set Default Radio buttons */	
+	CheckRadioButton(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONLEFT, AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER,
+		AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER);
+		
+	CheckRadioButton(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER, AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNHEADER,
+		AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER);
 
 	_createPreviewWidget();
 	_updatePreview(m_align, m_control);
@@ -159,45 +134,55 @@ BOOL AP_Win32Dialog_PageNumbers::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			m_answer = a_OK;
 			EndDialog(hWnd,0);
 			return 1;
-
-		case AP_RID_DIALOG_PAGENUMBERS_COMBO_POSITION:
-			if (wNotifyCode == CBN_SELCHANGE)
-			{
-				switch (m_helper.getComboSelectedIndex(AP_RID_DIALOG_PAGENUMBERS_COMBO_POSITION))
-				{
-					case 0:
-						m_control = id_HDR;
-						break;
-					case 1:
-						m_control = id_FTR;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				}
-				_updatePreview(m_align, m_control);
-			}
+			
+		/* Position */			
+		
+		case AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONLEFT:
+		{
+			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONLEFT))
+				m_align = id_LALIGN;
+				
+			_updatePreview(m_align, m_control);
 			break;
-
-		case AP_RID_DIALOG_PAGENUMBERS_COMBO_ALIGN:
-			if (wNotifyCode == CBN_SELCHANGE)
-			{
-				switch (m_helper.getComboSelectedIndex(AP_RID_DIALOG_PAGENUMBERS_COMBO_ALIGN))
-				{
-					case 0:
-						m_align = id_LALIGN;
-						break;
-					case 1:
-						m_align = id_RALIGN;
-						break;
-					case 2:
-						m_align = id_CALIGN;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				}
-				_updatePreview(m_align, m_control);
-			}
+		}
+		
+		case AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONRIGHT:
+		{
+			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONRIGHT))
+				m_align = id_RALIGN;
+			
+			_updatePreview(m_align, m_control);
 			break;
+		}
+		
+		case AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER:
+		{
+			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_POSITIONCENTER))
+				m_align = id_CALIGN;			
+				
+			_updatePreview(m_align, m_control);
+			break;
+		}
+		
+		/* Align */			
+		
+		case AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER:
+		{
+			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER))
+				m_control = id_FTR;
+				
+			_updatePreview(m_align, m_control);
+			break;
+		}
+		
+		case AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNHEADER:
+		{
+			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNHEADER))
+				m_control = id_HDR;
+				
+			_updatePreview(m_align, m_control);
+			break;
+		}
 
 		default:							// we did not handle this notification
 			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
