@@ -3103,7 +3103,7 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 	case AP_Dialog_Paragraph::a_OK:
 
 		// getDialogData() returns us XML_Char ** data we have to free
-		pDialog->getDialogData((XML_Char **) props);
+		pDialog->getDialogData((XML_Char **&) props);
 		UT_ASSERT(props);
 
 		// set properties back to document
