@@ -2474,7 +2474,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   if ((error != UT_OK) || !pFG)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
-	  DELETEP(pictData);
+	  // pictData is already freed in ~FG_Graphic
+	  //  DELETEP(pictData);
 	  FREEP(mimetype);
 	  goto Cleanup;
 	}
