@@ -95,14 +95,17 @@ UT_Bool IE_Imp_DocBook::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 
 #define TT_OTHER		0               // anything else
-#define TT_DOCUMENT	        1		// a document <wml>
+#define TT_DOCUMENT	        1		// a document <book>
 #define TT_SECTION              2               // card or section
-#define TT_BLOCK		3		// a paragraph <p>
+#define TT_BLOCK		3		// a paragraph <para>
 #define TT_PHRASE               4               // formatted text
 #define TT_EMPHASIS             5               // emphasized (italic) text
 #define TT_SUPERSCRIPT          6               // superscript
 #define TT_SUBSCRIPT            7               // subscript
 #define TT_BLOCKQUOTE           8               // block quote
+#define TT_BRIDGEHEAD           9               // heading  <bridgehead ...>
+#define TT_CHAPTER              10              // legacy abiword documents
+#define TT_TITLE                11              // title
 
 struct _TokenTable
 {
@@ -113,12 +116,16 @@ struct _TokenTable
 static struct _TokenTable s_Tokens[] =
 {
 	{	"book",			TT_DOCUMENT		},
-	{       "chapter",              TT_SECTION              },
+	{       "section",              TT_SECTION              },
+	{       "chapter",              TT_CHAPTER              },	
 	{	"para",			TT_BLOCK		},
 	{       "phrase",               TT_PHRASE               },
 	{       "emphasis",             TT_EMPHASIS             },
 	{       "superscript",          TT_SUPERSCRIPT          },
 	{       "subscript",            TT_SUBSCRIPT            },
+	{       "bridgehead",           TT_BRIDGEHEAD           },
+	{       "title",                TT_TITLE                },
+	{       "blockquote",           TT_BLOCKQUOTE           },
 	{	"*",			TT_OTHER		}
 };
 
@@ -173,6 +180,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		m_parseState = _PS_Doc;
 		return;
 
+	case TT_CHAPTER:
 	case TT_SECTION:
 	  {
 		X_VerifyParseState(_PS_Doc);
@@ -190,6 +198,27 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		X_CheckError(m_pDocument->appendStrux(PTX_Block, NULL));
 		return;
 		
+	case TT_BRIDGEHEAD:
+	        X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Block;
+		{
+		  const XML_Char **p_atts;
+		  XML_Char *buf[3];
+		  buf[2] = NULL;
+
+		  const XML_Char *p_val;
+		  p_val = _getXMLPropValue((const XML_Char *)"renderas", atts);
+		  XML_Char style_att[15] = "Heading a";
+		  style_att[8] = p_val[4]; 
+
+		  X_CheckError(m_pDocument->appendStrux(PTX_Block, NULL));
+		  UT_XML_cloneString(buf[0], PT_STYLE_ATTRIBUTE_NAME);
+		  UT_XML_cloneString(buf[1], (XML_Char *) style_att);
+		  p_atts = (const XML_Char **)buf;
+		  X_CheckError(m_pDocument->appendFmt(p_atts));
+		  return;
+		}
+
 	case TT_BLOCKQUOTE:
 	        X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
@@ -198,9 +227,11 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		  XML_Char *buf[3];
 		  buf[2] = NULL;
 
+		  XML_Char style_att[15] = "Block Text";
+
 		  X_CheckError(m_pDocument->appendStrux(PTX_Block, NULL));
 		  UT_XML_cloneString(buf[0], PT_STYLE_ATTRIBUTE_NAME);
-		  UT_XML_cloneString(buf[1], (XML_Char *)"Block Text");
+		  UT_XML_cloneString(buf[1], (XML_Char *) style_att);
 		  p_atts = (const XML_Char **)buf;
 		  X_CheckError(m_pDocument->appendFmt(p_atts));
 		  return;
@@ -210,47 +241,52 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 	case TT_EMPHASIS:
 	case TT_SUPERSCRIPT:
 	case TT_SUBSCRIPT:
-	  X_VerifyParseState(_PS_Block);
-	  {
-	    const XML_Char **p_atts;
-	    XML_Char *buf[3];
-	    UT_XML_cloneString(buf[0], (XML_Char *)"props");
-	    buf[2] = NULL;
-
-	    switch(s_Tokens[tokenIndex].m_type) {
-	    case TT_EMPHASIS: 
-	      UT_XML_cloneString(buf[1], (XML_Char *)"font-style:italic"); 
-	      break;
-	    case TT_SUPERSCRIPT: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text-position:superscript"); 
-	      break;
-	    case TT_SUBSCRIPT: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text-position:subscript"); 
-	      break;
-	    case TT_PHRASE:
-	      {
-		const XML_Char *p_val = _getXMLPropValue((const XML_Char *)"role", atts);
-		if(p_val != NULL && !strcmp(p_val, "strong"))
-		  UT_XML_cloneString(buf[1],  (XML_Char *)"font-weight:bold");
-		else
-		  buf[0] = NULL;
-		break;
-	      }
-
-	    default:
-	      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	      break;
+	    X_VerifyParseState(_PS_Block);
+	    {
+		const XML_Char **p_atts;
+		XML_Char *buf[3];
+		UT_XML_cloneString(buf[0], (XML_Char *)"props");
+		buf[2] = NULL;
+		
+		switch(s_Tokens[tokenIndex].m_type) {
+		case TT_EMPHASIS: 
+		    UT_XML_cloneString(buf[1], (XML_Char *)"font-style:italic"); 
+		    break;
+		case TT_SUPERSCRIPT: 
+		    UT_XML_cloneString(buf[1], (XML_Char *)"text-position:superscript"); 
+		    break;
+		case TT_SUBSCRIPT: 
+		    UT_XML_cloneString(buf[1], (XML_Char *)"text-position:subscript"); 
+		    break;
+		case TT_PHRASE:
+		{
+		    const XML_Char *p_val = _getXMLPropValue((const XML_Char *)"role", atts);
+		    if(p_val != NULL && !strcmp(p_val, "strong"))
+			UT_XML_cloneString(buf[1],  (XML_Char *)"font-weight:bold");
+		    else
+			buf[0] = NULL;
+		    break;
+		}
+		
+		default:
+		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		    break;
+		}
+		
+		p_atts = (const XML_Char **)buf;
+		X_CheckError(_pushInlineFmt(p_atts));
+		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 	    }
-
-	    p_atts = (const XML_Char **)buf;
-	    X_CheckError(_pushInlineFmt(p_atts));
-	    X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
-	  }
-	  return;
+	    return;
+	    
+	case TT_TITLE:
+	    X_VerifyParseState(_PS_Sec);
+	    return;
 
 	case TT_OTHER:
 	default:
-		UT_DEBUGMSG(("Unknown or knowingly unhandled tag [%s]\n",name));
+	    UT_DEBUGMSG(("Unknown or knowingly unhandled tag [%s]\n",name));
+	    return;
 	}
 
 }
@@ -277,10 +313,11 @@ void IE_Imp_DocBook::_endElement(const XML_Char *name)
 		m_parseState = _PS_Doc;
 		return;
 
+	case TT_BRIDGEHEAD:
 	case TT_BLOCKQUOTE:
 	        UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
-		m_parseState = _PS_Block;
+		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		_popInlineFmt();
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
@@ -297,16 +334,20 @@ void IE_Imp_DocBook::_endElement(const XML_Char *name)
 	case TT_EMPHASIS:
 	case TT_SUPERSCRIPT:
 	case TT_SUBSCRIPT:
-		UT_ASSERT(m_lenCharDataSeen==0);
-	        X_VerifyParseState(_PS_Block);
-		X_CheckDocument(_getInlineDepth()>0);
-		_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
-		return;
+	    UT_ASSERT(m_lenCharDataSeen==0);
+	    X_VerifyParseState(_PS_Block);
+	    X_CheckDocument(_getInlineDepth()>0);
+	    _popInlineFmt();
+	    X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+	    return;
+	    
+	case TT_TITLE:
+	    return;
 
 	case TT_OTHER:
 	default:
-		UT_DEBUGMSG(("Unknown or intentionally unhandled end tag [%s]\n",name));
+	    UT_DEBUGMSG(("Unknown or intentionally unhandled end tag [%s]\n",name));
+	    return;
 	}
 }
 

@@ -91,6 +91,7 @@ UT_Bool IE_Exp_DocBook::SupportsFileType(IEFileType ft)
 #define BT_BLOCKTEXT	        5
 #define BT_PLAINTEXT	        6
 
+
 class s_DocBook_Listener : public PL_Listener
 {
 public:
@@ -120,7 +121,7 @@ public:
 
 protected:
 	void				_closeSection(void);
-	void				_closeBlock(void);
+	void				_closeParagraph(void);
 	void				_closeSpan(void);
 	void				_openParagraph(PT_AttrPropIndex api);
 	void				_openSection(PT_AttrPropIndex api);
@@ -130,12 +131,12 @@ protected:
 	void				_convertFontSize(char* szDest, const char* pszFontSize);
 	void				_convertColor(char* szDest, const char* pszColor);
 	
-	PD_Document *		m_pDocument;
+	PD_Document *		        m_pDocument;
 	IE_Exp_DocBook *		m_pie;
 	UT_Bool				m_bInSection;
-	UT_Bool				m_bInBlock;
+	UT_Bool				m_bInParagraph;
 	UT_Bool				m_bInSpan;
-	const PP_AttrProp*	m_pAP_Span;
+	const PP_AttrProp*	        m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
 
@@ -151,33 +152,36 @@ void s_DocBook_Listener::_closeSection(void)
 		return;
 	}
 	
-	m_pie->write("</chapter>\n");
+	m_pie->write("</section>\n");
 	m_bInSection = UT_FALSE;
 	return;
 }
 
-void s_DocBook_Listener::_closeBlock(void)
+void s_DocBook_Listener::_closeParagraph(void)
 {
-	if (!m_bInBlock)
+	if (!m_bInParagraph)
 	{
 		return;
 	}
 
 	if(m_iBlockType == BT_NORMAL)
-		m_pie->write("</para>\n");
+	    m_pie->write("</para>\n");
 
         else if(m_iBlockType == BT_BLOCKTEXT)
-		  m_pie->write("</blockquote>\n"); 
+	    m_pie->write("</blockquote>\n"); 
+
+	else if(m_iBlockType >= BT_HEADING1 && m_iBlockType <= BT_HEADING3)
+	    m_pie->write("</bridgehead>\n");
 
 	else if(m_iBlockType == BT_PLAINTEXT) 
-		m_pie->write("</para>\n");
+	    m_pie->write("</para>\n");
 
         // Add "catchall" for now
 
 	else
 		m_pie->write("   oh, oh\n");
 
-	m_bInBlock = UT_FALSE;
+	m_bInParagraph = UT_FALSE;
 	return;
 }
 
@@ -198,12 +202,40 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 		if (pAP->getAttribute((const XML_Char *)"style", szValue))
 		{
 			
-		       	if(0 == UT_stricmp(szValue, "Block Text"))
+                        if(0 == UT_stricmp(szValue, "Heading 1")) 
+			{
+
+				// <p style="Heading 1"> ...
+
+				m_iBlockType = BT_HEADING1;
+				m_pie->write("<bridgehead renderas=\"sect1\"");
+			}
+
+			else if(0 == UT_stricmp(szValue, "Heading 2")) 
+			{
+
+				// <p style="Heading 2"> ...
+
+				m_iBlockType = BT_HEADING2;
+				m_pie->write("<bridgehead renderas=\"sect2\"");
+			}
+
+			else if(0 == UT_stricmp(szValue, "Heading 3")) 
+			{
+	
+				// <p style="Heading 3"> ...
+
+				m_iBlockType = BT_HEADING3;
+				m_pie->write("<bridgehead renderas=\"sect3\"");
+
+			}
+
+		       	else if(0 == UT_stricmp(szValue, "Block Text"))
 			{
 				// <p style="Block Text"> ...
 
 				m_iBlockType = BT_BLOCKTEXT;
-				m_pie->write("<blockquote\n");
+				m_pie->write("<blockquote");
 			}
 
 			else 
@@ -217,7 +249,6 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 		}
 		else 
 		{
-
 			// <p> with no style attribute ...
 
 			m_iBlockType = BT_NORMAL;
@@ -246,19 +277,19 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 
 		m_pie->write(">");
 
-	m_bInBlock = UT_TRUE;
+	m_bInParagraph = UT_TRUE;
 }
 
 void s_DocBook_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
-	m_pie->write("<chapter>\n<title></title>\n");
+	m_pie->write("<section>\n<title></title>\n");
 }
 
 
 
 void s_DocBook_Listener::_openSpan(PT_AttrPropIndex api)
 {
-	if (!m_bInBlock)
+	if (!m_bInParagraph)
 	{
 		return;
 	}
@@ -349,7 +380,7 @@ void s_DocBook_Listener::_closeSpan(void)
 
 void s_DocBook_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-	if (!m_bInBlock)
+	if (!m_bInParagraph)
 	{
 		return;
 	}
@@ -507,7 +538,7 @@ s_DocBook_Listener::s_DocBook_Listener(PD_Document * pDocument,
 	m_pDocument = pDocument;
 	m_pie = pie;
 	m_bInSection = UT_FALSE;
-	m_bInBlock = UT_FALSE;
+	m_bInParagraph = UT_FALSE;
 	m_bInSpan = UT_FALSE;
 	
 
@@ -568,7 +599,7 @@ s_DocBook_Listener::s_DocBook_Listener(PD_Document * pDocument,
 s_DocBook_Listener::~s_DocBook_Listener()
 {
 	_closeSpan();
-	_closeBlock();
+	_closeParagraph();
 	_closeSection();
 	_handleDataItems();
 	
@@ -644,7 +675,7 @@ UT_Bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Section:
 	{
 		_closeSpan();
-		_closeBlock();
+		_closeParagraph();
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -677,7 +708,7 @@ UT_Bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Block:
 	{
 		_closeSpan();
-		_closeBlock();
+		_closeParagraph();
 		_openParagraph(pcr->getIndexAP());
 		return UT_TRUE;
 	}
