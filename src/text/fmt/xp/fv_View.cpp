@@ -7895,29 +7895,6 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
 		}
-		else if(isHdrFtrEdit())
-		{
-			fl_HdrFtrSectionLayout * pHF =	m_pEditShadow->getHdrFtrSectionLayout();
-			pDSL = pHF->getDocSectionLayout();
-			UT_sint32 yoff = 0;
-			getPageYOffset(pPage, yoff);
-			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
-			pInfo->m_yPageSize = pPage->getHeight();
-
-			if(pHF->getHFType() >= FL_HDRFTR_FOOTER)
-			{
-				pInfo->m_yTopMargin = pPage->getHeight() - pDSL->getBottomMargin();
-				UT_ASSERT(pInfo->m_yTopMargin>= 0);
-				pInfo->m_yBottomMargin = pDSL->getFooterMargin();
-			}
-			else
-			{
-				pInfo->m_yTopMargin = pDSL->getHeaderMargin();
-				UT_ASSERT(pInfo->m_yTopMargin>= 0);
-				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL->getTopMargin();
-			}
-
-		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
@@ -8028,6 +8005,29 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 			pInfo->m_yBottomMargin = pPage->getHeight() - pFC->getFullY() - pFC->getFullHeight();
 		}
+		else if(isHdrFtrEdit())
+		{
+			fl_HdrFtrSectionLayout * pHF =	m_pEditShadow->getHdrFtrSectionLayout();
+			pDSL = pHF->getDocSectionLayout();
+			UT_sint32 yoff = 0;
+			getPageYOffset(pPage, yoff);
+			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
+			pInfo->m_yPageSize = pPage->getHeight();
+
+			if(pHF->getHFType() >= FL_HDRFTR_FOOTER)
+			{
+				pInfo->m_yTopMargin = pPage->getHeight() - pDSL->getBottomMargin();
+				UT_ASSERT(pInfo->m_yTopMargin>= 0);
+				pInfo->m_yBottomMargin = pDSL->getFooterMargin();
+			}
+			else
+			{
+				pInfo->m_yTopMargin = pDSL->getHeaderMargin();
+				UT_ASSERT(pInfo->m_yTopMargin>= 0);
+				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL->getTopMargin();
+			}
+
+		}		
 		else
 		{
 		}
