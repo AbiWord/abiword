@@ -455,6 +455,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile
+ src/tools/cdump/qnx/GNUmakefile
  src/tools/pfa2afm/GNUmakefile
  src/tools/pfa2afm/unix/GNUmakefile
  src/tools/ttftool/GNUmakefile
