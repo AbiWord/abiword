@@ -378,8 +378,8 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-	bool span = UT_FALSE;
-	bool textD = UT_FALSE;
+	UT_Bool span = UT_FALSE;
+	UT_Bool textD = UT_FALSE;
 	
 	if (bHaveProp && pAP)
 	{
