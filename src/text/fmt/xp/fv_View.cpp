@@ -7893,11 +7893,11 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 			{
 				iPortHeight = adjustedBottom - adjustedTop;
 			}
-			else if(adjustedBottom <= m_iWindowHeight && adjustedTop < 0)
+			else if(adjustedBottom <= m_iWindowHeight && adjustedTop <= 0)
 			{
 				iPortHeight = adjustedBottom;
 			}
-			else if(adjustedBottom > m_iWindowHeight && adjustedTop >=0)
+			else if(adjustedBottom >= m_iWindowHeight && adjustedTop >=0)
 			{
 				iPortHeight = m_iWindowHeight - adjustedTop;
 			}
