@@ -42,7 +42,7 @@
 #include "xap_Win32Dlg_FontChooser.h"
 
 #ifdef _MSC_VER
-// Workaround for Microsofts unability to follow international standards.
+// Workaround for Microsofts inability to follow international standards.
 #define for if (0) {} else for
 // MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
@@ -277,13 +277,16 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		_selectFont();
 		return 1;						// return zero to let windows take care of it.
 
-//	case AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN:
-//	case AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN:
+	case AP_RID_DIALOG_LIST_EDIT_FORMAT:
+	case AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN:
+	case AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN:
 	case AP_RID_DIALOG_LIST_EDIT_START_AT:
 	case AP_RID_DIALOG_LIST_EDIT_LEVEL:
 		if (wNotifyCode == EN_CHANGE)
 		{
 			_getDisplayedData(wId);
+			setDirty();
+			_enableControls();
 			_previewExposed();
 			return 1;
 		}
@@ -451,33 +454,31 @@ void AP_Win32Dialog_Lists::_enableControls(void)
 	const bool bAnyRadio	= bStartNew || bApplyToCurr || bResumeList;
 	const int iType			= _getTypeComboCurSel();
 
-	UT_ASSERT(bAnyRadio);
+
+	// Note that we can end up here without any radio button yet checked,
+	// while initializing the dialog.
 
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_COMBO_TYPE, bAnyRadio);
-
-	if (!bStartNew || !iType)
-	{
-		_win32Dialog.enableControl(AP_RID_DIALOG_LIST_COMBO_STYLE, false);
-	}
-
+	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_COMBO_STYLE, iType != 0);
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST,
 								getisListAtPoint() && !bStartNew);
 
 	// Apply button should only be enabled when user has changed something.
-	// Not that we allow "Apply" for Type "None".
+	// Note that we allow "Apply" for Type "None".
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_BTN_APPLY, isDirty());
 
 	_enableCustomControls(iType != 0);
 
-	// Font button should only be enabled when we have Numbered list.
-	// This call must come after _enableCustomControls() since it's
+	// Font button and List Format should only be enabled when we have
+	// Numbered list.
+	// These calls must come after _enableCustomControls() since it's
 	// part of the "Custom Controls" group.
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_BTN_FONT, iType == 2);
+	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_EDIT_FORMAT, iType == 2);
 
-	// The "Set Default Values" button should only be enabled if user made
-	// any changes _and_ we have a list type selected.
-	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_BUTTON_DEFAULT,
-								isDirty() && iType != 0);
+	// The "Set Default Values" button should only be enabled if
+	// we have a Type selected.
+	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_BUTTON_DEFAULT, iType != 0);
 }
 
 void AP_Win32Dialog_Lists::_onApply()
@@ -507,8 +508,9 @@ void AP_Win32Dialog_Lists::_onApply()
 
 	// Since it's now applied, we obviously are at a list and should check
 	// the "Apply to current" checkbox.
-	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, FALSE);
-	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, TRUE);
+	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, false);
+	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, true);
+	_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, false);
 	
 	_enableControls();
 
@@ -638,9 +640,41 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
 
+	HWND hComboStyle = GetDlgItem(m_hThisDlg, AP_RID_DIALOG_LIST_COMBO_STYLE);
+	UT_ASSERT(hComboStyle);
+	int nMaxWidth = 0;
+
+	// Get the HDC of the droplist to be able to get the
+	// width of each of the strings.
+	HDC hDCcombo = GetDC(hComboStyle);
+	HDC hDC = CreateCompatibleDC(hDCcombo);
+	ReleaseDC(hComboStyle, hDCcombo);
+
+	HFONT hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+	SelectObject(hDC, hFont);
+
 	for (size_t i = 0; i < nIDs; ++i)
 	{
-		_win32Dialog.addItemToCombo(idComboStyle, pSS->getValue(pIDs[i]));
+		LPCSTR psz = pSS->getValue(pIDs[i]);
+		_win32Dialog.addItemToCombo(idComboStyle, psz);
+
+		if (hDC)
+		{
+			SIZE size;
+			::GetTextExtentPoint32(hDC, psz, strlen(psz), &size);
+			if (size.cx > nMaxWidth)
+			{
+				nMaxWidth = size.cx;
+			}
+		}
+	}
+
+	DeleteDC(hDC);
+
+	if (nMaxWidth > 50 && nMaxWidth < 500 /* sanity check*/)
+	{
+		SendMessage(hComboStyle, CB_SETDROPPEDWIDTH,
+					(WPARAM)nMaxWidth + 8, 0);
 	}
 }
 
@@ -668,6 +702,7 @@ void AP_Win32Dialog_Lists::_styleChanged()
 	setbisCustomized(false);
 	_previewExposed();
 	_setDisplayedData();
+	_enableControls();
 }
 
 
@@ -697,12 +732,11 @@ static const UT_sint32 rgCustomIds[] =
 
 void AP_Win32Dialog_Lists::_resetCustomValues()
 {
-	_enableCustomControls(m_bEnableCustomControls);
-
 	setbisCustomized(false);
 	setDirty();
 	fillUncustomizedValues();
 	_setDisplayedData();
+	_enableControls();
 	_previewExposed();
 }
 
@@ -730,22 +764,46 @@ void AP_Win32Dialog_Lists::_previewExposed()
 	}
 }
 
+
+// The following two functions are used to not update controls
+// if they don't need to be updated since every update, from
+// user actions or from API update calls generates EN_CHANGE
+// messages.
+static updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, int val)
+{
+	int nOld = helper.getControlInt(id);
+	if (nOld != val)
+	{
+		helper.setControlInt(id, val);
+	}
+}
+
+static updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, LPCSTR val)
+{
+	char szBuff[100];
+	helper.getControlText(id, szBuff, sizeof(szBuff));
+	if (strcmp(val, szBuff))
+	{
+		helper.setControlText(id, val);
+	}
+}
+
 //
 // dialog internal data -> displayed values
 //
 void AP_Win32Dialog_Lists::_setDisplayedData()
 {
-	_win32Dialog.setControlInt(AP_RID_DIALOG_LIST_EDIT_START_AT,
-								getiStartValue());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_START_AT,
+						getiStartValue());
 
-	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN	,
-								UT_convertToDimensionlessString(getfAlign(), ".2"));
+	updateControlValue(_win32Dialog,AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN,
+						UT_convertToDimensionlessString(getfAlign(), ".2"));
 
-	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN,
-								UT_convertToDimensionlessString(getfIndent(), ".2"));
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN,
+						UT_convertToDimensionlessString(getfIndent(), ".2"));
 
-	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT	, getDelim());
-	_win32Dialog.setControlInt(AP_RID_DIALOG_LIST_EDIT_LEVEL	, getiLevel());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_FORMAT	, getDelim());
+	updateControlValue(_win32Dialog, AP_RID_DIALOG_LIST_EDIT_LEVEL	, getiLevel());
 
 	_setListType(getNewListType());
 
@@ -797,8 +855,6 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 		}
 	}
 
-//	_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT, szTmp, sizeof(szTmp));
-//	copyCharToDecimal(szTmp);
 	if (controlId == -1 || controlId == AP_RID_DIALOG_LIST_EDIT_FORMAT)
 	{
 		_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT, szTmp, sizeof(szTmp));
