@@ -1,0 +1,150 @@
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = freebird-jeff -->
+<!--         Build_Options     = JavaScript:Off Debug:On -->
+<!--         Build_Target      = Linux_2.0.33_i386_DBG -->
+<!--         Build_CompileTime = 20:01:27 -->
+<!--         Build_CompileDate = Mar  9 1999 -->
+
+<awml>
+<section>
+<p><c PROPS="font-family:Courier New; font-size:11pt">$Id$</c></p>
+<p></p>
+<p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiSource Dialog Framework</c></p>
+<p PROPS="text-align:center">Version 1.0</p>
+<p PROPS="text-align:center">Copyright (C) 1999 AbiSource, Inc., All Rights Reserved.</p>
+<p PROPS="text-align:center"></p>
+<p PROPS="text-align:center">Jeff Hostetler</p>
+<p PROPS="text-align:center"><c PROPS="font-family:Courier New">jeff@abisource.com</c></p>
+<p PROPS="text-align:center">AbiSource, Inc.</p>
+<p PROPS="text-align:center">$Date$</p>
+<p></p>
+<p><c PROPS="font-weight:bold">1.  Introduction</c></p>
+<p></p>
+<p>AbiWord makes use of a <c PROPS="font-style:normal; text-decoration:underline">Dialog Framework</c> which simplifies the complicated task of managing and raising modal dialogs in a application-neutral, platform-neutral fashion.  It also manages the dialog-specific persistence information in an automatic and consistent manner without bothering the application.</p>
+<p></p>
+<p><c PROPS="font-weight:bold">2.  Types of Dialogs</c></p>
+<p></p>
+<p>Before adding a dialog, the following questions must be answered:</p>
+<p></p>
+<p>[1] Is the dialog application-specific (ie. AbiWord vs AbiCalc) or is it application-independent (theoretically usable by any application). The File-Open dialog on most systems, for example.</p>
+<p></p>
+<p>[2] What is the persistence nature of the information in the dialog?  That is, what information (either user-entered or system-supplied) that is shown in one invocation of the dialog should be remembered and shown the next time that the dialog is raised (assuming nothing in the application needs to override it).</p>
+<p></p>
+<p>The Dialog Framework defines 3 levels of persistence:</p>
+<p>	[a] no-persistence (think of a yes/no message box)</p>
+<p>	[b] frame (window) persistence</p>
+<p>	[c] application (global) persistence</p>
+<p></p>
+<p><c PROPS="font-weight:bold">3.  Class Hierarchy</c></p>
+<p></p>
+<p>The file abi/src/xap/xp/xap_Dialog.h gives the class hierarchy of the Dialog Framework:</p>
+<p></p>
+<p>	Dialog</p>
+<p>		NonPersistent [*]</p>
+<p>		Persistent</p>
+<p>			FramePersistent [*]</p>
+<p>			AppPersistent [*]</p>
+<p></p>
+<p>From the ones marked with [*] we then derive a dialog-specific subclass (for FileOpenSaveAs, MessageBox, FontChooser, etc.).  From these, we then derive platform-specific versions.  For example:</p>
+<p></p>
+<p>	Dialog</p>
+<p>		NonPersistent [*]</p>
+<p>			MessageBox [**]</p>
+<p>				UnixMessageBox [***]</p>
+<p>				WinMessageBox [***]</p>
+<p>		Persistent</p>
+<p>			FramePersistent [*]</p>
+<p>			AppPersistent [*]</p>
+<p>				FileOpenSaveAs [**]</p>
+<p>					UnixFileOpenSaveAs [***]</p>
+<p>					WinFileOpenSaveAs [***]</p>
+<p></p>
+<p>The <c PROPS="font-style:italic">business logic</c> in the application (in abi/src/wp/ap/xp/ap_EditMethods.cpp for example) requests dialogs from the Dialog Framework by type (the ones marked [**]).  Platform-specific code in the Application Framework takes care of the [***] portion.  </p>
+<p></p>
+<p><c PROPS="font-weight:bold">4.  API to a Dialog</c></p>
+<p></p>
+<p>Needless to say, the [**] classes define a MINI-API for each type of dialog using absolute and virtual methods, so that the business logic can just work with the [**] classes.  For example, the MessageBox dialog defines the following methods and data types (in abi/src/xap/xp/xap_Dlg_MessageBox.h):</p>
+<p></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	typedef enum { b_O, b_OC, b_YN, b_YNC } tButtons;</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	typedef enum { a_OK, a_CANCEL, a_YES, a_NO } tAnswer;</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	void setMessage(const char * szMessage);</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	void setMessage(const char * szMessage, const char * sz1);</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	void setButtons(AP_Dialog_MessageBox::tButtons buttons);</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	void setDefaultAnswer(AP_Dialog_MessageBox::tAnswer answer);</c></p>
+<p></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	AP_Dialog_MessageBox::tAnswer getAnswer(void) const;</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	virtual void runModal(XAP_Frame * pFrame) = 0;</c></p>
+<p></p>
+<p>After requesting an instance of the MessageBox dialog from the Dialog Factory, application logic can simply use the dialog by doing something like the following:</p>
+<p></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	...</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	pDialog-&gt;setMessage("question...");</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	pDialog-&gt;setButtons(b_OC);</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	pDialog-&gt;setDefaultAnswer(a_OK);</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	pDialog-&gt;runModal(pFrame);</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	answer = pDialog-&gt;getAnswer();</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	...</c></p>
+<p></p>
+<p>In a similar fashion each type of dialog defines (in cross-platform code) the set of verbs that it requires.</p>
+<p></p>
+<p><c PROPS="font-weight:bold">5.  The Dialog Factory</c></p>
+<p></p>
+<p>The Dialog Framework contains a Dialog Factory that is contained in the {xap,ap}_{Frame,App} code  The Dialog Factory deals with the specific class construction and persistence, such that application logic can just request a dialog by ID and let the Dialog Factory take care of the details. </p>
+<p></p>
+<p>The following code shows an example of how to request a MessageBox dialog from the Dialog Factory:</p>
+<p> </p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	AP_DialogFactory * pDialogFactory</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">		= (AP_DialogFactory *)(pFrame-&gt;getDialogFactory());</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	AP_Dialog_MessageBox * pDialog = (AP_Dialog_MessageBox *)</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">		(pDialogFactory-&gt;requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));</c></p>
+<p></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	... use dialog as shown in previous section ...</c></p>
+<p></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	pDialogFactory-&gt;releaseDialog(pDialog);</c></p>
+<p><c PROPS="font-family:Courier New; font-size:12pt">	return (answer);</c></p>
+<p></p>
+<p>This code snippet was taken from code in abi/src/wp/ap/xp/ap_EditMethods.cpp.</p>
+<p></p>
+<p><c PROPS="font-weight:bold">6.  Creating a New Dialog</c></p>
+<p></p>
+<p>To add a new type of dialog, we need to do the following:</p>
+<p></p>
+<p>If you are creating an application-independent dialog:</p>
+<p></p>
+<p>[1] Define XAP_DIALOG_ID_foo for it in abi/src/xap/xp/xap_Dialog_Id.h.</p>
+<p></p>
+<p>[2] Create a [**] class for it in abi/src/xap/xp/xap_Dialog_Foo.{h,cpp} -- completely define the MINI-API for this dialog.</p>
+<p></p>
+<p>[3] Create [***] classes for each platform (abi/src/xap/{unix,win}/xap_{Unix,Win}Dialog_Foo.{h,cpp} -- create both sets even if you only "speak" one platform (stub in the other platform so it will at least compile).</p>
+<p></p>
+<p>[4] Update the Makefiles in abi/src/xap/{Makefile,{unix,win}/Makefile}.  <c PROPS="font-style:italic">Make sure that you get the .../xap/Makefile -- most link failures are due to adding it to the .../xap/unix/Makefile or .../xap/win/Makefile but forgetting to add it to the upper-level one.</c></p>
+<p></p>
+<p>If an application-dependent dialog, do steps [1-4] above but in abi/src/wp/ap/ instead of abi/src/xap/.</p>
+<p></p>
+<p>For either type of dialog:</p>
+<p></p>
+<p>[5] Add declarations for the dialog in abi/src/wp/ap/{unix,win}/ap_{Unix,Win}Dialog_All.h -- there are 2 sections in this file, add something to both.</p>
+<p></p>
+<p>[6] On win32, if not using a common dialog, add a resource ID to abi/src/wp/ap/win/ap_Win32Resources.rc2 and create a dialog template in abi/src/wp/ap/win/ap_Win32Resources_DialogFoo.rc2.  <c PROPS="font-style:italic">(You can use the MSVC dialog designer if you want, but I usually edit the output by hand before putting it in the tree.)</c></p>
+<p></p>
+<p>With some luck (and hopefully I haven't left anything out) you should have it.</p>
+<p></p>
+<p><c PROPS="font-weight:bold">7.  Supplemental Notes</c></p>
+<p></p>
+<p>[a] For some related dialogs (like file-open and save-as) we use the same code for both -- but with 2 unique ID's -- the association is made in the DeclareDialog() statements in the .../...Dialog_All.h files.</p>
+<p></p>
+<p>[b] All dialogs run as modal dialogs (hence the runModal call in the base class :-)  We do not (at present time) have need to modeless dialogs.</p>
+<p></p>
+<p>[c] All persistent dialogs are instantiated once (per-frame or per-application) and re-used between screen invocations.  The Dialog Factory takes care of instantiation and final destruction.  This allows you to store anything in the class that you want to persist between appearances on screen.  The useStart() and useEnd() methods are called by the Dialog Factory before and after your application logic uses the dialog (during the call to requestDialog() and during the releaseDialog() call, respectively), so your dialog can do any per-use initialization/cleanup.</p>
+<p></p>
+<p>[d] At this point we haven't dealt with localization issues, so (for now) we've just hard-coded English text in the dialogs.  We'll deal with that later.</p>
+<p></p>
+</section>
+</awml>
