@@ -24,7 +24,8 @@
 #include <string.h>				// strcmp
 #include "ut_string_class.h"
 #include "ut_stringbuf.h"
-#include "ut_debugmsg.h"
+#include "ut_debugmsg.h"		// UT_DEBUGMSG
+#include "ut_assert.h"			// UT_ASSERT
 
 //
 // This string class is intended to meet the following requirements.
@@ -216,6 +217,7 @@ UT_String operator+(const UT_String& s1, const UT_String& s2)
 
 char operator[](size_t iPos) const
 {
+	UT_ASSERT(iPos <= size());
 	if (iPos == size())
 		return '\0';
 	return data()[iPos];
@@ -223,5 +225,6 @@ char operator[](size_t iPos) const
 
 char& operator[](size_t iPos)
 {
+	UT_ASSERT(iPos <= size());
 	return data()[iPos];
 }
