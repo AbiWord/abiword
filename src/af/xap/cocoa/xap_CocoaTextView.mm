@@ -126,6 +126,16 @@
 	[self invokeEditMethod:"warpInsPtBOW"];
 }
 
+- (void)moveWordRight:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtEOW"];
+}
+
+- (void)moveWordLeft:(id)sender
+{
+	[self invokeEditMethod:"warpInsPtBOW"];
+}
+
 - (void)moveToBeginningOfLine:(id)sender
 {
 	[self invokeEditMethod:"warpInsPtBOL"];
@@ -143,14 +153,37 @@
 {
 	[self invokeEditMethod:"warpInsPtEOP"];
 }
+#if 0
+// implement the Edit method first
+- (void)moveParagraphBackwardAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelBOP"];
+}
+- (void)moveParagraphForwardAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelEOP"];
+}
+#endif
+
 - (void)moveToEndOfDocument:(id)sender
 {
 	[self invokeEditMethod:"warpInsPtEOD"];
 }
+
 - (void)moveToBeginningOfDocument:(id)sender
 {
 	[self invokeEditMethod:"warpInsPtBOD"];
 }
+
+- (void)moveToEndOfDocumentAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelEOD"];
+}
+- (void)moveToBeginningOfDocumentAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelBOD"];
+}
+
 - (void)pageDown:(id)sender;
 {
 	[self invokeEditMethod:"warpInsPtNextScreen"];
@@ -168,14 +201,25 @@
 {
 	[self invokeEditMethod:"extSelRight"];
 }
+
 - (void)moveWordForwardAndModifySelection:(id)sender
 {
 	[self invokeEditMethod:"extSelEOW"];
 }
+- (void)moveWordRightAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelEOW"];
+}
+
 - (void)moveWordBackwardAndModifySelection:(id)sender
 {
 	[self invokeEditMethod:"extSelBOW"];
 }
+- (void)moveWordLeftAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelBOW"];
+}
+
 - (void)moveUpAndModifySelection:(id)sender
 {
 	[self invokeEditMethod:"extSelPrevLine"];
