@@ -72,8 +72,16 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void ModifyParagraph(void);
 	void ModifyTabs(void);
 	void updateCurrentStyle(void);
+    bool createNewStyle(const XML_Char * szName);
+	bool applyModifiedStyleToDoc(void);
+	void setDoc(PD_Document * pDoc);
+	void setFrame(XAP_Frame * pFrame);
+	void setView(FV_View * pView);
+	FV_View * getView(void) const;
+	PD_Document * getDoc(void) const;
+	XAP_Frame * getFrame(void) const;
 
- protected:
+protected:
 
 	void				  _createParaPreviewFromGC(GR_Graphics * gc,  UT_uint32 width,  UT_uint32 height);
 
@@ -81,23 +89,34 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void				  _createAbiPreviewFromGC(GR_Graphics * gc,  UT_uint32 width, UT_uint32 height);
 	void                  _populateAbiPreview(bool isNew);
 	AP_Dialog_Styles::tAnswer	  m_answer;
+	PD_Style *                    m_pCurStyle;
+	char *                        m_pszCurStyleName;
+    UT_String                     m_curStyleDesc;
 	AP_Preview_Paragraph  *		  m_pParaPreview;
 	XAP_Preview_FontPreview *	  m_pCharPreview;
 	AP_Preview_Abi *	          m_pAbiPreview;
+
+private:
 	XAP_Frame *                   m_pFrame;
 	FV_View *                     m_pView;
 	PD_Document *                 m_pDoc;
-	PD_Style *                    m_pCurStyle;
-	char *                        m_pszCurStyleName;
-	UT_Vector                     m_vecCharProps;
-    UT_String                     m_curStyleDesc;
-	UT_Vector                     m_vecAllProps;
-	UT_Vector                     m_vecAllAttribs;
 	PT_DocPosition                m_posBefore;
 	PT_DocPosition                m_posFocus;
 	PT_DocPosition                m_posAfter;
-private:
+	UT_Vector                     m_vecCharProps;
+	UT_Vector                     m_vecAllProps;
+	UT_Vector                     m_vecAllAttribs;
 };
 
 #endif /* AP_Dialog_Styles_H */
+
+
+
+
+
+
+
+
+
+
 

@@ -33,7 +33,6 @@
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
-#include "ap_Dialog_Styles.h"
 #include "ap_UnixDialog_Styles.h"
 #include "fl_DocLayout.h"
 #include "fv_View.h"
@@ -139,6 +138,20 @@ static void s_style_name(GtkWidget * widget, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
 	me->new_styleName();
+}
+
+
+static void s_basedon(GtkWidget * widget, AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(widget && me);
+	me->event_basedOn();
+}
+
+
+static void s_followedby(GtkWidget * widget, AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(widget && me);
+	me->event_followedBy();
 }
 
 static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Styles * me)
@@ -262,13 +275,14 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 //
 // Get View and Document pointers. Place them in member variables
 //
-	m_pFrame = pFrame;
-	m_pView = (FV_View *) pFrame->getCurrentView();
-	UT_ASSERT(m_pView);
 
-	m_pDoc = m_pView->getLayout()->getDocument();
+	setFrame(pFrame);
+	setView((FV_View *) pFrame->getCurrentView());
+	UT_ASSERT(getView());
 
-	UT_ASSERT(m_pDoc);
+	setDoc(getView()->getLayout()->getDocument());
+
+	UT_ASSERT(getDoc());
 
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
@@ -366,6 +380,10 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	
 	if(mainWindow && GTK_IS_WIDGET(mainWindow)) 
 	    gtk_widget_destroy(mainWindow);
+	if(m_answer == AP_Dialog_Styles::a_OK)
+	{
+		getView()->updateScreen();
+	}
 }
 
 /*****************************************************************/
@@ -416,7 +434,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 
 		UT_DEBUGMSG(("DOM: attempting to delete style %s\n", style));
 
-		m_pDoc->removeStyle(style); // actually remove the style
+		getDoc()->removeStyle(style); // actually remove the style
 		_populateWindowData(); // force a refresh
     }
 }
@@ -428,17 +446,13 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 //
 	UT_DEBUGMSG(("SEVIOR: Hiding main window for New \n"));
     gtk_widget_hide( m_windowMain);
-//
-// fill the data structures needed for the Modify dialog
-//
 	setIsNew(true);
 	modifyRunModal();
 	UT_DEBUGMSG(("SEVIOR: Finished New \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
-//
-// Do stuff
-//
+		UT_DEBUGMSG(("SEVIOR!! creating new style!! \n"));
+		createNewStyle(getNewStyleName());
 	}
 	else
 	{
@@ -446,10 +460,6 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 // Do other stuff
 //
 	}
-//  
-// Restore the values in the main dialog
-//
-
 //
 // Reveal main window again
 //
@@ -749,12 +759,6 @@ void AP_UnixDialog_Styles::_connectsignals(void) const
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
 					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(m_wStyleNameEntry),
-					   "activate",
-					   GTK_SIGNAL_FUNC(s_style_name),
-					   (gpointer) this);
-
 	
 	// the catch-alls
 	
@@ -774,7 +778,7 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 	const PD_Style * pStyle;
 	const char * name = NULL;
 
-	size_t nStyles = m_pDoc->getStyleCount();
+	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
 
 	gtk_clist_freeze (GTK_CLIST (m_wclistStyles));
@@ -784,7 +788,7 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 	{
 	    const char * data[1];
 
-	    m_pDoc->enumStyles((UT_uint32)i, &name, &pStyle);
+	    getDoc()->enumStyles((UT_uint32)i, &name, &pStyle);
 
 	    // all of this is safe to do... append should take a const char **
 	    data[0] = name;
@@ -1119,6 +1123,21 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   GTK_SIGNAL_FUNC(s_modifyPreview_exposed),
 					   (gpointer) this);
 
+	gtk_signal_connect(GTK_OBJECT(m_wStyleNameEntry),
+					   "changed",
+					   GTK_SIGNAL_FUNC(s_style_name),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wBasedOnEntry), 
+					   "changed",
+					   GTK_SIGNAL_FUNC(s_basedon),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(m_wFollowingEntry), 
+					   "changed",
+					   GTK_SIGNAL_FUNC(s_followedby),
+					   (gpointer) this);
+
 	
 	gtk_signal_connect_after(GTK_OBJECT(m_wModifyDialog),
 							 "expose_event",
@@ -1151,8 +1170,35 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
  */
 void AP_UnixDialog_Styles::new_styleName(void)
 {
-	const char * style_name = getCurrentStyle();
-	fillVecWithProps(style_name);
+	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
+	UT_DEBUGMSG(("SEVIOR: New style name %s \n",psz));
+	g_snprintf((gchar *) m_newStyleName,40,"%s",psz);
+	addOrReplaceVecAttribs(PT_NAME_ATTRIBUTE_NAME,getNewStyleName());
+}
+
+/*!
+ * Update the properties and Attributes vector given the new basedon name
+ */
+void AP_UnixDialog_Styles::event_basedOn(void)
+{
+	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
+	UT_DEBUGMSG(("SEVIOR: New basedon name %s \n",psz));
+	g_snprintf((gchar *) m_basedonName,40,"%s",psz);
+	addOrReplaceVecAttribs("basedon",getBasedonName());
+	fillVecWithProps(getBasedonName());
+	updateCurrentStyle();
+}
+
+
+/*!
+ * Update the Attributes vector given the new followedby name
+ */
+void AP_UnixDialog_Styles::event_followedBy(void)
+{
+	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
+	UT_DEBUGMSG(("SEVIOR: New followedby name %s \n",psz));
+	g_snprintf((gchar *) m_followedbyName,40,"%s",psz);
+	addOrReplaceVecAttribs("followedby",getFollowedbyName());
 }
 
 void AP_UnixDialog_Styles::event_Modify_Cancel(void)
@@ -1179,7 +1225,7 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 
 	_constructModifyDialog();
 
-	connectFocus(GTK_WIDGET(m_wModifyDialog),m_pFrame);
+	connectFocus(GTK_WIDGET(m_wModifyDialog),getFrame());
 //
 // populate the dialog with useful info
 //
@@ -1263,9 +1309,8 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 	UT_DEBUGMSG(("SEVIOR: Finished Modify \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
-//
-// Do stuff
-//
+		applyModifiedStyleToDoc();
+		getView()->updateScreen();
 	}
 	else
 	{
@@ -1312,38 +1357,43 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 	}
 	else
 	{
-		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), " ");
+		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), "");
 		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),TRUE );
 	}
 //
 // Next interogate the current style and find the based on and followed by
 // Styles
 //
-	PD_Style * pStyle = NULL;
-	m_pDoc->getStyle(szCurrentStyle,&pStyle);
-	if(!pStyle)
+	const char * szBasedOn = NULL;
+	const char * szFollowedBy = NULL;
+	PD_Style * pBasedOnStyle = NULL;
+	PD_Style * pFollowedByStyle = NULL;
+	if(!isNew())
 	{
-		messageBoxOK("This style does not exist \n so it cannot be modified");
-		m_answer = AP_Dialog_Styles::a_CANCEL;
-		return false;
-	}
+		PD_Style * pStyle = NULL;
+		if(szCurrentStyle)
+			getDoc()->getStyle(szCurrentStyle,&pStyle);
+		if(!pStyle)
+		{
+			messageBoxOK("This style does not exist \n so it cannot be modified");
+			m_answer = AP_Dialog_Styles::a_CANCEL;
+			return false;
+		}
 //
 // Valid style get the Based On and followed by values
 //
-	PD_Style * pBasedOnStyle = pStyle->getBasedOn();
-	const char * szBasedOn = NULL;
- 
-	PD_Style * pFollowedByStyle = pStyle->getFollowedBy();
-	const char * szFollowedBy = NULL;
+	    pBasedOnStyle = pStyle->getBasedOn();
+		pFollowedByStyle = pStyle->getFollowedBy();
+	}
 //
 // Next make a glists of all styles and attach them to the BasedOn and FollowedBy
 //
-	size_t nStyles = m_pDoc->getStyleCount();
+	size_t nStyles = getDoc()->getStyleCount();
 	const char * name = NULL;
 	const PD_Style * pcStyle = NULL;
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
-	    m_pDoc->enumStyles(i, &name, &pcStyle);
+	    getDoc()->enumStyles(i, &name, &pcStyle);
 
 		if(pcStyle == pBasedOnStyle)
 			szBasedOn = name;
@@ -1352,6 +1402,9 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
 			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+		else if(szCurrentStyle == NULL)
+			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+
 		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
 	}
 
@@ -1364,10 +1417,13 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 // OK here we set intial values for the basedOn and followedBy
 //
-	gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),szBasedOn);
-	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),FALSE );
-	gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wFollowingCombo)->entry),szFollowedBy);
+	if(!isNew())
+	{
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),szBasedOn);
+		gtk_entry_set_text (GTK_ENTRY(GTK_COMBO(m_wFollowingCombo)->entry),szFollowedBy);
+	}
 	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(m_wFollowingCombo)->entry),FALSE );
+	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(m_wBasedOnCombo)->entry),FALSE );
 	return true;
 }
 

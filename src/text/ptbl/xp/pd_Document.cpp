@@ -1040,8 +1040,59 @@ bool	PD_Document::setStyleProperties(const XML_Char * szStyleName, const XML_Cha
 	PD_Style ** ppS = &pS;
 	if(!m_pPieceTable->getStyle(szStyleName, ppS))
 		return false;
-		
-	return (*ppS)->setProperties(pProperties);
+	if(!(*ppS)->setProperties(pProperties))
+		return false;
+	return updateDocForStyleChange(szStyleName,true);
+}
+
+/*!
+ * This method loops through the entire document updating each location
+ * where the style exists.
+\param szStyle the name of style that has changed.
+\param isParaStyle true if the style is a paragraph type.
+*/
+bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle, 
+											bool isParaStyle)
+{
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	UT_ASSERT(currentFrag);
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+//
+// get indexAP
+// get PT_STYLE_ATTRIBUTE_NAME
+// if it matches style name do a notify listeners call.
+		if(isParaStyle)
+		{
+			if (currentFrag->getType()==pf_Frag::PFT_Strux)
+			{
+//
+// All this code is used to find if this strux has our style in it
+//
+				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (currentFrag);
+				PT_AttrPropIndex indexAP = pfs->getIndexAP();
+				const PP_AttrProp * pAP = NULL;
+				m_pPieceTable->getAttrProp(indexAP,&pAP);
+				UT_ASSERT(pAP);
+				const XML_Char * pszStyleName = NULL;
+				(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+//
+// It does so signal all the layouts to update themselves for the new definition
+// of the style.
+//
+				if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
+				{
+					PL_StruxDocHandle sdh = (PL_StruxDocHandle) pfs;
+					PT_DocPosition pos = getStruxPosition(sdh);
+					PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pos,indexAP);
+					notifyListeners(pfs, pcr);
+					delete pcr;
+				}
+			}
+		}
+		currentFrag = currentFrag->getNext();
+	}
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////

@@ -3651,23 +3651,28 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 	FV_View* ppView = m_pLayout->getView();
 	if(ppView)
+	{
 		ppView->eraseInsertionPoint();
-	m_bCursorErased = true;
+		m_bCursorErased = true;
+	}
 
 	// erase the old version
 	clearScreen(m_pLayout->getGraphics());
 	setAttrPropIndex(pcrxc->getIndexAP());
+	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
 
 	const XML_Char * szOldStyle = m_szStyle;
 #ifdef BIDI_ENABLED
 	bool bOldDomDirection = m_bDomDirection;
 #endif
 	_lookupProperties();
+	UT_DEBUGMSG(("SEVIOR: Old Style = %s new style = %s \n",szOldStyle,m_szStyle));
 	if(ppView)
 		ppView->eraseInsertionPoint();
-
-	if ((szOldStyle != m_szStyle) &&
-		(!szOldStyle || !m_szStyle || !!(UT_XML_strcmp(szOldStyle, m_szStyle))))
+//
+// Not sure why we need this IF - Sevior
+//	if ((szOldStyle != m_szStyle) &&
+//		(!szOldStyle || !m_szStyle || !!(UT_XML_strcmp(szOldStyle, m_szStyle))))
 	{
 		/*
 		  A block-level style change means that we also need to update
@@ -3675,6 +3680,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 		*/
 		fp_Run* pRun = m_pFirstRun;
 
+		UT_DEBUGMSG(("SEVIOR: Doing a style change \n"));
 		while (pRun)
 		{
 			pRun->lookupProperties();

@@ -1903,7 +1903,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-
+	UT_DEBUGMSG(("SEVIOR: In fv_View setStyle \n"));
 //
 // Get This info before it's lost from the following processing
 // 
@@ -1929,7 +1929,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		{
 			_eraseInsertionPoint();
 		}
-
+		UT_DEBUGMSG(("SEVIOR: Setting character style in setStyle \n"));
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 		_eraseSelection();
 
@@ -1984,6 +1984,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 
 		// NB: clear explicit props at both block and char levels
+		UT_DEBUGMSG(("SEVIOR: Setting Paragraph style in setStyle \n"));
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
 #ifdef BIDI_ENABLED
 		/*	

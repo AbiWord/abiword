@@ -74,11 +74,15 @@ public:
 	void         event_ModifyNumbering();
 	void         event_ModifyTabs();
 	void         event_ModifyPreviewExposed();
-
+	void         event_basedOn(void);
+	void         event_followedBy(void);
 	void         modifyRunModal(void);
 
 	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
-	const bool   isNew(void) const { return m_bIsNew;}     
+	const bool   isNew(void) const { return m_bIsNew;}
+	XML_Char *   getNewStyleName(void) const {return (XML_Char *) m_newStyleName;}
+	XML_Char *   getBasedonName(void) const {return (XML_Char *) m_basedonName;}
+	XML_Char *   getFollowedbyName(void) const {return (XML_Char *) m_followedbyName;}
 protected:
 
 	// private construction functions
@@ -148,6 +152,9 @@ protected:
 	GtkWidget *	m_wModifyTabs;
 	GList *     m_gbasedOnStyles;
 	GList *     m_gfollowedByStyles;
+	const XML_Char * m_newStyleName[40];
+	const XML_Char * m_basedonName[40];
+	const XML_Char * m_followedbyName[40];
 private:
 	bool m_bIsNew;
 };

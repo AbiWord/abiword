@@ -612,8 +612,8 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		// TODO getOldIndexAP() is only intended for use by the document.
 		// TODO this assert is probably wrong. --- BUT EVERYTIME IT HAS
 		// TODO GONE OFF, I'VE FOUND A BUG, SO MAYBE WE SHOULD KEEP IT :-)
-		UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
-		UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
+		// UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
+		// UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
 
 		switch (pL->getType())
 		{

@@ -180,6 +180,8 @@ public:
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 	bool					setStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
 	bool					setStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties);
+	bool					updateDocForStyleChange(const XML_Char * szStyleName,
+													bool isParaStyle);
 
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
