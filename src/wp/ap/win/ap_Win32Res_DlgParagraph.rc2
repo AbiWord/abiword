@@ -164,23 +164,23 @@ BEGIN
 										"AbiLabelledSeparator", 0x0, 2,6,256,8
     CONTROL         "&Widow/Orphan control",
 										AP_RID_DIALOG_PARA_CHECK_WIDOW,
-										"Button",BS_AUTO3STATE | WS_TABSTOP,14,18,126,10
+										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,18,126,10
     CONTROL         "Keep with ne&xt",	
 										AP_RID_DIALOG_PARA_CHECK_NEXT,
-										"Button",BS_AUTO3STATE | WS_TABSTOP,150,18,101,10
+										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,18,101,10
     CONTROL         "&Keep lines together",	
 										AP_RID_DIALOG_PARA_CHECK_TOGETHER,
-										"Button",BS_AUTO3STATE | WS_TABSTOP,14,32,126,10
+										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,32,126,10
     CONTROL         "Page &break before",	
 										AP_RID_DIALOG_PARA_CHECK_BREAK,
-										"Button",BS_AUTO3STATE | WS_TABSTOP,150,32,101,10
+										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,32,101,10
     CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,56,256,1
     CONTROL         "&Suppress line numbers",	
 										AP_RID_DIALOG_PARA_CHECK_SUPPRESS,
-										"Button",BS_AUTO3STATE | WS_TABSTOP,14,64,126,10
+										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,64,126,10
     CONTROL         "&Don't hyphenate",		
 										AP_RID_DIALOG_PARA_CHECK_NOHYPHEN,
-										"Button",BS_AUTO3STATE | WS_TABSTOP,14,78,126,10
+										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,78,126,10
     CONTROL         "Preview",			AP_RID_DIALOG_PARA_TEXT_PREVIEW,
 										"AbiLabelledSeparator", 0x0, 2,132,256,8
     CONTROL         "(preview)",		AP_RID_DIALOG_PARA_PREVIEW,
