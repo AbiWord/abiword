@@ -567,6 +567,30 @@ static gint nonmodal_keypress_cb ( GtkWidget * wid, GdkEventKey * event,
 	return FALSE ;
 }
 
+static void help_button_cb (GObject * button, XAP_Dialog * pDlg)
+{
+  if (pDlg)
+    sDoHelp (pDlg);
+}
+
+static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
+{
+  if (pDlg->getHelpUrl().size () > 0) {
+    UT_DEBUGMSG(("DOM: %s\n", pDlg->getHelpUrl().c_str()));
+
+    GtkWidget * button = gtk_button_new_from_stock (GTK_STOCK_HELP);
+
+    // make sure button is at the far left
+    gtk_box_pack_start(GTK_BOX(me->action_area),
+		       button, TRUE, FALSE, 0);
+    gtk_box_reorder_child (GTK_BOX(me->action_area), button, 0);
+
+    g_signal_connect (G_OBJECT (button), "clicked",
+		      G_CALLBACK(help_button_cb), pDlg);
+    gtk_widget_show (button);
+  }
+}
+
 /*!
  * Centers a dialog, makes it transient, sets up the right window icon
  */
@@ -610,6 +634,8 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
 	
+	sAddHelpButton (me, pDlg);
+
 	// show the window
 	gtk_widget_show ( GTK_WIDGET(me) ) ;
 	
@@ -665,8 +691,8 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 
-	// remember the modeless id
 	if (abi_modeless) {
+	  // remember the modeless id
 	  XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
 	
 	  // connect focus to our parent frame
@@ -686,6 +712,8 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;
+
+	sAddHelpButton (me, pDlg);
 	
 	// show the window
 	gtk_widget_show ( GTK_WIDGET(me) ) ;
