@@ -23,7 +23,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
-#include <freetype/freetype.h>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -36,10 +35,16 @@
 #include "xap_UnixFontXLFD.h"
 
 #include "ut_AdobeEncoding.h"
+
 #ifdef USE_XFT
 #include <X11/Xft/Xft.h>
+/* I don't think we should be including freetype/freetype.h,
+ * and even if we should, shouldn't we be doing:
+#include <ft2build.h>
+#include FREETYPE_FREETYPE_H
+ * or some such??
+ */
 #endif
-
 
 class ps_Generate;
 
