@@ -4958,6 +4958,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 	}
 
 	endUserAtomicGlob();
+	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	return true;
 }
 
@@ -5059,6 +5060,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 	}
 
 	endUserAtomicGlob();
+	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	return true;
 }
 
