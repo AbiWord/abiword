@@ -31,6 +31,9 @@
 XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 	XAP_FrameImpl(pFrame),
 	m_hwndFrame(NULL),
+	m_hwndRebar(NULL),
+	m_hwndContainer(NULL),
+	m_hwndStatusBar(NULL),
 	m_dialogFactory(pFrame, pFrame->getApp()),
 	m_pWin32Menu(NULL),
 	m_pWin32Popup(NULL),
@@ -40,7 +43,7 @@ XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 {
 }
 
-XAP_Win32FrameImpl::~XAP_Win32FrameImpl()
+XAP_Win32FrameImpl::~XAP_Win32FrameImpl(void)
 {
 }
 
@@ -51,7 +54,7 @@ static void XAP_Win32FrameImpl::viewAutoUpdater(UT_Worker *wkr) {}
 #endif
 
 
-bool XAP_Win32FrameImpl::_updateTitle() 
+bool XAP_Win32FrameImpl::_updateTitle(void) 
 {
 	UT_return_val_if_fail(m_hwndFrame, false);
 	UT_return_val_if_fail(m_pFrame, false);
@@ -72,7 +75,7 @@ bool XAP_Win32FrameImpl::_updateTitle()
 	return true;
 }
 
-void XAP_Win32FrameImpl::_initialize()
+void XAP_Win32FrameImpl::_initialize(void)
 {
 	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
@@ -87,7 +90,7 @@ void XAP_Win32FrameImpl::_initialize()
 	UT_ASSERT(m_pMouse);
 }
 
-bool XAP_Win32FrameImpl::_close()
+bool XAP_Win32FrameImpl::_close(void)
 {
 	UT_return_val_if_fail(m_hwndFrame, false);
 	UT_return_val_if_fail(m_pFrame, false);
@@ -122,14 +125,14 @@ bool XAP_Win32FrameImpl::_close()
 	return true;
 }
 
-bool XAP_Win32FrameImpl::_raise()
+bool XAP_Win32FrameImpl::_raise(void)
 {
 	UT_return_val_if_fail(m_hwndFrame, false);
 	BringWindowToTop(m_hwndFrame);
 	return true;
 }
 
-bool XAP_Win32FrameImpl::_show()
+bool XAP_Win32FrameImpl::_show(void)
 {
 	UT_return_val_if_fail(m_hwndFrame, false);
 
@@ -140,7 +143,7 @@ bool XAP_Win32FrameImpl::_show()
 }
 
 
-XAP_DialogFactory * XAP_Win32FrameImpl::_getDialogFactory()
+XAP_DialogFactory * XAP_Win32FrameImpl::_getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
@@ -163,7 +166,7 @@ EV_Toolbar * XAP_Win32FrameImpl::_newToolbar(XAP_App *app, XAP_Frame *frame, con
 	return result;
 }
 
-EV_Menu* XAP_Win32FrameImpl::_getMainMenu()
+EV_Menu* XAP_Win32FrameImpl::_getMainMenu(void)
 {
 	return m_pWin32Menu;
 }
@@ -171,7 +174,7 @@ EV_Menu* XAP_Win32FrameImpl::_getMainMenu()
 // Useful to refresh the size of the Frame.  For instance,
 // when the user selects hide statusbar, the Frame has to be
 // resized in order to fill the gap leaved by the statusbar
-void XAP_Win32FrameImpl::_queue_resize()
+void XAP_Win32FrameImpl::_queue_resize(void)
 {
 	::SendMessage(m_hwndFrame, WM_SIZE, 0, MAKELONG(m_iRealSizeWidth, m_iRealSizeHeight));
 }
@@ -232,7 +235,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 }
 
 
-void XAP_Win32FrameImpl::_nullUpdate () const
+void XAP_Win32FrameImpl::_nullUpdate (void) const
 {
 	MSG msg;
 	for( int i = 0 ; i < 10 ; i++ )

@@ -23,6 +23,7 @@
 #define XAP_WIN32FRAMEIMPL_H
 
 #include <windows.h>
+#include <winuser.h>
 #include "xap_FrameImpl.h"
 #include "xap_Win32App.h"
 #include "xap_Win32DialogFactory.h"
@@ -47,9 +48,17 @@ class ABI_EXPORT XAP_Win32FrameImpl : public XAP_FrameImpl
 {
  public:
 	XAP_Win32FrameImpl(XAP_Frame *pFrame);
-	virtual ~XAP_Win32FrameImpl();
+	virtual ~XAP_Win32FrameImpl(void);
 
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp) = 0;
+
+	/** public functions replacing replacing usage of XAP_Win32Frame **/
+	void updateKeyboardFocus(void)			{  SetFocus(_getTopLevelWindow());  }
+	void enableWindowInput(bool bActive)		{  EnableWindow(_getTopLevelWindow(), bActive);  }
+	LRESULT sendMsgToFrame(UINT Msg, WPARAM wParam, LPARAM lParam)	{  return SendMessage(_getTopLevelWindow(), Msg, wParam, lParam);  }
+
+//	inline HWND getTopLevelWindow(void) const 	{  return _getTopLevelWindow();  }
+	inline HWND getToolbarWindow(void) const		{  return m_hwndRebar;  }
 
 protected:
 	friend class XAP_Frame;
@@ -59,27 +68,27 @@ protected:
 	static void viewAutoUpdater(UT_Worker *wkr);
 #endif
 
-	virtual bool _updateTitle();
+	virtual bool _updateTitle(void);
 
-	virtual void _initialize();
-	virtual bool _close();
-	virtual bool _raise();
-	virtual bool _show();
+	virtual void _initialize(void);
+	virtual bool _close(void);
+	virtual bool _raise(void);
+	virtual bool _show(void);
 
-	virtual XAP_DialogFactory * _getDialogFactory();
+	virtual XAP_DialogFactory * _getDialogFactory(void);
 	virtual EV_Toolbar * _newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage);
-	virtual EV_Menu* _getMainMenu();
+	virtual EV_Menu* _getMainMenu(void);
 
 	// Useful to refresh the size of the Frame.  For instance,
 	// when the user selects hide statusbar, the Frame has to be
 	// resized in order to fill the gap leaved by the statusbar
-	virtual void _queue_resize();
+	virtual void _queue_resize(void);
 
 	virtual bool _runModalContextMenu(AV_View * pView, const char * szMenuName,
 									  UT_sint32 x, UT_sint32 y);
 	virtual void _setFullScreen(bool isFullScreen);
 	virtual bool _openURL(const char * szURL);
-	virtual void _nullUpdate () const;
+	virtual void _nullUpdate (void) const;
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 
 	static bool _RegisterClass(XAP_Win32App * app);
@@ -88,10 +97,12 @@ protected:
 	virtual void				_translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual HWND				_getTopLevelWindow(void) const {  return m_hwndFrame;  }
 
-
-	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
-
 private:
+	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
+	HWND						m_hwndRebar;
+	HWND						m_hwndContainer; /* the document and all rulers and scroll bars */
+	HWND						m_hwndStatusBar;
+
 	AP_Win32DialogFactory			m_dialogFactory;	/* class defined[.h] in XAP, implemented[.cpp] in AP */
 
 	EV_Win32MenuBar *				m_pWin32Menu;

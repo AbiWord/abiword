@@ -26,7 +26,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "xav_View.h"
 #include "xad_Document.h"
 #include "ap_framedata.h"
@@ -91,8 +91,8 @@ STDMETHODIMP XAP_Win32DropTarget::DragOver(DWORD grfKeyState, POINTL pointl, LPD
 {        	
 	*pdwEffect = (m_bSupportedFormat) ? DROPEFFECT_COPY : DROPEFFECT_NONE;			
 	
-	SendMessage(m_pFrame->getTopLevelWindow(), WM_VSCROLL, SB_LINEDOWN, NULL);
-	
+	static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->sendMsgToFrame(WM_VSCROLL, SB_LINEDOWN, NULL);
+
 	return S_OK;
 }
 
@@ -130,7 +130,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD grfKeyState
 		// We send an event Message Window to the Win32Frame since historicaly
 		// the file loading was processed there
 		if (count) 
-			SendMessage(m_pFrame->getTopLevelWindow(), WM_DROPFILES, (WPARAM)medium.hGlobal, 0);	
+			static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->sendMsgToFrame(WM_DROPFILES, (WPARAM)medium.hGlobal, NULL);
 				
 		ReleaseStgMedium(&medium);	     
 		return S_OK;

@@ -31,7 +31,7 @@
 #include "ap_Win32Toolbar_StyleCombo.h"
 
 class XAP_Win32App;
-class XAP_Win32Frame;
+class XAP_Frame;
 class EV_Win32Toolbar_ViewListener;
 class EV_Toolbar_Action;
 
@@ -45,7 +45,7 @@ class EV_Toolbar_Action;
 class EV_Win32Toolbar : public EV_Toolbar
 {
 public:
-	EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
+	EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Frame * pFrame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
@@ -62,7 +62,7 @@ public:
 
 	HWND getWindow(void) const;
 
-	XAP_Win32Frame * getFrame(void);
+	XAP_Frame * getFrame(void);
 
 	/*
 		Note that the namespaces for toolbar and menu command ids 
@@ -91,7 +91,7 @@ private:
 	static LRESULT CALLBACK			_ComboEditWndProc(HWND, UINT, WPARAM, LPARAM);
 
 	XAP_Win32App *					m_pWin32App;
-	XAP_Win32Frame *				m_pWin32Frame;
+	XAP_Frame *						m_pWin32Frame;
 	EV_Win32Toolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
 

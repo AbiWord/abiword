@@ -32,7 +32,7 @@
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
-#include "xap_Win32Frame.h"
+#include "xap_Frame.h"
 #include "ap_Win32Resources.rc2"
 #include "ap_Menu_Id.h"
 
@@ -577,7 +577,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
  	return true;
 }
 
-bool EV_Win32Menu::onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
+bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 								   HWND hWnd, HMENU hMenu, WPARAM wParam)
 {
 	UINT nItemID = (UINT)LOWORD(wParam);

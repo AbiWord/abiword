@@ -26,7 +26,8 @@
 #include "xap_Args.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Clipboard.h"
-#include "xap_Win32Frame.h"
+#include "xap_Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
@@ -328,9 +329,9 @@ void XAP_Win32App::enableAllTopLevelWindows(bool b)
 
 	for (UT_uint32 ndx=0; ndx<iCount; ndx++)
 	{
-		XAP_Win32Frame * pFrame = (XAP_Win32Frame *) m_vecFrames.getNthItem(ndx);
+		XAP_Frame * pFrame = (XAP_Frame *) m_vecFrames.getNthItem(ndx);
 
-		EnableWindow(pFrame->getTopLevelWindow(), b);
+		static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->enableWindowInput(b);
 	}
 }
 

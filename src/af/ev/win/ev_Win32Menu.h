@@ -29,7 +29,6 @@ class AV_View;
 class XAP_Win32App;
 class EV_EditEventMapper;
 class XAP_Frame;
-class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -55,7 +54,7 @@ public:
 	bool				synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot);
 	bool				onCommand(AV_View * pView, HWND hWnd, WPARAM wParam);
 	bool				onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HMENU hMenuBar);
-	bool				onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
+	bool				onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 									 HWND hWnd, HMENU hMenu, WPARAM wParam);
 
 	HMENU				getMenuHandle() const				{ return m_myMenu; }

@@ -35,7 +35,8 @@
 #include <fcntl.h>
 #include <ole2.h>
 
-class XAP_Win32Frame;
+#include "xap_Frame.h"
+
 
 /*****************************************************************
 ******************************************************************
@@ -66,13 +67,13 @@ public:
 			LPDWORD pdwEffect);
 		
 	// Helper
-	void setFrame(XAP_Win32Frame* pFrame) {m_pFrame = pFrame;};	
+	void setFrame(XAP_Frame* pFrame) {m_pFrame = pFrame;};	
 private:
 	
 	int   			m_nCount;                 // reference count
 	UINT			m_uCF_RTF;
 	bool			m_bSupportedFormat;	
-	XAP_Win32Frame*		m_pFrame;			
+	XAP_Frame*		m_pFrame;			
 	
 
 };

@@ -55,7 +55,7 @@ public:
 
 protected:
 	XAP_FrameImpl(XAP_Frame *pFrame);
-	virtual ~XAP_FrameImpl();
+	virtual ~XAP_FrameImpl(void);
 
 	friend class XAP_Frame;
 

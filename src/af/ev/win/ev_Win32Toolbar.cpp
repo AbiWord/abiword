@@ -27,7 +27,8 @@
 #include "ut_vector.h"
 #include "ev_Win32Toolbar.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Layouts.h"
 #include "ev_Toolbar_Labels.h"
@@ -96,14 +97,14 @@ foo_Bitmap_container::~foo_Bitmap_container()
 /*****************************************************************/
 
 
-EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
+EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Frame * pFrame,
 								 const char * szToolbarLayoutName,
 								 const char * szToolbarLabelSetName)
 :	EV_Toolbar(pWin32App->getEditMethodContainer(),
 				szToolbarLayoutName,
 				szToolbarLabelSetName),
 	m_pWin32App(pWin32App),
-	m_pWin32Frame(pWin32Frame),
+	m_pWin32Frame(pFrame),
 	m_pViewListener(NULL),
 	m_lid(0),				// view listener id
 	m_hwnd(0)
@@ -305,8 +306,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				case VK_TAB:
 				case VK_RETURN:
 				{
-					HWND hwndFrame = t->m_pWin32Frame->getTopLevelWindow();
-					SetFocus(hwndFrame);
+					static_cast<XAP_Win32FrameImpl*>(t->m_pWin32Frame->getFrameImpl())->updateKeyboardFocus();
 					return 0;
 				}
 			}
@@ -458,7 +458,7 @@ bool EV_Win32Toolbar::synthesize(void)
 	XAP_Toolbar_ControlFactory * pFactory = m_pWin32App->getControlFactory();
 	UT_ASSERT(pFactory);
 
-	HWND hwndParent = m_pWin32Frame->getToolbarWindow();
+	HWND hwndParent = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	if(hwndParent == NULL)
 		return false;
 
@@ -1093,7 +1093,7 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 void EV_Win32Toolbar::show()
 {
 	UT_ASSERT(m_pWin32Frame);
-	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	UT_ASSERT(hRebar);
 	const int iBand = _getBandForHwnd(m_hwnd);
 	UT_ASSERT(iBand < 0);	// It can't already be displayed!
@@ -1105,7 +1105,7 @@ void EV_Win32Toolbar::show()
 void EV_Win32Toolbar::hide()
 {
 	UT_ASSERT(m_pWin32Frame);
-	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	UT_ASSERT(hRebar);
 	const int iBand = _getBandForHwnd(m_hwnd);
 	if (iBand >= 0)
@@ -1122,7 +1122,7 @@ void EV_Win32Toolbar::hide()
 //
 int EV_Win32Toolbar::_getBandForHwnd(HWND hToolbar) const
 {
-	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 
 	// If we ever get more than 20 toolbars I don't wanna be around.
 	REBARBANDINFO rbi = { 0 };
@@ -1172,13 +1172,13 @@ void EV_Win32Toolbar::_addToRebar()
 	rbbi.cyMinChild = HIWORD(dwBtnSize);
 	rbbi.cx = iWidth;
 
-	HWND hRebar = m_pWin32Frame->getToolbarWindow();
+	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	// Add it at the the end
 	SendMessage(hRebar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
 }
 
 
-XAP_Win32Frame * EV_Win32Toolbar::getFrame(void)
+XAP_Frame * EV_Win32Toolbar::getFrame(void)
 {
 	return m_pWin32Frame;
 }
