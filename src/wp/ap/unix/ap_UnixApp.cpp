@@ -553,8 +553,6 @@ bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
 	{
 		m_pClipboard->clearData(false,true);
 		m_pFrameSelection = NULL;
-		UT_DEBUGMSG(("here we go wheeeee\n"));
-		
 		m_pViewSelection = NULL;
 	}
 	

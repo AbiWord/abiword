@@ -71,7 +71,6 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 	XML_Char *unixstr = NULL;
 	GtkWidget *windowOptions;
 
-	GtkWidget *buttonSave;
 	GtkWidget *buttonDefaults;
 	GtkWidget *buttonApply;
 	GtkWidget *buttonOk;
@@ -80,8 +79,6 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle) );
 	windowOptions = gnome_dialog_new (unixstr, NULL);
 
-	gnome_dialog_append_button_with_pixmap(GNOME_DIALOG(windowOptions), 
-			pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Save), GNOME_STOCK_PIXMAP_SAVE);
 	gnome_dialog_append_button(GNOME_DIALOG(windowOptions), GNOME_STOCK_BUTTON_APPLY);
 	gnome_dialog_append_button_with_pixmap(GNOME_DIALOG(windowOptions), 
 			pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default), GNOME_STOCK_PIXMAP_REVERT);
@@ -90,96 +87,76 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 
 	gtk_object_set_data (GTK_OBJECT (windowOptions), "windowOptions", windowOptions);
 
-	buttonSave = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 0) );
-	gtk_widget_ref(buttonSave);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSave", buttonSave,
-	                          (GtkDestroyNotify) gtk_widget_unref);
+	buttonApply = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 0) );
+	buttonDefaults = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 1) );
+	buttonOk = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 2) );
+	buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 3) );
 
-	buttonApply = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 1) );
-	gtk_widget_ref(buttonApply);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonApply", buttonApply,
-	                          (GtkDestroyNotify) gtk_widget_unref);
+	// the catch-alls
+	gtk_signal_connect_after(GTK_OBJECT(windowOptions),
+				 "delete_event",
+				 GTK_SIGNAL_FUNC(s_delete_clicked),
+				 (gpointer) this);
 
-	buttonDefaults = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 2) );
-	gtk_widget_ref(buttonDefaults);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonDefaults", buttonDefaults,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-
-	buttonOk = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 3) );
-	gtk_widget_ref(buttonOk);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonOk", buttonOk,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-
-	buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 4) );
-	gtk_widget_ref(buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonCancel", buttonCancel,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-
-    // the catch-alls
-    gtk_signal_connect_after(GTK_OBJECT(windowOptions),
-                             "delete_event",
-                             GTK_SIGNAL_FUNC(s_delete_clicked),
-                             (gpointer) this);
-
-
-    gtk_signal_connect_after(GTK_OBJECT(windowOptions),
-                             "destroy",
-                             NULL,
-                             NULL);
-
-    //////////////////////////////////////////////////////////////////////
-    // the control buttons
-    gtk_signal_connect(GTK_OBJECT(buttonOk),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_ok_clicked),
-                       (gpointer) this);
+	
+	gtk_signal_connect_after(GTK_OBJECT(windowOptions),
+				 "destroy",
+				 NULL,
+				 NULL);
+	
+	//////////////////////////////////////////////////////////////////////
+	// the control buttons
+	gtk_signal_connect(GTK_OBJECT(buttonOk),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   (gpointer) this);
     
-    gtk_signal_connect(GTK_OBJECT(buttonCancel),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_cancel_clicked),
-                       (gpointer) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonDefaults),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_defaults_clicked),
-                       (gpointer) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonApply),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_apply_clicked),
-                       (gpointer) this);
-
-
-    // Update member variables with the important widgets that
-    // might need to be queried or altered later.
-
-    m_windowMain = windowOptions;
-
-    _constructWindowContents();
-    gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (windowOptions)->vbox), m_notebook, TRUE, TRUE, 10);
-
-    m_buttonSave					= buttonSave;
-    m_buttonDefaults				= buttonDefaults;
-    m_buttonApply					= buttonApply;
-    m_buttonOK						= buttonOk;
-    m_buttonCancel					= buttonCancel;
+	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   (gpointer) this);
+	
+	gtk_signal_connect(GTK_OBJECT(buttonDefaults),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_defaults_clicked),
+			   (gpointer) this);
+	
+	gtk_signal_connect(GTK_OBJECT(buttonApply),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_apply_clicked),
+			   (gpointer) this);
+	
+	
+	// Update member variables with the important widgets that
+	// might need to be queried or altered later.
+	
+	m_windowMain = windowOptions;
+	
+	_constructWindowContents(GNOME_DIALOG (windowOptions)->vbox);
+	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (windowOptions)->vbox), m_notebook, TRUE, TRUE, 10);
+	
+	m_buttonDefaults				= buttonDefaults;
+	m_buttonApply					= buttonApply;
+	m_buttonOK					= buttonOk;
+	m_buttonCancel					= buttonCancel;
 
 	// create the accelerators from &'s
 	createLabelAccelerators(windowOptions);
-
+	
 	// create user data tControl -> stored in widgets 
 	for ( int i = 0; i < id_last; i++ )
-	{
-		GtkWidget *w = _lookupWidget( (tControl)i );
-		UT_ASSERT( w && GTK_IS_WIDGET(w) );
+	  {
+	    GtkWidget *w = _lookupWidget( (tControl)i );
+	    if(!(w && GTK_IS_WIDGET(w)))
+	       continue;
 
-		/* check to see if there is any data already stored there (note, will
-		 * not work if 0's is stored in multiple places  */
-		UT_ASSERT( gtk_object_get_data(GTK_OBJECT(w), "tControl" ) == NULL);
-
-		gtk_object_set_data( GTK_OBJECT(w), "tControl", (gpointer) i );
-	}
-
-    return windowOptions;
+	    /* check to see if there is any data already stored there (note, will
+	     * not work if 0's is stored in multiple places  */
+	    UT_ASSERT( gtk_object_get_data(GTK_OBJECT(w), "tControl" ) == NULL);
+	    
+	    gtk_object_set_data( GTK_OBJECT(w), "tControl", (gpointer) i );
+	  }
+	
+	return windowOptions;
 }
 

@@ -81,7 +81,7 @@ public:
 	
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
-	GtkWidget *         _constructWindowContents(void);
+	GtkWidget *         _constructWindowContents(GtkWidget *);
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog
@@ -112,15 +112,16 @@ public:
     GtkWidget * m_listViewRulerUnits;
     GtkWidget * m_listViewRulerUnits_menu;
     GtkWidget * m_checkbuttonViewCursorBlink;
-    GtkWidget * m_checkbuttonViewShowStandardBar;
-    GtkWidget * m_checkbuttonViewShowFormatBar;
-    GtkWidget * m_checkbuttonViewShowExtraBar;
     GtkWidget * m_checkbuttonViewShowStatusBar;
+
+    GtkWidget * m_checkbuttonViewShowTB;
+    GtkWidget * m_checkbuttonViewHideTB;
+    GtkWidget * m_toolbarClist;
+
     GtkWidget * m_checkbuttonViewAll;
     GtkWidget * m_checkbuttonViewHiddenText;
     GtkWidget * m_checkbuttonViewUnprintable;
 
-	GtkWidget * m_buttonSave;
 	GtkWidget * m_buttonDefaults;
 	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonOK;
@@ -137,6 +138,8 @@ protected:
 	static void s_dict_edit_clicked		( GtkWidget *, gpointer );
 	static void s_defaults_clicked		( GtkWidget *, gpointer );
 
+	static void s_clist_clicked (GtkWidget *, gint, gint, GdkEvent *, gpointer);
+
 	static void s_checkbutton_toggle	( GtkWidget *, gpointer );
 	static gint s_menu_item_activate	( GtkWidget *, gpointer );
 
@@ -145,7 +148,7 @@ protected:
     virtual void event_Cancel(void);
     virtual void event_Apply(void);
     virtual void event_WindowDelete(void);
-
+    virtual void event_clistClicked (int row, int col);
 };
 
 #endif /* AP_UNIXDIALOG_OPTIONS_H */
