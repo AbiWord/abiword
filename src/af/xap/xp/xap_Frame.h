@@ -70,6 +70,7 @@ public:
 	AV_View *					getCurrentView(void) const;
 	const char *				getFilename(void) const;
 	const char *				getTitle(int len) const;
+	const char *				getTempNameFromTitle(void) const;
 
 	UT_Bool						isDirty(void) const;
 
@@ -98,7 +99,8 @@ protected:
 	AP_FrameData *				m_pData;		/* app-specific frame data */
 
 private:
-	char						m_szTitle[512];
+	char						m_szTitle[512];				/* TODO need #define for this number */
+	char						m_szNonDecoratedTitle[512]; /* TODO need #define for this number */
 	
 	static int					s_iUntitled;	
 };

@@ -31,13 +31,16 @@
 #	define AP_UNIXDIALOG_ALL_H
 
 #	include "ap_UnixDialog_MessageBox.h"
+#	include "ap_UnixDialog_FileOpenSaveAs.h"
 
 	// ... add new dialogs here ...
 
 #else
 
-	DeclareDialog(AP_DIALOG_ID_MESSAGE_BOX,		AP_UnixDialog_MessageBox)
-
+	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	AP_UnixDialog_MessageBox)
+	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		AP_UnixDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	AP_UnixDialog_FileOpenSaveAs)
+	
 	// ... also add new dialogs here ...
 
 #endif

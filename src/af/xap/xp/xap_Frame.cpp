@@ -215,6 +215,14 @@ const char * AP_Frame::getTitle(int len) const
 	return m_szTitle;
 }
 
+const char * AP_Frame::getTempNameFromTitle(void) const
+{
+	// extract a filename or pathname from the title.
+	// strip off all of the title's window decorations (the ":1 *").
+
+	return m_szNonDecoratedTitle;
+}
+	
 UT_Bool AP_Frame::updateTitle()
 {
 	/*
@@ -231,7 +239,7 @@ UT_Bool AP_Frame::updateTitle()
 
 	if (szName && *szName)
 	{
-		UT_ASSERT(strlen(szName) < 245);
+		UT_ASSERT(strlen(szName) < 245); // TODO need #define for this number
 		strcpy(m_szTitle, szName); 
 	}
 	else
@@ -240,6 +248,8 @@ UT_Bool AP_Frame::updateTitle()
 		sprintf(m_szTitle, "Untitled%d", m_iUntitled);
 	}
 
+	strcpy(m_szNonDecoratedTitle, m_szTitle);
+	
 	if (m_nView)
 	{
 		// multiple top-level views, so append : & view number

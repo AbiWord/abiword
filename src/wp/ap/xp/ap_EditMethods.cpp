@@ -44,12 +44,12 @@
 #include "ap_Dialog_Id.h"
 #include "ap_DialogFactory.h"
 #include "ap_Dialog_MessageBox.h"
+#include "ap_Dialog_FileOpenSaveAs.h"
 
+#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 
 #ifdef DLGHACK
 
-char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs);
-char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs, char * pSuggestedName);
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
 UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView);
 #endif /* DLGHACK */
@@ -490,7 +490,7 @@ static UT_Bool s_AskRevertFile(AP_Frame * pFrame)
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
 	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MESSAGE_BOX));
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage("Revert to saved copy of %s?", pFrame->getFilename());
@@ -516,7 +516,7 @@ static UT_Bool s_AskCloseAllAndExit(AP_Frame * pFrame)
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
 	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MESSAGE_BOX));
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage("Close all windows and exit?");
@@ -540,7 +540,7 @@ static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(AP_Frame * pFrame)
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
 	AP_Dialog_MessageBox * pDialog
-		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MESSAGE_BOX));
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage("Save changes to %s?", pFrame->getTitle(200));
@@ -556,6 +556,68 @@ static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(AP_Frame * pFrame)
 	return (ans);
 }
 
+static UT_Bool s_AskForPathname(AP_Frame * pFrame,
+								UT_Bool bSaveAs,
+								const char * pSuggestedName,
+								char ** ppPathname)
+{
+	// raise the file-open or file-save-as dialog.
+	// return a_OK or a_CANCEL depending on which button
+	// the user hits.
+	// return a pointer a strdup()'d string containing the
+	// pathname the user entered -- ownership of this goes
+	// to the caller (so free it when you're done with it).
+	
+	UT_DEBUGMSG(("s_AskForPathname: frame 0x%08lx, bSaveAs %ld, suggest=[%s]\n",
+				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
+	
+	UT_ASSERT(ppPathname);
+	*ppPathname = NULL;
+
+	pFrame->raise();
+
+	AP_Dialog_Id id = ((bSaveAs) ? XAP_DIALOG_ID_FILE_SAVEAS : XAP_DIALOG_ID_FILE_OPEN);
+	
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_FileOpenSaveAs * pDialog
+		= (AP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	if (pSuggestedName && *pSuggestedName)
+	{
+		// if caller wants to suggest a name, use it and seed the
+		// dialog in that directory and set the filename.
+		pDialog->setCurrentPathname(pSuggestedName);
+		pDialog->setSuggestFilename(UT_TRUE);
+	}
+	else
+	{
+		// if caller does not want to suggest a name, seed the dialog
+		// to the directory containing this document (if it has a
+		// name), but don't put anything in the filename portion.
+		pDialog->setCurrentPathname(pFrame->getFilename());
+		pDialog->setSuggestFilename(UT_FALSE);
+	}
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == AP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+			*ppPathname = strdup(szResultPathname);
+	}
+	
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 	
@@ -565,63 +627,62 @@ Defun1(fileOpen)
 	UT_ASSERT(pFrame);
 	UT_Bool bRes = UT_TRUE;
 
-#ifdef DLGHACK
-	char * pNewFile = _promptFile(pFrame, UT_FALSE);
-#else
 	char * pNewFile = NULL;
-#endif /* DLGHACK */
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
 
-	if (pNewFile)
+	if (!bOK || !pNewFile)
+		return UT_FALSE;
+	
+	// we own storate for pNewFile and must free it.
+		
+	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	AP_Frame * pNewFrame = NULL;
+
+	// see if requested file is already open in another frame
+	UT_sint32 ndx = pApp->findFrame(pNewFile);
+
+	if (ndx >= 0)
 	{
-		UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
-		AP_App * pApp = pFrame->getApp();
-		UT_ASSERT(pApp);
-		AP_Frame * pNewFrame = NULL;
+		// yep, reuse it
+		pNewFrame = pApp->getFrame(ndx);
+		UT_ASSERT(pNewFrame);
 
-		// see if requested file is already open in another frame
-		UT_sint32 ndx = pApp->findFrame(pNewFile);
-
-		if (ndx >= 0)
+		if (!s_AskRevertFile(pNewFrame))
 		{
-			// yep, reuse it
-			pNewFrame = pApp->getFrame(ndx);
-			UT_ASSERT(pNewFrame);
-
-			if (!s_AskRevertFile(pNewFrame))
-			{
-				// never mind
-				free(pNewFile);
-				return UT_FALSE;
-			}
+			// never mind
+			free(pNewFile);
+			return UT_FALSE;
 		}
-		else if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
-		{
-			/*
-				We generally open documents in a new frame, which keeps the 
-				contents of the current frame available.  
-				
-				However, as a convenience we do replace the contents of the 
-				current frame if it's the only top-level view on an empty, 
-				untitled document.  
-			*/
-			pNewFrame = pApp->newFrame();
-			UT_ASSERT(pNewFrame);
-		}
-
-		if (pNewFrame)
-			pFrame = pNewFrame;
-
-		bRes = pFrame->loadDocument(pNewFile);
-
-		// HACK: at least make something show
-		if (!bRes)
-			bRes = pFrame->loadDocument(NULL);
-
-		if (pNewFrame)
-			pNewFrame->show();
-
-		free(pNewFile);
 	}
+	else if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+	{
+		/*
+		  We generally open documents in a new frame, which keeps the 
+		  contents of the current frame available.  
+		  
+		  However, as a convenience we do replace the contents of the 
+		  current frame if it's the only top-level view on an empty, 
+		  untitled document.  
+		*/
+		pNewFrame = pApp->newFrame();
+		UT_ASSERT(pNewFrame);
+	}
+
+	if (pNewFrame)
+		pFrame = pNewFrame;
+
+	bRes = pFrame->loadDocument(pNewFile);
+
+	// HACK: at least make something show
+	if (!bRes)
+		bRes = pFrame->loadDocument(NULL);
+
+	if (pNewFrame)
+		pNewFrame->show();
+
+	free(pNewFile);
 
 	return bRes;
 }
@@ -653,16 +714,11 @@ Defun1(fileSaveAs)
 	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-#ifdef DLGHACK
-	char * pNewFile = _promptFile(pFrame, UT_TRUE);
-#else
 	char * pNewFile = NULL;
-#endif /* DLGHACK */
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_TRUE,NULL,&pNewFile);
 
-	if (!pNewFile)
-	{
+	if (!bOK || !pNewFile)
 		return UT_FALSE;
-	}
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 	pAV_View->cmdSaveAs(pNewFile);
@@ -1567,57 +1623,6 @@ Defun1(Test_Dump)
 #include "ap_Win32Frame.h"
 #include "gr_Win32Graphics.h"
 
-char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
-{
-	return _promptFile(pFrame, bSaveAs, NULL);
-}
-
-char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs, char * pSuggestedName)
-{
-	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
-	HWND hwnd = pWin32Frame->getTopLevelWindow();
-
-	OPENFILENAME ofn;       // common dialog box structure
-	char szFile[260];       // buffer for filename
-
-	if( pSuggestedName )
-		strcpy(szFile, pSuggestedName);
-	else
-		szFile[0] = 0;
-
-	// Initialize OPENFILENAME
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
-	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = hwnd;
-	ofn.lpstrFile = szFile;
-	ofn.nMaxFile = sizeof(szFile);
-	ofn.lpstrFilter = "All\0*.*\0";
-	ofn.nFilterIndex = 1;
-	ofn.lpstrFileTitle = NULL;
-	ofn.nMaxFileTitle = 0;
-	ofn.lpstrInitialDir = NULL;
-	ofn.Flags = OFN_PATHMUSTEXIST;
-
-	// display the appropriate dialog box.
-	if (bSaveAs)
-	{
-		if (GetSaveFileName(&ofn)==TRUE)
-			return strdup(szFile);
-	}
-	else
-	{
-		ofn.Flags |= OFN_FILEMUSTEXIST;
-
-		if (GetOpenFileName(&ofn)==TRUE)
-			return strdup(szFile);
-	}
-
-	DWORD err = CommDlgExtendedError();
-	UT_DEBUGMSG(("Didn't get a file: reason=0x%x\n", err));
-	UT_ASSERT(!err);
-
-	return NULL;
-}
 
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
@@ -1934,50 +1939,6 @@ static void set_ok (GtkWidget * /*widget*/, UT_Bool *dialog_result)
 {
 	*dialog_result = TRUE;
 	gtk_main_quit();
-}
-
-char * _promptFile(AP_Frame *pFrame, UT_Bool bSaveAs)
-{
-	return _promptFile(pFrame, bSaveAs, NULL);
-}
-
-char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs, char * pSuggestedName)
-{
-	GtkFileSelection *pFS;
-	UT_Bool accepted = FALSE;
-	char * fileName = NULL;
-
-	pFS = (GtkFileSelection *)gtk_file_selection_new(bSaveAs ? "Save file" : "Open File");
-
-	/* Connect the signals for Ok and Cancel */
-	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
-					   GTK_SIGNAL_FUNC(set_ok), &accepted);
-	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
-					   GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
-
-	// Do we really want to position at the cursor?
-	//gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
-
-	gtk_file_selection_hide_fileop_buttons(pFS);
-	// fill in suggested filename
-	if(pSuggestedName)
-	{
-		gtk_file_selection_set_filename(pFS, pSuggestedName);
-	}
-
-	/* Run the dialog */
-	gtk_widget_show(GTK_WIDGET(pFS));
-	gtk_grab_add(GTK_WIDGET(pFS));
-	gtk_main();
-
-	if (accepted)
-	{
-		UT_cloneString(fileName, gtk_file_selection_get_filename(pFS));
-	}
-
-	gtk_widget_destroy (GTK_WIDGET(pFS));
-
-	return fileName;
 }
 
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
@@ -2335,36 +2296,31 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
-	char* pTitle = (char *) doc->getFilename();
-	// This may be a new, unsaved file
-	if(!pTitle)
-		UT_cloneString(pTitle, "Untitled");
-
-	// get the filename with no path
-	char* pFileNameOnly = strrchr(pTitle, '/');
-	if(!pFileNameOnly)
-		pFileNameOnly = pTitle;
-	else
-		pFileNameOnly++;
-		
-	char *pSaveAsFile;
-	pSaveAsFile = new char[strlen(pFileNameOnly) + 4];
-	strcpy(pSaveAsFile, pFileNameOnly);
+	const char * pTitle = (char *) doc->getFilename();
+	if (!pTitle)
+		pTitle = pFrame->getTempNameFromTitle();
+	
+	char * pSaveAsFile = (char *) calloc(1, (strlen(pTitle) + 4) * sizeof(char) );
+	if (!pSaveAsFile)
+		return UT_FALSE;
+	
+	strcpy(pSaveAsFile, pTitle);
 	strcat(pSaveAsFile, ".ps");
 
-	char * pNewFile = _promptFile(pFrame, UT_TRUE, pSaveAsFile);
+	char * pNewFile = NULL;
+	UT_Bool bOK = s_AskForPathname(pFrame, UT_TRUE, pSaveAsFile, &pNewFile);
 
-	if(!pNewFile)
+	if (!bOK || !pNewFile)
 	{
 		// User hit cancel
-		if(pSaveAsFile)
-			delete pSaveAsFile;
+		FREEP(pSaveAsFile);
 		return UT_FALSE;
 	}
 
 	// create a new graphics for postscript
-	// TODO: replace hardcoded AbiWord with variable from app
-	PS_Graphics* ppG = new PS_Graphics(pNewFile, pTitle, "AbiWord");
+
+	const char * pAppName = pFrame->getApp()->getApplicationName();
+	PS_Graphics* ppG = new PS_Graphics(pNewFile, pTitle, pAppName);
 	UT_ASSERT(ppG);
 
 	// Create a new layout using the printer's graphics and format it
@@ -2392,8 +2348,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 
 	// Clean up
 	free(pNewFile);
-	if(pSaveAsFile)
-		delete pSaveAsFile;
+	FREEP(pSaveAsFile);
 	if(pV)
 		delete pV;
 	if(ppG)

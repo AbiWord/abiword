@@ -18,21 +18,34 @@
  */
 
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#ifndef XAP_DIALOG_ID_H
+#define XAP_DIALOG_ID_H
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+// since the dialog framework is split between cross-application
+// and application-specific, we partition the DialogId space two
+// sets.  this lets the XAP code be compiled once and linked with
+// each application.
 
-#include "xap_Dialog_Id.h"
+// we use a typedef to get unique symbols, but use AP_Dialog_Id
+// (defined in ap_Types.h as the actual parameter type (this
+// solves some compiler oddities)).
 
-typedef enum _AP_Dialog_Id
+typedef enum _XAP_Dialog_Id
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+	XAP_DIALOG_ID__FIRST__				= 0, /* must be first */
+
+	XAP_DIALOG_ID_MESSAGE_BOX,
+	XAP_DIALOG_ID_FILE_OPEN,
+	XAP_DIALOG_ID_FILE_SAVEAS,
+	XAP_DIALOG_ID_FILE_PAGESETUP,
+	XAP_DIALOG_ID_FILE_PRINT,
+
+	XAP_DIALOG_ID_WINDOW_MORE,
 
 	/* ... add others here ... */
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+	XAP_DIALOG_ID__LAST__				= 1000	/* must be last */
 
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* XAP_DIALOG_ID_H */

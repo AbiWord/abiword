@@ -17,22 +17,26 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_WIN32DIALOG_FILEOPENSAVEAS_H
+#define AP_WIN32DIALOG_FILEOPENSAVEAS_H
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include "ap_Dialog_FileOpenSaveAs.h"
+class AP_Win32Frame;
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+/*****************************************************************/
 
-#include "xap_Dialog_Id.h"
-
-typedef enum _AP_Dialog_Id
+class AP_Win32Dialog_FileOpenSaveAs : public AP_Dialog_FileOpenSaveAs
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+public:
+	AP_Win32Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_FileOpenSaveAs(void);
 
-	/* ... add others here ... */
+	virtual void			runModal(AP_Frame * pFrame);
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
+protected:
+	AP_Win32Frame *			m_pWin32Frame;
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* AP_WIN32DIALOG_FILEOPENSAVEAS_H */

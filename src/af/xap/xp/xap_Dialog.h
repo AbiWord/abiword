@@ -74,24 +74,23 @@ public:
 	AP_Dialog_Persistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog_Persistent(void);
 
-	virtual UT_uint32			useStart(void) = 0;
+	virtual void				useStart(void);
 	virtual void				runModal(AP_Frame * pFrame) = 0;
-	virtual UT_uint32			useEnd(void) = 0;
+	virtual void				useEnd(void);
 
 protected:
 	UT_Bool						m_bInUse;
 };
 
-#if 0
 class AP_Dialog_FramePersistent : public AP_Dialog_Persistent
 {
 public:
 	AP_Dialog_FramePersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog_FramePersistent(void);
 
-	virtual UT_uint32			useStart(void) = 0;
+	virtual void				useStart(void);
 	virtual void				runModal(AP_Frame * pFrame) = 0;
-	virtual UT_uint32			useEnd(void) = 0;
+	virtual void				useEnd(void);
 
 	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_FRAME_PERSISTENT; };
 	
@@ -104,14 +103,13 @@ public:
 	AP_Dialog_AppPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog_AppPersistent(void);
 
-	virtual UT_uint32			useStart(void) = 0;
+	virtual void				useStart(void);
 	virtual void				runModal(AP_Frame * pFrame) = 0;
-	virtual UT_uint32			useEnd(void) = 0;
+	virtual void				useEnd(void);
 
 	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_APP_PERSISTENT; };
 	
 protected:
 };
-#endif
 
 #endif /* AP_DIALOG_H */

@@ -43,30 +43,35 @@ AP_UnixDialog_MessageBox::~AP_UnixDialog_MessageBox(void)
 
 /*****************************************************************/
 
-static void message_box_ok_clicked(GtkWidget * widget,
-								   AP_Dialog_MessageBox::tAnswer * answer)
+static void s_ok_clicked(GtkWidget * widget,
+						 AP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = AP_Dialog_MessageBox::a_OK;
 	gtk_main_quit();
 }
-static void message_box_cancel_clicked(GtkWidget * widget,
-									   AP_Dialog_MessageBox::tAnswer * answer)
+
+static void s_cancel_clicked(GtkWidget * widget,
+							 AP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = AP_Dialog_MessageBox::a_CANCEL;
 	gtk_main_quit();
 }
-static void message_box_yes_clicked(GtkWidget * widget,
-									AP_Dialog_MessageBox::tAnswer * answer)
+
+static void s_yes_clicked(GtkWidget * widget,
+						  AP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = AP_Dialog_MessageBox::a_YES;
 	gtk_main_quit();
 }
-static void message_box_no_clicked(GtkWidget * widget,
-								   AP_Dialog_MessageBox::tAnswer * answer)
+
+static void s_no_clicked(GtkWidget * widget,
+						 AP_Dialog_MessageBox::tAnswer * answer)
 {
 	*answer = AP_Dialog_MessageBox::a_NO;
 	gtk_main_quit();
 }
+
+/*****************************************************************/
 
 void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 {
@@ -81,7 +86,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 	GtkWidget * dialog_window = gtk_dialog_new();
 	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
 							  "destroy",
-							  GTK_SIGNAL_FUNC(message_box_cancel_clicked),
+							  GTK_SIGNAL_FUNC(s_cancel_clicked),
 							  NULL);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
@@ -108,28 +113,28 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 	ok_button = gtk_button_new_with_label ("OK");
 	gtk_signal_connect (GTK_OBJECT (ok_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (message_box_ok_clicked),
+						GTK_SIGNAL_FUNC (s_ok_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
 	// Cancel
 	cancel_button = gtk_button_new_with_label ("Cancel");
 	gtk_signal_connect (GTK_OBJECT (cancel_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (message_box_cancel_clicked),
+						GTK_SIGNAL_FUNC (s_cancel_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
 	// Yes
 	yes_button = gtk_button_new_with_label ("Yes");
 	gtk_signal_connect (GTK_OBJECT (yes_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (message_box_yes_clicked),
+						GTK_SIGNAL_FUNC (s_yes_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (yes_button, GTK_CAN_DEFAULT);
 	// No
 	no_button = gtk_button_new_with_label ("No");
 	gtk_signal_connect (GTK_OBJECT (no_button),
 						"clicked",
-						GTK_SIGNAL_FUNC (message_box_no_clicked),
+						GTK_SIGNAL_FUNC (s_no_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (no_button, GTK_CAN_DEFAULT);
 

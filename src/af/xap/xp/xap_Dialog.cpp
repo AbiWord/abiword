@@ -18,6 +18,7 @@
  */
 
 #include "ap_Dialog.h"
+#include "ut_assert.h"
 
 /*****************************************************************/
 
@@ -45,4 +46,70 @@ AP_Dialog_NonPersistent::AP_Dialog_NonPersistent(AP_DialogFactory * pDlgFactory,
 
 AP_Dialog_NonPersistent::~AP_Dialog_NonPersistent(void)
 {
+}
+
+/*****************************************************************/
+
+AP_Dialog_Persistent::AP_Dialog_Persistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+	: AP_Dialog(pDlgFactory,id)
+{
+	m_bInUse = UT_FALSE;
+}
+
+AP_Dialog_Persistent::~AP_Dialog_Persistent(void)
+{
+}
+
+void AP_Dialog_Persistent::useStart(void)
+{
+	UT_ASSERT(!m_bInUse);
+	m_bInUse = UT_TRUE;
+}
+
+void AP_Dialog_Persistent::useEnd(void)
+{
+	UT_ASSERT(m_bInUse);
+	m_bInUse = UT_FALSE;
+}
+
+/*****************************************************************/
+
+AP_Dialog_FramePersistent::AP_Dialog_FramePersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+	: AP_Dialog_Persistent(pDlgFactory,id)
+{
+}
+
+AP_Dialog_FramePersistent::~AP_Dialog_FramePersistent(void)
+{
+}
+
+void AP_Dialog_FramePersistent::useStart(void)
+{
+	AP_Dialog_Persistent::useStart();
+}
+
+void AP_Dialog_FramePersistent::useEnd(void)
+{
+	AP_Dialog_Persistent::useEnd();
+}
+
+/*****************************************************************/
+
+AP_Dialog_AppPersistent::AP_Dialog_AppPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+	: AP_Dialog_Persistent(pDlgFactory,id)
+{
+}
+
+AP_Dialog_AppPersistent::~AP_Dialog_AppPersistent(void)
+{
+}
+
+void AP_Dialog_AppPersistent::useStart(void)
+{
+	AP_Dialog_Persistent::useStart();
+}
+
+void AP_Dialog_AppPersistent::useEnd(void)
+{
+	AP_Dialog_Persistent::useEnd();
 }
