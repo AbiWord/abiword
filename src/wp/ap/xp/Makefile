@@ -77,13 +77,13 @@ build:: $(TARGETS)
 
 ifdef ABI_OPT_BRANDED
 
-$(OBJDIR)/ap_wp_splash.cpp: $(ABI_BRAND_DIR)/art/$(ABI_NATIVE)/splash_tm.png $(BINDIR)/cdump
+$(OBJDIR)/ap_wp_splash.cpp: $(ABI_BRAND_DIR)/art/xp/splash_tm.png $(BINDIR)/cdump
 	rm -f $(OBJDIR)/ap_wp_splash.cpp
-	$(BINDIR)/cdump $(ABI_BRAND_DIR)/art/$(ABI_NATIVE)/splash_tm.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
+	$(BINDIR)/cdump $(ABI_BRAND_DIR)/art/xp/splash_tm.png g_pngSplash > $(OBJDIR)/ap_wp_splash.cpp
 
-$(OBJDIR)/ap_wp_sidebar.cpp: $(ABI_BRAND_DIR)/art/$(ABI_NATIVE)/sidebar_tm.png $(BINDIR)/cdump
+$(OBJDIR)/ap_wp_sidebar.cpp: $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png $(BINDIR)/cdump
 	rm -f $(OBJDIR)/ap_wp_sidebar.cpp
-	$(BINDIR)/cdump $(ABI_BRAND_DIR)/art/$(ABI_NATIVE)/sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
+	$(BINDIR)/cdump $(ABI_BRAND_DIR)/art/xp/sidebar_tm.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
 
 else
 
