@@ -30,6 +30,7 @@ CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacDlg_Language.cpp		\
 			xap_MacDlg_Insert_Symbol.cpp	\
 			xap_MacDlg_MessageBox.cpp	\
+			xap_MacDlg_PluginManager.cpp	\
 			xap_MacDlg_Print.cpp		\
 			xap_MacDlg_PrintPreview.cpp     \
 			xap_MacDlg_WindowMore.cpp	\
