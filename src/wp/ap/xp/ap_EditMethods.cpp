@@ -6006,23 +6006,26 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	//
 	s_pLoadingDoc = (AD_Document *) doc;
 
-	dg_DrawArgs da;
-	memset(&da, 0, sizeof(da));
-	da.pG = NULL;
-
-	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
-
-	fp_PageSize ps = pPrintView->getPageSize();
-
-	bool orient = ps.isPortrait ();
-	pGraphics->setPortrait (orient);
-
 	if(pGraphics->startPrint())
 	{
+	  // lazy-fill the layouts
+	  pPrintView->getLayout()->fillLayouts();
+	  pPrintView->getLayout()->formatAll();
+
+	  fp_PageSize ps = pPrintView->getPageSize();	  
+	  bool orient = ps.isPortrait ();
+	  pGraphics->setPortrait (orient);
+
 	  const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet ();
 	  const XML_Char * msgTmpl = pSS->getValue (AP_STRING_ID_MSG_PrintStatus);
 
 	  XML_Char msgBuf [1024];
+
+	  dg_DrawArgs da;
+	  memset(&da, 0, sizeof(da));
+	  da.pG = NULL;
+	  
+	  XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
 		if (bCollate)
 		{
@@ -6122,14 +6125,13 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 		FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
-		pDocLayout->fillLayouts();
+		// delay filling layouts...
+
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
 
-		if (nToPage > pDocLayout->countPages())
-		{
-			nToPage = pDocLayout->countPages();
-		}
+		if (nToPage > pLayout->countPages())
+		  nToPage = pLayout->countPages();
 
 		// TODO add code to handle getDoPrintSelection()
 
@@ -6138,8 +6140,8 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
-		UT_sint32 iWidth = pDocLayout->getWidth();
-		UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
+		UT_sint32 iWidth = pLayout->getWidth();
+		UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
 
@@ -6201,13 +6203,13 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 	FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
-	pDocLayout->fillLayouts();
-	pDocLayout->formatAll();
+	// delay filling layouts...
+
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages();
 
-	if (nToPage > pDocLayout->countPages())
+	if (nToPage > pLayout->countPages())
 	  {
-		nToPage = pDocLayout->countPages();
+		nToPage = pLayout->countPages();
 	  }
 
 	UT_uint32 nCopies = 1;
@@ -6215,8 +6217,8 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 	// BUGBUG assumes all pages are same size and orientation
-	UT_sint32 iWidth = pDocLayout->getWidth();
-	UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
+	UT_sint32 iWidth = pLayout->getWidth();
+	UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
 
 	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
 
