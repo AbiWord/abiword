@@ -541,17 +541,15 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
-#if 0
-	UT_sint32 xoff = 0, yoff = 0;
-	
-	// need to clear full height of line, in case we had a selection
-	m_pLine->getScreenOffsets(this, xoff, yoff);
-
-	// yoff is the top of the run, not the baseline
-	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
-#else
 	m_pG->setFont(m_pFont);
 	
+	/*
+	  TODO this should not be hard-coded.  We need to figure out
+	  what the appropriate background color for this run is, and
+	  use that.  Note that it could vary on a run-by-run basis,
+	  since document facilities allow the background color to be
+	  changed, for things such as table cells.
+	*/
 	UT_RGBColor clrNormalBackground(255,255,255);
 	m_pG->setColor(clrNormalBackground);
 	
@@ -585,7 +583,6 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 	}
 	
 	_drawPart(xoff, yoff + m_pLine->getAscent() - m_iAscent, m_iOffsetFirst, m_iLen, pgbCharWidths);
-#endif	
 }
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)
@@ -611,15 +608,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	*/
 	UT_RGBColor clrSelBackground(192, 192, 192);
 
-	/*
-	  TODO this should not be hard-coded.  We need to figure out
-	  what the appropriate background color for this run is, and
-	  use that.  Note that it could vary on a run-by-run basis,
-	  since document facilities allow the background color to be
-	  changed, for things such as table cells.
-	*/
-	UT_RGBColor clrNormalBackground(255,255,255);
-
 	UT_uint32 iRunBase = iBase + m_iOffsetFirst;
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
@@ -634,7 +622,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	if (iSel1 == iSel2)
 	{
 		// nothing in this run is selected
-//		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else if (iSel1 <= iRunBase)
@@ -642,7 +629,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if (iSel2 <= iRunBase)
 		{
 			// nothing in this run is selected
-//			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
 		else if (iSel2 >= (iRunBase + m_iLen))
@@ -659,19 +645,16 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
 
-//			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}
 	else if (iSel1 >= (iRunBase + m_iLen))
 	{
 		// nothing in this run is selected
-//		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else
 	{
-//		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
 		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, iSel1 - iRunBase, pgbCharWidths);
 		
 		if (iSel2 >= (iRunBase + m_iLen))
@@ -684,7 +667,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
 
-//			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 			_drawPart(pDA->xoff, yTopOfRun, iSel2 - iBase, m_iLen - (iSel2 - iRunBase), pgbCharWidths);
 		}
 	}

@@ -96,6 +96,7 @@ public:
 	void		layout(void);
 	UT_Bool		recalculateFields(void);
 	void		recalcHeight();
+	void		recalcMaxWidth();
 	
 	UT_Bool		isEmpty(void) const;
 	UT_Bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);

@@ -322,7 +322,6 @@ void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerg
 	UT_ASSERT(pLastRunToMerge->getType() == FPRUN_TEXT);
 
 	fp_TextRun* pFirst = (fp_TextRun*) pFirstRunToMerge;
-	fp_TextRun* pLast = (fp_TextRun*) pLastRunToMerge;
 
 	UT_Bool bDone = UT_FALSE;
 	while (!bDone)
@@ -1456,7 +1455,6 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 		{
 			const UT_ByteBuf* pBB = NULL;
 
-			void* pHandle = NULL;
 			UT_Bool bFoundDataItem = m_pDoc->getDataItemDataByName(pszDataID, &pBB, NULL, NULL);
 			if (bFoundDataItem && pBB)
 			{
@@ -1586,8 +1584,8 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			
 			pRun = pRun->getNext();
 			
-			UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
-			UT_uint32 iRunLength = pRun->getLength();
+			iRunBlockOffset = pRun->getBlockOffset();
+			iRunLength = pRun->getLength();
 
 			UT_ASSERT(iRunBlockOffset == blockOffset);
 			
@@ -1666,10 +1664,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	PT_BufIndex bi = pcrs->getBufIndex();
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
 
-//	m_gbCharWidths.ins(blockOffset, len);
-
-	AV_ChangeMask mask = AV_CHG_TYPING | AV_CHG_FMTCHAR;
-	
 	/*
 	  walk through the characters provided and find any
 	  control characters.  Then, each control character gets
@@ -1857,8 +1851,6 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					// the deleted section is entirely within this run
 					pRun->setLength(iRunLength - len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-//					pRun->fetchCharWidths(&m_gbCharWidths);
-//					pRun->recalcWidth();
 					m_bFixCharWidths = UT_TRUE;
 				}
 				else
@@ -1868,8 +1860,6 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 					pRun->setLength(iRunLength - iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-//					pRun->fetchCharWidths(&m_gbCharWidths);
-//					pRun->recalcWidth();
 					m_bFixCharWidths = UT_TRUE;
 				}
 			}
@@ -1882,8 +1872,6 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					pRun->setBlockOffset(iRunBlockOffset - (len - iDeleted));
 					pRun->setLength(iRunLength - iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-//					pRun->fetchCharWidths(&m_gbCharWidths);
-//					pRun->recalcWidth();
 					m_bFixCharWidths = UT_TRUE;
 				}
 				else
@@ -2245,7 +2233,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 			UT_ASSERT(pLine);
 			
 			pLine->removeRun(pRun);
-//			pRun->fetchCharWidths(&pPrevBL->m_gbCharWidths);
 
 			pLastLine->addRun(pRun);
 
@@ -2300,17 +2287,12 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 	_lookupProperties();
 
-	/*
-	  TODO this routine doesn't handle margin changes for the block or
-	  text-indent changes.  We need to adjust the constraints of the
-	  lines themselves.
-	*/
-	
 	fp_Column* pCol = NULL;
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
 		pLine->recalcHeight();	// line-height
+		pLine->recalcMaxWidth();
 
 		if (pLine->getColumn() != pCol)
 		{

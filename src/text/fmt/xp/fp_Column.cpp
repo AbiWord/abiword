@@ -280,25 +280,9 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 		}
 	}
 
-	UT_sint32 iX = pBL->getLeftMargin();
-
-	if (pNewLine->isFirstLineInBlock())
-	{
-		iX += pBL->getTextIndent();
-	}
-
-	pNewLine->setX(iX);
-
-	UT_sint32 iMaxWidth = getWidth();
-	iMaxWidth -= pBL->getRightMargin();
-	iMaxWidth -= pBL->getLeftMargin();
-	if (pNewLine->isFirstLineInBlock())
-	{
-		iMaxWidth -= pBL->getTextIndent();
-	}
-	
-	pNewLine->setMaxWidth(iMaxWidth);
 	pNewLine->setColumn(this);
+
+	pNewLine->recalcMaxWidth();
 
 	return UT_TRUE;
 }

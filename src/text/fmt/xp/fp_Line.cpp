@@ -627,3 +627,24 @@ UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsign
 	}
 }
 
+void fp_Line::recalcMaxWidth()
+{
+	UT_sint32 iX = m_pBlock->getLeftMargin();
+
+	if (isFirstLineInBlock())
+	{
+		iX += m_pBlock->getTextIndent();
+	}
+
+	setX(iX);
+
+	UT_sint32 iMaxWidth = m_pColumn->getWidth();
+	iMaxWidth -= m_pBlock->getRightMargin();
+	iMaxWidth -= m_pBlock->getLeftMargin();
+	if (isFirstLineInBlock())
+	{
+		iMaxWidth -= m_pBlock->getTextIndent();
+	}
+	
+	setMaxWidth(iMaxWidth);
+}
