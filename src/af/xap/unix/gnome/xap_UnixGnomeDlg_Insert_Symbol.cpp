@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"

@@ -142,7 +142,7 @@ void XAP_UnixGnomeDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	}
 	
 	if (val != -1)
-		gtk_object_destroy (G_OBJECT (mainWindow));
+		gtk_widget_destroy (mainWindow);
 	
 	return;
 }

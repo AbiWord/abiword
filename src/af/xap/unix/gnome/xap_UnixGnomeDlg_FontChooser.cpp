@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

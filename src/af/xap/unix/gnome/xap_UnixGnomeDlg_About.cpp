@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixGnomeDlg_About.h"
@@ -67,15 +67,21 @@ void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
 
   UT_String str = XAP_App::getApp()->getAbiSuiteLibDir();
   str += "/icons/abiword_logo.xpm";
-
+  const gchar *gstr = g_stpcpy(gstr, str.c_str());
+  const gchar *gcopystr = g_stpcpy(gcopystr, "(c) 1998-2002 AbiSource, Inc.\n"
+					     "Released under the GNU GPL v2.0");
+  const gchar *gcommentstr = g_stpcpy(gcommentstr, "Gnome Port maintained by Dom Lachowicz <cinamod@hotmail.com> with help\n");
+  const gchar *gdoccerstr = g_stpcpy(gdoccerstr, "David Chart <linux@dchart.demon.co.uk> and other contributors");
+  const gchar *gtranslatorstr = g_stpcpy(gtranslatorstr, "Many diverse translators");
   // Build the window's widgets and arrange them
   GtkWidget * mainWindow = gnome_about_new("AbiWord", 
 										   XAP_App::s_szBuild_Version,
-										   "(c) 1998-2002 AbiSource, Inc.",
-										   authors,
-										   "Released under the GNU GPL v2.0\n"
-										   "Gnome Port maintained by Dom Lachowicz <cinamod@hotmail.com>",
-										   str.c_str());
+										   *gcopystr,
+										   *gcommentstr,
+										   **authors,
+										   *gdoccerstr,
+										   *gtranslatorstr,
+										   *gstr);
   UT_ASSERT(mainWindow);
   
   GtkWidget * hbox = gtk_hbox_new (TRUE, 0);

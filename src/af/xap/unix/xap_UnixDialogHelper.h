@@ -62,7 +62,7 @@ gint searchCList(GtkCList * clist, char * compareText);
 void createLabelAccelerators( GtkWidget * widget );
 
 #ifdef HAVE_GNOME
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 void setDefaultButton (GnomeDialog * dlg, int which);
 #endif
 

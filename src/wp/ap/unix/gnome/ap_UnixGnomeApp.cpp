@@ -72,7 +72,7 @@
 #include "fv_View.h"
 #include "libgnomevfs/gnome-vfs.h"
 
-#include <libgnomeui/gnome-window-icon.h>
+#include <libgnomeui-2.0/libgnomeui/gnome-window-icon.h>
 
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -82,7 +82,7 @@
 #include "xap_UnixGnomePrintGraphics.h"
 #include "ap_EditMethods.h"
 
-#include <bonobo.h>
+#include <libbonobo-2.0/libbonobo.h>
 #include <liboaf/liboaf.h>
 #include "abiwidget.h"
 

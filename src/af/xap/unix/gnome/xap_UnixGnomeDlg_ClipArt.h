@@ -20,7 +20,7 @@
 #ifndef XAP_UNIXGNOMEDIALOG_CLIPART_H
 #define XAP_UNIXGNOMEDIALOG_CLIPART_H
 
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 #include "xap_Dlg_ClipArt.h"
 
 /*****************************************************************/

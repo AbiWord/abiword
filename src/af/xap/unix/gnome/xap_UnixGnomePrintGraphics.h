@@ -30,7 +30,7 @@
 
 // hack
 extern "C" {
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 #include <libgnomeprint/gnome-print.h>
 #include <libgnomeprint/gnome-print-master.h>
 #include <libgnomeprint/gnome-font.h>

@@ -21,7 +21,7 @@
 #ifndef XAP_UNIXGNOMEFRAME_H
 #define XAP_UNIXGNOMEFRAME_H
 
-#include <gnome.h>
+#include <libgnomeui-2.0/gnome.h>
 
 #include "xap_UnixFrame.h"
 #include "xap_UnixApp.h"
