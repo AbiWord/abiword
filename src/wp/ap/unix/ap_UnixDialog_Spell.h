@@ -49,7 +49,11 @@ class AP_UnixDialog_Spell: public AP_Dialog_Spell
  protected:
 
    // private construction functions
-   GtkWidget * _constructWindow(void);
+   virtual GtkWidget * _constructWindow(void);
+   virtual void        _constructWindowContents(GtkWidget *box);
+   virtual void        _createButtons(void);
+   void                _connectSignals(void);
+
    void	    _populateWindowData(void);
    void 	    _storeWindowData(void);
 

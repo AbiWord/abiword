@@ -510,6 +510,11 @@ s_DocBook_Listener::s_DocBook_Listener(PD_Document * pDocument,
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
 	
+
+	// write out the doctype descriptor
+	m_pie->write("<!DOCTYPE book PUBLIC \"-//OASIS//DTD DocBook XML V4.1.2//EN\"\n");
+        m_pie->write("\t\"http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd\">\n\n");
+
 	m_pie->write("<!-- ================================================================================ --!>\n");
 	m_pie->write("<!-- This DocBook file was created by AbiWord.                                        --!>\n");
 	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                   --!>\n");

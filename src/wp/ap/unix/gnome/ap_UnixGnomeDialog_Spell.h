@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,64 +17,24 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_SPELL_H
-#define AP_UNIXDIALOG_SPELL_H
+#ifndef AP_UNIXGNOMEDIALOG_SPELL_H
+#define AP_UNIXGNOMEDIALOG_SPELL_H
 
-#include "ap_Dialog_Spell.h"
-
-class XAP_UnixFrame;
+#include "ap_UnixDialog_Spell.h"
 
 /*****************************************************************/
 
-class AP_UnixDialog_Spell: public AP_Dialog_Spell
+class AP_UnixGnomeDialog_Spell: public AP_UnixDialog_Spell
 {
- public:
-   AP_UnixDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-   virtual ~AP_UnixDialog_Spell(void);
-   
-   virtual void			runModal(XAP_Frame * pFrame);
+public:
+	AP_UnixGnomeDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixGnomeDialog_Spell(void);
 
-   static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-   // callbacks can fire these events
-   virtual void event_Change(void);
-   virtual void event_ChangeAll(void);
-   virtual void event_Ignore(void);
-   virtual void event_IgnoreAll(void);
-   virtual void event_AddToDict(void);
-   virtual void event_Cancel(void);
-   virtual void event_SuggestionSelected(gint row, gint column);
-   virtual void event_ReplacementChanged(void);
-   
- protected:
-
-   // private construction functions
-   GtkWidget * _constructWindow(void);
-   void	    _populateWindowData(void);
-   void 	    _storeWindowData(void);
-
-   void _showMisspelledWord(void);	
-
-   char * _convertToMB(UT_UCSChar *wword);
-   UT_UCSChar * _convertFromMB(char *word);
-      
-   // pointers to widgets we need to query/set
-   GtkWidget * m_windowMain;
-   GtkWidget * m_textWord;
-   GtkWidget * m_entryChange;
-   GtkWidget * m_clistSuggestions;
-   
-   GtkWidget * m_buttonChange;
-   GtkWidget * m_buttonChangeAll;
-   GtkWidget * m_buttonIgnore;
-   GtkWidget * m_buttonIgnoreAll;
-   GtkWidget * m_buttonAddToDict;
-   GtkWidget * m_buttonCancel;
-
-   GdkColor m_highlight;
-
-   guint m_listHandlerID;
-   guint m_replaceHandlerID;
+protected:
+	virtual GtkWidget *		_constructWindow (void);
+	virtual void                    _createButtons(void);
 };
 
-#endif /* AP_UNIXDIALOG_SPELL_H */
+#endif /* AP_UNIXGNOMEDIALOG_SPELL_H */
