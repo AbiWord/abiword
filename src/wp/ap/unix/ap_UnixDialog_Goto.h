@@ -36,7 +36,7 @@ public:
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
-        virtual void                    notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void                    notifyActiveFrame(XAP_Frame *pFrame);
 	void					setSelectedRow(int row);
 	int						getSelectedRow(void);
 
@@ -49,7 +49,7 @@ public:
 	static void				s_nextClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
 	static void				s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
 	static void				s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
-      	static void				s_deleteClicked (GtkWidget * widget, gpointer /* data */ , AP_UnixDialog_Goto * me);
+	static void				s_deleteClicked (GtkWidget * widget, gpointer /* data */ , AP_UnixDialog_Goto * me);
 
 	/* Widgets members.  Publics to make them accesible to the callbacks */
 	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */

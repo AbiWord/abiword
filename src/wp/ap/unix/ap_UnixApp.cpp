@@ -29,9 +29,24 @@
 #include <sys/stat.h>
 #include <signal.h>
 
+// HACK to no collide with perl DEBUG
+#ifdef DEBUG
+#define ABI_DEBUG
+#undef DEBUG
+#endif
+
 #ifdef ABI_OPT_JS
 #include <EXTERN.h>
 #include <perl.h>
+#endif
+
+#ifdef DEBUG
+#define PERL_DEBUG
+#undef DEBUG
+#endif
+
+#ifdef ABI_DEBUG
+#define DEBUG
 #endif
 
 #include "ut_debugmsg.h"
@@ -84,10 +99,6 @@
 
 /*****************************************************************/
 
-#ifdef ABI_OPT_JS
-PerlInterpreter *AP_UnixApp::m_pPerlInstance = 0;
-#endif
-
 /*!
   Construct an AP_UnixApp.
   /param pArgs Arguments from command line
@@ -101,8 +112,8 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_bHasSelection(false),
 	  m_bSelectionInFlux(false),
 	  m_pViewSelection(0),
-	  m_pFrameSelection(0),
-	  m_cacheSelectionView(0)
+	  m_cacheSelectionView(0),
+	  m_pFrameSelection(0)
 {
 }
 
@@ -114,14 +125,6 @@ AP_UnixApp::~AP_UnixApp(void)
 {
     DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
-
-#ifdef ABI_OPT_JS
- 	if (m_pPerlInstance != 0)
- 	{
- 		perl_destruct(m_pPerlInstance);
- 		perl_free(m_pPerlInstance);
- 	}
-#endif
 }
 
 /*!
@@ -155,13 +158,6 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 }	
 
 #ifdef ABI_OPT_JS
-void AP_UnixApp::perlEvalFile(const char* filename)
-{
-	char * code = g_strdup_printf("do \"%s\"", filename);
-	getPerlInterp();
-	perl_eval_pv(code, TRUE);
-	g_free(code);
-}
 
 #ifdef __cplusplus
 #  define EXTERN_C extern "C"
@@ -181,22 +177,51 @@ xs_init () {
 	newXS("abi::boot_abi", boot_abi, file);*/
 }
 
-PerlInterpreter *AP_UnixApp::getPerlInterp()
+static PerlInterpreter &getPerlInterp()
 {
-	if (m_pPerlInstance == 0)
+	static PerlInterpreter *pPerlInt = 0;
+
+	if (pPerlInt == 0)
 	{
-		char *argv[] = { "", "-Mabi", "-MGtk", "-e", "0" };
-		m_pPerlInstance = perl_alloc();
-		perl_construct(m_pPerlInstance);
-		perl_parse(m_pPerlInstance, xs_init, 4, argv, (char **)NULL);
+		char *argv[] = { "", "-Mabi", "-e", "0" };
+#ifdef PERL_DEBUG
+#define DEBUG
+#endif
+		pPerlInt = perl_alloc();
+		perl_construct(pPerlInt);
+		perl_parse(pPerlInt, xs_init, sizeof(argv) / sizeof(char *), argv, (char **)NULL);
+#ifndef ABI_DEBUG
+#undef DEBUG
+#endif
 	}
 
-	return m_pPerlInstance;
+	return *pPerlInt;
+}
+
+void AP_UnixApp::perlEvalFile(const UT_String &filename)
+{
+#ifdef PERL_DEBUG
+#define DEBUG
+#endif
+	UT_String code("require \"");
+	code += filename;
+	code += '"';
+	getPerlInterp();
+	UT_DEBUGMSG(("executing script file: %s\n", filename));
+	perl_eval_pv(code.c_str(), FALSE);
+
+	if (SvTRUE(ERRSV))
+	{
+#ifndef ABI_DEBUG
+#undef DEBUG
+#endif
+		printf("eval error: %s\n", SvPV(ERRSV, PL_na));
+ 	}
 }
 #endif
 
 /*!
-  Initailize the application.  This involves preferences, keybindings,
+  Initialize the application.  This involves preferences, keybindings,
   toolbars, graphics, spelling and everything else.  
   \return True if successfully initalized, False otherwise. if false
   the app is unusable, and loading should not continue.   
@@ -1210,6 +1235,7 @@ bool AP_UnixApp::parseCommandLine()
 			{
 				// [-dumpstrings]
 #ifdef DEBUG
+#error "YIAAAAAAHHHHH"
 				// dump the string table in english as a template for translators.
 				// see abi/docs/AbiSource_Localization.abw for details.
 				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);

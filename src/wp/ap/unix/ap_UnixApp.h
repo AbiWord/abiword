@@ -40,11 +40,6 @@
 #define XAP_UNIXBASEAPP XAP_UnixApp
 #endif
 
-#ifdef ABI_OPT_JS
-#include <EXTERN.h>
-#include <perl.h>
-#endif
-
 class XAP_StringSet;
 class AV_View;
 
@@ -91,13 +86,12 @@ public:
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
-	void                                             catchSignals(int sig_num);
+	void							catchSignals(int sig_num);
 #ifdef ABI_OPT_JS
-	virtual void									perlEvalFile(const char * filename);
-	PerlInterpreter *								getPerlInterp();
+	virtual void					perlEvalFile(const UT_String &filename);
 #endif
 
-protected:
+protected:	// JCA: Why in the hell we have so many (any) protected variable?
 
 	static GR_Image *                                       _showSplash(UT_uint32);
 
@@ -112,11 +106,6 @@ protected:
 	XAP_Frame *				m_pFrameSelection;
 	UT_ByteBuf				m_selectionByteBuf;
 	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
-
-private: // JCA: Why in the hell we have so many (any) protected variable?
-#ifdef ABI_OPT_JS
-	static PerlInterpreter *m_pPerlInstance;
-#endif
 };
 
 // HACK What follows is an ugly hack. It is neccessitated by the 

@@ -81,13 +81,13 @@ AP_UnixGnomeApp::AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
 {
 }
 
-AP_UnixGnomeApp::~AP_UnixGnomeApp(void)
+AP_UnixGnomeApp::~AP_UnixGnomeApp()
 {
 }
 
 /*****************************************************************/
 
-bool	AP_UnixGnomeApp::initialize(void)
+int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 {
 	static const struct poptOption options[] =
 	{{"geometry", 'g', POPT_ARG_STRING, NULL, 0, "set initial frame geometry", "GEOMETRY"},
@@ -105,12 +105,7 @@ bool	AP_UnixGnomeApp::initialize(void)
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
 	gnomelib_register_popt_table (options, "Abiword Options");
-	
-	return AP_UnixApp::initialize();
-}
 
-int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
-{
 	// This is a static function.
 		   
 	UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
@@ -208,7 +203,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	return 0;
 }
 
-bool AP_UnixGnomeApp::parseCommandLine(void)
+bool AP_UnixGnomeApp::parseCommandLine()
 {
 	// parse the command line
 	// <app> [--script <scriptname>]* [--dumpstrings] [--to <format>] [--geometry <format>] [<documentname>]*
@@ -263,9 +258,7 @@ bool AP_UnixGnomeApp::parseCommandLine(void)
 
 #ifdef ABI_OPT_JS
 	if (script)
-	{
 		perlEvalFile(script);
-	}
 #endif
 
 	if (geometry)

@@ -37,6 +37,7 @@
 #include "ap_UnixDialog_Styles.h"
 
 #include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "pd_Style.h"
 #include "ut_string_class.h"
 

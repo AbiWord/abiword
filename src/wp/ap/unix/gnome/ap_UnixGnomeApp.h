@@ -38,11 +38,10 @@ class AP_UnixGnomeApp : public AP_UnixApp
 {
 public:
 	AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName);
-	virtual ~AP_UnixGnomeApp(void);
+	virtual ~AP_UnixGnomeApp();
 
-	virtual bool					initialize(void);
-	static int main (const char * szAppName, int argc, char ** argv);
-	bool					parseCommandLine(void);
+	static int				main (const char * szAppName, int argc, char ** argv);
+	bool					parseCommandLine();
 };
 
 #endif /* AP_UNIXGNOMEAPP_H */
