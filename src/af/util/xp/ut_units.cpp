@@ -68,22 +68,20 @@ const char * UT_dimensionName(UT_Dimension dim)
 	}
 }
 
-// TODO: should we change this to UT_stricmp for robustness?
-#define STR_COMPARE UT_strcmp
+#define STR_COMPARE UT_stricmp
 
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
   char * p = NULL ;
   char * old_locale = setlocale(LC_NUMERIC, "C");
-  
-	strtod(sz, &p);
+  strtod(sz, &p);
   setlocale(LC_NUMERIC, old_locale);
 
 #if defined(__QNXNTO__)
   // workaround for QNX's strtod being overly ambitious
-  //being totaly stupid and match 'in' for infinity, but still return 0.
-	//it do work fine on qnx if there is a number before 'in..' though.
-	if (STR_COMPARE(sz,"inch")==0)
+  // being totaly stupid and match 'in' for infinity, but still return 0.
+  // it does work fine on qnx if there is a number before 'in..' though.
+  if (STR_COMPARE(sz,"inch")==0 || STR_COMPARE(sz,"in")==0)
     return DIM_IN;
 #endif
 
