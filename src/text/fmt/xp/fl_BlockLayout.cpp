@@ -176,7 +176,12 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iDirOverride(UT_BIDI_UNSET),
 	  m_bIsTOC(false),
 	  m_bStyleInTOC(false),
-	  m_iTOCLevel(0)
+	  m_iTOCLevel(0),
+	  m_bSameYAsPrevious(false),
+	  m_iAccumulatedHeight(0),
+	  m_pVertContainer(NULL),
+	  m_iLinePosInContainer(0)
+
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -1632,6 +1637,7 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 			pContainer = static_cast<fp_VerticalContainer *>(m_pSectionLayout->getNewContainer());
 			UT_ASSERT(pContainer->getWidth() >0);
 		}
+
 		pContainer->insertContainer(static_cast<fp_Container *>(pLine));
 	}
 	fp_Run* pTempRun = m_pFirstRun;
@@ -1825,7 +1831,12 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 	for(i=0; i< getNumFrames();i++)
 	{
 		fl_FrameLayout * pFrame = getNthFrameLayout(i);
-		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT)
+		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			continue;
+		}
+		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK)
 		{
 			UT_sint32 xFpos = pFrame->getFrameXpos();
 			UT_sint32 yFpos = pFrame->getFrameYpos();
@@ -1936,7 +1947,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				}
 			}
 		}
-		else if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN_ABOVE_TEXT)
+		else if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN)
 		{
 			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
 			//
@@ -2001,13 +2012,500 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
 	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());
 	while(pCon)
 	{
-		iHeight += pCon->getHeight();
-		iHeight += pCon->getMarginBefore();
-		iHeight += pCon->getMarginAfter();
+		if(!pCon->isSameYAsPrevious())
+		{
+			iHeight += pCon->getHeight();
+			iHeight += pCon->getMarginBefore();
+			iHeight += pCon->getMarginAfter();
+		}
 		pCon = static_cast<fp_Line *>(pCon->getNext());
 	}
 	return iHeight;
 }
+
+/*!
+ * Reformat a block from the line given.
+ */
+void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
+{
+	//
+	// Check line is in this block. It might haave been removed.
+	//
+	fp_Line *pCLine = static_cast<fp_Line *>(getFirstContainer());
+	bool bFound = false;
+	while(pCLine)
+	{
+		if(pCLine == pLine)
+		{
+			bFound = true;
+			break;
+		}
+		pCLine = static_cast<fp_Line *>(pCLine->getNext());
+	}
+	if(!bFound)
+	{
+		return;
+	}
+	while(pLine->getPrev() && pLine->isSameYAsPrevious())
+	{
+		pLine = static_cast<fp_Line *>(pLine->getPrev());
+	}
+	fp_Run * pRun = pLine->getLastRun();
+	pRun = pRun->getNextRun();
+	m_pVertContainer = static_cast<fp_VerticalContainer *>(pLine->getContainer());
+	m_iLinePosInContainer = m_pVertContainer->findCon(pLine);
+	if(m_iLinePosInContainer < 0)
+	{
+		m_iLinePosInContainer = 0;
+	}
+	UT_Rect * pRec = pLine->getScreenRect();
+	m_iAccumulatedHeight = pRec->top;
+	UT_Rect rec;
+	rec.height = pRec->height;
+	rec.width = pRec->width;
+	rec.top = pRec->top;
+	rec.left = pRec->left;
+	delete pRec;
+	m_bSameYAsPrevious = pLine->isSameYAsPrevious();
+	UT_sint32 iHeight = pLine->getHeight() + pLine->getMarginAfter();
+	//
+	// Stuff remaining content on the line
+	//
+	while(pRun)
+	{
+		pLine->addRun(pRun);
+		pRun= pRun->getNextRun();
+	}
+	//
+	// Remove all the lines after this
+	//
+	fp_Line * pDumLine = static_cast<fp_Line *>(pLine->getNext());
+	while(pDumLine)
+	{
+		fp_Line * pLineToDelete = pDumLine;
+		pDumLine = static_cast<fp_Line *>(pDumLine->getNext());
+		pLineToDelete->setBlock(NULL);
+		pLineToDelete->remove();
+		delete pLineToDelete;
+	}
+	//
+	// OK our line is the last line left
+	//
+	setLastContainer(pLine);
+	//
+	// OK now we have to adjust the X and max width of pLine to fit around 
+	// the wrapped objects. We do this by looping though the wrapped objects
+	// on the page
+	//
+	UT_sint32 iX = getLeftMargin();
+	UT_sint32 iMaxX = m_pVertContainer->getWidth();
+	iMaxX -=  getLeftMargin();
+	iMaxX -= getRightMargin();
+	bool bFirst = false;
+	if(pLine == static_cast<fp_Line *>(getFirstContainer()))
+	{
+		bFirst = true;
+		UT_BidiCharType iBlockDir = getDominantDirection();
+		if(iBlockDir == UT_BIDI_LTR)
+		{
+			iMaxX -= getTextIndent();
+			iX += getTextIndent();
+		}
+	}
+	//
+	// OK Now adjust the left pos to make it bump up against either the
+	// the left side of the container or the previous line.
+	//
+	fp_Line * pPrev = static_cast<fp_Line *>(pLine->getPrev());
+	UT_sint32 iWidth = 0;
+	if(pPrev)
+	{
+		if(pLine->isSameYAsPrevious() && (pPrev->getY() == pLine->getY()))
+		{
+			iX = pPrev->getX() + pPrev->getMaxWidth();
+			iWidth = iMaxX - iX;
+		}
+		else
+		{
+			iWidth = iMaxX;
+			pLine->setSameYAsPrevious(false);
+		}
+	}
+	else
+	{
+		iWidth = iMaxX;
+	}
+	UT_sint32 xoff = rec.left - pLine->getX();
+	if(iWidth < 20*4)
+	{
+		UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
+		//
+		// Can't fit on this line.
+		// transfer to new wrapped line and delete the old one
+		//
+		m_iAccumulatedHeight += iHeight;
+		m_bSameYAsPrevious = false;
+		fp_Line * pNew = getNextWrappedLine(iX,iHeight,pPage);
+		fp_Run * pRun = pLine->getFirstRun();
+		while(pRun)
+		{
+			pNew->addRun(pRun);
+			pRun= pRun->getNextRun();
+		}
+		pLine->setBlock(NULL);
+		pLine->remove();
+		delete pLine;
+		pLine = pNew;
+		setLastContainer(pLine);
+		if(bFirst)
+		{
+			setFirstContainer(pLine);
+		}
+	}
+	else
+	{
+		rec.left = iX + xoff;
+		rec.width = iWidth;
+		UT_sint32 i = 0;
+		fp_FrameContainer * pFC = NULL;
+		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
+		{
+			pFC = pPage->getNthFrameContainer(i);
+			if(!pFC->isWrappingSet())
+			{
+				continue;
+			}
+			UT_Rect * pRec = pFC->getScreenRect();
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+			UT_sint32 iExpand = pFL->getBoundingSpace() + 2;
+			pRec->height += 2*iExpand;
+			pRec->width += 2*iExpand;
+			pRec->left -= iExpand;
+			pRec->top -= iExpand;
+			if(rec.intersectsRect(pRec))
+			{
+				if((pRec->left <= rec.left) && (pRec->left + pRec->width) > rec.left)
+				{
+					UT_sint32 diff = pRec->left + pRec->width - rec.left;
+					rec.left = pRec->left + pRec->width;
+					rec.width -= diff;
+				}
+				else if((pRec->left >= rec.left) && (rec.left + rec.width > pRec->left))
+				{
+					UT_sint32 diff = pRec->left - rec.left;
+					rec.width = diff;
+				}
+			}
+		}
+		iX = rec.left - xoff;
+		pLine->setX(iX);
+		if(rec.width < 20*4)
+		{
+			//
+			// Can't fit on this line.
+			// transfer to new wrapped line and delete the old one
+			//
+			iX = getLeftMargin();
+			bool bFirst = false;
+			if(pLine == static_cast<fp_Line *>(getFirstContainer()))
+			{
+				bFirst = true;
+				UT_BidiCharType iBlockDir = getDominantDirection();
+				if(iBlockDir == UT_BIDI_LTR)
+				{
+					iX += getTextIndent();
+				}
+			}
+			m_iAccumulatedHeight += iHeight;
+			m_bSameYAsPrevious = false;
+			fp_Line * pNew = getNextWrappedLine(iX,iHeight,pPage);
+			fp_Run * pRun = pLine->getFirstRun();
+			while(pRun)
+			{
+				pNew->addRun(pRun);
+				pRun= pRun->getNextRun();
+			}
+			pLine->setBlock(NULL);
+			pLine->remove();
+			delete pLine;
+			pLine = pNew;
+			setLastContainer(pLine);
+			if(bFirst)
+			{
+				setFirstContainer(pLine);
+			}
+		}
+		else
+		{
+			m_bSameYAsPrevious = true;
+			pLine->setMaxWidth(rec.width);
+		}
+	}
+	//
+	// OK, Now we have one long line with all our remaining content.
+	// Break it to fit in the container and around the wrapped objects
+	// 
+		// Reformat paragraph
+	m_Breaker.breakParagraph(this, pLine,pPage);
+	while(pLine)
+	{
+		pLine->recalcHeight();
+		pLine = static_cast<fp_Line *>(pLine->getNext());
+	}
+	UT_ASSERT(getLastContainer());
+	if(!m_pLayout->isLayoutFilling())
+    {
+		m_iNeedsReformat = -1;
+	}
+	if(m_pAlignment && m_pAlignment->getType() == FB_ALIGNMENT_JUSTIFY)
+	{
+		fp_Line* pLastLine = static_cast<fp_Line *>(getLastContainer());
+		pLastLine->resetJustification(true); // permanent reset
+	}
+	return;
+}
+
+/*!
+ * Create a new line that will fit between positioned objects on the page.
+ * iX       is the position of the last X coordinate of the previous
+ *          Line relative to it's container. 
+            The X location of wrapped line will be greater than this.
+  * iHeight  is the assumed height of the line (at first approximation this
+            is the height of the previous line).
+ * pPage    Pointer to the page with the positioned objects.
+ */  
+fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
+											  UT_sint32 iHeight,
+											  fp_Page * pPage)
+{
+	UT_sint32 iMaxX = m_pVertContainer->getWidth();
+	UT_sint32 iXDiff = getLeftMargin();
+	iMaxX -=  getLeftMargin();
+	iMaxX -= getRightMargin();
+	if (getFirstContainer() == NULL)
+	{
+		UT_BidiCharType iBlockDir = getDominantDirection();
+		if(iBlockDir == UT_BIDI_LTR)
+		{
+			iMaxX -= getTextIndent();
+			iXDiff += getTextIndent();
+		}
+	}
+	UT_sint32 xoff,yoff;
+	pPage->getScreenOffsets(m_pVertContainer,xoff,yoff);
+ 	fp_FrameContainer * pFC = NULL;
+	fp_Line * pLine = NULL;
+	if((iMaxX - iX) < 20*4)
+	{
+		UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
+		iX = getLeftMargin();
+		m_iAccumulatedHeight += iHeight;
+		m_bSameYAsPrevious = false;
+	}
+	else
+	{
+		UT_sint32 i = 0;
+		UT_sint32 iScreenX = iX + xoff;
+		UT_Rect projRec;
+		projRec.left = iScreenX;
+		projRec.height = iHeight;
+		projRec.width = iMaxX - (iX - iXDiff);
+		projRec.top = m_iAccumulatedHeight;
+		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
+		{
+			pFC = pPage->getNthFrameContainer(i);
+			if(!pFC->isWrappingSet())
+			{
+				continue;
+			}
+			UT_Rect * pRec = pFC->getScreenRect();
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+			UT_sint32 iExpand = pFL->getBoundingSpace() + 2;
+			pRec->height += 2*iExpand;
+			pRec->width += 2*iExpand;
+			pRec->left -= iExpand;
+			pRec->top -= iExpand;
+			if(projRec.intersectsRect(pRec))
+			{
+				if((pRec->left <= projRec.left) && (pRec->left + pRec->width) > projRec.left)
+				{
+					UT_sint32 diff = pRec->left + pRec->width - projRec.left;
+					projRec.left = pRec->left + pRec->width;
+					projRec.width -= diff;
+				}
+				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
+				{
+					UT_sint32 diff = pRec->left - projRec.left;
+					projRec.width = diff;
+				}
+			}
+		}
+		if(projRec.width <  20*4)
+		{
+			iX = getLeftMargin();
+			if (getFirstContainer() == NULL)
+			{
+				UT_BidiCharType iBlockDir = getDominantDirection();
+				if(iBlockDir == UT_BIDI_LTR)
+					iX += getTextIndent();
+			}
+			m_iAccumulatedHeight += iHeight;
+			m_bSameYAsPrevious = false;
+		}
+		else
+		{
+			pLine = new fp_Line(getSectionLayout());
+			fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());
+
+			if(pOldLastLine == NULL)
+			{
+				setFirstContainer(pLine);
+				setLastContainer(pLine);
+				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+				pLine->setContainer(m_pVertContainer);
+				pLine->setMaxWidth(projRec.width);
+				pLine->setX(projRec.left-xoff);
+				pLine->setBlock(this);
+				pLine->setSameYAsPrevious(false);
+				pLine->setWrapped((iMaxX != projRec.width));
+				m_bSameYAsPrevious = true;
+			}
+			else
+			{
+				pLine->setPrev(getLastContainer());
+				getLastContainer()->setNext(pLine);
+				setLastContainer(pLine);
+
+				fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
+				pLine->setWrapped((iMaxX != projRec.width));
+				if(pContainer)
+				{
+					pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+				}
+				pLine->setMaxWidth(projRec.width);
+				pLine->setX(projRec.left-xoff);
+				pLine->setBlock(this);
+				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
+				m_bSameYAsPrevious = true;
+			}
+			UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+			pLine->setHeight(iHeight);
+			return pLine;
+		}
+	}
+	bool bStop = false;
+	while(!bStop)
+    {
+		UT_sint32 i = 0;
+		UT_sint32 iScreenX = iX + xoff;
+		UT_Rect projRec;
+		projRec.left = iScreenX;
+		projRec.height = iHeight;
+		projRec.width = iMaxX - (iX - iXDiff);
+		projRec.top = m_iAccumulatedHeight;
+		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
+		{
+			pFC = pPage->getNthFrameContainer(i);
+			if(!pFC->isWrappingSet())
+			{
+				continue;
+			}
+			UT_Rect * pRec = pFC->getScreenRect();
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+			UT_sint32 iExpand = pFL->getBoundingSpace() +2; 
+			pRec->height += 2*iExpand;
+			pRec->width += 2*iExpand;
+			pRec->left -= iExpand;
+			pRec->top -= iExpand;
+			if(projRec.intersectsRect(pRec))
+			{
+				if((pRec->left <= projRec.left) && (pRec->left + pRec->width) > projRec.left)
+				{
+					UT_sint32 diff = pRec->left + pRec->width - projRec.left;
+					projRec.left = pRec->left + pRec->width;
+					projRec.width -= diff;
+				}
+				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
+				{
+					UT_sint32 diff = pRec->left - projRec.left;
+					projRec.width = diff;
+				}
+			}
+		}
+		fp_Line* pLine = new fp_Line(getSectionLayout());
+		fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());
+		if(projRec.width >  20*4)
+		{
+			if(pOldLastLine == NULL)
+			{
+				UT_DEBUGMSG(("Old Lastline NULL?????? \n"));
+				setFirstContainer(pLine);
+				setLastContainer(pLine);
+				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+				pLine->setContainer(m_pVertContainer);
+				pLine->setMaxWidth(projRec.width);
+				pLine->setX(projRec.left-xoff);
+				pLine->setBlock(this);
+				pLine->setSameYAsPrevious(false);
+				pLine->setWrapped((iMaxX != projRec.width));
+				m_bSameYAsPrevious = true;
+			}
+			else
+		    {
+				pLine->setPrev(getLastContainer());
+				getLastContainer()->setNext(pLine);
+				setLastContainer(pLine);
+				
+				fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
+				pLine->setWrapped((iMaxX != projRec.width));
+				if(pContainer)
+				{
+					pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+				}
+				pLine->setMaxWidth(projRec.width);
+				pLine->setX(projRec.left-xoff);
+				pLine->setBlock(this);
+				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
+				m_bSameYAsPrevious = true;
+			}
+			UT_DEBUGMSG(("-2- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+			pLine->setHeight(iHeight);
+			return pLine;
+		}
+		pLine->setMaxWidth(20);
+		pLine->setX(projRec.left-xoff);
+		pLine->setBlock(this);
+		pLine->setSameYAsPrevious(false);
+		pLine->setWrapped((iMaxX != projRec.width));
+		pOldLastLine = static_cast<fp_Line *>(getLastContainer());
+		if(pOldLastLine)
+		{
+			pLine->setPrev(getLastContainer());
+			getLastContainer()->setNext(pLine);
+			setLastContainer(pLine);
+			fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
+			if(pContainer)
+			{
+				pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+			}
+		}
+		else
+		{
+			setFirstContainer(pLine);
+			setLastContainer(pLine);
+			m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+			pLine->setContainer(m_pVertContainer);
+		}
+		m_bSameYAsPrevious = false;
+		
+		iX = getLeftMargin();
+		m_iAccumulatedHeight += iHeight;
+	}
+	UT_DEBUGMSG(("-3- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+	pLine->setHeight(iHeight);
+	return pLine;
+}
+
 
 void fl_BlockLayout::formatAll(void)
 {
@@ -2171,7 +2669,7 @@ void fl_BlockLayout::format()
 		recalculateFields(0);
 
 		// Reformat paragraph
-		m_Breaker.breakParagraph(this, NULL);
+		m_Breaker.breakParagraph(this, NULL,NULL);
 	}
 	else
 	{
@@ -5460,8 +5958,6 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 		clearScreen(m_pLayout->getGraphics());
 	}
 
-	bool bWasOnScreen = isOnScreen();
-	
 	collapse();
 	setAttrPropIndex(pcrxc->getIndexAP());
 	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
@@ -8336,8 +8832,6 @@ void fl_BlockLayout::listUpdate(void)
 
 	format();
 	
-	FV_View* pView = getView();
-
 }
 
 void fl_BlockLayout::transferListFlags(void)

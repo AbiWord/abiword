@@ -63,7 +63,8 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_sImagePath(""),
 	  m_iGraphicType(0),
 	  m_pImage(NULL),
-	  m_pGraphic(NULL)
+	  m_pGraphic(NULL),
+	  m_bSetWrapping(false)
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
@@ -434,8 +435,9 @@ void AP_Dialog_FormatFrame::applyChanges()
 		return;
 
     FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	const XML_Char ** propsArray  = new const XML_Char * [m_vecProps.getItemCount()+1];
-	propsArray[m_vecProps.getItemCount()] = NULL;
+	const XML_Char ** propsArray  = new const XML_Char * [m_vecProps.getItemCount()+4];
+	propsArray[m_vecProps.getItemCount()+2] = NULL;
+	propsArray[m_vecProps.getItemCount()+3] = NULL;
 	
 	UT_sint32 i = m_vecProps.getItemCount();
 	UT_sint32 j;
@@ -443,6 +445,16 @@ void AP_Dialog_FormatFrame::applyChanges()
 	{
 		propsArray[j] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
 		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
+	}
+	propsArray[j] = "wrap-mode";
+	j++;
+	if(getWrapping())
+	{
+		propsArray[j] = "wrapped-both";
+	}
+	else
+	{
+		propsArray[j] = "above-text";
 	}
 	pView->setFrameFormat(propsArray,m_pGraphic,m_sImagePath);
 	delete [] propsArray;

@@ -200,7 +200,15 @@ public:
 		{ return  m_iBreakTick;}
 	void        setBreakTick(UT_sint32 iTick)
 		{ m_iBreakTick = iTick;}
-
+	void        setWrapped(bool bWrapped)
+		{ m_bIsWrapped = bWrapped;}
+	bool        isWrapped(void) const
+		{ return m_bIsWrapped;}
+	void        setSameYAsPrevious(bool bSameAsPrevious)
+		{ m_bIsSameYAsPrevious = bSameAsPrevious;}
+	bool        isSameYAsPrevious(void) const
+		{ return m_bIsSameYAsPrevious;}
+	void        genOverlapRects(UT_Rect & recLeft, UT_Rect & recRight);
 
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
@@ -220,6 +228,10 @@ private:
 	void		_splitRunsAtSpaces(void);
 	void        _doClearScreenFromRunToEnd(UT_sint32 runIndex);
 	
+	
+	void  		setAscent(UT_sint32 i) { m_iAscent = i; }
+	void  		setDescent(UT_sint32 i) { m_iDescent = i; }
+	void        setScreenHeight(UT_sint32 i) {m_iScreenHeight =i;}
 
 
 	fl_BlockLayout*	m_pBlock;
@@ -273,6 +285,8 @@ private:
 	bool			m_bContainsFootnoteRef; // updated when runs added/removed.
 	void			_updateContainsFootnoteRef(void);
 	UT_sint32       m_iBreakTick;
+	bool            m_bIsWrapped;
+	bool            m_bIsSameYAsPrevious;
 };
 
 #endif /* FP_LINE_H */

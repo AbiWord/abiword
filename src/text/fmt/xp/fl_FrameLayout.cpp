@@ -80,7 +80,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 					   PTX_SectionFrame,
 					   pMyContainerLayout),
 	  m_iFrameType(FL_FRAME_TEXTBOX_TYPE),
-	  m_iFramePositionTo(FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT),
+	  m_iFramePositionTo(FL_FRAME_POSITIONED_TO_BLOCK),
 	  m_bNeedsRebuild(false),
 	  m_bNeedsFormat(true),
 	  m_bIsOnPage(false),
@@ -91,7 +91,9 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iXpos(0),
 	  m_iYpos(0),
 	  m_iXpad(0),
-	  m_iYpad(0)
+	  m_iYpad(0),
+	  m_iBoundingSpace(0),
+	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -178,7 +180,18 @@ void 	fl_FrameLayout::setContainerProperties(void)
 		}
 		pFrame->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
 	}
+	if(m_iFrameWrapMode >= FL_FRAME_WRAPPED_TO_RIGHT)
+	{ 
+//
+// Set text wrapping around frame
+//
+		pFrame->setWrapping(true);
+	}
+}
 
+UT_sint32 fl_FrameLayout::getBoundingSpace(void) const
+{
+	return m_iBoundingSpace;
 }
 
 /*!
@@ -535,7 +548,8 @@ void fl_FrameLayout::format(void)
 		fl_BlockLayout * pBL = NULL;
 		if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
 		{
-			pBL = pCL->getPrevBlockInDocument();
+			pCL = pCL->getPrevBlockInDocument();
+			pBL = static_cast<fl_BlockLayout *>(pCL);
 		}
 		else
 		{
@@ -568,6 +582,12 @@ void fl_FrameLayout::format(void)
 	}
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
+	if(pFC)
+	{
+		pDSL->setNeedsSectionBreak(true,pFC->getPage());
+	}
 }
 
 void fl_FrameLayout::_lookupProperties(void)
@@ -583,6 +603,7 @@ void fl_FrameLayout::_lookupProperties(void)
 
 	const XML_Char *pszFrameType = NULL;
 	const XML_Char *pszPositionTo = NULL;
+	const XML_Char *pszWrapMode = NULL;
 	const XML_Char *pszXpos = NULL;
 	const XML_Char *pszYpos = NULL;
 	const XML_Char *pszColXpos = NULL;
@@ -597,7 +618,7 @@ void fl_FrameLayout::_lookupProperties(void)
 	const XML_Char * pszBorderStyle = NULL;
 	const XML_Char * pszBorderWidth = NULL;
 
-
+	const XML_Char * pszBoundingSpace = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -619,21 +640,55 @@ void fl_FrameLayout::_lookupProperties(void)
 
 	if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
 	{
-		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	}
 	else if(strcmp(pszPositionTo,"block-above-text") == 0)
 	{
-		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	}
 	else if(strcmp(pszPositionTo,"column-above-text") == 0)
 	{
-		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN_ABOVE_TEXT;
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
 	}
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		m_iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+		m_iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK;
+	}
+
+
+// wrap-mode
+
+	if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
+	{
+		m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+	}
+	else if(strcmp(pszWrapMode,"above-text") == 0)
+	{
+		m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+	}
+	else if(strcmp(pszWrapMode,"below-text") == 0)
+	{
+		m_iFrameWrapMode = FL_FRAME_BELOW_TEXT;
+	}
+	else if(strcmp(pszWrapMode,"wrapped-to-right") == 0)
+	{
+		m_iFrameWrapMode = FL_FRAME_WRAPPED_TO_RIGHT;
+	}
+	else if(strcmp(pszWrapMode,"wrapped-to-left") == 0)
+	{
+		m_iFrameWrapMode = FL_FRAME_WRAPPED_TO_LEFT;
+	}
+	else if(strcmp(pszWrapMode,"wrapped-both") == 0)
+	{
+		m_iFrameWrapMode = FL_FRAME_WRAPPED_BOTH_SIDES;
+	}
+	else 
+	{
+		UT_DEBUGMSG(("Unknown wrap-mode %s \n",pszWrapMode));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
 	}
 
 // Xpos
@@ -785,7 +840,17 @@ void fl_FrameLayout::_lookupProperties(void)
 
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 
-
+//
+// Bounding Space
+//
+	if(!pSectionAP || !pSectionAP->getProperty("bounding-space",pszBoundingSpace))
+	{
+		m_iBoundingSpace = UT_convertToLogicalUnits("0.05in");
+	}
+	else
+	{
+		m_iBoundingSpace = UT_convertToLogicalUnits(pszBoundingSpace);
+	}
 }
 
 void fl_FrameLayout::localCollapse(void)

@@ -493,6 +493,8 @@ dcl(DLG_FormatFrame_SetImageBackground,  "Image For Background")
 dcl(DLG_FormatFrame_SetImage,            "Set Image")
 dcl(DLG_FormatFrame_SelectImage,         "Select image from File")
 dcl(DLG_FormatFrame_NoImageBackground,   "Set no image")
+dcl(DLG_FormatFrame_TextWrapping,        "Text Wrapping")
+dcl(DLG_FormatFrame_SetTextWrapping,     "Set Text Wrapping")
 
 dcl(DLG_FormatTableTitle,	    	     "Format Table")
 dcl(DLG_FormatTable_Borders,	   	     "Borders")

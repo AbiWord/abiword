@@ -33,6 +33,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"bot-color",
 	"bot-style",
 	"bot-thickness",
+	"bounding-space",
 	"cell-margin-bottom",
 	"cell-margin-left",
 	"cell-margin-right",
@@ -176,7 +177,8 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"top-style",
 	"top-thickness",
 	"widows",
-	"width"
+	"width",
+	"wrap-mode"
 };
 
 extern "C" {

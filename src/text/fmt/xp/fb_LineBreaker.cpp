@@ -27,7 +27,7 @@
 #include "fp_TextRun.h"
 #include "fp_Column.h"
 #include "fb_Alignment.h"
-
+#include "fp_Page.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -58,7 +58,9 @@ fb_LineBreaker::~fb_LineBreaker(void)
   All trailing spaces should remain on the end of the line.
 */
 UT_sint32
-fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
+fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, 
+							   fp_Line * pLineToStartAt,
+							   fp_Page * pPage)
 {
 	// FIXME: This should:
 	//	 o Check the Runs for state signalling if they changed since
@@ -86,6 +88,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 	if(pLineToStartAt)
 	{
 		pLine = pLineToStartAt;
+		pLine->resetJustification(true); // permanent reset
 	}
 
 	while (pLine)
@@ -292,7 +295,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			  sure that no other runs are on this line.
 			*/
 
-			_breakTheLineAtLastRunToKeep(pLine, pBlock);
+			_breakTheLineAtLastRunToKeep(pLine, pBlock,pPage);
 
 			/*
 			  Now we know all the runs which belong on this line.
@@ -556,7 +559,7 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 }
 
 void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
-												  fl_BlockLayout *pBlock)
+												  fl_BlockLayout *pBlock,fp_Page * pPage)
 {
 
 	/*
@@ -600,7 +603,21 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		pNextLine = static_cast<fp_Line *>(pLine->getNext());
 		if (!pNextLine)
 		{
-			fp_Line* pNewLine  = static_cast<fp_Line *>(pBlock->getNewContainer());
+			fp_Line* pNewLine = NULL;
+			if(pPage == NULL)
+			{
+				pNewLine  = static_cast<fp_Line *>(pBlock->getNewContainer());
+			}
+			else
+			{
+				fp_Run * pRun = pLine->getFirstRun();
+				UT_sint32 iX = pLine->getX();
+				iX += pLine->getMaxWidth();
+				pLine->recalcHeight();
+				UT_sint32 iHeight = pLine->getHeight() + pLine->getMarginAfter();
+				pNewLine = pBlock->getNextWrappedLine(iX,iHeight,pPage);
+				
+			}
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
 			pNextLine = pNewLine;
 			xxx_UT_DEBUGMSG(("!!!! Generated a new Line \n"));

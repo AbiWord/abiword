@@ -42,6 +42,8 @@
 #include "ap_Dialog_FormatFrame.h"
 #include "ap_UnixDialog_FormatFrame.h"
 #include "ap_UnixDialog_Columns.h"
+#include "fl_FrameLayout.h"
+#include "fl_BlockLayout.h"
 
 static void s_apply_changes(GtkWidget *widget, gpointer data )
 {
@@ -87,6 +89,15 @@ static void s_line_bottom(GtkWidget *widget, gpointer data )
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatFrame::toggle_bottom, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 	dlg->event_previewExposed();
+}
+
+
+
+static void s_WrapButton(GtkWidget *widget, gpointer data )
+{
+	AP_UnixDialog_FormatFrame * dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
+	UT_return_if_fail(widget && dlg);
+	dlg->setWrapping(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 }
 
 static void s_border_color(GtkWidget *widget, gpointer data )
@@ -182,6 +193,7 @@ AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFac
 	m_wNoImageButton = NULL;
 	m_wBorderThickness = NULL;
 	m_iBorderThicknessConnect = 0;
+	m_wWrapButton = NULL;
 //
 // These are hardwired into the GUI.
 //
@@ -249,6 +261,7 @@ void AP_UnixDialog_FormatFrame::setSensitivity(bool bSens)
 	gtk_widget_set_sensitive(m_wLineTop, bSens);
 	gtk_widget_set_sensitive(m_wLineBottom, bSens);
 	gtk_widget_set_sensitive(m_wApplyButton, bSens);
+	gtk_widget_set_sensitive(m_wWrapButton, bSens);
 }
 
 void AP_UnixDialog_FormatFrame::event_Close(void)
@@ -331,6 +344,26 @@ void AP_UnixDialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 	setAllSensitivities();
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+	if(pView && pView->isInFrame(pView->getPoint()))
+	{
+		fl_BlockLayout * pBL = pView->getCurrentBlock();
+		fl_FrameLayout * pFrame = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
+		if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		if(pFrame->getFrameWrapMode() >= FL_FRAME_WRAPPED_TO_RIGHT)
+		{
+			setWrapping(true);
+		}
+		else
+		{
+			setWrapping(false);
+		}
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),getWrapping());
+	}
 }
 
 /*****************************************************************/
@@ -357,7 +390,7 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	m_wLineLeft = glade_xml_get_widget(xml, "tbBorderLeft");
 	m_wLineRight = glade_xml_get_widget(xml, "tbBorderRight");
 	m_wLineBottom = glade_xml_get_widget(xml, "tbBorderBottom");
-	
+
 	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
 	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
 	gtk_container_remove(GTK_CONTAINER(m_wLineLeft), gtk_bin_get_child(GTK_BIN(m_wLineLeft)));
@@ -390,6 +423,16 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSetImageBackground"), pSS, AP_STRING_ID_DLG_FormatFrame_SetImageBackground);
+
+//  Button and label for text wrapping
+
+	m_wWrapButton = glade_xml_get_widget(xml, "bWrapButton");
+	gtk_container_remove(GTK_CONTAINER(m_wWrapButton), gtk_bin_get_child(GTK_BIN(m_wWrapButton)));
+	label_button_with_abi_pixmap(m_wWrapButton, "tb_WrapButton_xpm");
+		
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapState"), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
+	localizeLabel(glade_xml_get_widget(xml, "lbSetTextWrapping"), pSS, AP_STRING_ID_DLG_FormatFrame_SetTextWrapping);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),getWrapping());
 	
 
 //	add the buttons for background image to the dialog.
@@ -476,6 +519,12 @@ void AP_UnixDialog_FormatFrame::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_wNoImageButton),
 							"clicked",
 							G_CALLBACK(s_remove_image),
+							reinterpret_cast<gpointer>(this));
+
+
+	g_signal_connect(G_OBJECT(m_wWrapButton),
+							"clicked",
+							G_CALLBACK(s_WrapButton),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wCloseButton),

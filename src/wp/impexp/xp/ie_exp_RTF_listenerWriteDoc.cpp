@@ -802,7 +802,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	const XML_Char * pszBorderWidth = NULL;
 	
 	FL_FrameType iFrameType = FL_FRAME_TEXTBOX_TYPE;
-	FL_FrameFormatMode iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	FL_FrameFormatMode iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	UT_sint32 iXpos = convertInchToTwips(UT_convertToInches("0.0in"));
 	UT_sint32 iYpos = convertInchToTwips(UT_convertToInches("0.0in"));
 	UT_sint32 iWidth = convertInchToTwips(UT_convertToInches("1.0in"));
@@ -837,17 +837,17 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 	if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
 	{
-		iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+		iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	}
 	else if(strcmp(pszPositionTo,"block-above-text") == 0)
 	{
-		iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+		iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	}
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+		iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK;
 	}
 
 // Xpos
@@ -984,7 +984,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("*");
 	m_pie->_rtf_keyword("shpinst");
-	if( iFramePositionTo == FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT)
+	if( iFramePositionTo == FL_FRAME_POSITIONED_TO_BLOCK)
 	{
 		m_pie->_rtf_keyword("shpz",0); // All at z= 0;
 		m_pie->_rtf_keyword("shpbxmargin");

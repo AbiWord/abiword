@@ -66,6 +66,7 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_AutoNum;
+class fp_VerticalContainer;
 
 // Tab types and leaders
 typedef enum {
@@ -124,6 +125,10 @@ public:
 
     void                formatAll(void);
 	virtual void        format(void);
+	void                formatWrappedFromHere(fp_Line * pLine,fp_Page * pPage);
+	fp_Line *           getNextWrappedLine(UT_sint32 iX,
+											  UT_sint32 iHeight,
+										   fp_Page * pPage);
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
 	virtual void		redrawUpdate();
@@ -435,6 +440,11 @@ protected:
 	bool                    m_bIsTOC;
 	bool                    m_bStyleInTOC;
 	UT_sint32               m_iTOCLevel;
+
+	bool                    m_bSameYAsPrevious;
+	UT_sint32               m_iAccumulatedHeight;
+	fp_VerticalContainer *  m_pVertContainer;
+	UT_sint32               m_iLinePosInContainer;
 };
 
 /*

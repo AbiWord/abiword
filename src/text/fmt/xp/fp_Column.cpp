@@ -51,6 +51,7 @@ fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLay
 	m_bIntentionallyEmpty(0),
 	m_imaxContainerHeight(0)
 {
+	clearWrappedLines();
 }
 
 /*!
@@ -828,6 +829,13 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 	}
 
 	pNewContainer->setContainer(this);
+	if(pNewContainer->getContainerType() == FP_CONTAINER_LINE)
+	{
+		if(static_cast<fp_Line *>(pNewContainer)->isWrapped())
+		{
+			return true;
+		}
+	}
 	pNewContainer->recalcMaxWidth(true);
 
 	return true;
@@ -994,8 +1002,17 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
-		xxx_UT_DEBUGMSG(("Draw container %d Type %d \n",i,pContainer->getContainerType()));
-
+		xxx_UT_DEBUGMSG(("Draw container %x yoff %d\n",pContainer,da.yoff));
+#if 0
+		if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+			fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+			if(pLine->isSameYAsPrevious())
+			{
+				UT_DEBUGMSG((" !!!!!! Same previous!!!!!!!!\n"));
+			}
+		}
+#endif
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
@@ -1146,6 +1163,60 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		pTab->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
 								pos, bBOL, bEOL,isTOC);
+	}
+	else if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+	{
+//
+// Deal with wrapped lines where more than one line can have the same Y
+//
+		fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+		if(pLine->isWrapped())
+		{
+			fp_Line * pNext = static_cast<fp_Line *>(getNext());
+			if(pNext && (pNext->getY() == pLine->getY()))
+			{
+				pNext->setSameYAsPrevious(true);
+				fp_ContainerObject *pBest = pContainer;
+				UT_sint32 xmin = UT_MIN(abs(pNext->getX() - x),abs(pNext->getX()+pNext->getMaxWidth() -x));
+				while(pNext && pNext->isSameYAsPrevious())
+				{
+					if((pNext->getX() < x) && (x < pNext->getX() + pNext->getMaxWidth()))
+					{
+						pNext->mapXYToPosition(x - pContainer->getX(),
+											   y - pContainer->getY() , 
+											   pos, bBOL, bEOL,isTOC);
+						return;
+					}
+					UT_sint32 xmin1 = UT_MIN(abs(pNext->getX() - x),abs(pNext->getX()+pNext->getMaxWidth() -x));
+					if(xmin1 < xmin)
+					{
+						xmin = xmin1;
+						pBest = static_cast<fp_ContainerObject *>(pNext);
+					}
+					pNext = static_cast<fp_Line *>(pNext->getNext());
+					if(pNext->getY() == pLine->getY())
+					{
+						pNext->setSameYAsPrevious(true);
+					}
+				}
+				pBest->mapXYToPosition(x - pContainer->getX(),
+									   y - pContainer->getY() , 
+									   pos, bBOL, bEOL,isTOC);
+				return;
+			}
+			else
+			{
+				pContainer->mapXYToPosition(x - pContainer->getX(),
+											y - pContainer->getY() , 
+											pos, bBOL, bEOL,isTOC);
+			}
+		}
+		else
+		{
+			pContainer->mapXYToPosition(x - pContainer->getX(),
+								y - pContainer->getY() , 
+									pos, bBOL, bEOL,isTOC);
+		}
 	}
 	else
 	{
@@ -1498,6 +1569,7 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 */
 void fp_Column::layout(void)
 {
+	clearWrappedLines();
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	UT_sint32 iOldY  =-1;
@@ -1518,6 +1590,28 @@ void fp_Column::layout(void)
 // Set the location first so the height of a table can be calculated
 // and adjusted.
 //
+		if(pContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+//
+// Handle case of lines broken around a positioned object with text wrap on
+//
+			fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+			if(pLine->isWrapped())
+			{
+				addWrappedLine(pLine);
+			}
+			if(pLine->isSameYAsPrevious() && pLine->getPrev())
+			{
+				UT_sint32 iPrevY = static_cast<fp_Line *>(pLine->getPrev())->getY();
+				if(pLine->getY() != iPrevY)
+				{
+					pLine->clearScreen();
+					pLine->setY(iPrevY);
+				}
+				pPrevContainer = pLine;
+				continue;
+			}
+		}
 		if(pContainer->getY() != iY)
 		{
 			pContainer->clearScreen();
@@ -1584,8 +1678,24 @@ void fp_Column::layout(void)
 		// it and the current line.
 		if (pPrevContainer)
 		{
-			xxx_UT_DEBUGMSG(("layout: Assigned screen height %x %d \n",pPrevContainer,iY-iPrevY));
-			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			if(pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
+			{
+				fp_Line * pLine = static_cast<fp_Line *>(pPrevContainer);
+				while(pLine && pLine->isSameYAsPrevious())
+				{
+					pLine->setAssignedScreenHeight(iY - iPrevY);
+					pLine = static_cast<fp_Line *>(pLine->getPrev());
+				}
+				if(pLine)
+				{
+					pLine->setAssignedScreenHeight(iY - iPrevY);
+				}
+			}
+			else
+			{
+				xxx_UT_DEBUGMSG(("layout: Assigned screen height %x %d \n",pPrevContainer,iY-iPrevY));
+				pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			}
 		}
 		iPrevY = iY;
 		iY += iContainerHeight;
@@ -1614,7 +1724,23 @@ void fp_Column::layout(void)
 	if (pPrevContainer)
 	{
 		UT_ASSERT((iY - iPrevY + getGraphics()->tlu(1)) > 0);
-		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + getGraphics()->tlu(1));
+		if(pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
+		{
+			fp_Line * pLine = static_cast<fp_Line *>(pPrevContainer);
+			while(pLine && pLine->isSameYAsPrevious())
+			{
+				pLine->setAssignedScreenHeight(iY - iPrevY);
+				pLine = static_cast<fp_Line *>(pLine->getPrev());
+			}
+			if(pLine)
+			{
+				pLine->setAssignedScreenHeight(iY - iPrevY);
+			}
+		}
+		else
+		{
+			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+		}
 	}
 //	validate();
 

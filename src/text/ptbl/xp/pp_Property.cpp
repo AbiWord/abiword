@@ -73,6 +73,8 @@ static PP_Property _props[] =
 	{ "bot-style",             "solid",           false, NULL, PP_LEVEL_TABLE},
 	{ "bot-thickness",         "1px",             false, NULL, PP_LEVEL_TABLE},
 
+	{ "bounding-space",        "0.05in",          false, NULL, PP_LEVEL_FRAME},
+
 	{ "cell-margin-bottom",   "0.002in",         false,  NULL, PP_LEVEL_TABLE},
 	{ "cell-margin-left",     "0.002in",         false,  NULL, PP_LEVEL_TABLE},
 	{ "cell-margin-right",    "0.002in",         false,  NULL, PP_LEVEL_TABLE},
@@ -232,7 +234,8 @@ static PP_Property _props[] =
 	{ "top-thickness",         "1px",             false, NULL, PP_LEVEL_TABLE},
 
 	{ "widows",                "2",               false, NULL, PP_LEVEL_BLOCK},
-	{ "width",                 "0in",             false, NULL, PP_LEVEL_CHAR} 
+	{ "width",                 "0in",             false, NULL, PP_LEVEL_CHAR}, 
+	{ "wrap-mode",             "above-text",      false, NULL, PP_LEVEL_FRAME} 
 };
 
 #ifdef __MRC__

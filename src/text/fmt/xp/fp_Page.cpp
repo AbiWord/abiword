@@ -58,7 +58,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_pFooter(0),
 		m_pHeader(0),
 		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT),
-		m_pLastMappedTOC(NULL)
+		m_pLastMappedTOC(NULL),
+		m_iCountWrapPasses(0)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
@@ -134,6 +135,282 @@ UT_sint32 fp_Page::getHeight(void) const
 UT_sint32 fp_Page::getColumnGap(void) const
 {
 	return getOwningSection()->getColumnGap();
+}
+
+/*!
+ * This method scans the page, looking for lines that overlap wrapped
+ * positioned frames. As it finds them it records the line and the block
+ * After scanning the page it calls a method in the block to rebreak
+ * the papargraph starting from the line supplied, but now making sure
+ * to not overlap any wrapped objects.
+ * If it does a re-break of any paragraph it returns the first container
+ * in the page. 
+ * and sets pNextColumn to the first column on the page.
+ * fp_ColumnBreaker then lays out the page again.
+ * If there are no rebreaks it returns NULL and fp_ColumnBreaker moves on to
+ * the next page.
+ * pNextCol is the next column fb_ColumnBreaker will evaluate it is used
+ * as an output..
+ */
+fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
+{
+	if(m_iCountWrapPasses > 100)
+	{
+		return NULL;
+	}
+	m_iCountWrapPasses++;
+	UT_DEBUGMSG(("Wrap passes = %d \n",m_iCountWrapPasses));
+	UT_sint32 i= 0;
+	UT_sint32 nWrapped = 0;
+	fp_Container * pFirst = NULL;
+	fl_BlockLayout * pFirstBL = NULL;
+	for(i=0; i < static_cast<UT_sint32>(countColumnLeaders()); i++)
+	{
+		fp_Column * pCol = getNthColumnLeader(i);
+		if(i == 0)
+		{
+			pFirst = static_cast<fp_Container *>(pCol->getNthCon(0));
+			if(pFirst == NULL)
+			{
+				return NULL;
+			}
+			if(pFirst->getContainerType() == FP_CONTAINER_LINE)
+			{
+				pFirstBL = static_cast<fp_Line *>(pFirst)->getBlock();
+			}
+		}
+		while(pCol)
+		{
+			nWrapped += pCol->getNumWrapped();
+			pCol = static_cast<fp_Column *>(pCol->getNext());
+		}
+	}
+	UT_sint32 nWrappedObjs = 0;
+	for(i=0; i< static_cast<UT_sint32>(countFrameContainers()); i++)
+	{
+		fp_FrameContainer * pFrame = getNthFrameContainer(i);
+		if(pFrame->isWrappingSet())
+		{
+			nWrappedObjs++;
+		}
+	}
+	if((nWrapped == 0) && (nWrappedObjs == 0))
+	{
+		return NULL;
+	}
+	bool bFormatAllWrapped = ((nWrapped > 0) && (nWrappedObjs == 0));
+	UT_GenericVector<_BL *> vecBL;
+	vecBL.clear();
+	for(i=0; i < static_cast<UT_sint32>(countColumnLeaders()); i++)
+	{
+		fp_Column * pCol = getNthColumnLeader(i);
+		while(pCol)
+		{
+			UT_sint32 j = 0;
+			for(j=0; j < static_cast<UT_sint32>(pCol->countCons()); j++)
+			{
+				fp_Container * pCon = static_cast<fp_Container *>(pCol->getNthCon(j));
+				xxx_UT_DEBUGMSG(("Look at con %x at j %d \n",pCon,j));
+				if(pCon->getContainerType() == FP_CONTAINER_LINE)
+				{
+					fp_Line * pLine = static_cast<fp_Line *>(pCon);
+					if(bFormatAllWrapped)
+					{
+						if(pLine->isWrapped())
+						{
+							fl_BlockLayout * pBL = pLine->getBlock();
+							bool bPrev = false;
+							UT_sint32 k = 0;
+							for(k=0; k<static_cast<UT_sint32>(vecBL.getItemCount()); k++)
+							{
+								_BL * ppBL = vecBL.getNthItem(k);
+								if(ppBL->m_pBL == pBL)
+								{
+									bPrev = true;
+								}
+							}
+							if(!bPrev)
+							{
+								_BL * pBLine = new _BL(pBL,pLine);
+								vecBL.addItem(pBLine);
+							}
+							k =j;
+							while(pLine && pLine->getBlock() == pBL)
+							{
+								k++;
+								if(k >= static_cast<UT_sint32>(pCol->countCons()))
+								{
+									break;
+								}
+								pCon = static_cast<fp_Container *>(pCol->getNthCon(k));
+								if(pCon->getContainerType() == FP_CONTAINER_LINE)
+								{
+									pLine = static_cast<fp_Line *>(pCon);
+								}
+								else
+								{
+									break;
+								}
+							}
+							j = k-1;
+						}
+					}
+					else
+					{
+//
+// OK look to see if this line either overlaps a wrapped object or has
+// some space where a wrapped object should be
+//
+						bool bFoundOne = false;
+						if(pLine->isWrapped())
+						{
+							if(overlapsWrappedFrame(pLine))
+							{
+//
+// Wrapped line overlaps a wrapped frame
+//
+								UT_DEBUGMSG(("Found wrapped line %x that overlaps \n",pLine));
+								bFoundOne = true;
+							}
+							else
+							{
+//
+// Look to see if the wrapped line has no white space that overlaps
+// a wrapped object
+//
+								UT_Rect recLeft;
+								UT_Rect recRight;
+								pLine->genOverlapRects(recLeft,recRight);
+								
+								if((recLeft.width > 0 && recRight.width >0)
+								   && !overlapsWrappedFrame(recLeft) &&
+								   !overlapsWrappedFrame(recRight))
+								{
+									UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
+									bFoundOne = true;
+								}
+							}
+						}
+						else
+						{
+//
+// line overlaps a wrapped frame
+//
+							if(overlapsWrappedFrame(pLine))
+							{
+								UT_DEBUGMSG(("Found unwrapped line %x that overlaps \n",pLine));
+								bFoundOne = true;
+							}
+						}
+						if(bFoundOne)
+						{
+							fl_BlockLayout * pBL = pLine->getBlock();
+							bool bPrev = false;
+							UT_sint32 k = 0;
+							for(k=0; k<static_cast<UT_sint32>(vecBL.getItemCount()); k++)
+							{
+								_BL * ppBL = vecBL.getNthItem(k);
+								if(ppBL->m_pBL == pBL)
+								{
+									bPrev = true;
+								}
+							}
+							if(!bPrev)
+							{
+								_BL * pBLine = new _BL(pBL,pLine);
+								vecBL.addItem(pBLine);
+							}
+							k =j;
+							while(pLine && pLine->getBlock() == pBL)
+							{
+								k++;
+								if(k >= static_cast<UT_sint32>(pCol->countCons()))
+								{
+									break;
+								}
+								pCon = static_cast<fp_Container *>(pCol->getNthCon(k));
+								if(pCon->getContainerType() == FP_CONTAINER_LINE)
+								{
+									pLine = static_cast<fp_Line *>(pCon);
+								}
+								else
+								{
+									break;
+								}
+							}
+							j = k-1;
+						}
+					}
+				}
+			}
+			pCol = static_cast<fp_Column *>(pCol->getFollower());
+		}
+	}
+	if(vecBL.getItemCount() == 0)
+	{
+		return NULL;
+	}
+	for(i=0; i<static_cast<UT_sint32>(vecBL.getItemCount()); i++)
+	{
+		_BL * pBLine = vecBL.getNthItem(i);
+		xxx_UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));
+		pBLine->m_pBL->formatWrappedFromHere(pBLine->m_pL,this);
+	}
+	UT_VECTOR_PURGEALL(_BL *, vecBL);
+	pNextCol = getNthColumnLeader(0);
+	fp_Container * pNewFirstCon = pFirstBL->getFirstContainer();
+	while(pNewFirstCon && pNewFirstCon->getPage() != NULL && pNewFirstCon->getPage() != this)
+	{
+		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());
+	}
+	return pNewFirstCon;
+}
+
+
+/*!
+ * Returns true if the supplied rectangle overlaps with one wrapped frame
+ * on the page.
+ */
+bool fp_Page::overlapsWrappedFrame(fp_Line * pLine)
+{
+	UT_Rect * pRec = pLine->getScreenRect();
+	if(pRec == NULL)
+	{
+		return false;
+	}
+	bool bRes = overlapsWrappedFrame(*pRec);
+	delete pRec;
+	return bRes;
+}
+/*!
+ * Returns true if the supplied rectangle overlaps with one wrapped frame
+ * on the page. The rectangle is relative to the screen.
+ */
+bool fp_Page::overlapsWrappedFrame(UT_Rect & rec)
+{
+	UT_sint32 i=0;
+	for(i=0; i<static_cast<UT_sint32>(countFrameContainers());i++)
+	{
+		fp_FrameContainer * pFC = getNthFrameContainer(i);
+		if(!pFC->isWrappingSet())
+		{
+			continue;
+		}
+		UT_Rect * pMyFrameRec = pFC->getScreenRect();
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+		UT_sint32 iextra = pFL->getBoundingSpace();
+		pMyFrameRec->left -= iextra;
+		pMyFrameRec->top -= iextra;
+		pMyFrameRec->width += 2*iextra;
+		pMyFrameRec->height += 2*iextra;
+		if(rec.intersectsRect(pMyFrameRec))
+		{
+			delete pMyFrameRec;
+			return true;
+		}
+		delete pMyFrameRec;
+	}
+	return false;
 }
 
 /*!
@@ -438,6 +715,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 // only call this for printing and honour the option to not fill the paper with
 // color.
 //
+	UT_DEBUGMSG(("Draw wrap passes = %d \n",m_iCountWrapPasses));
+	m_iCountWrapPasses = 0;
 	int i=0;
 	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -1384,7 +1663,7 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 				}
 				
 				iDist = pFrameC->distanceFromPoint(x, y);
-				if(iDist > m_pLayout->getGraphics()->tlu(3))
+				if(static_cast<UT_sint32>(iDist) > m_pLayout->getGraphics()->tlu(3))
 				{
 					iDist += 200000;
 				}

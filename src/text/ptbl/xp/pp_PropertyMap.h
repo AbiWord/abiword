@@ -46,6 +46,7 @@ public:
 		abi_bot_color,
 		abi_bot_style,
 		abi_bot_thickness,
+		abi_bounding_space,
 		abi_cell_margin_bottom,
 		abi_cell_margin_left,
 		abi_cell_margin_right,
@@ -190,6 +191,7 @@ public:
 		abi_top_thickness,
 		abi_widows,
 		abi_width,
+		abi_wrap_mode,
 		abi__count
 	};
 	enum TypeColor

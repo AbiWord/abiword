@@ -152,13 +152,19 @@ public:
 	bool                validate(void);
 	FV_View*			getView(void) const
 		{ return getPage()->getDocLayout()->getView(); }
-
+	UT_sint32           getNumWrapped(void) const
+		{ return m_vecWrappedLines.getItemCount();}
+	void                addWrappedLine(fp_Line * pLine)
+		{ m_vecWrappedLines.addItem(pLine);}
+	void                clearWrappedLines(void)
+		{ m_vecWrappedLines.clear();}
+	fp_Line *           getNthWrappedLine(UT_sint32 i)
+		{ return m_vecWrappedLines.getNthItem(i);}
 protected:
     void                _setMaxContainerHeight(UT_sint32 iContainerHeight);
 	UT_sint32           _getMaxContainerHeight(void) const;
 
 	virtual void			_drawBoundaries(dg_DrawArgs* pDA);
-
 private:
 
 	/*!
@@ -194,6 +200,7 @@ private:
 	 */
 	bool					m_bIntentionallyEmpty;
 	UT_sint32               m_imaxContainerHeight;
+    UT_GenericVector<fp_Line *> m_vecWrappedLines;
 };
 
 class ABI_EXPORT fp_Column : public fp_VerticalContainer

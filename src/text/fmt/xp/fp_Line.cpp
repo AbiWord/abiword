@@ -85,7 +85,9 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_iRunsRTLcount(0),
 	m_iRunsLTRcount(0),
 	m_bIsCleared(true),
-	m_bContainsFootnoteRef(false)
+	m_bContainsFootnoteRef(false),
+	m_bIsWrapped(false),
+	m_bIsSameYAsPrevious(false)
 {
 	if(!s_iClassInstanceCounter)
 	{
@@ -215,6 +217,65 @@ bool fp_Line::containsOffset(PT_DocPosition blockOffset)
 		return false;
 	}
 	return true;
+}
+
+/*!
+ * Return two rectangles that represent the space left to the left and right
+ * right of the line where a wrapped object might be.
+ */
+void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
+{
+	UT_Rect * pRec = getScreenRect();
+	recLeft.top = pRec->top;
+	recRight.top = pRec->top;
+	recLeft.height = pRec->height;
+	recRight.height = pRec->height;
+	if(!isWrapped())
+	{
+		delete pRec;
+		recLeft.width = 0;
+		recRight.width = 0;
+		return;
+	}
+	UT_sint32 iLeftX = m_pBlock->getLeftMargin();
+	UT_sint32 iMaxWidth = getContainer()->getWidth();
+	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
+	if (isFirstLineInBlock())
+	{
+		if(iBlockDir == UT_BIDI_LTR)
+			iLeftX += m_pBlock->getTextIndent();
+	}
+	UT_sint32 xdiff = pRec->left - getX();
+	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
+	bool isWrapped = false;
+	if(pPrev && isSameYAsPrevious())
+	{
+		recLeft.left = pPrev->getX() + pPrev->getMaxWidth() + xdiff;
+		recLeft.width = getX() + xdiff - recLeft.left;
+	}
+	else
+	{
+		recLeft.left = iLeftX + xdiff;
+		recLeft.width = pRec->left - recLeft.left;
+	}
+	recRight.left = pRec->left + pRec->width;
+	fp_Line * pNext = static_cast<fp_Line *>(getNext());
+	if(pNext && pNext->isSameYAsPrevious())
+	{
+		recRight.width = pNext->getX() - getX() - getMaxWidth();
+	}
+	else
+	{
+		iMaxWidth -= m_pBlock->getRightMargin();
+		recRight.width = iMaxWidth +xdiff - recRight.left;
+	}
+	UT_ASSERT(recLeft.width >= 0);
+	UT_ASSERT(recRight.width >= 0);
+	if((recLeft.left <= (iLeftX+xdiff)) && (recRight.left >= (iLeftX + iMaxWidth)))
+	{
+		setWrapped(false);
+	}
+	delete pRec;
 }
 
 /*!
@@ -494,7 +555,6 @@ void fp_Line::remove(void)
 	// called from this function so we will cache them
 	fp_ContainerObject * pPrev = getPrev();
 	fp_ContainerObject * pNext = getNext();
-	
 	if (pNext)
 	{
 		pNext->setPrev(pPrev);
@@ -506,6 +566,7 @@ void fp_Line::remove(void)
 	}
 	if(getContainer())
 	{
+		xxx_UT_DEBUGMSG(("Removing line %x from container \n",this));
 		static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
 	}
 }
@@ -806,6 +867,38 @@ void fp_Line::recalcHeight()
 			iNewHeight = UT_MAX(iMaxAscent+static_cast<UT_sint32>(iMaxDescent*dLineSpace + 0.5), static_cast<UT_sint32>(dLineSpace));
 		}
 	}
+	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
+	if(isSameYAsPrevious() && pPrev)
+	{
+		if(iNewHeight > pPrev->getHeight())
+		{
+			pPrev->clearScreen();
+			pPrev->setHeight(iNewHeight);
+			pPrev->setAscent(iNewAscent);
+			pPrev->setDescent(iNewDescent);
+			pPrev->setScreenHeight(-1);
+			pPrev = static_cast<fp_Line *>(getPrev());
+			while(pPrev && pPrev->isSameYAsPrevious())
+			{
+				pPrev->clearScreen();
+				pPrev->setHeight(iNewHeight);
+				pPrev->setAscent(iNewAscent);
+				pPrev->setDescent(iNewDescent);
+				pPrev->setScreenHeight(-1);
+				pPrev = static_cast<fp_Line *>(getPrev());
+			}
+			return;
+		}
+		else if(iNewHeight < pPrev->getHeight())
+		{
+			clearScreen();
+			setHeight(pPrev->getHeight());
+			setAscent(pPrev->getAscent());
+			m_iScreenHeight = -1;	// undefine screen height
+			setDescent(pPrev->getDescent());
+			return;
+		}
+	}
 
 	if (
 		(iOldHeight != iNewHeight)
@@ -842,6 +935,10 @@ fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 
 void fp_Line::clearScreen(void)
 {
+	if(getBlock() == NULL)
+	{
+		return;
+	}
 	if(getBlock()->isHdrFtr() || isScreenCleared())
 	{
 		return;
@@ -2540,6 +2637,10 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 
 void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 {
+	if(m_pBlock == NULL)
+	{
+		return;
+	}
 	UT_sint32 iX = m_pBlock->getLeftMargin();
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
 

@@ -4526,7 +4526,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   {
 	  m_iRight++;
   }
-  xxx_UT_DEBUGMSG(("MSWord Import:  iLeft %d iRight %d m_iCurrentCell %d \n",m_iLeft,m_iRight,m_iCurrentCell));
+  UT_DEBUGMSG(("MSWord Import:  iLeft %d iRight %d m_iCurrentCell %d \n",m_iLeft,m_iRight,m_iCurrentCell));
   UT_return_if_fail(vspan >= 0);
   UT_String_sprintf(propBuffer,
 		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ",

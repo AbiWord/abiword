@@ -45,6 +45,18 @@ class fp_TableContainer;
 class fl_TOCLayout;
 struct dg_DrawArgs;
 
+class _BL
+	{
+	public:
+		_BL(fl_BlockLayout * pBL,fp_Line * pL) :
+			m_pBL(pBL),
+			m_pL(pL)
+			{
+			}
+		fl_BlockLayout * m_pBL;
+		fp_Line * m_pL;
+	};
+
 // ----------------------------------------------------------------
 class ABI_EXPORT fp_Page
 {
@@ -92,7 +104,7 @@ public:
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
 	bool				isEmpty(void) const;
-
+	fp_Container *      updatePageForWrapping(fp_Column *& pNextCol);
 	// Header/Footer functions.
 	void                removeHdrFtr(HdrFtrType hfType);
 	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType) const;
@@ -122,7 +134,8 @@ public:
     void                expandDamageRect(UT_sint32 x, UT_sint32 y, 
 										 UT_sint32 width, UT_sint32 height);
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);
-
+	bool                overlapsWrappedFrame(fp_Line * pLine);
+	bool                overlapsWrappedFrame(UT_Rect & rec);
 	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
 		{ m_pLastMappedTOC = pTOCL;}
 	fl_TOCLayout *      getLastMappedTOC(void)
@@ -166,6 +179,7 @@ private:
 	fl_TOCLayout *      m_pLastMappedTOC;
 
 	UT_Rect             m_rDamageRect;
+	UT_sint32           m_iCountWrapPasses;
 };
 
 #endif /* PAGE_H */
