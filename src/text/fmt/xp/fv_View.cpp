@@ -564,6 +564,7 @@ void FV_View::pasteFromLocalTo(PT_DocPosition pos)
 	_pasteFromLocalTo(pos);
 	clearCursorWait();
 	m_pDoc->clearDoingPaste();
+	m_pDoc->setDontImmediatelyLayout(false);
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
