@@ -243,6 +243,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					}
 				}
 				iContainerHeight = pVTab->getHeight();
+				if(pVTab->getContainerType() == FP_CONTAINER_TOC)
+				{
+					iContainerHeight = static_cast<fp_TOCContainer *>(pVTab)->getHeight();
+				}
 			}
 			else
 			{
@@ -286,6 +290,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					iWorkingColHeight += iFootnoteHeight;
 				}
 			}
+
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
 			{
 				pOffendingContainer = pCurContainer;
@@ -514,7 +519,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 							// Can get into trouble if the pFirstContainer
 							// points to a broken table after
 							// this. Check for this.
-							//
+							// Not sure why this code is meant to work at all
+#if 0
 							for (fp_TOCContainer * pTOC = 
 								 static_cast<fp_TOCContainer *>(pLastContainerToKeep);
 								 pTOC;
@@ -529,6 +535,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 								}
 								
 							}
+#endif
 						}
 						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 5 %x \n",pLastContainerToKeep));
 					}
@@ -1268,6 +1275,7 @@ bool fb_ColumnBreaker::_breakTOC(fp_Container*& pOffendingContainer,
 		}
 		return true;
 	}
+
 	return false;
 }
 
