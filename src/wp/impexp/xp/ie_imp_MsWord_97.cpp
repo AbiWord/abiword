@@ -2827,8 +2827,6 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
     // build column width properties string
     UT_String propBuffer;
     
-    const char * loc = setlocale(LC_NUMERIC,"C");
-
     for (UT_uint32 i = 0; i < m_vecColumnWidths.size(); i++) {
       UT_String_sprintf(propBuffer,
 			"%s/",
@@ -2836,7 +2834,6 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 			);
       props += propBuffer;
     }
-    setlocale(LC_NUMERIC, loc);
 
     props += "; ";
     m_vecColumnWidths.clear ();
