@@ -761,7 +761,7 @@ void IE_MailMerge_RegisterXP ()
 {
 	IE_MailMerge::registerMerger (new IE_XMLMerge_Sniffer ());
 	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Comma Separated Values (*.csv)", "*.csv", ','));
-	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Tabbed Text (.tdt)", "*.tdt", '\t'));
+	IE_MailMerge::registerMerger (new IE_Delimiter_Sniffer ("Tabbed Text (*.tdt)", "*.tdt", '\t'));
 }
 
 void IE_MailMerge_UnRegisterXP ()
