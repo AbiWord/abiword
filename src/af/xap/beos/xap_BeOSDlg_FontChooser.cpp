@@ -40,11 +40,12 @@ class FontWin:public BWindow {
 		void UpdateFontList();
 		void UpdateTypeList();
 		void UpdatePreview();
-		
+		void FillInSizeList();
 	private:
 		int 			spin;
 		XAP_BeOSDialog_FontChooser *m_FontChooser;
 		BFont m_CurrentFont;
+		rgb_color m_TextColor;
 };
 void FontWin::UpdateTypeList()
 {
@@ -70,6 +71,32 @@ void FontWin::UpdateTypeList()
 	typeList->Select(0);
 	Unlock();
 
+}
+void FontWin::FillInSizeList()
+{
+	BListView *sizeList=(BListView *)FindView("sizelist");
+	UT_uint32 i;
+	char TempBuffer[3];
+	Lock();
+	for (i=8;i<12;i++)
+	{
+		sprintf(TempBuffer,"%d",i);
+		TempBuffer[3]=0;
+		sizeList->AddItem(new BStringItem(TempBuffer));
+	}
+	for (i=12;i<28;i+=2)
+	{
+		sprintf(TempBuffer,"%d",i);
+		TempBuffer[3]=0;
+		sizeList->AddItem(new BStringItem(TempBuffer));
+	}
+	for (i=28;i<72;i+=8)
+	{
+		sprintf(TempBuffer,"%d",i);
+		TempBuffer[3]=0;
+		sizeList->AddItem(new BStringItem(TempBuffer));
+	}
+	Unlock();
 }
 void FontWin::UpdateFontList()
 {
@@ -130,6 +157,56 @@ void FontWin::MessageReceived(BMessage *msg)
 			}
 		}
 		break;
+		case 'undl':
+		{
+			UT_sint32 value=0;
+			msg->FindInt32("be:value",(int32 *)&value);
+			if (value)
+			{
+			}
+			else
+			{
+			}
+			UpdatePreview();
+		}
+		break;
+		case 'strk':
+		{
+			UT_sint32 value=0;
+			msg->FindInt32("be:value",(int32 *) &value);
+			if (value)
+			{
+			}
+			else
+			{
+			}
+			UpdatePreview();
+		}
+		break;
+		case 'ssel':
+		{
+		UT_sint32 index=0;
+			BListView *theView;
+			msg->FindInt32("index",(int32 *)&index);
+			msg->FindPointer("source",(void **)&theView);
+			if (index > -1)
+			{
+				BStringItem *theItem=dynamic_cast<BStringItem *>(theView->ItemAt(index));
+				m_CurrentFont.SetSize(atoi(theItem->Text()));
+				UpdatePreview();
+			}
+		}
+		break;
+		case 'csel':
+		{
+			BColorControl *theColorControl;
+			msg->FindPointer("source",(void **)&theColorControl);
+
+			m_TextColor=theColorControl->ValueAsColor();
+			UpdatePreview();
+		}
+		break;
+
 		default:
 			BWindow::MessageReceived(msg);
 			break;
@@ -137,6 +214,16 @@ void FontWin::MessageReceived(BMessage *msg)
 }
 void FontWin::UpdatePreview()
 {
+	BView *previewView=(BView *)FindView("previewview");
+	previewView->Window()->Lock();
+	previewView->SetFont(&m_CurrentFont);
+	rgb_color white={255,255,255};
+	rgb_color black={0,0,0};
+	previewView->SetHighColor(white);
+	previewView->FillRect(Bounds());
+	previewView->SetHighColor(m_TextColor);
+	previewView->DrawString("Lorem ipsum dolor sit amet, consectetaur adipisicing...",BPoint(0,previewView->Bounds().Height()/2));
+	previewView->Window()->Unlock();
 }
 
 FontWin::FontWin(BMessage *data) 
@@ -151,6 +238,7 @@ void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) {
 	Show();
 	UpdateFontList();
 	UpdateTypeList();
+	FillInSizeList();
 	UpdatePreview();
 	while (spin) { snooze(1000); }
 	Hide();
@@ -170,6 +258,11 @@ bool FontWin::QuitRequested() {
 		delete(TheItem);
 	}
 	FontList=(BListView *)FindView("typelist");
+	while ((TheItem=dynamic_cast<BStringItem *>(FontList->RemoveItem(0L))))
+	{
+		delete(TheItem);
+	}
+	FontList=(BListView *)FindView("sizelist");
 	while ((TheItem=dynamic_cast<BStringItem *>(FontList->RemoveItem(0L))))
 	{
 		delete(TheItem);
@@ -201,9 +294,8 @@ XAP_BeOSDialog_FontChooser::~XAP_BeOSDialog_FontChooser(void)
 void XAP_BeOSDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	BMessage msg;
-	FontWin  *newwin;
 	if (RehydrateWindow("FontWindow", &msg)) {
-                newwin = new FontWin(&msg);
+                FontWin *newwin = new FontWin(&msg);
 		newwin->SetDlg(this);
 		//Take the information here ...
 		newwin->Close();
