@@ -53,7 +53,7 @@ bool UT_Language::s_Init = true;
 
 
 // the constructor looks up the translations for the property and sorts out the table
-// alphabetically by the translation
+// alphabetically by the property
 
 UT_Language::UT_Language()
 {
@@ -112,6 +112,21 @@ UT_uint32 UT_Language::getIdFromProperty(const XML_Char * prop)
 	lang_entry * e = (lang_entry *) bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
 	if(e)
 		return e->id;
+	else
+		return 0;
+}
+
+// this function is not as useless as might seem; it takes a pointer to a property string, finds the same
+// property in the static table and returns the pointer to it
+// this is used by fp_TextRun to set its m_pLanguage member; by always refering into the static table
+// it is possible to compare the language property by simply comparing the pointers, rather than
+// having to use strcmp
+
+const XML_Char *  UT_Language::getPropertyFromProperty(const XML_Char * prop)
+{
+	lang_entry * e = (lang_entry *) bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
+	if(e)
+		return e->prop;
 	else
 		return 0;
 }
