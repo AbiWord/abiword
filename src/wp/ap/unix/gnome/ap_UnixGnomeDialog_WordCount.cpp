@@ -64,8 +64,16 @@ GtkWidget * AP_UnixGnomeDialog_WordCount::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	ConstructWindowName();
-	m_windowMain = gnome_dialog_new (m_WindowName, pSS->getValue(XAP_STRING_ID_DLG_Update),
-									 GNOME_STOCK_BUTTON_CLOSE, NULL);
+	m_windowMain = gnome_dialog_new (m_WindowName, NULL);
+
+	// update button
+	gnome_dialog_append_button_with_pixmap(GNOME_DIALOG(m_windowMain), 
+					       pSS->getValue(XAP_STRING_ID_DLG_Update),
+					       GNOME_STOCK_PIXMAP_REFRESH);
+
+	// close button
+	gnome_dialog_append_button(GNOME_DIALOG(m_windowMain),
+				   GNOME_STOCK_BUTTON_CLOSE);
 
 	_constructWindowContents();
 	gtk_container_add (GTK_CONTAINER (GNOME_DIALOG (m_windowMain)->vbox), m_wContent);
