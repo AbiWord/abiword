@@ -219,7 +219,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
 
-	utf8=(char*)UT_convert((char*)pChars,(iLength)*sizeof(pChars[0]),ucs4Internal(),"UTF-8",NULL,&len);
+	utf8=(char*)UT_convert((char*)pChars,(iLength)*sizeof(pChars[0]),UCS_INTERNAL,"UTF-8",NULL,&len);
 
 	//Faster to copy and not flush or to not copy and flush?
 /*

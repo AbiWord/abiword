@@ -148,7 +148,7 @@ bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 			UT_ASSERT(pEM);
 			len=PhKeyToMb((char*)&utf8,keyevent);
 			utf8[len]='\0';
-			ucs4Char = (UT_UCS4Char*) UT_convert((char*)utf8,len+1,"UTF-8",ucs4Internal(),NULL,NULL); 
+			ucs4Char = (UT_UCS4Char*) UT_convert((char*)utf8,len+1,"UTF-8",UCS_INTERNAL,NULL,NULL); 
 			invokeKeyboardMethod(pView,pEM,(UT_UCSChar *)ucs4Char,1); // no char data to offer*
 			free(ucs4Char);
 			return true;
