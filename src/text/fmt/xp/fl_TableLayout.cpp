@@ -610,7 +610,7 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 /*!
  * Return the position of the table strux. 
  */
-PT_DocPosition fl_TableLayout::getPosition(bool bActualBlockPosition = false) const
+PT_DocPosition fl_TableLayout::getPosition(bool bActualBlockPosition /* = false */) const
 {
 	return fl_ContainerLayout::getPosition(bActualBlockPosition);
 }
