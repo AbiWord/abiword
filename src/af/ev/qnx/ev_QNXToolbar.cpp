@@ -313,6 +313,7 @@ bool EV_QNXToolbar::synthesize(void)
 
 					PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_HIGHLIGHTED);
+					PtSetArg(&args[n++], Pt_ARG_ARM_FILL, Pt_TRUE, 0);
 
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_TOGGLE); 
 					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
