@@ -176,30 +176,53 @@ UT_sint32 GR_UnixImage::getDisplayHeight(void) const
 	return gdk_pixbuf_get_height (m_image);
 }
 
-bool GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
+static gboolean convCallback(const gchar *buf,
+			     gsize count,
+			     GError **error,
+			     gpointer byteBuf)
+{
+  UT_ByteBuf * pBB = reinterpret_cast<UT_ByteBuf *>(byteBuf);
+  pBB->append(reinterpret_cast<const UT_Byte *>(buf),count);
+  return TRUE;
+}
+
+/*!
+ * This method fills a byte buffer with a PNG representation of itself.
+ * This can be saved in the PT as a data-item and recreated.
+ * ppBB is a pointer to a pointer of a byte buffer. It's the callers
+ * job to delete it.
+ */
+bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
   if (!m_image)
-    {
-		UT_ASSERT(m_image);
-		*ppBB = 0;
-		return false;
-    }
+  {
+    UT_ASSERT(m_image);
+    *ppBB = 0;
+    return false;
+  }
   
-	const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
-	UT_ByteBuf * pBB = 0;
+  
+  UT_ByteBuf * pBB = 0;
+  const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
 
-	if (pixels)
-	{
-		// length is height * rowstride
-		UT_uint32 len = gdk_pixbuf_get_height (m_image) * 
-			gdk_pixbuf_get_rowstride (m_image);
-		pBB = new UT_ByteBuf();		
-		pBB->append(static_cast<const UT_Byte *>(pixels), len);		
-	}
-
-	*ppBB = pBB;
-	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
-	return true;
+  if (pixels)
+  {
+    GError    * error =NULL;
+    pBB = new UT_ByteBuf();		
+    gdk_pixbuf_save_to_callback(m_image,
+				convCallback,
+				reinterpret_cast<gpointer>(pBB),
+				"png",
+				&error,NULL,NULL);
+    if(error != NULL)
+      {
+	g_error_free (error);
+      }
+  }
+  
+  *ppBB = pBB;
+  UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+  return true;
 }
 
 bool GR_UnixImage::saveToPNG(const char * szFile)
@@ -213,6 +236,38 @@ bool GR_UnixImage::saveToPNG(const char * szFile)
 	delete error;
 	return false;
 
+}
+
+/*! 
+ * Returns true if pixel at point (x,y) in device units is transparent.
+ */
+bool GR_UnixImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
+{
+  if(!hasAlpha())
+  {
+    return false;
+  }
+  UT_return_val_if_fail(m_image,false);
+  UT_sint32 iBitsPerPixel = gdk_pixbuf_get_bits_per_sample(m_image);
+  UT_sint32 iRowStride = gdk_pixbuf_get_rowstride(m_image);
+  UT_sint32 iWidth =  gdk_pixbuf_get_width(m_image);
+  UT_sint32 iHeight =  gdk_pixbuf_get_height(m_image);
+  UT_ASSERT(iRowStride/iWidth == 4);
+  UT_return_val_if_fail((x>= 0) && (x < iWidth), false);
+  UT_return_val_if_fail((y>= 0) && (y < iHeight), false);
+  guchar * pData = gdk_pixbuf_get_pixels(m_image);
+  xxx_UT_DEBUGMSG(("BitsPerPixel = %d \n",iBitsPerPixel));
+  UT_sint32 iOff = iRowStride*y;
+  guchar pix0 = pData[iOff+ x*4];
+  guchar pix1 = pData[iOff+ x*4 +1];
+  guchar pix2 = pData[iOff+ x*4 +2];
+  guchar pix3 = pData[iOff+ x*4 +3];
+  if((pix3 | pix0 | pix1 | pix2) == 0)
+  {
+    return true;
+  }
+  UT_DEBUGMSG(("x %d y %d pix0 %d pix1 %d pix2 %d pix3 %d \n",x,y,pix0,pix1,pix2,pix3));
+  return false;
 }
 
 bool GR_UnixImage::hasAlpha (void) const
@@ -267,13 +322,15 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	
 	gdk_pixbuf_loader_set_size(ldr, iDisplayWidth, iDisplayHeight);
 	
-	if ( FALSE== gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
-										  static_cast<gsize>(pBB->getLength ()), &err) )
+	if ( !gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),static_cast<gsize>(pBB->getLength ()), &err) )
 	{
-		UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
+	  if(err != NULL)
+	    {
+		UT_DEBUGMSG(("DOM: couldn't write to loader:%s \n", err->message));
 		g_error_free(err);
-		gdk_pixbuf_loader_close (ldr, NULL);
-		return false ;
+	    }
+	  gdk_pixbuf_loader_close (ldr, NULL);
+	  return false ;
 	}
 //
 // This is just pointer to the buffer in the loader. This can be deleted

@@ -47,6 +47,8 @@ public:
 
 	po_Bookmark *			getBookmark() const;
 
+	virtual bool            usesXID() const {return true;}
+	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif

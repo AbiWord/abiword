@@ -1485,6 +1485,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 		case UCS_NBSP:					// NBSP -- non breaking space
 			FlushBuffer();
 			m_pie->_rtf_keyword("~");
+			m_pie->m_bLastWasKeyword = false;       // no space needed afterward
+			
 			pData++;
 			break;
 
@@ -1657,7 +1659,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_sdh = NULL;
 	m_bToClipboard = bToClipboard;
 	m_bStartedList = false;
-	m_bBlankLine = false;
+	m_bBlankLine = true;
 	m_Table.setDoc(m_pDocument);
 	m_iCurRow = -1;
 	m_bNewTable = false;
@@ -1771,6 +1773,11 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Field:
 				_closeSpan();
 				_openTag("field","/",false,api);
+				return true;
+
+			case PTO_Math:
+				_closeSpan();
+				_openTag("math","/",false,api);
 				return true;
 
 				//#endif
@@ -1935,33 +1942,33 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 if(UT_XML_strcmp(pszType,"footnote_ref") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"footnote_anchor") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"endnote_ref") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"endnote_anchor") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
-             m_pie->_rtf_keyword("chftn");
+			 m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("PAGE ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
@@ -1969,14 +1976,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_ref") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDpageDref"); // abiword extension for now.
              m_pie->_rtf_close_brace();
@@ -2125,8 +2132,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("NUMWORDS ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
@@ -2134,14 +2141,14 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 _writeFieldPreamble(pSpanAP);
   			 m_pie->write("NUMCHARS  ");
-             m_pie->_rtf_close_brace();
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"line_count") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDlineDcount"); // abiword extension for now.
              m_pie->_rtf_close_brace();
@@ -2149,7 +2156,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"para_count") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDparaDcount"); // abiword extension for now.
              m_pie->_rtf_close_brace();
@@ -2166,36 +2173,36 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"file_name") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDfileDname"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 UT_DEBUGMSG(("SEVIOR: File Name field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_ver") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDver"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_id") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDid"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+                         m_pie->_rtf_close_brace();
 			 UT_DEBUGMSG(("SEVIOR: Application ID field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_options") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+                         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDoptions"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_target") == 0)
@@ -2208,18 +2215,18 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_compiledate") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDcompiledate"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+                         m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_compiletime") == 0)
 		 {
-             m_pie->_rtf_open_brace();
+		         m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
 			 m_pie->_rtf_keyword("abifieldDappDcompiletime"); // abiword extension for now.
-             m_pie->_rtf_close_brace();
+			 m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else
@@ -2228,6 +2235,49 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 return;
 		 }
 	 }
+	 else if(UT_XML_strcmp(szPrefix,"math") == 0)
+	 {
+		 const PP_AttrProp * pSpanAP = NULL;
+		 const XML_Char * pszDataId = NULL;
+		 m_pDocument->getAttrProp(api, &pSpanAP);
+		 pSpanAP->getAttribute("dataid", pszDataId);
+		 UT_UTF8String sProps;
+		 if(pszDataId == NULL)
+		 {
+			 return;
+		 }
+		 m_pie->_rtf_open_brace();
+		 m_pie->_rtf_keyword("*");
+		 m_pie->_rtf_keyword("abimathml ");
+		 UT_UTF8String sAllProps;
+		 UT_UTF8String sPropName;
+		 UT_UTF8String sPropVal;
+		 UT_sint32 i = 0;
+		 const XML_Char * szProp = NULL;
+		 const XML_Char * szVal = NULL;
+		 for(i = 0; i < 50; i++)
+		 {
+		   szProp = NULL;
+		   szVal = NULL;
+		   pSpanAP->getNthProperty(i,szProp,szVal);
+		   if((szProp != NULL) && (szVal != NULL))
+		   { 
+		     sPropName = szProp;
+		     sPropVal = szVal;
+		     UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		   }
+		   else
+		   {
+		     break;
+		   }
+		 }
+		 sPropName = "dataid";
+		 sPropVal =pszDataId;
+		 UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		 m_pie->write(sAllProps.utf8_str());
+		 m_pie->_rtf_close_brace();
+	 }
+
 }
 
 
@@ -3902,8 +3952,12 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			{
 				bFooterLast = true;
 			}
-
-			if(bHeader)
+			if(bHeader && !bHeaderEven)
+			{
+			        m_bInBlock = false;
+				m_pie->exportHdrFtr("header",pszHeaderID,"header");
+			}
+			else if(bHeader)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header",pszHeaderID,"headerl");
@@ -3913,17 +3967,17 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-even",pszHeaderEvenID,"headerr");
 			}
-			else if(bHeader)
-			{
-				m_bInBlock = false;
-				m_pie->exportHdrFtr("header",pszHeaderID,"headerr");
-			}
 			if(bHeaderFirst)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-first",pszHeaderFirstID,"headerf");
 			}
-			if(bFooter)
+			if(bFooter && !bFooterEven)
+			{
+			        m_bInBlock = false;
+				m_pie->exportHdrFtr("footer",pszFooterID,"footer");
+			}
+			else if(bFooter)
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer",pszFooterID,"footerl");
@@ -3932,11 +3986,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			{
 				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer-even",pszFooterEvenID,"footerr");
-			}
-			else if(bFooter)
-			{
-				m_bInBlock = false;
-				m_pie->exportHdrFtr("footer",pszFooterID,"footerr");
 			}
 			if(bFooterFirst)
 			{
@@ -3953,6 +4002,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = sdh;
 			_rtf_open_section(pcr->getIndexAP());
 			m_bInBlock = false;
+			m_bBlankLine = true;
 			return true;
 		}
 
@@ -3965,34 +4015,6 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_closeSection();
 			_setTabEaten(false);
 			return false;
-#if 0
-//
-// We should have already outputting this.
-
-			// begin a header/footer.  in RTF this is expressed as
-			//
-			// {' <hdrctl> <para>+ '}' where <hdrctl> is one of
-			// \header or \footer for headers or footers on all pages
-			// \headerl or \headerr or \headerf for headers on left, right, and first pages
-			// \footerl or \footerr or \footerf for footers on left, right, and first pages
-			//
-			// here we deal with everything except for the <para>+
-			m_sdh = sdh;
-			m_pie->_rtf_nl();
-			m_pie->_rtf_open_brace();
-			PT_AttrPropIndex indexAP = pcr->getIndexAP();
-			const PP_AttrProp* pAP = NULL;
-			m_pDocument->getAttrProp(indexAP, &pAP);
-			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
-			if(0 == UT_strcmp(pszSectionType, "header"))
-				m_pie->_rtf_keyword("header");
-			else if(0 == UT_strcmp(pszSectionType, "footer"))
-				m_pie->_rtf_keyword("footer");
-			else
-				UT_ASSERT_NOT_REACHED();
-			return true;
-#endif
 		}
 	case PTX_SectionFootnote:
 	    {
@@ -4136,7 +4158,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		{
 			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Populate block \n"));
 			_closeSpan();
-			if(!m_bBlankLine)
+			if(!m_bBlankLine && !m_bOpennedFootnote)
 			{
 				m_bInBlock = true;
 			}
@@ -4914,16 +4936,31 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if (strcmp(szLineHeight,"1.0") != 0)
 	{
 		double f = UT_convertDimensionless(szLineHeight);
-		if (f != 0.0)					// we get zero on bogus strings....
-		{
-			// don't ask me to explain the details of this conversion factor,
-			// because i don't know....
-			UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
-			m_pie->_rtf_keyword("sl",dSpacing);
-			m_pie->_rtf_keyword("slmult",1);
+
+
+		if (f > 0.000001) 
+		{                                   // we get zero on bogus strings....
+		        const char * pPlusFound = strrchr(szLineHeight, '+');
+		        if (pPlusFound && *(pPlusFound + 1) == 0)             //  "+" means "at least" line spacing
+			{
+				UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+				m_pie->_rtf_keyword("sl",dSpacing);
+				m_pie->_rtf_keyword("slmult",0);
+			}
+			else if (UT_hasDimensionComponent(szLineHeight)) //  use exact line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 20.0);
+			        m_pie->_rtf_keyword("sl",-dSpacing);
+			        m_pie->_rtf_keyword("slmult",0);
+		        }
+			else // multiple line spacing
+			{
+			        UT_sint32 dSpacing = (UT_sint32)(f * 240.0);
+			        m_pie->_rtf_keyword("sl",dSpacing);
+			        m_pie->_rtf_keyword("slmult",1);
+		        }
 		}
 	}
-
 //
 // Output Paragraph Cell nesting level.
 //
@@ -5082,19 +5119,21 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			m_pie->_rtf_keyword("pich",iImageHeight);
 			if (bFoundWidthProperty)
 			{
-				m_pie->_rtf_keyword_ifnotdefault_twips("picwgoal",static_cast<const char*>(szWidthProp),0);
-				double dWidth = UT_convertToInches(szWidthProp);
-				double scalex = 100.0*dWidth/dImageWidth;
-				UT_uint32 iscalex = static_cast<UT_uint32>(scalex);
+			        double dWidth = UT_convertToInches(szWidthProp);   // Our "goal" width is _before_ scaling
+				double scalex = dWidth/dImageWidth;                // How intuitive!
+			        const XML_Char * szWidthGoal = UT_convertInchesToDimensionString(DIM_IN, dImageWidth,".4");
+				m_pie->_rtf_keyword_ifnotdefault_twips("picwgoal",static_cast<const char*>(szWidthGoal),0);
+				UT_uint32 iscalex = static_cast<UT_uint32>(100.0*scalex);
 				m_pie->_rtf_keyword("picscalex",iscalex);
 
 			}
 			if (bFoundHeightProperty)
 			{
-				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",static_cast<const char*>(szHeightProp),0);
-				double dHeight = UT_convertToInches(szHeightProp);
-				double scaley = 100.0*dHeight/dImageHeight;
-				UT_uint32 iscaley = static_cast<UT_uint32>(scaley);
+			        double dHeight = UT_convertToInches(szHeightProp);
+				double scaley = dHeight/dImageHeight;
+			        const XML_Char * szHeightGoal = UT_convertInchesToDimensionString(DIM_IN, dImageHeight,".4");
+				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",static_cast<const char*>(szHeightGoal),0);
+				UT_uint32 iscaley = static_cast<UT_uint32>(100.0*scaley);
 				m_pie->_rtf_keyword("picscaley",iscaley);
 			}
 

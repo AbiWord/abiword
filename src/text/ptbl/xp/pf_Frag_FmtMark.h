@@ -46,6 +46,8 @@ public:
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset) const;
 
+	virtual bool            usesXID() const {return false;}
+	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif

@@ -26,7 +26,7 @@
 
 
 /*!
-  Register all Win32 Importer and Exporter
+  Register all Win32 Importers and Exporters
   Should be called from AP_<FE>App
  */
 void IE_ImpExp_RegisterPlatform ()

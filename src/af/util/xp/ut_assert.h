@@ -49,7 +49,7 @@ extern int UT_Win32ThrowAssert(const char * pCondition, const char * pFile, int 
 // my cygwin
 #  if defined(__GNUC__) && (defined(_X86) || defined(__i386) || defined(i386))
      // Inline assembly for GCC on x86
-#    define UT_DEBUG_BREAK asm("int 3");
+#    define UT_DEBUG_BREAK asm("int3");
 #  elif defined(__GNUC__) && (defined(__ia64) || defined(ia64))
 #    error "This branch has not been tested."
      // On Itanium we use the intrinsic function __break(); defined in ia64intrin.h

@@ -137,6 +137,8 @@ public:
 	void                setFrameYpos(double iY) { m_iYpos = iY;}
 	bool                isEndFrameIn(void) const
 		{ return m_bHasEndFrame;}
+	bool                isTightWrap(void)
+	  { return m_bIsTightWrap;}
 private:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	void                     _purgeLayout(void);
@@ -173,8 +175,9 @@ private:
 	double               m_iXPage;
 	double               m_iYPage;
 
-	double               m_iBoundingSpace;
-    FL_FrameWrapMode        m_iFrameWrapMode;
+	double                  m_iBoundingSpace;
+        FL_FrameWrapMode        m_iFrameWrapMode;
+	bool                    m_bIsTightWrap;
 };
 
 #endif /* FRAMELAYOUT_H */

@@ -927,7 +927,7 @@ double fp_VerticalContainer::_getMaxContainerHeight(void) const
 
 /*!
  * Set the maximum line Height
-\params UT_sint32 iLineHeight the largest line height yet found.
+\param UT_sint32 iLineHeight the largest line height yet found.
  */
 void fp_VerticalContainer::_setMaxContainerHeight( double iLineHeight)
 {
@@ -1696,6 +1696,7 @@ void fp_Column::layout(void)
 // Handle case of lines broken around a positioned object with text wrap on
 //
 			fp_Line * pLine = static_cast<fp_Line *>(pContainer);
+			xxx_UT_DEBUGMSG(("Line %x X %d Y %d MaxWidth %d Width %d \n",pLine,pLine->getX(),pLine->getY(),pLine->getMaxWidth(),pLine->getWidth()));
 			if(pLine->isWrapped())
 			{
 				addWrappedLine(pLine);
@@ -2114,7 +2115,7 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 //
 //	if(m_bHdrFtrBoxDrawn)
 //		return;
-	UT_RGBColor clrDrawHdrFtr(0,0,0);
+	UT_RGBColor clrDrawHdrFtr(127,127,127);
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	getGraphics()->setColor(clrDrawHdrFtr);
 //

@@ -103,7 +103,10 @@ public:
 	void setWidth(const char * szWidth);
 	UT_Dimension getPreferedUnits(void);
 	void  setPreferedUnits(UT_Dimension dim);
-
+	void setTightWrap(bool bTight)
+	  { m_bTightWrap = bTight;}
+	bool isTightWrap(void)
+	  { return m_bTightWrap;}
 	void setTitle(const UT_UTF8String & title) {
 		m_title = title;
 	}
@@ -147,6 +150,7 @@ public:
 	WRAPPING_TYPE m_iWrappingType;
 	POSITION_TO m_iPositionTo;
 	bool m_bInHdrFtr;
+	bool m_bTightWrap;
 };
 
 #endif /* XAP_DIALOG_IMAGE_H */

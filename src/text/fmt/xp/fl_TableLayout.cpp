@@ -219,7 +219,7 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 /*!
   Create a new Table container and plug it into the linked list of Table 
   containers.
-  \params If pPrevTab is non-null place the new cell after this in the linked
+  \param If pPrevTab is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
   \return The newly created Table container
 */
@@ -1934,7 +1934,7 @@ fl_SectionLayout * fl_CellLayout::getSectionLayout(void) const
 /*!
   Create a new Cell containers and plug it into the linked list of Cell 
   containers.
-  \params If pPrevCell is non-null place the new cell after this in the linked
+  \param If pPrevCell is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
   \return The newly created Cell container
 */

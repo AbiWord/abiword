@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001, 2003 Hubert Figuiere
@@ -22,10 +24,13 @@
 #define AP_COCOADIALOG_WORDCOUNT_H
 
 #import <Cocoa/Cocoa.h>
-#import "xap_CocoaDialog_Utilities.h"
+
+#include "xap_CocoaDialog_Utilities.h"
+#include "xap_CocoaWidget.h"
 
 #include "ap_Dialog_WordCount.h"
-#include "ut_timer.h"
+
+class UT_Timer;
 
 class AP_CocoaDialog_WordCount;
 
@@ -43,9 +48,10 @@ class AP_CocoaDialog_WordCount;
     IBOutlet NSTextField *_paraLabel;
     IBOutlet NSTextField *_wordCount;
     IBOutlet NSTextField *_wordLabel;
-	AP_CocoaDialog_WordCount*	_xap;
+
+	AP_CocoaDialog_WordCount *	_xap;
 }
-- (void)setCounts:(FV_DocCount*)count;
+- (XAP_CocoaWidget *)getWidget:(int)wid;
 @end
 
 /*****************************************************************/
@@ -67,11 +73,13 @@ public:
 
 	virtual void			event_Update(void);
 	void 					event_CloseWindow(void);
+protected:
+	virtual XAP_Widget *getWidget(xap_widget_id wid)
+	{
+		return [m_dlg getWidget:((int) wid)];
+	}
 
 private:
-	void				_populateWindowData(void);
-	void 				_updateWindowData(void);       
-
 	UT_Timer * m_pAutoUpdateWC;
 
 	// Handshake variables

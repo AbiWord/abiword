@@ -252,9 +252,9 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
 /*!
  * This method search for the requested header/footer section within
  * PD_DOCument and writes into the stream at the current write point.
- \params pszHdrFtr constchar * string describing the type of header/footer to
+ \param pszHdrFtr constchar * string describing the type of header/footer to
                                 export.
- \params pszHdrFtrID const char * identification string for the header/footer
+ \param pszHdrFtrID const char * identification string for the header/footer
  */
 void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID, const char * pszKeyWord)
 {
@@ -302,7 +302,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 	_rtf_keyword(pszKeyWord);
 	_rtf_keyword("pard");
 	_rtf_keyword("plain");
-	m_pListenerWriteDoc->m_bBlankLine = false;
+	m_pListenerWriteDoc->m_bBlankLine = true;
 	m_pListenerWriteDoc->m_bStartedList = false;
 	UT_DEBUGMSG(("SEVIOR: Doing header \n"));
 //
@@ -1972,7 +1972,7 @@ UT_uint32 IE_Exp_RTF::getMatchingOverideNum(UT_uint32 ID)
 
 /*!
  * Actually output the RTF from a multi-level list
- \params ie_exp_RTF_MsWord97ListMulti * pMulti pointer to a multi-level list
+ \param ie_exp_RTF_MsWord97ListMulti * pMulti pointer to a multi-level list
  * structure.
  */
 void IE_Exp_RTF::_output_MultiLevelRTF(ie_exp_RTF_MsWord97ListMulti * pMulti)
@@ -2383,7 +2383,7 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 
 /*!
  * Actually output the RTF from a Simple list
- \params ie_exp_RTF_MsWord97ListSimple * pSimple pointer to a Simple list
+ \param ie_exp_RTF_MsWord97ListSimple * pSimple pointer to a Simple list
  * structure.
  */
 void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
@@ -2415,7 +2415,7 @@ void IE_Exp_RTF::_output_SimpleListRTF(ie_exp_RTF_MsWord97ListSimple * pSimple)
 
 /*!
  * Actually output the RTF from an Overide
- \params ie_exp_RTF_Overide * pOver pointer to an Overide definition
+ \param ie_exp_RTF_Overide * pOver pointer to an Overide definition
  */
 void IE_Exp_RTF::_output_OveridesRTF(ie_exp_RTF_ListOveride * pOver, UT_uint32 iOver)
 {
@@ -2658,8 +2658,8 @@ ie_exp_RTF_MsWord97ListMulti::~ie_exp_RTF_MsWord97ListMulti(void)
 
 /*!
  * Add a list to a level
-\params iLevel to add the list too
-\params ie_exp_RTF_MsWord97List * pList97 list to added at this level
+\param iLevel to add the list too
+\param ie_exp_RTF_MsWord97List * pList97 list to added at this level
  */
 void ie_exp_RTF_MsWord97ListMulti::addLevel(UT_uint32 iLevel, ie_exp_RTF_MsWord97List * pList97)
 {
@@ -2682,8 +2682,8 @@ void ie_exp_RTF_MsWord97ListMulti::addLevel(UT_uint32 iLevel, ie_exp_RTF_MsWord9
 
 /*!
  * Return the nthList List at level iLevel
- \params iLevel the level which we want to lists for
- \params nthList the list at the level we want
+ \param iLevel the level which we want to lists for
+ \param nthList the list at the level we want
  */
 ie_exp_RTF_MsWord97List * ie_exp_RTF_MsWord97ListMulti::getListAtLevel(UT_uint32 iLevel, UT_uint32 nthList)
 {
@@ -2711,7 +2711,7 @@ ie_exp_RTF_MsWord97List * ie_exp_RTF_MsWord97ListMulti::getListAtLevel(UT_uint32
 /*!
  * Return the listID of the first list element at the level that contains
  * the list that matches listID
- \params listID the listID we're looking for.
+ \param listID the listID we're looking for.
  \retval the List ID number of the first list on the level that contains
  the ID. Return 0 if there is no match in the structure.
  */

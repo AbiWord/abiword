@@ -40,9 +40,9 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 
  public:
 
-	typedef enum { align_LEFT = 0, align_CENTERED, align_RIGHT, align_JUSTIFIED } tAlignState;
-	typedef enum { indent_NONE = 0, indent_FIRSTLINE, indent_HANGING } tIndentState;
-	typedef enum { spacing_SINGLE = 0, spacing_ONEANDHALF, spacing_DOUBLE,
+	typedef enum { align_UNDEF = 0, align_LEFT, align_CENTERED, align_RIGHT, align_JUSTIFIED } tAlignState;
+	typedef enum { indent_UNDEF = 0, indent_NONE, indent_FIRSTLINE, indent_HANGING } tIndentState;
+	typedef enum { spacing_UNDEF = 0, spacing_SINGLE, spacing_ONEANDHALF, spacing_DOUBLE,
 				   spacing_ATLEAST, spacing_EXACTLY, spacing_MULTIPLE } tSpacingState;
 	/* these are public because we must be able to identify widgets out this class (NSWindowController)*/
 	typedef enum { id_MENU_ALIGNMENT = 0, id_SPIN_LEFT_INDENT,

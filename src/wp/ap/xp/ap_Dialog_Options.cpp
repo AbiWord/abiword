@@ -109,6 +109,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save the values to the Prefs classes
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoSpellCheck, _gatherSpellCheckAsType() );
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck, _gatherGrammarCheck() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
 	Save_Pref_Bool(pPrefsScheme, AP_PREF_KEY_ShowSplash,_gatherShowSplash());
@@ -270,9 +271,15 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 
 	switch (id)
 	{
+
 		case id_CHECK_SPELL_CHECK_AS_TYPE:
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_AutoSpellCheck,
 					_gatherSpellCheckAsType());
+			break;
+
+		case id_CHECK_GRAMMAR_CHECK:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_AutoGrammarCheck,
+					_gatherGrammarCheck());
 			break;
 
 		case id_CHECK_SPELL_UPPERCASE:
@@ -478,6 +485,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckNumbers,&b))
 		_setSpellNumbers (b);
+
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoGrammarCheck,&b))
+		_setGrammarCheck (b);
 
 	// ------------ Smart Quotes
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,&b))
@@ -715,6 +725,8 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 		m_BOData[bo_AutoSave		].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_AutoSpellCheck,						&bValue))
 		m_BOData[bo_CheckSpelling	].m_original = bValue;
+	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_AutoGrammarCheck,						&bValue))
+		m_BOData[bo_CheckGrammar	].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool( AP_PREF_KEY_CursorBlink,							&bValue))
 		m_BOData[bo_CursorBlink		].m_original = bValue;
 	if (m_pPrefsScheme->getValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,		&bValue))
@@ -937,6 +949,11 @@ void AP_PreferenceScheme::saveChanges()
 	bo = bo_CheckSpelling;
 	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
 		m_pPrefsScheme->setValueBool( AP_PREF_KEY_AutoSpellCheck,					 m_BOData[bo].m_current);
+
+
+	bo = bo_CheckGrammar;
+	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
+		m_pPrefsScheme->setValueBool( AP_PREF_KEY_AutoGrammarCheck,					 m_BOData[bo].m_current);
 
 	bo = bo_CursorBlink;
 	if (m_BOData[bo].m_current != m_BOData[bo].m_original)
@@ -1168,6 +1185,7 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 
 	pScheme->getValueBool(XAP_PREF_KEY_AutoSaveFile,						&(m_BOData[bo_AutoSave			].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_AutoSpellCheck,						&(m_BOData[bo_CheckSpelling		].m_default));
+	pScheme->getValueBool( AP_PREF_KEY_AutoGrammarCheck,						&(m_BOData[bo_CheckGrammar		].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_CursorBlink,							&(m_BOData[bo_CursorBlink		].m_default));
 	pScheme->getValueBool(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,	&(m_BOData[bo_DirectionMarkers	].m_default));
 	pScheme->getValueBool( AP_PREF_KEY_DefaultDirectionRtl,					&(m_BOData[bo_DirectionRTL		].m_default));
@@ -1506,13 +1524,17 @@ void AP_PreferenceSchemeManager::_constructLanguageArrays()
 	DELETEPV(ppLanguageTemp);
 }
 
+/* TODO: make this dynamic!
+ */
+static const XML_Char * s_internal_units[5] = { "in", "cm", "mm", "pt", "pi" };
+
 UT_uint32 AP_PreferenceSchemeManager::getPopUp_UnitsIndex(const XML_Char * szUnits) const
 {
 	UT_uint32 index = 0;
 
 	if (szUnits)
-		for (UT_uint32 i = 0; i < m_PopUp_UnitsCount; i++)
-			if (strcmp(m_PopUp_UnitsList[i], szUnits) == 0)
+		for (UT_uint32 i = 0; i < 5; i++)
+			if ((strcmp(s_internal_units[i], szUnits) == 0) || (strcmp(m_PopUp_UnitsList[i], szUnits) == 0))
 				{
 					index = i;
 					break;
@@ -1528,21 +1550,21 @@ const XML_Char * AP_PreferenceSchemeManager::reverseTranslate(const char * PopUp
 
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "inch";
+			return s_internal_units[0];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "cm";
+			return s_internal_units[1];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_mm))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "mm";
+			return s_internal_units[2];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_points))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "points";
+			return s_internal_units[3];
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica))
 		if (strcmp (tmp, PopUp_Units) == 0)
-			return "pica";
+			return s_internal_units[4];
 
-	return "inch";
+	return s_internal_units[0];
 }
 
 void AP_PreferenceSchemeManager::_constructPopUpArrays()
@@ -1569,6 +1591,8 @@ void AP_PreferenceSchemeManager::_constructPopUpArrays()
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica))
 		if (tmpcopy = UT_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
+
+	UT_ASSERT(m_PopUp_UnitsCount == 5); // must match size of s_internal_units[] // TODO: make dynamic!
 
 	// TODO
 }

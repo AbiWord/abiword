@@ -47,6 +47,8 @@
 #define fl_BLOCK_STRUX_OFFSET	1
 
 class fl_Squiggles;
+class fl_SpellSquiggles;
+class fl_GrammarSquiggles;
 class FL_DocLayout;
 class fl_SectionLayout;
 class fl_ContainerLayout;
@@ -102,6 +104,8 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<f
 class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 {
 	friend class fl_Squiggles;
+	friend class fl_SpellSquiggles;
+	friend class fl_GrammarSquiggles;
 	friend class fl_DocListener;
 	friend class fl_TOCLayout;
 	friend class fb_LineBreaker;
@@ -192,7 +196,9 @@ public:
 	fl_BlockLayout * getPreviousListOfSameMargin(void);
 	inline fl_BlockLayout * getParentItem(void);
 
-	void findSquigglesForRun(fp_Run* pRun);
+	void findSpellSquigglesForRun(fp_Run* pRun);
+	void drawGrammarSquiggles(void);
+	void findGrammarSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
@@ -228,7 +234,9 @@ public:
 	inline UT_BidiCharType getDominantDirection(void) const { return m_iDomDirection; }
 	void setDominantDirection(UT_BidiCharType iDirection);
 
-	inline fl_Squiggles* getSquiggles(void) const { return m_pSquiggles; }
+	inline fl_SpellSquiggles* getSpellSquiggles(void) const { return m_pSpellSquiggles; }
+	inline fl_GrammarSquiggles* getGrammarSquiggles(void) const { return  m_pGrammarSquiggles; }
+
 
 	bool isHdrFtr(void);
 	void setHdrFtr(void) { m_bIsHdrFtr = true;}
@@ -374,6 +382,7 @@ protected:
 	bool					_doInsertFieldEndRun(PT_BlockOffset blockOffset);
 	bool					_doInsertBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertHyperlinkRun(PT_BlockOffset blockOffset);
+	bool					_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
 //	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
@@ -441,7 +450,7 @@ protected:
 	bool                    m_bStartList;
 	bool                    m_bStopList;
     bool                    m_bListLabelCreated;
-	fl_Squiggles *          m_pSquiggles;
+	fl_SpellSquiggles *     m_pSpellSquiggles;
 	bool                    m_bListItem;
 	const XML_Char *		m_szStyle;
 	bool                    m_bIsCollapsed;
@@ -460,6 +469,7 @@ protected:
 	UT_sint32               m_iLinePosInContainer;
 	bool                    m_bForceSectionBreak;
 	bool                    m_bPrevListLabel;
+	fl_GrammarSquiggles *   m_pGrammarSquiggles;
 };
 
 /*
@@ -483,12 +493,19 @@ public:
 	inline void 	 setOffset(UT_sint32 iOffset) { m_iOffset = iOffset; }
 	inline void 	 setLength(UT_sint32 iLength) { m_iLength = iLength; }
 	inline void 	 setIsIgnored(bool bIsIgnored) { m_bIsIgnored = bIsIgnored; }
-
+	void             setInvisible(void)
+	{m_bIsInvisible = true;}
+	bool             isInvisible(void)
+	{ return m_bIsInvisible;}
+	void             setGrammarMessage(UT_UTF8String & sMsg);
+	void             getGrammarMessage(UT_UTF8String & sMsg);
 private:
 	UT_sint32	m_iOffset;
 	UT_sint32	m_iLength;
 
 	bool		m_bIsIgnored;
+	bool        m_bIsInvisible;
+	UT_UTF8String  m_sGrammarMessage;
 };
 
 class ABI_EXPORT fl_TabStop

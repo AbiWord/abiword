@@ -1,5 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
+## Copyright (C) 2005 Hubert Figuiere
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -21,6 +22,7 @@ include $(top_srcdir)/includes.mk
 SUBDIRS = xp @PLATFORM@
 
 noinst_LIBRARIES= libXap.a
+check_LIBRARIES = libTestXap.a 
 
 if WITH_GNOME
 objects = $(ABI_OBJECTS) $(ABI_GNOME_OBJECTS)
@@ -31,3 +33,7 @@ endif
 libXap_a_SOURCES = 
 
 libXap_a_LIBADD = $(objects) 
+
+libTestXap_a_SOURCES =
+
+libTestXap_a_LIBADD = @PLATFORM@/t/*.o

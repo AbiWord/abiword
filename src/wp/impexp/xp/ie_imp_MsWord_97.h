@@ -222,6 +222,7 @@ private:
 	bool        _findNextFNoteSection();
 	bool        _findNextENoteSection();
 	bool        _shouldUseInsert()const;
+	bool        _ensureInBlock();
 	bool        _appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	bool        _appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool        _appendSpan(const UT_UCSChar * p, UT_uint32 length);

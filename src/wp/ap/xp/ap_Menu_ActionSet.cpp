@@ -71,6 +71,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_NEW,			0,0,0,0,	"fileNew",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_NEW_USING_TEMPLATE,			0,1,0,0,	"fileNewUsingTemplate",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_OPEN,		0,1,0,0,	"fileOpen",			NULL,					NULL);
+	_s(AP_MENU_ID_FILE_IMPORTSTYLES,		0,1,0,0,	"importStyles",	NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,0,	"fileSave",			ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,0,	"fileSaveAs",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEIMAGE,		0,1,0,0,	"fileSaveImage",		NULL,					NULL);
@@ -83,10 +84,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,0,	"print",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT_PREVIEW, 0,1,0,0, "printPreview", NULL, NULL);
 	_s(AP_MENU_ID_FILE_RECENT,	1,0,0,0,	NULL, ap_GetState_Recent,NULL);
-	_s(AP_MENU_ID_FILE_RECENT_1,	0,0,0,0,	"openRecent_1",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_2,	0,0,0,0,	"openRecent_2",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_3,	0,0,0,0,	"openRecent_3",		NULL,					ap_GetLabel_Recent);
-	_s(AP_MENU_ID_FILE_RECENT_4,	0,0,0,0,	"openRecent_4",		NULL,					ap_GetLabel_Recent);
+ 	_s(AP_MENU_ID_FILE_RECENT_1,	0,0,0,0,	"openRecent_1",		NULL,					ap_GetLabel_Recent);
+ 	_s(AP_MENU_ID_FILE_RECENT_2,	0,0,0,0,	"openRecent_2",		NULL,					ap_GetLabel_Recent);
+ 	_s(AP_MENU_ID_FILE_RECENT_3,	0,0,0,0,	"openRecent_3",		NULL,					ap_GetLabel_Recent);
+ 	_s(AP_MENU_ID_FILE_RECENT_4,	0,0,0,0,	"openRecent_4",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_5,	0,0,0,0,	"openRecent_5",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_6,	0,0,0,0,	"openRecent_6",		NULL,					ap_GetLabel_Recent);
 	_s(AP_MENU_ID_FILE_RECENT_7,	0,0,0,0,	"openRecent_7",		NULL,					ap_GetLabel_Recent);
@@ -113,6 +114,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_REMOVEHEADER,		0,0,0,0,"removeHeader",ap_GetState_Changes	,					NULL);
 	_s(AP_MENU_ID_EDIT_REMOVEFOOTER,		0,0,0,0,	"removeFooter",ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_EDIT_DELETEFRAME,		0,0,0,0,	"deleteFrame", NULL,NULL);
+	_s(AP_MENU_ID_EDIT_DELETEIMAGE,		0,0,0,0,	"deleteFrame", NULL,NULL);
+	_s(AP_MENU_ID_FMT_POSIMAGE,		0,1,0,0,	"dlgFmtPosImage", NULL,NULL);
+	_s(AP_MENU_ID_EDIT_CUTIMAGE,		0,0,0,0,	"copy", NULL,NULL);
+	_s(AP_MENU_ID_EDIT_COPYIMAGE,		0,0,0,0,	"cut", NULL,NULL);
 	_s(AP_MENU_ID_EDIT_CUT_FRAME,		0,0,0,0,	"cutFrame", NULL,NULL);
 	_s(AP_MENU_ID_EDIT_COPY_FRAME,		0,0,0,0,	"copyFrame",NULL,NULL);
 	_s(AP_MENU_ID_EDIT_SELECT_FRAME,	0,0,0,0,	"selectFrame",NULL,NULL);
@@ -148,6 +153,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_HyperlinkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_GOTO_HYPERLINK, 0,1,0,0,	"hyperlinkJumpPos",	ap_GetState_HyperlinkOK,					NULL);
 	_s(AP_MENU_ID_INSERT_EDIT_HYPERLINK, 0,1,0,0,	"insertHyperlink",	ap_GetState_HyperlinkOK,					NULL);
+	_s(AP_MENU_ID_EDIT_COPY_HYPERLINK_LOCATION, 0,0,0,0, "hyperlinkCopyLocation", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_DELETE_HYPERLINK, 0,0,0,0,	"deleteHyperlink",	NULL,			NULL);
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,0,	"insPageNo",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,0,	"insDateTime",		NULL,					NULL);
@@ -193,7 +199,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_IMAGE, 0,1,0,0, "dlgFmtImage", ap_GetState_InImage, NULL);
 	_s(AP_MENU_ID_FMT_STYLE_DEFINE,		0,1,0,0,	"dlgStyle",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_STYLE,		1,0,0,0,	NULL,			NULL,					NULL);
-	_s(AP_MENU_ID_FMT_IMPORTSTYLES,		0,1,0,0,	"importStyles",	NULL,					NULL);
 	_s(AP_MENU_ID_FMT_STYLIST,		0,1,0,0,	"dlgStylist",	NULL,					NULL);
 	_s(AP_MENU_ID_FMT_TABS,			0,1,0,0,	"dlgTabs",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,0,	"toggleBold",		ap_GetState_CharFmt,	NULL);

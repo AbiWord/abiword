@@ -77,18 +77,21 @@ public:
 	void                  mouseRelease(double x, double y);
 	FV_FrameEditDragWhat  mouseMotion(double x, double y);
 	void                  drawFrame(bool bWithHandles);
-	void                  deleteFrame(void);
+	void                  deleteFrame(fl_FrameLayout * pFL = NULL);
 	void                  setDragType(double x, double y, bool bDrawFrame);
-	bool                  getFrameStrings(double x, double y, 
-										  UT_String & sXpos,
-										  UT_String & sYpos,
-										  UT_String & sWidth,
-										  UT_String & sHeight,
-										  UT_String & sColXpos,
-										  UT_String & sColYpos,
-										  fl_BlockLayout ** pCloseBL);
+	bool                  getFrameStrings(double x, double y,
+					      UT_String & sXpos,
+					      UT_String & sYpos,
+					      UT_String & sWidth,
+					      UT_String & sHeight,
+					      UT_String & sColXpos,
+					      UT_String & sColYpos,
+					      UT_String & sPageXpos,
+					      UT_String & sPageYpos,
+					      fl_BlockLayout ** pCloseBL);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
+	void                  setPointInside(void);
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  _beginGlob();

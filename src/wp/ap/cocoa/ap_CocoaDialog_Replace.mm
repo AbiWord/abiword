@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -69,108 +71,117 @@ AP_CocoaDialog_Replace::~AP_CocoaDialog_Replace(void)
 void AP_CocoaDialog_Replace::activate(void)
 {
 	ConstructWindowName();
-	NSWindow* window = [m_dlg window];
-	[window setTitle:[NSString stringWithUTF8String:m_WindowName]];
-	[window orderFront:m_dlg];
+	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
+
+	[m_dlg windowToFront];
 }
 
-
-void AP_CocoaDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_Replace::notifyActiveFrame(XAP_Frame * pFrame)
 {
 	ConstructWindowName();
 	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
+
+	setMatchCase  ([m_dlg matchCase]);
+	setMatchCase  ([m_dlg wholeWord]);
+	setReverseFind([m_dlg findReverse]);
+
+	// this dialog needs this // or does it?
+	if (pFrame)
+		setView(static_cast<FV_View *>(pFrame->getCurrentView()));
 }
 
 void AP_CocoaDialog_Replace::runModeless(XAP_Frame * pFrame)
 {
-	// get the Dialog Id number
-	UT_sint32 sid =(UT_sint32)  getDialogId();
-
 	m_dlg = [[AP_CocoaDialog_ReplaceController alloc] initFromNib];
+
 	[m_dlg setXAPOwner:this];
 
-	// Save dialog the ID number and pointer to the Dialog
-	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
-
-	NSWindow* window = [m_dlg window];
+	ConstructWindowName();
+	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
 
 	// Populate the window's data items
 	_populateWindowData();
-	
-	[window orderFront:m_dlg];
 
-	// this dialog needs this
-	setView(static_cast<FV_View *> (getActiveFrame()->getCurrentView()));
+	[m_dlg windowToFront];
+
+	// Save dialog the ID number and pointer to the Dialog
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
+
+	// this dialog needs this // why?
+	if (pFrame)
+		{
+			UT_DEBUGMSG(("AP_CocoaDialog_Replace::runModeless(\"%s\")\n",pFrame->getNonDecoratedTitle()));
+			setView(static_cast<FV_View *>(pFrame->getCurrentView()));
+		}
+	else
+		{
+			UT_DEBUGMSG(("AP_CocoaDialog_Replace::runModeless(\"(null)\")\n"));
+		}
 }
 
 void AP_CocoaDialog_Replace::event_Find(void)
 {
-	NSString* findWhat;
-	
-	findWhat = [m_dlg findWhat];
-	
-	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
-	
-	if (!getReverseFind())	{
-		findNext();
-	}
-	else {
-		findPrev();
-	}
-}
+	NSString * findWhat = [m_dlg findWhat];
 
+	if ([findWhat length])
+		{
+			setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+
+			if (getReverseFind())
+				findPrev();
+			else
+				findNext();
+		}
+}
 		
 void AP_CocoaDialog_Replace::event_Replace(void)
 {
-	NSString* findWhat;
-	NSString* replaceWith;
+	NSString * findWhat = [m_dlg findWhat];
+
+	if ([findWhat length])
+		{
+			NSString * replaceWith = [m_dlg replaceWith];
+
+			setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+			setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
 	
-	findWhat = [m_dlg findWhat];
-	replaceWith = [m_dlg replaceWith];
-	
-	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
-	setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
-	
-	if(!getReverseFind()) {	
-		findReplace();
-	}
-	else {
-		findReplaceReverse();
-	}
+			if(getReverseFind())
+				findReplaceReverse();
+			else
+				findReplace();
+		}
 }
 
 void AP_CocoaDialog_Replace::event_ReplaceAll(void)
 {
-	NSString* findWhat;
-	NSString* replaceWith;
+	NSString * findWhat = [m_dlg findWhat];
+
+	if ([findWhat length])
+		{
+			NSString * replaceWith = [m_dlg replaceWith];
+
+			setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+			setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
 	
-	findWhat = [m_dlg findWhat];
-	replaceWith = [m_dlg replaceWith];
-
-	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
-	setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
-
-	findReplaceAll();
+			findReplaceAll();
+		}
 }
-
 
 void AP_CocoaDialog_Replace::event_MatchCaseToggled(void)
 {
 	setMatchCase([m_dlg matchCase]);
 }
 
-
 void AP_CocoaDialog_Replace::event_WholeWordToggled(void)
 {
 	setMatchCase([m_dlg wholeWord]);
 }
 
-
 void AP_CocoaDialog_Replace::event_ReverseFindToggled(void)
 {
 	setReverseFind([m_dlg findReverse]);
 }
-
 
 void AP_CocoaDialog_Replace::event_Cancel(void)
 {
@@ -178,12 +189,10 @@ void AP_CocoaDialog_Replace::event_Cancel(void)
 	destroy();
 }
 
-
 void AP_CocoaDialog_Replace::event_CloseWindow(void)
 {
 	m_answer = AP_Dialog_Replace::a_CANCEL;
 }
-
 
 void AP_CocoaDialog_Replace::destroy(void)
 {
@@ -194,8 +203,8 @@ void AP_CocoaDialog_Replace::destroy(void)
 	m_dlg = nil;
 }
 
-
 /*****************************************************************/
+
 void AP_CocoaDialog_Replace::_populateWindowData(void)
 {
 	// last used find string
@@ -239,8 +248,6 @@ void AP_CocoaDialog_Replace::_updateLists()
 	[m_dlg updateReplaceWith:&m_replaceList];
 }
 
-
-
 @implementation AP_CocoaDialog_ReplaceController
 
 - (id)initFromNib
@@ -267,18 +274,20 @@ void AP_CocoaDialog_Replace::_updateLists()
 -(void)windowDidLoad
 {
 	if (_xap) {
+		NSPanel * panel = (NSPanel *) [self window];
+
+		[panel setBecomesKeyOnlyIfNeeded:YES];
+
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		
-		_xap->ConstructWindowName();
-		[[self window] setTitle:[NSString stringWithUTF8String:_xap->getWindowName()]];
-		LocalizeControl(_whatLabel, pSS, AP_STRING_ID_DLG_FR_FindLabel);
-		LocalizeControl(_matchCaseBtn, pSS, AP_STRING_ID_DLG_FR_MatchCase);
-		LocalizeControl(_wholeWordBtn, pSS, AP_STRING_ID_DLG_FR_WholeWord);
-		LocalizeControl(_replaceLabel, pSS, AP_STRING_ID_DLG_FR_ReplaceWithLabel);
-		LocalizeControl(_findAndReplaceBtn, pSS, AP_STRING_ID_DLG_FR_ReplaceButton);
-		LocalizeControl(_replaceAll, pSS, AP_STRING_ID_DLG_FR_ReplaceAllButton);
-		LocalizeControl(_findBtn, pSS, AP_STRING_ID_DLG_FR_FindNextButton);
-		LocalizeControl(_findReverseBtn, pSS, AP_STRING_ID_DLG_FR_ReverseFind);
+		LocalizeControl(_whatLabel,			pSS, AP_STRING_ID_DLG_FR_FindLabel);
+		LocalizeControl(_matchCaseBtn,		pSS, AP_STRING_ID_DLG_FR_MatchCase);
+		LocalizeControl(_wholeWordBtn,		pSS, AP_STRING_ID_DLG_FR_WholeWord);
+		LocalizeControl(_replaceLabel,		pSS, AP_STRING_ID_DLG_FR_ReplaceWithLabel);
+		LocalizeControl(_findAndReplaceBtn,	pSS, AP_STRING_ID_DLG_FR_ReplaceButton);
+		LocalizeControl(_replaceAll,		pSS, AP_STRING_ID_DLG_FR_ReplaceAllButton);
+		LocalizeControl(_findBtn,			pSS, AP_STRING_ID_DLG_FR_FindNextButton);
+		LocalizeControl(_findReverseBtn,	pSS, AP_STRING_ID_DLG_FR_ReverseFind);
 	}
 }
 	
@@ -287,6 +296,11 @@ void AP_CocoaDialog_Replace::_updateLists()
 	_xap->event_CloseWindow();
 }
 
+- (void)windowToFront
+{
+	[[self window] makeKeyAndOrderFront:self];
+	[[self window] makeFirstResponder:_whatCombo];
+}
 
 - (IBAction)findAction:(id)sender
 {

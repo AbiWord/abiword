@@ -35,6 +35,7 @@
 #include "spell_manager.h"
 
 class UT_Language;
+class UT_UTF8String;
 
 /********************************************************************
 INSTRUCTIONS FOR DESIGN OF THE PLATFORM VERSIONS OF THIS DIALOGUE
@@ -61,6 +62,14 @@ public:
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 	void							setLanguageProperty(const XML_Char * pLangProp);
 	bool							getChangedLangProperty(const XML_Char ** pszLangProp) const;
+
+	bool                            isMakeDocumentDefault() const {return m_bDocDefault;}
+	void                            setMakeDocumentDefault(bool b) {m_bDocDefault = b;}
+
+	void                            getDocDefaultLangDescription(UT_UTF8String &s);
+	void                            getDocDefaultLangCheckboxLabel(UT_UTF8String &s);
+	void                            setDocumentLanguage(const XML_Char * pLang);
+	
 	XAP_Dialog_Language::tAnswer	getAnswer(void) const;
 	
 	inline bool getSpellCheck(void) const {return m_bSpellCheck;}
@@ -79,8 +88,10 @@ protected:
 	UT_Language *					m_pLangTable;
 	const XML_Char **				m_ppLanguages;
 	const XML_Char **				m_ppLanguagesCode;
-	UT_uint32					m_iLangCount;
-	bool                                            m_bSpellCheck;
+	UT_uint32					    m_iLangCount;
+	bool                            m_bSpellCheck;
+	bool                            m_bDocDefault;
+	const XML_Char *                m_pDocLang;
 };
 #endif /* XAP_DIALOG_LANGUAGE_H */
 

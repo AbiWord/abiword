@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) Robert Staudinger <robsta@stereolyzer.net>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,12 +18,13 @@
  * 02111-1307, USA.
  */
 
-// for gtkclist. todo: use treeview
-#undef GTK_DISABLE_DEPRECATED
 
-#include <gtk/gtk.h>
+
 #include <stdlib.h>
 #include <string.h>
+#include <gtk/gtk.h>
+#include <glade/glade.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -37,391 +39,637 @@
 #include "ap_Dialog_Goto.h"
 #include "ap_UnixDialog_Goto.h"
 
-#include "fv_View.h"
 
-/*****************************************************************/
-XAP_Dialog * AP_UnixDialog_Goto::static_constructor(XAP_DialogFactory * pFactory,
-													XAP_Dialog_Id id)
-{
-	AP_UnixDialog_Goto * p = new AP_UnixDialog_Goto(pFactory, id);
-	return p;
-}
 
-AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory,
-									   XAP_Dialog_Id id)
-	: AP_Dialog_Goto(pDlgFactory,id)
+/*!
+* Event dispatcher for spinbutton "page".
+*/
+gboolean 
+AP_UnixDialog_Goto__onFocusPage (GtkWidget 		  *widget,
+								 GdkEventFocus    *event,
+								 gpointer 		  data) 
 {
-	m_wMainWindow = NULL;
-	m_pBookmarks = NULL;
-}
-
-AP_UnixDialog_Goto::~AP_UnixDialog_Goto(void)
-{
-	if(m_pBookmarks)
-	{
-		delete [] m_pBookmarks;
-		m_pBookmarks = 0;
+	UT_DEBUGMSG (("ROB: _onFocusPage () '%d', '%d'\n", event->type, event->in));
+	if (event->type == GDK_FOCUS_CHANGE && event->in) {
+		AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+		dlg->updateCache (AP_JUMPTARGET_PAGE);
 	}
-		
+	/* propagate further */
+	return FALSE;
 }
 
-void AP_UnixDialog_Goto::s_blist_clicked(GtkWidget *clist, gint row, gint column,
-										  GdkEventButton *event, AP_UnixDialog_Goto *me)
+/*!
+* Event dispatcher for spinbutton "line".
+*/
+gboolean 
+AP_UnixDialog_Goto__onFocusLine (GtkWidget 		  *widget,
+								 GdkEventFocus    *event,
+								 gpointer 		  data) 
 {
-	gtk_entry_set_text(GTK_ENTRY(me->m_wEntry), (gchar*)me->m_pBookmarks[row]);
+	UT_DEBUGMSG (("ROB: _onFocusLine () '%d', '%d'\n", event->type, event->in));
+	if (event->type == GDK_FOCUS_CHANGE && event->in) {
+		AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+		dlg->updateCache (AP_JUMPTARGET_LINE);
+	}
+	/* propagate further */
+	return FALSE;
 }
 
-char *AP_UnixDialog_Goto::s_convert(const char * st)
+/*!
+* Event dispatcher for treeview "bookmarks".
+*/
+gboolean 
+AP_UnixDialog_Goto__onFocusBookmarks (GtkWidget 	   *widget,
+									  GdkEventFocus    *event,
+									  gpointer 		   data) 
 {
-	UT_ASSERT(st);
-	char *res = g_strdup (st);
-	char *tmp = res;
+	UT_DEBUGMSG (("ROB: _onFocusBookmarks () '%d', '%d'\n", event->type, event->in));
+	if (event->type == GDK_FOCUS_CHANGE && event->in) {
+		AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+		dlg->updateCache (AP_JUMPTARGET_BOOKMARK);
+	}
+	/* propagate further */
+	return FALSE;
+}
 
-	while (*tmp)
-	{
-		if (*tmp == '&')
-			*tmp = '_';
-		tmp++;
+/*!
+* Event dispatcher for spinbutton "page".
+*/
+void 
+AP_UnixDialog_Goto__onPageChanged (GtkSpinButton *spinbutton,
+								   gpointer 	  data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onPageChanged ();
+}
+
+/*!
+* Event dispatcher for spinbutton "line".
+*/
+void 
+AP_UnixDialog_Goto__onLineChanged (GtkSpinButton *spinbutton,
+								   gpointer 	  data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onLineChanged ();
+}
+
+/*!
+* Event dispatcher for treeview "bookmarks".
+*/
+void
+AP_UnixDialog_Goto__onBookmarkDblClicked (GtkTreeView       *tree,
+										  GtkTreePath       *path,
+										  GtkTreeViewColumn *col,
+										  gpointer		    data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onBookmarkDblClicked ();
+}
+
+/*!
+* Event dispatcher for button "jump".
+*/
+void
+AP_UnixDialog_Goto__onJumpClicked (GtkButton *button,
+								   gpointer   data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onJumpClicked ();
+}
+
+/*!
+* Event dispatcher for button "prev".
+*/
+void
+AP_UnixDialog_Goto__onPrevClicked (GtkButton *button,
+								   gpointer   data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onPrevClicked ();
+}
+
+/*!
+* Event dispatcher for button "next".
+*/
+void
+AP_UnixDialog_Goto__onNextClicked (GtkButton *button,
+								   gpointer   data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onNextClicked ();
+}
+
+/*!
+* Event dispatcher for button "close".
+*/
+void
+AP_UnixDialog_Goto__onDialogResponse (GtkDialog *dialog,
+									  gint 		response,
+									  gpointer  data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	if (response == GTK_RESPONSE_CLOSE) {
+		dlg->destroy ();		
+	}
+}
+
+/*!
+* Event dispatcher for window.
+*/
+gboolean
+AP_UnixDialog_Goto__onDeleteWindow (GtkWidget *widget,
+									GdkEvent  *event,
+									gpointer  data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	if (dlg->getWindow ()) {
+		dlg->destroy ();
+	}
+	return TRUE;
+}
+
+
+
+/*!
+* Static ctor.
+*/
+XAP_Dialog * 
+AP_UnixDialog_Goto::static_constructor(XAP_DialogFactory *pFactory,
+									   XAP_Dialog_Id 	 id)
+{
+	AP_UnixDialog_Goto *dlg = new AP_UnixDialog_Goto (pFactory, id);
+	return dlg;
+}
+
+/*!
+* Ctor.
+*/
+AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
+									   XAP_Dialog_Id 	 id)
+	: AP_Dialog_Goto   (pDlgFactory, id), 
+	  m_wDialog 	   (NULL),
+	  m_lbPage		   (NULL),
+	  m_lbLine		   (NULL),
+	  m_lbBookmarks    (NULL),
+	  m_sbPage		   (NULL),
+	  m_sbLine		   (NULL),
+	  m_lvBookmarks	   (NULL),
+	  m_btJump		   (NULL),
+	  m_btPrev		   (NULL),
+	  m_btNext		   (NULL),
+	  m_btClose 	   (NULL), 
+	  m_JumpTarget	   (AP_JUMPTARGET_BOOKMARK)
+{
+}
+
+/*!
+* Dtor.
+*/
+AP_UnixDialog_Goto::~AP_UnixDialog_Goto ()
+{
+	UT_DEBUGMSG (("ROB: ~AP_UnixDialog_Goto ()\n"));
+}
+
+
+
+/*!
+* Event handler for spinbutton "page".
+*/
+void 
+AP_UnixDialog_Goto::onPageChanged () 
+{
+	UT_DEBUGMSG (("ROB: onPageChanged () maxpage='%d'\n", m_DocCount.page));
+	m_JumpTarget = AP_JUMPTARGET_PAGE;
+	UT_uint32 page = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbPage));
+	if (page > m_DocCount.page) {
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), 1);
+	}
+	onJumpClicked();
+}
+
+/*!
+* Event handler for spinbutton "line".
+*/
+void 
+AP_UnixDialog_Goto::onLineChanged () 
+{
+	UT_DEBUGMSG (("ROB: onLineChanged () maxline='%d'\n", m_DocCount.line));
+	m_JumpTarget = AP_JUMPTARGET_LINE;
+	UT_uint32 line = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbLine));
+	if (line > m_DocCount.line) {
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), 1);
+	}
+	onJumpClicked();
+}
+
+/*!
+* Event handler for treeview "bookmarks".
+*/
+void
+AP_UnixDialog_Goto::onBookmarkDblClicked ()
+{
+	m_JumpTarget = AP_JUMPTARGET_BOOKMARK;
+	onJumpClicked();
+}
+
+/*!
+* Event handler for button "jump".
+*/
+void 
+AP_UnixDialog_Goto::onJumpClicked () 
+{
+	const gchar *text = NULL;
+	bool freeText = FALSE;
+
+	switch (m_JumpTarget) {
+		case AP_JUMPTARGET_PAGE:
+			text = gtk_entry_get_text (GTK_ENTRY (m_sbPage));
+			break;
+		case AP_JUMPTARGET_LINE:
+			text = gtk_entry_get_text (GTK_ENTRY (m_sbLine));
+			break;
+		case AP_JUMPTARGET_BOOKMARK:
+			text = _getSelectedBookmarkLabel ();
+			freeText = TRUE;
+			break;
+		default:
+			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onJumpClicked () no jump target\n"));
+			return;
+			// UT_ASSERT_NOT_REACHED ();
 	}
 
-	return res;
-}
+	if (!text)
+		return;		
 
-void AP_UnixDialog_Goto::s_goto (const char *number, AP_UnixDialog_Goto * me)
-{
-	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
-	UT_UCS4_strcpy_char (ucsnumber, number);
-	int target = me->getSelectedRow ();
-	me->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
-	free (ucsnumber);
-}
+	UT_uint32 len = UT_XML_strlen (text);
+	UT_UCSChar *number = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * len + 1);
+	UT_UCS4_strcpy_utf8_char (number, text);
+	UT_DEBUGMSG (("ROB: onJumpClicked () gotoTarget () target='%d' number='%s'\n", m_JumpTarget, text));
+	getView()->gotoTarget (m_JumpTarget, number);
 
-void AP_UnixDialog_Goto::s_response (GtkWidget * widget, gint id, AP_UnixDialog_Goto * me )
-{
-  switch ( id )
-    {
-    case BUTTON_PREVIOUS:
-      s_prevClicked ( widget, me ) ; break ;
-    case BUTTON_NEXT:
-      s_nextClicked ( widget, me ) ; break ;
-    case BUTTON_GOTO:
-      s_gotoClicked ( widget, me ) ; break ;
-    default:
-      abiDestroyWidget ( widget ) ; break ; // will emit other signals for us
-    }
-}
-
-void AP_UnixDialog_Goto::s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
-{
-	const char *number = gtk_entry_get_text (GTK_ENTRY (me->m_wEntry));
-	if (number && *number)
-			s_goto ((const char *) number, me);
-}
-
-void AP_UnixDialog_Goto::s_nextClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
-{
-	s_goto ("+1", me);
-}
-
-void AP_UnixDialog_Goto::s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
-{
-	s_goto ("-1", me);
-}
-
-void AP_UnixDialog_Goto::s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
-{
-	me->destroy();
-}
-
-void AP_UnixDialog_Goto::s_deleteClicked (GtkWidget * widget, gpointer /* data */,AP_UnixDialog_Goto * me)
-{
-	me->destroy();
-}
-
-
-
-void AP_UnixDialog_Goto::s_targetChanged (GtkWidget *clist, gint row, gint column,
-										  GdkEventButton *event, AP_UnixDialog_Goto *me)
-{
-	me->setSelectedRow (row);
-}
-
-void AP_UnixDialog_Goto::s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * me)
-{
-	const gchar *text = gtk_entry_get_text (GTK_ENTRY (widget));
-
-	if (text[0] == '\0')
-	{
-		gtk_widget_grab_default (me->m_wClose);
-		gtk_widget_set_sensitive (me->m_wGoto, FALSE);
-	}
-	else
-	{
-		gtk_widget_set_sensitive (me->m_wGoto, TRUE);
-		gtk_widget_grab_default (me->m_wGoto);
+	FREEP (number);
+	if (freeText && text) {
+		g_free ((gchar *)text);
 	}
 }
 
-void AP_UnixDialog_Goto::setSelectedRow (int row)
+/*!
+* Event handler for button "prev".
+*/
+void 
+AP_UnixDialog_Goto::onPrevClicked () 
 {
-	m_iRow = row;
+	UT_DEBUGMSG (("ROB: onPrevClicked () '%d'\n", m_JumpTarget));
 
-	XAP_String_Id id = AP_STRING_ID_DLG_Goto_Label_Number;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	if(row == (int) AP_JUMPTARGET_BOOKMARK)
-	{
-		gtk_widget_hide(m_dlabel);
-		gtk_widget_show(m_swindow);
-		gtk_widget_set_sensitive (m_wPrev, FALSE);
-		gtk_widget_set_sensitive (m_wNext, FALSE);
-		id = AP_STRING_ID_DLG_Goto_Label_Name;
+	UT_uint32 num = 0;
+	switch (m_JumpTarget) {
+		case AP_JUMPTARGET_PAGE:
+			num = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbPage));
+			if (num == 1)
+				num = m_DocCount.page;
+			else
+				num--;
+			gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), num);
+			break;
+		case AP_JUMPTARGET_LINE:
+			num = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbLine));
+			if (num == 1)
+				num = m_DocCount.line;
+			else
+				num--;
+			gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), num);
+			break;
+		case AP_JUMPTARGET_BOOKMARK:
+			_selectPrevBookmark ();
+			break;
+		default:
+			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onPrevClicked () no jump target\n"));
+			return;
+			// UT_ASSERT_NOT_REACHED ();
 	}
-	else
-	{
-		gtk_widget_hide(m_swindow);
-		gtk_widget_show(m_dlabel);
-		gtk_widget_set_sensitive (m_wPrev, TRUE);
-		gtk_widget_set_sensitive (m_wNext, TRUE);
+
+	onJumpClicked ();
+}
+
+/*!
+* Event handler for button "next".
+*/
+void 
+AP_UnixDialog_Goto::onNextClicked () 
+{
+	UT_DEBUGMSG (("ROB: onNextClicked () '%d'\n", m_JumpTarget));
+
+	UT_uint32 num = 0;
+	switch (m_JumpTarget) {
+		case AP_JUMPTARGET_PAGE:
+			num = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbPage));
+			num++;
+			gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), num);
+			break;
+		case AP_JUMPTARGET_LINE:
+			num = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbLine));
+			num++;
+			gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), num);
+			break;
+		case AP_JUMPTARGET_BOOKMARK:
+			_selectNextBookmark ();
+			break;
+		default:
+			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onNextClicked () no jump target\n"));
+			return;
+			// UT_ASSERT_NOT_REACHED ();
 	}
 
-	// change string ids
-	UT_UTF8String s;
-	pSS->getValueUTF8 (id,s);
-	char * tmp = s_convert ((char*)s.utf8_str());
-	gtk_label_parse_uline (GTK_LABEL (m_numberLabel), tmp);
-	g_free (tmp);
+	onJumpClicked ();
 }
 
-int AP_UnixDialog_Goto::getSelectedRow (void)
+/*!
+* Set jump target and update cached data like number of lines and pages.
+* @see ap_types.h
+*/
+void 
+AP_UnixDialog_Goto::updateCache (AP_JumpTarget target) 
 {
-	return (m_iRow);
+	m_JumpTarget = target;
+	updateDocCount ();
 }
 
-void AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
+/*!
+* Update cached data like number of lines and pages.
+*/
+void
+AP_UnixDialog_Goto::updateDocCount ()
 {
-	_constructWindow ();
-	setSelectedRow ( 0 ) ;
-
-	UT_ASSERT (m_wMainWindow);
-
-	abiSetupModelessDialog( GTK_DIALOG(m_wMainWindow),pFrame, this, BUTTON_CLOSE );
+	m_DocCount = getView()->countWords (); 
+	UT_DEBUGMSG (("ROB: updateCache () page='%d' line='%d'\n", m_DocCount.page, m_DocCount.line));
 }
 
-void AP_UnixDialog_Goto::destroy (void)
+/*!
+* Build dialog.
+*/
+void 
+AP_UnixDialog_Goto::constuctWindow (XAP_Frame * pFrame) 
 {
-	UT_ASSERT (m_wMainWindow);
-	modeless_cleanup();
-	abiDestroyWidget(m_wMainWindow);
-	m_wMainWindow = NULL;
+	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+
+	// load the dialog from the glade file
+	UT_String glade_path (pApp->getAbiSuiteAppGladeDir ());
+	glade_path += "/ap_UnixDialog_Goto.glade";
+	GladeXML *xml = abiDialogNewFromXML (glade_path.c_str());
+	if (!xml)
+		return;
+
+	m_wDialog = glade_xml_get_widget(xml, "ap_UnixDialog_Goto");
+	m_lbPage = glade_xml_get_widget(xml, "lbPage");
+	m_lbLine = glade_xml_get_widget(xml, "lbLine");
+	m_lbPage = glade_xml_get_widget(xml, "lbPage");
+	m_lbBookmarks = glade_xml_get_widget(xml, "lbBookmarks");
+	m_sbPage = glade_xml_get_widget(xml, "sbPage");
+	m_sbLine = glade_xml_get_widget(xml, "sbLine");
+	m_lvBookmarks = glade_xml_get_widget(xml, "lvBookmarks");
+	m_btJump = glade_xml_get_widget(xml, "btJump");
+	m_btPrev = glade_xml_get_widget(xml, "btPrev");
+	m_btNext = glade_xml_get_widget(xml, "btNext");
+	m_btClose = glade_xml_get_widget(xml, "btClose");
+
+
+	// localise	
+	// const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	/* FIXME jump targets localised in xp land, make sure they work for non ascii characters */
+	XML_Char **targets = getJumpTargets ();
+	XML_Char *text = NULL;
+	if ((text = targets[AP_JUMPTARGET_PAGE]) != NULL)
+		gtk_label_set_text (GTK_LABEL (m_lbPage), text);
+	if ((text = targets[AP_JUMPTARGET_LINE]) != NULL)
+		gtk_label_set_text (GTK_LABEL (m_lbLine), text);
+	if ((text = targets[AP_JUMPTARGET_BOOKMARK]) != NULL)
+		gtk_label_set_text (GTK_LABEL (m_lbBookmarks), text);
+
+
+	// Liststore and -view
+	GtkListStore *store = gtk_list_store_new (NUM_COLUMNS, G_TYPE_STRING);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvBookmarks), GTK_TREE_MODEL (store));
+	g_object_unref (G_OBJECT (store));
+
+	// Column Bookmark
+	GtkCellRenderer *renderer = NULL;
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_lvBookmarks),
+												-1, "Name", renderer,
+												"text", COLUMN_NAME,
+												NULL);
+	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_lvBookmarks), 0);
+	gtk_tree_view_column_set_sort_column_id (column, COLUMN_NAME);
+
+	// Signals
+	g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "focus-in-event", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onFocusPage), static_cast <gpointer>(this)); 
+	g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "value-changed", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onPageChanged), static_cast <gpointer>(this)); 
+
+	g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "focus-in-event", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onFocusLine), static_cast <gpointer>(this)); 
+	g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "value-changed", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onLineChanged), static_cast <gpointer>(this)); 
+
+	g_signal_connect (GTK_TREE_VIEW (m_lvBookmarks), "focus-in-event", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onFocusBookmarks), static_cast <gpointer>(this)); 
+	g_signal_connect (GTK_TREE_VIEW (m_lvBookmarks), "row-activated", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onBookmarkDblClicked), static_cast <gpointer>(this));
+
+	g_signal_connect (GTK_BUTTON (m_btJump), "clicked", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onJumpClicked), static_cast <gpointer>(this));
+	g_signal_connect (GTK_BUTTON (m_btPrev), "clicked", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onPrevClicked), static_cast <gpointer>(this));
+	g_signal_connect (GTK_BUTTON (m_btNext), "clicked", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onNextClicked), static_cast <gpointer>(this));
+
+	g_signal_connect (GTK_DIALOG (m_wDialog), "response",
+					  G_CALLBACK (AP_UnixDialog_Goto__onDialogResponse), static_cast <gpointer>(this));
+	g_signal_connect (m_wDialog, "delete-event",
+					  G_CALLBACK (AP_UnixDialog_Goto__onDeleteWindow), static_cast <gpointer>(this));
 }
 
-void AP_UnixDialog_Goto::activate (void)
+/*!
+* Update dialog's data.
+*/
+void 
+AP_UnixDialog_Goto::updateWindow ()
 {
-	UT_ASSERT (m_wMainWindow);
-	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), m_WindowName);
-	gdk_window_raise (m_wMainWindow->window);
-}
+	UT_DEBUGMSG (("ROB: updateWindow () #bookmarks='%d'\n", getExistingBookmarksCount()));
+	ConstructWindowName ();
+	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName);
 
+	// pages, page increment of 10 is pretty arbitrary (set in glade)
+	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
 
-void AP_UnixDialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
-{
-        UT_ASSERT(m_wMainWindow);
-	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), m_WindowName);
-}
-
-GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
-{
-	GtkWidget *vbox;
-	GtkWidget *actionarea;
-	GtkWidget *contents;
-
-        ConstructWindowName();
-	m_wMainWindow = abiDialogNew( "goto dialog", TRUE, m_WindowName );
-	gtk_container_set_border_width (GTK_CONTAINER (m_wMainWindow), 4);
-
-	vbox = GTK_DIALOG (m_wMainWindow)->vbox;
-	actionarea = GTK_DIALOG (m_wMainWindow)->action_area;
-
-	contents = _constructWindowContents ();
-
-	// TODO: This call must be in _constructWindowContents
-	gtk_window_add_accel_group (GTK_WINDOW (m_wMainWindow), m_accelGroup);
-
-	gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
+	// lines, line increment of 10 is pretty arbitrary (set in glade)
+	UT_uint32 currentLine = 1; /* FIXME get current line */
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
 	
-	// Buttons
-	m_wClose = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_CLOSE, BUTTON_CLOSE);
-	m_wPrev = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_GO_BACK, BUTTON_PREVIOUS);
-	m_wNext = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_GO_FORWARD, BUTTON_NEXT);
-	m_wGoto = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_JUMP_TO, BUTTON_GOTO);
+	// bookmarks, detaching model for faster updates
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
+	g_object_ref (G_OBJECT (model));
+	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvBookmarks), NULL);
+	gtk_list_store_clear (GTK_LIST_STORE (model));
 
-	//const XAP_StringSet * pSS = m_pApp->getStringSet();
-	//m_wGoto = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Btn_Goto).utf8_str());
+	GtkTreeIter iter;
+	UT_uint32 numBookmarks = getExistingBookmarksCount();
+	for (UT_uint32 i = 0; i < numBookmarks; i++) {
 
-	gtk_widget_show_all (m_wMainWindow);
-	
-	//initially hide the bookmark list; also we want the bookmark list to be
-	// of same size as the descriptive text, so that when we swap them
-	// the whole window does not get resized
-	gtk_window_set_default_size(GTK_WINDOW(m_swindow),(gint)m_dlabel->allocation.width,(gint)m_dlabel->allocation.height);
-	gtk_widget_hide(m_swindow);
-	
-	_connectSignals ();
+		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+		const XML_Char *name = getNthExistingBookmark(i);
+		UT_DEBUGMSG (("    ROB: '%s'\n", name));
+		gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+							COLUMN_NAME, name, /* 
+							COLUMN_PAGE, "0", 
+							COLUMN_NUMBER, 0, */
+							-1);
+	}
+	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvBookmarks), model);
+	g_object_unref (G_OBJECT (model));
 
-	return (m_wMainWindow);
+	updateDocCount ();
 }
 
-GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
+void 
+AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
-	GtkWidget *hbox;
-	GtkWidget *vbox;
-	GtkWidget *what_lb;
-	GtkWidget *clist;
-	GtkWidget *vbox2;
-	GtkWidget *number_lb;
-	GtkWidget *contents;
-	GtkWidget *blist;
-
-	guint number_lb_key;
-	guint what_lb_key;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	char *tmp;
-
-	m_accelGroup = gtk_accel_group_new ();
-
-	contents = gtk_vbox_new (FALSE, 0);
-
-	hbox = gtk_hbox_new (FALSE, 8);
-	gtk_box_pack_start (GTK_BOX (contents), hbox, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 4);
-
-	vbox = gtk_vbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
-
-	what_lb = gtk_label_new ("");
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Label_What,s);
-	tmp = s_convert((char*)s.utf8_str());
-	what_lb_key = gtk_label_parse_uline (GTK_LABEL (what_lb), tmp);
-	g_free (tmp);
-	gtk_box_pack_start (GTK_BOX (vbox), what_lb, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (what_lb), 0, 0.5);
-
-	clist = gtk_clist_new (1);
-	gtk_box_pack_start (GTK_BOX (vbox), clist, TRUE, TRUE, 0);
-	gtk_clist_set_column_width (GTK_CLIST (clist), 0, 80);
-	gtk_clist_set_selection_mode (GTK_CLIST (clist), GTK_SELECTION_BROWSE);
-	gtk_clist_column_titles_hide (GTK_CLIST (clist));
-	m_iRow = 0;
-	char **tmp2 = getJumpTargets ();
-	for (int i = 0; tmp2[i] != NULL; i++)
-		gtk_clist_append (GTK_CLIST (clist), &tmp2[i]);
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), vbox2, TRUE, TRUE, 0);
-
-	number_lb = gtk_label_new ("");
-	m_numberLabel = number_lb;
-	pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Label_Number,s);
-	tmp = s_convert ((char*)s.utf8_str());
-	number_lb_key = gtk_label_parse_uline (GTK_LABEL (number_lb), tmp);
-	g_free (tmp);
-	gtk_box_pack_start (GTK_BOX (vbox2), number_lb, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (number_lb), 0, 0.5);
-
-	m_wEntry = gtk_entry_new ();
-	gtk_box_pack_start (GTK_BOX (vbox2), m_wEntry, FALSE, FALSE, 0);
-
-	pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Label_Help,s);
-	m_dlabel = gtk_label_new (s.utf8_str());
-	gtk_box_pack_start (GTK_BOX (vbox2), m_dlabel, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (m_dlabel), GTK_JUSTIFY_FILL);
-	gtk_label_set_line_wrap (GTK_LABEL (m_dlabel), TRUE);
-	gtk_misc_set_alignment (GTK_MISC (m_dlabel), 0, 0.5);
-	
-	// the bookmark list
-	m_swindow  = gtk_scrolled_window_new(NULL, NULL);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
-	gtk_widget_hide(m_swindow);
-	
-	blist = gtk_clist_new (1);
-	gtk_clist_set_selection_mode(GTK_CLIST(blist), GTK_SELECTION_BROWSE);
-    gtk_clist_column_titles_hide(GTK_CLIST(blist));
-    //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
-
-    if(m_pBookmarks)
-    	delete [] m_pBookmarks;
-	m_pBookmarks = new const XML_Char *[getExistingBookmarksCount()];
-	
-    for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
-    	m_pBookmarks[i] = getNthExistingBookmark(i);
-
-    int (*my_cmp)(const void *, const void *) =
-    	(int (*)(const void*, const void*)) UT_XML_strcmp;
-    	
-    qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(XML_Char*),my_cmp);
-
-    for (int i = 0; i < (int)getExistingBookmarksCount(); i++)
-    	gtk_clist_append (GTK_CLIST (blist), (gchar**) &m_pBookmarks[i]);
-
-	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),blist);
-	
-
-    //add signal handlers
-	g_signal_connect (G_OBJECT (clist), "select_row",
-						G_CALLBACK (s_targetChanged),
-						this);
-	g_signal_connect (G_OBJECT (m_wEntry), "changed",
-						G_CALLBACK (s_dataChanged), this);
-	g_signal_connect (G_OBJECT (m_wEntry), "activate",
-						G_CALLBACK (s_gotoClicked), this);
-						
-	g_signal_connect (G_OBJECT (blist), "select_row",
-						G_CALLBACK (s_blist_clicked), this);
-
-	gtk_widget_add_accelerator (clist, "grab_focus", m_accelGroup,
-								what_lb_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
-	gtk_widget_add_accelerator (m_wEntry, "grab_focus", m_accelGroup,
-								number_lb_key, GDK_MOD1_MASK, (GtkAccelFlags) 0);
-
-	return contents;
+	UT_DEBUGMSG (("ROB: runModeless ()\n"));
+	constuctWindow (pFrame);
+	UT_ASSERT (m_wDialog);
+	updateWindow ();
+	abiSetupModelessDialog (GTK_DIALOG (m_wDialog), pFrame, this, GTK_RESPONSE_CLOSE);
+	gtk_widget_show_all (m_wDialog);
+	gtk_window_present (GTK_WINDOW (m_wDialog));
 }
 
-void AP_UnixDialog_Goto::_populateWindowData (void) {}
-
-static void s_destroy_clicked(GtkWidget * /* widget */,
-			      AP_UnixDialog_Goto * dlg)
+void 
+AP_UnixDialog_Goto::notifyActiveFrame (XAP_Frame *pFrame)
 {
-	UT_ASSERT(dlg);
-	UT_DEBUGMSG(("DOM: destroying dialog\n"));
-	dlg->destroy();
+	UT_DEBUGMSG (("ROB: notifyActiveFrame ()\n"));
+	UT_ASSERT (m_wDialog);
+	updateWindow ();
+	/* default to page */
+	m_JumpTarget = AP_JUMPTARGET_PAGE;
 }
 
-static void s_delete_clicked(GtkWidget * widget,
-			     gpointer,
-			     gpointer * dlg)
+void 
+AP_UnixDialog_Goto::activate (void)
 {
-	abiDestroyWidget(widget);
+	UT_ASSERT (m_wDialog);
+	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::activate ()\n"));
+	updateWindow ();
+	gtk_window_present (GTK_WINDOW (m_wDialog));
 }
 
-void AP_UnixDialog_Goto::_connectSignals(void)
+void 
+AP_UnixDialog_Goto::destroy ()
 {
-	g_signal_connect_after(G_OBJECT(m_wMainWindow),
-			       "response",
-			       G_CALLBACK(s_response),
-			       this);
+	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::destroy ()\n"));
+	modeless_cleanup ();
+	if (m_wDialog) {
+		gtk_widget_destroy (m_wDialog);
+		m_wDialog = NULL;
+	}
+}
 
-	// the catch-alls
-	// Dont use gtk_signal_connect_after for modeless dialogs
-	g_signal_connect(G_OBJECT(m_wMainWindow),
-			   "destroy",
-			   G_CALLBACK(s_destroy_clicked),
-			   (gpointer) this);
-	g_signal_connect(G_OBJECT(m_wMainWindow),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
+/**
+* Try to select the bookmark before the current one.
+* If none is selected the last in the list is picked.
+* Wraps around.
+*/
+void
+AP_UnixDialog_Goto::_selectPrevBookmark () 
+{
+	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectPrevBookmark ()\n"));
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
+	UT_return_if_fail (model != NULL);
+
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvBookmarks));
+	GtkTreeIter iter;
+
+	// try to select prev
+	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
+	if (haveSelected) {
+		GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
+		gtk_tree_path_prev (path);
+		gboolean havePrev = gtk_tree_model_get_iter (model, &iter, path);
+		if (havePrev) {
+			gtk_tree_selection_select_path (selection, path);
+			gtk_tree_path_free (path);
+			return;
+		}
+		gtk_tree_path_free (path);
+	}
+
+	// select last
+	UT_uint32 idx = getExistingBookmarksCount () - 1;
+	GtkTreePath *path = gtk_tree_path_new_from_indices (idx);
+	gtk_tree_selection_select_path (selection, path);
+	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectPrevBookmark () select last '%d'\n", 
+					gtk_tree_model_get_iter (model, &iter, path)));
+	gtk_tree_path_free (path);
+}
+
+/**
+* Try to select the bookmark after the current one.
+* If none is selected the first in the list is picked.
+* Wraps around.
+*/
+void
+AP_UnixDialog_Goto::_selectNextBookmark () 
+{
+	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectNextBookmark ()\n"));
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
+	UT_return_if_fail (model != NULL);
+
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvBookmarks));
+	GtkTreeIter iter;
+
+	// try to select next
+	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
+	if (haveSelected) {
+		GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
+		gtk_tree_path_next (path);
+		gboolean haveNext = gtk_tree_model_get_iter (model, &iter, path);
+		if (haveNext) {
+			gtk_tree_selection_select_path (selection, path);
+			gtk_tree_path_free (path);
+			return;
+		}
+		gtk_tree_path_free (path);
+	}
+
+	// select first
+	GtkTreePath *path = gtk_tree_path_new_first ();
+	gtk_tree_selection_select_path (selection, path);
+	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_selectNextBookmark () select first '%d'\n", 
+					gtk_tree_model_get_iter (model, &iter, path)));
+	gtk_tree_path_free (path);
+}
+
+/*!
+* Get the label of the currently selected bookmark in the list.
+* The returned string has to bee freed. Can return NULL.
+*/
+gchar * 
+AP_UnixDialog_Goto::_getSelectedBookmarkLabel () 
+{
+	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::_getSelectedBookmarkLabel ()\n"));
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
+	UT_return_val_if_fail (model != NULL, NULL);
+
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvBookmarks));
+	GtkTreeIter iter;
+	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
+	if (!haveSelected)
+		return NULL;
+
+	gchar *label = NULL;
+	gtk_tree_model_get (model, &iter, COLUMN_NAME, &label, -1);
+	return label;
 }

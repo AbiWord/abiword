@@ -22,11 +22,13 @@
 #include "ie_exp.h"
 #include "ie_impexp_Register.h"
 
+#include "ie_impGraphic_GdkPixbuf.h"
+
 /*!
-  Register all GNOME Importer and Exporter
+  Register all GTK Importers and Exporters
   Should be called from AP_<FE>App
  */
 void IE_ImpExp_RegisterPlatform ()
 {
+    IE_ImpGraphic::registerImporter(new IE_ImpGraphicGdkPixbuf_Sniffer ());
 }
-    

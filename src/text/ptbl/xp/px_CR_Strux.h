@@ -44,6 +44,7 @@ public:
 	PX_ChangeRecord_Strux(PXType type,
 						  PT_DocPosition position,
 						  PT_AttrPropIndex indexAP,
+						  UT_uint32 iXID,
 						  PTStruxType struxType);
 	~PX_ChangeRecord_Strux();
 

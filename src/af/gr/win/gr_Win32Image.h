@@ -39,6 +39,8 @@ public:
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
 
 	virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
+	virtual bool hasAlpha (void) const;
+	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
 
 protected:
 	BITMAPINFO*		m_pDIB;

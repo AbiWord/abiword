@@ -212,6 +212,8 @@ public:
 
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const XML_Char ** attributes);
 
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object * pfo,const XML_Char ** attributes,const XML_Char ** properties);
+
 	bool                    changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
@@ -318,7 +320,7 @@ public:
 	const UT_GenericStringMap<PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
-
+	
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 	UT_uint32               getFragNumber(pf_Frag * pFrag) const {return m_fragments.getFragNumber(pFrag);}
     pt_VarSet &             getVarSet(void) {return m_varset;};
@@ -330,6 +332,11 @@ public:
 
 	void                    setDoNotTweakPosition(bool b) {m_bDoNotTweakPosition = b;}
 
+	UT_uint32               getXID();
+	UT_uint32               getTopXID() const {return m_iXID;}
+	void                    setXIDThreshold(UT_uint32 i){m_iXID = i;}
+	void                    fixMissingXIDs();
+	
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
@@ -479,7 +486,6 @@ protected:
 													 pf_Frag_Strux * pfs,
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd);
-
 	bool					_fmtChangeObject(pf_Frag_Object * pfo,
 											 PT_AttrPropIndex indexNewAP,
 											 pf_Frag ** ppfNewEnd,
@@ -573,6 +579,8 @@ protected:
 	UT_uint32               m_atomicGlobCount;
 	bool                    m_bDoingTheDo;
 	bool                    m_bDoNotTweakPosition;
+
+	UT_uint32               m_iXID;
 };
 
 #endif /* PT_PIECETABLE_H */

@@ -85,6 +85,7 @@
 #	include "ap_CocoaDialog_FormatFrame.h"
 #	include "ap_CocoaDialog_FormatTOC.h"
 #	include "ap_CocoaDialog_Stylist.h"
+#	include "ap_CocoaDialog_MailMerge.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
@@ -103,6 +104,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_CocoaDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_CocoaDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERTMATHML,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,	XAP_CocoaDialog_HTMLOptions)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_CocoaDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_CocoaDialog_PluginManager)
@@ -122,7 +124,7 @@
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_CocoaDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_CocoaDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_CocoaDialog_HdrFtr)
-//PORT    DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_CocoaDialog_Background)
+	DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_CocoaDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_CocoaDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_CocoaDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_CocoaDialog_Spell)
@@ -153,7 +155,7 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,		AP_CocoaDialog_FormatTOC)
 	DeclareDialog(AP_DIALOG_ID_STYLIST,		AP_CocoaDialog_Stylist)
-//PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
+	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_CocoaDialog_MailMerge)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
 #endif

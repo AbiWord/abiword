@@ -66,6 +66,8 @@
 #define _CTC		EV_EMC_TOPCELL
 #define _CTO		EV_EMC_TOC
 #define _CPO		EV_EMC_POSOBJECT
+#define _CMA		EV_EMC_MATH
+#define _CEM		EV_EMC_EMBED
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -91,7 +93,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CL _B0,	{ "",	"",			"cursorRightArrow",	"",			"",			""				}},
 	{_CM _B0,	{ "",	"",			"cursorIBeam",		"",			"",			""				}},
 	{_CI _B0,	{ "",	"",			"cursorImage",		"",			"",			""				}},
-	{_CZ _B0,	{ "",	"",			"cursorImageSize",	"",			"",			""				}},
+	{_CZ _B0,	{ "",	"",			"btn0InlineImage",	"",			"",			""				}},
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CR _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
@@ -102,6 +104,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CVD _B0,	{ "",	"",			"btn0VisualText",	"",			"",			"",				}},
 	{_CTC _B0,	{ "",	"",			"cursorTopCell",	"",			"",			"",				}},
 	{_CTO _B0,	{ "",	"",			"cursorTOC",	"",			"",			"",				}},
+	{_CMA _B0,	{ "",	"",			"cursorDefault",		"",			"",			""		        }},
 
 
 //	Button-1, VisualTextDrag context
@@ -112,13 +115,13 @@ ap_bs_Mouse MouseTable[] =
 //	Button-1, Frame-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
   { _CTF _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",	   	"releaseFrame" }},
-  { _CPO _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",	   	"releaseFrame" }},
+  { _CPO _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",   "releaseFrame" }},
 
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
 	{_CI _B1,	{ "selectObject",	"selectObject",	"",			"",				"",			""	}},
-	{_CI _B1 _C,{ "",				"",				"dragImage","",				"dropImage",""	}},
+	{_CI _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},
 	
@@ -148,7 +151,13 @@ ap_bs_Mouse MouseTable[] =
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
-	{_CZ _B1,	{ "",				"",				"resizeImage",	"",		"endResizeImage",	""				}},
+	{_CZ _B1,	{ "btn1InlineImage",				"dlgFmtPosImage",				"dragInlineImage",	"",		"releaseInlineImage",	"releaseInlineImage"				}},
+	{_CZ _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
+//	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
+
+//	Button-1, Math-context
+	{_CMA _B1, {"selectMath",                "selectMath",   "selectMath",            "",             "",                       "" }},
+
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
 
 //	Button-1, TableLine-context
@@ -184,8 +193,9 @@ ap_bs_Mouse MouseTable[] =
 	//{_CL _B3,	{ "contextLeftOfText",	"",			"",		"",			"",			""				}},
 	{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
 	{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
+	{_CZ _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	{_CTF _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
-	{_CPO _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
+	{_CPO _B3,	{ "contextPosObject",		"",			"",		"",			"",			""				}},
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 

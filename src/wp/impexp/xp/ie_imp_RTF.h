@@ -96,7 +96,7 @@ public:
 	UT_sint32  m_styleNumber ; //index into the style table
 	UT_uint32  m_listTag; // tag for lists to hang off
 	const char * m_szLang;
-	bool    m_RTL;
+	UT_BidiCharType m_dir;
 	UT_BidiCharType m_dirOverride;
 	bool    m_Hidden;
 	PP_RevisionType m_eRevision;
@@ -223,7 +223,7 @@ struct ABI_EXPORT RTFProps_ParaProps
 	UT_uint32       m_iOverrideLevel;     // 0's index to the level
 	_rtfListTable   m_rtfListTable;
 	UT_sint32  m_styleNumber ; //index into the style table
-	bool            m_RTL;
+	UT_BidiCharType m_dir;
 	UT_sint32       m_tableLevel; //nesting level of the paragram in a table.
 	bool            m_bInTable; // true if paragraph is in a table
 	PP_RevisionType m_eRevision;
@@ -387,6 +387,11 @@ struct ABI_EXPORT RTFProps_ImageProps
 	UT_uint16 scaleY;
 	UT_uint32 width;
 	UT_uint32 height;
+	bool bCrop;
+	UT_sint32 cropt;
+	UT_sint32 cropb;
+	UT_sint32 cropl;
+	UT_sint32 cropr;
 };
 
 // Section properties
@@ -685,11 +690,12 @@ private:
 
 	// Paragraph property handlers
 	bool ResetParagraphAttributes();
-	bool ApplyParagraphAttributes();
+	bool ApplyParagraphAttributes(bool bDontInsert = false);
 	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, 
                     eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
+
 
 // Paste AbiWord tables
  public:
@@ -698,6 +704,7 @@ private:
 	bool HandleAbiEndTable(void);
 	bool HandleAbiEndCell(void);
 	bool HandleAbiLists(void);
+	bool HandleAbiMathml(void);
 	bool isPastedTableOpen(void);
 	bool markPasteBlock(void);
 	bool isBlockNeededForPasteTable(void);
@@ -839,6 +846,7 @@ private:
 	UT_uint32 			m_lenPasteBuffer;
 	const unsigned char *		m_pCurrentCharInPasteBuffer;
 	PT_DocPosition		m_dposPaste;
+	PT_DocPosition		m_dOrigPos;
 	UT_uint32		    deflangid;
 	UT_UCS4_mbtowc		m_mbtowc;
 	bool                m_parsingHdrFtr;
@@ -884,6 +892,10 @@ private:
 	bool		          m_bStruxImage;
 	UT_UTF8String	      m_sImageName;
 	bool                  m_bFrameStruxIn;
+
+	UT_BidiCharType       m_iAutoBidiOverride;
+	UT_BidiCharType       m_iBidiLastType;
+	UT_BidiCharType       m_iBidiNextType;
 
 };
 

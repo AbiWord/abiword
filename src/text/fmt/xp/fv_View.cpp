@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -194,7 +195,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_ixDragOrigin(0),
 		m_iyDragOrigin(0),
 		m_colorShowPara(127,127,127),
-		m_colorSquiggle(255, 0, 0),
+		m_colorSpellSquiggle(255, 0, 0),
+		m_colorGrammarSquiggle(0, 192, 0),
 		m_colorMargin(127, 127, 127),
 		m_colorFieldOffset(10, 10, 10),
 		m_colorImage(0, 0, 255),
@@ -220,7 +222,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iFreePass(0),
 		m_bDontNotifyListeners(false),
 		m_pLocalBuf(NULL),
-		m_iGrabCell(0)
+		m_iGrabCell(0),
+		m_InlineImage(this)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -243,7 +246,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	}
 	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorSquiggle);
+		UT_parseColor(pszTmpColor, m_colorSpellSquiggle);
+	}
+	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorGrammarSquiggle);
 	}
 	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
@@ -484,6 +491,15 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	}
 }
 
+UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
+{
+	if(iSquiggleType == FL_SQUIGGLE_SPELL)
+	{
+		return m_colorSpellSquiggle;
+	}
+	return m_colorGrammarSquiggle;
+}
+
 void FV_View::replaceGraphics(GR_Graphics * pG)
 {
 	if(m_pG)
@@ -602,6 +618,87 @@ void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
 	delete pExpRtf;
 }
 
+//Creates a new document, inserts a string into it, selects all, and then copies it
+//onto the system clipboard
+
+void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard)
+{
+	/* create a new hidden document */
+  	PD_Document * pDoc = new PD_Document(XAP_App::getApp());
+  	pDoc->newDocument();
+	FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc, m_pG);
+	FV_View * pCopyLinkView = new FV_View(XAP_App::getApp(), 0, pDocLayout);
+	
+	/* assign the view to the doclayout */
+	pDocLayout->setView(pCopyLinkView);
+	
+	/* fill its layout structures (which are quite empty, but still...) */
+	pCopyLinkView->getLayout()->fillLayouts();
+	pCopyLinkView->getLayout()->formatAll();
+	
+	/* insert the string in the new document, select it, and copy it */
+	pCopyLinkView->cmdCharInsert(sIncoming.ucs4_str(), sIncoming.length(),false);
+	pCopyLinkView->cmdSelect(0,0,FV_DOCPOS_BOD,FV_DOCPOS_EOD);
+	pCopyLinkView->cmdCopy();
+
+	/* we're done, release our resources */
+	DELETEP(pCopyLinkView);
+	DELETEP(pDocLayout);
+}
+
+
+
+/*!
+ * Logic for determining what state the Image and cursor should be in.
+ */
+void FV_View::btn0InlineImage(UT_sint32 x, UT_sint32 y)
+{
+	xxx_UT_DEBUGMSG(("btn0 called InlineImage mode %d \n",m_InlineImage.getInlineDragMode()));
+	m_InlineImage.setDragType(x,y,false);
+	setCursorToContext();
+}
+
+/*!
+ * Deal with a left -mouse click on a inline-image. It might be the 
+ * start of a drag or a resize.
+ */
+void FV_View::btn1InlineImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseLeftPress(x,y);
+}
+
+
+/*!
+ * Complete the drag which either finishes the drag of the image or
+ * completes the resize of the image.
+ */
+void FV_View::releaseInlineImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseRelease(x,y);
+}
+
+
+
+/*!
+ * Drag on an image. Either drag the whole image or do a resize.
+ */
+void FV_View::dragInlineImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseDrag(x,y);
+}
+
+
+/*!
+ * Make a copy of the inline image. This gets called with cntrl-left mouse
+ * click.
+ */
+void FV_View::btn1CopyImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseCopy(x,y);
+}
+
+
+
 FV_FrameEdit * FV_View::getFrameEdit(void)
 {
 	return &m_FrameEdit;
@@ -641,6 +738,128 @@ void FV_View::setFrameFormat(const XML_Char * properties[])
 	setFrameFormat(properties,NULL,dataID);
 }
 
+/*!
+ * This method converts a positioned object described by fp_FrameLayout * pFram
+ * to an inline image. It then selects the inline image.
+ */
+bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
+{
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
+	fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pFrame->getFirstContainer());
+	pFC->getBlocksAroundFrame(vecBlocks);
+	if(vecBlocks.getItemCount() == 0)
+	{
+		fp_Page * pPage = pFC->getPage();
+		fp_Column * pCol = pPage->getNthColumnLeader(0);
+		fp_Container * pCon = pCol->getFirstContainer();
+		fl_BlockLayout * pB = NULL;
+		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		{
+			pB = static_cast<fp_Line *>(pCon)->getBlock();
+		}
+		else
+		{
+			fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
+			pB = pCL->getNextBlockInDocument();
+		}
+		vecBlocks.addItem(pB);
+	}
+	UT_sint32 iBlk = 0;
+	fl_BlockLayout * pBL = vecBlocks.getNthItem(iBlk);
+	fp_Line * pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
+	bool bLoop = true;
+	while((pLine != NULL) && bLoop)
+	{
+			double xoffLine, yoffLine;
+			fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(pLine->getContainer()));
+			pVCon->getScreenOffsets(pLine, xoffLine, yoffLine);
+			if(yoffLine + pLine->getHeight() >= pFC->getFullY())
+			{
+				bLoop = false;
+				break;
+			}
+			pLine = static_cast<fp_Line *>(pLine->getNext());
+			if(pLine == NULL)
+			{
+				iBlk++;
+				if(iBlk < vecBlocks.getItemCount())
+				{
+					pBL = vecBlocks.getNthItem(iBlk);
+					pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
+				}
+			}
+	}
+	if(pLine == NULL)
+	{
+		pBL = vecBlocks.getNthItem(vecBlocks.getItemCount()-1);
+		pLine = static_cast<fp_Line *>(pBL->getLastContainer());
+		if(pLine == NULL)
+			return false;
+	}
+	fp_Run * pRun = pLine->getLastRun();
+	PT_DocPosition pos = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength();
+	const PP_AttrProp* pAP = NULL;
+	pFrame->getAP(pAP);
+	if(pAP == NULL)
+	{
+		return false;
+	}
+	const XML_Char* szDataID = 0;
+	const XML_Char* szTitle = 0;
+	const XML_Char* szDescription = 0;
+	const  XML_Char* szWidth = 0;
+	const  XML_Char * szHeight = 0;
+    bool bFound = pAP->getAttribute(PT_STRUX_IMAGE_DATAID,szDataID);
+	if(!bFound)
+	{
+		return false;
+	}
+	bFound = pAP->getProperty("frame-width",szWidth);
+	if(!bFound)
+	{
+		return false;
+	}
+	bFound = pAP->getProperty("frame-height",szHeight);
+	if(!bFound)
+	{
+		return false;
+	}
+	bFound = pAP->getProperty("title",szTitle);
+	bFound = pAP->getProperty("alt",szDescription);
+	UT_String sProps;
+	sProps += "width:";
+	sProps += szWidth;
+	sProps += "; height:";
+	sProps += szHeight;
+	const XML_Char*	attributes[] = {
+		"dataid", NULL,
+		"title",NULL,
+		"alt",NULL,
+		PT_PROPS_ATTRIBUTE_NAME, NULL,
+	   	NULL, NULL};
+	attributes[1] = szDataID;
+	attributes[3] = szTitle;
+	attributes[5] = szDescription;
+	attributes[7] = sProps.c_str();
+	if(pFrame->getPosition(true) < pos)
+	{
+		pos -= 2;
+	}
+	m_pDoc->beginUserAtomicGlob();
+	m_FrameEdit.deleteFrame(pFrame);
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->insertObject(pos, PTO_Image, attributes, NULL);
+	_restorePieceTableState();
+	m_pDoc->endUserAtomicGlob();
+	_updateInsertionPoint();
+	_generalUpdate();
+	cmdSelect(pos,pos+1);
+	return true;
+}
+
+/*!
+ * This method converts an image located position pos to a positioned object.
+ */
 void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** attributes)
 {
 
@@ -700,13 +919,12 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 	PT_DocPosition posFrame = pfFrame->getPos();
 //	m_pDoc->insertStrux(posFrame+1,PTX_Block); // might need this later!
 	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
-
-
+	insertParaBreakIfNeededAtPos(posFrame+2);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-	_generalUpdate();
 	m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
 	setPoint(posFrame+2);
 	if(!isPointLegal())
 	{
@@ -757,6 +975,39 @@ void FV_View::setFrameFormat(const XML_Char * properties[], FG_Graphic * pFG,UT_
 	}
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionFrame);
+
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+
+	_ensureInsertionPointOnScreen();
+	clearCursorWait();
+	notifyListeners(AV_CHG_MOTION);
+}
+
+
+void FV_View::setFrameFormat(const XML_Char * attribs[], const XML_Char * properties[])
+{
+	bool bRet;
+	setCursorWait();
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	if(isHdrFtrEdit())
+	{
+		clearHdrFtrEdit();
+		warpInsPtToXY(0,0,false);
+	}
+	fl_FrameLayout * pFrame = getFrameLayout();
+	if(pFrame == NULL)
+	{
+		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+	}
+	PT_DocPosition posStart = pFrame->getPosition(true)+1;
+	PT_DocPosition posEnd = posStart;
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_SectionFrame);
 
 
 	// Signal PieceTable Changes have finished
@@ -851,9 +1102,11 @@ void FV_View::deleteFrame(void)
 	}
 	if(getFrameLayout() == NULL)
 	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		selectFrame(); // this will clear the frame context
 		return;
 	}
+	UT_DEBUGMSG(("Doing Delete Frame \n"));
 	m_FrameEdit.deleteFrame();
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if(pFrame)
@@ -2015,11 +2268,26 @@ PT_DocPosition FV_View::mapDocPos( FV_DocPos dp ) {
 PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 {
 	const char * dataId;
-	PT_DocPosition pos = getSelectedImage(&dataId);
+	PT_DocPosition pos = 0;
+	if(m_prevMouseContext == EV_EMC_POSOBJECT)
+	{
+		fl_FrameLayout * pFrame = getFrameLayout();
+		const PP_AttrProp* pAP = NULL;
+		pFrame->getAP(pAP);
+		if(pAP == NULL)
+		{
+			return 0;
+		}
+		pAP->getAttribute(PT_STRUX_IMAGE_DATAID, dataId);
+		pos = pFrame->getPosition();
+	}
+	else
+	{
+		pos = getSelectedImage(&dataId);
 
 	// if nothing selected or selection not an image
-	if (pos == 0) return 0;
-
+		if (pos == 0) return 0;
+	}
 	if ( m_pDoc->getDataItemDataByName ( dataId, pBytes, NULL, NULL ) )
 	  {
 		return pos ;
@@ -7770,7 +8038,6 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
 	notifyListeners(AV_CHG_MOTION);
@@ -8354,7 +8621,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
 		{
 			fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_FRAME;
 			fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
 			if(pDSL == NULL)
@@ -8527,11 +8794,17 @@ EV_EditMouseContext FV_View::getMouseContext(double xPos, double yPos)
 		}
 		return EV_EMC_FRAME;
 	}
+	if(m_InlineImage.isActive())
+	{
+			m_prevMouseContext = EV_EMC_IMAGESIZE;
+			return EV_EMC_IMAGESIZE;
+	}
 	UT_sint32 ires = 40;
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL,isTOC, true);
 	fl_BlockLayout* pBlock;
 	fp_Run* pRun;
 	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+	xxx_UT_DEBUGMSG(("Current Pos %d \n",pos));
 //
 // Look if we're inside a frame
 //
@@ -8541,6 +8814,7 @@ EV_EditMouseContext FV_View::getMouseContext(double xPos, double yPos)
 // Handle case of an image only as a backdrop to a frame. Then the frame
 // has no content.
 //
+		xxx_UT_DEBUGMSG(("In Frame \n"));
 		if(m_pDoc->isFrameAtPos(pos))
 		{
 			PL_StruxFmtHandle psfh = NULL;
@@ -8551,6 +8825,7 @@ EV_EditMouseContext FV_View::getMouseContext(double xPos, double yPos)
 			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
 			{
 				m_prevMouseContext = EV_EMC_POSOBJECT;;
+				xxx_UT_DEBUGMSG(("Over positioned object \n"));
 				return EV_EMC_POSOBJECT;;
 			}
 		}
@@ -8783,17 +9058,9 @@ EV_EditMouseContext FV_View::getMouseContext(double xPos, double yPos)
 				// Set the image size in the image selection rect
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
-		
-			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
-			{
-				m_prevMouseContext = EV_EMC_IMAGESIZE;
-				return EV_EMC_IMAGESIZE;
-			}
-			else
-			{
-				m_prevMouseContext = EV_EMC_IMAGE;
-				return EV_EMC_IMAGE;
-			}
+			m_prevMouseContext = EV_EMC_IMAGESIZE;
+			//			m_InlineImage.mouseLeftPress(xPos, yPos);
+			return EV_EMC_IMAGESIZE;
 		}
 		if(m_Selection.isPosSelected(pos))
 		{
@@ -8807,7 +9074,7 @@ EV_EditMouseContext FV_View::getMouseContext(double xPos, double yPos)
 	case FPRUN_TEXT:
 		if (!isPosSelected(pos))
 		{
-			if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
+			if (pBlock->getSpellSquiggles()->get(pos - pBlock->getPosition()))
 			{
 				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (8) misspelt pos %d \n",pos));
 				m_prevMouseContext = EV_EMC_MISSPELLEDTEXT;
@@ -8883,6 +9150,9 @@ EV_EditMouseContext FV_View::getMouseContext(double xPos, double yPos)
 		m_prevMouseContext = EV_EMC_FIELD;
 		return EV_EMC_FIELD;
 
+	case FPRUN_MATH:
+		m_prevMouseContext = EV_EMC_MATH;
+		return EV_EMC_MATH;
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (12)\n"));
@@ -8980,8 +9250,48 @@ void FV_View::setCursorToContext()
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
 	case EV_EMC_IMAGESIZE:
-		cursor = m_imageSelCursor;
-		break;	
+		xxx_UT_DEBUGMSG(("Imagesize context \n"));
+		if(m_InlineImage.getInlineDragWhat() == FV_Inline_DragTopLeftCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragTopRightCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotLeftCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SW;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotRightCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SE;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragLeftEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragTopEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_N;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragRightEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+		}
+		else if(m_InlineImage.getInlineDragWhat() ==FV_Inline_DragBotEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
+		}
+		else if(!m_InlineImage.isActive())
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		}
+		else
+		{
+			cursor = GR_Graphics::GR_CURSOR_GRAB;
+		}
+		break;
 	case EV_EMC_FIELD:
 		cursor = GR_Graphics::GR_CURSOR_DEFAULT;
 		break;
@@ -9011,6 +9321,7 @@ void FV_View::setCursorToContext()
 	case EV_EMC_VISUALTEXTDRAG:
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
+
 	case EV_EMC_FRAME:
 	case EV_EMC_POSOBJECT:
 		if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
@@ -9035,7 +9346,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragLeftEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopEdge)
 		{
@@ -9043,7 +9354,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragRightEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotEdge)
 		{
@@ -9057,6 +9368,12 @@ void FV_View::setCursorToContext()
 		{
 			cursor = GR_Graphics::GR_CURSOR_GRAB;
 		}
+		break;
+	case EV_EMC_MATH:
+		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		break;
+	case EV_EMC_EMBED:
+		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
 	default:
 		break;
@@ -9073,7 +9390,7 @@ bool FV_View::isTextMisspelled() const
 		return false;
 	}
 	if (!isPosSelected(pos))
-		if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
+		if (pBlock->getSpellSquiggles()->get(pos - pBlock->getPosition()))
 		{
 			return true;
 		}
@@ -9169,7 +9486,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(double * pxPos, double * p
 	{
 	case FPRUN_TEXT:
 		if (!isPosSelected(m_iInsPoint))
-			if (pBlock->getSquiggles()->get(m_iInsPoint - pBlock->getPosition()))
+			if (pBlock->getSpellSquiggles()->get(m_iInsPoint - pBlock->getPosition()))
 			{
 				return EV_EMC_MISSPELLEDTEXT;
 			}
@@ -9208,15 +9525,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(double * pxPos, double * p
 				// Set the image size in the image selection rect
 				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
 			}
-		
-			if (isOverImageResizeBox(m_imageSelCursor, m_xPoint, m_yPoint + m_iPointHeight))
-			{
-				return EV_EMC_IMAGESIZE;
-			}
-			else
-			{
-				return EV_EMC_IMAGE;
-			}
+			return EV_EMC_IMAGE;
 		}			
 	case FPRUN_TAB:
 	case FPRUN_FORCEDLINEBREAK:
@@ -9351,7 +9660,7 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 	PT_DocPosition epos = 0;
 	getDocument()->getBounds(true, epos);
 	UT_DEBUGMSG(("end bound is %d\n", epos));
-	pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
 	UT_return_val_if_fail(pPOB, NULL);
 
 	// grab the suggestion
@@ -9374,6 +9683,7 @@ static bool s_notChar(UT_UCSChar c)
       return false;
     }
 }
+
 
 /*!
  Count words
@@ -9529,7 +9839,25 @@ FV_View::countWords(void)
 			// quotes, etc).
 			if (newWord ||
 				XAP_EncodingManager::get_instance()->is_cjk_letter(pSpan[i]))
-				wCount.word++;
+                        {
+
+                                wCount.word++;
+                                wCount.words_no_hdrftr++;
+
+                                fl_ContainerLayout *l;
+
+                                pBL->getEmbeddedOffset(iCount, l);
+
+                                if (l)
+                                {
+                                        fl_ContainerType t = l->getContainerType();
+                                        if ((t == FL_CONTAINER_FOOTNOTE) ||
+                                            (t == FL_CONTAINER_ENDNOTE))
+                                        {
+                                                wCount.words_no_hdrftr--;
+                                        }
+                                }
+                        }
 		}
 
 		if (isPara)
@@ -9538,7 +9866,7 @@ FV_View::countWords(void)
 			isPara = false;
 		}
 
-		// Get next block
+		// Get next block, we want to include footnotes so can't use getNextBlockLayout
 		fl_ContainerLayout* pNextBlock = pBL->getNextBlockInDocument();
 		pBL = static_cast<fl_BlockLayout *>(pNextBlock);
 		pLine = NULL;
@@ -9548,6 +9876,8 @@ FV_View::countWords(void)
 		if (pLine)
 			pRun = pLine->getFirstRun();
 	}
+
+	//wCount.words_no_hdrftr = wCount.word - wCount.words_no_hdrftr;
 
 	return (wCount);
 }
@@ -9609,8 +9939,8 @@ void FV_View::RestoreSavedPieceTableState(void)
 
 /*!
  * Remove the Header/Footer type specified by hfType
-\params HdrFtrType hfType the type of the Header/Footer to be removed.
-\params bool bSkipPTSaves if true don't save the PieceTable stuff
+\param HdrFtrType hfType the type of the Header/Footer to be removed.
+\param bool bSkipPTSaves if true don't save the PieceTable stuff
  */
 void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
@@ -9689,12 +10019,86 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 	clearCursorWait();
 }
 
+/*!
+ * Returns true if the point at at the end of a section or document and the
+ * previous strux is not a block
+ */
+bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
+{
+
+  PT_DocPosition posEOD = 0;
+  getEditableBounds(true, posEOD);
+  if(!m_pDoc->isSectionAtPos(pos) && !m_pDoc->isHdrFtrAtPos(pos) &&
+     (pos < posEOD))
+  {
+	  return false;
+  }
+  pf_Frag * pf = m_pDoc->getFragFromPosition(pos);
+  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+  {
+	  pf = pf->getPrev();
+  }
+  if(pf == NULL)
+  {  
+	  return false;
+  }
+  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+  if(pfs->getStruxType() == PTX_EndTOC)
+  {
+	  return true;
+  }
+  if((pfs->getStruxType() == PTX_EndFootnote) || 
+     (pfs->getStruxType() == PTX_EndEndnote) || 
+     (pfs->getStruxType() == PTX_Block) )
+  {
+	  return false;
+  }
+  if((pfs->getStruxType() == PTX_Section) || (pfs->getStruxType() == PTX_SectionHdrFtr))
+  {
+	  if(pfs->getPos() < pos)
+	  {
+		  return true;
+	  }
+	  pf = pf->getPrev();
+	  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+	  {
+		  pf = pf->getPrev();
+	  }
+	  if(pf == NULL)
+	  {  
+		  return false;
+	  }
+	  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+	  if((pfs->getStruxType() == PTX_EndFootnote) || 
+		 (pfs->getStruxType() == PTX_EndEndnote) || 
+		 (pfs->getStruxType() == PTX_Block) )
+	  {
+		  return false;
+	  }
+  }
+  return true;
+}
+
+/*!
+ * Insrts a block and returns true if the point is at the end of a 
+ * section or document and the
+ * previous strux is not a block
+ */
+bool FV_View::insertParaBreakIfNeededAtPos(PT_DocPosition pos)
+{
+  if(!isParaBreakNeededAtPos(pos))
+  {
+    return false;
+  }
+  m_pDoc->insertStrux(pos,PTX_Block);
+  return true;
+}
 
 /*!
  *	 Insert the header/footer. Save the cursor position before we do this and
  *	 restore it to where it was before we did this.
-\params HdrFtrType hfType
-\params bool bSkipPTSaves if true don't save the PieceTable stuff
+\param HdrFtrType hfType
+\param bool bSkipPTSaves if true don't save the PieceTable stuff
  */
 void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
@@ -9766,8 +10170,8 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
  * OK, This method copies the content from either the header or footer to
  * the HdrFtrType specified here. This is used by the set HdrFtr properties
  * types in the GUI.
-\params HdrFtrType hfType
-\params bool bSkipPTSaves if true don't save the PieceTable stuff
+\param HdrFtrType hfType
+\param bool bSkipPTSaves if true don't save the PieceTable stuff
  */
 void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {

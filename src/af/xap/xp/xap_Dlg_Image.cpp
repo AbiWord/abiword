@@ -30,7 +30,7 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_bAspect(true),
 	m_width(0), 
 	m_height(0),
-    m_maxWidth (0), 
+        m_maxWidth (0), 
 	m_maxHeight(0), 
 	m_answer(a_OK),	
 	m_HeightString("0.0in"),
@@ -40,7 +40,8 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_PreferedUnits(DIM_IN),
 	m_iWrappingType(WRAP_INLINE),	
     m_iPositionTo(POSITION_TO_PARAGRAPH),
-    m_bInHdrFtr(false)
+    m_bInHdrFtr(false),
+    m_bTightWrap(false)
 {
 }
 
@@ -76,7 +77,7 @@ const char * XAP_Dialog_Image::getWidthString(void)
 
 /*!
  * Returns the increment associated with the dimension defined in the string.
-\params const char * sz the dimensioned string.
+\param const char * sz the dimensioned string.
 \returns double -  the increment associated with the dimension in sz
 */ 
 double XAP_Dialog_Image::getIncrement(const char * sz)
@@ -140,7 +141,7 @@ void XAP_Dialog_Image::incrementWidth(bool bIncrement)
 
 /*!
  * Set the member string variable m_HeightString
-\params const char * szHeight is the string containing the new value
+\param const char * szHeight is the string containing the new value
 */
 void XAP_Dialog_Image::setHeight(const char * szHeight)
 {
@@ -157,7 +158,7 @@ void XAP_Dialog_Image::setHeight(const char * szHeight)
 /*!
  * Set the member string variable m_HeightString from the a double value of 
  * the image. 
-\params double dHeight is the height of the image in inches.
+\param double dHeight is the height of the image in inches.
 */
 void XAP_Dialog_Image::setHeight(double  dHeight, bool checkaspect)
 {
@@ -184,7 +185,7 @@ void XAP_Dialog_Image::setHeight(double  dHeight, bool checkaspect)
 
 /*!
  * Set the member string variable m_HeightString
-\params const char * szWidth is the string containing the new value
+\param const char * szWidth is the string containing the new value
 */
 void XAP_Dialog_Image::setWidth(const char * szWidth)
 {
@@ -201,7 +202,7 @@ void XAP_Dialog_Image::setWidth(const char * szWidth)
 /*!
  * Set the member string variable m_WidthString from the a double value of 
  * the image. 
-\params double dWidth is the width of the image in inches.
+\param double dWidth is the width of the image in inches.
 */
 void XAP_Dialog_Image::setWidth(double  dWidth, bool checkaspect)
 {
@@ -229,7 +230,7 @@ void XAP_Dialog_Image::setWidth(double  dWidth, bool checkaspect)
 /*!
  * Set the member string variable m_WidthString from the pixel value of 
  * the image. This is to set the initial value if it's not defined.
-\params UT_sint32 iWidth is the pixel width of the string.
+\param UT_sint32 iWidth is the pixel width of the string.
 */
 void XAP_Dialog_Image::setWidth(UT_sint32 iWidth)
 {
@@ -249,7 +250,7 @@ void XAP_Dialog_Image::setPositionTo(POSITION_TO iPos)
 /*!
  * Set the member string variable m_HeightString from the pixel value of 
  * the image. This is to set the initial value if it's not defined.
-\params UT_sint32 iHeight is the pixels height of the image.
+\param UT_sint32 iHeight is the pixels height of the image.
 */
 void XAP_Dialog_Image::setHeight(UT_sint32 iHeight)
 {
@@ -258,8 +259,8 @@ void XAP_Dialog_Image::setHeight(UT_sint32 iHeight)
 
 /*!
  * Converts the string sz into the units seleced for the ruler.
-\params const char * sz is the strinewheightng containing the old value
-\params UT_String & pRet is the string to which the new value is copied.
+\param const char * sz is the strinewheightng containing the old value
+\param UT_String & pRet is the string to which the new value is copied.
 */
 void XAP_Dialog_Image::_convertToPreferredUnits(const char *sz, UT_String & pRet)
 {

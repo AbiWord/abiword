@@ -38,6 +38,7 @@
 #include "fp_TableContainer.h"
 #include "fv_View.h"
 #include "gr_Painter.h"
+#include "fl_BlockLayout.h"
 
 /*!
   Create Frame container
@@ -51,7 +52,8 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 	  m_iYpad(0),
 	  m_bNeverDrawn(true),
 	  m_bOverWrote(false),
-	  m_bIsWrapped(false)
+	  m_bIsWrapped(false),
+	  m_bIsTightWrapped(false)
 {
 }
 
@@ -84,6 +86,133 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 	{
 		getFillType()->setParent(NULL);
 	}
+}
+
+/*!
+ * Returns true if the supplied screen rectangle overlaps with frame
+ * container. This method takes account of transparening and tight wrapping.
+ */
+bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
+{
+     UT_Rect * pMyFrameRec = getScreenRect();
+     fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+     UT_sint32 iextra = pFL->getBoundingSpace() -2;
+     pMyFrameRec->left -= iextra;
+     pMyFrameRec->top -= iextra;
+     pMyFrameRec->width += 2*iextra;
+     pMyFrameRec->height += 2*iextra;
+     xxx_UT_DEBUGMSG(("look at rec.left %d top %d width %d  \n",rec.left,rec.top,rec.width));
+     if(rec.intersectsRect(pMyFrameRec))
+     {
+         if(!isTightWrapped())
+	 {
+	      delete pMyFrameRec;
+	      return true;
+	 }
+	 UT_sint32 y = rec.top - pMyFrameRec->top - iextra;
+	 UT_sint32 h = rec.height;
+	 if(pFL->getBackgroundImage() == NULL)
+	 {
+	      delete pMyFrameRec;
+	      return true;
+	 }
+	 UT_sint32 pad = pFL->getBoundingSpace();
+	 UT_sint32 iLeft = pFL->getBackgroundImage()->GetOffsetFromLeft(getGraphics(),pad,y,h);
+	 if(iLeft < -getWidth())
+	 {
+	   //
+	   // Pure transparent.
+	   //
+	      delete pMyFrameRec;
+	      return false;
+	 }
+	 xxx_UT_DEBUGMSG(("iLeft in overlapRect %d Y %d \n",iLeft,y));
+	 if(rec.left < pMyFrameRec->left)
+	 {
+              pMyFrameRec->left -= iLeft;
+	 }
+	 else
+	 {
+	      UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y,h);
+              pMyFrameRec->width += iRight;
+	 }
+	 if(rec.intersectsRect(pMyFrameRec))
+	 {
+	   xxx_UT_DEBUGMSG(("Frame overlaps \n"));
+	   delete pMyFrameRec;
+	   return true;
+	 }
+	 UT_DEBUGMSG(("Tight Frame does not overlap \n"));
+     }
+     delete pMyFrameRec;
+     return false;
+}
+/*!
+ * This method returns the padding to be applied between a line approaching
+ * wrapped frame or image from the left. 
+ * y Is the top of the line in logical units as defined relative to the
+ * y position on the screen.
+ * height is the height of the line.
+ * If tight wrapping is set on a positioned object this number can be negative
+ * which means the line can encroach into the rectangular region of the
+ * image provided the region is transparent.
+ */
+double fp_FrameContainer::getLeftPad(double y, double height)
+{
+  fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+  double pad = pFL->getBoundingSpace();	
+  UT_Rect * pRect = getScreenRect();
+  double yC = pRect->top;
+  delete pRect;
+  if(!isTightWrapped() || !isWrappingSet())
+  {
+    return pad;
+  }
+  if(FL_FRAME_TEXTBOX_TYPE == pFL->getFrameType())
+  {
+    return pad;
+  }
+  if(pFL->getBackgroundImage() == NULL)
+  {
+    return pad;
+  }
+  double iLeft = pFL->getBackgroundImage()->GetOffsetFromLeft(getGraphics(),pad,y - yC,height);
+  UT_DEBUGMSG(("Local Y %.2f iLeft %.2f width %.2f \n",y-yC,iLeft,getFullWidth()));
+  return iLeft;
+}
+
+
+/*!
+ * This method returns the padding to be applied between a line approaching
+ * wrapped frame or image from the right. 
+ * y Is the top of the line in logical units as defined relative to the
+ * y position on the screen.
+ * height is the height of the line.
+ * If tight wrapping is set on a positioned object this number can be negative
+ * which means the line can encroach into the rectangular region of the
+ * image provided the region is transparent.
+ */
+double fp_FrameContainer::getRightPad(double y, double height)
+{
+  fl_FrameLayout *pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+  double pad = pFL->getBoundingSpace();
+  UT_Rect * pRect = getScreenRect();
+  double yC = pRect->top;
+  if(!isTightWrapped() || !isWrappingSet())
+  {
+    return pad;
+  }
+  if(FL_FRAME_TEXTBOX_TYPE == pFL->getFrameType())
+  {
+    return pad;
+  }
+  if(pFL->getBackgroundImage() == NULL)
+  {
+    return pad;
+  }
+  double iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y - yC,height);
+  UT_DEBUGMSG(("Local Y %.2f iRight %.2f width %.2f \n",y-yC,iRight,getFullWidth()));
+  return iRight;
 }
 
 void fp_FrameContainer::clearScreen(void)
@@ -186,6 +315,72 @@ fl_DocSectionLayout * fp_FrameContainer::getDocSectionLayout(void)
 	return pDSL;
 }
 
+/*!
+ * Fill the supplied vector with a list of the blocks whose lines are affected
+ * by the Frame.
+ */ 
+void fp_FrameContainer::getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> & vecBlocks)
+{
+  fp_Page * pPage = getPage();
+  if(pPage == NULL)
+  {
+    return;
+  }
+  UT_uint32 iColLeader = 0;
+  fp_Column * pCol = NULL;
+  fl_BlockLayout * pCurBlock = NULL;
+  fp_Line * pCurLine = NULL;
+  fp_Container * pCurCon = NULL;
+  for(iColLeader = 0; iColLeader < pPage->countColumnLeaders(); iColLeader++)
+  {
+    pCol = pPage->getNthColumnLeader(iColLeader);
+    while(pCol)
+    {
+      UT_uint32 i = 0;
+      UT_sint32 iYCol = pCol->getY(); // Vertical position relative to page.
+      for(i=0; i< pCol->countCons(); i++)
+      {
+	pCurCon = static_cast<fp_Container *>(pCol->getNthCon(i));
+	if(pCurCon->getContainerType() == FP_CONTAINER_LINE)
+	{
+	  pCurLine = static_cast<fp_Line *>(pCurCon);
+	  UT_sint32 iYLine = iYCol + pCurLine->getY();
+	  xxx_UT_DEBUGMSG(("iYLine %d FullY %d FullHeight %d \n",iYLine,getFullY(),getFullHeight()));
+	  if((iYLine + pCurLine->getHeight() > getFullY()) && (iYLine < (getFullY() + getFullHeight())))
+	  {
+	    //
+	    // Line overlaps frame in Height. Add it's block to the vector.
+	    //
+	    if(pCurLine->getBlock() != pCurBlock)
+	    {
+	      pCurBlock = pCurLine->getBlock();
+	      vecBlocks.addItem(pCurBlock);
+	      xxx_UT_DEBUGMSG(("Add Block %x to vector \n",pCurBlock));
+	    }
+	  }
+	}
+      }
+      pCol = pCol->getFollower();
+    }
+  }
+  if(vecBlocks.getItemCount() == 0)
+  {
+      pCol = pPage->getNthColumnLeader(0);
+      fp_Container * pCon = pCol->getFirstContainer();
+      fl_BlockLayout * pB = NULL;
+      if(pCon->getContainerType() == FP_CONTAINER_LINE)
+      {
+	  pB = static_cast<fp_Line *>(pCon)->getBlock();
+      }
+      else
+      {
+	  fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCon->getSectionLayout());
+	  pB = pCL->getNextBlockInDocument();
+      }
+      vecBlocks.addItem(pB);
+  }
+
+}
 
 /* just a little helper function
  */

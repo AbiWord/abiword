@@ -668,6 +668,8 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 	
     switch(currentChar)
 	{
+		case 0xb7:	// Catalan middledot, like instal·lació
+			return false;
 		case '"': //in some languages this can be in the middle of a word (Hebrew)
 		case '\'':	// we want quotes inside words for contractions
 		case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
@@ -1170,3 +1172,53 @@ bool UT_dEQ(double x, double y)
 {
 	return fabs(x - y) < EPSILON;
 }
+
+#if defined(WIN32) && !defined(__GNUC__)	
+#   define MYZERO 0
+#else
+#   define MYZERO 0LL
+#endif
+
+UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen)
+{
+	UT_return_val_if_fail( p, MYZERO );
+	
+	if(!bytelen)
+	{
+		bytelen = strlen(p);
+	}
+
+	UT_return_val_if_fail( bytelen, MYZERO );
+	
+	UT_uint64 h = (UT_uint64)*p;
+	
+	for (UT_uint32 i = 1; i < bytelen; ++i, ++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+
+	return h;
+}
+
+UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen)
+{
+	UT_return_val_if_fail( p, 0 );
+	
+	if(!bytelen)
+	{
+		bytelen = strlen(p);
+	}
+
+	UT_return_val_if_fail( bytelen, 0 );
+
+	UT_uint32 h = (UT_uint32)*p;
+	
+	for (UT_uint32 i = 1; i < bytelen; ++i, ++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+
+	return h;
+}
+
+#undef MYZERO

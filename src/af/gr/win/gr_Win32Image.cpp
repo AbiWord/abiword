@@ -69,6 +69,27 @@ static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 	p->iCurPos += length;
 }
 
+
+/*! 
+ * Returns true if pixel at point (x,y) in device units is transparent.
+ * See gr_UnixImage.cpp for how it's done in GTK.
+ */
+bool	GR_Win32Image::isTransparentAt(UT_sint32 x, UT_sint32 y)
+{
+	UT_ASSERT(0);
+	return false;
+}
+
+/*!
+ * Returns true if there is any transparency in the image.
+ */ 
+bool	GR_Win32Image::hasAlpha(void) const
+{
+	UT_ASSERT(0);
+	return false;
+}
+
+
 bool GR_Win32Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;

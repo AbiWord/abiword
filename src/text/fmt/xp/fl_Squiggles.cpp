@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "fv_View.h"
 #include "pd_Document.h"
+#include "fp_Run.h"
 
 /*! \page squiggle_overview Squiggles
 
@@ -76,9 +77,10 @@ the pending word.
  Constructor
  \param pOwner The owning block
 */
-fl_Squiggles::fl_Squiggles(fl_BlockLayout* pOwner)
+fl_Squiggles::fl_Squiggles(fl_BlockLayout* pOwner,FL_SQUIGGLE_TYPE iType) :
+  m_pOwner(pOwner),
+  m_iSquiggleType(iType)
 {
-	m_pOwner = pOwner;
 }
 
 /*!
@@ -205,14 +207,14 @@ fl_Squiggles::_move(UT_sint32 iOffset, UT_sint32 chg,
 		if (pPOB->getOffset() < target) break;
 
 		// Clear the squiggle before moving it
-	    clear(pPOB);
+		clear(pPOB);
 		pPOB->setOffset(pPOB->getOffset() + chg);
 
 		// Move squiggle to another block if requested
 		if (pNewBlock)
 		{
 			UT_ASSERT(pNewBlock != m_pOwner);
-			pNewBlock->getSquiggles()->add(pPOB);
+			pNewBlock->getSpellSquiggles()->add(pPOB);
 			m_vecSquiggles.deleteNthItem(j);
 		}	
 	}
@@ -248,7 +250,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 	xxx_UT_DEBUGMSG(("fl_Squiggles::add(%p) [%d:%d]\n", pPOB,
 					 pPOB->getOffset(), 
 					 pPOB->getOffset() + pPOB->getLength()));
-
+	UT_ASSERT(pPOB->getOffset() >= 0);
 	UT_sint32 iIndex;
 
 	if (_findFirstAfter(pPOB->getOffset(), iIndex))
@@ -264,7 +266,7 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 	{
 		fl_PartOfBlock* pPrev = getNth(iIndex-1);
 
-		if (pPOB->getOffset() == pPrev->getOffset())
+		if (pPOB->getOffset() == pPrev->getOffset() && (getSquiggleType() == FL_SQUIGGLE_SPELL))
 		{
 			// Handle extension of existing squiggles. This happens
 			// because ' changes from being a word separator to not
@@ -273,29 +275,46 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 			// "gest's" the entire >gest's< is squiggled.
 			pPrev->setLength(pPOB->getLength());
 			_deleteNth(iIndex--);
+			markForRedraw(pPrev);
 		}
-		else if (pPOB->getOffset() == pPrev->getOffset() + pPrev->getLength())
+		else if ((pPOB->getOffset() == pPrev->getOffset() + pPrev->getLength()) && (getSquiggleType() == FL_SQUIGGLE_SPELL))
 		{
 			// Handle merging of two squiggles - this happens e.g. in
 			// overwrite mode when two misspelled words are joined by
 			// typing a character ' between them.
 			pPrev->setLength(pPrev->getLength() + pPOB->getLength());
 			_deleteNth(iIndex--);
+			markForRedraw(pPrev);
 		}
+		else
+		{
+			markForRedraw(pPOB);
+		}
+
 	}
+	else
+	{
+	        markForRedraw(pPOB);
+	}
+
 #if UT_DEBUG
 	UT_sint32 iSquiggles = _getCount();
 	if (iSquiggles <= 1) return;
-
-	if (iIndex > 0)
+	if(getSquiggleType() == FL_SQUIGGLE_SPELL)
 	{
-		UT_ASSERT((getNth(iIndex-1)->getOffset() + getNth(iIndex-1)->getLength())
-				  < getNth(iIndex)->getOffset());
-	}
-	if (iSquiggles > (iIndex+1))
-	{
-		UT_ASSERT((getNth(iIndex)->getOffset() + getNth(iIndex)->getLength())
-				  < getNth(iIndex+1)->getOffset());
+	  //
+	  // Grammar squiggles can over lap.
+	  //
+	  if (iIndex > 0)
+	    {
+	      UT_ASSERT((getNth(iIndex-1)->getOffset() + getNth(iIndex-1)->getLength())
+			< getNth(iIndex)->getOffset());
+	    }
+	  if (iSquiggles > (iIndex+1))
+	    {
+	      UT_ASSERT((getNth(iIndex)->getOffset() + getNth(iIndex)->getLength())
+			< getNth(iIndex+1)->getOffset());
+	    }
 	}
 #endif
 }
@@ -310,8 +329,8 @@ fl_Squiggles::_deleteNth(UT_sint32 iIndex)
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::delelteNth(%d)\n", iIndex));
 	fl_PartOfBlock* pPOB = getNth(iIndex);
-	clear(pPOB);
 	m_vecSquiggles.deleteNthItem(iIndex);
+	clear(pPOB);
 	delete pPOB;
 }
 
@@ -350,6 +369,34 @@ fl_Squiggles::_deleteAtOffset(UT_sint32 iOffset)
 	xxx_UT_DEBUGMSG(("fl_Squiggles::_deleteAtOffset(%d)\n", iOffset));
 
 	bool res = false;
+	if(getSquiggleType() == FL_SQUIGGLE_GRAMMAR)
+	{
+	  fl_PartOfBlock* pPOB = 0;
+	  UT_sint32 i = 0;
+	  UT_sint32 iLow = 0;
+	  UT_sint32 iHigh = 0;
+	  for(i=0; i< _getCount();)
+	  {
+	    pPOB = getNth(i);
+	    if(pPOB->isInvisible() && ((pPOB->getOffset() <= iOffset) &&
+				       pPOB->getOffset()+ pPOB->getLength() >= iOffset))
+	    {
+	      iLow = pPOB->getOffset();
+	      iHigh = pPOB->getOffset() + pPOB->getLength();
+	    }
+	    if(iOffset >= iLow && iOffset <= iHigh)
+	    {
+	      _deleteNth(i);
+	      res = true;
+	    }
+	    else
+	    {
+	      i++;
+	    }
+	  }
+	}
+	if(res)
+	  return res;
 	UT_sint32 iIndex = _find(iOffset);
 	if (iIndex >= 0)
 	{
@@ -358,6 +405,28 @@ fl_Squiggles::_deleteAtOffset(UT_sint32 iOffset)
 	}
 
 	return res;
+}
+
+
+/*!
+ * Mark all the runs overlapping with the POB for Redraw.
+ */
+void fl_Squiggles::markForRedraw(fl_PartOfBlock* pPOB)
+{
+	PT_DocPosition pos1 = pPOB->getOffset();
+	PT_DocPosition pos2 = pos1 + pPOB->getLength();
+	//
+	// Make sure the runs in this POB get redrawn.
+	//
+	fp_Run * pRun = m_pOwner->getFirstRun();
+	while(pRun && (pRun->getBlockOffset() <= pos2))
+	{
+	    if((pRun->getBlockOffset() + pRun->getLength()) >= pos1)
+	    {
+	         pRun->markAsDirty();
+	    }
+	    pRun = pRun->getNextRun();
+	}
 }
 
 /*!
@@ -385,18 +454,21 @@ fl_Squiggles::get(UT_sint32 iOffset) const
 void
 fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 {
-	xxx_UT_DEBUGMSG(("fl_Squiggles::clear(%p)\n", pPOB));
 	if(!m_pOwner->isOnScreen())
 	{
 		return;
 	}
 	FV_View* pView = m_pOwner->getDocLayout()->getView();
-	if(pView->getDocument()->isPieceTableChanging())
-	{
-		return;
-	}
 	PT_DocPosition pos1 = m_pOwner->getPosition() + pPOB->getOffset();
 	PT_DocPosition pos2 = pos1 + pPOB->getLength();
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+	  //
+	  // Make sure the runs in this POB get redrawn.
+	  //
+	  markForRedraw(pPOB);
+	  return;
+	}
 	PT_DocPosition posEOD = 0;
 	m_pOwner->getDocument()->getBounds(true,posEOD);
 	if(pos2 > posEOD)
@@ -408,6 +480,7 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 		pos1 = pos2 -1;
 	}
 	pView->_clearBetweenPositions(pos1, pos2, true);
+	UT_DEBUGMSG(("fl_Squiggles::clear posl %d pos2 %d \n", pos1,pos2));
 }
 
 /*!
@@ -438,7 +511,8 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 	_move(iOffset, chg);
 
 	// Deal with pending word, if any
-	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+  
+	if (m_pOwner->getDocLayout()->isPendingWordForSpell() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 	{
 		// If not affected by insert, check it
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, 0))
@@ -465,7 +539,10 @@ fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 	}
 
 	// Recheck word at boundary
-	m_pOwner->_recalcPendingWord(iOffset, chg);
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	{
+	  m_pOwner->_recalcPendingWord(iOffset, chg);
+	}
 }
 
 /*!
@@ -502,7 +579,7 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 	_move(iOffset, chg);
 
 	// Deal with pending word, if any
-	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+	if (m_pOwner->getDocLayout()->isPendingWordForSpell() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 	{
 		// If not affected by delete, check it
 		if (!m_pOwner->getDocLayout()->touchesPendingWordForSpell(m_pOwner, iOffset, chg))
@@ -527,7 +604,8 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 	}
 
 	// Recheck at boundary
-	m_pOwner->_recalcPendingWord(iOffset, chg);
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	  m_pOwner->_recalcPendingWord(iOffset, chg);
 }
 
 /*!
@@ -553,7 +631,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		return;
 
 	// Return if auto spell-checking disabled
-	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
+	if (!m_pOwner->getDocLayout()->getAutoSpellCheck() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 		return;
 
 	xxx_UT_DEBUGMSG(("fl_Squiggles::split(%d, %p)\n", iOffset, pNewBL));
@@ -566,7 +644,8 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 	// merge). Unfortunately it makes the word under the cursor
 	// squiggled (if badly spelled) instead of just pending - but it's
 	// hard to do anything about.
-	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+
+	if (m_pOwner->getDocLayout()->isPendingWordForSpell()&& (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 	{
 		fl_PartOfBlock *pPending, *pPOB;
 		fl_BlockLayout *pBL;
@@ -597,17 +676,21 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		pBL->checkWord(pPOB);
 	}
 
-	if (m_pOwner->getDocLayout()->dequeueBlockForBackgroundCheck(m_pOwner))
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL)
 	{
+	  if (m_pOwner->getDocLayout()->dequeueBlockForBackgroundCheck(m_pOwner))
+	  {
 		// This block was queuing for spell-checking. Do a check of
 		// both blocks, but clear any squiggle added at IP.
-		deleteAll();
-		m_pOwner->checkSpelling();
-		pNewBL->checkSpelling();
-		pNewBL->getSquiggles()->_deleteAtOffset(0);
-	}
-	else
-	{
+	    deleteAll();
+	    m_pOwner->checkSpelling();
+	    pNewBL->checkSpelling();
+	    fl_Squiggles * pSq = pNewBL->getSpellSquiggles();
+	    UT_return_if_fail( pSq );
+	    pSq->_deleteAtOffset(0);
+	  }
+	  else
+	  {
 		// This block was already spell-checked, so just move the
 		// squiggles around.
 
@@ -620,8 +703,9 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		// Find bounds of word at end of this block and check it.
 		// Use _recalcPendingWord which is a bit overkill, but gets
 		// the job done.
-		m_pOwner->_recalcPendingWord(iOffset, 0);
-		if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+		if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+		  m_pOwner->_recalcPendingWord(iOffset, 0);
+		if (m_pOwner->getDocLayout()->isPendingWordForSpell() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 		{
 			fl_PartOfBlock *pPending, *pPOB;
 			pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
@@ -633,10 +717,13 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 			m_pOwner->getDocLayout()->setPendingWordForSpell(NULL, NULL);
 			m_pOwner->checkWord(pPOB);
 		}
+	  }
+	  m_pOwner->getDocLayout()->setPendingBlockForGrammar(m_pOwner);
 	}
 
 	// Set start of new block to be pending word.
-	pNewBL->_recalcPendingWord(0, 0);
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	  pNewBL->_recalcPendingWord(0, 0);
 }
 
 
@@ -664,7 +751,7 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 		return;
 
 	// Return if auto spell-checking disabled
-	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
+	if (!m_pOwner->getDocLayout()->getAutoSpellCheck() && (getSquiggleType() ==  FL_SQUIGGLE_SPELL) )
 		return;
 
 	xxx_UT_DEBUGMSG(("fl_Squiggles::join(%d, %p)\n", iOffset, pPrevBL));
@@ -678,7 +765,7 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 		// spell-checking. Clear all existing squiggles and do a check
 		// of the combined block.
 		deleteAll();
-		pPrevBL->getSquiggles()->deleteAll();
+		pPrevBL->getSpellSquiggles()->deleteAll();
 		pPrevBL->checkSpelling();
 	}
 	else
@@ -691,12 +778,20 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 		// Move all squiggles from this block to the previous block.
 		_move(0, iOffset, pPrevBL);
 	}
+	m_pOwner->getDocLayout()->setPendingBlockForGrammar(m_pOwner);
 
 	// Delete squiggle touching IP
-	pPrevBL->getSquiggles()->_deleteAtOffset(iOffset);
+	if(getSquiggleType() ==  FL_SQUIGGLE_SPELL) 
+	{
+	  fl_Squiggles * pSq = pPrevBL->getSpellSquiggles();
+	  UT_return_if_fail( pSq );
+	
+	  pSq->_deleteAtOffset(iOffset);
 
 	// Update pending word
-	pPrevBL->_recalcPendingWord(iOffset, 0);
+
+	  pPrevBL->_recalcPendingWord(iOffset, 0);
+	}
 }
 
 /*!
@@ -709,15 +804,34 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 */
 bool
 fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
-						UT_sint32& iFirst, UT_sint32& iLast) const
+						UT_sint32& iFirst, UT_sint32& iLast, bool bDontExpand) const
 {
 	xxx_UT_DEBUGMSG(("fl_Squiggles::findRange(%d, %d)\n", iStart, iEnd));
 
 	UT_sint32 iSquiggles = _getCount();
 	if (0 == iSquiggles) return false;
-
 	fl_PartOfBlock* pPOB = 0;
 	UT_sint32 s, e;
+
+	if((getSquiggleType() == FL_SQUIGGLE_GRAMMAR) && !bDontExpand)
+	{
+	  // Grammar squiggles are preceded by a POB that covers the whole of the sentence.
+	  // Expand the end point to cover it.
+
+	  UT_sint32 i = 0;
+	  for(i=0; i< iSquiggles;i++)
+	  {
+	    pPOB = getNth(i);
+	    if((iStart >= pPOB->getOffset()) && (iStart <= pPOB->getOffset() + pPOB->getLength()) && pPOB->isInvisible())
+	    {
+	      iStart = pPOB->getOffset();
+	    }
+	    if((iEnd  >= pPOB->getOffset()) && (iEnd <= pPOB->getOffset() + pPOB->getLength()) && pPOB->isInvisible())
+	    {
+	      iEnd = pPOB->getOffset() + pPOB->getLength();
+	    }
+	  }
+	}
 	// Look for the first POB.start that is higher than the end offset
 	_findFirstAfter(iEnd, e);
 	// Note that the return value is not checked: either there is no
@@ -731,8 +845,8 @@ fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
 	// POB that could span the region end).
 	if (0 == e)
 	{
-		UT_ASSERT(getNth(0)->getOffset() > iEnd);
-		return false;
+	  UT_ASSERT(getNth(0)->getOffset() > iEnd);
+	  return false;
 	}
 	// Adjust to be the first POB inside the region.
 	e--;
@@ -741,22 +855,22 @@ fl_Squiggles::findRange(UT_sint32 iStart, UT_sint32 iEnd,
 	// Look for the last POB.end that is lower than the start offset
 	for (s = e; s >= 0; s--)
 	{
-		pPOB = getNth(s);
-		if ((pPOB->getOffset() + pPOB->getLength()) < iStart) break;
+	  pPOB = getNth(s);
+	  if ((pPOB->getOffset() + pPOB->getLength()) < iStart) break;
 	}
 	// Return with empty set if the last POB's end offset is lower
 	// than the region start.
 	if (s == e)
 	{
-		UT_ASSERT((pPOB->getOffset() + pPOB->getLength()) < iStart);
-		return false;
+	  UT_ASSERT((pPOB->getOffset() + pPOB->getLength()) < iStart);
+	  return false;
 	}
 	//Adjust to be the first POB inside the region
 	s++;
 	UT_ASSERT(s >= 0 && s < iSquiggles);
 	UT_ASSERT(e >= 0 && e < iSquiggles);
 	UT_ASSERT(s <= e);
-
+	
 	iFirst = s;
 	iLast = e;
 
@@ -796,3 +910,13 @@ fl_Squiggles::recheckIgnoredWords(const UT_UCSChar* pBlockText)
 
 	return bUpdate;
 }
+
+fl_SpellSquiggles::fl_SpellSquiggles(fl_BlockLayout* pOwner) : fl_Squiggles(pOwner,FL_SQUIGGLE_SPELL)
+{
+}
+
+
+fl_GrammarSquiggles::fl_GrammarSquiggles(fl_BlockLayout* pOwner) : fl_Squiggles(pOwner,FL_SQUIGGLE_GRAMMAR)
+{
+}
+

@@ -154,7 +154,7 @@ Section "$(TITLE_section_abi)" section_abi
 	; If we are in modify mode then we expect it to exist
 	; (where Not existing is a possible error condition)
 	; Else in normal install mode, we expect it to NOT exist
-	; (where existing is the a possible error condition)
+	; (where existing is a possible error condition)
 	StrCpy $R0 1	; flag we want to install main program
 	${If} ${FileExists} "$INSTDIR\${MAINPROGRAM}"
 		${If} $v_modifyinstall == 1 
@@ -357,12 +357,23 @@ SubSectionEnd ; helper files
 
 
 ; *********************************************************************
+!ifdef OPT_PLUGINS
 
+!include "plugins\abi_misc_plugins.nsh"
+ 
 ; OPTIONAL plugins
-${IfExists} system.dll.log
-!error exists
-${IfExistsEnd}
+SubSection /e "$(TITLE_ssection_plugins)" ssection_plugins
+!include "plugins\section_opt_tools.nsh"
+!include "plugins\section_opt_importexport.nsh"
+SubSectionEnd ; plugins
+!macro Remove_${ssection_plugins}
+	; Note: subsection removes called unless every section contained is selected
+	;       so do not actually remove anything that may be necessary
+	;       if subsection is only partially selected
+	DetailPrint "*** ssection_plugins"
+!macroend
 
+!endif
 ; *********************************************************************
 
 
@@ -409,6 +420,12 @@ ${IfExistsEnd}
   !endif ; OPT_DICTIONARIES
   !insertmacro "${MacroName}" "ssection_dictionary"
   !insertmacro "${MacroName}" "ssection_helper_files"
+
+!ifdef OPT_PLUGINS
+  ${MarkSubSectionStart} "*** ssection_plugins:"
+  !include "plugins\plugin_list.nsh"
+  !insertmacro "${MacroName}" "ssection_plugins"
+!endif
 
 !macroend
 

@@ -557,6 +557,8 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	if (!_createStrux(pts,indexAP,&pfsNew))
 		return false;
 
+	pfsNew->setXID(getXID());
+	
 	// when inserting paragraphs, we try to remember the current
 	// span formatting active at the insertion point and add a
 	// FmtMark immediately after the block.  this way, if the
@@ -622,7 +624,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	}
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
-									dpos,indexAP,pts);
+									dpos,indexAP,pfsNew->getXID(), pts);
 	UT_return_val_if_fail (pcrs,false);
 
 	// add record to history.  we do not attempt to coalesce these.

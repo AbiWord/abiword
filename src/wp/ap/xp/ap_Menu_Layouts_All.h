@@ -32,5 +32,6 @@
 #include "ap_ML_ContextSquiggle.h"
 #include "ap_ML_ContextHyperlink.h"
 #include "ap_ML_ContextImage.h"
+#include "ap_ML_ContextPosObject.h"
 #include "ap_ML_ContextRevision.h"
 #include "ap_ML_ContextFrame.h"

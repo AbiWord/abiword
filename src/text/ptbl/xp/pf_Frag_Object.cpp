@@ -463,8 +463,9 @@ bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 	
     PX_ChangeRecord_Object * pcr
     	 = new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-                                     dpos, m_indexAP, m_objectType,
-                                     blockOffset, m_pField);
+                                     dpos, m_indexAP, getXID(), m_objectType,
+                                     blockOffset, m_pField,
+				      reinterpret_cast<PL_ObjectHandle>(this));
 
     if (!pcr)
         return false;

@@ -30,6 +30,8 @@
 #include "ut_types.h"
 #endif
 
+#include "ut_assert.h"
+
 #include "xap_Types.h"
 
 class UT_String;
@@ -37,6 +39,8 @@ class UT_String;
 class XAP_DialogFactory;
 class XAP_App;
 class XAP_Frame;
+class XAP_Widget;
+class UT_UTF8String;
 
 class AV_View;
 
@@ -55,6 +59,7 @@ typedef enum _XAP_Dialog_Type
 
 } XAP_Dialog_Type;
 
+typedef int xap_widget_id;
 
 class ABI_EXPORT XAP_Dialog
 {
@@ -70,12 +75,63 @@ public:
 	
 	const UT_String& getHelpUrl () const { return *m_helpUrl ; }
 
+
+	/** get a widget state (enabled/disabled) */
+	bool getWidgetState(xap_widget_id wid);
+	/** set a widget state (enable/disabled) */
+	void setWidgetState(xap_widget_id wid, bool state);
+
+	/** get a widget visible state */
+	bool getWidgetVisible(xap_widget_id wid);
+	/** set a widget visible state */
+	void setWidgetVisible(xap_widget_id wid, bool visible);
+
+	/** get a widget value int */
+	int getWidgetValueInt(xap_widget_id wid);
+	/** set a widget value int */
+	void setWidgetValueInt(xap_widget_id wid, int value);
+
+	/** get a widget value UTF-8 string */
+	void getWidgetValueString(xap_widget_id wid, UT_UTF8String &str);
+	/** set a widget value UTF-8 string */
+	void setWidgetValueString(xap_widget_id wid, const UT_UTF8String &str);
+
+	/** get a widget value float*/
+	float getWidgetValueFloat(xap_widget_id wid);
+	/** set a widget value float */
+	void setWidgetValueFloat(xap_widget_id wid, float value);
+
+	/** set the widget label */
+	void setWidgetLabel(xap_widget_id wid, const UT_UTF8String &val);
+
+	// dialog framework
+
+	/** set the data to the widgets in the dialog. Dialog specific, XP*/
+	virtual void updateDialogData(void) {UT_ASSERT(UT_NOT_IMPLEMENTED);} //FIXME = 0
+
 protected:
+	/** localize the widgets in the dialog. Dialog specific, XP */
+	virtual void localizeDialog(void) {UT_ASSERT(UT_NOT_IMPLEMENTED);} //FIXME = 0
+	/** construct the dialog. Dialog and platfom specific */
+	virtual void constructDialog(void) {UT_ASSERT(UT_NOT_IMPLEMENTED);} //FIXME = 0
+
+	/** convert widget ID to XAP_Widget. Must be implemented by each dialogs
+	   on each platforms
+	   \return a newly allocated XAP_Widget. Caller is responsible from
+	   freeing it.
+	*/
+    // FIXME make it pure virtual
+	virtual XAP_Widget *getWidget(xap_widget_id wid)
+   	{ 
+		UT_ASSERT(UT_NOT_IMPLEMENTED); 
+		return NULL; 
+	} 
+
 	XAP_App *				m_pApp;
 	XAP_DialogFactory *			m_pDlgFactory;
 	XAP_Dialog_Id				m_id;
 
- private:
+private:
 	UT_String * m_helpUrl ;
 };
 

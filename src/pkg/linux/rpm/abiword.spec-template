@@ -47,9 +47,9 @@
 %endif
 
 %if %{enable_tools}
-%define plugin_tools --enable-abicommand --enable-abigimp --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --disable-magick --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots} %{?_with_aiksaurus:--enable-aiksaurus} %{!?_with_aiksaurus:--disable-aiksaurus} %{?_with_gda:--enable-gda} %{!?_with_gda:--disable-gda}
+%define plugin_tools --enable-abicommand --enable-abigimp --enable-babelfish --enable-freetranslation --enable-gdict --enable-referee --enable-urldict --enable-wikipedia --enable-shell %{?_with_ots:--enable-ots} %{!?_with_ots:--disable-ots} %{?_with_aiksaurus:--enable-aiksaurus} %{!?_with_aiksaurus:--disable-aiksaurus} %{?_with_gda:--enable-gda} %{!?_with_gda:--disable-gda}
 %else
-%define plugin_tools --disable-abicommand --disable-abigimp --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-magick --disable-shell --disable-ots --disable-aiksaurus --disable-gda
+%define plugin_tools --disable-abicommand --disable-abigimp --disable-babelfish --disable-freetranslation --disable-gdict --disable-referee --disable-urldict --disable-wikipedia --disable-shell --disable-ots --disable-aiksaurus --disable-gda
 %endif
 
 %if %{enable_impexp}
@@ -72,8 +72,8 @@ Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: Fedora Alternatives 2
 # Basic requirements
-Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
-BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
+Requires: gtk2 >= 2.4.0 glib2 >= 2.4.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
+BuildRequires: gtk2-devel >= 2.4.0 glib2-devel >= 2.4.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
 
 # Using Epoch is very bad, but RedHat/Fedora is forcing this matter.
 # I'm fed up with complaints from RH/FC users downgrading on upgrade just
@@ -161,7 +161,6 @@ This is a set of plugins for AbiWord.  It includes
         eml: Use mathematical notation in AbiWord.
  abicommand: Perform AbiWord operations from the command prompt.
     abigimp: Process images in AbiWord using the Gimp.
-  abimagick: Process images in AbiWord using ImageMagick.
   wikipedia: Access the Wikipedia reference from AbiWord.
     urldict: Cross-platform url dictionary plugin.
       gdict: Use the gnome dictionary application from within AbiWord.
@@ -236,14 +235,14 @@ cd ../abi
 %__make DESTDIR=$RPM_BUILD_ROOT install
 
 # Manual fixes to Abi package
-%__ln_s -f %{_bindir}/AbiWord-2.2 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.2
+%__ln_s -f %{_bindir}/AbiWord-2.4 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.4
 
 # Creates GNOME menu entries
 %__mkdir_p $RPM_BUILD_ROOT/%{_datadir}/icons
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_datadir}/icons/abiword_48.png
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/applications/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
-%__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.2|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
+%__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.4|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/COPYING $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/COPYING
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/README.TXT $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/README
 %if %{enable_gnome}
@@ -294,7 +293,6 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/templates
 %{_datadir}/icons/*
 %{_datadir}/applications/abiword.desktop
-%{ABIPREFIX}/plugins/libAbiGdkPixbuf.so
 
 
 %files embeddable

@@ -31,7 +31,7 @@
 #include "ie_types.h"
 #include "ap_types.h"
 #include "fp_types.h"
-
+#include "fl_Squiggles.h"
 #include "ev_EditBits.h"
 
 
@@ -40,6 +40,7 @@
 #include "fv_FrameEdit.h"
 #include "fv_VisualDragText.h"
 #include "fv_Selection.h"
+#include "fv_InlineImage.h"
 
 #define AUTO_SCROLL_MSECS	100
 
@@ -107,6 +108,8 @@ struct FV_DocCount
 	UT_uint32 ch_sp;
 	UT_uint32 line;
 	UT_uint32 page;
+       // sometimes people want to have a word count without header/footers included
+	UT_uint32 words_no_hdrftr;
 };
 
 class ABI_EXPORT fv_PropCache
@@ -144,6 +147,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class GR_Caret;
 	friend class FV_FrameEdit;
 	friend class FV_VisualDragText;
+	friend class FV_VisualInlineImage;
 	friend class FV_Selection;
 	friend class CellLine;
 
@@ -168,6 +172,7 @@ public:
 
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
+	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
 
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 
@@ -189,6 +194,9 @@ public:
 	UT_Error		cmdInsertHyperlink(const char* szName);
 	fp_Run *        getHyperLinkRun(PT_DocPosition pos);
 	UT_Error		cmdDeleteHyperlink();
+	bool                    cmdInsertMathML(const char * szFileName,
+						PT_DocPosition pos);
+
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(double xPos, double yPos);
 
@@ -206,6 +214,7 @@ public:
 	void            pasteFromLocalTo(PT_DocPosition pos);
 	void            _pasteFromLocalTo(PT_DocPosition pos);
 	void            copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2);
+	void			copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboard=true);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getTopRulerInfo(PT_DocPosition pos, AP_TopRulerInfo * pInfo);
@@ -306,6 +315,8 @@ public:
 
 	bool	getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride=false)const;
 
+	bool    isParaBreakNeededAtPos(PT_DocPosition pos);
+	bool    insertParaBreakIfNeededAtPos(PT_DocPosition pos);
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
 	void	insertSectionBreak( BreakSectionType type);
@@ -363,6 +374,16 @@ public:
 	void            dragVisualText(UT_sint32 x, UT_sint32 y);
 	void            pasteVisualText(UT_sint32 x, UT_sint32 y);
 	void            btn0VisualDrag(UT_sint32 x, UT_sint32 y);
+
+//---------
+//Visual Inline Image Drag stuff
+//
+	void            btn0InlineImage(UT_sint32 x, UT_sint32 y);
+	void            btn1InlineImage(UT_sint32 x, UT_sint32 y);
+	void            btn1CopyImage(UT_sint32 x, UT_sint32 y);
+	void            dragInlineImage(UT_sint32 x, UT_sint32 y);
+	void            releaseInlineImage(UT_sint32 x, UT_sint32 y);
+
 // -------
 // Frame stuff
 //
@@ -378,9 +399,12 @@ public:
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos);
 	fl_FrameLayout * getFrameLayout(void);
 	void            setFrameFormat(const XML_Char ** props);
+	void            setFrameFormat(const XML_Char ** attribs, const XML_Char ** props);
 	void            setFrameFormat(const XML_Char ** props,FG_Graphic * pFG, UT_String & dataID);
 	void            convertInLineToPositioned(PT_DocPosition pos, 
 											const XML_Char ** attribs);
+
+	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
 
 // ----------------------
 
@@ -610,7 +634,7 @@ public:
 	void				_generalUpdate(void);
 	
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
-	UT_RGBColor			getColorSquiggle(void) const { return m_colorSquiggle; }
+	UT_RGBColor			getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const;
 	UT_RGBColor			getColorMargin(void) const { return m_colorMargin; }
 	UT_RGBColor			getColorSelBackground(void);
 	UT_RGBColor			getColorSelForeground(void);
@@ -855,7 +879,8 @@ private:
 	
 	// default color values
 	UT_RGBColor			m_colorShowPara;
-	UT_RGBColor			m_colorSquiggle;
+	UT_RGBColor			m_colorSpellSquiggle;
+	UT_RGBColor			m_colorGrammarSquiggle;
 	UT_RGBColor			m_colorMargin;
 	UT_RGBColor			m_colorFieldOffset;
 	UT_RGBColor			m_colorImage;
@@ -890,6 +915,7 @@ private:
 	bool                m_bDontNotifyListeners;
 	UT_ByteBuf *        m_pLocalBuf;
 	UT_sint32           m_iGrabCell;
+	FV_VisualInlineImage  m_InlineImage;
 };
 
 #endif /* FV_VIEW_H */

@@ -62,6 +62,7 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 	void adjustWidthForAspect(void);
 	void aspectCheckbox();
 	void wrappingChanged(void);
+	void wrapTypeChanged(void);
 
 	static void s_HeightSpin_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg) ;
 
@@ -73,6 +74,7 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 
 	static void s_aspect_clicked(GtkWidget * widget, XAP_UnixDialog_Image * dlg) ;
 	static void s_wrapping_changed(GtkWidget * widget, XAP_UnixDialog_Image * dlg) ;
+	static void s_wrapType_changed(GtkWidget * widget, XAP_UnixDialog_Image * dlg) ;
 
 	GtkWidget * mMainWindow;
   	GtkWidget * m_wAspectCheck;
@@ -90,6 +92,9 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 	GtkWidget * m_wrbPlaceParagraph;
 	GtkWidget * m_wrbPlaceColumn;
 	GtkWidget * m_wrbPlacePage;
+	GtkWidget * m_wrbSquareWrap;
+	GtkWidget * m_wrbTightWrap;
+	GtkWidget * m_wWrapTable;
 
 
 

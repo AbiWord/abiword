@@ -29,6 +29,7 @@
 
 #include "ut_endian.h"
 #include "xap_CocoaApp.h"
+#include "xap_CocoaAppController.h"
 #include "xap_CocoaFont.h"
 #include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
@@ -120,8 +121,8 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 	return pszFontFamily;
 }
 
-GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
-	: m_updateCallback(NULL),
+GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app) :
+	m_updateCallback(NULL),
 	m_updateCBparam (NULL),
 	m_pWin(win),
 	m_cacheArray (10),
@@ -142,6 +143,25 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_joinStyle(JOIN_MITER),
 	m_capStyle(CAP_BUTT),
 	m_lineStyle(LINE_SOLID),
+	m_Cursor_E (nil),
+	m_Cursor_N (nil),
+	m_Cursor_NE (nil),
+	m_Cursor_NW (nil),
+	m_Cursor_S (nil),
+	m_Cursor_SE (nil),
+	m_Cursor_SW (nil),
+	m_Cursor_W (nil),
+	m_Cursor_Wait (nil),
+	m_Cursor_LeftArrow (nil),
+	m_Cursor_RightArrow (nil),
+	m_Cursor_Compass (nil),
+	m_Cursor_Exchange (nil),
+	m_Cursor_LeftRight (nil),
+	m_Cursor_UpDown (nil),
+	m_Cursor_Crosshair (nil),
+	m_Cursor_HandPointer (nil),
+	m_Cursor_DownArrow (nil),
+	m_GrabCursor(GR_CURSOR_DEFAULT),
 	m_screenResolution(0),
 	m_bIsPrinting(false),
 	m_bIsDrawing(false),
@@ -151,18 +171,209 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_fontMetricsTextContainer(nil)
 {
 	NSBundle * bundle = [NSBundle mainBundle];
-	m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Blue16x15" ofType:@"png"]];
-	m_imageBlue11x16 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Blue11x16" ofType:@"png"]];
-	m_imageGrey16x15 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Grey16x15" ofType:@"png"]];
-	m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Grey11x16" ofType:@"png"]];
-	m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
-	m_colorBlue11x16 = [NSColor colorWithPatternImage:m_imageBlue11x16];
-	m_colorGrey16x15 = [NSColor colorWithPatternImage:m_imageGrey16x15];
-	m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
-	[m_colorBlue16x15 retain];
-	[m_colorBlue11x16 retain];
-	[m_colorGrey16x15 retain];
-	[m_colorGrey11x16 retain];
+	NSString * path   = 0;
+	NSImage  * image  = 0;
+
+	if (path = [bundle pathForResource:@"Blue16x15" ofType:@"png"])
+		if (m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
+			[m_colorBlue16x15 retain];
+		}
+	if (!m_colorBlue16x15) {
+		m_colorBlue16x15 = [NSColor blueColor];
+		[m_colorBlue16x15 retain];
+	}
+	if (path = [bundle pathForResource:@"Blue11x16" ofType:@"png"])
+		if (m_imageBlue11x16 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorBlue11x16 = [NSColor colorWithPatternImage:m_imageBlue11x16];
+			[m_colorBlue11x16 retain];
+		}
+	if (!m_colorBlue11x16) {
+		m_colorBlue11x16 = [NSColor blueColor];
+		[m_colorBlue11x16 retain];
+	}
+	if (path = [bundle pathForResource:@"Grey16x15" ofType:@"png"])
+		if (m_imageGrey16x15 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorGrey16x15 = [NSColor colorWithPatternImage:m_imageGrey16x15];
+			[m_colorGrey16x15 retain];
+		}
+	if (!m_colorGrey16x15) {
+		m_colorGrey16x15 = [NSColor grayColor];
+		[m_colorGrey16x15 retain];
+	}
+	if (path = [bundle pathForResource:@"Grey11x16" ofType:@"png"])
+		if (m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
+			[m_colorGrey11x16 retain];
+		}
+	if (!m_colorGrey11x16) {
+		m_colorGrey11x16 = [NSColor grayColor];
+		[m_colorGrey11x16 retain];
+	}
+
+	if (path = [bundle pathForResource:@"Cursor_E" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_E = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	if (!m_Cursor_E) {
+		m_Cursor_E = [NSCursor arrowCursor];
+		[m_Cursor_E retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_N" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_N = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
+			[image release];
+		}
+	if (!m_Cursor_N) {
+		m_Cursor_N = [NSCursor arrowCursor];
+		[m_Cursor_N retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_NE" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_NE = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	if (!m_Cursor_NE) {
+		m_Cursor_NE = [NSCursor arrowCursor];
+		[m_Cursor_NE retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_NW" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_NW = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	if (!m_Cursor_NW) {
+		m_Cursor_NW = [NSCursor arrowCursor];
+		[m_Cursor_NW retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_S" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_S = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	if (!m_Cursor_S) {
+		m_Cursor_S = [NSCursor arrowCursor];
+		[m_Cursor_S retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_SE" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_SE = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
+			[image release];
+		}
+	if (!m_Cursor_SE) {
+		m_Cursor_SE = [NSCursor arrowCursor];
+		[m_Cursor_SE retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_SW" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_SW = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
+			[image release];
+		}
+	if (!m_Cursor_SW) {
+		m_Cursor_SW = [NSCursor arrowCursor];
+		[m_Cursor_SW retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_W" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_W = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	if (!m_Cursor_W) {
+		m_Cursor_W = [NSCursor arrowCursor];
+		[m_Cursor_W retain];
+	}
+
+	if (path = [bundle pathForResource:@"Cursor_Wait" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Wait = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	if (!m_Cursor_Wait) {
+		m_Cursor_Wait = [NSCursor arrowCursor];
+		[m_Cursor_Wait retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_LeftArrow" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_LeftArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,8)];
+			[image release];
+		}
+	if (!m_Cursor_LeftArrow) {
+		m_Cursor_LeftArrow = [NSCursor arrowCursor];
+		[m_Cursor_LeftArrow retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_RightArrow" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_RightArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,7)];
+			[image release];
+		}
+	if (!m_Cursor_RightArrow) {
+		m_Cursor_RightArrow = [NSCursor arrowCursor];
+		[m_Cursor_RightArrow retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_Compass" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Compass = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	if (!m_Cursor_Compass) {
+		m_Cursor_Compass = [NSCursor arrowCursor];
+		[m_Cursor_Compass retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_Exchange" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Exchange = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	if (!m_Cursor_Exchange) {
+		m_Cursor_Exchange = [NSCursor arrowCursor];
+		[m_Cursor_Exchange retain];
+	}
+	if (path = [bundle pathForResource:@"leftright_cursor" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_LeftRight = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
+			[image release];
+		}
+	if (!m_Cursor_LeftRight) {
+		m_Cursor_LeftRight = [NSCursor arrowCursor];
+		[m_Cursor_LeftRight retain];
+	}
+	if (path = [bundle pathForResource:@"updown_cursor" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_UpDown = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(8,8)];
+			[image release];
+		}
+	if (!m_Cursor_UpDown) {
+		m_Cursor_UpDown = [NSCursor arrowCursor];
+		[m_Cursor_UpDown retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_Crosshair" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_Crosshair = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(7,7)];
+			[image release];
+		}
+	if (!m_Cursor_Crosshair) {
+		m_Cursor_Crosshair = [NSCursor arrowCursor];
+		[m_Cursor_Crosshair retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_HandPointer" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_HandPointer = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(6,0)];
+			[image release];
+		}
+	if (!m_Cursor_HandPointer) {
+		m_Cursor_HandPointer = [NSCursor arrowCursor];
+		[m_Cursor_HandPointer retain];
+	}
+	if (path = [bundle pathForResource:@"Cursor_DownArrow" ofType:@"png"])
+		if (image = [[NSImage alloc] initWithContentsOfFile:path]) {
+			m_Cursor_DownArrow = [[NSCursor alloc] initWithImage:image hotSpot:NSMakePoint(6,0)];
+			[image release];
+		}
+	if (!m_Cursor_DownArrow) {
+		m_Cursor_DownArrow = [NSCursor arrowCursor];
+		[m_Cursor_DownArrow retain];
+	}
 
 	m_pApp = app;
 	UT_ASSERT (m_pWin);
@@ -197,6 +408,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	::CGContextRestoreGState(m_CGContext);
 }
 
+#ifndef RELEASEP
+#define RELEASEP(X) do { if (X) { [X release]; X = nil; } } while (0)
+#endif
+
 GR_CocoaGraphics::~GR_CocoaGraphics()
 {
 	DELETEP(m_pFontGUI);
@@ -210,14 +425,35 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	[m_fontForGraphics release];
 	[m_currentColor release];
 
-	[m_imageBlue16x15 release];
-	[m_imageBlue11x16 release];
-	[m_imageGrey16x15 release];
-	[m_imageGrey11x16 release];
-	[m_colorBlue16x15 release];
-	[m_colorBlue11x16 release];
-	[m_colorGrey16x15 release];
-	[m_colorGrey11x16 release];
+	RELEASEP(m_imageBlue16x15);
+	RELEASEP(m_imageBlue11x16);
+	RELEASEP(m_imageGrey16x15);
+	RELEASEP(m_imageGrey11x16);
+
+	RELEASEP(m_colorBlue16x15);
+	RELEASEP(m_colorBlue11x16);
+	RELEASEP(m_colorGrey16x15);
+	RELEASEP(m_colorGrey11x16);
+
+	RELEASEP(m_Cursor_E);
+	RELEASEP(m_Cursor_N);
+	RELEASEP(m_Cursor_NE);
+	RELEASEP(m_Cursor_NW);
+	RELEASEP(m_Cursor_S);
+	RELEASEP(m_Cursor_SE);
+	RELEASEP(m_Cursor_SW);
+	RELEASEP(m_Cursor_W);
+
+	RELEASEP(m_Cursor_Wait);
+	RELEASEP(m_Cursor_LeftArrow);
+	RELEASEP(m_Cursor_RightArrow);
+	RELEASEP(m_Cursor_Compass);
+	RELEASEP(m_Cursor_Exchange);
+	RELEASEP(m_Cursor_LeftRight);
+	RELEASEP(m_Cursor_UpDown);
+	RELEASEP(m_Cursor_Crosshair);
+	RELEASEP(m_Cursor_HandPointer);
+	RELEASEP(m_Cursor_DownArrow);
 
 	s_iInstanceCount--;
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
@@ -341,6 +577,8 @@ void GR_CocoaGraphics::_setJoinStyle(JoinStyle inJoinStyle, CGContextRef * conte
 
 void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle, CGContextRef * context)
 {
+	int lws = context ? 1 : static_cast<int>(m_fLineWidth);
+
 	switch (inLineStyle) {
 	case LINE_SOLID:
 		{
@@ -349,19 +587,19 @@ void GR_CocoaGraphics::_setLineStyle (LineStyle inLineStyle, CGContextRef * cont
 		break;
 	case LINE_ON_OFF_DASH:
 		{
-			float dash_list[2] = { 4, 5 };
+			float dash_list[2] = { 4*lws, 5*lws };
 			::CGContextSetLineDash((context ? *context : m_CGContext), 0, dash_list, 2);
 		}
 		break;
 	case LINE_DOUBLE_DASH:
 		{
-			float dash_list[4] = { 1, 3, 4, 2 };
+			float dash_list[4] = { 1*lws, 3*lws, 4*lws, 2*lws };
 			::CGContextSetLineDash((context ? *context : m_CGContext), 0, dash_list, 4);
 		}
 		break;
 	case LINE_DOTTED:
 		{
-			float dash_list[2] = { 1, 4 };
+			float dash_list[2] = { 1*lws, 4*lws };
 			::CGContextSetLineDash((context ? *context : m_CGContext), 0, dash_list, 2);
 		}
 		break;
@@ -655,43 +893,79 @@ GR_Font * GR_CocoaGraphics::_findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
 
-	NSFontTraitMask s = 0;
+	double size = ceil(UT_convertToPoints(pszFontSize));
 
-	// this is kind of sloppy
-	if (UT_strcmp(pszFontStyle, "italic") == 0)
-	{
-		s |= NSItalicFontMask;
-	}
-	if (UT_strcmp(pszFontWeight, "bold") == 0)
-	{
-		s |= NSBoldFontMask;
-	}
+	size = (size < 1.0) ? 1.0 : size;
 
-	NSFont*		nsfont;
-	double size = UT_convertToPoints(pszFontSize);
-	nsfont = [[NSFontManager sharedFontManager] fontWithFamily:[NSString stringWithUTF8String:pszFontFamily] 
-		traits:s weight:5 size:size];
-	if (!nsfont)
-	{
-		/* 
-		add a few hooks for a few predefined font names that MAY differ.
-		for example "Dingbats" is called "Zapf Dingbats" on MacOS X. 
-		Only fallback AFTER. WARNING: this is recursive call, watch out the
-		font family you pass.
-		*/
-		if (UT_stricmp(pszFontFamily, "Dingbats") == 0) {
-			return findFont("Zapf Dingbats", pszFontStyle, pszFontVariant, 
-			                    pszFontWeight, pszFontStretch, pszFontSize);
+	NSString * font_name = [NSString stringWithUTF8String:pszFontFamily];
+
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	NSString * family_name = [pController familyNameForFont:font_name];
+
+	NSFont * nsfont = nil;
+
+	if (family_name)
+		{
+			// fprintf(stderr, "*font* name: \"%s\", size=%lgpt\n", [font_name UTF8String], size);
+			/* this looks like a font name, not a font-family name...
+			 */
+			nsfont = [NSFont fontWithName:font_name size:((float) size)];
 		}
-		// Oops!  We don't have that font here.
-		// first try "Times New Roman", which should be sensible, and should
-		// be there unless the user fidled with the installation
-		NSLog (@"Unable to find font \"%s\".", pszFontFamily);
-		nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times" 
-		                traits:s weight:5 size:size];
-	}
+	if (!nsfont)
+		{
+			/* this probably is a real font-family name, not a font name...
+			 */
+			family_name = font_name;
+			// fprintf(stderr, "family name: \"%s\", size=%lgpt\n", [family_name UTF8String], size);
+			NSFontTraitMask s = 0;
 
-	// bury the pointer to our Cocoa font in a XAP_CocoaFontHandle 
+			// this is kind of sloppy
+			if (UT_strcmp(pszFontStyle, "italic") == 0)
+				{
+					s |= NSItalicFontMask;
+				}
+			if (UT_strcmp(pszFontWeight, "bold") == 0)
+				{
+					s |= NSBoldFontMask;
+				}
+
+			nsfont = [[NSFontManager sharedFontManager] fontWithFamily:family_name traits:s weight:5 size:size];
+
+			if (!nsfont) // this is bad; the wrong font name ends up in the font popups - FIXME please!
+				{
+					/* add a few hooks for a few predefined font names that MAY differ.
+					 * for example "Dingbats" is called "Zapf Dingbats" on MacOS X. 
+					 * Only fallback AFTER. WARNING: this is recursive call, watch out the
+					 * font family you pass.
+					 */
+					if (UT_stricmp(pszFontFamily, "Dingbats") == 0)
+						{
+							GR_Font * pGRFont = findFont("Zapf Dingbats", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
+							XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);
+							nsfont = pFont->getNSFont();
+						}
+					if (UT_stricmp(pszFontFamily, "Helvetic") == 0)
+						{
+							GR_Font * pGRFont = findFont("Helvetica", pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
+							XAP_CocoaFont * pFont = static_cast<XAP_CocoaFont *>(pGRFont);
+							nsfont = pFont->getNSFont();
+						}
+				}
+			if (!nsfont) // this is bad; the wrong font name ends up in the font popups - FIXME please!
+				{
+					/* Oops!  We don't have that font here.
+					 * first try "Times New Roman", which should be sensible, and should
+					 * be there unless the user fidled with the installation
+					 */
+					NSLog (@"Unable to find font \"%s\".", pszFontFamily);
+
+					nsfont = [[NSFontManager sharedFontManager] fontWithFamily:@"Times" traits:s weight:5 size:size];
+				}
+		}
+
+	/* bury the pointer to our Cocoa font in a XAP_CocoaFontHandle 
+	 */
 	XAP_CocoaFont * pFont = new XAP_CocoaFont(nsfont);
 	UT_ASSERT(pFont);
 
@@ -751,8 +1025,8 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
 	LOCK_CONTEXT__;
-	UT_DEBUGMSG (("GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2,
-	              m_fLineWidth));
+	UT_DEBUGMSG (("GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2, m_fLineWidth));
+	// if ((y1 == y2) && (x1 >= 500)) fprintf(stderr, "GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2, m_fLineWidth);
 	::CGContextBeginPath(m_CGContext);
 	::CGContextMoveToPoint (m_CGContext, TDUX(x1), _tduY(y1));
 	::CGContextAddLineToPoint (m_CGContext, TDUX(x2), _tduY(y2));
@@ -763,9 +1037,11 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::setLineWidth(%ld) was %f\n", iLineWidth, m_fLineWidth));
-	m_fLineWidth = tduD(iLineWidth);
+	m_fLineWidth = static_cast<float>(ceil(tduD(iLineWidth) - 0.75));
+	m_fLineWidth = (m_fLineWidth > 0) ? m_fLineWidth : 1.0f;
 	if (m_viewLocker) {
 		::CGContextSetLineWidth (m_CGContext, m_fLineWidth);
+		_setLineStyle(m_lineStyle);	
 	}
 }
 
@@ -1096,113 +1372,161 @@ GR_Graphics::ColorSpace GR_CocoaGraphics::getColorSpace(void) const
 	return m_cs;
 }
 
-static NSCursor *s_leftRightCursor = nil;
-static NSCursor *s_upDownCursor = nil;
-
 void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 {
-	if (m_cursor == c)
+	GR_Graphics::Cursor old_cursor = m_cursor;
+
+	m_cursor = (c == GR_CURSOR_GRAB) ? m_GrabCursor : c;
+
+	if (m_cursor == old_cursor)
 		return;
 
-	m_cursor = c;
+	bool bImplemented = true;
 
-	switch (c)
+	switch (m_cursor)
 	{
-	default:
-		NSLog (@"Using unimplemented cursor");
-		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
-		NSLog(@"Cursor default");
+		// NSLog(@"Cursor default");
 		[m_pWin setCursor:[NSCursor arrowCursor]];
 		break;
 
 	case GR_CURSOR_IBEAM:
-		NSLog(@"Cursor IBeam");
+		// NSLog(@"Cursor IBeam");
 		[m_pWin setCursor:[NSCursor IBeamCursor]];
 		break;
 
-	case GR_CURSOR_WAIT:
-		// There is no wait cursor for Cocoa.  Or something.
-		NSLog(@"Cursor wait");
-		[m_pWin setCursor:[NSCursor arrowCursor]];
-		break;
+	case GR_CURSOR_VLINE_DRAG:
+		// NSLog(@"Cursor VLine Drag (unimplemented)");
+		m_cursor = GR_CURSOR_LEFTRIGHT;
+		// fall through...
 
 	case GR_CURSOR_LEFTRIGHT:
-		if (s_leftRightCursor == nil) {
-			s_leftRightCursor = [[NSCursor alloc] initWithImage:[NSImage imageNamed:@"leftright_cursor"] hotSpot:NSMakePoint(8,8)];
-			UT_ASSERT(s_leftRightCursor);
+		// NSLog(@"Cursor LeftRight");
+		if (m_cursor != old_cursor)
+		{
+			[m_pWin setCursor:m_Cursor_LeftRight];
 		}
-		[m_pWin setCursor:s_leftRightCursor];
 		break;
+
+	case GR_CURSOR_HLINE_DRAG:
+		// NSLog(@"Cursor HLine Drag (unimplemented)");
+		m_cursor = GR_CURSOR_UPDOWN;
+		// fall through...
 
 	case GR_CURSOR_UPDOWN:
-		if (s_upDownCursor == nil) {
-			s_upDownCursor = [[NSCursor alloc] initWithImage:[NSImage imageNamed:@"updown_cursor"] hotSpot:NSMakePoint(8,8)];
-			UT_ASSERT(s_upDownCursor);
+		// NSLog(@"Cursor UpDown");
+		if (m_cursor != old_cursor)
+		{
+			[m_pWin setCursor:m_Cursor_UpDown];
 		}
-		[m_pWin setCursor:s_upDownCursor];
-		break;
-
-#if 0
-
-	//I have changed the shape of the arrow so get a consistent
-	//behaviour in the bidi build; I think the new arrow is better
-	//for the purpose anyway
-
-	case GR_CURSOR_RIGHTARROW:
-		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
-		break;
-
-	case GR_CURSOR_LEFTARROW:
-		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
 		break;
 
 	case GR_CURSOR_IMAGE:
-		cursor_number = GDK_FLEUR;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_NW:
-		cursor_number = GDK_TOP_LEFT_CORNER;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_N:
-		cursor_number = GDK_TOP_SIDE;
-		break;
-
-	case GR_CURSOR_IMAGESIZE_NE:
-		cursor_number = GDK_TOP_RIGHT_CORNER;
+		// NSLog(@"Cursor Image");
+		[m_pWin setCursor:m_Cursor_Compass];
 		break;
 
 	case GR_CURSOR_IMAGESIZE_E:
-		cursor_number = GDK_RIGHT_SIDE;
+		// NSLog(@"Cursor ImageSize [ E]");
+		[m_pWin setCursor:m_Cursor_E];
 		break;
 
-	case GR_CURSOR_IMAGESIZE_SE:
-		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
+	case GR_CURSOR_IMAGESIZE_N:
+		// NSLog(@"Cursor ImageSize [N ]");
+		[m_pWin setCursor:m_Cursor_N];
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NE:
+		// NSLog(@"Cursor ImageSize [NE]");
+		[m_pWin setCursor:m_Cursor_NE];
+		break;
+
+	case GR_CURSOR_IMAGESIZE_NW:
+		// NSLog(@"Cursor ImageSize [NW]");
+		[m_pWin setCursor:m_Cursor_NW];
 		break;
 
 	case GR_CURSOR_IMAGESIZE_S:
-		cursor_number = GDK_BOTTOM_SIDE;
+		// NSLog(@"Cursor ImageSize [S ]");
+		[m_pWin setCursor:m_Cursor_S];
+		break;
+
+	case GR_CURSOR_IMAGESIZE_SE:
+		// NSLog(@"Cursor ImageSize [SE]");
+		[m_pWin setCursor:m_Cursor_SE];
 		break;
 
 	case GR_CURSOR_IMAGESIZE_SW:
-		cursor_number = GDK_BOTTOM_LEFT_CORNER;
+		// NSLog(@"Cursor ImageSize [SW]");
+		[m_pWin setCursor:m_Cursor_SW];
 		break;
 
 	case GR_CURSOR_IMAGESIZE_W:
-		cursor_number = GDK_LEFT_SIDE;
+		// NSLog(@"Cursor ImageSize [ W]");
+		[m_pWin setCursor:m_Cursor_W];
+		break;
+
+	case GR_CURSOR_WAIT:
+		// NSLog(@"Cursor Wait");
+		[m_pWin setCursor:m_Cursor_Wait];
+		break;
+
+	case GR_CURSOR_RIGHTARROW:
+		// NSLog(@"Cursor RightArrow");
+		[m_pWin setCursor:m_Cursor_RightArrow];
+		break;
+
+	case GR_CURSOR_LEFTARROW:
+		// NSLog(@"Cursor LeftArrow");
+		[m_pWin setCursor:m_Cursor_LeftArrow];
 		break;
 
 	case GR_CURSOR_EXCHANGE:
-		cursor_number = GDK_EXCHANGE;
+		// NSLog(@"Cursor Exchange");
+		[m_pWin setCursor:m_Cursor_Exchange];
 		break;
 
-	case GR_CURSOR_GRAB:
-		cursor_number = GDK_HAND1;
+	case GR_CURSOR_CROSSHAIR:
+		// NSLog(@"Cursor Crosshair");
+		[m_pWin setCursor:m_Cursor_Crosshair];
 		break;
-#endif
+
+	case GR_CURSOR_LINK:
+		// NSLog(@"Cursor Link");
+		[m_pWin setCursor:m_Cursor_HandPointer];
+		break;
+
+	case GR_CURSOR_DOWNARROW:
+		// NSLog(@"Cursor DownArrow");
+		[m_pWin setCursor:m_Cursor_DownArrow];
+		break;
+
+
+	case GR_CURSOR_GRAB:
+		NSLog(@"Cursor Grab (unimplemented)");
+		bImplemented = false;
+		// cursor_number = GDK_HAND1;
+		break;
+
+	case GR_CURSOR_INVALID:
+		NSLog(@"Cursor Invalid (unimplemented)");
+	default:
+		NSLog(@"Unexpected cursor! (unimplemented)");
+		bImplemented = false;
+		break;
 	}
-	[[m_pWin window] invalidateCursorRectsForView:m_pWin];
+	if (!bImplemented)
+	{
+		m_cursor = GR_CURSOR_DEFAULT;
+		if (m_cursor != old_cursor)
+		{
+			[m_pWin setCursor:[NSCursor arrowCursor]];
+		}
+	}
+	if (m_cursor != old_cursor)
+	{
+		[[m_pWin window] invalidateCursorRectsForView:m_pWin];
+	}
 }
 
 GR_Graphics::Cursor GR_CocoaGraphics::getCursor(void) const

@@ -143,7 +143,7 @@ emit_color_changed (ColorPalette *P, GdkColor *color,
  * Add the new custom color as the first custom color in the custom color rows
  * and shift all of the others 'one step down'
  *
- * Also take care of setting up the GnomeColorPicker 'display'
+ * Also take care of setting up the GtkColorButton 'display'
  */
 static void
 color_palette_change_custom_color (ColorPalette *P, GdkColor const *new_color)
@@ -154,7 +154,7 @@ color_palette_change_custom_color (ColorPalette *P, GdkColor const *new_color)
 
 	g_return_if_fail (P != NULL);
 	g_return_if_fail (new_color != NULL);
-	g_return_if_fail (P->picker);
+	g_return_if_fail (P->button);
 
 	/* make sure there is room */
 	if (P->custom_color_pos == -1)
@@ -171,8 +171,7 @@ color_palette_change_custom_color (ColorPalette *P, GdkColor const *new_color)
 	}
 	if (next_swatch != NULL) {
 		next_swatch->style->bg[GTK_STATE_NORMAL] = *new_color;
-		gnome_color_picker_set_i16 (P->picker,
-			new_color->red, new_color->green, new_color->blue, 0);
+		gtk_color_button_set_color (P->button, new_color);
 	}
 }
 
@@ -181,17 +180,15 @@ color_palette_change_custom_color (ColorPalette *P, GdkColor const *new_color)
  * And add it to the custom color row
  */
 static void
-cust_color_set (GtkWidget  *color_picker, guint r, guint g, guint b, guint a,
-		ColorPalette *P)
+cust_color_set (GtkWidget 	 *color_button,
+				ColorPalette *P)
 {
 	GdkColor c_color;
 
-	c_color.red   = (gushort)r;
-	c_color.green = (gushort)g;
-	c_color.blue  = (gushort)b;
+	gtk_color_button_get_color (color_button, &c_color);
 
-	gdk_colormap_alloc_color (gtk_widget_get_colormap (color_picker), &c_color, FALSE, TRUE);
-	gdk_colormap_query_color (gtk_widget_get_colormap (color_picker), c_color.pixel, &c_color);
+	gdk_colormap_alloc_color (gtk_widget_get_colormap (color_button), &c_color, FALSE, TRUE);
+	gdk_colormap_query_color (gtk_widget_get_colormap (color_button), c_color.pixel, &c_color);
 	emit_color_changed (P, &c_color, TRUE, TRUE, FALSE);
 }
 
@@ -414,19 +411,18 @@ color_palette_setup (ColorPalette *P,
 	P->total = total;
 
 
-	/* "Custom" color - we'll pop up a GnomeColorPicker */
+	/* "Custom" color - we'll pop up a GtkColorButton */
 	cust_label = gtk_label_new (_("Custom Color:"));
 	gtk_table_attach (GTK_TABLE (table), cust_label, 0, ncols - 3 ,
 			  row + 1, row + 2, GTK_FILL | GTK_EXPAND, 0, 0, 0);
 	/*
-	  Keep a pointer to the picker so that we can update it's color
+	  Keep a pointer to the button so that we can update it's color
 	  to keep it in synch with that of other members of the group
 	*/
-	P->picker = GNOME_COLOR_PICKER (gnome_color_picker_new ());
-	gnome_color_picker_set_title (P->picker, _("Choose Custom Color"));
-	gtk_table_attach (GTK_TABLE (table), GTK_WIDGET (P->picker), ncols - 3, ncols,
+	P->button = GTK_COLOR_BUTTON (gtk_color_button_new ());
+	gtk_table_attach (GTK_TABLE (table), GTK_WIDGET (P->button), ncols - 3, ncols,
 			  row + 1, row + 2, GTK_FILL | GTK_EXPAND, 0, 0, 0);
-	g_signal_connect (P->picker, "color_set",
+	g_signal_connect (P->button, "color-set",
 			  G_CALLBACK (cust_color_set), P);
 	return table;
 }
@@ -467,11 +463,11 @@ color_palette_get_current_color (ColorPalette *P, gboolean *is_default)
 }
 
 GtkWidget *
-color_palette_get_color_picker (ColorPalette *P)
+color_palette_get_color_button (ColorPalette *P)
 {
 	g_return_val_if_fail (IS_COLOR_PALETTE (P), NULL);
 
-	return GTK_WIDGET (P->picker);
+	return GTK_WIDGET (P->button);
 }
 
 

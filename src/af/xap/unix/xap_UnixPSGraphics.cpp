@@ -1105,7 +1105,7 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 			image->width, image->height * -1, image->height);
 	m_ps->writeBytes(buf);
 	
-	int byteWidth = (pPSImage->getHasAlpha() ? 4 : 3);
+	int byteWidth = (pPSImage->hasAlpha() ? 4 : 3);
 
 	g_snprintf(buf, sizeof (buf),"{currentfile rowdata readhexstring pop}\nfalse %d colorimage\n", byteWidth);
 	m_ps->writeBytes(buf);

@@ -67,6 +67,7 @@ class GR_Graphics;
 class GR_AllocInfo;
 class XAP_InputModes;
 class AV_Listener;
+class GR_EmbedManager;
 
 /*****************************************************************
 ******************************************************************
@@ -116,7 +117,6 @@ public:
 	bool							updateClones(XAP_Frame * pFrame);
 
 	virtual void					notifyFrameCountChange (); // default is empty method
-
 	UT_uint32						getFrameCount() const;
 	XAP_Frame * 					getFrame(UT_uint32 ndx) const;
 	UT_sint32						findFrame(XAP_Frame * pFrame);
@@ -237,7 +237,11 @@ public:
 	EV_EditEventMapper *		getEditEventMapper() const;
 	bool			            addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	bool			            removeListener(AV_ListenerId listenerId);
-	virtual bool	            notifyListeners(AV_View * pView, const AV_ChangeMask hint);
+	virtual bool	            notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
+
+    UT_uint32                   registerEmbeddable(GR_EmbedManager * pEmbed);
+    bool                        unRegisterEmbeddable(UT_uint32 uid);
+	GR_EmbedManager *           getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -283,7 +287,7 @@ private:
 	UT_uint32                               m_iDefaultGraphicsId;
 	
 	XAP_InputModes *						m_pInputModes;
-	
+	UT_GenericVector <GR_EmbedManager *>    m_vecEmbedManagers;	
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);
 #ifdef DEBUG

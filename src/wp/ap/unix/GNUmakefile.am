@@ -28,7 +28,7 @@ INCLUDES= \
 	-DABIWORD_DATADIR=\""$(datadir)"\"			\
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	-DABIWORD_APP_LIBDIR="\"$(ABIWORD_APP_LIBDIR)\"" \
-	-DABIWORD_PLUGINDIR="\"$(libdir)/AbiWord-2.2/plugins/\"" \
+	-DABIWORD_PLUGINDIR="\"$(libdir)/AbiWord-2.4/plugins/\"" \
 	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
 	@GMODULE_CFLAGS@ @GTK_CFLAGS@ $(OTHER_INCLUDES) $(ICONV_INCLUDES)
 
@@ -43,6 +43,7 @@ glade_DATA = \
 	ap_UnixDialog_FormatFootnotes.glade \
 	ap_UnixDialog_FormatTable.glade \
 	ap_UnixDialog_FormatFrame.glade \
+	ap_UnixDialog_Goto.glade \
 	ap_UnixDialog_HdrFtr.glade \
 	ap_UnixDialog_InsertTable.glade \
 	ap_UnixDialog_Insert_DateTime.glade \
@@ -54,6 +55,7 @@ glade_DATA = \
 	ap_UnixDialog_PageSetup.glade		\
 	ap_UnixDialog_Replace.glade		\
 	ap_UnixDialog_New.glade		\
+	ap_UnixDialog_Spell.glade		\
 	ap_UnixDialog_Styles.glade	\
 	ap_UnixDialog_Stylist.glade	\
 	ap_UnixDialog_Stylist_modal.glade	\

@@ -70,6 +70,18 @@ FV_FrameEdit::~FV_FrameEdit()
 	}
 }
 
+void FV_FrameEdit::setPointInside(void)
+{
+  fl_FrameLayout * pFL = getFrameLayout();
+  if(pFL == NULL)
+  {
+    return;
+  }
+  PT_DocPosition pos = pFL->getPosition(true) + pFL->getLength()-1;
+  setMode(FV_FrameEdit_NOT_ACTIVE);
+  m_pView->_setPoint(pos);
+}
+
 bool FV_FrameEdit::isActive(void) const
 {
 	return (FV_FrameEdit_NOT_ACTIVE != m_iFrameEditMode);
@@ -992,14 +1004,16 @@ bool FV_FrameEdit::isImageWrapper(void) const
 	return false;
 }
 
-bool FV_FrameEdit::getFrameStrings(double x, double y, 
-										UT_String & sXpos,
-										UT_String & sYpos,
-										UT_String & sWidth,
-										UT_String & sHeight,
-										UT_String & sColXpos,
-										UT_String & sColYpos,
-								   fl_BlockLayout ** pCloseBL)
+bool FV_FrameEdit::getFrameStrings(double x, double y,
+				   UT_String & sXpos,
+				   UT_String & sYpos,
+				   UT_String & sWidth,
+				   UT_String & sHeight,
+				   UT_String & sColXpos,
+				   UT_String & sColYpos,
+				   UT_String & sPageXpos,
+				   UT_String & sPageYpos,
+				   fl_BlockLayout ** pCloseBL)
 {
 //
 // Find the block that contains (x,y). We'll insert the frame after
@@ -1087,6 +1101,13 @@ bool FV_FrameEdit::getFrameStrings(double x, double y,
 		double yPos = finalColy/UT_LAYOUT_RESOLUTION;
 		sColXpos = UT_formatDimensionedValue(xPos,"in", NULL);
 		sColYpos = UT_formatDimensionedValue(yPos,"in", NULL);
+		//
+		// OK calculate relative to page now
+		//
+		xPos += static_cast<double>(pCol->getX())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		yPos += static_cast<double>(pCol->getY())/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		sPageXpos = UT_formatDimensionedValue(xPos,"in", NULL);
+		sPageYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 
 //
 // Find the screen coords of pLine, then work out the offset to the (x,y)
@@ -1168,22 +1189,27 @@ void FV_FrameEdit::mouseRelease(double x, double y)
 		UT_String sYpos("");
 		UT_String sColXpos("");
 		UT_String sColYpos("");
+		UT_String sPageXpos("");
+		UT_String sPageYpos("");
 		UT_String sWidth("");
 		UT_String sHeight("");
 		fl_BlockLayout * pCloseBL = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,&pCloseBL);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
 		pf_Frag_Strux * pfFrame = NULL;
-		const XML_Char * props[22] = {"frame-type","textbox",
-									  "wrap-mode","wrapped-both",
-									 "position-to","column-above-text",
-									 "xpos",sXpos.c_str(),
-									 "ypos",sYpos.c_str(),
-									 "frame-width",sWidth.c_str(),
-									  "frame-height",sHeight.c_str(),
-									  "frame-col-xpos",sColXpos.c_str(),
-									  "frame-col-ypos",sColYpos.c_str(),
-									  "background-color", "ffffff",
-									  NULL,NULL};
+		const XML_Char * props[28] = {"frame-type","textbox",
+					      "wrap-mode","wrapped-both",
+					      "position-to","column-above-text",
+					      "xpos",sXpos.c_str(),
+					      "ypos",sYpos.c_str(),
+					      "frame-width",sWidth.c_str(),
+					      "frame-height",sHeight.c_str(),
+					      "frame-col-xpos",sColXpos.c_str(),
+					      "frame-col-ypos",sColYpos.c_str(),
+					      "frame-page-xpos",sPageXpos.c_str(),
+					      "frame-page-ypos",sPageYpos.c_str(),
+					      "background-color", "ffffff",
+					      "tight-wrap","0",
+					      NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
 // position posXY.
@@ -1192,8 +1218,11 @@ void FV_FrameEdit::mouseRelease(double x, double y)
 		posAtXY = pCloseBL->getPosition();
 		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,NULL,props,&pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
+		PT_DocPosition posEOD= 0;
+		m_pView->getEditableBounds(true,posEOD);
 		getDoc()->insertStrux(posFrame+1,PTX_Block);
 		getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+		m_pView->insertParaBreakIfNeededAtPos(posFrame+3);
 
 // Place the insertion point in the Frame
 
@@ -1350,6 +1379,18 @@ void FV_FrameEdit::mouseRelease(double x, double y)
 		if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
 		{
 			sVal = "above-text";
+		}
+		else
+		{
+			sVal = pszWrapMode;
+		}
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+// tight-wrap
+
+		sProp = "tight-wrap";
+		if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszWrapMode))
+		{
+			sVal = "0";
 		}
 		else
 		{
@@ -1530,8 +1571,10 @@ void FV_FrameEdit::mouseRelease(double x, double y)
 		UT_String sHeight("");
 		UT_String sColXpos("");
 		UT_String sColYpos("");
+		UT_String sPageXpos("");
+		UT_String sPageYpos("");
 		fl_BlockLayout * pCloseBL = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,&pCloseBL);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,&pCloseBL);
 		sProp = "xpos";
 		sVal = sXpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
@@ -1544,6 +1587,14 @@ void FV_FrameEdit::mouseRelease(double x, double y)
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		sProp = "frame-col-ypos";
 		sVal = sColYpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+
+		sProp = "frame-page-xpos";
+		sVal = sPageXpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		sProp = "frame-page-ypos";
+		sVal = sPageYpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 
 		sProp = "frame-width";
@@ -1627,10 +1678,12 @@ void FV_FrameEdit::mouseRelease(double x, double y)
 		{
 			getDoc()->insertStrux(posFrame+1,PTX_Block);
 			getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+			m_pView->insertParaBreakIfNeededAtPos(posFrame+3);
 		}
 		else
 		{
 			getDoc()->insertStrux(posFrame+1,PTX_EndFrame);
+			m_pView->insertParaBreakIfNeededAtPos(posFrame+2);
 		}
 		delete [] atts;
 
@@ -1725,12 +1778,16 @@ void FV_FrameEdit::mouseRelease(double x, double y)
 /*!
  * This method deletes the current selected frame
  */
-void FV_FrameEdit::deleteFrame(void)
+void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 {
 	if(m_pFrameLayout == NULL)
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return;
+	        m_pFrameLayout = pFL;
+		if(m_pFrameLayout == NULL)
+		{
+		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		  return;
+		}
 	}
 	PP_AttrProp * p_AttrProp_Before = NULL;
 
@@ -1830,7 +1887,17 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 		if(m_iDraggingWhat == FV_FrameEdit_DragWholeFrame)
 		{
 			GR_Painter painter (getGraphics());
-			m_pFrameImage = painter.genImageFromRectangle(m_recCurFrame);
+			if(m_pFrameLayout->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
+			{
+			      m_pFrameImage = painter.genImageFromRectangle(m_recCurFrame);
+			}
+			else
+		        {
+			      UT_Rect rec = m_recCurFrame;
+			      rec.left = 0;
+			      rec.top = 0;
+			      m_pFrameImage = m_pFrameLayout->getBackgroundImage()->createImageSegment(getGraphics(),rec);
+			}
 		}
 	}
 	else

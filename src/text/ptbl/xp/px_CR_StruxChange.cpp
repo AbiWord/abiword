@@ -28,7 +28,7 @@ PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
 														 PT_AttrPropIndex indexOldAP,
 														 PT_AttrPropIndex indexNewAP,
 														 PTStruxType pts)
-	: PX_ChangeRecord(type, position, indexNewAP)
+	: PX_ChangeRecord(type, position, indexNewAP, 0)
 {
 	m_indexOldAP = indexOldAP;
 	m_pts = pts;

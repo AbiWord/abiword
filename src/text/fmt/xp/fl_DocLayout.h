@@ -70,6 +70,7 @@ class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
 class fl_EndnoteLayout;
 class fp_EndnoteContainer;
+class GR_EmbedManager;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -175,7 +176,7 @@ public:
 	fl_DocSectionLayout* 	findSectionForHdrFtr(const char* pszHdrFtrID) const;
 	void 				deleteEmptyColumnsAndPages(void);
 	void 				deleteEmptyPages( bool bDontNotify = false);
-
+	GR_EmbedManager * getEmbedManager(const char * szEmbedType);
 // --------------------------------------------------------------------
 // Footnote Methods
 // fl_DocLAyout stores this Vector of footnotes to speed things up and
@@ -234,6 +235,7 @@ public:
 	bool                updateTOCsOnBookmarkChange(const XML_Char * pBookmark);
 // --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
+	bool		getAutoGrammarCheck(void) const { return (hasBackgroundCheckReason(bgcrGrammar)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
 	bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
 	bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
@@ -243,6 +245,12 @@ public:
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}
 	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uDocBackgroundCheckReasons & reason) ? true : false);}
 	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
+	fl_BlockLayout *        getPendingBlockForGrammar(void)
+	  {
+	    return m_PendingBlockForGrammar;
+	  }
+	void        setPendingBlockForGrammar(fl_BlockLayout * pBL);
+	void        triggerPendingBlock(fl_BlockLayout * pBL);
 
 	// These are used as bit flags in a UT_uint32.  The enum is here just
 	// to get the namespace protection.
@@ -251,7 +259,8 @@ public:
 		bgcrNone         = 0,
 		bgcrDebugFlash   = (1 <<  0),
 		bgcrSpelling     = (1 <<  1),
-		bgcrSmartQuotes  = (1 <<  2)   // ha!  we're not using background checks for this after all
+		bgcrSmartQuotes  = (1 <<  2),   // ha!  we're not using background checks for this after all
+		bgcrGrammar     = (1 <<  3)
 	};
 
 	// New List Guts
@@ -281,6 +290,7 @@ public:
 protected:
 	static void			_backgroundCheck(UT_Worker * pTimer);
 	void				_toggleAutoSpell(bool bSpell);
+	void				_toggleAutoGrammar(bool bGrammar);
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
@@ -341,6 +351,9 @@ private:
 	PT_DocPosition      m_iDocSize;
 	UT_sint32           m_iFilled;
 	bool                m_bSpellCheckInProgress;
+	UT_GenericVector<GR_EmbedManager *> m_vecEmbedManager;
+	bool                m_bAutoGrammarCheck;
+	fl_BlockLayout  *   m_PendingBlockForGrammar;
 };
 
 #endif /* DOCLAYOUT_H */

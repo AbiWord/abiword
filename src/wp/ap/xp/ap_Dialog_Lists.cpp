@@ -119,9 +119,9 @@ AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
 
 /*!
  * Create the preview from the Graphics Context provided by the platform code.
- \params gc the Platform Graphics Context cast into the a XP handle.
- \params width the width of the gc
- \params height the height of the gc
+ \param gc the Platform Graphics Context cast into the a XP handle.
+ \param width the width of the gc
+ \param height the height of the gc
  */
 void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 										   UT_uint32 width,
@@ -1138,8 +1138,8 @@ void AP_Lists_preview::draw(void)
 	
 	UT_RGBColor clrGrey = UT_RGBColor(128,128,128);
 	UT_RGBColor clrBlack = UT_RGBColor(0,0,0);
-	UT_sint32 iWidth = m_gc->tlu(getWindowWidth());
-	UT_sint32 iHeight = m_gc->tlu(getWindowHeight());
+	double iWidth = m_gc->tlu(getWindowWidth());
+	double iHeight = m_gc->tlu(getWindowHeight());
 	UT_UCSChar ucs_label[50];
 
 	UT_sint32 iDescent = m_gc->getFontDescent();
@@ -1154,8 +1154,8 @@ void AP_Lists_preview::draw(void)
 		painter.clearArea(0, 0, iWidth, iHeight);
 	}
 	m_gc->setColor(clrBlack);
-	UT_sint32 yoff = m_gc->tlu(5) ;
-	UT_sint32 xoff = m_gc->tlu(5) ;
+	double yoff = m_gc->tlu(5) ;
+	double xoff = m_gc->tlu(5) ;
 	UT_sint32 i,ii,yloc,awidth,aheight,maxw;
 	UT_sint32 twidth =0;
 	UT_sint32 j,xy;

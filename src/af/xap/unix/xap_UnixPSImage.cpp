@@ -25,7 +25,7 @@
 #include "ut_bytebuf.h"
 
 PS_Image::PS_Image(const char* szName)
-	: m_image(0), m_hasAlpha(false)
+	: m_hasAlpha(false), m_image(0)
 {
 	if (szName)
 	{
@@ -152,12 +152,10 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 
 	/* TODO: don't strip alpha */
 	if (color_type & PNG_COLOR_MASK_ALPHA) {
-#if 1
+#if 0
 		png_set_strip_alpha(png_ptr);
-		m_hasAlpha = true;		
-#else
-		m_hasAlpha = true;		
 #endif
+		m_hasAlpha = true;		
 	}
 
 	UT_uint32 iBytesInRow;
@@ -196,7 +194,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	m_image->height = height;
 
 	// allocate for 3 or 4 bytes
-	m_image->data = static_cast<guchar *>(UT_calloc(m_image->width * iBytesInRow, sizeof(guchar)));
+	m_image->data = static_cast<guchar *>(UT_calloc(m_image->height * iBytesInRow, sizeof(guchar)));
 	
 	if (!m_image->data)
 	{
@@ -225,4 +223,20 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	png_destroy_read_struct(&png_ptr, &info_ptr, static_cast<png_infopp>(NULL));
 
 	return true;
+}
+
+bool PS_Image::isTransparentAt(UT_sint32 x, UT_sint32 y)
+{
+  UT_ASSERT(0);
+  if(!hasAlpha())
+  {
+    return false;
+  }
+  UT_sint32 iOff = y*4*m_image->width + x*4 + 3;
+  guchar p = m_image->data[iOff];
+  if(p == 255)
+  {
+    return true;
+  }
+  return false;
 }

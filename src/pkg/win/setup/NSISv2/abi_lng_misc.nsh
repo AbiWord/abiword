@@ -47,9 +47,9 @@
       LicenseLangString LicenseTXT "${LANG_${LANG}}" "..\AbiSuite\Copying"
       !verbose push
       !verbose 3
-      !include "abi_lng_${LANG}.nsh"   ; Localized Installer Messages (Language Strings)
+      !include "lang\${LANG}.nsh"   ; Localized Installer Messages (Language Strings)
       !define SETDEFLANG
-      !include "abi_lng_${DEF_LANG}.nsh"
+      !include "lang\${DEF_LANG}.nsh"
       !verbose pop
       !ifdef APPSET_LANGUAGEFILE_DEFAULT_USED
         !undef APPSET_LANGUAGEFILE_DEFAULT_USED

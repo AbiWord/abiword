@@ -86,7 +86,8 @@ enum FP_RUN_TYPE
 	FPRUN_HYPERLINK					= 13,
 	FPRUN_DIRECTIONMARKER           = 14,
 	FPRUN_DUMMY                     = 15,
-	FPRUN__LAST__					= 16
+	FPRUN_MATH                      = 16,
+	FPRUN__LAST__					= 17
 };
 
 // specifies how setX should handle screen clearing

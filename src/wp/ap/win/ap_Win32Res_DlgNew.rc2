@@ -29,7 +29,6 @@
 
 #define AP_RID_DIALOG_NEW_RDO_TEMPLATE					1001
 #define AP_RID_DIALOG_NEW_RDO_EXISTING					1002
-#define AP_RID_DIALOG_NEW_RDO_BLANK						1003
 #define AP_RID_DIALOG_NEW_EBX_EXISTING					1004
 #define AP_RID_DIALOG_NEW_BTN_EXISTING					1005
 #define AP_RID_DIALOG_NEW_LBX_TEMPLATE					1006
@@ -41,7 +40,7 @@
 #ifdef RC_INVOKED
 // NOTE these placeholder strings get overridden at runtime 
 
-AP_RID_DIALOG_NEW DIALOG DISCARDABLE  30, 10, 195, 190
+AP_RID_DIALOG_NEW DIALOG DISCARDABLE  30, 10, 195, 170
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Choose a Template"
 FONT 8, "MS Sans Serif"
@@ -54,10 +53,6 @@ BEGIN
                     AP_RID_DIALOG_NEW_RDO_EXISTING,
                     "Button", BS_AUTORADIOBUTTON | WS_TABSTOP,
                     7,115,181,10
-    CONTROL         "Start with an empty document",
-                    AP_RID_DIALOG_NEW_RDO_BLANK,
-                    "Button", BS_AUTORADIOBUTTON | WS_TABSTOP,
-                    7,152,181,10
 
     LISTBOX         AP_RID_DIALOG_NEW_LBX_TEMPLATE,
                     7,20,181,85,
@@ -80,17 +75,12 @@ BEGIN
 					"Static", SS_GRAYFRAME | SS_SUNKEN,				
                     7,147,181,1
 
-	CONTROL			"",						
-                    AP_RID_DIALOG_NEW_STATIC,
-					"Static", SS_GRAYFRAME | SS_SUNKEN,				
-                    7,166,181,1
-
     DEFPUSHBUTTON   "OK",
                     AP_RID_DIALOG_NEW_BTN_OK,
-                    37,172,50,14
+                    37,153,50,14
     PUSHBUTTON      "Cancel",
                     AP_RID_DIALOG_NEW_BTN_CANCEL,
-                    117,172,50,14
+                    117,153,50,14
 
 END
 

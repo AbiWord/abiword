@@ -39,6 +39,7 @@
 
 class fl_TableLayout;
 class fl_DocSectionLayout;
+class fl_BlockLayout;
 
 #define FRAME_HANDLE_SIZE 6
 
@@ -61,6 +62,8 @@ public:
 	virtual double      getY() const;
 	virtual double      getWidth() const;
 	virtual double      getHeight() const;
+	double              getLeftPad(double y, double height);
+	double              getRightPad(double y, double height);
 	virtual bool        isVBreakable(void)
 		{ return false;}
 	double              getFullX() const;
@@ -75,7 +78,7 @@ public:
 	double              getYPad(void) { return m_iYpad;}
 	void                setPage(fp_Page * pPage);
 	fl_DocSectionLayout * getDocSectionLayout(void);
-		
+	void                getBlocksAroundFrame(UT_GenericVector<fl_BlockLayout *> & vecBlocks);
 	PP_PropertyMap::Background getBackground () const;
 
 	void setBackground (const PP_PropertyMap::Background & style);
@@ -90,6 +93,11 @@ public:
 		{m_bIsWrapped = bWrapping;}
 	bool                isWrappingSet(void) const
 		{ return m_bIsWrapped;}
+	void                setTightWrapping( bool bTight)
+	        { m_bIsTightWrapped = bTight;}
+	bool                isTightWrapped(void) const
+	        { return m_bIsTightWrapped;}
+	bool                overlapsRect(UT_Rect & rec);
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
 									  double left, double top, 
@@ -109,8 +117,9 @@ private:
 	PP_PropertyMap::Line   m_lineLeft;
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
-    bool                   m_bOverWrote;
-    bool                   m_bIsWrapped;
+	bool                   m_bOverWrote;
+	bool                   m_bIsWrapped;
+	bool                   m_bIsTightWrapped;
 };
 
 

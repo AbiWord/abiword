@@ -1386,9 +1386,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 							{
 								pf_Frag_Object *pOb = static_cast<pf_Frag_Object*>(pF);
 								po_Bookmark * pB1 = pOb->getBookmark();
-								if(!strcmp(pB->getName(),pB1->getName()))
+								if(pB1 && !strcmp(pB->getName(),pB1->getName()))
 								{
-
 									m_pDocument->removeBookmark(pB1->getName());
 
 									posComrade = getFragPosition(pOb);

@@ -500,7 +500,7 @@ s_mapDocToAbiListId (MSWordListIdType id)
 /*!
  * form AW list deliminator string
  */
-static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String &sDelim)
+static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_UTF8String &sDelim)
 {
 	// the Word format string looks like this
 	//    prefix '\0' suffix
@@ -542,9 +542,9 @@ static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String 
 		pSfx++;
 	}
 
-	sDelim.clear();
-
-	UT_String_sprintf(sDelim, "%s%%L%s",sUtf8Pfx.utf8_str(), sUtf8Sfx.utf8_str());
+	sDelim = sUtf8Pfx;
+	sDelim += "%L";
+	sDelim += sUtf8Sfx;
 }
 
 /*!
@@ -1911,8 +1911,8 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					}
 					UT_DEBUGMSG((" clienttextbox %x clientdata %x \n",answer->clienttextbox,answer->clientdata));
 				}
-//				if(isTextBox)
-//				{
+				if(isTextBox)
+				{
 //				if(answer != NULL)
 //				{
 					UT_DEBUGMSG(("Found a Text box! text offset is.. %d \n",textOff));
@@ -1985,7 +1985,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					m_vecTextboxPos.addItem(pPos);
 					wvReleaseEscher (&item);
 					return true;
-//				}
+				}
 				wvReleaseEscher (&item);
 			}
 			else
@@ -2856,10 +2856,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_atts[iOffset++] = szStartValue.c_str();
 
 		// list delimiter
-		UT_String sDelim;
+		UT_UTF8String sDelim;
 		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
 		list_atts[iOffset++] = "list-delim";
-		list_atts[iOffset++] = sDelim.c_str();
+		list_atts[iOffset++] = sDelim.utf8_str();
 
 		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
@@ -4090,11 +4090,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   propsArray[3] = static_cast<const XML_Char *>(propsName.c_str());
   propsArray[4] = 0;
 
-  if(!m_bInPara)
-  {
-	  _appendStrux(PTX_Block, NULL);
-	  m_bInPara = true ;
-  }
+  if (!_ensureInBlock())
+        {
+	  UT_DEBUGMSG (("_ensureInBlock() failed\n"));
+	  error = UT_ERROR;
+	  goto Cleanup;
+	}
 
   if (!_appendObject (PTO_Image, propsArray))
 	{
@@ -5967,8 +5968,8 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
  * of their lid values. This matches the order of the text sort in the
  * in the out-of-stream table.
  * Used by theqsort method on UT_Vector.
-\params const void * P1  - pointer to a textboxPos pointer
-\params const void * P2  - pointer to a textboxPos pointer
+\param const void * P1  - pointer to a textboxPos pointer
+\param const void * P2  - pointer to a textboxPos pointer
 \returns -ve if sz1 < sz2, 0 if sz1 == sz2, +ve if sz1 > sz2
 */
 static UT_sint32 s_cmp_lids(const void * P1, const void * P2)
@@ -6040,6 +6041,34 @@ bool IE_Imp_MsWord_97::_shouldUseInsert() const
 	return ((m_bInFNotes || m_bInENotes) && !m_bInHeaders && !m_bInTextboxes);
 }
 
+bool IE_Imp_MsWord_97::_ensureInBlock()
+{
+
+  bool bret = true;
+
+  pf_Frag * pf = getDoc()->getLastFrag();
+  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+    {
+      pf = pf->getPrev();
+    }
+    if(pf && (pf->getType() == pf_Frag::PFT_Strux) )
+    {
+      pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+      if(pfs->getStruxType() != PTX_Block)
+      {
+        bret = _appendStrux(PTX_Block, NULL);
+	if (bret) m_bInPara = true;
+      }
+    }
+    else if( pf == NULL)
+    {
+      bret = _appendStrux(PTX_Block, NULL);
+      if (bret) m_bInPara = true;
+    }
+
+    return bret;
+}
+ 
 bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
 	if(pts == PTX_SectionFrame)

@@ -671,9 +671,9 @@ void FV_VisualInlineImage::drawCursor(PT_DocPosition newPos)
 
 	fp_Run * pRunLow = NULL;
 	fl_BlockLayout * pBlock = NULL;
-	UT_sint32 xLow, yLow;
-	UT_uint32 heightCaret;
-	UT_sint32 xCaret2, yCaret2;
+	double xLow, yLow;
+	double heightCaret;
+	double xCaret2, yCaret2;
 	bool bDirection=false;
 	bool bEOL=false;
 	m_pView->_findPositionCoords(newPos, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
@@ -701,8 +701,8 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 // OK first work out the locations in the document of the anchor and point
 //	
 	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
-	UT_sint32 x1,y1,x2,y2;
-	UT_uint32 height;
+	double x1,y1,x2,y2;
+	double height;
 	
 	bool bEOL = false;
 	bool bDirection;
@@ -731,7 +731,7 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	  m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
 	  return;
 	}
-	UT_sint32 xoff = 0, yoff = 0;
+	double xoff = 0, yoff = 0;
 	pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
 	// Sevior's infamous + 1....
 	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + getGraphics()->tlu(1);	// Set the image size in the image selection rect
@@ -1009,7 +1009,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	  fl_BlockLayout * pBlock = m_pView->getBlockAtPosition(pos);
 	  if(pBlock)
 	  {
-		UT_sint32 x1,x2,y1,y2,iHeight;
+		double x1,x2,y1,y2,iHeight;
 		bool bEOL = false;
 		bool bDir = false;
 		

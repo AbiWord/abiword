@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +43,46 @@ AP_Dialog_WordCount::AP_Dialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Di
 AP_Dialog_WordCount::~AP_Dialog_WordCount(void)
 {
 }
+
+void AP_Dialog_WordCount::localizeDialog(void)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	UT_UTF8String str;
+
+	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_WordCountTitle, str);
+	setWidgetLabel(DIALOG_WID, str); 
+
+ 	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Words, str);
+	setWidgetLabel(WORDS_LBL_WID, str); 
+	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Words_No_Notes, str);
+	setWidgetLabel(WORDSNF_LBL_WID, str);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Pages, str);
+	setWidgetLabel(PAGES_LBL_WID, str);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Characters_Sp, str);
+	setWidgetLabel(CHARSP_LBL_WID, str);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Characters_No, str);
+	setWidgetLabel(CHARNSP_LBL_WID, str);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Lines, str);
+	setWidgetLabel(LINES_LBL_WID, str);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Paragraphs, str);
+	setWidgetLabel(PARA_LBL_WID, str);
+}
+
+
+void AP_Dialog_WordCount::updateDialogData(void)
+{
+	setWidgetValueInt(WORDS_VAL_WID, m_count.word);
+	setWidgetValueInt(WORDSNF_VAL_WID, m_count.words_no_hdrftr);
+	setWidgetValueInt(PARA_VAL_WID, m_count.para);
+	setWidgetValueInt(CHARSP_VAL_WID, m_count.ch_sp);
+	setWidgetValueInt(CHARNSP_VAL_WID, m_count.ch_no);
+	setWidgetValueInt(LINES_VAL_WID, m_count.line);
+	setWidgetValueInt(PAGES_VAL_WID, m_count.page);
+
+	setWidgetLabel (TITLE_LBL_WID, getActiveFrame()->getTitle(60));
+}
+
+
 
 AP_Dialog_WordCount::tAnswer AP_Dialog_WordCount::getAnswer(void) const
 {

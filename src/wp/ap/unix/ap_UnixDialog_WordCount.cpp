@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +28,7 @@
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
+#include "xap_UnixWidget.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_WordCount.h"
@@ -61,12 +63,13 @@ AP_UnixDialog_WordCount::~AP_UnixDialog_WordCount(void)
 
 void  AP_UnixDialog_WordCount::activate(void)
 {
+	// FIXME move to XP
 	UT_ASSERT (m_windowMain);
 	
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+	setWidgetLabel(DIALOG_WID, m_WindowName);
 	setCountFromActiveFrame ();
-	_updateWindowData ();
+	updateDialogData();
 	gdk_window_raise (m_windowMain->window);
 }
 
@@ -74,18 +77,21 @@ void AP_UnixDialog_WordCount::s_response(GtkWidget * wid, gint id,
 										 AP_UnixDialog_WordCount * me )
 {
 	if (id == GTK_RESPONSE_CLOSE)
-		abiDestroyWidget(wid) ;
+	{
+		abiDestroyWidget(wid);
+	}
 }
 
 void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
 {
-	GtkWidget * mainWindow = _constructWindow();
-	UT_return_if_fail(mainWindow);
+	constructDialog();
+	UT_return_if_fail(m_windowMain);
 
-	_updateWindowData ();
+	updateDialogData();
 
-	abiSetupModelessDialog(GTK_DIALOG(mainWindow), pFrame, this, GTK_RESPONSE_CLOSE);
-	gtk_widget_show(mainWindow);
+	abiSetupModelessDialog(GTK_DIALOG(m_windowMain), pFrame, this, 
+						   GTK_RESPONSE_CLOSE);
+	gtk_widget_show(m_windowMain);
 
 	// Now construct the timer for auto-updating
 	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this,NULL);
@@ -106,7 +112,7 @@ void AP_UnixDialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 	{
 		pDialog->m_bAutoUpdate_happening_now = true;
 		pDialog->setCountFromActiveFrame ();
-		pDialog->_updateWindowData ();
+		pDialog->updateDialogData ();
 		pDialog->m_bAutoUpdate_happening_now = false;
 	}
 }        
@@ -125,11 +131,12 @@ void AP_UnixDialog_WordCount::event_WindowDelete(void)
 
 void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 {
+	// FIXME put that in XP code
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+	setWidgetLabel(DIALOG_WID, m_WindowName);
 	setCountFromActiveFrame();
-	_updateWindowData();
+	updateDialogData();
 }
 
 void AP_UnixDialog_WordCount::destroy(void)
@@ -147,7 +154,67 @@ void AP_UnixDialog_WordCount::destroy(void)
 
 /*****************************************************************/
 
-GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
+XAP_Widget *AP_UnixDialog_WordCount::getWidget(xap_widget_id wid)
+{
+	switch(wid) {
+	case DIALOG_WID:
+		return new XAP_UnixWidget(m_windowMain);
+		break;
+	case CLOSE_BTN_WID:
+		return new XAP_UnixWidget(NULL);
+		break;
+	case TITLE_LBL_WID:
+		return new XAP_UnixWidget(m_labelTitle);
+		break;
+	case PAGES_LBL_WID:
+		return new XAP_UnixWidget(m_labelLabelPgCount);
+		break;
+	case PAGES_VAL_WID:
+		return new XAP_UnixWidget(m_labelPgCount);
+		break;
+	case LINES_LBL_WID:
+		return new XAP_UnixWidget(m_labelLabelLCount);
+		break;
+	case LINES_VAL_WID:
+		return new XAP_UnixWidget(m_labelLCount);
+		break;
+	case CHARNSP_LBL_WID:
+		return new XAP_UnixWidget(m_labelLabelCNCount);
+		break;
+	case CHARNSP_VAL_WID:
+		return new XAP_UnixWidget(m_labelCNCount);
+		break;
+	case CHARSP_LBL_WID:
+		return new XAP_UnixWidget(m_labelLabelCCount);
+		break;
+	case CHARSP_VAL_WID:
+		return new XAP_UnixWidget(m_labelCCount);
+		break;
+	case PARA_LBL_WID:
+		return new XAP_UnixWidget(m_labelLabelPCount);
+		break;
+	case PARA_VAL_WID:
+		return new XAP_UnixWidget(m_labelPCount);
+		break;
+	case WORDS_LBL_WID:
+		return new XAP_UnixWidget(m_labelLabelWCount);
+		break;
+	case WORDS_VAL_WID:
+		return new XAP_UnixWidget(m_labelWCount);
+		break;
+	case WORDSNF_LBL_WID:
+		return new XAP_UnixWidget(m_labelWNFCount);
+		break;
+	case WORDSNF_VAL_WID:
+		return new XAP_UnixWidget(m_labelWNoFootnotesCount);
+		break;		
+	default:
+		UT_ASSERT(UT_NOT_REACHED);
+	}
+	return NULL;
+}
+
+void AP_UnixDialog_WordCount::constructDialog(void)
 {	
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
@@ -156,13 +223,14 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 
 	// load the dialog from the glade file
 	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
-		return NULL;
-	
-	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	UT_ASSERT(xml);
+	if (!xml) {
+		return;
+	}
 
 	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_WordCount");
 	m_labelWCount  = glade_xml_get_widget(xml, "lbWordsVal");
+	m_labelWNoFootnotesCount = glade_xml_get_widget(xml, "lbWordsNoFootnotesVal");
 	m_labelPCount  = glade_xml_get_widget(xml, "lbParagraphsVal");
 	m_labelCCount  = glade_xml_get_widget(xml, "lbCharactersSpacesVal");
 	m_labelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpacesVal");
@@ -170,25 +238,15 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	m_labelPgCount = glade_xml_get_widget(xml, "lbPagesVal");	
 	m_labelTitle   = glade_xml_get_widget(xml, "lbTitle");
 
-	GtkWidget * labelWCount  = glade_xml_get_widget(xml, "lbWords");
-	GtkWidget * labelPCount  = glade_xml_get_widget(xml, "lbParagraphs");
-	GtkWidget * labelCCount  = glade_xml_get_widget(xml, "lbCharactersSpaces");
-	GtkWidget * labelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpaces");
-	GtkWidget * labelLCount  = glade_xml_get_widget(xml, "lbLines");	
-	GtkWidget * labelPgCount = glade_xml_get_widget(xml, "lbPages");	
+	m_labelLabelWCount  = glade_xml_get_widget(xml, "lbWords");
+ 	m_labelWNFCount     = glade_xml_get_widget(xml ,"lbWordsNoFootnotes");
+	m_labelLabelPCount  = glade_xml_get_widget(xml, "lbParagraphs");
+	m_labelLabelCCount  = glade_xml_get_widget(xml, "lbCharactersSpaces");
+	m_labelLabelCNCount = glade_xml_get_widget(xml, "lbCharactersNoSpaces");
+	m_labelLabelLCount  = glade_xml_get_widget(xml, "lbLines");	
+	m_labelLabelPgCount = glade_xml_get_widget(xml, "lbPages");	
 
-	gtk_label_set_text (GTK_LABEL (labelWCount),
-						pSS->getValue(AP_STRING_ID_DLG_WordCount_Words));
-	gtk_label_set_text (GTK_LABEL (labelPCount),
-						pSS->getValue(AP_STRING_ID_DLG_WordCount_Paragraphs));
-	gtk_label_set_text (GTK_LABEL (labelCCount),
-						pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_Sp));
-	gtk_label_set_text (GTK_LABEL (labelCNCount),
-						pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_No));
-	gtk_label_set_text (GTK_LABEL (labelLCount),
-						pSS->getValue(AP_STRING_ID_DLG_WordCount_Lines));
-	gtk_label_set_text (GTK_LABEL (labelPgCount),
-						pSS->getValue(AP_STRING_ID_DLG_WordCount_Pages));
+	localizeDialog();
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_WindowName);
@@ -203,31 +261,5 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 					   reinterpret_cast<gpointer>(this));
 
 	gtk_widget_show_all (m_windowMain);
-	
-	return m_windowMain;
 }
 
-void AP_UnixDialog_WordCount::_updateWindowData(void)
-{
-	char tmp[60];
-
-	g_snprintf (tmp, sizeof(tmp), "%d", m_count.word);
-	gtk_label_set_text(GTK_LABEL(m_labelWCount), tmp);
-	
-	g_snprintf (tmp, sizeof(tmp),"%d", m_count.para);
-	gtk_label_set_text(GTK_LABEL(m_labelPCount), tmp);
-
-	g_snprintf (tmp, sizeof(tmp),"%d", m_count.ch_sp);
-	gtk_label_set_text(GTK_LABEL(m_labelCCount), tmp);
-
-	g_snprintf (tmp, sizeof(tmp),"%d", m_count.ch_no);
-	gtk_label_set_text(GTK_LABEL(m_labelCNCount), tmp);
-
-	g_snprintf (tmp, sizeof(tmp),"%d", m_count.line);
-	gtk_label_set_text(GTK_LABEL(m_labelLCount), tmp);
-
-	g_snprintf (tmp, sizeof(tmp),"%d", m_count.page);
-	gtk_label_set_text(GTK_LABEL(m_labelPgCount), tmp);
-
-	setLabelMarkup (m_labelTitle, getActiveFrame()->getTitle (60));
-}

@@ -213,17 +213,17 @@ then
 fi
 
 # Figure out which binary to run
-if [ -f \$ABISUITE_HOME/bin/AbiWord-2.2 ]
+if [ -f \$ABISUITE_HOME/bin/AbiWord-2.4 ]
 then
-    \$ABISUITE_HOME/bin/AbiWord-2.2 "\$@"
-#elif [ -f \$ABISUITE_HOME/bin/AbiWord-2.2 ]
+    \$ABISUITE_HOME/bin/AbiWord-2.4 "\$@"
+#elif [ -f \$ABISUITE_HOME/bin/AbiWord-2.4 ]
 #then
-#    \$ABISUITE_HOME/bin/AbiWord-2.2 "\$@"
+#    \$ABISUITE_HOME/bin/AbiWord-2.4 "\$@"
 else
     $ECHO "Error: can't find AbiWord executables:"
-    $ECHO "    \$ABISUITE_HOME/bin/AbiWord-2.2"
+    $ECHO "    \$ABISUITE_HOME/bin/AbiWord-2.4"
 #    $ECHO "    -or-"
-#    $ECHO "    \$ABISUITE_HOME/bin/AbiWord-2.2"
+#    $ECHO "    \$ABISUITE_HOME/bin/AbiWord-2.4"
     $ECHO ""
     exit
 fi

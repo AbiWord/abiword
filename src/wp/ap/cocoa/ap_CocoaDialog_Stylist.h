@@ -68,7 +68,7 @@ private:
 	AP_CocoaDialog_Stylist* _xap;
 }
 - (void)refresh;
-- (void)selectStyleNode:(StyleNode*)node;
+- (void)selectStyleNode:(StyleNode *)childNode childOf:(StyleNode *)parentNode;
 - (IBAction)applyAction:(id)sender;
 - (IBAction)outlineAction:(id)sender;
 @end

@@ -193,6 +193,10 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 	UT_String propBuffer;
 	double wInch = 0.0f;
 	double hInch = 0.0f;
+    double cropt = 0.0f;
+	double cropb = 0.0f;
+	double cropl = 0.0f;
+	double cropr = 0.0f;
 	bool resize = false;
 	if (!bUseInsertNotAppend())
 	{
@@ -227,13 +231,22 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			break;
 		}
 
+		if ( imgProps.bCrop )
+		{
+			cropt = imgProps.cropt / 1440.0f;
+			cropb = imgProps.cropb / 1440.0f;
+			cropl = imgProps.cropl / 1440.0f;
+			cropr = imgProps.cropr / 1440.0f;
+			resize = true;
+		}
+	  
 		if (resize) 
 		{
 			UT_LocaleTransactor(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
-			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
-							  wInch, hInch);
-			xxx_UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
+			UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
+							  wInch, hInch, cropt, cropb, cropl, cropr);
+			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
 		const XML_Char* propsArray[5];
@@ -337,8 +350,14 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		case RTFProps_ImageProps::ipstScale:
 			UT_DEBUGMSG (("Scale: x=%d, y=%d, w=%d, h=%d\n", imgProps.scaleX, imgProps.scaleY, imgProps.width, imgProps.height));
 			resize = true;
-			wInch = ((static_cast<double>(imgProps.scaleX) / 100.0f) * imgProps.width);
-			hInch = ((static_cast<double>(imgProps.scaleY) / 100.0f) * imgProps.height);
+			if ((imgProps.wGoal != 0) && (imgProps.hGoal != 0)) {
+				// want image scaled against the w&h specified, not the image's natural size
+				wInch = ((static_cast<double>(imgProps.scaleX) / 100.0f) * imgProps.wGoal/ 1440.0f);
+				hInch = ((static_cast<double>(imgProps.scaleY) / 100.0f) * imgProps.hGoal/ 1440.0f);
+			} else {
+				wInch = ((static_cast<double>(imgProps.scaleX) / 100.0f) * (imgProps.width));
+				hInch = ((static_cast<double>(imgProps.scaleY) / 100.0f) * (imgProps.height));
+			}
 			break;
 		default:
 			resize = false;
@@ -449,26 +468,34 @@ bool IE_Imp_RTF::HandlePicture()
 				}
 				break;
 			case RTF_KW_picscalex:
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
+				if ((parameterUsed) && (parameter != 100))       // scale the image if one of these two keywords appear
 				{
-					if ((parameterUsed) && (parameter != 100))
-					{
-						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
-						imageProps.scaleX = static_cast<unsigned short>(parameter);
-					}
+					imageProps.sizeType = RTFProps_ImageProps::ipstScale;
+					imageProps.scaleX = static_cast<unsigned short>(parameter);
 				}
 				break;
 			case RTF_KW_picscaley:
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale))
+				if ((parameterUsed) && (parameter != 100))
 				{
-					if ((parameterUsed) && (parameter != 100))
-					{
-						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
-						imageProps.scaleY = static_cast<unsigned short>(parameter);
-					}
+					imageProps.sizeType = RTFProps_ImageProps::ipstScale;
+					imageProps.scaleY = static_cast<unsigned short>(parameter);
 				}
+				break;
+			case RTF_KW_piccropt:
+				imageProps.cropt = parameter;
+				imageProps.bCrop = true;
+				break;
+			case RTF_KW_piccropb:
+				imageProps.cropb = parameter;
+				imageProps.bCrop = true;
+				break;
+			case RTF_KW_piccropl:
+				imageProps.cropl = parameter;
+				imageProps.bCrop = true;
+				break;
+			case RTF_KW_piccropr:
+				imageProps.cropr = parameter;
+				imageProps.bCrop = true;
 				break;
 			case RTF_KW_bin:
 				/* this code is completely broken. 

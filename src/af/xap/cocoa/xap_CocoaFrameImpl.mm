@@ -43,6 +43,8 @@
 #import "xap_CocoaFrameImpl.h"
 #import "xap_CocoaTextView.h"
 #import "xap_CocoaTimer.h"
+#import "xap_CocoaToolbarWindow.h"
+#import "xap_CocoaToolPalette.h"
 #import "xap_FrameImpl.h"
 #import "xap_Frame.h"
 
@@ -197,6 +199,15 @@ void XAP_CocoaFrameImpl::_initialize()
 	}
 }
 
+void XAP_CocoaFrameImpl::notifyViewChanged(AV_View * pView) // called from XAP_Frame::setView(pView)
+{
+	if (XAP_Frame * pFrame = getFrame())
+		{
+			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+			[pController resetCurrentView:pView inFrame:pFrame];
+		}
+}
+
 UT_sint32 XAP_CocoaFrameImpl::_setInputMode(const char * szName)
 {
 	UT_sint32 result = XAP_App::getApp()->setInputMode(szName);
@@ -237,6 +248,9 @@ void XAP_CocoaFrameImpl::_nullUpdate() const
 	[[m_frameController window] displayIfNeeded];
 }
 
+static UT_uint32	s_iNewFrameOffsetX = 0;
+static UT_uint32	s_iNewFrameOffsetY = 0;
+
 void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
@@ -273,65 +287,58 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	m_pCocoaApp->getGeometry(&x, &y, &width, &height, &f);
 
 	// Set the size if requested
+	NSSize userSize;
+	// userSize.width  = (width  < 300.0f) ? 300.0f : static_cast<float>(width);
+	// userSize.height = (height < 300.0f) ? 300.0f : static_cast<float>(height);
 
 	if (f & XAP_CocoaApp::GEOMETRY_FLAG_SIZE)
 	{
-		NSRect windowFrame;
 		NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
 
-		windowFrame.size.width = UT_MIN(screenFrame.size.width - 30, 813);
-		windowFrame.size.height = UT_MIN(screenFrame.size.height, 836);
+		screenFrame.size.height -= [[XAP_CocoaToolbarWindow_Controller sharedToolbar] height];
+
+		if ([XAP_CocoaToolPalette instantiated])
+		{
+			NSWindow * palettePanel = [[XAP_CocoaToolPalette instance:theWindow] window];
+			if ([palettePanel isVisible])
+			{
+				NSRect paletteFrame = [palettePanel frame];
+				if (paletteFrame.origin.x < screenFrame.origin.x + 10.0f) // panel at left
+				{
+					screenFrame.origin.x   += paletteFrame.size.width;
+					screenFrame.size.width -= paletteFrame.size.width;
+				}
+				else if (paletteFrame.origin.x + paletteFrame.size.width > screenFrame.origin.x + screenFrame.size.width - 10.0f) // panel at right
+				{
+					screenFrame.size.width -= paletteFrame.size.width;
+				}
+			}
+		}
+
+		userSize.height = screenFrame.size.height;
+		userSize.width  = rintf(screenFrame.size.height * 0.9f);
+
+		if (m_pCocoaApp->getFrameCount() == 1)
+		{
+			s_iNewFrameOffsetX = 0;
+			s_iNewFrameOffsetY = 0;
+		}
+
+		screenFrame.origin.x    += s_iNewFrameOffsetX;
+		screenFrame.size.height -= s_iNewFrameOffsetY;
+
+		s_iNewFrameOffsetX = (s_iNewFrameOffsetX <= 128) ? (s_iNewFrameOffsetX + 32) : 0;
+		s_iNewFrameOffsetY = (s_iNewFrameOffsetY <  128) ? (s_iNewFrameOffsetY + 32) : 0;
+
+		NSRect windowFrame;
+		windowFrame.size.width  = UT_MIN(screenFrame.size.width,  userSize.width ); // 813);
+		windowFrame.size.height = UT_MIN(screenFrame.size.height, userSize.height); // 836);
 		windowFrame.origin.x = screenFrame.origin.x;
-		windowFrame.origin.y = screenFrame.size.height - windowFrame.size.height;
+		windowFrame.origin.y = screenFrame.origin.y + screenFrame.size.height - windowFrame.size.height;
+
 		[theWindow setFrame:windowFrame display:YES];
 	}
-
-
-	// Because we're clever, we only honor this flag when we
-	// are the first (well, only) top level frame available.
-	// This is so the user's window manager can find better
-	// places for new windows, instead of having our windows
-	// pile upon each other.
-
-#if 0
-	if (m_pCocoaApp->getFrameCount() <= 1)
-		if (f & XAP_CocoaApp::GEOMETRY_FLAG_POS)
-			gtk_widget_set_uposition(m_wTopLevelWindow,
-									 x,
-									 y);
-#endif
-
-	return;
 }
-
-/*!
- * This code is used by the dynamic menu API to rebuild the menus after a
- * a change in the menu structure.
- */
-void XAP_CocoaFrameImpl::rebuildMenus(void)
-{
-	UT_ASSERT_NOT_REACHED();
-#if 0
-//
-// Destroy the old menu bar
-//
-	m_pCocoaMenu->destroy();
-//
-// Delete the old class
-//
-	DELETEP(m_pCocoaMenu);
-//
-// Build a new one.
-//
-	m_pCocoaMenu = new EV_CocoaMenuBar(m_pCocoaApp,(AP_CocoaFrame*)getFrame(),
-									 m_szMenuLayoutName,
-									 m_szMenuLabelSetName);
-	UT_ASSERT(m_pCocoaMenu);
-	bool bResult = m_pCocoaMenu->rebuildMenuBar();
-	UT_ASSERT(bResult);
-#endif
-}
-
 
 /*!
  * This code is used by the dynamic toolbar API to rebuild a toolbar after a
@@ -390,6 +397,10 @@ bool XAP_CocoaFrameImpl::_show()
 	UT_DEBUGMSG (("XAP_CocoaFrame::show()\n"));
 	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
 	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_FrameNeedToolbar object:m_frameController];
+
+	XAP_CocoaTextView * textView = (XAP_CocoaTextView *) [m_frameController textView];
+	[textView hasBeenResized:nil];
+
 	return true;
 }
 
@@ -419,9 +430,13 @@ bool XAP_CocoaFrameImpl::_updateTitle()
 	UT_ASSERT (theWindow);
 	if (theWindow)
 		{
-			const char * szTitle = getFrame()->getNonDecoratedTitle();
+			const char * szTitle    = getFrame()->getNonDecoratedTitle();
+			const char * szFilename = getFrame()->getFilename();
 
-			[theWindow setTitleWithRepresentedFilename:[NSString stringWithUTF8String:szTitle]];
+			[theWindow setTitle:[NSString stringWithUTF8String:szTitle]];
+			if (szFilename)
+				[theWindow setRepresentedFilename:[NSString stringWithUTF8String:szFilename]];
+
 			[theWindow setDocumentEdited:(getFrame()->isDirty() ? YES : NO)];
 		}
 	return true;
@@ -571,8 +586,6 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	XAP_Frame * pFrame = m_frame->getFrame ();
 	AV_View * pView = pFrame->getCurrentView();
 
-	XAP_App::getApp()->rememberFocussedFrame (static_cast<void *>(pFrame));
-
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 	[pController setCurrentView:pView inFrame:pFrame];
 
@@ -590,10 +603,6 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 - (void)windowDidResignKey:(NSNotification *)aNotification
 {
 	UT_DEBUGMSG(("windowDidResignKey: '%s'\n", [[[self window] title] UTF8String]));
-
-	XAP_Frame * frame = m_frame->getFrame ();
-	XAP_App * App = frame->getApp ();
-	App->clearLastFocussedFrame ();
 
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 	[pController setCurrentView:0 inFrame:0];
@@ -662,6 +671,28 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 		}
 	}
 	return array;
+}
+
+- (NSString *)getToolbarSummaryID
+{
+	UT_UTF8String SummaryID;
+
+	const UT_GenericVector<EV_Toolbar *> & toolbars = m_frame->_getToolbars();
+
+	UT_uint32 count = toolbars.getItemCount();
+
+	for (UT_uint32 i = 0; i < count; i++) {
+		const EV_CocoaToolbar * tlbr = static_cast<const EV_CocoaToolbar *>(toolbars[i]);
+		UT_ASSERT(tlbr);
+
+		if (!tlbr->isHidden()) {
+			SummaryID += "+";
+		}
+		else {
+			SummaryID += "-";
+		}
+	}
+	return [NSString stringWithUTF8String:(SummaryID.utf8_str())];
 }
 
 @end

@@ -20,12 +20,12 @@ dnl 02111-1307, USA.
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.50)
-AC_INIT([AbiSuite],[2.2],[http://www.abisource.com/])
+AC_INIT([AbiSuite],[2.4],[http://www.abisource.com/])
 AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.2,2.2.2)
+AM_INIT_AUTOMAKE(AbiSuite-2.4,2.3.0)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -399,6 +399,7 @@ AC_SUBST(PEERS)
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
+ src/af/tf/GNUmakefile
  src/af/ev/GNUmakefile
  src/af/ev/xp/GNUmakefile
  src/af/ev/cocoa/GNUmakefile
@@ -411,13 +412,16 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/gr/qnx/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
+ src/af/util/xp/t/GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/util/qnx/GNUmakefile
+ src/af/tf/xp/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
  src/af/xap/cocoa/GNUmakefile
  src/af/xap/qnx/GNUmakefile
  src/af/xap/unix/GNUmakefile
+ src/af/xap/unix/t/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
@@ -429,6 +433,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/text/fmt/xp/GNUmakefile
  src/text/ptbl/GNUmakefile
  src/text/ptbl/xp/GNUmakefile
+ src/text/ptbl/xp/t/GNUmakefile
  src/wp/GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
@@ -454,6 +459,9 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
  src/wp/main/qnx/GNUmakefile
  src/wp/main/unix/GNUmakefile
+ src/wp/test/GNUmakefile
+ src/wp/test/xp/GNUmakefile
+ src/wp/test/unix/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile

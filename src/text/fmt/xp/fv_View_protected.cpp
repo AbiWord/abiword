@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -2939,6 +2940,8 @@ bool FV_View::_insertField(const char* szName,
 	{
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
+
+		insertParaBreakIfNeededAtPos(getPoint());
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props,&pField);
 		if(pField != NULL)
 		{
@@ -2948,6 +2951,7 @@ bool FV_View::_insertField(const char* szName,
 	}
 	else
 	{
+		insertParaBreakIfNeededAtPos(getPoint());
 		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
 		if(pField != NULL)
 		{
@@ -3957,12 +3961,16 @@ void FV_View::_fixInsertionPointCoords()
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
-	if(pBlock && pBlock->getSquiggles()->get(getPoint() - pBlock->getPosition()))
+	if(pBlock && pBlock->getSpellSquiggles()->get(getPoint() - pBlock->getPosition()))
 	{
 		if(m_prevMouseContext == EV_EMC_TEXT)
 		{
 			m_prevMouseContext = EV_EMC_MISSPELLEDTEXT;
 		}
+	}
+	if(pBlock)
+	{
+		m_pLayout->triggerPendingBlock(pBlock);
 	}
 }
 
@@ -5192,7 +5200,11 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	}
 	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorSquiggle);
+		UT_parseColor(pszTmpColor, pView->m_colorSpellSquiggle);
+	}
+	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForGrammarSquiggle), &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorGrammarSquiggle);
 	}
 	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
@@ -5483,12 +5495,16 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 		if(pLR)
 			AttrProp_Before.setProperty("lang", pLR->m_szLangCode);
-		
+		insertParaBreakIfNeededAtPos(getPoint());
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
 	else
 	{
+		if(m_FrameEdit.isActive())
+		{
+			m_FrameEdit.setPointInside();
+		}
 		bool bOK = true;
 		if(!isPointLegal() && bOK)
 		{
@@ -5504,10 +5520,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			bOK = _charMotion(false,1);
 		}
 		if(posEnd-1 == getPoint() && !isPointLegal())
-		{
-			bOK = _charMotion(false,1);
-		}
-		if(posEnd == getPoint() && m_pDoc->isTOCAtPos(getPoint()-2))
 		{
 			bOK = _charMotion(false,1);
 		}
@@ -5573,7 +5585,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 				AP.setProperty("lang", pLR->m_szLangCode);
 				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
 			}
-
+			insertParaBreakIfNeededAtPos(getPoint());
 			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
 
 			if(!bResult)

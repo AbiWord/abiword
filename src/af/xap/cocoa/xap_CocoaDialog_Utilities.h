@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-2003 Hubert Figuiere
+ * Copyright (C) 2002-2005 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@
 
 class XAP_Dialog;
 
+void SetNSControlLabel (id control, const UT_UTF8String &label);
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId);
 NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId);
 void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag);

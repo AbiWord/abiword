@@ -384,6 +384,7 @@ void fp_Line::setMaxWidth(double iMaxWidth)
 		iMaxWidth = 60; // FIXME: THIS SHOULD NOT EXIST, AND CERTAINLY NOT IN NON-LAYOUT UNITS! - MARCM
 	}
 	m_iMaxWidth = iMaxWidth;
+	xxx_UT_DEBUGMSG(("Line %x MaxWidth %d \n",this,iMaxWidth));
 	m_iClearToPos = iMaxWidth;
 	m_iClearLeftOffset = getDescent();
 }
@@ -2522,6 +2523,7 @@ void fp_Line::setX(double iX, bool bDontClearIfNeeded)
 	{
 		clearScreen();
 	}
+	xxx_UT_DEBUGMSG(("Line %x X %d \n",this,iX));
 	m_iX = iX;
 }
 

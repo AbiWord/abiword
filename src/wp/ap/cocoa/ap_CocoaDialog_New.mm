@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2005 Francis Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -86,10 +89,6 @@ void AP_CocoaDialog_New::event_Ok ()
 	if ([m_dlg existingBtnState])
 	{
 		setOpenType(AP_Dialog_New::open_Existing);
-	}
-	else if ([m_dlg emptyBtnState])
-	{
-		setOpenType(AP_Dialog_New::open_New);
 	}
 	else
 	{
@@ -209,9 +208,8 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 	LocalizeControl(_chooseFileBtn, pSS, AP_STRING_ID_DLG_NEW_Choose);
 	LocalizeControl(_createNewBtn, pSS, AP_STRING_ID_DLG_NEW_Create);
-	LocalizeControl(_startEmptyBtn, pSS, AP_STRING_ID_DLG_NEW_StartEmpty);
 	LocalizeControl(_openBtn, pSS, AP_STRING_ID_DLG_NEW_Open);
-	[self synchronizeGUI:_startEmptyBtn];	// TODO check what is the default
+	[self synchronizeGUI:_createNewBtn];	// TODO check what is the default
 	
 	_dataSource = [[XAP_StringListDataSource alloc] init];
 	NSMutableArray *templateDirs = [[NSMutableArray alloc] init];
@@ -246,7 +244,7 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 	if ([_templateList selectedRow] < 0) // I don't think this happens
-		[self synchronizeGUI:_startEmptyBtn];
+		[self synchronizeGUI:_openBtn];
 	else
 		[self synchronizeGUI:_createNewBtn];
 }
@@ -273,7 +271,7 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 - (void)synchronizeGUI:(NSControl*)control
 {
-	enum { NONE, NEW, OPEN, EMPTY } selected;
+	enum { NONE, NEW, OPEN } selected;
 	
 	if (control == _createNewBtn) {
 		selected = NEW;
@@ -281,15 +279,11 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	else if (control == _openBtn) {
 		selected = OPEN;
 	}
-	else if (control == _startEmptyBtn) {
-		selected = EMPTY;
-	}
 	else {
 		selected = NONE;
 	}
 	switch (selected) {
 	case NEW:
-		[_startEmptyBtn setState:NSOffState];
 		[_createNewBtn setState:NSOnState];
 		[_templateList setEnabled:YES];
 		[_openBtn setState:NSOffState];
@@ -297,20 +291,11 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 		[_chooseFileBtn setEnabled:NO];
 		break;
 	case OPEN:
-		[_startEmptyBtn setState:NSOffState];
 		[_createNewBtn setState:NSOffState];
 		[_templateList setEnabled:NO];
 		[_openBtn setState:NSOnState];
 		[_documentNameData setEnabled:YES];
 		[_chooseFileBtn setEnabled:YES];
-		break;
-	case EMPTY:
-		[_startEmptyBtn setState:NSOnState];
-		[_createNewBtn setState:NSOffState];
-		[_templateList setEnabled:NO];
-		[_openBtn setState:NSOffState];
-		[_documentNameData setEnabled:NO];
-		[_chooseFileBtn setEnabled:NO];
 		break;
 	default:
 		break;
@@ -348,11 +333,6 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 		}
 	}
 	return path;
-}
-
-- (BOOL)emptyBtnState
-{
-	return ([_startEmptyBtn state] == NSOnState);
 }
 
 - (void)setFileName:(NSString*)name

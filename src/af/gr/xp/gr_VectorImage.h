@@ -40,11 +40,14 @@ public:
    	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec)
+	virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec)
 		{ UT_ASSERT_NOT_REACHED() ; return NULL; }
 
    	virtual GRType		getType() const { return GRT_Vector; }
    	virtual bool		render(GR_Graphics *pGR, double xDest, double yDest);
+	virtual bool            hasAlpha(void) const;
+	virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y);
+
 
 private:
    	bool m_status;

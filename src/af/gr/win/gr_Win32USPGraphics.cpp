@@ -610,18 +610,25 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont, bool bZoomMe)
 	else if (bZoomMe)
 	{
 		// this branch gets only executed for screen draw
+		// Win32 GDI uses a bigger font size for screen operations than the user request;
+		// this is a real pain as it makes doing WYSIWIG near impossible. One of the
+		// consequences of this is that if we do layout using printer metrics (in order to
+		// achieve true WYSIWIG), the letters, particularly, the descending parts, can be
+		// drawn outwith the line rectangle (and so leave pixel dirt, etc.)
+		// In order to avoid that, we actually request a slightly smaller font from the
+		// system if the physical pixel size drops below certain (heristically determined) value.
 		zoom = getZoomPercentage();
 		double dZoom = (double)zoom;
-		if(zoom < 100)
+		double dSizeFactor = dZoom * (double)pFont->getUnscaledHeight()/(double)getDeviceResolution();
+		// 10 pt font on 96dpi is 13px
+		if(dSizeFactor <= 14.0)
 		{
-			// we want to use slightly smaller font in order to counter the GDI's habit of
-			// using bigger fonts which causes text to be drawn outwith its rectangle
-			// (8216, et al.)
 			// The numerical constant is heuristic
-			dZoom /= 1.05;
+			// 2% decrease on a 96 dpi screen works out 1 pixel adjustment
+			dZoom /= 1.02;
 		}
 		
-		pixels = (UT_uint32)((double)pFont->getUnscaledHeight()* dZoom/100.0 + 0.5) ;
+		pixels = (UT_uint32)((double)pFont->getUnscaledHeight()* dZoom/100.0) ;
 	}
 	else if(getPrintDC())
 	{
@@ -913,9 +920,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			{
 				delete [] pGlyphs;
 				delete [] pVa;
-				delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;
-				delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;
-				delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;
+				if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+				if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+				if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 			}
 
 			bCopyGlyphs = true; // glyphs not in RI
@@ -964,6 +971,10 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		RI->m_iIndicesSize = iGlyphBuffSize;
 		RI->m_pIndices = pGlyphs;
 		RI->m_pVisAttr = pVa;
+
+		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 	}
 	else if(!bDeleteGlyphs && bCopyGlyphs)
 	{
@@ -981,9 +992,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			// we also have to delete the other related arrays we do
 			// not need just yet to ensure that the size of all the
 			// arrays will remain in sync
-			delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;
-			delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;
-			delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;
+			if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+			if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+			if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 			
 			UT_return_val_if_fail(RI->m_pIndices && RI->m_pVisAttr, false);
 		
@@ -998,6 +1009,10 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// glyphs are already in the RI, just need to set the correct
 		// size for the buffers
 		RI->m_iIndicesSize = iGlyphBuffSize;
+
+		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 	}
 	else
 	{
@@ -1058,11 +1073,10 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(GR_RenderInfo & ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
-
-	UT_uint32 iZoom = getZoomPercentage();
 	GR_Win32USPFont * pFont = (GR_Win32USPFont*)RI.m_pFont;
 
-	if(iZoom != RI.m_iZoom || pFont->getPrintDC() != getPrintDC() || RI.m_hdc != getPrintDC())
+	// NB -- do not have to check for zoom as the internal metrics is always for 100%
+	if(pFont->getPrintDC() != getPrintDC() || RI.m_hdc != getPrintDC())
 	{
 		measureRenderedCharWidths(ri);
 	}
@@ -1142,10 +1156,10 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 		return;
 	}
 
-
-	if(iZoom != RI.m_iZoom || pFont->getPrintDC() != getPrintDC())
+	// NB -- do not have to check for zoom as the internal metrics is always for 100%
+	if(pFont->getPrintDC() != getPrintDC())
 	{
-		// this happens when we change zoom without any other changes
+		// this happens when we change printer
 		// we need to recalculate the widths ...
 		measureRenderedCharWidths(ri);
 	}
@@ -1179,7 +1193,14 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 		}
 	}
 
- 	// RI.m_iZoom  = iZoom;
+	// there are two situations in which we need to recalculate the static positioning
+	// buffers, (a) the buffer is not ours, or, (b) we have last calculated its contents
+	// at different zomm level. Furthermore, if we detect a zoom change, we need to
+	// invalidate the screen ascent value for the current font
+	if(RI.m_iZoom != iZoom)
+		pFont->setScreenAscent(0);
+	
+	RI.m_iZoom = iZoom;
 	RI.s_pOwnerDraw = &ri;
 }
 
@@ -1195,8 +1216,8 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	UT_return_if_fail(pItem && pFont);
 
 	UT_sint32 xoff = tdu(RI.m_xoff * m_fXYRatio);
-	UT_sint32 yoff = tdu(RI.m_yoff);
 
+	// we will deal with yoff later
 	if(RI.m_iLength == 0)
 		return;
 	
@@ -1240,6 +1261,26 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	// need to make sure that the HDC has the correct font set
 	// we scale this font
 	_setupFontOnDC(pFont, true);
+
+	// Now deal with y offset: RI.m_yoff is the top of the run, based on the ascent of the
+	// font; if we are drawing on screen and using printer metrics to do the layout, the
+	// ascent of the screen font can be smaller/greater and so we need to adjust the yoff
+	// accordingly
+	UT_sint32 iAscentScreen = pFont->getScreenAscent();
+
+	if(!iAscentScreen)
+	{
+		TEXTMETRIC tm = { 0 };
+		GetTextMetrics(m_hdc, &tm);
+		iAscentScreen = (UT_sint32)((double)tm.tmAscent*(double)getResolution()*100.0/
+									((double)getDeviceResolution()*(double)getZoomPercentage()));
+		
+		pFont->setScreenAscent(iAscentScreen);
+	}
+
+	UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent * getResolution() / getDeviceResolution();
+	
+	UT_sint32 yoff = tdu(RI.m_yoff + iAscentPrint - iAscentScreen);
 	
 	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : NULL;
 	
@@ -1394,6 +1435,11 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		// we remember the hdc for which we measured so we can remeasure when hdc changes
 		RI.m_hdc = hdc;
 	}
+	else
+	{
+		RI.m_hdc = pFont->getPrintDC();
+	}
+	
 
 	
 	// need to disapble shaping if call to ScriptShape failed ...
@@ -1423,7 +1469,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	pItem->m_si.a.eScript = eScript;
 
 	// remember the zoom at which we calculated this ...
-	RI.m_iZoom = iZoom;
+	// RI.m_iZoom = iZoom;
 
 	if(RI.s_pOwnerDraw == & ri)
 	{
@@ -2325,10 +2371,9 @@ GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints, HDC hdc
 GR_Win32USPFont::GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 	: GR_Win32Font(lf, fPoints, hdc, printHDC),
 	  m_sc(NULL),
-	  m_printHDC(NULL)
+	  m_printHDC(NULL),
+	  m_iScreenAscent(0)
 {
-	// we need to get text metrix for the font afresh
-	// GetTextMetrics(hdc, m_tm);
 };
 
 void GR_Win32USPFont::_clearAnyCachedInfo()

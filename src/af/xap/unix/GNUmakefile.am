@@ -1,5 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
+## Copyright (C) 2005 Hubert Figuiere
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -19,10 +20,13 @@
 include $(top_srcdir)/includes.mk
 
 if WITH_GNOME
-SUBDIRS = gnome
+SUBDIRS = gnome t
+else
+SUBDIRS = t
 endif
 
 INCLUDES= -UVERSION @GTK_CFLAGS@ @GMODULE_CFLAGS@ \
+	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES)
 
 noinst_LIBRARIES = libXap_unix.a
@@ -77,8 +81,8 @@ libXap_unix_a_SOURCES=\
 	xap_UnixPSGraphics.cpp			\
 	xap_UnixEncodingManager.cpp		\
 	xap_UnixFrameImpl.cpp			\
-	xap_UnixGtkColorPicker.cpp              \
 	xap_UnixTableWidget.cpp \
 	xap_UnixDlg_ListDocuments.cpp \
 	xap_UnixDlg_History.cpp \
-	xap_UnixDlg_DocComparison.cpp
+	xap_UnixDlg_DocComparison.cpp \
+	xap_UnixWidget.cpp

@@ -468,9 +468,9 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 
 /*!
  * Control Method for the updating loader.
-\params bool bStartStop true to start the updating loader, flase to stop it
+\param bool bStartStop true to start the updating loader, flase to stop it
              after the document has loaded.
-\params XAP_Frame * pFrame Pointer to the new frame being loaded.
+\param XAP_Frame * pFrame Pointer to the new frame being loaded.
 */
 static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 {

@@ -54,7 +54,8 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 	m_pDocument(pDocument),
     m_atomicGlobCount(0),
 	m_bDoingTheDo(false),
-	m_bDoNotTweakPosition(false)
+	m_bDoNotTweakPosition(false),
+	m_iXID(0)
 {
 
 	setPieceTableState(PTS_Create);
@@ -1126,7 +1127,7 @@ bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
 {
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangePoint,
-							  dpos, 0);
+							  dpos, 0,0);
 	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
@@ -1134,6 +1135,27 @@ bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
 
 	return true;
 }
+
+/*!
+    This function crawls the entire PT and assignes new xid to any fragment that should
+    have one and does not. It is primarily to be used by exporters (accessed throught
+    PD_Document wrapper)
+*/
+void pt_PieceTable::fixMissingXIDs()
+{
+	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	{
+		if(!pf->getXID() && pf->usesXID())
+			pf->setXID(getXID());
+	}
+}
+
+UT_uint32 pt_PieceTable::getXID()
+{
+	++m_iXID;
+	return m_iXID;
+}
+
 
 
 

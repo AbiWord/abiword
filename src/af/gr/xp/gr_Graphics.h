@@ -105,7 +105,14 @@ class ABI_EXPORT GR_Font
 	   NB: it is essential that this function is fast
 	*/
 	virtual bool doesGlyphExist(UT_UCS4Char g);
+//
+// UT_Rect of glyph in Logical units.
+// rec.left = bearing Left (distance from origin to start)
+// rec.width = width of the glyph
+// rec.top = distance from the origin to the top of the glyph
+// rec.height = total height of the glyph
 
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) const = 0;
 	static  bool s_doesGlyphExist(UT_UCS4Char g, void *instance)
 	{
 		UT_return_val_if_fail(instance, false);
@@ -492,7 +499,7 @@ class ABI_EXPORT GR_Graphics
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
 
 	virtual void      setZoomPercentage(UT_uint32 iZoom);
-	UT_uint32         getZoomPercentage(void) const;
+	inline UT_uint32  getZoomPercentage(void) const {return m_iZoomPercentage; }
 	static UT_uint32  getResolution(void) { return UT_LAYOUT_RESOLUTION; }
 	inline void       setPortrait (bool b) {m_bIsPortrait = b;}
 	inline bool       isPortrait (void) const {return m_bIsPortrait;}

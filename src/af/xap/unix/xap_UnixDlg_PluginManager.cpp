@@ -50,17 +50,6 @@ static void _errorMessage (XAP_Frame * pFrame, XAP_String_Id id)
 							XAP_Dialog_MessageBox::a_OK);
 }
 
-static void selectFirstEntry(GtkWidget * list)
-{
-	GtkTreePath* path = gtk_tree_path_new_first();
-	gtk_tree_view_set_cursor(GTK_TREE_VIEW(list),
-							 path, 
-							 gtk_tree_view_get_column (GTK_TREE_VIEW(list), 0), 
-							 FALSE);
-	gtk_tree_path_free (path);
-	
-	gtk_widget_grab_focus (list);
-}
 
 /*****************************************************************/
 
@@ -91,7 +80,6 @@ void XAP_UnixDialog_PluginManager::event_DeactivateAll ()
 	GtkTreeModel * model;
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_list));
 	gtk_list_store_clear(GTK_LIST_STORE (model));
-	_refresh ();
 }
 
 void XAP_UnixDialog_PluginManager::event_Deactivate ()
@@ -127,7 +115,7 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 			if (deactivatePlugin (pModule))
 			{
 				// worked
-				_refresh ();
+				_updatePluginList ();
 			}
 			else
 			{
@@ -164,7 +152,11 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	// set the intial plugin directory to the user-local plugin directory
 	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
 	UT_String pluginDir (XAP_App::getApp()->getUserPrivateDirectory());
-	pluginDir += "/AbiWord-2.2/plugins/";
+	pluginDir += "/";
+	pluginDir += ABIWORD_APP_NAME;
+	pluginDir += "-";
+	pluginDir += PACKAGE_VERSION;
+	pluginDir += "/plugins/";
 	pDialog->setCurrentPathname (pluginDir.c_str());
 	pDialog->setSuggestFilename(false);
 	
@@ -176,10 +168,8 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1,
 																 sizeof(IEFileType)));
 	
-	// we probably shouldn't hardcode this
-	// HP-UX uses .sl, for instance
-	szDescList[0] = "AbiWord Plugin (.so)";
-	szSuffixList[0] = "*.so";
+	szDescList[0] = "AbiWord Plugin (.G_MODULE_SUFFIX)";
+	szSuffixList[0] = "*.G_MODULE_SUFFIX";
 	nTypeList[0] = static_cast<IEFileType>(1);
 	
 	pDialog->setFileTypeList(szDescList, szSuffixList, 
@@ -200,7 +190,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 			if (activatePlugin (szResultPathname))
 			{
 				// worked!
-				_refresh ();
+				_updatePluginList ();
 			}
 			else
 			{
@@ -220,20 +210,30 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 
 /*****************************************************************/
 
-void XAP_UnixDialog_PluginManager::setPluginList()
+/*!
+* Update the list of loaded plugins.
+*/
+void XAP_UnixDialog_PluginManager::_updatePluginList ()
 {
 	const UT_GenericVector<XAP_Module*> * pVec = XAP_ModuleManager::instance().enumModules ();
 	
-	GtkListStore *model;
-	GtkTreeIter iter;
-	
-	model = gtk_list_store_new (1, 
-							    G_TYPE_STRING
-	                            );
+	GtkTreeModel *tm = gtk_tree_view_get_model (GTK_TREE_VIEW (m_list));
+	GtkListStore *model = NULL;
+	if (tm != NULL) {
+		model = GTK_LIST_STORE (tm);
+		// detach model for faster updates
+		g_object_ref (G_OBJECT (model));
+		gtk_tree_view_set_model (GTK_TREE_VIEW (m_list), NULL);
+		gtk_list_store_clear (model);
+	}
+	else {	
+		model = gtk_list_store_new (1, G_TYPE_STRING);
+	}
 	
  	// build a list of all items
-    for (UT_uint32 i = 0; i < pVec->size(); i++)
-	{
+	GtkTreeIter iter;
+    for (UT_uint32 i = 0; i < pVec->size(); i++) {
+
 		XAP_Module * pModule = pVec->getNthItem (i);
 		gtk_list_store_append (model, &iter);
 		gtk_list_store_set (model, &iter,
@@ -241,10 +241,10 @@ void XAP_UnixDialog_PluginManager::setPluginList()
 					  		-1);
 	}
 	
-	gtk_tree_view_set_model(GTK_TREE_VIEW(m_list), reinterpret_cast<GtkTreeModel *>(model));
+	gtk_tree_view_set_model (GTK_TREE_VIEW (m_list), reinterpret_cast<GtkTreeModel *>(model));
 		
-	if(pVec->size())
-		selectFirstEntry(m_list);
+	if(pVec->size ())
+		_selectFirstEntry ();
 
 	g_object_unref (model);
 }
@@ -268,11 +268,7 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 			gint rowNumber = gtk_tree_path_get_indices (path)[0];
 			
 			pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber));
-			
-		} else
-		{
-			selectFirstEntry(m_list);
-		}
+		} 
 	}
 	
 	// just a blank space, to represent an empty entry
@@ -329,7 +325,7 @@ void XAP_UnixDialog_PluginManager::s_load_clicked (GtkWidget * w,
 	dlg->event_Load ();
 }
 
-void XAP_UnixDialog_PluginManager::s_list_clicked(GtkTreeView *treeview,
+void XAP_UnixDialog_PluginManager::s_list_clicked(GtkTreeSelection *selection,
 												  XAP_UnixDialog_PluginManager * dlg)
 {
 	UT_return_if_fail(dlg);
@@ -349,8 +345,7 @@ void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
 	gtk_window_set_default_size(GTK_WINDOW(cf), 500, 300);
 	
 	// load the data
-	setPluginList();
-	_refresh();
+	_updatePluginList ();
 	
 	abiRunModalDialog (GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CLOSE, true);
 }
@@ -416,10 +411,22 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 					  G_CALLBACK(s_load_clicked), 
 					  static_cast<gpointer>(this));
 
-	g_signal_connect_after(G_OBJECT(m_list),
-						   "cursor-changed",
+	g_signal_connect_after(G_OBJECT(gtk_tree_view_get_selection (GTK_TREE_VIEW (m_list))),
+						   "changed",
 						   G_CALLBACK(s_list_clicked),
 						   static_cast<gpointer>(this));
 
 	return m_windowMain;
+}
+
+/*!
+* Select the plugin list's first entry.
+*/
+void 
+XAP_UnixDialog_PluginManager::_selectFirstEntry ()
+{
+	GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW (m_list));
+	GtkTreePath* path = gtk_tree_path_new_first();
+	gtk_tree_selection_select_path (selection, path);
+	gtk_tree_path_free (path);
 }

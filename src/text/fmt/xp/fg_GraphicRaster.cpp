@@ -237,8 +237,15 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 	UT_ASSERT(iWidth > 0);
 	UT_ASSERT(iHeight > 0);
 
-	if (!UT_dEQ(maxW,0) && iWidth > maxW) iWidth = maxW;
-	if (!UT_dEQ(maxH,0) && iHeight > maxH) iHeight = maxH;
+	if (!UT_dEQ(maxW,0) && iWidth > maxW) {
+		iHeight = iHeight * maxW / iWidth;
+		iWidth = maxW;
+	}
+	if (!UT_dEQ(maxH,0) && iHeight > maxH) {
+		iWidth = iWidth * maxH / iHeight;
+		iHeight = maxH;
+	}
+
 	m_iMaxW = maxW;
 	m_iMaxH = maxH;
    	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbPNG, iWidth, iHeight, GR_Image::GRT_Raster);

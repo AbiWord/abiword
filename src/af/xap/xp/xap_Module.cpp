@@ -22,9 +22,7 @@
 #include <string.h>
 
 #include "ut_assert.h"
-#include "ut_spi.h"
 
-#include "xap_Spider.h"
 #include "xap_Module.h"
 #include "xap_ModuleManager.h"
 
@@ -35,7 +33,6 @@ XAP_Module::XAP_Module () :
 	m_fnRegister(0),
 	m_fnDeregister(0),
 	m_fnSupportsVersion(0),
-	m_spider(0),
 	m_creator (0),
 	m_bLoaded(false),
 	m_bRegistered(false),
@@ -88,9 +85,6 @@ bool XAP_Module::registerThySelf ()
 
 	m_bRegistered = true; // i.e., don't try to register again
 
-	if (m_spider)
-		if ((m_szSPI = m_spider->add_spi (this)) != 0) return true; // register properly later
-
 	int (*plugin_init_func) (XAP_ModuleInfo *);
 
 	m_iStatus = 0;
@@ -114,30 +108,6 @@ bool XAP_Module::registerThySelf ()
 }
 
 /*!
- * SPI plugins require a further registration step. Call this *after*
- * XAP_Spider::register_spies() - it's safe to call this for modules
- * which aren't spies.
- *
- * \return true on success, false on failure
- */
-bool XAP_Module::registerPending ()
-{
-	if (m_szSPI  == 0) return true;
-	if (m_spider == 0) return false; // huh?
-
-	UT_SPI * spi = m_spider->lookup_spi (m_szSPI);
-	if (spi == 0) return false;
-
-	m_info.name    = const_cast<char *>(spi->plugin_name ());
-	m_info.desc    = const_cast<char *>(spi->plugin_desc ());
-	m_info.version = const_cast<char *>(spi->plugin_version ());
-	m_info.author  = const_cast<char *>(spi->plugin_author ());
-	m_info.usage   = const_cast<char *>(spi->plugin_usage ());
-
-	return true;
-}
-
-/*!
  * Whether the plugin is registered
  *
  * \return true if registered, false otherwise
@@ -146,16 +116,8 @@ bool XAP_Module::registered ()
 {
 	if (!m_bLoaded) return false;
 
-	if (m_szSPI)
-	{
-		if (m_spider == 0) return false; // huh?
-		return m_spider->spi_registered (m_szSPI);
-	}
-	else
-	{
-		if (!m_bRegistered) return false;
-		return (m_iStatus ? true : false);
-	}
+	if (!m_bRegistered) return false;
+	return (m_iStatus ? true : false);
 }
 
 /*!
@@ -175,11 +137,7 @@ bool XAP_Module::unregisterThySelf ()
 		{
 			int (*plugin_cleanup_func) (XAP_ModuleInfo *);
 
-			if (m_szSPI)
-				{
-					m_spider->unregister_spi (m_szSPI);
-				}
-			else if (m_fnDeregister)
+			if (m_fnDeregister)
 				{
 					if (m_fnDeregister (&m_info) == 0) result = false;
 				}

@@ -47,6 +47,9 @@ Scott Boesch <scott@abisource.com>			artist, trade shows
 Brian Bosse <bhb002@drake.edu>
 Justin Bradford <justin@ukans.edu>			Word import,
 							spell dialog
+Jean Brefort <jean.brefort@normalesup.org>              Build System for 
+                                                        abimathview plugin
+
 John Brewer <jbrewer@jera.com>				started MacOS port
 Thomas Briggs <tom@sane.com>				Lots of Win32 work, Bug 919
 Sean Bright <elixer@erols.com>				Fix Page# Preview align bug
@@ -118,6 +121,7 @@ Lauris Kaplinski<lauris@helixcode.com>			Help with GnomePrint
 Joseph Kelsey <jkelsey@freei.com>			HTML centering
 Matt Kimball <robozapp@xmission.com>			layout fixes
 Andrew Klassen <ak@dkp.com> 				Irix 64 fixes
+Birch Knutson <bnknuts@gmail.com>                       Fix 6456,8326 RTF exporter
 Michael Kobas <michael238@ozemail.com.au>		Win32 Setup icon and Installer mods
 Larry Kollar <kollar@alltel.net>			MkLinux
 Egmont Koblinger <egmont@uhulinux.hu>			Encoding fix 4782

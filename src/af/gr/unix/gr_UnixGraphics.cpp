@@ -1735,9 +1735,10 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
  */
 GR_Image * GR_UnixGraphics::genImageFromRectangle(const UT_Rect &rec)
 {
+	GdkColormap* cmp = gdk_colormap_get_system();
 	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
 												   m_pWin,
-												   NULL,
+												   cmp,
 												   tdu(rec.left), tdu(rec.top), 0, 0,
 												   tdu(rec.width), tdu(rec.height));
 	

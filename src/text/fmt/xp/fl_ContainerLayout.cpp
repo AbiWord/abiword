@@ -464,7 +464,14 @@ fl_BlockLayout* fl_ContainerLayout::getNextBlockInDocument(void) const
 		}
 		else if(pNext->getContainerType() == FL_CONTAINER_FRAME)
 		{
-			pNext = pNext->getFirstLayout();
+			if(pNext->getFirstLayout() == NULL)
+			{
+			     pNext = pNext->getNext();
+			}
+			else
+			{
+			     pNext = pNext->getFirstLayout();
+			}
 		}
 		else if(pNext->getContainerType() == FL_CONTAINER_CELL)
 		{
@@ -549,7 +556,14 @@ fl_BlockLayout* fl_ContainerLayout::getPrevBlockInDocument(void) const
 		}
 		else if(pPrev->getContainerType() == FL_CONTAINER_FRAME)
 		{
-			pPrev = pPrev->getLastLayout();
+			if(pPrev->getLastLayout() == NULL)
+			{
+			     pPrev = pPrev->getPrev();
+			}
+			else
+			{
+			     pPrev = pPrev->getLastLayout();
+			}
 		}
 		else if(pPrev->getContainerType() == FL_CONTAINER_TABLE)
 		{

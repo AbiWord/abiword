@@ -192,7 +192,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	UT_return_val_if_fail (pApp && pLabel, NULL);
 
 	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_FILE_RECENT_1);
-	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_FILE_RECENT_9);
 
 	UT_uint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
 
@@ -657,6 +656,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	const char * c = NULL;
 	const UT_UCSChar *p;
 	static char cBuf[128];		// BUGBUG: possible buffer overflow
+	UT_UTF8String s;
 	UT_uint32 len = 0;
 
 	p = pView->getContextSuggest(ndx);
@@ -676,8 +676,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	}
 	else if (ndx == 1)
 	{
-		// placeholder when no suggestions
-		UT_UTF8String s;
+		// placeholder when no suggestions		
 		const XAP_StringSet * pSS = pApp->getStringSet();
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
 		c = s.utf8_str();
@@ -1498,6 +1497,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->isImageSelected())
 	{
+		return EV_MIS_ZERO;
+	}
+	if(pView->getFrameEdit()->isActive())
+	{
+	        fl_FrameLayout * pFL = pView->getFrameLayout();
+		if(pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
+		{
+		        return EV_MIS_Gray;
+		}
 		return EV_MIS_ZERO;
 	}
 	return EV_MIS_Gray;

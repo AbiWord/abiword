@@ -235,8 +235,8 @@ enum _XAP_CocoaTool_Id
 }
 
 #define PALETTE_ELEMENT_ORIGIN_X  -3
-#define PALETTE_ELEMENT_WIDTH    240
-#define PALETTE_PANEL_WIDTH      234
+#define PALETTE_ELEMENT_WIDTH    219
+#define PALETTE_PANEL_WIDTH      213
 
 - (void)sync
 {
@@ -262,12 +262,50 @@ enum _XAP_CocoaTool_Id
 
 	NSRect frame;
 
+	UT_uint32 vh_remember = view_height;
+
+	/* Adjust frames of individual palettes
+	 */
+	for (i = 0; i < count; i++)
+		{
+			XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
+
+			UT_uint32 height = [palette heightTitle];
+
+			view_height -= height;
+
+			/* Title
+			 */
+
+			/* Box
+			 */
+			height = [palette heightBox];
+
+			if ([palette isExpanded])
+				{
+					view_height -= height;
+				}
+			else // move it out of sight
+				{
+					[self setNeedsDisplayInRect:[[palette Box] frame]];
+
+					frame.origin.x    = PALETTE_ELEMENT_WIDTH;
+					frame.origin.y    = static_cast<float>(view_height);
+					frame.size.width  = PALETTE_ELEMENT_WIDTH;
+					frame.size.height = static_cast<float>(height);
+					[[palette Box] setFrame:frame];
+				}
+		}
+	[self displayIfNeeded];
+
+	view_height = vh_remember;
+
 	/* Update panel size, if in a panel, else set the frame size
 	 */
 	NSWindow * window = [self window];
 	if (window)
 		{
-			[self setNeedsDisplay:NO];
+			// [self setNeedsDisplay:NO];
 
 			NSRect current = [window frame];
 
@@ -282,7 +320,7 @@ enum _XAP_CocoaTool_Id
 			frame = [NSWindow frameRectForContentRect:content styleMask:(NSTitledWindowMask|NSClosableWindowMask|NSUtilityWindowMask)];
 			frame.origin.x = current.origin.x;
 			frame.origin.y = static_cast<float>(y - static_cast<int>(frame.size.height));
-			[window setFrame:frame display:YES];
+			[window setFrame:frame display:YES animate:YES];
 		}
 	else
 		{
@@ -310,6 +348,8 @@ enum _XAP_CocoaTool_Id
 			frame.size.width  = PALETTE_ELEMENT_WIDTH;
 			frame.size.height = static_cast<float>(height);
 			[[palette Title] setFrame:frame];
+			[[palette Title] setNeedsDisplay:YES];
+			[[palette Title] displayIfNeeded];
 
 			/* Box
 			 */
@@ -324,6 +364,8 @@ enum _XAP_CocoaTool_Id
 					frame.size.width  = PALETTE_ELEMENT_WIDTH;
 					frame.size.height = static_cast<float>(height);
 					[[palette Box] setFrame:frame];
+					[[palette Box] setNeedsDisplay:YES];
+					[[palette Box] displayIfNeeded];
 				}
 			else // move it out of sight
 				{
@@ -1038,6 +1080,10 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	[oFontName removeAllItems];
 	[oFontName addItemsWithTitles:m_pFontFamilies];
 
+	[[oFontName menu] setAutoenablesItems:NO];
+
+	[[oDocumentStyle menu] setAutoenablesItems:NO];
+
 	if (m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties])
 		{
 			[oProperties setIndentationPerLevel:10.0f];
@@ -1166,10 +1212,12 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (IBAction)aSwitch_FG:(id)sender
 {
+	// TODO
 }
 
 - (IBAction)aSwitch_BG:(id)sender
 {
+	// TODO
 }
 
 - (IBAction)aTitle_click:(id)sender
@@ -1346,13 +1394,13 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 			if (tlbrid == AP_TOOLBAR_ID_COLOR_FORE)
 				{
-					[colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_FG color]];
 					[colorPanel setAction:@selector(aColor_FG:)];
 				}
 			else
 				{
-					[colorPanel setTitle:@"Background Color"]; // TODO: Localize
+					// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
 					[colorPanel setColor:[oColor_BG color]];
 					[colorPanel setAction:@selector(aColor_BG:)];
 				}
@@ -1815,6 +1863,9 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 	/* Color buttons
 	 */
+	[oSwitch_FG setEnabled:NO]; // TODO
+	[oSwitch_BG setEnabled:NO]; // TODO
+
 	if (m_pViewCurrent)
 		{
 			FV_View * pFView = static_cast<FV_View *>(m_pViewCurrent);

@@ -334,7 +334,7 @@ void AP_Dialog_FormatTOC::incrementIndent(UT_sint32 iLevel, bool bInc)
 
 /*!
  * Returns the increment associated with the dimension defined in the string.
-\params const char * sz the dimensioned string.
+\param const char * sz the dimensioned string.
 \returns double -  the increment associated with the dimension in sz
 */
 double AP_Dialog_FormatTOC::getIncrement(const char * sz)

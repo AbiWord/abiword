@@ -170,6 +170,19 @@ void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 	coverage = *_m_coverage;
 }
 
+// UT_Rect of glyph in Logical units.
+// rec.left = bearing Left (distance from origin to start)
+// rec.width = width of the glyph
+// rec.top = distance from the origin to the top of the glyph
+// rec.height = total height of the glyph
+
+bool XAP_CocoaFont::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+{
+  // FIXME: Write the code for this!
+  UT_ASSERT(0);
+  return false;
+}
+
 UT_sint32 XAP_CocoaFont::measureUnremappedCharForCache(UT_UCSChar cChar) const
 {
 	if (m_fontForCache == nil) {

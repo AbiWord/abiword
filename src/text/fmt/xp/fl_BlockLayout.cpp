@@ -76,6 +76,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "fp_MathRun.h"
 
 #include "xap_EncodingManager.h"
 
@@ -169,6 +170,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bKeepWithNext(false),
 	  m_bStartList(false), m_bStopList(false),
 	  m_bListLabelCreated(false),
+	  m_pSpellSquiggles(NULL),
 	  m_bListItem(false),
 	  m_szStyle(NULL),
 	  m_bIsCollapsed(true),
@@ -182,8 +184,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_pVertContainer(NULL),
 	  m_iLinePosInContainer(0),
 	  m_bForceSectionBreak(false),
-	  m_bPrevListLabel(false)
-
+	  m_bPrevListLabel(false),
+	  m_pGrammarSquiggles(NULL)
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -258,8 +260,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		_insertEndOfParagraphRun();
 	}
 
-	m_pSquiggles = new fl_Squiggles(this);
-	UT_ASSERT(m_pSquiggles);
+	m_pSpellSquiggles = new fl_SpellSquiggles(this);
+	m_pGrammarSquiggles = new fl_GrammarSquiggles(this);
+	UT_ASSERT(m_pSpellSquiggles);
+	UT_ASSERT(m_pGrammarSquiggles);
 	setUpdatableField(false);
 	updateEnclosingBlockIfNeeded();
 }
@@ -770,9 +774,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 		if (m_pAutoNum->isEmpty())
 		{
-			fl_AutoNum * pAuto = m_pAutoNum;
+			m_pDoc->removeList(m_pAutoNum,getStruxDocHandle());
 			DELETEP(m_pAutoNum);
-			m_pDoc->removeList(pAuto,getStruxDocHandle());
 		}
 		else
 		{
@@ -882,7 +885,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 fl_BlockLayout::~fl_BlockLayout()
 {
-	DELETEP(m_pSquiggles);
+	DELETEP(m_pSpellSquiggles);
+	DELETEP(m_pGrammarSquiggles);
 	purgeLayout();
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 	DELETEP(m_pAlignment);
@@ -901,6 +905,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	}
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
+	m_pLayout->dequeueBlockForBackgroundCheck(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
 	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x sdh %x \n",this,getStruxDocHandle()));
@@ -1142,7 +1147,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 // Now update the PartOfBlocks in the squiggles
 //
-		getSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
+		getSpellSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
+		getGrammarSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
 	}
 #if 0
 #if DEBUG
@@ -2332,6 +2338,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 				continue;
 			}
 			UT_Rect * pRec = pFC->getScreenRect();
+			bool bIsTight = pFC->isTightWrapped();
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			double iExpand = pFL->getBoundingSpace() + 2.0;
 			pRec->height += 2*iExpand;
@@ -2340,15 +2347,38 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			pRec->top -= iExpand;
 			if(rec.intersectsRect(pRec))
 			{
+				if(!pFC->overlapsRect(rec))
+				{
+					delete pRec;
+					continue;
+				}
 				if((pRec->left <= rec.left) && (pRec->left + pRec->width) > rec.left)
 				{
-					double diff = pRec->left + pRec->width - rec.left;
-					rec.left = pRec->left + pRec->width;
+					double iRightP = 0;
+					if(bIsTight)
+					{
+						//
+						// Project back into image over the transparent region
+						//
+						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand +2; // FIXME: this random, non-tlu should NOT be here - MARCM
+						UT_DEBUGMSG(("Project Right (3) %d \n",iRightP));
+					}
+					double diff = pRec->left + pRec->width - rec.left - iRightP;
+					rec.left = pRec->left + pRec->width + iRightP;
 					rec.width -= diff;
 				}
 				else if((pRec->left >= rec.left) && (rec.left + rec.width > pRec->left))
 				{
-					double diff = pRec->left - rec.left;
+					double iLeftP = 0;
+					if(bIsTight)
+					{
+						//
+						// Project into the image over the transparent region
+						//
+						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight);
+						UT_DEBUGMSG(("Project into (3) image with distance %d \n",iLeftP));
+					}
+					double diff = pRec->left - rec.left - iLeftP;
 					rec.width = diff;
 				}
 			}
@@ -2493,6 +2523,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
 		projRec.height = iHeight;
 		projRec.width = iMaxX - (iX - iXDiff);
 		projRec.top = m_iAccumulatedHeight;
+		bool bIsTight = false;
 		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
 		{
 			pFC = pPage->getNthFrameContainer(i);
@@ -2500,6 +2531,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
 			{
 				continue;
 			}
+			bIsTight = pFC->isTightWrapped();
 			UT_Rect * pRec = pFC->getScreenRect();
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			double iExpand = pFL->getBoundingSpace() + 2;
@@ -2509,15 +2541,38 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
 			pRec->top -= iExpand;
 			if(projRec.intersectsRect(pRec))
 			{
+				if(!pFC->overlapsRect(projRec))
+				{
+					delete pRec;
+					continue;
+				}
 				if((pRec->left <= projRec.left) && (pRec->left + pRec->width) > projRec.left)
 				{
-					double diff = pRec->left + pRec->width - projRec.left;
-					projRec.left = pRec->left + pRec->width;
+					double iRightP = 0;
+					if(bIsTight)
+					{
+						//
+						// Project back into image over the transparent region
+						//
+						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand +2; // FIXME: this random non-tlu 2 should NOT be here - MARCM
+						UT_DEBUGMSG(("Project Right %d \n",iRightP));
+					}
+					double diff = pRec->left + pRec->width - projRec.left - iRightP;
+					projRec.left = pRec->left + pRec->width + iRightP;
 					projRec.width -= diff;
 				}
 				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
 				{
-					double diff = pRec->left - projRec.left;
+					double iLeftP = 0;
+					if(bIsTight)
+					{
+						//
+						// Project into the image over the transparent region
+						//
+						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight);
+						UT_DEBUGMSG(("Project into (1) image with distance %d \n",iLeftP));
+					}
+					double diff = pRec->left - projRec.left - iLeftP;
 					projRec.width = diff;
 				}
 			}
@@ -2548,7 +2603,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
    				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
 				m_iLinePosInContainer++;
 	   			pLine->setContainer(m_pVertContainer);
-				xxx_UT_DEBUGMSG(("Max width 2 set to %d \n",projRec.width));
+				UT_DEBUGMSG(("Max width 2 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
 				pLine->setSameYAsPrevious(false);
@@ -2570,13 +2625,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
 					m_iLinePosInContainer = pContainer->findCon(pLine)+1;
 					pLine->setContainer(pContainer);
 				}
-				xxx_UT_DEBUGMSG(("Max width 3 set to %d \n",projRec.width));
+				UT_DEBUGMSG(("Max width 3 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
 				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
 				m_bSameYAsPrevious = true;
 			}
-			xxx_UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
+			UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 			pLine->setHeight(iHeight);
 #if DEBUG
 			if(getFirstContainer())
@@ -2598,6 +2653,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
 		projRec.height = iHeight;
 		projRec.width = iMaxX - (iX - iXDiff);
 		projRec.top = m_iAccumulatedHeight;
+		bool bIsTight = false;
 		for(i=0; i< static_cast<UT_sint32>(pPage->countFrameContainers());i++)
 		{
 			pFC = pPage->getNthFrameContainer(i);
@@ -2605,6 +2661,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
 			{
 				continue;
 			}
+			bIsTight = pFC->isTightWrapped();
 			UT_Rect * pRec = pFC->getScreenRect();
 			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			double iExpand = pFL->getBoundingSpace() +2; 
@@ -2614,15 +2671,38 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(double iX,
 			pRec->top -= iExpand;
 			if(projRec.intersectsRect(pRec))
 			{
+				if(!pFC->overlapsRect(projRec))
+				{
+					delete pRec;
+					continue;
+				}
 				if((pRec->left <= projRec.left) && (pRec->left + pRec->width) > projRec.left)
 				{
-					double diff = pRec->left + pRec->width - projRec.left;
-					projRec.left = pRec->left + pRec->width;
+					double iRightP = 0;
+					if(bIsTight)
+					{
+						//
+						// Project back into image over the transparent region
+						//
+						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand +2; // FIXME: this ranomd non-tlu +2 should NOT be here - MARCM
+						UT_DEBUGMSG(("Project Right %d \n",iRightP));
+					}
+					double diff = pRec->left + pRec->width - projRec.left - iRightP;
+					projRec.left = pRec->left + pRec->width + iRightP;
 					projRec.width -= diff;
 				}
 				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
 				{
-					double diff = pRec->left - projRec.left;
+					double iLeftP = 0;
+					if(bIsTight)
+					{
+						//
+						// Project into the image over the transparent region
+						//
+						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight);
+						UT_DEBUGMSG(("Project into (2) image with distance %d \n",iLeftP));
+					}
+					double diff = pRec->left - projRec.left - iLeftP;
 					projRec.width = diff;
 				}
 			}
@@ -3744,6 +3824,7 @@ fl_PartOfBlock::fl_PartOfBlock(void)
 	m_iOffset = 0;
 	m_iLength = 0;
 	m_bIsIgnored = false;
+	m_bIsInvisible = false;
 }
 
 fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
@@ -3752,6 +3833,17 @@ fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
 	m_iOffset = iOffset;
 	m_iLength = iLength;
 	m_bIsIgnored = bIsIgnored;
+	m_bIsInvisible = false;
+}
+
+void fl_PartOfBlock::setGrammarMessage(UT_UTF8String & sMsg)
+{
+	m_sGrammarMessage = sMsg;
+}
+
+void fl_PartOfBlock::getGrammarMessage(UT_UTF8String & sMsg)
+{
+	sMsg = m_sGrammarMessage;
 }
 
 /*!
@@ -3824,6 +3916,10 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	}
 
 	UT_uint32 iFirst = iOffset;
+
+	if (iFirst > pgb.getLength() - 1)
+		iFirst = pgb.getLength() - 1;
+
 	UT_uint32 iAbs = static_cast<UT_uint32>((chg >= 0) ? chg : -chg);
 	UT_sint32 iLen = ((chg > 0) ? iAbs : 0);
 
@@ -3984,7 +4080,7 @@ bool fl_BlockLayout::checkSpelling(void)
 	}
 	
 	// Remove any existing squiggles from the screen...
-	bool bUpdateScreen = m_pSquiggles->deleteAll();
+	bool bUpdateScreen = m_pSpellSquiggles->deleteAll();
 
 	// Now start checking
 	bUpdateScreen |= _checkMultiWord(0, -1, bIsCursorInBlock);
@@ -4094,12 +4190,12 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 		// Word not correct or recognized, so squiggle it
 		if (bAddSquiggle)
 		{
-			m_pSquiggles->add(pPOB);
+			m_pSpellSquiggles->add(pPOB);
 		}
 
 		if(bClearScreen)
 		{
-			m_pSquiggles->clear(pPOB);
+			m_pSpellSquiggles->clear(pPOB);
 		}
 
 		// Display was updated
@@ -4333,20 +4429,31 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)
 	{
-		fp_TextRun* pNewRun = new fp_TextRun(this,
-											 blockOffset + I.getNthOffset(i),
-											 I.getNthLength(i));
-		
-		UT_return_val_if_fail(pNewRun && pNewRun->getType() == FPRUN_TEXT, false);
-		pNewRun->setDirOverride(m_iDirOverride);
+		UT_uint32 iRunOffset = I.getNthOffset(i);
+		UT_uint32 iRunLength = I.getNthLength(i);
 
-		GR_Item * pItem = I.getNthItem(i)->makeCopy();
-		UT_ASSERT( pItem );
-		pNewRun->setItem(pItem);
-		
-		if(!_doInsertRun(pNewRun))
-			return false;
+		// because of bug 8542 we do not allow runs longer than 32000 chars, so if it is
+		// longer, just split it (we do not care where we split it, this is a contingency
+		// measure only)
+		while(iRunLength)
+		{
+			UT_uint32 iRunSegment = UT_MIN(iRunLength, 32000);
+			
+			fp_TextRun* pNewRun = new fp_TextRun(this, blockOffset + iRunOffset, iRunSegment);
+			iRunOffset += iRunSegment;
+			iRunLength -= iRunSegment;
+			
+			UT_return_val_if_fail(pNewRun && pNewRun->getType() == FPRUN_TEXT, false);
+			pNewRun->setDirOverride(m_iDirOverride);
 
+			GR_Item * pItem = I.getNthItem(i)->makeCopy();
+			UT_ASSERT( pItem );
+			pNewRun->setItem(pItem);
+		
+			if(!_doInsertRun(pNewRun))
+				return false;
+		}
+		
 	}
 
 	return true;
@@ -4619,6 +4726,15 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 	return _doInsertRun(pNewRun);
 }
 
+
+bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
+{
+	fp_Run * pNewRun = NULL;
+	pNewRun = new fp_MathRun(this,blockOffset,indexAP,oh);
+	UT_ASSERT(pNewRun); // TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
 
 bool	fl_BlockLayout::_doInsertTOCTabRun(PT_BlockOffset blockOffset)
 {
@@ -5405,8 +5521,10 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	format();
 	updateEnclosingBlockIfNeeded();
 
-	m_pSquiggles->textInserted(blockOffset, len);
-
+	m_pSpellSquiggles->textInserted(blockOffset, len);
+	m_pGrammarSquiggles->textInserted(blockOffset, len);
+	xxx_UT_DEBUGMSG(("Set pending block for grammar - insertSpan \n"));
+	m_pLayout->setPendingBlockForGrammar(this);
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
@@ -5845,7 +5963,10 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	xxx_UT_DEBUGMSG(("fl_BlockLayout:: deleteSpan offset %d len %d \n",blockOffset,len));
 	_delete(blockOffset, len);
 
-	m_pSquiggles->textDeleted(blockOffset, len);
+	m_pSpellSquiggles->textDeleted(blockOffset, len);
+	m_pGrammarSquiggles->textDeleted(blockOffset, len);
+	xxx_UT_DEBUGMSG(("Set pending block for grammar - deleteSpan \n"));
+	m_pLayout->setPendingBlockForGrammar(this);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -6294,7 +6415,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 		// This call will dequeue the block from background checking
 		// if necessary
-		m_pSquiggles->join(offset, pPrevBL);
+		m_pSpellSquiggles->join(offset, pPrevBL);
+		m_pGrammarSquiggles->join(offset, pPrevBL);
 		pPrevBL->setNeedsReformat();
 		//
 		// Update if it's TOC entry by removing then restoring
@@ -6679,7 +6801,9 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	updateEnclosingBlockIfNeeded();
 
 	// Split squiggles between this and the new block
-	m_pSquiggles->split(blockOffset, pNewBL);
+	m_pSpellSquiggles->split(blockOffset, pNewBL);
+	m_pGrammarSquiggles->split(blockOffset, pNewBL);
+	m_pLayout->setPendingBlockForGrammar(pNewBL);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -7324,9 +7448,9 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
  method.
 */
 void
-fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
+fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
 {
-	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSquigglesForRun\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSpellSquigglesForRun\n"));
 
 	UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 	fp_TextRun* pTextRun = (static_cast<fp_TextRun*>(pRun));
@@ -7334,7 +7458,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 	UT_sint32 runBlockOffset = pRun->getBlockOffset();
 	UT_sint32 runBlockEnd = runBlockOffset + pRun->getLength();
 	UT_sint32 iFirst, iLast;
-	if (m_pSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
+	if (m_pSpellSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
 	{
 		UT_sint32 iStart = 0, iEnd;
 		fl_PartOfBlock* pPOB;
@@ -7342,7 +7466,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 
 		// The first POB may only be partially within the region. Clip
 		// it if necessary.
-		pPOB = m_pSquiggles->getNth(i++);
+		pPOB = m_pSpellSquiggles->getNth(i++);
 		if (!pPOB->getIsIgnored())
 		{
 			iStart = pPOB->getOffset();
@@ -7354,22 +7478,22 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			// code below handle it).
 			if (iFirst != iLast)
 			{
-				pTextRun->drawSquiggle(iStart, iEnd - iStart);
+				pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
 			}
 		}
 		// The ones in the middle don't need clipping.
 		for (; i < iLast; i++)
 		{
-			pPOB = m_pSquiggles->getNth(i);
+			pPOB = m_pSpellSquiggles->getNth(i);
 			if (pPOB->getIsIgnored()) continue;
 
 			iStart = pPOB->getOffset();
 			iEnd =	iStart + pPOB->getLength();
-			pTextRun->drawSquiggle(iStart, iEnd - iStart);
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
 		}
 		// The last POB may only be partially within the region. Clip
 		// it if necessary. Note the load with iLast instead of i.
-		pPOB = m_pSquiggles->getNth(iLast);
+		pPOB = m_pSpellSquiggles->getNth(iLast);
 		if (!pPOB->getIsIgnored())
 		{
 			// Only load start if this POB is different from the first
@@ -7378,7 +7502,92 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 				iStart = pPOB->getOffset();
 			iEnd =	pPOB->getOffset() + pPOB->getLength();
 			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
-			pTextRun->drawSquiggle(iStart, iEnd - iStart);
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
+		}
+	}
+}
+
+/*!
+ * Draw all the grammar squiggles in the Block.
+ */
+void fl_BlockLayout::drawGrammarSquiggles(void)
+{
+	fp_Run * pRun = getFirstRun();
+	while(pRun)
+	{
+		if(pRun->getType() == FPRUN_TEXT)
+		{
+			findGrammarSquigglesForRun(pRun);
+		}
+		pRun = pRun->getNextRun();
+	}
+}
+
+/*!
+ Draw grammar squiggles intersecting with Run
+ \param pRun Run
+
+ For all incorrect grammar in this run, call the run->drawSquiggle()
+ method.
+*/
+void
+fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
+{
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSpellSquigglesForRun\n"));
+
+	UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+	fp_TextRun* pTextRun = (static_cast<fp_TextRun*>(pRun));
+
+	UT_sint32 runBlockOffset = pRun->getBlockOffset();
+	UT_sint32 runBlockEnd = runBlockOffset + pRun->getLength();
+	UT_sint32 iFirst, iLast;
+	if (m_pGrammarSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast,true))
+	{
+		UT_sint32 iStart = 0, iEnd;
+		fl_PartOfBlock* pPOB;
+		UT_sint32 i = iFirst;
+
+		// The first POB may only be partially within the region. Clip
+		// it if necessary.
+		pPOB = m_pGrammarSquiggles->getNth(i++);
+		if (!pPOB->getIsIgnored() && !pPOB->isInvisible())
+		{
+			iStart = pPOB->getOffset();
+			iEnd =	iStart + pPOB->getLength();
+			if (iStart < runBlockOffset) iStart = runBlockOffset;
+
+			// Only draw if there's more than one POB. If there's only
+			// one POB, it may also need clipping at the end (let the
+			// code below handle it).
+			//			if (iFirst != iLast)
+			{
+				pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
+			}
+		}
+		// The ones in the middle don't need clipping.
+		for (; i < iLast; i++)
+		{
+			pPOB = m_pGrammarSquiggles->getNth(i);
+			if (pPOB->getIsIgnored() || pPOB->isInvisible()) continue;
+
+			iStart = pPOB->getOffset();
+			iEnd =	iStart + pPOB->getLength();
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
+		}
+		// The last POB may only be partially within the region. Clip
+		// it if necessary. Note the load with iLast instead of i.
+		pPOB = m_pGrammarSquiggles->getNth(iLast);
+		if (!pPOB->getIsIgnored() && !pPOB->isInvisible())
+		{
+			// Only load start if this POB is different from the first
+			// one.
+			if (iFirst != iLast)
+				iStart = pPOB->getOffset();
+			if(iStart < pTextRun->getBlockOffset())
+				iStart = pTextRun->getBlockOffset();
+			iEnd =	pPOB->getOffset() + pPOB->getLength();
+			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
 		}
 	}
 }
@@ -7418,6 +7627,11 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 	case PTO_Hyperlink:
 		UT_DEBUGMSG(("Populate:InsertHyperlink:\n"));
 		_doInsertHyperlinkRun(blockOffset);
+		return true;
+
+	case PTO_Math:
+		UT_DEBUGMSG(("Populate:InsertMathML:\n"));
+		_doInsertMathRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
 		return true;
 
 	default:
@@ -7480,6 +7694,16 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 
 	}
 
+	case PTO_Math:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Math:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertMathRun(blockOffset,pcro->getIndexAP(),pcro->getObjectHandle());
+		break;
+
+	}
+
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -7498,7 +7722,8 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		pView->_setPoint(pView->getPoint() + 1);
 
 	// TODO: are objects always one wide?
-	m_pSquiggles->textInserted(blockOffset, 1);
+	m_pSpellSquiggles->textInserted(blockOffset, 1);
+	m_pGrammarSquiggles->textInserted(blockOffset, 1);
 
 	_assertRunListIntegrity();
 	//
@@ -7536,6 +7761,13 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		case PTO_Image:
 		{
 			UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset, 1);
+			break;
+		}
+		case PTO_Math:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Math:\n"));
 			blockOffset = pcro->getBlockOffset();
 			_delete(blockOffset, 1);
 			break;
@@ -7587,8 +7819,10 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		pView->_setPoint(pView->getPoint() - 1);
 
 	// TODO: are objects always one wide?
-	if(m_pSquiggles)
-		m_pSquiggles->textDeleted(blockOffset, 1);
+	if(m_pSpellSquiggles)
+		m_pSpellSquiggles->textDeleted(blockOffset, 1);
+	if(m_pGrammarSquiggles)
+		m_pGrammarSquiggles->textDeleted(blockOffset, 1);
 
 	_assertRunListIntegrity();
 	//
@@ -7690,6 +7924,42 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 					pFieldRun->clearScreen();
 				}
 				pFieldRun->lookupProperties();
+
+				goto done;
+			}
+			pRun = pRun->getNextRun();
+		}
+
+		return false;
+	}
+	case PTO_Math:
+	{
+		UT_DEBUGMSG(("Edit:ChangeObject:Math:\n"));
+		blockOffset = pcroc->getBlockOffset();
+		fp_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			if (pRun->getBlockOffset() == blockOffset && (pRun->getType()!= FPRUN_FMTMARK))
+			{
+				if(pRun->getType()!= FPRUN_MATH)
+				{
+					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
+					while(pRun && pRun->getType() == FPRUN_FMTMARK)
+					{
+						pRun = pRun->getNextRun();
+					}
+				}
+				if(!pRun || pRun->getType() != FPRUN_MATH)
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					return false;
+				}
+				fp_MathRun* pMathRun = static_cast<fp_MathRun*>(pRun);
+				if(!isHdrFtr())
+				{
+					pMathRun->clearScreen();
+				}
+				pMathRun->lookupProperties();
 
 				goto done;
 			}
@@ -8218,7 +8488,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 	UT_ASSERT(bRes);
 	const UT_UCSChar* pBlockText = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(0));
 
-	bool bUpdate = m_pSquiggles->recheckIgnoredWords(pBlockText);
+	bool bUpdate = m_pSpellSquiggles->recheckIgnoredWords(pBlockText);
 
 	// Update screen if any words squiggled
 	FV_View* pView = getView();
@@ -8434,7 +8704,7 @@ void fl_BlockLayout::remItemFromList(void)
 
 /*!
  * Start a list with the paragraph definition container in the style defined by "style"
-\params const XML_CHar * style the name of the paragraph style for this block.
+\param const XML_CHar * style the name of the paragraph style for this block.
 */
 void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSDH)
 {
@@ -9719,8 +9989,8 @@ fl_BlockLayout::debugFlashing(void)
 	fl_PartOfBlock* pPOB = new fl_PartOfBlock(0, eor);
 	UT_ASSERT(pPOB);
 	if (pPOB) {
-		m_pSquiggles->add(pPOB);
-		m_pSquiggles->clear(pPOB);
+		m_pSpellSquiggles->add(pPOB);
+		m_pSpellSquiggles->clear(pPOB);
 
 		pView->updateScreen();
 		UT_usleep(250000);

@@ -48,9 +48,10 @@ public:
 	virtual GR_Image* createImageSegment(GR_Graphics*, const UT_Rect&)
 		{ UT_ASSERT_NOT_REACHED(); return NULL; }
 
-	bool getHasAlpha() const {
-		return m_hasAlpha;
+	virtual bool hasAlpha() const {
+	  return m_hasAlpha;
 	}
+	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
 
 private:
 

@@ -50,6 +50,7 @@
 #include "ut_string.h"
 #include "xap_Frame.h"
 #include "spell_manager.h"
+#include "gr_EmbedManager.h"
 
 #define REDRAW_UPDATE_MSECS	500
 
@@ -72,39 +73,56 @@ const char * s_FootnoteTypeDesc[] = {
 };
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
+  : m_pG(pG),
+    m_pDoc(doc),
+    m_pView(NULL),
+    m_lid((PL_ListenerId)-1),
+    m_pFirstSection(NULL),
+    m_pLastSection(NULL),
+    m_pPendingBlockForSpell(NULL),
+    m_pPendingWordForSpell(NULL),
+    m_bSpellCheckCaps(true),
+    m_bSpellCheckNumbers(true),
+    m_bSpellCheckInternet(true),
+    m_bAutoSpellCheck(true),
+    m_uDocBackgroundCheckReasons(0),
+    m_bStopSpellChecking(false),
+    m_bImSpellCheckingNow(false),
+    m_pPendingBlockForSmartQuote(NULL),
+    m_uOffsetForSmartQuote(0),
+    m_pBackgroundCheckTimer(NULL),
+    m_pPrefs(NULL),
+    m_pRedrawUpdateTimer(NULL),
+    m_iSkipUpdates(0),
+    m_bDeletingLayout(false),
+    m_bisLayoutFilling(false),
+    m_iRedrawCount(0),
+    m_FootnoteType(FOOTNOTE_TYPE_NUMERIC),
+    m_iFootnoteVal(1),
+    m_bRestartFootSection(false),
+    m_bRestartFootPage(false),
+    m_iEndnoteVal(1),
+    m_EndnoteType(FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS),
+    m_bRestartEndSection(false),
+    m_bPlaceAtDocEnd(false),
+    m_bPlaceAtSecEnd(true),
+    m_iGraphicTick(0), 
+    m_iDocSize(0),
+    m_iFilled(0),
+    m_bSpellCheckInProgress(false),
+    m_bAutoGrammarCheck(false),
+    m_PendingBlockForGrammar(NULL)
 {
-	m_pDoc = doc;
-	m_pG = pG;
-	m_pView = NULL;
-
-	m_pBackgroundCheckTimer = NULL;
-	m_pPendingBlockForSpell = NULL;
-	m_pPendingWordForSpell = NULL;
-	m_pPendingBlockForSmartQuote = NULL;
-	m_uOffsetForSmartQuote = 0;
-	m_pFirstSection = NULL;
-	m_pLastSection = NULL;
-	m_bSpellCheckCaps = true;
-	m_bSpellCheckNumbers = true;
-	m_bSpellCheckInternet = true;
-	m_bAutoSpellCheck = true;
-	m_pPrefs = NULL;
-	m_bStopSpellChecking = false;
-	m_bImSpellCheckingNow = false;
-	m_uDocBackgroundCheckReasons = 0;
-	m_iSkipUpdates = 0;
-	m_bDeletingLayout = false;
-	setLayoutIsFilling(false);
-	m_lid = (PL_ListenerId)-1;
-	m_iGraphicTick = 0;
+#ifdef FMT_TEST
+        m_pDocLayout = this;
+#endif
+        setLayoutIsFilling(false),
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
 	{
 		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
 		m_pRedrawUpdateTimer->start();
 	}
-	m_iFilled = 0;
-	m_bSpellCheckInProgress	= false;
 	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -115,22 +133,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_pDoc->disableListUpdates();
 
 	strncpy(m_szCurrentTransparentColor,static_cast<const char *>(XAP_PREF_DEFAULT_ColorForTransparent),9);
-
-#ifdef FMT_TEST
-	m_pDocLayout = this;
-#endif
-	m_iRedrawCount = 0;
 	m_vecFootnotes.clear();
 	m_vecEndnotes.clear();
-	m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
-	m_iFootnoteVal = 1;
-	m_bRestartFootSection = false;
-	m_bRestartFootPage = false;
-	m_iEndnoteVal = 1;
-	m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-    m_bRestartEndSection = false;
-	m_bPlaceAtDocEnd = false;
-	m_bPlaceAtSecEnd = true;
 
 }
 
@@ -196,6 +200,42 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
+	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecEmbedManager);
+}
+
+
+/*!
+ * Get an embedManager of the requested Type.
+ */
+GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
+{
+  // Look in the current collection first.
+  UT_uint32 i = 0;
+  GR_EmbedManager * pDefault = NULL;
+  GR_EmbedManager * pEmbed = NULL;
+  for(i=0; i< m_vecEmbedManager.getItemCount(); i++)
+    {
+      pEmbed = m_vecEmbedManager.getNthItem(i);
+      if(UT_strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
+	{
+	  return pEmbed;
+	}
+      if(UT_strcmp(pEmbed->getObjectType(),"default") == 0)
+	{
+	  pDefault = pEmbed;
+	}
+    }
+  pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pG,szEmbedType);
+  if((UT_strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+    {
+      delete pEmbed;
+      return pDefault;
+    }
+  UT_DEBUGMSG(("Got mamanger of type %s \n",pEmbed->getObjectType()));
+  m_vecEmbedManager.addItem(pEmbed);
+  pEmbed->initialize();
+  
+  return pEmbed;
 }
 
 /*! 
@@ -590,6 +630,12 @@ void FL_DocLayout::setView(FV_View* pView)
 			if (m_pPrefs->getPrefsValueBool(static_cast<const XML_Char *>("DebugFlash"),&b)  &&  b == true)
 			{
 				addBackgroundCheckReason(bgcrDebugFlash);
+			}
+			m_pPrefs->getPrefsValueBool(static_cast<const XML_Char *>("AutoGrammarCheck"),&b);
+			if (b)
+			{
+				addBackgroundCheckReason(bgcrGrammar);
+				m_bAutoGrammarCheck = true;
 			}
 		}
 	}
@@ -2100,7 +2146,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 				if(b->getContainerType() == FL_CONTAINER_BLOCK)
 				{
 					static_cast<fl_BlockLayout *>(b)->removeBackgroundCheckReason(bgcrSpelling);
-					static_cast<fl_BlockLayout *>(b)->getSquiggles()->deleteAll();
+					static_cast<fl_BlockLayout *>(b)->getSpellSquiggles()->deleteAll();
 					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
 				}
 				else
@@ -2119,6 +2165,91 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 			// ignored once autospell is off, but for now it should
 			// definitely be annulled.
 			setPendingWordForSpell(NULL, NULL);
+		}
+	}
+}
+
+
+/*!
+ Toggle auto spell-checking state
+ \param bGrammar True if grammar-checking should be enabled, false otherwise
+ When disabling grammar checking, all squiggles are deleted.
+ When enabling grammar, force a full check of the document.
+*/
+void
+FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
+{
+	bool bOldAutoGrammar = getAutoGrammarCheck();
+	UT_DEBUGMSG(("_toggleAutoGrammar %d \n",bGrammar));
+	// Add reason to background checker
+	if (bGrammar)
+	{
+		UT_DEBUGMSG(("Adding Auto GrammarCheck  \n"));
+		addBackgroundCheckReason(bgcrGrammar);
+		m_bAutoGrammarCheck = true;
+	}
+	else
+	{
+		UT_DEBUGMSG(("Removing Auto Grammar  \n"));
+		removeBackgroundCheckReason(bgcrGrammar);
+		m_bAutoGrammarCheck = false;
+	}
+
+	xxx_UT_DEBUGMSG(("FL_DocLayout::_toggleAutoGrammar (%s)\n",
+					 bGrammar ? "true" : "false" ));
+
+	if (bGrammar)
+	{
+		UT_DEBUGMSG(("Rechecking Grammar in blocks \n"));
+		// When enabling, recheck the whole document
+		fl_DocSectionLayout * pSL = getFirstSection();
+		if(pSL)
+		{
+			fl_ContainerLayout* b = pSL->getFirstLayout();
+			while (b)
+			{
+				// TODO: just check and remove matching squiggles
+				// for now, destructively recheck the whole thing
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					UT_DEBUGMSG(("Add block  %x for Grammar check \n",b));
+					queueBlockForBackgroundCheck(bgcrGrammar, static_cast<fl_BlockLayout *>(b));
+					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
+				}
+				else
+				{
+					b = b->getNext();
+				}
+			}
+		}
+	}
+	else
+	{
+		// Disabling, so remove the squiggles too
+		fl_DocSectionLayout * pSL = getFirstSection();
+		if(pSL)
+		{
+			fl_ContainerLayout* b = pSL->getFirstLayout();
+			while (b)
+			{
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					static_cast<fl_BlockLayout *>(b)->removeBackgroundCheckReason(bgcrGrammar);
+					static_cast<fl_BlockLayout *>(b)->getGrammarSquiggles()->deleteAll();
+					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
+				}
+				else
+				{
+					b = b->getNext();
+				}
+			}
+		}
+		if (bOldAutoGrammar)
+		{
+			// If we're here, it was set to TRUE before but now it is
+			// being set to FALSE. This means that it is the user
+			// setting it. That's good.
+			m_pView->draw(NULL);
 		}
 	}
 }
@@ -2244,6 +2375,19 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 							}
 							break;
 						}
+						case bgcrGrammar:
+						{
+							UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
+							XAP_App * pApp = pDocLayout->getView()->getApp();
+     //
+     // If a grammar checker plugin is loaded it will check the block now.
+     //
+							pApp->notifyListeners(pDocLayout->getView(),AV_CHG_BLOCKCHECK,reinterpret_cast<void *>(pB));
+							pB->removeBackgroundCheckReason(mask);
+							pB->drawGrammarSquiggles();
+							break;
+						}
+
 						case bgcrSmartQuotes:
 						default:
 							pB->removeBackgroundCheckReason(mask);
@@ -2356,6 +2500,9 @@ void FL_DocLayout::dequeueAll(void)
 	{
 		m_vecUncheckedBlocks.deleteNthItem(i);	
 	}
+	UT_DEBUGMSG(("Dequeue all \n"));
+
+	m_PendingBlockForGrammar = NULL;
 	m_bStopSpellChecking = true;
 	if(m_pBackgroundCheckTimer)
 	{
@@ -2366,6 +2513,40 @@ void FL_DocLayout::dequeueAll(void)
 			// TODO shouldn't we have a little sleep here?
 		}
 	}
+}
+
+/*!
+ * Set the next block to be grammar checked. It won't actually get checked
+ * until the insertPoint leaves this block.
+ */
+void FL_DocLayout::setPendingBlockForGrammar(fl_BlockLayout * pBL)
+{
+  xxx_UT_DEBUGMSG(("Pending called with block %x pending %x \n",pBL,m_PendingBlockForGrammar));
+  if(!m_bAutoGrammarCheck)
+    return;
+  if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
+    {
+      xxx_UT_DEBUGMSG(("Block %x queued \n",m_PendingBlockForGrammar));
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+    }
+  m_PendingBlockForGrammar = pBL;
+}
+
+
+/*!
+ * This is called from fv_View::_fixPointCoords to actually queue a grammar 
+ * check a pending block.
+ */
+void FL_DocLayout::triggerPendingBlock(fl_BlockLayout * pBL)
+{
+  xxx_UT_DEBUGMSG(("Trigger called with block %x pending %x \n",pBL,m_PendingBlockForGrammar));
+  if(!m_bAutoGrammarCheck)
+    return;
+  if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
+    {
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+      m_PendingBlockForGrammar = NULL;
+     }
 }
 
 /*!
@@ -2388,7 +2569,11 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 		m_vecUncheckedBlocks.deleteNthItem(i);
 		bRes = true;
 	}
-
+	if(pBlock == m_PendingBlockForGrammar)
+	  {
+	    xxx_UT_DEBUGMSG(("Dequeue block %x in dequeue \n",pBlock));
+	    m_PendingBlockForGrammar = NULL;
+	  }
 	// When queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
@@ -2783,6 +2968,15 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	{
 		pDocLayout->m_bAutoSpellCheck = b;
 		pDocLayout->_toggleAutoSpell( b );
+	}
+
+	// grammar check
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoGrammarCheck), &b );
+	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
+	if(b != pDocLayout->m_bAutoGrammarCheck || (pDocLayout->m_iGraphicTick < 2))
+	{
+		pDocLayout->m_bAutoGrammarCheck = b;
+		pDocLayout->_toggleAutoGrammar( b );
 	}
 
 // autosave

@@ -85,24 +85,7 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 
 	// Format
 	{AP_MENU_ID_FMT_FONT, "Menu_AbiWord_Font"},
-
-	/*{AP_MENU_ID_FMT_BOLD, "Menu_AbiWord_Bold"},
-	{AP_MENU_ID_FMT_ITALIC, "Menu_AbiWord_Italic"},
-	{AP_MENU_ID_FMT_UNDERLINE, "Menu_AbiWord_Underline"},
-	{AP_MENU_ID_FMT_STRIKE, "Menu_AbiWord_Strike"},		
-	{AP_MENU_ID_FMT_TOPLINE, "Menu_AbiWord_Topline"},
-	{AP_MENU_ID_FMT_BOTTOMLINE, "Menu_AbiWord_Bottomline"},
-	{AP_MENU_ID_SUPERSCRIPT, "Menu_AbiWord_Superscript"},
-	{AP_MENU_ID_SUBSCRIPT, "Menu_AbiWord_Subscript"},
-	{AP_MENU_ID_OVERLINE, "Menu_AbiWord_Overline"},*/
-		
-
-	//{AP_MENU_ID_ALIGN_LEFT, "Menu_AbiWord_Align_Left"},
-	//{AP_MENU_ID_ALIGN_RIGHT, "Menu_AbiWord_Align_Right"},
-	//{AP_MENU_ID_ALIGN_CENTER, "Menu_AbiWord_Align_Center"},
-	//{AP_MENU_ID_ALIGN_JUSTIFY, "Menu_AbiWord_Align_Justify"},	
 	{AP_MENU_ID_TABLE_INSERT_TABLE, "Menu_AbiWord_Insert_Table"},
-	//{AP_MENU_ID_VIEW_SHOWPARA, "Menu_AbiWord_View_Showpara"},
 	{AP_MENU_ID_TOOLS_SPELL, "Menu_AbiWord_Spellcheck"},			
 	{AP_MENU_ID_TOOLS_OPTIONS, "Menu_AbiWord_Preferences"},
 	{AP_MENU_ID_TOOLS_SCRIPTS, "Menu_AbiWord_Execute"},
@@ -126,8 +109,6 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 	
 
 	// Help
-	{AP_MENU_ID_HELP_CONTENTS,      "Menu_AbiWord_Help"},    
-	//{AP_MENU_ID_HELP_INDEX, GTK_STOCK_INDEX},
 	{AP_MENU_ID_HELP_SEARCH, "Menu_AbiWord_Search"},
 	{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
 	{AP_MENU_ID_HELP_CREDITS, "Menu_AbiWord_Credits"},

@@ -27,8 +27,13 @@ endif
 
 SUBDIRS = xp @BE_PLATFORM@
 
-noinst_LIBRARIES= libUtil.a
+noinst_LIBRARIES = libUtil.a 
+check_LIBRARIES = libTestUtil.a
 
 libUtil_a_SOURCES = 
 
 libUtil_a_LIBADD = $(ABI_BE_OBJECTS)
+
+libTestUtil_a_SOURCES =
+
+libTestUtil_a_LIBADD = $(ABI_TEST_OBJECTS)

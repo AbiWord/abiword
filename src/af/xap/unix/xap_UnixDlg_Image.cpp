@@ -81,16 +81,22 @@ void XAP_UnixDialog_Image::wrappingChanged(void)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph),TRUE);
 		gtk_widget_set_sensitive(m_wPlaceTable,FALSE);
+		gtk_widget_set_sensitive(m_wWrapTable,FALSE);
 		gtk_widget_set_sensitive(m_wrbPlaceParagraph,FALSE);
 		gtk_widget_set_sensitive(m_wrbPlaceColumn,FALSE);
 		gtk_widget_set_sensitive(m_wrbPlacePage,FALSE);
+		gtk_widget_set_sensitive(m_wrbSquareWrap,FALSE);
+		gtk_widget_set_sensitive(m_wrbTightWrap,FALSE);
 
 		return;
 	}
 	gtk_widget_set_sensitive(m_wPlaceTable,TRUE);
+	gtk_widget_set_sensitive(m_wWrapTable,TRUE);
 	gtk_widget_set_sensitive(m_wrbPlaceParagraph,TRUE);
 	gtk_widget_set_sensitive(m_wrbPlaceColumn,TRUE);
 	gtk_widget_set_sensitive(m_wrbPlacePage,TRUE);
+	gtk_widget_set_sensitive(m_wrbSquareWrap,TRUE);
+	gtk_widget_set_sensitive(m_wrbTightWrap,TRUE);
 }
 
 void XAP_UnixDialog_Image::event_Ok ()
@@ -126,6 +132,14 @@ void XAP_UnixDialog_Image::event_Ok ()
 	else if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbPlacePage)))
 	{
 		setPositionTo(POSITION_TO_PAGE);
+	}
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbTightWrap)))
+	{
+	        setTightWrap(true);
+	}
+	else
+	{
+	        setTightWrap(false);
 	}
 }
 void XAP_UnixDialog_Image::event_Cancel ()
@@ -258,24 +272,42 @@ void XAP_UnixDialog_Image::setWrappingGUI()
 	if(isInHdrFtr() || (getWrapping() == WRAP_INLINE))
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbInLine),TRUE);
+		gtk_widget_set_sensitive(m_wrbSquareWrap,FALSE);
+		gtk_widget_set_sensitive(m_wrbTightWrap,FALSE);
 	}
 	else if(getWrapping() == WRAP_TEXTRIGHT)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedRight),TRUE);
+		gtk_widget_set_sensitive(m_wrbSquareWrap,TRUE);
+		gtk_widget_set_sensitive(m_wrbTightWrap,TRUE);
 	}
 	else if(getWrapping() == WRAP_TEXTLEFT)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedLeft),TRUE);
+		gtk_widget_set_sensitive(m_wrbSquareWrap,TRUE);
+		gtk_widget_set_sensitive(m_wrbTightWrap,TRUE);
 	}
 	else if(getWrapping() == WRAP_TEXTBOTH)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedBoth),TRUE);
+		gtk_widget_set_sensitive(m_wrbSquareWrap,TRUE);
+		gtk_widget_set_sensitive(m_wrbTightWrap,TRUE);
 	}
 	if(isInHdrFtr())
 	{
 	  gtk_widget_set_sensitive(m_wrbWrappedRight,FALSE);
 	  gtk_widget_set_sensitive(m_wrbWrappedLeft,FALSE);
 	  gtk_widget_set_sensitive(m_wrbWrappedBoth,FALSE);
+	  gtk_widget_set_sensitive(m_wrbSquareWrap,FALSE);
+	  gtk_widget_set_sensitive(m_wrbTightWrap,FALSE);
+	}
+	else if(isTightWrap())
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbTightWrap),TRUE);
+	}
+	else if(!isTightWrap())
+	{
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbSquareWrap),TRUE);
 	}
 }
 
@@ -303,6 +335,7 @@ void XAP_UnixDialog_Image::setPositionToGUI()
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceColumn),FALSE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlacePage),FALSE);
     gtk_widget_set_sensitive(m_wPlaceTable,FALSE);
+    gtk_widget_set_sensitive(m_wWrapTable,FALSE);
     gtk_widget_set_sensitive(m_wrbPlaceParagraph,FALSE);
     gtk_widget_set_sensitive(m_wrbPlaceColumn,FALSE);
     gtk_widget_set_sensitive(m_wrbPlacePage,FALSE);
@@ -382,6 +415,17 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 				   "clicked",
 				   G_CALLBACK(s_wrapping_changed),
 				   static_cast<gpointer>(this));
+
+
+  g_signal_connect(G_OBJECT(m_wrbSquareWrap),
+				   "clicked",
+				   G_CALLBACK(s_wrapping_changed),
+				   static_cast<gpointer>(this));
+
+  g_signal_connect(G_OBJECT(m_wrbTightWrap),
+				   "clicked",
+				   G_CALLBACK(s_wrapping_changed),
+				   static_cast<gpointer>(this));
   
   m_iWidthID = g_signal_connect(G_OBJECT(m_wWidthEntry),
 								"changed",
@@ -437,6 +481,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImageDescription"), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapping"), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImagePlacement"), pSS, XAP_STRING_ID_DLG_Image_Placement);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbWrapType"), pSS, XAP_STRING_ID_DLG_Image_WrapType);
 	
 	localizeLabel(glade_xml_get_widget(xml,"lbHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
 	localizeLabel(glade_xml_get_widget(xml,"lbWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
@@ -452,6 +497,9 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	localizeButton(glade_xml_get_widget(xml,"rbPlaceColumn"), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
 	localizeButton(glade_xml_get_widget(xml,"rbPlacePage"), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
 
+	localizeButton(glade_xml_get_widget(xml,"rbSquareWrap"), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
+	localizeButton(glade_xml_get_widget(xml,"rbTightWrap"), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
+
 	m_wPlaceTable = glade_xml_get_widget(xml,"tbPlacement");
 	m_wrbInLine = glade_xml_get_widget(xml,"rbInLine");
 	m_wrbWrappedRight = glade_xml_get_widget(xml,"rbWrappedRight");
@@ -461,6 +509,11 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_wrbPlaceParagraph = glade_xml_get_widget(xml,"rbPlaceParagraph");
 	m_wrbPlaceColumn = glade_xml_get_widget(xml,"rbPlaceColumn");
 	m_wrbPlacePage = glade_xml_get_widget(xml,"rbPlacePage");
+
+	m_wWrapTable = glade_xml_get_widget(xml,"tbWrapTable");
+	m_wrbSquareWrap = glade_xml_get_widget(xml,"rbSquareWrap");
+	m_wrbTightWrap = glade_xml_get_widget(xml,"rbTightWrap");
+
 
 // the check button already contains a label. We have to remove this
 // before we can localize it

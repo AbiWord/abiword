@@ -97,7 +97,8 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iXPage(0),
 	  m_iYPage(0),
 	  m_iBoundingSpace(0),
-	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT)
+	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT),
+	  m_bIsTightWrap(false)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -153,6 +154,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 	pFrame->setRightStyle(m_lineRight );
 	pFrame->setXpad(m_iXpad);
 	pFrame->setYpad(m_iYpad);
+	pFrame->setTightWrapping(m_bIsTightWrap);
 //
 // Now do the image for this frame.
 //
@@ -342,10 +344,26 @@ fl_SectionLayout * fl_FrameLayout::getSectionLayout(void) const
 bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+	fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(getFirstContainer());
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
+	pFrameC->getBlocksAroundFrame(vecBlocks);
+	UT_uint32 i = 0;
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
+	  pBL->collapse();
+	  xxx_UT_DEBUGMSG(("Collapse block %x \n",pBL));
+	}
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
 	lookupProperties();
 	format();
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
+	  pBL->format();
+	  xxx_UT_DEBUGMSG(("Format block %x \n",pBL));
+	}
 	return true;
 }
 
@@ -417,6 +435,17 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		pFrameC->getPage()->markDirtyOverlappingRuns(pFrameC);
 	}
 #endif
+	fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(getFirstContainer());
+	UT_GenericVector<fl_BlockLayout *> vecBlocks;
+	pFrameC->getBlocksAroundFrame(vecBlocks);
+	UT_uint32 i = 0;
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  fl_BlockLayout * pBL = vecBlocks.getNthItem(i);
+	  pBL->collapse();
+	  xxx_UT_DEBUGMSG(("Collapse block %x \n",pBL));
+	}
+
 //
 // Remove all remaining structures
 //
@@ -457,7 +486,42 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		return false;
 	}
 	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
-	pBL->removeFrame(this);
+	bool bFound = false;
+	for(i=0; i<static_cast<UT_uint32>(pBL->getNumFrames()) && !bFound;i++)
+	{
+	  fl_FrameLayout * pF = pBL->getNthFrameLayout(i);
+	  if(pF == this)
+	  {
+	    bFound = true;
+	  }
+	}
+	if(bFound)
+	{
+	  pBL->removeFrame(this);
+	}
+	else
+	{
+	  UT_DEBUGMSG(("Whoops! not Frame found. Try ahead \n"));
+	  pCL = this;
+	  while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+	  {
+	    pCL = pCL->getNext();
+	  }
+	  if(pCL == NULL)
+	  {
+	    UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
+	    return false;
+	  }
+	  pBL = static_cast<fl_BlockLayout *>(pCL);
+	  pBL->removeFrame(this);
+	}
+	for(i=0; i< vecBlocks.getItemCount();i++)
+	{
+	  pBL = vecBlocks.getNthItem(i);
+	  pBL->format();
+	  xxx_UT_DEBUGMSG(("format block %x \n",pBL));
+	}
+
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;
@@ -523,7 +587,7 @@ void fl_FrameLayout::_createFrameContainer(void)
 
 /*!
   Create a new Frame container.
-  \params If pPrevFrame is non-null place the new cell after this in the linked
+  \param If pPrevFrame is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
   \return The newly created Frame container
 */
@@ -638,7 +702,10 @@ void fl_FrameLayout::format(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
-		pBL->setFramesOnPage(NULL);
+		if(!pBL->isCollapsed())
+		{
+		  pBL->setFramesOnPage(NULL);
+		}
 	}
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;
@@ -678,6 +745,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const XML_Char * pszBorderWidth = NULL;
 
 	const XML_Char * pszBoundingSpace = NULL;
+	const XML_Char * pszTightWrapped = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -756,6 +824,21 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_DEBUGMSG(("Unknown wrap-mode %s \n",pszWrapMode));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+	}
+	//
+	// Wrap type
+	//
+	if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszTightWrapped))
+	{
+		m_bIsTightWrap = false;
+	}
+	else if(strcmp(pszTightWrapped,"1") == 0)
+	{
+		m_bIsTightWrap = true;
+	}
+	else
+	{
+		m_bIsTightWrap = false;
 	}
 
 // Xpos

@@ -64,8 +64,8 @@ class AP_Preview_Paragraph_Block
 	// applies to the first line in a block only.  The others
 	// apply to the rest of the block.
 	UT_uint32 m_firstLineLeftStop;
-	UT_uint32 m_leftStop;
-	UT_uint32 m_rightStop;
+	double m_leftStop;
+	double m_rightStop;
 
 	UT_uint32 m_beforeSpacing;
 	UT_uint32 m_afterSpacing;

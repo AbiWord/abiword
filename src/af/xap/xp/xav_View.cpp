@@ -88,7 +88,7 @@ bool AV_View::removeListener(AV_ListenerId listenerId)
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
 
-bool AV_View::notifyListeners(const AV_ChangeMask hint)
+bool AV_View::notifyListeners(const AV_ChangeMask hint, void * pPrivateData)
 {
 	/*
 		App-specific logic calls this virtual method when relevant portions of 
@@ -144,7 +144,7 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 				pListener->notify(this,hint);
 		}
 	}
-	getApp()->notifyListeners(this,hint);
+	getApp()->notifyListeners(this,hint,pPrivateData);
 	return true;
 }
 

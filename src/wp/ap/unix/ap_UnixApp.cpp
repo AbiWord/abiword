@@ -99,7 +99,6 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "gr_Image.h"
 
-#include "xap_ModuleManager.h"
 #include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
 #include "ut_sleep.h"
@@ -756,7 +755,12 @@ void AP_UnixApp::loadAllPlugins ()
 
   // the user-local plugin directory
   pluginDir = getUserPrivateDirectory ();
-  pluginDir += "/AbiWord-2.2/plugins/";
+  pluginDir += "/";
+  pluginDir += ABIWORD_APP_NAME;
+  pluginDir += "-";
+  pluginDir += PACKAGE_VERSION;
+  pluginDir += "/plugins/";
+  UT_DEBUGMSG (("ROB: private plugins in '%s'\n", pluginDir.c_str ()));
   pluginList[1] = pluginDir;
 
   for(UT_uint32 i = 0; i < (sizeof(pluginList)/sizeof(pluginList[0])); i++)
@@ -801,11 +805,6 @@ void AP_UnixApp::loadAllPlugins ()
 		  free(namelist);
       }
   }
-
-  /* SPI modules don't register automatically on loading, so
-   * now that we've loaded the modules we need to register them:
-   */
-  XAP_ModuleManager::instance().registerPending ();
 }
 
 /*****************************************************************/

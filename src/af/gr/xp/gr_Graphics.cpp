@@ -322,10 +322,6 @@ void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 	m_iFontAllocNo = 0xffffffff;
 }
 
-UT_uint32 GR_Graphics::getZoomPercentage(void) const
-{
-	return m_iZoomPercentage;
-}
 
 const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 {
@@ -586,7 +582,7 @@ void GR_Graphics::setDoMerge( bool bMergeState)
  * already existing expose rectangle to cover the expose rectangle of
  *  the current event or if there is no pending expose rectangle, because
  *  the background repainter has cleared it, set a new expose rectangle.
-\params UT_Rect *rClip the rectangle of the expose event.
+\param UT_Rect *rClip the rectangle of the expose event.
 */
 void GR_Graphics::doRepaint( UT_Rect * rClip)
 {

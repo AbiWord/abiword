@@ -123,7 +123,7 @@ public:
 
 	//! returns true iff the current view is the active/focused window
 	bool			isActive(void);
-	virtual bool	notifyListeners(const AV_ChangeMask hint) = 0;
+	virtual bool	notifyListeners(const AV_ChangeMask hint, void * pPrivateData = NULL);
 	virtual bool    isDocumentPresent(void) = 0;
 	virtual bool	canDo(bool bUndo) const = 0;
 	virtual void	cmdUndo(UT_uint32 count) = 0;

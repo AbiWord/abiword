@@ -201,6 +201,8 @@ public:
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
 	bool                    isMarginChangeOnly(void) const;
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties );	
+PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);	
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
@@ -298,7 +300,8 @@ public:
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
 										   const pf_Frag * pfStart = NULL);
 	pf_Frag *               getLastFrag() const;
-	
+	bool                    checkForSuspect(void);
+	bool                    repairDoc(void);
 	bool                    removeStyle(const XML_Char * name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
@@ -353,9 +356,10 @@ public:
 
 	// data items
 
-	bool					createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
+	virtual bool			createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
 										   const void* pToken, void ** ppHandle);
-	bool					getDataItemDataByName(const char * szName,
+	virtual bool            replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf);
+	virtual bool			getDataItemDataByName(const char * szName,
 												  const UT_ByteBuf ** ppByteBuf, const void** ppToken, void ** ppHandle) const;
 	bool					setDataItemToken(void* pHandle, void* pToken);
 	bool					getDataItemData(void * pHandle,
@@ -428,6 +432,8 @@ public:
 	// FRAME function
 	bool                    isFrameAtPos(PT_DocPosition pos);
 	bool                    isEndFrameAtPos(PT_DocPosition pos);
+	bool                    isHdrFtrAtPos(PT_DocPosition pos);
+	bool                    isSectionAtPos(PT_DocPosition pos);
 
 // Table functions
 
@@ -537,20 +543,29 @@ public:
 	bool                     isDontImmediateLayout(void)
 		{ return m_bDontImmediatelyLayout;}
 
+	/* Okay, as far as I can tell this is a non-persistent document property since it is not
+	 * written to the AbiWord file when the document is saved. In fact, it is only set if a
+	 * mail-merge source/link is given on the command line.
+	 * 
+	 * Mail merge fields are, naturally, saved and loaded, but the Insert->Mail Merge Field...
+	 * dialog doesn't reflect the current document's fields but rather some internal set of
+	 * fields, which is confusing if you are trying to work with muliple mail merge sources.
+	 */
 	// map UT_String=>UT_UTF8String*
-	UT_UTF8String getMailMergeField(const UT_String & key) const;
-	bool mailMergeFieldExists(const UT_String & key) const;
-	void setMailMergeField(const UT_String & key,
-						   const UT_UTF8String & value);
+
+	UT_UTF8String	getMailMergeField(const UT_String & key) const;
+	bool			mailMergeFieldExists(const UT_String & key) const;
+	void			setMailMergeField(const UT_String & key, const UT_UTF8String & value);
+
+	void			clearMailMergeMap();
 
 	void setMailMergeLink (const char * file) {
 		m_mailMergeLink = file;
 	}
 
-	UT_UTF8String getMailMergeLink () const {
-		// return a copy of me
-		return m_mailMergeLink;
-	}
+	const UT_UTF8String &							getMailMergeLink() const { return m_mailMergeLink; }
+	const UT_GenericStringMap<UT_UTF8String *> &	getMailMergeMap() const  { return m_mailMergeMap; }
+
 	void invalidateCache(void);
 
 	/*
@@ -599,8 +614,13 @@ public:
 
 	virtual void   setAutoRevisioning(bool autorev);
 
+	virtual UT_uint32 getXID();
+	virtual UT_uint32 getTopXID() const;
+	void              fixMissingXIDs();
+	UT_uint32         getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersion) const;
 
-	double        getNewHdrHeight(void) const
+	
+	UT_sint32     getNewHdrHeight(void) const
 	{ return m_iNewHdrHeight;}
 	double        getNewFtrHeight(void) const
 	{ return m_iNewFtrHeight;}
@@ -683,6 +703,8 @@ private:
 	double                  m_iNewHdrHeight;
 	double                  m_iNewFtrHeight;
 	bool                    m_bMarginChangeOnly;
+	UT_GenericVector<pf_Frag *> m_vecSuspectFrags;
+
 };
 
 #endif /* PD_DOCUMENT_H */

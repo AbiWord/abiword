@@ -213,8 +213,11 @@ class GR_UnixGraphics : public GR_Graphics
 private:
 	XAP_UnixFontHandle *	m_pFallBackFontHandle;
 
+protected:	
 	XftDraw*				m_pXftDraw;
 	XftColor				m_XftColor;
+	
+private:	
 	XftFont*				m_pXftFontL;
 	XftFont*				m_pXftFontD;
 	

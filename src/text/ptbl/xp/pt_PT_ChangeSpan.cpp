@@ -59,26 +59,31 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		const XML_Char name[] = "revision";
 		const XML_Char * pRevision = NULL;
 
-		// first retrive the starting and ending fragments
-		pf_Frag * pf1, * pf2;
-		PT_BlockOffset Offset1, Offset2;
+		// we cannot retrieve the start and end fragments here and
+		// then work between them in a loop using getNext() because
+		// processing might result in merging of fargments. so we have
+		// to use the doc position to keep track of where we are and
+		// retrieve the fragments afresh in each step of the loop
+		// Tomas, Dec 29, 2004
 
-		if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
-			return false;
-
-		// now we have to traverse the fragments and change their
-		// formatting
-
-		pf_Frag * pTemp;
-		pf_Frag * pEnd = pf2->getNext();
-
-		for(pTemp = pf1; pTemp && (pTemp != pEnd); pTemp = pTemp->getNext())
+		bool bRet = false;
+		while(dpos1 < dpos2)
 		{
+			// first retrive the starting and ending fragments
+			pf_Frag * pf1, * pf2;
+			PT_BlockOffset Offset1, Offset2;
+
+			if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2) ||
+			   pf1->getType() == pf_Frag::PFT_EndOfDoc)
+				return bRet;
+			else
+				bRet = true;
+			
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
 			pRevision = NULL;
 			
-			if(_getSpanAttrPropHelper(pTemp, &pAP))
+			if(_getSpanAttrPropHelper(pf1, &pAP))
 			{
 				pAP->getAttribute(name, pRevision);
 			}
@@ -112,7 +117,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			ppRevAttrib[1] = Revisions.getXMLstring();
 			ppRevAttrib[2] = NULL;
 
-			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
+			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pf1->getLength());
 
 			if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
 				return false;

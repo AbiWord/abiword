@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-2003 Hubert Figuiere
+ * Copyright (C) 2002-2005 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,28 +25,26 @@
 
 #include "xap_CocoaDialog_Utilities.h"
 
-/*!
-	Localize a control with a string from a string set
-	
+/** set the label of a NSControl
 	\param control the control AppKit object
-	\param pSS the string set
-	\param stringID the string ID from the string set
+	\param label UT_UTF8String to set. It is a well formed XP label
+	that will be converted.
 	\note if the control object you pass is of an unknown type, the function will
 	NSLog something on the console. Feel free to update the function if you want to
 	handle that kind of object.
- */
-void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId)
+*/
+void SetNSControlLabel (id control, const UT_UTF8String &label)
 {
-	char buf [1024];
+ 	char buf [1024];
 	NSString*	str;
-	UT_UTF8String label;
-	pSS->getValueUTF8(stringId, label);
+
 	_convertLabelToMac(buf, sizeof (buf), label);
 
 	str = [[NSString alloc] initWithUTF8String:buf];
+
 	if ([control isKindOfClass:[NSButton class]] 
-	     || [control isKindOfClass:[NSBox class]]
-		 || [control isKindOfClass:[NSCell class]]) {
+		|| [control isKindOfClass:[NSBox class]]
+		|| [control isKindOfClass:[NSCell class]]) {
 		[control setTitle:str];
 	}
 	else if ([control isKindOfClass:[NSTabViewItem class]]) {
@@ -64,6 +62,22 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 	[str release];
 }
 
+
+/*!
+	Localize a control with a string from a string set
+	
+	\param control the control AppKit object
+	\param pSS the string set
+	\param stringID the string ID from the string set
+	\seealso SetNSControlLabel
+ */
+void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId)
+{
+	UT_UTF8String label;
+	pSS->getValueUTF8(stringId, label);
+	SetNSControlLabel(control, label);
+}
+
 /*!
 	Fetch a string from the string set and return a NSString
 	
@@ -76,8 +90,6 @@ NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 	char buf [1024];
 	UT_UTF8String label;
 	pSS->getValueUTF8(stringId, label);
-	_convertLabelToMac(buf, sizeof (buf), label);
-	return [NSString stringWithUTF8String:buf];
 }
 
 /*!
@@ -87,13 +99,13 @@ NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 	\param pSS the string set
 	\param stringId the string id
  */
-void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag)
+void AppendLocalizedMenuItem (NSPopUpButton * menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag)
 {
-	NSString* str = LocalizedString(pSS, stringId);
-	NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""];
-	[item setTag:tag];
-	[[menu menu] addItem:item];
-	[item release];
+	NSString * str = LocalizedString(pSS, stringId);
+
+	[menu addItemWithTitle:str];
+
+	[[menu lastItem] setTag:tag];
 }
 
 /*!

@@ -37,6 +37,11 @@ endif
 
 default:	compile
 
+
+test:
+	@echo "make test not yet supported with diving Makefile"
+	@echo "Please use autoconf build."
+
 ##################################################################
 ## Compile all applications in AbiSuite
 ## This creates $(OUT)/bin/<programs>
@@ -62,12 +67,9 @@ bidi_dbg:
 
 ##################################################################
 
-## Generates documentation from the sources
-## This creates docs/dox/html/<HTML files>
-
 dox:
 	@echo Generating documentation
-	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src dox
+	doxygen
 
 ##################################################################
 
@@ -124,3 +126,4 @@ abiclean:
 realclean:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src realclean
 	rm -rf dist
+

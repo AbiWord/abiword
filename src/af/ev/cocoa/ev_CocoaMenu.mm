@@ -105,9 +105,20 @@
 {
 	UT_DEBUGMSG (("@EV_CocoaMenuTarget (id)menuSelected:(id)sender\n"));
 
-	if ([sender isKindOfClass:[NSMenuItem class]])
-		_xap->menuEvent([sender tag]);
-	return sender;
+	bool bEnabled = true;
+	bool bChecked = false;
+
+	const char * szLabel = 0;
+
+	m_menu->validateMenuItem(menuid, bEnabled, bChecked, szLabel);
+
+	if (szLabel)
+		{
+			[menuItem setTitle:(m_menu->convertToString(szLabel))];
+		}
+	[menuItem setState:(bChecked ? NSOnState : NSOffState)];
+
+	return bEnabled ? YES : NO;
 }
 
 @end
@@ -314,6 +325,9 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 	return true;
 }
 
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	XAP_Frame * frame = m_pCocoaApp->getLastFocussedFrame();
 
 bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot, EV_CocoaMenuBar * pMenuBar)
 {

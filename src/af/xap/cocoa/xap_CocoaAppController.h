@@ -28,6 +28,10 @@ class XAP_Frame;
 
 @class EV_CocoaMenuDelegate;
 
+@class XAP_CocoaPlugin;
+
+@class AP_CocoaPlugin_MenuIDRef;
+
 @interface XAP_CocoaApplication : NSApplication
 {
 	EV_CocoaMenuDelegate *	m_MenuDelegate;
@@ -44,8 +48,47 @@ class XAP_Frame;
 	IBOutlet NSMenuItem* m_prefMenuItem;
 	IBOutlet NSMenuItem* m_quitMenuItem;
 
-	BOOL m_bFileOpenedDuringLaunch;
-	BOOL m_bApplicationLaunching;
+	IBOutlet NSMenu *		oMenu_File;
+	IBOutlet NSMenu *		oMenu_Edit;
+	IBOutlet NSMenu *		oMenu_View;
+	IBOutlet NSMenu *		oMenu_Insert;
+	IBOutlet NSMenu *		oMenu_Format;
+	IBOutlet NSMenu *		oMenu_Tools;
+	IBOutlet NSMenu *		oMenu_Table;
+	IBOutlet NSMenu *		oMenu_Window;
+	IBOutlet NSMenu *		oMenu_Help;
+
+	IBOutlet NSMenuItem *	oMenuItem_File;
+	IBOutlet NSMenuItem *	oMenuItem_Edit;
+	IBOutlet NSMenuItem *	oMenuItem_View;
+	IBOutlet NSMenuItem *	oMenuItem_Insert;
+	IBOutlet NSMenuItem *	oMenuItem_Format;
+	IBOutlet NSMenuItem *	oMenuItem_Tools;
+	IBOutlet NSMenuItem *	oMenuItem_Table;
+	IBOutlet NSMenuItem *	oMenuItem_Window;
+	IBOutlet NSMenuItem *	oMenuItem_Help;
+
+	IBOutlet NSMenuItem *	oMenuItem_AbiWordHelp;
+
+	NSMenu *				m_PanelMenu;
+	NSMenu *				m_ContextMenu;
+
+	NSMenu *				m_AppMenu[XAP_CocoaAppMenu_count__];
+	NSMenuItem *			m_AppItem[XAP_CocoaAppMenu_count__];
+
+	NSMutableDictionary *	m_FontDictionary;
+
+	NSMutableDictionary *	m_MenuIDRefDictionary;
+
+	NSMutableArray *		m_Plugins;
+	NSMutableArray *		m_PluginsTools;
+
+	NSMenuItem *			m_PluginsToolsSeparator;
+
+	NSMutableArray *		m_FilesRequestedDuringLaunch;
+
+	BOOL			m_bApplicationLaunching;
+	BOOL			m_bAutoLoadPluginsAfterLaunch;
 
 	AV_View *		m_pViewCurrent;
 	XAP_Frame *		m_pFrameCurrent;
@@ -81,6 +124,21 @@ class XAP_Frame;
 - (NSMenuItem *)_preferenceMenu;
 - (NSMenuItem *)_quitMenu;
 
+- (void)appendPanelItem:(NSMenuItem *)item;
+- (void)appendContextItem:(NSMenuItem *)item;
+- (void)appendItem:(NSMenuItem *)item toMenu:(XAP_CocoaAppMenu_Id)appMenu;
+
+- (void)clearContextMenu;
+- (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu; // except AbiWord & Windows
+- (void)clearAllMenus;                          // except AbiWord & Windows
+
+- (NSString *)familyNameForFont:(NSString *)fontName;
+
+- (void)appendPluginMenuItem:(NSMenuItem *)menuItem;
+- (void)removePluginMenuItem:(NSMenuItem *)menuItem;
+
+/* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
+ */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
 - (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
 
@@ -89,6 +147,53 @@ class XAP_Frame;
 
 - (AV_View *)previousView;
 - (XAP_Frame *)previousFrame;
+
+- (void)notifyFrameViewChange; // [re/un]setCurrentView call this
+
+/**
+ * Load .Abi bundle plugin at path.
+ * 
+ * \return Returns nil on failure.
+ */
+- (XAP_CocoaPlugin *)loadPlugin:(NSString *)path;
+
+/**
+ * \return Returns list of currently loaded plugins.
+ */
+- (NSArray *)plugins;
+
+/**
+ * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
+ * 
+ * \return Returns false if any of the plugins object.
+ */
+- (BOOL)deactivateAllPlugins;
+
+/**
+ * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
+ * 
+ * \return Returns false if the plugin objects, unless override is YES.
+ */
+- (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override;
+
+/**
+ * This provides a mechanism for associating XAP_CocoaPlugin_MenuItem objects
+ * with a given menu ID.
+ */
+- (void)addRef:(AP_CocoaPlugin_MenuIDRef *)ref forMenuID:(NSNumber *)menuid;
+
+/**
+ * This provides a mechanism for finding XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (AP_CocoaPlugin_MenuIDRef *)refForMenuID:(NSNumber *)menuid;
+
+/**
+ * This provides a mechanism for removing XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (void)removeRefForMenuID:(NSNumber *)menuid;
+
 @end
 
 extern XAP_CocoaAppController* XAP_AppController_Instance;

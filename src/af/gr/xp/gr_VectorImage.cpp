@@ -115,6 +115,19 @@ bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
   return bCopied;
 }
 
+bool   GR_VectorImage::hasAlpha(void) const
+{
+  UT_ASSERT(0);
+  return false;
+}
+
+bool   GR_VectorImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
+{
+  UT_ASSERT(0);
+  return false;
+}
+
+
 // note that this does take device units, unlike everything else.
 bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {

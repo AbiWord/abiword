@@ -38,8 +38,6 @@
 #include "xap_Module.h"
 
 
-class XAP_Spider;
-
 class ABI_EXPORT XAP_ModuleManager
 {
 	friend class XAP_Module;
@@ -58,13 +56,10 @@ public:
 								XAP_Plugin_Registration fnDeregister,
 								XAP_Plugin_VersionCheck fnSupportsVersion);
 
-	UT_uint32    registerPending ();
-
 	void         unloadModule (XAP_Module * module);
 private:
 	void         unloadModule (UT_sint32 ndx);
 public:
-	void         unloadUnregistered ();
 	void         unloadAllPlugins ();
 
 	const UT_GenericVector<XAP_Module*> * enumModules () const;
@@ -73,8 +68,6 @@ private:
 
 	XAP_ModuleManager(const XAP_ModuleManager &);		// no impl
 	void operator=(const XAP_ModuleManager &);	        // no impl
-
-	XAP_Spider * m_spider;
 
 	UT_GenericVector<XAP_Module*> * m_modules;
 };

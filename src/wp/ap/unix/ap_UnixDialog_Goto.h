@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) Robert Staudinger <robsta@stereolyzer.net>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,72 +21,73 @@
 #ifndef AP_UNIXDIALOG_GOTO_H
 #define AP_UNIXDIALOG_GOTO_H
 
+#include "ap_types.h"
 #include "ap_Dialog_Goto.h"
+
+#include "fv_View.h"
+
 class XAP_UnixFrame;
 
-/*****************************************************************/
+
 
 class AP_UnixDialog_Goto: public AP_Dialog_Goto
 {
 public:
-	AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_UnixDialog_Goto(void);
+	AP_UnixDialog_Goto (XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_UnixDialog_Goto (void);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *static_constructor (XAP_DialogFactory *, 
+										   XAP_Dialog_Id id);
 
-	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			destroy(void);
-	virtual void			activate(void);
-	virtual void                    notifyActiveFrame(XAP_Frame *pFrame);
-	void					setSelectedRow(int row);
-	int						getSelectedRow(void);
+	virtual void runModeless 	   (XAP_Frame *pFrame);
+	virtual void notifyActiveFrame (XAP_Frame *pFrame);
+	virtual void activate	 	   (void);
+	virtual void destroy 		   (void);
 
-	/* CALLBACKS */
-	static void				s_targetChanged(GtkWidget *clist, gint row, gint column,
-											GdkEventButton *event, AP_UnixDialog_Goto *me);
-	static void s_response (GtkWidget * widget, gint id, AP_UnixDialog_Goto * me );
-	static void				s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * me);
-	static void				s_goto (const char *number, AP_UnixDialog_Goto * me);
-	static void				s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
-	static void				s_nextClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
-	static void				s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
-	static void				s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
-	static void				s_deleteClicked (GtkWidget * widget, gpointer /* data */ , AP_UnixDialog_Goto * me);
-	static void				s_blist_clicked(GtkWidget *clist, gint row, gint column,
-										  GdkEventButton *event, AP_UnixDialog_Goto *me);
-	
-	/* Widgets members.  Publics to make them accesible to the callbacks */
-	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */
-	GtkWidget *				m_wMainWindow;
-	GtkWidget * m_wGoto ;
-	GtkWidget * m_wPrev ;
-	GtkWidget * m_wNext ;
-	GtkWidget * m_wClose ;
-	GtkWidget *				m_wEntry;
-	GtkAccelGroup *			m_accelGroup;
-	int						m_iRow;
-	GtkWidget *				m_swindow;
-	GtkWidget *				m_dlabel;
-	GtkWidget * m_numberLabel;
-	const XML_Char **		m_pBookmarks;
-	
-	
+	void onPageChanged 		  (void); 
+	void onLineChanged 		  (void);
+	void onBookmarkDblClicked (void);
+	void onJumpClicked 		  (void);
+	void onPrevClicked 		  (void);
+	void onNextClicked 		  (void);
+
+	void updateCache		  (AP_JumpTarget target);
+	void updateDocCount 	  (void);
+
+	const GtkWidget *getWindow (void) { return m_wDialog; }
+
 protected:
 
-	enum
-	  {
-	    BUTTON_PREVIOUS,
-	    BUTTON_NEXT,
-	    BUTTON_GOTO,
-	    BUTTON_CLOSE
-	  } ResponseId;
+	void constuctWindow 	  (XAP_Frame *pFrame);
+	void updateWindow		  (void);
 
-	virtual GtkWidget *		_constructWindow(void);
-	GtkWidget *				_constructWindowContents(void);
-	void					_populateWindowData(void);
-	void					_connectSignals(void);
+private: 
 
-	static char *			s_convert(const char * st);
+	enum {
+		COLUMN_NAME = 0,  /* currently only one column
+		COLUMN_PAGE,
+		COLUMN_NUMBER,  */
+		NUM_COLUMNS
+	};
+
+	void  _selectPrevBookmark 		 (void);
+	void  _selectNextBookmark 		 (void);
+	gchar *_getSelectedBookmarkLabel (void);	
+	
+	GtkWidget *m_wDialog;
+	GtkWidget *m_lbPage;
+	GtkWidget *m_lbLine;
+	GtkWidget *m_lbBookmarks;
+	GtkWidget *m_sbPage;
+	GtkWidget *m_sbLine;
+	GtkWidget *m_lvBookmarks;
+	GtkWidget *m_btJump;
+	GtkWidget *m_btPrev;
+	GtkWidget *m_btNext;
+	GtkWidget *m_btClose;
+
+	AP_JumpTarget m_JumpTarget;
+	FV_DocCount   m_DocCount;
 };
 
 #endif /* AP_UNIXDIALOG_GOTO_H */

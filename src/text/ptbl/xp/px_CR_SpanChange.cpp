@@ -30,7 +30,7 @@ PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   PT_BufIndex bufIndex,
 													   UT_uint32 length,
 													   PT_BlockOffset blockOffset)
-	: PX_ChangeRecord(type, position, indexNewAP)
+	: PX_ChangeRecord(type, position, indexNewAP, 0)
 {
 	m_bufIndex = bufIndex;
 	m_length = length;

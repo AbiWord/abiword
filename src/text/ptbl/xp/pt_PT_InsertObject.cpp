@@ -176,7 +176,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									const XML_Char ** attributes,
 									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
 {
-	UT_return_val_if_fail (properties == NULL, false);
+	UT_ASSERT_HARMLESS((pto == PTO_Math) || (properties == NULL));
 
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
@@ -222,8 +222,8 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos,indexAP,pto,blockOffset,
-                                     pfo->getField());
+									 dpos,indexAP, pfo->getXID(), pto,blockOffset,
+                                     pfo->getField(),reinterpret_cast<PL_ObjectHandle>(pfo));
 	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
@@ -238,7 +238,6 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									const XML_Char ** attributes,
 									const XML_Char ** properties )
 {
-	UT_ASSERT_HARMLESS(properties == NULL);
 
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
@@ -281,8 +280,8 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos,indexAP,pto,blockOffset,
-                                     pfo->getField());
+									 dpos,indexAP,pfo->getXID(),pto,blockOffset,
+                                     pfo->getField(),reinterpret_cast<PL_ObjectHandle>(pfo));
 	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
@@ -304,6 +303,7 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 	{
 		case PTO_Hyperlink:
 		case PTO_Image:
+	        case PTO_Math:
 		case PTO_Field:
 			{
 				pfo = new pf_Frag_Object(this,pto,indexAP);
@@ -344,6 +344,8 @@ bool pt_PieceTable::_insertObject(pf_Frag * pf,
 	if (!_createObject(pto,indexAP,&pfo))
 		return false;
 
+	pfo->setXID(getXID());
+	
 	if (fragOffset == 0)
 	{
 		// we are at the beginning of a fragment, insert the

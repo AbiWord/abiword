@@ -47,6 +47,7 @@ public:
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	const GtkWidget 	  * getWindow (void) const { return m_windowMain; }
 protected:
 	typedef enum
 	{

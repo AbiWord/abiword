@@ -60,7 +60,6 @@ libXap_xp_a_SOURCES=\
 	xap_InputModes.cpp		\
 	xap_LoadBindings.cpp		\
 	xap_Log.cpp			\
-	xap_Spider.cpp			\
 	xap_Module.cpp			\
 	xap_ModuleManager.cpp		\
 	xap_Prefs.cpp			\

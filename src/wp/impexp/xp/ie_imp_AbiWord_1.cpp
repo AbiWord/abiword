@@ -182,10 +182,15 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, true), m_bWroteSection (false),
-    m_bWroteParagraph(false), m_bDocHasLists(false), m_bDocHasPageSize(false),
-	m_iInlineStart(0), m_refMap(new UT_GenericStringMap<UT_UTF8String*>),
-	m_bAutoRevisioning(false)
+  : IE_Imp_XML(pDocument, true), 
+	m_bWroteSection (false),
+    m_bWroteParagraph(false), 
+	m_bDocHasLists(false), 
+	m_bDocHasPageSize(false),
+	m_iInlineStart(0), 
+	m_refMap(new UT_GenericStringMap<UT_UTF8String*>),
+	m_bAutoRevisioning(false),
+	m_bInMath(false)
 {
 }
 
@@ -235,6 +240,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_HISTORYSECTION  32 //<history>
 #define TT_VERSION         33 //<version>
 #define TT_TOC             34 //<toc> (Table of Contents
+#define TT_MATH            35 //<math> Math Run
 
 
 /*
@@ -279,6 +285,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"lists",		TT_LISTSECTION	},
 	{       "m",        TT_META         },
 	{	"margin",		TT_MARGINNOTE	},
+	{	"math",		    TT_MATH     	},
 	{       "metadata", TT_METADATA     },
 	{	"p",			TT_BLOCK		},
 	{   "pagesize",     TT_PAGESIZE     },
@@ -477,6 +484,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_IMAGE:
 	{
+		if(m_bInMath)
+		{
+			UT_DEBUGMSG(("Ignore image in math-tag \n"));
+			return;
+		}
 		X_VerifyParseState(_PS_Block);
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
@@ -489,6 +501,13 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		//
 		X_CheckError(appendObject(PTO_Image,atts));
 #endif
+		return;
+	}
+	case TT_MATH:
+	{
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(appendObject(PTO_Math,atts));
+		m_bInMath = true;
 		return;
 	}
 	case TT_BOOKMARK:
@@ -760,10 +779,15 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 				bAuto = (0 != atoi(szS));
 			else
 				bAuto = false;
+
+			UT_uint32 iXID = 0;
+			szS = UT_getAttribute("top-xid",atts);
+			if(szS)
+				iXID = atoi(szS);
 			
 			szS = UT_getAttribute("uid",atts);
 
-			AD_VersionData v(iId, szS, tStarted, bAuto);
+			AD_VersionData v(iId, szS, tStarted, bAuto, iXID);
 			getDoc()->addRecordToHistory(v);
 		}
 
@@ -936,6 +960,13 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_MATH:						// not a container, so we don't pop stack
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		m_bInMath = false;
+		UT_DEBUGMSG(("In math set false \n"));
 		X_VerifyParseState(_PS_Block);
 		return;
 
@@ -1307,7 +1338,7 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 	else
 		{
 			// <d name="ID" mime-type="image/png" base64="yes"> ... </d>
-			// <d name="ID" mime-type="image/svg-xml | text/mathml" base64="no"> <![CDATA[ ... ]]> </d>
+			// <d name="ID" mime-type="image/svg+xml | application/mathxml+xml" base64="no"> <![CDATA[ ... ]]> </d>
 
 			const XML_Char * r_id = 0;
 			const XML_Char * r_64 = 0;
@@ -1328,9 +1359,9 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 
 							if (strcmp (*attr, "image/png") == 0)
 								mt = mt_png;
-							else if (strcmp (*attr, "image/svg-xml") == 0)
+							else if (strcmp (*attr, "image/svg+xml") == 0 || strcmp (*attr, "image/svg"))
 								mt = mt_svg;
-							else if (strcmp (*attr, "text/mathml") == 0)
+							else if (strcmp (*attr, "application/mathml+xml") == 0)
 								mt = mt_mathml;
 
 							attr++;

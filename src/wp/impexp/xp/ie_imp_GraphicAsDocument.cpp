@@ -67,7 +67,7 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
 	}
    	else if (pFG->getType() == FGT_Vector) { 
 	   buf = (static_cast<FG_GraphicVector*>(pFG))->getVector_SVG();
-	   mimetype = UT_strdup("image/svg-xml");
+	   mimetype = UT_strdup("image/svg+xml");
 	}
    	else {
 	   delete pFG;

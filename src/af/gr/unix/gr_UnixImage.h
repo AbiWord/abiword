@@ -43,8 +43,8 @@ public:
    	GdkPixbuf *			getData(void) const { return m_image; }
     virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
     virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
-
-	void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+    virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
+    void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 private:
 	GdkPixbuf * m_image;

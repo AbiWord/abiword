@@ -21,7 +21,6 @@
                 "_effectLabel" = NSTextField; 
                 "_fontLabel" = NSTextField; 
                 "_fontList" = NSTableView; 
-                "_helpBtn" = NSButton; 
                 "_hiddenButton" = NSButton; 
                 "_noHighlightColorButton" = NSButton; 
                 "_okBtn" = NSButton; 

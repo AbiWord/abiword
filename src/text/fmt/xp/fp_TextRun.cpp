@@ -1,4 +1,4 @@
-/* AbiWord
+ /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
  *
@@ -62,7 +62,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   bool bLookupProperties)
 :	fp_Run(pBL,iOffsetFirst, iLen, FPRUN_TEXT),
 	m_fPosition(TEXT_POSITION_NORMAL),
-	m_bSquiggled(false),
+	m_bSpellSquiggled(false),
+	m_bGrammarSquiggled(false),
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
 	m_bKeepWidths(false),
@@ -250,8 +251,16 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_pLanguage = lls.getCodeFromCode(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
 	{
-
-		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(static_cast<UT_uint32>(FL_DocLayout::bgcrSpelling), getBlock());
+	        UT_uint32 reason =  0;
+		if( getBlock()->getDocLayout()->getAutoSpellCheck())
+		{
+		        reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+		}
+		if( getBlock()->getDocLayout()->getAutoGrammarCheck())
+		{
+		        reason = reason | (UT_uint32) FL_DocLayout::bgcrGrammar;
+		}
+		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(reason, getBlock());
 		bChanged = true;
 	}
 
@@ -895,7 +904,8 @@ bool fp_TextRun::canMergeWithNext(void)
 	if (!getNextRun() ||
 		!getLine() ||
 		getNextRun()->getType() != FPRUN_TEXT ||
-		!getNextRun()->getLine())
+		!getNextRun()->getLine() ||
+		getLength()+ getNextRun()->getLength() > 32000) // sanity check, see bug 8542
 	{
 		return false;
 	}
@@ -1829,8 +1839,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// TODO: draw this underneath (ie, before) the text and decorations
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		m_bSquiggled = false;
-		getBlock()->findSquigglesForRun(this);
+		m_bSpellSquiggled = false;
+		getBlock()->findSpellSquigglesForRun(this);
+		m_bGrammarSquiggled = false;
+		getBlock()->findGrammarSquigglesForRun(this);
 	}
 }
 
@@ -1907,6 +1919,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	m_pRenderInfo->m_iOffset = iStart - getBlockOffset();
 	m_pRenderInfo->m_iLength = iLen;
 	pRect->width = getGraphics()->getTextWidth(*m_pRenderInfo);
+	UT_ASSERT(pRect->left < 10000000);
+	UT_ASSERT(pRect->width >= 0);
 
 	//in case of rtl we are now in the position to calculate the position of the the left corner
 	if(getVisDirection() == UT_BIDI_RTL)
@@ -1927,7 +1941,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 		}
 		delete pLRec;
 	}
-	
+	UT_ASSERT(pRect->left < 10000000);
+	UT_ASSERT(pRect->width >= 0);
 }
 
 /*!
@@ -2121,13 +2136,22 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
+	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		m_bSpellSquiggled = false;
+		getBlock()->findSpellSquigglesForRun(this);
+		m_bGrammarSquiggled = false;
+		getBlock()->findGrammarSquigglesForRun(this);
+	}
 }
 
 void fp_TextRun::_drawInvisibleSpaces(double xoff, double yoff)
 {
-	double       	iWidth = 0;
+	bool bRTL = getVisDirection() == UT_BIDI_RTL;
+	
+	double          iWidth =  bRTL ? getWidth() : 0;
 	UT_uint32       iLen = getLength();
-	double       	iLineWidth = 1+ (UT_MAX(10,getAscent())-10)/8;
+	double       	iLineWidth = 1+ (UT_MAX(10,getAscent())-10)/8; // FIXME: WTF?! get your act together people! MARCM
 	double       	iRectSize = iLineWidth * 3 / 2;
 	double          iWidthOffset = 0.0;
 	double			iY = yoff + getAscent() * 2 / 3;
@@ -2148,11 +2172,21 @@ void fp_TextRun::_drawInvisibleSpaces(double xoff, double yoff)
 		
 		if(text.getChar() == UCS_SPACE)
 		{
-			painter.fillRect(pView->getColorShowPara(), xoff + iWidth + (iCharWidth - iRectSize) / 2,iY,iRectSize,iRectSize);
+			UT_uint32 x;
+			if(bRTL)
+				x = xoff + iWidth - (iCharWidth + iRectSize)/2;
+			else
+				x = xoff + iWidth + (iCharWidth - iRectSize)/2;
+			
+			painter.fillRect(pView->getColorShowPara(), x, iY, iRectSize, iRectSize);
 		}
 		double iCW = iCharWidth > 0.0 && iCharWidth < GR_OC_MAX_WIDTH ? iCharWidth : 0.0;
+
+		if(bRTL)
+			iWidth -= iCW;
+		else
+			iWidth += iCW;
 		
-		iWidth += iCW;
 		++iWidthOffset;
 	}
 }
@@ -2165,7 +2199,7 @@ void fp_TextRun::_drawInvisibles(double xoff, double yoff)
 	_drawInvisibleSpaces(xoff,yoff);
 }
 
-void fp_TextRun::_drawSquiggle(double top, double left, double right)
+void fp_TextRun::_drawSquiggle(double top, double left, double right, FL_SQUIGGLE_TYPE iSquiggle)
 {
 	if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)))
 	{
@@ -2173,10 +2207,27 @@ void fp_TextRun::_drawSquiggle(double top, double left, double right)
 	}
 
 	GR_Painter painter(getGraphics());
+	if(iSquiggle == FL_SQUIGGLE_SPELL)
+	{
+	  m_bSpellSquiggled = true;
+	}
+	if(iSquiggle == FL_SQUIGGLE_GRAMMAR)
+	{
+	  m_bGrammarSquiggled = true;
+	}
 
-	m_bSquiggled = true;
+	UT_sint32 nPoints = 0;
 
-	UT_sint32 nPoints = getGraphics()->tdu((right - left + getGraphics()->tlu(3))/2);
+	if(iSquiggle == FL_SQUIGGLE_SPELL)
+	{
+	  /* Do /\/\/\/\ */
+	  nPoints = getGraphics()->tdu((right - left + getGraphics()->tlu(3))/2);
+	}
+	else
+	{
+	  // Do _|-|_|-|
+	  nPoints = getGraphics()->tdu((right - left + getGraphics()->tlu(3)));
+	}  
 	UT_return_if_fail(nPoints >= 1); //can be 1 for overstriking chars
 
 	/*
@@ -2199,19 +2250,55 @@ void fp_TextRun::_drawSquiggle(double top, double left, double right)
 	points[0].y = top;
 
 	bool bTop = false;
-
-	for (UT_sint32 i = 1; i < nPoints; i++, bTop = !bTop)
+	if(iSquiggle ==  FL_SQUIGGLE_SPELL)
 	{
+	  for (UT_sint32 i = 1; i < nPoints; i++, bTop = !bTop)
+	  {
 		points[i].x = points[i-1].x + getGraphics()->tlu(2);
 		points[i].y = (bTop ? top : top + getGraphics()->tlu(2));
-	}
+	  }
 
-	if (points[nPoints-1].x > right)
+	  if (points[nPoints-1].x > right)
+	  {
+	    points[nPoints-1].x = right;
+	    points[nPoints-1].y = top + getGraphics()->tlu(1);
+	  }
+	}
+	else
 	{
-		points[nPoints-1].x = right;
-		points[nPoints-1].y = top + getGraphics()->tlu(1);
-	}
 
+	  UT_return_if_fail(nPoints >= 2); //can be 1 for overstriking chars
+	  points[0].x = left;
+	  points[0].y = top + getGraphics()->tlu(2);
+	  UT_sint32 i =0;
+	  for (i = 1; i < nPoints-2; i +=2)
+	  {
+		points[i].x = points[i-1].x + getGraphics()->tlu(2);
+		points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
+		points[i+1].x = points[i].x;
+		points[i+1].y = (bTop ? top + getGraphics()->tlu(2) : top);
+		bTop = ! bTop;
+	  }
+	  if(i == (nPoints-2))
+	  {
+		points[i].x = points[i-1].x + getGraphics()->tlu(2);
+		points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
+		points[i+1].x = points[i].x;
+		points[i+1].y = (bTop ? top + getGraphics()->tlu(2) : top);
+		bTop = ! bTop;
+	  }
+	  else if( i == (nPoints-1))
+	  {
+	    points[nPoints-1].x = right;
+	    points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
+	  }
+	  if (points[nPoints-1].x > right)
+	  {
+	    points[nPoints-1].x = right;
+	    points[i].y = (bTop ? top : top + getGraphics()->tlu(2)) ;
+	  }
+
+	}
 	getGraphics()->setLineProperties(getGraphics()->tluD(1.0),
 									 GR_Graphics::JOIN_MITER,
 									 GR_Graphics::CAP_PROJECTING,
@@ -2222,7 +2309,7 @@ void fp_TextRun::_drawSquiggle(double top, double left, double right)
 	if (points != scratchpoints) delete[] points;
 }
 
-void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
+void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen,FL_SQUIGGLE_TYPE iSquiggle )
 {
 //	UT_ASSERT(iLen > 0);
 	if (iLen == 0)
@@ -2237,20 +2324,29 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	double xoff = 0, yoff = 0;
 	double iAscent = getLine()->getAscent();
 	double iDescent = getLine()->getDescent();
-
+	if(iOffset < getBlockOffset())
+	{
+	  iOffset = getBlockOffset();
+	}
 	// we'd prefer squiggle to leave one pixel below the baseline,
 	// but we need to force all three pixels inside the descent
 	// we cannot afford the 1pixel gap, it leave dirt on screen -- Tomas
-	double iGap = (iDescent > 3) ?/*1*/0 : (iDescent - 3);
-
-	getGraphics()->setColor(_getView()->getColorSquiggle());
+	double iGap = (iDescent > 3) ?/*1*/0 : (iDescent - 3); // FIXME: what is this normal -3 doing here??? - MARCM
+	if(iSquiggle == FL_SQUIGGLE_GRAMMAR)
+	{
+	  //	  iGap += getGraphics()->tlu(2);
+	}
+	getGraphics()->setColor(_getView()->getColorSquiggle(iSquiggle));
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	UT_Rect r;
 	_getPartRect( &r, xoff, yoff, iOffset, iLen);
-
-	_drawSquiggle(r.top + iAscent + iGap + getGraphics()->tlu(1), r.left, r.left + r.width);
+	if(r.width > getWidth())
+	{
+	  r.width = getWidth();
+	}
+	_drawSquiggle(r.top + iAscent + iGap + getGraphics()->tlu(1), r.left, r.left + r.width,iSquiggle);
 	xxx_UT_DEBUGMSG(("Done draw sqiggle for run in block %x \n",getBlock()));
 }
 
@@ -2438,6 +2534,21 @@ void fp_TextRun::justify(double iAmount, UT_uint32 iSpacesInRun)
 		m_pRenderInfo->m_iLength = getLength();
 		xxx_UT_DEBUGMSG(("OldWidth %f.2 New Width %f.2 \n",getWidth(),getWidth() + iAmount));
 		_setWidth(getWidth() + iAmount);
+
+#ifdef XP_UNIX_TARGET_GTK
+		// Because Pango does not yet support justification, we need to iterate over the raw
+		// text counting spaces; this is not required by the default graphics class, nor
+		// Uniscribe and for performance reasons it is therefore only conditionally compiled
+		// in; once Pango supports justification, this will not be needed, so this whole lot
+		// will be again removed
+		UT_uint32 iPosStart = getBlockOffset() + fl_BLOCK_STRUX_OFFSET;
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),iPosStart);
+		text.setUpperLimit(iPosStart + getLength() - 1);
+		m_pRenderInfo->m_pText = & text;
+#else
+		m_pRenderInfo->m_pText = NULL;
+#endif
+
 		m_pRenderInfo->m_iJustificationPoints = iSpacesInRun;
 		m_pRenderInfo->m_iJustificationAmount = static_cast<UT_sint32>(iAmount);
 		getGraphics()->justify(*m_pRenderInfo);
@@ -2456,6 +2567,22 @@ UT_sint32 fp_TextRun::countJustificationPoints(bool bLast) const
 	UT_return_val_if_fail(m_pRenderInfo, 0);
 	m_pRenderInfo->m_iLength = getLength();
 
+	UT_return_val_if_fail(m_pRenderInfo->m_iLength > 0, 0);
+
+#ifdef XP_UNIX_TARGET_GTK
+	// Because Pango does not yet support justification, we need to iterate over the raw
+	// text counting spaces; this is not required by the default graphics class, nor
+	// Uniscribe and for performance reasons it is therefore only conditionally compiled
+	// in; once Pango supports justification, this will not be needed, so this whole lot
+	// will be again removed
+	UT_uint32 iPosStart = getBlockOffset() + fl_BLOCK_STRUX_OFFSET;
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),iPosStart);
+	text.setUpperLimit(iPosStart + getLength() - 1);
+	m_pRenderInfo->m_pText = & text;
+#else
+	m_pRenderInfo->m_pText = NULL;
+#endif
+	
 	m_pRenderInfo->m_bLastOnLine = bLast;
 	return getGraphics()->countJustificationPoints(*m_pRenderInfo);
 }
@@ -2527,10 +2654,33 @@ void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 		// only do this once
 		if(_getDirection() == UT_BIDI_UNSET)
 		{
-			UT_UCSChar firstChar;
-			getCharacter(0, firstChar);
+			// here we used to check the first character; we can no longer do that,
+			// because the latest versions of USP create items that are not homogenous and
+			// can contain strong chars prefixed by weak chars. So if the first char is
+			// not strong, we try the rest of the run to see if it might contain any
+			// strong chars
+			PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-			_setDirection(UT_bidiGetCharType(firstChar));
+			text.setUpperLimit(text.getPosition() + getLength() - 1);
+
+			UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+			
+			UT_BidiCharType t = UT_BIDI_UNSET;
+			
+			while(text.getStatus() == UTIter_OK)
+			{
+				UT_UCS4Char c = text.getChar();
+
+				t = UT_bidiGetCharType(c);
+
+				if(UT_BIDI_IS_STRONG(t))
+					break;
+				
+				++text;
+			}
+			
+			_setDirection(t);
 		}
 	}
 	else //meaningfull value received

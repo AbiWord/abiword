@@ -431,22 +431,20 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	return true;
 }
 
-static char _ev_get_underlined_char(const char * szString)
+static guint _ev_get_underlined_char(const char * szString)
 {
 
 	UT_ASSERT(szString);
 	
-	// return the char right after the underline
-	const char * p = szString;
-	while (*p && *(p+1))
+	// return the keycode right after the underline
+	const UT_UCS4String str(szString);
+	for (int i = 0; i < str.length() - 1; )
 	{
-		if (*p == '_')
-			return *++p;
-		else
-			p++;
+		if (str[i++] == '_')
+			return gdk_unicode_to_keyval(str[i]);
 	}
 
-	return 0;
+	return GDK_VoidSymbol;
 }
 
 static void _ev_strip_underline(char * bufResult,
@@ -522,16 +520,6 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_FILE_PRINT_PREVIEW, GTK_STOCK_PRINT_PREVIEW},
 		{AP_MENU_ID_FILE_EXIT, GTK_STOCK_QUIT},
 		{AP_MENU_ID_FILE_REVERT, GTK_STOCK_REVERT_TO_SAVED},
-
-		{AP_MENU_ID_FILE_RECENT_1, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_2, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_3, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_4, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_5, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_6, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_7, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_8, GTK_STOCK_NEW},
-		{AP_MENU_ID_FILE_RECENT_9, GTK_STOCK_NEW},		
 
 		{AP_MENU_ID_EDIT_UNDO, GTK_STOCK_UNDO},
 		{AP_MENU_ID_EDIT_REDO, GTK_STOCK_REDO},
@@ -619,7 +607,19 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{ AP_MENU_ID_TABLE_SELECT_ROW, "Menu_AbiWord_Select_Row"},
 		{ AP_MENU_ID_TABLE_SELECT_TABLE, "Menu_AbiWord_Select_Table"},
 		{ AP_MENU_ID_INSERT_DATETIME, "Menu_AbiWord_Insert_Date"},
-		
+
+		// textbox
+		{ AP_MENU_ID_EDIT_CUT_FRAME, GTK_STOCK_CUT},
+		{ AP_MENU_ID_EDIT_COPY_FRAME, GTK_STOCK_COPY},
+		{ AP_MENU_ID_EDIT_SELECT_FRAME, "Menu_AbiWord_Select_All"},
+		{ AP_MENU_ID_EDIT_DELETEFRAME, GTK_STOCK_DELETE},
+
+		// "wrapped" image
+		{ AP_MENU_ID_FILE_SAVEIMAGE, GTK_STOCK_SAVE_AS}, 
+		{ AP_MENU_ID_EDIT_CUTIMAGE, GTK_STOCK_CUT}, 
+		{ AP_MENU_ID_EDIT_COPYIMAGE, GTK_STOCK_COPY}, 
+		{ AP_MENU_ID_EDIT_DELETEIMAGE, GTK_STOCK_DELETE}, 
+
 		{AP_MENU_ID__BOGUS2__, NULL}
 	};
 	
@@ -749,12 +749,12 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				// version of the underlined char, since all the menus ignore upper
 				// case (SHIFT-MOD1-[char]) invokations of accelerators.
 
-				if (bAltOnMod1)
+				if (keyCode != GDK_VoidSymbol && bAltOnMod1)
 				{
 					EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
 					UT_ASSERT(pEEM);
 					EV_EditMethod * pEM = NULL;
-					pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|tolower(keyCode),&pEM);
+					pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|keyCode,&pEM);
 
 					// if the pointer is valid, there is a conflict
 					bConflict = (pEM != NULL);

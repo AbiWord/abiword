@@ -462,6 +462,215 @@ void s_RTF_ListenerGetProps::_searchCellAPI(PT_AttrPropIndex api)
 
 }
 
+void s_RTF_ListenerGetProps::_check_revs_for_color(const PP_AttrProp * pAP1,
+												   const PP_AttrProp * pAP2,
+												   const PP_AttrProp * pAP3)
+{
+	const PP_AttrProp * pAP = NULL;
+
+	for(UT_uint32 i = 0; i < 3; ++i)
+	{
+		if(i == 0)
+			pAP = pAP1;
+		else if(i == 1)
+			pAP = pAP2;
+		else
+			pAP = pAP3;
+		
+		if(!pAP)
+			continue;
+
+		const XML_Char * pRev;
+		char *pDup  = NULL;
+
+		if(pAP->getAttribute("revision", pRev))
+		{
+			char * p;
+			pDup = p = UT_strdup(pRev);
+
+			do
+			{
+				char * p1 = strstr(p, "color");
+				char * p2 = strstr(p, "bgcolor");
+
+				if(p1 && p2)
+				{
+					p = UT_MIN(p1,p2);
+				}
+				else if(p1)
+				{
+					p = p1;
+				}
+				else
+				{
+					p = p2;
+				}
+			
+				if(p)
+				{
+					char * s = strchr(p, ':');
+					if(s)
+						++s;
+					
+					while(s && *s == ' ')
+						++s;
+				
+					if(s)
+					{
+						char * e1 = strchr(s, ';');
+						char * e2 = strchr(s, '}');
+						char * e;
+
+						if(e1 && e2)
+						{
+							e = UT_MIN(e1,e2);
+						}
+						else if(e1)
+						{
+							e = e1;
+						}
+						else
+						{
+							e = e2;
+						}
+
+						
+						if(e)
+						{
+							*e = 0;
+							p = e+1;
+						}
+						else
+						{
+							p = NULL;
+						}
+
+						m_pie->_findOrAddColor(s);
+					}
+				}
+			
+			}while(p);
+		}
+		else
+			return;
+
+		if(pDup)
+		{
+			free(pDup);
+			pDup = NULL;
+		}
+	}
+}
+
+void s_RTF_ListenerGetProps::_check_revs_for_font(const PP_AttrProp * pAP1,
+												  const PP_AttrProp * pAP2,
+												  const PP_AttrProp * pAP3)
+{
+	const PP_AttrProp * pAP = NULL;
+
+	for(UT_uint32 i = 0; i < 3; ++i)
+	{
+		if(i == 0)
+			pAP = pAP1;
+		else if(i == 1)
+			pAP = pAP2;
+		else
+			pAP = pAP3;
+		
+		if(!pAP)
+			continue;
+
+		const XML_Char * pRev;
+		char *pDup  = NULL;
+
+		if(pAP->getAttribute("revision", pRev))
+		{
+			char * p;
+			pDup = p = UT_strdup(pRev);
+
+			do
+			{
+				char * p1 = strstr(p, "font-family");
+				char * p2 = strstr(p, "field-font");
+
+				if(p1 && p2)
+				{
+					p = UT_MIN(p1,p2);
+				}
+				else if(p1)
+				{
+					p = p1;
+				}
+				else
+				{
+					p = p2;
+				}
+			
+				if(p)
+				{
+					char * s = strchr(p, ':');
+					if(s)
+						++s;
+					
+					while(s && *s == ' ')
+						++s;
+				
+					if(s)
+					{
+						char * e1 = strchr(s, ';');
+						char * e2 = strchr(s, '}');
+						char * e;
+
+						if(e1 && e2)
+						{
+							e = UT_MIN(e1,e2);
+						}
+						else if(e1)
+						{
+							e = e1;
+						}
+						else
+						{
+							e = e2;
+						}
+
+						
+						if(e)
+						{
+							*e = 0;
+							p = e+1;
+						}
+						else
+						{
+							p = NULL;
+						}
+
+						{
+							_rtf_font_info fi;
+
+							if (fi.init(s))
+							{
+								UT_sint32 ndxFont = m_pie->_findFont(&fi);
+								if (ndxFont == -1)
+									m_pie->_addFont(&fi);
+							}
+						}
+					}
+				}
+			
+			}while(p);
+		}
+		else
+			return;
+
+		if(pDup)
+		{
+			free(pDup);
+			pDup = NULL;
+		}
+	}
+}
+
 void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanAP,
 													  const PP_AttrProp * pBlockAP,
 													  const PP_AttrProp * pSectionAP)
@@ -481,6 +690,9 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 		if (ndxColor == -1)
 			m_pie->_addColor(static_cast<const char*>(szColor));
 	}
+
+	// also check the revision attribute
+	_check_revs_for_color(pSpanAP, pBlockAP, pSectionAP);
 	
 	// convert our font properties into an item for the rtf font table.
 	// in this pass thru the document we are just collecting all the
@@ -512,6 +724,10 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 				m_pie->_addFont(&fii);
 		}
 	}
+
+	// also check the revision attribute
+	_check_revs_for_font(pSpanAP, pBlockAP, pSectionAP);
+	
 }
 
 
