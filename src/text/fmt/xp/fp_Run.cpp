@@ -2228,6 +2228,30 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 	//UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties\n"));
 	_inheritProperties();
 
+	// we will make this run to indicate revisions on the block;
+	// examining the m_pRevisions contents is too involved, it is
+	// faster to delete it and create a new instance if needed
+	if(m_pRevisions)
+	{
+		delete m_pRevisions;
+		m_pRevisions = NULL;
+	}
+
+	const PP_AttrProp * pBlockAP = NULL;
+	m_pBL->getAttrProp(&pBlockAP);
+
+	const XML_Char* pRevision = NULL;
+
+	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
+	{
+		// we will not in fact be doing anything with the actual
+		// properties and attributes contained in the revision
+		// we just need its representation so the base class can
+		// handle us properly
+		if(!m_pRevisions)
+			m_pRevisions = new PP_RevisionAttr(pRevision);
+	}
+
 	FV_View* pView = m_pBL->getDocLayout()->getView();
 	if (pView && pView->getShowPara())
 	{

@@ -62,14 +62,22 @@ void fp_FmtMarkRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+
+	GR_Font* pFont = pLayout->findFont(pSpanAP,
+									   pBlockAP,
+									   pSectionAP,
+									   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
 	m_iAscent = m_pG->getFontAscent(pFont);
 	m_iDescent = m_pG->getFontDescent(pFont);
 	m_iHeight = m_pG->getFontHeight(pFont);
 
 #ifndef WITH_PANGO
-	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
+	pFont = pLayout->findFont(pSpanAP,
+							  pBlockAP,
+							  pSectionAP,
+							  FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
+
 	m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);
 	m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
 	m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
@@ -79,8 +87,12 @@ void fp_FmtMarkRun::lookupProperties(void)
 
 	m_iDirection = FRIBIDI_TYPE_WS;
 
-	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-
+	const XML_Char * pszPosition = PP_evalProperty("text-position",
+												   pSpanAP,
+												   pBlockAP,
+												   pSectionAP,
+												   pDoc,
+												   true);
 
 	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{

@@ -9436,12 +9436,22 @@ static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * 
 	else
 	{
 		pDialog->addRevision();
+		// we also want to have paragraph marks and etc visible
+		AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+		UT_ASSERT(pFrameData);
+
+		if(!pFrameData->m_bShowPara)
+		{
+			pFrameData->m_bShowPara = true;
+			pView->setShowPara(true);
+			pView->notifyListeners(AV_CHG_FRAMEDATA);	// to update toolbar
+		}
 	}
 
 
 	pDialogFactory->releaseDialog(pDialog);
 
-		return bOK;
+	return bOK;
 }
 
 Defun1(toggleMarkRevisions)
