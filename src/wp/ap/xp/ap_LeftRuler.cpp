@@ -697,35 +697,47 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 										AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
 {
-	UT_Rect rLeft, rRight;
+	FV_View *pView = static_cast<FV_View *>(m_pView);
+	bool hdrftr = pView->isHdrFtrEdit();
 
-	_getMarginMarkerRects(pInfo,rLeft,rRight);
+	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
+
+	bool hdr = (hdrftr && 
+				pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
+
+	UT_Rect rTop, rBottom;
+
+	_getMarginMarkerRects(pInfo,rTop,rBottom);
 	
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, rLeft);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, rTop);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
-	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
-	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
-	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
+	m_pG->drawLine( rTop.left,  rTop.top, rTop.left + rTop.width, rTop.top);
+	m_pG->drawLine( rTop.left + rTop.width,  rTop.top, rTop.left + rTop.width, rTop.top + rTop.height);
+	m_pG->drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
+	m_pG->drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rLeft.left + 1,  rLeft.top + 1, rLeft.left + rLeft.width - 1, rLeft.top + 1);
-	m_pG->drawLine( rLeft.left + 1,  rLeft.top + rLeft.height - 2, rLeft.left + 1, rLeft.top + 1);
+	m_pG->drawLine( rTop.left + 1,  rTop.top + 1, rTop.left + rTop.width - 1, rTop.top + 1);
+	m_pG->drawLine( rTop.left + 1,  rTop.top + rTop.height - 2, rTop.left + 1, rTop.top + 1);
 	
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
+	// TODO: this isn't the right place for this logic. But it works.
+	if (hdrftr && !hdr)
+		return;
+
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, rBottom);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
-	m_pG->drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
-	m_pG->drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
-	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
-	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
+	m_pG->drawLine( rBottom.left,  rBottom.top, rBottom.left + rBottom.width, rBottom.top);
+	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top, rBottom.left + rBottom.width, rBottom.top + rBottom.height);
+	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
+	m_pG->drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rRight.left + 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + 1);
-	m_pG->drawLine( rRight.left + 1,  rRight.top + rRight.height - 2, rRight.left + 1, rRight.top + 1);
+	m_pG->drawLine( rBottom.left + 1,  rBottom.top + 1, rBottom.left + rBottom.width - 1, rBottom.top + 1);
+	m_pG->drawLine( rBottom.left + 1,  rBottom.top + rBottom.height - 2, rBottom.left + 1, rBottom.top + 1);
 #if 0
     m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + rRight.height - 1);
-	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + rRight.height - 1, rRight.left + 1, rRight.top + rRight.height - 1);
+	m_pG->drawLine( rBottom.left + rBottom.width - 1,  rBottom.top + 1, rBottom.left + rBottom.width - 1, rBottom.top + rBottom.height - 1);
+	m_pG->drawLine( rBottom.left + rBottom.width - 1,  rBottom.top + rBottom.height - 1, rBottom.left + 1, rBottom.top + rBottom.height - 1);
 #endif
 }
 
