@@ -45,8 +45,8 @@ static  UT_sint32 compareStrings(const void * ppS1, const void * ppS2)
 enum
 {
 	TT_ABIPREFERENCES,
-	TT_LOG,
 	TT_GEOMETRY,
+	TT_LOG,
 	TT_PLUGIN,
 	TT_RECENT,
 	TT_SCHEME,
@@ -57,8 +57,8 @@ enum
 static struct xmlToIdMapping s_Tokens[] =
 {
 	{ "AbiPreferences",		TT_ABIPREFERENCES },
-	{ "Log",                TT_LOG},
 	{ "Geometry",			TT_GEOMETRY },
+	{ "Log",                TT_LOG},
 	{ "Plugin",				TT_PLUGIN },
 	{ "Recent",				TT_RECENT },
 	{ "Scheme",				TT_SCHEME },
@@ -701,7 +701,7 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 		_startElement_SystemDefaultFile (name, atts);
 		return;
 	}
-
+	UT_DEBUGMSG(("Looking for %s \n",name));
 	XAP_PrefsScheme * pNewScheme = NULL; // must be freed
 	
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
@@ -716,8 +716,11 @@ void XAP_Prefs::startElement(const XML_Char *name, const XML_Char **atts)
 #endif
 									n_compare));
 	if (!id)
+	{
+		UT_DEBUGMSG(("Didin't find it! Abort! \n"));
+		UT_ASSERT(0);
 		return;
-
+	}
 	switch (id->m_type)
 	{
 		case TT_LOG: // ignore
