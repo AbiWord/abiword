@@ -1269,9 +1269,9 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawMarginProperties(pClipRect, pInfo, GR_Graphics::CLR3D_Foreground);
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,0);
-	_drawTabProperties(pClipRect,pInfo,true);
 	_drawCellProperties(pClipRect, pInfo);
 	_drawParagraphProperties(pClipRect,pInfo,true);
+	_drawTabProperties(pClipRect,pInfo,true);
 	return;
 }
 
@@ -1529,30 +1529,51 @@ void AP_TopRuler::_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell,
 			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 			UT_sint32 pos = xAbsLeft + pCellInfo->m_iRightCellPos;
 			UT_sint32 ileft = s_iFixedHeight/4;
-			prCell->set(pos-ileft,0,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
+			prCell->set(pos-ileft,ileft,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
 		}
 	}
 
 }
 
-void AP_TopRuler::_drawCellMark(UT_Rect * prDrag)
+/*!
+ * This draws a cell marker as either a hollow square or a bevelled square.
+ * The hollow square is to show the original location during a drag.
+ * pUp should be true to draw the bevelled square.
+ */
+void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 {
-//
-// Grey background
-//
-	m_pG->fillRect(GR_Graphics::CLR3D_Background, *prDrag);
 //
 // Draw square inside
 //
-	UT_sint32 left = prDrag->left + 4 ;
-	UT_sint32 right = left + prDrag->width - 8;
-	UT_sint32 top = prDrag->top + 4;
-	UT_sint32 bot = top + prDrag->height - 8;
+	UT_sint32 left = prDrag->left + 2;
+	UT_sint32 right = left + prDrag->width -4;
+	UT_sint32 top = prDrag->top + 2;
+	UT_sint32 bot = top + prDrag->height - 4;
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	m_pG->drawLine(left,top,left,bot);
 	m_pG->drawLine(left,bot,right,bot);
 	m_pG->drawLine(right,bot,right,top);
 	m_pG->drawLine(right,top,left,top);
+//
+// Draw a bevel up
+//
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	left += 1;
+	top += 1;
+	right -= 1;
+	bot -= 1;
+	m_pG->drawLine(left,top,left,bot);
+	m_pG->drawLine(left,bot,right,bot);
+	m_pG->drawLine(right,bot,right,top);
+	m_pG->drawLine(right,top,left,top);
+//
+// Fill with Background?? color
+//
+	left += 1;
+	top += 1;
+	right -= 1;
+	bot -= 1;
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
 }
 
 void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
@@ -1571,7 +1592,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 			xFixed = s_iFixedWidth;
 		}
 		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)xFixed)
-			_drawCellMark(&m_draggingRect);
+			_drawCellMark(&m_draggingRect,true);
 	}
 
 	/*
@@ -1583,13 +1604,6 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 	if (bDrawAll)
 	{
 		// loop over all explicit cells
-#if 0
-
-// might need this code...
-
-		UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
-		UT_sint32 left = xAbsLeft + pInfo->m_xrLeftIndent;
-#endif
 		for (UT_sint32 i = 0; i <= pInfo->m_iCells; i++)
 		{
 			if ((m_draggingWhat == DW_CELLMARK) &&
@@ -1598,7 +1612,10 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 			_getCellMarkerRect(pInfo, i, &rCell);
 
 			if (!pClipRect || rCell.intersectsRect(pClipRect))
-				_drawCellMark(&rCell);
+			{
+				_drawCellGap(pInfo, i);
+				_drawCellMark(&rCell,true);
+			}
 		}
 	}
 }
@@ -1608,15 +1625,68 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo)
 {
+	if(pInfo->m_mode != AP_TopRulerInfo::TRI_MODE_TABLE)
+	{
+		return;
+	}
 	UT_Rect rCell;
-
+	
 	for (UT_sint32 i = 0; i <= pInfo->m_iCells; i++)
 	{
 		_getCellMarkerRect(pInfo, i, &rCell);
 		if (!pClipRect || rCell.intersectsRect(pClipRect))
-			_drawCellMark(&rCell);
+		{
+			_drawCellGap(pInfo, i);
+			_drawCellMark(&rCell,true);
+		}
 	}
+}
 
+/*!
+ * Draw the gap between active regions for tables.
+ */
+void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
+{
+	UT_Rect greyBit;
+	UT_sint32 left,right,top,height;
+	if(pInfo->m_vecTableColInfo)
+	{
+		UT_sint32 nCells = pInfo->m_vecTableColInfo->getItemCount();
+		if(nCells == 0)
+		{
+			return;
+		}
+		if(iCell < nCells)
+		{
+			AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo->getNthItem(iCell);
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
+			if(iCell == 0)
+			{
+				left = xAbsLeft +  pCellInfo->m_iLeftCellPos -  pCellInfo->m_iLeftSpacing;
+			}
+			else
+			{
+				AP_TopRulerTableInfo * pPI = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo->getNthItem(iCell-1);
+				left = xAbsLeft +  pCellInfo->m_iLeftCellPos - pPI->m_iRightSpacing;
+			}
+			right = xAbsLeft + pCellInfo->m_iLeftCellPos + pCellInfo->m_iLeftSpacing;
+		}
+		else
+		{
+			AP_TopRulerTableInfo * pCellInfo = (AP_TopRulerTableInfo *)pInfo->m_vecTableColInfo->getNthItem(nCells-1);
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
+			right = xAbsLeft +  pCellInfo->m_iRightCellPos;
+			left = right  - pCellInfo->m_iRightSpacing;
+			right +=  pCellInfo->m_iRightSpacing;
+		}
+		top = s_iFixedHeight / 4;
+		height =  s_iFixedHeight / 2;
+		greyBit.set(left, top, right - left,height);
+//
+// Grey background
+//
+		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, greyBit);
+	}
 }
 
 void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,

@@ -66,7 +66,9 @@ class AP_TopRulerInfo
 public:
 	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
 
-	AP_TopRulerInfo(void) : 	m_vecTableColInfo(NULL)
+	AP_TopRulerInfo(void) : 	m_mode(TRI_MODE_COLUMNS),
+								m_vecTableColInfo(NULL),
+								m_iCells(0)
 		{
 		}
 	virtual ~AP_TopRulerInfo(void)
@@ -223,7 +225,8 @@ protected:
 									  UT_uint32 kCol, bool bDrawAll);
 	void		_drawCellProperties(const UT_Rect * pClipRect,
 									AP_TopRulerInfo * pInfo);
-	void        _drawCellMark(UT_Rect * prDrag);
+	void        _drawCellGap( AP_TopRulerInfo * pInfo, UT_sint32 iCell);
+	void        _drawCellMark(UT_Rect * prDrag, bool bUp);
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
