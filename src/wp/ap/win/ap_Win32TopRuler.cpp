@@ -69,6 +69,9 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);		
 	pG->init3dColors();
+
+	if (IsWindow(m_hwndTopRuler))
+		SendMessage(m_hwndTopRuler, WM_ERASEBKGND, (WPARAM)GetDC(m_hwndTopRuler), 0);
 }
 
 /*****************************************************************/
