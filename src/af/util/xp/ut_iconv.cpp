@@ -19,6 +19,7 @@
 
 #include "ut_iconv.h"
 #include <iconv.h>
+#include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 
