@@ -419,7 +419,7 @@ int IE_Imp_MsWord_97::_handleCommandField(char *command)
       unsigned int tokenIndex = 0;
       char *token = NULL;
 
-      xxx_UT_DEBUGMSG(("DOM: handleCommandField\n"));
+      xxx_UT_DEBUGMSG(("DOM: handleCommandField '%s'\n", command));
 
       const XML_Char* atts[3];
       atts[2] = NULL;
@@ -523,7 +523,7 @@ int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar, U8 chartype, U
 
 	/* DOM: note to self: make sure wv's iconv problem is fixed */
 	if (chartype)
-	  which[i] = wvHandleCodePage(which[i], lid);
+	  which[i] = wvHandleCodePage(eachchar, lid);
 	else
 	  which[i] = eachchar;
 
