@@ -42,6 +42,43 @@
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
 
+static GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
+
+
+/**
+ * toolbar_append_with_eventbox
+ *
+ * Borrowed code from gnumeric (src/gnumeric-util.c)
+ *
+ * @toolbar               toolbar
+ * @widget                widget to insert
+ * @tooltip_text          tooltip text
+ * @tooltip_private_text  longer tooltip text
+ *
+ * Packs widget in an eventbox and adds the eventbox to toolbar.
+ * This lets a windowless widget (e.g. combo box) have tooltips.
+ **/
+static GtkWidget *
+toolbar_append_with_eventbox (GtkToolbar *toolbar, GtkWidget  *widget,
+			      const char *tooltip_text,
+			      const char *tooltip_private_text)
+{
+	GtkWidget *eventbox;
+
+	UT_ASSERT(GTK_IS_TOOLBAR (toolbar));
+	UT_ASSERT(widget != NULL);
+
+	/* An event box to receive events - this is a requirement for having
+           tooltips */
+	eventbox = gtk_event_box_new ();
+	gtk_widget_show (widget);
+	gtk_container_add (GTK_CONTAINER (eventbox), widget);
+	gtk_widget_show (eventbox);
+	gtk_toolbar_append_widget (GTK_TOOLBAR (toolbar), eventbox,
+				   tooltip_text, tooltip_private_text);
+	return eventbox;
+}
+
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
@@ -72,52 +109,53 @@ public:									// we create...
 			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
 	};
 
-	static void s_DragEventCallback(GtkWidget * /* widget */, GdkEvent * event, _wd * wd)
+
+	static void s_drag_begin(GtkWidget  *widget,
+							GdkDragContext     *context)
 	{
-		UT_ASSERT(wd);
-		UT_DEBUGMSG(("SEVIOR: in s_DragStartCallback this %x Toolbar pointer %x id =%d \n",wd,wd->m_pUnixToolbar,wd->m_id));
+		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: Begin drag at icon id %d \n",wd->m_id));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-		UT_uint32 x = (UT_uint32) event->motion.x;
-		UT_uint32 y = (UT_uint32) event->motion.y;
-//		if(event->button.button == 2)
-		{
-			UT_DEBUGMSG(("SEVIOR: Right button dragged \n"));
-			pFrame->dragEvent(wd->m_id, static_cast<EV_Toolbar *>(wd->m_pUnixToolbar),x,y);
-		}
-		gdk_window_get_pointer(event->motion.window,NULL,NULL,NULL);
-//		wd->m_pUnixToolbar->setCurrentEvent(event);
+	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wd->m_pUnixToolbar;
+		pFrame->dragBegin(wd->m_id,pTBsrc);
 	};
 
 
-	static void s_EnterCallback(GtkWidget * /* widget */, GdkEvent * event, _wd * wd)
+	static void s_drag_drop(GtkWidget  *widget,
+							GdkDragContext     *context,
+							gint x, gint y, guint time )
 	{
-		// this is a static callback method and does not have a 'this' pointer.
-		// map the user_data into an objectS and dispatch the event.
-		UT_ASSERT(wd);
-		UT_DEBUGMSG(("SEVIOR: in s_EnterCallback this %x Toolbar pointer %x id =%d \n",wd,wd->m_pUnixToolbar,wd->m_id));
+		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		GtkWidget * src = gtk_drag_get_source_widget(context);
+		_wd * wdSrc = (_wd *)  gtk_object_get_data(GTK_OBJECT(src),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: Drop at icon id %d source icon %d \n",wd->m_id,wdSrc->m_id));
+		
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-		pFrame->enterEvent(wd->m_id, (EV_Toolbar *) wd->m_pUnixToolbar);
+	    EV_Toolbar * pTBdest = (EV_Toolbar *) wd->m_pUnixToolbar;
+	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
+		pFrame->dragDropToIcon(wdSrc->m_id,wd->m_id,pTBsrc,pTBdest);
 	};
 
-	static void s_LeaveCallback(GtkWidget * /* widget */, GdkEvent *event, _wd * wd)
+	static void s_drag_drop_toolbar(GtkWidget  *widget,
+							GdkDragContext     *context,
+							gint x, gint y, guint time, gpointer pTB)
 	{
-		UT_ASSERT(wd);
-		UT_DEBUGMSG(("SEVIOR: in s_LeaveCallback this %x Toolbar pointer %x id =%d \n",wd,wd->m_pUnixToolbar,wd->m_id));
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-		pFrame->leaveEvent(wd->m_id, (EV_Toolbar *) wd->m_pUnixToolbar);
+		GtkWidget * src = gtk_drag_get_source_widget(context);
+		_wd * wdSrc = (_wd *)  gtk_object_get_data(GTK_OBJECT(src),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: Drop  icon on toolbar source icon %d \n",wdSrc->m_id));
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wdSrc->m_pUnixToolbar->getFrame());
+	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
+	    EV_Toolbar * pTBdest = (EV_Toolbar *) pTB;
+		pFrame->dragDropToTB(wdSrc->m_id,pTBsrc,pTBdest);
 	};
 
-
-	static void s_releaseCallback(GtkWidget * /* widget */, GdkEvent *event, _wd * wd)
+	static void s_drag_end(GtkWidget  *widget,
+							GdkDragContext     *context)
 	{
-		UT_ASSERT(wd);
-		UT_DEBUGMSG(("SEVIOR: in s_releaseCallback this %x Toolbar pointer %x id =%d \n",wd,wd->m_pUnixToolbar,wd->m_id));
-
+		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: End drag of icon id %d \n",wd->m_id));
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-		if(event->button.button == 3)
-		{
-			pFrame->rightMouseReleasedEvent();
-		}
+		pFrame->dragEnd(wd->m_id);
 	};
 
 	static void s_ColorCallback(GtkWidget * /* widget */, gpointer user_data)
@@ -202,14 +240,14 @@ public:									// we create...
 		s_combo_changed(widget, user_data);
 	}
 
+
+
 	EV_UnixToolbar *	m_pUnixToolbar;
 	XAP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
 	bool				m_blockSignal;
-
 	char 				m_comboEntryBuffer[1024];
 };
-
 /*****************************************************************/
 
 EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
@@ -291,6 +329,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 	return true;
 }
 
+
 /*!
  * This method destroys the container widget here and returns the position in
  * the overall vbox container.
@@ -320,11 +359,14 @@ UT_sint32 EV_UnixToolbar::destroy(void)
 		pos = -1;
 	}
 //
-// Now remove the listener to this toolbar
+// Now remove the view listener
 //
-	AV_View * pView = m_pUnixFrame->getCurrentView();
+	AV_View * pView = getFrame()->getCurrentView();
 	pView->removeListener(m_lid);
 	_releaseListener();
+//
+// Finally destroy the old toolbar widget
+//
 	gtk_widget_destroy(m_wHandleBox);
 	return pos;
 }
@@ -343,9 +385,9 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox,oldpos);
 //
-// add a listener for this toolbar.
+// bind  view listener
 //
-	AV_View * pView = m_pUnixFrame->getCurrentView();
+	AV_View * pView = getFrame()->getCurrentView();
 	bindListenerToView(pView);
 }
 
@@ -392,6 +434,13 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
 	gtk_toolbar_set_space_style(GTK_TOOLBAR (m_wToolbar), GTK_TOOLBAR_SPACE_LINE);
+//
+// Make the toolbar a destination for drops
+//
+	gtk_drag_dest_set(m_wToolbar,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+					  s_AbiTBTargets,1,
+					  GDK_ACTION_COPY);
+	gtk_signal_connect(GTK_OBJECT(m_wToolbar),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop_toolbar),this);
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -434,15 +483,23 @@ bool EV_UnixToolbar::synthesize(void)
 													   wPixmap,
 													   GTK_SIGNAL_FUNC(_wd::s_callback),
 													   wd);
-	//  			gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
-//  				gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
-  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
-  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
-  				gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragEventCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"button_release_event",GTK_SIGNAL_FUNC(_wd::s_releaseCallback), wd);
+				GtkWidget * wwd = wd->m_widget;
+				gtk_object_set_data(GTK_OBJECT(wwd),
+									"wd_pointer",
+									wd);
+				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
 
 			}
 			break;
@@ -467,18 +524,26 @@ bool EV_UnixToolbar::synthesize(void)
 															  wPixmap,
 															  GTK_SIGNAL_FUNC(_wd::s_callback),
 															  wd);
+//
 // Add in a right drag method
 //
-//  					gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
-//  					gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
- 					gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
-  					gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
-  					gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
-					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragEventCallback), wd);
-					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
-					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
-					gtk_signal_connect(GTK_OBJECT(wd->m_widget),"button_release_event",GTK_SIGNAL_FUNC(_wd::s_releaseCallback), wd);
-
+				GtkWidget * wwd = wd->m_widget;
+				gtk_object_set_data(GTK_OBJECT(wwd),
+									"wd_pointer",
+									wd);
+				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
 				}
 				break;
 
@@ -576,22 +641,36 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_widget_show(comboBox);
 
 				// stick it in the toolbar
-				gtk_toolbar_append_widget(GTK_TOOLBAR(m_wToolbar),
-										  comboBox,
-										  szToolTip,
-										  (const char *) NULL);
+				//	gtk_toolbar_append_widget(GTK_TOOLBAR(m_wToolbar),
+				//						  comboBox,
+				//						  szToolTip,
+				//						  (const char *) NULL);
+				GtkWidget * evBox = toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+									     comboBox,
+									     szToolTip,
+									     (const char *)NULL);
 				wd->m_widget = comboBox;
-
+//
 // Add in a right drag method
 //
-	//  			gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
-//  				gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
-//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
-//  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
-//  				gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragEventCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
+				GtkWidget * wwd = wd->m_widget;
+				gtk_object_set_data(GTK_OBJECT(wwd),
+									"wd_pointer",
+									wd);
+				gtk_drag_source_set(evBox,GDK_BUTTON3_MASK,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+//				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+//				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+//				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+//				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,bitmap);
+				gtk_drag_dest_set(evBox,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+				gtk_signal_connect(GTK_OBJECT(evBox),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+				gtk_signal_connect(GTK_OBJECT(evBox),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+				gtk_signal_connect(GTK_OBJECT(evBox),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
 			}
@@ -618,15 +697,24 @@ bool EV_UnixToolbar::synthesize(void)
 //
 // Add in a right drag method
 //
-//  				gtk_widget_add_events(wd->m_widget,GDK_ENTER_NOTIFY_MASK);
-//  				gtk_widget_add_events(wd->m_widget,GDK_LEAVE_NOTIFY_MASK);
-  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON3_MOTION_MASK);
-  				gtk_widget_add_events(wd->m_widget,GDK_BUTTON_RELEASE_MASK);
-  				gtk_widget_add_events(wd->m_widget,GDK_POINTER_MOTION_HINT_MASK);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"motion_notify_event",GTK_SIGNAL_FUNC(_wd::s_DragEventCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"enter_notify_event",GTK_SIGNAL_FUNC(_wd::s_EnterCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"leave_notify_event",GTK_SIGNAL_FUNC(_wd::s_LeaveCallback), wd);
-				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"button_release_event",GTK_SIGNAL_FUNC(_wd::s_releaseCallback), wd);
+				GtkWidget * wwd = wd->m_widget;
+				gtk_object_set_data(GTK_OBJECT(wwd),
+									"wd_pointer",
+									wd);
+				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+									s_AbiTBTargets,1,
+									GDK_ACTION_COPY);
+				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,bitmap);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+				gtk_signal_connect(GTK_OBJECT(wd->m_widget),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+
 			}
 			break;
 				

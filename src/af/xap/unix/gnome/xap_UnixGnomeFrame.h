@@ -50,6 +50,7 @@ public:
 	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 	virtual void rebuildMenus(void);
+    virtual void rebuildToolbar(UT_uint32 ibar);
 
   	enum AbiMimeId
   	{

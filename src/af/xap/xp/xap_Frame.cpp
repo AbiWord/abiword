@@ -80,14 +80,13 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_iAutoSavePeriod(0),
 	  m_stAutoSaveExt(),
 	  m_bBackupRunning(false),
-	  m_iDraggedId(0),
-	  m_iDraggedTBNr(0),
-	  m_iEnteredId(0),
-	  m_iEnteredTBNr(0),
-	  m_iLeftId(0),
-	  m_iLeftTBNr(0),
-	  m_bisDraggingIcon(false),
-	  m_bStartDrag(false)
+	  m_isrcId(0),
+	  m_isrcTBNr(0),
+	  m_idestId(0),
+	  m_idestTBNr(0),
+	  m_bisDragging(false),
+	  m_bHasDropped(false),
+	  m_bHasDroppedTB(false)
 {
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -116,14 +115,13 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pInputModes(0),
 	m_iIdAutoSaveTimer(0),
 	m_bBackupRunning(false),
-	m_iDraggedId(0),
-	m_iDraggedTBNr(0),
-	m_iEnteredId(0),
-	m_iEnteredTBNr(0),
-	m_iLeftId(0),
-	m_iLeftTBNr(0),
-	m_bisDraggingIcon(false),
-	m_bStartDrag(false)
+	m_isrcId(0),
+	m_isrcTBNr(0),
+	m_idestId(0),
+	m_idestTBNr(0),
+	m_bisDragging(false),
+	m_bHasDropped(false),
+	m_bHasDroppedTB(false)
 {
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -849,6 +847,7 @@ void XAP_Frame::updateZoom(void)
    }
 }
 
+
 /*!
  * This method destroys toolbar number ibar, then rebuilds it and displays
  * as requested from the current toolbar layouts. Used for dynamic toolbars.
@@ -857,92 +856,111 @@ void XAP_Frame::rebuildToolbar(UT_uint32 ibar)
 {
 }
 
-void XAP_Frame::dragEvent(XAP_Toolbar_Id tbId,  EV_Toolbar * pTB, UT_uint32 x, UT_uint32 y)
+/*!
+ * Record stuff for start of drag.
+\param XAP_Toolbar_Id srcId - source of Toolbar Icon.
+\param EV_Toolbar * pTBSrc pointer to toolbar class that contains the icon.
+*/
+void XAP_Frame::dragBegin(XAP_Toolbar_Id srcId, EV_Toolbar * pTBsrc)
 {
-	UT_DEBUGMSG(("SEVIOR: Doing Drag event id %d m_iDraggedId %d \n",tbId,m_iDraggedId));
-	if(!m_bStartDrag && !m_bisDraggingIcon)
+	m_isrcId = srcId;
+	m_isrcTBNr = findToolbarNr(pTBsrc);
+	m_bisDragging = true;
+	m_bHasDropped = false;
+	m_bHasDroppedTB = false;
+	m_idestId = 0;
+	m_idestTBNr = 0;
+}
+	
+/*
+ * Record the XP stuff from drop event recorded from the toolbars onto an icon
+ */
+void XAP_Frame::dragDropToIcon(XAP_Toolbar_Id srcId,XAP_Toolbar_Id destId, EV_Toolbar * pTBsrc, EV_Toolbar * pTBdest)
+{
+	UT_ASSERT(m_isrcId == srcId);
+	UT_ASSERT(m_isrcTBNr == findToolbarNr(pTBsrc));
+	m_idestId = destId;
+	m_idestTBNr = findToolbarNr(pTBdest);
+	m_bHasDropped = true;
+}
+
+/*
+ * Record the XP stuff from drop event recorded from the toolbars onto a bare
+ * toolbar
+ */
+void XAP_Frame::dragDropToTB(XAP_Toolbar_Id srcId,EV_Toolbar * pTBsrc, EV_Toolbar * pTBdest)
+{
+	UT_ASSERT(m_isrcId == srcId);
+	UT_ASSERT(m_isrcTBNr == findToolbarNr(pTBsrc));
+	m_idestTBNr = findToolbarNr(pTBdest);
+	m_bHasDroppedTB = true;
+}
+
+/*
+ * Actually do the toolbar(s) rebuild from the info recorded.
+ */
+void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
+{
+	UT_ASSERT(m_isrcId == srcId);
+//
+// Drop to icon
+//
+	if(m_bisDragging && m_bHasDropped)
 	{
-		m_bStartDrag = true;
-		UT_DEBUGMSG(("SEVIOR: Load pixmap in cursor \n",tbId,x,y));
-		m_iDraggedId = tbId;
-		m_iDraggedTBNr = findToolbarNr(pTB);
-		UT_ASSERT(m_iDraggedTBNr >= 0);
+		if(m_isrcId != m_idestId)
+		{
+			const char * szTBSrcName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
+			const char * szTBDestName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+			getApp()->getToolbarFactory()->addIconBefore(szTBDestName,m_isrcId,m_idestId);
+			rebuildToolbar(m_isrcTBNr);
+			if(m_isrcTBNr != m_idestTBNr)
+			{
+				rebuildToolbar(m_idestTBNr);
+			}
+		}
 	}
-	m_bisDraggingIcon = true;
-
-}
-
-void XAP_Frame::leaveEvent(XAP_Toolbar_Id tbId,  EV_Toolbar * pTB)
-{
-	m_iLeftId = tbId;
-	m_iLeftTBNr = findToolbarNr(pTB);
-	UT_DEBUGMSG(("SEVIOR: left %d in frame \n",tbId));
-	if(isDraggingIcon() && isDragStarted())
+//
+// Drop to Toolbar
+//
+	if(m_bisDragging && m_bHasDroppedTB)
 	{
-		//
-		UT_DEBUGMSG(("Sevior: Save current TB configuration \n"));
-		UT_DEBUGMSG(("SEVIOR: Remove m_iDraggedId %d from TB no %d \n",m_iDraggedId,m_iDraggedTBNr));
-#ifdef DEBUG
-		const char * szTBName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_iDraggedTBNr);
-		getApp()->getToolbarFactory()->removeIcon(szTBName,m_iDraggedId);
-		rebuildToolbar(m_iDraggedTBNr);
-#endif
-		m_bStartDrag = false;
+		const char * szTBSrcName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
+		const char * szTBDestName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+		const EV_Toolbar_Layout * pTBDest = getToolbar(m_idestTBNr)->getToolbarLayout();
+		UT_uint32 count = pTBDest->getLayoutItemCount();
+		EV_Toolbar_LayoutItem * pTbl =pTBDest->getLayoutItem(count - 1);
+		XAP_Toolbar_Id lastId = pTbl->getToolbarId();
+		getApp()->getToolbarFactory()->addIconAfter(szTBDestName,m_isrcId,lastId);
+		rebuildToolbar(m_isrcTBNr);
+		if(m_isrcTBNr != m_idestTBNr)
+		{
+			rebuildToolbar(m_idestTBNr);
+		}
 	}
-	m_iEnteredId = 0;
-}
-
-void XAP_Frame::enterEvent(XAP_Toolbar_Id tbId, EV_Toolbar * pTB)
-{
-	m_iEnteredId = tbId;
-	m_iEnteredTBNr = findToolbarNr(pTB);
-	UT_DEBUGMSG(("SEVIOR: Entered %d in frame Toolbar No %d \n",tbId,m_iEnteredTBNr));
-}
-
-void XAP_Frame::rightMouseReleasedEvent(void)
-{
-	UT_DEBUGMSG(("SEVIOR: Right button released entered_id = %d dragged_id = %d\n",m_iEnteredId,m_iDraggedId));
-	if(isDraggingIcon() && m_iEnteredId != m_iDraggedId)
+//
+// Remove icon
+//
+	if(m_bisDragging && !m_bHasDroppedTB && !m_bHasDropped)
 	{
-		UT_DEBUGMSG(("SEVIOR: Paste icon %d before %d \n", m_iDraggedId,m_iEnteredId));
-#ifdef DEBUG
-		const char * szTBName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_iEnteredTBNr);
-		getApp()->getToolbarFactory()->addIconBefore(szTBName,m_iDraggedId,m_iEnteredId);
-		rebuildToolbar(m_iEnteredTBNr);
-#endif
-		m_bisDraggingIcon = false;
-		m_iDraggedId = 0;
-		m_bStartDrag = false;
-		return;
+//
+// Ask if icon should be removed.
+//
+		if(XAP_Dialog_MessageBox::a_YES == showMessageBox(XAP_STRING_ID_DLG_Remove_Icon,XAP_Dialog_MessageBox::b_YN,XAP_Dialog_MessageBox::a_NO))
+		{
+			const char * szTBSrcName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
+			rebuildToolbar(m_isrcTBNr);
+		}
 	}
-	if(m_iEnteredId == 0)
-	{
-	    m_iDraggedTBNr = 0;
-	    m_bisDraggingIcon = false;
-	    m_iDraggedId = 0;
-	    m_bStartDrag = false;
-		UT_DEBUGMSG(("SEVIOR: removing icon from TB setup \n"));
-		return;
-	}
-	m_iDraggedTBNr = 0;
-	m_bisDraggingIcon = false;
-	m_iDraggedId = 0;
-	m_bStartDrag = false;
-}
-
-bool XAP_Frame::isDragStarted(void)
-{
-	return m_bStartDrag;
-}
-
-void XAP_Frame::setDragStartedTo(bool bStartState)
-{
-	m_bStartDrag =  bStartState;
-}
-
-bool XAP_Frame::isDraggingIcon(void)
-{ 
-	return m_bisDraggingIcon;
+	m_isrcId = 0;
+	m_isrcTBNr = 0;
+	m_idestId = 0;
+	m_idestTBNr = 0;
+	m_bisDragging = true;
+	m_bHasDropped = false;
+	m_bHasDroppedTB = false;
 }
 
 //////////////////////////////////////////////////////////////////

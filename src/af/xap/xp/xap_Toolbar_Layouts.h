@@ -80,7 +80,7 @@ public:
     bool             removeIcon(const char * szName,
 									XAP_Toolbar_Id nukeId);
 	bool             resetToolbarToDefault(const char * szName);
-
+    bool             saveToolbarsInPreferences(void);
 private:
   UT_Vector m_vecTT;
   XAP_App * m_pApp;

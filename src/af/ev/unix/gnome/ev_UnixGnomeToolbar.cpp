@@ -63,6 +63,9 @@ int EV_UnixGnomeToolbar::nbBands = 0;
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
 
+
+static GtkTargetEntry      s_AbiTBTargets[] = {{"abi-toolbars",0,0}};
+
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
@@ -78,6 +81,55 @@ public:									// we create...
 	~_wd(void)
 	{
 	}
+
+
+	static void s_drag_begin(GtkWidget  *widget,
+							GdkDragContext     *context)
+	{
+		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: Begin drag at icon id %d \n",wd->m_id));
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
+	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wd->m_pUnixToolbar;
+		pFrame->dragBegin(wd->m_id,pTBsrc);
+	};
+
+
+	static void s_drag_drop(GtkWidget  *widget,
+							GdkDragContext     *context,
+							gint x, gint y, guint time )
+	{
+		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		GtkWidget * src = gtk_drag_get_source_widget(context);
+		_wd * wdSrc = (_wd *)  gtk_object_get_data(GTK_OBJECT(src),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: Drop at icon id %d source icon %d \n",wd->m_id,wdSrc->m_id));
+		
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
+	    EV_Toolbar * pTBdest = (EV_Toolbar *) wd->m_pUnixToolbar;
+	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
+		pFrame->dragDropToIcon(wdSrc->m_id,wd->m_id,pTBsrc,pTBdest);
+	};
+
+	static void s_drag_drop_toolbar(GtkWidget  *widget,
+							GdkDragContext     *context,
+							gint x, gint y, guint time, gpointer pTB)
+	{
+		GtkWidget * src = gtk_drag_get_source_widget(context);
+		_wd * wdSrc = (_wd *)  gtk_object_get_data(GTK_OBJECT(src),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: Drop  icon on toolbar source icon %d \n",wdSrc->m_id));
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wdSrc->m_pUnixToolbar->getFrame());
+	    EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
+	    EV_Toolbar * pTBdest = (EV_Toolbar *) pTB;
+		pFrame->dragDropToTB(wdSrc->m_id,pTBsrc,pTBdest);
+	};
+
+	static void s_drag_end(GtkWidget  *widget,
+							GdkDragContext     *context)
+	{
+		_wd * wd = (_wd *) gtk_object_get_data(GTK_OBJECT(widget),"wd_pointer");
+		UT_DEBUGMSG(("SEVIOR: End drag of icon id %d \n",wd->m_id));
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
+		pFrame->dragEnd(wd->m_id);
+	};
 
 	EV_UnixGnomeToolbar *	m_pUnixToolbar;
 	XAP_Toolbar_Id		m_id;
@@ -100,15 +152,15 @@ public:									// we create...
  * Packs widget in an eventbox and adds the eventbox to toolbar.
  * This lets a windowless widget (e.g. combo box) have tooltips.
  **/
-static void
+GtkWidget * 
 toolbar_append_with_eventbox (GtkToolbar *toolbar, GtkWidget  *widget,
 			      const char *tooltip_text,
 			      const char *tooltip_private_text)
 {
 	GtkWidget *eventbox;
 
-	g_return_if_fail (GTK_IS_TOOLBAR (toolbar));
-	g_return_if_fail (widget != NULL);
+	UT_ASSERT(GTK_IS_TOOLBAR (toolbar));
+	UT_ASSERT(widget != NULL);
 
 	/* An event box to receive events - this is a requirement for having
            tooltips */
@@ -118,6 +170,7 @@ toolbar_append_with_eventbox (GtkToolbar *toolbar, GtkWidget  *widget,
 	gtk_widget_show (eventbox);
 	gtk_toolbar_append_widget (GTK_TOOLBAR (toolbar), eventbox,
 				   tooltip_text, tooltip_private_text);
+	return eventbox;
 }
 
 static int s_callback(GtkWidget * /* widget */, gpointer user_data)
@@ -272,7 +325,73 @@ EV_UnixGnomeToolbar::_orient_changed(GtkToolbar *toolbar,
 	  }
 }
 
+/*!
+ * This method destroys the container widget here and returns the position in
+ * the overall vbox container.
+ */
+GnomeDockItem * EV_UnixGnomeToolbar::destroy(GtkOrientation * Orient, 
+											 const char ** szItemName)
+{
+	GnomeDockPlacement placement;
+	guint band_num;
+	guint position;
+	guint offset;
+    GnomeApp *app;
+    app = GNOME_APP(m_pUnixFrame->getTopLevelWindow());
+//
+// Get the dock and then find the dockitem corresponding to this toolbar
+//
+	GnomeDock * wDock = GNOME_DOCK(app->dock);
+	GnomeDockItem * wDockItem = gnome_dock_get_item_by_name(wDock, m_sName.c_str(),
+															&placement,&band_num,
+															&position, &offset);
+	*szItemName = UT_strdup(m_sName.c_str());
+	*Orient = gnome_dock_item_get_orientation(wDockItem);
+//
+// Now remove the view listener
+//
+	AV_View * pView = getFrame()->getCurrentView();
+	pView->removeListener(m_lid);
+	_releaseListener();
+//
+// Finally destroy the old toolbar widget. Destroy the parent which gives a
+// slot for the new toolbar
+//
+	GtkWidget * TBContainer = gnome_dock_item_get_child(wDockItem);
+	gtk_widget_destroy(	TBContainer);
+	return wDockItem;
+}
+
+/*!
+ * This method rebuilds the toolbar and places it in the position it previously
+ * occupied.
+ */
+void EV_UnixGnomeToolbar::rebuildToolbar(GnomeDockItem * wDockItem,
+										 GtkOrientation Orient,
+										 const char * szItemName)
+{
+  //
+  // Build the toolbar, place it in the old dockitem of the previous toolbar.
+  //
+    synthesize(false);
+    GnomeApp *app;
+    app = GNOME_APP(m_pUnixFrame->getTopLevelWindow());
+	gtk_container_add(GTK_CONTAINER(wDockItem),m_wToolbar);
+	m_sName = szItemName;
+	m_vecToolbars.addItem(m_wToolbar);
+//
+// bind  view listener
+//
+	AV_View * pView = getFrame()->getCurrentView();
+	bindListenerToView(pView);
+}
+
 bool EV_UnixGnomeToolbar::synthesize(void)
+{
+	return synthesize(true);
+}
+
+bool EV_UnixGnomeToolbar::synthesize(bool bAddToolbar)
 {
 	// create a GTK toolbar from the info provided.
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
@@ -287,6 +406,13 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
 
 	m_wToolbar = _makeToolbar ();
+//
+// Make the toolbar a destination for drops
+//
+	gtk_drag_dest_set(m_wToolbar,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+					  s_AbiTBTargets,1,
+					  GDK_ACTION_COPY);
+	gtk_signal_connect(GTK_OBJECT(m_wToolbar),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop_toolbar),this);
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -329,6 +455,22 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 														   wPixmap,
 														   GTK_SIGNAL_FUNC(s_callback),
 														   wd);
+					GtkWidget * wwd = wd->m_widget;
+					gtk_object_set_data(GTK_OBJECT(wwd),"wd_pointer",wd);
+					gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
+										s_AbiTBTargets,1,
+										GDK_ACTION_COPY);
+					GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+					GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+					GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+					gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+					gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
+									  s_AbiTBTargets,1,
+									  GDK_ACTION_COPY);
+					gtk_signal_connect(GTK_OBJECT(wwd),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+					gtk_signal_connect(GTK_OBJECT(wwd),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+					gtk_signal_connect(GTK_OBJECT(wwd),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+
 				}
 				break;
 
@@ -352,6 +494,22 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 															  wPixmap,
 															  GTK_SIGNAL_FUNC(s_callback),
 															  wd);
+					GtkWidget * wwd = wd->m_widget;
+					gtk_object_set_data(GTK_OBJECT(wwd),"wd_pointer",wd);
+					gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
+										s_AbiTBTargets,1,
+										GDK_ACTION_COPY);
+					GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+					GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+					GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+					gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+					gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
+									  s_AbiTBTargets,1,
+									  GDK_ACTION_COPY);
+					gtk_signal_connect(GTK_OBJECT(wwd),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+					gtk_signal_connect(GTK_OBJECT(wwd),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+					gtk_signal_connect(GTK_OBJECT(wwd),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+
 				}
 				break;
 
@@ -384,6 +542,7 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 
 						  GtkWidget * comboBox;
 						  comboBox = gtk_combo_text_new (TRUE);
+						UT_ASSERT(GTK_IS_COMBO_TEXT(comboBox));
 
 						if (!gnome_preferences_get_toolbar_relief_btn ())
 						  gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (comboBox), GTK_RELIEF_NONE);
@@ -415,11 +574,32 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 								    GTK_SIGNAL_FUNC (s_combo_changed), wd);
 
 				                // stick it in the toolbar
-						toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+						wd->m_widget = comboBox;
+						GtkWidget * wwd= toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
 									     comboBox,
 									     szToolTip,
 									     (const char *)NULL);
-						wd->m_widget = comboBox;
+						gtk_object_set_data(GTK_OBJECT(wwd),
+											"wd_pointer",
+											wd);
+						gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
+											s_AbiTBTargets,1,
+											GDK_ACTION_COPY);
+						//		GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+						//	GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+						//	GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+						//  gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+						gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
+										  s_AbiTBTargets,1,
+										  GDK_ACTION_COPY);
+						gtk_signal_connect(GTK_OBJECT(wwd),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+						gtk_signal_connect(GTK_OBJECT(wwd),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+						gtk_signal_connect(GTK_OBJECT(wwd),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
+
+						if(wd->m_id ==  AP_TOOLBAR_ID_FMT_STYLE)
+						  {
+							UT_DEBUGMSG(("SEVIOR: wd of style = %x \n",wd));
+						  }
 					}
 				}
 
@@ -432,12 +612,15 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 			case EV_TBIT_ColorBack:
 			  {
 			    GtkWidget * combo;
-			    
-			    if (pAction->getItemType() == EV_TBIT_ColorFore)			      
-				combo = color_combo_new (font_xpm, szToolTip, black, NULL);
+			    GtkWidget * wPixmap;
+			    if (pAction->getItemType() == EV_TBIT_ColorFore)
+				{
+					combo = color_combo_new (font_xpm, szToolTip, black, NULL);
+				}
 			    else
-			      combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
-
+				{
+					combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
+				}
 			    if (!gnome_preferences_get_toolbar_relief_btn ())
 			      gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (combo), GTK_RELIEF_NONE);
 
@@ -445,12 +628,27 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 			    wd->m_widget = combo;
 			    gtk_combo_box_set_title (GTK_COMBO_BOX (combo),
 						     szToolTip);
-			    toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+			    GtkWidget * wwd = toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
 							 combo,
 							 szToolTip,
 							 (const char *)NULL);
 			    gtk_signal_connect (GTK_OBJECT (combo), "changed",
 						GTK_SIGNAL_FUNC (s_color_changed), wd);
+				gtk_object_set_data(GTK_OBJECT(combo),"wd_pointer",wd);
+				gtk_object_set_data(GTK_OBJECT(wwd),"wd_pointer",wd);
+				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
+										s_AbiTBTargets,1,
+										GDK_ACTION_COPY);
+				//				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+				//GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
+				//GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+				//gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
+								  s_AbiTBTargets,1,
+								  GDK_ACTION_COPY);
+				gtk_signal_connect(GTK_OBJECT(wwd),"drag_begin",GTK_SIGNAL_FUNC(_wd::s_drag_begin), wd);
+				gtk_signal_connect(GTK_OBJECT(wwd),"drag_drop",GTK_SIGNAL_FUNC(_wd::s_drag_drop), wd);
+			    gtk_signal_connect(GTK_OBJECT(wwd),"drag_end",GTK_SIGNAL_FUNC(_wd::s_drag_end), wd);
 			    break;
 			  }
 
@@ -482,7 +680,7 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 			_wd * wd = new _wd(this,id);
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
-		        gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
+			gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
 			break;
 		}
 		
@@ -500,7 +698,10 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 	gtk_widget_show(m_wToolbar);
 
 	// add the toolbar to the band
-	_addToolbar(m_wToolbar);
+	if(bAddToolbar)
+	{
+		_addToolbar(m_wToolbar);
+	}
 	return true;
 }
 
@@ -517,7 +718,7 @@ bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 		beh |= GNOME_DOCK_ITEM_BEH_LOCKED;
 
 	name = g_strdup_printf("Abi-Toolbar-%d", nbBands);
-
+	m_sName = name;
 	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
 			      GTK_TOOLBAR(toolbar), name, 
 			      (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
@@ -530,6 +731,7 @@ bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 
 	return true;
 }
+
 
 GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 {
@@ -759,11 +961,12 @@ bool EV_UnixGnomeToolbar::repopulateStyles(void)
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
 	AP_UnixToolbar_StyleCombo * pStyleC = static_cast<AP_UnixToolbar_StyleCombo *>(pControl);
 	pStyleC->repopulate();
+	UT_ASSERT(GTK_IS_COMBO_TEXT(wd->m_widget));
 	GtkComboText * combo = GTK_COMBO_TEXT(wd->m_widget);
 //
 // Now the combo box has to be refilled from this
 //						
-	xxx_UT_DEBUGMSG(("SEVIOR: Got vector of styles \n"));
+	UT_DEBUGMSG(("SEVIOR: Got vector of styles \n"));
 	const UT_Vector * v = pControl->getContents();
 	UT_ASSERT(v);
 //
@@ -789,4 +992,30 @@ bool EV_UnixGnomeToolbar::repopulateStyles(void)
 //
 	return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

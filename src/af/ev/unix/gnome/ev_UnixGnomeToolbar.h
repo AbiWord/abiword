@@ -44,10 +44,18 @@ public:
 	virtual ~EV_UnixGnomeToolbar(void);
 
 	virtual bool synthesize(void);
+	bool synthesize(bool bAddToolbar = true);
 	virtual void show(void);
 	virtual void hide(void);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 	virtual bool repopulateStyles(void);
+GnomeDockItem * destroy(GtkOrientation * bOrient, 
+						const char ** szItemName);
+
+	void rebuildToolbar(GnomeDockItem * wDockItem,
+						GtkOrientation bOrient,
+						const char * szItemName);
+
 	// consider this function protected - it's needed in a callback
 	virtual void _orient_changed(GtkToolbar *toolbar,
 				GtkOrientation dir);
@@ -58,6 +66,7 @@ private:
 	static int nbBands;
 	int nbToolbarsInBand;
 	UT_Vector m_vecToolbars;
+	UT_String m_sName;
 };
 
 #endif /* EV_UNIXGNOMETOOLBAR_H */

@@ -60,6 +60,9 @@ dcl(DLG_QNXMB_No,				"No")
 dcl(DLG_MW_MoreWindows,			"Activate Window")
 dcl(DLG_MW_Activate,			"Activate:")
 
+/* Remove Toolbar Icon */
+dcl(DLG_Remove_Icon,            "Do you want to remove this icon from the toolbar?")
+
 /* Font Selector dialog */
 dcl(DLG_UFS_FontTitle,			"Font")
 dcl(DLG_UFS_FontLabel,			"Font:")

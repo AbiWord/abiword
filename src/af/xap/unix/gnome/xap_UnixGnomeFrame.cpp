@@ -404,6 +404,34 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	return;
 }
 
+void XAP_UnixGnomeFrame::rebuildToolbar(UT_uint32 ibar)
+{
+//
+// Destroy the old toolbar
+//
+	GtkOrientation bOrient;
+	const char* szGtkName = NULL;
+	EV_Toolbar * pToolbar = (EV_Toolbar *) m_vecToolbars.getNthItem(ibar);
+	const char * szTBName = (const char *) m_vecToolbarLayoutNames.getNthItem(ibar);
+	EV_UnixGnomeToolbar * pUTB = static_cast<EV_UnixGnomeToolbar *>( pToolbar);
+	GnomeDockItem * wDockItem = pUTB->destroy(&bOrient,&szGtkName);
+//
+// Delete the old class
+//
+	delete pToolbar;
+//
+// Build a new one.
+//
+	pToolbar = _newToolbar(m_app, (XAP_Frame *) this,szTBName,
+						   (const char *) m_szToolbarLabelSetName);
+	static_cast<EV_UnixGnomeToolbar *>(pToolbar)->rebuildToolbar(wDockItem, 
+																 bOrient, 
+																 szGtkName);
+	delete [] szGtkName;
+	m_vecToolbars.setNthItem(ibar, (void *) pToolbar, NULL);
+	repopulateCombos();
+}
+
 void  XAP_UnixGnomeFrame::rebuildMenus(void)
 {
 	((EV_UnixGnomeMenuBar *) m_pUnixMenu)->destroy();
