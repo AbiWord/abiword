@@ -39,41 +39,6 @@
 #include "ut_assert.h"
 #include "ut_timer.h"
 
-void spell_prefsListener (
-	XAP_App				*pApp,
-	XAP_Prefs			*pPrefs,
-	UT_AlphaHashTable	* /*phChanges*/,  // not used
-	void				*data
-) 
-{
-	UT_Bool b;
-	FL_DocLayout *pDocLayout = (FL_DocLayout *)data;
-
-	UT_DEBUGMSG(("spell_prefsListener\n"));		
-	UT_ASSERT( pApp && pPrefs && data );
-
-	// caps/number/internet
-	//UT_Bool changed = UT_FALSE;	don't htink it's needed
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckCaps, &b );
-	//changed = changed || (b != pDocLayout->getSpellCheckCaps());
-	pDocLayout->m_bSpellCheckCaps = b;
-
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckNumbers, &b );
-	//changed = changed || (b != pDocLayout->getSpellCheckNumbers());
-	pDocLayout->m_bSpellCheckNumbers = b;
-
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckInternet, &b );
-	//changed = changed || (b != pDocLayout->getSpellCheckInternet());
-	pDocLayout->m_bSpellCheckInternet = b;
-	
-	// auto spell
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_AutoSpellCheck, &b );
-	pDocLayout->_toggleAutoSpell( b );
-	// do this because it's recheck to document - TODO
-
-
-}
-
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(19)
 {
 	m_pDoc = doc;
@@ -152,10 +117,10 @@ void FL_DocLayout::setView(FV_View* pView)
 		UT_ASSERT(pPrefs);
 
 		// initialize the vars here
-		spell_prefsListener( pApp, pPrefs, NULL, this );
+		_prefsListener( pApp, pPrefs, NULL, this );
 
 		// keep updating itself	
-		pPrefs->addListener ( spell_prefsListener, this ); 
+		pPrefs->addListener ( _prefsListener, this ); 
 	}
 }
 
@@ -771,5 +736,44 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	}
 
 	return NULL;
+}
+
+/*static*/ void FL_DocLayout::_prefsListener (
+	XAP_App				*pApp,
+	XAP_Prefs			*pPrefs,
+	UT_AlphaHashTable	* /*phChanges*/,  // not used
+	void				*data
+) 
+{
+	UT_Bool b;
+	FL_DocLayout *pDocLayout = (FL_DocLayout *)data;
+
+	// UT_DEBUGMSG(("spell_prefsListener\n"));		
+	UT_ASSERT( pApp && pPrefs && data );
+
+	// caps/number/internet
+	UT_Bool changed = UT_FALSE;	
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckCaps, &b );
+	changed = changed || (b != pDocLayout->getSpellCheckCaps());
+	pDocLayout->m_bSpellCheckCaps = b;
+
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckNumbers, &b );
+	changed = changed || (b != pDocLayout->getSpellCheckNumbers());
+	pDocLayout->m_bSpellCheckNumbers = b;
+
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckInternet, &b );
+	changed = changed || (b != pDocLayout->getSpellCheckInternet());
+	pDocLayout->m_bSpellCheckInternet = b;
+	
+	// auto spell
+	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_AutoSpellCheck, &b );
+	pDocLayout->_toggleAutoSpell( b );
+	// do this because it's recheck to document - TODO
+
+	if ( changed )
+	{
+		// TODO: recheck document
+		;
+	}
 }
 

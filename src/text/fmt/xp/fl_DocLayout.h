@@ -73,9 +73,6 @@ class fl_PartOfBlock;
 class FL_DocLayout
 {
 	friend class fl_DocListener;
-	friend void spell_prefsListener(class XAP_App *, class XAP_Prefs *, 
-								    class UT_AlphaHashTable *, void *);
-
 
 public:
 	FL_DocLayout(PD_Document* doc, GR_Graphics* pG);
@@ -141,6 +138,10 @@ public:
 protected:
 	static void			_spellCheck(UT_Timer * pTimer);
 	void				_toggleAutoSpell(UT_Bool bSpell);
+	
+	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
+									   class UT_AlphaHashTable *, void *);
+
 
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
