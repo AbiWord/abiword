@@ -627,7 +627,7 @@ bool EV_UnixGnomeToolbar::synthesize(bool bAddToolbar)
 				}
 			    else
 				{
-					combo = color_combo_new (tb_text_fgcolor_xpm, szToolTip, NULL, color_group_fetch("background_color", NULL));
+					combo = color_combo_new (tb_text_bgcolor_xpm, szToolTip, NULL, color_group_fetch("background_color", NULL));
 				}
 			    if (!gnome_preferences_get_toolbar_relief_btn ())
 			      gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (combo), GTK_RELIEF_NONE);
