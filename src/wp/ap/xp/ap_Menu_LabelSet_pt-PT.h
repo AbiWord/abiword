@@ -88,7 +88,7 @@ BeginSet(pt,PT,UT_TRUE)
     MenuLabel(AP_MENU_ID_INSERT_SYMBOL,     "Caracteres especiais",    "Inserir caracteres especiais")
     MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,    "Ima&gem",          "Inserir uma imagem")
 
-    MenuLabel(AP_MENU_ID_FORMAT,            "F&ormato",         NULL)
+    MenuLabel(AP_MENU_ID_FORMAT,            "F&ormatar",         NULL)
     MenuLabel(AP_MENU_ID_FMT_FONT,          "&Tipo",         "Mudar o tipo de letra")
     MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,     "&Parágrafo",     "Mudar a definição do parágrafo")
     MenuLabel(AP_MENU_ID_FMT_BULLETS,       "&Listas",     "Formatar listas (não) numeradas")
