@@ -38,43 +38,33 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
-	GtkWidget * m_windowMain;
 
-	void _constructWindowContents (GtkWidget * container);
-	virtual GtkWidget * _constructWindow ();
+	GtkWidget * _constructWindow ();
 
 private:
-
-	typedef enum
-	  {
-	    BUTTON_CANCEL
-	  } ResponseId ;
 
 	void event_DeactivateAll ();
 	void event_Deactivate ();
 	void event_Load ();
-	void event_Select1 ();
+
+	void setPluginList();
 
 	static void s_deactivate_clicked (GtkWidget * w, 
-					  XAP_UnixDialog_PluginManager * dlg);
+									  XAP_UnixDialog_PluginManager * dlg);
 	
 	static void s_deactivate_all_clicked (GtkWidget * w, 
-					      XAP_UnixDialog_PluginManager * dlg);
+										  XAP_UnixDialog_PluginManager * dlg);
 	
 	static void s_load_clicked (GtkWidget * w,
-				    XAP_UnixDialog_PluginManager * dlg);
+								XAP_UnixDialog_PluginManager * dlg);
 
-	static void s_clist_selected (GtkWidget * w,
-				      gint /* row */,
-				      gint /* column */,
-				      GdkEventButton * /* event */,
-				      XAP_UnixDialog_PluginManager * dlg) ;
+	static void s_list_clicked(GtkTreeView *treeview,
+							   XAP_UnixDialog_PluginManager * dlg);
 
-	void _refreshAll ();
-	void _refreshTab1 ();
-	void _refreshTab2 ();
+	void _refresh ();
 
-	GtkWidget * m_clist;
+	GtkWidget * m_windowMain;
+	GtkWidget * m_list;
 	GtkWidget * m_name;
 	GtkWidget * m_author;
 	GtkWidget * m_version;

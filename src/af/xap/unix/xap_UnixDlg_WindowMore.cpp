@@ -37,8 +37,7 @@
 XAP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,
 							   XAP_Dialog_Id id)
 {
-  XAP_UnixDialog_WindowMore * p = new XAP_UnixDialog_WindowMore(pFactory,id);
-  return p;
+	return new XAP_UnixDialog_WindowMore(pFactory,id);
 }
 
 XAP_UnixDialog_WindowMore::XAP_UnixDialog_WindowMore(XAP_DialogFactory * pDlgFactory,
@@ -101,9 +100,7 @@ void XAP_UnixDialog_WindowMore::event_OK(void)
 	if ( !selection || 
 		 !gtk_tree_selection_get_selected (selection, &model, &iter)
 	   )
-	{
 		return;
-	}
 	
 	// get the ID of the selected Type
 	gtk_tree_model_get (model, &iter, 1, &row, -1);

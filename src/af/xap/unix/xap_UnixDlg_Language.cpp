@@ -35,8 +35,7 @@
 XAP_Dialog * XAP_UnixDialog_Language::static_constructor(XAP_DialogFactory * pFactory,
 							 XAP_Dialog_Id id)
 {
-  XAP_UnixDialog_Language * p = new XAP_UnixDialog_Language(pFactory,id);
-  return p;
+	return new XAP_UnixDialog_Language(pFactory,id);
 }
 
 XAP_UnixDialog_Language::XAP_UnixDialog_Language(XAP_DialogFactory * pDlgFactory,
