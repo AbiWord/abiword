@@ -110,14 +110,14 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 {
 	if (!szFilename || !*szFilename)
 	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- invalid filename\n"));
+		UT_DEBUGMSG(("PD_Document::importFile -- invalid filename\n"));
 		return UT_INVALIDFILENAME;
 	}
 
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
 	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct piece table\n"));
+		UT_DEBUGMSG(("PD_Document::importFile -- could not construct piece table\n"));
 		return UT_NOPIECETABLE;
 	}
 
@@ -129,7 +129,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &savedAsType);
 	if (errorCode)
 	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
+		UT_DEBUGMSG(("PD_Document::importFile -- could not construct importer\n"));
 		return errorCode;
 	}
 
@@ -139,7 +139,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 
 	if (errorCode)
 	{
-		UT_DEBUGMSG(("PD_Document::readFromFile -- could not import file\n"));
+		UT_DEBUGMSG(("PD_Document::importFile -- could not import file\n"));
 		return errorCode;
 	}
 	

@@ -1255,7 +1255,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	};
 #else
 	// we always encode as UTF-8
-	m_pie->write("?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	m_pie->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 #endif
 	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
 
@@ -1306,9 +1306,15 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write("\n");	
 	m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
 	m_pie->write("<head>\n");
-	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=");
+#if 0
+	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=\"");
+	// TODO Use charset of document instead of charset of machine.
 	m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	m_pie->write("\" />\n");
+#else
+	// we always encode as UTF-8
+	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=\"UTF-8\" />\n");
+#endif
 	m_pie->write("<title>");
 	m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\n");
