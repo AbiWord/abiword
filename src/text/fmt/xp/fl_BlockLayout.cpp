@@ -150,22 +150,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	UT_ASSERT(m_pDoc);
 	setAttrPropIndex(indexAP);
 
-	setPrev(pPrev);
-	if (getPrev())
-	{
-		setNext(getPrev()->getNext());
-		getPrev()->setNext(this);
-	}
-	else
-	{
-		setNext(pSectionLayout->getFirstLayout());
-	}
-
-	if (getNext())
-	{
-		getNext()->setPrev(this);
-	}
-
 	if(m_szStyle != NULL)
 	{
 		PD_Style * pStyle = NULL;
@@ -2884,11 +2868,11 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "endnote_ref") == 0)
 	{
-		pNewRun = new fp_FieldEndnoteRefRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldFootnoteRefRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
 	{
-		pNewRun = new fp_FieldEndnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldFootnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time") == 0)
 	{

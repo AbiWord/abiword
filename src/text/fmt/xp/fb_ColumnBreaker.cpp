@@ -33,6 +33,7 @@ fb_ColumnBreaker::fb_ColumnBreaker()
 
 UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 {
+	bool bHasFootnote = false, bFirstColumn = true;
 	fl_BlockLayout* pFirstBlock = pSL->getFirstBlock();
 	if (!pFirstBlock)
 	{
@@ -54,6 +55,21 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 		UT_sint32 iWorkingColHeight = 0;
 
 		fp_Line* pCurLine = pFirstLineToKeep;
+		bHasFootnote |= pCurLine->getHasFootnoteRef();
+		// Excellent.  If we have a footnote, we can start deducting
+		// from the working height before we lay out the text.
+		if (pCurLine->getHasFootnoteRef())
+		{
+			// Unless bFirstColumn is false.  In which case we assert
+			// NOT_YET_IMPLEMENTED for now!  Hurrah!
+			if (!bFirstColumn)
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+
+			// Ok.  Now, deduct the proper amount from iMaxColHeight.
+			// We need to get the footnote section.
+			// what's the proper place to do that?
+		}
+
 		while (pCurLine)
 		{
 			UT_sint32 iLineHeight = pCurLine->getHeight();
@@ -219,6 +235,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 			}
 
 			pCurLine = pCurLine->getNextLineInSection();
+			bHasFootnote |= pCurLine->getHasFootnoteRef();
 		}
 
 		if (pLastLineToKeep)
@@ -273,6 +290,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 		pCurColumn->layout();
 
 		pCurColumn = pCurColumn->getNext();
+		bFirstColumn = false;
 	}
 
 	return 0; // TODO return code

@@ -32,6 +32,7 @@ class FL_DocLayout;
 class fp_Column;
 class fp_Container;
 class fp_ShadowContainer;
+class fp_FootnoteContainer;
 class fl_DocSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_HdrFtrShadow;
@@ -102,6 +103,11 @@ protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);
 
+private:
+	// don't allow copying
+	fp_Page(const fp_Page&);		// no impl.
+	void operator=(const fp_Page&);	// no impl.
+
 	FL_DocLayout*		m_pLayout;
 	FV_View*			m_pView;
 	fp_Page*			m_pNext;
@@ -119,10 +125,7 @@ protected:
 	fp_ShadowContainer* m_pFooter;
 	fp_ShadowContainer* m_pHeader;
 
-private:
-	// don't allow copying
-	fp_Page(const fp_Page&);		// no impl.
-	void operator=(const fp_Page&);	// no impl.
+	fp_FootnoteContainer * m_pFootnoteContainer;
 };
 
 #endif /* PAGE_H */

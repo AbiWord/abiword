@@ -228,8 +228,15 @@ public:
 	void                setPaperColor();
 	UT_RGBColor *       getPaperColor(void);
 	void				deleteEmptyColumns(void);
-	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	virtual bool 	    doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+
+	virtual bool        bl_doclistener_insertFootnote(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx, 
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
 
 	void				setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL);
 
@@ -345,7 +352,6 @@ public:
 	virtual bool				recalculateFields(UT_uint32 iUpdateCount);
 	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	void                        localFormat(void);
-	void                        localCollapse(void);
 	virtual void                markAllRunsDirty(void);
 	void                        checkAndRemovePages(void);
 	void                        addValidPages(void);
@@ -402,6 +408,7 @@ public:
 private:
 	UT_sint32					_findShadow(fp_Page * pPage);
 	virtual void				_lookupProperties(void);
+	void                        _localCollapse(void);
 
 	fl_DocSectionLayout*		m_pDocSL;
 	HdrFtrType					m_iHFType;

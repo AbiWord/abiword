@@ -7429,9 +7429,6 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkattrs, const XML_Char **
 	// change the containing section to point to the endnote which doesn't exist yet.
  	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
-	// Move to the end, where we will create the endnotes
-	moveInsPtTo(FV_DOCPOS_EOD);
-
 	// Now create the endnotes section
 	// If there is a list item here remove it!
 
@@ -7452,14 +7449,14 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkattrs, const XML_Char **
 
 	// Now Insert the endnotes section.
 
-	m_pDoc->insertStrux(getPoint(), PTX_SectionEndnote);
+	m_pDoc->insertStrux(getPoint(), PTX_SectionFootnote);
 	m_iInsPoint++;
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 	m_iInsPoint++;
 
 	// Give the endnotes section the properties it needs to attach
 	// itself to the correct DocSectionLayout.
-	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionEndnote);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionFootnote);
 
 	// Change the formatting of the new endnote appropriately
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), blkattrs, blkprops, PTX_Block);

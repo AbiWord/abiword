@@ -329,7 +329,6 @@ void fp_Run::updateHighlightColor(void)
 
 	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
 	static UT_RGBColor sClr;
-	UT_RGBColor * pClr = NULL;
 
 //
 // FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this
@@ -353,8 +352,7 @@ void fp_Run::updateHighlightColor(void)
 			// if it is, then use the cell backgound color
 			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 			{
-				pClr = &((fp_CellContainer *) pCon)->getBgColor();
-				UT_setColor (m_pColorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
+				m_pColorHL = ((fp_CellContainer *) pCon)->getBgColor();
 				return;
 			} 
 			pPage = pCon->getPage();
@@ -362,7 +360,7 @@ void fp_Run::updateHighlightColor(void)
 		if (pPage != NULL)
 		{
 			if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-				pClr = pPage->getOwningSection()->getPaperColor();
+				m_pColorHL = *pPage->getOwningSection()->getPaperColor();
 			else
 			{
 				UT_setColor (m_pColorHL, 255, 255, 255);
@@ -375,8 +373,7 @@ void fp_Run::updateHighlightColor(void)
 			return;
 		}
 		else
-			pClr = getBlock()->getDocSectionLayout()->getPaperColor();
-		UT_setColor (m_pColorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
+			m_pColorHL = *getBlock()->getDocSectionLayout()->getPaperColor();
 		return;		
 	}
 }
@@ -399,8 +396,7 @@ void fp_Run::updatePageColor(void)
 		// if it is, then use the cell backgound color
 		if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 		{
-			pClr = &((fp_CellContainer *) pCon)->getBgColor();
-			UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
+			m_pColorPG = ((fp_CellContainer *) pCon)->getBgColor();
 			return;
 		} 
 		pPage = pCon->getPage();
@@ -3991,8 +3987,8 @@ static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
 	return endnoteNo;
 }
 
-// Refers to an endnote in the main body of the text.
-fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+// Refers to an footnote in the main body of the text.
+fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 #if 0
 	const PP_AttrProp * pp = getAP();
@@ -4005,7 +4001,7 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* p
 }
 
 
-bool fp_FieldEndnoteRefRun::calculateValue(void)
+bool fp_FieldFootnoteRefRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * endid;
@@ -4055,7 +4051,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
-fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 #if 0
 	const PP_AttrProp * pp = getAP();
@@ -4068,7 +4064,7 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graph
 }
 
 // Appears in the EndnoteSection, one per endnote.
-bool fp_FieldEndnoteAnchorRun::calculateValue(void)
+bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * endid;

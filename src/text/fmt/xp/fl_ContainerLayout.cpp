@@ -26,6 +26,7 @@
 
 #include "ap_Prefs.h"
 #include "fl_ContainerLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
@@ -242,20 +243,36 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
 		{
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true);
+			if (pPrev)
+				pPrev->_insertIntoList(pL);
+			else
+			{ 
+				pL->setNext(getFirstLayout()); 
+				if (getFirstLayout()) getFirstLayout()->setPrev(pL); 
+			}
 		}
 		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_TABLE))
 		{
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), (fl_SectionLayout *) pPrev->myContainingLayout(), indexAP);
+			pPrev->_insertIntoList(pL);
 		}
 		else
 		{
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP);
+			if (pPrev)
+				pPrev->_insertIntoList(pL);
+			else
+			{ 
+				pL->setNext(getFirstLayout()); 
+				if (getFirstLayout()) getFirstLayout()->setPrev(pL); 
+			}
 		}
 	}
 	if(iType == FL_CONTAINER_TABLE)
 	{
 		pL = (fl_ContainerLayout *) new fl_TableLayout(getDocLayout(),sdh, indexAP, this);
-		insertIntoList(pL,pPrev);
+		if (pPrev)
+			pPrev->_insertIntoList(pL);
 //
 // Now put the Physical Container into the vertical container that contains it.
 //
@@ -265,7 +282,14 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	if(iType == FL_CONTAINER_CELL)
 	{
 		pL = (fl_ContainerLayout *) new fl_CellLayout(getDocLayout(),sdh, indexAP, this);
-		insertIntoList(pL,pPrev);
+		if (pPrev)
+			pPrev->_insertIntoList(pL);
+	}
+	if(iType == FL_CONTAINER_FOOTNOTE)
+	{
+		pL = (fl_ContainerLayout *) new fl_FootnoteLayout(getDocLayout(), sdh, indexAP, this);
+		if (pPrev)
+			pPrev->_insertIntoList(pL);
 	}
 
 	if (pL == NULL)
@@ -294,21 +318,20 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	return pL;
 }
 
-void  fl_ContainerLayout::insertIntoList(fl_ContainerLayout * pL, fl_ContainerLayout * pPrev)
+/*! 
+   Inserts pL into the containment hierarchy after 'this'.
+   This is actually a general linked list insertion routine.
+*/
+void fl_ContainerLayout::_insertIntoList(fl_ContainerLayout * pL)
 {
-	if(pPrev == NULL)
-	{
-		return;
-	}
-	fl_ContainerLayout * pNext = pPrev->getNext();
-	pPrev->setNext(pL);
-	pL->setPrev(pPrev);
+	fl_ContainerLayout * pNext = getNext();
+	setNext(pL);
+
+	pL->setPrev(this);
 	pL->setNext(pNext);
+
 	if(pNext)
-	{
 		pNext->setPrev(pL);
-	}
-	UT_DEBUGMSG(("SEVIOR: Inserting in List new pointer %x , prev %x \n",pL,pPrev));
 }
 
 /*!

@@ -26,6 +26,7 @@
 
 #include "ap_Prefs.h"
 #include "fl_SectionLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
@@ -2813,7 +2814,7 @@ void fl_HdrFtrSectionLayout::collapse(void)
 		pView->rememberCurrentPosition();
 	}
 
-	localCollapse();
+	_localCollapse();
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	UT_uint32 i;
 	for (i=0; i<iCount; i++)
@@ -3268,7 +3269,7 @@ void fl_HdrFtrSectionLayout::localFormat(void)
  *  This removes all lines and references to containers but leaves the blocks
  *  and runs intact.
  */
-void fl_HdrFtrSectionLayout::localCollapse(void)
+void fl_HdrFtrSectionLayout::_localCollapse(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
@@ -3942,6 +3943,42 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pB
 	pBL = findMatchingContainer(pBL);
    	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc) && bResult;
 	return bResult;
+}
+
+bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFootnote,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+	fl_ContainerLayout * pNewCL = NULL;
+	fl_DocSectionLayout * pCol = (fl_DocSectionLayout *) myContainingLayout();
+	pNewCL = pCol->insert(sdh,pFootnote,pcrx->getIndexAP(), FL_CONTAINER_FOOTNOTE);
+	
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewCL;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////

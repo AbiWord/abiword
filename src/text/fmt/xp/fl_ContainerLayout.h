@@ -90,7 +90,6 @@ public:
 	virtual void		updateLayout(void) = 0;
 	virtual void        markAllRunsDirty(void) =0;
 	virtual void        collapse(void) = 0;
-	void                insertIntoList(fl_ContainerLayout * pL, fl_ContainerLayout * pPrev);
 	virtual void		redrawUpdate(void) = 0;
 	virtual void        setNeedsReformat(void) = 0;
 	virtual void        setNeedsRedraw(void) = 0;
@@ -127,7 +126,8 @@ public:
 #endif
 protected:
 private:
-	virtual bool                _canContainPoint() const {return true;}
+	virtual bool            _canContainPoint() const {return true;}
+	void	                _insertIntoList(fl_ContainerLayout * pL);
 
 	fl_ContainerType	        m_iConType;
 	fl_ContainerLayout*		    m_pMyLayout;

@@ -719,6 +719,8 @@ extern fp_FieldData fp_FieldFmts[];
 
 // these constants define how frequently our fields get updated
 // (in 1/2 seconds)
+// you know, we should be able to not have to scan for endnote changes;
+// they should be told to us.
 #define FIELD_UPDATE_ENDNOTE       3
 #define FIELD_UPDATE_TIME          1
 #define FIELD_UPDATE_DATE        240
@@ -783,11 +785,11 @@ private:
 	UT_Byte					m_fPosition;
 };
 
-class ABI_EXPORT fp_FieldEndnoteRefRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldFootnoteRefRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -799,11 +801,11 @@ private:
 #endif
 };
 
-class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
+class ABI_EXPORT fp_FieldFootnoteAnchorRun : public fp_FieldRun
 {
 public:
 
-	fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
