@@ -47,7 +47,7 @@ EV_EditMethodCallData::EV_EditMethodCallData()
 */
 EV_EditMethodCallData::EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength)
 	: m_xPos(0),
-	  m_yPos(0),
+	  m_yPos(0)
 {
 	m_pData = new UT_UCSChar[dataLength];
 	if (m_pData)
