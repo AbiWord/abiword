@@ -82,7 +82,9 @@ protected:
 			       _PS_DataSec,
 			       _PS_DataItem,
 			       _PS_StyleSec,
-			       _PS_Style
+			       _PS_Style,
+			       _PS_ListSec,
+			       _PS_List
     } ParseState;
 
     UT_Error			m_error;
@@ -91,7 +93,9 @@ protected:
     UT_uint32			m_lenCharDataSeen;
     UT_uint32			m_lenCharDataExpected;
     UT_Bool				m_bSeenCR;
-	
+    
+    UT_Bool			m_bDocHasLists;
+    
     UT_Vector			m_vecInlineFmt;
     UT_Stack			m_stackFmtStartIndex;
 

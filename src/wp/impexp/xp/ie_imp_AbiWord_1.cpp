@@ -172,6 +172,7 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 	m_lenCharDataSeen = 0;
 	m_lenCharDataExpected = 0;
 	m_bSeenCR = UT_FALSE;
+	m_bDocHasLists = UT_FALSE;
 
 	m_currentDataItemName = NULL;
 	m_currentDataItemMimeType = NULL;
@@ -259,6 +260,8 @@ UT_Bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
 #define TT_PAGEBREAK	11		// a forced page-break <pbr>
 #define TT_STYLESECTION	12		// a style section <styles>
 #define TT_STYLE		13		// a style <s> within a style section
+#define TT_LISTSECTION		14	// a list section <lists>
+#define TT_LIST			15	// a list <l> within a list section
 
 struct _TokenTable
 {
@@ -291,12 +294,14 @@ static struct _TokenTable s_Tokens[] =
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
 	{	"br",			TT_BREAK		},
-	{	"data",			TT_DATASECTION	},
+	{	"data",			TT_DATASECTION		},
 	{	"d",			TT_DATAITEM		},
 	{	"cbr",			TT_COLBREAK		},
-	{	"pbr",			TT_PAGEBREAK	},
-	{	"styles",		TT_STYLESECTION	},
+	{	"pbr",			TT_PAGEBREAK		},
+	{	"styles",		TT_STYLESECTION		},
 	{	"s",			TT_STYLE		},
+	{	"lists",		TT_LISTSECTION		},
+	{	"l",			TT_LIST			},
 	{	"*",			TT_OTHER		}};	// must be last
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -456,6 +461,20 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_CheckError(m_pDocument->appendStyle(atts));
 		return;
 		
+	case TT_LISTSECTION:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_ListSec;
+		// As per styles, we don't need to notify the piece table.
+		return;
+		
+	case TT_LIST:
+		X_VerifyParseState(_PS_ListSec);
+		m_parseState = _PS_List;
+		// Urgh! Complex. I think how done.
+		X_CheckError(m_pDocument->appendList(atts));
+		m_bDocHasLists = UT_TRUE;
+		return;
+		
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -562,6 +581,19 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Style);
 		m_parseState = _PS_StyleSec;
+		return;
+
+	case TT_LISTSECTION:
+		X_VerifyParseState(_PS_ListSec);
+		if (m_bDocHasLists)
+			X_CheckError(m_pDocument->fixListHierarchy());
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_LIST:
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_List);
+		m_parseState = _PS_ListSec;
 		return;
 		
 	case TT_OTHER:

@@ -197,7 +197,8 @@ public:
 	inline fp_Run* getFirstRun(void) const { return m_pFirstRun; }
 
 	inline UT_Bool isListItem(void) const { return m_bListItem; }
-	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
+	inline UT_Bool isFirstInList(void) const;
+//	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
 	void    getListAttributesVector( UT_Vector * va);
 	void  getListPropertyVector( UT_Vector * vp);
 
@@ -214,7 +215,7 @@ public:
 	UT_Bool isListLabelInBlock(void); 
 	void StartList( const XML_Char * style);
 
-	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float Indent, UT_uint32 curlevel );
+	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0 );
 
 	void StopList(void);
 	void deleteListLabel(void);
@@ -223,9 +224,10 @@ public:
 	UT_uint32 getLevel(void);
 	void setStarting( UT_Bool bValue);
 	void setStopping( UT_Bool bValue);
-        fl_BlockLayout * getPreviousList(UT_uint32 level);
+        fl_BlockLayout * getPreviousList(UT_uint32 id);
         fl_BlockLayout * getPreviousList(void);
-
+	inline fl_BlockLayout * getParentItem(void);
+	
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
@@ -395,11 +397,9 @@ protected:
 
 	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void * data);
 
-	void 					_startList(UT_uint32 id);
-	void 					_stopList(void);
 	void					_createListLabel(void);
 	void					_deleteListLabel(void);
-	inline void				_addBlockToPrevList( fl_BlockLayout * prevBlockInList);	
+	inline void				_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);	
 	inline void				_prependBlockToPrevList( fl_BlockLayout * nextBlockInList);	
 
 	UT_Bool					m_bNeedsReformat;
@@ -447,7 +447,7 @@ protected:
 	UT_Bool					m_bKeepWithNext;
 	const XML_Char *		m_szStyle;
 
-	fl_AutoNum *			m_pAutoNum;
+	//fl_AutoNum *			m_pAutoNum;
 	UT_Bool					m_bListItem;
 	UT_Bool					m_bStartList;
 	UT_Bool					m_bStopList;

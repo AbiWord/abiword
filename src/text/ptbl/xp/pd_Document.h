@@ -44,6 +44,7 @@ class PP_AttrProp;
 class pf_Frag_Strux;
 class PX_ChangeRecord;
 class PD_Style;
+class fl_AutoNum;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -116,7 +117,7 @@ public:
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	UT_Bool					appendStyle(const XML_Char ** attributes);
-
+	
 	UT_Bool					tellListener(PL_Listener * pListener);
 	UT_Bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
@@ -169,6 +170,16 @@ public:
 	const char *                            getFileName() { return m_szFilename; }
 	UT_uint32                               getLastType() { return m_lastSavedAsType; }
 	
+	// List Functions
+	fl_AutoNum *    getListByID(UT_uint32 id) const;
+	fl_AutoNum *    getNthList(UT_uint32 i) const; 
+	UT_Bool		enumLists(UT_uint32 k, const fl_AutoNum ** pAutoNum) const;
+	UT_uint32       getListsCount(void) const; 
+	void            addList(fl_AutoNum * pAutoNum);
+	UT_Bool		appendList(const XML_Char ** attributes);
+	UT_Bool		fixListHierarchy(void);
+	void	 	removeList(fl_AutoNum * pAutoNum);
+	
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -181,7 +192,8 @@ protected:
 
 	pt_PieceTable *			        m_pPieceTable;
 	UT_Vector				m_vecListeners;
-
+	UT_Vector				m_vecLists;
+	
 	UT_AlphaHashTable		        m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;

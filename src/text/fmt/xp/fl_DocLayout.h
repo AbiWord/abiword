@@ -39,7 +39,7 @@ class GR_Graphics;
 class GR_Font;
 class UT_Timer;
 class fl_PartOfBlock;
-
+class fl_AutoNum;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -177,6 +177,12 @@ public:
 		bgcrSmartQuotes  = (1 <<  2)   // ha!  we're not using background checks for this after all
 	};
 
+	// New List Guts
+	inline fl_AutoNum * 	getListByID(UT_uint32 id) const;
+	inline fl_AutoNum *	getNthList(UT_uint32 i) const; // { return m_vecLists[i]; }
+	inline UT_uint32	getListsCount(void) const; // { return m_vecLists.getItemCount(); }
+	inline void		addList(fl_AutoNum * pAutoNum);
+	
 #ifdef FMT_TEST
 	static		FL_DocLayout* m_pDocLayout;
 
@@ -224,6 +230,8 @@ protected:
 
 	XAP_Prefs *			m_pPrefs;
 
+//	UT_Vector			m_vecLists;
+	
 	UT_Timer*			m_pRedrawUpdateTimer;
 	fp_PageSize			m_pageSize;
 };

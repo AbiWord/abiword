@@ -35,6 +35,7 @@ fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh)
 	m_sdh = sdh;
 	m_apIndex = 0;
 
+	m_pAutoNum = NULL;
 	m_pDoc = NULL;		// set by child
 }
 
@@ -67,3 +68,7 @@ UT_Bool fl_Layout::getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP
 	return m_pDoc->getSpanAttrProp(m_sdh,offset,bLeftSide,ppAP);
 }
 
+inline void fl_Layout::setAutoNum(fl_AutoNum * pAutoNum)
+{
+	m_pAutoNum = pAutoNum;
+}

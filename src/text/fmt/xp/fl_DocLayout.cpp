@@ -26,6 +26,7 @@
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_AutoNum.h"
 #include "fp_Page.h"
 #include "fp_Run.h"
 #include "fv_View.h"
@@ -1496,3 +1497,40 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 		m_pPendingBlockForSmartQuote = NULL;
 		}
 	}
+
+inline fl_AutoNum * FL_DocLayout::getListByID(UT_uint32 id) const
+{
+	return m_pDoc->getListByID(id);
+/*	
+	UT_uint16 i = 0;
+	fl_AutoNum * pAutoNum;
+	
+	UT_ASSERT(m_vecLists.getFirstItem());
+	
+	while (m_vecLists[i])
+	{
+		pAutoNum = (fl_AutoNum *)m_vecLists[i];
+		if (pAutoNum->getID() == id)
+			return pAutoNum;
+		i++;
+	}
+	
+	return 0;
+*/
+}
+
+inline fl_AutoNum * FL_DocLayout::getNthList(UT_uint32 i) const
+{
+	return m_pDoc->getNthList(i);
+}
+
+inline UT_uint32 FL_DocLayout::getListsCount(void) const
+{
+	return m_pDoc->getListsCount();
+}
+
+inline void FL_DocLayout::addList(fl_AutoNum * pAutoNum)
+{
+	m_pDoc->addList(pAutoNum);
+	// m_vecLists.addItem(pAutoNum);
+}

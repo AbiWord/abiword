@@ -33,13 +33,15 @@ class fl_AutoNum
 {
 public:
 	fl_AutoNum(UT_uint32 id, UT_uint32 start, fl_Layout * pItem, fl_AutoNum * pParent, const XML_Char * lDelim, const XML_Char * lDecimal, List_Type lType);
+	fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_uint32 start, const XML_Char * lDelim);
+	void					fixHierarchy(PD_Document *);
 	~fl_AutoNum();
-
+		
 	XML_Char *				getLabel(fl_Layout *) const;
 	List_Type				getType(void);
 	UT_uint32				getValue(fl_Layout *) const;
 	UT_uint32				getLevel(void) const { return m_iLevel; }
-	UT_sint32				getPositionInList( fl_Layout * pItem);
+	UT_sint32				getPositionInList( fl_Layout * pItem) const;
 	void					setListType(List_Type lType);
 	void					setDelim(const XML_Char * pszDelim);
 	void					setDecimal(const XML_Char * pszDecimal);
@@ -49,6 +51,7 @@ public:
 	UT_uint32				getStartValue32(void);
 	void					setStartValue(UT_uint32 start);
 
+	void					insertFirstItem(fl_Layout * pItem, fl_Layout * pLast);
 	void					insertItem(fl_Layout * pItem, fl_Layout * pBefore);
 	void					prependItem(fl_Layout * pItem, fl_Layout * pAfter);
 	void					removeItem(fl_Layout * pItem);
@@ -62,6 +65,7 @@ public:
 	UT_Bool					isLastOnLevel(fl_Layout * pItem) const;
 
 	fl_AutoNum *			getParent(void) const { return m_pParent; }
+	fl_AutoNum * 			getActiveParent(void) const;
 	void				setParent(fl_AutoNum *);
 	void			      	setAsciiOffset(UT_uint32 new_asciioffset);
 
@@ -69,7 +73,10 @@ public:
 	inline UT_Bool			isUpdating(void) const { return m_bUpdatingItems; }
 	inline UT_uint32		getID(void) const { return m_iID; }
 	char *                          dec2roman(UT_sint32 value, UT_Bool lower) const;
- 
+	char *				dec2ascii(UT_sint32 value, UT_uint32 offset) const;
+	
+	const char **			getAttributes(void) const;
+	
 protected:
 
 	void				_calculateLabelStr(UT_uint32 depth);
@@ -78,11 +85,12 @@ protected:
 	inline UT_uint32		_getLevelValue(fl_AutoNum * pAutoNum); 
 
 	fl_AutoNum *			m_pParent;
-
+	
 	UT_Vector				m_pItems;
 
 	List_Type                               m_List_Type;
 	UT_uint32				m_iID;
+	UT_uint32				m_iParentID;
 	UT_uint32				m_iLevel;
 	UT_uint32				m_iStartValue;
 	UT_uint16				m_iAsciiOffset;
@@ -91,6 +99,7 @@ protected:
 	XML_Char                                m_pszDecimal[80];
 	XML_Char                                m_pszDelim[80];
 	XML_Char                                m_pszIndent[80];
+	UT_Bool					m_bWordMultiStyle;
 };
 
 #endif

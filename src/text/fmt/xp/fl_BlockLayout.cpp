@@ -35,6 +35,7 @@
 #include "fp_TextRun.h"
 #include "fp_FieldListLabelRun.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
 #include "pt_Types.h"
@@ -447,9 +448,8 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
-	const XML_Char * szLid, * szLevel;
-	UT_uint32 id, level, last_level, curr_level;
-	UT_uint32 last_id = 0;
+	const XML_Char * szLid;
+	UT_uint32 id;
 
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
@@ -458,147 +458,87 @@ void fl_BlockLayout::_lookupProperties(void)
 	else 
 		id = 0;
 
+/*	if (!pBlockAP || !pBlockAP->getAttribute(PT_PARENTID_ATTRIBUTE_NAME, szPid))
+		szPid = NULL;
+	if (szPid)
+		parent_id = atoi(szPid);
+	else
+		parent_id = 0;
+
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LEVEL_ATTRIBUTE_NAME, szLevel))
 		szLevel = NULL;
 	if (szLevel)
 		level = atoi(szLevel);
 	else 
 		level = 0;
+	UT_DEBUGMSG(("JORDAN: szPid %s, Parent ID %i\n", szPid, parent_id));*/
 
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
-	if(id !=0 && getAutoNum() != NULL)
+	fl_AutoNum * pAutoNum;
+	
+	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
 	{
-		// This block has a list item.
-
-		// Get the id from the previous block.
-		prevBlockInList = (fl_BlockLayout *) getAutoNum()->getPrevInList(this);
-		if(prevBlockInList != NULL)
-		{
-			last_id = prevBlockInList->getAutoNum()->getID();
-		}
-	}
-	else if(id != 0)
-	{
-		// This block does not have an list item. But it should.
-
-		// Find the previous block with the same id
-
-		prevBlockInList = getPreviousList( id);
-		if (prevBlockInList != NULL)
-		{
-			last_id = id;
-		}
-		else  
-		{ 
-		  //
-		  // Look if the block has a matching ID later
-		  //
-		        nextBlockInList =  getNextList(id);
-			UT_DEBUGMSG(("SEVIOR for id %d found block %d \n",nextBlockInList));
-			if(nextBlockInList == NULL)
-			{
-			        last_id = 0;
-			}
-			else
-			{
-			        last_id = id;
-			}
-		}
+		// We have stopped or started a multi-level list
+		m_pAutoNum->removeItem(this);
+		m_pAutoNum = NULL;
+		UT_DEBUGMSG(("Started/Stopped Multi-Level\n"));
 	}
 
-	// Get the last list level.
-
-	if (prevBlockInList != NULL)
+	if (id == 0 && (m_pAutoNum))
 	{
-		last_level = prevBlockInList->getLevel();
-	}
-	else if(nextBlockInList != NULL)
-	{
-	        last_level = nextBlockInList->getLevel();
-	}
-	else
-	{
-		last_level = 0;
-	}
-
-	//
-	// OK finally the business end of the set up. Put in autonum stuff, stat/stop lists etc
-	//
-	if(id == 0 && level == 0 &&  m_pAutoNum != NULL)
-	{
-	        _stopList();
-	}
-	else if (id != last_id) 
-	{
-		if ((level > last_level) && !m_bStartList)
-		{
-			if (last_level > 0 && !m_bListItem && !m_bStopList && prevBlockInList != NULL)
-			{
-				_addBlockToPrevList(prevBlockInList);
-			}
-			else if( last_level > 0 && !m_bListItem && !m_bStopList && nextBlockInList != NULL)
-			{
-			        _prependBlockToPrevList(nextBlockInList);
-			}
-			else if (m_pAutoNum != NULL)
-			{
-				curr_level = m_pAutoNum->getLevel();
-			}
-			else 
-			{
-                                curr_level = 0;
-			}
-			while (curr_level < level)
-			{
-			  UT_DEBUGMSG(("SEVIOR: Calling _startlist, level, curr_level, last_level  %d %d %d \n",level,curr_level,last_level));
-				_startList(id);
-				curr_level++;
-			}
-		}
-		else if ((level == last_level))
-		{
-			/* For now, stop-list then start list */
-			if (!m_bStopList)
-			{
-				if (!m_pAutoNum)
-					_addBlockToPrevList(prevBlockInList);
-				_stopList();
-			}
-			if(id != 0) _startList(id);
-		}
-		else if ((level < last_level) && (!m_bStopList))
-		{
-			if (!m_pAutoNum)
-				_addBlockToPrevList(prevBlockInList);
+		// We have stopped a final list item.
+		m_bStopList = UT_TRUE;
+		m_pAutoNum->removeItem(this);
+		m_bListItem = UT_FALSE;
+		_deleteListLabel();
 		
-			if (m_pAutoNum)
-				curr_level = m_pAutoNum->getLevel();
-			else 
-				curr_level = 0;
-		
-			while (curr_level >  level)
-			{
-				_stopList();
-				curr_level--;
-			}
-		}
-	}
-	else if ((id > 0) && !m_bListItem)
-	{
-		// List id is the same so use list from previous block
-		// for this block.
-	  
-		if(prevBlockInList != NULL)
+		if (m_pAutoNum->isEmpty())
 		{
-		        _addBlockToPrevList(prevBlockInList);
+			m_pDoc->removeList(m_pAutoNum);
+			DELETEP(m_pAutoNum);
 		}
 		else
-		{
-		        _prependBlockToPrevList(nextBlockInList);
-		}
-		m_bListItem = UT_TRUE;
+			m_pAutoNum->update(0);
+		m_bStopList = UT_FALSE;
+		m_pAutoNum = NULL;
+		UT_DEBUGMSG(("Stopped List\n"));
 	}
+
+	if (id != 0 && !m_pAutoNum)
+	{
+		UT_DEBUGMSG(("Adding to List\n"));
+		
+		pAutoNum = m_pDoc->getListByID(id);
+		// TODO Make this more tolerant - create a list.
+		UT_ASSERT(pAutoNum);
+		m_pAutoNum = pAutoNum;
+		m_bListItem = UT_TRUE;
+		
+                prevBlockInList = getPreviousList(id);
+		nextBlockInList = getNextList(id);		
+		
+		if (prevBlockInList)
+			m_pAutoNum->insertItem(this, prevBlockInList);
+		else if (nextBlockInList)
+			m_pAutoNum->prependItem(this, nextBlockInList);
+		else
+		{
+			if (pAutoNum->getParent())
+				prevBlockInList = getParentItem();
+			else 
+				prevBlockInList = NULL;
+			m_pAutoNum->insertFirstItem(this, prevBlockInList);
+			m_bStartList = UT_TRUE;
+		}
+
+		UT_DEBUGMSG(("Added Item to List\n"));
+	}
+
+	// Add this in for loading - see if better way to fix.
+	// if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
+	//	_createListLabel();
+
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -4263,67 +4203,6 @@ List_Type fl_BlockLayout::getListType(void)
 	}
 }
 
-void fl_BlockLayout::_startList(UT_uint32 id)
-{
-	const XML_Char * style = NULL;
-	const PP_AttrProp * pBlockAP = NULL;
-	getAttrProp(&pBlockAP);
-	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
-	UT_uint32 start = atoi(getProperty((XML_Char*)"start-value",UT_TRUE));
-        const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
-        const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
-	List_Type lType = getListTypeFromStyle( style);
-	UT_DEBUGMSG(("SEVIOR: Starting List with style = %s listype = %d start value = %d Delimeter value = %s \n",style,lType,start,lDelim));
-
-	m_pAutoNum = new fl_AutoNum(id, start, this,  m_pAutoNum,lDelim,lDecimal, lType);
-	m_bListItem = UT_TRUE;
-	m_bStartList = UT_TRUE;
-}
-
-
-void fl_BlockLayout::_stopList()
-{
-	fl_AutoNum * pAutoNum = NULL;
-
-	UT_ASSERT(m_pAutoNum);
-
-	m_bStopList = UT_TRUE;
-
-	//	UT_sint32 loc = m_pAutoNum->getPositionInList(this);
-
-	m_pAutoNum->removeItem(this);
-	//	if (m_pAutoNum->getParent() != NULL)
-	//{
-	//	pAutoNum = m_pAutoNum->getParent();
-	//	if (pAutoNum->isItem(this) == UT_FALSE)
-	//	{
-	//		pAutoNum->insertItem(this, m_pAutoNum->getFirstItem());
-	//	}
-	//}
-	//else
-	{
-		if (m_bListLabelCreated)
-			_deleteListLabel();
-		m_bListItem = UT_FALSE;
-		pAutoNum = NULL;
-	}
-	
-	if (m_pAutoNum->isEmpty())
-	{
-		DELETEP(m_pAutoNum);
-	}
-	else
-	{
-		m_pAutoNum->update(0);
-	}
-	m_bStopList = UT_FALSE;
-	m_pAutoNum = pAutoNum;	
-
-//	FV_View* pView = m_pLayout->getView();
-//	if(pView != NULL)
-//	        pView->_generalUpdate();
-}
-
 void fl_BlockLayout::remItemFromList(void)
 {
 	XML_Char lid[15], buf[5];
@@ -4419,12 +4298,54 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
   // attributes and properties are the default values
   //
 	List_Type lType;
-	const XML_Char * lDelim = "%L";
-	XML_Char font[30],lDecimal[10];
-	UT_uint32 level = 1;
-	UT_uint32 startv = 1;
-	float fAlign = 0.25;
-	float fIndent = -0.25;
+	PD_Style * pStyle;
+	const XML_Char * szDelim, * szStart, * szAlign, * szIndent;
+	XML_Char font[30], lDecimal[20];
+	UT_uint32 startv, level, currID;
+	float fAlign, fIndent;
+	
+	m_pDoc->getStyle(style, &pStyle);
+	if (pStyle)
+	{
+		// Use the props in the style
+		pStyle->getProperty((const XML_Char *) "list-delim", szDelim);
+		pStyle->getProperty((const XML_Char *) "start-value", szStart);
+		pStyle->getProperty((const XML_Char *) "margin-left", szAlign);
+		pStyle->getProperty((const XML_Char *) "text-indent", szIndent);
+		if (szStart)
+			startv = atoi(szStart);
+		else 
+			startv = 1;
+		if (szAlign)
+			fAlign = atof(szAlign);
+		else
+			fAlign = 0.25;
+		if (szIndent)
+			fIndent = atof(szIndent);
+		else
+			fIndent = -0.25;
+	}
+	else
+	{
+		szDelim = "%L";
+		startv = 1;
+		fAlign = 0.25;
+		fIndent = -0.25;
+	}
+	
+	if (m_pAutoNum)
+	{
+		level = m_pAutoNum->getLevel();
+		currID = m_pAutoNum->getID();
+	}
+	else
+	{
+		level = 0;
+		currID = 0;
+	}
+	level++;
+	fAlign *= (float)level;
+	
 	lType = getListTypeFromStyle(style);
 	if(lType < BULLETED_LIST)
 	{   
@@ -4440,7 +4361,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
        {
                UT_XML_strncpy((XML_Char *)font,30, (const XML_Char *)"Symbol");
        }
-       StartList( lType, startv,lDelim, lDecimal, font, fAlign, fIndent,level);
+       StartList( lType, startv,szDelim, lDecimal, font, fAlign, fIndent, currID);
 }
 
 void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
@@ -4487,16 +4408,16 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
   // quantities are const XML_Char *
   //
         UT_uint32 count=0;
-	const XML_Char * pszStart = getProperty((XML_Char*)"start-value",UT_TRUE);
-        const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
-        const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
+//	const XML_Char * pszStart = getProperty((XML_Char*)"start-value",UT_TRUE);
+ //       const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",UT_TRUE);
+ //       const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",UT_TRUE);
         const XML_Char * pszAlign =  getProperty((XML_Char*)"margin-left",UT_TRUE);
         const XML_Char * pszIndent =  getProperty((XML_Char*)"text-indent",UT_TRUE);
         const XML_Char * fFont =  getProperty((XML_Char*)"field-font",UT_TRUE);
-	if(pszStart != NULL)
+/*	if(pszStart != NULL)
 	{
 	       vp->addItem( (void *) "start-value");	vp->addItem( (void *) pszStart);
-	}
+	}*/
 	if(pszAlign != NULL)
 	{
 	      vp->addItem( (void *) "margin-left");	vp->addItem( (void *) pszAlign);
@@ -4507,7 +4428,7 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	      vp->addItem( (void *) "text-indent");	vp->addItem( (void *) pszIndent);
 	      count++;
 	}
-	if(lDelim != NULL)
+/*	if(lDelim != NULL)
 	{
 	      vp->addItem( (void *) "list-delim"); vp->addItem( (void *) lDelim);
 	      count++;
@@ -4516,7 +4437,7 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	{
 	      vp->addItem( (void *) "list-decimal"); vp->addItem( (void *) lDecimal);
 	      count++;
-	}
+	}*/
 	if(fFont != NULL)
 	{
 	      vp->addItem( (void *) "field-font"); vp->addItem( (void *) fFont);
@@ -4529,16 +4450,18 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 }
 
 
-void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 curlevel )
+void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID )
 {
   //
   // Starts a new list at the current block with all the options
   //
-	XML_Char lid[15], buf[5],pszStart[15], pszAlign[20],pszIndent[20];
+	XML_Char lid[15], pszAlign[20], pszIndent[20];
 	XML_Char * style = getListStyleString(lType);
 	UT_Bool bRet;
 	UT_uint32 id;
 	UT_Vector vp,va;
+
+	fl_AutoNum * pAutoNum;
 
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
@@ -4547,30 +4470,29 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	id = rand();
 	sprintf(lid, "%i", id);
 
-	sprintf(buf, "%i", curlevel);
-	sprintf(pszStart,"%i",start);
-	sprintf(pszAlign,"%fin",Align);
+//	sprintf(pid, "%i", iParentID);
+//	sprintf(buf, "%i", curlevel);
+//	sprintf(pszStart,"%i",start);
+//	sprintf(pszAlign,"%fin",Align);
 	sprintf(pszIndent,"%fin",indent);
+	sprintf(pszAlign, "%fin", Align);
 
 	va.addItem( (void *) "listid");  va.addItem( (void *) lid);
-	va.addItem( (void *) "level");	va.addItem( (void *) buf);
-	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
+//	va.addItem( (void *) "parentid"); va.addItem( (void *) pid);
+//	va.addItem( (void *) "level");	va.addItem( (void *) buf);
+//	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
-
-	if(lDelim != NULL)
-	{
-	        vp.addItem( (void *) "list-delim"); vp.addItem( (void *) lDelim);
-	}
-	if(lDecimal != NULL)
-	{
-	        vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) lDecimal);
-	}
-	if(fFont != NULL)
-	{
-	        vp.addItem( (void *) "field-font"); vp.addItem( (void *) fFont);
-	}
 	va.addItem( (void *) "style");	va.addItem( (void *) style);
+
+	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim);
+	if (!pAutoNum)
+	{
+		// TODO Out of Mem.
+	}
+	m_pDoc->addList(pAutoNum);
+	pAutoNum->fixHierarchy(m_pDoc);
+
 	UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
@@ -4589,7 +4511,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	props[i] = (XML_Char *) NULL;
 
 	setStarting( UT_FALSE);
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs,props, PTX_Block);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 	pView->_ensureThatInsertionPointIsOnScreen();
 	pView->_eraseInsertionPoint();
 
@@ -4605,21 +4527,21 @@ void    fl_BlockLayout::StopList(void)
   //
   // Stops the list in the current block
   //
-	XML_Char lid[15], buf[5];
+	XML_Char lid[15];
 	UT_Bool bRet;
-	UT_uint32 id;
+	UT_uint32 id, level;
 	UT_Vector vp;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
-
+/*
 	UT_uint32 currLevel = getLevel();
 
 	UT_ASSERT(currLevel > 0);
 	currLevel=0; // was currlevel--
-	sprintf(buf, "%i", currLevel);
+	sprintf(buf, "%i", currLevel);*/
 	PT_DocPosition offset = pView->getPoint() - getPosition();
-	fl_BlockLayout * pNext = getNext();
-	if (currLevel == 0)
+	fl_BlockLayout * pPrev, * pNext;
+/*	if (currLevel == 0)
 	{
 		id = 0;
 		//      if(pNext != NULL && pNext->isListItem()!= UT_TRUE)
@@ -4631,7 +4553,19 @@ void    fl_BlockLayout::StopList(void)
 	{
 		id = getAutoNum()->getParent()->getID();
 		pNext = getPreviousList( id);
+	}*/
+	if (getAutoNum()->getParent())
+	{
+		id = getAutoNum()->getParent()->getID();
+		level = getAutoNum()->getParent()->getLevel();
+		// pNext = getPreviousList(id);
 	}
+	else
+	{
+		id = 0;
+		level = 0;
+	}
+		
 	sprintf(lid, "%i", id);
 
 	setStopping(UT_FALSE);
@@ -4641,40 +4575,113 @@ void    fl_BlockLayout::StopList(void)
 	// Set formatiing to match the next paragraph if it exists
 	//
 	const XML_Char ** props = NULL;
+	const XML_Char * szAlign, * szIndent;
+	pPrev = getPrev();
+	pNext = getNext();
 	
-	if(pNext != NULL)
+	if(id != 0)
 	{
-	        pNext->getListPropertyVector( &vp);
-		UT_uint32 countp = vp.getItemCount() + 1;
-		UT_uint32 i;
-		props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
-		for(i=0; i<vp.getItemCount();i++)
+		//First, look for block in list
+		UT_Bool bmatch = UT_FALSE;
+		bmatch = (UT_Bool)(pPrev->isListItem() && pPrev->getLevel() == level && pPrev->getAutoNum()->getID() == id);
+		while (pPrev && !bmatch)
 		{
-		       if( i > 0 && 
-			   UT_XML_strcmp(props[i-1], 
-					 (XML_Char *) "text-indent")==0)
-		       {
-			       props[i] = (XML_Char *) "0.0000in";
-		       }
-		       else
-		       {
-			       props[i] = (XML_Char *) vp.getNthItem(i);
-		       }
+			pPrev = pPrev->getPrev();
+			if (pPrev && pPrev->isListItem())
+				bmatch = (UT_Bool)(pPrev->getLevel() == level 
+					&& pPrev->getAutoNum()->getID() == id);
 		}
-		props[i] = (XML_Char *) NULL;
-	  
+		while (pNext  && !bmatch)
+		{
+			pNext = pNext->getNext();
+			if (pNext && pNext->isListItem())
+				bmatch = (UT_Bool)(pNext->getLevel() == level 
+					&& pNext->getAutoNum()->getID() == id);
+		}
+		
+		if (pPrev)
+	        	pPrev->getListPropertyVector( &vp);
+		else if (pNext)
+			pNext->getListPropertyVector( &vp);
+		else
+		{
+			// We have a problem
+			List_Type newType;
+			PD_Style * pStyle;
+			float fAlign, fIndent;
+			XML_Char align[30], indent[30];
+			
+			newType = getAutoNum()->getParent()->getType();
+			m_pDoc->getStyle(getListStyleString(newType), &pStyle);
+			if (pStyle)
+			{
+				pStyle->getProperty("margin-left", szAlign);
+				pStyle->getProperty("text-indent", szIndent);
+				fAlign = atof(szAlign);
+				fAlign *= level;
+				sprintf(align, "%fin", fAlign);
+				sprintf(indent, "%s", szIndent);
+			}
+			else
+			{
+				fAlign = 0.25 * level;
+				fIndent = -0.25;
+				sprintf(align, "%fin", fAlign);
+				sprintf(indent, "%fin", fIndent);
+			}
+			
+			vp.addItem((void *) "margin-left");
+			vp.addItem((void *) align);
+			vp.addItem((void *) "text-indent");
+			vp.addItem((void *) indent);
+		}
 	}
-	if (currLevel == 0)
+	else
+	{
+		// Find the last non-list item and set alignment + indent
+		while (pPrev && pPrev->isListItem())
+			pPrev = pPrev->getPrev();
+		
+		while (pNext && pNext->isListItem())
+			pNext = pNext->getNext();
+			
+		if (pPrev)
+		{
+			szAlign = pPrev->getProperty("margin-left", UT_TRUE);
+			szIndent =  pPrev->getProperty("text-indent", UT_TRUE);
+		}
+		else if (pNext)
+		{
+			szAlign = pNext->getProperty("margin-left", UT_TRUE);
+			szIndent = pNext->getProperty("text-indent", UT_TRUE);
+		}
+		else
+		{
+			szAlign = "0.0000in";
+			szIndent = "0.0000in";
+		}
+		vp.addItem((void *) "margin-left"); vp.addItem((void *)szAlign);
+		vp.addItem((void *) "text-indent"); vp.addItem((void *)szIndent);
+	}
+	UT_uint32 countp = vp.getItemCount() + 1;
+	UT_uint32 i;
+	props = (const XML_Char **) calloc(countp, sizeof(XML_Char *));
+	for (i = 0; i < vp.getItemCount(); i++)
+	{
+		props[i] = (XML_Char *) vp.getNthItem(i);
+	}
+	props[i] = NULL;
+
+	if (id == 0)
 	{
 	        const XML_Char * attribs[] = { 	"listid", lid,
-					"level", buf,"style","Normal", 0 };
+					"style","Normal", 0 };
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 		m_bListItem = UT_FALSE;
 	}
 	else
 	{
-	        const XML_Char * attribs[] = { 	"listid", lid,
-					"level", buf,0 };
+	        const XML_Char * attribs[] = { 	"listid", lid, 0 };
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		listUpdate();
 	}
@@ -4696,21 +4703,47 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
   //
   // Find the most recent list item that matches the id given
   //
+  	UT_ASSERT(m_pAutoNum);
 	fl_BlockLayout * pPrev = getPrev();
 	UT_Bool bmatchid =  UT_FALSE;
-	if( pPrev != NULL && pPrev->isListItem())
+	fl_AutoNum * pAutoNum = NULL;
+	
+	if (pPrev != NULL && pPrev->isListItem())
 	{
-	        bmatchid = (UT_Bool) (id == pPrev->getAutoNum()->getID());
-	}
-	while(pPrev != NULL && bmatchid == UT_FALSE) 
-	{ 
-	        pPrev = pPrev->getPrev() ;
-		if( pPrev != NULL && pPrev->isListItem())
-	        {
-		        bmatchid = (UT_Bool) (id == pPrev->getAutoNum()->getID());
+		bmatchid = (UT_Bool) (id == pPrev->getAutoNum()->getID());
+		if (pPrev->isFirstInList() && !bmatchid)
+		{
+			pAutoNum = pPrev->getAutoNum()->getParent();
+			while (pAutoNum && !bmatchid)
+			{
+				bmatchid = (UT_Bool) (id == pAutoNum->getID()
+						&& pAutoNum->isItem(pPrev));
+				pAutoNum = pAutoNum->getParent();
+			}
 		}
 	}
-        return pPrev;
+	
+	while (pPrev != NULL && bmatchid == UT_FALSE)
+	{
+		pPrev = pPrev->getPrev();
+		if (pPrev && pPrev->isListItem())
+		{
+			bmatchid = (UT_Bool) (id == pPrev->getAutoNum()->getID());
+			if (pPrev->isFirstInList() && !bmatchid)
+			{
+				pAutoNum = pPrev->getAutoNum()->getParent();
+				while (pAutoNum && !bmatchid)
+				{
+					bmatchid = (UT_Bool) 
+						(id == pAutoNum->getID()
+						&& pAutoNum->isItem(pPrev));
+					pAutoNum = pAutoNum->getParent();
+				}
+			}
+		}
+	}
+	
+	return pPrev;
 }
 
 
@@ -4747,6 +4780,18 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 	        pPrev = pPrev->getPrev() ;
 	}
         return pPrev;
+}
+
+inline fl_BlockLayout * fl_BlockLayout::getParentItem(void)
+{
+	// TODO Again, more firendly.
+	UT_ASSERT(m_pAutoNum);
+	
+	fl_AutoNum * pParent = m_pAutoNum->getActiveParent();
+	if (pParent)
+		return getPreviousList(pParent->getID());
+	else
+		return NULL;
 }
 
 
@@ -4835,6 +4880,7 @@ void fl_BlockLayout::listUpdate(void)
   //
   // Update the list on the screen to reflect changes made. 
   //
+  	UT_DEBUGMSG(("Entering listUpdate\n"));
 	if (m_pAutoNum == NULL)
 		return;
 	
@@ -4890,6 +4936,7 @@ void fl_BlockLayout::transferListFlags(void)
 
 UT_Bool  fl_BlockLayout::isListLabelInBlock( void)
 {
+	UT_DEBUGMSG(("Entering isListLabelInBlock\n"));
         fp_Run * pRun = m_pFirstRun;
 	UT_Bool bListLabel = UT_FALSE;
 	while( (pRun!= NULL) && (bListLabel == UT_FALSE))
@@ -4902,7 +4949,16 @@ UT_Bool  fl_BlockLayout::isListLabelInBlock( void)
 		}
 		pRun = pRun->getNext();
 	}
+	UT_DEBUGMSG(("Exiting isListLabel in Block with bListLabel: %i\n", bListLabel));
 	return bListLabel;
+}
+
+inline UT_Bool fl_BlockLayout::isFirstInList(void) const
+{
+	if (!m_pAutoNum)
+		return UT_FALSE;
+	else
+		return (UT_Bool) (this == (fl_BlockLayout *)m_pAutoNum->getFirstItem());
 }
 
 void fl_BlockLayout::_createListLabel(void)
@@ -4910,6 +4966,7 @@ void fl_BlockLayout::_createListLabel(void)
   //
   // Put the current list label into this block.
   //
+  	UT_DEBUGMSG(("Entering _createListLabel\n"));
 	if(!m_pFirstRun)
 		return;
 	if (isListLabelInBlock() == UT_TRUE)
@@ -4940,6 +4997,7 @@ void fl_BlockLayout::_createListLabel(void)
 		pView->_drawInsertionPoint();
 	}
 	m_bListLabelCreated = UT_TRUE;
+	UT_DEBUGMSG(("Exiting _createListLabel\n"));
 }
 
 void fl_BlockLayout::deleteListLabel(void)
@@ -5005,13 +5063,32 @@ XML_Char * fl_BlockLayout::getListLabel(void)
 		return NULL;
 }
 
-inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInList)
+inline void fl_BlockLayout::_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level)
 {
   //
   // Insert the current block to the list at the point after prevBlockInList
   //
+	fl_AutoNum * pAutoNum;
+	UT_Bool bMatchList = UT_FALSE;
+	
 	UT_ASSERT(prevBlockInList);
-	m_pAutoNum = prevBlockInList->getAutoNum();
+	
+	pAutoNum = prevBlockInList->getAutoNum();
+	while(pAutoNum && !bMatchList)
+	{
+		if (pAutoNum->getLevel() == level)
+		{
+			bMatchList = UT_TRUE;
+			UT_DEBUGMSG(("Matched List. Returning.\n"));
+		}
+		else
+		{
+			pAutoNum = pAutoNum->getParent();
+			UT_DEBUGMSG(("Didn't match list. Going Up.\n"));
+		}
+	}
+	UT_DEBUGMSG(("Found List with Id: %d\n", pAutoNum->getID()));
+	m_pAutoNum = pAutoNum;
 	m_pAutoNum->insertItem(this, prevBlockInList);
 }
 

@@ -77,6 +77,7 @@ typedef const void * PL_StruxFmtHandle;	/* opaque layout data */
 #define PT_STYLE_ATTRIBUTE_NAME			((const XML_Char *)"style")
 #define PT_LEVEL_ATTRIBUTE_NAME			((const XML_Char *)"level")
 #define PT_LISTID_ATTRIBUTE_NAME		((const XML_Char *)"listid")
+#define PT_PARENTID_ATTRIBUTE_NAME		((const XML_Char *)"parentid")
 #define PT_NAME_ATTRIBUTE_NAME			((const XML_Char *)"name")
 #define PT_TYPE_ATTRIBUTE_NAME			((const XML_Char *)"type")
 #define PT_BASEDON_ATTRIBUTE_NAME		((const XML_Char *)"basedon")

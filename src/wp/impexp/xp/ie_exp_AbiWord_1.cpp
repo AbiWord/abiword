@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
+#include "ut_debugmsg.h"
 #include "pt_Types.h"
 #include "ie_exp_AbiWord_1.h"
 #include "pd_Document.h"
@@ -31,6 +32,7 @@
 #include "px_CR_Strux.h"
 #include "xap_App.h"
 #include "pd_Style.h"
+#include "fl_AutoNum.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -116,6 +118,7 @@ protected:
 								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleStyles(void);
+	void				_handleLists(void);
 	void				_handleDataItems(void);
 	
 	PD_Document *		m_pDocument;
@@ -455,6 +458,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	
 	
 	_handleStyles();
+	_handleLists();
 }
 
 s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
@@ -621,6 +625,53 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 	if (bWroteOpenStyleSection)
 		m_pie->write("</styles>\n");
 
+	return;
+}
+
+void s_AbiWord_1_Listener::_handleLists(void)
+{
+	UT_Bool bWroteOpenListSection = UT_FALSE;
+	
+ 	//const char * szID;
+	//const char * szPid;
+	//const char * szProps;
+
+	const fl_AutoNum * pAutoNum;
+	const char ** attr;
+
+#define LCheck(str) (0 == UT_stricmp(attr[0], str))
+
+	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
+	{	
+		if (pAutoNum->isEmpty())
+			continue;
+		
+		if (!bWroteOpenListSection)
+		{
+			m_pie->write("<lists>\n");
+			bWroteOpenListSection = UT_TRUE;
+		}
+		m_pie->write("<l");
+		for (attr = pAutoNum->getAttributes(); (*attr); attr++)
+		{
+			if (LCheck("id") || LCheck("parentid") || LCheck("type") || LCheck("start-value") || LCheck("list-delim"))
+			{
+				m_pie->write(" ");
+				m_pie->write(attr[0]);
+				m_pie->write("=\""); 
+				m_pie->write(attr[1]);
+				m_pie->write("\"");
+			}
+			//attr++;
+		}
+		m_pie->write("/>\n");
+	}
+
+#undef LCheck			
+	
+	if (bWroteOpenListSection)
+		m_pie->write("</lists>\n");
+	
 	return;
 }
 

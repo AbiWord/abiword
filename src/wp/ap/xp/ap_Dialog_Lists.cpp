@@ -234,21 +234,30 @@ void  AP_Dialog_Lists::Apply(void)
 	              getBlock()->listUpdate();
 		      return;
 	      }
-	      else 
+	      else if (m_bisCustomized == UT_TRUE)
 	      {
-	              getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, m_iLevel); 
+	              getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0); 
 	              getBlock()->listUpdate();
 	              return;
+	      }
+	      else if (m_bisCustomized == UT_FALSE)
+	      {
+	      	      getBlock()->StartList(getBlock()->getListStyleString(m_newListType));
+		      getBlock()->listUpdate();
 	      }
        }
        if(m_bStartSubList == UT_TRUE && m_newListType != NOT_A_LIST )
        { 
 	      if(m_isListAtPoint == UT_TRUE)
 	      {
-		      getBlock()->StopList();
+		//      getBlock()->StopList();
 		      UT_uint32 curlevel = getBlock()->getLevel();
+		      UT_uint32 currID = getBlock()->getAutoNum()->getID();
 		      curlevel++;
-		      getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, m_iLevel); 
+		      if (m_bisCustomized == UT_TRUE)
+		      	getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID); 
+		      else if (m_bisCustomized == UT_FALSE)
+		      	getBlock()->StartList(getBlock()->getListStyleString(m_newListType));
 		      getBlock()->listUpdate();
 		      return;
 	      }
@@ -359,10 +368,13 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
        // Now generate the AutoNum
        //
        DELETEP(m_pFakeAuto);
-       m_pFakeAuto = new fl_AutoNum(m_iID,m_newStartValue,m_pFakeLayout[0],NULL,m_pszDelim,m_pszDecimal,m_newListType);
+       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, "%L");
+       m_pFakeAuto->insertFirstItem(m_pFakeLayout[0], NULL);
+       m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
        for(i=1; i<4; i++)
        {
 	      m_pFakeAuto->insertItem(m_pFakeLayout[i],m_pFakeLayout[i-1]);
+	      m_pFakeLayout[i]->setAutoNum(m_pFakeAuto);
        }
 }
 

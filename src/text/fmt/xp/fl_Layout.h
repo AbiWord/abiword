@@ -27,6 +27,7 @@
 
 class PP_AttrProp;
 class PD_Document;
+class fl_AutoNum;
 
 /*
 	fl_Layout is the base class for all layout objects which correspond to 
@@ -49,6 +50,8 @@ public:
 	UT_Bool				getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP_AttrProp ** ppAP) const;
 	
 	virtual	void		listUpdate(void) { return; }
+	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
+	inline void		setAutoNum(fl_AutoNum * pAutoNum);
 	
 	inline PD_Document *	getDocument(void) const { return m_pDoc; };
 	
@@ -56,7 +59,8 @@ protected:
 	PTStruxType				m_type;
 	PL_StruxDocHandle		m_sdh;
 	PT_AttrPropIndex		m_apIndex;
-
+	fl_AutoNum * 			m_pAutoNum;
+	
 	PD_Document *			m_pDoc;		// set by child
 };
 

@@ -36,7 +36,7 @@
 #include "ie_exp.h"
 #include "pf_Frag_Strux.h"
 #include "pd_Style.h"
-
+#include "fl_AutoNum.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -823,3 +823,121 @@ void PD_Document::clearIfAtFmtMark(PT_DocPosition dpos)
 	m_pPieceTable->clearIfAtFmtMark(dpos);
 }
 
+////////////////////////////////////////////////////////////////
+// List Vector Functions
+
+fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
+{
+	UT_uint16 i = 0;
+        fl_AutoNum * pAutoNum;
+	        
+	UT_ASSERT(m_vecLists.getFirstItem());
+		        
+	while (m_vecLists[i])
+	{
+	 	pAutoNum = (fl_AutoNum *)m_vecLists[i];
+                if (pAutoNum->getID() == id)
+        		return pAutoNum;
+	     	i++;
+        }
+	
+	return 0;
+}
+
+UT_Bool PD_Document::enumLists(UT_uint32 k, const fl_AutoNum ** pAutoNum) const
+{
+	UT_uint32 kLimit = m_vecLists.getItemCount();
+	if (k >= kLimit)
+		return UT_FALSE;
+	
+	if (pAutoNum)
+		*pAutoNum = (fl_AutoNum *)m_vecLists[k];
+	
+	return UT_TRUE;
+}
+
+fl_AutoNum * PD_Document::getNthList(UT_uint32 i) const
+{
+	UT_ASSERT(i >= 0);
+	return (fl_AutoNum *)m_vecLists[i];
+}
+
+UT_uint32 PD_Document::getListsCount(void) const
+{
+	return m_vecLists.getItemCount();
+}
+
+void PD_Document::addList(fl_AutoNum * pAutoNum)
+{
+	m_vecLists.addItem(pAutoNum);
+}
+
+UT_Bool PD_Document::appendList(const XML_Char ** attributes)
+{
+	const XML_Char * szID, * szPid, * szType, * szStart, * szDelim;
+	UT_uint32 id, parent_id, start;
+	List_Type type;
+	
+	for (const XML_Char ** a = attributes; (*a); a++)
+	{
+		if (UT_XML_stricmp(a[0],"id") == 0)
+			szID = a[1];
+		else if (UT_XML_stricmp(a[0], "parentid") == 0)
+			szPid = a[1];
+		else if (UT_XML_stricmp(a[0], "type") == 0)
+			szType = a[1];
+		else if (UT_XML_stricmp(a[0], "start-value") == 0)
+			szStart = a[1];
+		else if (UT_XML_stricmp(a[0], "list-delim") == 0)
+			szDelim = a[1];
+	}
+
+	if(!szID)
+		return UT_FALSE;
+	if(!szPid)
+		return UT_FALSE;
+	if(!szType)
+		return UT_FALSE;
+	if(!szStart)
+		return UT_FALSE;
+	if(!szDelim)
+		return UT_FALSE;
+
+	id = atoi(szID);
+	parent_id = atoi(szPid);
+	type = (List_Type)atoi(szType);
+	start = atoi(szStart);
+
+	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim);
+	addList(pAutoNum);
+	
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::fixListHierarchy(void)
+{
+	UT_uint32 iNumLists = m_vecLists.getItemCount();
+	fl_AutoNum * pAutoNum;
+	
+	if (iNumLists == 0)
+	{
+		return UT_FALSE;
+	}
+	else
+	{
+		for (UT_uint32 i = 0; i < iNumLists; i++)
+		{
+			pAutoNum = (fl_AutoNum *)m_vecLists.getNthItem(i);
+			pAutoNum->fixHierarchy(this);
+		}
+		return UT_TRUE;
+	}
+}
+
+void PD_Document::removeList(fl_AutoNum * pAutoNum)
+{
+	UT_ASSERT(pAutoNum);
+	UT_sint32 ndx = m_vecLists.findItem(pAutoNum);
+	if (ndx != -1)
+		m_vecLists.deleteNthItem(ndx);
+}
