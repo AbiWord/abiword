@@ -102,7 +102,7 @@ UT_Bool UT_isSmartQuotedCharacter(UT_UCSChar c);
 #define UT_UCS_islower(x)	(((x) >= 'a') && ((x) <= 'z'))		// HACK: not UNICODE-safe
 #define UT_UCS_isalpha(x)	(UT_UCS_isupper(x) || UT_UCS_islower(x))		// HACK: not UNICODE-safe
 #define UT_UCS_isalnum(x)	(UT_UCS_isalpha(x) || UT_UCS_isdigit(x))		// HACK: not UNICODE-safe
-#define UT_UCS_isspace(x)   (((x)==' ' ||  ((x)=='\t')  ||  ((x)=='\f')))  // HACK: not UNICODE safe
+#define UT_UCS_isspace(x)   (((x)==' '||((x)=='\r')||((x)=='\n')||((x)=='\t')||((x)=='\f')))  // HACK: not UNICODE safe
 #define UT_UCS_ispunct(x)   ((!UT_UCS_isspace(x)  &&  !UT_UCS_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
 
 #ifdef WIN32

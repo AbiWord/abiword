@@ -2252,6 +2252,7 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	{
 		switch (pChars[i])
 		{
+			// see similar control characters in fl_DocLayout.cpp
 		case UCS_FF:	// form feed, forced page break
 		case UCS_VTAB:	// vertical tab, forced column break
 		case UCS_LF:	// newline
@@ -2729,9 +2730,14 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		{
 			m_pLayout->considerSmartQuoteCandidateAt(sq_bl, sq_of);
 		}
-		for (unsigned int sdex=0; sdex<sqcount; ++sdex)
+		if (sqcount)
 		{
-			m_pLayout->considerSmartQuoteCandidateAt(this, sqlist[sdex]);
+			m_pDoc->beginUserAtomicGlob();
+			for (unsigned int sdex=0; sdex<sqcount; ++sdex)
+			{
+				m_pLayout->considerSmartQuoteCandidateAt(this, sqlist[sdex]);
+			}
+			m_pDoc->endUserAtomicGlob();
 		}
 		if (UT_isSmartQuotableCharacter(pChars[len - 1]))
 		{

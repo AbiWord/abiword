@@ -1197,14 +1197,24 @@ algorithm.
 // doesn't matter what occurs in that position.
 enum sqThingAt
 {
-	sqDONTCARE,
-	sqQUOTEls, sqQUOTErs, sqQUOTEld, sqQUOTErd, // the smart quotes, left/right single/double
-	sqBREAK, sqFOLLOWPUNCT, sqOPENPUNCT, sqCLOSEPUNCT, sqOTHERPUNCT, sqALPHA, sqWHITE
+	sqDONTCARE     = 1,
+	sqQUOTEls      = 2,
+	sqQUOTErs      = 3,
+	sqQUOTEld      = 4,
+	sqQUOTErd      = 5,// the smart quotes, left/right single/double
+	sqBREAK        = 6,
+	sqFOLLOWPUNCT  = 7,
+	sqOPENPUNCT    = 8,
+	sqCLOSEPUNCT   = 9,
+	sqOTHERPUNCT   =10,
+	sqALPHA        =11,
+	sqWHITE        =12
 };
 
 // TODO:  This function probably needs tuning for non-Anglo locales.
 static enum sqThingAt whatKindOfChar(UT_UCSChar thing)
 {
+	xxx_UT_DEBUGMSG(("what sort of character is %d 0x%x |%c|\n", thing, thing, thing));
 	switch (thing)
 	{
 	case UCS_LQUOTE:     return sqQUOTEls;
@@ -1217,12 +1227,18 @@ static enum sqThingAt whatKindOfChar(UT_UCSChar thing)
 
 	case '.': case ',': case ';': case ':': case '!': case '?':  return sqFOLLOWPUNCT;
 
+		// see similar control characters in fl_BlockLayout.cpp
+	case UCS_FF:	// form feed, forced page break
+	case UCS_VTAB:	// vertical tab, forced column break
+	case UCS_LF:	// newline
+	case UCS_TAB:	// tab
+		return sqBREAK;
 	}
 	if (UT_UCS_isalpha(thing)) return sqALPHA;
 	if (UT_UCS_ispunct(thing)) return sqOTHERPUNCT;
 	if (UT_UCS_isspace(thing)) return sqWHITE;
 
-	return sqDONTCARE;
+	return sqBREAK;  // supposed to be a character, but...!
 }
 
 struct sqTable
@@ -1348,7 +1364,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 	// something other than '?' if '?' ever shows up as UT_isSmartQuotableCharacter()
 	UT_UCSChar c = '?';
 	if (pgb.getLength() > offset) c = *pgb.getPointer(offset);
-	xxx_UT_DEBUGMSG(("FL_DocLayout::considerSmartQuoteCandidateAt(%x, %d)  |%c|\n", block, offset, c));
+	UT_DEBUGMSG(("FL_DocLayout::considerSmartQuoteCandidateAt(%x, %d)  |%c|\n", block, offset, c));
 
 	//  there are some operations that leave a dangling pending
 	//  smart quote, so just double check before plunging onward
@@ -1374,15 +1390,21 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 				{
 					last = r;
 				} while ((r = r->getNext()));  // assignment
-				if (last  &&  (FPRUN_TEXT == last->getType()))
+				if (last  &&  (FPRUN_TEXT == last->getType())  &&  last->getLength() > 0)
 				{
-					// last run of previous block was a text run,
-					// so find out what the final character was
-					UT_GrowBuf pgb_b(1024);
-					ob->getBlockBuf(&pgb_b);
-					if (pgb_b.getLength())
+					fp_Line *blocks_line, *lasts_line;
+					blocks_line = block->getFirstRun()->getLine();
+					lasts_line = last->getLine();
+					if (blocks_line == lasts_line)
 					{
-						before = whatKindOfChar(*pgb_b.getPointer(pgb.getLength()-1));
+						// last run of previous block was a text run on the same line
+						// so find out what the final character was
+						UT_GrowBuf pgb_b(1024);
+						ob->getBlockBuf(&pgb_b);
+						if (pgb_b.getLength())
+						{
+							before = whatKindOfChar(*pgb_b.getPointer(pgb_b.getLength()-1));
+						}
 					}
 				}
 			}
@@ -1436,17 +1458,20 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 				}
 			}
 		}
+		UT_DEBUGMSG(("before %d, after %d, replace %x\n", before, after, replacement));
 		if (replacement != UCS_UNKPUNK)
 		{
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;
 			saved_pos = m_pView->getPoint();
 			quotable_at = block->getPosition(UT_FALSE) + offset;
+
 			m_pView->moveInsPtTo(quotable_at);
 			// delete/insert create change records for UNDO
 			m_pView->cmdCharDelete(UT_TRUE, 1);
 			m_pView->cmdCharInsert(&replacement, 1);
 			m_pView->moveInsPtTo(saved_pos);
+
 			// Alas, Abi undo moves the insertion point, so you can't
 			// just UNDO right after a smart quote pops up to force
 			// an ASCII quote.  For an open quote, you could type
