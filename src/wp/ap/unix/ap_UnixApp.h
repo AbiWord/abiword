@@ -29,6 +29,7 @@
 #include <popt.h>
 #include "ut_bytebuf.h"
 #include "xap_Args.h"
+#include "ap_App.h"
 #include "ap_UnixPrefs.h"
 #include "ap_UnixClipboard.h"
 #include "pt_Types.h"
@@ -46,7 +47,7 @@ class AV_View;
 class GR_Image;
 class AP_Args;
 
-class AP_UnixApp : public XAP_UNIXBASEAPP
+class AP_UnixApp : public AP_App
 {
 public:
 	AP_UnixApp(XAP_Args * pArgs, const char * szAppName);
@@ -92,9 +93,11 @@ public:
 
 	void loadAllPlugins ();
 
+	virtual void initPopt (AP_Args *);
+	virtual bool doWindowlessArgs (const AP_Args *);
+
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);
-	static bool             doWindowlessArgs(const AP_Args *Args);
 
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;

@@ -94,9 +94,6 @@ static bool s_checkControl(const char * szAppName, XAP_Args XArgs);
 static BonoboObject*
    bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure);
 
-// and for popt
-static void s_poptInit(AP_Args *Args);
-
 /*****************************************************************/
 
 AP_UnixGnomeApp::AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
@@ -120,7 +117,8 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	if (s_checkControl(szAppName, XArgs))
 		return 0;
 
-	AP_Args Args = AP_Args(&XArgs, szAppName, &s_poptInit, doWindowlessArgs);
+ 	AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&XArgs, szAppName);
+	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 	// Step 1: Initialize GTK and create the APP.
     // HACK: these calls to gtk reside properly in 
@@ -128,9 +126,6 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
     // HACK: to throw the splash screen as soon as possible.
 	// hack needed to intialize gtk before ::initialize
 	gtk_set_locale();
-
- 	AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&XArgs, szAppName);
-	Args.setApp(getApp());
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
@@ -198,7 +193,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	return 0;
 }
 
-static void s_poptInit(AP_Args *Args)
+void AP_UnixGnomeApp::initPopt(AP_Args *Args)
 {
 	int v = -1, i;
 

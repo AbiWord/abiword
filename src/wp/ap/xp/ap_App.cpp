@@ -18,6 +18,7 @@
  */
 
 #include "ap_App.h"
+#include "ap_Args.h"
 
 AP_App::AP_App (XAP_Args * pArgs, const char * szAppName)
   : XAP_App_BaseClass ( pArgs, szAppName )
@@ -26,4 +27,15 @@ AP_App::AP_App (XAP_Args * pArgs, const char * szAppName)
 
 AP_App::~AP_App ()
 {
+}
+
+void AP_App::initPopt (AP_Args *)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+bool AP_App::doWindowlessArgs (const AP_Args *)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return false;
 }

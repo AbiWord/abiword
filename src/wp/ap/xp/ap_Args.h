@@ -26,16 +26,13 @@
 
 class AP_Args;
 class XAP_App;
-
-typedef void (*initPopt_cb) (AP_Args *);
-typedef bool (*dwa_cb) (const AP_Args *);
+class AP_App;
 
 // warning: options array is static.
 class AP_Args
 {
 public:
-	AP_Args(XAP_Args * pArgs, const char * szAppName,
-		initPopt_cb ipFunc, dwa_cb dwaFunc);
+	AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp);
 	~AP_Args(void);
 
 	XAP_Args *XArgs;
@@ -43,8 +40,7 @@ public:
 
 	bool getShowSplash() const { return m_bShowSplash; }
 	bool getShowApp() const { return m_bShowApp; }
-	XAP_App* getApp() const { return m_app; }
-	void setApp(XAP_App* app) { m_app = app; }
+	AP_App* getApp() const { return m_pApp; }
 	bool doWindowlessArgs() const;
 
 	// Would be nice if this could be non-static.
@@ -72,8 +68,7 @@ public:
 
 private:
 	bool          m_bShowApp, m_bShowSplash;
-	XAP_App*      m_app;
-	dwa_cb        m_cbDwa;
+	AP_App*       m_pApp;
 };
 
 #endif /* AP_ARGS_H */

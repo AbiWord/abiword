@@ -21,6 +21,7 @@
 #include "ap_Strings.h"
 #include "ap_Prefs_SchemeIds.h"
 #include "ap_Args.h"
+#include "ap_App.h"
 #include "ap_Convert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -54,11 +55,10 @@ int    AP_Args::m_iHelp = 0;
 const char * AP_Args::m_sDisplay = NULL;
 struct poptOption * AP_Args::options = NULL;
 
-AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName,
-				 initPopt_cb ipFunc, dwa_cb dwaFunc) : XArgs (pArgs),
-													   m_cbDwa(dwaFunc)
+AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
+	: XArgs (pArgs), m_pApp(pApp)
 {
-	(ipFunc)(this);
+	pApp->initPopt (this);
 
 	// Let's do --version right away, since we only read static data.
  	if (m_iVersion)
@@ -152,7 +152,7 @@ bool AP_Args::doWindowlessArgs() const
 	    return false;
 	}
 
-	if (!m_cbDwa(this))
+	if (!m_pApp->doWindowlessArgs(this))
 		return false;
 
 	return true;

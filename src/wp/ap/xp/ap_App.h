@@ -20,6 +20,8 @@
 #ifndef AP_APP_H
 #define AP_APP_H
 
+class AP_Args;
+
 // this ugliness is needed for proper inheritence
 
 #if defined(WIN32)
@@ -52,8 +54,10 @@ class AP_App : public XAP_App_BaseClass
 {
  public:
 
-  AP_App (XAP_Args * pArgs, const char * szAppName);
-  virtual ~AP_App ();
+	AP_App (XAP_Args * pArgs, const char * szAppName);
+	virtual ~AP_App ();
+	virtual void initPopt (AP_Args *);
+	virtual bool doWindowlessArgs (const AP_Args *);
 
  private:
 

@@ -118,7 +118,7 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	Currently always AbiWord (I think).
 */
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
-    : XAP_UNIXBASEAPP(pArgs,szAppName),
+    : AP_App(pArgs,szAppName),
 	  m_pStringSet(0),
 	  m_pClipboard(0),
 	  m_bHasSelection(false),
@@ -1237,7 +1237,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     // initialize our application.
     
 	XAP_Args XArgs = XAP_Args(argc,argv);
-	AP_Args Args = AP_Args(&XArgs, szAppName, &s_poptInit, doWindowlessArgs);
+	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
+	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
     
 	// Step 1: Initialize GTK and create the APP.
     // HACK: these calls to gtk reside properly in 
@@ -1247,9 +1248,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     gtk_set_locale();
     gtk_init(&XArgs.m_argc,&XArgs.m_argv);
     
-	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
-	Args.setApp(getApp());
-
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyUnixApp->initialize())
 	{
@@ -1375,7 +1373,7 @@ bool AP_UnixApp::parseCommandLine(poptContext poptcon)
 	return true;
 }
 
-static void s_poptInit(AP_Args *Args)
+void AP_UnixApp::initPopt(AP_Args *Args)
 {
 	int nextopt;
 

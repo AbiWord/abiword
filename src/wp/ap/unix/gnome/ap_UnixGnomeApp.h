@@ -36,6 +36,8 @@ public:
 	AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_UnixGnomeApp();
 
+	virtual void initPopt (AP_Args *);
+
 	static int				main (const char * szAppName, int argc, char ** argv);
 };
 
