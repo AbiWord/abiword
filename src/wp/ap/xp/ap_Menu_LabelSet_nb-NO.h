@@ -20,12 +20,12 @@
 // Norwegian translations provided by Edouard Lafargue / Lars Ranheim
 //                                       Edouard.Lafargue@bigfoot.com
 //                          Karl Trygve Kalleberg <karltk@gentoo.org>
-*****************************************************************
-******************************************************************
-** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
-** MORE THAN ONE TIME.
-******************************************************************
-*****************************************************************/
+//*****************************************************************
+//******************************************************************
+//** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+//** MORE THAN ONE TIME.
+//******************************************************************
+//*****************************************************************/
 
 // We use the Win32 '&' character to denote a keyboard accelerator on a menu item.
 // If your platform doesn't have a way to do accelerators or uses a different
