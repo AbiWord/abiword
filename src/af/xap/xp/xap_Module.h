@@ -30,7 +30,7 @@
 #ifdef WIN32
   #include <windows.h>
   #define WIN32_LEAN_AND_MEAN
-  #define ABI_PLUGIN_DECLARE(name) BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved ) { return TRUE; } 
+  #define ABI_PLUGIN_DECLARE(name) static HANDLE s_hModule = (HANDLE)NULL; BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved ) { s_hModule = hModule; return TRUE; } 
 #else
   #define ABI_PLUGIN_DECLARE(name)
 #endif
@@ -103,7 +103,7 @@ private:
 	XAP_ModuleInfo        m_info;
 };
 
-#define ABI_VERSION_STRING "0.99.1"
-#define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==99) && ((c)==1))
+#define ABI_VERSION_STRING "0.99.2"
+#define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==99) && ((c)==2))
 
 #endif /* XAP_MODULE_H */
