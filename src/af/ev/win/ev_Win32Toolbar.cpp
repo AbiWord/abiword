@@ -1056,7 +1056,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				{
 						pt_PieceTable::s_getLocalisedStyleName(pLocalised, utf8);
 						pLocalised = utf8.utf8_str();
-						str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+						str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 						pLocalised = str.c_str();						
 				}
 					
@@ -1308,7 +1308,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 
 		pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
 		pLocalised = utf8.utf8_str();
-		str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+		str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 		pLocalised = str.c_str();
 		
 		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)pLocalised);

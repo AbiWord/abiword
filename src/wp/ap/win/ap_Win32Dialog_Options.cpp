@@ -697,7 +697,7 @@ void AP_Win32Dialog_Options_Toolbars::_onInitDialog()
 	{		
 		utf8 = static_cast<const char *>(reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(i))->utf8_str());		
 		static char szText[255];		
-		strcpy(szText, (AP_Win32App::s_fromUTF8ToAnsi(utf8)).c_str());		
+		strcpy(szText, (AP_Win32App::s_fromUTF8ToWinLocale(utf8)).c_str());		
 		
 		LVITEM item;
 		item.pszText = szText;

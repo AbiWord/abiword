@@ -196,7 +196,7 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
+	SetWindowText(hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str()); 
 
 	// Disable the Go To button until something has been entered into the Number box
 	EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), FALSE );

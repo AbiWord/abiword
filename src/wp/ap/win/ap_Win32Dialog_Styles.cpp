@@ -324,7 +324,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
     		
    			pt_PieceTable::s_getLocalisedStyleName(name, utf8);			
 			pLocalised = utf8.utf8_str();
-			str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+			str = AP_Win32App::s_fromUTF8ToWinLocale (pLocalised);
 			pLocalised = str.c_str();	
 			
 			nIndex = _win32DialogNewModify.addItemToCombo(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, pLocalised);				
@@ -340,14 +340,14 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		const char*	pDefCurrent = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
 		const char*	pDefNone = pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone);
 		
-		str = AP_Win32App::s_fromUTF8ToAnsi(pDefCurrent);
+		str = AP_Win32App::s_fromUTF8ToWinLocale(pDefCurrent);
 		pDefCurrent = str.c_str();	
 		
 		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
                                               pDefCurrent );
 
 
-		str = AP_Win32App::s_fromUTF8ToAnsi(pDefNone);
+		str = AP_Win32App::s_fromUTF8ToWinLocale(pDefNone);
 		pDefNone = str.c_str();							
 
 		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
@@ -402,7 +402,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			
 			pt_PieceTable::s_getLocalisedStyleName(szCurrentStyle, utf8);						
 			pLocalised = utf8.utf8_str();
-			str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+			str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 			pLocalised = str.c_str();
 	
 		
@@ -450,7 +450,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 				pt_PieceTable::s_getLocalisedStyleName(szBasedOn, utf8);
 				pLocalised = utf8.utf8_str();
-				str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 				pLocalised = str.c_str();
 	
 				
@@ -472,7 +472,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			{
 				pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, utf8);		
 				pLocalised = utf8.utf8_str();
-				str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 				pLocalised = str.c_str();
 				
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
@@ -483,7 +483,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			{
 				pt_PieceTable::s_getLocalisedStyleName(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent), utf8);		
 				pLocalised = utf8.utf8_str();
-				str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 				pLocalised = str.c_str();
 
 				
@@ -575,7 +575,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			    return 1;
     		}
 
-			strcpy (m_newStyleName, (AP_Win32App::s_fromAnsiToUTF8(m_newStyleName)).utf8_str());
+			strcpy (m_newStyleName, (AP_Win32App::s_fromWinLocaleToUTF8(m_newStyleName)).utf8_str());
 
 		}
 		m_answer = a_OK;
@@ -853,7 +853,7 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 
 			pt_PieceTable::s_getLocalisedStyleName(*data, utf8);
 			pLocalised = utf8.utf8_str();
-			str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+			str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 			pLocalised = str.c_str();
 			
 			nIndex = _win32Dialog.addItemToList(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, pLocalised);						
@@ -916,7 +916,7 @@ void AP_Win32Dialog_Styles::eventBasedOn()
 	
 	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
 	
-	strcpy (szTemp, (AP_Win32App::s_fromAnsiToUTF8(pText)).utf8_str());
+	strcpy (szTemp, (AP_Win32App::s_fromWinLocaleToUTF8(pText)).utf8_str());
 	addOrReplaceVecAttribs("basedon",pText);
 	fillVecWithProps(pText,false);
 	updateCurrentStyle();
@@ -940,7 +940,7 @@ void AP_Win32Dialog_Styles::eventFollowedBy()
 	
 	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);			
 	
-	strcpy (szTemp, (AP_Win32App::s_fromAnsiToUTF8(pText)).utf8_str());
+	strcpy (szTemp, (AP_Win32App::s_fromWinLocaleToUTF8(pText)).utf8_str());
 	addOrReplaceVecAttribs("followedby",pText);
 }
 

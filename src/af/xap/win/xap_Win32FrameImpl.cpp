@@ -162,7 +162,7 @@ bool XAP_Win32FrameImpl::_updateTitle(void)
 	sTmp += " - ";
 	sTmp += XAP_App::getApp()->getApplicationTitleForTitleBar();
 	
-	SetWindowText(m_hwndFrame, (AP_Win32App::s_fromUTF8ToAnsi(sTmp.c_str())).c_str());
+	SetWindowText(m_hwndFrame, (AP_Win32App::s_fromUTF8ToWinLocale(sTmp.c_str())).c_str());
 
 	return true;
 }

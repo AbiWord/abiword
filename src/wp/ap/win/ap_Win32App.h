@@ -105,10 +105,10 @@ public:
 		win32 UI until we do a Unicode port. It's better to do all UI
 		conversions in a single point. You are looking to this point right now. Jordi,
 	*/
-	static UT_String 		s_fromUCS4ToAnsi(const UT_UCS4Char * szIn);
-	static UT_UCS4String	s_fromAnsiToUCS4(const char* szIn);
-	static UT_String 		s_fromUTF8ToAnsi(const char* szIn);
-	static UT_UTF8String	s_fromAnsiToUTF8(const char* szIn);
+	static UT_String 		s_fromUCS4ToWinLocale(const UT_UCS4Char * szIn);
+	static UT_UCS4String	s_fromWinLocaleToUCS4(const char* szIn);
+	static UT_String 		s_fromUTF8ToWinLocale(const char* szIn);
+	static UT_UTF8String	s_fromWinLocaleToUTF8(const char* szIn);
 
 	
 	

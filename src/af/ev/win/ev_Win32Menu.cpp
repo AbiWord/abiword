@@ -158,7 +158,7 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 	if (!szLabelName || !*szLabelName)
 		return NULL;
 
-	UT_String str = AP_Win32App::s_fromUTF8ToAnsi(szLabelName);
+	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(szLabelName);
 	szLabelName = str.c_str();
 
 	
@@ -942,7 +942,7 @@ bool EV_Win32Menu::onMenuSelect(XAP_Frame * pFrame, AV_View * pView,
 	if (!szMsg || !*szMsg)
 		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
 	
-	UT_String str = AP_Win32App::s_fromUTF8ToAnsi(szMsg);
+	UT_String str = AP_Win32App::s_fromUTF8ToWinLocale(szMsg);
 	pFrame->setStatusMessage(str.c_str());
 	return true;
 }

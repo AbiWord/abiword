@@ -63,7 +63,7 @@ void AP_Win32Dialog_Replace::activate(void)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
+	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str()); 
 
 	SetFocus( GetDlgItem( m_hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND) );
 
@@ -118,7 +118,7 @@ void AP_Win32Dialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 	{
 		// Update the caption
 		ConstructWindowName();
-		SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
+		SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str()); 
 
 		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
@@ -168,7 +168,7 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 
 	// Update the caption
 	ConstructWindowName();
-	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToAnsi(m_WindowName)).c_str()); 
+	SetWindowText(m_hWnd, (AP_Win32App::s_fromUTF8ToWinLocale(m_WindowName)).c_str()); 
 
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 
@@ -460,7 +460,7 @@ void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char
 		// add it to the list
 		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));   
 				
-    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)(AP_Win32App::s_fromUTF8ToAnsi(utf8s)).c_str());    		
+    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)(AP_Win32App::s_fromUTF8ToWinLocale(utf8s)).c_str());    		
 
 		free(utf8s);
 	}		

@@ -774,7 +774,7 @@ void AP_Win32Dialog_Lists::_enableCustomControls(bool bEnable)
 void AP_Win32Dialog_Lists::_updateCaption()
 {
 	ConstructWindowName();
-	_win32Dialog.setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToAnsi( getWindowName())).c_str());	
+	_win32Dialog.setDialogTitle((LPCSTR)(AP_Win32App::s_fromUTF8ToWinLocale( getWindowName())).c_str());	
 }
 
 void AP_Win32Dialog_Lists::_previewExposed()
