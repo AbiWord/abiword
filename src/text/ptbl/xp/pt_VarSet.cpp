@@ -225,6 +225,89 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 // This code assumes that the properties passed in the PTC_AddStyle are the
 // properties from the fully expanded style.
 //
+
+// TODO this is not right; we first have to remove any properties that we got
+// from the current style if any, only then we can proceed
+#if 1
+		const XML_Char * szStyle;
+		const XML_Char * szSName;
+		bool bFound = false;
+		//there is something wrong with getAttribute
+        //papOld->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szStyle);
+		for(UT_uint32 k = 0; k < papOld->getAttributeCount();k++)
+		{
+			papOld->getNthAttribute(k, szSName, szStyle);
+			if(!UT_strcmp(PT_STYLE_ATTRIBUTE_NAME, szSName))
+			{
+				bFound = true;
+				break;
+			}
+		}
+		
+
+		PP_AttrProp * pNew1;
+
+        if(bFound && szStyle && UT_strcmp(szStyle, "None"))
+        {
+	        UT_DEBUGMSG(("current style [%s]\n",szStyle));
+			PD_Style * pStyle = NULL;
+			pDoc->getStyle(szStyle,&pStyle);
+			UT_ASSERT(pStyle);
+			UT_Vector vProps, vAttribs;
+		
+			pStyle->getAllProperties(&vProps,0);
+		
+			const XML_Char ** sProps = NULL;
+			UT_uint32 countp = vProps.getItemCount() + 1;
+			sProps = new const XML_Char*[countp];
+			countp--;
+			UT_uint32 i;
+			for(i=0; i<countp; i++)
+			{
+				sProps[i] = (const XML_Char *) vProps.getNthItem(i);
+			}
+			sProps[i] = NULL;
+		
+			
+			pStyle->getAllAttributes(&vAttribs,0);
+			
+			const XML_Char ** sAttribs = NULL;
+			countp = vAttribs.getItemCount() + 1;
+			sAttribs = new const XML_Char*[countp];
+			countp--;
+			
+			for(i=0; i<countp; i++)
+			{
+				sAttribs[i] = (const XML_Char *) vAttribs.getNthItem(i);
+			}
+			sAttribs[i] = NULL;
+		
+			PP_AttrProp * pNew0 = papOld->cloneWithElimination(sAttribs,sProps);
+			delete [] sProps;
+			delete [] sAttribs;
+			
+			if (!pNew0)
+				return false;
+
+			pNew1 = pNew0->cloneWithReplacements(attributes,NULL, false);
+			delete pNew0;
+			if (!pNew1)
+				return false;
+		}
+		else
+		{
+			pNew1 = papOld->cloneWithReplacements(attributes,NULL, false);
+			if (!pNew1)
+				return false;
+		
+		}
+		
+		PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,properties);
+		delete pNew1;
+		if (!pNew)
+			return false;
+					
+#else
 			PP_AttrProp * pNew1 = papOld->cloneWithReplacements(attributes,NULL, false);
 			if (!pNew1)
 				return false;
@@ -232,7 +315,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			delete pNew1;
 			if (!pNew)
 				return false;
-
+#endif
 			pNew->markReadOnly();
 			return addIfUniqueAP(pNew,papiNew);
 		}

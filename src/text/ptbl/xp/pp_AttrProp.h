@@ -65,6 +65,7 @@ public:
 
 	bool hasProperties(void) const;
 	size_t getPropertyCount (void) const;
+	size_t getAttributeCount (void) const;
 	bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
 	bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
 	bool isExactMatch(const PP_AttrProp * pMatch) const;

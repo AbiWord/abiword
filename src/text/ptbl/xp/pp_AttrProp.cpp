@@ -87,8 +87,23 @@ PP_AttrProp::~PP_AttrProp()
  */
 size_t PP_AttrProp::getPropertyCount (void) const
 {
-	return m_pProperties->size();
+	if(!m_pProperties)
+		return 0;
+	else
+		return m_pProperties->size();
 }
+
+/*!
+ * Returns the number of attributes in this PP_AttrProp.
+ */
+size_t PP_AttrProp::getAttributeCount (void) const
+{
+	if(!m_pAttributes)
+		return 0;
+	else
+		return m_pAttributes->size();
+}
+
 
 /*!
  * Sets attributes as given in the NULL-terminated input array

@@ -180,6 +180,13 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 // style (they exist there) to specifc values in strux (if not overridden by 
 // the style) then finally to default value.
 //
+// TODO this is not right; first of all, paragraph style should be applied
+// 		to the block Strux only and nothing else -- no Spans, Fmt marks, etc.
+//		Second, when applying paragraph style, we should clear the existing
+//		strux of all its properties inherited from any previous style
+//		not just the ones defined explicitely, by this style, because what
+//		is not defined is assumed to default, not to be inherited from a style
+//		we are trying to get rid off.
 		const XML_Char * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
 
 		PD_Style * pStyle = NULL;
@@ -244,7 +251,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 						bFinished = true;
 				}
 				break;
-
+#if 0
 			case pf_Frag::PFT_Text:
 				{
 					bool bResult;
@@ -288,6 +295,13 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 					UT_ASSERT(bResult);
 				}
 				break;
+#else
+			case pf_Frag::PFT_Text:
+			case pf_Frag::PFT_FmtMark:
+			case pf_Frag::PFT_Object:
+				pfNewEnd = pf->getNext();
+				break;
+#endif
 			}
 			dpos += lengthThisStep;
 			
@@ -296,8 +310,8 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			// fragments, we cannot just do a pf->getNext() here.
 			// to advance to the next fragment, we use the *NewEnd variables
 			// that each of the cases routines gave us.
-
 			pf = pfNewEnd;
+			
 			if (!pf)
 				bFinished = true;
 		}

@@ -200,6 +200,17 @@ bool PD_Style::addAttributes(const XML_Char ** pAtts)
 	return bres;
 }
 
+size_t PD_Style::getAttributeCount(void) const
+{
+  	PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+		return 0;
+	else
+	        return pAP->getAttributeCount();
+}
+
+
 size_t PD_Style::getPropertyCount(void) const
 {
   	PP_AttrProp * pAP = NULL;
@@ -208,6 +219,19 @@ size_t PD_Style::getPropertyCount(void) const
 		return 0;
 	else
 	        return pAP->getPropertyCount();
+}
+	
+bool PD_Style::getNthAttribute (int ndx, const XML_Char *&szName,
+			     const XML_Char *&szValue) const
+{
+  	PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+		return false;
+	else
+	  {
+	        return pAP->getNthAttribute(ndx, szName, szValue);
+	  }
 }
 
 bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
@@ -221,6 +245,45 @@ bool PD_Style::getNthProperty (int ndx, const XML_Char *&szName,
 	  {
 	        return pAP->getNthProperty(ndx, szName, szValue);
 	  }
+}
+
+/*!
+ * This method fills a vector structure with all the attributes defined
+ * in this style, including the basedon style.
+\param vProps the vector containing const XML_Char * (name,value) pairs
+*/
+
+bool PD_Style::getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth)
+{
+//
+// This method will be recursively called to basedon style
+//
+	UT_uint32 count = getAttributeCount();
+	UT_uint32 i,j;
+	const XML_Char * szName = NULL;
+	const XML_Char * szValue = NULL;
+	for(i=0; i < count; i++)
+	{
+		getNthAttribute(i, szName, szValue);
+		bool bfound = false;
+//
+// Only keep the most recently defined properties
+//
+		for(j = 0; (j < vAttribs->getItemCount()) && !bfound ; j += 2)
+		{
+			bfound = (0 == strcmp(szName, (const char *) vAttribs->getNthItem(j)));
+		}
+		if(!bfound)
+		{
+			vAttribs->addItem((void *) szName);
+			vAttribs->addItem((void *) szValue);
+		}
+	}
+	if(depth <  pp_BASEDON_DEPTH_LIMIT && getBasedOn() != NULL)
+	{
+		getBasedOn()->getAllAttributes(vAttribs,depth +1);
+	}
+	return true;
 }
 
 /*!
