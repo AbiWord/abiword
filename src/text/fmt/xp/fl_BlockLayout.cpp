@@ -7690,7 +7690,14 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 			 * if(pFieldRun->getFieldType() == FPFIELD_list_label)
 			 *	get the list to which it belongs, and get that list's
 			 *	m_bDirtyForFieldRecalc which is set true after any change
-			 *	to the list structure. Finally, after the loop, tell the list to reset that member to false. */
+			 *	to the list structure. Finally, after the loop, tell the list to reset that member to false. 
+			 * However, the possible down side to this is that you need to recalc the entire list and not just the individual fields, because otherwise
+			 * you risk having an only partially recalced list being left alone because it's marked clean... in retrospect I think you may need to
+			 * move this sort of optimization up to the DocSectionLayout redraw code, rather than having it here at the block level where it might (not 100% sure but might)
+			 * be waaay overcalculated (having a 1-1 block-li situation.  In fl_DocSectionLayout::redrawUpdate, you just make a special case for if any block encountered has
+			 * an autonum (as opposed to any old field), and if so you do this (recalc the whole list and mark it no longer dirty for recalc), and then subsequent blocks with
+			 * part of the same autonum	will pass over recalculating it.  You may still need (or want) a new method in BL to recalculateAutoNums, called separately from
+			 * recalculateFields (which ignores fields from autonums), to ease still recalculating non-autonum fields from the DSL code. 			 */
 			
 			xxx_UT_DEBUGMSG(("DOM: %d %d\n", pFieldRun==0, pFieldRun->needsFrequentUpdates()));
 
