@@ -64,4 +64,16 @@ typedef		UT_sint32			UT_ErrorCode;
 #define		UT_OK				((UT_ErrorCode) 0)
 #define		UT_OUTOFMEM			((UT_ErrorCode) -100)
 
+
+/* 
+	The MSVC debug runtime library can track leaks back to the 
+	original allocation via the following black magic.
+*/
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(_CRTDBG_MAP_ALLOC)
+#include <crtdbg.h>
+#define UT_DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new UT_DEBUG_NEW
+#endif /* _MSC_VER && _DEBUG && _CRTDBG_MAP_ALLOC */
+
+
 #endif /* UT_TYPES_H */

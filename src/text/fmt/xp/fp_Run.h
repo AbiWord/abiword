@@ -24,7 +24,6 @@
 #ifndef RUN_H
 #define RUN_H
 
-#include <stdlib.h>
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "pt_Types.h"
