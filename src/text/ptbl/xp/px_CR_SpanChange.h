@@ -49,7 +49,6 @@ public:
 							   PT_DocPosition position,
 							   PT_AttrPropIndex indexOldAP,
 							   PT_AttrPropIndex indexNewAP,
-							   PTChangeFmt ptc,
 							   PT_BufIndex bufIndex,
 							   UT_uint32 length,
 							   PT_BlockOffset blockOffset);
@@ -63,7 +62,6 @@ public:
 	PT_BlockOffset			getBlockOffset(void) const;
 	
 protected:
-	PTChangeFmt				m_ptc;
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
 	PT_AttrPropIndex		m_indexOldAP;

@@ -46,15 +46,13 @@ public:
 	PX_ChangeRecord_StruxChange(PXType type,
 								PT_DocPosition position,
 								PT_AttrPropIndex indexOldAP,
-								PT_AttrPropIndex indexNewAP,
-								PTChangeFmt ptc);
+								PT_AttrPropIndex indexNewAP);
 	~PX_ChangeRecord_StruxChange();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	PT_AttrPropIndex		getOldIndexAP(void) const;
 	
 protected:
-	PTChangeFmt				m_ptc;
 	PT_AttrPropIndex		m_indexOldAP;
 };
 

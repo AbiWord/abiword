@@ -74,7 +74,7 @@ UT_Bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_ObjectChange * pcr
 		= new PX_ChangeRecord_ObjectChange(PX_ChangeRecord::PXT_ChangeObject,
 										   dpos, indexOldAP,indexNewAP,
-										   pfo->getObjectType(),ptc,blockOffset);
+										   pfo->getObjectType(),blockOffset);
 	UT_ASSERT(pcr);
 
 	// apply the change to this fragment

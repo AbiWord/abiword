@@ -27,11 +27,9 @@ PX_ChangeRecord_FmtMarkChange::PX_ChangeRecord_FmtMarkChange(PXType type,
 															 PT_DocPosition position,
 															 PT_AttrPropIndex indexOldAP,
 															 PT_AttrPropIndex indexNewAP,
-															 PTChangeFmt ptc,
 															 PT_BlockOffset blockOffset)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
-	m_ptc = ptc;
 	m_indexOldAP = indexOldAP;
 	m_blockOffset = blockOffset;
 }
@@ -42,14 +40,10 @@ PX_ChangeRecord_FmtMarkChange::~PX_ChangeRecord_FmtMarkChange()
 
 PX_ChangeRecord * PX_ChangeRecord_FmtMarkChange::reverse(void) const
 {
-	UT_ASSERT((m_ptc >= 0) && (m_ptc <= 1));
-	PTChangeFmt ptcRev = (PTChangeFmt)( ! ((UT_Bool) m_ptc));
-	
 	PX_ChangeRecord_FmtMarkChange * pcr
 		= new PX_ChangeRecord_FmtMarkChange(getRevType(),
 											m_position,
 											m_indexAP,m_indexOldAP,
-											ptcRev,
 											m_blockOffset);
 	UT_ASSERT(pcr);
 	return pcr;

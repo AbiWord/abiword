@@ -47,7 +47,6 @@ public:
 								  PT_DocPosition position,
 								  PT_AttrPropIndex indexOldAP,
 								  PT_AttrPropIndex indexNewAP,
-								  PTChangeFmt ptc,
 								  PT_BlockOffset blockOffset);
 	~PX_ChangeRecord_FmtMarkChange();
 
@@ -56,7 +55,6 @@ public:
 	PT_BlockOffset			getBlockOffset(void) const;
 	
 protected:
-	PTChangeFmt				m_ptc;
 	PT_AttrPropIndex		m_indexOldAP;
 	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 };

@@ -288,7 +288,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
-										 dpos, indexOldAP,indexNewAP, ptc,
+										 dpos, indexOldAP,indexNewAP,
 										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 										 length,blockOffset);
 	UT_ASSERT(pcr);

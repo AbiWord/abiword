@@ -260,8 +260,7 @@ UT_Bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtM
 
 	PX_ChangeRecord_FmtMarkChange * pcr
 		= new PX_ChangeRecord_FmtMarkChange(PX_ChangeRecord::PXT_ChangeFmtMark,
-											dpos, indexOldAP,indexNewAP,
-											ptc,blockOffset);
+											dpos, indexOldAP,indexNewAP, blockOffset);
 	UT_ASSERT(pcr);
 
 	// apply the change to this fragment

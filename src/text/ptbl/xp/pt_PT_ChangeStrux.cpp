@@ -72,8 +72,7 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_StruxChange * pcr
 		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
 										  dpos,
-										  indexOldAP,indexNewAP,
-										  ptc);
+										  indexOldAP,indexNewAP);
 	UT_ASSERT(pcr);
 
 	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);

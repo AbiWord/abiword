@@ -48,7 +48,6 @@ public:
 								 PT_AttrPropIndex indexOldAP,
 								 PT_AttrPropIndex indexNewAP,
 								 PTObjectType pto,
-								 PTChangeFmt ptc,
 								 PT_BlockOffset blockOffset);
 	~PX_ChangeRecord_ObjectChange();
 
@@ -58,7 +57,6 @@ public:
 	PT_BlockOffset			getBlockOffset(void) const;
 	
 protected:
-	PTChangeFmt				m_ptc;
 	PT_AttrPropIndex		m_indexOldAP;
 	PTObjectType			m_objectType;		/* our type (image, etc.) */
 	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
