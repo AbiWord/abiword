@@ -43,7 +43,6 @@
 // Forward declarations
 class UT_String;
 class UT_UTF8String;
-class UT_UCS2String;
 class UT_UCS4String;
 
 // yes, this is screaming for a template
@@ -161,9 +160,6 @@ public:
 	UT_UTF8String ();
 	UT_UTF8String (const char * sz);
 	UT_UTF8String (const UT_UTF8String & rhs);
-#ifdef ENABLE_UCS2_STRINGS
-	UT_UTF8String (const UT_UCS2String & rhs);
-#endif
 	UT_UTF8String (const UT_UCS4String & rhs);
 	UT_UTF8String (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
 
@@ -178,16 +174,10 @@ public:
 
 	UT_UTF8String &	operator=(const char *          rhs);
 	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
-#ifdef ENABLE_UCS2_STRINGS
-	UT_UTF8String &	operator=(const UT_UCS2String & rhs);
-#endif
 	UT_UTF8String &	operator=(const UT_UCS4String & rhs);
 
 	UT_UTF8String &	operator+=(const char *          rhs);
 	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
-#ifdef ENABLE_UCS2_STRINGS
-	UT_UTF8String &	operator+=(const UT_UCS2String & rhs);
-#endif
 	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);
 
 	// The returned pointer is valid until the next non-const
@@ -195,12 +185,8 @@ public:
 	// even if to an empty (0) string.
 	const char * utf8_str () const;
 
-	UT_UCS2String ucs2_str ();
 	UT_UCS4String ucs4_str ();
 
-#ifdef ENABLE_UCS2_STRINGS
-	void appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);
-#endif
 	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 
 	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
@@ -256,94 +242,6 @@ ABI_EXPORT UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String
 ABI_EXPORT UT_UTF8String UT_UTF8String_sprintf(const char * inFormat, ...);
 ABI_EXPORT UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inFormat, ...);
 
-#ifdef ENABLE_UCS2_STRINGS
-
-////////////////////////////////////////////////////////////////////////
-//
-//  UCS-2 string
-//
-//  String is built of 16-bit units (words)
-//
-//  TODO: Is this really UCS-2 or UTF-16?
-//  TODO:  meaning, does it support surrogates or is it intended to
-//  TODO:  support them at any time in the future?
-//  TODO: Correctly, UCS-2 does not support surrogates and UTF-16 does.
-//  TODO: BUT Microsoft calls their native Unicode encoding UCS-2
-//  TODO:  while it supports surrogates and is thus really UTF-16.
-//  TODO: Surrogates are Unicode characters with codepoints above
-//  TODO:  65535 which cannot therefore fit into a 2-byte word.
-//  TODO: This means that TRUE UCS-2 is a single-word encoding and
-//  TODO:  UTF-16 is a multi-word encoding.
-//
-//  NOTE: We shouldn't actually need 16-bit strings anymore since
-//  NOTE:  AbiWord is now fully converted to using 32-bit Unicode
-//  NOTE:  internally. The only possible needs for this is for
-//  NOTE:  Windows GUI, filesystem and API functions where applicable;
-//  NOTE:  and perhaps some file formats or external libraries
-//
-////////////////////////////////////////////////////////////////////////
-
-//!
-//	UT_UCS2String, a simple wrapper for zero terminated 'UCS2' strings.
-//
-
-// TODO: add c_str(), encoded_str(const char * to)
-
-class ABI_EXPORT UT_UCS2String
-{
-public:
-	UT_UCS2String();
-	UT_UCS2String(const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);
-	UT_UCS2String(const UT_UCS2String& rhs);
-	~UT_UCS2String();
-
-	size_t		size() const;
-	size_t length () const { return size () ; }
-
-	bool		empty() const;
-	void        clear() const;
-
-	UT_UCS2String	substr(size_t iStart, size_t nChars) const;
-
-	UT_UCS2String&	operator=(const UT_UCS2String&  rhs);
-	UT_UCS2String&	operator=(const UT_UCS2Char *    rhs);
-	UT_UCS2String&	operator+=(const UT_UCS2String& rhs);
-	UT_UCS2String&	operator+=(const UT_UCS2Char *   rhs);
-	UT_UCS2String&  operator+=(UT_UCS2Char rhs);
-	UT_UCS2String&  operator+=(char rhs);
-	UT_UCS2String&  operator+=(unsigned char rhs);
-
-	UT_UCS2Char		operator[](size_t iPos) const;
-	UT_UCS2Char&	operator[](size_t iPos);
-
-	void		swap(UT_UCS2String& rhs);
-
-	// The returned pointer is valid until the next non-const
-	// operation. You will _always_ get a legal pointer back,
-	// even if to an empty (0) string.
-	const char*        utf8_str();
-	const UT_UCS2Char* ucs2_str() const;
-	const UT_UCS4Char* ucs4_str();
-
-private:
-	class UT_UCS2Stringbuf* pimpl;
-};
-
-// helpers
-bool operator==(const UT_UCS2String& s1, const UT_UCS2String& s2);
-bool operator==(const UT_UCS2String& s1, const UT_UCS2Char *  s2);
-bool operator==(const UT_UCS2Char *  s1, const UT_UCS2String& s2);
-bool operator!=(const UT_UCS2String& s1, const UT_UCS2String& s2);
-bool operator!=(const UT_UCS2String& s1, const UT_UCS2Char *  s2);
-bool operator!=(const UT_UCS2Char *  s1, const UT_UCS2String& s2);
-
-// strcmp ordering
-bool operator<(const UT_UCS2String& s1, const UT_UCS2String& s2);
-
-UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2);
-
-#endif
-
 ////////////////////////////////////////////////////////////////////////
 //
 //  UCS-4 string
@@ -368,8 +266,6 @@ public:
 	UT_UCS4String();
 	UT_UCS4String(const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 	UT_UCS4String(const UT_UCS4String& rhs);
-
-	UT_UCS4String(const UT_UCS2String& rhs);
 
 	/* construct from a string in UTF-8 format
 	 */

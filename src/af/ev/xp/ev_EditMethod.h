@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -18,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
-
 
 #ifndef EV_EDITMETHOD_H
 #define EV_EDITMETHOD_H
@@ -168,14 +164,14 @@ ABI_EXPORT bool ev_EditMethod_exists (const UT_String & methodName);
 
 ABI_EXPORT bool ev_EditMethod_invoke (const EV_EditMethod * pEM, EV_EditMethodCallData * pData);
 ABI_EXPORT bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_String & data);
-ABI_EXPORT bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS2String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const EV_EditMethod * pEM, const UT_UCS4String & data);
 
 ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const UT_String & data);
-ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const UT_UCS2String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const UT_UCS4String & data);
 ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const char * data);
 ABI_EXPORT bool ev_EditMethod_invoke (const char * methodName, const UT_UCSChar * data);
 ABI_EXPORT bool ev_EditMethod_invoke (const UT_String& methodName, const UT_String & data);
-ABI_EXPORT bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS2String & data);
+ABI_EXPORT bool ev_EditMethod_invoke (const UT_String& methodName, const UT_UCS4String & data);
 
 ABI_EXPORT EV_EditMethod* ev_EditMethod_lookup (const char * methodName);
 ABI_EXPORT EV_EditMethod* ev_EditMethod_lookup (const UT_String & methodName);

@@ -679,14 +679,6 @@ UT_UTF8String::UT_UTF8String (const UT_UTF8String & rhs) :
 	// 
 }
 
-#ifdef ENABLE_UCS2_STRINGS
-UT_UTF8String::UT_UTF8String (const UT_UCS2String & rhs) :
-	pimpl(new UT_UTF8Stringbuf)
-{
-	if (rhs.size ()) appendUCS2 (rhs.ucs2_str (), rhs.size ());
-}
-#endif
-
 UT_UTF8String::UT_UTF8String (const UT_UCS4String & rhs) :
 	pimpl(new UT_UTF8Stringbuf)
 {
@@ -743,15 +735,6 @@ UT_UTF8String &	UT_UTF8String::operator=(const UT_UTF8String & rhs)
 	return *this;
 }
 
-#ifdef ENABLE_UCS2_STRINGS
-UT_UTF8String &	UT_UTF8String::operator=(const UT_UCS2String & rhs)
-{
-	pimpl->clear ();
-	if (rhs.size ()) appendUCS2 (rhs.ucs2_str (), rhs.size ());
-	return *this;
-}
-#endif
-
 UT_UTF8String &	UT_UTF8String::operator+=(const char * rhs)
 {
 	UT_return_val_if_fail(rhs, *this);
@@ -765,25 +748,10 @@ UT_UTF8String &	UT_UTF8String::operator+=(const UT_UTF8String & rhs)
 	return *this;
 }
 
-#ifdef ENABLE_UCS2_STRINGS
-UT_UTF8String &	UT_UTF8String::operator+=(const UT_UCS2String & rhs)
-{
-	if (rhs.size ()) appendUCS2 (rhs.ucs2_str (), rhs.size ());
-	return *this;
-}
-#endif
-
 const char * UT_UTF8String::utf8_str () const
 {
 	return pimpl->utf8Length () ? pimpl->data() : pszEmpty;
 }
-
-#ifdef ENABLE_UCS2_STRINGS
-void UT_UTF8String::appendUCS2 (const UT_UCS2Char * sz, size_t n /* 0 = null-terminated */)
-{
-	pimpl->appendUCS2 (sz, n);
-}
-#endif
 
 void UT_UTF8String::appendUCS4 (const UT_UCS4Char * sz, size_t n /* 0 = null-terminated */)
 {
@@ -805,24 +773,6 @@ const UT_UTF8String & UT_UTF8String::escapeMIME ()
 	pimpl->escapeMIME ();
 	return *this;
 }
-
-#ifdef ENABLE_UCS2_STRINGS
-UT_UCS2String UT_UTF8String::ucs2_str ()
-{
-	UT_UCS2String ucs2string;
-
-	const char * utf8string = pimpl->data ();
-	size_t bytelength = pimpl->byteLength ();
-
-	while (true)
-	{
-		UT_UCS2Char ucs2 = UT_UCS2Stringbuf::UTF8_to_UCS2 (utf8string, bytelength);
-		if (ucs2 == 0) break;
-		ucs2string += ucs2;
-	}
-	return ucs2string;
-}
-#endif
 
 UT_UCS4String UT_UTF8String::ucs4_str ()
 {
@@ -894,243 +844,6 @@ UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inForm
   return inStr;
 }
 
-#ifdef ENABLE_UCS2_STRINGS
-
-////////////////////////////////////////////////////////////////////////
-//
-//  UCS-2 string
-//
-//  String is built of 16-bit units (words)
-//
-//  TODO: Is this really UCS-2 or UTF-16?
-//  TODO:  meaning, does it support surrogates or is it intended to
-//  TODO:  support them at any time in the future?
-//  TODO: Correctly, UCS-2 does not support surrogates and UTF-16 does.
-//  TODO: BUT Microsoft calls their native Unicode encoding UCS-2
-//  TODO:  while it supports surrogates and is thus really UTF-16.
-//  TODO: Surrogates are Unicode characters with codepoints above
-//  TODO:  65535 which cannot therefore fit into a 2-byte word.
-//  TODO: This means that TRUE UCS-2 is a single-word encoding and
-//  TODO:  UTF-16 is a multi-word encoding.
-//
-//  NOTE: We shouldn't actually need 16-bit strings anymore since
-//  NOTE:  AbiWord is now fully converted to using 32-bit Unicode
-//  NOTE:  internally. The only possible needs for this is for
-//  NOTE:  Windows GUI, filesystem and API functions where applicable;
-//  NOTE:  and perhaps some file formats or external libraries
-//
-////////////////////////////////////////////////////////////////////////
-
-UT_UCS2String::UT_UCS2String()
-:	pimpl(new UT_UCS2Stringbuf)
-{
-}
-
-UT_UCS2String::UT_UCS2String(const UT_UCS2Char* sz, size_t n)
-:	pimpl(new UT_UCS2Stringbuf(sz, n ? n : (sz) ? UT_UCS2_strlen(sz) : 0))
-{
-}
-
-UT_UCS2String::UT_UCS2String(const UT_UCS2String& rhs)
-	:	pimpl(new UT_UCS2Stringbuf(*rhs.pimpl))
-{
-}
-
-UT_UCS2String::~UT_UCS2String()
-{
-	delete pimpl;
-}
-
-
-//////////////////////////////////////////////////////////////////
-// accessors
-
-size_t UT_UCS2String::size() const
-{
-	return pimpl->size();
-}
-
-bool UT_UCS2String::empty() const
-{
-	return pimpl->empty();
-}
-
-void UT_UCS2String::clear() const
-{
-	pimpl->clear();
-}
-
-UT_UCS2String UT_UCS2String::substr(size_t iStart, size_t nChars) const
-{
-	const size_t nSize = pimpl->size();
-
-	if (iStart >= nSize || !nChars) {
-		return UT_UCS2String();
-	}
-
-	const UT_UCS2Char* p = pimpl->data() + iStart;
-	if (iStart + nChars > nSize) {
-		nChars = nSize - iStart;
-	}
-
-	return UT_UCS2String(p, nChars);
-}
-
-const UT_UCS2Char* UT_UCS2String::ucs2_str() const
-{
-	return pimpl->size() ? pimpl->data() : ucs2Empty;
-}
-
-const UT_UCS4Char* UT_UCS2String::ucs4_str()
-{
-	if(!pimpl->size()) return ucs4Empty;
-
-	return pimpl->ucs4_data ();
-}
-
-const char* UT_UCS2String::utf8_str()
-{
-	if(!pimpl->size()) return pszEmpty;
-
-	return pimpl->utf8_data ();
-}
-
-//////////////////////////////////////////////////////////////////
-// mutators
-
-UT_UCS2String& UT_UCS2String::operator=(const UT_UCS2String& rhs)
-{
-	if (this != &rhs) {
-		*pimpl = *rhs.pimpl;
-	}
-	return *this;
-}
-
-UT_UCS2String& UT_UCS2String::operator=(const UT_UCS2Char* rhs)
-{
-	UT_return_val_if_fail(rhs, *this);
-	pimpl->assign(rhs, UT_UCS2_strlen(rhs));
-	return *this;
-}
-
-UT_UCS2String& UT_UCS2String::operator+=(const UT_UCS2String& rhs)
-{
-	if (this != &rhs) {
-		pimpl->append(*rhs.pimpl);
-	} else {
-		UT_UCS2Stringbuf t(*rhs.pimpl);
-		pimpl->append(t);
-	}
-	return *this;
-}
-
-UT_UCS2String& UT_UCS2String::operator+=(const UT_UCS2Char* rhs)
-{
-	UT_return_val_if_fail(rhs, *this);
-	pimpl->append(rhs, UT_UCS2_strlen(rhs));
-	return *this;
-}
-
-UT_UCS2String& UT_UCS2String::operator+=(UT_UCS2Char rhs)
-{
-	UT_UCS2Char cs = rhs;
-	pimpl->append(&cs, 1);
-	return *this;
-}
-
-// TODO What encoding do these functions think the 8-bit
-// TODO  character is in?  ASCII?  ISO-8859-1?  System encoding?
-// TODO  any old 8-bit single-byte or multibyte encoding?
-
-UT_UCS2String& UT_UCS2String::operator+=(char rhs)
-{
-	return this->operator+=(static_cast<unsigned char>(rhs));
-}
-
-UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
-{
-	UT_UCS2Char cs[2];
-	char rs[2];
-
-	rs[0] = static_cast<char>(rhs); rs[1] = 0;
-	UT_UCS2_strcpy_char (cs, rs);
-
-	pimpl->append(cs, 1);
-	return *this;
-}
-
-void UT_UCS2String::swap(UT_UCS2String& rhs)
-{
-	UT_UCS2Stringbuf* p = pimpl;
-	pimpl = rhs.pimpl;
-	rhs.pimpl = p;
-}
-
-//////////////////////////////////////////////////////////////////
-// End of class members, start of free functions
-//////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////
-// Helpers
-
-bool operator==(const UT_UCS2String& s1, const UT_UCS2String& s2)
-{
-	return UT_UCS2_strcmp(s1.ucs2_str(), s2.ucs2_str()) == 0;
-}
-
-bool operator==(const UT_UCS2String& s1, const UT_UCS2Char* s2)
-{
-	return UT_UCS2_strcmp(s1.ucs2_str(), s2) == 0;
-}
-
-bool operator==(const UT_UCS2Char* s1, const UT_UCS2String& s2)
-{
-	return s2 == s1;
-}
-
-bool operator!=(const UT_UCS2String& s1, const UT_UCS2String& s2)
-{
-	return !(s1 == s2);
-}
-
-bool operator!=(const UT_UCS2String& s1, const UT_UCS2Char*  s2)
-{
-	return !(s1 == s2);
-}
-
-bool operator!=(const UT_UCS2Char* s1, const UT_UCS2String& s2)
-{
-	return !(s2 == s1);
-}
-
-bool operator<(const UT_UCS2String& s1, const UT_UCS2String& s2)
-{
-	return UT_UCS2_strcmp(s1.ucs2_str(), s2.ucs2_str()) < 0;
-}
-
-UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2)
-{
-	UT_UCS2String s(s1);
-	s += s2;
-	return s;
-}
-
-UT_UCS2Char UT_UCS2String::operator[](size_t iPos) const
-{
-	UT_ASSERT(iPos <= size());
-	if (iPos == size())
-		return '\0';
-	return pimpl->data()[iPos];
-}
-
-UT_UCS2Char& UT_UCS2String::operator[](size_t iPos)
-{
-	UT_ASSERT(iPos <= size());
-	return pimpl->data()[iPos];
-}
-
-#endif
-
 ////////////////////////////////////////////////////////////////////////
 //
 //  UCS-4 string
@@ -1157,17 +870,6 @@ UT_UCS4String::UT_UCS4String(const UT_UCS4String& rhs)
 :	pimpl(new UT_UCS4Stringbuf(*rhs.pimpl))
 {
 }
-
-#ifdef ENABLE_UCS2_STRINGS
-UT_UCS4String::UT_UCS4String(const UT_UCS2String& rhs)
-	:	pimpl(new UT_UCS4Stringbuf(NULL, rhs.size()))
-{
-	const UT_UCS2Char * pUcs2 = rhs.ucs2_str();
-	
-	for(UT_uint32 i = 0; i < pimpl->size(); i++)
-		*(pimpl->data()+i) = (UT_UCS4Char)(*(pUcs2 + i));
-}
-#endif
 
 /* construct from a string in UTF-8 format
  */

@@ -62,13 +62,8 @@ public:
 	~private_FontReverter()
 	{
 		if (m_pOldFont)
-		{
 			m_gr.setFont(m_pOldFont);
-		}
-		else
-		{
-			// Oh joy, no old font to revert to... :-<
-		}
+		// else, Oh joy, no old font to revert to... :-<
 	}
 
 private:
@@ -134,9 +129,8 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
 	UT_VECTOR_PURGEALL(COLORREF*, m_vSaveRectBuf);
 	DELETEP(m_pFontGUI);
-	if (m_hXorPen) {
+	if (m_hXorPen)
 		DeleteObject(m_hXorPen);
-	}
 
 	delete [] m_remapBuffer;
 	delete [] m_remapIndices;
@@ -205,43 +199,27 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
-	{
 		lf.lfWeight = 700;
-	}
 
 	// TODO -- remove this block entirely, since oblique is no longer a valid style
 	// We squash oblique into italic
 	if (0 == UT_stricmp(pszFontStyle, "italic") || 0 == UT_stricmp(pszFontStyle, "oblique"))
-	{
 		lf.lfItalic = TRUE;
-	}
 
 	// TODO note that we currently think pszFontFamily is a single name, not a list!
 	// TODO why don't these generic family names work?!?
 	if (0 == UT_stricmp(pszFontFamily, "serif"))
-	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_ROMAN;
-	}
 	else if (0 == UT_stricmp(pszFontFamily, "sans-serif"))
-	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;
-	}
 	else if (0 == UT_stricmp(pszFontFamily, "cursive"))
-	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_SCRIPT;
-	}
 	else if (0 == UT_stricmp(pszFontFamily, "fantasy"))
-	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DECORATIVE;
-	}
 	else if (0 == UT_stricmp(pszFontFamily, "monospace"))
-	{
 		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_MODERN;
-	}
 	else
-	{
 		strcpy(lf.lfFaceName, pszFontFamily);
-	}
 
 	// Get character set value from the font itself
 	LOGFONT enumlf = { 0 };
@@ -589,9 +567,7 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 				y2 = temp;
 			}
 			else
-			{
 				--y2;
-			}
 		}
 		else
 		{
@@ -602,9 +578,7 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 				x2 = temp;
 			}
 			else
-			{
 				--x2;
-			}
 		}
 		UT_ASSERT(x1 <= x2);
 		UT_ASSERT(y1 <= y2);
@@ -675,9 +649,7 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	if (m_clrCurrent != m_clrXorPen || !m_hXorPen)
 	{
 		if (m_hXorPen)
-		{
 			DeleteObject(m_hXorPen);
-		}
 		m_hXorPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), m_clrCurrent);
 		m_clrXorPen = m_clrCurrent;
 	}
@@ -822,13 +794,10 @@ void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 
 void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
-
-//	UT_ASSERT((x + width) < 800);
 	_UUD(x);
 	_UUD(y);
 	_UUD(width);
-	_UUD(height);
-	
+	_UUD(height);	
 	
 	RECT r;
 	r.left = x;
@@ -873,11 +842,8 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 
 		DeleteObject(hrgn);
 	}
-	else
-	{
-		// stop clipping
+	else		// stop clipping
 		res = SelectClipRgn(m_hdc, NULL);
-	}
 
 	UT_ASSERT(res != ERROR);
 }
@@ -1053,9 +1019,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 
 	HCURSOR hCursor = LoadCursor(hinst,cursor_name);
 	if (hCursor != NULL)
-	{
 		SetCursor(hCursor);
-	}
 }
 
 void GR_Win32Graphics::setColor3D(GR_Color3D c)
@@ -1389,35 +1353,43 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 #endif
 }
 
-void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) {	
-	void * oldR = NULL;
-	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
-	if(oldR)
-		delete (UT_Rect*)oldR;
+void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
+{	
+	UT_Rect * oldR = NULL;
+	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
+	DELETEP(oldR);
 
-	void * oldC = NULL;
-	m_vSaveRectBuf.setNthItem(iIndx, (void*) new COLORREF[tdu(r.width) * tdu(r.height)], &oldC);
-	if(oldC)
-		delete (COLORREF*)oldC;
-		
-	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);
-	for (int x = 0; x < tdu(r.width); x++) {
-		for (int y = 0; y < tdu(r.height); y++) {
-			*(p++) = GetPixel(m_hdc, tdu(r.left) + x, tdu(r.top) + y);
-			}
+	UT_uint32 iWidth = tdu(r.width);
+	UT_uint32 iHeight = tdu(r.height);
+
+	COLORREF *p = new COLORREF[iWidth * iHeight];
+	COLORREF* oldC = NULL;
+
+	m_vSaveRectBuf.setNthItem(iIndx, (void*)p, (void **)&oldC);
+	DELETEP(oldC);
+
+	for (UT_uint32 x = 0; x < iWidth; x++)
+		for (UT_uint32 y = 0; y < iHeight; y++) {
+			UT_sint32 left = tdu(r.left);
+			UT_sint32 top = tdu(r.top);
+			*(p++) = GetPixel(m_hdc, left + x, r.top + y);
 		}
-	}
+}
 
 void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) {
 	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
 	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);
 	
-	if ( r && p) {
-		for (int x = 0; x < tdu(r->width); x++) {
-			for (int y = 0; y < tdu(r->height); y++) {
-				SetPixel(m_hdc, tdu(r->left) + x, tdu(r->top) + y, *(p++));
-				}
+	if (r && p) {
+		UT_uint32 iWidth = tdu(r->width);
+		UT_uint32 iHeight = tdu(r->height);
+		
+		for (int x = 0; x < iWidth; x++)
+			for (int y = 0; y < iHeight; y++) {
+				UT_sint32 left = tdu(r->left);
+				UT_sint32 top = tdu(r->top);
+				SetPixel(m_hdc, left + x, top + y, *(p++));
 			}
-		}
+	}
 }
 

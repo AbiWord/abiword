@@ -104,12 +104,12 @@ void GR_Caret::setWindowSize(UT_uint32 width, UT_uint32 height)
 {
 	m_iWindowWidth = width; m_iWindowHeight = height;
 
-	if(m_xPoint < m_pG->tlu(3)+1 || m_yPoint < 0 || m_xPoint > m_iWindowWidth || m_yPoint > m_iWindowHeight)
+	if(m_xPoint < m_pG->tlu(3)+1 || m_yPoint < 0 || m_xPoint > (UT_sint32)m_iWindowWidth || m_yPoint > (UT_sint32)m_iWindowHeight)
 		m_bCaret1OnScreen = false;
 	else
 		m_bCaret1OnScreen = true;
 	
-	if(m_xPoint2 < m_pG->tlu(3)+1 || m_yPoint2 < 0 || m_xPoint2 > m_iWindowWidth || m_yPoint2 > m_iWindowHeight)
+	if(m_xPoint2 < m_pG->tlu(3)+1 || m_yPoint2 < 0 || m_xPoint2 > (UT_sint32)m_iWindowWidth || m_yPoint2 > (UT_sint32)m_iWindowHeight)
 		m_bCaret2OnScreen = false;
 	else
 		m_bCaret2OnScreen = true;
@@ -127,12 +127,12 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 	m_bPointDirection = bPointDirection; m_pClr = pClr;
 	m_bPositionSet = true;
 
-	if(x < m_pG->tlu(3)+1 || y <= 0 || x > m_iWindowWidth || y > m_iWindowHeight)
+	if(x < m_pG->tlu(3)+1 || y <= 0 || x > (UT_sint32)m_iWindowWidth || y > (UT_sint32)m_iWindowHeight)
 		m_bCaret1OnScreen = false;
 	else
 		m_bCaret1OnScreen = true;
 	
-	if(x2 < m_pG->tlu(3)+1 || y2 <= 0 || x2 > m_iWindowWidth || y2 > m_iWindowHeight)
+	if(x2 < m_pG->tlu(3)+1 || y2 <= 0 || x2 > (UT_sint32)m_iWindowWidth || y2 > (UT_sint32)m_iWindowHeight)
 		m_bCaret2OnScreen = false;
 	else
 		m_bCaret2OnScreen = true;
