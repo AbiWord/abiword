@@ -108,18 +108,6 @@ dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
-AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
-	case "${enableval}" in
-	   yes)	debug=true ;
-		DEBUG_CFLAGS="-DDEBUG -DUT_DEBUG -DFMT_TEST -DUT_TEST -DPT_TEST -g" ;;
-	    no)	debug=false ;
-		DEBUG_CFLAGS="-DNDEBUG" ;;
-	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
-	esac
-],[	debug=false
-	DEBUG_CFLAGS="-DNDEBUG"
-])
-AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 ABI_GNOME_QUICK
 
@@ -168,16 +156,19 @@ AC_ARG_ENABLE(extra-optimization,
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-extra-optimization) ;;
      esac],[OPTIMIZE_CFLAGS=""])
 
-AC_ARG_ENABLE(bidi,
-    [  --enable-bidi    Turn on bidirectional support ],
-     [case "${enableval}" in
-       yes) bidi=true;
-		BIDI_CFLAGS="-DBIDI_ENABLED" ;;
-       no)  bidi=false;
-		BIDI_CFLAGS="" ;; 
-       *) AC_MSG_ERROR(bad value ${enableval} for --enable-bidi) ;;
-     esac],[BIDI_CFLAGS=""])
-AM_CONDITIONAL(BIDI_ENABLED, test "x$bidi" = "xtrue")
+AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
+	case "${enableval}" in
+	   yes)	debug=true ;
+		DEBUG_CFLAGS="-DDEBUG -DUT_DEBUG -DFMT_TEST -DUT_TEST -DPT_TEST -g" ;
+		OPTIMIZE_CFLAGS="" ;;
+	    no)	debug=false ;
+		DEBUG_CFLAGS="-DNDEBUG" ;;
+	     *)	AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+	esac
+],[	debug=false
+	DEBUG_CFLAGS="-DNDEBUG"
+])
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 #
 # Checks for FreeType
