@@ -69,6 +69,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 							 pcrSpan->getLength(),pcrSpan->getIndexAP()))
 				return UT_FALSE;
 
+// TODO see if we can avoid this call to _getStruxFromPosition ??
 			pf_Frag_Strux * pfs = NULL;
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
@@ -98,6 +99,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 
 			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
 
+// TODO see if we can avoid this call to _getStruxFromPosition ??
 			pf_Frag_Strux * pfs = NULL;
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
@@ -146,6 +148,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 				fragOffset = fragOffsetEnd;
 			}
 			
+// TODO see if we can avoid this call to _getStruxFromPosition ??
 			pf_Frag_Strux * pfs = NULL;
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrs->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
@@ -175,6 +178,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 
 			// get the strux containing the given position.
 	
+// TODO see if we can avoid this call to _getStruxFromPosition ??
 			pf_Frag_Strux * pfsContainer = NULL;
 			UT_Bool bFoundContainer = _getStruxFromPosition(pcrStrux->getPosition(),&pfsContainer);
 			UT_ASSERT(bFoundContainer);

@@ -91,6 +91,10 @@ PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset
 					if (pftPrev->getIndexAP() != indexAP)
 						diff |= PT_Diff_Left;
 				}
+				else
+				{
+					diff |= PT_Diff_Left;
+				}
 			}
 			else if (fragOffset == fragLen)
 			{
@@ -105,6 +109,10 @@ PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset
 					pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pf->getNext());
 					if (pftNext->getIndexAP() != indexAP)
 						diff |= PT_Diff_Right;
+				}
+				else
+				{
+//					diff |= PT_Diff_Right;
 				}
 			}
 			else

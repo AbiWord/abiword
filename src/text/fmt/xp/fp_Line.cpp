@@ -150,7 +150,7 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun)
 		{
 			m_vecRunInfos.deleteNthItem(i);
 			delete pRI;
-			UT_ASSERT(((signed)m_iWidth) > iAdjust);
+			UT_ASSERT(((signed)m_iWidth) >= iAdjust);
 			m_iWidth -= iAdjust;
 
 			pRun->setLine(NULL, NULL);
