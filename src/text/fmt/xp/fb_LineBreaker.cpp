@@ -365,7 +365,6 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 	}
 	while(pCurrentRun);
 
-
 	*pOffendingRun = pCurrentRun;
 
 	return iTrailingBlank;

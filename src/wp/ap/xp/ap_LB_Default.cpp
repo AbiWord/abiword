@@ -228,8 +228,8 @@ static struct ap_bs_NVK s_NVKTable[] =
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F11,		{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-	{EV_NVK_F12,		{ "cycleInputMode",		"",					"",				"",
-						  FN_TEST_DUMP,			"",					"",				""					}},
+	{EV_NVK_F12,		{ "cycleInputMode",		"",					FN_TEST_FTR,				"",
+						  FN_TEST_DUMP,			        "",					"",				""					}},
 // 	{EV_NVK_F13,		{
 // 	{EV_NVK_F14,		{
 // 	{EV_NVK_F15,		{

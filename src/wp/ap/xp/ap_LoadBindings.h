@@ -27,9 +27,12 @@ class EV_EditBindingMap;
 //////////////////////////////////////////////////////////////////
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 #  define FN_TEST_DUMP		"Test_Dump"
+#  define FN_TEST_FTR           "Test_Ftr"
 #else
 #  define FN_TEST_DUMP		""
+#  define FN_TEST_FTR           ""
 #endif
+
 //////////////////////////////////////////////////////////////////
 
 struct ap_bs_Mouse						/* binding set table to describe mouse bindings */

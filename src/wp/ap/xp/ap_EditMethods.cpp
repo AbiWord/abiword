@@ -362,6 +362,7 @@ public:
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 	static EV_EditMethod_Fn Test_Dump;
+	static EV_EditMethod_Fn Test_Ftr;
 #endif
 };
 
@@ -639,7 +640,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(noop),					0,	""),
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
-	EV_EditMethod(NF(Test_Dump),			0,	"")
+	EV_EditMethod(NF(Test_Dump),			0,	""),
+	EV_EditMethod(NF(Test_Ftr),			0,	"")
 #endif
 };
 
@@ -1781,7 +1783,9 @@ Defun(warpInsPtToXY)
 Defun1(warpInsPtLeft)
 {
 	ABIWORD_VIEW;
+	UT_DEBUGMSG(("getPoint1: %d\n", pView->getPoint()));
 	pView->cmdCharMotion(UT_FALSE,1);
+	UT_DEBUGMSG(("getPoint2: %d\n", pView->getPoint()));
 	return UT_TRUE;
 }
 
@@ -4248,6 +4252,13 @@ Defun1(Test_Dump)
 {
 	ABIWORD_VIEW;
 	pView->Test_Dump();
+	return UT_TRUE;
+}
+
+Defun1(Test_Ftr)
+{
+	ABIWORD_VIEW;
+	pView->insertFooter();
 	return UT_TRUE;
 }
 #endif

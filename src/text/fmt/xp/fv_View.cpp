@@ -5463,3 +5463,68 @@ void FV_View::setShowPara(UT_Bool bShowPara)
         draw();
     }
 };
+
+void FV_View::insertFooter()
+{
+
+
+	// the following code copied from insertSectionBreak()
+	// blame them
+
+	m_pDoc->beginUserAtomicGlob();
+	// this is all one big hunk in the eyes of undo
+	                              
+	if (!isSelectionEmpty())
+	{
+		_deleteSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+
+	UT_DEBUGMSG(("EOD: %d\n", FV_DOCPOS_EOD));
+	UT_uint32 iPoint = FV_DOCPOS_EOD;
+
+	UT_uint32 oldPos = getPoint();
+	moveInsPtTo(FV_DOCPOS_EOD);
+
+	m_pDoc->insertStrux(getPoint(), PTX_Section);
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
+	m_pDoc->endUserAtomicGlob(); // end the big undo section
+
+	_generalUpdate(); // Why is this needed here?
+
+	// TODO: This stuff shouldn't be hardcoded
+	const XML_Char*	sec_attributes1[] = {
+		"type", "footer",
+		"id", "page_num",
+		NULL, NULL
+	};
+	const XML_Char*	sec_attributes2[] = {
+		"footer", "page_num",
+		NULL, NULL
+	};
+
+	UT_DEBUGMSG(("gp2: %d\n", getPoint()));
+
+
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
+
+	const XML_Char*	f_attributes[] = {
+		"type", "page_number",
+		NULL, NULL
+	};
+
+	UT_Bool bResult;
+	UT_DEBUGMSG(("gp3: %d\n", getPoint()));
+
+	moveInsPtTo(FV_DOCPOS_EOD);
+
+	bResult = m_pDoc->insertObject(getPoint(), PTO_Field, f_attributes, NULL);
+	moveInsPtTo(oldPos);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
+	_generalUpdate();
+
+}

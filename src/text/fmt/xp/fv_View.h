@@ -234,6 +234,12 @@ public:
 
 	FV_DocCount                     countWords(void);
 
+// -----------------------
+
+	void                            insertFooter(void);
+
+// -----------------------
+
     void            setShowPara(UT_Bool);    
     inline UT_Bool  getShowPara(void) const { return m_bShowPara; };
 protected:
