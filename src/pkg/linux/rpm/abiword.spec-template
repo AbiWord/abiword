@@ -293,6 +293,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiURLDict.so
 %{_libdir}/%{AbiWord}/plugins/libAbiWikipedia.so
 %{?_with_ots:%{_libdir}/%{AbiWord}/plugins/libAbiOTS.so}
+%{?_with_ots:%{_libdir}/%{AbiWord}/plugins/AbiWord/glade/ots.glade}
 %{_libdir}/%{AbiWord}/plugins/libAbiReferee.so
 %{_libdir}/%{AbiWord}/plugins/libAbiScriptHappy.so
 %endif
