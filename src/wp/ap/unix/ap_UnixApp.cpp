@@ -464,7 +464,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 
     // create XHTML buffer to put on the clipboard
 
-    IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc, false);
+    IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc, true);
     if ( pExpHtml )
     {
         pExpHtml->copyToBuffer(pDocRange, &bufHTML);
