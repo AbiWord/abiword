@@ -34,6 +34,14 @@
 
 #include "ap_Win32Resources.rc2"
 
+#if defined(STRICT)
+#define WHICHPROC	WNDPROC
+#else
+#define WHICHPROC	FARPROC
+#endif
+
+WHICHPROC hTreeProc;
+
 /*****************************************************************/
 
 XAP_Dialog * AP_Win32Dialog_Stylist::static_constructor(XAP_DialogFactory * pFactory,
@@ -75,16 +83,6 @@ void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 							(DLGPROC)s_dlgProc,(LPARAM)this);
-
-	//if (hResult == NULL)
-	//{
-	//	CHAR szBuf[80]; 
-	//	DWORD dw = GetLastError(); 
-	// 
-	//	sprintf(szBuf, "failed: GetLastError returned %u\n", dw); 
-	// 
-	//	MessageBox(NULL, szBuf, "Error", MB_OK); 
-	//}
 
 	UT_ASSERT_HARMLESS((hResult != NULL));
 
@@ -138,7 +136,41 @@ void  AP_Win32Dialog_Stylist::destroy(void)
 
 void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 {
-	UT_ASSERT_HARMLESS(0);
+	UT_sint32 row,col;
+	UT_UTF8String sCurStyle = *getCurStyle();
+
+	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
+		updateDialog();
+
+	if(isStyleTreeChanged())
+		_fillTree();
+
+	getStyleTree()->findStyle(sCurStyle,row,col);
+	UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
+	UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
+	UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
+	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
+
+	HWND hTree = GetDlgItem(m_hWnd, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
+	HTREEITEM hitem = NULL;
+
+	hitem = TreeView_GetRoot(hTree);
+	UT_sint32 i;
+	// Go through each row until we've found ours
+	for (i = 0; i < row; i++)
+		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
+
+	// If column > 0, we're looking for a child of this node in the treeview
+	if (col > 0)
+	{
+		hitem = TreeView_GetNextItem(hTree, hitem, TVGN_CHILD);
+		for (i = 0; i < col; i++)
+			hitem = TreeView_GetNextItem(hTree, hitem, TVGN_NEXT);
+	}
+
+	TreeView_SelectItem(hTree, hitem);
+
+	setStyleChanged(false);
 }
 
 void  AP_Win32Dialog_Stylist::activate(void)
@@ -160,6 +192,7 @@ void  AP_Win32Dialog_Stylist::activate(void)
 void AP_Win32Dialog_Stylist::notifyActiveFrame(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
+	setStyleInGUI();
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_STYLIST_##c,pSS->getValue(AP_STRING_ID_##s))
@@ -181,6 +214,11 @@ BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	_populateWindowData();
 
+	HWND hTree = GetDlgItem(m_hWnd, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
+	hTreeProc = (WHICHPROC) GetWindowLong(hTree, GWL_WNDPROC); // save off our prior callback
+	SetWindowLong(hTree, GWL_WNDPROC, (LONG)s_treeProc); // tie the treeview to the new callback
+	SetWindowLong(hTree, GWL_USERDATA, (LONG)this);
+
 	return 1;							// 1 == we did not call SetFocus()
 }
 
@@ -194,7 +232,9 @@ BOOL AP_Win32Dialog_Stylist::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	switch (wId)
 	{
 		case IDOK:
-			
+			if (_styleClicked())
+				Apply();
+
 		case IDCANCEL:						// also AP_RID_DIALOG_STYLIST_BTN_CLOSE
 //			m_answer = a_CANCEL;
 			destroy();
@@ -244,7 +284,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 
 	UT_sint32 row, col;
 	UT_UTF8String sTmp("");
-	int iter = 0; // Unique key for each item in the treeview
+	//int iter = 0; // Unique key for each item in the treeview
 	for(row= 0; row < pStyleTree->getNumRows(); row++)
 	{
 		if(!pStyleTree->getNameOfRow(sTmp,row))
@@ -252,22 +292,27 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
-		if(pStyleTree->getNumCols(row) > 0)
-		{
-			xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
 
-			// Insert the item into the treeview
-			tvi.pszText = const_cast<char *>(sTmp.utf8_str());
-			tvi.cchTextMax = sTmp.length() + 1;
+		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
+
+		// Insert the item into the treeview
+		tvi.pszText = (LPTSTR)sTmp.utf8_str();
+		tvi.cchTextMax = sTmp.length() + 1;
+		tvi.lParam = row;
+		if (pStyleTree->getNumCols(row) > 0)
 			tvi.cChildren = 1;
-			tvi.lParam = iter++;
+		else
+			tvi.cChildren = 0;
 
-			tvins.item = tvi;
-			tvins.hParent = TVI_ROOT;
-			tvins.hInsertAfter = TVI_LAST;
-			
-			hParentItem = TreeView_InsertItem(hTree, &tvins);
+		tvins.item = tvi;
+		tvins.hParent = TVI_ROOT;
+		tvins.hInsertAfter = TVI_LAST;
+		
+		hParentItem = TreeView_InsertItem(hTree, &tvins);
 
+		// Add any children (columns) this row contains to be added
+		if (pStyleTree->getNumCols(row) > 0)
+		{
 			for(col = 0; col < pStyleTree->getNumCols(row); col++)
 			{
 				if(!pStyleTree->getStyleAtRowCol(sTmp,row,col))
@@ -277,10 +322,10 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 				}
 				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
 				// Insert the item into the treeview
-				tvi.pszText = const_cast<char *>(sTmp.utf8_str());
+				tvi.pszText = (LPTSTR)sTmp.utf8_str();
 				tvi.cchTextMax = sTmp.length() + 1;
 				tvi.cChildren = 0;
-				tvi.lParam = iter++;
+				tvi.lParam = col;
 
 				tvins.item = tvi;
 				tvins.hParent = hParentItem;
@@ -289,12 +334,68 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 				TreeView_InsertItem(hTree, &tvins);
 			}
 		}
-		else
-		{
-			xxx_UT_DEBUGMSG(("Adding style %s at row %d \n",sTmp.utf8_str(),row));
-			// TODO: Add any special case single-style rows here.
-		}
 	}
 
 	setStyleTreeChanged(false);
+}
+
+BOOL CALLBACK AP_Win32Dialog_Stylist::s_treeProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{		
+	if (msg == WM_LBUTTONDBLCLK)
+	{
+		// The user has double clicked on a tree item
+		AP_Win32Dialog_Stylist * pThis = (AP_Win32Dialog_Stylist *)GetWindowLong(hWnd,GWL_USERDATA);
+		if (pThis->_styleClicked())
+			pThis->Apply();
+		return 1;
+	}
+
+	return CallWindowProc(hTreeProc, hWnd, msg, wParam, lParam);
+}
+
+BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
+{
+
+	UT_sint32 row, col;
+	TVITEM tvi;		
+
+	HWND hTree = GetDlgItem(m_hWnd, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
+
+	// Selected item
+	tvi.hItem =  TreeView_GetSelection(hTree);
+			
+	if (!tvi.hItem)
+		return 0;
+
+	// Associated data		 
+	tvi.mask = TVIF_HANDLE;
+	TreeView_GetItem(hTree, &tvi);
+
+	// Retrieve the row/column information from the treeview
+	// This maps back to the pStyleList's row&column identifiers
+	if (TreeView_GetParent(hTree, tvi.hItem) == NULL)
+	{
+		row = tvi.lParam;
+		col = 0;
+	}
+	else
+	{
+		col = tvi.lParam;
+		// Get parent node for row information
+		tvi.mask = TVIF_HANDLE;
+		tvi.hItem = TreeView_GetParent(hTree, tvi.hItem);
+		TreeView_GetItem(hTree, &tvi);
+		row = tvi.lParam;
+	}
+
+	UT_UTF8String sStyle;
+
+	if((col == 0) && (getStyleTree()->getNumCols(row) > 1))
+		return 0; // We're at a style heading, not a style.  Don't attempt to set the style.
+	else
+		getStyleTree()->getStyleAtRowCol(sStyle,row,col);
+	
+	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
+	setCurStyle(sStyle);
+	return 1;
 }
