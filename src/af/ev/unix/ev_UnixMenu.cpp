@@ -88,18 +88,22 @@ public:									// we create...
 			XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
 			UT_ASSERT(pFrame);
 
-			EV_Menu_Label * pLabel = wd->m_pUnixMenu->getMenuLabelSet()->getLabel(wd->m_id);
-			if (!pLabel)
+			const EV_Menu_LabelSet * pLabelSet = wd->m_pUnixMenu->getMenuLabelSet();
+			if (pLabelSet)
 			{
-				pFrame->setStatusMessage(NULL);
-				return;
-			}
+				EV_Menu_Label * pLabel = pLabelSet->getLabel(wd->m_id);
+				if (!pLabel)
+				{
+					pFrame->setStatusMessage(NULL);
+					return;
+				}
 
-			const char * szMsg = pLabel->getMenuStatusMessage();
-			if (!szMsg || !*szMsg)
-				szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+				const char * szMsg = pLabel->getMenuStatusMessage();
+				if (!szMsg || !*szMsg)
+					szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
 	
-			pFrame->setStatusMessage(szMsg);
+				pFrame->setStatusMessage(szMsg);
+			}
 		}
 	};
 	
