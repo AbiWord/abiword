@@ -306,7 +306,8 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	//TODO this is a temporary hack -- need a way to handle true 32-bit chars
 	UT_UCS2Char aChar = (UT_UCS2Char) currentChar;
 
-	if(currentChar == 0x200B || currentChar == 0xFEFF || currentChar == UCS_LIGATURE_PLACEHOLDER)
+	if(currentChar == 0x200B || currentChar == 0xFEFF
+	   /*|| currentChar == UCS_LIGATURE_PLACEHOLDER*/)
 		return;
 	// Windows NT and Windows 95 support the Unicode Font file.
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -399,8 +400,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			
 			for (i = 0, j = 0; i < iLengthOrig; i++,j++)
 			{
-				if(pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF ||
-				   pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER)
+				if(pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
+				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/)
 				{
 					j--;
 				}
@@ -496,8 +497,8 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 	{
 		m_remapBuffer[j] = (UT_UCS2Char)pChars[iCharOffset + i];
 		
-		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF ||
-		   m_remapBuffer[j] == UCS_LIGATURE_PLACEHOLDER)
+		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF
+		   /*|| m_remapBuffer[j] == UCS_LIGATURE_PLACEHOLDER*/)
 			j--;
 	}
 
