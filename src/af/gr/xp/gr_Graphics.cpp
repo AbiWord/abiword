@@ -173,14 +173,16 @@ void GR_Graphics::beginPaint ()
 {
 	m_paintCount++;
 
-	_beginPaint ();
+	if (m_paintCount == 1)
+		_beginPaint ();
 }
 
 void GR_Graphics::endPaint ()
 {
-	_endPaint ();
-
 	m_paintCount--;
+
+	if (m_paintCount == 0)
+		_endPaint ();
 }
 
 UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
