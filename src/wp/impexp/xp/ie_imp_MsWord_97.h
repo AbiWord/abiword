@@ -34,6 +34,13 @@ typedef struct _Blip Blip;
 typedef struct _CHP CHP;
 class PD_Document;
 
+struct bookmark
+{
+	XML_Char * name;
+	UT_uint32  pos;
+	bool	   start;
+};
+
 //
 // The Sniffer/Manager/Creator Class for DOC
 //
@@ -69,60 +76,63 @@ public:
 
 	UT_Error			importFile (const char * szFilename);
 
-   	// wv's callbacks need access to these, so they have to be public
-	int             _specCharProc (wvParseStruct *ps, UT_uint16 eachchar, 
+	// wv's callbacks need access to these, so they have to be public
+	int 			_specCharProc (wvParseStruct *ps, UT_uint16 eachchar, 
 								   CHP * achp);
-	int             _charProc (wvParseStruct *ps, UT_uint16 eachchar,
+	int 			_charProc (wvParseStruct *ps, UT_uint16 eachchar,
 							   UT_Byte chartype,  UT_uint16 lid);
 	int 			_docProc  (wvParseStruct *ps, UT_uint32 tag);
 	int 			_eleProc  (wvParseStruct *ps, UT_uint32 tag,
-							   void *props, int dirty);	
+							   void *props, int dirty); 
 
 private:
 
-	int        _beginSect (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _beginSect (wvParseStruct *ps, UT_uint32 tag,
 						   void *props, int dirty);
-	int        _endSect (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _endSect (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
 
-	int        _beginPara (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _beginPara (wvParseStruct *ps, UT_uint32 tag,
 						   void *props, int dirty);
-	int        _endPara (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _endPara (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
 
-	int        _beginChar (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _beginChar (wvParseStruct *ps, UT_uint32 tag,
 						   void *props, int dirty);
-	int        _endChar (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _endChar (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
-
-	int        _beginComment (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _beginComment (wvParseStruct *ps, UT_uint32 tag,
 						   void *props, int dirty);
-	int        _endComment (wvParseStruct *ps, UT_uint32 tag,
+	int 	   _endComment (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
-
-   	UT_Error   _handleImage (Blip *, long width, long height);
-	bool       _handleCommandField (char *command);
-	bool       _handleFieldEnd (char * command);
-	int        _fieldProc (wvParseStruct *ps, UT_uint16 eachchar, 
+	XML_Char * _getBookmarkName(wvParseStruct * ps, UT_uint32 pos);
+	bool	   _insertBookmark(bookmark * bm);
+	UT_Error   _handleImage (Blip *, long width, long height);
+	bool	   _handleCommandField (char *command);
+	bool	   _handleFieldEnd (char * command);
+	int 	   _fieldProc (wvParseStruct *ps, UT_uint16 eachchar,
 						   UT_Byte chartype, UT_uint16 lid);
-	void       _appendChar (UT_UCSChar ch);
-	void       _flush ();
+	void	   _appendChar (UT_UCSChar ch);
+	void	   _flush ();
 
 private:
 
-	UT_UCS2String       m_pTextRun;
-   	UT_uint32           m_iImageCount;
-	UT_uint32           m_nSections;
-	bool                m_bSetPageSize;
+	UT_UCS2String		m_pTextRun;
+	UT_uint32			m_iImageCount;
+	UT_uint32			m_nSections;
+	bool				m_bSetPageSize;
 	UT_UCSChar m_command [FLD_SIZE];
 	UT_UCSChar m_argument [FLD_SIZE];
-	bool       m_bIsLower;
+	bool	   m_bIsLower;
 
 	bool m_bInSect;
 	bool m_bInPara;
 #ifdef BIDI_ENABLED
 	bool m_bPrevStrongCharRTL;
 #endif
+	UT_uint32 m_iDocPosition;
+	bookmark * m_pBookmarks;
+	UT_uint32  m_iBookmarksCount;
 };
 
 #endif /* IE_IMP_MSWORD_H */

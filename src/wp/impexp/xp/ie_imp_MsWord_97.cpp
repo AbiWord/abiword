@@ -55,7 +55,7 @@
 #undef IE_IMP_MSWORD_DUMP
 #endif
 
-#define X_CheckError(v)			do { if (!(v)) return 1; } while (0)
+#define X_CheckError(v) 		do { if (!(v)) return 1; } while (0)
 
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
@@ -142,27 +142,27 @@ typedef struct
 
 static Doc_Field_Mapping_t s_Tokens[] =
 {
-	{"TIME",       F_TIME},
+	{"TIME",	   F_TIME},
 	{"EDITTIME",   F_EDITTIME},
-	{"DATE",       F_DATE},
-	{"date",       F_DATE},
-	{"\\@",        F_DateTimePicture},
+	{"DATE",	   F_DATE},
+	{"date",	   F_DATE},
+	{"\\@", 	   F_DateTimePicture},
 
 	{"FILENAME",   F_FILENAME},
 	{"\\filename", F_FILENAME},
-	{"PAGE",       F_PAGE},
+	{"PAGE",	   F_PAGE},
 	{"NUMCHARS",   F_NUMCHARS},
 	{"NUMWORDS",   F_NUMWORDS},
 
 	// these below aren't handled by AbiWord, but they're known about
 	{"HYPERLINK",  F_HYPERLINK},
 	{"PAGEREF",    F_PAGEREF},
-	{"EMBED",      F_EMBED},
-	{"TOC",        F_TOC},
-	{"\\o",        F_TOC_FROM_RANGE},
-	{"AUTHOR",     F_AUTHOR},
+	{"EMBED",	   F_EMBED},
+	{"TOC", 	   F_TOC},
+	{"\\o", 	   F_TOC_FROM_RANGE},
+	{"AUTHOR",	   F_AUTHOR},
 
-	{ "*",         F_OTHER}
+	{ "*",		   F_OTHER}
 };
 
 #define FieldMappingSize (sizeof(s_Tokens)/sizeof(s_Tokens[0]))
@@ -174,8 +174,8 @@ s_mapNameToField (const char * name)
 	{
 		if (!UT_strcmp(s_Tokens[k].m_name,name))
 			return s_Tokens[k].m_id;
-    }
-    return F_OTHER;
+	}
+	return F_OTHER;
 }
 
 #undef FieldMappingSize
@@ -226,11 +226,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_sniffer);
 
-	mi->name    = "Microsoft Word (tm) Importer";
-	mi->desc    = "Import Microsoft Word (tm) Documents";
+	mi->name	= "Microsoft Word (tm) Importer";
+	mi->desc	= "Import Microsoft Word (tm) Documents";
 	mi->version = ABI_VERSION_STRING;
-	mi->author  = "Abi the Ant";
-	mi->usage   = "No Usage";
+	mi->author	= "Abi the Ant";
+	mi->usage	= "No Usage";
 
 	IE_Imp::registerImporter (m_sniffer);
 	return 1;
@@ -239,11 +239,11 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 ABI_FAR_CALL
 int abi_plugin_unregister (XAP_ModuleInfo * mi)
 {
-	mi->name    = 0;
-	mi->desc    = 0;
+	mi->name	= 0;
+	mi->desc	= 0;
 	mi->version = 0;
-	mi->author  = 0;
-	mi->usage   = 0;
+	mi->author	= 0;
+	mi->usage	= 0;
 
 	UT_ASSERT (m_sniffer);
 
@@ -271,7 +271,7 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 bool IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf, 
 												  UT_uint32 iNumbytes)
 {
-	char * magic    = 0;
+	char * magic	= 0;
 	int magicoffset = 0;
 
 	magic = "Microsoft Word 6.0 Document";
@@ -378,13 +378,36 @@ bool	IE_Imp_MsWord_97_Sniffer::getDlgLabels (const char ** pszDesc,
 
 IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 {
+	if(m_pBookmarks)
+	{
+		// free the names from the bookmarks
+		for(UT_uint32 i = 0; i < m_iBookmarksCount; i++)
+		{
+			// make sure we do not delete any name twice
+			if(m_pBookmarks[i].name && m_pBookmarks[i].start)
+			{
+			   delete[] m_pBookmarks[i].name;
+			   m_pBookmarks[i].name = NULL;
+			}
+		}
+		delete [] m_pBookmarks;
+	}
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
-  : IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false), m_bIsLower(false), m_bInSect(false), m_bInPara(false)
+  : IE_Imp (pDocument),
+	m_iImageCount (0),
+	m_nSections(0),
+	m_bSetPageSize(false),
+	m_bIsLower(false),
+	m_bInSect(false),
+	m_bInPara(false),
 #ifdef BIDI_ENABLED
-	,m_bPrevStrongCharRTL(false)
+	m_bPrevStrongCharRTL(false),
 #endif
+	m_iDocPosition(0),
+	m_pBookmarks(NULL),
+	m_iBookmarksCount(0)
 {
 }
 
@@ -403,7 +426,7 @@ static UT_String _getPassword (XAP_Frame * pFrame)
   pFrame->raise ();
 
   XAP_DialogFactory * pDialogFactory
-    = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
   XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
   UT_ASSERT(pDlg);
@@ -414,7 +437,7 @@ static UT_String _getPassword (XAP_Frame * pFrame)
   bool bOK = (ans == XAP_Dialog_Password::a_OK);
 
   if (bOK)
-    password = pDlg->getPassword ();
+	password = pDlg->getPassword ();
 
   UT_DEBUGMSG(("Password is %s\n", password.c_str()));
 
@@ -443,46 +466,46 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 	if (ret & 0x8000)		/* Password protected? */
 	  {
-	    UT_String pass = GetPassword();
-	    if ( pass.size () != 0 )
-	      password = pass.c_str();
+		UT_String pass = GetPassword();
+		if ( pass.size () != 0 )
+		  password = pass.c_str();
 
-	    if ((ret & 0x7fff) == WORD8)
-	      {
+		if ((ret & 0x7fff) == WORD8)
+		  {
 		ret = 0;
 		if (password == NULL)
 		  {
-		    ErrorMessage(AP_STRING_ID_WORD_PassRequired);
-		    ErrCleanupAndExit(UT_IE_PROTECTED);
+			ErrorMessage(AP_STRING_ID_WORD_PassRequired);
+			ErrCleanupAndExit(UT_IE_PROTECTED);
 		  }
 		else
 		  {
-		    wvSetPassword (password, &ps);
-		    if (wvDecrypt97 (&ps))
-		      {
+			wvSetPassword (password, &ps);
+			if (wvDecrypt97 (&ps))
+			  {
 			ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
 			ErrCleanupAndExit(UT_IE_PROTECTED);
-		      }
+			  }
 		  }
-	      }
-	    else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
-	      {
+		  }
+		else if (((ret & 0x7fff) == WORD7) || ((ret & 0x7fff) == WORD6))
+		  {
 		ret = 0;
 		if (password == NULL)
 		  {
-		    ErrorMessage(AP_STRING_ID_WORD_PassRequired);
-		    ErrCleanupAndExit(UT_IE_PROTECTED);
+			ErrorMessage(AP_STRING_ID_WORD_PassRequired);
+			ErrCleanupAndExit(UT_IE_PROTECTED);
 		  }
 		else
 		  {
-		    wvSetPassword (password, &ps);
-		    if (wvDecrypt95 (&ps))
-		      {
+			wvSetPassword (password, &ps);
+			if (wvDecrypt95 (&ps))
+			  {
 			//("Incorrect Password\n"));
 			ErrCleanupAndExit(UT_IE_PROTECTED);
-		      }
+			  }
 		  }
-	      }
+		  }
 	  }
 
 	if (ret)
@@ -507,24 +530,24 @@ void IE_Imp_MsWord_97::_flush ()
 {
 
   if(!m_pTextRun.size())
-    return;
+	return;
 
   // we've got to ensure that we're inside of a section & paragraph
   if (!m_bInSect)
-    {
-      // append a blank default section - assume it works
-      UT_DEBUGMSG(("#TF: _flush: appending default section\n"));
-      getDoc()->appendStrux(PTX_Section, NULL);
-      m_bInSect = true;
-    }
+	{
+	  // append a blank default section - assume it works
+	  UT_DEBUGMSG(("#TF: _flush: appending default section\n"));
+	  getDoc()->appendStrux(PTX_Section, NULL);
+	  m_bInSect = true;
+	}
 
   if(!m_bInPara)
-    {
-      // append a blank defaul paragraph - assume it works
-      UT_DEBUGMSG(("#TF: _flush: appending default block\n"));
-      getDoc()->appendStrux(PTX_Block, NULL);
-      m_bInPara = true;
-    }
+	{
+	  // append a blank defaul paragraph - assume it works
+	  UT_DEBUGMSG(("#TF: _flush: appending default block\n"));
+	  getDoc()->appendStrux(PTX_Block, NULL);
+	  m_bInPara = true;
+	}
 
 	if (m_pTextRun.size())
 	{
@@ -547,6 +570,78 @@ void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 /****************************************************************************/
 /****************************************************************************/
 
+static int s_cmp_bookmarks_qsort(const void * a, const void * b)
+{
+	const bookmark * A = (const bookmark *) a;
+	const bookmark * B = (const bookmark *) b;
+
+	if(A->pos != B->pos)
+		return (A->pos - B->pos);
+	else
+		// for bookmarks with identical position we want any start bookmarks to be
+		// before end bookmarks.
+		return ((UT_sint32)B->start - (UT_sint32)A->start);
+}
+
+static int s_cmp_bookmarks_bsearch(const void * a, const void * b)
+{
+	UT_uint32 A = *((const UT_uint32 *) a);
+	const bookmark * B = (const bookmark *) b;
+
+	return (A - B->pos);
+}
+
+XML_Char * IE_Imp_MsWord_97::_getBookmarkName(wvParseStruct * ps, UT_uint32 pos)
+{
+	XML_Char *str;
+	UT_iconv_t ic_handle;
+	// word bookmarks can be at most 30 characters, so make a reasonable buffer
+	// for the utf-8 version
+	char buff[200];
+	char *buff_ptr = &buff[0];
+	const char *in_ptr;
+	size_t out_left = 200, in_left;
+
+	if (!XAP_EncodingManager::get_instance()->cjk_locale()
+	   &&(XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1))
+	{
+		ic_handle = UT_iconv_open(XAP_EncodingManager::get_instance()->getNativeEncodingName(), "UCS-2");
+	}
+	else
+	{
+		// use utf-8
+		ic_handle = UT_iconv_open("utf-8", "UCS-2LE");
+	}
+
+	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)
+	{
+		// 16 bit stuff
+		in_ptr = (const char *) ps->Sttbfbkmk.u16strings[pos];
+		in_left = 2 * UT_UCS_strlen(ps->Sttbfbkmk.u16strings[pos]) + 2;
+		UT_iconv( ic_handle, &in_ptr, &in_left, &buff_ptr,&out_left);
+		str = new XML_Char[200 - out_left];
+		strcpy(str, buff);
+	}
+	else
+	{
+		// 8 bit stuff
+		// there is a bug in wv, and the table gets incorrectly retrieved
+		// if it contains 8-bit strings
+		if(ps->Sttbfbkmk.s8strings[pos])
+		{
+			UT_uint32 len = strlen(ps->Sttbfbkmk.s8strings[pos]);
+			str = new XML_Char[len + 1];
+			for(UT_uint32 i = 0; i < len; i++)
+				str[i] = ps->Sttbfbkmk.s8strings[pos][i];
+			str[i] = 0;
+		}
+		else
+			str = NULL;
+	}
+
+	return str;
+}
+
 int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 {
 	// flush out any pending character data
@@ -559,7 +654,85 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 	switch ((wvTag)tag)
 	{
 	case DOCBEGIN:
-	case DOCEND:	
+		UT_uint32 i,j;
+
+		if(m_pBookmarks)
+		{
+			for(i = 0; i < m_iBookmarksCount; i++)
+			{
+				if(m_pBookmarks[i].name && m_pBookmarks[i].start)
+				{
+					delete []m_pBookmarks[i].name;
+					m_pBookmarks[i].name = NULL;
+				}
+			}
+			delete [] m_pBookmarks;
+		}
+		BKF *bkf;
+		BKL *bkl;
+		U32 *posf, *posl, nobkf, nobkl;
+
+		if(!wvGetBKF_PLCF (&bkf, &posf, &nobkf, ps->fib.fcPlcfbkf, ps->fib.lcbPlcfbkf, ps->tablefd))
+		{
+			m_iBookmarksCount = nobkf;
+		}
+		else
+			m_iBookmarksCount = 0;
+
+		if(!wvGetBKL_PLCF (&bkl, &posl, &nobkl, ps->fib.fcPlcfbkl, ps->fib.lcbPlcfbkl, ps->fib.fcPlcfbkf, ps->fib.lcbPlcfbkf, ps->tablefd))
+		{
+			m_iBookmarksCount += nobkl;
+		}
+		else
+		{
+			if(m_iBookmarksCount > 0)
+			{
+				//free the bkf and posf
+				wvFree(bkf);
+				wvFree(posf);
+				m_iBookmarksCount = 0;
+			}
+		}
+		UT_ASSERT(nobkl == nobkf);
+		if(m_iBookmarksCount > 0)
+		{
+			m_pBookmarks = new bookmark[m_iBookmarksCount];
+			UT_ASSERT(m_pBookmarks);
+			for(i = 0; i < nobkf; i++)
+			{
+				m_pBookmarks[i].name = _getBookmarkName(ps, i);
+				m_pBookmarks[i].pos  = posf[i];
+				m_pBookmarks[i].start = true;
+			}
+
+			for(j = i; j < nobkl + i; j++)
+			{
+				// since the name is shared with the start of the bookmark,
+				// we reuse it
+				UT_sint32 iBkf = (UT_sint32) bkl[j-i].ibkf < 0 ? nobkl + (UT_sint32)bkl[j-i].ibkf : bkl[j-i].ibkf;
+				m_pBookmarks[j].name = m_pBookmarks[iBkf].name;
+				m_pBookmarks[j].pos  = posl[j - i];
+				m_pBookmarks[j].start = false;
+			}
+			// free bkf, bkl, posf, posl
+			wvFree(bkf);
+			wvFree(bkl);
+			wvFree(posf);
+			wvFree(posl);
+
+			//now sort the bookmarks by position
+			qsort((void*)m_pBookmarks, m_iBookmarksCount, sizeof(bookmark), s_cmp_bookmarks_qsort);
+#ifdef DEBUG
+			for(UT_uint32 k = 0; k < m_iBookmarksCount; k++)
+			{
+				UT_DEBUGMSG(("Bookmark: name [%s], pos %d, start %d\n", m_pBookmarks[k].name,m_pBookmarks[k].pos,m_pBookmarks[k].start));
+			}
+
+#endif
+		}
+
+			break;
+	case DOCEND:
 	default:
 		break;
 	}
@@ -567,8 +740,55 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 	return 0;
 }
 
+bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
+{
+	// first of all flush what is in the buffers
+	this->_flush();
+	bool error = false;
+
+	const XML_Char* propsArray[5];
+	propsArray[0] = (XML_Char *)"name";
+	propsArray[1] = (XML_Char *)bm->name;
+	propsArray[2] = (XML_Char *)"type";
+	propsArray[4] = 0;
+
+	if(bm->start)
+		propsArray[3] = (XML_Char *)"start";
+	else
+		propsArray[3] = (XML_Char *)"end";
+
+
+	if (!getDoc()->appendObject (PTO_Bookmark, propsArray))
+	{
+		UT_DEBUGMSG (("Could not append bookmark object\n"));
+		error = true;
+	}
+	return error;
+}
+
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
+	//now search for position m_iDocPosition in our bookmark list;
+	bookmark * bm = (bookmark*) bsearch((const void *) &m_iDocPosition, m_pBookmarks, m_iBookmarksCount, sizeof(bookmark),
+					   s_cmp_bookmarks_bsearch);
+	bool error = false;
+	if(bm)
+	{
+	   // there is a bookmark at the current position
+	   // first make sure the returned bookmark is the first one at this position
+	   while(bm > m_pBookmarks && (bm - 1)->pos == m_iDocPosition)
+		   bm--;
+
+	   while(bm->pos == m_iDocPosition)
+		  error |= _insertBookmark(bm++);
+	}
+
+#ifdef DEBUG
+	if(error)
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: error inserting bookmark at pos %d\n",m_iDocPosition));
+#endif
+	m_iDocPosition++;
+
 	// convert incoming character to unicode
 	if (chartype)
 		eachchar = wvHandleCodePage(eachchar, lid);
@@ -596,7 +816,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		this->_flush ();
 		ps->fieldstate++;
 		ps->fieldmiddle = 0;
-		this->_fieldProc (ps, eachchar, chartype, lid); 
+		this->_fieldProc (ps, eachchar, chartype, lid);
 		return 0;
 
 	case 20: // field separator
@@ -621,7 +841,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	}
 
 	// take care of any oddities in Microsoft's character encoding
-	if (chartype == 1 && eachchar == 146) 
+	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
 
 	//
@@ -644,7 +864,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	FSPA * fspa;
 	FDOA * fdoa;
 #ifdef SUPPORTS_OLD_IMAGES
-	wvStream *fil;	
+	wvStream *fil;
 	PICF picf;
 #endif
 
@@ -661,7 +881,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		ps->fieldmiddle = 0;
 		this->_fieldProc (ps, eachchar, 0, 0x400);
 		return 0;
-		
+
 	case 20: // field separator
 		if (achp->fOle2)
 		{
@@ -678,7 +898,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		return 0;
 
 	}
-	
+
 	/* it seems some fields characters slip through here which tricks
 	 * the import into thinking it has an image with it really does
 	 * not. this catches special characters in a field
@@ -687,50 +907,50 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		if (this->_fieldProc(ps, eachchar, 0, 0x400))
 			return 0;
 	}
-	
+
 	//
 	// This next bit of code is to handle OLE2 embedded objects and images
 	//
 
-	switch (eachchar) 
+	switch (eachchar)
 	{
 	case 0x01: // Older ( < Word97) image, currently not handled very well
- 		
+
 		if (achp->fOle2) {
 			UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
 			return 0;
 		}
-		
+
 		pos = wvStream_tell(ps->data);
 
 #ifdef SUPPORTS_OLD_IMAGES
 		wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
-		
-		if (1 == wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, 
+
+		if (1 == wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf,
 				   ps->data) && NULL != picf.rgb)
-		  {	
-		    fil = picf.rgb;
-		    
-		    if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
-		      {
+		  { 
+			fil = picf.rgb;
+			
+			if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
+			  {
 			this->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
-		      }
-		    else
-		      {
+			  }
+			else
+			  {
 			UT_DEBUGMSG(("Dom: no graphic data\n"));
-		      }
+			  }
 #else
-		    UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
+			UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
 #endif
-		    
-		    wvStream_goto(ps->data, pos);
-		    
-		    return 0;
+			
+			wvStream_goto(ps->data, pos);
+			
+			return 0;
 		  }
 		else
 		  {
-		    UT_DEBUGMSG(("Couldn't import graphic!\n"));
-		    return 0;
+			UT_DEBUGMSG(("Couldn't import graphic!\n"));
+			return 0;
 		  }
 	case 0x08: // Word 97, 2000, XP image
 		
@@ -746,7 +966,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 				{
 					UT_DEBUGMSG(("No fspa! Panic and Insanity Abounds!\n"));
 					return 0;
-				}	     
+				}		 
 				
 				if (wv0x08(&blip, fspa->spid, ps))
 				{
@@ -770,7 +990,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 			fdoa = wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos, 
 								   ps->nooffdoa);
 			
-			// TODO: do something with the data in this fdoa someday...	     
+			// TODO: do something with the data in this fdoa someday... 	 
 		}
 		
 		return 0;
@@ -780,7 +1000,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 }
 
 int IE_Imp_MsWord_97::_beginComment(wvParseStruct *ps, UT_uint32 tag, 
-				    void *props, int dirty)
+					void *props, int dirty)
 {
   UT_DEBUGMSG(("DOM: begin comment\n"));
   return 0;
@@ -890,8 +1110,8 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	
 	if(asep->fPgnRestart)
 	  {
-	    // set to 1 when page numbering should be restarted at the beginning of this section
-	    props += "section-restart:1;";
+		// set to 1 when page numbering should be restarted at the beginning of this section
+		props += "section-restart:1;";
 	  }
 
 	{
@@ -1013,19 +1233,19 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		switch (asep->bkc) {
 		case 1: 
 			ucs = UCS_VTAB;
-			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
 			
 		case 2:
-			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
 			
 		case 3: // TODO: handle me better (not even)
-			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
 			
 		case 4: // TODO: handle me better (not odd)
-			X_CheckError(getDoc()->appendSpan(&ucs,1)); 
+			X_CheckError(getDoc()->appendSpan(&ucs,1));
 			break;
 			
 		case 0:
@@ -1044,7 +1264,7 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
 	// at the end of our character stream and remove it (to prevent page breaks
 	// between sections)
 	if (m_pTextRun.size() && 
-	    m_pTextRun[m_pTextRun.size()-1] == UCS_FF)
+		m_pTextRun[m_pTextRun.size()-1] == UCS_FF)
 	  {
 		m_pTextRun[m_pTextRun.size()-1] = 0;
 	  }
@@ -1099,7 +1319,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	case 3:
 		props += "text-align:justify;";
 		break;
-	case 4:			
+	case 4: 		
 		/* this type of justification is of unknown purpose and is 
 		 * undocumented , but it shows up in asian documents so someone
 		 * should be able to tell me what it is someday 
@@ -1227,14 +1447,14 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// when non-zero, list level for this paragraph
 	if ( apap->ilvl )
 	  {
-	    //level=
-	    sprintf(propBuffer, "%d", apap->ilvl);
+		//level=
+		sprintf(propBuffer, "%d", apap->ilvl);
 	  }
 
 	if ( apap->ilfo )
 	  {
-	    //listid=
-	    sprintf(propBuffer, "%d", apap->ilfo);
+		//listid=
+		sprintf(propBuffer, "%d", apap->ilfo);
 	  }
 #endif
 
@@ -1444,7 +1664,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
 		
 	props += "font-family:";
-	props += fname;
+
+	if(fname)
+		props += fname;
+	else
+		props += "Times New Roman";
 	FREEP(fname);
 
 	xxx_UT_DEBUGMSG(("DOM: character properties are: '%s'\n", props.c_str()));
@@ -1489,20 +1713,20 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	
 	if (eachchar == 0x13) // beginning of a field
 	{
-	    a = 0;
-	    ret = 1;
-	    if (depth == 0)
+		a = 0;
+		ret = 1;
+		if (depth == 0)
 		{
 			which = m_command;
 			m_command[0] = 0;
 			m_argument[0] = 0;
 			i = 0;
 		}
-	    depth++;
+		depth++;
 	}
 	else if (eachchar == 0x14) // field trigger
 	{
-	    if (depth == 1)
+		if (depth == 1)
 		{
 			m_command[i] = 0;
 			c = wvWideStrToMB (m_command);
@@ -1521,9 +1745,9 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	
 	if (i >= FLD_SIZE)
 	{
-	    UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
-	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	    return 1;
+		UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 1;
 	}
 
 	if (!which) {
@@ -1541,8 +1765,8 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	
 	if (eachchar == 0x15) // end of field marker
 	{
-	    depth--;
-	    if (depth == 0)
+		depth--;
+		if (depth == 0)
 		{
 			which[i] = 0;
 			a = wvWideStrToMB (m_argument);
@@ -1557,28 +1781,28 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
 {
   Doc_Field_t tokenIndex = F_OTHER;
-    char *token;
+	char *token;
 
-    if (*command != 0x13)
-      {
+	if (*command != 0x13)
+	  {
 	  UT_DEBUGMSG (("field did not begin with 0x13\n"));
 	  return true;
-      }
-    strtok (command, "\t, ");
-    while ((token = strtok (NULL, "\t, ")))
-      {
+	  }
+	strtok (command, "\t, ");
+	while ((token = strtok (NULL, "\t, ")))
+	  {
 	tokenIndex = s_mapNameToField (token);
 	switch (tokenIndex)
-	    {
-	    case FC_HYPERLINK:
-		token = strtok (NULL, "\"\" ");		
+		{
+		case FC_HYPERLINK:
+		token = strtok (NULL, "\"\" "); 	
 		getDoc()->appendObject(PTO_Hyperlink,NULL);
 		break;
-	    default:
+		default:
 		break;
-	    }
-      }
-    return false;
+		}
+	  }
+	return false;
 }
 
 bool IE_Imp_MsWord_97::_handleCommandField (char *command)
@@ -1605,9 +1829,9 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		tokenIndex = s_mapNameToField (token);
 		
 		switch (tokenIndex)
-	    {
+		{
 		case F_EDITTIME:
-	        case F_TIME:
+			case F_TIME:
 			atts[1] = "time";
 			break;
 
@@ -1636,8 +1860,8 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 			atts[1] = "file_name";
 			break;
 
-	    case F_HYPERLINK:
-	      {
+		case F_HYPERLINK:
+		  {
 		const XML_Char *new_atts[3];
 		token = strtok (NULL, "\"\" ");
 
@@ -1646,24 +1870,24 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		UT_String href;
 		if ( !strcmp(token, "\\l") )
 		  {
-		    token = strtok (NULL, "\"\" ");
-		    href = "#";
-		    href += token;
+			token = strtok (NULL, "\"\" ");
+			href = "#";
+			href += token;
 		  }
 		else
 		  {
-		    href = token;
+			href = token;
 		  }
 		new_atts[1] = href.c_str();
 		new_atts[2] = 0;
 		getDoc()->appendObject(PTO_Hyperlink, new_atts);
 		return true;
-	      }
+		  }
 
-	    default:
+		default:
 			// unhandled field type
 			continue;
-	    }
+		}
 
 		if (!getDoc()->appendObject (PTO_Field, (const XML_Char**)atts))
 		{
@@ -1676,12 +1900,12 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
-  const char * mimetype     = UT_strdup ("image/png");
-  IE_ImpGraphic * importer  = 0;
-  FG_Graphic* pFG           = 0;
-  UT_Error error            = UT_OK;
-  UT_ByteBuf * buf          = 0;  
-  UT_ByteBuf * pictData     = new UT_ByteBuf();
+  const char * mimetype 	= UT_strdup ("image/png");
+  IE_ImpGraphic * importer	= 0;
+  FG_Graphic* pFG			= 0;
+  UT_Error error			= UT_OK;
+  UT_ByteBuf * buf			= 0;  
+  UT_ByteBuf * pictData 	= new UT_ByteBuf();
   
   // suck the data into the ByteBuffer
 
@@ -1691,41 +1915,41 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   // will load Caolan's example graphic inclusion stuff
   while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
 #else
-    // will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
+	// will load (but not display the images) from http://www.stud.uni-karlsruhe.de/~uhwe/abi/
   while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
 #endif
-    pictData->append((UT_Byte*)&data, 1);
+	pictData->append((UT_Byte*)&data, 1);
   
   error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
   if ((error != UT_OK) || !importer)
-    {
-      UT_DEBUGMSG(("Could not create image importer object\n"));
-      DELETEP(pictData);
-      FREEP(mimetype);
-      goto Cleanup;
-    }
+	{
+	  UT_DEBUGMSG(("Could not create image importer object\n"));
+	  DELETEP(pictData);
+	  FREEP(mimetype);
+	  goto Cleanup;
+	}
   
   error = importer->importGraphic(pictData, &pFG); 
   if ((error != UT_OK) || !pFG)
-    {
-      UT_DEBUGMSG(("Could not import graphic\n"));
-      DELETEP(pictData);
-      FREEP(mimetype);
-      goto Cleanup;
-    }
+	{
+	  UT_DEBUGMSG(("Could not import graphic\n"));
+	  DELETEP(pictData);
+	  FREEP(mimetype);
+	  goto Cleanup;
+	}
   
   // TODO: can we get back a vector graphic?
   buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
 
   if (!buf)
-    {
-      // i don't think that this could ever happen, but...
-      UT_DEBUGMSG(("Could not convert to PNG\n"));
-      DELETEP(pictData);
-      FREEP(mimetype);
-      error = UT_ERROR;
-      goto Cleanup;
-    }
+	{
+	  // i don't think that this could ever happen, but...
+	  UT_DEBUGMSG(("Could not convert to PNG\n"));
+	  DELETEP(pictData);
+	  FREEP(mimetype);
+	  error = UT_ERROR;
+	  goto Cleanup;
+	}
   
   //
   // This next bit of code will set up our properties based on the image attributes
@@ -1752,22 +1976,22 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   propsArray[4] = 0;
   
   if (!getDoc()->appendObject (PTO_Image, propsArray))
-    {
-      UT_DEBUGMSG (("Could not create append object\n"));
-      error = UT_ERROR;
-      FREEP(mimetype);
-      goto Cleanup;
-    }
+	{
+	  UT_DEBUGMSG (("Could not create append object\n"));
+	  error = UT_ERROR;
+	  FREEP(mimetype);
+	  goto Cleanup;
+	}
   
   if (!getDoc()->createDataItem((char*)propsName, false,
 				buf, (void*)mimetype, NULL))
-    {
-      UT_DEBUGMSG (("Could not create data item\n"));
-      error = UT_ERROR;
-      // this is taken care of by createDataItem
-      //FREEP(mimetype);
-      goto Cleanup;
-    }
+	{
+	  UT_DEBUGMSG (("Could not create data item\n"));
+	  error = UT_ERROR;
+	  // this is taken care of by createDataItem
+	  //FREEP(mimetype);
+	  goto Cleanup;
+	}
 
  Cleanup:
   //DELETEP(pictData);
