@@ -51,6 +51,7 @@
 #	include "ap_UnixDialog_WordCount.h"
 
 #ifdef HAVE_GNOME
+#   include "xap_UnixGnomeDlg_About.h"
 #   include "xap_UnixGnomeDlg_MessageBox.h"
 #   include "xap_UnixGnomeDlg_Zoom.h"
 
@@ -73,7 +74,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixGnomeDialog_Zoom)
-	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixGnomeDialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
