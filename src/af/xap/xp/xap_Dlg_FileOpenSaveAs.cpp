@@ -52,20 +52,18 @@
 ******************************************************************/
 
 XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_AppPersistent(pDlgFactory,id)
+	: XAP_Dialog_AppPersistent(pDlgFactory,id),
+	  m_szPersistPathname(NULL),
+	  m_szInitialPathname(NULL),
+	  m_szFinalPathname(NULL),
+	  m_szDescriptions(NULL),
+	  m_szSuffixes(NULL),
+	  m_nTypeList(NULL),
+	  m_nFileType(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO),
+	  m_nDefaultFileType(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO),
+	  m_answer(a_VOID),
+	  m_bSuggestName(false)
 {
-	m_szPersistPathname = NULL;
-	m_szInitialPathname = NULL;
-	m_szFinalPathname = NULL;
-
-	m_szDescriptions = NULL;
-	m_szSuffixes = NULL;
-	m_nTypeList = NULL;
-	m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
-	m_nDefaultFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
-
-	m_answer = a_VOID;
-	m_bSuggestName = false;
 }
 
 XAP_Dialog_FileOpenSaveAs::~XAP_Dialog_FileOpenSaveAs(void)
@@ -101,7 +99,7 @@ void XAP_Dialog_FileOpenSaveAs::useEnd(void)
 
 void XAP_Dialog_FileOpenSaveAs::setCurrentPathname(const char * szPathname)
 {
-	// this let's us know the pathname of the document
+	// this lets us know the pathname of the document
 	// in the frame from which we were invoked.
 
 	FREEP(m_szInitialPathname);
