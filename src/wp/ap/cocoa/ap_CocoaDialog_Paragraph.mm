@@ -72,7 +72,6 @@ void AP_CocoaDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	window = [m_dlg window];
 	_populateWindowData();
-	[m_dlg showWindow:m_dlg];
  	_createGC([m_dlg preview]);
 	event_PreviewAreaExposed();
 

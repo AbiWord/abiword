@@ -213,7 +213,6 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(window);
 
 	// freeze updates of the preview
-	[m_dlg showWindow:m_dlg];
 	_createGC([m_dlg preview]);
 	event_previewClear();
 

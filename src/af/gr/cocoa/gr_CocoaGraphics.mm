@@ -70,6 +70,7 @@ public:
 	StNSViewLocker (NSView * view) {
 		m_view = view;
 		m_hasLock = [view lockFocusIfCanDraw];
+		UT_ASSERT(m_hasLock);
 	}
 	~StNSViewLocker () {
 		if (m_hasLock == YES) {
