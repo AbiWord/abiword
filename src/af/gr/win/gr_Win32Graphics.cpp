@@ -336,6 +336,41 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	}
 }
 
+
+UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
+{
+	// TODO -- make this handle 32-bit chars properly
+	if (iLength > (int)m_remapBufferSize)
+	{
+		delete [] m_remapBuffer;
+
+		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
+		{
+			delete [] m_remapIndices;
+			m_remapIndices = new UT_UCS2Char[iLength];
+		}
+
+		m_remapBuffer = new UT_UCS2Char[iLength];
+		m_remapBufferSize = iLength;
+	}
+
+    // Need to handle zero-width spaces correctly
+	int i, j;
+	for (i = 0, j = 0; i < iLength; ++i, ++j)
+	{
+		m_remapBuffer[j] = (UT_UCS2Char)pChars[iCharOffset + i];
+		
+		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF
+		   /*|| m_remapBuffer[j] == UCS_LIGATURE_PLACEHOLDER*/)
+			j--;
+	}
+
+	iLength -= (i - j);
+
+	return m_remapBuffer;
+}
+
+
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 								 int iCharOffset, int iLengthOrig,
 								 UT_sint32 xoff, UT_sint32 yoff,
@@ -349,6 +384,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	
 	xoff = tdu(xoff);
 	yoff = tdu(yoff);
+	int *pCharAdvances = NULL;
 	
 
 	// iLength can be modified by _remapGlyphs
@@ -378,13 +414,13 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
 			(LPCWSTR) currentChars, iLength,
 			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
+
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 		delete [] str;
 	}
 	else
 	{
 		int duCharWidths [256];
-		int *pCharAdvances;
 
 		if (pCharWidths)
 		{
@@ -398,19 +434,26 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			// all 0x200B and 0xFEFF characters, we also have to
 			// remove their entires from the advances
 			UT_sint32 i,j;
-			
+			UT_sint32 iwidth = 0;
+			UT_sint32 iadvance = 0;
+			UT_sint32 inextAdvance = 0;
 			for (i = 0, j = 0; i < iLengthOrig; i++)
 			{
 				if(! (pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
 				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
-					pCharAdvances[j] = tdu (pCharWidths[i]);
-                    j++;
+					iwidth += pCharWidths[i];
+					inextAdvance = tdu(iwidth);
+					pCharAdvances[j] = inextAdvance - iadvance;
+					iadvance = inextAdvance;
+					j++;
 				}
 			}
 		}
 		else
+		  {
 			pCharAdvances=NULL;
+		  }
 
 		// Unicode font and default character set handling for WinNT and Win9x
 
@@ -470,39 +513,6 @@ simple_exttextout:
 			delete[] pCharAdvances;
 	}
 
-}
-
-UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
-{
-	// TODO -- make this handle 32-bit chars properly
-	if (iLength > (int)m_remapBufferSize)
-	{
-		delete [] m_remapBuffer;
-
-		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
-		{
-			delete [] m_remapIndices;
-			m_remapIndices = new UT_UCS2Char[iLength];
-		}
-
-		m_remapBuffer = new UT_UCS2Char[iLength];
-		m_remapBufferSize = iLength;
-	}
-
-    // Need to handle zero-width spaces correctly
-	int i, j;
-	for (i = 0, j = 0; i < iLength; ++i, ++j)
-	{
-		m_remapBuffer[j] = (UT_UCS2Char)pChars[iCharOffset + i];
-		
-		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF
-		   /*|| m_remapBuffer[j] == UCS_LIGATURE_PLACEHOLDER*/)
-			j--;
-	}
-
-	iLength -= (i - j);
-
-	return m_remapBuffer;
 }
 
 void GR_Win32Graphics::setFont(GR_Font* pFont)
