@@ -567,8 +567,8 @@ BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lP
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			if( atof(buf) >= 0.0 && atof(buf) != m_PageSize.Width(getPageUnits()) )
 			{
-				m_PageSize.Set( atof(buf),
-					            m_PageSize.Height(getPageUnits()),
+				m_PageSize.Set( (getPageOrientation() == PORTRAIT) ? atof(buf) : m_PageSize.Height(getPageUnits()),
+								(getPageOrientation() == PORTRAIT) ? m_PageSize.Height(getPageUnits()) : atof(buf),
 								getPageUnits() );
 				updatePageSize();
 				updatePreview();
@@ -585,8 +585,8 @@ BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lP
 			GetDlgItemText( hWnd, wId, buf, BUFSIZE );
 			if( atof(buf) >= 0.0 && atof(buf) != m_PageSize.Height(getPageUnits()) )
 			{
-				m_PageSize.Set( m_PageSize.Width(getPageUnits()), 
-								atof(buf),
+				m_PageSize.Set( (getPageOrientation() == PORTRAIT) ? m_PageSize.Width(getPageUnits()) : atof(buf), 
+								(getPageOrientation() == PORTRAIT) ? atof(buf) : m_PageSize.Width(getPageUnits()),
 								getPageUnits() );
 				updatePageSize();
 				updatePreview();
@@ -782,9 +782,9 @@ void AP_Win32Dialog_PageSetup::doSpinControl(UT_uint32 id, UT_sint32 delta)
 		updatedData = (int)( m_PageSize.Width(getPageUnits()) * pageScale + delta + 0.05f );
 		if( updatedData >= 0 )
 		{
-			m_PageSize.Set( (double) updatedData/pageScale,
-				             m_PageSize.Height(getPageUnits()),
-							 getPageUnits() );
+			m_PageSize.Set( (getPageOrientation() == PORTRAIT) ? (double) updatedData / (double) pageScale : m_PageSize.Height(getPageUnits()),
+							(getPageOrientation() == PORTRAIT) ? m_PageSize.Height(getPageUnits()) : (double) updatedData / (double) pageScale,
+							getPageUnits() );
 			updatePageSize();
 			updateWidth();
 			updatePreview();
@@ -795,8 +795,8 @@ void AP_Win32Dialog_PageSetup::doSpinControl(UT_uint32 id, UT_sint32 delta)
 		updatedData = (int)( m_PageSize.Height(getPageUnits()) * pageScale + delta + 0.05f );
 		if( updatedData >= 0 )
 		{
-			m_PageSize.Set( m_PageSize.Width(getPageUnits()),
-							(double) updatedData/pageScale,
+			m_PageSize.Set( (getPageOrientation() == PORTRAIT) ? m_PageSize.Width(getPageUnits()) : (double) updatedData / (double) pageScale,
+							(getPageOrientation() == PORTRAIT) ? (double) updatedData / (double) pageScale : m_PageSize.Width(getPageUnits()),
 							getPageUnits() );
 			updatePageSize();
 			updateHeight();
