@@ -155,7 +155,7 @@ msgstr "&Over %s"
 #. MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h.h:47
 msgid "&Accept revision"
-msgstr "Revisie &accepteren"
+msgstr "Wijzigingen &accepteren"
 
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:49
@@ -461,7 +461,7 @@ msgstr "&Marge"
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:167
 msgid "&Mark revisions while typing"
-msgstr "Herziening &markeren tijdens het typen"
+msgstr "Wijzigingen &markeren tijdens het typen"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:169
@@ -577,7 +577,7 @@ msgstr "&Opnieuw"
 #: po/tmp/ap_String_Id.h.h:211
 #, fuzzy
 msgid "&Reject revision"
-msgstr "Revisie verwerpen"
+msgstr "Wijzigingen nege&ren"
 
 #. DLG_FR_ReplaceButton
 #: po/tmp/ap_String_Id.h.h:213
@@ -594,7 +594,7 @@ msgstr "&Reset"
 #: po/tmp/ap_String_Id.h.h:217
 #, fuzzy
 msgid "&Revisions"
-msgstr "&Revisies"
+msgstr "&Wijzigingen bijhouden"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:219
@@ -631,7 +631,7 @@ msgstr "&Zoek naar Help"
 #: po/tmp/ap_String_Id.h.h:231
 #, fuzzy
 msgid "&Select revision"
-msgstr "&Selecteer revisie"
+msgstr "&Selecteer een wijziging"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:233
@@ -1336,7 +1336,7 @@ msgstr "Schermkleur kiezen voor AbiWord"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:499
 msgid "Choose which revision you wish to view"
-msgstr "Selecteer de revisie die u wilt zien"
+msgstr "Selecteer de wijziging die u wilt zien"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:501
@@ -1424,7 +1424,7 @@ msgstr "Opmerking"
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h.h:529
 msgid "Comment to be associated with the revision:"
-msgstr "Opmerking behorend bij de revisie:"
+msgstr "Opmerking behorend bij de wijzigingen:"
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:531
@@ -1446,7 +1446,7 @@ msgstr "Onafgebroken"
 #: po/tmp/ap_String_Id.h.h:537
 #, c-format
 msgid "Contiue previous revision (number %d)"
-msgstr "Verdergaan met de vorige revisie (nummer %d)"
+msgstr "Verdergaan met de vorige wijziging (nummer %d)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h.h:539
@@ -1894,7 +1894,7 @@ msgstr "Hulp scripts uitvoeren"
 #. DLG_ListRevisions_Label1
 #: po/tmp/ap_String_Id.h.h:707
 msgid "Existing revisions:"
-msgstr "Bestaande revisies:"
+msgstr "Bestaande wijzigingen:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h.h:709
@@ -2567,7 +2567,7 @@ msgstr "Plugins beheren"
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:957
 msgid "Mark Revisions"
-msgstr "Revisie markeren"
+msgstr "Wijzigingen markeren"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:959
@@ -3207,7 +3207,7 @@ msgstr "Terugdraaien naar opgeslagen kopie van %s?"
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:1195
 msgid "Revision ID"
-msgstr "Revisie ID"
+msgstr "Wijziging Nr"
 
 #. DLG_PageNumbers_Right
 #: po/tmp/ap_String_Id.h.h:1197
@@ -3390,7 +3390,7 @@ msgstr "Selecteer kolom"
 #. DLG_ListRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1261
 msgid "Select Revision"
-msgstr "Selecteer revisie"
+msgstr "Selecteer wijziging"
 
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:1263
@@ -3622,7 +3622,7 @@ msgstr "Start Sublijst"
 #: po/tmp/ap_String_Id.h.h:1349
 #, fuzzy
 msgid "Start a new revision"
-msgstr "Start Nieuwe Lijst"
+msgstr "Nieuwe wijziging beginnen"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:1351
