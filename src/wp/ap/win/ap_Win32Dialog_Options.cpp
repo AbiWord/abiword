@@ -390,7 +390,9 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_DS(OPTIONS_CHK_ViewShowRuler,			DLG_Options_Label_ViewRuler);
             _DS(OPTIONS_CHK_ViewUnprintable,        DLG_Options_Label_ViewUnprintable);
 			_DS(OPTIONS_CHK_ViewCursorBlink,		DLG_Options_Label_ViewCursorBlink);
-			_DS(OPTIONS_CHK_ViewShowToolbars,		DLG_Options_Label_ViewToolbars);
+			_DS(OPTIONS_CHK_ViewShowStandardBar,	DLG_Options_Label_ViewStandardTB);
+			_DS(OPTIONS_CHK_ViewShowFormatBar,		DLG_Options_Label_ViewFormatTB);
+			_DS(OPTIONS_CHK_ViewShowExtraBar,		DLG_Options_Label_ViewExtraTB);
 			_DS(OPTIONS_CHK_ViewAll,				DLG_Options_Label_ViewAll);
 			_DS(OPTIONS_CHK_ViewHiddenText,			DLG_Options_Label_ViewHiddenText);
 			_DS(OPTIONS_CHK_ViewUnprintable,		DLG_Options_Label_ViewUnprintable);
@@ -478,7 +480,9 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler:		_enableDisableLogic(id_CHECK_VIEW_SHOW_RULER);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink:		_enableDisableLogic(id_CHECK_VIEW_CURSOR_BLINK);	return 0;
-	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowToolbars:	_enableDisableLogic(id_CHECK_VIEW_SHOW_TOOLBARS);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR);		return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar:	_enableDisableLogic(id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewAll:				_enableDisableLogic(id_CHECK_VIEW_ALL);				return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		_enableDisableLogic(id_CHECK_VIEW_HIDDEN_TEXT);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable:		_enableDisableLogic(id_CHECK_VIEW_UNPRINTABLE);		return 0;
@@ -577,10 +581,18 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, UT_Bool value )
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink),value);
 		return;
 		
-	case id_CHECK_VIEW_SHOW_TOOLBARS:
-		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowToolbars),value);
+	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar),value);
 		return;
 		
+	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar),value);
+		return;
+	
+	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
+		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar),value);
+		return;
+
 	case id_CHECK_VIEW_ALL:
 		EnableWindow(GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX),AP_RID_DIALOG_OPTIONS_CHK_ViewAll),value);
 		return;
@@ -629,8 +641,10 @@ DEFINE_GET_SET_BOOL(OTHER_INDEX,SmartQuotesEnable);
 DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 
 DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowRuler);
+DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowStandardBar);                                       
+DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowFormatBar);                                         
+DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowExtraBar);
 DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewCursorBlink);
-DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewShowToolbars);
 
 DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewAll);
 DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewHiddenText);

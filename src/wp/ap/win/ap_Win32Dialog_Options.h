@@ -58,9 +58,11 @@ public:
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
+	SET_GATHER			(ViewShowStandardBar,UT_Bool );      
+	SET_GATHER			(ViewShowFormatBar,	UT_Bool );      
+	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
- 	SET_GATHER			(ViewShowToolbars,	UT_Bool );
  
  	SET_GATHER			(ViewAll,			UT_Bool );
  	SET_GATHER			(ViewHiddenText,	UT_Bool );

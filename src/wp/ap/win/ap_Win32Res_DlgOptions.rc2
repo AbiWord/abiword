@@ -50,7 +50,6 @@
 #define AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT			1022
 #define AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave			1023
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler			1024
-#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowToolbars		1025
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewAll				1026
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText		1027
 #define AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable		1028
@@ -62,6 +61,9 @@
 #define AP_RID_DIALOG_OPTIONS_LBL_SHOWHIDE				1034
 #define AP_RID_DIALOG_OPTIONS_LBL_VIEWFRAME				1035
 #define AP_RID_DIALOG_OPTIONS_CHK_SmartQuotesEnable		1036
+#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar	1037
+#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar		1038
+#define AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar		1039
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -144,26 +146,32 @@ STYLE DS_CONTROL | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "Show/Hide...",AP_RID_DIALOG_OPTIONS_LBL_SHOWHIDE,7,11,
-                    305,64
-    GROUPBOX        "View...",AP_RID_DIALOG_OPTIONS_LBL_VIEWFRAME,7,83,305,64
+                    305,100
+    GROUPBOX        "View...",AP_RID_DIALOG_OPTIONS_LBL_VIEWFRAME,7,118,305,64
     CONTROL         "&Ruler",AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,24,115,10
     RTEXT           "&Units:",AP_RID_DIALOG_OPTIONS_LBL_UNITS,136,25,73,8
     COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UNITS,213,23,92,75,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "&Toolbars",AP_RID_DIALOG_OPTIONS_CHK_ViewShowToolbars,
+    CONTROL         "&Standard Toolbar",AP_RID_DIALOG_OPTIONS_CHK_ViewShowStandardBar,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
                     41,291,10
+    CONTROL         "&Format Toolbar",AP_RID_DIALOG_OPTIONS_CHK_ViewShowFormatBar,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    58,291,10
+    CONTROL         "&Extra Toolbar",AP_RID_DIALOG_OPTIONS_CHK_ViewShowExtraBar,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    75,291,10
     CONTROL         "Cursor &blink",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,58,291,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,92,291,10
     CONTROL         "&All",AP_RID_DIALOG_OPTIONS_CHK_ViewAll,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,96,291,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,131,291,10
     CONTROL         "&Hidden text",AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,113,291,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,148,291,10
     CONTROL         "Un&printable characters",
                     AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,130,291,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,165,291,10
 END
 
 // The sub-dialog for the OTHER tab of the Options dialog
