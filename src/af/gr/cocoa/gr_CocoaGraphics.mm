@@ -572,9 +572,9 @@ GR_Font * GR_CocoaGraphics::getGUIFont(void)
 
 GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 									const char* pszFontStyle,
-									const char* /*pszFontVariant*/,
+									const char* pszFontVariant,
 									const char* pszFontWeight,
-									const char* /*pszFontStretch*/,
+									const char* pszFontStretch,
 									const char* pszFontSize)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::findFont(%s, %s, %s)\n", pszFontFamily, pszFontStyle, pszFontSize));
@@ -602,6 +602,16 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 		traits:s weight:5 size:size];
 	if (!nsfont)
 	{
+		/* 
+		add a few hooks for a few predefined font names that MAY differ.
+		for example "Dingbats" is called "Zapf Dingbats" on MacOS X. 
+		Only fallback AFTER. WARNING: this is recursive call, watch out the
+		font family you pass.
+		*/
+		if (UT_stricmp(pszFontFamily, "Dingbats") == 0) {
+			return findFont("Zapf Dingbats", pszFontStyle, pszFontVariant, 
+			                    pszFontWeight, pszFontStretch, pszFontSize);
+		}
 		// Oops!  We don't have that font here.
 		// first try "Times New Roman", which should be sensible, and should
 		// be there unless the user fidled with the installation
@@ -688,10 +698,10 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 		/* since we are in the image coordinate space, we should offset it with the origin */
 		::CGContextMoveToPoint (context, tduD(x1 - x), tduD(y1 - y));
 		::CGContextAddLineToPoint (context, tduD(x2 - x), tduD(y2 - y));
-		::CGContextSaveGState(m_CGContext);
+		::CGContextSaveGState(context);
 		[m_currentColor set];	
 		::CGContextStrokePath (context);
-		::CGContextRestoreGState(m_CGContext);
+		::CGContextRestoreGState(context);
 	}
 	// Should make an NSImage and XOR it onto the real image.
 	LOCK_CONTEXT__;
@@ -742,38 +752,6 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 }
 void GR_CocoaGraphics::_setClipRectImpl(const UT_Rect*)
 {
-#if 0
-	RgnHandle rgn = ::NewRgn();
-	Rect theRect;
-	Rect bounds;
-	NSRect nsBounds = [m_pWin bounds];
-		
-	bounds.left = nsBounds.origin.x;
-	bounds.top = nsBounds.origin.y;
-	bounds.right = bounds.left + nsBounds.size.width;
-	bounds.bottom = bounds.top + nsBounds.size.height;
-
-	if (m_pRect != NULL) {
-		theRect.left = tdu(m_pRect->left);
-		theRect.top = tdu(m_pRect->top);
-		theRect.right = theRect.left + tdu(m_pRect->width);
-		theRect.bottom = theRect.top + tdu(m_pRect->height);
-	}
-	else {
-		theRect = bounds;
-	}
-	::RectRgn(rgn, &theRect);
-	::ClipCGContextToRegion(m_CGContext, &bounds, rgn);
-	::DisposeRgn(rgn);
-#else
-//	LOCK_CONTEXT__;
-#if 0
-	/* discard the clipping */
-	/* currently the only way is to restore the graphic state */
-	::CGContextRestoreGState(m_CGContext);
-	/* restore the graphics settings. will save the context in the mean time. */
-	_resetContext();
-#endif
 	if (m_pRect) {
 		UT_DEBUGMSG (("ClipRect set\n"));
 		::CGContextClipToRect (m_CGContext, 
@@ -782,7 +760,6 @@ void GR_CocoaGraphics::_setClipRectImpl(const UT_Rect*)
 	else {
 		UT_DEBUGMSG (("ClipRect reset!!\n"));
 	}
-#endif
 }
 
 void GR_CocoaGraphics::fillRect(const UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
