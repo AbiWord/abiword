@@ -35,6 +35,13 @@
 // forward declaration
 class SpellManager;
 
+struct DictionaryMapping
+{
+  UT_String lang ; // the language tag
+  UT_String dict ; // the dictionary for the tag
+  UT_String enc  ; // the encoding of the dictionary
+} ;
+
 class SpellChecker
 {
 	friend class SpellManager;
@@ -50,15 +57,21 @@ public:
 	
 	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len) = 0;
 	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len) = 0;
+	// vector of DictionaryMapping*
+	virtual	UT_Vector & getMapping() {return m_vecEmpty;};	
+	virtual bool  doesDictionaryExist (const char * szLang) {return false;};
 	
 protected:
+
 	virtual bool requestDictionary (const char * szLang) = 0;
+	
 	
 protected:
     SpellChecker();
     virtual ~SpellChecker();
     
    	Barbarisms		m_barbarism;
+   	UT_Vector		m_vecEmpty;
 
 private:
 	SpellChecker(const SpellChecker&);		// no impl
@@ -73,15 +86,19 @@ public:
 	
 	virtual ~SpellManager ();
 	
-	virtual SpellChecker * requestDictionary (const char * szLang);
+	
 	virtual SpellChecker * lastDictionary (void) const;
-
+	virtual SpellChecker * requestDictionary (const char * szLang);
 	UT_uint32 numLoadedDicts () const { return m_nLoadedDicts; }
+	
+	SpellChecker *	getInstance()  const ;
+
 
 private:
 	SpellManager ();
 	SpellManager ( const SpellManager & other ) ;
 	SpellManager & operator= ( const SpellManager & other ) ;
+	
 
 	UT_StringPtrMap m_map;
 	UT_String m_missingHashs;

@@ -32,6 +32,7 @@
 /* #include "ut_debugmsg.h" */
 
 #include "xap_Dialog.h"
+#include "spell_manager.h"
 
 class UT_Language;
 
@@ -63,6 +64,7 @@ public:
 	XAP_Dialog_Language::tAnswer	getAnswer(void) const;
 	
 	inline bool getSpellCheck(void) const {return m_bSpellCheck;}
+	UT_Vector* 						getAvailableDictionaries();
 
 protected:
 	void							_setLanguage(const XML_Char * pLang);
@@ -76,6 +78,7 @@ protected:
 	bool							m_bChangedLanguage;
 	UT_Language *					m_pLangTable;
 	const XML_Char **				m_ppLanguages;
+	const XML_Char **				m_ppLanguagesCode;
 	UT_uint32					m_iLangCount;
 	bool                                            m_bSpellCheck;
 };

@@ -25,7 +25,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
-
 #include "xap_Dlg_Language.h"
 
 /*****************************************************************/
@@ -50,15 +49,35 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	UT_ASSERT(m_pLangTable);
 	m_iLangCount = m_pLangTable->getCount();
 	m_ppLanguages = new const XML_Char * [m_iLangCount];
+	m_ppLanguagesCode = new const XML_Char * [m_iLangCount];
 
 	for(UT_uint32 i = 0; i < m_iLangCount; i++)
+	{
 		m_ppLanguages[i] = m_pLangTable->getNthLanguage(i);
+		m_ppLanguagesCode[i] = m_pLangTable->getNthProperty(i);			
+	}
+	
 	qsort(m_ppLanguages, m_iLangCount, sizeof(XML_Char *), s_compareQ);
+	
+	// Assign its language code to every language once is sorted
+	for(UT_uint32 nLang = 0; nLang < m_iLangCount; nLang++)
+	{	
+		for(UT_uint32 i = 0; i < m_iLangCount; i++)
+		{
+			if (strcmp (m_ppLanguages[nLang], m_pLangTable->getNthLanguage(i))==0)
+			{
+				m_ppLanguagesCode[nLang] = m_pLangTable->getNthProperty(i);
+				break;
+			}						
+		}
+	}		
 
 	// TODO: move spell-checking into XAP land and make this dialog
 	// TODO: more like the MSWord one (i.e. add):
 	// [] do not check spelling or grammar
 	m_bSpellCheck = true;
+	
+	
 }
 
 XAP_Dialog_Language::~XAP_Dialog_Language(void)
@@ -66,7 +85,9 @@ XAP_Dialog_Language::~XAP_Dialog_Language(void)
 	if(m_pLangTable)
 		delete m_pLangTable;
 	if(m_ppLanguages)
-		delete [] m_ppLanguages;
+		delete [] m_ppLanguages;		
+	if(m_ppLanguagesCode)
+		delete [] m_ppLanguagesCode;
 }
 
 // we will not use the value passed to us, but rather will reference
@@ -102,4 +123,29 @@ bool XAP_Dialog_Language::getChangedLangProperty(const XML_Char ** pszLangProp) 
 	*pszLangProp = m_pLangProperty;
 	return m_bChangedLanguage;
 }
+
+/*
+	Creates a vector with a list of support languages for spell checking
+	
+	You must to free the allocated memory
+*/
+UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
+{
+	SpellChecker * checker = SpellManager::instance().getInstance();	
+	UT_Vector& vec= checker->getMapping();
+	DictionaryMapping * mapping;
+	UT_Vector* vecRslt = new UT_Vector();
+			
+	const UT_uint32 nItems = vec.getItemCount();	
+		
+	for (UT_uint32 iItem = nItems; iItem; --iItem)
+	{
+		mapping  = (DictionaryMapping*) vec.getNthItem(iItem - 1);			
+				
+		if (checker->doesDictionaryExist(mapping->lang.c_str()))
+			vecRslt->addItem( strdup(mapping->lang.c_str()));	
+	}
+	
+	return vecRslt;
+}	
 

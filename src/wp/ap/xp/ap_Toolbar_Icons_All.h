@@ -114,6 +114,7 @@
 #include "tb_delete_column.xpm"
 #include "tb_merge_cells.xpm"
 #include "tb_split_cells.xpm"
+#include "tb_transparent.xpm"
 
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
@@ -240,6 +241,7 @@
         DefineToolbarIcon(tb_delete_column_xpm)
         DefineToolbarIcon(tb_merge_cells_xpm)
         DefineToolbarIcon(tb_split_cells_xpm)
+        DefineToolbarIcon(tb_transparent_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

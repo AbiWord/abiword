@@ -491,6 +491,37 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
     }
 }
 
+bool  ISpellChecker::doesDictionaryExist (const char * szLang) 
+{
+	char *hashname = NULL;	
+	UT_String szFile;
+	 
+	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
+	{
+	  DictionaryMapping * mapping = (DictionaryMapping * )m_mapping.getNthItem ( i ) ;
+	  if (mapping->lang.size() && !strcmp (szLang, mapping->lang.c_str()))
+	    {
+	      szFile   = mapping->dict;
+	      break;
+	    }
+	}
+
+	if (szFile.size () == 0 )
+		return false ;
+	
+	hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), szFile.c_str()) ;
+	FILE* in =  fopen(hashname, "r");
+	
+	if (!in)
+		return false;
+	else
+	{	
+		fclose(in);
+		return true;
+	}
+		
+}
+
 bool
 ISpellChecker::requestDictionary(const char *szLang)
 {

@@ -135,3 +135,8 @@ SpellManager::lastDictionary () const
 {
 	return m_lastDict;
 }
+
+SpellChecker *	SpellManager::getInstance()  const 
+{
+	return  new SpellCheckerClass ();
+}

@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * 
+ * 			 (c) 2002 Jordi Mas i Hernàndez	
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -33,6 +34,16 @@
 #include "xap_Win32Dlg_Language.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32Resources.rc2"
+
+#ifdef STRICT   
+#define WHICHPROC	WNDPROC
+#else   
+#define WHICHPROC	FARPROC
+#endif
+ 
+WHICHPROC gTreeProc;
+#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 
 /*****************************************************************/
 
@@ -73,13 +84,16 @@ void XAP_Win32Dialog_Language::runModal(XAP_Frame * pFrame)
 	UT_ASSERT((result != -1));
 }
 
+/*
+	
+*/
 BOOL CALLBACK XAP_Win32Dialog_Language::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
 	// This is a static function.
 	XAP_Win32Dialog_Language * pThis;
 	
 	switch (msg)
-	{
+	{			
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32Dialog_Language *)lParam;
 		SetWindowLong(hWnd,DWL_USER,lParam);
@@ -94,11 +108,105 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	}
 }
 
-#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+/*
+	Fills up the tree with the languages names
+*/
+void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV) 
+{
+	TV_INSERTSTRUCT tvins;
+	TV_ITEM tvi;
+	HTREEITEM hItem;
+	HTREEITEM hSel = NULL;	
+	
+	UT_Vector* pVec = getAvailableDictionaries();		
+	tvins.hParent = NULL;
+	tvins.hInsertAfter = TVI_LAST;  	
+	tvi.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE| TVIF_PARAM;               
+	tvi.stateMask =0;
+			  
+	for (UT_uint32 i=0; i < m_iLangCount;  i++ )
+	{
+		const XML_Char* sLang = m_ppLanguages[i];
+		const UT_uint32 nItems = pVec->getItemCount();	
+		
+		tvi.iImage = 0;    
+		tvi.iSelectedImage = tvi.iImage;
+			
+		//Loop all the languages that we have a spell checker for them
+		for (UT_uint32 iItem = nItems; iItem; --iItem)
+		{
+			const char* pText  = (const char*) pVec->getNthItem(iItem - 1);							
+			if (strcmp(pText,  m_ppLanguagesCode[i])==0)
+			{				
+				tvi.iImage = 1;    
+				tvi.iSelectedImage = tvi.iImage;
+				break;
+			}
+		}		
+		tvi.pszText = (char *)sLang;
+		tvi.cchTextMax = lstrlen(sLang);				
+		tvi.lParam=i;
+		tvins.item = tvi;
+		hItem = TreeView_InsertItem(hTV, &tvins);
+		
+		if (strcmp(m_pLanguage, sLang)==0)
+			hSel = hItem;	
+	}
+	
+	::SendMessage(hTV, TVM_SELECTITEM, TVGN_CARET,  (LONG)hSel);	
+	delete pVec;
+}
+
+/*
+
+*/
+BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
+{		
+	XAP_Win32Dialog_Language *pThis;
+	
+	/*
+		The user has double click on an tree item (a language name)
+	*/
+	if (msg==WM_LBUTTONDBLCLK)
+	{
+		pThis = (XAP_Win32Dialog_Language *)GetWindowLong(hWnd,GWL_USERDATA);
+		TVITEM tvi;
+		HTREEITEM hItem;
+		
+		// Selected item
+		tvi.hItem =  (HTREEITEM)::SendMessage(hWnd, TVM_GETNEXTITEM, TVGN_CARET, 0);
+				
+		if (tvi.hItem)
+		{
+			// Associated data		 
+			tvi.mask = TVIF_PARAM;
+			SendMessage(hWnd, TVM_GETITEM, 0, (LPARAM)&tvi);
+			pThis->_setLanguageAndExit(tvi.lParam);			
+		}
+		return 1;						
+	}	
+		
+	return CallWindowProc(gTreeProc,  hWnd, msg, wParam, lParam);
+}
+
+/*
+
+*/
+void XAP_Win32Dialog_Language::_setLanguageAndExit(UINT nLang)
+{
+	_setLanguage(m_ppLanguages[nLang]);
+	m_bChangedLanguage = true;
+	m_answer = a_OK;
+	EndDialog(m_hWnd,0);
+}
 
 BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	
+	m_hWnd = hWnd;
 	
 	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle));
 
@@ -106,25 +214,31 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	_DS(LANGUAGE_BTN_OK,			DLG_OK);
 	_DS(LANGUAGE_BTN_CANCEL,		DLG_Cancel);
 	_DS(LANGUAGE_FRM_LANGUAGE,      DLG_ULANG_LangLabel);
-	
-	// Load Initial Data into Listbox
-	{
-		HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_LBX_LANGUAGE);  
-
-		// load each string name into the list
-		for ( UT_uint32 i=0; i < m_iLangCount;  i++ )
-		{
-			const XML_Char* s = m_ppLanguages[i];
-            SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
-        }
 		
-		// Initialize data based on m_pLangauge
-		UT_sint32 result = SendMessage( hwndList, LB_FINDSTRING, 0, (LPARAM)  m_pLanguage );
-		if( result != LB_ERR )
-		{
-			SendMessage( hwndList, LB_SETCURSEL, (WPARAM) result, 0 );
-		}
-	}		
+	HWND hTree = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_TREE_LANGUAGE);  		
+	DWORD dwColor = GetSysColor(COLOR_WINDOW);	
+	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
+	HBITMAP hBitmap = NULL, hBitmapTrans = NULL;
+	
+	/* create image lists, fill, attach to Treeviews */
+	HIMAGELIST hNormIml = ImageList_Create(20, 20,  ILC_COLORDDB, 2, 2);    		              	       	
+   	XAP_Win32DialogHelper::getBitmapForIcon(hWnd, 20,20, &Color, "tb_spellcheck_xpm",  &hBitmap);       		       	
+   	XAP_Win32DialogHelper::getBitmapForIcon(hWnd, 20,20, &Color, "tb_transparent_xpm",  &hBitmapTrans);       		
+	
+	/* Setup tree images */
+	ImageList_Add(hNormIml,hBitmapTrans, NULL);		
+	ImageList_Add(hNormIml, hBitmap, NULL);		
+	DeleteObject(hBitmap);
+	
+	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_NORMAL, (LPARAM)hNormIml);		
+	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_STATE, (LPARAM)hNormIml);
+	
+	_fillTreeview(hTree);
+	
+	gTreeProc = (WHICHPROC) GetWindowLong(hTree, GWL_WNDPROC);
+	SetWindowLong(hTree, GWL_WNDPROC, (LONG)s_treeProc);
+	SetWindowLong(hTree, GWL_USERDATA, (LONG)this);
+	
 	
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 			
@@ -137,29 +251,10 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
 	HWND hWndList = NULL; 
-	UT_sint32 nItem;
+	UT_sint32 nItem;	
 
 	switch (wId)
 	{
-	case XAP_RID_DIALOG_LANGUAGE_LBX_LANGUAGE:
-		switch (HIWORD(wParam))
-		{
-			case LBN_SELCHANGE:
-				// NOTE: we get away with only grabbing this in IDOK case
-				return 0;
-
-			case LBN_DBLCLK:
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				_setLanguage( m_ppLanguages[nItem] );
-				m_bChangedLanguage = true;
-				m_answer = a_OK;
-				EndDialog(hWnd,0);
-				return 1;
-
-			default:
-				return 0;
-		}
-		break;
 
 	case IDCANCEL:						// also XAP_RID_DIALOG_LANGUAGE_BTN_CANCEL
 		m_answer = a_CANCEL;
@@ -167,11 +262,20 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		return 1;
 
 	case IDOK:							// also XAP_RID_DIALOG_LANGUAGE_BTN_OK
-		hWndList = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_LBX_LANGUAGE);
-		nItem = SendMessage(hWndList, LB_GETCURSEL, 0, 0);
-		if( nItem != LB_ERR)
-		{
-			_setLanguage( m_ppLanguages[nItem] );
+	{
+		TVITEM tvi;
+		HTREEITEM hItem;
+		HWND hWndTree = GetDlgItem(hWnd, XAP_RID_DIALOG_LANGUAGE_TREE_LANGUAGE);
+		
+		// Selected item
+		tvi.hItem =  (HTREEITEM)::SendMessage(hWndTree, TVM_GETNEXTITEM, TVGN_CARET, 0);
+		
+		if (tvi.hItem)
+		{				
+			// Associated data		 
+			tvi.mask = TVIF_PARAM;
+			SendMessage(hWndTree, TVM_GETITEM, 0, (LPARAM)&tvi);		
+			_setLanguage( m_ppLanguages[tvi.lParam]);
 			m_bChangedLanguage = true;
 			m_answer = a_OK;
 		}
@@ -179,12 +283,15 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		{
 			m_answer = a_CANCEL;
 		}	
+
 		EndDialog(hWnd,0);
 		return 1;
-
+	}
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
 	}
+
+	return 0;	
 }
 

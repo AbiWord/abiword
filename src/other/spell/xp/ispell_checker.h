@@ -7,12 +7,7 @@
 #include "ut_vector.h"
 
 
-struct DictionaryMapping
-{
-  UT_String lang ; // the language tag
-  UT_String dict ; // the dictionary for the tag
-  UT_String enc  ; // the encoding of the dictionary
-} ;
+
 
 class ISpellChecker : public SpellChecker
 {
@@ -25,7 +20,8 @@ public:
 	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len);
 
 	// vector of DictionaryMapping*
-	static UT_Vector & getMapping() ;
+	virtual	UT_Vector & getMapping();
+	virtual bool  doesDictionaryExist (const char * szLang);
 
 protected:
 	virtual bool requestDictionary (const char * szLang);

@@ -33,26 +33,13 @@
 #include "ap_Win32Dialog_MergeCells.h"
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
-#include "xap_Win32Toolbar_Icons.h"
-#include "ap_Toolbar_Icons_All.h"
-#include "ut_Xpm2Bmp.h"
+
 
 
 #define GWL(hwnd)		(AP_Win32Dialog_MergeCells*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_MergeCells*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
 #define DefineToolbarIcon(name)		{ #name, (const char **) name, sizeof(name)/sizeof(name[0]) },
 
-struct _it
-{
-	const char *				m_name;
-	const char **				m_staticVariable;
-	UT_uint32					m_sizeofVariable;
-};
-
-static struct _it s_itTable[] =
-{
-	#include "ap_Toolbar_Icons_All.h"	
-};
 
 
 XAP_Dialog * AP_Win32Dialog_MergeCells::static_constructor(XAP_DialogFactory * pFactory,
@@ -117,56 +104,12 @@ BOOL CALLBACK AP_Win32Dialog_MergeCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPa
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-//
-static bool _findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
-{
-	// This is a static function.
-
-	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
-		return false;
-
-	UT_uint32 kLimit = NrElements(s_itTable);
-	UT_uint32 k;
-
-	for (k=0; k < kLimit; k++)
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
-		{
-			*pIconData = s_itTable[k].m_staticVariable;
-			*pSizeofData = s_itTable[k].m_sizeofVariable;
-			return true;
-		}
-
-	return false;
-}
-
-bool AP_Win32Dialog_MergeCells::getBitmapForIcon(HWND hwnd, UT_uint32 maxWidth, UT_uint32 maxHeight,UT_RGBColor * pColor, const char * szIconName, HBITMAP * pBitmap)
-{
-	UT_ASSERT(hwnd);
-	UT_ASSERT(szIconName && *szIconName);
-	UT_ASSERT(pBitmap);
-	
-	const char ** pIconData = NULL;
-	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	
-	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
-	if (!bFound)
-		return false;
-
-	HDC hdc = GetDC(hwnd);
-	bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,hdc,pColor,pBitmap);
-	ReleaseDC(hwnd,hdc);
-
-	return bCreated;
-}
-
-
-
 
 HBITMAP AP_Win32Dialog_MergeCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int x, int y, UT_RGBColor color)
 {
 	HBITMAP hBitmap = NULL;
 	
-	getBitmapForIcon(hWnd, x,y, &color,	pName,	&hBitmap);	
+	XAP_Win32DialogHelper::getBitmapForIcon(hWnd, x,y, &color,	pName,	&hBitmap);	
 				
 	SendDlgItemMessage(hWnd,  nId, 
         	            BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);				
