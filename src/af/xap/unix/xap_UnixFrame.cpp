@@ -184,9 +184,7 @@ void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
 	
 	if (pView)
-	{
-		pView->setYScrollOffset((UT_sint32) w->value);
-	}
+		pView->sendVerticalScrollEvent((UT_sint32) w->value);
 }
 	
 void XAP_UnixFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
@@ -195,9 +193,7 @@ void XAP_UnixFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	AV_View * pView = pUnixFrame->getCurrentView();
 	
 	if (pView)
-	{
-		pView->setXScrollOffset((UT_sint32) w->value);
-	}
+		pView->sendHorizontalScrollEvent((UT_sint32) w->value);
 }
 	
 void XAP_UnixFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)

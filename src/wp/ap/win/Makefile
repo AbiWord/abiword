@@ -29,7 +29,8 @@ CPPSRCS=		ap_$(ABI_FE)DialogFactory.cpp		\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)Toolbar_FontCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_SizeCombo.cpp	\
-			ap_$(ABI_FE)Toolbar_ControlFactory.cpp	
+			ap_$(ABI_FE)Toolbar_ControlFactory.cpp	\
+			ap_$(ABI_FE_TopRuler.cpp
 
 TARGETS=		$(OBJS)
 

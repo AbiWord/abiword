@@ -36,6 +36,7 @@
 #include "ap_Win32Frame.h"
 #include "xap_Win32App.h"
 #include "ev_Win32Mouse.h"
+#include "ap_Win32TopRuler.h"
 
 /*****************************************************************/
 
@@ -52,7 +53,6 @@
 
 static char s_ContainerWndClassName[256];
 static char s_DocumentWndClassName[256];
-static char s_TopRulerWndClassName[256];
 static char s_LeftRulerWndClassName[256];
 
 /*****************************************************************/
@@ -78,7 +78,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	ap_ViewListener * pViewListener = NULL;
 	AD_Document * pOldDoc = NULL;
 	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
-	
+	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
 	
 	UT_uint32 iWindowHeight, iHeight;
@@ -96,13 +96,43 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	
 	pView = new FV_View(this,pDocLayout);
 	ENSUREP(pView);
-	pScrollObj = new AV_ScrollObj(this,_scrollFunc);
+
+	// The "AV_ScrollObj pScrollObj" receives
+	// send{Vertical,Horizontal}ScrollEvents
+	// from both the scroll-related edit methods
+	// and from the UI callbacks.
+	// 
+	// The "ap_ViewListener pViewListener" receives
+	// change notifications as the document changes.
+	// This ViewListener is responsible for keeping
+	// the title-bar up to date (primarily title
+	// changes, dirty indicator, and window number).
+	//
+	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
+	// receives change notifications as the doucment changes.
+	// This ViewListener is responsible for recalibrating the
+	// scrollbars as pages are added/removed from the document.
+	//
+	// Each Toolbar will also get a ViewListener so that
+	// it can update toggle buttons, and other state-indicating
+	// controls on it.
+	//
+	// TODO we ***really*** need to re-do the whole scrollbar thing.
+	// TODO we have an addScrollListener() using an m_pScrollObj
+	// TODO and a View-Listener, and a bunch of other widget stuff.
+	// TODO and its very confusing.
+	
+	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
 	ENSUREP(pScrollObj);
 	pViewListener = new ap_ViewListener(this);
 	ENSUREP(pViewListener);
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
+	ENSUREP(pScrollbarViewListener);
 
-	AV_ListenerId lid;
 	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
+		goto Cleanup;
+	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
+							&lidScrollbarViewListener))
 		goto Cleanup;
 
 	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
@@ -120,19 +150,6 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 		EV_Win32Toolbar * pWin32Toolbar = (EV_Win32Toolbar *)m_vecWin32Toolbars.getNthItem(k);
 		pWin32Toolbar->bindListenerToView(pView);
 	}
-
-	// add a Scrollbar-View-Listener to help up keep the scrollbar up-to-date.
-	//
-	// TODO we ***really*** need to re-do the whole scrollbar thing.
-	// TODO we have an addScrollListener() using an m_pScrollObj
-	// TODO and a View-Listener, and a bunch of other widget stuff.
-	// TODO and its very confusing.
-
-	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
-	ENSUREP(pScrollbarViewListener);
-	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
-							&lidScrollbarViewListener))
-		goto Cleanup;
 
 	/****************************************************************
 	*****************************************************************
@@ -158,17 +175,19 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	REPLACEP(m_pScrollbarViewListener,pScrollbarViewListener);
 	m_lidScrollbarViewListener = lidScrollbarViewListener;
 	
+	m_pView->addScrollListener(m_pScrollObj);
+
+	// Associate the new view with the existing TopRuler.
+	// Because of the binding to the actual on-screen widgets
+	// we do not destroy and recreate the TopRuler when we change
+	// views, like we do for all the other objects.  We also do not
+	// allocate the TopRuler here; that is done as the frame is
+	// created.
+	m_pData->m_pTopRuler->setView(pView);
+
 	RECT r;
 	GetClientRect(hwnd, &r);
-	iWindowHeight = r.bottom - r.top;
-
-	iHeight = m_pData->m_pDocLayout->getHeight();
-
-	m_pView->addScrollListener(m_pScrollObj);
-//	m_pMouse->reset();
-	
-	// enough HACKs to get a clean redisplay?
-	m_pView->setWindowSize(r.right - r.left, iWindowHeight);
+	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
 	InvalidateRect(hwnd, NULL, true);
 
 	setXScrollRange();
@@ -297,30 +316,6 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 		return UT_FALSE;
 	}
 	
-	// register class for the top ruler
-	sprintf(s_TopRulerWndClassName, "%sTopRuler", app->getApplicationName());
-
-	memset(&wndclass, 0, sizeof(wndclass));
-	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS;
-	wndclass.lpfnWndProc   = AP_Win32Frame::_TopRulerWndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = s_TopRulerWndClassName;
-	wndclass.hIconSm       = NULL;
-
-	if (!RegisterClassEx(&wndclass))
-	{
-		DWORD err = GetLastError();
-		UT_ASSERT(err);
-		return UT_FALSE;
-	}
-	
 	// register class for the left ruler
 	sprintf(s_LeftRulerWndClassName, "%sLeftRuler", app->getApplicationName());
 
@@ -344,6 +339,9 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 		UT_ASSERT(err);
 		return UT_FALSE;
 	}
+
+	if (!AP_Win32TopRuler::RegisterClass(app))
+		return UT_FALSE;
 
 	return UT_TRUE;
 }
@@ -462,13 +460,12 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	UT_ASSERT(m_hwndHScroll);
 	SWL(m_hwndHScroll, this);
 
-	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
-									WS_CHILD | WS_VISIBLE,
-									0, 0, r.right - cxVScroll, HACK_RULER_SIZE,
-									hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
-	UT_ASSERT(m_hwndTopRuler);
-	SWL(m_hwndTopRuler, this);
-
+	AP_Win32TopRuler * pWin32TopRuler = new AP_Win32TopRuler(this);
+	UT_ASSERT(pWin32TopRuler);
+	m_hwndTopRuler = pWin32TopRuler->createWindow(hwndContainer,
+												  0,0, (r.right - cxVScroll), HACK_RULER_SIZE);
+	pWin32TopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
+	m_pData->m_pTopRuler = pWin32TopRuler;
 	GetClientRect(m_hwndTopRuler, &rTopRuler);
 	
 	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
@@ -505,9 +502,14 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	return _showDocument();
 }
 	
-void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
+void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
+
+	// scroll event came in (probably from an EditMethod (like a PageDown
+	// or insertData or something).  update the on-screen scrollbar and
+	// then warp the document window contents.
+	
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
 	UT_ASSERT(pWin32Frame);
 
@@ -516,19 +518,27 @@ void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
-	// Do the vertical
-
 	HWND hwndV = pWin32Frame->m_hwndVScroll;
 	GetScrollInfo(hwndV, SB_CTL, &si);
 
 	si.nPos = yoff;
 	SetScrollInfo(hwndV, SB_CTL, &si, TRUE);
 
-	// TODO: move this logic back to shared code
 	GetScrollInfo(hwndV, SB_CTL, &si);	// may have been clamped
 	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
+}
 
-	// Do the horizontal
+void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 yoff)
+{
+	// this is a static callback function and doesn't have a 'this' pointer.
+
+	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
+	UT_ASSERT(pWin32Frame);
+
+	SCROLLINFO si;
+	memset(&si, 0, sizeof(si));
+	si.cbSize = sizeof(si);
+	si.fMask = SIF_ALL;
 
 	HWND hwndH = pWin32Frame->m_hwndHScroll;
 	GetScrollInfo(hwndH, SB_CTL, &si);
@@ -536,7 +546,6 @@ void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 	si.nPos = xoff;
 	SetScrollInfo(hwndH, SB_CTL, &si, TRUE);
 
-	// TODO: move this logic back to shared code
 	GetScrollInfo(hwndH, SB_CTL, &si);	// may have been clamped
 	pWin32Frame->m_pView->setXScrollOffset(si.nPos);
 }
@@ -695,11 +704,6 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 	}
 }
 
-LRESULT CALLBACK AP_Win32Frame::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
-{
-	return DefWindowProc(hwnd, iMsg, wParam, lParam);
-}
-
 LRESULT CALLBACK AP_Win32Frame::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
@@ -767,6 +771,19 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 			int nHeight = HIWORD(lParam);
 
 			pView->setWindowSize(nWidth, nHeight);
+
+			// may need to scroll to keep everything in sync
+
+			SCROLLINFO si;
+			memset(&si, 0, sizeof(si));
+			si.cbSize = sizeof(si);
+			si.fMask = SIF_ALL;
+
+			GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
+			pView->setYScrollOffset(si.nPos);
+
+			GetScrollInfo(f->m_hwndHScroll, SB_CTL, &si);
+			pView->setXScrollOffset(si.nPos);
 		}
 		return 0;
 	}

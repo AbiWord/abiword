@@ -50,7 +50,8 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_Toolbar_Functions.cpp	\
 		ap_Toolbar_Icons.cpp		\
 		ap_Toolbar_LabelSet.cpp		\
-		ap_Toolbar_Layouts.cpp
+		ap_Toolbar_Layouts.cpp		\
+		ap_TopRuler.cpp
 
 TARGETS=		$(OBJS)
 

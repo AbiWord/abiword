@@ -2210,6 +2210,15 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 	yoff = y;
 }
 
+UT_uint32 FV_View::getPageViewLeftMargin(void) const
+{
+	// return the amount of gray-space we draw to the left
+	// of the paper in "Page View".  return zero if not in
+	// "Page View".
+
+	return fl_PAGEVIEW_MARGIN_X;
+}
+
 /*
   This method simply iterates over every run between two doc positions
   and draws each one.  The current selection information is heeded.
@@ -2768,49 +2777,60 @@ void FV_View::Test_Dump(void)
 
 void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 {
+#define HACK_LINE_HEIGHT				20 // TODO Fix this!!
+	
 	UT_sint32 lineHeight = iPos;
-	UT_sint32 docWidth = 0, docHeight = 0;
+	UT_sint32 docHeight = 0;
+	UT_Bool bVertical = UT_FALSE;
+	UT_Bool bHorizontal = UT_FALSE;
 	
 	_eraseInsertionPoint();	
 
 	docHeight = m_pLayout->getHeight();
-	docWidth = m_pLayout->getWidth();
 	
 	if (lineHeight == 0)
-	{
-		lineHeight = 20; // TODO
-	}
+		lineHeight = HACK_LINE_HEIGHT;
 	
-	UT_sint32 yoff = m_yScrollOffset, xoff = m_xScrollOffset;
+	UT_sint32 yoff = m_yScrollOffset;
+	UT_sint32 xoff = m_xScrollOffset;
 	
 	switch(cmd)
 	{
 	case AV_SCROLLCMD_PAGEDOWN:
-		yoff += m_iWindowHeight - 20;
+		yoff += m_iWindowHeight - HACK_LINE_HEIGHT;
+		bVertical = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_PAGEUP:
-		yoff -= m_iWindowHeight - 20;
+		yoff -= m_iWindowHeight - HACK_LINE_HEIGHT;
+		bVertical = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_PAGELEFT:
 		xoff -= m_iWindowWidth;
+		bHorizontal = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_PAGERIGHT:
 		xoff += m_iWindowWidth;
+		bHorizontal = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_LINEDOWN:
 		yoff += lineHeight;
+		bVertical = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_LINEUP:
 		yoff -= lineHeight;
+		bVertical = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_LINELEFT:
 		xoff -= lineHeight;
+		bHorizontal = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_LINERIGHT:
 		xoff += lineHeight;
+		bHorizontal = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_TOTOP:
 		yoff = 0;
+		bVertical = UT_TRUE;
 		break;
 	case AV_SCROLLCMD_TOPOSITION:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
@@ -2824,33 +2844,24 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 			pPage = pPage->getNext();
 		}
 		yoff = iDocHeight;
+		bVertical = UT_TRUE;
 		break;
 	}
 
-	// try and figure out if we really need to scroll
-	if (yoff < 0)
+	if (bVertical)
 	{
-		if (m_yScrollOffset == 0) // already at top - forget it
-		{
-			return;
-		}
-		
-		yoff = 0;
+		if (yoff < 0)
+			yoff = 0;
+				
+		sendVerticalScrollEvent(yoff);
 	}
 
-	if (yoff > docHeight)
+	if (bHorizontal)
 	{
-		if (m_yScrollOffset == docHeight) // already at bottom
-		{
-			return;
-		}
-		else
-		{
-			yoff = docHeight;
-		}
+		if (xoff < 0)
+			xoff = 0;
+		sendHorizontalScrollEvent(xoff);
 	}
-				
-	sendScrollEvent(xoff, yoff);
 }
 
 UT_Bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)

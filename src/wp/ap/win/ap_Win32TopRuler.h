@@ -16,27 +16,39 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
-#include "ap_FrameData.h"
-#include "gr_Graphics.h"
-#include "fl_DocLayout.h"
-#include "ap_TopRuler.h"
+#ifndef AP_WIN32TOPRULER_H
+#define AP_WIN32TOPRULER_H
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
+// Class for dealing with the horizontal ruler at the top of
+// a document window.
 
 /*****************************************************************/
 
-AP_FrameData::AP_FrameData()
-{
-	m_pDocLayout = NULL;
-	m_pG = NULL;
-	m_pTopRuler = NULL;
-}
+#include "ut_types.h"
+#include "ap_TopRuler.h"
+#include "gr_Win32Graphics.h"
+class XAP_Frame;
 
-AP_FrameData::~AP_FrameData()
+/*****************************************************************/
+
+class AP_Win32TopRuler : public AP_TopRuler
 {
-	DELETEP(m_pDocLayout);
-	DELETEP(m_pG);
-	DELETEP(m_pTopRuler);
-}
+public:
+	AP_Win32TopRuler(XAP_Frame * pFrame);
+	virtual ~AP_Win32TopRuler(void);
+
+	HWND				CreateWindow(HWND hwndContainer,
+									 UT_uint32 left, UT_uint32 top,
+									 UT_uint32 width, UT_uint32 height);
+	virtual void		setView(AV_View * pView);
+	void				scrollRuler(UT_sint32 xoff);
+
+	static UT_Bool		RegisterClass(AP_Win32App * app);
+	LRESULT CALLBACK	_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	
+protected:
+	HWND				m_hwndTopRuler;
+};
+
+#endif /* AP_WIN32TOPRULER_H */

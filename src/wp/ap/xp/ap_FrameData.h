@@ -21,9 +21,9 @@
 #ifndef AP_FRAMEDATA_H
 #define AP_FRAMEDATA_H
 
-
 class DG_Graphics;
 class FL_DocLayout;
+class AP_TopRuler;
 
 // A trivial helper class to hold app-specific frame data
 
@@ -35,6 +35,7 @@ public:
 
 	FL_DocLayout *		m_pDocLayout;
 	DG_Graphics *		m_pG;
+	AP_TopRuler *		m_pTopRuler;
 };
 
 #endif /* AP_FRAMEDATA_H */

@@ -37,7 +37,9 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_ControlFactory.$(OBJ_SUFFIX)
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_ControlFactory.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)TopRuler.$(OBJ_SUFFIX)
+
 
 OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)			\
@@ -65,7 +67,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)
+		xp/$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_TopRuler.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

@@ -35,6 +35,7 @@
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_UnixFrame.h"
 #include "xap_UnixApp.h"
+#include "ap_UnixTopRuler.h"
 
 /*****************************************************************/
 
@@ -67,9 +68,8 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	ap_ViewListener * pViewListener = NULL;
 	AD_Document * pOldDoc = NULL;
 	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
-	
+	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
-
 	UT_uint32 nrToolbars;
 
 	// TODO fix prefix on class UNIXGraphics
@@ -83,13 +83,44 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 
 	pView = new FV_View(this, pDocLayout);
 	ENSUREP(pView);
-	pScrollObj = new AV_ScrollObj(this,_scrollFunc);
+
+	// The "AV_ScrollObj pScrollObj" receives
+	// send{Vertical,Horizontal}ScrollEvents
+	// from both the scroll-related edit methods
+	// and from the UI callbacks.
+	// 
+	// The "ap_ViewListener pViewListener" receives
+	// change notifications as the document changes.
+	// This ViewListener is responsible for keeping
+	// the title-bar up to date (primarily title
+	// changes, dirty indicator, and window number).
+	//
+	// The "ap_Scrollbar_ViewListener pScrollbarViewListener"
+	// receives change notifications as the doucment changes.
+	// This ViewListener is responsible for recalibrating the
+	// scrollbars as pages are added/removed from the document.
+	//
+	// Each Toolbar will also get a ViewListener so that
+	// it can update toggle buttons, and other state-indicating
+	// controls on it.
+	//
+	// TODO we ***really*** need to re-do the whole scrollbar thing.
+	// TODO we have an addScrollListener() using an m_pScrollObj
+	// TODO and a View-Listener, and a bunch of other widget stuff.
+	// TODO and its very confusing.
+	
+	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
 	ENSUREP(pScrollObj);
 	pViewListener = new ap_ViewListener(this);
 	ENSUREP(pViewListener);
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
+	ENSUREP(pScrollbarViewListener);
 
-	AV_ListenerId lid;
 	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
+		goto Cleanup;
+
+	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
+							&lidScrollbarViewListener))
 		goto Cleanup;
 
 	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
@@ -107,18 +138,6 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecUnixToolbars.getNthItem(k);
 		pUnixToolbar->bindListenerToView(pView);
 	}
-
-	// add a Scrollbar-View-Listener to help up keep the scrollbar up-to-date.
-	//
-	// TODO we ***really*** need to re-do the whole scrollbar thing.
-	// TODO we have an addScrollListener() using an m_pScrollObj
-	// TODO and a View-Listener, and a bunch of other widget stuff.
-	// TODO and its very confusing.
-
-	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
-	ENSUREP(pScrollbarViewListener);
-	pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
-					   &lidScrollbarViewListener);
 
 	/****************************************************************
 	*****************************************************************
@@ -145,6 +164,14 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	m_lidScrollbarViewListener = lidScrollbarViewListener;
 
 	m_pView->addScrollListener(m_pScrollObj);
+
+	// Associate the new view with the existing TopRuler.
+	// Because of the binding to the actual on-screen widgets
+	// we do not destroy and recreate the TopRuler when we change
+	// views, like we do for all the other objects.  We also do not
+	// allocate the TopRuler here; that is done as the frame is
+	// created.
+	m_pData->m_pTopRuler->setView(pView);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
@@ -189,10 +216,6 @@ Cleanup:
 
 void AP_UnixFrame::setXScrollRange(void)
 {
-	// TODO do we need to increase width by the amount of
-	// TODO white space, drop shadows, and etc. that we
-	// TODO draw around the pages.
-
 	int width = m_pData->m_pDocLayout->getWidth();
 	int windowWidth = GTK_WIDGET(m_dArea)->allocation.width;
 	
@@ -207,10 +230,6 @@ void AP_UnixFrame::setXScrollRange(void)
 
 void AP_UnixFrame::setYScrollRange(void)
 {
-	// TODO do we need to increase height by the amount of
-	// TODO white space, drop shadows, and etc. that we
-	// TODO draw between the pages.
-
 	int height = m_pData->m_pDocLayout->getHeight();
 	int windowHeight = GTK_WIDGET(m_dArea)->allocation.height;
 	
@@ -346,50 +365,77 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 	return _showDocument();
 }
 
-void AP_UnixFrame::_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff)
+void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
 	
 	AP_UnixFrame * pUnixFrame = static_cast<AP_UnixFrame *>(pData);
-		
-	pUnixFrame->m_pVadj->value = (gfloat) yoff;
-	gtk_signal_emit_by_name(GTK_OBJECT(pUnixFrame->m_pVadj), "changed");
+	AV_View * pView = pUnixFrame->getCurrentView();
+	
+	// we've been notified (via sendVerticalScrollEvent()) of a scroll (probably
+	// a keyboard motion).  push the new values into the scrollbar widgets
+	// (with clamping).  then cause the view to scroll.
+	
+	gfloat yoffNew = (gfloat)yoff;
+	gfloat yoffMax = pUnixFrame->m_pVadj->upper - pUnixFrame->m_pVadj->page_size;
+	if (yoffNew > yoffMax)
+		yoffNew = yoffMax;
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pVadj),yoffNew);
+	pView->setYScrollOffset((UT_sint32)yoffNew);
+}
 
-	pUnixFrame->m_pHadj->value = (gfloat) xoff;
-	gtk_signal_emit_by_name(GTK_OBJECT(pUnixFrame->m_pHadj), "changed");
+void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff)
+{
+	// this is a static callback function and doesn't have a 'this' pointer.
+	
+	AP_UnixFrame * pUnixFrame = static_cast<AP_UnixFrame *>(pData);
+	AV_View * pView = pUnixFrame->getCurrentView();
+	
+	// we've been notified (via sendScrollEvent()) of a scroll (probably
+	// a keyboard motion).  push the new values into the scrollbar widgets
+	// (with clamping).  then cause the view to scroll.
+
+	gfloat xoffNew = (gfloat)xoff;
+	gfloat xoffMax = pUnixFrame->m_pHadj->upper - pUnixFrame->m_pHadj->page_size;
+	if (xoffNew > xoffMax)
+		xoffNew = xoffMax;
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pHadj),xoffNew);
+	pView->setXScrollOffset((UT_sint32)xoffNew);
 }
 
 GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 {
 	GtkWidget * wSunkenBox;
 
-	m_topRuler = gtk_drawing_area_new();
-	gtk_object_set_user_data(GTK_OBJECT(m_topRuler),this);
-	gtk_widget_set_usize(m_topRuler, 1, HACK_RULER_SIZE);
-	
-	// TODO set properties on the topRuler
+	// create the top ruler
+	AP_UnixTopRuler * pUnixTopRuler = new AP_UnixTopRuler(this);
+	UT_ASSERT(pUnixTopRuler);
+	m_topRuler = pUnixTopRuler->createWidget(HACK_RULER_SIZE);
+	pUnixTopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
+	m_pData->m_pTopRuler = pUnixTopRuler;
+
+	// create the left ruler
 	m_leftRuler = gtk_drawing_area_new();
 	gtk_object_set_user_data(GTK_OBJECT(m_leftRuler),this);
-	gtk_widget_set_usize(m_leftRuler, HACK_RULER_SIZE, 1);
+	gtk_widget_show(m_leftRuler);
+	gtk_widget_set_usize(m_leftRuler, HACK_RULER_SIZE, -1);
 	
-	// TODO set properties on the leftRuler
-
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
 	m_hScroll = gtk_hscrollbar_new(m_pHadj);
 	gtk_object_set_user_data(GTK_OBJECT(m_hScroll),this);
 
-	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_pHadj), "changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed",
+					   GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
 
 	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	gtk_object_set_user_data(GTK_OBJECT(m_pVadj),this);
 	m_vScroll = gtk_vscrollbar_new(m_pVadj);
 	gtk_object_set_user_data(GTK_OBJECT(m_vScroll),this);
 
-	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
-	gtk_signal_connect(GTK_OBJECT(m_pVadj), "changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed",
+					   GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
 
 	// we don't want either scrollbar grabbing events from us
 	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
@@ -432,10 +478,12 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions)(GTK_FILL),
 					 0,0);
+
 	gtk_table_attach(GTK_TABLE(m_table), m_leftRuler, 0, 1, 1, 2,
 					 (GtkAttachOptions)(GTK_FILL),
 					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 					 0,0);
+
 	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   1, 2, 1, 2,
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -455,8 +503,6 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	gtk_frame_set_shadow_type(GTK_FRAME(wSunkenBox), GTK_SHADOW_IN);
 	gtk_container_add(GTK_CONTAINER(wSunkenBox), m_table);
 
-	gtk_widget_show(m_topRuler);
-	gtk_widget_show(m_leftRuler);
 	gtk_widget_show(m_hScroll);
 	gtk_widget_show(m_vScroll);
 	gtk_widget_show(m_dArea);

@@ -44,10 +44,14 @@ typedef enum _AV_ScrollCmd
 class AV_ScrollObj
 {
  public:
-	AV_ScrollObj(void * pData, void (*pfn)(void *,UT_sint32,UT_sint32)) { m_pData=pData; m_pfn=pfn; };
+	AV_ScrollObj(void * pData,
+				 void (*pfnX)(void *,UT_sint32),
+				 void (*pfnY)(void *,UT_sint32))
+		{ m_pData=pData; m_pfnX=pfnX; m_pfnY=pfnY; };
 	
 	void* m_pData;
-	void (*m_pfn)(void *, UT_sint32, UT_sint32);
+	void (*m_pfnX)(void *, UT_sint32);
+	void (*m_pfnY)(void *, UT_sint32);
 };
 
 class AV_View
@@ -63,13 +67,15 @@ public:
 	virtual void	setYScrollOffset(UT_sint32) = 0;
 	UT_sint32		getXScrollOffset(void) const;
 	UT_sint32		getYScrollOffset(void) const;
+	virtual UT_uint32	getPageViewLeftMargin(void) const = 0;
 	
 	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
 
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
-	void			sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff);
+	void			sendVerticalScrollEvent(UT_sint32 yoff);
+	void			sendHorizontalScrollEvent(UT_sint32 xoff);
 
 	UT_Bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	UT_Bool			removeListener(AV_ListenerId listenerId);
