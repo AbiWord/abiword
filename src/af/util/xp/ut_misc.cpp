@@ -670,7 +670,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 				  return true;
 			  }
 		case UCS_ABI_OBJECT:
-			return false;
+			return true;
 
 		default:
 			return s_find_delim(currentChar);
