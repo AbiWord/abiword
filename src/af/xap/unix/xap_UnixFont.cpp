@@ -35,6 +35,30 @@
 #include "xap_App.h"
 //#include "ut_AdobeEncoding.h"
 
+//this one is for use with qsort
+static int s_compareUniWidths(const void * w1, const void * w2)
+{
+	const uniWidth   * W1 = (const uniWidth   * ) w1;
+	const uniWidth   * W2 = (const uniWidth   * ) w2;
+
+	if(W1->ucs < W2->ucs)
+		return -1;
+	if(W1->ucs > W2->ucs)
+		return 1;
+	return 0;
+}
+
+//this one is for use with bsearch
+static int s_compareUniWidthsChar(const void * c, const void * w)
+{
+	const UT_UCSChar * C = (const UT_UCSChar * ) c;
+	const uniWidth   * W = (const uniWidth   * ) w;
+	if(*C < W->ucs)
+		return -1;
+	if(*C > W->ucs)
+		return 1;
+	return 0;
+}
 
 #define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_fontfile); UT_ASSERT(m_metricfile); } while (0)
 
@@ -146,7 +170,11 @@ XAP_UnixFont::~XAP_UnixFont(void)
 
 	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
 	
-	FREEP(m_uniWidths);
+	if(m_uniWidths)
+	{
+		delete [] m_uniWidths;
+		m_uniWidths = 0;
+	}
 	
 	_deleteEncodingTable();
 	// leave GdkFont * alone
@@ -273,15 +301,14 @@ const char * XAP_UnixFont::getXLFD(void)
 
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c)
 {
-	UT_sint32 i;
 	if(!m_uniWidths)
 		getMetricsData();
-	for (i=0; i<m_metricsData->numOfChars; i++)
-	{
-		if(m_uniWidths[i].ucs == c)
-			return(m_uniWidths[i].width);
-	}
-	return 0;
+
+	uniWidth * w = (uniWidth *) bsearch(&c, m_uniWidths, m_metricsData->numOfChars, sizeof(uniWidth), s_compareUniWidthsChar);
+	if(w)
+		return w->width;
+	else
+		return 0;
 }
 
 bool	XAP_UnixFont::_getMetricsDataFromX(void)
@@ -323,7 +350,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 {
 	if(m_pEncodingTable)
 	{
-		UT_DEBUGMSG(("UnixFont: font table already exists\n"));
+		//UT_DEBUGMSG(("UnixFont: font table already exists\n"));
 		return m_pEncodingTable;
 	}
 	
@@ -633,8 +660,8 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 		UT_DEBUGMSG(("PS font metrics file:  %s\n", m_metricfile));
 		UT_DEBUGMSG(("PS font encoding type: %s\n", m_metricsData->gfi->encodingScheme));
 		UT_DEBUGMSG(("PS font char count: %d\n", m_metricsData->numOfChars));
-		m_uniWidths = (uniWidth *) malloc (sizeof (uniWidth) * m_metricsData->numOfChars);
-		memset (m_uniWidths, 0, m_metricsData->numOfChars * sizeof(uniWidth)); // Clear array - i would hope that sizeof(UT_uint16) == 16
+		m_uniWidths = new uniWidth[m_metricsData->numOfChars];
+		memset (m_uniWidths, 0, m_metricsData->numOfChars * sizeof(uniWidth)); // Clear array
 		UT_AdobeEncoding *ae = 0;
 
 		if (loadEncodingFile() && !XAP_EncodingManager::instance->cjk_locale())
@@ -656,6 +683,12 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 					++numfound;
 				}
 			}
+			// we want to set m_metricsData->numOfChars to the number of chars which we found;
+			// this is typically smaller than the afm file indicated (often the font contains
+			// alternative glyphs, names of which use vendor-defined names; we are not able to
+			// translate these into UCS-2 values).
+
+			m_metricsData->numOfChars = numfound;
 			UT_DEBUGMSG(("created width table with %d entries\n", numfound));
 			
 			//OK, now we have the widths, we can get rid off the encoding table
@@ -668,8 +701,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 		else
 		{
 			/*	
-				it's neither iso 8859-1, nor cp1250, nor utf-8 or we did not
-				succeed in loading an encoding file
+				either CJK or we did not succeed in loading an encoding file
 				we have to assume that order of glyphs in font is correct.
 			*/
 			
@@ -684,7 +716,12 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 					++numfound;
 				}
            }
+		m_metricsData->numOfChars = numfound;
+
        	}
+	
+		//Now we sort the m_uniWidths array
+		qsort(m_uniWidths, m_metricsData->numOfChars, sizeof(uniWidth), s_compareUniWidths);
 		
 		fclose(fp);
 		
