@@ -48,6 +48,7 @@ Andrew Dunbar <falconsquire@start.com.au>		UTF-8 text recognition, encoding stuf
 Ryan Dooley <ryan@coe.missouri.edu> 			started IRIX port
 Paul Egli <pegli@sourcegear.com>
 Uri Elias <elias@techunix.technion.ac.il>	testing of bidi
+Mike Fabian  <mfabian@suse.de>                  XIM fix for Gnome.
 Danny Faught <faught@rstcorp.com>
 Harald Fernengel <harry@bnro.de>				RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>			RTF import/export work, MacOS (X) maintainer, MacOS X makefiles and autoconf, JPEG import, Applix import
