@@ -452,10 +452,10 @@ void FL_DocLayout::fillLayouts(void)
 	m_pDoc->setDontImmediatelyLayout(true);
 	m_pDocListener->setHoldTableLayout(false);
 	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
-//	m_pDocListener->setHoldTableLayout(false);
 	m_pDoc->setDontImmediatelyLayout(false);
 	UT_ASSERT(m_lid != (PL_ListenerId)-1);
-	formatAll();
+	GR_Graphics * pG = getGraphics();
+//	formatAll();
 	if(m_pView)
 	{
 		m_pView->setLayoutIsFilling(false);
@@ -463,9 +463,16 @@ void FL_DocLayout::fillLayouts(void)
 		m_pView->moveInsPtTo(FV_DOCPOS_BOD);
 		m_pView->clearCursorWait();
 		m_pView->updateLayout();
-		m_pView->updateScreen(false);
+		if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			m_pView->updateScreen(false);
+			m_pView->notifyListeners(AV_CHG_ALL);
+		}
 	}
-
+	if(!m_pView)
+	{
+		updateLayout();
+	}
 	setLayoutIsFilling(false);
 
 	// Layout of any TOC that is built only from a restricted document range is tentative, because
@@ -529,7 +536,11 @@ void FL_DocLayout::fillLayouts(void)
 		if(m_pView)
 		{
 			m_pView->updateLayout();
-			m_pView->updateScreen(false);
+			if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
+			{
+				m_pView->updateScreen(false);
+				m_pView->notifyListeners(AV_CHG_ALL);
+			}
 		}
 	}
 }

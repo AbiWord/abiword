@@ -2646,6 +2646,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if (apap->fTtp)
 	  {
 	    m_bInPara = true;
+		xxx_UT_DEBUGMSG(("m_bInPara set true here -1 \n"));
 	    return 0;
 	  }
 
@@ -2955,6 +2956,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_field_fmt[1] = "list_label";
 		list_field_fmt[2] = 0;
 		_appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
+		m_bInPara = true;
 
 		// the character following the list label - 0=tab, 1=space, 2=none
 		if(apap->linfo.ixchFollow == 0) // tab
@@ -2969,7 +2971,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		}
 		// else none
 	  }
-	m_bInPara = true;
+
 	return 0;
 }
 
@@ -3083,7 +3085,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		m_bSymbolFont = true;
 	else
 	{
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_beginChar: unknow font encoding %d\n",
+		xxx_UT_DEBUGMSG(("IE_Imp_MsWord_97::_beginChar: unknow font encoding %d\n",
 					 ps->fonts.ffn[achp->ftcAscii].chs));
 		m_bSymbolFont = false;
 	}
@@ -4526,7 +4528,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   {
 	  m_iRight++;
   }
-  UT_DEBUGMSG(("MSWord Import:  iLeft %d iRight %d m_iCurrentCell %d \n",m_iLeft,m_iRight,m_iCurrentCell));
+  xxx_UT_DEBUGMSG(("MSWord Import:  iLeft %d iRight %d m_iCurrentCell %d \n",m_iLeft,m_iRight,m_iCurrentCell));
   UT_return_if_fail(vspan >= 0);
   UT_String_sprintf(propBuffer,
 		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ",
@@ -5507,7 +5509,7 @@ bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition, UT_UCS4C
 bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 {
 	UT_return_val_if_fail(f, true);
-	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertFootnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
+	xxx_UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertFootnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
 
 	this->_flush();
 
@@ -5562,7 +5564,7 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 {
 	UT_return_val_if_fail(f, true);
-	UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertEndnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
+	xxx_UT_DEBUGMSG(("IE_Imp_MsWord_97::_insertEndnote: pos: %d, pid %d\n", f->ref_pos, f->pid));
 
 	this->_flush();
 
@@ -5645,7 +5647,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 
 		if(!m_bInFNotes)
 		{
-			UT_DEBUGMSG(("In footnote territory: pos %d\n", iDocPosition));
+			xxx_UT_DEBUGMSG(("In footnote territory: pos %d\n", iDocPosition));
 			m_bInFNotes = true;
 			m_bInHeaders = false;
 			
@@ -5710,12 +5712,12 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		}
 		
 		// do not return !!!
-		UT_DEBUGMSG(("In footnote %d, on pos %d\n", m_iNextFNote, iDocPosition));
+		xxx_UT_DEBUGMSG(("In footnote %d, on pos %d\n", m_iNextFNote, iDocPosition));
 	}
 	else if(m_bInFNotes)
 	{
 		m_bInFNotes = false;
-		UT_DEBUGMSG(("Leaving footnote territory\n"));
+		xxx_UT_DEBUGMSG(("Leaving footnote territory\n"));
 		// move to the end of the do end of the document ...
 
 		// do not return !!!
@@ -5725,7 +5727,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 	{
 		if(!m_bInENotes)
 		{
-			UT_DEBUGMSG(("In endnote territory: pos %d\n", iDocPosition));
+			xxx_UT_DEBUGMSG(("In endnote territory: pos %d\n", iDocPosition));
 			m_bInENotes = true;
 			m_bInHeaders = false;
 			m_iNextENote = 0;
@@ -5746,7 +5748,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 				_findNextENoteSection();
 			else
 			{
-				UT_DEBUGMSG(("End of endnotes marker at pos %d\n", iDocPosition));
+				xxx_UT_DEBUGMSG(("End of endnotes marker at pos %d\n", iDocPosition));
 				return false;
 			}
 		}
@@ -5784,13 +5786,13 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			return true;
 		}
 
-		UT_DEBUGMSG(("In endnote %d, on pos %d\n", m_iNextENote, iDocPosition));
+		xxx_UT_DEBUGMSG(("In endnote %d, on pos %d\n", m_iNextENote, iDocPosition));
 		// do not return !!!
 	}
 	else if(m_bInENotes)
 	{
 		m_bInENotes = false;
-		UT_DEBUGMSG(("Leaving endnote territory\n"));
+		xxx_UT_DEBUGMSG(("Leaving endnote territory\n"));
 		// move to the end of the document ...
 
 		// do not return !!!
@@ -5910,7 +5912,7 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
 
 	if(!m_pNotesEndSection)
 	{
-		UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
+		xxx_UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
 		return false;
 	}
 
@@ -6086,6 +6088,15 @@ bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** att
 	}
 	
 	bRet &= getDoc()->appendStrux(pts, attributes);
+	if(pts != PTX_Block)
+	{
+		xxx_UT_DEBUGMSG(("m_bInPara set false here -1 \n"));
+		m_bInPara = false;
+	}
+	else
+	{
+		m_bInPara = true;
+	}
 	return bRet;
 }
 
@@ -6099,13 +6110,16 @@ bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const XML_Char ** a
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
-
+		if(!m_bInPara)
+		{
+			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, NULL);
+		}
 		bRet &= getDoc()->insertObjectBeforeFrag(pF, pto, attributes);
 	}
 	if(!m_bInPara)
 	{
-	  _appendStrux(PTX_Block, NULL);
-	  m_bInPara = true;
+		m_bInPara = true;
+		bRet &= getDoc()->appendStrux(PTX_Block, NULL);
 	}	
 	bRet &= getDoc()->appendObject(pto, attributes);
 	return bRet;
@@ -6121,15 +6135,18 @@ bool IE_Imp_MsWord_97::_appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length)
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
+		if(!m_bInPara)
+		{
+			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, NULL);
+		}
 
 		bRet &= getDoc()->insertSpanBeforeFrag(pF, p, length);
 	}
 	if(!m_bInPara)
 	{
-	  _appendStrux(PTX_Block, NULL);
-	  m_bInPara = true;
+		m_bInPara = true;
+		bRet &= getDoc()->appendStrux(PTX_Block, NULL);
 	}	
-	
 	bRet &= getDoc()->appendSpan(p, length);
 	return bRet;
 }

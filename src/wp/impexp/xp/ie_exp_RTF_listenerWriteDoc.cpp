@@ -1632,6 +1632,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	}
 	PL_StruxFmtHandle sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
 	fl_Layout * pL = const_cast<fl_Layout *>(reinterpret_cast<const fl_Layout *>(sfh));
+	UT_return_val_if_fail(pL,NULL);
 	if(pL && pL->getType() != PTX_Block)
 	{
 	  UT_return_val_if_fail(0, NULL);

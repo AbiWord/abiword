@@ -989,7 +989,7 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 {
 	UT_ASSERT(pWorker);
-
+	UT_DEBUGMSG(("Doing HdrFtr change callback \n"));
 	// Get the docSectionLayout
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pWorker->getInstanceData());
 	UT_ASSERT(pDSL);
@@ -1043,6 +1043,7 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 //
 	pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	pDoc->notifyPieceTableChangeEnd();
+	pDSL->m_sHdrFtrChangeProps.clear();
 //
 // Put the point at the right point in the header/footer on the right page.
 //
@@ -1087,11 +1088,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		{
 			return false;
 		}
-		if(newHeight <= getDocument()->getNewHdrHeight())
-		{
-			m_iNewHdrHeight = newHeight;
-			return false;
-		}
+		m_iNewHdrHeight = newHeight;
 		getDocument()->setNewHdrHeight(newHeight);
 		UT_sint32 fullHeight = newHeight + getHeaderMargin();
 		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
@@ -1104,11 +1101,7 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 		{
 			return false;
 		}
-		if(newHeight <= getDocument()->getNewFtrHeight())
-		{
-			m_iNewFtrHeight = newHeight;
-			return false;
-		}
+		m_iNewFtrHeight = newHeight;
 		getDocument()->setNewFtrHeight(newHeight);
 		UT_sint32 fullHeight = newHeight + getFooterMargin();
 		UT_String sHeight = m_pLayout->getGraphics()->invertDimension(DIM_IN, static_cast<double>(fullHeight));
