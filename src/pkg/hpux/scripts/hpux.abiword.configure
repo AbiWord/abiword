@@ -20,7 +20,7 @@
 #  automatically, so please don't change its format.  (I know this is
 #  hackish, but it works well enough for now.)
 #  Where abiword is installed:
-TARGET=/usr/local/AbiSuite
+TARGET=/usr/local/share/AbiSuite-2.0
 
 #  Make sure we can find everything we'll need:
 PATH=/usr/sbin:/sbin:/usr/bin:${PATH} ; export PATH

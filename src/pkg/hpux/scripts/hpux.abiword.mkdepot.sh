@@ -29,7 +29,7 @@ HPUXCONFIGURE=hpux.abiword.configure
 #
 #  Set $TARGET and $BINDIR, if they're not already set (they should be!):
 #
-: ${TARGET:=/usr/local/AbiSuite}
+: ${TARGET:=/usr/local/share/AbiSuite-2.0}
 : ${BINDIR:=/usr/local/bin}
 
 #
@@ -134,7 +134,7 @@ product
     #  The name of the configure script:
     configure     $HPUXCONFIGURE
     file_permissions -o root -g root
-    file ${BINDIR}/AbiWord
+    file ${BINDIR}/AbiWord-2.0
     file ${BINDIR}/abiword
     # Note: "file *" isn't really a glob pattern, despite appearances.
     directory $TARGET
