@@ -55,6 +55,7 @@ private:
 	// overridden virtual functions
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame);
+	virtual void*			pGetWindowHandle() { return (void*)m_hThisDlg; }
 
 	// current selection of the drop-list combo boxes
 	int						_getTypeComboCurSel() const;
@@ -82,6 +83,7 @@ private:
 	XAP_Win32DialogHelper	_win32Dialog;
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;
 	UT_Bool					m_bDisplayCustomControls;
+	HWND					m_hThisDlg;
 };
 
 #endif /* AP_Win32Dialog_List_H */

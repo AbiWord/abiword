@@ -67,7 +67,8 @@ AP_Win32Dialog_Lists::AP_Win32Dialog_Lists(	XAP_DialogFactory* pDlgFactory,
 	m_pAutoUpdateLists(0),
 	_win32Dialog(this),
 	m_pPreviewWidget(0),
-	m_bDisplayCustomControls(UT_FALSE)
+	m_bDisplayCustomControls(UT_FALSE),
+	m_hThisDlg(0)
 {
 	// Manually set this for now...
 	m_newListType = m_iListType = NUMBERED_LIST;
@@ -102,6 +103,8 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 
 BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	m_hThisDlg = hWnd;
+
 	// Default range for a spin control is 100 -- 0 (i.e. min > max),
 	// making it go "the wrong way" (i.e. cursor up lowers the value).
 	// It needs an UDM_SETRANGE to go the right way.
@@ -210,41 +213,49 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		m_iStartValue  = 1;
 		_setListType(m_iListType);
 		_enableControls();
-		return 0;
+		return 1;
 
 	case AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST:
 		_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, FALSE);
 		m_bisCustomized = UT_FALSE;
 		_enableControls();
-		return 0;
+		return 1;
 
 	case IDCANCEL:	// also AP_RID_DIALOG_LIST_BTN_CLOSE
 		_win32Dialog.showWindow(SW_HIDE);
-		return 0;
+		return 1;
 
 	case AP_RID_DIALOG_LIST_BTN_APPLY:
 		m_bisCustomized = UT_TRUE;
 		_onApply();
-		return 0;
+		return 1;
 
 	case AP_RID_DIALOG_LIST_BUTTON_CUSTOMIZE:
 		m_bDisplayCustomControls = !m_bDisplayCustomControls;
 		_customChanged();
-		return 0;
+		return 1;
 
 	case AP_RID_DIALOG_LIST_COMBO_TYPE:
-		m_bisCustomized = UT_TRUE;
-		_typeChanged();
+		if (wNotifyCode == LBN_SELCHANGE)
+		{
+			m_bisCustomized = UT_TRUE;
+			_typeChanged();
+			return 1;
+		}
 		return 0;
 
 	case AP_RID_DIALOG_LIST_COMBO_STYLE:
-		m_bisCustomized = UT_TRUE;
-		_styleChanged();
+		if (wNotifyCode == LBN_SELCHANGE)
+		{
+			m_bisCustomized = UT_TRUE;
+			_styleChanged();
+			return 1;
+		}
 		return 0;
 
 	case AP_RID_DIALOG_LIST_BTN_FONT:
 		_selectFont();
-		return 0;						// return zero to let windows take care of it.
+		return 1;						// return zero to let windows take care of it.
 
 //	case AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN:
 //	case AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN:
@@ -254,9 +265,9 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 			_getData();
 			_previewExposed();
-			return 0;
+			return 1;
 		}
-		return 1;
+		return 0;
 
 	default:	// we did not handle this notification
 		if (_win32Dialog.isControlVisible(wId))
@@ -265,7 +276,7 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		} else {
 			UT_DEBUGMSG(("AP_Win32Dialog_Lists::_onCommand, WM_Command for invisible control ID %ld\n",wId));
 		}
-		return 1;	// return non-zero to let windows take care of it.
+		return 0;	// return zero to let windows take care of it.
 	}
 }
 
@@ -376,6 +387,10 @@ void AP_Win32Dialog_Lists::_enableControls(void)
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, !bStopCurr);
 
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_COMBO_TYPE, bStartNew);
+	if (!bStartNew || !iType)
+	{
+		_win32Dialog.enableControl(AP_RID_DIALOG_LIST_COMBO_STYLE, UT_FALSE);
+	}
 
 //	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_EDIT_START_AT, bStartNew);
 
