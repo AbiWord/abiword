@@ -1960,7 +1960,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	CHP *achp = static_cast <CHP *>(prop);
 	
 	XML_Char * propsArray[3];
-	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
+	UT_String propBuffer;
 	UT_String props;
 
 	// set char tolower if fSmallCaps && fLowerCase
@@ -2087,7 +2087,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// I have seen a bidi doc that had hpsBidi == 0, and the actual size in hps
 	U16 hps = (achp->fBidi &&  achp->hpsBidi ? achp->hpsBidi : achp->hps);
 	UT_String_sprintf(propBuffer, 
-			"font-size:%dpt;", (hps/2));
+			"font-size:%dpt;", (int)(hps/2));
 	props += propBuffer;
 
 	// font family

@@ -1351,6 +1351,9 @@ void AP_TopRuler::_xorGuide(bool bClear)
 */
 bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 {
+	// incremental loader segfault protection
+	if (!m_pView)
+		return false;
 
 // Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
