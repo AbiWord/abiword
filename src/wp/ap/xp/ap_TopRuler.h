@@ -318,6 +318,8 @@ private:
 	UT_sint32			m_xOtherGuide;
 	
 	AV_ListenerId		m_lidTopRuler;		/* need to save the view/listenerID so we can removeListener in destructor */
+	UT_sint32           m_iCellContainerLeftPos; // position of the left side of the container
+                                                 // holding the cell
 };
 
 #endif /* AP_TOPRULER_H */

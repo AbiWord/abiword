@@ -122,8 +122,10 @@ ABI_OPT_DEBUG	= 0
 else
     ifeq ($(ABI_OPT_TINY),1)
     OPTIMIZER	= -Os -fno-default-inline -fno-inline
+    else if($(ABI_OPT_DEBUG),1)
+    OPTIMIZER	= 
     else
-    OPTIMIZER	= -O2
+    OPTIMIZER	= O2
     endif
 endif
 

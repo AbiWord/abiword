@@ -36,6 +36,7 @@
 #include "ap_StatusBar.h"
 #include "ap_Strings.h"
 #include "ut_string_class.h"
+#include "fp_TableContainer.h"
 
 #define	tr_TABINDEX_NEW			-1
 #define	tr_TABINDEX_NONE		-2
@@ -82,7 +83,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 
 	// install top_ruler_prefs_listener as this lister for this func
 	pFrame->getApp()->getPrefs()->addListener( AP_TopRuler::_prefsListener, (void *)this );
-
+	m_iCellContainerLeftPos = 0;
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -528,6 +529,7 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 	{
 		pTInfo = (AP_TopRulerTableInfo *) pInfo->m_vecTableColInfo->getNthItem(pInfo->m_iCurCell);
 	}
+	m_iCellContainerLeftPos = xAbsLeft;
 	if (pLeft)
 	{
 		if(pTInfo == NULL)
@@ -537,6 +539,23 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 		else
 		{
 			*pLeft = xAbsLeft + pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing + pInfo->m_xrLeftIndent;
+//
+// m_iLeftCellPos is the absolute value of the position of the left side of the cell relative
+// to the left column.
+//
+// What we want is the position relative to the container holding the cell
+			fp_Container *pCon = pTInfo->m_pCell->getContainer();
+			if(pCon)
+			{
+				pCon = pCon->getContainer();
+				UT_sint32 ioff_x = 0;
+				while(pCon && !pCon->isColumnType())
+				{
+					ioff_x += pCon->getX();
+					pCon = (fp_Container *) pCon->getContainer();
+				}				
+				m_iCellContainerLeftPos += ioff_x;
+			}
 		}
 	}
 
@@ -2467,39 +2486,36 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 				UT_sint32 right = 0;
 				
 				//
-				// MARCM: THE CODE BELOW WORKS BUT IS JUST PLAIN WRONG; I SUSPECT AN ERROR IN  
-				// MARCM: THE LAYOUT ENGINE INSTEAD
+
 				if((i - 1) != m_draggingCell)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
-					left = pTInfo->m_iLeftCellPos + pTInfo->m_iLeftSpacing;
+					left = pTInfo->m_iLeftCellPos + xAbsLeft +pTInfo->m_iLeftSpacing;
 				}
 				else
 				{
-					left = m_draggingCenter - xAbsLeft + pTInfo->m_iLeftSpacing;
+					left =  m_draggingCenter;
 				}
 				if(i != nCells && i != m_draggingCell)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
-					right = pTInfo->m_iLeftCellPos - pTInfo->m_iLeftSpacing;
+					right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
 				else if(i == nCells && i != m_draggingCell)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
-					right = pTInfo->m_iRightCellPos;
+					right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
 				else if(i == nCells)
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
-					right = m_draggingCenter - xAbsLeft;
+					right =   m_draggingCenter;
 				}
 				else
 				{
 					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
-					right = m_draggingCenter - xAbsLeft - pTInfo->m_iLeftSpacing;
+					right = m_draggingCenter;
 				}
-				// BROKEN CODE ABOVE
-				//
 				
 				UT_DEBUGMSG(("SEVIOR i %d iCell %d left %d right %d \n",i,m_draggingCell,left,right));
 				UT_sint32 width = right - left;
@@ -2517,7 +2533,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
  
 			if(m_draggingCell == 0)
 			{
-				UT_sint32 leftCol =  m_draggingCenter - xAbsLeft;
+				UT_sint32 leftCol =  m_draggingCenter - m_iCellContainerLeftPos;
 				double dLeft = tick.scalePixelDistanceToUnits(leftCol);
 				sCellPos = m_pG->invertDimension(tick.dimType,dLeft);
 				props[2] = "table-column-leftpos";

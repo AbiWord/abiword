@@ -960,7 +960,7 @@ fp_Container * fp_CellContainer::getPrevContainerInSection() const
 
 void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 {
-	UT_DEBUGMSG(("Doing size request on %x \n",pRequest));
+	xxx_UT_DEBUGMSG(("Doing size request on %x \n",pRequest));
 	UT_sint32 count = countCons();
 	UT_sint32 i =0;
 	UT_sint32 height = 0;
@@ -1008,24 +1008,29 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 			height = height + pReq.height;
 		}
 	}
-	if(width == 0)
+	UT_sint32 iwidth = 0;
+	fl_CellLayout * pCellL = (fl_CellLayout *) getSectionLayout();
+	fl_ContainerLayout * pCL = pCellL->getFirstLayout();
+	while(pCL)
 	{
-		fl_CellLayout * pCellL = (fl_CellLayout *) getSectionLayout();
-		fl_ContainerLayout * pCL = pCellL->getFirstLayout();
-		while(pCL)
+		if(pCL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
-			if(pCL->getContainerType() == FL_CONTAINER_BLOCK)
+			fl_BlockLayout * pBL = (fl_BlockLayout *) pCL;
+			UT_sint32 iw = pBL->getMaxNonBreakableRun();
+			if(iwidth < iw)
 			{
-				fl_BlockLayout * pBL = (fl_BlockLayout *) pCL;
-				UT_sint32 iw = pBL->getMaxNonBreakableRun();
-				if(width < iw)
-				{
-					width = iw;
-				}
+				iwidth = iw;
 			}
-			pCL = pCL->getNext();
 		}
-		width =  (UT_sint32) ((double) width)/SCALE_TO_SCREEN;
+		pCL = pCL->getNext();
+	}
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	iwidth =  (UT_sint32) ((double) iwidth)/SCALE_TO_SCREEN;
+#endif
+	
+	if(iwidth > width)
+	{
+		width = iwidth;
 	}
 	if(pRequest)
 	{
@@ -1034,7 +1039,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 	}
 	m_MyRequest.width = width;
 	m_MyRequest.height = height;
-	UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
+	xxx_UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
 }
 
 void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
@@ -3016,7 +3021,12 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	  for (col = 0; col < getNumCols(); col++)
 	  {
 		  fl_ColProps * pColProp = (fl_ColProps *) pVecColProps->getNthItem(col);
-		  getNthCol(col)->allocation = pColProp->m_iColWidth;
+		  getNthCol(col)->allocation = pColProp->m_iColWidth - getNthCol(col)->spacing;
+		  if(col == (getNumCols() - 1) )
+		  {
+			  getNthCol(col)->allocation += 2 * getNthCol(col)->spacing;
+		  }
+		  UT_DEBUGMSG(("Sevior: column %d set to width %d spacing %d \n",col,getNthCol(col)->allocation,getNthCol(col)->spacing));
 	  }
   }
   m_MyAllocation.x = pTL->getLeftColPos() - m_iBorderWidth;

@@ -2730,7 +2730,7 @@ void FV_View::_xorInsertionPoint()
 
 void FV_View::_eraseInsertionPoint()
 {
-	UT_DEBUGMSG(("_eraseInsertionPointCalled()\n"));
+	xxx_UT_DEBUGMSG(("_eraseInsertionPointCalled()\n"));
 	m_bEraseSaysStopBlinking = true;
 	if (_hasPointMoved() == true)
 	{
@@ -2756,7 +2756,7 @@ void FV_View::_eraseInsertionPoint()
 void FV_View::_drawInsertionPoint()
 {
 //	CHECK_WINDOW_SIZE
-	UT_DEBUGMSG(("_drawInsertionPointCalled()\n"));
+	xxx_UT_DEBUGMSG(("_drawInsertionPointCalled()\n"));
 
 	if(m_focus==AV_FOCUS_NONE || !shouldScreenUpdateOnGeneralUpdate())
 	{
