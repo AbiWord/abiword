@@ -14,6 +14,12 @@
 
 <Strings    class="XAP"
 
+DLG_FOSA_ALL="Alle (*.*)"
+DLG_FOSA_ALLDOCS="Alle dokument"
+DLG_FOSA_ALLIMAGES="Alle bildefiler"
+DLG_FOSA_ExportTitle="Eksporter fil"
+DLG_FOSA_ImportTitle="Importer fil"
+
 DLG_ABOUT_Title="Om %s"
 DLG_UFS_BottomlineCheck="Botnlinje"
 DLG_UFS_ColorLabel="Farge:"
@@ -74,8 +80,6 @@ LANG_ZH_CN="Kinesisk (PRC)"
 LANG_ZH_HK="Kinesisk (Hongkong)"
 LANG_ZH_SG="Kinesisk (Singapore)"
 LANG_ZH_TW="Kinesisk (Taiwan)"
-
-
 
 DLG_Break_Insert="Sett inn"
 DLG_CLIPART_Title="Utklippsbilde"
@@ -258,6 +262,17 @@ UntitledDocument="Utan namn%d"
 
 <Strings    class="AP"
 
+DLG_Column_Number_Cols="Talet på kolonnar"
+DLG_Column_RtlOrder="Bruk HTV-retning"
+DLG_Column_Size="Maks. kolonnestorleik"
+DLG_Column_Space_After="Luft etter kolonne"
+DLG_Lists_ButtonFont="Skrift ..."
+TabToggleBarTab="Linjetabulator"
+TabToggleCenterTab="Midtstillingstabulator"
+TabToggleDecimalTab="Desimaltabulator"
+TabToggleLeftTab="Venstretabulator"
+TabToggleRightTab="Høgretabulator"
+
 DLG_Column_Preview="Førehandsvising"
 DLG_DateTime_DateTimeTitle="Dato og klokkeslett"
 DLG_Goto_Target_Page="Side"
@@ -289,8 +304,6 @@ DLG_Styles_ErrBlankName="Stilen må få eit namn"
 MSG_PrintStatus="Skriv ut side %d av %d"
 WORD_PassInvalid="Ugyldig passord"
 WORD_PassRequired="Dette er eit kryptert dokument. Skriv inn passord."
-
-
 
 AUTOTEXT_ATTN_1="OBS:"
 AUTOTEXT_ATTN_2="Viktig:"
