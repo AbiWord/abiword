@@ -172,11 +172,6 @@ UT_Bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi
 	return ((getPointer(bi)+length) == getPointer(bi2));
 }
 
-const PP_AttrProp * pt_VarSet::getAP(PT_AttrPropIndex api) const
-{
-	return m_tableAttrProp[_varsetFromAPIndex(api)].getAP(_subscriptFromAPIndex(api));
-}
-
 UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 						   const XML_Char ** attributes, const XML_Char ** properties,
 						   PT_AttrPropIndex * papiNew)

@@ -40,10 +40,14 @@ public:
 	inline const UT_UCSChar *getPointer(PT_BufIndex bi) const {  return m_buffer[_varsetFromBufIndex(bi)].getPointer(_subscriptFromBufIndex(bi)); }
 	inline PT_BufIndex		getBufIndex(PT_BufIndex bi, UT_uint32 offset) const
 	{     return _makeBufIndex(_varsetFromBufIndex(bi),
-	                           _subscriptFromBufIndex(bi)+offset);  }
+	                           _subscriptFromBufIndex(bi)+offset);
+	}
 
 	UT_Bool					isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const;
-	inline const PP_AttrProp *getAP(PT_AttrPropIndex api) const;
+	inline const PP_AttrProp *getAP(PT_AttrPropIndex api) const
+	{
+		return m_tableAttrProp[_varsetFromAPIndex(api)].getAP(_subscriptFromAPIndex(api));
+	}
 	UT_Bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
 									const XML_Char ** attributes, const XML_Char ** properties,
 									PT_AttrPropIndex * papiNew);
