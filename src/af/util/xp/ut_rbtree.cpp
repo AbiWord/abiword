@@ -194,7 +194,8 @@ UT_RBTree::_insertFixup(Node* x)
 bool
 UT_RBTree::insert(UT_RBTree::key_t item)
 {
-	Node* pnode = new Node(Node::red, item, getLeaf(), getLeaf(), 0);
+	Node* pleaf = getLeaf();
+	Node* pnode = new Node(Node::red, item, pleaf, pleaf, 0);
 
 	if (!pnode)
 		return false;
@@ -216,15 +217,13 @@ UT_RBTree::erase(Iterator& c)
 	--m_nSize;
 
 	UT_ASSERT(pNode);
-	Node* y;
+	Node* pleaf = getLeaf();
+	Node* y = (pNode->left == pleaf || pNode->right == pleaf) ?
+		pNode :
+		_prev(pNode);
 
-	if (pNode->left == getLeaf() || pNode->right == getLeaf())
-		y = pNode;
-	else
-		y = _prev(pNode);
-
-	UT_ASSERT(y->left == getLeaf() || y->right == getLeaf());
-	Node* son = y->left != getLeaf() ? y->left : y->right;
+	UT_ASSERT(y->left == pleaf || y->right == pleaf);
+	Node* son = y->left != pleaf ? y->left : y->right;
 	UT_ASSERT(son);
 	son->parent = y->parent;
 
@@ -596,9 +595,10 @@ UT_RBTree::_rightRotate(UT_RBTree::Node* x)
 void
 UT_RBTree::s_delete_tree(UT_RBTree::Node* node)
 {
-	if (node->left != getLeaf())
+	Node* pleaf = getLeaf();
+	if (node->left != pleaf)
 		s_delete_tree(node->left);
-	if (node->right != getLeaf())
+	if (node->right != pleaf)
 		s_delete_tree(node->right);
 	delete node;
 }
@@ -649,8 +649,9 @@ UT_RBTree::checkInvariants()
 	if (nb_blacks < 0)
 		return false;
 
+	Node* pleaf = getLeaf();
 	for (; it != end; ++it)
-		if (it.getNode()->left == getLeaf() && it.getNode()->right == getLeaf() &&
+		if (it.getNode()->left == pleaf && it.getNode()->right == pleaf &&
 			nb_blacks != _countBlackNodes(it))
 			return false;
 	
