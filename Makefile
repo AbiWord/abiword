@@ -21,7 +21,6 @@
 
 ABI_ROOT	:=$(shell pwd)
 prefix		:=/usr/local
-MAKE		:=$(MAKE) -f Makefile
 
 ##################################################################
 ## Useful options:
