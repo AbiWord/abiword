@@ -61,15 +61,15 @@ int main(int argc, char ** argv)
 
 		for (i=1; i<argc; i++)
 		{
-#ifdef ABI_OPT_JS
 			if (0 == strcmp(argv[i], "-script"))
 			{
 				i++;
 				
+#ifdef ABI_OPT_JS
 				js_eval_file(pMyUnixApp->getInterp(), argv[i]);
+#endif /* ABI_OPT_JS */
 			}
 			else
-#endif /* ABI_OPT_JS */
 			{
 				break;
 			}
