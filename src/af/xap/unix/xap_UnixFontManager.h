@@ -70,15 +70,9 @@ private:
 	void					_addFont(XAP_UnixFont* font);
 	UT_Vector				m_vecFontCache;
 
-	// perhaps this should be a hash to avoid duplicates?
-	UT_Vector				m_searchPaths;
-
 	UT_StringPtrMap 		m_fontHash;
-
-	static FcFontSet*		m_pFontSet;
-	static FcConfig*		m_pConfig;
-
-	XAP_UnixFont*           m_pDefaultFont;
+	FcFontSet*		m_pFontSet;
+	FcConfig*		m_pConfig;
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */

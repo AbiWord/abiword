@@ -37,28 +37,20 @@
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 
-FcFontSet* XAP_UnixFontManager::m_pFontSet = 0;
-FcConfig* XAP_UnixFontManager::m_pConfig = 0;
-
 // initialize our static member pFontManager
 XAP_UnixFontManager * XAP_UnixFontManager::pFontManager = 0;
 
-XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
-											   , m_pDefaultFont(NULL)
+XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256),
+												 m_pFontSet (0),
+												 m_pConfig(0)
 {
-	if (!m_pConfig)
-		m_pConfig = FcInitLoadConfigAndFonts();
-
-	if (!m_pFontSet)
-		scavengeFonts();
+	m_pConfig = FcInitLoadConfigAndFonts();
+	scavengeFonts();
 }
 
 XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
-	UT_VECTOR_FREEALL(char *, m_searchPaths);
-
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
-	FREEP(m_pDefaultFont);
 
 	// remove all the font from our cache
 	UT_DEBUGMSG(("MARCM: Removing %d fonts from cache\n", m_vecFontCache.getItemCount() / 2));
@@ -73,6 +65,12 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 		FREEP(fdescr);
 		m_vecFontCache.deleteNthItem(k-1);
 	}
+
+	if (m_pFontSet)
+		FcFontSetDestroy (m_pFontSet);
+
+	if (m_pConfig)
+		FcConfigDestroy (m_pConfig);
 }
 
 /*!
