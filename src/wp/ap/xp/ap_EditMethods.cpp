@@ -186,6 +186,7 @@ public:
 	static EV_EditMethod_Fn cursorDefault;
 	static EV_EditMethod_Fn cursorIBeam;
 	static EV_EditMethod_Fn cursorRightArrow;
+	static EV_EditMethod_Fn cursorTopCell;
 	static EV_EditMethod_Fn cursorVline;
 	static EV_EditMethod_Fn cursorHline;
 	static EV_EditMethod_Fn cursorLeftArrow;
@@ -247,6 +248,7 @@ public:
 	static EV_EditMethod_Fn selectRow;
 	static EV_EditMethod_Fn selectCell;
 	static EV_EditMethod_Fn selectColumn;
+	static EV_EditMethod_Fn selectColumnClick;
 
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -745,6 +747,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorImageSize),		0,	""),
 	EV_EditMethod(NF(cursorLeftArrow),		0,	""),
 	EV_EditMethod(NF(cursorRightArrow), 	0,	""),
+	EV_EditMethod(NF(cursorTopCell), 	0,	""),
 	EV_EditMethod(NF(cursorVline), 	        0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
 	EV_EditMethod(NF(cutFrame),					0,	""),
@@ -1055,6 +1058,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectBlock),			0,	""),
 	EV_EditMethod(NF(selectCell),			0,	""),
 	EV_EditMethod(NF(selectColumn),			0,	""),
+	EV_EditMethod(NF(selectColumnClick),			0,	""),
 	EV_EditMethod(NF(selectFrame),			0,	""),
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
@@ -3853,6 +3857,24 @@ Defun1(cursorVline)
 }
 
 
+Defun1(cursorTopCell)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+	{
+		pG->setCursor(GR_Graphics::GR_CURSOR_DOWNARROW);
+	}
+	return true;
+}
+
+
 Defun1(cursorHline)
 {
 	CHECK_FRAME;
@@ -4464,6 +4486,22 @@ Defun1(selectColumn)
 		return false;
 	}
 	pView->cmdSelectColumn(pView->getPoint());
+	return true;
+}
+
+
+Defun(selectColumnClick)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	PT_DocPosition pos = pView->getDocPositionFromXY(x,y);
+	if(!pView->isInTable(pos))
+	{
+		return false;
+	}
+	pView->cmdSelectColumn(pos);
 	return true;
 }
 

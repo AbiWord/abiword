@@ -38,7 +38,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 // defined at the bottom of this file -- if you dont you will spend
 // hours trying to work out why your functions do not get called, as
 // I did :) (Tomas)
-#define EV_EMC__MASK__			((EV_EditMouseContext) 0xf0000000)
+#define EV_EMC__MASK__			((EV_EditMouseContext) 0xf8000000)
 #define EV_EMC_UNKNOWN			((EV_EditMouseContext) 0x10000000)
 #define EV_EMC_TEXT				((EV_EditMouseContext) 0x20000000)
 #define EV_EMC_LEFTOFTEXT		((EV_EditMouseContext) 0x30000000)
@@ -53,6 +53,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_HLINE            ((EV_EditMouseContext) 0xc0000000)
 #define EV_EMC_FRAME            ((EV_EditMouseContext) 0xd0000000)
 #define EV_EMC_VISUALTEXTDRAG   ((EV_EditMouseContext) 0xe0000000)
+#define EV_EMC_TOPCELL          ((EV_EditMouseContext) 0x18000000)
 
 // NB: the following two values are not included in EV_COUNT_EMC
 // because they are not used in the bindings, and are, therefore,
@@ -66,11 +67,11 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_HYPERLINKTEXT      ((EV_EditMouseContext) 0x000000002)
 #define EV_EMC_HYPERLINKMISSPELLED ((EV_EditMouseContext) 0x000000001)
 
-#define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>28)
+#define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>27)
 
 
 typedef UT_uint32 EV_EditModifierState;								/* may be ORed */
-#define EV_EMS__MASK__			((EV_EditModifierState) 0x0f000000)
+#define EV_EMS__MASK__			((EV_EditModifierState) 0x07000000)
 #define EV_EMS_SHIFT			((EV_EditModifierState) 0x01000000)
 #define EV_EMS_CONTROL			((EV_EditModifierState) 0x02000000)
 #define EV_EMS_ALT				((EV_EditModifierState) 0x04000000)
@@ -126,7 +127,7 @@ typedef UT_uint32 EV_EditBits;	/* union of all the above bits */
 
 #define EV_COUNT_EMB			6		// simple count (not 'OR')
 #define EV_COUNT_EMO			6		// simple count (not 'OR')
-#define EV_COUNT_EMC			15		// simple count (not 'OR')
+#define EV_COUNT_EMC			16		// simple count (not 'OR')
 
 #define EV_IsMouse(eb)			(((eb) & EV_EMO__MASK__))
 #define EV_IsKeyboard(eb)		(((eb) & EV_EKP__MASK__))

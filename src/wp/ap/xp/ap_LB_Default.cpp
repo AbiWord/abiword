@@ -63,6 +63,7 @@
 #define _CTH		EV_EMC_HLINE
 #define _CTF		EV_EMC_FRAME
 #define _CVD		EV_EMC_VISUALTEXTDRAG
+#define _CTC		EV_EMC_TOPCELL
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -96,6 +97,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CTH _B0,	{ "",	"",			"cursorHline",	"",			"",			"",				}},
 	{_CTF _B0,	{ "",	"",			"btn0Frame",	"",			"",			"",				}},
 	{_CVD _B0,	{ "",	"",			"btn0VisualText",	"",			"",			"",				}},
+	{_CTC _B0,	{ "",	"",			"cursorTopCell",	"",			"",			"",				}},
 
 
 //	Button-1, VisualTextDrag context
@@ -146,6 +148,8 @@ ap_bs_Mouse MouseTable[] =
 
 	{_CTV _B1,	{ "beginVDrag",		 "clearSetCols", "dragVline",	"",		"endDragVline",	""				}},
 	{_CTH _B1,	{ "beginHDrag",		 "clearSetRows", "dragHline",	"",		"endDragHline",	""				}},
+	{_CTC _B1,	{ "selectColumnClick","clearSetCols", "dragHline",	"",		"endDragVline",	""				}},
+	{_CTC _B2,	{ "selectColumnClick","clearSetCols", "dragHline",	"",		"endDragVline",	""				}},
 
 
 //	Button-1, ImageSize-context

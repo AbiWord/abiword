@@ -7341,6 +7341,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				UT_sint32 iRight = pCell->getRightPos();
 				UT_sint32 iTop = pCell->getStartY();
 				UT_sint32 iBot = pCell->getStopY();
+				UT_sint32 iTopAttach = pCell->getTopAttach();
 				UT_sint32 offy =0;
 				UT_sint32 offx =0;
 				fp_Column * pCol = static_cast<fp_Column *>(pCell->getColumn(pLine));
@@ -7392,11 +7393,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
 				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
 				{
-
-// TODO put in some code to indicate which control of which cell is being
-// dragged. Maybe reuse topRuler stuff???
-//
-					xxx_UT_DEBUGMSG(("getContext: Found left cell \n"));
 					m_prevMouseContext = EV_EMC_VLINE;
 					return EV_EMC_VLINE;
 				}
@@ -7408,6 +7404,18 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				}
 				if((iTop - yPos < ires) && (yPos - iTop < ires))
 				{
+//
+// Now look to see if the cursor is over the first row of the table.
+//
+
+// TODO put in some code to indicate which control of which cell is being
+// dragged. Maybe reuse topRuler stuff???
+//
+					if(iTopAttach == 0)
+					{
+						m_prevMouseContext = EV_EMC_TOPCELL;
+						return EV_EMC_TOPCELL;
+					}		
 					xxx_UT_DEBUGMSG(("getContext: Found top cell \n"));
 					m_prevMouseContext = EV_EMC_HLINE;
 					return EV_EMC_HLINE;
@@ -7703,6 +7711,10 @@ void FV_View::setCursorToContext()
 		break;
 	case EV_EMC_HLINE:
 		cursor = GR_Graphics::GR_CURSOR_HLINE_DRAG;
+		break;
+	case EV_EMC_TOPCELL:
+		UT_DEBUGMSG(("setCursor: Set to select Col \n"));
+		cursor = GR_Graphics::GR_CURSOR_DOWNARROW;
 		break;
 	case EV_EMC_VISUALTEXTDRAG:
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
