@@ -23,7 +23,7 @@
 
 #include "ut_types.h"
 
-class AP_Ap;
+class AP_App;
 class DG_Graphics;
 class FV_View;
 class FL_DocLayout;
@@ -47,7 +47,7 @@ class FV_ScrollObj;
 class AP_Frame
 {
 public:
-	AP_Frame(AP_Ap * ap);
+	AP_Frame(AP_App * app);
 	virtual ~AP_Frame(void);
 
 	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
@@ -56,10 +56,11 @@ public:
 	const EV_Menu_Layout *		getMenuLayout(void) const;
 	const EV_Menu_LabelSet *	getMenuLabelSet(void) const;
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
+	AP_App *					getApp(void) const;
 	FV_View *					getCurrentView(void) const;
 	
 protected:
-	AP_Ap *						m_ap;			/* handle to application-specific data */
+	AP_App *					m_app;			/* handle to application-specific data */
 	PD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	FL_DocLayout *				m_pDocLayout;	
 	FV_View *					m_pView;		/* to our view on the document */

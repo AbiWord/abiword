@@ -18,11 +18,11 @@
  */
 
 
-#ifndef AP_WIN32AP_H
-#define AP_WIN32AP_H
+#ifndef AP_WIN32APP_H
+#define AP_WIN32APP_H
 
 #include <windows.h>
-#include "ap_Ap.h"
+#include "ap_App.h"
 
 /*****************************************************************
 ******************************************************************
@@ -33,11 +33,11 @@
 ******************************************************************
 *****************************************************************/
 
-class AP_Win32Ap : public AP_Ap
+class AP_Win32App : public AP_App
 {
 public:
-	AP_Win32Ap(HINSTANCE hInstance);
-	virtual ~AP_Win32Ap(void);
+	AP_Win32App(HINSTANCE hInstance);
+	virtual ~AP_Win32App(void);
 
 	virtual UT_Bool			initialize(int * pArgc, char *** pArgv);
 
@@ -50,4 +50,4 @@ protected:
 	*/
 };
 
-#endif /* AP_WIN32AP_H */
+#endif /* AP_WIN32APP_H */

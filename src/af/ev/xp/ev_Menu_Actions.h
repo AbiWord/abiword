@@ -40,7 +40,7 @@
 
 #include "ut_types.h"
 #include "ap_Menu_Id.h"
-class AP_Ap;
+class AP_App;
 class FV_View;
 
 // TODO consider removing bHoldsSubMenu bit from this file.
@@ -59,14 +59,14 @@ typedef EV_Menu_ItemState ( EV_GetMenuItemState_Fn )(FV_View * pView, AP_Menu_Id
 typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(FV_View * pView, AP_Menu_Id id);
 #define Defun_EV_GetMenuItemState_Fn(fn) EV_Menu_ItemState fn(FV_View * pView, AP_Menu_Id id)
 
-// TODO decide if ...GetMenuItemComputedLabel... should take an AP_Ap or an FV_View.
+// TODO decide if ...GetMenuItemComputedLabel... should take an AP_App or an FV_View.
 // TODO for most-recently-used-file-list and window-history, we probably just need
 // TODO the ap.  but for view-specific things (like toggles where we change the menu
 // TODO item name rather than doing a checkmark), we need the view.
 
-typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(AP_Ap * pAp, AP_Menu_Id id);
-typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(AP_Ap * pAp, AP_Menu_Id id);
-#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(AP_Ap * pAp, AP_Menu_Id id)
+typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(AP_App * pApp, AP_Menu_Id id);
+typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(AP_App * pApp, AP_Menu_Id id);
+#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(AP_App * pApp, AP_Menu_Id id)
 
 /*****************************************************************/
 
@@ -83,7 +83,7 @@ public:
 	~EV_Menu_Action(void);
 
 	AP_Menu_Id						getMenuId(void) const;
-	const char *					getDynamicLabel(AP_Ap * pAp) const;
+	const char *					getDynamicLabel(AP_App * pApp) const;
 	const char *					getMethodName(void) const;
 	UT_Bool							raisesDialog(void) const;
 	

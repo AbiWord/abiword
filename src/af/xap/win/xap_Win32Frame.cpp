@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ap_Win32Ap.h"
+#include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ev_Win32Keyboard.h"
 #include "ev_Win32Mouse.h"
@@ -39,7 +39,7 @@
 
 //LRESULT CALLBACK AP_Win32Frame::_WndProc (HWND, UINT, WPARAM, LPARAM) ;
 
-UT_Bool AP_Win32Frame::RegisterClass(AP_Win32Ap * ap)
+UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 	WNDCLASSEX  wndclass ;
@@ -49,12 +49,12 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32Ap * ap)
 	wndclass.lpfnWndProc   = AP_Win32Frame::_WndProc ;
 	wndclass.cbClsExtra    = 0 ;
 	wndclass.cbWndExtra    = sizeof(AP_Win32Frame*) ;
-	wndclass.hInstance     = ap->getInstance() ;
+	wndclass.hInstance     = app->getInstance() ;
 	wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION) ;
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
 	wndclass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH) ;
 	wndclass.lpszMenuName  = NULL ;
-	wndclass.lpszClassName = ap->getApplicationName() ;
+	wndclass.lpszClassName = app->getApplicationName() ;
 	wndclass.hIconSm       = LoadIcon (NULL, IDI_APPLICATION) ;
 
 	if (!RegisterClassEx (&wndclass))
@@ -72,10 +72,10 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32Ap * ap)
 
 /*****************************************************************/
 
-AP_Win32Frame::AP_Win32Frame(AP_Win32Ap * ap)
-	: AP_Frame(static_cast<AP_Ap *>(ap))
+AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
+	: AP_Frame(static_cast<AP_App *>(app))
 {
-	m_pWin32Ap = ap;
+	m_pWin32App = app;
 	m_pWin32Keyboard = NULL;
 	m_pWin32Mouse = NULL;
 	m_pWin32Menu = NULL;
@@ -139,8 +139,8 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 	// TODO get the default window size from preferences or something.
-	m_hwnd = CreateWindow (m_pWin32Ap->getApplicationName(),	// window class name
-				m_pWin32Ap->getApplicationTitleForTitleBar(),	// window caption
+	m_hwnd = CreateWindow (m_pWin32App->getApplicationName(),	// window class name
+				m_pWin32App->getApplicationTitleForTitleBar(),	// window caption
 				WS_OVERLAPPEDWINDOW
 				| WS_VSCROLL
 				,					     // window style
@@ -150,7 +150,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 				CW_USEDEFAULT,           // initial y size
 				NULL,                    // parent window handle
 				NULL,                    // window menu handle
-				m_pWin32Ap->getInstance(),       // program instance handle
+				m_pWin32App->getInstance(),       // program instance handle
 				NULL) ;		             // creation parameters
 
 	UT_ASSERT(m_hwnd);
@@ -159,7 +159,7 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	SWL(m_hwnd, this);
 
 	// synthesize a menu from the info in our base class.
-	m_pWin32Menu = new EV_Win32Menu(m_pWin32Ap,this);
+	m_pWin32Menu = new EV_Win32Menu(m_pWin32App,this);
 	UT_ASSERT(m_pWin32Menu);
 	UT_Bool bResult = m_pWin32Menu->synthesize();
 	UT_ASSERT(bResult);

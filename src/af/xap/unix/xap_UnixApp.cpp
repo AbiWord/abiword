@@ -18,19 +18,19 @@
  */
 
 #include <gtk/gtk.h>
-#include "ap_UnixAp.h"
+#include "ap_UnixApp.h"
 
 /*****************************************************************/
 
-AP_UnixAp::AP_UnixAp(void)
+AP_UnixApp::AP_UnixApp(void)
 {
 }
 
-AP_UnixAp::~AP_UnixAp(void)
+AP_UnixApp::~AP_UnixApp(void)
 {
 }
 
-UT_Bool AP_UnixAp::initialize(int * pArgc, char *** pArgv)
+UT_Bool AP_UnixApp::initialize(int * pArgc, char *** pArgv)
 {
 	// initialize GTK first.
 	
@@ -39,7 +39,7 @@ UT_Bool AP_UnixAp::initialize(int * pArgc, char *** pArgv)
 
 	// let our base class do it's thing.
 	
-	AP_Ap::initialize(pArgc,pArgv);
+	AP_App::initialize(pArgc,pArgv);
 
 	// do any thing we need here...
 	

@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ap_Ap.h"
+#include "ap_App.h"
 #include "ap_Frame.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
@@ -41,9 +41,9 @@
 
 /*****************************************************************/
 
-AP_Frame::AP_Frame(AP_Ap * ap)
+AP_Frame::AP_Frame(AP_App * app)
 {
-	m_ap = ap;
+	m_app = app;
 
 	m_pDoc = NULL;
 	m_pDocLayout = NULL;
@@ -55,13 +55,13 @@ AP_Frame::AP_Frame(AP_Ap * ap)
 	m_pMenuLayout = NULL;
 	m_pMenuLabelSet = NULL;
 
-	m_ap->rememberFrame(this);
+	m_app->rememberFrame(this);
 }
 
 AP_Frame::~AP_Frame(void)
 {
 	// BUGBUG: commented out to avoid circular nastiness in app destructor
-//	m_ap->forgetFrame(this);
+//	m_app->forgetFrame(this);
 	
 	// only delete the things that we created...
 
@@ -84,7 +84,7 @@ UT_Bool AP_Frame::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 	
 	char * szBindings = "default";
 	// TODO override szBindings from argc,argv.
-	bResult = AP_LoadBindings(szBindings,m_ap->getEditMethodContainer(),&m_pEBM);
+	bResult = AP_LoadBindings(szBindings,m_app->getEditMethodContainer(),&m_pEBM);
 	UT_ASSERT(bResult && (m_pEBM != NULL));
 
 	// create a EventMapper state-machine to process our events
@@ -123,6 +123,11 @@ const EV_Menu_LabelSet * AP_Frame::getMenuLabelSet(void) const
 const EV_EditEventMapper * AP_Frame::getEditEventMapper(void) const
 {
 	return m_pEEM;
+}
+
+AP_App * AP_Frame::getApp(void) const
+{
+	return m_app;
 }
 
 FV_View * AP_Frame::getCurrentView(void) const

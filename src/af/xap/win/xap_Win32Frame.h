@@ -23,7 +23,7 @@
 
 #include <windows.h>
 #include "ap_Frame.h"
-class AP_Win32Ap;
+class AP_Win32App;
 class ev_Win32Keyboard;
 class EV_Win32Mouse;
 class EV_Win32Menu;
@@ -40,7 +40,7 @@ class EV_Win32Menu;
 class AP_Win32Frame : public AP_Frame
 {
 public:
-	AP_Win32Frame(AP_Win32Ap * ap);
+	AP_Win32Frame(AP_Win32App * app);
 	~AP_Win32Frame(void);
 
 	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
@@ -50,7 +50,7 @@ public:
 	EV_Win32Mouse *				getWin32Mouse(void);
 	ev_Win32Keyboard *			getWin32Keyboard(void);
 
-	static UT_Bool				RegisterClass(AP_Win32Ap * ap);
+	static UT_Bool				RegisterClass(AP_Win32App * app);
 
 protected:
 	void						_createTopLevelWindow(void);
@@ -58,7 +58,7 @@ protected:
 	static LRESULT CALLBACK		_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 	// TODO see why ev_Win32Keyboard has lowercase prefix...
-	AP_Win32Ap *				m_pWin32Ap;
+	AP_Win32App *				m_pWin32App;
 	ev_Win32Keyboard *			m_pWin32Keyboard;
 	EV_Win32Mouse *				m_pWin32Mouse;
 	EV_Win32Menu *				m_pWin32Menu;

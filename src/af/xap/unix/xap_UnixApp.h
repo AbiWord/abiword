@@ -18,10 +18,10 @@
  */
 
 
-#ifndef AP_UNIXAP_H
-#define AP_UNIXAP_H
+#ifndef AP_UNIXAPP_H
+#define AP_UNIXAPP_H
 
-#include "ap_Ap.h"
+#include "ap_App.h"
 
 /*****************************************************************
 ******************************************************************
@@ -32,11 +32,11 @@
 ******************************************************************
 *****************************************************************/
 
-class AP_UnixAp : public AP_Ap
+class AP_UnixApp : public AP_App
 {
 public:
-	AP_UnixAp(void);
-	virtual ~AP_UnixAp(void);
+	AP_UnixApp(void);
+	virtual ~AP_UnixApp(void);
 
 	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
 
@@ -47,4 +47,4 @@ protected:
 	*/
 };
 
-#endif /* AP_UNIXAP_H */
+#endif /* AP_UNIXAPP_H */

@@ -71,7 +71,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	NULL,				NULL,					NULL);
 
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_TABS,			0,1,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,	"toggleBold",		ap_GetState_FontEffect,	NULL);

@@ -20,32 +20,32 @@
 #include <windows.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ap_Win32Ap.h"
+#include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 
 /*****************************************************************/
 
-AP_Win32Ap::AP_Win32Ap(HINSTANCE hInstance)
+AP_Win32App::AP_Win32App(HINSTANCE hInstance)
 {
 	UT_ASSERT(hInstance);
 
 	m_hInstance = hInstance;
 }
 
-AP_Win32Ap::~AP_Win32Ap(void)
+AP_Win32App::~AP_Win32App(void)
 {
 }
 
-HINSTANCE AP_Win32Ap::getInstance() const
+HINSTANCE AP_Win32App::getInstance() const
 {
 	return m_hInstance;
 }
 
-UT_Bool AP_Win32Ap::initialize(int * pArgc, char *** pArgv)
+UT_Bool AP_Win32App::initialize(int * pArgc, char *** pArgv)
 {
 	// let our base class do it's thing.
 	
-	AP_Ap::initialize(pArgc,pArgv);
+	AP_App::initialize(pArgc,pArgv);
 
 	// let various window types register themselves
 

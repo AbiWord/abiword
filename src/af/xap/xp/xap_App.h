@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_AP_H
-#define AP_AP_H
+#ifndef AP_APP_H
+#define AP_APP_H
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -35,11 +35,11 @@ class EV_Menu_ActionSet;
 ******************************************************************
 *****************************************************************/
 
-class AP_Ap
+class AP_App
 {
 public:
-	AP_Ap(void);
-	virtual ~AP_Ap(void);
+	AP_App(void);
+	virtual ~AP_App(void);
 
 	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
 	virtual UT_Bool					rememberFrame(AP_Frame * pFrame);
@@ -58,4 +58,4 @@ protected:
 	UT_Vector					m_vecFrames;
 };
 
-#endif /* AP_AP_H */
+#endif /* AP_APP_H */

@@ -35,12 +35,14 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "fl_Types.h"
+#include "ap_App.h"
 #include "ap_Frame.h"
 #include "ap_EditMethods.h"
 
 
 #ifdef DLGHACK
 char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs);
+UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
 #endif /* DLGHACK */
 
 
@@ -176,6 +178,7 @@ public:
 	static EV_EditMethod_Fn copy;
 	static EV_EditMethod_Fn paste;
 
+	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
@@ -313,6 +316,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(copy),					_M_,	""),
 		EV_EditMethod(NF(paste),				_M_,	""),
 
+		EV_EditMethod(NF(dlgFont),				0,		""),
 		EV_EditMethod(NF(toggleBold),			0,		""),
 		EV_EditMethod(NF(toggleItalic),			0,		""),
 		EV_EditMethod(NF(toggleUline),			0,		""),
@@ -1019,6 +1023,18 @@ Defun0(querySaveAndExit)
 	return UT_TRUE;
 }
 
+Defun(dlgFont)
+{
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+#ifdef DLGHACK
+	return _chooseFont(pFrame, pView);
+#else
+	return UT_TRUE;
+#endif /* DLGHACK */
+}
+
 // HACK: for now, map toggle* onto insFmt*
 // TODO: implement toggle semantics directly
 Defun(toggleBold)
@@ -1091,6 +1107,7 @@ Defun1(Test_Dump)
 /*****************************************************************/
 
 #ifdef WIN32
+#include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "gr_Win32Graphics.h"
 
@@ -1136,6 +1153,44 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 	UT_ASSERT(!err);
 
 	return NULL;
+}
+
+UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
+{
+#if 0
+	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
+	AP_Win32App * pWin32App = static_cast<AP_Win32App *>(pFrame->getApp());
+	HWND hwnd = pWin32Frame->getTopLevelWindow();
+
+	CHOOSEFONT cf;				// common dialog box structure
+	static LOGFONT lf;			// logical font structure
+	static DWORD rgbCurrent;	// current text color
+
+	// TODO: get current font info from pView
+	
+	// Initialize CHOOSEFONT
+	ZeroMemory(&cf, sizeof(CHOOSEFONT));
+	cf.lStructSize = sizeof(CHOOSEFONT);
+	cf.hwndOwner = hwnd;
+	cf.lpLogFont = &lf;
+	cf.rgbColors = rgbCurrent;
+	cf.Flags = CF_SCREENFONTS | CF_EFFECTS;
+	cf.hInstance = pWin32App->getInstance();
+
+	if (ChooseFont(&cf)==TRUE) 
+	{
+		// TODO: pView->insertCharacterFormatting() 
+		return UT_TRUE;
+	}
+
+	DWORD err = CommDlgExtendedError();
+	UT_DEBUGMSG(("Didn't get a font: reason=0x%x\n", err));
+	UT_ASSERT(!err);
+
+	return UT_FALSE;
+#endif
+
+	return UT_TRUE;
 }
 
 // TODO: figure out what can be shared here and move it up 
@@ -1242,6 +1297,12 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 	gtk_widget_destroy (GTK_WIDGET(pFS));
 
 	return fileName;
+}
+
+UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
+{
+	/* TODO */
+	return UT_TRUE;
 }
 
 #endif /* LINUX */

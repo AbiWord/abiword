@@ -25,7 +25,7 @@
 #include "ev_Menu.h"
 #include "ap_Menu_Id.h"
 class FV_View;
-class AP_UnixAp;
+class AP_UnixApp;
 class AP_UnixFrame;
 
 /*****************************************************************/
@@ -33,14 +33,14 @@ class AP_UnixFrame;
 class EV_UnixMenu : public EV_Menu
 {
 public:
-	EV_UnixMenu(AP_UnixAp * pUnixAp, AP_UnixFrame * pUnixFrame);
+	EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame);
 	~EV_UnixMenu(void);
 
 	UT_Bool				synthesize(void);
 	UT_Bool				menuEvent(AP_Menu_Id id);
 
 protected:
-	AP_UnixAp *			m_pUnixAp;
+	AP_UnixApp *		m_pUnixApp;
 	AP_UnixFrame *		m_pUnixFrame;
 
 	GtkWidget *			m_wMenuBar;

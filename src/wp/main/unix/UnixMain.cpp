@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#include "ap_UnixAp.h"
+#include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 
 int main(int argc, char ** argv)
 {
 	// initialize our application.
 
-	AP_UnixAp * pMyUnixAp = new AP_UnixAp();
+	AP_UnixApp * pMyUnixApp = new AP_UnixApp();
 	pMyUnixAp->initialize(&argc,&argv);
 
 	// create the first window.
 
-	AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(pMyUnixAp);
+	AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(pMyUnixApp);
 	pFirstUnixFrame->initialize(&argc,&argv);
 	
 	// TODO fish thru argv and see if there's a filename.
@@ -41,9 +41,9 @@ int main(int argc, char ** argv)
 
 	gtk_main();
 
-	// destroy the Ap.  It should take care of deleting all frames.
+	// destroy the App.  It should take care of deleting all frames.
 
-	delete pMyUnixAp;
+	delete pMyUnixApp;
 	
 	return 0;
 }

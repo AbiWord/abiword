@@ -63,10 +63,10 @@ AP_Menu_Id EV_Menu_Action::getMenuId(void) const
 	return m_id;
 }
 
-const char * EV_Menu_Action::getDynamicLabel(AP_Ap * pAp) const
+const char * EV_Menu_Action::getDynamicLabel(AP_App * pApp) const
 {
 	if (m_pfnGetLabel)
-		return m_pfnGetLabel(pAp,m_id);
+		return m_pfnGetLabel(pApp,m_id);
 	else
 		return NULL;
 }

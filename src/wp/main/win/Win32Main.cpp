@@ -21,7 +21,7 @@
 #include <windows.h>
 #include <crtdbg.h>
 
-#include "ap_Win32Ap.h"
+#include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 
 #ifdef   _DEBUG
@@ -50,12 +50,12 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	// initialize our application.
 
-	AP_Win32Ap * pMyWin32Ap = new AP_Win32Ap(hInstance);
-	pMyWin32Ap->initialize(&argc,&argv);
+	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance);
+	pMyWin32App->initialize(&argc,&argv);
 
 	// create the first window.
 
-	AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(pMyWin32Ap);
+	AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(pMyWin32App);
 	pFirstWin32Frame->initialize(&argc,&argv);
 	hwnd = pFirstWin32Frame->getTopLevelWindow();
 	
@@ -75,9 +75,9 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		DispatchMessage (&msg) ;
 	}
 
-	// destroy the Ap.  It should take care of deleting all frames.
+	// destroy the App.  It should take care of deleting all frames.
 
-	delete pMyWin32Ap;
+	delete pMyWin32App;
 
 	SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
 

@@ -24,7 +24,7 @@
 #include "ut_stack.h"
 #include "ap_Menu_Id.h"
 #include "ev_Win32Menu.h"
-#include "ap_Win32Ap.h"
+#include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
@@ -48,10 +48,10 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 
 /*****************************************************************/
 
-EV_Win32Menu::EV_Win32Menu(AP_Win32Ap * pWin32Ap, AP_Win32Frame * pWin32Frame)
-	: EV_Menu(pWin32Ap->getEditMethodContainer())
+EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame)
+	: EV_Menu(pWin32App->getEditMethodContainer())
 {
-	m_pWin32Ap = pWin32Ap;
+	m_pWin32App = pWin32App;
 	m_pWin32Frame = pWin32Frame;
 }
 
@@ -77,7 +77,7 @@ UT_Bool EV_Win32Menu::onCommand(FV_View * pView,
 	// invoke the appropriate function.
 	// return UT_TRUE iff handled.
 
-	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32Ap->getMenuActionSet();
+	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
@@ -88,7 +88,7 @@ UT_Bool EV_Win32Menu::onCommand(FV_View * pView,
 	if (!szMethodName)
 		return UT_FALSE;
 	
-	const EV_EditMethodContainer * pEMC = m_pWin32Ap->getEditMethodContainer();
+	const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
@@ -106,7 +106,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	UT_Bool bResult;
 	UT_uint32 tmp = 0;
 	
-	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32Ap->getMenuActionSet();
+	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
 	const EV_Menu_LabelSet * pMenuLabelSet = m_pWin32Frame->getMenuLabelSet();
@@ -141,7 +141,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 
 		// get the name for the menu item
 
-		const char * szLabelName = pAction->getDynamicLabel(m_pWin32Ap);
+		const char * szLabelName = pAction->getDynamicLabel(m_pWin32App);
 		if (!szLabelName || !*szLabelName)
 			szLabelName = pLabel->getMenuLabel();
 

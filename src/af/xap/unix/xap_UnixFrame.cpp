@@ -20,7 +20,7 @@
 #include <gtk/gtk.h>
 #include "ut_types.h"
 #include "ut_assert.h"
-#include "ap_UnixAp.h"
+#include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 #include "ev_UnixKeyboard.h"
 #include "ev_UnixMouse.h"
@@ -138,10 +138,10 @@ public:
 	
 /*****************************************************************/
 
-AP_UnixFrame::AP_UnixFrame(AP_UnixAp * ap)
-	: AP_Frame(static_cast<AP_Ap *>(ap))
+AP_UnixFrame::AP_UnixFrame(AP_UnixApp * app)
+	: AP_Frame(static_cast<AP_App *>(app))
 {
-	m_pUnixAp = ap;
+	m_pUnixApp = app;
 	m_pUnixKeyboard = NULL;
 	m_pUnixMouse = NULL;
 	m_pUnixMenu = NULL;
@@ -214,11 +214,11 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 						m_wTopLevelWindow);
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
 	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
-						 m_pUnixAp->getApplicationTitleForTitleBar());
+						 m_pUnixApp->getApplicationTitleForTitleBar());
 	gtk_window_set_policy(GTK_WINDOW(m_wTopLevelWindow), TRUE, TRUE, FALSE);
 	gtk_window_set_wmclass(GTK_WINDOW(m_wTopLevelWindow),
-						   m_pUnixAp->getApplicationName(),
-						   m_pUnixAp->getApplicationName());
+						   m_pUnixApp->getApplicationName(),
+						   m_pUnixApp->getApplicationName());
 
 	// TODO get the following values from a preferences or something.
 	gtk_container_border_width(GTK_CONTAINER(m_wTopLevelWindow), 10);
@@ -244,7 +244,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 
 	// synthesize a menu from the info in our base class.
 
-	m_pUnixMenu = new EV_UnixMenu(m_pUnixAp,this);
+	m_pUnixMenu = new EV_UnixMenu(m_pUnixApp,this);
 	UT_ASSERT(m_pUnixMenu);
 	UT_Bool bResult = m_pUnixMenu->synthesize();
 	UT_ASSERT(bResult);

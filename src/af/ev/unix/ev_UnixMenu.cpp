@@ -23,7 +23,7 @@
 #include "ut_stack.h"
 #include "ap_Menu_Id.h"
 #include "ev_UnixMenu.h"
-#include "ap_UnixAp.h"
+#include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
@@ -83,10 +83,10 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 
 /*****************************************************************/
 
-EV_UnixMenu::EV_UnixMenu(AP_UnixAp * pUnixAp, AP_UnixFrame * pUnixFrame)
-	: EV_Menu(pUnixAp->getEditMethodContainer())
+EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame)
+	: EV_Menu(pUnixApp->getEditMethodContainer())
 {
-	m_pUnixAp = pUnixAp;
+	m_pUnixApp = pUnixApp;
 	m_pUnixFrame = pUnixFrame;
 }
 
@@ -101,7 +101,7 @@ UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
 	// invoke the appropriate function.
 	// return UT_TRUE iff handled.
 
-	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixAp->getMenuActionSet();
+	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
@@ -111,7 +111,7 @@ UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
 	if (!szMethodName)
 		return UT_FALSE;
 	
-	const EV_EditMethodContainer * pEMC = m_pUnixAp->getEditMethodContainer();
+	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 
 	// TODO decide if we like this lookup here or would rather do the
@@ -133,7 +133,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	UT_Bool bResult;
 	UT_uint32 tmp = 0;
 	
-	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixAp->getMenuActionSet();
+	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
 	const EV_Menu_LabelSet * pMenuLabelSet = m_pUnixFrame->getMenuLabelSet();
@@ -173,7 +173,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 
 		// get the name for the menu item
 		
-		const char * szLabelName = pAction->getDynamicLabel(m_pUnixAp);
+		const char * szLabelName = pAction->getDynamicLabel(m_pUnixApp);
 		if (!szLabelName || !*szLabelName)
 			szLabelName = pLabel->getMenuLabel();
 

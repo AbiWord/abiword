@@ -25,7 +25,7 @@
 #include "ev_Menu.h"
 #include "ap_Menu_Id.h"
 class FV_View;
-class AP_Win32Ap;
+class AP_Win32App;
 class AP_Win32Frame;
 
 /*****************************************************************/
@@ -33,14 +33,14 @@ class AP_Win32Frame;
 class EV_Win32Menu : public EV_Menu
 {
 public:
-	EV_Win32Menu(AP_Win32Ap * pWin32Ap, AP_Win32Frame * pWin32Frame);
+	EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame);
 	~EV_Win32Menu(void);
 
 	UT_Bool				synthesize(void);
 	UT_Bool				onCommand(FV_View * pView, HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 protected:
-	AP_Win32Ap *		m_pWin32Ap;
+	AP_Win32App *		m_pWin32App;
 	AP_Win32Frame *		m_pWin32Frame;
 };
 
