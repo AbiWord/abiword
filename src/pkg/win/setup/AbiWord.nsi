@@ -57,6 +57,30 @@ Section "Abiword.exe (required)"
 	; More than one version of Abiword but only one Control Panel.  
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword" "DisplayName" "Abiword (remove only)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword" "UninstallString" '"$INSTDIR\UninstallAbiWord.exe"'
+
+SectionEnd
+
+; OPTIONAL Registry Settings
+Section "Update Registry Settings"
+
+	; Write the AbiSuite.AbiWord Keys
+	WriteRegStr HKCR "AbiSuite.AbiWord" "" "AbiWord Document"
+	WriteRegStr HKCR "AbiSuite.AbiWord\DefaultIcon" "" "$INSTDIR\AbiWord\bin\AbiWord.exe,3"
+	WriteRegStr HKCR "AbiSuite.AbiWord\shell\open\command" "" "$INSTDIR\AbiWord\bin\AbiWord.exe"
+	WriteRegStr HKCR "AbiSuite.AbiWord\shell\open\ddeexec" "" '[Open("%1")]'
+	WriteRegStr HKCR "AbiSuite.AbiWord\shell\open\ddeexec\application" "" "AbiWord"
+	WriteRegStr HKCR "AbiSuite.AbiWord\shell\open\ddeexec\topic" "" "System"
+
+	; Write File Associations
+	WriteRegStr HKCR ".abw" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".abw" "Content Type" "application/abiword"
+
+	WriteRegStr HKCR ".awt" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".awt" "Content Type" "application/abiword-template"
+
+	WriteRegStr HKCR ".zabw" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".zabw" "Content Type" "application/abiword-compressed"
+
 SectionEnd
 
 ; OPTIONAL Start Menu Shortcut
@@ -69,6 +93,18 @@ SectionEnd
 ; OPTIONAL Desktop Shortcut 
 Section "Desktop Shortcut"
 	CreateShortCut "$DESKTOP\Abiword.lnk" "$INSTDIR\Abiword\bin\Abiword.exe" "" "$INSTDIR\Abiword\bin\Abiword.exe" 0
+SectionEnd
+
+; OPTIONAL 
+Section "Associate .doc & .rtf with AbiWord"
+
+	; Write File Associations
+	WriteRegStr HKCR ".doc" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".doc" "Content Type" "application/abiword"
+
+	WriteRegStr HKCR ".rtf" "" "AbiSuite.AbiWord"
+	WriteRegStr HKCR ".rtf" "Content Type" "application/abiword"
+
 SectionEnd
 
 ; OPTIONAL Installation of Clipart
@@ -93,6 +129,19 @@ Section "Uninstall"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword"
 	DeleteRegKey HKLM SOFTWARE\Abisuite
 
+	; remove file assoications
+	DeleteRegKey HKCR "AbiSuite.AbiWord"
+	DeleteRegKey HKCR ".abw"
+	DeleteRegKey HKCR ".awt"
+	DeleteRegKey HKCR ".zabw"
+
+	ReadRegStr $0 HKCR ".doc" "(Default)"
+	StrCmp $0 "AbiSuite.AbiWord" Del_Word_Assoc Skip_Del_Word
+	Del_Word_Assoc:
+	DeleteRegKey HKCR ".doc"
+	DeleteRegKey HKCR ".rtf"
+	Skip_Del_Word:
+	
 	; remove start menu shortcuts.
 	Delete "$SMPROGRAMS\Abiword\*.*"
 
