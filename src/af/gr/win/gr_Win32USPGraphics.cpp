@@ -92,6 +92,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		m_pClust(NULL),
 		m_iClustSize(0),
 		m_iIndicesCount(0),
+		m_iCharCount(0),
 		m_pGoffsets(NULL),
 	    m_pAdvances(NULL),
 	    m_pJustify(NULL)
@@ -119,6 +120,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	UT_uint32        m_iClustSize;
 
 	UT_uint32        m_iIndicesCount;
+	UT_uint32        m_iCharCount;
 
 	GOFFSET *        m_pGoffsets;
 	int *            m_pAdvances;
@@ -555,6 +557,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	RI->m_iIndicesCount = iGlyphCount;
 	RI->m_pItem = si.m_pItem;
 	RI->m_pFont = si.m_pFont;
+	RI->m_iCharCount = si.m_iLength;
 	
 	if(bDeleteChars)
 	{
@@ -568,7 +571,25 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
-	return tlu(RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
+
+	if(ri.m_iOffset == 0 && ri.m_iLength == RI.m_iCharCount)
+		return tlu(RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
+
+	UT_return_val_if_fail(ri.m_iOffset + ri.m_iLength <= RI.m_iCharCount, 0);
+	
+	UT_sint32 iWidth = 0;
+	for(UT_uint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
+	{
+		UT_uint32 iMax = RI.m_iCharCount;
+		
+		if(i < RI.m_iCharCount - 1)
+			iMax = RI.m_pClust[i+1];
+
+		for(UT_uint32 j = RI.m_pClust[i]; j < iMax; ++j)
+			iWidth += RI.m_pAdvances[j];
+	}
+
+	return tlu(iWidth);
 }
 
 void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)

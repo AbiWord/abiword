@@ -203,7 +203,7 @@ class GR_RenderInfo
 		: m_iOffset(0), m_iLength(0), m_eShapingResult(GRSR_Unknown),
  		  m_eState(GRSR_Unknown), m_eScriptType(type),
 		  m_pText(NULL), m_iVisDir(FRIBIDI_TYPE_LTR),
-	      m_xoff(0), m_yoff(), m_pWidths(NULL),
+	      m_xoff(0), m_yoff(),
 	      m_pGraphics(NULL), m_pFont(NULL),
 		  m_iJustificationPoints(0),
 		  m_iJustificationAmount(0),
@@ -234,7 +234,6 @@ class GR_RenderInfo
 	FriBidiCharType     m_iVisDir;
 	UT_sint32           m_xoff;
 	UT_sint32           m_yoff;
-	UT_sint32 *         m_pWidths;
 
 	GR_Graphics *       m_pGraphics;
 	GR_Font     *       m_pFont;
@@ -260,14 +259,14 @@ class GR_XPRenderInfo : public GR_RenderInfo
   public:
 	GR_XPRenderInfo(GR_ScriptType type);
 	
-	
+#if 0
 	GR_XPRenderInfo(UT_UCS4Char *pChar,
 				  UT_sint32 * pAdv,
 				  UT_uint32 offset,
 				  UT_uint32 len,
 				  UT_uint32 iBufferSize,
 				  GR_ScriptType type);
-	
+#endif
 	
 	virtual ~GR_XPRenderInfo();
 
@@ -283,7 +282,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 	
 
 	UT_UCS4Char *       m_pChars;
-	UT_sint32 *         m_pAdvances;
+	UT_sint32 *         m_pWidths;
 	UT_uint32           m_iBufferSize;
 	UT_uint32 *         m_pSegmentOffset;
 	UT_uint32           m_iSegmentCount;
@@ -294,6 +293,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 	static UT_UCS4Char *    s_pCharBuff;
 	static UT_sint32 *      s_pWidthBuff;
 	static UT_uint32        s_iBuffSize;
+	static UT_sint32 *      s_pAdvances;
 
   private:
 	void                   _constructorCommonCode();

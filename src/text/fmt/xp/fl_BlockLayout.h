@@ -90,53 +90,6 @@ typedef enum {
 } eTabLeader;
 
 
-class ABI_EXPORT fl_CharWidths
-{
-public:
-	fl_CharWidths() : m_gbCharWidths(256)
-		{
-		}
-
-private:
-
-	UT_GrowBuf m_gbCharWidths;
-
-public:
-
-	bool ins(UT_uint32 position, UT_uint32 length)
-		{
-			return m_gbCharWidths.ins(position, length);
-		}
-
-	bool del(UT_uint32 position, UT_uint32 amount)
-		{
-			return m_gbCharWidths.del(position, amount);
-		}
-	UT_uint32 getLength(void) const
-		{
-			return m_gbCharWidths.getLength();
-		}
-	bool ins(UT_uint32 position, const UT_GrowBufElement *pValue,UT_uint32 length)
-		{
-			return m_gbCharWidths.ins(position, pValue, length);
-		}
-	bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
-		{
-			return m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
-		}
-
-	void truncate(UT_uint32 position)
-		{
-			m_gbCharWidths.truncate(position);
-		}
-
-	UT_GrowBuf *getCharWidths()
-		{
-			return &m_gbCharWidths;
-		}
-};
-
-
 /*
 	Blocks are stored in a linked list which contains all of the blocks in
 	the normal flow, in order.
@@ -236,8 +189,6 @@ public:
 
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
-
-	fl_CharWidths * getCharWidths(void);
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
 	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
@@ -446,7 +397,6 @@ protected:
 											  // is need, -1 if not
 	bool					m_bNeedsRedraw;
 	bool				    m_bIsHdrFtr;
-	fl_CharWidths			m_gbCharWidths;
 
 	FL_DocLayout*			m_pLayout;
 	fb_LineBreaker 		    m_Breaker;

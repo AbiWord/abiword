@@ -1044,27 +1044,6 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
 //
-// First shift the charwidths to account for this change.
-//
-		iDiff = static_cast<UT_sint32>(iEmbeddedSize) - iDiff;
-		if(iDiff < 0)
-		{
-			m_gbCharWidths.del(pRun->getBlockOffset()+iDiff,-iDiff);
-		}
-		else
-		{
-//
-// Insert zeros for the widths inside the embedded space
-//
-			UT_GrowBufElement valz = 0;
-			UT_sint32 i =0;
-			for(i=0; i< iDiff; i++)
-			{
-				m_gbCharWidths.ins(pRun->getBlockOffset(),&valz,1);
-			}
-			xxx_UT_DEBUGMSG(("updateOffsets: inserted %d zeros in charwidths \n",iDiff));
-		}
-//
 // Now shift all the offsets in the runs.
 //
 		UT_sint32 iFirstOffset = static_cast<UT_sint32>(pRun->getBlockOffset());
@@ -2446,11 +2425,6 @@ PT_DocPosition fl_BlockLayout::getPosition(bool bActualBlockPos) const
 	return pos;
 }
 
-fl_CharWidths * fl_BlockLayout::getCharWidths(void)
-{
-	return &m_gbCharWidths;
-}
-
 void fl_BlockLayout::getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) const
 {
 	dSpacing = m_dLineSpacing;
@@ -3652,8 +3626,6 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 	pB1->unlinkFromRunList();
 	delete pB1;
 
-	m_gbCharWidths.del(blockOffset, 1);
-
 	fp_Run * pLastRun = static_cast<fp_Line *>(getLastContainer())->getLastRun();
 	while(pRun )
 	{
@@ -4143,12 +4115,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	xxx_UT_DEBUGMSG(("_doInsertRun: New run has offset %d Length %d \n",blockOffset,len));
 	_assertRunListIntegrity();
 
-	// we do not want to insert the chunk into the cache until after
-	// we split a run if the insert in in the middle of a run (that
-	// way the second part of the run does not have to re-measure its
-	// characters). Tomas, Nov 28, 2003
-	// m_gbCharWidths.ins(blockOffset, len);
-
 	bool bInserted = false;
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
@@ -4171,7 +4137,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 // Run should be inserted before this run
 //
 		{
-			m_gbCharWidths.ins(blockOffset, len);
 			pRun->setBlockOffset(iRunBlockOffset + len);
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
 			
@@ -4195,7 +4160,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			bInserted = true;
 
 			// the insert is right before this run.
-			m_gbCharWidths.ins(blockOffset, len);
 			pRun->setBlockOffset(iRunBlockOffset + len);
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
 			
@@ -4250,7 +4214,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			UT_ASSERT(iRunBlockOffset == blockOffset);
 
 			// the insert is right before this run.
-			m_gbCharWidths.ins(blockOffset, len);
 			pRun->setBlockOffset(iRunBlockOffset + len);
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
 
@@ -4269,8 +4232,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 	if (!bInserted)
 	{
-		m_gbCharWidths.ins(blockOffset, len);
-
 		pRun = m_pFirstRun;
 		fp_Run * pLastRun = NULL;
 		UT_uint32 offset = 0;
@@ -4696,10 +4657,6 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 {
 	_assertRunListIntegrity();
 	UT_DEBUGMSG(("_delete fl_BlockLayout offset %d len %d \n",blockOffset,len));
-	/* TODO the attempts herein to do fetchCharWidths will fail. */
-
-	m_gbCharWidths.del(blockOffset, len);
-
 	// runs to do with bidi post-processing
 	fp_TextRun * pTR_del1 = NULL;
 	fp_TextRun * pTR_del2 = NULL;
@@ -5305,10 +5262,6 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			pPrevBL->m_pFirstRun = m_pFirstRun;
 		}
 		UT_DEBUGMSG(("deleteStrux: offset = %d \n",offset));
-		// Merge charwidths
-		UT_uint32 lenNew = m_gbCharWidths.getLength();
-
-		pPrevBL->m_gbCharWidths.ins(offset, m_gbCharWidths, 0, lenNew);
 
 		// Tell all the new runs where they live
 		pRun = m_pFirstRun;
@@ -5676,17 +5629,6 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	// Also, note if pFirstNewRun == m_pFirstRun then we will be moving
 	// the entire set of runs to the newly created block -- and leave
 	// the current block empty.
-
-	// Split charwidths across the two blocks
-	UT_sint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
-	if (lenNew > 0)
-	{
-		// NOTE: We do the length check on the outside for speed
-		// TODO [1] can we move info from the current to the new
-		// TODO CharWidths to keep from having to compute it in [2].
-		pNewBL->m_gbCharWidths.ins(0, m_gbCharWidths, blockOffset, lenNew);
-		m_gbCharWidths.truncate(blockOffset);
-	}
 
 	// Move remaining runs to new block
 	pNewBL->m_pFirstRun = pFirstNewRun;

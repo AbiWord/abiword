@@ -142,8 +142,7 @@ protected:
 										 UT_sint32 xoff,
 										 UT_sint32 yoff,
 										 UT_uint32 iStart,
-										 UT_uint32 iLen,
-										 const UT_GrowBuf * pgbCharWidths);
+										 UT_uint32 iLen);
 
 	void					_drawLastChar(bool bSelection);
 	
@@ -154,7 +153,6 @@ protected:
 									  UT_sint32 yoff,
 									  UT_uint32 iStart,
 									  UT_uint32 iLen,
-									  const UT_GrowBuf * pgbCharWidths,
 									  UT_Rect & rect,
 									  GR_Graphics * pG);
 

@@ -887,13 +887,13 @@ bool GR_Graphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& pri)
 	if(si.m_iLength > pRI->m_iBufferSize) //buffer too small, reallocate
 	{
 		delete[] pRI->m_pChars;
-		delete[] pRI->m_pAdvances;
+		delete[] pRI->m_pWidths;
 			
 		pRI->m_pChars = new UT_UCS4Char[si.m_iLength + 1];
 		UT_return_val_if_fail(pRI->m_pChars, false);
 
-		pRI->m_pAdvances = new UT_sint32[si.m_iLength + 1];
-		UT_return_val_if_fail(pRI->m_pAdvances, false);
+		pRI->m_pWidths = new UT_sint32[si.m_iLength + 1];
+		UT_return_val_if_fail(pRI->m_pWidths, false);
 
 		pRI->m_iBufferSize = si.m_iLength + 1;
 	}
@@ -938,10 +938,13 @@ void GR_Graphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf
 
 UT_sint32 GR_Graphics::getTextWidth(const GR_RenderInfo & ri) const
 {
+	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
+
 	UT_sint32 iWidth = 0;
 	for (UT_uint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
 	{
-		UT_uint32 iCW = ri.m_pWidths[i] > 0 ? ri.m_pWidths[i] : 0;
+		UT_uint32 iCW = RI.m_pWidths[i] > 0 ? RI.m_pWidths[i] : 0;
 		iWidth += iCW;
 	}
 
@@ -951,39 +954,29 @@ UT_sint32 GR_Graphics::getTextWidth(const GR_RenderInfo & ri) const
 
 void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri) 
 {
-	UT_return_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths);
-
+	UT_return_if_fail(ri.getType() == GRRI_XP);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
-
+	UT_return_if_fail(RI.m_pWidths);
+	
 	bool bReverse = (RI.m_iVisDir == FRIBIDI_TYPE_RTL);
 
-	UT_sint32 j,k;
 	UT_uint32 i;
 
 	for (i = 0; i < RI.m_iLength; i++)
 	{
-		// this is a bit tricky, since we want the resulting width array in
-		// logical order, so if we reverse the draw buffer ourselves, we
-		// have to address the draw buffer in reverse
-		j = bReverse ? RI.m_iLength - i - 1 : i;
-		//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? getLength() - i - 1: i;
-		k = i + RI.m_iOffset;
-
-		if(k > 0 && *(RI.m_pChars + j) == UCS_LIGATURE_PLACEHOLDER)
+		if(i > 0 && *(RI.m_pChars + i) == UCS_LIGATURE_PLACEHOLDER)
 		{
-			ri.m_pWidths[k]   = ri.m_pWidths[k - 1]/2;
-			UT_uint32 mod     = ri.m_pWidths[k-1]%2;
-			ri.m_pWidths[k-1] = ri.m_pWidths[k] + mod;
+			RI.m_pWidths[i]   = RI.m_pWidths[i - 1]/2;
+			UT_uint32 mod     = RI.m_pWidths[i-1]%2;
+			RI.m_pWidths[i-1] = RI.m_pWidths[i] + mod;
 		}
 		else
 		{
 
-			measureString(RI.m_pChars + j, 0, 1,
-										 static_cast<UT_GrowBufElement*>(ri.m_pWidths) + k);
-			/*UT_uint32 iCW = ri.m_pWidths[k] > 0 ? ri.m_pWidths[k] : 0;*/
+			measureString(RI.m_pChars + i, 0, 1,
+										 static_cast<UT_GrowBufElement*>(RI.m_pWidths) + i);
 		}
 	}
-	
 }
 
 /*!
@@ -1024,7 +1017,7 @@ void GR_Graphics::renderChars(GR_RenderInfo & ri)
 	UT_return_if_fail(ri.getType() == GRRI_XP);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
 
-	drawChars(RI.s_pCharBuff,RI.m_iOffset,RI.m_iLength,RI.m_xoff,RI.m_yoff,RI.m_pAdvances);
+	drawChars(RI.s_pCharBuff,RI.m_iOffset,RI.m_iLength,RI.m_xoff,RI.m_yoff,RI.s_pAdvances);
 
 	
 };
@@ -1186,8 +1179,9 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 
 UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
+	UT_return_val_if_fail(RI.m_pWidths, 0);
 
 	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,0 );
 	return 0;
@@ -1198,8 +1192,9 @@ void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
 							  UT_sint32& x2, UT_sint32& y2,
 							  UT_sint32& height, bool& bDirection) const
 {
-	UT_return_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths);
+	UT_return_if_fail(ri.getType() == GRRI_XP);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
+	UT_return_if_fail(RI.m_pWidths);
 	
 	UT_return_if_fail(UT_NOT_IMPLEMENTED);
 }

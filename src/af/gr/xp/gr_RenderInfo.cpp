@@ -49,11 +49,12 @@ UT_uint32     GR_XPRenderInfo::s_iClassInstanceCount = 0;
 UT_UCS4Char * GR_XPRenderInfo::s_pCharBuff  = NULL;
 UT_sint32 *   GR_XPRenderInfo::s_pWidthBuff = NULL;
 UT_uint32     GR_XPRenderInfo::s_iBuffSize  = 0;
+UT_sint32 *   GR_XPRenderInfo::s_pAdvances = NULL;
 
 GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 		:GR_RenderInfo(type),
 		 m_pChars(NULL),
-		 m_pAdvances(NULL),
+		 m_pWidths(NULL),
 		 m_iBufferSize(0),
 		 m_pSegmentOffset(NULL),
 		 m_iSegmentCount(0),
@@ -61,7 +62,7 @@ GR_XPRenderInfo::GR_XPRenderInfo(GR_ScriptType type)
 {
 	_constructorCommonCode();
 }
-
+#if 0 
 GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 				  UT_sint32 * pAdv,
 				  UT_uint32 offset,
@@ -70,7 +71,7 @@ GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 				  GR_ScriptType type)
 		:GR_RenderInfo(type),
 		 m_pChars(pChar),
-		 m_pAdvances(pAdv),
+		 m_pWidths(NULL),
 		 m_iBufferSize(iBufferSize),
 		 m_pSegmentOffset(NULL),
 		 m_iSegmentCount(0),
@@ -81,7 +82,7 @@ GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 
 	_constructorCommonCode();
 };
-
+#endif
 void GR_XPRenderInfo::_constructorCommonCode()
 {
 	if(!s_iClassInstanceCount)
@@ -91,6 +92,9 @@ void GR_XPRenderInfo::_constructorCommonCode()
 
 		s_pWidthBuff = new UT_sint32 [GRIXP_STATIC_BUFFER_SIZE];
 		UT_return_if_fail(s_pWidthBuff);
+
+		s_pAdvances = new UT_sint32 [GRIXP_STATIC_BUFFER_SIZE];
+		UT_return_if_fail(s_pAdvances);
 
 		s_iBuffSize = GRIXP_STATIC_BUFFER_SIZE;
 	}
@@ -109,7 +113,7 @@ GR_XPRenderInfo::~GR_XPRenderInfo()
 	}
 
     delete [] m_pChars;
-	delete [] m_pAdvances;	
+	delete [] m_pWidths;
 }
 
 /*!
@@ -127,7 +131,8 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		xxx_UT_DEBUGMSG(("GR_RenderInfo::append: reallocating span buffer\n"));
 		m_iBufferSize = m_iLength + RI.m_iLength + 1;
 		UT_UCS4Char * pSB = new UT_UCS4Char[m_iBufferSize];
-		UT_UCS4Char * pAB = new UT_UCS4Char[m_iBufferSize];
+		UT_sint32 * pAB = new UT_sint32[m_iBufferSize];
+		UT_sint32 * pWB = new UT_sint32[m_iBufferSize];
 		
 		UT_return_val_if_fail(pSB && pAB, false);
 		
@@ -135,29 +140,29 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		{
 			UT_UCS4_strncpy(pSB, RI.m_pChars, RI.m_iLength);
 			UT_UCS4_strncpy(pSB + RI.m_iLength, m_pChars, m_iLength);
-
-			UT_UCS4_strncpy(pAB, (UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
-			UT_UCS4_strncpy(pAB + RI.m_iLength, (UT_UCS4Char*)m_pAdvances, m_iLength);
+			
+			UT_UCS4_strncpy((UT_UCS4Char*)pWB, (UT_UCS4Char*)RI.m_pWidths, RI.m_iLength);
+			UT_UCS4_strncpy((UT_UCS4Char*)pWB + RI.m_iLength, (UT_UCS4Char*)m_pWidths, m_iLength);
 		}
 		else
 		{
 			UT_UCS4_strncpy(pSB,m_pChars, m_iLength);
 			UT_UCS4_strncpy(pSB + m_iLength, RI.m_pChars, RI.m_iLength);
 
-			UT_UCS4_strncpy(pAB,(UT_UCS4Char*)m_pAdvances, m_iLength);
-			UT_UCS4_strncpy(pAB + m_iLength, (UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
+			UT_UCS4_strncpy((UT_UCS4Char*)pWB,(UT_UCS4Char*)m_pWidths, m_iLength);
+			UT_UCS4_strncpy((UT_UCS4Char*)pWB + m_iLength, (UT_UCS4Char*)RI.m_pWidths, RI.m_iLength);
 		}
 
 		*(pSB + m_iLength + RI.m_iLength) = 0;
 		delete [] m_pChars;
-		delete [] m_pAdvances;
+		delete [] m_pWidths;
 		
 		m_pChars = pSB;
-		m_pAdvances = (UT_sint32*)pAB;
+		m_pWidths = pWB;
 	}
 	else
 	{
-		UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reusing existin span buffer\n"));
+		UT_DEBUGMSG(("mergeWithNext: reusing existin span buffer\n"));
 		if(bReverse)
 		{
 			// can only shift the text directly in the existing buffer if
@@ -165,19 +170,19 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 			UT_return_val_if_fail(m_iLength <= RI.m_iLength, false);
 			UT_UCS4_strncpy(m_pChars + RI.m_iLength, m_pChars, m_iLength);
 			UT_UCS4_strncpy(m_pChars, RI.m_pChars, RI.m_iLength);
-
-			UT_UCS4_strncpy((UT_UCS4Char*)m_pAdvances + RI.m_iLength,
-							(UT_UCS4Char*)m_pAdvances, m_iLength);
 			
-			UT_UCS4_strncpy((UT_UCS4Char*)m_pAdvances,
-							(UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
+			UT_UCS4_strncpy((UT_UCS4Char*)m_pWidths + RI.m_iLength,
+							(UT_UCS4Char*)m_pWidths, m_iLength);
+			
+			UT_UCS4_strncpy((UT_UCS4Char*)m_pWidths,
+							(UT_UCS4Char*)RI.m_pWidths, RI.m_iLength);
 		}
 		else
 		{
 			UT_UCS4_strncpy(m_pChars + m_iLength, RI.m_pChars, RI.m_iLength);
-
-			UT_UCS4_strncpy((UT_UCS4Char*)m_pAdvances + m_iLength,
-							(UT_UCS4Char*)RI.m_pAdvances, RI.m_iLength);
+			
+			UT_UCS4_strncpy((UT_UCS4Char*)m_pWidths + m_iLength,
+							(UT_UCS4Char*)RI.m_pWidths, RI.m_iLength);
 		}
 		*(m_pChars + m_iLength + RI.m_iLength) = 0;
 	}
@@ -219,13 +224,17 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bRever
 	pRI->m_iLength = iPart2Len;
 
 	UT_UCS4Char * pSB = new UT_UCS4Char[m_iLength + 1];
-	UT_UCS4Char * pAB = new UT_UCS4Char[m_iLength + 1];
-	UT_return_val_if_fail(pSB && pAB, false);
+	UT_sint32   * pAB = new UT_sint32[m_iLength + 1];
+	UT_sint32   * pWB = new UT_sint32[m_iLength + 1];
+	
+	UT_return_val_if_fail(pSB && pAB && pWB, false);
+	
 	m_iBufferSize = iPart1Len;
 	
 	pRI->m_pChars = new UT_UCS4Char[iPart2Len + 1];
-	pRI->m_pAdvances = (UT_sint32*)new UT_UCS4Char[iPart2Len + 1];
-	UT_return_val_if_fail(pRI->m_pChars && pRI->m_pAdvances, false);
+	pRI->m_pWidths = new UT_sint32[iPart2Len + 1];
+	
+	UT_return_val_if_fail(pRI->m_pChars && pRI->m_pWidths, false);
 	pRI->m_iBufferSize = iPart2Len;
 	
 	
@@ -233,19 +242,19 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bRever
 	{
 		UT_UCS4_strncpy(pSB, m_pChars + pRI->m_iLength, m_iLength);
 		UT_UCS4_strncpy(pRI->m_pChars, m_pChars, pRI->m_iLength);
-
-		UT_UCS4_strncpy(pAB, (UT_UCS4Char*)m_pAdvances + pRI->m_iLength, m_iLength);
-		UT_UCS4_strncpy((UT_UCS4Char*)pRI->m_pAdvances,
-						(UT_UCS4Char*)m_pAdvances, pRI->m_iLength);
+		
+		UT_UCS4_strncpy((UT_UCS4Char*)pWB, (UT_UCS4Char*)m_pWidths + pRI->m_iLength, m_iLength);
+		UT_UCS4_strncpy((UT_UCS4Char*)pRI->m_pWidths,
+						(UT_UCS4Char*)m_pWidths, pRI->m_iLength);
 	}
 	else
 	{
 		UT_UCS4_strncpy(pSB, m_pChars, m_iLength);
 		UT_UCS4_strncpy(pRI->m_pChars, m_pChars + m_iLength, pRI->m_iLength);
 
-		UT_UCS4_strncpy(pAB,(UT_UCS4Char*)m_pAdvances, m_iLength);
-		UT_UCS4_strncpy((UT_UCS4Char*)pRI->m_pAdvances,
-						(UT_UCS4Char*)m_pAdvances + m_iLength, pRI->m_iLength);
+		UT_UCS4_strncpy((UT_UCS4Char*)pWB,(UT_UCS4Char*)m_pWidths, m_iLength);
+		UT_UCS4_strncpy((UT_UCS4Char*)pRI->m_pWidths,
+						(UT_UCS4Char*)m_pWidths + m_iLength, pRI->m_iLength);
 	}
 
 	pSB[m_iLength] = 0;
@@ -255,9 +264,9 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bRever
 	delete[] m_pChars;
 	m_pChars = pSB;
 
-	delete[] m_pAdvances;
-	m_pAdvances = (UT_sint32*)pAB;
-
+	delete[] m_pWidths;
+	m_pWidths = pWB;
+	
 	pRI->m_eShapingResult = m_eShapingResult;
 
 	// Deal with justification
@@ -311,7 +320,7 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bRever
 }
 
 /*
-   remove section of legth iLen starting at offset from any chaches ...
+   remove section of length iLen starting at offset from any chaches ...
    return value false indicates that simple removal was not possible
    and the caller needs to re-shape.
 */
@@ -420,18 +429,17 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 			UT_UCS4_strncpy(d, s, iLenToCopy);
 			m_pChars[m_iLength - iLen] = 0;
 
-			d = (UT_UCS4Char *) m_pAdvances+offset;
-			s = (UT_UCS4Char *) m_pAdvances+offset+iLen;
+			d = (UT_UCS4Char *) m_pWidths+offset;
+			s = (UT_UCS4Char *) m_pWidths+offset+iLen;
 
 			if(m_iVisDir == FRIBIDI_TYPE_RTL)
 			{
-				d = (UT_UCS4Char *) m_pAdvances + (m_iLength - offset + iLen - 1);
-				s = (UT_UCS4Char *) m_pAdvances + (m_iLength - offset);
+				d = (UT_UCS4Char *) m_pWidths + (m_iLength - offset + iLen - 1);
+				s = (UT_UCS4Char *) m_pWidths + (m_iLength - offset);
 			}
 
 			UT_UCS4_strncpy(d, s, iLenToCopy);
-			m_pAdvances[m_iLength - iLen] = 0;
-			
+			m_pWidths[m_iLength - iLen] = 0;
 		}
 	}
 
@@ -481,7 +489,8 @@ void GR_XPRenderInfo::_stripLigaturePlaceHolders()
 	for(UT_sint32 i = 0, j = 0; i < len; i++, j++)
 	{
 		// m is the logical offeset corresponding to the visual offest i
-		UT_sint32 m = bReverse ? len - i - 1 : i;
+		// UT_sint32 m = bReverse ? len - i - 1 : i;
+		UT_sint32 m = i;
 
 		if(m_pChars[i] != UCS_LIGATURE_PLACEHOLDER)
 		{
@@ -659,7 +668,7 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 					// overimposing our overstriking chars
 					// we will have to set the offsets to 0
 					for(UT_uint32 k = n; k < m_iLength; k++)
-						m_pAdvances[k] = 0;
+						s_pAdvances[k] = 0;
 
 					n = m_iLength;
 				}
@@ -693,16 +702,16 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 							// calculated the advance in previous
 							// round of the main loop, and this is
 							// only adjustment
-							m_pAdvances[k-1] += iAdv;
+							s_pAdvances[k-1] += iAdv;
 						}
 						else
-							m_pAdvances[k-1] = iAdv;
+							s_pAdvances[k-1] = iAdv;
 
 						iCumAdvance += iAdv;
 					}
 
-					m_pAdvances[k-1] = -iCumAdvance;
-					m_pAdvances[k]   = s_pWidthBuff[m];
+					s_pAdvances[k-1] = -iCumAdvance;
+					s_pAdvances[k]   = s_pWidthBuff[m];
 					n = k; // should be k+1, but there will be n++ in
 					       // the for loop
 				}
@@ -710,7 +719,7 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 			}
 			else
 			{
-				m_pAdvances[n] = s_pWidthBuff[n];
+				s_pAdvances[n] = s_pWidthBuff[n];
 			}
 		}
 	}
@@ -744,17 +753,17 @@ void GR_XPRenderInfo::_calculateCharAdvances()
 						iAdv = iWidth - (iWidth + s_pWidthBuff[m])/2 + iCumAdvance;
 					}
 
-					m_pAdvances[m-1] = iAdv;
+					s_pAdvances[m-1] = iAdv;
 					iCumAdvance += iAdv;
 					m++;
 				}
 
 				n = m-1; // this is the last 0-width char
-				m_pAdvances[n] = iWidth - iCumAdvance;
+				s_pAdvances[n] = iWidth - iCumAdvance;
 			}
 			else
-				m_pAdvances[n] = s_pWidthBuff[n];
-			xxx_UT_DEBUGMSG(("%d ",m_pAdvances[n],s_pWidthBuff[n] ));
+				s_pAdvances[n] = s_pWidthBuff[n];
+			xxx_UT_DEBUGMSG(("%d ",s_pAdvances[n],s_pWidthBuff[n] ));
 		}
 		xxx_UT_DEBUGMSG(("ENDRUN \n"));
 
@@ -774,6 +783,10 @@ bool GR_XPRenderInfo::_checkAndFixStaticBuffers()
 		s_pWidthBuff = new UT_sint32 [m_iLength];
 		UT_return_val_if_fail(s_pWidthBuff,false);
 
+		delete [] s_pAdvances;
+		s_pAdvances = new UT_sint32 [m_iLength];
+		UT_return_val_if_fail(s_pAdvances,false);
+		
 		s_iBuffSize = m_iLength;
 	}
 
