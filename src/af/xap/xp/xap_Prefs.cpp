@@ -36,8 +36,8 @@ struct xmlToIdMapping {
 
 static  UT_sint32 compareStrings(const void * ppS1, const void * ppS2)
 {
-	const char ** sz1 = reinterpret_cast<const char **>(ppS1);
-	const char ** sz2 = reinterpret_cast<const char **>(ppS2);
+	const char ** sz1 = (const char **)ppS1;
+	const char ** sz2 = (const char **)ppS2;
 	return UT_stricmp(*sz1, *sz2);
 }
 

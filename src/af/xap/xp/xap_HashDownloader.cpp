@@ -204,7 +204,8 @@ XAP_HashDownloader::initData()
 UT_sint32
 XAP_HashDownloader::getPref(XAP_Frame *pFrame, XML_Char *pref)
 {
-	char *endptr, *val;
+	char *endptr;
+	const XML_Char *val;
 	UT_sint32 i;
 
 	UT_return_val_if_fail((pFrame != NULL), -1);
@@ -250,7 +251,7 @@ UT_sint32
 XAP_HashDownloader::getComparableBuildDate()
 {
 	char months[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-	char *buildDate = static_cast<char *>(XAP_App::getApp()->s_szBuild_CompileDate);
+	const char *buildDate = XAP_App::getApp()->s_szBuild_CompileDate;
 	char month[4], day[3], year[5], all[20];
 	char *endptr;
 	UT_sint32 i, nMonth;
