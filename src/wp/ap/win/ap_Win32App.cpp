@@ -1007,6 +1007,8 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 
 bool AP_Win32App::canPasteFromClipboard(void)
 {
+	UT_return_val_if_fail(getLastFocussedFrame(), false);
+
 	AP_Win32FrameImpl * pFrameImp = static_cast<AP_Win32FrameImpl*>(getLastFocussedFrame()->getFrameImpl());
 	UT_return_val_if_fail(pFrameImp, false);
 	
