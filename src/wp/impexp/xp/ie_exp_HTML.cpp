@@ -4066,11 +4066,11 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	const XML_Char * szAlt  = 0;
 	pAP->getAttribute ("alt",  szAlt);
+	m_utf8_1 += " alt=\"";
 	if (szAlt) {
-		m_utf8_1 += " alt=\"";
 		m_utf8_1 += szAlt;
-		m_utf8_1 += "\"";
 	}
+	m_utf8_1 += "\"";
 
 	if (!get_Embed_Images () || get_Multipart ())
 	{
