@@ -263,7 +263,7 @@ void s_HRText_Listener::_openTag(PT_AttrPropIndex api)
 		const XML_Char * szListID;
 
 		if (
-		   (pAP->getAttribute((XML_Char*)"style", szValue))
+		   (pAP->getAttribute((XML_Char*)PT_STYLE_ATTRIBUTE_NAME, szValue))
 		   )
 		{
 			if(pAP->getAttribute((XML_Char*)"listid", szListID) &&

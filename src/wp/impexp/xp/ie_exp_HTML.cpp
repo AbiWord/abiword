@@ -419,14 +419,14 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		UT_uint16 *popped, *pushed;
 
 		if (
-		   (pAP->getAttribute("style", szValue) ||
-		   	(pAP->getAttribute("listid", szListID) && 
+		   (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue) ||
+		   	(pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szListID) && 
 			 0 != UT_strcmp(szListID, "0")))
 		   )
 		{
-			if(pAP->getAttribute("listid", szListID))
+			if(pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szListID))
 			{	// we're in a list
-				if(!pAP->getAttribute("style", szValue)) szValue = szDefault;
+				if(!pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue)) szValue = szDefault;
 				pAP->getAttribute("level", szLevel);
 				m_iListDepth = atoi((const char*) szLevel);
 				if(!pAP->getProperty("list-style", szStyleType))
@@ -1168,7 +1168,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		char* szStyle = NULL;
 		const XML_Char * pStyle;
 		PD_Style* s = NULL;
-		bool fnd = pAP->getAttribute("style", pStyle);
+		bool fnd = pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pStyle);
 		if(pStyle && fnd)
 		{
 			szStyle = removeWhiteSpace((const char *)pStyle);
@@ -1285,7 +1285,7 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 
-		if(pAP->getAttribute("style", szValue))
+		if(pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			closeSpan = true;
 		}
@@ -1475,6 +1475,10 @@ bool s_HTML_Listener::_inherits(const char* style, const char* from)
 		if(pStyle && pStyle->getBasedOn())
 		{
 			pStyle = pStyle->getBasedOn();
+//
+// The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
+// style
+//
 			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, 
 								 pName);
 			szName = removeWhiteSpace(pName);
@@ -1501,6 +1505,10 @@ void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 			pBasedOn = pStyle->getBasedOn();
 			if(pBasedOn)
 			{
+//
+// The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
+// style
+//
 				pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szName);
 				
 				UT_ASSERT((szName));

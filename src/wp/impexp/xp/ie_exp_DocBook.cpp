@@ -259,7 +259,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 	{
 		const XML_Char * szValue;
 
-		if (pAP->getAttribute((const XML_Char *)"style", szValue))
+		if (pAP->getAttribute((const XML_Char *)PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			
                         if(0 == UT_strcmp(szValue, "Heading 1")) 

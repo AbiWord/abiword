@@ -470,7 +470,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		{
 			m_szStyle = NULL;
 		}
-		else if (!pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME, m_szStyle) && !pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
+		else if (!pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
 		{
 			m_szStyle = NULL;
 		}
@@ -675,7 +675,13 @@ void fl_BlockLayout::_lookupProperties(void)
 	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
 	{
 		// We have stopped or started a multi-level list
-		m_pAutoNum->removeItem(getStruxDocHandle());
+		// this struxdochandle may already have been removed if there is another
+        // view on this document. So check first
+	
+		if(m_pAutoNum->isItem(getStruxDocHandle()));
+		{
+		   m_pAutoNum->removeItem(getStruxDocHandle());
+		}
 		m_pAutoNum = NULL;
 		UT_DEBUGMSG(("Started/Stopped Multi-Level\n"));
 	}
@@ -685,7 +691,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		// We have stopped a final list item.
 		m_bStopList = true;
 		m_pAutoNum->markAsDirty();
-		if(m_pAutoNum->isItem(getStruxDocHandle()) == true)
+		if(m_pAutoNum->isItem(getStruxDocHandle()))
 			m_pAutoNum->removeItem(getStruxDocHandle());
 		m_bListItem = false;
 		_deleteListLabel();
@@ -723,14 +729,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			style = getProperty("list-style",true);
 			if(!style)
 			{
-				pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME,style);
-//
-// For legacy documents.
-//
-				if(!style)
-				{
-					pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
-				}
+				pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
 			}
 			UT_ASSERT(style);
 			List_Type lType = getListTypeFromStyle( style);
@@ -5412,15 +5411,8 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
-	pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME,style);
-//
-// For legacy documents
-//
-	if(!style)
-	{
-		pBlockAP->getAttribute(PT_NAME_ATTRIBUTE_NAME,style);
-	}
-	pBlockAP->getAttribute((const XML_Char *)"listid",lid);
+	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+	pBlockAP->getAttribute((const XML_Char *)PT_LISTID_ATTRIBUTE_NAME,lid);
 	level = getAutoNum()->getLevel();
 	sprintf(buf,"%i",level);
 	//	pBlockAP->getAttribute("level",buf);
@@ -5436,7 +5428,7 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 	}
 	if(style != NULL)
 	{
-		va->addItem( (void *) PT_NAME_ATTRIBUTE_NAME  );	va->addItem( (void *) style);
+		va->addItem( (void *) PT_STYLE_ATTRIBUTE_NAME  );	va->addItem( (void *) style);
 		count++;
 	}
 	if(count == 0)
@@ -5771,10 +5763,10 @@ void    fl_BlockLayout::StopList(void)
 	{
 #ifndef _MRC_
 		const XML_Char * attribs[] = { 	"listid", lid,
-										 PT_NAME_ATTRIBUTE_NAME,"Normal", NULL, NULL };
+										 PT_STYLE_ATTRIBUTE_NAME,"Normal", NULL, NULL };
 #else
 		const XML_Char * attribs[] = { 	"listid", NULL,
-										PT_NAME_ATTRIBUTE_NAME,"Normal", NULL, NULL };
+										PT_STYLE_ATTRIBUTE_NAME,"Normal", NULL, NULL };
 		attribs [1] = lid;
 #endif
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
@@ -6004,7 +5996,12 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	//
 	UT_ASSERT(prevList);
 	UT_Vector va,vp;
-	
+//
+// Defensive code. This should not happen
+//
+	UT_ASSERT(prevList->getAutoNum());
+	if(prevList->getAutoNum() == NULL)
+		return;
 	prevList->getListPropertyVector( &vp);
 	prevList->getListAttributesVector( &va);
 	UT_uint32 counta = va.getItemCount() + 1;

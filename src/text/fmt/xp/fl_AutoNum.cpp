@@ -651,13 +651,13 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	{
 		m_bDirty = true;
 		_updateItems(0,NULL);
+		return;
 	}        
 	PL_StruxDocHandle ppItem = NULL;
 	if(ndx > 0)
 	{
 		ppItem =  ( PL_StruxDocHandle) m_pItems.getNthItem(ndx - 1);
 	}
-	
 	m_pItems.deleteNthItem(ndx);
 	m_bDirty = true;
 

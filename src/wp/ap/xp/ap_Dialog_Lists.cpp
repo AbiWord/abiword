@@ -785,23 +785,15 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	//
 	if(va.getItemCount()>0)
 	{	
-		i = findVecItem(&va,PT_NAME_ATTRIBUTE_NAME);
-		if( i>= 0)
-		{
-			m_DocListType = getBlock()->getListTypeFromStyle( (const XML_Char *) va.getNthItem(i+1));
-		}
-		else 
-		{
-			i = findVecItem(&va,PT_STYLE_ATTRIBUTE_NAME);
-			if( i>= 0)
-			{
-				m_DocListType = getBlock()->getListTypeFromStyle( (const XML_Char *) va.getNthItem(i+1));
-			}
-			else
-			{
-				m_DocListType = NUMBERED_LIST;
-			}
-		}
+//  		i = findVecItem(&va,PT_STYLE_ATTRIBUTE_NAME);
+//  		if( i>= 0)
+//  		{
+//  			m_DocListType = getBlock()->getListTypeFromStyle( (const XML_Char *) va.getNthItem(i+1));
+//  		}
+//  		else 
+//  		{
+//  			m_DocListType = NUMBERED_LIST;
+//  		}
 
 		i = findVecItem(&va,"level");
 		if( i>= 0)

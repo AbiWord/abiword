@@ -5911,7 +5911,10 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			attributes[i++] = (const char *) &propBuffer;
 			UT_DEBUGMSG(("SEVIOR: Loading props definition %s \n",propBuffer));
 			// ApplyParagraphAttributes()
-
+//
+// The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME attribute within the
+// style
+//
 			attributes[i++] = PT_NAME_ATTRIBUTE_NAME;
 			attributes[i++] = (const char *)m_styleTable[styleNumber];
 

@@ -265,7 +265,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		  style_att[8] = p_val[4]; 
 
 		  X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
-		  UT_XML_cloneString(buf[0], PT_NAME_ATTRIBUTE_NAME);
+		  UT_XML_cloneString(buf[0], PT_STYLE_ATTRIBUTE_NAME);
 		  UT_XML_cloneString(buf[1], (XML_Char *) style_att);
 		  p_atts = (const XML_Char **)buf;
 		  X_CheckError(getDoc()->appendFmt(p_atts));
@@ -283,7 +283,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 		  XML_Char style_att[15] = "Block Text";
 
 		  X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
-		  UT_XML_cloneString(buf[0], PT_NAME_ATTRIBUTE_NAME);
+		  UT_XML_cloneString(buf[0], PT_STYLE_ATTRIBUTE_NAME);
 		  UT_XML_cloneString(buf[1], (XML_Char *) style_att);
 		  p_atts = (const XML_Char **)buf;
 		  X_CheckError(getDoc()->appendFmt(p_atts));

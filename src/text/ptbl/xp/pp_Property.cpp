@@ -199,6 +199,12 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	PD_Style * pStyle = NULL;
 
 	const XML_Char * szValue = NULL;
+//
+// SHIT. This is where the style/name split gets really hairy. This index AP MIGHT be
+// from a style definition in which case the name of the style is PT_NAME_ATTRIBUTE_NAME
+// or it might be from the document in which case the attribute is  
+// PT_STYLE_ATTRIBUTE_NAME. Fuck it, try both. - MES.
+//
 	if (pAttrProp->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue))
 	{
 		UT_ASSERT(szValue && szValue[0]);
@@ -207,10 +213,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 
 		// NOTE: we silently fail if style is referenced, but not defined
 	}
-//
-// This code is for legacy documents. Read it but don't write it ever.
-//
-	else if(pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
+    else if(pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 	{
 		UT_ASSERT(szValue && szValue[0]);
 		if (pDoc)

@@ -687,7 +687,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		    X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
 		}
 		
-		UT_XML_cloneString(sz, PT_NAME_ATTRIBUTE_NAME);
+		UT_XML_cloneString(sz, PT_STYLE_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
 		sz = NULL;
 		
