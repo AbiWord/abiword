@@ -40,6 +40,7 @@
 #	include "xap_UnixDlg_WindowMore.h"
 #	include "xap_UnixDlg_FontChooser.h"
 #	include "xap_UnixDlg_About.h"
+#	include "xap_UnixDlg_Zoom.h"
 
 #	include "ap_UnixDialog_Replace.h"
 
@@ -54,6 +55,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
+	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)

@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXDIALOG_WINDOWMORE_H
-#define XAP_UNIXDIALOG_WINDOWMORE_H
+#ifndef XAP_UNIXDIALOG_ZOOM_H
+#define XAP_UNIXDIALOG_ZOOM_H
 
-#include "xap_Dlg_WindowMore.h"
+#include "xap_Dlg_Zoom.h"
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class XAP_UnixDialog_WindowMore: public XAP_Dialog_WindowMore
+class XAP_UnixDialog_Zoom: public XAP_Dialog_Zoom
 {
 public:
-	XAP_UnixDialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~XAP_UnixDialog_WindowMore(void);
+	XAP_UnixDialog_Zoom(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_UnixDialog_Zoom(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -39,20 +39,44 @@ public:
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_DoubleClick(void);
 	virtual void			event_WindowDelete(void);
+
+	virtual void			event_Radio200Clicked(void);
+	virtual void			event_Radio100Clicked(void);
+	virtual void			event_Radio75Clicked(void);
+	virtual void			event_RadioPageWidthClicked(void);
+	virtual void			event_RadioWholePageClicked(void);
+
+	virtual void			event_RadioPercentClicked(void);
+	virtual void			event_SpinPercentChanged(void);
 	
 protected:
 
-	gint 		_GetFromList(void);
+	// private construction functions
 	GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
+	void		_enablePercentSpin(UT_Bool enable);
+	void 		_storeWindowData(void);
 	
+	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
-	GtkWidget * m_clistWindows;
+
+	GtkWidget * m_previewFrame;
+	GtkWidget * m_previewArea;
+	
+	GtkWidget * m_radio200;
+	GtkWidget * m_radio100;
+	GtkWidget * m_radio75;
+	GtkWidget * m_radioPageWidth;
+	GtkWidget * m_radioWholePage;
+	GtkWidget * m_radioPercent;
+	GtkWidget * m_spinPercent;
+
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
-	
+
+	// our "group" of radio buttons
+	GSList *	m_radioGroup;
 };
 
-#endif /* XAP_UNIXDIALOG_WINDOWMORE_H */
+#endif /* XAP_UNIXDIALOG_ZOOM_H */

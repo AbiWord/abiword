@@ -36,6 +36,7 @@
 #	include "xap_Win32Dlg_FontChooser.h"
 #	include "xap_Win32Dlg_WindowMore.h"
 #	include "xap_Win32Dlg_About.h"
+#	include "xap_Win32Dlg_Zoom.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 
@@ -50,6 +51,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_Win32Dialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_Win32Dialog_WindowMore)
+	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_Win32Dialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_Win32Dialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)

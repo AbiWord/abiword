@@ -17,42 +17,26 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXDIALOG_WINDOWMORE_H
-#define XAP_UNIXDIALOG_WINDOWMORE_H
+#ifndef XAP_WIN32DIALOG_ZOOM_H
+#define XAP_WIN32DIALOG_ZOOM_H
 
-#include "xap_Dlg_WindowMore.h"
-class XAP_UnixFrame;
+#include "xap_Dlg_Zoom.h"
+class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class XAP_UnixDialog_WindowMore: public XAP_Dialog_WindowMore
+class XAP_Win32Dialog_Zoom: public XAP_Dialog_Zoom
 {
 public:
-	XAP_UnixDialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~XAP_UnixDialog_WindowMore(void);
+	XAP_Win32Dialog_Zoom(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~XAP_Win32Dialog_Zoom(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-	// callbacks can fire these events
-
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
-	virtual void			event_DoubleClick(void);
-	virtual void			event_WindowDelete(void);
-	
 protected:
 
-	gint 		_GetFromList(void);
-	GtkWidget * _constructWindow(void);
-	void		_populateWindowData(void);
-	
-	GtkWidget * m_windowMain;
-	GtkWidget * m_clistWindows;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-	
 };
 
-#endif /* XAP_UNIXDIALOG_WINDOWMORE_H */
+#endif /* XAP_WIN32DIALOG_ZOOM_H */

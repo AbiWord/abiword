@@ -107,7 +107,7 @@ void XAP_UnixDialog_WindowMore::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(mainWindow);
 
 	// Populate the window's data items
-	_populateWindow();
+	_populateWindowData();
 	
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -332,7 +332,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	return windowMain;
 }
 
-void XAP_UnixDialog_WindowMore::_populateWindow(void)
+void XAP_UnixDialog_WindowMore::_populateWindowData(void)
 {
 	// We just do one thing here, which is fill the list with
 	// all the windows.

@@ -36,17 +36,20 @@
 #include "xap_Prefs.h"
 #include "ap_Strings.h"
 #include "ap_LoadBindings.h"
+
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
-#include "xap_Dlg_About.h"
 #include "ap_Dialog_Goto.h"
 
 #include "xap_DialogFactory.h"
+#include "xap_Dlg_About.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dlg_FontChooser.h"
 #include "xap_Dlg_Print.h"
 #include "xap_Dlg_WindowMore.h"
+#include "xap_Dlg_Zoom.h"
+
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "ie_types.h"
@@ -3170,6 +3173,51 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	return bOK;
 }
 
+static UT_Bool s_doZoomDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_Zoom * pDialog
+		= (XAP_Dialog_Zoom *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_ZOOM));
+	UT_ASSERT(pDialog);
+
+	pDialog->setZoomPercent(pFrame->getZoomPercentage());
+	
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_Zoom::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == XAP_Dialog_Zoom::a_OK);
+
+	if (bOK)
+	{
+		UT_uint32 newZoom = pFrame->getZoomPercentage();
+		switch(pDialog->getZoomType())
+		{
+		// special cases
+		case XAP_Dialog_Zoom::z_PAGEWIDTH:
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			break;
+		case XAP_Dialog_Zoom::z_WHOLEPAGE:
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			break;
+		default:
+			newZoom = pDialog->getZoomPercent();
+		}
+
+		pFrame->setZoomPercentage(newZoom);
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -3286,12 +3334,8 @@ Defun(zoom)
 
 Defun1(dlgZoom)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Zoom dialog", __LINE__);
-	
-	return UT_TRUE;
+	ABIWORD_VIEW;
+	return s_doZoomDlg(pView);
 }
 
 
