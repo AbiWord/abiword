@@ -804,7 +804,11 @@ CFLAGS += -DSUPPORTS_UT_IDLE=1
 endif
 
 ifeq ($(OS_NAME), WIN32)
-	EXTRA_LIBS += $(LIBDIR)/fribidi.lib
+# TODO: support fribidi as DLL or statically compiled in
+#	EXTRA_LIBS += $(LIBDIR)/fribidi.lib
+	EXTRA_LIBS += $(LIBDIR)/libfribidi_s.lib
+	CFLAGS += -DFRIBIDI_EXPORTS	# symbols match
+	CFLAGS += -I$(ABI_ROOT)/..	# so <fribidi/fribidi.h> works
 else
 	EXTRA_LIBS += -lfribidi
 endif

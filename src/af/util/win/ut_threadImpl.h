@@ -19,6 +19,7 @@
 #ifndef UT_THREADIMPL_H
 #define UT_THREADIMPL_H
 
+#include "ut_assert.h"
 #include "ut_thread.h"
 #include <process.h>
 
@@ -55,7 +56,9 @@ class ABI_EXPORT UT_ThreadImpl
 
 	if (mThread = _beginthread(start_routine, 0, (void *)this) == -1)
 	{
-	  printf ( "thread create failed!!\n" ) ;
+	  //printf ( "thread create failed!!\n" ) ;
+	  //MessageBox( NULL, "thread create failed!!\n", NULL, MB_OK );
+	  UT_ASSERT(mTrhead != -1);
 	}
     }
 
@@ -76,12 +79,17 @@ class ABI_EXPORT UT_ThreadImpl
 	// yield? 
     }
 
+  void join ()
+  {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+  }
+
  private:
 
   static void start_routine ( void * inPtr )
     {
       UT_Thread * thisPtr = static_cast<UT_ThreadImpl *>(inPtr)->mOwner;
-      printf ( "In the start routine: %d\n", thisPtr == NULL );
+      // printf ( "In the start routine: %d\n", thisPtr == NULL );
       thisPtr->run () ;
     }
 

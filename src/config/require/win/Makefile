@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _NSIS_
+REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _NSIS_ _FRIBIDI_
 ifeq ($(OS_NAME),MINGW32)
     CCSET=
 else
@@ -136,6 +136,18 @@ _PEER_LIBCURL_:
 	fi
 #		cd $(ABI_ROOT)/../libcurl/lib
 #		nmake /f Makefile.vc6 cfg=release
+
+# TODO: update to support building statically or as DLL
+_FRIBIDI_:
+	@if [ -d $(ABI_ROOT)/../fribidi ]; then					\
+		echo Found fribidi in peer directory;				\
+		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../fribidi;	\
+	else									\
+		echo fribidi not found;						\
+		echo Please checkout the fribidi module from cvs or \
+		echo download it from where you obtained your AbiWord source. \
+		exit 1;								\
+	fi
 
 #################################################################
 

@@ -23,6 +23,7 @@
 #include "ap_Win32Toolbar_ZoomCombo.h"
 #include "ap_Toolbar_Id.h"
 #include "xap_Frame.h"
+#include "xap_App.h"
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_Win32Toolbar_ZoomCombo::static_constructor(EV_Toolbar * pToolbar,

@@ -21,6 +21,7 @@
 #define XAP_Win32Dialog_Insert_Symbol_H
 
 #include "xap_Dlg_Insert_Symbol.h"
+#include "xap_Draw_Symbol.h"
 class XAP_Win32Frame;
 class XAP_Win32PreviewWidget;
 

@@ -26,12 +26,15 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
+#include "xav_View.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
+#include "xap_Preview_Zoom.h"
 #include "xap_Win32Dlg_Zoom.h"
 #include "xap_Win32PreviewWidget.h"
+
 
 #include "gr_Win32Graphics.h"
 #include "xap_Win32DialogHelper.h"
