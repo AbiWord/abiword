@@ -5033,7 +5033,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 // Terminate blocklist here. This Block is the last in this section.
 //
-	pLastCL->setNext(NULL);
+	if (pLastCL)
+		pLastCL->setNext(NULL);
 	pOldSL->setLastLayout(pLastCL);
 //
 // OK we have to redo all the containers now.
