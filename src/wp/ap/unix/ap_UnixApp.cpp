@@ -701,11 +701,9 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		  // at this point, 'bytes' is owned by pFG
 		  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 		  
-		  UT_String newName = UT_String_sprintf ( "paste_image_%d", UT_newNumber() ) ;
-		  
 		  DELETEP(pIEG);
 		  
-		  error = pView->cmdInsertGraphic(pFG, newName.c_str());
+		  error = pView->cmdInsertGraphic(pFG);
 		  if (error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));

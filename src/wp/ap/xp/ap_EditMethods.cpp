@@ -3425,7 +3425,7 @@ UT_return_val_if_fail(pDialog, false);
 
 		DELETEP(pIEG);
 
-		errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
+		errorCode = pView->cmdInsertGraphic(pFG);
 		if (errorCode)
 		{
 			s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -3487,7 +3487,7 @@ Defun1(fileInsertGraphic)
 
 	ABIWORD_VIEW;
 
-	errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
+	errorCode = pView->cmdInsertGraphic(pFG);
 	if (errorCode != UT_OK)
 	{
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -3552,7 +3552,7 @@ Defun1(fileInsertPageBackgroundGraphic)
 	fl_DocSectionLayout * pDSL = pBlock->getDocSectionLayout();
 	UT_return_val_if_fail( pDSL, false );
 	PT_DocPosition iPos = pDSL->getPosition();
-	errorCode = pView->cmdInsertGraphicAtStrux(pFG, pNewFile, iPos, PTX_Section);
+	errorCode = pView->cmdInsertGraphicAtStrux(pFG, iPos, PTX_Section);
 
 	if (errorCode != UT_OK)
 	{

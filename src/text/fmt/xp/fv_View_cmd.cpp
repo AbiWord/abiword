@@ -4193,7 +4193,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	return bResult;
 }
 
-UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
+UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG)
 {
 	bool bDidGlob = false;
 
@@ -4233,7 +4233,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
  * point given by ipos.
  * This is useful for speficifying images as backgrounds to pages and cells.
  */
-UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, PT_DocPosition iPos, PTStruxType iStruxType)
+UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType)
 {
 	bool bDidGlob = false;
 
@@ -4241,24 +4241,17 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, 
 	_saveAndNotifyPieceTableChange();
 
 	/*
-	  First, find a unique name for the data item.
+	  Create a unique identifier for the data item.
 	*/
-	char *szName = new char [strlen (pszName) + 64 + 1];
-	UT_uint32 ndx = 0;
-	for (;;)
-	{
-		sprintf(szName, "%s_%d", pszName, ndx);
-		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
-		{
-			break;
-		}
-		ndx++;
-	}
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
+	UT_UTF8String s;
+	uuid->toString(s);
 
 	UT_Error errorCode = pFG->insertAtStrux(m_pDoc, 
 											m_pG->getDeviceResolution(),
 											iPos,
-											iStruxType,szName);
+											iStruxType, s.utf8_str());
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
@@ -4266,8 +4259,6 @@ UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, 
 
 	_generalUpdate();
 	_updateInsertionPoint();
-
-	delete [] szName;
 
 	return errorCode;
 }

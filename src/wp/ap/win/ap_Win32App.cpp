@@ -975,7 +975,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  		pDocLy =	pFrameData->m_pDocLayout;	
  		pView =  pDocLy->getView();		
  				
- 		errorCode = pView->cmdInsertGraphic(pFG, szFile);	  		  		
+ 		errorCode = pView->cmdInsertGraphic(pFG);	  		  		
  	
 		DELETEP(pIEG);
  		//DELETEP(pFG);		

@@ -186,8 +186,8 @@ public:
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 
-	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
-	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, PT_DocPosition iPos, PTStruxType iStruxType);
+	UT_Error		cmdInsertGraphic(FG_Graphic*);
+	UT_Error        cmdInsertGraphicAtStrux(FG_Graphic* pFG, PT_DocPosition iPos, PTStruxType iStruxType);
 	virtual void	toggleCase(ToggleCase c);
 	virtual void	setPaperColor(const XML_Char * clr);
 

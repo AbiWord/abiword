@@ -208,7 +208,7 @@ s_load_image (const UT_String & file, XAP_Frame * pFrame, FV_View * pView)
 			return;
 		}
 
-	pView->cmdInsertGraphic(pFG, file.c_str());
+	pView->cmdInsertGraphic(pFG);
 	DELETEP(pFG);
 }
 
