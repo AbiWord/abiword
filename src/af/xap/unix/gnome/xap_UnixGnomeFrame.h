@@ -57,11 +57,14 @@ protected:
   	enum
   	{
 		TARGET_URI_LIST,
-		TARGET_URL
+		TARGET_URL,
+		TARGET_PNG,
+		TARGET_SVG,
+		TARGET_BMP
   	};
 
 	static void _dnd_drop_event (GtkWidget *widget, GdkDragContext */*context*/, gint /*x*/, gint /*y*/,
-								 GtkSelectionData *selection_data, guint info, guint /*time*/);
+								 GtkSelectionData *selection_data, guint info, guint /*time*/, XAP_UnixGnomeFrame * pFrame);
 };
 
 #endif /* XAP_UNIXGNOMEFRAME_H */

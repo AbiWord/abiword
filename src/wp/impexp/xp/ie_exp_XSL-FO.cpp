@@ -505,7 +505,7 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 	m_pie->write("<fo:flow flow-name=\"section\">\n");
 }
 
-#define BLOCK() do {if(block) m_pie->write(" "); else m_pie->write(" "); block = true;} while (0)
+#define USED() do {m_pie->write(" "); if(!used) used = true;} while (0)
 
 void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 {
@@ -521,7 +521,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 	m_pie->write("<fo:block");
 
 	// keep track of whether we have we written anything
-	bool block = false;
+	bool used = false;
 
 	// query and output properties
 	// todo - validate these and make sure they all make sense
@@ -531,7 +531,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("background-color=\"#");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -539,7 +539,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("color", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("color=\"#");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -547,7 +547,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("lang", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("language=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -555,7 +555,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 		
 		if (pAP->getProperty("font-size", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("font-size=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -563,7 +563,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-family", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("font-family=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -571,7 +571,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-weight", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("font-weight=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -579,7 +579,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-style", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("font-style=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -587,7 +587,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-stretch", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("font-stretch=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -595,7 +595,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("keep-together", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("keep-together=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -603,7 +603,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("keep-with-next", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("keep-with-next=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -611,7 +611,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("line-height", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("line-height=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -619,7 +619,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("margin-bottom", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("margin-bottom=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -627,7 +627,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("margin-top", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("margin-top=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -635,7 +635,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("margin-left", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("margin-left=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -643,7 +643,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("margin-right", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("margin-right=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -651,7 +651,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("text-align", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("text-align=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -659,7 +659,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("widows", szValue))
 		{
-			BLOCK();
+			USED();
 			m_pie->write("widows=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -668,10 +668,6 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 
 	m_pie->write(">\n");
 }
-
-#undef BLOCK
-
-#define SPAN() do {if(span) m_pie->write(" "); else m_pie->write(" "); span = true;} while (0)
 
 void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 {
@@ -686,7 +682,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	// keep track of whether we've written out anything
-	bool span = false;
+	bool used = false;
 
 	m_pie->write("<fo:inline");
 
@@ -697,7 +693,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("background-color=\"#");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -705,7 +701,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("color", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("color=\"#");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -713,7 +709,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("lang", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("language=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -721,7 +717,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (pAP->getProperty("font-size", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("font-size=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -729,7 +725,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-family", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("font-family=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -737,7 +733,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-weight", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("font-weight=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -745,7 +741,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-style", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("font-style=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -753,7 +749,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-stretch", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("font-stretch=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -761,7 +757,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("keep-together", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("keep-together=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -769,7 +765,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("keep-with-next", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("keep-with-next=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -777,7 +773,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("text-decoration", szValue))
 		{
-			SPAN();
+			USED();
 			m_pie->write("text-decoration=\"");
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
@@ -788,7 +784,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 	m_pie->write(">");
 }
 
-#undef SPAN
+#undef USED
 
 void s_XSL_FO_Listener::_closeBlock(void)
 {

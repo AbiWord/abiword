@@ -36,7 +36,12 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
-// #include "ie_types.h"
+// sorry about the XAP/AP separation breakage, but this is more important
+#include "ie_types.h"
+#include "ie_imp.h"
+#include "ie_impGraphic.h"
+#include "fg_Graphic.h"
+#include "fv_View.h"
 
 /*****************************************************************/
 
@@ -51,7 +56,8 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 										 gint              /*y*/,
 										 GtkSelectionData *selection_data,
 										 guint             info,
-										 guint             /*time*/)
+										 guint             /*time*/,
+										 XAP_UnixGnomeFrame * pFrame)
 {
 	XAP_UnixFrame * pUnixFrame;
 	XAP_App * pApp;
@@ -94,6 +100,55 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 		gnome_uri_list_free_strings (names);
 		break;
 	}
+	case TARGET_PNG:
+	case TARGET_SVG:
+	case TARGET_BMP:
+	{
+		IE_ImpGraphic * pIEG;
+		FG_Graphic * pFG;
+		IEGraphicFileType iegft;
+		UT_Error errorCode;
+
+		if (info == TARGET_PNG)
+			info = IEGFT_PNG;
+		else if (info == TARGET_BMP)
+			info = IEGFT_DIB;
+		else
+			info = IEGFT_SVG;
+
+		filename = (char *) selection_data->data;
+
+		errorCode = IE_ImpGraphic::constructImporter(filename, iegft, &pIEG);
+		if(errorCode)
+		{
+			//s_CouldNotLoadFileMessage(this, filename, errorCode);
+			return;
+		}
+
+		errorCode = pIEG->importGraphic(filename, &pFG);
+		if(errorCode)
+		{
+			//s_CouldNotLoadFileMessage(this, filename, errorCode);
+			DELETEP(pIEG);
+			return;
+		}
+		
+		DELETEP(pIEG);
+		
+		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+
+		errorCode = pView->cmdInsertGraphic(pFG, filename);
+		if (errorCode)
+		{
+			//s_CouldNotLoadFileMessage(this, filename, errorCode);
+			DELETEP(pFG);
+			return;
+		}
+		
+		DELETEP(pFG);
+		break;
+	}
+
 	case TARGET_URL:
 	{
 		// TODO
@@ -101,10 +156,10 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 		XAP_Frame * pNewUnixFrame = pApp->newFrame();
 		filename = (char *) selection_data->data;
 
-		UT_Error error = pNewUnixFrame->loadDocument(filename, 0 /* IEFT_Unknown */)
+		UT_Error error = pNewUnixFrame->loadDocument(filename, IEFT_Unknown);
 
 		if (error)
-			pNewUnixFrame->loadDocument(NULL, 0 /* IEFT_Unknown */);
+			pNewUnixFrame->loadDocument(NULL, IEFT_Unknown);
 
 #endif
 		break;
@@ -144,7 +199,23 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	bool bResult;
 	static GtkTargetEntry drag_types[] =
 	{
-		{ "text/uri-list", 0, TARGET_URI_LIST },
+#if 0
+		// why won't these work?
+		{"text/abiword", TARGET_URI_LIST},
+		{"text/plain", TARGET_URI_LIST},
+		{"text/richtext", TARGET_URI_LIST},
+		{"text/xml", TARGET_URI_LIST},
+		{"application/msword", TARGET_URI_LIST},
+		{"application/rtf", TARGET_URI_LIST},
+		{"application/x-palm-database", TARGET_URI_LIST},
+		{"application/x-applix-word", TARGET_URI_LIST},
+#else
+		{ "text/uri-list", 0, TARGET_URI_LIST},
+#endif
+		// why don't these work? everything gets sent as TARGET_URI_LIST
+		{ "image/png", 0, TARGET_PNG},
+		{ "image/bmp", 0, TARGET_BMP},
+		{ "image/svg-xml", 0, TARGET_SVG},
 		{ "_NETSCAPE_URL", 0, TARGET_URL }
 	};
 	static gint n_drag_types = sizeof(drag_types)/sizeof(drag_types[0]);
@@ -159,12 +230,13 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 						   m_pUnixApp->getApplicationName(),
 						   m_pUnixApp->getApplicationName());
 
+	//(GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION|GTK_DEST_DEFAULT_DROP),
 	gtk_drag_dest_set (m_wTopLevelWindow,
-					   (GtkDestDefaults)(GTK_DEST_DEFAULT_MOTION|GTK_DEST_DEFAULT_DROP),
+					   GTK_DEST_DEFAULT_ALL,
 					   drag_types, n_drag_types, GDK_ACTION_COPY);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "drag_data_received",
-                       GTK_SIGNAL_FUNC(_dnd_drop_event), NULL);
+                       GTK_SIGNAL_FUNC(_dnd_drop_event), (gpointer)this);
 
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "delete_event",
 					   GTK_SIGNAL_FUNC(_fe::delete_event), NULL);

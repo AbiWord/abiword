@@ -33,6 +33,7 @@ BeginLayout(ContextText,EV_EMC_TEXT)
 		MenuItem(AP_MENU_ID_EDIT_PASTE)
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_FONT)
+	    MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 	EndPopupMenu()
 

@@ -29,6 +29,8 @@
 #include "pd_Document.h"
 #include "ut_growbuf.h"
 
+#include "ut_string_class.h"
+
 /*
  * This is meant to import XSL-FO documents. XSL-FO are XML/XSL
  * Formatting objects, meant to be similar in scope to LaTeX.
@@ -37,6 +39,10 @@
  *
  * Dom
  */
+
+// this importer is of Beta quality
+// it handles a lot of XSL-FO but also doesn't handle a
+// lot of key things
 
 /*****************************************************************/
 /*****************************************************************/
@@ -65,9 +71,6 @@ bool IE_Imp_XSL_FO::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 
 	while ( iLinesToRead-- )
 	{
-		magic = "<?xml ";
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
 		magic = "<fo:root ";
 		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
 		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
@@ -175,15 +178,25 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 /*****************************************************************/
 
+#define USED() do {if(used) sBuf+="; "; else used = true;} while (0)
+
 void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 								  const XML_Char **atts)
 {
-	UT_DEBUGMSG(("FO import: startElement: %s\n", name));
-
 	// xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
 	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+
+    const XML_Char * buf[3];
+    const XML_Char ** p_atts;
+	buf[0] = (XML_Char *)"props";
+	buf[2] = 0;
+	
+	UT_String sBuf;
+	XML_Char * pVal = 0;
+	
+	bool used = false;
 
 	switch (tokenIndex)
 	{
@@ -203,26 +216,251 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		{
-			// todo: lots more - relevant props:
-			// background-color, color, language, font-size, font-family,
-			// font-weight, font-style, font-stretch, keep-together,
-			// keep-with-next, line-height, margin-bottom, margin-top,
-			// margin-left, margin-right, text-align, widows
-			X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
+			pVal = (XML_Char*)_getXMLPropValue("background-color", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "bgcolor:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("color", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "color:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("language", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "lang:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-size", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-size:";
+				sBuf += (char *)pVal;
+			}
+			
+			pVal = (XML_Char*)_getXMLPropValue("font-family", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-family:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-weight", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-weight:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-style", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-style:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-stretch", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-stretch:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("keep-together", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "keep-together:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("keep-with-next", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "keep-with-next:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("line-height", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "line-height:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("margin-bottom", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "margin-bottom:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("margin-top", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "margin-top:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("margin-left", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "margin-left:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("margin-right", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "margin-right:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("text-align", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "text-align:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("widows", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "widows:";
+				sBuf += (char *)pVal;
+			}
+
+			buf[1] = sBuf.c_str();
+
+			xxx_UT_DEBUGMSG(("FO import: block props='%s'\n", sBuf.c_str()));
+
+			// append the atts/block to the document
+			X_CheckError(m_pDocument->appendStrux(PTX_Block,buf));
 		}
 		break;
 
-		// we treat both of these as the same
+		// we treat both of these as if they were the same
 		// they represent character-level formatting
 	case TT_CHAR:
 	case TT_INLINE:
 		X_VerifyParseState(_PS_Block);
 		{
-			// todo: lots more - relevant props:
-			// background-color, color, language, font-size, font-family,
-			// font-weight, font-style, font-stretch, keep-together,
-			// keep-with-next, text-decoration
-			X_CheckError(_pushInlineFmt(atts));
+			pVal = (XML_Char*)_getXMLPropValue("background-color", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "bgcolor:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("color", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "color:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("language", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "lang:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-size", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-size:";
+				sBuf += (char *)pVal;
+			}
+			
+			pVal = (XML_Char*)_getXMLPropValue("font-family", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-family:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-weight", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-weight:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-style", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-style:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("font-stretch", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "font-stretch:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("keep-together", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "keep-together:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("keep-with-next", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "keep-with-next:";
+				sBuf += (char *)pVal;
+			}
+
+			pVal = (XML_Char*)_getXMLPropValue("text-decoration", atts);
+			if (pVal)
+			{
+				USED();
+				sBuf += "text-decoration:";
+				sBuf += (char *)pVal;
+			}
+
+			buf[1] = sBuf.c_str();
+
+			xxx_UT_DEBUGMSG(("FO import: inline props='%s'\n", sBuf.c_str()));
+
+            p_atts = (const XML_Char **)buf;
+			X_CheckError(_pushInlineFmt(p_atts));
 			X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 		}
 		break;
@@ -239,6 +477,7 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 		break;
 
 		// we should really try to get this working
+        // at least with local graphics
 	case TT_IMAGE:
 		X_VerifyParseState(_PS_Block);
 		{
@@ -253,16 +492,16 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 		break;
 
 	default:
-		UT_DEBUGMSG(("Unknown or knowingly unhandled tag [%s]\n",name));
+		xxx_UT_DEBUGMSG(("Unknown or knowingly unhandled tag [%s]\n",name));
+		break;
 	}
 
 }
 
+#undef USED
+
 void IE_Imp_XSL_FO::_endElement(const XML_Char *name)
 {
-  
-	UT_DEBUGMSG(("FO import: endElement: %s\n", name));
-	
 	// xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
@@ -307,7 +546,8 @@ void IE_Imp_XSL_FO::_endElement(const XML_Char *name)
 	case TT_REGION_BODY:
 	case TT_PAGE_SEQUENCE:
 	default:
-		UT_DEBUGMSG(("Unknown or intentionally unhandled end tag [%s]\n",name));
+		xxx_UT_DEBUGMSG(("Unknown or intentionally unhandled end tag [%s]\n",name));
+		break;
 	}
 }
 
