@@ -34,9 +34,11 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
-
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	
 protected:
-
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 };
 
 #endif /* AP_WIN32DIALOG_BREAK_H */

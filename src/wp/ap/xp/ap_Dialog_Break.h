@@ -35,7 +35,7 @@ public:
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
-	typedef enum { b_PAGE, b_COLUMN, b_NEXTPAGE, b_CONTINUOUS, b_EVENPAGE, b_ODDPAGE } breakType;
+	typedef enum { b_PAGE = 0, b_COLUMN, b_NEXTPAGE, b_CONTINUOUS, b_EVENPAGE, b_ODDPAGE } breakType;
 
 	AP_Dialog_Break::tAnswer		getAnswer(void) const;
 	AP_Dialog_Break::breakType		getBreakType(void) const;
