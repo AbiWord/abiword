@@ -407,40 +407,30 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 {
 	GtkWidget * windowInsertS;
-
 	GtkWidget * vboxInsertS;
 	GtkWidget * vhbox;
-
 	GtkWidget * fontcombo;
 	GtkWidget * SymbolMap;
-
 	GtkWidget * areaCurrentSym;
-
 	GtkWidget * hboxInsertS;
 	GtkWidget * buttonOK;
 	GtkWidget * buttonCancel;
-
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	XML_Char * tmp = NULL;
 
 	windowInsertS = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowInsertS), "windowInsertS", windowInsertS);
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
 	gtk_window_set_title (GTK_WINDOW (windowInsertS), tmp);
 	FREEP(tmp);
 	gtk_widget_set_usize(windowInsertS, 610, 245);
-
 	gtk_window_set_policy (GTK_WINDOW (windowInsertS), FALSE, FALSE, FALSE);
 
 	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
 	// and OK -Selected Symbol- Cancel
-
 	vboxInsertS = gtk_vbox_new( FALSE, 1);
 	gtk_widget_show(vboxInsertS);
-	// Insert the vbox into the dialog window
 
+	// Insert the vbox into the dialog window
 	gtk_container_add(GTK_CONTAINER(windowInsertS),vboxInsertS);
 
 	// Now Build the font combo box into the frame
@@ -451,33 +441,6 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	   This can then be displayed on a combo box at the top of the dialog.
 	   Code stolen from ap_UnixToolbar_FontCombo */
 
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_uint32 count = unixapp->getFontManager()->getCount();
-	XAP_UnixFont ** list = unixapp->getFontManager()->getAllFonts();
-
-	/* Now we remove all the duplicate name entries and create the Glist
-	   m_InsertS_Font_list. This will be used in the font selection combo
-	   box */
-
-	gchar currentfont[50] = "\0";
-	UT_uint32 j = 0;
-	m_InsertS_Font_list = NULL;
-
-	for (UT_uint32 i = 0; i < count; i++)
-	{
-		gchar * lgn  = (gchar *) list[i]->getName();
-		if(strstr(currentfont, lgn) == NULL)
-		{
-			strncpy(currentfont, lgn, 50);
-			m_fontlist[j] = g_strdup(currentfont);
-			m_InsertS_Font_list = g_list_prepend(m_InsertS_Font_list, m_fontlist[j++]);
-		}
-	}
-	m_Insert_Symbol_no_fonts = j;
-	DELETEP(list);
-  
-	m_InsertS_Font_list = g_list_reverse(m_InsertS_Font_list);
-
 	vhbox = gtk_hbox_new(FALSE, 1);
 
 	// Insert the vhbox into the vbox to hold the combo box
@@ -485,42 +448,17 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), vhbox, TRUE, TRUE, 0);
 
 	// Finally construct the combo box
-	fontcombo = gtk_combo_new();
- 
+	fontcombo = create_combobox_with_fonts ();
 	gtk_object_set_data (GTK_OBJECT(windowInsertS), "fontcombo", fontcombo);
-	gtk_widget_set_usize(fontcombo, 200, 25);
-	gtk_widget_show(fontcombo);
-	gtk_combo_set_value_in_list(GTK_COMBO(fontcombo), TRUE, TRUE);
-	gtk_combo_set_use_arrows(GTK_COMBO(fontcombo), FALSE);
-	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
-
-	// Put the current font in the entry box.
-	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),
-					   (gchar *) DEFAULT_UNIX_SYMBOL_FONT);
-
-	// Turn off keyboard entry in the font selection box
-	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),FALSE);
 
 	// Now put the font combo box at the top of the dialog 
 	gtk_box_pack_start(GTK_BOX(vhbox), fontcombo, TRUE, FALSE, 0);
 
 	// Now the Symbol Map. 
-
-	// *** Code Stolen from the preview widget ***
-	{
-		SymbolMap = gtk_drawing_area_new ();
-		gtk_object_set_data (GTK_OBJECT (windowInsertS), "SymbolMap", SymbolMap);
-		gtk_widget_show (SymbolMap);
-
-		// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
-		gtk_widget_set_usize (SymbolMap, 608, 147);
-		// Put this in the dialog under the font selection widget
-
-		gtk_box_pack_start(GTK_BOX(vboxInsertS), SymbolMap, FALSE, FALSE, 0);
-
-		// Enable button press events
-		gtk_widget_add_events(SymbolMap, GDK_BUTTON_PRESS_MASK);
-   	}
+	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
+	SymbolMap = preview_new (608, 147);
+	gtk_object_set_data (GTK_OBJECT (windowInsertS), "SymbolMap", SymbolMap);
+	gtk_box_pack_start(GTK_BOX(vboxInsertS), SymbolMap, FALSE, FALSE, 0);
 	
 	// Now make a Hbox to hold  OK, Current Selection and Cancel
 	hboxInsertS = gtk_hbox_new (FALSE, 1);
@@ -539,19 +477,14 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start(GTK_BOX(hboxInsertS), buttonOK, TRUE, FALSE, 4);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 
-	// *** Code Stolen from the preview widget again! ***
-	{
-		areaCurrentSym = gtk_drawing_area_new ();
-		gtk_object_set_data (GTK_OBJECT (windowInsertS), 
-							 "areaCurrentSym", areaCurrentSym);
-		gtk_widget_show (areaCurrentSym);
-		gtk_widget_set_usize (areaCurrentSym, 60,45);
-		gtk_box_pack_start(GTK_BOX(hboxInsertS), areaCurrentSym, TRUE, FALSE, 0);
-   	}
+	areaCurrentSym = preview_new (60, 45);
+	gtk_object_set_data (GTK_OBJECT (windowInsertS), 
+						 "areaCurrentSym", areaCurrentSym);
+	gtk_box_pack_start(GTK_BOX(hboxInsertS), areaCurrentSym, TRUE, FALSE, 0);
 
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Close));
 	buttonCancel = gtk_button_new_with_label (tmp);
-        FREEP(tmp);
+	FREEP(tmp);
 
 	gtk_object_set_data (GTK_OBJECT (windowInsertS), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
@@ -563,10 +496,8 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 	m_windowMain = windowInsertS;
-
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
-
 	m_SymbolMap = 	SymbolMap;
 	m_fontcombo = fontcombo;
 	m_areaCurrentSym = areaCurrentSym;
@@ -633,4 +564,65 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	return windowInsertS;
 }
 
+GtkWidget *XAP_UnixDialog_Insert_Symbol::preview_new (int w, int h)
+{
+	GtkWidget *pre = gtk_drawing_area_new ();
+	gtk_widget_show (pre);
+	gtk_widget_set_usize (pre, w, h);
+	
+	// Enable button press events
+	gtk_widget_add_events(pre, GDK_BUTTON_PRESS_MASK);
+	return pre;
+}
+	
+/* Now we remove all the duplicate name entries and create the Glist
+   glFonts. This will be used in the font selection combo
+   box */
 
+GList *XAP_UnixDialog_Insert_Symbol::get_glist_fonts (void)
+{	  
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+	UT_uint32 count = unixapp->getFontManager()->getCount();
+	XAP_UnixFont ** list = unixapp->getFontManager()->getAllFonts();
+	GList *glFonts = NULL;
+	gchar currentfont[50] = "\0";
+	UT_uint32 j = 0;
+	
+	for (UT_uint32 i = 0; i < count; i++)
+	{
+		gchar * lgn  = (gchar *) list[i]->getName();
+		if(strstr(currentfont, lgn) == NULL)
+		{
+			strncpy(currentfont, lgn, 50);
+			m_fontlist[j] = g_strdup(currentfont);
+			glFonts = g_list_prepend(glFonts, m_fontlist[j++]);
+		}
+	}
+
+	m_Insert_Symbol_no_fonts = j;
+	DELETEP(list);
+
+	return g_list_reverse(glFonts);
+}
+
+GtkWidget *XAP_UnixDialog_Insert_Symbol::create_combobox_with_fonts (void)
+{
+	GtkWidget *fontcombo = gtk_combo_new();
+
+	m_InsertS_Font_list = get_glist_fonts ();
+ 
+	gtk_widget_set_usize(fontcombo, 200, 25);
+	gtk_widget_show(fontcombo);
+	gtk_combo_set_value_in_list(GTK_COMBO(fontcombo), TRUE, TRUE);
+	gtk_combo_set_use_arrows(GTK_COMBO(fontcombo), FALSE);
+	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
+
+	// Put the current font in the entry box.
+	gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),
+					   (gchar *) DEFAULT_UNIX_SYMBOL_FONT);
+
+	// Turn off keyboard entry in the font selection box
+	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),FALSE);
+
+	return fontcombo;
+}

@@ -61,6 +61,9 @@ protected:
 
 	// private construction functions
 	GtkWidget * _constructWindow(void);
+	GtkWidget * preview_new(int w, int h);
+	GList *     get_glist_fonts(void);
+	GtkWidget * create_combobox_with_fonts (void);
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
@@ -78,13 +81,3 @@ protected:
 };
 
 #endif /* XAP_UNIXDIALOG_INSERT_SYMBOL_H */
-
-
-
-
-
-
-
-
-
-
