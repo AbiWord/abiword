@@ -197,6 +197,7 @@ protected:
 #endif
 	UT_uint32 m_iOldLen;
 	GR_Font *m_pOldScreenFont;
+	UT_sint32 m_iOldSpaceWidthBeforeJustification;
 	
 };
 

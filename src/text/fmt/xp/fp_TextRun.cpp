@@ -82,6 +82,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_iLineWidth = 0;
 	m_bSquiggled = false;
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
+	m_iOldSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
 	m_pField = NULL;
 	m_pLanguage = NULL;
 #ifdef BIDI_ENABLED
@@ -1004,10 +1005,10 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 bool fp_TextRun::recalcWidth(void)
 {
 /*
-	The width can only change if the font has changed, or the run has
-	changed physically, i.e., it has been either split or merged; all
-	we need to test is the length -- if the length is the same, it could
-	not have changed -- and the screen font
+	The width can only change if the font has changed, the alignment has changed,
+	or the run has changed physically, i.e., it has been either split or merged;
+	all we need to test is the length -- if the length is the same, it could
+	not have changed -- and the screen font, and the justification spaces
 	
 	In the Bidi build though when using the automatic glyph shape selection
 	the width can also change when the context changes, i.e., we have a new
@@ -1042,17 +1043,23 @@ bool fp_TextRun::recalcWidth(void)
 	bool bIsDirty = false;
 	
 #ifdef BIDI_ENABLED
-	UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_pOldPrev 0x%x, m_pOldNext 0x%x, m_iOldLen %d\n"
+	xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_pOldPrev 0x%x, m_pOldNext 0x%x, m_iOldLen %d\n"
 	             "       m_pPrev 0x%x, m_pNext 0x%x, m_iLen %d\n"
 	             "       m_pOldScreenFont 0x%x, m_pScreenFont 0x%x\n",
 	             this,m_pOldPrev, m_pOldNext, m_iOldLen, m_pPrev, m_pNext, m_iLen, m_pOldScreenFont,m_pScreenFont));
 	if(s_bUseContextGlyphs)
 	{
-		bIsDirty = (m_pOldNext != m_pNext || m_pOldPrev != m_pPrev || m_pOldScreenFont != m_pScreenFont);
+		bIsDirty = (m_pOldNext != m_pNext
+				 || m_pOldPrev != m_pPrev
+				 || m_pOldScreenFont != m_pScreenFont
+				 ||	m_iOldSpaceWidthBeforeJustification != 	m_iSpaceWidthBeforeJustification);
+
 	}
 	else
 #endif
-		bIsDirty = (m_iOldLen != m_iLen || m_pOldScreenFont != m_pScreenFont);
+		bIsDirty = (m_iOldLen != m_iLen
+				 || m_pOldScreenFont != m_pScreenFont
+				 ||	m_iOldSpaceWidthBeforeJustification != 	m_iSpaceWidthBeforeJustification);
 		
 	if(bIsDirty)
 	{
@@ -1140,12 +1147,12 @@ bool fp_TextRun::recalcWidth(void)
 		if(m_iWidth)
 			// this is really needed ...
 			clearScreen();
-		UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_iWidth %d, m_iWidthLayoutUnits %d\n",this,m_iWidth, m_iWidthLayoutUnits));
+		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_iWidth %d, m_iWidthLayoutUnits %d\n",this,m_iWidth, m_iWidthLayoutUnits));
 		return true;
 	}
 	else
 	{
-		UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): the run has not changed\n",this));
+		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): the run has not changed\n",this));
 		return false;
 	}
 #endif

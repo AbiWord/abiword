@@ -1707,7 +1707,29 @@ void fp_Line::layout(void)
 			pRun->setX(pRun->getX() + iStartX);
 		}
 	}
-	
+	else
+	if(eAlignment == FB_ALIGNMENT_RIGHT)
+	{   // we have not dealt with trailing spaces ...
+		pAlignment->initialize(this);
+		iStartX = pAlignment->getStartPosition();
+#ifdef BIDI_ENABLED
+  		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(0));
+#else
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+#endif
+		if(pRun->getX() != iStartX)
+			for (UT_uint32 k = 0; k < iCountRuns; k++)
+			{
+#ifdef BIDI_ENABLED
+	  			pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+#else
+				pRun = (fp_Run*) m_vecRuns.getNthItem(k);
+#endif
+				UT_ASSERT(pRun);
+				pRun->setX(iStartX);
+				iStartX += pRun->getWidth();
+			}	
+	}
 	//not entirely sure about this, by now all the coordinances have
 	//changed, but it seems to work :-)
 	//pAlignment->eraseLineFromRun(this, iIndxToEraseFrom);
