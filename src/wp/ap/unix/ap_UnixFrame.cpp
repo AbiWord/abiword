@@ -792,7 +792,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 												GDK_BUTTON_RELEASE_MASK |
 												GDK_KEY_PRESS_MASK |
 												GDK_KEY_RELEASE_MASK));
-
+	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea),FALSE);
 	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   G_CALLBACK(_fe::expose), NULL);
   

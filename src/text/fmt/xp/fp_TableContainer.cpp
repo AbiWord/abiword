@@ -293,13 +293,39 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		//if (m_iBgStyle == FS_OFF)
 		{
 			if(m_iLeftStyle != LS_OFF)
-				{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); }
+			{	
+				getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); 
+			}
 			if(m_iTopStyle != LS_OFF)
-				{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); }
+			{	
+				getGraphics()->drawLine(bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); 
+				if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
+				{
+					UT_sint32 col_x,col_y;
+					fp_Column * pCol = (fp_Column *) pBroke->getColumn();
+					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+					getGraphics()->drawLine(bRec.left, col_y, bRec.left + bRec.width,  col_y);
+//					pBroke->setBrokenTop(-1);
+				}
+			}
 			if(m_iRightStyle != LS_OFF)
-				{	getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); }
+			{	
+				getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); 
+			}
 			if(m_iBottomStyle != LS_OFF)
-				{	getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height); }
+			{	
+				getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height); 
+				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
+				{
+					UT_sint32 col_x,col_y;
+					fp_Column * pCol = (fp_Column *) pBroke->getColumn();
+					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+					UT_sint32 bot = col_y + pCol->getHeight();
+					getGraphics()->drawLine(bRec.left, bot, bRec.left + bRec.width,  bot);
+//					pBroke->setBrokenBot(-1);
+				}
+
+			}
 		}
 					
 // then clear the background as well
@@ -513,12 +539,20 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		{
 			iTop = col_y;
 			bDrawTop = true;
+			if(pBroke != NULL)
+			{
+				pBroke->setBrokenTop(1);
+			}
 		}
 		xxx_UT_DEBUGMSG(("drawlines: After iTop %d iBot = %d  sum %d left %d top %d  \n",iTop,iBot,col_y + pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
 		if(iBot > col_y + pCol->getHeight())
 		{
 			iBot =  col_y + pCol->getHeight();
 			bDrawBot = true;
+			if(pBroke != NULL)
+			{
+				pBroke->setBrokenBot(1);
+			}
 		}
 		if(m_bDrawLeft)
 		{
@@ -1284,7 +1318,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_bIsBroken(true),
 	  m_pMasterTable(pMaster),
 	  m_iYBreakHere(0),
-	  m_iYBottom(0)
+	  m_iYBottom(0),
+	  m_iBrokenTop(0),
+	  m_iBrokenBottom(0)
 {
 }
 
@@ -1411,6 +1447,39 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
 		}
 	}
 	return maxY;
+}
+
+/*!
+ * This method returns the Y Location of the line drawn across the top of
+ * broken table.
+ * It returns -1 if the table is not broken or it is the first broken table
+ * of the chain.
+ */
+UT_sint32 fp_TableContainer::getBrokenTop(void)
+{
+	if(getMasterTable() == NULL)
+	{
+		return -1;
+	}
+	else if(getYBreak() == 0)
+	{
+		return -1;
+	}
+	return m_iBrokenTop;
+}
+
+/*!
+ * This method returns the Y Location of the line drawn across the Bottom of
+ * broken table.
+ * It returns -1 if the table is not broken.
+ */
+UT_sint32 fp_TableContainer::getBrokenBot(void)
+{
+	if(getMasterTable() == NULL)
+	{
+		return -1;
+	}
+	return m_iBrokenBottom;
 }
 
 /*!

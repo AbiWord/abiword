@@ -408,6 +408,12 @@ public:
 		{ return m_bRedrawLines;}
 	fp_TableRowColumn *     getNthCol(UT_sint32 i);
 	fp_TableRowColumn *     getNthRow(UT_sint32 i);
+	UT_sint32               getBrokenTop(void);
+	UT_sint32               getBrokenBot(void);
+	void                    setBrokenTop(UT_sint32 iTop) 
+		{ m_iBrokenTop = iTop;}
+	void                    setBrokenBot(UT_sint32 iBot) 
+		{ m_iBrokenBottom = iBot;}
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -450,7 +456,8 @@ private:
 	fp_TableContainer *     m_pMasterTable;
 	UT_sint32               m_iYBreakHere;
 	UT_sint32               m_iYBottom;
-
+	UT_sint32               m_iBrokenTop;
+	UT_sint32               m_iBrokenBottom;
 	bool                    m_bRedrawLines;
 };
 
