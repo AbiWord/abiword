@@ -24,10 +24,6 @@
 
 #include <stdlib.h>
 
-#ifdef DEBUG
-#define _CRTDBG_MAP_ALLOC
-#endif
-
 #ifdef NULL
 #undef NULL
 #endif
