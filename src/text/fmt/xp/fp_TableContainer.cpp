@@ -257,7 +257,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
 		
 // only clear the lines if no background is set: the background clearing will also clear the lines
-		if (m_iBgStyle != FS_OFF)
+		if (m_iBgStyle == FS_OFF)
 		{
 			if(m_iLeftStyle != LS_OFF)
 				{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); }
