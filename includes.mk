@@ -59,7 +59,7 @@ WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/@PLATFORM@'
 WP_INCLUDES+=-I'$(top_srcdir)/src/wp/ap/xp/ToolbarIcons'
 endif
 
-OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell'
+OTHER_INCLUDES=-I'$(top_srcdir)/src/other/spell/xp'
 OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi'
 
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
