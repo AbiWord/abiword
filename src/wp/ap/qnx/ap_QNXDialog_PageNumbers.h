@@ -40,8 +40,8 @@ class AP_QNXDialog_PageNumbers : public AP_Dialog_PageNumbers
   void event_Cancel(void);
   void event_WindowDelete(void);
   void event_PreviewExposed(void);
-  void event_AlignChanged(AP_Dialog_PageNumbers::tAlign);
-  void event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl);
+  void event_AlignChanged(int index /* AP_Dialog_PageNumbers::tAlign */);
+  void event_HdrFtrChanged(int index /* AP_Dialog_PageNumbers::tControl */);
 
  protected:
 

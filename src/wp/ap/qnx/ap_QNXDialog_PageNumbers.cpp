@@ -66,7 +66,6 @@ static int s_delete_clicked(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -88,21 +87,23 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 
 static int s_position_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
 {
+	PtListCallback_t *ldata = (PtListCallback_t *)info->cbdata;
 	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
-	/*
-	int pos = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
-	dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
-	*/
+	if (info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
+		return Pt_CONTINUE;
+	}
+	dlg->event_HdrFtrChanged(ldata->item_pos - 1);
 	return Pt_CONTINUE;
 }
 
 static int s_alignment_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
 {
+	PtListCallback_t *ldata = (PtListCallback_t *)info->cbdata;
 	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
-	/*
-	int align = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
-	dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
-	*/
+	if (info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
+		return Pt_CONTINUE;
+	}
+	dlg->event_AlignChanged(ldata->item_pos - 1);
 	return Pt_CONTINUE;
 }
 
@@ -157,15 +158,15 @@ void AP_QNXDialog_PageNumbers::event_PreviewExposed(void)
 		m_preview->draw();
 }
 
-void AP_QNXDialog_PageNumbers::event_AlignChanged(AP_Dialog_PageNumbers::tAlign   align)
+void AP_QNXDialog_PageNumbers::event_AlignChanged(int index /* AP_Dialog_PageNumbers::tAlign align */)
 {
-	m_recentAlign = align;
+	m_recentAlign = (AP_Dialog_PageNumbers::tAlign)((int)m_vecalign.getNthItem(index));
 	_updatePreview(m_recentAlign, m_recentControl);
 }
 
-void AP_QNXDialog_PageNumbers::event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl control)
+void AP_QNXDialog_PageNumbers::event_HdrFtrChanged(int index /* AP_Dialog_PageNumbers::tControl control */)
 {
-	m_recentControl = control;
+	m_recentControl = (AP_Dialog_PageNumbers::tControl)((int)m_vecposition.getNthItem(index));
 	_updatePreview(m_recentAlign, m_recentControl);
 }
 
@@ -197,9 +198,9 @@ void AP_QNXDialog_PageNumbers::runModal(XAP_Frame * pFrame)
     // *** this is how we add the gc ***
 	{
 	  // attach a new graphics context to the drawing area
-	  XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
+	  //XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
+	  //UT_ASSERT(app);
 
-	  UT_ASSERT(app);
 	  UT_ASSERT(m_previewArea);
 	  DELETEP (m_qnxGraphics);
 	  
@@ -218,8 +219,9 @@ void AP_QNXDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	  event_PreviewExposed ();
 	}
 
-    // Run into the GTK event loop for this window.
-	int count = PtModalStart();
+    // Run into the event loop for this window.
+	int count;
+	count = PtModalStart();
 	done = 0;
 	while(!done) {
 		PtProcessEvent();
@@ -231,35 +233,6 @@ void AP_QNXDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
 }
-
-#if 0
-void AP_QNXDialog_PageNumbers::_connectSignals (void)
-{
-  	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
-			   "clicked",
-			   GTK_SIGNAL_FUNC(s_ok_clicked),
-			   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
-			   "clicked",
-			   GTK_SIGNAL_FUNC(s_cancel_clicked),
-			   (gpointer) this);
-
-	// the catch-alls
-	
-	gtk_signal_connect_after(GTK_OBJECT(m_window),
-				 "delete_event",
-				 GTK_SIGNAL_FUNC(s_delete_clicked),
-				 (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(m_window),
-				 "destroy",
-				 NULL,
-				 NULL);
-
-}
-#endif
 
 PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 {  
@@ -315,6 +288,8 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtListAddItems(combo1, &add, 1, 0);
 	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_FTR);
 	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_HDR);
+	PtAddCallback(combo1, Pt_CB_SELECTION, s_position_changed, this);
+	UT_QNXComboSetPos(combo1, 1);
 
 	//Create the second label/combo combination
 	n = 0;
@@ -330,10 +305,11 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtListAddItems(combo2, &add, 1, 0);
 	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center); 
 	PtListAddItems(combo2, &add, 1, 0);
-
 	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_RALIGN);
 	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_LALIGN);
 	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_CALIGN);
+	PtAddCallback(combo2, Pt_CB_SELECTION, s_alignment_changed, this);
+	UT_QNXComboSetPos(combo2, 1);
 
 	//Create the preview area
 	//frame1 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));
