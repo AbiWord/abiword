@@ -25,7 +25,6 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"

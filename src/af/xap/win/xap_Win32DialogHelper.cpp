@@ -28,7 +28,6 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
 #include "xap_Win32DialogHelper.h"
 
 
@@ -44,15 +43,13 @@ void XAP_Win32DialogHelper::runModal(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id
 	UT_ASSERT(m_pDialog != NULL);
 
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(p_dialog->getApp());
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-
 
 	UT_ASSERT(p_dialog->getDialogId() == dialog_id);
 
 	LPCTSTR lpTemplate = MAKEINTRESOURCE(resource_id);
 
 	int result = DialogBoxParam(pWin32App->getInstance(), lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
+								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc, (LPARAM)this);
 	UT_ASSERT((result != -1));
 }
@@ -65,7 +62,6 @@ void XAP_Win32DialogHelper::runModeless(XAP_Frame * pFrame, XAP_Dialog_Id dialog
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(p_dialog->getApp());
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -74,7 +70,7 @@ void XAP_Win32DialogHelper::runModeless(XAP_Frame * pFrame, XAP_Dialog_Id dialog
 	lpTemplate = MAKEINTRESOURCE(resource_id);
 
 	HWND hWndDialog = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
+								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 	ShowWindow(hWndDialog, SW_SHOW);
 	UT_ASSERT((hWndDialog != NULL));
@@ -308,22 +304,22 @@ bool XAP_Win32DialogHelper::isParentFrame(const XAP_Win32Frame& frame) const
 {
 	_assertValidDlgHandle(m_hDlg);
 	return ((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) ==
-		frame.getTopLevelWindow()) ? true : false;
+		static_cast<XAP_Win32FrameImpl*>(frame.getFrameImpl())->getTopLevelWindow()) ? true : false;
 }
 
-void XAP_Win32DialogHelper::setParentFrame(const XAP_Win32Frame* pFrame)
+void XAP_Win32DialogHelper::setParentFrame(const XAP_Frame* pFrame)
 {
 	_assertValidDlgHandle(m_hDlg);
 	SetWindowLong(	m_hDlg,
 					GWL_HWNDPARENT,
-					(LONG)(pFrame ? pFrame->getTopLevelWindow() : 0));
+					(LONG)(pFrame ? pFrame : NULL));
 }
 
 
-XAP_Win32Frame* XAP_Win32DialogHelper::getParentFrame()
+XAP_Frame* XAP_Win32DialogHelper::getParentFrame()
 {
 	_assertValidDlgHandle(m_hDlg);
-	return reinterpret_cast<XAP_Win32Frame*>(
+	return reinterpret_cast<XAP_Frame*>(
 			GetWindowLong(m_hDlg, GWL_HWNDPARENT));
 }
 

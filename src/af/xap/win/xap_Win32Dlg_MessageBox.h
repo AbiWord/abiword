@@ -21,7 +21,7 @@
 #define XAP_WIN32DIALOG_MESSAGEBOX_H
 
 #include "xap_Dlg_MessageBox.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 
@@ -36,8 +36,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
-	XAP_Win32Frame *		m_pWin32Frame;
-	
+
 };
 
 #endif /* XAP_WIN32DIALOG_MESSAGEBOX_H */

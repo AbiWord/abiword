@@ -22,7 +22,7 @@
 
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Draw_Symbol.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 class XAP_Win32PreviewWidget;
 
 /*****************************************************************/

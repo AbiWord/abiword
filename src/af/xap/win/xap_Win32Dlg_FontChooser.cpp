@@ -27,7 +27,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -65,10 +65,10 @@ XAP_Win32Dialog_FontChooser::~XAP_Win32Dialog_FontChooser(void)
 
 void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
-	m_pWin32Frame = (XAP_Win32Frame *)pFrame;
-	UT_ASSERT(m_pWin32Frame);
-	XAP_Win32App * pApp = (XAP_Win32App *)m_pWin32Frame->getApp();
-	UT_ASSERT(pApp);
+	UT_return_if_fail(pFrame);
+
+	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(pFrame->getApp());
+	UT_return_if_fail(pApp);
 
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",
 				 ((m_pFontFamily) ? m_pFontFamily : ""),
@@ -94,7 +94,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	CHOOSEFONT cf;
 	memset(&cf, 0, sizeof(cf));
 	cf.lStructSize = sizeof(cf);
-	cf.hwndOwner = m_pWin32Frame->getTopLevelWindow();
+	cf.hwndOwner = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	cf.lpLogFont = &lf;
 	cf.Flags = CF_SCREENFONTS |
                CF_EFFECTS |
@@ -297,8 +297,7 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	HWND hFrame     = GetParent(hWnd);
-	XAP_Win32Frame* pWin32Frame = (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
-	XAP_App*              pApp        = pWin32Frame->getApp();
+	XAP_App*              pApp        = XAP_App::getApp();
 	const XAP_StringSet*  pSS         = pApp->getStringSet();
 
 	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));

@@ -26,7 +26,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "xap_Win32Toolbar_Icons.h"
 
 #include "xap_Strings.h"
@@ -67,9 +67,10 @@ XAP_Win32Dialog_Language::~XAP_Win32Dialog_Language(void)
 
 void XAP_Win32Dialog_Language::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
+
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	UT_return_if_fail(pWin32App);
 	
 	LPCTSTR lpTemplate = NULL;
 
@@ -78,10 +79,10 @@ void XAP_Win32Dialog_Language::runModal(XAP_Frame * pFrame)
 	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_LANGUAGE);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),
-			                    lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,
-								(LPARAM)this );
+						lpTemplate,
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,
+						(LPARAM)this );
 	UT_ASSERT((result != -1));
 }
 

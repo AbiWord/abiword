@@ -21,7 +21,7 @@
 #define XAP_WIN32DIALOG_CLIPART_H
 
 #include "xap_Dlg_ClipArt.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 

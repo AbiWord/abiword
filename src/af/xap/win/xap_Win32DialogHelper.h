@@ -31,7 +31,8 @@
 #include <commctrl.h>
 
 /*****************************************************************/
-#include "XAP_Win32Frame.h"
+#include "xap_Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "ut_Xpm2Bmp.h"
 
 class XAP_Win32Dialog
@@ -112,9 +113,9 @@ public:
 
 	bool				isControlVisible(UT_sint32	controlId) const;
 
-	bool				isParentFrame(const XAP_Win32Frame& frame) const;
-	void				setParentFrame(const XAP_Win32Frame* pFrame);
-	XAP_Win32Frame*		getParentFrame();
+	bool				isParentFrame(const XAP_Frame& frame) const;
+	void				setParentFrame(const XAP_Frame* pFrame);
+	XAP_Frame*			getParentFrame();
 	void 				centerDialog();
 	static void			s_centerDialog(HWND hWnd);
 	void				setHandle(HWND hWnd){m_hDlg=hWnd;};

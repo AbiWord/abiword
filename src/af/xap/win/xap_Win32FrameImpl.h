@@ -57,7 +57,7 @@ class ABI_EXPORT XAP_Win32FrameImpl : public XAP_FrameImpl
 	void enableWindowInput(bool bActive)		{  EnableWindow(_getTopLevelWindow(), bActive);  }
 	LRESULT sendMsgToFrame(UINT Msg, WPARAM wParam, LPARAM lParam)	{  return SendMessage(_getTopLevelWindow(), Msg, wParam, lParam);  }
 
-//	inline HWND getTopLevelWindow(void) const 	{  return _getTopLevelWindow();  }
+	inline HWND getTopLevelWindow(void) const 	{  return _getTopLevelWindow();  }
 	inline HWND getToolbarWindow(void) const		{  return m_hwndRebar;  }
 
 protected:

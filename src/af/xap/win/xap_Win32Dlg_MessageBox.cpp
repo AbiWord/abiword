@@ -21,7 +21,7 @@
 #include "ut_assert.h"
 #include "xap_Win32Dlg_MessageBox.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
@@ -45,14 +45,13 @@ XAP_Win32Dialog_MessageBox::~XAP_Win32Dialog_MessageBox(void)
 
 void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	m_pWin32Frame = (XAP_Win32Frame *)pFrame;
-	UT_ASSERT(m_pWin32Frame);
-	XAP_Win32App * pApp = (XAP_Win32App *)m_pWin32Frame->getApp();
+	UT_ASSERT(pFrame);
+	XAP_Win32App * pApp = static_cast<XAP_Win32App *>(pFrame->getApp());
 	UT_ASSERT(pApp);
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
-	HWND hwnd = m_pWin32Frame->getTopLevelWindow();
+	HWND hwnd = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	UINT flags;
 
 	switch (m_buttons)
@@ -113,7 +112,5 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 	}
 
 	// the caller can get the answer from getAnswer().
-
-	m_pWin32Frame = NULL;
 }
 

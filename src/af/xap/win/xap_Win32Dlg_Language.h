@@ -22,7 +22,7 @@
 
 #include "xap_Dlg_Language.h"
 #include "xap_Win32DialogHelper.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 

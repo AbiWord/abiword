@@ -23,7 +23,7 @@
 #include "xap_Dlg_FileOpenSaveAs.h"
 
 class UT_String;
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 #define DEFAULT_EXT_SIZE 15
 
@@ -42,8 +42,6 @@ public:
 	static UINT CALLBACK	s_hookInsertPicProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 			
 protected:
-	XAP_Win32Frame *		m_pWin32Frame;
-
 	UINT _previewPicture(HWND hwnd);
 	UINT _initPreviewDlg(HWND hwnd);
 

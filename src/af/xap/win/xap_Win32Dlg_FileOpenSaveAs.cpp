@@ -32,7 +32,7 @@
 #include "xap_App.h"
 #include "xap_Strings.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
@@ -225,12 +225,12 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 
 void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
+	UT_ASSERT(pFrame);
+	UT_ASSERT(pFrame->getFrameImpl());
+
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(m_pApp);
 
-	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	UT_ASSERT(m_pWin32Frame);
-
-	HWND hFrame = m_pWin32Frame->getTopLevelWindow();
+	HWND hFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 
 	char szFile[MAX_DLG_INS_PICT_STRING];	// buffer for filename
 	char szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
@@ -460,7 +460,6 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_DEBUGMSG(("Didn't get a file: reason=0x%x\n", CommDlgExtendedError()));
 	}
 
-	m_pWin32Frame = NULL;
 	return;
 }
 
@@ -620,8 +619,8 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	HWND hFrame 	= GetParent(hFOSADlg);
 	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
 
-	XAP_Win32Frame* pWin32Frame = (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
-	const XAP_StringSet*  pSS	= pWin32Frame->getApp()->getStringSet();
+	const XAP_StringSet*  pSS	= XAP_App::getApp()->getStringSet();
+	UT_return_val_if_fail(pSS, false);
 
 	// Check if File Name is for a file
 	char buf[MAX_DLG_INS_PICT_STRING];
@@ -726,7 +725,7 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hThumbnail, &ps);
 	FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
-	GR_Win32Graphics* pGr = new GR_Win32Graphics(hdc,hThumbnail,pWin32Frame->getApp());
+	GR_Win32Graphics* pGr = new GR_Win32Graphics(hdc,hThumbnail,XAP_App::getApp());
 	pGr->drawImage(pImage,
 				  (r.right	- scaled_width ) / 2,
 				  (r.bottom - scaled_height) / 2);
@@ -745,9 +744,8 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 	HWND hFrame 	= GetParent(hFOSADlg);
 	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
 
-	XAP_Win32Frame* pWin32Frame = (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
-	XAP_App*			  pApp		  = pWin32Frame->getApp();
-	const XAP_StringSet*  pSS		  = pApp->getStringSet();
+	const XAP_StringSet*  pSS		  = XAP_App::getApp()->getStringSet();
+	UT_return_val_if_fail(pSS, false);
 	
 	SetDlgItemText( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,

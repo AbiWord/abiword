@@ -27,7 +27,8 @@
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
@@ -83,7 +84,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	m_pFrame = static_cast<XAP_Win32Frame *>(pFrame);
+	m_pFrame = pFrame;
 
 	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
 	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
@@ -122,7 +123,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	const int iScreenWidth  = ::GetSystemMetrics(SM_CXFULLSCREEN);
 	const int iScreenHeight = ::GetSystemMetrics(SM_CYFULLSCREEN);
 
-	HWND hWndFrame = m_pFrame->getTopLevelWindow();
+	HWND hWndFrame = static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->getTopLevelWindow();
 
 	BringWindowToTop(hWndFrame);
 	pWin32App->enableAllTopLevelWindows(FALSE);

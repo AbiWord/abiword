@@ -23,7 +23,7 @@
 #include "xap_Dlg_FontChooser.h"
 #include "xap_Win32PreviewWidget.h"
 
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 
@@ -42,7 +42,7 @@ protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	XAP_Win32Frame *		m_pWin32Frame;
+	XAP_Frame *			m_pWin32Frame;
 	XAP_Win32PreviewWidget* m_pPreviewWidget;
 
 	bool					m_bWin32Overline;

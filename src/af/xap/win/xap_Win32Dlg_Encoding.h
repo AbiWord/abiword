@@ -21,7 +21,7 @@
 #define XAP_WIN32DIALOG_ENCODING_H
 
 #include "xap_Dlg_Encoding.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 

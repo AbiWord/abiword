@@ -91,11 +91,11 @@ void XAP_Win32Dialog_Insert_Symbol::activate(void)
 
 void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	UT_return_if_fail(pWin32App);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -104,7 +104,7 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_SYMBOL);
 
 	HWND hWndDialog = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
+								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 	ShowWindow(hWndDialog, SW_SHOW);
 	UT_ASSERT((hWndDialog != NULL));
@@ -116,14 +116,16 @@ void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) != pWin32Frame->getTopLevelWindow())
+	UT_return_if_fail(pFrame);
+
+	HWND frameHWND = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
+	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) != frameHWND)
 	{
 		// Update the caption
 		ConstructWindowName();
 		SetWindowText(m_hDlg, m_WindowName);
 
-		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)pWin32Frame->getTopLevelWindow());
+		SetWindowLong(m_hDlg, GWL_HWNDPARENT, (long)frameHWND);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -131,8 +133,8 @@ void XAP_Win32Dialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
 
 void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) == pWin32Frame->getTopLevelWindow())
+	UT_return_if_fail(pFrame);
+	if((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLong(m_hDlg, GWL_HWNDPARENT, NULL);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,

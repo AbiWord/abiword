@@ -23,7 +23,7 @@
 #include "xap_Dlg_Password.h"
 #include "xap_Win32DialogHelper.h"
 
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 
