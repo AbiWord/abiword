@@ -2214,7 +2214,9 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 
 void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
+	// this assert is wrong -- a run can be asked to return coords for position it does
+	// not contain if the run which contains it cannot contain point
+	// UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
 
