@@ -1230,8 +1230,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTOC)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
-
-	return EV_MIS_ZERO;
+	if(pView->isTOCSelected())
+	{
+		return EV_MIS_ZERO;
+	}
+	return EV_MIS_Gray;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
