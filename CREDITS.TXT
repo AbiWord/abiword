@@ -100,6 +100,7 @@ Peter Haight <peterh@sapros.com>			Fonts location bug fix
 Vlad Harchev <hvv@hippo.ru> 				Support for non latin-1 Languages
 Stephen Hack <shack@uiuc.edu>				options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
+Larin Hennessy <larin@science.oregonstate.edu>		various plugin work
 hj <huangj@citiz.net>					XIM, focus, principal
 							author of CJK support
 							patch
@@ -120,7 +121,9 @@ Michael Kobas <michael238@ozemail.com.au>		Win32 Setup icon and Installer mods
 Larry Kollar <kollar@alltel.net>			MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>			artist
-William Lachance <wlach@interlog.com>			WordPerfect import
+William Lachance <william.lachance@sympatico.ca>	WordPerfect import, 
+		 					GTK+ and platform work,
+							OOo export
 Dom Lachowicz <cinamod@hotmail.com> 			glib and Word export,
 							gnome FE maintainer, 
 							current wvWare
