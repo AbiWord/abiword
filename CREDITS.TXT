@@ -13,6 +13,7 @@ contributors
 ------------
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix.
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
+Jesus Bravo Alvarez <jba@pobox.com>		Galician translation
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Henrik Berg <henrik@lansen.se>                  ispell i18n
 Daniel Berlin <db003g@mail.rochester.edu>       BeOS whiz
