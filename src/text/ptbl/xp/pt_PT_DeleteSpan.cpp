@@ -1031,18 +1031,19 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 // First delete the EndTable Strux
 //
 					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
+					if(m_fragments.areFragsDirty())
+					{
+						m_fragments.cleanFrags();
+					}
 					PT_DocPosition myPos = pfs->getPos();
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
+					UT_DEBUGMSG(("DELeteing EndTable Strux, pos= %d \n",pfs->getPos()));
 					bResult = _deleteStruxWithNotify(myPos, pfs,
 													  &pfNewEnd,
 													  &fragOffsetNewEnd);
 					while(bResult && iTable > 0)
 					{
 						stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
-						if(m_fragments.areFragsDirty())
-						{
-							m_fragments.cleanFrags();
-						}
 						if(pfs->getStruxType() == PTX_SectionTable)
 						{
 							iTable--;
