@@ -69,6 +69,7 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	m_checkStrikeOut = NULL;
 	m_checkUnderline = NULL;
 	m_checkOverline = NULL;
+	m_checkHidden = NULL;
 	m_checkTransparency = NULL;
 	m_colorSelector = NULL;
 	m_bgcolorSelector = NULL;
@@ -231,6 +232,11 @@ static void s_strikeout_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg
 	dlg->strikeoutChanged();
 }
 
+static void s_hidden_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
+{
+	dlg->hiddenChanged();
+}
+
 
 static void s_transparency_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
 {
@@ -265,6 +271,11 @@ void XAP_UnixDialog_FontChooser::overlineChanged(void)
 	updatePreview();
 }
 
+void XAP_UnixDialog_FontChooser::hiddenChanged(void)
+{
+	m_bHidden = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkHidden));
+	m_bChangedHidden = !m_bChangedHidden;
+}
 
 void XAP_UnixDialog_FontChooser::transparencyChanged(void)
 {
@@ -450,6 +461,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	GtkWidget *checkbuttonStrikeout;
 	GtkWidget *checkbuttonUnderline;
 	GtkWidget *checkbuttonOverline;
+	GtkWidget *checkbuttonHidden;
 //	GtkWidget *labelEncoding;
 //	GtkWidget *comboEncoding;
 	GtkWidget *listStyles;
@@ -654,6 +666,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (checkbuttonOverline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonOverline, TRUE, TRUE, 0);
 
+	checkbuttonHidden = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_HiddenCheck).c_str());
+	gtk_container_border_width (GTK_CONTAINER (checkbuttonHidden), 5);
+	gtk_widget_show (checkbuttonHidden);
+	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonHidden, TRUE, TRUE, 0);
+
 
 #if 0
 	hboxForEncoding = gtk_hbox_new (FALSE, 0);
@@ -765,6 +782,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	m_checkStrikeOut = checkbuttonStrikeout;
 	m_checkUnderline = checkbuttonUnderline;
 	m_checkOverline = checkbuttonOverline;
+	m_checkHidden = checkbuttonHidden;
 	m_checkTransparency = checkbuttonTrans;
 
 	// bind signals to things
@@ -781,6 +799,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	g_signal_connect(G_OBJECT(m_checkStrikeOut),
 					   "toggled",
 					   G_CALLBACK(s_strikeout_toggled),
+					   (gpointer) this);
+
+	g_signal_connect(G_OBJECT(m_checkHidden),
+					   "toggled",
+					   G_CALLBACK(s_hidden_toggled),
 					   (gpointer) this);
 
 

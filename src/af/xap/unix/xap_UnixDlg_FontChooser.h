@@ -48,6 +48,7 @@ public:
 	void                    underlineChanged(void);
 	void                    overlineChanged(void);
 	void                    strikeoutChanged(void);
+	void                    hiddenChanged(void);
 	void                    transparencyChanged(void);
 	void 					updatePreview(void);
 	void                    fontRowChanged(void);
@@ -69,6 +70,7 @@ public:
 	GtkWidget * 			m_checkStrikeOut;
 	GtkWidget *				m_checkUnderline;
 	GtkWidget *				m_checkOverline;
+	GtkWidget *                             m_checkHidden;
 	GtkWidget *				m_checkTransparency;
 	GtkWidget *				m_colorSelector;
 	GtkWidget *				m_bgcolorSelector;
