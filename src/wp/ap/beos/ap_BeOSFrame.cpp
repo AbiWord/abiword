@@ -199,7 +199,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	// frame is created.
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
-	//((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
@@ -234,7 +234,8 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 #endif	
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
         ((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	//((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+ 
 
 	return UT_OK;
 
@@ -560,8 +561,7 @@ void AP_BeOSFrame::_scrollFuncY(void * pData,
 
 void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 {
-	printf("FRAME:Set Status Message not yet supported \n");
-//        ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }                                                                        
 
 
@@ -575,20 +575,21 @@ be_DocView *be_Window::_createDocumentWindow() {
 	
         //Set up the scroll bars on the outer edges of the document area
         r = m_winRectAvailable;
-        r.bottom -= B_H_SCROLL_BAR_HEIGHT;
+        r.bottom -= (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);
         r.left = r.right - B_V_SCROLL_BAR_WIDTH;
         m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
                                     "VertScroll", NULL, 0, 100, B_VERTICAL);
         AddChild(m_vScroll);
 
         r = m_winRectAvailable;
-        r.top = r.bottom - B_H_SCROLL_BAR_HEIGHT;
+        r.top = r.bottom - (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);
+        r.bottom-=(1+ STATUS_BAR_HEIGHT);
         r.right -= B_V_SCROLL_BAR_WIDTH;
         m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
                                     "HortScroll", NULL, 0, 100, B_HORIZONTAL);
         AddChild(m_hScroll);
         m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
-        m_winRectAvailable.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
+        m_winRectAvailable.bottom -= (B_H_SCROLL_BAR_HEIGHT +2+ STATUS_BAR_HEIGHT);
         m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
 
 	//Create the Top and Left Rulers (need a width here)
