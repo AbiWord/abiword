@@ -34,11 +34,10 @@ XFT_LIBS=""
 
 xft=true
 
-AC_ARG_ENABLE(xft,[  --enable-xft    Turn on xft ],[
+AC_ARG_ENABLE(xft,[  --disable-xft   Turn off xft ],[
 	if test "x$enableval" = "xno"; then
 		xft=false
 	fi
-],[	xft=false
 ])
 
 if test "$PLATFORM" = unix; then
