@@ -163,6 +163,6 @@ void PX_ChangeRecord::dump(void) const
 	case PX_ChangeRecord::PXT_ChangeStrux:				name = "ChngStrx";	break;
 	}
 	
-	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %d]\n", name,m_atomic,m_indexAP));
+	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %08lx]\n", name,m_atomic,m_indexAP));
 #endif
 }

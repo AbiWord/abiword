@@ -256,7 +256,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					{					
 						if (pRun->ins(blockOffset, len, pcrs->getIndexAP()))
 						{
-							if (pcrs->getIndexAP() != pcrs->getOldIndexAP())
+							if (pcrs->isDifferentFmt() & PT_Diff_Left)
 							{
 								/*
 									The format changed too, so this needs to 
@@ -621,6 +621,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 			fl_Layout * pL = (fl_Layout *)sfh;
 
+			// TODO getOldIndexAP() is only intended for use by the document.
+			// TODO this assert is probably wrong.
 			UT_ASSERT(pL->getAttrPropIndex() == pcrxc->getOldIndexAP());
 			UT_ASSERT(pL->getAttrPropIndex() != pcr->getIndexAP());
 

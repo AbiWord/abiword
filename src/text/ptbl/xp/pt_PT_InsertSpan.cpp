@@ -44,6 +44,76 @@
 /****************************************************************/
 /****************************************************************/
 
+PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex indexAP)
+{
+	PT_Differences diff = 0;
+	
+	switch (pf->getType())
+	{
+	default:
+		UT_ASSERT(0);
+		return diff;
+
+	case pf_Frag::PFT_Strux:
+		{
+			// we are looking at a strux.  see if there is text
+			// just before us and if it is different.
+			if (   (pf->getPrev())
+				&& (pf->getPrev()->getType()==pf_Frag::PFT_Text))
+			{
+				pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pf->getPrev());
+				if (pftPrev->getIndexAP() != indexAP)
+					diff |= PT_Diff_Left;
+			}
+		}
+		return diff;
+		
+	case pf_Frag::PFT_Text:
+		{
+			pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
+			UT_uint32 fragLen = pft->getLength();
+			if (fragOffset == 0)
+			{
+				// we are on the left edge of a text frag.
+				// see if we are different.  if the previous frag
+				// is a text frag, see if it is different.
+				if (pft->getIndexAP() != indexAP)
+					diff |= PT_Diff_Right;
+				if (   (pf->getPrev())
+					&& (pf->getPrev()->getType()==pf_Frag::PFT_Text))
+				{
+					pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pf->getPrev());
+					if (pftPrev->getIndexAP() != indexAP)
+						diff |= PT_Diff_Left;
+				}
+			}
+			else if (fragOffset == fragLen)
+			{
+				// we are on the right edge of a text frag.
+				// see if we are different.  if the next frag is
+				// a text frag, see if it is different.
+				if (pft->getIndexAP() != indexAP)
+					diff |= PT_Diff_Left;
+				if (   (pft->getNext())
+					&& (pft->getNext()->getType()==pf_Frag::PFT_Text))
+				{
+					pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pf->getNext());
+					if (pftNext->getIndexAP() != indexAP)
+						diff |= PT_Diff_Right;
+				}
+			}
+			else
+			{
+				// we are in the middle of a text frag.
+				// see if we are different.
+				if (pft->getIndexAP() != indexAP)
+					diff |= PT_Diff_Left | PT_Diff_Right;
+			}
+		}
+		return diff;
+	}
+}
+	
 UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 								   PT_BufIndex bi,
 								   PT_BlockOffset fragOffset,
@@ -52,7 +122,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 {
 	// update the fragment and/or the fragment list.
 	// return true if successful.
-
+	
 	pf_Frag_Text * pft = NULL;
 	
 	switch (pf->getType())
@@ -139,8 +209,6 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 			// the same properties, and the character data is contiguous with
 			// it, let's stick it in the previous fragment.
 
-			// TODO verify that this case is actually generated.
-		
 			pf_Frag * pfPrev = pft->getPrev();
 			if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text)
 			{
@@ -226,14 +294,39 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
-	pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
+	// we just did a getFragFromPosition() which gives us the
+	// the thing *starting* at that position.  if we have a
+	// fragment boundary at that position, it's sort of arbitrary
+	// whether we treat it as a prepend to the one we just found
+	// or an append to the previous one (when it's a text frag).
+	// in the normal case, we want the Attr/Prop of a character
+	// insertion to take the AP of the thing to the immediate
+	// left (this is what MS-Word and MS-WordPad do).  It's also
+	// useful when the user hits the BOLD button (without a)
+	// selection) and then starts typing -- ideally you'd like
+	// all of the text to have bold not just the first.  therefore,
+	// we will see if we are on a text-text boundary and backup
+	// (and thus appending) to the previous.
 
+	if ((fragOffset == 0) && pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
+	{
+		pf = pf->getPrev();
+		fragOffset = pf->getLength();
+	}
+	
 	PT_AttrPropIndex indexAP = 0;
 	if (m_bHaveTemporarySpanFmt)
 		indexAP = m_indexAPTemporarySpanFmt;
 	else if (pf->getType() == pf_Frag::PFT_Text)
+	{
+		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
 		indexAP = pft->getIndexAP();
+	}
 
+	// before we actually do the insert, see if we are introducing a
+	// change in the formatting.
+	PT_Differences isDifferentFmt = _isDifferentFmt(pf,fragOffset,indexAP);
+	
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP))
 		return UT_FALSE;
 
@@ -245,9 +338,9 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,PX_ChangeRecord::PXF_Null,
 								   dpos,
-								   pft->getIndexAP(),indexAP,
+								   indexAP,indexAP,
 								   m_bHaveTemporarySpanFmt,UT_FALSE,
-								   bi,length);
+								   bi,length,isDifferentFmt);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 

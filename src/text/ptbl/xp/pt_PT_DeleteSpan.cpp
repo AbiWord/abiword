@@ -129,6 +129,8 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 		SETP(pfragOffsetEnd, 0);
 		return UT_TRUE;
 	}
+
+	PT_Differences isDifferentFmt = _isDifferentFmt(pft,fragOffset,pft->getIndexAP());
 	
 	// we do this before the actual change because various fields that
 	// we need are blown away during the delete.  we then notify all
@@ -141,7 +143,7 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 								   m_indexAPTemporarySpanFmt,pft->getIndexAP(),
 								   m_bHaveTemporarySpanFmt,UT_FALSE,
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-								   length);
+								   length,isDifferentFmt);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);

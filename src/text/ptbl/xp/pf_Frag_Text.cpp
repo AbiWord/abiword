@@ -66,7 +66,7 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 								   dpos,
 								   m_indexAP,m_indexAP,
 								   UT_FALSE,UT_FALSE,
-								   m_bufIndex,m_length);
+								   m_bufIndex,m_length,UT_FALSE);
 	if (!pcr)
 		return UT_FALSE;
 

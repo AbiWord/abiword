@@ -55,17 +55,20 @@ public:
 						 UT_Bool bTempBefore,
 						 UT_Bool bTempAfter,
 						 PT_BufIndex bufIndex,
-						 UT_uint32 length);
+						 UT_uint32 length,
+						 PT_Differences bDifferentFmt);
 	~PX_ChangeRecord_Span();
 
 	virtual PX_ChangeRecord * reverse(void) const;
 
 	UT_uint32				getLength(void) const;
 	PT_BufIndex				getBufIndex(void) const;
+	PT_Differences			isDifferentFmt(void) const;
 	
 protected:
 	PT_BufIndex				m_bufIndex;	/* bufIndex to our text */
 	UT_uint32				m_length;	/* length of our text */
+	PT_Differences			m_DifferentFmt;
 };
 
 #endif /* PX_CHANGERECORD_SPAN_H */
