@@ -126,16 +126,16 @@ enum
 /////////////////////////////////////////////////////////
 
 // searchable, indexable keywords
-#define PD_META_KEY_KEYWORDS     "abiword.keywords"
+#define PD_META_KEY_KEYWORDS          "abiword.keywords"
 
 // the time this document was created
-#define PD_META_KEY_DATE_CREATED "abiword.date_created"
+#define PD_META_KEY_DATE_CREATED      "abiword.date_created"
 
 // the last time this document was saved
 #define PD_META_KEY_DATE_LAST_CHANGED "abiword.date_last_changed"
 
 // the creator (product) of this document. AbiWord, KWord, etc...
-#define PD_META_KEY_GENERATOR "abiword.generator"
+#define PD_META_KEY_GENERATOR         "abiword.generator"
 
 /*!
  PD_Document is the representation for a document.
