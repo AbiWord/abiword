@@ -442,7 +442,6 @@ private:
 	s_StyleTree (s_StyleTree * parent, const char * name, PD_Style * style);
 public:
 	s_StyleTree ();
-
 	~s_StyleTree ();
 
 private:
@@ -497,6 +496,7 @@ public:
 												 PL_StruxFmtHandle sfhNew));
 
 	bool	signal (UT_uint32 iSignal);
+	void    startEmbeddedStrux(void);
 
 private:
 	void 	_outputBegin (PT_AttrPropIndex api);
@@ -645,7 +645,8 @@ private:
 	void			blockStyleClear ();
 
 	bool			compareStyle (const char * key, const char * value);
-
+	void            _fillColWidthsVector();
+	void            _setCellWidthInches(void);
 	/* temporary strings; use with extreme caution
 	 */
 	UT_UTF8String	m_utf8_0; // low-level
@@ -678,6 +679,8 @@ private:
 	double          m_dPageWidthInches;
 	double          m_dSecLeftMarginInches;
 	double          m_dSecRightMarginInches;
+	double          m_dCellWidthInches;
+	UT_Vector       m_vecDWidths;
 };
 
 /*****************************************************************/
@@ -1551,6 +1554,18 @@ void s_HTML_Listener::_buildStyleTree ()
 					m_style_tree.add (szStyleName, m_pDocument);
 				}
 		}
+}
+
+/*!
+ * This closes open section tags and starts new one for embedded struxes
+ */
+void s_HTML_Listener::startEmbeddedStrux(void)
+{
+	if (m_bInSection) _closeSection ();
+
+	m_utf8_1 = "div";
+	tagOpen (TT_DIV, m_utf8_1);
+	m_bInSection = true;
 }
 
 void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
@@ -2790,6 +2805,74 @@ void s_HTML_Listener::_closeSpan ()
 
 #ifdef HTML_TABLES_SUPPORTED
 
+void s_HTML_Listener::_fillColWidthsVector(void)
+{
+//
+// Positioned columns controls
+//
+	const char * pszColumnProps = m_TableHelper.getTableProp("table-column-props");
+	UT_sint32 nCols = m_TableHelper.getNumCols ();
+	UT_DEBUGMSG(("Number columns in table %d \n",nCols));
+	if(m_vecDWidths.getItemCount() > 0)
+	{
+		UT_VECTOR_PURGEALL(double *,m_vecDWidths);
+		m_vecDWidths.clear();
+	}
+	if(pszColumnProps && *pszColumnProps)
+	{
+/*
+   These will be properties applied to all columns. To start with, just the 
+    widths of each column are specifed. These are translated to layout units.
+ 
+   The format of the string of properties is:
+
+   table-column-props:1.2in/3.0in/1.3in/;
+
+   So we read back in pszColumnProps
+   1.2in/3.0in/1.3in/
+
+   The "/" characters will be used to delineate different column entries.
+   As new properties for each column are defined these will be delineated with "_"
+   characters. But we'll cross that bridge later.
+*/
+		UT_DEBUGMSG(("table-column-props: %s \n",pszColumnProps));
+		UT_String sProps = pszColumnProps;
+		UT_sint32 sizes = sProps.size();
+		UT_sint32 i =0;
+		UT_sint32 j =0;
+		while(i < sizes)
+		{
+			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if((j+1)>i && sProps[j] == '/')
+			{
+				UT_String sSub = sProps.substr(i,(j-i));
+				i = j + 1;
+				double * pDWidth = new double;
+				*pDWidth = UT_convertToInches(sSub.c_str());
+				m_vecDWidths.addItem(reinterpret_cast<void *>(pDWidth));
+			}
+		}
+	}
+	//
+	// automatic column widths set to total width divided by nCols
+	//
+	else
+	{
+		double total = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+		UT_sint32 nCols = m_TableHelper.getNumCols ();
+		double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+		double colWidth = totWidth/nCols;
+		UT_sint32 i = 0;
+		for(i =0; i< nCols; i++)
+		{
+			double * pDWidth = new double;
+			*pDWidth = colWidth;
+			m_vecDWidths.addItem(reinterpret_cast<void *>(pDWidth));
+		}
+	}
+}
+
+
 void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 {
 	if (m_bFirstWrite) _outputBegin (api);
@@ -2978,53 +3061,17 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 
 	int nCols = m_TableHelper.getNumCols ();
-
-	float colWidth = 100 / static_cast<float>(nCols);
 	double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
-//
-// Positioned columns controls
-//
-	const char * pszColumnProps = m_TableHelper.getTableProp("table-column-props");
-	if(pszColumnProps && *pszColumnProps)
+
+	float colWidth = 100.0 / static_cast<float>(nCols);
+	tagOpen (TT_TABLE, m_utf8_1);
+	_fillColWidthsVector();
+	UT_sint32 i = 0;
+	if(m_vecDWidths.getItemCount() > 0)
 	{
-/*
-   These will be properties applied to all columns. To start with, just the 
-    widths of each column are specifed. These are translated to layout units.
- 
-   The format of the string of properties is:
-
-   table-column-props:1.2in/3.0in/1.3in/;
-
-   So we read back in pszColumnProps
-   1.2in/3.0in/1.3in/
-
-   The "/" characters will be used to delineate different column entries.
-   As new properties for each column are defined these will be delineated with "_"
-   characters. But we'll cross that bridge later.
-*/
-		UT_DEBUGMSG(("Processing Column width string %s \n",pszColumnProps));
-		UT_Vector vecDWidths;
-		UT_String sProps = pszColumnProps;
-		UT_sint32 sizes = sProps.size();
-		UT_sint32 i =0;
-		UT_sint32 j =0;
-		while(i < sizes)
+		for(i = 0; i< static_cast<UT_sint32>(m_vecDWidths.getItemCount());i++)
 		{
-			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
-			if((j+1)>i && sProps[j] == '/')
-			{
-				UT_String sSub = sProps.substr(i,(j-i));
-				i = j + 1;
-				double * pDWidth = new double;
-				*pDWidth = UT_convertToInches(sSub.c_str());
-				vecDWidths.addItem(reinterpret_cast<void *>(pDWidth));
-				UT_DEBUGMSG(("SEVIOR: width char %s \n",sSub.c_str()));
-			}
-		}
-		tagOpen (TT_TABLE, m_utf8_1);
-		for(i = 0; i< static_cast<UT_sint32>(vecDWidths.getItemCount());i++)
-		{
-			double * pDWidth = reinterpret_cast<double *>(vecDWidths.getNthItem(i));
+			double * pDWidth = reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
 			double percent = 100.0*(*pDWidth/totWidth);
 
 
@@ -3037,7 +3084,6 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			tagOpenClose (m_utf8_1, false);
 			m_utf8_1.clear();		
 		}
-		UT_VECTOR_PURGEALL(double *,vecDWidths);
  	}
 	else
 	{
@@ -3063,6 +3109,26 @@ void s_HTML_Listener::_closeTable ()
 
 	m_utf8_1 = "table";
 	tagClose (TT_TABLE, m_utf8_1);
+	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
+	m_vecDWidths.clear();
+	if(m_TableHelper.getNestDepth() > 0)
+	{
+		_fillColWidthsVector();
+		_setCellWidthInches();
+	}
+}
+
+void s_HTML_Listener::_setCellWidthInches(void)
+{
+	UT_sint32 left = m_TableHelper.getLeft ();
+	UT_sint32 right = m_TableHelper.getRight ();
+	double tot = 0;
+	UT_sint32 i =0;
+	for(i=left; i<right; i++)
+	{
+		tot += *reinterpret_cast<double *>(m_vecDWidths.getNthItem(i));
+	}
+	m_dCellWidthInches = tot;
 }
 
 void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
@@ -3075,7 +3141,7 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
-
+ 	_setCellWidthInches();
 	if (bHaveProp && pAP)
 		{
 			UT_sint32 rowspan = m_TableHelper.getBot ()   - m_TableHelper.getTop ();
@@ -3400,7 +3466,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_iEmbedStartPos(0),
 	m_dPageWidthInches(0.0),
 	m_dSecLeftMarginInches(0.0),
-	m_dSecRightMarginInches(0.0)
+	m_dSecRightMarginInches(0.0),
+	m_dCellWidthInches(0.0)
 {
 	// 
 }
@@ -3417,6 +3484,7 @@ s_HTML_Listener::~s_HTML_Listener()
 
 	bodyStyleClear ();
 	blockStyleClear ();
+	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
 }
 
 /* dataid   is the raw string with the data ID
@@ -3574,24 +3642,32 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	m_utf8_1 = "img";
 
 	const XML_Char * szWidth  = 0;
-	const XML_Char * szHeight = 0;
 
 	pAP->getProperty ("width",  szWidth);
-	pAP->getProperty ("height", szHeight);
-
+	double dWidth = UT_convertToInches(szWidth);
+	double total = 0;
+	if(m_TableHelper.getNestDepth() > 0)
+	{
+		total = m_dCellWidthInches;
+	}
+	else
+	{
+		total =  m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+	}
+	double percent = 100.0*dWidth/total;
+	if(percent > 100.)
+	{
+		percent = 100.0;
+	}
+	UT_UTF8String tmp;
+	UT_DEBUGMSG(("Width of Image %s \n",szWidth));
 	if (szWidth)
 		{
 			m_utf8_1 += " width=\"";
-			m_utf8_1 += szWidth;
+			tmp = UT_UTF8String_sprintf("%f%%",percent,1);
+			m_utf8_1 += tmp;
 			m_utf8_1 += "\"";
 		}
-	if(szHeight)
-		{
-			m_utf8_1 += " height=\"";
-			m_utf8_1 += szHeight;
-			m_utf8_1 += "\"";
-		}
-
 	if (!get_Embed_Images () || get_Multipart ())
 		{
 			m_utf8_1 += " src=\"";
@@ -3966,8 +4042,8 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 					return true;
 				}
 				_closeTag();
-				_closeTable();
 				m_TableHelper.CloseTable();
+				_closeTable();
 				return true;
 			}
 
@@ -4347,6 +4423,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	for(i=0; i< getNumFootnotes(); i++)
 		{
 			PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecFootnotes.getNthItem(i));
+			pListener->startEmbeddedStrux();
 			okay = getDoc()->tellListenerSubset(pL,pDocRange);
 		}
 	//
@@ -4355,6 +4432,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	for(i=0; i< getNumEndnotes(); i++)
 		{
 			PD_DocumentRange * pDocRange = reinterpret_cast<PD_DocumentRange *>(m_vecEndnotes.getNthItem(i));
+			pListener->startEmbeddedStrux();
 			okay = getDoc()->tellListenerSubset(pL,pDocRange);
 		}
 	DELETEP(pListener);
