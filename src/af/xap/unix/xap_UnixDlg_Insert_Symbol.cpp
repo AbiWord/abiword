@@ -618,32 +618,32 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 #ifndef USE_GUCHARMAP
 
 	// The event to choose the Symbol!
-	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
-					   "button_press_event",
-				       GTK_SIGNAL_FUNC(s_SymbolMap_clicked),
-					   static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_SymbolMap),
+					 "button_press_event",
+					 G_CALLBACK(s_SymbolMap_clicked),
+					 static_cast<gpointer>(this));
 
 	// The event to choose the Symbol!
-	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),
-			   "button_press_event",
-			   GTK_SIGNAL_FUNC(s_CurrentSymbol_clicked),
-			   static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_areaCurrentSym),
+					 "button_press_event",
+					 G_CALLBACK(s_CurrentSymbol_clicked),
+					 static_cast<gpointer>(this));
 
 	// Look for keys pressed
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
-					   "key_press_event",
-					   GTK_SIGNAL_FUNC(s_keypressed),
-					   static_cast<gpointer>(this));
-
+	g_signal_connect(G_OBJECT(m_windowMain),
+					 "key_press_event",
+					 G_CALLBACK(s_keypressed),
+					 static_cast<gpointer>(this));
+	
 	// the expose event of the m_SymbolMap
-	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_sym_SymbolMap_exposed),
-					   static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_SymbolMap),
+					 "expose_event",
+					 G_CALLBACK(s_sym_SymbolMap_exposed),
+					 static_cast<gpointer>(this));
 
-	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),
+	g_signal_connect(G_OBJECT(m_areaCurrentSym),
 					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_Symbolarea_exposed),
+					   G_CALLBACK(s_Symbolarea_exposed),
 					   static_cast<gpointer>(this));
 #else
 	g_signal_connect (G_OBJECT (gucharmap_charmap_get_chartable (GUCHARMAP_CHARMAP (m_SymbolMap))), "activate",
