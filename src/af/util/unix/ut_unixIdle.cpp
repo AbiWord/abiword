@@ -17,7 +17,12 @@
  * 02111-1307, USA.
  */
 
+#ifndef XP_TARGET_COCOA
 #include <glib.h>
+#else 
+	typedef int gint;
+	
+#endif
 
 #include "ut_unixIdle.h"
 #include "ut_assert.h"
@@ -32,7 +37,7 @@ static gint _Timer_Proc(void *p)
 
   pIdle->fire();
 
-  return TRUE;
+  return true;
 }
 
 /*!
@@ -71,7 +76,11 @@ void UT_UnixIdle::start ()
 // UT_ASSERT(m_id == -1);
 	if(m_id == -1)
 	{  
+#ifndef XP_TARGET_COCOA
 		m_id = g_idle_add(_Timer_Proc, this);
+#else
+		m_id = -1;
+#endif
 	}
 	UT_ASSERT(m_id > 0);
 }
@@ -86,8 +95,12 @@ void UT_UnixIdle::stop ()
 //    UT_ASSERT(m_id > 0);
 	if(m_id > 0)
 	{
+#ifndef XP_TARGET_COCOA
 		gboolean b = g_idle_remove_by_data(this);
 		UT_ASSERT(TRUE == b);
+#else
+		UT_ASSERT (UT_NOT_IMPLEMENTED);
+#endif
 	}
 	m_id = -1;
 }

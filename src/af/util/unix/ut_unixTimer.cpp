@@ -17,8 +17,11 @@
  * 02111-1307, USA.
  */
  
-
+#ifndef XP_TARGET_COCOA
 #include <gtk/gtk.h>
+#else
+#include "xap_CocoaTimer.h"
+#endif
 
 #include "ut_unixTimer.h"
 #include "ut_assert.h"
@@ -58,7 +61,7 @@ static int _Timer_Proc(void *p)
 	
 	pTimer->fire();
 
-	return TRUE;
+	return true;
 }
 
 UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
@@ -75,7 +78,11 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	*/
 	stop();
 
+#ifndef XP_TARGET_COCOA
 	m_iGtkTimerId = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
+#else
+	m_iGtkTimerId = XAP_newCocoaTimer(iMilliseconds, _Timer_Proc, this);
+#endif
 
 	if (getIdentifier() == 0)
 		setIdentifier(m_iGtkTimerId);
@@ -94,7 +101,11 @@ void UT_UNIXTimer::stop()
 	if (m_iGtkTimerId != 0)
 	{
 //		UT_DEBUGMSG(("ut_unixTimer.cpp: timer [%d] (with id [%d]) stopped\n", getIdentifier(), m_iGtkTimerId));
+#ifndef XP_TARGET_COCOA
 		gtk_timeout_remove(m_iGtkTimerId);
+#else
+		XAP_stopCocoaTimer (m_iGtkTimerId);
+#endif
 		m_iGtkTimerId = 0;
 	}
 }
