@@ -1826,7 +1826,6 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					FREEP(temp);
 					UT_String_sprintf(buf, "%s.png", fstripped);
 					FREEP(fstripped);
-					
 					m_pie->write("<img alt=\"AbiWord Image ");
 					m_pie->write(buf);
 					m_pie->write("\" src=\"");
@@ -1834,7 +1833,6 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->write("_data/");
 					m_pie->write(buf);
 					m_pie->write("\" ");
-					
 					const XML_Char * szWidth = 0;
 					const XML_Char * szHeight = 0;
 
@@ -2088,8 +2086,11 @@ void s_HTML_Listener::_handleDataItems(void)
 		{
 			FILE *fp;
 			UT_String fname; // EVIL EVIL bad hardcoded buffer size
-			
+#ifndef LEGIONS			
 			UT_String_sprintf(fname, "%s_data", m_pie->getFileName());
+#else
+			fname = "images";
+#endif			
 			int result = m_pDocument->getApp()->makeDirectory(fname.c_str(), 0750);
 			
 			if (!UT_strcmp(szMimeType, "image/svg-xml"))

@@ -662,7 +662,7 @@ void IE_Imp_MsWord_97::_flush ()
 
 	if (m_pTextRun.size())
 	{
-		if (!getDoc()->appendSpan(m_pTextRun.ucs_str(), m_pTextRun.size()))
+		if (!getDoc()->appendSpan(m_pTextRun.ucs4_str(), m_pTextRun.size()))
 		{
 			UT_DEBUGMSG(("DOM: error appending text run\n"));
 			return;
@@ -674,7 +674,7 @@ void IE_Imp_MsWord_97::_flush ()
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 {
 	if ( m_bIsLower )
-	  ch = UT_UCS_tolower ( ch );
+	  ch = UT_UCS4_tolower ( ch );
 	m_pTextRun += ch;
 }
 
@@ -728,7 +728,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(wvParseStruct * ps, UT_uint32 pos)
 	{
 		// 16 bit stuff
 		in_ptr = (const char *) ps->Sttbfbkmk.u16strings[pos];
-		in_left = 2 * UT_UCS_strlen(ps->Sttbfbkmk.u16strings[pos]) + 2;
+		in_left = 2 * UT_UCS2_strlen((UT_UCS2Char*)ps->Sttbfbkmk.u16strings[pos]) + 2;
 		UT_iconv( ic_handle, &in_ptr, &in_left, &buff_ptr,&out_left);
 		str = new XML_Char[200 - out_left];
 		strcpy(str, buff);
@@ -2223,7 +2223,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 		if (m_fieldDepth == 1)
 		{
 			m_command[m_fieldI] = 0;
-			m_iDocPosition += UT_UCS_strlen(m_command) + 1; // +1 for the 0x14
+			m_iDocPosition += UT_UCS2_strlen(m_command) + 1; // +1 for the 0x14
 			m_fieldC = wvWideStrToMB (m_command);
 			if (this->_handleCommandField(m_fieldC))
 				m_fieldRet = 1;
@@ -2296,7 +2296,7 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
 			token = strtok (NULL, "\"\" ");
 			UT_ASSERT(m_argument[0] == 0x14 && m_argument[m_fieldI - 1] == 0x15);
 			m_argument[m_fieldI - 1] = 0;
-			UT_UCSChar * a = m_argument + 1;
+			UT_UCS2Char * a = m_argument + 1;
 			while(*a)
 			{
 				this->_appendChar(*a++);

@@ -73,9 +73,9 @@ void AP_Dialog_Replace::useStart(void)
 
 	// restore from persistent storage
 	if (persist_findString)
-		UT_UCS_cloneString(&m_findString, persist_findString);
+		UT_UCS4_cloneString(&m_findString, persist_findString);
 	if (persist_replaceString)
-		UT_UCS_cloneString(&m_replaceString, persist_replaceString);
+		UT_UCS4_cloneString(&m_replaceString, persist_replaceString);
 
 	m_matchCase = persist_matchCase;
 
@@ -91,11 +91,11 @@ void AP_Dialog_Replace::useEnd(void)
 	{
 		FREEP(persist_findString);
 		if (m_findString)
-			UT_UCS_cloneString(&persist_findString, m_findString);
+			UT_UCS4_cloneString(&persist_findString, m_findString);
 		
 		FREEP(persist_replaceString);
 		if (m_replaceString)
-			UT_UCS_cloneString(&persist_replaceString, m_replaceString);
+			UT_UCS4_cloneString(&persist_replaceString, m_replaceString);
 
 		persist_matchCase = m_matchCase;
 	}
@@ -165,7 +165,7 @@ FV_View * AP_Dialog_Replace::getFvView(void)
 
 bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
 {
-	if (string && m_findString && UT_UCS_strcmp(string, m_findString) != 0)
+	if (string && m_findString && UT_UCS4_strcmp(string, m_findString) != 0)
 	{
 		// When search parameters change, clear any existing selection to
 		// avoid replacement of the previous search string.
@@ -173,7 +173,7 @@ bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
 	}
 
 	FREEP(m_findString);
-	return UT_UCS_cloneString(&m_findString, string);
+	return UT_UCS4_cloneString(&m_findString, string);
 }
 
 UT_UCSChar * AP_Dialog_Replace::getFindString(void)
@@ -181,12 +181,12 @@ UT_UCSChar * AP_Dialog_Replace::getFindString(void)
 	UT_UCSChar * string = NULL;
 	if (m_findString)
 	{
-		if (UT_UCS_cloneString(&string, m_findString))
+		if (UT_UCS4_cloneString(&string, m_findString))
 			return string;
 	}
 	else
 	{
-		if (UT_UCS_cloneString_char(&string, ""))
+		if (UT_UCS4_cloneString_char(&string, ""))
 			return string;
 	}
 	return NULL;
@@ -195,7 +195,7 @@ UT_UCSChar * AP_Dialog_Replace::getFindString(void)
 bool AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
 {
 	FREEP(m_replaceString);
-	return UT_UCS_cloneString(&m_replaceString, string);
+	return UT_UCS4_cloneString(&m_replaceString, string);
 }
 
 UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
@@ -203,12 +203,12 @@ UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
 	UT_UCSChar * string = NULL;
 	if (m_replaceString)
 	{
-		if (UT_UCS_cloneString(&string, m_replaceString))
+		if (UT_UCS4_cloneString(&string, m_replaceString))
 			return string;
 	}
 	else
 	{
-		if (UT_UCS_cloneString_char(&string, ""))
+		if (UT_UCS4_cloneString_char(&string, ""))
 			return string;
 	}
 

@@ -7011,8 +7011,8 @@ static bool s_doInsertDateTime(FV_View * pView)
 		char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
 
 		strftime(szCurrentDateTime,CURRENT_DATE_TIME_SIZE,pDialog->GetDateTimeFormat(),pTime);
-		UT_UCS_cloneString_char(&CurrentDateTime,szCurrentDateTime);
-		pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime), true);
+		UT_UCS4_cloneString_char(&CurrentDateTime,szCurrentDateTime);
+		pView->cmdCharInsert(CurrentDateTime,UT_UCS4_strlen(CurrentDateTime), true);
 		FREEP(CurrentDateTime);
 	}
 
@@ -8522,7 +8522,7 @@ bool _insAutotext (FV_View *pView, int id)
 	UT_uint32 len = strlen (text);
 
 	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
-	UT_UCS_strcpy_char (ucstext, text);
+	UT_UCS4_strcpy_char (ucstext, text);
 
 	pView->cmdCharInsert(ucstext, len);
 

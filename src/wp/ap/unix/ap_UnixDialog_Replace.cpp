@@ -179,7 +179,7 @@ void AP_UnixDialog_Replace::event_Find(void)
 	
 	UT_UCSChar * findString;
 
-	UT_UCS_cloneString_char(&findString, findEntryText);
+	UT_UCS4_cloneString_char(&findString, findEntryText);
 	
 	setFindString(findString);
 	
@@ -199,8 +199,8 @@ void AP_UnixDialog_Replace::event_Replace(void)
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
 
-	UT_UCS_cloneString_char(&findString, findEntryText);
-	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+	UT_UCS4_cloneString_char(&findString, findEntryText);
+	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
 	
 	setFindString(findString);
 	setReplaceString(replaceString);
@@ -222,8 +222,8 @@ void AP_UnixDialog_Replace::event_ReplaceAll(void)
 	UT_UCSChar * findString;
 	UT_UCSChar * replaceString;
 
-	UT_UCS_cloneString_char(&findString, findEntryText);
-	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+	UT_UCS4_cloneString_char(&findString, findEntryText);
+	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
 	
 	setFindString(findString);
 	setReplaceString(replaceString);
@@ -467,8 +467,8 @@ void AP_UnixDialog_Replace::_populateWindowData(void)
 	// last used find string
 	{
 		UT_UCSChar * bufferUnicode = getFindString();
-		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+		char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
+		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
 		gtk_entry_set_text(GTK_ENTRY(m_entryFind), bufferNormal);
@@ -484,8 +484,8 @@ void AP_UnixDialog_Replace::_populateWindowData(void)
 		UT_ASSERT(m_entryReplace);
 		
 		UT_UCSChar * bufferUnicode = getReplaceString();
-		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+		char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
+		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
 		gtk_entry_set_text(GTK_ENTRY(m_entryReplace), bufferNormal);

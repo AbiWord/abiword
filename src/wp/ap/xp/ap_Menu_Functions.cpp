@@ -488,12 +488,12 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 
 	p = pView->getContextSuggest(ndx);
 	if (p && *p)
-		len = UT_UCS_strlen(p);
+		len = UT_UCS4_strlen(p);
 
 	if (len)
 	{
 		// this is a suggestion
-		UT_UCS_strcpy_to_char(cBuf, p);
+		UT_UCS4_strcpy_to_char(cBuf, p);
 		c = cBuf;
 	}
 	else if (ndx == 1)

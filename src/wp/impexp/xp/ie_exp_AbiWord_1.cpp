@@ -296,7 +296,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	m_bInTag = true;
 }
 
-// This method is very much like _outputData but uses XML_Chars instead of UT_UCS_Char's.
+// This method is very much like _outputData but uses XML_Chars instead of UT_UCS4_Char's.
 void s_AbiWord_1_Listener::_outputXMLChar(const XML_Char * data, UT_uint32 length)
 {
 	UT_String sBuf;
@@ -812,7 +812,7 @@ void s_AbiWord_1_Listener::_handleIgnoredWords(void)
 		}
 		
 		m_pie->write("<iw>");
-		_outputData (word, UT_UCS_strlen (word));
+		_outputData (word, UT_UCS4_strlen (word));
 		m_pie->write("</iw>\n");
 	}
 

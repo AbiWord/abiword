@@ -226,7 +226,7 @@ bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		// TODO limited to single-byte encodings by the code below.  
 
 		int kLimit=gb.getLength();
-		UT_uint16 * p=gb.getPointer(0);
+		UT_UCS4Char * p= (UT_UCS4Char*) gb.getPointer(0);
 		UT_ByteBuf str;		
 		UT_Wctomb wctomb_conv;
 		char letter_buf[20];

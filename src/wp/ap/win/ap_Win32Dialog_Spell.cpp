@@ -168,11 +168,11 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_ALL, (LPARAM) &cf);
 
 	p = _getPreWord();
-	len = UT_UCS_strlen(p);
+	len = UT_UCS4_strlen(p);
 	if (len)
 	{
 		buf = new char [len + 1];
-		UT_UCS_strcpy_to_char(buf, p);
+		UT_UCS4_strcpy_to_char(buf, p);
 		SendMessage(m_hwndSentence, WM_SETTEXT, 0, (LPARAM)buf);
 		DELETEP(buf);
 	}
@@ -188,11 +188,11 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_SELECTION, (LPARAM) &cf);
 
 	p = _getCurrentWord();
-	len = UT_UCS_strlen(p);
+	len = UT_UCS4_strlen(p);
 	if (len)
 	{
 		buf = new char [len + 1];
-		UT_UCS_strcpy_to_char(buf, p);
+		UT_UCS4_strcpy_to_char(buf, p);
 		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)buf);
 		DELETEP(buf);
 	}
@@ -206,11 +206,11 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	SendMessage(m_hwndSentence, EM_SETCHARFORMAT, (WPARAM) SCF_SELECTION, (LPARAM) &cf);
 
 	p = _getPostWord();
-	len = UT_UCS_strlen(p);
+	len = UT_UCS4_strlen(p);
 	if (len)
 	{
 		buf = new char [len + 1];
-		UT_UCS_strcpy_to_char(buf, p);
+		UT_UCS4_strcpy_to_char(buf, p);
 		SendMessage(m_hwndSentence, EM_REPLACESEL, FALSE, (LPARAM)buf);
 		DELETEP(buf);
 	}
@@ -230,11 +230,11 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 		for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 		{
 			p = (UT_UCSChar *) m_Suggestions->getNthItem(i);
-			len = UT_UCS_strlen(p);
+			len = UT_UCS4_strlen(p);
 			if (len)
 			{
 				buf = new char [len + 1];
-				UT_UCS_strcpy_to_char(buf, p);
+				UT_UCS4_strcpy_to_char(buf, p);
 				SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM)buf);
 				DELETEP(buf);
 			}
@@ -293,7 +293,7 @@ static UT_UCSChar * s_getUCSText(HWND hwnd)
 		goto FreeMemory;
 	GetWindowText(hwnd,pBuf,len+1);
 
-	UT_UCS_cloneString_char(&pUCS,pBuf);
+	UT_UCS4_cloneString_char(&pUCS,pBuf);
 	if (!pUCS)
 		goto FreeMemory;
 
@@ -319,7 +319,7 @@ void AP_Win32Dialog_Spell::_change(void)
 	else
 	{
 		replace = s_getUCSText(m_hwndChangeTo);
-		if (!UT_UCS_strlen(replace)) 
+		if (!UT_UCS4_strlen(replace)) 
 		{
 			FREEP(replace);
 			return;
@@ -343,7 +343,7 @@ void AP_Win32Dialog_Spell::_changeAll(void)
 	else
 	{
 		replace = s_getUCSText(m_hwndChangeTo);
-		if (!UT_UCS_strlen(replace)) 
+		if (!UT_UCS4_strlen(replace)) 
 		{
 			FREEP(replace);
 			return;

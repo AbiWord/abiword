@@ -106,7 +106,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 	
 	// dup the string for harmful chunkification
 	UT_UCSChar * clone = NULL;
-	UT_UCS_cloneString(&clone, text);
+	UT_UCS4_cloneString(&clone, text);
 
 	UT_UCSChar * i = clone;
 
@@ -122,7 +122,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 			m_words.addItem(clone);
 
 			// measure clone item
-			m_widths.addItem((void *) m_gc->measureString(clone, 0, UT_UCS_strlen(clone), NULL));
+			m_widths.addItem((void *) m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
 
 			// advance clone pointer for new word
 			clone = i + 1;
@@ -133,7 +133,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 	// add last word
 	m_words.addItem(clone);
 	// measure last word
-	m_widths.addItem((void *) m_gc->measureString(clone, 0, UT_UCS_strlen(clone), NULL));
+	m_widths.addItem((void *) m_gc->measureString(clone, 0, UT_UCS4_strlen(clone), NULL));
 }
 
 // ignores NULL parameters, otherwise scales dimensioned strings into
@@ -335,14 +335,14 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	
 	UT_UCSChar * tmp = NULL;
 
-	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
+	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
 	m_previousBlock->setText(tmp);
 	FREEP(tmp);
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
+	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
 	m_followingBlock->setText(tmp);
 	FREEP(tmp);
 }
@@ -398,14 +398,14 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	
 	UT_UCSChar * tmp = NULL;
 
-	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
+	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
 	m_previousBlock->setText(tmp);
 	FREEP(tmp);
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
+	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
 	m_followingBlock->setText(tmp);
 	FREEP(tmp);
 	  
@@ -493,14 +493,14 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	
 	UT_UCSChar * tmp = NULL;
 
-	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
+	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
 	m_previousBlock->setText(tmp);
 	FREEP(tmp);
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
+	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
 	m_followingBlock->setText(tmp);
 	FREEP(tmp);
 }
@@ -776,7 +776,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 #ifdef BIDI_ENABLED
 		// this will not produce correct results in true bidi text, since the words that are inconsistend
 		// with the overall pargraph direction will be in wrong order, but that is not a big deal
-  	    iLen = UT_UCS_strlen((UT_UCSChar *) words->getNthItem(k));
+  	    iLen = UT_UCS4_strlen((UT_UCSChar *) words->getNthItem(k));
 	    for(j = 0; j < iLen; j++)
 		    fb1[j] = ((UT_UCSChar *) words->getNthItem(k))[j];
 
@@ -802,7 +802,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		    willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
 #else
 		m_gc->drawChars((UT_UCSChar *) words->getNthItem(k), 0,
-						UT_UCS_strlen((UT_UCSChar *) words->getNthItem(k)), willDrawAt >> 8, y);
+						UT_UCS4_strlen((UT_UCSChar *) words->getNthItem(k)), willDrawAt >> 8, y);
 		willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
 #endif
 	}

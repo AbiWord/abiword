@@ -193,7 +193,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 		// white-space stuff, but it does no harm
 		
 		UT_Byte * ss = (UT_Byte *)s;
-		UT_UCS2String buf;
+		UT_UCS4String buf;
 		UT_Byte currentChar;
 		
 		for (int k=0; k<len; k++)
@@ -223,7 +223,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 			// (ABW)
 			if (!m_bWhiteSignificant)
 			{
-				if(UT_UCS_isspace(currentChar))
+				if(UT_UCS4_isspace(currentChar))
 				{
 					if(!m_bWasSpace)
 					{
@@ -296,12 +296,12 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 		switch (m_parseState)
 		  {
 		  case _PS_Block:
-		    X_CheckError(getDoc()->appendSpan(buf.ucs_str(), buf.size()));
+		    X_CheckError(getDoc()->appendSpan(buf.ucs4_str(), buf.size()));
 		    break;
 		  case _PS_IgnoredWordsItem:
 		    if (m_bLoadIgnoredWords) 
 		      {
-			X_CheckError(getDoc()->appendIgnore(buf.ucs_str(), buf.size()));
+			X_CheckError(getDoc()->appendIgnore(buf.ucs4_str(), buf.size()));
 		      }
 		    break;
 		  default:

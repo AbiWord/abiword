@@ -356,7 +356,7 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 	bool bIsUnicode;
 	while (pText[0] != '\0')
 	{
-		bIsUnicode = ((pText[0] == '\\') && (pText[1] == '\'') && UT_UCS_isdigit(pText[2]) && UT_UCS_isdigit(pText[3]));
+		bIsUnicode = ((pText[0] == '\\') && (pText[1] == '\'') && UT_UCS4_isdigit(pText[2]) && UT_UCS4_isdigit(pText[3]));
 		// A broken exporter writes some junk at the beginning of the string.
 		// Look for the first \'nn string
 		if ((bIsUnicode) && (ilength == 0))
@@ -1478,7 +1478,7 @@ bool IE_Imp_RTF::StartNewSection()
 // 
 bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 {
-	return m_gbBlock.ins(m_gbBlock.getLength(), &ch, 1);
+	return m_gbBlock.ins(m_gbBlock.getLength(), (UT_GrowBufElement*)&ch, 1);
 }
 
 
@@ -3851,12 +3851,12 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
 		{
 			ok = (   getDoc()->appendFmt(propsArray)
-					 && getDoc()->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
+					 && getDoc()->appendSpan((UT_UCS4Char*)m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
 		}
 		else								// else we are pasting from a buffer
 		{
 			ok = (   getDoc()->insertSpan(m_dposPaste,
-										  m_gbBlock.getPointer(0),m_gbBlock.getLength())
+										  (UT_UCS4Char*)m_gbBlock.getPointer(0),m_gbBlock.getLength())
 					 && getDoc()->changeSpanFmt(PTC_AddFmt,
 												m_dposPaste,m_dposPaste+m_gbBlock.getLength(),
 												propsArray,NULL));

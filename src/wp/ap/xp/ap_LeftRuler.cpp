@@ -892,11 +892,11 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 				char buf[6];
 				UT_UCSChar span[6];
-				UT_uint16 charWidths[6];
+				UT_GrowBufElement charWidths[6];
 				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);
-				UT_UCS_strcpy_char(span, buf);
+				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
 
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);
@@ -927,11 +927,11 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 				char buf[6];
 				UT_UCSChar span[6];
-				UT_uint16 charWidths[6];
+				UT_GrowBufElement charWidths[6];
 				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);
-				UT_UCS_strcpy_char(span, buf);
+				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
 
 				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);

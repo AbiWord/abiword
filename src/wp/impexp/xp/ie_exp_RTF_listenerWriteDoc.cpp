@@ -486,7 +486,7 @@ void s_RTF_ListenerWriteDoc::_writeFieldTrailer(void)
 	m_pie->_rtf_open_brace();
 	m_pie->_rtf_keyword("noproof");
 	m_pie->write(" ");
-	UT_uint32 len = UT_UCS_strlen(szFieldValue);
+	UT_uint32 len = UT_UCS4_strlen(szFieldValue);
 	_outputData(szFieldValue,len);
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
@@ -1355,7 +1355,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			static char tmp[100];
 			if(lab != NULL)
 			{
-				UT_uint32 len = UT_MIN(UT_UCS_strlen(lab),100);
+				UT_uint32 len = UT_MIN(UT_UCS4_strlen(lab),100);
 				UT_uint32 i;
 				for(i=0; i<=len; i++)
 					tmp[i] = (char ) (unsigned char)  *lab++;
@@ -1592,7 +1592,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			else
 			{
 				UT_uint32 i,len;
-				len = UT_UCS_strlen(tmp);
+				len = UT_UCS4_strlen(tmp);
 				for(i=0;i<=len;i++)
 					p[i] = (char) (unsigned char) *tmp++;
 				m_pie->_rtf_chardata(p,len);

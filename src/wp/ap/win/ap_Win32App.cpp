@@ -928,10 +928,10 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	int nFirstArg = 0;
 	int k;
 	int kWindowsOpened = 0;
-	char *to = NULL;
+	const char *to = NULL;
 	int verbose = 1;
 	bool show = false, bHelp = false;
-	char *iftDesc = NULL;
+	const char *iftDesc = NULL;
 	
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{

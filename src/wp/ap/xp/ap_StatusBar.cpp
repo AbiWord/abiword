@@ -146,8 +146,8 @@ UT_uint32 ap_sb_Field_PageInfo::getDesiredWidth(void)
 		sprintf(buf,m_szFormat,999,999);
 		UT_uint32 len = strlen(buf);
 		UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD];
-		UT_uint16 charWidths[AP_MAX_MESSAGE_FIELD];
-		UT_UCS_strcpy_char(bufUCS,buf);
+		UT_GrowBufElement charWidths[AP_MAX_MESSAGE_FIELD];
+		UT_UCS4_strcpy_char(bufUCS,buf);
 
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_uint32 w = pG->measureString(bufUCS,0,len,charWidths);
@@ -211,7 +211,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 		sprintf(buf,m_szFormat,m_pageNr,m_nrPages);
 
 		m_lenBufUCS = strlen(buf);
-		UT_UCS_strcpy_char(m_bufUCS,buf);
+		UT_UCS4_strcpy_char(m_bufUCS,buf);
 
 		draw();
 	}
@@ -352,7 +352,7 @@ void ap_sb_Field_StatusMessage::draw(void)
 	}
 
 	const UT_UCSChar * szMsg = m_pSB->getStatusMessage();
-	UT_uint32 len = UT_UCS_strlen(szMsg);
+	UT_uint32 len = UT_UCS4_strlen(szMsg);
 
 	if (len)
 	{
@@ -452,7 +452,7 @@ ap_sb_Field_InputMode::ap_sb_Field_InputMode(AP_StatusBar * pSB)
 {
 	const char * szInputMode = m_pSB->getFrame()->getInputMode();
 	m_lenBufUCS = strlen(szInputMode);
-	UT_UCS_strcpy_char(m_bufUCS,szInputMode);
+	UT_UCS4_strcpy_char(m_bufUCS,szInputMode);
 
 	m_iDesiredWidth = 0;
 }
@@ -468,8 +468,8 @@ UT_uint32 ap_sb_Field_InputMode::getDesiredWidth(void)
 		char * szBuf = "MMMMMMMM";
 		UT_uint32 len = strlen(szBuf);
 		UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD];
-		UT_uint16 charWidths[AP_MAX_MESSAGE_FIELD];
-		UT_UCS_strcpy_char(bufUCS,szBuf);
+		UT_GrowBufElement charWidths[AP_MAX_MESSAGE_FIELD];
+		UT_UCS4_strcpy_char(bufUCS,szBuf);
 
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_uint32 w = pG->measureString(bufUCS,0,len,charWidths);
@@ -506,7 +506,7 @@ void ap_sb_Field_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask ma
 	{
 		const char * szInputMode = m_pSB->getFrame()->getInputMode();
 		m_lenBufUCS = strlen(szInputMode);
-		UT_UCS_strcpy_char(m_bufUCS,szInputMode);
+		UT_UCS4_strcpy_char(m_bufUCS,szInputMode);
 
 		draw();
 	}
@@ -531,8 +531,8 @@ private:
 ap_sb_Field_InsertMode::ap_sb_Field_InsertMode(AP_StatusBar * pSB)
     : ap_sb_Field(pSB)
 {
-    UT_UCS_strcpy_char(m_InsertMode[(int)true],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
-    UT_UCS_strcpy_char(m_InsertMode[(int)false],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR));
+    UT_UCS4_strcpy_char(m_InsertMode[(int)true],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
+    UT_UCS4_strcpy_char(m_InsertMode[(int)false],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR));
 
     m_iDesiredWidth = 0;
     m_bInsertMode = true;
@@ -547,10 +547,10 @@ UT_uint32 ap_sb_Field_InsertMode::getDesiredWidth(void)
     if (!m_iDesiredWidth)
     {
         UT_uint32 i;
-        UT_uint16 charWidths[AP_MAX_MESSAGE_FIELD];
+        UT_GrowBufElement charWidths[AP_MAX_MESSAGE_FIELD];
         UT_uint32 len;
         for(i = 0;i < 2;i++){
-            len = UT_UCS_strlen(m_InsertMode[i]);
+            len = UT_UCS4_strlen(m_InsertMode[i]);
             m_iDesiredWidth = MyMax(m_iDesiredWidth,m_pSB->getGraphics()->measureString(m_InsertMode[i],0,len,charWidths));
         }
         UT_ASSERT(m_iDesiredWidth);
@@ -566,7 +566,7 @@ void ap_sb_Field_InsertMode::draw(void)
 
     UT_UCSChar *bufInsertMode = m_InsertMode[m_bInsertMode];
 
-    len = UT_UCS_strlen(bufInsertMode);
+    len = UT_UCS4_strlen(bufInsertMode);
 
     if (len)
     {
@@ -773,8 +773,8 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 
 	if (pBufUCS && *pBufUCS)
 	{
-		UT_ASSERT(UT_UCS_strlen(pBufUCS) < AP_MAX_MESSAGE_FIELD);
-		UT_UCS_strcpy(m_bufUCS,pBufUCS);
+		UT_ASSERT(UT_UCS4_strlen(pBufUCS) < AP_MAX_MESSAGE_FIELD);
+		UT_UCS4_strcpy(m_bufUCS,pBufUCS);
 	}
 	
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
@@ -791,7 +791,7 @@ void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 	UT_UCSChar bufUCS[AP_MAX_MESSAGE_FIELD];
 
 	if (len)
-		UT_UCS_strcpy_char(bufUCS,pBuf);
+		UT_UCS4_strcpy_char(bufUCS,pBuf);
 	else
 		memset(bufUCS,0,sizeof(bufUCS));
 

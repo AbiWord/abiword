@@ -565,7 +565,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	{
 		char* cpgname = wvLIDToCodePageConverter(langcode);
 		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
-		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS_isdigit(cpgname[2])) 
+		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2])) 
 		{
 			int cpg;
 			if (sscanf(cpgname+2,"%d",&cpg)==1) 
@@ -580,7 +580,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		else
 		{
 			const char* codepage=XAP_EncodingManager::get_instance()->CodepageFromCharset(cpgname);
-			if(UT_strnicmp(codepage,"cp",2)==0 && UT_UCS_isdigit(codepage[2]))
+			if(UT_strnicmp(codepage,"cp",2)==0 && UT_UCS4_isdigit(codepage[2]))
 			{
 				int cpg;
 				if (sscanf(codepage+2,"%d",&cpg)==1)

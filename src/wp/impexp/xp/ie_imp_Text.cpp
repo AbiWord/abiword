@@ -230,11 +230,11 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
 	
 	if (m_bClipboard)
 	{
-		bRes = m_pDocument->insertSpan(m_dPos, b.getPointer(0), b.getLength());
+		bRes = m_pDocument->insertSpan(m_dPos, (UT_UCS4Char*)b.getPointer(0), b.getLength());
 		m_dPos += b.getLength();
 	}
 	else
-		bRes = m_pDocument->appendSpan(b.getPointer(0), b.getLength());
+		bRes = m_pDocument->appendSpan((UT_UCS4Char*)b.getPointer(0), b.getLength());
 
 	b.truncate(0);
 
@@ -677,7 +677,7 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
 				break;
 
 		default:
-			X_ReturnNoMemIfError(gbBlock.append(&c,1));
+			X_ReturnNoMemIfError(gbBlock.append((UT_GrowBufElement*)&c,1));
 			break;
 		}
 		bFirstChar = false;

@@ -103,7 +103,7 @@ public:
 					bool bIs16Bit = false,
 					bool bUseBOM = false,
 					bool bBigEndian = false);
-	virtual ~Text_Listener() {}
+	virtual ~Text_Listener(){};
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);

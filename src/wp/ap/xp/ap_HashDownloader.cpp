@@ -18,8 +18,9 @@
  */
 
 #include <sys/types.h>
-#include <unistd.h>
-#include <sys/wait.h>
+// this XP file -- you cannot include unix-only stuff !!!
+//#include <unistd.h>
+//#include <sys/wait.h>
 #include <errno.h>
 
 #include <stdio.h>

@@ -165,7 +165,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 {
    UT_ASSERT(m_pBlockBuf);
 
-   UT_UCSChar* pBlockText = m_pBlockBuf->getPointer(0);
+   UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
 
    UT_ASSERT(m_pView && m_pView->getLayout() );	
@@ -222,7 +222,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   m_iSentenceStart = 0;
 		   m_iSentenceEnd = 0;
 		   iBlockLength = m_pBlockBuf->getLength();
-		   pBlockText = m_pBlockBuf->getPointer(0);
+		   pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
 
 	   }
 	
@@ -276,8 +276,8 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   } 
 				   else 
 				   {
-					   bAllUpperCase &= UT_UCS_isupper(pBlockText[m_iWordOffset + m_iWordLength]);
-					   bHasNumeric |= UT_UCS_isdigit(pBlockText[m_iWordOffset + m_iWordLength]);
+					   bAllUpperCase &= UT_UCS4_isupper(pBlockText[m_iWordOffset + m_iWordLength]);
+					   bHasNumeric |= UT_UCS4_isdigit(pBlockText[m_iWordOffset + m_iWordLength]);
 
 					   m_iWordLength++;
 				   }
@@ -294,7 +294,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   if ((m_iWordLength > 1) &&
 				   XAP_EncodingManager::get_instance()->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
 				   (!checkCaps || !bAllUpperCase) &&
-				   (!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
+				   (!UT_UCS4_isdigit(pBlockText[m_iWordOffset]) &&
 					(m_iWordLength < INPUTWORDLEN))) 
 			   {
 	    
@@ -398,7 +398,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   {
 					   // we changed the word, and the block buffer has
 					   // been updated, so reload the pointer and length
-					   pBlockText = m_pBlockBuf->getPointer(0);
+					   pBlockText = (UT_UCS4Char*) m_pBlockBuf->getPointer(0);
 					   iBlockLength = m_pBlockBuf->getLength();
 					   // the offset shouldn't change
 				   }
@@ -442,8 +442,8 @@ bool AP_Dialog_Spell::inChangeAll(void)
 {
    UT_UCSChar * bufferUnicode = _getCurrentWord();
    UT_ASSERT(bufferUnicode);
-   char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-   UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+   char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
+   UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
    FREEP(bufferUnicode);
    const void * ent = m_pChangeAll->pick(bufferNormal);
    FREEP(bufferNormal);
@@ -459,13 +459,13 @@ bool AP_Dialog_Spell::inChangeAll(void)
 bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
 {
    UT_UCSChar * bufferUnicode = _getCurrentWord();
-   char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-   UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+   char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
+   UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
    FREEP(bufferUnicode);
 
    // make a copy of the word for storage
-   UT_UCSChar * newword2 = (UT_UCSChar*) UT_calloc(UT_UCS_strlen(newword) + 1, sizeof(UT_UCSChar));
-   UT_UCS_strcpy(newword2, newword);
+   UT_UCSChar * newword2 = (UT_UCSChar*) UT_calloc(UT_UCS4_strlen(newword) + 1, sizeof(UT_UCSChar));
+   UT_UCS4_strcpy(newword2, newword);
    
    m_pChangeAll->insert(bufferNormal, 
 			(void *) newword2);
@@ -486,7 +486,7 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    // that the focus gets shifted to the textbox instead
    // of the document, so isSelectionEmpty() returns true
    makeWordVisible ();
-   m_iWordLength = UT_UCS_strlen(newword);
+   m_iWordLength = UT_UCS4_strlen(newword);
 
 #ifdef DEBUG   
    UT_UCSChar * p;
@@ -523,7 +523,7 @@ UT_UCSChar * AP_Dialog_Spell::_getCurrentWord(void)
    UT_UCSChar * word = (UT_UCSChar*) UT_calloc(m_iWordLength + 1, sizeof(UT_UCSChar));
    if (word == NULL) return NULL;
 
-   UT_uint16 * pBuf = m_pBlockBuf->getPointer(m_iWordOffset);
+   UT_UCS4Char * pBuf = (UT_UCS4Char*) m_pBlockBuf->getPointer(m_iWordOffset);
    
    for (UT_sint32 i = 0; i < m_iWordLength; i++) word[i] = (UT_UCSChar) pBuf[i];
 
@@ -537,7 +537,7 @@ UT_UCSChar * AP_Dialog_Spell::_getPreWord(void)
    if (preword == NULL) return NULL;
    
    if (len) {
-      UT_uint16 * pBuf = m_pBlockBuf->getPointer(m_iSentenceStart);
+      UT_UCS4Char * pBuf = (UT_UCS4Char*) m_pBlockBuf->getPointer(m_iSentenceStart);
    
       for (UT_sint32 i = 0; i < len; i++) preword[i] = (UT_UCSChar) pBuf[i];
    }
@@ -552,7 +552,7 @@ UT_UCSChar * AP_Dialog_Spell::_getPostWord(void)
    if (postword == NULL) return NULL;
    
    if (len) {
-      UT_uint16 * pBuf = m_pBlockBuf->getPointer(m_iWordOffset+m_iWordLength);
+      UT_UCS4Char * pBuf = (UT_UCS4Char*) m_pBlockBuf->getPointer(m_iWordOffset+m_iWordLength);
    
       for (UT_sint32 i = 0; i < len; i++) postword[i] = (UT_UCSChar) pBuf[i];
    }
@@ -572,7 +572,7 @@ UT_UCSChar * AP_Dialog_Spell::_getPostWord(void)
 void AP_Dialog_Spell::_updateSentenceBoundaries(void)
 {
    
-   UT_UCSChar* pBlockText = m_pBlockBuf->getPointer(0);
+   UT_UCSChar* pBlockText = (UT_UCS4Char*)m_pBlockBuf->getPointer(0);
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
    
    // go back until a period is found

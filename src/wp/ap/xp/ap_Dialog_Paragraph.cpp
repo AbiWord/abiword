@@ -692,14 +692,14 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	if (hadMem && gb.getLength() > 0)
 	{
 		gb.truncate(NUM_CHARS_FOR_SAMPLE);
-		UT_UCS_cloneString(&tmp, (UT_UCSChar *) gb.getPointer(0));
+		UT_UCS4_cloneString(&tmp, (UT_UCSChar *) gb.getPointer(0));
 	}
 	else
 	{
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 		// if the paragraph was empty, use our sample
-		UT_UCS_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
+		UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
 	}
 
 	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this);

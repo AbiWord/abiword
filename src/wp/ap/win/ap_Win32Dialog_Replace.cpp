@@ -213,11 +213,11 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	{
 		UT_UCSChar * bufferUnicode = getFindString();
-		UT_uint32 lenUnicode = UT_UCS_strlen(bufferUnicode);
+		UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
 		if (lenUnicode)
 		{
 			char * bufferNormal = new char [lenUnicode + 1];
-			UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 			SetDlgItemText(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND,bufferNormal);
 			DELETEP(bufferNormal);
 		}
@@ -227,11 +227,11 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		UT_UCSChar * bufferUnicode = getReplaceString();
-		UT_uint32 lenUnicode = UT_UCS_strlen(bufferUnicode);
+		UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
 		if (lenUnicode)
 		{
 			char * bufferNormal = new char [lenUnicode + 1];
-			UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 			SetDlgItemText(hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE,bufferNormal);
 			DELETEP(bufferNormal);
 		}
@@ -312,7 +312,7 @@ BOOL AP_Win32Dialog_Replace::_onBtn_FindNext(HWND hWnd)
 
 	UT_DEBUGMSG(("Find entry contents: [%s]\n",pBufFromDialogFind));
 
-	UT_UCS_cloneString_char(&pUCSFind,pBufFromDialogFind);
+	UT_UCS4_cloneString_char(&pUCSFind,pBufFromDialogFind);
 	if (!pUCSFind)
 		goto FreeMemory;
 
@@ -350,7 +350,7 @@ BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
 
 	UT_DEBUGMSG(("Find entry contents: [%s]\n",pBufFromDialogFind));
 
-	UT_UCS_cloneString_char(&pUCSFind,pBufFromDialogFind);
+	UT_UCS4_cloneString_char(&pUCSFind,pBufFromDialogFind);
 	if (!pUCSFind)
 		goto FreeMemory;
 
@@ -361,7 +361,7 @@ BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
 
 	UT_DEBUGMSG(("Replace entry contents: [%s]\n",pBufFromDialogReplace));
 
-	UT_UCS_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
+	UT_UCS4_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
 	if (!pUCSReplace)
 		goto FreeMemory;
 
@@ -402,7 +402,7 @@ BOOL AP_Win32Dialog_Replace::_onBtn_ReplaceAll(HWND hWnd)
 
 	UT_DEBUGMSG(("Find entry contents: [%s]\n",pBufFromDialogFind));
 
-	UT_UCS_cloneString_char(&pUCSFind,pBufFromDialogFind);
+	UT_UCS4_cloneString_char(&pUCSFind,pBufFromDialogFind);
 	if (!pUCSFind)
 		goto FreeMemory;
 
@@ -413,7 +413,7 @@ BOOL AP_Win32Dialog_Replace::_onBtn_ReplaceAll(HWND hWnd)
 
 	UT_DEBUGMSG(("Replace entry contents: [%s]\n",pBufFromDialogReplace));
 
-	UT_UCS_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
+	UT_UCS4_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
 	if (!pUCSReplace)
 		goto FreeMemory;
 

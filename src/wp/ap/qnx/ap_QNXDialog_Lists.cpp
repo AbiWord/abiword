@@ -692,6 +692,15 @@ void AP_QNXDialog_Lists::_fillNumberedStyleMenu( PtWidget_t *listmenu)
 	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Roman_List);
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)UPPERROMAN_LIST);
+#ifdef BIDI_ENABLED
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Arabic_List);
+	PtListAddItems(listmenu, &text, 1, 0);
+	m_styleVector.addItem((void *)ARABICNUMBERED_LIST);
+
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Hebrew_List);
+	PtListAddItems(listmenu, &text, 1, 0);
+	m_styleVector.addItem((void *)HEBREW_LIST);
+#endif
 }
 
 void AP_QNXDialog_Lists::_fillBulletedStyleMenu( PtWidget_t *listmenu)

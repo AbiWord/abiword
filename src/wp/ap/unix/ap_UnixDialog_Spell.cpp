@@ -481,7 +481,7 @@ void AP_UnixDialog_Spell::event_Change()
 	else
 	  {
 	        replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
-		if (!UT_UCS_strlen(replace)) {
+		if (!UT_UCS4_strlen(replace)) {
 		  UT_DEBUGMSG(("replace is 0 length\n"));
 		  FREEP(replace);
 		  return;
@@ -505,7 +505,7 @@ void AP_UnixDialog_Spell::event_ChangeAll()
    else
      {
 	replace = _convertFromMB((char*)gtk_entry_get_text(GTK_ENTRY(m_entryChange)));
-	if (!UT_UCS_strlen(replace)) {
+	if (!UT_UCS4_strlen(replace)) {
 	   FREEP(replace);
 	   return;
 	}
@@ -591,8 +591,8 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
-	char *word = (char *) malloc (UT_UCS_strlen(wword)*2);
-	UT_UCS_strcpy_to_char(word,wword);
+	char *word = (char *) malloc (UT_UCS4_strlen(wword)*2);
+	UT_UCS4_strcpy_to_char(word,wword);
 	return word;
 }
 
@@ -601,10 +601,10 @@ UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
 {
 #if 1
         UT_UCSChar *wword = NULL;
-	UT_UCS_cloneString_char ( &wword, word );
+	UT_UCS4_cloneString_char ( &wword, word );
 #else
 	UT_UCSChar *wword = (UT_UCSChar *) malloc (strlen(word)*2);
-	UT_UCS_strcpy_char(wword,word);
+	UT_UCS4_strcpy_char(wword,word);
 #endif
 	return wword;
 }

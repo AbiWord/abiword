@@ -641,7 +641,7 @@ UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
 	{
 		return NULL;
 	}
-	UT_sint32 cnt = UT_MIN(UT_UCS_strlen(tmp),80);
+	UT_sint32 cnt = UT_MIN(UT_UCS4_strlen(tmp),80);
 	UT_sint32 i;
 	for(i =0; i<= cnt; i++)
 		lab[i] = *tmp++;
@@ -903,7 +903,7 @@ void AP_Dialog_Lists::PopulateDialogData(void)
 		const UT_UCSChar * tmp1 =  getBlock()->getListLabel();
 		if(tmp1 != NULL)
 		{
-			UT_sint32 cnt = UT_MIN(UT_UCS_strlen(tmp1),80);
+			UT_sint32 cnt = UT_MIN(UT_UCS4_strlen(tmp1),80);
 			UT_sint32 i;
 			for(i =0; i<=cnt; i++)
 				m_curListLabel[i] = *tmp1++;
@@ -1107,7 +1107,7 @@ void AP_Lists_preview::draw(void)
 			//
 			// This code is here because UT_UCS_copy_char is broken
 			//
-			len = UT_MIN(UT_UCS_strlen(lv),51);
+			len = UT_MIN(UT_UCS4_strlen(lv),51);
 			for(j=0; j<=len;j++)
 			{
 				ucs_label[j] = *lv++;
@@ -1115,7 +1115,7 @@ void AP_Lists_preview::draw(void)
 			
 			ucs_label[len] = NULL;
 
-			len = UT_UCS_strlen(ucs_label);
+			len = UT_UCS4_strlen(ucs_label);
 			yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/4;
 			//    m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
 			twidth = m_gc->measureString(ucs_label,0,len,NULL);
@@ -1174,7 +1174,7 @@ void AP_Lists_preview::draw(void)
 			
 			if(lv != NULL) 
 			{
-				len = UT_MIN(UT_UCS_strlen(lv),51);
+				len = UT_MIN(UT_UCS4_strlen(lv),51);
 #ifdef BIDI_ENABLED
 				if(len > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
 				{
@@ -1210,7 +1210,7 @@ void AP_Lists_preview::draw(void)
 				}
 				
 				ucs_label[len] = NULL;
-				len = UT_UCS_strlen(ucs_label);
+				len = UT_UCS4_strlen(ucs_label);
 				yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
 #ifdef BIDI_ENABLED
 				if(iDirection == FRIBIDI_TYPE_RTL)

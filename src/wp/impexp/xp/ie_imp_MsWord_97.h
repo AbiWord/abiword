@@ -119,13 +119,13 @@ private:
 
 private:
 
-	UT_UCS2String		m_pTextRun;
+	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
 	UT_uint32			m_nSections;
 	bool				m_bSetPageSize;
-	UT_UCSChar m_command [FLD_SIZE];
-	UT_UCSChar m_argument [FLD_SIZE];
-	UT_UCSChar *m_fieldWhich;
+	UT_UCS2Char m_command [FLD_SIZE];
+	UT_UCS2Char m_argument [FLD_SIZE];
+	UT_UCS2Char *m_fieldWhich;
 	UT_sint32	m_fieldI;
 	UT_sint32	m_fieldDepth;
 	UT_sint32	m_fieldRet;

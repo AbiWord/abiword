@@ -91,7 +91,7 @@ AP_Preview_PageNumbers::AP_Preview_PageNumbers (GR_Graphics * gc)
 
   m_gc->setFont(found);
 
-  UT_UCS_cloneString_char (&m_str, "1");
+  UT_UCS4_cloneString_char (&m_str, "1");
 }
 
 AP_Preview_PageNumbers::~AP_Preview_PageNumbers(void)
@@ -152,5 +152,5 @@ void AP_Preview_PageNumbers::draw (void)
     case AP_Dialog_PageNumbers::id_FTR : y = iHeight - (2 * iFontHeight); break;
     }
 
-  m_gc->drawChars (m_str, 0, UT_UCS_strlen(m_str), x, y);
+  m_gc->drawChars (m_str, 0, UT_UCS4_strlen(m_str), x, y);
 }

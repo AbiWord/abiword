@@ -171,7 +171,7 @@ BOOL CALLBACK AP_Win32Dialog_Goto::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LP
 void AP_Win32Dialog_Goto::GoTo (const char *number)
 {
 	UT_UCSChar *ucsnumber = (UT_UCSChar *) malloc (sizeof (UT_UCSChar) * (strlen(number) + 1));
-	UT_UCS_strcpy_char (ucsnumber, number);
+	UT_UCS4_strcpy_char (ucsnumber, number);
 	int target = this->getSelectedRow ();
 	this->getView()->gotoTarget ((AP_JumpTarget) target, ucsnumber);
 	free (ucsnumber);
@@ -399,7 +399,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 					// Make sure everything we have is numeric
 					for( dwCounter = dwStart; dwCounter < dwTextLength; dwCounter++ )
 					{
-						if( !UT_UCS_isdigit( pBuf[ dwCounter ] ) )
+						if( !UT_UCS4_isdigit( pBuf[ dwCounter ] ) )
 						{
 							if( m_pszOldValue == NULL )
 							{
