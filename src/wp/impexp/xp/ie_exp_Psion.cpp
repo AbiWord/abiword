@@ -765,7 +765,7 @@ void s_Psion_Listener::_parseColor(const char *input,psiconv_color color)
 void s_Psion_Listener::_parseTab(char *input,psiconv_tab tab)
 {
 	char *slash;
-	slash = index(input,'/');
+	slash = strchr(input,'/');
 	tab->kind = psiconv_tab_left;
 	if (slash) {
 		if (*(slash+1) == 'R')
@@ -788,9 +788,9 @@ UT_Bool s_Psion_Listener::_parseTabs(const char *input,psiconv_tab_list tabs)
 
 	currentPos = input;
 	while (*currentPos != '\000') {
-		nextPos = index(currentPos,',');
+		nextPos = strchr(currentPos,',');
 		if (!nextPos)
-			nextPos = index(currentPos,'\000');
+			nextPos = strchr(currentPos,'\000');
 		if (!(copy = (char *) malloc(nextPos - currentPos + 1)))
 			return UT_FALSE;
 		memcpy(copy,currentPos,nextPos-currentPos);
