@@ -228,7 +228,7 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "alignmentLabel", alignmentLabel,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (alignmentLabel);
-   gtk_table_attach (GTK_TABLE(tableMain), alignmentLabel, 0, 2, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
+   gtk_table_attach (GTK_TABLE(tableMain), alignmentLabel, 0, 2, 0, 1, GTK_FILL, GTK_FILL, 0, 0);
 
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_UnknownWord));
    label1 = gtk_label_new (unixstr);
@@ -679,7 +679,7 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
    }
    word[mblength] = 0;
 
-   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i", wcindex, wclength, mbindex, mblength));
+//   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i", wcindex, wclength, mbindex, mblength));
    UT_ASSERT(mblength >= mbindex);
    
    return word;
@@ -711,7 +711,7 @@ UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
    }
    wword[wclength] = 0;
    
-   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i", mbindex, mblength, wcindex, wclength));
+//   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i", mbindex, mblength, wcindex, wclength));
    UT_ASSERT(wclength >= wcindex);
    
    return (UT_UCSChar*)wword;

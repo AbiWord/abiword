@@ -76,6 +76,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    m_pFrame = pFrame;
 			  
    AP_FrameData * frameData = (AP_FrameData*) m_pFrame->getFrameData();
+   m_pDoc = frameData->m_pDocLayout->getDocument();
    m_pView = frameData->m_pDocLayout->getView();
    m_iOrigInsPoint = m_pView->getPoint();
    m_pSection = frameData->m_pDocLayout->getFirstSection();
@@ -104,6 +105,11 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
       // do we need to move to the next block?
       if (m_iWordOffset >= iBlockLength) {
 
+	 // since we're done with this current block, put it
+	 // in the block spell queue so squiggles will be updated
+	 FL_DocLayout * docLayout = m_pSection->getDocLayout();
+	 docLayout->queueBlockForSpell(m_pBlock, UT_FALSE);
+	 
 	 m_pBlock = m_pBlock->getNext();
 
 	 // next section, too?
@@ -236,33 +242,23 @@ UT_Bool AP_Dialog_Spell::makeWordVisible(void)
    return UT_TRUE;
 }
 
-// TODO: ignore all lists should be stored higher up so they're persistent
-// TODO: and usable by other routines which do spell checking
-
 UT_Bool AP_Dialog_Spell::inIgnoreAll(void)
 {
-   UT_UCSChar * bufferUnicode = _getCurrentWord();
-   char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-   UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
-   FREEP(bufferUnicode);
-   UT_HashEntry * ent = m_pIgnoreAll->findEntry(bufferNormal);
-   FREEP(bufferNormal);
-   
-   if (ent == NULL) return UT_FALSE;
-   else return UT_TRUE;
+   UT_UCSChar * word = _getCurrentWord();
+   UT_Bool bRes = m_pDoc->isIgnore(word);
+   FREEP(word);
+
+   return bRes;
 }
 
 UT_Bool AP_Dialog_Spell::addIgnoreAll(void)
 {
-   UT_UCSChar * bufferUnicode = _getCurrentWord();
-   char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-   UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
-   FREEP(bufferUnicode);
-   UT_sint32 iRes = m_pIgnoreAll->addEntry(bufferNormal, NULL, NULL);
-   FREEP(bufferNormal);
-
-   if (iRes < 0) return UT_FALSE;
-   else return UT_TRUE;
+   UT_UCSChar * word = _getCurrentWord();
+   UT_Bool bRes = m_pDoc->appendIgnore(word);
+   FREEP(word);
+   
+   
+   return bRes;
 }
 
 void AP_Dialog_Spell::ignoreWord(void)

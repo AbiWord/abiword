@@ -86,6 +86,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    
    XAP_Frame * m_pFrame;
    FV_View * m_pView;
+   PD_Document * m_pDoc;
    
    // current suggested corrections to the 
    // most recently misspelled word
