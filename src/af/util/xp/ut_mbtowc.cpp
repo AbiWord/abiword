@@ -240,7 +240,9 @@ UT_Mbtowc::UT_Mbtowc(const UT_Mbtowc& v): m_bufLen(0)
 
 UT_Mbtowc::~UT_Mbtowc()
 {
-    iconv_close(cd);
+    /*libiconv is stupid - we'll get segfault if we don't check  - VH */
+    if (cd!=(iconv_t)-1)
+	    iconv_close(cd);
 };
 
 int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)

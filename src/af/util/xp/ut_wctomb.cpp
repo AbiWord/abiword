@@ -185,7 +185,9 @@ UT_Wctomb::UT_Wctomb(const UT_Wctomb& v)
 
 UT_Wctomb::~UT_Wctomb()
 {
-    iconv_close(cd);
+    /*libiconv is stupid - we'll get segfault if we don't check  - VH */
+    if (cd!=(iconv_t)-1)
+	    iconv_close(cd);
 };
 
 int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)

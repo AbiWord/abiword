@@ -629,7 +629,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			   else
 				 {
 				   FREEP(fname);
-				   fname=UT_strdup(f);
+				   fname=UT_strdup(f ? f : "helvetic");
 				 }			   
 		      }
 		   }

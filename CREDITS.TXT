@@ -45,7 +45,7 @@ Peter Haight <peterh@sapros.com>                Fonts location bug fix
 Vlad Harchev <hvv@hippo.ru>                     Support for non latin-1 Languages
 Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
-hj <huangj@citiz.net>                           XIM, focus
+hj <huangj@citiz.net>                           XIM, focus, principal author of CJK support patch
 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>    m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Perry Ismangil <perry@trabas.com>               AbiHello
@@ -107,6 +107,7 @@ Martin Vermeer <martin.vermeer@fgi.fi>          Unicode Latex export
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
 Alan Young <ayoung@teleport.com>                Alpha/NT
+Belcon Zhao <rainfall@yeah.net>			Testing/fixing CJK support
 
 translators
 -----------

@@ -196,14 +196,20 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			{
 				/*FIXME: can it happen that wctomb will fail under CJK locales? */
 				m_wctomb.wctomb_or_fallback(mbbuf,mblen,*pData++);
-				for(int i=0;i<mblen;++i) {
-					unsigned char c = mbbuf[i];
-					if ( c > 0x007f)
+				if (mbbuf[0] & 0x80)
+				{
+					FlushBuffer();
+					for(int i=0;i<mblen;++i) {
+						unsigned char c = mbbuf[i];
 						m_pie->_rtf_nonascii_hex2(c);
-					else
-						*pBuf++ = c;
-					
-				};
+					}
+				}
+				else
+				{
+					for(int i=0;i<mblen;++i) {
+						*pBuf++ = mbbuf[i];
+					}
+				}
 			} else if (!m_pie->m_atticFormat) 
 			{
 				if (*pData > 0x00ff)		// emit unicode character

@@ -1447,6 +1447,10 @@ UT_Bool IE_Imp_RTF::ReadOneFontFromTable()
 	//is seen
 	// Now comes the font name, terminated by either a close brace or a slash or a semi-colon
 	int count = 0;
+	/*
+	    FIXME: CJK font names come in form \'aa\'cd\'ef - so we have to 
+	    parse \'HH correctly (currently we ignore them!) - VH
+	*/
 	while ( ch != '}'  &&  ch != '\\'  &&  ch != ';' && ch!= '{')
 	{
 		keyword[count++] = ch;
@@ -1472,6 +1476,8 @@ UT_Bool IE_Imp_RTF::ReadOneFontFromTable()
 		{
 			if (!ReadCharFromFile(&ch))
 				return UT_FALSE;
+			if (ch=='{')
+				++nesting;
 		}
 		if (nesting>0 && i!=nesting) //we need to skip '}' we've just seen.
 			if (!ReadCharFromFile(&ch))

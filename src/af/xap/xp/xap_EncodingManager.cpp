@@ -395,6 +395,15 @@ static const char* wincharsetcode_vi[]=  /* vietnamese charset*/
 static const char* wincharsetcode_th[]=  /* thai charset*/
 { "th", NULL };
 
+/*I'm not sure that charset code is the same for Big5 and GB2312.
+  Tested with GB2312 only.  
+*/
+static const char* wincharsetcode_zh_GB2312[]= /* chinese*/
+{ "zh_CN.GB2312", "zh_TW.GB2312", NULL };
+
+static const char* wincharsetcode_zh_BIG5[]= /* chinese*/
+{ "zh_CN.BIG5", "zh_TW.BIG5", NULL };
+
 static const _rmap langcode_to_wincharsetcode[]=
 {
 	{"0"}, /* default value - ansi charset*/
@@ -403,6 +412,8 @@ static const _rmap langcode_to_wincharsetcode[]=
 	{"162",wincharsetcode_tr},
 	{"163",wincharsetcode_vi},
 	{"222",wincharsetcode_th},	
+	{"134",wincharsetcode_zh_GB2312},
+	{"136",wincharsetcode_zh_BIG5},	
 	{NULL}
 };
 
@@ -449,12 +460,16 @@ static const _rmap can_break_words_data[]=
 	{NULL}
 };
 
+/*
+ This table is useful since iconv implementations don't know some cpNNNN 
+ charsets but under some different name.
+*/
 static const _map MSCodepagename_to_charset_name_map[]=
 {
 /*key, value*/
     {NULL,NULL},
-    {"CP936","BIG5"}, /* most probably it's correct  - VH*/
-    {"CP950","GB2312"},    /* 100% correct */
+    {"CP936","GB2312"},
+    {"CP950","BIG5"},  
     {NULL,NULL}
 };
 
@@ -463,7 +478,10 @@ static const _map langcode_to_winlangcode[]=
 {
 /*key, value*/
     {NULL},
-/*   {"0x404","zh_CN"},*/  /*I guess - VH*/
+   {"zh_CN.BIG5",	"0x404"},  
+   {"zh_CN.GB2312",	"0x804"},     
+   {"zh_TW.BIG5",	"0x404"},  
+   {"zh_TW.GB2312",	"0x804"}, 
     {NULL}
 };
 
@@ -728,7 +746,7 @@ void XAP_EncodingManager::initialize()
 		    len += sprintf(buf+len,"\\usepackage[%s]{inputenc}\n",NativeTexEncodingName);
 		if (NativeBabelArgument)
 		    len += sprintf(buf+len,"\\usepackage[%s]{babel}\n",NativeBabelArgument);
-		TexPrologue = len ? UT_strdup(buf)  : "";
+		TexPrologue = len ? UT_strdup(buf)  : " ";
 	    };
 	}
 	if (cjk_locale()) {
@@ -815,7 +833,9 @@ const char* XAP_EncodingManager::getTexPrologue() const
 
 const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
 {
-    char* cpname = wvLIDToCodePageConverter(lid);
+    static char buf[100];
+    sprintf(buf,"CP%d",lid);    
+    char* cpname = buf;
     UT_Bool is_default;
     const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
     return is_default ? cpname : ret;
@@ -823,7 +843,10 @@ const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
 
 const char* XAP_EncodingManager::WindowsCharsetName() const
 {
-    return charsetFromCodepage( getWinLanguageCode() );
+    char* cpname = wvLIDToCodePageConverter(getWinLanguageCode());
+    UT_Bool is_default;
+    const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
+    return is_default ? cpname : ret;
 };
 
 UT_uint32  XAP_EncodingManager::getWinLanguageCode() const

@@ -53,7 +53,7 @@
 <h2>
 Installing AbiWord on FreeBSD / INTEL</h2>
 Welcome to the community of AbiWord users!
-<p>The current version of AbiWord (0.7.9) should install and run properly
+<p>The current version of AbiWord (0.7.12) should install and run properly
 one FreeBSD 3.2 systems with a INTEL (or INTEL-COMPATIBLE) processor. AbiWord
 has been packaged in several different distribution formats to simplify
 the installation on your system:
@@ -77,13 +77,13 @@ The TGZ&nbsp; installation process is very simple.
 <ol>
 <li>
 Download the distribution files (<a href="http://www.abisource.com">
-AbiSuite-0.7.9.tgz
+AbiSuite-0.7.12.tgz
 </a>, 2.7MB).</li>
 
 <li>
 Become superuser, enter the command:
 
-<pre>&nbsp;&nbsp; pkg_add AbiSuite-0.7.9.tgz</pre>
+<pre>&nbsp;&nbsp; pkg_add AbiSuite-0.7.12.tgz</pre>
 
 <li>
 This will install AbiWord and supporting files to
@@ -105,7 +105,7 @@ file for additional details.</li>
 <a NAME="tar"></a>TAR</h3>
 There are two versions of the Tar files: one is a statically-linked version
 and the other is the dynamically-linked version. The dynamic version is
-smaller (2.7Mb vs 3.3Mb), our goal is to make use of a number of shared
+smaller (3.7Mb vs 4.3Mb), our goal is to make use of a number of shared
 libraries on your system. If you are running FreeBSD 3.2 or newer, the
 dynamic package should work for you. If you can't run the dynamic package,
 try the static package.&nbsp;
@@ -114,17 +114,17 @@ actually quite simple.
 <ol>
 <li>
 Download the distribution files (<a href="http://www.abisource.com">
-abisuite-0.7.9-FreeBSD_i386_static.tar.gz </a>, 3.3MB).</li>
+abisuite-0.7.12-FreeBSD_i386_static.tar.gz </a>, 4.3MB).</li>
 
 <li>
 Copy the files to a directory writable by you and open the files:
 
-<pre>&nbsp;&nbsp; gunzip - C abisuite-0.7.9-FreeBSD_i386_static.tar.gz | tar
+<pre>&nbsp;&nbsp; gunzip - C abisuite-0.7.12-FreeBSD_i386_static.tar.gz | tar
 xvf -</pre>
 ... or, if your tar command supports the ' z' flag:
-<pre>&nbsp;&nbsp; tar xvzf abisuite-0.7.9-FreeBSD_i386_static.tar.gz</pre>
+<pre>&nbsp;&nbsp; tar xvzf abisuite-0.7.12-FreeBSD_i386_static.tar.gz</pre>
 Both these commands will create the directory
-<tt>abisuite-0.7.9-FreeBSD_i386_static
+<tt>abisuite-0.7.12-FreeBSD_i386_static
 </tt>.
 <li>
 Change to that directory and become superuser.</li>
@@ -154,7 +154,7 @@ Please consult the <a href="http://www.abisource.com">README
 </a>file for additional details.</li>
 </ol>
 The installation process for the dynamic Tar files (<a href="http://www.abisource.com">
-abisuite-0.7.9-FreeBSD_i386_dynamic.tar.gz </a>, 2.7MB) is identical. Simply
+abisuite-0.7.12-FreeBSD_i386_dynamic.tar.gz </a>, 3.7MB) is identical. Simply
 substitute
 <tt>_ dynamic
 </tt>for

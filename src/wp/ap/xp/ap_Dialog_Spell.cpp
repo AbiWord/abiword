@@ -338,8 +338,20 @@ UT_Bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    UT_Bool result = UT_TRUE;
 
    UT_DEBUGMSG(("changing word\n"));
-   
+   UT_DEBUGMSG(("SAM: gp: %d\n", m_pView->getPoint()));
+
    m_iWordLength = UT_UCS_strlen(newword);
+
+#ifdef DEBUG   
+   UT_UCSChar * p;
+   p = newword;
+   UT_DEBUGMSG(("SAM : The new word is \n"));
+   for(int i=0;i<m_iWordLength;i++)
+   {
+	   UT_DEBUGMSG(("%c\n", (char)p[i]));
+   }
+#endif
+
    result = m_pView->cmdCharInsert(newword, m_iWordLength);
    m_pView->updateScreen();
    

@@ -432,7 +432,18 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 	fl_BlockLayout* pBL = NULL;
 	PL_StruxFmtHandle sfh;
 
-	if (m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh))
+        PT_DocPosition posEOD;
+        UT_Bool bRes;
+
+        bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+        UT_ASSERT(bRes);
+
+	bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
+
+	while(!bRes && (pos < posEOD))
+		bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, ++pos, PTX_Block, &sfh);
+		
+	if (bRes)
 	{
 		fl_Layout * pL = (fl_Layout *)sfh;
 		switch (pL->getType())
@@ -443,12 +454,14 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 				
 		case PTX_Section:
 		default:
-			UT_ASSERT((0));
+			UT_ASSERT((UT_SHOULD_NOT_HAPPEN)); 
+			// We asked for a block, and we got a section.  Bad
 		}
 	}
 	else
 	{
 		UT_ASSERT((0));
+		return NULL;
 	}
 
 
