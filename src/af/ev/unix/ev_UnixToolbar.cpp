@@ -257,6 +257,10 @@ public:									// we create...
 						return;
 					}
 
+					// check if something actually _is_ changed... yeah yeah, another hack.. gtk sux sometimes
+					if (!strcmp(wd->m_comboEntryBuffer, buffer))
+						return;
+					
 					UT_uint32 length = strlen(buffer);
 					xxx_UT_DEBUGMSG(("LACHANCE: comboChanged, length: %d \n", length));
 				        // LACHANCE: in gtk2, it seems as if the gtk_entry's text buffer length is set to 0
