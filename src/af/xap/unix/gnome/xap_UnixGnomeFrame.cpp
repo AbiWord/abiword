@@ -242,8 +242,8 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	
 	if (f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
 	{
-                gint abi_width = UT_MIN( gdk_screen_width() - 30, 950);
-                gint abi_height = UT_MIN( gdk_screen_height() - 100, 1200);
+                gint abi_width = UT_MIN( gdk_screen_width() - 30, 813);
+                gint abi_height = UT_MIN( gdk_screen_height() - 100, 836);
 	        gtk_widget_set_usize(m_wTopLevelWindow,
 							 abi_width,
 							 abi_height);

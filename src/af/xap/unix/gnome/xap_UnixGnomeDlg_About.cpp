@@ -59,9 +59,7 @@ static void cb_delete (GtkWidget *w, gpointer, XAP_UnixGnomeDialog_About *dlg)
 
 void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
 {
-  static const gchar *authors[] = {"Dom Lachowicz <cinamod@hotmail.com>",
-				   "Joaquin Cuenca Abela <cuenca@celium.net>",
-				   "John Tunison <nosinut@wind.rem.cmu.edu>",
+  static const gchar *authors[] = {"Abi the Ant <abi@abisource.com>",
 				   "and many other intrepid hackers",
 				   NULL};
 
@@ -70,7 +68,8 @@ void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
 					   XAP_App::s_szBuild_Version,
 					   "(c) 1998-2001 AbiSource, Inc.",
 					   authors,
-					   "Released under the GNU GPL v2.0",
+					   "Released under the GNU GPL v2.0\n"
+					   "Gnome Port maintained by Dom Lachowicz <cinamod@hotmail.com>",
 					   NULL);  
   UT_ASSERT(mainWindow);
   
