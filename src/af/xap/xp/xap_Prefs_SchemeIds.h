@@ -101,6 +101,10 @@
 #define XAP_PREF_KEY_DocumentLocale "DocumentLocale"
 #define XAP_PREF_DEFAULT_DocumentLocale "en-US"
 
+#define XAP_PREF_KEY_ZoomType		"ZoomType"
+#define XAP_PREF_DEFAULT_ZoomType	"100" /* 100, Width, Page */
+
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -127,5 +131,8 @@ dcl(AutoSaveFileExt)
 dcl(EmbedFontsInPS)
 dcl(ColorForTransparent)
 dcl(DocumentLocale)
+
+dcl(ZoomType)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
+

@@ -296,6 +296,28 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		_createAutoSaveTimer();
 	
 	//////////////////////////////////////////////////////////////////
+	// select the default zoom settings
+	//////////////////////////////////////////////////////////////////
+	pApp->getPrefsValue(XAP_PREF_KEY_ZoomType, stTmp);
+	if( UT_stricmp( stTmp.c_str(), "100" ) == 0 )
+	{
+		m_zoomType = z_100;
+	}
+	else if( UT_stricmp( stTmp.c_str(), "Width" ) == 0 )
+	{
+		m_zoomType = z_PAGEWIDTH;
+	}
+	else if( UT_stricmp( stTmp.c_str(), "Page" ) == 0 )
+	{
+		m_zoomType = z_WHOLEPAGE;
+	}
+	else
+	{
+		m_zoomType = z_100;
+	}
+
+	
+	//////////////////////////////////////////////////////////////////
 	// ... add other stuff here ...
 	//////////////////////////////////////////////////////////////////
 
@@ -740,6 +762,7 @@ UT_Error XAP_Frame::backup()
 
 void XAP_Frame::updateZoom(void)
 {
+	if( !m_pView ) return;
 	UT_uint32 newZoom = 100;
 	switch( getZoomType() )
 	{
