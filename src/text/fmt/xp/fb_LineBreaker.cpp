@@ -152,7 +152,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 					}
 					else
 					{
-						m_iWorkingLineWidth -= iTrailingSpace;
+						//m_iWorkingLineWidth -= iTrailingSpace;
 						if(pCurrentRun)
 						{
 							xxx_UT_DEBUGMSG(("Break at 2 Trailing Space %d \n",iTrailingSpace));
