@@ -32,18 +32,12 @@ public:
 	XAP_BeOSClipboard();
 	virtual ~XAP_BeOSClipboard();
 	
-	virtual UT_Bool			open(void);
-	virtual UT_Bool			close(void);
-	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_sint32		getDataLen(const char* format);
-	virtual UT_Bool			getData(const char* format, void* pData);
-	virtual UT_Bool			hasFormat(const char* format);
-	virtual UT_sint32		countFormats(void);
-	virtual const char *	getNthFormat(UT_sint32 n);
-	virtual UT_Bool			clear(void);
+	virtual UT_Bool			clearClipboard(void);
 
-	virtual GR_Image*	getImage(void);
-	virtual UT_Bool		addImage(GR_Image*);
+	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual UT_Bool			getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen);
+	virtual UT_Bool			hasFormat(const char* format);
+
 };
 
 #endif /* XAP_BEOSCLIPBOARD_H */

@@ -379,7 +379,7 @@ void AP_BeOSApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.
 
-	m_pClipboard->clear();
+	m_pClipboard->clearClipboard();
 	
 	// also put RTF on the clipboard
 	
@@ -419,7 +419,7 @@ void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
 	{
 		unsigned char * pData = NULL;
 		UT_uint32 iLen = 0;
-		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,&pData,&iLen);
+		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
 		iLen = MyMin(iLen,strlen(pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
@@ -433,7 +433,7 @@ void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
 	{
 		unsigned char * pData = NULL;
 		UT_uint32 iLen = 0;
-		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,&pData,&iLen);
+		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
 		iLen = MyMin(iLen,strlen(pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));

@@ -34,17 +34,7 @@ XAP_BeOSClipboard::XAP_BeOSClipboard()
 
 XAP_BeOSClipboard::~XAP_BeOSClipboard()
 {
-	clear();
-}
-
-UT_Bool XAP_BeOSClipboard::open(void)
-{
-	return XAP_FakeClipboard::open();
-}
-
-UT_Bool XAP_BeOSClipboard::close(void)
-{
-	return XAP_FakeClipboard::close();
+	clearClipboard();
 }
 
 UT_Bool XAP_BeOSClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
@@ -57,38 +47,13 @@ UT_Bool XAP_BeOSClipboard::hasFormat(const char* format)
 	return XAP_FakeClipboard::hasFormat(format);
 }
 
-UT_sint32 XAP_BeOSClipboard::getDataLen(const char * format)
+UT_Bool XAP_BeOSClipboard::clearClipboard(void)
 {
-	return XAP_FakeClipboard::getDataLen(format);
+	return XAP_FakeClipboard::clearClipboard();
 }
 
-UT_Bool XAP_BeOSClipboard::getData(const char * format, void* pData)
+UT_Bool XAP_BeOSClipboard::getClipboardData(const char * format, void ** ppData, UT_uint32 * pLen)
 {
-	return XAP_FakeClipboard::getData(format, pData);
-}
-
-UT_sint32 XAP_BeOSClipboard::countFormats(void)
-{
-	return XAP_FakeClipboard::countFormats();
-}
-
-const char * XAP_BeOSClipboard::getNthFormat(UT_sint32 n)
-{
-	return XAP_FakeClipboard::getNthFormat(n);
-}
-
-UT_Bool XAP_BeOSClipboard::clear(void)
-{
-	return XAP_FakeClipboard::clear();
-}
-
-GR_Image * XAP_BeOSClipboard::getImage(void)
-{
-	return XAP_FakeClipboard::getImage();
-}
-
-UT_Bool XAP_BeOSClipboard::addImage(GR_Image*)
-{
-	return XAP_FakeClipboard::addImage(NULL);
+	return XAP_FakeClipboard::getClipboardData(format,ppData,pLen);
 }
 
