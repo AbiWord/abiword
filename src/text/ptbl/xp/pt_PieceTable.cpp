@@ -902,10 +902,10 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			pf_Frag_Strux * pfs = NULL;
 			pf_Frag_Text * pft = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrSpan->getPosition(),pcrSpan->getSide(),&pfs,&pft,&fragOffset))
+			if (!getTextFragFromPosition(pcrSpan->getPosition(),pcrSpan->isLeftSide(),&pfs,&pft,&fragOffset))
 				return UT_FALSE;
 			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
-			if (!_insertSpan(pft,pcrSpan->getBufIndex(),pcrSpan->getSide(),fragOffset,pcrSpan->getLength()))
+			if (!_insertSpan(pft,pcrSpan->getBufIndex(),pcrSpan->isLeftSide(),fragOffset,pcrSpan->getLength()))
 				return UT_FALSE;
 			m_pDocument->notifyListeners(pfs,pcr);
 		}

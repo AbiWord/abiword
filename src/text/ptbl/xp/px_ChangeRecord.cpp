@@ -41,7 +41,7 @@ PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 	return m_indexAP;
 }
 
-UT_Bool PX_ChangeRecord::getSide(void) const
+UT_Bool PX_ChangeRecord::isLeftSide(void) const
 {
 	return m_bLeftSide;
 }
@@ -98,7 +98,6 @@ UT_Byte PX_ChangeRecord::getRevFlags(void) const
 	}
 }
 	
-
 void PX_ChangeRecord::dump(void) const
 {
 #ifdef UT_DEBUG
