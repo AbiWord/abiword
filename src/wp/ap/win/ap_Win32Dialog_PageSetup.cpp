@@ -422,6 +422,9 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 							    AP_RID_DIALOG_PAGE_SETUP_RDO_LANDSCAPE );
 
 			updatePageSize();
+			
+			int nUnit =  getPageUnits();
+			
 			SendMessage( hwndUnits, CB_SETCURSEL, (WPARAM) getPageUnits(), (LPARAM) 0 );
 
 			// Load Appropriate XPM to BMPs

@@ -67,7 +67,8 @@
 #	include "ap_Win32Dialog_New.h"
 #  	include "ap_Win32Dialog_MarkRevisions.h"
 #  	include "ap_Win32Dialog_ListRevisions.h"
-#   	include "ap_Win32Dialog_InsertTable.h"
+#  	include "ap_Win32Dialog_InsertTable.h"
+#  	include "ap_Win32Dialog_MetaData.h"
 #ifdef HAVE_CURL
 #	include "ap_Win32Dialog_Download_File.h"
 #endif
@@ -120,6 +121,9 @@
 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_Win32Dialog_MarkRevisions)
 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_Win32Dialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,	AP_Win32Dialog_InsertTable)
+	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_Win32Dialog_MetaData)
+	
+	
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_Win32Dialog_Download_File)
 #endif

@@ -59,8 +59,11 @@
 #define AP_RID_DIALOG_NEW						229
 #define AP_RID_DIALOG_MARK_REVISIONS            230
 #define AP_RID_DIALOG_LIST_REVISIONS            231
-#define AP_RID_DIALOG_INSERT_TABLE		232
+#define AP_RID_DIALOG_INSERT_TABLE				232
 #define AP_RID_DIALOG_DOWNLOADFILE				233
+#define AP_RID_DIALOG_META_GENERAL				234	// Property Page
+#define AP_RID_DIALOG_META_SUMMARY				235	// Property Page
+#define AP_RID_DIALOG_META_PERMISSIONS			236	// Property Page
 
 
 #include "ap_Win32Res_DlgPageSetup.rc2"
@@ -90,4 +93,5 @@
 #include "ap_Win32Res_DlgInsertTable.rc2"
 #include "ap_Win32Res_DlgDownload_File.rc2"
 #include "ap_Win32Res_Version.rc2"
+#include "ap_Win32Res_DlgMetaData.rc2"
 

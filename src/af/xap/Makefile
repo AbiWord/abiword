@@ -86,6 +86,7 @@ ifeq ($(ABI_FE), Win32)
 PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PreviewWidget.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)DialogHelper.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/xap_$(ABI_FE)PropertySheet.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)DragAndDrop.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)LabelledSeparator.$(OBJ_SUFFIX)
 endif
