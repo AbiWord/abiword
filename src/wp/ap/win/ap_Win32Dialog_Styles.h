@@ -21,13 +21,17 @@
 #define AP_WIN32DIALOG_STYLES_H
 
 #include "ap_Dialog_Styles.h"
-class XAP_Win32Frame;
+#include "xap_Win32DialogHelper.h"
+#include "xap_Win32PreviewWidget.h"
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Styles: public AP_Dialog_Styles
+class AP_Win32Dialog_Styles: public AP_Dialog_Styles, XAP_Win32Dialog
 {
 public:
+	typedef enum _StyleType 
+	  {USED_STYLES, ALL_STYLES, USER_STYLES} StyleType;
+
 	AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Styles(void);
 
@@ -37,10 +41,27 @@ public:
 	
 protected:
 
-	virtual const char * getCurrentStyle (void) const {return (const char *)NULL;}
-	virtual void setDescription (const char * desc) const {}
+	virtual const char * getCurrentStyle (void) const;
+	virtual void setDescription (const char * desc) const;
 	virtual void setModifyDescription (const char * desc) {}
 
+	XAP_Win32PreviewWidget	* 	m_pParaPreviewWidget;
+	XAP_Win32PreviewWidget	* 	m_pCharPreviewWidget;
+
+	void				_populateWindowData(void);
+	void                _populateCList(void);
+
+protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
+
+private:
+	XAP_Win32DialogHelper		_win32Dialog;
+	StyleType					m_whichType;
+	UT_String					m_selectedStyle;
+
 };
+
 
 #endif /* AP_WIN32DIALOG_STYLES_H */

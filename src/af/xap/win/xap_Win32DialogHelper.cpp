@@ -219,6 +219,13 @@ void XAP_Win32DialogHelper::selectListItem(UT_sint32 controlId, int index)
 	SendDlgItemMessage(m_hDlg, controlId, LB_SETCURSEL, index, 0);
 }
 
+void XAP_Win32DialogHelper::getListText(UT_sint32 controlId, int index, char *p_str) const
+{
+	_assertValidDlgHandle(m_hDlg);
+	SendDlgItemMessage(m_hDlg, controlId, LB_GETTEXT, index, (LPARAM)p_str);
+}
+
+
 // Controls
 void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCSTR p_str)
 {

@@ -1,0 +1,91 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define AP_RID_DIALOG_STYLES_TOP						1001
+#define AP_RID_DIALOG_STYLES_TOP_LIST_STYLES			1002
+#define AP_RID_DIALOG_STYLES_TOP_COMBO_LIST				1003
+#define AP_RID_DIALOG_STYLES_TOP_TEXT_LIST				1004
+#define AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW	1005
+#define AP_RID_DIALOG_STYLES_TOP_TEXT_CHARACTER_PREVIEW	1006
+#define AP_RID_DIALOG_STYLES_TOP_TEXT_DESCRIPTION		1007
+#define AP_RID_DIALOG_STYLES_TOP_BUTTON_DELETE			1008
+#define AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY			1009
+#define AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW				1010
+#define AP_RID_DIALOG_STYLES_TOP_TEXT_AVAILABLE			1011
+#define AP_RID_DIALOG_STYLES_TOP_LABEL_DESCRIPTION		1012
+
+#define AP_RID_DIALOG_STYLES_TOP_TEXT_DEFAULT			-1
+
+#define AP_RID_DIALOG_STYLES_TOP_BUTTON_OK				IDOK
+#define AP_RID_DIALOG_STYLES_TOP_BUTTON_CANCEL			IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+
+AP_RID_DIALOG_STYLES_TOP DIALOG DISCARDABLE  0, 0, 365, 226
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Styles"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",AP_RID_DIALOG_STYLES_TOP_BUTTON_OK,247,205,50,14
+    PUSHBUTTON      "Cancel",AP_RID_DIALOG_STYLES_TOP_BUTTON_CANCEL,308,205,
+                    50,14
+    GROUPBOX        "Available Styles",
+                    AP_RID_DIALOG_STYLES_TOP_TEXT_AVAILABLE,7,7,117,137
+    LISTBOX         AP_RID_DIALOG_STYLES_TOP_LIST_STYLES,13,17,108,123,
+                    LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_HSCROLL | WS_TABSTOP
+    GROUPBOX        "List",AP_RID_DIALOG_STYLES_TOP_TEXT_LIST,7,144,118,29
+    COMBOBOX        AP_RID_DIALOG_STYLES_TOP_COMBO_LIST,14,153,108,60,
+                    CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Paragraph Preview",
+                    AP_RID_DIALOG_STYLES_TOP_TEXT_PARAGRAPH_PREVIEW,129,7,
+                    229,58
+    GROUPBOX        "Character Preview",
+                    AP_RID_DIALOG_STYLES_TOP_TEXT_CHARACTER_PREVIEW,130,68,
+                    228,51
+    GROUPBOX        "Description",AP_RID_DIALOG_STYLES_TOP_TEXT_DESCRIPTION,
+                    129,122,229,51
+    CONTROL         "",AP_RID_DIALOG_STYLES_TOP_TEXT_DEFAULT,"Static",
+                    SS_BLACKFRAME | SS_SUNKEN,7,178,351,1
+    CONTROL         "",AP_RID_DIALOG_STYLES_TOP_TEXT_DEFAULT,"Static",
+                    SS_BLACKFRAME | SS_SUNKEN,7,199,351,1
+    PUSHBUTTON      "Delete",AP_RID_DIALOG_STYLES_TOP_BUTTON_DELETE,308,183,
+                    50,14
+    PUSHBUTTON      "Modify...",AP_RID_DIALOG_STYLES_TOP_BUTTON_MODIFY,246,
+                    183,50,14
+    PUSHBUTTON      "New...",AP_RID_DIALOG_STYLES_TOP_BUTTON_NEW,184,183,50,
+                    14
+    LTEXT           "",AP_RID_DIALOG_STYLES_TOP_LABEL_DESCRIPTION,139,135,
+                    212,30
+END
+
+#endif /* RC_INVOKED */

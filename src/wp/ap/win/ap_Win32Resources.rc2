@@ -66,4 +66,5 @@
 #include "ap_Win32Res_Icons.rc2"
 #include "ap_Win32Res_DlgPageNumbers.rc2"
 #include "ap_Win32Res_DlgToggleCase.rc2"
+#include "ap_Win32Res_DlgStylesTop.rc2"
 

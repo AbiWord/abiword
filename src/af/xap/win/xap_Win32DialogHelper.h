@@ -84,6 +84,7 @@ public:
 	void				addItemToList(UT_sint32 controlId, LPCSTR p_str);
 	int					getListSelectedIndex(UT_sint32 controlId) const;
 	void				selectListItem(UT_sint32 controlId, int index);
+	void				getListText(UT_sint32 controlId, int index, char *p_str) const;
 
 	// Controls
 	void				setControlText(UT_sint32 controlId, LPCSTR p_str);
