@@ -1319,9 +1319,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 //	
 
 
-#if  !defined(__MINGW32__)  && !defined(__WINE__) && !defined(DEBUG) 
-__try
-#endif	
+try
 {		
 	UT_uint32 iHeight = 0, iWidth = 0, t_flag =0;
 	UT_sint32 iPosX = 0, iPosY = 0;
@@ -1381,15 +1379,18 @@ __try
 	delete pMyWin32App;
 	
 	
-}// end of thes block is controlled by the SEH 
+}// end of thes block is controlled by the Exception Handler
 
 //
 // If an exception happens, with "catch" the block
 // and then the save it into disk
 //
-#if  !defined(__MINGW32__)  && !defined(__WINE__)  && !defined(DEBUG) 
-__except (1)
+catch (...)
 {
+#ifdef DEBUG
+	throw;
+#endif
+
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
 	
 	UT_return_val_if_fail (pApp,1);
@@ -1418,7 +1419,6 @@ __except (1)
 		
 
 }// end of except
-#endif
 
 	SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
 	return msg.wParam;

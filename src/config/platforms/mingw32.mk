@@ -59,7 +59,7 @@ RC		= windres
 OBJ_SUFFIX	= o
 LIB_SUFFIX	= a
 DLL_SUFFIX	= so # We dont use actual dlls, for disting anyway.  We could though, but given the windows using church secretary, I think current system is safer.
-EXE_SUFFIX = .exe
+EXE_SUFFIX = exe
 
 OBJ_DIR_SFX	=
 DEFINES		=
@@ -165,6 +165,15 @@ UNIX_CAN_BUILD_STATIC=1
 # I'm still not totally decided really...I'll need to experiment some more.
 
 ABI_REQUIRE_PEER_ICONV = 1
+
+# Currently hard code expat to default for Win32
+ABI_OPT_PEER_EXPAT?=1
+
+# add wv's mini glib to include list
+ABI_OTH_INCS+=	/../../wv/glib-wv
+
+# so <fribidi.h> works
+CFLAGS += -I$(ABI_ROOT)/../fribidi	
 
 # Compiler flags
 # requires the commctrl.dll from ie4.0 or greater

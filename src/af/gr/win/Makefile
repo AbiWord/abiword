@@ -29,7 +29,7 @@ CPPSRCS=		gr_Win32CharWidths.cpp	\
 
 TARGETS=		$(OBJS)
 INCLUDES=		-I$(ABI_XX_ROOT)/../libpng	\
-			-I$(ABI_XX_ROOT)/../zlib
+			-I$(ABI_ZLIB_INC)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

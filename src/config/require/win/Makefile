@@ -71,7 +71,7 @@ _ZLIB_:
 _LIBPNG_:
 	@if [ -d $(ABI_ROOT)/../libpng ]; then					\
 		echo Found libpng in peer directory;				\
-		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;	\
+		$(MAKE) -f Makefile.abi.head ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;	\
 	else									\
 		echo peer libpng not found.  You can check it out of cvs by; \
 		echo cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout libpng; \

@@ -29,6 +29,10 @@ ifeq ($(ABI_OPT_GNOME),1)
 ABI_AP_INCS+=	/wp/ap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
 
+ABI_APPLIBS+=		AbiWordVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv \
+					AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_libwv \
+					Abi_libpopt
+
 ##################################################################
 ##
 ## Define the name of the application.  The quoting stuff is beacuse

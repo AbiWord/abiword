@@ -80,13 +80,6 @@
 #### ABI_OPT_PANGO=1
 ####
 
-#### To build with the JPEG support with libjpeg enabled add the following
-#### line back to the Makefile, add the variable to the make command line
-#### or set this variable as an environment variable.
-####
-#### ABI_OPT_LIBJPEG=1
-####
-
 ##################################################################
 ##################################################################
 ## abi_defs.mk --  Makefile definitions for building AbiSource software.
@@ -192,18 +185,10 @@ ifndef ABI_ESCAPE_QUOTES
  endif
 endif
 
-# Currently hard code expat to default for Win32
-ifeq ($(OS_NAME),WIN32)
-  ABI_OPT_PEER_EXPAT?=1
-endif
-ifeq ($(OS_NAME),MINGW32)
-  ABI_OPT_PEER_EXPAT?=1
-endif
-
 
 ##################################################################
 ##################################################################
-#### if it is Darwin, we suspect taht we have MacOS X, hence we
+#### if it is Darwin, we suspect that we have MacOS X, hence we
 #### build MacOS version using Carbon. Change later when we
 #### support Darwin running X and other varieties (like MacOS X
 #### using Cocoa). <hfiguiere@teaser.fr>
@@ -311,94 +296,16 @@ ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
 
-
-# consider adding some UNIX native includes because MacOS X is really hybrid.
-ifeq ($(OS_NAME), MACOSX)
-ABI_XAP_INCS+= /af/util/unix
-endif
-
 ABI_OTH_INCS=	/other/spell/xp \
 				/other/pango
 
-ifeq ($(OS_NAME), WIN32)
-ABI_OTH_INCS+=	/../../wv/glib-wv
-endif
-ifeq ($(OS_NAME), MINGW32)
-ABI_OTH_INCS+=	/../../wv/glib-wv
-endif
-
-ifeq ($(ABI_OPT_PEER_EXPAT),1)
-  ABI_PEER_INCS+=/../../expat/lib
-endif
 ABI_PEER_INCS+=/../../wv/exporter
 ABI_PEER_INCS+=/../../popt
 
 # Test for iconv in system locations
 HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/include/iconv.h ] ; then echo 1 ; fi)
 
-ifeq ($(OS_NAME), WIN32)
-ABI_PEER_INCS+=/../../libiconv/include
-ABI_PEER_INCS+=/../../libiconv/libcharset/include
-else
-ifneq ($(HAVE_ICONV_SYSTEM),1)
-ABI_PEER_INCS+=/../../libiconv/include
-ABI_PEER_INCS+=/../../libiconv/libcharset/include
-endif
-endif
-
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
-
-ifeq ($(OS_NAME), WIN32)
-ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')
-ABI_INCS=	$(addprefix -I$(ABI_XX_ROOT)/src,$(ABI_ALL_INCS))
-else
-ABI_XX_ROOT:=$(ABI_ROOT)
-ABI_INCS=	$(addprefix -I$(ABI_ROOT)/src,$(ABI_ALL_INCS))
-endif
-
-##################################################################
-##################################################################
-
-## ABI_OPTIONS is a list of all the conditionally included options
-##             suitable for echoing during the build process or
-##             including in an AboutBox.
-
-ABI_ENABLED_OPTIONS=
-
-## conditionally enable some additional debugging and test code
-
-ifeq ($(ABI_OPT_DEBUG),1)
-ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST -DUT_TEST
-ABI_OPTIONS+=Debug:On
-else
-ABI_DBGDEFS=		-DNDEBUG
-ABI_OPTIONS+=Debug:Off
-endif
-
-
-## BIDI options
-ifeq ($(ABI_OPT_BIDI_RTL_DOMINANT),1)
-ABI_BIDI_ENABLED+=-DBIDI_RTL_DOMINANT
-ABI_OPTIONS+=BiDi:RTL
-else
-ABI_OPTIONS+=BiDi:LTR
-endif
-
-ifeq ($(ABI_OPT_PANGO),1)
-ABI_BIDI_ENABLED=-DWITH_PANGO
-ABI_OPTIONS+=Pango:On
-else
-ABI_OPTIONS+=Pango:Off
-endif
-
-##################################################################
-##################################################################
-
-LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
-
-CFLAGS		= $(INCLUDES) $(OS_INCLUDES) $(DEFINES) $(OPTIMIZER) $(WARNFLAGS) $(OS_CFLAGS) $(XCFLAGS)	\
-			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_APPLIBDIRDEF)	\
-			$(ABI_DBGDEFS) $(ABI_BIDI_ENABLED) $(ABI_INCS) $(LIBJPEG_CFLAGS)
 
 ##################################################################
 ##################################################################
@@ -482,6 +389,11 @@ ifeq ($(OS_NAME), MACOSX)
 include $(ABI_ROOT)/src/config/platforms/macosx.mk
 endif
 
+# DOS (via WxWindows)
+ifeq ($(OS_NAME), WXWIN)
+include $(ABI_ROOT)/src/config/platforms/wxwin.mk
+endif
+ 
 
 # Catch all for undefined platform (CC will always be defined on a working platform)
 ifndef CC
@@ -499,6 +411,69 @@ fake-target::
 endif
 
 #### End of platform defs
+##################################################################
+##################################################################
+
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+  ABI_PEER_INCS+=/../../expat/lib
+endif
+ifneq ($(HAVE_ICONV_SYSTEM),1)
+ABI_PEER_INCS+=/../../libiconv/include
+ABI_PEER_INCS+=/../../libiconv/libcharset/include
+endif
+
+ifeq ($(OS_NAME), WIN32)
+ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')
+ABI_INCS=	$(addprefix -I$(ABI_XX_ROOT)/src,$(ABI_ALL_INCS))
+else
+ABI_XX_ROOT:=$(ABI_ROOT)
+ABI_INCS=	$(addprefix -I$(ABI_ROOT)/src,$(ABI_ALL_INCS))
+endif
+
+##################################################################
+##################################################################
+
+## ABI_OPTIONS is a list of all the conditionally included options
+##             suitable for echoing during the build process or
+##             including in an AboutBox.
+
+ABI_ENABLED_OPTIONS=
+
+## conditionally enable some additional debugging and test code
+
+ifeq ($(ABI_OPT_DEBUG),1)
+ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST -DUT_TEST
+ABI_OPTIONS+=Debug:On
+else
+ABI_DBGDEFS=		-DNDEBUG
+ABI_OPTIONS+=Debug:Off
+endif
+
+
+## BIDI options
+ifeq ($(ABI_OPT_BIDI_RTL_DOMINANT),1)
+ABI_BIDI_ENABLED+=-DBIDI_RTL_DOMINANT
+ABI_OPTIONS+=BiDi:RTL
+else
+ABI_OPTIONS+=BiDi:LTR
+endif
+
+ifeq ($(ABI_OPT_PANGO),1)
+ABI_BIDI_ENABLED=-DWITH_PANGO
+ABI_OPTIONS+=Pango:On
+else
+ABI_OPTIONS+=Pango:Off
+endif
+
+##################################################################
+##################################################################
+
+LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
+
+CFLAGS		= $(INCLUDES) $(OS_INCLUDES) $(DEFINES) $(OPTIMIZER) $(WARNFLAGS) $(OS_CFLAGS) $(XCFLAGS)	\
+			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_APPLIBDIRDEF)	\
+			$(ABI_DBGDEFS) $(ABI_BIDI_ENABLED) $(ABI_INCS)
+
 #################################################################
 ##################################################################
 ## Directory name pattern and locations of where we put our output.
@@ -523,9 +498,10 @@ OUT			= $(ABI_ROOT)/src
 ##################################################################
 ## Symbols to uniquely identify the build.
 ##
-## ABI_BUILD_VERSION_MAJOR/MINOR/MICRO	should be set to the three
+## ABI_BUILD_VERSION_MAJOR/MINOR/MICRO[/BUILD]	should be set to the three
 ##          numbers making up the build version (e.g. 1 0 0)
-##			for a numbered build.
+##          for a numbered build.  BUILD is optional, should be 0
+##          for all release builds, indicates CVS or other nightly build.
 ##
 ## ABI_BUILD_ID		can be used as a identifying label (such as
 ##			a date stamp in a nightly build system).
@@ -533,17 +509,34 @@ OUT			= $(ABI_ROOT)/src
 ## 
 
 ifndef ABI_BUILD_VERSION_MAJOR
-ABI_BUILD_VERSION_MAJOR= 2
-ABI_BUILD_VERSION_MINOR= 1
-ABI_BUILD_VERSION_MICRO= 3
+include abi_release_version.mk
 endif
 
 ifndef ABI_BUILD_VERSION
+ifdef ABI_BUILD_VERSION_BUILD
+ABI_BUILD_VERSION = $(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO)-$(ABI_BUILD_VERSION_BUILD)
+else
 ABI_BUILD_VERSION	= $(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO)
-ABI_BUILD_ID		=
+endif
 endif
 
+ABI_BUILD_ID ?=
+
+ABI_OPTIONS += v$(ABI_BUILD_VERSION) 
 CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
+RCFLAGS += -DABI_BUILD_VERSION=$(ABI_BUILD_VERSION)
+CFLAGS  += -DABI_BUILD_VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR) \
+           -DABI_BUILD_VERSION_MINOR=$(ABI_BUILD_VERSION_MINOR) \
+           -DABI_BUILD_VERSION_MICRO=$(ABI_BUILD_VERSION_MICRO)
+RCFLAGS += -DABI_BUILD_VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR) \
+           -DABI_BUILD_VERSION_MINOR=$(ABI_BUILD_VERSION_MINOR) \
+           -DABI_BUILD_VERSION_MICRO=$(ABI_BUILD_VERSION_MICRO)
+# ABI_BUILD_VERSION_BUILD should ONLY be defined and nonzero for automatic builds!!!
+ifdef ABI_BUILD_VERSION_BUILD
+CFLAGS  += -DABI_BUILD_VERSION_BUILD=$(ABI_BUILD_VERSION_BUILD)
+RCFLAGS += -DABI_BUILD_VERSION_BUILD=$(ABI_BUILD_VERSION_BUILD)
+endif
+
 
 ##################################################################
 ##################################################################
@@ -564,7 +557,7 @@ BINDIR			= $(OUTDIR)/bin
 CANONDIR		= $(OUTDIR)/AbiSuite
 PLUGINDIR       = $(OUTDIR)/plugins
 
-PKGBASENAME		= abisuite-$(ABI_BUILD_VERSION)-$(OS_NAME)_$(OS_ARCH)
+PKGBASENAME		= abisuite-$(ABI_BUILD_VERSION_MAJOR)-$(ABI_BUILD_VERSION_MINOR)-$(ABI_BUILD_VERSION_MICRO)-$(OS_NAME)_$(OS_ARCH)
 
 USERDIR			= $(ABI_ROOT)/user
 
@@ -583,12 +576,13 @@ USERDIR			= $(ABI_ROOT)/user
 ##              checking dependencies in the final link.
 
 ifeq ($(OS_NAME),WIN32)
-EXTRA_LIBS	= 	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-			$(addsuffix .lib,$(ABI_LIBS))
-EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBDEP)))
+#EXTRA_LIBS	= 	$(addprefix lib,$(addsuffix .lib,$(ABI_APPLIBS)))	\
+#			$(addsuffix .lib,$(ABI_LIBS))
+#EXTRA_LIBDEP	=	$(addprefix lib,$(addsuffix .lib,$(ABI_APPLIBDEP)))
+EXTRA_LIBS	= 	$(addsuffix .lib,$(ABI_APPLIBS)) $(addsuffix .lib,$(ABI_LIBS))
+EXTRA_LIBDEP	=	$(addsuffix .lib,$(ABI_APPLIBDEP))
 else
-EXTRA_LIBS	=	-L$(LIBDIR) 							\
-			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
+EXTRA_LIBS	=	-L$(LIBDIR) $(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 			$(addprefix -l,$(ABI_LIBS))
 EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION).a,$(ABI_APPLIBDEP)))
 endif
@@ -598,16 +592,7 @@ endif
 ## XML Parser
 ## Default = libxml2, peer = expat
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
-  ifeq ($(OS_NAME),WIN32)
-    EXTRA_LIBS += $(LIBDIR)/libAbi_libexpat_s.lib
-    LDFLAGS += /NODEFAULTLIB:LIBC
-  else
-  ifeq ($(OS_NAME),MINGW32)
-    EXTRA_LIBS += $(LIBDIR)/libAbi_libexpat.a
-  else
-    EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat
-  endif
-  endif
+  ABI_LIBS += expat
   CFLAGS += -DHAVE_EXPAT
   ABI_OPTIONS+=XML:expat
 else
@@ -756,8 +741,6 @@ else
 	ABI_OPTIONS+=Scripting:Off
 endif
 
-ABI_OPTIONS += v$(ABI_BUILD_VERSION_MAJOR)-$(ABI_BUILD_VERSION_MINOR)-$(ABI_BUILD_VERSION_MICRO) 
-
 ifeq ($(ABI_OPT_WIDGET),1)
 CFLAGS += -DABI_OPT_WIDGET
 endif
@@ -771,41 +754,9 @@ ifeq ($(ABI_USE_100_ISPELL),1)
 CFLAGS += -DMAXSTRINGCHARS=100
 endif
 
-# Windows unicode build
-ifeq ($(ABI_OPT_UNICODE),1)
-CFLAGS 	+= -DUNICODE -D_UNICODE
-endif
-
-
-#
-# yep, this is an egregiously ugly place to hardwire this, but
-# it's the easiest way to ensure that we always include iconv.h
-# with it set (to prevent linker mismatches with wv's version)
-#
-# fjf: I'm commenting it. wv should be using the same iconv as
-#      AbiWord, and both should be using libiconv-1.8 or equiv.
-#      LIBICONV_PLUG should be set *only* if building against
-#      peer libiconv
-#
-# CFLAGS += -DLIBICONV_PLUG
-
-ifeq ($(ABI_NATIVE),unix)
-CFLAGS += -DSUPPORTS_UT_IDLE=1
-endif
-
-ifeq ($(OS_NAME), WIN32)
-# TODO: support fribidi as DLL or statically compiled in
-#	EXTRA_LIBS += $(LIBDIR)/fribidi.lib
-	EXTRA_LIBS += $(LIBDIR)/libfribidi_s.lib
-	CFLAGS += -DFRIBIDI_EXPORTS	# symbols match
-	CFLAGS += -I$(ABI_XX_ROOT)/../fribidi	# so <fribidi.h> works
-else
+# link with Fribidi library
 ifeq ($(OS_NAME),QNX)
 	EXTRA_LIBS += -Bstatic -lfribidi -Bdynamic
 else
-	EXTRA_LIBS += -lfribidi
-endif
-endif
-ifeq ($(OS_NAME), MINGW32)
-	CFLAGS += -I$(ABI_ROOT)/../fribidi	# so <fribidi.h> works
+	ABI_LIBS += fribidi
 endif

@@ -244,6 +244,8 @@ LIBXML_CONFIG	= xml2-config
 XFT_CONFIG	= xft-config
 LIBGLADE_CONFIG = pkg-config libglade-2.0
 
+CFLAGS += -DSUPPORTS_UT_IDLE=1
+
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 #MKSHLIB			= g++ -shared -o  $(@:$(OBJDIR)/%.so=%.so)

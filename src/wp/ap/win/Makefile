@@ -78,6 +78,6 @@ TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
-INCLUDES+= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../wv/exporter -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../libiconv/include -I$(ABI_XX_ROOT)/../psiconv
+INCLUDES+= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../wv/exporter -I$(ABI_ZLIB_INC) -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../libiconv/include
 
 build:: $(TARGETS)

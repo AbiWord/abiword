@@ -64,21 +64,17 @@ endif
 
 ifdef LIBRARY_NAME
 ifeq ($(OS_NAME), WIN32)
-LIBRARY		= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION)_s.lib
-IMPORT_LIBRARY	= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).lib
+ LIBPREFIX	=
 else
-LIBRARY		= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).$(LIB_SUFFIX)
+ LIBPREFIX = lib
 endif
- SHARED_LIBRARY		= $(LIBDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).$(DLL_SUFFIX)
- PLUGIN          	= $(PLUGINDIR)/lib$(LIBRARY_NAME)$(LIBRARY_VERSION).$(DLL_SUFFIX)
+ LIBRARY		= $(LIBDIR)/$(LIBPREFIX)$(LIBRARY_NAME)$(LIBRARY_VERSION).$(LIB_SUFFIX)
+ SHARED_LIBRARY		= $(LIBDIR)/$(LIBPREFIX)$(LIBRARY_NAME)$(LIBRARY_VERSION).$(DLL_SUFFIX)
+ PLUGIN          	= $(PLUGINDIR)/$(LIBPREFIX)$(LIBRARY_NAME)$(LIBRARY_VERSION).$(DLL_SUFFIX)
 endif
 
 ifndef TARGETS
-ifeq ($(OS_NAME), WIN32)
-TARGETS		= $(LIBRARY) $(SHARED_LIBRARY) $(IMPORT_LIBRARY)
-else
 TARGETS		= $(LIBRARY) $(SHARED_LIBRARY)
-endif
 endif
 
 #
@@ -208,12 +204,13 @@ $(SHARED_LIBRARY): $(OBJS)
 	@rm -f $@
 ifeq ($(ABI_FE), Win32)
 ifeq ($(OS_NAME), MINGW32)
-	dllwrap --dllname=$(LIBDIR)/lib$(LIBRARY_NAME).dll \
+	dllwrap --dllname=$(LIBDIR)/$(LIBRARY_NAME).dll \
 	--implib=$(LIBDIR)/lib$(LIBRARY_NAME)dll.a \
 	--driver-name=g++  \
 	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 else
-	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) \
+	$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) \
+	-implib:$(LIBRARY)	\
 	$(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH) ) \
 	$(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH) )
 endif
@@ -228,7 +225,7 @@ $(PLUGIN): $(OBJS)
 	@rm -f $@
 ifeq ($(ABI_FE), Win32)
 ifeq ($(OS_NAME), MINGW32)
-	dllwrap --dllname=$(PLUGINDIR)/lib$(LIBRARY_NAME).dll \
+	dllwrap --dllname=$(PLUGINDIR)/$(LIBRARY_NAME).dll \
 	--implib=$(PLUGINDIR)/lib$(LIBRARY_NAME)dll.a \
 	--driver-name=g++  \
 	$(OBJS) $(EXTRA_LIBS) $(OS_LIBS)

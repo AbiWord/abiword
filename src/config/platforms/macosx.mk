@@ -70,6 +70,9 @@ OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include \
 		-I/Developer/Headers/FlatCarbon 
 G++INCLUDES		= -I$(ABI_ROOT)/../libiconv/include -I/usr/include/g++
 
+# consider adding some UNIX native includes because MacOS X is really hybrid.
+ABI_XAP_INCS	+= /af/util/unix
+
 # Compiler flags
 PLATFORM_FLAGS		= -fpascal-strings -DUSE_CARBON_EVENT -DCARBON_ON_MACH_O=1 -DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_CARBON -DXP_MAC_TARGET_QUARTZ -DNO_SYS_ERRLIST $(OS_INCLUDES)
 #PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED

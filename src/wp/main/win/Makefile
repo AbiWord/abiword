@@ -27,17 +27,14 @@ RCSRCS=			Win32Main.rc
 
 PROGRAM=		$(BINDIR)/AbiWord.exe
 
+
+ifeq ($(OS_NAME), MINGW32)
 # Mingw provides libiconv, a darn good one (:
 ifneq ($(ABI_REQUIRE_PEER_ICONV),0)
 ABIICONV = Abi_libiconv
 else
 ABIICONV =
 endif
-
-## TODO should /profile be on the following line ??  does this
-## TODO enable linking with profile-libraries and thus bloat us.
-
-ifeq ($(OS_NAME), MINGW32)
 MINGRES_INCS=--include-dir=../../ap/win --include-dir=../../../af/xap/win
 CPPSRCS+=		dummy.cpp
 
@@ -54,43 +51,13 @@ endif
 LoadOrder=	AbiGr AbiFmt AbiXAp AbiWPAp AbiPTbl AbiImpExp \
 			AbiEv AbiUtil AbiGr AbiWordVer AbiSpell 
 ABI_PERIPHLIBS=		Abi_libwv fribidi \
-			Abi_libpopt $(ABIICONV) Abi_libpng Abi_zlib
+			Abi_libpopt $(ABIICONV) Abi_libpng $(ABI_ZLIB_LIB)
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder) $(ABI_PERIPHLIBS)
 ABI_APPLIBDEP=		$(LoadOrder)
 
 SHARED_LDFLAGS =	$(SHARED_FLAGS) -Wl,--dll -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,libAbiWord.dll.a
-
-
-else
-
-ABI_LDFLAGS=		-nologo -subsystem:windows -incremental:no -machine:$(LINK_ARCH) -profile
-ABI_APPLIBS=		AbiWordVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv \
-					AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib $(ABIICONV) Abi_libwv \
-					Abi_libpopt
-
-ABI_APPLIBDEP=		$(ABI_APPLIBS)
-
-####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
-ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 msvcprt ole32 version
-
-ifeq ($(ABI_OPT_UNICODE),1)
-ABI_LIBS += unicows
-endif			
-
-
-GARBAGE=		AbiWord.map AbiWord.pdb
-
 endif
 
-# ifeq ($(ABI_OPT_CURL),1)
-# ABI_APPLIBS+=	Abi_libcurl
-# # Note: ws2_32.lib is the winsock 2 import library (may cause user to require Winsock 2 update)
-# ABI_LIBS+=		ws2_32
-# so lets try delay loading it, win95 users should be able to run abiword, just not its libcurl based features
-#ABI_LIBS+= Delayimp -delayload:ws2_32.dll
-# endif
 
 TARGETS=		$(PROGRAM)
 

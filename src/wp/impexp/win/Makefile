@@ -29,7 +29,7 @@ CPPSRCS=		ie_impexp_RegisterWin32.cpp
 TARGETS=                $(OBJS)
 
 
-INCLUDES+= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv
+INCLUDES+= 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

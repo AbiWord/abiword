@@ -73,10 +73,6 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_DocComparison.cpp
 
 
-ifeq ($(OS_NAME),WIN32)
-INCLUDES += -GX
-endif
-
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
