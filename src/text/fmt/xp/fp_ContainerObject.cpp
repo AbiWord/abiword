@@ -431,7 +431,7 @@ void fg_FillType::setTransparent(void)
 /*!
  * set this class to have an image background for fills.
  */
-void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage)
+void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage, GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight)
 {
 	m_FillType = FG_FILL_IMAGE;
 	DELETEP(m_pImage);
@@ -439,6 +439,7 @@ void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage)
 	m_pImage = pImage;
 	m_pGraphic = pGraphic;
 	m_bTransparentForPrint = false;
+	setWidthHeight(pG,iWidth,iHeight);
 }
 
 /*!
@@ -483,6 +484,7 @@ void fg_FillType::_regenerateImage(GR_Graphics * pG)
 	UT_return_if_fail(m_pDocLayout);
 	DELETEP(m_pImage);
 	m_pImage = m_pGraphic->regenerateImage(pG);
+	setWidthHeight(pG,m_iWidth,m_iHeight);
 	m_iGraphicTick = m_pDocLayout->getGraphicTick();
 }
 
@@ -504,6 +506,17 @@ UT_RGBColor * fg_FillType::getColor(void)
 		return getParent()->getColor();
 	}
 	return &m_color;
+}
+
+void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight)
+{
+	m_iWidth = iWidth;
+	m_iHeight = iHeight;
+	if(m_pImage)
+	{
+		UT_Rect rec(0,0,iWidth,iHeight);
+		m_pImage->scaleImageTo(pG,rec);
+	}
 }
 
 /*!
@@ -529,13 +542,6 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 }
 		 if(m_FillType == FG_FILL_TRANSPARENT)
 		 {
-			 if(getParent() && m_pContainer )
-			 {
-				 UT_sint32 newX = srcX + (m_pContainer->getX());
-				 UT_sint32 newY = srcY + (m_pContainer->getY());
-				 getParent()->Fill(pG,newX,newY,x,y,width,height);
-				 return;
-			 }
 			 return;
 		 }
 		 if(m_FillType == FG_FILL_IMAGE)
@@ -584,7 +590,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 	 }
 	 if(m_FillType == FG_FILL_IMAGE)
 	 {
-		 xxx_UT_DEBUGMSG(("Fill type Image ! \n"));
+		 xxx_UT_DEBUGMSG(("Fill type Image ! srcX %d srcY %d x  %d y %d width %d height %d \n",srcX,srcY,x,y,width,height));
 		 if(m_pDocLayout->getGraphicTick() != m_iGraphicTick)
 		 {
 			 _regenerateImage(pG);

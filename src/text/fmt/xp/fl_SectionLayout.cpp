@@ -55,7 +55,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
-
+#include "fg_Graphic.h"
 /*
   TODO this file is now really too long.  divide it up
   into smaller ones.
@@ -358,6 +358,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_iFootnoteLineThickness = 0;
 	m_sPaperColor.clear();
 	m_sScreenColor.clear();
+	m_pPageImage = NULL;
 	_lookupProperties();
 }
 
@@ -385,6 +386,7 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 
 		pCol = pNext;
 	}
+	DELETEP(m_pPageImage);
 }
 
 void fl_DocSectionLayout::setFirstEndnoteContainer(fp_EndnoteContainer * pECon)
@@ -1340,6 +1342,13 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_iFootnoteLineThickness = UT_convertToLogicalUnits("0.005in");
 	}
 
+	const XML_Char * pszDataID = NULL;
+	pSectionAP->getAttribute("strux-image-dataid", (const XML_Char *&)pszDataID);
+	DELETEP(m_pPageImage);
+	if(pszDataID && *pszDataID)
+	{
+		m_pPageImage = FG_Graphic::createFromStrux(this);
+	}
 	setPaperColor();
 	m_bForceNewPage = false;
 }
@@ -1695,7 +1704,17 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 	if(m_pFirstOwnedPage == NULL)
 		m_pFirstOwnedPage = pPage;
 	fp_Page * pPrev = m_pFirstOwnedPage;
-	if(m_sScreenColor.size() > 0)
+	pPage->getFillType()->setDocLayout(getDocLayout());
+	if(m_pPageImage)
+	{
+		FG_Graphic * pGraphic = m_pPageImage->clone();
+		const PP_AttrProp * pAP = NULL;
+		getAttrProp(&pAP);
+		GR_Image * pImage = m_pPageImage->generateImage(getDocLayout()->getGraphics(),pAP,pPage->getWidth(),pPage->getHeight());
+		pPage->getFillType()->setImage(pGraphic,pImage,getDocLayout()->getGraphics(),pPage->getWidth(),pPage->getHeight());
+														
+	}
+	else if(m_sScreenColor.size() > 0)
 	{
 		pPage->getFillType()->setColor(m_sScreenColor.c_str());
 	}

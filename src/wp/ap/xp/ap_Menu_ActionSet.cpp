@@ -168,7 +168,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,0,	"dlgColumns",		ap_GetState_ColumnsActive,					NULL);
-	_s(AP_MENU_ID_FMT_BACKGROUND, 0,1,0,0, "dlgBackground", NULL, NULL);
+	_s(AP_MENU_ID_FMT_BACKGROUND, 0,1,0,0, NULL, NULL, NULL);
+	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_COLOR, 0,1,0,0, "dlgBackground", NULL, NULL);
+	_s(AP_MENU_ID_FMT_BACKGROUND_PAGE_IMAGE, 0,1,0,0, "fileInsertPageBackgroundGraphic", NULL, NULL);
 	_s(AP_MENU_ID_FMT_HDRFTR,     0,1,0,0, "dlgHdrFtr", NULL, NULL);
 	_s(AP_MENU_ID_FMT_FOOTNOTES,     0,1,0,0, "formatFootnotes", NULL, NULL);
 	_s(AP_MENU_ID_FMT_IMAGE, 0,1,0,0, "dlgFmtImage", NULL, NULL);

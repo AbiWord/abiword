@@ -124,6 +124,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
+	m_FillType.setDocLayout(m_pBL->getDocLayout());
 }
 
 fp_Run::~fp_Run()
@@ -153,16 +154,34 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	{
 		return;
 	}
+	fp_Line * pLine = getLine();
+	if(pLine == NULL)
+	{
+		return;
+	}
+	UT_sint32 xoffLine, yoffLine;
+	fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(pLine->getContainer()));
+	pVCon->getScreenOffsets(pLine, xoffLine, yoffLine);
+
+	UT_sint32 srcX = getX() + xoffLine;
+	UT_sint32 srcY = getY() + yoffLine;
+	//
+	// srcX and srcY should now give the location on screen of this run.
+	// we want them to give the offset of x and y from their container,
+	// the line that holds them.
+	//
+	srcX = getX() - (srcX - x);
+	srcY = getY() - (srcY - y);
+	if(getType() == FPRUN_TAB)
+	{
+		UT_DEBUGMSG(("Tab run in fp_Run::Fill \n"));
+	}
 	if(getType() != FPRUN_FIELD)
 	{
-		UT_sint32 srcX = getX();
-		UT_sint32 srcY = getY();
 		m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
 	}
 	else
 	{
-		UT_sint32 srcX = getX();
-		UT_sint32 srcY = getY();
 		m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
 	}
 }
@@ -1435,7 +1454,7 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
-	Fill(getGraphics(),xoff, yoff, getWidth(), getLine()->getHeight());
+	Fill(getGraphics(),xoff+getX(), yoff, getWidth(), getLine()->getHeight());
 }
 
 void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
@@ -1519,6 +1538,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
+	// need to clear full height of line, in case we had a selection
+
 	UT_sint32 iFillHeight = getLine()->getHeight();
 	UT_sint32 iFillTop = pDA->yoff - getLine()->getAscent();
 
@@ -1542,6 +1563,25 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
 	getBlock()->getAttrProp(&pBlockAP);
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
+	
+	if (
+	    /* pView->getFocus()!=AV_FOCUS_NONE && */
+		(iSel1 <= iRunBase)
+		&& (iSel2 > iRunBase)
+		)
+	{
+		pG->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+        if(pView->getShowPara()){
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+        }
+	}
+	else
+	{
+		Fill(pG,DA_xoff, iFillTop, getWidth(), iFillHeight);
+        if(pView->getShowPara()){
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+        }
+	}
 	if (m_leader != FL_LEADER_NONE)
 	{
 		UT_UCSChar tmp[151];
@@ -1585,25 +1625,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
 		pG->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
-	}
-	else
-	if (
-	    /* pView->getFocus()!=AV_FOCUS_NONE && */
-		(iSel1 <= iRunBase)
-		&& (iSel2 > iRunBase)
-		)
-	{
-		pG->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
-        if(pView->getShowPara()){
-            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
-        }
-	}
-	else
-	{
-		Fill(getGraphics(),DA_xoff, iFillTop, getWidth(), iFillHeight);
-        if(pView->getShowPara()){
-            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
-        }
 	}
 //
 // Draw underline/overline/strikethough

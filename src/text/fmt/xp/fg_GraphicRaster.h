@@ -31,12 +31,13 @@ class ABI_EXPORT FG_GraphicRaster : public FG_Graphic
 public:
 	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL, 
 											   const PX_ChangeRecord_Object* pcro);
+	static FG_Graphic*	createFromStrux(const fl_Layout *pFL);
 
 	FG_GraphicRaster();
 	virtual ~FG_GraphicRaster();
 
 	virtual FGType		getType(void);
-
+	virtual FG_Graphic * clone(void);
 	virtual double		getWidth(void);
 	virtual double		getHeight(void);
 	virtual const char * getDataId(void) const;
@@ -47,6 +48,11 @@ public:
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName);
+	virtual UT_Error   	insertAtStrux(PD_Document* pDoc, 
+									  UT_uint32 res,
+									  UT_uint32 iPos,
+									  PTStruxType iStruxType, 
+									  const char* szName);
 
 	bool				setRaster_PNG(UT_ByteBuf* pBB);
 	UT_ByteBuf*			getRaster_PNG(void);

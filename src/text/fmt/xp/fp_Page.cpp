@@ -425,7 +425,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 // color.
 //
 	int i=0;
-	if(!bAlwaysUseWhiteBackground && !pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(!pDA->bDirtyRunsOnly)
 	{
 		xxx_UT_DEBUGMSG(("Doing a rectangular color fill \n"));
  		UT_sint32 xmin = pDA->xoff;
@@ -433,8 +433,8 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 		UT_sint32 height =getHeight();
 		UT_sint32 width = getWidth();
-		UT_sint32 srcX = xmin;
-		UT_sint32 srcY = ymin;
+		UT_sint32 srcX = 0;
+		UT_sint32 srcY = 0;
 		getFillType()->Fill(pDA->pG,srcX,srcY,xmin,ymin,width,height);
 	}
 

@@ -64,12 +64,45 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 }
 
 
+FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_Layout* pFL)
+{
+	FG_GraphicRaster* pFG = new FG_GraphicRaster();
+
+	bool bFoundDataItem = false;
+	const PD_Document* pDoc = pFL->getDocument();
+	/*
+	  Get the attribute list for this offset, lookup the dataid
+	  for the image, and get the dataItem.  The bytes in the
+	  dataItem should be a PNG image.
+	*/
+	bool bFoundSpanAP = pFL->getAttrProp(&pFG->m_pSpanAP);
+	if (bFoundSpanAP && pFG->m_pSpanAP)
+	{
+		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("strux-image-dataid", pFG->m_pszDataID);
+		if (bFoundDataID && pFG->m_pszDataID)
+		{
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbPNG), NULL, NULL);
+		}
+	}
+
+	if (!bFoundDataItem)
+		DELETEP(pFG);
+
+	return pFG;
+}
+
+
 FG_GraphicRaster::FG_GraphicRaster()
 {
 	m_pbbPNG = NULL;
 	m_bOwnPNG = false;
 	m_pSpanAP = NULL;
 	m_pszDataID = NULL;
+	m_iWidth = 0, 
+	m_iHeight = 0;
+	m_iMaxW = 0;
+	m_iMaxH = 0;
+
 }
 
 FG_GraphicRaster::~FG_GraphicRaster()
@@ -78,6 +111,19 @@ FG_GraphicRaster::~FG_GraphicRaster()
 		DELETEP(m_pbbPNG);
 	else
 		m_pbbPNG = NULL;
+}
+
+FG_Graphic * FG_GraphicRaster::clone(void)
+{
+	FG_GraphicRaster * pClone = new FG_GraphicRaster();
+	pClone->m_pbbPNG = m_pbbPNG;
+	pClone->m_pSpanAP = m_pSpanAP;
+	pClone->m_pszDataID = m_pszDataID;
+	pClone->m_iWidth = m_iWidth; 
+	pClone->m_iHeight = m_iHeight;
+	pClone->m_iMaxW = m_iMaxW;
+	pClone->m_iMaxH = m_iMaxH;
+	return static_cast<FG_Graphic *>(pClone);
 }
 
 FGType FG_GraphicRaster::getType(void)
@@ -243,6 +289,61 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 #endif
 
 	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
+
+	// TODO: better error checking in this function
+	return UT_OK;
+}
+
+
+/*!
+ * Insert an image at the strux given. This will become the
+ * background image for the container defined by the strux.
+ */
+UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc, 
+										 UT_uint32 res,
+										 UT_uint32 iPos,
+										 PTStruxType iStruxType,
+										 const char* szName)
+{
+	UT_ASSERT(pDoc);
+	UT_ASSERT(szName);
+
+	/*
+	  Create the data item
+	*/
+	const char* mimetypePNG = NULL;
+	mimetypePNG = UT_strdup("image/png");
+   	pDoc->createDataItem(szName, false, m_pbbPNG, static_cast<void *>(const_cast<char *>(mimetypePNG)), NULL);
+
+	/*
+	  Insert the object into the document.
+	*/
+	UT_String szProps;
+
+	szProps += "width:";
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
+	szProps += "; height:";
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
+
+#ifndef __MRC__
+	const XML_Char*	attributes[] = {
+		"strux-image-dataid", szName,
+		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
+	   	NULL, NULL
+	};
+#else
+	// MrCPP does not like the above
+	const XML_Char * attributes[] = {
+		"strux-image-dataid", NULL,
+		PT_PROPS_ATTRIBUTE_NAME, NULL,
+	   	NULL, NULL
+	};
+	attributes [1] = szName;
+	attributes [3] = szProps;
+#endif
+
+	pDoc->changeStruxFmt(PTC_AddFmt,iPos,iPos,attributes,NULL,iStruxType);
+
 
 	// TODO: better error checking in this function
 	return UT_OK;

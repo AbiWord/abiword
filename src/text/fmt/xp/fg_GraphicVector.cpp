@@ -65,6 +65,34 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 }
 
 
+FG_Graphic* FG_GraphicVector::createFromStrux(const fl_Layout *pFL)
+{
+	FG_GraphicVector* pFG = new FG_GraphicVector();
+
+	bool bFoundDataItem = false;
+	const PD_Document* pDoc = pFL->getDocument();
+	/*
+	  Get the attribute list for this offset, lookup the dataid
+	  for the image, and get the dataItem.  The bytes in the
+	  dataItem should be a SVG image.
+	*/
+	bool bFoundSpanAP = pFL->getAttrProp(&pFG->m_pSpanAP);
+	if (bFoundSpanAP && pFG->m_pSpanAP)
+	{
+		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("strux-image-dataid", pFG->m_pszDataID);
+		if (bFoundDataID && pFG->m_pszDataID)
+		{
+			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbSVG), NULL, NULL);
+		}
+	}
+
+	if (!bFoundDataItem)
+		DELETEP(pFG);
+
+	return pFG;
+}
+
+
 FG_GraphicVector::FG_GraphicVector()
 {
 	m_pbbSVG = NULL;
@@ -79,6 +107,19 @@ FG_GraphicVector::~FG_GraphicVector()
 		DELETEP(m_pbbSVG);
 	else
 		m_pbbSVG = NULL;
+}
+
+FG_Graphic * FG_GraphicVector::clone(void)
+{
+	FG_GraphicVector * pClone = new FG_GraphicVector();
+	pClone->m_pbbSVG = m_pbbSVG;
+	pClone->m_pSpanAP = m_pSpanAP;
+	pClone->m_pszDataID = m_pszDataID;
+	pClone->m_iWidth = m_iWidth; 
+	pClone->m_iHeight = m_iHeight;
+	pClone->m_iMaxW = m_iMaxW;
+	pClone->m_iMaxH = m_iMaxH;
+	return static_cast<FG_Graphic *>(pClone);
 }
 
 FGType FG_GraphicVector::getType(void)
@@ -236,6 +277,61 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	// TODO: better error checking in this function
 	return UT_OK;
 }
+
+/*!
+ * Insert an image at the strux given. This will become the
+ * background image for the container defined by the strux.
+ */
+UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc, 
+										 UT_uint32 res,
+										 UT_uint32 iPos,
+										 PTStruxType iStruxType,
+										 const char* szName)
+{
+	UT_ASSERT(pDoc);
+	UT_ASSERT(szName);
+
+	/*
+	  Create the data item
+	*/
+	char * mimetype = UT_strdup("image/svg-xml");
+   	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
+
+
+	/*
+	  Insert the object into the document.
+	*/
+	UT_String szProps;
+
+	szProps += "width:";
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
+	szProps += "; height:";
+	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
+
+#ifndef __MRC__
+	const XML_Char*	attributes[] = {
+		"strux-image-dataid", szName,
+		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
+	   	NULL, NULL
+	};
+#else
+	// MrCPP does not like the above
+	const XML_Char * attributes[] = {
+		"strux-image-dataid", NULL,
+		PT_PROPS_ATTRIBUTE_NAME, NULL,
+	   	NULL, NULL
+	};
+	attributes [1] = szName;
+	attributes [3] = szProps;
+#endif
+
+	pDoc->changeStruxFmt(PTC_AddFmt,iPos,iPos,attributes,NULL,iStruxType);
+
+
+	// TODO: better error checking in this function
+	return UT_OK;
+}
+
 
 bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 {

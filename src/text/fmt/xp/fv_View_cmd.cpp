@@ -3208,6 +3208,50 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	return errorCode;
 }
 
+/*!
+ * This method inserts an image at the strux of type iStruxType at the 
+ * point given by ipos.
+ * This is useful for speficifying images as backgrounds to pages and cells.
+ */
+UT_Error FV_View::cmdInsertGraphicAtStrux(FG_Graphic* pFG, const char* pszName, PT_DocPosition iPos, PTStruxType iStruxType)
+{
+	bool bDidGlob = false;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	/*
+	  First, find a unique name for the data item.
+	*/
+	char *szName = new char [strlen (pszName) + 64 + 1];
+	UT_uint32 ndx = 0;
+	for (;;)
+	{
+		sprintf(szName, "%s_%d", pszName, ndx);
+		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
+		{
+			break;
+		}
+		ndx++;
+	}
+
+	UT_Error errorCode = pFG->insertAtStrux(m_pDoc, 
+											m_pG->getDeviceResolution(),
+											iPos,
+											iStruxType,szName);
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+
+	_restorePieceTableState();
+	_updateInsertionPoint();
+
+	delete [] szName;
+
+	return errorCode;
+}
+
 void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 								fl_PartOfBlock * ppPOB)
 {

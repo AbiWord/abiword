@@ -606,7 +606,7 @@ void GR_Graphics::fillRect(GR_Image * pImg, const UT_Rect & src, const UT_Rect &
 {
 	GR_Image * pImageSection = pImg->createImageSegment(this, src);
 	UT_return_if_fail(pImageSection);
-	pImageSection->scaleImageTo(this,dest);
+//	pImageSection->scaleImageTo(this,dest);
 	drawImage(pImageSection,dest.left,dest.top);
 	delete pImageSection;
 }

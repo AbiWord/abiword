@@ -43,6 +43,7 @@ class ABI_EXPORT FG_Graphic
 public:
 	static FG_Graphic*	createFromChangeRecord(const fl_Layout *pFL,
 											   const PX_ChangeRecord_Object* pcro);
+	static FG_Graphic*	createFromStrux(const fl_Layout *pFL);
 
 	virtual ~FG_Graphic();
 
@@ -58,8 +59,8 @@ public:
 //
 	virtual const char * getWidthProp(void) = 0;
 	virtual const char * getHeightProp(void) = 0;
-	virtual GR_Image *   regenerateImage(GR_Graphics * pG) = 0;
-
+	virtual GR_Image *     regenerateImage(GR_Graphics * pG) = 0;
+	virtual FG_Graphic *   clone(void) = 0;
 	//  generate an image for display in the specified graphics object
 	virtual GR_Image* generateImage(GR_Graphics* pG,
 								   const PP_AttrProp * pSpanAP,
@@ -68,6 +69,12 @@ public:
 	//  Insert the object at the specified point in a document
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName) = 0;
+	//  Attach the object to a strux for a background image for the strux
+	virtual UT_Error   	insertAtStrux(PD_Document* pDoc, 
+									  UT_uint32 res,
+									  UT_uint32 iPos,
+									  PTStruxType iStruxType, 
+									  const char* szName) = 0;
 };
 
 #endif /* FG_GRAPHIC_H */

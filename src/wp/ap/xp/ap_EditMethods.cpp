@@ -332,6 +332,7 @@ public:
 	static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn printDirectly;
 	static EV_EditMethod_Fn fileInsertGraphic;
+	static EV_EditMethod_Fn fileInsertPageBackgroundGraphic;
 	static EV_EditMethod_Fn insertClipart;
 	static EV_EditMethod_Fn fileSaveAsWeb;
     static EV_EditMethod_Fn fileSaveTemplate;
@@ -779,6 +780,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileExport), 0, ""),
 	EV_EditMethod(NF(fileImport), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
+	EV_EditMethod(NF(fileInsertPageBackgroundGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				0,	""),
 	EV_EditMethod(NF(fileOpen), 			0,	""),
 	EV_EditMethod(NF(filePreviewWeb), 0, ""),
@@ -3365,6 +3367,70 @@ Defun1(fileInsertGraphic)
 	ABIWORD_VIEW;
 
 	errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
+	if (errorCode != UT_OK)
+	{
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+
+		FREEP(pNewFile);
+		DELETEP(pFG);
+		return false;
+	}
+
+	FREEP(pNewFile);
+	DELETEP(pFG);
+
+	return true;
+}
+
+
+Defun1(fileInsertPageBackgroundGraphic)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	char* pNewFile = NULL;
+
+
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&iegft);
+
+	if (!bOK || !pNewFile)
+		return false;
+
+	// we own storage for pNewFile and must free it.
+	UT_DEBUGMSG(("fileInsertBackgroundGraphic: loading [%s]\n",pNewFile));
+
+	IE_ImpGraphic *pIEG;
+	FG_Graphic* pFG;
+
+	UT_Error errorCode;
+
+	errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
+	if(errorCode != UT_OK)
+	  {
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+		FREEP(pNewFile);
+		return false;
+	  }
+
+	errorCode = pIEG->importGraphic(pNewFile, &pFG);
+	if(errorCode != UT_OK || !pFG)
+	  {
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
+		FREEP(pNewFile);
+		DELETEP(pIEG);
+		return false;
+	  }
+
+	DELETEP(pIEG);
+
+	ABIWORD_VIEW;
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	fl_DocSectionLayout * pDSL = pBlock->getDocSectionLayout();
+	PT_DocPosition iPos = pDSL->getPosition();
+	errorCode = pView->cmdInsertGraphicAtStrux(pFG, pNewFile, iPos, PTX_Section);
+
 	if (errorCode != UT_OK)
 	{
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
@@ -10710,7 +10776,7 @@ Defun(dlgHdrFtr)
 // Get stuff we need from the view
 //
 	if(pView->isHdrFtrEdit())
-	{
+{	
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}

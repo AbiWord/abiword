@@ -58,6 +58,35 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
 	return NULL;
 }
 
+FG_Graphic* FG_Graphic::createFromStrux(const fl_Layout* pFL)
+{
+   
+	// Get the attribute list for this offset.
+	const PP_AttrProp* pSpanAP;
+	bool bFoundSpanAP = pFL->getAttrProp(&pSpanAP);
+	if (bFoundSpanAP && pSpanAP)
+	{
+		const XML_Char *pszDataID;
+		bool bFoundDataID = pSpanAP->getAttribute("strux-image-dataid", pszDataID);
+      
+		if (bFoundDataID && pszDataID)
+		{
+			const char * pszMimeType = NULL;
+			bFoundDataID = pFL->getDocument()->getDataItemDataByName(const_cast<char*>(pszDataID), NULL,
+																	 reinterpret_cast<const void**>(&pszMimeType), NULL);
+	   
+			// figure out what type to create
+	   
+			if (!bFoundDataID || !pszMimeType || UT_strcmp(pszMimeType, "image/svg-xml") != 0) {
+				return FG_GraphicRaster::createFromStrux(pFL);
+			} else {
+				return FG_GraphicVector::createFromStrux(pFL);
+			}
+		}
+	}
+	return NULL;
+}
+
 FG_Graphic::~FG_Graphic() {
 	// do nothing for now.
 }

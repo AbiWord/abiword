@@ -77,6 +77,7 @@ class fp_Run;
 class fp_Line;
 class fp_Container;
 class fp_HdrFtrContainer;
+class FG_Graphic;
 class PD_Document;
 class PP_AttrProp;
 class PX_ChangeRecord_FmtMark;
@@ -323,6 +324,7 @@ private:
 	bool                m_bDeleteingBrokenContainers;
 	UT_String           m_sPaperColor;
 	UT_String           m_sScreenColor;
+	FG_Graphic *        m_pPageImage;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout

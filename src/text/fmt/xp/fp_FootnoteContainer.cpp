@@ -112,8 +112,8 @@ void fp_FootnoteContainer::clearScreen(void)
 		UT_sint32 yline = yoff;
 		yline = yline - iLineThick - 4; // FIXME This should not be a magic numer!
 		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-		UT_sint32 srcX = getX();
-		UT_sint32 srcY = getY();
+		UT_sint32 srcX = getX() + diff -1;
+		UT_sint32 srcY = getY() - iLineThick -4;
 		getFillType()->Fill(getGraphics(),srcX,srcY,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
 	}
 
