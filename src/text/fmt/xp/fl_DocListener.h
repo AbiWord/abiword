@@ -41,7 +41,7 @@ class fl_DocListener : public PL_Listener
 {
 public:
 	fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout);
-	~fl_DocListener();
+	virtual ~fl_DocListener();
 
 	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);

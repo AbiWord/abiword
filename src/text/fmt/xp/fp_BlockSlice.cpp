@@ -286,7 +286,9 @@ void FP_BlockSlice::returnExtraSpace()
 		int iCountSlivers = countSlivers();
 		UT_uint32 iY = 0;
 		UT_Bool bKilling = UT_FALSE;
-		for (int i=0; i<iCountSlivers; i++)
+		int i;
+
+		for (i=0; i<iCountSlivers; i++)
 		{
 			fp_Sliver* pSliver = getNthSliver(i);
 			if (bKilling)
