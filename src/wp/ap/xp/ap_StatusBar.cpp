@@ -38,9 +38,6 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-#define AP_STATUSBARELEMENT_TEXT_ALIGN_LEFT 0
-#define AP_STATUSBARELEMENT_TEXT_ALIGN_CENTER 1
-
 #define AP_STATUSBAR_STATUSMESSAGE_REPRESENTATIVE_STRING "MMMMMMMMMMMMMMMMMMMMMMMMMMMM"
 #define AP_STATUSBAR_INPUTMODE_REP_STRING "MMMMMMMM"
 #define AP_STATUSBAR_INSERTMODE_REP_STRING "MMM"
@@ -69,7 +66,6 @@ AP_StatusBarField::~AP_StatusBarField(void)
 AP_StatusBarField_TextInfo::AP_StatusBarField_TextInfo(AP_StatusBar *pSB) 
 	: AP_StatusBarField(pSB) 
 { 
-	m_lenBufUCS = 0; 
 	memset(m_bufUCS, 0, sizeof(m_bufUCS)); 
 	strcpy(m_sRepresentativeString, "");
 }
@@ -129,8 +125,8 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 		
 		// WL: Assume all incoming strings are in UTF-8
 		// FIXME: Should we be doing this in a more principled way?
-		m_lenBufUCS = strlen(buf);
 		UT_UCS4_strcpy_utf8_char(m_bufUCS,buf);		
+
 		if (getListener())
 			getListener()->notify();
 
@@ -188,8 +184,9 @@ ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
 	: AP_StatusBarField_TextInfo(pSB)
 {
 	const char * szInputMode = m_pSB->getFrame()->getInputMode();
-	m_lenBufUCS = strlen(szInputMode);
-	UT_UCS4_strcpy_char(m_bufUCS,szInputMode);
+	// WL: Assume all incoming strings are in UTF-8
+	// FIXME: Should we be doing this in a more principled way?
+	UT_UCS4_strcpy_utf8_char(m_bufUCS,szInputMode);
 
 	m_fillMethod = REPRESENTATIVE_STRING;
 	m_alignmentMethod = LEFT;
@@ -204,7 +201,6 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 
 		// WL: Assume all incoming strings are in UTF-8
 		// FIXME: Should we be doing this in a more principled way?
-		m_lenBufUCS = strlen(szInputMode);
 		UT_UCS4_strcpy_utf8_char(m_bufUCS,szInputMode);		
 
 		if (getListener())

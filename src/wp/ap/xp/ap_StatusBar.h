@@ -145,11 +145,10 @@ class AP_StatusBarField_TextInfo : public AP_StatusBarField
 	const UT_UCS4Char * getBufUCS() { return m_bufUCS; }
 	// getRepresentativeString: give a "guess" as to how long the string will be. it's not a big deal
 	// if it's wrong; we should resize fixed-length status bar elements in platform specific code 
-	// if they're not big enough to store the string
+	// if they're not big enough to show the string correctly
 	const char * getRepresentativeString(void) { return m_sRepresentativeString; }
 	_statusbar_textelement_alignment_method getAlignmentMethod() { return m_alignmentMethod; }
  protected:
-	UT_uint32 m_lenBufUCS;
 	UT_UCS4Char m_bufUCS[AP_MAX_MESSAGE_FIELD];
 	char m_sRepresentativeString[AP_MAX_MESSAGE_FIELD];
 	_statusbar_textelement_alignment_method m_alignmentMethod;

@@ -52,7 +52,9 @@ void ap_usb_TextListener::notify()
 
 	// we conditionally update the size request, if the representative string (or an earlier
 	// size) wasn't large enough, if the element uses the representative string method
-	if (textInfo->getFillMethod() == REPRESENTATIVE_STRING) {
+	// and is aligned with the center
+	if (textInfo->getFillMethod() == REPRESENTATIVE_STRING && 
+	    textInfo->getAlignmentMethod() == CENTER) {
 		GtkRequisition requisition;
 		gint iOldWidthRequest, iOldHeightRequest;
 		gtk_widget_get_size_request(m_pLabel, &iOldWidthRequest, &iOldHeightRequest);
@@ -61,8 +63,7 @@ void ap_usb_TextListener::notify()
 		if (requisition.width > iOldWidthRequest)			
 			gtk_widget_set_size_request(m_pLabel, requisition.width, -1);		
 		else
-			gtk_widget_set_size_request(m_pLabel, iOldWidthRequest, -1);		
-			
+			gtk_widget_set_size_request(m_pLabel, iOldWidthRequest, -1);					
 	}
 }
 
