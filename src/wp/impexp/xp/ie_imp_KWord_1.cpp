@@ -560,7 +560,7 @@ void IE_Imp_KWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	  }
 
 	if ( page_height != 0. && page_width != 0. )
-	  getDoc()->m_docPageSize.Set(page_width, page_height, fp_PageSize::mm);
+	  getDoc()->m_docPageSize.Set(page_width, page_height, DIM_MM);
 	break;
       }
       

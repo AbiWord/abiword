@@ -77,22 +77,22 @@ bool fp_Page::isEmpty(void) const
 
 UT_sint32 fp_Page::getWidth(void) const
 {
-	return (UT_sint32)(m_iResolution * m_pageSize.Width(fp_PageSize::inch));
+	return (UT_sint32)(m_iResolution * m_pageSize.Width(DIM_IN));
 }
 
 UT_sint32 fp_Page::getWidthInLayoutUnits(void) const
 {
-	return (UT_sint32)m_pageSize.Width(fp_PageSize::LayoutUnit);
+	return (UT_sint32)UT_convertSizeToLayoutUnits(m_pageSize.Width(DIM_IN), DIM_IN);
 }
 
 UT_sint32 fp_Page::getHeight(void) const
 {
-	return (UT_sint32)(m_iResolution * m_pageSize.Height(fp_PageSize::inch));
+	return (UT_sint32)(m_iResolution * m_pageSize.Height(DIM_IN));
 }
 
 UT_sint32 fp_Page::getHeightInLayoutUnits(void) const
 {
-	return (UT_sint32)m_pageSize.Height(fp_PageSize::LayoutUnit);
+	return (UT_sint32)UT_convertSizeToLayoutUnits(m_pageSize.Height(DIM_IN), DIM_IN);
 }
 
 /*!

@@ -72,8 +72,8 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 //
 
 #ifndef ABI_OPT_WIDGET
-	double curWidth = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Width(fp_PageSize::inch);
-	double curHeight = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Height(fp_PageSize::inch);
+	double curWidth = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Width(DIM_IN);
+	double curHeight = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Height(DIM_IN);
 #else
 	// DOM: evil hack
 	double curWidth = 8.5;
@@ -97,7 +97,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 // For this we set the zoom to fit the page width inside the preview
 //
 	case PREVIEW_ZOOMED:
-		m_pDocument->m_docPageSize.Set(curWidth,curHeight,fp_PageSize::inch);
+		m_pDocument->m_docPageSize.Set(curWidth,curHeight,DIM_IN);
 		previewWidth = ((double) iWidth)/((double) gc->getResolution());
 		tmp = 100.0 * previewWidth/curWidth;
 		iZoom = (UT_uint32) tmp;
@@ -109,21 +109,21 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 	case PREVIEW_ADJUSTED_PAGE:
 		width = (double) iWidth/((double) gc->getResolution());
 		height = (double) iHeight/((double) gc->getResolution()) ;
-		m_pDocument->m_docPageSize.Set(width,height,fp_PageSize::inch);
+		m_pDocument->m_docPageSize.Set(width,height,DIM_IN);
 		break;
 //
 // In this case we set the page size to the current pagesize and just
 // clip the display inside the gc window
 //
 	case PREVIEW_CLIPPED:
-		m_pDocument->m_docPageSize.Set(curWidth,curHeight,fp_PageSize::inch);
+		m_pDocument->m_docPageSize.Set(curWidth,curHeight,DIM_IN);
 		break;
 //
 // For this we set the zoom to fit the page width inside the preview and add
 // a scrollbar
 //
 	case PREVIEW_ZOOMED_SCROLL:
-		m_pDocument->m_docPageSize.Set(curWidth,curHeight,fp_PageSize::inch);
+		m_pDocument->m_docPageSize.Set(curWidth,curHeight,DIM_IN);
 		previewWidth = (double) iWidth/((double) gc->getResolution());
 		tmp = 100.0 * previewWidth/curWidth;
 		iZoom = (UT_uint32) tmp;
@@ -137,14 +137,14 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 	case PREVIEW_ADJUSTED_PAGE_SCROLL:
 		width = (double) iWidth/((double) gc->getResolution());
 		height = (double) iHeight/((double) gc->getResolution()) ;
-		m_pDocument->m_docPageSize.Set(width,height,fp_PageSize::inch);
+		m_pDocument->m_docPageSize.Set(width,height,DIM_IN);
 		break;
 //
 // In this case we set the page size to the current pagesize and just
 // clip the display inside the gc window and add a scroll bar.
 //
 	case PREVIEW_CLIPPED_SCROLL:
-		m_pDocument->m_docPageSize.Set(curWidth,curHeight,fp_PageSize::inch);
+		m_pDocument->m_docPageSize.Set(curWidth,curHeight,DIM_IN);
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

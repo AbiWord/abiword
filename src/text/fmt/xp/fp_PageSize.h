@@ -27,17 +27,6 @@ class ABI_EXPORT fp_PageSize
 {
 public:
 
-	enum Unit
-	{
-		_first_predefined_unit_ = 0,
-		mm = 0,
-		cm,
-		inch,
-		PaperUnit,		//  100 per inch
-		LayoutUnit,		// 1440 per inch
-		_last_predefined_unit_dont_use_
-	};
-
 	enum Predefined
 	{
 		_first_predefined_pagesize_ = 0,
@@ -65,29 +54,29 @@ public:
 
 	fp_PageSize(Predefined preDef);
 	fp_PageSize(const char *name);
-	fp_PageSize(double w, double h, Unit u);
+	fp_PageSize(double w, double h, UT_Dimension u);
 
-	void Set(Predefined preDef, Unit u = fp_PageSize::_last_predefined_unit_dont_use_);
-	void Set(const char *name, Unit u = fp_PageSize::_last_predefined_unit_dont_use_);
-	void Set(double w, double h, Unit u);
-	void Set(Unit u) {m_unit = u;}
-	inline void setScale( double scale) {m_scale = scale;}
+	void Set(Predefined preDef, UT_Dimension u = DIM_none);
+	void Set(const char *name, UT_Dimension u = DIM_none);
+	void Set(double w, double h, UT_Dimension u = DIM_none);
+	void Set(UT_Dimension u) { m_unit = u; }
+	inline void setScale( double scale) { m_scale = scale; }
 	void setPortrait(void);
 	void setLandscape(void);
 	bool isPortrait(void) const { return m_bisPortrait; }
-	double Width(Unit u) const;
-	double Height(Unit u) const;
+	double Width(UT_Dimension u) const;
+	double Height(UT_Dimension u) const;
 
 	/* These accessor methods should be used with the 
 	 * predefined page sizes to set proper initial margins. */
 	/* I don't think this is done at present. */
-	double MarginLeft(Unit u) const;
-	double MarginRight(Unit u) const;
-	double MarginTop(Unit u) const;
-	double MarginBottom(Unit u) const;
+	double MarginLeft(UT_Dimension u) const;
+	double MarginRight(UT_Dimension u) const;
+	double MarginTop(UT_Dimension u) const;
+	double MarginBottom(UT_Dimension u) const;
 
-	double getScale(void) {return m_scale;}
-	Unit getUnit(void) { return m_unit;}
+	double getScale(void) { return m_scale; }
+	UT_Dimension getDims(void) { return m_unit; }
 	inline char * getPredefinedName (void) const { return m_predefined; }
 
 	static bool	IsPredefinedName(const char* szPageSizeName);
@@ -95,6 +84,8 @@ public:
 	static const char * PredefinedToName(Predefined preDef);
 
 private:
+	static const UT_Dimension FUND = DIM_MM;
+
 	char * m_predefined;
 
 	double m_iWidth;
@@ -107,10 +98,7 @@ private:
 
 	bool m_bisPortrait;
 	double m_scale;
-	Unit m_unit;
+	UT_Dimension m_unit;
 };
-
-UT_Dimension UT_pageSizeUnitToDimension(fp_PageSize::Unit u);
-fp_PageSize::Unit UT_dimensionToPageSizeUnit(UT_Dimension u);
 
 #endif	// FP_PAGESIZE_H

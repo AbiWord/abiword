@@ -848,7 +848,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 	else
 	        m_pie->write("landscape\"");
 	m_pie->write( " width=\"");
-	fp_PageSize::Unit  docUnit = m_pDocument->m_docPageSize.getUnit(); 
+	UT_Dimension docUnit = m_pDocument->m_docPageSize.getDims();
 	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(docUnit));
 	m_pie->write( (char *) buf);
 	m_pie->write("\"");
@@ -857,14 +857,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 	m_pie->write( (char *) buf);
 	m_pie->write("\"");
 	m_pie->write(" units=\"");
-	if(docUnit == fp_PageSize::cm)
-	        m_pie->write("cm");
-	else if(docUnit == fp_PageSize::mm)
-	        m_pie->write("mm");
-	else if(docUnit == fp_PageSize::inch)
-	        m_pie->write("inch");
-	else
-	        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	m_pie->write(UT_dimensionName(docUnit));
 	m_pie->write("\"");
 	m_pie->write(" page-scale=\"");
 	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.getScale());

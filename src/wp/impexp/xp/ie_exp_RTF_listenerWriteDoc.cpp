@@ -527,8 +527,8 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 	old_locale = setlocale (LC_NUMERIC, "C");
 
-	double width = m_pDocument->m_docPageSize.Width(fp_PageSize::inch);
-	double height = m_pDocument->m_docPageSize.Height(fp_PageSize::inch);
+	double width = m_pDocument->m_docPageSize.Width(DIM_IN);
+	double height = m_pDocument->m_docPageSize.Height(DIM_IN);
 	bool landscape = !m_pDocument->m_docPageSize.isPortrait();
 
 	XML_Char szPaperWidth[24];

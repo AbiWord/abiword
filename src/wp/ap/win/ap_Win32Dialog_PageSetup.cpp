@@ -380,9 +380,9 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 						     (LPARAM) fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)i ) );
 			}
 			HWND hwndUnits = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS);
-			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::mm,   (LPARAM) _GVX(DLG_Unit_mm) );                                
-			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::cm,   (LPARAM) _GVX(DLG_Unit_cm) );                                
-			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::inch, (LPARAM) _GVX(DLG_Unit_inch) );                                
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
+			SendMessage( hwndUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );                                
 			
 			// Initialize Data
 			char buf[BUFSIZE];
@@ -463,9 +463,9 @@ BOOL AP_Win32Dialog_PageSetup::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PAGE_SETUP_LBL_HEADER,			DLG_PageSetup_Header);			
 			_DS(PAGE_SETUP_LBL_FOOTER,			DLG_PageSetup_Footer);			
 			HWND hwndMarginUnits = GetDlgItem(hWnd, AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS);
-			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::mm,   (LPARAM) _GVX(DLG_Unit_mm) );                                
-			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::cm,   (LPARAM) _GVX(DLG_Unit_cm) );                                
-			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) fp_PageSize::inch, (LPARAM) _GVX(DLG_Unit_inch) );                                
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_MM,   (LPARAM) _GVX(DLG_Unit_mm) );                                
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_CM,   (LPARAM) _GVX(DLG_Unit_cm) );                                
+			SendMessage( hwndMarginUnits, CB_INSERTSTRING , (WPARAM) DIM_IN, (LPARAM) _GVX(DLG_Unit_inch) );                                
 
 			// Initialize Data
 			SendMessage( hwndMarginUnits, CB_SETCURSEL, (WPARAM) getMarginUnits(), (LPARAM) 0 );
@@ -518,7 +518,7 @@ BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lP
 	case AP_RID_DIALOG_PAGE_SETUP_LBX_UNITS:
 		if( wNotifyCode == CBN_SELCHANGE )
 		{
-			fp_PageSize::Unit unit = (fp_PageSize::Unit)SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
+			UT_Dimension unit = (UT_Dimension)SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
 			if( unit != getPageUnits() )
 			{
 				setPageUnits( unit );
@@ -617,7 +617,7 @@ BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lP
 		if( wNotifyCode == CBN_SELCHANGE )
 		{
 			UT_sint32 selected = SendMessage( hWndCtrl, CB_GETCURSEL, (WPARAM) 0, (LPARAM) 0 );
-			if( getMarginUnits() != (fp_PageSize::Unit) selected )
+			if( getMarginUnits() != (UT_Dimension) selected )
 			{
 				setMarginTop(    getMarginTop()   * mScale[getMarginUnits()] / mScale[selected] );
 				setMarginBottom( getMarginBottom()* mScale[getMarginUnits()] / mScale[selected] );
@@ -626,7 +626,7 @@ BOOL AP_Win32Dialog_PageSetup::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lP
 				setMarginHeader( getMarginHeader()* mScale[getMarginUnits()] / mScale[selected] );
 				setMarginFooter( getMarginFooter()* mScale[getMarginUnits()] / mScale[selected] );
 				updateMargins();
-				setMarginUnits( (fp_PageSize::Unit) selected );
+				setMarginUnits( (UT_Dimension) selected );
 			}
 		}
 		return 0;
@@ -742,8 +742,8 @@ void AP_Win32Dialog_PageSetup::doSpinControl(UT_uint32 id, UT_sint32 delta)
 {
 	char buf[BUFSIZE];
 	int updatedData =  0;
-	int pageScale   = ( getPageUnits()   == fp_PageSize::mm ) ? 1 : 10;
-	int marginScale = ( getMarginUnits() == fp_PageSize::mm ) ? 1 : 10;
+	int pageScale   = ( getPageUnits()   == DIM_MM ) ? 1 : 10;
+	int marginScale = ( getMarginUnits() == DIM_MM ) ? 1 : 10;
 
 	switch( id )
 	{
@@ -961,8 +961,8 @@ void AP_Win32Dialog_PageSetup::updatePreview()
 	UT_uint16 borderWidth  = rectBorder.right  - rectBorder.left - offset;
 	UT_uint16 borderHeight = rectBorder.bottom - rectBorder.top  - offset;
 
-	UT_uint16 pageWidth  = (UT_uint16) m_PageSize.Width( (fp_PageSize::Unit)0 );  // in mm
-	UT_uint16 pageHeight = (UT_uint16) m_PageSize.Height( (fp_PageSize::Unit)0 ); // in mm
+	UT_uint16 pageWidth  = (UT_uint16) m_PageSize.Width( DIM_MM );  // in mm
+	UT_uint16 pageHeight = (UT_uint16) m_PageSize.Height( DIM_MM ); // in mm
 	UT_uint16 marginTop  = (UT_uint16) (getMarginTop() * mScale[getMarginUnits()] );
 	UT_uint16 marginLeft = (UT_uint16) (getMarginLeft() * mScale[getMarginUnits()] );
 	UT_uint16 marginRight= (UT_uint16) (getMarginRight() * mScale[getMarginUnits()] );

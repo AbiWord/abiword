@@ -28,10 +28,10 @@ AP_Dialog_PageSetup::AP_Dialog_PageSetup (XAP_DialogFactory * pDlgFactory,
 :	XAP_Dialog_NonPersistent(pDlgFactory,id),
 	m_answer(a_OK),
 	m_PageSize(fp_PageSize::Letter), // isn't this leaked when setPageSize called?
-	m_PageUnits(fp_PageSize::inch),
+	m_PageUnits(DIM_IN),
 	m_PageOrientation(PORTRAIT),
 	m_PageScale(100),
-	m_MarginUnits(fp_PageSize::inch),
+	m_MarginUnits(DIM_IN),
 	m_MarginTop(1.0f),
 	m_MarginBottom(1.0f),
 	m_MarginLeft(1.0f),
@@ -51,7 +51,7 @@ bool AP_Dialog_PageSetup::validatePageSettings(void) const
 {
 	// Require at least 0.3in for headers and footers.
 
-	double fudge = UT_convertInchesToDimension(0.3, UT_pageSizeUnitToDimension(m_MarginUnits));
+	double fudge = UT_convertInchesToDimension(0.3, m_MarginUnits);
 
 	if ( (m_MarginLeft + m_MarginRight >= m_PageSize.Width(m_PageUnits)) ||
 		 (m_MarginTop + m_MarginBottom >= m_PageSize.Height(m_PageUnits)) ||

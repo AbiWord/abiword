@@ -5375,19 +5375,6 @@ static bool s_doBreakDlg(FV_View * pView)
 	return bOK;
 }
 
-static UT_Dimension
-fp_2_dim (fp_PageSize::Unit u)
-{
-  switch (u)
-	{
-	case fp_PageSize::cm   : return DIM_CM;
-	case fp_PageSize::mm   : return DIM_MM;
-	case fp_PageSize::inch :
-	default :
-	  return DIM_IN;
-	}
-}
-
 static bool s_doPageSetupDlg (FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -5413,7 +5400,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	fp_PageSize::Predefined orig_def,final_def;
 	double orig_wid = -1, orig_ht = -1, final_wid = -1, final_ht = -1;
-	fp_PageSize::Unit orig_ut, final_ut;
+	UT_Dimension orig_ut, final_ut;
 	fp_PageSize pSize(pDoc->m_docPageSize.getPredefinedName());
 	orig_def = pSize.NameToPredefined(pSize.getPredefinedName());
 	//
@@ -5421,7 +5408,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	if (orig_def == fp_PageSize::Custom)
 	{
-		orig_ut = pDoc->m_docPageSize.getUnit();
+		orig_ut = pDoc->m_docPageSize.getDims();
 		orig_ht = pDoc->m_docPageSize.Width(orig_ut);
 		orig_wid = pDoc->m_docPageSize.Height(orig_ut); 
 		pSize.Set(orig_ht, orig_wid, orig_ut);
@@ -5432,9 +5419,9 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	if(pDoc->m_docPageSize.isPortrait() == false)
 		orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
 	pDialog->setPageOrientation(orig_ori);
-	fp_PageSize::Unit orig_unit,final_unit,orig_margu,final_margu;
+	UT_Dimension orig_unit,final_unit,orig_margu,final_margu;
 	double orig_scale,final_scale;
-	orig_unit = pDoc->m_docPageSize.getUnit();
+	orig_unit = pDoc->m_docPageSize.getDims();
 	orig_scale = pDoc->m_docPageSize.getScale();
 
 	pDialog->setPageUnits(orig_unit);
@@ -5503,7 +5490,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 			dHeaderMargin = UT_convertToInches(pszHeaderMargin);
 	}
 	FREEP(props_in);
-	orig_margu = fp_PageSize::inch;
+	orig_margu = DIM_IN;
 	if(docMargUnits == DIM_MM)
 	{
 		dLeftMargin = dLeftMargin * 25.4;
@@ -5512,7 +5499,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		dBottomMargin = dBottomMargin * 25.4;
 		dFooterMargin = dFooterMargin * 25.4;
 		dHeaderMargin = dHeaderMargin * 25.4;
-		orig_margu = fp_PageSize::mm;
+		orig_margu = DIM_MM;
 	}
 	else if(docMargUnits == DIM_CM)
 	{
@@ -5522,7 +5509,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		dBottomMargin = dBottomMargin * 2.54;
 		dFooterMargin = dFooterMargin * 2.54;
 		dHeaderMargin = dHeaderMargin * 2.54;
-		orig_margu = fp_PageSize::cm;
+		orig_margu = DIM_CM;
 	}
 
 	//
@@ -5551,7 +5538,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	if (final_def == fp_PageSize::Custom)
 	{
-		final_ut = pDialog->getPageSize().getUnit();
+		final_ut = pDialog->getPageSize().getDims();
 		final_wid = pDialog->getPageSize().Width(final_ut);
 		final_ht = pDialog->getPageSize().Height(final_ut); 
 	}
@@ -5622,7 +5609,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	UT_ASSERT(pPrefsScheme);
 
 	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
-						   (XML_Char*)UT_dimensionName(fp_2_dim (final_unit)));
+						   (XML_Char*)UT_dimensionName(final_unit));
 
 	//
 	// Recover ppView
@@ -5648,7 +5635,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	dFooterMargin = (double) pDialog->getMarginFooter();
 
 	docMargUnits = DIM_IN;
-	if(final_margu == fp_PageSize::cm)
+	if(final_margu == DIM_CM)
 	{
 		docMargUnits = DIM_CM;
 		dLeftMargin = dLeftMargin / 2.54;
@@ -5658,7 +5645,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		dFooterMargin = dFooterMargin / 2.54;
 		dHeaderMargin = dHeaderMargin / 2.54;
 	}
-	else if (final_margu == fp_PageSize::mm)
+	else if (final_margu == DIM_MM)
 	{
 		docMargUnits = DIM_MM;
 		dLeftMargin = dLeftMargin / 25.4;
@@ -6533,8 +6520,8 @@ Defun(dlgFmtImage)
 	  const fp_PageSize & page = pView->getPageSize ();
 
 	  // an approximate... TODO: make me more accurate
-	  max_width  = page.Width (fp_PageSize::inch) * 72.0;
-	  max_height = page.Height (fp_PageSize::inch) * 72.0;
+	  max_width  = page.Width (DIM_IN) * 72.0;
+	  max_height = page.Height (DIM_IN) * 72.0;
 
 	  pDialog->setWidth (width);
 	  pDialog->setHeight (height);
@@ -6946,7 +6933,7 @@ Defun1(toggleIndent)
   ABIWORD_VIEW;
   bool ret;
   bool doLists = true;
-  double page_size = pView->getPageSize().Width (fp_PageSize::inch);
+  double page_size = pView->getPageSize().Width (DIM_IN);
   if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
   {
 	 doLists = false;
@@ -6959,7 +6946,7 @@ Defun1(toggleUnIndent)
 {
   ABIWORD_VIEW;
   bool ret;
-  double page_size = pView->getPageSize().Width (fp_PageSize::inch);
+  double page_size = pView->getPageSize().Width (DIM_IN);
   bool doLists = true;
   if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
   {

@@ -580,22 +580,6 @@ bool s_XSL_FO_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 /*****************************************************************/
 /*****************************************************************/
 
-static const char *
-docUnitToString(fp_PageSize::Unit docUnit)
-{
-	if(docUnit == fp_PageSize::cm)
-		return "cm";
-	else if(docUnit == fp_PageSize::mm)
-		return "mm";
-	else if(docUnit == fp_PageSize::inch)
-		return "in";
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return "";
-	}
-}
-
 static UT_String
 purgeSpaces(const char* st)
 {
@@ -657,19 +641,19 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 		m_pie->write(szValue);
 		m_pie->write("\"");
 		
-		fp_PageSize::Unit  docUnit = m_pDocument->m_docPageSize.getUnit(); 
+		UT_Dimension docUnit = m_pDocument->m_docPageSize.getDims(); 
 		char buf[20];
 
 		m_pie->write( " page-width=\"");
 		sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(docUnit));
 		m_pie->write((char *)buf);
-		m_pie->write(docUnitToString(docUnit));
+		m_pie->write(UT_dimensionName(docUnit));
 		m_pie->write("\"");
 
 		m_pie->write(" page-height=\"");
 		sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(docUnit));
 		m_pie->write((char *)buf);
-		m_pie->write(docUnitToString(docUnit));
+		m_pie->write(UT_dimensionName(docUnit));
 		m_pie->write("\"");
 		
 	}

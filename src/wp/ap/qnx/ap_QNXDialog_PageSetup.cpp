@@ -79,26 +79,11 @@ _ev_convert (char * bufResult,
 	return bufResult;
 }
 
-static UT_Dimension 
-fp_2_dim (fp_PageSize::Unit u)
-{
-  switch (u)
-    {
-    case fp_PageSize::cm   : return DIM_CM;
-    case fp_PageSize::mm   : return DIM_MM;
-    case fp_PageSize::inch :
-    default :
-      return DIM_IN;
-    }
-}
-
 /*********************************************************************************/
 
 // some static variables
 /*
 static fp_PageSize::Predefined last_page_size = fp_PageSize::Custom;
-static fp_PageSize::Unit last_page_unit = fp_PageSize::inch;
-static fp_PageSize::Unit last_margin_unit = fp_PageSize::inch;
 */
 
 /*********************************************************************************/
@@ -106,8 +91,6 @@ static fp_PageSize::Unit last_margin_unit = fp_PageSize::inch;
 // a *huge* convenience macro
 static char _ev_buf[256];
 #define _(a, x) _ev_convert (_ev_buf, pSS->getValue (a##_STRING_ID_##x))
-
-#define CONVERT_DIMENSIONS(v, d1, d2) v = UT_convertInchesToDimension (UT_convertDimToInches (v, fp_2_dim (d1)), fp_2_dim (d2))
 
 /*********************************************************************************/
 
@@ -181,7 +164,7 @@ void AP_QNXDialog_PageSetup::event_OK (void)
 	index = UT_QNXComboGetPos(m_optionPageSize);
 	fp_PageSize::Predefined pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
 	
-	if(pd.Width(fp_PageSize::inch) < 1.0 || pd.Height(fp_PageSize::inch) < 1.0)
+	if(pd.Width(DIM_IN) < 1.0 || pd.Height(DIM_IN) < 1.0)
 	{
 		if (!done++) {
 			setAnswer (a_CANCEL);
@@ -193,11 +176,11 @@ void AP_QNXDialog_PageSetup::event_OK (void)
 	setAnswer (a_OK);
 	
 	index = UT_QNXComboGetPos(m_optionMarginUnits);
-	fp_PageSize::Unit mu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
+	UT_Dimension mu = (UT_Dimension)((int)m_vecunits.getNthItem(index - 1));
 	setMarginUnits (mu);
 
 	index = UT_QNXComboGetPos(m_optionPageUnits);
-	fp_PageSize::Unit pu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
+	UT_Dimension pu = (UT_Dimension)((int)m_vecunits.getNthItem(index - 1));
 	setPageUnits (pu);
 
 	PtGetResource(m_radioPagePortrait, Pt_ARG_FLAGS, &flags, 0);
@@ -239,7 +222,7 @@ void AP_QNXDialog_PageSetup::event_PageUnitsChanged (void)
 	int index;
 
 	index = UT_QNXComboGetPos(m_optionPageUnits);
-	fp_PageSize::Unit pu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
+	UT_Dimension pu = (UT_Dimension)((int)m_vecunits.getNthItem(index - 1));
 	setPageUnits (pu);
 
 	index = UT_QNXComboGetPos(m_optionPageSize);
@@ -267,7 +250,7 @@ void AP_QNXDialog_PageSetup::event_PageSizeChanged (void)
 	setPageSize (ps);
 
 	index = UT_QNXComboGetPos(m_optionPageUnits);
-	fp_PageSize::Unit pu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
+	UT_Dimension pu = (UT_Dimension)((int)m_vecunits.getNthItem(index - 1));
 
 	double w, h;
 
@@ -283,12 +266,12 @@ void AP_QNXDialog_PageSetup::event_PageSizeChanged (void)
 void AP_QNXDialog_PageSetup::event_MarginUnitsChanged (void)
 {
 	int index;
-	fp_PageSize::Unit last_margin_unit;
+	UT_Dimension last_margin_unit;
 
 	last_margin_unit = getMarginUnits();
 
 	index = UT_QNXComboGetPos(m_optionMarginUnits);
-	fp_PageSize::Unit mu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
+	UT_Dimension mu = (UT_Dimension)((int)m_vecunits.getNthItem(index - 1));
 	setMarginUnits (mu);
 
 
@@ -508,13 +491,13 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 		const char *itemname;
 		itemname = 	_(XAP, DLG_Unit_inch);
 		PtListAddItems(m_optionPageUnits, &itemname, 1, 0);
-		m_vecunits.addItem((void *)fp_PageSize::inch);
+		m_vecunits.addItem((void *)DIM_IN);
 		itemname = 	_(XAP, DLG_Unit_cm);
 		PtListAddItems(m_optionPageUnits, &itemname, 1, 0);
-		m_vecunits.addItem((void *)fp_PageSize::cm);
+		m_vecunits.addItem((void *)DIM_CM);
 		itemname = 	_(XAP, DLG_Unit_mm);
 		PtListAddItems(m_optionPageUnits, &itemname, 1, 0);
-		m_vecunits.addItem((void *)fp_PageSize::mm);
+		m_vecunits.addItem((void *)DIM_MM);
 	}
 	PtAddCallback(m_optionPageUnits, Pt_CB_SELECTION, s_page_units_changed, this);
 	UT_QNXComboSetPos(m_optionPageUnits, 1);

@@ -145,13 +145,11 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 #endif
 
-#if 1 // TODO: JCA
 	SET_GATHER			(AutoSaveFile,		bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal) = 0;
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod) = 0;
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal) = 0;
 	virtual void _setAutoSaveFileExt(const UT_String &stExt) = 0;
-#endif
 
 	// so we can save and restore to the same page - must be able to return
 	// the current page and reset it later (i.e., don't use a handle, but a

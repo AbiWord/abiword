@@ -8073,7 +8073,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 		static char buf[20];
 		setlocale(LC_NUMERIC,"C");
-		snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(fp_PageSize::inch));
+		snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 		setlocale(LC_NUMERIC,""); // restore original locale
 
 		pInfo->m_xPaperSize = m_pG->convertDimension(buf);
@@ -11084,7 +11084,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 {
 
 	const fp_PageSize pageSize = getPageSize();
-	double pageWidth = pageSize.Width(fp_PageSize::inch);
+	double pageWidth = pageSize.Width(DIM_IN);
 	
 	// Set graphics zoom to 100 so we can get the display resolution.
 	GR_Graphics *pG = getGraphics();
@@ -11106,7 +11106,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 {
 
 	const fp_PageSize pageSize = getPageSize();
-	double pageHeight = pageSize.Height(fp_PageSize::inch);
+	double pageHeight = pageSize.Height(DIM_IN);
 	
 	// Set graphics zoom to 100 so we can get the display resolution.
 	GR_Graphics *pG = getGraphics();

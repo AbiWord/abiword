@@ -41,10 +41,10 @@ public:
 #define SET_GATHER(a, u)  inline u get##a(void) const {return m_##a;} \
 			  inline void set##a(u p##a) {m_##a = p##a;}
 	SET_GATHER(PageSize,		fp_PageSize);
-	SET_GATHER(PageUnits,		fp_PageSize::Unit);
+	SET_GATHER(PageUnits,		UT_Dimension);
 	SET_GATHER(PageOrientation,	Orientation);
 	SET_GATHER(PageScale,		int);
-	SET_GATHER(MarginUnits,		fp_PageSize::Unit);
+	SET_GATHER(MarginUnits,		UT_Dimension);
 	SET_GATHER(MarginTop,		float);
 	SET_GATHER(MarginBottom,	float);
 	SET_GATHER(MarginLeft,		float);
@@ -65,10 +65,10 @@ public:
 	AP_Dialog_PageSetup::tAnswer m_answer;
 
 	fp_PageSize             m_PageSize;
-	fp_PageSize::Unit       m_PageUnits;
+	UT_Dimension            m_PageUnits;
 	Orientation             m_PageOrientation;
 	int                     m_PageScale;
-	fp_PageSize::Unit       m_MarginUnits;
+	UT_Dimension            m_MarginUnits;
 	float                   m_MarginTop;
 	float                   m_MarginBottom;
 	float                   m_MarginLeft;

@@ -2326,7 +2326,7 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 	double width=0.0;
 	double height=0.0;
 	double scale =1.0;
-	fp_PageSize::Unit u = fp_PageSize::inch;
+	UT_Dimension u = DIM_IN;
 	
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{
@@ -2367,11 +2367,11 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		height = UT_convertDimensionless(szHeight);
 		scale =  UT_convertDimensionless(szPageScale);
 		if(UT_XML_stricmp(szUnits,"cm") == 0)
-		        u = fp_PageSize::cm;
+			u = DIM_CM;
 		else if(UT_XML_stricmp(szUnits,"mm") == 0)
-		        u = fp_PageSize::mm;
+			u = DIM_MM;
 		else if(UT_XML_stricmp(szUnits,"inch") == 0)
-		        u = fp_PageSize::inch;
+			u = DIM_IN;
 		if(UT_XML_stricmp(szPageSize,"Custom") == 0)
 		{
 			m_docPageSize.Set(width,height,u);

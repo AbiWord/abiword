@@ -1336,7 +1336,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		  }
 
 		// always use the passed size
-		getDoc()->m_docPageSize.Set (page_width, page_height, fp_PageSize::inch);
+		getDoc()->m_docPageSize.Set (page_width, page_height, DIM_IN);
 		getDoc()->m_docPageSize.setScale(page_scale);
 	}
 

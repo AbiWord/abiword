@@ -83,27 +83,14 @@ _ev_convert (char * bufResult,
 	return bufResult;
 }
 
-static UT_Dimension 
-fp_2_dim (fp_PageSize::Unit u)
-{
-  switch (u)
-    {
-    case fp_PageSize::cm   : return DIM_CM;
-    case fp_PageSize::mm   : return DIM_MM;
-    case fp_PageSize::inch :
-    default :
-      return DIM_IN;
-    }
-}
-
 static int
-fp_2_pos (fp_PageSize::Unit u)
+fp_2_pos (UT_Dimension u)
 {
    switch (u)
     {
-    case fp_PageSize::cm   : return 1;
-    case fp_PageSize::mm   : return 2;
-    case fp_PageSize::inch :
+    case DIM_CM   : return 1;
+    case DIM_MM   : return 2;
+    case DIM_IN   :
     default :
       return 0;
     } 
@@ -129,8 +116,8 @@ create_entry (float v)
 
 // some static variables
 static fp_PageSize::Predefined last_page_size = fp_PageSize::Custom;
-static fp_PageSize::Unit last_page_unit = fp_PageSize::inch;
-static fp_PageSize::Unit last_margin_unit = fp_PageSize::inch;
+static UT_Dimension last_page_unit = DIM_IN;
+static UT_Dimension last_margin_unit = DIM_IN;
 
 /*********************************************************************************/
 
@@ -154,8 +141,6 @@ static char _ev_buf[256];
                 GTK_SIGNAL_FUNC (f),		\
                 (gpointer)this);							\
         } while (0)
-
-#define CONVERT_DIMENSIONS(v, d1, d2) v = UT_convertInchesToDimension (UT_convertDimToInches (v, fp_2_dim (d1)), fp_2_dim (d2))
 
 /*********************************************************************************/
 
@@ -223,7 +208,7 @@ void AP_CocoaDialog_PageSetup::event_OK (void)
 {
 	fp_PageSize fp (last_page_size);
 
-	if(fp.Width(fp_PageSize::inch) < 1.0 || fp.Height(fp_PageSize::inch) < 1.0)	
+	if(fp.Width(DIM_IN) < 1.0 || fp.Height(DIM_IN) < 1.0)
 	{
 		setAnswer(a_CANCEL);
 		gtk_main_quit();
@@ -271,7 +256,7 @@ void AP_CocoaDialog_PageSetup::event_WindowDelete (void)
 
 void AP_CocoaDialog_PageSetup::event_PageUnitsChanged (void)
 {
-  fp_PageSize::Unit pu = (fp_PageSize::Unit) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionPageUnits), 
+  UT_Dimension pu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionPageUnits), 
 										   WIDGET_MENU_VALUE_TAG));
 
   float width, height;
@@ -302,11 +287,8 @@ void AP_CocoaDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd
 
   float w, h;
 
-  w = ps.Width (fp_PageSize::inch);
-  h = ps.Height (fp_PageSize::inch);
-
-  CONVERT_DIMENSIONS (w, fp_PageSize::inch, last_page_unit);
-  CONVERT_DIMENSIONS (h, fp_PageSize::inch, last_page_unit);
+  w = ps.Width (last_page_unit);
+  h = ps.Height (last_page_unit);
 
   // set values
   gchar * val;
@@ -334,7 +316,7 @@ void AP_CocoaDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd
 
 void AP_CocoaDialog_PageSetup::event_MarginUnitsChanged (void)
 {
-  fp_PageSize::Unit mu = (fp_PageSize::Unit) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionMarginUnits),
+  UT_Dimension mu = (UT_Dimension) GPOINTER_TO_INT (gtk_object_get_data (GTK_OBJECT (m_optionMarginUnits),
 										   WIDGET_MENU_VALUE_TAG));
 
   float top, bottom, left, right, header, footer;
@@ -621,17 +603,17 @@ void AP_CocoaDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   optionPageUnits_menu = gtk_menu_new ();
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, fp_PageSize::inch, s_page_units_changed);
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, DIM_IN, s_page_units_changed);
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, fp_PageSize::cm, s_page_units_changed);
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, DIM_CM, s_page_units_changed);
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, fp_PageSize::mm, s_page_units_changed);
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, DIM_MM, s_page_units_changed);
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
 
@@ -832,17 +814,17 @@ void AP_CocoaDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   optionMarginUnits_menu = gtk_menu_new ();
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, fp_PageSize::inch, s_margin_units_changed);
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, DIM_IN, s_margin_units_changed);
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, fp_PageSize::cm, s_margin_units_changed);
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, DIM_CM, s_margin_units_changed);
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
-  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, fp_PageSize::mm, s_margin_units_changed);
+  CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, DIM_MM, s_margin_units_changed);
   gtk_widget_show (glade_menuitem);
   gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
 

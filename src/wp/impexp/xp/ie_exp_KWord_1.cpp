@@ -109,8 +109,7 @@ private:
 };
 
 // KWord version 1 width/height are in mm
-static const UT_Dimension kword_1_unit_ut = DIM_MM;
-static const fp_PageSize::Unit kword_1_unit_fp = fp_PageSize::mm;
+static const UT_Dimension kword_1_unit = DIM_MM;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -445,22 +444,6 @@ bool s_KWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 /*****************************************************************/
 
 static const char *
-preferedUnitString(fp_PageSize::Unit docUnit)
-{
-	if(docUnit == fp_PageSize::cm)
-		return "mm";
-	else if(docUnit == fp_PageSize::mm)
-		return "mm";
-	else if(docUnit == fp_PageSize::inch)
-		return "inch";
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return "";
-	}
-}
-
-static const char *
 justificationToNumber(const char * justification_name)
 {
 	if (! strcmp(justification_name,"left"))
@@ -562,7 +545,7 @@ void s_KWord_1_Listener::_writeMarginSize(PT_AttrPropIndex api, char * name)
 	sprintf(buf, "page-margin-%s", name);
 	szValue = PP_evalProperty(buf, 
 							  NULL, NULL, pAP, m_pDocument, true);
-	sprintf((char *) buf," %s=\"%f",name, UT_convertToDimension(szValue, kword_1_unit_ut));
+	sprintf((char *) buf," %s=\"%f",name, UT_convertToDimension(szValue, kword_1_unit));
 	m_pie->write((char *)buf);
 	m_pie->write("\"");
 
@@ -601,12 +584,12 @@ void s_KWord_1_Listener::_handlePageSize(PT_AttrPropIndex api)
 	
 	char buf[20]; 
 	m_pie->write(" width=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(kword_1_unit_fp));
+	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Width(kword_1_unit));
 	m_pie->write((char *)buf);
 	m_pie->write("\"");
 
 	m_pie->write(" height=\"");
-	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(kword_1_unit_fp));
+	sprintf((char *) buf,"%f",m_pDocument->m_docPageSize.Height(kword_1_unit));
 	m_pie->write((char *)buf);
 	m_pie->write("\"");
 	
@@ -636,7 +619,7 @@ void s_KWord_1_Listener::_handleAttributes(PT_AttrPropIndex api)
 	m_pie->write("<ATTRIBUTES");
 	m_pie->write(" processing=\"0\"");
 	m_pie->write(" unit=\"");
-	m_pie->write(preferedUnitString(m_pDocument->m_docPageSize.getUnit()));
+	m_pie->write(UT_dimensionName(m_pDocument->m_docPageSize.getDims()));
 	m_pie->write("\"");
 	m_pie->write("/>\n");
 

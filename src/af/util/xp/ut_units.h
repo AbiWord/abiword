@@ -44,6 +44,7 @@ typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM
 
 double UT_convertToInches(const char* s);
 double UT_convertDimToInches (double f, UT_Dimension dim);
+double UT_convertDimensions(double f, UT_Dimension from, UT_Dimension to);
 double UT_convertToPoints(const char* s);
 double UT_convertToDimension(const char* s, UT_Dimension dim);
 UT_sint32 UT_convertToLayoutUnits(const char* s);

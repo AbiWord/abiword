@@ -132,6 +132,12 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	return valueScaled;
 }
 
+double UT_convertDimensions(double f, UT_Dimension from, UT_Dimension to)
+{
+	double valueScaled = UT_convertDimToInches(f, from);
+	return UT_convertInchesToDimension(valueScaled, to);
+}
+
 const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInInches, const char * szPrecision)
 {
 	// return pointer to static buffer -- use it quickly.

@@ -205,7 +205,7 @@ double AP_Dialog_Columns::getPageWidth(void)
 	double width = 1.0;
 	if(m_pDoc)
 	{
-		width =  m_pDoc->m_docPageSize.Width(fp_PageSize::inch) - m_dMarginLeft - m_dMarginRight;
+		width =  m_pDoc->m_docPageSize.Width(DIM_IN) - m_dMarginLeft - m_dMarginRight;
 	}
 	return width;
 }
@@ -220,7 +220,7 @@ double AP_Dialog_Columns::getPageHeight(void)
 	double height = 1.0;
 	if(m_pDoc)
 	{
-		height =  m_pDoc->m_docPageSize.Height(fp_PageSize::inch) - m_dMarginTop - m_dMarginBottom;
+		height =  m_pDoc->m_docPageSize.Height(DIM_IN) - m_dMarginTop - m_dMarginBottom;
 	}
 	return height;
 }

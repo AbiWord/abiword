@@ -19,7 +19,7 @@ struct private_pagesize_sizes
 	double w; // width
 	double h; // height
 
-	fp_PageSize::Unit u; // unit for all these values
+	UT_Dimension u; // unit for all these values
 	char name[cMaxSymbolicLength]; // symbolic name
 
 	double l; // left margin
@@ -37,108 +37,99 @@ const private_pagesize_sizes
 pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 {
 	// the A sizes
-	{1682.0, 2378.0, fp_PageSize::mm,	"4A", 
+	{1682.0, 2378.0, DIM_MM,	"4A", 
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1189.0, 1682.0, fp_PageSize::mm,	"2A", 
+	{1189.0, 1682.0, DIM_MM,	"2A", 
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 841.0, 1189.0, fp_PageSize::mm,	"A0", 
+	{ 841.0, 1189.0, DIM_MM,	"A0", 
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 594.0,  841.0, fp_PageSize::mm,	"A1",
+	{ 594.0,  841.0, DIM_MM,	"A1",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 420.0,  594.0, fp_PageSize::mm,	"A2",
+	{ 420.0,  594.0, DIM_MM,	"A2",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 297.0,  420.0, fp_PageSize::mm,	"A3", 28.0, 28.0, 28.0, 28.0 },
-	{ 210.0,  297.0, fp_PageSize::mm,	"A4", 28.0, 28.0, 28.0, 28.0 },
-	{ 148.0,  210.0, fp_PageSize::mm,	"A5", 28.0, 28.0, 28.0, 28.0 },
-	{ 105.0,  148.0, fp_PageSize::mm,	"A6",
+	{ 297.0,  420.0, DIM_MM,	"A3", 28.0, 28.0, 28.0, 28.0 },
+	{ 210.0,  297.0, DIM_MM,	"A4", 28.0, 28.0, 28.0, 28.0 },
+	{ 148.0,  210.0, DIM_MM,	"A5", 28.0, 28.0, 28.0, 28.0 },
+	{ 105.0,  148.0, DIM_MM,	"A6",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  74.0,  105.0, fp_PageSize::mm,	"A7",
+	{  74.0,  105.0, DIM_MM,	"A7",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  52.0,  74.0, fp_PageSize::mm,	"A8",
+	{  52.0,  74.0, DIM_MM,	"A8",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  37.0,  52.0, fp_PageSize::mm,	"A9",
+	{  37.0,  52.0, DIM_MM,	"A9",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  26.0,  37.0, fp_PageSize::mm,	"A10",
+	{  26.0,  37.0, DIM_MM,	"A10",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 
 	// the B sizes
-	{2000.0, 2828.0, fp_PageSize::mm,	"4B",
+	{2000.0, 2828.0, DIM_MM,	"4B",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1414.0, 2000.0, fp_PageSize::mm,	"2B",
+	{1414.0, 2000.0, DIM_MM,	"2B",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{1000.0, 1414.0, fp_PageSize::mm,	"B0",
+	{1000.0, 1414.0, DIM_MM,	"B0",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 707.0, 1000.0, fp_PageSize::mm,	"B1",
+	{ 707.0, 1000.0, DIM_MM,	"B1",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 500.0,  707.0, fp_PageSize::mm,	"B2",
+	{ 500.0,  707.0, DIM_MM,	"B2",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 353.0,  500.0, fp_PageSize::mm,	"B3",
+	{ 353.0,  500.0, DIM_MM,	"B3",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 250.0,  353.0, fp_PageSize::mm,	"B4", 21.0, 21.0, 21.0, 21.0 },
-	{ 176.0,  250.0, fp_PageSize::mm,	"B5", 28.0, 28.0, 28.0, 28.0 },
-	{ 125.0,  176.0, fp_PageSize::mm,	"B6",
+	{ 250.0,  353.0, DIM_MM,	"B4", 21.0, 21.0, 21.0, 21.0 },
+	{ 176.0,  250.0, DIM_MM,	"B5", 28.0, 28.0, 28.0, 28.0 },
+	{ 125.0,  176.0, DIM_MM,	"B6",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  88.0,  125.0, fp_PageSize::mm,	"B7",
+	{  88.0,  125.0, DIM_MM,	"B7",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  62.0,   88.0, fp_PageSize::mm,	"B8",
+	{  62.0,   88.0, DIM_MM,	"B8",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  44.0,   62.0, fp_PageSize::mm,	"B9",
+	{  44.0,   62.0, DIM_MM,	"B9",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  31.0,   44.0, fp_PageSize::mm,	"B10",
+	{  31.0,   44.0, DIM_MM,	"B10",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 
 	// the C sizes
-	{ 917.0, 1297.0, fp_PageSize::mm,	"C0",
+	{ 917.0, 1297.0, DIM_MM,	"C0",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 648.0,  917.0, fp_PageSize::mm,	"C1",
+	{ 648.0,  917.0, DIM_MM,	"C1",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 458.0,  648.0, fp_PageSize::mm,	"C2",
+	{ 458.0,  648.0, DIM_MM,	"C2",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 324.0,  458.0, fp_PageSize::mm,	"C3",
+	{ 324.0,  458.0, DIM_MM,	"C3",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{ 229.0,  324.0, fp_PageSize::mm,	"C4",
+	{ 229.0,  324.0, DIM_MM,	"C4",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	// FIXME: C5 is dealt with below, under envelopes
 	// FIXME: should prolly have C6/C5 here too, for completeness
-	{ 114.0,  162.0, fp_PageSize::mm,	"C6",
+	{ 114.0,  162.0, DIM_MM,	"C6",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  81.0,  114.0, fp_PageSize::mm,	"C7",
+	{  81.0,  114.0, DIM_MM,	"C7",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  57.0,   81.0, fp_PageSize::mm,	"C8",
+	{  57.0,   81.0, DIM_MM,	"C8",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  40.0,   57.0, fp_PageSize::mm,	"C9",
+	{  40.0,   57.0, DIM_MM,	"C9",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
-	{  28.0,   40.0, fp_PageSize::mm,	"C10",
+	{  28.0,   40.0, DIM_MM,	"C10",
 	  MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN, MARGIN_UNKNOWN },
 	
 	// Japanese B sizes
 	// FIXME: should prolly have the other Japanese sizes
-	{ 182.0,  258.0, fp_PageSize::mm,   "B5-Japan", 28.0, 28.0, 28.0, 28.0},
+	{ 182.0,  258.0, DIM_MM,   "B5-Japan", 28.0, 28.0, 28.0, 28.0},
 
 	// the rest
-	{   8.5,   14.0, fp_PageSize::inch,	"Legal", 1.0, 1.0, 1.0, 1.0	},
-	{   8.5,   13.0, fp_PageSize::inch,	"Folio", 1.0, 1.0, 1.0, 1.0	},
-	{   8.5,   11.0, fp_PageSize::inch,	"Letter", 1.0, 1.0, 1.0, 1.0 },
-	{   8.5,    5.5, fp_PageSize::inch, "Half-Letter", 1.0, 1.0, 1.0, 1.0 },
-	{   7.5,   10.0, fp_PageSize::inch, "Executive", 1.0, 1.0, 1.0, 1.0 },
-	{ 280.1,  267.0, fp_PageSize::mm,   "Tabloid/Ledger", 25.4, 25.4, 25.4, 25.4},
-	{  99.0,  191.0, fp_PageSize::mm,   "Monarch", 3.5, 3.5, 3.5, 3.5},
-	{ 297.0,  433.0, fp_PageSize::mm,   "SuperB", 28.2, 28.2, 28.2, 28.2},
-	{ 105.0,  242.0, fp_PageSize::mm,   "Envelope-Commercial", 1.8, 1.8, 1.8, 1.8},
-	{  99.0,  191.0, fp_PageSize::mm,   "Envelope-Monarch", 1.8, 1.8, 1.8, 1.8},
-	{ 110.0,  220.0, fp_PageSize::mm,   "Envelope-DL", 1.8, 1.8, 1.8, 1.8},
-	{ 162.0,  229.0, fp_PageSize::mm,   "Envelope-C5", 1.8, 1.8, 1.8, 1.8},
-	{ 105.0,  148.0, fp_PageSize::mm,   "EuroPostcard", 1.8, 1.8, 1.8, 1.8},
-	{   0.0,    0.0, fp_PageSize::mm,	"Custom", 0.0, 0.0, 0.0, 0.0}
-};
-
-const double ScaleFactors[fp_PageSize::_last_predefined_unit_dont_use_] =
-{
-	{ 1.0								},		// mm
-	{ 10.0								},		// cm
-	{ 25.4								},		// inch
-	{ 25.4 / UT_PAPER_UNITS_PER_INCH	},		// PaperUnit
-	{ 25.4 / UT_LAYOUT_UNITS			}		// LayoutUnit
+	{   8.5,   14.0, DIM_IN,	"Legal", 1.0, 1.0, 1.0, 1.0	},
+	{   8.5,   13.0, DIM_IN,	"Folio", 1.0, 1.0, 1.0, 1.0	},
+	{   8.5,   11.0, DIM_IN,	"Letter", 1.0, 1.0, 1.0, 1.0 },
+	{   8.5,    5.5, DIM_IN, "Half-Letter", 1.0, 1.0, 1.0, 1.0 },
+	{   7.5,   10.0, DIM_IN, "Executive", 1.0, 1.0, 1.0, 1.0 },
+	{ 280.1,  267.0, DIM_MM,   "Tabloid/Ledger", 25.4, 25.4, 25.4, 25.4},
+	{  99.0,  191.0, DIM_MM,   "Monarch", 3.5, 3.5, 3.5, 3.5},
+	{ 297.0,  433.0, DIM_MM,   "SuperB", 28.2, 28.2, 28.2, 28.2},
+	{ 105.0,  242.0, DIM_MM,   "Envelope-Commercial", 1.8, 1.8, 1.8, 1.8},
+	{  99.0,  191.0, DIM_MM,   "Envelope-Monarch", 1.8, 1.8, 1.8, 1.8},
+	{ 110.0,  220.0, DIM_MM,   "Envelope-DL", 1.8, 1.8, 1.8, 1.8},
+	{ 162.0,  229.0, DIM_MM,   "Envelope-C5", 1.8, 1.8, 1.8, 1.8},
+	{ 105.0,  148.0, DIM_MM,   "EuroPostcard", 1.8, 1.8, 1.8, 1.8},
+	{   0.0,    0.0, DIM_MM,	"Custom", 0.0, 0.0, 0.0, 0.0}
 };
 
 fp_PageSize::fp_PageSize(Predefined preDef)
@@ -155,36 +146,35 @@ fp_PageSize::fp_PageSize(const char *name)
 	Set(name);
 }
 
-fp_PageSize::fp_PageSize(double w, double h, Unit u)
+fp_PageSize::fp_PageSize(double w, double h, UT_Dimension u)
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
+
 	m_bisPortrait = true;
 	m_scale = 1.0;
 	Set(w, h, u);
 }
 
 // all Set() calls ultimately go through this function
-void fp_PageSize::Set(Predefined preDef, Unit u)
+void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 {
 	UT_ASSERT(preDef >= _first_predefined_pagesize_ && preDef < _last_predefined_pagesize_dont_use_);
-	UT_ASSERT(u >= _first_predefined_unit_ && u <= _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
 
 	const private_pagesize_sizes& size = pagesizes[preDef];
 
-	if (u != _last_predefined_unit_dont_use_)
+	if (u != DIM_none)
 		m_unit = u;
 	else
 		m_unit = size.u;
 
-	double sf = ScaleFactors[size.u];
-
 	// Always scale to mm's, which we store.
-	m_iWidth        = size.w * sf;
-	m_iHeight       = size.h * sf;
-	m_iMarginTop    = size.t * sf;
-	m_iMarginBottom = size.b * sf;
-	m_iMarginLeft   = size.l * sf;
-	m_iMarginRight  = size.r * sf;
+	m_iWidth        = UT_convertDimensions(size.w, m_unit, FUND);
+	m_iHeight       = UT_convertDimensions(size.h, m_unit, FUND);
+	m_iMarginTop    = UT_convertDimensions(size.t, m_unit, FUND);
+	m_iMarginBottom = UT_convertDimensions(size.b, m_unit, FUND);
+	m_iMarginLeft   = UT_convertDimensions(size.l, m_unit, FUND);
+	m_iMarginRight  = UT_convertDimensions(size.r, m_unit, FUND);
 
 	m_predefined = (char *)pagesizes [preDef].name;
 }
@@ -192,12 +182,12 @@ void fp_PageSize::Set(Predefined preDef, Unit u)
 /*!
   Set the pagesize to given width and height, assumed to be in given unit.
  */
-void fp_PageSize::Set(double w, double h, Unit u)
+void fp_PageSize::Set(double w, double h, UT_Dimension u)
 {
 	int i;
 	double converted_w, converted_h;
 
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
 
 	// calculate which predefined this represents
 
@@ -206,14 +196,10 @@ void fp_PageSize::Set(double w, double h, Unit u)
 	{
 		if (pagesizes[i].u != u )  // Convert to local defined units and round off
 		{
-			converted_w = w * ScaleFactors[u]/ScaleFactors[pagesizes[i].u];
-			int w_int = (int) (converted_w*10.0);
-			if ( converted_w*10 - w_int >= 0.5 ) w_int++;
-			converted_w = (double) w_int/10.0;
-			converted_h = h * ScaleFactors[u]/ScaleFactors[pagesizes[i].u];
-			int h_int = (int) (converted_h*10.0);
-			if ( converted_h*10 - h_int >= 0.5 ) h_int++;
-			converted_h = (double) h_int/10.0;			
+			converted_w = UT_convertDimensions(w, pagesizes[i].u, u);
+			converted_w = ((int)(converted_w*10.0+0.5))/(double)10.0;
+			converted_h = UT_convertDimensions(h, pagesizes[i].u, u);
+			converted_w = ((int)(converted_h*10.0+0.5))/(double)10.0;
 		}
 		else
 		{
@@ -240,15 +226,13 @@ void fp_PageSize::Set(double w, double h, Unit u)
 	if ( i == (int)_last_predefined_pagesize_dont_use_ )
 	{
 		Set (static_cast<Predefined>(i-1), u);
-		m_iWidth  = w * ScaleFactors[u];
-		m_iHeight = h * ScaleFactors[u];
+		m_iWidth  = UT_convertDimensions(w, u, FUND);
+		m_iHeight = UT_convertDimensions(h, u, FUND);
 	}
 }
 
-void fp_PageSize::Set(const char *name, Unit u)
+void fp_PageSize::Set(const char *name, UT_Dimension u)
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u <= _last_predefined_unit_dont_use_);
-
 	Set(NameToPredefined(name), u);
 }
 
@@ -262,58 +246,64 @@ void fp_PageSize::setLandscape(void)
 	m_bisPortrait = false;
 }
 
-double fp_PageSize::Width(Unit u) const
+double fp_PageSize::Width(UT_Dimension u) const
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
+
 	if(m_bisPortrait == true)
-		return m_scale * m_iWidth / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iWidth, FUND, u);
 	else
-		return m_scale * m_iHeight / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iHeight, FUND, u);
 }
 
-double fp_PageSize::Height(Unit u) const
+double fp_PageSize::Height(UT_Dimension u) const
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
+
 	if(m_bisPortrait == true)
-		return m_scale * m_iHeight / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iHeight, FUND, u);
 	else
-		return m_scale * m_iWidth / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iWidth, FUND, u);
 }
 
-double fp_PageSize::MarginTop(Unit u) const
+double fp_PageSize::MarginTop(UT_Dimension u) const
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
+
 	if(m_bisPortrait == true)
-		return m_scale * m_iMarginTop / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginTop, FUND, u);
 	else
-		return m_scale * m_iMarginRight / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginRight, FUND, u);
 }
 
-double fp_PageSize::MarginBottom(Unit u) const
+double fp_PageSize::MarginBottom(UT_Dimension u) const
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
+
 	if(m_bisPortrait == true)
-		return m_scale * m_iMarginBottom / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginBottom, FUND, u);
 	else
-		return m_scale * m_iMarginLeft / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginLeft, FUND, u);
 }
 
-double fp_PageSize::MarginLeft(Unit u) const
+double fp_PageSize::MarginLeft(UT_Dimension u) const
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
+
 	if(m_bisPortrait == true)
-		return m_scale * m_iMarginLeft / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginLeft, FUND, u);
 	else
-		return m_scale * m_iMarginTop / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginTop, FUND, u);
 }
 
-double fp_PageSize::MarginRight(Unit u) const
+double fp_PageSize::MarginRight(UT_Dimension u) const
 {
-	UT_ASSERT(u >= _first_predefined_unit_ && u < _last_predefined_unit_dont_use_);
+	UT_ASSERT(u >= DIM_IN && u <= DIM_none);
+
 	if(m_bisPortrait == true)
-		return m_scale * m_iMarginRight / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginRight, FUND, u);
 	else
-		return m_scale * m_iMarginBottom / ScaleFactors[u];
+		return m_scale * UT_convertDimensions(m_iMarginBottom, FUND, u);
 }
 
 bool fp_PageSize::IsPredefinedName(const char* szPageSizeName)
@@ -362,34 +352,4 @@ const char * fp_PageSize::PredefinedToName(Predefined preDef)
 	UT_ASSERT((preDef >= _first_predefined_pagesize_) && (preDef < _last_predefined_pagesize_dont_use_));
 
 	return pagesizes[preDef].name;
-}
-
-UT_Dimension UT_pageSizeUnitToDimension(fp_PageSize::Unit u)
-{
-	switch (u)
-	{
-	case fp_PageSize::mm:
-		return DIM_MM;
-	case fp_PageSize::cm:
-		return DIM_CM;
-	case fp_PageSize::inch:
-		return DIM_IN;
-	}
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return DIM_MM;
-}
-
-fp_PageSize::Unit UT_dimensionToPageSizeUnit(UT_Dimension u)
-{
-	switch(u)
-	{
-	case DIM_MM:
-		return fp_PageSize::mm;
-	case DIM_CM:
-		return fp_PageSize::cm;
-	case DIM_IN:
-		return fp_PageSize::inch;
-	}
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return fp_PageSize::mm;
 }

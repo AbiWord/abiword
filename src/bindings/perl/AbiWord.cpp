@@ -643,7 +643,7 @@ XS(XS_AbiWord__XAP_Frame_setPageSize)
 		PD_Document* doc = dynamic_cast<PD_Document*> (ad_doc);
 		if (doc)
 		{
-			fp_PageSize ps(iWidth, iHeight, fp_PageSize::mm);
+			fp_PageSize ps(iWidth, iHeight, DIM_MM);
 //			doc->setPageSize(ps);
 		}
 #line 650 "AbiWord.c"
