@@ -358,6 +358,11 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		PD_DocumentRange * pR = m_pView->getNthSelection(0);
 		posLow = pR->m_pos1+1;
 		fl_BlockLayout * pBlock = NULL;
+
+		bDirection = bEOL = false;
+		UT_DEBUGMSG(("MSEVIOR: TODO: initialize bDirection && bEOL (bug 7428)\n"));
+		UT_ASSERT(UT_TODO);
+
 		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
 		while(pBlock->isEmbeddedType())
 		{
