@@ -235,12 +235,12 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	gtk_widget_show (hbuttonbox4);
 	gtk_table_attach (GTK_TABLE (table13), hbuttonbox4, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
+					  (GtkAttachOptions) (GTK_FILL), 6, 6);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox4), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox4), 5);
+	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox4), 9);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox4), 0, 0);
 
-	buttonSet = gtk_button_new_from_stock(GTK_STOCK_ADD); //pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
+	buttonSet = gtk_button_new_from_stock(GTK_STOCK_APPLY); //pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
 	gtk_widget_show (buttonSet);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
 	GTK_WIDGET_SET_FLAGS (buttonSet, GTK_CAN_DEFAULT);
