@@ -1655,7 +1655,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 					pTmpCol = pTmpCol->getFollower();
 				}
 
-				yPoint += iMostHeight;
+				yPoint += (iMostHeight - 1);
 			}
 			else
 			{
