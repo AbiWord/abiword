@@ -162,6 +162,8 @@ public:
 	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
+	UT_String metaTag(const char * key, const char * value);
+
 	void				_closeSection(void);
 	void				_closeTag(void);
 	void				_closeSpan(void);
@@ -258,6 +260,13 @@ static bool is_CSS(const char* property)
 	#undef PropListLen
 }
 
+UT_String s_HTML_Listener::metaTag(const char * key, const char * value)
+{
+  if (m_bIs4)
+    return UT_String_sprintf("<meta name=\"%s\" content=\"%s\" >\r\n", key, value);
+  else
+    return UT_String_sprintf("<meta name=\"%s\" content=\"%s\" />\r\n", key, value);
+}
 
 void s_HTML_Listener::_closeSection(void)
 {
@@ -1675,9 +1684,44 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	    m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" >\r\n");
 	}
 
+	{
+	  // export metadata - first map some data to common HTML Meta props
+	  UT_String metaProp ;
+	  if ( m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, metaProp) && metaProp.size () )
+	    m_pie->write(metaTag("Title", metaProp.c_str()));
+	  if ( m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, metaProp) && metaProp.size () )
+	    m_pie->write(metaTag("Author", metaProp.c_str()));
+	  if ( m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size () )
+	    m_pie->write(metaTag("Keywords", metaProp.c_str()));
+	  if ( m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, metaProp) && metaProp.size () )
+	    m_pie->write(metaTag("Subject", metaProp.c_str()));
+
+	  UT_StringPtrMap & metaDataMap = m_pDocument->getMetaData ();
+	  UT_StringPtrMap::UT_Cursor cursor(&metaDataMap);
+
+	  // now generically dump all of our data to meta stuff
+	  const void * val = NULL ;
+	  for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
+	    {
+	      if ( val )
+		{
+		  UT_String *stringval = (UT_String*) val;
+		  if(stringval->size () > 0)
+		    {
+		      m_pie->write(metaTag(cursor.key().c_str(), stringval->c_str()));
+		    }
+		}
+	    }
+	}
+
+	UT_String titleProp;
 	m_pie->write("<title>");
-	m_pie->write(m_pie->getFileName());
+	if ( m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp) && titleProp.size () )
+	  m_pie->write(titleProp);
+	else
+	  m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\r\n");
+
 	m_pie->write("<style type=\"text/css\">\r\n");
 	if(bHaveProp && pAP)
 	{							// global page styles refer to the <body> tag

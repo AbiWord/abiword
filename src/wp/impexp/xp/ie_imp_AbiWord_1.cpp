@@ -539,6 +539,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_parseState = _PS_Meta;
 		m_currentMetaDataName = _getXMLPropValue("key", atts);
 		return;
+
 	case TT_TABLE:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
