@@ -2127,7 +2127,6 @@ bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 
 bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 {
-#if 0
 	UT_return_val_if_fail(m_pGraphics && m_pFont, false);
 
 	UT_ASSERT_HARMLESS(!pri);
@@ -2139,6 +2138,12 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 
 	pri->m_pItem = m_pItem->makeCopy();
 	UT_return_val_if_fail(pri->m_pItem, false);
+
+	m_bNeedsReshaping = true;
+	return false;
+	
+	// trying to split the data is just too precarious ...
+#if 0
 
 	if(m_bNeedsReshaping)
 	{
@@ -2276,10 +2281,6 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	}
 	
 	return true;
-#else
-		m_bNeedsReshaping = true;
-	
-	return false;
 #endif
 }
 
