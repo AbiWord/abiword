@@ -346,7 +346,7 @@ UT_PerlBindings::registerCallback(const char* pszFunctionName,
 		id = menu->addMenuItem(pszMenuPath, pszDescription);
 	}
 
-	app->getMenuActionSet()->addAction(new EV_Menu_Action(id, false, bRaisesDialog, false, "executeScript", 0, 0, pszFunctionName));
+	app->getMenuActionSet()->addAction(new EV_Menu_Action(id, false, bRaisesDialog, false, false, "executeScript", 0, 0, pszFunctionName));
 }
 
 /***************************************************************************/
