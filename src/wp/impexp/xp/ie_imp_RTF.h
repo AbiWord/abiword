@@ -402,6 +402,25 @@ struct ABI_EXPORT RTFProps_SectionProps
 	FriBidiCharType m_dir;
 };
 
+// Frame properties
+class ABI_EXPORT RTFProps_FrameProps
+{
+public:
+	RTFProps_FrameProps();
+	virtual ~RTFProps_FrameProps(){};
+	void             clear();
+	UT_sint32        m_iLeftPos;
+	UT_sint32        m_iRightPos;
+	UT_sint32        m_iTopPos;
+	UT_sint32        m_iBotPos;
+	UT_sint32        m_iLeftPad;
+	UT_sint32        m_iRightPad;
+	UT_sint32        m_iTopPad;
+	UT_sint32        m_iBotPad;
+	UT_sint32        m_iFrameType;
+	UT_sint32        m_iFramePositionTo;
+	bool             m_bCleared;
+};
 
 /*!
   Stores a RTF header and footer.
@@ -445,7 +464,6 @@ struct ABI_EXPORT RTFStateStore
 	RTFProps_SectionProps	m_sectionProps;			// Section properties
 	RTFProps_CellProps      m_cellProps;            // Cell properties
     RTFProps_TableProps     m_tableProps;           // Table properties
-
 	UT_uint32				m_unicodeAlternateSkipCount;	// value of N in "\ucN"
 	UT_uint32				m_unicodeInAlternate;			// chars left in alternate "\u<u><A>"
 };
@@ -664,6 +682,12 @@ private:
     void           HandleRow(void);
 	void           HandleNote();
 	void           HandleNoteReference();
+// Frame handlers
+	void           HandleShapeProp(void);
+	void           HandleShapeVal(void);
+	void           HandleShapeText(void);
+	void           HandleEndShape(void);
+
 	bool           bUseInsertNotAppend(void);
 // Little convience wrapper
 	void           _setStringProperty(UT_String & sPropString, const char * szProp, const char * szVal);
@@ -785,6 +809,10 @@ private:
 	RTFStateStore         m_FootnoteRefState;
 	bool                  m_bFieldRecognized;
 	UT_sint32             m_iIsInHeaderFooter;
+	UT_sint32             m_iStackDepthAtFrame;
+	bool                  m_bFrameOpen;
+	UT_String             m_sPendingShapeProp;
+	RTFProps_FrameProps   m_currentFrame;
 };
 
 #endif /* IE_IMP_RTF_H */

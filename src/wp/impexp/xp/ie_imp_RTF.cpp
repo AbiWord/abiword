@@ -1298,6 +1298,36 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_dir = FRIBIDI_TYPE_UNSET;
 }
 
+RTFProps_FrameProps::RTFProps_FrameProps(void):
+	m_iLeftPos(0),
+	m_iRightPos(0),
+	m_iTopPos(0),
+	m_iBotPos(0),
+	m_iLeftPad(0),
+	m_iRightPad(0),
+	m_iTopPad(0),
+	m_iBotPad(0),
+	m_iFrameType(-1),
+	m_iFramePositionTo(-1),
+	m_bCleared(true)
+{
+}
+
+void RTFProps_FrameProps::clear(void)
+{
+	m_iLeftPos = 0;
+	m_iRightPos = 0;
+	m_iTopPos = 0;
+	m_iBotPos = 0;
+	m_iLeftPad = 0;
+	m_iRightPad = 0;
+	m_iTopPad = 0;
+	m_iBotPad = 0;
+	m_iFrameType = -1;
+	m_iFramePositionTo =1;
+	m_bCleared= true;
+}
+
 RTFStateStore::RTFStateStore()
 {
 	m_destinationState = rdsNorm;
@@ -1359,7 +1389,10 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bDoCloseTable(false),
 	m_iNoCellsSinceLastRow(0),
 	m_bFieldRecognized(false),
-	m_iIsInHeaderFooter(0)
+	m_iIsInHeaderFooter(0),
+	m_iStackDepthAtFrame(0),
+	m_bFrameOpen(false),
+	m_sPendingShapeProp("")
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1923,6 +1956,175 @@ void IE_Imp_RTF::HandleRow(void)
 	m_iNoCellsSinceLastRow = 0;
 }
 
+/*!
+ * a "sp" keyword has been found the text following is the property.
+ */
+void IE_Imp_RTF::HandleShapeProp(void)
+{
+	UT_ASSERT(m_sPendingShapeProp.size() == 0);
+	UT_Byte ch = 0;
+	xxx_UT_DEBUGMSG(("Handle sp \n"));
+	while (ch != '}')
+	{
+		if (!ReadCharFromFile(&ch)) 
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		if (ch != '}' && (ch != ' ')) 
+		{
+			m_sPendingShapeProp += ch;
+		}
+	}
+	SkipBackChar (ch);
+}
+
+/*!
+ * a "sv" keyword has been found. The text following is the value of the property
+ */
+void IE_Imp_RTF::HandleShapeVal(void)
+{
+	UT_String sVal;
+	sVal.clear();
+	UT_Byte ch = 0;
+	UT_ASSERT(m_sPendingShapeProp.size() > 0);
+	xxx_UT_DEBUGMSG(("Handle sp \n"));
+	while (ch != '}')
+	{
+		if (!ReadCharFromFile(&ch)) 
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return;
+		}
+		if (ch != '}' && (ch != ' ')) 
+		{
+			sVal += ch;
+		}
+	}
+	SkipBackChar (ch);
+//
+// OK got the  prop,val pair. Do something with them!
+//	
+	UT_sint32 ival = 0;
+	if(strcmp(m_sPendingShapeProp.c_str(),"dxTextLeft")== 0)
+	{
+		ival = atoi(sVal.c_str());
+		m_currentFrame.m_iLeftPad = ival;
+	}
+	else if(strcmp(m_sPendingShapeProp.c_str(),"dxTextRight")== 0)
+	{
+		ival = atoi(sVal.c_str());
+		m_currentFrame.m_iRightPad = ival;
+	}
+	else if(strcmp(m_sPendingShapeProp.c_str(),"dxTextTop")== 0)
+	{
+		ival = atoi(sVal.c_str());
+		m_currentFrame.m_iTopPad = ival;
+	}
+	else if(strcmp(m_sPendingShapeProp.c_str(),"dxTextBottom")== 0)
+	{
+		ival = atoi(sVal.c_str());
+		m_currentFrame.m_iBotPad = ival;
+	}
+	else if(strcmp(m_sPendingShapeProp.c_str(),"shapeType")== 0)
+	{
+		ival = atoi(sVal.c_str());
+		if(ival == 202)
+		{
+			m_currentFrame.m_iFrameType = 0;
+		}
+		m_currentFrame.m_iFrameType = 0; // no others implemented
+	}
+	m_sPendingShapeProp.clear();
+}
+
+void IE_Imp_RTF::HandleShapeText(void)
+{
+
+// Ok this is the business end of the frame where we actually insert the
+// Strux.
+
+// Flush any stored chars now.
+	FlushStoredChars(true);
+	UT_DEBUGMSG(("Doing Handle shptxt \n"));
+// OK Assemble the attributes/properties for the Frame
+	const XML_Char * attribs[3] = {"props",NULL,NULL};
+	UT_UTF8String sPropString;
+	UT_UTF8String sP;
+	UT_UTF8String sV;
+	sP = "frame-type";
+	sV = "textbox";
+	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+
+	sP = "position-to";
+	sV = "block-above-text";
+	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+
+	double dV = static_cast<double>(m_currentFrame.m_iLeftPos)/1440.0;
+	sV= UT_UTF8String_sprintf("%fin",dV);
+	sP= "xpos";
+	UT_UTF8String_setProperty(sPropString,sP,sV);
+
+	dV = static_cast<double>(m_currentFrame.m_iTopPos)/1440.0;
+	sV= UT_UTF8String_sprintf("%fin",dV);
+	sP= "ypos";
+	UT_UTF8String_setProperty(sPropString,sP,sV);
+
+	dV = static_cast<double>(m_currentFrame.m_iRightPos - m_currentFrame.m_iLeftPos)/1440.0;
+	sV= UT_UTF8String_sprintf("%fin",dV);
+	sP= "frame-width";
+	UT_UTF8String_setProperty(sPropString,sP,sV); 
+
+	dV = static_cast<double>(m_currentFrame.m_iBotPos - m_currentFrame.m_iTopPos)/1440.0;
+	sV= UT_UTF8String_sprintf("%fin",dV);
+	sP= "frame-height";
+	UT_UTF8String_setProperty(sPropString,sP,sV); 
+
+	dV = static_cast<double>(m_currentFrame.m_iRightPad + m_currentFrame.m_iLeftPad)/9114400.0; // EMU
+	sV= UT_UTF8String_sprintf("%fin",dV);
+	sP= "xpad";
+	UT_UTF8String_setProperty(sPropString,sP,sV); 
+
+	dV = static_cast<double>(m_currentFrame.m_iBotPad + m_currentFrame.m_iTopPad)/9114400.0; //EMU
+	sV= UT_UTF8String_sprintf("%fin",dV);
+	sP= "ypad";
+	UT_UTF8String_setProperty(sPropString,sP,sV); 
+	attribs[1] = sPropString.utf8_str();
+
+	if(!bUseInsertNotAppend())
+	{
+		getDoc()->appendStrux(PTX_SectionFrame,attribs);
+		UT_DEBUGMSG(("Append block in Frame \n"));
+		getDoc()->appendStrux(PTX_Block,NULL);
+	}
+	else
+	{
+		getDoc()->insertStrux(m_dposPaste,PTX_SectionFrame,attribs,NULL);
+		m_dposPaste++;
+		UT_DEBUGMSG((" Insert Block at Frame \n"));
+		markPasteBlock();
+		getDoc()->insertStrux(m_dposPaste,PTX_Block);
+		m_dposPaste++;
+	}
+
+}
+
+void IE_Imp_RTF::HandleEndShape(void)
+{
+	UT_DEBUGMSG(("Doing HandleEndShape \n"));
+	if(!bUseInsertNotAppend())
+	{
+		getDoc()->appendStrux(PTX_EndFrame,NULL);
+	}
+	else
+	{
+		getDoc()->insertStrux(m_dposPaste,PTX_EndFrame);
+		m_dposPaste++;
+	}
+	m_bFrameOpen = false;
+	m_iStackDepthAtFrame = 0;
+}
+
 void IE_Imp_RTF::HandleNoteReference(void)
 {
 	// see if we have a reference marker pending ...
@@ -2122,10 +2324,16 @@ UT_Error IE_Imp_RTF::_parseText()
 				}
 				break;
 			case '}':
+			{
 				ok = PopRTFState();
 				if (!ok) {
 					UT_DEBUGMSG(("PopRTFState()\n"));
 				}
+				if(m_bFrameOpen &&  static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame)
+				{
+					HandleEndShape(); // OK end of frame braces
+				}
+			}
 				break;
 			case '\\':
 			{
@@ -2438,6 +2646,10 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		}
 		m_bInFootnote = false;
 		m_iDepthAtFootnote = 0;
+	}
+	if( ok && m_bFrameOpen && (static_cast<UT_sint32>(m_stateStack.getDepth()) < m_iStackDepthAtFrame))	
+	{
+		HandleEndShape();
 	}
 	return ok;
 }
@@ -5127,22 +5339,49 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkOdd;
 			return true;
 		}
-   		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sp") == 0) // Some shape thing!
+		else if(strcmp(reinterpret_cast<char*>(pKeyword), "shp") == 0)
 		{
-			UT_DEBUGMSG (("ignoring sp\n"));
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+// Found a positioned thingy
+			m_currentFrame.clear();
 			return true;
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sn") == 0) // Some shape thing!
+   		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sp") == 0) // A shape property
 		{
-			UT_DEBUGMSG (("ignoring sn\n"));
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			return true;
 		}
-		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sv") == 0) // Some shape thing!
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sn") == 0) 		
 		{
-			UT_DEBUGMSG (("ignoring sp\n"));
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			HandleShapeProp();
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sv") == 0) // A shape value
+		{
+			HandleShapeVal();
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shpleft") == 0) 
+		{
+			m_currentFrame.m_iLeftPos= param;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shpright") == 0) 
+		{
+			m_currentFrame.m_iRightPos= param;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shptop") == 0) 
+		{
+			m_currentFrame.m_iTopPos= param;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shpbottom") == 0) 
+		{
+			m_currentFrame.m_iBotPos= param;
+			return true;
+		}
+		else if (strcmp(reinterpret_cast<char*>(pKeyword), "shptxt") == 0) 
+		{
+			HandleShapeText();
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "sl") == 0)
@@ -5515,7 +5754,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 						}
 						else if (strcmp(reinterpret_cast<char*>(keyword_star),"shpinst") == 0)
 						{
-							UT_DEBUGMSG (("ignoring shpinst\n"));
+							UT_DEBUGMSG(("Doing shpinst \n"));
+
+							m_iStackDepthAtFrame = m_stateStack.getDepth();
+							m_bFrameOpen = true;
+
 							return true;
 						}
 						else if (strcmp(reinterpret_cast<char*>(keyword_star),"nesttableprops") == 0)

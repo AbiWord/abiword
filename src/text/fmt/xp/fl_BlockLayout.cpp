@@ -1782,6 +1782,10 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			UT_sint32 yoff = 0;
 			fp_Line * pFirstLine = static_cast<fp_Line *>(getFirstContainer());
 			fp_Line * pCon = pFirstLine;
+			if(pCon == NULL)
+			{
+				return false;
+			}
 			if(pCon->getNext() != NULL)
 			{
 				while(pCon && (pCon != pLastLine) && yoff < yFpos )
@@ -1818,6 +1822,10 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// The Frame should be placed on the same page as this line
 			//
 			fp_Page * pPage = pCon->getPage();
+			if(pPage == NULL)
+			{
+				return false;
+			}
 			//
 			// OK now calculate the offset from the first line to this page.
 			//
