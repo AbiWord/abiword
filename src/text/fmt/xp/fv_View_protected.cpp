@@ -1473,14 +1473,14 @@ bool FV_View::_ensureInsertionPointOnScreen()
 	xxx_UT_DEBUGMSG(("FV_View::_ensureInsertionPointOnScreen called\n"));
 
 	// Some short circuit tests to avoid doing bad things.
-	if (m_iWindowHeight <= 0)
+	if (getWindowHeight() <= 0)
 		return false;
 
     // If == 0 no layout information is present. Don't scroll.
 	if(getPoint() == 0)
 		return false;
 
-	xxx_UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,m_iWindowWidth,m_iWindowHeight));
+	xxx_UT_DEBUGMSG(("_ensure: [xp %ld][yp %ld][ph %ld] [w %ld][h %ld]\n",m_xPoint,m_yPoint,m_iPointHeight,getWindowWidth(),getWindowHeight()));
 
 	bool bRet = false;
 	if (m_yPoint < 0)
@@ -1488,9 +1488,9 @@ bool FV_View::_ensureInsertionPointOnScreen()
 		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
 		bRet = true;
 	}
-	else if ((static_cast<UT_uint32>(m_yPoint + m_iPointHeight)) >= (static_cast<UT_uint32>(m_iWindowHeight)))
+	else if ((static_cast<UT_uint32>(m_yPoint + m_iPointHeight)) >= (static_cast<UT_uint32>(getWindowHeight())))
 	{
-		cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(m_yPoint + m_iPointHeight - m_iWindowHeight));
+		cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(m_yPoint + m_iPointHeight - getWindowHeight()));
 		bRet = true;
 	}
 
@@ -1502,9 +1502,9 @@ bool FV_View::_ensureInsertionPointOnScreen()
 		cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(m_xPoint) + getPageViewLeftMargin()/2));
 		bRet = true;
 	}
-	else if ((static_cast<UT_uint32>(m_xPoint)) >= (static_cast<UT_uint32>(m_iWindowWidth)))
+	else if ((static_cast<UT_uint32>(m_xPoint)) >= (static_cast<UT_uint32>(getWindowWidth())))
 	{
-		cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(m_xPoint - m_iWindowWidth + getPageViewLeftMargin()/2));
+		cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(m_xPoint - getWindowWidth() + getPageViewLeftMargin()/2));
 		bRet = true;
 	}
 
@@ -1589,8 +1589,8 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	bool bSuccess = true;
 	if(bNext)
 	{
-		iYnext = yoff + m_iWindowHeight;
-		iYscroll = m_yScrollOffset + m_iWindowHeight;
+		iYnext = yoff + getWindowHeight();
+		iYscroll = m_yScrollOffset + getWindowHeight();
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Yoff %d iYnext %d page %x \n",yoff,iYnext,pPage));
 		while(pPage && (iYnext > pPage->getHeight()))
 		{
@@ -1655,8 +1655,8 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	}
 	else
 	{
-		iYnext = yoff  - m_iWindowHeight;
-		iYscroll = m_yScrollOffset - m_iWindowHeight;
+		iYnext = yoff  - getWindowHeight();
+		iYscroll = m_yScrollOffset - getWindowHeight();
 		if(iYscroll < 0)
 		{
 			return;
@@ -1832,8 +1832,8 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 
 		bool bOnScreen = true;
 
-		if ((xPos < 0 || xPos > pView->m_iWindowWidth) ||
-			(yPos < 0 || yPos > pView->m_iWindowHeight))
+		if ((xPos < 0 || xPos > pView->getWindowWidth()) ||
+			(yPos < 0 || yPos > pView->getWindowHeight()))
 			bOnScreen = false;
 
 		if (!bOnScreen)
@@ -1846,7 +1846,7 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 			// TODO fire them, but that knowledge is only stored in the frame and we
 			// TODO don't have a backpointer to it.
 			// UT_DEBUGMSG(("_auto: [xp %ld][yp %ld] [w %ld][h %ld]\n",
-			//			 xPos,yPos,pView->m_iWindowWidth,pView->m_iWindowHeight));
+			//			 xPos,yPos,pView->getWindowWidth(),pView->getWindowHeight()));
 			//
 			// Sevior: Is This what you wanted? Uncomment these lines when
 			// needed.
@@ -1858,18 +1858,18 @@ void FV_View::_autoScroll(UT_Worker * pWorker)
 			{
 				pView->cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(yPos)));
 			}
-			else if ((static_cast<UT_uint32>(yPos)) >= (static_cast<UT_uint32>(pView->m_iWindowHeight)))
+			else if ((static_cast<UT_uint32>(yPos)) >= (static_cast<UT_uint32>(pView->getWindowHeight())))
 			{
-				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yPos - pView->m_iWindowHeight));
+				pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(yPos - pView->getWindowHeight()));
 			}
 
 			if (xPos < 0)
 			{
 				pView->cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(xPos)));
 			}
-			else if ((static_cast<UT_uint32>(xPos)) >= (static_cast<UT_uint32>(pView->m_iWindowWidth)))
+			else if ((static_cast<UT_uint32>(xPos)) >= (static_cast<UT_uint32>(pView->getWindowWidth())))
 			{
-				pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(xPos - pView->m_iWindowWidth));
+				pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(xPos - pView->getWindowWidth()));
 			}
 		}
 	}
@@ -2891,13 +2891,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
 					 x,y,width,height,bClip,
-					 m_yScrollOffset,m_iWindowHeight));
+					 m_yScrollOffset,getWindowHeight()));
 	
 	// CHECK_WINDOW_SIZE
 	// this can happen when the frame size is decreased and
 	// only the toolbars show...
 
-	if ((m_iWindowWidth <= 0) || (m_iWindowHeight <= 0))
+	if ((getWindowWidth() <= 0) || (getWindowHeight() <= 0))
 	{
 		UT_DEBUGMSG(("fv_View::draw() called with zero drawing area.\n"));
 		return;
@@ -2941,13 +2941,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		if ((m_xScrollOffset < getPageViewLeftMargin()) && (getViewMode() == VIEW_PRINT))
 		{
 			// fill left margin
-			m_pG->fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, m_iWindowHeight);
+			m_pG->fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight());
 		}
 
 		if (m_yScrollOffset < getPageViewTopMargin() && (getViewMode() == VIEW_PRINT))
 		{
 			// fill top margin
-			m_pG->fillRect(clrMargin, 0, 0, m_iWindowWidth, getPageViewTopMargin() - m_yScrollOffset);
+			m_pG->fillRect(clrMargin, 0, 0, getWindowWidth(), getPageViewTopMargin() - m_yScrollOffset);
 		}
 	}
 
@@ -2966,16 +2966,16 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
 
-		if (adjustedTop > m_iWindowHeight)
+		if (adjustedTop > getWindowHeight())
 		{
 			// the start of this page is past the bottom
 			// of the window, so we don't need to draw it.
 
-			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
+			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
-							 m_iWindowHeight));
+							 getWindowHeight()));
 
 			// since all other pages are below this one, we
 			// don't need to draw them either.	exit loop now.
@@ -2986,11 +2986,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// the end of this page is above the top of
 			// the window, so we don't need to draw it.
 
-			xxx_UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
+			xxx_UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
-							 m_iWindowHeight));
+							 getWindowHeight()));
 		}
 		else if (adjustedTop > y + height)
 		{
@@ -2998,11 +2998,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// of the clipping region, so we don't need
 			// to draw it.
 
-			xxx_UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+			xxx_UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
-							 m_iWindowHeight,
+							 getWindowHeight(),
 							 y,height));
 		}
 		else if (adjustedBottom < y)
@@ -3011,11 +3011,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// of the clipping region, so we don't need
 			// to draw it.
 
-			xxx_UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+			xxx_UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
-							 m_iWindowHeight,
+							 getWindowHeight(),
 							 y,height));
 			//TF NOTE: Can we break out here?
 		}
@@ -3024,8 +3024,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// this page is on screen and intersects the clipping region,
 			// so we *DO* draw it.
 
-			xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
-							 iPageHeight,curY,m_yScrollOffset,m_iWindowHeight,y,height));
+			xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d getWindowHeight()=%d y=%d h=%d\n",
+							 iPageHeight,curY,m_yScrollOffset,getWindowHeight(),y,height));
 
 			dg_DrawArgs da;
 
@@ -3098,33 +3098,33 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				m_pG->setColor(clr);
 			}
 			// fill to right of page
-			if (m_iWindowWidth - (adjustedRight + 1) > 0)
+			if (getWindowWidth() - (adjustedRight + 1) > 0)
 			{
 				// In normal mode, the right margin is
 				// white (since the whole screen is white).
 				if(getViewMode() != VIEW_PRINT)
 				{
-					m_pG->fillRect(paperColor, adjustedRight, adjustedTop, m_iWindowWidth - (adjustedRight), iPageHeight + 1);
+					m_pG->fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - (adjustedRight), iPageHeight + 1);
 				}
 				// Otherwise, the right margin is the
 				// margin color (gray).
 				else
 				{
-					m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
+					m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, getWindowWidth() - (adjustedRight + 1), iPageHeight + 1);
 				}
 			}
 
 			// fill separator below page
-			if ((m_iWindowHeight - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()))
+			if ((getWindowHeight() - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()))
 			{
 			        if(pPage->getNext() != NULL)
 				{
-					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, getPageViewSep());
+					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, getPageViewSep());
 				}
 				else // found last page
 				{
 				        UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
-					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, botfill);
+					m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, botfill);
 				}
 			}
 
@@ -3162,9 +3162,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	{
 		// fill below bottom of document
 		UT_sint32 y = curY - m_yScrollOffset + 1;
-		UT_sint32 h = m_iWindowHeight - y;
+		UT_sint32 h = getWindowHeight() - y;
 
-		m_pG->fillRect(clrMargin, 0, y, m_iWindowWidth, h);
+		m_pG->fillRect(clrMargin, 0, y, getWindowWidth(), h);
 	}
 
 	if (bClip)

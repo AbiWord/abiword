@@ -254,13 +254,8 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
-	if(!pView || pFrame->isFrameLocked())
-	{
-		pUnixFrameImpl->m_iZoomUpdateID = 0;
-		pUnixFrameImpl->m_bDoZoomUpdate = false;
-		return FALSE;
-	}
-	if(pUnixFrameImpl->m_bDoZoomUpdate && (pView->getWindowWidth() == pUnixFrameImpl->m_iNewWidth) && (pView->getWindowHeight() == pUnixFrameImpl->m_iNewHeight))
+	if(!pView || pFrame->isFrameLocked() ||
+	   (pUnixFrameImpl->m_bDoZoomUpdate && (pView->getGraphics()->tdu(pView->getWindowWidth()) == pUnixFrameImpl->m_iNewWidth) && (pView->getGraphics()->tdu(pView->getWindowHeight()) == pUnixFrameImpl->m_iNewHeight)))
 	{
 		pUnixFrameImpl->m_iZoomUpdateID = 0;
 		pUnixFrameImpl->m_bDoZoomUpdate = false;
@@ -268,41 +263,37 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 	}
 
 	pUnixFrameImpl->m_bDoZoomUpdate = true;
+	UT_DEBUGMSG(("setting window size to %d %d, have %d %d\n", pUnixFrameImpl->m_iNewWidth, pUnixFrameImpl->m_iNewHeight, pView->getGraphics()->tdu(pView->getWindowWidth()), pView->getGraphics()->tdu(pView->getWindowHeight())));
+
 	UT_sint32 iNewWidth = 0;
 	UT_sint32 iNewHeight = 0;
 	do
 	{
-		AV_View * pView = pFrame->getCurrentView();
+		// currently, we blow away the old view.  This will change, rendering
+		// the loop superfluous.
+		pView = pFrame->getCurrentView();
+
 		if(!pView)
 		{
 			pUnixFrameImpl->m_iZoomUpdateID = 0;
 			pUnixFrameImpl->m_bDoZoomUpdate = false;
 			return FALSE;
 		}
-		while(pView->isLayoutFilling())
-		{
-//
-// Comeback when it's finished.
-//
+
+		// oops, we're not ready yet.
+		if (pView->isLayoutFilling())
 			return TRUE;
-		}
+
 		iNewWidth = pUnixFrameImpl->m_iNewWidth;
 		iNewHeight = pUnixFrameImpl->m_iNewHeight;
-		pView = pFrame->getCurrentView();
-		if(pView)
-		{
-			pUnixFrameImpl->_startViewAutoUpdater(); 
-			pView->setWindowSize(iNewWidth, iNewHeight);
-			pFrame->updateZoom();
-		}
-		else
-		{
-			pUnixFrameImpl->m_iZoomUpdateID = 0;
-			pUnixFrameImpl->m_bDoZoomUpdate = false;
-			return FALSE;
-		}
+
+		pUnixFrameImpl->_startViewAutoUpdater(); 
+		pView->setWindowSize(iNewWidth, iNewHeight);
+		pFrame->updateZoom();
+
 	}
 	while((iNewWidth != pUnixFrameImpl->m_iNewWidth) || (iNewHeight != pUnixFrameImpl->m_iNewHeight));
+
 	pUnixFrameImpl->m_iZoomUpdateID = 0;
 	pUnixFrameImpl->m_bDoZoomUpdate = false;
 	return FALSE;

@@ -101,10 +101,10 @@ public:
 	virtual void    setCursorToContext(void) =0;
 
 	/*! the return values of these functions are in logical units !!!*/
-	inline UT_sint32	getWindowWidth(void) const { return m_iWindowWidth; };
-	inline UT_sint32	getWindowHeight(void) const { return m_iWindowHeight; };
-	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; };
-	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; };
+	UT_sint32		getWindowWidth(void) const;
+	UT_sint32		getWindowHeight(void) const;
+	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; }
+	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; }
 
 	virtual void	      draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
 	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
@@ -159,8 +159,6 @@ protected:
 
 	UT_sint32			m_xScrollOffset;
 	UT_sint32			m_yScrollOffset;
-	UT_sint32			m_iWindowHeight;
-	UT_sint32			m_iWindowWidth;
 	AV_Focus			m_focus;
 	UT_uint32                       m_iTick; // Count changes
 	bool				m_bInsertMode;
@@ -172,6 +170,10 @@ private:
 	AV_View(const AV_View&);	// no impl.
 	void operator=(AV_View&);	// no impl.
 	bool m_bIsLayoutFilling;
+
+	UT_sint32			m_iWindowHeight;
+	UT_sint32			m_iWindowWidth;
+	double				m_dOneTDU;
 };
 
 #endif /* AV_VIEW_H */

@@ -55,18 +55,16 @@ public:
 	// function to handle mouse down event.
 	virtual void			onLeftButtonDown(UT_sint32 x, UT_sint32 y) {  };
 
-	
 protected:
-
+	GR_Graphics *		m_gc;
+	
+private:
 	// TODO : 
 	// later we might add some useful high-level macro-like drawing functions
 	// for previews, like drawing page boundaries, etc.
 	
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
-
-	GR_Graphics *		m_gc;
-	
 };
 
 #endif /* XAP_PREVIEW_H */

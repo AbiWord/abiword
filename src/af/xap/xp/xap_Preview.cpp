@@ -23,16 +23,12 @@
 #include "xap_Preview.h"
 #include "gr_Graphics.h"
 
-XAP_Preview::XAP_Preview(GR_Graphics * gc)
+XAP_Preview::XAP_Preview(GR_Graphics * gc) :
+	m_gc(gc), m_iWindowHeight(0), m_iWindowWidth(0)
 {
 	UT_ASSERT(gc);
 	
 	// maybe later we'll need scroll offsets
-	
-	m_iWindowHeight = 0;
-	m_iWindowWidth = 0;
-
-	m_gc = gc;
 }
 
 XAP_Preview::~XAP_Preview()
@@ -43,7 +39,7 @@ XAP_Preview::~XAP_Preview()
 
 void XAP_Preview::setWindowSize(UT_sint32 width, UT_sint32 height)
 {
-	m_iWindowWidth = width;
-	m_iWindowHeight = height;
+	m_iWindowWidth = m_gc->tlu(width);
+	m_iWindowHeight = m_gc->tlu(height);
 }
 

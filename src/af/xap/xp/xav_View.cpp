@@ -31,12 +31,13 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_pParentData(pParentData),
 	m_xScrollOffset(0),
 	m_yScrollOffset(0),
-	m_iWindowHeight(0),
-	m_iWindowWidth(0),
 	m_focus(AV_FOCUS_NONE),
 	m_iTick(0),
 	m_bInsertMode(true),
-	m_bIsLayoutFilling(false)
+	m_bIsLayoutFilling(false),
+	m_iWindowHeight(0),
+	m_iWindowWidth(0),
+	m_dOneTDU(0)
 {
 }
 
@@ -183,7 +184,8 @@ void AV_View::setInsertMode(bool bInsert)
 void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 {
 	m_iWindowWidth  = getGraphics()->tlu(width);
-	m_iWindowHeight = getGraphics()->tlu(width);
+	m_iWindowHeight = getGraphics()->tlu(height);
+	m_dOneTDU = getGraphics()->tduD(1.0);
 
 	notifyListeners(AV_CHG_WINDOWSIZE);
 }
@@ -241,8 +243,14 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 	}
 }
 
+UT_sint32 AV_View::getWindowHeight(void) const
+{ 
+	return static_cast<UT_sint32>(m_iWindowHeight * m_dOneTDU /
+								  getGraphics()->tduD(1.0)); 
+}
 
-
-
-
-
+UT_sint32 AV_View::getWindowWidth(void) const
+{
+	return static_cast<UT_sint32>(m_iWindowWidth * m_dOneTDU /
+								  getGraphics()->tduD(1.0));
+}

@@ -915,13 +915,13 @@ void FV_View::setPaperColor(const XML_Char* clr)
 
 	setSectionFormat(props);
 	// update the screen
-	_draw(0, 0, m_iWindowWidth, m_iWindowHeight, false, false);
+	_draw(0, 0, getWindowWidth(), getWindowHeight(), false, false);
 }
 
 void FV_View::focusChange(AV_Focus focus)
 {
 	m_focus=focus;
-	UT_DEBUGMSG(("fv_View:: Focus change focus = %d selection %d \n",focus,isSelectionEmpty()));
+	xxx_UT_DEBUGMSG(("fv_View:: Focus change focus = %d selection %d \n",focus,isSelectionEmpty()));
 	switch(focus)
 	{
 	case AV_FOCUS_HERE:
@@ -1397,8 +1397,8 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 	  not do any scrolling.  Instead of the code below, we use the code which
 	  is already in the _ensureInsertionPointOnScreen() function.
 	  _fixInsertionPointCoords();
-	  cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(m_yPoint + m_iPointHeight/2 - m_iWindowHeight/2));
-	  cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(m_xPoint - m_iWindowWidth/2));
+	  cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(m_yPoint + m_iPointHeight/2 - getWindowHeight()/2));
+	  cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(m_xPoint - getWindowWidth()/2));
 	  notifyListeners(AV_CHG_MOTION);
 	*/
 	_ensureInsertionPointOnScreen();
@@ -4260,8 +4260,8 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 		// figure out whether we're still on screen
 		bool bOnScreen = true;
 
-		if ((xPos < 0 || xPos > m_iWindowWidth) ||
-			(yPos < 0 || yPos > m_iWindowHeight))
+		if ((xPos < 0 || xPos > getWindowWidth()) ||
+			(yPos < 0 || yPos > getWindowHeight()))
 			bOnScreen = false;
 		// is autoscroll timer set properly?
 		if (bOnScreen)
@@ -4342,8 +4342,8 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 		// figure out whether we're still on screen
 		bool bOnScreen = true;
 
-		if ((xPos < 0 || xPos > m_iWindowWidth) ||
-			(yPos < 0 || yPos > m_iWindowHeight))
+		if ((xPos < 0 || xPos > getWindowWidth()) ||
+			(yPos < 0 || yPos > getWindowHeight()))
 			bOnScreen = false;
 
 		// is autoscroll timer set properly?
@@ -4393,8 +4393,8 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 	// figure out whether we're still on screen
 	bool bOnScreen = true;
 
-	if ((xPos < 0 || xPos > m_iWindowWidth) ||
-		(yPos < 0 || yPos > m_iWindowHeight))
+	if ((xPos < 0 || xPos > getWindowWidth()) ||
+		(yPos < 0 || yPos > getWindowHeight()))
 		bOnScreen = false;
 
 	if (!bOnScreen)
@@ -5033,25 +5033,25 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 	m_xScrollOffset = v;
 
 	UT_sint32 x1 = 0;
-	UT_sint32 dx2 = m_iWindowWidth;
+	UT_sint32 dx2 = getWindowWidth();
 
 	if (dx > 0)
 	{
-		if (dx < m_iWindowWidth)
+		if (dx < getWindowWidth())
 		{
-			x1 = m_iWindowWidth - dx;
+			x1 = getWindowWidth() - dx;
 			dx2 = dx;
 		}
 	}
 	else
 	{
-		if (dx > -m_iWindowWidth)
+		if (dx > -getWindowWidth())
 		{
 			dx2 = -dx;
 		}
 	}
 
-	_draw(x1-m_pG->tlu(1), 0, dx2+m_pG->tlu(2), m_iWindowHeight, false, true);
+	_draw(x1-m_pG->tlu(1), 0, dx2+m_pG->tlu(2), getWindowHeight(), false, true);
 
 	_fixInsertionPointCoords();
 }
@@ -5068,25 +5068,25 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	m_yScrollOffset = v;
 
 	UT_sint32 y1 = 0;
-	UT_sint32 dy2 = m_iWindowHeight;
+	UT_sint32 dy2 = getWindowHeight();
 
 	if (dy > 0)
 	{
-		if (dy < m_iWindowHeight)
+		if (dy < getWindowHeight())
 		{
-			y1 = m_iWindowHeight - dy;
+			y1 = getWindowHeight() - dy;
 			dy2 = dy;
 		}
 	}
 	else
 	{
-		if (dy > -m_iWindowHeight)
+		if (dy > -getWindowHeight())
 		{
 			dy2 = -dy;
 		}
 	}
 
-	_draw(0, y1, m_iWindowWidth, dy2, false, true);
+	_draw(0, y1, getWindowWidth(), dy2, false, true);
 
 	_fixInsertionPointCoords();
 }
@@ -5126,14 +5126,14 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	}
 	else
 	{
-		_draw(0,0,m_iWindowWidth,m_iWindowHeight,false,false);
+		_draw(0,0,getWindowWidth(),getWindowHeight(),false,false);
 	}
 	_fixInsertionPointCoords();
 }
 
 void FV_View::updateScreen(bool bDirtyRunsOnly)
 {
-	_draw(0,0,m_iWindowWidth,m_iWindowHeight,bDirtyRunsOnly,false);
+	_draw(0,0,getWindowWidth(),getWindowHeight(),bDirtyRunsOnly,false);
 }
 
 
@@ -8011,7 +8011,6 @@ const fp_PageSize & FV_View::getPageSize(void) const
 
 UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 {
-
 	const fp_PageSize pageSize = getPageSize();
 	double pageWidth = pageSize.Width(DIM_IN);
 
@@ -8019,8 +8018,15 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	if ( ( getWindowWidth() - 2 * getPageViewLeftMargin() ) <= 0 )
 		return getGraphics()->getZoomPercentage();
 
-	double scale = static_cast<double>(getWindowWidth() - 2 * getPageViewLeftMargin()) /
-		(pageWidth * static_cast<double>(getGraphics()->getResolution()));
+	double scale = (getWindowWidth() - 2 * getPageViewLeftMargin()) /
+		(pageWidth * static_cast<double>(getGraphics()->getResolution() / 
+								   getGraphics()->getZoomPercentage() * 100.0));
+
+	// Don't do the change if it's less than 5% from current percentage - PL
+	if (abs(static_cast<int>(scale * 100.0) - 
+			getGraphics()->getZoomPercentage()) < 5)
+		return getGraphics()->getZoomPercentage();
+
 	return static_cast<UT_uint32>(scale * 100.0);
 }
 
@@ -8034,8 +8040,15 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	if ( ( getWindowHeight() - 2 * getPageViewTopMargin() ) <= 0 )
 		return getGraphics()->getZoomPercentage();
 
-	double scale = static_cast<double>(getWindowHeight() - 2 * getPageViewTopMargin()) /
-		(pageHeight * static_cast<double>(getGraphics()->getResolution()));
+	double scale = (getWindowHeight() - 2 * getPageViewTopMargin()) /
+		(pageHeight * static_cast<double>(getGraphics()->getResolution() /
+		                         getGraphics()->getZoomPercentage() * 100.0));
+
+	// Don't do the change if it's less than 5% from current percentage - PL
+	if (abs(static_cast<int>(scale * 100.0) -
+			getGraphics()->getZoomPercentage()) < 5)
+		return getGraphics()->getZoomPercentage();
+
 	return static_cast<UT_uint32>(scale * 100.0);
 }
 
@@ -8209,7 +8222,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 
 		UT_sint32 adjustedBottom = adjustedTop + iPageHeight + getPageViewSep();
 
-		if (adjustedTop > m_iWindowHeight)
+		if (adjustedTop > getWindowHeight())
 		{
 			// the start of this page is past the bottom
 			// of the window, so we don't need to draw it.
@@ -8218,7 +8231,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
-							 m_iWindowHeight));
+							 getWindowHeight()));
 
 			// since all other pages are below this one, we
 			// don't need to draw them either.	exit loop now.
@@ -8233,7 +8246,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 							 iPageHeight,
 							 curY,
 							 m_yScrollOffset,
-							 m_iWindowHeight));
+							 getWindowHeight()));
 		}
 		else
 		{
@@ -8242,7 +8255,7 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 						 iPageHeight,
 						 curY,
 						 m_yScrollOffset,
-						 m_iWindowHeight));
+						 getWindowHeight()));
 
 
 			vPages.addItem(static_cast<void*>(pPage));
@@ -8255,23 +8268,23 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 			UT_sint32 iLeftGrayWidth = getPageViewLeftMargin() - m_xScrollOffset;
 			UT_uint32 iPortTop       = adjustedTop >= 0 ? 0 : -adjustedTop;
 			UT_uint32 iPortLeft      = iLeftGrayWidth >= 0 ? 0 : -iLeftGrayWidth;
-			UT_uint32 iWindowWidth   = m_iWindowWidth - iLeftGrayWidth > 0 ? m_iWindowWidth - iLeftGrayWidth : 0;
+			UT_uint32 iWindowWidth   = getWindowWidth() - iLeftGrayWidth > 0 ? getWindowWidth() - iLeftGrayWidth : 0;
 			UT_uint32 iPortHeight;
-			if( adjustedBottom <= m_iWindowHeight && adjustedTop >=0)
+			if( adjustedBottom <= getWindowHeight() && adjustedTop >=0)
 			{
 				iPortHeight = adjustedBottom - adjustedTop;
 			}
-			else if(adjustedBottom <= m_iWindowHeight && adjustedTop <= 0)
+			else if(adjustedBottom <= getWindowHeight() && adjustedTop <= 0)
 			{
 				iPortHeight = adjustedBottom;
 			}
-			else if(adjustedBottom >= m_iWindowHeight && adjustedTop >=0)
+			else if(adjustedBottom >= getWindowHeight() && adjustedTop >=0)
 			{
-				iPortHeight = m_iWindowHeight - adjustedTop;
+				iPortHeight = getWindowHeight() - adjustedTop;
 			}
-			else if(adjustedBottom >= m_iWindowHeight && adjustedTop <=0)
+			else if(adjustedBottom >= getWindowHeight() && adjustedTop <=0)
 			{
-				iPortHeight = m_iWindowHeight;
+				iPortHeight = getWindowHeight();
 			}
 			else
 				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
