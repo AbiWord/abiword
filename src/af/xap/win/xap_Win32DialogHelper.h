@@ -79,16 +79,20 @@ public:
 
 	// Combo boxes.
 
-	void				addItemToCombo(UT_sint32 controlId, LPCSTR p_str);
+	int					addItemToCombo(UT_sint32 controlId, LPCSTR p_str);
 	void				selectComboItem(UT_sint32 controlId, int index);
+	int 				setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
+	int 				getComboDataItem(UT_sint32 controlId, int nIndex);
 	int					getComboSelectedIndex(UT_sint32 controlId) const;
 	void				resetComboContent(UT_sint32 controlId);
 
 	// List boxes
 
 	void				resetContent(UT_sint32 controlId);
-	void				addItemToList(UT_sint32 controlId, LPCSTR p_str);
+	int					addItemToList(UT_sint32 controlId, LPCSTR p_str);
 	int					getListSelectedIndex(UT_sint32 controlId) const;
+	int 				setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData);
+	int 				getListDataItem(UT_sint32 controlId, int nIndex);
 	void				selectListItem(UT_sint32 controlId, int index);
 	void				getListText(UT_sint32 controlId, int index, char *p_str) const;
 

@@ -69,6 +69,7 @@ private:
 	XAP_Win32DialogHelper		_win32DialogNewModify;
 	StyleType					m_whichType;
 	UT_String					m_selectedStyle;
+	UT_uint32					m_nSelectedStyleIdx;
 	bool						m_bisNewStyle;
 	UT_sint32					m_selectToggle;
 	XML_Char    				m_newStyleName[MAX_EBX_LENGTH];

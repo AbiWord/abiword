@@ -40,6 +40,7 @@
 #include "pd_Style.h"
 #include "ut_string_class.h"
 #include "gr_Win32Graphics.h"
+#include "pt_PieceTable.h"
 
 /*****************************************************************/
 
@@ -107,6 +108,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	char szTemp[20];
 	GetWindowText(hWnd, szTemp, 20 );
 
+	// Regular dialog box
 	if( strncmp(szTemp, "Styles", 20) == 0 )
 	{
 		// m_hThisDlg = hWnd;
@@ -171,7 +173,8 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 		_populateWindowData();
 	}
-	else  // This is either the new or Modify sub dialog of styles
+	// This is either the new or Modify sub dialog of styles
+	else  
 	{
 		// Localize the controls Labels etc...
 		SetWindowText(hWnd, pSS->getValue( (m_bisNewStyle) ? 
@@ -204,36 +207,61 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 		size_t nStyles = getDoc()->getStyleCount();
 		const char * name = NULL;
+		const char * pLocalised = NULL;
 		const PD_Style * pcStyle = NULL;
+		int nIndex;
+		
 		for (UT_uint32 i = 0; i < nStyles; i++)
 		{
-    		getDoc()->enumStyles(i, &name, &pcStyle);
-			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, name );
-			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, name );
+    		getDoc()->enumStyles(i, &name, &pcStyle);	
+    		
+   			pLocalised = pt_PieceTable::s_getLocalisedStyleName(name);					  		
+			
+			nIndex = _win32DialogNewModify.addItemToCombo(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, pLocalised);				
+			_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
+				nIndex, i);				
+			
+			nIndex = _win32DialogNewModify.addItemToCombo(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, pLocalised);				
+			_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
+				nIndex, i);				
 		}
+		
+		// Strings (not styles names)
+		const char*	pDefCurrent = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
+		const char*	pDefNone = pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone);
+		
+		//pDefCurrent = pt_PieceTable::s_getLocalisedStyleName(pDefCurrent);		
+		//pDefNone = pt_PieceTable::s_getLocalisedStyleName(pDefNone);		
+		
 		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
-                                              pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+                                              pDefCurrent );
 		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
-                                              pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
+                                              pDefNone);
+		
+		
 		if( m_bisNewStyle )
 		{	
-			// Add last Member item which will be defined as the default value
-			//_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
-            //                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone) );
-			//_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
-            //                                      pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent) );
+			
+			const char* p = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph);
+			
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
-                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
+                                                  p );
+                                                  
+			p = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter);
+                                                  
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
-                                                  pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter) );
-			// Set the Default Item
+                                                  p);			                         
+                                                  
+			// Set the Default syltes: none, default curretn
 			UT_sint32 result;
 			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
 										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
 			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
+			
 			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
 										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
 			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
+			
 			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE, CB_FINDSTRING, -1,
 										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
 			_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE, result );
@@ -248,17 +276,21 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			const char * szCurrentStyle = NULL;
 			const char * szBasedOn = NULL;
 			const char * szFollowedBy = NULL;
+			const char * pLocalised = NULL;
 			PD_Style * pStyle = NULL;
 			PD_Style * pBasedOnStyle = NULL;
 			PD_Style * pFollowedByStyle = NULL;
 			
 			szCurrentStyle = m_selectedStyle.c_str();
+			
+			pLocalised = pt_PieceTable::s_getLocalisedStyleName(szCurrentStyle);		
 		
 			_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
-                                                  (char *) szCurrentStyle );
+                                                  pLocalised);
                                                   
 			if(szCurrentStyle)
 				getDoc()->getStyle(szCurrentStyle,&pStyle);
+				
 			if(!pStyle)
 			{
 				XAP_Frame * pFrame = getFrame();
@@ -293,27 +325,36 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		
 			if(pBasedOnStyle != NULL)
 			{
+				pLocalised = pt_PieceTable::s_getLocalisedStyleName(szBasedOn);		
+				
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
-										(LPARAM) szBasedOn);
+										(LPARAM)pLocalised);
+										
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			}
 			else
 			{
+				// Not a style name
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
 										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
+										
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, result );
 			}
 
 			if(pFollowedByStyle != NULL)
 			{
+				pLocalised = pt_PieceTable::s_getLocalisedStyleName(szFollowedBy);		
+				
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
-										(LPARAM) szFollowedBy);
+										(LPARAM)pLocalised);
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			}
 			else
 			{
+				pLocalised = pt_PieceTable::s_getLocalisedStyleName(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));		
+				
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
-										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
+										(LPARAM) pLocalised);
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			}
 			
@@ -428,24 +469,26 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_STYLES_TOP_LIST_STYLES:
 		if (wNotifyCode == LBN_SELCHANGE)
 		{
-			int row = _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES);
-
-			if (row == -1)
+			
+			UT_uint32	nData = -1;
+			const char* name;
+			const PD_Style * pcStyle = NULL;
+			
+			int row = _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES);					
+			
+			nData = _win32Dialog.getListDataItem( AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, row);
+			
+			if (row!=LB_ERR)
 			{
-				m_selectedStyle = "";
-				return 1;
+				getDoc()->enumStyles(nData, &name, &pcStyle);				
+				m_selectedStyle = name;
+				m_nSelectedStyleIdx = nData;
+							
+				// refresh the previews
+				_populatePreviews(false);	
 			}
-
-
-			char *p_buffer = new char [1024];
-
-			_win32Dialog.getListText(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, row, p_buffer);
-
-			m_selectedStyle = p_buffer;
-			delete [] p_buffer;
-
-			// refresh the previews
-			_populatePreviews(false);
+			
+			break;			
 		}
 		return 1;
 
@@ -524,10 +567,10 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_REMOVE:
 		{
-			char szTemp[40];
+			char szTemp[128];
 			_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE,
                                                   szTemp,
-	                                              40 );			
+	                                              sizeof(szTemp) );			
 			removeVecProp(szTemp);
 			rebuildDeleteProps();
 			updateCurrentStyle();
@@ -611,11 +654,14 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 {
 	const PD_Style * pStyle;
 	const char * name = NULL;
+	const char*	pLocalised = NULL;
+	int nIndex;
 
 	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
 
 	_win32Dialog.resetContent(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES);
+	
 	
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
@@ -628,13 +674,17 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 			continue;
 
 	    // all of this is safe to do... append should take a const char **
-	    data[0] = name;
+	    data[0] = name;	    
 
 	    if ((m_whichType == ALL_STYLES) || 
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()))
 		{
-			_win32Dialog.addItemToList(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, *data);
+			pLocalised = pt_PieceTable::s_getLocalisedStyleName(*data);			
+			
+			nIndex = _win32Dialog.addItemToList(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, pLocalised);						
+			_win32Dialog.setListDataItem(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, nIndex, i);							
+			
 		}
 	}
 
@@ -708,33 +758,58 @@ void AP_Win32Dialog_Styles::rebuildDeleteProps()
 
 void AP_Win32Dialog_Styles::eventBasedOn()
 {
-	char szTemp[40];
-	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON,
-                                          szTemp,
-	                                      40 );			
-	addOrReplaceVecAttribs("basedon",szTemp);
-	fillVecWithProps(szTemp,false);
+	char szTemp[128];
+	int	nSel;
+	int	nData;
+	const PD_Style * pStyle = NULL;
+	const char* pText = szTemp;
+		
+	nSel = _win32DialogNewModify.getComboSelectedIndex(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON);		
+				
+	if (nSel==CB_ERR) return;				
+	
+	nData= _win32DialogNewModify.getComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, nSel);
+	
+	size_t nStyles = getDoc()->getStyleCount();							
+	
+	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
+	
+	addOrReplaceVecAttribs("basedon",pText);
+	fillVecWithProps(pText,false);
 	updateCurrentStyle();
 }
 
 void AP_Win32Dialog_Styles::eventFollowedBy()
 {
-	char szTemp[40];
-	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA,
-                                          szTemp,
-	                                      40 );			
-	addOrReplaceVecAttribs("followedby",szTemp);
+	char szTemp[128]; 
+	int	nSel;
+	int	nData;
+	const PD_Style * pStyle = NULL;
+	const char* pText = szTemp;
+		
+	nSel = _win32DialogNewModify.getComboSelectedIndex(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA);		
+					
+	if (nSel==CB_ERR) return;				
+	
+	nData= _win32DialogNewModify.getComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, nSel);
+					
+	size_t nStyles = getDoc()->getStyleCount();							
+	
+	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
+	
+	addOrReplaceVecAttribs("followedby",pText);
 }
 
 void AP_Win32Dialog_Styles::eventStyleType()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();	
 	const XML_Char * pszSt = "P";
-	char szTemp[40];
+	char szTemp[128];
 	_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
                                           szTemp,
-                                          40 );			
+                                          sizeof(szTemp));			
 	if(strstr(szTemp, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
 		pszSt = "C";
 	addOrReplaceVecAttribs("type",pszSt);
 }
+

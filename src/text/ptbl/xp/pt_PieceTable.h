@@ -68,6 +68,8 @@ public:
 	UT_uint32                               undoCount(bool bUndo) const;
 	bool					undoCmd(void);
 	bool					redoCmd(void);
+	
+	static const char* 		s_getLocalisedStyleName(const char *szStyle);
 
 protected:
 	bool					_realInsertObject(PT_DocPosition dpos,

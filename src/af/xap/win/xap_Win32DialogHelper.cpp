@@ -169,10 +169,23 @@ int XAP_Win32DialogHelper::bringWindowToTop()
 
 // Combo boxes.
 
-void XAP_Win32DialogHelper::addItemToCombo(UT_sint32 controlId, LPCSTR p_str)
+int XAP_Win32DialogHelper::addItemToCombo(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
+	return SendDlgItemMessage(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
+}
+
+int XAP_Win32DialogHelper::setComboDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
+{
+	_assertValidDlgHandle(m_hDlg);
+	return SendDlgItemMessage(m_hDlg, controlId, CB_SETITEMDATA, nIndex, dwData);
+}
+
+
+int XAP_Win32DialogHelper::getComboDataItem(UT_sint32 controlId, int nIndex)
+{
+	_assertValidDlgHandle(m_hDlg);
+	return SendDlgItemMessage(m_hDlg, controlId, CB_GETITEMDATA, nIndex,0);
 }
 
 void XAP_Win32DialogHelper::selectComboItem(UT_sint32 controlId, int index)
@@ -201,10 +214,24 @@ void XAP_Win32DialogHelper::resetContent(UT_sint32 controlId)
 	SendDlgItemMessage(m_hDlg, controlId, LB_RESETCONTENT, 0, 0);
 }
 
-void XAP_Win32DialogHelper::addItemToList(UT_sint32 controlId, LPCSTR p_str)
+
+int XAP_Win32DialogHelper::addItemToList(UT_sint32 controlId, LPCSTR p_str)
 {
 	_assertValidDlgHandle(m_hDlg);
-	SendDlgItemMessage(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
+	return SendDlgItemMessage(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
+}
+
+int XAP_Win32DialogHelper::setListDataItem(UT_sint32 controlId, int nIndex, DWORD dwData)
+{
+	_assertValidDlgHandle(m_hDlg);
+	return SendDlgItemMessage(m_hDlg, controlId, LB_SETITEMDATA, nIndex, dwData);
+}
+
+
+int XAP_Win32DialogHelper::getListDataItem(UT_sint32 controlId, int nIndex)
+{
+	_assertValidDlgHandle(m_hDlg);
+	return SendDlgItemMessage(m_hDlg, controlId, LB_GETITEMDATA, nIndex,0);
 }
 
 int XAP_Win32DialogHelper::getListSelectedIndex(UT_sint32 controlId) const

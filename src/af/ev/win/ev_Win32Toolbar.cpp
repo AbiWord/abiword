@@ -42,6 +42,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Background.h"
 #include "fv_view.h"
+#include "pt_PieceTable.h"
 
 #ifndef TBSTYLE_AUTOSIZE
 #define TBSTYLE_AUTOSIZE  0x10
@@ -225,7 +226,8 @@ WHICHPROC s_lpfnDefComboEdit;
 LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMessage)
-	{
+	{		
+		
 		case WM_MOUSEMOVE:
 		case WM_LBUTTONDOWN:
 		case WM_LBUTTONUP:
@@ -250,18 +252,43 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 		case WM_COMMAND:
 		{
 			switch (HIWORD(wParam))
-			{
+			{								
 				case CBN_SELCHANGE:
 				{
 					// are we currently dropped down?
 					if (!SendMessage(hWnd, CB_GETDROPPEDSTATE, 0, 0))
-						break;
-
-					// yep, we're done 
+						break;					
+					
 					SendMessage(hWnd, CB_SHOWDROPDOWN, (WPARAM) FALSE, 0);
 
-					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);
+					// Find the proper non-localised text
+					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);																
+				
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+					XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
+
+					EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
+					const UT_Vector * v = pControl->getContents();				
+						
+					AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
+					pStyleC->repopulate();	
+									
+					int k  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);										
 					
+					char*	sz = (char *)v->getNthItem(k);
+					
+					UINT u = GetDlgCtrlID(hWnd);
+					XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);					
+					
+					if(strlen(sz))
+						{
+						t->toolbarEvent(id, (unsigned int *)sz, strlen(sz));
+						}
+					else
+						{
+						SendMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
+						}
+						
 					if(iSelected != -1)
 						{
 						// now that we know dropdown is gone, this should be ok
@@ -270,12 +297,33 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					else
 						{
 						PostMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
-						}
-					break;
-				}
-			}
-			break;
-		}
+						}						
+				} // case
+							
+				break;
+				
+			} // swich
+		} // case command
+			
+			/*						
+					// for now, we fire an event any time we lose focus
+					// TODO: confirm that this gives the desired behavior
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+			UT_ASSERT(t);
+
+			HWND hwndParent = GetParent(hWnd);
+			UINT u = GetDlgCtrlID(hwndParent);
+			XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
+
+			static char buf[COMBO_BUF_LEN];
+
+			UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
+			
+			XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
+			EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
+			const UT_Vector * v = pControl->getContents();
+			*/	
+			
 
 		case WM_KEYDOWN:
 		{
@@ -310,8 +358,10 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMessage)
-	{
-		case WM_MOUSEMOVE:
+	{	
+
+		
+		case WM_MOUSEMOVE:		
 		case WM_LBUTTONDOWN:
 		case WM_LBUTTONUP:
 		{
@@ -326,6 +376,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 
 		case WM_KILLFOCUS:
 		{
+			/*
 			// for now, we fire an event any time we lose focus
 			// TODO: confirm that this gives the desired behavior
 			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
@@ -347,6 +398,8 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 				{
 				SendMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
 				}
+			break;
+			*/
 			break;
 		}
 
@@ -940,12 +993,60 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 
 				HWND hwndCombo = _getControlWindow(id);
 				UT_ASSERT(hwndCombo);
-
+				
+				/*
+				{
 				// NOTE: we always update the control even if !bString
 				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
 				if (idx==CB_ERR)
 					SetWindowText(hwndCombo, szState);
+				}	
+				break;
+				*/
+				
+				// are we currently dropped down?
+			
+				// Find the proper non-localised text
+		
+				EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hwndCombo, GWL_USERDATA);
+				XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
 
+				EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
+				const UT_Vector * v = pControl->getContents();				
+					
+				AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
+				pStyleC->repopulate();	
+				
+				//
+				// Is this a valid text?
+				//
+				UT_uint32 items = v->getItemCount();
+				int	nItem;
+				bool bFound = false;
+				UT_uint32 k=0;
+				
+				for (k=0; k < items; k++)
+				{
+					if (strcmp((char *)v->getNthItem(k), szState)==0)
+					{
+						bFound = true;
+						break;
+					}	
+				}				
+				
+				char* pLocalised = (char *)szState;
+				
+				if (bFound)
+				{
+				 	pLocalised = (char *)v->getNthItem(k);					
+					pLocalised = (char *) pt_PieceTable::s_getLocalisedStyleName(pLocalised);
+				}								
+												
+				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pLocalised);
+				if (idx==CB_ERR)
+					SetWindowText(hwndCombo, pLocalised);							
+	
+					
 				//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
 				//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 				//			 ((bGrayed) ? "disabled" : "enabled"),
@@ -1127,6 +1228,9 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 	}
 	if(i>=count)
 		return false;
+	
+
+
 //
 // GOT IT!
 //
@@ -1136,7 +1240,8 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
 	AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 	pStyleC->repopulate();
-
+	
+	
 	HWND hwndCombo = _getControlWindow(id);
 	UT_ASSERT(hwndCombo);
 	// GtkCombo * item = GTK_COMBO(wd->m_widget);
@@ -1145,6 +1250,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //						
 	const UT_Vector * v = pControl->getContents();
 	UT_ASSERT(v);
+	
 //
 // Now  we must remove and delete the old data so we add the new
 // list of styles to the combo box.
@@ -1162,10 +1268,20 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // Now make a new one.
 //
 	UT_uint32 items = v->getItemCount();
+	int	nItem;
+	
 	for (UT_uint32 k=0; k < items; k++)
 	{
-		char * sz = (char *)v->getNthItem(k);
-		SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
+		char*	sz = (char *)v->getNthItem(k);
+		char*	pLocalised = sz;
+
+		pLocalised = (char *) pt_PieceTable::s_getLocalisedStyleName(sz);
+		
+		if (pLocalised!=sz)
+			int n=1;			
+
+		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)pLocalised);
+		SendMessage(hwndCombo, CB_SETITEMDATA,(WPARAM)nItem, (LPARAM)k);
 	}
 //
 // Don't need this anymore and we don't like memory leaks in abi

@@ -30,6 +30,9 @@
 #include "ut_hash.h"
 // that's only to use the findNearestFont method
 #include "gr_Graphics.h"
+#include "Xap_Strings.h"
+#include "xap_App.h"
+
 
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
@@ -45,6 +48,73 @@
 		if (!_createBuiltinStyle(name, a))		\
 			goto Failed;						\
 	} while(0)
+
+typedef struct
+{
+	char*	pStyle;
+	int		nID;	
+	
+} ST_LOCALISED_STYLES;
+
+//
+//	A list of the styles and they correspondant localised name
+//
+ST_LOCALISED_STYLES stLocalised[] =
+{
+	
+	{"Numbered List",			XAP_STRING_ID_STYLE_NUMBER_LIST},       
+	{"Plain Text",      		XAP_STRING_ID_STYLE_PLAIN_TEXT},    
+	{"Heading 1",           	XAP_STRING_ID_STYLE_HEADING1},		
+	{"Heading 2",           	XAP_STRING_ID_STYLE_HEADING2},		
+	{"Heading 3",           	XAP_STRING_ID_STYLE_HEADING3},		
+	{"Normal",         	        XAP_STRING_ID_STYLE_NORMAL},		              
+	{"Block Text",              XAP_STRING_ID_STYLE_BLOCKTEXT},	
+	{"Lower Case List",         XAP_STRING_ID_STYLE_LOWERCASELIST},
+	{"Upper Case List",         XAP_STRING_ID_STYLE_UPPERCASTELIST},
+	{"Lower Roman List",        XAP_STRING_ID_STYLE_LOWERROMANLIST},
+	{"Upper Roman List",        XAP_STRING_ID_STYLE_UPPERROMANLIST},
+	{"Bullet List",             XAP_STRING_ID_STYLE_BULLETLIST},	
+	{"Dashed List",             XAP_STRING_ID_STYLE_DASHEDLIST},	
+	{"Square List",             XAP_STRING_ID_STYLE_SQUARELIST},	
+	{"Triangle List",           XAP_STRING_ID_STYLE_TRIANGLELIST},	
+	{"Diamond List",	        XAP_STRING_ID_STYLE_DIAMONLIST},	
+	{"Star List",               XAP_STRING_ID_STYLE_STARLIST},		
+	{"Tick List",               XAP_STRING_ID_STYLE_TICKLIST},		
+	{"Box List",                XAP_STRING_ID_STYLE_BOXLIST},		
+	{"Hand List",               XAP_STRING_ID_STYLE_HANDLIST},		
+	{"Heart List",              XAP_STRING_ID_STYLE_HEARTLIST},	
+	{"Chapter Heading",         XAP_STRING_ID_STYLE_CHAPHEADING},	
+	{"Section Heading",         XAP_STRING_ID_STYLE_SECTHEADING},	
+	{"Endnote Reference",       XAP_STRING_ID_STYLE_ENDREFERENCE},	
+	{"Endnote Text",            XAP_STRING_ID_STYLE_ENDTEXT},		
+	{"Numbered Heading 1",      XAP_STRING_ID_STYLE_NUMHEAD1},		
+	{"Numbered Heading 2",      XAP_STRING_ID_STYLE_NUMHEAD2},		
+	{"Numbered Heading 3",      XAP_STRING_ID_STYLE_NUMHEAD3},		
+	{"Implies List",	       	XAP_STRING_ID_STYLE_IMPLIES_LIST},		
+	{NULL,	0}	
+};
+
+
+/*
+	Gets a style name and returns its localised name
+*/
+const char* pt_PieceTable::s_getLocalisedStyleName(const char *szStyle)
+{		
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	const char*	pRslt = szStyle;
+	int n;	
+		
+	for (n=0; stLocalised[n].pStyle; n++)
+	{
+		if (strcmp(szStyle, stLocalised[n].pStyle)==0)
+		{
+			pRslt = pSS->getValue(stLocalised[n].nID);
+			break;
+		}
+	}		
+	
+	return pRslt;
+}
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
@@ -194,6 +264,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 
 	return true;
 }
+
 
 bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 {
