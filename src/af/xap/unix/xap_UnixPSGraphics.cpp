@@ -1285,7 +1285,11 @@ void PS_Graphics::_emit_SetColor(void)
 	case GR_Graphics::GR_COLORSPACE_BW:
 		// Black & White is a special case of the Gray color space where
 		// all colors are 0 (black) and all absence of color is 1 (white)
-		g_snprintf(buf,sizeof(buf),"0 setgray\n");
+
+        if (m_currentColor.m_red + m_currentColor.m_grn + m_currentColor.m_blu > 3*250) // yay, arbitrary threshold!
+			g_snprintf(buf,sizeof(buf),"1 setgray\n");
+         else		
+			 g_snprintf(buf,sizeof(buf),"0 setgray\n");
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
