@@ -5308,7 +5308,6 @@ void FV_View::_drawInsertionPoint()
 	{
 		return;
 	}
-	UT_ASSERT(m_bCursorIsOn == false);
 	if (m_bCursorIsOn == false)
 	{
 		_xorInsertionPoint();
