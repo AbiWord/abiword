@@ -53,6 +53,9 @@
 #include "pd_Style.h"
 #include "fv_View.h"
 #include "fl_AutoLists.h"
+#include "pf_Frag.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
 #include "wv.h" // for wvLIDToLangConverter
 
 class fl_AutoNum;
@@ -1352,7 +1355,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iStackLevelAtRow(0),
 	m_bDoCloseTable(false),
 	m_iNoCellsSinceLastRow(0),
-	m_bFieldRecognized(false)
+	m_bFieldRecognized(false),
+	m_iIsInHeaderFooter(0)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1577,6 +1581,8 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 //
 	if((m_TableControl.getNestDepth() > 1) && m_bCellBlank)
 	{
+			xxx_UT_DEBUGMSG(("Append block 6 \n"));
+
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	getDoc()->appendStrux(PTX_SectionTable,NULL);
@@ -1721,6 +1727,8 @@ void IE_Imp_RTF::HandleCell(void)
 	}
 	if(m_bCellBlank && (m_gbBlock.getLength() == 0))
 	{
+			xxx_UT_DEBUGMSG(("Append block 7 \n"));
+
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
@@ -1773,6 +1781,8 @@ void IE_Imp_RTF::HandleCell(void)
 		if(getDoc()->isStruxBeforeThis(sdhEndCell,PTX_SectionCell))
 		{
 			getDoc()->insertStruxNoUpdateBefore(sdhEndCell,PTX_Block,NULL);
+			const pf_Frag * pf = static_cast<const pf_Frag *>(sdhEndCell);
+			getDoc()->insertFmtMarkBeforeFrag(const_cast<pf_Frag *>(pf));
 		}
 		getTable()->CloseCell();
 		getDoc()->appendStrux(PTX_SectionCell,NULL);
@@ -2012,6 +2022,7 @@ void IE_Imp_RTF::HandleNote(void)
 		else
 			getDoc()->appendStrux(PTX_SectionEndnote,attribs);
 			
+		xxx_UT_DEBUGMSG(("Append block 8 \n"));
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
@@ -2386,12 +2397,16 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	{
 		if(ok && m_bCellBlank && (getTable() != NULL))
 		{
+			xxx_UT_DEBUGMSG(("Append block 10 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
 		}
 		else if( ok && m_bEndTableOpen)
 		{
+			xxx_UT_DEBUGMSG(("Append block 11 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bEndTableOpen = false;
 		}
@@ -3038,6 +3053,8 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		UT_DEBUGMSG(("SEVIOR: Appending Object 2 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
+			xxx_UT_DEBUGMSG(("Append block 13 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
@@ -3196,6 +3213,10 @@ bool IE_Imp_RTF::HandlePicture()
 			{
 				format = picJPEG;
 			}
+			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "wmetafile") == 0)
+			{
+				format = picWMF;
+			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "picwgoal") == 0)
 			{
 				if (parameterUsed)
@@ -3293,15 +3314,46 @@ bool IE_Imp_RTF::HandlePicture()
   Handle a object in the current group
   \return false if failed
   \desc Once the \\object has been read, handle the object contained in
-  the current group.
-  \todo in the future this method should load an object from the file
-  and insert it in the document. To fix some open bugs, we just
-  skip all the data and do nothing
+  the current group.  
  */
 bool IE_Imp_RTF::HandleObject()
-{
-	UT_DEBUGMSG(("TODO: Handle \\object keyword properly\n"));
-	return SkipCurrentGroup();
+{	
+	RTFTokenType tokenType;
+	unsigned char keyword[MAX_KEYWORD_LEN];
+	long parameter = 0;
+	bool paramUsed = false;	
+	int nested = 1;           // nesting level							  	
+		
+	do
+	{
+		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN,false);
+		switch (tokenType)
+		{
+		case RTF_TOKEN_ERROR:
+			UT_ASSERT_NOT_REACHED();
+			return false;
+			break;
+		case RTF_TOKEN_KEYWORD:			
+			if (strcmp(reinterpret_cast<char*>(keyword), "pict") == 0)
+				HandlePicture();	// Process the picture
+			
+			break;
+		case RTF_TOKEN_OPEN_BRACE:
+			nested++;
+			PushRTFState();
+			break;
+		case RTF_TOKEN_CLOSE_BRACE:
+			nested--;
+			PopRTFState();			
+			break;
+		case RTF_TOKEN_DATA:	//Ignore data
+			break;
+		default:
+			break;
+		}
+	} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
+
+	return true;
 }
 
 /*!
@@ -3517,6 +3569,8 @@ bool IE_Imp_RTF::HandleField()
 		{
 			if(m_bCellBlank || m_bEndTableOpen)
 			{
+				xxx_UT_DEBUGMSG(("Append block 14 \n"));
+
 				getDoc()->appendStrux(PTX_Block,NULL);
 				m_bCellBlank = false;
 				m_bEndTableOpen = false;
@@ -3700,6 +3754,8 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 				if(m_bCellBlank || m_bEndTableOpen)
 				{
+					xxx_UT_DEBUGMSG(("Append block 15 \n"));
+
 					getDoc()->appendStrux(PTX_Block,NULL);
 					m_bCellBlank = false;
 					m_bEndTableOpen = false;
@@ -5335,6 +5391,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
 							}
+							if(m_iIsInHeaderFooter == 1)
+							{
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
 							return HandleAbiCell();
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abitableprops") == 0)
@@ -5344,6 +5405,37 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								UT_DEBUGMSG (("ignoring abictableprops on file import \n"));
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
+							}
+							if(m_iIsInHeaderFooter == 1)
+							{
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							if(m_iIsInHeaderFooter == 0)
+							{
+								XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+								if(pFrame == NULL)
+								{
+									m_iIsInHeaderFooter =1;
+									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+									return true;
+								}
+								// TODO fix this as it appears to be a real hack. We shouldn't have access to 
+								// this from importers.
+								FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+								if(pView == NULL)
+								{
+									m_iIsInHeaderFooter =1;
+									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+									return true;
+								}
+								if(pView->isHdrFtrEdit())
+								{
+									m_iIsInHeaderFooter =1;
+									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+									return true;
+								}
+								m_iIsInHeaderFooter = 2;
 							}
 							return HandleAbiTable();
 						}
@@ -5355,6 +5447,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
 							}
+							if(m_iIsInHeaderFooter == 1)
+							{
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
 							return HandleAbiEndTable();
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendcell") == 0)
@@ -5362,6 +5459,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 							if(!bUseInsertNotAppend())
 							{
 								UT_DEBUGMSG (("ignoring abiendcell on file import \n"));
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							if(m_iIsInHeaderFooter == 1)
+							{
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
 							}
@@ -6605,6 +6707,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	{
 		if(bAbiList || bWord97List )
 		{
+			xxx_UT_DEBUGMSG(("Append block 1 \n"));
 			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
@@ -6626,7 +6729,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux \n"));
+			UT_DEBUGMSG(("SEVIOR: Apply Para's append strux -2 \n"));
 			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
@@ -7008,6 +7111,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 
 	if (!bUseInsertNotAppend()) // if we are reading a file or parsing a header and footer
 	{
+		UT_DEBUGMSG(("Appending Section strux now \n"));
 		return getDoc()->appendStrux(PTX_Section, propsArray);
 	}
 	else
@@ -9112,6 +9216,12 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 	if(m_bCellBlank || m_bEndTableOpen)
 	{
+		xxx_UT_DEBUGMSG(("Append block 3 \n"));
+		if (m_newSectionFlagged)
+		{
+			ApplySectionAttributes();
+			m_newSectionFlagged = false;
+		}
 		getDoc()->appendStrux(PTX_Block,NULL);
 		m_bCellBlank = false;
 		m_bEndTableOpen = false;
@@ -9208,6 +9318,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
 		propsArray[0] = NULL;
 		// actually it appears that we have to append a block for some cases.
+			xxx_UT_DEBUGMSG(("Append block 4 \n"));
 		getDoc()->appendStrux(PTX_Block, propsArray);
 
 		// tell that we are parsing headers and footers
@@ -9289,6 +9400,8 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		xxx_UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
+			xxx_UT_DEBUGMSG(("Append block 5 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;

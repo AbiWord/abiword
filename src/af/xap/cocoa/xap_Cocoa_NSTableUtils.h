@@ -32,7 +32,7 @@
 
 - (void)insertString:(NSString*)string atIndex:(int)index;
 - (void)addString:(NSString*)string;
-- (void)addUT_String:(const UT_String &)string;
+- (void)addUT_UTF8String:(const UT_UTF8String &)string;
 - (int)rowWithCString:(const char *)cString;
 - (void)removeAllStrings;
 - (NSArray*)array;

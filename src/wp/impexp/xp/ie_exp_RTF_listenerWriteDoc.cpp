@@ -54,7 +54,7 @@
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {

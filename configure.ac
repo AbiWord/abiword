@@ -25,7 +25,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite-2.0,2.0.0)
+AM_INIT_AUTOMAKE(AbiSuite-2.0,2.0.3)
 
 if test "$srcdir" = "."; then
 	abi_rootdir=".."
@@ -90,6 +90,11 @@ elif test "$PLATFORM" = "cocoa" ; then
 	OBJCXX="c++"
 	OBJCXXFLAGS=""
 	OBJCXXDEPMODE="depmode=gcc3"
+elif test "$PLATFORM" = "qnx" ; then
+	ABI_FE="QNX"
+	with_qnx=true
+	ABI_THREAD
+
 else
 	ABI_THREAD
 fi
@@ -218,12 +223,6 @@ AC_ARG_ENABLE(symbols,[  --enable-symbols   Debugging symbols, but not debug-spe
 AM_CONDITIONAL(DEBUG, test x$symbols = xtrue)
 fi
 
-## see which freetype we have, 2.0.3 vs. 2.0.4
-abi_save_cppflags="$CPPFLAGS"  
-CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
-AC_CHECK_HEADER(freetype/internal/tterrors.h, AC_DEFINE(HAVE_FREETYPE_2_0_3))
-CPPFLAGS="$abi_save_cppflags"
-
 # by default, configure in the abi directory runs the same configure command
 # in the peer directories (wv, expat, etc...).  this provides a way to
 # disable that behavior.
@@ -298,7 +297,9 @@ if test "$PLATFORM" = "cocoa"; then
 	fi
 	PLATFORM_CFLAGS="$GLIB_CFLAGS -fpascal-strings -DNO_SYS_ERRLIST"
 fi
-
+if test "$PLATFORM" = "qnx"; then
+	PLATFORM_LIBS="-fexceptions"
+fi
 
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
@@ -350,8 +351,8 @@ ABI_LIBJPEG
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
 
+AC_CHECK_FUNCS(re_comp regcomp strdup strstr strcasecmp stricmp)
 AC_CHECK_FUNC(putenv,abi_putenv=maybe,abi_putenv=no)
 AC_CHECK_FUNC(setenv,abi_setenv=maybe,abi_setenv=no)
 

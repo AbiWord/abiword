@@ -158,6 +158,24 @@ static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 	gtk_widget_grab_focus (entry);
 }
 
+
+static const gchar* entry_text;
+
+static gboolean entry_focus_in (GtkWidget *entry)
+{
+        entry_text = strdup(gtk_entry_get_text(GTK_ENTRY(entry)));
+        return 0;
+}
+
+static gboolean entry_focus_out (GtkWidget *entry, const void* ignore,
+ GtkWidget *check)
+{
+        const gchar* tmp = gtk_entry_get_text(GTK_ENTRY(entry));
+        if(strcmp(entry_text, tmp) != 0)
+          gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(check), 1);
+        return 0;
+}
+
 void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	// raise the actual dialog and wait for an answer.
@@ -196,7 +214,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	UT_ASSERT(pSS);
 	
-	window = abiDialogNew ("print dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintTitle).c_str());
+	window = abiDialogNew ("print dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintTitle).utf8_str());
 
 	// Add a main vbox
 	vbox1 = GTK_DIALOG(window)->vbox;
@@ -213,19 +231,19 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 	gtk_widget_show (hbox);
 	
-	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintTo).c_str());
+	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintTo).utf8_str());
 	gtk_misc_set_padding (GTK_MISC (label), 5,5);
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 	gtk_widget_show (label);
 	
-	buttonPrint = gtk_radio_button_new_with_label (NULL, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Printer).c_str());
+	buttonPrint = gtk_radio_button_new_with_label (NULL, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Printer).utf8_str());
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonPrint), TRUE);
 	gtk_box_pack_start (GTK_BOX (hbox), buttonPrint, FALSE, TRUE, 0);
 	gtk_widget_show (buttonPrint);
 	
 	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (buttonPrint));
 	
-	buttonFile = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_File).c_str());
+	buttonFile = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_File).utf8_str());
 	gtk_box_pack_start (GTK_BOX (hbox), buttonFile, FALSE, TRUE, 0);
 	gtk_widget_show (buttonFile);
 	
@@ -235,7 +253,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 	gtk_widget_show (hbox);
 	
-	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrinterCommand).c_str());
+	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrinterCommand).utf8_str());
 	gtk_misc_set_padding (GTK_MISC (label), 5,5);
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 	gtk_widget_show (label);
@@ -259,12 +277,12 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (vbox2), vbox, FALSE, TRUE, 0);
 	gtk_widget_show (vbox);
 	
-	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PageRanges).c_str());
+	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PageRanges).utf8_str());
 	gtk_misc_set_padding (GTK_MISC (label), 5,5);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 	gtk_widget_show (label);
 	
-	buttonAll = gtk_radio_button_new_with_label (NULL, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_All).c_str());
+	buttonAll = gtk_radio_button_new_with_label (NULL, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_All).utf8_str());
 	gtk_box_pack_start (GTK_BOX (vbox), buttonAll, FALSE, TRUE, 0);
 	gtk_widget_show (buttonAll);
 	
@@ -275,7 +293,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 	gtk_widget_show (hbox);
 	
-	buttonRange = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_From).c_str());
+	buttonRange = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_From).utf8_str());
 	gtk_box_pack_start (GTK_BOX (hbox), buttonRange, FALSE, FALSE, 0);
 	gtk_widget_show (buttonRange);
 	
@@ -284,19 +302,29 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (hbox), entryFrom, TRUE, TRUE, 0);
 	gtk_widget_show (entryFrom);
 	
-	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_To).c_str());
+	g_signal_connect(G_OBJECT(entryFrom), "focus-in-event",
+			 G_CALLBACK(entry_focus_in), NULL);
+	g_signal_connect(G_OBJECT(entryFrom), "focus-out-event",
+			 G_CALLBACK(entry_focus_out), buttonRange);
+	
+	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_To).utf8_str());
 	//gtk_misc_set_padding (GTK_MISC (label), 5,5);
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 	gtk_widget_show (label);
-	
+
 	entryTo = gtk_entry_new();
 	gtk_entry_set_max_length (GTK_ENTRY(entryTo), 4);
 	gtk_box_pack_start (GTK_BOX (hbox), entryTo, TRUE, TRUE, 0);
 	gtk_widget_show (entryTo);
 	
+	g_signal_connect(G_OBJECT(entryTo), "focus-in-event",
+			 G_CALLBACK(entry_focus_in), NULL);
+	g_signal_connect(G_OBJECT(entryTo), "focus-out-event",
+			 G_CALLBACK(entry_focus_out), buttonRange);
+	
 	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (buttonRange));
 	
-	buttonSelection = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Selection).c_str());
+	buttonSelection = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Selection).utf8_str());
 	gtk_box_pack_start (GTK_BOX (vbox), buttonSelection, FALSE, FALSE, 0);
 	gtk_widget_show (buttonSelection);
 	
@@ -311,15 +339,15 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox, TRUE, TRUE, 0);
 	gtk_widget_show (hbox);
 	
-	buttonCollate = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Collate).c_str());
+	buttonCollate = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Collate).utf8_str());
 	gtk_box_pack_start (GTK_BOX (hbox), buttonCollate, TRUE, TRUE, 0);
 	gtk_widget_show (buttonCollate);
 	
-	buttonEmbedFonts = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_EmbedFonts).c_str());
+	buttonEmbedFonts = gtk_check_button_new_with_label (pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_EmbedFonts).utf8_str());
 	gtk_box_pack_start (GTK_BOX (hbox), buttonEmbedFonts, TRUE, TRUE, 0);
 	gtk_widget_show (buttonEmbedFonts);
 	
-	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Copies).c_str());
+	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Copies).utf8_str());
 	gtk_misc_set_padding (GTK_MISC (label), 5,5);
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 	gtk_widget_show (label);
@@ -341,24 +369,24 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 	gtk_widget_show (hbox);
 	
-	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintIn).c_str());
+	label = gtk_label_new(pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_PrintIn).utf8_str());
 	gtk_misc_set_padding (GTK_MISC (label), 5,5);
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 	gtk_widget_show (label);
 	
-	radioBW = gtk_radio_button_new_with_label (NULL, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_BlackWhite).c_str());
+	radioBW = gtk_radio_button_new_with_label (NULL, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_BlackWhite).utf8_str());
 	gtk_box_pack_start (GTK_BOX (hbox), radioBW, FALSE, TRUE, 0);
 	gtk_widget_show (radioBW);
 	
 	radioGrayscale = gtk_radio_button_new_with_label(
 							 gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioBW)),
-							 pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Grayscale).c_str());
+							 pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Grayscale).utf8_str());
 	gtk_box_pack_start (GTK_BOX (hbox), radioGrayscale, FALSE, TRUE, 0);
 	gtk_widget_show (radioGrayscale);
 	
 	radioColor = gtk_radio_button_new_with_label(
 						     gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioGrayscale)),
-						     pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Color).c_str());
+						     pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Color).utf8_str());
 	gtk_box_pack_start (GTK_BOX (hbox), radioColor, FALSE, TRUE, 0);
 	gtk_widget_show (radioColor);
 	
@@ -390,7 +418,13 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	  }
 	// Force the print command to default to "lpr" every time the print dialog is invoked.
 	// The mechanism for keeping persistant data seems to be broken.
-	UT_cloneString(m_persistPrintDlg.szPrintCommand, "lpr");
+	
+	UT_UTF8String printer("lpr");
+	const char * printCmd;
+	printCmd = g_getenv("PRINTER");
+	if(!printCmd)
+		printer = UT_UTF8String_sprintf("lpr -P%s", printCmd);
+	UT_cloneString(m_persistPrintDlg.szPrintCommand, printer.utf8_str());
 
 	// Turn some widgets on or off based on settings
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonPrint), !m_persistPrintDlg.bDoPrintToFile);

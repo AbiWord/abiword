@@ -43,6 +43,8 @@ public:
 	bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
 	const PP_PropertyType *	getPropertyType(const XML_Char * szName, tProperty_type Type) const;
 	bool					getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
+	bool					getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue);
+	bool					getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue);
 	
 	PD_Style *				getBasedOn(void);
 	PD_Style *				getFollowedBy(void);
@@ -69,6 +71,8 @@ public:
 	inline const char * getName (void) const {return m_szName;}
 
 protected:
+	bool					_getPropertyExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth);
+	bool					_getAttributeExpand(const XML_Char * szName, const XML_Char *& szValue, UT_sint32 iDepth);
 
 	pt_PieceTable *			m_pPT;
 	PT_AttrPropIndex		m_indexAP;

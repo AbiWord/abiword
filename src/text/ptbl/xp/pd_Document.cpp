@@ -195,9 +195,15 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 			return false;
 	}
 
-	UT_UCS4Char * pD = new UT_UCS4Char [iLen + 1];
-	UT_UCS4_strncpy(pD,pDesc,iLen);
-	pD[iLen] = 0;
+	UT_UCS4Char * pD = NULL;
+	
+	if(pDesc)
+	{
+		pD = new UT_UCS4Char [iLen + 1];
+		UT_UCS4_strncpy(pD,pDesc,iLen);
+		pD[iLen] = 0;
+	}
+	
 	PD_Revision * pRev = new PD_Revision(iId, pD);
 
 	m_vRevisions.addItem(static_cast<void*>(pRev));

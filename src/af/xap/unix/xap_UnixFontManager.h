@@ -65,6 +65,14 @@ public:
 
 private:
 
+	XAP_UnixFont* forceFontSynth(XAP_UnixFontManager* pFontManager,
+								 const char* pszFontFamily,
+								 const char* pszFontStyle,
+								 const char* /* pszFontVariant */,
+								 const char* pszFontWeight,
+								 const char* /* pszFontStretch */,
+								 const char* pszFontSize);
+
 	void					_addFont(XAP_UnixFont* font);
 
 	UT_StringPtrMap 		m_fontHash;

@@ -43,7 +43,7 @@
 #ifdef WIN32
   #include "ut_Win32OS.h"
 #endif
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 
 /*****************************************************************/

@@ -70,7 +70,7 @@ AUTOTEXT_SUBJECT_1="Definir"
 BottomMarginStatus="Margen Inferior [%s]"
 
 ColumnGapStatus="Espaçamento de Coluna [%s]"
-ColumnStatus="Coluna [%s]"
+ColumnStatus="Coluna [%d]"
 
 SPELL_CANTLOAD_DICT="Não foi possível carregar o dicionário para a língua %s"
 SPELL_CANTLOAD_DLL="Não foi possível encontrar o ficheiro de dicionário %s.dll\nPor favor instale o Aspell que pode ser obtido em http://aspell.net/win32"
