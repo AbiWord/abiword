@@ -2093,6 +2093,8 @@ Defun1(fileNew)
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
+#ifdef DEBUG
+
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
@@ -2159,6 +2161,9 @@ Defun1(fileNew)
 
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
+#else
+	return EX(toolbarNew);
+#endif
 }
 
 bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
@@ -6045,7 +6050,13 @@ Defun1(dlgStyle)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	ABIWORD_VIEW;
+
+#ifndef WIN32
 	return s_doStylesDlg(pView);
+#else
+	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);
+	return UT_OK;
+#endif
 }
 
 Defun1(dlgTabs)
