@@ -3515,6 +3515,12 @@ bool IE_Imp_RTF::HandleField()
 
 		if (!bUseInsertNotAppend()) 
 		{
+			if(m_bCellBlank || m_bEndTableOpen)
+			{
+				getDoc()->appendStrux(PTX_Block,NULL);
+				m_bCellBlank = false;
+				m_bEndTableOpen = false;
+			}
 			getDoc()->appendObject(PTO_Hyperlink, NULL);
 		}
 		else 
@@ -3691,6 +3697,13 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 			if (!bUseInsertNotAppend()) 
 			{
+
+				if(m_bCellBlank || m_bEndTableOpen)
+				{
+					getDoc()->appendStrux(PTX_Block,NULL);
+					m_bCellBlank = false;
+					m_bEndTableOpen = false;
+				}
 				getDoc()->appendObject(PTO_Hyperlink, new_atts);
 			}
 			else 
