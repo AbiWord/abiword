@@ -100,11 +100,10 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
 
 IE_Imp_GraphicAsDocument::~IE_Imp_GraphicAsDocument()
 {
-   	m_pGraphicImporter = NULL;
+   	DELETEP(m_pGraphicImporter);
 }
 
 IE_Imp_GraphicAsDocument::IE_Imp_GraphicAsDocument(PD_Document * pDocument)
-	: IE_Imp(pDocument)
+  : IE_Imp(pDocument), m_pGraphicImporter(0)
 {
-   	DELETEP(m_pGraphicImporter);
 }
