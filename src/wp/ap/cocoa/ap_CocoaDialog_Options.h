@@ -35,7 +35,6 @@ class AP_CocoaDialog_Options;
 
 @interface AP_CocoaDialog_OptionsController : NSWindowController
 {
-    IBOutlet NSButton *m_applyBtn;
     IBOutlet NSButton *m_cancelBtn;
     IBOutlet NSButton *m_defaultsBtn;
     IBOutlet NSTextField *m_chooseScreenColorLabel;
@@ -46,7 +45,6 @@ class AP_CocoaDialog_Options;
     IBOutlet NSBox *m_layoutUIBox;
     IBOutlet NSTextField *m_layoutUnitsLabel;
     IBOutlet NSPopUpButton *m_layoutUnitsPopup;
-    IBOutlet NSButton *m_okBtn;
     IBOutlet NSBox *m_prefsAutoSaveBox;
     IBOutlet NSButton *m_prefsAutoSaveCurrentBtn;
     IBOutlet NSTextField *m_prefsAutoSaveMinField;
@@ -79,12 +77,10 @@ class AP_CocoaDialog_Options;
 - (void)windowDidLoad;
 - (void)setXAPOwner:(AP_CocoaDialog_Options *)owner;
 - (id)_lookupWidget:(AP_Dialog_Options::tControl)controlId;
-- (IBAction)applyAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)chooseScreenAction:(id)sender;
 - (IBAction)defaultAction:(id)sender;
 - (IBAction)increaseMinutesAction:(id)sender;
-- (IBAction)okAction:(id)sender;
 - (IBAction)autoSaveStepperAction:(id)sender;
 - (IBAction)autoSaveFieldAction:(id)sender;
 - (IBAction)_defaultControlAction:(id)sender;
@@ -107,9 +103,7 @@ public:
 	void event_ChooseTransparentColor(void);
 	void event_AllowTransparentColor(void);
 
-    virtual void event_OK(void);
     virtual void event_Cancel(void);
-    virtual void event_Apply(void);
 
  protected:
     void _saveCocoaOnlyPrefs();
@@ -128,17 +122,12 @@ public:
  	SET_GATHER			(SpellMainOnly,		bool );
  	SET_GATHER			(SpellUppercase,	bool );
  	SET_GATHER			(SpellNumbers,		bool );
- //	SET_GATHER			(SpellInternet,		bool );
 
  	SET_GATHER			(ShowSplash,	bool);
 
 	SET_GATHER			(SmartQuotesEnable,	bool );
 
  	SET_GATHER			(PrefsAutoSave,		bool );
-
- 	SET_GATHER			(ViewShowRuler,		bool );
-
- 	SET_GATHER			(ViewShowStatusBar,	bool );
 
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);

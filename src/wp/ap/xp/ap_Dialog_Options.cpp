@@ -110,16 +110,18 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable, _gatherSmartQuotesEnable() );
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
-	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	
 // Not implemented for UNIX. No need for it.
 #if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
+
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		Save_Pref_Bool( pPrefsScheme, m_pApp->getToolbarFactory()->prefKeyForToolbar(i), _gatherViewShowToolbar(i));
 	}
-#endif
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_StatusBarVisible, _gatherViewShowStatusBar() );
+#endif
+
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
 #if defined(XP_UNIX_TARGET_GTK)
@@ -157,6 +159,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
 	// (If we didn't change anything, leave it alone)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
@@ -171,7 +174,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (_gatherViewShowToolbar(i) != pFrameData->m_bShowBar[i])
 		{
@@ -304,6 +306,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 			break;
 
 		case id_CHECK_VIEW_SHOW_RULER:
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 			tmpbool = _gatherViewShowRuler();
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
 			if (tmpbool != pFrameData->m_bShowRuler)
@@ -311,6 +314,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 				pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
 				m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
 			}
+#endif
 			break;
 
 		case id_LIST_VIEW_RULER_UNITS:
@@ -323,6 +327,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 					_gatherViewCursorBlink());
 
 		case id_CHECK_VIEW_SHOW_STATUS_BAR:
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 			tmpbool = _gatherViewShowStatusBar();
 			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
 			if (tmpbool != pFrameData->m_bShowStatusBar)
@@ -330,6 +335,7 @@ void AP_Dialog_Options::_storeDataForControl (tControl id)
 				pFrameData->m_bShowStatusBar = tmpbool;
 				m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
 			}
+#endif
 			break;
 
 		case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
@@ -471,19 +477,20 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
+
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 
-#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (pPrefs->getPrefsValueBool((XML_Char*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
 			_setViewShowToolbar (i, b);
 		}
 	}
-#endif
-	
+
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_StatusBarVisible,&b))
 		_setViewShowStatusBar (b);
+#endif	
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ParaVisible,&b))
 		_setViewUnprintable (b);

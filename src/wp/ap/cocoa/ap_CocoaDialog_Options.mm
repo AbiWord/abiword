@@ -253,12 +253,6 @@ void AP_CocoaDialog_Options::event_AllowTransparentColor(void)
 }
 
 #endif
-void AP_CocoaDialog_Options::event_OK(void)
-{
-    m_answer = AP_Dialog_Options::a_OK;
-	_storeWindowData();
-	[NSApp stopModal];
-}
 
 void AP_CocoaDialog_Options::event_Cancel(void)
 {
@@ -266,11 +260,6 @@ void AP_CocoaDialog_Options::event_Cancel(void)
 	[NSApp stopModal];
 }
 
-void AP_CocoaDialog_Options::event_Apply(void)
-{
-    m_answer = AP_Dialog_Options::a_APPLY;
-	_storeWindowData();
-}
 
 /*!
 	Enable a control
@@ -312,7 +301,6 @@ DEFINE_GET_SET_BOOL(SpellSuggest, id_CHECK_SPELL_SUGGEST);
 DEFINE_GET_SET_BOOL(SpellMainOnly, id_CHECK_SPELL_MAIN_ONLY);
 DEFINE_GET_SET_BOOL(SpellUppercase, id_CHECK_SPELL_UPPERCASE);
 DEFINE_GET_SET_BOOL(SpellNumbers, id_CHECK_SPELL_NUMBERS);
-//DEFINE_GET_SET_BOOL(SpellInternet, id_CHECK_SPELL_INTERNET);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable, id_CHECK_SMART_QUOTES_ENABLE);
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl, id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);
@@ -321,8 +309,6 @@ DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs, id_CHECK_OTHER_HEBREW_CONTEXT_GLYP
 DEFINE_GET_SET_BOOL(AutoSaveFile, id_CHECK_AUTO_SAVE_FILE);
 DEFINE_GET_SET_BOOL(ShowSplash, id_SHOWSPLASH);
 DEFINE_GET_SET_BOOL(PrefsAutoSave, id_CHECK_PREFS_AUTO_SAVE);
-DEFINE_GET_SET_BOOL(ViewShowRuler, id_CHECK_VIEW_SHOW_RULER);
-DEFINE_GET_SET_BOOL(ViewShowStatusBar, id_CHECK_VIEW_SHOW_STATUS_BAR);
 
 void AP_CocoaDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
@@ -613,13 +599,13 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 		return m_defaultsBtn;
 
 	case AP_Dialog_Options::id_BUTTON_OK:
-		return m_okBtn;
+		return nil;
 
 	case AP_Dialog_Options::id_BUTTON_CANCEL:
 		return m_cancelBtn;
 
 	case AP_Dialog_Options::id_BUTTON_APPLY:
-		return m_applyBtn;
+		return nil;
 
 		// not implemented
 	case AP_Dialog_Options::id_BUTTON_SAVE:
@@ -640,12 +626,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	return 0;
 }
 
-
-- (IBAction)applyAction:(id)sender
-{
-	m_xap->event_Apply();
-}
-
 - (IBAction)cancelAction:(id)sender
 {
 	m_xap->event_Cancel();	
@@ -663,11 +643,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 
 - (IBAction)increaseMinutesAction:(id)sender
 {
-}
-
-- (IBAction)okAction:(id)sender
-{
-	m_xap->event_OK();	
 }
 
 - (IBAction)autoSaveStepperAction:(id)sender

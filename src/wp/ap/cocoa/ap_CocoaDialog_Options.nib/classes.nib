@@ -3,19 +3,16 @@
         {
             ACTIONS = {
                 "_defaultControlAction" = id; 
-                applyAction = id; 
                 autoSaveFieldAction = id; 
                 autoSaveStepperAction = id; 
                 cancelAction = id; 
                 chooseScreenAction = id; 
                 defaultAction = id; 
                 increaseMinutesAction = id; 
-                okAction = id; 
             }; 
             CLASS = "AP_CocoaDialog_OptionsController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                "m_applyBtn" = NSButton; 
                 "m_cancelBtn" = NSButton; 
                 "m_chooseScreenColorLabel" = NSTextField; 
                 "m_defaultsBtn" = NSButton; 
@@ -26,7 +23,6 @@
                 "m_layoutUIBox" = NSBox; 
                 "m_layoutUnitsLabel" = NSTextField; 
                 "m_layoutUnitsPopup" = NSPopUpButton; 
-                "m_okBtn" = NSButton; 
                 "m_prefsAutoSaveBox" = NSBox; 
                 "m_prefsAutoSaveCurrentBtn" = NSButton; 
                 "m_prefsAutoSaveMinField" = NSTextField; 
