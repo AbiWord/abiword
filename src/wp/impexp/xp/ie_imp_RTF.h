@@ -589,7 +589,7 @@ private:
 	    RTF_TOKEN_ERROR = -1
 	} RTFTokenType;
 	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam, 
-							bool* pParamUsed, UT_uint32 len);
+							bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace=false);
 
 
 // import member vars

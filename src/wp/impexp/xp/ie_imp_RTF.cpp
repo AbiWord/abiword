@@ -1662,9 +1662,16 @@ bool IE_Imp_RTF::ParseRTFKeyword()
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	long parameter = 0;
 	bool parameterUsed = false;
-
 	if (ReadKeyword(keyword, &parameter, &parameterUsed, MAX_KEYWORD_LEN))
-		return TranslateKeyword(keyword, parameter, parameterUsed);
+	{
+		xxx_UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
+		bool bres = TranslateKeyword(keyword, parameter, parameterUsed);
+//		if(!bres)
+//		{
+//			xxx_UT_DEBUGMSG(("SEVIOR: %s error in translation \n",keyword));
+//		}
+		return bres;
+	}
 	else
 		return false;
 }
@@ -5260,7 +5267,7 @@ bool IE_Imp_RTF::ReadFontTable()
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
 		return false;
-
+	
 	if (ch == '\\')
 	{
 		// one entry in the font table
@@ -5332,7 +5339,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	//TODO - handle the other keywords
 	int * pValue;
 
-	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN);
+	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN,true);
 	if (tokenType != RTF_TOKEN_KEYWORD || (strcmp((char*)keyword, "f") != 0))
 	{
 		return false;
@@ -5343,7 +5350,9 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	}
 
 	// Read the font family (must be specified)
-	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN);
+    // ignore white space here to work around some broken docs. See 2719
+
+	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN,true);
 	if (tokenType != RTF_TOKEN_KEYWORD)
 	{
 		return false;
@@ -5374,7 +5383,7 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 	// Now (possibly) comes some optional keyword before the fontname
 	while (tokenType != RTF_TOKEN_DATA || nesting > 0)
 	{
-    	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN);
+    	tokenType = NextToken(keyword,&parameter,&paramUsed,MAX_KEYWORD_LEN,true);
 		switch (tokenType)
 		{
 		case RTF_TOKEN_OPEN_BRACE:
@@ -5550,6 +5559,11 @@ bool IE_Imp_RTF::ReadColourTable()
 	{
 		UT_uint32 colour = 0;
 		bool tableError = false;
+		while(ch == ' ')
+		{
+			if (!ReadCharFromFile(&ch))
+				return false;
+		}
 
 		// Create a new entry for the colour table
  		if (ch == ';')
@@ -5557,7 +5571,7 @@ bool IE_Imp_RTF::ReadColourTable()
 			// Default colour required, black it is
 			colour = 0;
 		}
-		else
+		else if(ch != '}')
 		{
 			if (ch == '\\')
 			{
@@ -5619,7 +5633,7 @@ bool IE_Imp_RTF::ReadColourTable()
 		{
 			return false;
 		}
-		else
+		else if(ch!= '}')
 		{
 			m_colourTable.addItem((void*)colour);
 
@@ -6288,7 +6302,7 @@ bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tab
   \note this changes the state of the file
 */
 IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* pParam, 
-									bool* pParamUsed, UT_uint32 len)
+									bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace)
 {
 	RTFTokenType tokenType = RTF_TOKEN_NONE;
 	bool ok;
@@ -6301,28 +6315,34 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 	*pParamUsed = false;
 	pKeyword [0] = ' ';
 
-#if 0
-	// see bug 1211 and bug 1207.rtf - invalid RTF coming in
-	// this code instead violates the RTF spec in order to fix that problem,
-	// but instead breaks other things like field values:
-	// If a space delimits the control word, the space does not appear in the 
-	// document. Any characters following the delimiter, including spaces, will
-	// appear in the document. For this reason, you should use spaces only 
-	// where necessary; do not use spaces merely to break up RTF code.
+	if(bIgnoreWhiteSpace)
+	{
+		// see bug 1211 and bug 1207.rtf - invalid RTF coming in
+		// this code instead violates the RTF spec in order to fix that problem,
+		// but instead breaks other things like field values:
+		// If a space delimits the control word, the space does not appear in the 
+		// document. Any characters following the delimiter, including spaces, will
+		// appear in the document. For this reason, you should use spaces only 
+		// where necessary; do not use spaces merely to break up RTF code.
 
-	while( pKeyword[0] == ' ')
+		// OK Sevior put in bool to choose this behaviour for some parts of documents
+        // where we can work around this broken behaviour and still import the doc.
+
+		while( pKeyword[0] == ' ')
 		{
 			if (!ReadCharFromFile(pKeyword))
 				{
 					tokenType = RTF_TOKEN_ERROR;
 				}
 		}
-#else
-	if (!ReadCharFromFile(pKeyword))
+	}
+	else
+	{
+		if (!ReadCharFromFile(pKeyword))
 		{
 			tokenType = RTF_TOKEN_ERROR;
 		}
-#endif
+	}
 
 	switch (*pKeyword)
 	{
