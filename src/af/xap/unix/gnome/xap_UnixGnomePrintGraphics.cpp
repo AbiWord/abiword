@@ -110,6 +110,8 @@ static char * mapFontName(const char *name)
 	return fontMappingTable[idx].gnome;
 }
 
+#undef TableSize
+
 static UT_Bool isItalic(XAP_UnixFont::style s)
 {
         return ((s == XAP_UnixFont::STYLE_ITALIC) || (s == XAP_UnixFont::STYLE_BOLD_ITALIC));
@@ -130,7 +132,24 @@ static GnomeFontWeight getGnomeFontWeight(XAP_UnixFont::style s)
 	return w;
 }
 
-#define FONT_NAMES_MATCH(gf, n) (!strcasecmp(gnome_font_get_ps_name((gf)), n))
+#define DEFAULT_GNOME_FONT "Helvetica"
+static
+gboolean fonts_match(GnomeFont *tmp, const gchar * intended)
+{
+		/* this is a hack - gnome_font_new_closest() returns Helvetica
+		   when it gets confused */
+
+		if(!g_strcasecmp(intended, DEFAULT_GNOME_FONT))
+				return TRUE; // asked for and got helvetica
+
+		const gchar * what = gnome_font_get_name(tmp);
+		UT_DEBUGMSG(("DOM: intended - '%s' what - '%s'\n", intended, what));
+
+		if(!g_strcasecmp(what, DEFAULT_GNOME_FONT))
+				return FALSE; // asked for something and got helvetica instead
+		return TRUE;
+}
+#undef DEFAULT_GNOME_FONT
 
 GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 {
@@ -163,12 +182,12 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 
 	/* gnome_font_new_closest always returns a font. 
 	   So you will get helvetica if not found */
-#if 0
+
 	tmp      = gnome_font_new_closest(abi_name, gfw, italic, size);
 
 	// assert that the fonts match
-	if(FONT_NAMES_MATCH(tmp, abi_name))
-		return tmp;
+	if(tmp && fonts_match(tmp, abi_name))
+			return tmp;
 
 	UT_DEBUGMSG(("Dom: unreffing gnome font: ('%s','%s')\n", 
 		     gnome_font_get_ps_name(tmp), abi_name));
@@ -176,24 +195,10 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 	// else we got something we didn't ask for
 	// unref the gnome-font and try again
 	gnome_font_unref(tmp);
-#endif
 
 	char *fontname      = mapFontName(abi_name);
 	tmp = gnome_font_new_closest(fontname, gfw, italic, size);
 
-#if 0
-	if(!FONT_NAMES_MATCH(tmp, fontname))
-	  {
-	    // ok, that failed. maybe put up a messagebox reporting our
-	    // failure? Anyway, try to allocate our default font
-	    // with their given size,weight, and italic settings
-	    gnome_font_unref(tmp);
-
-	    UT_DEBUGMSG(("Couldn't allocate %s, defaulting to '%s'\n", fontname, GPG_DEFAULT_FONT));
-	    tmp = gnome_font_new_closest (GPG_DEFAULT_FONT, gfw, italic, size);
-	  }
-#endif
-	
 	return tmp;
 }
 
