@@ -489,31 +489,28 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 		case NM_CUSTOMDRAW:
 			{
-				LPNMTBCUSTOMDRAW  pTBcd = (LPNMTBCUSTOMDRAW)lParam;
+				LPNMCUSTOMDRAW  pNMcd = (LPNMCUSTOMDRAW)lParam;
 				UT_uint32 nrToolbars, k;
 				nrToolbars = f->m_vecWin32Toolbars.getItemCount();
 				for (k=0; k < nrToolbars; k++)
 				{
 					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
-					if( pTBcd->nmcd.hdr.hwndFrom == t->getWindow() )
+					if( pNMcd->hdr.hwndFrom == t->getWindow() )
 					{
-						if( pTBcd->nmcd.dwDrawStage == CDDS_PREPAINT )
+						if( pNMcd->dwDrawStage == CDDS_PREPAINT )
 						{
 							return CDRF_NOTIFYPOSTPAINT;
 						}
-						if( pTBcd->nmcd.dwDrawStage == CDDS_POSTPAINT )
+						if( pNMcd->dwDrawStage == CDDS_POSTPAINT )
 						{
 							RECT  rc;
 							HBRUSH	hBr = NULL;
 
-							rc.top = pTBcd->nmcd.rc.top;
-							rc.bottom = pTBcd->nmcd.rc.bottom;
-							if( pTBcd->clrBtnFace != 0 )
-								hBr = CreateSolidBrush( pTBcd->clrBtnFace );
-							else
-								hBr = GetSysColorBrush( COLOR_3DFACE );
+							rc.top = pNMcd->rc.top;
+							rc.bottom = pNMcd->rc.bottom;
+							hBr = GetSysColorBrush( COLOR_3DFACE );
 
-							HWND  hWndChild = FindWindowEx( pTBcd->nmcd.hdr.hwndFrom, NULL, NULL, NULL );
+							HWND  hWndChild = FindWindowEx( pNMcd->hdr.hwndFrom, NULL, NULL, NULL );
 							while( hWndChild != NULL )
 							{
 								RECT   rcChild;
@@ -521,14 +518,14 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 								GetWindowRect( hWndChild, &rcChild );
 								pt.x = rcChild.left;
 								pt.y = rcChild.top;
-								ScreenToClient( pTBcd->nmcd.hdr.hwndFrom, &pt );
+								ScreenToClient( pNMcd->hdr.hwndFrom, &pt );
 								rc.left = pt.x;
 								pt.x = rcChild.right;
 								pt.y = rcChild.bottom;
-								ScreenToClient( pTBcd->nmcd.hdr.hwndFrom, &pt );
+								ScreenToClient( pNMcd->hdr.hwndFrom, &pt );
 								rc.right = pt.x;
-								FillRect( pTBcd->nmcd.hdc, &rc, hBr );
-								hWndChild = FindWindowEx( pTBcd->nmcd.hdr.hwndFrom, hWndChild, NULL, NULL );
+								FillRect( pNMcd->hdc, &rc, hBr );
+								hWndChild = FindWindowEx( pNMcd->hdr.hwndFrom, hWndChild, NULL, NULL );
 							}
 
 							if( hBr != NULL )
