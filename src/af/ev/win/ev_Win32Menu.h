@@ -52,6 +52,9 @@ public:
 	inline XAP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (XAP_Menu_Id)(cmd - WM_USER); };
 	inline UINT			WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); };
 
+private:
+	virtual bool		_doAddMenuItem(XAP_Menu_Id id) { /* TODO */ }
+
 protected:
 	XAP_Win32App *				m_pWin32App;
 	const EV_EditEventMapper *	m_pEEM;

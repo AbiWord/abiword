@@ -50,6 +50,9 @@ protected:
 	XAP_BeOSFrame 		*m_pBeOSFrame;
 	
 	class BMenuBar* pMenuBar;
+
+private:
+	virtual bool		_doAddMenuItem(XAP_Menu_Id id) { /* TODO */ }
 };
 
 /*****************************************************************/
