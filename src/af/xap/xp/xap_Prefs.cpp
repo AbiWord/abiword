@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include "ut_debugmsg.h"
+#include "ut_growbuf.h"
 #include "xap_Prefs.h"
 
 /*****************************************************************/
@@ -871,6 +872,8 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 							"\t**** defaults and adjusted by the installation system defaults.  This scheme\n"
 							"\t**** is only written here as a reference.  Any schemes following this one\n"
 							"\t**** only list values that deviate from the built-in values.\n"
+							"\t**** Items values must observe XML encoding for double quote (&quot;),\n"
+							"\t**** ampersand (&amp;), and angle brackets (&lt; and &gt;).\n"
 							"\t-->\n"),
 						szBuiltinSchemeName);
 			}
@@ -882,10 +885,12 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			UT_uint32 j;
 			for (j=0; (p->getNthValue(j,&szKey,&szValue)); j++)
 			{
+				UT_Bool need_print;
+				need_print = UT_FALSE;
 				if (bIsBuiltin)
 				{
 					// for the builtin set, we print every value
-					fprintf(fp,"\t\t%s=\"%s\"\n",szKey,szValue);
+					need_print = UT_TRUE;
 				}
 				else
 				{
@@ -895,7 +900,41 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 					UT_Bool bHaveBuiltinValue = m_builtinScheme->getValue(szKey,&szBuiltinValue);
 					UT_ASSERT(bHaveBuiltinValue);
 					if (UT_XML_strcmp(szValue,szBuiltinValue) != 0)
-						fprintf(fp,"\t\t%s=\"%s\"\n",szKey,szValue);
+						need_print = UT_TRUE;
+				}
+				if (need_print == UT_TRUE)
+				{
+					// szValue is UTF8.  Convert to Unicode and then
+					// do XML-encoding of XML-special characters and
+					// non-ASCII characters.  The printed value
+					// strings will get XML parsing and conversion to
+					// UTF8 the next time the application reads the
+					// prefs file.
+					UT_GrowBuf gb;
+					UT_decodeUTF8string(szValue, UT_XML_strlen(szValue), &gb);
+					UT_uint32 length = gb.getLength();
+					fprintf(fp,"\t\t%s=\"",szKey);
+					for (UT_uint32 udex=0; udex<length; ++udex)
+					{
+						UT_UCSChar ch = *(gb.getPointer(udex));
+						switch (ch)
+						{
+						case '&':   fputs("&amp;", fp);  break;
+						case '<':   fputs("&lt;", fp);  break;
+						case '>':   fputs("&gt;", fp);  break;
+						case '"':   fputs("&quot;", fp);  break;
+						default:
+							if (ch < ' ' || ch >= 128)
+							{
+								fprintf(fp, "&#x%x;", ch);
+							}
+							else
+							{
+								putc(ch, fp);
+							}
+						}
+					}
+					fputs("\"\n", fp);
 				}
 			}
 				

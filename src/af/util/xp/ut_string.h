@@ -82,6 +82,7 @@ char * UT_catPathname(const char * szPath, const char * szFile);
 UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
 void UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
 XML_Char * UT_encodeUTF8char(UT_UCSChar cIn);
+XML_Char * UT_decodeXMLstring(XML_Char *pcIn);
 
 #define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))
 #define UT_UCS_isupper(x)	(((x) >= 'A') && ((x) <= 'Z'))		// HACK: not UNICODE-safe

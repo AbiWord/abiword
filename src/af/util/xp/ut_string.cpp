@@ -760,4 +760,39 @@ XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 }
 #endif // --jeff
 
+static void endElement(void *userData, const XML_Char *name)
+{
+}
+
+static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
+{
+	XML_Char **pout = (XML_Char **)userData;
+	*pout = atts[1];
+}
+
+XML_Char *UT_decodeXMLstring(XML_Char *in)
+{
+	// There has *got* to be an easier way to do this with expat, but I
+	// didn't spot it from looking at the expat source code.  Anyhow, this
+	// is just used during init to chomp the preference default value
+	// strings, so the amount of work done probably doesn't matter too
+	// much.
+	const char s1[] = "<fake blah=\"";
+	const char s2[] = "\"/>";
+	XML_Char *out = 0;
+	XML_Parser parser = 0;
+	parser = XML_ParserCreate(0);
+	XML_SetUserData(parser, &out);
+	XML_SetElementHandler(parser, startElement, endElement);
+	if (!XML_Parse(parser, s1, sizeof(s1)-1, 0)
+	||  !XML_Parse(parser, in, strlen(in), 0)
+	||  !XML_Parse(parser, s2, sizeof(s2)-1, 0))
+	{
+		UT_DEBUGMSG(("XML parsing error %s; %s:%d\n", XML_ErrorString(XML_GetErrorCode(parser)), __FILE__, __LINE__));
+	}
+	// TODO: who owns the storage for this?
+	out = strdup(out);
+	if (parser) XML_ParserFree(parser);
+	return out;
 	
+}

@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include "ap_Prefs.h"
 #include "xap_App.h"
+#include "ut_debugmsg.h"
+#include "ut_string.h"
 
 /*****************************************************************/
 
@@ -110,9 +112,15 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 #		undef dcl
 	};
 
+	// Must do XML special character decoding on the default values
+	// since that will automatically happen in the case of values
+	// values read from preferences files.
 	for (UT_uint32 k=0; k<NrElements(_t); k++)
-		if (!pScheme->setValue(_t[k].m_szKey, _t[k].m_szValue))
+	{
+		UT_DEBUGMSG(("DEFAULT %s |%s|%s|\n", _t[k].m_szKey, _t[k].m_szValue, UT_decodeXMLstring(_t[k].m_szValue)));
+		if (!pScheme->setValue(_t[k].m_szKey, UT_decodeXMLstring(_t[k].m_szValue)))
 			goto Failed;
+	}
 
 	addScheme(pScheme);					// set the builtin scheme in the base class
 	overlaySystemPrefs();				// so that the base class parser can overlay it.

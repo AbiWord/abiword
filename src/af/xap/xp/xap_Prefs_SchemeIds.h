@@ -30,7 +30,9 @@
 //////////////////////////////////////////////////////////////////////////////////////
 // The following are the set of scheme-based application-independent preference keys
 // and the set of default values for them.  Each item must have the XAP_PREF_KEY_ prefix
-// and each value must have the XAP_PREF_DEFAULT_ prefix.
+// and each value must have the XAP_PREF_DEFAULT_ prefix.  Default values *must* obey
+// XML encoding rules if they contain any double quote (&quot;), ampersand (&amp;), 
+// or angle bracket (&lt; and &gt;) characters.
 //
 // ***FOR EACH PAIR DEFINED, ADD A 'dcl(basename)' TO THE BOTTOM HALF OF THIS FILE***
 //
