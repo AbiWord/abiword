@@ -168,8 +168,9 @@ class ABI_EXPORT PD_Document : public AD_Document
 public:
 	PD_Document(XAP_App *pApp);
 
-	virtual UT_Error		readFromFile(const char * szFilename, int ieft);
-	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true);
+	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * impProps = NULL);
+	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true,
+									   const char * impProps = NULL);
 	virtual UT_Error		importStyles(const char * szFilename, int ieft, bool bDocProps = false);
 
 	virtual UT_Error		newDocument(void);
@@ -180,8 +181,8 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 
-	UT_Error				saveAs(const char * szFilename, int ieft);
-	UT_Error   				saveAs(const char * szFilename, int ieft, bool cpy);
+	UT_Error				saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
+	UT_Error   				saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
 	UT_Error				save(void);
 
 	void					beginUserAtomicGlob(void);

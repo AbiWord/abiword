@@ -1474,6 +1474,11 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			if (Args->m_sMerge)
 				conv.setMergeSource (Args->m_sMerge);
 
+			if (Args->m_impProps)
+				conv.setImpProps (Args->m_impProps);
+			if (Args->m_expProps)
+				conv.setExpProps (Args->m_expProps);
+
 			PS_GraphicsFactory printFactory (Args->m_sPrintTo);
 
 			conv.setVerbose(Args->m_iVerbose);

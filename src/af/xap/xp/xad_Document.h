@@ -58,8 +58,8 @@ public:
 	// TODO - this should be returning IEFileType, 
 	// but that's AP stuff, so it's not here
 
-	virtual UT_Error		readFromFile(const char * szFilename, int ieft) = 0;
-	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true) = 0;
+	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * props = NULL) = 0;
+	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true, const char * props = NULL) = 0;
 	virtual UT_Error		newDocument() = 0;
 	virtual bool			isDirty(void) const = 0;
 
@@ -67,9 +67,9 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
 
-	virtual UT_Error		saveAs(const char * szFilename, int ieft) = 0;
-	virtual UT_Error		saveAs(const char * szFilename, int ieft, bool cpy) = 0;
-	virtual UT_Error		save() = 0;
+	virtual UT_Error		saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
+	virtual UT_Error		saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;
+	virtual UT_Error		save(void) = 0;
 
 	/**
 	 * Returns the # of seconds since the last save of this file 

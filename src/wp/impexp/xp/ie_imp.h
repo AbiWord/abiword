@@ -142,6 +142,10 @@ public:
 	void setLoadDocProps(bool b) {m_bDocProps = b;}
 	bool getLoadDocProps() const {return m_bDocProps;}
 	
+	void setProps (const char * props) {
+		m_props = props;
+	}
+
  protected:
 	IE_Imp(PD_Document * pDocument);
 
@@ -157,12 +161,18 @@ public:
 	bool appendFmt(const XML_Char ** attributes);
 	bool appendFmt(const UT_Vector * pVecAttributes);
 
+	const UT_UTF8String & getProps () {
+		return m_props;
+	}
+
  private:
 	PD_Document * m_pDocument;
 	bool m_isPaste;
 	PT_DocPosition m_dpos;
 	bool m_bStylesOnly;
 	bool m_bDocProps;
+
+	UT_UTF8String m_props;
 };
 
 

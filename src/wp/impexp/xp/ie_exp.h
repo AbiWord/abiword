@@ -123,6 +123,10 @@ public:
 
 	virtual char *          getFileName(void) {return m_szFileName;}
 
+	void setProps (const char * props) {
+		m_props = props;
+	}
+
 protected:
 	IE_Exp(PD_Document * pDocument);
 	virtual UT_Error	_writeDocument(void) = 0;
@@ -143,6 +147,10 @@ protected:
 
 	bool				m_error;
 
+	const UT_UTF8String & getProps () {
+		return m_props;
+	}
+
  private:
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
@@ -151,6 +159,8 @@ protected:
 	FILE *				m_fp;
 
 	bool				m_bCancelled;
+
+	UT_UTF8String m_props;
 };
 
 

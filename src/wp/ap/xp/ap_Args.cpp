@@ -57,6 +57,9 @@ struct poptOption * AP_Args::options = NULL;
 int  AP_Args::m_iAbiControl = 0;
 const char * AP_Args::m_sMerge = NULL;
 
+const char * AP_Args::m_impProps=NULL;
+const char * AP_Args::m_expProps=NULL;
+
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 	: XArgs (pArgs), poptcon(NULL), m_bShowSplash(true), m_pApp(pApp)
 {
@@ -145,6 +148,10 @@ bool AP_Args::doWindowlessArgs()
 		conv->setVerbose(m_iVerbose);
 		if (m_sMerge)
 			conv->setMergeSource (m_sMerge);
+		if (m_impProps)
+			conv->setImpProps (m_impProps);
+		if (m_expProps)
+			conv->setExpProps (m_expProps);
 		while ((m_sFile = poptGetArg (poptcon)) != NULL)
 			conv->convertTo(m_sFile, m_sTo);
 		delete conv;
@@ -192,6 +199,8 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"print", 'p', POPT_ARG_STRING, &m_sPrintTo, 0, "Print this file to FILE or printer", "FILE or '|lpr -Pprinter'"},
 	 {"plugin", '\0', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application", "NAME"},
 	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
+	 {"imp-props", 'i', POPT_ARG_STRING, &m_impProps, 0, "Importer Arguments", "CSS String"},
+	 {"exp-props", 'e', POPT_ARG_STRING, &m_expProps, 0, "Exorter Arguments", "CSS String"},
 	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application", ""},
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},

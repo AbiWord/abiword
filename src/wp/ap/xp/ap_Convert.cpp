@@ -70,9 +70,10 @@ public:
 	
 	explicit Save_MailMerge_Listener (PD_Document * pDoc,
 									  const UT_UTF8String & szOut,
-									  IEFileType out_ieft)
+									  IEFileType out_ieft,
+									  const UT_UTF8String & szExpProps)
 		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pDoc),
-		  m_szFile(szOut), m_count(0), m_ieft(out_ieft)
+		  m_szFile(szOut), m_count(0), m_ieft(out_ieft), m_expProps(szExpProps)
 		{
 		}
 
@@ -94,7 +95,7 @@ public:
 														  m_szFile.utf8_str(),
 														  m_count++));
 
-			if (UT_OK == m_doc->saveAs (out_file.utf8_str(), m_ieft))
+			if (UT_OK == m_doc->saveAs (out_file.utf8_str(), m_ieft, m_expProps.utf8_str()))
 				return true;
 			return false;
 		}
@@ -104,6 +105,7 @@ private:
 	UT_UTF8String m_szFile;
 	UT_uint32 m_count;
 	IEFileType m_ieft;
+	UT_UTF8String m_expProps;
 };
 
 class Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
@@ -186,7 +188,7 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 	PD_Document * pNewDoc = new PD_Document(XAP_App::getApp());
 	UT_return_if_fail(pNewDoc);
 
-	error = pNewDoc->readFromFile(szSourceFilename, sourceFormat);
+	error = pNewDoc->readFromFile(szSourceFilename, sourceFormat, m_impProps.utf8_str());
 
 	if (error != UT_OK) {
 		switch (error) {
@@ -209,11 +211,11 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 	}
 
 	if (m_mergeSource.size()) {
-		IE_MailMerge::IE_MailMerge_Listener * listener = new Save_MailMerge_Listener (pNewDoc, szTargetFilename, targetFormat);
+		IE_MailMerge::IE_MailMerge_Listener * listener = new Save_MailMerge_Listener (pNewDoc, szTargetFilename, targetFormat, m_expProps);
 		handleMerge (m_mergeSource.utf8_str(), *listener);
 		DELETEP(listener);
 	} else {
-		error = pNewDoc->saveAs(szTargetFilename, targetFormat);
+		error = pNewDoc->saveAs(szTargetFilename, targetFormat, m_expProps.utf8_str());
 		switch (error) {
 		case UT_OK:
 			if (m_iVerbose > 1)
@@ -336,7 +338,7 @@ void AP_Convert::print(const char * szFile, GR_GraphicsFactory & pFactory)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
-	pDoc->readFromFile(szFile, IEFT_Unknown);
+	pDoc->readFromFile(szFile, IEFT_Unknown, m_impProps.utf8_str());
 
 	if (m_mergeSource.size()){
 		IE_MailMerge::IE_MailMerge_Listener * listener = new Print_MailMerge_Listener(pDoc, pFactory, szFile);

@@ -49,9 +49,20 @@ class ABI_EXPORT AP_Convert
 
 	void print(const char * file, GR_GraphicsFactory & pFactory);
 
+	void setImpProps (const char * props) {
+		m_impProps = props;
+	}
+
+	void setExpProps (const char * props) {
+		m_expProps = props;
+	}
+
  private:
 	int m_iVerbose;
 	UT_UTF8String m_mergeSource;
+
+	UT_UTF8String m_impProps;
+	UT_UTF8String m_expProps;
 };
 
 #endif /* AP_CONVERT_H */

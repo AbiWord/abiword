@@ -299,7 +299,8 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 }
 
 UT_Error PD_Document::importFile(const char * szFilename, int ieft,
-								 bool markClean, bool bImportStylesFirst)
+								 bool markClean, bool bImportStylesFirst,
+								 const char* impProps)
 {
 	if (!szFilename || !*szFilename)
 	{
@@ -340,6 +341,9 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
+	if (impProps && strlen(impProps))
+		pie->setProps (impProps);
+
 	m_indexAP =  99999999;
 	errorCode = pie->importFile(szFilename);
 	delete pie;
@@ -374,7 +378,8 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	return UT_OK;
 }
 
-UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
+UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
+								   const char * impProps)
 {
 	if (!szFilename || !*szFilename)
 	{
@@ -418,6 +423,8 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
 		return errorCode;
 	}
+	if (impProps && strlen(impProps))
+		pie->setProps (impProps);
 
 	_syncFileTypes(false);
 	m_indexAP = 99999999;
@@ -561,12 +568,14 @@ UT_Error PD_Document::newDocument(void)
 	return UT_OK;
 }
 
-UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
+UT_Error PD_Document::saveAs(const char * szFilename, int ieft,
+							 const char * expProps)
 {
-  return saveAs(szFilename, ieft, true);
+  return saveAs(szFilename, ieft, true, expProps);
 }
 
-UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
+UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
+							 const char * expProps)
 {
 	if (!szFilename)
 		return UT_SAVE_NAMEERROR;
@@ -581,6 +590,8 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
 		return UT_SAVE_EXPORTERROR;
 	}
+	if (expProps && strlen(expProps))
+		pie->setProps (expProps);
 
 	if (cpy)
 	{
