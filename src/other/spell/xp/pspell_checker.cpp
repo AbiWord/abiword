@@ -28,13 +28,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ut_debugmsg.h"
 #include "pspell_checker.h"
 
-#include "xap_EncodingManager.h"
+#include "ut_debugmsg.h"
 #include "ut_iconv.h"
 #include "ut_string.h"
 
+#include "xap_EncodingManager.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Strings.h"
 
