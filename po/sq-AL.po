@@ -2,12 +2,11 @@
 # Copyright (C) 2002 Free Software Foundation, Inc.
 # Besnik Bleta <besnikbleta@hotmail.com>, 2002.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2002-11-20 17:19-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2002-11-29 22:06--800\n"
 "Last-Translator: Besnik Bleta <besnikbleta@hotmail.com>\n"
 "Language-Team: Shqip <Shqip@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,16 +19,15 @@ msgstr ""
 #.
 #. MENU_STATUSLINE_AUTOTEXT_EMAIL_6
 #: po/tmp/ap_String_Id.h.h:7
+#, fuzzy
 msgid " "
 msgstr ""
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h.h:9
-msgid ""
-" - Reserved. \n"
+msgid " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr ""
-" - Rezervuar. \n"
+msgstr " - Rezervuar. \n"
 "S'mund të përdorni këtë emër. Zgjidhni një tjetër \n"
 
 #. DLG_WordCount_Auto_Update
@@ -224,7 +222,6 @@ msgstr "&Poshtë:"
 
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:77
-#, fuzzy
 msgid "&Break"
 msgstr "&Ndërprerje"
 
@@ -240,9 +237,8 @@ msgstr "&Ndërro"
 
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:83
-#, fuzzy
 msgid "&Clip Art"
-msgstr "Vizatime"
+msgstr "&Vizatime"
 
 #. MENU_LABEL_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:85
@@ -420,7 +416,8 @@ msgid "&Indents and Spacing"
 msgstr "&Kryeradhë dhe Hapësira"
 
 #. MENU_LABEL_TABLE_INSERT
-#: po/tmp/ap_String_Id.h.h:155 po/tmp/xap_String_Id.h.h:17
+#: po/tmp/ap_String_Id.h.h:155
+#: po/tmp/xap_String_Id.h.h:17
 msgid "&Insert"
 msgstr "&Fut"
 
@@ -853,10 +850,8 @@ msgstr "AbiWordi mbaroi së kontrolluari zgjedhjen."
 
 #: po/tmp/ap_String_Id.h.h:327
 #, c-format
-msgid ""
-"AbiWord has finished its search of the document and has made %d replacements."
-msgstr ""
-"AbiWordi ka përfunduar kërkimet në dokument dhe ka kryer %d zëvendësime."
+msgid "AbiWord has finished its search of the document and has made %d replacements."
+msgstr "AbiWordi ka përfunduar kërkimet në dokument dhe ka kryer %d zëvendësime."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:329
@@ -866,11 +861,9 @@ msgstr "AbiWordi ka përfunduar kërkimin në dokument."
 #. DLG_DlFile_Status
 #: po/tmp/ap_String_Id.h.h:331
 #, c-format
-msgid ""
-"Abiword is now downloading %s from:\n"
+msgid "Abiword is now downloading %s from:\n"
 "%s"
-msgstr ""
-"AbiWordi është duke shkarkuar %s prej:\n"
+msgstr "AbiWordi është duke shkarkuar %s prej:\n"
 "%s"
 
 #. MENU_LABEL_HELP_ABOUT_GNU
@@ -964,7 +957,8 @@ msgid "Alignment:"
 msgstr "Drejtim:"
 
 #. DLG_Styles_LBL_All
-#: po/tmp/ap_String_Id.h.h:369 po/tmp/xap_String_Id.h.h:45
+#: po/tmp/ap_String_Id.h.h:369
+#: po/tmp/xap_String_Id.h.h:45
 msgid "All"
 msgstr "Tërë"
 
@@ -984,7 +978,8 @@ msgid "Application"
 msgstr "Zbatim"
 
 #. DLG_Options_Btn_Apply
-#: po/tmp/ap_String_Id.h.h:377 po/tmp/xap_String_Id.h.h:53
+#: po/tmp/ap_String_Id.h.h:377
+#: po/tmp/xap_String_Id.h.h:53
 msgid "Apply"
 msgstr "Zbato"
 
@@ -1129,7 +1124,8 @@ msgid "Bi-Directional Options"
 msgstr "Mundësi dy-kahshe"
 
 #. TOOLBAR_TOOLTIP_FMT_BOLD
-#: po/tmp/ap_String_Id.h.h:435 po/tmp/xap_String_Id.h.h:87
+#: po/tmp/ap_String_Id.h.h:435
+#: po/tmp/xap_String_Id.h.h:87
 msgid "Bold"
 msgstr "Të Trasha"
 
@@ -1161,7 +1157,6 @@ msgstr "Anë"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:447
-#, fuzzy
 msgid "Borders and Shading"
 msgstr "Anë dhe Hije"
 
@@ -1172,12 +1167,14 @@ msgid "Bottom Margin [%s]"
 msgstr "Mënjanë e poshtme [%s]"
 
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
-#: po/tmp/ap_String_Id.h.h:451 po/tmp/xap_String_Id.h.h:91
+#: po/tmp/ap_String_Id.h.h:451
+#: po/tmp/xap_String_Id.h.h:91
 msgid "Bottomline"
 msgstr "Fundvijë"
 
 #. DLG_Lists_Box_List
-#: po/tmp/ap_String_Id.h.h:453 po/tmp/xap_String_Id.h.h:93
+#: po/tmp/ap_String_Id.h.h:453
+#: po/tmp/xap_String_Id.h.h:93
 msgid "Box List"
 msgstr "Listë Kuti"
 
@@ -1207,7 +1204,8 @@ msgid "Bullet"
 msgstr "Shenjë"
 
 #. DLG_Lists_Bullet_List
-#: po/tmp/ap_String_Id.h.h:465 po/tmp/xap_String_Id.h.h:101
+#: po/tmp/ap_String_Id.h.h:465
+#: po/tmp/xap_String_Id.h.h:101
 msgid "Bullet List"
 msgstr "Listë Shenjë"
 
@@ -1313,11 +1311,9 @@ msgstr "Këmbe gërmat"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:507
-msgid ""
-"Change Current \n"
+msgid "Change Current \n"
 "List"
-msgstr ""
-"Ndërro Listën \n"
+msgstr "Ndërro Listën \n"
 "E Tanishme"
 
 #. DLG_Background_TitleHighlight
@@ -1452,18 +1448,10 @@ msgstr "Zgjidh cilin rishikim doni të shihni"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:561
-msgid ""
-"Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the "
-"desired number.  You can use + and - to perform relative movement.\tI.e., if "
-"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
-"below your current position."
-msgstr ""
-"Zgjidhni drejtimin në anën e majtë. \n" 
-"Nëse doni të përdorni butonin \"Go To\", vini numrin e dëshiruar në Number Entry "
-"Mund të përdorni + dhe - që të kryeni lëvizje përkatëse.P.sh., nëse "
-"shkruani \"+2\" dhe zgjidhni  \"Line\",  \"Go To\" do të shkojë dy rreshta "
-"më poshtë vendndodhjes suaj të çastit."
+msgid "Choose your target in the left side.\n"
+"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
+msgstr "Zgjidhni majtas vendmbërritjen.\n"
+"Nëse doni të përdorni butonin \"Shko Tek\" , vendosni numrin e dëshiruar në Number Entry.  Mund të përdorni + dhe - për këtë qëllim.\tI.e., nëse shkruani \"+2\" dhe zgjidhnit \"Rresht\",  \"Shko Tek\" do vejë dy rreshta më poshtë vendodhjes suaj të çastit."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:563
@@ -1607,9 +1595,8 @@ msgstr "S'munda të shkruaj në skedarin %s"
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:617
-#, fuzzy
 msgid "Count the number of words in the document"
-msgstr "Numëro fjalët në dokumentet"
+msgstr "Numëro fjalët në dokument"
 
 #. FIELD_Document_Coverage
 #: po/tmp/ap_String_Id.h.h:619
@@ -1712,7 +1699,8 @@ msgid "Cut the selection and put it on the Clipboard"
 msgstr "Pri zgjedhjen dhe hidhe në Clipboard"
 
 #. DLG_Lists_Dashed_List
-#: po/tmp/ap_String_Id.h.h:659 po/tmp/xap_String_Id.h.h:177
+#: po/tmp/ap_String_Id.h.h:659
+#: po/tmp/xap_String_Id.h.h:177
 msgid "Dashed List"
 msgstr "Listë me vija"
 
@@ -1802,7 +1790,8 @@ msgid "Define or apply style for the selection"
 msgstr "Përcakto ose zbato stil për zgjedhjen"
 
 #. MENU_STATUSLINE_TABLE_DELETE
-#: po/tmp/ap_String_Id.h.h:695 po/tmp/xap_String_Id.h.h:183
+#: po/tmp/ap_String_Id.h.h:695
+#: po/tmp/xap_String_Id.h.h:183
 msgid "Delete"
 msgstr "Fshij"
 
@@ -1877,7 +1866,8 @@ msgid "Delete this row from its table"
 msgstr "Fshij këtë rresht prej tabelës"
 
 #. FIELD_Document_Description
-#: po/tmp/ap_String_Id.h.h:725 po/tmp/xap_String_Id.h.h:185
+#: po/tmp/ap_String_Id.h.h:725
+#: po/tmp/xap_String_Id.h.h:185
 msgid "Description"
 msgstr "Përshkrim"
 
@@ -1892,7 +1882,8 @@ msgid "Determine correct glyph shapes from context"
 msgstr "Përcakto formën e drejtë për shkronjat nga konteksti "
 
 #. DLG_Lists_Diamond_List
-#: po/tmp/ap_String_Id.h.h:731 po/tmp/xap_String_Id.h.h:187
+#: po/tmp/ap_String_Id.h.h:731
+#: po/tmp/xap_String_Id.h.h:187
 msgid "Diamond List"
 msgstr "Listë Diamant"
 
@@ -1993,7 +1984,6 @@ msgstr "Hapësirë Dyshe"
 
 #. TOOLBAR_TOOLTIP_DOUBLE_SPACE
 #: po/tmp/ap_String_Id.h.h:771
-#, fuzzy
 msgid "Double spacing"
 msgstr "Hapësirë dyshe"
 
@@ -2066,8 +2056,7 @@ msgstr "Gabim gjatë importimit të skedarit %s"
 #: po/tmp/ap_String_Id.h.h:799
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr ""
-"Gabim gjatë përpjekjes për ruajtjen e %s: s'mund të ndërtoj eksportuesin"
+msgstr "Gabim gjatë përpjekjes për ruajtjen e %s: s'mund të ndërtoj eksportuesin"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:801
@@ -2187,21 +2176,17 @@ msgstr "Madhësi shtylle e fiksuar:"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h.h:845
-msgid ""
-"Following Paragraph Following Paragraph Following Paragraph Following "
-"Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr ""
-"Paragrafi Pasues  Paragrafi Pasues   Paragrafi Pasues   Paragrafi Pasues "
-"Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues "
+msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr "Paragrafi Pasues  Paragrafi Pasues   Paragrafi Pasues   Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues "
 
 #. TOOLBAR_TOOLTIP_FMT_FONT
-#: po/tmp/ap_String_Id.h.h:847 po/tmp/xap_String_Id.h.h:243
+#: po/tmp/ap_String_Id.h.h:847
+#: po/tmp/xap_String_Id.h.h:243
 msgid "Font"
 msgstr "Gërma"
 
 #. TOOLBAR_TOOLTIP_FMT_SIZE
 #: po/tmp/ap_String_Id.h.h:849
-#, fuzzy
 msgid "Font Size"
 msgstr "Madhësi Gërmash"
 
@@ -2216,7 +2201,8 @@ msgid "Font..."
 msgstr "Gërma..."
 
 #. DLG_Lists_Font
-#: po/tmp/ap_String_Id.h.h:855 po/tmp/xap_String_Id.h.h:245
+#: po/tmp/ap_String_Id.h.h:855
+#: po/tmp/xap_String_Id.h.h:245
 msgid "Font:"
 msgstr "Gërma:"
 
@@ -2317,7 +2303,8 @@ msgid "Go to..."
 msgstr "Shko tek..."
 
 #. DLG_Lists_Hand_List
-#: po/tmp/ap_String_Id.h.h:895 po/tmp/xap_String_Id.h.h:283
+#: po/tmp/ap_String_Id.h.h:895
+#: po/tmp/xap_String_Id.h.h:283
 msgid "Hand List"
 msgstr "Listë Dorë"
 
@@ -2345,18 +2332,17 @@ msgstr "Kryefaqe [%s]"
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h.h:905
 msgid ""
-"Headers and Footers can only be created and edited while in Print View Mode. "
-"\n"
+"Headers and Footers can only be created and edited while in Print View Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Kryefaqe dhe Fundfaqe mund të krijohen dhe ndryshohen vetëm në Print View Mode. "
-"\n"
+"Kryefaqe dhe Fundfaqe mund të krijohen dhe ndryshohen vetëm në Print View Mode. \n"
 " Për tu futur atje, zgjidhni Shfaq pastaj Skemë Shtypjeje prej Menu. \n"
 " Doni të futeni atje tani?"
 
 #. DLG_Lists_Heart_List
-#: po/tmp/ap_String_Id.h.h:907 po/tmp/xap_String_Id.h.h:295
+#: po/tmp/ap_String_Id.h.h:907
+#: po/tmp/xap_String_Id.h.h:295
 msgid "Heart List"
 msgstr "Listë Zemër"
 
@@ -2413,11 +2399,8 @@ msgstr "Figura"
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h.h:929
 #, c-format
-msgid ""
-"If you close without saving, changes from the last %d minutes will be "
-"discarded."
-msgstr ""
-"Nëse e mbyllni pa ruajtur, ndryshimet në %d minutat e fundit do të humbin "
+msgid "If you close without saving, changes from the last %d minutes will be discarded."
+msgstr "Nëse e mbyllni pa ruajtur, ndryshimet në %d minutat e fundit do të humbin "
 
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:931
@@ -2450,7 +2433,8 @@ msgid "Ignored words:"
 msgstr "Fjalë të shpërfillura"
 
 #. DLG_Lists_Implies_List
-#: po/tmp/ap_String_Id.h.h:943 po/tmp/xap_String_Id.h.h:333
+#: po/tmp/ap_String_Id.h.h:943
+#: po/tmp/xap_String_Id.h.h:333
 msgid "Implies List"
 msgstr "Listë Sjell"
 
@@ -2485,7 +2469,8 @@ msgid "Initial Caps"
 msgstr ""
 
 #. MENU_STATUSLINE_TABLE_INSERT
-#: po/tmp/ap_String_Id.h.h:957 po/tmp/xap_String_Id.h.h:341
+#: po/tmp/ap_String_Id.h.h:957
+#: po/tmp/xap_String_Id.h.h:341
 msgid "Insert"
 msgstr "Fut"
 
@@ -2670,7 +2655,8 @@ msgid "Invisible &Layout Marks"
 msgstr "Shenja të Padukshme &Skeme"
 
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
-#: po/tmp/ap_String_Id.h.h:1031 po/tmp/xap_String_Id.h.h:361
+#: po/tmp/ap_String_Id.h.h:1031
+#: po/tmp/xap_String_Id.h.h:361
 msgid "Italic"
 msgstr "Të Pjerrta"
 
@@ -2725,7 +2711,8 @@ msgid "Ladies and Gentlemen:"
 msgstr "Zonja dhe Zotërinj"
 
 #. FIELD_Document_Language
-#: po/tmp/ap_String_Id.h.h:1053 po/tmp/xap_String_Id.h.h:383
+#: po/tmp/ap_String_Id.h.h:1053
+#: po/tmp/xap_String_Id.h.h:383
 msgid "Language"
 msgstr "Gjuhë"
 
@@ -2863,12 +2850,14 @@ msgid "Love,"
 msgstr "Me dashuri,"
 
 #. DLG_Lists_Lower_Case_List
-#: po/tmp/ap_String_Id.h.h:1107 po/tmp/xap_String_Id.h.h:391
+#: po/tmp/ap_String_Id.h.h:1107
+#: po/tmp/xap_String_Id.h.h:391
 msgid "Lower Case List"
 msgstr "Listë me të vogla"
 
 #. DLG_Lists_Lower_Roman_List
-#: po/tmp/ap_String_Id.h.h:1109 po/tmp/xap_String_Id.h.h:393
+#: po/tmp/ap_String_Id.h.h:1109
+#: po/tmp/xap_String_Id.h.h:393
 msgid "Lower Roman List"
 msgstr "Listë me gërma Roman të vogla"
 
@@ -3009,20 +2998,16 @@ msgstr "Etiketë e Re Liste"
 
 #. DLG_Lists_New_List_Type
 #: po/tmp/ap_String_Id.h.h:1165
-msgid ""
-"New List \n"
+msgid "New List \n"
 "Type"
-msgstr ""
-"Listë e Re \n"
+msgstr "Listë e Re \n"
 "Shtypni"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h.h:1167
-msgid ""
-"New Starting \n"
+msgid "New Starting \n"
 "Value"
-msgstr ""
-"Vlerë e Re \n"
+msgstr "Vlerë e Re \n"
 "Fillimi"
 
 #. DLG_Styles_NewTitle
@@ -3047,11 +3032,9 @@ msgstr "Jo Skedar"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1177
-msgid ""
-"No Style selected \n"
+msgid "No Style selected \n"
 " so it cannot be modified"
-msgstr ""
-"Nuk u zgjodh stil \n"
+msgstr "Nuk u zgjodh stil \n"
 " ndaj s'mund të ndryshohet"
 
 #. SCRIPT_NOSCRIPTS
@@ -3110,7 +3093,8 @@ msgid "Numbered"
 msgstr "Numëruar"
 
 #. DLG_Lists_Numbered_List
-#: po/tmp/ap_String_Id.h.h:1201 po/tmp/xap_String_Id.h.h:425
+#: po/tmp/ap_String_Id.h.h:1201
+#: po/tmp/xap_String_Id.h.h:425
 msgid "Numbered List"
 msgstr "Listë e Numëruar"
 
@@ -3191,7 +3175,8 @@ msgid "Out of memory attempting to open %s"
 msgstr "Kujtesë e pamjaftueshme gjatë përpjekjes për hapjen e %"
 
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:1233 po/tmp/xap_String_Id.h.h:437
+#: po/tmp/ap_String_Id.h.h:1233
+#: po/tmp/xap_String_Id.h.h:437
 msgid "Overline"
 msgstr "Mbivijë"
 
@@ -3352,7 +3337,8 @@ msgid "Preferences"
 msgstr "Parapëlqime"
 
 #. DLG_PageNumbers_Preview
-#: po/tmp/ap_String_Id.h.h:1297 po/tmp/xap_String_Id.h.h:459
+#: po/tmp/ap_String_Id.h.h:1297
+#: po/tmp/xap_String_Id.h.h:459
 msgid "Preview"
 msgstr "Paraparje"
 
@@ -3368,15 +3354,12 @@ msgstr "Parashih dokumentin para shtypjes"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1303
-msgid ""
-"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
-"Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr ""
-"Paragraf i Mëparshëm  Paragraf i Mëparshëm  Paragraf i Mëparshëm  Paragraf i "
-"Mëparshëm  Paragraf i Mëparshëm  Paragraf i Mëparshëm "
+msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr "Paragraf i Mëparshëm  Paragraf i Mëparshëm  Paragraf i Mëparshëm  Paragraf i Mëparshëm  Paragraf i Mëparshëm  Paragraf i Mëparshëm "
 
 #. TOOLBAR_LABEL_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1305 po/tmp/xap_String_Id.h.h:463
+#: po/tmp/ap_String_Id.h.h:1305
+#: po/tmp/xap_String_Id.h.h:463
 msgid "Print"
 msgstr "Shtyp"
 
@@ -3454,7 +3437,7 @@ msgstr "REKOMANDE"
 #. MENU_STATUSLINE_WINDOW_9
 #: po/tmp/ap_String_Id.h.h:1335
 msgid "Raise this window"
-msgstr ""
+msgstr "Sill në plan të parë këtë dritare"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h.h:1337
@@ -3536,7 +3519,6 @@ msgstr "Hiq nga dokumenti Fundfaqen e kësaj faqeje"
 msgid "Remove the Header on this page from the Document"
 msgstr "Hiq nga dokumenti Kryefaqen e kësaj faqeje"
 
-
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:1369
 msgid "Remove the suggested change"
@@ -3616,7 +3598,6 @@ msgstr "Të rikthej skedarin te gjendja para shpëtimit të fundit?"
 #: po/tmp/ap_String_Id.h.h:1399
 msgid "Revert the document to the last saved state"
 msgstr "Të rikthej dokumentin te gjendja e fundit e shpëtuar?"
-
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1401
@@ -4077,7 +4058,8 @@ msgid "Split this cell"
 msgstr "Ndaj këtë kuti"
 
 #. DLG_Lists_Square_List
-#: po/tmp/ap_String_Id.h.h:1583 po/tmp/xap_String_Id.h.h:527
+#: po/tmp/ap_String_Id.h.h:1583
+#: po/tmp/xap_String_Id.h.h:527
 msgid "Square List"
 msgstr "Listë Katrorë"
 
@@ -4092,7 +4074,8 @@ msgid "Standard Toolbar"
 msgstr "Shtyllë Mjetesh Standarte"
 
 #. DLG_Lists_Star_List
-#: po/tmp/ap_String_Id.h.h:1589 po/tmp/xap_String_Id.h.h:529
+#: po/tmp/ap_String_Id.h.h:1589
+#: po/tmp/xap_String_Id.h.h:529
 msgid "Star List"
 msgstr "Listë Yll"
 
@@ -4142,7 +4125,8 @@ msgid "Strike"
 msgstr "Hequrvije"
 
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:1609 po/tmp/xap_String_Id.h.h:531
+#: po/tmp/ap_String_Id.h.h:1609
+#: po/tmp/xap_String_Id.h.h:531
 msgid "Strikeout"
 msgstr "Hequrvije"
 
@@ -4182,7 +4166,8 @@ msgid "Style name cannot be left blank"
 msgstr "S'mund të lihet bosh emri i stilit"
 
 #. DLG_Lists_Style
-#: po/tmp/ap_String_Id.h.h:1625 po/tmp/xap_String_Id.h.h:533
+#: po/tmp/ap_String_Id.h.h:1625
+#: po/tmp/xap_String_Id.h.h:533
 msgid "Style:"
 msgstr "Stil:"
 
@@ -4263,7 +4248,8 @@ msgid "Tab stops to be cleared:"
 msgstr "Ndalesë Tab për tu hequr:"
 
 #. MENU_STATUSLINE_TABLE
-#: po/tmp/ap_String_Id.h.h:1657 po/tmp/xap_String_Id.h.h:537
+#: po/tmp/ap_String_Id.h.h:1657
+#: po/tmp/xap_String_Id.h.h:537
 msgid "Table"
 msgstr "Tabelë"
 
@@ -4324,11 +4310,8 @@ msgstr "Kontrolli drejtshkrimor i përmbushur."
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:1681
-msgid ""
-"The text to which the hyperlink is to be attached must be within a single "
-"paragraph."
-msgstr ""
-"Teksti tek i cili doni të bashkangjisni tejlidhjen duhet të jetë brenda një paragrafi"
+msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
+msgstr "Teksti tek i cili doni të bashkangjisni tejlidhjen duhet të jetë brenda një paragrafi"
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:1683
@@ -4337,30 +4320,19 @@ msgstr "Dita"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:1685
-msgid ""
-"This change will only take effect when you restart AbiWord or create a new "
-"document."
-msgstr ""
-"Ky ndryshim do ketë efekt pasi të rinisni AbiWord-in ose të krijoni një dokument tëri"
+msgid "This change will only take effect when you restart AbiWord or create a new document."
+msgstr "Ky ndryshim do ketë efekt pasi të rinisni AbiWord-in ose të krijoni një dokument tëri"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:1687
-msgid ""
-"This paragraph represents words as they might appear in your document.  To "
-"see text from your document used in this preview, position your cursor in a "
-"document paragraph with some text in it and open this dialog."
-msgstr ""
-"Ky paragraf tregon si do të dukeshin fjalët në dokumentin tuaj. Që "
-"të parashihnitekst nga dokumenti juaj, vendosni kursorin në një paragraf me "
-"tekstdhe hapni këtë dialog."
+msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
+msgstr "Ky paragraf tregon si do të dukeshin fjalët në dokumentin tuaj. Që të parashihnitekst nga dokumenti juaj, vendosni kursorin në një paragraf me tekstdhe hapni këtë dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:1689
-msgid ""
-"This style does not exist \n"
+msgid "This style does not exist \n"
 " so it cannot be modified"
-msgstr ""
-"Ky stil nuk gjendet\n"
+msgstr "Ky stil nuk gjendet\n"
 "ndaj edhe s'mund të ndryshohet"
 
 #. DLG_Column_Three
@@ -4369,7 +4341,8 @@ msgid "Three"
 msgstr "Tre"
 
 #. DLG_Lists_Tick_List
-#: po/tmp/ap_String_Id.h.h:1693 po/tmp/xap_String_Id.h.h:555
+#: po/tmp/ap_String_Id.h.h:1693
+#: po/tmp/xap_String_Id.h.h:555
 msgid "Tick List"
 msgstr "Listë me shenjë"
 
@@ -4415,12 +4388,14 @@ msgid "Top Margin [%s]"
 msgstr "Mënjana e sipërme [%s]"
 
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:1711 po/tmp/xap_String_Id.h.h:557
+#: po/tmp/ap_String_Id.h.h:1711
+#: po/tmp/xap_String_Id.h.h:557
 msgid "Topline"
 msgstr "Kryerreshti"
 
 #. DLG_Lists_Triangle_List
-#: po/tmp/ap_String_Id.h.h:1713 po/tmp/xap_String_Id.h.h:559
+#: po/tmp/ap_String_Id.h.h:1713
+#: po/tmp/xap_String_Id.h.h:559
 msgid "Triangle List"
 msgstr "Listë Trekëndësh"
 
@@ -4450,7 +4425,8 @@ msgid "UPPERCASE"
 msgstr "Me të Mëdhaja"
 
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:1725 po/tmp/xap_String_Id.h.h:577
+#: po/tmp/ap_String_Id.h.h:1725
+#: po/tmp/xap_String_Id.h.h:577
 msgid "Underline"
 msgstr "Nënvijë"
 
@@ -4470,12 +4446,14 @@ msgid "Undo editing"
 msgstr "Ngulit gërma"
 
 #. DLG_Lists_Upper_Case_List
-#: po/tmp/ap_String_Id.h.h:1733 po/tmp/xap_String_Id.h.h:611
+#: po/tmp/ap_String_Id.h.h:1733
+#: po/tmp/xap_String_Id.h.h:611
 msgid "Upper Case List"
 msgstr "Listë Me të Mëdhaja"
 
 #. DLG_Lists_Upper_Roman_List
-#: po/tmp/ap_String_Id.h.h:1735 po/tmp/xap_String_Id.h.h:613
+#: po/tmp/ap_String_Id.h.h:1735
+#: po/tmp/xap_String_Id.h.h:613
 msgid "Upper Roman List"
 msgstr "Listë Me gërma ROMAN të Mëdhaja"
 
@@ -4515,7 +4493,8 @@ msgid "VIA OVERNIGHT MAIL"
 msgstr "VIA OVERNIGHT MAIL"
 
 #. FIELD_Application_Version
-#: po/tmp/ap_String_Id.h.h:1751 po/tmp/xap_String_Id.h.h:615
+#: po/tmp/ap_String_Id.h.h:1751
+#: po/tmp/xap_String_Id.h.h:615
 msgid "Version"
 msgstr "Version"
 
@@ -4607,7 +4586,8 @@ msgid "Yours truly,"
 msgstr "Juaji"
 
 #. TOOLBAR_TOOLTIP_ZOOM
-#: po/tmp/ap_String_Id.h.h:1787 po/tmp/xap_String_Id.h.h:647
+#: po/tmp/ap_String_Id.h.h:1787
+#: po/tmp/xap_String_Id.h.h:647
 msgid "Zoom"
 msgstr "Rrit"
 
@@ -4798,9 +4778,8 @@ msgstr "Afrikaans"
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:43
-#, fuzzy
 msgid "Albanian"
-msgstr "Armene"
+msgstr "Shqip"
 
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:47
@@ -4909,7 +4888,6 @@ msgstr "Bretone"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:97
-#, fuzzy
 msgid "Building Document.."
 msgstr "Po përgatis Dokumentin..."
 
@@ -4970,9 +4948,8 @@ msgstr "Kineze (Tajvan)"
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:123
-#, fuzzy
 msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr "Kineze e Thjeshtuar, EUC-CN"
+msgstr "Kineze e Thjeshtuar, EUC-CN (GB2312)"
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:125
@@ -5042,7 +5019,7 @@ msgstr "Kopje:"
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h.h:151
 msgid "Cornish"
-msgstr ""
+msgstr "Kornuellse "
 
 #. LANG_CO_FR
 #: po/tmp/xap_String_Id.h.h:153
@@ -5245,7 +5222,7 @@ msgstr "Finlandeze"
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Fit to Height"
-msgstr ""
+msgstr "Vetëpërshtat Lartësinë"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:239
@@ -5425,11 +5402,9 @@ msgstr "Hungareze"
 #. DLG_HashDownloader_AskDownload
 #: po/tmp/xap_String_Id.h.h:317
 #, c-format
-msgid ""
-"I could not find a dictionary for %s.\n"
+msgid "I could not find a dictionary for %s.\n"
 "Would you like me to try downloading it from the internet?"
-msgstr ""
-"Nuk gjej ndonjë fjalor për %s.\n"
+msgstr "Nuk gjej ndonjë fjalor për %s.\n"
 "Doni të provoj të shkarkoj ndonjë prej internetit?"
 
 #. DLG_HashDownloader_DictNotAvailable
@@ -5439,20 +5414,16 @@ msgstr "Më vjen keq. Fjalori i kërkuar nuk është i gatshëm për shkarkim."
 
 #. DLG_HashDownloader_DictNotForThis
 #: po/tmp/xap_String_Id.h.h:321
-msgid ""
-"I'm sorry. The wanted dictionary is not available for this release.\n"
+msgid "I'm sorry. The wanted dictionary is not available for this release.\n"
 "Please consider upgrading AbiWord."
-msgstr ""
-"Më vjen keq. Fjalori i kërkuar nuk është i vlefshëm për këtë version.\n"
+msgstr "Më vjen keq. Fjalori i kërkuar nuk është i vlefshëm për këtë version.\n"
 "Lutemi shihni mundësinë e freskimit të AbiWord-it."
 
 #. DLG_HashDownloader_FeatureDisabledForThis
 #: po/tmp/xap_String_Id.h.h:323
-msgid ""
-"I'm sorry. This feature is disabled for this release.\n"
+msgid "I'm sorry. This feature is disabled for this release.\n"
 "Please consider upgrading AbiWord."
-msgstr ""
-"Më vjen keq. Kjo nuk është pjesë e këtij versioni.\n"
+msgstr "Më vjen keq. Kjo nuk është pjesë e këtij versioni.\n"
 "Lutemi shihni mundësinë e freskimit të AbiWord-it."
 
 #. DLG_HashDownloader_FeatureDisabled
@@ -5518,7 +5489,7 @@ msgstr "Instalo shtojcë të re"
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:353
 msgid "Interlingua"
-msgstr ""
+msgstr "Interlingua"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:355
@@ -5608,12 +5579,12 @@ msgstr ""
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:397
 msgid "Marshallese (Marshall Islands)"
-msgstr ""
+msgstr "Marshalleze (Ishujt Marshall)"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Marshallese (Nauru)"
-msgstr ""
+msgstr "Marshalleze (Nauru)"
 
 #. DLG_Options_Label_ModifyUnixFontPath
 #: po/tmp/xap_String_Id.h.h:401
@@ -5667,7 +5638,6 @@ msgstr "Fillim i numëruar 1"
 
 #. STYLE_NUMHEAD2
 #: po/tmp/xap_String_Id.h.h:421
-#, fuzzy
 msgid "Numbered Heading 2"
 msgstr "Fillim i Numëruar 2"
 
@@ -6111,7 +6081,7 @@ msgstr "Vietnameze, Windows Code Page 1258"
 #. LANG_CY_GB
 #: po/tmp/xap_String_Id.h.h:625
 msgid "Welsh"
-msgstr ""
+msgstr "Uellsiane"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:627
@@ -6220,9 +6190,3 @@ msgstr "fjalori"
 msgid "the dictionary-list"
 msgstr "fjalori-listë"
 
-#~ msgid "Right-to-left"
-#~ msgstr "Nga e djathta në të majtë"
-
-#~ msgid "Width"
-#~ msgstr "Gjerësi"
-s

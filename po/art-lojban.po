@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2002-11-26 21:50-0500\n"
-"PO-Revision-Date: 2002-11-26 22:15GMT\n"
+"PO-Revision-Date: 2002-11-27 08:55GMT\n"
 "Last-Translator: Pierre Abbat <phma@webjockey.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2988,9 +2988,8 @@ msgstr "vimcu lo selci"
 
 #. TOOLBAR_LABEL_MERGELEFT
 #: po/tmp/ap_String_Id.h.h:1155
-#, fuzzy
 msgid "Merge left"
-msgstr "jorne le pritu"
+msgstr "jorne le zunle"
 
 #. TOOLBAR_LABEL_MERGERIGHT
 #: po/tmp/ap_String_Id.h.h:1157
@@ -3387,9 +3386,8 @@ msgstr "Mot de passe requis, ceci est un document chiffré"
 
 #. TOOLBAR_TOOLTIP_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1305
-#, fuzzy
 msgid "Paste"
-msgstr "s&etca"
+msgstr "setca"
 
 #. DLG_MetaData_TAB_Permission
 #: po/tmp/ap_String_Id.h.h:1307
@@ -3467,9 +3465,8 @@ msgstr "&Aperçu avant impression"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1335
-#, fuzzy
 msgid "Print Preview"
-msgstr "&Aperçu avant impression"
+msgstr "prina prujvinu"
 
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1337
@@ -3500,9 +3497,8 @@ msgstr "Impression de la page %d de %d"
 
 #. FIELD_Document_Publisher
 #: po/tmp/ap_String_Id.h.h:1347
-#, fuzzy
 msgid "Publisher"
-msgstr "bangrpolski"
+msgstr "gubyternoi"
 
 #. DLG_MetaData_Publisher_LBL
 #: po/tmp/ap_String_Id.h.h:1349
@@ -4047,9 +4043,8 @@ msgstr "Affiche ou masque la barre d'état"
 
 #. MENU_STATUSLINE_VIEW_TB_TABLE
 #: po/tmp/ap_String_Id.h.h:1557
-#, fuzzy
 msgid "Show or hide the table toolbar"
-msgstr "Affiche ou masque la barre d'outils extra"
+msgstr "jarco jonai mipri le cartu tcigrana"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:1559
@@ -4058,15 +4053,13 @@ msgstr "Montrer l'écran fugitif d'AbiWord au démarrage de l'application"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1561
-#, fuzzy
 msgid "Show..."
-msgstr "Afficher/Masquer"
+msgstr "jarco..."
 
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1563
-#, fuzzy
 msgid "Show/hide formatting marks"
-msgstr "&tarmi"
+msgstr "jarco jonai mipri le tarmi barna"
 
 #. AUTOTEXT_CLOSING_8
 #: po/tmp/ap_String_Id.h.h:1565
@@ -4128,15 +4121,13 @@ msgstr "Espacement"
 
 #. TOOLBAR_LABEL_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:1587
-#, fuzzy
 msgid "Spellcheck"
 msgstr "lerfu &zmidragau "
 
 #. TOOLBAR_TOOLTIP_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:1589
-#, fuzzy
 msgid "Spellcheck the document"
-msgstr "Enregistre le document actif"
+msgstr "lerfu dragau le selpapri"
 
 #. DLG_Options_TabLabel_Spelling
 #: po/tmp/ap_String_Id.h.h:1591
@@ -4150,31 +4141,28 @@ msgstr "&Options"
 
 #. MENU_LABEL_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:1595
-#, fuzzy
 msgid "Spli&t Table"
-msgstr "Piece Table"
+msgstr "&fendi le cartu"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1597
 msgid "Split Cells"
-msgstr ""
+msgstr "fendi le selci"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:1599
-#, fuzzy
 msgid "Split Table"
-msgstr "Piece Table"
+msgstr "fendi le cartu"
 
 #. TOOLBAR_LABEL_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1601
-#, fuzzy
 msgid "Split cells"
-msgstr "cuxna le selci"
+msgstr "fendi le selci"
 
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1603
 msgid "Split this cell"
-msgstr ""
+msgstr "fendi le selci"
 
 #. DLG_Lists_Square_List
 #: po/tmp/ap_String_Id.h.h:1605 po/tmp/xap_String_Id.h.h:527
@@ -4306,7 +4294,6 @@ msgstr "Objet : "
 
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:1655
-#, fuzzy
 msgid "Subscript"
 msgstr "&ni'arci'a"
 
@@ -4343,15 +4330,13 @@ msgstr "Caractères s&péciaux"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1669
-#, fuzzy
 msgid "Symbol"
-msgstr "Caractères s&péciaux"
+msgstr "snile'u"
 
 #. MENU_LABEL_TABLE
 #: po/tmp/ap_String_Id.h.h:1671
-#, fuzzy
 msgid "T&able"
-msgstr "Tabulations"
+msgstr "&cartu"
 
 #. TabStopStatus
 #: po/tmp/ap_String_Id.h.h:1673
@@ -4371,15 +4356,13 @@ msgstr "Tabulation à effacer :"
 
 #. MENU_STATUSLINE_TABLE
 #: po/tmp/ap_String_Id.h.h:1679 po/tmp/xap_String_Id.h.h:537
-#, fuzzy
 msgid "Table"
-msgstr "Tabulations"
+msgstr "cartu"
 
 #. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h.h:1681
-#, fuzzy
 msgid "Table size"
-msgstr "Casse De &Titre"
+msgstr "cartu nilbra"
 
 #. DLG_Tab_TabTitle
 #: po/tmp/ap_String_Id.h.h:1683
@@ -4577,7 +4560,6 @@ msgstr "Souligne la sélection (bascule)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:1751
-#, fuzzy
 msgid "Undo"
 msgstr "&fatyzu'e"
 
@@ -4655,7 +4637,7 @@ msgstr "Voir les astuces"
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:1781
 msgid "View..."
-msgstr "Vue"
+msgstr "jvinu"
 
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:1783
@@ -4885,6 +4867,12 @@ msgid ""
 "the Abiword help file for more detailed information, including\n"
 "instructions on how to turn this warning off."
 msgstr ""
+"la .Abiuord. na pu ka'e jmina le vo'a lermontai le la me xy. lermontai\n"
+"tercuxste .i la'e di'u na nibli ledu'u le do ciste cu srera .iku'i do nitcu\n"
+"lenu tolzmi galfi le do lermontai tercuxste .i.e'o ko tcidu la'e lu le la\n"
+".iuniks. lermontai tercuxste nabmi li'u le cafne preti pagbu be le la"
+".Abiuord sidju datnyvei tezu'e tu'a loi tcila .e lepu'u cadgau dei"
+"noi nunjde"
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:31
@@ -4919,9 +4907,8 @@ msgstr "Afrikaans"
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:43
-#, fuzzy
 msgid "Albanian"
-msgstr "le bangrxai"
+msgstr "le ckiptare"
 
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:47
@@ -5001,12 +4988,12 @@ msgstr "Baltique, Page de codes Windows 1257"
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h.h:79
 msgid "Basque"
-msgstr ""
+msgstr "le skalduna"
 
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:81
 msgid "Belarusian"
-msgstr ""
+msgstr "le labru'e"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:83
@@ -5026,19 +5013,17 @@ msgstr "Gras Italique"
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h.h:95
 msgid "Breton"
-msgstr ""
+msgstr "le bre'one"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:97
-#, fuzzy
 msgid "Building Document.."
-msgstr "Tous les documents"
+msgstr "zbasu le selpapri"
 
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:99
-#, fuzzy
 msgid "Bulgarian"
-msgstr "le magjaro"
+msgstr "le bolgaro"
 
 #. DLG_Cancel
 #: po/tmp/xap_String_Id.h.h:103
@@ -5068,7 +5053,7 @@ msgstr "Européen central, Page de codes Windows 1250"
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h.h:113
 msgid "Chapter Heading"
-msgstr ""
+msgstr "ckupau sedytcita"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h.h:115
@@ -5164,15 +5149,13 @@ msgstr "Copies : "
 
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h.h:151
-#, fuzzy
 msgid "Cornish"
-msgstr "le gailge"
+msgstr "le kernauke"
 
 #. LANG_CO_FR
 #: po/tmp/xap_String_Id.h.h:153
-#, fuzzy
 msgid "Corsican"
-msgstr "Formule de politesse"
+msgstr "le banrkorsika"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:155
@@ -5192,9 +5175,8 @@ msgstr "Ne peut charger le dictionnaire pour la langue &quot;%s&quot;."
 
 #. LANG_HR
 #: po/tmp/xap_String_Id.h.h:161
-#, fuzzy
 msgid "Croatian"
-msgstr "le katlana"
+msgstr "le xorvato"
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:163
@@ -5243,9 +5225,8 @@ msgstr "Désactiver un module"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:189
-#, fuzzy
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "Voulez-vous remplacer les mots ignorés de tous les documents?"
+msgstr "xu do djica lenu vimcu le vi snixra le tcigrana"
 
 #. DLG_HashDownloader_AskFirstTryFailed
 #: po/tmp/xap_String_Id.h.h:191
@@ -5254,6 +5235,9 @@ msgid ""
 "Would you like me to try again?\n"
 "If yes, please make sure you are connected to the internet."
 msgstr ""
+"le nu nircpacu cu fliba\n"
+".i krefu troci xu?"
+".i go'i .inaja .e'o ko birti ledu'u do jorne la .Internet"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:193
@@ -5282,15 +5266,13 @@ msgstr "Codage :"
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:203
-#, fuzzy
 msgid "Endnote Reference"
-msgstr "Référence pour note en fin de document"
+msgstr "rebytcita selki'i"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:205
-#, fuzzy
 msgid "Endnote Text"
-msgstr "&rebytcita"
+msgstr "rebytcita selci'a"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:207
@@ -5339,9 +5321,8 @@ msgstr "le spero"
 
 #. LANG_ET
 #: po/tmp/xap_String_Id.h.h:225
-#, fuzzy
 msgid "Estonian"
-msgstr "le bangnromania"
+msgstr "le banrxesti"
 
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:227
@@ -5371,20 +5352,18 @@ msgstr "le bangrsuomi"
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:237
-#, fuzzy
 msgid "Fit to Height"
-msgstr "&rajytermre"
+msgstr "rajytermre nilbrastika"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:239
 msgid "Fit to Width"
-msgstr ""
+msgstr "pintermre nilbrastika"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:241
-#, fuzzy
 msgid "Flemish (Belgium)"
-msgstr "le belgo fraso"
+msgstr "le belgo bangrnederlanda"
 
 #. LANG_FR_BE
 #: po/tmp/xap_String_Id.h.h:247
@@ -5408,9 +5387,8 @@ msgstr "le fraso pe la xelvet."
 
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:255
-#, fuzzy
 msgid "Frisian"
-msgstr "le bangrfarsi"
+msgstr "le bangrfrisi"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:257
@@ -5480,30 +5458,27 @@ msgstr "Grec, Page de codes Windows 1253"
 #. LANG_HAU_NE
 #: po/tmp/xap_String_Id.h.h:285
 msgid "Hausa (Niger)"
-msgstr ""
+msgstr "le gugrnijere bangrxausa"
 
 #. LANG_HAU_NG
 #: po/tmp/xap_String_Id.h.h:287
 msgid "Hausa (Nigeria)"
-msgstr ""
+msgstr "le gugrnaidjiri bangrxausa"
 
 #. STYLE_HEADING1
 #: po/tmp/xap_String_Id.h.h:289
-#, fuzzy
 msgid "Heading 1"
-msgstr "Négatif"
+msgstr "1moi sedytcita"
 
 #. STYLE_HEADING2
 #: po/tmp/xap_String_Id.h.h:291
-#, fuzzy
 msgid "Heading 2"
-msgstr "Négatif"
+msgstr "2moi sedytcita"
 
 #. STYLE_HEADING3
 #: po/tmp/xap_String_Id.h.h:293
-#, fuzzy
 msgid "Heading 3"
-msgstr "Négatif"
+msgstr "3moi sedytcita"
 
 #. LANG_HE_IL
 #: po/tmp/xap_String_Id.h.h:297
@@ -5576,6 +5551,8 @@ msgid ""
 "I'm sorry. The wanted dictionary is not available for this release.\n"
 "Please consider upgrading AbiWord."
 msgstr ""
+".u'u le seldjica vlaste pe le vi velfarvi na se cpacu\n"
+".i .e'u ko cabgau la .Abiuord"
 
 #. DLG_HashDownloader_FeatureDisabledForThis
 #: po/tmp/xap_String_Id.h.h:323
@@ -5583,11 +5560,13 @@ msgid ""
 "I'm sorry. This feature is disabled for this release.\n"
 "Please consider upgrading AbiWord."
 msgstr ""
+".u'u le tcila cu cando ne'i le vi velfarvi\n"
+".i .e'u ko cabgau la .Abiuord"
 
 #. DLG_HashDownloader_FeatureDisabled
 #: po/tmp/xap_String_Id.h.h:325
 msgid "I'm sorry. This feature is not available anymore."
-msgstr ""
+msgstr ".u'u le tcila ba'o zasti"
 
 #. LANG_IS_IS
 #: po/tmp/xap_String_Id.h.h:327
@@ -5617,7 +5596,7 @@ msgstr ""
 #. LANG_ID_ID
 #: po/tmp/xap_String_Id.h.h:339
 msgid "Indonesian"
-msgstr ""
+msgstr "le bidbau"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:343
@@ -5626,7 +5605,6 @@ msgstr "setca lo datnyvei"
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h.h:345
-#, fuzzy
 msgid "Insert New Table"
 msgstr "setca lo cartu"
 
@@ -5733,22 +5711,22 @@ msgstr "bangrlietuva"
 #. LANG_MK
 #: po/tmp/xap_String_Id.h.h:395
 msgid "Macedonian"
-msgstr ""
+msgstr "le bangrmakedoni"
 
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:397
 msgid "Marshallese (Marshall Islands)"
-msgstr ""
+msgstr "le bangrmarcali pe la marcal dapl"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Marshallese (Nauru)"
-msgstr ""
+msgstr "le bangrmarcali pe la naurun"
 
 #. DLG_Options_Label_ModifyUnixFontPath
 #: po/tmp/xap_String_Id.h.h:401
 msgid "Modify Unix Font Path"
-msgstr ""
+msgstr "galfi le la .iuniks lermontai tercuxste"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:403
@@ -5813,7 +5791,7 @@ msgstr "vi'o"
 #. LANG_OC_FR
 #: po/tmp/xap_String_Id.h.h:429
 msgid "Occitan"
-msgstr ""
+msgstr "le bangrxokcitanu"
 
 #. DLG_FOSA_OpenTitle
 #: po/tmp/xap_String_Id.h.h:431
@@ -5827,9 +5805,8 @@ msgstr "Ouvrir un fichier de type :"
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:435
-#, fuzzy
 msgid "Other..."
-msgstr "Autre"
+msgstr "drata"
 
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:439
@@ -5943,9 +5920,8 @@ msgstr "mupli"
 
 #. LANG_SC_IT
 #: po/tmp/xap_String_Id.h.h:487
-#, fuzzy
 msgid "Sardinian"
-msgstr "le vukro"
+msgstr "le bangrsardini"
 
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:489
@@ -5964,9 +5940,8 @@ msgstr "Scr&ipt :"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h.h:495
-#, fuzzy
 msgid "Section Heading"
-msgstr "Sauts de &section"
+msgstr "pagbu sedytcita"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:497
@@ -5985,9 +5960,8 @@ msgstr "selcu'a"
 
 #. LANG_SR
 #: po/tmp/xap_String_Id.h.h:503
-#, fuzzy
 msgid "Serbian"
-msgstr "le kartuli"
+msgstr "le bangrserbi"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:505
@@ -6268,9 +6242,8 @@ msgstr "Européen de l'ouest, Page de codes Windows 1252"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:637
-#, fuzzy
 msgid "Width:"
-msgstr "&Largeur :"
+msgstr "nilganra:"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:639
