@@ -67,6 +67,10 @@ DLG_UP_Collate="Collage"
 DLG_UP_Copies="Copie: "
 DLG_UP_PrintButton="Stampa"
 DLG_UP_InvalidPrintString="La stringa di comando per la stampa non e' valida."
+DLG_UP_PrintIn="Stampa: "
+DLG_UP_BlackWhite="In Bianco e Nero"
+DLG_UP_Grayscale="A Toni di Grigio"
+DLG_UP_Color="A Colori"
 />
 
 <Strings	class="AP"
@@ -162,8 +166,21 @@ DLG_Options_Label_SpellInternet="Ignora gli indirizzi &amp;Internet e i nomi dei
 DLG_Options_Label_SpellCustomDict="Vocabolario personale:"
 DLG_Options_Label_SpellIgnoredWord="Parole ignorate:"
 DLG_Options_Btn_CustomDict="&amp;Vocabolario..."
-DLG_Options_Btn_IgnoreReset="&amp;Reset"
+DLG_Options_Btn_IgnoreReset="&amp;Cancellale"
 DLG_Options_Btn_IgnoreEdit="&amp;Modifica"
+DLG_Options_Label_PrefsAutoSave="Salva &amp;automaticamente le preferenze"
+DLG_Options_Label_PrefsCurrentScheme="Schema delle Preferenze Correnti"
+DLG_Options_Label_ViewShowHide="Mostra/Nascondi..."
+DLG_Options_Label_ViewRuler="&amp;Righelli"
+DLG_Options_Label_ViewUnits="&amp;Unita' di misura:"
+DLG_Options_Label_ViewCursorBlink="Cursore &amp;lampeggiante"
+DLG_Options_Label_ViewToolbars="&amp;Toolbars"
+DLG_Options_Label_ViewViewFrame="Mostra..."
+DLG_Options_Label_ViewAll="&amp;Tutto"
+DLG_Options_Label_ViewHiddenText="Testo &amp;nascosto"
+DLG_Options_Label_ViewUnprintable="&amp;Caratteri non stampabili"
+DLG_Options_Prompt_IgnoreResetCurrent="Vuoi cancellare la lista delle parole ignorate in questo documento?"
+DLG_Options_Prompt_IgnoreResetAll="Vuoi cancellare la lista delle parole ignorate in tutti i documenti?"
 />
 
 </AbiStrings>
