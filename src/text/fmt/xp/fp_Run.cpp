@@ -1584,7 +1584,9 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 		xxx_UT_DEBUGMSG(("iOffset %d, getBlockOffset() %d, getLength() %d\n", iOffset,getBlockOffset(),getLength()));
 		if(iOffset != getBlockOffset())
 		{
-			UT_ASSERT(iOffset == (getBlockOffset() + getLength()));
+			// this happens when a tab run is last run in a block and the eop's run
+			//findPointCoords() is called ...
+			//UT_ASSERT(iOffset == (getBlockOffset() + getLength()));
 			x += getWidth();
 		}
 	}
