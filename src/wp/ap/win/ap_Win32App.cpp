@@ -127,7 +127,103 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
 	return false;
-}	
+}
+	
+//
+//
+//
+void AP_Win32App::_printUsage()
+{
+	char szTmp[1024];
+	char szMsg[1024];
+	
+	// just print to stdout, not stderr
+	sprintf(szMsg, "\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
+
+	
+#ifdef DEBUG
+	sprintf(szTmp, "  -dumpstrings Dump strings strings to file\n");
+	strcat(szMsg, szTmp);
+#endif
+
+	sprintf(szTmp, "  -version Print AbiWord version");
+	strcat(szMsg, szTmp);
+	
+	sprintf(szTmp, "\n");
+	strcat(szMsg, szTmp);
+	
+	MessageBox(NULL, szMsg, NULL, MB_OK);
+}
+
+
+//
+// Command line processing
+//
+bool AP_Win32App::parseCommandLine(void)
+{
+	// parse the command line
+	// <app> [-dumpstrings] [<documentname>]	
+	int nFirstArg = 1;
+	int k;
+	int kWindowsOpened = 0;	
+
+	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
+	{
+		if (*m_pArgs->m_argv[k] == '-')
+		{
+			if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
+			{				
+#ifdef DEBUG
+				// dump the string table in english as a template for translators.
+				// see abi/docs/AbiSource_Localization.abw for details.
+				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
+				delete pBuiltinStringSet;
+#endif
+			}				
+			else
+			if (UT_stricmp(m_pArgs->m_argv[k],"--help") == 0)				
+			{
+				_printUsage();
+				return false;
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-version") == 0)				
+			{
+				MessageBox(NULL, XAP_App::s_szBuild_Version, "Version", MB_OK|MB_ICONINFORMATION);
+				return false;
+			}
+		}
+		else
+		{
+			// [filename]						
+
+			AP_Win32Frame * pFirstFrame = new AP_Win32Frame(this);
+			pFirstFrame->initialize();
+			UT_Error error = pFirstFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+			if (!error)
+			{
+				kWindowsOpened++;
+			}
+			else
+			{				
+				kWindowsOpened++;
+				pFirstFrame->loadDocument(NULL, IEFT_Unknown);
+				delete pFirstFrame;
+			}
+		}
+	}					
+
+	if (kWindowsOpened == 0)
+	{
+		// no documents specified or were able to be opened, open an untitled one
+
+		AP_Win32Frame * pFirstFrame = new AP_Win32Frame(this);
+		pFirstFrame->initialize();
+		pFirstFrame->loadDocument(NULL, IEFT_Unknown);
+	}
+
+	return true;
+}
 
 bool AP_Win32App::initialize(void)
 {
@@ -1026,13 +1122,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	{
 		bShowSplash = bShowSplash && bSplashPref;
 	}
-
-#if SPLASH
-	if (bShowSplash)
-	{
-		_showSplash(hInstance, szAppName);
-	}
-#endif
+	
 
 	// Step 2: Handle all non-window args.
 	// process args (calls common arg handler, which then calls platform specific)
@@ -1047,9 +1137,22 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	// Step 3: Create windows as appropriate.
 	// if some args are botched, it returns false and we should
-	// continue out the door.
-	if (!pMyWin32App->parseCommandLine(Args.poptcon))
-		bShowApp = false;
+	// continue out the door.	
+	if (!pMyWin32App->parseCommandLine())
+	{	
+		pMyWin32App->shutdown();	// properly shutdown the app 1st
+		delete pMyWin32App;
+		return 0;
+	}
+	
+	#if SPLASH
+	if (bShowSplash)
+	{
+		_showSplash(hInstance, szAppName);
+	}
+	
+#endif
+		
 }
 //
 // This block is controlled by the Structured Exception Handle
