@@ -1351,6 +1351,9 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 		//UT_DEBUGMSG(("LeftRuler:: draw [no clip]\n"));
 	}
 	
+	/* if you get one of these two asserts then you forgot to call setWidth() or setHeight() */
+	UT_ASSERT(m_iHeight);
+	UT_ASSERT(m_iWidth);
 	// draw the background
 	
 	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,

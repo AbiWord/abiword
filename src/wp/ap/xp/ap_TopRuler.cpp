@@ -369,6 +369,10 @@ void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 		m_pG->setClipRect(pClipRect);
 	}
 
+	/* if you get one of these two asserts then you forgot to call setWidth() or setHeight() */
+	UT_ASSERT(m_iHeight);
+	UT_ASSERT(m_iWidth);
+
 	// draw the background
 
 	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,getWidth (),getHeight ());
