@@ -80,9 +80,15 @@ if(scalar @ARGV) {
 unshift(@lang, 'en-US');
 
 ## Determine global missing counts
+print STDERR "Missing strings:\n";
+$selected_langs=join ":",@ARGV;
 foreach my $dlg (keys %dlgs) {
   foreach my $lang (@lang) {
-    $missing{$lang}++ unless $dlgs{$dlg}{$lang};
+    unless($dlgs{$dlg}{$lang}) {
+      print STDERR "$lang: $dlg\n" if $selected_langs =~ $lang;
+    #$missing{$lang}++ unless $dlgs{$dlg}{$lang};
+      $missing{$lang}++;
+    }
   }
 }
 
