@@ -181,6 +181,7 @@ public:
 	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
 	
 	
+	
 protected:
 	virtual GR_Font*		_findFont(const char* pszFontFamily,
 									  const char* pszFontStyle,

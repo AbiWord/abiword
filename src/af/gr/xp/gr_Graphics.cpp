@@ -119,7 +119,8 @@ GR_Graphics::GR_Graphics()
 	  m_bDoMerge(false),
 	  m_iPrevYOffset(0),
 	  m_iPrevXOffset(0),
-	  m_hashFontCache(19)
+	  m_hashFontCache(19),
+	  m_bDoNotZoomText(false)
 {
 }
 
@@ -305,6 +306,11 @@ void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 	UT_ASSERT(iZoom > 0);
 
 	m_iZoomPercentage = iZoom;
+
+	// invalidate stored font allocation number (change of zoom
+	// requires font of different size to be loaded into the device
+	// context)
+	m_iFontAllocNo = 0xffffffff;
 }
 
 UT_uint32 GR_Graphics::getZoomPercentage(void) const

@@ -38,6 +38,7 @@
 #include "ut_string_class.h"
 #include "fp_TableContainer.h"
 
+
 enum TABINDEX
   {
     tr_TABINDEX_NEW  = -1,
@@ -472,8 +473,9 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 	{
 		// draw the number
 		m_pG->setColor3D(clr3d);
+		m_pG->setDoNotZoomText(true);
 		m_pG->setFont(pFont);
-		UT_uint32 iFontHeight = m_pG->getFontHeight();
+		UT_uint32 iFontHeight = m_pG->getFontHeight() * 100 / m_pG->getZoomPercentage();
 		UT_uint32 n = k / tick.tickLabel * tick.tickScale;
 
 		if (n == 0)						// we never draw the zero on the
@@ -488,10 +490,11 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		UT_UCS4_strcpy_char(span, buf);
 		UT_uint32 len = strlen(buf);
 
-		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths);
+		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths)*100/m_pG->getZoomPercentage();
 		UT_sint32 y = yTop + (yBar-static_cast<UT_sint32>(iFontHeight))/2;
 
 		m_pG->drawChars(span, 0, len, xTick - w/2, y);
+		m_pG->setDoNotZoomText(false);
 	}
 }
 
@@ -4329,3 +4332,4 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 	else
 		pRuler->mouseMotion(0, static_cast<UT_sint32>(pRuler->getWidth ()) + 1, fakeY); // getWidth ()+1 will be greater than getWidth ()
 }
+

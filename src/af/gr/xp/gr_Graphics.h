@@ -396,6 +396,9 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32         getPrevXOffset(void) const { return m_iPrevXOffset;}
 	void              setPrevYOffset(UT_sint32 y) { m_iPrevYOffset = y;}
 	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
+
+	bool              getDoNotZoomText() const {return m_bDoNotZoomText;}
+	void              setDoNotZoomText(bool b) {m_bDoNotZoomText = b;}
  protected:
 	UT_sint32         _tduX(UT_sint32 layoutUnits) const;
 	UT_sint32         _tduY(UT_sint32 layoutUnits) const;
@@ -458,7 +461,8 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32        m_iPrevXOffset;
 	GR_Transform     m_Transform;
 
-	UT_StringPtrMap		m_hashFontCache;
+	UT_StringPtrMap	 m_hashFontCache;
+	bool             m_bDoNotZoomText;
 };
 
 void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);

@@ -1444,9 +1444,9 @@ void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
 
 HFONT GR_Win32Font::Acq::getDisplayFont(GR_Win32Font& font, GR_Graphics * pG)
 {
-	UT_uint32 zoom = pG->getZoomPercentage();
-	UT_uint32 pixels = font.m_iHeight*zoom/100;
-
+	UT_uint32 zoom = pG->getDoNotZoomText() ? 100 : pG->getZoomPercentage();
+	UT_uint32 pixels = pG->getDoNotZoomText() ? font.m_iHeight : font.m_iHeight*zoom/100;
+		
 	HFONT pFont = font.getFontFromCache(pixels, false, zoom);
 	if (pFont)
 		return pFont;

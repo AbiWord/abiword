@@ -1577,8 +1577,6 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,
 		       getWidth(),getHeight());
 
-	// draw a dark-gray and white bar lined up with the paper
-
 	UT_uint32 xLeft = m_pG->tlu(s_iFixedWidth)/4;
 	UT_uint32 xBar  = m_pG->tlu(s_iFixedWidth)/2;
 
@@ -1633,11 +1631,12 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 
+	m_pG->setDoNotZoomText(true);
 	GR_Font * pFont = m_pG->getGUIFont();
 	if (pFont)
 	{
 		m_pG->setFont(pFont);
-		iFontHeight = m_pG->getFontHeight();
+		iFontHeight = m_pG->getFontHeight() * 100 / m_pG->getZoomPercentage();
 	}
 
 	// first draw the top margin
@@ -1668,7 +1667,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
 
-				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);
+				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 				UT_uint32 x = xLeft + (xBar-w)/2;
 
 				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
@@ -1706,13 +1705,15 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				UT_UCS4_strcpy_char(span, buf);
 				UT_uint32 len = strlen(buf);
 
-				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);
+				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 				UT_uint32 x = xLeft + (xBar-w)/2;
 
 				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
 			}
 		}
 	}
+
+	m_pG->setDoNotZoomText(false);
 	
 	//
 	// draw the various widgets for the left ruler
@@ -1730,6 +1731,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 		m_pG->setClipRect(NULL);
 	}
 	m_lfi = lfi;
+
 }
 
 /*****************************************************************/
