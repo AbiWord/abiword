@@ -37,15 +37,15 @@
 
 	// Include each toolbar icon that we want to build.
 
-#	include "ToolbarIcons/EnUS_AlignCenter.xpm"
-#	include "ToolbarIcons/EnUS_AlignJustify.xpm"
-#	include "ToolbarIcons/EnUS_AlignLeft.xpm"
-#	include "ToolbarIcons/EnUS_AlignRight.xpm"
-#	include "ToolbarIcons/EnUS_Bold.xpm"
-#	include "ToolbarIcons/EnUS_Font.xpm"
-#	include "ToolbarIcons/EnUS_Italic.xpm"
-#	include "ToolbarIcons/EnUS_Strike.xpm"
-#	include "ToolbarIcons/EnUS_Underline.xpm"
+#	include "ToolbarIcons/tb_text_center.xpm"
+#	include "ToolbarIcons/tb_text_justify.xpm"
+#	include "ToolbarIcons/tb_text_align_left.xpm"
+#	include "ToolbarIcons/tb_text_align_right.xpm"
+#	include "ToolbarIcons/tb_text_bold.xpm"
+#	include "ToolbarIcons/tb_text_font.xpm"
+#	include "ToolbarIcons/tb_text_italic.xpm"
+#	include "ToolbarIcons/tb_text_strikeout.xpm"
+#	include "ToolbarIcons/tb_text_underline.xpm"
 #	include "ToolbarIcons/tb_copy.xpm"
 #	include "ToolbarIcons/tb_cut.xpm"
 #	include "ToolbarIcons/tb_edit.xpm"
@@ -64,15 +64,15 @@
 
 	// Declare each toolbar icon that we are building.
 	
-	DefineToolbarIcon(EnUS_AlignCenter_xpm)
-	DefineToolbarIcon(EnUS_AlignJustify_xpm)
-	DefineToolbarIcon(EnUS_AlignLeft_xpm)
-	DefineToolbarIcon(EnUS_AlignRight_xpm)
-	DefineToolbarIcon(EnUS_Bold_xpm)
-	DefineToolbarIcon(EnUS_Font_xpm)
-	DefineToolbarIcon(EnUS_Italic_xpm)
-	DefineToolbarIcon(EnUS_Strike_xpm)
-	DefineToolbarIcon(EnUS_Underline_xpm)
+	DefineToolbarIcon(tb_text_center_xpm)
+	DefineToolbarIcon(tb_text_justify_xpm)
+	DefineToolbarIcon(tb_text_align_left_xpm)
+	DefineToolbarIcon(tb_text_align_right_xpm)
+	DefineToolbarIcon(tb_text_bold_xpm)
+	DefineToolbarIcon(tb_text_font_xpm)
+	DefineToolbarIcon(tb_text_italic_xpm)
+	DefineToolbarIcon(tb_text_strikeout_xpm)
+	DefineToolbarIcon(tb_text_underline_xpm)
 	DefineToolbarIcon(tb_copy_xpm)
 	DefineToolbarIcon(tb_cut_xpm)
 	DefineToolbarIcon(tb_edit_xpm)

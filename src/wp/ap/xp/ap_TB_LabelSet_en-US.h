@@ -54,16 +54,16 @@ BeginSet(EnUS)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copy",		tb_copy_xpm,	NULL, "Copy")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Paste",	tb_paste_xpm,	NULL, "Paste")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Font",		EnUS_Font_xpm,		NULL, "Raise font selection dialog")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Bold",		EnUS_Bold_xpm,		NULL, "Bold")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italic",	EnUS_Italic_xpm,	NULL, "Italic")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Underline",EnUS_Underline_xpm,	NULL, "Underline")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Strike",	EnUS_Strike_xpm,	NULL, "Strikeout")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Font",		tb_text_font_xpm,		NULL, "Raise font selection dialog")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Bold",		tb_text_bold_xpm,		NULL, "Bold")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Italic",	tb_text_italic_xpm,	NULL, "Italic")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Underline",tb_text_underline_xpm,	NULL, "Underline")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Strike",   tb_text_strikeout_xpm,	NULL, "Strikeout")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Left",		EnUS_AlignLeft_xpm,		NULL, "Left alignment")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Center",	EnUS_AlignCenter_xpm,	NULL, "Center alignment")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Right",	EnUS_AlignRight_xpm,	NULL, "Right alignment")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justify",	EnUS_AlignJustify_xpm,	NULL, "Justify paragraph")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Left",		tb_text_align_left_xpm,		NULL, "Left alignment")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Center",	tb_text_center_xpm,	NULL, "Center alignment")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Right",	tb_text_align_right_xpm,	NULL, "Right alignment")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justify",	tb_text_justify_xpm,	NULL, "Justify paragraph")
 
 	// ... add others here ...
 
