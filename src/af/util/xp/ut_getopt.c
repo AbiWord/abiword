@@ -17,8 +17,11 @@
  * 02111-1307, USA.
  */
 
-// These are the FSF's getopt functions from the GNU C library.
-// See the GNU C library source code for the original implementations.
+/*
+  sterwill@abisource.com:
+  These are the FSF's getopt functions from the GNU C library.
+  See the GNU C library source code for the original implementations.
+*/
 
 /* Getopt for GNU.
    NOTE: getopt is now part of the C library, so if you don't know what

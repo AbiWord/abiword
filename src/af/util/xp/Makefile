@@ -42,15 +42,14 @@ CPPSRCS=	ut_alphahash.cpp	\
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c
 
-TARGETS=		$(OBJS)
-
 # for the moment, ut_getopt isn't *really* XP.  :-)
-
-ifneq ($(OS_NAME), WIN32)
-CPPSRCS += ut_getopt.cpp
+ifeq ($(ABI_NATIVE),unix)
+CSRCS += ut_getopt.c
 endif
 
-ifeq ($(OS_NAME), WIN32)
+TARGETS=		$(OBJS)
+
+ifeq ($(OS_NAME),WIN32)
 INCLUDES=		-I$(ABI_XX_ROOT)/../libpng	\
 			-I$(ABI_XX_ROOT)/../zlib
 else
