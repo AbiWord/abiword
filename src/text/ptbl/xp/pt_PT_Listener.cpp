@@ -41,8 +41,21 @@
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
+UT_Bool pt_PieceTable::tellListener(PL_Listener* pListener)
+{
+	return _tellAndMaybeAddListener(pListener, 0, UT_FALSE);
+}
+
+UT_Bool pt_PieceTable::addListener(PL_Listener* pListener,
 								   PL_ListenerId listenerId)
+{
+	return _tellAndMaybeAddListener(pListener, listenerId, UT_TRUE);
+}
+
+UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
+											   PL_ListenerId listenerId,
+											   UT_Bool bAdd
+											   )
 {
 	// walk document and for each fragment, send a notification
 	// to each layout.
@@ -79,7 +92,10 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 				UT_Bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_ASSERT(bStatus1);
 				UT_Bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
-				pfs->setFmtHandle(listenerId,sfh);
+				if (bAdd)
+				{
+					pfs->setFmtHandle(listenerId,sfh);
+				}
 				
 				if (pcr)
 					delete pcr;

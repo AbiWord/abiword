@@ -313,6 +313,14 @@ UT_Bool PD_Document::appendStyle(const XML_Char ** attributes)
 	return m_pPieceTable->appendStyle(attributes);
 }
 
+UT_Bool PD_Document::tellListener(PL_Listener* pListener)
+{
+	UT_ASSERT(pListener);
+	UT_ASSERT(m_pPieceTable);
+
+	return m_pPieceTable->tellListener(pListener);
+}
+
 UT_Bool PD_Document::addListener(PL_Listener * pListener,
 								 PL_ListenerId * pListenerId)
 {

@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef PT_PIECETABLE_H
 #define PT_PIECETABLE_H
 
@@ -104,6 +103,8 @@ public:
 	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	UT_Bool					appendStyle(const XML_Char ** attributes);
 
+	UT_Bool					tellListener(PL_Listener * pListener);
+	
 	UT_Bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);
 	
@@ -152,6 +153,11 @@ public:
 	
 protected:
 
+	UT_Bool					_tellAndMaybeAddListener(PL_Listener * pListener,
+													PL_ListenerId listenerId,
+													UT_Bool bAdd
+													);
+	
 	void					_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock);
 	PT_AttrPropIndex		_chooseIndexAP(pf_Frag * pf, PT_BlockOffset fragOffset);
 	UT_Bool					_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const;

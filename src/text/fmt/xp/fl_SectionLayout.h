@@ -24,6 +24,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
+#include "pl_Listener.h"
 
 class fp_Page;
 class FL_DocLayout;
@@ -265,6 +266,37 @@ protected:
 	fl_HdrFtrSectionLayout*		m_pHdrFtrSL;
 	fp_HdrFtrContainer*			m_pContainer;
 	fp_Page*					m_pPage;
+};
+
+class fl_ShadowListener : public PL_Listener
+{
+public:
+	fl_ShadowListener(fl_HdrFtrSectionLayout* pHFSL, fl_HdrFtrShadow* pShadow);
+	virtual ~fl_ShadowListener();
+
+	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+								 const PX_ChangeRecord * pcr);
+
+	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+									  const PX_ChangeRecord * pcr,
+									  PL_StruxFmtHandle * psfh);
+
+	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+							   const PX_ChangeRecord * pcr);
+
+	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+									const PX_ChangeRecord * pcr,
+									PL_StruxDocHandle sdh,
+									PL_ListenerId lid,
+									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+															PL_ListenerId lid,
+															PL_StruxFmtHandle sfhNew));
+
+	virtual UT_Bool		signal(UT_uint32 iSignal);
+
+protected:
+	fl_HdrFtrSectionLayout*	m_pHFSL;
+	fl_HdrFtrShadow* m_pShadow;
 };
 
 #endif /* SECTIONLAYOUT_H */

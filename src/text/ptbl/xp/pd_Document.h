@@ -114,6 +114,7 @@ public:
 	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	UT_Bool					appendStyle(const XML_Char ** attributes);
 
+	UT_Bool					tellListener(PL_Listener * pListener);
 	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	UT_Bool					removeListener(PL_ListenerId listenerId);
 	UT_Bool					signalListeners(UT_uint32 iSignal) const;
