@@ -2,6 +2,21 @@
 The 'src' directory contains all source code for all modules and applications
 in the tree.  This directory contains the following subdirectories:
 
+calc
+	Source code for the spreadsheet application.
+
+config
+	Files related to the build system.  This contains no actual
+	product source code.  Rather, it contains things like
+	Makefiles and scripts.
+
+ev
+	Source code for the cross-platform application framework.
+	This code contains the machinery to do key bindings, mouse
+	bindings, and menu bars.  This code is currently used by
+	the word processor, but we expect to also use it for the
+	spreadsheet application.
+
 other
 	This is where source code for all third-party libraries is placed.
 	For example, we use James Clark's XML parser, expat, which is
@@ -13,23 +28,17 @@ other
 	every one of our coding guidelines.  Don't make gratuitous sweeping
 	changes just to fix the indent level on someone else's library.
 
-wp
-	Source code for the word processor application.
-
-calc
-	Source code for the spreadsheet application.
+ps
+	Source code for PostScript generation.  Currently used only by
+	AbiWord, but will likely be used by other products later.
+	This code is not currently used.
 
 util
 	Source code for general-purpose utility functions.
 
-config
-	Files related to the build system.  This contains no actual
-	product source code.  Rather, it contains things like
-	Makefiles and scripts.
+wp
+	Source code for the word processor application.
 
-ps
-	Source code for PostScript generation.  Currently used only by
-	AbiWord, but will likely be used by other products later.
 
 Subdirectories below may have additional hierarchy to further break
 things down by module.  However, eventually, source code should find

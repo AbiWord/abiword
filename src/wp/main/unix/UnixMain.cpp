@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
 	// initialize our application.
 
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp();
-	pMyUnixAp->initialize(&argc,&argv);
+	pMyUnixApp->initialize(&argc,&argv);
 
 	// create the first window.
 
