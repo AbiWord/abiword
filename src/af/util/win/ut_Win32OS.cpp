@@ -37,3 +37,22 @@ UT_Bool UT_IsWinNT(void)
 
 	return (os.dwPlatformId == VER_PLATFORM_WIN32_NT);
 }
+
+/*****************************************************************/
+
+DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName)
+{ 
+	// This function loads and locks a dialog template resource. 
+	// Returns the address of the locked resource.
+	// The caller is responsible for any unlocking/releasing necessary.
+	//
+	// lpszResName - name of the resource
+	//
+	// This function is used by the various tabbed dialogs to load
+	// the sub-dialogs.
+
+    HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
+    HGLOBAL hglb = LoadResource(hinst, hrsrc); 
+    return (DLGTEMPLATE *) LockResource(hglb); 	
+} 
+

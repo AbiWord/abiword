@@ -20,6 +20,7 @@
 #ifndef AP_WIN32DIALOG_OPTIONS_H
 #define AP_WIN32DIALOG_OPTIONS_H
 
+#include "ut_vector.h"
 #include "ap_Dialog_Options.h"
 
 class XAP_Win32Frame;
@@ -34,6 +35,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 
  protected:
 
@@ -54,7 +56,6 @@ public:
 	SET_GATHER_BOOL			(PrefsAutoSave);
 
 	SET_GATHER_BOOL			(ViewShowRuler);
-		// have a units option
 	SET_GATHER_BOOL			(ViewShowToolbars);
 
 	SET_GATHER_BOOL			(ViewAll);
@@ -64,6 +65,18 @@ public:
 #undef SET_GATHER_BOOL
 	
  protected:
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
+	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
+	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	HWND						m_hwndDlg;		// parent dialog
+	HWND						m_hwndTab;		// tab control in parent dialog
+
+	int							m_nrSubDlgs;		// number of tabs on tab control
+	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
 	
 };
 

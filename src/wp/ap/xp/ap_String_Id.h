@@ -124,3 +124,26 @@ dcl(DLG_Para_PreviewSampleFallback, "This paragraph represents words as they mig
                                     "in a document paragraph with some text in it and open this dialog.")
 dcl(DLG_Para_PreviewPrevParagraph,  "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph")
 dcl(DLG_Para_PreviewFollowParagraph,"Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph")
+
+/* Options dialog */
+dcl(DLG_Options_OptionsTitle,			"Options")
+
+dcl(DLG_Options_TabLabel_Spelling,		"Spelling")
+dcl(DLG_Options_TabLabel_Preferences,	"Preferences")
+dcl(DLG_Options_TabLabel_View,			"View")
+
+dcl(DLG_Options_Btn_Save,				"Sa&ve")
+dcl(DLG_Options_Btn_Default,			"De&faults")
+
+dcl(DLG_Options_Label_SpellCheckAsType,	"Check s&pelling as you type")
+dcl(DLG_Options_Label_SpellHideErrors,	"Hide &spelling errors in the document")
+dcl(DLG_Options_Label_SpellSuggest,		"A&lways suggest corrections")
+dcl(DLG_Options_Label_SpellMainOnly,	"Suggest from &main dictionary only")
+dcl(DLG_Options_Label_SpellUppercase,	"Ignore words in &UPPERCASE")
+dcl(DLG_Options_Label_SpellNumbers,		"Ignore words with num&bers")
+dcl(DLG_Options_Label_SpellInternet,	"Ignore Internet and &file addresses")
+dcl(DLG_Options_Label_SpellCustomDict,	"Custom Dictionary:")
+dcl(DLG_Options_Label_SpellIgnoredWord,	"Ignored words:")
+dcl(DLG_Options_Btn_CustomDict,			"&Dictionary...")
+dcl(DLG_Options_Btn_IgnoreReset,		"&Reset")
+dcl(DLG_Options_Btn_IgnoreEdit,			"&Edit")

@@ -98,8 +98,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 {
 	UT_Bool			b;
 	XAP_Prefs		*pPrefs;
-	// TODO: move this logic when we get a PrefsListener API and turn this
-	//		 dialog into an app-specific
 
 	pPrefs = m_pApp->getPrefs();
 	UT_ASSERT( pPrefs );
@@ -176,5 +174,10 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 	_populateWindowData();
 
+	// TODO i'm not sure you want to do the following at this
+	// TODO time.  setting to "defaults" should probably just
+	// TODO set us to "_builtin_" and that's it.  if the user
+	// TODO then changes something, we should create a new
+	// TODO scheme and fill in the new value.  --jeff
 	pPrefs->setCurrentScheme(old_name);
 }

@@ -23,6 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32OS.h"
 
 #include "gr_Win32Graphics.h"
 
@@ -64,21 +65,6 @@ AP_Win32Dialog_Paragraph::~AP_Win32Dialog_Paragraph(void)
 {
 	DELETEP(m_pPreviewWidget);
 }
-
-
-/*****************************************************************/
-
-// TODO: move this to UTIL/WIN
-
-// s_LockDlgRes - loads and locks a dialog template resource. 
-// Returns the address of the locked resource. 
-// lpszResName - name of the resource  
-DLGTEMPLATE * WINAPI s_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName) 	
-{ 
-    HRSRC hrsrc = FindResource(NULL, lpszResName, RT_DIALOG); 
-    HGLOBAL hglb = LoadResource(hinst, hrsrc); 
-    return (DLGTEMPLATE *) LockResource(hglb); 	
-} 
 
 /*****************************************************************/
 
@@ -275,13 +261,13 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 		// finally, create the (modeless) child dialogs
 		
 		tp.which = AP_RID_DIALOG_PARA_TAB1;
-		pTemplate = s_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
 										(DLGPROC)s_tabProc, (LPARAM)&tp); 
 		UT_ASSERT((w && (w == m_hwndSpacing)));
 
 		tp.which = AP_RID_DIALOG_PARA_TAB2;
-		pTemplate = s_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
+		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
 										(DLGPROC)s_tabProc, (LPARAM)&tp); 
 		UT_ASSERT((w && (w == m_hwndBreaks)));

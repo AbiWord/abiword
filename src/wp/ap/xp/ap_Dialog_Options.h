@@ -57,6 +57,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 			
 				   id_last } tControl;
 
+	typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
 
 	AP_Dialog_Options::tAnswer	getAnswer(void) const;
 
@@ -92,7 +93,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER_BOOLV			(PrefsAutoSave);
 
 	SET_GATHER_BOOLV			(ViewShowRuler);
-		// have a units option
 	SET_GATHER_BOOLV			(ViewShowToolbars);
 
 	SET_GATHER_BOOLV			(ViewAll);

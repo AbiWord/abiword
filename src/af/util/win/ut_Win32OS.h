@@ -25,4 +25,6 @@
 
 UT_Bool UT_IsWinNT(void);
 
+DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName);
+
 #endif /* UT_Win32OS_H */
