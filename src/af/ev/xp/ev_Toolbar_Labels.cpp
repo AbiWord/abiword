@@ -56,7 +56,7 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 	// I do not know how to fix this and as we do not need it yet,
 	// I am going to turn it off for the moment
 	
-#if 0 //def BIDI_ENABLED
+#ifdef BIDI_ENABLED
 	// TODO I wish we did not have to do this here, but I see no other
 	// way; the menu mechanism is much cleaner and I think we should be
 	// using the string-set mechanism for toolbars as we do for menus.

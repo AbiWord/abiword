@@ -359,7 +359,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	// and until a solution to the problem is devised (see comments in that file)
 	// I am turning this off.
 
-#if 0 //def BIDI_ENABLED
+#ifdef BIDI_ENABLED
 	// now we run this stringset through fribidi
 	if(!XAP_App::getApp()->theOSHasBidiSupport())
 	{
