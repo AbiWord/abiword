@@ -242,7 +242,6 @@ public:
 	void                     createCellContainer(void);
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
-	void                     updateCell(void);
 	void                     localCollapse();
 	virtual void             collapse(void);
 	virtual void             markAllRunsDirty(void);
@@ -310,6 +309,8 @@ private:
 // Background properties
 	UT_RGBColor            m_cBgColor;
 	UT_sint32              m_iBgStyle;
+
+	void                   _updateCell(void);
 };
 
 //

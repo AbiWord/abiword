@@ -1263,13 +1263,13 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 //	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
 	collapse();
 //	pTL->collapse();
-	updateCell();
+	_updateCell();
 //	pTL->updateTable(); // may not need this
 	return true;
 }
 
 
-void fl_CellLayout::updateCell(void)
+void fl_CellLayout::_updateCell(void)
 {
 
 	const PP_AttrProp* pAP = NULL;
