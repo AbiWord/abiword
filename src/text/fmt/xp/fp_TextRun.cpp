@@ -1397,23 +1397,14 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	{
 		// TODO -- this needs to be done in vis. space !!!
 
-		// because of rounding errors, we need to mark one run beyond what the math tells us
-		bool bOneMore = false;
-		
 		while(pPrev != NULL && pPrev->getLine() == thisLine &&
-			  (pPrev->getLength() == 0 || iCumWidth > 0 || bOneMore))
+			  (pPrev->getLength() == 0 || iCumWidth > 0))
 		{
-			iCumWidth -= pPrev->getWidth();
+			// only substract the width of this run, if it is already on screen
+			// (newly inserted runs that are not on screen have TmpWidth == 0)
+			if(pPrev->getTmpWidth())
+				iCumWidth -= pPrev->getWidth();
 
-			if(!bOneMore && iCumWidth <= 0)
-			{
-				bOneMore = true;
-			}
-			else
-			{
-				bOneMore = false;
-			}
-			
 			if(!isSelectionDraw())
 			{
 				pPrev->markAsDirty();
@@ -1422,22 +1413,13 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		}
 		
 		iCumWidth = rightClear;
-		bOneMore = false;
 //		UT_sint32 iEx = getGraphics()->tlu(2);
 		while(pNext != NULL && pNext->getLine() == thisLine &&
-			  (pNext->getLength() == 0 || iCumWidth >= 0  || bOneMore))
+			  (pNext->getLength() == 0 || iCumWidth > 0))
 		{
-			iCumWidth -= pNext->getWidth();
+			if(pNext->getTmpWidth())
+				iCumWidth -= pNext->getWidth();
 
-			if(!bOneMore && (iCumWidth <= 0))
-			{
-				bOneMore = true;
-			}
-			else
-			{
-				bOneMore = false;
-			}
-			
 			if(!isSelectionDraw())
 			{
 				pNext->markAsDirty();

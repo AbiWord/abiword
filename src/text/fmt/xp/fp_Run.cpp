@@ -298,8 +298,11 @@ bool fp_Run::clearIfNeeded(void)
 	//
 	// If a run was created by "split" it initially has X value zero. Don't
     // reset the "clear" in this.
+    //
+    // If the run was just newly inserted (and is, therefore, not on screen) do not reset
+    // its clear flag
 	//
-	if(getTmpX() != 0)
+	if(getTmpX() != 0 && getTmpWidth() != 0)
 	{
 		m_bIsCleared = false;
 	}
