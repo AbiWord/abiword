@@ -62,6 +62,7 @@ protected:
 		UT_Bool		bEnablePrintToFile;
 		UT_Bool		bEnableSelection;
 		UT_Bool		bEnablePageRange;
+		char *		szPrintCommand;
 
 	} m_persistPrintDlg;
 	

@@ -59,8 +59,6 @@ void AP_UnixDialog_Print::useStart(void)
 
 	if (m_bPersistValid)
 	{
-		// TODO fill in initial values in the current variables
-		// TODO from the persistent vars we keep.
 		m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
 		m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
 		m_persistPrintDlg.bDoPrintToFile = m_bDoPrintToFile;
@@ -72,7 +70,6 @@ void AP_UnixDialog_Print::useEnd(void)
 {
 	AP_Dialog_Print::useEnd();
 
-	// TODO save current vars into out persistent vars.
 	m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
 	m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
 	m_persistPrintDlg.bDoPrintToFile = m_bDoPrintToFile;
@@ -80,6 +77,8 @@ void AP_UnixDialog_Print::useEnd(void)
 	m_persistPrintDlg.nCopies = m_nCopies;
 	m_persistPrintDlg.nFromPage = m_nFirstPage;
 	m_persistPrintDlg.nToPage = m_nLastPage;
+
+	UT_cloneString(m_persistPrintDlg.szPrintCommand, m_szPrintCommand);
 }
 
 DG_Graphics * AP_UnixDialog_Print::getPrinterGraphicsContext(void)
@@ -179,7 +178,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 							  GTK_SIGNAL_FUNC(s_cancel_clicked), NULL);
 	gtk_window_set_title (GTK_WINDOW (window), "Printer Setup");
 	gtk_container_border_width (GTK_CONTAINER (window), 0);
-	gtk_widget_set_usize (window, 450, 400);
+	gtk_widget_set_usize (window, 375, 300);
 
 	// Add a main vbox
 	vbox1 = gtk_vbox_new (FALSE, 0);
@@ -188,18 +187,18 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 	// Add a vbox to the main vbox
 	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_container_border_width (GTK_CONTAINER (vbox2), 10);
+	gtk_container_border_width (GTK_CONTAINER (vbox2), 5);
 	gtk_box_pack_start (GTK_BOX (vbox1), vbox2, TRUE, FALSE, 0);
 	gtk_widget_show (vbox2);
 
 		// Print To label and radio buttons
 		hbox = gtk_hbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 10);
+		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
 			label = gtk_label_new("Print To: ");
-			gtk_misc_set_padding (GTK_MISC (label), 10,10);
+			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 			gtk_widget_show (label);
 
@@ -216,12 +215,12 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		// Print Command Label and Text box
 		hbox = gtk_hbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 10);
+		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
 			label = gtk_label_new("Printer Command: ");
-			gtk_misc_set_padding (GTK_MISC (label), 10,10);
+			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 			gtk_widget_show (label);
 
@@ -233,22 +232,22 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		// Print To File Label and Text box and button
 		hbox = gtk_hbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 10);
+		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
 			label = gtk_label_new("Filename: ");
-			gtk_misc_set_padding (GTK_MISC (label), 10,10);
+			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
 			gtk_widget_show (label);
 
 			entryFile = gtk_entry_new_with_max_length (1024);
 			gtk_signal_connect(GTK_OBJECT(buttonFile), "toggled",
 							GTK_SIGNAL_FUNC(entry_toggle_enable), entryFile);
-			gtk_box_pack_start (GTK_BOX (hbox), entryFile, TRUE, TRUE, 10);
+			gtk_box_pack_start (GTK_BOX (hbox), entryFile, TRUE, TRUE, 5);
 			gtk_widget_show (entryFile);
 
-			button = gtk_button_new_with_label("Browse");
+			button = gtk_button_new_with_label("Browse...");
 			// TODO add a gtk_signal_connect that opens the file browser dlg
 			gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, TRUE, 0);
 			gtk_widget_show(button);
@@ -260,12 +259,12 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		// Page range stuff
 		vbox = gtk_vbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (vbox), 10);
+		gtk_container_border_width (GTK_CONTAINER (vbox), 5);
 		gtk_box_pack_start (GTK_BOX (vbox2), vbox, FALSE, TRUE, 0);
 		gtk_widget_show (vbox);
 
 			label = gtk_label_new("Page Ranges: ");
-			gtk_misc_set_padding (GTK_MISC (label), 10,10);
+			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 			gtk_widget_show (label);
 
@@ -289,7 +288,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 				gtk_widget_show (entryFrom);
 
 				label = gtk_label_new("To: ");
-				//gtk_misc_set_padding (GTK_MISC (label), 10,10);
+				//gtk_misc_set_padding (GTK_MISC (label), 5,5);
 				gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 				gtk_widget_show (label);
 
@@ -319,7 +318,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 			gtk_widget_show (buttonCollate);
 
 			label = gtk_label_new("Copies: ");
-			gtk_misc_set_padding (GTK_MISC (label), 10,10);
+			gtk_misc_set_padding (GTK_MISC (label), 5,5);
 			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 			gtk_widget_show (label);
 
@@ -335,15 +334,15 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 	gtk_widget_show (separator);
 
 		// Button area
-		hbox = gtk_hbox_new (FALSE, 10);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 10);
+		hbox = gtk_hbox_new (FALSE, 5);
+		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
 		gtk_box_pack_end (GTK_BOX (vbox1), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
 			button = gtk_button_new_with_label ("Cancel");
 			gtk_signal_connect (GTK_OBJECT (button), "clicked",
 							GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
-			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 10);
+			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 5);
 			//GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
 			//gtk_widget_grab_default (button);
 			gtk_widget_show (button);
@@ -351,7 +350,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 			button = gtk_button_new_with_label ("Print");
 			gtk_signal_connect (GTK_OBJECT (button), "clicked",
 							GTK_SIGNAL_FUNC(s_ok_clicked), &m_answer);
-			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 10);
+			gtk_box_pack_end (GTK_BOX (hbox), button, TRUE, TRUE, 5);
 			//gtk_widget_grab_default (button);
 			gtk_widget_show (button);
 
@@ -366,6 +365,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 			// The first time through, grab the settings and set min and max for range checking
 			m_persistPrintDlg.nMinPage = m_nFirstPage;
 			m_persistPrintDlg.nMaxPage = m_nLastPage;
+			UT_cloneString(m_persistPrintDlg.szPrintCommand, "lpr");
 		}
 
 		// Turn some widgets on or off based on settings
@@ -374,7 +374,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 		gtk_widget_set_sensitive(buttonFile, m_persistPrintDlg.bEnablePrintToFile);
 
 		gtk_widget_set_sensitive(entryPrint, GTK_TOGGLE_BUTTON(buttonPrint)->active);
-		gtk_entry_set_text (GTK_ENTRY (entryPrint), "lpr");
+		gtk_entry_set_text (GTK_ENTRY (entryPrint), m_persistPrintDlg.szPrintCommand);
 		gtk_widget_set_sensitive(entryFile, GTK_TOGGLE_BUTTON(buttonFile)->active);
 
 		gtk_widget_set_sensitive(buttonRange, m_persistPrintDlg.bEnablePageRange);
@@ -428,6 +428,8 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 				m_nLastPage = m_persistPrintDlg.nMaxPage;
 			}
 		}
+
+		UT_cloneString(m_szPrintCommand, gtk_entry_get_text(GTK_ENTRY(entryPrint)));
 	}
 	// destroy the widgets.
 
@@ -481,10 +483,11 @@ void AP_UnixDialog_Print::_getGraphics(void)
 	{
 		// TODO use a POPEN style constructor to get the graphics....
 		
-		m_pPSGraphics = new PS_Graphics("lpr",
+		m_pPSGraphics = new PS_Graphics(m_szPrintCommand,
 										m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
 										UT_FALSE);
+	UT_DEBUGMSG(("Using %s as print command", m_szPrintCommand));
 	}
 
 	UT_ASSERT(m_pPSGraphics);

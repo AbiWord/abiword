@@ -46,6 +46,7 @@ AP_Dialog_Print::AP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id
 	m_szDocumentTitle = NULL;
 	m_szDocumentPathname = NULL;
 	m_szPrintToFilePathname = NULL;
+	m_szPrintCommand = NULL;
 	m_bBypassActualDialog = UT_FALSE;
 	m_bEnablePageRange = UT_FALSE;
 	m_bEnablePrintSelection = UT_FALSE;

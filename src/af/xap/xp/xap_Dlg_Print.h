@@ -80,6 +80,7 @@ protected:
 	UT_uint32						m_nCopies;				/* output */
 	AP_Dialog_Print::tAnswer		m_answer;				/* output */
 	char *							m_szPrintToFilePathname;/* output */
+	char *							m_szPrintCommand;		/* output */
 };
 
 #endif /* AP_DIALOG_PRINT_H */
