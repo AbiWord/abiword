@@ -1003,8 +1003,8 @@ bool GR_CocoaGraphics::_callUpdateCallback(NSRect * aRect)
 void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 {
 		if ([v inLiveResize]) {
-			UT_DEBUGMSG (("Is resizing\n"));
-/*
+			xxx_UT_DEBUGMSG (("Is resizing\n"));
+
 			::CGContextSaveGState(m_CGContext);
 			::CGContextClipToRect (m_CGContext, ::CGRectMake (aRect.origin.x, aRect.origin.y, 
 			                                                  aRect.size.width, aRect.size.height));
@@ -1012,7 +1012,6 @@ void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 
 			}
 			::CGContextRestoreGState(m_CGContext);
-*/
 		}
 /*		else {
 			m_CGContext = CG_CONTEXT__;
@@ -1058,7 +1057,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 }
 
 
-GR_Image * GR_CocoaGraphics::genImageFromRectangle(UT_Rect & r)
+GR_Image * GR_CocoaGraphics::genImageFromRectangle(const UT_Rect & r)
 {
 	GR_CocoaImage *img = new GR_CocoaImage("ScreenShot");
 	NSRect rect = NSMakeRect(tdu(r.left), tdu(r.top), 
