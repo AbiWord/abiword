@@ -5180,7 +5180,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	}
 
 	UT_uint32 number = 0;
-	if(type != AP_JUMPTARGET_PAGE)
+	if(type != AP_JUMPTARGET_BOOKMARK)
 		number = atol(numberString);
 
 	if (dec || inc)
