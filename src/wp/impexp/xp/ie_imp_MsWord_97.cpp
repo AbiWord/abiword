@@ -1705,7 +1705,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 {
 	// make sure we are not past the end of the document ...
 	// this can happen with some complex documents
-	if(ps->currentcp >= m_iEndnotesEnd)
+	if(ps->currentcp >= m_iTextboxesEnd)
 	{
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_specCharProc: processing past end of document !!!\n"));
 		return 0;
@@ -1855,12 +1855,45 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 
 				if (wv0x08(&blip, fspa->spid, ps))
 				{
+//
+// FIXME! Put some code in here to make this use Sectionframes!!
+//
+					UT_DEBUGMSG(("!!!!Found a blip in a fspa!!!!!!!!!! \n"));
 					this->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
 									   fspa->yaBottom-fspa->yaTop);
 				}
-				else
+				bool isTextBox = false;
+				UT_uint32 textOff = 0;
+				UT_uint32 i;
+				escherstruct item;
+				FSPContainer *answer = NULL;
+
+				UT_DEBUGMSG(("IE_Imp_MsWord_97:: escher: ps->fib.fcDggInfo %d ps->fib.lcbDggInfo %d \n", ps->fib.fcDggInfo,ps->fib.lcbDggInfo));
+				wvGetEscher (&item, ps->fib.fcDggInfo, ps->fib.lcbDggInfo, ps->tablefd,
+							 ps->mainfd);
+				for (i = 0; i < item.dgcontainer.no_spgrcontainer; i++)
 				{
-					UT_DEBUGMSG(("Dom: no graphic data! Assume Text box!\n"));
+					answer = wvFindSPID (&(item.dgcontainer.spgrcontainer[i]), fspa->spid);
+					if (answer)
+					{
+						break;
+					}
+				}
+				if(answer != NULL)
+				{
+					ClientTextbox cTextBox = answer->clienttextbox;
+					if(cTextBox.textid != NULL)
+					{
+						isTextBox = true;
+						textOff = *cTextBox.textid;
+					}
+					UT_DEBUGMSG((" clienttextbox %x clientdata %x \n",answer->clienttextbox,answer->clientdata));
+				}
+//				if(isTextBox)
+//				{
+//				if(answer != NULL)
+//				{
+					UT_DEBUGMSG(("Found a Text box! text offset is.. %d \n",textOff));
 					const char * atts[] = {"props",NULL,NULL,NULL};
 					UT_String sProps;
 					UT_String sVal;
@@ -1918,8 +1951,10 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					pPos->lid = fspa->spid;
 					pPos->endFrame = getDoc()->getLastFrag();
 					m_vecTextboxPos.addItem(pPos);
+					wvReleaseEscher (&item);
 					return true;
-				}
+//				}
+				wvReleaseEscher (&item);
 			}
 			else
 			{
@@ -5371,7 +5406,10 @@ void IE_Imp_MsWord_97::_handleTextBoxes(const wvParseStruct *ps)
 		{
 			bTextboxError = true;
 		}
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: dgginfo size %d bytes\n", ps->fib.ccpTxbx));
+
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: ps->fib.fcDggInfo %d ps->fib.lcbDggInfo %d \n", ps->fib.fcDggInfo,ps->fib.lcbDggInfo));
+
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: Text size %d bytes\n", ps->fib.ccpTxbx));
 		
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleTextBoxes: fib.lid %d \n", ps->fib.lid));
 		if(!bTextboxError && 		   
