@@ -219,7 +219,7 @@ public:
 							{ return m_pImpl->localizeHelpUrl(pathBeforeLang, pathAfterLang, remoteURLbase); }
 
 	GR_GraphicsFactory *       getGraphicsFactory() const {return m_pGraphicsFactory;}
-	void                       setDefaultGraphicsId(UT_uint32 i) {m_iDefaultGraphicsId = i;}
+	void                       setDefaultGraphicsId(UT_uint32 i);
 	GR_Graphics *              newGraphics(UT_uint32 iClassId, GR_AllocInfo *param) const;
 	
 	virtual UT_sint32			setInputMode(const char * szName);

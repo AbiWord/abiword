@@ -1050,7 +1050,27 @@ GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo * param) con
 
 	return m_pGraphicsFactory->newGraphics(iClassId, param);
 }
+void XAP_App::setDefaultGraphicsId(UT_uint32 i)
+{
+	if(i == GRID_UNKNOWN)
+		return;
+	
+	m_iDefaultGraphicsId = i;
 
+	if(i < GRID_LAST_BUILT_IN)
+	{
+		// change the preference settings
+		UT_return_if_fail(m_prefs)
+			
+		XAP_PrefsScheme *pPrefsScheme = m_prefs->getCurrentScheme();
+		UT_return_if_fail(pPrefsScheme);
+
+		UT_String s;
+		UT_String_sprintf(s, "%d", i);
+		
+		pPrefsScheme->setValue(XAP_PREF_KEY_DefaultGraphics, s.c_str());
+	}
+}
 
 #ifdef DEBUG
 /*!

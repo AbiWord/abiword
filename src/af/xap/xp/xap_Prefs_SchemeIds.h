@@ -163,6 +163,8 @@
 #define XAP_PREF_KEY_NoMACinUUID "NoMACinUUID"
 #define XAP_PREF_DEFAULT_NoMACinUUID "0"
 
+#define XAP_PREF_KEY_DefaultGraphics "DefaultGraphics"
+#define XAP_PREF_DEFAULT_DefaultGraphics "0"
 
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
@@ -209,5 +211,6 @@ dcl(HTMLExportOptions)
 dcl(ChangeLanguageWithKeyboard)
 dcl(DirMarkerAfterClosingParenthesis)
 dcl(NoMACinUUID)
+dcl(DefaultGraphics)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
