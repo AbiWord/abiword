@@ -519,7 +519,7 @@ void  XAP_UnixEncodingManager::initialize()
 			
 				if (mask & COMPONENT_CODESET)
 				{
-					Native8BitEncodingName = cs+1;
+					Native8BitEncodingName = my_cs+1;
 					xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
 					if (!strncmp(my_cs+1,"ISO8859",strlen("ISO8859")))
 					{
