@@ -158,6 +158,9 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 	m_iLastX = x;
 	m_iLastY = y;
 	getGraphics()->setClipRect(NULL);
+	PT_DocPosition posAtXY = getPosFromXY(x,y);
+	m_pView->_setPoint(posAtXY);
+	m_pView->_fixInsertionPointCoords();
 }
 
 
@@ -305,6 +308,20 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 	m_iVisualDragMode= FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
 	m_bTextCut = false;
 }
+
+PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
+{
+//
+// Convert this to a document position and paste!
+//
+	x -= m_iInitialOffX;
+	y -= m_iInitialOffY;
+	y += getGraphics()->tlu(6); //Otherwise it's too easy to hit the line above
+	x += m_recOrigLeft.width; // Add in offset 
+	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
+	return posAtXY;
+}
+
 /*!
  * x and y is the location in the document windows of the mouse in logical
  * units.
@@ -319,20 +336,13 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 		m_pView->warpInsPtToXY(x, y,true);
 		return;
 	}
-//
-// Convert this to a document position and paste!
-//
-	x -= m_iInitialOffX;
-	y -= m_iInitialOffY;
-	y += getGraphics()->tlu(6); //Otherwise it's too easy to hit the line above
-	x += m_recOrigLeft.width; // Add in offset 
-	PT_DocPosition posAtXY = m_pView->getDocPositionFromXY(x,y,false);
+	PT_DocPosition posAtXY = getPosFromXY(x,y);
 	m_pView->setPoint(posAtXY);
 	getGraphics()->setClipRect(&m_recCurFrame);
 	m_pView->updateScreen(false);
 	getGraphics()->setClipRect(NULL);
 	m_iVisualDragMode = FV_VisualDrag_NOT_ACTIVE;
-	m_pView->getMouseContext(x- m_iInitialOffX,y - m_iInitialOffY);
+	m_pView->getMouseContext(x,y);
 	m_iInitialOffX = 0;
 	m_iInitialOffY = 0;
 	m_pView->cmdPaste();

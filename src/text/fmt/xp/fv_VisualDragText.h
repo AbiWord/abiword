@@ -54,6 +54,7 @@ public:
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	void                  drawImage(void);
 	void                  getImageFromSelection(UT_sint32 x, UT_sint32 y); 	
+	PT_DocPosition        getPosFromXY(UT_sint32 x, UT_sint32 y);
 private:
 	FV_View *             m_pView;
 	FV_VisualDragMode     m_iVisualDragMode;
