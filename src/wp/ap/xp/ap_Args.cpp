@@ -64,7 +64,9 @@ AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 
 AP_Args::~AP_Args()
 {
+#ifndef HAVE_GNOME
 	poptFreeContext(poptcon);
+#endif
 	FREEP(options);
 }
 
