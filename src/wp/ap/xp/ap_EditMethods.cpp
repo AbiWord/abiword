@@ -274,6 +274,7 @@ public:
 	static EV_EditMethod_Fn insertLRM;
 	static EV_EditMethod_Fn insertRLM;
 	static EV_EditMethod_Fn insertClosingParenthesis;
+	static EV_EditMethod_Fn insertOpeningParenthesis;
 
 	static EV_EditMethod_Fn insertGraveData; // for certain european keys
 	static EV_EditMethod_Fn insertAcuteData;
@@ -871,6 +872,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertNBSpace),		0,	""),
 	EV_EditMethod(NF(insertNBZWSpace),		0,	""),
 	EV_EditMethod(NF(insertOgonekData), 	_D_,	""),
+	EV_EditMethod(NF(insertOpeningParenthesis),	_D_,""),
 	EV_EditMethod(NF(insertPageBreak),		0,	""),
 	EV_EditMethod(NF(insertParagraphBreak), 0,	""),
 	EV_EditMethod(NF(insertRLM),		0,	""),
@@ -4318,6 +4320,69 @@ Defun(insertClosingParenthesis)
 			else if(order == UTLANG_LTR)
 			{
 				data[1] = UCS_LRM;
+			}
+			else
+			{
+				goto normal_insert;
+			}
+
+			pView->cmdCharInsert(&data[0], 2);
+			return true;
+		}
+		
+		return false;
+	}
+
+ normal_insert:	
+	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
+	return true;
+}
+
+Defun(insertOpeningParenthesis)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	ABIWORD_VIEW;
+
+	XAP_App * pApp = pFrame->getApp();
+	UT_return_val_if_fail(pApp, false);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_return_val_if_fail(pPrefs, false);
+
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_return_val_if_fail(pPrefsScheme, false);
+
+	bool b = false;
+
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard), &b);
+	if(b)
+	{
+		pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_DirMarkerAfterClosingParenthesis), &b);
+	}
+	
+	if(b)
+	{
+		UT_return_val_if_fail(pCallData->m_dataLength == 1, false);
+		UT_UCS4Char data[2];
+		data[1] = (UT_UCS4Char) *(pCallData->m_pData);
+
+		
+		const XML_Char ** props_in = NULL;
+		if (pView->getCharFormat(&props_in))
+		{
+			const XML_Char * s = UT_getAttribute("lang", props_in);
+			UT_Language l;
+			UT_LANGUAGE_ORDER order = l.getOrderFromProperty(s);
+			FREEP(props_in);
+
+			if(order == UTLANG_RTL)
+			{
+				data[0] = UCS_RLM;
+			}
+			else if(order == UTLANG_LTR)
+			{
+				data[0] = UCS_LRM;
 			}
 			else
 			{

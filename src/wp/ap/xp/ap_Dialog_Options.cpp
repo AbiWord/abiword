@@ -120,7 +120,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
-	Save_Pref_Bool( pPrefsScheme, XAP_PREF_DEFAULT_DirMarkerAfterClosingParenthesis, _gatherDirMarkerAfterClosingParenthesis());
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_DirMarkerAfterClosingParenthesis, _gatherDirMarkerAfterClosingParenthesis());
 	
 	
 #if 1
