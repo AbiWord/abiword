@@ -40,6 +40,7 @@ NIBS=$(top_srcdir)/src/af/xap/cocoa/xap_CocoaDlg_MessageBox.nib \
 	$(top_srcdir)/src/af/xap/cocoa/xap_GenericListChooser_Controller.nib \
 	$(top_srcdir)/src/af/xap/cocoa/xap_CocoaToolbarWindow.nib \
 	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaDialog_Break.nib \
+	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaDialog_MetaData.nib \
 	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaFrame.nib \
 	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaSplash.nib
 
@@ -56,14 +57,8 @@ PROGRAM_BUNDLE_RES=$(PROGRAM_BUNDLE)/Resources
 $(PROGRAM_BUNDLE_BIN)/AbiWord: AbiWord
 	@mkdir -p $(PROGRAM_BUNDLE_RES)
 	@mkdir -p $(PROGRAM_BUNDLE_BIN)
-	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaDlg_MessageBox.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
-	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_GenericListChooser_Controller.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
-	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaToolbarWindow.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
-	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaDlg_MessageBox.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
-	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaDialog_Break.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
-	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaFrame.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
-	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaSplash.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
-
+	for i in $(NIBS); do; (cd `dirname $$i`; tar cf - `basename $$i`) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -); done
+	
 	cp $(top_srcdir)/src/wp/main/cocoa/bundle/PkgInfo $(PROGRAM_BUNDLE)
 	cp $(top_srcdir)/src/wp/main/cocoa/bundle/Info.plist $(PROGRAM_BUNDLE)
 	cp $(top_srcdir)/src/wp/main/cocoa/bundle/AbiWord.icns $(PROGRAM_BUNDLE_RES)
