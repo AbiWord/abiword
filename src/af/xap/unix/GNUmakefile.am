@@ -29,7 +29,9 @@ noinst_LIBRARIES = libXap_unix.a
 
 gladedir=$(pkgdatadir)/AbiWord/glade
 
-glade_DATA = xap_UnixDlg_About.glade
+glade_DATA = \
+	xap_UnixDlg_About.glade \
+	xap_UnixDlg_Zoom.glade
 
 libXap_unix_a_SOURCES=\
 	xap_UnixApp.cpp				\

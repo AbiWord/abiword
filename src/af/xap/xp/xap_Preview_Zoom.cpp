@@ -164,16 +164,39 @@ void XAP_Preview_Zoom::draw(void)
 	UT_ASSERT(m_gc);
 	UT_ASSERT(m_string);
 	
-	// TODO : replace 5,5 with real coordinates
-	m_gc->clearArea(0, 0, m_gc->tlu(getWindowWidth()), m_gc->tlu(getWindowHeight()));
+	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
+	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
+	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
+	
+	m_gc->fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
+	m_gc->clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
+
+	pageRect.left += m_gc->tlu(5);
+	pageRect.top += m_gc->tlu(5);
+	pageRect.width -= m_gc->tlu(10);
+	pageRect.height -= m_gc->tlu(10);
+
+	// set the cliprect to our page size, so we don't draw over our borders
+	UT_Rect r;
+	r.left   = pageRect.left;
+	r.top    = pageRect.top;
+	r.width  = pageRect.width;
+	r.height = pageRect.height;
+	m_gc->setClipRect(&r);
 
 #ifndef WITH_PANGO	
-	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), m_gc->tlu(5), m_gc->tlu(5));
+	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), pageRect.left, pageRect.top);
 #else
 	if(!m_pGlyphString)
 		m_pGlyphString = m_gc->getPangoGlyphString(m_string,UT_UCS4_strlen(m_string));
 
-	m_gc->drawPangoGlyphString(m_pGlyphString, m_gc->tlu(5), m_gc->tlu(5));
+	m_gc->drawPangoGlyphString(m_pGlyphString, pageRect.left, pageRect.top);
 #endif
-	
+
+	UT_Rect rr;
+	rr.left   = 0;
+	rr.top    = 0;
+	rr.width  = iWidth;
+	rr.height = iHeight;
+	m_gc->setClipRect(&rr);
 }

@@ -147,5 +147,3 @@ void XAP_Dialog_Zoom::_createPreviewFromGC(GR_Graphics * gc,
 	m_zoomPreview->setFont(XAP_Preview_Zoom::font_NORMAL);
 
 }
-
-	

@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -134,17 +135,14 @@ gint XAP_UnixDialog_Zoom::s_preview_exposed(GtkWidget * /* widget */,
 
 void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
-  m_pFrame = pFrame ;
-
-  // Build the window's widgets and arrange them
-  GtkWidget * mainWindow = _constructWindow();
-  gtk_widget_show ( mainWindow ) ;
-
-  // Populate the window's data items
-  _populateWindowData();
+	m_pFrame = pFrame ;
+	
+	// Build the window's widgets and arrange them
+	m_windowMain = _constructWindow();
+	
+	// Populate the window's data items
+	_populateWindowData();
   
-  // *** this is how we add the gc ***
-  {
     // attach a new graphics context to the drawing area
     XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
     UT_ASSERT(unixapp);
@@ -162,78 +160,74 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
     _createPreviewFromGC(m_unixGraphics,
 			 static_cast<UT_uint32>(m_previewArea->allocation.width),
 			 static_cast<UT_uint32>(m_previewArea->allocation.height));
-  }
-  
-  // HACK : we call this TWICE so it generates an update on the buttons to
-  // HACK : trigger a preview
-  _populateWindowData();
 
-  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false ) )
-    {
-    case BUTTON_OK:
-      event_OK () ; break ;
-    default:
-      event_Cancel () ; break ;
-    }
+	// Todo: we need a good widget to query with a probable
+	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
+	// Todo: background. This should be fine
+	m_unixGraphics->init3dColors(m_previewArea->style);
 
-  _storeWindowData();
+	// HACK : we call this TWICE so it generates an update on the buttons to
+	// HACK : trigger a preview
+	_populateWindowData();
+
+	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain), pFrame, this, GTK_RESPONSE_CANCEL, false ) )
+	{
+		case GTK_RESPONSE_OK:
+			m_answer = XAP_Dialog_Zoom::a_OK;
+			break;
+		default:
+			m_answer = XAP_Dialog_Zoom::a_CANCEL;
+			break;
+	}
 	
-  abiDestroyWidget (mainWindow) ;
-}
-
-void XAP_UnixDialog_Zoom::event_OK(void)
-{
-  m_answer = XAP_Dialog_Zoom::a_OK;
-}
-
-void XAP_UnixDialog_Zoom::event_Cancel(void)
-{
-  m_answer = XAP_Dialog_Zoom::a_CANCEL;
+	_storeWindowData();
+	
+	abiDestroyWidget (m_windowMain) ;
 }
 
 void XAP_UnixDialog_Zoom::event_Radio200Clicked(void)
 {
-  _enablePercentSpin(false);
-  _updatePreviewZoomPercent(200);
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(200);
 }
 
 void XAP_UnixDialog_Zoom::event_Radio100Clicked(void)
 {
-  _enablePercentSpin(false);
-  _updatePreviewZoomPercent(100);
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(100);
 }
 
 void XAP_UnixDialog_Zoom::event_Radio75Clicked(void)
 {
-  _enablePercentSpin(false);
-  _updatePreviewZoomPercent(75);
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(75);
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPageWidthClicked(void)
 {
-  _enablePercentSpin(false);
-  if ( m_pFrame )
-    {
-      UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForPageWidth () ;
-      _updatePreviewZoomPercent(value);
-    }
+	_enablePercentSpin(false);
+	if ( m_pFrame )
+	{
+		UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForPageWidth () ;
+		_updatePreviewZoomPercent(value);
+	}
 }
 
 void XAP_UnixDialog_Zoom::event_RadioWholePageClicked(void)
 {
-  _enablePercentSpin(false);
-  if ( m_pFrame )
-    {
-      UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForWholePage () ;
-      _updatePreviewZoomPercent(value);
-    }
+	_enablePercentSpin(false);
+	if ( m_pFrame )
+	{
+		UT_uint32 value = m_pFrame->getCurrentView ()->calculateZoomPercentForWholePage () ;
+		_updatePreviewZoomPercent(value);
+	}
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPercentClicked(void)
 {
-  _enablePercentSpin(true);
-  // call event_SpinPercentChanged() to do the fetch and update work
-  event_SpinPercentChanged();
+	_enablePercentSpin(true);
+	// call event_SpinPercentChanged() to do the fetch and update work
+	event_SpinPercentChanged();
 }
 
 void XAP_UnixDialog_Zoom::event_SpinPercentChanged(void)
@@ -254,190 +248,76 @@ void XAP_UnixDialog_Zoom::event_PreviewAreaExposed(void)
 
 GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 {
-  GtkWidget * windowZoom;
-  
-  GtkWidget * vboxZoom;
-  GtkWidget * hboxFrames;
-  GtkWidget * frameZoomTo;
-  GtkWidget * vboxZoomTo;
-  GSList * 	vboxZoomTo_group = NULL;
-  
-  GtkWidget * radiobutton200;
-  GtkWidget * radiobutton100;
-  GtkWidget * radiobutton75;
-  GtkWidget * radiobuttonPageWidth;
-  GtkWidget * radiobuttonWholePage;
-  GtkWidget * radiobuttonPercent;
-  GtkObject * spinbuttonPercent_adj;
-  GtkWidget * spinbuttonPercent;
-  
-  GtkWidget * framePreview;
-  GtkWidget * drawingareaPreview;
-  
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-  
-  XML_Char * tmp = NULL;
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle).c_str());
-  windowZoom = abiDialogNew ( "zoom dialog", TRUE, tmp ) ;
-  FREEP(tmp);
-
-  vboxZoom = GTK_DIALOG(windowZoom)->vbox;
-  gtk_container_set_border_width (GTK_CONTAINER (vboxZoom), 10);
-
-  hboxFrames = gtk_hbox_new (FALSE, 10);
-  gtk_widget_show (hboxFrames);
-  gtk_box_pack_start (GTK_BOX (vboxZoom), hboxFrames, FALSE, TRUE, 0);
-
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption).c_str());
-  frameZoomTo = gtk_frame_new (tmp);
-  gtk_frame_set_shadow_type(GTK_FRAME(frameZoomTo), GTK_SHADOW_NONE);
-  FREEP(tmp);
-  gtk_widget_show (frameZoomTo);
-  gtk_box_pack_start (GTK_BOX (hboxFrames), frameZoomTo, FALSE, TRUE, 0);
-  
-  vboxZoomTo = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (vboxZoomTo);
-  gtk_container_add (GTK_CONTAINER (frameZoomTo), vboxZoomTo);
-  gtk_container_border_width (GTK_CONTAINER (vboxZoomTo), 10);
-  
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_200).c_str());
-  radiobutton200 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
-  FREEP(tmp);
-  vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton200));
-  g_object_set_data (G_OBJECT (radiobutton200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_200));
-  gtk_widget_show (radiobutton200);
-  gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton200, FALSE, TRUE, 0);
-  
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_100).c_str());
-  radiobutton100 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
-  FREEP(tmp);
-  vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton100));
-  g_object_set_data (G_OBJECT (radiobutton100), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_100));
-  gtk_widget_show (radiobutton100);
-  gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton100, FALSE, TRUE, 0);
-  
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_75).c_str());
-  radiobutton75 = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
-  FREEP(tmp);
-  vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton75));
-  g_object_set_data (G_OBJECT (radiobutton75), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_75));
-  gtk_widget_show (radiobutton75);
-  gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton75, TRUE, TRUE, 0);
-  
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PageWidth).c_str());
-  radiobuttonPageWidth = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
-  FREEP(tmp);
-  vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageWidth));
-  g_object_set_data (G_OBJECT (radiobuttonPageWidth), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PAGEWIDTH));
-  gtk_widget_show (radiobuttonPageWidth);
-  gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonPageWidth, TRUE, TRUE, 0);
-  
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_WholePage).c_str());
-  radiobuttonWholePage = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
-  FREEP(tmp);
-  vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonWholePage));
-  g_object_set_data (G_OBJECT (radiobuttonWholePage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_WHOLEPAGE));
-  gtk_widget_show (radiobuttonWholePage);
-  gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonWholePage, TRUE, TRUE, 0);
-  
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_Percent).c_str());
-  radiobuttonPercent = gtk_radio_button_new_with_label (vboxZoomTo_group, tmp);
-  FREEP(tmp);
-  vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPercent));
-  g_object_set_data (G_OBJECT (radiobuttonPercent), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PERCENT));
-  gtk_widget_show (radiobuttonPercent);
-  gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonPercent, TRUE, TRUE, 0);
-
-  spinbuttonPercent_adj = gtk_adjustment_new (1, 1, 500, 1, 10, 10);
-  spinbuttonPercent = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonPercent_adj), 1, 0);
-  gtk_widget_show (spinbuttonPercent);
-  gtk_box_pack_end (GTK_BOX (vboxZoomTo), spinbuttonPercent, TRUE, TRUE, 0);
-  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbuttonPercent), TRUE);
-
-  UT_XML_cloneNoAmpersands(tmp, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PreviewFrame).c_str());
-  framePreview = gtk_frame_new (tmp);
-  gtk_frame_set_shadow_type(GTK_FRAME(framePreview), GTK_SHADOW_NONE);
-  FREEP(tmp);
-  gtk_widget_show (framePreview);
-  gtk_box_pack_start (GTK_BOX (hboxFrames), framePreview, TRUE, TRUE, 0);
-  
-  // TODO: do something dynamically here?  How do we set this "sample" font?
-  // 
-  // aiken: add padding around the preview area.
-  GtkWidget* padding = gtk_frame_new(0);
-  gtk_container_set_border_width(GTK_CONTAINER(padding), 10);
-  gtk_container_add(GTK_CONTAINER(framePreview), padding);
-  gtk_frame_set_shadow_type(GTK_FRAME(padding), GTK_SHADOW_NONE);
-  gtk_widget_show(padding); 
-  
-  // *** This is how we do a preview widget ***
-  drawingareaPreview = createDrawingArea ();
-  gtk_widget_show (drawingareaPreview);
-
-  // aiken: change container to padding instead of frameSampleText
-  gtk_container_add (GTK_CONTAINER (padding), drawingareaPreview);
-  gtk_widget_set_usize (drawingareaPreview, 149, 10);  	
-  
-  abiAddStockButton(GTK_DIALOG(windowZoom), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(windowZoom), GTK_STOCK_OK, BUTTON_OK);
-  
-  // the radio buttons
-  g_signal_connect(G_OBJECT(radiobutton200),
-		   "clicked",
-		   G_CALLBACK(s_radio_200_clicked),
-		   static_cast<gpointer>(this));
-  g_signal_connect(G_OBJECT(radiobutton100),
-		   "clicked",
-		   G_CALLBACK(s_radio_100_clicked),
-		   static_cast<gpointer>(this));
-  g_signal_connect(G_OBJECT(radiobutton75),
-		   "clicked",
-		   G_CALLBACK(s_radio_75_clicked),
-					   static_cast<gpointer>(this));
-  g_signal_connect(G_OBJECT(radiobuttonPageWidth),
-		   "clicked",
-		   G_CALLBACK(s_radio_PageWidth_clicked),
-		   static_cast<gpointer>(this));
-  g_signal_connect(G_OBJECT(radiobuttonWholePage),
-		   "clicked",
-		   G_CALLBACK(s_radio_WholePage_clicked),
-		   static_cast<gpointer>(this));
-  g_signal_connect(G_OBJECT(radiobuttonPercent),
-		   "clicked",
-		   G_CALLBACK(s_radio_Percent_clicked),
-		   static_cast<gpointer>(this));
-  
-  // the spin button
-  g_signal_connect(G_OBJECT(spinbuttonPercent_adj),
-		   "value_changed",
-		   G_CALLBACK(s_spin_Percent_changed),
-		   static_cast<gpointer>(this));
+	GtkWidget * window;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-  // the expose event off the preview
-  g_signal_connect(G_OBJECT(drawingareaPreview),
-		   "expose_event",
-		   G_CALLBACK(s_preview_exposed),
-		   static_cast<gpointer>(this));
-  
-  // Update member variables with the important widgets that
-  // might need to be queried or altered later.
-  
-  m_windowMain = windowZoom;
-  
-  m_previewArea = 	drawingareaPreview;
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/xap_UnixDlg_Zoom.glade";
 	
-  m_radio200 = 		radiobutton200;
-  m_radio100 = 		radiobutton100;
-  m_radio75 = 		radiobutton75;
-  m_radioPageWidth = 	radiobuttonPageWidth;
-  m_radioWholePage = 	radiobuttonWholePage;
-  m_radioPercent = 	radiobuttonPercent;
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "xap_UnixDlg_Zoom");
+	m_previewArea = glade_xml_get_widget(xml, "daPreview");
+	m_radioGroup = gtk_radio_button_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPercent200") ));
+	m_radio200 = glade_xml_get_widget(xml, "rbPercent200");
+	m_radio100 = glade_xml_get_widget(xml, "rbPercent100");
+	m_radio75 = glade_xml_get_widget(xml, "rbPercent75");
+	m_radioPageWidth = glade_xml_get_widget(xml, "rbPageWidth");
+	m_radioWholePage = glade_xml_get_widget(xml, "rbWholePage");
+	m_radioPercent = glade_xml_get_widget(xml, "rbPercent");
+	m_spinPercent = glade_xml_get_widget(xml, "sbPercent");
+	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_spinPercent) );
+
+	// set the dialog title
+	abiDialogSetTitle(window, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle).c_str());
+
+	// disable double buffering on our preview
+	gtk_widget_set_double_buffered(m_previewArea, FALSE);  
+
+	// localize the strings in our dialog, and set tags for some widgets
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbZoom"), pSS, XAP_STRING_ID_DLG_Zoom_RadioFrameCaption);
+
+	localizeButton(m_radio200, pSS, XAP_STRING_ID_DLG_Zoom_200);
+	g_object_set_data (G_OBJECT (m_radio200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_200));
   
-  m_spinPercent = spinbuttonPercent;
+	localizeButton(m_radio100, pSS, XAP_STRING_ID_DLG_Zoom_100);
+	g_object_set_data (G_OBJECT (m_radio100), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_100));
   
-  m_radioGroup = vboxZoomTo_group;
-  
-  return windowZoom;
+	localizeButton(m_radio75, pSS, XAP_STRING_ID_DLG_Zoom_75);
+	g_object_set_data (G_OBJECT (m_radio75), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_75));
+	
+	localizeButton(m_radioPageWidth, pSS, XAP_STRING_ID_DLG_Zoom_PageWidth);
+	g_object_set_data (G_OBJECT (m_radioPageWidth), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PAGEWIDTH));
+	
+	localizeButton(m_radioWholePage, pSS, XAP_STRING_ID_DLG_Zoom_WholePage);
+	g_object_set_data (G_OBJECT (m_radioWholePage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_WHOLEPAGE));
+	
+	localizeButton(m_radioPercent, pSS, XAP_STRING_ID_DLG_Zoom_Percent);
+	g_object_set_data (G_OBJECT (m_radioPercent), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(XAP_Frame::z_PERCENT));
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, XAP_STRING_ID_DLG_Zoom_PreviewFrame);
+
+	// Connect clicked signals so that our callbacks get called.
+	g_signal_connect(G_OBJECT(m_radio200),       "clicked", G_CALLBACK(s_radio_200_clicked),       static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_radio100),       "clicked", G_CALLBACK(s_radio_100_clicked),       static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_radio75),        "clicked", G_CALLBACK(s_radio_75_clicked),        static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_radioPageWidth), "clicked", G_CALLBACK(s_radio_PageWidth_clicked), static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_radioWholePage), "clicked", G_CALLBACK(s_radio_WholePage_clicked), static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_radioPercent),   "clicked", G_CALLBACK(s_radio_Percent_clicked),   static_cast<gpointer>(this));
+
+	// the zoom spin button
+	g_signal_connect(G_OBJECT(m_spinAdj), "value_changed", G_CALLBACK(s_spin_Percent_changed), static_cast<gpointer>(this));
+
+	// the expose event off the preview
+	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed),   static_cast<gpointer>(this));
+
+	return window;
 }
 
 void XAP_UnixDialog_Zoom::_populateWindowData(void)
@@ -505,5 +385,3 @@ void XAP_UnixDialog_Zoom::_enablePercentSpin(bool enable)
   
   gtk_widget_set_sensitive(m_spinPercent, enable);
 }
-
-	

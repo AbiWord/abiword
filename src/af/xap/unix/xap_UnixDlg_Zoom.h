@@ -38,17 +38,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
-
-	typedef enum
-	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
-	  } ResponseId ;
-
 	// callbacks can fire these events
-
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
 
 	virtual void			event_Radio200Clicked(void);
 	virtual void			event_Radio100Clicked(void);
@@ -99,7 +89,8 @@ protected:
 	GtkWidget * m_radioWholePage;
 	GtkWidget * m_radioPercent;
 	GtkWidget * m_spinPercent;
-
+	GtkAdjustment * m_spinAdj;
+	
 	// our "group" of radio buttons
 	GSList *	m_radioGroup;
 };
