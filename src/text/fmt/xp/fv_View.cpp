@@ -9607,6 +9607,11 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+
+	while(pRun && pRun->getType() ==  FPRUN_FMTMARK)
+	{
+		pRun = pRun->getNext();
+	}
 	
 	if (!pRun)
 	{
@@ -9619,7 +9624,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
 		return EV_EMC_HYPERLINK;
 	}
-	
+
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:

@@ -28,6 +28,7 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
+
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "pp_Property.h"
@@ -45,6 +46,8 @@
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
+
+#include "ut_sleep.h"
 
 // TODO can we use the indexAP provided in the change records
 // TODO to remember the attr/prop for each run rather than
@@ -597,7 +600,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			return;
 		}
 	}
-
+//	UT_usleep(100000); // 0.1 seconds useful for debugging
+	xxx_UT_DEBUGMSG(("SEVIOR: draw this %x \n"));
 
 	// shortcircuit drawing if we're way off base.
 	long imax = (1<<15) -1;

@@ -956,6 +956,7 @@ void fp_Line::draw(GR_Graphics* pG)
 		}
 
 		da.yoff += pRun->getY();
+		da.bDirtyRunsOnly = true; //magic line to give a factor 2 speed up!
 		pRun->draw(&da);
 
 		da.xoff -= pRun->getX();
