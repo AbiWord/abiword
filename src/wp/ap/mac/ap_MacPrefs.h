@@ -1,6 +1,5 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 1999 John Brewer DBA Jera Design
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,9 +17,17 @@
  * 02111-1307, USA.
  */
 
-#include "ap_MacApp.h"
+#ifndef AP_MACPREFS_H
+#define AP_MACPREFS_H
 
-int main (int argc, char **argv)
+#include "ap_Prefs.h"
+
+class AP_MacPrefs : public AP_Prefs
 {
-	return AP_MacApp::MacMain("AbiWord", argc, argv);
-}
+public:
+	AP_MacPrefs(XAP_App * pApp);
+	
+	virtual const char *	getPrefsPathname(void) const;
+};
+
+#endif /* AP_MACPREFS_H */

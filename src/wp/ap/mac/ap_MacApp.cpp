@@ -1,6 +1,5 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 1999 John Brewer DBA Jera Design
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,28 +17,78 @@
  * 02111-1307, USA.
  */
 
-
-#include <string.h>
+/*****************************************************************
+** Only one of these is created by the application.
+*****************************************************************/
 
 #ifdef ABI_OPT_JS
 #include <js.h>
 #endif /* ABI_OPT_JS */
 
-#include "xap_Args.h"
-#include "xap_MacApp.h"
-#include "xap_MacFrame.h"
+#include <stdio.h>
+#include <string.h>
 
-#include "ap_MacFrame.h"			// TODO move this
+#include "xap_Args.h"
+#include "ap_MacFrame.h"
+#include "ap_MacApp.h"
+
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
+#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
+#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
 
 /*****************************************************************/
 
-int XAP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
+AP_MacApp::AP_MacApp(AP_Args * pArgs, const char * szAppName)
+	: XAP_MacApp(pArgs,szAppName)
+{
+	m_prefs = NULL;
+}
+
+AP_MacApp::~AP_MacApp(void)
+{
+	DELETEP(m_prefs);
+}
+
+UT_Bool AP_MacApp::initialize(void)
+{
+	// load preferences, first the builtin set and then any on disk.
+	
+	m_prefs = new AP_MacPrefs(this);
+	m_prefs->loadBuiltinPrefs();
+	m_prefs->loadPrefsFile();
+
+	// TODO overlay command line arguments onto preferences...
+		   
+	// now that preferences are established, let the xap init
+		   
+	return XAP_MacApp::initialize();
+}
+
+UT_Bool AP_MacApp::shutdown(void)
+{
+	if (m_prefs->getAutoSave())
+		m_prefs->savePrefsFile();
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_MacApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValue(szKey,pszValue);
+}
+
+/*****************************************************************/
+
+int AP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 {
 	// initialize our application.
 
 	AP_Args Args = AP_Args(argc,argv);
 	
-	XAP_MacApp * pMyMacApp = new XAP_MacApp(&Args, szAppName);
+	AP_MacApp * pMyMacApp = new AP_MacApp(&Args, szAppName);
 	pMyMacApp->initialize();
 
 	// create the first window.
@@ -63,8 +112,8 @@ int XAP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 
 	// destroy the App.  It should take care of deleting all frames.
 
+	pMyMacApp->shutdown();
 	delete pMyMacApp;
 
 	return 0;
 }
-

@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
  * 
@@ -18,42 +18,33 @@
  * 02111-1307, USA.
  */
 
-
-#ifndef XAP_MACAPP_H
-#define XAP_MACAPP_H
-
-#include "xap_App.h"
-#include "xap_MacDialogFactory.h"
-#include "xap_MacTlbr_ControlFactory.h"
-class AP_Args;
-class AP_MacToolbar_Icons;
-
 /*****************************************************************
 ******************************************************************
 ** Only one of these is created by the application.
 ******************************************************************
 *****************************************************************/
 
-class XAP_MacApp : public XAP_App
+#ifndef AP_MACAPP_H
+#define AP_MACAPP_H
+
+#include "xap_Args.h"
+#include "xap_MacApp.h"
+#include "ap_MacPrefs.h"
+
+class AP_MacApp : public XAP_MacApp
 {
 public:
-	XAP_MacApp(AP_Args * pArgs, const char * szAppName);
-	virtual ~XAP_MacApp(void);
+	AP_MacApp(AP_Args * pArgs, const char * szAppName);
+	virtual ~AP_MacApp(void);
 
 	virtual UT_Bool			initialize(void);
-	virtual XAP_Frame *		newFrame(void);
-	virtual void			reallyExit(void);
+	virtual UT_Bool			shutdown(void);
+	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 
-	virtual AP_DialogFactory *				getDialogFactory(void);
-	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
-	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	static int MacMain (const char * szAppName, int argc, char **argv);
 
 protected:
-	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
-	
-	AP_MacToolbar_Icons *		m_pMacToolbarIcons;
-	AP_MacDialogFactory			m_dialogFactory;
-	AP_MacToolbar_ControlFactory	m_controlFactory;
+	AP_MacPrefs *			m_prefs;
 };
 
 #endif /* XAP_MACAPP_H */
