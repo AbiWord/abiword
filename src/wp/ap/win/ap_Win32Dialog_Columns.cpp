@@ -54,6 +54,7 @@ AP_Win32Dialog_Columns::AP_Win32Dialog_Columns(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Columns(pDlgFactory,id), _win32Dialog(this)
 {
+	m_hThisDlg = NULL;
 }
 
 AP_Win32Dialog_Columns::~AP_Win32Dialog_Columns(void)
@@ -71,9 +72,15 @@ void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 }
 
 void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)
+{
+	// As this function gets called prior to getting an hWnd for the dialog
+	// we check to see if the dialog has been initialized prior to 
+	// running the conrol
+	if (m_hThisDlg)
 	{
-	_win32Dialog.enableControl(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, bState);
+		_win32Dialog.enableControl(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, bState);
 	}
+}
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
@@ -83,6 +90,7 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
 	UT_ASSERT(app);
 
+	m_hThisDlg = hWnd;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));

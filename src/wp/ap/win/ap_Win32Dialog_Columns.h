@@ -41,7 +41,8 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 private:
-	XAP_Win32DialogHelper	_win32Dialog;
+	HWND						m_hThisDlg;
+	XAP_Win32DialogHelper		_win32Dialog;
 	XAP_Win32PreviewWidget *	m_pPreviewWidget;
 
 protected:
