@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 Hubert Figuiere <hfiguiere@teaser.fr>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,33 +17,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <ctype.h>
 
-#include "ut_types.h"
-#include "ut_misc.h"
-#include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_MacString.h"
-  
-/* this function is defined in ut_string.h */
-char * UT_catPathname(const char * szPath, const char * szFile)
-{
-	UT_ASSERT((szPath) && (*szPath));
-	UT_ASSERT((szFile) && (*szFile));
-	
-	char * szPathname = (char *)calloc(sizeof(char),strlen(szPath)+strlen(szFile)+2);
-	UT_ASSERT(szPathname);
-	
-	sprintf(szPathname,"%s%s%s",
-			szPath,
-			((szPath[strlen(szPath)-1]=='\\') ? "" : "\\"),
-			szFile);
+#ifndef UT_BEOSASSERT_H
+#define UT_BEOSASSERT_H
 
-	return szPathname;
-}
+void UT_MacAssertMsg(const char * szMsg, const char * szFile, int iLine);
 
+#endif /* UT_BEOSASSERT_H */

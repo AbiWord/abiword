@@ -23,7 +23,9 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		ut_debugmsg.cpp		\
-			ut_Win32Timer.cpp	\
+			ut_MacStrimp.cpp	\
+			ut_MacAssert.cpp	\
+			ut_MacTimer.cpp	\
 			ut_Xpm2Bmp.cpp
 
 TARGETS=		$(OBJS)

@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,32 +17,15 @@
  * 02111-1307, USA.
  */
  
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <ctype.h>
+#ifndef UT_SLEEP_H
+#define UT_SLEEP_H
 
-#include "ut_types.h"
-#include "ut_misc.h"
-#include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_MacString.h"
-  
-/* this function is defined in ut_string.h */
-char * UT_catPathname(const char * szPath, const char * szFile)
+#include <unistd.h>
+
+inline void UT_usleep (unsigned long usec)
 {
-	UT_ASSERT((szPath) && (*szPath));
-	UT_ASSERT((szFile) && (*szFile));
-	
-	char * szPathname = (char *)calloc(sizeof(char),strlen(szPath)+strlen(szFile)+2);
-	UT_ASSERT(szPathname);
-	
-	sprintf(szPathname,"%s%s%s",
-			szPath,
-			((szPath[strlen(szPath)-1]=='\\') ? "" : "\\"),
-			szFile);
-
-	return szPathname;
+	sleep (usec / 1000);
 }
+
+#endif
 

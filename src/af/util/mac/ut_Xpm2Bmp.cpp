@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 Hubert Figuiere <hfiguiere@teaser.fr>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,15 +18,17 @@
  * 02111-1307, USA.
  */
 
-#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_hash.h"
 #include "ut_string.h"
+#include "ut_MacAssert.h"
 
 #define _RoundUp(x,y) ((((x)+((y)-1))/(y))*(y))
 
@@ -35,9 +38,9 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 				   UT_uint32 maxHeight,
 				   const char ** pIconData,
 				   UT_uint32 sizeofData,
-				   HDC hdc,
+				   CGrafPtr port,
 				   UT_RGBColor * pBackgroundColor,
-				   HBITMAP * pBitmap)
+				   PixMapHandle * pBitmap)
 {
 	// convert an XPM into a BMP using a DIB.
 	// return true if successful.
@@ -51,7 +54,7 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 	UT_uint32 width, height, nrColors, charsPerPixel;
 	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
-						 &width,&height,&nrColors,&charsPerPixel);
+						 &width, &height, &nrColors, &charsPerPixel);
 	UT_ASSERT(n == 4);
 	UT_ASSERT(width > 0);
 	UT_ASSERT(height > 0);
@@ -61,33 +64,24 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 	UT_ASSERT(width <= maxWidth);
 	UT_ASSERT(height <= maxHeight);
 	
-	UT_uint32 sizeofColorData = nrColors * sizeof(RGBQUAD);
-	UT_uint32 widthRoundedUp = _RoundUp(width,sizeof(LONG));
+	UT_uint32 sizeofColorData = nrColors * sizeof(RGBColor);
+	UT_uint32 widthRoundedUp = _RoundUp(width,sizeof(long));
 	UT_uint32 rowPadding = widthRoundedUp - width;
 	UT_uint32 sizeofPixelData = widthRoundedUp * height;
-	UT_uint32 sizeofStructure = sizeof(BITMAPINFOHEADER) + sizeofColorData + sizeofPixelData;
+	
+	
+	PixMapHandle hBitmap = NewPixMap ();
+	Rect bounds;
+	bounds.top = 0;
+	bounds.left = 0;
+	bounds.right = width;
+	bounds.bottom = height;
+	(*hBitmap)->bounds = bounds;
+	(*hBitmap)->pixelSize = 8;
 
-	UT_Byte * pInfo = (UT_Byte *)calloc(1,sizeofStructure);
-	if (!pInfo)
-		return UT_FALSE;
-
-	BITMAPINFO * pbmi = (BITMAPINFO *)pInfo;
-	BITMAPINFOHEADER * pbmih = &pbmi->bmiHeader;
-	RGBQUAD * pRGB = (RGBQUAD *)(pInfo + sizeof(BITMAPINFOHEADER));
-	UT_Byte * pPixel = (UT_Byte *)(pInfo + sizeof(BITMAPINFOHEADER) + sizeofColorData);
-
-	pbmih->biSize			= sizeof(BITMAPINFOHEADER);
-	pbmih->biWidth			= width;
-	pbmih->biHeight			= -(LONG)height;	// minus height gives us a top-down bitmap
-	pbmih->biPlanes			= 1;
-	pbmih->biBitCount		= 8;
-	pbmih->biCompression	= BI_RGB;
-	pbmih->biSizeImage		= 0;
-	pbmih->biXPelsPerMeter	= 0;
-	pbmih->biYPelsPerMeter	= 0;
-	pbmih->biClrUsed		= nrColors;	// should we verify that they are all actually used ??
-	pbmih->biClrImportant	= 0;
-
+	RGBColor *pRGB = (RGBColor *) NewPtr ((nrColors + 1) * sizeof(RGBColor));
+	UT_ASSERT (pRGB != NULL);
+	
 	UT_HashTable hash(61);
 	UT_RGBColor color(0,0,0);
 	
@@ -123,23 +117,23 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 		if (UT_stricmp(bufColorValue,"None")==0)
 		{
-			pRGB[k].rgbRed		= pBackgroundColor->m_red;
-			pRGB[k].rgbGreen	= pBackgroundColor->m_grn;
-			pRGB[k].rgbBlue		= pBackgroundColor->m_blu;
-			pRGB[k].rgbReserved	= 0;
+			pRGB[k].red		= pBackgroundColor->m_red;
+			pRGB[k].green	= pBackgroundColor->m_grn;
+			pRGB[k].blue	= pBackgroundColor->m_blu;
 		}
 		else
 		{
 			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
 			UT_parseColor(bufColorValue, color);
-			pRGB[k].rgbRed		= color.m_red;
-			pRGB[k].rgbGreen	= color.m_grn;
-			pRGB[k].rgbBlue		= color.m_blu;
-			pRGB[k].rgbReserved	= 0;
+			pRGB[k].red		= color.m_red;
+			pRGB[k].green	= color.m_grn;
+			pRGB[k].blue	= color.m_blu;
 		}
 	}
 
 	// walk thru the image data
+
+	UT_Byte *pPixel = NULL;
 
 	const char ** pIconDataImage = &pIconDataPalette[nrColors];
 	for (UT_uint32 kRow=0; (kRow < height); kRow++)
@@ -160,14 +154,16 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		pPixel += rowPadding;
 	}
 
-	UT_ASSERT(pPixel == (pInfo + sizeofStructure));
-	pPixel = (UT_Byte *)(pInfo + sizeof(BITMAPINFOHEADER) + sizeofColorData);
-	
-	HBITMAP hBitmap = CreateDIBitmap(hdc,pbmih,CBM_INIT,pPixel,pbmi,DIB_RGB_COLORS);
+//	UT_ASSERT(pPixel == (pInfo + sizeofStructure));
+//	pPixel = (UT_Byte *)(pInfo + sizeof(BITMAPINFOHEADER) + sizeofColorData);
+		
+//	HBITMAP hBitmap = CreateDIBitmap(hdc,pbmih,CBM_INIT,pPixel,pbmi,DIB_RGB_COLORS);
 	*pBitmap = hBitmap;
 
-	free(pInfo);
-	
+//	free(pInfo);
+	::DisposePtr ((Ptr)pRGB);
+	pRGB = NULL; 
+
 	return (hBitmap != 0);
 }
 
