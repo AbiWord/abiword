@@ -18,6 +18,9 @@
  */
 
 #include "ut_assert.h"
+#include "ut_string.h"
+#include "ut_misc.h"
+#include "ut_bytebuf.h"
 #include "ie_impGraphic.h"
 
 #include "ie_impGraphic_PNG.h"
@@ -33,9 +36,10 @@ struct _impGraphic
 									  const char ** szSuffixList,
 									  IEGraphicFileType * ft);
 	UT_Bool			(*fpSupportsFileType)(IEGraphicFileType ft);
+    IEStatus		(*fpStaticConstructor)(IE_ImpGraphic **ppieg);
 };
 
-#define DeclareImporter(n)	{ n::RecognizeSuffix, n::GetDlgLabels, n::SupportsFileType }
+#define DeclareImporter(n)	{ n::RecognizeSuffix, n::GetDlgLabels, n::SupportsFileType, n::StaticConstructor }
 
 static struct _impGraphic s_impGraphicTable[] =
 {
@@ -90,4 +94,61 @@ UT_Bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 UT_uint32 IE_ImpGraphic::getImporterCount(void)
 {
 	return NrElements(s_impGraphicTable);
+}
+
+UT_Bool IE_ImpGraphic::constructImporter(const char * szFilename,
+										 IEGraphicFileType ft,
+										 IE_ImpGraphic **ppieg)
+{
+	// construct an importer of the right type.
+	// caller is responsible for deleting the importer object
+	// when finished with it.
+	UT_ASSERT(ppieg);
+
+	// no filter will support IEGFT_Unknown, so we detect from the
+	// suffix of the filename, the real importer to use and assign
+	// that back to ieft.
+	if (ft == IEGFT_Unknown)
+	{
+		UT_ASSERT(szFilename && *szFilename);
+		ft = IE_ImpGraphic::fileTypeForSuffix(UT_pathSuffix(szFilename));
+	}
+
+	UT_ASSERT(ft != IEGFT_Unknown);
+
+	// use the importer for the specified file type
+	for (UT_uint32 k=0; (k < NrElements(s_impGraphicTable)); k++)
+	{
+		struct _impGraphic * s = &s_impGraphicTable[k];
+		if (s->fpSupportsFileType(ft))
+			return s->fpStaticConstructor(ppieg);
+	}
+
+	// if we got here, no registered importer handles the
+	// type of file we're supposed to be reading.
+	return IES_UnknownType;
+}
+
+
+//  Load the contents of the file into a ByteBuffer, and pass it to
+//  the other importGraphic function.  Used as a convenience for importing
+//  graphics from a file on disk.
+IEStatus	IE_ImpGraphic::importGraphic(const char * szFilename,
+										 FG_Graphic ** ppfg)
+{
+	UT_ByteBuf* pBB = new UT_ByteBuf();
+
+	if (pBB == NULL)
+		return IES_NoMemory;
+
+	if (!pBB->insertFromFile(0, szFilename))
+	{
+		DELETEP(pBB);
+		return IES_FileNotFound;
+	}
+
+	//  The ownership of pBB changes here.  The subclass of IE_ImpGraphic
+	//  should either delete pBB when it is done importing, or give it
+	//  to the FG_Graphic object which is eventually constructed.
+	return importGraphic(pBB, ppfg);
 }

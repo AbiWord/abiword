@@ -1,5 +1,5 @@
-/* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiWord -- Embedded graphics for layout
+ * Copyright (C) 1999 Matt Kimball
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,24 +17,31 @@
  * 02111-1307, USA.
  */
 
+#ifndef FG_GRAPHICRASTER_H
+#define FG_GRAPHICRASTER_H
 
-#ifndef IE_IMPGRAPHIC_PNG_H
-#define IE_IMPGRAPHIC_PNG_H
+#include "fg_Graphic.h"
+#include "ut_bytebuf.h"
 
-#include "ie_impGraphic.h"
-
-class IE_ImpGraphic_PNG : public IE_ImpGraphic
+//  An implementation of the FG_Graphic interface for raster files.  The
+//  internal file format happens to be PNG.
+class FG_GraphicRaster : public FG_Graphic
 {
 public:
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEGraphicFileType * ft);
-	static UT_Bool 		SupportsFileType(IEGraphicFileType ft);
-    static IEStatus		StaticConstructor(IE_ImpGraphic **ppieg);
+	FG_GraphicRaster();
+	virtual ~FG_GraphicRaster();
 
-    virtual IEStatus	importGraphic(UT_ByteBuf* pBB, 
-									  FG_Graphic ** ppfg);
+	virtual FGType		getType(void);
+
+	virtual double		getWidth(void);
+	virtual double		getHeight(void);
+
+	UT_Bool				setRaster_PNG(UT_ByteBuf* pBB);
+	UT_ByteBuf*			getRaster_PNG(void);
+
+protected:
+	UT_ByteBuf *m_pbbPNG;
+	UT_sint32 m_iWidth, m_iHeight;
 };
 
-#endif /* IE_IMPGRAPHIC_PNG_H */
+#endif /* FG_GRAPHICRASTER_H */

@@ -28,7 +28,6 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
-#include "ut_png.h"
 
 #include "xav_View.h"
 #include "fv_View.h"
@@ -39,6 +38,8 @@
 #include "fp_Column.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
 #include "pd_Document.h"
 #include "pd_Style.h"
 #include "pp_Property.h"
@@ -4212,10 +4213,15 @@ void FV_View::_doPaste(void)
 			UT_ByteBuf* pBB = NULL;
 			pImg->convertToPNG(&pBB);
 
-			UT_sint32	iImageWidth = pImg->getDisplayWidth();
-			UT_sint32	iImageHeight = pImg->getDisplayHeight();
-
-			_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
+			FG_GraphicRaster *pFGR;
+			pFGR = new FG_GraphicRaster();
+			if (pFGR)
+			{
+				if(pFGR->setRaster_PNG(pBB)) {
+					_insertGraphic(pFGR, szName);
+				}
+				delete pFGR;
+			}
 
 			delete pImg;
 		}
@@ -4466,29 +4472,34 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 /*****************************************************************/
 
-UT_Bool FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight)
+UT_Bool FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 {
-	UT_ASSERT(iImageWidth > 0);
-	UT_ASSERT(iImageHeight > 0);
-	UT_ASSERT(pBB);
+	UT_ASSERT(pFG);
 	UT_ASSERT(szName);
+
+	FGType fgt = pFG->getType();
+	UT_ASSERT(fgt == FGT_Raster);
+	FG_GraphicRaster* pFGR = (FG_GraphicRaster *)pFG;
+
+	UT_ByteBuf* pBB = pFGR->getRaster_PNG();
 
 	/*
 	  Create the data item
 	*/
 	m_pDoc->createDataItem(szName, UT_FALSE, pBB, NULL, NULL);
 
-	delete pBB;
-
 	/*
 	  Insert the object into the document.
 	*/
 	char szProps[256];
 	
-	double fWidthInInches = iImageWidth / ((double) m_pG->getResolution());
-	double fHeightInInches = iImageHeight / ((double) m_pG->getResolution());
+	// TODO:  Ok, this scale is in here so that I didn't change the behavior
+	// of image insertion, so the size of the image you insert depends on the
+	// zoom factor you are at.  This is wrong.  But what is right?  --  MK
+	double fScale = 72.0 / (double) m_pG->getResolution();
 
-	sprintf(szProps, "width:%3.2fin; height:%3.2fin", fWidthInInches, fHeightInInches);
+	sprintf(szProps, "width:%3.2fin; height:%3.2fin", 
+			pFG->getWidth() * fScale, pFG->getHeight() * fScale);
 	
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
@@ -4502,7 +4513,7 @@ UT_Bool FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 
 	return UT_TRUE;
 }
 
-UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
+UT_Bool FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 {
 	UT_Bool bDidGlob = UT_FALSE;
 
@@ -4532,15 +4543,7 @@ UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 		ndx++;
 	}
 
-	UT_sint32 iImageWidth;
-	UT_sint32 iImageHeight;
-
-	UT_Bool bOK = UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-	
-	if (bOK)
-		bOK = _insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
-	else
-		DELETEP(pBB);
+	UT_Bool bOK = _insertGraphic(pFG, szName);
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();

@@ -20,6 +20,7 @@
 #include "ut_string.h"
 
 #include "ie_impGraphic_PNG.h"
+#include "fg_GraphicRaster.h"
 
 UT_Bool IE_ImpGraphic_PNG::RecognizeSuffix(const char * szSuffix)
 {
@@ -39,4 +40,33 @@ UT_Bool IE_ImpGraphic_PNG::GetDlgLabels(const char ** pszDesc,
 UT_Bool IE_ImpGraphic_PNG::SupportsFileType(IEGraphicFileType ft)
 {
 	return (IEGFT_PNG == ft);
+}
+
+IEStatus IE_ImpGraphic_PNG::StaticConstructor(IE_ImpGraphic **ppieg)
+{
+	*ppieg = new IE_ImpGraphic_PNG();
+	if (*ppieg == NULL)
+		return IES_NoMemory;
+
+	return IES_OK;
+}
+
+//  This actually creates our FG_Graphic object for a PNG
+IEStatus IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB, 
+										  FG_Graphic ** ppfg)
+{
+	FG_GraphicRaster *pFGR;
+
+	pFGR = new FG_GraphicRaster();
+	if(pFGR == NULL)
+		return IES_NoMemory;
+
+	if(!pFGR->setRaster_PNG(pBB)) {
+		DELETEP(pFGR);
+		
+		return IES_BogusDocument;
+	}
+
+	*ppfg = (FG_Graphic *) pFGR;
+	return IES_OK;
 }

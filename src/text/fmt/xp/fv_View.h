@@ -37,6 +37,7 @@ class fl_DocListener;
 class fl_BlockLayout;
 class fp_Page;
 class fp_Run;
+class FG_Graphic;
 class PD_Document;
 class GR_Graphics;
 class GR_Image;
@@ -101,8 +102,7 @@ public:
 	virtual UT_Bool	cmdSave(void);
 	virtual UT_Bool	cmdSaveAs(const char * szFilename, int ieft);
 
-	UT_Bool			_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight);
-	UT_Bool			cmdInsertPNGImage(UT_ByteBuf*, const char*);
+	UT_Bool			cmdInsertGraphic(FG_Graphic*, const char*);
 	
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
@@ -247,6 +247,7 @@ protected:
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
+	UT_Bool				_insertGraphic(FG_Graphic*, const char*);
 
 	static void			_autoScroll(UT_Timer * pTimer);
 

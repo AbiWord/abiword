@@ -35,7 +35,9 @@ CPPSRCS=		fv_View.cpp			\
 			fp_Page.cpp			\
 			fp_Run.cpp			\
 			fp_FmtMarkRun.cpp		\
-			fp_TextRun.cpp
+			fp_TextRun.cpp			\
+			fg_Graphic.cpp			\
+			fg_GraphicRaster.cpp
 
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)

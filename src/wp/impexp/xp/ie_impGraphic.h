@@ -24,9 +24,21 @@
 #include "ut_types.h"
 #include "ie_types.h"
 
-class PD_Document;
+class FG_Graphic;
+class UT_ByteBuf;
 
-// IE_ImpImage defines the abstract base class for image file importers.
+//
+// IE_ImpGraphic defines the abstract base class for graphic file importers.
+// 
+// Subclasses which load raster files should generally convert to a
+// PNG format image and construct a FG_GraphicRaster.  Subclasses
+// which load vector files should generally convert to a SVG format
+// and construct a FG_GraphicVector.
+//
+// That way, the only formats that the layout and display code need to know
+// about are PNG and SVG.  The code to handle other formats should be isolated
+// in the impexp package.
+//
 class IE_ImpGraphic
 {
 public:
@@ -43,6 +55,22 @@ public:
 										   const char ** pszSuffixList,
 										   IEGraphicFileType * ft);
 	static UT_uint32	getImporterCount(void);
+
+	static UT_Bool		constructImporter(const char * szFilename,
+										  IEGraphicFileType ft,
+										  IE_ImpGraphic **ppieg);
+
+	virtual ~IE_ImpGraphic() {}
+
+	//  Note subclassers:  ownership of pBB is passes here, so
+	//  free pBB if you don't need it.
+    virtual IEStatus	importGraphic(UT_ByteBuf* pBB, 
+									  FG_Graphic ** ppfg) = 0;
+
+	virtual IEStatus	importGraphic(const char * szFilename,
+									  FG_Graphic ** ppfg);
+
+private:
 };
 
 #endif /* IE_IMP_H */

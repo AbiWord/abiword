@@ -27,6 +27,7 @@
 #include "xav_View.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
+#include "fg_Graphic.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
 #include "xap_App.h"
@@ -1653,55 +1654,51 @@ Defun1(fileInsertGraphic)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	UT_Bool bRes = UT_FALSE;
 
 	char* pNewFile = NULL;
 
-	// we just ignore this ieft now, even though the user
-	// might set it in the dialog
-	IEGraphicFileType ieift;
-	
-	UT_Bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&ieift);
+
+	IEGraphicFileType iegft;
+	UT_Bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&iegft);
 
 	if (!bOK || !pNewFile)
 		return UT_FALSE;
 
 	// we own storage for pNewFile and must free it.
-
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
 
-	UT_ByteBuf* pBB = new UT_ByteBuf();
+	IE_ImpGraphic *pIEG;
+	FG_Graphic* pFG;
 
-	bRes = pBB->insertFromFile(0, pNewFile);
+	if(IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG) != IES_OK) {
+		s_CouldNotLoadFileMessage(pFrame, pNewFile);
 
-	if (!bRes)
-	{
-		free(pNewFile);
-		delete pBB;
-		
+		FREEP(pNewFile);
 		return UT_FALSE;
 	}
+	if(pIEG->importGraphic(pNewFile, &pFG) != IES_OK) {
+		s_CouldNotLoadFileMessage(pFrame, pNewFile);
+
+		FREEP(pNewFile);
+		DELETEP(pIEG);
+		return UT_FALSE;
+	}
+
+	DELETEP(pIEG);
 	
 	ABIWORD_VIEW;
 
-	/*
-	  TODO we will eventually want to support other
-	  image file formats, although PNG will still be
-	  the only format which we consider to be a
-	  "first class citizen", since images saved in ABW
-	  files are encoded as PNG.  Anyway, when we support
-	  other formats, the place to do the conversion would
-	  be somewhere right around here.  The file dialog
-	  above would need to be modified to show a different
-	  set of file formats in the drop-down list, as well.
-	*/
-	
-	if (!pView->cmdInsertPNGImage(pBB, pNewFile))
+	if (!pView->cmdInsertGraphic(pFG, pNewFile))
 	{
-		s_CouldNotLoadFileMessage(pFrame,pNewFile);
+		s_CouldNotLoadFileMessage(pFrame, pNewFile);
+
+		FREEP(pNewFile);
+		DELETEP(pFG);
+		return UT_FALSE;
 	}
 
-	free(pNewFile);
+	FREEP(pNewFile);
+	DELETEP(pFG);
 	
 	return UT_TRUE;
 }
