@@ -38,7 +38,7 @@ LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
 else
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
 endif
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)

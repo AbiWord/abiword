@@ -30,7 +30,7 @@ CPPSRCS=		MacMain.cpp
 PROGRAM=		$(BINDIR)/AbiWord.app/Content/MacOS/AbiWord
 
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv Abi_libiconv
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv Abi_libiconv
 
 
 ABI_APPLIBS=		$(LoadOrder)

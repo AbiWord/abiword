@@ -560,7 +560,7 @@ endif
 # For psiconv. This should pick up the static psiconv library in the
 # peer directory, or the global one if it is not found. 
 EXTRA_LIBS	+= -L$(ABI_ROOT)/../psiconv/psiconv/.libs -lpsiconv
-
+EXTRA_LIBS	+= -L$(ABI_ROOT)/../expat/lib/.libs -lexpat
 
 ##################################################################
 ##################################################################
@@ -583,7 +583,3 @@ CFLAGS += -DABI_OPT_STL
 ABI_OPTIONS+=STL:On
 endif
 
-ifdef ABI_OPT_SHARED_EXPAT
-CFLAGS += -DSHAREDLIB_EXPAT
-EXTRA_LIBS +=  -lexpat
-endif

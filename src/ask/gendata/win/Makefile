@@ -27,7 +27,7 @@ CSRCS=			ask_gendata_main_Win32.c ask_gendata_data_Win32.c
 PROGRAM=		$(BINDIR)/ask_gendata.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:$(LINK_ARCH) /profile
-ABI_APPLIBS=		AbiSetup_Small AbiSetupGenData Abi_zlib Abi_expat
+ABI_APPLIBS=		AbiSetup_Small AbiSetupGenData Abi_zlib 
 
 ABI_OTHLIBS=		
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \

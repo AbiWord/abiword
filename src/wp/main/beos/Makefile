@@ -25,11 +25,9 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 CPPSRCS=		BeOSMain.cpp
 PROGRAM=		$(BINDIR)/AbiWord
 
-#TF As of R4 we don't need zlib or libpng any more
-#LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
-#			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libpng Abi_zlib
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv Abi_libiconv
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv \
+			Abi_libiconv
 
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 

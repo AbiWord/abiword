@@ -31,7 +31,7 @@ PROGRAM=		AbiHello.exe
 ## TODO enable linking with profile-libraries and thus bloat us.
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:$(LINK_ARCH) /profile
-ABI_APPLIBS=		AbiHelloVer AbiUtil AbiEv AbiXAp AbiGr AbiHEAp Abi_libpng Abi_zlib Abi_expat
+ABI_APPLIBS=		AbiHelloVer AbiUtil AbiEv AbiXAp AbiGr AbiHEAp Abi_libpng Abi_zlib 
 ABI_APPLIBDEP=		$(ABI_APPLIBS)
 
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \

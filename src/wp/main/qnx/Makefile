@@ -34,7 +34,7 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 # TODO several times.  see if there is a better way of doing this.
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv \
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv \
 			Abi_libpng Abi_zlib Abi_libiconv
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
