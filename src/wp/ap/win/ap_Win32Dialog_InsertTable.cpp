@@ -251,7 +251,7 @@ BOOL AP_Win32Dialog_InsertTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 			EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), bEnable);
 			EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE), bEnable);
-			break;
+			return 1;
 		}
 			
 
