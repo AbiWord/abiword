@@ -3967,11 +3967,11 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	PT_DocPosition posOld = m_iInsPoint;
 	fp_Run* pRun = NULL;
 	fl_BlockLayout* pBlock = NULL;
-	UT_sint32 x;
-	UT_sint32 y;
-	UT_sint32 x2;
-	UT_sint32 y2;
-	bool bDirection;
+	UT_sint32 x=0;
+	UT_sint32 y=0;
+	UT_sint32 x2=0;
+	UT_sint32 y2=0;
+	bool bDirection=false;
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	UT_sint32 iOldDepth = getEmbedDepth(getPoint());
@@ -3980,8 +3980,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
 	*/
-	PT_DocPosition posBOD;
-	PT_DocPosition posEOD;
+	PT_DocPosition posBOD=0;
+	PT_DocPosition posEOD=0;
 	bool bRes;
 
 	bRes = getEditableBounds(false, posBOD);
@@ -3992,8 +3992,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// versions of findPositionCoords. I think there's been some bugs
 	// due to that function being overloaded to be used from this
 	// code.
-	UT_sint32 xold,yold,x2old,y2old;
-	bool bDirectionOld;
+	UT_sint32 xold,yold,x2old,y2old=0;
+	bool bDirectionOld=false;
 	UT_DEBUGMSG(("Count Chars %d \n",countChars));
 	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirectionOld, &pBlock, &pRun);
 	if (bForward)

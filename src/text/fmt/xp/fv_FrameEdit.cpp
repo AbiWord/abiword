@@ -730,8 +730,9 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		fp_Line * pLine = NULL;
 		UT_sint32 x1,x2,y1,y2;
 		UT_uint32 height;
-		bool b,bDir;
-		m_pView->_findPositionCoords(posAtXY,b,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
+		bool bEOL=false;
+		bool bDir;
+		m_pView->_findPositionCoords(posAtXY,bEOL,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
 		UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
 		if((pBL == NULL) || (pRun == NULL))
 		{
