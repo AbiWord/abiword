@@ -6418,7 +6418,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	fp_PageSize::Predefined orig_def,final_def;
 	double orig_wid = -1, orig_ht = -1, final_wid = -1, final_ht = -1;
-	UT_Dimension orig_ut, final_ut;
+	UT_Dimension orig_ut = DIM_IN, final_ut = DIM_IN;
 	fp_PageSize pSize(pDoc->m_docPageSize.getPredefinedName());
 	orig_def = pSize.NameToPredefined(pSize.getPredefinedName());
 	//
@@ -8154,6 +8154,51 @@ Defun1(toggleBottomline)
 	return _toggleSpan(pView, "text-decoration", "bottomline", "none", true);
 }
 
+// non-static so that ap_Toolbar_Functions.cpp can use it
+void s_getPageMargins(FV_View * pView,
+					  double &margin_left,
+					  double &margin_right,
+					  double &page_margin_left,
+					  double &page_margin_right)
+{
+  // get current char properties from pView
+  const XML_Char * prop = NULL;
+  const XML_Char ** props_in = NULL;
+  const XML_Char * sz = NULL;
+
+	{
+		pView->getBlockFormat(&props_in);
+		prop = "margin-left";
+		sz = UT_getAttribute(prop, props_in);
+		margin_left = UT_convertToInches(sz);
+		FREEP(props_in);
+	}
+
+	{
+		pView->getBlockFormat(&props_in);
+		prop = "margin-right";
+		sz = UT_getAttribute(prop, props_in);
+		margin_right = UT_convertToInches(sz);
+		FREEP(props_in);
+	}
+
+	{
+		prop = "page-margin-left";
+		pView->getSectionFormat(&props_in);
+		sz = UT_getAttribute(prop, props_in);
+		page_margin_left = UT_convertToInches(sz);
+		FREEP(props_in);
+	}
+
+	{
+		prop = "page-margin-right";
+		pView->getSectionFormat(&props_in);
+		sz = UT_getAttribute(prop, props_in);
+		page_margin_right = UT_convertToInches(sz);
+		FREEP(props_in);
+	}
+}
+
 // MSWord defines this to 1/2 an inch, so we do too
 #define TOGGLE_INDENT_AMT 0.5
 
@@ -8161,15 +8206,26 @@ Defun1(toggleIndent)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-  bool ret;
   bool doLists = true;
   double page_size = pView->getPageSize().Width (DIM_IN);
+
+  double margin_left = 0., margin_right = 0., allowed = 0.,
+	  page_margin_left = 0., page_margin_right = 0.;
+
+  s_getPageMargins (pView, margin_left, margin_right,
+					page_margin_left, page_margin_right);
+
+  FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
+
+  allowed = page_size - page_margin_left - page_margin_right;
+  if (margin_left >= allowed)
+	  return true;
+  
   if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
   {
-	 doLists = false;
+	  doLists = false;
   }
-  ret = pView->setBlockIndents(doLists, (double) TOGGLE_INDENT_AMT ,page_size);
-  return ret;
+  return  pView->setBlockIndents(doLists, (double) TOGGLE_INDENT_AMT ,page_size);
 }
 
 Defun1(toggleUnIndent)
@@ -8179,6 +8235,18 @@ Defun1(toggleUnIndent)
   bool ret;
   double page_size = pView->getPageSize().Width (DIM_IN);
   bool doLists = true;
+
+  double margin_left = 0., margin_right = 0., allowed = 0.,
+	  page_margin_left = 0., page_margin_right = 0.;
+
+  s_getPageMargins (pView, margin_left, margin_right,
+					page_margin_left, page_margin_right);
+
+  FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
+  allowed = iBlockDir == FRIBIDI_TYPE_LTR ? margin_left : margin_right;
+  if ( allowed <= 0. )
+	  return true ;
+
   if(!pView->getCurrentBlock()->isListItem() || !pView->isSelectionEmpty() )
   {
 	 doLists = false;

@@ -42,6 +42,7 @@
 #include "pd_Document.h"
 #include "ut_Script.h"
 #include "spell_manager.h"
+#include "ap_EditMethods.h"
 
 #if 0
 
@@ -325,45 +326,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-	// get current char properties from pView
-	const XML_Char * prop = NULL;
-	const XML_Char ** props_in = NULL;
-	const XML_Char * sz = NULL;
-
 	double margin_left = 0., margin_right = 0., allowed = 0.,
 		page_margin_left = 0., page_margin_right = 0.;
 
-	{
-		pView->getBlockFormat(&props_in);
-		prop = "margin-left";
-		sz = UT_getAttribute(prop, props_in);
-		margin_left = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
-
-	{
-		pView->getBlockFormat(&props_in);
-		prop = "margin-right";
-		sz = UT_getAttribute(prop, props_in);
-		margin_right = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
-
-	{
-		prop = "page-margin-left";
-		pView->getSectionFormat(&props_in);
-		sz = UT_getAttribute(prop, props_in);
-		page_margin_left = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
-
-	{
-		prop = "page-margin-right";
-		pView->getSectionFormat(&props_in);
-		sz = UT_getAttribute(prop, props_in);
-		page_margin_right = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
+	s_getPageMargins(pView, margin_left, margin_right,
+					 page_margin_left, page_margin_right);
 
 	FriBidiCharType iBlockDir = pView->getCurrentBlock()->getDominantDirection();
 
@@ -375,11 +342,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 				s = EV_TIS_Gray;
 			break;
 		case AP_TOOLBAR_ID_UNINDENT:
-			allowed = 0.;
+			allowed = iBlockDir == FRIBIDI_TYPE_LTR ? margin_left : margin_right;
 
-			double margin = iBlockDir == FRIBIDI_TYPE_LTR ? margin_left : margin_right;
-
-			if (margin <= allowed)
+			if (allowed <= 0.)
 				s = EV_TIS_Gray;
 			break;
 	}
