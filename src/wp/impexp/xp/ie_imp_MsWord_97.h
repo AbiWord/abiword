@@ -134,6 +134,8 @@ private:
 	bool	   m_bIsLower;
 
 	bool m_bRevisionDeleted;
+	UT_uint32 m_tableNesting;
+
 	bool m_bInSect;
 	bool m_bInPara;
 	bool m_bPrevStrongCharRTL;

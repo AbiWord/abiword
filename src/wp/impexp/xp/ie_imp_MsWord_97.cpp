@@ -483,14 +483,15 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_fieldC(NULL),
 	//m_fieldA(NULL),
 	m_bIsLower(false),
+        m_bRevisionDeleted(false),
+        m_tableNesting(0),
 	m_bInSect(false),
 	m_bInPara(false),
 	m_bPrevStrongCharRTL(false),
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
-	m_iMSWordListId(0),
-	m_bRevisionDeleted(false)
+	m_iMSWordListId(0)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1475,9 +1476,27 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
 }
 
 int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
-								  void *prop, int dirty)
+				  void *prop, int dirty)
 {
 	PAP *apap = static_cast <PAP *>(prop);
+
+	{
+	  // TABLE related stuff first - HACK
+	  if (apap->fInTable && m_tableNesting==0)
+	    {
+#if DEBUG_ENABLE_TABLES
+	      const XML_Char *cellAtts[3];
+	      cellAtts[0] = "props";
+	      cellAtts[1] = "left-attach:0; right-attach:1; top-attach:0; bot-attach:1";
+	      cellAtts[2] = 0;
+
+	      UT_DEBUGMSG(("DOM: begin table\n"));
+	      m_tableNesting++;
+	      getDoc()->appendStrux(PTX_SectionTable,NULL);
+	      getDoc()->appendStrux(PTX_SectionCell, (const XML_Char **)cellAtts);
+#endif
+	    }
+	}
 
 	UT_String propBuffer;
 	UT_String props;
@@ -2053,11 +2072,27 @@ list_error:
 int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 								void *prop, int dirty)
 {
-	xxx_UT_DEBUGMSG(("#TF: _endPara\n"));
+	xxx_UT_DEBUGMSG(("#DOM: _endPara\n"));
 	// have to flush here, otherwise flushing later on will result in
 	// an empty paragraph being inserted
 	this->_flush ();
 	m_bInPara = false;
+
+	{
+	  PAP *apap = static_cast <PAP *>(prop);
+
+	  // TABLE related stuff first - HACK
+	  if (m_tableNesting!=0 && !apap->fInTable)
+	    {
+#if DEBUG_ENABLE_TABLES
+	      UT_DEBUGMSG(("DOM: end table\n"));
+	      m_tableNesting--;
+	      getDoc()->appendStrux(PTX_EndCell, NULL);
+	      getDoc()->appendStrux(PTX_EndTable,NULL);
+#endif
+	    }
+	}
+
 	return 0;
 }
 
