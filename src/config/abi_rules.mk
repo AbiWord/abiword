@@ -220,7 +220,7 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): $(OBJDIR)/%.c
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CC) -Fo$(shell echo $@ | sed $(TRANSFORM_TO_DOS_PATH) ) -c	\
+	@$(CC) -Fo$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH) ) -c	\
 		$(CFLAGS) $(shell echo $< | $(TRANSFORM_TO_DOS_PATH) )
 else
 	@echo $<:
