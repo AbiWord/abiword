@@ -1998,13 +1998,39 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_open_brace();
 	}
 
-	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
-	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
+	// it is essential that the \rtlpar and \ltrpar tokens are issued
+	// before any formatting, otherwise it can cause difficulties
+	const XML_Char * szBidiDir = PP_evalProperty("dom-dir",
+												 pSpanAP,
+												 pBlockAP,
+												 pSectionAP,
+												 m_pDocument,
+												 true);
+
+	xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
+	if (szBidiDir)
+	{
+		if (!UT_strcmp (szBidiDir, "ltr"))
+			m_pie->_rtf_keyword ("ltrpar");
+		else
+			m_pie->_rtf_keyword ("rtlpar");
+	}
+
+	// if string is "left" use "ql", but that is the default, so we
+	// don't need to write it out.
+	// Except that if the alignment overrides one prescribed by a
+	// style, we probably need to issue this (Tomas, Apr 12, 2003)
+
+	// output q{lrcj depending upon paragraph alignment
+	if (UT_strcmp(szTextAlign,"left")==0)	
+		m_pie->_rtf_keyword("ql");
+	else if (UT_strcmp(szTextAlign,"justify")==0)
+		m_pie->_rtf_keyword("qj");
+	else if (UT_strcmp(szTextAlign,"right")==0)	
 		m_pie->_rtf_keyword("qr");
 	else if (UT_strcmp(szTextAlign,"center")==0)
 		m_pie->_rtf_keyword("qc");
-	else if (UT_strcmp(szTextAlign,"justify")==0)
-		m_pie->_rtf_keyword("qj");
+
 
 
 	m_pie->_rtf_keyword_ifnotdefault_twips("fi",static_cast<const char*>(szFirstLineIndent),0);
@@ -2012,16 +2038,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault_twips("ri",static_cast<const char*>(szRightIndent),0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("sb",static_cast<const char*>(szTopMargin),0);
 	m_pie->_rtf_keyword_ifnotdefault_twips("sa",static_cast<const char*>(szBottomMargin),0);
-
-		const XML_Char * szBidiDir = PP_evalProperty("dom-dir",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
-		xxx_UT_DEBUGMSG(("bidi paragraph: pSectionAp 0x%x, pBlockAP 0x%x, dom-dir\"%s\"\n",pSectionAP,pBlockAP,szBidiDir));
-		if (szBidiDir)
-		{
-			if (!UT_strcmp (szBidiDir, "ltr"))
-				m_pie->_rtf_keyword ("ltrpar");
-			else
-				m_pie->_rtf_keyword ("rtlpar");
-		}
 
 	const XML_Char * szStyle = NULL;
 	if (pBlockAP->getAttribute("style", szStyle))
