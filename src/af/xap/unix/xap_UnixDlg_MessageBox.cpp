@@ -132,6 +132,12 @@ static void s_no_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
+static void s_delete_clicked(GtkWidget * widget, gpointer data, AP_Dialog_MessageBox::tAnswer * answer)
+{
+	*answer = AP_Dialog_MessageBox::a_CANCEL;
+	gtk_main_quit();
+}
+					  
 /*****************************************************************/
 
 void AP_UnixDialog_MessageBox::_bindKey(guint key, AP_Dialog_MessageBox::tAnswer answer)
@@ -168,10 +174,15 @@ void AP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	// New GTK+ dialog window
 	GtkWidget * dialog_window = gtk_dialog_new();								 
+
 	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
 							  "destroy",
-							  GTK_SIGNAL_FUNC(s_cancel_clicked),
+							  NULL,
 							  NULL);
+	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
+							  "delete_event",
+							  GTK_SIGNAL_FUNC(s_delete_clicked),
+							  &m_answer);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
 

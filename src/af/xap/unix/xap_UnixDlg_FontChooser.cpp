@@ -56,6 +56,13 @@ AP_UnixDialog_FontChooser::~AP_UnixDialog_FontChooser(void)
 
 /*****************************************************************/
 
+static void s_delete_clicked(GtkWidget * widget, gpointer data,
+							 AP_Dialog_FontChooser::tAnswer * answer)
+{
+	*answer = AP_Dialog_FontChooser::a_CANCEL;
+	gtk_main_quit();
+}
+
 static void s_ok_clicked(GtkWidget * widget,
 						 AP_Dialog_FontChooser::tAnswer * answer)
 {
@@ -375,10 +382,15 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	m_checkUnderline = checkbuttonUnderline;
 
 	// bind signals to things
-	gtk_signal_connect(GTK_OBJECT(windowFontSelection),
-					   "destroy",
-					   GTK_SIGNAL_FUNC(NULL),
-					   NULL);
+	gtk_signal_connect_after(GTK_OBJECT(windowFontSelection),
+							  "destroy",
+							  NULL,
+							  NULL);
+	gtk_signal_connect_after(GTK_OBJECT(windowFontSelection),
+							 "delete_event",
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
+							 (void *) &m_answer);
+
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked),

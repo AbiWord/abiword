@@ -138,6 +138,13 @@ static void s_cancel_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
+static void s_delete_clicked(GtkWidget * widget, gpointer data,
+							 AP_Dialog_Print::tAnswer * answer)
+{
+	*answer = AP_Dialog_Print::a_CANCEL;
+	gtk_main_quit();
+}
+
 static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 {
 	gtk_widget_set_sensitive(entry, GTK_TOGGLE_BUTTON(checkbutton)->active);
@@ -176,8 +183,15 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	// Create window
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_signal_connect_after (GTK_OBJECT (window), "destroy",
-							  GTK_SIGNAL_FUNC(s_cancel_clicked), NULL);
+	gtk_signal_connect_after(GTK_OBJECT(window),
+							  "destroy",
+							  NULL,
+							  NULL);
+	gtk_signal_connect_after(GTK_OBJECT(window),
+							 "delete_event",
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
+							 (void *) &m_answer);
+	
 	gtk_window_set_title (GTK_WINDOW (window), "Printer Setup");
 	gtk_container_set_border_width (GTK_CONTAINER (window), 0);
 	gtk_widget_set_usize (window, 325, 275);

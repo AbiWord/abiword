@@ -86,6 +86,12 @@ static void s_closeCallback(GtkWidget * object, GtkWidget * data)
 	gtk_main_quit();
 }
 
+static void s_delete_clicked(GtkWidget * widget, gpointer data, gpointer extra)
+{
+	// just quit out of the dialog
+	gtk_main_quit();
+}
+
 void AP_UnixDialog_Goto::runModeless(XAP_Frame * pFrame)
 {
 	GtkWidget * topLevel;
@@ -106,16 +112,13 @@ void AP_UnixDialog_Goto::runModeless(XAP_Frame * pFrame)
 	// create a top level window, the actual dialog
 	topLevel = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-	// we treat a window close as a cancel
-	gtk_signal_connect_object(GTK_OBJECT(topLevel),
-							  "delete_event",
-							  GTK_SIGNAL_FUNC(s_closeCallback),
-							  GTK_OBJECT(topLevel));
-
-	// if you don't bind this, gtk_main_quit() won't work
 	gtk_signal_connect_after(GTK_OBJECT(topLevel),
 							 "destroy",
-							 GTK_SIGNAL_FUNC(s_closeCallback),
+							 NULL,
+							 NULL);
+	gtk_signal_connect_after(GTK_OBJECT(topLevel),
+							 "delete_event",
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 NULL);
 
 	// don't let user shrink or expand, but auto-size to
