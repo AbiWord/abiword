@@ -123,6 +123,7 @@ protected:
 	AP_FormatTable_preview_drawer		m_previewDrawer;
 		
 private:
+	bool								_getToggleButtonStatus(const char * lineStyle);
 
 	bool								m_bSettingsChanged;
 
