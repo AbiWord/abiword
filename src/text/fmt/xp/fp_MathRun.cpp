@@ -34,6 +34,7 @@
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_RenderingContext.h"
 
+#include <MathView/AbstractLogger.hh>
 #include <MathView/BoundingBox.hh>
 #include <MathView/MathMLNamespaceContext.hh>
 #include <MathView/NamespaceContext.hh>
@@ -58,15 +59,22 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 
 fp_MathRun::~fp_MathRun(void)
 {
-  m_pMathView->ref();
+  // LUCA: It is fundamental to do this before the MathView object
+  // gets destroyed to avoid resuscitating it
+  m_pMathView->resetRootElement();
 }
 
-SmartPtr<GR_Abi_MathGraphicDevice> fp_MathRun::getMathDevice(void)
+AbstractLogger * fp_MathRun::getLogger() const
+{
+  return getBlock()->getDocLayout()->getLogger();
+}
+
+GR_Abi_MathGraphicDevice * fp_MathRun::getMathDevice() const
 {
 	return getBlock()->getDocLayout()->getMathGraphicDevice();
 }
 
-GR_Abi_RenderingContext *  fp_MathRun::getAbiContext(void)
+GR_Abi_RenderingContext *  fp_MathRun::getAbiContext() const
 {
 	return getBlock()->getDocLayout()->getAbiContext();
 }
@@ -99,8 +107,9 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(m_pMathView == NULL)
 	{
 		m_pMathView = libxml2_MathView::create();
+		m_pMathView->setLogger(getLogger());
 		m_pMathView->setMathMLNamespaceContext(
-			MathMLNamespaceContext::create(m_pMathView,getMathDevice()));
+			MathMLNamespaceContext::create(m_pMathView, getMathDevice()));
 		UT_DEBUGMSG(("fp_MathRun Created! \n"));
 
 		m_pMathView->loadBuffer(m_sMathML.utf8_str());

@@ -23,8 +23,6 @@
 #include <signal.h>
 #include <time.h>
 
-#include <MathView/token.hh>
-
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
@@ -321,10 +319,6 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 			}
 		}
 	}
-
-	// MathView-stuff
-	// initialize global MathView data structures
-	initTokens();
 
 	return true;
 }

@@ -20,9 +20,15 @@
 #include "gr_Abi_GlyphArea.h"
 #include "gr_Abi_RenderingContext.h"
 
-GR_Abi_GlyphArea::GR_Abi_GlyphArea(GR_Font* pFont, UT_uint32 g)
+GR_Abi_GlyphArea::GR_Abi_GlyphArea(GR_Graphics* GR_Font* pFont, UT_uint32 g)
   : m_pFont(pFont), m_glyphIndex(g)
-{ }
+{
+  UT_ASSERT(graphics);
+  graphics->setFont(m_pFont);
+  m_box = BoundingBox(GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->measureUnRemappedChar(g)),
+		      GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->getFontAscent()),
+		      GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->getFontDescent()));
+}
 
 GR_Abi_GlyphArea::~GR_Abi_GlyphArea()
 {
@@ -32,7 +38,7 @@ GR_Abi_GlyphArea::~GR_Abi_GlyphArea()
 BoundingBox
 GR_Abi_GlyphArea::box() const
 {
-  return BoundingBox(); // ???
+  return m_box; // ???
 }
 
 scaled
@@ -44,7 +50,7 @@ GR_Abi_GlyphArea::leftEdge() const
 scaled
 GR_Abi_GlyphArea::rightEdge() const
 {
-  return 0; // ???
+  return m_box.width; // ???
 }
 
 void

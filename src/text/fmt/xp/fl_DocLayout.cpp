@@ -49,10 +49,13 @@
 #include "ut_timer.h"
 #include "ut_string.h"
 #include "xap_Frame.h"
+// BEGIN: MathView
 #include <MathView/libxml2_MathView.hh>
 #include <MathView/MathMLElement.hh>
+#include <MathView/Logger.hh>
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_RenderingContext.h"
+// END: MathView
 
 #define REDRAW_UPDATE_MSECS	500
 
@@ -134,11 +137,15 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_bPlaceAtDocEnd = true;
 	m_bPlaceAtSecEnd = false;
 
-	// MathView-related stuff
+	// BEGIN: MathView
+	SmartPtr<AbstractLogger> logger = Logger::create();
+	m_pLogger = logger;
+	m_pLogger->ref();
 	SmartPtr<GR_Abi_MathGraphicDevice> mathGraphicDevice = GR_Abi_MathGraphicDevice::create(m_pG);
 	m_pMathGraphicDevice = mathGraphicDevice;
 	m_pMathGraphicDevice->ref();
 	m_pAbiContext = new GR_Abi_RenderingContext(pG);
+	// END: MathView
 
 }
 
@@ -204,19 +211,15 @@ FL_DocLayout::~FL_DocLayout()
 		m_pFirstSection = pNext;
 	}
 
-	// MathView-related stuff
+	// BEGIN: MathView
+	m_pLogger->unref();
+	m_pLogger = 0;
 	m_pMathGraphicDevice->unref();
 	m_pMathGraphicDevice = 0;
 	DELETEP(m_pAbiContext);
 	m_pAbiContext = 0;
+	// END: MathView
 }
-
-#if 0
-SmartPtr<GR_Abi_MathGraphicDevice> FL_DocLayout::getMathGraphicDevice(void) const
-{
-	return m_pMathGraphicDevice; 
-}
-#endif
 
 /*! 
  * little helper method for lookup properties

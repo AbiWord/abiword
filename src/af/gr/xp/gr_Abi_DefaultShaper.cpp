@@ -110,8 +110,6 @@ GR_Abi_DefaultShaper::shapeChar(MathVariant variant, const MathFormattingContext
   UT_ASSERT(font);
 
   SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(ctxt.getDevice()->getFactory());
-  // do NOT use getGUIFont but find the appropriate font depending on the
-  // font size and font variant
   return factory->charArea(m_pGraphics, font, ch);
 }
 

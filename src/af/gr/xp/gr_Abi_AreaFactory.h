@@ -25,7 +25,6 @@
 #include "gr_Abi_ColorArea.h"
 //#include "gr_Abi_BackgroundArea.h"
 #include "gr_Abi_InkArea.h"
-#include "gr_Abi_GlyphArea.h"
 #include "gr_Abi_CharArea.h"
 
 class GR_Abi_AreaFactory : public AreaFactory
@@ -53,8 +52,6 @@ public:
 
   virtual SmartPtr<GR_Abi_CharArea> charArea(class GR_Graphics* g, class GR_Font* f, UT_UCS4Char ch) const
   { return GR_Abi_CharArea::create(g, f, ch); }
-  virtual SmartPtr<GR_Abi_GlyphArea> glyph(class GR_Font* f, UT_uint32 glyph_idx) const
-  { return GR_Abi_GlyphArea::create(f, glyph_idx); }
 };
 
 #endif // __gr_Abi_AreaFactory_h__

@@ -25,8 +25,8 @@
 
 #include "fp_Run.h"
 #include <MathView/libxml2_MathView.hh>
-#include <MathView/SmartPtr.hh>
 
+class AbstractLogger;
 class GR_Abi_MathGraphicDevice;
 class GR_Abi_RenderingContext;
 
@@ -46,8 +46,9 @@ public:
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const;
 
-	SmartPtr<GR_Abi_MathGraphicDevice> getMathDevice(void);
-	GR_Abi_RenderingContext *  getAbiContext(void);
+	AbstractLogger * getLogger(void) const;
+	GR_Abi_MathGraphicDevice * getMathDevice(void) const;
+	GR_Abi_RenderingContext *  getAbiContext(void) const;
 	const char *            getDataID(void) const;
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -72,13 +73,3 @@ protected:
 };
 
 #endif /* FP_MATHRUN_H */
-
-
-
-
-
-
-
-
-
-

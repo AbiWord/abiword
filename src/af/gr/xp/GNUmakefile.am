@@ -44,7 +44,7 @@ libGr_xp_a_SOURCES += \
 	gr_Abi_CharArea.cpp \
 	gr_Abi_ColorArea.cpp \
 	gr_Abi_DefaultShaper.cpp \
-	gr_Abi_GlyphArea.cpp \
+	gr_Abi_StandardSymbolsShaper.cpp \
 	gr_Abi_InkArea.cpp \
 	gr_Abi_MathGraphicDevice.cpp \
 	gr_Abi_RenderingContext.cpp \
@@ -55,7 +55,7 @@ noinst_HEADERS += \
 	gr_Abi_CharArea.h \
 	gr_Abi_ColorArea.h \
 	gr_Abi_DefaultShaper.h \
-	gr_Abi_GlyphArea.h \
+	gr_Abi_StandardSymbolsShaper.h \
 	gr_Abi_InkArea.h \
 	gr_Abi_MathGraphicDevice.h \
 	gr_Abi_RenderingContext.h \

@@ -17,34 +17,42 @@
  * 02111-1307, USA.
  */
 
-#include <MathView/MathMLElement.hh>
+#include <MathView/ShapingResult.hh>
 #include <MathView/ShaperManager.hh>
-#include <MathView/SpaceShaper.hh>
+#include <MathView/MathGraphicDevice.hh>
+#include <MathView/MathMLElement.hh>
+#include <MathView/MathVariantMap.hh>
 
 #include "gr_Abi_AreaFactory.h"
-#include "gr_Abi_MathGraphicDevice.h"
-#include "gr_Abi_DefaultShaper.h"
 #include "gr_Abi_StandardSymbolsShaper.h"
 
-GR_Abi_MathGraphicDevice::GR_Abi_MathGraphicDevice(GR_Graphics* pGr)
-  : m_abiFactory(GR_Abi_AreaFactory::create())
-{
-  UT_ASSERT(pGr);
+#define NORMAL_INDEX 0
+#define MAPPED_BASE_INDEX 1
 
-  setFactory(m_abiFactory);
-
-  SmartPtr<GR_Abi_DefaultShaper> defaultShaper = GR_Abi_DefaultShaper::create();
-  defaultShaper->setGraphics(pGr);
-  getShaperManager()->registerShaper(defaultShaper);
-  getShaperManager()->registerShaper(SpaceShaper::create());
-
-#if 1
-  SmartPtr<GR_Abi_StandardSymbolsShaper> symbolsShaper = GR_Abi_StandardSymbolsShaper::create();
-  symbolsShaper->setGraphics(pGr);
-  getShaperManager()->registerShaper(symbolsShaper);
-#endif
-}
-
-GR_Abi_MathGraphicDevice::~GR_Abi_MathGraphicDevice()
+GR_Abi_StandardSymbolsShaper::GR_Abi_StandardSymbolsShaper()
 { }
 
+GR_Abi_StandardSymbolsShaper::~GR_Abi_StandardSymbolsShaper()
+{ }
+
+AreaRef
+GR_Abi_StandardSymbolsShaper::createGlyphArea(const SmartPtr<AreaFactory>& f,
+					      Char8 index, const scaled& size) const
+{
+  SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(f);
+  assert(factory);
+
+  static char fontSize[128];
+  sprintf(fontSize, "%dpt", static_cast<int>(size.toFloat() + 0.5f));
+
+  GR_Font* font = m_pGraphics->findFont("symbol", 0, 0, 0, 0, fontSize);
+  UT_ASSERT(font);
+
+  return factory->charArea(getGraphics(), font, index);
+}
+
+void
+GR_Abi_StandardSymbolsShaper::setGraphics(GR_Graphics* pGr)
+{
+  m_pGraphics = pGr;
+}
