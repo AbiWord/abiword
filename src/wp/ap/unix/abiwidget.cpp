@@ -35,11 +35,7 @@
 #include "ie_exp.h"
 #include "xap_UnixDialogHelper.h"
 #include <glib-object.h>
-#if 0//def HAVE_GNOME
-#include "ap_UnixGnomeApp.h"
-#else
 #include "ap_UnixApp.h"
-#endif
 
 //#define LOGFILE
 #ifdef LOGFILE
@@ -196,7 +192,6 @@ enum {
 static GtkBinClass * parent_class = 0;
 
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
-
 
 /**************************************************************************/
 /**************************************************************************/
@@ -364,9 +359,7 @@ static bool
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
 	if(abi->priv->m_szFilename)
-	{
 		free(abi->priv->m_szFilename);
-	}
 	abi->priv->m_szFilename = UT_strdup(pszFile);
 	if(!abi->priv->m_bMappedToScreen)
 	{
@@ -375,9 +368,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	}
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
-	{
 		return false;
-	}
 
 	bool res= ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
 	if(abi->priv->m_bUnlinkFileAfterLoad)
@@ -393,9 +384,7 @@ static gint s_abi_widget_load_file(gpointer p)
   AbiWidget * abi = (AbiWidget *) p;
 
   if(!abi->priv->m_bMappedToScreen)
-  {
 	abi_widget_map_to_screen(abi);
-  }
   if(abi->priv->m_bPendingFile)
   {
 	char * pszFile = UT_strdup(abi->priv->m_szFilename);
@@ -404,7 +393,6 @@ static gint s_abi_widget_load_file(gpointer p)
   }
   return FALSE;
 }
-	  
 
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 {
@@ -414,10 +402,6 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
   {
 	  abi->priv->m_bMappedEventProcessed = true;
 	  s_abi_widget_load_file((gpointer) abi);
-  }
-  else
-  {
-	  return;
   }
 }
 
@@ -457,10 +441,7 @@ void abi_widget_get_property(GObject  *object,
 								 GValue     *arg,
 								 GParamSpec *pspec)
 {
-	abi_widget_get_prop(object,
-						arg_id,
-						arg,
-						pspec);
+	abi_widget_get_prop(object,	arg_id,	arg, pspec);
 }
 
 //
@@ -487,9 +468,7 @@ static void abi_widget_set_prop (GObject  *object,
 	    case CURSOR_ON:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
-			 {
 			      abi_widget_turn_on_cursor(abi);
-			 }
 			 break;
 		}
 	    case INVOKE_NOARGS:
@@ -501,29 +480,21 @@ static void abi_widget_set_prop (GObject  *object,
 	    case MAP_TO_SCREEN:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
-			 {
 			      abi_widget_map_to_screen(abi);
-			 }
 			 break;
 		}
 	    case UNLINK_AFTER_LOAD:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
-			 {
 			      abi->priv->m_bUnlinkFileAfterLoad = true;
-			 }
 			 else
-			 {
 			      abi->priv->m_bUnlinkFileAfterLoad = false;
-			 }
 			 break;
 		}
 	    case DRAW:
 		{
 		     if(g_value_get_boolean(arg) == TRUE)
-			 {
 			      abi_widget_draw(abi);
-			 }
 			 break;
 		}
 	    case LOAD_FILE:
@@ -544,8 +515,8 @@ static void abi_widget_set_prop (GObject  *object,
 		}
 	    case ALIGNRIGHT:
 	      {
-		abi_klazz->align_right (abi);
-		break;
+			  abi_klazz->align_right (abi);
+			  break;
 	      }
 	    case ALIGNJUSTIFY:
 		{
@@ -974,33 +945,16 @@ void abi_widget_set_property(GObject  *object,
 							 const GValue *arg,
 							 GParamSpec *pspec)
 {
-	abi_widget_set_prop(object,
-						arg_id,
-						arg,
-						pspec);
+	abi_widget_set_prop(object, arg_id, arg, pspec);
 }
 
 static void 
 abi_widget_size_request (GtkWidget      *widget,
 			 GtkRequisition *requisition)
 {
-  // TODO: possibly be smarter about sizes
-  // This code doesn't work but it might be the basis of further work.
-#if 0
-    if(widget->window)
-	{
-	    GdkWindow * pWindow = gdk_window_get_parent(widget->window);
-		gint width,height;
-		gdk_window_get_size (pWindow, &width, &height);
-		requisition->width = width;
-		requisition->height = height;
-	}
-	else
-#endif
-	{
-	  requisition->width = ABI_DEFAULT_WIDTH;
-	  requisition->height = ABI_DEFAULT_HEIGHT;
-	}
+	requisition->width = ABI_DEFAULT_WIDTH;
+	requisition->height = ABI_DEFAULT_HEIGHT;
+
 	if (ABI_WIDGET(widget)->child)
 	  {
 		GtkRequisition child_requisition;
@@ -1023,9 +977,7 @@ abiwidget_add(GtkContainer *container,
   g_return_if_fail (widget != NULL);
 
   if (GTK_CONTAINER_CLASS (parent_class)->add)
-  {
 	  GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
-  }
 
   ABI_WIDGET(container)->child = GTK_BIN (container)->child;
 }
@@ -1156,8 +1108,6 @@ abi_widget_realize (GtkWidget * widget)
 	g_signal_connect_after(G_OBJECT(widget),"map_event", 
 			       G_CALLBACK (s_abi_widget_map_cb),
 			       (gpointer) abi);
-
-	return;
 }
 
 static void
@@ -2033,9 +1983,6 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	fclose(logfile);
 	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
 #endif
-
-
-	return;
 }
 
 /**************************************************************************/
@@ -2055,25 +2002,14 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	if(!abi->priv->externalApp)
 	{
 		if (abi->priv->m_szFilename)
-		{
-			//pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
 			pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
-		}
 		else
-		{
 			pArgs = new XAP_Args(0, 0);
-		}
 
 		AP_UnixApp * pApp = static_cast<AP_UnixApp*>(XAP_App::getApp());
 
 		if ( !pApp )
-		  {
-#if 0//def HAVE_GNOME
-		    pApp = new AP_UnixGnomeApp (pArgs, "AbiWidget");
-#else
 		    pApp = new AP_UnixApp (pArgs, "AbiWidget");
-#endif
-		  }
 
 		UT_ASSERT(pApp);
 		pApp->setBonoboRunning();
@@ -2089,19 +2025,12 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	pFrame->initialize(XAP_NoMenusWindowLess);
 	abi->priv->m_pFrame   = pFrame;
 	if(!abi->priv->externalApp)
-	{
 		delete pArgs;
-	}
 
 	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
 	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
 
 	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
-
-#if 0
-	// disable rulers after we have a view of the document
-	pFrame->toggleRuler ( false ) ;
-#endif
 }
 
 extern "C" void 
@@ -2112,9 +2041,7 @@ abi_widget_turn_on_cursor(AbiWidget * abi)
 		g_return_if_fail (abi != 0);
 		FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
 		if(pV)
-		{
 			pV->focusChange(AV_FOCUS_HERE);
-		}
 	}
 }
 
@@ -2322,11 +2249,8 @@ abi_widget_draw (AbiWidget * w)
 		// obtain a valid view
 		g_return_if_fail (w != NULL);
 		FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
-		UT_ASSERT(view);
 		if(view)
-		{
 			view->draw();
-		}
 	}
 }
 
@@ -2346,9 +2270,7 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
 
   FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
   if(view == NULL)
-  {
 	  return false;
-  }
   PD_Document * doc = view->getDocument () ;
 
   // start out saving as abiword format by default
@@ -2359,10 +2281,3 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
 
   return ( doc->saveAs ( fname, ieft ) == UT_OK ? TRUE : FALSE ) ;
 }
-
-
-
-
-
-
-
