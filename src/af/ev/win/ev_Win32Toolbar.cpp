@@ -424,8 +424,8 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 								pStyleC->repopulate();                                                                                                
 
-								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);                                                         					
-								strcpy (buf, (char *)v->getNthItem(nData));				
+								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);                                                         													
+								UT_UCS4_strcpy_char(ucs_buf, (char *)v->getNthItem(nData));				
 								DELETEP(pControl);
 							}
 							
