@@ -80,7 +80,7 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 
   gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
   
-  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, false ) )
     {
     case BUTTON_OK:
       event_Ok() ; break ;
@@ -137,8 +137,8 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 
   _constructWindowContents (hbox1);
 
-  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
   mMainWindow = dialog1;
 

@@ -234,7 +234,7 @@ void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)
 	  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), FALSE);
   }	  
 
-  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, true ) )
     {
     case BUTTON_OK:
       event_Ok (); break;
@@ -375,8 +375,8 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 
   _constructWindowContents ( dialog_vbox1 );
 
-  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_add_button(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
   mMainWindow = dialog1;
   _connectSignals ();

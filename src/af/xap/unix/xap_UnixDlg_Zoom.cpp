@@ -164,7 +164,7 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
   // HACK : trigger a preview
   _populateWindowData();
 
-  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false ) )
     {
     case BUTTON_OK:
       event_OK () ; break ;
@@ -372,8 +372,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_container_add (GTK_CONTAINER (padding), drawingareaPreview);
   gtk_widget_set_usize (drawingareaPreview, 149, 10);  	
   
-  gtk_dialog_add_button(GTK_DIALOG(windowZoom), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_add_button(GTK_DIALOG(windowZoom), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(windowZoom), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(windowZoom), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   
   // the radio buttons
   g_signal_connect(G_OBJECT(radiobutton200),

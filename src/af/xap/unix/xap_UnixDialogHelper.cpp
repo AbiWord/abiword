@@ -650,36 +650,68 @@ GtkWidget *createDrawingArea ()
 /****************************************************************/
 /****************************************************************/
 
+static void sDoHelp ( XAP_Dialog * pDlg )
+{
+	// get any frame to open up a URL, doesn't matter which one
+	XAP_App   * pApp   = XAP_App::getApp () ;
+	XAP_Frame * pFrame = pApp->getLastFocussedFrame () ;
+	
+	// should always be valid, but just in case...
+	UT_return_if_fail(pFrame);
+	UT_return_if_fail(pDlg);
+
+	UT_DEBUGMSG(("DOM: doing help: %d %s\n", pDlg->getHelpUrl().size (),
+				 pDlg->getHelpUrl().c_str ()));
+	
+	// open the url
+	if ( pDlg->getHelpUrl().size () > 0 )
+    {
+		pFrame->openURL ( pDlg->getHelpUrl().c_str() ) ;
+    }
+	else
+    {
+		// TODO: warn no help on this topic
+		UT_DEBUGMSG(("NO HELP FOR THIS TOPIC!!\n"));
+    }
+}
+
 /*!
  * Catch F1 keypress over a dialog and open up the help file, if any
  */
-static gint s_doHelp_cb ( GtkWidget * wid, GdkEventKey * event, 
-			  XAP_Dialog * pDlg )
+static gint modal_keypress_cb ( GtkWidget * wid, GdkEventKey * event, 
+								XAP_Dialog * pDlg )
 {
-  // propegate keypress up if not F1
-  if ( event->keyval != GDK_KP_F1 )
-    return TRUE ;
+	// propegate keypress up if not F1
+	if ( event->keyval == GDK_F1 || event->keyval == GDK_Help )
+	{
+		sDoHelp( pDlg ) ;
 
-  // get any frame to open up a URL, doesn't matter which one
-  XAP_App   * pApp   = XAP_App::getApp () ;
-  XAP_Frame * pFrame = pApp->getLastFocussedFrame () ;
+		// stop F1 propegation
+		return TRUE ;
+	}
+	
+	return FALSE ;		
+}
 
-  // should always be valid, but just in case...
-  UT_return_val_if_fail(pDlg, FALSE);
-  UT_return_val_if_fail(pFrame, FALSE);
-
-  // open the url
-  if ( pDlg->getHelpUrl().size () > 0 )
-    {
-      pFrame->openURL ( pDlg->getHelpUrl().c_str() ) ;
-    }
-  else
-    {
-      // TODO: warn no help on this topic
-    }
-  
-  // stop F1 propegation
-  return FALSE ;
+/*!
+ * Catch F1 keypress over a dialog and open up the help file, if any
+ */
+static gint nonmodal_keypress_cb ( GtkWidget * wid, GdkEventKey * event, 
+								   XAP_Dialog * pDlg )
+{
+	// propegate keypress up if not F1
+	if ( event->keyval == GDK_F1 || event->keyval == GDK_Help )
+	{
+		sDoHelp( pDlg ) ;
+		return TRUE ;
+	}
+	else if ( event->keyval == GDK_Escape )
+	{
+		gtk_widget_destroy ( wid ) ;
+		return TRUE ;
+	}
+	
+	return FALSE ;
 }
 
 /*!
@@ -687,11 +719,11 @@ static gint s_doHelp_cb ( GtkWidget * wid, GdkEventKey * event,
  */
 void centerDialog(GtkWidget * parent, GtkWidget * child)
 {
-	UT_ASSERT(parent);
-	UT_ASSERT(child);
+	UT_return_if_fail(parent);
+	UT_return_if_fail(child);
 
 	gtk_window_set_transient_for(GTK_WINDOW(child),
-				     GTK_WINDOW(parent));
+								 GTK_WINDOW(parent));
 #ifdef HAVE_GNOME
 	gnome_window_icon_set_from_default (GTK_WINDOW(child));
 #else
@@ -705,45 +737,49 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
  * 2) Centers dialog over toplevel window
  * 3) Connects F1 to help system
  * 4) Makes dialog modal
- * 5) Returns value of gtk_dialog_run(me)
- * 6) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
+ * 5) Sets the default button to dfl_response, sets ESC to close
+ * 6) Returns value of gtk_dialog_run(me)
+ * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
  */
 gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-		       bool destroyDialog )
+					   gint dfl_response, bool destroyDialog )
 {
-  // To center the dialog, we need the frame of its parent.
-  XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-  
-  // Get the GtkWindow of the parent frame
-  GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	
+	// connect focus to our parent frame
+	connectFocus(GTK_WIDGET(me),pFrame);
 
-  // connect focus to our parent frame
-  connectFocus(GTK_WIDGET(me),pFrame);
-
-  // center the dialog
-  centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
-
-  // connect F1 to the help subsystem
-  g_signal_connect (G_OBJECT(me), "key_press_event",
-		    G_CALLBACK(s_doHelp_cb), pDlg);
-  
-  // show the window
-  gtk_widget_show ( GTK_WIDGET(me) ) ;
-
-  // grab the dialog
-  gtk_grab_add ( GTK_WIDGET(me) ) ;
-
-  // and make it modal
-  gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
-
-  // now run the dialog
-  gint result = gtk_dialog_run ( me ) ;
-
-  // destroy the dialog
-  if ( destroyDialog )
-    abiDestroyWidget ( GTK_WIDGET ( me ) );
-
-  return result ;
+	// center the dialog
+	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
+	
+	// connect F1 to the help subsystem
+	g_signal_connect (G_OBJECT(me), "key-press-event",
+					  G_CALLBACK(modal_keypress_cb), pDlg);
+	
+	// set the default response
+	gtk_dialog_set_default_response ( me, dfl_response ) ;
+	
+	// show the window
+	gtk_widget_show ( GTK_WIDGET(me) ) ;
+	
+	// grab the dialog
+	gtk_grab_add ( GTK_WIDGET(me) ) ;
+	
+	// and make it modal
+	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
+	
+	// now run the dialog
+	gint result = gtk_dialog_run ( me ) ;
+	
+	// destroy the dialog
+	if ( destroyDialog )
+		abiDestroyWidget ( GTK_WIDGET ( me ) );
+	
+	return result ;
 }
 
 /*!
@@ -753,35 +789,40 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
  * 3) Makes the App remember this modeless dialog
  * 4) Connects F1 to help system
  * 5) Makes dialog non-modal (modeless)
+ * 6) Sets the default button to dfl_response, sets ESC to close
  */
-void abiRunModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg)
+void abiRunModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
+						  gint dfl_response )
 {
-  // To center the dialog, we need the frame of its parent.
-  XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-
-  XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
-  
-  // Get the GtkWindow of the parent frame
-  GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-
-  // connect focus to our parent frame
-  connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());
-
-  // center the dialog
-  centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
-
-  // connect F1 to the help subsystem
-  g_signal_connect (G_OBJECT(me), "key_press_event",
-		    G_CALLBACK(s_doHelp_cb), pDlg);
-  
-  // show the window
-  gtk_widget_show ( GTK_WIDGET(me) ) ;
-
-  // grab the dialog
-  gtk_grab_add ( GTK_WIDGET(me) ) ;
-
-  // and mark it as modeless
-  gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	
+	XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	
+	// connect focus to our parent frame
+	connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());
+	
+	// center the dialog
+	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
+	
+	// connect F1 to the help subsystem
+	g_signal_connect (G_OBJECT(me), "key-press-event",
+					  G_CALLBACK(nonmodal_keypress_cb), pDlg);
+	
+	// set the default response
+	gtk_dialog_set_default_response ( me, dfl_response ) ;
+	
+	// show the window
+	gtk_widget_show ( GTK_WIDGET(me) ) ;
+	
+	// grab the dialog
+	gtk_grab_add ( GTK_WIDGET(me) ) ;
+	
+	// and mark it as modeless
+	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
 }
 
 /*!
@@ -810,11 +851,41 @@ GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...)
     UT_String_vprintf (inStr, title, args);
     va_end (args);
 
+	// TODO: locale->utf8 title
+	
     // create the title
     gtk_window_set_title ( GTK_WINDOW(dlg), inStr.c_str() ) ;
   }
 
   return dlg ;
+}
+
+/*!
+ * Add this stock button to the dialog and make it sensitive
+ */
+void abiAddStockButton (GtkDialog * me, const gchar * btn_id,
+						gint response_id)
+{
+	UT_return_if_fail(me);
+	UT_return_if_fail(btn_id);
+	
+	gtk_dialog_add_button(me, btn_id, response_id);
+	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
+}
+
+/*!
+ * Add this locale-sensitive button to the dialog and
+ * make it sensitive
+ */
+void abiAddButton(GtkDialog * me, const gchar * btn_id,
+				  gint response_id)
+{
+	UT_return_if_fail(me);
+	UT_return_if_fail(btn_id);
+
+	// todo: possibly make me locale sensitive->utf8
+	gtk_dialog_add_button(me, btn_id, response_id);
+	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
 }
 
 /*!
@@ -829,8 +900,8 @@ void abiDestroyWidget(GtkWidget * me)
 
 GdkWindow * getRootWindow(GtkWidget * widget)
 {
-	UT_ASSERT(widget);
+	UT_return_val_if_fail(widget, NULL);
 
 	// BROKEN!!!!
-	return gdk_get_default_root_window() ;//widget->window ;
+	return gdk_get_default_root_window() ;
 }

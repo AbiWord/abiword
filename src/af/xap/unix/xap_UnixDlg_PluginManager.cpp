@@ -329,7 +329,7 @@ void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
   gtk_clist_select_row(GTK_CLIST(m_clist), 0, 0);
   _refreshAll();
   
-  abiRunModalDialog (GTK_DIALOG(cf), pFrame, this);
+  abiRunModalDialog (GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, true);
 }
 
 /*****************************************************************/
@@ -533,7 +533,7 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
   gtk_widget_show (dialog_vbox1);
   gtk_container_set_border_width (GTK_CONTAINER (dialog_vbox1), 3);
   
-  gtk_dialog_add_button(GTK_DIALOG(windowPlugins), GTK_STOCK_CLOSE, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(windowPlugins), GTK_STOCK_CLOSE, BUTTON_CANCEL);
 
   m_windowMain = windowPlugins;
   _constructWindowContents (dialog_vbox1);

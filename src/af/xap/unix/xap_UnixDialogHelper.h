@@ -71,9 +71,13 @@ GtkStyle * get_ensured_style (GtkWidget * w);
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap
 GtkWidget *createDrawingArea ();
 
-gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, bool destroyDialog = true);
-void abiRunModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg);
+gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id, bool destroyDialog);
+void abiRunModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id );
 void abiDestroyWidget(GtkWidget * me);
+void abiAddStockButton (GtkDialog * me, const gchar * btn_id,
+						gint response_id) ;
+void abiAddButton(GtkDialog * me, const gchar * btn_id,
+				  gint response_id);
 
 GtkWidget * abiDialogNew(gboolean resizable = FALSE);
 GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...);

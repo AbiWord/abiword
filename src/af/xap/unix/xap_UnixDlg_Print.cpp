@@ -352,8 +352,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_widget_show (radioColor);
 	
 	// append the buttons
-	gtk_dialog_add_button ( GTK_DIALOG(window), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-	gtk_dialog_add_button ( GTK_DIALOG(window), GTK_STOCK_PRINT, BUTTON_PRINT ) ;
+	abiAddStockButton ( GTK_DIALOG(window), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(window), GTK_STOCK_PRINT, BUTTON_PRINT ) ;
 	
 	// fill a little callback struct to hide some private data pointers in
 	m_callbackData.entry = entryPrint;
@@ -422,7 +422,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonEmbedFonts), m_bEmbedFonts);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 	
-	switch ( abiRunModalDialog ( GTK_DIALOG(window), pFrame, this, false ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(window), pFrame, this, BUTTON_CANCEL, false ) )
 	  {
 	  case BUTTON_PRINT:
 	    {

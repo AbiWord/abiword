@@ -425,8 +425,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	vboxMain = constructWindowContents(vboxOuter);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
-	gtk_dialog_add_button ( GTK_DIALOG(windowFontSelection), GTK_STOCK_OK, BUTTON_OK ) ;
-	gtk_dialog_add_button ( GTK_DIALOG(windowFontSelection), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(windowFontSelection), GTK_STOCK_OK, BUTTON_OK ) ;
+	abiAddStockButton ( GTK_DIALOG(windowFontSelection), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 
 	return windowFontSelection;
 }
@@ -1052,7 +1052,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// manually trigger an update
 	updatePreview();
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this ) )
+	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, true ) )
 	  {
 	  case BUTTON_OK:
 	    {

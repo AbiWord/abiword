@@ -104,7 +104,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
   m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, pApp);
 #endif
   
-  switch ( abiRunModalDialog ( mainWindow, pFrame, this ) )
+  switch ( abiRunModalDialog ( mainWindow, pFrame, this, BUTTON_CLOSE, true ) )
     {
     case BUTTON_URL:
       event_URL () ; break;
@@ -198,10 +198,10 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   gtk_widget_set_style(textCopyright, smallstyle);
 
   // add the buttons
-  gtk_dialog_add_button (GTK_DIALOG(windowAbout), 
-			 "http://www.abisource.com", BUTTON_URL);
-  gtk_dialog_add_button (GTK_DIALOG(windowAbout), 
-			 GTK_STOCK_CLOSE, BUTTON_CLOSE);
+  abiAddButton (GTK_DIALOG(windowAbout), 
+				"http://www.abisource.com", BUTTON_URL);
+  abiAddStockButton (GTK_DIALOG(windowAbout), 
+					 GTK_STOCK_CLOSE, BUTTON_CLOSE);
   
   // Since we do drawing, we need a graphics context which can
   // understand PNG data.

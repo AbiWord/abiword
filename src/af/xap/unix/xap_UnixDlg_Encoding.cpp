@@ -75,7 +75,7 @@ void XAP_UnixDialog_Encoding::runModal(XAP_Frame * pFrame)
   // Populate the window's data items
   _populateWindowData();
   
-  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false ) )
     {
     case BUTTON_OK:
       event_Ok (); break;
@@ -169,8 +169,8 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
   vboxMain = GTK_DIALOG(windowMain)->vbox ;
 
 
-  gtk_dialog_add_button(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
-  gtk_dialog_add_button(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   
   labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UENC_EncLabel));
   gtk_widget_show (labelActivate);
