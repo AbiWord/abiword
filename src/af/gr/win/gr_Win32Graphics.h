@@ -70,7 +70,6 @@ public:
 	friend class Acq;
 
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
-	virtual bool doesGlyphExist(UT_UCS4Char g);
 	
 private:
 	void					setupFontInfo();

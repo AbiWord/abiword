@@ -103,8 +103,11 @@ UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 bool GR_Font::doesGlyphExist(UT_UCS4Char g)
 {
 	if(getCharWidthFromCache(g) == GR_CW_ABSENT)
-	   return false;
-
+	{
+		UT_DEBUGMSG(("GR_Font::doesGlyphExist: glyph 0x%04x absent from font\n",g));
+		return false;
+	}
+	
 	return true;
 }
 

@@ -21,6 +21,8 @@
 #define GR_WIN32CHARWIDTHS_H
 
 #include "gr_CharWidths.h"
+
+class UT_NumberVector;
 class GR_Graphics;
 
 //////////////////////////////////////////////////////////////////
@@ -31,6 +33,12 @@ class GR_Win32CharWidths : public GR_CharWidths
 {
 public:
 	void  setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1, GR_Graphics * pGr);
+
+private:
+	bool _doesGlyphExist(UT_UCS4Char g);
+	void _retrieveFontInfo(HDC hdc);
+	
+	UT_NumberVector m_vRanges;
 };
 
 #endif /* GR_WIN32CHARWIDTHS_H */
