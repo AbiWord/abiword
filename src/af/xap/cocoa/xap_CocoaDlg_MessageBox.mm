@@ -67,13 +67,11 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();
 
-	m_dlg = [XAP_CocoaDlg_MessageBoxController loadFromNibWithButtons:m_buttons];	// autoreleased
+	m_dlg = [XAP_CocoaDlg_MessageBoxController loadFromNibWithButtons:m_buttons];
 	[m_dlg setXAPOwner:this];
 	NSWindow *win = [m_dlg window];		// force the window to be loaded.
-	[win setTitle:[NSString stringWithCString:szCaption]];
-	[m_dlg setMessage:[NSString stringWithCString:m_szMessage]];	// string autoreleased
-
-
+	[win setTitle:[NSString stringWithUTF8String:szCaption]];
+	[m_dlg setMessage:[NSString stringWithUTF8String:m_szMessage]];
 
 	[NSApp runModalForWindow:win];
 

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Hubert Figuiere
+ * Copyright (C) 2002-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,10 +23,10 @@
 
 
 #import <Cocoa/Cocoa.h>
-
+#include "ut_string_class.h"
 #include "xap_Strings.h"
 
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId);
-void _convertLabelToMac (char * buf, size_t bufSize, const char * label);
+void _convertLabelToMac (char * buf, size_t bufSize, const UT_String & label);
 
 #endif

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Hubert Figuiere
+ * Copyright (C) 2002-2003 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,17 +27,22 @@
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId)
 {
 	char buf [1024];
-	_convertLabelToMac(buf, sizeof (buf), pSS->getValue(stringId));
+	NSString*	str;
+	_convertLabelToMac(buf, sizeof (buf), pSS->getValueUTF8(stringId));
 
+	str = [[NSString alloc] initWithUTF8String:buf];
 	if ([control isKindOfClass:[NSButton class]] 
-	     || [control isKindOfClass:[NSBox class]]) {
-		[control setTitle:[NSString stringWithUTF8String:buf]];
+	     || [control isKindOfClass:[NSBox class]]
+		 || [control isKindOfClass:[NSCell class]]) {
+		[control setTitle:str];
 	}
 	else if ([control isKindOfClass:[NSTabViewItem class]]) {
-		[control setLabel:[NSString stringWithUTF8String:buf]];
+		[control setLabel:str];
 	}
-//	else 
-
+	else {
+		NSLog(@"Unknown control type to localize");
+	}
+	[str release];
 }
 
 
@@ -46,14 +51,14 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 	
 	\param buf the result buffer
 	\param bufSize the allocated size for buf
-	\param label the label to convert
+	\param label the label to convert as an UT_String
  */
-void _convertLabelToMac (char * buf, size_t bufSize, const char * label)
+void _convertLabelToMac (char * buf, size_t bufSize, const UT_String& label)
 {
-	UT_ASSERT(label && buf);
-	UT_ASSERT(strlen (label) < bufSize);
+	UT_ASSERT(buf);
+	UT_ASSERT(label.length() < bufSize);
 
-	strcpy (buf, label);
+	strcpy (buf, label.c_str());
 
 	char * src, *dst;
 	src = dst = buf;
