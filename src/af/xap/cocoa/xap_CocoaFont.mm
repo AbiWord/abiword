@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,19 +25,21 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_CocoaFont.h"
-//#include "xap_EncodingManager.h"
-//#include "xap_App.h"
 
 
 /*******************************************************************/
 
 XAP_CocoaFont::XAP_CocoaFont()
-  : m_font(NULL)
+  : GR_Font(),
+	m_font(NULL),
+	_m_coverage(NULL)
 {
 	_resetMetricsCache();
 }
 
 XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
+  : GR_Font(),
+	_m_coverage(NULL)
 {
 	m_font = font;
 	[m_font retain];
@@ -45,7 +47,8 @@ XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
 }
 
 XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
-  : GR_Font(copy)
+  : GR_Font(copy),
+	_m_coverage(NULL)
 {
 	m_font = [copy.getNSFont() copy];
 	_resetMetricsCache();
@@ -54,6 +57,7 @@ XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
 XAP_CocoaFont::~XAP_CocoaFont()
 {
 	[m_font release];
+	DELETEP(_m_coverage);
 }
 
 
@@ -82,6 +86,8 @@ void XAP_CocoaFont::_resetMetricsCache()
 {
 	_m_ascent = _m_descent = _m_height = 0.0;
 	_m_size = 0;
+	DELETEP(_m_coverage);
+	_m_coverage = NULL;
 }
 
 
@@ -110,4 +116,35 @@ float XAP_CocoaFont::getHeight()
 		_m_height = [m_font defaultLineHeightForFont];
 	}
 	return _m_height;
+}
+
+void XAP_CocoaFont::getCoverage(UT_Vector& coverage)
+{
+	UT_uint32 i, begin;
+	bool lastState = false;
+	bool currentState = false;
+	if (_m_coverage) {
+		xxx_UT_DEBUGMSG(("getCoverage(): return cached coverage\n"));
+		coverage = *_m_coverage;
+		return;
+	}
+	_m_coverage = new UT_Vector(10);
+	const char *bitmap = static_cast<const char*>([[[m_font coveredCharacterSet] bitmapRepresentation] bytes]);
+	for (i = 0; i < 0xffff; i++) {
+		currentState = (bitmap[i >> 3] & (((unsigned int)1) << (i & 7)));
+		if (currentState != lastState) {
+			xxx_UT_DEBUGMSG(("getCoverage(): changing state at %lu\n", i));
+			if (currentState) {
+				begin = i;
+				xxx_UT_DEBUGMSG(("getCoverage(): begin range\n"));
+			}
+			else {
+				_m_coverage->push_back(reinterpret_cast<void *>(begin));
+				_m_coverage->push_back(reinterpret_cast<void *>(i - begin));
+				xxx_UT_DEBUGMSG(("getCoverage(): adding range %lu - %lu\n", begin, i - begin));
+			}
+			lastState = currentState;
+		}
+	}
+	coverage = *_m_coverage;
 }

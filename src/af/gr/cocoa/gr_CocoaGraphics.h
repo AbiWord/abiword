@@ -52,8 +52,7 @@ class GR_CocoaGraphics : public GR_Graphics
 #ifndef WITH_PANGO
 	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
-	virtual void getCoverage(UT_Vector& coverage)
-			{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
+	virtual void getCoverage(UT_Vector& coverage);
 #endif
 
 	virtual void		setColor(const UT_RGBColor& clr);

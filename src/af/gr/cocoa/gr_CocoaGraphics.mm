@@ -512,6 +512,12 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 }
 
 
+void GR_CocoaGraphics::getCoverage(UT_Vector& coverage)
+{
+	m_pFont->getCoverage(coverage);	
+}
+
+
 UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 {
 	return m_screenResolution;

@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
   GR_Font is a completely virtual class with no data or accessors of
   its own.
 */
+class UT_Vector;
 
 class XAP_CocoaFont : public GR_Font
 {
@@ -48,6 +49,7 @@ class XAP_CocoaFont : public GR_Font
 	float						getAscent();
 	float						getDescent(); /* returns -descent because it is <0 on CG */
 	float						getHeight();
+	void 						getCoverage(UT_Vector& coverage);
 private:
 	NSFont*						m_font;
 	void						_resetMetricsCache();
@@ -56,6 +58,7 @@ private:
 	float						_m_ascent;
 	float						_m_descent;
 	float						_m_height;
+	UT_Vector*					_m_coverage;
 };
 
 #endif /* XAP_COCOAFONT_H */
