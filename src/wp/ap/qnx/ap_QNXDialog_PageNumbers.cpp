@@ -88,23 +88,15 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 
 static int s_position_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
 {
-	PtListCallback_t *ldata = (PtListCallback_t *)info->cbdata;
 	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
-	if (info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
-		return Pt_CONTINUE;
-	}
-	dlg->event_HdrFtrChanged(ldata->item_pos - 1);
+	dlg->event_HdrFtrChanged();
 	return Pt_CONTINUE;
 }
 
 static int s_alignment_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
 {
-	PtListCallback_t *ldata = (PtListCallback_t *)info->cbdata;
 	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
-	if (info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
-		return Pt_CONTINUE;
-	}
-	dlg->event_AlignChanged(ldata->item_pos - 1);
+	dlg->event_AlignChanged();
 	return Pt_CONTINUE;
 }
 
@@ -159,15 +151,30 @@ void AP_QNXDialog_PageNumbers::event_PreviewExposed(void)
 		m_preview->draw();
 }
 
-void AP_QNXDialog_PageNumbers::event_AlignChanged(int index /* AP_Dialog_PageNumbers::tAlign align */)
+void AP_QNXDialog_PageNumbers::event_AlignChanged()
 {
-	m_recentAlign = (AP_Dialog_PageNumbers::tAlign)((int)m_vecalign.getNthItem(index));
+	AP_Dialog_PageNumbers::tAlign index;
+	
+	if(PtWidgetFlags(m_toggleAlignmentLeft) & Pt_SET)
+		index = id_LALIGN;
+	else if (PtWidgetFlags(m_toggleAlignmentRight) & Pt_SET)
+		index = id_RALIGN;
+	else if (PtWidgetFlags(m_toggleAlignmentCenter) & Pt_SET)
+		index = id_CALIGN;
+
+	m_recentAlign = index;
 	_updatePreview(m_recentAlign, m_recentControl);
 }
 
-void AP_QNXDialog_PageNumbers::event_HdrFtrChanged(int index /* AP_Dialog_PageNumbers::tControl control */)
+void AP_QNXDialog_PageNumbers::event_HdrFtrChanged()
 {
-	m_recentControl = (AP_Dialog_PageNumbers::tControl)((int)m_vecposition.getNthItem(index));
+	AP_Dialog_PageNumbers::tControl index;
+	if(PtWidgetFlags(m_toggleHeader) & Pt_SET)
+		index = id_HDR;
+	else if (PtWidgetFlags(m_toggleFooter) & Pt_SET)
+		index = id_FTR;
+
+	m_recentControl = index; 
 	_updatePreview(m_recentAlign, m_recentControl);
 }
 
@@ -233,8 +240,6 @@ void AP_QNXDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 
 PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 {  
-  PtWidget_t *combo1;
-  PtWidget_t *combo2;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -245,35 +250,29 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtAddHotkeyHandler(m_window,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(m_window,Pt_CB_WINDOW_CLOSING,s_delete_clicked,this);
 
-	//Create the first label/combo combination
-	PtSetResource(abiPhabLocateWidget(m_window,"lblPosition"), Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Position), 0);
+	//Create the first label/toggle combination
+	PtSetResource(abiPhabLocateWidget(m_window,"grpPosition"), Pt_ARG_TITLE, _(AP,DLG_PageNumbers_Position), 0);
 
-	combo1 = abiPhabLocateWidget(m_window,"comboPosition"); 
-	const char *add;
-add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).c_str();
-	PtListAddItems(combo1, &add, 1, 0);
-add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str();
-	PtListAddItems(combo1, &add, 1, 0);
-	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_FTR);
-	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_HDR);
-	PtAddCallback(combo1, Pt_CB_SELECTION, s_position_changed, this);
-	UT_QNXComboSetPos(combo1, 1);
+	m_toggleFooter = abiPhabLocateWidget(m_window,"togglePositionFooter"); 
+	PtSetResource(m_toggleFooter,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).c_str(),0);
+	m_toggleHeader = abiPhabLocateWidget(m_window,"togglePositionHeader");
+	PtSetResource(m_toggleHeader,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str(),0);
+	PtAddCallback(m_toggleFooter, Pt_CB_ACTIVATE, s_position_changed, this);
+	PtAddCallback(m_toggleHeader, Pt_CB_ACTIVATE, s_position_changed,this);
 
-	//Create the second label/combo combination
-	PtSetResource(abiPhabLocateWidget(m_window,"lblAlignment"), Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Alignment), 0);
+	//Create the second label/toggle combination
+	PtSetResource(abiPhabLocateWidget(m_window,"grpAlignment"), Pt_ARG_TITLE, _(AP,DLG_PageNumbers_Alignment), 0);
 	
-	combo2 = abiPhabLocateWidget(m_window,"comboAlignment"); 
-add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).c_str();
-	PtListAddItems(combo2, &add, 1, 0);
-add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).c_str();
-	PtListAddItems(combo2, &add, 1, 0);
-add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str();
-	PtListAddItems(combo2, &add, 1, 0);
-	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_RALIGN);
-	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_LALIGN);
-	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_CALIGN);
-	PtAddCallback(combo2, Pt_CB_SELECTION, s_alignment_changed, this);
-	UT_QNXComboSetPos(combo2, 3);
+	m_toggleAlignmentRight = abiPhabLocateWidget(m_window,"toggleAlignmentRight"); 
+	PtSetResource(m_toggleAlignmentRight,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).c_str(),0);
+	m_toggleAlignmentLeft = abiPhabLocateWidget(m_window,"toggleAlignmentLeft");
+	PtSetResource(m_toggleAlignmentLeft,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).c_str(),0);
+	m_toggleAlignmentCenter = abiPhabLocateWidget(m_window,"toggleAlignmentCenter");
+	PtSetResource(m_toggleAlignmentCenter,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str(),0);
+
+PtAddCallback(m_toggleAlignmentLeft, Pt_CB_ACTIVATE, s_alignment_changed, this);
+PtAddCallback(m_toggleAlignmentCenter, Pt_CB_ACTIVATE, s_alignment_changed, this);
+PtAddCallback(m_toggleAlignmentRight, Pt_CB_ACTIVATE, s_alignment_changed, this);
 
 	//Create the preview area
 	void *data = (void *)this;

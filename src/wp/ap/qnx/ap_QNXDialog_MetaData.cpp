@@ -147,172 +147,57 @@ PtWidget_t *mainwindow;
 PtWidget_t *panelgrp;
 PtWidget_t *btnOk,*btnCancel;
 	  
-	PtArg_t args[10];
-	int n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_MetaData_Title),0);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
-//	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_MANAGED_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-
-	mainwindow = PtCreateWidget(PtWindow,NULL,n,args);
+	mainwindow = abiCreatePhabDialog("ap_QNXDialog_MetaData",_(AP,DLG_MetaData_Title)); 
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
-	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtWidget_t *grp =	PtCreateWidget(PtGroup,NULL,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_AUTO_EXTENT);
-	panelgrp=PtCreateWidget( PtPanelGroup, NULL, n,args);
+	panelgrp=abiPhabLocateWidget(mainwindow,"panelgrp");
 
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_General),0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_SHOW_TITLE);
-  PtCreateWidget( PtPane,panelgrp ,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"paneGeneral"),Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_General),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,5,0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblTitle"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Title_LBL),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Title_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Subject_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Author_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Publisher_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_CoAuthor_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblSubject"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Subject_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblAuthor"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Author_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblPublisher"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Publisher_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblCoAuthor"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_CoAuthor_LBL),0);
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *title_entry=PtCreateWidget( PtText, Pt_DEFAULT_PARENT, n,args);
-	n=0;
+	PtWidget_t *title_entry=abiPhabLocateWidget(mainwindow,"textTitle");
+	PtWidget_t *subject_entry= abiPhabLocateWidget(mainwindow,"textSubject");
+	PtWidget_t *author_entry =abiPhabLocateWidget(mainwindow,"textAuthor"); 
+	PtWidget_t *publisher_entry =abiPhabLocateWidget(mainwindow,"textPublisher");
+	PtWidget_t *coauthor_entry =abiPhabLocateWidget(mainwindow,"textCoAuthor");
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *subject_entry=PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"paneSummary"),Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Summary),0);
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *author_entry = PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblCategory"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Category_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblKeywords"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Keywords_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblLanguages"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Languages_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblDescription"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Description_LBL),0);
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *publisher_entry =PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtWidget_t *category_entry = abiPhabLocateWidget(mainwindow,"textCategory"); 
+	PtWidget_t *keywords_entry =abiPhabLocateWidget(mainwindow,"textKeywords");
+	PtWidget_t *languages_entry = abiPhabLocateWidget(mainwindow,"textLanguages");
+	PtWidget_t *description_txt = abiPhabLocateWidget(mainwindow,"multiDescription");
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *coauthor_entry =PtCreateWidget( PtText, Pt_DEFAULT_PARENT,n,args );
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"panePermissions"),Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Permission),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Summary),0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_SHOW_TITLE);
-	PtCreateWidget( PtPane,panelgrp,n,args );
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Category_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Keywords_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Languages_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Description_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *category_entry = PtCreateWidget( PtText, NULL, n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *keywords_entry = PtCreateWidget( PtText, NULL, n,args );
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *languages_entry = PtCreateWidget( PtText, NULL, n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtSetArg(&args[n++],Pt_ARG_MULTITEXT_ROWS,5,0);
-	PtWidget_t *description_txt = PtCreateWidget( PtMultiText, NULL, n,args );
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_TITLE,_(AP,DLG_MetaData_TAB_Permission),0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++],Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_SHOW_TITLE);
-	PtCreateWidget( PtPane, panelgrp, n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Source_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;	
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Relation_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Coverage_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Rights_LBL),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblSource"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Source_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblRelation"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Relation_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblCoverage"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Coverage_LBL),0);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblRights"),Pt_ARG_TEXT_STRING,_(AP,DLG_MetaData_Rights_LBL),0);
 	
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *source_entry = PtCreateWidget( PtText, NULL,n,args);
-	n=0;
+	PtWidget_t *source_entry = abiPhabLocateWidget(mainwindow,"textSource"); 
+	PtWidget_t *relation_entry = abiPhabLocateWidget(mainwindow,"textRelation");
+	PtWidget_t * coverage_entry = abiPhabLocateWidget(mainwindow,"textCoverage");
+	PtWidget_t *rights_entry = abiPhabLocateWidget(mainwindow,"textRights");
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *relation_entry = PtCreateWidget( PtText, NULL,n,args);
-	n=0;
+	btnOk = abiPhabLocateWidget(mainwindow,"btnOK"); 
+	PtSetResource(btnOk,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t * coverage_entry = PtCreateWidget( PtText, NULL,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	PtWidget_t *rights_entry = PtCreateWidget( PtText, NULL, n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtCreateWidget(PtGroup,grp,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
-	btnOk = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
-	n=0;	
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
-	btnCancel = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
+	btnCancel = abiPhabLocateWidget(mainwindow,"btnCancel"); 
+	PtSetResource(btnCancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
 
 	PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
 	PtAddCallback(btnOk,Pt_CB_ACTIVATE,ph_event_ok,this);

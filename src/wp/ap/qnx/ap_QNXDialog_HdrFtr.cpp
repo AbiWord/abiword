@@ -216,7 +216,8 @@ PtWidget_t *RestartLabel;
 	toggleRestartNewSection=abiPhabLocateWidget(mainWindow,"toggleRestart"); 
 	PtSetResource(toggleRestartNewSection,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartCheck),0);
 
-	PtSetResource(abiPhabLocateWidget(mainWindow,"lblRestart"),Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartNumbers),0);
+	RestartLabel = abiPhabLocateWidget(mainWindow,"lblRestart");
+	PtSetResource(RestartLabel,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartNumbers),0);
 
 	UpDown=abiPhabLocateWidget(mainWindow,"NumericRestart");
 

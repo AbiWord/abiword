@@ -40,8 +40,8 @@ class AP_QNXDialog_PageNumbers : public AP_Dialog_PageNumbers
   void event_Cancel(void);
   void event_WindowDelete(void);
   void event_PreviewExposed(void);
-  void event_AlignChanged(int index /* AP_Dialog_PageNumbers::tAlign */);
-  void event_HdrFtrChanged(int index /* AP_Dialog_PageNumbers::tControl */);
+  void event_AlignChanged();
+  void event_HdrFtrChanged();
 
  protected:
 
@@ -58,10 +58,8 @@ class AP_QNXDialog_PageNumbers : public AP_Dialog_PageNumbers
 
   PtWidget_t * m_previewArea;
   int		   done;
-
-  UT_Vector	   m_vecalign;
-  UT_Vector	   m_vecposition;
-
+  PtWidget_t *m_toggleAlignmentRight,*m_toggleAlignmentLeft,*m_toggleAlignmentCenter;
+  PtWidget_t *m_toggleHeader,*m_toggleFooter; 
   GR_QNXGraphics * m_qnxGraphics;
 };
 

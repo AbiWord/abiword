@@ -7,7 +7,7 @@ string
 Untitled
 1005
 dim
-450,282
+481,282
 2002
 crgb
 0xc0c0c0
@@ -32,7 +32,7 @@ PtPane
 PtPane
 1005
 dim
-450,249
+481,249
 1006
 flag
 256,256
@@ -221,7 +221,7 @@ string
 Toggle
 1007
 pos
-5,213
+5,214
 1005
 dim
 180,24
@@ -240,10 +240,10 @@ string
 Label
 1007
 pos
-256,215
+275,216
 1005
 dim
-64,21
+113,21
 1014
 datas
 lblRestart
@@ -256,10 +256,10 @@ PtNumericInteger
 PtNumericInteger
 1005
 dim
-117,27
+84,27
 1007
 pos
-326,212
+392,213
 1014
 datas
 NumericRestart
@@ -281,7 +281,7 @@ PtPane
 PtPane
 1005
 dim
-450,33
+481,33
 1006
 flag
 258,1334445470
@@ -312,7 +312,7 @@ multi
 6
 Cancel1007
 pos
-274,2
+305,2
 1005
 dim
 82,27
@@ -337,7 +337,7 @@ multi
 2
 OK1007
 pos
-362,2
+393,2
 1005
 dim
 82,27
