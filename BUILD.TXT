@@ -58,8 +58,9 @@ There are several ways to build and run AbiWord:
     If you are building from CVS, you will need to run autogen.sh in
     abiword-plugins in order to create the build system.
 
-    Build Options
-    -------------
+    =====================
+    Compiling options (1)
+    =====================
     
     ABI_OPT_CURLHASH
 	Enables the dictionary downloader. When Abiword tries to spellcheck a
@@ -70,6 +71,75 @@ There are several ways to build and run AbiWord:
 	a formality to make the other platforms work. Also, since we currently
 	only have ispell hashes only those systems will work.
 	It depends on libcurl.
+
+     - mr.g 30/4/2002
+    =================
+
+    =====================
+    Compiling options (2)
+    =====================
+
+    The diving make build system (i.e., what happens if you just use
+    make instead of configure & make) has a number of options that can
+    be specified on the make line, i.e.:
+
+	make prefix=<dir> Feature=[1,0]
+
+    where 1 = on
+	  0 = off
+
+    Cross platform options
+    ----------------------
+
+    prefix=/usr/local or prefix=/usr/share  set AbiWords (preferred) install path
+
+    ABI_BUILD_VERSION=x.y.z		set Abiword compile version
+    ABI_OPT_DEBUG=[1,0]			enable debugging
+    ABI_OPT_LIBXML2=[1,0]		enable LibXML2 support
+    UNIX_CAN_BUILD_STATIC=[1,0]		Include all libraries within Abi's structure
+    UNIX_CAN_BUILD_DYNAMIC=[1,0]	Link to libraries in Operating System
+    ABI_OPT_GNOME=[1,0]			enable Gnome support
+    ABI_OPT_LIBJPEG=[1,0]		enable LibJPEG support
+    ABI_OPT_BIDI_ENABLED=[1,0]		enable Bidirectional text support
+    ABI_OPT_BIDI_RTL_DOMINANT=[1,0]	enable Right-to-Left Bidirectional support
+    ABI_OPT_PERL=[1,0]			enable Perl scripting
+    ABI_OPT_OPTIMIZE=[1,0]
+    ABI_OPT_PSPELL=[1,0]		enable Pspell
+    ABI_OPT_PROF=[1,0]			for profiling flags I think
+    ABI_OPT_WAY_TOO_MANY_WARNINGS=[1,0]	linux one to disable some warnings???
+
+
+    Linux specific options
+    ----------------------
+
+    ABI_OPT_BONOBO=[1,0]		enable Bonobo support
+    ABI_REQUIRE_PEER_ICONV=[1,0]	require LibICONV support to build
+    ABI_REQUIRE_PEER_LIBPNG=[1,0]	require LibPNG support to build
+
+    Windows specific options
+    ------------------------
+
+    ABI_OPT_CYGWIN_UNIX=[1,0]	(cywin/gcc/gtk instead of native windows build)
+
+    Other options
+    -------------
+
+    (These are used, but generally should be left unset so they are auto set.)
+
+    OS_NAME
+    OS_RELEASE
+    ABISOURCE_LICENSED_TRADEMARKS
+
+    To build an RPM distribution on Linux
+    -------------------------------------
+
+    make prefix=/usr ABI_RELEASE_NUMBER=n ABI_DIST_TARGET=rpm OUT=<dir> \
+	ABI_BUILD_PACKAGER="You <email@of.yourse.lf>"
+
+    where, typically, n=1 and <dir> should be external to the build tree.
+
+     - compiled by Scott (mrphido@prodigy.net) [ed. fjf 30/4/2002]
+    ==============================================================
 
     AIX platform Notes
     ------------------
