@@ -218,7 +218,7 @@ gint XAP_UnixFrameImpl::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameImpl * */ p)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(p);
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
-	if(!pView || pUnixFrameImpl->m_bShowDocLocked)
+	if(!pView || pFrame->isFrameLocked())
 	{
 		pUnixFrameImpl->m_iZoomUpdateID = 0;
 		pUnixFrameImpl->m_bDoZoomUpdate = false;

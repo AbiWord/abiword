@@ -287,19 +287,20 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 		UT_DEBUGMSG(("Can't show a non-existent document\n"));
 		return UT_IE_FILENOTFOUND;
 	}
-
+	if(isFrameLocked())
+	{
+		UT_DEBUGMSG(("_showDocument: Nasty race bug, please fix me!! \n"));
+		UT_ASSERT(0);
+		return  UT_IE_ADDLISTENERERROR;
+	}
+	setFrameLocked(true);
 	if (!((AP_FrameData*)m_pData))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		setFrameLocked(false);
 		return UT_IE_IMPORTERROR;
 	}
 
-//         if(static_cast<XAP_FrameImpl *>(m_pFrameImpl)->getShowDocLocked())
-//         {
-//                 UT_DEBUGMSG(("Evil race condition detected. Fix this!!! \n"));
-//                 UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-//                 return  UT_IE_ADDLISTENERERROR;
-//         }                                                                       
 // 	static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(true);
 
 	GR_Graphics * pG = NULL;
@@ -357,7 +358,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	m_pView->focusChange(AV_FOCUS_HERE);
 
 	//static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
-
+	setFrameLocked(false);
 	return UT_OK;
 
 Cleanup:
@@ -371,6 +372,7 @@ Cleanup:
 
 	// change back to prior document
 	UNREFP(m_pDoc);
+	setFrameLocked(false);
 	UT_return_val_if_fail(((AP_FrameData*)m_pData)->m_pDocLayout, UT_IE_ADDLISTENERERROR);
 	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 	//static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);

@@ -121,7 +121,7 @@ AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * pApp)
 	: AP_Frame(new AP_UnixFrameImpl(this, pApp), pApp)
 {
 	m_pData = NULL;
-	static_cast<XAP_UnixFrameImpl*>(getFrameImpl())->setShowDocLocked(false);
+	setFrameLocked(false);
 
 }
 
@@ -158,7 +158,7 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 	UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! \n"));
 
 	setFrameMode(frameMode);
-	pFrameImpl->setShowDocLocked(false);
+	setFrameLocked(false);
 
 	if (!initFrameData())
 		return false;

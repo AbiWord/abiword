@@ -54,9 +54,6 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	void createTopLevelWindow(void);
 	GtkWidget * getVBoxWidget() const;
 
-	void setShowDocLocked(bool bShowDocLocked) { m_bShowDocLocked = bShowDocLocked; }
-	bool getShowDocLocked() { return m_bShowDocLocked; }
-
 private:
 	void _setGeometry ();
 
@@ -122,8 +119,6 @@ protected:
 		static gint focusOut(GtkWidget * /*widget*/, GdkEvent */* e */,gpointer /* data */);
 	};
 	friend class _fe;
-
-	bool m_bShowDocLocked;
 
  private:
 	bool                        m_bDoZoomUpdate;

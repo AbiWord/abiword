@@ -234,6 +234,10 @@ public:
 	virtual void                setStatusBarShown(bool bShowStatusbar) {}
 	virtual void                setMenuBarShown(bool bShowMenubar) {}
 	UT_uint32                   getTimeSinceSave() const;
+	bool                        isFrameLocked(void) const 
+	                            {return m_bIsFrameLocked;}
+	void                        setFrameLocked(bool bLock) 
+	                            {m_bIsFrameLocked = bLock;}
 
 protected:
 	friend class XAP_FrameImpl;
@@ -280,6 +284,7 @@ private:
 	bool                        m_bFirstDraw; // WL_REFACTOR: should this go into the helper?
 	bool                        m_bShowStatusbar;
 	bool                        m_bShowMenubar;
+	bool                        m_bIsFrameLocked;
 
 	XAP_FrameImpl *           m_pFrameImpl; /* set by platform specific code */
 };
@@ -421,7 +426,6 @@ public:
 	virtual void                setStatusBarShown(bool bShowStatusbar) {}
 	virtual void                setMenuBarShown(bool bShowMenubar) {}
 	UT_uint32                   getTimeSinceSave() const;
-
 protected:
 	virtual void				_createToolbars();
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) = 0; // Abstract

@@ -85,7 +85,8 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_bHasDroppedTB(false),
 	  m_bFirstDraw(false),
 	  m_bShowStatusbar(true),
-	  m_bShowMenubar(true)
+	  m_bShowMenubar(true),
+	  m_bIsFrameLocked(false)
 {
 	m_pApp->rememberFrame(this);
 }
@@ -114,7 +115,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_bisDragging(false),
 	m_bHasDropped(false),
 	m_bHasDroppedTB(false),
-	m_bFirstDraw(false)
+	m_bFirstDraw(false),
+	m_bIsFrameLocked(false)
 {
 	m_pApp->rememberFrame(this, f);
 }
