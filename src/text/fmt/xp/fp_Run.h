@@ -137,7 +137,8 @@ class fp_Run
 	UT_uint32				m_iAscent;
 	UT_uint32				m_iDescent;
 	UT_uint32				m_iExtraWidth;
-	int						m_bCanSplit;
+	UT_Bool					m_bCanSplit;
+	UT_Bool					m_bNeverDrawn;
 	int						m_iLineBreakAfter;
 	int						m_iLineBreakBefore;
 

@@ -676,6 +676,7 @@ void fp_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 void fp_Run::clearScreen(void)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+
 	UT_sint32 xoff = 0, yoff = 0, width, height;
 	
 	// need to clear full height of line, in case we had a selection
@@ -1016,3 +1017,4 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 	
 	return UT_TRUE;
 }
+

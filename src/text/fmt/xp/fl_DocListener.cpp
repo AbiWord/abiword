@@ -327,6 +327,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 					else
 					{
+						pRun->clearScreen();
 						pRun->calcWidths(&pBL->m_gbCharWidths);
 					}
 				}

@@ -404,6 +404,8 @@ void Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 
 void Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
+//	UT_ASSERT((x + width) < 800);
+	
 	HBRUSH hBrush = (HBRUSH) GetStockObject(WHITE_BRUSH);
 	RECT r;
 	r.left = x;
