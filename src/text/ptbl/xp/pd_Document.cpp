@@ -2071,6 +2071,7 @@ static void s_BindHandles(PL_StruxDocHandle sdhNew,
 	UT_ASSERT(sfhNew);
 
 	pf_Frag_Strux * pfsNew = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdhNew));
+	UT_DEBUGMSG(("Set Format handle number %d of strux %x to format %x \n",lid,pfsNew,sfhNew));
 	pfsNew->setFmtHandle(lid,sfhNew);
 }
 

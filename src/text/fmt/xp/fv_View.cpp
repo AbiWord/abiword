@@ -3653,7 +3653,6 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 
 	UT_uint32 iPropsCount = PP_getPropertyCount();
-
 	for(UT_uint32 n = 0; n < iPropsCount; n++)
 	{
 		if((PP_getNthPropertyLevel(n) & PP_LEVEL_BLOCK))
@@ -8746,7 +8745,7 @@ UT_uint32 fv_PropCache::getTick(void) const
 
 const XML_Char ** fv_PropCache::getCopyOfProps(void) const
 {
-	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(m_iNumProps, sizeof(XML_Char *))); 
+	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(m_iNumProps+1, sizeof(XML_Char *))); 
 	UT_uint32 i =0;
 	const XML_Char ** p = props;
 	for(i =0; i< m_iNumProps;i++)
@@ -8754,6 +8753,7 @@ const XML_Char ** fv_PropCache::getCopyOfProps(void) const
 		p[i] = m_pszProps[i];
 		xxx_UT_DEBUGMSG((" copy i %d m_pszProps[i] %x m_pszProps %s props %x props %s\n",i,m_pszProps[i],m_pszProps[i],props[i],props[i]));
 	}
+	p[m_iNumProps] = NULL;
 	xxx_UT_DEBUGMSG(("getCopy: props %x m_pszProps %x \n",props,m_pszProps));
 	UT_ASSERT(NULL != m_pszProps);
 	return props;
@@ -8765,10 +8765,17 @@ void fv_PropCache::fillProps(UT_uint32 numProps, const XML_Char ** props)
 	m_pszProps = static_cast<XML_Char **>(UT_calloc(m_iNumProps, sizeof(XML_Char *))); 
 	UT_uint32 i = 0;
 	xxx_UT_DEBUGMSG(("m_pszProps %x props %x ",m_pszProps,props));
-	for(i =0; i< m_iNumProps;i++)
+	for(i =0; i< m_iNumProps && (props[i] != NULL);i++)
 	{
-		m_pszProps[i] = const_cast<XML_Char *>(props[i]);
-		xxx_UT_DEBUGMSG((" i %d m_pszProps[i] %x m_pszProps %s \n",i,m_pszProps[i],m_pszProps[i]));
+		if(props[i] != NULL)
+		{
+			m_pszProps[i] = const_cast<XML_Char *>(props[i]);
+			xxx_UT_DEBUGMSG((" i %d m_pszProps[i] %x m_pszProps %s \n",i,m_pszProps[i],m_pszProps[i]));
+		}
+		else
+		{
+			m_pszProps[i] = NULL;
+		}
 	}
 	UT_ASSERT(NULL != m_pszProps);
 }

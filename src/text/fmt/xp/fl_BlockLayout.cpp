@@ -169,6 +169,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_iDomDirection(FRIBIDI_TYPE_UNSET),
 	  m_iDirOverride(FRIBIDI_TYPE_UNSET)
 {
+	UT_DEBUGMSG(("BlockLayout %x created \n",this));
 	setPrev(pPrev);
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
 	{
@@ -391,7 +392,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		if(pszFntId && *pszFntId)
 		{
-			UT_ASSERT(m_pSectionLayout->getType() == PTX_SectionFootnote);
+			UT_ASSERT(m_pSectionLayout->getContainerType() == FL_CONTAINER_FOOTNOTE);
 			fl_FootnoteLayout   * pFL = (fl_FootnoteLayout*) m_pSectionLayout;
 			fl_DocSectionLayout * pDSL=	 pFL->getDocSectionLayout();
 
@@ -794,7 +795,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
+	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
 }
 
 /*!
@@ -3795,7 +3796,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	{
 		sqlist = new UT_uint32[len];
 	}
-	UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, pos %d \n", len, getPosition()+blockOffset));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, pos %d \n", len, getPosition()+blockOffset));
 	for (i=0; i<len; i++)
 	{
 		xxx_UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,static_cast<char>(pChars[i])));
@@ -4730,8 +4731,13 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 {
 	//	Exchange handles with the piece table
 	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
-	pfnBindHandles(sdh,lid,sfhNew);
-
+	//
+	// Don't bind to shadows!
+	//
+	if(pfnBindHandles)
+	{
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
 	setNeedsReformat();
 	updateEnclosingBlockIfNeeded();
 
@@ -4780,7 +4786,13 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	// of the view listeners).
 
 	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewBL);
-	pfnBindHandles(sdh,lid,sfhNew);
+	//
+	// Don't Bind to shadows
+	//
+	if(pfnBindHandles)
+	{
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
 
 	/*
 	  The idea here is to divide the runs of the existing block
@@ -4967,7 +4979,6 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	// contain content.
 
 	UT_ASSERT(pcrx);
-	UT_ASSERT(pfnBindHandles);
 	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(iType != FL_SECTION_DOC || pcrx->getStruxType() == PTX_Section);
 	UT_ASSERT(iType != FL_SECTION_HDRFTR || pcrx->getStruxType() == PTX_SectionHdrFtr);
@@ -5119,7 +5130,13 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	// listeners).
 
 	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
-	pfnBindHandles(sdh,lid,sfhNew);
+	//
+	// Don't bind to shadows
+	//
+	if(pfnBindHandles)
+	{
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
 
 	fl_SectionLayout* pOldSL = m_pSectionLayout;
 
@@ -5271,7 +5288,6 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
 	// contain content.
 
 	UT_ASSERT(pcrx);
-	UT_ASSERT(pfnBindHandles);
 	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
 //
 // Not true always. eg Undo on a delete header/footer. We should detect this
@@ -5293,7 +5309,13 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
 		// listeners).
 
 	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
-	pfnBindHandles(sdh,lid,sfhNew);
+	//
+	// Don't bind to shadows
+	//
+	if(pfnBindHandles)
+	{
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
 
 //
 // increment the insertion point in the view.

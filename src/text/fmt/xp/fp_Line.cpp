@@ -2915,7 +2915,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 		if(!m_iRunsRTLcount)
 		{
-			UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
+			xxx_UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
 			for (i = 0; i < count; i++)
 			{
 				//the map is actually never used, we only need to set the
@@ -2932,7 +2932,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		//from back to start
 		if(!m_iRunsLTRcount)
 		{
-			UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));
+			xxx_UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));
 			for(i = 0; i < count/2; i++)
 			{
 				s_pMapOfRunsL2V[i]= count - i - 1;
@@ -2956,7 +2956,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			/*
 				This is a genuine bidi line, so we have to go the full way.
 			*/
-			UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs, line 0x%x)\n", m_iRunsLTRcount, m_iRunsRTLcount, this));
+			xxx_UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs, line 0x%x)\n", m_iRunsLTRcount, m_iRunsRTLcount, this));
 
 			// create a pseudo line string
 			/*

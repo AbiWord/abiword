@@ -3054,6 +3054,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 //
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	fl_ContainerLayout * pShadowBL = NULL;
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -3063,7 +3064,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 		if(pBL)
 		{
 			pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+			UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock into shadow 1 \n"));
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertBlock(pcrx,sdh,lid,NULL)
 				&& bResult;
 		}
 		else
@@ -3077,8 +3079,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 				UT_DEBUGMSG(("no memory for BlockLayout\n"));
 				return false;
 			}
+			UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock into shadow 2 \n"));
 			bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
-													lid, pfnBindHandles);
+													lid, NULL);
 		}
 	}
 //
