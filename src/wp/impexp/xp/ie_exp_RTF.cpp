@@ -444,7 +444,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 {
 	UT_uint32 k,kLimit;
 
-	UT_uint32 langcode = XAP_EncodingManager::instance->getWinLanguageCode();
+	UT_uint32 langcode = XAP_EncodingManager::get_instance()->getWinLanguageCode();
 	// write <rtf-header>
 	// return false on error
 	UT_DEBUGMSG(("Belcon:in  IE_Exp_RTF::_write_rtf_header,langcode=%d\n",langcode));
@@ -472,7 +472,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		// NOTE:but we need convert them to CPxx.:-(
 		else
 		{
-			const char* codepage=XAP_EncodingManager::instance->CodepageFromCharset(cpgname);
+			const char* codepage=XAP_EncodingManager::get_instance()->CodepageFromCharset(cpgname);
 			if(UT_strnicmp(codepage,"cp",2)==0 && UT_UCS_isdigit(codepage[2]))
 			{
 				int cpg;
@@ -482,7 +482,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 					wrote_cpg = 1;
 				}
 			}
-			UT_DEBUGMSG(("Belcon:after XAP_EncodingManager::instance->CodepageFromCharset(%s),codepage=%s\n",cpgname,codepage));
+			UT_DEBUGMSG(("Belcon:after XAP_EncodingManager::get_instance()->CodepageFromCharset(%s),codepage=%s\n",cpgname,codepage));
 		}
 	};
 	if (!wrote_cpg)
@@ -502,7 +502,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_nl();
 	_rtf_open_brace();
 	_rtf_keyword("fonttbl");
-	UT_uint32 charsetcode = XAP_EncodingManager::instance->getWinCharsetCode();
+	UT_uint32 charsetcode = XAP_EncodingManager::get_instance()->getWinCharsetCode();
 	for (k=0; k<kLimit; k++)
 	{
 		const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);

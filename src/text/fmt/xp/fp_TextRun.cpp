@@ -278,7 +278,7 @@ bool fp_TextRun::canBreakAfter(void) const
 			{
 				UT_ASSERT(len>0);
 
-				if (XAP_EncodingManager::instance->can_break_at(pSpan[len-1]))
+				if (XAP_EncodingManager::get_instance()->can_break_at(pSpan[len-1]))
 				{
 					return true;
 				}
@@ -316,7 +316,7 @@ bool fp_TextRun::canBreakBefore(void) const
 		{
 			UT_ASSERT(lenSpan>0);
 
-			if (XAP_EncodingManager::instance->can_break_at(pSpan[0]))
+			if (XAP_EncodingManager::get_instance()->can_break_at(pSpan[0]))
 			{
 				return true;
 			}
@@ -410,12 +410,12 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 	FIXME: this is a direct equivalent to HJ's patch, but other branch
 	could be more correct than this one. - VH
     */
-			if ( (XAP_EncodingManager::instance->can_break_at(pSpan[i]) && pSpan[i]!=UCS_SPACE) ||
+			if ( (XAP_EncodingManager::get_instance()->can_break_at(pSpan[i]) && pSpan[i]!=UCS_SPACE) ||
 				(
 					(UCS_SPACE == pSpan[i])
 #else
 			if (
-				(XAP_EncodingManager::instance->can_break_at(pSpan[i])
+				(XAP_EncodingManager::get_instance()->can_break_at(pSpan[i])
 #endif					
 					&& ((i + offset) != (m_iOffsetFirst + m_iLen - 1))
 					)

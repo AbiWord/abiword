@@ -161,7 +161,7 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	   // convert incoming character to unicode
 	   if (chartype)
 	     eachchar = wvHandleCodePage(eachchar, lid);
-	     //eachchar = XAP_EncodingManager::instance->UToNative(eachchar);
+	     //eachchar = XAP_EncodingManager::get_instance()->UToNative(eachchar);
 	     
 	   xxx_UT_DEBUGMSG(("word 97 char is %c (%d), type is %d\n",eachchar,(int)eachchar,chartype));
 

@@ -359,10 +359,25 @@ g_i18n_get_language_list (const gchar *category_name)
   return list;
 }
 
+/************************************************************/
+
+XAP_EncodingManager *XAP_EncodingManager::get_instance()
+{
+	if (_instance == 0)
+	{
+		UT_DEBUGMSG(("Building XAP_EncodingManager\n"));
+		_instance = new XAP_UnixEncodingManager();
+		_instance->initialize();
+		UT_DEBUGMSG(("XAP_EncodingManager builded\n"));
+	}
+
+	return _instance;
+}
+
+/************************************************************/
 
 XAP_UnixEncodingManager::XAP_UnixEncodingManager() 
 {
-	initialize();	
 }
 
 XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}

@@ -23,8 +23,10 @@
 #define UT_TYPES_H
 
 #include <stdlib.h>
+#if 0
 #ifdef HAVE_GNOME
 #include <glib.h>
+#endif
 #endif
 
 #ifdef NULL

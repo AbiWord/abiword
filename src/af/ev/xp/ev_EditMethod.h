@@ -77,7 +77,7 @@ typedef UT_uint32 EV_EditMethodType;
 class EV_EditMethodCallData
 {
 public:
-	EV_EditMethodCallData(void);
+	EV_EditMethodCallData();
 	EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength);
 	EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength);
 	~EV_EditMethodCallData();
@@ -98,12 +98,12 @@ typedef bool ( EV_EditMethod_Fn) (AV_View * pView, EV_EditMethodCallData * pCall
 class EV_EditMethod
 {
 public:
-	EV_EditMethod(const char * szName,EV_EditMethod_pFn fn, EV_EditMethodType emt,const char * szDescription);
+	EV_EditMethod(const char * szName, EV_EditMethod_pFn fn, EV_EditMethodType emt, const char * szDescription);
 
-	EV_EditMethod_pFn	getFn(void) const;
-	EV_EditMethodType	getType(void) const;
-	inline const char *	getName(void) const;
-	const char *		getDescription(void) const;
+	EV_EditMethod_pFn	getFn() const;
+	EV_EditMethodType	getType() const;
+	inline const char *	getName() const;
+	const char *		getDescription() const;
 
 protected:
 	const char *		m_szName;				// used for lookup; not malloced; this should not be localized
@@ -118,11 +118,11 @@ protected:
 class EV_EditMethodContainer
 {
 public:
-	EV_EditMethodContainer(UT_uint32 cStatic,EV_EditMethod arrayStaticEditMethods[]);
+	EV_EditMethodContainer(UT_uint32 cStatic, EV_EditMethod arrayStaticEditMethods[]);
 	~EV_EditMethodContainer();
 
 	bool				addEditMethod(EV_EditMethod * pem);
-	UT_uint32			countEditMethods(void);
+	UT_uint32			countEditMethods();
 	EV_EditMethod *		getNthEditMethod(UT_uint32 ndx);
 	EV_EditMethod *		findEditMethodByName(const char * szName) const;
 

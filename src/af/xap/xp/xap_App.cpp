@@ -46,31 +46,25 @@
 
 XAP_App * XAP_App::m_pApp = NULL;
 
-XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
+XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
+	: m_hashClones(5),
+	  m_pArgs(pArgs),
+	  m_szAppName(szAppName),
+	  m_szAbiSuiteLibDir(NULL),
+	  m_pEMC(NULL),
+	  m_pBindingSet(NULL),
+	  m_pMenuActionSet(NULL),
+	  m_pToolbarActionSet(NULL),
+	  m_pDict(NULL),
+	  m_prefs(NULL),
+	  m_lastFocussedFrame(NULL)
 {
 	UT_ASSERT(szAppName && *szAppName);
-
-	m_pArgs = pArgs;
-	m_szAppName = szAppName;
-	m_szAbiSuiteLibDir = NULL;
-	m_pEMC = NULL;
-	m_pBindingSet = NULL;
-	m_pMenuActionSet = NULL;
-	m_pToolbarActionSet = NULL;
-	m_pDict = NULL;
-	m_prefs = NULL;
-	m_pEncMgr = new XAP_EncodingManager();/* HACK: this is done in order 
-		not to update the code for each platform. If platform specific
-		code has its own implementation of EncodingManager, then it
-		should just simply delete an instance pointed by this member
-		and assign ptr to platform-specific implementation. - hvv */
-       
 	m_pApp = this;
-	m_lastFocussedFrame = NULL;
-        clearIdTable();
+	clearIdTable();
 }
 
-XAP_App::~XAP_App(void)
+XAP_App::~XAP_App()
 {
 	// HACK: for now, this works from XAP code
 	// TODO: where should this really go?
@@ -87,15 +81,25 @@ XAP_App::~XAP_App(void)
 	DELETEP(m_pToolbarActionSet);
 	DELETEP(m_pDict);
 	DELETEP(m_prefs);
-	DELETEP(m_pEncMgr);
 }
 
-const XAP_EncodingManager* XAP_App::getEncodingManager(void) const 
+/*! this function is silly */
+const XAP_EncodingManager* XAP_App::getEncodingManager() const 
 { 
-    return m_pEncMgr;
+    return XAP_EncodingManager::get_instance();
 };
 
-bool XAP_App::initialize(void)
+EV_Menu_ActionSet *XAP_App::getMenuActionSet()
+{
+	return m_pMenuActionSet;
+}
+
+EV_Toolbar_ActionSet *XAP_App::getToolbarActionSet()
+{
+	return m_pToolbarActionSet;
+}
+
+bool XAP_App::initialize()
 {
 	// create application-wide resources that
 	// are shared by everything.
@@ -134,7 +138,7 @@ bool XAP_App::initialize(void)
 	return true;
 }
 
-const char * XAP_App::getApplicationTitleForTitleBar(void) const
+const char * XAP_App::getApplicationTitleForTitleBar() const
 {
 	static char _title[512];
 
@@ -147,7 +151,7 @@ const char * XAP_App::getApplicationTitleForTitleBar(void) const
 	return _title;
 }
 
-const char * XAP_App::getApplicationName(void) const
+const char * XAP_App::getApplicationName() const
 {
 	// return a string that the platform-specific code
 	// can use as a class name for various window-manager-like
@@ -155,7 +159,7 @@ const char * XAP_App::getApplicationName(void) const
 	return m_szAppName;
 }
 
-EV_EditMethodContainer * XAP_App::getEditMethodContainer(void) const
+EV_EditMethodContainer * XAP_App::getEditMethodContainer() const
 {
 	return m_pEMC;
 }
@@ -166,12 +170,12 @@ EV_EditBindingMap * XAP_App::getBindingMap(const char * szName)
 	return m_pBindingSet->getMap(szName);
 }
 
-const EV_Menu_ActionSet * XAP_App::getMenuActionSet(void) const
+const EV_Menu_ActionSet * XAP_App::getMenuActionSet() const
 {
 	return m_pMenuActionSet;
 }
 
-const EV_Toolbar_ActionSet * XAP_App::getToolbarActionSet(void) const
+const EV_Toolbar_ActionSet * XAP_App::getToolbarActionSet() const
 {
 	return m_pToolbarActionSet;
 }
@@ -391,7 +395,7 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 	return true;
 }
 
-UT_uint32 XAP_App::getFrameCount(void) const
+UT_uint32 XAP_App::getFrameCount() const
 {
 	return m_vecFrames.getItemCount();
 }
@@ -439,7 +443,7 @@ void XAP_App::_setAbiSuiteLibDir(const char * sz)
 	UT_cloneString((char *&)m_szAbiSuiteLibDir,sz);
 }
 
-const char * XAP_App::getAbiSuiteLibDir(void) const
+const char * XAP_App::getAbiSuiteLibDir() const
 {
 	return m_szAbiSuiteLibDir;
 }
@@ -460,7 +464,7 @@ bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
 	return m_pDict->isWord(pWord, len);
 }
 
-XAP_Prefs * XAP_App::getPrefs(void) const
+XAP_Prefs * XAP_App::getPrefs() const
 {
 	return m_prefs;
 }
@@ -515,7 +519,7 @@ UT_sint32 XAP_App::safefindFrame( XAP_Frame * f)
         return i;
 }
 
-void    XAP_App::clearLastFocussedFrame(void)
+void    XAP_App::clearLastFocussedFrame()
 {
         m_lastFocussedFrame = (XAP_Frame *) NULL;
 }
@@ -674,7 +678,7 @@ void XAP_App::parseAndSetGeometry(const char *string) {
 	}
 } 
 
-void XAP_App::_printUsage(void)
+void XAP_App::_printUsage()
 {
 	// just print to stdout, not stderr
 	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);

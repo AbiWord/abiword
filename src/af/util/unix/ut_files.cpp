@@ -24,6 +24,8 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_types.h"
+#include "ut_vector.h"
+#include "ut_string_class.h"
 
 /*!
 	If progName is a fully qualified path (i.e. it begins with '/'),
@@ -37,7 +39,7 @@
 
 bool progExists(const char* progName)
 {
-        struct stat statbuf;
+	struct stat statbuf;
 	int laststat;
 
 	if(*progName == '/')

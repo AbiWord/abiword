@@ -6,15 +6,18 @@
 /* it's assumed that only one instance of this class will exist */
 class XAP_UnixEncodingManager: public XAP_EncodingManager
 {
-public:
+protected:
     XAP_UnixEncodingManager();
-    ~XAP_UnixEncodingManager();    
+    virtual ~XAP_UnixEncodingManager();    
 
+    void 	initialize();    
+
+public:
     const char* getNativeEncodingName() 	const;
     const char* getLanguageISOName() 		const;
     const char* getLanguageISOTerritory() 	const;
-    
-    void 	initialize();    
+
+	friend class XAP_EncodingManager;
 };
 
 #endif /* XAP_UNIXENCMGR_H */

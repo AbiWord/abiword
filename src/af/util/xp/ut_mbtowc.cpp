@@ -228,13 +228,13 @@ void UT_Mbtowc::setInCharset(const char* charset)
 
 UT_Mbtowc::UT_Mbtowc(): m_bufLen(0)
 {
-    cd = iconv_open("UCS-2", XAP_EncodingManager::instance->getNativeEncodingName() );
+    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNativeEncodingName() );
     UT_ASSERT(cd!=(iconv_t)-1);    
 };
 
 UT_Mbtowc::UT_Mbtowc(const UT_Mbtowc& v): m_bufLen(0)
 {
-    cd = iconv_open("UCS-2", XAP_EncodingManager::instance->getNativeEncodingName() );
+    cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNativeEncodingName() );
     UT_ASSERT(cd!=(iconv_t)-1);    
 };
 

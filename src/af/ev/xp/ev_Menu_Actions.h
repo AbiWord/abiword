@@ -40,6 +40,7 @@
 
 #include "ut_types.h"
 #include "xap_Types.h"
+#include "ut_vector.h"
 
 class XAP_App;
 class XAP_Frame;
@@ -88,16 +89,16 @@ public:
 				   const char * szMethodName,
 				   EV_GetMenuItemState_pFn pfnGetState,
 				   EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
-	~EV_Menu_Action(void);
+	~EV_Menu_Action();
 
-	XAP_Menu_Id						getMenuId(void) const;
-	bool							hasDynamicLabel(void) const;
+	XAP_Menu_Id						getMenuId() const;
+	bool							hasDynamicLabel() const;
 	const char *					getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const;
-	const char *					getMethodName(void) const;
-	bool							hasGetStateFunction(void) const;
+	const char *					getMethodName() const;
+	bool							hasGetStateFunction() const;
 	EV_Menu_ItemState				getMenuItemState(AV_View * pView) const;
-	bool							raisesDialog(void) const;
-	bool							isCheckable(void) const;
+	bool							raisesDialog() const;
+	bool							isCheckable() const;
 	
 protected:
 	XAP_Menu_Id						m_id;
@@ -115,7 +116,7 @@ class EV_Menu_ActionSet					/* a glorified array with bounds checking */
 {
 public:
 	EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last);
-	~EV_Menu_ActionSet(void);
+	~EV_Menu_ActionSet();
 
 	bool				setAction(XAP_Menu_Id id,
 								  bool bHoldsSubMenu,
@@ -124,10 +125,12 @@ public:
 								  const char * szMethodName,
 								  EV_GetMenuItemState_pFn pfnGetState,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
+	bool				addAction(EV_Menu_Action *pAction);
+
 	EV_Menu_Action *	getAction(XAP_Menu_Id id) const;
 
 protected:
-	EV_Menu_Action **	m_actionTable;
+	UT_Vector			m_actionTable;
 	XAP_Menu_Id			m_first;
 	XAP_Menu_Id			m_last;
 };

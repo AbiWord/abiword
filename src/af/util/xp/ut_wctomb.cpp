@@ -173,13 +173,13 @@ UT_Wctomb::UT_Wctomb(const char* to_charset)
 
 UT_Wctomb::UT_Wctomb()
 {
-    cd = iconv_open(XAP_EncodingManager::instance->getNativeEncodingName(),"UCS-2");
+    cd = iconv_open(XAP_EncodingManager::get_instance()->getNativeEncodingName(),"UCS-2");
     UT_ASSERT(cd!=(iconv_t)-1);
 };
 
 UT_Wctomb::UT_Wctomb(const UT_Wctomb& v)
 {
-    cd = iconv_open(XAP_EncodingManager::instance->getNativeEncodingName(),"UCS-2");
+    cd = iconv_open(XAP_EncodingManager::get_instance()->getNativeEncodingName(),"UCS-2");
     UT_ASSERT(cd!=(iconv_t)-1);
 };
 

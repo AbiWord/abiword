@@ -54,9 +54,9 @@
 	
 #define ToolbarLabel(id,szName,iconName,szToolTip,szStatusMsg)									\
 		pLabelSet->setLabel((id),											\
-			XAP_EncodingManager::instance->strToNative((szName),encoding,namebuf,sizeof(namebuf)),(#iconName),	\
-			XAP_EncodingManager::instance->strToNative((szToolTip),encoding,tooltipbuf,sizeof(tooltipbuf)),		\
-			XAP_EncodingManager::instance->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
+			XAP_EncodingManager::get_instance()->strToNative((szName),encoding,namebuf,sizeof(namebuf)),(#iconName),	\
+			XAP_EncodingManager::get_instance()->strToNative((szToolTip),encoding,tooltipbuf,sizeof(tooltipbuf)),		\
+			XAP_EncodingManager::get_instance()->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
 		);
 			
 #define EndSet()																				\

@@ -527,13 +527,13 @@ UT_UCSChar UT_UCS_toupper(UT_UCSChar c)
         if (c >= 256)
 	  return c;
 #else
-	if (XAP_EncodingManager::instance->single_case())
+	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
-	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	if (!local || local>0xff)
 		return c;
-	local = XAP_EncodingManager::instance->try_nativeToU(toupper(local));
+	local = XAP_EncodingManager::get_instance()->try_nativeToU(toupper(local));
 	return local ? local : c;
 #endif
 }
@@ -554,13 +554,13 @@ UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
 		return c + 0x20;
 	return c;
 #else
-	if (XAP_EncodingManager::instance->single_case())
+	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
-	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	if (!local || local>0xff)
 		return c;
-	local = XAP_EncodingManager::instance->try_nativeToU(tolower(local));
+	local = XAP_EncodingManager::get_instance()->try_nativeToU(tolower(local));
 	return local ? local : c;
 #endif
 }
@@ -1020,23 +1020,23 @@ bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 
 bool UT_UCS_isupper(UT_UCSChar c)
 {
-	if (XAP_EncodingManager::instance->single_case())
+	if (XAP_EncodingManager::get_instance()->single_case())
 	    return 1;/* FIXME: anyone has better idea? */
-	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	return local && local <0xff ? isupper(local)!=0 : 0;
 };
 
 bool UT_UCS_islower(UT_UCSChar c)
 {
-	if (XAP_EncodingManager::instance->single_case())
+	if (XAP_EncodingManager::get_instance()->single_case())
 	    return 1;/* FIXME: anyone has better idea? */
-	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	return local && local <0xff ? islower(local)!=0 : 0;
 };
 
 bool UT_UCS_isalpha(UT_UCSChar c)
 {
-	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
+	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
 	return local && local < 0xff ? 
 		isalpha(local)!=0 : 
 		local > 0xff /* we consider it alpha if it's > 0xff */;

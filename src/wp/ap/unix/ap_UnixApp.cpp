@@ -207,7 +207,7 @@ void AP_UnixApp::perlEvalFile(const UT_String &filename)
 	code += filename;
 	code += '"';
 	getPerlInterp();
-	UT_DEBUGMSG(("executing script file: %s\n", filename));
+	UT_DEBUGMSG(("executing script file: %s\n", filename.c_str()));
 	perl_eval_pv(code.c_str(), FALSE);
 
 	if (SvTRUE(ERRSV))

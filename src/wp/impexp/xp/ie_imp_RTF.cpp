@@ -1033,13 +1033,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case 'a':
 		if (strcmp((char*)pKeyword, "ansicpg") == 0)
 		{
-			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage((UT_uint32)param));
+			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage((UT_uint32)param));
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "ansi") == 0) 
 		{
 			// this is charset Windows-1252
-			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(1252));
+			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(1252));
 			return true;
 		}
 		break;		
@@ -1222,12 +1222,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char *)pKeyword, "pc") == 0) 
 		{
-			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(437));
+			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(437));
 			return true;
 		}
 		else if (strcmp((char *)pKeyword, "pca") == 0) 
 		{
-			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(850));
+			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(850));
 			return true;
 		}
 	case 'q':

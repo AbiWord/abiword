@@ -285,7 +285,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 	    // for some reason, the spell checker fails on all 1-char words & really big ones
 	    // -this is a limitation in the underlying default checker ispell --JB
 	    if ((m_iWordLength > 1) &&
-		XAP_EncodingManager::instance->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
+		XAP_EncodingManager::get_instance()->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
 		(!checkCaps || !bAllUpperCase) &&             // TODO: iff relevant Option is set
 		(!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
 		 (m_iWordLength < INPUTWORDLEN))) {

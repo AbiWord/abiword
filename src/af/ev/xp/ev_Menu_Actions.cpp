@@ -50,17 +50,17 @@ EV_Menu_Action::EV_Menu_Action(XAP_Menu_Id id,
 	m_pfnGetLabel	= pfnGetLabel;
 }
 
-EV_Menu_Action::~EV_Menu_Action(void)
+EV_Menu_Action::~EV_Menu_Action()
 {
 	FREEP(m_szMethodName);
 }
 
-XAP_Menu_Id EV_Menu_Action::getMenuId(void) const
+XAP_Menu_Id EV_Menu_Action::getMenuId() const
 {
 	return m_id;
 }
 
-bool EV_Menu_Action::hasDynamicLabel(void) const
+bool EV_Menu_Action::hasDynamicLabel() const
 {
 	return (m_pfnGetLabel != NULL);
 }
@@ -73,7 +73,7 @@ const char * EV_Menu_Action::getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_L
 		return NULL;
 }
 
-bool EV_Menu_Action::hasGetStateFunction(void) const
+bool EV_Menu_Action::hasGetStateFunction() const
 {
 	return (m_pfnGetState != NULL);
 }
@@ -86,17 +86,17 @@ EV_Menu_ItemState EV_Menu_Action::getMenuItemState(AV_View * pView) const
 		return EV_MIS_ZERO;
 }
 
-const char * EV_Menu_Action::getMethodName(void) const
+const char * EV_Menu_Action::getMethodName() const
 {
 	return m_szMethodName;
 }
 
-bool EV_Menu_Action::raisesDialog(void) const
+bool EV_Menu_Action::raisesDialog() const
 {
 	return m_bRaisesDialog;
 }
 
-bool EV_Menu_Action::isCheckable(void) const
+bool EV_Menu_Action::isCheckable() const
 {
 	return m_bCheckable;
 }
@@ -105,41 +105,38 @@ bool EV_Menu_Action::isCheckable(void) const
 /*****************************************************************/
 
 EV_Menu_ActionSet::EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last)
+	: m_actionTable(last - first + 1),
+	  m_first(first),
+	  m_last(last)
 {
-	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
-	// TODO move this allocation to somewhere else.
-	m_actionTable = (EV_Menu_Action **)calloc((last-first+1),sizeof(EV_Menu_Action *));
-	m_first = first;
-	m_last = last;
+	for (size_t i = 0; i < m_actionTable.getItemCount(); ++i)
+		m_actionTable.addItem(0);
 }
 
-EV_Menu_ActionSet::~EV_Menu_ActionSet(void)
+EV_Menu_ActionSet::~EV_Menu_ActionSet()
 {
-	if (!m_actionTable)
-		return;
-
-	UT_uint32 k, kLimit;
-	for (k=0, kLimit=(m_last-m_first+1); (k<kLimit); k++)
-		DELETEP(m_actionTable[k]);
-	free(m_actionTable);
+	UT_VECTOR_SPARSEPURGEALL(EV_Menu_Action *, m_actionTable);
 }
 
 bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
-									 bool bHoldsSubMenu,
-									 bool bRaisesDialog,
-									 bool bCheckable,
-									 const char * szMethodName,
-									 EV_GetMenuItemState_pFn pfnGetState,
-									 EV_GetMenuItemComputedLabel_pFn pfnGetLabel)
+								  bool bHoldsSubMenu,
+								  bool bRaisesDialog,
+								  bool bCheckable,
+								  const char * szMethodName,
+								  EV_GetMenuItemState_pFn pfnGetState,
+								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel)
 {
+	void *tmp;
+
 	if ((id < m_first) || (id > m_last))
 		return false;
 
 	UT_uint32 index = (id - m_first);
-	DELETEP(m_actionTable[index]);
-	m_actionTable[index] = new EV_Menu_Action(id,bHoldsSubMenu,bRaisesDialog,bCheckable,
-											  szMethodName,pfnGetState,pfnGetLabel);
-	return (m_actionTable[index] != NULL);
+	EV_Menu_Action *pAction = new EV_Menu_Action(id,bHoldsSubMenu,bRaisesDialog,bCheckable,
+												 szMethodName,pfnGetState,pfnGetLabel);
+	UT_uint32 error = m_actionTable.setNthItem(index, pAction, &tmp);
+	DELETEP(static_cast<EV_Menu_Action *> (tmp));
+	return (error == 0);
 }
 
 EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
@@ -148,7 +145,21 @@ EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 		return NULL;
 
 	UT_uint32 index = (id - m_first);
-	EV_Menu_Action * pAction = m_actionTable[index];
+	EV_Menu_Action * pAction = static_cast<EV_Menu_Action *> (m_actionTable[index]);
 	UT_ASSERT(pAction && (pAction->getMenuId()==id));
 	return pAction;
+}
+
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) < (b) ? (b) : (a))
+
+bool EV_Menu_ActionSet::addAction(EV_Menu_Action *pAction)
+{
+	int id = pAction->getMenuId();
+	m_first = min(id, m_first);
+	m_last = max(id, m_last);
+
+	UT_ASSERT(false); // TODO
+
+	return true;
 }

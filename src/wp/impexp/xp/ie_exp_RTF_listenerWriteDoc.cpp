@@ -194,7 +194,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 			break;
 
 		default:
-			if (XAP_EncodingManager::instance->cjk_locale())
+			if (XAP_EncodingManager::get_instance()->cjk_locale())
 			{
 				/*FIXME: can it happen that wctomb will fail under CJK locales? */
 				m_wctomb.wctomb_or_fallback(mbbuf,mblen,*pData++);
@@ -234,7 +234,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 					// TODO if so, we may need to begin a sub-brace level to avoid
 					// TODO polluting the global context w/r/t \uc.
 					
-					UT_UCSChar lc = XAP_EncodingManager::instance->try_UToWindows(*pData);
+					UT_UCSChar lc = XAP_EncodingManager::get_instance()->try_UToWindows(*pData);
 					m_pie->_rtf_keyword("uc",lc && lc<256 ? 1 : 0);
 					unsigned short ui = ((unsigned short)(*pData));	// RTF is limited to +/-32K ints
 					signed short si = *((signed short *)(&ui));		// so we need to write negative
@@ -265,7 +265,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 				    \uc0\u<UUUU> format at all.
 				*/
 				UT_UCSChar c = *pData++;
-				UT_UCSChar lc = XAP_EncodingManager::instance->try_UToWindows(c);
+				UT_UCSChar lc = XAP_EncodingManager::get_instance()->try_UToWindows(c);
 				if (lc==0 || lc >255) 
 				{
 					/*
@@ -342,7 +342,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_bJustStartingDoc = !m_bToClipboard;
 	m_bJustStartingSection = !m_bToClipboard;
 
-	m_wctomb.setOutCharset(XAP_EncodingManager::instance->WindowsCharsetName());
+	m_wctomb.setOutCharset(XAP_EncodingManager::get_instance()->WindowsCharsetName());
 	// TODO emit <info> if desired
 
 	_rtf_docfmt();						// deal with <docfmt>

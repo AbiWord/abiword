@@ -841,7 +841,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("\\usepackage{setspace}\n");
 	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
 	{
-	    const char* misc = XAP_EncodingManager::instance->getTexPrologue();
+	    const char* misc = XAP_EncodingManager::get_instance()->getTexPrologue();
 	    if (misc)
 		m_pie->write(misc);
 	}

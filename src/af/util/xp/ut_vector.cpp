@@ -240,7 +240,7 @@ bool UT_Vector::copy(const UT_Vector *pVec)
 	return 0;
 }
 
-const void* UT_Vector::operator[](UT_uint32 i) const
+void* UT_Vector::operator[](UT_uint32 i) const
 {
 	return this->getNthItem(i);
 }
@@ -345,10 +345,9 @@ bool UT_Vector::copy(UT_Vector *pVec)
 	return 0;
 }
 
-const void* UT_Vector::operator[](UT_uint32 i) const
+void* UT_Vector::operator[](UT_uint32 i) const
 {
 	return m_STLVec[i];
 }
-
 
 #endif /* ABI_OPT_STL */

@@ -332,7 +332,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			pD = buf;
 			for (pB = pS; (pB < pS + OUR_LINE_LIMIT) && (pB < pEnd); pB++) {
 					currentChar = remapGlyph(*pB, *pB >= 256 ? true : false);
-					currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
+					currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::get_instance()->UToNative(currentChar);
 					pD += unichar_to_utf8 (currentChar, pD);
 			}
 			gnome_print_show_sized (m_gpc, (gchar *) buf, pD - buf);

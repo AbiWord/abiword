@@ -26,6 +26,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ev_Menu_Labels.h"
+#include "ut_vector.h"
 
 /*****************************************************************/
 
@@ -38,23 +39,23 @@ EV_Menu_Label::EV_Menu_Label(XAP_Menu_Id id,
 	UT_cloneString(m_szStatusMsg,szStatusMsg);
 }
 
-EV_Menu_Label::~EV_Menu_Label(void)
+EV_Menu_Label::~EV_Menu_Label()
 {
 	FREEP(m_szMenuLabel);
 	FREEP(m_szStatusMsg);
 }
 
-XAP_Menu_Id EV_Menu_Label::getMenuId(void) const
+XAP_Menu_Id EV_Menu_Label::getMenuId() const
 {
 	return m_id;
 }
 
-const char * EV_Menu_Label::getMenuLabel(void) const
+const char * EV_Menu_Label::getMenuLabel() const
 {
 	return m_szMenuLabel;
 }
 
-const char * EV_Menu_Label::getMenuStatusMessage(void) const
+const char * EV_Menu_Label::getMenuStatusMessage() const
 {
 	return m_szStatusMsg;
 }
@@ -63,39 +64,38 @@ const char * EV_Menu_Label::getMenuStatusMessage(void) const
 
 EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 								   XAP_Menu_Id first, XAP_Menu_Id last)
+	: m_labelTable(last - first + 1),
+	  m_first(first),
+	  m_last(last)
 {
-	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
+	// TODO it's bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
 	UT_cloneString(m_szLanguage,szLanguage);
-	m_labelTable = (EV_Menu_Label **)calloc((last-first+1),sizeof(EV_Menu_Label *));
-	m_first = first;
-	m_last = last;
+	int size = m_labelTable.getItemCount();
+
+	for (int i = 0; i < size; i++)
+		m_labelTable.addItem(0);
 }
 
-EV_Menu_LabelSet::~EV_Menu_LabelSet(void)
+EV_Menu_LabelSet::~EV_Menu_LabelSet()
 {
+	UT_VECTOR_SPARSEPURGEALL(EV_Menu_Label *, m_labelTable);
 	FREEP(m_szLanguage);
-
-	if (!m_labelTable)
-		return;
-
-	UT_uint32 k, kLimit;
-	for (k=0, kLimit=(m_last-m_first+1); (k<kLimit); k++)
-		DELETEP(m_labelTable[k]);
-	free(m_labelTable);
 }
 
 bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
-								   const char * szMenuLabel,
-								   const char * szStatusMsg)
+								const char * szMenuLabel,
+								const char * szStatusMsg)
 {
+	void *tmp;
 	if ((id < m_first) || (id > m_last))
 		return false;
 
 	UT_uint32 index = (id - m_first);
-	DELETEP(m_labelTable[index]);
-	m_labelTable[index] = new EV_Menu_Label(id,szMenuLabel,szStatusMsg);
-	return (m_labelTable[index] != NULL);
+	EV_Menu_Label *label = new EV_Menu_Label(id, szMenuLabel, szStatusMsg);
+	UT_sint32 error = m_labelTable.setNthItem(index, label, &tmp);
+	DELETEP(static_cast<EV_Menu_Label *> (tmp));
+	return (error == 0);
 }
 
 #ifdef __MRC__
@@ -109,25 +109,34 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 
 	UT_uint32 index = (id - m_first);
 	
-	EV_Menu_Label * pLabel = m_labelTable[index];
+	EV_Menu_Label * pLabel = static_cast<EV_Menu_Label *> (m_labelTable.getNthItem(index));
 
-	// IDEA: some labelsets are sparse because their translation is behind
-	// HACK: if no label, create a fallback JIT so we don't fail downstream
-	// TODO: fall back to English instead like strings do (but not here)
 	if (!pLabel)
 	{
-		UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n",m_szLanguage,id));
+		UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n", m_szLanguage, id));
 		// NOTE: only translators should see the following strings
 		// NOTE: do *not* translate them
-		pLabel = new EV_Menu_Label(id,"TODO","untranslated menu item");
-		m_labelTable[index] = pLabel;
+		pLabel = new EV_Menu_Label(id, "TODO", "untranslated menu item");
+//		m_labelTable.setNthItem [index] = pLabel;
 	}
 
-	UT_ASSERT(pLabel && (pLabel->getMenuId()==id));
+	UT_ASSERT(pLabel && (pLabel->getMenuId() == id));
 	return pLabel;
 }
 
-const char * EV_Menu_LabelSet::getLanguage(void) const
+#define max(a, b) ((a) < (b) ? (b) : (a))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
+bool EV_Menu_LabelSet::addLabel(EV_Menu_Label *pLabel)
+{
+	UT_ASSERT(pLabel);
+	XAP_Menu_Id id = pLabel->getMenuId();
+	m_last = max(id, m_last);
+	m_first = min(id, m_first);
+	return (m_labelTable.addItem(pLabel) == 0);
+}
+
+const char * EV_Menu_LabelSet::getLanguage() const
 {
 	return m_szLanguage;
 }

@@ -24,7 +24,8 @@
 
 #include "ut_types.h"
 #include "xap_Types.h"
-
+#include "ut_vector.h"
+#include "ut_string_class.h"
 
 /*****************************************************************
 ******************************************************************
@@ -54,10 +55,10 @@ class EV_Menu_LayoutItem
 {
 public:
 	EV_Menu_LayoutItem(XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
-	~EV_Menu_LayoutItem(void);
+	~EV_Menu_LayoutItem();
 
-	XAP_Menu_Id						getMenuId(void) const;
-	EV_Menu_LayoutFlags				getMenuLayoutFlags(void) const;
+	XAP_Menu_Id						getMenuId() const;
+	EV_Menu_LayoutFlags				getMenuLayoutFlags() const;
 
 protected:
 	XAP_Menu_Id						m_id;
@@ -69,18 +70,21 @@ protected:
 class EV_Menu_Layout					/* a glorified array with bounds checking */
 {
 public:
-	EV_Menu_Layout(const char * szName, UT_uint32 nrLayoutItems);
-	~EV_Menu_Layout(void);
+	EV_Menu_Layout(const UT_String &szName, UT_uint32 nrLayoutItems);
+	~EV_Menu_Layout();
 
 	bool					setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
+	XAP_Menu_Id				addLayoutItem(const UT_String &path, EV_Menu_LayoutFlags flags = EV_MLF_Normal);
 	EV_Menu_LayoutItem *	getLayoutItem(UT_uint32 indexLayoutItem) const;
-	const char *			getName(void) const;
-	UT_uint32				getLayoutItemCount(void) const;
+	const char *			getName() const;
+	UT_uint32				getLayoutItemCount() const;
 
 protected:
-	char *					m_szName;			/* the name of our layout (like "MainMenu") */
-	UT_uint32				m_nrLayoutItems;
-	EV_Menu_LayoutItem **	m_layoutTable;
+	UT_String			    m_stName;			/* the name of our layout (like "MainMenu") */
+//	UT_uint32				m_nrLayoutItems;
+	UT_Vector				m_layoutTable;
+	XAP_Menu_Id				m_iMaxId;
+	// EV_Menu_LayoutItem **	m_layoutTable;
 };
 
 #endif /* EV_MENU_LAYOUTS_H */

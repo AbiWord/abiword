@@ -913,8 +913,8 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		default:
 			if (*pData > 0x007f)
 			{
-				if(XAP_EncodingManager::instance->isUnicodeLocale() || 
-				   (XAP_EncodingManager::instance->try_nativeToU(0xa1) == 0xa1))
+				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || 
+				   (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) == 0xa1))
 
 				{
 					XML_Char * pszUTF8 = UT_encodeUTF8char(*pData++);
@@ -936,7 +936,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					Networks and mail transfers are 8bit clean
 					these days.  - VH
 					*/
-					UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
+					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)
 					{
 						char localBuf[20];
@@ -967,10 +967,10 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-	if (!XAP_EncodingManager::instance->cjk_locale())
+	if (!XAP_EncodingManager::get_instance()->cjk_locale())
 	{
 	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
-	    m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
+	    m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	    m_pie->write("\"?>\n");
 	}
 	else
@@ -1027,7 +1027,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
 	m_pie->write("<head>\n");
 	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=");
-	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
+	m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	m_pie->write("\" />\n");
 	m_pie->write("<title>");
 	m_pie->write(m_pie->getFileName());

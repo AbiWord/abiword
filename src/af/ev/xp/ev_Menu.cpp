@@ -59,26 +59,36 @@ EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC,
 
 }
 
-EV_Menu::~EV_Menu(void)
+EV_Menu::~EV_Menu()
 {
 	DELETEP(m_pMenuLayout);
 	DELETEP(m_pMenuLabelSet);
 }
 
-const EV_Menu_Layout * EV_Menu::getMenuLayout(void) const
+const EV_Menu_Layout * EV_Menu::getMenuLayout() const
 {
 	return m_pMenuLayout;
 }
 
-const EV_Menu_LabelSet * EV_Menu::getMenuLabelSet(void) const
+const EV_Menu_LabelSet * EV_Menu::getMenuLabelSet() const
 {
 	return m_pMenuLabelSet;
 }
 
+void EV_Menu::addMenuItem(const UT_String &path)
+{
+	XAP_Menu_Id id = m_pMenuLayout->addLayoutItem(path);
+	EV_Menu_ActionSet *pMenuActionSet = getApp()->getMenuActionSet();
+	pMenuActionSet->addAction(new EV_Menu_Action(id, false, false, false, "FIXME_methodName", NULL, NULL));
+	m_pMenuLabelSet->addLabel(new EV_Menu_Label(id, "TODO_labelName", "TODO_Statusbar"));
+
+	_doAddMenuItem(id);
+}
+
 bool EV_Menu::invokeMenuMethod(AV_View * pView,
-								  EV_EditMethod * pEM,
-								  UT_UCSChar * pData,
-								  UT_uint32 dataLength)
+							   EV_EditMethod * pEM,
+							   UT_UCSChar * pData,
+							   UT_uint32 dataLength)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
@@ -98,14 +108,13 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 	(*pEM->getFn())(pView,&emcd);
 
 	return true;
-	
 }
 
 
 /* replace _ev_GetLabelName () */
 /* this version taken from ev_UnixMenu.cpp */
 const char ** EV_Menu::getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
-				  EV_Menu_Action * pAction, EV_Menu_Label * pLabel)
+									EV_Menu_Action * pAction, EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
 

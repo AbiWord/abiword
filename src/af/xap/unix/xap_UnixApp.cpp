@@ -59,16 +59,14 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	// specify a --geometry argument, we only want to obey the
 	// size (which is set above), not a position.
 	m_geometry.flags = GEOMETRY_FLAG_SIZE;
-	DELETEP(m_pEncMgr);
-	m_pEncMgr = new XAP_UnixEncodingManager();
 }
 
-XAP_UnixApp::~XAP_UnixApp(void)
+XAP_UnixApp::~XAP_UnixApp()
 {
 	DELETEP(m_pUnixToolbarIcons);
 }
 
-bool XAP_UnixApp::initialize(void)
+bool XAP_UnixApp::initialize()
 {
 	// initialize GTK first.
 	

@@ -77,7 +77,7 @@ Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk>  GTK Window Autosize
 Mike Meyer <mwm@mired.org>                      ParseAFM isspace() fix
-Paolo Molaro <lupus@lettere.unipd.it>		Perl bindings
+Paolo Molaro <lupus@debian.org>			Perl bindings
 James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integration
 David Nay                                       PalmDoc exporter
 Tom Newton <Tom.Newton@gtl.com>

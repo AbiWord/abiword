@@ -35,7 +35,7 @@
 *****************************************************************/
 
 #define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)								\
-	static EV_Menu_LabelSet * _ap_CreateLabelSet_##Language##Locale(void)				\
+	static EV_Menu_LabelSet * _ap_CreateLabelSet_##Language##Locale()				\
 	{ \
 		EV_Menu_LabelSet * pLabelSet; \
  		if (UT_strcmp(#Language#Locale, "enUS") == 0) \
@@ -54,8 +54,8 @@
 	
 #define MenuLabel(id,szName,szStatusMsg) \
 		pLabelSet->setLabel((id),											\
-			XAP_EncodingManager::instance->strToNative((szName),encoding,namebuf,sizeof(namebuf)),			\
-			XAP_EncodingManager::instance->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
+			XAP_EncodingManager::get_instance()->strToNative((szName),encoding,namebuf,sizeof(namebuf)),			\
+			XAP_EncodingManager::get_instance()->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
 		);
 
 #define EndSet()									return pLabelSet; }

@@ -384,7 +384,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 		{
 			strcpy(full_name, XAP_App::getApp()->getAbiSuiteLibDir());
 
-			//if(XAP_EncodingManager::instance->isUnicodeLocale())
+			//if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 				//unicode locale, use the complete table
 				strcat(full_name, "/fonts/adobe-full.u2g");
 			//else
@@ -664,7 +664,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 		memset (m_uniWidths, 0, m_metricsData->numOfChars * sizeof(uniWidth)); // Clear array
 		UT_AdobeEncoding *ae = 0;
 
-		if (loadEncodingFile() && !XAP_EncodingManager::instance->cjk_locale())
+		if (loadEncodingFile() && !XAP_EncodingManager::get_instance()->cjk_locale())
 		{
 			/*
 				map glyphs by name.
@@ -708,7 +708,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
            int numfound = 0;
            for (UT_sint32 i=0; i < m_metricsData->numOfChars; ++i)
            {     
-				UT_UCSChar ucs = XAP_EncodingManager::instance->try_nativeToU(m_metricsData->cmi[i].code);
+				UT_UCSChar ucs = XAP_EncodingManager::get_instance()->try_nativeToU(m_metricsData->cmi[i].code);
 				if(ucs)
 				{
 					m_uniWidths[numfound].ucs   = ucs;
@@ -1044,7 +1044,7 @@ XAP_UnixFont *XAP_UnixFont::s_defaultCJKFont[4];
 
 GdkFont * XAP_UnixFont::getMatchGdkFont(UT_uint32 size)
 {
-  if (!XAP_EncodingManager::instance->cjk_locale())
+  if (!XAP_EncodingManager::get_instance()->cjk_locale())
       return getGdkFont(size);
   int s;
   switch(m_style)

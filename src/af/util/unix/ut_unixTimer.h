@@ -31,8 +31,8 @@ public:
 	virtual ~UT_UNIXTimer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
-	virtual void stop(void);
-	virtual void start(void);
+	virtual void stop();
+	virtual void start();
 	
 protected:
 	UT_sint32 m_iMilliseconds;

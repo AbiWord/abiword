@@ -221,7 +221,7 @@ void s_Applix_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 				Networks and mail transfers are 8bit clean
 				these days.  - VH
 				*/
-				UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
+				UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 				if (c==0 || c>255)
 				{
 					char localBuf[20];

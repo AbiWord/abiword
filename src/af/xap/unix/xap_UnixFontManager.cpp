@@ -140,7 +140,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 					fclose(file);
 					return true;
 				}
-				if (subdir != subdirs && XAP_EncodingManager::instance->cjk_locale())
+				if (subdir != subdirs && XAP_EncodingManager::get_instance()->cjk_locale())
 				    _allocateCJKFont((const char *) buffer,line);
 				else
 				    _allocateThisFont((const char *) buffer, filename,line);

@@ -107,8 +107,7 @@ public:
     
     
     virtual char fallbackChar(UT_UCSChar c) const;
-
-    virtual ~XAP_EncodingManager();
+	static XAP_EncodingManager *get_instance();
 
     /*  This tries to approximate the character with the string, e.g.
 	horizontal-elipsis -> "...". Returns # of chars written or 0 if can't. 
@@ -161,7 +160,7 @@ public:
 
 	/*
 	    This one correlates with can_break_words() very tightly.
-            Under CJK locales it returns 1 for cjk letters. 
+		Under CJK locales it returns 1 for cjk letters. 
 	    Under non-CJK locales returns 0.
 	*/
 	virtual bool can_break_at(const UT_UCSChar c) const;
@@ -218,9 +217,6 @@ public:
                                           const XML_Char *name,
                                           XML_Encoding *info);
 #endif
-	XAP_EncodingManager();
-	static XAP_EncodingManager*		instance;	
-	
 	/*it's terminated with the record with NULL in language name. */
 	static const XAP_LangInfo		langinfo[];
 	/*
@@ -248,12 +244,17 @@ public:
 	static const XAP_LangInfo* findLangInfo(const char* key,
 		XAP_LangInfo::fieldidx column);
 		
-			/*word uses non-ascii names of fonts in .doc*/
+	/*word uses non-ascii names of fonts in .doc*/
 	static UT_Pair				cjk_word_fontname_mapping,
-			/* CJK users need slightly different set of fontsizes*/
-						fontsizes_list;
+		/* CJK users need slightly different set of fontsizes*/
+		fontsizes_list;
 protected:
 	void describe();
+	XAP_EncodingManager();
+    virtual ~XAP_EncodingManager();
+
+private:
+	static XAP_EncodingManager*		_instance;
 
 	const char* TexPrologue;
 	UT_uint32 WinLanguageCode,WinCharsetCode;

@@ -29,7 +29,6 @@ class AV_View;
 class XAP_UnixApp;
 class XAP_UnixFrame;
 
-
 /*****************************************************************/
 
 class EV_UnixMenu : public EV_Menu
@@ -39,19 +38,23 @@ public:
 				XAP_UnixFrame * pUnixFrame,
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
-	virtual ~EV_UnixMenu(void);
+	virtual ~EV_UnixMenu();
 
 	bool				synthesizeMenu(GtkWidget * wMenuRoot);
 	bool				menuEvent(XAP_Menu_Id id);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
-
-	XAP_UnixFrame * 	getFrame(void);
+	
+	XAP_UnixFrame * 	getFrame();
 
 protected:
-
 	bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	bool				_isItemPresent(XAP_Menu_Id id) const;
 
+private:
+	virtual bool		_doAddMenuItem(XAP_Menu_Id id);
+	void				_insertMenuItem(XAP_Menu_Id id, UT_uint32 pos);
+
+protected: // FIXME! These variables should be private.
 	XAP_UnixApp *		m_pUnixApp;
 	XAP_UnixFrame *		m_pUnixFrame;
 

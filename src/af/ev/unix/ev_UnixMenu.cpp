@@ -19,7 +19,10 @@
  * 02111-1307, USA.
  */
  
-#include <gtk/gtk.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtkaccelgroup.h>
+#include <gtk/gtkmenuitem.h>
+#include <gtk/gtkhbox.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
@@ -236,11 +239,11 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 						 const char * szMenuLayoutName,
 						 const char * szMenuLabelSetName)
-	: EV_Menu(pUnixApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
+	: EV_Menu(pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName)
 {
 	m_pUnixApp = pUnixApp;
 	m_pUnixFrame = pUnixFrame;
-
+	setApp(pUnixApp);
 	m_accelGroup = gtk_accel_group_new();
 }
 
@@ -407,12 +410,14 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
-	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
+		// VERY BAD HACK!  It will be here until I fix the const correctness of all the functions
+		// using EV_Menu_Action
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
@@ -1048,6 +1053,33 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	return true;
 }
 
+bool EV_UnixMenu::_doAddMenuItem(XAP_Menu_Id id)
+{
+	EV_Menu_Layout *pLayout = getLayoutSet();
+	UT_uint32 nItems = pLayout->getLayoutItemCount();
+	EV_Menu_LayoutItem *pItem;
+	UT_uint32 pos = 30; // FIXME!
+
+	for (size_t i = 0; i < nItems; ++i)
+	{
+		pItem = pLayout->getLayoutItem(0);
+
+		if (pItem->getMenuId() == id)
+		{
+			_insertMenuItem(id, pos);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void EV_UnixMenu::_insertMenuItem(XAP_Menu_Id id, UT_uint32 pos)
+{
+	/* TODO: Build a gtk+ widget with this info, and put it somewhere in the menubar */
+	UT_DEBUGMSG(("_insertMenuItem(%d, %d)\n", id, pos));	
+}
+
 /*****************************************************************/
 
 EV_UnixMenuBar::EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
@@ -1058,11 +1090,11 @@ EV_UnixMenuBar::EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
 {
 }
 
-EV_UnixMenuBar::~EV_UnixMenuBar(void)
+EV_UnixMenuBar::~EV_UnixMenuBar()
 {
 }
 
-bool EV_UnixMenuBar::synthesizeMenuBar(void)
+bool EV_UnixMenuBar::synthesizeMenuBar()
 {
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
@@ -1109,16 +1141,16 @@ EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 {
 }
 
-EV_UnixMenuPopup::~EV_UnixMenuPopup(void)
+EV_UnixMenuPopup::~EV_UnixMenuPopup()
 {
 }
 
-GtkWidget * EV_UnixMenuPopup::getMenuHandle(void) const
+GtkWidget * EV_UnixMenuPopup::getMenuHandle() const
 {
 	return m_wMenuPopup;
 }
 
-bool EV_UnixMenuPopup::synthesizeMenuPopup(void)
+bool EV_UnixMenuPopup::synthesizeMenuPopup()
 {
 	m_wMenuPopup = gtk_menu_new();
 	_wd * wd = new _wd(this, 0);

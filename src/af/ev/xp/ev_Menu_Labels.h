@@ -21,7 +21,7 @@
 #define EV_MENU_LABELS_H
 
 #include "xap_Types.h"
-
+#include "ut_vector.h"
 
 /*****************************************************************
 ******************************************************************
@@ -47,9 +47,9 @@ public:
 				  const char * szStatusMsg);	/* status bar message */
 	~EV_Menu_Label(void);
 
-	XAP_Menu_Id						getMenuId(void) const;
-	const char *					getMenuLabel(void) const;
-	const char *					getMenuStatusMessage(void) const;
+	XAP_Menu_Id						getMenuId() const;
+	const char *					getMenuLabel() const;
+	const char *					getMenuStatusMessage() const;
 
 protected:
 	XAP_Menu_Id						m_id;
@@ -64,21 +64,23 @@ class EV_Menu_LabelSet					/* a glorified array with bounds checking */
 public:
 	EV_Menu_LabelSet(const char * szLanguage,
 					 XAP_Menu_Id first, XAP_Menu_Id last);
-	~EV_Menu_LabelSet(void);
+	~EV_Menu_LabelSet();
 
 	bool				setLabel(XAP_Menu_Id id,
 								 const char * szMenuLabel,
 								 const char * szStatusMsg);
+	bool				addLabel(EV_Menu_Label *pLabel);
 #ifdef __MRC__
 	EV_Menu_Label *		getLabel(XAP_Menu_Id id);
 #else
 	EV_Menu_Label *		getLabel(XAP_Menu_Id id) const;
 #endif
-	const char *		getLanguage(void) const;
+	const char *		getLanguage() const;
 	void				setLanguage(const char *szLanguage);
 
 protected:
-	EV_Menu_Label **	m_labelTable;
+	UT_Vector			m_labelTable;
+//	EV_Menu_Label **	m_labelTable;
 	XAP_Menu_Id			m_first;
 	XAP_Menu_Id			m_last;
 	char *				m_szLanguage;	/* for the convenience of the app only  */

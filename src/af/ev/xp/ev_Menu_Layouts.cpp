@@ -23,6 +23,7 @@
 #include "ev_Menu_Layouts.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_misc.h"
 
 /*****************************************************************/
 
@@ -32,64 +33,83 @@ EV_Menu_LayoutItem::EV_Menu_LayoutItem(XAP_Menu_Id id, EV_Menu_LayoutFlags flags
 	m_flags = flags;
 }
 
-EV_Menu_LayoutItem::~EV_Menu_LayoutItem(void)
+EV_Menu_LayoutItem::~EV_Menu_LayoutItem()
 {
 }
 
-XAP_Menu_Id EV_Menu_LayoutItem::getMenuId(void) const
+XAP_Menu_Id EV_Menu_LayoutItem::getMenuId() const
 {
 	return m_id;
 }
 
-EV_Menu_LayoutFlags EV_Menu_LayoutItem::getMenuLayoutFlags(void) const
+EV_Menu_LayoutFlags EV_Menu_LayoutItem::getMenuLayoutFlags() const
 {
 	return m_flags;
 }
 
 /*****************************************************************/
 
-EV_Menu_Layout::EV_Menu_Layout(const char * szName, UT_uint32 nrLayoutItems)
+#define max(a, b) ((a) < (b) ? (b) : (a))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
+EV_Menu_Layout::EV_Menu_Layout(const UT_String &stName, UT_uint32 nrLayoutItems)
+	: m_stName(stName),
+	  m_layoutTable(nrLayoutItems),
+	  m_iMaxId(0)
 {
-	UT_ASSERT(nrLayoutItems > 0);
-	m_nrLayoutItems = nrLayoutItems;
-	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
-	// TODO move this allocation to somewhere else.
-	m_layoutTable = (EV_Menu_LayoutItem **)calloc(nrLayoutItems,sizeof(EV_Menu_LayoutItem *));
-	UT_ASSERT(m_layoutTable);
-	UT_cloneString(m_szName,szName);
+	for (UT_uint32 i = 0; i < nrLayoutItems; i++)
+		m_layoutTable.addItem(0);
 }
 
-EV_Menu_Layout::~EV_Menu_Layout(void)
+EV_Menu_Layout::~EV_Menu_Layout()
 {
-	FREEP(m_szName);
-	if (!m_layoutTable)
-		return;
-	for (UT_uint32 k=0; k<m_nrLayoutItems; k++)
-		DELETEP(m_layoutTable[k]);
-	free(m_layoutTable);
+	UT_VECTOR_PURGEALL(EV_Menu_LayoutItem *, m_layoutTable);
+}
+
+/*!
+ * It adds a new item to the menu bar.
+ * \param path says where should appear the new item
+ * (syntax: "/File/Send by email", "/Insert/Autotext/Insert automatically", etc.
+ * you got it.)
+ *
+ * \todo This operation is a slow dog.  I should use ut_list, but it doesn't exists yet.
+ */
+XAP_Menu_Id EV_Menu_Layout::addLayoutItem(const UT_String &/* path */, EV_Menu_LayoutFlags flags)
+{
+// todo
+//	UT_Vector *items = simpleSplit(path);
+	EV_Menu_LayoutItem *pItem = new EV_Menu_LayoutItem(m_iMaxId++, flags);
+	// fixme: by now, I will just put the item in a random place.  Just for test purposes
+	int pos = 30;
+
+	m_layoutTable.insertItemAt(pItem, pos);
+
+	return m_iMaxId;
 }
 
 bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
 {
-	UT_ASSERT(indexLayoutItem < m_nrLayoutItems);
-	DELETEP(m_layoutTable[indexLayoutItem]);
-	m_layoutTable[indexLayoutItem] = new EV_Menu_LayoutItem(id,flags);
+	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
+	m_iMaxId = max(m_iMaxId, id);
+	void *old;
+	m_layoutTable.setNthItem(indexLayoutItem, new EV_Menu_LayoutItem(id, flags), &old);
+	DELETEP(static_cast<EV_Menu_LayoutItem *> (old));
 	return (m_layoutTable[indexLayoutItem] != NULL);
 }
 
 EV_Menu_LayoutItem * EV_Menu_Layout::getLayoutItem(UT_uint32 indexLayoutItem) const
 {
-	UT_ASSERT(indexLayoutItem < m_nrLayoutItems);
-	return m_layoutTable[indexLayoutItem];
+	UT_ASSERT(indexLayoutItem < m_layoutTable.getItemCount());
+	return static_cast<EV_Menu_LayoutItem *> (m_layoutTable.getNthItem(indexLayoutItem));
 }
 
-const char * EV_Menu_Layout::getName(void) const
+const char * EV_Menu_Layout::getName() const
 {
-	return m_szName;
+	return m_stName.c_str();
 }
 
-UT_uint32 EV_Menu_Layout::getLayoutItemCount(void) const
+UT_uint32 EV_Menu_Layout::getLayoutItemCount() const
 {
-	return m_nrLayoutItems;
+	return m_layoutTable.getItemCount();
 }
 

@@ -23,6 +23,8 @@
 #include <math.h>
 #include <ctype.h>
 
+#include "ut_vector.h"
+#include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -342,35 +344,25 @@ UT_sint32 signedHiWord(UT_uint32 dw)
  * string in the vector will contain the remainder of the original string 
  * (str).
  */
-UT_Vector * simpleSplit (UT_String & str, char separator,
+UT_Vector * simpleSplit (const UT_String & str, char separator,
 						 size_t max)
 {
 	UT_Vector * utvResult = new UT_Vector();
 	UT_String* utsEntry;
 	int start = -1;
 
-	for(size_t j = 0; max == 0 || j < max; j++)
+	for(size_t j = 0; max == 0 || j < max || str.size() == start; j++)
 	{
 		utsEntry = new UT_String;
-		for(start++; *(str.substr(start, 1).c_str()) != separator
-				|| j == max - 1; start++)
-		{
-			*utsEntry += str.substr(start, 1);
-			if(*(str.substr(start, 1).c_str()) == '\0') 
-				break;
-		}
-		
-		if(utsEntry->empty())
-		{
-			delete utsEntry;
-		}
-		else
-		{
-			utvResult->addItem(utsEntry);
-		}
 
-		if(*(str.substr(start, 1).c_str()) == '\0') 
-			break;
+		for (start++; str[start] != separator
+				|| j == max - 1 || str.size() == start; start++)
+			*utsEntry += str[start];
+		
+		if (utsEntry->empty())
+			delete utsEntry;
+		else
+			utvResult->addItem(utsEntry);
 	}
 
 	return utvResult;

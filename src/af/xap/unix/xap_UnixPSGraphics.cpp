@@ -193,7 +193,7 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	PSFont *pChineseFont;
 	_explodePSFonts(m_pCurrentFont, pEnglishFont,pChineseFont);
 	
-	if (XAP_EncodingManager::instance->is_cjk_letter(c))
+	if (XAP_EncodingManager::get_instance()->is_cjk_letter(c))
 	    return _scale(pChineseFont->getUnixFont()->get_CJK_Width());
 	else
 	{	
@@ -363,7 +363,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 xS;
 	do
 	{
-		for(pS=pE,xS=xoff; pE<pEnd && XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
+		for(pS=pE,xS=xoff; pE<pEnd && XAP_EncodingManager::get_instance()->is_cjk_letter(*pE); ++pE)
 			xoff+=_scale(pChineseFont->getUnixFont()->get_CJK_Width());
 		if(pE>pS)
 		{
@@ -372,9 +372,9 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 #ifdef BIDI_ENABLED
 		bool font_emitted = false;
-		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) == UT_NOT_OVERSTRIKING); ++pE)
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) == UT_NOT_OVERSTRIKING); ++pE)
 #else
-		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE); ++pE)
 #endif
 		xoff += _scale(pEnglishFont->getCharWidth(remapGlyph(*pE,/**pS > 0xff*/0)));
 		if(pE>pS)
@@ -383,13 +383,13 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 #ifdef BIDI_ENABLED
 			font_emitted = true;
 #endif
-			if(XAP_EncodingManager::instance->isUnicodeLocale())
+			if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 				_drawCharsUTF8(pS,0,pE-pS,xS,yoff);
 			else
 				_drawCharsNonCJK(pS,0,pE-pS,xS,yoff);
 		}
 #ifdef BIDI_ENABLED
-		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) != UT_NOT_OVERSTRIKING); ++pE)
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) != UT_NOT_OVERSTRIKING); ++pE)
 			;
 		if(pE>pS)
 		{
@@ -664,7 +664,7 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 		}
 	
 	    currentChar = remapGlyph(*pS, *pS >= 256 ? true : false);
-	    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
+	    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::get_instance()->UToNative(currentChar);
 	    switch (currentChar)
 	    {
 			case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
@@ -1551,7 +1551,7 @@ void PS_Graphics::fillRect(GR_Color3D /*c*/, UT_Rect & /*r*/)
 
 PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
 {
-  if (!XAP_EncodingManager::instance->cjk_locale())
+  if (!XAP_EncodingManager::get_instance()->cjk_locale())
 	return pFont;
   UT_uint32 k, count;
   int s;

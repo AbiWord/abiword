@@ -26,6 +26,7 @@
 /*****************************************************************/
 
 #include "ut_types.h"
+#include "xap_Types.h"
 
 class EV_EditMethodContainer;
 class EV_EditMethod;
@@ -36,6 +37,7 @@ class EV_Menu_Label;
 class AV_View;
 class XAP_App;
 class XAP_Frame;
+class UT_String;
 
 class EV_Menu
 {
@@ -43,23 +45,36 @@ public:
 	EV_Menu(EV_EditMethodContainer * pEMC,
 			const char * szMenuLayoutName,
 			const char * szMenuLanguageName);
-	~EV_Menu(void);
+	virtual ~EV_Menu();
 
 	bool invokeMenuMethod(AV_View * pView,
-							 EV_EditMethod * pEM,
-							 UT_UCSChar * pData,
-							 UT_uint32 dataLength);
+						  EV_EditMethod * pEM,
+						  UT_UCSChar * pData,
+						  UT_uint32 dataLength);
 
-	const EV_Menu_Layout *		getMenuLayout(void) const;
-	const EV_Menu_LabelSet *	getMenuLabelSet(void) const;
+	const EV_Menu_Layout *		getMenuLayout() const;
+	const EV_Menu_LabelSet *	getMenuLabelSet() const;
+	void 						addMenuItem(const UT_String &path/*, ... todo */);
 
 protected:
-        const char ** getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
-				  EV_Menu_Action * pAction, EV_Menu_Label * pLabel);
+	const char ** 				getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+											 EV_Menu_Action * pAction, EV_Menu_Label * pLabel);
+	// this method comes a bit late... if somebody has the time, add pApp to our constructor,
+	// and erase it from the constructor of our inherited classes.
+	void						setApp(XAP_App *pApp) { m_pApp = pApp; }
+	inline XAP_App *			getApp() { return m_pApp; }
 
+	inline EV_Menu_Layout *		getLayoutSet() { return m_pMenuLayout; }
+	inline EV_Menu_LabelSet *	getLabelSet() { return m_pMenuLabelSet; }
+
+// private: TODO: our inherited classes should have no business with our variables!
 	EV_EditMethodContainer *	m_pEMC;
 	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */
 	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */
+
+private:
+	virtual bool				_doAddMenuItem(XAP_Menu_Id id) = 0;
+	XAP_App *					m_pApp;
 };
 
 #endif /* EV_MENU_H */

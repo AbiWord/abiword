@@ -173,11 +173,11 @@ s_XSL_FO_Listener::s_XSL_FO_Listener(PD_Document * pDocument,
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
 	// is a strict subset of UTF-8. 
 
-	if (!XAP_EncodingManager::instance->cjk_locale() &&
-	    (XAP_EncodingManager::instance->try_nativeToU(0xa1) != 0xa1)) {
+	if (!XAP_EncodingManager::get_instance()->cjk_locale() &&
+	    (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1)) {
 	    // use utf8 for CJK locales and latin1 locales and unicode locales
 	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
-	    m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
+	    m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	    m_pie->write("\"?>\n");
 	} else {
 	    m_pie->write("<?xml version=\"1.0\"?>\n");
@@ -895,8 +895,8 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 			if (*pData > 0x007f)
 			{
-				if(XAP_EncodingManager::instance->isUnicodeLocale() || 
-				   (XAP_EncodingManager::instance->try_nativeToU(0xa1) == 0xa1))
+				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || 
+				   (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) == 0xa1))
 
 				{
 					XML_Char * pszUTF8 = UT_encodeUTF8char(*pData++);
@@ -918,7 +918,7 @@ void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					Networks and mail transfers are 8bit clean
 					these days.  - VH
 					*/
-					UT_UCSChar c = XAP_EncodingManager::instance->try_UToNative(*pData);
+					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)
 					{
 						char localBuf[20];

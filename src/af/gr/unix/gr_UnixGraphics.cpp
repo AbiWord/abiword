@@ -145,9 +145,9 @@ static bool fallback_used;
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_UCSChar Wide_char = remapGlyph(Char, false);
-	GdkFont *font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
+	GdkFont *font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
-	if(XAP_EncodingManager::instance->isUnicodeLocale())
+	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 	{
 		/*  if the locale is unicode (i.e., utf-8) then we do not want
 			to convert the UCS string to anything,
@@ -198,9 +198,9 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
 	{
 		UT_UCSChar actual = remapGlyph(*pC,false);
-		font=XAP_EncodingManager::instance->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
+		font=XAP_EncodingManager::get_instance()->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
 		
-		if(XAP_EncodingManager::instance->isUnicodeLocale())
+		if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 		{
 			/*	if the locale is unicode (i.e., utf-8) then we do not want
 				to convert the UCS string to anything,
@@ -324,7 +324,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	GdkFont * font;
 	UT_UCSChar Wide_char = c;
 		
-	if(XAP_EncodingManager::instance->isUnicodeLocale())
+	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 	{
 		font = m_pSingleByteFont;
 		
@@ -352,7 +352,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		CONVERT_TO_MBS(Wide_char);
 		if (fallback_used)
 			return 0;
-		font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
+		font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
 		return gdk_text_width(font, text, text_length);
 	}

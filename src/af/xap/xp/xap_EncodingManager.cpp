@@ -21,6 +21,7 @@
 #include "xap_EncodingManager.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 
 #include <stdio.h>
@@ -31,7 +32,7 @@ static 	iconv_t iconv_handle_N2U = NULL, iconv_handle_U2N = NULL,
 	iconv_handle_U2Latin1 = NULL,
 	iconv_handle_U2Win = NULL ,iconv_handle_Win2U = NULL;
 
-XAP_EncodingManager*	XAP_EncodingManager::instance = NULL;
+XAP_EncodingManager*	XAP_EncodingManager::_instance = NULL;
 
 const char* XAP_EncodingManager::getNativeEncodingName() const
 {
@@ -41,24 +42,25 @@ const char* XAP_EncodingManager::getNativeEncodingName() const
 #define VALID_ICONV_HANDLE(i) ((i) != (iconv_t)-1)
 XAP_EncodingManager::~XAP_EncodingManager()
 {
-  if(VALID_ICONV_HANDLE(iconv_handle_N2U))
-    iconv_close(iconv_handle_N2U);
+	UT_DEBUGMSG(("CLOSING XAP_ENCODINGMANAGER\n"));
+	if(VALID_ICONV_HANDLE(iconv_handle_N2U))
+		iconv_close(iconv_handle_N2U);
 
-  if(VALID_ICONV_HANDLE(iconv_handle_U2N))
-    iconv_close(iconv_handle_U2N);
+	if(VALID_ICONV_HANDLE(iconv_handle_U2N))
+		iconv_close(iconv_handle_U2N);
 
-  if(VALID_ICONV_HANDLE(iconv_handle_U2Latin1))
-    iconv_close(iconv_handle_U2Latin1);
+	if(VALID_ICONV_HANDLE(iconv_handle_U2Latin1))
+		iconv_close(iconv_handle_U2Latin1);
 
-  if(VALID_ICONV_HANDLE(iconv_handle_U2Win))
-    iconv_close(iconv_handle_U2Win);
+	if(VALID_ICONV_HANDLE(iconv_handle_U2Win))
+		iconv_close(iconv_handle_U2Win);
   
-  if(VALID_ICONV_HANDLE(iconv_handle_Win2U))
-    iconv_close(iconv_handle_Win2U);
+	if(VALID_ICONV_HANDLE(iconv_handle_Win2U))
+		iconv_close(iconv_handle_Win2U);
 }
 #undef VALID_ICONV_HANDLE
 
-XAP_EncodingManager::XAP_EncodingManager() { instance = this; initialize(); }
+XAP_EncodingManager::XAP_EncodingManager() { }
 
 const char* XAP_EncodingManager::getLanguageISOName() const 
 {
@@ -137,7 +139,8 @@ UT_UCSChar XAP_EncodingManager::UToWindows(UT_UCSChar c)  const
 
 const char* XAP_EncodingManager::strToNative(const char* in,const char* charset) const
 {
-	static char buf[8000];
+	
+	static char buf[500];
 	return strToNative(in,charset,buf,sizeof(buf));
 };
 
@@ -167,7 +170,7 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
                                           const XML_Char *name,
                                           XML_Encoding *info)
 {
-	if (instance->cjk_locale())
+	if (get_instance()->cjk_locale())
 	    return 0;/*this handler doesn't support multibyte encodings*/
 	iconv_t iconv_handle = iconv_open("UCS-2",name);
 	if (iconv_handle == (iconv_t)-1)
@@ -932,33 +935,56 @@ void 	XAP_EncodingManager::describe()
 */
 const char** localeinfo_combinations(const char* prefix,const char* suffix,const char* sep, bool skip_fallback)
 {
-    typedef char buf_t[1024];
-    static buf_t bufs[6];
-    static char* ptrs[7];
+	UT_String buf[5];
+	static const char *ptrs[7];
+
+	for (size_t i = 1; i < 5; i++)
+		buf[i] = prefix;
+
     int idx = 0;
     if (!skip_fallback)
-	if (sprintf(ptrs[idx]=bufs[idx],"%s%s",prefix,suffix)!=-1)
-	    ++idx;
-    const char* lang = XAP_EncodingManager::instance->getLanguageISOName(),
-	*territory = XAP_EncodingManager::instance->getLanguageISOTerritory(),
-	*enc = XAP_EncodingManager::instance->getNativeEncodingName();
-    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s%s",prefix,sep,lang,suffix)!=-1)
-	++idx;
-    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s%s",prefix,sep,enc,suffix)!=-1)
-	++idx;	
-    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s-%s%s",prefix,sep,lang,territory,suffix)!=-1)
-	++idx;
-    if (sprintf(ptrs[idx]=bufs[idx],"%s%s%s-%s.%s%s",prefix,sep,lang,territory,enc,suffix)!=-1)
-	++idx;
-    ptrs[idx]=NULL;
-    return (const char **)ptrs;
+	{
+		buf[idx] = prefix;
+		buf[idx++] += suffix;
+	}
+
+    UT_String lang = XAP_EncodingManager::get_instance()->getLanguageISOName();
+	UT_String territory = XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
+	UT_String enc = XAP_EncodingManager::get_instance()->getNativeEncodingName();
+
+	buf[idx] += sep;
+	buf[idx] += lang;
+	buf[idx++] += suffix;
+	
+	buf[idx] += sep;
+	buf[idx] += enc;
+	buf[idx++] += suffix;
+
+	buf[idx] += sep;
+	buf[idx] += lang;
+	buf[idx] += '-';
+	buf[idx] += territory;
+	buf[idx++] += suffix;
+
+	buf[idx] += sep;
+	buf[idx] += lang;
+	buf[idx] += '-';
+	buf[idx] += territory;
+	buf[idx] += '.';
+	buf[idx] += enc;
+	buf[idx++] += suffix;
+
+	for (size_t i = 0; i < 5; ++i)
+		ptrs[i] = buf[i].c_str();
+
+    return ptrs;
 };
 
 /* pspell hack */
 extern "C" {
 const char * xap_encoding_manager_get_language_iso_name(void)
 {
-  return XAP_EncodingManager::instance->getLanguageISOName();
+  return XAP_EncodingManager::get_instance()->getLanguageISOName();
 }
 
 }
@@ -967,6 +993,6 @@ void UT_iconv_reset(iconv_t cd)
 {
     // this insane code is needed by iconv brokenness.  see
     // http://www.abisource.com/mailinglists/abiword-dev/01/April/0135.html
-    if (XAP_EncodingManager::instance->cjk_locale())
-	iconv(cd,const_cast<ICONV_CONST char**>((char**)NULL),NULL,NULL,NULL);
+    if (XAP_EncodingManager::get_instance()->cjk_locale())
+		iconv(cd,const_cast<ICONV_CONST char**>((char**)NULL),NULL,NULL,NULL);
 };

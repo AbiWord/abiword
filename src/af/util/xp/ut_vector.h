@@ -50,7 +50,7 @@ public:
 
 		return m_pEntries[n];
 	}
-	const void*           operator[](UT_uint32 i) const;
+	void*		operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
 	void*		getFirstItem() const;
 	void*		getLastItem() const;
@@ -66,6 +66,7 @@ public:
 	void		qsort(int (*compar)(const void *, const void *));
 
 	bool		copy(const UT_Vector *pVec);
+	inline UT_uint32 size() const { return getItemCount(); }
 
 protected:
 	UT_sint32		grow(UT_uint32);
@@ -126,7 +127,7 @@ class UT_Vector
 	UT_sint32	addItem(void*);
 	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
 	void*		getNthItem(UT_uint32 n) const;
-	const void*           operator[](UT_uint32 i) const;
+	void*		operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
 	void*		getFirstItem() const;
 	void*		getLastItem() const;
@@ -139,10 +140,10 @@ class UT_Vector
 	void		qsort(int (*compar)(const void *, const void *));
 
 	bool		copy(UT_Vector *pVec);
- private:
+	UT_uint32 inline size() const { return getItemCount(); }
+
+private:
 	vector<void *>  m_STLVec;
-
-
 };
 
 // NB: this macro is useful only in destructors
