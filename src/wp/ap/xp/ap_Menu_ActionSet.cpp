@@ -56,7 +56,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,	"fileSaveAs",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_FILE_PRINT,		0,0,0,	"print",			NULL,					NULL);
+	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,	"print",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_EXIT,		0,0,0,	"querySaveAndExit",	NULL,					NULL);
 
 	_s(AP_MENU_ID_EDIT,				1,0,0,	NULL,				NULL,					NULL);
