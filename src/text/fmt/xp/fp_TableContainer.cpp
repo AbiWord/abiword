@@ -208,7 +208,6 @@ fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
 	}
 	bool bStop = false;
 	fp_Column * pCol = NULL;
-	fp_Container * pCon = NULL;
 	//
 	// FIXME for nexted tables off first page
 	//
@@ -329,10 +328,23 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 				col_y += pCon->getY();
 				pCon = pCon->getContainer();
 			}
-			iLeft += col_x;
-			iRight += col_x;
-			iTop += col_y;
-			iBot += col_y;
+			if(pCon->getContainerType() != FP_CONTAINER_FRAME)
+			{
+				iLeft += col_x;
+				iRight += col_x;
+				iTop += col_y;
+				iBot += col_y;
+			}
+			else
+			{
+				UT_sint32 iTmpX,iTmpY;
+				pPage->getScreenOffsets(pCol,iTmpX,iTmpY);
+				col_x -= iTmpX;
+				col_y -= iTmpY;
+				getView()->getPageScreenOffsets(pPage,iTmpX,iTmpY);
+				col_x += iTmpX;
+				col_y += iTmpY;
+			}
 		}
 	}
 
@@ -589,7 +601,6 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			return;
 		}
 
-	UT_RGBColor page_color(255,255,255);
 
 	fp_Container * pCon = getContainer();
 	if(pCon->getContainer() && !pCon->getContainer()->isColumnType())
@@ -1434,7 +1445,7 @@ void fp_CellContainer::draw(fp_Line * pLine)
 		return;
 	}
 	m_bDirty = false;
-	FV_View * pView = getPage()->getDocLayout()->getView();
+	FV_View * pView = getView();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if(pTab == NULL)
 	{
@@ -1473,8 +1484,34 @@ void fp_CellContainer::draw(fp_Line * pLine)
 	fp_Page * pLinePage;
 	_getBrokenRect(pBroke, pLinePage, bRec,getGraphics());
 	dg_DrawArgs da;
-	da.xoff = bRec.left -getX();
-	da.yoff = bRec.top -getY();
+	UT_sint32 xoff,yoff;
+	fp_Container * pCon = static_cast<fp_Container *>(this);
+	pView->getPageScreenOffsets(pLinePage,xoff,yoff);
+	//
+	// Just need to get the offsets of the container that contains 
+	// this table.
+	//
+	pCon = pCon->getContainer();
+	while(pCon && !pCon->isColumnType())
+	{
+		xoff += pCon->getX();
+		yoff += pCon->getY();
+		pCon = pCon->getContainer();
+	}
+	if(pCon)
+	{
+		xoff += pCon->getX();
+		yoff += pCon->getY();
+	}
+	if(getY() < pBroke->getYBreak())
+	{
+		//
+		// Have to account for the bit of the cell on the previous page
+		//
+		da.yoff = yoff - pBroke->getYBreak();
+	}
+	da.xoff = xoff;
+	da.yoff = yoff;
 	da.bDirtyRunsOnly = false;
 	da.pG = pView->getGraphics();
 	drawBroken(&da,pBroke);
@@ -1524,18 +1561,32 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 			fp_Page * pLinePage;
 			_getBrokenRect(pBroke, pLinePage, bRec,getGraphics());
 			dg_DrawArgs da;
-			da.xoff = bRec.left -getX();
-			if(getY() < pBroke->getYBreak())
+			UT_sint32 xoff,yoff;
+			fp_Container * pCon = static_cast<fp_Container *>(this);
+			pView->getPageScreenOffsets(pLinePage,xoff,yoff);
+			//
+			// Just need to get the offsets of the container that contains 
+			// this table.
+			//
+			pCon = static_cast<fp_Container *>(pBroke);
+			if(pBroke->getY() < -10000)
 			{
-				//
-				// Have to account for the bit of the cell on the previous page
-				//
-				da.yoff = bRec.top - (pBroke->getYBreak() - getY()) - getY();
+				pCon = static_cast<fp_Container *>(pBroke->getMasterTable());
 			}
-			else
+			while(pCon && !pCon->isColumnType())
 			{
-				da.yoff = bRec.top -getY();
+				xoff += pCon->getX();
+				yoff += pCon->getY();
+				pCon = pCon->getContainer();
 			}
+			if(pCon)
+			{
+				xoff += pCon->getX();
+				yoff += pCon->getY();
+			}
+			yoff -= pBroke->getYBreak();
+			da.xoff = xoff;
+			da.yoff = yoff;
 			da.bDirtyRunsOnly = false;
 			da.pG = pView->getGraphics();
 			drawBroken(&da,pBroke);
@@ -1608,7 +1659,6 @@ bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke)
 void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
-	PP_PropertyMap::Background background = getBackground ();
 	GR_Graphics * pG = pDA->pG;
 	UT_sint32 count = countCons();
 	m_bDrawLeft = false;
