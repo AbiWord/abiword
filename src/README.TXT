@@ -190,19 +190,42 @@ please post them to the developer list and we'll discuss it.
 <li> Comments should be kept in raw ASCII where possible. If you feel
      structure or typeface commands would help, use the HTML tags
      which most people understand.
-<li> Use Doxygen default assumptions about documentation. That is,
-     first line of a comment block is the brief description (do not
-     use \\brief).
+<li> The first line of a comment block is the brief description (do not
+     use \\brief). Follow it by input/output descriptions, then a
+     longer comment if necessary. Finally add \\note, \\bug, \\see,
+     \\fixme as necessary.
 <li> Put the descriptions by the function definition, not the
-     declaration (except inline accessors defined in the header
-     files).
+     declaration. Always use the 
+\verbatim
+/*!
+  Short description
+  \param param1 Param 1 Description 
+                long descriptions should be indented like this
+  <repeat as necessary>
+  \retval paramN+1 Return value ParamN+1 description
+  <repeat as necessary>
+  \return Return value description
+  Long description
+  ...
+  \note Note ...
+  <repeat as necessary>
+  \fixme FIXME description 1
+  <repeat as necessary>
+  \bug Bug description 1 <you can add URL to bugzilla here>
+  <repeat as necessary>
+  \see otherClass::otherFunction1
+  <repeat as necessary>
+*/ 
+\endverbatim
+     variant of the comment marker, and leave the opening and closing
+     markers on empty lines.
 <li> In the brief line, describe what the function
-     <em>does</em>. Leave the input/output details to the appropriate
-     lines (accessors excepted again). See fp_Container::isEmpty.
+     <em>does</em>, not how it does it. Leave the input/output details
+     to the appropriate lines (accessors excepted). See
+     fp_Container::isEmpty.
 <li> Always add input/output details for a function: \\param,
      \\retval (return value via pointer parameter), \\return (actual
      function return value).
-<li> Add \\fixme, \\note, \\bug, \\see, etc as you feel necessary.
 </ol>
 
 A list of quick hints about doxygen syntax. Please see <a
