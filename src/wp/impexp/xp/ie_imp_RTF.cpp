@@ -838,7 +838,8 @@ RTFProps_bCharProps::RTFProps_bCharProps(void):
 	bm_hasBgColour(false),
 	bm_bgcolourNumber(false),
 	bm_listTag(false),
-	bm_RTL(false)
+	bm_RTL(false),
+	bm_dirOverride(false)
 {
 }
 
@@ -1085,6 +1086,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_listTag = 0;
 	m_szLang = 0;
 	m_RTL = false;
+	m_dirOverride = FRIBIDI_TYPE_UNSET;
 }
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -1117,7 +1119,9 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_iOverrideLevel = 0;
 	m_styleNumber = -1;
 	m_dom_dir = FRIBIDI_TYPE_UNSET;
-	m_tableLevel = 1;
+	m_tableLevel = 0; // was 1, but get getNestDepth() returns 0 for
+					  // unnested table -- see ie_Table.cpp (Tomas,
+					  // May 8, 2003)
 }
 
 RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& other)
@@ -1277,32 +1281,33 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bParaWrittenForSection(false),
 	m_bCellBlank(true),
 	m_bEndTableOpen(false),
-	m_iHyperlinkOpen(0)
+	m_iHyperlinkOpen(0),
+	m_bBidiDocument(true),
+	m_pPasteBuffer(NULL),
+	m_lenPasteBuffer(0),
+	m_pCurrentCharInPasteBuffer(NULL),
+	m_numLists(0),
+	m_currentHdrID(0),
+	m_currentFtrID(0),
+	m_currentHdrEvenID(0),
+	m_currentFtrEvenID(0),
+	m_currentHdrFirstID(0),
+	m_currentFtrFirstID(0),
+	m_currentHdrLastID(0),
+	m_currentFtrLastID(0),
+	m_parsingHdrFtr(false),
+	m_icurOverride(0),
+	m_icurOverrideLevel(0),
+	m_szFileDirName(NULL),
+	m_bAppendAnyway(false),
+	m_bInFootnote(false),
+	m_iDepthAtFootnote(0)
 {
-	m_pPasteBuffer = NULL;
-	m_lenPasteBuffer = 0;
-	m_pCurrentCharInPasteBuffer = NULL;
-	m_numLists = 0;
-	m_currentHdrID = 0;
-	m_currentFtrID = 0;
-	m_currentHdrEvenID = 0;
-	m_currentFtrEvenID = 0;
-	m_currentHdrFirstID = 0;
-	m_currentFtrFirstID = 0;
-	m_currentHdrLastID = 0;
-	m_currentFtrLastID = 0;
-	m_parsingHdrFtr = false;
-	m_icurOverride = 0;
-	m_icurOverrideLevel = 0;
-	m_szFileDirName = NULL;
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
 		UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	}
 	m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->getNativeEncodingName());
-	m_bAppendAnyway = false;
-	m_bInFootnote = false;
-	m_iDepthAtFootnote = 0;
 	m_hyperlinkBase.clear();
 }
 
@@ -1345,7 +1350,6 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	}
 	FREEP (m_szFileDirName);
 }
-
 
 UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 {
@@ -1765,6 +1769,63 @@ UT_Error IE_Imp_RTF::_parseText()
 
 }
 
+/*
+   Scans the entire document for any rtl tokens and set m_bBidiDocument
+   accordingly. Please note that this results in a minimal performance
+   loss (a fraction of a second on a 30 page doc), and saves us much
+   work and time if the document is LTR-only.
+*/
+UT_Error IE_Imp_RTF::_isBidiDocument()
+{
+	UT_return_val_if_fail(m_pImportFile, UT_ERROR);
+
+	char buff[8192 + 1];
+	char * token = NULL;
+	
+	size_t iBytes = fread((void*)&buff[0], 1, sizeof(buff) - 1, m_pImportFile);
+
+	UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: looking for RTL tokens\n"));
+	while (iBytes)
+	{
+		buff[iBytes] = 0;
+		token = strstr(buff, "rtlsect");
+		if(token)
+		{
+			break;
+		}
+		
+		token = strstr(buff, "rtlpar");
+		if(token)
+			break;
+
+		token = strstr(buff, "rtlch");
+		if(token)
+			break;
+
+		iBytes = fread((void*)&buff[0], 1, sizeof(buff) - 1, m_pImportFile);	
+	}
+
+	if(token)
+	{
+		UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: found rtl token [%s]\n", token));
+		m_bBidiDocument = true;
+	}
+	else
+	{
+		UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: no rtl token found\n"));
+		m_bBidiDocument = false;
+	}
+	
+	
+	// reset the file pointer to the beginning
+	if(fseek(m_pImportFile, 0, SEEK_SET))
+		return UT_ERROR;
+
+	UT_DEBUGMSG(("IE_Imp_RTF::_isBidiDocument: looking for RTL tokens -- done\n"));
+	return UT_OK;
+}
+
+
 
 UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 {
@@ -1781,7 +1842,9 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 	m_currentHdrLastID = 0;
 	m_currentFtrLastID = 0;
 
-
+	if(m_pImportFile && UT_OK != _isBidiDocument())
+		return UT_ERROR;
+	
 	return _parseText();
 }
 
@@ -1798,6 +1861,9 @@ bool IE_Imp_RTF::StartNewPara()
 
 	bool ok = FlushStoredChars(true);
 	m_newParaFlagged = true;
+
+	// need to reset any left-over direction override
+	m_currentRTFState.m_charProps.m_dirOverride = FRIBIDI_TYPE_UNSET;
 	return ok;
 }
 
@@ -1822,29 +1888,8 @@ bool IE_Imp_RTF::StartNewSection()
 //
 bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 {
-	// certain characters require additional processing
-	// Opening paranthesis, etc., need to be prefixed with direciton marker
-	UT_GrowBufElement c;
-	if(m_currentRTFState.m_charProps.m_RTL)
-		c = UCS_RLM;
-	else
-		c = UCS_LRM;
-	
-	if(ch == '(' || ch == '{' || ch == '[')
-	{
-		if(!m_gbBlock.ins(m_gbBlock.getLength(), &c, 1))
-			return false;
-	}
-	
 	if(!m_gbBlock.ins(m_gbBlock.getLength(), reinterpret_cast<UT_GrowBufElement*>(&ch), 1))
 		return false;
-
-	// closing parenthesis, etc., need to be affixed with direciton marker
-	if(ch == ')' || ch == '}' || ch == ']')
-	{
-		if(!m_gbBlock.ins(m_gbBlock.getLength(), &c, 1))
-			return false;
-	}
 
 	return true;
 }
@@ -4205,15 +4250,17 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // Look to see if m_bNestTableProps is true for nested tables.
 //
-			else if((m_TableControl.getNestDepth() > 1) && !m_bNestTableProps)
+// changed the 1 to 0, because get getNestDepth() returns 0 for
+// unnested table -- see ie_Table.cpp (Tomas, May 8, 2003)			
+			else if((m_TableControl.getNestDepth() > 0) && !m_bNestTableProps)
 			{
-				while(m_TableControl.getNestDepth() > 1)
+				while(m_TableControl.getNestDepth() > 0)
 				{
 					UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
 					CloseTable();
 					m_bCellBlank = true;
 				}
-				m_currentRTFState.m_paraProps.m_tableLevel = 1;
+				m_currentRTFState.m_paraProps.m_tableLevel = 0;
 			}
 //
 // If a trowd appears without  a preceding \cell we close the previous table
@@ -4564,42 +4611,324 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 		propBuffer += "; lang:";
 		propBuffer += m_currentRTFState.m_charProps.m_szLang;
 	}
+
+	if(m_currentRTFState.m_charProps.m_dirOverride == FRIBIDI_TYPE_LTR)
+	{
+		propBuffer += ";dir-override:ltr";
+	}
+	else if(m_currentRTFState.m_charProps.m_dirOverride == FRIBIDI_TYPE_RTL)
+	{
+		propBuffer += ";dir-override:rtl";
+	}
+	
+	return true;
+}
+
+// in non-bidi doc we just append the current format and text; in bidi
+// documents we crawl over the text looking for neutral characters;
+// when we find one, we see if the implied override is identical to
+// directional properties on either side of the character: if yes, we
+// leave the character as it is; if not we issued the override. This
+// saves us inserting overrides on most space characters in the document
+bool IE_Imp_RTF::_appendSpan()
+{
+	XML_Char* pProps = "props";
+	UT_String prop_basic;
+	buildCharacterProps(prop_basic);
+
+	UT_String prop_ltr = prop_basic;
+	prop_ltr += ";dir-override:ltr";
+	
+	UT_String prop_rtl = prop_basic;
+	prop_rtl += ";dir-override:rtl";
+	
+
+	const XML_Char* propsArray[3];
+	propsArray[0] = pProps;
+	propsArray[1] = prop_basic.c_str();
+	propsArray[2] = NULL;
+	UT_UCS4Char * p;
+	UT_uint32 iLen = m_gbBlock.getLength();
+
+	if(m_bBidiDocument)
+	{
+		FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
+		UT_uint32 iLast = 0;
+		UT_UCS4Char c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)));
+	
+		cType = fribidi_get_type(c);
+	
+		for(UT_uint32 i = 0; i < iLen; i++)
+		{
+			if(i < iLen - 1 )
+			{
+				c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(i+1)));
+				cNextType = fribidi_get_type(c);
+			}
+			else
+			{
+				cNextType = FRIBIDI_TYPE_UNSET;
+			}
+		
+		
+			if(FRIBIDI_IS_NEUTRAL(cType))
+			{
+				if(!m_currentRTFState.m_charProps.m_RTL
+				   && iOverride != FRIBIDI_TYPE_LTR
+				   && (cLastType != FRIBIDI_TYPE_LTR || cNextType != FRIBIDI_TYPE_LTR))
+				{
+					if(i - iLast > 0)
+					{
+						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+						if(!getDoc()->appendFmt(propsArray))
+							return false;
+					
+						if(!getDoc()->appendSpan(p, i - iLast))
+							return false;
+					}
+					iOverride = FRIBIDI_TYPE_LTR;
+					propsArray[1] = prop_ltr.c_str();
+					iLast = i;
+				}
+				else if(m_currentRTFState.m_charProps.m_RTL
+						&& iOverride != FRIBIDI_TYPE_RTL
+						&& (cLastType != FRIBIDI_TYPE_RTL || cNextType != FRIBIDI_TYPE_RTL))
+				{
+					if(i - iLast > 0)
+					{
+						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+						if(!getDoc()->appendFmt(propsArray))
+							return false;
+
+						if(!getDoc()->appendSpan(p, i - iLast))
+							return false;
+					}
+					iOverride = FRIBIDI_TYPE_RTL;
+					propsArray[1] = prop_rtl.c_str();
+					iLast = i;
+				}
+			}
+			else
+			{
+				// strong character; if we previously issued an override,
+				// we need to cancel it
+				if(iOverride != FRIBIDI_TYPE_UNSET)
+				{
+					if(i - iLast > 0)
+					{
+						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+						if(!getDoc()->appendFmt(propsArray))
+							return false;
+					
+						if(!getDoc()->appendSpan(p, i - iLast))
+							return false;
+					}
+					iOverride = FRIBIDI_TYPE_UNSET;
+					propsArray[1] = prop_basic.c_str();
+					iLast = i;
+				}
+			}
+
+			cLastType = cType;
+			cType = cNextType;
+		}
+
+		// insert what is left over
+		if(iLen - iLast > 0)
+		{
+			p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+			if(!getDoc()->appendFmt(propsArray))
+				return false;
+					
+			if(!getDoc()->appendSpan(p, iLen - iLast))
+				return false;
+		}
+	}
+	else
+	{
+		// not a bidi doc, just do it the simple way
+		p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0));
+		if(!getDoc()->appendFmt(propsArray))
+			return false;
+					
+		if(!getDoc()->appendSpan(p, iLen))
+			return false;
+		
+	}
+	
+	return true;
+}
+	
+bool IE_Imp_RTF::_insertSpan()
+{
+	XML_Char* pProps = "props";
+	UT_String prop_basic;
+	buildCharacterProps(prop_basic);
+
+	UT_String prop_ltr = prop_basic;
+	prop_ltr += ";dir-override:ltr";
+	
+	UT_String prop_rtl = prop_basic;
+	prop_rtl += ";dir-override:rtl";
+	
+
+	const XML_Char* propsArray[3];
+	propsArray[0] = pProps;
+	propsArray[1] = prop_basic.c_str();
+	propsArray[2] = NULL;
+	UT_UCS4Char * p;
+	UT_uint32 iLen = m_gbBlock.getLength();
+
+	if(m_bBidiDocument)
+	{
+		FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
+		UT_uint32 iLast = 0;
+		UT_UCS4Char c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)));
+	
+		cType = fribidi_get_type(c);
+	
+		for(UT_uint32 i = 0; i < iLen; i++)
+		{
+			if(i < iLen - 1 )
+			{
+				c = *(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(i+1)));
+				cNextType = fribidi_get_type(c);
+			}
+			else
+			{
+				cNextType = FRIBIDI_TYPE_UNSET;
+			}
+		
+		
+			if(FRIBIDI_IS_NEUTRAL(cType))
+			{
+				if(!m_currentRTFState.m_charProps.m_RTL
+				   && iOverride != FRIBIDI_TYPE_LTR
+				   && (cLastType != FRIBIDI_TYPE_LTR || cNextType != FRIBIDI_TYPE_LTR))
+				{
+					if(i - iLast > 0)
+					{
+						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
+							return false;
+						
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, i - iLast,
+													propsArray,NULL))
+							return false;
+						
+						m_dposPaste += i - iLast;						
+					}
+					iOverride = FRIBIDI_TYPE_LTR;
+					propsArray[1] = prop_ltr.c_str();
+					iLast = i;
+				}
+				else if(m_currentRTFState.m_charProps.m_RTL
+						&& iOverride != FRIBIDI_TYPE_RTL
+						&& (cLastType != FRIBIDI_TYPE_RTL || cNextType != FRIBIDI_TYPE_RTL))
+				{
+					if(i - iLast > 0)
+					{
+						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
+							return false;
+						
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, i - iLast,
+													propsArray,NULL))
+							return false;
+						
+						m_dposPaste += i - iLast;						
+					}
+					iOverride = FRIBIDI_TYPE_RTL;
+					propsArray[1] = prop_rtl.c_str();
+					iLast = i;
+				}
+			}
+			else
+			{
+				// strong character; if we previously issued an override,
+				// we need to cancel it
+				if(iOverride != FRIBIDI_TYPE_UNSET)
+				{
+					if(i - iLast > 0)
+					{
+						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
+							return false;
+						
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, i - iLast,
+													propsArray,NULL))
+							return false;
+						
+						m_dposPaste += i - iLast;						
+					}
+					iOverride = FRIBIDI_TYPE_UNSET;
+					propsArray[1] = prop_basic.c_str();
+					iLast = i;
+				}
+			}
+
+			cLastType = cType;
+			cType = cNextType;
+		}
+
+		// insert what is left over
+		if(iLen - iLast > 0)
+		{
+			p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
+			if(!getDoc()->insertSpan(m_dposPaste, p ,iLen - iLast))
+				return false;
+						
+			if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, iLen - iLast,
+										propsArray,NULL))
+				return false;
+						
+			m_dposPaste += iLen - iLast;						
+		}
+	}
+	else
+	{
+		// not a bidi doc, just do it the simple way
+		p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0));
+		if(!getDoc()->insertSpan(m_dposPaste, p ,iLen))
+			return false;
+						
+		if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, iLen,
+									propsArray,NULL))
+			return false;
+						
+		m_dposPaste += iLen;						
+	}
+	
 	return true;
 }
 
 bool IE_Imp_RTF::ApplyCharacterAttributes()
 {
-	XML_Char* pProps = "props";
-	UT_String propBuffer;
-	buildCharacterProps(propBuffer);
-
-	const XML_Char* propsArray[3];
-	propsArray[0] = pProps;
-	propsArray[1] = propBuffer.c_str();
-	propsArray[2] = NULL;
-
 	bool ok;
 	if(m_gbBlock.getLength() > 0)
 	{
 		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
 		{
-			ok = (   getDoc()->appendFmt(propsArray)
-					 && getDoc()->appendSpan(reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)), m_gbBlock.getLength()) );
+			ok = _appendSpan();
 		}
 		else								// else we are pasting from a buffer
 		{
-			ok = (   getDoc()->insertSpan(m_dposPaste,
-										  reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0)),m_gbBlock.getLength())
-					 && getDoc()->changeSpanFmt(PTC_AddFmt,
-												m_dposPaste,m_dposPaste+m_gbBlock.getLength(),
-												propsArray,NULL));
-			m_dposPaste += m_gbBlock.getLength();
+			ok = _insertSpan();
 		}
 		m_gbBlock.truncate(0);
 		return ok;
 	}
 	else
 	{
+		XML_Char* pProps = "props";
+		UT_String propBuffer;
+		buildCharacterProps(propBuffer);
+
+		const XML_Char* propsArray[3];
+		propsArray[0] = pProps;
+		propsArray[1] = propBuffer.c_str();
+		propsArray[2] = NULL;
+		
 		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
 		{
 			ok = getDoc()->appendFmt(propsArray);

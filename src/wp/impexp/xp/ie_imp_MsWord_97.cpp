@@ -1141,9 +1141,6 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
 
-	// deal with the thorny problem of languge as direction override
-	FriBidiCharType cType = fribidi_get_type(static_cast<FriBidiChar>(eachchar));
-
 	// bidi adjustments for neutrals
 	// 
 	// We have a problem in bidi documents caused by the fact that
@@ -1159,6 +1156,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 
 	if(m_bBidiDocument)
 	{
+		FriBidiCharType cType = fribidi_get_type(static_cast<FriBidiChar>(eachchar));
 		if(FRIBIDI_IS_NEUTRAL(cType))
 		{
 			this->_flush();

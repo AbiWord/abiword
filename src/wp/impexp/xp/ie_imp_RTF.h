@@ -35,7 +35,7 @@
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
-#include "fribidi/fribidi.h"
+#include <fribidi/fribidi.h>
 #include  "ie_Table.h"
 
 class IE_Imp_RTF;
@@ -93,6 +93,7 @@ public:
 	UT_uint32  m_listTag; // tag for lists to hang off
 	const char * m_szLang;
 	bool    m_RTL;
+	FriBidiCharType m_dirOverride;
 };
 
 class ABI_EXPORT RTFProps_bCharProps
@@ -121,6 +122,7 @@ public:
 	bool bm_bgcolourNumber; // index into colour table
 	bool bm_listTag; // tag for lists to hanfg off
 	bool bm_RTL;
+	bool bm_dirOverride;
 };
 
 struct ABI_EXPORT _rtfListTable
@@ -633,6 +635,10 @@ private:
 	RTFTokenType NextToken (unsigned char *pKeyword, long* pParam,
 							bool* pParamUsed, UT_uint32 len, bool bIgnoreWhiteSpace=false);
 
+	UT_Error _isBidiDocument();
+	bool     _appendSpan();
+	bool     _insertSpan();
+	
 
 // import member vars
 private:
@@ -717,6 +723,7 @@ private:
 	UT_uint32             m_iLastFootnoteId;
 	UT_String             m_hyperlinkBase;
 	UT_uint32             m_iHyperlinkOpen;
+	bool                  m_bBidiDocument;
 };
 
 #endif /* IE_IMP_RTF_H */
