@@ -213,10 +213,16 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			UT_uint32 j = 1;
 			while (pAP->getNthProperty(j++,szName,szValue))
 			{
-				m_pie->write("; ");
-				m_pie->write(szName);
-				m_pie->write(":");
-				m_pie->write(szValue);
+				// TMN: Patched this since I got an assert. What's the fix?
+				// is it to write out a quoted empty string, or not to write
+				// the property at all? For now I fixed it by the latter.
+				if (*szValue)
+				{
+					m_pie->write("; ");
+					m_pie->write(szName);
+					m_pie->write(":");
+					m_pie->write(szValue);
+				}
 			}
 			m_pie->write("\"");
 		}
