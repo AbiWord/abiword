@@ -19,18 +19,44 @@
 
 include $(top_srcdir)/includes.mk
 
-bin_PROGRAMS = AbiWord
+bin_PROGRAMS = Abiword
 
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
 	$(TEXT_INCLUDES) 
 
-AbiWord_SOURCES = abi_ver.cpp MacMain.cpp
+Abiword_SOURCES = abi_ver.cpp MacMain.cpp
 
 REPEAT_LIBS = $(ABI_LIBS) 
 
-AbiWord_LDADD = $(REPEAT_LIBS) $(REPEAT_LIBS) @PLATFORM_LIBS@ $(OTHER_LIBS) 
+Abiword_LDADD = $(REPEAT_LIBS) $(REPEAT_LIBS) @PLATFORM_LIBS@ $(OTHER_LIBS) 
+
+RESOURCES=$(top_srcdir)/src/af/util/mac/ut_MacAssert.rsrc \
+	$(top_srcdir)/src/af/xap/mac/xap_MacDlg_MessageBox.rsrc \
+	$(top_srcdir)/src/af/xap/mac/xap_MacResources.rsrc
+
+PROGRAM_BUNDLE=Abiword.app/Contents
+PROGRAM_BUNDLE_BIN=$(PROGRAM_BUNDLE)/MacOS
+PROGRAM_BUNDLE_RES=$(PROGRAM_BUNDLE)/Resources
+
+
+$(PROGRAM_BUNDLE_RES)/Abiword.rsrc: $(RESOURCES)
+	@mkdir -p $(PROGRAM_BUNDLE_RES)
+	@mkdir -p $(PROGRAM_BUNDLE_BIN)
+	$(RESMERGER) -srcIs DF -dstIs DF $(RESOURCES) -o $@
+
+$(PROGRAM_BUNDLE_BIN)/Abiword: Abiword
+	@mkdir -p $(PROGRAM_BUNDLE_RES)
+	@mkdir -p $(PROGRAM_BUNDLE_BIN)
+	cp bundle/PkgInfo $(PROGRAM_BUNDLE)
+	cp bundle/Info.plist $(PROGRAM_BUNDLE)
+	cp bundle/AbiWord.icns $(PROGRAM_BUNDLE_RES)
+	cp bundle/abiword_48.tif $(PROGRAM_BUNDLE_RES)
+	cp $< $@
+
+all: $(PROGRAM_BUNDLE_RES)/Abiword.rsrc $(PROGRAM_BUNDLE_BIN)/Abiword
+
 
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .
