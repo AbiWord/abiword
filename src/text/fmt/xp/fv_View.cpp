@@ -2299,7 +2299,24 @@ void FV_View::getBlocksInSelection( UT_Vector * vBlock)
 	{
 		startpos =	m_iSelectionAnchor;
 	}
+//
+// tweak the start point of the selection if it is just before the current block
+// strux. Clicking in the left margin moves the start point here but usually the
+// user wants block after this.
+//
 	fl_BlockLayout * pBlock = _findBlockAtPosition(startpos);
+	fl_BlockLayout * pBlNext = NULL;
+	PT_DocPosition posEOD = 0;
+	getEditableBounds(true, posEOD);
+
+	if(startpos < posEOD)
+	{
+		pBlNext = _findBlockAtPosition(startpos+1);
+	}
+	if((pBlNext != NULL) && (pBlNext != pBlock))
+	{
+		pBlock = pBlNext;
+	}
 	while( pBlock != NULL && pBlock->getPosition() <= endpos)
 	{
 		vBlock->addItem(pBlock);

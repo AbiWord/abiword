@@ -957,11 +957,41 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 													pSpanAP,pBlockAP,pSectionAP,
 													m_pDocument,true);
 
+
+	const XML_Char * szMarginLeft = PP_evalProperty("page-margin-left",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+	const XML_Char * szMarginTop = PP_evalProperty("page-margin-top",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+	const XML_Char * szMarginRight = PP_evalProperty("page-margin-right",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+	const XML_Char * szMarginBottom = PP_evalProperty("page-margin-bottom",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
 	const XML_Char * szHeaderY = PP_evalProperty("page-margin-header",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
 	const XML_Char * szFooterY = PP_evalProperty("page-margin-footer",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+
+	const XML_Char * szSpaceAfter = PP_evalProperty("section-space-after",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+	const XML_Char * szRestartNumbering = PP_evalProperty("section-restart",
+												 pSpanAP,pBlockAP,pSectionAP,
+												 m_pDocument,true);
+
+	const XML_Char * szRestartAt = PP_evalProperty("section-restart-value",
 												 pSpanAP,pBlockAP,pSectionAP,
 												 m_pDocument,true);
 
@@ -993,11 +1023,41 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",(char*)szColumnGap,720);
 
 	if (bColLine)
+	{
 		m_pie->_rtf_keyword ("linebetcol");
-
+	}
 	m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)szHeaderY, 720);
 	m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)szFooterY, 720);
-
+	if(szMarginLeft)
+	{
+		m_pie->_rtf_keyword_ifnotdefault_twips("marglsxn", (char*)szMarginLeft, 1440);
+	}
+	if(szMarginRight)
+	{
+		m_pie->_rtf_keyword_ifnotdefault_twips("margrsxn", (char*)szMarginRight, 1440);
+	}
+	if(szMarginTop)
+	{
+		m_pie->_rtf_keyword_ifnotdefault_twips("margfsxn", (char*)szMarginTop, 1440);
+	}
+	if(szMarginBottom)
+	{
+		m_pie->_rtf_keyword_ifnotdefault_twips("margbsxn", (char*)szMarginBottom, 1440);
+	}
+	if(szRestartNumbering && UT_strcmp(szRestartNumbering,"1") == 0)
+	{
+		m_pie->_rtf_keyword("pgnrestart");
+		if(szRestartAt)
+		{
+			UT_sint32 num = atoi(szRestartAt);
+			m_pie->_rtf_keyword("pgnx",num);
+		}
+	}
+	else
+	{
+		m_pie->_rtf_keyword("pgncont");
+	}
+		
 #ifdef BIDI_ENABLED
 	if (bSectRTL)
 		m_pie->_rtf_keyword("rtlsect");

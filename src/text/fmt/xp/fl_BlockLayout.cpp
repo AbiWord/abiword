@@ -6735,7 +6735,7 @@ void fl_BlockLayout::_createListLabel(void)
 	}
 #if 1
 	const  XML_Char ** blockatt;
-	pView->getCharFormat(&blockatt,true,getPosition());
+	pView->getCharFormat(&blockatt,true,getPosition()+2);
 //	pView->setBlockFormat(blockatt);
 //	FREEP(blockatt);
 #endif
@@ -6765,7 +6765,17 @@ void fl_BlockLayout::_createListLabel(void)
 		bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
 		diff = 2;
 	}
-	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+diff,NULL,(const char **)blockatt);
+//
+// I don't think we need this.
+//
+
+//	UT_uint32 i =0;
+//  	while(blockatt[i] != NULL)
+//  	{
+//  		UT_DEBUGMSG(("SEVIOR: Applying blockatt[i] %s at %d %d \n",blockatt[i],getPosition(),getPosition()+diff));
+//  		i++;
+//  	}
+//  	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition()+diff,NULL,(const char **)blockatt);
 	FREEP(blockatt);
 
 	if (pView && (pView->isActive() || pView->isPreview()))
