@@ -247,16 +247,13 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 		return false;
 	
 	UT_StringPtrMap::UT_Cursor c (&m_hashStyles);
-	const void * val = c.first();
+	const void * val = NULL;
 	UT_uint32 i = 0;
 
-	while (i != k)
-	{
-		i++;
-		if (!c.more())
-			return false;
-		val = c.next();
-	}
+	for (i = 0, val = c.first(); (i < k) && c.more(); i++, val = c.next())
+	  {
+	    // noop
+	  }
 
 	PD_Style * pStyle = (PD_Style *)val;
 	UT_ASSERT(pStyle);

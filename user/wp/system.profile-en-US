@@ -13,7 +13,7 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="american.hash"
+    DocumentLocale="en-US"
     RulerUnits="inch"
     DefaultPageSize="Letter"
 />

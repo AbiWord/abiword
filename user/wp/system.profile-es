@@ -13,7 +13,7 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="spanish.hash"
+    DocumentLocale="es-ES"
     RulerUnits="cm"
     DefaultPageSize="A4"
 />

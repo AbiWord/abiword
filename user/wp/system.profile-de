@@ -13,7 +13,7 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="german.hash"
+    DocumentLocale="de-DE"
     RulerUnits="cm"
     DefaultPageSize="A4"
 />

@@ -300,23 +300,18 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 	if ((UT_uint32)ndx >= m_pAttributes->size())
 		return false;
 
-	int i = 0;
 	UT_StringPtrMap::UT_Cursor c(m_pAttributes);
-	const void * val = c.first();
+	const void * val = NULL;
+	UT_uint32 i;
 
-	while (true)
-	{
-		if (i == ndx)
-		{
-			szName = (XML_Char*) c.key().c_str();
-			szValue = (XML_Char*) val;
-			break;
-		}
-		i++;
-		if (!c.more())
-			return false;
-		val = c.next();
-	}
+	for (i = 0, val = c.first();
+	     c.more() && i < ndx; i++, val = c.next())
+	  {
+	    // noop
+	  }
+
+	szName = (XML_Char*) c.key().c_str();
+	szValue = (XML_Char*) val;
 
 	return true;
 }
@@ -329,24 +324,19 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
  	if ((UT_uint32)ndx >= m_pProperties->size())
   		return false;
  
- 	int i = 0;
  	UT_StringPtrMap::UT_Cursor c(m_pProperties);
- 	const void * val = c.first();
+ 	const void * val = NULL;
+	UT_uint32 i;
+
+	for (i = 0, val = c.first();
+	     c.more() && i < ndx; i++, val = c.next())
+	  {
+	    // noop
+	  }
  
- 	while (true)
- 	{
- 		if (i == ndx)
- 		{
- 			szName = (XML_Char*) c.key().c_str();
- 			szValue = (XML_Char*) ((UT_Pair*)val)->first();
- 			break;
- 		}
- 		i++;
-		if (!c.more())
-			return false;
- 		val = c.next();
- 	}
- 
+	szName = (XML_Char*) c.key().c_str();
+	szValue = (XML_Char*) ((UT_Pair*)val)->first();
+
   	return true;
 }
 
@@ -748,33 +738,32 @@ void PP_AttrProp::_computeCheckSum(void)
 	UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
 	UT_StringPtrMap::UT_Cursor c2(m_pProperties);
 
-	const void *val = c1.first();
-	while (val != NULL)
+	const void *val = NULL;
+
+	for (val = c1.first(); c1.more(); val = c1.next())
+	  {
+	    if (!val)
+	      continue;
+
+	    s1 = (XML_Char *)c1.key().c_str();
+	    s2 = (XML_Char *)val;
+	    
+	    m_checkSum += UT_XML_strlen(s1);
+	    m_checkSum += UT_XML_strlen(s2);
+	  }
+
+
+	val = NULL;
+	for (val = c2.first(); c2.more(); val = c2.next())
 	{
-		s1 = (XML_Char *)c1.key().c_str();
-		s2 = (XML_Char *)val;
+	  if (!val)
+	    continue;
 
-		m_checkSum += UT_XML_strlen(s1);
-		m_checkSum += UT_XML_strlen(s2);
-
-		if (!c1.more())
-			break;
-		val = c1.next();
-	}
-
-
-	val = c2.first();
-	while (val != NULL)
-	{
-		s1 = (XML_Char *)c2.key().c_str();
-		s2 = (XML_Char *) ((UT_Pair*)val)->first();
-
-		m_checkSum += UT_XML_strlen(s1);
-		m_checkSum += UT_XML_strlen(s2);
-
-		if (!c2.more())
-			break;
-		val = c2.next();
+	  s1 = (XML_Char *)c2.key().c_str();
+	  s2 = (XML_Char *) ((UT_Pair*)val)->first();
+	  
+	  m_checkSum += UT_XML_strlen(s1);
+	  m_checkSum += UT_XML_strlen(s2);
 	}
 
 	return;

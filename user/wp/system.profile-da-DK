@@ -13,7 +13,7 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="danish.hash"
+    DocumentLocale="da-DK"
     RulerUnits="cm"
     DefaultPageSize="A4"
 />

@@ -1,6 +1,5 @@
 /* AbiSource Program Utilities
  *
- * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Mike Nordell <tamlin@alogonet.se>
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  *
@@ -29,8 +28,8 @@
 // fwd. decls.
 static  UT_uint32 _Recommended_hash_size(UT_uint32	size);
 static  UT_uint32 _Recommended_hash_size(UT_uint32	numslots,
-					 UT_uint32	slotsize,
-					 UT_uint32	max_tablesize);
+										 UT_uint32	slotsize,
+										 UT_uint32	max_tablesize);
 
 // Here we declare a couple of classes internal to the hashtable's impl
 
@@ -40,38 +39,32 @@ class key_wrapper
 public:
 	key_wrapper() 
 		: m_hashval(0) { }
-	~key_wrapper() { }
 	
-	inline void die() 
+	void die() 
 		{ m_val.clear(); }
 	
-	inline bool eq(const UT_String &key) const
+	bool eq(const UT_String &key) const
 	{
 		return (m_val == key);
 	}
 	
-	inline void operator=(const UT_String &k)	
+	void operator=(const UT_String &k)	
 		{ m_val = k; }
 	
-	inline UT_uint32 hashval() const		
+	UT_uint32 hashval() const
 		{ return m_hashval; }
-	inline void set_hashval(UT_uint32 h)	
+	void set_hashval(UT_uint32 h)
 		{ m_hashval = h; }
 	
-	inline UT_String &value(void) 
+	UT_String &value(void) 
 		{return m_val;}
 
-	inline void operator=(const key_wrapper& rhs)
+	void operator=(const key_wrapper& rhs)
 		{ m_val = rhs.m_val; m_hashval = rhs.m_hashval; }
 
-	static inline UT_uint32 compute_hash(const UT_String &key) 
+	static UT_uint32 compute_hash(const UT_String &key) 
 		{
-#if 0
-			// 9987001 is a reasnonably large prime, for void *
-			return reinterpret_cast<UT_uint32>(key) * 0x9863b9; 
-#else
-			return hashcode (key); // UT_String::hashcode
-#endif
+			return hashcode(key); // UT_String::hashcode
 		}
 
 private:
@@ -86,41 +79,40 @@ class hash_slot
 public:
 	hash_slot() 
 		: m_value(0) { }
-	~hash_slot() { }
 
-	inline void make_deleted()
+	void make_deleted()
 		{
-			m_value = static_cast<void *>(this);
+			m_value = static_cast<void*>(this);
 			m_key.die();
 		}
-	inline void make_empty() 
+	void make_empty() 
 		{ m_value = 0; }
 
-	inline const void * value() const 
+	const void* value() const 
 		{ return m_value; }
 
-	inline void insert(const void * v, const UT_String &k, UT_uint32 h)
+	void insert(const void* v, const UT_String &k, UT_uint32 h)
 		{
 			m_value = v;
 			m_key = k;
 			m_key.set_hashval(h);
 		}
 
-	inline void assign(hash_slot* s) 
+	void assign(hash_slot* s) 
 		{
 			m_value = s->value();
 			m_key = s->m_key;
 		}
 
-	inline bool empty() const 
+	bool empty() const 
 		{ return (m_value == 0); }
 
-	inline bool deleted(const void * delval) const
+	bool deleted() const
 		{
-			return ((delval ? false : static_cast<const void *>(this)) ==  (m_value));
+			return static_cast<const void*>(this) == m_value;
 		}
 
-	inline bool key_eq(const UT_String &test, size_t h) const
+	bool key_eq(const UT_String &test, size_t h) const
 		{
 #if 1
 			return m_key.eq(test);
@@ -129,22 +121,22 @@ public:
 #endif
 		}
 	
-	const void *	m_value;
-	key_wrapper	m_key;	
+	const void*	m_value;
+	key_wrapper	m_key;
 };
 
 
 /*!
  * This class represents a mapping between key/value pairs where the keys are
  * represented by UT_String (a wrapper around char*) and the values may be of
- * any pointer type (void *)
+ * any pointer type (void*)
  */
 UT_StringPtrMap::UT_StringPtrMap(size_t expected_cardinality)
-	:	n_keys(0),
-		n_deleted(0),
-		m_nSlots(_Recommended_hash_size(expected_cardinality)),
-		reorg_threshold(compute_reorg_threshold(m_nSlots)),
-		flags(0)
+:	n_keys(0),
+	n_deleted(0),
+	m_nSlots(_Recommended_hash_size(expected_cardinality)),
+	reorg_threshold(compute_reorg_threshold(m_nSlots)),
+	flags(0)
 {
 	m_pMapping = new hash_slot[m_nSlots];
 }
@@ -160,20 +152,20 @@ UT_StringPtrMap::~UT_StringPtrMap()
  * Find the value associated with the key \k
  * \return 0 if key not found, object if found
  */
-const void * UT_StringPtrMap::pick(const char * k) const
+const void* UT_StringPtrMap::pick(const char* k) const
 {
   UT_String aKey = k;
   return pick (aKey);
 }
 
-const void * UT_StringPtrMap::pick(const UT_String & k) const
+const void* UT_StringPtrMap::pick(const UT_String & k) const
 {
 	hash_slot*		sl = 0;
 	bool			key_found = false;
 	size_t			slot;
 	size_t			hashval;
 	
-	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
+	sl = find_slot(k, SM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
 	return key_found ? sl->value() : 0;
 }
 
@@ -182,13 +174,13 @@ const void * UT_StringPtrMap::pick(const UT_String & k) const
  * If \v is null, just see if the key \k exists
  * \return truth
  */
-bool UT_StringPtrMap::contains(const char * k, const void * v) const
+bool UT_StringPtrMap::contains(const char* k, const void* v) const
 {
   UT_String aKey = k;
   return contains (aKey, v);
 }
 
-bool UT_StringPtrMap::contains(const UT_String & k, const void * v) const
+bool UT_StringPtrMap::contains(const UT_String& k, const void* v) const
 {
 	hash_slot * sl = 0;
 	bool key_found = false;
@@ -197,11 +189,11 @@ bool UT_StringPtrMap::contains(const UT_String & k, const void * v) const
 	size_t hashval = 0;
 
 #if 0
-	sl = find_slot (k, _CM_LOOKUP, slot, key_found,
+	sl = find_slot (k, SM_LOOKUP, slot, key_found,
 			hashval, v, &v_found, 0, 0);
 	return v_found;
 #else
-	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
+	sl = find_slot(k, SM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
 
 	// this is obviously not correct
 	return key_found ? true : false;
@@ -212,27 +204,31 @@ bool UT_StringPtrMap::contains(const UT_String & k, const void * v) const
 /*!
  * Insert this key/value pair into the map
  */
-void UT_StringPtrMap::insert(const char * key, const void * value)
+void UT_StringPtrMap::insert(const char* key, const void* value)
 {
   UT_String aKey = key;
   insert (aKey, value);
 }
 
-void UT_StringPtrMap::insert(const UT_String & key, const void * value)
+void UT_StringPtrMap::insert(const UT_String& key, const void* value)
 {
 	size_t		slot = 0;
 	bool		key_found = false;
 	size_t		hashval = 0;
 
-	hash_slot* sl = find_slot(key, _CM_INSERT, slot, key_found, 
+	hash_slot* sl = find_slot(key, SM_INSERT, slot, key_found, 
 				  hashval, 0, 0, 0, 0);
 	sl->insert(value, key, hashval);
 	++n_keys;
 	
-	if (too_full()) {
-		if (too_many_deleted()) {
+	if (too_full())
+	{
+		if (too_many_deleted())
+		{
 			reorg(m_nSlots);
-		} else {
+		}
+		else
+		{
 			grow();
 		}
 	}
@@ -252,20 +248,20 @@ void UT_StringPtrMap::insert(const UT_String & key, const void * value)
  * Set the item determined by \key to the value \value
  * If item(\key) does not exist, insert it into the map
  */
-void UT_StringPtrMap::set(const char * key, const void * value)
+void UT_StringPtrMap::set(const char* key, const void* value)
 {
-  UT_String aKey = key;
-  set (aKey, value);
+	UT_String aKey = key;
+	set (aKey, value);
 }
 
-void UT_StringPtrMap::set(const UT_String & key, const void * value)
+void UT_StringPtrMap::set(const UT_String& key, const void* value)
 {
 	size_t		slot = 0;
 	bool		key_found = false;
 	size_t		hashval = 0;
 	
-	hash_slot* sl = find_slot(key, _CM_LOOKUP, slot, key_found, 
-				  hashval, 0, 0, 0, 0);
+	hash_slot* sl = find_slot(key, SM_LOOKUP, slot, key_found, 
+							  hashval, 0, 0, 0, 0);
 	
 	if (!sl || !key_found) // TODO: should we insert or just return?
 	{
@@ -288,14 +284,22 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
 
 	UT_Cursor cursor(this);
 
-	const void * val = cursor.first ();
+	const void* val = cursor.first();
 
-	while (true) {
+	// TMN: Dom, have a look at this. I think it should be
+	// for (const void* val = cursor.first(); cursor.more; cursor.next())
+	// 
+	// I also think "more()" should be renamed, can't come to think of a good
+	// name though.
+	while (true)
+	{
 		// we don't allow nulls since so much of our code depends on this
 		// behavior
 #if 1
 		if (val)
-			pVec->addItem ((void *)val);
+		{
+			pVec->addItem ((void*)val);
+		}
 #endif
 		if (!cursor.more())
 			break;
@@ -308,25 +312,28 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
 /*!
  * Remove the item referenced by \key in the map
  */
-void UT_StringPtrMap::remove(const char * key, const void *)
+void UT_StringPtrMap::remove(const char* key, const void*)
 {
-  UT_String aKey = key;
-  remove (aKey, 0);
+	UT_String aKey = key;
+	remove (aKey, 0);
 }
 
-void UT_StringPtrMap::remove(const UT_String & key, const void *)
+void UT_StringPtrMap::remove(const UT_String& key, const void*)
 {
 	size_t slot = 0, hashval;
-	bool found = false;
-	hash_slot* sl = find_slot(key, _CM_LOOKUP, slot, found,
+	bool bFound = false;
+	hash_slot* sl = find_slot(key, SM_LOOKUP, slot, bFound,
 							  hashval, 0, 0, 0, 0);
 	
-	if (found) {
+	if (bFound)
+	{
 		sl->make_deleted();
 		--n_keys;
 		++n_deleted;
 		if (m_nSlots > 11 && m_nSlots / 4 >= n_keys)
+		{
 			reorg(_Recommended_hash_size(m_nSlots/2));
+		}
 	}
 }
 
@@ -336,11 +343,15 @@ void UT_StringPtrMap::remove(const UT_String & key, const void *)
 void UT_StringPtrMap::clear()
 {
 	hash_slot* slots = m_pMapping;
-	for (size_t x=0; x < m_nSlots; x++) {
+	for (size_t x=0; x < m_nSlots; x++)
+	{
 		hash_slot& this_slot = slots[x];
-		if (!this_slot.empty()) {
-			if (!this_slot.deleted(0))
+		if (!this_slot.empty())
+		{
+			if (!this_slot.deleted())
+			{
 				this_slot.make_deleted();
+			}
 			this_slot.make_empty();
 		}
 	}
@@ -357,13 +368,15 @@ void UT_StringPtrMap::assign_slots(hash_slot* p, size_t old_num_slot)
 {
 	size_t target_slot = 0;
 	
-	for (size_t slot_num=0; slot_num < old_num_slot; ++slot_num, ++p) {
-		if (!p->empty() && !p->deleted(0)) {
+	for (size_t slot_num=0; slot_num < old_num_slot; ++slot_num, ++p)
+	{
+		if (!p->empty() && !p->deleted())
+		{
 			bool kf = false;
 			
 			size_t hv;
 			hash_slot* sl = find_slot(p->m_key.value(),
-									  _CM_REORG,
+									  SM_REORG,
 									  target_slot,
 									  kf,
 									  hv,
@@ -383,15 +396,15 @@ size_t UT_StringPtrMap::compute_reorg_threshold(size_t nSlots)
 
 
 hash_slot*
-UT_StringPtrMap::find_slot(const UT_String & k,
-						_CM_search_type	search_type,
-						size_t&			slot,
-						bool&			key_found,
-						size_t&			hashval,
-						const void*	        v,
-						bool*			v_found,
-						void*			vi,
-						size_t			hashval_in) const
+UT_StringPtrMap::find_slot(const UT_String& k,
+							SM_search_type	search_type,
+							size_t&			slot,
+							bool&			key_found,
+							size_t&			hashval,
+							const void*		v,
+							bool*			v_found,
+							void*			vi,
+							size_t			hashval_in) const
 {
 	hashval = (hashval_in ? hashval_in : key_wrapper::compute_hash(k));
 
@@ -401,7 +414,8 @@ UT_StringPtrMap::find_slot(const UT_String & k,
 
 	hash_slot* sl = &m_pMapping[nSlot];
 	
-	if (sl->empty()) {
+	if (sl->empty())
+	{
 		
 		xxx_UT_DEBUGMSG(("DOM: empty slot\n"));
 		
@@ -409,16 +423,19 @@ UT_StringPtrMap::find_slot(const UT_String & k,
 		key_found = false;
 		return sl;
 	} 
-	else {
-		if (search_type != _CM_REORG &&
-			!sl->deleted(0) &&
+	else
+	{
+		if (search_type != SM_REORG &&
+			!sl->deleted() &&
 			sl->key_eq(k, hashval))
 	    {
 			slot = nSlot;
 			key_found = true;
 			
 			if (v)
-				*v_found = ((sl->value() == v) ? true : false);
+			{
+				*v_found = (sl->value() == v);
+			}
 
 			xxx_UT_DEBUGMSG(("DOM: found something #1\n"));
 
@@ -432,35 +449,47 @@ UT_StringPtrMap::find_slot(const UT_String & k,
 	size_t s = 0;
 	key_found = false;
 	
-	while (1) {
+	while (1)
+	{
 		nSlot -= delta;
-		if (nSlot < 0) {
+		if (nSlot < 0)
+		{
 			nSlot += m_nSlots;
 			tmp_sl += (m_nSlots - delta);
 		}
 		else
+		{
 			tmp_sl -= delta;
-		
-		if (tmp_sl->empty()) {
-			if (!s) {
+		}
+
+		if (tmp_sl->empty())
+		{
+			if (!s)
+			{
 				s = nSlot;
 				sl = tmp_sl;
 			}
 			break;
 			
-		} else if (tmp_sl->deleted(0)) {
-			if (!s) {
+		}
+
+		if (tmp_sl->deleted())
+		{
+			if (!s)
+			{
 				s = nSlot;
 				sl = tmp_sl;
 			}
-			
-		} else if (search_type != _CM_REORG && tmp_sl->key_eq(k, hashval)) {
+		}
+		else if (search_type != SM_REORG && tmp_sl->key_eq(k, hashval))
+		{
 			s = nSlot;
 			sl = tmp_sl;
 			key_found = true;
 			
-			if (v) {
-				*v_found = (sl->value() == (void *)v) ? true : false;
+			if (v)
+			{
+				*v_found = (sl->value() == (void*)v);
 			}
 			break;
 		}
@@ -482,9 +511,8 @@ void UT_StringPtrMap::reorg(size_t slots_to_allocate)
 {
 	hash_slot* pOld = m_pMapping;
 	
-	//const size_t old_map_size = m_nSlots * sizeof(hash_slot);
-	
-	if (slots_to_allocate < 11) {
+	if (slots_to_allocate < 11)
+	{
 		slots_to_allocate = 11;
 	}
 	
@@ -498,73 +526,82 @@ void UT_StringPtrMap::reorg(size_t slots_to_allocate)
 	assign_slots(pOld, old_num_slot);
 
 	n_deleted = 0;
-
-#if 0 	// todo: aren't these redundant?
-	memset(pOld, 0, old_map_size);
-#endif
-	delete[] pOld;
 }
 
 
-const void * UT_StringPtrMap::_first(UT_Cursor* c) const
+const void* UT_StringPtrMap::_first(UT_Cursor& c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
-	for (x=0; x < m_nSlots; ++x) {
-		if (!map[x].empty() && !map[x].deleted(0))
+	for (x=0; x < m_nSlots; ++x)
+	{
+		if (!map[x].empty() && !map[x].deleted())
+		{
 			break;
+		}
 	}
-	if (x < m_nSlots) {
-		c->_set_index(x);	// c = 'UT_Cursor etc'
+	if (x < m_nSlots)
+	{
+		c._set_index(x);	// c = 'UT_Cursor etc'
 		return map[x].value();
 	}
 	
-	c->_set_index(-1);
+	c._set_index(-1);
 	return 0;
 }
 
-const UT_String & UT_StringPtrMap::_key(UT_Cursor* c) const
+const UT_String& UT_StringPtrMap::_key(UT_Cursor& c) const
 {
-	hash_slot slot = m_pMapping[c->_get_index()];
+	hash_slot slot = m_pMapping[c._get_index()];
 
-	if (!slot.empty() && !slot.deleted(0))
+	if (!slot.empty() && !slot.deleted())
+	{
 		return slot.m_key.value();
+	}
 	// should never happen
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-const void * UT_StringPtrMap::_next(UT_Cursor* c) const
+const void* UT_StringPtrMap::_next(UT_Cursor& c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
-	for (x = c->_get_index() + 1; x < m_nSlots; ++x) {
-		if (!map[x].empty() && !map[x].deleted(0))
+	for (x = c._get_index() + 1; x < m_nSlots; ++x)
+	{
+		if (!map[x].empty() && !map[x].deleted())
+		{
 			break;
+		}
 	}
-	if (x < m_nSlots) {
-		c->_set_index(x);
+	if (x < m_nSlots)
+	{
+		c._set_index(x);
 		return map[x].value();
 	}
 
-	c->_set_index(-1);
+	c._set_index(-1);
 	return 0;
 }
 
 
-const void * UT_StringPtrMap::_prev(UT_Cursor *c) const
+const void* UT_StringPtrMap::_prev(UT_Cursor& c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
-	for (x = c->_get_index() - 1; x >= 0; --x) {
-		if (!map[x].empty() && !map[x].deleted(0))
+	for (x = c._get_index() - 1; x >= 0; --x)
+	{
+		if (!map[x].empty() && !map[x].deleted())
+		{
 			break;
+		}
 	}
-	if (x >= 0) {
-		c->_set_index(x);
+	if (x >= 0)
+	{
+		c._set_index(x);
 		return map[x].value();
 	}
 	
-	c->_set_index(-1);
+	c._set_index(-1);
 	return 0;
 }
 
@@ -718,7 +755,8 @@ const UT_uint32 _Hash_magic_numbers[] =
 	9597349,9693317,9790229,9888127,9987001
 };
 
-const UT_uint32  _Hash_n_magic_numbers = sizeof _Hash_magic_numbers / sizeof *_Hash_magic_numbers;
+const UT_uint32  _Hash_n_magic_numbers =
+	sizeof _Hash_magic_numbers / sizeof *_Hash_magic_numbers;
 
 static UT_uint32 _Recommended_hash_size(UT_uint32 size)	// Verifies reasonably
 {
@@ -753,16 +791,26 @@ static UT_uint32 _Recommended_hash_size(UT_uint32 numslots,
 	{
 		UT_uint32 mid = (hi + lo) / 2;
 		UT_uint32 s = _Hash_magic_numbers[mid];
-		if (numslots > s) {
+		if (numslots > s)
+		{
 			lo = mid + 1;
-		} else if (numslots <= s) {
+		}
+		else if (numslots <= s)
+		{
 			hi = mid - 1;
-		} else
+		}
+		else
+		{
 			return s;
+		}
 	}
 	while (_Hash_magic_numbers[lo] * slotsize > max_tablesize)
+	{
 		--lo;
+	}
 	if (lo >= _Hash_n_magic_numbers)
+	{
 		return (UT_uint32)-1;
+	}
 	return _Hash_magic_numbers[lo];
 }

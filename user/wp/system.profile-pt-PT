@@ -13,7 +13,7 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="portugal.hash"
+    DocumentLocale="pt-PT"
     RulerUnits="cm"
     DefaultPageSize="A4"
 />

@@ -87,9 +87,6 @@
 #define AP_PREF_DEFAULT_ParaVisible                 "0"
 
 
-#define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"		/* name of ispell hash file */
-#define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"				
-
 #define AP_PREF_KEY_StringSet						"StringSet"					/* name of dialog/msgbox strings */
 #define AP_PREF_DEFAULT_StringSet					"en-US"
 
@@ -154,7 +151,6 @@ dcl(FormatBarVisible)
 dcl(ExtraBarVisible)
 dcl(StatusBarVisible)
 dcl(ParaVisible)
-dcl(SpellCheckWordList)
 dcl(StringSet)
 dcl(KeyBindings)
 dcl(KeyBindingsCycle)

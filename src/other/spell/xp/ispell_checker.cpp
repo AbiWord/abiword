@@ -312,6 +312,7 @@ static const Ispell2Lang_t m_mapping[] = {
   { "british.hash",    "en-GB" },
   { "american.hash",   "en-US" },
   { "spanish.hash",    "es-ES" },
+  { "dutch96.hash",    "nl-NL" },
   { "nynorsk.hash",    "nn-NO" },
   { "french.hash",     "fr-FR" },
   { "lietuviu.hash",   "lt-LT" },

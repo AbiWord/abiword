@@ -117,41 +117,6 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	}
 	ENSUREP(pView);
 
-    //////////////////////////////////////////////////////////////////
-    // initializes the spell checker.
-    //////////////////////////////////////////////////////////////////
-    
-    {
-		// what we want to do here is to set the default language
-		// that we're editing in. i'd rather do this in the APP,
-		// on initialize, but we can't assume that we have a valid
-		// handle to a AV_View then. this is icky, but it's what users
-		// expect.
-		const char * lang = getenv("LANG");
-
-		#define IS_VALID_LANG(l) ((l) && (strlen((l)) == 5))
-
-		if (IS_VALID_LANG(lang))
-		{
-			UT_DEBUGMSG(("DOM: lang is %s\n", lang));
-
-			// replace a possible '_' with a '-'
-			char * szLang = UT_strdup (lang);
-			szLang[2] = '-';
-
-			FV_View * aView = static_cast<FV_View *>(pView);
-
-			const XML_Char * props[3];
-			props[0] = "lang";
-			props[1] = szLang;
-			props[2] = 0;
-			aView->setCharFormat(props);
-			FREEP(szLang);
-		}
-
-		#undef IS_VALID_LANG
-    }
-
 	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
 	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
 	// The "AV_ScrollObj pScrollObj" receives

@@ -164,32 +164,23 @@ bool XAP_PrefsScheme::getValueBool(const XML_Char * szKey, bool * pbValue) const
 
 bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const
 {
-	// TODO we should fix hash to use ut_uint32 rather than int
-	
 	if (k >= (UT_uint32)m_hash.size())
 		return false;
 
-	UT_uint32 i = 0;
 	UT_StringPtrMap::UT_Cursor c (&m_hash);
-	const void *v = c.first();
+	const void * v = NULL;
+	UT_uint32 i;
 
-	if (!v)
-		return false;
-
-	while (c.more())
+	for ( i = 0, v = c.first(); 
+	      c.more() && i < k; v = c.next(), i++ )
 	{
-		if (i == k)
-		{
-			*pszKey = (const XML_Char *)c.key().c_str();
-			*pszValue = (const XML_Char *)v;
-			return true;
-		}
-
-		i++;
-		v = c.next();		
+	  // noop
 	}
 
-	return false;
+	*pszKey = (const XML_Char *)c.key().c_str();
+	*pszValue = (const XML_Char *)v;
+
+	return true;
 }
 
 /*****************************************************************/

@@ -13,7 +13,7 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="french.hash"
+    DocumentLocale="fr-FR"
     RulerUnits="cm"
     DefaultPageSize="A4"
 />

@@ -199,6 +199,21 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 	UT_ASSERT((pFrame));
 	pFrame->repopulateCombos();
+
+	// what we want to do here is to set the default language
+	// that we're editing in
+	const XML_Char * doc_locale = NULL;
+	if (m_pApp->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
+	  {
+	    if (doc_locale)
+	      {
+		const XML_Char * props[3];
+		props[0] = "lang";
+		props[1] = doc_locale;
+		props[2] = 0;
+		this->setCharFormat(props);
+	      }
+	  }
 }
 
 FV_View::~FV_View()

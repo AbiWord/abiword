@@ -13,8 +13,9 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="swedish.hash"
+    DocumentLocale="sv-SE"
     RulerUnits="cm"
     DefaultPageSize="A4"
     SmartQuotesEnable="0"
 />
+

@@ -117,8 +117,9 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	const XML_Char * szFontSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	double dbl = UT_convertToPoints(szFontSize);
 	UT_sint32 d = (UT_sint32)(dbl*2.0);
-	if (d != 24)
-		m_pie->_rtf_keyword("fs",d);	// font size in half points
+
+	// if (d != 24) - always write this out
+	m_pie->_rtf_keyword("fs",d);	// font size in half points
 
 	const XML_Char * szFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))

@@ -1252,18 +1252,14 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 		return false;
 	
 	UT_StringPtrMap::UT_Cursor c(&m_hashDataItems);
-	const void *pHashEntry = c.first();
-	UT_uint32 i = 0;
+	const void *pHashEntry = NULL;
+	UT_uint32 i;
 
-	while (true) {		
-		UT_ASSERT(pHashEntry);
-		if (i == k)
-			break;
-
-		if (!c.more())
-		  return false;
-		pHashEntry = c.next(), i++;
-	}
+	for (i = 0, pHashEntry = c.first();
+	     c.more() && i < k; i++, pHashEntry = c.next())
+	  {
+	    // noop
+	  }
 
 	if (ppHandle)
 		*ppHandle = (void *)pHashEntry;

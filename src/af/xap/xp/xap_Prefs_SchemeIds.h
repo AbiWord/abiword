@@ -98,6 +98,9 @@
 #define XAP_PREF_KEY_ColorForTransparent            "TransparentColor"
 #define XAP_PREF_DEFAULT_ColorForTransparent        "ffffff"
 
+#define XAP_PREF_KEY_DocumentLocale "DocumentLocale"
+#define XAP_PREF_DEFAULT_DocumentLocale "en-US"
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -123,5 +126,6 @@ dcl(AutoSaveFileExt)
 
 dcl(EmbedFontsInPS)
 dcl(ColorForTransparent)
+dcl(DocumentLocale)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

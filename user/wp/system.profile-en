@@ -13,7 +13,7 @@
 **** ************************************************************************** -->
 
 <SystemDefaults
-    SpellCheckWordList="australian.hash"
+    DocumentLocale="en-AU"
     RulerUnits="cm"
     DefaultPageSize="A4"
 />
