@@ -217,14 +217,18 @@ AC_OUTPUT(
  src/af/ev/xp/GNUmakefile
  src/af/ev/unix/GNUmakefile
  src/af/ev/unix/gnome/GNUmakefile
+ src/af/ev/mac/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
+ src/af/gr/mac/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
+ src/af/util/mac/GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
+ src/af/xap/mac/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
  src/other/GNUmakefile
@@ -238,12 +242,14 @@ AC_OUTPUT(
  src/wp/GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
+ src/wp/ap/mac/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
  src/wp/impexp/GNUmakefile
  src/wp/impexp/xp/GNUmakefile
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
+ src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/main/unix/gnome/GNUmakefile
  src/tools/GNUmakefile
@@ -285,6 +291,8 @@ case "$script" in
      "true" )
         AC_MSG_RESULT([Configured with scripting support.]) ;;
 esac
+
+echo " "
 
 cat <<EOF
   XML Parser:      ${abi_xml_parser_message}
