@@ -37,6 +37,7 @@
 class fp_Run;
 class GR_Graphics;
 class fp_Container;
+class fp_VerticalContainer;
 
 struct dg_DrawArgs;
 
@@ -167,7 +168,6 @@ public:
 	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
-
 	virtual void  clearScreen(void);
 	void		clearScreenFromRunToEnd(UT_uint32 runIndex);
 	void		clearScreenFromRunToEnd(fp_Run * pRun);

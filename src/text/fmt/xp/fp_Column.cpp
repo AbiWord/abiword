@@ -27,6 +27,7 @@
 #include "fv_View.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
+#include "fp_TableContainer.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -163,6 +164,66 @@ UT_sint32 fp_VerticalContainer::getY(void) const
 }
 
 /*!
+ * This method returns the vertical offset due to a table broken
+ * across more than 1 page.
+ */
+UT_sint32 fp_VerticalContainer::getYoffsetFromTable(fp_Container * pT,
+													fp_Container* pCell,
+													fp_ContainerObject * pCon)
+{
+	fp_TableContainer * pTable = static_cast<fp_TableContainer *>(pT)->getFirstBrokenTable();
+//	UT_ASSERT(pTable);
+	UT_sint32 offset = 0;
+	bool bFound = false;
+	while(pTable != NULL && !bFound)
+	{
+		bFound = pTable->isInBrokenTable((fp_CellContainer *) pCell,(fp_Container *) pCon);
+		if(bFound)
+		{
+			offset = -pTable->getYBreak();
+		}
+		pTable = (fp_TableContainer *) pTable->getNext();
+	}
+	return offset;
+}
+
+
+/*!
+ * This method returns the correct broken table for this line.
+ */
+fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * pLine)
+{
+	fp_CellContainer * pCell = (fp_CellContainer *) pLine->getContainer();
+	if(!pCell)
+	{
+		return NULL;
+	}
+	fp_TableContainer * pMasterTab = (fp_TableContainer *) pCell->getContainer();
+	if(!pMasterTab)
+	{
+		return NULL;
+	}
+	fp_TableContainer * pTab = pMasterTab->getFirstBrokenTable();
+	bool bFound = false;
+	while(pTab && !bFound)
+	{
+		if(pTab->isInBrokenTable(pCell,pLine))
+		{
+			bFound = true;
+		}
+		else
+		{
+			pTab = (fp_TableContainer *) pTab->getNext();
+		}
+	}
+	if(bFound)
+	{
+		return  pTab;
+	}
+	return pMasterTab;
+}
+
+/*!
   Get line's offsets relative to this container
  \param  pContainer Container
  \retval xoff Container's X offset relative to container
@@ -173,10 +234,52 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	UT_sint32 my_xoff = 0;
 	UT_sint32 my_yoff = 0;
 	fp_Container * pCon = (fp_Container *) this;
+	fp_Container * pPrev = NULL;
 	while(pCon->getContainerType() != FP_CONTAINER_COLUMN)
 	{
 		my_xoff += pCon->getX();
-		my_yoff += pCon->getY();
+		UT_sint32 iycon = pCon->getY();
+		my_yoff += iycon;
+//
+// Handle offsets from tables broken across pages.
+//
+		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_VerticalContainer * pVCon= (fp_VerticalContainer *) pCon;
+//
+// Lines and Cells are actually always in the Master table. To make
+// Them print on the right pages broken tables are created which
+// sit in different columns. Here we hijack the recursive search and
+// move it up the correct broken table line when we come across a cell
+// 
+			pVCon = getCorrectBrokenTable((fp_Container *) pContainer);
+			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
+			{
+				UT_sint32 iTable =  getYoffsetFromTable(pCon,pPrev,pContainer);
+				my_yoff += iTable;
+				fp_TableContainer * pTab = (fp_TableContainer *) pVCon; 
+				if(pTab->isThisBroken() && pTab != pTab->getMasterTable()->getFirstBrokenTable())
+				{
+					my_yoff = my_yoff + pVCon->getY() -iycon;
+				}
+				UT_sint32 col_xV =0;
+				UT_sint32 col_yV =0;
+				fp_Column * pCol = (fp_Column *) pVCon->getColumn();
+				pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
+				UT_sint32 col_x =0;
+				UT_sint32 col_y =0;
+				pCol =(fp_Column *)  pCon->getColumn();
+				pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+				UT_sint32 ydiff = col_yV - col_y;
+				pCon = (fp_Container *) pVCon;
+				my_yoff += ydiff;
+			}
+			else
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		}
+		pPrev = pCon;
 		pCon = pCon->getContainer();
 	}
 	xoff = pCon->getX() + my_xoff + pContainer->getX();
@@ -202,18 +305,54 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		yoff = 0;
 		return;
 	}
-	fp_Column * pCol = (fp_Column *) getColumn();
-	getPage()->getScreenOffsets(pCol, my_xoff, my_yoff);
 
 	fp_Container * pCon = (fp_Container *) this;
+	fp_Container * pPrev = NULL;
 	while(pCon->getContainerType() != FP_CONTAINER_COLUMN)
 	{
 		my_xoff += pCon->getX();
-		my_yoff += pCon->getY();
+		UT_sint32 iycon = pCon->getY();
+		my_yoff += iycon;
+//
+// Handle offsets from tables broken across pages.
+//
+		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_VerticalContainer * pVCon= (fp_VerticalContainer *) pCon;
+//
+// Lines and Cells are actually always in the Master table. To make
+// Them print on the right pages broken tables are created which
+// sit in different columns. Here we put in a recursive search find
+// the correct broken table line when we come across a cell
+// 
+// Then we have to get all the offsets right for the broken table.
+//
+			pVCon = getCorrectBrokenTable((fp_Container *) pContainer);
+			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
+			{
+				my_yoff += getYoffsetFromTable(pCon,pPrev,pContainer);
+				fp_TableContainer * pTab = (fp_TableContainer *) pVCon; 
+				if(pTab->isThisBroken() && pTab != pTab->getMasterTable()->getFirstBrokenTable())
+				{
+					my_yoff = my_yoff + pVCon->getY() -iycon;
+				}
+				pCon = (fp_Container *) pVCon;
+			}
+			else
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		}
+		pPrev = pCon;
 		pCon = pCon->getContainer();
 	}
-	xoff = my_xoff + pContainer->getX();
-	yoff = my_yoff + pContainer->getY();
+	UT_sint32 col_x =0;
+	UT_sint32 col_y =0;
+	fp_Column * pCol = (fp_Column *) pCon;
+	pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+
+	xoff = my_xoff + pContainer->getX() + col_x;
+	yoff = my_yoff + pContainer->getY() + col_y;
 }
 
 /*!
@@ -416,7 +555,22 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 		da.xoff += pContainer->getX();
 		da.yoff += pContainer->getY();
 		UT_sint32 ydiff = da.yoff + pContainer->getHeight();
-		if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
+		bool bTable = false;
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer * pTab = (fp_TableContainer *) pContainer;
+			UT_sint32 iTableTop = da.yoff;
+			UT_sint32 iTableBot = iTableTop + pTab->getHeight();
+			if(iTableBot < ytop || iTableTop > ybot)
+			{
+				bTable = false;
+			}
+			else
+			{
+				bTable = true;
+			}
+		}
+		if(bTable || (da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
 		{
 			bStart = true;
 			pContainer->draw(&da);
@@ -442,8 +596,15 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 								   bool& bBOL, bool& bEOL)
 {
 	int count = countCons();
+	xxx_UT_DEBUGMSG(("SEVIOR: count cons %d x %d y %d \n",count,x,y));
 	if(count == 0)
 	{
+		xxx_UT_DEBUGMSG(("SEVIOR: In container type %d return with bBOL set \n",getContainerType()));
+		if(getContainerType() == FP_CONTAINER_TABLE)
+		{
+			xxx_UT_DEBUGMSG(("SEVIOR: Table container with no containers \n"));
+			return;
+		}
 		pos = 2;
 		bBOL = true;
 		bEOL = true;
@@ -455,32 +616,64 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	int i = 0;
 	// Find first container that contains the point. First has its lower level below the desired Y
 	// position. Note that X-positions are completely ignored here.
+	UT_sint32 iHeight = 0;
 	do 
 	{
 		pContainer = (fp_ContainerObject*) getNthCon(i++);
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			iHeight = static_cast<fp_TableContainer *>(pContainer)->getHeight();
+		}
+		else
+		{
+			iHeight = pContainer->getHeight();
+		}
+		xxx_UT_DEBUGMSG(("SEVIOR: IN column looking at x %d y %d height %d \n",pContainer->getX(),pContainer->getY(),iHeight));
 	} while ((i < count)
-			 && (y > (pContainer->getY() + pContainer->getHeight())));
+			 && (y > (pContainer->getY() + iHeight)));
 	// Undo the postincrement.
 	i--;
 	// Now check if the position is actually between the found container
 	// and the line before it (ignore check on the top-most line).
+	UT_sint32 iUHeight =0;
 	if (i > 0 && y < pContainer->getY())
 	{
 		fp_ContainerObject* pContainerUpper = (fp_ContainerObject*) getNthCon(i-1);
+		if(pContainerUpper->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			iUHeight = static_cast<fp_TableContainer *>(pContainerUpper)->getHeight();
+		}
+		else
+		{
+			iUHeight = pContainer->getHeight();
+		}
 
 		// Be careful with the signedness here - bug 172 leared us a
 		// lesson!
 
 		// Now pick the line that is closest to the point - or the
 		// upper if it's a stalemate.
-		if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + (UT_sint32) pContainerUpper->getHeight())))
+		if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + (UT_sint32) iUHeight)))
 		{
 			pContainer = pContainerUpper;
 		}
 	}
-	pContainer->mapXYToPosition(x - pContainer->getX(),
+	if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+	{
+		xxx_UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));
+		fp_TableContainer * pTab = (fp_TableContainer *) pContainer;
+		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
+		pTab->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
 								pos, bBOL, bEOL);
+	}
+	else
+	{
+		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
+		pContainer->mapXYToPosition(x - pContainer->getX(),
+								y - pContainer->getY() , 
+									pos, bBOL, bEOL);
+	}
 }
 
 /*!
@@ -747,32 +940,22 @@ void fp_Column::layout(void)
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 #endif
+
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	long imax = (1<<30) -1;
-
-	for (UT_uint32 i=0; i < iCountContainers; i++)
+ 
+	for (UT_uint32 i=0; i < (UT_sint32) countCons() ; i++)
 	{
 		pContainer = (fp_Container*) getNthCon(i);
-//
-// This is to speedup redraws.
-//
-		if(pContainer->getHeight() > _getMaxContainerHeight())
-			_setMaxContainerHeight(pContainer->getHeight());
-#ifndef WITH_PANGO
-		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
-//		UT_sint32 iContainerMarginBefore = (i != 0) ? pContainer->getMarginBefore() : 0;
-		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
-#else
-		UT_sint32 iContainerHeight = pContainer->getHeight();
-		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
-#endif
 
 #ifndef WITH_PANGO
-//		iY += iContainerMarginBefore;
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
 #endif
-
+//
+// Set the location first so the height of a table can be calculated
+// and adjusted.
+//
 		if(pContainer->getY() != iY)
 		{
 			pContainer->clearScreen();
@@ -780,6 +963,35 @@ void fp_Column::layout(void)
 		pContainer->setY(iY);
 #ifndef WITH_PANGO
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
+#endif
+
+//
+// This is to speedup redraws.
+//
+		fp_TableContainer * pTab = NULL;
+		UT_sint32 iHeight = pContainer->getHeight();
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			pTab = (fp_TableContainer *) pContainer;
+			iHeight = pTab->getHeight();
+		}
+		if(iHeight > _getMaxContainerHeight())
+		{
+			_setMaxContainerHeight(iHeight);
+		}
+#ifndef WITH_PANGO
+		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+		if(pTab)
+		{
+			iContainerHeightLayoutUnits = pTab->getHeightInLayoutUnits();
+		}
+		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
+#else
+		UT_sint32 iContainerHeight = iHeight;
+		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+#endif
+
+#ifndef WITH_PANGO
 		iYLayoutUnits += iContainerHeightLayoutUnits;
 		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 #else
@@ -891,20 +1103,39 @@ void fp_ShadowContainer::layout(void)
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		fp_Container* pContainer = (fp_Container*) getNthCon(i);
+		fp_TableContainer * pTab = NULL;
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			pTab = (fp_TableContainer *) pContainer;
+		}
 #ifndef WITH_PANGO
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+		if(pTab != NULL)
+		{
+			iContainerHeightLayoutUnits = pTab->getHeightInLayoutUnits();
+		}
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 		UT_sint32 sum = iContainerHeightLayoutUnits + iContainerMarginAfterLayoutUnits;
 		if(((iYLayoutUnits + sum) <= (getMaxHeightInLayoutUnits())) && doLayout)
 		{
-//			if(pContainer->getYInLayoutUnits() != iYLayoutUnits)
-//				pContainer->clearScreen();
-			pContainer->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
-			pContainer->setYInLayoutUnits(iYLayoutUnits);
+			if(pTab == NULL)
+			{
+				pContainer->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+				pContainer->setYInLayoutUnits(iYLayoutUnits);
+			}
+			else
+			{
+				pTab->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+				pTab->setYInLayoutUnits(iYLayoutUnits);
+			}
 		}
 #else
 
 		UT_sint32 iContainerHeight = pContainer->getHeight();
+		if(pTab != NULL)
+		{
+			iContainerHeight = pTab->getHeight();
+		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 		UT_sint32 sum = iContainerHeight + iContainerMarginAfter;
 		if(((iY + sum) <= (getMaxHeight())) && doLayout)
@@ -1018,8 +1249,17 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 		dg_DrawArgs da = *pDA;
 		da.xoff += pContainer->getX();
 		da.yoff += pContainer->getY();
+		fp_TableContainer * pTab = NULL;
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			pTab = static_cast<fp_TableContainer *>(pContainer);
+		}
 #ifndef WITH_PANGO
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+		if(pTab)
+		{
+			 iContainerHeightLayoutUnits = pTab->getHeightInLayoutUnits();
+		}
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 		iY += iContainerHeightLayoutUnits;
 		iY += iContainerMarginAfterLayoutUnits;
@@ -1030,6 +1270,10 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 			break;
 #else
 		UT_sint32 iContainerHeight = pContainer->getHeight();
+		if(pTab)
+		{
+			UT_sint32 iContainerHeight = pTab->getHeight();
+		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
@@ -1161,12 +1405,19 @@ void fp_HdrFtrContainer::layout(void)
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		fp_Container* pContainer = (fp_Container*) getNthCon(i);
+		fp_TableContainer * pTab = NULL;
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			pTab = static_cast<fp_TableContainer *>(pContainer);
+		}
 #ifndef WITH_PANGO
 		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
-//		UT_sint32 iContainerMarginBefore = (i != 0) ? pContainer->getMarginBefore() : 0;
+		if(pTab)
+		{
+			iContainerHeightLayoutUnits = pTab->getHeightInLayoutUnits();
+		}
 		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 
-//		iY += iContainerMarginBefore;
 		pContainer->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
 		pContainer->setYInLayoutUnits(iYLayoutUnits);
 		iYLayoutUnits += iContainerHeightLayoutUnits;
@@ -1174,6 +1425,10 @@ void fp_HdrFtrContainer::layout(void)
 #else
 
 		UT_sint32 iContainerHeight = pContainer->getHeight();
+		if(pTab)
+		{
+			iContainerHeight = pTab->getHeight();
+		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 
 		pContainer->setY(iY);

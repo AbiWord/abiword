@@ -33,7 +33,7 @@
 #include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
-
+#include "fp_TableContainer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
@@ -148,12 +148,28 @@ UT_sint32 fp_Page::getFilledHeightInLayoutUnits(fp_Container * prevContainer) co
 				UT_sint32 curHeight = 0;
 				while((pCurContainer != NULL) && (pCurContainer != prevContainer))
 				{
-					curHeight += pCurContainer->getHeightInLayoutUnits();
+					if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
+					{
+						fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pCurContainer);
+						curHeight += pTC->getHeightInLayoutUnits();
+					}
+					else
+					{
+						curHeight += pCurContainer->getHeightInLayoutUnits();
+					}
 					pCurContainer = (fp_Container *) pCurContainer->getNext();
 				}
 				if(pCurContainer == prevContainer)
 				{
-					curHeight += pCurContainer->getHeightInLayoutUnits();
+					if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
+					{
+						fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pCurContainer);
+						curHeight += pTC->getHeightInLayoutUnits();
+					}
+					else
+					{
+						curHeight += pCurContainer->getHeightInLayoutUnits();
+					}
 				}
 				maxHeight = UT_MAX(curHeight,maxHeight);
 			}
@@ -465,18 +481,50 @@ bool fp_Page::breakPage(void)
 			{
 				countContainers++;
 #ifndef WITH_PANGO
-				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+				if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pContainer);
+					maxContainerHeight = UT_MAX(maxContainerHeight,pTC->getHeightInLayoutUnits());
+				}
+				else
+				{
+					maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+				}
 #else
-				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
+				if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pContainer);
+					maxContainerHeight = UT_MAX(maxContainerHeight,pTC->getHeight());
+				}
+				else
+				{
+					maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
+				}
 #endif
 				pContainer = (fp_Container *) pContainer->getNext();
 			}
 			if(pContainer != NULL)
 			{
 #ifndef WITH_PANGO
-				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+				if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pContainer);
+
+					maxContainerHeight = UT_MAX(maxContainerHeight,pTC->getHeightInLayoutUnits());
+				}
+				else
+				{
+					maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+				}
 #else
-				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
+				{
+					fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pContainer);
+					maxContainerHeight = UT_MAX(maxContainerHeight,pTC->getHeight());
+				}
+				else
+				{
+					maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeight());
+				}
 #endif
 				countContainers++;
 			}
@@ -752,10 +800,28 @@ void fp_Page::_reformat(void)
 				return;
 			}
 #ifndef WITH_PANGO
-			UT_sint32 iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
+			UT_sint32 iYLayoutNext = 0;
+			if(pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pFirstNextContainer);
+				iYLayoutNext = pTC->getHeightInLayoutUnits();
+			}
+			else
+			{
+				iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
+			}
 			if( (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 #else
-			UT_sint32 iYNext = pFirstNextContainer->getHeight();
+			UT_sint32 iYNext = 0;
+			if(pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pFirstNextContainer);
+				iYNext = pTC->getHeight();
+			}
+			else
+			{
+				iYNext = pFirstNextContainer->getHeight();
+			}
 			if( (iY + 3*iYNext) < (getHeight() - iBottomMargin))
 #endif
 			{

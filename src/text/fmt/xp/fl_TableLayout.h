@@ -102,6 +102,7 @@ public:
 	void                        setTableContainerProperties(fp_TableContainer * pTab);
 	virtual void		        format(void);
 	void                        attachCell(fl_ContainerLayout * pCell);
+	void                        createTableContainer(void);
 	virtual void		        updateLayout(void);
 	void		                updateTable(void);
 	virtual void                collapse(void);
@@ -137,6 +138,10 @@ UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 		{ return m_bIsDirty;}
 	void                     setDirty(void)
 		{ m_bIsDirty = true;}
+	void                     setDontImmediatelyLayout(bool b)
+		{ m_bDontImmediatelyLayout = b;}
+	bool                     isDontImmediateLayout(void)
+		{ return m_bDontImmediatelyLayout;}
 
 protected:
 	virtual void		        _lookupProperties(void);
@@ -165,6 +170,7 @@ private:
 	bool                   m_bColumnsPositionedOnPage;
 	bool                   m_bRowsPositionedOnPage;
 	bool                   m_bIsDirty;
+	bool                   m_bDontImmediatelyLayout;
 };
 
 
@@ -188,6 +194,7 @@ public:
 																	  PL_StruxFmtHandle sfhNew));
 
 	void                     setCellContainerProperties(fp_CellContainer * pCell);
+	void                     createCellContainer(void);
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
 	void                     updateCell(void);

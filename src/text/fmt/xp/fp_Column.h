@@ -39,6 +39,7 @@ class fl_HdrFtrShadow;
 class fp_Page;
 class PP_AttrProp;
 class GR_Graphics;
+class fp_TableContainer;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
@@ -129,7 +130,9 @@ public:
 
 	fp_Container*			getFirstContainer(void) const;
 	fp_Container*			getLastContainer(void) const;
-
+	UT_sint32               getYoffsetFromTable(fp_Container * pT,
+												fp_Container* pCell,
+												fp_ContainerObject * pCon);
 	bool				insertContainerAfter(fp_Container* pNewContainer, fp_Container*	pAfterContainer);
 	bool				insertContainer(fp_Container*);
 	bool				addContainer(fp_Container*);
@@ -145,7 +148,7 @@ public:
 	void		 		getOffsets(fp_ContainerObject* pContainer,
 								   UT_sint32& xoff,
 								   UT_sint32& yoff);
-
+	fp_TableContainer * getCorrectBrokenTable(fp_Container * pLine);
 	void		 		getScreenOffsets(fp_ContainerObject* pContainer,
 										 UT_sint32& xoff,
 										 UT_sint32& yoff);

@@ -6601,6 +6601,14 @@ void fl_BlockLayout::transferListFlags(void)
 	// Transfer list flags from a block to the following list blocks
 	//
 	UT_ASSERT(getNext());
+	if(getNext() == NULL)
+	{
+		return;
+	}
+	if(getNext()->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		return;
+	}
 	if (static_cast<fl_BlockLayout *>(getNext())->isListItem()) // this is wrong. It should be next in the list.
 	{
 		UT_uint32 nId = getNext()->getAutoNum()->getID();

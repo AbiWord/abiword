@@ -339,7 +339,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
-
 	UT_uint32 i = 0;
 	fp_Run* pFirstRun;
 	bool bHidden;
@@ -395,7 +394,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 //			if (((y2) >= 0) && ((y2) < (pRun2->getHeight())))
 				{
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
-
 					return;
 				}
 			}
@@ -407,7 +405,6 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 				//UT_ASSERT(FPRUN_FMTMARK == pRun2->getType());
 
 				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
-
 				return;
 			}
 
@@ -463,10 +460,10 @@ void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 {
 	// This returns the baseline of run. ie the bottom of the line of text
 	 //
-	UT_sint32 my_xoff;
-	UT_sint32 my_yoff;
-
-	((fp_VerticalContainer *)getContainer())->getOffsets(this, my_xoff, my_yoff);
+	UT_sint32 my_xoff = -31999;
+	UT_sint32 my_yoff = -31999;
+	fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+	pVCon->getOffsets(this, my_xoff, my_yoff);
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
 }
@@ -475,15 +472,15 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 							   UT_sint32& xoff,
 							   UT_sint32& yoff)
 {
-	UT_sint32 my_xoff;
-	UT_sint32 my_yoff;
+	UT_sint32 my_xoff = -31999;
+	UT_sint32 my_yoff = -31999;
 
 	/*
 		This method returns the screen offsets of the given
 		run, referring to the UPPER-LEFT corner of the run.
 	*/
-
-	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
+	fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
 
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY();
@@ -732,7 +729,8 @@ void fp_Line::clearScreen(void)
 			pRun = (fp_Run*) m_vecRuns.getNthItem(0);
 
 			UT_sint32 xoffLine, yoffLine;
-			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
+			fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+			pVCon->getScreenOffsets(this, xoffLine, yoffLine);
 
 			// Note: we use getHeight here instead of m_iScreenHeight
 			// in case the line is asked to render before it's been
@@ -810,7 +808,8 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				leftClear = 0;
 			getScreenOffsets(pRun, xoff, yoff);
 			UT_sint32 xoffLine, yoffLine;
-			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
+			fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+			pVCon->getScreenOffsets(this, xoffLine, yoffLine);
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 			UT_DEBUGMSG(("SEVIOR: Doing clear from run to end xoff %d yoff %d \n",xoff,yoff));
@@ -922,7 +921,10 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		UT_sint32 oldheight = getHeight();
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
-		((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
+		fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+		pVCon->getScreenOffsets(this, xoffLine, yoffLine);
+
+		UT_ASSERT(yoff == yoffLine);
 
 		fp_Line * pPrevLine = (fp_Line *) getPrevContainerInSection();
 		if(pPrevLine != NULL && (pPrevLine->getContainerType() == FP_CONTAINER_LINE))
@@ -984,6 +986,7 @@ void fp_Line::redrawUpdate(void)
 
 }
 
+
 void fp_Line::draw(GR_Graphics* pG)
 {
 	//line can be wider than the max width due to trailing spaces
@@ -994,8 +997,9 @@ void fp_Line::draw(GR_Graphics* pG)
 		return;
 
 	UT_sint32 my_xoff = 0, my_yoff = 0;
-	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
-	//xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
+	fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 
 	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -1086,7 +1090,8 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 			rType == FPRUN_FORCEDPAGEBREAK)
 		{
 			UT_sint32 my_xoff = 0, my_yoff = 0;
-			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
+			fp_VerticalContainer * pVCon= ((fp_VerticalContainer *)getContainer());
+			pVCon->getScreenOffsets(this, my_xoff, my_yoff);
 			da.xoff = my_xoff;
 		}
 		else

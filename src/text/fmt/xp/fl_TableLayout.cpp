@@ -78,7 +78,33 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	  m_iNumberOfColumns(0),
 	  m_bColumnsPositionedOnPage(false),
 	  m_bRowsPositionedOnPage(false),
-	  m_bIsDirty(true)
+	  m_bIsDirty(true),
+	  m_bDontImmediatelyLayout(false)
+{
+	createTableContainer();
+	fp_TableContainer * pTableContainer = (fp_TableContainer *) getFirstContainer();
+	fl_ContainerLayout * pCL = myContainingLayout();
+	fp_Container * pCon = pCL->getLastContainer();
+	pCon->addCon(pTableContainer);
+}
+
+fl_TableLayout::~fl_TableLayout()
+{
+	// NB: be careful about the order of these
+	_purgeLayout();
+	fp_TableContainer * pTC = (fp_TableContainer *) getFirstContainer();
+	if (pTC)
+	{
+		delete pTC;
+	}
+	setFirstContainer(NULL);
+	setLastContainer(NULL);
+}
+
+/*!
+ * Only one Master Table container per Table Layout. Create it here.
+ */
+void fl_TableLayout::createTableContainer(void)
 {
 	_lookupProperties();
 	fp_TableContainer * pTableContainer = new fp_TableContainer((fl_SectionLayout *) this);
@@ -99,23 +125,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	}
 	pTableContainer->setWidth(iWidth);
 	pTableContainer->setWidthInLayoutUnits(iWidthLayout);
-	pCon->addCon(pTableContainer);
 	pTableContainer->setContainer(pCon);
-}
-
-fl_TableLayout::~fl_TableLayout()
-{
-	// NB: be careful about the order of these
-	_purgeLayout();
-	fp_TableContainer * pTC = (fp_TableContainer *) getFirstContainer();
-	while(pTC)
-	{
-		fp_TableContainer * pNext = (fp_TableContainer *) pTC->getNext();
-		delete pTC;
-		pTC = pNext;
-	}
-	setFirstContainer(NULL);
-	setLastContainer(NULL);
 }
 
 /*!
@@ -139,37 +149,34 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 */
 fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 {
-	fp_TableContainer * pNewTab = new fp_TableContainer((fl_SectionLayout *) this);
-
+	UT_ASSERT(getFirstContainer() == NULL);
+	createTableContainer();
+	fp_TableContainer * pNewTab = (fp_TableContainer *) getFirstContainer();
 //
-// Now insert into linked list.
+// Master Tables do not get linked into the container linked list.
 //
-	if (pPrevTab)
+	pNewTab->setPrev(NULL);
+	pNewTab->setNext(NULL);
+	fl_ContainerLayout * pCL = myContainingLayout();
+	fp_Container * pCon = pCL->getLastContainer();
+	if(pPrevTab == NULL)
 	{
-		fp_Container * pNext = (fp_Container *) pPrevTab->getNext();
-		pPrevTab->setNext(pNewTab);
-		pNewTab->setPrev(pPrevTab);
-		pNewTab->setNext(pNext);
-		if(pNext)
-		{
-			pNext->setPrev(pNewTab);
-		}
+		pCon->addCon(pNewTab);
 	}
 	else
 	{
-		if(getLastContainer())
+		UT_sint32 i = pCon->findCon(pPrevTab);
+		if(i >= 0 && (i+1) < (UT_sint32) pCon->countCons())
 		{
-			getLastContainer()->setNext(pNewTab);
-			pNewTab->setPrev(getLastContainer());
-			pNewTab->setNext(NULL);
-			setLastContainer(pNewTab);
+			pCon->insertConAt(pNewTab,i+1);
+		}
+		else if( i >=0 &&  (i+ 1) == (UT_sint32) pCon->countCons())
+		{
+			pCon->addCon(pNewTab);
 		}
 		else
 		{
-			setFirstContainer(pNewTab);
-			pNewTab->setPrev(NULL);
-			pNewTab->setNext(NULL);
-			setLastContainer(pNewTab);
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
 	return (fp_Container *) pNewTab;
@@ -177,35 +184,32 @@ fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 
 void fl_TableLayout::format(void)
 {
+	bool bRebuild = false;
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
+		bRebuild = true;
 	}
 	if(isDirty())
 	{
 		markAllRunsDirty();
 	}
-	fl_ContainerLayout*	pBL = getFirstLayout();
-	while (pBL)
+	fl_ContainerLayout*	pCell = getFirstLayout();
+	while (pCell)
 	{
-		pBL->format();
-		UT_sint32 count = 0;
-		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
+		pCell->format();
+		if(bRebuild)
 		{
-			UT_DEBUGMSG(("Error formatting a block try again \n"));
-			count = count + 1;
-			pBL->format();
-			if(count > 3)
-			{
-				UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
-				break;
-			}
+			attachCell(pCell);
 		}
-		pBL = pBL->getNext();
+		pCell = pCell->getNext();
 	}
-	if(isDirty())
+	UT_DEBUGMSG(("SEVIOR: Finished Formatting %x \n",this));
+
+	if(isDirty() && !isDontImmediateLayout())
 	{
 		m_bIsDirty = false;
+		UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
 		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
 		setNeedsRedraw();
 		markAllRunsDirty();
@@ -214,9 +218,10 @@ void fl_TableLayout::format(void)
 // The layout process can trigger a width change on a cell which requires
 // a second layout pass
 //
-	if(isDirty())
+	if(isDirty() && !isDontImmediateLayout())
 	{
 		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
+		UT_DEBUGMSG(("SEVIOR: Layout pass 2 \n"));
 		setNeedsRedraw();
 		markAllRunsDirty();
 	}
@@ -257,7 +262,6 @@ void fl_TableLayout::redrawUpdate(void)
 		{
 			pBL->redrawUpdate();
 		}
-
 		pBL = pBL->getNext();
 	}
 }
@@ -548,10 +552,9 @@ void fl_TableLayout::collapse(void)
 {
 	// Clear all our Tables
 	fp_TableContainer *pTab = (fp_TableContainer *) getFirstContainer();
-	while (pTab)
+	if (pTab)
 	{
 		pTab->clearScreen();
-		pTab = (fp_TableContainer *) pTab->getNext();
 	}
 
 	// get rid of all the layout information for every containerLayout
@@ -562,13 +565,11 @@ void fl_TableLayout::collapse(void)
 		pCL = pCL->getNext();
 	}
 
-	// delete all our Tables
+	// delete our Table
 	pTab = (fp_TableContainer *) getFirstContainer();
-	while (pTab)
+	if (pTab)
 	{
-		fp_TableContainer * pNext = (fp_TableContainer *) pTab->getNext();
 		delete pTab;
-		pTab = pNext;
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
@@ -680,22 +681,7 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_bCellPositionedOnPage(false),
 	  m_iCellHeight(0)
 {
-	_lookupProperties();
-	fp_CellContainer * pCellContainer = new fp_CellContainer((fl_SectionLayout *) this);
-	setFirstContainer(pCellContainer);
-	setLastContainer(pCellContainer);
-	setCellContainerProperties(pCellContainer);
-	fl_ContainerLayout * pCL = myContainingLayout();
-	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
-	{
-		pCL = pCL->myContainingLayout();
-	}
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
-	UT_ASSERT(pDSL != NULL);
-	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
-	pCellContainer->setWidth(iWidth);
-	UT_sint32 iWidthLayout = pDSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - pDSL->getLeftMarginInLayoutUnits() - pDSL->getRightMarginInLayoutUnits();
-	pCellContainer->setWidthInLayoutUnits(iWidthLayout);
+	createCellContainer();
 }
 
 fl_CellLayout::~fl_CellLayout()
@@ -715,6 +701,31 @@ fl_CellLayout::~fl_CellLayout()
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+}
+
+/*!
+ * This method creates a new cell with it's properties initially set
+ * from the Attributes/properties of this Layout
+ */
+void fl_CellLayout::createCellContainer(void)
+{
+	_lookupProperties();
+	fp_CellContainer * pCellContainer = new fp_CellContainer((fl_SectionLayout *) this);
+	setFirstContainer(pCellContainer);
+	setLastContainer(pCellContainer);
+	setCellContainerProperties(pCellContainer);
+	fl_ContainerLayout * pCL = myContainingLayout();
+	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
+	UT_ASSERT(pDSL != NULL);
+	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
+	pCellContainer->setWidth(iWidth);
+	UT_sint32 iWidthLayout = pDSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - pDSL->getLeftMarginInLayoutUnits() - pDSL->getRightMarginInLayoutUnits();
+	UT_DEBUGMSG(("SEVIOR: Setting initial width of cell %x to %d \n",pCellContainer,iWidthLayout));
+	pCellContainer->setWidthInLayoutUnits(iWidthLayout);
 }
 
 
@@ -785,49 +796,26 @@ fl_SectionLayout * fl_CellLayout::getSectionLayout(void) const
           list, otherwise just append it to the end.
   \return The newly created Cell container
 */
-fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrevCell)
+fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
 {
-	fp_CellContainer * pNewCell = new fp_CellContainer((fl_SectionLayout *) this);
-
 //
-// Now insert into linked list.
+// One cell container per cell layout
 //
-	if (pPrevCell)
-	{
-		fp_Container * pNext = (fp_Container *) pPrevCell->getNext();
-		pPrevCell->setNext(pNewCell);
-		pNewCell->setPrev(pPrevCell);
-		pNewCell->setNext(pNext);
-		if(pNext)
-		{
-			pNext->setPrev(pNewCell);
-		}
-	}
-	else
-	{
-		if(getLastContainer())
-		{
-			getLastContainer()->setNext(pNewCell);
-			pNewCell->setPrev(getLastContainer());
-			pNewCell->setNext(NULL);
-			setLastContainer(pNewCell);
-		}
-		else
-		{
-			setFirstContainer(pNewCell);
-			pNewCell->setPrev(NULL);
-			pNewCell->setNext(NULL);
-			setLastContainer(pNewCell);
-		}
-	}
-	return (fp_Container *) pNewCell;
+	UT_ASSERT(pPrev == NULL);
+	UT_ASSERT((getFirstContainer() == NULL) && (getLastContainer()==NULL));
+	createCellContainer();
+	setCellContainerProperties((fp_CellContainer * ) getLastContainer());
+	return (fp_Container *) getLastContainer();
 }
+
 
 void fl_CellLayout::format(void)
 {
+	UT_DEBUGMSG(("SEVIOR: New container is %x \n",getFirstContainer()));
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
+		
 	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
@@ -847,6 +835,7 @@ void fl_CellLayout::format(void)
 		}
 		pBL = pBL->getNext();
 	}
+	static_cast<fp_CellContainer *>(getFirstContainer())->layout();
 	m_bNeedsFormat = false;
 }
 
@@ -1176,13 +1165,13 @@ UT_sint32 fl_CellLayout::getBottomOffsetInLayoutUnits(void) const
 void fl_CellLayout::localCollapse(void)
 {
 
-	// Clear all our Cells
+	// ClearScreen on our Cell. One Cell per layout.
 
 	fp_CellContainer *pCell = (fp_CellContainer *) getFirstContainer();
-	while (pCell)
+	UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x CellContainer %x \n",this,pCell));
+	if (pCell)
 	{
 		pCell->clearScreen();
-		pCell = (fp_CellContainer *) pCell->getNext();
 	}
 
 	// get rid of all the layout information for every containerLayout
@@ -1197,14 +1186,13 @@ void fl_CellLayout::localCollapse(void)
 void fl_CellLayout::collapse(void)
 {
 	localCollapse();
-	// Clear all our Cells
+
+	// Delete our Cell. One Cell per layout.
 
 	fp_CellContainer *pCell = (fp_CellContainer *) getFirstContainer();
-	while (pCell)
+	if (pCell)
 	{
-		fp_CellContainer * pNext = (fp_CellContainer *) pCell->getNext();
 		delete pCell;
-		pCell = pNext;
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
@@ -1257,3 +1245,4 @@ void fl_CellLayout::_purgeLayout(void)
 		pCL = pNext;
 	}
 }
+

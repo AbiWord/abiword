@@ -558,7 +558,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		}
 		pushContainerLayout(pCL);
 		*psfh = (PL_StruxFmtHandle)pCL;
-
+//
+// Don't layout until a endTable strux
+//
+		static_cast<fl_TableLayout *>(pCL)->setDontImmediatelyLayout(true);
 	}
 	break;
 	case PTX_SectionCell:
@@ -596,7 +599,12 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			return false;
 		}
 		*psfh = (PL_StruxFmtHandle)pCon;
-		static_cast<fl_TableLayout *>(pCon)->setDirty();
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCon);
+		UT_DEBUGMSG(("SEVIOR: End table in doclistener \n"));
+		pTL->setDirty();
+		pTL->setDontImmediatelyLayout(false);
+		pTL->format();
+
 	}
 	break;
 	case PTX_EndCell:

@@ -100,6 +100,9 @@ public:
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
 	void				layout(void);
+	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
+	virtual void		clearScreen(void);
+
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
@@ -235,6 +238,7 @@ class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
 {
 public:
 	fp_TableContainer(fl_SectionLayout* pSectionLayout);
+	fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableContainer * pMaster);
 	~fp_TableContainer();
 
 	void                sizeRequest(fp_Requisition * pRequest);
@@ -244,6 +248,9 @@ public:
 										bool& bBOL, bool& bEOL);
 
 	void				layout(void);
+	virtual void        setY(UT_sint32 iY);
+	virtual UT_sint32   getHeight(void);
+	virtual UT_sint32   getHeightInLayoutUnits(void);
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
@@ -266,6 +273,31 @@ public:
 	void                queueResize(void);
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
+	fp_TableContainer * getMasterTable(void) const
+		{ return m_pMasterTable; }
+	bool                isThisBroken(void) const
+		{ return m_bIsBroken;}
+	void                setYBreakHere(UT_sint32 iBreakHere);
+	void                setYBottom(UT_sint32 iBotContainer);
+	bool                isInBrokenTable(fp_CellContainer * pCell, 
+										fp_Container * pCon);
+//
+// This is the smallest Y value of the Table allowed in this 
+// broken Table.
+//
+	UT_sint32           getYBreak(void) const
+		{return m_iYBreakHere;}
+//
+// This is the largest Y value of the Table allowed in this broken table
+//
+	UT_sint32           getYBottom(void) const
+		{return m_iYBottom;}
+	fp_TableContainer * getFirstBrokenTable(void) const;
+	fp_TableContainer * getLastBrokenTable(void) const;
+	void                setFirstBrokenTable(fp_TableContainer * pBroke);
+	void                setLastBrokenTable(fp_TableContainer * pBroke);
+	void                deleteBrokenTables(void);
+	void                adjustBrokenTables(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -283,6 +315,8 @@ private:
 	void                    _size_allocate_pass2(void);
 	UT_uint32 				_getBottomOfLastContainer(void) const;
 	void					_drawBoundaries(dg_DrawArgs* pDA);
+	void					_drawBrokenBoundaries(dg_DrawArgs* pDA);
+	void					_brokenDraw(dg_DrawArgs* pDA);
 
 	UT_sint32               m_iRows;
 	UT_sint32               m_iCols;
@@ -299,9 +333,20 @@ private:
 
 	UT_sint32               m_iRowSpacing;
 	UT_sint32               m_iColSpacing;
+//
+// Variables for Tables broken across Vertical Containers.
+//
+	fp_TableContainer *     m_pFirstBrokenTable;
+	fp_TableContainer *     m_pLastBrokenTable;
+	bool                    m_bIsBroken;
+	fp_TableContainer *     m_pMasterTable;
+	UT_sint32               m_iYBreakHere;
+	UT_sint32               m_iYBottom;
 };
 
 #endif /* TABLECONTAINER_H */
+
+
 
 
 
