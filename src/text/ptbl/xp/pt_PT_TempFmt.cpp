@@ -80,6 +80,14 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
+	// we want to bases things off the attributes of the the
+	// text immediately to our left, if present.
+	if ((fragOffset == 0) && pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
+	{
+		pf = pf->getPrev();
+		fragOffset = pf->getLength();
+	}
+
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = 0;
 	if (m_bHaveTemporarySpanFmt)
