@@ -1244,9 +1244,9 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 		buf[idx++] += suffix;
 	}
 
-    UT_String lang = XAP_EncodingManager::get_instance()->getLanguageISOName();
-	UT_String territory = XAP_EncodingManager::get_instance()->getLanguageISOTerritory();
-	UT_String enc = XAP_EncodingManager::get_instance()->getNativeEncodingName();
+    UT_String lang (XAP_EncodingManager::get_instance()->getLanguageISOName());
+	UT_String territory (XAP_EncodingManager::get_instance()->getLanguageISOTerritory());
+	UT_String enc (XAP_EncodingManager::get_instance()->getNativeEncodingName());
 
 	buf[idx] += sep;
 	buf[idx] += lang;
@@ -1273,8 +1273,6 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 	for (size_t j = 0; j < 5; ++j)
 		ptrs[j] = buf[j].c_str();
 	ptrs[5] = 0;
-
-	//_DEBUGMSG(("combinations: %s, %s, %s, %s, %s\n", ptrs[0], ptrs[1],ptrs[2],ptrs[3],ptrs[4]));
 	
     return ptrs;
 };

@@ -571,8 +571,13 @@ void  XAP_UnixEncodingManager::initialize()
 					setenv("LANG", OLDLANG.c_str(), 1);
 #endif			
 				}
+
+			FREEP(lang);
+			FREEP(terr);
+			FREEP(cs);
+			FREEP(mod);
 		}
-	};	
+	}
 	XAP_EncodingManager::initialize();
 	describe();
 };

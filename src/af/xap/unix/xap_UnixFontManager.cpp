@@ -37,8 +37,8 @@
 #include "xap_Strings.h"
 #include "xap_Prefs.h"
 
-FcFontSet* XAP_UnixFontManager::m_pFontSet;
-FcConfig* XAP_UnixFontManager::m_pConfig;
+FcFontSet* XAP_UnixFontManager::m_pFontSet = 0;
+FcConfig* XAP_UnixFontManager::m_pConfig = 0;
 
 // initialize our static member pFontManager
 XAP_UnixFontManager * XAP_UnixFontManager::pFontManager = 0;
