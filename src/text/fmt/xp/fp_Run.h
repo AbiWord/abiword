@@ -475,8 +475,9 @@ private:
     bool                    m_bDrawSelection;
     PT_DocPosition          m_iSelLow;
     PT_DocPosition          m_iSelHigh;
-
+#ifdef DEBUG
 	UT_uint32               m_iFontAllocNo;
+#endif
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
