@@ -68,7 +68,7 @@ class AD_VersionData
 	time_t         getStartTime()const {return m_tStart;}
 	const UT_UUID& getUID()const {return (const UT_UUID&)*m_pUUID;}
 	bool           newUID(); // true on success
-	void           setId(UT_uint32 id) {m_iId = id;}
+	void           setId(UT_uint32 iid) {m_iId = iid;}
 	
   private:
 	UT_uint32   m_iId;
