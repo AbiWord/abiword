@@ -44,7 +44,7 @@ AP_MacApp::AP_MacApp(XAP_Args * pArgs, const char * szAppName)
 
 AP_MacApp::~AP_MacApp(void)
 {
-	SpellCheckCleanup();
+	//SpellCheckCleanup(); Spell check doesn't compile...yet (SBK)
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 }
