@@ -231,28 +231,30 @@ s_clist_clicked (GtkWidget *w, gint row, gint col,
 /*************************************************************************/
 /*************************************************************************/
 
-// return > 0 for directory entries ending in ".awt" and ".dot"
-#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
-	|| defined(_AIX)
-static int awt_only (struct dirent *d)
+extern "C" {
+
+	// return > 0 for directory entries ending in ".awt" and ".dot"
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) || defined(_AIX)
+	static int awt_only (struct dirent *d)
 #else
-static int awt_only (const struct dirent *d)
+	static int awt_only (const struct dirent *d)
 #endif
-{
-  const char * name = d->d_name;
-
-  if ( name )
-    {
-      int len = strlen (name);
-
-      if (len >= 4)
 	{
-	  if(!strcmp(name+(len-4), ".awt") || !strcmp(name+(len-4), ".dot") )
-	    return 1;
+		const char * name = d->d_name;
+		
+		if ( name )
+		{
+			int len = strlen (name);
+			
+			if (len >= 4)
+			{
+				if(!strcmp(name+(len-4), ".awt") || !strcmp(name+(len-4), ".dot") )
+					return 1;
+			}
+		}
+		return 0;
 	}
-    }
-  return 0;
-}
+} // extern "C" block
 
 /*************************************************************************/
 /*************************************************************************/

@@ -600,34 +600,37 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 #endif
 }
 
-// return > 0 for directory entries ending in ".so"
+extern "C" {
+
+	// return > 0 for directory entries ending in ".so"
 #if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
 	|| defined(_AIX)
-static int so_only (struct dirent *d)
+	static int so_only (struct dirent *d)
 #else
-static int so_only (const struct dirent *d)
+	static int so_only (const struct dirent *d)
 #endif
-{
-  const char * name = d->d_name;
-
-  if ( name )
-    {
-      int len = strlen (name);
-
-      if (len >= 7)
 	{
-	  if(!strcmp(name+(len-7), ".bundle"))
+		const char * name = d->d_name;
+		
+		if ( name )
+		{
+			int len = strlen (name);
+			
+			if (len >= 7)
+			{
+				if(!strcmp(name+(len-7), ".bundle"))
+					return 1;
+			}
+			
+			if (len >= 3)
+			{
+				if(!strcmp(name+(len-3), ".so"))
 	    return 1;
+			}
+		}
+		return 0;
 	}
-
-      if (len >= 3)
-	{
-	  if(!strcmp(name+(len-3), ".so"))
-	    return 1;
-	}
-    }
-  return 0;
-}
+} // extern "C" block
 
 void AP_UnixApp::loadAllPlugins ()
 {
