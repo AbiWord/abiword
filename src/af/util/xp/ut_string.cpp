@@ -27,24 +27,12 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
-UT_sint32 UT_stricmp(const char *s1, const char *s2)
-{
-#ifdef WIN32
-	return stricmp(s1,s2);
-#else
-	return strcasecmp(s1,s2);
-#endif
-}
-
-UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)
-{
-#ifdef WIN32
-	return strnicmp(s1,s2,lenS1);
-#else
-	// TODO - fix this!  strncasecmp is NOT portable (for example, AIX doesn't have it)
-	return strncasecmp(s1,s2,lenS1);
-#endif
-}
+//////////////////////////////////////////////////////////////////
+// The following functions defined in ut_string.h are defined
+// in platform code:
+//    UT_stricmp()
+//    UT_strnicmp()
+//////////////////////////////////////////////////////////////////
 
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource)
 {

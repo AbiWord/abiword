@@ -35,6 +35,7 @@ TARGETS=		$(LIBRARY)
 ifeq ($(ABI_NATIVE), unix)
 ## TODO fix capitalization and change to $(ABI_FE)
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_unixString.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_unixTimer.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_dialogHelper.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
@@ -42,6 +43,7 @@ endif
 
 ifeq ($(ABI_NATIVE), win)
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
