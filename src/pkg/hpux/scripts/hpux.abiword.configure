@@ -85,6 +85,17 @@ fi
 
 add_iconv_alias iso81 ISO-8859-1
 add_iconv_alias ucs2 UCS-2
+add_iconv_alias utf8 utf-8
+add_iconv_alias utf8 UTF-8
+add_iconv_alias cp1250 CP1250
+add_iconv_alias cp1251 CP1251
+add_iconv_alias cp1252 CP1252
+add_iconv_alias cp1253 CP1253
+add_iconv_alias cp1254 CP1254
+add_iconv_alias cp1255 CP1255
+add_iconv_alias cp1256 CP1256
+add_iconv_alias cp1257 CP1257
+add_iconv_alias cp1258 CP1258
 
 ###############################################################################
 
