@@ -303,6 +303,7 @@ public:
 	const char * utf8_str () const;
 
 	UT_UCS2String ucs2_str ();
+	UT_UCS4String ucs4_str ();
 
 	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 	void appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);

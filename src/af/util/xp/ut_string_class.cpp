@@ -975,6 +975,22 @@ UT_UCS2String UT_UTF8String::ucs2_str ()
 	return ucs2string;
 }
 
+UT_UCS4String UT_UTF8String::ucs4_str ()
+{
+	UT_UCS4String ucs4string;
+
+	const char * utf8string = pimpl->data ();
+	size_t bytelength = pimpl->byteLength ();
+
+	while (true)
+	{
+		UT_UCS4Char ucs4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (utf8string, bytelength);
+		if (ucs4 == 0) break;
+		ucs4string += ucs4;
+	}
+	return ucs4string;
+}
+
 UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
 {
 	UT_UTF8String s(s1);

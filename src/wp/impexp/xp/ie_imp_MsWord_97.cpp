@@ -489,7 +489,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
-	m_iMSWordListId(0)
+	m_iMSWordListId(0),
+	m_bRevisionDeleted(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -815,14 +816,15 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 	// flush out any pending character data
 	this->_flush ();
 
-	//
-	// we currently don't do anything with these tags
-	//
+	UT_UCS4String revisionStr ("msword_revisioned_text");
 
 	switch ((wvTag)tag)
 	{
 	case DOCBEGIN:
 		UT_uint32 i,j;
+
+		// revision hack - add a single revision for all revisioned text
+		getDoc()->addRevision(1, revisionStr.ucs4_str(), revisionStr.size());
 
 		if(m_pBookmarks)
 		{
@@ -962,6 +964,12 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
+	// deleted text encountered...
+	if (m_bRevisionDeleted) {
+		return 0;
+		}
+
+
 	_insertBookmarkIfAppropriate();
 
 	// convert incoming character to unicode
@@ -1209,6 +1217,9 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 	//
 	// Marshall these off to the correct handlers
 	//
+	CHP * achp = static_cast <CHP *>(props);
+
+	m_bRevisionDeleted = achp->fRMarkDel;
 
 	switch ((wvTag)tag)
 	{
@@ -2055,9 +2066,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 {
 	CHP *achp = static_cast <CHP *>(prop);
 
-	XML_Char * propsArray[3];
+	XML_Char * propsArray[5];
 	UT_String propBuffer;
 	UT_String props;
+
+	memset (propsArray, 0, sizeof(propsArray));
 
 	// set char tolower if fSmallCaps && fLowerCase
 	if ( achp->fSmallCaps && achp->fLowerCase )
@@ -2151,7 +2164,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// underline and strike-through
 	if (achp->fStrike || achp->kul) {
 		props += "text-decoration:";
-		if (achp->fStrike && achp->kul) {
+		if ((achp->fStrike || achp->fDStrike) && achp->kul) {
 			props += "underline line-through;";
 		} else if (achp->kul) {
 			props += "underline;";
@@ -2176,6 +2189,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	} else if (achp->iss == 2) {
 		props += "text-position: subscript;";
 	}
+
+	if (achp->fVanish)
+	  {
+	    props += "display:none;";
+	  }
 
 	// font size (hps is half-points)
 	// I have seen a bidi doc that had hpsBidi == 0, and the actual size in hps
@@ -2232,8 +2250,14 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
-	propsArray[2] = 0;
 
+	if (achp->fRMark)
+	  {
+	    // hack for revisions
+	    propsArray[2] = (XML_Char *)"revision";
+	    propsArray[3] = "1";
+	  }
+		
 	// woah - major error here
 	if(!m_bInSect)
 	{
