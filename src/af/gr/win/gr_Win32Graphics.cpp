@@ -25,28 +25,12 @@
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_Win32OS.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 #define FREEP(p)	do { if (p) free(p); } while (0)
 
 /*****************************************************************/
-
-static UT_Bool __isWinNT(void)
-{
-	static UT_Bool bInitialized = UT_FALSE;
-	static OSVERSIONINFO os;
-
-	if (!bInitialized)
-	{
-		os.dwOSVersionInfoSize = sizeof(os);
-		BOOL bSuccess = GetVersionEx(&os);
-		UT_ASSERT(bSuccess);
-		bInitialized = UT_TRUE;
-	}
-
-	return (os.dwPlatformId == VER_PLATFORM_WIN32_NT);
-}
-
 
 void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 {
@@ -218,7 +202,7 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 #endif	
 
 	UT_Bool bSuccess;
-	if (__isWinNT())
+	if (UT_IsWinNT())
 		bSuccess = GetCharWidth32(m_hdc, 0, 255, m_aCharWidths);
 	else
 		bSuccess = GetCharWidth(m_hdc, 0, 255, m_aCharWidths);
@@ -239,7 +223,7 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 	UINT d = tm.tmDefaultChar;
 	UT_ASSERT(d<256);	// if this is always true, we could save a lookup
 
-	if (__isWinNT())
+	if (UT_IsWinNT())
 		bSuccess = GetCharWidth32(m_hdc, d, d, &m_defaultCharWidth);
 	else
 		bSuccess = GetCharWidth(m_hdc, d, d, &m_defaultCharWidth);

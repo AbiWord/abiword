@@ -23,6 +23,7 @@ ABI_DEPTH = ../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		ut_debugmsg.cpp		\
+			ut_Win32OS.cpp		\
 			ut_Win32String.cpp	\
 			ut_Win32Timer.cpp	\
 			ut_Xpm2Bmp.cpp
