@@ -618,7 +618,7 @@ const void* UT_StringPtrMap::_next(UT_Cursor& c) const
 const void* UT_StringPtrMap::_prev(UT_Cursor& c) const
 {
 	const hash_slot* map = m_pMapping;
-	size_t x;
+	int x;
 	for (x = c._get_index() - 1; x >= 0; --x)
 	{
 		if (!map[x].empty() && !map[x].deleted())
