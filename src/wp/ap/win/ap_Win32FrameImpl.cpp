@@ -168,8 +168,11 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pG = pG;
 
 	if (static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowRuler)
-	{
-		_createRulers(pFrame);		
+	{		
+		_createTopRuler(pFrame); 
+		if (static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pViewMode == VIEW_PRINT)
+	       _createLeftRuler(pFrame);		
+		
 		_getRulerSizes(static_cast<AP_FrameData *>(pFrame->getFrameData()), yTopRulerHeight, xLeftRulerWidth);
 	}
 
@@ -1123,10 +1126,92 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			return 0;
 
 		case WM_SYSKEYDOWN:
+		{
+			UT_DEBUGMSG(("WM_SYSKEYDOWN %d  - %d\n",wParam, lParam));
+			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
+
+			BYTE	keyboardState[256];
+
+			::GetKeyboardState(keyboardState);
+
+			UT_DEBUGMSG(("ev_Win32Keyboard::_getModifierState VK_LCONTROL: %u, VK_RCONTROL %u, VK_LMENU %u, VK_LMENU %u, VK_CONTROL %u, VK_MENU %u\n",
+				(GetKeyState(VK_LCONTROL) & 0x8000), (GetKeyState(VK_RCONTROL) & 0x8000),
+				(GetKeyState(VK_LMENU) & 0x8000), (GetKeyState(VK_LMENU) & 0x8000),
+				(GetKeyState(VK_CONTROL) & 0x8000), (GetKeyState(VK_MENU) & 0x8000)	));
+
+			UT_DEBUGMSG(("ev_Win32Keyboard::GetKeyboardState VK_LCONTROL: %u, VK_RCONTROL %u, VK_LMENU %u, VK_LMENU %u, VK_CONTROL %u, VK_MENU %u\n",
+				(keyboardState[VK_LCONTROL]), (keyboardState[VK_RCONTROL]),
+				(keyboardState[VK_LMENU] ), (keyboardState[VK_LMENU]),
+				(keyboardState[VK_CONTROL]), (keyboardState[VK_MENU])	));
+
+	    
+	     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
+    			return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	 		else
+ 				return false;	    				 	     			
+		
+		}
+
+		case WM_KEYUP:
+		{
+			BYTE	keyboardState[256];
+
+			::GetKeyboardState(keyboardState);
+
+			/*
+				Win 9.x does not diferenciate between left and right keys, we have to
+				do it ourselfs. Win NT based system do.
+			*/
+			if (wParam == VK_CONTROL)
+			{
+				keyboardState[(lParam & 0x1000000) ? VK_RCONTROL : VK_LCONTROL] &= ~0x80;
+				SetKeyboardState (keyboardState);
+			}
+			else if (wParam == VK_MENU)
+			{						
+				keyboardState[(lParam & 0x1000000) ? VK_RMENU : VK_LMENU]  &= ~0x80;
+				SetKeyboardState (keyboardState);
+			}
+
+			break;
+		}
 		case WM_KEYDOWN:
 		{
 			UT_DEBUGMSG(("WM_KEYDOWN %d  - %d\n",wParam, lParam));
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
+
+				BYTE	keyboardState[256];
+
+				::GetKeyboardState(keyboardState);
+
+				/*
+					Win 9.x does not diferenciate between left and right keys, we have to
+					do it ourselfs. Win NT based system do.
+				*/
+				if (wParam == VK_CONTROL)
+				{
+					keyboardState[(lParam & 0x1000000) ? VK_RCONTROL : VK_LCONTROL] |= 0x80;
+					SetKeyboardState (keyboardState);
+				}
+				else if (wParam == VK_MENU)
+				{						
+					keyboardState[(lParam & 0x1000000) ? VK_RMENU : VK_LMENU] |= 0x80;
+					SetKeyboardState (keyboardState);
+				}				
+
+				/*
+				UT_DEBUGMSG(("ev_Win32Keyboard::_getModifierState VK_LCONTROL: %u, VK_RCONTROL %u, VK_RMENU %u, VK_LMENU %u, VK_CONTROL %u, VK_MENU %u\n",
+					(GetKeyState(VK_LCONTROL) & 0x8000), (GetKeyState(VK_RCONTROL) & 0x8000),
+					(GetKeyState(VK_RMENU) & 0x8000), (GetKeyState(VK_LMENU) & 0x8000),
+					(GetKeyState(VK_CONTROL) & 0x8000), (GetKeyState(VK_MENU) & 0x8000)	));
+
+				UT_DEBUGMSG(("ev_Win32Keyboard::GetKeyboardState VK_LCONTROL: %u, VK_RCONTROL %u, VK_RMENU %u, VK_LMENU %u, VK_CONTROL %u, VK_MENU %u, sys %u\n",
+					(keyboardState[VK_LCONTROL]), (keyboardState[VK_RCONTROL]),
+					(keyboardState[VK_RMENU] ), (keyboardState[VK_LMENU]),
+					(keyboardState[VK_CONTROL]), (keyboardState[VK_MENU]),
+					(lParam & 0x1000000) ));
+					*/
+
 	    
 		     	if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
      				return DefWindowProc(hwnd,iMsg,wParam,lParam);

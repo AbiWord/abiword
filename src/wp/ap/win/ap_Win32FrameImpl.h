@@ -78,7 +78,7 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
 	void						_getVerticalScrollInfo(SCROLLINFO * psi);
 
-	void						_createRulers(XAP_Frame *pFrame) {  _createTopRuler(pFrame); _createLeftRuler(pFrame);  }
+	//void						_createRulers(XAP_Frame *pFrame) {  _createTopRuler(pFrame); _createLeftRuler(pFrame);  }
 
 	HWND						_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent,
 													  UT_uint32 iLeft, UT_uint32 iTop,
