@@ -30,6 +30,7 @@
 #include "fl_DocLayout.h"
 #include "fl_AutoLists.h"
 #include "fp_Page.h"
+#include "fp_Line.h"
 #include "fg_Graphic.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
@@ -497,6 +498,7 @@ public:
 	static EV_EditMethod_Fn Test_Dump;
 	static EV_EditMethod_Fn Test_Ftr;
 #endif
+
 };
 
 /*****************************************************************/
@@ -2642,14 +2644,22 @@ Defun(warpInsPtToXY)
 Defun1(warpInsPtLeft)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+    pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection(),1);
+#else	
 	pView->cmdCharMotion(false,1);
+#endif
 	return true;
 }
 
 Defun1(warpInsPtRight)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+    pView->cmdCharMotion(!pView->getCurrentBlock()->getDominantDirection(),1);
+#else	
 	pView->cmdCharMotion(true,1);
+#endif	
 	return true;
 }
 
@@ -2684,14 +2694,28 @@ Defun1(warpInsPtEOL)
 Defun1(warpInsPtBOW)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+	if(pView->getCurrentBlock()->getDominantDirection())
+		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+	else
+		pView->moveInsPtTo(FV_DOCPOS_BOW);
+#else	
 	pView->moveInsPtTo(FV_DOCPOS_BOW);
+#endif
 	return true;
 }
 
 Defun1(warpInsPtEOW)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+	if(pView->getCurrentBlock()->getDominantDirection())
+		pView->moveInsPtTo(FV_DOCPOS_BOW);
+	else
+		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+#else	
 	pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+#endif
 	return true;
 }
 
@@ -2962,14 +2986,22 @@ Defun(extSelToXY)
 Defun1(extSelLeft)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection(),1);
+#else	
 	pView->extSelHorizontal(false,1);
+#endif
 	return true;
 }
 
 Defun1(extSelRight)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+	pView->extSelHorizontal(!pView->getCurrentBlock()->getDominantDirection(),1);
+#else	
 	pView->extSelHorizontal(true,1);
+#endif
 	return true;
 }
 
@@ -2990,14 +3022,28 @@ Defun1(extSelEOL)
 Defun1(extSelBOW)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+	if(pView->getCurrentBlock()->getDominantDirection())
+		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+	else
+		pView->moveInsPtTo(FV_DOCPOS_BOW);
+#else	
 	pView->extSelTo(FV_DOCPOS_BOW);
+#endif
 	return true;
 }
 
 Defun1(extSelEOW)
 {
 	ABIWORD_VIEW;
+#ifdef BIDI_ENABLED
+	if(pView->getCurrentBlock()->getDominantDirection())
+		pView->moveInsPtTo(FV_DOCPOS_BOW);
+	else
+		pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+#else	
 	pView->extSelTo(FV_DOCPOS_EOW_MOVE);
+#endif
 	return true;
 }
 
@@ -6392,20 +6438,47 @@ Defun1(toggleDirOverrideRTL)
 Defun1(toggleDomDirection)
 {
 	ABIWORD_VIEW;
-	const XML_Char * properties[] =	{ "dom-dir", NULL, 0};
-	const XML_Char drtl[] = "rtl";
-	const XML_Char dltr[] = "ltr";
+	const XML_Char * properties[] =	{ "dom-dir", NULL, "text-align", NULL, 0};
+	const XML_Char drtl[]   = "rtl";
+	const XML_Char dltr[]   = "ltr";
+	const XML_Char aright[] = "right";
+	const XML_Char aleft[]  = "left";
+	XML_Char cur_alignment[10];
+	
+    fl_BlockLayout * pBl = pView->getCurrentBlock();
 
-	if(pView->getCurrentBlock()->getDominantDirection())
+    strcpy(cur_alignment,pBl->getProperty("text-align"));
+    properties[3] = (XML_Char *) &cur_alignment;
+
+
+	if(pBl->getDominantDirection())
 	{
 		properties[1] = (XML_Char *) &dltr;
+		//the last run in the block is the FmtMark, and we need
+		//to reset its direction
+		pBl->getLastLine()->getLastRun()->setDirection(0);
 	}
 	else
 	{
 		properties[1] = (XML_Char *) &drtl;
+		pBl->getLastLine()->getLastRun()->setDirection(1);
+	}
+	
+	// if the paragraph is was aligned either left or right, then
+	// toggle the alignment as well; if it was anything else
+	// i.e., justfied or centered, then leave it
+	if(!strcmp(properties[3],aleft))
+	{
+		properties[3] = (XML_Char *) &aright;
+	}
+	else if(!strcmp(properties[3],aright))
+	{
+		properties[3] = (XML_Char *) &aleft;
+	
 	}
 
 	pView->setBlockFormat(properties);
+	
 	return true;
 }
 #endif

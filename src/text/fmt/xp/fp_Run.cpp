@@ -3414,10 +3414,11 @@ void fp_Run::setDirection(UT_sint32 iDir)
 	//with -2, which is used in the derived classes that can handle
 	//Unicode as an indication that direction should be worked out
 	//from Unicode, we will treat this a whitespace
-
+    UT_DEBUGMSG(("fp_Run::SetDirection, m_iDirection %d, iDir %d, run type %d\n", m_iDirection, iDir, getType()));
 	UT_sint32 iDirection = iDir != -2 ? iDir : -1;
 	if(m_iDirection != iDirection)
 	{
+		UT_sint32 origDirection = m_iDirection;
 		m_iDirection = iDirection;
 		clearScreen();
 		/*
@@ -3430,7 +3431,10 @@ void fp_Run::setDirection(UT_sint32 iDir)
 		*/
 	
 		if(m_pLine)
+		{
 			m_pLine->addDirectionUsed(m_iDirection);
+			m_pLine->removeDirectionUsed(origDirection);
+		}
 
 	}
 }

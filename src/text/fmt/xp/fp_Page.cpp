@@ -330,7 +330,19 @@ void fp_Page::_reformat(void)
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
 		UT_uint32 iColWidthLayoutUnits = (iSpaceLayoutUnits - ((iNumColumns - 1) * iColumnGapLayoutUnits)) / iNumColumns;
 		
+#ifdef BIDI_ENABLED
+		UT_sint32 iX;
+		if(pSL->getColumnOrder())
+		{
+			iX = getWidth() - iRightMargin - iColWidth;
+		}
+		else
+		{
+			iX = iLeftMargin;
+		}
+#else		
 		UT_sint32 iX = iLeftMargin;
+#endif
 		
 		fp_Column* pTmpCol = pLeader;
 		UT_sint32 iMostHeight = 0;
@@ -343,7 +355,18 @@ void fp_Page::_reformat(void)
 			pTmpCol->setMaxHeightInLayoutUnits(getHeightInLayoutUnits() - iBottomMarginLayoutUnits - iYLayoutUnits);
 			pTmpCol->setWidth(iColWidth);
 			pTmpCol->setWidthInLayoutUnits(iColWidthLayoutUnits);
+#ifdef BIDI_ENABLED			
+		if(pSL->getColumnOrder())
+		{
+			iX -= (iColWidth + iColumnGap);
+		}
+		else
+		{
 			iX += (iColWidth + iColumnGap);
+		}		
+#else
+			iX += (iColWidth + iColumnGap);
+#endif
 			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
 			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
 			pTmpCol = pTmpCol->getFollower();

@@ -208,6 +208,9 @@ public:
 	UT_uint32			getColumnGap(void) const;
 	UT_uint32			getColumnGapInLayoutUnits(void) const;
 	bool				getColumnLineBetween(void) const {return m_bColumnLineBetween;}
+#ifdef BIDI_ENABLED	
+	UT_uint32			getColumnOrder(void) const;
+#endif
 	void                setPaperColor();
 	UT_RGBColor *       getPaperColor(void);
 	void				deleteEmptyColumns(void);
@@ -246,6 +249,9 @@ protected:
 	UT_uint32			m_iColumnGap;
 	UT_uint32			m_iColumnGapLayoutUnits;
 	bool				m_bColumnLineBetween;
+#ifdef BIDI_ENABLED
+	UT_uint32			m_iColumnOrder;
+#endif
 
 	UT_sint32			m_iSpaceAfter;
 	UT_sint32			m_iSpaceAfterLayoutUnits;

@@ -196,6 +196,7 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 
 void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 {
+	//UT_DEBUGMSG(("insertRunBefore (line 0x%x, run 0x%x, type %d, dir %d)\n", this, pNewRun, pNewRun->getType(), pNewRun->getDirection()));
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	UT_ASSERT(pNewRun);
 	UT_ASSERT(pBefore);
@@ -231,6 +232,8 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 
 void fp_Line::insertRun(fp_Run* pNewRun)
 {
+	//UT_DEBUGMSG(("insertRun (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
+	
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	pNewRun->setLine(this);
 
@@ -260,6 +263,8 @@ void fp_Line::insertRun(fp_Run* pNewRun)
 
 void fp_Line::addRun(fp_Run* pNewRun)
 {
+	//UT_DEBUGMSG(("addRun (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
+
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	pNewRun->setLine(this);
 
@@ -292,6 +297,8 @@ void fp_Line::addRun(fp_Run* pNewRun)
 
 void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 {
+	//UT_DEBUGMSG(("insertRunAfter (line 0x%x, run 0x%x, type %d)\n", this, pNewRun, pNewRun->getType()));
+	
 	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	UT_ASSERT(pNewRun);
 	UT_ASSERT(pAfter);
@@ -1471,6 +1478,7 @@ bool fp_Line::containsForcedPageBreak(void) const
 
 void fp_Line::coalesceRuns(void)
 {
+	//UT_DEBUGMSG(("coalesceRuns (line 0x%x)\n", this));
 	UT_uint32 count = m_vecRuns.getItemCount();
 	for (UT_uint32 i=0; i<(count-1); i++)
 	{
@@ -1481,7 +1489,22 @@ void fp_Line::coalesceRuns(void)
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 			if (pTR->canMergeWithNext())
 			{
-				pTR->mergeWithNext();
+#ifdef BIDI_ENABLED
+				switch(pRun->getDirection())
+				{
+					case 0:
+							m_iRunsLTRcount--;
+							UT_ASSERT((m_iRunsLTRcount >= 0));
+							break;
+			
+					case 1:
+							m_iRunsRTLcount--;
+							UT_ASSERT((m_iRunsRTLcount >= 0));
+							break;
+					default:;
+			    }
+#endif				
+    			pTR->mergeWithNext();
 				count--;
 			}
 		}
@@ -1755,6 +1778,8 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 
 void fp_Line::splitRunsAtSpaces(void)
 {
+	//UT_DEBUGMSG(("splitRunsAtSpaces (line 0x%x)\n", this));
+
 	UT_uint32 count = m_vecRuns.getItemCount();
 #ifdef BIDI_ENABLED
 	UT_uint32 countOrig = count;
@@ -1773,6 +1798,19 @@ void fp_Line::splitRunsAtSpaces(void)
 			if ((iSpacePosition > 0) &&
 				((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
 			{
+#ifdef BIDI_ENABLED
+				switch(pRun->getDirection())
+				{
+					case 0:
+							m_iRunsLTRcount++;
+							break;
+			
+					case 1:
+							m_iRunsRTLcount++;
+							break;
+					default:;
+			    }
+#endif				
 				pTR->split(iSpacePosition + 1);
 				count++;
 			}
@@ -1791,6 +1829,18 @@ void fp_Line::splitRunsAtSpaces(void)
 		if ((iSpacePosition > 0) &&
 			((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
 		{
+#ifdef BIDI_ENABLED
+			switch(pRun->getDirection())
+			{
+				case 0:
+						m_iRunsLTRcount++;
+						break;
+				case 1:
+						m_iRunsRTLcount++;
+						break;
+				default:;
+			    }
+#endif				
 			pTR->split(iSpacePosition + 1);
 		}
 	}
@@ -1808,11 +1858,12 @@ void fp_Line::splitRunsAtSpaces(void)
 
 UT_sint32 fp_Line::_createMapOfRuns()
 {
+	//UT_DEBUGMSG(("_createMapOfRuns\n"));
 	UT_uint32 i=0;
 
 	if(!m_iRunsRTLcount)
 	{
-		//UT_DEBUGMSG(("_createMapOfRuns: ltr line only\n"));
+		UT_DEBUGMSG(("_createMapOfRuns: ltr line only (line 0x%x)\n", this));
 		return UT_OK;
 	}
     //UT_DEBUGMSG(("createMapOfRuns: this=%x, Owner=%x, Dirty=%x\n", this, s_pMapOwner, m_bMapDirty));
@@ -1831,6 +1882,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 	//is fine
 #endif
 		UT_uint32 count = m_vecRuns.getItemCount();
+		//UT_DEBUGMSG(("run count %d\n", count));
 		if(!count) 
 			return UT_OK;  // do not even try to map a line with no runs
 
@@ -1862,7 +1914,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		//we only need to test absence of ltr runs
 		if(!m_iRunsLTRcount)
 		{
-			//UT_DEBUGMSG(("_createMapOfRuns: rtl line only\n"));			
+			UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));			
 			for(i = 0; i < count/2; i++)
 			{
 				s_pMapOfRuns[i]= count - i - 1;
@@ -1874,7 +1926,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		}
 		else
 		{
-			//UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs)\n",m_iRunsLTRcount, m_iRunsRTLcount));        	
+			UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs, line 0x%x)\n", m_iRunsLTRcount, m_iRunsRTLcount, this));        	
 			// get the dominant direction of the block and set the MapOfRuns so that all runs
 			// that have different direction than the dominant will have value 1,
 			// neutral runs -1 and the rest 0

@@ -67,6 +67,9 @@ static PP_Property _props[] =
 	{ "color",   "000000", true, NULL},
 	{ "column-gap",	"0.25in", false, NULL},
 	{ "column-line", "off",	false, NULL},
+#ifdef BIDI_ENABLED
+	{ "column-order", default_dominant_direction, false, NULL},
+#endif	
 	{ "columns", "1", false, NULL},
 
 	{ "default-tab-interval",  "0.5in", false, NULL},
@@ -170,7 +173,11 @@ void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 
 	for (i=0; i<count; i++)
 	{
-		if ((0 == UT_stricmp(_props[i].m_pszName, "dir"))||(0 == UT_stricmp(_props[i].m_pszName, "dom-dir")))
+		if ((0 == UT_stricmp(_props[i].m_pszName, "dir"))
+		  ||(0 == UT_stricmp(_props[i].m_pszName, "dom-dir"))
+		  /*||(0 == UT_stricmp(_props[i].m_pszName, "column-order"))*/)
+		  //this last one is not necessary since dom-dir and column-order
+		  //share the same physical string
 		{
 			UT_XML_strncpy(_props[i].m_pszInitial, 3,pszValue);
 		}
@@ -292,7 +299,11 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 //
 	if(!bExpandStyles)
 	{
-		return NULL;
+		//#TF I need to get some value for Section properties even
+		//when I am not to expand styles; we should never return
+		//NULL anyway, since we have hardcoded defaults for all
+		//properties
+		return pProp->getInitial()/*NULL*/;
 	}
 
 	if (pDoc->getStyle("Normal", &pStyle))

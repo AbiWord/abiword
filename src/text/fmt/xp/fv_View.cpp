@@ -3304,6 +3304,9 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	v.addItem(new _fmtPair("columns", NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("column-line", NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+#ifdef BIDI_ENABLED
+	v.addItem(new _fmtPair("column-order",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+#endif
 	v.addItem(new _fmtPair("page-margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("page-margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,false));

@@ -1300,6 +1300,9 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	while (bContinue)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		//if(!bContinue)
+		//	break; //no span found
+			
 		UT_ASSERT(lenSpan>0);
 
 		if (len <= lenSpan)
@@ -1350,6 +1353,8 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
     if(findCharacter(0, UCS_SPACE) > 0){
         while(bContinue){
             bContinue = m_pBL->getSpanPtr(offset,&pSpan,&lenSpan);
+            //if(!bContinue)
+            //	break; //no span found
             UT_ASSERT(lenSpan > 0);
 
 
@@ -1485,6 +1490,8 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 		while (bContinue)
 		{
 			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			//if(!bContinue)
+			//	break;
 			UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan)
@@ -1582,6 +1589,8 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 		while (bContinue)
 		{
 			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			//if(!bContinue)
+			//	break; //no span found
 			if(lenSpan <= 0)
 			{ 
 				fp_Line * pLine = m_pBL->getFirstLine();
@@ -1926,7 +1935,10 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 	if(m_iDirection != prevDir)
 	{
 		if(m_pLine)
+		{
 			m_pLine->addDirectionUsed(m_iDirection);
+			m_pLine->removeDirectionUsed(prevDir);
+		}
 		clearScreen();
 	}
 	

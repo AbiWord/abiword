@@ -855,6 +855,24 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		m_bColumnLineBetween = false;
 	}
 
+#ifdef BIDI_ENABLED	
+	//we use the mechanism used by BlockLayout, since otherwise we
+	//cannot recode the default value
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	
+	const char * pszColumnOrder = PP_evalProperty("column-order",pSpanAP,pBlockAP,pSectionAP,m_pDoc,false);
+    UT_DEBUGMSG(("column-order: %s\n", pszColumnOrder));
+	if (pszColumnOrder && pszColumnOrder[0])
+	{
+		m_iColumnOrder = strcmp(pszColumnOrder, "ltr")	? 1 : 0;
+	}
+	else
+	{
+		m_iColumnOrder = 0;
+	}
+#endif
+
 	const char* pszSpaceAfter = NULL;
 	pSectionAP->getProperty("section-space-after", (const XML_Char *&)pszSpaceAfter);
 	if (pszSpaceAfter && pszSpaceAfter[0])
@@ -1139,6 +1157,14 @@ UT_uint32 fl_DocSectionLayout::getColumnGapInLayoutUnits(void) const
 {
 	return m_iColumnGapLayoutUnits;
 }
+
+#ifdef BIDI_ENABLED	
+UT_uint32 fl_DocSectionLayout::getColumnOrder(void) const
+{
+	return m_iColumnOrder;
+}
+#endif
+
 
 fl_DocSectionLayout* fl_DocSectionLayout::getNextDocSection(void) const
 {
