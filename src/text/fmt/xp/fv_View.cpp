@@ -211,17 +211,22 @@ UT_Bool FV_View::_isSelectionEmpty()
 	return UT_FALSE;
 }
 
-#define fv_VIEW_POS_BOD  2
-
 PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 {
 	UT_uint32 xPoint;
 	UT_uint32 yPoint;
 	UT_uint32 iPointHeight;
 
+	PT_DocPosition iPos;
+
 	// this gets called from ctor, so get out quick
 	if (dp == FV_DOCPOS_BOD)
-		return fv_VIEW_POS_BOD;
+	{
+		UT_Bool bRes = m_pDoc->getBounds(UT_FALSE, iPos);
+		UT_ASSERT(bRes);
+
+		return iPos;
+	}
 
 	PT_DocPosition iPoint = _getPoint();
 
@@ -232,7 +237,7 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 	fp_Line* pLine = pRun->getLine();
 
 	// be pessimistic
-	PT_DocPosition iPos = iPoint;
+	iPos = iPoint;
 
 	switch (dp)
 	{
@@ -252,12 +257,18 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 		}
 		break;
 
+	case FV_DOCPOS_EOD:
+		{
+			UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, iPos);
+			UT_ASSERT(bRes);
+		}
+		break;
+
 	case FV_DOCPOS_BOB:
 		iPos = pBlock->getPosition(UT_TRUE);
 		break;
 
 	case FV_DOCPOS_EOB:		// TODO: just write it
-	case FV_DOCPOS_EOD:		// TODO: need doc api (last DocPosition)
 	case FV_DOCPOS_BOW:		// TODO: need doc api (getBlockBuf variant of getSpanPtr)
 	case FV_DOCPOS_EOW:		// TODO: need doc api (getBlockBuf variant of getSpanPtr)
 	case FV_DOCPOS_BOS: 
@@ -1413,13 +1424,27 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	else
 		m_iInsPoint -= countChars;
 
-	if ((UT_sint32) m_iInsPoint < fv_VIEW_POS_BOD)
+	PT_DocPosition posBOD;
+	PT_DocPosition posEOD;
+	UT_Bool bRes;
+
+	bRes = m_pDoc->getBounds(UT_FALSE, posBOD);
+	UT_ASSERT(bRes);
+
+	if ((UT_sint32) m_iInsPoint < (UT_sint32) posBOD)
 	{
-		m_iInsPoint = fv_VIEW_POS_BOD;
+		m_iInsPoint = posBOD;
 		return UT_FALSE;
 	}
 
-	// TODO: clamp at end of document, too
+	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+	UT_ASSERT(bRes);
+
+	if ((UT_sint32) m_iInsPoint > (UT_sint32) posEOD)
+	{
+		m_iInsPoint = posEOD;
+		return UT_FALSE;
+	}
 
 	return UT_TRUE;
 }

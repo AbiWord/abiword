@@ -130,14 +130,6 @@ UT_Bool PD_Document::newDocument(void)
 	appendStrux(PTX_Column,atts);
 	appendStrux(PTX_Block,NULL);
 
-// TODO: Jeff, without this, the getFragFromPosition assert fires
-#if 1
-	// need one character so the formatter will create the first page
-	UT_UCSChar space = 0x0020;
-
-	appendSpan(&space,1);
-#endif
-
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	setClean();							// mark the document as not-dirty
 	return UT_TRUE;
@@ -378,12 +370,6 @@ UT_Bool PD_Document::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** 
 	return m_pPieceTable->getAttrProp(indexAP,ppAP);
 }
 
-UT_Bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
-								const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
-{
-	return m_pPieceTable->getSpanPtr(sdh,offset,ppSpan,pLength);
-}
-
 const UT_UCSChar * PD_Document::getPointer(PT_BufIndex bi) const
 {
 	// the pointer that we return is NOT a zero-terminated
@@ -391,6 +377,22 @@ const UT_UCSChar * PD_Document::getPointer(PT_BufIndex bi) const
 	// long the data is within the span/fragment.
 	
 	return m_pPieceTable->getPointer(bi);
+}
+
+UT_Bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
+								const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
+{
+	return m_pPieceTable->getSpanPtr(sdh,offset,ppSpan,pLength);
+}
+
+UT_Bool PD_Document::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
+{
+	return m_pPieceTable->getBlockBuf(sdh,pgb);
+}
+
+UT_Bool PD_Document::getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const
+{
+	return m_pPieceTable->getBounds(bEnd,docPos);
 }
 
 PT_DocPosition PD_Document::getStruxPosition(PL_StruxDocHandle sdh) const

@@ -42,6 +42,9 @@
 
 #define NrElements(a)		(sizeof(a)/sizeof(a[0]))
 
+// TODO: calculate this from pf_FRAG_STRUX_*_LENGTH instead?
+#define pt_BOD_POSITION 2
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -229,6 +232,41 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 		cumOffset += pfTemp->getLength();
 	}
 	return UT_FALSE;
+}
+
+UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
+{
+	UT_ASSERT(UT_TODO);
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const
+{
+	// be optimistic
+	UT_Bool res = UT_TRUE;
+
+	if (!bEnd)
+	{
+		docPos = pt_BOD_POSITION;
+	}
+	else
+	{
+		// NOTE: this gets called for every cursor motion
+		// TODO: be more efficient & cache the doc length
+		PT_DocPosition sum = 0;
+		pf_Frag * pfLast = NULL;
+
+		for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+		{
+			sum += pf->getLength();
+			pfLast = pf;
+		}
+
+		UT_ASSERT(pfLast && (pfLast->getType() == pf_Frag::PFT_EndOfDoc));
+		docPos = sum;
+	}
+
+	return res;
 }
 
 PT_DocPosition pt_PieceTable::getStruxPosition(PL_StruxDocHandle sdh) const

@@ -32,6 +32,8 @@
 #include "pt_Types.h"
 #include "pl_Listener.h"
 #include "ie_types.h"
+
+class UT_GrowBuf;
 class pt_PieceTable;
 class PP_AttrProp;
 class pf_Frag_Strux;
@@ -98,9 +100,12 @@ public:
 	UT_Bool					getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const;
 	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 											const PP_AttrProp ** ppAP) const;
+	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
-	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
+	UT_Bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
+
+	UT_Bool					getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
 	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,
