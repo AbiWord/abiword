@@ -77,7 +77,7 @@ public:
 								 const char * szIconName,
 								 const char * szToolTip,
 								 const char * szStatusMsg);
-	EV_Toolbar_Label *	getLabel(XAP_Toolbar_Id id) const;
+	EV_Toolbar_Label *	getLabel(XAP_Toolbar_Id id);
 	const char *		getLanguage(void) const;
 
 protected:

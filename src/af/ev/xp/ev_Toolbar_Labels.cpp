@@ -116,7 +116,7 @@ UT_Bool EV_Toolbar_LabelSet::setLabel(XAP_Toolbar_Id id,
 	return (m_labelTable[index] != NULL);
 }
 
-EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(XAP_Toolbar_Id id) const
+EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(XAP_Toolbar_Id id)
 {
 	if ((id < m_first) || (id > m_last))
 		return NULL;
