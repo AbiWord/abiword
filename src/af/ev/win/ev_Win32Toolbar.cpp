@@ -259,7 +259,12 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				break;
 			}
 								
-			DRAWITEMSTRUCT* dis = (DRAWITEMSTRUCT*)lParam;			
+			DRAWITEMSTRUCT* dis = (DRAWITEMSTRUCT*)lParam;
+			if((UT_sint32)dis->itemData < 0)
+			{
+				return TRUE;
+			}
+			
 			XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
 
 			if (!t->m_pFontCtrl)
