@@ -858,7 +858,7 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec)
 	return true;
 }
 
-bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2, bool bLast = false)
+bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2, bool bLast/* = false*/)
 {
 	UT_sint32 fuz = 20; // CellXs within 20 TWIPS are assumed to be the same
 	if(bLast)
