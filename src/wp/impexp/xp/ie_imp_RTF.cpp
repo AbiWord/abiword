@@ -223,7 +223,6 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			// 936  Chinese: Simplified
 		case 936:
 			CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GB2312");
-			m_szEncoding = "CP936";
 			break;
 			// 950  Chinese: Traditional
 		case 950:
@@ -878,8 +877,15 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 }
 
 
-// Reads and proccesses a RTF control word and its parameter
-//
+/*!
+  Reads and proccesses a RTF control word and its parameter
+  \return false if something goes wrong.
+  \desc Read and handle the RTF keyword. Commands are dispatched by calling
+  TranslateKeyword
+  \fixme This is too generic: keywords are most of the time contextual
+  so context should be taken care of.
+  \see IE_Imp_RTF::ReadKeyword, IE_Imp_RTF::TranslateKeyword
+*/
 bool IE_Imp_RTF::ParseRTFKeyword()
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
@@ -893,6 +899,19 @@ bool IE_Imp_RTF::ParseRTFKeyword()
 }
 
 
+/*!
+  Read a keyword from the file.
+  \retval pKeyword the keyword buffer whose len is in keywordBuffLen
+  Can not be NULL on input.
+  \retval pParam the keyword parameter as specified by the RTF spec. 0
+  is there is no param.
+  \retval pParamUsed true if the keyword does really have a param. false
+  otherwise (pParam is 0 then).
+  \param keywordBuffLen the length of the pKeyword memory block
+  \return false if any problem
+  \desc This function parse and read the keyword. It is called if a 
+  \\ is encountered in the flow. *pKeyword never contains the \\
+ */
 bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed, UT_uint32 keywordBuffLen)
 {
 	bool fNegative = false;
@@ -977,7 +996,12 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 }
 
 
-// Reads a character from the file. Doesn't ignore CR and LF
+/*!
+  Reads a character from the file. Doesn't ignore CR and LF
+  \retval pCh the char read
+  \return false if an error occured.
+  \see IE_Imp_RTF::ReadCharFromFile
+*/
 bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 {
 	
@@ -1002,7 +1026,12 @@ bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
 	return ok;
 }
 
-// Reads a character from the file ignoring CR and LF
+/*!
+  Reads a character from the file ignoring CR and LF
+  \retval pCh the char read
+  \return false if an error occured.
+  \see IE_Imp_RTF::ReadCharFromFileWithCRLF
+*/
 bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
 {
 	// line feed and cr should be ignored in RTF files
@@ -1018,6 +1047,15 @@ bool IE_Imp_RTF::ReadCharFromFile(unsigned char* pCh)
 }
 
 
+/*!
+  Push a char back to the stream.
+  \param ch the char to push back
+  \return false if any problem
+  \desc Push back the char ch to the stream so it can be re-read
+  after. Since we use buffered stdio from lib C, there should be
+  no noticeable I/O impact.
+  \fixme check that ungetc() works under MacOS
+ */
 bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
 {
 	if (m_pImportFile)					// if we are reading a file
@@ -1034,6 +1072,15 @@ bool IE_Imp_RTF::SkipBackChar(unsigned char ch)
 	}
 }
 
+
+/*!
+  Skip the current group
+  \param  bConsumeLastBrace pass true to discard the last }
+  \return false if any problem raised
+  \desc This function read until the current group and all nested 
+  subgroups are passed. This allow skipping a chunk of the RTF file
+  we do not understand.
+ */
 bool IE_Imp_RTF::SkipCurrentGroup(bool bConsumeLastBrace)
 {
 	int nesting = 1;
@@ -1062,19 +1109,38 @@ bool IE_Imp_RTF::SkipCurrentGroup(bool bConsumeLastBrace)
 }
 
 
+/*!
+  Tell if we can handle the picture format
+  \param format the picture format
+  \return true if we can handle it.
+  \desc This function should check with the image importer
+  if there is a correct importer for the corresponding image 
+  type. 
+  \todo we should really check against importer
+  \todo we may provide a beginning of the buffer to sniff data
+  content. 
+ */
 bool IE_Imp_RTF::CanHandlePictFormat(PictFormat format)
 {
 	return (format == picPNG);
 }
 
-// When we start adding code for handling other formats,
-// this method signature may change
+/*!
+  Load the picture data
+  \param format the Picture Format.
+  \param image_name the name of the image. Must be unique.
+  \return true if success, otherwise false.
+  \desc Load the picture data from the flow. Will move the file position
+  and assume proper RTF file structure. It will take care of inserting
+  the picture into the document.
+  \todo TODO: We assume the data comes in hex. Check this assumption
+  as we might have to handle binary data as well
+  \see IE_Imp_RTF::HandlePicture
+*/
 bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 {
 	// first, we load the actual data into a buffer
 
-	// TODO: We assume the data comes in hex. Check this assumption
-	// TODO: as we might have to handle binary data as well
 	const UT_uint16 chars_per_byte = 2;
 	const UT_uint16 BITS_PER_BYTE = 8;
 	const UT_uint16 bits_per_char = BITS_PER_BYTE / chars_per_byte;
@@ -1193,6 +1259,14 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 	return true;
 }
 
+/*!
+  Handle a picture in the current group
+  \return false if failed
+  \desc Once the \\pict has been read, hande the picture contained in
+  the current group. Calls LoadPictData
+  \see IE_Imp_RTF::LoadPictData
+  \fixme TODO handle image size and other options in the future
+ */
 bool IE_Imp_RTF::HandlePicture()
 {
 	// this method loads a picture from the file 
@@ -1221,7 +1295,7 @@ bool IE_Imp_RTF::HandlePicture()
 			{
 				UT_DEBUGMSG(("Unexpected EOF during RTF import?\n"));
 			}
-
+			// TODO handle image format
 			if (strcmp((char *)keyword, "pngblip") == 0)
 			{
 				format = picPNG;
@@ -1274,19 +1348,32 @@ bool IE_Imp_RTF::HandlePicture()
 	return true;
 }
 
+/*!
+  Handle a object in the current group
+  \return false if failed
+  \desc Once the \\object has been read, handle the object contained in
+  the current group.
+  \todo in the future this method should load an object from the file 
+  and insert it in the document. To fix some open bugs, we just
+  skip all the data and do nothing
+ */
 bool IE_Imp_RTF::HandleObject()
 {
-	// in the future this method should load an object from the file 
-	// and insert it in the document. To fix some open bugs, we just
-	// skip all the data and do nothing
-	
 	UT_DEBUGMSG(("TODO: Handle \\object keyword properly\n"));
 	return SkipCurrentGroup();
 }
 
-/*
+/*!
   Handle a RTF field
+  \return false if failed
+  \desc Once the \\field has been read, handle the object contained in
+  the current group. This is really tricky as fields are really
+  hard to handle since most writers do whatever they want, including
+  RTF code interleaved with field instruction. Thank you Microsoft
+  (sorry for the rant). Call IE_Imp_RTF::_parseFldinstBlock to 
+  parse field instructions
   See p44 for specs.
+  \see IE_Imp_RTF::_parseFldinstBlock
  */
 bool IE_Imp_RTF::HandleField()
 {
@@ -1509,9 +1596,12 @@ bool IE_Imp_RTF::HandleField()
 }
 
 
+/*!
+  
+  \see IE_Imp_RTF::HandleField
+ */
 XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 {
-	// TODO: handle field instructions
 	// this is quite complex as field instructions are not really document in the RTF specs.
 	// we will guess as much us possible.
 	// thing that complexify is that a field instruction can contain nested block and

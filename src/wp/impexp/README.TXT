@@ -16,7 +16,7 @@ TBD
 
 <li>IE_Imp_RTF -- This is the RTF importer.
 
-<li>IE_Imp_MsWord97 -- Imports MS Word 97 documents using libwv.
+<li>IE_Imp_MsWord_97 -- Imports MS Word 97 documents using libwv.
 
 </ul>
 
