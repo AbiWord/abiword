@@ -85,7 +85,7 @@ void AP_CocoaDialog_Spell::runModal(XAP_Frame * pFrame)
 				
 		// now loop while there are still misspelled words
 		while (bRes) {
-			
+
 			// show word in main window
 			makeWordVisible();
 			
@@ -124,14 +124,16 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
 	NSAttributedString *buffer;
 	const UT_UCSChar *p;
 	// insert start of sentence
+	UT_sint32 iLengthPre;
 	UT_sint32 iLength;
+	UT_sint32 iLengthPost;
 	
 	attrStr = [[NSMutableAttributedString alloc] initWithString:@""];
-	[m_dlg setMisspelled:nil];
+	[m_dlg setMisspelled:nil scroll:0.0f];
 
-	p = m_pWordIterator->getPreWord(iLength);
-	if (0 < iLength) {
-		UT_UTF8String str(p);
+	p = m_pWordIterator->getPreWord(iLengthPre);
+	if (0 < iLengthPre) {
+		UT_UTF8String str(p,iLengthPre);
 		buffer = [[[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:str.utf8_str()]] autorelease];
 		[attrStr appendAttributedString:buffer];
 	}
@@ -139,21 +141,28 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
 	// insert misspelled word (in highlight color)
 	p = m_pWordIterator->getCurrentWord(iLength);
 	{
-		UT_UTF8String str(p);
-		buffer = [[[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:str.utf8_str()]] autorelease];
+		UT_UTF8String str(p,iLength);
+		NSString * word = [NSString stringWithUTF8String:str.utf8_str()];
+		[m_dlg setReplace:word];
+
+		NSDictionary * attr = [NSDictionary dictionaryWithObject:[NSColor redColor] forKey:NSForegroundColorAttributeName];
+
+		buffer = [[[NSAttributedString alloc] initWithString:word attributes:attr] autorelease];
 	}
 	[attrStr appendAttributedString:buffer];
 		
 	// insert end of sentence
-	p = m_pWordIterator->getPostWord(iLength);
-	if (0 < iLength) {
-		UT_UTF8String str(p);
+	p = m_pWordIterator->getPostWord(iLengthPost);
+	if (0 < iLengthPost) {
+		UT_UTF8String str(p,iLengthPost);
 		[attrStr appendAttributedString:
 		            [[[NSAttributedString alloc] initWithString:
 					         [NSString stringWithUTF8String:str.utf8_str()]] autorelease]];
 	}
 
-	[m_dlg setMisspelled:attrStr];
+	float offset = static_cast<float>(iLengthPre + iLength) / static_cast<float>(iLengthPre + iLength + iLengthPost);
+
+	[m_dlg setMisspelled:attrStr scroll:offset];
 
 	[m_suggestionList removeAllStrings];
 	for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++) {
@@ -164,12 +173,15 @@ void AP_CocoaDialog_Spell::_showMisspelledWord(void)
 	if (!m_Suggestions->getItemCount()) {	
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 		[m_suggestionList addUT_UTF8String:pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions)];
-	
+	}
+	[m_dlg reloadSuggestionList];
+
+	if (!m_Suggestions->getItemCount()) {	
 		m_iSelectedRow = -1;
-		[m_dlg selectSuggestion:-1];
-		
-	} else {
+	}
+	else {
 		[m_dlg selectSuggestion:0];
+		[m_dlg suggestionSelected:nil];
 	}
 
 	[attrStr release];
@@ -266,13 +278,9 @@ void AP_CocoaDialog_Spell::event_SuggestionSelected(int row, int column)
 
 void AP_CocoaDialog_Spell::event_ReplacementChanged()
 {
-	NSString *replace = [m_dlg replace];
-	
-	int idx = [[m_suggestionList array] indexOfObject:replace];
-	[m_dlg selectSuggestion:idx];
-	m_iSelectedRow = idx;
+	m_iSelectedRow = -1;
+	event_Change();
 }
-
 
 
 @implementation AP_CocoaDialog_Spell_Controller
@@ -350,22 +358,39 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 
 - (IBAction)replacementChanged:(id)sender
 {
+	[_suggestionList deselectAll:self];
 	_xap->event_ReplacementChanged();
 }
 
 - (void)suggestionSelected:(id)sender
 {
-	_xap->event_SuggestionSelected([sender selectedRow], [sender selectedColumn]);
+	_xap->event_SuggestionSelected([_suggestionList selectedRow], [_suggestionList selectedColumn]);
 }
 
-- (void)setMisspelled:(NSAttributedString*)attr
+- (void)setMisspelled:(NSAttributedString*)attr scroll:(float)offset
 {
-	// TODO
+	[_unknownData setString:@""];
+
 	if (attr) {
-		[_unknownData setString:[attr string]];
-	}
-	else {
-		[_unknownData setString:@""];
+		[_unknownData setEditable:YES];
+		[_unknownData insertText:attr];
+		[_unknownData setEditable:NO];
+
+		NSClipView * clipView = (NSClipView *) [_unknownData superview];
+
+		NSRect textFrame = [_unknownData bounds];
+		NSRect clipFrame = [clipView bounds];
+
+		textFrame.origin.x = 0.0f;
+		textFrame.origin.y = offset * textFrame.size.height - clipFrame.size.height / 2.0f;
+
+		if (textFrame.origin.y > textFrame.size.height - clipFrame.size.height)
+			textFrame.origin.y = textFrame.size.height - clipFrame.size.height;
+
+		if (textFrame.origin.y < 0)
+			textFrame.origin.y = 0;
+
+		[clipView scrollToPoint:textFrame.origin];
 	}
 }
 
@@ -381,6 +406,12 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 	[_suggestionList selectRow:idx byExtendingSelection:NO];
 }
 
+- (void)reloadSuggestionList
+{
+	[_suggestionList deselectAll:self];
+	[_suggestionList reloadData];
+	[[_suggestionList window] makeFirstResponder:_replData];
+}
 
 - (void)setSuggestionList:(id)list
 {
@@ -393,4 +424,3 @@ void AP_CocoaDialog_Spell::event_ReplacementChanged()
 }
 
 @end
-

@@ -86,9 +86,10 @@ private:
 - (IBAction)replacementChanged:(id)sender;
 - (void)suggestionSelected:(id)sender;
 
-- (void)setMisspelled:(NSAttributedString*)attr;
+- (void)setMisspelled:(NSAttributedString*)attr scroll:(float)offset;
 - (void)setReplace:(NSString*)str;
 - (void)selectSuggestion:(int)idx;
+- (void)reloadSuggestionList;
 - (void)setSuggestionList:(id)list;
 - (NSString*)replace;
 @end
