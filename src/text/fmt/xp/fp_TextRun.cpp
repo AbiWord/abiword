@@ -1423,13 +1423,13 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		
 		iCumWidth = rightClear;
 		bOneMore = false;
-		
+//		UT_sint32 iEx = getGraphics()->tlu(2);
 		while(pNext != NULL && pNext->getLine() == thisLine &&
 			  (pNext->getLength() == 0 || iCumWidth >= 0  || bOneMore))
 		{
 			iCumWidth -= pNext->getWidth();
 
-			if(!bOneMore && iCumWidth <= 0)
+			if(!bOneMore && (iCumWidth <= 0))
 			{
 				bOneMore = true;
 			}
