@@ -150,7 +150,7 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 
 static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
-	UT_return_if_fail(widget && dlg);
+	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
 	return FALSE;
 }
