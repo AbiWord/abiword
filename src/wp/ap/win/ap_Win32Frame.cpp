@@ -102,6 +102,16 @@ void AP_Win32Frame::_getVerticalScrollInfo(SCROLLINFO * psi)
 
 /*****************************************************************/
 	
+void AP_Win32Frame::setZoomPercentage(UT_uint32 iZoom)
+{
+	_showDocument(iZoom);
+}
+
+UT_uint32 AP_Win32Frame::getZoomPercentage(void)
+{
+	return m_pData->m_pG->getZoomPercentage();
+}
+
 UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 {
 	if (!m_pDoc)
@@ -211,7 +221,10 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 
 	REPLACEP(m_pData->m_pG, pG);
 	REPLACEP(m_pData->m_pDocLayout, pDocLayout);
-	DELETEP(pOldDoc);
+	if (pOldDoc != m_pDoc)
+	{
+		DELETEP(pOldDoc);
+	}
 	REPLACEP(m_pView, pView);
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
