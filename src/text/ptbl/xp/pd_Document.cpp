@@ -135,6 +135,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::importFile -- could not construct importer\n"));
+		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
 	m_bLoading = true;
@@ -145,6 +146,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::importFile -- could not import file\n"));
+		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
 	
