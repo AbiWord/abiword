@@ -1147,7 +1147,7 @@ rms:  I'm adding something here to get a localized splash screen
 			}
 		}
 		// create a centered window the size of our image
-		wSplash = gtk_window_new(GTK_WINDOW_POPUP);
+		wSplash = gtk_window_new(GTK_WINDOW_DIALOG);
 		gtk_window_set_default_size (GTK_WINDOW (wSplash),
 									 iSplashWidth, iSplashHeight);
 		gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
