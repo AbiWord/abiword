@@ -169,10 +169,10 @@ void fb_Alignment_justify::_confirmJustification(fp_Line *pLine)
 //	UT_ASSERT(iJustifiedLength == iLineLength);
 }
 
+#endif /* NDEBUG */
+
 void fb_Alignment_justify::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 {
 	pLine->clearScreenFromRunToEnd(runIndex);
 }
 
-
-#endif
