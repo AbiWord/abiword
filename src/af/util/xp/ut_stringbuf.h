@@ -101,5 +101,66 @@ private:
 	size_t		m_size;
 };
 
-#endif	// UT_STRINGBUF_H
+class ABI_EXPORT UT_UTF8Stringbuf
+{
+public:
+	typedef UT_UCSChar   UCS2Char;
+	typedef unsigned int UCS4Char;
 
+	static UCS4Char charCode (const char * str);
+
+	UT_UTF8Stringbuf ();
+	UT_UTF8Stringbuf (const UT_UTF8Stringbuf & rhs);
+	UT_UTF8Stringbuf (const char * sz);
+
+	~UT_UTF8Stringbuf ();
+
+	void		operator=(const UT_UTF8Stringbuf & rhs);
+
+	void		assign (const char * sz);
+	void		append (const char * sz);
+	void		append (const UT_UTF8Stringbuf & rhs);
+
+	void		clear ();
+
+	bool		empty ()	const { return m_psz == m_pEnd; }
+	size_t		byteLength ()	const { return m_pEnd - m_psz; }
+	size_t		utf8Length ()	const { return m_strlen; }
+	const char *	data ()		const { return m_psz; }
+
+	class ABI_EXPORT UTF8Iterator
+	{
+	public:
+		UTF8Iterator (const UT_UTF8Stringbuf * strbuf);
+		~UTF8Iterator ();
+
+		void operator=(const char * position);
+
+		UTF8Iterator & operator++() { advance (); return *this; } // prefix operators
+		UTF8Iterator & operator--() { retreat (); return *this; }
+
+		const char * current (); // return 0 if current position is invalid
+		const char * start ();   // return 0 if no string exists
+		const char * end ();     // return 0 if no string exists
+		const char * advance (); // return 0 if unable to advance
+		const char * retreat (); // return 0 if unable to retreat
+
+	private:
+		const UT_UTF8Stringbuf * m_strbuf;
+
+		const char * m_utfbuf;
+		const char * m_utfptr;
+
+		bool sync ();
+	};
+
+private:
+	char *	m_psz;
+	char *	m_pEnd;
+	size_t	m_strlen;
+	size_t	m_buflen;
+
+	bool	grow (size_t length);
+};
+
+#endif	// UT_STRINGBUF_H

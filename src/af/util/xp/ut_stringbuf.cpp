@@ -312,3 +312,367 @@ void UT_UCS2Stringbuf::copy(char_type* pDest, const char_type* pSrc, size_t n)
 	memcpy(pDest, pSrc, n * sizeof(char_type));
 }
 
+
+/***************************************************************************/
+/***************************************************************************/
+
+
+UT_UTF8Stringbuf::UT_UTF8Stringbuf () :
+	m_psz(0),
+	m_pEnd(0),
+	m_strlen(0),
+	m_buflen(0)
+{
+	// 
+}
+
+UT_UTF8Stringbuf::UT_UTF8Stringbuf (const UT_UTF8Stringbuf & rhs) :
+	m_psz(0),
+	m_pEnd(0),
+	m_strlen(0),
+	m_buflen(0)
+{
+	append (rhs);
+}
+
+UT_UTF8Stringbuf::UT_UTF8Stringbuf (const char * sz) :
+	m_psz(0),
+	m_pEnd(0),
+	m_strlen(0),
+	m_buflen(0)
+{
+	append (sz);
+}
+
+UT_UTF8Stringbuf::~UT_UTF8Stringbuf ()
+{
+	clear ();
+}
+
+void UT_UTF8Stringbuf::operator=(const UT_UTF8Stringbuf & rhs)
+{
+	m_pEnd = m_psz;
+	m_strlen = 0;
+	append (rhs);
+}
+
+void UT_UTF8Stringbuf::assign (const char * sz)
+{
+	m_pEnd = m_psz;
+	m_strlen = 0;
+	append (sz);
+}
+
+// returns 0 if invalid, or if end of string, i.e. 0
+// technically it could differentiate, since UCS-4 is only 31-bit, but...
+UT_UTF8Stringbuf::UCS4Char UT_UTF8Stringbuf::charCode (const char * str)
+{
+	if ( str == 0) return 0;
+	if (*str == 0) return 0;
+
+	const char * p = str;
+
+	if ((*p & 0x80) == 0x00) // plain us-ascii part of latin-1
+	{
+		return (UCS4Char) (*p);
+	}
+
+	UCS4Char ret_code = 0;
+
+	int bytesInSequence = 0;
+	int bytesExpectedInSequence = 0;
+
+	while (*p)
+	{
+		// 'continuing' octets:
+		if ((*p & 0xc0) == 0x80) // trailing byte in multi-byte sequence
+		{
+			if (bytesInSequence == 0) break;
+			bytesInSequence++;
+
+			ret_code = (ret_code << 6) | (UCS4Char) (*p & 0x3f);
+
+			if (bytesInSequence == bytesExpectedInSequence) break;
+
+			p++;
+			continue;
+		}
+
+		if (bytesInSequence) break;
+		bytesInSequence++;
+
+		/* 4,5,6-byte sequences may require > 2 bytes in UCS-4
+		 */
+		if ((*p & 0xfe) == 0xfc) // lead byte in 6-byte sequence
+		{
+			bytesExpectedInSequence = 6;
+			ret_code = (UCS4Char) (*p & 0x01);
+			p++;
+			continue;
+		}
+		if ((*p & 0xfc) == 0xf8) // lead byte in 5-byte sequence
+		{
+			bytesExpectedInSequence = 5;
+			ret_code = (UCS4Char) (*p & 0x03);
+			p++;
+			continue;
+		}
+		if ((*p & 0xf8) == 0xf0) // lead byte in 4-byte sequence
+		{
+			bytesExpectedInSequence = 4;
+			ret_code = (UCS4Char) (*p & 0x07);
+			p++;
+			continue;
+		}
+
+		/* 1,2,3-byte sequences do not require > 2 bytes in UCS-4
+		 */
+		if ((*p & 0xf0) == 0xe0) // lead byte in 3-byte sequence
+		{
+			bytesExpectedInSequence = 3;
+			ret_code = (UCS4Char) (*p & 0x0f);
+			p++;
+			continue;
+		}
+		if ((*p & 0xe0) == 0xc0) // lead byte in 2-byte sequence
+		{
+			bytesExpectedInSequence = 2;
+			ret_code = (UCS4Char) (*p & 0x1f);
+			p++;
+			continue;
+		}
+
+		ret_code = 0;
+		break; // invalid byte - not UTF-8
+	}
+	if (bytesInSequence != bytesExpectedInSequence) ret_code = 0;
+
+	return ret_code;
+}
+
+void UT_UTF8Stringbuf::append (const char * sz)
+{
+	if (sz == 0) return;
+	if (!grow (strlen (sz) + 1)) return;
+
+	const char * p = sz;
+	char buf[6];
+	int bytesInSequence = 0;
+	int bytesExpectedInSequence = 0;
+
+	while (*p)
+	{
+		if ((*p & 0x80) == 0x00) // plain us-ascii part of latin-1
+		{
+			if (bytesInSequence) break;
+
+			*m_pEnd++ = *p;
+			*m_pEnd = 0;
+			m_strlen++;
+
+			p++;
+			continue;
+		}
+
+		// 'continuing' octets:
+		if ((*p & 0xc0) == 0x80) // trailing byte in multi-byte sequence
+		{
+			if (bytesInSequence == 0) break;
+
+			buf[bytesInSequence++] = *p;
+			if (bytesInSequence == bytesExpectedInSequence)
+			{
+				for (int b = 0; b < bytesInSequence; b++) *m_pEnd++ = buf[b];
+				*m_pEnd = 0;
+				m_strlen++;
+				bytesInSequence = 0;
+				bytesExpectedInSequence = 0;
+			}
+
+			p++;
+			continue;
+		}
+
+		if (bytesInSequence) break;
+
+		buf[bytesInSequence++] = *p;
+
+		/* 4,5,6-byte sequences may require > 2 bytes in UCS-4
+		 */
+		if ((*p & 0xfe) == 0xfc) // lead byte in 6-byte sequence
+		{
+			bytesExpectedInSequence = 6;
+			p++;
+			continue;
+		}
+		if ((*p & 0xfc) == 0xf8) // lead byte in 5-byte sequence
+		{
+			bytesExpectedInSequence = 5;
+			p++;
+			continue;
+		}
+		if ((*p & 0xf8) == 0xf0) // lead byte in 4-byte sequence
+		{
+			bytesExpectedInSequence = 4;
+			p++;
+			continue;
+		}
+
+		/* 1,2,3-byte sequences do not require > 2 bytes in UCS-4
+		 */
+		if ((*p & 0xf0) == 0xe0) // lead byte in 3-byte sequence
+		{
+			bytesExpectedInSequence = 3;
+			p++;
+			continue;
+		}
+		if ((*p & 0xe0) == 0xc0) // lead byte in 2-byte sequence
+		{
+			bytesExpectedInSequence = 2;
+			p++;
+			continue;
+		}
+
+		break; // invalid byte - not UTF-8
+	}
+}
+
+void UT_UTF8Stringbuf::append (const UT_UTF8Stringbuf & rhs)
+{
+	if (grow (rhs.byteLength () + 1))
+	{
+		memcpy (m_pEnd, rhs.data (), rhs.byteLength ());
+		m_strlen += rhs.utf8Length ();
+		m_pEnd = m_pEnd + rhs.byteLength ();
+		*m_pEnd = 0;
+	}
+}
+
+void UT_UTF8Stringbuf::clear ()
+{
+	if (m_psz) free (m_psz);
+	m_psz = 0;
+	m_pEnd = 0;
+	m_strlen = 0;
+	m_buflen = 0;
+}
+
+bool UT_UTF8Stringbuf::grow (size_t length)
+{
+	if (length <= (m_buflen - (m_pEnd - m_psz))) return true;
+
+	if (m_psz == 0)
+	{
+		m_psz = (char *) malloc (length);
+		if (m_psz == 0) return false;
+		m_strlen = 0;
+		m_buflen = length;
+		m_pEnd = m_psz;
+		*m_pEnd = 0;
+		return true;
+	}
+
+	size_t new_length = length + (m_pEnd - m_psz);
+	size_t end_offset = m_pEnd - m_psz;
+
+	char * more = (char *) realloc ((void *) m_psz, new_length);
+	if (more == 0) return false;
+	m_psz = more;
+	m_pEnd = m_psz + end_offset;
+	m_buflen = new_length;
+	return true;
+}
+
+UT_UTF8Stringbuf::UTF8Iterator::UTF8Iterator (const UT_UTF8Stringbuf * strbuf) :
+	m_strbuf(strbuf),
+	m_utfbuf(0),
+	m_utfptr(0)
+{
+	sync ();
+}
+
+UT_UTF8Stringbuf::UTF8Iterator::~UTF8Iterator ()
+{
+	// 
+}
+
+void UT_UTF8Stringbuf::UTF8Iterator::operator=(const char * position)
+{
+	if (!sync ()) return;
+	if ((position - m_utfbuf) > m_strbuf->byteLength ())
+	{
+		m_utfptr = m_utfbuf + m_strbuf->byteLength ();
+	}
+	else
+	{
+		m_utfptr = position;
+	}
+}
+
+const char * UT_UTF8Stringbuf::UTF8Iterator::current ()
+{
+	if (!sync ()) return 0;
+	if ((*m_utfptr & 0xc0) == 0x80) return 0; // oops - a 'continuing' byte 
+	return m_utfptr;
+}
+
+const char * UT_UTF8Stringbuf::UTF8Iterator::start ()
+{
+	if (!sync ()) return 0;
+	return m_utfbuf;
+}
+
+const char * UT_UTF8Stringbuf::UTF8Iterator::end ()
+{
+	if (!sync ()) return 0;
+	return m_utfbuf + m_strbuf->byteLength ();
+}
+
+const char * UT_UTF8Stringbuf::UTF8Iterator::advance ()
+{
+	if (!sync ()) return 0;
+	if (*m_utfptr == 0) return 0;
+	do m_utfptr++;
+	while ((*m_utfptr & 0xc0) == 0x80); // a 'continuing' byte 
+	return m_utfptr;
+}
+
+const char * UT_UTF8Stringbuf::UTF8Iterator::retreat ()
+{
+	if (!sync ()) return 0;
+	if (m_utfptr == m_utfbuf) return 0;
+	do m_utfptr--;
+	while ((*m_utfptr & 0xc0) == 0x80); // a 'continuing' byte 
+	return m_utfptr;
+}
+
+// returns false only if there is no string data
+bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
+{
+	if (m_strbuf == 0) return false;
+
+	const char * utf8_buffer = m_strbuf->data ();
+	if (utf8_buffer == 0)
+	{
+		m_utfbuf = 0;
+		m_utfptr = 0;
+		return false;
+	}
+
+	size_t utf8_length = m_strbuf->byteLength ();
+
+	/* note that this doesn't guarantee that m_utfptr points to the
+	 * start of utf8 char sequence
+	 */
+	if ((m_utfptr - m_utfbuf) > utf8_length)
+	{
+		m_utfptr = utf8_buffer + utf8_length;
+	}
+	else
+	{
+		m_utfptr = utf8_buffer + (m_utfptr - m_utfbuf);
+	}
+	m_utfbuf = utf8_buffer;
+
+	return true;
+}

@@ -650,3 +650,217 @@ UT_UCSChar& UT_UCS2String::operator[](size_t iPos)
 	UT_ASSERT(iPos <= size());
 	return pimpl->data()[iPos];
 }
+
+// ---------------------------------------------------------------------------------- //
+
+UT_UTF8String::UT_UTF8String () :
+	pimpl(new UT_UTF8Stringbuf)
+{
+	// 
+}
+
+UT_UTF8String::UT_UTF8String (const char * sz) :
+	pimpl(new UT_UTF8Stringbuf(sz))
+{
+	// 
+}
+
+UT_UTF8String::UT_UTF8String (const UT_UTF8String & rhs) :
+	pimpl(new UT_UTF8Stringbuf(*rhs.pimpl))
+{
+	// 
+}
+
+UT_UTF8String::UT_UTF8String (const UT_UCS2String & rhs) :
+	pimpl(new UT_UTF8Stringbuf)
+{
+	if (rhs.size ()) append (rhs.ucs_str (), rhs.size ());
+}
+
+UT_UTF8String::UT_UTF8String (const UT_UCSChar * sz, size_t n) :
+	pimpl(new UT_UTF8Stringbuf)
+{
+	append (sz, n);
+}
+
+UT_UTF8String::~UT_UTF8String ()
+{
+	delete pimpl;
+}
+
+size_t UT_UTF8String::size () const
+{
+	return pimpl->utf8Length ();
+}
+
+bool UT_UTF8String::empty () const
+{
+	return pimpl->empty ();
+}
+
+void UT_UTF8String::clear () const
+{
+	pimpl->clear ();
+}
+
+UT_UTF8String &	UT_UTF8String::operator=(const char * rhs)
+{
+	pimpl->assign (rhs);
+	return *this;
+}
+
+UT_UTF8String &	UT_UTF8String::operator=(const UT_UTF8String & rhs)
+{
+	if (this != &rhs) {
+		*pimpl = *rhs.pimpl;
+	}
+	return *this;
+}
+
+UT_UTF8String &	UT_UTF8String::operator=(const UT_UCS2String & rhs)
+{
+	pimpl->clear ();
+	if (rhs.size ()) append (rhs.ucs_str (), rhs.size ());
+	return *this;
+}
+
+UT_UTF8String &	UT_UTF8String::operator+=(const char * rhs)
+{
+	pimpl->append (rhs);
+	return *this;
+}
+
+UT_UTF8String &	UT_UTF8String::operator+=(const UT_UTF8String & rhs)
+{
+	pimpl->append (*rhs.pimpl);
+	return *this;
+}
+
+UT_UTF8String &	UT_UTF8String::operator+=(const UT_UCS2String & rhs)
+{
+	if (rhs.size ()) append (rhs.ucs_str (), rhs.size ());
+	return *this;
+}
+
+const char * UT_UTF8String::utf8_str () const
+{
+	static const char * utf8Empty = "";
+	return pimpl->utf8Length () ? pimpl->data() : utf8Empty;
+}
+
+void UT_UTF8String::append (const UT_UCSChar * sz, size_t n /* 0 = null-terminated */)
+{
+	if (sz == 0) return;
+
+	size_t ucs2_length = 0;
+	size_t utf8_length = 0;
+
+	// check UCS-2 string length and calculate UTF-8 string length
+	if (n == 0)
+	{
+		const UT_UCSChar * p = sz;
+		while (*p)
+		{
+			if ((*p & 0xff80) == 0x0000)
+			{
+				utf8_length++;
+			}
+			else if ((*p & 0xf800) == 0x0000)
+			{
+				utf8_length += 2;
+			}
+			else
+			{
+				utf8_length += 3;
+			}
+			p++;
+			ucs2_length++;
+		}
+	}
+	else
+	{
+		const UT_UCSChar * p = sz;
+		for (size_t i = 0; i < n; i++)
+		{
+			if (*p == 0) break;
+			if ((*p & 0xff80) == 0x0000)
+			{
+				utf8_length++;
+			}
+			else if ((*p & 0xf800) == 0x0000)
+			{
+				utf8_length += 2;
+			}
+			else
+			{
+				utf8_length += 3;
+			}
+			p++;
+			ucs2_length++;
+		}
+	}
+
+	if (utf8_length == 0) return;
+
+	char * utf8_buffer = (char *) malloc (utf8_length + 1);
+	if (utf8_buffer == 0) return;
+
+	const UT_UCSChar * p = sz;
+	char * b = utf8_buffer;
+	for (size_t i = 0; i < utf8_length; i++)
+	{
+		if ((*p & 0xff80) == 0x0000)
+		{
+			*b++ = (char) (*p & 0x7f);
+		}
+		else if ((*p & 0xf800) == 0x0000)
+		{
+			*b++ = 0xc0 | (char) ((*p >> 6) & 0x1f);
+			*b++ = 0x80 | (char) ( *p       & 0x3f);
+		}
+		else
+		{
+			*b++ = 0xe0 | (char) ((*p >> 12) & 0x0f);
+			*b++ = 0x80 | (char) ((*p >>  6) & 0x3f);
+			*b++ = 0x80 | (char) ( *p        & 0x3f);
+		}
+		p++;
+	}
+	*b = 0;
+
+	pimpl->append (utf8_buffer);
+
+	free (utf8_buffer);
+}
+
+UT_UCS2String UT_UTF8String::ucs2_str ()
+{
+	UT_UCS2String ucs2_string;
+
+	UT_UTF8Stringbuf::UTF8Iterator utf(pimpl);
+
+	utf = utf.start ();
+	if (utf.current () == 0) return ucs2_string;
+
+	while (true)
+	{
+		const char * pUTF8 = utf.current ();
+		utf.advance ();
+
+		UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (pUTF8);
+
+		if (ucs4 == 0) break; // end of string
+		if (ucs4 & 0xffff0000) continue; // oops - UCS-2 can't handle this...
+
+		ucs2_string += (UT_UCSChar) (ucs4 & 0x0000ffff);
+	}
+
+	return ucs2_string;
+}
+
+UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2)
+{
+	UT_UTF8String s(s1);
+	s += s2;
+	return s;
+}

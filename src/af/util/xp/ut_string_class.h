@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "ut_string.h"
+#include "ut_stringbuf.h"
 #include "ut_types.h"
 
 // yes, this is screaming for a template
@@ -162,5 +163,86 @@ bool operator<(const UT_UCS2String& s1, const UT_UCS2String& s2);
 
 UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2);
 
-#endif	// UT_STRING_CLASS_H
+/***************************************************************************/
 
+//!
+//	UT_UTF8String, a simple wrapper for zero terminated 'UTF8' strings.
+//
+
+class ABI_EXPORT UT_UTF8String
+{
+public:
+	UT_UTF8String ();
+	UT_UTF8String (const char * sz);
+	UT_UTF8String (const UT_UTF8String & rhs);
+	UT_UTF8String (const UT_UCS2String & rhs);
+	UT_UTF8String (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
+
+	~UT_UTF8String ();
+
+	size_t		size () const;
+	bool		empty () const;
+	void		clear () const;
+
+	UT_UTF8String &	operator=(const char *          rhs);
+	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
+	UT_UTF8String &	operator=(const UT_UCS2String & rhs);
+
+	UT_UTF8String &	operator+=(const char *          rhs);
+	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
+	UT_UTF8String &	operator+=(const UT_UCS2String & rhs);
+
+	// The returned pointer is valid until the next non-const
+	// operation. You will _always_ get a legal pointer back,
+	// even if to an empty (0) string.
+	const char * utf8_str () const;
+
+	UT_UCS2String ucs2_str ();
+
+	void append (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
+
+	/* UTF8String - NOTES
+	 * 
+	 * TODO:
+	 * 1. Maybe have a search&replace function, something like:
+	 * 
+	 * 	int replace (const char * utf_newstr, const char * utf_oldstr);
+	 * 
+	 *    which could be used to do substitutions, e.g.:
+	 * 
+	 * 	UTF8String xmlstr = "expr: if ((c > 0) && (c < 0x80)) return c;";
+	 * 	xmlstr.replace ("&lt;", "<");
+	 * 	xmlstr.replace ("&gt;", ">");
+	 * 	xmlstr.replace ("&amp;","&");
+	 * 
+	 * getIterator:
+	 * returns a home-made iterator associated with the UTF-8 string, e.g.:
+	 * 
+	 * 	UTF8String str = "This is a UTF-8 string.";
+	 * 	UT_UTF8Stringbuf::UTF8Iterator & iter = str.getIterator ();
+	 * 	iter = iter.start (); // iter.start() returns 0 if no string, so:
+	 * 	if (iter.current ())
+	 * 	{
+	 * 		while (true)
+	 * 		{
+	 * 			char * pUTF = iter.current ();
+	 * 			if (*pUTF == 0) break; // end-of-string
+	 * 			// etc.
+	 * 			iter.advance (); // or ++iter;
+	 * 		}
+	 * 	}
+	 * 
+	 * The iterator will be well behaved provided the string is not being edited.
+	 */
+	UT_UTF8Stringbuf::UTF8Iterator getIterator () const
+	{
+		return UT_UTF8Stringbuf::UTF8Iterator(pimpl);
+	}
+
+private:
+	class UT_UTF8Stringbuf * pimpl;
+};
+
+UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
+
+#endif	// UT_STRING_CLASS_H
