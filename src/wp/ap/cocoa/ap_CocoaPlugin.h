@@ -145,6 +145,10 @@ class PD_Document;
 
 - (NSString *)title;
 
+- (NSString *)selectWord;
+
+- (void)insertText:(NSString *)text;
+
 - (NSString *)documentMailMergeSource; // may return nil
 - (void)setDocumentMailMergeSource:(NSString *)path;
 
