@@ -34,6 +34,8 @@
 #include "ut_mbtowc.h"
 #include "ut_wctomb.h"
 
+#include "ut_string_class.h"
+
 #include "xap_EncodingManager.h"
 
 #define UT_STRING_CPP
@@ -1410,6 +1412,21 @@ UT_UCS4Char * UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src)
 
 	return dest;
 }
+
+UT_UCS4Char * UT_UCS4_strcpy_utf8_char(UT_UCS4Char * dest, const char * src)
+{
+	// FIXME: This could be more efficient than it is, on the other
+	// hand, it should be correct
+
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+
+	UT_UCS4String ucs4str(src); // constructs a string from utf8 by default
+	dest = UT_UCS4_strcpy(dest, ucs4str.ucs4_str());
+
+	return dest;
+}
+
 
 char * UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src)
 {
