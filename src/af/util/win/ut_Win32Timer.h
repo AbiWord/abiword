@@ -24,7 +24,7 @@
 
 #include "ut_timer.h"
 
-class UT_Win32Timer : public UT_Timer
+class ABI_EXPORT UT_Win32Timer : public UT_Timer
 {
 public:
 	UT_Win32Timer(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG);
