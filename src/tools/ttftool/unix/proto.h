@@ -3,6 +3,8 @@
 
 /* function prototypes */
 
+#include <sys/types.h>
+
 void endianness_test(void);
 
 struct TableDirectoryEntry *readDirectory(int fd, struct OffsetTable *ot);
