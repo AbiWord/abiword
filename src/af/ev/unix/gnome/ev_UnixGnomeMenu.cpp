@@ -889,7 +889,9 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					bResult = stack.viewTop((void **)&wParent);
 					UT_ASSERT(bResult);
 					
-					gtk_widget_queue_resize( GTK_MENU_ITEM(wParent)->submenu );
+					//gtk_widget_queue_resize( GTK_MENU(wParent)->parent_menu_item );
+					//gtk_widget_queue_resize( GTK_MENU_ITEM(GTK_MENU(wParent)->parent_menu_item)->submenu );
+					gtk_widget_queue_resize(wParent);
 				}
 			//;
 			
