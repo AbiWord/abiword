@@ -628,7 +628,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		NSPoint point = NSMakePoint (TDUX(xoff), yoff);
 		unichar * uniString = (unichar*)malloc((iLength + 1) * sizeof (unichar));
 		for (int i = 0; i < iLength; i++) {
-			uniString[i] = pChars[i + iCharOffset];
+			uniString[i] = m_pFont ? m_pFont->remapChar(pChars[i + iCharOffset]) : pChars[i + iCharOffset];
 		}
 		string =  [[NSString alloc] initWithCharacters:uniString length:iLength];
 		NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps];
@@ -681,7 +681,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					if (UT_BIDI_IS_RTL(UT_bidiGetCharType(begin[i]))) {
 						rtl = true;
 					}
-					cBuf[i] = (unichar) begin[i];
+					cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[i]) : begin[i]);
 				}
 				cBuf[iLength] = 0;
 
@@ -699,7 +699,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					}
 				if (rtl && countTrailingNeutral) {
 					for (int i = 0; i < countTrailingNeutral; i++) {
-						cBuf[i] = (unichar) begin[iLength-i-1];
+						cBuf[i] = (unichar) (m_pFont ? m_pFont->remapChar(begin[iLength-i-1]) : begin[iLength-i-1]);
 					}
 					cBuf[countTrailingNeutral] = 0;
 

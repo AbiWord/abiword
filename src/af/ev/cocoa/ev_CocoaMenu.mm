@@ -27,83 +27,104 @@
 #include <ctype.h>
 
 #include "ut_types.h"
+#include "ut_debugmsg.h"
 #include "ut_exception.h"
 #include "ut_stack.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
-#include "ut_debugmsg.h"
 
-#include "xap_Types.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
+#include "xap_CocoaFrameImpl.h"
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaToolPalette.h"
+#include "xap_Types.h"
 
 #include "ev_CocoaMenu.h"
 #include "ev_CocoaMenuBar.h"
 #include "ev_CocoaMenuPopup.h"
 #include "ev_CocoaKeyboard.h"
-#include "ev_Menu_Layouts.h"
+#include "ev_EditEventMapper.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
-#include "ev_EditEventMapper.h"
 
-#include "ap_Menu_Id.h"
 #include "ap_CocoaFrame.h"
+#include "ap_Menu_Id.h"
 
-#import "xap_CocoaFrameImpl.h"
-
-@implementation EV_NSMenu
-
--(void)dealloc
+EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName) :
+	EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName, false)
 {
-	[_virtualItems release];
-	[super dealloc];
+	// 
+}
+
+EV_CocoaMenuBar::~EV_CocoaMenuBar()
+{
+	// 
 }
 
 
--(id)initWithXAP:(EV_CocoaMenu*)owner andTitle:(NSString*)title
+EV_CocoaMenuPopup::EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName) :
+	EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName, true)
 {
-	self = [super initWithTitle:title];
-	_virtualItems = [[NSMutableArray alloc] init];
-	_xap = owner;
-	return self;
+	// 
 }
 
-// NSMenu overrides
-
--(void)update
+EV_CocoaMenuPopup::~EV_CocoaMenuPopup()
 {
-	xxx_UT_DEBUGMSG(("-[EV_NSMenu update: %s]\n", [[self title] UTF8String]));
-	_xap->_refreshMenu(self);
-	[super update];
+	// 
 }
 
-- (void)addVirtualItem:(id <NSMenuItem>)newItem
+NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
 {
-	[_virtualItems addObject:newItem];
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	return [pController contextMenu];
 }
 
-
-- (NSEnumerator*)virtualItemsEnumerator
+bool EV_CocoaMenuPopup::synthesizeMenuPopup()
 {
-	return [_virtualItems objectEnumerator];
+	buildAppMenu();
+	return true;
 }
 
-@end
+bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
+{
+	return true;
+}
 
 
 @implementation EV_CocoaMenuTarget
 
-- (void)setXAPOwner:(EV_CocoaMenu*)owner
+- (id)initWithMenu:(EV_CocoaMenu *)menu
 {
-	_xap = owner;
+	if (self = [super init])
+		{
+			m_menu = menu;
+		}
+	return self;
 }
 
-
-- (id)menuSelected:(id)sender
+- (void)menuSelected:(id)sender
 {
-	UT_DEBUGMSG (("@EV_CocoaMenuTarget (id)menuSelected:(id)sender\n"));
+	if ([sender isKindOfClass:[NSMenuItem class]])
+		{
+			XAP_Menu_Id menuid = static_cast<XAP_Menu_Id>([sender tag]);
+
+			UT_DEBUGMSG(("[EV_CocoaMenuTarget -menuSelected:] (menu-id=%d)\n", (int) menuid));
+
+			if (!m_menu->menuEvent(menuid))
+				{
+					UT_DEBUGMSG(("[EV_CocoaMenuTarget -menuSelected:] (menu-id=%d) - failed!\n", (int) menuid));
+				}
+		}
+	else
+		{
+			UT_DEBUGMSG(("[EV_CocoaMenuTarget -menuSelected:] (ignored)\n"));
+		}
+}
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+{
+	XAP_Menu_Id menuid = static_cast<XAP_Menu_Id>([menuItem tag]);
 
 	bool bEnabled = true;
 	bool bChecked = false;
@@ -124,404 +145,570 @@
 @end
 
 
-void
-EV_CocoaMenu::_refreshMenu(EV_NSMenu *menu)
+EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName, bool bContextMenu) :
+	EV_Menu(pCocoaApp, pCocoaApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
+	m_pCocoaApp(pCocoaApp),
+	m_menuTarget(0),
+	m_AppMenuCurrent(static_cast<XAP_CocoaAppMenu_Id>(0)),
+	m_menuStack(0),
+	m_buffer(0),
+	m_maxlen(0),
+	m_bContextMenu(bContextMenu),
+	m_bAddSeparator(false)
 {
-	XAP_App* app = XAP_App::getApp();
-	AV_View* pView;
-	XAP_Frame* frame = app->getLastFocussedFrame();
-	if (frame) {
-		pView = frame->getCurrentView();
-	}
-	else {
-		pView = NULL;
-	}
-	const EV_Menu_ActionSet * pMenuActionSet = app->getMenuActionSet();
-	const EV_EditMethodContainer * pEMC = app->getEditMethodContainer();
-	UT_ASSERT(pEMC);
-	
-	NSMenuItem *menuItem;
-	NSEnumerator * enumerator = [[menu itemArray] objectEnumerator];
-	while (menuItem = [enumerator nextObject]) {
-		[menu removeItem:menuItem];
-	}
-	
-	enumerator = [menu virtualItemsEnumerator];
-	
-	while (menuItem = [enumerator nextObject]) {
-		XAP_Menu_Id cmd = [menuItem tag];
-		
-		const EV_Menu_Action * pAction = pMenuActionSet->getAction(cmd);
-		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(cmd);
-		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(m_pMenuLayout->getLayoutIndex(cmd));
-		
-		switch (pLayoutItem->getMenuLayoutFlags()) {
-		case EV_MLF_Normal:
-		{			
-			// see if we need to enable/disable and/or check/uncheck it.
-			bool bEnable = true;
-			bool bCheck = false;
-			
-			if (pAction->hasGetStateFunction())
-			{
-				if (pView) {
-					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-					if (mis & EV_MIS_Gray)
-						bEnable = false;
-					if (mis & EV_MIS_Toggled)
-						bCheck = true;
-				}
-				else {
-					bEnable = false;
-					bCheck = false;				
-				}
-			}
-			else {
-				// TODO FIXME: store this somewhere
-				const char *methodName = pAction->getMethodName();
-
-				EV_EditMethod * pEM = pEMC->findEditMethodByName(methodName);
-				if (pEM) {
-					EV_EditMethodType t = pEM->getType();
-					if (!(t & EV_EMT_APP_METHOD)) {
-						bEnable = (pView != NULL);
-					}
-					else {
-						bEnable = true;
-					}
-				}
-				else {
-					bEnable = false;
-				}
-			}
-
-			// Get the dynamic label
-			const char ** data = getLabelName(app, pAction, pLabel);
-			const char * szLabelName = data[0];
-			const char * szMnemonicName = data[1];		
-			bool bHasDynamicLabel = pAction->hasDynamicLabel();
-			
-			/* 
-			 we need to set the memnomic if current is empty even if it is not dynamic. Because we
-			 may be running the first update after building the menu bar in the application without
-			 having a frame. No frame = no shortcut actuallly because event mapper is tied to the frame.
-			*/
-			if (szMnemonicName && *szMnemonicName 
-						&& (bHasDynamicLabel || [[menuItem keyEquivalent] isEqualToString:@""])) {
-				NSString* shortCut;
-				unsigned int modifier = 0;
-				UT_DEBUGMSG(("changing menu shortcut\n"));
-				shortCut = _getItemCmd (szMnemonicName, modifier);
-				[menuItem setKeyEquivalent:shortCut];
-			}
-
-			// No dynamic label, check/enable
-			if (!bHasDynamicLabel)
-			{
-				[menu addItem:menuItem];
-			}
-			else {
-				szLabelName = pAction->getDynamicLabel(pLabel);
-				if (szLabelName && *szLabelName) {
-					char buf[1024];
-					_convertLabelToMac(buf, sizeof (buf), szLabelName);
-					[menuItem setTitle:[NSString stringWithUTF8String:buf]];
-					[menu addItem:menuItem];
-				}
-			}
-			
-			[menuItem setState:(bCheck?NSOnState:NSOffState)];
-			[menuItem setEnabled:(bEnable?YES:NO)];
-			break;
-		}
-		case EV_MLF_Separator:
-			[menu addItem:menuItem];
-			break;
-
-		case EV_MLF_BeginSubMenu:
-		{
-			bool bEnable = (pView != NULL);
-			if (cmd == AP_MENU_ID_FILE_RECENT) {
-					if (!pAction->getMenuItemState(pView)) {
-						bEnable = true;
-					}
-			}
-			else if (pAction->hasGetStateFunction()) {
-				if (pView) {
-					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-					if (mis & EV_MIS_Gray) {
-						bEnable = false;
-					}
-				}
-				else {
-					bEnable = false;
-				}
-			}
-			[menu addItem:menuItem];
-			[menuItem setEnabled:(bEnable?YES:NO)];
-			break;
-		}
-		case EV_MLF_EndSubMenu:
-		case EV_MLF_BeginPopupMenu:
-		case EV_MLF_EndPopupMenu:
-			break;
-			
-		default:
-			UT_ASSERT_NOT_REACHED();
-			break;
-		}
-	}
-}
-
-
-/*****************************************************************/
-
-
-EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp,
-						 const char * szMenuLayoutName,
-						 const char * szMenuLabelSetName)
-	: EV_Menu(pCocoaApp, pCocoaApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
-	  m_pCocoaApp(pCocoaApp)
-{
-	m_menuTarget = [[EV_CocoaMenuTarget alloc] init];
-	[m_menuTarget setXAPOwner:this];
+	m_menuTarget = [[EV_CocoaMenuTarget alloc] initWithMenu:this];
+	UT_ASSERT(m_menuTarget);
 }
 
 EV_CocoaMenu::~EV_CocoaMenu()
 {
-	[m_menuTarget release];
+	if (m_menuTarget)
+		{
+			[m_menuTarget release];
+			m_menuTarget = 0;
+		}
+	DELETEPV(m_buffer);
+}
+
+void EV_CocoaMenu::buildAppMenu()
+{
+	UT_DEBUGMSG(("EV_CocoaMenu::buildAppMenu()\n"));
+
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	if (m_bContextMenu)
+		[pController clearContextMenu];
+	else
+		[pController clearAllMenus];
+
+	m_AppMenuCurrent = static_cast<XAP_CocoaAppMenu_Id>(0); // XAP_CocoaAppMenu_AbiWord, technically
+
+	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
+	if (!pMenuActionSet)
+		return;
+	
+	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
+	UT_ASSERT(nrLabelItemsInLayout);
+	if (!nrLabelItemsInLayout)
+		return;
+
+	UT_Stack stack;
+	m_menuStack = &stack;
+
+	for (UT_uint32 k = 0; k < nrLabelItemsInLayout; k++)
+		{
+			EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
+			UT_ASSERT(pLayoutItem);
+			if (!pLayoutItem)
+				continue;
+		
+			EV_Menu_LayoutFlags flags = pLayoutItem->getMenuLayoutFlags();
+
+			XAP_Menu_Id menuid = pLayoutItem->getMenuId();
+
+			const EV_Menu_Action * pAction = pMenuActionSet->getAction(menuid);
+			UT_ASSERT(pAction);
+			if (!pAction)
+				continue;
+
+			const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(menuid);
+			UT_ASSERT(pLabel);
+			if (!pLabel)
+				continue;
+
+			bool bNewAppMenuItem = false;
+
+			if (!m_bContextMenu)
+				switch (menuid) // handle top-level menus
+					{
+					case AP_MENU_ID_FILE:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_File;
+							bNewAppMenuItem = true;
+						}
+						break;
+					case AP_MENU_ID_EDIT:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_Edit;
+							bNewAppMenuItem = true;
+						}
+						break;
+					case AP_MENU_ID_VIEW:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_View;
+							bNewAppMenuItem = true;
+						}
+						break;
+					case AP_MENU_ID_INSERT:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_Insert;
+							bNewAppMenuItem = true;
+						}
+						break;
+					case AP_MENU_ID_FORMAT:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_Format;
+							bNewAppMenuItem = true;
+						}
+						break;
+					case AP_MENU_ID_TOOLS:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_Tools;
+							bNewAppMenuItem = true;
+						}
+						break;
+					case AP_MENU_ID_TABLE:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_Table;
+							bNewAppMenuItem = true;
+						}
+						break;
+					case AP_MENU_ID_WINDOW:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_Window;
+							bNewAppMenuItem = true;
+							// I want to skip window-menu entries; see below
+						}
+						break;
+					case AP_MENU_ID_HELP:
+						{
+							m_AppMenuCurrent = XAP_CocoaAppMenu_Help;
+							bNewAppMenuItem = true;
+						}
+						break;
+					default:
+						break;
+					}
+			if ((!m_AppMenuCurrent && !m_bContextMenu) || (m_AppMenuCurrent == XAP_CocoaAppMenu_Window)) // I want to skip window-menu entries
+				{
+					continue;
+				}
+			if (bNewAppMenuItem)
+				{
+					MenuStack_clear();
+
+					const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
+					UT_ASSERT(data);
+					if (!data)
+						break; // erk!
+
+					const char * szLabelName = data[0];
+					UT_ASSERT(szLabelName);
+					if (szLabelName)
+						{
+							[pController setTitle:convertToString(szLabelName) forMenu:m_AppMenuCurrent];
+						}
+					continue;
+				}
+			addToAppMenu(menuid, pAction, pLabel, flags);
+		}
+	MenuStack_clear(); // shouldn't be anything in it, but maybe
+	m_menuStack = 0;
+}
+
+void EV_CocoaMenu::addToAppMenu(XAP_Menu_Id menuid, const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel, EV_Menu_LayoutFlags flags)
+{
+	switch (flags)
+		{
+		case EV_MLF_BeginSubMenu:
+			{
+				const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
+				UT_ASSERT(data);
+				if (!data)
+					break; // erk!
+
+				const char * szLabelName = data[0];
+				UT_ASSERT(szLabelName);
+				if (!szLabelName)
+					break; // erk!
+
+				NSString * itemName = convertToString(szLabelName);
+
+				NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:itemName action:nil keyEquivalent:@""];
+
+				NSMenu * menu = [[NSMenu alloc] initWithTitle:itemName];
+
+				[item setSubmenu:menu];
+				[item setTag:menuid];
+
+				addToAppMenu(item);
+
+				MenuStack_push(menu);
+
+				[menu release];
+				[item release];
+			}
+			break;
+
+		case EV_MLF_EndSubMenu:
+			{
+				MenuStack_pop();
+			}
+			break;
+
+		case EV_MLF_Normal:
+			{
+				const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
+				UT_ASSERT(data);
+				if (!data)
+					break; // erk!
+
+			//	const char * szMnemonicName = data[1]; // standard AbiWord-defined short-cut, e.g., Shift+Ctrl+?
+				const char * szLabelName    = data[0];
+			//	UT_ASSERT(szLabelName); // this happens 5 times atm (possibly more for new users?) in the recent files list
+				if (!szLabelName)
+					break; // erk!
+
+				NSString * itemName = convertToString(szLabelName, (menuid == AP_MENU_ID_HELP_ABOUT));
+
+				switch (menuid)
+					{
+					case AP_MENU_ID_HELP_ABOUT:
+						{
+							XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+							[pController setAboutTitle:itemName];
+
+							// TODO: setKeyEquivalent (although none for this usually)
+						}
+						break;
+
+					case AP_MENU_ID_TOOLS_OPTIONS:
+						{
+							XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+							[pController setPrefsTitle:itemName];
+
+							// TODO: setKeyEquivalent (usually Cmd-,)
+						}
+						break;
+
+					case AP_MENU_ID_FILE_EXIT:
+						{
+							// let's leave the title of this alone
+
+							// TODO: setKeyEquivalent (usually Cmd-Q)
+						}
+						break;
+
+					default:
+						{
+							NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:itemName action:nil keyEquivalent:@""];
+
+							if (!m_bContextMenu)
+								{
+									XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+									unsigned int mask = 0;
+									if (const char * equiv = [pController keyEquivalentForMenuID:menuid modifierMask:&mask])
+										{
+											[item setKeyEquivalent:[NSString stringWithUTF8String:equiv]];
+											[item setKeyEquivalentModifierMask:mask];
+										}
+								}
+
+							[item setTarget:m_menuTarget];
+							[item setAction:@selector(menuSelected:)];
+							[item setTag:menuid];
+
+							addToAppMenu(item);
+
+							[item release];
+						}
+						break;
+					}
+			}
+			break;
+
+		case EV_MLF_Separator:
+			{
+				m_bAddSeparator = true;
+				m_SeparatorID = menuid;
+			}
+			break;
+
+		case EV_MLF_BeginPopupMenu:
+		case EV_MLF_EndPopupMenu:
+			break;
+
+		default:
+			UT_ASSERT_NOT_REACHED();
+			break;
+		}
+}
+
+void EV_CocoaMenu::addToAppMenu(NSMenuItem * item)
+{
+	if (NSMenu * menu = MenuStack_top())
+		{
+			// UT_DEBUGMSG(("EV_CocoaMenu::addToAppMenu(\"%s\") [submenu]\n", [[item title] UTF8String]));
+
+			if (m_bAddSeparator)
+				{
+					m_bAddSeparator = false;
+
+					NSMenuItem * separator = [NSMenuItem separatorItem];
+					[separator setTag:m_SeparatorID];
+
+					[menu addItem:separator];
+				}
+			[menu addItem:item];
+		}
+	else
+		{
+			// UT_DEBUGMSG(("EV_CocoaMenu::addToAppMenu(\"%s\") [appmenu]\n", [[item title] UTF8String]));
+			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+			if (m_bAddSeparator)
+				{
+					m_bAddSeparator = false;
+
+					NSMenuItem * separator = [NSMenuItem separatorItem];
+					[separator setTag:m_SeparatorID];
+
+					if (m_bContextMenu)
+						[pController appendContextItem:separator];
+					else
+						[pController appendItem:separator toMenu:m_AppMenuCurrent];
+				}
+			if (m_bContextMenu)
+				[pController appendContextItem:item];
+			else
+				[pController appendItem:item toMenu:m_AppMenuCurrent];
+		}
 }
 
 bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 {
-	// user selected something from the menu.
-	// invoke the appropriate function.
-	// return true if handled.
-
 	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
+	if (!pMenuActionSet)
+		return false;
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(menuid);
 	UT_ASSERT(pAction);
+	if (!pAction)
+		return false;
 
 	const char * szMethodName = pAction->getMethodName();
+	UT_ASSERT(szMethodName);
 	if (!szMethodName)
 		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pCocoaApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
+	if (!pEMC)
+		return false;
 
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
-	UT_ASSERT(pEM);						// make sure it's bound to something
+	UT_ASSERT(pEM);
+	if (!pEM)
+		return false;
 
 	UT_String script_name(pAction->getScriptName());
-	XAP_Frame* frame = NULL;
-	AV_View* view = NULL;
-	frame = static_cast<XAP_CocoaApp*>(XAP_App::getApp())->_getFrontFrame();
-	if (frame) {
-		view =  frame->getCurrentView();
-	}
-	invokeMenuMethod(view, pEM, script_name);
-	return true;
-}
 
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
 	XAP_Frame * frame = m_pCocoaApp->getLastFocussedFrame();
 
-bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot, EV_CocoaMenuBar * pMenuBar)
+	AV_View * view = frame ? frame->getCurrentView() : 0;
+
+	return invokeMenuMethod(view, pEM, script_name);
+}
+
+void EV_CocoaMenu::validateMenuItem(XAP_Menu_Id menuid, bool & bEnabled, bool & bChecked, const char *& szLabel)
 {
-	UT_DEBUGMSG(("EV_CocoaMenu::synthesizeMenu\n"));
-	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-	
-	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-	UT_ASSERT(nrLabelItemsInLayout > 0);
+	bEnabled = true;
+	bChecked = false;
 
-	// we keep a stack of the widgets so that we can properly
-	// parent the menu items and deal with nested pull-rights.
-	bool bResult;
-	UT_Stack stack;
-	stack.push(wMenuRoot);
+	XAP_App * pApp = XAP_App::getApp();
 
-	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
-	{
-		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
-		
-		XAP_Menu_Id menuid = pLayoutItem->getMenuId();
-		// VERY BAD HACK!  It will be here until I fix the const correctness of all the functions
-		// using EV_Menu_Action
-		const EV_Menu_Action * pAction = pMenuActionSet->getAction(menuid);
-		UT_ASSERT(pAction);
-		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(menuid);
-		UT_ASSERT(pLabel);
+	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
 
-		// get the name for the menu item
-		const char * szLabelName;
-		const char * szMnemonicName;
-		
-		switch (pLayoutItem->getMenuLayoutFlags())
+	AV_View * pView = pFrame ? pFrame->getCurrentView() : 0;
+
+	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
+	if (!pMenuActionSet)
+		return;
+
+	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+	if (!pEMC)
+		return;
+
+	const EV_Menu_Action * pAction = pMenuActionSet->getAction(menuid);
+	if (!pAction)
+		return;
+
+	const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(menuid);
+	if (!pLabel)
+		return;
+
+	EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(m_pMenuLayout->getLayoutIndex(menuid));
+	if (!pLayoutItem)
+		return;
+
+	switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:
-		{
-			unsigned int modifier = 0;
-			const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
-			szLabelName = data[0];
-			szMnemonicName = data[1];
-			
-			NSString * shortCut = nil;
-			UT_uint32 keyRefKey = 0;
-
-			if (data[1] && *(data[1])) {
-				shortCut = _getItemCmd (data[1], modifier, &keyRefKey);
+			{			
+				if (pAction->hasGetStateFunction())
+					{
+						if (pView)
+							{
+								EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+								if (mis & EV_MIS_Gray)
+									bEnabled = false;
+								if (mis & EV_MIS_Toggled)
+									bChecked = true;
+							}
+						else
+							{
+								bEnabled = false;
+							}
+					}
+				else if (const char * methodName = pAction->getMethodName()) // TODO FIXME: store this somewhere
+					{
+						EV_EditMethod * pEM = pEMC->findEditMethodByName(methodName);
+						if (pEM)
+							{
+								if (!(pEM->getType() & EV_EMT_APP_METHOD))
+									{
+										bEnabled = (pView != NULL);
+									}
+							}
+						else
+							{
+								bEnabled = false;
+							}
+					}
+				if (pAction->hasDynamicLabel())
+					if (const char ** data = getLabelName(pApp, pAction, pLabel))
+						if (data[0])
+							{
+								szLabel = data[0];
+							}
 			}
-			else {
-				shortCut = [NSString string];
-			}
-			char buf[1024];
-			// convert label into underscored version
-
-			// create the item with the underscored label
-			EV_NSMenu * wParent;
-			bResult = stack.viewTop((void **)&wParent);
-			UT_ASSERT(bResult);
-
-			NSMenuItem * menuItem = nil;
-			NSString * str = nil;
-			if (szLabelName) {
-				_convertLabelToMac(buf, sizeof (buf), szLabelName);
-				str = [[NSString alloc] initWithUTF8String:buf];
-			}
-			else {
-				str = [[NSString alloc] init];
-			}
-			switch (menuid) {
-			
-			case AP_MENU_ID_HELP_ABOUT:
-				menuItem = [XAP_AppController_Instance _aboutMenu];
-				[menuItem setTitle:str];
-				[menuItem setKeyEquivalent:shortCut];
-				break;
-			case AP_MENU_ID_TOOLS_OPTIONS:
-				menuItem = [XAP_AppController_Instance _preferenceMenu];
-				[menuItem setTitle:str];
-				[menuItem setKeyEquivalent:shortCut];
-				break;
-			case AP_MENU_ID_FILE_EXIT:
-				menuItem = [XAP_AppController_Instance _quitMenu];
-				[menuItem setTitle:str];
-				[menuItem setKeyEquivalent:shortCut];					
-				break;
-			default:
-				menuItem = [[NSMenuItem alloc] initWithTitle:str action:nil
-								keyEquivalent:shortCut];
-				[wParent addVirtualItem:menuItem];
-				[menuItem release];
-			}
-			if (pMenuBar && keyRefKey) {
-				struct EV_CocoaCommandKeyRef keyRef;
-				keyRef.key    = keyRefKey;
-				keyRef.menuid = pLayoutItem->getMenuId();
-				keyRef.target = m_menuTarget;
-				keyRef.action = @selector(menuSelected:);
-				pMenuBar->addCommandKey (&keyRef);
-			}
-			[menuItem setTarget:m_menuTarget];
-			[menuItem setAction:@selector(menuSelected:)];
-			[menuItem setTag:pLayoutItem->getMenuId()];
-			[str release];
 			break;
-		}
+
 		case EV_MLF_BeginSubMenu:
-		{
-			const char ** data = getLabelName(m_pCocoaApp, pAction, pLabel);
-			szLabelName = data[0];
-			
-			char buf[1024];
-			// convert label into underscored version
-			// create the item with the underscored label
-			EV_NSMenu * wParent;
-			bResult = stack.viewTop((void **)&wParent);
-			UT_ASSERT(bResult);
+			{
+				bEnabled = (pView != 0);
 
-			NSMenuItem * menuItem = nil;
-			NSString * str = nil;
-			if (szLabelName) {
-				_convertLabelToMac(buf, sizeof (buf), szLabelName);
-				str = [NSString stringWithUTF8String:buf];	
+				if (menuid == AP_MENU_ID_FILE_RECENT)
+					{
+						if (!pAction->getMenuItemState(pView))
+							{
+								bEnabled = true;
+							}
+					}
+				else if (pAction->hasGetStateFunction())
+					{
+						if (pView)
+							{
+								EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+								if (mis & EV_MIS_Gray)
+									{
+										bEnabled = false;
+									}
+							}
+					}
 			}
-			else {
-				str = [NSString string]; // autoreleased
-			}
-			if ([wParent isKindOfClass:[EV_NSMenu class]]) {
-				menuItem = [[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""];
-				[wParent addVirtualItem:menuItem];
-				[menuItem release];
-			}
-			else {
-				menuItem = [wParent addItemWithTitle:str action:nil keyEquivalent:@""];
-			}
-			
-			// item is created, add to class vector
-			[menuItem setTag:(int)pLayoutItem->getMenuId()];
-
-			EV_NSMenu * subMenu = [[EV_NSMenu alloc] initWithXAP:this andTitle:str];
-			[menuItem setSubmenu:subMenu];
-			[subMenu setAutoenablesItems:NO];
-			[subMenu release];
-			stack.push((void **)subMenu);
 			break;
-		}
+
 		case EV_MLF_EndSubMenu:
-		{
-			// pop and inspect
-			EV_NSMenu * menu;
-			bResult = stack.pop((void **)&menu);
-			UT_ASSERT(bResult);
-
-			break;
-		}
 		case EV_MLF_Separator:
-		{	
-			NSMenuItem * menuItem = nil;
-			menuItem = [NSMenuItem separatorItem];
-
-			EV_NSMenu * wParent;
-			bResult = stack.viewTop((void **)&wParent);
-			UT_ASSERT(bResult);
-			[wParent addVirtualItem:menuItem];
-
-			[menuItem setTag:(int)pLayoutItem->getMenuId()];
-			break;
-		}
-
 		case EV_MLF_BeginPopupMenu:
 		case EV_MLF_EndPopupMenu:
 			break;
-			
+
 		default:
 			UT_ASSERT_NOT_REACHED();
 			break;
 		}
-	}
-
-	// make sure our last item on the stack is the one we started with
-	EV_NSMenu * wDbg = NULL;
-	bResult = stack.pop((void **)&wDbg);
-	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == wMenuRoot);
-
-	return true;
 }
 
+NSString * EV_CocoaMenu::convertToString(const char * label, bool strip_dots)
+{
+	if (!label)
+		return @"";
+	if (*label == 0)
+		return @"";
+
+	UT_uint32 length = static_cast<UT_uint32>(strlen(label));
+
+	if (m_maxlen <= length)
+		{
+			DELETEPV(m_buffer);
+			m_buffer = new char[length+1];
+			UT_ASSERT(m_buffer);
+			if (m_buffer)
+				m_maxlen = length + 1;
+			else
+				return @"";
+		}
+	_convertLabelToMac(m_buffer, m_maxlen, label);
+
+	if (strip_dots)
+		{
+			length = static_cast<UT_uint32>(strlen(label));
+			if (length > 3)
+				{
+					char * ptr = m_buffer + length - 1;
+					if (*ptr-- == '.')
+						if (*ptr-- == '.')
+							if (*ptr == '.')
+								*ptr = 0;
+				}
+		}
+	return [NSString stringWithUTF8String:m_buffer];
+}
+
+void EV_CocoaMenu::MenuStack_clear()
+{
+	while (/* NSMenu * menu = */ MenuStack_pop())
+		;
+}
+
+bool EV_CocoaMenu::MenuStack_push(NSMenu * menu)
+{
+	[menu retain];
+	return m_menuStack->push((void *) menu);
+}
+
+NSMenu * EV_CocoaMenu::MenuStack_pop()
+{
+	m_bAddSeparator = false;
+
+	void * ptr = 0;
+
+	if (m_menuStack->getDepth())
+		m_menuStack->pop(&ptr);
+
+	NSMenu * menu = (NSMenu *) ptr;
+
+	[menu release];
+	return menu;
+}
+
+NSMenu * EV_CocoaMenu::MenuStack_top() const
+{
+	void * ptr = 0;
+
+	if (m_menuStack->getDepth())
+		m_menuStack->viewTop(&ptr);
+
+	return (NSMenu *) ptr;
+}
 
 bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
-{	
-	UT_ASSERT_NOT_REACHED();
+{
 	return false;
 }
 
+#if 0
+
+/* **************************************************************** OLD IMPLEMENTATION **************************************************************** */
 
 /*!
 	Return the menu shortcut for the mnemonic
@@ -577,8 +764,11 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 	return shortcut;
 }
 
+#endif
 
 /*****************************************************************/
+
+#if 0
 
 @implementation EV_CocoaMenuDelegate
 
@@ -648,33 +838,8 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 
 @end
 
-static EV_CocoaMenuBar * s_cocoa_menu_bar = 0;
-
-EV_CocoaMenuBar * EV_CocoaMenuBar::instance()
-{
-	return s_cocoa_menu_bar;
-}
-
-EV_CocoaMenuBar * EV_CocoaMenuBar::instantiate(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName)
-{
-	if (!s_cocoa_menu_bar)
-		{
-			UT_TRY
-				{
-					s_cocoa_menu_bar = new EV_CocoaMenuBar(pCocoaApp, szMenuLayoutName, szMenuLabelSetName);
-				}
-			UT_CATCH(...)
-				{
-					s_cocoa_menu_bar = 0;
-				}
-		}
-	return s_cocoa_menu_bar;
-}
-
-EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
-							   const char * szMenuLayoutName,
-							   const char * szMenuLabelSetName)
-	: EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName)
+EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName) :
+	EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName)
 {
 	char buf[1024];
 
@@ -728,11 +893,6 @@ bool EV_CocoaMenuBar::rebuildMenuBar()
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
 	return false;
-}
-
-bool EV_CocoaMenuBar::refreshMenu(AV_View * pView)
-{
-	return true;
 }
 
 bool EV_CocoaMenuBar::lookupCommandKey (struct EV_CocoaCommandKeyRef * keyRef) const
@@ -1003,35 +1163,4 @@ void EV_CocoaMenuBar::releaseDockMenu(EV_CocoaDockMenu * pMenu)
 	[pMenu release];
 }
 
-/*****************************************************************/
-
-EV_CocoaMenuPopup::EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp,
-								   const char * szMenuLayoutName,
-								   const char * szMenuLabelSetName)
-	: EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName),
-		m_wMenuPopup(nil)
-{
-}
-
-EV_CocoaMenuPopup::~EV_CocoaMenuPopup()
-{
-	[m_wMenuPopup release];
-}
-
-NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
-{
-	return m_wMenuPopup;
-}
-
-bool EV_CocoaMenuPopup::synthesizeMenuPopup()
-{
-	m_wMenuPopup = [[EV_NSMenu alloc] initWithXAP:this andTitle:@""];
-	[m_wMenuPopup setAutoenablesItems:NO];
-	synthesizeMenu(m_wMenuPopup);
-	return true;
-}
-
-bool EV_CocoaMenuPopup::refreshMenu(AV_View * pView)
-{
-	return true;
-}
+#endif
