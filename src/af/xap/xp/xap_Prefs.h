@@ -158,7 +158,7 @@ private:
 // The following are the default values and limits for various non-scheme-based
 // application-independent preferences.
 
-#define XAP_PREF_DEFAULT_AutoSavePrefs		"0"
+#define XAP_PREF_DEFAULT_AutoSavePrefs		"1"
 #define XAP_PREF_DEFAULT_MaxRecent			"4"
 #define XAP_PREF_DEFAULT_UseEnvLocale		"1"
 
