@@ -159,73 +159,41 @@ PtWidget_t *PtButton_ok;
 PtWidget_t *PtButton_cancel;
 
 
-		PhDim_t dim = { 250,100 };
-		PtArg_t args[] = {
-			Pt_ARG(Pt_ARG_DIM,&dim,0),
-			Pt_ARG(Pt_ARG_WINDOW_TITLE,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Title).c_str(),0),
-			Pt_ARG(Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS),
-			Pt_ARG(Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS)
-		};
-		//Top Pane.
-	 PhArea_t area1 = { { 0, 0 }, { 248, 202 } };
-	 PtArg_t args1[] = {
-		Pt_ARG( Pt_ARG_AREA, &area1, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 256,256 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		};
-	//PtList.
-	 PhArea_t area2 = { { 3, 65 }, { 239, 131 } };
-	 PtArg_t args2[] = {
-		Pt_ARG( Pt_ARG_AREA, &area2, 0 ),
-		};
-	//PtList.
-	 PhArea_t area3 = { { 2, 35 }, { 240, 27 } };
-	 PtArg_t args3[] = {
-		Pt_ARG( Pt_ARG_AREA, &area3, 0 ),
-		};
-	//Msg label.
-	 PhArea_t area4 = { { 2, 5 }, { 241, 21 } };
-	 PtArg_t args4[] = {
-		Pt_ARG( Pt_ARG_AREA, &area4, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Msg).c_str() , 0 ),
-		};
-	//Bottom pane.
-	 PhArea_t area5 = { { 0, 201 }, { 248, 33 } };
-	 PtArg_t args5[] = {
-		Pt_ARG( Pt_ARG_AREA, &area5, 0 ),
-		Pt_ARG( Pt_ARG_FLAGS, 258,1334445470 ),
-		Pt_ARG( Pt_ARG_BEVEL_WIDTH, 1, 0 ),
-		Pt_ARG( Pt_ARG_FILL_COLOR, 0xc0c0c0, 0 ),
-		Pt_ARG( Pt_ARG_BASIC_FLAGS, 67056,4194303 ),
-		};
-	//Cancel button
-	 PhArea_t area6 = { { 72, 2 }, { 82, 27 } };
-	 PtArg_t args6[] = {
-		Pt_ARG( Pt_ARG_AREA, &area6, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str(), 0 ),
-		};
-	//OK button
-	 PhArea_t area7 = { { 160, 2 }, { 82, 27 } };
-	 PtArg_t args7[] = {
-		Pt_ARG( Pt_ARG_AREA, &area7, 0 ),
-		Pt_ARG( Pt_ARG_TEXT_STRING, pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str(), 0 ),
-		};
+	int n=0;
+	PtArg_t args[10];
+	
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertHyperlink_Title),0);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
+	windowHyperlink= PtCreateWidget(PtWindow,NULL,n,args);
+	n=0;
 
-	windowHyperlink= PtCreateWidget(PtWindow,NULL,sizeof(args) / sizeof(PtArg_t),args);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	PtCreateWidget( PtPane, NULL, sizeof(args1) / sizeof(PtArg_t), args1 );
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertHyperlink_Msg),0);
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	mBookmarkList=PtCreateWidget( PtList, NULL, sizeof(args2) / sizeof(PtArg_t), args2 );
+	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
+	mSelectedBookmark=PtCreateWidget( PtText, Pt_DEFAULT_PARENT, n, args );
+	n=0;
 
-	mSelectedBookmark=PtCreateWidget( PtText, NULL, sizeof(args3) / sizeof(PtArg_t), args3 );
+	PtSetArg(&args[n++],Pt_ARG_HEIGHT,50,0);
+	mBookmarkList=PtCreateWidget( PtList,Pt_DEFAULT_PARENT,n,args );
+	n=0;
 
-	PtCreateWidget( PtLabel, NULL, sizeof(args4) / sizeof(PtArg_t), args4 );
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
+	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	n=0;
 
-	PtCreateWidget( PtPane, windowHyperlink, sizeof(args5) / sizeof(PtArg_t), args5 );
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+	PtButton_cancel=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
 
-	PtButton_cancel=PtCreateWidget( PtButton, NULL, sizeof(args6) / sizeof(PtArg_t), args6 );
-
-	PtButton_ok=PtCreateWidget( PtButton, NULL, sizeof(args7) / sizeof(PtArg_t), args7 );
+	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+	PtButton_ok=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
 
 	//Add existing bookmarks to the list.
  XML_Char ** pBookmarks = (XML_Char **)calloc(getExistingBookmarksCount(),sizeof(XML_Char*));
