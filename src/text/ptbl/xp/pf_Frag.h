@@ -44,13 +44,14 @@ public:
 	pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length);
 	virtual ~pf_Frag();
 
-	PFType					getType(void) const;
-	pf_Frag *				getNext(void) const;
-	pf_Frag *				getPrev(void) const;
+	inline PFType			getType(void) const		{ return m_type; }
+	inline pf_Frag *		getNext(void) const		{ return m_next; }
+	inline pf_Frag *		getPrev(void) const		{ return m_prev; }
+
 	pf_Frag *				setNext(pf_Frag * pNext);
 	pf_Frag *				setPrev(pf_Frag * pPrev);
 
-	UT_uint32				getLength(void) const;
+	inline UT_uint32		getLength(void) const	{ return m_length; }
 	
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and

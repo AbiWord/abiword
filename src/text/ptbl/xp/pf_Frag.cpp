@@ -35,21 +35,6 @@ pf_Frag::~pf_Frag()
 {
 }
 
-pf_Frag::PFType pf_Frag::getType(void) const
-{
-	return m_type;
-}
-
-pf_Frag * pf_Frag::getNext(void) const
-{
-	return m_next;
-}
-
-pf_Frag * pf_Frag::getPrev(void) const
-{
-	return m_prev;
-}
-
 pf_Frag * pf_Frag::setNext(pf_Frag * pNext)
 {
 	pf_Frag * pOld = m_next;
@@ -62,11 +47,6 @@ pf_Frag * pf_Frag::setPrev(pf_Frag * pPrev)
 	pf_Frag * pOld = m_prev;
 	m_prev = pPrev;
 	return pOld;
-}
-
-UT_uint32 pf_Frag::getLength(void) const
-{
-	return m_length;
 }
 
 UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
