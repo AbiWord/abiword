@@ -117,8 +117,9 @@ static gint do_Map_Update(gpointer p)
 static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT( dlg);
-	do_Map_Update((gpointer) dlg);
-//	gtk_idle_add((GtkFunction) do_Map_Update, (gpointer) dlg);
+	
+//	do_Map_Update((gpointer) dlg);
+	gtk_idle_add((GtkFunction) do_Map_Update, (gpointer) dlg);
 	return FALSE;
 }
 

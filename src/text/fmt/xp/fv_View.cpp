@@ -802,6 +802,7 @@ void FV_View::setPaperColor(const XML_Char* clr)
 void FV_View::focusChange(AV_Focus focus)
 {
 	m_focus=focus;
+	UT_DEBUGMSG(("fv_View:: Focus change focus = %d selection %d \n",focus,isSelectionEmpty()));
 	switch(focus)
 	{
 	case AV_FOCUS_HERE:

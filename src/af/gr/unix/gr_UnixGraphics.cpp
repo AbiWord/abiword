@@ -329,17 +329,29 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pMultiByteFont = NULL;
 	//m_pFontGUI = NULL;
 	s_iInstanceCount++;
+	m_pColormap = gdk_rgb_get_cmap(); // = gdk_colormap_get_system();
+
+#ifdef USE_XFT
+	//
+	// Martin's attempt to make double buffering work.with xft
+	//
+	m_iXoff = 0;
+	m_iYoff = 0;
+	GdkDrawable * realDraw;
+	gdk_window_get_internal_paint_info (m_pWin, &realDraw,&m_iXoff,&m_iYoff);
+	m_pGC = gdk_gc_new(realDraw);
+	m_pXORGC = gdk_gc_new(realDraw);
+	m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
+	m_Drawable = gdk_x11_drawable_get_xid(realDraw);
+
+
+
+	m_pXftFont = NULL;
+	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
+	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
+#else
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
-
-	m_pColormap = gdk_rgb_get_cmap(); // = gdk_colormap_get_system();
-#ifdef USE_XFT
-	m_pVisual = GDK_VISUAL_XVISUAL(gdk_window_get_visual(win));
-	m_Drawable = GDK_WINDOW_XWINDOW(m_pWin);
-	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
-	m_pXftFont = NULL;
-
-	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
 #endif
 
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
@@ -509,7 +521,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		iChar = adobeToUnicode(Char);
 		UT_DEBUGMSG(("DrawGlyph remapped %d to %d \n",Char,iChar));
 	}
-	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff + m_pXftFont->ascent, &iChar, 1);
+	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFont, xoff + m_iXoff, yoff + m_pXftFont->ascent + m_iYoff, &iChar, 1);
 #else
 	UT_UCSChar Wide_char = remapGlyph(Char, false);
 	if(Wide_char == 0x200B || Wide_char == 0xFEFF) //zero width spaces
@@ -565,7 +577,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	{
 		if(!m_bIsSymbol)
 		{
-			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
+			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff + m_iXoff, yoff + m_iYoff,
 							const_cast<XftChar32*> (pChars + iCharOffset), iLength);
 		}
 		else
@@ -580,7 +592,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
 				}
 			}
-			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff, yoff,
+			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff + m_iXoff, yoff + m_iYoff,
 							const_cast<XftChar32*> (uChars + iCharOffset), iLength);
 			delete [] uChars;
 		}
@@ -1436,17 +1448,17 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 #ifdef USE_XFT
 		Region region;
 		XPoint points[4];
-		points[0].x = r.x;
-		points[0].y = r.y - r.height;
+		points[0].x = r.x + m_iXoff;
+		points[0].y = r.y - r.height + m_iYoff;
 			
-		points[1].x = r.x + r.width;
-		points[1].y = r.y - r.height;
+		points[1].x = r.x + r.width  + m_iXoff;
+		points[1].y = r.y - r.height  + m_iYoff;
 			
-		points[2].x = r.x + r.width;
-		points[2].y = r.y + r.height;
+		points[2].x = r.x + r.width  + m_iXoff;
+		points[2].y = r.y + r.height + m_iYoff;
 			
-		points[3].x = r.x;
-		points[3].y = r.y + r.height;
+		points[3].x = r.x  + m_iXoff;
+		points[3].y = r.y + r.height + m_iYoff;
 
 		xxx_UT_DEBUGMSG(("Setting clipping rectangle: (%d, %d, %d, %d)\n", r.x, r.y, r.width, r.height));
 		region = XPolygonRegion(points, 4, EvenOddRule);

@@ -338,8 +338,9 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
 	if(pView)
 	{
-		GR_Graphics * pG = pView->getGraphics();
-		pG->doRepaint(&rClip);
+		pView->draw(&rClip);
+//		GR_Graphics * pG = pView->getGraphics();
+//		pG->doRepaint(&rClip);
 	}
 	return FALSE;
 }
@@ -375,7 +376,7 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 		while(pG->isExposedAreaAccessed())
 		{
 			pF->nullUpdate();
-//			UT_usleep(10); // 10 microseconds
+			UT_usleep(10); // 10 microseconds
 		}
 		pG->setExposedAreaAccessed(true);
 		localCopy.set(pG->getPendingRect()->left,pG->getPendingRect()->top,
@@ -686,7 +687,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-		gtk_widget_set_double_buffered(m_wTopLevelWindow,FALSE);
+//		gtk_widget_set_double_buffered(m_wTopLevelWindow,FALSE);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),

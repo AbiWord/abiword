@@ -195,6 +195,8 @@ private:
 	FcChar32				m_aMap[FC_CHARSET_MAP_SIZE];
 	// hack
 	bool					m_bLayoutUnits;
+	UT_sint32               m_iXoff;
+	UT_sint32               m_iYoff;
 #endif
 	UT_RGBColor				m_curColor;
 	GdkPixbuf *				m_saveBuf;

@@ -844,7 +844,7 @@ GtkWidget *createDrawingArea ()
   gtk_widget_push_colormap (gdk_rgb_get_cmap ());
   
   area = gtk_drawing_area_new ();
-  gtk_widget_set_double_buffered(area,FALSE);
+  //gtk_widget_set_double_buffered(area,FALSE);
   gtk_widget_pop_colormap ();
   gtk_widget_pop_visual ();
   

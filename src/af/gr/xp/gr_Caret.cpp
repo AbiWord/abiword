@@ -112,6 +112,7 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 
 void GR_Caret::enable()
 {
+	xxx_UT_DEBUGMSG(("GR_Caret: enable() recursive draw %d disablecount %d \n",m_bRecursiveDraw,m_nDisableCount));
 	if (m_bRecursiveDraw)
 		return;
 
@@ -134,6 +135,7 @@ void GR_Caret::enable()
 
 void GR_Caret::disable(bool bNoMulti)
 {
+	xxx_UT_DEBUGMSG(("GR_Caret: disable () recursive draw %d disablecount %d \n",m_bRecursiveDraw,m_nDisableCount));
 	if (m_bRecursiveDraw)
 		return;
 
@@ -168,6 +170,7 @@ void GR_Caret::_erase()
 
 void GR_Caret::_blink(bool bExplicit)
 {
+	xxx_UT_DEBUGMSG(("GR_Caret: _blink recursive draw %d position set %d \n",m_bRecursiveDraw,m_bPositionSet));
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
 

@@ -112,18 +112,18 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
   
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "configure_event",
 					   G_CALLBACK(_fe::configure_event), NULL);
-	if( m_iBackgroundRedrawID == 0)
-	{
-//
-// Start background repaint
-//
-		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-	}
-	else
-    {
-		gtk_timeout_remove(m_iBackgroundRedrawID);
-		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-	}
+// 	if( m_iBackgroundRedrawID == 0)
+// 	{
+// //
+// // Start background repaint
+// //
+// //		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+// 	}
+// 	else
+//     {
+// 		gtk_timeout_remove(m_iBackgroundRedrawID);
+// 		m_iBackgroundRedrawID = gtk_timeout_add(200,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+// 	}
 	return m_wLeftRuler;
 }
 
@@ -333,8 +333,8 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	GR_Graphics * pG = pUnixLeftRuler->getGraphics();
 	if(pG != NULL)
 	{
-		pUnixLeftRuler->getGraphics()->doRepaint(&rClip);
-//		pUnixLeftRuler->draw(&rClip);
+//		pUnixLeftRuler->getGraphics()->doRepaint(&rClip);
+		pUnixLeftRuler->draw(&rClip);
 	}
 	else
 	{

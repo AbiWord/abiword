@@ -970,7 +970,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 	const UT_UCSChar * pEnd = pS+iLength;
 	UT_UCSChar currentChar;
 
-#if 1
+#if 0
 //
 // Debugging code. Disable when printing works.
 //
@@ -1457,7 +1457,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 	UT_Vector vec;
 	UT_uint32 k,n;
 	UT_uint32 kLimit = m_vecFontList.getItemCount();
-
+	
 	bool bFontKeyword = true;
 
 	for (k=0; k<kLimit; k++)
@@ -1478,6 +1478,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
             // only include each font name once
 #ifdef USE_XFT
 			UT_String pName(psf->getUnixFont()->getPostscriptName());
+			UT_DEBUGMSG(("_ps: 3 Looking at font %d name %s \n",k,pName.c_str()));
 #else	
             const char * pName = psf->getMetricsData()->gfi->fontName;
 #endif
@@ -1497,7 +1498,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
             
             if(!bFound)
 #ifdef USE_XFT
-				UT_DEBUGMSG(("_ps: Adding font %s tp list to embed \n",pName.c_str()));
+				UT_DEBUGMSG(("_ps:1 Adding font %s tp list to embed \n",pName.c_str()));
     		    vec.addItem(UT_strdup(pName.c_str()));
 #else
     		    vec.addItem((void*) pName);
@@ -1530,7 +1531,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 	// need them in the document
 	bool bEmbedFonts;
 	XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
-	//UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
+	UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
 
     if(bEmbedFonts)
     {
@@ -1539,13 +1540,15 @@ void PS_Graphics::_emit_IncludeResource(void)
     		char buf[128];
 
     		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
-		
-    		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
+   		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
 
     		// Instead of including the resources, we actually splat the fonts
     		// into the document.  This looks really slow... perhaps buffer line
     		// by line or in larger chunks the font data.
     		XAP_UnixFont * unixfont = psf->getUnixFont();
+
+			UT_DEBUGMSG(("_ps: Look at Enebdding font number %k name %s \n",k,unixfont->getFontKey()));
+
 		
     		if(unixfont->is_CJK_font())
 		      continue;
@@ -1555,6 +1558,8 @@ void PS_Graphics::_emit_IncludeResource(void)
     		{
 				if(!strcmp(pName,(const char*)vec.getNthItem(i)))
     			{
+
+					UT_DEBUGMSG(("_ps: Font already emitted, forget it. \n"));
 			    	match=true;
     				break;
     			}
