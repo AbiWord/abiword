@@ -178,6 +178,7 @@ typedef		UT_sint32				UT_Error;
 
 #if defined (WIN32) || defined(__QNXNTO__) ||  \
 (defined (__MACH__) && defined (__APPLE__)) || \
+(defined(TARGET_OS_MAC) && TARGET_OS_MAC) || \
 defined(__BEOS__) || defined (__AIX__) 
 
 #define ICONV_CONST const
