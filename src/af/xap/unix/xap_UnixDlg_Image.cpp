@@ -25,8 +25,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Unix dialogs,
-// like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_App.h"
@@ -310,7 +308,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
 		
   GtkWidget * HeightSpin_dum = gtk_spin_button_new( GTK_ADJUSTMENT(HeightSpinAdj), 1.0,0);
   gtk_widget_show(HeightSpin_dum);
-  gtk_widget_set_size_request(HeightSpin_dum,10,-2);  
+  gtk_widget_set_size_request(HeightSpin_dum,13,-1);  
   gtk_box_pack_start(GTK_BOX(hboxSpinHeight),HeightSpin_dum,FALSE,FALSE,0);
 
 
@@ -331,7 +329,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
 		
   GtkWidget * WidthSpin_dum = gtk_spin_button_new( GTK_ADJUSTMENT(WidthSpinAdj), 1.0,0);
   gtk_widget_show(WidthSpin_dum);
-  gtk_widget_set_size_request(WidthSpin_dum,10,-2);  
+  gtk_widget_set_size_request(WidthSpin_dum,10,-1);  
   gtk_box_pack_start(GTK_BOX(hboxSpinWidth),WidthSpin_dum,FALSE,FALSE,0);
 
 

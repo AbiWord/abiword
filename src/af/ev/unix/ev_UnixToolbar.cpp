@@ -818,7 +818,7 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_widget_set_colormap(comboBox, gdk_rgb_get_colormap());
 				
 				// set the size of the entry to set the total combo size
-				gtk_widget_set_usize(GTK_COMBO(comboBox)->entry, iWidth, 0);
+				gtk_widget_set_size_request(GTK_COMBO(comboBox)->entry, iWidth, -1);
 
 				// the entry is read-only for now
 				gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(comboBox)->entry), FALSE);

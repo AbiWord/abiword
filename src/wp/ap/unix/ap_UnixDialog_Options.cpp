@@ -852,7 +852,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	autosave_ext = gtk_entry_new_with_max_length (5);
 	gtk_widget_show (autosave_ext);
 	gtk_box_pack_start (GTK_BOX (hbox28), autosave_ext, TRUE, TRUE, 0);
-	gtk_widget_set_usize (autosave_ext, 50, -2);
+	gtk_widget_set_size_request (autosave_ext, 50, -1);
 
 	frame44 = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Misc).c_str());
 	gtk_widget_show (frame44);

@@ -509,7 +509,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 		if(height > width)
 		{
 			rat = static_cast<gint>( 100.0 *height/width);
-			gtk_widget_set_size_request (wPreviewFrame, 100, rat); // was -2
+			gtk_widget_set_size_request (wPreviewFrame, 100, -1); // was -2
 		}
 		else
 		{
@@ -519,7 +519,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	}
 	else
 	{
-		gtk_widget_set_size_request (wPreviewFrame, 100, -2); // was -2
+		gtk_widget_set_size_request (wPreviewFrame, 100, -1); // was -2
 	}
 
 	wDrawFrame = gtk_frame_new (NULL);
@@ -594,7 +594,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	
 	GtkWidget * SpinAfter_dum = gtk_spin_button_new( GTK_ADJUSTMENT(SpinAfterAdj), 1.0,0);
 	gtk_widget_show(SpinAfter_dum);
-	gtk_widget_set_size_request(SpinAfter_dum,13,-2);
+	gtk_widget_set_size_request(SpinAfter_dum,13,-1);
 	gtk_table_attach (GTK_TABLE (table), SpinAfter_dum, 2, 3, 4, 5,
 			  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 	
@@ -616,7 +616,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 
 	GtkWidget * SpinSize_dum = gtk_spin_button_new( GTK_ADJUSTMENT(SpinSizeAdj), 1.0,0);
 	gtk_widget_show(SpinSize_dum);
-	gtk_widget_set_size_request(SpinSize_dum,13,-2);
+	gtk_widget_set_size_request(SpinSize_dum,13,-1);
 	gtk_table_attach (GTK_TABLE (table), SpinSize_dum, 2, 3, 5, 6,
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
 
