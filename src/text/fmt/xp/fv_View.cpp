@@ -1569,7 +1569,8 @@ bool FV_View::isCurrentListBlockEmpty(void)
 		FP_RUN_TYPE runtype = (FP_RUN_TYPE) pRun->getType();	
 		if((runtype == FPRUN_TAB) ||
 		   ( runtype == FPRUN_FIELD)  ||
-		   (runtype == FPRUN_FMTMARK))
+		   (runtype == FPRUN_FMTMARK) ||
+			(runtype == FPRUN_ENDOFPARAGRAPH))
 		{
 			if(runtype == FPRUN_FIELD)
 			{
