@@ -66,43 +66,43 @@ public:									// we create...
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
 	};
 
-	static void s_onMenuItemDraw(GtkWidget * widget, GdkRectangle * area, gpointer data)
+	static void s_onMenuItemSelect(GtkWidget * widget, gpointer data)
 	{
-		UT_ASSERT(widget && area && data);
+		UT_ASSERT(widget && data);
 
-		// TODO: Events come in out of order for us.  We get a first draw
-		// TODO: to paint the newly selected, prelighted widget, then we
-		// TODO: get a call to ERASE (or draw down) the old, stale, unselected
-		// TODO: menu item.  This means we can't do something like:
-		// TODO: if(prelight){ [setmessage] } else { [clear message] }
-		// TODO: because we'll always be clearing the message we just set
-		// TODO: the round before.  Look for s_onDestroyMenu() for a final
-		// TODO: cleanup of any stray messages.
+		_wd * wd = (_wd *) data;
+		UT_ASSERT(wd && wd->m_pUnixMenu);
 
-		// on prelight, we set menu hints in the status bar
-		if (widget->state == GTK_STATE_PRELIGHT)
+		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
+		UT_ASSERT(pFrame);
+
+		EV_Menu_Label * pLabel = wd->m_pUnixMenu->getMenuLabelSet()->getLabel(wd->m_id);
+		if (!pLabel)
 		{
-			_wd * wd = (_wd *) data;
-			UT_ASSERT(wd && wd->m_pUnixMenu);
-
-			XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
-			UT_ASSERT(pFrame);
-
-			EV_Menu_Label * pLabel = wd->m_pUnixMenu->getMenuLabelSet()->getLabel(wd->m_id);
-			if (!pLabel)
-			{
-				pFrame->setStatusMessage(NULL);
-				return;
-			}
-
-			const char * szMsg = pLabel->getMenuStatusMessage();
-			if (!szMsg || !*szMsg)
-				szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
-	
-			pFrame->setStatusMessage(szMsg);
+			pFrame->setStatusMessage(NULL);
+			return;
 		}
+
+		const char * szMsg = pLabel->getMenuStatusMessage();
+		if (!szMsg || !*szMsg)
+			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+	
+		pFrame->setStatusMessage(szMsg);
 	};
 	
+	static void s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
+	{
+		UT_ASSERT(widget && data);
+
+		_wd * wd = (_wd *) data;
+		UT_ASSERT(wd && wd->m_pUnixMenu);
+
+		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
+		UT_ASSERT(pFrame);
+
+		pFrame->setStatusMessage(NULL);
+	};
+
 	static void s_onInitMenu(GtkMenuItem * menuItem, gpointer callback_data)
 	{
 		_wd * wd = (_wd *) callback_data;
@@ -481,7 +481,8 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				gtk_menu_append(GTK_MENU(wParent), w);
 				// connect callbacks
 				gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
-				gtk_signal_connect(GTK_OBJECT(w), "draw", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDraw), wd);
+				gtk_signal_connect(GTK_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
+				gtk_signal_connect(GTK_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
 
 				// we always set the acccelerators in "normal" menu items, but
 				// not top-level (begin_submenus), as shown below
@@ -842,7 +843,8 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 						gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, nPositionInThisMenu);
 						// connect callbacks
 						gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
-						gtk_signal_connect(GTK_OBJECT(w), "draw", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDraw), wd);
+						gtk_signal_connect(GTK_OBJECT(w), "select", GTK_SIGNAL_FUNC(_wd::s_onMenuItemSelect), wd);
+						gtk_signal_connect(GTK_OBJECT(w), "deselect", GTK_SIGNAL_FUNC(_wd::s_onMenuItemDeselect), wd);				
 						
 						// we do NOT ad a new item, we point the existing index at our new widget
 						// (update the pointers)
