@@ -2426,7 +2426,7 @@ void fl_DocSectionLayout::collapse(void)
 // Remove all the empty pages thus created. Don't notify of the deletion though.
 //
 	fp_Page* pPage = m_ColumnBreaker.getStartPage();
-	if (pPage && pPage->isEmpty());
+	if (pPage && pPage->isEmpty())
 		m_ColumnBreaker.setStartPage(NULL);
 	getDocLayout()->deleteEmptyPages(true);
 //
