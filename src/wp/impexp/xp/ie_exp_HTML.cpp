@@ -1745,6 +1745,9 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
 
 void s_HTML_Listener::_closeSection (void)
 {
+	if (m_bInBlock)
+		_closeTag ();
+
 	if (m_bInSection && (tagTop () == TT_DIV))
 	{
 		m_utf8_1 = "div";
