@@ -537,7 +537,22 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %postun
 %__rm -f %{prefix}/bin/abiword
 
+%post fonts
+if test -x /usr/sbin/chkfontpath ; then
+  /usr/sbin/chkfontpath --add %{ABIPREFIX}/AbiSuite/fonts
+fi
+
+%postun fonts
+if test -x /usr/sbin/chkfontpath ; then
+  /usr/sbin/chkfontpath --remove %{ABIPREFIX}/AbiSuite/fonts
+fi
+
 %changelog
+* Sat Apr 6 2002 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>
+                 Rui M. Silva Seabra <rms@1407.org>
+- Add %post fonts and %postun fonts to use (if found) redhat's chkfontpath
+  program to add abiword's font path on install and remove it on uninstall
+
 * Sun Mar c31 2002 Rui M. Silva Seabra <rms@1407.org>
 - Partially solve bug http://bugzilla.abisource.com/show_bug.cgi?id=1938
   Added postun to remove the symlink
