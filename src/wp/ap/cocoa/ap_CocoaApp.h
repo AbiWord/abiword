@@ -1,6 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
+ * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,16 +46,18 @@ class AP_CocoaApp : public AP_App
 {
 public:
 	AP_CocoaApp(XAP_Args * pArgs, const char * szAppName);
+
 	virtual ~AP_CocoaApp();
+
+	virtual BidiSupportType			theOSHasBidiSupport() const { return BIDI_SUPPORT_FULL; }
 
 	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual bool					shutdown(void);
-	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
-									       const XML_Char * szKey, const XML_Char ** pszValue) const;
-	virtual const XAP_StringSet *	                getStringSet(void) const;
-	virtual const char *			        getAbiSuiteAppDir(void) const;
+	virtual bool					getPrefsValueDirectory(bool bAppSpecific, const XML_Char * szKey, const XML_Char ** pszValue) const;
+	virtual const XAP_StringSet *	getStringSet(void) const;
+	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
 	virtual bool					canPasteFromClipboard(void);

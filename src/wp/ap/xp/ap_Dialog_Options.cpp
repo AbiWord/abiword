@@ -849,7 +849,7 @@ AP_PreferenceScheme::AP_PreferenceScheme(AP_PreferenceSchemeManager * pSchemeMan
 		{
 			UT_ASSERT(pszValue);
 			if (pszValue)
-				m_ioUnitsIndex.m_original = static_cast<UT_sint32>(m_pSchemeManager->getLanguageIndex(pszValue));
+				m_ioUnitsIndex.m_original = static_cast<UT_sint32>(m_pSchemeManager->getPopUp_UnitsIndex(pszValue));
 		}
 	m_ioUnitsIndex.m_current = m_ioUnitsIndex.m_original;
 
@@ -1056,8 +1056,8 @@ void AP_PreferenceScheme::saveChanges()
 
 	/* PopUp Units
 	 */
-	szValue = m_pSchemeManager->getNthLanguageCode(static_cast<UT_uint32>(m_ioUnitsIndex.m_current));
-	m_pPrefsScheme->setValue(AP_PREF_KEY_RulerUnits, szValue);
+	szValue = m_pSchemeManager->getPopUp_NthUnits(static_cast<UT_uint32>(m_ioUnitsIndex.m_current));
+	m_pPrefsScheme->setValue(AP_PREF_KEY_RulerUnits, AP_PreferenceSchemeManager::reverseTranslate(szValue));
 
 	m_ioUnitsIndex.m_original = m_ioUnitsIndex.m_current;
 
@@ -1147,7 +1147,7 @@ UT_uint32 AP_PreferenceScheme::setUILangIndex(UT_uint32 index)
 
 UT_uint32 AP_PreferenceScheme::setUnitsIndex(UT_uint32 index)
 {
-	if (index < m_pSchemeManager->getLanguageCount())
+	if (index < m_pSchemeManager->getPopUp_UnitsCount())
 		{
 			m_ioUnitsIndex.m_current = static_cast<UT_sint32>(index);
 
@@ -1244,9 +1244,9 @@ void AP_PreferenceScheme::lookupDefaultOptionValues()
 	pScheme->getValue(AP_PREF_KEY_RulerUnits, &pszValue);
 	UT_ASSERT(pszValue);
 	if (pszValue)
-		m_ioUnitsIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getLanguageIndex(pszValue));
+		m_ioUnitsIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getPopUp_UnitsIndex(pszValue));
 	else
-		m_ioUnitsIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getLanguageIndex(AP_PREF_DEFAULT_RulerUnits));
+		m_ioUnitsIndex.m_default = static_cast<UT_sint32>(m_pSchemeManager->getPopUp_UnitsIndex(AP_PREF_DEFAULT_RulerUnits));
 
 	// TODO
 }
@@ -1520,12 +1520,37 @@ UT_uint32 AP_PreferenceSchemeManager::getPopUp_UnitsIndex(const XML_Char * szUni
 	return index;
 }
 
+const XML_Char * AP_PreferenceSchemeManager::reverseTranslate(const char * PopUp_Units)
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+	const XML_Char * tmp = 0;
+
+	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch))
+		if (strcmp (tmp, PopUp_Units) == 0)
+			return "inch";
+	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm))
+		if (strcmp (tmp, PopUp_Units) == 0)
+			return "cm";
+	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_mm))
+		if (strcmp (tmp, PopUp_Units) == 0)
+			return "mm";
+	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_points))
+		if (strcmp (tmp, PopUp_Units) == 0)
+			return "points";
+	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_pica))
+		if (strcmp (tmp, PopUp_Units) == 0)
+			return "pica";
+
+	return "inch";
+}
+
 void AP_PreferenceSchemeManager::_constructPopUpArrays()
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	const XML_Char * tmp = 0;
-	const char * tmpcopy = 0;
+	char * tmpcopy = 0;
 
 	m_PopUp_UnitsCount = 0;
 
@@ -1533,6 +1558,9 @@ void AP_PreferenceSchemeManager::_constructPopUpArrays()
 		if (tmpcopy = UT_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm))
+		if (tmpcopy = UT_strdup(tmp))
+			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
+	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_mm))
 		if (tmpcopy = UT_strdup(tmp))
 			m_PopUp_UnitsList[m_PopUp_UnitsCount++] = tmpcopy;
 	if (tmp = pSS->getValue(XAP_STRING_ID_DLG_Unit_points))
