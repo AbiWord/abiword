@@ -167,11 +167,11 @@ UT_uint32 EV_Menu_Layout::getLayoutIndex(XAP_Menu_Id id) const
 
 	for (index = 0; index < size_table; ++index)
 	{
-		if ((static_cast<EV_Menu_LayoutItem*> (m_layoutTable[index]))->getMenuId() == id)
+		if ((static_cast<const EV_Menu_LayoutItem *> (m_layoutTable[index]))->getMenuId() == id)
 			break;
 	}
 
-	return index < size_table ? index : 0;
+	return ((index < size_table) ? index : 0);
 }
 
 EV_Menu_LayoutItem * EV_Menu_Layout::getLayoutItem(UT_uint32 indexLayoutItem) const

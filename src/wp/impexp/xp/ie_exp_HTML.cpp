@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,12 +24,14 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
+#include "ut_hash.h"
 #include "ut_units.h"
 #include "ut_wctomb.h"
 #include "pt_Types.h"
 #include "fd_Field.h"
 #include "ie_exp_HTML.h"
 #include "pd_Document.h"
+#include "pd_Style.h"
 #include "pp_AttrProp.h"
 #include "pp_Property.h"
 #include "px_ChangeRecord.h"
@@ -203,10 +205,13 @@ protected:
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	bool				_inherits(const char* style, const char* from);
+	void				_outputInheritanceLine(const char* ClassName);
 	void 				_outputBegin(PT_AttrPropIndex api);
 	void				_handleDataItems(void);
 	void				_convertFontSize(char* szDest, const char* pszFontSize);
 	void				_convertColor(char* szDest, const char* pszColor);
+	void				_storeStyles(void);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
@@ -218,6 +223,7 @@ protected:
 	bool				m_bWroteText;
 	bool				m_bFirstWrite;
 	const PP_AttrProp*	m_pAP_Span;
+	UT_HashTable*		m_pStylesHash;
 
 	// Need to look up proper type, and place to stick #defines...
   
@@ -226,6 +232,78 @@ protected:
         UT_uint16               m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
 };
+
+/*!	This function copies a string to a new string, removing all the white
+	space in the process.  Note that this function allocates the new
+	string (and so the caller must make sure to deallocate it).
+ */
+
+static char* removeWhiteSpace(const char * text)
+{
+	char* temp = static_cast<char*>(calloc(strlen(text)+1, sizeof(char)));
+	char* ref = temp;
+	char* ptr = (char *)text; // only a pointer for quick traversal
+
+	while(*ptr)
+	{
+		if(!UT_UCS_isspace(*ptr))
+		{
+			*temp++ = *ptr;
+		}
+		ptr++;
+	}
+
+	return ref;
+}
+
+extern "C" { // for MRC compiler (Mac)
+	static int s_str_compare (const void * a, const void * b)
+	{
+		const char * a1 = (const char *)a;
+		const char * b1 = (const char *)b;
+		UT_DEBUGMSG(("DOM: comparing %s && %s\n", a1, b1));
+		return UT_strcmp (a1, b1);
+	}
+}
+
+/*!	This function returns true if the given property is a valid CSS
+	property.  It is based on the list in pp_Property.cpp, and, as such,
+	is quite brittle.
+ */
+static bool is_CSS(const char* property)
+{
+	static const char * prop_list [] = {"background-color", "color", 
+										"font-family", "font-size", 
+										"font-stretch", "font-style", 
+										"font-variant", "font-weight",
+										"height", "margin-bottom", 
+										"margin-left", "margin-right",
+										"orphans", "text-align", 
+										"text-decoration", "text-indent",
+										"widows", "width"};
+
+#if 0
+	// TODO: why doesn't this work? make this work
+	const char * prop = (const char *) bsearch (property, prop_list, 
+												sizeof (prop_list)/sizeof(prop_list[0]),
+												sizeof (char *), 
+												s_str_compare);
+
+	return ((prop != NULL) ? true : false);
+#else
+	#define PropListLen sizeof(prop_list)/sizeof(prop_list[0])
+
+	for (UT_uint32 i = 0; i < PropListLen; i++) 
+	{
+		if (!UT_strcmp (property, prop_list[i]))
+			return true;
+	}
+	return false;
+
+	#undef PropListLen
+#endif
+}
+
 
 void s_HTML_Listener::_closeSection(void)
 {
@@ -309,21 +387,24 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		   (pAP->getAttribute("style", szValue))
 		   )
 		{
+			szValue = removeWhiteSpace((char*) szValue);
 			if(pAP->getAttribute("listid", szListID) &&
 			   0 != UT_strcmp(szListID, "0"))
 			{	// we're in a list
 				if(!m_bInList)
 				{
-					if(0 != UT_strcmp(szValue, "Bullet List"))
+					if(0 != UT_strcmp(szValue, "BulletList"))
 					{
 						m_iBlockType = BT_NUMBEREDLIST;
-						m_pie->write("<ol>\n");
+						m_pie->write("<ol class=\"");
 					}
 					else 
 					{
 						m_iBlockType = BT_BULLETLIST;
-						m_pie->write("<ul>\n");
+						m_pie->write("<ul class=\"");
 					}
+					_outputInheritanceLine((const char*) szValue);
+					m_pie->write("\">\n");
 					m_bInList = true;
 				}
 				else
@@ -344,44 +425,79 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					m_bInList = false;
 				}
 
-				if(0 == UT_strcmp(szValue, "Heading 1")) 
+				if(0 == UT_strcmp(szValue, "Heading1") ||
+					_inherits((const char*) szValue, "Heading1")) 
 				{
 					// <p style="Heading 1"> ...
 
 					m_iBlockType = BT_HEADING1;
-					m_pie->write("<h1");
+					m_pie->write("\n<h1");
+					if(_inherits((const char*) szValue, "Heading1"))
+					{
+						m_pie->write(" class=\"");
+						_outputInheritanceLine((const char*) szValue);
+						m_pie->write("\"");
+					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "Heading 2")) 
+				else if(0 == UT_strcmp(szValue, "Heading2") ||
+					_inherits((const char*) szValue, "Heading2")) 
 				{
 					// <p style="Heading 2"> ...
 
 					m_iBlockType = BT_HEADING2;
-					m_pie->write("<h2");
+					m_pie->write("\n<h2");
+					if(_inherits((const char*) szValue, "Heading2"))
+					{
+						m_pie->write(" class=\"");
+						_outputInheritanceLine((const char*) szValue);
+						m_pie->write("\"");
+					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "Heading 3")) 
+				else if(0 == UT_strcmp(szValue, "Heading3") ||
+					_inherits((const char*) szValue, "Heading3")) 
 				{
 					// <p style="Heading 3"> ...
 
 					m_iBlockType = BT_HEADING3;
-					m_pie->write("<h3");
+					m_pie->write("\n<h3");
+					if(_inherits((const char*) szValue, "Heading3"))
+					{
+						m_pie->write(" class=\"");
+						_outputInheritanceLine((const char*) szValue);
+						m_pie->write("\"");
+					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "Block Text"))
+				else if(0 == UT_strcmp(szValue, "BlockText") || 
+					_inherits((const char*) szValue, "BlockText"))
 				{
 					// <p style="Block Text"> ...
 
 					m_iBlockType = BT_BLOCKTEXT;
 					m_pie->write("<blockquote");
+					if(_inherits((const char*) szValue, "BlockText"))
+					{
+						m_pie->write(" class=\"");
+						_outputInheritanceLine((const char*) szValue);
+						m_pie->write("\"");
+					}
 					wasWritten = true;
 				}
-				else if(0 == UT_strcmp(szValue, "Plain Text"))
+				else if(0 == UT_strcmp(szValue, "PlainText") ||
+					_inherits((const char*) szValue, "PlainText"))
 				{
 					// <p style="Plain Text"> ...
 
 					m_iBlockType = BT_PLAINTEXT;
 					m_pie->write("<pre");
+					if(_inherits((const char*) szValue, "PlainText"))
+					{
+						m_pie->write(" class=\"");
+						_outputInheritanceLine((const char*) szValue);
+						m_pie->write("\"");
+					}
 					wasWritten = true;
 				}
 				else 
@@ -389,10 +505,13 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					// <p style="<anything else!>"> ...
 
 			        m_iBlockType = BT_NORMAL;
-			      	m_pie->write("<p");
+			      	m_pie->write("<p class=\"");
+					m_pie->write(szValue);
+					m_pie->write("\"");
 					wasWritten = true;
 				}	
 			}
+			DELETEP(szValue);
 		}
 		else 
 		{
@@ -769,18 +888,31 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			
 			if (pszFontFamily)
 			{
-				  if (!span)
-				    {
+				if (!span)
+				{
 					m_pie->write("<span style=\"font-family: ");	
-					m_pie->write((char*)pszFontFamily);
 					span = true;
-				    }
-				  else 
-				    {
+				}
+				else 
+				{
 					m_pie->write("; font-family: ");	
-					m_pie->write((char*)pszFontFamily);
-				    }
+				}
 
+				if(UT_strcmp((char*)pszFontFamily, "serif") != 0 ||
+					UT_strcmp((char*)pszFontFamily, "sans-serif") != 0 ||
+					UT_strcmp((char*)pszFontFamily, "cursive") != 0 ||
+					UT_strcmp((char*)pszFontFamily, "fantasy") != 0 ||
+					UT_strcmp((char*)pszFontFamily, "monospace") != 0)
+				{
+					m_pie->write("\'");
+					m_pie->write(pszFontFamily);
+					m_pie->write("\'");
+				}						// only quote non-keyword family names
+				else 
+				{
+					m_pie->write(pszFontFamily);
+				}
+	
 			}
 			
 			char szSize[4];
@@ -825,9 +957,33 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			  }
 
 		}
-		
+
+		char* szStyle = NULL;
+		pAP->getAttribute("style", (const XML_Char*) szStyle);
+		if(szStyle)
+		{
+			szStyle = removeWhiteSpace(szStyle);
+		}
+
 		if (span)
-		  m_pie->write("\">");
+		{
+			m_pie->write("\"");
+			if(szStyle)
+			{
+				m_pie->write(" class=\"");
+				_outputInheritanceLine(szStyle);
+				m_pie->write("\"");
+			}
+			m_pie->write(">");
+		}
+		else if(szStyle)
+		{
+			m_pie->write("<span class=\"");
+			_outputInheritanceLine(szStyle);
+			m_pie->write("\">");
+		}
+		DELETEP(szStyle);
+		
 
 		m_bInSpan = true;
 		m_pAP_Span = pAP;
@@ -892,6 +1048,11 @@ void s_HTML_Listener::_closeSpan(void)
 			)
 		{
 		  closeSpan = true;
+		}
+
+		if(pAP->getAttribute("style", szValue))
+		{
+			closeSpan = true;
 		}
 
 		if (closeSpan)
@@ -1031,6 +1192,61 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
+bool s_HTML_Listener::_inherits(const char* style, const char* from)
+{
+	bool bret = false;
+	UT_HashEntry* p_uthe = m_pStylesHash->findEntry(style);
+	if(p_uthe)
+	{
+		PD_Style* pStyle = static_cast<PD_Style*>(p_uthe->pData);
+		char* szName = NULL;
+
+		if(pStyle && pStyle->getBasedOn())
+		{
+			pStyle = pStyle->getBasedOn();
+			pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, 
+				(const XML_Char*) szName);
+			szName = removeWhiteSpace(szName);
+
+			if(UT_strcmp(from, szName) == 0)
+				bret = true;
+
+			DELETEP(szName);
+		}
+	}
+
+	return bret;
+}
+
+void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
+{
+	UT_HashEntry* p_uthe = m_pStylesHash->findEntry(ClassName);
+	PD_Style* pStyle = NULL;
+	PD_Style* pBasedOn = NULL;
+	const XML_Char* szName = NULL;
+
+	if(p_uthe)
+	{
+		pStyle = static_cast<PD_Style*>(p_uthe->pData);
+	}
+	if(pStyle)
+	{
+		pBasedOn = pStyle->getBasedOn();
+		if(pBasedOn)
+		{
+			pBasedOn->getAttribute(PT_NAME_ATTRIBUTE_NAME, szName);
+
+			UT_ASSERT((szName));
+			szName = removeWhiteSpace((char*) szName);
+			_outputInheritanceLine((const char*) szName);
+			DELETEP(szName);
+			m_pie->write(" ");
+		}
+	}
+
+	m_pie->write(ClassName);
+}
+
 void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = NULL;
@@ -1104,41 +1320,99 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!--\n");
 
-	if(bHaveProp && pAP)				// this is where we write out the
-	{									// default style sheet
-		const XML_Char * szValue;
-		/* begin paragraph (p) stylesheet */
-		szValue = PP_evalProperty("margin-top",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("p\n{\n    margin-top: ");
-			m_pie->write(szValue);
+	_storeStyles();
 
-		szValue = PP_evalProperty("margin-bottom",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write(";\n    margin-bottom: ");
-			m_pie->write(szValue);
-			m_pie->write(";\n}\n\n");	// end paragraph stylesheet
+	UT_HashEntry* p_uthe;
+	PD_Style* p_pds;
+	const XML_Char* szName;
+	const XML_Char* szValue;
+	const PP_AttrProp * pAP_style = NULL;
 
-		/* begin generic text (p, ul, ol) stylesheet */
-		szValue = PP_evalProperty("font-family",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("p, ul, ol\n{\n    font-family: \"");
-			m_pie->write(szValue);
-			m_pie->write("\"");
+	for(int i = 0; i < m_pStylesHash->getEntryCount(); i++)
+	{
+		p_uthe = m_pStylesHash->getNthEntry(i);
+		UT_ASSERT((p_uthe));
+		p_pds = static_cast<PD_Style*>(p_uthe->pData);
+		UT_ASSERT((p_pds));
 
-		szValue = PP_evalProperty("font-size",
-			NULL, NULL, pAP, m_pDocument, true);
-			m_pie->write("; font-size: ");
-			m_pie->write(szValue);
+		PT_AttrPropIndex api = p_pds->getIndexAP();
+		bool bHaveProp = m_pDocument->getAttrProp(api,&pAP_style);
 
-			m_pie->write(";\n}\n");		// end generic text stylesheet
+		if(bHaveProp && pAP_style /*&& p_pds->isUsed()*/)
+		{	
+			/*	The isUsed() test above is commented out because
+			 *	it's currently broken.  I'd like to use it when
+			 *	it gets fixed, but all the functionality remains,
+			 *	regardless.
+			 */
+			if(UT_strcmp(p_uthe->pszLeft, "Heading1") == 0)
+				m_pie->write("h1, ");
+			else if(UT_strcmp(p_uthe->pszLeft, "Heading2") == 0)
+				m_pie->write("h2, ");
+			else if(UT_strcmp(p_uthe->pszLeft, "Heading3") == 0)
+				m_pie->write("h3, ");
+			else if(UT_strcmp(p_uthe->pszLeft, "BlockText") == 0)
+				m_pie->write("blockquote, ");
+			else if(UT_strcmp(p_uthe->pszLeft, "PlainText") == 0)
+				m_pie->write("pre, ");
+			else if(UT_strcmp(p_uthe->pszLeft, "Normal") == 0)
+				m_pie->write("p, ");
+
+			m_pie->write(".");			// generic class qualifier, CSS
+			m_pie->write(p_uthe->pszLeft);
+			m_pie->write("\n{");
+
+			UT_uint32 i = 0, j = 0;
+			while(pAP_style->getNthAttribute(i++, szName, szValue))
+			{
+				if(!is_CSS(static_cast<const char*>(szName)))
+					continue;
+				
+				m_pie->write("\n\t");
+				m_pie->write(szName);
+				m_pie->write(": ");
+				m_pie->write(szValue);
+				
+				m_pie->write(";");
+			}
+			while(pAP_style->getNthProperty(j++, szName, szValue))
+			{
+				if(!is_CSS(static_cast<const char*>(szName)))
+					continue;
+				m_pie->write("\n\t");
+				m_pie->write(szName);
+				m_pie->write(": ");
+				if (UT_strcmp(szName, "font-family") == 0 &&
+					(UT_strcmp(szValue, "serif") != 0 ||
+					 UT_strcmp(szValue, "sans-serif") != 0 ||
+					 UT_strcmp(szValue, "cursive") != 0 ||
+					 UT_strcmp(szValue, "fantasy") != 0 ||
+					 UT_strcmp(szValue, "monospace") != 0))
+				{
+					m_pie->write("\"");
+					m_pie->write(szValue);
+					m_pie->write("\"");
+				}						// only quote non-keyword family names
+				else 
+				{
+					if(strstr(szName, "color"))
+						m_pie->write("#");
+					m_pie->write(szValue);
+				}
+				
+				m_pie->write(";");
+			}
+
+
+			m_pie->write("\n}\n\n");
+		}
 	}
 		
 	m_pie->write("-->\n</style>\n");
 	m_pie->write("</head>\n");
 	m_pie->write("<body");
 	if(bHaveProp && pAP)
-	{									// global page styles go in the <body> tag
+	{								// global page styles go in the <body> tag
 		const XML_Char * szValue;
 
 			m_pie->write(" style=\"");
@@ -1193,6 +1467,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bFirstWrite = true;
 	m_iListDepth = 0;
 	m_iImgCnt = 0;
+	m_pStylesHash = NULL;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -1469,3 +1744,31 @@ void s_HTML_Listener::_handleDataItems(void)
 	return;
 }
 
+/*!	This function gets a listing of all the styles from
+ *	the document and stores them by their compressed name (without spaces)
+ *	in the hash table m_pStylesHash.  This function allocates
+ *	the hash table if it is NULL.
+ */
+
+void s_HTML_Listener::_storeStyles(void)
+{
+	const char* pszName;
+	const PD_Style* pStyle;
+	void* pData;
+	size_t count = m_pDocument->getStyleCount();
+
+	if(m_pStylesHash == NULL)
+	{
+		m_pStylesHash = new UT_HashTable(count);
+	}
+
+	for(int i = 0; m_pDocument->enumStyles(i, &pszName, &pStyle); i++)
+	{
+		pData = reinterpret_cast<void*>(const_cast<PD_Style*>(pStyle));
+		pszName = removeWhiteSpace(const_cast<char*>(pszName));
+		m_pStylesHash->addEntry(pszName, NULL, pData);
+		DELETEP(pszName);
+	}
+
+	return;
+}

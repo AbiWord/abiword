@@ -169,8 +169,8 @@ public:									// we create...
 
 static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 									  XAP_UnixFrame * pUnixFrame,
-									  EV_Menu_Action * pAction,
-									  EV_Menu_Label * pLabel)
+									  const EV_Menu_Action * pAction,
+									  const EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
 
@@ -418,9 +418,9 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		// VERY BAD HACK!  It will be here until I fix the const correctness of all the functions
 		// using EV_Menu_Action
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
 		// get the name for the menu item
@@ -779,8 +779,8 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{

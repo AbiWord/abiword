@@ -53,7 +53,7 @@ searchMenuLabel(const EV_Menu_LabelSet &labels, const UT_String &label)
 
 	for (UT_uint32 i = 0; i < size_labels; ++i)
 	{
-		l = static_cast<EV_Menu_Label*> (labels_table[i]);
+		l = static_cast<const EV_Menu_Label *> (labels_table[i]);
 		if (l && label == l->getMenuLabel())
 		{
 			id = l->getMenuId();
@@ -119,7 +119,7 @@ void EV_Menu::addPath(const UT_String &path)
 	size_t end = names->size() - 1;
 	for (size_t i = 0; i < end; ++i)
 	{
-		label = static_cast<UT_String*> ((*names)[i]);
+		label = static_cast<const UT_String*> ((*names)[i]);
 		UT_ASSERT(label);
 		index = searchMenuLabel(*m_pMenuLabelSet, *label);
 
@@ -132,7 +132,7 @@ void EV_Menu::addPath(const UT_String &path)
 			// and now we add the new submenus
 			for (size_t j = i; j < end; ++j)
 			{
-				label = static_cast<UT_String*> ((*names)[j]);
+				label = static_cast<const UT_String*> ((*names)[j]);
 				UT_ASSERT(label);
 				index = m_pMenuLayout->addLayoutItem(++lpos, EV_MLF_BeginSubMenu);
 				pMenuActionSet->addAction(new EV_Menu_Action(index, true, false, false, NULL, NULL, NULL));

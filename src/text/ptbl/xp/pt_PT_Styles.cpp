@@ -25,6 +25,7 @@
 #include "ut_debugmsg.h"
 #include "pt_PieceTable.h"
 #include "pd_Style.h"
+#include "fl_AutoLists.h"
 
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
@@ -43,6 +44,8 @@
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
+	char* list_fmt = "start-value:%s; margin-left:%fin; text-indent:-%fin; field-color:%s; list-delim:%s; field-font:%s; list-decimal:%s";
+	char list_fmt_tmp[1024];
 #ifdef BIDI_ENABLED
 #ifdef BIDI_RTL_DOMINANT	
 	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; margin-top:0pt; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
@@ -57,22 +60,40 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
 	_s("Plain Text","P", "Normal", "Plain Text", "font-family:Courier New;  field-font:NULL");
 	_s("Block Text","P", "Normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
-	_s("Numbered List","P", "Normal", "Numbered List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; field-color: transparent; field-font:NULL;list-delim:%L.;list-decimal:.");
-	_s("Lower Case List","P", "Numbered List", "Lower Case List", "start-value:1;list-delim:%L); margin-left:LIST_DEFAULT_INDENTin; field-font:NULL; text-indent:-LIST_DEFAULT_INDENT_LABELin");
-	_s("Upper Case List","P", "Numbered List", "Upper Case List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; list-delim:%L); field-font:NULL;list-decimal:.");
-	_s("Lower Roman List","P", "Normal", "Lower Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; list-delim:%L; field-font:NULL;list-decimal:.");
-	_s("Upper Roman List","P", "Numbered List", "Upper Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin;text-indent:-LIST_DEFAULT_INDENT_LABELin;list-delim:%L;  field-font:NULL;list-decimal:.");
-	_s("Bullet List", "P", "Normal", "Bullet List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Symbol;list-delim:%L;list-decimal:NULL");
-	_s("Dashed List", "P", "Normal", "Dashed List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:NULL;list-delim:%L;list-decimal:NULL");
-	_s("Square List", "P", "Normal", "Square List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Triangle List", "P", "Normal", "Triangle List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Diamond List", "P", "Normal", "Diamond List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Star List", "P", "Normal", "Star List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Implies List", "P", "Normal", "Implies List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Symbol;list-delim:%L;list-decimal:NULL");
-	_s("Tick List", "P", "Normal", "Tick List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Box List", "P", "Normal", "Box List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Hand List", "P", "Normal", "Hand List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Heart List", "P", "Normal", "Heart List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: transparent; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+
+	sprintf(list_fmt_tmp, list_fmt, "1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
+
+	_s("Numbered List","P", "Normal", "Numbered List", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
+
+	_s("Lower Case List","P", "Numbered List", "Lower Case List", list_fmt_tmp);
+	_s("Upper Case List","P", "Numbered List", "Upper Case List", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
+
+	_s("Lower Roman List","P", "Normal", "Lower Roman List", list_fmt_tmp);
+	_s("Upper Roman List","P", "Numbered List", "Upper Roman List", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
+
+	_s("Bullet List", "P", "Normal", "Bullet List", list_fmt_tmp);
+	_s("Implies List", "P", "Normal", "Implies List", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
+
+	_s("Dashed List", "P", "Normal", "Dashed List", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+
+	_s("Square List", "P", "Normal", "Square List", list_fmt_tmp);
+	_s("Triangle List", "P", "Normal", "Triangle List", list_fmt_tmp);
+	_s("Diamond List", "P", "Normal", "Diamond List", list_fmt_tmp);
+	_s("Star List", "P", "Normal", "Star List", list_fmt_tmp);
+	_s("Tick List", "P", "Normal", "Tick List", list_fmt_tmp);
+	_s("Box List", "P", "Normal", "Box List", list_fmt_tmp);
+	_s("Hand List", "P", "Normal", "Hand List", list_fmt_tmp);
+	_s("Heart List", "P", "Normal", "Heart List", list_fmt_tmp);
 
 
 	return true;

@@ -252,7 +252,7 @@ bool UT_Vector::copy(const UT_Vector *pVec)
 	return 0;
 }
 
-void* UT_Vector::operator[](UT_uint32 i) const
+const void* UT_Vector::operator[](UT_uint32 i) const
 {
 	return this->getNthItem(i);
 }

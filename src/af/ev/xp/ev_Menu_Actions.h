@@ -127,7 +127,7 @@ public:
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
 	bool				addAction(EV_Menu_Action *pAction);
 
-	EV_Menu_Action *	getAction(XAP_Menu_Id id) const;
+	const EV_Menu_Action *	getAction(XAP_Menu_Id id) const;
 
 private:
 	UT_Vector			m_actionTable;

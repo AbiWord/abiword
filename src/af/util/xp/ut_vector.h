@@ -55,14 +55,11 @@ public:
 		return m_pEntries[n];
 	}
 
-	void*		operator[](UT_uint32 i) const;
+	const void*		operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
 	void*		getFirstItem() const;
 	void*		getLastItem() const;
-	inline UT_uint32 getItemCount() const
-	{
-		return m_iCount;
-	}
+	inline UT_uint32 getItemCount() const {	return m_iCount; }
 	UT_sint32	findItem(void*) const;
 
 	UT_sint32	insertItemAt(void*, UT_uint32 ndx);

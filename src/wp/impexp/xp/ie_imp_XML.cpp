@@ -57,15 +57,14 @@
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
 
-#ifdef __MRC__
-extern "C"
-#endif
-static int n_compare (const void * a, const void * b)
-{
-  const char * name = (const char *)a;
-  const xmlToIdMapping * id = (const xmlToIdMapping *)b;
-
-  return UT_strcmp (name, id->m_name);
+extern "C" { // for MRC compiler (Mac)
+	static int s_str_compare (const void * a, const void * b)
+	{
+		const char * name = (const char *)a;
+		const xmlToIdMapping * id = (const xmlToIdMapping *)b;
+		
+		return UT_strcmp (name, id->m_name);
+	}
 }
 
 int IE_Imp_XML::_mapNameToToken (const char * name, 
@@ -83,7 +82,7 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 	}
 	
 	id = (xmlToIdMapping *)bsearch (name, idlist, len, 
-									sizeof (xmlToIdMapping), n_compare);
+									sizeof (xmlToIdMapping), s_str_compare);
 	if (id)
     {
 		tokens.addEntry (name, 0, (void *)id->m_type);

@@ -60,8 +60,8 @@ struct __Aux {
 
 static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 									  XAP_UnixFrame * pUnixFrame,
-									  EV_Menu_Action * pAction,
-									  EV_Menu_Label * pLabel)
+									  const EV_Menu_Action * pAction,
+									  const EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
 
@@ -497,8 +497,8 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(pos);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
 		UT_ASSERT(pLayoutItem);
 		UT_ASSERT(pAction);
@@ -672,8 +672,8 @@ GnomeUIInfo * EV_UnixGnomeMenu::_generateMenuItem(UT_uint32 nLabelItemInLayout)
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 
-	EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-	EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+	const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
 	UT_ASSERT(pAction);
 	UT_ASSERT(pLabel);
@@ -805,8 +805,8 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{

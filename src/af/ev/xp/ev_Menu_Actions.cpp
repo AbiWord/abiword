@@ -153,14 +153,14 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 	return (error == 0);
 }
 
-EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
+const EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 {
 	xxx_UT_DEBUGMSG(("JCA: EV_Menu_ActionSet::getAction(%d) m_first = [%d], size_table = [%d]\n", id, m_first, m_actionTable.size()));
 	if ((id < m_first) || (id > m_first + m_actionTable.size()))
 		return NULL;
 
 	UT_uint32 index = (id - m_first);
-	EV_Menu_Action * pAction = static_cast<EV_Menu_Action *> (m_actionTable[index]);
+	const EV_Menu_Action * pAction = static_cast<const EV_Menu_Action *> (m_actionTable[index]);
 	UT_ASSERT(pAction && (pAction->getMenuId() == id));
 	return pAction;
 }
