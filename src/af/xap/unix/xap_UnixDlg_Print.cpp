@@ -179,7 +179,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 	gtk_signal_connect_after (GTK_OBJECT (window), "destroy",
 							  GTK_SIGNAL_FUNC(s_cancel_clicked), NULL);
 	gtk_window_set_title (GTK_WINDOW (window), "Printer Setup");
-	gtk_container_border_width (GTK_CONTAINER (window), 0);
+	gtk_container_set_border_width (GTK_CONTAINER (window), 0);
 	gtk_widget_set_usize (window, 325, 275);
 
 	// Add a main vbox
@@ -189,13 +189,13 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 	// Add a vbox to the main vbox
 	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_container_border_width (GTK_CONTAINER (vbox2), 5);
+	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
 	gtk_box_pack_start (GTK_BOX (vbox1), vbox2, TRUE, FALSE, 0);
 	gtk_widget_show (vbox2);
 
 		// Print To label and radio buttons
 		hbox = gtk_hbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
+		gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
@@ -217,7 +217,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		// Print Command Label and Text box
 		hbox = gtk_hbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
+		gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 
@@ -239,7 +239,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		// Page range stuff
 		vbox = gtk_vbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (vbox), 5);
+		gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 		gtk_box_pack_start (GTK_BOX (vbox2), vbox, FALSE, TRUE, 0);
 		gtk_widget_show (vbox);
 
@@ -255,7 +255,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 			group = gtk_radio_button_group (GTK_RADIO_BUTTON (buttonAll));
 
 			hbox = gtk_hbox_new (FALSE, 0);
-			gtk_container_border_width (GTK_CONTAINER (hbox), 0);
+			gtk_container_set_border_width (GTK_CONTAINER (hbox), 0);
 			gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 			gtk_widget_show (hbox);
 
@@ -289,7 +289,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		// Add collate and copies options here
 		hbox = gtk_hbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 0);
+		gtk_container_set_border_width (GTK_CONTAINER (hbox), 0);
 		gtk_box_pack_start (GTK_BOX (vbox2), hbox, TRUE, TRUE, 0);
 		gtk_widget_show (hbox);
 
@@ -315,7 +315,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		// Button area
 		hbox = gtk_hbox_new (FALSE, 5);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
+		gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
 		gtk_box_pack_end (GTK_BOX (vbox1), hbox, FALSE, TRUE, 0);
 		gtk_widget_show (hbox);
 

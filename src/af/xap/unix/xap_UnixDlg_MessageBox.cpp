@@ -167,7 +167,6 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 							  NULL);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
-	gtk_container_border_width (GTK_CONTAINER (dialog_window), 0);
 	gtk_widget_set_usize (dialog_window, 400, 110);
 
 	// Intercept key strokes
