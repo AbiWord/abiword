@@ -154,8 +154,8 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
   ; Languages
   ; some are presently commented out as they lack some translations (hence fail to build)
-;  !insertmacro MUI_LANGUAGE "Bulgarian"
-;  !insertmacro MUI_LANGUAGE "Czech"
+  !insertmacro MUI_LANGUAGE "Bulgarian"
+  !insertmacro MUI_LANGUAGE "Czech"
   !insertmacro MUI_LANGUAGE "Dutch"
   !insertmacro MUI_LANGUAGE "English"
   !insertmacro MUI_LANGUAGE "French"
@@ -169,7 +169,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !insertmacro MUI_LANGUAGE "SimpChinese"
   !insertmacro MUI_LANGUAGE "Spanish"
   !insertmacro MUI_LANGUAGE "TradChinese"
-;  !insertmacro MUI_LANGUAGE "Ukrainian"
+  !insertmacro MUI_LANGUAGE "Ukrainian"
 
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM"
@@ -228,8 +228,8 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 !define LSTR "!insertmacro LSTR"
 !define LANG_X					; used to prevent a warning about not being defined
 
-;!include "abi_lng_Bulgarian.nsh"
-;!include "abi_lng_Czech.nsh"
+!include "abi_lng_Bulgarian.nsh"
+!include "abi_lng_Czech.nsh"
 !include "abi_lng_Dutch.nsh"
 !include "abi_lng_English.nsh"
 !include "abi_lng_French.nsh"
@@ -243,7 +243,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 !include "abi_lng_SimpChinese.nsh"
 !include "abi_lng_Spanish.nsh"
 !include "abi_lng_TradChinese.nsh"
-;!include "abi_lng_Ukrainian.nsh"
+!include "abi_lng_Ukrainian.nsh"
 
 
 ; add a version resource to installer corresponding to version of app we're installing
@@ -524,6 +524,9 @@ Section "$(TITLE_section_help)" section_help
 	SetOutPath $INSTDIR\AbiWord
 	; help documents may not be created if peer abiword-docs not found
 	File /nonfatal /r "..\abisuite\abiword\help"
+
+	SetOutPath $INSTDIR\AbiWord\help\en-US
+	File "..\..\..\credits.txt"
 SectionEnd
 
 ; OPTIONAL Installation of Templates
