@@ -99,7 +99,6 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
-#if 0
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
 	// from both the scroll-related edit methods
@@ -154,7 +153,6 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 		EV_BeOSToolbar * pBeOSToolbar = (EV_BeOSToolbar *)m_vecBeOSToolbars.getNthItem(k);
 		pBeOSToolbar->bindListenerToView(pView);
 	}
-#endif
 
 	/****************************************************************
 	*****************************************************************
@@ -176,10 +174,10 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
         }       
 
 	REPLACEP(m_pView, pView);
-	//REPLACEP(m_pScrollObj, pScrollObj);
+	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
 	m_lid = lid;
-	//REPLACEP(m_pScrollbarViewListener,pScrollbarViewListener);
+	REPLACEP(m_pScrollbarViewListener,pScrollbarViewListener);
 	//m_lidScrollbarViewListener = lidScrollbarViewListener;
 
 	m_pView->addScrollListener(m_pScrollObj);
@@ -193,10 +191,11 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	//((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
 	//((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
 	
-/*
-	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
-			       GTK_WIDGET(m_dArea)->allocation.height);
-*/
+	m_pBeDocView->Window()->Lock();
+	m_pView->setWindowSize(m_pBeDocView->Bounds().Width(),
+			       m_pBeDocView->Bounds().Height());
+	m_pBeDocView->Window()->Unlock();
+
 	setXScrollRange();
 	setYScrollRange();
 	updateTitle();
@@ -265,6 +264,19 @@ void AP_BeOSFrame::setXScrollRange(void)
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendHorizontalScrollEvent(newvalue,m_pHadj->upper-m_pHadj->page_size);
 #endif
+	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
+	be_Window *pBWin = (be_Window*)getTopLevelWindow();
+        pBWin->Lock();
+        int windowWidth = pBWin->m_pbe_DocView->Bounds().Width();
+        pBWin->Unlock();
+        BScrollBar *hscroll = pBWin->m_hScroll;
+
+        printf("FRAME:setXScrollRange \n");
+        hscroll->Window()->Lock();
+        hscroll->SetSteps(20.0, windowWidth);
+        hscroll->SetRange(0, width);
+        hscroll->SetValue((m_pView) ? m_pView->getXScrollOffset() : 0);
+        hscroll->Window()->Unlock(); 
 }
 
 void AP_BeOSFrame::setYScrollRange(void)
@@ -294,6 +306,19 @@ void AP_BeOSFrame::setYScrollRange(void)
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendVerticalScrollEvent(newvalue,m_pVadj->upper-m_pVadj->page_size);
 #endif
+	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
+	be_Window *pBWin = (be_Window*)getTopLevelWindow();
+        pBWin->Lock();
+        int windowHeight = pBWin->m_pbe_DocView->Bounds().Height();
+        pBWin->Unlock();
+        BScrollBar *vscroll = pBWin->m_vScroll;
+
+        printf("FRAME:setYScrollRange \n");
+        vscroll->Window()->Lock();
+        vscroll->SetSteps(20.0, windowHeight);
+        vscroll->SetRange(0, height);
+        vscroll->SetValue((m_pView) ? m_pView->getYScrollOffset() : 0);
+        vscroll->Window()->Unlock();        
 }
 
 
@@ -363,7 +388,7 @@ void AP_BeOSFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Bool AP_BeOSFrame::_loadDocument(const char * szFilename)
+UT_Bool AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 {
 	// are we replacing another document?
 	if (m_pDoc)
@@ -385,7 +410,7 @@ UT_Bool AP_BeOSFrame::_loadDocument(const char * szFilename)
 		goto ReplaceDocument;
 	}
 
-	if (pNewDoc->readFromFile(szFilename))
+	if (pNewDoc->readFromFile(szFilename, ieft))
 		goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
@@ -393,7 +418,7 @@ UT_Bool AP_BeOSFrame::_loadDocument(const char * szFilename)
 	return UT_FALSE;
 
 ReplaceDocument:
-	// NOTE: prior document is bound to m_pData->m_pDocLayout, which gets discarded by subclass
+	// NOTE: prior document is bound to ((AP_FrameData*)m_pData)->m_pDocLayout, which gets discarded by subclass
 	m_pDoc = pNewDoc;
 	return UT_TRUE;
 }
@@ -424,9 +449,9 @@ Cleanup:
 	return NULL;
 }
 
-UT_Bool AP_BeOSFrame::loadDocument(const char * szFilename)
+UT_Bool AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
 {
-	if (! _loadDocument(szFilename))
+	if (! _loadDocument(szFilename,(IEFileType)ieft))
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
@@ -440,48 +465,48 @@ UT_Bool AP_BeOSFrame::loadDocument(const char * szFilename)
 
 void AP_BeOSFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {
-#if 0
-	// this is a static callback function and doesn't have a 'this' pointer.
-	
-	AP_BeOSFrame * pBeOSFrame = static_cast<AP_BeOSFrame *>(pData);
-	AV_View * pView = pBeOSFrame->getCurrentView();
-	
-	// we've been notified (via sendVerticalScrollEvent()) of a scroll (probably
-	// a keyboard motion).  push the new values into the scrollbar widgets
-	// (with clamping).  then cause the view to scroll.
-	
-	gfloat yoffNew = (gfloat)yoff;
-	gfloat yoffMax = pBeOSFrame->m_pVadj->upper - pBeOSFrame->m_pVadj->page_size;
-	if (yoffMax <= 0)
-		yoffNew = 0;
-	else if (yoffNew > yoffMax)
-		yoffNew = yoffMax;
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(pBeOSFrame->m_pVadj),yoffNew);
-	pView->setYScrollOffset((UT_sint32)yoffNew);
-#endif
+        // this is a static callback function and doesn't have a 'this' pointer.
+
+        AP_BeOSFrame * pBeOSFrame = static_cast<AP_BeOSFrame *>(pData);
+        AV_View * pView = pBeOSFrame->getCurrentView();
+
+        // we've been notified (via sendVerticalScrollEvent()) of a scroll (probably
+        // a keyboard motion).  push the new values into the scrollbar widgets
+        // (with clamping).  then cause the view to scroll.
+
+        float yoffNew = yoff;
+        float yoffMax, max;
+	be_Window *pBWin = (be_Window*)pBeOSFrame->getTopLevelWindow();
+        pBWin->m_vScroll->GetRange(&yoffMax, &max);
+        yoffMax = max - pBWin->m_vScroll->Value();
+        if (yoffMax <= 0)
+                yoffNew = 0;
+        else if (yoffNew > yoffMax)
+                yoffNew = yoffMax;
+        pView->setYScrollOffset((UT_sint32)yoffNew); 
 }
 
 void AP_BeOSFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
 {
-#if 0
-	// this is a static callback function and doesn't have a 'this' pointer.
-	
-	AP_BeOSFrame * pBeOSFrame = static_cast<AP_BeOSFrame *>(pData);
-	AV_View * pView = pBeOSFrame->getCurrentView();
-	
-	// we've been notified (via sendScrollEvent()) of a scroll (probably
-	// a keyboard motion).  push the new values into the scrollbar widgets
-	// (with clamping).  then cause the view to scroll.
+        // this is a static callback function and doesn't have a 'this' pointer.
 
-	gfloat xoffNew = (gfloat)xoff;
-	gfloat xoffMax = pBeOSFrame->m_pHadj->upper - pBeOSFrame->m_pHadj->page_size;
-	if (xoffMax <= 0)
-		xoffNew = 0;
-	else if (xoffNew > xoffMax)
-		xoffNew = xoffMax;
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(pBeOSFrame->m_pHadj),xoffNew);
-	pView->setXScrollOffset((UT_sint32)xoffNew);
-#endif
+        AP_BeOSFrame * pBeOSFrame = static_cast<AP_BeOSFrame *>(pData);
+        AV_View * pView = pBeOSFrame->getCurrentView();
+
+        // we've been notified (via sendScrollEvent()) of a scroll (probably
+        // a keyboard motion).  push the new values into the scrollbar widgets
+        // (with clamping).  then cause the view to scroll.
+        float xoffNew = xoff;
+        //float xoffMax = pBeOSFrame->m_pHadj->upper - pBeOSFrame->m_pHadj->page_size;
+        float xoffMax, max;
+	be_Window *pBWin = (be_Window*)pBeOSFrame->getTopLevelWindow();
+        pBWin->m_hScroll->GetRange(&xoffMax, &max);
+        xoffMax = max - pBWin->m_hScroll->Value();
+        if (xoffMax <= 0)
+                xoffNew = 0;
+        else if (xoffNew > xoffMax)
+                xoffNew = xoffMax;
+        pView->setXScrollOffset((UT_sint32)xoffNew); 
 }
 
 #if 0
@@ -597,5 +622,6 @@ GtkWidget * AP_BeOSFrame::_createDocumentWindow(void)
 
 void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 {
-        ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+	printf("FRAME:Set Status Message not yet supported \n");
+//        ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }                                                                        

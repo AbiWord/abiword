@@ -33,9 +33,6 @@ AP_BeOSStatusBar::AP_BeOSStatusBar(XAP_Frame * pFrame)
 {
 //	m_wStatusBar = NULL;
 	m_pG = NULL;
-				 //	R, G, B
-	UT_setColor(m_clrForeground, 255, 0, 0);
-	UT_setColor(m_clrBackground, 0, 0, 255);
 }
 
 AP_BeOSStatusBar::~AP_BeOSStatusBar(void)

@@ -42,7 +42,6 @@ public:
 
 protected:
 	//GtkWidget *			m_wStatusBar;
-
 };
 
 #endif /* AP_BEOSSTATUSBAR_H */

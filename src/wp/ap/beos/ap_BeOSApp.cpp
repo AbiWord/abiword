@@ -308,11 +308,11 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 		// try to load the document named on the command line,
 		// if that fails, create an new, untitled document window.
 		
-		if (!pFirstBeOSFrame->loadDocument(argv[i]))
+		if (!pFirstBeOSFrame->loadDocument(argv[i], IEFT_Unknown))
 		{
 			// TODO: warn user that we couldn't open that file
 			
-			pFirstBeOSFrame->loadDocument(NULL);
+			pFirstBeOSFrame->loadDocument(NULL, IEFT_Unknown);
 		}
 	}
 
