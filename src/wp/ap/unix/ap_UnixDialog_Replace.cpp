@@ -29,6 +29,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
+#include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
 #include "ap_UnixDialog_Replace.h"
 
@@ -67,27 +68,20 @@ static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 	UT_ASSERT(repDialog);
 
 	char * findEntryText;
-	char * replaceEntryText;
 
 	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
-	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
 	
 	UT_DEBUGMSG(("Find entry contents: \"%s\"\n", ((findEntryText) ? findEntryText : "NULL")));
-	UT_DEBUGMSG(("Replace entry contents: \"%s\"\n", ((replaceEntryText) ? replaceEntryText : "NULL")));
 
 	UT_UCSChar * findString;
-	UT_UCSChar * replaceString;
 
 	UT_UCS_cloneString_char(&findString, findEntryText);
-	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
 	
 	repDialog->setFindString(findString);
-	repDialog->setReplaceString(replaceString);
 	
 	repDialog->findNext();
 
 	FREEP(findString);
-	FREEP(replaceString);
 }
 
 
@@ -163,6 +157,10 @@ static void CancelCallback(GtkWidget * object, GtkWidget * data)
 	gtk_main_quit();
 }
 
+/*
+  Since this function builds both the Find and the Replace
+  dialogs, it gets kinda hairy.
+*/
 void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 {
 	GtkWidget * topLevel;
@@ -200,7 +198,11 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 						  FALSE,
 						  TRUE);
 
-	gtk_window_set_title(GTK_WINDOW(topLevel), "Replace");
+	if (m_id == AP_DIALOG_ID_FIND)
+		gtk_window_set_title(GTK_WINDOW(topLevel), "Find");
+	else
+		gtk_window_set_title(GTK_WINDOW(topLevel), "Replace");
+	
 	// show this at the very end
 	
 	// create a vertical stacked box to put our widgets in
@@ -260,38 +262,41 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 					   GTK_SIGNAL_FUNC(MatchCaseCallback),
 					   (gpointer) this);
 
-	// container for Replace text field
-	replaceBox = gtk_hbox_new(FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(vbox), replaceBox, TRUE, TRUE, 5);
-	gtk_widget_show(replaceBox);
-
-	replaceEntry = gtk_entry_new_with_max_length(50);
-	
+	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		UT_UCSChar * bufferUnicode = getReplaceString();
-		char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
-		FREEP(bufferUnicode);
-		
-		gtk_entry_set_text(GTK_ENTRY(replaceEntry), bufferNormal);
+		// container for Replace text field
+		replaceBox = gtk_hbox_new(FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), replaceBox, TRUE, TRUE, 5);
+		gtk_widget_show(replaceBox);
 
-		FREEP(bufferNormal);
-	}
-		
-	gtk_box_pack_end (GTK_BOX (replaceBox), replaceEntry, TRUE, TRUE, 10);
-	gtk_widget_show (replaceEntry);
-
-	gtk_signal_connect(GTK_OBJECT(replaceEntry),
-					   "activate",
-					   GTK_SIGNAL_FUNC(ReplaceCallback),
-					   this);
+		replaceEntry = gtk_entry_new_with_max_length(50);
 	
-	replaceLabel = gtk_label_new("Replace With: ");
-	gtk_label_set_justify(GTK_LABEL(replaceLabel), GTK_JUSTIFY_RIGHT);
-	gtk_widget_set_usize(replaceLabel, 150, 0);
-	gtk_box_pack_end(GTK_BOX(replaceBox), replaceLabel, TRUE, TRUE, 0);
-	gtk_widget_show(replaceLabel);
+		{
+			UT_UCSChar * bufferUnicode = getReplaceString();
+			char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+			UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+			FREEP(bufferUnicode);
+		
+			gtk_entry_set_text(GTK_ENTRY(replaceEntry), bufferNormal);
 
+			FREEP(bufferNormal);
+		}
+		
+		gtk_box_pack_end (GTK_BOX (replaceBox), replaceEntry, TRUE, TRUE, 10);
+		gtk_widget_show (replaceEntry);
+
+		gtk_signal_connect(GTK_OBJECT(replaceEntry),
+						   "activate",
+						   GTK_SIGNAL_FUNC(ReplaceCallback),
+						   this);
+	
+		replaceLabel = gtk_label_new("Replace With: ");
+		gtk_label_set_justify(GTK_LABEL(replaceLabel), GTK_JUSTIFY_RIGHT);
+		gtk_widget_set_usize(replaceLabel, 150, 0);
+		gtk_box_pack_end(GTK_BOX(replaceBox), replaceLabel, TRUE, TRUE, 0);
+		gtk_widget_show(replaceLabel);
+	}
+	
 	// pretty seperator for the action area
 	separator = gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, TRUE, 5);
@@ -311,26 +316,29 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 					   "clicked",
 					   GTK_SIGNAL_FUNC(FindCallback),
 					   this);
+		
+	if (m_id == AP_DIALOG_ID_REPLACE)
+	{
+		replaceButton = gtk_button_new_with_label("Replace");
+		gtk_widget_set_usize(replaceButton, DEFAULT_BUTTON_WIDTH, 0);
+		gtk_box_pack_start(GTK_BOX(buttonBox), replaceButton, FALSE, FALSE, 0);
+		gtk_widget_show(replaceButton);
 
-	replaceButton = gtk_button_new_with_label("Replace");
-	gtk_widget_set_usize(replaceButton, DEFAULT_BUTTON_WIDTH, 0);
-	gtk_box_pack_start(GTK_BOX(buttonBox), replaceButton, FALSE, FALSE, 0);
-	gtk_widget_show(replaceButton);
+		gtk_signal_connect(GTK_OBJECT(replaceButton),
+						   "clicked",
+						   GTK_SIGNAL_FUNC(ReplaceCallback),
+						   this);
 
-	gtk_signal_connect(GTK_OBJECT(replaceButton),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(ReplaceCallback),
-					   this);
+		replaceAllButton = gtk_button_new_with_label("Replace All");
+		gtk_widget_set_usize(replaceAllButton, DEFAULT_BUTTON_WIDTH, 0);
+		gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, FALSE, FALSE, 0);
+		gtk_widget_show(replaceAllButton);
 
-	replaceAllButton = gtk_button_new_with_label("Replace All");
-	gtk_widget_set_usize(replaceAllButton, DEFAULT_BUTTON_WIDTH, 0);
-	gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, FALSE, FALSE, 0);
-	gtk_widget_show(replaceAllButton);
-
-	gtk_signal_connect(GTK_OBJECT(replaceAllButton),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(ReplaceAllCallback),
-					   this);
+		gtk_signal_connect(GTK_OBJECT(replaceAllButton),
+						   "clicked",
+						   GTK_SIGNAL_FUNC(ReplaceAllCallback),
+						   this);
+	}
 	
 	cancelButton = gtk_button_new_with_label("Cancel");
 	gtk_widget_set_usize(cancelButton, DEFAULT_BUTTON_WIDTH, 0);
@@ -343,8 +351,12 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 							  GTK_OBJECT(topLevel));
 
 	GTK_WIDGET_SET_FLAGS(findButton, GTK_CAN_DEFAULT);
-	GTK_WIDGET_SET_FLAGS(replaceButton, GTK_CAN_DEFAULT);
-	GTK_WIDGET_SET_FLAGS(replaceAllButton, GTK_CAN_DEFAULT);
+
+	if (m_id == AP_DIALOG_ID_REPLACE)
+	{
+		GTK_WIDGET_SET_FLAGS(replaceButton, GTK_CAN_DEFAULT);
+		GTK_WIDGET_SET_FLAGS(replaceAllButton, GTK_CAN_DEFAULT);
+	}
 	GTK_WIDGET_SET_FLAGS(cancelButton, GTK_CAN_DEFAULT);
 	
 	// get top level window and it's GtkWidget *
@@ -355,8 +367,10 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	// center it
     centerDialog(parent, topLevel);
 
-	// Replace should be default button
-	gtk_widget_grab_default(replaceButton);
+	if (m_id == AP_DIALOG_ID_FIND)
+		gtk_widget_grab_default(findButton);
+	else
+		gtk_widget_grab_default(replaceButton);
 
 	// Find entry should have focus, for immediate typing
 	gtk_widget_grab_focus(findEntry);
