@@ -378,7 +378,6 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		m_szStyle = NULL;
 	}
-
 	// Now work out our dominant direction
 	// First, test if this is not a block that is the wrapper around a
 	// footnote text, if it is, we will get the direction from the
@@ -793,7 +792,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
+	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
 }
 
 /*!
@@ -1416,6 +1415,7 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 	fp_Run* pTempRun = m_pFirstRun;
 	while (pTempRun)
 	{
+		pTempRun->lookupProperties();
 		pLine->addRun(pTempRun);
 		pTempRun = pTempRun->getNext();
 	}
