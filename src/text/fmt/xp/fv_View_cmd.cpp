@@ -1970,10 +1970,8 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty())
 	{
-		m_pDoc->beginUserAtomicGlob();
-		PP_AttrProp AttrProp_Before;
-		_deleteSelection(&AttrProp_Before);
-		m_pDoc->endUserAtomicGlob();
+		_clearSelection();
+		_resetSelection();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
