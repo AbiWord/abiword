@@ -915,6 +915,11 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 void GR_UnixGraphics::setFont(GR_Font * pFont)
 {
+	UT_ASSERT(pFont);
+	if(pFont == NULL)
+	{
+		return;
+	}
 	XAP_UnixFontHandle * pUFont = static_cast<XAP_UnixFontHandle *> (pFont);
 
 	// Sometimes we ask gr_UnixGraphics to build big (*BIG*) fonts only to

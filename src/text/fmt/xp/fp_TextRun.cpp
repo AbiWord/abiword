@@ -2222,7 +2222,7 @@ void fp_TextRun::resetJustification(bool bPermanent)
 	UT_return_if_fail(m_pRenderInfo);
 	if(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		_clearScreen();
+//		_clearScreen(); // This causes excessive flicker editing Justified text
 	}
 	UT_sint32 iWidth = getWidth();
 	xxx_UT_DEBUGMSG(("reset Justification of run %x \n", this));

@@ -246,6 +246,7 @@ bool fl_TOCLayout::bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
 	m_bHasEndTOC = true;
+	m_pLayout->fillTOC(this);
 	return true;
 }
 
@@ -736,7 +737,7 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 {
 	UT_UTF8String sTmpStyle = sStyle;
 	const char * sLStyle = sTOCStyle.utf8_str();
-	xxx_UT_DEBUGMSG(("Looking at Style %s \n",sLStyle));
+	xxx_UT_DEBUGMSG(("Looking at TOC Style %s \n",sLStyle));
 	xxx_UT_DEBUGMSG(("Base input style is %s \n",sTmpStyle.utf8_str()));
 	if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
 	{
@@ -1030,7 +1031,10 @@ void fl_TOCLayout::_createTOCContainer(void)
 	UT_ASSERT(pCon);
 	UT_sint32 iWidth = pCon->getWidth();
 	pTOCContainer->setWidth(iWidth);
-	m_pLayout->fillTOC(this);
+	if(m_bHasEndTOC)
+	{
+		m_pLayout->fillTOC(this);
+	}
 	if(m_bTOCHeading)
 	{
 		PD_Style * pStyle = NULL;

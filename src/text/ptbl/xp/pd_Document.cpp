@@ -2491,7 +2491,7 @@ bool PD_Document::getNextStrux(PL_StruxDocHandle sdh,
 		{
 			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
 			if(iEmbedDepth <= 0 && !m_pPieceTable->isFootnote(pf) &&
-			   !m_pPieceTable->isFootnote(pf))
+									 !m_pPieceTable->isEndFootnote(pf))
 			{
 				*nextsdh = pfsTemp;
 				return true;
