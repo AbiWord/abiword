@@ -31,14 +31,14 @@
 
 class XAP_Frame;
 class GR_CocoaGraphics;
-
+class AP_CocoaStatusBar;
 
 @interface XAP_CocoaNSStatusBar : NSView
 {
-
+	AP_CocoaStatusBar*	_xap;
 }
-
-- (NSControl *)addField:(AP_StatusBarField*)field;
+- (void)setXAPOwner:(AP_CocoaStatusBar*)owner;
+- (void)statusBarDidResize:(NSNotification *)notification;
 
 @end
 
@@ -57,11 +57,15 @@ public:
 	virtual void		show(void);
 	virtual void		hide(void);
 
+	void _repositionFields(NSArray *fields);
+
 private:
 
 	XAP_CocoaNSStatusBar *	m_wStatusBar;
 	NSView *			m_superView;
 	bool				m_hidden;
+	float				m_requestedWidth;
+	int					m_numMaxWidth;
 };
 
 #endif /* AP_COCOASTATUSBAR_H */

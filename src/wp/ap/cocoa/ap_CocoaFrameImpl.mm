@@ -365,7 +365,7 @@ void AP_CocoaFrameImpl::_bindToolbars(AV_View * pView)
 void AP_CocoaFrameImpl::_showOrHideStatusbar()
 {
 	XAP_Frame*	pFrame = getFrame();
-	bool bShowStatusBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowStatusBar && false;
+	bool bShowStatusBar = static_cast<AP_FrameData*> (pFrame->getFrameData())->m_bShowStatusBar;
 	static_cast<AP_CocoaFrame *>(pFrame)->toggleStatusBar(bShowStatusBar);
 }
 
@@ -449,7 +449,8 @@ void AP_CocoaFrameImpl::_createStatusBarWindow(XAP_CocoaNSStatusBar * statusBar)
 	AP_CocoaStatusBar * pCocoaStatusBar = new AP_CocoaStatusBar(pFrame);
 	UT_ASSERT(pCocoaStatusBar);
 
-	((AP_FrameData *)pFrame->getFrameData())->m_pStatusBar = pCocoaStatusBar;
+	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pStatusBar = pCocoaStatusBar;
+	pCocoaStatusBar->createWidget();
 }
 
 void AP_CocoaFrameImpl::_setWindowIcon()

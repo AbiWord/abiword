@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001,2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +28,8 @@
 #include "gr_CocoaGraphics.h"
 #include "ap_CocoaStatusBar.h"
 #import "xap_CocoaFrameImpl.h"
+
+#define FIELD_SPACING 4.0f
 
 class ap_csb_TextListener : public AP_StatusBarFieldListener
 {
@@ -57,7 +59,9 @@ void ap_csb_TextListener::notify()
 	const UT_UCS4Char * buf = textInfo->getBufUCS();
 	UT_UTF8String utf8 (buf);	
 
-	[m_pLabel setStringValue:[NSString stringWithUTF8String:utf8.utf8_str()]];
+	NSString* str = [[NSString alloc] initWithUTF8String:utf8.utf8_str()];
+	[m_pLabel setStringValue:str];
+	[str release];
 
 	// we conditionally update the size request, if the representative string (or an earlier
 	// size) wasn't large enough, if the element uses the representative string method
@@ -83,13 +87,19 @@ void ap_csb_TextListener::notify()
 //////////////////////////////////////////////////////////////////
 
 AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
-	: AP_StatusBar(pFrame)
+	: AP_StatusBar(pFrame),
+		m_wStatusBar(nil),
+		m_hidden(false),
+		m_requestedWidth(0),
+		m_numMaxWidth(0)
 {
-	m_wStatusBar = nil;
-	m_hidden = false;
-
 	/* fetch the widget from the controller */
 	m_wStatusBar = [(XAP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl*>(m_pFrame->getFrameImpl()))->_getController() getStatusBar];
+	[m_wStatusBar setPostsFrameChangedNotifications:YES];
+	[[NSNotificationCenter defaultCenter] addObserver:m_wStatusBar 
+				selector:@selector(statusBarDidResize:) 
+				name:NSViewFrameDidChangeNotification
+				object:m_wStatusBar];
 }
 
 AP_CocoaStatusBar::~AP_CocoaStatusBar(void)
@@ -97,6 +107,7 @@ AP_CocoaStatusBar::~AP_CocoaStatusBar(void)
 	if ((m_hidden) && ([m_wStatusBar superview] == nil))
 	{
 		[m_wStatusBar release];
+		[[NSNotificationCenter defaultCenter] removeObserver:m_wStatusBar];
 	}
 }
 
@@ -111,55 +122,105 @@ XAP_CocoaNSStatusBar * AP_CocoaStatusBar::createWidget(void)
 	UT_ASSERT(m_wStatusBar);
 	float currentX = 0.0;
 	float height = [m_wStatusBar frame].size.height;
+	NSString* str;
+	m_requestedWidth = 0;
+	m_numMaxWidth = 0;
+	
+	NSFont* font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
+	
 	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) {
  		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
 		UT_ASSERT(pf); // we should NOT have null elements
-		
 		AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
-		NSRect frame = NSMakeRect (currentX, 0, 50, height);
+		NSRect frame = NSMakeRect (currentX, 0, 100, height);
 		NSTextField *pStatusBarElementLabel = [[NSTextField alloc] initWithFrame:frame];
-		pf->setListener((AP_StatusBarFieldListener *)(new ap_csb_TextListener
+		pf->setListener(static_cast<AP_StatusBarFieldListener *>(new ap_csb_TextListener
 				(pf_TextInfo, pStatusBarElementLabel)));
+		[pStatusBarElementLabel setFont:font];
 		[pStatusBarElementLabel setEditable:NO];
 		[pStatusBarElementLabel setBezeled:YES];
 		[pStatusBarElementLabel setSelectable:NO];
-		[pStatusBarElementLabel setStringValue:[NSString stringWithUTF8String:pf_TextInfo->getRepresentativeString()]];
-		// align
-		if (pf_TextInfo->getAlignmentMethod() == LEFT) {
-			// TODO set the text alignement. Probaably thru attributed string
-		//	gtk_misc_set_alignment(GTK_MISC(pStatusBarElementLabel), 0.0, 0.0);
+		// align text
+		switch (pf_TextInfo->getAlignmentMethod()) {
+		case LEFT:
+			[pStatusBarElementLabel setAlignment:NSNaturalTextAlignment];
+			break;
+		case CENTER:
+			[pStatusBarElementLabel setAlignment:NSCenterTextAlignment];
+			break;
+		default:
+			UT_ASSERT_NOT_REACHED();
 		}
 			
 		// size and place
-		if (pf_TextInfo->getFillMethod() == REPRESENTATIVE_STRING) {
-		/*
-			GtkRequisition requisition;
-			gtk_widget_size_request(pStatusBarElementLabel, &requisition);				
-			gtk_widget_set_size_request(pStatusBarElementLabel, requisition.width, -1);
-			
-			gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, FALSE, FALSE, 0);
-			*/
+		switch (pf_TextInfo->getFillMethod()) {
+		case REPRESENTATIVE_STRING:
+			str = [[NSString alloc] initWithUTF8String:pf_TextInfo->getRepresentativeString()];
+			[pStatusBarElementLabel setStringValue:str];
+			[str release];
+			[pStatusBarElementLabel sizeToFit];
+			[pStatusBarElementLabel setStringValue:@""];
+			frame = [pStatusBarElementLabel bounds];
+			height = frame.size.height;
+			m_requestedWidth += frame.size.width + FIELD_SPACING;
+			[pStatusBarElementLabel setTag:lrintf(frame.size.width)];
+			UT_DEBUGMSG(("New size is: w=%f h=%f\n", frame.size.width, frame.size.height));
+			break;
+		case MAX_POSSIBLE:
+			[pStatusBarElementLabel setTag:-1];
+			m_numMaxWidth++;
+			break;
+		default:
+			UT_ASSERT_NOT_REACHED();
 		}
 		[m_wStatusBar addSubview:pStatusBarElementLabel];
+		UT_DEBUGMSG(("added status bar element. Frame = %f %f %f %f\n",
+				frame.origin.x, frame.origin.y, frame.size.width, frame.size.height));
+
+		[pStatusBarElementLabel release];
+		currentX += frame.size.width + FIELD_SPACING;
 	}
+	_repositionFields([m_wStatusBar subviews]);
 	
 	return m_wStatusBar;
+}
+
+void AP_CocoaStatusBar::_repositionFields(NSArray *fields)
+{
+	float maxWidth = [m_wStatusBar bounds].size.width;
+	float freeWidth = maxWidth - m_requestedWidth;
+	NSEnumerator* iter = [fields objectEnumerator];
+	NSTextField* obj;
+	float prevX = 0;
+	while (obj = [iter nextObject]) {
+		int tag = [obj tag];
+		NSRect frame = [obj frame];
+		frame.origin.x = prevX;
+		if (tag == -1) {
+			frame.size.width = (freeWidth / (float)m_numMaxWidth) - FIELD_SPACING;
+		}
+		prevX += frame.size.width + FIELD_SPACING;
+		[obj setFrame:frame];
+		UT_DEBUGMSG(("resized status bar element. Frame = %f %f %f %f\n",
+				frame.origin.x, frame.origin.y, frame.size.width, frame.size.height));
+	}
 }
 
 
 
 void AP_CocoaStatusBar::show(void)
 {
+	UT_DEBUGMSG(("AP_CocoaStatusBar::show(void)\n"));
 	if ([m_wStatusBar superview] == nil) {
 		[m_superView addSubview:m_wStatusBar];
-		UT_ASSERT ([m_wStatusBar retainCount] > 1);
-		[m_wStatusBar autorelease];		// at this time it should have already been retained.
+		[m_wStatusBar release];	
 	}
 	m_hidden = false;
 }
 
 void AP_CocoaStatusBar::hide(void)
 {
+	UT_DEBUGMSG(("AP_CocoaStatusBar::hide(void)\n"));
 	if ([m_wStatusBar superview] != nil) {
 		m_superView = [m_wStatusBar superview];
 		UT_ASSERT (m_superView);
@@ -171,11 +232,17 @@ void AP_CocoaStatusBar::hide(void)
 }
 
 @implementation XAP_CocoaNSStatusBar
-- (NSControl *)addField:(AP_StatusBarField*)field
+
+- (void)setXAPOwner:(AP_CocoaStatusBar*)owner
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);;
-	return nil;
+	_xap = owner;
 }
 
+- (void)statusBarDidResize:(NSNotification *)notification
+{
+	if (_xap) {
+		_xap->_repositionFields([self subviews]);
+	}
+}
 
 @end
