@@ -2376,7 +2376,15 @@ Defun1(helpCheckVer)
 
 Defun1(helpReportBug)
 {
-  return _helpOpenURL(pAV_View, "http://www.abisource.com/support/bugs/");
+  UT_String bugURL = "http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord"; 
+  
+  bugURL += "&version="; 
+  bugURL += XAP_App::s_szBuild_Version; 
+  bugURL += "&comment=("; 
+  bugURL += XAP_App::s_szBuild_Options; 
+  bugURL += ")%0d%0a%0d%0a"; 
+ 
+  return _helpOpenURL(pAV_View, bugURL.c_str()); 
 }
 
 Defun1(helpSearch)
