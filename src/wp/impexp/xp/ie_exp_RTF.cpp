@@ -302,7 +302,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 	_rtf_keyword(pszKeyWord);
 	_rtf_keyword("pard");
 	_rtf_keyword("plain");
-	m_pListenerWriteDoc->m_bBlankLine = false;
+	m_pListenerWriteDoc->m_bBlankLine = true;
 	m_pListenerWriteDoc->m_bStartedList = false;
 	UT_DEBUGMSG(("SEVIOR: Doing header \n"));
 //
