@@ -153,7 +153,7 @@ private:
 	void        _generateParaProps(UT_String &s, const PAP * apap, wvParseStruct *ps);
 	int         _handleBookmarks(const wvParseStruct *ps);
 	void        _handleNotes(const wvParseStruct *ps);
-	bool        _insertNoteIfAppropriate(UT_uint32 iDocPosition, UT_UCS4Char c);
+	bool        _insertNoteIfAppropriate(UT_uint32 iDocPosition,UT_UCS4Char c);
 	bool        _insertFootnote(const footnote * f, UT_UCS4Char c);
 	bool        _insertEndnote(const footnote * f, UT_UCS4Char c);
 	bool        _insertNoteTextIfAppropriate(UT_uint32 iDocPosition);
@@ -211,6 +211,8 @@ private:
 	UT_String   m_charProps;
 	UT_String   m_charRevs;
 	UT_String   m_charStyle;
+	UT_String   m_paraProps;
+	UT_String   m_paraStyle;
 
 	UT_uint32   m_iFootnotesStart;
 	UT_uint32   m_iFootnotesEnd;

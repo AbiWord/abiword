@@ -697,6 +697,9 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   wvSetSpecialCharHandler(&ps, specCharProc);
   wvSetDocumentHandler (&ps, docProc);
 
+  // need to init doc props
+  getDoc()->setAttrProp(NULL);
+  
   UT_DEBUGMSG(("DOM: wvText\n"));
 
   wvText(&ps);
@@ -1224,7 +1227,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	
 	_insertBookmarkIfAppropriate(ps->currentcp);
 
-	if(_insertNoteIfAppropriate(ps->currentcp, eachchar))
+	if(_insertNoteIfAppropriate(ps->currentcp,eachchar))
 		return 0;
 
 	// convert incoming character to unicode
@@ -1306,7 +1309,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	
 	_insertBookmarkIfAppropriate(ps->currentcp);
 	
-	if(_insertNoteIfAppropriate(ps->currentcp, 0))
+	if(_insertNoteIfAppropriate(ps->currentcp,0))
 		return 0;
 	
 	//
@@ -1817,8 +1820,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		_appendSpan(&ucs,1);
 	}
 	
-	UT_String props;
-	_generateParaProps(props, apap, ps);
+	m_paraProps.clear();
+	_generateParaProps(m_paraProps, apap, ps);
 	
 	//props, level, listid, parentid, style, NULL
 	const XML_Char * propsArray[11];
@@ -1973,18 +1976,18 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		// such as list-style, field-font, ...
 
 		// start-value
-		props += "start-value:";
-		props += szStartValue;
-		props += ";";
+		m_paraProps += "start-value:";
+		m_paraProps += szStartValue;
+		m_paraProps += ";";
 
 		// list style
-		props += "list-style:";
-		props += s_mapDocToAbiListStyle (static_cast<MSWordListIdType>(apap->linfo.format));
-		props += ";";
+		m_paraProps += "list-style:";
+		m_paraProps += s_mapDocToAbiListStyle (static_cast<MSWordListIdType>(apap->linfo.format));
+		m_paraProps += ";";
 
 		// field-font
-		props += "field-font:";
-		props += s_fieldFontForListStyle (static_cast<MSWordListIdType>(apap->linfo.format));
+		m_paraProps += "field-font:";
+		m_paraProps += s_fieldFontForListStyle (static_cast<MSWordListIdType>(apap->linfo.format));
 		// Put in margin-left and text-indent - Use MS info if available or
 		// AbiWord defaults if these aren't present
 		//
@@ -2039,7 +2042,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
  	// props
 	UT_uint32 i = 0;
 	propsArray[i++] = static_cast<const XML_Char *>("props");
-	propsArray[i++] = static_cast<const XML_Char *>(props.c_str());
+	propsArray[i++] = static_cast<const XML_Char *>(m_paraProps.c_str());
 
 	
 	// level, or 0 for default, normal level
@@ -2061,6 +2064,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 		propsArray[i++] = "style";
 		propsArray[i++] = apap->stylename;
+		m_paraStyle = apap->stylename;
 	}
 
 	// NULL
@@ -3564,6 +3568,58 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			wvFree(pPLCF_ref);
 			wvFree(pPLCF_txt);
 		}
+
+		// next, deal footnote formatting matters
+		const XML_Char * props[] = {"document-footnote-type",            NULL,
+									"document-footnote-initial",         NULL,
+									"document-footnote-restart-section", NULL,
+									"document-footnote-restart-page",    NULL,
+		                            NULL};
+
+		switch(ps->dop.rncFtn)
+		{
+			case 0:
+				props[5] = "0";
+				props[7] = "0";
+				break;
+			case 1:
+				props[5] = "1";
+				props[7] = "0";
+				break;
+			case 2:
+				props[5] = "0";
+				props[7] = "1";
+				break;
+			default:
+				UT_ASSERT(UT_NOT_REACHED);
+		}
+
+		UT_String number;
+		UT_String_sprintf(number, "%d", ps->dop.nFtn);
+		props[3] = number.c_str();
+
+		switch(ps->dop.nfcFtnRef)
+		{
+			case 0:
+				props[1] = "numeric";
+				break;
+			case 1:
+				props[1] = "upper-roman";
+				break;
+			case 2:
+				props[1] = "lower-roman";
+				break;
+			case 3:
+				props[1] = "upper";
+				break;
+			case 4:
+				props[1] = "lower";
+				break;
+			default:
+				UT_ASSERT(UT_NOT_REACHED);
+		}
+		
+		getDoc()->setProperties(&props[0]);
 	}
 	
 	if(ps->fib.lcbPlcfendTxt)
@@ -3603,6 +3659,77 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			wvFree(pPLCF_ref);
 			wvFree(pPLCF_txt);
 		}
+		// next, deal endnote formatting matters
+		const XML_Char * props[] = {"document-endnote-type",            NULL,
+									"document-endnote-initial",         NULL,
+									"document-endnote-restart-section", NULL,
+									"document-endnote-restart-page",    NULL,
+									"document-endnote-place-endsection",NULL,
+									"document-endnote-place-enddoc",    NULL,
+		                            NULL};
+
+		switch(ps->dop.rncEdn)
+		{
+			case 0:
+				props[5] = "0";
+				props[7] = "0";
+				break;
+			case 1:
+				props[5] = "1";
+				props[7] = "0";
+				break;
+			case 2:
+				props[5] = "0";
+				props[7] = "1";
+				break;
+
+			default:
+				UT_ASSERT(UT_NOT_REACHED);
+		}
+
+		UT_String number;
+		UT_String_sprintf(number, "%d", ps->dop.nEdn);
+		props[3] = number.c_str();
+
+		switch(ps->dop.nfcEdnRef)
+		{
+			case 0:
+				props[1] = "numeric";
+				break;
+			case 1:
+				props[1] = "upper-roman";
+				break;
+			case 2:
+				props[1] = "lower-roman";
+				break;
+			case 3:
+				props[1] = "upper";
+				break;
+			case 4:
+				props[1] = "lower";
+				break;
+
+			default:
+				UT_ASSERT(UT_NOT_REACHED);
+				
+		}
+
+		switch(ps->dop.epc)
+		{
+			case 0:
+				props[9]  = "1";
+				props[11] = "0";
+				break;
+			case 3:
+				props[9]  = "0";
+				props[11] = "1";
+				break;
+			default:
+				UT_ASSERT(UT_NOT_REACHED);
+				
+		}
+				
+		getDoc()->setProperties(&props[0]);
 	}
 }
 
@@ -3633,7 +3760,7 @@ bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition, UT_UCS4C
 
 	if(m_pFootnotes[m_iNextFNote].ref_pos == iDocPosition)
 	{
-		res |= _insertFootnote(m_pFootnotes + m_iNextFNote++, c);
+		res |= _insertFootnote(m_pFootnotes + m_iNextFNote++,c);
 	}
 	
  endnotes:
@@ -3644,7 +3771,7 @@ bool IE_Imp_MsWord_97::_insertNoteIfAppropriate(UT_uint32 iDocPosition, UT_UCS4C
 	
 	if(m_pEndnotes[m_iNextENote].ref_pos == iDocPosition)
 	{
-		res |= _insertEndnote(m_pEndnotes + m_iNextENote++, c);
+		res |= _insertEndnote(m_pEndnotes + m_iNextENote++,c);
 	}
 	
 	
@@ -3664,13 +3791,11 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	const XML_Char * attribsS[3] ={"footnote-id",NULL,NULL};
 	const XML_Char* attribsR[9] = {"type", "footnote_ref", "footnote-id",
 								   NULL, NULL, NULL, NULL, NULL, NULL};
-	const XML_Char* attribsA[5] = {"type", "footnote_anchor", "footnote-id", NULL, NULL};
 	UT_uint32 iOffR = 3;
 
 	UT_String footpid;
 	UT_String_sprintf(footpid,"%i",f->pid);
 	attribsS[1] = footpid.c_str();
-	attribsA[3] = footpid.c_str();
 
 	// for attribsR we need to set props and style in order to
 	// preserve any formating set by a previous call to _beginChar()
@@ -3698,13 +3823,6 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	}
 	
 	_appendStrux(PTX_SectionFootnote,attribsS);
-	_appendStrux(PTX_Block,NULL);
-
-	if(f->type)
-	{
-		_appendObject(PTO_Field, attribsA);
-	}
-	
 	_appendStrux(PTX_EndFootnote,NULL);
 
 	if(!f->type)
@@ -3728,13 +3846,11 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 	const XML_Char * attribsS[3] ={"endnote-id",NULL,NULL};
 	const XML_Char* attribsR[9] = {"type", "endnote_ref", "endnote-id",
 								   NULL, NULL, NULL, NULL, NULL, NULL};
-	const XML_Char* attribsA[5] = {"type", "endnote_anchor", "endnote-id", NULL, NULL};
 	UT_uint32 iOffR = 3;
 
 	UT_String footpid;
 	UT_String_sprintf(footpid,"%i",f->pid);
 	attribsS[1] = footpid.c_str();
-	attribsA[3] = footpid.c_str();
 
 	// for attribsR we need to set props and style in order to
 	// preserve any formating set by a previous call to _beginChar()
@@ -3762,13 +3878,6 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 	}
 	
 	_appendStrux(PTX_SectionEndnote,attribsS);
-	_appendStrux(PTX_Block,NULL);
-
-	if(f->type)
-	{
-		_appendObject(PTO_Field, attribsA);
-	}
-	
 	_appendStrux(PTX_EndEndnote,NULL);
 
 	if(!f->type)
@@ -3827,16 +3936,6 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			_findNextFNoteSection();
 		}
 
-		// if this is the first character in a footnote with an
-		// autogenerated reference then skip it (the field has already
-		// been inserted
-		if(m_pFootnotes[m_iNextFNote].type &&
-		   iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos)
-		{
-			UT_DEBUGMSG(("Skiping auto-generated reference mareker\n"));
-			return false;
-		}
-		
 		// the current footnote will end at pos
 		// f.txt_pos + f.txt_len, 
 		if(iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos +
@@ -3856,6 +3955,38 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			}
 		}
 
+		// if this is the first character in a footnote, insert the reference
+		if(iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos)
+		{
+			const XML_Char* attribsA[] = {"type", "footnote_anchor",
+										   "footnote-id", NULL,
+										   "props",       NULL,
+										   "style",       NULL,
+										   NULL};
+			
+			const XML_Char * attribsB[] = {"props", NULL,
+											"style", NULL,
+											NULL};
+
+			UT_String footpid;
+			UT_String_sprintf(footpid,"%i",m_pFootnotes[m_iNextFNote].pid);
+			attribsA[3] = footpid.c_str();
+			attribsA[5] = m_charProps.c_str();
+			attribsA[7] = m_charStyle.c_str();
+
+			attribsB[1] = m_paraProps.c_str();
+			attribsB[3] = m_paraStyle.c_str();
+
+			_appendStrux(PTX_Block,attribsB);
+
+			if(m_pFootnotes[m_iNextFNote].type)
+			{
+				_appendObject(PTO_Field, attribsA);
+				return false;
+			}
+			return true;
+		}
+		
 		// do not return !!!
 		UT_DEBUGMSG(("In footnote %d, on pos %d\n", m_iNextFNote, iDocPosition));
 	}
@@ -3878,16 +4009,6 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			_findNextENoteSection();
 		}
 
-		// if this is the first character in a footnote with an
-		// autogenerated reference then skip it (the field has already
-		// been inserted
-		if(m_pEndnotes[m_iNextENote].type &&
-		   iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
-		{
-			UT_DEBUGMSG(("Skiping auto-generated reference mareker\n"));
-			return false;
-		}
-
 		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos +
 		                   m_pEndnotes[m_iNextENote].txt_len)
 		{
@@ -3903,6 +4024,38 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 				UT_DEBUGMSG(("End of endnotes marker at pos %d\n", iDocPosition));
 				return false;
 			}
+		}
+
+		// if this is the first character in an endnote, insert the anchor
+		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
+		{
+			const XML_Char * attribsA[] = {"type", "endnote_anchor",
+										   "endnote-id", NULL,
+										   "props",       NULL,
+										   "style",       NULL,
+										   NULL};
+			
+			const XML_Char * attribsB[] = {"props", NULL,
+										   "style", NULL,
+										   NULL};
+
+			UT_String footpid;
+			UT_String_sprintf(footpid,"%i",m_pEndnotes[m_iNextENote].pid);
+			attribsA[3] = footpid.c_str();
+			attribsA[5] = m_charProps.c_str();
+			attribsA[7] = m_charStyle.c_str();
+
+			attribsB[1] = m_paraProps.c_str();
+			attribsB[3] = m_paraStyle.c_str();
+			
+			_appendStrux(PTX_Block,attribsB);
+
+			if(m_pEndnotes[m_iNextENote].type)
+			{
+				_appendObject(PTO_Field, attribsA);
+				return false;
+			}
+			return true;
 		}
 
 		UT_DEBUGMSG(("In endnote %d, on pos %d\n", m_iNextENote, iDocPosition));
@@ -3930,9 +4083,17 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
 		m_pNotesEndSection = NULL;
 	}
 
+	if(m_pNotesEndSection)
+	{
+		// move to the next fragment
+		m_pNotesEndSection = m_pNotesEndSection->getNext();
+		UT_return_val_if_fail(m_pNotesEndSection, false);
+	}
+	
+
 	m_pNotesEndSection = getDoc()->findFragOfType(pf_Frag::PFT_Strux,
-												(UT_sint32)PTX_EndFootnote,
-												m_pNotesEndSection);
+												  (UT_sint32)PTX_EndFootnote,
+												  m_pNotesEndSection);
 
 	if(!m_pNotesEndSection)
 	{
@@ -3951,9 +4112,16 @@ bool IE_Imp_MsWord_97::_findNextENoteSection()
 		m_pNotesEndSection = NULL;
 	}
 	
+	if(m_pNotesEndSection)
+	{
+		// move to the next fragment
+		m_pNotesEndSection = m_pNotesEndSection->getNext();
+		UT_return_val_if_fail(m_pNotesEndSection, false);
+	}
+
 	m_pNotesEndSection = getDoc()->findFragOfType(pf_Frag::PFT_Strux,
-												(UT_sint32)PTX_EndEndnote,
-												m_pNotesEndSection);
+												  (UT_sint32)PTX_EndEndnote,
+												  m_pNotesEndSection);
 
 	if(!m_pNotesEndSection)
 	{
@@ -3966,8 +4134,7 @@ bool IE_Imp_MsWord_97::_findNextENoteSection()
 
 bool IE_Imp_MsWord_97::_shouldUseInsert() const
 {
-	//return (m_bInFNotes || m_bInENotes);
-	return false;
+	return (m_bInFNotes || m_bInENotes);
 }
 
 bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
