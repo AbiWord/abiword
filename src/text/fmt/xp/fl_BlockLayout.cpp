@@ -3323,13 +3323,19 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 
 bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
+	// Get the field type.
 	const PP_AttrProp * pSpanAP = NULL;
 
+#if 0
+	// this is unnecessarily involved, just use the index from the pcro
 	getSpanAttrProp(blockOffset, false, &pSpanAP);
 	UT_ASSERT(pSpanAP);
-
-	// Get the field type.
-
+#else
+	UT_return_val_if_fail(pcro, false);
+	PT_AttrPropIndex iAP = pcro->getIndexAP();
+	m_pLayout->getDocument()->getAttrProp(iAP, &pSpanAP);
+#endif
+	
 	const XML_Char* pszType = NULL;
 	pSpanAP->getAttribute("type", pszType);
 
