@@ -81,7 +81,7 @@ static void s_color_changed(GtkWidget * csel,
 
 	static char buf_color[12];
 
-	sprintf(buf_color,"#%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
+	sprintf(buf_color,"%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
 	dlg->setColor ((const XML_Char *) buf_color);
 }
 
