@@ -74,7 +74,7 @@ endif
 ## they're building without going through building every package
 ## format.
 
-install: compile canonical
+install: build canonical
 ifeq ($(ABI_NATIVE),ufnix)
 	@echo
 	@echo Putting things in [$(PREFIX)]...
