@@ -17,7 +17,10 @@
  * 02111-1307, USA.
  */
 
+#include <stdlib.h>
+#include <string.h>
 #include "xap_Args.h"
+#include "ut_string.h"
 
 /*****************************************************************/
 
@@ -25,8 +28,52 @@ AP_Args::AP_Args(int argc, char ** argv)
 {
 	m_argc = argc;
 	m_argv = argv;
+	m_szBuf = NULL;
+}
+
+AP_Args::AP_Args(const char * szCmdLine)
+{
+	// build an argc,argv for this command line
+
+	m_argc = 0;
+	m_argv = NULL;
+	m_szBuf = NULL;
+	
+	if (!szCmdLine || !*szCmdLine)
+		return;
+
+	// copy command line into work buffer
+	// and count the tokens
+	
+	UT_cloneString(m_szBuf,szCmdLine);
+	int k;
+	char * p;
+	for (k=0, p=strtok(m_szBuf," "); (p); k++, p=strtok(NULL," "))
+		;
+
+	// if no tokens, do nothing.
+	
+	if (k==0)
+	{
+		FREEP(m_szBuf);
+		return;
+	}
+
+	// build an array of tokens.  we just let them
+	// point back into our work buffer.
+	
+	m_argc = k;
+	m_argv = (char **)calloc(m_argc,sizeof(char *));
+	strcpy(m_szBuf,szCmdLine);
+	for (k=0, p=strtok(m_szBuf," "); (p); k++, p=strtok(NULL," "))
+		m_argv[k] = p;
 }
 
 AP_Args::~AP_Args(void)
 {
+	if (m_szBuf)
+	{
+		FREEP(m_szBuf);
+		FREEP(m_argv);
+	}
 }

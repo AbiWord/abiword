@@ -170,12 +170,6 @@ UT_Bool AP_Win32App::initialize(void)
 		
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
-#if 0
-#ifdef DEBUG
-		// TODO Change this to be someplace more friendly.
-		pBuiltinStringSet->dumpBuiltinSet(".\\EnUS.strings");
-#endif
-#endif
 		m_pStringSet = pBuiltinStringSet;
 
 		// see if we should load an alternate set from the disk
@@ -279,13 +273,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
 	// this is a static function and doesn't have a 'this' pointer.
-	HWND hwnd;
 	MSG msg;
-
-	// TODO the following two variables are a temporary hack.
-	// TODO we need to convert szCmdLine into argc/argv format.
-	int argc = 0;
-	char ** argv = NULL;
 
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
@@ -300,71 +288,25 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	// initialize our application.
 
-	AP_Args Args = AP_Args(argc,argv);
+	AP_Args Args = AP_Args(szCmdLine);
 	
 	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
 
 	// create the first window.
 
-	AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(pMyWin32App);
-	pFirstWin32Frame->initialize();
-	hwnd = pFirstWin32Frame->getTopLevelWindow();
-	
+	if (pMyWin32App->ParseCommandLine(iCmdShow))
 	{
-		// Yuck!  strtok is a horrible way to do this
-		char*	p = strdup(szCmdLine);
-		char*	q = strtok(p, " ");
-
-		/*
-		  Yuck!  This command-line parsing loop is horrible.
-		  It's a barely-functional hack which allows us to pass
-		  a script using -script on the command line.  Replace
-		  this ugliness.
-		*/
-		while (q)
+		while (GetMessage(&msg, NULL, 0, 0))
 		{
-			if (0 == strcmp(q, "-script"))
-			{
-				q = strtok(NULL, " ");
-#ifdef ABI_OPT_JS			
-				js_eval_file(pMyWin32App->getInterp(), q);
-#endif /* ABI_OPT_JS */
-				
-				q = strtok(NULL, " ");
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		if (!pFirstWin32Frame->loadDocument(q, IEFT_Unknown))
-		{
-			// TODO: warn user that we couldn't open that file
+			// Note: we do not call TranslateMessage() because
+			// Note: the keybinding mechanism is responsible
+			// Note: for deciding if/when to do this.
 			
-			// fallback, open empty document so we don't crash
-			pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
+			DispatchMessage(&msg);
 		}
-
-		free(p);
 	}
 	
-
-	ShowWindow(hwnd, iCmdShow);
-	UpdateWindow(hwnd);
-
-	// turn over control to windows
-
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
-		// Note: we do not call TranslateMessage() because
-		// Note: the keybinding mechanism is responsible
-		// Note: for deciding if/when to do this.
-
-		DispatchMessage(&msg);
-	}
-
 	// destroy the App.  It should take care of deleting all frames.
 
 	pMyWin32App->shutdown();
@@ -375,3 +317,86 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	return msg.wParam;
 }
 
+UT_Bool AP_Win32App::ParseCommandLine(int iCmdShow)
+{
+	// parse the command line
+	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
+	
+	// TODO when we refactor the App classes, consider moving
+	// TODO this to app-specific, cross-platform.
+
+	// TODO replace this with getopt or something similar.
+	
+	// Win32 does not put the program name in argv[0], so [0] is the first argument.
+
+	int nFirstArg = 0;
+	int k;
+	int kWindowsOpened = 0;
+	
+	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
+	{
+		if (*m_pArgs->m_argv[k] == '-')
+		{
+			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
+			{
+				// [-script scriptname]
+#ifdef ABI_OPT_JS			
+				js_eval_file(getInterp(),m_pArgs->m_argv[k+1]);
+#endif /* ABI_OPT_JS */
+				k++;
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
+			{
+				// [-dumpstrings]
+#ifdef DEBUG
+				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+				pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
+				delete pBuiltinStringSet;
+#endif
+			}
+			else
+			{
+				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
+				// TODO don't know if it has a following argument or not -- assume not
+			}
+		}
+		else
+		{
+			// [filename]
+			
+			AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
+			pFirstWin32Frame->initialize();
+			HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
+			if (pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
+			{
+				kWindowsOpened++;
+				ShowWindow(hwnd, iCmdShow);
+				UpdateWindow(hwnd);
+			}
+			else
+			{
+				// TODO: warn user that we couldn't open that file
+
+				delete pFirstWin32Frame;
+
+				// TODO do we want to signal and error and exit.... if so, return false here
+			}
+		}
+	}
+
+	if (kWindowsOpened == 0)
+	{
+		// no documents specified or were able to be opened, open an untitled one
+
+		AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
+		pFirstWin32Frame->initialize();
+		HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
+
+		pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
+
+		ShowWindow(hwnd, iCmdShow);
+		UpdateWindow(hwnd);
+	}
+
+	return UT_TRUE;
+}

@@ -42,6 +42,8 @@ public:
 	virtual XAP_Prefs *				getPrefs(void) const;
 	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
+
+	UT_Bool							ParseCommandLine(int iCmdShow);
 	
 	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
 						HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
