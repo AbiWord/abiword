@@ -44,6 +44,7 @@
 #include "xap_Prefs.h"
 #include "xap_UnixEncodingManager.h"
 #include "xap_UnixFontManager.h"
+#include "xap_UnixNullGraphics.h"
 
 /*****************************************************************/
 
@@ -64,6 +65,13 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	// specify a --geometry argument, we only want to obey the
 	// size (which is set above), not a position.
 	m_geometry.flags = GEOMETRY_FLAG_SIZE;
+
+	// hack to ensure UnixNull_Graphics is linked properly
+	// this condition should be false always
+	if (this == 0)
+	{
+		UnixNull_Graphics * pUN_G = new UnixNull_Graphics(0,0);
+	}
 }
 
 XAP_UnixApp::~XAP_UnixApp()
