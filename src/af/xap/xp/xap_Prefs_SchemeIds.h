@@ -108,6 +108,9 @@
 #define XAP_PREF_KEY_ZoomType		"ZoomType"
 #define XAP_PREF_DEFAULT_ZoomType	"100" /* 100, Width, Page */
 
+#define XAP_PREF_KEY_ShowUnixFontWarning "ShowUnixFontWarning"
+#define XAP_PREF_DEFAULT_ShowUnixFontWarning "1"
+
 
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
@@ -139,6 +142,9 @@ dcl(ColorForTransparent)
 dcl(DocumentLocale)
 
 dcl(ZoomType)
+
+dcl(ShowUnixFontWarning)
+
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
 

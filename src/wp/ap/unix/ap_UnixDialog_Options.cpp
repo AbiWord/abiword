@@ -100,8 +100,8 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 
     // Populate the window's data items
     _populateWindowData();
-	initializeTransperentToggle(); // Hack for Transperency, sorry.
-
+	_initUnixOnlyPrefs();
+	
     // To center the dialog, we need the frame of its parent.
     XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
     UT_ASSERT(pUnixFrame);
@@ -281,17 +281,6 @@ void AP_UnixDialog_Options::event_AllowTransparentColor(void)
 		gtk_widget_set_sensitive(m_pushbuttonNewTransparentColor,TRUE);
 }
 
-void AP_UnixDialog_Options::initializeTransperentToggle(void)
-{
-	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), FALSE);
-	}
-	else
-	{
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), TRUE);
-	}
-}
 void AP_UnixDialog_Options::event_OK(void)
 {
     m_answer = AP_Dialog_Options::a_OK;
@@ -418,7 +407,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *autosave_time;
 	GtkWidget *frame44;
 	GtkWidget *check_splash;
-	GtkWidget *hbox29;
+	GtkWidget *vbox29;
 	GtkWidget *label23;
 	GtkWidget *hbox28;
 	GtkWidget *label24;
@@ -431,6 +420,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *use_context_glyphs;
 	GtkWidget *save_context_glyphs;
 #endif
+	GtkWidget *fontWarning;
 	
 	mainWindow = m_windowMain;
 	dialog_vbox1 = vbox;
@@ -946,15 +936,17 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_box_pack_start (GTK_BOX (vbox36), frame44, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (frame44), 4);
 	
-	hbox29 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox29);
-	//gtk_box_pack_start (GTK_BOX (vbox36), hbox29, TRUE, TRUE, 0);
-	gtk_container_add (GTK_CONTAINER (frame44), hbox29);
+	vbox29 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (vbox29);
+	gtk_container_add (GTK_CONTAINER (frame44), vbox29);
 
 	check_splash = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ShowSplash));
 	gtk_widget_show (check_splash);
-	gtk_box_pack_start (GTK_BOX (hbox29), check_splash, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox29), check_splash, FALSE, FALSE, 0);
 
+	fontWarning = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Options_Label_UnixFontWarning));
+	gtk_widget_show (fontWarning);
+	gtk_box_pack_start (GTK_BOX (vbox29), fontWarning, FALSE, FALSE, 0);
 
 	label10 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_show (label10);
@@ -1004,7 +996,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_checkbuttonViewAll			= view_all;
 	m_checkbuttonViewHiddenText		= view_hidden;
 	m_checkbuttonViewUnprintable	        = view_invis;
-
+	m_checkbuttonFontWarning		= fontWarning;
 	// TODO: rulers
 	m_checkbuttonViewShowTB	= show_toolbar;
 	m_checkbuttonViewHideTB = hide_toolbar;
@@ -1634,4 +1626,40 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 {
   AP_UnixDialog_Options * dlg = static_cast <AP_UnixDialog_Options *>(d);
   dlg->event_clistClicked (row, col);
+}
+
+void AP_UnixDialog_Options::_initUnixOnlyPrefs()
+{
+	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), FALSE);
+	}
+	else
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonTransparentIsWhite), TRUE);
+	}
+	
+	bool bFontWarning;
+	bool bRet = m_pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bFontWarning);
+    UT_DEBUGMSG(("bRet %d, bFontWarning %d\n",bRet,bFontWarning));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning), bFontWarning);
+}
+
+void AP_UnixDialog_Options::_saveUnixOnlyPrefs()
+{
+	XAP_Prefs *pPrefs = m_pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pPrefsScheme);
+	
+	bool bRet = pPrefsScheme->setValueBool(XAP_PREF_KEY_ShowUnixFontWarning,
+			       gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning)));
+	UT_DEBUGMSG(("bRet %d, Font warning %d\n",bRet,gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonFontWarning))));
+}
+
+void AP_UnixDialog_Options::_storeWindowData(void)
+{
+	_saveUnixOnlyPrefs();
+	AP_Dialog_Options::_storeWindowData();
 }

@@ -189,6 +189,6 @@ dcl(ShowSplash)
 #ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
 #endif
-	
+
 #endif /* dcl */
 #endif /* AP_PREFS_SCHEMEIDS_H */

@@ -36,7 +36,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	void initializeTransperentToggle(void);
+	//void initializeTransperentToggle(void);
 	void event_ChooseTransparentColor(void);
 	void event_AllowTransparentColor(void);
 
@@ -152,6 +152,7 @@ public:
 	GtkWidget * m_textAutoSaveFilePeriod;
 	GtkWidget * m_textAutoSaveFileExt;
 	GtkWidget * m_checkbuttonShowSplash;
+	GtkWidget * m_checkbuttonFontWarning;
 	GtkWidget * m_buttonDefaults;
 	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonOK;
@@ -181,6 +182,9 @@ protected:
     virtual void event_Apply(void);
     virtual void event_WindowDelete(void);
     virtual void event_clistClicked (int row, int col);
+    void _saveUnixOnlyPrefs();
+    void _initUnixOnlyPrefs();
+    virtual void _storeWindowData(void);
 };
 
 #endif /* AP_UNIXDIALOG_OPTIONS_H */

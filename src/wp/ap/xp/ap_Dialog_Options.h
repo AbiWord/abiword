@@ -77,7 +77,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT,
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS,
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
-				   id_SHOWSPLASH,	
+				   id_SHOWSPLASH,
+				   id_UNIXFONTWARNING,
 				   id_last } tControl;
 
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
@@ -98,10 +99,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	void _populateWindowData(void);
 	void _eventSave(void);
 
-	void _storeWindowData(void);	// calls the following functions to
+	virtual void _storeWindowData(void);	// calls the following functions to
 									// lookup values to set as preferences
-								// don't see any need to make virtual yet, all
-								// optdlgs should as for the same preferences
 
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
 					 	virtual void    _set##a(const u) = 0
