@@ -38,39 +38,6 @@
 
 #define UCS_2_INTERNAL "UCS-2"
 
-/*!
- * Convert a word16 to an UCS2 value by byteswapping if needed
- *
- * \param word16 The input string
- * \param len The lengh of the input string
- */
-static void toucs2(unsigned short *word16, int length)
-{
-	int i = 0;
-	if (XAP_EncodingManager__swap_utos) {
-		for(;i<length;++i)
-		{
-			word16[i] = ((word16[i]>>8) & 0xff) | ((word16[i]&0xff)<<8);
-		}
-	}
-}
-
-/*!
- * Convert an UCS2 value to word16 by byteswapping if needed
- *
- * \param word16 The input string
- * \param len The lengh of the input string
- */
-static void fromucs2(unsigned short *word16, int length)
-{
-	int i = 0;
-	if (XAP_EncodingManager__swap_stou) {
-		for(;i<length;++i)
-		{
-			word16[i] = ((word16[i]>>8) & 0xff) | ((word16[i]&0xff)<<8);
-		}
-	}
-}
 
 /*!
  * Convert an UTF16 string to an UTF8 string
@@ -89,7 +56,6 @@ utf16_to_utf8(const unsigned short *word16, int length)
 
   UT_UCS_cloneString (&ucs2, word16);
 
-  toucs2 (ucs2, length);
   /* Note that length is in shorts, so we have to double it here */
   (char *) result = UT_convert ((const char *)ucs2, length*2, UCS_2_INTERNAL,
                                 "utf-8", NULL, &len_out);
@@ -128,8 +94,6 @@ utf8_to_utf16(const char *word8, int length)
 
   /* We assume that UT_convert creates result big enough for this: */
   word16[len_out] = 0;
-
-  fromucs2 (word16, len_out);
 
   return word16;
 }
