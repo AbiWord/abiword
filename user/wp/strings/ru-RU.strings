@@ -461,6 +461,7 @@ RightMarginStatus="Правое поле [%s]"
 TabStopStatus="Табуляция [%s]"
 
 MENU_LABEL__BOGUS1__=" "
+MENU_LABEL_FILE="&amp;Файл"
 MENU_LABEL_FILE_NEW="&amp;Новый"
 MENU_LABEL_FILE_OPEN="&amp;Открыть"
 MENU_LABEL_FILE_SAVE="&amp;Сохранить"

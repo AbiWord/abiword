@@ -200,6 +200,7 @@ Tânia M. G. Ferreira <tmgferreira@hotmail.com>  Portugese
 Martin Lacko <lacko@host.sk>                    Slovak
 Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
+Rhoslyn Prys <rhoslyn.prys@ntlworld.com>	Welsh
 Andraz Tori                                     Slovenian (sl-SI)
 J. Marc Maurer <j.m.maurer@student.utwente.nl>  Dutch
 Alper <shullgum@yahoo.com>			Turkish
