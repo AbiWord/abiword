@@ -26,7 +26,7 @@
 
 #include "ut_debugmsg.h"
 
-// TODO aaaaagh!  This is Win32-specific
+// TODO This is Win32-specific, and should not be.
 
 void _UT_OutputMessage(const char *s, ...)
 {
