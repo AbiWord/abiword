@@ -40,7 +40,7 @@ public:
 	virtual void			activate();
 	virtual void			destroy();
 	virtual void			setSensitivity(bool onoff);
-	virtual void            setBorderThicknessInGUI(UT_String & sThick) {};
+	virtual void                setBorderThicknessInGUI(UT_UTF8String & sThick) { UT_ASSERT(UT_NOT_IMPLEMENTED); };
 
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	void				lineClicked();

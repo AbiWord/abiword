@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2004 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -97,6 +97,11 @@ void AP_CocoaDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 void AP_CocoaDialog_FormatTable::setSensitivity(bool bSens)
 {
 	[m_dlg setSensitivity:bSens];
+}
+
+void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
+{
+	UT_ASSERT_NOT_REACHED();
 }
 
 void AP_CocoaDialog_FormatTable::event_Close(void)

@@ -99,6 +99,12 @@ void AP_CocoaDialog_FormatFrame::setSensitivity(bool bSens)
 	[m_dlg setSensitivity:bSens];
 }
 
+void AP_CocoaDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & sThick)
+{
+	UT_ASSERT_NOT_REACHED();
+}
+
+
 void AP_CocoaDialog_FormatFrame::event_Close(void)
 {
 	m_answer = AP_Dialog_FormatFrame::a_CLOSE;

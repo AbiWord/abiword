@@ -100,8 +100,8 @@ public:
 												   const XML_Char * pszProp,
 												   const XML_Char * &pszVal);
 	void								removeVecProp(UT_Vector &vec, const XML_Char * pszProp);
-	void                                setBorderThickness(UT_String & sThick);
-	virtual void                        setBorderThicknessInGUI(UT_String & sThick) = 0;
+	void                                setBorderThickness(UT_UTF8String & sThick);
+	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	
 	void                                setAllSensitivities(void);
 	void 								setCurFrameProps(void);	
@@ -127,7 +127,8 @@ public:
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	XML_Char *							m_bgFillStyle;
-	UT_Vector                           m_vecProps;									UT_String                           m_sBorderThickness;
+	UT_Vector                           m_vecProps;									
+	UT_UTF8String                       m_sBorderThickness;
 					 
 protected:
 	AP_Dialog_FormatFrame::tAnswer		m_answer;

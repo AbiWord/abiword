@@ -573,28 +573,28 @@ void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 		{
 			addOrReplaceVecProp(m_vecProps, "left-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "left-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "left-thickness",m_sBorderThickness.c_str());
+			addOrReplaceVecProp(m_vecProps, "left-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 		case toggle_right:
 		{	
 			addOrReplaceVecProp(m_vecProps, "right-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "right-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.c_str());
+			addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 		case toggle_top:
 		{			
 			addOrReplaceVecProp(m_vecProps, "top-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "top-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.c_str());
+			addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 		case toggle_bottom:
 		{			
 			addOrReplaceVecProp(m_vecProps, "bot-style", sTmp.c_str());
 			addOrReplaceVecProp(m_vecProps, "bot-color", cTmp.c_str());
-			addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.c_str());
+			addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.utf8_str());
 		}
 		break;
 	}
@@ -603,15 +603,15 @@ void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 	m_bSettingsChanged = true;
 }
 
-void AP_Dialog_FormatTable::setBorderThickness(UT_String & sThick)
+void AP_Dialog_FormatTable::setBorderThickness(UT_UTF8String & sThick)
 {
 	m_sBorderThickness = sThick;
 	if(m_borderToggled)
 		return;
-	addOrReplaceVecProp(m_vecProps, "left-thickness", m_sBorderThickness.c_str());
-	addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.c_str());
-	addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.c_str());
-	addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.c_str());
+	addOrReplaceVecProp(m_vecProps, "left-thickness", m_sBorderThickness.utf8_str());
+	addOrReplaceVecProp(m_vecProps, "right-thickness",m_sBorderThickness.utf8_str());
+	addOrReplaceVecProp(m_vecProps, "top-thickness",m_sBorderThickness.utf8_str());
+	addOrReplaceVecProp(m_vecProps, "bot-thickness",m_sBorderThickness.utf8_str());
 	
 	m_bSettingsChanged = true;
 

@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2004 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -46,7 +46,7 @@ public:
 	virtual void			event_Close(void);
 	void					event_ApplyToChanged(void);
 	void 					event_previewExposed(void);
-	virtual void            setBorderThicknessInGUI(UT_String & sThick) {};
+	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
 	virtual void			setSensitivity(bool bSens);
 	virtual void            destroy(void);
 	virtual void            activate(void);

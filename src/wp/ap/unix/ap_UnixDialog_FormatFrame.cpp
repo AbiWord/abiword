@@ -258,9 +258,9 @@ void AP_UnixDialog_FormatFrame::event_previewExposed(void)
 		m_pFormatFramePreview->draw();
 }
 
-void AP_UnixDialog_FormatFrame::setBorderThicknessInGUI(UT_String & sThick)
+void AP_UnixDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & sThick)
 {
-	double thickness = UT_convertToInches(sThick.c_str());
+	double thickness = UT_convertToInches(sThick.utf8_str());
 	guint i =0;
 	guint closest = 0;
 	double dClose = 100000000.;

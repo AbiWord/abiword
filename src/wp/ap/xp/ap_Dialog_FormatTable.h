@@ -108,8 +108,8 @@ public:
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
 	void								setBGColor(UT_RGBColor clr);
-	void                                setBorderThickness(UT_String & sThick);
-	virtual void                        setBorderThicknessInGUI(UT_String & sThick) = 0;
+	void                                setBorderThickness(UT_UTF8String & sThick);
+	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	void                                clearImage(void);
 	void                                askForGraphicPathName(void);
 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
@@ -129,7 +129,7 @@ public:
 	UT_sint32							m_lineStyle;
 	XML_Char *							m_bgFillStyle;
 	UT_Vector                           m_vecProps;
-	UT_String                           m_sBorderThickness;
+	UT_UTF8String                           m_sBorderThickness;
 protected:
 	AP_Dialog_FormatTable::tAnswer		m_answer;
 	char                                m_WindowName[100];

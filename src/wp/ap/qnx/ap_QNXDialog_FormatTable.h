@@ -44,7 +44,7 @@ public:
 	void				lineClicked();
 	void				event_WindowDelete();
 	void				event_previewExposed();
-	virtual void        setBorderThicknessInGUI(UT_String & sThick) {};
+	virtual void                setBorderThicknessInGUI(UT_UTF8String & sThick) { UT_ASSERT(UT_NOT_IMPLEMENTED); };
 		
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
