@@ -58,10 +58,10 @@ GdkFont * UnixFont::getGdkFont(void)
 	return m_hFont->getGdkFont(m_pointSize);
 }
 
-UNIXGraphics::UNIXGraphics(GdkWindow * win, AP_UnixApp * app)
+UNIXGraphics::UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager)
 {
 	m_pWin = win;
-	m_pApp = app;
+	m_pFontManager = fontManager;
 	m_pFont = NULL;
 	m_pGC = gdk_gc_new(m_pWin);
 	m_pXORGC = gdk_gc_new(m_pWin);
@@ -298,16 +298,12 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 
 	// Request the appropriate AP_UnixFont::, and bury it in an
 	// instance of a UnixFont:: with the correct size.
-
-	AP_UnixFontManager * fontmgr = m_pApp->getFontManager();
-	UT_ASSERT(fontmgr);
-	
-	AP_UnixFont * unixfont = fontmgr->getFont(pszFontFamily, s);
+	AP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);
 	if (!unixfont)
 	{
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
-		unixfont = fontmgr->getFont("Times New Roman", s);
+		unixfont = m_pFontManager->getFont("Times New Roman", s);
 		UT_ASSERT(unixfont);
 	}
 	

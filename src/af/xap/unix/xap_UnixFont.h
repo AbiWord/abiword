@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef AP_UNIXFONT_H
 #define AP_UNIXFONT_H
 
@@ -29,6 +28,8 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+
+#include "xap_UnixPSParseAFM.h"
 
 /*****************************************************************/
 
@@ -58,6 +59,7 @@ public:
 	const char * 			getFontfile(void);
 	const char * 			getMetricfile(void);
 	const char * 			getXLFD(void);
+	FontInfo * 				getMetricsData(void);
 	
 	UT_Bool					openPFA(void);
 	char					getPFAChar(void);
@@ -80,11 +82,10 @@ protected:
 	// a cache of GdkFont * at a given size
 	UT_Vector				m_allocFonts;
 	
-	// expand this data to account for other attributes of a
-	// font, like character set or special decorations.
 	char * 					m_name;
 	AP_UnixFont::style		m_style;
 	char * 					m_xlfd;
+	FontInfo *				m_metricsData;
 
 	char * 					m_fontfile;
 	char *					m_metricfile;

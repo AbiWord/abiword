@@ -44,7 +44,11 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 # Note that we might later want to include the FakeClipboard code only for certain platforms.
 ifeq ($(ABI_FE), Unix)
 PLATFORM_OBJS += 	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)			\
-			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)
+			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)FontManager.$(OBJ_SUFFIX)		\
+			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)		\
+			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
+			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
+			$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)PSGraphics.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_FE), Win32)

@@ -87,9 +87,11 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 	// unfortunately, the actual window (m_wTopRuler->window)
 	// is not created until the frame's top-level window is
 	// shown.
-	
-	DELETEP(m_pG);
-	m_pG = new UNIXGraphics(m_wTopRuler->window, static_cast<AP_UnixApp *>(m_pFrame->getApp()));
+
+	DELETEP(m_pG);	
+	AP_UnixApp * app = static_cast<AP_UnixApp *>(m_pFrame->getApp());
+	AP_UnixFontManager * fontManager = app->getFontManager();
+	m_pG = new UNIXGraphics(m_wTopRuler->window, fontManager);
 	UT_ASSERT(m_pG);
 }
 

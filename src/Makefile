@@ -23,9 +23,9 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 T=abiword
 
-ifneq ($(OS_NAME), WIN32)
-PS_DIRS=	ps
-endif
+#ifneq ($(OS_NAME), WIN32)
+#PS_DIRS=	ps
+#endif
 
 # ifeq ($(T), all)
 # DIRS=		ver other util $(PS_DIRS) ev xap wp calc

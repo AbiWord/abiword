@@ -29,7 +29,7 @@
 #include "xap_UnixDialog_Print.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
-#include "ps_Graphics.h"
+#include "xap_UnixPSGraphics.h"
 #include <gtk/gtk.h>
 #include <glib.h>
 
@@ -445,6 +445,15 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 void AP_UnixDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
+
+	AP_App * app = m_pUnixFrame->getApp();
+	UT_ASSERT(app);
+	
+	AP_UnixApp * unixapp = static_cast<AP_UnixApp *> (app);
+	UT_ASSERT(unixapp);
+
+	AP_UnixFontManager * fontmgr = unixapp->getFontManager();
+	UT_ASSERT(fontmgr);
 	
 	if (m_bDoPrintToFile)
 	{
@@ -462,6 +471,7 @@ void AP_UnixDialog_Print::_getGraphics(void)
 
 		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
+										fontmgr,
 										UT_TRUE);
 	}
 	else
@@ -470,6 +480,7 @@ void AP_UnixDialog_Print::_getGraphics(void)
 		
 		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
+										fontmgr,
 										UT_FALSE);
 	}
 

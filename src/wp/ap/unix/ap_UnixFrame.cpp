@@ -38,6 +38,8 @@
 #include "ap_UnixTopRuler.h"
 #include "ap_UnixLeftRuler.h"
 
+#include "xap_UnixFontManager.h"
+
 /*****************************************************************/
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
@@ -72,8 +74,9 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	UT_uint32 nrToolbars;
 
 	// TODO fix prefix on class UNIXGraphics
+	AP_UnixFontManager * fontManager = ((AP_UnixApp *) getApp())->getFontManager();
 	
-	pG = new UNIXGraphics(m_dArea->window, (AP_UnixApp *) getApp());
+	pG = new UNIXGraphics(m_dArea->window, fontManager);
 	ENSUREP(pG);
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);

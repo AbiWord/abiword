@@ -56,7 +56,7 @@ protected:
 class UNIXGraphics : public DG_Graphics
 {
 public:
-  UNIXGraphics(GdkWindow * win, AP_UnixApp * app);
+  UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager);
   virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			 int iLength, UT_sint32 xoff, UT_sint32 yoff);
   virtual void setFont(DG_Font* pFont);
@@ -93,14 +93,14 @@ public:
   virtual UT_Bool endPrint(void);
   
 protected:
-  AP_UnixApp * 	m_pApp;
-  GdkGC*        m_pGC;
-  GdkGC*        m_pXORGC;
-  GdkWindow*    m_pWin;
-  UnixFont*		m_pFont;
-  GdkColormap*  m_pColormap;
-  int			m_aCharWidths[256];
-  int           m_iWindowHeight, m_iWindowWidth;
+  AP_UnixFontManager * 	m_pFontManager;
+  GdkGC*       			m_pGC;
+  GdkGC*        		m_pXORGC;
+  GdkWindow*    		m_pWin;
+  UnixFont*				m_pFont;
+  GdkColormap*  		m_pColormap;
+  int					m_aCharWidths[256];
+  int          			m_iWindowHeight, m_iWindowWidth;
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

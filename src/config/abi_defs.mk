@@ -67,7 +67,6 @@ DISTBASE 	= $(ABI_DEPTH)/../dist
 ABI_XAP_INCS=	/config					\
 		/xap/xp		/xap/$(ABI_NATIVE)	\
 		/ev/xp		/ev/$(ABI_NATIVE)	\
-		/ps/xp					\
 		/util/xp	/util/$(ABI_NATIVE)	\
 		/ver/xp
 
