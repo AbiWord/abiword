@@ -51,7 +51,7 @@ UT_Vector::~UT_Vector()
 	FREEP(m_pEntries);
 }
 
-UT_uint32 UT_Vector::calcNewSpace()
+UT_uint32 UT_Vector::calcNewSpace(void)
 {
 	if (m_iSpace < m_iCutoffDouble)
 	{
@@ -75,9 +75,13 @@ UT_uint32 UT_Vector::getItemCount() const
 	return m_iCount;
 }
 
-UT_sint32 UT_Vector::grow()
+UT_sint32 UT_Vector::grow(UT_uint32 ndx)
 {
 	UT_uint32 new_iSpace = calcNewSpace();
+	if (new_iSpace < ndx)
+	{
+		new_iSpace = ndx;
+	}
 
 	void ** new_pEntries = (void**) calloc(new_iSpace, sizeof(void*));
 	if (!new_pEntries)
@@ -108,7 +112,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 	
 	if ((m_iCount+1) > m_iSpace)
 	{
-		int err = grow();
+		int err = grow(0);
 		if (err)
 		{
 			return err;
@@ -139,7 +143,7 @@ UT_sint32 UT_Vector::addItem(void* p)
 {
 	if ((m_iCount+1) > m_iSpace)
 	{
-		UT_sint32 err = grow();
+		UT_sint32 err = grow(0);
 		if (err)
 		{
 			return err;
@@ -162,11 +166,26 @@ void* UT_Vector::getNthItem(UT_uint32 n) const
 
 UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 {
-	if (ndx >= m_iCount)
-		return -1;
+	if ((ndx+1) > m_iSpace)
+	{
+		UT_sint32 err = grow(ndx+1);
+		if (err)
+		{
+			return err;
+		}
+	}
+
 	if (ppOld)
+	{
 		*ppOld = m_pEntries[ndx];
+	}
+	
 	m_pEntries[ndx] = pNew;
+	if ((ndx+1) > m_iCount)
+	{
+		m_iCount = ndx + 1;
+	}
+	
 	return 0;
 }
 

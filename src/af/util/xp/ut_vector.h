@@ -56,7 +56,7 @@ public:
 
 protected:
 	UT_uint32		calcNewSpace();
-	UT_sint32		grow();
+	UT_sint32		grow(UT_uint32);
 	
 	void**			m_pEntries;
 	UT_uint32		m_iCount;

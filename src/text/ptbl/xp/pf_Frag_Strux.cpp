@@ -51,17 +51,7 @@ PL_StruxFmtHandle pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
 
 UT_Bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 {
-	UT_uint32 kLimit = m_vecFmtHandle.getItemCount();
-	if (lid < kLimit)
-		return (m_vecFmtHandle.setNthItem(lid,(void *)sfh,NULL) == 0);
-	else if (lid == kLimit)
-		return (m_vecFmtHandle.addItem((void *)sfh) == 0);
-
-	// TODO we need to fix the vector class so that i can do a setNthItem
-	// TODO and have it automatically grow the vector -- or we need to do
-	// TODO an addItem(0) until we get to lid-1 and then addItem(sfh).
-	UT_ASSERT((0));
-	return UT_FALSE;
+	return (m_vecFmtHandle.setNthItem(lid,(void *)sfh,NULL) == 0);
 }
 
 PT_AttrPropIndex pf_Frag_Strux::getIndexAP(void) const
