@@ -94,7 +94,8 @@ bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 	UT_uint32 index = (id - m_first);
 	EV_Menu_Label *label = new EV_Menu_Label(id, szMenuLabel, szStatusMsg);
 	UT_sint32 error = m_labelTable.setNthItem(index, label, &tmp);
-	DELETEP(static_cast<EV_Menu_Label *> (tmp));
+	EV_Menu_Label * pTmpLbl = static_cast<EV_Menu_Label *> (tmp);
+	DELETEP(pTmpLbl);
 	return (error == 0);
 }
 
