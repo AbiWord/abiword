@@ -18,6 +18,9 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+ifneq ($(OS_NAME), WIN32)
+PS_DIRS=	ps
+endif
 
 ABI_DEPTH=.
 include $(ABI_DEPTH)/config/abi_defs.mk
@@ -25,15 +28,15 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 T=abiword
 
 ifeq ($(T), all)
-DIRS=		ver other util ps ev wp calc
+DIRS=		ver other util $(PS_DIRS) ev wp calc
 endif
 
 ifeq ($(T), abiword)
-DIRS=		ver other util ps ev wp
+DIRS=		ver other util $(PS_DIRS) ev wp
 endif
 
 ifeq ($(T), abicalc)
-DIRS=		ver other util ps ev calc
+DIRS=		ver other util $(PS_DIRS) ev calc
 endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk
