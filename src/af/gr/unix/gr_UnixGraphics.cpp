@@ -1487,21 +1487,17 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	xDest = tdu(xDest); yDest = tdu(yDest);
 
 	if (gdk_pixbuf_get_has_alpha (image))
-		gdk_pixbuf_render_to_drawable_alpha (image, m_pWin,
-											 0, 0,
-											 xDest, yDest,
-											 iImageWidth, iImageHeight,
-											 GDK_PIXBUF_ALPHA_BILEVEL,
-											 ABI_ALPHA_THRESHOLD,
-											 GDK_RGB_DITHER_NORMAL,
-											 0, 0);
+		gdk_draw_pixbuf (m_pWin, NULL, image,
+						 0, 0, xDest, yDest,
+						 iImageWidth, iImageHeight,
+						 GDK_RGB_DITHER_NORMAL,
+						 0, 0);
 	else
-		gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
-									   0, 0,
-									   xDest, yDest,
-									   iImageWidth, iImageHeight,
-									   GDK_RGB_DITHER_NORMAL,
-									   0, 0);
+		gdk_draw_pixbuf (m_pWin, m_pGC, image,
+						 0, 0, xDest, yDest,
+						 iImageWidth, iImageHeight,
+						 GDK_RGB_DITHER_NORMAL,
+						 0, 0);
 }
 
 void GR_UnixGraphics::flush(void)
@@ -1760,10 +1756,7 @@ void GR_UnixGraphics::restoreRectangle(UT_uint32 iIndx)
 	GdkPixbuf *p = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(iIndx));
 
 	if (p && r)
-		gdk_pixbuf_render_to_drawable(p,
-									  m_pWin,
-									  NULL, 
-									  0, 0,
-									  tdu(r->left), tdu(r->top),
-									  -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+		gdk_draw_pixbuf (m_pWin, NULL, p, 0, 0,
+						 tdu(r->left), tdu(r->top),
+						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
 }
