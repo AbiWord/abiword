@@ -122,6 +122,7 @@ public:
 	PtWidget_t * m_buttonCancel;
 	PtWidget_t * m_buttonTabs;
 
+	int 		 done;
 };
 
 #endif /* XAP_QNXDIALOG_PARAGRAPH_H */

@@ -111,7 +111,7 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
 	PtSetArg(&args[n], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); n++;
 	PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
- 	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_GETS_FOCUS, Pt_GETS_FOCUS); n++;
+    PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
 	m_wTopRuler = PtCreateWidget(PtRaw, cont, n, args);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
 								  _fe::motion_notify_event, this);
@@ -144,6 +144,7 @@ void AP_QNXTopRuler::setView(AV_View * pView)
 
 void AP_QNXTopRuler::getWidgetPosition(int * x, int * y)
 {
+	UT_ASSERT(0);
 	UT_ASSERT(x && y);
 	PtArg_t  args[1];
 	PhArea_t *area;
@@ -346,9 +347,6 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 	if (!pQNXRuler) {
 		return 0;
 	}
-
-	printf("TR Expose %d,%d %d,%d \n", 
-		damage->rect.ul.x, damage->rect.ul.y, damage->rect.lr.x, damage->rect.lr.y);
 
 #if 0
     if (damage->next) {

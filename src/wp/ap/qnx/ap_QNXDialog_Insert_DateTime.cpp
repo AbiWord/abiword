@@ -33,6 +33,8 @@
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_QNXDialog_Insert_DateTime.h"
 
+#include <stdio.h>
+
 /*****************************************************************/
 
 #define	LIST_ITEM_INDEX_KEY "index"
@@ -64,45 +66,56 @@ AP_QNXDialog_Insert_DateTime::~AP_QNXDialog_Insert_DateTime(void)
 
 /*****************************************************************/
 
-static void s_ok_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
+static int s_ok_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Insert_DateTime * dlg = (AP_QNXDialog_Insert_DateTime *)data;
 	UT_ASSERT(widget && dlg);
 	dlg->event_OK();
+	return Pt_CONTINUE;
 }
 
-static void s_cancel_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
+static int s_cancel_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Insert_DateTime * dlg = (AP_QNXDialog_Insert_DateTime *)data;
 	UT_ASSERT(widget && dlg);
 	dlg->event_Cancel();
+	return Pt_CONTINUE;
 }
 
-static void s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
+static int s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Insert_DateTime * dlg = (AP_QNXDialog_Insert_DateTime *)data;
 	UT_ASSERT(dlg);
 	dlg->event_WindowDelete();
+	return Pt_CONTINUE;
+}
+
+static int s_item_selected(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Insert_DateTime * dlg = (AP_QNXDialog_Insert_DateTime *)data;
+	PtListCallback_t *plist = (PtListCallback_t *)info->cbdata;
+	dlg->m_index = plist->item_pos;
+	return Pt_CONTINUE;
 }
 
 /*****************************************************************/
 
 void AP_QNXDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 {
-#if 0
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
+	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
 	// Populate the window's data items
 	_populateWindowData();
 	
+#if 0
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pQNXFrame->getTopLevelWindow();
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	
 	// Center our new dialog in its parent and make it a transient
@@ -121,176 +134,125 @@ void AP_QNXDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_destroy(mainWindow);
 #endif
+	printf("Running the time main window loop \n");
+	PtRealizeWidget(mainWindow);
+	int count = PtModalStart();
+	done = 0;
+	while(!done) {
+		PtProcessEvent();
+	}
+	PtModalEnd(count);
+
+	PtDestroyWidget(mainWindow);
 }
 
 void AP_QNXDialog_Insert_DateTime::event_OK(void)
 {
-#if 0
 	UT_ASSERT(m_windowMain && m_listFormats);
-	
+/*	
 	// find item selected in list box, save it to m_iFormatIndex
+	PtArg_t arg;
+	int     pindex = 0;
 
-	GList * listitem = GTK_LIST(m_listFormats)->selection;
+	PtSetArg(&arg, Pt_ARG_CBOX_SEL_ITEM, &pindex, 0);
+	PtGetResources(m_listFormats, 1, &arg);
+	m_iFormatIndex = pindex;
 
-	// if there is no selection, or the selection's data (GtkListItem widget)
-	// is empty, return cancel.  GTK can make this happen.
-	if (!(listitem) || !(listitem)->data)
-	{
+	printf("Got selected item %d \n", m_iFormatIndex);
+
+	if (m_iFormatIndex == 0) {
 		m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
-		gtk_main_quit();
+		done = 1;
 		return;
 	}
-
-	// since we only do single mode selection, there is only one
-	// item in the GList we just got back
-
-	gint indexdata = GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(listitem->data), LIST_ITEM_INDEX_KEY));
-
-	m_iFormatIndex = indexdata;
-	
+	m_iFormatIndex--;
+*/
+	m_iFormatIndex = m_index -1;
 	m_answer = AP_Dialog_Insert_DateTime::a_OK;
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void AP_QNXDialog_Insert_DateTime::event_Cancel(void)
 {
-#if 0
 	m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void AP_QNXDialog_Insert_DateTime::event_WindowDelete(void)
 {
-#if 0
-	m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;	
-	gtk_main_quit();
-#endif
+	if (!done)
+		m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;	
+	done = 1;
 }
 
 /*****************************************************************/
 
 PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 {
-#if 0
-	GtkWidget *windowMain;
-	GtkWidget *hboxMain;
-	GtkWidget *vboxFormats;
-	GtkWidget *labelFormats;
-	GtkWidget *scrolledwindowFormats;
-	GtkWidget *viewportFormats;
-	GtkWidget *listFormats;
-	GtkWidget *vbuttonboxButtons;
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
+	PtWidget_t *windowMain;
+	PtWidget_t *labelFormats;
+	PtWidget_t *listFormats;
+	PtWidget_t *buttonOK;
+	PtWidget_t *buttonCancel;
+
+	PtArg_t args[10];
+	int     n;
+	PhArea_t area;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
-	gtk_widget_set_usize (windowMain, 270, 240);
-	gtk_container_set_border_width (GTK_CONTAINER (windowMain), 10);
-	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowMain), FALSE, FALSE, FALSE);
 
-	hboxMain = gtk_hbox_new (FALSE, 5);
-	gtk_widget_ref (hboxMain);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "hboxMain", hboxMain,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxMain);
-	gtk_container_add (GTK_CONTAINER (windowMain), hboxMain);
+#define WIN_HEIGHT 100
+#define WIN_WIDTH  200
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle), 0);
+	area.size.w = WIN_WIDTH; 
+	area.size.h = WIN_HEIGHT;
+	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0);
+	PtSetParentWidget(NULL);
+	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	vboxFormats = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vboxFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "vboxFormats", vboxFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vboxFormats);
-	gtk_box_pack_start (GTK_BOX (hboxMain), vboxFormats, TRUE, TRUE, 0);
-
+#define LABEL_HEIGHT 15
+	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
-	labelFormats = gtk_label_new (unixstr);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	area.pos.x = 10; area.pos.y = 10;
+	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
+	labelFormats = PtCreateWidget(PtLabel, windowMain, n, args);
 	FREEP(unixstr);
-	gtk_widget_ref (labelFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "labelFormats", labelFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelFormats);
-	gtk_box_pack_start (GTK_BOX (vboxFormats), labelFormats, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelFormats), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelFormats), 0, 0.5);
 
-	scrolledwindowFormats = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_ref (scrolledwindowFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "scrolledwindowFormats", scrolledwindowFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (scrolledwindowFormats);
-	gtk_box_pack_start (GTK_BOX (vboxFormats), scrolledwindowFormats, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-	viewportFormats = gtk_viewport_new (NULL, NULL);
-	gtk_widget_ref (viewportFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "viewportFormats", viewportFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (viewportFormats);
-	gtk_container_add (GTK_CONTAINER (scrolledwindowFormats), viewportFormats);
+	//Add in a list with the formats
+#define COMBO_HEIGHT LABEL_HEIGHT
+	n = 0;
+	area.pos.y += LABEL_HEIGHT + 10;
+	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH - 10, 0);
+	PtSetArg(&args[n++], Pt_ARG_CBOX_MAX_VISIBLE_COUNT, 3, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
+	listFormats = PtCreateWidget(PtComboBox, windowMain, n, args);
+	PtAddCallback(listFormats, Pt_CB_SELECTION, s_item_selected, this);
 
-	listFormats = gtk_list_new ();
-	gtk_widget_ref (listFormats);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "listFormats", listFormats,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_list_set_selection_mode (GTK_LIST(listFormats), GTK_SELECTION_SINGLE);
-	gtk_widget_show (listFormats);
-	gtk_container_add (GTK_CONTAINER (viewportFormats), listFormats);
+#define BUTTON_HEIGHT 24
+#define BUTTON_WIDTH  80
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	area.pos.y += COMBO_HEIGHT + 20;
+	area.pos.x = WIN_WIDTH - BUTTON_WIDTH - 5;
+	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	buttonCancel = PtCreateWidget(PtButton, windowMain, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
-	vbuttonboxButtons = gtk_vbutton_box_new ();
-	gtk_widget_ref (vbuttonboxButtons);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "vbuttonboxButtons", vbuttonboxButtons,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbuttonboxButtons);
-	gtk_box_pack_start (GTK_BOX (hboxMain), vbuttonboxButtons, FALSE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonboxButtons), GTK_BUTTONBOX_START);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_ref (buttonOK);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonOK", buttonOK,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), buttonOK);
-	gtk_widget_set_usize (buttonOK, -2, 33);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_ref (buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (windowMain), "buttonCancel", buttonCancel,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), buttonCancel);
-	gtk_widget_set_usize (buttonCancel, -2, 33);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
-	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
-
-	// the catch-alls
-	
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	area.pos.x -= BUTTON_WIDTH + 10;
+	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	buttonOK = PtCreateWidget(PtButton, windowMain, n, args);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -299,62 +261,32 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
-
 	m_listFormats = listFormats;
 
 	return windowMain;
-#endif
 }
 
 void AP_QNXDialog_Insert_DateTime::_populateWindowData(void)
 {
-#if 0
-	UT_ASSERT(m_windowMain && m_listFormats);
-	
-	// NOTE : this code is similar to the Windows dialog code to do
-	// NOTE : the same thing.  if you are implementing this dialog
-	// NOTE : for a new front end, this is the formatting logic 
-	// NOTE : you'll want to use to populate your list
-	
+	const char *items[1];
 	int i;
+
+	UT_ASSERT(m_windowMain && m_listFormats);
 
 	// this constant comes from ap_Dialog_Insert_DateTime.h
     char szCurrentDateTime[CURRENT_DATE_TIME_SIZE];
 	
     time_t tim = time(NULL);
-	
     struct tm *pTime = localtime(&tim);
 
-	GList * list = NULL;
-	GtkWidget * listitem;
-	
-	// build GList of gtk_list_items
-    for (i = 0; InsertDateTimeFmts[i] != NULL; i++)
-	{
+    for (i = 0, items[0] = szCurrentDateTime; InsertDateTimeFmts[i]; i++) {
         strftime(szCurrentDateTime, CURRENT_DATE_TIME_SIZE, InsertDateTimeFmts[i], pTime);
-
-		// allocate a list item with that string
-		listitem = gtk_list_item_new_with_label(szCurrentDateTime);
-		UT_ASSERT(listitem);
-
-		gtk_widget_show(listitem);
-		
-		// store index in data pointer
-		gtk_object_set_data(GTK_OBJECT(listitem), LIST_ITEM_INDEX_KEY, GINT_TO_POINTER(i));
-
-		// add to list
-	    list = g_list_append(list, (void *) listitem);
+		PtListAddItems(m_listFormats, items, 1, 0);
 	}
-
-	// TODO : Does the gtk_list free this list for me?  I think it does.
-	
-	// add GList items to list box
-	gtk_list_append_items(GTK_LIST(m_listFormats), list);
-
-	// now select first item in box
-	if (i > 0)
-		gtk_list_select_item(GTK_LIST(m_listFormats), 0);
-
-#endif
+	//Select the first one?
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
+	PtSetResources(m_listFormats, 1, &arg);
+	m_index = 1;
 }
 

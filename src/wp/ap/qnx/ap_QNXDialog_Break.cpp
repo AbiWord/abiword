@@ -120,7 +120,7 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 	gtk_widget_destroy(mainWindow);
 #endif
 	printf("Running the break main window loop \n");
-	PtRealizeWidget(m_windowMain);
+	PtRealizeWidget(mainWindow);
 	int count = PtModalStart();
 	done = 0;
 	while(!done) {
@@ -130,7 +130,7 @@ void AP_QNXDialog_Break::runModal(XAP_Frame * pFrame)
 
 	_storeWindowData();
 
-	PtDestroyWidget(m_windowMain);
+	PtDestroyWidget(mainWindow);
 }
 
 void AP_QNXDialog_Break::event_OK(void)
@@ -182,25 +182,27 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
+#define WIN_WIDTH  280
+#define WIN_HEIGHT 140
 	n = bmi = 0;
-	height = 140; width = 300;
+	height = WIN_HEIGHT; width = WIN_WIDTH;
     UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, unixstr, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
-	PtSetArg(&args[n++], Pt_ARG_TITLE, unixstr, 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+	PtSetParentWidget(NULL);
 	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	n = 0;
-	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
-
-
 	/* TODO: Add all these items to a group */
-/*
-	n = 0
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-*/
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_ASIS, 0);
+	boxTop = PtCreateWidget(PtGroup, windowBreak, n, args);	
 
 #define LABEL_WIDTH  100
 #define RADIO_WIDTH  150 
@@ -217,7 +219,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	area.pos.x = GEN_OFFSET; area.pos.y = GEN_OFFSET;
 	area.size.w = LABEL_WIDTH; area.size.h = GEN_HEIGHT;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	labelInsert = PtCreateWidget(PtLabel, windowBreak, n, args);
+	labelInsert = PtCreateWidget(PtLabel, boxTop, n, args);
 
 	/* TODO: Add a seperator */
 
@@ -229,7 +231,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	bm[bmi].widget =
-	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, boxTop, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_PAGE;
 
 	n = 0;
@@ -239,7 +241,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, boxTop, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_COLUMN;
 
 	/* --- */
@@ -249,7 +251,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	area.pos.x = GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	labelSectionBreaks = PtCreateWidget(PtLabel, windowBreak, n, args);
+	labelSectionBreaks = PtCreateWidget(PtLabel, boxTop, n, args);
 
 	/* TODO: Add a seperator */
 
@@ -260,7 +262,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonNextPage = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	radiobuttonNextPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_NEXTPAGE;
 
 	n = 0;
@@ -270,7 +272,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_EVENPAGE;
 
 	n = 0;
@@ -280,7 +282,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonContinuous = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	radiobuttonContinuous = PtCreateWidget(PtToggleButton, boxTop, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_CONTINUOUS;
 
 	n = 0;
@@ -290,24 +292,26 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonOddPage = PtCreateWidget(PtToggleButton, windowBreak, n, args);
+	radiobuttonOddPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_ODDPAGE;
 
+#define BUTTON_WIDTH 80
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	area.pos.y += area.size.h + GEN_OFFSET;
+	area.pos.x = WIN_WIDTH - BUTTON_WIDTH - GEN_OFFSET; 
+	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	buttonCancel = PtCreateWidget(PtButton, boxTop, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
-	area.pos.x = GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	buttonOK = PtCreateWidget(PtButton, windowBreak, n, args);
+	area.pos.x -= BUTTON_WIDTH + GEN_OFFSET; 
+	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	buttonOK = PtCreateWidget(PtButton, boxTop, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
-	area.pos.x += area.size.w + GEN_OFFSET; 
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	buttonCancel = PtCreateWidget(PtButton, windowBreak, n, args);
-	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
-
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 

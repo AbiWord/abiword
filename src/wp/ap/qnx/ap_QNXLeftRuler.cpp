@@ -81,6 +81,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
       PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
       PtSetArg(&args[n], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); n++;
       PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
+      PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
       m_wLeftRuler = PtCreateWidget(PtRaw, cont, n, args);
 
 #if 0

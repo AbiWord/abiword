@@ -644,9 +644,10 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	}
 
 	n = 0;
-	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/, 
-									 Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/); n++;
-	PtSetArg(&args[n], Pt_ARG_ORIENTATION, 0 /*Vertical*/, 0); n++;
+	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/, 
+									 		     Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 0 /*Vertical*/, 0); 
 	m_vScroll = PtCreateWidget(PtScrollbar, group, n, args);
 	PtAddCallback(m_vScroll, Pt_CB_SCROLL_MOVE, _fe::vScrollChanged, this);
 
@@ -670,9 +671,10 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	}
 	
 	n = 0;
-	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/,
-									 Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/); n++;
-	PtSetArg(&args[n], Pt_ARG_ORIENTATION, 1 /*Horizontal*/, 0); n++;
+	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/,
+									 			 Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
+	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 1 /*Horizontal*/, 0); 
 	m_hScroll = PtCreateWidget(PtScrollbar, group, n, args);
 	PtAddCallback(m_hScroll, Pt_CB_SCROLL_MOVE, _fe::hScrollChanged, this);
 

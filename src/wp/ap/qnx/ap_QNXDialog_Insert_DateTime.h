@@ -43,6 +43,7 @@ public:
 	virtual void			event_Cancel(void);
 	virtual void			event_WindowDelete(void);
 
+	int						m_index;
 protected:
 
 	// private construction functions
@@ -58,6 +59,7 @@ protected:
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
 
+	int 		 done;
 };
 
 #endif /* AP_QNXDIALOG_INSERT_DATETIME_H */
