@@ -8314,15 +8314,21 @@ void FV_View::cmdContextAdd(void)
 
 		pView->m_bCursorBlink = b;
 
-		// if currently blinking, turn it off
-		if ( pView->m_bCursorBlink == false && pView->m_pAutoCursorTimer )
-			pView->m_pAutoCursorTimer->stop();
+               if ( pView->m_bCursorBlink ) 
+		 {
+		   // start the cursor blinking
+		   pView->_eraseInsertionPoint();
+		   pView->_drawInsertionPoint();
+		 }
+	       else
+		 {
+                       // stop blinking and make sure the cursor is drawn
+                       if ( pView->m_pAutoCursorTimer )
+                               pView->m_pAutoCursorTimer->stop();
 
-		// this is an attempt for force the cursors to draw, don't know if it actually helps
-		if ( !pView->m_bCursorBlink && pView->m_bCursorIsOn )
-			pView->_drawInsertionPoint();
-
-		pView->_updateInsertionPoint();
+                       if ( !pView->m_bCursorIsOn )
+                               pView->_drawInsertionPoint();
+		 }
 	}
 #ifdef BIDI_ENABLED	
 	if ( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
