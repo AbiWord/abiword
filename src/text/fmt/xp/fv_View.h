@@ -544,6 +544,7 @@ public:
 	bool                isPointLegal(PT_DocPosition pos);
 	bool                isPointLegal(void);
 	bool				isInTable();
+	fl_TableLayout *    getTableAtPos(PT_DocPosition);
 	bool				isInTable(PT_DocPosition pos);
 	bool                cmdAutoSizeCols(void);
 	bool                cmdAutoSizeRows(void);

@@ -9494,6 +9494,34 @@ bool FV_View::isInTable()
 	return isInTable(pos);
 }
 
+fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
+{
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	if(!pBL)
+	{
+		return NULL;
+	}
+	fl_ContainerLayout * pCL = pBL->myContainingLayout();
+	if(!pCL)
+	{
+		return NULL;
+	}
+	if(pCL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		pCL = pCL->myContainingLayout();
+		if(!pCL)
+		{
+			return NULL;
+		}
+		if(pCL->getContainerType() != FL_CONTAINER_TABLE)
+		{
+			return NULL;
+		}
+		fl_TableLayout * pTab = static_cast<fl_TableLayout *>(pCL);
+		return pTab;
+	}
+	return NULL;
+}
 /*!
  * Returns true if the point supplied is inside a Table.
  */

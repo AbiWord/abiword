@@ -1168,7 +1168,6 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell,posFirstInsert;
-
 	UT_sint32 numColsForInsertion = getNumColumnsInSelection();
 	if(numColsForInsertion == 0)
 	{
@@ -1324,7 +1323,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 					bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
 					if(i == 0)
 					{
-						posFirstInsert = posCell + 1;
+						posFirstInsert = posCell + 2;
 					}
 					bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 				}
@@ -1354,7 +1353,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 					bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
 					if(i == 0)
 					{
-						posFirstInsert = posCellLeft + 1;
+						posFirstInsert = posCellLeft + 2;
 					}
 					
 					bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
@@ -1405,7 +1404,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 								bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
 								if(i == 0)
 								{
-									posFirstInsert = posCell + 1;
+									posFirstInsert = posCell + 2;
 								}
 								bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 							}
@@ -1473,7 +1472,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 								bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
 								if(i == 0)
 								{
-									posFirstInsert = posCellLeft + 1;
+									posFirstInsert = posCellLeft + 2;
 								}
 								bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
 							}
@@ -1601,7 +1600,6 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
 //
-	setPoint(posFirstInsert);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
 	_generalUpdate();
@@ -1615,6 +1613,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	_restorePieceTableState();
 // Put the insertion point in a legal position
 //
+	setPoint(posFirstInsert);
 	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
@@ -3365,6 +3364,23 @@ void FV_View::cmdCopy(bool bToClipboard)
 
 void FV_View::cmdPaste(bool bHonorFormatting)
 {
+//
+// Look to see if should paste a table column or row
+//
+	if((m_Selection.getPrevSelectionMode() == FV_SelectionMode_TableColumn)
+	   || (m_Selection.getPrevSelectionMode() == 	FV_SelectionMode_TableRow))
+	{
+		if(isInTable())
+		{
+			fl_TableLayout * pTab = getTableAtPos(getPoint());
+			if(pTab && pTab == m_Selection.getTableLayout());
+			{
+				m_Selection.pasteRowOrCol();
+				return;
+			}
+		}
+	}
+
 	// set UAG markers around everything that the actual paste does
 	// so that undo/redo will treat it as one step.
 

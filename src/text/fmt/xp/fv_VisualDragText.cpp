@@ -412,6 +412,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_iInitialOffX = 0;
 	m_iInitialOffY = 0;
 	PT_DocPosition oldPoint = m_pView->getPoint();
+	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
 	m_pView->cmdPaste();
 	PT_DocPosition newPoint = m_pView->getPoint();
 	DELETEP(m_pDragImage);
@@ -419,7 +420,14 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	{
 		m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
 	}
-	m_pView->cmdSelect(oldPoint,newPoint);
+	if(!bPasteTableCol)
+	{
+		m_pView->cmdSelect(oldPoint,newPoint);
+	}
+	else
+	{
+		m_pView->cmdSelectColumn(newPoint);
+	}
 	m_bTextCut = false;
 }
 

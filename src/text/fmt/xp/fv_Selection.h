@@ -81,7 +81,9 @@ public:
 	bool                  isSelected(void) const;
 	void                  clearSelection(void);
 	void                  setTableLayout(fl_TableLayout * pFL);
+	fl_TableLayout *      getTableLayout(void);
 	void                  addCellToSelection(fl_CellLayout * pCell);
+	void                  pasteRowOrCol(void);
 private:
 	FV_View *             m_pView;
 	FV_SelectionMode      m_iSelectionMode;

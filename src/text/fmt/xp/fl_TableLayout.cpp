@@ -1410,7 +1410,7 @@ bool fl_CellLayout::isCellSelected(void)
 	posEndCell = m_pDoc->getStruxPosition(sdhEnd) -1;
 	if(pView->isPosSelected(posStartCell) && pView->isPosSelected(posEndCell))
 	{
-		UT_DEBUGMSG(("Cell at top %d left %d selected \n",m_iTopAttach,m_iLeftAttach));
+		xxx_UT_DEBUGMSG(("Cell at top %d left %d selected \n",m_iTopAttach,m_iLeftAttach));
 		return true;
 	}
 	return false;

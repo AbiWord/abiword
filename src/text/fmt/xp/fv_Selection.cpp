@@ -61,7 +61,10 @@ FV_Selection::~FV_Selection()
 
 void FV_Selection::setMode(FV_SelectionMode iSelMode)
 {
-	m_iPrevSelectionMode = m_iSelectionMode;
+	if( (m_iSelectionMode != FV_SelectionMode_NONE) || (iSelMode !=  FV_SelectionMode_NONE))
+	{
+		m_iPrevSelectionMode = m_iSelectionMode;
+	}
 	m_iSelectionMode = iSelMode;
 	if(m_iSelectionMode != FV_SelectionMode_NONE)
 	{
@@ -73,6 +76,100 @@ void FV_Selection::setMode(FV_SelectionMode iSelMode)
 		m_vecSelRTFBuffers.clear();
 		m_vecSelCellProps.clear();
 	}
+}
+
+void FV_Selection::pasteRowOrCol(void)
+{
+	PL_StruxDocHandle cellSDH,tableSDH;
+	PT_DocPosition pos = m_pView->getPoint();
+	if(m_iPrevSelectionMode == FV_SelectionMode_TableColumn)
+	{
+//
+// GLOB stuff together so it undo's in one go.
+//
+		getDoc()->beginUserAtomicGlob();
+//
+// Insert a column after the current column
+//
+		m_pView->cmdInsertCol(m_pView->getPoint(),false);
+//
+// Now do all the encapsulating stuff for piecetable manipulations.
+//
+	// Signal PieceTable Change
+		m_pView->_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+		getDoc()->disableListUpdates();
+		getDoc()->beginUserAtomicGlob();
+		if (!m_pView->isSelectionEmpty())
+		{
+			m_pView->_clearSelection();
+		}
+		getDoc()->setDontImmediatelyLayout(true);
+		pos = m_pView->getPoint();
+		PT_DocPosition posTable,posCell;
+		UT_sint32 iLeft,iRight,iTop,iBot;
+		m_pView->getCellParams(pos, &iLeft, &iRight,&iTop,&iBot);
+		bool bRes = getDoc()->getStruxOfTypeFromPosition(pos,PTX_SectionCell,&cellSDH);
+		bRes = getDoc()->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
+		UT_return_if_fail(bRes);
+		posTable = getDoc()->getStruxPosition(tableSDH) + 1;
+		UT_sint32 numRows = 0;
+		UT_sint32 numCols = 0;
+		UT_sint32 i = 0;
+		getDoc()-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+
+		PD_DocumentRange DocRange(getDoc(),posCell,posCell);
+		for(i=0; i<getNumSelections();i++)
+		{
+			posCell = m_pView->findCellPosAt(posTable,i,iLeft)+2;
+			m_pView->setPoint(posCell);
+			PD_DocumentRange * pR = getNthSelection(i);
+			if(pR->m_pos1 == pR->m_pos2)
+			{
+//
+// Dont paste empty cells
+//
+				continue;
+			}
+			UT_ByteBuf * pBuf = static_cast<UT_ByteBuf *>(m_vecSelRTFBuffers.getNthItem(i));
+			const unsigned char * pData = pBuf->getPointer(0);
+			UT_uint32 iLen = pBuf->getLength();
+			DocRange.m_pos1 = posCell;
+			DocRange.m_pos2 = posCell;
+			IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(getDoc());
+			pImpRTF->pasteFromBuffer(&DocRange,pData,iLen);
+			DELETEP(pImpRTF);
+			fl_SectionLayout * pSL = m_pView->getCurrentBlock()->getSectionLayout();
+			pSL->checkAndAdjustCellSize();
+		}
+		getDoc()->endUserAtomicGlob();
+		getDoc()->setDontImmediatelyLayout(false);
+		m_pView->_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+		getDoc()->enableListUpdates();
+		getDoc()->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+		m_pView->_restorePieceTableState();
+// Put the insertion point in a legal position
+//
+		m_pView->notifyListeners(AV_CHG_MOTION);
+		m_pView->_fixInsertionPointCoords();
+		m_pView->_ensureInsertionPointOnScreen();
+
+	}
+	else
+	{
+	}
+}
+
+fl_TableLayout * FV_Selection::getTableLayout(void)
+{
+	return m_pTableOfSelectedColumn;
 }
 
 PD_Document * FV_Selection::getDoc(void) const
@@ -149,7 +246,7 @@ bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 	for(i=0; i < static_cast<UT_sint32>(m_vecSelRanges.getItemCount()); i++)
 	{
 		PD_DocumentRange * pDocRange = static_cast<PD_DocumentRange *>(m_vecSelRanges.getNthItem(i));
-		xxx_UT_DEBUGMSG(("Looking at pos %d low %d hight %d \n",pos, pDocRange->m_pos1,pDocRange->m_pos2 ));
+		UT_DEBUGMSG(("Looking at pos %d low %d high %d \n",pos, pDocRange->m_pos1,pDocRange->m_pos2 ));
 		if ((pos >= pDocRange->m_pos1) && (pos <= pDocRange->m_pos2+1))
 		{
 			return true;
@@ -207,7 +304,17 @@ void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 	UT_ByteBuf * pByteBuf = new UT_ByteBuf;
     if (pExpRtf)
     {
+		if(posLow < posHigh)
+		{
+			pDocRange->m_pos1++;
+			pDocRange->m_pos2++;
+		}
 		pExpRtf->copyToBuffer(pDocRange,pByteBuf);
+		if(posLow < posHigh)
+		{
+			pDocRange->m_pos1--;
+			pDocRange->m_pos2--;
+		}
 		DELETEP(pExpRtf);
     }
 	m_vecSelRTFBuffers.addItem(static_cast<void *>(pByteBuf));
