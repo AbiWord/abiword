@@ -8,7 +8,8 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<!-- Norwegian Nynorsk translations provided by Karl Ove Hufthammer <huftis@bigfoot.com> -->
+<!-- Norwegian Nynorsk (nn-NO) translations provided by
+     Karl Ove Hufthammer <huftis@bigfoot.com> -->
 
 <AbiStrings app="AbiWord Personal" ver="1.0" language="nn-NO">
 
@@ -67,6 +68,7 @@ DLG_Zoom_PreviewFrame="Førehandsvising"
 TB_Zoom_PageWidth="Sidebreidd"
 TB_Zoom_WholePage="Heile sida"
 DLG_UP_PrintTitle="Skriv ut"
+DLG_UP_PrintPreviewTitle="AbiWord: Førehandsvising"
 DLG_UP_PrintTo="Skriv ut til: "
 DLG_UP_Printer="Skrivar"
 DLG_UP_File="Fil"
@@ -268,10 +270,13 @@ DLG_Field_Types="&amp;Typar:"
 DLG_Field_Fields="&amp;Felt:"
 FIELD_Type_Datetime="Dato og klokkeslett"
 FIELD_Type_Numbers="Tal"
+FIELD_Type_PieceTable="Deltabell"
 FIELD_Datetime_CurrentTime="Gjeldande klokkeslett"
 FIELD_Numbers_PageNumber="Sidetal"
 FIELD_Numbers_PagesCount="Talet på sider"
 FIELD_Numbers_ListLabel="Listeetikett"
+FIELD_PieceTable_Test="Kevins test"
+FIELD_PieceTable_MartinTest="Martins test"
 DLG_Goto_Title="Gå til ..."
 DLG_Goto_Label_Help="Vel kva type plassering du vil gå til i venstre felt og fyll eventuelt ut talfeltet til høgre viss du vil bruka Gå til-knappen. Du kan bruka&#160;+ og&#160;- for å flytta i forhold til den gjeldande plasseringa. Eksempel:&#160;+2 flyttar to element (f.eks.&#160;linjer) framover."
 DLG_Goto_Btn_Prev="&lt;&lt; Førre"
@@ -327,4 +332,6 @@ DLG_Lists_Apply_Current="Bruk på gjeldande liste"
 DLG_Lists_Start_Sub="Start underliste"
 DLG_Lists_Resume="Hald fram med førre liste"
 />
+
 </AbiStrings>
+
