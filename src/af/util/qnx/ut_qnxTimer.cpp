@@ -24,7 +24,6 @@
 #include <Pt.h>
 #include <stdio.h>
 
-#define ENABLE_TIMER 
 
 /*****************************************************************/
 extern PtWidget_t *gTimerWidget;
@@ -47,39 +46,33 @@ UT_QNXTimer::UT_QNXTimer(UT_TimerCallback pCallback, void* pData)
 
 UT_QNXTimer::~UT_QNXTimer()
 {
-	UT_DEBUGMSG(("TIMER:  timer destructor "));
-
 	stop();
 }
 
 /*****************************************************************/
 static int _Timer_Proc(PtWidget_t *w, void *p, PtCallbackInfo_t *info)
 {
-	UT_QNXTimer* pTimer = (UT_QNXTimer*) p;
-	UT_ASSERT(pTimer);
-
-	pTimer->fire();
+	UT_QNXTimer *pTimer;
 
 	/*
-	  We need to manually reset the timer here.  This cross-platform
-	  timer was designed to emulate the semantics of Win32 timers,
-	  which continually fire until they are killed.
-
-	  pTimer->resetIfStarted();
+     We need to look up the timer because the widget might have	
+	 been deleted.  Note that this is not entirely foolproof since
+	 a new timer might have been created which re-used the widget's
+	 address and so we could pre-maturely fire someone elses timer.
+	 It would be better if we could do the lookup based on a large
+     increasing number, but alas that would mean that we couldn't
+     store our widget pointer in the Identifier field (which might
+     not be entirely a bad thing).
 	*/
-	return 0;
+	pTimer = (UT_QNXTimer *)UT_Timer::findTimer((UT_uint32)w);
+	if (!pTimer) {
+		printf("*** Saved ourselves a timer segfault *** \n");
+	} else {
+		pTimer->fire();
+	}
+
+	return Pt_CONTINUE;
 }
-
-static void * _Timer_Thread(void *p)
-{
-	UT_QNXTimer* pTimer = (UT_QNXTimer*) p;
-	UT_ASSERT(pTimer);
-
-	pTimer->fire();
-
-	return NULL;
-}
-
 
 void UT_QNXTimer::resetIfStarted(void)
 {
@@ -87,82 +80,84 @@ void UT_QNXTimer::resetIfStarted(void)
 		set(m_iMilliseconds);
 }
 
+/*
+  The goal here is to set this timer to go off after iMilliseconds
+ have passed.  This method should not block.  It should call some
+ OS routine which provides timing facilities.  It is assumed that this
+ routine requires a C callback.  That callback, when it is called,
+ must look up the UT_Timer object which corresponds to it, and
+ call its fire() method.  The lookup of the UT_Timer object should be
+ done in a manner such that if the timer is deleted and then the event
+ is fired it will not segfault by referencing the now invalid timer
+ object.  This can be done by using the calls setIdentifier/getIdentifier
+ and the static findTimer() calls.
+
+ See ut_Win32Timer.cpp for an example of how it's done on Windows.  
+ We're hoping that something similar will work for other platforms.
+*/
 UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 {
-	/*
-	  The goal here is to set this timer to go off after iMilliseconds
-	  have passed.  This method should not block.  It should call some
-	  OS routine which provides timing facilities.  It is assumed that this
-	  routine requires a C callback.  That callback, when it is called,
-	  must look up the UT_Timer object which corresponds to it, and
-	  call its fire() method.  See ut_Win32Timer.cpp for an example
-	  of how it's done on Windows.  We're hoping that something similar will work
-	  for other platforms.
-	*/
+	PtArg_t 	args[5];
+	PtWidget_t 	*idTimer;
+	int     	n;
 
-
-	setIdentifier(0);
-
-#if defined(ENABLE_TIMER) 
-	PtArg_t args[5];
-	int     n = 0;
-	PtWidget_t *idTimer;
-
-	PtSetArg(&args[n++], Pt_ARG_TIMER_INITIAL, iMilliseconds, 0);
-	PtSetArg(&args[n++], Pt_ARG_TIMER_REPEAT, iMilliseconds, 0);
 	if (!gTimerWidget || !PtWidgetIsRealized(gTimerWidget)) {
-		UT_DEBUGMSG(("TIMER: Can't access timer widget "));
+		UT_DEBUGMSG(("TIMER: Can't access global timer widget "));
+		UT_ASSERT(0);
 		return 1;	
 	}
+
+	//Clear the identifier while we are doing this processing
+	setIdentifier(0);
+
+	//Set up and create the timer
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TIMER_INITIAL, iMilliseconds, 0);
+	PtSetArg(&args[n++], Pt_ARG_TIMER_REPEAT, iMilliseconds, 0);
 	if (!(idTimer = PtCreateWidget(PtTimer, gTimerWidget, n, args))) {
-		UT_DEBUGMSG(("TIMER: Can't create timer "));
+		UT_DEBUGMSG(("TIMER: Can't create local timer "));
+		UT_ASSERT(0);
 		return 1;
 	}
-	PtAddCallback(idTimer, Pt_CB_TIMER_ACTIVATE, _Timer_Proc, this);
-	//All bad things go away when I don't use this
-	PtRealizeWidget(idTimer);
+
+	//We get our reference to the timer object by querying the id of the widget
+	PtAddCallback(idTimer, Pt_CB_TIMER_ACTIVATE, _Timer_Proc, NULL);
 	setIdentifier((UT_sint32)idTimer);
+
+	//The timer only starts when we realize the timer widget.
+	PtRealizeWidget(idTimer);
 
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
-#endif
 
 	return 0;
 }
 
+/*
+ Stop the delivery of timer events and stop the 
+ OS timer from firing, but do not delete the class.
+*/
 void UT_QNXTimer::stop(void)
 {
-	// stop the delivery of timer events.
-	// stop the OS timer from firing, but do not delete the class.
-
-#if 0
-	if (m_bStarted)
-		gtk_timeout_remove(getIdentifier());
-#endif
-	//PtArg_t arg;
-	//PtSetArg(&arg, Pt_ARG_TIMER_INITIAL, 0, 0);
-	//PtSetResources((PtWidget_t *)getIdentifier(), 1, &arg);
-	//OR
-#if defined(ENABLE_TIMER) 
 	PtWidget_t *timer;
-	if (!(timer = (PtWidget_t *)getIdentifier()) || !PtWidgetIsRealized(timer)) {
-		return;
-	}
-	PtDestroyWidget(timer);
-#endif
-	setIdentifier(0);
-	m_bStarted = UT_FALSE;
 
-	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer stopped\n"));
+	timer = (PtWidget_t *)getIdentifier();
+	setIdentifier(0);
+
+	if (timer && PtWidgetIsRealized(timer)) {
+		PtDestroyWidget(timer);
+	}
+
+	m_bStarted = UT_FALSE;
 }
 
+/*
+ Resume the delivery of timer events but only if they
+ have not already been started.
+*/
 void UT_QNXTimer::start(void)
 {
-	// resume the delivery of events.
-
-#if defined(ENABLE_TIMER)
 	UT_ASSERT(m_iMilliseconds > 0);
-#endif
 	
 	if (!m_bStarted)
 		set(m_iMilliseconds);
