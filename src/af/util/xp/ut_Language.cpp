@@ -71,6 +71,8 @@ static lang_entry s_Table[] =
 	{"fr-FR",		NULL, XAP_STRING_ID_LANG_FR_FR},
 	{"ga-IE",		NULL, XAP_STRING_ID_LANG_GA_IE},
 	{"gl-ES",		NULL, XAP_STRING_ID_LANG_GL_ES},
+	{"hau-NE",		NULL, XAP_STRING_ID_LANG_HAU_NE},
+	{"hau-NG",		NULL, XAP_STRING_ID_LANG_HAU_NG},
 	{"he-IL",		NULL, XAP_STRING_ID_LANG_HE_IL},	// was iw-IL - why?
 	{"hi-IN",		NULL, XAP_STRING_ID_LANG_HI_IN},
 	{"hu-HU",		NULL, XAP_STRING_ID_LANG_HU_HU},
