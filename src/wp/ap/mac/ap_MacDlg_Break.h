@@ -17,36 +17,26 @@
  * 02111-1307, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_debugmsg.h"
+#ifndef AP_MACDIALOG_BREAK_H
+#define AP_MACDIALOG_BREAK_H
 
-#include "xap_Dlg_Break.h"
+#include "ap_Dialog_Break.h"
+class XAP_MacFrame;
 
-#include "xap_Dialog_Id.h"
-#include "xap_DialogFactory.h"
-#include "xap_Dlg_MessageBox.h"
+/*****************************************************************/
 
-XAP_Dialog_Break::XAP_Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_NonPersistent(pDlgFactory,id)
+class AP_MacDialog_Break: public AP_Dialog_Break
 {
-	m_answer = a_OK;
-	m_break = b_PAGE;
-}
+public:
+	AP_MacDialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_MacDialog_Break(void);
 
-XAP_Dialog_Break::~XAP_Dialog_Break(void)
-{
-}
+	virtual void			runModal(XAP_Frame * pFrame);
 
-XAP_Dialog_Break::tAnswer XAP_Dialog_Break::getAnswer(void) const
-{
-	return m_answer;
-}
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-XAP_Dialog_Break::breakType XAP_Dialog_Break::getBreakType(void) const
-{
-	return m_break;
-}
+protected:
+
+};
+
+#endif /* AP_MACDIALOG_BREAK_H */

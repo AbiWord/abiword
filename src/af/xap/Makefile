@@ -35,7 +35,6 @@ TARGETS=		$(LIBRARY)
 
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_Break.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Dlg_MessageBox.$(OBJ_SUFFIX)		\
@@ -75,7 +74,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/xap_Dialog.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_DialogFactory.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dlg_About.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/xap_Dlg_Break.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\

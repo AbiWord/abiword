@@ -79,15 +79,3 @@ dcl(DLG_Zoom_PageWidth,					"Page width")
 dcl(DLG_Zoom_WholePage,					"Whole page")
 dcl(DLG_Zoom_Percent,					"Percent:")	
 dcl(DLG_Zoom_PreviewFrame,				"Preview")
-	
-/* Break dialog */
-dcl(DLG_Break_BreakTitle,				"Break")
-dcl(DLG_Break_Insert,					"Insert")
-dcl(DLG_Break_SectionBreaks,			"Section breaks")
-dcl(DLG_Break_PageBreak,				"Page break")
-dcl(DLG_Break_ColumnBreak,				"Column break")
-dcl(DLG_Break_NextPage,					"Next page")
-dcl(DLG_Break_Continuous,				"Continuous")
-dcl(DLG_Break_EvenPage,					"Even page")
-dcl(DLG_Break_OddPage,					"Odd page")
-

@@ -17,19 +17,20 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXDIALOG_BREAK_H
-#define XAP_UNIXDIALOG_BREAK_H
+#ifndef AP_UNIXDIALOG_BREAK_H
+#define AP_UNIXDIALOG_BREAK_H
 
-#include "xap_Dlg_Break.h"
+#include "ap_Dialog_Break.h"
+
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class XAP_UnixDialog_Break: public XAP_Dialog_Break
+class AP_UnixDialog_Break: public AP_Dialog_Break
 {
 public:
-	XAP_UnixDialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~XAP_UnixDialog_Break(void);
+	AP_UnixDialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_UnixDialog_Break(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -48,8 +49,8 @@ protected:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 
-	GtkWidget * _findRadioByID(XAP_Dialog_Break::breakType b);
-	XAP_Dialog_Break::breakType _getActiveRadioItem(void);
+	GtkWidget * _findRadioByID(AP_Dialog_Break::breakType b);
+	AP_Dialog_Break::breakType _getActiveRadioItem(void);
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
@@ -62,4 +63,4 @@ protected:
 
 };
 
-#endif /* XAP_UNIXDIALOG_BREAK_H */
+#endif /* AP_UNIXDIALOG_BREAK_H */

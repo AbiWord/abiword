@@ -17,19 +17,19 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_WIN32DIALOG_BREAK_H
-#define XAP_WIN32DIALOG_BREAK_H
+#ifndef AP_BEOSDIALOG_BREAK_H
+#define AP_BEOSDIALOG_BREAK_H
 
-#include "xap_Dlg_Break.h"
-class XAP_Win32Frame;
+#include "ap_Dialog_Break.h"
+class XAP_BeOSFrame;
 
 /*****************************************************************/
 
-class XAP_Win32Dialog_Break: public XAP_Dialog_Break
+class AP_BeOSDialog_Break: public AP_Dialog_Break
 {
 public:
-	XAP_Win32Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~XAP_Win32Dialog_Break(void);
+	AP_BeOSDialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_BeOSDialog_Break(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
@@ -39,4 +39,4 @@ protected:
 
 };
 
-#endif /* XAP_WIN32DIALOG_BREAK_H */
+#endif /* AP_BEOSDIALOG_BREAK_H */

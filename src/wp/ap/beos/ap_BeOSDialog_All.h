@@ -35,9 +35,9 @@
 #	include "xap_BeOSDlg_Print.h"
 #	include "xap_BeOSDlg_FontChooser.h"
 #	include "xap_BeOSDlg_Zoom.h"
-#	include "xap_BeOSDlg_Break.h"
 
 #	include "ap_BeOSDialog_Replace.h"
+#	include "ap_BeOSDialog_Break.h"
 
 	// ... add new dialogs here ...
 
@@ -50,9 +50,9 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_BeOSDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_BeOSDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_BeOSDialog_Zoom)
-	DeclareDialog(XAP_DIALOG_ID_BREAK,			XAP_BeOSDialog_Break)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_BeOSDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_BeOSDialog_Break)
 	
 	// ... also add new dialogs here ...
 

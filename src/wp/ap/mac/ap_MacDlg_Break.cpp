@@ -22,35 +22,36 @@
 #include "ut_debugmsg.h"
 
 #include "xap_App.h"
-#include "xap_BeOSApp.h"
-#include "xap_BeOSFrame.h"
+#include "xap_MacApp.h"
+#include "xap_MacFrame.h"
 
-#include "xap_Dialog_Id.h"
-#include "xap_Dlg_Break.h"
-#include "xap_BeOSDlg_Break.h"
+#include "ap_Strings.h"
+#include "ap_Dialog_Id.h"
+#include "ap_Dialog_Break.h"
+#include "ap_MacDialog_Break.h"
 
 /*****************************************************************/
 
-AP_Dialog * XAP_BeOSDialog_Break::static_constructor(AP_DialogFactory * pFactory,
+AP_Dialog * AP_MacDialog_Break::static_constructor(AP_DialogFactory * pFactory,
 													 AP_Dialog_Id id)
 {
-	XAP_BeOSDialog_Break * p = new XAP_BeOSDialog_Break(pFactory,id);
+	AP_MacDialog_Break * p = new AP_MacDialog_Break(pFactory,id);
 	return p;
 }
 
-XAP_BeOSDialog_Break::XAP_BeOSDialog_Break(AP_DialogFactory * pDlgFactory,
+AP_MacDialog_Break::AP_MacDialog_Break(AP_DialogFactory * pDlgFactory,
 										   AP_Dialog_Id id)
-	: XAP_Dialog_Break(pDlgFactory,id)
+	: AP_Dialog_Break(pDlgFactory,id)
 {
 }
 
-XAP_BeOSDialog_Break::~XAP_BeOSDialog_Break(void)
+AP_MacDialog_Break::~AP_MacDialog_Break(void)
 {
 }
 
 /*****************************************************************/
 
-void XAP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
+void AP_MacDialog_Break::runModal(XAP_Frame * pFrame)
 {
 
 	/*
@@ -76,7 +77,7 @@ void XAP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
 	*/
 
 	// TODO build the dialog, attach events, etc., etc.
-	m_answer = XAP_Dialog_Break::a_CANCEL;
+	m_answer = AP_Dialog_Break::a_CANCEL;
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 

@@ -17,26 +17,36 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_BEOSDIALOG_BREAK_H
-#define XAP_BEOSDIALOG_BREAK_H
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "ut_assert.h"
+#include "ut_string.h"
+#include "ut_debugmsg.h"
 
-#include "xap_Dlg_Break.h"
-class XAP_BeOSFrame;
+#include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_MessageBox.h"
 
-/*****************************************************************/
+#include "ap_Dialog_Break.h"
 
-class XAP_BeOSDialog_Break: public XAP_Dialog_Break
+AP_Dialog_Break::AP_Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+	: AP_Dialog_NonPersistent(pDlgFactory,id)
 {
-public:
-	XAP_BeOSDialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~XAP_BeOSDialog_Break(void);
+	m_answer = a_OK;
+	m_break = b_PAGE;
+}
 
-	virtual void			runModal(XAP_Frame * pFrame);
+AP_Dialog_Break::~AP_Dialog_Break(void)
+{
+}
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+AP_Dialog_Break::tAnswer AP_Dialog_Break::getAnswer(void) const
+{
+	return m_answer;
+}
 
-protected:
-
-};
-
-#endif /* XAP_BEOSDIALOG_BREAK_H */
+AP_Dialog_Break::breakType AP_Dialog_Break::getBreakType(void) const
+{
+	return m_break;
+}

@@ -45,7 +45,6 @@ typedef enum _XAP_Dialog_Id
 	XAP_DIALOG_ID_ZOOM,
 
 	XAP_DIALOG_ID_ABOUT,				/* about dialog */
-	XAP_DIALOG_ID_BREAK,
 	
 	/* ... add others here ... */
 

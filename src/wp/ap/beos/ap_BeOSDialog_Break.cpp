@@ -17,42 +17,41 @@
  * 02111-1307, USA.
  */
 
-#include <windows.h>
-
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
 #include "xap_App.h"
-#include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_BeOSApp.h"
+#include "xap_BeOSFrame.h"
 
-#include "xap_Dialog_Id.h"
-#include "xap_Dlg_Break.h"
-#include "xap_Win32Dlg_Break.h"
+#include "ap_Strings.h"
+#include "ap_Dialog_Id.h"
+#include "ap_Dialog_Break.h"
+#include "ap_BeOSDialog_Break.h"
 
 /*****************************************************************/
 
-AP_Dialog * XAP_Win32Dialog_Break::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+AP_Dialog * AP_BeOSDialog_Break::static_constructor(AP_DialogFactory * pFactory,
+													 AP_Dialog_Id id)
 {
-	XAP_Win32Dialog_Break * p = new XAP_Win32Dialog_Break(pFactory,id);
+	AP_BeOSDialog_Break * p = new AP_BeOSDialog_Break(pFactory,id);
 	return p;
 }
 
-XAP_Win32Dialog_Break::XAP_Win32Dialog_Break(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
-	: XAP_Dialog_Break(pDlgFactory,id)
+AP_BeOSDialog_Break::AP_BeOSDialog_Break(AP_DialogFactory * pDlgFactory,
+										   AP_Dialog_Id id)
+	: AP_Dialog_Break(pDlgFactory,id)
 {
 }
 
-XAP_Win32Dialog_Break::~XAP_Win32Dialog_Break(void)
+AP_BeOSDialog_Break::~AP_BeOSDialog_Break(void)
 {
 }
 
 /*****************************************************************/
 
-void XAP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
+void AP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
 {
 
 	/*
@@ -76,8 +75,9 @@ void XAP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 	  - Just quit, the data items will be ignored by the caller.
 
 	*/
-	
+
 	// TODO build the dialog, attach events, etc., etc.
+	m_answer = AP_Dialog_Break::a_CANCEL;
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 

@@ -39,6 +39,7 @@
 #	include "xap_MacDlg_About.h"
 
 #	include "ap_MacDlg_Replace.h"
+#	include "ap_MacDlg_Break.h"
 
 	// ... add new dialogs here ...
 
@@ -55,6 +56,7 @@
 
 //	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_MacDialog_Replace)
 //	DeclareDialog(AP_DIALOG_ID_FIND,			AP_MacDialog_Replace)
+//	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_MacDialog_Break)
 	
 	// ... also add new dialogs here ...
 

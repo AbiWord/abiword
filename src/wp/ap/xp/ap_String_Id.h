@@ -44,3 +44,15 @@ dcl(DLG_FR_FindNextButton,	"&Find Next")
 dcl(DLG_FR_ReplaceButton,	"&Replace")
 dcl(DLG_FR_ReplaceAllButton,	"Replace &All")
 dcl(DLG_FR_CancelButton,	"Cancel")
+
+/* Break dialog */
+dcl(DLG_Break_BreakTitle,				"Break")
+dcl(DLG_Break_Insert,					"Insert")
+dcl(DLG_Break_SectionBreaks,			"Section breaks")
+dcl(DLG_Break_PageBreak,				"Page break")
+dcl(DLG_Break_ColumnBreak,				"Column break")
+dcl(DLG_Break_NextPage,					"Next page")
+dcl(DLG_Break_Continuous,				"Continuous")
+dcl(DLG_Break_EvenPage,					"Even page")
+dcl(DLG_Break_OddPage,					"Odd page")
+	

@@ -24,7 +24,8 @@ include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
-CPPSRCS=	ap_Dialog_Replace.cpp		\
+CPPSRCS=	ap_Dialog_Break.cpp		\
+		ap_Dialog_Replace.cpp		\
 		ap_Dialog_Goto.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\

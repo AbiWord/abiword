@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_DIALOG_BREAK_H
-#define XAP_DIALOG_BREAK_H
+#ifndef AP_DIALOG_BREAK_H
+#define AP_DIALOG_BREAK_H
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
@@ -26,24 +26,24 @@
 
 class XAP_Frame;
 
-class XAP_Dialog_Break : public AP_Dialog_NonPersistent
+class AP_Dialog_Break : public AP_Dialog_NonPersistent
 {
 public:
-	XAP_Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~XAP_Dialog_Break(void);
+	AP_Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_Dialog_Break(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 	typedef enum { b_PAGE, b_COLUMN, b_NEXTPAGE, b_CONTINUOUS, b_EVENPAGE, b_ODDPAGE } breakType;
 
-	XAP_Dialog_Break::tAnswer		getAnswer(void) const;
-	XAP_Dialog_Break::breakType		getBreakType(void) const;
+	AP_Dialog_Break::tAnswer		getAnswer(void) const;
+	AP_Dialog_Break::breakType		getBreakType(void) const;
 	
 protected:
 	
-	XAP_Dialog_Break::tAnswer		m_answer;
-	XAP_Dialog_Break::breakType		m_break;
+	AP_Dialog_Break::tAnswer		m_answer;
+	AP_Dialog_Break::breakType		m_break;
 };
 
-#endif /* XAP_DIALOG_BREAK_H */
+#endif /* AP_DIALOG_BREAK_H */

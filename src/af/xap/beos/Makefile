@@ -26,7 +26,6 @@ include $(ABI_DEPTH)/config/abi_defs_wp.mk
 CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSDlg_WindowMore.cpp	\
 			xap_BeOSDlg_About.cpp		\
-			xap_BeOSDlg_Break.cpp		\
 			xap_BeOSDlg_FileOpenSaveAs.cpp	\
 			xap_BeOSDlg_FontChooser.cpp	\
 			xap_BeOSDlg_MessageBox.cpp	\

@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,27 +17,26 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_WIN32DIALOG_BREAK_H
+#define AP_WIN32DIALOG_BREAK_H
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include "ap_Dialog_Break.h"
+class XAP_Win32Frame;
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+/*****************************************************************/
 
-#include "xap_Dialog_Id.h"
-
-typedef enum _AP_Dialog_Id
+class AP_Win32Dialog_Break: public AP_Dialog_Break
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+public:
+	AP_Win32Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_Break(void);
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
-	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
-	AP_DIALOG_ID_BREAK,					/* insert page, column, section, etc. breaks */
-	/* ... add others here ... */
+	virtual void			runModal(XAP_Frame * pFrame);
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+
+protected:
 
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* AP_WIN32DIALOG_BREAK_H */
