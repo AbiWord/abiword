@@ -9559,7 +9559,11 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		pStyle = PT_STYLE_ATTRIBUTE_NAME;
 		pStyleName = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];
 	}
-		
+	bool bNoteRef = false;
+	if((UT_strcmp(xmlField,"endnote_ref") == 0) || (UT_strcmp(xmlField,"footnote_ref") == 0))
+	{
+		bNoteRef = true;
+	}
 	if(pszAttribs == NULL)
 	{
 		propsArray = static_cast<const XML_Char **>(UT_calloc(7, sizeof(XML_Char *)));		
@@ -9620,6 +9624,41 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 	}
 	else
 	{
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		if(pFrame == NULL)
+		 {
+			 m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			 return true;
+		 }
+		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		if(pView == NULL)
+		{
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		}
+		//
+		// No pasting footnotes/endnotes into text boxes, paste just before
+		// it.
+		//
+		if(bNoteRef && pView->isInFrame(m_dposPaste))
+		{
+			fl_FrameLayout * pFL = pView->getFrameLayout(m_dposPaste);
+			if(pFL == NULL)
+			{
+				m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+				return true;
+			}
+			PT_DocPosition newPos = pFL->getPosition(true);
+			while(newPos > 2 && getDoc()->isEndFrameAtPos(newPos-1))
+			{
+				pFL = pView->getFrameLayout(newPos-2);
+				if(pFL)
+				{
+					newPos = pFL->getPosition(true);
+				}
+			}
+			m_dposPaste = newPos;
+		}
 		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
 		m_dposPaste++;
 	}
