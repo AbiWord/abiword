@@ -30,7 +30,6 @@
 #include "xap_Dlg_Stub.h"
 #include "xap_MacDlg_Stub.h"
 
-#include "ut_Rehydrate.h"
 
 /*****************************************************************/
 
