@@ -2502,7 +2502,7 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 //
 // OK Set the Default page size, in case it isn't set in RTF
 //
-	if(!getLoadStylesOnly())
+	if(!getLoadStylesOnly() && !m_parsingHdrFtr)
 	{
 		double width = 12240./1440.; // default width in twips
 		double height = 15840./1440;; // default height in twips
@@ -4974,6 +4974,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 			double height = getDoc()->m_docPageSize.Height(DIM_IN);
 			double width = (static_cast<double>(param))/1440.0;
 			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+			UT_DEBUGMSG(("Page set to width %f height %f \n",width,height));
 		}
 		break;
 	case RTF_KW_paperh:
@@ -4985,6 +4986,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 			double width = getDoc()->m_docPageSize.Width(DIM_IN);
 			double height = (static_cast<double>(param))/1440.0;
 			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+			UT_DEBUGMSG(("Page set to width %f height %f \n",width,height));
 		}
 		break;
 
