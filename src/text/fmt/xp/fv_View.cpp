@@ -1492,6 +1492,7 @@ void FV_View::focusChange(AV_Focus focus)
 		}
 		break;
 	}
+	AV_View::notifyListeners(AV_CHG_FOCUS);
 }
 
 FL_DocLayout* FV_View::getLayout() const

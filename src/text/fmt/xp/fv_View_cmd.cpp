@@ -3087,6 +3087,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 
 	// we only do this for space ... (certain other chars can be handled in ap_EditMethods.cpp
 	// because they do not need knowledge of block direction)
+	fl_BlockLayout * pBlock = NULL;
 	if(count == 1 && text[0] == UCS_SPACE)
 	{
 		bool bLang = false, bMarker = false;
@@ -3105,7 +3106,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 
 		if(bMarker && pLR)
 		{
-			fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(getPoint());
+			pBlock = m_pLayout->findBlockAtPosition(getPoint());
 
 			if(!pBlock)
 				goto normal_insert;
