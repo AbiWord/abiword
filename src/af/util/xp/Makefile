@@ -42,11 +42,6 @@ CPPSRCS=	ut_alphahash.cpp	\
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c
 
-# for the moment, ut_getopt isn't *really* XP.  :-)
-ifeq ($(ABI_NATIVE),unix)
-CSRCS += ut_getopt.c
-endif
-
 TARGETS=		$(OBJS)
 
 ifeq ($(OS_NAME),WIN32)

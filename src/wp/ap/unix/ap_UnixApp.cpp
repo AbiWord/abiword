@@ -33,7 +33,6 @@
 
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
-#include "ut_getopt.h"
 
 #include "xap_Args.h"
 #include "ap_UnixFrame.h"

@@ -32,7 +32,6 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_unixString.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_unixTimer.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_dialogHelper.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ut_getopt.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
