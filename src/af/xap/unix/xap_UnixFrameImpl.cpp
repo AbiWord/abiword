@@ -72,6 +72,10 @@ enum {
 	TARGET_UNKNOWN
 } DragDropTypes;
 
+// FIXME Rob: this should be split into a static and a dynamic part.
+// At least the image formats could be added dynamically based on gdk_pixbuf_get_formats ()
+// but we should be able to also dynamically determine document formats by looking at the
+// loaded importers.
 static const GtkTargetEntry drag_types[] =
 	{
 		{"application/rtf", 0, TARGET_URI_LIST},
@@ -89,7 +93,7 @@ static const GtkTargetEntry drag_types[] =
 		{"text/xml", 0, TARGET_URI_LIST},
 		{"text/vnd.wap.wml", 0, TARGET_URI_LIST},
 		{"image/png", 0, TARGET_IMAGE},
-		{"image/bmp", 0, TARGET_IMAGE},
+		{"image/jpeg", 0, TARGET_IMAGE},
 		{"image/gif", 0, TARGET_IMAGE},
 		{"image/x-xpixmap", 0, TARGET_IMAGE},
 		{"image/bmp", 0, TARGET_IMAGE},
