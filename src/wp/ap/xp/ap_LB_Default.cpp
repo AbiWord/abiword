@@ -65,7 +65,7 @@ static struct ap_bs_Mouse s_MouseTable[] =
 // TODO add bindings for mouse-2, mouse-3, ...
 // TODO remove the test dump binding.
 
-#if defined(PT_TEST) || defined(FMT_TEST)
+#if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 	{	EV_EMB_BUTTON3,			{ "Test_Dump",		"",				"",				""			}},
 #endif
 };

@@ -20,7 +20,11 @@
 
 
 #include "ut_test.h"
+#include "ut_base64.h"
 
+/*****************************************************************/
+
+#ifdef UT_DEBUG
 const char * UT_TestStatus_GetMessage(UT_TestStatus status)
 {
 	switch (status)
@@ -31,4 +35,16 @@ const char * UT_TestStatus_GetMessage(UT_TestStatus status)
 	default:					return "Bogus";
 	}
 }
+#endif
+
+/*****************************************************************/
+
+#ifdef UT_TEST
+void UT_Test(FILE * fp)
+{
+	UT_Base64_Test(fp);
+
+	// add other tests here
+}
+#endif /* UT_TEST */
 

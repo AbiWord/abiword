@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,35 +16,47 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
-
-#ifndef UT_TEST_H
-#define UT_TEST_H
-
-// UT_TEST_H governs multiple inclusion of this header file
-// 
-// UT_TEST is a compile option to select testing of src/util code
-// PT_TEST is a compile option to select testing of src/ptbl code
-// FMT_TEST is a compile option to select testing of src/fmt code
-//
-// UT_DEBUG is a compile option to select debugging, we piggy back
-//          inclusion of core test routines on this.  (we could
-//          also just do a (defined(UT_TEST) || ...)
+#if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 
 #include <stdio.h>
+#include <string.h>
+#include "ut_test.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
 
-#ifdef UT_DEBUG
-typedef enum {  UT_Test_SystemError=-1,
-				UT_Test_Fail=0,
-				UT_Test_Pass=1
-} UT_TestStatus;
+#include "xav_View.h"
+#include "fv_View.h"
+#include "pd_Document.h"
+#include "fl_DocLayout.h"
 
-const char * UT_TestStatus_GetMessage(UT_TestStatus status);
-#endif /* UT_DEBUG */
+void FV_View::Test_Dump(void)
+{
+	char buf[100];
+	static UT_uint32 x = 0;
 
-#ifdef UT_TEST
-void UT_Test(FILE * fp);
+	x++;
+	
+#if defined(PT_TEST)
+	sprintf(buf,"dump.ptbl.%ld",x);
+	FILE * fpDumpPTbl = fopen(buf,"w");
+	m_pDoc->__dump(fpDumpPTbl);
+	fclose(fpDumpPTbl);
 #endif
 
-#endif /* UT_TEST_H */
+#if defined(FMT_TEST)
+	sprintf(buf,"dump.fmt.%ld",x);
+	FILE * fpDumpFmt = fopen(buf,"w");
+	m_pLayout->__dump(fpDumpFmt);
+	fclose(fpDumpFmt);
+#endif
+
+#if defined(UT_TEST)
+	sprintf(buf,"dump.ut.%ld",x);
+	FILE * fpDumpUt = fopen(buf,"w");
+	UT_Test(fpDumpUt);
+	fclose(fpDumpUt);
+#endif
+
+}
+#endif

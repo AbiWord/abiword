@@ -22,30 +22,13 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		fv_View.h	\
-			fl_DocLayout.h	\
-			fv_Listener.h
-
-HEADERS=		$(EXPORT_HEADERS)	\
-			fb_LineBreaker.h	\
-			fl_BlockLayout.h	\
-			fl_SectionLayout.h	\
-			fl_DocListener.h		\
-			fl_Layout.h		\
-			fp_Column.h		\
-			fp_Line.h		\
-			fp_Page.h		\
-			fp_Run.h
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
-CPPSRCS=		fv_View.cpp		\
+CPPSRCS=		fv_View.cpp			\
+			fv_View_TestRoutines.cpp	\
 			fb_LineBreaker.cpp		\
 			fl_BlockLayout.cpp		\
 			fl_DocLayout.cpp		\
 			fl_DocListener.cpp		\
-			fl_Layout.cpp		\
+			fl_Layout.cpp			\
 			fl_SectionLayout.cpp		\
 			fp_Column.cpp			\
 			fp_Line.cpp			\

@@ -23,6 +23,8 @@ ABI_DEPTH = ../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=	ut_alphahash.cpp	\
+		ut_base64.cpp		\
+		ut_base64_TestRoutines.cpp	\
 		ut_bytebuf.cpp		\
 		ut_dllist.cpp		\
 		ut_growbuf.cpp		\

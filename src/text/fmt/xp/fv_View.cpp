@@ -3223,29 +3223,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 }
 
-#if defined(PT_TEST) || defined(FMT_TEST)
-void FV_View::Test_Dump(void)
-{
-	char buf[100];
-	static UT_uint32 x = 0;
-
-	x++;
-	
-#if defined(PT_TEST)
-	sprintf(buf,"dump.ptbl.%ld",x);
-	FILE * fpDumpPTbl = fopen(buf,"w");
-	m_pDoc->__dump(fpDumpPTbl);
-	fclose(fpDumpPTbl);
-#endif
-#if defined(FMT_TEST)
-	sprintf(buf,"dump.fmt.%ld",x);
-	FILE * fpDumpFmt = fopen(buf,"w");
-	m_pLayout->__dump(fpDumpFmt);
-	fclose(fpDumpFmt);
-#endif
-}
-#endif
-
 void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 {
 #define HACK_LINE_HEIGHT				20 // TODO Fix this!!

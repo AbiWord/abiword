@@ -16,35 +16,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
+#ifndef UT_BASE64_H
+#define UT_BASE64_H
 
-#ifndef UT_TEST_H
-#define UT_TEST_H
+#include "ut_assert.h"
+#include "ut_types.h"
+#include "ut_bytebuf.h"
 
-// UT_TEST_H governs multiple inclusion of this header file
-// 
-// UT_TEST is a compile option to select testing of src/util code
-// PT_TEST is a compile option to select testing of src/ptbl code
-// FMT_TEST is a compile option to select testing of src/fmt code
-//
-// UT_DEBUG is a compile option to select debugging, we piggy back
-//          inclusion of core test routines on this.  (we could
-//          also just do a (defined(UT_TEST) || ...)
-
-#include <stdio.h>
-
-#ifdef UT_DEBUG
-typedef enum {  UT_Test_SystemError=-1,
-				UT_Test_Fail=0,
-				UT_Test_Pass=1
-} UT_TestStatus;
-
-const char * UT_TestStatus_GetMessage(UT_TestStatus status);
-#endif /* UT_DEBUG */
+UT_Bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
+UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
 
 #ifdef UT_TEST
-void UT_Test(FILE * fp);
+#include "ut_test.h"
+void UT_Base64_Test(FILE * fp);
 #endif
 
-#endif /* UT_TEST_H */
+#endif /* UT_BASE64_H */
+

@@ -172,7 +172,7 @@ public:
 		
 // ----------------------
 
-#if defined(PT_TEST) || defined(FMT_TEST)
+#if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 	void			Test_Dump(void);
 #endif
 

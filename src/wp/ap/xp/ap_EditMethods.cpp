@@ -225,7 +225,7 @@ public:
 
 	// Test routines
 
-#if defined(PT_TEST) || defined(FMT_TEST)
+#if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 	static EV_EditMethod_Fn Test_Dump;
 #endif
 };
@@ -394,7 +394,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(closeWindow),			_M_,	""),
 	EV_EditMethod(NF(querySaveAndExit),		_M_,	""),
 
-#if defined(PT_TEST) || defined(FMT_TEST)
+#if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 	EV_EditMethod(NF(Test_Dump),			_M_,	"")
 #endif
 };
@@ -2611,7 +2611,7 @@ Defun1(doubleSpace)
 	return UT_TRUE;
 }
 
-#if defined(PT_TEST) || defined(FMT_TEST)
+#if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 Defun1(Test_Dump)
 {
 	ABIWORD_VIEW;
