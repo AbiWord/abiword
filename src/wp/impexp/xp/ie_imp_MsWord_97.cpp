@@ -1824,10 +1824,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	/* lists */
 	UT_uint32 myListId = 0;
-	UT_String szListId, szParentId, szLevel, szStartValue;
+	UT_String szListId, szParentId, szLevel, szStartValue, szNumberProps;
 	
 	// all lists have ilfo set 
-	if(apap->ilfo && ps->lfo)
+	if(apap->ilfo)
 	{
 		UT_uint32 j;
 		// if we are in a new list, then do some clean up first and remember the list id
@@ -1895,17 +1895,18 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 		myListId += m_iListIdIncrement[apap->ilvl];
 
-		const XML_Char * list_atts[13];
+		const XML_Char * list_atts[15];
+		UT_uint32 iOffset = 0;
 		UT_String propBuffer;
 		
 		// list id number
-		list_atts[0] = "id";
+		list_atts[iOffset++] = "id";
 		UT_String_sprintf(propBuffer, "%d", myListId);
 		szListId = propBuffer;
-		list_atts[1] = szListId.c_str();
+		list_atts[iOffset++] = szListId.c_str();
 
 		// parent id
-		list_atts[2] = "parentid";
+		list_atts[iOffset++] = "parentid";
 
 		// we will search backward our list vector for the first entry that has a lower level than we
 		// and that will be our parent
@@ -1921,29 +1922,42 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		}
 		UT_String_sprintf(propBuffer, "%d", myParentID);
 		szParentId = propBuffer;
-		list_atts[3] = szParentId.c_str();
+		list_atts[iOffset++] = szParentId.c_str();
 
 		// list type
-		list_atts[4] = "type";
-		list_atts[5] = s_mapDocToAbiListId (static_cast<MSWordListIdType>(apap->linfo.format));
+		list_atts[iOffset++] = "type";
+		list_atts[iOffset++] = s_mapDocToAbiListId (static_cast<MSWordListIdType>(apap->linfo.format));
 
 		// start value
-		list_atts[6] = "start-value";
+		list_atts[iOffset++] = "start-value";
 		UT_String_sprintf(propBuffer, "%d", apap->linfo.start);
 		szStartValue = propBuffer;
-		list_atts[7] = szStartValue.c_str();
+		list_atts[iOffset++] = szStartValue.c_str();
 
 		// list delimiter
-		list_atts[8] = "list-delim";
-		list_atts[9] = s_mapDocToAbiListDelim (static_cast<MSWordListIdType>(apap->linfo.format));
+		list_atts[iOffset++] = "list-delim";
+		list_atts[iOffset++] = s_mapDocToAbiListDelim (static_cast<MSWordListIdType>(apap->linfo.format));
 
-		list_atts[10] = "level";
+		list_atts[iOffset++] = "level";
 		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
 		szLevel = propBuffer;
-		list_atts[11] = szLevel.c_str();
+		list_atts[iOffset++] = szLevel.c_str();
 
+		// generate character props for the number
+		// TODO -- the properties represented by apap->linfo.chp need
+		// to be applied to the list number/bulet. For now, I am going
+		// to translate these into a regular props string and attach
+		// them to the list attributes, but they need to be passed
+		// somehow down to the number field (may need a dedicated
+		// _generateListCharProps() for this
+		// Tomas, May 12, 2003
+		_generateCharProps(szNumberProps, &apap->linfo.chp, ps);
+		list_atts[iOffset++] = "props";
+		list_atts[iOffset++] = szNumberProps.c_str();
+		
 		// NULL
-		list_atts[12] = 0;
+		list_atts[iOffset++] = 0;
+		UT_ASSERT( iOffset <=  sizeof(list_atts)/sizeof(XML_Char *) );
 
 		// now add this to our vector of lists
 		ListIdLevelPair * llp = new ListIdLevelPair;
