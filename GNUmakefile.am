@@ -43,7 +43,7 @@ install-data-local:
 	fi
 	if test -d $(top_srcdir)/../abidistfiles/dictionary ; then \
 	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/dictionary ;\
-	  for file in $(top_srcdir)/../unixfonts/dictionary/* ; do \
+	  for file in $(top_srcdir)/../abidistfiles/dictionary/* ; do \
 	    if test -f $$file ; then \
 	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/dictionary; \
 	    fi ; \
@@ -53,7 +53,7 @@ install-data-local:
 	fi
 	if test -d $(top_srcdir)/../abidistfiles/icons ; then \
 	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/icons ;\
-	  for file in $(top_srcdir)/../unixfonts/icons/* ; do \
+	  for file in $(top_srcdir)/../abidistfiles/icons/* ; do \
 	    if test -f $$file ; then \
 	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/icons; \
 	    fi ; \
