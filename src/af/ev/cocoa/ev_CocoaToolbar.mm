@@ -95,11 +95,12 @@
 	[self setColor:AP_TOOLBAR_ID_COLOR_BACK];
 }
 
-- (id)toolbarSelected:(id)sender
+- (void)toolbarSelected:(id)sender
 {
 	UT_DEBUGMSG (("@EV_CocoaToolbarTarget (id)toolbarSelected:(id)sender\n"));
 	
-	if ([sender isKindOfClass:[NSPopUpButton class]]) {
+	if ([sender isKindOfClass:[NSPopUpButton class]])
+	{
 		XAP_Toolbar_Id tlbrID = [sender tag];
 
 		UT_UCS4String ucsText([[sender titleOfSelectedItem] UTF8String]);
@@ -108,7 +109,8 @@
 		if (XAP_Frame * pFrame = _xap->getFrame())
 			pFrame->raise();
 	}
-	else if ([sender isKindOfClass:[NSButton class]]) {
+	else if ([sender isKindOfClass:[NSButton class]])
+	{
 		XAP_Toolbar_Id tlbrID = [sender tag];
 
 		switch (tlbrID) {
@@ -149,31 +151,74 @@
 			break;
 		}
 	}
-	else if ([sender isKindOfClass:[NSComboBox class]]) {
+	else if ([sender isKindOfClass:[NSComboBox class]])
+	{
 		XAP_Toolbar_Id tlbrID = [sender tag];
 
-		NSString * str = [sender stringValue];
-		const char * text = NULL;
 	    if (tlbrID == AP_TOOLBAR_ID_FMT_SIZE)
 		{
-		    text = UT_strdup(XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str UTF8String]));
+			int size = [sender intValue];
+
+			if (size < 1)
+				size = 1;   // TODO: ??
+			if (size > 100)
+				size = 100; // TODO: ??
+
+			char buf[8];
+			sprintf(buf, "%d", size);
+
+			UT_UCS4String ucsText(buf);
+
+			if (XAP_Frame * pFrame = _xap->getFrame())
+			{
+				pFrame->raise();
+				_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
+			}
 		}
 		else
 		{
-			text = UT_strdup([str UTF8String]);
-		}
-		UT_UCS4String ucsText(text);
-		_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
-		FREEP(text);
+			NSComboBox * cbZoom = (NSComboBox *) sender;
 
-		if (XAP_Frame * pFrame = _xap->getFrame())
-			pFrame->raise();
+			NSString * value = [cbZoom stringValue];
+			NSArray * values = [cbZoom objectValues];
+
+			if ([values containsObject:value])
+			{
+				UT_UCS4String ucsText([value UTF8String]);
+
+				if (XAP_Frame * pFrame = _xap->getFrame())
+				{
+					pFrame->raise();
+					_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
+				}
+			}
+			else
+			{
+				int size = [cbZoom intValue];
+
+				if (size < 1)
+					size = 1;    // TODO: ??
+				if (size > 1000)
+					size = 1000; // TODO: ??
+
+				char buf[8];
+				sprintf(buf, "%d", size);
+
+				UT_UCS4String ucsText(buf);
+
+				if (XAP_Frame * pFrame = _xap->getFrame())
+				{
+					pFrame->raise();
+					_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
+				}
+			}
+		}
 	}
-	else {
+	else
+	{
 		UT_DEBUGMSG (("Unexpected object class\n"));
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
-	return sender;		// FIXME what should we return here ?
 }
 @end
 
@@ -528,7 +573,7 @@ bool EV_CocoaToolbar::synthesize(void)
 					// [comboBox setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
 
 					[comboBox setTag:(int)tlbrID];
-					[comboBox setEditable:NO];
+					[comboBox setEditable:YES];
 					[comboBox setTarget:m_target];
 					[comboBox setAction:@selector(toolbarSelected:)];
 
@@ -550,7 +595,28 @@ bool EV_CocoaToolbar::synthesize(void)
 
 				/* populate it
 				 */
-				if (pControl)
+				if (tlbrID == AP_TOOLBAR_ID_FMT_SIZE)
+				{
+					/* AbiWord's other platforms have a bug that the comboboxes in the toolbars
+					 * can't be edited and to get around this the comboboxes have a lot of values
+					 * to choose from.
+					 */
+					[comboBox addItemWithObjectValue:@"72"];
+					[comboBox addItemWithObjectValue:@"36"];
+					[comboBox addItemWithObjectValue:@"24"];
+					[comboBox addItemWithObjectValue:@"18"];
+					[comboBox addItemWithObjectValue:@"16"];
+					[comboBox addItemWithObjectValue:@"14"];
+					[comboBox addItemWithObjectValue:@"12"];
+					[comboBox addItemWithObjectValue:@"10"];
+					[comboBox addItemWithObjectValue:@"8" ];
+
+					[comboBox selectItemAtIndex:0];
+					[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
+
+					[comboBox setNumberOfVisibleItems:9];
+				}
+				else if (pControl)
 				{
 					pControl->populate();
 
@@ -576,13 +642,14 @@ bool EV_CocoaToolbar::synthesize(void)
 							{
 								[comboBox selectItemAtIndex:0];
 								[comboBox setObjectValue:[comboBox objectValueOfSelectedItem]];
+
+								[comboBox setNumberOfVisibleItems:9];
 							}
 							else
 							{
 								[popupButton selectItemAtIndex:0];
 							}
 						}
-						// [comboBox setNumberOfVisibleItems:items];
 					}
 				}
 				// for now, we never repopulate, so can just toss it
@@ -834,18 +901,12 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					[item setEnabled:(bGrayed?NO:YES)];
 					NSString* value = nil;
 					if (tlbrid == AP_TOOLBAR_ID_FMT_SIZE) {
-						const char *str = XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState);
-						if (str) {
-							value = [[NSString alloc] initWithUTF8String:str];
+						// mixed selection? ... UT_DEBUGMSG(("%s:%d fontSize not found.... !!!! FIXME", __FILE__, __LINE__));
+						if (szState) {
+							value = [[NSString alloc] initWithUTF8String:szState];
 						}
 						else {
-							// mixed selection? ... UT_DEBUGMSG(("%s:%d fontSize not found.... !!!! FIXME", __FILE__, __LINE__));
-							if (szState) {
-								value = [[NSString alloc] initWithUTF8String:szState];
-							}
-							else {
-								value = [[NSString alloc] initWithUTF8String:""];
-							}
+							value = [[NSString alloc] initWithUTF8String:""];
 						}
 					}
 					else {
@@ -858,11 +919,11 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					}
 					if (value) {
 						int idx = [item indexOfItemWithObjectValue:value];
-						if (idx >= 0) {
-							[item selectItemWithObjectValue:value];
+						if (idx == NSNotFound) {
+							[item setStringValue:value];
 						}
 						else {
-							[item setStringValue:value];
+							[item selectItemWithObjectValue:value];
 						}
 						[value release];
 					}
