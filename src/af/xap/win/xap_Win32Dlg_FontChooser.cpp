@@ -117,14 +117,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (m_pFontSize && *m_pFontSize)
 	{
 		UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-		UT_ASSERT(m_pGraphics);
-
-		// This fixes bug 4494
-		UT_uint32 ioldPer = m_pGraphics->getZoomPercentage();
-		m_pGraphics->setZoomPercentage(100);
-		lf.lfHeight = (long) -(UT_convertToPoints(m_pFontSize));
-		m_pGraphics->setZoomPercentage(ioldPer);
-		
+		lf.lfHeight = (long) -(UT_convertToPoints(m_pFontSize))*4/3;
 	}
 	else
 		cf.Flags |= CF_NOSIZESEL;
@@ -187,15 +180,15 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			sprintf(bufSize,"%dpt",(cf.iPointSize/10));
 		else
 			bufSize[0] = 0;
-		if (   (bIsSizeValid && bWasSizeValid && (UT_stricmp(bufSize,m_pFontSize) == 0))
-			|| (!bIsSizeValid && !bWasSizeValid))
-		{
-			/* nothing changed */
-		}
-		else
+
+		if (bIsSizeValid && bWasSizeValid && (UT_stricmp(bufSize,m_pFontSize) != 0))			
 		{
 			m_bChangedFontSize = true;
 			CLONEP((char *&) m_pFontSize, bufSize);
+		}
+		else
+		{
+			/* nothing changed */			
 		}
 
 		bool bIsBold = ((cf.nFontType & BOLD_FONTTYPE) != 0);
