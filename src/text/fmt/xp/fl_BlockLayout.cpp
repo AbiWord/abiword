@@ -773,10 +773,8 @@ fl_BlockLayout::~fl_BlockLayout()
 
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
-#if 1
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-#endif
 	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
 }
 

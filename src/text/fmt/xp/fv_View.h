@@ -62,6 +62,7 @@ class fl_AutoNum;
 class fp_PageSize;
 class AP_TopRuler;
 class AP_LeftRuler;
+class SpellChecker;
 
 typedef enum _FVDocPos
 {
@@ -302,6 +303,9 @@ public:
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
+
+	SpellChecker * getDictForSelection ();
+
 	void			extSelNextPrevLine(bool bNext);
 	void            extSelNextPrevPage(bool bNext);
 	void            extSelNextPrevScreen(bool bNext);

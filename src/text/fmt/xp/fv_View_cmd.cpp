@@ -3151,7 +3151,7 @@ void FV_View::cmdContextAdd(void)
 	const UT_UCSChar * pBuf = (UT_UCSChar*)pgb.getPointer(pPOB->getOffset());
 
 	// make the change
-	if (m_pApp->addWordToDict(pBuf, pPOB->getLength()))
+	if (getDictForSelection ()->addToCustomDict (pBuf, pPOB->getLength()))
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();

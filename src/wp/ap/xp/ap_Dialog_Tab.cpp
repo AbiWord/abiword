@@ -206,6 +206,9 @@ void AP_Dialog_Tab::_event_Set(void)
 	UT_String buffer;
 
 	buildTab(buffer);
+
+	UT_DEBUGMSG(("DOM: %s\n", buffer.c_str()));
+
 	const char *cbuffer = buffer.c_str();
 	int Dimension_size = 0;
 	while(cbuffer[Dimension_size] != 0)

@@ -105,9 +105,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 				separator =UT_String("\n\n");
 			
 			labelText = UT_String_sprintf(labelText, "<span weight=\"bold\" size=\"larger\">%s</span>%s%s", 
-					m_szMessage, separator.c_str(), m_szSecondaryMessage);
+						      m_szMessage, separator.c_str(), m_szSecondaryMessage);
 			
-			UT_DEBUGMSG(("SAM: text is %s\n", labelText.c_str()));
 			gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
 
 			hbox = gtk_hbox_new(FALSE, 12);
@@ -133,7 +132,6 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
   			gtk_dialog_set_default_response (GTK_DIALOG(message),
 							 GTK_RESPONSE_YES);
 			gtk_dialog_set_has_separator(GTK_DIALOG(message), FALSE);
-			UT_DEBUGMSG(("SAM: got here\n"));
 			break;
 			
 		default:

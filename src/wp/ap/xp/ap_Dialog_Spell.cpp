@@ -36,39 +36,16 @@
 
 #include "ap_Dialog_Spell.h"
 
-#include "xap_EncodingManager.h"
-
-#if 1
-// todo: remove this requirement on INPUTWORDLEN for pspell builds
-#include "ispell_def.h"
-#endif
-
 // important that you call makeWordVisible before you call this
 SpellChecker *
 AP_Dialog_Spell::_getDict (void)
 {
-	SpellChecker * checker = NULL;
-	const char * szLang = NULL;
-
 	const XML_Char ** props_in = NULL;
-	if (m_pView && m_pView->getCharFormat(&props_in))
+	if (m_pView)
 	{
-		szLang = UT_getAttribute("lang", props_in);
-		FREEP(props_in);
+	  return m_pView->getDictForSelection ();
 	}
-
-	if (szLang)
-	{
-		// we get smart and request the proper dictionary
-		checker = SpellManager::instance().requestDictionary(szLang);
-	}
-	else
-	{
-		// we just (dumbly) default to the last dictionary
-		checker = SpellManager::instance().lastDictionary();
-	}
-
-	return checker;
+	return NULL;
 }
 
 bool
@@ -437,8 +414,6 @@ bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
 
 bool AP_Dialog_Spell::addToDict(void)
 {
-	// add word to the current custom dictionary
-	XAP_App * pApp = m_pFrame->getApp();
-	return pApp->addWordToDict(m_pWord, m_iWordLength);
+  return _getDict()->addToCustomDict(m_pWord, m_iWordLength);
 }
 

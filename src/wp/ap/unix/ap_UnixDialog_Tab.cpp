@@ -103,7 +103,7 @@ void AP_UnixDialog_Tab::runModal(XAP_Frame * pFrame)
 void AP_UnixDialog_Tab::event_OK(void)
 {
     m_answer = AP_Dialog_Tab::a_OK;
-	_storeWindowData();
+    _storeWindowData();
 }
 
 void AP_UnixDialog_Tab::event_Cancel(void)
@@ -118,6 +118,7 @@ void AP_UnixDialog_Tab::event_Cancel(void)
                 G_CALLBACK(s_menu_item_activate),		\
                 (gpointer) this);							\
         } while (0)
+
 GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 {
 	

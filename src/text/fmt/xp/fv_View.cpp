@@ -67,7 +67,6 @@
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 
-
 #include "xap_EncodingManager.h"
 
 #include "pp_Revision.h"
@@ -8321,3 +8320,28 @@ void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)
 	_restorePieceTableState();
 }
 
+SpellChecker * FV_View::getDictForSelection ()
+{
+	SpellChecker * checker = NULL;
+	const char * szLang = NULL;
+
+	const XML_Char ** props_in = NULL;
+	if (getCharFormat(&props_in))
+	{
+		szLang = UT_getAttribute("lang", props_in);
+		FREEP(props_in);
+	}
+
+	if (szLang)
+	{
+		// we get smart and request the proper dictionary
+		checker = SpellManager::instance().requestDictionary(szLang);
+	}
+	else
+	{
+		// we just (dumbly) default to the last dictionary
+		checker = SpellManager::instance().lastDictionary();
+	}
+
+	return checker;
+}
