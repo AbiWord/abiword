@@ -47,23 +47,16 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixModule.cpp                      \
 			xap_UnixPSImage.cpp			\
 			xap_UnixPSParseAFM.cpp			\
-			xap_UnixEncodingManager.cpp \
-			xap_UnixDlg_Language.cpp
+			xap_UnixEncodingManager.cpp 		\
+			xap_UnixDlg_Language.cpp		\
+			xap_UnixPSGenerate.cpp			\
+			xap_UnixPSGraphics.cpp
 
 # only build these for non-gnome
 ifndef ABI_OPT_GNOME
 CPPSRCS +=		xap_UnixDlg_About.cpp			\
-			xap_UnixPSGenerate.cpp			\
-			xap_UnixDlg_PrintPreview.cpp            \
-			xap_UnixPSGraphics.cpp
+			xap_UnixDlg_PrintPreview.cpp            
 endif
-
-# only build this until gnome-print support gets better
-ifeq ($(ABI_OPT_GNOME_DIRECT_PRINT),1)
-CPPSRCS +=		xap_UnixPSGenerate.cpp			\
-			xap_UnixPSGraphics.cpp
-endif
-
 
 TARGETS=		$(OBJS)
 INCLUDES=      -I/usr/X11R6/include

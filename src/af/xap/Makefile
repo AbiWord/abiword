@@ -70,14 +70,9 @@ PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)FontXLFD.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSImage.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSParseAFM.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)
-
-# Unix specific
-ifndef ABI_OPT_GNOME
-PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)PSFont.$(OBJ_SUFFIX)		\
+			$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PSGraphics.$(OBJ_SUFFIX)		
-endif
-
 endif
 
 ifeq ($(ABI_FE), Win32)
@@ -102,13 +97,6 @@ PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)PrintGraphics.$(OBJ_SUFFIX)
 
 #			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Encoding.$(OBJ_SUFFIX)    \
-
-# only build this until gnome-print support gets a bit better
-ifeq ($(ABI_OPT_GNOME_DIRECT_PRINT),1)	
-PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)PSGenerate.$(OBJ_SUFFIX)		\
-			$(OBJDIR)/xap_$(ABI_FE)PSGraphics.$(OBJ_SUFFIX)		
-endif
-endif
 
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xad_Document.$(OBJ_SUFFIX)				\
