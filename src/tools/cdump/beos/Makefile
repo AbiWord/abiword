@@ -33,7 +33,7 @@ ABI_APPLIBS=
 ABI_LIBS=		stdc++.r4 translation be tracker
 else				#OS_ARCH ppc or BeBox
 ABI_APPLIBS=		
-ABI_LIBS=	 	mslcpp be translation tracker
+ABI_LIBS=	 	be translation tracker
 LDFLAGS += -msg nodup
 endif
 

@@ -40,7 +40,7 @@ ifeq ($(OS_ARCH), x86)
 ABI_APPLIBS+=		$(LoadOrder) $(LoadOrder)
 ABI_LIBS+=		stdc++.r4
 else		#OS_ARCH ppc or BeBox
-ABI_LIBS+=	 	mslcpp
+ABI_LIBS+=
 LDFLAGS += 		-msg nodup
 endif
 
