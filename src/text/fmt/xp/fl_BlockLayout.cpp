@@ -160,7 +160,11 @@ void fl_BlockLayout::_verifyCurrentSlice()
 		if (pCol->insertBlockSliceAfter(pNewSlice, pPrevSlice, iLineHeight))
 		{
 			// failed.  try next column
-			pCol = m_pSectionLayout->getNewColumn();
+			pCol = pCol->getNext();
+
+			// no more columns exist, so need a new one
+			if (!pCol)
+				pCol = m_pSectionLayout->getNewColumn();
 
 			int err = pCol->insertBlockSliceAfter(pNewSlice, NULL, iLineHeight);
 			UT_ASSERT(err==0);
@@ -438,9 +442,11 @@ int fl_BlockLayout::format()
 #endif
 		m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
 	}
-	
+
+#if 0
 	_createRuns();
 	_verifyCurrentSlice(); // this is helpful for empty paragraphs
+#endif 
 
 	if (m_pFirstRun)
 	{
