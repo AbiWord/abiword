@@ -1594,8 +1594,10 @@ abi_widget_map_to_screen(AbiWidget * abi)
 
 	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
 
+#if 0
 	// disable rulers after we have a view of the document
 	pFrame->toggleRuler ( false ) ;
+#endif
 }
 
 extern "C" void 

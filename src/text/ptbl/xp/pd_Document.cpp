@@ -52,6 +52,7 @@
 #include "fl_AutoNum.h"
 #include "xap_Frame.h"
 #include "xap_App.h"
+#include "xap_Prefs.h"
 #include "ut_units.h"
 #include "ut_string_class.h"
 #include "ut_sleep.h"
@@ -234,11 +235,9 @@ UT_Error PD_Document::newDocument(void)
   {
     if (UT_OK != importFile ( global_normal_awt.c_str(), IEFT_Unknown, true ) )
       {
-	UT_DEBUGMSG(("Could not load normal.awt, defaulting to a blank document\n"));
 	m_pPieceTable = new pt_PieceTable(this);
 	if (!m_pPieceTable)
 	  {
-	    UT_DEBUGMSG(("PD_Document::newDocument -- could not construct piece table\n"));
 	    return UT_NOPIECETABLE;
 	  }
 	
@@ -247,14 +246,37 @@ UT_Error PD_Document::newDocument(void)
 	// add just enough structure to empty document so we can edit
 	
 	appendStrux(PTX_Section,NULL);
-	appendStrux(PTX_Block,NULL);
-	
+	appendStrux(PTX_Block, NULL);
+
+	// what we want to do here is to set the default language
+	// that we're editing in
+
+	const XML_Char * doc_locale = NULL;
+	if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
+	{
+	  const XML_Char * props[3];
+	  props[0] = "lang";
+	  props[1] = doc_locale;
+	  props[2] = 0;
+	  
+	  // insert a format mark since we're not putting anything inside of the block
+	  appendFmt((const XML_Char **)props);
+	  appendFmtMark () ;
+	  UT_DEBUGMSG(("DOM: new document set lang to %s\n", doc_locale));
+	}
+	else
+	  {
+	  }
 	m_pPieceTable->setPieceTableState(PTS_Editing);
       }
   }
 
-  setDefaultPageSize(); // set the default page size from preferences, regardless of template values
-  _setClean();							// mark the document as not-dirty
+  // set the default page size from preferences, regardless of template values
+  setDefaultPageSize();
+
+  // mark the document as not-dirty
+  _setClean();
+
   return UT_OK;
 }
 
@@ -318,15 +340,6 @@ UT_Error PD_Document::save(void)
 
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
-
-	// make sure we don't cause extension problems
-
-	const char* szSuffix = UT_pathSuffix(m_szFilename);
-	if(szSuffix && strcmp(szSuffix, ".doc") == 0)
-	{
-	  UT_DEBUGMSG(("PD_Document::Save -- word extensions cause problems\n"));
-	  return UT_EXTENSIONERROR;
-	}
 
 	errorCode = IE_Exp::constructExporter(this,m_szFilename,m_lastSavedAsType,&pie);
 	if (errorCode)

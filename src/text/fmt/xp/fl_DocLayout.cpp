@@ -187,23 +187,6 @@ void FL_DocLayout::fillLayouts(void)
 	}
 
 	setLayoutIsFilling(false);
-
-	// what we want to do here is to set the default language
-	// that we're editing in
-
-	const XML_Char * doc_locale = NULL;
-	if (m_pView && XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
-	{
-		if (doc_locale)
-		{
-			const XML_Char * props[3];
-			props[0] = "lang";
-			props[1] = doc_locale;
-			props[2] = 0;
-			m_pView->setCharFormat(props);
-		}
-		m_pView->notifyListeners(AV_CHG_ALL);
-	}
 }
 
 void FL_DocLayout::setView(FV_View* pView)
