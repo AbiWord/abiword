@@ -157,7 +157,6 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 	m_pView = NULL;
 	m_pG = NULL;
 
-	const XML_Char * szRulerUnits;
 	m_dim = DIM_IN;
 
 	m_iWidth = 0;

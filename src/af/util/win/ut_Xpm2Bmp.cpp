@@ -130,6 +130,8 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		}
 		else
 		{
+			// TODO fix this to also handle #ffffeeeedddd type color references
+			
 			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
 			UT_parseColor(bufColorValue, color);
 			pRGB[k].rgbRed		= color.m_red;

@@ -18,6 +18,7 @@
  */
 
 #include "ut_types.h"
+#include "ut_string.h"
 #include "ev_EditBits.h"
 
 #include "ap_View.h"

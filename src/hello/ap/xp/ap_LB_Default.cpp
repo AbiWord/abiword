@@ -127,6 +127,11 @@ static struct ap_bs_Mouse s_MouseTable[] =
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},
 //	{_CL _B3 _A,	{ "Test_Dump",	"",				"",			"",			"",			""				}},
 #endif
+
+#if 1 /* THIS IS ONLY HERE TO MAKE THE TABLE HAVE AT LEAST ONE ENTRY */
+//  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},
+	{_CL _B3 _A _C _S,	{ "noop",	"",				"",			"",			"",			""				}},
+#endif
 };
 
 #undef _CT
@@ -202,10 +207,7 @@ static struct ap_bs_NVK s_NVKTable[] =
 //						  "",					"",					"",				""					}},
 //	{EV_NVK_F11,		{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-#if 1 // FOR TESTING INPUT MODE SWITCHING -- TODO REMOVE THIS
-//	{EV_NVK_F12,		{ "setInputVI",			"",					"",				"",
-//						  "",					"",					"",				""					}},
-#endif
+//	{EV_NVK_F12,		{
 // 	{EV_NVK_F13,		{
 // 	{EV_NVK_F14,		{
 // 	{EV_NVK_F15,		{
@@ -237,7 +239,7 @@ static struct ap_bs_NVK s_NVKTable[] =
 ** load top-level prefixed builtin bindings for the NamedVirtualKeys
 ******************************************************************
 *****************************************************************/
-
+#if 0
 static struct ap_bs_NVK_Prefix s_NVKTable_P[] =
 {
 //	{nvk,						{ none,					_S,					_C,				_S_C,		
@@ -256,7 +258,7 @@ static struct ap_bs_NVK_Prefix s_NVKTable_P[] =
 //	{EV_NVK_DEAD_CEDILLA,		{ "deadcedilla",		"deadcedilla",		"",	"", "", "",	"",	""	}},
 //	{EV_NVK_DEAD_OGONEK,		{ "deadogonek",			"deadogonek",		"",	"", "",	"",	"",	""	}},
 };
-
+#endif
 /*****************************************************************
 ******************************************************************
 ** load top-level (non-prefixed) builtin bindings for the non-nvk
@@ -488,7 +490,8 @@ static struct ap_bs_Char s_CharTable[] =
 UT_Bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
 	pThis->_loadMouse(pebm,s_MouseTable,NrElements(s_MouseTable));
-	pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),s_NVKTable_P,NrElements(s_NVKTable_P));
+	//pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),s_NVKTable_P,NrElements(s_NVKTable_P));
+	pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),NULL,0);
 	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
 
 	return UT_TRUE;

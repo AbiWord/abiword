@@ -25,10 +25,6 @@
 #include "ut_string.h"
 #include "ap_Strings.h"
 
-#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
-#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
-#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
 //////////////////////////////////////////////////////////////////
 // a sub-class to wrap the compiled-in (english) strings
 // (there will only be one instance of this sub-class)

@@ -28,7 +28,7 @@ RCSRCS=			Win32Main.rc
 PROGRAM=		AbiHello.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
-ABI_APPLIBS=		AbiVer AbiUtil AbiEv AbiXAp AbiGr AbiHEAp
+ABI_APPLIBS=		AbiHelloVer AbiUtil AbiEv AbiXAp AbiGr AbiHEAp Abi_libpng Abi_zlib Abi_expat
 
 ABI_OTHLIBS=		
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \

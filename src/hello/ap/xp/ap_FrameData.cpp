@@ -20,8 +20,6 @@
 #include "gr_Graphics.h"
 #include "ap_FrameData.h"
 
-#define DELETEP(p)      do { if (p) delete p; } while (0)
-
 AP_FrameData::AP_FrameData()
 {
 	m_pG = NULL;
