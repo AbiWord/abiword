@@ -816,16 +816,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
 	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
 
-	if ((lineBottom.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(  lineLeft.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		( lineRight.m_t_linestyle == PP_PropertyMap::linestyle_none) &&
-		(   lineTop.m_t_linestyle == PP_PropertyMap::linestyle_none))
-		{
-			/* nothing to draw
-			 */
-			return;
-		}
-
 //
 // Now correct if iTop or iBot is off the page.
 //
