@@ -2620,7 +2620,7 @@ IE_Imp_TableHelperStack::~IE_Imp_TableHelperStack ()
 
 void IE_Imp_TableHelperStack::clear ()
 {
-	for (UT_sint32 i = 0; i < m_count; i++)
+	for (UT_sint32 i = 1; i <= m_count; i++)
 		delete m_stack[i];
 
 	m_count = 0;
