@@ -38,7 +38,9 @@
 #include "xav_View.h"
 #include "ut_xml.h"
 #include "xap_Prefs.h"
+#include "xap_QNXFontPreview.h"
 
+#include "ap_Toolbar_Id.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -54,6 +56,7 @@ EV_QNXToolbar::EV_QNXToolbar(XAP_QNXApp * pQNXApp, XAP_QNXFrame * pQNXFrame,
 	m_pQNXFrame = pQNXFrame;
 	m_pViewListener = 0;
 	m_lid = 0;							// view listener id
+	m_pFontPreview = 0;
 }
 
 EV_QNXToolbar::~EV_QNXToolbar(void)
@@ -121,15 +124,38 @@ struct _cb_data {
 
 static int s_combo_select(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 
-	if (info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
-		return 0;
-	}
-
 	PtListCallback_t *cb = (PtListCallback_t *)info->cbdata;
-
 	struct _cb_data *cb_data = (struct _cb_data *)data;
-	cb_data->tb->toolbarEvent(cb_data->id, cb->item, (UT_uint32)cb->item_len);
 
+	if(info->reason_subtype == Pt_LIST_SELECTION_BROWSE) {
+		if(cb_data->id == AP_TOOLBAR_ID_FMT_FONT)
+		{
+			if(cb_data->tb->m_pFontPreview == NULL)
+			{
+				short x,y;
+				PhArea_t* area; 
+
+				PtGetAbsPosition(w,&x,&y);
+				PtGetResource(w,Pt_ARG_AREA,&area,0);
+		
+				x += area->size.w;
+				y += area->size.h;
+
+				XAP_Frame *pFrame = static_cast<XAP_Frame *>(cb_data->tb->getFrame());
+				cb_data->tb->m_pFontPreview = new XAP_QNXFontPreview(pFrame,x,y);
+			}
+			cb_data->tb->m_pFontPreview->setFontFamily(cb->item);
+			cb_data->tb->m_pFontPreview->draw();
+		}
+	}
+	
+		if((info->reason_subtype == Pt_LIST_SELECTION_FINAL || info->reason_subtype == Pt_LIST_SELECTION_CANCEL )&& (cb_data->id == AP_TOOLBAR_ID_FMT_FONT) && cb_data->tb->m_pFontPreview != NULL)
+		{
+			DELETEP(cb_data->tb->m_pFontPreview);
+		}
+	if (info->reason_subtype == Pt_LIST_SELECTION_FINAL) {
+		cb_data->tb->toolbarEvent(cb_data->id, cb->item, (UT_uint32)cb->item_len);
+	}
 	return Pt_CONTINUE;
 }
 

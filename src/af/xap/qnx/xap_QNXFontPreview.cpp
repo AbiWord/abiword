@@ -1,0 +1,63 @@
+/* AbiSource Application Framework
+ * Copyright (C) 1998-2002 AbiSource, Inc.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
+#include <Pt.h>
+#include "xap_Frame.h"
+#include "xap_QNXFrame.h"
+#include "ut_debugmsg.h"
+#include "xap_QNXFontPreview.h"
+#include "gr_QNXGraphics.h"
+
+XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
+	: XAP_FontPreview()
+{
+	int n=0;
+	PtArg_t args[5];
+	PhArea_t area;
+	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
+
+	m_left = left;
+	m_top = top;
+	area.size.w=m_width;
+	area.size.h=m_height;
+	area.pos.x=left;
+	area.pos.y=top;
+
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,Pt_TRUE);	
+	PtSetArg(&args[n++],Pt_ARG_AREA,&area,0);
+	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
+	m_pPreviewWindow = PtCreateWidget(PtWindow,m_pQNXFrame->getTopLevelWindow(),n,args);
+	PtRealizeWidget(m_pPreviewWindow);
+
+		n=0;
+	PtSetArg(&args[n++],Pt_ARG_DIM,&area.size,0);
+	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
+	m_pDrawingArea = PtCreateWidget(PtRaw,m_pPreviewWindow,n,args); 
+
+	XAP_App *pApp = m_pQNXFrame->getApp();
+	m_gc = new GR_QNXGraphics(m_pPreviewWindow,m_pDrawingArea, pApp);
+	
+	_createFontPreviewFromGC(m_gc, area.size.w,area.size.h);
+}
+
+XAP_QNXFontPreview::~XAP_QNXFontPreview(void)
+{
+	DELETEP(m_gc);
+	PtDestroyWidget(m_pPreviewWindow);
+}

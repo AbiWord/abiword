@@ -1018,3 +1018,9 @@ bool GR_QNXGraphics::endPrint(void) {
 	return true;
 }
 
+bool GR_QNXGraphics::_setTransform(const GR_Transform &tr)
+{
+//Hmm?
+
+return true;
+}

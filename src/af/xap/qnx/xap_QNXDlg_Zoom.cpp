@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -33,6 +32,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
 #include "xap_QNXDlg_Zoom.h"
+#include "xap_Preview_Zoom.h"
 #include "ut_qnxHelper.h"
 
 /*****************************************************************/
@@ -613,4 +613,3 @@ void XAP_QNXDialog_Zoom::_storeWindowData(void)
 #endif
 }
 
-	

@@ -44,7 +44,8 @@ CPPSRCS=		xap_QNXApp.cpp				\
 			xap_QNXEncodingManager.cpp		\
 			xap_QNXFrame.cpp			\
 			xap_QNXModule.cpp			\
-			xap_QNXToolbar_Icons.cpp
+			xap_QNXToolbar_Icons.cpp \
+			xap_QNXFontPreview.cpp
 
 TARGETS=		$(OBJS)
 

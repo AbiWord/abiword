@@ -155,6 +155,9 @@ class GR_QNXGraphics : public GR_Graphics
 	UT_uint32			m_iShadowZoomPercentage;
  	bool             m_bPrintNextPage;    
 	PpPrintContext_t *  m_pPrintContext;
+private:
+	virtual bool _setTransform(const GR_Transform & tr);
+
 };
 
 #endif /* GR_QNXGRAPHICS_H */

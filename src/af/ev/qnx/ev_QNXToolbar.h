@@ -26,6 +26,7 @@
 #include "ev_Toolbar.h"
 #include "xav_Listener.h"
 #include <Pt.h>
+#include "xap_FontPreview.h"
 
 class XAP_QNXApp;
 class XAP_QNXFrame;
@@ -52,6 +53,7 @@ public:
 	virtual void	show();
 	virtual void	hide();
 	
+	XAP_FontPreview * m_pFontPreview;
 protected:
 	void							_releaseListener(void);
 	
