@@ -245,29 +245,14 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	// Update the caption
 	ConstructWindowName();
 	SetWindowText(hWnd, m_WindowName);
-
-	// Set the starting rate a 1 update/second
-	SetDlgItemInt(hWnd, AP_RID_DIALOG_WORDCOUNT_EDIT_RATE, 1, FALSE );
-
-	// Set the range for auto-updating to 0-10
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_WORDCOUNT_SPIN_RATE),UDM_SETRANGE,(WPARAM)0,(WPARAM)10);
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_WORDCOUNT_EDIT_RATE),EM_LIMITTEXT,(WPARAM)2,(WPARAM)0);
-
-	EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_WORDCOUNT_BTN_UPDATE), !m_bAutoWC );
-	if( m_bAutoWC )
-		CheckDlgButton(hWnd, AP_RID_DIALOG_WORDCOUNT_CHK_AUTOUPDATE, BST_CHECKED);
-
+			
 	GR_Graphics * pG = NULL;
 	m_pAutoUpdateWC = UT_Timer::static_constructor(autoupdateWC,this,pG);
 	setUpdateCounter( 1 );
 
 	// localize controls
 	_DSX(WORDCOUNT_BTN_CLOSE,		DLG_Close);
-	_DSX(WORDCOUNT_BTN_UPDATE,		DLG_Update);
-
-	_DS(WORDCOUNT_CHK_AUTOUPDATE,	DLG_WordCount_Auto_Update);
-	_DS(WORDCOUNT_TEXT_RATE,		DLG_WordCount_Update_Rate);
-
+	
 	_DS(WORDCOUNT_TEXT_STATS,		DLG_WordCount_Statistics);
 	_DS(WORDCOUNT_TEXT_PAGE,		DLG_WordCount_Pages);
 	_DS(WORDCOUNT_TEXT_WORD,		DLG_WordCount_Words);
@@ -318,20 +303,7 @@ BOOL AP_Win32Dialog_WordCount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		m_answer = a_CANCEL;
 		destroy();
 		return 1;
-
-	case AP_RID_DIALOG_WORDCOUNT_BTN_UPDATE:
-		setCountFromActiveFrame();
-		_updateWindowData();
-		return 1;
-
-	case AP_RID_DIALOG_WORDCOUNT_CHK_AUTOUPDATE:
-		m_bAutoWC = !m_bAutoWC;
-		EnableWindow( GetDlgItem(m_hWnd,AP_RID_DIALOG_WORDCOUNT_BTN_UPDATE), !m_bAutoWC );
-		EnableWindow( GetDlgItem(m_hWnd,AP_RID_DIALOG_WORDCOUNT_EDIT_RATE), m_bAutoWC );
-		EnableWindow( GetDlgItem(m_hWnd,AP_RID_DIALOG_WORDCOUNT_SPIN_RATE), m_bAutoWC );
-		setUpdateCounter( m_iUpdateRate );
-		return 1;
-
+	
 	default:							// we did not handle this notification
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
