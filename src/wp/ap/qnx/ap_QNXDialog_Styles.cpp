@@ -820,24 +820,33 @@ const char * AP_QNXDialog_Styles::getCurrentStyle (void) const
  MODIFY PANE
 ***/
 
-const char *_combo_or_text_entry(PtWidget_t *widget, char *newentry) {
+char *_combo_or_text_entry(PtWidget_t *widget, const char *newentry) {
 	char *entry = NULL;
 
 	if(PtWidgetIsClass(widget, PtComboBox)) {
 		char **items;
-		int *selected;
+		unsigned short *selected;
 
 		if(newentry) {
-			PtListItemExists(widget, newentry);
-			PtSetResource(widget, Pt_ARG_CBOX_SEL_ITEM, PtListItemPos(widget, newentry), 0);
+			if(!PtListItemExists(widget, newentry)) {
+				PtListAddItems(widget, &newentry, 1, 0);
+			}
+
+			PtSetResource(widget, Pt_ARG_CBOX_SEL_ITEM, 
+							PtListItemPos(widget, newentry), 0);
 		}
 
+		selected = NULL;
 		PtGetResource(widget, Pt_ARG_CBOX_SEL_ITEM, &selected, 0);
 		PtGetResource(widget, Pt_ARG_ITEMS, &items, 0);
-		entry = items[selected];
+		if(selected) {
+			entry = items[*selected];
+		} else {
+			entry = items[0];	//First item selected by default
+		}
 	} else {
 		if(newentry) {
-			PtSetResource(widget, Pt_ARG_TEXT_STRING, newentry);
+			PtSetResource(widget, Pt_ARG_TEXT_STRING, newentry, 0);
 		}
 
 		PtGetResource(widget, Pt_ARG_TEXT_STRING, &entry, 0);
@@ -988,7 +997,7 @@ PtWidget_t *  AP_QNXDialog_Styles::_constructModifyDialog(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	deletePropCombo = PtCreateWidget(PtComboBox, hgroup, n, args);
+	deletePropEntry = PtCreateWidget(PtComboBox, hgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Styles_RemoveButton), 0);
@@ -1186,7 +1195,6 @@ void AP_QNXDialog_Styles::new_styleName(void)
 void AP_QNXDialog_Styles::event_RemoveProperty(void)
 {
 	char * psz = NULL;
-	PtGetResource(m_wDeletePropEntry, Pt_ARG_TEXT_STRING, &psz, 0);
 	psz = _combo_or_text_entry(m_wDeletePropEntry, NULL);
 	removeVecProp(psz);
 	rebuildDeleteProps();
@@ -1506,30 +1514,23 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 	{
 	    getDoc()->enumStyles(i, &name, &pcStyle);
 
-		if(pBasedOnStyle && pcStyle == pBasedOnStyle)
-		{
+		if(pBasedOnStyle && pcStyle == pBasedOnStyle) {
 			szBasedOn = name;
 		}
-		if(pFollowedByStyle && pcStyle == pFollowedByStyle)
+
+		if(pFollowedByStyle && pcStyle == pFollowedByStyle) {
 			szFollowedBy = name;
-		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0) {
-			//m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
-			PtListAddItems(m_wBasedOnEntry, &name, 1, 0);
 		}
-		else if(szCurrentStyle == NULL) {
-			//m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+
+		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0) {
+			PtListAddItems(m_wBasedOnEntry, &name, 1, 0);
+		} else if(szCurrentStyle == NULL) {
 			PtListAddItems(m_wBasedOnEntry, &name, 1, 0);
 		}
 
-		//m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
 		PtListAddItems(m_wFollowingEntry, &name, 1, 0);
 	}
-/*
-	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
-	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
-	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
-	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
-*/
+
 	const char *item = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
 	_combo_or_text_entry(m_wFollowingEntry, item); 
 
@@ -1538,17 +1539,15 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph);
 	_combo_or_text_entry(m_wStyleTypeEntry, item); 
+
 	item = pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter);
 	_combo_or_text_entry(m_wStyleTypeEntry, item); 
  
-/*
-	PtSetArg(m_wBasedOnEntry, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
-	PtSetArg(m_wFollowingEntry, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
-	if(isNew())
-	{
-		PtSetArg(m_wStyleTypeCombo, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
+	/*
+	if(isNew()) {
+		PtSetResource(m_wStyleTypeCombo, Pt_ARG_CBOX_SEL_ITEM, 1, 0);
 	}
-*/
+	*/
 
 	//
 	// OK here we set intial values for the basedOn and followedBy
@@ -1561,7 +1560,7 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 			_combo_or_text_entry(m_wBasedOnEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
 
 		if(pFollowedByStyle != NULL)
-			_combo_or_text_entry(m_wFollowingEntry, szFollowedByStyle);
+			_combo_or_text_entry(m_wFollowingEntry, szFollowedBy);
 		else
 			_combo_or_text_entry(m_wFollowingEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
 
@@ -1579,11 +1578,6 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 		_combo_or_text_entry(m_wFollowingEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
 		_combo_or_text_entry(m_wStyleTypeEntry, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
 	}
-/*
-	gtk_entry_set_editable(GTK_ENTRY(m_wFollowingEntry),FALSE );
-	gtk_entry_set_editable(GTK_ENTRY(m_wBasedOnEntry),FALSE );
-	gtk_entry_set_editable(GTK_ENTRY(m_wStyleTypeEntry),FALSE );
-*/
 
 	//
 	// Set these in our attributes vector
@@ -1608,7 +1602,7 @@ bool  AP_QNXDialog_Styles::_populateModify(void)
 	// Now set the list of properties which can be deleted.
 	//
 	rebuildDeleteProps();
-	PtSetResource(m_wDeletePropEntry, Pt_ARG_TEXT_STRING, "", 0);
+	_combo_or_text_entry(m_wDeletePropEntry, ""); 
 	return true;
 }
 
