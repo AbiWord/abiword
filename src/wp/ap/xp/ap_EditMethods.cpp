@@ -9116,7 +9116,7 @@ Defun(viCmd_d24)
 {
 	CHECK_FRAME;
 //delete to end of line
-	return ( EX(extSelEOL) && EX(cut) );
+	return ( EX(delEOL) );
 }
 
 /* d( */
@@ -9124,7 +9124,7 @@ Defun(viCmd_d28)
 {
 	CHECK_FRAME;
 //delete to start of sentence
-	return ( EX(extSelBOS) && EX(cut) );
+	return ( EX(delBOS) );
 }
 
 /* d) */
@@ -9132,7 +9132,7 @@ Defun(viCmd_d29)
 {
 	CHECK_FRAME;
 //delete to end of sentence
-	return ( EX(extSelEOS) && EX(cut) );
+	return ( EX(delEOS) );
 }
 
 /* d[ */
@@ -9140,7 +9140,7 @@ Defun(viCmd_d5b)
 {
 	CHECK_FRAME;
 //delete to beginning of block
-	return ( EX(extSelBOB) && EX(cut) );
+	return ( EX(delBOB) );
 }
 
 /* d] */
@@ -9148,7 +9148,7 @@ Defun(viCmd_d5d)
 {
 	CHECK_FRAME;
 //delete to end of block
-	return ( EX(extSelEOB) && EX(cut) );
+	return ( EX(delEOB) );
 }
 
 /* d^ */
@@ -9156,28 +9156,28 @@ Defun(viCmd_d5e)
 {
 	CHECK_FRAME;
 //delete to beginning of line
-	return ( EX(extSelBOL) && EX(cut) );
+	return ( EX(delBOL) );
 }
 
 Defun(viCmd_db)
 {
 	CHECK_FRAME;
 //delete to beginning of word
-	return ( EX(extSelBOW) && EX(cut) );
+	return ( EX(delBOW) );
 }
 
 Defun(viCmd_dd)
 {
 	CHECK_FRAME;
 // delete the current line
-	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(extSelRight) && EX(cut) );
+	return ( EX(warpInsPtBOL) && EX(delEOL) && EX(delLeft) && EX(warpInsPtBOL) );
 }
 
 Defun(viCmd_dw)
 {
 	CHECK_FRAME;
 //delete to end of word
-	return ( EX(extSelEOW) && EX(cut) );
+	return ( EX(delEOW) );
 }
 
 /* y$ */
