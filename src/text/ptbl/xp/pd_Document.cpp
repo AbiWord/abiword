@@ -2650,6 +2650,8 @@ void PD_Document::removeBookmark(const XML_Char * pName)
 	}
 }
 
+/*! Returns true if pName doesn't correspond to a 
+ *  currently existing bookmark. */
 bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 {
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
@@ -2659,4 +2661,14 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 			return false;
 	}
 	return true;
+}
+
+/*! Returns true if pName looks like a relative link, rather than a
+ *  bookmark.
+
+ *  Current heuristic: try to stat the file; if it exists, then it's
+ * a filename. */
+bool PD_Document::isBookmarkRelativeLink(const XML_Char * pName) const
+{
+	return UT_isRegularFile(pName);
 }

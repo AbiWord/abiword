@@ -9321,10 +9321,14 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		return false;
 	}
+
+	bool relLink = false;
+	if (!UT_isUrl(szName))
+		relLink = m_pDoc->isBookmarkRelativeLink(szName);
 	
-	if(!UT_isUrl(szName) && m_pDoc->isBookmarkUnique(szName))
+	if(!UT_isUrl(szName) && m_pDoc->isBookmarkUnique(szName) && !relLink)
 	{
-		//No bookmark of that name in document
+		//No bookmark of that name in document, tell user.
 		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 		UT_ASSERT((pFrame));
 		
@@ -9368,7 +9372,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	UT_uint32 target_len = UT_XML_strlen(szName);
 	XML_Char * target  = new XML_Char[ target_len+ 2];
 	
-	if(UT_isUrl(szName))
+	if(UT_isUrl(szName) || relLink)
 	{
 		UT_XML_strncpy(target, target_len + 1, (XML_Char*)szName);
 	}
