@@ -114,8 +114,9 @@ static GtkWidget *
 create_spinentry (float v)
 {
   gchar * val;
-  GtkWidget * e = gtk_entry_new ();
-  gtk_entry_set_max_length (GTK_ENTRY (e), 6);
+  GtkAdjustment * SpinAdj = (GtkAdjustment *) 
+        gtk_adjustment_new( 10.0, 1.0, 5000.0, 0.1, 1.0, 0.0);
+  GtkWidget * e = gtk_spin_button_new (SpinAdj, 1.0, 2);
   val = g_strdup_printf (FMT_STRING, v);
   gtk_entry_set_text (GTK_ENTRY (e), val);
   gtk_entry_set_editable (GTK_ENTRY (e), TRUE);
@@ -359,7 +360,7 @@ void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
   height = (double)ps.Height (pu);
 
   m_PageSize.Set(width, height, pu);
-  setPageUnits(m_PageSize.getUnit());
+  setPageUnits(pu);
 
   // set values
   gchar * val;
@@ -378,6 +379,7 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   fp_PageSize ps(pd);
   // hmm, we should free the old pagesize.
   m_PageSize = ps;
+  setPageUnits(ps.getUnit());
 
   // change the units in the dialog, too.
   fp_PageSize::Unit new_units = ps.getUnit();
