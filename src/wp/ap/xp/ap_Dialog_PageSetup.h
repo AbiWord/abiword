@@ -59,6 +59,8 @@ public:
 	// this should only get used by decendant classes
 	inline void setAnswer (tAnswer answer) {m_answer = answer;}
 
+    bool validatePageSettings(void) const;
+
  private:
 	AP_Dialog_PageSetup::tAnswer m_answer;
 

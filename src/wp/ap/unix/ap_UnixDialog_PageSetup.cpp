@@ -230,9 +230,6 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 		return;
 	}
 	
-	setAnswer (a_OK);
-
-
 	setPageSize (fp);
 	setMarginUnits (last_margin_unit);
 	setPageUnits (last_page_unit);
@@ -246,7 +243,19 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 	setMarginHeader (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginHeader)));
 	setMarginFooter (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginFooter)));
 
-	gtk_main_quit();
+	// The window will only close (on an OK click) if the margins
+	// fit inside the paper size.
+	if ( validatePageSettings() ) {
+		setAnswer (a_OK);
+		
+		gtk_main_quit();
+	}
+	else {
+		// "The margins selected are too large to fit on the page."
+		m_pFrame->showMessageBox(AP_STRING_ID_DLG_PageSetup_ErrBigMargins, 
+								 XAP_Dialog_MessageBox::b_O,
+								 XAP_Dialog_MessageBox::a_OK);
+	}
 }
 
 void AP_UnixDialog_PageSetup::event_Cancel (void)
@@ -372,6 +381,8 @@ void AP_UnixDialog_PageSetup::runModal (XAP_Frame *pFrame)
     UT_ASSERT(mainWindow);
 
     connectFocus(GTK_WIDGET(mainWindow), pFrame);
+
+	m_pFrame = pFrame;
 
     // To center the dialog, we need the frame of its parent.
     XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);

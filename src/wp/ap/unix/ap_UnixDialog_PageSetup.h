@@ -69,6 +69,8 @@ public:
 	GtkWidget * m_spinMarginRight;
 	GtkWidget * m_spinMarginHeader;
 	GtkWidget * m_spinMarginFooter;
+
+    XAP_Frame * m_pFrame;
 };
 
 #endif // AP_UnixDialog_PageSetup_H

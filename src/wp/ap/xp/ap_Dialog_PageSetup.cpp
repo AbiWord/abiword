@@ -47,6 +47,11 @@ AP_Dialog_PageSetup::~AP_Dialog_PageSetup(void)
 }
 
 
+bool AP_Dialog_PageSetup::validatePageSettings(void) const
+{
+	if ( (m_MarginLeft + m_MarginRight >= m_PageSize.Width(m_PageUnits)) ||
+		 (m_MarginTop + m_MarginBottom >= m_PageSize.Height(m_PageUnits)) ) 
+		return false;
 
-
-
+	return true;
+}
