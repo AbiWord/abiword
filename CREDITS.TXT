@@ -4,7 +4,7 @@ principal authors of AbiWord
 ----------------------------
 Thomas Fletcher <thomasf@qnx.com>               BeOS port
 Jeff Hostetler <jeff@abisource.com>
-Paul Rohr <paul@abisource.com>
+Paul Rohr <paul@abisource.com> 
 Bob Sievers <bob@abisource.com>                 QA
 Eric Sink <eric@abisource.com>
 Shaw Terwilliger <sterwill@abisource.com>
