@@ -99,6 +99,10 @@ public:
  		SET_GATHER (SpellSuggest,     bool);
 	 	SET_GATHER (SpellMainOnly,    bool);
 
+		// Grammar Check
+
+	 	SET_GATHER (GrammarCheck,    bool);
+
 	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though
 
 	SET_GATHER			(PrefsAutoSave,			bool);
@@ -179,6 +183,10 @@ public:
 
 		GtkWidget *m_checkbuttonSpellSuggest;
 		GtkWidget *m_checkbuttonSpellMainOnly;
+
+		// Grammar Checking
+
+		GtkWidget *m_checkbuttonGrammarCheck;
 
     		// Dummy
 		bool m_boolEnableSmoothScrolling;

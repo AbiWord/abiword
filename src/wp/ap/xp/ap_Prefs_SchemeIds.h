@@ -46,6 +46,9 @@
 #define AP_PREF_KEY_AutoSpellCheck					"AutoSpellCheck"			/* enable automatic spell check {0,1} */
 #define AP_PREF_DEFAULT_AutoSpellCheck				"1"
 
+#define AP_PREF_KEY_AutoGrammarCheck		    "AutoGrammarCheck"			/* enable automatic grammar check {0,1} */
+#define AP_PREF_DEFAULT_AutoGrammarCheck  		"1"
+
 #define AP_PREF_KEY_SpellCheckCaps					"SpellCheckCaps"			/* enable checking CAPITALIZED words {0,1} */
 #define AP_PREF_DEFAULT_SpellCheckCaps				"1"
 
@@ -142,6 +145,7 @@ dcl(CloseOnLastDoc)
 dcl(DefaultSaveFormat)
 dcl(CursorBlink)
 dcl(AutoSpellCheck)
+dcl(AutoGrammarCheck)
 dcl(SpellCheckCaps)
 dcl(SpellCheckNumbers)
 dcl(SpellCheckInternet)

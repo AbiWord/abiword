@@ -396,6 +396,13 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		localizeButtonUnderline (m_checkbuttonSpellMainOnly, pSS,
 					 AP_STRING_ID_DLG_Options_Label_SpellMainOnly);
 
+		tmp = WID ("lblGrammar");
+		localizeLabelMarkup (tmp, pSS, AP_STRING_ID_DLG_Options_Label_Grammar);
+
+		m_checkbuttonGrammarCheck = WID ("chkGrammarCheck");
+		localizeButtonUnderline (m_checkbuttonGrammarCheck, pSS,
+					 AP_STRING_ID_DLG_Options_Label_GrammarCheck);
+
 	//////////////////////////////////////////////////////////////////
 
 //
@@ -524,6 +531,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_SPELL_NUMBERS:
 		return m_checkbuttonSpellNumbers;
 
+	case id_CHECK_GRAMMAR_CHECK:
+		return m_checkbuttonGrammarCheck;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
 	case id_CHECK_SMART_QUOTES_ENABLE:
@@ -633,6 +643,7 @@ DEFINE_GET_SET_BOOL(SpellMainOnly)
 DEFINE_GET_SET_BOOL(SpellUppercase)
 DEFINE_GET_SET_BOOL(SpellNumbers)
 DEFINE_GET_SET_BOOL(SmartQuotesEnable)
+DEFINE_GET_SET_BOOL(GrammarCheck)
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl)
 DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs)

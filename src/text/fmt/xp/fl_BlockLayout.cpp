@@ -170,6 +170,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bKeepWithNext(false),
 	  m_bStartList(false), m_bStopList(false),
 	  m_bListLabelCreated(false),
+	  m_pSpellSquiggles(NULL),
 	  m_bListItem(false),
 	  m_szStyle(NULL),
 	  m_bIsCollapsed(true),
@@ -183,8 +184,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_pVertContainer(NULL),
 	  m_iLinePosInContainer(0),
 	  m_bForceSectionBreak(false),
-	  m_bPrevListLabel(false)
-
+	  m_bPrevListLabel(false),
+	  m_pGrammarSquiggles(NULL)
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
@@ -260,6 +261,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	}
 
 	m_pSpellSquiggles = new fl_SpellSquiggles(this);
+	m_pGrammarSquiggles = new fl_GrammarSquiggles(this);
 	UT_ASSERT(m_pSpellSquiggles);
 	setUpdatableField(false);
 	updateEnclosingBlockIfNeeded();

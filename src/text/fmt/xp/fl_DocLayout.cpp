@@ -132,6 +132,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_bRestartEndSection = false;
 	m_bPlaceAtDocEnd = false;
 	m_bPlaceAtSecEnd = true;
+	m_bAutoGrammarCheck = false;
 
 }
 
@@ -627,6 +628,12 @@ void FL_DocLayout::setView(FV_View* pView)
 			if (m_pPrefs->getPrefsValueBool(static_cast<const XML_Char *>("DebugFlash"),&b)  &&  b == true)
 			{
 				addBackgroundCheckReason(bgcrDebugFlash);
+			}
+			m_pPrefs->getPrefsValueBool(static_cast<const XML_Char *>("AutoGrammarCheck"),&b);
+			if (b)
+			{
+				addBackgroundCheckReason(bgcrGrammar);
+				m_bAutoGrammarCheck = true;
 			}
 		}
 	}
@@ -2160,6 +2167,91 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 	}
 }
 
+
+/*!
+ Toggle auto spell-checking state
+ \param bGrammar True if grammar-checking should be enabled, false otherwise
+ When disabling grammar checking, all squiggles are deleted.
+ When enabling grammar, force a full check of the document.
+*/
+void
+FL_DocLayout::_toggleAutoGrammar(bool bGrammar)
+{
+	bool bOldAutoGrammar = getAutoGrammarCheck();
+	UT_DEBUGMSG(("_toggleAutoGrammar %d \n",bGrammar));
+	// Add reason to background checker
+	if (bGrammar)
+	{
+		UT_DEBUGMSG(("Adding Auto GrammarCheck  \n"));
+		addBackgroundCheckReason(bgcrGrammar);
+		m_bAutoGrammarCheck = true;
+	}
+	else
+	{
+		UT_DEBUGMSG(("Removing Auto Grammar  \n"));
+		removeBackgroundCheckReason(bgcrGrammar);
+		m_bAutoGrammarCheck = false;
+	}
+
+	xxx_UT_DEBUGMSG(("FL_DocLayout::_toggleAutoGrammar (%s)\n",
+					 bGrammar ? "true" : "false" ));
+
+	if (bGrammar)
+	{
+		UT_DEBUGMSG(("Rechecking Grammar in blocks \n"));
+		// When enabling, recheck the whole document
+		fl_DocSectionLayout * pSL = getFirstSection();
+		if(pSL)
+		{
+			fl_ContainerLayout* b = pSL->getFirstLayout();
+			while (b)
+			{
+				// TODO: just check and remove matching squiggles
+				// for now, destructively recheck the whole thing
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					UT_DEBUGMSG(("Add block  %x for Grammar check \n",b));
+					queueBlockForBackgroundCheck(bgcrGrammar, static_cast<fl_BlockLayout *>(b));
+					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
+				}
+				else
+				{
+					b = b->getNext();
+				}
+			}
+		}
+	}
+	else
+	{
+		// Disabling, so remove the squiggles too
+		fl_DocSectionLayout * pSL = getFirstSection();
+		if(pSL)
+		{
+			fl_ContainerLayout* b = pSL->getFirstLayout();
+			while (b)
+			{
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					static_cast<fl_BlockLayout *>(b)->removeBackgroundCheckReason(bgcrGrammar);
+					static_cast<fl_BlockLayout *>(b)->getGrammarSquiggles()->deleteAll();
+					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
+				}
+				else
+				{
+					b = b->getNext();
+				}
+			}
+		}
+		if (bOldAutoGrammar)
+		{
+			// If we're here, it was set to TRUE before but now it is
+			// being set to FALSE. This means that it is the user
+			// setting it. That's good.
+			m_pView->draw(NULL);
+		}
+	}
+}
+
 void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 {
 	setPendingSmartQuote(NULL, 0);  // avoid surprises
@@ -2281,6 +2373,18 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 							}
 							break;
 						}
+						case bgcrGrammar:
+						{
+							UT_DEBUGMSG(("Grammar checking block %x directly \n",pB));
+							XAP_App * pApp = pDocLayout->getView()->getApp();
+     //
+     // If a grammar checker plugin is loaded it will check the block now.
+     //
+							pApp->notifyListeners(pDocLayout->getView(),AV_CHG_BLOCKCHECK,reinterpret_cast<void *>(pB));
+							pB->removeBackgroundCheckReason(mask);
+							break;
+						}
+
 						case bgcrSmartQuotes:
 						default:
 							pB->removeBackgroundCheckReason(mask);
@@ -2820,6 +2924,15 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	{
 		pDocLayout->m_bAutoSpellCheck = b;
 		pDocLayout->_toggleAutoSpell( b );
+	}
+
+	// grammar check
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoGrammarCheck), &b );
+	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
+	if(b != pDocLayout->m_bAutoGrammarCheck || (pDocLayout->m_iGraphicTick < 2))
+	{
+		pDocLayout->m_bAutoGrammarCheck = b;
+		pDocLayout->_toggleAutoGrammar( b );
 	}
 
 // autosave

@@ -591,6 +591,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				{
 					reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
 				}
+				if( m_pLayout->getAutoGrammarCheck())
+				{
+					reason = reason | (UT_uint32) FL_DocLayout::bgcrGrammar;
+				}
 				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,true);
 			}
 		}
@@ -611,6 +615,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				if( m_pLayout->getAutoSpellCheck())
 				{
 					reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+				}
+				if( m_pLayout->getAutoGrammarCheck())
+				{
+					reason = reason | (UT_uint32) FL_DocLayout::bgcrGrammar;
 				}
 				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,true);
 			}

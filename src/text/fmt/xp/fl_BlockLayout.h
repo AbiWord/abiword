@@ -233,6 +233,8 @@ public:
 	void setDominantDirection(UT_BidiCharType iDirection);
 
 	inline fl_SpellSquiggles* getSpellSquiggles(void) const { return m_pSpellSquiggles; }
+	inline fl_GrammarSquiggles* getGrammarSquiggles(void) const { return  m_pGrammarSquiggles; }
+
 
 	bool isHdrFtr(void);
 	void setHdrFtr(void) { m_bIsHdrFtr = true;}
@@ -465,6 +467,7 @@ protected:
 	UT_sint32               m_iLinePosInContainer;
 	bool                    m_bForceSectionBreak;
 	bool                    m_bPrevListLabel;
+	fl_GrammarSquiggles *   m_pGrammarSquiggles;
 };
 
 /*

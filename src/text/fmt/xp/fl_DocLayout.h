@@ -235,6 +235,7 @@ public:
 	bool                updateTOCsOnBookmarkChange(const XML_Char * pBookmark);
 // --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
+	bool		getAutoGrammarCheck(void) const { return (hasBackgroundCheckReason(bgcrGrammar)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
 	bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
 	bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
@@ -283,6 +284,7 @@ public:
 protected:
 	static void			_backgroundCheck(UT_Worker * pTimer);
 	void				_toggleAutoSpell(bool bSpell);
+	void				_toggleAutoGrammar(bool bGrammar);
 	void				_toggleAutoSmartQuotes(bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
@@ -344,6 +346,7 @@ private:
 	UT_sint32           m_iFilled;
 	bool                m_bSpellCheckInProgress;
 	UT_GenericVector<GR_EmbedManager *> m_vecEmbedManager;
+	bool                m_bAutoGrammarCheck;
 };
 
 #endif /* DOCLAYOUT_H */

@@ -355,6 +355,10 @@ dcl(DLG_Options_SpellCheckingTitle,		"Spell Checking")
 dcl(DLG_Options_Label_SpellCheckAsType, "Check s&pelling as you type")
 dcl(DLG_Options_Label_SpellHideErrors,	"Hide &spelling errors in the document")
 dcl(DLG_Options_Label_SpellHighlightMisspelledWords, "&Highlight misspelled words") // Opposite of HideErrors
+
+     // Grammar Check
+dcl(DLG_Options_Label_Grammar, "Automatic Grammar Checking")
+dcl(DLG_Options_Label_GrammarCheck, "Check &grammar as you type")
 										      // should be merged one day
 dcl(DLG_Options_Label_SpellSuggest, 	"A&lways suggest corrections")
 dcl(DLG_Options_Label_SpellMainOnly,	"Suggest from &main dictionary only")

@@ -250,8 +250,16 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_pLanguage = lls.getCodeFromCode(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
 	{
-
-		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(static_cast<UT_uint32>(FL_DocLayout::bgcrSpelling), getBlock());
+	        UT_uint32 reason =  0;
+		if( getBlock()->getDocLayout()->getAutoSpellCheck())
+		{
+		        reason = (UT_uint32) FL_DocLayout::bgcrSpelling;
+		}
+		if( getBlock()->getDocLayout()->getAutoGrammarCheck())
+		{
+		        reason = reason | (UT_uint32) FL_DocLayout::bgcrGrammar;
+		}
+		getBlock()->getDocLayout()->queueBlockForBackgroundCheck(reason, getBlock());
 		bChanged = true;
 	}
 

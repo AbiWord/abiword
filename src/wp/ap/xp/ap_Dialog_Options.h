@@ -51,6 +51,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 				   id_CHECK_SPELL_SUGGEST, id_CHECK_SPELL_MAIN_ONLY,
 				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS,
 				   id_BUTTON_SPELL_AUTOREPLACE,
+				   id_CHECK_GRAMMAR_CHECK,
 
 				   id_CHECK_SMART_QUOTES_ENABLE,
 
@@ -132,6 +133,7 @@ class AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	SET_GATHER			(SpellMainOnly, 	bool);
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
+	SET_GATHER			(GrammarCheck,		bool);
 
 	SET_GATHER			(ShowSplash,bool);
 	SET_GATHER			(SmartQuotesEnable, bool);
@@ -237,6 +239,7 @@ public:
 			bo_IgnoreNumbered,
 			bo_IgnoreUppercase,
 			bo_IgnoreURLs,
+			bo_CheckGrammar,
 			bo_LayoutMarks,
 			bo_MainDictionaryOnly,	// NOT (YET?) IMPLEMENTED
 			bo_Plugins,
