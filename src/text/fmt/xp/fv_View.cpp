@@ -9345,6 +9345,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	m_pDoc->beginUserAtomicGlob();
 	_saveAndNotifyPieceTableChange();
+	if (!isSelectionEmpty())
+	{
+		_deleteSelection();
+	}
 	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;
@@ -9367,7 +9371,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bool bRet = false;
 	if(bFootnote)
 	{
-		if (cmdInsertField("footnote_ref", attrs)==false)
+		if (_insertField("footnote_ref", attrs)==false)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
@@ -9379,7 +9383,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	}
 	else
 	{
-		if (cmdInsertField("endnote_ref", attrs)==false)
+		if (_insertField("endnote_ref", attrs)==false)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
@@ -9409,11 +9413,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	_setPoint(FanchStart);
 	if(bFootnote)
 	{
-		cmdInsertField("footnote_anchor", attrs);
+		_insertField("footnote_anchor", attrs);
 	}
 	else
 	{
-		cmdInsertField("endnote_anchor", attrs);
+		_insertField("endnote_anchor", attrs);
 	}
 //
 // Place a format mark before the field so we can select the field.

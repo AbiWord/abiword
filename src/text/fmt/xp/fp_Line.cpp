@@ -485,7 +485,10 @@ void fp_Line::remove(void)
 	{
 		pPrev->setNext(pNext);
 	}
-	static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
+	if(getContainer())
+	{
+		static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
+	}
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,

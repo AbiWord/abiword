@@ -1031,12 +1031,25 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 				fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
 				UT_uint32 splitOffset = posEmbedded - posInBlock -1;
-				UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
-				bool bres = pTRun->split(splitOffset);
-				UT_ASSERT(bres);
-				pRun = pTRun->getNextRun();
-				pPrev = pTRun;
-				iDiff = 0;
+				if(splitOffset > pTRun->getBlockOffset())
+				{
+					UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+					bool bres = pTRun->split(splitOffset);
+					UT_ASSERT(bres);
+					pRun = pTRun->getNextRun();
+					pPrev = pTRun;
+					UT_DEBUGMSG(("New Run %x created offset %d \n",pRun,pRun->getBlockOffset()));
+					UT_DEBUGMSG(("Old Run %x offset %d length\n",pPrev,pPrev->getBlockOffset(),pPrev->getLength()));
+					iDiff = 0;
+				}
+				else
+				{
+					// Split point is actually after this run
+					UT_ASSERT(splitOffset == pTRun->getBlockOffset());
+					pRun = pTRun->getNextRun();
+					pPrev = pTRun;
+					iDiff = pRun->getBlockOffset() - pPrev->getBlockOffset() -pPrev->getLength();
+				}
 			}
 		}
 	}
@@ -1048,6 +1061,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 // Now shift all the offsets in the runs.
 //
 		UT_sint32 iFirstOffset = static_cast<UT_sint32>(pRun->getBlockOffset());
+		iDiff = iEmbeddedSize - iDiff;
 		while(pRun)
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iDiff;
@@ -2295,7 +2309,7 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 				}
 			}
 		}
-		else if (getNext() && getNext()->getFirstContainer())
+		else if (getNext() && getNext()->getFirstContainer() && getNext()->getFirstContainer()->getContainer())
 		{
 			pContainer = static_cast<fp_VerticalContainer *>(getNext()->getFirstContainer()->getContainer());
 			UT_return_val_if_fail(pContainer, NULL);

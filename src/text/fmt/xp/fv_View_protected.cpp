@@ -2591,6 +2591,56 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	return bufferSegment;
 }
 
+bool FV_View::_insertField(const char* szName, 
+						   const XML_Char ** extra_attrs, 
+						   const XML_Char ** extra_props)
+{
+	bool bResult;
+	int attrCount = 0;
+	while (extra_attrs && extra_attrs[attrCount] != NULL)
+	{
+		attrCount++;
+	}
+
+	const XML_Char ** attributes = new const XML_Char*[attrCount+4];
+
+	int i = 0;
+	while (extra_attrs && extra_attrs[i] != NULL)
+	{
+		attributes[i] = extra_attrs[i];
+		i++;
+	}
+	attributes[i++] = "type";
+	attributes[i++] = szName;
+	attributes[i++] = NULL;
+	attributes[i++] = NULL;
+
+
+	fd_Field * pField = NULL;
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props,&pField);
+		if(pField != NULL)
+		{
+			pField->update();
+		}
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
+		if(pField != NULL)
+		{
+			pField->update();
+		}
+	}
+
+	delete [] attributes;
+	return bResult;
+}
+ 
 bool
 FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 {

@@ -3749,25 +3749,6 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 {
 	bool bResult;
 
-	int attrCount = 0;
-	while (extra_attrs && extra_attrs[attrCount] != NULL)
-	{
-		attrCount++;
-	}
-
-	const XML_Char ** attributes = new const XML_Char*[attrCount+4];
-
-	int i = 0;
-	while (extra_attrs && extra_attrs[i] != NULL)
-	{
-		attributes[i] = extra_attrs[i];
-		i++;
-	}
-	attributes[i++] = "type";
-	attributes[i++] = szName;
-	attributes[i++] = NULL;
-	attributes[i++] = NULL;
-
 /*
   currently unused
   fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
@@ -3776,33 +3757,13 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
-	fd_Field * pField = NULL;
-	if (!isSelectionEmpty())
-	{
-		m_pDoc->beginUserAtomicGlob();
-		_deleteSelection();
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props,&pField);
-		if(pField != NULL)
-		{
-			pField->update();
-		}
-		m_pDoc->endUserAtomicGlob();
-	}
-	else
-	{
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
-		if(pField != NULL)
-		{
-			pField->update();
-		}
-	}
+	_insertField(szName,  extra_attrs,extra_props);
 
-	delete [] attributes;
-
-	_generalUpdate();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_generalUpdate();
+
 	_fixInsertionPointCoords();
 	if (!_ensureInsertionPointOnScreen())
 	{

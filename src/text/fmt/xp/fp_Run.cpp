@@ -709,7 +709,7 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	}
     m_bRecalcWidth |= bRefresh;
 	clearScreen();
-
+	//	UT_ASSERT((getType() == FPRUN_FMTMARK) ||  (iLen > 0));
 	m_iLen = iLen;
 
 	// change of length generally means something got deleted, and

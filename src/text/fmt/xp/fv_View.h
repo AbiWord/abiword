@@ -679,7 +679,9 @@ protected:
 									  UT_sint32 yPos,
 									  UT_sint32& xClick,
 									  UT_sint32& yClick) const;
-
+	bool                _insertField(const char* szName, 
+									 const XML_Char ** extra_attrs = NULL, 
+									 const XML_Char ** extra_props = NULL);
 	void				_moveToSelectionEnd(bool bForward);
 	void				_eraseSelection(void);
 	void				_clearSelection(void);
