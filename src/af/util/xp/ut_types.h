@@ -159,19 +159,19 @@ typedef	UT_sint32		UT_Error;
 ** Some useful macros that we use throughout
 */
 
-#define FREEP(p)		do { if (p) free((void *)p); (p)=NULL; } while (0)
-#define DELETEP(p)		do { if (p) delete(p); (p)=NULL; } while (0)
-#define DELETEPV(pa)            do { if (pa) delete [] (p); (p)=NULL; } while (0)
+#define FREEP(p)		do { if (p) { free((void *)p); (p)=NULL; } } while (0)
+#define DELETEP(p)		do { if (p) { delete(p); (p)=NULL; } } while (0)
+#define DELETEPV(pa)	do { if (pa) { delete [] (pa); (pa)=NULL; } } while (0)
 #define REPLACEP(p,q)		do { if (p) delete p; p = q; } while (0)
 #define REFP(p)			((p)->ref(), (p))
-#define UNREFP(p)		do { if (p) (p)->unref(); (p)=NULL; } while (0)
+#define UNREFP(p)		do { if (p) { (p)->unref(); (p)=NULL; } } while (0)
 #define CLONEP(p,q)		do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
 
-#define NrElements(a)		((sizeof(a)/sizeof(a[0])))
-#define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
-#define MyMin(a,b)		(((a)<(b)) ? (a) : (b))
+#define NrElements(a)		((sizeof(a) / sizeof(a[0])))
+#define MyMax(a,b)		(((a) > (b)) ? (a) : (b))
+#define MyMin(a,b)		(((a) < (b)) ? (a) : (b))
 
-#define UT_UNUSED(v)		do { (v)=(v); } while (0)
+#define UT_UNUSED(v)		do { (v) = (v); } while (0)
 
 #define E2B(err)		((err) == UT_OK)
 
