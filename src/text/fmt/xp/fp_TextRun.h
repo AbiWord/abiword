@@ -45,8 +45,6 @@
 #include "ut_abi-pango.h"
 #endif
 
-//#define JUSTIFY_WITHOUT_SPLITING
-
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
 public:
@@ -202,6 +200,15 @@ protected:
 									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
 
+	enum
+	{
+	    JUSTIFICATION_NOT_USED = -1,
+		JUSTIFICATION_FAKE = -2
+	};
+
+	UT_sint32              _getSpaceWidthBeforeJustification();
+	void                   _setSpaceWidthBeforeJustification(UT_sint32 iWidth);
+
 private:
 	enum
 	{
@@ -223,13 +230,6 @@ private:
 	//GR_Font*				m_pFontLayout;
 	//UT_RGBColor 			m_colorFG; //#TF moved this into fp_Run
 	bool					m_bSquiggled;
-
-	enum
-	{
-	    JUSTIFICATION_NOT_USED = -1,
-		JUSTIFICATION_FAKE = -2
-	};
-	UT_sint32				m_iSpaceWidthBeforeJustification;
 
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
 	// but only a pointer in the static table of the UT_Language class !!!

@@ -2998,7 +2998,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 		// too much, since it is unlikely that there is going to be a justified line with
 		// no spaces on it
 
-#ifndef JUSTIFY_WITHOUT_SPLITING
+#if 0
 		// to avoid spliting the runs at spaces, saving memory and
 		// processing time, we now improved fp_TextRun::_draw(), so
 		// that it is able to skip over spaces
