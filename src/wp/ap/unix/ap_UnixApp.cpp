@@ -459,7 +459,7 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-#define CLIPBOARD_IS_HTML4 false
+#define CLIPBOARD_IS_HTML4 true
 
 /*!
   copy the given subset of the given document to the
