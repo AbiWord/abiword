@@ -1138,7 +1138,14 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		m_pRenderInfo->m_pFont = getFont();
 		m_pRenderInfo->m_iLength = getLength();
 		m_pRenderInfo->m_iOffset = iSplitOffset - getBlockOffset();
-		m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse);
+		if(!m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse))
+		{
+			// the graphics class is either incapable of spliting, or the operation failed
+			// we need to mark both runs for shaping
+			_setRefreshDrawBuffer(GRSR_Unknown);
+			pNew->_setRefreshDrawBuffer(GRSR_Unknown);
+		}
+		
 
 		// the split function created a copy of GR_Item in the render
 		// info; bring the member into sync with it (m_pItem is where the GR_Item lives and where it
