@@ -56,8 +56,9 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 	NSRect windowFrame = [myWindow frame];
 	windowFrame.size.width = screenFrame.size.width;
 	windowFrame.origin.x = 0.0f;
-	windowFrame.origin.y = 0.0f;
+	windowFrame.origin.y = 0.0f;		// TODO calc to be stuck to the bottom of the menubar.
 	[myWindow setFrame:windowFrame display:YES];
+	[myWindow setFrameOrigin:windowFrame.origin];
 	[super windowDidLoad];
 }
 

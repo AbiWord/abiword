@@ -556,9 +556,8 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	NSString * str = [NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()];
+	NSString * str = [NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()];	// autoreleased
 	[theWindow setTitle:str];
-	[str release];
 	NSScrollView * scroller = [m_frameController getMainView];
 	[scroller setHasHorizontalScroller:YES];
 	[scroller setHasVerticalScroller:YES];
@@ -727,13 +726,11 @@ bool XAP_CocoaFrame::show()
 
 bool XAP_CocoaFrame::openURL(const char * szURL)
 {  
-	NSString * nsURL = [NSString stringWithCString:szURL];
-	NSURL *URL = [[NSURL alloc] initWithString:nsURL];
+	NSString * nsURL = [NSString stringWithCString:szURL];	// autoreleased
+	NSURL *URL = [[NSURL alloc] initWithString:nsURL];		// autoreleased
 	
 	NSWorkspace * space = [NSWorkspace sharedWorkspace];
 	[space openURL:URL];
-	[URL release];
-	[nsURL release];
 
 	return true;
 }
@@ -759,9 +756,8 @@ bool XAP_CocoaFrame::updateTitle()
 	/* TODO discard this sprintf and you NSString features instead */
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	NSString * str = [NSString stringWithCString:szTitle]; //was buf TODO remove formatting code above
+	NSString * str = [NSString stringWithCString:szTitle]; // autoreleased // was buf TODO remove formatting code above
 	[theWindow setTitleWithRepresentedFilename:str];
-	[str release];
 
 	return true;
 }

@@ -189,7 +189,7 @@ void XAP_CocoaFont::setName(const char * name)
 	UT_DEBUGMSG (("XAP_CocoaFont::setName(%s)\n", name));
 	UT_cloneString(m_name, name);
 	if (m_nsName == NULL) {
-		m_nsName = [NSString stringWithCString:m_name];
+		m_nsName = [[NSString stringWithCString:m_name] retain];
 	}
 	else {
 		[m_nsName initWithCString:m_name];
