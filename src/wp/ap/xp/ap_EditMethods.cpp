@@ -1622,7 +1622,7 @@ Defun1(filePreviewWeb)
 
   char * tmpUrl = NULL;
   
-  tmpUrl = UT_catPathname("file://", szTempFileName);
+  tmpUrl = UT_catPathname("file:///", szTempFileName);
 
   bool bOk = _helpOpenURL(pAV_View, tmpUrl);
   FREEP(tmpUrl);

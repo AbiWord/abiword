@@ -20,13 +20,14 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_files.h"
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
@@ -639,32 +640,67 @@ bool XAP_UnixFrame::show()
 }
 
 bool XAP_UnixFrame::openURL(const char * szURL)
-{
-  	char *execstring;
-	struct stat * statbuf = (struct stat *) malloc(sizeof(struct stat));
+{	
+	static char *fmtstring = NULL;
+  	char *execstring = NULL;
 
-	//
-	// The gnome-help-browser sucks right now. Instead open with netscape
-	// or kde.
-	// When it gets better we should restore this code.
-	/*
-	//if (!stat("/opt/gnome/bin/gnome-help-browser", statbuf) || !stat("/usr/local/bin/gnome-help-browser", statbuf) || !stat("/usr/bin/gnome-help-browser", statbuf))
-	{
-		execstring = g_strdup_printf("gnome-help-browser %s &", szURL);
+	if(fmtstring)			// lookup browser result when we have
+	  {				// already calculated it once before
+		if(strstr(fmtstring, "netscape"))
+		{
+		  execstring = g_strdup_printf(fmtstring, szURL, szURL);
+		}
+		else
+		{
+		  execstring = g_strdup_printf(fmtstring, szURL);
+		}
+
+		system(execstring);
+		g_free (execstring);
+		return false;					// why do we return false?
 	}
-	*/
-	if (!stat("/opt/kde/bin/kdehelp", statbuf) || !stat("/usr/local/kde/bin/kdehelp", statbuf) || !stat("/usr/local/bin/kdehelp", statbuf) || !stat("/usr/bin/kdehelp", statbuf))
+
+	// TODO: we should move this into a preferences item,
+	// TODO: but every other platform has a default browser
+	// TODO: or text/html handler in a global registry
+
+	// ORDER:
+	// 1) konqueror
+	// 2) mozilla
+	// 3) netscape
+	// 4) kdehelp
+	// 5) lynx in an xterm
+
+	if(progExists("konqueror"))
 	{
-		execstring = g_strdup_printf("kdehelp %s &", szURL);
+		fmtstring = "konqueror %s &";
+		execstring = g_strdup_printf(fmtstring, szURL);
+	}
+	// Anyone know how to find out where it might be, regardless?
+	else if(progExists("mozilla"))
+	{
+	        fmtstring = "mozilla %s &";
+		execstring = g_strdup_printf(fmtstring, szURL);
+	}
+	else if(progExists("netscape"))
+	{
+		// Try to connect to a running Netscape, if not, start new one
+		fmtstring = "netscape -remote openURL\\(%s\\) || netscape %s &";
+		execstring = g_strdup_printf(fmtstring, szURL, szURL);
+	}
+	else if(progExists("khelpcenter"))
+	{
+		fmtstring = "khelpcenter %s &";
+		execstring = g_strdup_printf(fmtstring, szURL);
 	}
 	else
 	{
-		// Try to connect to a running Netscape, if not, start new one
-		execstring = g_strdup_printf("netscape -remote openURL\\(%s\\) || netscape %s &", szURL, szURL);
+		fmtstring = "xterm -e lynx %s &";
+		execstring = g_strdup_printf(fmtstring, szURL);
 	}
+
 	system(execstring);
-	g_free(execstring);
-	FREEP(statbuf);
+	g_free (execstring);
 	return false;
 }
 

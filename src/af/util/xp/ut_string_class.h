@@ -26,6 +26,7 @@
 //
 
 #include <stdlib.h>
+#include "ut_vector.h"
 
 //!
 //	UT_String, a simple wrapper for zero terminated 'char' strings.
@@ -49,6 +50,8 @@ public:
 	UT_String&	operator+=(const char*      rhs);
 
 	void		swap(UT_String& rhs);
+	UT_Vector	*simplesplit(char separator = ' ', 
+				     size_t max = 0 /* 0 == full split */);
 
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,

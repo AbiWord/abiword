@@ -37,6 +37,24 @@ UT_Vector::UT_Vector(UT_uint32 sizehint)
 	m_pEntries = NULL;				/* The actual array of pointers itself */
 }
 
+UT_Vector::UT_Vector(const UT_Vector& utv)
+{
+	m_iCutoffDouble = utv.m_iCutoffDouble;
+	m_iPostCutoffIncrement = utv.m_iPostCutoffIncrement;
+	copy(&utv);
+}
+
+UT_Vector& UT_Vector::operator=(const UT_Vector& utv)
+{
+	if(this != &utv)
+	{
+		m_iCutoffDouble = utv.m_iCutoffDouble;
+		m_iPostCutoffIncrement = utv.m_iPostCutoffIncrement;
+		copy(&utv);
+	}
+	return *this;
+}
+
 void UT_Vector::clear()
 {
 	m_iCount = 0;
@@ -206,7 +224,7 @@ void UT_Vector::qsort(int (*compar)(const void *, const void *))
 	::qsort(m_pEntries, m_iCount, sizeof(void*), compar);
 }
 
-bool UT_Vector::copy(UT_Vector *pVec)
+bool UT_Vector::copy(const UT_Vector *pVec)
 {
 	clear();
 

@@ -26,7 +26,8 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_unixAssert.cpp	\
 			ut_unixString.cpp	\
 			ut_unixTimer.cpp	\
-			ut_dialogHelper.cpp
+			ut_dialogHelper.cpp	\
+			ut_files.cpp
 
 TARGETS=		$(OBJS)
 

@@ -36,6 +36,8 @@ class UT_Vector
 {
 public:
 	UT_Vector(UT_uint32 sizehint = 2048);
+	UT_Vector(const UT_Vector&);
+	UT_Vector& operator=(const UT_Vector&);
 	~UT_Vector();
 
 	UT_sint32	addItem(void*);
@@ -63,7 +65,7 @@ public:
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
 
-	bool		copy(UT_Vector *pVec);
+	bool		copy(const UT_Vector *pVec);
 
 protected:
 	UT_sint32		grow(UT_uint32);
