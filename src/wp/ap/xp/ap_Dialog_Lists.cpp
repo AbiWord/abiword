@@ -564,7 +564,9 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
  * or font from their specified values. Here we override whatever was in them
  * to the values they SHOULD be given the list type.
  */
-	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
+	if(  m_NewListType == BULLETED_LIST || 
+		 m_NewListType == IMPLIES_LIST  || 
+		 m_NewListType == DASHED_LIST )
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
