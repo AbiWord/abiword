@@ -570,7 +570,7 @@ void fp_Run::expandWidthTo(UT_uint32 /*iNewWidth*/)
 #endif
 }
 
-void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& /*bBOL*/, UT_Bool& bEOL)
+void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -578,6 +578,15 @@ void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, 
 	if  (x <= 0)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
+		bEOL = UT_FALSE;
+		return;
+	}
+
+	// catch the case of a click directly on the left half of the first character in the run
+	if (x < (pCharWidths[m_iOffsetFirst] / 2))
+	{
+		pos = m_pBL->getPosition() + m_iOffsetFirst;
+		bBOL = UT_FALSE;
 		bEOL = UT_FALSE;
 		return;
 	}
@@ -595,7 +604,7 @@ void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, 
 
 			// NOTE: this allows inserted text to be coalesced in the PT
 			bEOL = UT_TRUE;
-			
+
 			pos = m_pBL->getPosition() + i;
 			return;
 		}
