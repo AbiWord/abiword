@@ -1340,7 +1340,10 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 //
 		if(!ppBL)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			if(!isLayoutFilling())
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
 		}
 		else
 		{

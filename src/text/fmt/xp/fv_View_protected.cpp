@@ -1113,8 +1113,11 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	{
 //		  fl_HdrFtrSectionLayout * pSSL = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout());
 //		  pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
-		  UT_DEBUGMSG(("SEVIOR: in view \n"));
-		  UT_ASSERT(0);
+		  if(!isLayoutFilling())
+		  {
+			  UT_DEBUGMSG(("SEVIOR: in view \n"));
+			  UT_ASSERT(0);
+		  }
 	}
 #endif
 	return pBL;
@@ -2956,19 +2959,21 @@ void FV_View::_fixInsertionPointCoords()
 	if (m_pG->getCaret() == NULL)
 		return;
 
-	if (getPoint())
+	fp_Page * pPage = NULL;
+
+	if ((getPoint() > 0) && !isLayoutFilling())
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
+		pPage = getCurrentPage();
+		UT_RGBColor * pClr = NULL;
+		if (pPage)
+			pClr = pPage->getOwningSection()->getPaperColor();
+
+		m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
+									m_xPoint2, m_yPoint2, m_iPointHeight, 
+									m_bPointDirection, pClr);
 	}
 
-	fp_Page * pPage = getCurrentPage();
-	UT_RGBColor * pClr = NULL;
-	if (pPage)
-		pClr = pPage->getOwningSection()->getPaperColor();
-
-	m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
-					  m_xPoint2, m_yPoint2, m_iPointHeight, 
-					  m_bPointDirection, pClr);
 	m_pG->getCaret()->setWindowSize(getWindowWidth(), getWindowHeight());
 
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
