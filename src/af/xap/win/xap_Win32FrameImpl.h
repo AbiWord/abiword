@@ -129,6 +129,7 @@ private:
 	UT_uint32					m_iStatusBarHeight;
 	UT_uint32					m_iRealSizeHeight;
 	UT_uint32					m_iRealSizeWidth;
+	UT_uint32					m_iWindowStateBeforeFS; /* was Abi maximized/normal/minimized before we went full-screen */
 
 	UINT						m_mouseWheelMessage;
 	XAP_Win32DropTarget			m_dropTarget;

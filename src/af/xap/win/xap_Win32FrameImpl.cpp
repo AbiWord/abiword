@@ -441,7 +441,36 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 
 void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 {
-	// TODO: currently does nothing
+	// TODO: figure out how to remove the window's title bar
+
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+	HWND hwndFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
+	if (isFullScreen)
+	{
+		// Save window state prior to fullscreen (are we maximized?)
+		WINDOWPLACEMENT wndPlacement;
+		wndPlacement.length = sizeof(WINDOWPLACEMENT);
+		if (GetWindowPlacement(hwndFrame, &wndPlacement))
+		{
+			m_iWindowStateBeforeFS = wndPlacement.showCmd;
+		}
+		else
+		{
+			// Couldn't retrieve windowplacement info
+			// Assume we were at Normal (non-maximized) state
+			m_iWindowStateBeforeFS = SW_NORMAL;
+		}
+
+		ShowWindow(hwndFrame, SW_SHOWMAXIMIZED);
+	}
+	else
+	{
+		if(m_iWindowStateBeforeFS)
+			ShowWindow(hwndFrame, m_iWindowStateBeforeFS);
+	}
+
+	UpdateWindow(hwndFrame);
 }
 
 
