@@ -2077,7 +2077,8 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		if (!getDoc()->createDataItem(image_name, false,
 									  buf, (void*)mimetype, NULL)) 
 		{
-			FREEP(mimetype);
+			// taken care of by createDataItem
+			//FREEP(mimetype);
 			return false;
 		}
 	}

@@ -81,12 +81,15 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
    
    	if (!getDoc()->appendObject(PTO_Image, propsArray)) {
 	   delete pFG;
+	   FREEP(mimetype);
 	   return UT_IE_NOMEMORY;
 	}
 
    	if (!getDoc()->createDataItem("image_0", false,
 					buf, (void*)mimetype, NULL)) {
 	   delete pFG;
+	   // mimetype will be freed by crateDataItem
+	   //FREEP(mimetype);
 	   return UT_IE_NOMEMORY;
 	}
 

@@ -1562,6 +1562,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
     {
       UT_DEBUGMSG(("Could not create image importer object\n"));
       DELETEP(pictData);
+      FREEP(mimetype);
       goto Cleanup;
     }
   
@@ -1570,6 +1571,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
     {
       UT_DEBUGMSG(("Could not import graphic\n"));
       DELETEP(pictData);
+      FREEP(mimetype);
       goto Cleanup;
     }
   
@@ -1581,6 +1583,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
       // i don't think that this could ever happen, but...
       UT_DEBUGMSG(("Could not convert to PNG\n"));
       DELETEP(pictData);
+      FREEP(mimetype);
       error = UT_ERROR;
       goto Cleanup;
     }
@@ -1613,6 +1616,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
     {
       UT_DEBUGMSG (("Could not create append object\n"));
       error = UT_ERROR;
+      FREEP(mimetype);
       goto Cleanup;
     }
   
@@ -1621,6 +1625,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
     {
       UT_DEBUGMSG (("Could not create data item\n"));
       error = UT_ERROR;
+      // this is taken care of by createDataItem
+      //FREEP(mimetype);
       goto Cleanup;
     }
 
@@ -1628,7 +1634,9 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   //DELETEP(pictData);
   //DELETEP(pFG);
   DELETEP(importer);
-  FREEP(mimetype);
+
+  // !!! must not free this; this is used by pd_Document !!!
+  //FREEP(mimetype);
   
   //
   // Free any allocated data
