@@ -612,7 +612,185 @@ Section "AbiXSL-FO Plugin"
 	End:
 SectionEnd
 
+; Additional File Format importer/exporters
+SubSectionEnd
+
+
 ;SectionDivider
+
+
+SubSection /e "Glib/GSF based I/E importer and exporter plugins"
+
+!macro dlFileMacro remoteFname localFname errMsg
+	!define retryDLlbl retryDL_${__FILE__}${__LINE__}
+	!define dlDonelbl dlDoneDL_${__FILE__}${__LINE__}
+
+	;Call ConnectInternet	; try to establish connection if not connected
+	;StrCmp $0 "online" 0 ${dlDonelbl}
+
+	${retryDLlbl}:
+	NSISdl::download "${remoteFname}" "${localFname}"
+	Pop $0 ;Get the return value
+	StrCmp $0 "success" ${dlDonelbl}
+		; Couldn't download the file
+		DetailPrint "${errMsg}"
+		DetailPrint "Remote URL: ${remoteFname}"
+		DetailPrint "Local File: ${localFname}"
+		DetailPrint "NSISdl::download returned $0"
+		MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "${errMsg}" IDRETRY ${retryDLlbl}
+	${dlDonelbl}:
+	!undef retryDLlbl
+	!undef dlDonelbl
+!macroend
+!define dlFile "!insertmacro dlFileMacro"
+
+
+; Not required if Glib is already available, otherwise is required
+Section "download glib 2.2"
+	SectionIn 2
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Set output path to the installation directory.
+	SetOutPath $INSTDIR\AbiWord\bin
+
+	;${dlFile} "http://www.pchasm.org/abiword/glib/glib-2.2.3.tgz" "$TEMP\glib-2.2.3.tgz" "ERROR: failed to download glib-2.2.3.tgz"
+	${dlFile} "http://dl.sourceforge.net/abiword/glib-2.2.3.tgz" "$TEMP\glib-2.2.3.tgz" "ERROR: failed to download http://dl.sourceforge.net/abiword/glib-2.2.3.tgz"
+	StrCmp $0 "success" 0 dlFailed
+
+	; Glib 2.2
+	;File "libglib-2.0-0.dll"
+	;File "libgobject-2.0-0.dll"
+	;File "iconv.dll"
+	;File "intl.dll"
+	
+	; libGSF
+	;File "libgsf-1.8.dll"
+
+	; Unzip glib and its dependencies into same directory as AbiWord.exe
+	untgz::extract "-j" "-d" "$INSTDIR\AbiWord\bin" "$TEMP\glib-2.2.3.tgz"
+	StrCmp $0 "success" doCleanup
+		DetailPrint "  Failed to extract $TEMP\glib-2.2.3.tgz"
+		
+	doCleanup:
+		; Delete temporary files
+		Delete "$TEMP\glib-2.2.3.tgz"
+
+	dlFailed:
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; Set output path to the installation directory.
+	SetOutPath $INSTDIR\AbiWord\plugins
+SectionEnd
+
+;SectionDivider
+!ifdef 0
+; OPTIONAL
+SubSection /e "Image Manipulation"
+
+Section "AbiRSVG Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbi_IEG_RSVG.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiRSVG Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiRSVG Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbi_IEG_RSVG.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+SubSectionEnd
+!endif
+
+SubSection /e "File Format Importers/Exporters"
+
+Section "OpenWriter (*.sxw) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libOpenWriter.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing OpenWriter Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping OpenWriter Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libOpenWriter.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+Section "AbiSDW (*.sdw) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiSDW.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiSDW Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiSDW Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiSDW.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+Section "AbiWordPerfect (*.wpd) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiWordPerfect.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiWordPerfect Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiWordPerfect Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiWordPerfect.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+
+!ifdef 0
+Section "AbiXHTML (*.xhtml) Plugin"
+	SectionIn 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiXHTML.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiXHTML Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiXHTML Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiXHTML.dll"
+  
+	End:
+SectionEnd
+
+;SectionDivider
+!endif
+
+SubSectionEnd  ; Additional File Format importer/exporters
+
+SubSectionEnd  ; glib based plugins
 
 ; uncomment [here and in uninstall] & change .ext if this plugin adds support for new type (with new extension)
 ; OPTIONAL Registry Settings
@@ -624,8 +802,7 @@ SectionEnd
 ;
 ;SectionEnd
 
-; Additional File Format importer/exporters
-SubSectionEnd
+;SectionDivider
 
 
 ; OPTIONAL Create Uninstaller for Plugin
@@ -664,9 +841,37 @@ Section "Uninstall"
 	DeleteRegKey HKCR ".bzabw"
 
 	; remove files used
-	Delete "$INSTDIR\libBZ2Abw.dll"
-	Delete "$INSTDIR\libAbiEML.dll"
 	Delete "$INSTDIR\libAbiMagick.dll"
+	Delete "$INSTDIR\libAbi_IEG_BMP.dll"
+	Delete "$INSTDIR\libAbi_IEG_jpeg.dll"
+	Delete "$INSTDIR\libAbi_IEG_svg.dll"
+	Delete "$INSTDIR\libAbi_IEG_wmf.dll"
+	Delete "$INSTDIR\libAbiApplix.dll"
+	Delete "$INSTDIR\libBZ2Abw.dll"
+	Delete "$INSTDIR\libAbiClarisWorks.dll"
+	Delete "$INSTDIR\libAbiCoquille.dll"
+	Delete "$INSTDIR\libAbiDocBook.dll"
+	Delete "$INSTDIR\libAbiEML.dll"
+	Delete "$INSTDIR\libAbiHancom.dll"
+	Delete "$INSTDIR\libAbiHrtext.dll"
+	Delete "$INSTDIR\libAbiIsciitext.dll"
+	Delete "$INSTDIR\libAbiKword.dll"
+	Delete "$INSTDIR\libAbiLaTeX.dll"
+	Delete "$INSTDIR\libAbiMIF.dll"
+	Delete "$INSTDIR\libAbiMSWrite.dll"
+	Delete "$INSTDIR\libAbiNroff.dll"
+	Delete "$INSTDIR\libAbiPalmDoc.dll"
+	Delete "$INSTDIR\libAbiPDF.dll"
+	Delete "$INSTDIR\libAbi_psion.dll"
+	Delete "$INSTDIR\libAbiPW.dll"
+	Delete "$INSTDIR\libAbiT602.dll"
+	Delete "$INSTDIR\libAbiWML.dll"
+	Delete "$INSTDIR\libAbiXSLFO.dll"
+
+	Delete "$INSTDIR\libOpenWriter.dll"
+	Delete "$INSTDIR\libAbiSDW.dll"
+	Delete "$INSTDIR\libAbiWordPerfect.dll"
+	Delete "$INSTDIR\libAbiXHTML.dll"
 
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordIEPlugins.exe"
 
