@@ -25,6 +25,7 @@
 # automake complains at us if we just if out the gnome-specific parts
 if WITH_GNOME
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
@@ -37,6 +38,7 @@ AF_INCLUDES+=-I'$(top_srcdir)/src/af/xap/@PLATFORM@/gnome'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/@PLATFORM@/gnome'
 else
 AF_INCLUDES=-I'$(top_srcdir)/src/af/util/xp' 
+AF_INCLUDES+=-I'$(top_srcdir)/src/af/tf/xp' 
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/ev/xp'
 AF_INCLUDES+=-I'$(top_srcdir)/src/af/gr/xp'
@@ -132,6 +134,11 @@ ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 endif
+
+ABI_TEST_LIBS=$(top_builddir)/src/af/util/libTestUtil.a
+ABI_TEST_LIBS+=$(top_builddir)/src/text/ptbl/xp/t/libTestPtbl.a
+ABI_TEST_LIBS+=$(top_builddir)/src/af/tf/libTF.a
+
 # we don't assume that WITH_GNOME => unix, on the off chance that
 # someday it won't
 if WITH_GNOME
@@ -139,6 +146,8 @@ ABI_GNOME_OBJECTS=xp/*.o @PLATFORM@/*.o @PLATFORM@/gnome/*.o
 endif 
 
 ABI_OBJECTS=xp/*.o @PLATFORM@/*.o 
+ABI_TEST_OBJECTS=xp/t/*.o 
+#@PLATFORM@/t/*.o 
 
 SUFFIXES=.mm
 # Added for automake (at least version 1.5) - Frodo Looijaard (frodol@dds.nl)

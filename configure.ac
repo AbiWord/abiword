@@ -399,6 +399,7 @@ AC_SUBST(PEERS)
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
+ src/af/tf/GNUmakefile
  src/af/ev/GNUmakefile
  src/af/ev/xp/GNUmakefile
  src/af/ev/cocoa/GNUmakefile
@@ -411,8 +412,10 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/gr/qnx/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
+ src/af/util/xp/t/GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/util/qnx/GNUmakefile
+ src/af/tf/xp/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
  src/af/xap/cocoa/GNUmakefile
@@ -429,6 +432,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/text/fmt/xp/GNUmakefile
  src/text/ptbl/GNUmakefile
  src/text/ptbl/xp/GNUmakefile
+ src/text/ptbl/xp/t/GNUmakefile
  src/wp/GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
@@ -454,6 +458,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
  src/wp/main/qnx/GNUmakefile
  src/wp/main/unix/GNUmakefile
+ src/wp/test/GNUmakefile
+ src/wp/test/xp/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile

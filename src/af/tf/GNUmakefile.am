@@ -16,6 +16,15 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-SUBDIRS = tf ev gr util xap
+include $(top_srcdir)/includes.mk
 
+# change this below to match the rest of the tree
+ABI_OBJECTS=xp/*.o 
 
+SUBDIRS = xp 
+
+noinst_LIBRARIES= libTF.a
+
+libTF_a_SOURCES = 
+
+libTF_a_LIBADD = $(ABI_OBJECTS) 
