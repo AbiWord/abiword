@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,7 +21,6 @@
 #define AP_QNXDIALOG_NEW_H
 
 #include "ap_Dialog_New.h"
-#include <Pt.h>
 
 class XAP_QNXFrame;
 
@@ -35,10 +34,38 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, 
+											   XAP_Dialog_Id id);
+
+	void event_Ok ();
+	void event_Cancel ();
+	void event_ToggleUseTemplate (const char * name);
+	void event_ToggleOpenExisting ();
+	void event_ToggleStartNew ();
+	void event_ToggleSelection(PtWidget_t *w);
 	
 protected:
 
+	virtual PtWidget_t * _constructWindow ();
+
+	void _connectSignals ();
+
+	/* private ... */
+	PtWidget_t * m_mainWindow;
+	PtWidget_t * m_buttonOk;
+	PtWidget_t * m_buttonCancel;
+
+
+private:
+	XAP_Frame * m_pFrame;
+
+	PtWidget_t * m_entryFilename;
+	PtWidget_t * m_radioNew;
+	PtWidget_t * m_radioExisting;
+	PtWidget_t * m_radioEmpty;
+	PtWidget_t * m_tree;
+
+	int done;
 };
 
 #endif /* AP_QNXDIALOG_NEW_H */

@@ -43,6 +43,7 @@
 #	include "xap_QNXDlg_Zoom.h"
 #	include "xap_QNXDlg_Insert_Symbol.h"
 #	include "xap_QNXDlg_Language.h"
+#   include "xap_QNXDlg_PluginManager.h"
 
 #	include "ap_QNXDialog_Replace.h"
 #	include "ap_QNXDialog_Break.h"
@@ -61,6 +62,7 @@
 #	include "ap_QNXDialog_Columns.h"
 #   include "ap_QNXDialog_ToggleCase.h"
 #   include "ap_QNXDialog_Background.h"
+#   include "ap_QNXDialog_New.h"
 
 	// ... add new dialogs here ...
 
@@ -77,27 +79,30 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_QNXDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_QNXDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_QNXDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_QNXDialog_PluginManager)
 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_QNXDialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_QNXDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_QNXDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_QNXDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_QNXDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_QNXDialog_Styles)
-	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)	
-	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)	
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_QNXDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,	AP_QNXDialog_PageNumbers)
+	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,	AP_QNXDialog_PageSetup)
+	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_QNXDialog_Paragraph)	
+	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)	
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME, AP_QNXDialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_QNXDialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_QNXDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_QNXDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_QNXDialog_Columns)
-	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,	AP_QNXDialog_PageSetup)
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_QNXDialog_ToggleCase)
-	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_QNXDialog_Background)
+	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_QNXDialog_New)
+
 
 	// ... also add new dialogs here ...
 
