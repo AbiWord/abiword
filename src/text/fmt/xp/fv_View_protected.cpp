@@ -379,7 +379,15 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 		UT_ASSERT( iRealDeleteCount <= iHigh - iLow + 1 );
 		_charMotion(true,iHigh - iLow - iRealDeleteCount);
 	}
-
+//
+// Make sure the insertion point is in a legal position
+//
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	while(!isPointLegal() && getPoint() < posEnd)
+	{
+		_charMotion(true,1);
+	}
 	m_pG->getCaret()->enable();
 }
 

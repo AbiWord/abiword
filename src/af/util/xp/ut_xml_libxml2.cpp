@@ -101,8 +101,9 @@ static void _errorSAXFunc(void *ctx,
   va_start (args, msg);
   UT_String errorMessage(UT_String_vprintf (msg, args));
   va_end (args);
-
+  UT_DEBUGMSG(("SAX function error here \n"));
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
+  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 static void _fatalErrorSAXFunc(void *ctx,
@@ -113,8 +114,10 @@ static void _fatalErrorSAXFunc(void *ctx,
   va_start (args, msg);
   UT_String errorMessage(UT_String_vprintf (msg, args));
   va_end (args);
+  UT_DEBUGMSG((" fatal SAX function error here \n"));
 
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
+  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 #ifdef __MRC__
