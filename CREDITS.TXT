@@ -18,7 +18,7 @@ John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
 Heath D. Carr <heath@abisource.com>
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
-Matt Kimball <robozapp@xmission.com>            layout bugs
+Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 James Lefavour <James@albany.net>               Win98/VC6
