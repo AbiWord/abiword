@@ -4706,8 +4706,24 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 
 			if (sz_property && sz_comment)
 				{
-					const UT_UTF8String * prop = m_pie->getProperty (sz_property->utf8_str ());
+#ifdef HTML_META_SUPPORTED
+					UT_UTF8String creator = "";
+#endif /* HTML_META_SUPPORTED */
+					const UT_UTF8String * prop = 0;
 
+					if (*sz_property == "meta::creator")
+						{
+#ifdef HTML_META_SUPPORTED
+							m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, creator);
+
+							if (creator.byteLength ())
+								prop = &creator;
+#endif /* HTML_META_SUPPORTED */
+						}
+					else
+						{
+							prop = m_pie->getProperty (sz_property->utf8_str ());
+						}
 					if (prop)
 						{
 							const UT_UTF8String DD("$$");
