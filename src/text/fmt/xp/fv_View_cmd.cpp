@@ -734,6 +734,7 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 		jPrev = j;
 	}
 	_drawSelection();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -3303,6 +3304,22 @@ void FV_View::cmdCut(void)
 	if (isSelectionEmpty())
 	{
 		// clipboard does nothing if there is no selection
+		return;
+	}
+	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableColumn)
+	{
+		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
+		PT_DocPosition pos = pDR->m_pos1 +1;
+		_clearSelection();
+		cmdDeleteCol(pos);
+		return;
+	}
+	if(m_Selection.getSelectionMode() == FV_SelectionMode_TableRow)
+	{
+		PD_DocumentRange * pDR = m_Selection.getNthSelection(0);
+		PT_DocPosition pos = pDR->m_pos1 +1;
+		_clearSelection();
+		cmdDeleteRow(pos);
 		return;
 	}
 	// Signal PieceTable Change

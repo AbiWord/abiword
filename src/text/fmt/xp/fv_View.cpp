@@ -7481,23 +7481,10 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				return EV_EMC_IMAGE;
 			}
 		}
-		PT_DocPosition posLow = m_Selection.getSelectionAnchor();
-		PT_DocPosition posHigh = getPoint();
-		if(posLow > posHigh)
+		if(m_Selection.isPosSelected(pos))
 		{
-			if((pos >= posHigh) && (pos <= posLow))
-			{
-				m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
-				return EV_EMC_VISUALTEXTDRAG;
-			}
-		}
-		else
-		{
-			if((pos >= posLow) && (pos <= posHigh))
-			{
-				m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
-				return EV_EMC_VISUALTEXTDRAG;
-			}
+			m_prevMouseContext = EV_EMC_VISUALTEXTDRAG;
+			return EV_EMC_VISUALTEXTDRAG;
 		}
 	}
 	

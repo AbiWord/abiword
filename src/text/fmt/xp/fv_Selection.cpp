@@ -150,7 +150,7 @@ bool FV_Selection::isPosSelected(PT_DocPosition pos) const
 	{
 		PD_DocumentRange * pDocRange = static_cast<PD_DocumentRange *>(m_vecSelRanges.getNthItem(i));
 		xxx_UT_DEBUGMSG(("Looking at pos %d low %d hight %d \n",pos, pDocRange->m_pos1,pDocRange->m_pos2 ));
-		if ((pos >= pDocRange->m_pos1) && (pos <= pDocRange->m_pos2))
+		if ((pos >= pDocRange->m_pos1) && (pos <= pDocRange->m_pos2+1))
 		{
 			return true;
 		}

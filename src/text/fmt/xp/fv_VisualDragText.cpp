@@ -179,7 +179,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	PT_DocPosition posHigh = 0;
 
 	fp_Run * pRunLow = NULL;
-	UT_sint32 xLow, yLow;
+	UT_sint32 xLow, yLow,xHigh,yHigh;
 	UT_uint32 heightCaret;
 	UT_sint32 xCaret2, yCaret2;
 	bool bDirection,bEOL;
@@ -201,7 +201,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	{
 		UT_sint32 num = m_pView->getNumSelections();
 		PD_DocumentRange * pR = m_pView->getNthSelection(0);
-		posLow = pR->m_pos1;
+		posLow = pR->m_pos1+1;
 		fl_BlockLayout * pBlock = NULL;
 		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
 		while(pBlock->isEmbeddedType())
@@ -210,7 +210,7 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 			m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
 		}
 		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
-		UT_return_if_fail(pCL->getContainerType() != FL_CONTAINER_CELL);
+		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
 		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
 		fp_CellContainer * pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
@@ -224,21 +224,21 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 // Now the other end of the column
 //
 	    pR = m_pView->getNthSelection(num-1);
-		posHigh = pR->m_pos1;
-		m_pView->_findPositionCoords(posHigh, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+		posHigh = pR->m_pos1+1;
+		m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
 		while(pBlock->isEmbeddedType())
 		{
 			posHigh++;
-			m_pView->_findPositionCoords(posHigh, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
+			m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
 		}
 		pCL = pBlock->myContainingLayout();
-		UT_return_if_fail(pCL->getContainerType() != FL_CONTAINER_CELL);
+		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
 		pCell = static_cast<fl_CellLayout *>(pCL);
 		pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
 		pRect = pCCon->getScreenRect();
-		UT_sint32 xHigh = pRect->left+ pRect->width;
-		UT_sint32 yHigh = pRect->top + pRect->height;
+		xHigh = pRect->left+ pRect->width;
+		yHigh = pRect->top + pRect->height;
 		delete pRect;
 		m_recCurFrame.width = xHigh - xLow;
 		m_recCurFrame.height = yHigh - yLow;
@@ -260,7 +260,6 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
 	fp_Line * pLineLow = pRunLow->getLine();
 	fp_Run * pRunHigh = NULL;
-	UT_sint32 xHigh, yHigh;
 	m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunHigh);
 	fp_Line * pLineHigh = pRunHigh->getLine();
 //
