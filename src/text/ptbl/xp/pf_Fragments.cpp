@@ -98,6 +98,8 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
 {
+	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
+	
 	UT_ASSERT(pf->getType() != pf_Frag::PFT_EndOfDoc);
 	
 	pf_Frag * pn = pf->getNext();

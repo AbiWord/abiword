@@ -197,6 +197,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 					{
 						pft->changeLength(pft->getLength()+pftNext->getLength());
 						m_fragments.unlinkFrag(pftNext);
+						delete pftNext;
 					}
 				}
 				
@@ -229,6 +230,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 					{
 						pftPrev->changeLength(pftPrev->getLength()+pft->getLength());
 						m_fragments.unlinkFrag(pft);
+						delete pft;
 					}
 				}
 			
