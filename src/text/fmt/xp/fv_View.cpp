@@ -9406,86 +9406,177 @@ bool s_notChar(UT_UCSChar c)
 	return res;
 }
 
-FV_DocCount FV_View::countWords(void)
+/*!
+ Count words
+ \return structure with word counts
+ Count words in document (or selection).
+*/
+FV_DocCount
+FV_View::countWords(void)
 {
 	FV_DocCount wCount;
 	memset(&wCount,0,sizeof(wCount));
 
 	bool isPara = false;
 
-	fl_SectionLayout * pSL = m_pLayout->getFirstSection();
-	while (pSL)
+	PT_DocPosition low, high;
+
+	// Find selection bounds - if no selection, use bounds of entire
+	// document
+	if (isSelectionEmpty())
 	{
-		fl_BlockLayout * pBL = pSL->getFirstBlock();
-		while (pBL)
+		getEditableBounds(false, low);
+		getEditableBounds(true, high);
+	}
+	else
+	{
+		if(m_iInsPoint < m_iSelectionAnchor)
 		{
-			UT_GrowBuf gb(1024);
-			pBL->getBlockBuf(&gb);
-			const UT_UCSChar * pSpan = gb.getPointer(0);
-			UT_uint32 len = gb.getLength();
-			
-			// count words in pSpan[0..len]
-			UT_uint32 i;
-			bool newWord = false;
-			bool delim = true;
-			for (i = 0; i < len; i++)
+			low  = m_iInsPoint;
+			high = m_iSelectionAnchor;
+		}
+		else
+		{
+			high = m_iInsPoint;
+			low  = m_iSelectionAnchor;
+		}
+	}
+
+	UT_sint32 iSelLen = high - low;
+	fl_BlockLayout * pBL = _findBlockAtPosition(low);
+
+	// Selection may start inside first block
+	UT_sint32 iStartOffset = 0, iLineOffset = 0, iCount = 0;
+	fp_Line* pLine = pBL->getFirstLine();
+	fp_Run* pRun = pLine->getFirstRun();
+	fp_Page* pPage = pLine->getContainer()->getPage();
+	wCount.page = 1;
+	if (low > pBL->getPosition())
+	{
+		iStartOffset = low - pBL->getPosition();
+		// Find first line in selection
+		if (pLine && iLineOffset < iStartOffset)
+		{
+			fp_Run* pPrevRun = NULL;
+			while (pRun && iLineOffset < iStartOffset)
 			{
-				if (!s_notChar(pSpan[i]))
-				{
-					wCount.ch_sp++;
-					isPara = true;
-
-					switch (pSpan[i])
-					{
-					case UCS_SPACE:
-					case UCS_NBSP:
-					case UCS_EN_SPACE:
-					case UCS_EM_SPACE:
-						break;
-
-					default:
-						wCount.ch_no++;
-					}
-				}
-				UT_UCSChar followChar;
-				followChar = (i+1 < len) ? pSpan[i+1] : UCS_UNKPUNK;
-				newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar));
-				
-				delim = UT_isWordDelimiter(pSpan[i], followChar);
-				
-				/*
-				  CJK-FIXME: this can work incorrectly under CJK locales since it can
-				  give 'true' for UCS with value >0xff (like quotes, etc).
-				*/
-				if (newWord || XAP_EncodingManager::get_instance()->is_cjk_letter(pSpan[i]))
-					wCount.word++;
-			
+				iLineOffset += pRun->getLength();
+				pPrevRun = pRun;
+				pRun = pRun->getNext();
+			}
+			UT_ASSERT(pRun);
+			if (!pRun)
+			{
+				pRun = pBL->getNext()->getFirstRun();
 			}
 
-		
-			// count lines
-
-			fp_Line * pLine = pBL->getFirstLine();
-			while (pLine)
+			iLineOffset -= iStartOffset;
+			UT_ASSERT(iLineOffset >= 0);
+			pLine = pRun->getLine();
+			pPage = pLine->getContainer()->getPage();
+			if (pPrevRun->getLine() != pLine)
 			{
 				wCount.line++;
-				pLine = pLine->getNext();
+				if (pPrevRun->getLine()->getContainer()->getPage() != pPage)
+					wCount.page++;
 			}
-			
-			if (isPara)
-			{
-				wCount.para++;
-				isPara = false;
-			}
-	
-			pBL = pBL->getNext();
 		}
-		pSL = pSL->getNext();
-
 	}
-	// count pages
-	wCount.page = m_pLayout->countPages();
-	
+
+	while (NULL != pBL && iCount < iSelLen)
+	{
+		UT_GrowBuf gb(1024);
+		pBL->getBlockBuf(&gb);
+		const UT_UCSChar * pSpan = gb.getPointer(0);
+		UT_uint32 len = gb.getLength();
+
+		UT_uint32 i = iStartOffset;
+		iStartOffset = 0;
+
+		// Count lines and pages
+		while (pLine && iLineOffset < iSelLen)
+		{
+			wCount.line++;
+
+			// If this line is on a new page, increment page count
+			if (pLine->getContainer()->getPage() != pPage)
+			{
+				wCount.page++;
+				pPage = pLine->getContainer()->getPage();
+			}
+
+			// Add length for runs on this line
+			while (pRun && pRun->getLine() == pLine)
+			{
+				iLineOffset += pRun->getLength();
+				pRun = pRun->getNext();
+			}
+			pLine = pLine->getNext();
+			UT_ASSERT((pLine && pRun) || ((void*)pLine == (void*)pRun));
+			UT_ASSERT(!pLine || pLine->getFirstRun() == pRun);
+		}
+
+		bool newWord = false;
+		bool delim = true;
+		for (; i < len; i++)
+		{
+			if (++iCount > iSelLen) break;
+
+			if (!s_notChar(pSpan[i]))
+			{
+				wCount.ch_sp++;
+				isPara = true;
+
+				switch (pSpan[i])
+				{
+				case UCS_SPACE:
+				case UCS_NBSP:
+				case UCS_EN_SPACE:
+				case UCS_EM_SPACE:
+					break;
+					
+				default:
+					wCount.ch_no++;
+				}
+			}
+			UT_UCSChar followChar;
+			followChar = (i+1 < len) ? pSpan[i+1] : UCS_UNKPUNK;
+			newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar));
+			
+			delim = UT_isWordDelimiter(pSpan[i], followChar);
+				
+			// CJK-FIXME: this can work incorrectly under CJK locales
+			// since it can give 'true' for UCS with value >0xff (like
+			// quotes, etc).
+			if (newWord || 
+				XAP_EncodingManager::get_instance()->is_cjk_letter(pSpan[i]))
+				wCount.word++;
+		}
+
+		if (isPara)
+		{
+			wCount.para++;
+			isPara = false;
+		}
+
+		// Get next block
+		fl_BlockLayout* pNextBlock = pBL->getNext();
+		if (NULL == pNextBlock)
+		{
+			// If NULL, go to next section
+			fl_SectionLayout* pSL = pBL->getSectionLayout()->getNext();
+			if (pSL)
+				pNextBlock = pSL->getFirstBlock();
+		}
+		pBL = pNextBlock;
+		pLine = NULL;
+		pRun = NULL;
+		if (pBL)
+			pLine = pBL->getFirstLine();
+		if (pLine)
+			pRun = pLine->getFirstRun();
+	}
+
 	return (wCount);
 }
 
