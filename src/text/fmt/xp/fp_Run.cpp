@@ -115,6 +115,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 #else
 		m_pFont(0),
 #endif
+		m_bRecalcWidth(false),
 		m_fDecorations(0),
 		m_iLineWidth(0),
 		m_iLinethickness(0),

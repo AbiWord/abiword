@@ -106,6 +106,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_yPoint(0),
 		m_xPoint2(0),
 		m_yPoint2(0),
+		m_bPointDirection(false) /* now what semantics is this? */,
+		m_bDefaultDirectionRtl(false),
+		m_bUseHebrewContextGlyphs(false),
 		m_iPointHeight(0),
 		m_xPointSticky(0),
 		m_bPointVisible(false),
@@ -6989,9 +6992,14 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		{
 			pSL = (fl_SectionLayout *) pSL->getNext();
 			pFirstBL = (fl_BlockLayout *) pSL->getFirstLayout();
-			posNext = pFirstBL->getPosition(true) - 1;
-			if(posNext < posFirst)
-				posFirst = posNext;
+			// Make sure the first fl_BlockLayout of this new
+			// fl_SectionLayout is valid.
+			if (pFirstBL)
+			{
+				posNext = pFirstBL->getPosition(true) - 1;
+				if(posNext < posFirst)
+					posFirst = posNext;
+			}
 		}
 		posEOD = posFirst;
 		return res;

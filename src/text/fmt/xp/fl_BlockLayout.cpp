@@ -5915,9 +5915,14 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	// attributes and properties are the default values
 	//
 	List_Type lType;
-	PD_Style * pStyle;
-	const XML_Char * szDelim,*szDec, * szStart, * szAlign, * szIndent;
-	const XML_Char * szFont,* szListStyle;
+	PD_Style* pStyle = 0;
+	const XML_Char* szDelim     = 0;
+	const XML_Char* szDec       = 0;
+	const XML_Char* szStart     = 0;
+	const XML_Char* szAlign     = 0;
+	const XML_Char* szIndent    = 0;;
+	const XML_Char* szFont      = 0;
+	const XML_Char* szListStyle = 0;;
 	UT_uint32 startv, level, currID;
 
 	// TODO -- this mixture of float and double is a mess, we should
@@ -5945,6 +5950,7 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 			startv = atoi(szStart);
 		else
 			startv = 1;
+
 		if (szAlign)
 			fAlign = (float)UT_convertToInches(szAlign);
 		else
