@@ -727,13 +727,18 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
 	return ans;
 }
 
-UT_Error XAP_Frame::backup()
+/**
+ * It saves the current document with an extension stExt.
+ * If the extension is empty, then it save the document with
+ * the default extension (as defined in the preferences dialog box)
+ */
+UT_Error XAP_Frame::backup(const char* stExt)
 {
 	if (m_bBackupRunning)
 		return UT_OK;
 	m_bBackupRunning = true;
 
-	UT_String &ext = m_stAutoSaveExt;
+	UT_String ext(stExt ? stExt : m_stAutoSaveExt);
 	UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
 	UT_String backupName;
 

@@ -1447,7 +1447,7 @@ static gint s_signal_count = 0;
 /*!
   This function actually handles signals.  The most commonly recieved
   one is SIGSEGV, the segfault signal.  We want to clean up, save the
-  user's files to backup locations (currently <filename>.bak) and then
+  user's files to backup locations (currently <filename>.SEGFAULTED) and then
   call abort, so we still get a core dump that we can debug.
   \param sig_num the integer representing which signal we recieved
 */
@@ -1472,7 +1472,7 @@ void AP_UnixApp::catchSignals(int sig_num)
     {
 		AP_UnixFrame * curFrame = (AP_UnixFrame*) m_vecFrames[i];
 		UT_ASSERT(curFrame);
-		curFrame->backup();
+		curFrame->backup(".SEGFAULTED");
     }
     
     fflush(stdout);
