@@ -35,7 +35,9 @@
 #include <Menus.h>
 #include <Devices.h>
 #include <Events.h>
-#include <AEInteraction.h>
+#ifdef XP_MAC_TARGET_MACOSX
+# include <AEInteraction.h>
+#endif
 
 /* end */
 
