@@ -160,8 +160,8 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 										   const char ** pszSuffixList,
 										   IEFileType * ft)
 {
-	*pszDesc = "XHTML (.html)";
-	*pszSuffixList = "*.html";
+	*pszDesc = "XHTML (.html, .htm, .xhtml)";
+	*pszSuffixList = "*.html; *.htm; *.xhtml";
 	*ft = getFileType();
 	return true;
 }

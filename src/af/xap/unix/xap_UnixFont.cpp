@@ -245,7 +245,8 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	else
 	{
 		m_fontType = FONT_TYPE_UNKNOWN;
-		return false;
+		if(!m_is_cjk)	/* cjk has different fonts.dir format. */
+		    return false;
 	}
 
 	return true;

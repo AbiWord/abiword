@@ -479,6 +479,23 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 void XAP_UnixFontManager::_allocateCJKFont(const char * line,
 											   int iLine)
 {
+	/*
+	  Each line for cjk fonts.dir files comes in as:
+	  
+	  Song-Medium-GB-EUC-H, -default-song-medium-r-normal--0-0-0-0-c-0-gb2312.1980-0, 880, 120, 1000
+	  
+	  We consider everything up to the first comma to be the postscript
+	  font name which we will use for postscript printing. 
+	  The second field is the XLFD of the font. The next 3 fields are
+	  the ascent, descent and width of the font.
+	  
+	  FIXME: We might want to change the format of the file to having 
+	  the first field as the actually font filename. And insert the
+	  postscript fontname to the 3rd field. This will agree better with
+	  standard fonts.dir. Comma still has to be used as the seperator
+	  since white spaces are valid XLFD characters.
+	*/
+
 	gchar **sa= g_strsplit(line,",",5);
 
 	g_strstrip(sa[0]);

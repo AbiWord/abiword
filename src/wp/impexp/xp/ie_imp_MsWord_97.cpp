@@ -1182,8 +1182,8 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	// The majority of this code has just been ripped out of wv/field.c
 	//
 
-	static U16 *which;
-	static int i, depth;
+	static U16 *which = 0;
+	static int i = 0, depth = 0;
 	char *a = 0;
 	static char *c = 0;
 	static int ret = 0;
@@ -1225,6 +1225,12 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	    UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
 	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	    return 1;
+	}
+
+	if (!which) {
+		UT_DEBUGMSG(("DOM: _fieldProc - 'which' is null\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 1;
 	}
 	
 	if (chartype)
