@@ -56,7 +56,7 @@ static UT_sint32 compareAPBinary(const void * vX1, const void * vX2)
 // vX1 is actually the key value (a UT_uint32 checkSum) cast into a
 // void * pointer so this cast is correct even on a 64 bit machine
 //
-	UT_uint32 u1 = reinterpret_cast<UT_uint32>(vX1);
+	UT_uint32 u1 = ((UT_uint32) (vX1));
 	PP_AttrProp *x2 = *(PP_AttrProp **)(vX2);
 	UT_uint32 u2 = x2->getCheckSum();
 
