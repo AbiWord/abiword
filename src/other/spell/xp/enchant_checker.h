@@ -44,7 +44,7 @@ private:
 	SpellChecker::SpellCheckResult _checkWord (const UT_UCSChar * word, size_t len);
 	UT_Vector * _suggestWord (const UT_UCSChar * word, size_t len);
 
-	EnchantDict *m_dic;
+	EnchantDict *m_dict;
 };
 
 #endif
