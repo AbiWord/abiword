@@ -2634,10 +2634,8 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty())
 	{
-		m_pDoc->beginUserAtomicGlob();
-		PP_AttrProp AttrProp_Before;
-		_deleteSelection(&AttrProp_Before);
-		m_pDoc->endUserAtomicGlob();
+		_clearSelection();
+		_resetSelection();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
 //
