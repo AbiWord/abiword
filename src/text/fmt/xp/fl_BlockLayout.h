@@ -185,8 +185,6 @@ public:
 	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);
 
 	UT_sint32       getHeightOfBlock(void);
-	fl_BlockLayout* getNextBlockInDocument(void) const;
-	fl_BlockLayout* getPrevBlockInDocument(void) const;
 	fp_Line *       findLineWithFootnotePID(UT_uint32 pid);
 	UT_sint32 getMaxNonBreakableRun(void);
 
