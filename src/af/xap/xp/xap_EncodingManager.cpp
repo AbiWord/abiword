@@ -930,13 +930,12 @@ void XAP_EncodingManager::initialize()
 	{
 	    fontsizes_mapping.clear();
 	    const char** fontsizes = cjk_locale() ? cjk_fontsizes : non_cjk_fontsizes;
-	    UT_String buf;
 	    for(const char** cur=fontsizes; *cur; ++cur) 
 		{
-			buf += " ";
-			buf += *cur;
-			buf += " ";
-			fontsizes_mapping.add(*cur, buf.c_str());
+		  UT_String buf ( " " );
+		  buf += *cur;
+		  buf += " ";
+		  fontsizes_mapping.add(*cur, buf.c_str());
 	    }
 	}
 	
