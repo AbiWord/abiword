@@ -282,6 +282,8 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 	case ')':
 	case '[':
 	case ']':
+    case '{':
+    case '}':
 	case '<':
 	case '>':
 	case '*':
