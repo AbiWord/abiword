@@ -55,8 +55,8 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 {
 	bool bUseFix2 = bUseCurrency;
 	bool bUseInt = false;
-	double res = 0.000001;
-	if(fabs(d) > 0.00001)
+	double res = 0.0000000001;
+	if(fabs(d) > 0.0000000001)
 	{
 		res = res*d;
 	}
@@ -138,8 +138,11 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 			}
 			if(bUseFix2)
 			{
-				iVal = static_cast<UT_sint32>(a);
-				d = static_cast<double>(iVal)/100.0;
+				if(fabs(a) < 1e9)
+				{
+					iVal = static_cast<UT_sint32>(a);
+					d = static_cast<double>(iVal)/100.0;
+				}
 			}
 		}
 	}
@@ -179,6 +182,10 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	cCurrency = '$';
 	PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
 	PD_Document * pDoc = getBlock()->getDocument();
+	if(pDoc->isPieceTableChanging())
+	{
+		return false;
+	}
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
 	pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
@@ -200,6 +207,10 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	for(row = 0; row < numRows; row++)
 	{
 		fp_CellContainer * pCCon = pTAB->getCellAtRowColumn(row,col);
+		if(pCCon == NULL)
+		{
+			return false;
+		}
 		if(pCCon->getTopAttach() == lastRow)
 		{
 			continue;
@@ -268,6 +279,10 @@ bool fp_FieldTableSumCols::calculateValue(void)
 
 	PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
 	PD_Document * pDoc = getBlock()->getDocument();
+	if(pDoc->isPieceTableChanging())
+	{
+		return false;
+	}
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
 	pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
@@ -292,6 +307,10 @@ bool fp_FieldTableSumCols::calculateValue(void)
 	for(col = 0; col < numCols; col++)
 	{
 		fp_CellContainer * pCCon = pTAB->getCellAtRowColumn(row,col);
+		if(pCCon == NULL)
+		{
+			return false;
+		}
 		if(pCCon->getLeftAttach() == lastCol)
 		{
 			continue;
