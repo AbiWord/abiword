@@ -189,6 +189,7 @@ public:
 
 	UT_Bool					checkWord(fl_PartOfBlock* pPOB);
 	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
+	void					recheckIgnoredWords();
 
 	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
 	
@@ -222,7 +223,7 @@ protected:
 
 	void					_purgeSquiggles(void);
 	UT_sint32				_findSquiggle(UT_uint32 iOffset) const;
-	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen);
+	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, UT_Bool bIsIgnored = UT_FALSE);
 	void					_updateSquiggle(fl_PartOfBlock* pPOB);
 	void					_insertSquiggles(UT_uint32 iOffset, 
 											 UT_uint32 iLength);
@@ -299,6 +300,8 @@ public:
 
 	UT_uint32	iOffset;
 	UT_uint32	iLength;
+
+	UT_Bool		bIsIgnored;
 
 protected:
 };

@@ -1036,6 +1036,7 @@ fl_PartOfBlock::fl_PartOfBlock(void)
 {
 	iOffset = 0;
 	iLength = 0;
+	bIsIgnored = UT_FALSE;
 }
 
 UT_Bool fl_PartOfBlock::doesTouch(UT_uint32 offset, UT_uint32 length) const
@@ -1113,7 +1114,7 @@ UT_sint32 fl_BlockLayout::_findSquiggle(UT_uint32 iOffset) const
 	return res;
 }
 
-void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
+void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, UT_Bool bIsIgnored /* = UT_FALSE */)
 {
 	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
 	if (!pPOB)
@@ -1123,6 +1124,7 @@ void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	
 	pPOB->iOffset = iOffset;
 	pPOB->iLength = iLen;
+	pPOB->bIsIgnored = bIsIgnored;
 
 	m_vecSquiggles.addItem(pPOB);
 
@@ -1578,9 +1580,10 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 				XAP_App * pApp = m_pLayout->getView()->getApp();
 
 			   	if (!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength) &&
-					!pDoc->isIgnore(    &(pBlockText[wordBeginning]), wordLength) &&
 					!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength))
 				{
+					UT_Bool bIsIgnored = pDoc->isIgnore(&(pBlockText[wordBeginning]), wordLength);
+
 					// unknown word...
 					if (bToggleIP && !bUpdateScreen)
 					{
@@ -1592,7 +1595,7 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 					}
 
 					// squiggle it
-					_addSquiggle(wordBeginning, wordLength);
+					_addSquiggle(wordBeginning, wordLength, bIsIgnored);
 				}
 			}
 
@@ -1658,11 +1661,11 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		XAP_App * pApp = m_pLayout->getView()->getApp();
 
 		if (!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength) &&
-			!pDoc->isIgnore(    &(pBlockText[wordBeginning]), wordLength) &&
 			!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength))
 		{
 			// squiggle it
 			m_vecSquiggles.addItem(pPOB);
+			pPOB->bIsIgnored = pDoc->isIgnore(    &(pBlockText[wordBeginning]), wordLength);
 
 			_updateSquiggle(pPOB);
 
@@ -2855,7 +2858,8 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			}
 
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
-			(static_cast<fp_TextRun*>(pRun))->drawSquiggle(iStart, iLen);
+			if ( !pPOB->bIsIgnored )
+				(static_cast<fp_TextRun*>(pRun))->drawSquiggle(iStart, iLen);
 		}
 	}
 }
@@ -3314,4 +3318,92 @@ done:
 	}
 
 	return UT_TRUE;
+}
+
+void fl_BlockLayout::recheckIgnoredWords()
+{
+	fp_Run	   *pRun = m_pFirstRun;
+	UT_uint32  runBlockOffset = pRun->getBlockOffset();
+	UT_uint32  runLength = pRun->getLength();
+	fl_PartOfBlock*	pPOB;
+	
+	// for scanning a word	
+	UT_uint32 wordBeginning, wordLength;
+	UT_Bool bAllUpperCase;
+	UT_Bool bHasNumeric;
+	UT_uint32 eor;
+
+	// buffer to hold text
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+
+	PD_Document * pDoc = m_pLayout->getDocument();
+	FV_View* pView = m_pLayout->getView();
+	XAP_App * pApp = pView->getApp();
+	UT_Bool bUpdate = UT_FALSE;
+
+	/* For all misspelled words in this run, call the run->drawSquiggle() method */
+
+	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
+	UT_uint32 i;
+	for (i=0; i<iSquiggles; i++)
+	{
+		pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(i);
+		
+		wordBeginning = pPOB->iOffset; 
+		wordLength = 0;
+		bAllUpperCase = UT_FALSE;
+		bHasNumeric = UT_FALSE;
+		eor = pPOB->iOffset + pPOB->iLength; /* end of region */
+
+		while (!bAllUpperCase && ((wordBeginning + wordLength) < eor))
+		{
+			UT_ASSERT(!UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ));
+
+			if (bAllUpperCase)
+				bAllUpperCase = UT_UCS_isupper(pBlockText[wordBeginning + wordLength]);
+
+			if (!bHasNumeric)
+				bHasNumeric = UT_UCS_isdigit(pBlockText[wordBeginning + wordLength]);
+
+			wordLength++;
+		}
+
+		wordLength = pPOB->iLength;
+
+		// for some reason, the spell checker fails on all 1-char words & really big ones
+		if ((wordLength > 1) && 
+			(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
+			(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
+			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
+			(wordLength < 100) &&
+
+			(!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength)) &&
+			(!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength)))
+		{
+				// squiggle it
+			pPOB->bIsIgnored = pDoc->isIgnore( &(pBlockText[wordBeginning]), wordLength);
+		}
+		else
+		{
+			// remove
+			m_vecSquiggles.deleteNthItem(i);
+			i--;
+			iSquiggles--;
+
+			// forget about it
+			delete pPOB;
+		} // if valid word
+
+		_updateSquiggle(pPOB);
+
+		bUpdate = UT_TRUE;
+	}
+	if (bUpdate && pView)
+	{
+		pView->updateScreen();
+		pView->_drawInsertionPoint();
+	}
 }

@@ -30,6 +30,8 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Prefs.h"
+#include "fv_View.h"
+#include "fl_DocLayout.h"
 
 #include "ap_Dialog_Options.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -333,13 +335,20 @@ void AP_Dialog_Options::_event_IgnoreReset(void)
 		// if no to all documents, then just reset current (because we made it
 		// this far
 		m_pFrame->getCurrentDoc()->clearIgnores();
+
+		((FV_View *)m_pFrame->getCurrentView())->getLayout()->recheckIgnoredWords();
 	}	
 	else 
 	{
 		// reset all doc's ignored words
 		UT_uint32 ndx;
 		for ( ndx = 0; ndx < pApp->getFrameCount(); ndx++ )
-			pApp->getFrame(ndx)->getCurrentDoc()->clearIgnores();
+		{
+			XAP_Frame *pFrame = pApp->getFrame(ndx);
+
+			pFrame->getCurrentDoc()->clearIgnores();
+			((FV_View *)pFrame->getCurrentView())->getLayout()->recheckIgnoredWords();
+		}
 	}
 
 	// TODO : recheck spelling

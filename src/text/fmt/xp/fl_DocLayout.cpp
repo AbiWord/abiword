@@ -805,3 +805,18 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	}
 }
 
+void FL_DocLayout::recheckIgnoredWords()
+{
+	// recheck the whole doc
+	fl_DocSectionLayout * pSL = getFirstSection();
+	while (pSL)
+	{
+		fl_BlockLayout* b = pSL->getFirstBlock();
+		while (b)
+		{
+			b->recheckIgnoredWords();
+			b = b->getNext();
+		}
+		pSL = (fl_DocSectionLayout *) pSL->getNext();
+	}
+}

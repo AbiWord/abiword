@@ -131,6 +131,9 @@ public:
 	UT_Bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
 	UT_Bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
 	UT_Bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
+
+	void		recheckIgnoredWords();
+
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif
