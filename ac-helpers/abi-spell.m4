@@ -49,7 +49,7 @@ if test $abi_spell != ispell; then
 		abi_pspell_libs="-lpspell -lpspell-modules -lltdl"
 	else
 		abi_pspell_cflags=""
-		abi_pspell_libs="-lpspell -lltdl"
+		abi_pspell_libs="-lpspell -laspell -laspell-common -lltdl"
 	fi
 	if test $abi_spell = pspell; then
 		abi_pspell_cflags="-I$abi_pspell_opt/include"
