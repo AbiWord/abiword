@@ -719,7 +719,11 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			// there is clear screen there
 			//
 			UT_sint32 j = runIndex - 1;
-			fp_Run * pPrev = pRun->getPrev();
+			fp_Run * pPrev = NULL;
+			if(j>=0)
+			{
+				pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
+			}
 			UT_sint32 leftClear = 0;
 			while(j >= 0 && pPrev != NULL && pPrev->getLength() == 0)
 			{
@@ -737,12 +741,11 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			UT_sint32 xoffLine, yoffLine;
 		
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-			if(pPrev)
-				xxx_UT_DEBUGMSG(("cleartoend prun leftOffset %d xpos %d pPrev->getType()= %d \n",leftClear,xoff,pPrev->getType()));
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
+
 			UT_RGBColor * pClr = pRun->getPageColor();
-			xxx_UT_DEBUGMSG(("ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
+
 			pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
@@ -821,7 +824,6 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
 			j--;
 		}
-		xxx_UT_DEBUGMSG(("cleartoend index j= %d initial start %d \n",j,runIndex-1)); 
 		leftClear = pRun->getDescent();
 		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
 			leftClear = 0;
@@ -836,12 +838,24 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-		xxx_UT_DEBUGMSG(("cleartoend irun leftOffset %d xpos %d \n",leftClear,xoff));
-		xxx_UT_DEBUGMSG(("cleartoend index xoff %d xoffline %d \n",xoff,xoffLine));
+		fp_Line * pPrevLine = getPrevLineInSection();
+		if(pPrevLine != NULL)
+		{
+			UT_sint32 xPrev=0;
+			UT_sint32 yPrev=0;
+			fp_Run * pLastRun = pPrevLine->getLastRun();
+			if(pLastRun != NULL)
+			{
+				pPrevLine->getScreenOffsets(pLastRun,xPrev,yPrev);
+				if((leftClear >0) && (yPrev > 0) && (yPrev == yoffLine))
+				{
+					leftClear = 0;
+				}
+			}
+		}
 		if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 		UT_RGBColor * pClr = pRun->getPageColor();
-		xxx_UT_DEBUGMSG(("ClearToEnd index cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
 		pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos  + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.

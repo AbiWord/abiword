@@ -440,14 +440,14 @@ bool fp_Page::breakPage(void)
 		{
 //
 // OK we want to delete this column if the docsection of the 
-// previous column continues onto the next page.
+// previous column continues onto the next or even subsequent pages.
 //
 			fp_Page * pPNext = getNext();
+			fl_DocSectionLayout * pPrevDSL = getNthColumnLeader(i-1)->getDocSectionLayout();
 			if(pPNext== NULL)
 			{
 				return true;
 			}
-			fl_DocSectionLayout * pPrevDSL = getNthColumnLeader(i-1)->getDocSectionLayout();
 			if(pPrevDSL == pPrev->getDocSectionLayout())
 			{
 				return true;
@@ -469,109 +469,75 @@ bool fp_Page::breakPage(void)
 		}
 	}
 	return false;
-//
-// OK now i is one less than count and points to our orphaned container
-//
-//
-// We enter this loop if there are column Leaders left but no space to put them
-// on the page. These will have to be deleted and the content restributed on 
-// subsequent pages.
-//
-// OK collapse the blocks with lines in this container. Then format the section.
-//
-#if 0
-	fl_DocSectionLayout * pCurSL = NULL;
-	fl_BlockLayout * pFirstBlockToFormat = NULL;
-	while (i < count)
-	{
-		fp_Column* pLeader = getNthColumnLeader(i);
-		fl_DocSectionLayout* pSL = pLeader->getDocSectionLayout();
-		fl_BlockLayout *pCurBL = NULL;
-		while(pLeader != NULL)
-		{
-			UT_Vector vBlock;
-			vBlock.clear();
-			fp_Line * pLine = pLeader->getFirstLine();
-			while(pLine != NULL)
-			{
-				if(pLine->getBlock() != pCurBL)
-				{
-					pCurBL = pLine->getBlock();
-					if(vBlock.getItemCount() == 0)
-					{
-						vBlock.addItem( (void *) pCurBL);
-					}
-					else
-					{
-						if(vBlock.findItem(pCurBL) < 0)
-						{
-							vBlock.addItem((void *) pCurBL);
-						}
-					}
-				}
-				pLine = pLine->getNext();
-			}
-//
-// Now collapse the blocks that generated these lines.
-//
-			for(UT_uint32 j = 0; j< vBlock.getItemCount(); j++)
-			{
-				pCurBL = (fl_BlockLayout *) vBlock.getNthItem(j);
-				if((j == 0) && (pFirstBlockToFormat == NULL))
-				{
-					UT_DEBUGMSG(("SEVIOR: First block to format is %x \n",pCurBL));
-					pFirstBlockToFormat = pCurBL;
-				}
-				if(!pCurBL->isCollapsed())
-				{
-					UT_DEBUGMSG(("SEVIOR: Collapsing block  %x \n",pCurBL));
-					pCurBL->collapse();
-				}
-			}
-			pLeader = pLeader->getFollower();
-		}
-		
-		if(pSL != pCurSL)
-		{
-			pCurSL = pSL;
-			pCurSL->markForReformat();
-		}
-//
-// This will take care of all bookkeeping and destructing.
-//
-		pCurSL->deleteEmptyColumns();
-		UT_DEBUGMSG((" fp_Page::BreakSection i < count, i= %d count= %d \n",i,count)); 
-		i++;
-	}
-//
-// Now reformat
-//
-	if(pFirstBlockToFormat != NULL)
-	{
-		fl_BlockLayout * pLastValidBlock = pFirstBlockToFormat->getPrev();
-		fl_BlockLayout * pBL = pFirstBlockToFormat;
-		pCurSL = (fl_DocSectionLayout *)  pBL->getSectionLayout();
-		while(pBL != NULL)
-		{
-			pBL->format();
-			pBL = pBL->getNext();
-		}
-		pCurSL->breakSection(pLastValidBlock);
-		pCurSL = pCurSL->getNextDocSection();
-		while(pCurSL != NULL)
-		{
-			if(pCurSL->needsReFormat())
-			{
-				pCurSL->format();
-			}
-			pCurSL = pCurSL->getNextDocSection();
-		}
-		m_pLayout->deleteEmptyColumnsAndPages();
-	}
-#endif
 }
 
+#if 0
+/*!
+ * Return true if a column on the page has a docsectionlayout as given.
+ */
+bool fp_Page::isDSLOnPage(fl_DocSectionLayout * pDSLToFind)
+{
+	int count = countColumnLeaders();
+	if (count <= 0)
+	{
+		return;
+	}
+	UT_uint32 i = 0; 
+	for(i=0; i< count)
+	{
+		fl_DocSectionLayout * pDSL = getNthColumnLeader(i)->getDocSectionLayout();
+		if(pDSL ==  pDSLToFind)
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
+/*!
+ * Return the column previous to this one
+ */
+fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
+{
+	UT_sint32 count = pPage->countColumnLeaders();
+	UT_sint32 i=0;
+	fp_Column * pFound = NULL;
+	for(i=0; i< count: i++)
+	{
+		pFound = (fp_Column *) pPage->getNthColumn(i);
+		if(pFound == pCol)
+		{
+			break;
+		}
+	}
+	if( i == count)
+	{
+		return NULL;
+	}
+	if(i>0)
+	{
+		pFound = pPage->getNthColumn(i-1);
+		return pFound;
+	}
+	else
+	{
+		fp_Page * pPrev = pPage->getPrev();
+		if(pPrev == NULL)
+		{
+			return NULL;
+		}
+		count = pPage->countColumnLeaders();
+		if(count <1 )
+		{
+			return NULL;
+		}
+	    else
+		{
+			pFound = pPrev->getNthColumn(count-1);
+		}
+	}
+}
+#endif
 
 void fp_Page::_reformat(void)
 {
@@ -584,7 +550,6 @@ void fp_Page::_reformat(void)
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fp_Column * pLastCol = NULL;
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
-	
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 	
 	UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
