@@ -60,4 +60,10 @@ int  UT_QNXBlockWidget(PtWidget_t *widget, int block);
 int  UT_QNXComboSetPos(PtWidget_t *widget, int index);
 int  UT_QNXComboGetPos(PtWidget_t *widget);
 
+/*
+ Focus helpers 
+*/
+void connectFocusModeless(PtWidget_t *widget, XAP_App * pApp);
+void connectFocus(PtWidget_t *widget, XAP_Frame *frame);
+
 #endif /* UT_QNXHELPER_H */

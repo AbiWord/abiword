@@ -6,7 +6,11 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
+#include"xav_View.h"
+#include"xap_Frame.h"
+#include"xap_App.h"
 #include "ut_qnxHelper.h"
+
 
 #include <stdio.h>
 
@@ -135,4 +139,86 @@ int  UT_QNXComboGetPos(PtWidget_t *widget) {
 
 	return (index) ? *index : 0;
 }
+
+/**** All for the modal/modeless dialogs (from unix) ****/
+
+static int focus_in_event(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+      XAP_Frame *pFrame=(XAP_Frame *)data;
+      UT_ASSERT(pFrame);
+      pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
+
+      return Pt_CONTINUE;
+}
+
+static int focus_out_event(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+      XAP_Frame *pFrame=(XAP_Frame *)data;
+      if(pFrame == NULL) return Pt_CONTINUE;
+      AV_View * pView = pFrame->getCurrentView();
+      if(pView != NULL) {
+	     pView->focusChange(AV_FOCUS_NONE);
+      }
+
+      return Pt_CONTINUE;
+}
+
+static int focus_out_event_Modeless(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+	XAP_App *pApp = (XAP_App *)data;
+	XAP_Frame *pFrame = pApp->getLastFocussedFrame();
+	if(pFrame == NULL) {
+		UT_uint32 nframes =  pApp->getFrameCount();
+		if(nframes > 0 && nframes < 10) {     
+			pFrame = pApp->getFrame(0);
+		}
+       	else {
+			return Pt_CONTINUE;
+		}
+	}
+	if(pFrame == NULL) return Pt_CONTINUE;
+	AV_View * pView = pFrame->getCurrentView();
+
+	UT_ASSERT(pView);
+	if(pView!= NULL) {
+		pView->focusChange(AV_FOCUS_NONE);
+	}
+	return Pt_CONTINUE;
+}
+
+
+static int focus_in_event_Modeless(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+	XAP_App *pApp=(XAP_App *)data;
+	XAP_Frame *pFrame= pApp->getLastFocussedFrame();
+
+	if(pFrame == NULL) {
+		UT_uint32 nframes =  pApp->getFrameCount();
+		if(nframes > 0 && nframes < 10) {     
+			pFrame = pApp->getFrame(0);
+		}
+		else {
+			return Pt_CONTINUE;
+		}
+	}
+	if(pFrame == NULL) return Pt_CONTINUE;
+	AV_View * pView = pFrame->getCurrentView();
+	if(pView!= NULL) {
+		pView->focusChange(AV_FOCUS_MODELESS);
+	}
+	return Pt_CONTINUE;
+}
+
+void connectFocus(PtWidget_t *widget, XAP_Frame *frame)
+{
+	PtAddCallback(widget, Pt_CB_GOT_FOCUS, focus_in_event, frame);
+	PtAddCallback(widget, Pt_CB_LOST_FOCUS, focus_out_event, frame);
+	//???
+	PtAddCallback(widget, Pt_CB_DESTROYED, focus_out_event, frame);
+}
+
+void connectFocusModeless(PtWidget_t *widget, XAP_App * pApp)
+{
+	PtAddCallback(widget, Pt_CB_GOT_FOCUS, focus_in_event_Modeless, pApp);
+	PtAddCallback(widget, Pt_CB_LOST_FOCUS, focus_out_event_Modeless, pApp);
+	//???
+	PtAddCallback(widget, Pt_CB_DESTROYED, focus_out_event_Modeless, pApp);
+}
+
 
