@@ -137,8 +137,50 @@
 #endif
 
 
+/*!
+ * This part is not implemented. Same as UT_TODO
+ */
 #define UT_NOT_IMPLEMENTED		0
+
+/*!
+ * This really shouldn't happen
+ */
 #define UT_SHOULD_NOT_HAPPEN	0
+
+/*!
+ * This part is left TODO
+ */
 #define UT_TODO					0
+
+/*!
+ * This line of code should not be reached
+ */
+#define UT_ASSERT_NOT_REACHED() UT_ASSERT(UT_SHOULD_NOT_HAPPEN)
+
+#ifndef UT_DISABLE_CHECKS
+
+/*!
+ * Just return from a function if this condition fails
+ */
+#define UT_return_if_fail(cond) if (!(cond)) { UT_ASSERT(cond); return; }
+
+/*!
+ * Just return this value from a function if this condition fails
+ */
+#define UT_return_val_if_fail(cond, val) if (!(cond)) { UT_ASSERT(cond); return (val); }
+
+/*!
+ * Throw if this condition fails
+ */
+#define UT_throw_if_fail(cond, val) if (!(cond)) { UT_ASSERT(cond); throw val; }
+
+#else
+
+//disable these checks (NOTE: NOT NDEBUG!!!)
+
+#define UT_return_if_fail(cond)
+#define UT_return_val_if_fail(cond, val)
+#define UT_throw_if_fail(cond, val)
+#endif
 
 #endif /* UT_ASSERT_H */
