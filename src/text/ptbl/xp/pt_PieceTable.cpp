@@ -1668,6 +1668,23 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 		}
 		return UT_TRUE;
 
+	case PX_ChangeRecord::PXT_ChangeSpan:
+		{
+			// ChangeSpan is it's own inverse.  similarly, we have a much simpler
+			// job than the main routine, because we have broken up the user's
+			// request into atomic operations.
+
+			const PX_ChangeRecord_SpanChange * pcrs = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
+			pf_Frag_Strux * pfs = NULL;
+			pf_Frag_Text * pft = NULL;
+			PT_BlockOffset fragOffset = 0;
+			if (!getTextFragFromPosition(pcrs->getPosition(),UT_FALSE,&pfs,&pft,&fragOffset))
+				return UT_FALSE;
+			_fmtChange(pft,fragOffset,pcrs->getLength(),pcrs->getIndexAP(),NULL,NULL);
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+			
 	case PX_ChangeRecord::PXT_InsertStrux:
 		{
 			const PX_ChangeRecord_Strux * pcrStrux = static_cast<const PX_ChangeRecord_Strux *>(pcr);
