@@ -70,7 +70,7 @@ bool XAP_CocoaClipboard::getClipboardData(const char** formatAccepted, void ** p
 	const char** current = formatAccepted;
 	NSString* pbType = nil;
 	NSPasteboard* pb = _getPasteboard();
-	while (current) {
+	while (*current) {
 		pbType = nil;
 		if (strcmp(*current, XAP_CLIPBOARD_RTF) == 0) {
 			pbType = NSRTFPboardType;
