@@ -124,6 +124,12 @@ ifeq ($(OS_NAME), CYGWIN)
 OS_NAME = WIN32
 endif
 
+ifeq ($(OS_NAME), WIN32)
+CYGWIN_MAJOR_VERSION := $(shell echo $(OS_RELEASE) | cut -d . -f 1)
+CYGWIN_MINOR_VERSION := $(shell echo $(OS_RELEASE) | cut -d . -f 2)
+CYGWIN_REVISION      := $(shell echo $(OS_RELEASE) | cut -d . -f 3)
+endif
+
 ##################################################################
 ##################################################################
 #### if ABI_OPT_CYGWIN_UNIX is defined then the OS_NAME becomes
@@ -132,6 +138,18 @@ endif
 ifdef ABI_OPT_CYGWIN_UNIX
 ifeq ($(OS_NAME), WIN32)
 OS_NAME = CYGWIN
+endif
+endif
+
+ABI_ESCAPE_QUOTES=NO
+ifeq ($(OS_NAME),WIN32)
+ifeq ($(CYGWIN_MAJOR_VERSION),1)
+ifeq ($(CYGWIN_MINOR_VERSION),1)
+OLD_CYGWIN := $(shell expr $(CYGWIN_REVISION) "<=" 2)
+ifeq ($(OLD_CYGWIN),1)
+ABI_ESCAPE_QUOTES=YES
+endif
+endif
 endif
 endif
 

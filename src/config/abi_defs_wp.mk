@@ -41,7 +41,7 @@ endif
 
 ifdef ABISOURCE_LICENSED_TRADEMARKS
 
-ifeq ($(OS_NAME),WIN32)
+ifeq ($(ABI_ESCAPE_QUOTES),YES)
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord\"\"
 else
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord\""
@@ -49,7 +49,7 @@ endif
 
 else
 
-ifeq ($(OS_NAME),WIN32)
+ifeq ($(ABI_ESCAPE_QUOTES),YES)
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord Personal\"\"
 else
 ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord Personal\""
@@ -64,7 +64,7 @@ endif
 ##                  within the application.
 
 ABI_APPLIBDIR=AbiWord
-ifeq ($(OS_NAME),WIN32)
+ifeq ($(ABI_ESCAPE_QUOTES),YES)
 ABI_APPLIBDIRDEF= -DABIWORD_APP_LIBDIR=\"\"AbiWord\"\"
 else
 ABI_APPLIBDIRDEF= -DABIWORD_APP_LIBDIR="\"AbiWord\""
