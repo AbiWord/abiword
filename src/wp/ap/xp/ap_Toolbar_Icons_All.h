@@ -75,6 +75,7 @@
 #       include "tb_lists_numbers.xpm"
 #       include "tb_text_indent.xpm"
 #       include "tb_text_unindent.xpm"
+#       include "tb_spellcheck.xpm"
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
@@ -150,6 +151,7 @@
        	DefineToolbarIcon(tb_lists_bullets_xpm)
         DefineToolbarIcon(tb_text_indent_xpm)
         DefineToolbarIcon(tb_text_unindent_xpm)
+        DefineToolbarIcon(tb_spellcheck_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

@@ -88,6 +88,7 @@ enum _Ap_Toolbar_Id
 
 	AP_TOOLBAR_ID_INDENT,
 	AP_TOOLBAR_ID_UNINDENT,
+	AP_TOOLBAR_ID_SPELLCHECK,
 
 	/* ... add others here ... */
 

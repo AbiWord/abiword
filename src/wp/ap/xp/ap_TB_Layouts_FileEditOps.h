@@ -37,6 +37,7 @@ BeginLayout(FileEditOps)
 #ifdef HAVE_GNOME
         ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
 #endif
+        ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_UNDO)
