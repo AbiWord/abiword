@@ -477,6 +477,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 										XAP_Dialog_MessageBox::a_OK);
 			return;
 		}
+		getFrame()->repopulateCombos();
 		_populateWindowData(); // force a refresh
     }
 }
