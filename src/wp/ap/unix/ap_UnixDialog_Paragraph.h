@@ -46,29 +46,65 @@ public:
 
 	// Indents and Spacing page
 	virtual void event_AlignmentChanged(void);
-	virtual void event_LeftIndentChanged(void);
-	virtual void event_RightIndentChanged(void);
-	virtual void event_SpecialIndentListChanged(void);
-	virtual void event_SpecialIndentValueChanged(void);
 
-	virtual void event_BeforeSpacingChanged(void);
-	virtual	void event_AfterSpacingChanged(void);
-	virtual void event_SpecialSpacingListChanged(void);
-	virtual void event_SpecialSpacingValueChanged(void);
+	// actions for all indent-related spin-button changes are the same
+	virtual void event_UpdateEntry(GtkWidget * widget);
+//	virtual void event_IndentSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj);
+//	virtual void event_SpecialIndentListChanged(void);
+
+	// actions for all spacing-related spin-button changes are the same
+//	virtual void event_SpacingSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj);
+//	virtual void event_SpecialSpacingListChanged(void);
 
 	// Line and Page Breaks
-	virtual void event_WidowOrphanControlToggled(void);
-	virtual void event_KeepLinesTogetherToggled(void);
-	virtual void event_KeepWithNextToggled(void);
-	virtual void event_PageBreakBeforeToggled(void);
+//	virtual void event_WidowOrphanControlToggled(void);
+//	virtual void event_KeepLinesTogetherToggled(void);
+//	virtual void event_KeepWithNextToggled(void);
+//	virtual void event_PageBreakBeforeToggled(void);
 
-	virtual void event_SupressLineNumbersToggled(void);
-	virtual void event_NoHyphenateToggled(void);
+//	virtual void event_SuppressLineNumbersToggled(void);
+//	virtual void event_NoHyphenateToggled(void);
 	
 	// Preview
 	virtual void event_PreviewAreaExposed(void);
+
+ protected:
+
+	// we implement these so the XP dialog can set/grab our data
 	
-protected:
+	virtual tAlignment			_gatherAlignmentType(void);
+	virtual void				_setAlignmentType(tAlignment alignment);
+	virtual tSpecialIndent 		_gatherSpecialIndentType(void);
+	virtual void				_setSpecialIndentType(tSpecialIndent indent);
+	virtual tLineSpacing		_gatherLineSpacingType(void);
+	virtual void				_setLineSpacingType(tLineSpacing spacing);
+	
+	virtual const XML_Char *	_gatherLeftIndent(void);
+	virtual void				_setLeftIndent(const XML_Char * indent);
+	virtual const XML_Char *	_gatherRightIndent(void);
+	virtual void				_setRightIndent(const XML_Char * indent);
+	virtual const XML_Char *	_gatherSpecialIndent(void);
+	virtual void				_setSpecialIndent(const XML_Char * indent);
+	
+	virtual const XML_Char *	_gatherBeforeSpacing(void);
+	virtual void				_setBeforeSpacing(const XML_Char * spacing);
+	virtual const XML_Char *	_gatherAfterSpacing(void);
+	virtual void				_setAfterSpacing(const XML_Char * spacing);
+	virtual const XML_Char *	_gatherSpecialSpacing(void);	
+	virtual void				_setSpecialSpacing(const XML_Char * spacing);
+	
+	virtual UT_Bool				_gatherWidowOrphanControl(void);
+	virtual void				_setWidowOrphanControl(UT_Bool b);
+	virtual UT_Bool				_gatherKeepLinesTogether(void);
+	virtual void				_setKeepLinesTogether(UT_Bool b);
+	virtual UT_Bool				_gatherKeepWithNext(void);
+	virtual void				_setKeepWithNext(UT_Bool b);
+	virtual UT_Bool				_gatherSuppressLineNumbers(void);
+	virtual void				_setSuppressLineNumbers(UT_Bool b);
+	virtual UT_Bool				_gatherNoHyphenate(void);
+	virtual void				_setNoHyphenate(UT_Bool b);
+	
+ protected:
 
 	GR_UnixGraphics	* 		m_unixGraphics;
 	
@@ -108,7 +144,7 @@ protected:
 	GtkWidget * m_checkbuttonWidowOrphan;
 	GtkWidget * m_checkbuttonKeepLines;
 	GtkWidget * m_checkbuttonPageBreak;
-	GtkWidget * m_checkbuttonSupress;
+	GtkWidget * m_checkbuttonSuppress;
 	GtkWidget * m_checkbuttonHyphenate;
 	GtkWidget * m_checkbuttonKeepNext;
 

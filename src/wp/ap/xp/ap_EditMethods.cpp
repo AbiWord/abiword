@@ -3082,115 +3082,148 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 		= (AP_Dialog_Paragraph *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
 	UT_ASSERT(pDialog);
 
-#if 0
-	const XML_Char ** props_in = NULL;
-	if (pView->getCharFormat(&props_in))
+	const XML_Char ** props = NULL;
+
+	if (!pView->getBlockFormat(&props))
+		return UT_FALSE;
+
+	if (!pDialog->setDialogData(props))
+		return UT_FALSE;
+
+	FREEP(props);
+	
+	// run the dialog
+	pDialog->runModal(pFrame);
+
+	// get the dialog answer
+	AP_Dialog_Paragraph::tAnswer answer = pDialog->getAnswer();
+
+	switch (answer)
 	{
-		// stuff font properties into the dialog.
-		// for a/p which are constant across the selection (always
-		// present) we will set the field in the dialog.  for things
-		// which change across the selection, we ask the dialog not
-		// to set the field (by passing null).
+	case AP_Dialog_Paragraph::a_OK:
 
-		pDialog->setFontFamily(UT_getAttribute("font-family", props_in));
-		pDialog->setFontSize(UT_getAttribute("font-size", props_in));
-		pDialog->setFontWeight(UT_getAttribute("font-weight", props_in));
-		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
-		pDialog->setColor(UT_getAttribute("color", props_in));
+		// getDialogData() returns us XML_Char ** data we have to free
+		pDialog->getDialogData((XML_Char **) props);
+		UT_ASSERT(props);
 
-		// these behave a little differently since they are
-		// probably just check boxes and we don't have to
-		// worry about initializing a combo box with a choice
-		// (and because they are all stuck under one CSS attribute).
+		// set properties back to document
+		pView->setBlockFormat(props);
+				
+		FREEP(props);
+		
+		break;
+		
+	case AP_Dialog_Paragraph::a_TABS:
 
-		UT_Bool bUnderline = UT_FALSE;
-		UT_Bool bStrikeOut = UT_FALSE;
-		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
-		if (s)
+		// TODO : call s_doTabsDialog when it exists
+
+		break;
+		
+	case AP_Dialog_Paragraph::a_CANCEL:
+		// do nothing
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+			
+	pDialogFactory->releaseDialog(pDialog);
+
+	return UT_TRUE;
+
+#if 0		
+	// fetch data
+	{
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz;
+
+		if (!pView->getBlockFormat(&props_in))
+			return UT_FALSE;
+
+		if (props_in && props_in[0])
 		{
-			bUnderline = (strstr(s, "underline") != NULL);
-			bStrikeOut = (strstr(s, "line-through") != NULL);
+			sz = UT_getAttribute("text-align", props_in);
+			if (sz)
+			{
+				if (UT_XML_strcmp(sz, "center") == 0)
+					d.m_alignmentType = ParagraphDialogData::align_CENTERED;
+				else if (UT_XML_strcmp(sz, "right") == 0)
+					d.m_alignmentType = ParagraphDialogData::align_RIGHT;
+				else if (UT_XML_strcmp(sz, "justify") == 0)
+					d.m_alignmentType = ParagraphDialogData::align_JUSTIFIED;
+				else
+					d.m_alignmentType = ParagraphDialogData::align_LEFT;
+			}
+								 
+			sz = UT_getAttribute("margin-left", props_in);
+			if (sz)
+				d.replaceString(d.m_leftIndent, sz);
+
+			sz = UT_getAttribute("margin-right", props_in);
+			if (sz)
+				d.replaceString(d.m_rightIndent, sz);
+
+			sz = UT_getAttribute("text-indent", props_in);
+			if (sz)
+			{
+				// NOTE : Calling UT_convertDimensionless() _discards_ all
+				// NOTE : unit system information.  IFF all units are
+				// NOTE : consistent among all paragraph properties will
+				// NOTE : the comparisons be valid.
+				
+				if (d.m_leftIndent)
+				{
+					// if text-indent is greater than margin-left, we have a "first line" case
+					if (UT_convertDimensionless(sz) > UT_convertDimensionless(d.m_leftIndent))
+						d.m_specialIndentType = ParagraphDialogData::indent_FIRSTLINE;
+					
+					// if text-indent is less than margin-left, we have a "hanging" case
+					if (UT_convertDimensionless(sz) < UT_convertDimensionless(d.m_leftIndent))
+						d.m_specialIndentType = ParagraphDialogData::indent_HANGING;
+
+					// set the value regardless; dialog will enable/disable field
+					// if spacing is "NONE"
+					d.replaceString(d.m_specialIndent, sz);
+				}
+				else
+					d.m_specialIndentType = ParagraphDialogData::indent_NONE;
+			}
+
+			sz = UT_getAttribute("line-height", props_in);
+			if (sz)
+			{
+			}
+
+			sz = UT_getAttribute("margin-top", props_in);
+			if (sz)
+				d.replaceString(d.m_beforeSpacing, sz);
+			
+			sz = UT_getAttribute("margin-bottom", props_in);
+			if (sz)
+				d.replaceString(d.m_afterSpacing, sz);
+
+			// TODO : map line-height (in multiples of 1 line) to m_specialSpacing (in in/cm/%/etc).
+
+			// TODO : read these!
+			/*
+			m_widowOrphanControl;
+			m_keepLinesTogether;
+			m_keepWithNext;
+			m_pageBreakBefore;
+
+			m_suppressLineNumbers;
+			m_noHyphenate;
+			*/
+
+			
 		}
-		pDialog->setFontDecoration(bUnderline,bStrikeOut);
+
+		// commit to dialog
+		pDialog->setDialogData(&d);
 
 		free(props_in);
 	}
 #endif
 	
-	// run the dialog
-	pDialog->runModal(pFrame);
-
-#if 0
-	// extract what they did
-	UT_Bool bOK = (pDialog->getAnswer() == XAP_Dialog_FontChooser::a_OK);
-
-	if (bOK)
-	{
-		UT_uint32  k = 0;
-		const XML_Char * props_out[17];
-		const XML_Char * s;
-
-		if (pDialog->getChangedFontFamily(&s))
-		{
-			props_out[k++] = "font-family";
-			props_out[k++] = s;
-		}
-
-		if (pDialog->getChangedFontSize(&s))
-		{
-			props_out[k++] = "font-size";
-			props_out[k++] = s;
-		}
-
-		if (pDialog->getChangedFontWeight(&s))
-		{
-			props_out[k++] = "font-weight";
-			props_out[k++] = s;
-		}
-
-		if (pDialog->getChangedFontStyle(&s))
-		{
-			props_out[k++] = "font-style";
-			props_out[k++] = s;
-		}
-
-		if (pDialog->getChangedColor(&s))
-		{
-			props_out[k++] = "color";
-			props_out[k++] = s;
-		}
-
-		UT_Bool bUnderline = UT_FALSE;
-		UT_Bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
-		UT_Bool bStrikeOut = UT_FALSE;
-		UT_Bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
-
-		if (bChangedUnderline || bChangedStrikeOut)
-		{
-			if (bUnderline && bStrikeOut)
-				s = "underline line-through";
-			else if (bUnderline)
-				s = "underline";
-			else if (bStrikeOut)
-				s = "line-through";
-			else
-				s = "none";
-
-			props_out[k++] = "text-decoration";
-			props_out[k++] = s;
-		}
-
-		props_out[k] = 0;						// put null after last pair.
-		UT_ASSERT(k < NrElements(props_out));
-
-		if (k > 0)								// if something changed
-			pView->setCharFormat(props_out);
-	}
-#endif
-	
-	pDialogFactory->releaseDialog(pDialog);
-
-	return UT_TRUE;
 }
 
 

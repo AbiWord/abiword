@@ -40,6 +40,10 @@
 
 /*****************************************************************/
 
+#define WIDGET_DIALOG_TAG "dialog"
+
+/*****************************************************************/
+
 XAP_Dialog * AP_UnixDialog_Paragraph::static_constructor(XAP_DialogFactory * pFactory,
 														 XAP_Dialog_Id id)
 {
@@ -93,26 +97,45 @@ static void s_option_alignment_toggle(GtkWidget * widget, GtkCList * clist)
 }
 */
 
-static void s_spin_leftindent_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_LeftIndentChanged(); }
+#if 0
+static gboolean s_spin_editable_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
+{
+	UT_ASSERT(widget && dlg);
 
-static void s_spin_rightindent_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_RightIndentChanged(); }
+//	dlg->event_UpdateEntry(widget);
+	
+	// do NOT let GTK do its own update (which would erase the text we just
+	// put in the entry area
+	return FALSE;
+}
+#endif
 
-static void s_spin_specialindentvalue_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_SpecialIndentValueChanged(); }
+#if 0
+static gboolean s_spin_indent_changed(GtkAdjustment * adjustment, AP_UnixDialog_Paragraph * dlg)
+{
+	UT_ASSERT(adjustment && dlg);
 
-static void s_spin_beforespacing_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_BeforeSpacingChanged(); }
+	// GTK just prints the value of the adjustment into a string and slaps
+	// it into the dialog.  We need to preserve the existing units while
+	// doing something similar.
 
-static void s_spin_afterspacing_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_AfterSpacingChanged(); }
+	GtkWidget * spinbutton = (GtkWidget *)
+		gtk_object_get_data(GTK_OBJECT(adjustment), WIDGET_DIALOG_TAG);
 
-static void s_spin_specialspacingvalue_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_SpecialSpacingValueChanged(); }
+	UT_ASSERT(dlg);
+
+	// fire the event to the dialog
+	dlg->event_UnitSpinButtonChanged(spinbutton, adjustment);
+
+	// do NOT let GTK continue with its evaluation of the adjustment event
+	// (which would set a silly new text in the spin button)
+	return FALSE;
+}
+#endif
 
 // toggle buttons
 
+#if 0
 static void s_check_widoworphancontrol_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 { UT_ASSERT(widget && dlg); dlg->event_WidowOrphanControlToggled(); }
 
@@ -125,11 +148,12 @@ static void s_check_keepwithnext_toggled(GtkWidget * widget, AP_UnixDialog_Parag
 static void s_check_pagebreakbefore_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 { UT_ASSERT(widget && dlg); dlg->event_PageBreakBeforeToggled(); }
 
-static void s_check_supresslinenumbers_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
-{ UT_ASSERT(widget && dlg); dlg->event_SupressLineNumbersToggled(); }
+static void s_check_suppresslinenumbers_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
+{ UT_ASSERT(widget && dlg); dlg->event_SuppressLineNumbersToggled(); }
 
 static void s_check_nohyphenate_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 { UT_ASSERT(widget && dlg); dlg->event_NoHyphenateToggled(); }
+#endif
 
 // preview drawing area
 
@@ -200,63 +224,132 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Paragraph::event_OK(void)
 {
-	m_paragraphData.m_answer = AP_Dialog_Paragraph::a_OK;
+	m_answer = AP_Dialog_Paragraph::a_OK;
 	gtk_main_quit();
 }
 
 void AP_UnixDialog_Paragraph::event_Cancel(void)
 {
-	m_paragraphData.m_answer = AP_Dialog_Paragraph::a_CANCEL;
+	m_answer = AP_Dialog_Paragraph::a_CANCEL;
 	gtk_main_quit();
 }
 
 void AP_UnixDialog_Paragraph::event_Tabs(void)
 {
-	m_paragraphData.m_answer = AP_Dialog_Paragraph::a_TABS;
+	m_answer = AP_Dialog_Paragraph::a_TABS;
 	gtk_main_quit();
 }
 
 void AP_UnixDialog_Paragraph::event_WindowDelete(void)
 {
-	m_paragraphData.m_answer = AP_Dialog_Paragraph::a_CANCEL;	
+	m_answer = AP_Dialog_Paragraph::a_CANCEL;	
 	gtk_main_quit();
 }
 
+/****************************************/
+
+// Alignment methods
 
 void AP_UnixDialog_Paragraph::event_AlignmentChanged(void) { }
 
-void AP_UnixDialog_Paragraph::event_RightIndentChanged(void) { }
-void AP_UnixDialog_Paragraph::event_SpecialIndentListChanged(void) { }
-void AP_UnixDialog_Paragraph::event_SpecialIndentValueChanged(void) { }
+/****************************************/
 
-void AP_UnixDialog_Paragraph::event_BeforeSpacingChanged(void) { }
-void AP_UnixDialog_Paragraph::event_AfterSpacingChanged(void) { }
-void AP_UnixDialog_Paragraph::event_SpecialSpacingListChanged(void) { }
-void AP_UnixDialog_Paragraph::event_SpecialSpacingValueChanged(void) { }
-
-
-void AP_UnixDialog_Paragraph::event_WidowOrphanControlToggled(void) { }
-void AP_UnixDialog_Paragraph::event_KeepLinesTogetherToggled(void) { }
-void AP_UnixDialog_Paragraph::event_KeepWithNextToggled(void) { }
-void AP_UnixDialog_Paragraph::event_PageBreakBeforeToggled(void) { }
-
-void AP_UnixDialog_Paragraph::event_SupressLineNumbersToggled(void) { }
-void AP_UnixDialog_Paragraph::event_NoHyphenateToggled(void) { }
-	
-void AP_UnixDialog_Paragraph::event_LeftIndentChanged(void)
+// generic methods for spin buttons
+void AP_UnixDialog_Paragraph::event_UpdateEntry(GtkWidget * widget)
 {
-/*	_updatePreviewParagraphPercent((UT_uint32) gtk_spin_button_get_value_as_int(
-		GTK_SPIN_BUTTON(m_spinPercent)));
-*/
+#if 0
+	gchar * oldtext = gtk_entry_get_text(GTK_ENTRY(widget));
+
+	XML_Char * newtext = _filterUserInput((XML_Char *) oldtext);
+
+	// we have to protect this section with a lock, so that updating
+	// the text doesn't trigger this same event
+	{
+		gtk_object_set_data(GTK_OBJECT(widget), "updatelock", (void *) TRUE);
+	
+		if ( ((gboolean) gtk_object_get_data(GTK_OBJECT(widget), "updatelock")) == FALSE)
+			gtk_entry_set_text(GTK_ENTRY(widget), (const gchar *) newtext);
+
+		gtk_object_set_data(GTK_OBJECT(widget), "updatelock", (void *) FALSE);
+	}
+#endif
 }
+
+#if 0
+void AP_UnixDialog_Paragraph::event_UnitSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj)
+{
+	UT_ASSERT(spinbutton && adj);
+	
+	const char * newvalue =
+		UT_convertToDimensionString(m_dim, (double) adj->value, ".1");
+
+	UT_ASSERT(newvalue);
+
+	GtkSpinButton * sb = GTK_SPIN_BUTTON(spinbutton);
+
+	GtkEntry * entry = & sb->entry;
+	
+	gtk_entry_set_text(entry, newvalue);
+}
+
+void AP_UnixDialog_Paragraph::event_UnitlessSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj)
+{
+	UT_ASSERT(spinbutton && adj);
+	
+	const char * newvalue =
+		UT_convertToDimensionString(m_dim, (double) adj->value, ".1");
+
+	UT_ASSERT(newvalue);
+
+	GtkSpinButton * sb = GTK_SPIN_BUTTON(spinbutton);
+
+	GtkEntry * entry = & sb->entry;
+	
+	gtk_entry_set_text(entry, newvalue);
+}
+#endif
+
+/****************************************/
 
 void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 {
-	UT_ASSERT(m_paragraphPreview);
-
-    // trigger a draw on the preview area in the base class
-	m_paragraphPreview->draw();
+	if (m_paragraphPreview)
+		m_paragraphPreview->draw();
 }
+
+/*****************************************************************/
+
+AP_Dialog_Paragraph::tAlignment AP_UnixDialog_Paragraph::_gatherAlignmentType(void) {}
+void AP_UnixDialog_Paragraph::_setAlignmentType(AP_Dialog_Paragraph::tAlignment alignment) {}
+AP_Dialog_Paragraph::tSpecialIndent AP_UnixDialog_Paragraph::_gatherSpecialIndentType(void) {}
+void AP_UnixDialog_Paragraph::_setSpecialIndentType(AP_Dialog_Paragraph::tSpecialIndent indent) {}
+AP_Dialog_Paragraph::tLineSpacing AP_UnixDialog_Paragraph::_gatherLineSpacingType(void) {}
+void AP_UnixDialog_Paragraph::_setLineSpacingType(AP_Dialog_Paragraph::tLineSpacing spacing) {}
+	
+const XML_Char *	AP_UnixDialog_Paragraph::_gatherLeftIndent(void) {}
+void				AP_UnixDialog_Paragraph::_setLeftIndent(const XML_Char * indent) {}
+const XML_Char *	AP_UnixDialog_Paragraph::_gatherRightIndent(void) {}
+void				AP_UnixDialog_Paragraph::_setRightIndent(const XML_Char * indent) {}
+const XML_Char *	AP_UnixDialog_Paragraph::_gatherSpecialIndent(void) {}
+void				AP_UnixDialog_Paragraph::_setSpecialIndent(const XML_Char * indent) {}
+	
+const XML_Char *	AP_UnixDialog_Paragraph::_gatherBeforeSpacing(void) {}
+void				AP_UnixDialog_Paragraph::_setBeforeSpacing(const XML_Char * spacing) {}
+const XML_Char *	AP_UnixDialog_Paragraph::_gatherAfterSpacing(void) {}
+void				AP_UnixDialog_Paragraph::_setAfterSpacing(const XML_Char * spacing) {}
+const XML_Char *	AP_UnixDialog_Paragraph::_gatherSpecialSpacing(void) {}	
+void				AP_UnixDialog_Paragraph::_setSpecialSpacing(const XML_Char * spacing) {}
+	
+UT_Bool				AP_UnixDialog_Paragraph::_gatherWidowOrphanControl(void) {}
+void				AP_UnixDialog_Paragraph::_setWidowOrphanControl(UT_Bool b) {}
+UT_Bool				AP_UnixDialog_Paragraph::_gatherKeepLinesTogether(void) {}
+void				AP_UnixDialog_Paragraph::_setKeepLinesTogether(UT_Bool b) {}
+UT_Bool				AP_UnixDialog_Paragraph::_gatherKeepWithNext(void) {}
+void				AP_UnixDialog_Paragraph::_setKeepWithNext(UT_Bool b) {}
+UT_Bool				AP_UnixDialog_Paragraph::_gatherSuppressLineNumbers(void) {}
+void				AP_UnixDialog_Paragraph::_setSuppressLineNumbers(UT_Bool b) {}
+UT_Bool				AP_UnixDialog_Paragraph::_gatherNoHyphenate(void) {}
+void				AP_UnixDialog_Paragraph::_setNoHyphenate(UT_Bool b) {}
 
 /*****************************************************************/
 
@@ -317,7 +410,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * checkbuttonWidowOrphan;
 	GtkWidget * checkbuttonKeepLines;
 	GtkWidget * checkbuttonPageBreak;
-	GtkWidget * checkbuttonSupress;
+	GtkWidget * checkbuttonSuppress;
 	GtkWidget * checkbuttonHyphenate;
 	GtkWidget * hseparator6;
 	GtkWidget * checkbuttonKeepNext;
@@ -399,7 +492,9 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_fixed_put (GTK_FIXED (fixedSpacing), spinbuttonLeft, 104, 56);
 	gtk_widget_set_uposition (spinbuttonLeft, 104, 56);
 	gtk_widget_set_usize (spinbuttonLeft, 88, 24);
-
+	// set info for callback
+	gtk_object_set_data(GTK_OBJECT(spinbuttonLeft_adj), WIDGET_DIALOG_TAG, (gpointer) spinbuttonLeft);
+	
 	spinbuttonRight_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
 	spinbuttonRight = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonRight_adj), 1, 1);
 	gtk_widget_ref (spinbuttonRight);
@@ -409,6 +504,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_fixed_put (GTK_FIXED (fixedSpacing), spinbuttonRight, 104, 80);
 	gtk_widget_set_uposition (spinbuttonRight, 104, 80);
 	gtk_widget_set_usize (spinbuttonRight, 88, 24);
+	// set info for callback
+	gtk_object_set_data(GTK_OBJECT(spinbuttonRight_adj), WIDGET_DIALOG_TAG, (gpointer) spinbuttonRight);
 
 	listSpecial = gtk_option_menu_new ();
 	gtk_widget_ref (listSpecial);
@@ -439,6 +536,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_fixed_put (GTK_FIXED (fixedSpacing), spinbuttonBy, 312, 80);
 	gtk_widget_set_uposition (spinbuttonBy, 312, 80);
 	gtk_widget_set_usize (spinbuttonBy, 88, 24);
+	// set info for callback
+	gtk_object_set_data(GTK_OBJECT(spinbuttonBy_adj), WIDGET_DIALOG_TAG, (gpointer) spinbuttonBy);
 
 	spinbuttonBefore_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
 	spinbuttonBefore = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonBefore_adj), 1, 0);
@@ -449,6 +548,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_fixed_put (GTK_FIXED (fixedSpacing), spinbuttonBefore, 104, 128);
 	gtk_widget_set_uposition (spinbuttonBefore, 104, 128);
 	gtk_widget_set_usize (spinbuttonBefore, 88, 24);
+	// set info for callback
+	gtk_object_set_data(GTK_OBJECT(spinbuttonBefore_adj), WIDGET_DIALOG_TAG, (gpointer) spinbuttonBefore);
 
 	spinbuttonAfter_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
 	spinbuttonAfter = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonAfter_adj), 1, 0);
@@ -459,6 +560,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_fixed_put (GTK_FIXED (fixedSpacing), spinbuttonAfter, 104, 152);
 	gtk_widget_set_uposition (spinbuttonAfter, 104, 152);
 	gtk_widget_set_usize (spinbuttonAfter, 88, 24);
+	// set info for callback
+	gtk_object_set_data(GTK_OBJECT(spinbuttonAfter_adj), WIDGET_DIALOG_TAG, (gpointer) spinbuttonAfter);
 
 	listLineSpacing = gtk_option_menu_new ();
 	gtk_widget_ref (listLineSpacing);
@@ -498,6 +601,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_fixed_put (GTK_FIXED (fixedSpacing), spinbuttonAt, 312, 152);
 	gtk_widget_set_uposition (spinbuttonAt, 312, 152);
 	gtk_widget_set_usize (spinbuttonAt, 88, 24);
+	// set info for callback
+	gtk_object_set_data(GTK_OBJECT(spinbuttonAt_adj), WIDGET_DIALOG_TAG, (gpointer) spinbuttonAt);
 
 	labelAlignment = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Para_LabelAlignment));
 	gtk_widget_ref (labelAlignment);
@@ -739,14 +844,14 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_widget_set_uposition (checkbuttonPageBreak, 216, 56);
 	gtk_widget_set_usize (checkbuttonPageBreak, 192, 24);
 
-	checkbuttonSupress = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_PushSupressLineNumbers));
-	gtk_widget_ref (checkbuttonSupress);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "checkbuttonSupress", checkbuttonSupress,
+	checkbuttonSuppress = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_PushSuppressLineNumbers));
+	gtk_widget_ref (checkbuttonSuppress);
+	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "checkbuttonSuppress", checkbuttonSuppress,
 							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSupress);
-	gtk_fixed_put (GTK_FIXED (fixedBreaks), checkbuttonSupress, 16, 96);
-	gtk_widget_set_uposition (checkbuttonSupress, 16, 96);
-	gtk_widget_set_usize (checkbuttonSupress, 192, 24);
+	gtk_widget_show (checkbuttonSuppress);
+	gtk_fixed_put (GTK_FIXED (fixedBreaks), checkbuttonSuppress, 16, 96);
+	gtk_widget_set_uposition (checkbuttonSuppress, 16, 96);
+	gtk_widget_set_usize (checkbuttonSuppress, 192, 24);
 
 	checkbuttonHyphenate = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_PushNoHyphenate));
 	gtk_widget_ref (checkbuttonHyphenate);
@@ -881,12 +986,21 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 					   GTK_SIGNAL_FUNC(s_tabs_clicked),
 					   (gpointer) this);
 
-	/*
-	gtk_signal_connect(GTK_OBJECT(spinbuttonPercent_adj),
-					   "value_changed",
-					   GTK_SIGNAL_FUNC(s_spin_Percent_changed),
+	// we have to handle the changes in values for spin buttons
+	// to preserve units
+#if 0	
+	gtk_signal_connect(GTK_OBJECT(spinbuttonLeft),
+					   "changed",
+					   GTK_SIGNAL_FUNC(s_spin_editable_changed),
 					   (gpointer) this);
-	*/
+					   
+	gtk_signal_connect(GTK_OBJECT(spinbuttonLeft_adj),
+					   "value_changed",
+					   GTK_SIGNAL_FUNC(s_spin_indent_changed),
+					   (gpointer) this);
+#endif
+	// TODO : MORE CONNECTS FOR MORE SPINS!
+	
 
 	// the catch-alls
 	gtk_signal_connect_after(GTK_OBJECT(windowParagraph),
@@ -935,7 +1049,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	m_checkbuttonWidowOrphan = checkbuttonWidowOrphan;
 	m_checkbuttonKeepLines = checkbuttonKeepLines;
 	m_checkbuttonPageBreak = checkbuttonPageBreak;
-	m_checkbuttonSupress = checkbuttonSupress;
+	m_checkbuttonSuppress = checkbuttonSuppress;
 	m_checkbuttonHyphenate = checkbuttonHyphenate;
 	m_checkbuttonKeepNext = checkbuttonKeepNext;
 
@@ -948,11 +1062,37 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 
 void AP_UnixDialog_Paragraph::_populateWindowData(void)
 {
-	/*
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio100), TRUE);		
+#if 0
+	// alignment option menu 
+	UT_ASSERT(m_listAlignment);
+	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listAlignment),
+								(gint) m_paragraphData.m_alignmentType);
+
+	// indent and paragraph margins
+	UT_ASSERT(m_spinbuttonLeft);
+	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft),
+					   (const gchar *) m_paragraphData.m_leftIndent);
+
+	UT_ASSERT(m_spinbuttonRight);
+	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight),
+					   (const gchar *) m_paragraphData.m_rightIndent);
+
+	UT_ASSERT(m_spinbuttonBy);
+	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy),
+					   (const gchar *) m_paragraphData.m_specialIndent);
+
+	UT_ASSERT(m_listSpecial);
+	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
+								(gint) m_paragraphData.m_specialIndentType);
 	
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_spinPercent), (gfloat) getParagraphPercent());
-	*/
+	// if m_specialIndentType is "(none)" (ParagraphDialogData::indent_NONE)
+	// then the "By" spin should be disabled
+
+	if (m_paragraphData.m_specialIndentType == ParagraphDialogData::indent_NONE)
+		gtk_widget_set_sensitive(GTK_WIDGET(m_spinbuttonBy), FALSE);
+	else
+		gtk_widget_set_sensitive(GTK_WIDGET(m_spinbuttonBy), TRUE);
+#endif	
 }
 
 void AP_UnixDialog_Paragraph::_storeWindowData(void)

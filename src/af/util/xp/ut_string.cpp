@@ -72,6 +72,34 @@ UT_uint32 UT_XML_strlen(const XML_Char * sz)
 	return k;
 }
 
+// Is this function implemented somewhere else?
+
+UT_Bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource)
+{
+	if (!szSource)
+		return UT_TRUE;
+
+	XML_Char ** newmemory = (XML_Char **)
+		calloc(UT_pointerArrayLength((void **) szSource) + 1, sizeof(XML_Char *));
+
+	if (newmemory == NULL)
+		return UT_FALSE;
+
+	memcpy((void *) newmemory, (const void *) szSource,
+		   UT_pointerArrayLength((void **) szSource ) * sizeof(XML_Char *));
+
+	rszDest = newmemory;
+
+	return UT_TRUE;
+}
+
+UT_Bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource)
+{
+	FREEP(rszDest);
+
+	return UT_XML_cloneList(rszDest, szSource);
+}
+	
 UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 {
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;

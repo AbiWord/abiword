@@ -38,7 +38,7 @@ UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
 
 typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_PI, DIM_PT } UT_Dimension;
 
-UT_Dimension UT_determineDimension(const char * sz);
+UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 const char * UT_dimensionName(UT_Dimension dim);
 const char * UT_convertToDimensionString(UT_Dimension, double value, const char * szPrecision = NULL);
 const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);

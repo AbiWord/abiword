@@ -429,12 +429,12 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 									GTK_POLICY_NEVER,
 									GTK_POLICY_AUTOMATIC);
 	GList * comboEncoding_items = NULL;
-	comboEncoding_items = g_list_append (comboEncoding_items, "American");
-	comboEncoding_items = g_list_append (comboEncoding_items, "Canadian");
-	comboEncoding_items = g_list_append (comboEncoding_items, "British");
-	comboEncoding_items = g_list_append (comboEncoding_items, "Irish");
-	comboEncoding_items = g_list_append (comboEncoding_items, "Broken English");
-	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");	
+	comboEncoding_items = g_list_append (comboEncoding_items, (void *) "Placeholder");
+//	comboEncoding_items = g_list_append (comboEncoding_items, "Canadian");
+//	comboEncoding_items = g_list_append (comboEncoding_items, "British");
+//	comboEncoding_items = g_list_append (comboEncoding_items, "Irish");
+//	comboEncoding_items = g_list_append (comboEncoding_items, "Broken English");
+//	comboEncoding_items = g_list_append (comboEncoding_items, "These Are Bogus");	
 	gtk_combo_set_popdown_strings (GTK_COMBO (comboEncoding), comboEncoding_items);
 	g_list_free (comboEncoding_items);
 	

@@ -107,7 +107,7 @@ dcl(DLG_Para_LabelPagination,	"Pagination")
 dcl(DLG_Para_PushWidowOrphanControl,	"&Widow/Orphan control")
 dcl(DLG_Para_PushKeepLinesTogether,		"&Keep lines together")
 dcl(DLG_Para_PushPageBreakBefore,		"Page &break before")
-dcl(DLG_Para_PushSupressLineNumbers,	"&Suppress line numbers")
+dcl(DLG_Para_PushSuppressLineNumbers,	"&Suppress line numbers")
 dcl(DLG_Para_PushNoHyphenate,			"&Don't hyphenate")
 dcl(DLG_Para_PushKeepWithNext,			"Keep with ne&xt")
 

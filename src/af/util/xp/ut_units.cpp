@@ -58,7 +58,7 @@ const char * UT_dimensionName(UT_Dimension dim)
 	}
 }
 
-UT_Dimension UT_determineDimension(const char * sz)
+UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
 	if (UT_stricmp(sz,"in") == 0)
 		return DIM_IN;
@@ -72,8 +72,7 @@ UT_Dimension UT_determineDimension(const char * sz)
 	if (UT_stricmp(sz,"pt") == 0)
 		return DIM_PT;
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return DIM_IN;
+	return fallback;
 }
 
 const char * UT_convertToDimensionString(UT_Dimension dim, double value, const char * szPrecision)
