@@ -515,48 +515,48 @@ s_DocBook_Listener::s_DocBook_Listener(PD_Document * pDocument,
 	m_pie->write("<!DOCTYPE book PUBLIC \"-//OASIS//DTD DocBook XML V4.1.2//EN\"\n");
         m_pie->write("\t\"http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd\">\n\n");
 
-	m_pie->write("<!-- ================================================================================ --!>\n");
-	m_pie->write("<!-- This DocBook file was created by AbiWord.                                        --!>\n");
-	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                   --!>\n");
-	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com               --!>\n");
-	m_pie->write("<!-- ================================================================================ --!>\n");
+	m_pie->write("<!-- ================================================================================ -->\n");
+	m_pie->write("<!-- This DocBook file was created by AbiWord.                                        -->\n");
+	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                                   -->\n");
+	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com               -->\n");
+	m_pie->write("<!-- ================================================================================ -->\n");
 	m_pie->write("\n");
 
 	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
 	{
 		m_pie->write("<!--         Build_ID          = ");
 		m_pie->write(XAP_App::s_szBuild_ID);
-		m_pie->write(" --!>\n");
+		m_pie->write(" -->\n");
 	}
 	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 	{
 		m_pie->write("<!--         Build_Version     = ");
 		m_pie->write(XAP_App::s_szBuild_Version);
-		m_pie->write(" --!>\n");
+		m_pie->write(" -->\n");
 	}
 	if (XAP_App::s_szBuild_Options && XAP_App::s_szBuild_Options[0])
 	{
 		m_pie->write("<!--         Build_Options     = ");
 		m_pie->write(XAP_App::s_szBuild_Options);
-		m_pie->write(" --!>\n");
+		m_pie->write(" -->\n");
 	}
 	if (XAP_App::s_szBuild_Target && XAP_App::s_szBuild_Target[0])
 	{
 		m_pie->write("<!--         Build_Target      = ");
 		m_pie->write(XAP_App::s_szBuild_Target);
-		m_pie->write(" --!>\n");
+		m_pie->write(" -->\n");
 	}
 	if (XAP_App::s_szBuild_CompileTime && XAP_App::s_szBuild_CompileTime[0])
 	{
 		m_pie->write("<!--         Build_CompileTime = ");
 		m_pie->write(XAP_App::s_szBuild_CompileTime);
-		m_pie->write(" --!>\n");
+		m_pie->write(" -->\n");
 	}
 	if (XAP_App::s_szBuild_CompileDate && XAP_App::s_szBuild_CompileDate[0])
 	{
 		m_pie->write("<!--         Build_CompileDate = ");
 		m_pie->write(XAP_App::s_szBuild_CompileDate);
-		m_pie->write(" --!>\n");
+		m_pie->write(" -->\n");
 	}
 	
 	m_pie->write("\n");

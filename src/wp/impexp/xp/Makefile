@@ -40,6 +40,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_imp_XML.cpp				\
 			ie_imp_AbiWord_1.cpp			\
 			ie_imp_GZipAbiWord.cpp                  \
+			ie_imp_DocBook.cpp                      \
 			ie_imp_MsWord_97.cpp			\
 			ie_imp_RTF.cpp				\
 			ie_imp_Text.cpp				\

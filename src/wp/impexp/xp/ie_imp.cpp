@@ -35,6 +35,7 @@
 #include "ie_imp_WML.h"
 #include "ie_imp_GraphicAsDocument.h"
 #include "ie_imp_XHTML.h"
+#include "ie_imp_DocBook.h"
 /*****************************************************************/
 /*****************************************************************/
 
@@ -56,6 +57,9 @@ struct _imp
 static struct _imp s_impTable[] =
 {
 	DeclareImporter(IE_Imp_AbiWord_1),
+#ifdef DEBUG
+	DeclareImporter(IE_Imp_DocBook),
+#endif
 	DeclareImporter(IE_Imp_MsWord_97),
 	DeclareImporter(IE_Imp_XHTML),
 	DeclareImporter(IE_Imp_RTF),
