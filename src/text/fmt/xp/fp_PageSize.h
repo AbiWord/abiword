@@ -23,10 +23,10 @@ public:
 		// If you append a predefined pagesize here, don't forget
 		// to update the cpp accordingly.
 		A0, A1, A2, A3, A4, A5, A6,
-		B0, B1, B2, B3, B4, B5, B6,
+		B0, B1, B2, B3, B4, B5, B5_Japan, B6,
 		Legal, Folio, Letter, Half_Letter, 
 
-		B5_Japan, Tabloid_Ledger, Monarch, SuperB,
+		Tabloid_Ledger, Monarch, SuperB,
 		Envelope_Commercial, Envelope_Monarch,
 		Envelope_DL, Envelope_C5, EuroPostcard,
 
@@ -39,8 +39,8 @@ public:
 	fp_PageSize(const char *name);
 	fp_PageSize(double w, double h, Unit u);
 
-	void Set(Predefined preDef);
-	void Set(const char *name);
+	void Set(Predefined preDef, Unit u = fp_PageSize::_last_predefined_unit_dont_use_);
+	void Set(const char *name, Unit u = fp_PageSize::_last_predefined_unit_dont_use_);
 	void Set(double w, double h, Unit u);
 	void Set(Unit u) {m_unit = u;}
 	inline void setScale( double scale) {m_scale = scale;}
@@ -49,6 +49,12 @@ public:
 	bool isPortrait(void) { return m_bisPortrait; }
 	double Width(Unit u) const;
 	double Height(Unit u) const;
+
+	double MarginLeft(Unit u) const;
+	double MarginRight(Unit u) const;
+	double MarginTop(Unit u) const;
+	double MarginBottom(Unit u) const;
+
 	double getScale(void) {return m_scale;}
 	Unit getUnit(void) { return m_unit;}
 	inline char * getPredefinedName (void) const { return m_predefined; }
@@ -62,6 +68,12 @@ private:
 
 	double m_iWidth;
 	double m_iHeight;
+
+	double m_iMarginLeft;
+	double m_iMarginRight;
+	double m_iMarginTop;
+	double m_iMarginBottom;
+
 	bool m_bisPortrait;
 	double m_scale;
 	Unit m_unit;
