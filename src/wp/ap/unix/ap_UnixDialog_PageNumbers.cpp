@@ -219,6 +219,5 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), (gpointer)this);	
 
-
 	return window;
 }
