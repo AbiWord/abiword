@@ -69,12 +69,12 @@ public:
 	struct sParagraphData
 	{
 		// final dialog answer
-		AP_Dialog_Paragraph::tAnswer	m_answer;
+		tAnswer			m_answer;
 
 		// data for spacing tab
-		AP_Dialog_Paragraph::tAlignment		m_alignmentType;
-		AP_Dialog_Paragraph::tSpecialIndent	m_specialIndentType;
-		AP_Dialog_Paragraph::tLineSpacing	m_lineSpacingType;
+		tAlignment		m_alignmentType;
+		tSpecialIndent	m_specialIndentType;
+		tLineSpacing	m_lineSpacingType;
 
 		UT_UCSChar * m_leftIndent;
 		UT_UCSChar * m_rightIndent;
@@ -97,12 +97,12 @@ public:
 
 	// This dialog has so much data to it, I've stuck it all in one
 	// big structure to be set/read in one pass.
-	void									setDialogData(AP_Dialog_Paragraph::sParagraphData d);
-	AP_Dialog_Paragraph::sParagraphData * 	getDialogData(void) const;
-	
+	void				setDialogData(sParagraphData d);
+	sParagraphData * 	getDialogData(void) const;
+
 protected:
 
-	AP_Dialog_Paragraph::sParagraphData	m_paragraphData;
+	sParagraphData	m_paragraphData;
 
 	// handle the XP-job of attaching something to our m_paragraphPreview
 	void _createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
