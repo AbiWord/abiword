@@ -359,8 +359,12 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 {
 	// get the current document
 	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
-	pDoc->readFromFile(szFile, IEFT_Unknown, m_impProps.utf8_str());
-
+	UT_Error err= pDoc->readFromFile(szFile, IEFT_Unknown, m_impProps.utf8_str());
+	if( err != UT_OK)
+	{
+		fprintf(stderr, "AbiWord: Error importing file. [%s]  Could not print \n", szFile);
+		return;
+	}
 	if (m_mergeSource.size()){
 		IE_MailMerge::IE_MailMerge_Listener * listener = new Print_MailMerge_Listener(pDoc, pGraphics, szFile);
 		
