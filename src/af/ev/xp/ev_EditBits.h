@@ -55,6 +55,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_VISUALTEXTDRAG   ((EV_EditMouseContext) 0xe0000000)
 #define EV_EMC_TOPCELL          ((EV_EditMouseContext) 0x18000000)
 #define EV_EMC_TOC              ((EV_EditMouseContext) 0x28000000)
+#define EV_EMC_POSOBJECT        ((EV_EditMouseContext) 0x38000000)
 
 // NB: the following two values are not included in EV_COUNT_EMC
 // because they are not used in the bindings, and are, therefore,

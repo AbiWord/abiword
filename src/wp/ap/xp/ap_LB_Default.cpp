@@ -65,6 +65,7 @@
 #define _CVD		EV_EMC_VISUALTEXTDRAG
 #define _CTC		EV_EMC_TOPCELL
 #define _CTO		EV_EMC_TOC
+#define _CPO		EV_EMC_POSOBJECT
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -97,6 +98,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CTV _B0,	{ "",	"",			"cursorVline",	"",			"",			"",				}},
 	{_CTH _B0,	{ "",	"",			"cursorHline",	"",			"",			"",				}},
 	{_CTF _B0,	{ "",	"",			"btn0Frame",	"",			"",			"",				}},
+	{_CPO _B0,	{ "",	"",			"btn0Frame",	"",			"",			"",				}},
 	{_CVD _B0,	{ "",	"",			"btn0VisualText",	"",			"",			"",				}},
 	{_CTC _B0,	{ "",	"",			"cursorTopCell",	"",			"",			"",				}},
 	{_CTO _B0,	{ "",	"",			"cursorTOC",	"",			"",			"",				}},
@@ -110,6 +112,7 @@ ap_bs_Mouse MouseTable[] =
 //	Button-1, Frame-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
   { _CTF _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",	   	"releaseFrame" }},
+  { _CPO _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",	   	"releaseFrame" }},
 
 
 //	Button-1, Image-context
@@ -182,6 +185,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
 	{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	{_CTF _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
+	{_CPO _B3,	{ "contextFrame",		"",			"",		"",			"",			""				}},
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 

@@ -179,6 +179,14 @@ void 	fl_FrameLayout::setContainerProperties(void)
 			m_iDocImageHeight = pFrame->getFullHeight();
 			m_iGraphicTick = getDocLayout()->getGraphicTick();
 			UT_Rect rec(0,0,pFrame->getFullWidth(),pFrame->getFullHeight());
+			if(rec.width < pG->tlu(3))
+			{
+				rec.width = pG->tlu(3);
+			}
+			if(rec.height < pG->tlu(3))
+			{
+				rec.height = pG->tlu(3);
+			}
 			pImage->scaleImageTo(pG,rec);
 			m_pImageImage = pImage;
 		}

@@ -13217,6 +13217,7 @@ Defun(dlgFormatFrame)
 
 	pFrame->raise();
 
+
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 

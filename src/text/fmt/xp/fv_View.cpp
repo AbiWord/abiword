@@ -8089,6 +8089,12 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	if(m_FrameEdit.isActive())
 	{
+		fl_FrameLayout * pFL = m_FrameEdit.getFrameLayout();
+		if(pFL && (pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE))
+		{
+			m_prevMouseContext = EV_EMC_POSOBJECT;
+			return EV_EMC_POSOBJECT;
+		}
 		return EV_EMC_FRAME;
 	}
 	UT_sint32 ires = 40;
@@ -8114,8 +8120,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
 			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
 			{
-				m_prevMouseContext = EV_EMC_FRAME;
-				return EV_EMC_FRAME;
+				m_prevMouseContext = EV_EMC_POSOBJECT;;
+				return EV_EMC_POSOBJECT;;
 			}
 		}
  
@@ -8576,6 +8582,7 @@ void FV_View::setCursorToContext()
 		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
 	case EV_EMC_FRAME:
+	case EV_EMC_POSOBJECT:
 		if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
 		{
 			cursor = GR_Graphics::GR_CURSOR_CROSSHAIR;
