@@ -240,7 +240,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
 		UT_sint32 Left,Right,Top,Bot;
 		_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
-		UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+		UT_DEBUGMSG(("SEVIOR: Before Insert column left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 		const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 		UT_String sRowTop = "top-attach";
 		UT_String sRowBot = "bot-attach";
@@ -555,132 +555,247 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 
 bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 {
-  PL_StruxDocHandle cellSDH,tableSDH;
-  PT_DocPosition posTable,posCell;
-  UT_sint32 iLeft,iRight,iTop,iBot;
-  _getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
-
-  bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
-  bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
-  UT_return_val_if_fail(bRes, false);
+	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
+	PT_DocPosition posTable,posCell,posEndCell;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	_getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
+	
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
   
-  posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
   
-  //
-  // Now find the number of rows and columns inthis table. This is easiest to
-  // get from the table container
-  //
-  fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
-  fp_Run * pRun;
-  UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
-  bool bDirection;
-  pRun = pBL->findPointCoords(posRow, false, xPoint,
-			      yPoint, xPoint2, yPoint2,
-			      iPointHeight, bDirection);
+	//
+	// Now find the number of rows and columns inthis table. This is easiest to
+	// get from the table container
+	//
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+	pRun = pBL->findPointCoords(posRow, false, xPoint,
+								yPoint, xPoint2, yPoint2,
+								iPointHeight, bDirection);
   
-  UT_return_val_if_fail(pRun, false);
+	UT_return_val_if_fail(pRun, false);
+	
+	fp_Line * pLine = pRun->getLine();
+	UT_return_val_if_fail(pLine, false);
+	
+	fp_Container * pCon = pLine->getContainer();
+	UT_return_val_if_fail(pCon, false);
   
-  fp_Line * pLine = pRun->getLine();
-  UT_return_val_if_fail(pLine, false);
+	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	UT_return_val_if_fail(pTab, false);
   
-  fp_Container * pCon = pLine->getContainer();
-  UT_return_val_if_fail(pCon, false);
+	UT_sint32 numCols = pTab->getNumCols();
+	UT_sint32 numRows = pTab->getNumRows();
   
-  fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
-  UT_return_val_if_fail(pTab, false);
+	//
+	// Got all we need, now set things up to do the delete nicely
+	//
+	
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
   
-  UT_sint32 numRows = pTab->getNumRows();
-  UT_sint32 numCols = pTab->getNumCols();
-  
-  //
-  // Got all we need, now set things up to do the delete nicely
-  //
-  
-  // Signal PieceTable Change
-  _saveAndNotifyPieceTableChange();
-  
-  // Turn off list updates
-  m_pDoc->disableListUpdates();
-  m_pDoc->beginUserAtomicGlob();
-  if (!isSelectionEmpty())
-    {
-      m_pDoc->beginUserAtomicGlob();
-      PP_AttrProp AttrProp_Before;
-      _deleteSelection(&AttrProp_Before);
-      m_pDoc->endUserAtomicGlob();
-    }
-  else
-    {
-      _eraseInsertionPoint();
-    }
-  m_pDoc->setDontImmediatelyLayout(true);
-  
-  //
-  // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-  // with a bogus line-type property. We'll restore it later.
-  //
-  const char * pszTable[3] = {NULL,NULL,NULL};
-  pszTable[0] = "table-line-type";
-  const char * szLineType = NULL;
-  UT_String sLineType;
-  UT_sint32 iLineType;
-  m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-  if(szLineType == NULL || *szLineType == NULL)
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
 	{
-	  iLineType = 0;
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
 	}
-  else
-    {
-      iLineType = atoi(szLineType);
-      iLineType -= 1;
+	else
+	{
+		_eraseInsertionPoint();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+  
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with a bogus line-type property. We'll restore it later.
+	//
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "table-line-type";
+	const char * szLineType = NULL;
+	UT_String sLineType;
+	UT_sint32 iLineType;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
+	if(szLineType == NULL || *szLineType == NULL)
+	{
+		iLineType = 0;
+	}
+	else
+	{
+		iLineType = atoi(szLineType);
+		iLineType -= 1;
+	}
+	UT_String_sprintf(sLineType,"%d",iLineType);
+	pszTable[1] = sLineType.c_str();
+	UT_DEBUGMSG(("Sevior: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+  
+	//
+	// OK find the position to insert the row.
+	// Have to handle the case of a cell spanning multiple rows.
+	//
+	// scan the piecetable and find either the first cell that has an attach above the current
+    // row (bBefore or the cell witht he largest bottom attach that has a top attach on the row
+    // for before
+	//
+	UT_sint32 prevTop = 100000;
+	if(bBefore)
+	{
+		UT_sint32 Left,Right,Top,Bot;
+		for(UT_sint32 i = 0; i < numCols; i++)
+		{
+			posCell = findCellPosAt(posTable,iTop,i);
+			bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
+			_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+			UT_DEBUGMSG(("Sevior: Cell position left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+			if(Top < prevTop)
+			{
+				prevTop = Top;
+			}
+		}
+//
+// We insert at this position
+//
+		posCell =  findCellPosAt(posTable,Top,0);
+	}
+	else
+	{
+		UT_sint32 prevBot = -1;
+		for(UT_sint32 i = 0; i < numCols; i++)
+		{
+			posCell = findCellPosAt(posTable,iTop,i);
+			bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
+			UT_sint32 Left,Right,Top,Bot;
+			_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+			UT_DEBUGMSG(("Sevior: Cell position left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+			if(Bot > prevBot)
+			{
+				prevTop = Bot;
+			}
+		}
+//
+// We insert at poscell position
+//
+		if(prevTop > numRows -1)
+		{
+//
+// After Last row so just before the end of table
+//
+			prevTop = numRows;
+			bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
+			if(!bRes)
+			{
+				//
+				// Disaster! the table structure in the piecetable is screwed.
+				// we're totally stuffed now.
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+			posCell = m_pDoc->getStruxPosition(endTableSDH);
+		}
+		else
+		{
+			posCell =  findCellPosAt(posTable,prevTop,0);
+		}
+		UT_DEBUGMSG(("SEVIOR: Inserting after row %d \n",prevTop));
+	}		
+//
+// Got position and top row pos
+// Now insert a row.
+// 
+	PT_DocPosition posInsert = 0;
+	UT_sint32 i =0;
+	for(i=0; i < numCols; i++)
+	{
+		const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+		UT_String sRowTop = "top-attach";
+		UT_String sRowBot = "bot-attach";
+		UT_String sColLeft = "left-attach";
+		UT_String sColRight = "right-attach";
+		UT_String sTop,sBot,sLeft,sRight;
+		UT_String_sprintf(sTop,"%d",prevTop);
+		UT_String_sprintf(sBot,"%d",prevTop+1);
+		UT_String_sprintf(sLeft,"%d",i);
+		UT_String_sprintf(sRight,"%d",i+1);
+		props[0] = sRowTop.c_str();
+		props[1] = sTop.c_str();
+		props[2] = sRowBot.c_str();
+		props[3] = sBot.c_str();
+		props[4] = sColLeft.c_str();
+		props[5] = sLeft.c_str();
+		props[6] = sColRight.c_str();
+		props[7] = sRight.c_str();
+		bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
+		bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+		if(i == 0)
+		{
+			posInsert = posCell+2;
+		}
+		bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+		posCell += 3;
     }
-  UT_String_sprintf(sLineType,"%d",iLineType);
-  pszTable[1] = sLineType.c_str();
-  UT_DEBUGMSG(("DOM: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
-  m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
-  
-  // *******BEGIN TODO*********
-  
-  //
-  // ***CASES***
-  // BEFORE: TOP ROW
-  // BEFORE: INBETWEEN ROWS
-  // AFTER:  BOTTOM ROW
-  // AFTER:  INBETWEEN ROWS
-  //
-  
-  //
-  // OK loop through all the columns in this row
-  //
-  
-  UT_sint32 oldTop = -1;
-  for(UT_sint32 i = 0; i < numCols; i++)
-    {
-      // TODO: i and iLeft shouldd we reversed i think
-      posCell = findCellPosAt(posTable,i,iLeft);
-      bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
-      UT_sint32 Left,Right,Top,Bot;
-      _getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
-      UT_DEBUGMSG(("DOM: Cell position left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
-      const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-      UT_String sRowTop = "top-attach";
-      UT_String sRowBot = "bot-attach";
-      UT_String sColLeft = "left-attach";
-      UT_String sColRight = "right-attach";
-      UT_String sTop,sBot,sLeft,sRight;
-      UT_String_sprintf(sTop,"%d",i);
-      UT_String_sprintf(sBot,"%d",i+1);
-      props[0] = sRowTop.c_str();
-      props[1] = sTop.c_str();
-      props[2] = sRowBot.c_str();
-      props[3] = sBot.c_str();
-
-      // GLARING AMOUNT TODO
-
-    }
-
-    // *************END TODO***********
-
+//
+// OK! now starting immediately after this insert loop through the table adding 1 to top and bottom
+//
+	bRes = m_pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
+	if(!bRes)
+	{
+		//
+		// Disaster! the table structure in the piecetable is screwed.
+		// we're totally stuffed now.
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+	bool bEnd = false;
+	UT_sint32 iCurLeft,iCurRight,iCurTop,iCurBot;
+//
+// -2 gives the last cell inserted.
+//
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posCell-2,PTX_SectionCell,&cellSDH);
+    while(!bEnd)
+	{
+		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
+		if(!bRes)
+		{
+			bEnd = true;
+			break;
+		}
+		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
+		posEndCell =  m_pDoc->getStruxPosition(endCellSDH);
+		if(posEndCell+1 >= posEndTable)
+		{
+			bEnd = true;
+		}
+		posCell =  m_pDoc->getStruxPosition(cellSDH);
+		_getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		iCurTop++;
+		iCurBot++;
+		UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
+		const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+		UT_String sLeft,sRight,sTop,sBot;
+		props[0] = "left-attach";
+		UT_String_sprintf(sLeft,"%d",iCurLeft);
+		props[1] = sLeft.c_str();
+		props[2] = "right-attach";
+		UT_String_sprintf(sRight,"%d",iCurRight);
+		props[3] = sRight.c_str();
+		props[4] = "top-attach";
+		UT_String_sprintf(sTop,"%d",iCurTop);
+		props[5] = sTop.c_str();
+		props[6] = "bot-attach";
+		UT_String_sprintf(sBot,"%d",iCurBot);
+		props[7] = sBot.c_str();
+		UT_DEBUGMSG(("SEVIOR: Changing cell strux %s %s %s %s %s %s %s %s \n",props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7]));
+		bRes = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell+1,posCell+1,NULL,props,PTX_SectionCell);
+	}
     //
     // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
     // with the restored line-type property it has before.
@@ -695,6 +810,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
     // OK finish everything off with the various parameters which allow the formatter to
     // be updated.
     //
+	setPoint(posInsert);
     m_pDoc->endUserAtomicGlob();
     m_pDoc->setDontImmediatelyLayout(false);
     _generalUpdate();
