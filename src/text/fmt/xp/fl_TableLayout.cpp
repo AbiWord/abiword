@@ -345,12 +345,22 @@ bool fl_TableLayout::doSimpleChange(void)
 	UT_sint32 iBot = m_pNewHeightCell->getBottomAttach();
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(m_pNewHeightCell->getSectionLayout());
 	pCL->format();
+
 	if(iBot > iTop +1 )
 	{
 		return false;
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
 	if(pTab == NULL)
+	{
+		return false;
+	}
+	//
+	// Handle case of single Cell table. Also no point doing this for
+	// small tables.
+	//
+	UT_sint32 iNumCells = pTab->getNumRows()*pTab->getNumCols();
+	if(iNumCells < 11)
 	{
 		return false;
 	}
