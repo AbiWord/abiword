@@ -178,7 +178,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
 			UT_ASSERT(szDialogFilename);
 
-			err = stat(szFinalPathname, &buf);
+			err = stat(szDialogFilename, &buf);
 			UT_ASSERT(err == 0 || err == -1);
 			
 			// Check for a directory entered as filename.  When true,

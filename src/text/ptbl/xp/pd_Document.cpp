@@ -17,7 +17,9 @@
  * 02111-1307, USA.
  */
 
-
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -165,9 +167,22 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 
 UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 {
+	struct stat fStats;
+
 	if (!szFilename || !*szFilename)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- invalid filename\n"));
+		return UT_INVALIDFILENAME;
+	}
+
+	if (stat (szFilename, &fStats) == -1) 
+	{
+		UT_DEBUGMSG (("PD_Document::readFromFile -- could not stat the file\n"));
+		return UT_INVALIDFILENAME;
+	}
+	if ((S_IFREG & fStats.st_mode) == 0) 
+	{
+		UT_DEBUGMSG (("PD_Document::readFromFile -- file is not plain file, but %o\n", fStats.st_mode));
 		return UT_INVALIDFILENAME;
 	}
 
