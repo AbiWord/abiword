@@ -3561,7 +3561,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
  		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cs") == 0)
  		{
- 			m_currentRTFState.m_paraProps.m_styleNumber = param;
+ 			m_currentRTFState.m_charProps.m_styleNumber = param;
  			return true;
  		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cell") == 0)
@@ -4632,7 +4632,8 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 // saves us inserting overrides on most space characters in the document
 bool IE_Imp_RTF::_appendSpan()
 {
-	XML_Char* pProps = "props";
+	const XML_Char* pProps = "props";
+	const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
 	UT_String prop_basic;
 	buildCharacterProps(prop_basic);
 
@@ -4643,10 +4644,20 @@ bool IE_Imp_RTF::_appendSpan()
 	prop_rtl += ";dir-override:rtl";
 	
 
-	const XML_Char* propsArray[3];
+	const XML_Char* propsArray[5];
 	propsArray[0] = pProps;
 	propsArray[1] = prop_basic.c_str();
 	propsArray[2] = NULL;
+	propsArray[3] = NULL;
+	propsArray[4] = NULL;
+
+	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
+	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	{
+		propsArray[2] = pStyle;
+		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+	}
+	
 	UT_UCS4Char * p;
 	UT_uint32 iLen = m_gbBlock.getLength();
 
@@ -4761,7 +4772,8 @@ bool IE_Imp_RTF::_appendSpan()
 	
 bool IE_Imp_RTF::_insertSpan()
 {
-	XML_Char* pProps = "props";
+	const XML_Char* pProps = "props";
+	const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
 	UT_String prop_basic;
 	buildCharacterProps(prop_basic);
 
@@ -4772,13 +4784,23 @@ bool IE_Imp_RTF::_insertSpan()
 	prop_rtl += ";dir-override:rtl";
 	
 
-	const XML_Char* propsArray[3];
+	const XML_Char* propsArray[5];
 	propsArray[0] = pProps;
 	propsArray[1] = prop_basic.c_str();
 	propsArray[2] = NULL;
+	propsArray[3] = NULL;
+	propsArray[4] = NULL;
+	
 	UT_UCS4Char * p;
 	UT_uint32 iLen = m_gbBlock.getLength();
 
+	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
+	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	{
+		propsArray[2] = pStyle;
+		propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+	}
+	
 	if(m_bBidiDocument)
 	{
 		FriBidiCharType iOverride = FRIBIDI_TYPE_UNSET, cType, cLastType = FRIBIDI_TYPE_UNSET, cNextType;
@@ -4920,14 +4942,24 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	}
 	else
 	{
-		XML_Char* pProps = "props";
+		const XML_Char* pProps = "props";
+		const XML_Char* pStyle = PT_STYLE_ATTRIBUTE_NAME;
 		UT_String propBuffer;
 		buildCharacterProps(propBuffer);
 
-		const XML_Char* propsArray[3];
+		const XML_Char* propsArray[5];
 		propsArray[0] = pProps;
 		propsArray[1] = propBuffer.c_str();
 		propsArray[2] = NULL;
+		propsArray[3] = NULL;
+		propsArray[4] = NULL;
+
+		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
+		   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+		{
+			propsArray[2] = pStyle;
+			propsArray[3] = static_cast<const char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+		}
 		
 		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
 		{
@@ -8022,14 +8054,25 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 	UT_String propBuffer;
 	buildCharacterProps(propBuffer);
 
+	const XML_Char * pStyle = NULL;
+    const XML_Char * pStyleName = NULL;
+	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
+	   && (UT_uint32)m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	{
+		pStyle = PT_STYLE_ATTRIBUTE_NAME;
+		pStyleName = static_cast<const XML_Char *>(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
+	}
+		
 	if(pszAttribs == NULL)
 	{
-		propsArray = static_cast<const XML_Char **>(UT_calloc(5, sizeof(XML_Char *)));		
+		propsArray = static_cast<const XML_Char **>(UT_calloc(7, sizeof(XML_Char *)));		
 		propsArray [0] = "type";
 		propsArray [1] = xmlField;
 		propsArray [2] = "props";
 		propsArray [3] = propBuffer.c_str();
-		propsArray [4] = NULL;
+		propsArray [4] = pStyle;
+		propsArray [5] = pStyleName;
+		propsArray [6] = NULL;
 	}
 	else
 	{
@@ -8038,17 +8081,29 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		{
 			isize++;
 		}
-		propsArray = static_cast<const XML_Char **>(UT_calloc(5+isize, sizeof(XML_Char *)));		
+		propsArray = static_cast<const XML_Char **>(UT_calloc(7+isize, sizeof(XML_Char *)));
+
+		UT_uint32 iEmptyAttrib = 4;
 		propsArray [0] = "type";
 		propsArray [1] = xmlField;
 		propsArray [2] = "props";
 		propsArray [3] = propBuffer.c_str();
+		propsArray [4] = NULL;
+		propsArray [5] = NULL;
+
+		if(pStyle)
+		{
+			propsArray[iEmptyAttrib++] = pStyle;
+			propsArray[iEmptyAttrib++] = pStyleName;
+		}
+		
+		
 		UT_uint32 i = 0;
 		for(i=0; i< isize;i++)
 		{
-			propsArray[4+i] = pszAttribs[i];
+			propsArray[iEmptyAttrib+i] = pszAttribs[i];
 		}
-		propsArray[4+isize] = NULL;
+		propsArray[iEmptyAttrib+isize] = NULL;
 	}
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
@@ -8145,7 +8200,10 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	bool status = true;
 	int nesting = 1;
 	unsigned char ch;
-	char * styleType = "P";
+	char * styleTypeP = "P";
+	char * styleTypeC = "C";
+	char * styleType = styleTypeP;
+	
 	UT_sint32 BasedOn[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 FollowedBy[2000]; // 2000 styles. I know this should be a Vector.
 	UT_sint32 styleCount = 0;
@@ -8236,10 +8294,15 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if ((strcmp(reinterpret_cast<char*>(&keyword[0]),  "s") == 0) ||
 				     (strcmp(reinterpret_cast<char*>(&keyword[0]), "ds") == 0) ||
-				     (strcmp(reinterpret_cast<char*>(&keyword[0]), "cs") == 0) ||
 					 (strcmp(reinterpret_cast<char*>(&keyword[0]), "ts") == 0))
 			{
 				styleNumber = parameter;
+				styleType = styleTypeP;
+			}
+			if (strcmp(reinterpret_cast<char*>(&keyword[0]), "cs") == 0)
+			{
+				styleNumber = parameter;
+				styleType = styleTypeC;
 			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "*") == 0)
 			{
