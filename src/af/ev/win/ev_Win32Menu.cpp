@@ -57,7 +57,7 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 	// append "..." to menu item if it raises a dialog
 
 	static char buf[128];
-	memset(buf,0,NrElement(buf));
+	memset(buf,0,NrElements(buf));
 	strncpy(buf,szLabelName,NrElements(buf)-4);
 	strcat(buf,"...");
 	return buf;
