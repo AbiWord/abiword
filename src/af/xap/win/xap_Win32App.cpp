@@ -75,19 +75,20 @@ UT_Bool AP_Win32App::initialize(void)
 	// do anything else we need here...
 
 	_pClipboard = new AP_Win32Clipboard();
-	
+
 	/*
-	  The following call initializes the spell checker.
-	  It does NOT belong here.  However, right now, it's
-	  not clear where it does belong.
-	  HACK TODO fix this
-
-	  Furthermore, it currently initializes the dictionary
-	  to a hard-coded path
-	  TODO fix this
+	  TODO for now, we assume the dictionary
+	  file is in the same directory as the EXE,
+	  and that it is called 'american.hash'.  Later,
+	  we will want to support spell checking in other
+	  languages.
 	*/
+	char szDictionary[512];
 
-	SpellCheckInit("c:/american.hash");		// NB: yes, the slash should be backwards
+	_getExeDir(szDictionary, 512);
+	strcat(szDictionary, "american.hash");
+	
+	SpellCheckInit(szDictionary);
 	
 	return UT_TRUE;
 }
@@ -116,3 +117,23 @@ AP_Toolbar_ControlFactory * AP_Win32App::getControlFactory(void)
 {
 	return &m_controlFactory;
 }
+
+UT_uint32 AP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
+{
+	UT_uint32 iResult = GetModuleFileName(NULL, pDirBuf, iBufLen);
+
+	if (iResult > 0)
+	{
+		char* p = pDirBuf + strlen(pDirBuf);
+		while (*p != '\\')
+		{
+			p--;
+		}
+		UT_ASSERT(p > pDirBuf);
+		p++;
+		*p = 0;
+	}
+
+	return iResult;
+}
+
