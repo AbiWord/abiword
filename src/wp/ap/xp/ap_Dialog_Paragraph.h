@@ -72,13 +72,13 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 
 	AP_Dialog_Paragraph::tAnswer	getAnswer(void) const;
 
- protected:
-
+	// must be public, otherwise MSVC bails out
 	// enumerated types for drop-down lists (option menus)
-
 	typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
 
 	typedef enum { op_INIT = 0, op_UICHANGE, op_SYNC } tOperation;
+
+ protected:
 
 	// handle the XP-job of attaching something to our m_paragraphPreview
 	void _createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
