@@ -33,6 +33,7 @@
 #include "ut_rand.h"
 #include "pd_Document.h"
 #include "xad_Document.h"
+#include "xap_Strings.h"
 #include "pt_PieceTable.h"
 #include "pl_Listener.h"
 #include "ie_imp.h"
@@ -4503,6 +4504,72 @@ bool PD_Document::areDocumentStylesheetsEqual(const PD_Document &d) const
 	return true;
 }
 
+void PD_Document::diffIntoRevisions(const PD_Document &d)
+{
+	UT_Vector vDiff;
+	diffDocuments(d, vDiff);
+
+	if(vDiff.getItemCount() == 0)
+		return;
+
+	// bracket undo
+	beginUserAtomicGlob();
+	
+	bool bMark = isMarkRevisions();
+	setMarkRevisions(true);
+
+	// create new revision
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_return_if_fail(pSS);
+	UT_UCS4String ucs4(pSS->getValue(AP_STRING_ID_MSG_AutoMerge));
+
+	addRevision(getRevisionId()+1, ucs4.ucs4_str(),ucs4.length(),time(NULL));
+
+	for(UT_uint32 i = 0; i < vDiff.getItemCount(); ++i)
+	{
+		PD_DocumentDiff * pDiff = (PD_DocumentDiff *) vDiff.getNthItem(i);
+		if(!pDiff)
+		{
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			continue;
+		}
+
+		if(pDiff->m_bDeleted)
+		{
+			// this is the easy bit ...
+			UT_uint32 iRealDeleteCount;
+			deleteSpan(pDiff->m_pos1, pDiff->m_pos1 + pDiff->m_len, NULL, iRealDeleteCount);
+		}
+		else
+		{
+			// we need to get the text from doc2 first
+			PD_DocIterator t2(d, pDiff->m_pos2);
+
+			UT_UCS4Char * pC = new UT_UCS4Char[pDiff->m_len];
+			UT_return_if_fail(pC);
+			
+			UT_uint32 j = 0;
+
+			for(j = 0; j < pDiff->m_len && t2.getStatus() == UTIter_OK; ++j, ++t2)
+				pC[j] = t2.getChar();
+
+			// TODO -- respect fmt
+			insertSpan(pDiff->m_pos1, pC, j, NULL);
+
+			delete [] pC;
+		}
+	}
+	
+	// clean up ...
+	setMarkRevisions(bMark);
+
+	//release undo
+	endUserAtomicGlob();
+	
+	UT_VECTOR_PURGEALL(PD_DocumentDiff*, vDiff);
+}
+
+
 bool PD_Document::diffDocuments(const PD_Document &d, UT_Vector & vDiff) const
 {
 	PT_DocPosition pos1 = 0;
@@ -4539,8 +4606,9 @@ bool PD_Document::diffDocuments(const PD_Document &d, UT_Vector & vDiff) const
 		if(!bDiff)
 		{
 			// no further similarities found
-			// insertion if the change in iOffset2 is negative
-			bool bDel = (iOffset2 - iOffset2Diff > 0);
+			// deletion if the change in iOffset2 is negative, i.e.,
+			// doc2 is shorter
+			bool bDel = (iOffset2 - iOffset2Diff < 0);
 			UT_uint32 iLen = 0xffffffff; // to the end
 	
 			PD_DocumentDiff * pDiff = new PD_DocumentDiff(bDel, pos1, pos1 + iOffset2, iLen);
@@ -4551,19 +4619,20 @@ bool PD_Document::diffDocuments(const PD_Document &d, UT_Vector & vDiff) const
 			return true;
 		}
 
-		// text is deleted if the extra offset from the similarity is positive
-		bool bDel = (iOffset2Diff - iOffset2 > 0);
+		// text is deleted if the extra offset from the similarity is
+		// negative, i.e., doc2 is shorter
+		bool bDel = (iOffset2Diff - iOffset2 < 0);
 		UT_uint32 iLen;
 
 		if(bDel)
 		{
-			// need to use the coords of the second doc for calculations
-			iLen = pos1+iOffset2 > pos1Diff+iOffset2Diff ? pos1+iOffset2-pos1Diff-iOffset2Diff :
-				pos1Diff+iOffset2Diff-pos1-iOffset2;
+			iLen = pos1 > pos1Diff ? pos1 - pos1Diff : pos1Diff - pos1;
 		}
 		else
 		{
-			iLen = pos1 > pos1Diff ? pos1 - pos1Diff : pos1Diff - pos1;
+			// need to use the coords of the second doc for calculations
+			iLen = pos1+iOffset2 > pos1Diff+iOffset2Diff ? pos1+iOffset2-pos1Diff-iOffset2Diff :
+				pos1Diff+iOffset2Diff-pos1-iOffset2;
 		}
 	
 		PD_DocumentDiff * pDiff = new PD_DocumentDiff(bDel, pos1, pos1 + iOffset2, iLen);

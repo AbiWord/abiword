@@ -1138,11 +1138,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
-	EV_EditMethod(NF(viewTable),			0,		""),
+	// capitals before lowercase ...
 	EV_EditMethod(NF(viewTB1),			0,		""),
 	EV_EditMethod(NF(viewTB2),			0,		""),
 	EV_EditMethod(NF(viewTB3),			0,		""),
 	EV_EditMethod(NF(viewTB4),			0,		""),
+	EV_EditMethod(NF(viewTable),			0,		""),
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
@@ -11599,10 +11600,7 @@ Defun1(revisionCompareDocuments)
 					 pDoc->areDocumentContentsEqual(*pDoc2),
 					 pDoc->areDocumentFormatsEqual(*pDoc2)));
 
-		UT_Vector vDiff;
-		pDoc->diffDocuments(*pDoc2, vDiff);
-		UT_VECTOR_PURGEALL(PD_DocumentDiff*, vDiff);
-		
+		pDoc->diffIntoRevisions(*pDoc2);
 	}
 	return true;
 }

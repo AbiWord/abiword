@@ -635,6 +635,7 @@ public:
 										 const PD_Document &d) const;
 
 	bool      diffDocuments(const PD_Document &d, UT_Vector & vDiff) const;
+	void      diffIntoRevisions(const PD_Document &d);
 	
 	const PD_DocumentUID * getDocUID()const {return m_pDocUID;}
 	void                   setDocUID(PD_DocumentUID * u);
