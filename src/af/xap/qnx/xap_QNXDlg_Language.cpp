@@ -181,8 +181,9 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_ULANG_LangTitle), 0);
 	UT_Vector *pVec = getAvailableDictionaries();
 	UT_uint32 nItems = pVec->getItemCount();
 	
-	UT_uint32 k;
-	for (k = 0; k < m_iLangCount; k++) {
+	UT_sint32 k;
+	for (k = m_iLangCount-1; k >= 0; k--) {
+
 		const char *item = (const char *) m_ppLanguages[k];
 		img=-1;
 		for(UT_uint32 i = 0; i < nItems; i++)
