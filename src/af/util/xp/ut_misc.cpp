@@ -248,21 +248,65 @@ const char * UT_pathSuffix(const char * path)
 	}
 }
 
-		
+typedef struct {
+  UT_UCSChar low;
+  UT_UCSChar high; 
+} ucs_range;
 
+static ucs_range s_word_delim[] = 
+{
+  // we will include all control chars from Latin1
+  {0x0001, 0x0021},
+  {0x0023, 0x0026},
+  {0x0028, 0x002f},
+  {0x003a, 0x0040},
+  {0x005b, 0x0060},
+  {0x007b, 0x007e},
+  {0x00a1, 0x00a7},
+  {0x00a9, 0x00b3},
+  {0x00b5, 0x00b7},
+  {0x00b9, 0x00bf},
+  {0x00f7, 0x00f7}
+};
+
+static bool s_find_delim(UT_UCSChar c)
+{
+    for(UT_uint32 i = 0; i < NrElements(s_word_delim); i++)
+	{
+		if(c < s_word_delim[i].low)
+			return false;
+
+		if(c <= s_word_delim[i].high)
+			return true;
+	}
+	return false;
+}
 
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 {
-#if 0
-	/* wjc ... these UT_UCS_isXXX() functions aren't really right for UCS */
-	if (UT_UCS_isalnum(currentChar)) return false;
-	// This is for the unicode character used to represent AbiWord
-	// objects (which are used among other things for computed
-	// fields which should be considered words).
-	if (UCS_ABI_OBJECT == currentChar) return false;
-	// the following case is for embedded apostrophe in a contraction
-	if ((currentChar == '\''  ||  currentChar == UCS_RQUOTE)  &&  UT_UCS_isalnum(followChar)) return false;
-	return true;
+#if 1
+    switch(currentChar)
+	{
+		case '"': //in some languages this can be in the middle of a word (Hebrew)
+		case '\'':	// we want quotes inside words for contractions
+		case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
+		case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
+		case UCS_LQUOTE:    // smart quote, open single  /* wjc */
+		case UCS_RQUOTE:	// we want quotes inside words for contractions
+			if (UT_UCS_isalpha(followChar))
+			  {
+				  return false;
+			  }
+			else
+			  {
+				  return true;
+			  }
+		case UCS_ABI_OBJECT:
+			return false;
+
+		default:
+			return s_find_delim(currentChar);
+	}
 
 #else
 	/*
@@ -272,51 +316,68 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 	*/
 	switch (currentChar)
 	{
-	case ' ':
-	case ',':
-	case '.':
-	case '-':
-	case '_':
-	case '(':
-	case ')':
-	case '[':
-	case ']':
-    case '{':
-    case '}':
-	case '<':
-	case '>':
-	case '*':
-	case '/':
-	case '+':
-	case '=':
-	case '#':
-	case '$':
-	case ';':
-	case ':':
-	case '!':
-	case '?':
-	case UCS_TAB:	// tab
-	case UCS_LF:	// line break
-	case UCS_VTAB:	// column break
-	case UCS_FF:	// page break
+		case ' ':
+		case ',':
+		case '.':
+		case '-':
+		case '_':
+		case '(':
+		case ')':
+		case '[':
+		case ']':
+		case '{':
+		case '}':
+		case '<':
+		case '>':
+		case '*':
+		case '/':
+		case '+':
+		case '=':
+		case '#':
+		case '$':
+		case ';':
+		case ':':
+		case '!':
+		case '?':
+		case UCS_TAB:	// tab
+		case UCS_LF:	// line break
+		case UCS_VTAB:	// column break
+		case UCS_FF:	// page break
+		case 0x00a1:    // upside-down exclamation mark
+
+		/* various currency symbols */
+		case 0x00a2:
+		case 0x00a3:
+		case 0x00a4:
+		case 0x00a5:
+
+		/* other symbols */
+		case 0x00a6:
+		case 0x00a7:
+		case 0x00a9:
+		case 0x00ab:
+		case 0x00ae:
+		case 0x00b0:
+		case 0x00b1:
+
 		return true;
-	case '"': //in some languages this can be in the middle of a word (Hebrew)
-	case '\'':	// we want quotes inside words for contractions
-	case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
-	case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
-	case UCS_LQUOTE:    // smart quote, open single  /* wjc */
-	case UCS_RQUOTE:	// we want quotes inside words for contractions
-		if (UT_UCS_isalpha(followChar))
-		{
+		case '"': //in some languages this can be in the middle of a word (Hebrew)
+		case '\'':	// we want quotes inside words for contractions
+		case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
+		case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
+		case UCS_LQUOTE:    // smart quote, open single  /* wjc */
+		case UCS_RQUOTE:	// we want quotes inside words for contractions
+			if (UT_UCS_isalpha(followChar))
+			  {
+				  return false;
+			  }
+			else
+			  {
+				  return true;
+			  }
+		case UCS_ABI_OBJECT:
+		default:
 			return false;
-		}
-		else
-		{
-			return true;
-		}
-	case UCS_ABI_OBJECT:
-	default:
-		return false;
 	}
 #endif
 }
