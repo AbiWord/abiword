@@ -33,6 +33,14 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
+typedef struct
+{
+	XAP_Menu_Id 	id;			// Menu ID
+	int 			nRsc;
+	HBITMAP			hBitmap;	// Bitmap
+	
+} EV_Menu_Bitmap;	
+
 class EV_Win32Menu : public EV_Menu
 {
 public:
@@ -41,6 +49,8 @@ public:
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName);
 	~EV_Win32Menu();
+	
+	void				destroy();
 
 	bool				synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot);
 	bool				onCommand(AV_View * pView, HWND hWnd, WPARAM wParam);
@@ -57,7 +67,7 @@ public:
 protected:
 	XAP_Win32App *				m_pWin32App;
 	const EV_EditEventMapper *	m_pEEM;
-
+	EV_Menu_Bitmap*				m_pArMenuBitmaps;
 	HMENU						m_myMenu;
 };
 

@@ -385,6 +385,45 @@ bool XAP_Win32Frame::updateTitle()
 	return true;
 }
 
+HFONT GetAFont(int fnFont) 
+{ 
+    static LOGFONT lf;  // structure for font information  
+ 
+    // Get a handle to the ANSI fixed-pitch font, and copy 
+    // information about the font to a LOGFONT structure. 
+ 
+    GetObject(GetStockObject(ANSI_FIXED_FONT), sizeof(LOGFONT), 
+        &lf); 
+ 
+    // Set the font attributes, as appropriate.  
+ 
+    //if (fnFont == BOLD) 
+    lf.lfWeight = FW_BOLD; 
+    //else 
+    //    lf.lfWeight = FW_NORMAL; 
+ 
+    //lf.lfItalic = (fnFont == ITALIC); 
+    //lf.lfItalic = 0; 
+ 
+    // Create the font, and then return its handle.  
+ 
+    return CreateFont(lf.lfHeight, lf.lfWidth, 
+        lf.lfEscapement, lf.lfOrientation, lf.lfWeight, 
+        lf.lfItalic, lf.lfUnderline, lf.lfStrikeOut, lf.lfCharSet, 
+        lf.lfOutPrecision, lf.lfClipPrecision, lf.lfQuality, 
+        lf.lfPitchAndFamily, lf.lfFaceName); 
+} 
+
+HFONT	gFont = NULL;
+LPMEASUREITEMSTRUCT lpmis;  // pointer to item of data             
+LPDRAWITEMSTRUCT lpdis;  
+SIZE size;                  // menu-item text extents             
+    WORD wCheckX;               // check-mark width                   
+    int nTextX;                 // width of menu item                 
+    int nTextY;                 // height of menu item                
+    int i;                      // loop counter                       
+    HFONT hfontOld;             // handle to old font      
+
 LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	XAP_Win32Frame * f = (XAP_Win32Frame*)GetWindowLong(hwnd, GWL_USERDATA);
@@ -460,7 +499,8 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		else if (f->m_pWin32Menu->onInitMenu(f,pView,hwnd,(HMENU)wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-
+		
+#ifdef MENU_FT
 	case WM_MENUSELECT:
 		if (f->m_pWin32Popup)
 		{
@@ -470,6 +510,106 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		else if (f->m_pWin32Menu->onMenuSelect(f,pView,hwnd,(HMENU)lParam,wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+		
+	case WM_MEASUREITEM: 
+ 	{
+        // Retrieve a device context for the main window.  
+        HDC hdc = GetDC(hwnd); 
+
+        // Retrieve pointers to the menu item's 
+        // MEASUREITEMSTRUCT structure and MYITEM structure. 
+
+        lpmis = (LPMEASUREITEMSTRUCT) lParam; 
+        //pmyitem = (MYITEM *) lpmis->itemData; 
+        char *pText = (char*) lpmis->itemData;
+
+        // Select the font associated with the item into 
+        // the main window's device context. 
+        
+        if (!gFont)
+        	gFont = GetAFont(0); 
+
+        hfontOld = (HFONT) SelectObject(hdc, gFont); 
+
+        // Retrieve the width and height of the item's string, 
+        // and then copy the width and height into the 
+        // MEASUREITEMSTRUCT structure's itemWidth and 
+        // itemHeight members. 
+
+        GetTextExtentPoint32(hdc, pText, 
+            lstrlen(pText), &size); 
+            
+        lpmis->itemWidth = size.cx; 
+        lpmis->itemHeight = size.cy; 
+
+        // Select the old font back into the device context, 
+        // and then release the device context. 
+
+        SelectObject(hdc, hfontOld); 
+        ReleaseDC(hwnd, hdc); 
+
+        return TRUE; 
+ 	}
+ 	
+ 	case WM_DRAWITEM: 
+ 	{
+            // Get pointers to the menu item's DRAWITEMSTRUCT 
+            // structure and MYITEM structure. 
+ 
+            lpdis = (LPDRAWITEMSTRUCT) lParam; 
+            //pmyitem = (MYITEM *) lpdis->itemData; 
+            char *pText = (char*) lpmis->itemData;
+            
+           	BOOL fSelected = false;
+           	
+           	COLORREF crText;            // text color of unselected item      
+    		COLORREF crBkgnd;           // background color unselected item
+    		static COLORREF crSelText;  // text color of selected item        
+    		static COLORREF crSelBkgnd;
+ 
+            // If the user has selected the item, use the selected 
+            // text and background colors to display the item. 
+ 
+            if (lpdis->itemState & ODS_SELECTED) 
+            { 
+                crText = SetTextColor(lpdis->hDC, crSelText); 
+                crBkgnd = SetBkColor(lpdis->hDC, crSelBkgnd); 
+                fSelected = TRUE; 
+            } 
+ 
+            // Remember to leave space in the menu item for the 
+            // check-mark bitmap. Retrieve the width of the bitmap 
+            // and add it to the width of the menu item. 
+ 
+            wCheckX = GetSystemMetrics(SM_CXMENUCHECK); 
+            nTextX = wCheckX + lpdis->rcItem.left; 
+            nTextY = lpdis->rcItem.top; 
+ 
+            // Select the font associated with the item into the 
+            // item's device context, and then draw the string. 
+ 
+            hfontOld = (HFONT) SelectObject(lpdis->hDC, gFont); 
+            ExtTextOut(lpdis->hDC, nTextX, nTextY, ETO_OPAQUE, 
+                &lpdis->rcItem, pText, 
+                lstrlen(pText), NULL); 
+ 
+            // Select the previous font back into the device 
+            // context. 
+ 
+            SelectObject(lpdis->hDC, hfontOld); 
+ 
+            // Return the text and background colors to their 
+            // normal state (not selected). 
+ 
+            if (fSelected) 
+            { 
+                SetTextColor(lpdis->hDC, crText); 
+                SetBkColor(lpdis->hDC, crBkgnd); 
+            } 
+ 
+	         return TRUE; 
+		} 
+#endif		
 
 	case WM_NOTIFY:
 		switch (((LPNMHDR) lParam)->code) 

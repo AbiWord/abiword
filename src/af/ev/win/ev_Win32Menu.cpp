@@ -33,6 +33,9 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 #include "xap_Win32Frame.h"
+#include "ap_Win32Resources.rc2"
+#include "ap_Menu_Id.h"
+
 
 /*****************************************************************/
 
@@ -109,11 +112,54 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 	m_pEEM(pEEM),
 	m_myMenu(NULL)
 {
+	
+	#define BITMAP_ITEMS	14
+			
+	EV_Menu_Bitmap bitmaps[BITMAP_ITEMS] = 
+	{	
+			
+		// File
+		{AP_MENU_ID_FILE_NEW, 	AP_RID_BITMAP_NEW, NULL},						
+		{AP_MENU_ID_FILE_OPEN,  AP_RID_BITMAP_OPEN, NULL},							
+		{AP_MENU_ID_FILE_PRINT, AP_RID_BITMAP_PRINT, NULL},						
+		
+		// Edit
+		{AP_MENU_ID_EDIT_PASTE, AP_RID_BITMAP_PASTE, NULL},				
+		
+		// Edit
+		{AP_MENU_ID_EDIT_REDO, 		AP_RID_BITMAP_REDO, NULL},
+		{AP_MENU_ID_EDIT_UNDO, 		AP_RID_BITMAP_UNDO, NULL},
+		
+		{AP_MENU_ID_EDIT_COPY,  AP_RID_BITMAP_COPY, NULL},				
+		{AP_MENU_ID_EDIT_CUT, 	AP_RID_BITMAP_CUT, NULL},				
+		{AP_MENU_ID_EDIT_FIND,  AP_RID_BITMAP_FIND,  NULL},		
+		
+		// Insert
+		{AP_MENU_ID_INSERT_SYMBOL,		AP_RID_BITMAP_SYMBOL, NULL},				
+		{AP_MENU_ID_INSERT_PICTURE, 	AP_RID_BITMAP_PICTURE, NULL},				
+		{AP_MENU_ID_INSERT_GRAPHIC, 	AP_RID_BITMAP_PICTURE, NULL},				
+		
+		// Tools		
+		{AP_MENU_ID_TOOLS_OPTIONS, 	AP_RID_BITMAP_OPTIONS,  NULL},		
+		{AP_MENU_ID_HELP_CONTENTS, 	AP_RID_BITMAP_HELP,  NULL},						
+		
+		
+	};
+	
+	m_pArMenuBitmaps = new EV_Menu_Bitmap[BITMAP_ITEMS];	
+	memcpy (m_pArMenuBitmaps, bitmaps, sizeof(EV_Menu_Bitmap)*BITMAP_ITEMS);
+}
+
+void	EV_Win32Menu::destroy()
+{
+	  delete m_pArMenuBitmaps;	
 }
 
 EV_Win32Menu::~EV_Win32Menu()
-{
+{	
 	// we let the derived classes handle destruction of m_myMenu if appropriate.
+	// TODO: this is never colld
+		
 }
 
 bool EV_Win32Menu::onCommand(AV_View * pView,
@@ -153,6 +199,8 @@ bool EV_Win32Menu::onCommand(AV_View * pView,
 	invokeMenuMethod(pView, pEM, script_name);
 	return true;
 }
+
+//HBITMAP ghBitmap = NULL;
 
 bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 {
@@ -216,14 +264,70 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 					stack.push(sub);
 					u = (UINT) sub;
 					//UT_DEBUGMSG(("menu::synthesize [name %s][subMenu 0x%08lx]\n",szLabelName,u));
+					if (szLabelName && *szLabelName)
+					{						
+						AppendMenu(m, flags, u, szLabelName);						
+					}
 				}
 				else
 				{
 					//UT_DEBUGMSG(("menu::synthesize [name %s]\n",szLabelName));
+					if (szLabelName && *szLabelName)
+					{				
+
+						AppendMenu(m, flags, u, szLabelName);
+						
+						// Does the menu have a bitmap? Let's see...
+						EV_Menu_Bitmap*	pBitmapItem = m_pArMenuBitmaps;
+						 
+						for (int i=0; i<BITMAP_ITEMS; i++, pBitmapItem++)
+						{
+							if (pBitmapItem->id==id)
+							{	
+								int 	cx, cy;																				
+								HBITMAP hbmpSrc;
+								BITMAP	bmp;
+								
+								// Load bitmap processing its background
+								hbmpSrc =  (HBITMAP)LoadImage(m_pWin32App->getInstance(), 
+									MAKEINTRESOURCE(pBitmapItem->nRsc), IMAGE_BITMAP, 0,0,
+										LR_LOADTRANSPARENT);
+																								
+								cx=GetSystemMetrics(SM_CXMENUCHECK);
+								cy=GetSystemMetrics(SM_CYMENUCHECK);			
+																
+								GetObject(hbmpSrc, sizeof(BITMAP), &bmp);
+								
+								HBITMAP hbmpOldSrc, hbmpOldDest, hbmpNew;
+								
+								HDC     hdcSrc, hdcDest;
+								hdcSrc =  CreateCompatibleDC(NULL);
+								hdcDest =  CreateCompatibleDC(hdcSrc);
+								hbmpOldSrc = (HBITMAP) SelectObject(hdcSrc, hbmpSrc);
+								hbmpNew = (HBITMAP)CreateCompatibleBitmap(hdcSrc, cx,cy);
+								hbmpOldDest = (HBITMAP)SelectObject(hdcDest, hbmpNew);
+								
+								StretchBlt(hdcDest, 0, 0, cx,cy, hdcSrc, 0, 0,
+									bmp.bmWidth,bmp.bmHeight, SRCCOPY);
+								
+								SelectObject(hdcDest, hbmpOldDest);
+								SelectObject(hdcSrc, hbmpOldSrc);
+								DeleteDC(hdcDest);
+								DeleteDC(hdcSrc);
+								DeleteObject(hbmpSrc);								
+								
+								pBitmapItem->hBitmap = hbmpNew;
+								
+								SetMenuItemBitmaps(m, u, MF_BYCOMMAND,	hbmpNew, NULL);
+									//pBitmapItem->hBitmap, pBitmapItem->hBitmap);		
+							}
+
+						}							
+							
+					}
 				}
 
-				if (szLabelName && *szLabelName)
-					AppendMenu(m, flags, u, szLabelName);
+				
 			}
 			break;
 	
@@ -310,7 +414,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 				UINT uBold = 0;
 				if (pAction->hasGetStateFunction())
 				{
-					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+ 					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
 					if (mis & EV_MIS_Gray)
 						uEnable |= MF_GRAYED;
 					if (mis & EV_MIS_Toggled)
@@ -360,7 +464,9 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 
 				// we want the item in the menu.
 				pos++;
-
+				
+				//#ifdef _TEMP_OUT
+										
 				if (bPresent)			// just update the label on the item.
 				{
 					if (strcmp(szLabelName,mif.dwTypeData)==0)
@@ -400,6 +506,8 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 					InsertMenuItem(m,pos-1,TRUE,&mif);
 					bNeedToRedrawMenu = true;
 				}
+				
+				//#endif
 			}
 			break;
 	
@@ -446,7 +554,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 	UT_ASSERT(wDbg == hMenuBar);
 #endif
 		
-	return true;
+ 	return true;
 }
 
 bool EV_Win32Menu::onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
@@ -508,6 +616,7 @@ EV_Win32MenuBar::EV_Win32MenuBar(XAP_Win32App * pWin32App,
 
 EV_Win32MenuBar::~EV_Win32MenuBar(void)
 {
+	destroy();
 	// TODO should we destroy m_myMenu if set ??
 }
 
@@ -530,6 +639,8 @@ EV_Win32MenuPopup::EV_Win32MenuPopup(XAP_Win32App * pWin32App,
 
 EV_Win32MenuPopup::~EV_Win32MenuPopup(void)
 {
+	destroy();
+	
 	if (m_myMenu)
 		DestroyMenu(m_myMenu);
 }

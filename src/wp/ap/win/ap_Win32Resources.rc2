@@ -66,6 +66,23 @@
 #define AP_RID_DIALOG_META_PERMISSIONS			236	// Property Page
 
 
+// Menu bitmaps
+#define AP_RID_BITMAP_NEW			2500
+#define AP_RID_BITMAP_OPEN			2501
+#define AP_RID_BITMAP_PRINT			2502
+#define AP_RID_BITMAP_PASTE			2503
+#define AP_RID_BITMAP_CUT			2504
+#define AP_RID_BITMAP_COPY			2505
+#define AP_RID_BITMAP_FIND			2506
+#define AP_RID_BITMAP_SYMBOL		2507
+#define AP_RID_BITMAP_PICTURE		2508
+#define AP_RID_BITMAP_HELP			2509		
+#define AP_RID_BITMAP_REDO			2510
+#define AP_RID_BITMAP_OPTIONS		2511
+#define AP_RID_BITMAP_UNDO			2512
+
+
+
 #include "ap_Win32Res_DlgPageSetup.rc2"
 #include "ap_Win32Resources_DialogReplace.rc2"
 #include "ap_Win32Res_DlgBreak.rc2"
