@@ -71,6 +71,13 @@
 				 0)))
 #	endif
 
+#elif defined(TARGET_OS_MAC) && TARGET_OS_MAC // ?SBK
+
+	// MAC assert() is not cool, but I will fix it later.
+
+#	include <assert.h>
+#	define UT_ASSERT assert
+
 #else
 
 	// A Unix variant.
