@@ -22,8 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=		    _ZLIB_ _LIBPNG_ _LIBWV_ _ABIDISTFILES_
-#REQUIRE=		    _LIBWV_ _ABIDISTFILES_
+REQUIRE=		_ZLIB_ _LIBPNG_ _LIBWV_ _ABIDISTFILES_ _LIBICONV_
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
@@ -96,6 +95,34 @@ _ABIDISTFILES_:
 		echo ;						\
 	fi
 
+# On machines that do _NOT_ have libiconv in the C library, we
+# force a build as a peer.  We don't detect whether you have libiconv
+# (specifically iconv.h) as part of your C library, or whether it 
+# was something you installed yourself.  
+
+_LIBICONV_:
+	@if [ ! -r /usr/include/iconv.h -a ! -r /usr/local/include/iconv.h ]; then	\
+		if [ -d $(ABI_ROOT)/../libiconv ]; then                        	\
+			echo Found libiconv in peer directory;                  \
+			if [ ! -r $(ABI_ROOT)/../libiconv/src/config.h ]; then  \
+				cd $(ABI_ROOT)/../libiconv;                     \
+				./configure;                                    \
+			fi;                                                     \
+			$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;     \
+		else                                                            \
+			echo libiconv not found;                                \
+			echo TODO provide a nicer error message;                \
+			echo TODO with instructions for obtaining it;           \
+			exit 1;                                                 \
+		fi								\
+	else									\
+		echo ;								\
+		echo "*** Found iconv functions in system locations.  I'm going to trust that these";	\
+		echo "*** are the versions of the libraries we should link against.";			\
+		echo ;								\
+	fi
+
+
 #################################################################
 
 clean_ZLIB_:
@@ -112,3 +139,6 @@ clean_LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../wv clean;	\
 
+clean_LIBICONV_:
+	@if [ -d $(ABI_ROOT)/../libiconv ]; then              \
+		$(MAKE) -C $(ABI_ROOT)/../libiconv clean;     \
