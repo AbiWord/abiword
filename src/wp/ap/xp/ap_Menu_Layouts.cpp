@@ -445,8 +445,8 @@ bool  XAP_Menu_Factory::buildMenuLabelSet(const char * szLanguage_)
 		m_pLabelSet = new EV_Menu_LabelSet(szLanguage,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
 		#define menuitem(id) \
 			m_pLabelSet->setLabel( (AP_MENU_ID_##id),	\
-								    pSS->getValue(AP_STRING_ID_MENU_LABEL_##id), \
-								    pSS->getValue(AP_STRING_ID_MENU_STATUSLINE_##id) );
+								    (pSS->getValueUTF8(AP_STRING_ID_MENU_LABEL_##id)).utf8_str(), \
+								    (pSS->getValueUTF8(AP_STRING_ID_MENU_STATUSLINE_##id)).utf8_str() );
 			#include "ap_Menu_Id_List.h"
 		#undef menuitem
 		return true;
@@ -470,8 +470,8 @@ bool  XAP_Menu_Factory::buildBuiltInMenuLabelSet(EV_Menu_LabelSet *& pLabelSet)
 	pLabelSet = new EV_Menu_LabelSet("en-US",AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
     #define menuitem(id) \
 		pLabelSet->setLabel( (AP_MENU_ID_##id),	\
-		m_pBSS->getValue(AP_STRING_ID_MENU_LABEL_##id), \
-		m_pBSS->getValue(AP_STRING_ID_MENU_STATUSLINE_##id) );
+		(m_pBSS->getValueUTF8(AP_STRING_ID_MENU_LABEL_##id)).utf8_str(), \
+		(m_pBSS->getValueUTF8(AP_STRING_ID_MENU_STATUSLINE_##id)).utf8_str() );
     #include "ap_Menu_Id_List.h"
     #undef menuitem
 	return true;
@@ -499,8 +499,8 @@ EV_Menu_LabelSet *  XAP_Menu_Factory::CreateMenuLabelSet(const char * szLanguage
 		m_pLabelSet = new EV_Menu_LabelSet(szLanguage,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
 		#define menuitem(id) \
 			m_pLabelSet->setLabel( (AP_MENU_ID_##id),	\
-								    pSS->getValue(AP_STRING_ID_MENU_LABEL_##id), \
-								    pSS->getValue(AP_STRING_ID_MENU_STATUSLINE_##id) );
+								    (pSS->getValueUTF8(AP_STRING_ID_MENU_LABEL_##id)).utf8_str(), \
+								    (pSS->getValueUTF8(AP_STRING_ID_MENU_STATUSLINE_##id)).utf8_str() );
 			#include "ap_Menu_Id_List.h"
 		#undef menuitem
 	}
