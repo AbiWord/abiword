@@ -3184,7 +3184,7 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	UT_sint32 top = box.top;
 	UT_sint32 right = box.left + box.width - pG->tlu(1);
 	UT_sint32 bottom = box.top + box.height - pG->tlu(1);
-
+	
 	GR_Painter painter(pG);
 	
 	pG->setLineProperties(pG->tluD(1.0),
@@ -3295,7 +3295,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				UT_uint32 right = xoff + getWidth() - pG->tlu(1);
 				UT_uint32 bottom = yoff + getHeight() - pG->tlu(1);
 
-				UT_sint32 boxSize = pView->getImageSelInfo();
+				UT_sint32 boxSize = pG->tlu(pView->getImageSelInfo());
 			
 				// now, draw the resize boxes around the image
 	
