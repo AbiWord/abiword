@@ -4542,6 +4542,13 @@ UT_Error FV_View::cmdInsertTOC(void)
 		}
 	}
 //
+// Check if there is a hyperlink here
+//
+	if(getHyperLinkRun(getPoint()) != NULL)
+	{
+		return false;
+	}
+//
 // Close off the current block
 //
 	insertParagraphBreak();
