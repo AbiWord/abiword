@@ -30,15 +30,21 @@
 
 void _UT_OutputMessage(char *s, ...)
 {
-	Str255 sBuf;
 	va_list marker;
 
 	va_start(marker, s);
-
+#ifndef CARBON_ON_MACH_O
+	Str255 sBuf;
 	vsprintf(&((char*)sBuf)[1], s, marker);
 
 	sBuf[0] = 1;
 	sBuf[0] = strlen ((char *)sBuf) - 1;
 
 	DebugStr(sBuf);
+#else
+	char sBuf[1024];
+	vsprintf(sBuf, s, marker);
+
+        fprintf(stderr,"DEBUG: %s",sBuf);
+#endif
 }
