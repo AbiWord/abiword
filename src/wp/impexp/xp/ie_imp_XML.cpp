@@ -54,6 +54,27 @@
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
 
+static int n_compare (const void * a, const void * b)
+{
+  const char * name = (const char *)a;
+  const xmlToIdMapping * id = (const xmlToIdMapping *)b;
+
+  return UT_strcmp (name, id->m_name);
+}
+
+int mapNameToToken (const char * name, struct xmlToIdMapping * idlist, int len)
+{
+  xmlToIdMapping * id = NULL;
+
+  id = (xmlToIdMapping *)bsearch (name, idlist, len, 
+				  sizeof (xmlToIdMapping), n_compare);
+  if (id)
+    {
+      return id->m_type;
+    }
+  return -1;
+}
+
 /*****************************************************************
 ******************************************************************
 ** C-style callback functions that we register with the XML parser
@@ -439,7 +460,7 @@ const XML_Char * IE_Imp_XML::_getXMLPropValue(const XML_Char *name,
     return NULL;
 
   for (const XML_Char ** a = atts; (*a); a++)
-    if(a[0] && (UT_XML_stricmp(a[0],name) == 0))
+    if(a[0] && (UT_XML_strcmp(a[0],name) == 0))
       return a[1];
   
   return NULL;

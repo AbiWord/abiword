@@ -340,7 +340,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		const char* pszKeepTogether = getProperty((XML_Char*)"keep-together");
 		if (pszKeepTogether
-			&& (0 == UT_stricmp("yes", pszKeepTogether))
+			&& (0 == UT_strcmp("yes", pszKeepTogether))
 			)
 		{
 			m_bKeepTogether = UT_TRUE;
@@ -348,7 +348,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	
 		const char* pszKeepWithNext = getProperty((XML_Char*)"keep-with-next");
 		if (pszKeepWithNext
-			&& (0 == UT_stricmp("yes", pszKeepWithNext))
+			&& (0 == UT_strcmp("yes", pszKeepWithNext))
 			)
 		{
 			m_bKeepWithNext = UT_TRUE;
@@ -373,19 +373,19 @@ void fl_BlockLayout::_lookupProperties(void)
 
 		DELETEP(m_pAlignment);
 
-		if (0 == UT_stricmp(pszAlign, "left"))
+		if (0 == UT_strcmp(pszAlign, "left"))
 		{
 			m_pAlignment = new fb_Alignment_left;
 		}
-		else if (0 == UT_stricmp(pszAlign, "center"))
+		else if (0 == UT_strcmp(pszAlign, "center"))
 		{
 			m_pAlignment = new fb_Alignment_center;
 		}
-		else if (0 == UT_stricmp(pszAlign, "right"))
+		else if (0 == UT_strcmp(pszAlign, "right"))
 		{
 			m_pAlignment = new fb_Alignment_right;
 		}
-		else if (0 == UT_stricmp(pszAlign, "justify"))
+		else if (0 == UT_strcmp(pszAlign, "justify"))
 		{
 			m_pAlignment = new fb_Alignment_justify;
 		}
@@ -2519,19 +2519,19 @@ UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_C
 
 	fp_FieldRun* pNewRun;
 
-	if(UT_stricmp(pszType, "list_label") == 0)
+	if(UT_strcmp(pszType, "list_label") == 0)
 	{
 		pNewRun = new fp_FieldListLabelRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
-	else if(UT_stricmp(pszType, "time") == 0)
+	else if(UT_strcmp(pszType, "time") == 0)
 	{
 		pNewRun = new fp_FieldTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
-	else if(UT_stricmp(pszType, "page_number") == 0)
+	else if(UT_strcmp(pszType, "page_number") == 0)
 	{
 		pNewRun = new fp_FieldPageNumberRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
-	else if(UT_stricmp(pszType, "page_count") == 0)
+	else if(UT_strcmp(pszType, "page_count") == 0)
 	{
 		pNewRun = new fp_FieldPageCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}

@@ -80,7 +80,7 @@ UT_Bool PD_Style::isCharStyle(void) const
 	const XML_Char * szValue = NULL;
 	if (getAttribute(PT_TYPE_ATTRIBUTE_NAME, szValue))
 		if (szValue && szValue[0])
-			return !UT_stricmp(szValue, "c");
+			return !UT_strcmp(szValue, "c");
 
 	// default: no
 	return UT_FALSE;

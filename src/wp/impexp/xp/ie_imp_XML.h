@@ -31,6 +31,13 @@
 #include "ut_bytebuf.h"
 class PD_Document;
 
+struct xmlToIdMapping {
+  char *m_name;
+  int m_type;
+};
+
+int mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
+
 // The importer/reader for reading generic
 // XML documents. The Abiword and WML importers
 // Derive from this *abstract* base class

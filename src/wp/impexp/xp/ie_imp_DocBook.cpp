@@ -113,34 +113,22 @@ struct _TokenTable
 	int             m_type;
 };
 
-static struct _TokenTable s_Tokens[] =
+static struct xmlToIdMapping s_Tokens[] =
 {
+	{       "blockquote",           TT_BLOCKQUOTE           },
 	{	"book",			TT_DOCUMENT		},
-	{       "section",              TT_SECTION              },
-	{       "chapter",              TT_CHAPTER              },	
+	{       "bridgehead",           TT_BRIDGEHEAD           },
+	{       "chapter",              TT_CHAPTER              },
+	{       "emphasis",             TT_EMPHASIS             },	
 	{	"para",			TT_BLOCK		},
 	{       "phrase",               TT_PHRASE               },
-	{       "emphasis",             TT_EMPHASIS             },
-	{       "superscript",          TT_SUPERSCRIPT          },
+	{       "section",              TT_SECTION              },
 	{       "subscript",            TT_SUBSCRIPT            },
-	{       "bridgehead",           TT_BRIDGEHEAD           },
-	{       "title",                TT_TITLE                },
-	{       "blockquote",           TT_BLOCKQUOTE           },
-	{	"*",			TT_OTHER		}
+	{       "superscript",          TT_SUPERSCRIPT          },
+	{       "title",                TT_TITLE                }
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
-
-static UT_uint32 s_mapNameToToken(const XML_Char * name)
-{
-	for (unsigned int k=0; k<TokenTableSize; k++)
-		if (s_Tokens[k].m_name[0] == '*')
-			return k;
-		else if (UT_stricmp(s_Tokens[k].m_name,name)==0)
-			return k;
-	UT_ASSERT(0);
-	return 0;
-}
 
 /*****************************************************************/	
 /*****************************************************************/	
@@ -172,8 +160,9 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 	// xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
-	UT_uint32 tokenIndex = s_mapNameToToken(name);
-	switch (s_Tokens[tokenIndex].m_type)
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 		X_VerifyParseState(_PS_Init);
@@ -299,9 +288,9 @@ void IE_Imp_DocBook::_endElement(const XML_Char *name)
         // xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
-   	UT_uint32 tokenIndex = s_mapNameToToken(name);
+   	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 
-	switch (s_Tokens[tokenIndex].m_type)
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 		X_VerifyParseState(_PS_Doc);

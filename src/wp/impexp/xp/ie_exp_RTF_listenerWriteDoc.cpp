@@ -100,11 +100,11 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 		m_pie->_rtf_keyword("fs",d);	// font size in half points
 
 	const XML_Char * szFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	if (szFontStyle && *szFontStyle && (UT_stricmp(szFontStyle,"italic")==0))
+	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))
 		m_pie->_rtf_keyword("i");
 
 	const XML_Char * szFontWeight = PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	if (szFontWeight && *szFontWeight && (UT_stricmp(szFontWeight,"bold")==0))
+	if (szFontWeight && *szFontWeight && (UT_strcmp(szFontWeight,"bold")==0))
 		m_pie->_rtf_keyword("b");
 
 	const XML_Char * szFontDecoration = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
@@ -121,9 +121,9 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	const XML_Char * szFontPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
 	if (szFontPosition && *szFontPosition)
 	{
-		if (!UT_stricmp(szFontPosition,"superscript"))
+		if (!UT_strcmp(szFontPosition,"superscript"))
 			m_pie->_rtf_keyword("super");
-		else if (!UT_stricmp(szFontPosition,"subscript"))
+		else if (!UT_strcmp(szFontPosition,"subscript"))
 			m_pie->_rtf_keyword("sub");
 	}
 
@@ -634,11 +634,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
 
 	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
-	if (UT_stricmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
+	if (UT_strcmp(szTextAlign,"right")==0)		// output one of q{lrcj} depending upon paragraph alignment
 		m_pie->_rtf_keyword("qr");
-	else if (UT_stricmp(szTextAlign,"center")==0)
+	else if (UT_strcmp(szTextAlign,"center")==0)
 		m_pie->_rtf_keyword("qc");
-	else if (UT_stricmp(szTextAlign,"justify")==0)
+	else if (UT_strcmp(szTextAlign,"justify")==0)
 		m_pie->_rtf_keyword("qj");
 
 	m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
@@ -660,9 +660,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		}
 	}
 
-	if (UT_stricmp(szKeepTogether,"yes")==0)
+	if (UT_strcmp(szKeepTogether,"yes")==0)
 		m_pie->_rtf_keyword("keep");
-	if (UT_stricmp(szKeepWithNext,"yes")==0)
+	if (UT_strcmp(szKeepWithNext,"yes")==0)
 		m_pie->_rtf_keyword("keepn");
 
 	if (szTabStops && *szTabStops)

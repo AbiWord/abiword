@@ -245,23 +245,23 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
 	// this is kind of sloppy
-	if (!UT_stricmp(pszFontStyle, "normal") &&
-		!UT_stricmp(pszFontWeight, "normal"))
+	if (!UT_strcmp(pszFontStyle, "normal") &&
+		!UT_strcmp(pszFontWeight, "normal"))
 	{
 		s = XAP_UnixFont::STYLE_NORMAL;
 	}
-	else if (!UT_stricmp(pszFontStyle, "normal") &&
-			 !UT_stricmp(pszFontWeight, "bold"))
+	else if (!UT_strcmp(pszFontStyle, "normal") &&
+			 !UT_strcmp(pszFontWeight, "bold"))
 	{
 		s = XAP_UnixFont::STYLE_BOLD;
 	}
-	else if (!UT_stricmp(pszFontStyle, "italic") &&
-			 !UT_stricmp(pszFontWeight, "normal"))
+	else if (!UT_strcmp(pszFontStyle, "italic") &&
+			 !UT_strcmp(pszFontWeight, "normal"))
 	{
 		s = XAP_UnixFont::STYLE_ITALIC;
 	}
-	else if (!UT_stricmp(pszFontStyle, "italic") &&
-			 !UT_stricmp(pszFontWeight, "bold"))
+	else if (!UT_strcmp(pszFontStyle, "italic") &&
+			 !UT_strcmp(pszFontWeight, "bold"))
 	{
 		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 	}
@@ -762,7 +762,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 		m_ps->writeBytes(buf);
 
 		// Compare with iso8859, and emit LAT for that font
-		if (!UT_stricmp(myXLFD.getRegistry(), "iso8859") && !UT_stricmp(myXLFD.getEncoding(), "1"))
+		if (!UT_stricmp(myXLFD.getRegistry(), "iso8859") && !UT_strcmp(myXLFD.getEncoding(), "1"))
 		{
 			g_snprintf(buf, sizeof (buf), "LAT\n");
 			m_ps->writeBytes(buf);

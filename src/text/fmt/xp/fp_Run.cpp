@@ -1069,11 +1069,11 @@ void fp_FieldRun::lookupProperties(void)
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
 
-	if (0 == UT_stricmp(pszPosition, "superscript"))
+	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
 	}
-	else if (0 == UT_stricmp(pszPosition, "subscript"))
+	else if (0 == UT_strcmp(pszPosition, "subscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUBSCRIPT;
 	} 

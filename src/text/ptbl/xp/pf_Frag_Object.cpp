@@ -43,27 +43,27 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     if (objectType==PTO_Field) 
     {
 
-        if (0 == UT_stricmp(pszType, "test"))
+        if (0 == UT_strcmp(pszType, "test"))
         {
             fieldType = fd_Field::FD_Test;
         }
-        else if (0 == UT_stricmp(pszType, "martin_test"))
+        else if (0 == UT_strcmp(pszType, "martin_test"))
         {
             fieldType = fd_Field::FD_MartinTest;
         }
-        else if (0 == UT_stricmp(pszType, "time"))
+        else if (0 == UT_strcmp(pszType, "time"))
         {
             fieldType = fd_Field::FD_Time;
         }
-        else if (0 == UT_stricmp(pszType, "page_number"))
+        else if (0 == UT_strcmp(pszType, "page_number"))
         {
             fieldType = fd_Field::FD_PageNumber;
         }
-        else if (0 == UT_stricmp(pszType, "page_count"))
+        else if (0 == UT_strcmp(pszType, "page_count"))
         {
             fieldType = fd_Field::FD_PageCount;
         }
-        else if (0 == UT_stricmp(pszType, "list_label"))
+        else if (0 == UT_strcmp(pszType, "list_label"))
         {
             fieldType = fd_Field::FD_ListLabel;
         }

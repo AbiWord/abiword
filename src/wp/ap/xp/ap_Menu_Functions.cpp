@@ -530,7 +530,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 			}
 			else
 			{
-				if (0 == UT_stricmp(sz, val))
+				if (0 == UT_strcmp(sz, val))
 					s = EV_MIS_Toggled;
 			}
 		}
@@ -584,7 +584,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 			return s;
 
 		sz = UT_getAttribute(prop, props_in);
-		if (sz && (0 == UT_stricmp(sz, val)))
+		if (sz && (0 == UT_strcmp(sz, val)))
 			s = EV_MIS_Toggled;
 		
 		free(props_in);

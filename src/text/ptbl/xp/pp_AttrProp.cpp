@@ -94,7 +94,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
 	UT_ASSERT(sizeof(char)==sizeof(XML_Char));
 	
-	if (0 == UT_stricmp(szName, PT_PROPS_ATTRIBUTE_NAME))	// PROPS -- cut value up into properties
+	if (0 == UT_strcmp(szName, PT_PROPS_ATTRIBUTE_NAME))	// PROPS -- cut value up into properties
 	{
 		char * pOrig = NULL;
 		if (!UT_cloneString(pOrig,szValue))

@@ -25,6 +25,9 @@
 
 #include "ut_types.h"
 
+#include <string.h>
+
+#define UT_strcmp(a, b) strcmp((a), (b))
 
 class UT_GrowBuf;
 

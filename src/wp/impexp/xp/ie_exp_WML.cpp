@@ -228,9 +228,9 @@ void s_WML_Listener::_openParagraph(PT_AttrPropIndex api)
 		m_pie->write("<p");
 		if (pAP->getProperty((XML_Char*)"text-align", szValue))
 		{
-		  if (!UT_stricmp(szValue, "center")) 
+		  if (!UT_strcmp(szValue, "center")) 
 			m_pie->write(" align=\"center\"");
-		  else if (!UT_stricmp(szValue, "right"))
+		  else if (!UT_strcmp(szValue, "right"))
 		        m_pie->write(" align=\"right\"");
 		  else //left or block-justify
 		        m_pie->write(" align=\"left\"");
@@ -389,7 +389,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (
 			(pAP->getProperty((XML_Char*)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold")
+			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 		  m_pie->write("<b>");
@@ -397,7 +397,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (
 			(pAP->getProperty((XML_Char*)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic")
+			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 		  m_pie->write("<i>");
@@ -421,7 +421,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "underline"))
+				if (0 == UT_strcmp(q, "underline"))
 				{
 				      m_pie->write("<u>");
 				}
@@ -436,11 +436,11 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 		// subscript = small
 		if (pAP->getProperty((XML_Char*)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("<big>");
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("<small>");
 			}
@@ -619,11 +619,11 @@ void s_WML_Listener::_closeSpan(void)
 		
 		if (pAP->getProperty((XML_Char*)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("</big>");
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("</small>");
 			}
@@ -644,7 +644,7 @@ void s_WML_Listener::_closeSpan(void)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "underline"))
+				if (0 == UT_strcmp(q, "underline"))
 				{
 				      m_pie->write("</u>");
 				}
@@ -656,7 +656,7 @@ void s_WML_Listener::_closeSpan(void)
 
 		if (
 			(pAP->getProperty((XML_Char*)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic")
+			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 		  m_pie->write("</i>");
@@ -664,7 +664,7 @@ void s_WML_Listener::_closeSpan(void)
 		
 		if (
 			(pAP->getProperty((XML_Char*)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold")
+			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 		  m_pie->write("</b>");

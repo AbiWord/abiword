@@ -152,60 +152,43 @@ UT_Bool IE_Imp_XHTML::SupportsFileType(IEFileType ft)
 
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
-struct _TokenTable
+static struct xmlToIdMapping s_Tokens[] =
 {
-	const char *	m_name;
-	int				m_type;
-};
-
-static struct _TokenTable s_Tokens[] =
-{
-	{	"html",	        	TT_DOCUMENT		},
-	{	"div",		        TT_DIV		        },
-	{	"p",			TT_P	        	},
-	{	"span",			TT_INLINE		},
-	{	"br",			TT_BREAK		},
+	{       "address",              TT_ADDRESS              },
+	{       "b",                    TT_B                    },
+	{       "blockquote",           TT_BLOCKQUOTE           },
 	{       "body",                 TT_BODY                 },
-	{       "tr",                   TT_TR                   },
+	{	"br",			TT_BREAK		},
+	{       "cite",                 TT_CITE                 },
+	{       "code",                 TT_CODE                 },
+	{       "def",                  TT_DFN                  },
+	{	"div",		        TT_DIV		        },
+	{       "em",                   TT_EM                   },
+	{       "font",                 TT_FONT                 },
 	{       "h1",                   TT_H1                   },
 	{       "h2",                   TT_H2                   },
 	{       "h3",                   TT_H3                   },
 	{       "h4",                   TT_H4                   },
 	{       "h5",                   TT_H5                   },
 	{       "h6",                   TT_H6                   },
-	{       "b",                    TT_B                    },
-	{       "em",                   TT_EM                   },
-	{       "strong",               TT_STRONG               },
-	{       "def",                  TT_DFN                  },
-	{       "code",                 TT_CODE                 },
+	{	"html",	        	TT_DOCUMENT		},
 	{       "i",                    TT_I                    },
-	{       "address",              TT_ADDRESS              },
-	{       "samp",                 TT_SAMP                 },
 	{       "kbd",                  TT_KBD                  },
-	{       "var",                  TT_VAR                  },
-	{       "cite",                 TT_CITE                 },
+	{	"p",			TT_P	        	},
 	{       "q",                    TT_Q                    },
-	{       "sup",                  TT_SUP                  },
-	{       "sub",                  TT_SUB                  },
 	{       "s",                    TT_S                    },
+	{       "samp",                 TT_SAMP                 },
+	{	"span",			TT_INLINE		},
 	{       "strike",               TT_STRIKE               },
-	{       "font",                 TT_FONT                 },
-	{       "blockquote",           TT_BLOCKQUOTE           },
+	{       "strong",               TT_STRONG               },
+	{       "sub",                  TT_SUB                  },
+	{       "sup",                  TT_SUP                  },
+	{       "tr",                   TT_TR                   },
 	{       "u",                    TT_UNDERLINE            },
-	{	"*",			TT_OTHER		}};	// must be last
+	{       "var",                  TT_VAR                  }
+};
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
-
-static UT_uint32 s_mapNameToToken(const XML_Char * name)
-{
-	for (unsigned int k=0; k<TokenTableSize; k++)
-		if (s_Tokens[k].m_name[0] == '*')
-			return k;
-		else if (UT_stricmp(s_Tokens[k].m_name,name)==0)
-			return k;
-	UT_ASSERT(0);
-	return 0;
-}
 
 /*****************************************************************/	
 /*****************************************************************/	
@@ -401,8 +384,9 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  new_atts[i] = NULL;
 #undef NEW_ATTR_SZ
 
-	UT_uint32 tokenIndex = s_mapNameToToken(name);
-	switch (s_Tokens[tokenIndex].m_type)
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
@@ -543,9 +527,9 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		  {
 		    sz = NULL;
 		    
-		    if(!UT_XML_stricmp(p_val, "right"))
+		    if(!UT_XML_strcmp(p_val, "right"))
 		      UT_XML_cloneString(sz, "text-align:right");
-		    else if(!UT_XML_stricmp(p_val, "center"))
+		    else if(!UT_XML_strcmp(p_val, "center"))
 		      UT_XML_cloneString(sz, "text-align:center");
 		    
 		    if(sz != NULL)
@@ -595,9 +579,9 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		  {
 		    sz = NULL;
 
-		    if(!UT_XML_stricmp(p_val, "right"))
+		    if(!UT_XML_strcmp(p_val, "right"))
 		      UT_XML_cloneString(sz, "text-align:right");
-		    else if(!UT_XML_stricmp(p_val, "center"))
+		    else if(!UT_XML_strcmp(p_val, "center"))
 		      UT_XML_cloneString(sz, "text-align:center");
 		    
 		    if(sz != NULL)
@@ -656,9 +640,9 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 
 	
-	UT_uint32 tokenIndex = s_mapNameToToken(name);
-	if(name == "html") UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
-	switch (s_Tokens[tokenIndex].m_type)
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 	  //UT_DEBUGMSG(("Init %d\n", m_parseState));

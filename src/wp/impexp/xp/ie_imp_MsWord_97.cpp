@@ -103,7 +103,7 @@ static unsigned int s_mapNameToToken(const char* name)
     {
       if (s_Tokens[k].m_name[0] == '*')
 	return k;
-      else if (!(UT_stricmp(s_Tokens[k].m_name,name)))
+      else if (!(UT_strcmp(s_Tokens[k].m_name,name)))
 	return k;
     }
     return 0;
@@ -553,7 +553,7 @@ int IE_Imp_MsWord_97::_fieldProc(wvParseStruct *ps, U16 eachchar, U8 chartype, U
 int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int dirty)
 	{
 	XML_Char propBuffer[1024];
-	XML_Char* pProps = "PROPS";
+	XML_Char* pProps = "props";
 	const XML_Char* propsArray[3];
 	   
 	propBuffer[0] = 0;

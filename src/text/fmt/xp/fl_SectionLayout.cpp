@@ -2253,7 +2253,7 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			pAP->getAttribute((XML_Char*)"type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_stricmp(pszSectionType, "doc"))
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
 				)
 			{
 				m_bListening = UT_FALSE;
@@ -2261,8 +2261,8 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			else
 			{
 				if (
-					(0 == UT_stricmp(pszSectionType, "header"))
-					|| (0 == UT_stricmp(pszSectionType, "footer"))
+					(0 == UT_strcmp(pszSectionType, "header"))
+					|| (0 == UT_strcmp(pszSectionType, "footer"))
 					)
 				{
 					// TODO verify id match

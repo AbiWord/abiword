@@ -211,7 +211,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 			)
 		{
 
-                        if(0 == UT_stricmp(szValue, "Heading 1")) 
+                        if(0 == UT_strcmp(szValue, "Heading 1")) 
 			{
 
 				// <p style="Heading 1"> ...
@@ -220,7 +220,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_pie->write("<h1");
 				wasWritten = UT_TRUE;
 			}
-			else if(0 == UT_stricmp(szValue, "Heading 2")) 
+			else if(0 == UT_strcmp(szValue, "Heading 2")) 
 			{
 
 				// <p style="Heading 2"> ...
@@ -230,7 +230,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 				wasWritten = UT_TRUE;
 
 			}
-			else if(0 == UT_stricmp(szValue, "Heading 3")) 
+			else if(0 == UT_strcmp(szValue, "Heading 3")) 
 			{
 	
 				// <p style="Heading 3"> ...
@@ -240,7 +240,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 				wasWritten = UT_TRUE;
 
 			}
-			else if(0 == UT_stricmp(szValue, "Block Text"))
+			else if(0 == UT_strcmp(szValue, "Block Text"))
 			{
 				// <p style="Block Text"> ...
 
@@ -249,7 +249,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 				wasWritten = UT_TRUE;
 
 			}
-			else if(0 == UT_stricmp(szValue, "Plain Text"))
+			else if(0 == UT_strcmp(szValue, "Plain Text"))
 			{
 				// <p style="Plain Text"> ...
 
@@ -390,7 +390,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (
 			(pAP->getProperty((XML_Char*)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold")
+			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 		        if (!span)
@@ -406,7 +406,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (
 			(pAP->getProperty((XML_Char*)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic")
+			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 		  if (!span)
@@ -438,7 +438,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "underline"))
+				if (0 == UT_strcmp(q, "underline"))
 				{
 				  if (!span)
 				    {
@@ -480,7 +480,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "line-through"))
+				if (0 == UT_strcmp(q, "line-through"))
 				{
 				  if (!span)
 				    {
@@ -522,7 +522,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "overline"))
+				if (0 == UT_strcmp(q, "overline"))
 				{
 				  if (!span)
 				    {
@@ -549,11 +549,11 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty((XML_Char*)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("<sup>");
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("<sub>");
 			}
@@ -668,11 +668,11 @@ void s_HTML_Listener::_closeSpan(void)
 
 		if (pAP->getProperty((XML_Char*)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("</sup>");
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("</sub>");
 			}
@@ -682,7 +682,7 @@ void s_HTML_Listener::_closeSpan(void)
 
 		if (
 			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
-			&& UT_stricmp(szValue, "none")
+			&& UT_strcmp(szValue, "none")
 			)
 		{
 		  closeSpan = UT_TRUE;
@@ -690,7 +690,7 @@ void s_HTML_Listener::_closeSpan(void)
 
 		if (
 			(pAP->getProperty((XML_Char*)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic")
+			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 		  closeSpan = UT_TRUE;
@@ -698,7 +698,7 @@ void s_HTML_Listener::_closeSpan(void)
 		
 		if (
 			(pAP->getProperty((XML_Char*)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold")
+			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 		  closeSpan = UT_TRUE;
@@ -983,7 +983,7 @@ UT_Bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			pAP->getAttribute((XML_Char*)"type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_stricmp(pszSectionType, "doc"))
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
 				)
 			{
 				_openSection(pcr->getIndexAP());

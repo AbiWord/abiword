@@ -1016,7 +1016,7 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 
 UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 {
-	XML_Char* pProps = "PROPS";
+	XML_Char* pProps = "props";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
 	XML_Char tempBuffer[130];
 
@@ -1131,7 +1131,7 @@ UT_Bool IE_Imp_RTF::ResetCharacterAttributes()
 
 UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 {
-	XML_Char* pProps = "PROPS";
+	XML_Char* pProps = "props";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack // TODO consider using a UT_ByteBuf instead -- jeff
 	XML_Char tempBuffer[128];
 
@@ -1246,7 +1246,7 @@ UT_Bool IE_Imp_RTF::ResetSectionAttributes()
 
 UT_Bool IE_Imp_RTF::ApplySectionAttributes()
 {
-	XML_Char* pProps = "PROPS";
+	XML_Char* pProps = "props";
 	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
 	XML_Char tempBuffer[128];
 

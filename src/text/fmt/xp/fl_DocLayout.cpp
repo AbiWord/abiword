@@ -232,8 +232,8 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 
 	// for superscripts and subscripts, we'll automatically shrink the font size
-	if ((0 == UT_stricmp(pszPosition, "superscript")) ||
-		(0 == UT_stricmp(pszPosition, "subscript")))
+	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
+		(0 == UT_strcmp(pszPosition, "subscript")))
 	{
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
@@ -287,8 +287,8 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 
 	// for superscripts and subscripts, we'll automatically shrink the font size
-	if ((0 == UT_stricmp(pszPosition, "superscript")) ||
-		(0 == UT_stricmp(pszPosition, "subscript")))
+	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
+		(0 == UT_strcmp(pszPosition, "subscript")))
 	{
 		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
 		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");

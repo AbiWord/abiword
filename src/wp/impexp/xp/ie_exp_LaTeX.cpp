@@ -243,27 +243,27 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		if (pAP->getAttribute((XML_Char*)"style", szValue))
 		{
 			
-			if(0 == UT_stricmp(szValue, "Heading 1")) 
+			if(0 == UT_strcmp(szValue, "Heading 1")) 
 			{
 				m_iBlockType = BT_HEADING1;
 				m_pie->write("\\section{");
 			}
-			else if(0 == UT_stricmp(szValue, "Heading 2")) 
+			else if(0 == UT_strcmp(szValue, "Heading 2")) 
 			{
 				m_iBlockType = BT_HEADING2;
 				m_pie->write("\\subsection{");
 			}
-			else if(0 == UT_stricmp(szValue, "Heading 3")) 
+			else if(0 == UT_strcmp(szValue, "Heading 3")) 
 			{
 				m_iBlockType = BT_HEADING3;
 				m_pie->write("\\subsubsection{");
 			}
-			else if(0 == UT_stricmp(szValue, "Block Text"))
+			else if(0 == UT_strcmp(szValue, "Block Text"))
 			{
 				m_iBlockType = BT_BLOCKTEXT;
 				m_pie->write("\\begin{quote}\n");
 			}
-			else if(0 == UT_stricmp(szValue, "Plain Text"))
+			else if(0 == UT_strcmp(szValue, "Plain Text"))
 			{
 				m_iBlockType = BT_PLAINTEXT;
 				m_pie->write("\\texttt{");
@@ -284,17 +284,17 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		{
 			if (pAP->getProperty((XML_Char*)"text-align", szValue))
 			{
-				if (0 == UT_stricmp(szValue, "center"))
+				if (0 == UT_strcmp(szValue, "center"))
 				{
 					m_pie->write("\\begin{center}\n");
 					m_eJustification = CENTER;
 				}
-				if (0 == UT_stricmp(szValue, "right"))
+				if (0 == UT_strcmp(szValue, "right"))
 				{
 					m_pie->write("\\begin{flushright}\n");
 					m_eJustification = RIGHT;
 				}
-				if (0 == UT_stricmp(szValue, "left"))
+				if (0 == UT_strcmp(szValue, "left"))
 				{
 					m_pie->write("\\begin{flushleft}\n");
 					m_eJustification = LEFT;
@@ -345,8 +345,8 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		pAP->getProperty((XML_Char*)"page-margin-right", pszPageMarginLeft);
 		pAP->getProperty((XML_Char*)"page-margin-left", pszPageMarginRight);
 
-		if (pszNbCols != NULL && ((0 == UT_stricmp(pszNbCols, "2"))
-								  || (0 == UT_stricmp(pszNbCols, "3"))))
+		if (pszNbCols != NULL && ((0 == UT_strcmp(pszNbCols, "2"))
+								  || (0 == UT_strcmp(pszNbCols, "3"))))
 		{
 			m_pie->write("\\begin{multicols}{");
 			m_pie->write((char*)pszNbCols);
@@ -447,7 +447,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (
 			(pAP->getProperty((XML_Char*)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold")
+			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 			m_pie->write("\\textbf{");
@@ -455,7 +455,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (
 			(pAP->getProperty((XML_Char*)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic")
+			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 			m_pie->write("\\textit{");
@@ -476,17 +476,17 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 			while (q)
 			{
-			  if (0 == UT_stricmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
+			  if (0 == UT_strcmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
 				{
 					m_pie->write("\\underline{");
 				}
 
-				if (0 == UT_stricmp(q, "overline"))
+				if (0 == UT_strcmp(q, "overline"))
 				{
 					m_pie->write("$\\overline{\\textrm{");
 				}
 
-				if (0 == UT_stricmp(q, "line-through"))
+				if (0 == UT_strcmp(q, "line-through"))
 				{
 					m_pie->write("");	// TODO
 				}
@@ -499,11 +499,11 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty((XML_Char*)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("$^{\\rm{}"); // TODO: Finish it
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("$_{\\rm{}"); // TODO: Finish it
 			}
@@ -554,11 +554,11 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 		if (pAP->getProperty((XML_Char*)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("}$"); // TODO
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("}$"); // TODO
 			}
@@ -581,7 +581,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "line-through"))
+				if (0 == UT_strcmp(q, "line-through"))
 				{
 					m_pie->write("");	// TODO
 				}
@@ -609,12 +609,12 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "underline"))
+				if (0 == UT_strcmp(q, "underline"))
 				{
 					m_pie->write("}");
 				}
 
-				if (0 == UT_stricmp(q, "overline"))
+				if (0 == UT_strcmp(q, "overline"))
 				{
 					m_pie->write("}}$");
 				}
@@ -627,7 +627,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 
 		if (
 			(pAP->getProperty((XML_Char*)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic")
+			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 			m_pie->write("}");
@@ -635,7 +635,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		
 		if (
 			(pAP->getProperty((XML_Char*)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold")
+			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 			m_pie->write("}");
@@ -949,7 +949,7 @@ UT_Bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			pAP->getAttribute((XML_Char*)"type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_stricmp(pszSectionType, "doc"))
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
 				)
 			{
 				_openSection(pcr->getIndexAP());

@@ -70,6 +70,8 @@ const char * UT_dimensionName(UT_Dimension dim)
 	}
 }
 
+#define STR_COMPARE UT_strcmp
+
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
 	const char *p = sz;
@@ -81,25 +83,25 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 	// p should now point to the unit
 	if (*p)
 	{
-		if (UT_stricmp(p,"in") == 0)
+		if (STR_COMPARE(p,"in") == 0)
 			return DIM_IN;
 
-		if (UT_stricmp(p,"cm") == 0)
+		if (STR_COMPARE(p,"cm") == 0)
 			return DIM_CM;
 
-	   	if (UT_stricmp(p,"mm") == 0)
+	   	if (STR_COMPARE(p,"mm") == 0)
 			return DIM_MM;
 
-		if (UT_stricmp(p,"pi") == 0)
+		if (STR_COMPARE(p,"pi") == 0)
 			return DIM_PI;
 
-		if (UT_stricmp(p,"pt") == 0)
+		if (STR_COMPARE(p,"pt") == 0)
 			return DIM_PT;
 
-	   	if (UT_stricmp(p,"px") == 0)
+	   	if (STR_COMPARE(p,"px") == 0)
 			return DIM_PX;
 
-	   	if (UT_stricmp(p,"%") == 0)
+	   	if (STR_COMPARE(p,"%") == 0)
 			return DIM_PERCENT;
 	   
 		UT_ASSERT(UT_TODO);

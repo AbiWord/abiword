@@ -321,23 +321,23 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
 	// this is kind of sloppy
-	if (!UT_stricmp(pszFontStyle, "normal") &&
-		!UT_stricmp(pszFontWeight, "normal"))
+	if (!UT_strcmp(pszFontStyle, "normal") &&
+		!UT_strcmp(pszFontWeight, "normal"))
 	{
 		s = XAP_UnixFont::STYLE_NORMAL;
 	}
-	else if (!UT_stricmp(pszFontStyle, "normal") &&
-			 !UT_stricmp(pszFontWeight, "bold"))
+	else if (!UT_strcmp(pszFontStyle, "normal") &&
+			 !UT_strcmp(pszFontWeight, "bold"))
 	{
 		s = XAP_UnixFont::STYLE_BOLD;
 	}
-	else if (!UT_stricmp(pszFontStyle, "italic") &&
-			 !UT_stricmp(pszFontWeight, "normal"))
+	else if (!UT_strcmp(pszFontStyle, "italic") &&
+			 !UT_strcmp(pszFontWeight, "normal"))
 	{
 		s = XAP_UnixFont::STYLE_ITALIC;
 	}
-	else if (!UT_stricmp(pszFontStyle, "italic") &&
-			 !UT_stricmp(pszFontWeight, "bold"))
+	else if (!UT_strcmp(pszFontStyle, "italic") &&
+			 !UT_strcmp(pszFontWeight, "bold"))
 	{
 		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 	}

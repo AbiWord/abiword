@@ -202,7 +202,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 		if (pAP->getAttribute((const XML_Char *)"style", szValue))
 		{
 			
-                        if(0 == UT_stricmp(szValue, "Heading 1")) 
+                        if(0 == UT_strcmp(szValue, "Heading 1")) 
 			{
 
 				// <p style="Heading 1"> ...
@@ -211,7 +211,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_pie->write("<bridgehead renderas=\"sect1\"");
 			}
 
-			else if(0 == UT_stricmp(szValue, "Heading 2")) 
+			else if(0 == UT_strcmp(szValue, "Heading 2")) 
 			{
 
 				// <p style="Heading 2"> ...
@@ -220,7 +220,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 				m_pie->write("<bridgehead renderas=\"sect2\"");
 			}
 
-			else if(0 == UT_stricmp(szValue, "Heading 3")) 
+			else if(0 == UT_strcmp(szValue, "Heading 3")) 
 			{
 	
 				// <p style="Heading 3"> ...
@@ -230,7 +230,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 
 			}
 
-		       	else if(0 == UT_stricmp(szValue, "Block Text"))
+		       	else if(0 == UT_strcmp(szValue, "Block Text"))
 			{
 				// <p style="Block Text"> ...
 
@@ -302,13 +302,13 @@ void s_DocBook_Listener::_openSpan(PT_AttrPropIndex api)
 		const XML_Char * szValue;
 
 		if ((pAP->getProperty((const XML_Char *)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold"))
+			&& !UT_strcmp(szValue, "bold"))
 		{
 			m_pie->write("<phrase role=\"strong\">");
 		}
 		
 		if ((pAP->getProperty((const XML_Char *)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic"))
+			&& !UT_strcmp(szValue, "italic"))
 		{
 			m_pie->write("<emphasis>");
 		}
@@ -316,11 +316,11 @@ void s_DocBook_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty((const XML_Char *)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("<superscript>");
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("<subscript>");
 			}
@@ -345,11 +345,11 @@ void s_DocBook_Listener::_closeSpan(void)
 		
 		if (pAP->getProperty((const XML_Char *)"text-position", szValue))
 		{
-			if (!UT_stricmp("superscript", szValue))
+			if (!UT_strcmp("superscript", szValue))
 			{
 				m_pie->write("</superscript>");
 			}
-			else if (!UT_stricmp("subscript", szValue))
+			else if (!UT_strcmp("subscript", szValue))
 			{
 				m_pie->write("</subscript>");
 			}
@@ -357,7 +357,7 @@ void s_DocBook_Listener::_closeSpan(void)
 
 		if (
 			(pAP->getProperty((const XML_Char *)"font-style", szValue))
-			&& !UT_stricmp(szValue, "italic")
+			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 			m_pie->write("</emphasis>");
@@ -365,7 +365,7 @@ void s_DocBook_Listener::_closeSpan(void)
 		
 		if (
 			(pAP->getProperty((const XML_Char *)"font-weight", szValue))
-			&& !UT_stricmp(szValue, "bold")
+			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 			m_pie->write("</phrase>");
@@ -686,7 +686,7 @@ UT_Bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			pAP->getAttribute((const XML_Char *)"type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_stricmp(pszSectionType, "doc"))
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
 				)
 			{
 				_openSection(pcr->getIndexAP());

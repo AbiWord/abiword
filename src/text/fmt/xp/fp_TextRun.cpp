@@ -105,15 +105,15 @@ void fp_TextRun::lookupProperties(void)
 
 	while (q)
 	{
-		if (0 == UT_stricmp(q, "underline"))
+		if (0 == UT_strcmp(q, "underline"))
 		{
 			m_fDecorations |= TEXT_DECOR_UNDERLINE;
 		}
-		else if (0 == UT_stricmp(q, "overline"))
+		else if (0 == UT_strcmp(q, "overline"))
 		{
 			m_fDecorations |= TEXT_DECOR_OVERLINE;
 		}
-		else if (0 == UT_stricmp(q, "line-through"))
+		else if (0 == UT_strcmp(q, "line-through"))
 		{
 			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
 		}
@@ -125,11 +125,11 @@ void fp_TextRun::lookupProperties(void)
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
 
-	if (0 == UT_stricmp(pszPosition, "superscript"))
+	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
 	}
-	else if (0 == UT_stricmp(pszPosition, "subscript"))
+	else if (0 == UT_strcmp(pszPosition, "subscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUBSCRIPT;
 	} 

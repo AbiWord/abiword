@@ -42,7 +42,7 @@
   Import ClarisWorks/AppleWorks file
 */
 
-static const char PROPS_XML_ATTR_NAME[] = "PROPS";
+static const char PROPS_XML_ATTR_NAME[] = "props";
 
 // char attributes
 static const char FONT_FAMILY[] = "font-family:%s;";

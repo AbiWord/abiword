@@ -160,7 +160,7 @@ static int s_combo_changed(GtkWidget * widget, gpointer user_data)
 		// TODO : do a real conversion to UT_UCSChar or figure out the casting
 		
 		// don't do changes for empty combo texts
-		if (UT_stricmp(wd->m_comboEntryBuffer, ""))
+		if (UT_strcmp(wd->m_comboEntryBuffer, ""))
 		  {
 		    UT_UCSChar * text = (UT_UCSChar *) wd->m_comboEntryBuffer;
 		    UT_ASSERT(text);		    

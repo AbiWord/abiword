@@ -696,7 +696,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 	fl_AutoNum * pAutoNum;
 	const char ** attr;
 
-#define LCheck(str) (0 == UT_stricmp(attr[0], str))
+#define LCheck(str) (0 == UT_strcmp(attr[0], str))
 
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
 	{	
@@ -753,7 +753,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	   	UT_Bool status = UT_FALSE;
 	   	UT_Bool encoded = UT_TRUE;
 	   
-		if (szMimeType && (UT_stricmp(szMimeType, "image/svg-xml") == 0 || UT_stricmp(szMimeType, "text/mathml") == 0))
+		if (szMimeType && (UT_strcmp(szMimeType, "image/svg-xml") == 0 || UT_strcmp(szMimeType, "text/mathml") == 0))
 	     	{
 		   bbEncoded.truncate(0);
 		   bbEncoded.append((UT_Byte*)"<![CDATA[", 9);

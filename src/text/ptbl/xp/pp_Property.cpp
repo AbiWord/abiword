@@ -105,7 +105,7 @@ static int s_compare (const void * a, const void * b)
   name = (const char *)a;
   prop = (const PP_Property *)b;
 
-  return UT_stricmp (name, prop->getName());
+  return UT_strcmp (name, prop->getName());
 }
 
 /*****************************************************************/

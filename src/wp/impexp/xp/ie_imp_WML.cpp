@@ -113,41 +113,25 @@ UT_Bool IE_Imp_WML::SupportsFileType(IEFileType ft)
 #define TT_BIG                  11              // big(super script) text
 #define TT_SMALL                12              // small(sub script) text
 
-struct _TokenTable
-{
-	const char *	m_name;
-	int             m_type;
-};
+// KEEP IN ALPHABETICAL ORDER!!
 
-static struct _TokenTable s_Tokens[] =
+static struct xmlToIdMapping s_Tokens[] =
 {
-	{	"wml",			TT_DOCUMENT		},
-	{       "card",                 TT_SECTION              },
-	{	"p",			TT_BLOCK		},
-	{	"img",		        TT_IMAGE		},
-	{	"br",			TT_BREAK		},
 	{       "b",                    TT_BOLD                 },
-	{       "i",                    TT_ITALIC               },
-	{       "u",                    TT_UNDERLINE            },
-	{       "strong",               TT_STRONG               },
-	{       "em",                   TT_EMPHASIS             },
 	{       "big",                  TT_BIG                  },
+	{	"br",			TT_BREAK		},
+	{       "card",                 TT_SECTION              },
+	{       "em",                   TT_EMPHASIS             },
+	{       "i",                    TT_ITALIC               },
+	{	"img",		        TT_IMAGE		},
+	{	"p",			TT_BLOCK		},
 	{       "small",                TT_SMALL                },
-	{	"*",			TT_OTHER		}
+	{       "strong",               TT_STRONG               },
+	{       "u",                    TT_UNDERLINE            },
+	{	"wml",			TT_DOCUMENT		}
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
-
-static UT_uint32 s_mapNameToToken(const XML_Char * name)
-{
-	for (unsigned int k=0; k<TokenTableSize; k++)
-		if (s_Tokens[k].m_name[0] == '*')
-			return k;
-		else if (UT_stricmp(s_Tokens[k].m_name,name)==0)
-			return k;
-	UT_ASSERT(0);
-	return 0;
-}
 
 /*****************************************************************/	
 /*****************************************************************/	
@@ -179,8 +163,9 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 	// xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
-	UT_uint32 tokenIndex = s_mapNameToToken(name);
-	switch (s_Tokens[tokenIndex].m_type)
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 		X_VerifyParseState(_PS_Init);
@@ -302,9 +287,9 @@ void IE_Imp_WML::_endElement(const XML_Char *name)
         // xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
-   	UT_uint32 tokenIndex = s_mapNameToToken(name);
+   	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 
-	switch (s_Tokens[tokenIndex].m_type)
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 		X_VerifyParseState(_PS_Doc);

@@ -378,16 +378,16 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	UT_ASSERT(slant);
 
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
-	if(!UT_stricmp(slant, "r"))
+	if(!UT_strcmp(slant, "r"))
 	  {
-		if(!UT_stricmp(weight, "bold"))
+		if(!UT_strcmp(weight, "bold"))
 		  s = XAP_UnixFont::STYLE_BOLD;
 		else
 		  s = XAP_UnixFont::STYLE_NORMAL;
 	  }
-	else if(!UT_stricmp(slant, "i"))
+	else if(!UT_strcmp(slant, "i"))
 	  {
-		if(!UT_stricmp(weight, "bold"))
+		if(!UT_strcmp(weight, "bold"))
 		  s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 		else
 		  s= XAP_UnixFont::STYLE_ITALIC;
@@ -501,16 +501,16 @@ void XAP_UnixFontManager::_allocateCJKFont(const char * line,
 	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 	// sort from most common down
 
-	if(!UT_stricmp(slant, "r"))
+	if(!UT_strcmp(slant, "r"))
 	  {
-		if(!UT_stricmp(weight, "bold"))
+		if(!UT_strcmp(weight, "bold"))
 		  s = XAP_UnixFont::STYLE_BOLD;
 		else
 		  s = XAP_UnixFont::STYLE_NORMAL;
 	  }
-	else if(!UT_stricmp(slant, "i"))
+	else if(!UT_strcmp(slant, "i"))
 	  {
-		if(!UT_stricmp(weight, "bold"))
+		if(!UT_strcmp(weight, "bold"))
 		  s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 		else
 		  s= XAP_UnixFont::STYLE_ITALIC;

@@ -167,7 +167,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			pAP->getAttribute((XML_Char*)"type", pszSectionType);
 			if (
 				!pszSectionType
-				|| (0 == UT_stricmp(pszSectionType, "doc"))
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
 				)
 			{
 				// append a SectionLayout to this DocLayout
@@ -186,7 +186,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				if (0 == UT_stricmp(pszSectionType, "header"))
+				if (0 == UT_strcmp(pszSectionType, "header"))
 				{
 					const XML_Char* pszID = NULL;
 					pAP->getAttribute((XML_Char*)"id", pszID);
@@ -208,7 +208,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					
 					m_pCurrentSL = pSL;
 				}
-				else if (0 == UT_stricmp(pszSectionType, "footer"))
+				else if (0 == UT_strcmp(pszSectionType, "footer"))
 				{
 					const XML_Char* pszID = NULL;
 					pAP->getAttribute((XML_Char*)"id", pszID);
@@ -472,7 +472,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			// transfer the blocks in this sectionlayout to the
 			// new header/footer and format just the shadows
 			//
-			if(pszSectionType && UT_stricmp(pszSectionType,"header") == 0)
+			if(pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
 			{
 			        //
 			        //  Ok first we need a previous section with a
@@ -504,7 +504,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			        bResult = UT_TRUE;
 			        goto finish_up;
 			}
-			else if(pszSectionType && UT_stricmp(pszSectionType,"footer") == 0)
+			else if(pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
 			{
 			        //
 			        //  Ok first we need a previous section with a

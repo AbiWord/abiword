@@ -275,7 +275,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		sz = UT_getAttribute("keep-together", pProps);
 		if (sz)
 		{
-			if (UT_stricmp(sz, "yes") == 0)
+			if (UT_strcmp(sz, "yes") == 0)
 				_setCheckItemValue(id_CHECK_KEEP_LINES, check_TRUE, op_INIT);
 			else
 				_setCheckItemValue(id_CHECK_KEEP_LINES, check_FALSE, op_INIT);
@@ -286,7 +286,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		sz = UT_getAttribute("keep-with-next", pProps);
 		if (sz)
 		{
-			if (UT_stricmp(sz, "yes") == 0)
+			if (UT_strcmp(sz, "yes") == 0)
 				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_TRUE, op_INIT);
 			else
 				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_FALSE, op_INIT);

@@ -136,12 +136,6 @@ UT_Bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
 #define TT_LISTSECTION		14	// a list section <lists>
 #define TT_LIST			15	// a list <l> within a list section
 
-struct _TokenTable
-{
-	const char *	m_name;
-	int				m_type;
-};
-
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -155,40 +149,29 @@ struct _TokenTable
   code should be removed.
 */
 
-static struct _TokenTable s_Tokens[] =
+static struct xmlToIdMapping s_Tokens[] =
 {
 	{	"abiword",		TT_DOCUMENT		},
 	{	"awml",			TT_DOCUMENT		},
-	{	"section",		TT_SECTION		},
-	{	"p",			TT_BLOCK		},
+	{	"br",			TT_BREAK		},
 	{	"c",			TT_INLINE		},
-	{	"i",			TT_IMAGE		},
-	{	"image",		TT_IMAGE		},
+	{	"cbr",			TT_COLBREAK		},
+	{	"d",			TT_DATAITEM		},
+	{	"data",			TT_DATASECTION		},
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
-	{	"br",			TT_BREAK		},
-	{	"data",			TT_DATASECTION		},
-	{	"d",			TT_DATAITEM		},
-	{	"cbr",			TT_COLBREAK		},
-	{	"pbr",			TT_PAGEBREAK		},
-	{	"styles",		TT_STYLESECTION		},
-	{	"s",			TT_STYLE		},
-	{	"lists",		TT_LISTSECTION		},
+	{	"i",			TT_IMAGE		},
+	{	"image",		TT_IMAGE		},
 	{	"l",			TT_LIST			},
-	{	"*",			TT_OTHER		}};	// must be last
+	{	"lists",		TT_LISTSECTION		},
+	{	"p",			TT_BLOCK		},
+	{	"pbr",			TT_PAGEBREAK		},
+	{	"s",			TT_STYLE		},
+	{	"section",		TT_SECTION		},
+	{	"styles",		TT_STYLESECTION		}
+};
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
-
-static UT_uint32 s_mapNameToToken(const XML_Char * name)
-{
-	for (unsigned int k=0; k<TokenTableSize; k++)
-		if (s_Tokens[k].m_name[0] == '*')
-			return k;
-		else if (UT_stricmp(s_Tokens[k].m_name,name)==0)
-			return k;
-	UT_ASSERT(0);
-	return 0;
-}
 
 /*****************************************************************/	
 /*****************************************************************/	
@@ -222,8 +205,9 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
-	UT_uint32 tokenIndex = s_mapNameToToken(name);
-	switch (s_Tokens[tokenIndex].m_type)
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
+
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 		X_VerifyParseState(_PS_Init);
@@ -389,9 +373,9 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	UT_uint32 len;
 	const UT_Byte * buffer;
 
-   	UT_uint32 tokenIndex = s_mapNameToToken(name);
+   	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 
-	switch (s_Tokens[tokenIndex].m_type)
+	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 		X_VerifyParseState(_PS_Doc);
@@ -522,7 +506,7 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
 	// ignore everything else (which there shouldn't be)
 
 	for (const XML_Char ** a = atts; (*a); a++)
-		if (UT_XML_stricmp(a[0],"name") == 0)
+		if (UT_XML_strcmp(a[0],"name") == 0)
 			return a[1];
 	return NULL;
 }
@@ -533,7 +517,7 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 	// ignore everything else (which there shouldn't be)
 
 	for (const XML_Char ** a = atts; (*a); a++)
-		if (UT_XML_stricmp(a[0],"mime-type") == 0)
+		if (UT_XML_strcmp(a[0],"mime-type") == 0)
 			return a[1];
 	// if the mime-type was not specified, for backwards 
  	// compatibility we assume that it is a png image
@@ -543,8 +527,8 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 UT_Bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 {
 	for (const XML_Char ** a = atts; (*a); a++)
-		if (UT_XML_stricmp(a[0],"base64") == 0) {
-		   	if (UT_XML_stricmp(a[1], "no") == 0) return UT_FALSE;
+		if (UT_XML_strcmp(a[0],"base64") == 0) {
+		   	if (UT_XML_strcmp(a[1], "no") == 0) return UT_FALSE;
 		}
    	return UT_TRUE;
    	
