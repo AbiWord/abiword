@@ -205,7 +205,7 @@ UT_Bool FV_View::_isSelectionEmpty()
 	return UT_FALSE;
 }
 
-PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
+PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 {
 	UT_uint32 xPoint;
 	UT_uint32 yPoint;
@@ -277,11 +277,31 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 
 			if (offset == 0)
 			{
-				// TODO: look in prior block?
-				break;
+				if (!bKeepLooking)
+					break;
+
+				// is there a prior block?
+				pBlock = pBlock->getPrev();
+
+				if (!pBlock)
+					break;
+
+				// yep.  look there instead
+				pgb.truncate(0);
+				bRes = pBlock->getBlockBuf(&pgb);
+				UT_ASSERT(bRes);
+
+				pSpan = pgb.getPointer(0);
+				offset = pgb.getLength();
+
+				if (offset == 0)
+				{
+					iPos = pBlock->getPosition();
+					break;
+				}
 			}
 
-			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[offset-1]);
+			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[bKeepLooking ? offset-1 : offset]);
 
 			for (offset--; offset > 0; offset--)
 			{
@@ -290,8 +310,8 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 					if (bInWord)
 						break;
 				}
-				else if (!bInWord)
-					break;
+				else
+					bInWord = UT_TRUE;
 			}
 
 			if ((offset > 0) && (offset < pgb.getLength()))
@@ -316,21 +336,41 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 
 			if (offset == pgb.getLength())
 			{
-				// TODO: look in next block?
-				break;
+				if (!bKeepLooking)
+					break;
+
+				// is there a next block?
+				pBlock = pBlock->getNext();
+
+				if (!pBlock)
+					break;
+
+				// yep.  look there instead
+				pgb.truncate(0);
+				bRes = pBlock->getBlockBuf(&pgb);
+				UT_ASSERT(bRes);
+
+				pSpan = pgb.getPointer(0);
+				offset = 0;
+
+				if (pgb.getLength() == 0)
+				{
+					iPos = pBlock->getPosition();
+					break;
+				}
 			}
 
-			UT_Bool bInWord = !UT_isWordDelimiter(pSpan[offset]);
+			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset]);
 
 			for (; offset < pgb.getLength(); offset++)
 			{
-				if (UT_isWordDelimiter(pSpan[offset]))
+				if (!UT_isWordDelimiter(pSpan[offset]))
 				{
-					if (bInWord)
+					if (bBetween)
 						break;
 				}
-				else if (!bInWord)
-					break;
+				else
+					bBetween = UT_TRUE;
 			}
 
 			iPos = offset + pBlock->getPosition();
@@ -1364,8 +1404,8 @@ void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 
 	_eraseInsertionPoint();
 
-	PT_DocPosition iPosLeft = _getDocPos(FV_DOCPOS_BOW);
-	PT_DocPosition iPosRight = _getDocPos(FV_DOCPOS_EOW);
+	PT_DocPosition iPosLeft = _getDocPos(FV_DOCPOS_BOW, UT_FALSE);
+	PT_DocPosition iPosRight = _getDocPos(FV_DOCPOS_EOW, UT_FALSE);
 
 	if (!_isSelectionEmpty())
 	{
@@ -1374,6 +1414,13 @@ void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 
 	m_iSelectionAnchor = iPosLeft;
 	_setPoint(iPosRight);
+
+	if (iPosLeft == iPosRight)
+	{
+		_updateInsertionPoint();
+		return;
+	}
+
 	m_bSelection = UT_TRUE;
 	
 	_xorSelection();

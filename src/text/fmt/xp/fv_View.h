@@ -123,7 +123,7 @@ public:
 protected:
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
 
-	PT_DocPosition		_getDocPos(FV_DocPos dp);
+	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
 	void 				_findPositionCoords(UT_uint32 pos,
 											UT_Bool b,
 											UT_uint32& x,
