@@ -177,10 +177,7 @@ class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 public:
 	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*,
 				   fl_BlockLayout*, fl_SectionLayout*,
-				   PT_AttrPropIndex indexAP, bool bIsHdrFtr);
-	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*,
-				   fl_BlockLayout*, fl_SectionLayout*,
-				   PT_AttrPropIndex indexAP);
+				   PT_AttrPropIndex indexAP, bool bIsHdrFtr = false);
 	~fl_BlockLayout();
 
 	typedef enum _eSpacingPolicy
@@ -488,9 +485,9 @@ protected:
 	bool                    m_bStartList;
 	bool                    m_bStopList;
     bool                    m_bListLabelCreated;
-	const XML_Char *		m_szStyle;
 	fl_Squiggles *          m_pSquiggles;
 	bool                    m_bListItem;
+	const XML_Char *		m_szStyle;
 	bool                    m_bIsCollapsed;
 	bool                    m_bHasUpdatableField;
 

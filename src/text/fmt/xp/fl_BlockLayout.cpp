@@ -120,30 +120,26 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
 							   PT_AttrPropIndex indexAP, bool bIsHdrFtr)
-	: fl_ContainerLayout(pSectionLayout,sdh,indexAP,PTX_Block,FL_CONTAINER_BLOCK)
-
+	: fl_ContainerLayout(pSectionLayout,sdh,indexAP,PTX_Block,FL_CONTAINER_BLOCK),
+	  m_uBackgroundCheckReasons(0),
+	  m_bNeedsReformat(true),
+	  m_bNeedsRedraw(false),
+	  m_bFixCharWidths(false),
+	  m_bCursorErased(false),
+	  m_bIsHdrFtr(bIsHdrFtr),
+	  m_pBreaker(pBreaker),
+	  m_pFirstRun(NULL),
+	  m_pSectionLayout(pSectionLayout),
+	  m_pAlignment(NULL),
+	  m_bKeepTogether(false),
+	  m_bKeepWithNext(false),
+	  m_bStartList(false), m_bStopList(false),
+	  m_bListLabelCreated(false),
+	  m_bListItem(false),
+	  m_szStyle(NULL),
+	  m_bIsCollapsed(true),
+	  m_iDirOverride(FRIBIDI_TYPE_UNSET)
 {
-	m_pAlignment = NULL;
-
-	m_pSectionLayout = pSectionLayout;
-	m_pBreaker = pBreaker;
-	m_pFirstRun = NULL;
-	m_pAutoNum = NULL;
-	m_szStyle = NULL;
-
-	m_bNeedsReformat = true;
-	m_bNeedsRedraw = false;
-	m_bFixCharWidths = false;
-	m_bKeepTogether = false;
-	m_bKeepWithNext = false;
-	m_bListItem = false;
-	m_bStartList = false;
-	m_bStopList = false;
-	m_bListLabelCreated = false;
-	m_bCursorErased = false;
-	m_uBackgroundCheckReasons = 0;
-	m_bIsHdrFtr = bIsHdrFtr;
-	m_bIsCollapsed = true;
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
 	{
 		m_bIsHdrFtr = true;
@@ -183,8 +179,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		}
 	}
 
-	m_iDirOverride = FRIBIDI_TYPE_UNSET;
-
 	_lookupProperties();
 
 	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
@@ -192,87 +186,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		_insertEndOfParagraphRun();
 	}
 
-	m_pSquiggles = new fl_Squiggles(this);
-	UT_ASSERT(m_pSquiggles);
-	setUpdatableField(false);
-}
-
-
-fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
-							   fb_LineBreaker* pBreaker,
-							   fl_BlockLayout* pPrev,
-							   fl_SectionLayout* pSectionLayout,
-				   PT_AttrPropIndex indexAP)
-	: fl_ContainerLayout(pSectionLayout,sdh,indexAP,PTX_Block,FL_CONTAINER_BLOCK)
-{
-	m_pAlignment = NULL;
-
-	m_pSectionLayout = pSectionLayout;
-	m_pBreaker = pBreaker;
-	m_pFirstRun = NULL;
-	m_pAutoNum = NULL;
-	m_szStyle = NULL;
-
-	m_bNeedsReformat = true;
-	m_bNeedsRedraw = false;
-	m_bFixCharWidths = false;
-	m_bKeepTogether = false;
-	m_bKeepWithNext = false;
-	m_bListItem = false;
-	m_bStartList = false;
-	m_bStopList = false;
-	m_bListLabelCreated = false;
-	m_bCursorErased = false;
-	m_uBackgroundCheckReasons = 0;
-	m_bIsHdrFtr = false;
-	m_bIsCollapsed = true;
-	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
-	{
-		m_bIsHdrFtr = true;
-	}
-	m_pLayout = m_pSectionLayout->getDocLayout();
-	m_pDoc = m_pLayout->getDocument();
-
-	setAttrPropIndex(indexAP);
-
-	setPrev(pPrev);
-	if (getPrev())
-	{
-		setNext(getPrev()->getNext());
-		getPrev()->setNext(this);
-	}
-	else
-	{
-		setNext(pSectionLayout->getFirstLayout());
-	}
-
-	if (getNext())
-	{
-		getNext()->setPrev(this);
-	}
-
-	m_iDirOverride = FRIBIDI_TYPE_UNSET;
-
-	_lookupProperties();
-
-	if(m_szStyle != NULL)
-	{
-		PD_Style * pStyle = NULL;
-		m_pDoc->getStyle((const char*) m_szStyle, &pStyle);
-		if(pStyle != NULL)
-		{
-			pStyle->used(1);
-			if(pStyle->getBasedOn() != NULL)
-			{
-				pStyle->getBasedOn()->used(1);
-			}
-		}
-	}
-
-	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
-	{
-		_insertEndOfParagraphRun();
-	}
 	m_pSquiggles = new fl_Squiggles(this);
 	UT_ASSERT(m_pSquiggles);
 	setUpdatableField(false);

@@ -28,16 +28,15 @@
 #include "fd_Field.h"
 #include "po_Bookmark.h"
 
-fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh)
+fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh) :
+	m_type(type),
+	m_sdh(sdh),
+	m_apIndex(0),
+	m_pAutoNum(NULL),
+	m_pDoc(NULL) // set by child
 {
 	//UT_ASSERT(sdh); Sevior this assert screws up my fake fl_layout code
 	xxx_UT_DEBUGMSG(("Layout Strux type = %d \n",type));
-	m_type = type;
-	m_sdh = sdh;
-	m_apIndex = 0;
-
-	m_pAutoNum = NULL;
-	m_pDoc = NULL;		// set by child
 }
 
 fl_Layout::~fl_Layout()
