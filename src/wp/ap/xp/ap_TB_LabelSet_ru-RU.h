@@ -42,56 +42,56 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSetEnc(ru,RU,true,"koi8-r")
+BeginSetEnc(ru,RU,true,"cp1251")
 
 ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,			NoIcon,			NULL, NULL)
 
 //	(id,					szLabel,		IconName,     		szToolTip, szStatusMsg)
 
-ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"оѕ„ў ", 		tb_new_xpm,		NULL, "уѕЏƒЅ‘Ў ќѕ„ў  ƒѕЋ’Ќ≈ќ‘")	
-ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"п‘Ћ“ў‘Ў",		tb_open_xpm,		NULL, "п‘Ћ“ў‘Ў ”’Ё≈”‘„’јЁ…  ƒѕЋ’Ќ≈ќ‘")
-ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"уѕ»“Ѕќ…‘Ў", 		tb_save_xpm,		NULL, "уѕ»“Ѕќ…‘Ў ƒѕЋ’Ќ≈ќ‘")
-ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"уѕ»“Ѕќ…‘Ў ЋЅЋ",	tb_save_as_xpm,		NULL, "уѕ»“Ѕќ…‘Ў ƒѕЋ’Ќ≈ќ‘ –ѕƒ ƒ“’«…Ќ …Ќќ≈Ќ")
-ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"р≈ёЅ‘Ў",		tb_print_xpm,		NULL, "р≈ёЅ‘Ѕ‘Ў ƒѕЋ’Ќ≈ќ‘ …ћ… ≈«ѕ ёЅ”‘Ў")
+ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Ќовый", 		tb_new_xpm,		NULL, "—оздать новый документ")	
+ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"ќткрыть",		tb_open_xpm,		NULL, "ќткрыть существующий документ")
+ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"—охранить", 		tb_save_xpm,		NULL, "—охранить документ")
+ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"—охранить как",	tb_save_as_xpm,		NULL, "—охранить документ под другим имнем")
+ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"ѕечать",		tb_print_xpm,		NULL, "ѕечатать документ или его часть")
 
-ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"п‘Ќ≈ќЅ",		tb_undo_xpm,		NULL, "п‘Ќ≈ќ…‘Ў –“≈ƒўƒ’Ё≈≈ ƒ≈ ”‘„…≈")
-ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"рѕ„‘ѕ“",		tb_redo_xpm,		NULL, "рѕ„‘ѕ“…‘Ў –“≈ƒўƒ’Ё≈≈ ѕ‘Ќ≈ќ≈ќќѕ≈ ƒ≈ ”‘„…≈")
-ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"чў“≈ЏЅ‘Ў",		tb_cut_xpm,		NULL, "чў“≈ЏЅ‘Ў „ўƒ≈ћ≈ќ…≈ … –ѕЌ≈”‘…‘Ў ≈«ѕ „ ¬’∆≈“ ѕ¬Ќ≈ќЅ")
-ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"лѕ–…“ѕ„Ѕ‘Ў",		tb_copy_xpm,		NULL, "уЋѕ–…“ѕ„Ѕ‘Ў „ўƒ≈ћ≈ќ…≈ … –ѕЌ≈”‘…‘Ў ≈«ѕ „ ¬’∆≈“ ѕ¬Ќ≈ќЅ")
-ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"ч”‘Ѕ„…‘Ў",		tb_paste_xpm,		NULL, "ч”‘Ѕ„…‘Ў ”ѕƒ≈“÷…Ќѕ≈ ¬’∆≈“Ѕ ѕ¬Ќ≈ќЅ „ ƒѕЋ’Ќ≈ќ‘")
+ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"ќтмена",		tb_undo_xpm,		NULL, "ќтменить предыдущее действие")
+ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"ѕовтор",		tb_redo_xpm,		NULL, "ѕовторить предыдущее отмененное действие")
+ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"¬ырезать",		tb_cut_xpm,		NULL, "¬ырезать выделение и поместить его в буфер обмена")
+ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		" опировать",		tb_copy_xpm,		NULL, "—копировать выделение и поместить его в буфер обмена")
+ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"¬ставить",		tb_paste_xpm,		NULL, "¬ставить содержимое буфера обмена в документ")
 
-ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"у‘…ћЎ",		NoIcon,			NULL, "п–“≈ƒ≈ћ…‘Ў …ћ… –“…Ќ≈ќ…‘Ў ”‘…ћ…")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"ы“…∆‘",		NoIcon,			NULL, "йЏЌ≈ќ…‘Ў џ“…∆‘ ‘≈Ћ”‘Ѕ")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"тЅЏЌ≈“ џ“…∆‘Ѕ",	NoIcon,			NULL, "йЏЌ≈ќ…‘Ў “ЅЏЌ≈“ џ“…∆‘Ѕ ‘≈Ћ”‘Ѕ")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"ц…“ќў ",		tb_text_bold_rus_xpm,	NULL, "уƒ≈ћЅ‘Ў „ўƒ≈ћ≈ќ…≈ ÷…“ќўЌ")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"л’“”…„",		tb_text_italic_rus_xpm,	NULL, "уƒ≈ћЅ‘Ў „ўƒ≈ћ≈ќ…≈ Ћ’“”…„ќўЌ")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"рѕƒё≈“Ћ…„Ѕќ…≈",	tb_text_underline_rus_xpm,	NULL, "рѕƒё≈“Ћќ’‘Ў „ўƒ≈ћ≈ќ…≈")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"оЅƒё≈“Ћ…„Ѕќ…≈",	tb_text_overline_rus_xpm,	NULL, "оЅƒё≈“Ћќ’‘Ў „ўƒ≈ћ≈ќ…≈")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"р≈“≈ё≈“Ћ…„Ѕќ…≈", 	tb_text_strikeout_rus_xpm,	NULL, "р≈“≈ё≈“Ћќ’‘Ў „ўƒ≈ћ≈ќ…≈")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"—тиль",		NoIcon,			NULL, "ќпределить или применить стили")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Ўрифт",		NoIcon,			NULL, "»зменить шрифт текста")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"–азмер шрифта",	NoIcon,			NULL, "»зменить размер шрифта текста")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"∆ирный",		tb_text_bold_rus_xpm,	NULL, "—делать выделение жирным")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		" урсив",		tb_text_italic_rus_xpm,	NULL, "—делать выделение курсивным")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"ѕодчеркивание",	tb_text_underline_rus_xpm,	NULL, "ѕодчеркнуть выделение")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Ќадчеркивание",	tb_text_overline_rus_xpm,	NULL, "Ќадчеркнуть выделение")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"ѕеречеркивание", 	tb_text_strikeout_rus_xpm,	NULL, "ѕеречеркнуть выделение")
 
-ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"ч≈“ќ…  …ќƒ≈Ћ”", 	tb_text_superscript_xpm,	NULL, "р≈“≈„≈”‘… „ „≈“»ќ…  …ќƒ≈Ћ”")
-ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"о…÷ќ…  …ќƒ≈Ћ”",	tb_text_subscript_xpm,	NULL, "р≈“≈„≈”‘… „ ќ…÷ќ…  …ќƒ≈Ћ”")
-ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"у…Ќ„ѕћ",		tb_symbol_xpm,		NULL, "ч”‘Ѕ„…‘Ў ”…Ќ„ѕћ …ћ… ƒ“’«ѕ  ”–≈√…ЅћЎќў  ЏќЅЋ")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"¬ерний индекс", 	tb_text_superscript_xpm,	NULL, "ѕеревести в верхний индекс")
+ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Ќижний индекс",	tb_text_subscript_xpm,	NULL, "ѕеревести в нижний индекс")
+ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"—имвол",		tb_symbol_xpm,		NULL, "¬ставить символ или другой специальный знак")
 
-ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"рѕ ћ≈„ѕЌ’ Ћ“Ѕј",	tb_text_align_left_xpm,	NULL, "чў“ѕ„ќ—‘Ў Ѕ¬ЏЅ√ –ѕ ћ≈„ѕЌ’ Ћ“Ѕј")
-ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"рѕ √≈ќ‘“’",		tb_text_center_xpm,	NULL, "чў“ѕ„ќ—‘Ў Ѕ¬ЏЅ√ –ѕ √≈ќ‘“’")
-ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"рѕ –“Ѕ„ѕЌ’ Ћ“Ѕј",	tb_text_align_right_xpm,	NULL, "чў“ѕ„ќ—‘Ў Ѕ¬ЏЅ√ –ѕ –“Ѕ„ѕЌ’ Ћ“Ѕј")
-ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"рѕ џ…“…ќ≈",		tb_text_justify_xpm,	NULL, "чў“ѕ„ќ—‘Ў Ѕ¬ЏЅ√ –ѕ џ…“…ќ≈ ћ…”‘Ѕ")
+ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"ѕо левому краю",	tb_text_align_left_xpm,	NULL, "¬ыровн€ть абзац по левому краю")
+ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"ѕо центру",		tb_text_center_xpm,	NULL, "¬ыровн€ть абзац по центру")
+ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"ѕо правому краю",	tb_text_align_right_xpm,	NULL, "¬ыровн€ть абзац по правому краю")
+ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"ѕо ширине",		tb_text_justify_xpm,	NULL, "¬ыровн€ть абзац по ширине листа")
 
-ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"п‘”‘’– –≈“≈ƒ: 0",	tb_para_0before_xpm,	NULL, "х”‘Ѕќѕ„…‘Ў ѕ‘”‘’– –≈“≈ƒ Ѕ¬ЏЅ√≈Ќ „ 0 –’ќЋ‘ѕ„")
-ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"п‘”‘’– –≈“≈ƒ: 12",	tb_para_12before_xpm,	NULL, "х”‘Ѕќѕ„…‘Ў ѕ‘”‘’– –≈“≈ƒ Ѕ¬ЏЅ√≈Ќ „ 12 –’ќЋ‘ѕ„")
+ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"ќтступ перед: 0",	tb_para_0before_xpm,	NULL, "”становить отступ перед абзацем в 0 пунктов")
+ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"ќтступ перед: 12",	tb_para_12before_xpm,	NULL, "”становить отступ перед абзацем в 12 пунктов")
 
-ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"пƒ…ќѕёќў  …ќ‘≈“„Ѕћ",	tb_line_single_space_xpm,	NULL, "х”‘Ѕќѕ„…‘Ў …ќ‘≈“„Ѕћ Ѕ¬ЏЅ√Ѕ „ \"пƒ…ќѕёќў \"")
-ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"рѕћ’‘ѕ“ќў  …ќ‘≈“„Ѕћ",	tb_line_middle_space_xpm,	NULL, "х”‘Ѕќѕ„…‘Ў …ќ‘≈“„Ѕћ Ѕ¬ЏЅ√Ѕ „ \"рѕћ’‘ѕ“ќў \"")
-ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"д„ѕ ќѕ  …ќ‘≈“„Ѕћ",	tb_line_double_space_xpm,	NULL, "х”‘Ѕќѕ„…‘Ў …ќ‘≈“„Ѕћ Ѕ¬ЏЅ√Ѕ „ \"д„ѕ ќѕ \"")
+ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"ќдиночный интервал",	tb_line_single_space_xpm,	NULL, "”становить интервал абзаца в \"ќдиночный\"")
+ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"ѕолуторный интервал",	tb_line_middle_space_xpm,	NULL, "”становить интервал абзаца в \"ѕолуторный\"")
+ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"ƒвойной интервал",	tb_line_double_space_xpm,	NULL, "”становить интервал абзаца в \"ƒвойной\"")
 
-ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 ЋѕћѕќЋЅ",		tb_1column_xpm,		NULL, "тЅЏ¬…‘Ў ƒѕЋ’Ќ≈ќ‘ ќЅ 1 ЋћѕќЋ’")
-ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 ЋѕћѕќЋ…",		tb_2column_xpm,		NULL, "тЅЏ¬…‘Ў ƒѕЋ’Ќ≈ќ‘ ќЅ 2 ЋћѕќЋ…")
-ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 ЋѕћѕќЋ…",		tb_3column_xpm,		NULL, "тЅЏ¬…‘Ў ƒѕЋ’Ќ≈ќ‘ ќЅ 3 ЋћѕќЋ…")
+ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 колонка",		tb_1column_xpm,		NULL, "–азбить документ на 1 клонку")
+ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 колонки",		tb_2column_xpm,		NULL, "–азбить документ на 2 клонки")
+ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 колонки",		tb_3column_xpm,		NULL, "–азбить документ на 3 клонки")
 
-ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"нЅ”џ‘Ѕ¬",		NoIcon,			NULL, "йЏЌ≈ќ…‘Ў ЌЅ”џ‘Ѕ¬ ѕ‘ѕ¬“Ѕ÷≈ќ…— ƒѕЋ’Ќ≈ќ‘Ѕ")
-ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"о≈ќ’Ќ≈“ѕ„Ѕќќў  ”–”ѕЋ",	tb_lists_bullets_xpm,	NULL, "оЅёЅ‘Ў/ъЅ„≈“џ…‘Ў ќ≈ќ’Ќ≈“ѕ„Ѕќќў  ”–…”ѕЋ")
-ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"о’Ќ≈“ѕ„Ѕќќў  ”–…”ѕЋ",	tb_lists_numbers_xpm,	NULL, "оЅёЅ‘Ў/ъЅ„≈“џ…‘Ў ќ’Ќ≈“ѕ„Ѕќќў  ”–…”ѕЋ")
+ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"ћасштаб",		NoIcon,			NULL, "»зменить масштаб отображени€ документа")
+ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Ќенумерованный спсок",	tb_lists_bullets_xpm,	NULL, "Ќачать/«авершить ненумерованный список")
+ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Ќумерованный список",	tb_lists_numbers_xpm,	NULL, "Ќачать/«авершить нумерованный список")
 	
 // ... add others here ...
 
