@@ -19,3 +19,13 @@ UT_Bool UT_Stack::pop(void ** ppVoid)
 	m_vecStack.deleteNthItem(indexEnd-1);
 	return UT_TRUE;
 }
+
+UT_Bool UT_Stack::viewTop(void ** ppVoid) const
+{
+	UT_ASSERT(ppVoid);
+	UT_uint32 indexEnd = m_vecStack.getItemCount();
+	if (!indexEnd)
+		return UT_FALSE;
+	*ppVoid = m_vecStack.getLastItem();
+	return UT_TRUE;
+}
