@@ -36,6 +36,10 @@
 #include "ut_string.h"
 #include "ut_Win32OS.h"
 
+#ifdef __MINGW32__
+#include <w32api.h>
+#endif
+
 //#define GR_GRAPHICS_DEBUG	1
 
 /*****************************************************************/
