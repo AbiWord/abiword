@@ -590,12 +590,13 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			return;
 		}
 	}
-	
+
+	// Hyperlink screen colour
+	// TODO this should not be hardcoded
+	UT_RGBColor fgColor(0,0,255);
+
 	if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		// TODO this should not be hardcoded
-		UT_RGBColor fgColor(0,0,255);
-		
 		m_pG->setColor(fgColor);
 	}
 	
@@ -603,6 +604,9 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
+		// have to set the colour again, since fp_TextRun::_draw can set it to read
+		// for drawing sguiggles
+		m_pG->setColor(fgColor);
 		m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + m_iWidth, pDA->yoff + 2);
 	}
 	

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001,2002 Tomas Frydrych
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -725,11 +726,6 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 									{
 										// we are inside that section
 										length--;
-#if 0									
-										// the marker is in the same block	
-										if(pfsContainer2 == pfsContainer)
-											fragOffset_First--;					
-#endif
 									}
 									break;
 								}
@@ -764,9 +760,17 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 									
 									// now adjusting the positional variables
 									posComrade--;
+
 									bResult2 =
 											_deleteObjectWithNotify(posComrade,pOb,0,1,
 									  							pfsContainer2,0,0);
+
+									if(posComrade >= dpos1 && posComrade <= dpos1 + length - 2)
+									{
+										// the endmarker was inside of the segment we are working
+										// so we have to adjust the length
+										length--;
+									}
 									
 									break;
 								}
