@@ -292,7 +292,7 @@ static void _ev_strip_accel(char * bufResult,
 {
 	int i = 0;
 	int j = 0;
-	while (szString[i] != NULL)
+	while (szString[i] != 0)
 	{
 		if (szString[i] != '_')
 		{
