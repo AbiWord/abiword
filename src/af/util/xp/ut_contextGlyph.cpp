@@ -410,6 +410,7 @@ UT_contextGlyph::UT_contextGlyph()
 {
 	if(!s_bInit)
 	{
+#ifdef BIDI_ENABLED
 		bool bHebrewContextGlyphs = false;
 		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs, &bHebrewContextGlyphs);
 		UT_DEBUGMSG(("UT_contextGlyph Constructor: bHebrewContextGlyphs %d\n",bHebrewContextGlyphs));
@@ -418,6 +419,7 @@ UT_contextGlyph::UT_contextGlyph()
 			s_iGlyphTableSize -= (HEBREW_END - HEBREW_START + 1) * sizeof(Letter);
 			memcpy(&s_table[HEBREW_START], &s_table[HEBREW_END + 1],s_iGlyphTableSize - HEBREW_START);
 		}
+#endif
 
 		memcpy(s_pLigRev,s_pLigature, sizeof(s_ligature));
 		qsort(s_pLigRev,NrElements(s_lig_rev), sizeof(Letter),s_comp_qlig);
