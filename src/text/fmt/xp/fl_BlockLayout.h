@@ -196,7 +196,8 @@ public:
 	fl_BlockLayout * getPreviousListOfSameMargin(void);
 	inline fl_BlockLayout * getParentItem(void);
 
-	void findSquigglesForRun(fp_Run* pRun);
+	void findSpellSquigglesForRun(fp_Run* pRun);
+	void findGrammarSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;

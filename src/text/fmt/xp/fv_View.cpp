@@ -194,7 +194,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_ixDragOrigin(0),
 		m_iyDragOrigin(0),
 		m_colorShowPara(127,127,127),
-		m_colorSquiggle(255, 0, 0),
+		m_colorSpellSquiggle(255, 0, 0),
+		m_colorGrammarSquiggle(0, 255, 0),
 		m_colorMargin(127, 127, 127),
 		m_colorFieldOffset(10, 10, 10),
 		m_colorImage(0, 0, 255),
@@ -243,7 +244,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	}
 	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
 	{
-		UT_parseColor(pszTmpColor, m_colorSquiggle);
+		UT_parseColor(pszTmpColor, m_colorSpellSquiggle);
 	}
 	if (pApp->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{
@@ -482,6 +483,15 @@ void FV_View::setGraphics(GR_Graphics * pG)
 	{
 		m_caretListener = NULL;
 	}
+}
+
+UT_RGBColor	FV_View::getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const
+{
+	if(iSquiggleType == FL_SQUIGGLE_SPELL)
+	{
+		return m_colorSpellSquiggle;
+	}
+	return m_colorGrammarSquiggle;
 }
 
 void FV_View::replaceGraphics(GR_Graphics * pG)

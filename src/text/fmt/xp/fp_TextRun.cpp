@@ -62,7 +62,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   bool bLookupProperties)
 :	fp_Run(pBL,iOffsetFirst, iLen, FPRUN_TEXT),
 	m_fPosition(TEXT_POSITION_NORMAL),
-	m_bSquiggled(false),
+	m_bSpellSquiggled(false),
+	m_bGrammarSquiggled(false),
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
 	m_bKeepWidths(false),
@@ -1853,8 +1854,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// TODO: draw this underneath (ie, before) the text and decorations
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		m_bSquiggled = false;
-		getBlock()->findSquigglesForRun(this);
+		m_bSpellSquiggled = false;
+		getBlock()->findSpellSquigglesForRun(this);
+		m_bGrammarSquiggled = false;
+		getBlock()->findGrammarSquigglesForRun(this);
 	}
 }
 
@@ -2201,7 +2204,7 @@ void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 	_drawInvisibleSpaces(xoff,yoff);
 }
 
-void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
+void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, FL_SQUIGGLE_TYPE iSquiggle)
 {
 	if (!(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)))
 	{
@@ -2209,8 +2212,14 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 	}
 
 	GR_Painter painter(getGraphics());
-
-	m_bSquiggled = true;
+	if(iSquiggle == FL_SQUIGGLE_SPELL)
+	{
+	  m_bSpellSquiggled = true;
+	}
+	if(iSquiggle == FL_SQUIGGLE_GRAMMAR)
+	{
+	  m_bGrammarSquiggled = true;
+	}
 
 	UT_sint32 nPoints = getGraphics()->tdu((right - left + getGraphics()->tlu(3))/2);
 	UT_return_if_fail(nPoints >= 1); //can be 1 for overstriking chars
@@ -2258,7 +2267,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 	if (points != scratchpoints) delete[] points;
 }
 
-void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
+void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen,FL_SQUIGGLE_TYPE iSquiggle )
 {
 //	UT_ASSERT(iLen > 0);
 	if (iLen == 0)
@@ -2278,15 +2287,18 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	// but we need to force all three pixels inside the descent
 	// we cannot afford the 1pixel gap, it leave dirt on screen -- Tomas
 	UT_sint32 iGap = (iDescent > 3) ?/*1*/0 : (iDescent - 3);
-
-	getGraphics()->setColor(_getView()->getColorSquiggle());
+	if(iSquiggle == FL_SQUIGGLE_GRAMMAR)
+	{
+	  iGap += getGraphics()->tlu(2);
+	}
+	getGraphics()->setColor(_getView()->getColorSquiggle(iSquiggle));
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	UT_Rect r;
 	_getPartRect( &r, xoff, yoff, iOffset, iLen);
 
-	_drawSquiggle(r.top + iAscent + iGap + getGraphics()->tlu(1), r.left, r.left + r.width);
+	_drawSquiggle(r.top + iAscent + iGap + getGraphics()->tlu(1), r.left, r.left + r.width,iSquiggle);
 	xxx_UT_DEBUGMSG(("Done draw sqiggle for run in block %x \n",getBlock()));
 }
 

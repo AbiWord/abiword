@@ -5213,7 +5213,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	}
 	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForSquiggle), &pszTmpColor))
 	{
-		UT_parseColor(pszTmpColor, pView->m_colorSquiggle);
+		UT_parseColor(pszTmpColor, pView->m_colorSpellSquiggle);
 	}
 	if (pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForMargin), &pszTmpColor))
 	{

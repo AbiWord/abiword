@@ -28,6 +28,7 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 #include "gr_RenderInfo.h"
+#include "fl_Squiggles.h"
 
 /*
 	fp_TextRun represents a run of contiguous text sharing the same
@@ -49,7 +50,7 @@ public:
 	virtual bool			alwaysFits(void) const;
 	virtual bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
-	void					drawSquiggle(UT_uint32, UT_uint32);
+	void				drawSquiggle(UT_uint32, UT_uint32,FL_SQUIGGLE_TYPE iSquiggle);
 
 	bool					split(UT_uint32 iSplitOffset);
 #if DEBUG
@@ -139,7 +140,7 @@ protected:
 
 	void					_drawInvisibleSpaces(UT_sint32, UT_sint32);
 	void					_drawInvisibles(UT_sint32, UT_sint32);
-	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
+	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right,FL_SQUIGGLE_TYPE iSquiggle);
 
 	void					_getPartRect(UT_Rect* pRect,
 										 UT_sint32 xoff,
@@ -176,7 +177,8 @@ private:
 	  retrieved from multiple fonts.
 	  TODO fix this issue
 	*/
-	bool					m_bSquiggled;
+	bool					m_bSpellSquiggled;
+	bool					m_bGrammarSquiggled;
 
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
 	// but only a pointer in the static table of the UT_Language class !!!

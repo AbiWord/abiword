@@ -7335,9 +7335,9 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
  method.
 */
 void
-fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
+fl_BlockLayout::findSpellSquigglesForRun(fp_Run* pRun)
 {
-	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSquigglesForRun\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSpellSquigglesForRun\n"));
 
 	UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 	fp_TextRun* pTextRun = (static_cast<fp_TextRun*>(pRun));
@@ -7365,7 +7365,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			// code below handle it).
 			if (iFirst != iLast)
 			{
-				pTextRun->drawSquiggle(iStart, iEnd - iStart);
+				pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
 			}
 		}
 		// The ones in the middle don't need clipping.
@@ -7376,7 +7376,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 
 			iStart = pPOB->getOffset();
 			iEnd =	iStart + pPOB->getLength();
-			pTextRun->drawSquiggle(iStart, iEnd - iStart);
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
 		}
 		// The last POB may only be partially within the region. Clip
 		// it if necessary. Note the load with iLast instead of i.
@@ -7389,7 +7389,75 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 				iStart = pPOB->getOffset();
 			iEnd =	pPOB->getOffset() + pPOB->getLength();
 			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
-			pTextRun->drawSquiggle(iStart, iEnd - iStart);
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_SPELL);
+		}
+	}
+}
+
+
+/*!
+ Draw grammar squiggles intersecting with Run
+ \param pRun Run
+
+ For all incorrect grammar in this run, call the run->drawSquiggle()
+ method.
+*/
+void
+fl_BlockLayout::findGrammarSquigglesForRun(fp_Run* pRun)
+{
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::findSpellSquigglesForRun\n"));
+
+	UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+	fp_TextRun* pTextRun = (static_cast<fp_TextRun*>(pRun));
+
+	UT_sint32 runBlockOffset = pRun->getBlockOffset();
+	UT_sint32 runBlockEnd = runBlockOffset + pRun->getLength();
+	UT_sint32 iFirst, iLast;
+	if (m_pGrammarSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
+	{
+		UT_sint32 iStart = 0, iEnd;
+		fl_PartOfBlock* pPOB;
+		UT_sint32 i = iFirst;
+
+		// The first POB may only be partially within the region. Clip
+		// it if necessary.
+		pPOB = m_pSpellSquiggles->getNth(i++);
+		if (!pPOB->getIsIgnored())
+		{
+			iStart = pPOB->getOffset();
+			iEnd =	iStart + pPOB->getLength();
+			if (iStart < runBlockOffset) iStart = runBlockOffset;
+
+			// Only draw if there's more than one POB. If there's only
+			// one POB, it may also need clipping at the end (let the
+			// code below handle it).
+			if (iFirst != iLast)
+			{
+				pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
+			}
+		}
+		// The ones in the middle don't need clipping.
+		for (; i < iLast; i++)
+		{
+			pPOB = m_pSpellSquiggles->getNth(i);
+			if (pPOB->getIsIgnored()) continue;
+
+			iStart = pPOB->getOffset();
+			iEnd =	iStart + pPOB->getLength();
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
+		}
+		// The last POB may only be partially within the region. Clip
+		// it if necessary. Note the load with iLast instead of i.
+		pPOB = m_pSpellSquiggles->getNth(iLast);
+		if (!pPOB->getIsIgnored())
+		{
+			// Only load start if this POB is different from the first
+			// one.
+			if (iFirst != iLast)
+				iStart = pPOB->getOffset();
+			iEnd =	pPOB->getOffset() + pPOB->getLength();
+			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
+			pTextRun->drawSquiggle(iStart, iEnd - iStart,FL_SQUIGGLE_GRAMMAR);
 		}
 	}
 }
