@@ -11282,14 +11282,20 @@ Defun1(toggleShowRevisionsBefore)
 	ABIWORD_VIEW;
 
 	bool bShow = pView->isShowRevisions();
-
+	UT_uint32 iLevel = pView->getRevisionLevel();
+	
 	if(bShow)
 	{
 		//we are asked to hide revisions, first set view level to 0
 		pView->setRevisionLevel(0);
+		pView->toggleShowRevisions();
+	}
+	else if(iLevel != 0)
+	{
+		// we are asked to change view level
+		pView->cmdSetRevisionLevel(0);
 	}
 	
-	pView->toggleShowRevisions();
 	return true;
 }
 
@@ -11299,14 +11305,20 @@ Defun1(toggleShowRevisionsAfter)
 	ABIWORD_VIEW;
 
 	bool bShow = pView->isShowRevisions();
+	UT_uint32 iLevel = pView->getRevisionLevel();
 
 	if(bShow)
 	{
 		//we are asked to hide revisions, first set view level to max
 		pView->setRevisionLevel(0xffffffff);
+		pView->toggleShowRevisions();
+	}
+	else if(iLevel != 0xffffffff)
+	{
+		// we are asked to change view level
+		pView->cmdSetRevisionLevel(0xffffffff);
 	}
 	
-	pView->toggleShowRevisions();
 	return true;
 }
 

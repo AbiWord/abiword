@@ -1052,7 +1052,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisions)
 	
 	if(pView->isShowRevisions())
 	{
-		return EV_MIS_Gray;
+		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
 	}
 
 	return EV_MIS_ZERO;
@@ -1074,7 +1074,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 
 	if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0xffffffff)
 	{
-		return EV_MIS_Toggled;
+		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
 	}
 
 	return EV_MIS_ZERO;
@@ -1096,7 +1096,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsBefore)
 
 	if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0)
 	{
-		return EV_MIS_Toggled;
+		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
 	}
 
 	return EV_MIS_ZERO;
