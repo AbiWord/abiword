@@ -109,9 +109,7 @@ bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	UT_UCS4Char *pData4 = (UT_UCS4Char*) UT_convert((char*)pData,dataLength,"UTF-8",UCS_INTERNAL,NULL,NULL); 
-	invokeToolbarMethod(pView,pEM,pData4,dataLength);
-	free(pData4);
+	invokeToolbarMethod(pView,pEM,(UT_UCS4Char *)pData,dataLength);
 	return true;
 }
 
