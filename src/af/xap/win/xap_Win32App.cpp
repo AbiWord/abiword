@@ -388,8 +388,8 @@ void XAP_Win32App::_setBidiOS(void)
 	the win32 bidi altogether and treating it as a non-bidi system, but there does
 	not seem to be a simple way of doing this
 
-	I am going to have another shot at disabling the build in support
-	for the main window, and leaving for the GUI only. The main
+	I am going to have another shot at disabling the built-in support
+	for the main window, and leaving it for the GUI only. The main
 	changes are in gr_Win32Graphics class. Tomas, Jan 19th, 2003
 */
 	const UT_UCS2Char araAin  = 0x0639;

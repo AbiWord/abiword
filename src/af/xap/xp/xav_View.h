@@ -113,7 +113,7 @@ public:
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
-	/*! input parameters of these functions are in device units !!! */
+	/*! input parameters of these functions are in logical units !!! */
 	void			sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit = -1);
 	void			sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit = -1);
 
