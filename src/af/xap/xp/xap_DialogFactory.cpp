@@ -49,7 +49,7 @@ AP_DialogFactory::AP_DialogFactory(AP_Frame * pFrame, int nrElem, const struct _
 
 AP_DialogFactory::~AP_DialogFactory(void)
 {
-	UT_VECTOR_PURGEALL(AP_Dialog *, m_vecDialogs);
+	UT_VECTOR_PURGEALL(AP_Dialog, m_vecDialogs);
 }
 
 UT_Bool AP_DialogFactory::_findDialogInTable(AP_Dialog_Id id, UT_uint32 * pIndex) const
