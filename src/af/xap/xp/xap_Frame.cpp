@@ -173,9 +173,11 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 		m_pInputModes = new XAP_InputModes();
 		UT_ASSERT(m_pInputModes);
 	}
-	UT_Bool bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
+	UT_Bool bResult;
+	bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
 	UT_ASSERT(bResult);
-	UT_Bool bResult2 = m_pInputModes->setCurrentMap(szBindings);
+	UT_Bool bResult2;
+	bResult2 = m_pInputModes->setCurrentMap(szBindings);
 	UT_ASSERT(bResult2);
 	
 	//////////////////////////////////////////////////////////////////
@@ -285,7 +287,8 @@ UT_sint32 XAP_Frame::setInputMode(const char * szName)
 
 		EV_EditBindingMap * pBindingMap = m_app->getBindingMap(szName);
 		UT_ASSERT(pBindingMap);
-		UT_Bool bResult = m_pInputModes->createInputMode(szName,pBindingMap);
+		UT_Bool bResult;
+		bResult = m_pInputModes->createInputMode(szName,pBindingMap);
 		UT_ASSERT(bResult);
 	}
 	
@@ -623,8 +626,10 @@ UT_Bool XAP_InputModes::createInputMode(const char * szName,
 	pEEM = new EV_EditEventMapper(pBindingMap);
 	UT_ASSERT(pEEM);
 
-	UT_Bool b1 = (m_vecEventMaps.addItem(pEEM) == 0);
-	UT_Bool b2 = (m_vecNames.addItem(szDup) == 0);
+	UT_Bool b1;
+	b1 = (m_vecEventMaps.addItem(pEEM) == 0);
+	UT_Bool b2;
+	b2 = (m_vecNames.addItem(szDup) == 0);
     UT_ASSERT(b1 && b2);
 
 	return UT_TRUE;

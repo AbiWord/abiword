@@ -582,7 +582,8 @@ UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * sz
 		//be able to provide some sort of handler that blocks the
 		//window and then unblocks it when we are finished with 
 		//the menu. This is why we do the "getPopupDone" test, set by the menu
-		int level = PtModalStart();
+		int level;
+		level = PtModalStart();
 		while (getPopupDone() == 0) {
 			PtProcessEvent();
 		}	

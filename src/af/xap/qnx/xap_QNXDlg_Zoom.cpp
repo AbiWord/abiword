@@ -153,7 +153,6 @@ static int s_spin_Percent_changed(PtWidget_t *w, void *data, PtCallbackInfo_t *i
 
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) {
 	PtArg_t args[1];
-	UT_Rect rClip;
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -203,7 +202,8 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 	PtRealizeWidget(mainWindow);
 	PgFlush();
 	
-	int count = PtModalStart();
+	int count;
+	count = PtModalStart();
 	done = 0;
 	while(!done) {
 		PtProcessEvent();
@@ -331,13 +331,11 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	PtWidget_t * radiobuttonPageWidth;
 	PtWidget_t * radiobuttonWholePage;
 	PtWidget_t * radiobuttonPercent;
-	PtWidget_t * spinbuttonPercent_adj;
 	PtWidget_t * spinbuttonPercent;
 
 	PtWidget_t * frameSampleText;
 	PtWidget_t * drawingareaPreview;
 
-	PtWidget_t * hbuttonboxZoom;
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
 	PtArg_t		args[10];
@@ -531,21 +529,17 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 }
 
 void XAP_QNXDialog_Zoom::_enablePercentSpin(UT_Bool enable) {
-	PtArg_t arg;
 	if (enable == UT_FALSE) {
-		PtSetArg(&arg, Pt_ARG_FLAGS, Pt_BLOCKED | Pt_GHOST, Pt_BLOCKED | Pt_GHOST);	
-		PtSetResources(m_spinPercent, 1, &arg);
+		PtSetResource(m_spinPercent, Pt_ARG_FLAGS, Pt_BLOCKED | Pt_GHOST, Pt_BLOCKED | Pt_GHOST);
 	}
 	else {
-		PtSetArg(&arg, Pt_ARG_FLAGS, 0, Pt_BLOCKED | Pt_GHOST);	
-		PtSetResources(m_spinPercent, 1, &arg);
-		PtWidgetShowFocus(m_spinPercent);
+		PtSetResource(m_spinPercent, Pt_ARG_FLAGS, 0, Pt_BLOCKED | Pt_GHOST);
+		//PtWidgetShowFocus(m_spinPercent);
 	}
 }
 
 static void set_toggle_button(PtWidget_t *w, int enable) {
 	PtArg_t arg;
-	int     *value;
 
 	PtSetArg(&arg, Pt_ARG_FLAGS, (enable) ? Pt_SET : 0, Pt_SET);
 	PtSetResources(w, 1, &arg);

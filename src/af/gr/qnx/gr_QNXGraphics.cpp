@@ -159,7 +159,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	PhPoint_t pos;
-	int i,j;
+	int i;
 	
 	pos.x = xoff; 
 	pos.y = yoff + getFontAscent();
@@ -190,7 +190,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	char *pNChars, utb[MB_CUR_MAX * 150];  // arbitrary biggish size for utb
 	int  blen, ipos;
 
-	if ((iLength * MB_CUR_MAX) < (sizeof(utb) / sizeof(utb[0]))) {
+	if ((iLength * MB_CUR_MAX) < (int)(sizeof(utb) / sizeof(utb[0]))) {
 		blen = sizeof(utb) / sizeof(utb[0]);
 		pNChars = utb;
 	} else {

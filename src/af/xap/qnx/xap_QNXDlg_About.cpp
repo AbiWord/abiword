@@ -160,7 +160,8 @@ void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 	UT_QNXBlockWidget(parentWindow, 1);
 	PtRealizeWidget(mainWindow);
 
-	int count = PtModalStart();
+	int count;
+	count = PtModalStart();
 	done = 0;
 	while(!done) {
 		PtProcessEvent();

@@ -134,7 +134,8 @@ void XAP_QNXDialog_WindowMore::runModal(XAP_Frame * pFrame)
 
    printf("Running the more windows main window loop \n");
    PtRealizeWidget(windowMain);
-   int count = PtModalStart();
+   int count;
+   count = PtModalStart();
    done = 0;
    while(!done) {
            PtProcessEvent();
@@ -175,23 +176,12 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	// It's created with a "dialog" style.
 	PtWidget_t *windowMain;
 
-	// This is the top level organization widget, which packs
-	// things vertically
-	PtWidget_t *vboxMain;
-
 	// The top item in the vbox is a simple label
 	PtWidget_t *labelActivate;
 
-	// The second item in the vbox is a scrollable area
-	PtWidget_t *scrollWindows;
-	
 	// The child of the scrollable area is our list of windows
 	PtWidget_t *clistWindows;
 	
-	// The third (and bottom) item in the vbox is a horizontal
-	// button box, which holds our two action buttons.
-	PtWidget_t *buttonboxAction;
-
 	// These are the buttons.
 	PtWidget_t *buttonOK;
 	PtWidget_t *buttonCancel;

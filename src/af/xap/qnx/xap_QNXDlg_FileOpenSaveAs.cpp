@@ -67,11 +67,11 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
 
-	UT_Bool bCheckWritePermission;
-
-	const XML_Char * szTitle;
-	const XML_Char * szFileTypeLabel;
+	UT_Bool bCheckWritePermission = UT_TRUE;
+	const XML_Char * szTitle = NULL;
+	const XML_Char * szFileTypeLabel = NULL;
 	int   flags = 0;
+
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:

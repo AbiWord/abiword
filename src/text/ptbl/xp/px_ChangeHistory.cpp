@@ -160,7 +160,8 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 	// coalesce this record with the current undo record.
 
 	PX_ChangeRecord * pcrUndo;
-	UT_Bool bResult = getUndo(&pcrUndo);
+	UT_Bool bResult;
+	bResult = getUndo(&pcrUndo);
 	UT_ASSERT(bResult);
 	UT_ASSERT(pcr->getType() == pcrUndo->getType());
 

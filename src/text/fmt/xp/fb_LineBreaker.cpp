@@ -534,7 +534,8 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 	UT_ASSERT(pRunToSplit->getNext());
 	UT_ASSERT(pRunToSplit->getNext()->getType() == FPRUN_TEXT);
 	
-	fp_TextRun *pOtherHalfOfSplitRun = (fp_TextRun*) pRunToSplit->getNext();
+	fp_TextRun *pOtherHalfOfSplitRun;
+	pOtherHalfOfSplitRun = (fp_TextRun*) pRunToSplit->getNext();
 
 // todo decide if we need to call recalcWidth() now on the 2 pieces.
 //							pRunToSplit->recalcWidth();

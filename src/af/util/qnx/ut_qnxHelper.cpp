@@ -171,6 +171,7 @@ int pretty_group(PtWidget_t *w, const char *title) {
 	PtArg_t args[10];
 
 	n = 0;
+	width = 0;
 
 	if (title && *title) {
 		PhRect_t rect;

@@ -55,7 +55,8 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
+	UT_Bool bMerged;
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -75,7 +76,8 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 										  indexOldAP,indexNewAP);
 	UT_ASSERT(pcr);
 
-	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);
+	UT_Bool bResult;
+	bResult = _fmtChangeStrux(pfs,indexNewAP);
 	UT_ASSERT(bResult);
 
 	// add record to history.  we do not attempt to coalesce these.
@@ -97,8 +99,9 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	// apply a strux-level formatting change to the given region.
 
 	UT_ASSERT(dpos1 <= dpos2);
-	UT_Bool bHaveAttributes = (attributes && *attributes);
-	UT_Bool bHaveProperties = (properties && *properties);
+	UT_Bool bHaveAttributes, bHaveProperties;
+	bHaveAttributes = (attributes && *attributes);
+	bHaveProperties = (properties && *properties);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
 
 	pf_Frag_Strux * pfs_First;
@@ -107,8 +110,10 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	// look backwards and find the containing strux of the given
 	// type for both end points of the change.
 	
-	UT_Bool bFoundFirst = _getStruxOfTypeFromPosition(dpos1,pts,&pfs_First);
-	UT_Bool bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
+	UT_Bool bFoundFirst;
+	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,pts,&pfs_First);
+	UT_Bool bFoundEnd;
+	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
 	UT_ASSERT(bFoundFirst && bFoundEnd);
 	
 	// see if the change is exactly one block.  if so, we have
@@ -143,7 +148,8 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 					if (pfs->getStruxType() == pts)
 					{
-						UT_Bool bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties);
+						UT_Bool bResult;
+						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties);
 						UT_ASSERT(bResult);
 					}
 					if (pfs == pfs_End)
@@ -195,7 +201,8 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 					pfsContainer = static_cast<pf_Frag_Strux *> (pf);
 					if (!bEndSeen && (pfsContainer->getStruxType() == pts))
 					{
-						UT_Bool bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,properties);
+						UT_Bool bResult;
+						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,properties);
 						UT_ASSERT(bResult);
 					}
 
@@ -208,8 +215,8 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_Text:
 				{
-					UT_Bool bResult
-						= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf),
+					UT_Bool bResult;
+					bResult = _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf),
 												   0,dpos,lengthThisStep,
 												   NULL,NULL,
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -228,8 +235,8 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_Object:
 				{
-					UT_Bool bResult
-						= _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf),
+					UT_Bool bResult;
+					bResult = _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf),
 													 0,dpos,lengthThisStep,
 													 NULL,NULL,
 													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -240,8 +247,8 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_FmtMark:
 				{
-					UT_Bool bResult
-						= _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf),
+					UT_Bool bResult;
+				 	bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf),
 													  dpos, NULL,NULL,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 					UT_ASSERT(bResult);

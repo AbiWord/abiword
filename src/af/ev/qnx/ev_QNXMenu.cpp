@@ -266,6 +266,7 @@ static int s_menu_init(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	UT_ASSERT(pMenu);
 
 	pMenu->refreshMenu(pMenu->getFrame()->getCurrentView());
+	return Pt_CONTINUE;
 }
 
 /*******************************************************************************/
@@ -314,7 +315,6 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	UT_uint32 tmp = 0;
 	UT_Bool bResult;
 	UT_Stack stack;
 	stack.push(wMenuRoot);

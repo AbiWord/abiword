@@ -159,7 +159,7 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 	PhArea_t	area;
 
 	PtWidget_t * wTLW = m_pQNXFrame->getTopLevelWindow();
-	PtWidget_t * wVBox = m_pQNXFrame->getVBoxWidget();
+	//PtWidget_t * wVBox = m_pQNXFrame->getVBoxWidget();
 
 #if 0
 	const XML_Char * szValue = NULL;
@@ -453,7 +453,8 @@ UT_Bool EV_QNXToolbar::bindListenerToView(AV_View * pView)
 	m_pViewListener = new EV_QNXToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	UT_Bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+	UT_Bool bResult;
+	bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
 	refreshToolbar(pView, AV_CHG_ALL);
@@ -504,7 +505,8 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 
 					tcb = (struct _cb_data *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(tcb);
-					PtWidget_t * item = tcb->m_widget;
+					PtWidget_t *item;
+					item = tcb->m_widget;
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item
@@ -528,7 +530,8 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 
 					tcb = (struct _cb_data *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(tcb);
-					PtWidget_t * item = tcb->m_widget;
+					PtWidget_t *item;
+					item = tcb->m_widget;
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item
@@ -563,7 +566,8 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					
 					tcb = (struct _cb_data *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(tcb);
-					PtWidget_t * item = tcb->m_widget;
+					PtWidget_t *item;
+					item = tcb->m_widget;
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item

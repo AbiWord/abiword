@@ -38,7 +38,8 @@ UT_AlphaHashTable::~UT_AlphaHashTable()
 
 UT_sint32 UT_AlphaHashTable::addEntry(const char* psLeft, const char* psRight, void* pData)
 {
-	UT_sint32 addHashError = UT_HashTable::addEntry(psLeft,psRight,pData);
+	UT_sint32 addHashError;
+	addHashError = UT_HashTable::addEntry(psLeft,psRight,pData);
 	UT_ASSERT(addHashError == 0);
 
 	int ndxEntryAdded = (getEntryCount()-1);
@@ -56,7 +57,8 @@ UT_sint32 UT_AlphaHashTable::addEntry(const char* psLeft, const char* psRight, v
 		UT_sint32 cmp = UT_stricmp(psLeft,szK);
 		if (cmp < 0)					// new key should be before the k-th one.
 		{
-			UT_sint32 errInsert = m_vecAlpha.insertItemAt((void *)ndxEntryAdded,k);
+			UT_sint32 errInsert;
+			errInsert = m_vecAlpha.insertItemAt((void *)ndxEntryAdded,k);
 			UT_ASSERT(errInsert == 0);
 			return 0;					// success
 		}
@@ -75,7 +77,8 @@ UT_sint32 UT_AlphaHashTable::addEntry(const char* psLeft, const char* psRight, v
 	// if we fall out of the loop, we just append it to the end
 	// of the vector.
 
-	UT_sint32 addVecError = m_vecAlpha.addItem((void *)ndxEntryAdded);
+	UT_sint32 addVecError;
+	addVecError = m_vecAlpha.addItem((void *)ndxEntryAdded);
 	UT_ASSERT(addVecError == 0);
 	return 0;
 }

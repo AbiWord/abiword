@@ -40,8 +40,7 @@ public:
 				XAP_QNXFrame * pQNXFrame,
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
-	//virtual ~EV_QNXMenu(void);
-	~EV_QNXMenu(void);
+	virtual ~EV_QNXMenu(void);
 
 	UT_Bool				synthesizeMenu(PtWidget_t * wMenuRoot);
 	UT_Bool				synthesizeMenu(void * wMenuRoot);
@@ -75,8 +74,7 @@ public:
 				   XAP_QNXFrame * pQNXFrame,
 				   const char * szMenuLayoutName,
 				   const char * szMenuLabelSetName);
-	//virtual ~EV_QNXMenuBar(void);
-	~EV_QNXMenuBar(void);
+	virtual ~EV_QNXMenuBar(void);
 
 	UT_Bool				synthesizeMenuBar(void);
 	virtual UT_Bool		refreshMenu(AV_View * pView);
@@ -95,8 +93,7 @@ public:
 					 XAP_QNXFrame * pQNXFrame,
 					 const char * szMenuLayoutName,
 					 const char * szMenuLabelSetName);
-	//virtual ~EV_QNXMenuPopup(void);
-	~EV_QNXMenuPopup(void);
+	virtual ~EV_QNXMenuPopup(void);
 
 	UT_Bool				synthesizeMenuPopup();
 	virtual UT_Bool		refreshMenu(AV_View * pView);

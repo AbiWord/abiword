@@ -322,7 +322,8 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) cons
 				const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
 				UT_uint32 length = pft->getLength();
 
-				UT_Bool bAppended = pgb->ins(bufferOffset,pSpan,length);
+				UT_Bool bAppended;
+				bAppended = pgb->ins(bufferOffset,pSpan,length);
 				UT_ASSERT(bAppended);
 				
 				bufferOffset += length;
@@ -357,7 +358,8 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) cons
 				{
 					pSpaces[i] = UCS_SPACE;
 				}
-				UT_Bool bAppended = pgb->ins(bufferOffset, pSpaces, length);
+				UT_Bool bAppended;
+				bAppended = pgb->ins(bufferOffset, pSpaces, length);
 				delete pSpaces;
 				UT_ASSERT(bAppended);
 		

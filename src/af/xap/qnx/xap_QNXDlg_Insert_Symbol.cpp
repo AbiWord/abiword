@@ -92,7 +92,6 @@ static int s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 static int s_sym_SymbolMap_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -115,7 +114,6 @@ static int s_sym_SymbolMap_exposed(PtWidget_t * w, PhTile_t * damage)
 static int s_Symbolarea_exposed(PtWidget_t * w, PhTile_t * damage) 
 {
 	PtArg_t args[1];
-	UT_Rect rClip;
 
    	PhRect_t rect;
    	PtSuperClassDraw(PtBasic, w, damage);
@@ -242,7 +240,8 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
-	XAP_QNXApp * app = (XAP_QNXApp *) (m_pApp);
+	XAP_QNXApp * app;
+	app = (XAP_QNXApp *) (m_pApp);
 	UT_ASSERT(app);
 
 	// make a new QNX GC
@@ -282,7 +281,7 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 #endif
 
     // Put the current font in the entry box
-	char * iSelectedFont = iDrawSymbol->getSelectedFont();
+	//char * iSelectedFont = iDrawSymbol->getSelectedFont();
 
 	// Show the Previously selected symbol
 	m_PreviousSymbol = m_CurrentSymbol;
@@ -440,7 +439,6 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	PtWidget_t * windowInsertS;
 
 	PtWidget_t * vboxInsertS;
-	PtWidget_t * vhbox;
 
 	PtWidget_t * fontcombo;
 	PtWidget_t * SymbolMap;

@@ -68,8 +68,10 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
             fieldType = fd_Field::FD_ListLabel;
         }
         else
-        {
+        { 
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			//Better than segfaulting I figure
+			fieldType = fd_Field::FD_Test;
         }
         m_pField = new fd_Field(*this, pPT,fieldType);
     }

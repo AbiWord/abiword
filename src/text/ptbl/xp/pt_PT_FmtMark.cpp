@@ -64,7 +64,8 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
 			pf_Frag_Strux * pfsContainer = NULL;
-			UT_Bool bFoundStrux = _getStruxFromPosition(dpos,&pfsContainer);
+			UT_Bool bFoundStrux;
+			bFoundStrux = _getStruxFromPosition(dpos,&pfsContainer);
 			UT_ASSERT(bFoundStrux);
 
 			return _fmtChangeFmtMarkWithNotify(ptc,pffm,dpos,attributes,properties,pfsContainer,NULL,NULL);
@@ -82,14 +83,16 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	
 	PT_AttrPropIndex indexOldAP = _chooseIndexAP(pf,fo);
 	PT_AttrPropIndex indexNewAP;
-	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
+	UT_Bool bMerged;
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return UT_TRUE;
 	
 	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	UT_Bool bFoundStrux;
+	bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fo;
 
@@ -240,7 +243,8 @@ UT_Bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtM
 
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pffm->getIndexAP();
-	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
+	UT_Bool bMerged;
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.

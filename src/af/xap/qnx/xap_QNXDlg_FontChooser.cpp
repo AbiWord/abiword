@@ -69,7 +69,8 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
 	UT_ASSERT(m_pQNXFrame);
 
-	XAP_QNXApp * pApp = (XAP_QNXApp *)m_pApp;
+	XAP_QNXApp * pApp;
+	pApp = (XAP_QNXApp *)m_pApp;
 	UT_ASSERT(pApp);
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();

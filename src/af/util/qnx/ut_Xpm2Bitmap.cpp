@@ -45,10 +45,10 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 	UT_ASSERT(ppImage);
 
 	// first row contains: width height, number of colors, chars per pixel
-	UT_uint32 width, height, nrColors, charsPerPixel;
+	UT_uint32 width, height, nrColors, charsPerPixel, n;
 	//printf("Scanning in the core info [%s] \n", pIconData[0]);
-	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
-					 &width,&height,&nrColors,&charsPerPixel);
+	n = sscanf(pIconData[0],"%uld %uld %uld %uld",
+				 &width,&height,&nrColors,&charsPerPixel);
 	//printf("Scanned w %d, h %d, #c %d, cpp %d\n", width, height, nrColors, charsPerPixel);
 	UT_ASSERT(n == 4);
 	UT_ASSERT(width > 0);
@@ -110,14 +110,16 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 			bufSymbol[kPx] = pIconDataPalette[k][kPx];
 		UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
 		
-		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1],
-						" %s %s",&bufKey,&bufColorValue);
+		UT_uint32 nf;
+		nf = sscanf(&pIconDataPalette[k][charsPerPixel+1],
+						" %s %s",bufKey,bufColorValue);
 		UT_ASSERT(nf == 2);
 		UT_ASSERT(bufKey[0] = 'c');
 
 		// make the ".." a hash key and store our color index as the data.
 		// we add k+1 because the hash code does not like null pointers...
-		UT_sint32 resultHash = hash.addEntry(bufSymbol,0,(void *)(k+1));
+		UT_sint32 resultHash;
+		resultHash = hash.addEntry(bufSymbol,0,(void *)(k+1));
 		UT_ASSERT(resultHash != -1);
 		
 		// store the actual color value in the 

@@ -261,7 +261,8 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
-	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
+	UT_Bool bMerged;
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -327,8 +328,9 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	}
 	
 	UT_ASSERT(dpos1 < dpos2);
-	UT_Bool bHaveAttributes = (attributes && *attributes);
-	UT_Bool bHaveProperties = (properties && *properties);
+	UT_Bool bHaveAttributes, bHaveProperties;
+	bHaveAttributes = (attributes && *attributes);
+	bHaveProperties = (properties && *properties);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
     
 	pf_Frag * pf_First;
@@ -336,7 +338,8 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	PT_BlockOffset fragOffset_First;
 	PT_BlockOffset fragOffset_End;
 
-	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_Bool bFound;
+	bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_ASSERT(bFound);
 
 #if 0
@@ -404,12 +407,13 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				if (!pfsContainer)
 				{
-					UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+					UT_Bool bFoundStrux;
+					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
 				}
 
-				UT_Bool bResult
-					= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf_First),
+				UT_Bool bResult;
+				bResult	= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf_First),
 											   fragOffset_First,dpos1,lengthThisStep,
 											   attributes,properties,
 											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -421,12 +425,13 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				if (!pfsContainer)
 				{
-					UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+					UT_Bool bFoundStrux;
+					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
 				}
 
-				UT_Bool bResult
-					= _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf_First),
+				UT_Bool bResult;
+				bResult	= _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf_First),
 												 fragOffset_First,dpos1,lengthThisStep,
 												 attributes,properties,
 												 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -438,12 +443,13 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				if (!pfsContainer)
 				{
-					UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+					UT_Bool bFoundStrux;
+					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
 				}
 
-				UT_Bool bResult
-					= _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf_First),
+				UT_Bool bResult;
+				bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf_First),
 												  dpos1, attributes,properties,
 												  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
