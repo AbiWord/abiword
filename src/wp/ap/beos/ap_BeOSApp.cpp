@@ -226,7 +226,7 @@ bool AP_BeOSApp::initialize(void)
 
 	m_pClipboard = new AP_BeOSClipboard();
 	UT_ASSERT(m_pClipboard);
-	   
+
 	m_pEMC = AP_GetEditMethods();
 	UT_ASSERT(m_pEMC);
 
@@ -297,7 +297,7 @@ bool AP_BeOSApp::initialize(void)
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
 			&& (szStringSet)
 			&& (*szStringSet)
-			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+			&& (UT_strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
@@ -329,8 +329,6 @@ bool AP_BeOSApp::initialize(void)
 		}
 	}
 	// Now we have the strings loaded we can populate the field names correctly
-	// CHECK THIS: the following was added by a Linux developer who can't test
-	// on BeOS, or even compile, so someone with a BeOS box needs to check it
 	int i;
 	
 	for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
@@ -517,7 +515,7 @@ ReturnTrue:
 
 /*****************************************************************/
 
-int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
+int AP_BeOSApp::main(const char * szAppName, int argc, char ** argv) {
 	// This is a static function.
 #if CONVERT
 	bool bShowApp = true;

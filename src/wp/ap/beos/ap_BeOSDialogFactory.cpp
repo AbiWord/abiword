@@ -35,8 +35,6 @@ static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 	
 };
 
-#define NrElements(a)	((sizeof(a)/sizeof(a[0])))
-
 /*****************************************************************/
   
 AP_BeOSDialogFactory::AP_BeOSDialogFactory(XAP_App * pApp)

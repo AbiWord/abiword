@@ -39,6 +39,7 @@
 #include "xap_BeOSDlg_About.h"
 #include "xap_BeOSDlg_Insert_Symbol.h"
 #include "xap_BeOSDlg_Language.h"
+#include "xap_BeOSDlg_Encoding.h"
 
 
 #include "ap_BeOSDialog_Replace.h"
@@ -66,6 +67,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_BeOSDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_BeOSDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,			XAP_BeOSDialog_Language)
+	DeclareDialog(XAP_DIALOG_ID_ENCODING,			XAP_BeOSDialog_Encoding)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_BeOSDialog_WindowMore) 
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_BeOSDialog_Zoom) 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_BeOSDialog_About) 

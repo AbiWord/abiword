@@ -55,7 +55,7 @@ public:
 
 	void							ParseCommandLine(void);
 	
-	static int local_main (const char * szAppName, int argc, char ** argv);
+	static int main (const char * szAppName, int argc, char ** argv);
 
 	void                                             catchSignals(int sig_num);
 
