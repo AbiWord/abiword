@@ -52,20 +52,20 @@ enum XLFDField
 
 /********************************************************************/
 
-AP_UnixFontXLFD::AP_UnixFontXLFD(void)
+XAP_UnixFontXLFD::XAP_UnixFontXLFD(void)
 {
 	_blankMembers();
 	_wipeMembers();
 }
 
-AP_UnixFontXLFD::AP_UnixFontXLFD(const char * xlfd)
+XAP_UnixFontXLFD::XAP_UnixFontXLFD(const char * xlfd)
 {
 	_blankMembers();
 	_wipeMembers();
 	setXLFD(xlfd);
 }
 
-AP_UnixFontXLFD::AP_UnixFontXLFD(AP_UnixFontXLFD & copy)
+XAP_UnixFontXLFD::XAP_UnixFontXLFD(XAP_UnixFontXLFD & copy)
 {
 	UT_cloneString(m_foundry, copy.m_foundry);
 	UT_cloneString(m_family, copy.m_family);
@@ -84,13 +84,13 @@ AP_UnixFontXLFD::AP_UnixFontXLFD(AP_UnixFontXLFD & copy)
 }
 
 	
-AP_UnixFontXLFD::~AP_UnixFontXLFD(void)
+XAP_UnixFontXLFD::~XAP_UnixFontXLFD(void)
 {
 	_wipeMembers();
 }
 
 
-void AP_UnixFontXLFD::setXLFD(const char * xlfd)
+void XAP_UnixFontXLFD::setXLFD(const char * xlfd)
 {
 	UT_ASSERT(xlfd);
 	
@@ -120,7 +120,7 @@ void AP_UnixFontXLFD::setXLFD(const char * xlfd)
 	g_strfreev(fields);
 }
 
-char * AP_UnixFontXLFD::getXLFD(void)
+char * XAP_UnixFontXLFD::getXLFD(void)
 {
 	// could GString be Unicode in the future?  let's hope not
 	GString * xlfd = g_string_new("-");	// start off with the first dash
@@ -166,7 +166,7 @@ char * AP_UnixFontXLFD::getXLFD(void)
 
 /********************************************************************/
 
-void AP_UnixFontXLFD::_blankMembers(void)
+void XAP_UnixFontXLFD::_blankMembers(void)
 {
 	// set all the pointers to NULL
 	m_foundry = NULL;
@@ -180,7 +180,7 @@ void AP_UnixFontXLFD::_blankMembers(void)
 	m_encoding = NULL;
 }
 
-void AP_UnixFontXLFD::_wipeMembers(void)
+void XAP_UnixFontXLFD::_wipeMembers(void)
 {
 	FREEP(m_foundry);
 	FREEP(m_family);

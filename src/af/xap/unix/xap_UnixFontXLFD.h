@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXFONTXLFD_H
-#define AP_UNIXFONTXLFD_H
+#ifndef XAP_UNIXFONTXLFD_H
+#define XAP_UNIXFONTXLFD_H
 
 #include "ut_types.h"
 #include "ut_string.h"
@@ -35,15 +35,15 @@
 
 /*****************************************************************/
 
-class AP_UnixFontXLFD
+class XAP_UnixFontXLFD
 {
 public:
 
-	AP_UnixFontXLFD(void);
-	AP_UnixFontXLFD(const char * xlfd);
-	AP_UnixFontXLFD(AP_UnixFontXLFD & copy);
+	XAP_UnixFontXLFD(void);
+	XAP_UnixFontXLFD(const char * xlfd);
+	XAP_UnixFontXLFD(XAP_UnixFontXLFD & copy);
 	
-	~AP_UnixFontXLFD(void);
+	~XAP_UnixFontXLFD(void);
 
 	// pass and receive full XLFDs to set/get contents
 	void				setXLFD(const char * xlfd);
@@ -117,4 +117,4 @@ protected:
 		
 };
 
-#endif /* AP_UNIXFONTXLFD_H */
+#endif /* XAP_UNIXFONTXLFD_H */

@@ -70,7 +70,7 @@ UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 	
 	UT_uint32 count = toolbar->getApp()->getFontManager()->getCount();
 	
-	AP_UnixFont ** list = toolbar->getApp()->getFontManager()->getAllFonts();
+	XAP_UnixFont ** list = toolbar->getApp()->getFontManager()->getAllFonts();
 	UT_ASSERT(list);
 
 	m_vecContents.clear();

@@ -30,7 +30,7 @@
 /*
   This class is much like the UnixGraphics class in
   abi/src/wp/gr/unix/gr_UnixGraphics.h.  Why?  Because it's
-  a light wrapper around the cross-application AP_UnixFont
+  a light wrapper around the cross-application XAP_UnixFont
   class, exposing appropriate methods to the type of GC
   that needs access to the font resource (which itself
   handles keeping X fonts in sync with files on the local
@@ -38,11 +38,11 @@
 
   It's not pretty, and these wrappers should probably go
   away if someone gets around to making GR_Font basically
-  AP_UnixFont, but at a cross platform class where there
+  XAP_UnixFont, but at a cross platform class where there
   is no Windows implementation.
 */
 
-PSFont::PSFont(AP_UnixFont * pFont, UT_uint32 size)
+PSFont::PSFont(XAP_UnixFont * pFont, UT_uint32 size)
 {
 	UT_ASSERT(pFont);
   
@@ -51,7 +51,7 @@ PSFont::PSFont(AP_UnixFont * pFont, UT_uint32 size)
 	m_index = 0;
 }
 
-AP_UnixFont * PSFont::getUnixFont(void)
+XAP_UnixFont * PSFont::getUnixFont(void)
 {
 	UT_ASSERT(m_hFont);
 	return m_hFont;

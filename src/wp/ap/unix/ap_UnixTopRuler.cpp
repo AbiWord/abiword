@@ -121,8 +121,8 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 
 	DELETEP(m_pG);	
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
-	AP_UnixFontManager * fontManager = app->getFontManager();
-	m_pG = new GR_UNIXGraphics(m_wTopRuler->window, fontManager);
+	XAP_UnixFontManager * fontManager = app->getFontManager();
+	m_pG = new GR_UnixGraphics(m_wTopRuler->window, fontManager);
 	UT_ASSERT(m_pG);
 }
 

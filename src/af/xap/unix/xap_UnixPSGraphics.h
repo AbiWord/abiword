@@ -42,7 +42,7 @@ public:
 	PS_Graphics(const char * szFilename,
 				const char * szTitle,
 				const char * szSoftwareNameAndVersion,
-				AP_UnixFontManager * fontManager,
+				XAP_UnixFontManager * fontManager,
 				UT_Bool		 bIsFile);
 	virtual ~PS_Graphics();
 
@@ -120,7 +120,7 @@ protected:
 	UT_Bool			m_bIsFile;
 	UT_sint32		m_iLineWidth;
 
-	AP_UnixFontManager *	m_fm;
+	XAP_UnixFontManager *	m_fm;
 	
 };
 

@@ -45,12 +45,14 @@
 
 #else
 
+// TODO  some of these are misnamed, because the actual classes are in XAP
+// TODO  now instead of AP.  fix the classes and this file
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	AP_UnixDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		AP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	AP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			AP_UnixDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	AP_UnixDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FONT,			AP_UnixDialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)

@@ -47,7 +47,7 @@
 PS_Graphics::PS_Graphics(const char * szFilename,
 						 const char * szTitle,
 						 const char * szSoftwareNameAndVersion,
-						 AP_UnixFontManager * fontManager,						 
+						 XAP_UnixFontManager * fontManager,						 
 						 UT_Bool	  bIsFile)
 {
 	UT_ASSERT(szFilename && *szFilename);
@@ -209,49 +209,49 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontWeight);
 	UT_ASSERT(pszFontSize);
 	
-	// convert styles to AP_UnixFont:: formats
-	AP_UnixFont::style s;
+	// convert styles to XAP_UnixFont:: formats
+	XAP_UnixFont::style s;
 
 	// this is kind of sloppy
 	if (!UT_stricmp(pszFontStyle, "normal") &&
 		!UT_stricmp(pszFontWeight, "normal"))
 	{
-		s = AP_UnixFont::STYLE_NORMAL;
+		s = XAP_UnixFont::STYLE_NORMAL;
 	}
 	else if (!UT_stricmp(pszFontStyle, "normal") &&
 			 !UT_stricmp(pszFontWeight, "bold"))
 	{
-		s = AP_UnixFont::STYLE_BOLD;
+		s = XAP_UnixFont::STYLE_BOLD;
 	}
 	else if (!UT_stricmp(pszFontStyle, "italic") &&
 			 !UT_stricmp(pszFontWeight, "normal"))
 	{
-		s = AP_UnixFont::STYLE_ITALIC;
+		s = XAP_UnixFont::STYLE_ITALIC;
 	}
 	else if (!UT_stricmp(pszFontStyle, "italic") &&
 			 !UT_stricmp(pszFontWeight, "bold"))
 	{
-		s = AP_UnixFont::STYLE_BOLD_ITALIC;
+		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 	}
 	else
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	// Request the appropriate AP_UnixFont::, and bury it in an
+	// Request the appropriate XAP_UnixFont::, and bury it in an
 	// instance of a UnixFont:: with the correct size.
-	AP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
-	AP_UnixFont * item = NULL;
+	XAP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
+	XAP_UnixFont * item = NULL;
 	if (unixfont)
 	{
 		// make a copy
-		item = new AP_UnixFont(*unixfont);
+		item = new XAP_UnixFont(*unixfont);
 	}
 	else
 	{
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
-		item = new AP_UnixFont(*m_fm->getFont("Times New Roman", s));
+		item = new XAP_UnixFont(*m_fm->getFont("Times New Roman", s));
 	}
 	
 	PSFont * pFont = new PSFont(item, convertDimension(pszFontSize));
@@ -601,7 +601,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 		// Instead of including the resources, we actually splat the fonts
 		// into the document.  This looks really slow... perhaps buffer line
 		// by line or in larger chunks the font data.
-		AP_UnixFont * unixfont = psf->getUnixFont();
+		XAP_UnixFont * unixfont = psf->getUnixFont();
 		unixfont->openPFA();
 		char ch = 0;
 		while ((ch = unixfont->getPFAChar()) != EOF)

@@ -33,9 +33,9 @@
 class PSFont : public GR_Font
 {
 public:
-	PSFont(AP_UnixFont * hFont, UT_uint32 size);
+	PSFont(XAP_UnixFont * hFont, UT_uint32 size);
 
-	AP_UnixFont * 		getUnixFont(void);
+	XAP_UnixFont * 		getUnixFont(void);
 	UT_uint32			getSize(void) { return m_pointSize; };
 	void				setIndex(UT_uint32 ndx) { m_index = ndx; }
 	UT_uint32			getIndex(void) { return m_index; };	
@@ -44,7 +44,7 @@ public:
 	// perhaps request raw data from PSFont?
  
 protected:
-	AP_UnixFont * 		m_hFont;
+	XAP_UnixFont * 		m_hFont;
 	UT_uint32			m_pointSize;
 	UT_uint32			m_index;
 };

@@ -36,17 +36,17 @@
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
 
-AP_UnixFontManager::AP_UnixFontManager(void) : m_fontHash(256)
+XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
 {
 }
 
-AP_UnixFontManager::~AP_UnixFontManager(void)
+XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
 	UT_VECTOR_PURGEALL(char *, m_searchPaths);
-	UT_HASH_PURGEDATA(AP_UnixFont *, m_fontHash);
+	UT_HASH_PURGEDATA(XAP_UnixFont *, m_fontHash);
 }
 
-UT_Bool AP_UnixFontManager::setFontPath(const char * searchpath)
+UT_Bool XAP_UnixFontManager::setFontPath(const char * searchpath)
 {
 	gchar ** table = g_strsplit(searchpath, ";", 0);
 
@@ -59,7 +59,7 @@ UT_Bool AP_UnixFontManager::setFontPath(const char * searchpath)
 	return UT_TRUE;
 }
 
-UT_Bool AP_UnixFontManager::scavengeFonts(void)
+UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 {
 	UT_uint32 i = 0;
 	UT_uint32 count = m_searchPaths.getItemCount();
@@ -201,7 +201,7 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 
 	// for the above reason (speed) we don't do this now
 #if 0	
-	AP_UnixFont ** allfonts = getAllFonts();
+	XAP_UnixFont ** allfonts = getAllFonts();
 	for (UT_uint32 k = 0; k < getCount(); k++)
 	{
 		// if any of these fails, the user will know about it
@@ -214,16 +214,16 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 	return UT_TRUE;
 }
 
-UT_uint32 AP_UnixFontManager::getCount(void)
+UT_uint32 XAP_UnixFontManager::getCount(void)
 {
 	return (UT_uint32) m_fontHash.getEntryCount();
 }
 
-AP_UnixFont ** AP_UnixFontManager::getAllFonts(void)
+XAP_UnixFont ** XAP_UnixFontManager::getAllFonts(void)
 {
 	UT_uint32 count = getCount();
 	
-	AP_UnixFont ** table = new AP_UnixFont * [count];
+	XAP_UnixFont ** table = new XAP_UnixFont * [count];
 
 	UT_ASSERT(table);
 
@@ -233,13 +233,13 @@ AP_UnixFont ** AP_UnixFontManager::getAllFonts(void)
 		entry = m_fontHash.getNthEntry(i);
 		UT_ASSERT(entry && entry->pData);
 		
-		table[i] = (AP_UnixFont *) entry->pData;
+		table[i] = (XAP_UnixFont *) entry->pData;
 	}
 
 	return table;
 }
 
-AP_UnixFont * AP_UnixFontManager::getDefaultFont(void)
+XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(void)
 {
 	// this function (perhaps incorrectly) always assumes
 	// it will be able to find this font on the display.
@@ -247,18 +247,18 @@ AP_UnixFont * AP_UnixFontManager::getDefaultFont(void)
 	// gtk itself uses it all over (and it ships with every
 	// X11R6 I can think of)
 
-	AP_UnixFont * f = new AP_UnixFont();
+	XAP_UnixFont * f = new XAP_UnixFont();
 
 	// do some manual behind-the-back construction
 	f->setName("Default");
-	f->setStyle(AP_UnixFont::STYLE_NORMAL);
+	f->setStyle(XAP_UnixFont::STYLE_NORMAL);
 	f->setXLFD("-*-helvetica-medium-r-normal--0-0-*-*-p-56-iso8859-1");
 
 	return f;
 }
 
-AP_UnixFont * AP_UnixFontManager::getFont(const char * fontname,
-										  AP_UnixFont::style s)
+XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
+											XAP_UnixFont::style s)
 {
 	// We use a static buffer because this function gets called a lot.
 	// Doing an allocation is really slow on many machines.
@@ -276,14 +276,14 @@ AP_UnixFont * AP_UnixFontManager::getFont(const char * fontname,
 
 	UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
-	return (entry && entry->pData) ? ((AP_UnixFont *) entry->pData) : NULL;
+	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : NULL;
 }
 
 /*
   If you don't like C-style strings, this function will make you cry.
 */
-void AP_UnixFontManager::_allocateThisFont(const char * line,
-										   const char * workingdir)
+void XAP_UnixFontManager::_allocateThisFont(const char * line,
+											const char * workingdir)
 {
 	// TODO (this one's easy): Make this function use the xap_UnixFontXLFD
 	// TODO (this one's easy): class!  It'll save lots of work.
@@ -310,7 +310,7 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	char * fontfile = strtok(linedup, " ");
 	if (!fontfile)
 	{
-		UT_DEBUGMSG(("AP_UnixFontManager::_allocateThisFont() - missing font "
+		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - missing font "
 					 "file name at first position in line.\n"));
 		FREEP(linedup);
 		return;
@@ -327,7 +327,7 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	char * xlfd = strtok(NULL, "\n");
 	if (!xlfd)
 	{
-		UT_DEBUGMSG(("AP_UnixFontManager::_allocateThisFont() - missing XLFD "
+		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - missing XLFD "
 					 "file name at second position in line.\n"));
 		FREEP(linedup);
 		return;
@@ -350,28 +350,28 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	char * slant = strtok(NULL, "-");
 	UT_ASSERT(slant);
 
-	AP_UnixFont::style s = AP_UnixFont::STYLE_NORMAL;
+	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 	
 	// sort from most common down
 	if (!UT_stricmp(weight, "regular") &&
 		!UT_stricmp(slant, "r"))
 	{
-		s = AP_UnixFont::STYLE_NORMAL;
+		s = XAP_UnixFont::STYLE_NORMAL;
 	}
 	else if (!UT_stricmp(weight, "bold") &&
 			!UT_stricmp(slant, "r"))
 	{
-		s = AP_UnixFont::STYLE_BOLD;
+		s = XAP_UnixFont::STYLE_BOLD;
 	}
 	else if (!UT_stricmp(weight, "regular") &&
 			!UT_stricmp(slant, "i"))
 	{
-		s = AP_UnixFont::STYLE_ITALIC;
+		s = XAP_UnixFont::STYLE_ITALIC;
 	}
 	else if (!UT_stricmp(weight, "bold") &&
 			!UT_stricmp(slant, "i"))
 	{
-		s = AP_UnixFont::STYLE_BOLD_ITALIC;
+		s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 	}
 	FREEP(ihatexlfds);
 	
@@ -379,7 +379,7 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	char * dot = strrchr(fontfile, '.');
 	if (!dot)
 	{
-		UT_DEBUGMSG(("AP_UnixFontManager::_allocateThisFont() - can't guess "
+		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - can't guess "
 					 "at font metrics file from font file name.\n"));
 		FREEP(linedup);
 		return;
@@ -397,7 +397,7 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	strcat(metricfile, ".afm");
 
 	// build a font and load it up
-	AP_UnixFont * font = new AP_UnixFont;
+	XAP_UnixFont * font = new XAP_UnixFont;
 	UT_ASSERT(font);
 	if (font->openFileAs((const char *) fontfile,
 						 (const char *) metricfile,
@@ -418,7 +418,7 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	FREEP(linedup);
 }
 	  
-void AP_UnixFontManager::_addFont(AP_UnixFont * font)
+void XAP_UnixFontManager::_addFont(XAP_UnixFont * font)
 {
 	// we index fonts by a combined "name" and "style"
 

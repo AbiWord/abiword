@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXFONT_H
-#define AP_UNIXFONT_H
+#ifndef XAP_UNIXFONT_H
+#define XAP_UNIXFONT_H
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -27,13 +27,13 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 
+#include "gr_Graphics.h"
+
 #include "xap_UnixPSParseAFM.h"
-
-/*****************************************************************/
-
-class AP_UnixFont
+  
+class XAP_UnixFont
 {
-public:
+ public:
 
 	typedef enum
 	{
@@ -45,20 +45,20 @@ public:
 	} style;
 
 	
-	AP_UnixFont(void);
-	AP_UnixFont(AP_UnixFont & copy);
+	XAP_UnixFont(void);
+	XAP_UnixFont(XAP_UnixFont & copy);
 	
-	~AP_UnixFont(void);
+	~XAP_UnixFont(void);
 
 	UT_Bool 				openFileAs(const char * fontfile,
 									   const char * metricfile,
 									   const char * xlfd,
-									   AP_UnixFont::style s);
+									   XAP_UnixFont::style s);
 	void					setName(const char * name);
 	const char * 			getName(void);
 
-	void					setStyle(AP_UnixFont::style s);
-	AP_UnixFont::style		getStyle(void);
+	void					setStyle(XAP_UnixFont::style s);
+	XAP_UnixFont::style		getStyle(void);
 
 	const char * 			getFontfile(void);
 	const char * 			getMetricfile(void);
@@ -90,7 +90,7 @@ protected:
 	UT_Vector				m_allocFonts;
 	
 	char * 					m_name;
-	AP_UnixFont::style		m_style;
+	XAP_UnixFont::style		m_style;
 	char * 					m_xlfd;
 	FontInfo *				m_metricsData;
 
@@ -100,4 +100,30 @@ protected:
 	FILE *	 				m_PFAFile;
 };
 
-#endif /* AP_UNIXFONT_H */
+/*****************************************************************/
+
+/*
+  We derive our handle from GR_Font so we can be passed around the GR
+  contexts as a native Unix font, much like a Windows font handle.
+  GR_Font is a completely virtual class with no data or accessors of
+  its own.
+*/
+
+class XAP_UnixFontHandle : public GR_Font
+{
+ public:
+
+	XAP_UnixFontHandle();
+	XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size);	
+	XAP_UnixFontHandle(XAP_UnixFontHandle & copy);
+	~XAP_UnixFontHandle();
+
+	GdkFont * 		getGdkFont(void);
+	UT_uint32		getSize(void);
+	
+	// data items
+	XAP_UnixFont *				m_font;
+	UT_uint32					m_size;
+};
+
+#endif /* XAP_UNIXFONT_H */

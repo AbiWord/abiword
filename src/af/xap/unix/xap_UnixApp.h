@@ -51,13 +51,13 @@ public:
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
 	virtual XAP_Prefs *		getPrefs(void) const = 0;
 	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
-	AP_UnixFontManager *					getFontManager(void);
+	XAP_UnixFontManager *					getFontManager(void);
 
 protected:
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
-	AP_UnixFontManager *			m_fontManager;
+	XAP_UnixFontManager *			m_fontManager;
 	
 	/* TODO put anything we need here.  for example, our
 	** TODO connection to the XServer.

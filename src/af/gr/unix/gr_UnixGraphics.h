@@ -1,4 +1,4 @@
-/* AbiWord
+/* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -36,31 +36,36 @@
 
 class UT_ByteBuf;
 
+// this has now been REPLACED by XAP_UnixFontg
+#if 0
 class GR_UnixFont : public GR_Font
 {
 public:
-  GR_UnixFont(AP_UnixFont * hFont, UT_uint32 size);
+  GR_UnixFont(XAP_UnixFont * hFont, UT_uint32 size);
   ~GR_UnixFont(void);
   
   // this shouldn't need to be called to draw things,
   // since it has no idea of "size"; it's just
   // a face that the UnixFontManager:: can verify
   // it can find if called upon to do so.
-  AP_UnixFont * 		getUnixFont(void);
+  XAP_UnixFont * 		getUnixFont(void);
 
   // get the proper gdk font out of here
   GdkFont * 			getGdkFont(void);
 
+  UT_uint32				getPixelSize(void) { return m_pixelSize; };
+		  
 protected:
-  AP_UnixFont * 		m_hFont;
+  XAP_UnixFont * 		m_hFont;
   UT_uint32				m_pixelSize;
 };
+#endif
 
-class GR_UNIXGraphics : public GR_Graphics
+class GR_UnixGraphics : public GR_Graphics
 {
 public:
-  GR_UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager);
-  ~GR_UNIXGraphics();
+  GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager);
+  ~GR_UnixGraphics();
 
   virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			 int iLength, UT_sint32 xoff, UT_sint32 yoff);
@@ -109,12 +114,17 @@ public:
   virtual GR_Graphics::Cursor getCursor(void) const;
   
 protected:
-  AP_UnixFontManager * 	m_pFontManager;
+  XAP_UnixFontManager * 	m_pFontManager;
   GdkGC*       			m_pGC;
   GdkGC*        		m_pXORGC;
   GdkWindow*    		m_pWin;
-  GR_UnixFont*			m_pFont;
-  GR_UnixFont*			m_pFontGUI;
+
+  // our currently requested font by handle
+  XAP_UnixFontHandle *	m_pFont;
+
+  // our "OEM" system font, like a 10 point Helvetica for GUI items
+  XAP_UnixFontHandle * 	m_pFontGUI;
+  
   GdkColormap*  		m_pColormap;
   int					m_aCharWidths[256];
   int          			m_iWindowHeight, m_iWindowWidth;

@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXFONTMANAGER_H
-#define AP_UNIXFONTMANAGER_H
+#ifndef XAP_UNIXFONTMANAGER_H
+#define XAP_UNIXFONTMANAGER_H
 
 //////////////////////////////////////////////////////////////////
 // TODO rename this class with XAP_ prefix
@@ -36,32 +36,32 @@
 
 /*****************************************************************/
 
-class AP_UnixFontManager
+class XAP_UnixFontManager
 {
 public:
-	AP_UnixFontManager(void);
-	~AP_UnixFontManager(void);
+	XAP_UnixFontManager(void);
+	~XAP_UnixFontManager(void);
 
 	UT_Bool					setFontPath(const char * searchpath);
 	UT_Bool					scavengeFonts(void);
 
 	UT_uint32				getCount(void);
 
-	AP_UnixFont **			getAllFonts(void);
-	AP_UnixFont *			getDefaultFont(void);
-	AP_UnixFont * 			getFont(const char * fontname,
-									AP_UnixFont::style s);
+	XAP_UnixFont **			getAllFonts(void);
+	XAP_UnixFont *			getDefaultFont(void);
+	XAP_UnixFont *			getFont(const char * fontname,
+									XAP_UnixFont::style s);
 		
 protected:
 
 	void					_allocateThisFont(const char * line,
 											  const char * workingdir);
-	void					_addFont(AP_UnixFont * font);
+	void					_addFont(XAP_UnixFont * font);
 
 	// perhaps this should be a hash to avoid duplicates?
 	UT_Vector				m_searchPaths;
+
 	UT_HashTable 			m_fontHash;
-	
 };
 
-#endif /* AP_UNIXFONTMANAGER_H */
+#endif /* XAP_UNIXFONTMANAGER_H */

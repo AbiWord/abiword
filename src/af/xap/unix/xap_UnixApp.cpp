@@ -74,7 +74,7 @@ UT_Bool XAP_UnixApp::initialize(void)
 
 	// create a font manager for our app to use
 
-	m_fontManager = new AP_UnixFontManager();
+	m_fontManager = new XAP_UnixFontManager();
 
 	// find all the fonts in the appropriate places
 
@@ -102,7 +102,7 @@ UT_Bool XAP_UnixApp::initialize(void)
 
 	
 #ifdef DEBUG	
-	AP_UnixFont ** fonts = m_fontManager->getAllFonts();
+	XAP_UnixFont ** fonts = m_fontManager->getAllFonts();
 	UT_DEBUGMSG(("Found Fonts:"));
 	for (UT_uint32 i = 0; i < m_fontManager->getCount(); i++)
 	{
@@ -152,7 +152,7 @@ AP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory(void)
 	return &m_controlFactory;
 }
 
-AP_UnixFontManager * XAP_UnixApp::getFontManager(void)
+XAP_UnixFontManager * XAP_UnixApp::getFontManager(void)
 {
 	return m_fontManager;
 }

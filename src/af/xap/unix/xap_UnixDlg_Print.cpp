@@ -494,7 +494,7 @@ void AP_UnixDialog_Print::_getGraphics(void)
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
 	UT_ASSERT(unixapp);
 
-	AP_UnixFontManager * fontmgr = unixapp->getFontManager();
+	XAP_UnixFontManager * fontmgr = unixapp->getFontManager();
 	UT_ASSERT(fontmgr);
 	
 	if (m_bDoPrintToFile)

@@ -21,21 +21,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-
-/*
-  I'm not sure if this is a bug in FreeBSD 3.1, or the way we're
-  using stat.h, but FreeBSD 3.1's sys/stat.h does NOT include
-  sys/types.h, which leads to a whole bunch of undefined types.
-
-  Older versions of FreeBSD (2.2.5-RELEASE) also do not include
-  sys/types.h inside sys/stat.h, but seem to find the types anyway.
-
-  Linux's sys/stat.h explicitly includes sys/types.h
-*/
-#ifdef FREEBSD
-#include <sys/types.h>
-#endif
-
 #include <sys/stat.h>
 
 #include "ut_string.h"
@@ -51,7 +36,47 @@
 
 #define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_fontfile); UT_ASSERT(m_metricfile); } while (0)
 
-AP_UnixFont::AP_UnixFont(void)
+/*******************************************************************/
+
+XAP_UnixFontHandle::XAP_UnixFontHandle()
+{
+	m_font = NULL;
+	m_size = 0;
+}
+
+XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFont * font, UT_uint32 size)
+{
+	m_font = font;
+	m_size = size;
+}
+
+XAP_UnixFontHandle::XAP_UnixFontHandle(XAP_UnixFontHandle & copy)
+{
+	m_font = copy.m_font;
+	m_size = copy.m_size;
+}
+
+XAP_UnixFontHandle::~XAP_UnixFontHandle()
+{
+}
+
+GdkFont * XAP_UnixFontHandle::getGdkFont(void)
+{
+	if (m_font)
+		return m_font->getGdkFont(m_size);
+	else
+		return NULL;
+}
+
+UT_uint32 XAP_UnixFontHandle::getSize(void)
+{
+	return m_size;
+}
+
+
+/*******************************************************************/		
+
+XAP_UnixFont::XAP_UnixFont(void)
 {
 	m_name = NULL;
 	m_style = STYLE_LAST;
@@ -67,7 +92,7 @@ AP_UnixFont::AP_UnixFont(void)
 	m_fontKey = NULL;
 }
 
-AP_UnixFont::AP_UnixFont(AP_UnixFont & copy)
+XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 {
 	m_name = NULL;
 	m_style = STYLE_LAST;
@@ -88,7 +113,7 @@ AP_UnixFont::AP_UnixFont(AP_UnixFont & copy)
 			   copy.getStyle());
 }
 
-AP_UnixFont::~AP_UnixFont(void)
+XAP_UnixFont::~XAP_UnixFont(void)
 {
 	FREEP(m_name);
 	
@@ -104,10 +129,10 @@ AP_UnixFont::~AP_UnixFont(void)
 	// leave GdkFont * alone
 }
 
-UT_Bool AP_UnixFont::openFileAs(const char * fontfile,
+UT_Bool XAP_UnixFont::openFileAs(const char * fontfile,
 								const char * metricfile,
 								const char * xlfd,
-								AP_UnixFont::style s)
+								XAP_UnixFont::style s)
 {
 	// test all our data to make sure we can continue
 	if (!fontfile)
@@ -163,55 +188,55 @@ UT_Bool AP_UnixFont::openFileAs(const char * fontfile,
 	return UT_TRUE;
 }
 
-void AP_UnixFont::setName(const char * name)
+void XAP_UnixFont::setName(const char * name)
 {
 	FREEP(m_name);
 	UT_cloneString(m_name, name);
 }
 
-const char * AP_UnixFont::getName(void)
+const char * XAP_UnixFont::getName(void)
 {
 	ASSERT_MEMBERS;
 	return m_name;
 }
 
-void AP_UnixFont::setStyle(AP_UnixFont::style s)
+void XAP_UnixFont::setStyle(XAP_UnixFont::style s)
 {
 	m_style = s;
 }
 
-AP_UnixFont::style AP_UnixFont::getStyle(void)
+XAP_UnixFont::style XAP_UnixFont::getStyle(void)
 {
 	ASSERT_MEMBERS;
 	return m_style;
 }
 
-const char * AP_UnixFont::getFontfile(void)
+const char * XAP_UnixFont::getFontfile(void)
 {
 	ASSERT_MEMBERS;
 	
 	return m_fontfile;
 }
 
-const char * AP_UnixFont::getMetricfile(void)
+const char * XAP_UnixFont::getMetricfile(void)
 {
 	ASSERT_MEMBERS;
 	return m_metricfile;
 }
 
-void AP_UnixFont::setXLFD(const char * xlfd)
+void XAP_UnixFont::setXLFD(const char * xlfd)
 {
 	FREEP(m_xlfd);
 	UT_cloneString(m_xlfd, xlfd);
 }
 
-const char * AP_UnixFont::getXLFD(void)
+const char * XAP_UnixFont::getXLFD(void)
 {
 	ASSERT_MEMBERS;
 	return m_xlfd;
 }
 
-FontInfo * AP_UnixFont::getMetricsData(void)
+FontInfo * XAP_UnixFont::getMetricsData(void)
 {
 	if (m_metricsData)
 		return m_metricsData;
@@ -269,13 +294,12 @@ FontInfo * AP_UnixFont::getMetricsData(void)
 		break;
 	}
 
-	fclose(fp);
 	UT_ASSERT(m_metricsData);
 	UT_ASSERT(m_metricsData->gfi);
 	return m_metricsData;
 }
 
-UT_Bool AP_UnixFont::openPFA(void)
+UT_Bool XAP_UnixFont::openPFA(void)
 {
 	ASSERT_MEMBERS;
 	
@@ -293,7 +317,7 @@ UT_Bool AP_UnixFont::openPFA(void)
 	return UT_TRUE;
 }
 
-UT_Bool AP_UnixFont::closePFA(void)
+UT_Bool XAP_UnixFont::closePFA(void)
 {
 	if (m_PFAFile)
 	{
@@ -303,18 +327,18 @@ UT_Bool AP_UnixFont::closePFA(void)
 	return UT_FALSE;
 }
 
-char AP_UnixFont::getPFAChar(void)
+char XAP_UnixFont::getPFAChar(void)
 {
 	return fgetc(m_PFAFile);
 }
 
-const char * AP_UnixFont::getFontKey(void)
+const char * XAP_UnixFont::getFontKey(void)
 {
 	ASSERT_MEMBERS;
 	return m_fontKey;
 }
 
-GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pixelsize)
+GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 {
 	// this might return NULL, but that means a font at a certain
 	// size couldn't be found
@@ -338,7 +362,7 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 		return NULL;
 
 	// create a real object around that string
-	AP_UnixFontXLFD myXLFD(m_xlfd);
+	XAP_UnixFontXLFD myXLFD(m_xlfd);
 
 	// Must set a pixel size, or a point size, but we're getting
 	// automunged pixel sizes appropriate for our resolution from
@@ -378,7 +402,7 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	return gdkfont;
 }
 
-void AP_UnixFont::_makeFontKey(void)
+void XAP_UnixFont::_makeFontKey(void)
 {
 	ASSERT_MEMBERS;
 
