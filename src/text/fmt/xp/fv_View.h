@@ -616,6 +616,8 @@ protected:
 
 	UT_uint32           m_iViewRevision;
 
+private:
+	bool				m_bWarnedThatRestartNeeded;
 };
 
 #endif /* FV_VIEW_H */
