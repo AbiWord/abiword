@@ -103,7 +103,7 @@ protected:
 							UT_uint32 height);
 	void			   _drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint32 iColumns);
 	void			_convertToPreferredUnits(XAP_Frame * pFrame,const
-	char *sz, const XML_Char *pRet);
+	char *sz, XML_Char * pRet);
 	AP_Dialog_Columns::tAnswer m_answer;
 	AP_Columns_preview *	   m_pColumnsPreview;
 	AP_Columns_preview_drawer  m_previewDrawer;

@@ -1190,7 +1190,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
     if (have_display) {
 #ifndef HAVE_GNOME
-      gtk_init (&XArgs.m_argc,&XArgs.m_argv);
+      gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 	  Args.parsePoptOpts();
 #else
 	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, 

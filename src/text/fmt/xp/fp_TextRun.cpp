@@ -244,7 +244,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 #if !defined(WITH_PANGO)
 	GR_Font * pFont;
 
-	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
 	if (_getFont() != pFont)
 	{
 		_setRecalcWidth(true);

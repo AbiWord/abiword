@@ -58,9 +58,9 @@ void fp_FmtMarkRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-	GR_Font* pFont = pLayout->findFont(pSpanAP,
+	GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,
 									   pBlockAP,
-									   pSectionAP);
+									   pSectionAP));
 
 	_setAscent(getGR()->getFontAscent(pFont));
 	_setDescent(getGR()->getFontDescent(pFont));

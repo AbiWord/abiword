@@ -492,7 +492,7 @@ public:
 
 	fl_TabStop();
 
-	UT_sint32		getPosition() { return iPosition;}
+	UT_sint32		getPosition() const { return iPosition;}
 	void			setPosition(UT_sint32 value) { iPosition = value;}
 	eTabType		getType() { return iType;}
 	void			setType(eTabType type) { iType = type;}

@@ -222,8 +222,8 @@ fl_TabStop::fl_TabStop()
 
 static int compare_tabs(const void* p1, const void* p2)
 {
-	fl_TabStop** ppTab1 = reinterpret_cast<fl_TabStop**>(p1);
-	fl_TabStop** ppTab2 = reinterpret_cast<fl_TabStop**>(p2);
+	const fl_TabStop * const * ppTab1 = reinterpret_cast<const fl_TabStop * const *>(p1);
+	const fl_TabStop * const * ppTab2 = reinterpret_cast<const fl_TabStop * const *>(p2);
 
 	if ((*ppTab1)->getPosition() < (*ppTab2)->getPosition())
 	{
