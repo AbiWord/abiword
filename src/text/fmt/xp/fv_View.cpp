@@ -1165,48 +1165,36 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	if (lineHeight == 0)
 		lineHeight = 20; // TODO
 	
+	UT_sint32 yoff = m_yScrollOffset, xoff = m_xScrollOffset;
+	
 	switch(iScrollCmd)
 	{
 	case DG_SCROLLCMD_PAGEDOWN:
-		if (m_yScrollOffset + m_iWindowHeight - 20 <= docHeight)
-		{
-			sendScrollEvent(m_xScrollOffset,
-							m_yScrollOffset + m_iWindowHeight - 20);
-		}
+		yoff += m_iWindowHeight - 20;
 		break;
 	case DG_SCROLLCMD_PAGEUP:
-		if (m_yScrollOffset - m_iWindowHeight + 20 >= 0)
-		{
-			sendScrollEvent(m_xScrollOffset,
-							m_yScrollOffset - m_iWindowHeight + 20);
-		}
+		yoff -= m_iWindowHeight - 20;
 		break;
 	case DG_SCROLLCMD_PAGELEFT:
-		if (m_xScrollOffset - m_iWindowWidth >= 0)
-			sendScrollEvent(m_xScrollOffset - m_iWindowWidth, m_yScrollOffset);
+		xoff -= m_iWindowWidth;
 		break;
 	case DG_SCROLLCMD_PAGERIGHT:
-		if (m_xScrollOffset + m_iWindowWidth <= docWidth)
-			sendScrollEvent(m_xScrollOffset + m_iWindowWidth, m_yScrollOffset);
+		xoff += m_iWindowWidth;
 		break;
 	case DG_SCROLLCMD_LINEDOWN:
-		if (m_yScrollOffset + lineHeight <= docHeight)
-			sendScrollEvent(m_xScrollOffset, m_yScrollOffset + lineHeight);
+		yoff += lineHeight;
 		break;
 	case DG_SCROLLCMD_LINEUP:
-		if (m_yScrollOffset - lineHeight >= 0)
-			sendScrollEvent(m_xScrollOffset, m_yScrollOffset - lineHeight); 
+		yoff -= lineHeight;
 		break;
 	case DG_SCROLLCMD_LINELEFT:
-		if (m_xScrollOffset - lineHeight >= 0)
-			sendScrollEvent(m_xScrollOffset - lineHeight, m_yScrollOffset);
+		xoff -= lineHeight;
 		break;
 	case DG_SCROLLCMD_LINERIGHT:
-		if (m_xScrollOffset + lineHeight <= docWidth)
-			sendScrollEvent(m_xScrollOffset + lineHeight, m_yScrollOffset);
+		xoff += lineHeight;
 		break;
 	case DG_SCROLLCMD_TOTOP:
-		sendScrollEvent(m_xScrollOffset, 0);
+		yoff = 0;
 		break;
 	case DG_SCROLLCMD_TOBOTTOM:
 		fp_Page* pPage = m_pLayout->getFirstPage();
@@ -1216,9 +1204,28 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 			iDocHeight += pPage->getHeight();
 			pPage = pPage->getNext();
 		}
-		sendScrollEvent(m_xScrollOffset, iDocHeight);
+		yoff = iDocHeight;
 		break;
 	}
+
+	// try and figure out of we really need to scroll
+	if (yoff < 0)
+	{
+		if (m_yScrollOffset == 0) // already at top - forget it
+			return;
+		
+		yoff = 0;
+	}
+
+	if (yoff > docHeight)
+	{
+		if (m_yScrollOffset == docHeight) // all ready at bottom
+			return;
+		else
+			yoff = docHeight;
+	}
+				
+	sendScrollEvent(xoff, yoff);
 }
 
 //void FV_View::addScrollListener(void (*pfn)(FV_View*,UT_sint32, UT_sint32))
