@@ -48,6 +48,8 @@ public:
 								UT_cloneString(m_szFinalPathname, pathname);
 							}
 	
+	void				SetFileTypeIndex(UT_sint32 newIndex);
+	
 protected:	
 	DLGHandler				*m_pHandler;
 	XAP_BeOSFrame 			*m_pBeOSFrame;

@@ -55,7 +55,23 @@ DLGHandler::DLGHandler(XAP_BeOSDialog_FileOpenSaveAs *dlg, const char *name)
 }
 
 void DLGHandler::MessageReceived(BMessage *msg) {
-	switch (msg->what) {
+	switch (msg->what) 
+	{
+		case 'styp':
+		{
+		
+		// Called when they change the filetype.
+		
+		int32 index;
+		if( msg->FindInt32("index" , &index) == B_OK)
+		{
+				printf("Filetype changed. = %d\n" , index);
+				m_pDlg->SetFileTypeIndex(index);//m_nFileType = 3;
+		}
+		
+		return;
+		}
+		
 	case 'fopn': {
 		entry_ref ref;
 		msg->FindRef("refs", &ref);
@@ -118,6 +134,11 @@ XAP_BeOSDialog_FileOpenSaveAs::~XAP_BeOSDialog_FileOpenSaveAs(void)
 	m_pHandler = NULL;
 }
 
+void XAP_BeOSDialog_FileOpenSaveAs::SetFileTypeIndex(UT_sint32 newIndex)
+{
+	m_nFileType = m_nTypeList[newIndex];
+}
+
 void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	m_pBeOSFrame = (XAP_BeOSFrame*)pFrame;
@@ -172,6 +193,33 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
        									  true, 			//modal
        									  false);			//hide when done
 			m_pSavePanel->Window()->SetTitle("Save your file");
+			
+			if( m_pSavePanel->Window()->Lock())
+			{
+				// Add our sweet file type selection list to the dialog.
+				// We put it 10 points to the right of the filename.
+			
+				BRect saveTypeRect = m_pSavePanel->Window()->FindView("text view")->Frame();
+				saveTypeRect.left = saveTypeRect.right + 10.0;
+				saveTypeRect.right = saveTypeRect.left + 250.0;
+	
+				BPopUpMenu* pPopup = new BPopUpMenu("typeListMenu");
+				BMenuField* typeList = new BMenuField(saveTypeRect , "typeList" , "Save as Type:" , pPopup , B_FOLLOW_LEFT | B_FOLLOW_BOTTOM , B_WILL_DRAW);
+				typeList->SetDivider( typeList->StringWidth("Save as Type:") + 13);
+				typeList->SetViewColor(m_pSavePanel->Window()->ChildAt(0)->ViewColor());
+				m_pSavePanel->Window()->ChildAt(0)->AddChild(typeList);
+				m_pSavePanel->Window()->Unlock();
+				
+				for(int i = 0; m_szDescriptions[i] != '\0'; i ++)
+				{
+					BMenuItem* newItem = new BMenuItem(m_szDescriptions[i] , new BMessage('styp'));
+					newItem->SetTarget(*messenger);
+					pPopup->AddItem(newItem);
+					
+					if( m_nTypeList[i] == m_nDefaultFileType)
+						newItem->SetMarked(true);
+				}
+			}
 		}
 		
 		if(m_szInitialPathname)
@@ -244,5 +292,6 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_cloneString(m_szFinalPathname, "junk.abw");		
 	m_answer = a_OK;		//vs a_CANCEL 
 */
+
 	return;
 }
