@@ -131,23 +131,23 @@ ap_bs_Mouse MouseTable[] =
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
-//  Button-4, Mouse wheel (Page Up)
-	{_CU _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
-	{_CT _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
-	{_CL _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
-	{_CM _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
-	{_CI _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
-	{_CZ _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
-	{_CF _B4,	{ "scrollPageUp",		"",			"",		"",			"",			""				}},
+//  Button-4, Mouse wheel (3 lines up)... yes, a hack.
+	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CT _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CL _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CM _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CI _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CZ _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
+	{_CF _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
 
-//  Button-5, Mouse wheel (Page Down)
-	{_CU _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
-	{_CT _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
-	{_CL _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
-	{_CM _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
-	{_CI _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
-	{_CZ _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
-	{_CF _B5,	{ "scrollPageDown",		"",			"",		"",			"",			""				}},
+//  Button-5, Mouse wheel (3 lines down)
+	{_CU _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CT _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CL _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CM _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CI _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CZ _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
+	{_CF _B5,	{ "scrollWheelMouseDown",		"scrollWheelMouseDown",			"",		"",			"",			""				}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},

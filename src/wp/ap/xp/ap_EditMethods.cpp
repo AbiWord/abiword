@@ -121,7 +121,9 @@ public:
 	static EV_EditMethod_Fn scrollLineRight;
 	static EV_EditMethod_Fn scrollToTop;
 	static EV_EditMethod_Fn scrollToBottom;
-
+	static EV_EditMethod_Fn scrollWheelMouseDown;
+	static EV_EditMethod_Fn scrollWheelMouseUp;
+	
 	static EV_EditMethod_Fn warpInsPtToXY;
 	static EV_EditMethod_Fn warpInsPtLeft;
 	static EV_EditMethod_Fn warpInsPtRight;
@@ -745,6 +747,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(scrollPageUp),			0,	""),
 	EV_EditMethod(NF(scrollToBottom),		0,	""),
 	EV_EditMethod(NF(scrollToTop),			0,	""),
+	EV_EditMethod(NF(scrollWheelMouseDown),			0,	""),
+	EV_EditMethod(NF(scrollWheelMouseUp),			0,	""),
 	EV_EditMethod(NF(sectColumns1),			0,		""),
 	EV_EditMethod(NF(sectColumns2),			0,		""),
 	EV_EditMethod(NF(sectColumns3),			0,		""),
@@ -956,6 +960,20 @@ Defun1(scrollLineDown)
 Defun1(scrollLineUp)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP);
+
+	return true;
+}
+
+Defun1(scrollWheelMouseDown)
+{
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN, 60);
+
+	return true;
+}
+
+Defun1(scrollWheelMouseUp)
+{
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP, 60);
 
 	return true;
 }
