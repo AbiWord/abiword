@@ -9,6 +9,10 @@
   ; define options to MUI pages (we do this before including Mui.nsh
   ; as some do not work (e.g. MUI_COMPONENTSPAGE_SMALLDESC) if defined
   ; afterwards.
+    ; see bug 710, don't require user to accept license only view it
+    ; so we change the 'I Accept' button to 'Next'
+    !define MUI_LICENSEPAGE_BUTTON "$(^NextBtn)"
+    !define MUI_LICENSEPAGE_TEXT_BOTTOM "$(^ClickNext) - $(^NameDA)"
     ; put the component (what gets installed) description below choices (list with checkboxes)
       !define MUI_COMPONENTSPAGE_SMALLDESC
     ; set default start menu name and where we store this value (for uninstallation)
