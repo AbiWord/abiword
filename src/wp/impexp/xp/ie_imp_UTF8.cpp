@@ -308,8 +308,56 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-	// TODO: Not yet written
-	return(false);
+	bool bSuccess = false;
+	const char *p = szBuf;
+
+	while (p < szBuf + iNumbytes)
+	{
+		int len;
+		
+		if ((*p & 0x80) == 0)				// ASCII
+		{
+			++p;
+			continue;
+		}
+		else if (*p == 0xfe || *p == 0xff)		// BOM markers?  RFC2279 says illegal
+		{
+			//UT_DEBUGMSG(("  BOM?\n"));
+			break;
+		}
+		else if ((*p & 0xfe) == 0xfc)			// lead byte in 6-byte sequence
+			len = 6;
+		else if ((*p & 0xfc) == 0xf8)			// lead byte in 5-byte sequence
+			len = 5;
+		else if ((*p & 0xf8) == 0xf0)			// lead byte in 4-byte sequence
+			len = 4;
+		else if ((*p & 0xf0) == 0xe0)			// lead byte in 3-byte sequence
+			len = 3;
+		else if ((*p & 0xe0) == 0xc0)			// lead byte in 2-byte sequence
+			len = 2;
+		else						// not UTF-8 lead byte
+		{
+			//UT_DEBUGMSG(("  not utf-8 lead byte\n"));
+			return false;
+		}
+	
+		while (--len)
+		{
+			++p;
+			if (p >= szBuf + iNumbytes)
+			{
+				//UT_DEBUGMSG(("  out of data!\n"));
+				break;
+			}
+			if ((*p & 0xc0) == 0x80)
+				bSuccess = true;
+			else
+				return false;
+		}
+		++p;
+	}
+	
+	return bSuccess;
 }
 
 bool IE_Imp_UTF8::RecognizeSuffix(const char * szSuffix)

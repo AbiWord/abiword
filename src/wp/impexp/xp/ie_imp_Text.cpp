@@ -242,15 +242,16 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 bool IE_Imp_Text::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-	// TODO: We give the other guys a chance, since this
-	// TODO: importer is so generic.  Does this seem
-	// TODO: like a sensible strategy?
-	return(false);
+	// We give the other guys a chance, since this
+	// importer is so generic.  
+	return false;
 }
 
 bool IE_Imp_Text::RecognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".txt") == 0);
+	// We give the other guys a chance, since this
+	// importer is so generic.  
+	return false;
 }
 
 UT_Error IE_Imp_Text::StaticConstructor(PD_Document * pDocument,
