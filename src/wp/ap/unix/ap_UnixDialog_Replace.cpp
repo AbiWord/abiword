@@ -179,9 +179,9 @@ void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Replace::event_Find(void)
 {
-	char * findEntryText;
-
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	char * findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	if (strlen(findEntryText) == 0) // do nothing when the find field is empty
+		return;	
 	
 	UT_UCSChar * findString;
 
