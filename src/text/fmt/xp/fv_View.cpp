@@ -7091,7 +7091,11 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		}
 
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
-		pInfo->m_xPaperSize = m_pG->convertDimension("8.5in"); // TODO eliminate this constant
+
+		static char buf[20];
+		snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(fp_PageSize::inch));
+
+		pInfo->m_xPaperSize = m_pG->convertDimension(buf);
 		pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
