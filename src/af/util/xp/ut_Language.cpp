@@ -21,6 +21,7 @@ static lang_entry s_Table[] =
 	{"af-ZA",		NULL, XAP_STRING_ID_LANG_AF_ZA},
 	{"ar-EG",		NULL, XAP_STRING_ID_LANG_AR_EG},
 	{"ar-SA",		NULL, XAP_STRING_ID_LANG_AR_SA},
+	{"as-IN",		NULL, XAP_STRING_ID_LANG_AS_IN},
 	{"ca-ES",               NULL, XAP_STRING_ID_LANG_CA_ES},
 	{"cs-CZ",		NULL, XAP_STRING_ID_LANG_CS_CZ},
 	{"da-DK",		NULL, XAP_STRING_ID_LANG_DA_DK},
