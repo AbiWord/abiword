@@ -3102,7 +3102,6 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	  And, obviously, anything which was not selected, and
 	  is still not selected, should not be touched.
 	*/
-	bool bres;
 	UT_uint32 iNewPoint = getPoint();
 	xxx_UT_DEBUGMSG(("_extSel: iNewPoint %d ioldPoint %d selectionAnchor %d \n",iNewPoint,iOldPoint,m_Selection.getSelectionAnchor()));
 	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint;
@@ -3154,7 +3153,39 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	}
 	m_Selection.setMode(FV_SelectionMode_Single);
 	_setPoint(iNewPoint);
+//
+// Look if we should select the initial cell.
+//
 	_extSel(iOldPoint);
+	if(getSelectionAnchor() < getPoint())
+	{
+		PT_DocPosition posLow = getSelectionAnchor();
+		fp_CellContainer * pLowCell = NULL;
+		fp_CellContainer * pHighCell = NULL;
+		if(isInTable(posLow))
+		{
+			pLowCell = getCellAtPos(posLow);
+			pHighCell =  getCellAtPos(getPoint());
+			if((pLowCell != NULL) && (pLowCell != pHighCell))
+			{
+				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pLowCell->getSectionLayout());
+				PT_DocPosition posCell = pCell->getPosition(true);
+				if(posCell + 1 == posLow)
+				{
+					m_Selection.setSelectionAnchor(posCell-1);
+					_drawBetweenPositions(posCell-1, getPoint());
+				}
+				else if(posCell + 2 == posLow)
+				{
+					m_Selection.setSelectionAnchor(posCell-1);
+					_drawBetweenPositions(posCell, getPoint());
+				}
+//
+// FIXME look to see if we've selected a whole row.
+//
+			}
+		}
+	}
 
 	if (isSelectionEmpty())
 	{
