@@ -1191,23 +1191,16 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 
 	pFirst->addRun(m_pFirstRun);
 
-#if 0
-	// with the fix for reversed loading, our line might not have been
-	// inserted into the vertical container, so we cannot do layout
-	
 	// only do the line layout if this block is not hidden ...
-	FV_View * pView = getView();
-	UT_return_if_fail(pView);
+ 	FV_View * pView = getView();
 
-	bool bShowHidden = pView->getShowPara();
-	FPVisibility eHidden;
-	eHidden  = isHidden();
+	bool bShowHidden = pView && pView->getShowPara();
+	FPVisibility eHidden = isHidden();
 	bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
 		              || eHidden == FP_HIDDEN_REVISION
 		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
 	if(!bHidden)
 		pFirst->layout();
-#endif
 	// Run list should be valid now.
 	_assertRunListIntegrity();
 }
@@ -1323,23 +1316,20 @@ void fl_BlockLayout::updateBackgroundColor(void)
 }
 
 /*!
-  Format paragraph
-  \return 0
-  Formatting a paragraph means splitting the content into lines which
+  Format paragraph: split the content into lines which
   will fit in the container.  */
-int
-fl_BlockLayout::formatLocal(fp_Line * pLineToStartAt)
+void fl_BlockLayout::format()
 {
 	// do not format if we are not on the screen
 #if 0
 	if(!isOnScreen())
 	{
-		return 1;
+		return;
 		UT_DEBUGMSG(("block 0x%08x not on screen\n",this));
 	}
 #endif
 	_assertRunListIntegrity();
-	fp_Run *pRunToStartAt = pLineToStartAt ? pLineToStartAt->getFirstRun() : NULL;
+	fp_Run *pRunToStartAt = NULL;
 	// Remember state of cursor
 	m_bCursorErased = false;
 
@@ -1403,7 +1393,7 @@ fl_BlockLayout::formatLocal(fp_Line * pLineToStartAt)
 		recalculateFields(0);
 
 		// Reformat paragraph
-		m_pBreaker->breakParagraph(this, pLineToStartAt);
+		m_pBreaker->breakParagraph(this, NULL);
 
 		// we have to do this in the breakParagraph rutine
 		//_removeAllEmptyLines();
@@ -1445,7 +1435,7 @@ fl_BlockLayout::formatLocal(fp_Line * pLineToStartAt)
 
 	_assertRunListIntegrity();
 	m_bIsCollapsed = false;
-	return 0;	// TODO return code
+	return;	// TODO return code
 }
 
 void fl_BlockLayout::markAllRunsDirty(void)

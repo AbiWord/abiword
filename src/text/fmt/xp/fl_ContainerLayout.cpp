@@ -238,8 +238,9 @@ fb_LineBreaker * fl_ContainerLayout::getLineBreaker(void)
 fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_ContainerLayout * pPrev, PT_AttrPropIndex indexAP,fl_ContainerType iType)
 {
 	fl_ContainerLayout* pL=NULL;
-	if(iType == FL_CONTAINER_BLOCK)
+	switch (iType)
 	{
+	case FL_CONTAINER_BLOCK:
 		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
 		{
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true);
@@ -267,29 +268,32 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 				if (getFirstLayout()) getFirstLayout()->setPrev(pL); 
 			}
 		}
-	}
-	if(iType == FL_CONTAINER_TABLE)
-	{
+		break;
+	case FL_CONTAINER_TABLE:
 		pL = (fl_ContainerLayout *) new fl_TableLayout(getDocLayout(),sdh, indexAP, this);
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
 //
 // Now put the Physical Container into the vertical container that contains it.
 //
-		fp_TableContainer * pTab = (fp_TableContainer *) static_cast<fl_TableLayout *>(pL)->getLastContainer();
-		static_cast<fl_TableLayout *>(pL)->insertTableContainer((fp_TableContainer *) pTab);
-	}
-	if(iType == FL_CONTAINER_CELL)
-	{
+		{
+			fp_TableContainer * pTab = (fp_TableContainer *) static_cast<fl_TableLayout *>(pL)->getLastContainer();
+			static_cast<fl_TableLayout *>(pL)->insertTableContainer((fp_TableContainer *) pTab);
+		}
+		break;
+	case FL_CONTAINER_CELL:
 		pL = (fl_ContainerLayout *) new fl_CellLayout(getDocLayout(),sdh, indexAP, this);
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
-	}
-	if(iType == FL_CONTAINER_FOOTNOTE)
-	{
+		break;
+	case FL_CONTAINER_FOOTNOTE:
 		pL = (fl_ContainerLayout *) new fl_FootnoteLayout(getDocLayout(), sdh, indexAP, this);
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
 	}
 
 	if (pL == NULL)
@@ -487,12 +491,7 @@ bool fl_ContainerLayout::isOnScreen() const
 	
 	FV_View *pView = getDocLayout()->getView();
 
-	if(!pView)
-	{
-		return false;
-	}
-
-	bool bShowHidden = pView->getShowPara();
+	bool bShowHidden = pView && pView->getShowPara();
 
 	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
 	              || m_eHidden == FP_HIDDEN_REVISION

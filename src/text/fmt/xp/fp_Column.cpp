@@ -1008,11 +1008,6 @@ void fp_Column::layout(void)
 //
 		fp_TableContainer * pTab = NULL;
 		UT_sint32 iHeight = pContainer->getHeight();
-		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			pTab = (fp_TableContainer *) pContainer;
-			iHeight = pTab->getHeight();
-		}
 		if(iHeight > _getMaxContainerHeight())
 		{
 			_setMaxContainerHeight(iHeight);

@@ -187,8 +187,7 @@ public:
 		spacing_ATLEAST
 	} eSpacingPolicy;
 
-	virtual void        format(void) { formatLocal(NULL);}
-	int 		        formatLocal(fp_Line * pLineToStartWith = NULL);
+	virtual void        format(void);
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
 	virtual void		redrawUpdate();

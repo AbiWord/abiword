@@ -62,41 +62,20 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 		const char * szStruxType = UT_getAttribute("type",attributes);
 		if(szStruxType)
 		{
-			if(UT_strcmp(szStruxType,"header") == 0)
+			if(UT_strcmp(szStruxType,"header") == 0 ||
+			   UT_strcmp(szStruxType,"footer") == 0 ||
+			   UT_strcmp(szStruxType,"header-even") == 0 ||
+			   UT_strcmp(szStruxType,"footer-even") == 0 ||
+			   UT_strcmp(szStruxType,"header-first") == 0 ||
+			   UT_strcmp(szStruxType,"footer-first") == 0 ||
+			   UT_strcmp(szStruxType,"header-last") == 0 ||
+			   UT_strcmp(szStruxType,"footer-last") == 0)
 			{
 				pts = PTX_SectionHdrFtr;
 			}
-			else if(UT_strcmp(szStruxType,"footer") == 0)
+			else if(UT_strcmp(szStruxType,"footnote") == 0)
 			{
-				pts = PTX_SectionHdrFtr;
-			}
-			else if(UT_strcmp(szStruxType,"header-even") == 0)
-			{
-				pts = PTX_SectionHdrFtr;
-			}
-			else if(UT_strcmp(szStruxType,"footer-even") == 0)
-			{
-				pts = PTX_SectionHdrFtr;
-			}
-			else if(UT_strcmp(szStruxType,"header-first") == 0)
-			{
-				pts = PTX_SectionHdrFtr;
-			}
-			else if(UT_strcmp(szStruxType,"footer-first") == 0)
-			{
-				pts = PTX_SectionHdrFtr;
-			}
-			else if(UT_strcmp(szStruxType,"header-last") == 0)
-			{
-				pts = PTX_SectionHdrFtr;
-			}
-			else if(UT_strcmp(szStruxType,"footer-last") == 0)
-			{
-				pts = PTX_SectionHdrFtr;
-			}
-			else if(UT_strcmp(szStruxType,"endnote") == 0)
-			{
-				pts = PTX_SectionEndnote;
+				pts = PTX_SectionFootnote;
 			}
 	    }
 	}

@@ -209,10 +209,7 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 																		  PL_StruxFmtHandle sfhNew))
 {
 	if (pBL)
-	{
-		bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
-		return bres;
-	}
+		return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
 	else
 	{
 		// Insert the block at the beginning of the section
@@ -223,9 +220,8 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 			return false;
 		}
 
-		bool bres =pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
+		return pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
-		return bres;
 	}
 }
 
@@ -392,40 +388,29 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 {
 	if(pHFSL == NULL)
 	{
-		if(iType == FL_HDRFTR_HEADER)
+		switch (iType)
 		{
-			m_pHeaderSL = pHFSL;
-		}
-		else if(iType == FL_HDRFTR_HEADER_EVEN)
-		{
-			m_pHeaderEvenSL = pHFSL;
-		}
-		else if(iType == FL_HDRFTR_HEADER_FIRST)
-		{
-			m_pHeaderFirstSL = pHFSL;
-		}
-		else if(iType == FL_HDRFTR_HEADER_LAST)
-		{
-			m_pHeaderLastSL = pHFSL;
-		}
-		else if(iType == FL_HDRFTR_FOOTER)
-		{
-			m_pFooterSL = pHFSL;
-		}
-		else if(iType == FL_HDRFTR_FOOTER_EVEN)
-		{
-			m_pFooterEvenSL = pHFSL;
-		}
-		else if(iType == FL_HDRFTR_FOOTER_FIRST)
-		{
-			m_pFooterFirstSL = pHFSL;
-		}
-		else if(iType == FL_HDRFTR_FOOTER_LAST)
-		{
-			m_pFooterLastSL = pHFSL;
+		case FL_HDRFTR_HEADER:
+			m_pHeaderSL = pHFSL; break;
+		case FL_HDRFTR_HEADER_EVEN:
+			m_pHeaderEvenSL = pHFSL; break;
+		case FL_HDRFTR_HEADER_FIRST:
+			m_pHeaderFirstSL = pHFSL; break;
+		case FL_HDRFTR_HEADER_LAST:
+			m_pHeaderLastSL = pHFSL; break;
+		case FL_HDRFTR_FOOTER:
+			m_pFooterSL = pHFSL; break;
+		case FL_HDRFTR_FOOTER_EVEN:
+			m_pFooterEvenSL = pHFSL; break;
+		case FL_HDRFTR_FOOTER_FIRST:
+			m_pFooterFirstSL = pHFSL; break;
+		case FL_HDRFTR_FOOTER_LAST:
+			m_pFooterLastSL = pHFSL; break;
+		case FL_HDRFTR_NONE:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
 		}
 		checkAndRemovePages();
-	return;
+		return;
 	}
 	const char* pszID = pHFSL->getAttribute("id");
 
@@ -824,9 +809,8 @@ void fl_DocSectionLayout::format(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	FV_View * pView = m_pLayout->getView();
-	UT_return_if_fail(pView);
 
-	bool bShowHidden = pView->getShowPara();
+	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
 
@@ -907,9 +891,8 @@ void fl_DocSectionLayout::updateLayout(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	FV_View * pView = m_pLayout->getView();
-	UT_return_if_fail(pView);
 
-	bool bShowHidden = pView->getShowPara();
+	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
 
@@ -920,9 +903,9 @@ void fl_DocSectionLayout::updateLayout(void)
 		              || eHidden == FP_HIDDEN_REVISION
 		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
 
-		if(!bHidden)
-		{
-			if (pBL->needsReformat())
+ 		if(!bHidden)
+ 		{
+ 			if (pBL->needsReformat())
 				pBL->format();
 
 			if (pBL->getContainerType() != FL_CONTAINER_BLOCK)
@@ -934,7 +917,7 @@ void fl_DocSectionLayout::updateLayout(void)
 
 	fb_ColumnBreaker::breakSection(this);
 
-	if(!needsRebuild())
+	if(needsRebuild())
 	{
 		checkAndRemovePages();
 		addValidPages();
@@ -972,7 +955,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	{
 		fb_ColumnBreaker::breakSection(this);
 	
-		if(!needsRebuild())
+		if(needsRebuild())
 		{
 			checkAndRemovePages();
 			addValidPages();
@@ -1614,46 +1597,14 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	// clear all the columns
 	collapse();
 
-	if(m_pHeaderSL)
-	{
-		DELETEP(m_pHeaderSL);
-		m_pHeaderSL = NULL;
-	}
-	if(m_pHeaderEvenSL)
-	{
-		DELETEP(m_pHeaderEvenSL);
-		m_pHeaderEvenSL = NULL;
-	}
-	if(m_pHeaderFirstSL)
-	{
-		DELETEP(m_pHeaderFirstSL);
-		m_pHeaderFirstSL = NULL;
-	}
-	if(m_pHeaderLastSL)
-	{
-		DELETEP(m_pHeaderLastSL);
-		m_pHeaderLastSL = NULL;
-	}
-	if(m_pFooterSL)
-	{
-		DELETEP(m_pFooterSL);
-		m_pFooterSL = NULL;
-	}
-	if(m_pFooterEvenSL)
-	{
-		DELETEP(m_pFooterEvenSL);
-		m_pFooterEvenSL = NULL;
-	}
-	if(m_pFooterFirstSL)
-	{
-		DELETEP(m_pFooterFirstSL);
-		m_pFooterFirstSL = NULL;
-	}
-	if(m_pFooterLastSL)
-	{
-		DELETEP(m_pFooterLastSL);
-		m_pFooterLastSL = NULL;
-	}
+	DELETEP(m_pHeaderSL);
+	DELETEP(m_pHeaderEvenSL);
+	DELETEP(m_pHeaderFirstSL);
+	DELETEP(m_pHeaderLastSL);
+	DELETEP(m_pFooterSL);
+	DELETEP(m_pFooterEvenSL);
+	DELETEP(m_pFooterFirstSL);
+	DELETEP(m_pFooterLastSL);
 
 //
 // Collapse the subsequent sections too. These will be reformatted in a few lines.
@@ -1950,148 +1901,71 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
  */
 bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage)
 {
-	typedef enum {odd,even,first,last} PageType;
-	PageType FirstLast = odd;
-	PageType OddEven = odd;
-	fp_Page * pPage = m_pFirstOwnedPage;
-	if(!pPage)
-	{
-	    return false;
-	}
-//
-// No header/footerness assigned yet. Page is invalid.
-//
-	if(hfType == FL_HDRFTR_NONE)
-	{
+	if (!m_pFirstOwnedPage)
 		return false;
-	}
-	if(pThisPage == pPage)
-	{
-		FirstLast = first;
-	}
-	if(hfType == FL_HDRFTR_HEADER_FIRST)
-	{
-		if(FirstLast == first)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	if(hfType == FL_HDRFTR_FOOTER_FIRST)
-	{
-		if(FirstLast == first)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+
+    // No header/footerness assigned yet. Page is invalid.
+	if(hfType == FL_HDRFTR_NONE)
+		return false;
+
+	if(hfType == FL_HDRFTR_HEADER_FIRST ||
+	   hfType == FL_HDRFTR_FOOTER_FIRST)
+		return (pThisPage == m_pFirstOwnedPage);
+
 //
 // If there is a header page defined and this is a header page bail now!
 //
-	if(m_pHeaderFirstSL && (FirstLast == first) && (hfType < FL_HDRFTR_FOOTER))
-	{
+	if ((pThisPage == m_pFirstOwnedPage) &&
+		 ((m_pHeaderFirstSL && hfType < FL_HDRFTR_FOOTER) ||
+		  (m_pFooterFirstSL && hfType >= FL_HDRFTR_FOOTER)))
 		return false;
-	}
-	if(m_pFooterFirstSL && (FirstLast == first) && (hfType >= FL_HDRFTR_FOOTER))
-	{
-		return false;
-	}
 
+	fp_Page * pPage = m_pFirstOwnedPage;
 	fp_Page * pNext = pPage->getNext();
 	while(pNext && (pNext->getOwningSection() == this))
 	{
 		pPage = pNext;
 		pNext = pNext->getNext();
 	}
-	if(pPage == pThisPage)
+
+	if(hfType == FL_HDRFTR_HEADER_LAST ||
+	   hfType == FL_HDRFTR_FOOTER_LAST)
 	{
-		FirstLast = last;
-	}
-	if(hfType == FL_HDRFTR_HEADER_LAST)
-	{
-		if(FirstLast == last)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	if(hfType == FL_HDRFTR_FOOTER_LAST)
-	{
-		if(FirstLast == last)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return (pPage == pThisPage);
 	}
 //
-// If there is a Last SL  defined and this is the last page in the SLpage bail now!
+// If there is a Last SL defined and this is the last page in the SLpage bail now!
 //
-	if(m_pHeaderLastSL && (FirstLast == last) &&  (hfType < FL_HDRFTR_FOOTER) )
-	{
+	if ((pThisPage == pPage) &&
+		 ((m_pHeaderLastSL && hfType < FL_HDRFTR_FOOTER) ||
+		  (m_pFooterLastSL && hfType >= FL_HDRFTR_FOOTER)))
 		return false;
-	}
-	if(m_pFooterLastSL && (FirstLast == last) &&  (hfType >= FL_HDRFTR_FOOTER))
+
+	UT_uint32 i = 0;
+	for(i=0; i < getDocLayout()->countPages(); i++)
 	{
-		return false;
+		if (getDocLayout()->getNthPage(i) == pThisPage)
+			break;
 	}
 
-	UT_sint32 count = (UT_sint32) getDocLayout()->countPages();
-	UT_sint32 i =0;
-	bool bFound = false;
-	for(i=0; (i < count) && !bFound ; i++)
+	UT_ASSERT(i < getDocLayout()->countPages());
+
+	if((hfType == FL_HDRFTR_HEADER_EVEN) ||
+	   (hfType == FL_HDRFTR_FOOTER_EVEN))
 	{
-		bFound = (getDocLayout()->getNthPage(i) == pThisPage);
-	}
-	if(bFound)
-	{
-		UT_sint32 j = i/2;
-		if(j*2 != i)
-		{
-			OddEven = odd;
-		}
-		else
-		{
-			OddEven = even;
-		}
-	}
-	else
-	{
-		UT_ASSERT(0);
-	}
-	if((hfType == FL_HDRFTR_HEADER_EVEN) || (hfType == FL_HDRFTR_FOOTER_EVEN))
-	{
-		if(OddEven == even)
-		{
+		if(i % 2 == 0)
 			return true;
-		}
 		else
-		{
 			return false;
-		}
 	}
 //
-// If there is an Even SL  defined and this is an even page in the SL page bail now!
+// If there is an Even SL defined and this is an even page in the SL page bail now!
 //
-	if(m_pHeaderEvenSL && (OddEven == even) &&  (hfType < FL_HDRFTR_FOOTER))
-	{
+	if ((i % 2 == 0) &&
+		((m_pHeaderEvenSL && hfType < FL_HDRFTR_FOOTER) ||
+		 (m_pFooterEvenSL && hfType >= FL_HDRFTR_FOOTER)))
 		return false;
-	}
-	if(m_pFooterEvenSL && (OddEven == even) &&  (hfType >= FL_HDRFTR_FOOTER))
-	{
-		return false;
-	}
+
 	return true; //if we're here all pages are valid.
 }
 
