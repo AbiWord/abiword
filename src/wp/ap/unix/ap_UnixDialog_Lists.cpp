@@ -546,7 +546,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show (listType);
 	gtk_box_pack_start (GTK_BOX (listChoiceBox), listType, FALSE, FALSE, 0);
 	gtk_widget_set_usize (listType, -2, 18);
-	gtk_container_set_border_width (GTK_CONTAINER (listType), 3);
+	gtk_container_set_border_width (GTK_CONTAINER (listChoiceBox), 3);
 	listType_menu = gtk_menu_new ();
 	GtkWidget * menu_none = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Lists_Type_none));
 	m_wMenu_None = menu_none;
