@@ -25,19 +25,13 @@
 
 #include "xap_Widget.h"
 
-
-class XAP_CocoaWidget
-	: public XAP_Widget
+class XAP_CocoaWidget : public XAP_Widget
 {
-protected:
-	XAP_CocoaWidget(NSControl *w)
-		: XAP_Widget(), m_widget(w)
-		{  }
-
 public:
+	XAP_CocoaWidget(id w);
+
 	/** The destructor just clean up. Must not destroy the real widget. */
-	virtual ~XAP_UnixWidget()
-		{ }
+	virtual ~XAP_CocoaWidget();
 
 	/** set the widget enabled/disabled state */
 	virtual void setState(bool enabled);
@@ -67,9 +61,7 @@ public:
 	/** set the widget label */
 	virtual void setLabel(const UT_UTF8String &val);
 private:
-	NSControl *m_widget;
+	id	m_widget;
 };
-
-
 
 #endif

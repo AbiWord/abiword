@@ -176,7 +176,6 @@ void XAP_CocoaFont::getCoverage(UT_NumberVector& coverage)
 	coverage = *_m_coverage;
 }
 
-/
 // UT_Rect of glyph in Logical units.
 // rec.left = bearing Left (distance from origin to start)
 // rec.width = width of the glyph

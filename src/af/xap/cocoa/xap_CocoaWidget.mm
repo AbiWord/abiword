@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2005 Hubert Figuiere
  * 
@@ -22,8 +24,21 @@
 
 #include "ut_assert.h"
 #include "ut_string_class.h"
+
 #include "xap_CocoaWidget.h"
 #include "xap_CocoaDialog_Utilities.h"
+
+XAP_CocoaWidget::XAP_CocoaWidget(id w) :
+	XAP_Widget(),
+	m_widget(w)
+{
+	// 
+}
+
+XAP_CocoaWidget::~XAP_CocoaWidget()
+{
+	// 
+}
 
 /** set the widget enabled/disabled state */
 void XAP_CocoaWidget::setState(bool enabled)

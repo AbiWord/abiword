@@ -22,9 +22,10 @@
 
 #include <stdlib.h>
 
-#include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_string.h"
+#include "ut_timer.h"
 
 #include "xap_CocoaDialog_Utilities.h"
 
@@ -182,7 +183,7 @@ void AP_CocoaDialog_WordCount::destroy(void)
 }
 
 
-- (XAP_CocoaWidget*)getWidget(int wid)
+- (XAP_CocoaWidget *)getWidget:(int)wid
 {
 	switch(wid) {
 	case AP_Dialog_WordCount::DIALOG_WID:
