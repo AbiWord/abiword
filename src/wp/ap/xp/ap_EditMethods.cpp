@@ -486,6 +486,7 @@ public:
 	static EV_EditMethod_Fn cycleInputMode;
 	static EV_EditMethod_Fn toggleInsertMode;
 
+	static EV_EditMethod_Fn	viCmd_5e;
 	static EV_EditMethod_Fn viCmd_A;
 	static EV_EditMethod_Fn viCmd_C;
 	static EV_EditMethod_Fn viCmd_I;
@@ -992,6 +993,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(unlockGUI), 		0,	""),
 
 	// v
+	EV_EditMethod(NF(viCmd_5e),		0,	""), //^ 
 	EV_EditMethod(NF(viCmd_A),		0,	""),
 	EV_EditMethod(NF(viCmd_C),		0,	""),
 	EV_EditMethod(NF(viCmd_I),		0,	""),
@@ -8991,6 +8993,14 @@ Defun1(toggleInsertMode)
 // didn't know all of the little (subtle) side-effects that make VI
 // special.
 //////////////////////////////////////////////////////////////////
+
+Defun(viCmd_5e)
+{
+	CHECK_FRAME;
+	//Move to first non space char on current line 
+	//TODO: BOL seems to count as a BOW, how to move to first non space? 
+	return ( EX(warpInsPtBOL));
+}
 
 Defun(viCmd_A)
 {
