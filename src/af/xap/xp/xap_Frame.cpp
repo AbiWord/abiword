@@ -73,7 +73,7 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_pKeyboard(0),
 	  m_pScrollbarViewListener(0),
 	  m_lidScrollbarViewListener((AV_ListenerId)-1),
-	  m_zoomType(z_100),
+	  m_zoomType(z_PAGEWIDTH),
 	  m_pData(0),
 	  m_pInputModes(0),
 	  m_iFrameMode(XAP_NormalFrame),

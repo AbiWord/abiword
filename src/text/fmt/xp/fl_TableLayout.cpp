@@ -85,6 +85,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_iColSpacing(0),
 	  m_iRowSpacing(0),
 	  m_iLeftColPos(0)
+
 {
 	m_vecColProps.clear();
 	m_vecRowProps.clear();
@@ -1031,7 +1032,11 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iRightStyle(LS_NORMAL),
 	  m_iTopStyle(LS_NORMAL),
 	  m_iBottomStyle(LS_NORMAL),
-	  m_iBgStyle(FS_OFF)
+	  m_iBgStyle(FS_OFF),
+m_iLeftLineThickness(0),
+m_iTopLineThickness(0),
+m_iRightLineThickness(0),
+m_iBottomLineThickness(0)
 {
 	createCellContainer();
 }
@@ -1113,6 +1118,11 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setTopStyle(m_iTopStyle);
 	pCell->setBottomStyle(m_iBottomStyle);
 	pCell->setBgStyle(m_iBgStyle);
+	
+	pCell->setLeftThickness(m_iLeftLineThickness);
+	pCell->setTopThickness(m_iTopLineThickness);
+	pCell->setRightThickness(m_iRightLineThickness);
+	pCell->setBottomThickness(m_iBottomLineThickness);
 }
 
 /*!
@@ -1629,6 +1639,27 @@ void fl_CellLayout::_lookupProperties(void)
 	if(pszBgStyle && pszBgStyle[0])
 	{
 		m_iBgStyle = atoi(pszBgStyle);
+	}
+
+const char *pszLeftLineThickness = NULL;
+const char *pszTopLineThickness = NULL;
+const char *pszRightLineThickness = NULL;
+const char *pszBottomLineThickness = NULL;
+pSectionAP->getProperty("left-thickness", (const XML_Char *&)pszLeftLineThickness);
+pSectionAP->getProperty("top-thickness", (const XML_Char *&)pszTopLineThickness);
+pSectionAP->getProperty("right-thickness", (const XML_Char *&)pszRightLineThickness);
+pSectionAP->getProperty("bot-thickness", (const XML_Char *&)pszBottomLineThickness);
+if (pszLeftLineThickness && pszLeftLineThickness[0]) {
+	m_iLeftLineThickness = atoi(pszLeftLineThickness);
+	}
+if (pszTopLineThickness && pszTopLineThickness[0]) {
+	m_iTopLineThickness = atoi(pszTopLineThickness);
+	}
+if (pszRightLineThickness && pszRightLineThickness[0]) {
+	m_iRightLineThickness = atoi(pszRightLineThickness);
+	}
+if (pszBottomLineThickness && pszBottomLineThickness[0]) {
+	m_iBottomLineThickness = atoi(pszBottomLineThickness);
 	}
 }
 

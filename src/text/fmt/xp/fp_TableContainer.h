@@ -233,6 +233,30 @@ public:
 		{  return m_iRight; }
  
 
+UT_sint32 getLeftThickness(void) const {
+	return m_iLeftThickness;
+	}
+void setLeftThickness(UT_uint32 i) {
+	m_iLeftThickness = i;
+	}
+UT_sint32 getTopThickness(void) const {
+	return m_iTopThickness;
+	}
+void setTopThickness(UT_uint32 i) {
+	m_iTopThickness = i;
+	}
+UT_sint32 getRightThickness(void) const {
+	return m_iRightThickness;
+	}
+void setRightThickness(UT_uint32 i) {
+	m_iRightThickness = i;
+	}
+UT_sint32 getBottomThickness(void) const {
+	return m_iBottomThickness;
+	}
+void setBottomThickness(UT_uint32 i) {
+	m_iBottomThickness = i;
+	}
 			
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
@@ -318,6 +342,12 @@ private:
 	UT_sint32			m_iRightStyle;
 	UT_sint32			m_iTopStyle;
 	UT_sint32			m_iBottomStyle;
+	
+// Line thicknesses
+UT_uint32 m_iLeftThickness;
+UT_uint32 m_iTopThickness;
+UT_uint32 m_iRightThickness;
+UT_uint32 m_iBottomThickness;	
 	
 // Cell background fill color
 	UT_RGBColor			m_cBgColor;

@@ -66,6 +66,9 @@ static PP_Property _props[] =
 {
 	{ "background-color",      "ffffff",          false, NULL, PP_LEVEL_CHAR},
 	{ "bgcolor",               "transparent",     true,  NULL, PP_LEVEL_CHAR},
+{ "bot-color",					"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "bot-thickness",	"0",		false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "bot-style",				"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
 
 	{ "color",                 "000000",          true,  NULL, PP_LEVEL_CHAR},
 	{ "column-gap",	           "0.25in",          false, NULL, PP_LEVEL_SECT},
@@ -102,6 +105,9 @@ static PP_Property _props[] =
 	{ "keep-with-next",        "",                false, NULL, PP_LEVEL_BLOCK},
 
 	{ "lang",                  "en-US",           true,  NULL, PP_LEVEL_CHAR},
+{ "left-color",					"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "left-style",				"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "left-thickness",	"0",		false, NULL, PP_LEVEL_TABLE},//ArVee
 	{ "line-height",           "1.0",             false, NULL, PP_LEVEL_BLOCK},
 	{ "list-decimal",          ".",               true,  NULL, PP_LEVEL_BLOCK},
 	{ "list-delim",            "%L",              true,  NULL, PP_LEVEL_BLOCK},
@@ -122,6 +128,10 @@ static PP_Property _props[] =
 	{ "page-margin-right",     "1in",             false, NULL, PP_LEVEL_SECT},
 	{ "page-margin-top",       "1in",             false, NULL, PP_LEVEL_SECT},
 
+{ "right-color",				"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "right-thickness",	"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "right-style",				"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+
     { "section-max-column-height", "0in",         false, NULL, PP_LEVEL_SECT},
 	{ "section-restart",       "",                false, NULL, PP_LEVEL_SECT},
 	{ "section-restart-value", "",                false, NULL, PP_LEVEL_SECT},
@@ -138,13 +148,17 @@ static PP_Property _props[] =
  	{ "table-margin-left",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
 	{ "table-margin-right",    "0.1in",           false, NULL, PP_LEVEL_TABLE},
 	{ "table-margin-top",      "0.1in",           false, NULL, PP_LEVEL_TABLE},
-	{ "table-row-spacing",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
+
 	{ "table-row-props",       "",                false, NULL, PP_LEVEL_TABLE},
+{ "table-row-spacing",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
 	{ "tabstops",              "",                false, NULL, PP_LEVEL_BLOCK},
 	{ "text-align",            text_align,	      true,  NULL, PP_LEVEL_BLOCK},
 	{ "text-decoration",       "none",            true,  NULL, PP_LEVEL_CHAR},
 	{ "text-indent",           "0in",             false, NULL, PP_LEVEL_BLOCK},
 	{ "text-position",         "normal",          true,  NULL, PP_LEVEL_CHAR},
+{ "top-color",					"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "top-thickness",	"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
+{ "top-style",				"0",			false, NULL, PP_LEVEL_TABLE},//ArVee
 
 	{ "widows",                "2",               false, NULL, PP_LEVEL_BLOCK},
 	{ "width",                 "0in",             false, NULL, PP_LEVEL_CHAR} 

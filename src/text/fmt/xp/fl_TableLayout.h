@@ -139,6 +139,7 @@ public:
 	virtual void		        redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
+
 	void                        markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                        clearRebuild(void) { m_bNeedsRebuild = false;}
 	bool                        needsRebuild(void) const { return m_bNeedsRebuild;}
@@ -312,6 +313,11 @@ private:
 	UT_sint32              m_iTopStyle;
 	UT_sint32              m_iBottomStyle;
 	
+UT_uint32 m_iLeftLineThickness;
+UT_uint32 m_iTopLineThickness;
+UT_uint32 m_iRightLineThickness;
+UT_uint32 m_iBottomLineThickness;
+
 // Background properties
 	UT_RGBColor            m_cBgColor;
 	UT_sint32              m_iBgStyle;

@@ -118,7 +118,12 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_iRightStyle(LS_NORMAL),
 	  m_iTopStyle(LS_NORMAL),
 	  m_iBottomStyle(LS_NORMAL),
-	  m_bBgDirty(true)
+	  m_bBgDirty(true),
+m_iLeftThickness(0),
+m_iTopThickness(0),
+m_iRightThickness(0),
+m_iBottomThickness(0)
+	  
 {
 }
 
@@ -436,7 +441,6 @@ void fp_CellContainer::_drawLine(UT_RGBColor clr, UT_sint32 lineStyle, UT_sint32
 			break;
 		case LS_NORMAL: // normal line style is default, so don't do anything
 			break;
-		// ... add more line styles here ...
 		default:
 			break;
 	}
@@ -469,7 +473,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 // Lookup table properties to get the line thickness.
 	fl_TableLayout * pTab = (fl_TableLayout *) getSectionLayout()->myContainingLayout();
 	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
-	getGraphics()->setLineWidth(pTab->getLineThickness());
+//FIX:	getGraphics()->setLineWidth(pTab->getLineThickness());
 
 // see if we need to draw lines around the cell or draw the background of the cell.
 	
@@ -556,19 +560,23 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		}
 		if(m_bDrawLeft)
 		{
+			// must draw a line : if no thickness available, fetch it from the enclosing table object
+			getGraphics()->setLineWidth(m_iLeftThickness ? m_iLeftThickness : pTab->getLineThickness());
 			_drawLine(m_cLeftColor, m_iLeftStyle, iLeft,iTop, iLeft, iBot);
 		}
 		if(m_bDrawTop || bDrawTop)
 		{
+			getGraphics()->setLineWidth(m_iTopThickness ? m_iTopThickness : pTab->getLineThickness());
 			_drawLine(m_cTopColor, m_iTopStyle, iLeft, iTop, iRight, iTop);
 		}
 		if(m_bDrawRight)
 		{
+			getGraphics()->setLineWidth(m_iRightThickness ? m_iRightThickness : pTab->getLineThickness());
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
-		xxx_UT_DEBUGMSG(("SEVIOR: m_bDrawbot %d  bDrawBot %d \n",m_bDrawBot, bDrawBot));
 		if(m_bDrawBot || bDrawBot)
 		{
+			getGraphics()->setLineWidth(m_iBottomThickness ? m_iBottomThickness : pTab->getLineThickness());
 			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
 		}
 	}
@@ -2484,6 +2492,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 	if(iTop >= iBreak)
 	{
 		if(iBot <= iBottom)
+
 		{
 			UT_sint32 diff = iBottom - iBot;
 			if(diff >= 0)
@@ -2491,6 +2500,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 				return true;
 			}
 		}
+
 	}
 	return false;
 }	

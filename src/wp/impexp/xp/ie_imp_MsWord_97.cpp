@@ -703,17 +703,24 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	  if (found && prop_str)
 	    getDoc()->setMetaDataProp ( PD_META_KEY_DESCRIPTION, prop_str ) ;
 	  
-	  // category
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
-	  if (found && prop_str)
-	    getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
-	  
-	  // organization
-	  prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
-	  if (found && prop_str)
-	    getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
-	  
+	  // below this line are from Document Summary Information
+
 	  ms_ole_summary_close (summary);
+	  summary = ms_ole_docsummary_open(ps.ole_file);
+
+	  if(summary){
+	    // category
+	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
+	    if (found && prop_str)
+	      getDoc()->setMetaDataProp ( PD_META_KEY_TYPE, prop_str ) ;
+	    
+	    // organization
+	    prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
+	    if (found && prop_str)
+	      getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
+	    
+	    ms_ole_summary_close (summary);
+	  }
 	}
     }
 
@@ -732,7 +739,6 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 void IE_Imp_MsWord_97::_flush ()
 {
-
   if(!m_pTextRun.size())
 	return;
 
@@ -766,23 +772,20 @@ void IE_Imp_MsWord_97::_flush ()
 }
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
-{
-
-	
-	if (m_bInTable) {
-		switch (ch) {
-			case 7:			// eat tab characters
-		return;	
-			case 30:		// ??
-				ch = '-';
-				break;
-			}
-		UT_DEBUGMSG(("%c", ch));
-		}	
-
-	if ( m_bIsLower )
-	  ch = UT_UCS4_tolower ( ch );
-	m_pTextRun += ch;
+{	
+  if (m_bInTable) {
+    switch (ch) {
+    case 7:			// eat tab characters
+      return;	
+    case 30:		// ??
+      ch = '-';
+		  break;
+    }
+  }	
+  
+  if ( m_bIsLower )
+    ch = UT_UCS4_tolower ( ch );
+  m_pTextRun += ch;
 }
 
 /****************************************************************************/
@@ -2648,7 +2651,7 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
-	char * old_locale = "" ;
+	const char * old_locale = "" ;
 	const char * mimetype 	= UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
 	FG_Graphic* pFG		= 0;
@@ -2706,7 +2709,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	{
 	  UT_DEBUGMSG(("Could not import graphic\n"));
 	  // pictData is already freed in ~FG_Graphic
-	  //  DELETEP(pictData);
 	  FREEP(mimetype);
 	  goto Cleanup;
 	}
@@ -2730,8 +2732,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
   old_locale = setlocale(LC_NUMERIC, "C");
   UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
-					(double)width / (double)1440,
-					(double)height / (double)1440);
+		    (double)width / (double)1440,
+		    (double)height / (double)1440);
   setlocale(LC_NUMERIC, old_locale);
 
   UT_String_sprintf(propsName, "image%d", m_iImageCount++);
@@ -2756,22 +2758,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));
 	  error = UT_ERROR;
-	  // this is taken care of by createDataItem
-	  //FREEP(mimetype);
 	  goto Cleanup;
 	}
 
  Cleanup:
-  //DELETEP(pictData);
-  //DELETEP(pFG);
   DELETEP(importer);
 
-  // !!! must not free this; this is used by pd_Document !!!
-  //FREEP(mimetype);
-
-  //
-  // Free any allocated data
-  //
   return error;
 }
 
@@ -2811,23 +2803,16 @@ static int docProc (wvParseStruct *ps, wvTag tag)
 //--------------------------------------------------------------------------/
 
 void IE_Imp_MsWord_97::_table_open () 
-{
-  UT_DEBUGMSG(("\n<TABLE>"));
-  
+{  
   m_iCurrentRow = 0;
   m_iCurrentCell = 0;
   
-  getDoc()->appendStrux(
-			PTX_Block, 
-			NULL
-			);
-  getDoc()->appendStrux(
-			PTX_SectionTable, 
-			NULL //pPropsArray
-			);
+  getDoc()->appendStrux(PTX_Block, NULL);
+  getDoc()->appendStrux(PTX_SectionTable, NULL);
   
   m_bRowOpen = false;
   m_bCellOpen = false;
+  xxx_UT_DEBUGMSG(("\n<TABLE>"));
 }
 
 //--------------------------------------------------------------------------/
@@ -2837,9 +2822,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 {  
   _cell_close();
   _row_close();
-  
-  UT_DEBUGMSG(("\n</TABLE>\n"));
-  
+   
   if (m_vecColumnWidths.size()) {
     // build column width properties string
     UT_String propBuffer;
@@ -2855,7 +2838,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
       props += propBuffer;
     }
 
-    props += UT_String_sprintf("; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
+    props += UT_String_sprintf("; table-line-thickness:0; table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
 
     setlocale(LC_NUMERIC, loc);
     
@@ -2877,10 +2860,8 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   }
   
   // end-of-table
-  getDoc()->appendStrux(
-			PTX_EndTable,
-			NULL
-			);
+  getDoc()->appendStrux(PTX_EndTable, NULL);
+  xxx_UT_DEBUGMSG(("\n</TABLE>\n"));
 }
 
 //--------------------------------------------------------------------------/
@@ -2888,15 +2869,14 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 
 void IE_Imp_MsWord_97::_row_open () 
 {  
-  if (m_bRowOpen) {
+  if (m_bRowOpen)
     return;
-  }
   
   m_bRowOpen = true;
   m_iCurrentRow++;
   m_iCurrentCell = 0;
   
-  UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
+  xxx_UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
 }
 
 //--------------------------------------------------------------------------/
@@ -2905,7 +2885,7 @@ void IE_Imp_MsWord_97::_row_open ()
 void IE_Imp_MsWord_97::_row_close () 
 {
   if (m_bRowOpen) {
-    UT_DEBUGMSG(("\t</ROW>"));
+    xxx_UT_DEBUGMSG(("\t</ROW>"));
   }
   m_bRowOpen = false;
 }
@@ -2913,16 +2893,28 @@ void IE_Imp_MsWord_97::_row_close ()
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
+// from fp_TableContainer.h
+enum
+{
+  LS_OFF = 0,	        // No line style, which means no line is drawn
+  LS_NORMAL = 1 	// A normal solid line
+};
+
 static int
 sConvertLineStyle (short lineType)
 {
   // TODO - convert msword line styles to ours
-  return 1;
+  switch (lineType) 
+    {
+    case 0: return LS_OFF;
+    case 1: return LS_NORMAL;
+      // more cases here
+    }
+  return LS_OFF;
 }
 
 void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap) 
-{
-  
+{  
   if (m_bCellOpen || apap->fTtp)
     return;
   
@@ -2931,9 +2923,9 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   
   for (int i = 1; i < ps->nocellbounds; i++) {
     int width = apap->ptap.rgdxaCenter[i] - apap->ptap.rgdxaCenter[i - 1];
-    if (width <= 0) {
+    if (width <= 0)
       break;
-    }				  
+
     columnWidths.addItem((void *)width);
   }
   
@@ -2946,15 +2938,12 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   m_bCellOpen = true;
   m_iCurrentCell++;
   
-  UT_DEBUGMSG(("\t<CELL:%d:%d>", (int)m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1), ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1]));
-  
   UT_String propBuffer;
   
   int vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1];
   
-  if (vspan > 0) {
+  if (vspan > 0)
     vspan--;
-  }
   
   UT_String_sprintf(propBuffer, 
 		    "left-attach:%d; right-attach:%d; top-attach:%d; bot-attach:%d; ", 
@@ -2964,44 +2953,41 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 		    m_iCurrentRow + vspan
 		    );
 
-  {
-    propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoFore).c_str());
-    propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoBack).c_str());
-
-    // so long as it's not the "auto" color
-    if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
-      propBuffer += "bg-style:1;";
-
-    // each unit is 1/8 of a pixel. abi only deals with whole numbers
-#define BRC_TO_PIXEL(x) (int)(((x)+.5)/8.)
-    propBuffer += UT_String_sprintf("top-color:%s; table-line-thickness: %d;table-line-type:%d;", 
-				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.ico).c_str(),
-				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
-				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.brcType));
-    propBuffer += UT_String_sprintf("left-color:%s; table-line-thickness: %d;table-line-type:%d;", 
-				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.ico).c_str(),
-				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.dptLineWidth),
-				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.brcType));
-    propBuffer += UT_String_sprintf("bot-color:%s; table-line-thickness: %d;table-line-type:%d;", 
-				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.ico).c_str(),
-				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.dptLineWidth),
-				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.brcType));
-    propBuffer += UT_String_sprintf("right-color:%s; table-line-thickness: %d;table-line-type:%d", 
-				    sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.ico).c_str(),
-				    BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
-				    sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
+  propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoFore).c_str());
+  propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell - 1].icoBack).c_str());
+  
+  // so long as it's not the "auto" color
+  if (apap->ptap.rgshd[m_iCurrentCell - 1].icoBack != 0)
+    propBuffer += "bg-style:1;";
+  
+  // each unit is 1/8 of a pixel. abi only deals with whole numbers
+#define BRC_TO_PIXEL(x) ((x) == 255 ? 0 : (int)(((x)+.5)/8.))
+  
+  propBuffer += UT_String_sprintf("top-color:%s; top-thickness:%d; top-style:%d;", 
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.ico).c_str(),
+				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcTop.brcType));
+  propBuffer += UT_String_sprintf("left-color:%s; left-thickness:%d; left-style:%d;", 
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.ico).c_str(),
+				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcLeft.brcType));
+  propBuffer += UT_String_sprintf("bot-color:%s; bot-thickness:%d; bot-style:%d;", 
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.ico).c_str(),
+				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcBottom.brcType));
+  propBuffer += UT_String_sprintf("right-color:%s; right-thickness:%d; right-style:%d", 
+				  sMapIcoToColor(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.ico).c_str(),
+				  BRC_TO_PIXEL(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.dptLineWidth),
+				  sConvertLineStyle(apap->ptap.rgtc[m_iCurrentCell - 1].brcRight.brcType));
 #undef BRC_TO_PIXEL
-  }
   
   const XML_Char* propsArray[3];
   propsArray[0] = (XML_Char*)"props";
   propsArray[1] = propBuffer.c_str();
   propsArray[2] = NULL;
   
-  getDoc()->appendStrux(
-			PTX_SectionCell, 
-			propsArray
-			);
+  getDoc()->appendStrux(PTX_SectionCell, propsArray);
+  xxx_UT_DEBUGMSG(("\t<CELL:%d:%d>", (int)m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1), ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1]));
 }
 
 //--------------------------------------------------------------------------/
@@ -3009,17 +2995,10 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 
 void IE_Imp_MsWord_97::_cell_close () 
 {  
-  if (!m_bCellOpen) {
+  if (!m_bCellOpen)
     return;
-  }
   
-  m_bCellOpen = false;
-  
-  UT_DEBUGMSG(("</CELL>"));
-  
-  getDoc()->appendStrux(
-			PTX_EndCell, 
-			NULL 
-			);
+  m_bCellOpen = false;  
+  getDoc()->appendStrux(PTX_EndCell, NULL);
+  xxx_UT_DEBUGMSG(("</CELL>"));
 }
-
