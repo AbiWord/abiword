@@ -31,6 +31,9 @@ G_BEGIN_DECLS
 #define GAL_COMBO_BOX_TYPE          (gal_combo_box_get_type())
 #define GAL_COMBO_BOX(obj)	    G_TYPE_CHECK_INSTANCE_CAST (obj, gal_combo_box_get_type (), GalComboBox)
 #define GAL_COMBO_BOX_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST (klass, gal_combo_box_get_type (), GalComboBoxClass)
+#ifdef GTK_IS_COMBO_BOX
+#undef GTK_IS_COMBO_BOX
+#endif
 #define GTK_IS_COMBO_BOX(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, gal_combo_box_get_type ())
 
 typedef struct _GalComboBox	   GalComboBox;
