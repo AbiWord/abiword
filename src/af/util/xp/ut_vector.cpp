@@ -312,24 +312,26 @@ UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 		*ppOld = m_STLVec[ndx];
 	}
 	
+	if (m_STLVec.size() <= ndx)
+		m_STLVec.resize (ndx+1);
 	m_STLVec[ndx] = pNew;
+		
 	return 0;
 }
 
 void* UT_Vector::getLastItem() const
 {
-	return m_STLVec[m_STLVec.size()-2];
+	return m_STLVec.back();
 }
 
 void* UT_Vector::getFirstItem() const
 {
-	return m_STLVec[0];
+	return m_STLVec.front();
 }
 
 void UT_Vector::deleteNthItem(UT_uint32 n)
 {
 	m_STLVec.erase(m_STLVec.begin()+n);
-	return;
 }
 
 UT_sint32 UT_Vector::findItem(void* p) const
@@ -352,13 +354,7 @@ void UT_Vector::qsort(int (*compar)(const void *, const void *))
 
 UT_Bool UT_Vector::copy(UT_Vector *pVec)
 {
-	clear();
-
-	for (UT_uint32 i=0; i < pVec->getItemCount(); i++)
-	{
-		m_STLVec.push_back(pVec->getNthItem(i));
-	}
-
+	m_STLVec = pVec->m_STLVec;
 	return 0;
 }
 
