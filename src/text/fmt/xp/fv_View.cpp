@@ -980,14 +980,18 @@ void FV_View::toggleCase (ToggleCase c)
 		}
 	}
 
+	if(low < 2)
+	{
+		// the initial block strux / section strux is also selected, for example when
+		// using ctrl+a
+		low = 2;
+	}
+	
 	// if this is an empty document, gracefully return
 	if(low == high)
 		return;
 
 	UT_DEBUGMSG(("fv_View::toggleCase: low %d, high %d\n", low, high));
-
-	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
-	bool bDirection;
 
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(low);
 	fp_Run * pRun;
@@ -1009,6 +1013,22 @@ void FV_View::toggleCase (ToggleCase c)
 
 		PT_DocPosition offset = low - pBL->getPosition(false);
 
+		if(offset == buffer.getLength())
+		{
+			// this is a special case when the selection starts at the very begining of a
+			// block which is not the first block in the document -- the block that
+			// findBlockAtPosition() returned to us is actually the block _before_ the one
+			// we are interested in
+			pBL = pBL->getNextBlockInDocument();
+			UT_return_if_fail( pBL );
+			buffer.truncate(0);
+			pBL->getBlockBuf(&buffer);
+
+			// move past the block strux
+			++low;
+			offset = 0;
+		}
+		
 		if(c == CASE_ROTATE)
 		{
 			// workout the current case
@@ -1048,11 +1068,9 @@ void FV_View::toggleCase (ToggleCase c)
 		PP_AttrProp * pSpanAPNow = const_cast<PP_AttrProp *>(pSpanAPAfter);
 
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: pBL 0x%x, offset %d, pSpanAPAfter 0x%x\n", pBL, offset, pSpanAPAfter));
-		//fp_Run * pLastRun = static_cast<fp_Line *>(pBL->getLastContainer())->getLastRun();
-		//PT_DocPosition lastPos = pBL->getPosition(false) + pLastRun->getBlockOffset() + pLastRun->getLength() - 1;
-		pRun = pBL->findPointCoords(low, false, xPoint,
-										   yPoint, xPoint2, yPoint2,
-										   iPointHeight, bDirection);
+
+		pRun = pBL->findRunAtOffset(offset);
+
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
 
 		bool bBlockDone = false;
@@ -1222,6 +1240,12 @@ void FV_View::toggleCase (ToggleCase c)
 				pBL->getSpanAP(offset+iLen,false,pSpanAPAfter);
 				xxx_UT_DEBUGMSG(("fv_View::toggleCase: delete/insert: low %d, iLen %d, pSpanAPAfter 0x%x, pSpanAPNow 0x%x\n", low, iLen,pSpanAPAfter,pSpanAPNow));
 
+#if 0
+				UT_DEBUGMSG(("AP Now\n"));
+				pSpanAPNow->miniDump(getDocument());
+				UT_DEBUGMSG(("---------------------------------- \nAP After\n"));
+				pSpanAPAfter->miniDump(getDocument());
+#endif
 				UT_uint32 iRealDeleteCount;
 				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL,iRealDeleteCount);
 				UT_ASSERT(bResult);
@@ -1234,13 +1258,20 @@ void FV_View::toggleCase (ToggleCase c)
 					_charMotion(true,iLen - iRealDeleteCount);
 				}
 				bResult = m_pDoc->insertSpan(low, pTemp, iLen, pSpanAPNow);
-
+				UT_ASSERT_HARMLESS( bResult );
+				bResult &= m_pDoc->changeSpanFmt(PTC_SetFmt,low,low+iLen,
+												 pSpanAPNow->getAttributes(),pSpanAPNow->getProperties());
+				
 				// now remember the props for the next round
 				pSpanAPNow = const_cast<PP_AttrProp*>(pSpanAPAfter);
 
-				UT_ASSERT(bResult);
+				UT_ASSERT_HARMLESS(bResult);
 				low += iLen;
 				offset += iLen;
+
+				// the piecetable operations might have invalidated the pRun pointer,
+				// need to get it afresh
+				pRun = pBL->findRunAtOffset(offset);
 			}
 		}
 		pBL = pBL->getNextBlockInDocument();
@@ -3525,6 +3556,93 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 
 	return bRet;
 }
+
+/*!
+    clears props and attribs
+    bAll specifies that everything is to go; if !bAll some selected props will be preserved
+ 
+    Notes: This function is to be called in response to reset fmt command
+    (ctrl+space). The idea is this: we use props and attributes to store things that are
+    not strictly speaking text fmt. For example, spellchecker language is a property, but
+    not strictly text fmt; when pressing ctrl+space, more often than not the user wants to
+    get rid of bold, italics, etc., but not of the langauge markup. So we exercise a
+    degree of discretion.
+*/
+bool FV_View::resetCharFormat(bool bAll)
+{
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	PP_AttrProp AP;
+
+	if(!bAll)
+	{
+		const PP_AttrProp * pAP = getAttrPropForPoint();
+
+		if(pAP)
+		{
+			UT_uint32 i = 0;
+			const XML_Char * szName, *szValue;
+			while(pAP->getNthProperty(i++,szName,szValue))
+			{
+				// add other props as required ...
+				if(!UT_strcmp(szName,"lang"))
+				   AP.setProperty(szName,szValue);
+			}
+			
+		}
+	}
+	
+	m_pDoc->beginUserAtomicGlob();
+
+	// first we reset everything ...
+	// we have to do this, because setCharFormat() calls are cumulative (it uses
+	// PTC_AddFmt)
+	const XML_Char p[] = "props";
+	const XML_Char v[] = "";
+	const XML_Char * props_out[3] = {p,v,NULL};
+	
+	bool bRet = setCharFormat(NULL, props_out);
+
+	// now if we have something to set, we do so ...
+	if(AP.hasAttributes() || AP.hasProperties())
+		bRet &= setCharFormat(AP.getAttributes(), AP.getProperties());
+	
+	m_pDoc->endUserAtomicGlob();
+	return bRet;
+}
+
+const PP_AttrProp * FV_View::getAttrPropForPoint()
+{
+	const fl_BlockLayout * pBL = getCurrentBlock();
+	UT_return_val_if_fail( pBL, NULL);
+
+	UT_uint32 blockOffset = getPoint() - pBL->getPosition();
+	fp_Run * pRun = pBL->findRunAtOffset(blockOffset);
+
+	UT_return_val_if_fail( pRun, NULL );
+	bool bLeftSide = true;
+
+	if(/*(pRun->getType() == FPRUN_TEXT || pRun->getType() == FPRUN_ENDOFPARAGRAPH) &&*/
+	   pRun->getBlockOffset() == blockOffset &&
+	   pRun->getPrevRun()
+	   && pRun->getPrevRun()->getType() == FPRUN_TEXT)
+	{
+		// between two text frags, use the one on the left
+		pRun = pRun->getPrevRun();
+
+		blockOffset = pRun->getBlockOffset();
+		bLeftSide = false;
+	}
+	
+	const PP_AttrProp * pAP = NULL;
+	getDocument()->getSpanAttrProp(pBL->getStruxDocHandle(), blockOffset, bLeftSide, &pAP);
+#if 0
+	if(pAP) pAP->miniDump(getDocument());
+#endif
+	return pAP;
+}
+
 
 bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP, PT_DocPosition posStart)
 {

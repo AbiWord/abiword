@@ -1222,6 +1222,78 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 	return true;
 }
 
+bool PP_AttrProp::isEquivalent(const XML_Char ** attrs, const XML_Char ** props) const
+{
+	UT_uint32 iAttrsCount  = 0;
+	UT_uint32 iPropsCount = 0;
+
+	const XML_Char ** p = attrs;
+
+	while(p && *p)
+	{
+		iAttrsCount++;
+		p += 2;
+	}
+	
+	p = props;
+
+	while(p && *p)
+	{
+		iPropsCount++;
+		p += 2;
+	}
+
+	
+	if(   getAttributeCount() != iAttrsCount
+	   || getPropertyCount()  != iPropsCount)
+		return false;
+	
+	UT_uint32 i;
+	const XML_Char * pName, * pValue, * pValue2;
+	
+	for(i =  0; i < getAttributeCount(); ++i)
+	{
+		pName = attrs[2*i];
+		pValue = attrs[2*i + 1];
+
+		if(!getAttribute(pName,pValue2))
+			return false;
+
+		// ignore property attribute
+		if(0 != UT_strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
+			continue;
+
+		// handle revision attribute correctly
+		if(0 != UT_strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
+		{
+			// requires special treatment
+			PP_RevisionAttr r1(pValue);
+			PP_RevisionAttr r2 (pValue2);
+
+			if(!(r1 == r2))
+			{
+				return false;
+			}
+		}
+		else if(0 != UT_strcmp(pValue,pValue2))
+			return false;
+	}
+
+	for(i =  0; i < getPropertyCount(); ++i)
+	{
+		pName = props[2*i];
+		pValue = props[2*i + 1];
+
+		if(!getProperty(pName,pValue2))
+			return false;
+
+		if(0 != UT_strcmp(pValue,pValue2))
+			return false;
+	}
+
+	return true;
+}
+
 /*!
     This function transfers attributes and properties defined in style into the AP
 

@@ -168,6 +168,8 @@ public:
 
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 
+	const PP_AttrProp * getAttrPropForPoint();
+
 	virtual bool	notifyListeners(const AV_ChangeMask hint);
 
 	virtual bool	canDo(bool bUndo) const;
@@ -274,6 +276,7 @@ public:
 	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0);
 
 	bool	setCharFormat(const XML_Char * properties[], const XML_Char * attribs[] = NULL);
+	bool	resetCharFormat(bool bAll);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles, PT_DocPosition posStart);
 	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
