@@ -32,6 +32,7 @@
 
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
+#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
 
 /*****************************************************************/
 
@@ -78,6 +79,32 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 	static char buf[128];
 	UT_ASSERT(strlen(sz)<120);
 	sprintf(buf,"%s%ld",sz,k);
+	return buf;
+}
+
+static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
+									 EV_Menu_Action * pAction,
+									 EV_Menu_Label * pLabel)
+{
+	const char * szLabelName;
+	
+	if (pAction->hasDynamicLabel())
+		szLabelName = pAction->getDynamicLabel(pUnixApp,pLabel);
+	else
+		szLabelName = pLabel->getMenuLabel();
+
+	if (!szLabelName || !*szLabelName)
+		return NULL;
+	
+	if (!pAction->raisesDialog())
+		return szLabelName;
+
+	// append "..." to menu item if it raises a dialog
+
+	static char buf[128];
+	memset(buf,0,NrElements(buf));
+	strncpy(buf,szLabelName,NrElements(buf)-4);
+	strcat(buf,"...");
 	return buf;
 }
 
@@ -173,21 +200,7 @@ UT_Bool EV_UnixMenu::synthesize(void)
 
 		// get the name for the menu item
 		
-		const char * szLabelName = pAction->getDynamicLabel(m_pUnixApp, pLabel);
-		if (!szLabelName || !*szLabelName)
-			szLabelName = pLabel->getMenuLabel();
-
-		// append "..." to menu item if it raises a dialog
-		
-		char * buf = NULL;
-		if (pAction->raisesDialog())
-		{
-			buf = new char[strlen(szLabelName) + 4];
-			UT_ASSERT(buf);
-			strcpy(buf,szLabelName);
-			strcat(buf,"...");
-			szLabelName = buf;
-		}
+		const char * szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
 
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
@@ -257,8 +270,6 @@ UT_Bool EV_UnixMenu::synthesize(void)
 			UT_ASSERT(0);
 			break;
 		}
-
-		DELETEP(buf);
 	}
 
 #ifdef UT_DEBUG

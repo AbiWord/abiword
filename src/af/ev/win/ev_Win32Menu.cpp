@@ -37,16 +37,32 @@
 
 /*****************************************************************/
 
-static const char * _ev_FakeName(const char * sz, UT_uint32 k)
+static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
+									 EV_Menu_Action * pAction,
+									 EV_Menu_Label * pLabel)
 {
-	// construct a temporary string
+	const char * szLabelName;
+	
+	if (pAction->hasDynamicLabel())
+		szLabelName = pAction->getDynamicLabel(pWin32App,pLabel);
+	else
+		szLabelName = pLabel->getMenuLabel();
+
+	if (!szLabelName || !*szLabelName)
+		return NULL;
+	
+	if (!pAction->raisesDialog())
+		return szLabelName;
+
+	// append "..." to menu item if it raises a dialog
 
 	static char buf[128];
-	UT_ASSERT(strlen(sz)<120);
-	sprintf(buf,"%s%ld",sz,k);
+	memset(buf,0,NrElement(buf));
+	strncpy(buf,szLabelName,NrElements(buf)-4);
+	strcat(buf,"...");
 	return buf;
 }
-
+	
 /*****************************************************************/
 
 EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame)
@@ -137,27 +153,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 
 		// get the name for the menu item
 
-		char * buf = NULL;
-		const char * szLabelName = NULL;
-
-		if (pAction->hasDynamicLabel())
-			szLabelName = pAction->getDynamicLabel(m_pWin32App,pLabel);
-		else
-			szLabelName = pLabel->getMenuLabel();
-
-		if (szLabelName && *szLabelName)
-		{
-			// append "..." to menu item if it raises a dialog
-		
-			if (pAction->raisesDialog())
-			{
-				buf = new char[strlen(szLabelName) + 4];
-				UT_ASSERT(buf);
-				strcpy(buf,szLabelName);
-				strcat(buf,"...");
-				szLabelName = buf;
-			}
-		}
+		const char * szLabelName = _ev_GetLabelName(m_pWin32App,pAction,pLabel);
 		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
@@ -218,8 +214,6 @@ UT_Bool EV_Win32Menu::synthesize(void)
 			UT_ASSERT(0);
 			break;
 		}
-
-		DELETEP(buf);
 	}
 
 #ifdef UT_DEBUG
@@ -308,8 +302,9 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 				// this item has a dynamic label...
 				// compute the value for the label.
 				// if it is blank, we remove the item from the menu.
-				
-				const char * szLabelName = pAction->getDynamicLabel(m_pWin32App,pLabel);
+
+				const char * szLabelName = _ev_GetLabelName(m_pWin32App,pAction,pLabel);
+
 				BOOL bRemoveIt = (!szLabelName || !*szLabelName);
 
 				if (bRemoveIt)			// we don't want it to be there
@@ -322,19 +317,8 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 					break;
 				}
 
-				// we want it in the menu, complete the construction of the
-				// menu label.  append "..." to menu item if it raises a dialog.
+				// we want the item in the menu.
 				
-				char * buf = NULL;		// delete this when done with it.
-				if (pAction->raisesDialog())
-				{
-					buf = new char[strlen(szLabelName) + 4];
-					UT_ASSERT(buf);
-					strcpy(buf,szLabelName);
-					strcat(buf,"...");
-					szLabelName = buf;
-				}
-
 				if (bPresent)			// just update the label on the item.
 				{
 					if (strcmp(szLabelName,mif.dwTypeData)==0)
@@ -363,8 +347,6 @@ UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
 
 					// TODO do this
 				}
-
-				DELETEP(buf);
 			}
 			break;
 	
