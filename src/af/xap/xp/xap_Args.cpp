@@ -24,14 +24,14 @@
 
 /*****************************************************************/
 
-AP_Args::AP_Args(int argc, char ** argv)
+XAP_Args::XAP_Args(int argc, char ** argv)
 {
 	m_argc = argc;
 	m_argv = argv;
 	m_szBuf = NULL;
 }
 
-AP_Args::AP_Args(const char * szCmdLine)
+XAP_Args::XAP_Args(const char * szCmdLine)
 {
 	// build an argc,argv for this command line
 
@@ -69,7 +69,7 @@ AP_Args::AP_Args(const char * szCmdLine)
 		m_argv[k] = p;
 }
 
-AP_Args::~AP_Args(void)
+XAP_Args::~XAP_Args(void)
 {
 	if (m_szBuf)
 	{

@@ -30,7 +30,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-EV_Menu_Action::EV_Menu_Action(AP_Menu_Id id,
+EV_Menu_Action::EV_Menu_Action(XAP_Menu_Id id,
 							   UT_Bool bHoldsSubMenu,
 							   UT_Bool bRaisesDialog,
 							   UT_Bool bCheckable,
@@ -55,7 +55,7 @@ EV_Menu_Action::~EV_Menu_Action(void)
 	FREEP(m_szMethodName);
 }
 
-AP_Menu_Id EV_Menu_Action::getMenuId(void) const
+XAP_Menu_Id EV_Menu_Action::getMenuId(void) const
 {
 	return m_id;
 }
@@ -104,7 +104,7 @@ UT_Bool EV_Menu_Action::isCheckable(void) const
 /*****************************************************************/
 /*****************************************************************/
 
-EV_Menu_ActionSet::EV_Menu_ActionSet(AP_Menu_Id first, AP_Menu_Id last)
+EV_Menu_ActionSet::EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last)
 {
 	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
@@ -124,7 +124,7 @@ EV_Menu_ActionSet::~EV_Menu_ActionSet(void)
 	free(m_actionTable);
 }
 
-UT_Bool EV_Menu_ActionSet::setAction(AP_Menu_Id id,
+UT_Bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 									 UT_Bool bHoldsSubMenu,
 									 UT_Bool bRaisesDialog,
 									 UT_Bool bCheckable,
@@ -142,7 +142,7 @@ UT_Bool EV_Menu_ActionSet::setAction(AP_Menu_Id id,
 	return (m_actionTable[index] != NULL);
 }
 
-EV_Menu_Action * EV_Menu_ActionSet::getAction(AP_Menu_Id id) const
+EV_Menu_Action * EV_Menu_ActionSet::getAction(XAP_Menu_Id id) const
 {
 	if ((id < m_first) || (id > m_last))
 		return NULL;

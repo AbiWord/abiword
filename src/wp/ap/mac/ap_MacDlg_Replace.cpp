@@ -36,16 +36,16 @@
 
 /*****************************************************************/
 #if 0
-AP_Dialog * AP_MacDialog_Replace::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * AP_MacDialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	AP_MacDialog_Replace * p = new AP_MacDialog_Replace(pFactory,id);
 	return p;
 }
 #endif
 
-AP_MacDialog_Replace::AP_MacDialog_Replace(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+AP_MacDialog_Replace::AP_MacDialog_Replace(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 	m_findString = NULL;

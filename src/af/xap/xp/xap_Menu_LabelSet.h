@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_MENU_LABELSET_H
-#define AP_MENU_LABELSET_H
+#ifndef XAP_MENU_LABELSET_H
+#define XAP_MENU_LABELSET_H
 
 #include "ev_Menu_Labels.h"
 
@@ -27,4 +27,4 @@ EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage);
 UT_uint32 AP_GetMenuLabelSetLanguageCount(void);
 const char * AP_GetNthMenuLabelLanguageName(UT_uint32 ndx);
 
-#endif /* AP_MENU_LABELSET_H */
+#endif /* XAP_MENU_LABELSET_H */

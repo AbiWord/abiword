@@ -35,7 +35,7 @@ class XAP_StringSet;
 class AP_BeOSApp : public XAP_BeOSApp
 {
 public:
-	AP_BeOSApp(AP_Args * pArgs, const char * szAppName);
+	AP_BeOSApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_BeOSApp(void);
 
 	virtual UT_Bool					initialize(void);

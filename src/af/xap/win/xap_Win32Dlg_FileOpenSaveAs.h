@@ -28,12 +28,12 @@ class XAP_Win32Frame;
 class XAP_Win32Dialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
 {
 public:
-	XAP_Win32Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Win32Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Win32Dialog_FileOpenSaveAs(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 	void _buildFilterList(char * szFilter);

@@ -19,8 +19,8 @@
 
 
 
-#ifndef AP_VIEWLISTENER_H
-#define AP_VIEWLISTENER_H
+#ifndef XAP_VIEWLISTENER_H
+#define XAP_VIEWLISTENER_H
 
 #include "ut_types.h"
 #include "xav_Listener.h"
@@ -45,4 +45,4 @@ protected:
 	XAP_Frame*		m_pFrame;
 };
 
-#endif /* AP_VIEWLISTENER_H */
+#endif /* XAP_VIEWLISTENER_H */

@@ -18,12 +18,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACTOOLBAR_CONTROLFACTORY_H
-#define AP_MACTOOLBAR_CONTROLFACTORY_H
+#ifndef XAP_MACTOOLBAR_CONTROLFACTORY_H
+#define XAP_MACTOOLBAR_CONTROLFACTORY_H
 
 #include "xap_Toolbar_ControlFactory.h"
 
-class AP_MacToolbar_ControlFactory : public AP_Toolbar_ControlFactory
+class AP_MacToolbar_ControlFactory : public XAP_Toolbar_ControlFactory
 {
 public:
 	AP_MacToolbar_ControlFactory();
@@ -32,4 +32,4 @@ public:
 protected:
 };
 
-#endif /* AP_MACTOOLBAR_CONTROLFACTORY_H */
+#endif /* XAP_MACTOOLBAR_CONTROLFACTORY_H */

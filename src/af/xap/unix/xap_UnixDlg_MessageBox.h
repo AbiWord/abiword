@@ -30,12 +30,12 @@ class XAP_UnixFrame;
 class XAP_UnixDialog_MessageBox : public XAP_Dialog_MessageBox
 {
 public:
-	XAP_UnixDialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_UnixDialog_MessageBox(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_MessageBox(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// must let static callbacks read our bindings
 	UT_Vector * 		_getBindingsVector();

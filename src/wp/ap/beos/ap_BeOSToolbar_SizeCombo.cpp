@@ -25,14 +25,14 @@
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_BeOSToolbar_SizeCombo::static_constructor(EV_Toolbar * pToolbar,
-														  AP_Toolbar_Id id)
+														  XAP_Toolbar_Id id)
 {
 	AP_BeOSToolbar_SizeCombo * p = new AP_BeOSToolbar_SizeCombo(pToolbar,id);
 	return p;
 }
 
 AP_BeOSToolbar_SizeCombo::AP_BeOSToolbar_SizeCombo(EV_Toolbar * pToolbar,
-													 AP_Toolbar_Id id)
+													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_SIZE);

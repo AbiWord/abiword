@@ -151,14 +151,14 @@ Defun1(noop)
 	return UT_TRUE;
 }
 
-static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, AP_Dialog_Id id)
+static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 {
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_About * pDialog
 		= (XAP_Dialog_About *)(pDialogFactory->requestDialog(id));

@@ -31,15 +31,15 @@
 #define DEFAULT_BUTTON_WIDTH	85
 
 /*****************************************************************/
-AP_Dialog * XAP_UnixDialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,
-														 AP_Dialog_Id id)
+XAP_Dialog * XAP_UnixDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
+														 XAP_Dialog_Id id)
 {
 	XAP_UnixDialog_MessageBox * p = new XAP_UnixDialog_MessageBox(pFactory,id);
 	return p;
 }
 
-XAP_UnixDialog_MessageBox::XAP_UnixDialog_MessageBox(AP_DialogFactory * pDlgFactory,
-												   AP_Dialog_Id id)
+XAP_UnixDialog_MessageBox::XAP_UnixDialog_MessageBox(XAP_DialogFactory * pDlgFactory,
+												   XAP_Dialog_Id id)
 	: XAP_Dialog_MessageBox(pDlgFactory,id)
 {
 }

@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_H
-#define AP_DIALOG_H
+#ifndef XAP_DIALOG_H
+#define XAP_DIALOG_H
 
 #include "ut_types.h"
 #include "xap_Types.h"
-class AP_DialogFactory;
+class XAP_DialogFactory;
 class XAP_App;
 class XAP_Frame;
 
@@ -32,49 +32,49 @@ class XAP_Frame;
 ******************************************************************
 *****************************************************************/
 
-typedef enum _AP_Dialog_Type
+typedef enum _XAP_Dialog_Type
 {
-	AP_DLGT_NON_PERSISTENT		= 1,
-	AP_DLGT_FRAME_PERSISTENT	= 2,
-	AP_DLGT_APP_PERSISTENT		= 3
+	XAP_DLGT_NON_PERSISTENT		= 1,
+	XAP_DLGT_FRAME_PERSISTENT	= 2,
+	XAP_DLGT_APP_PERSISTENT		= 3
 
-} AP_Dialog_Type;
+} XAP_Dialog_Type;
 
 
-class AP_Dialog
+class XAP_Dialog
 {
 public:
-	AP_Dialog(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog(void);
+	XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_Dialog(void);
 
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
-	AP_Dialog_Id				getDialogId(void) const;
+	XAP_Dialog_Id				getDialogId(void) const;
 	
 protected:
 	XAP_App *					m_pApp;
-	AP_DialogFactory *			m_pDlgFactory;
-	AP_Dialog_Id				m_id;
+	XAP_DialogFactory *			m_pDlgFactory;
+	XAP_Dialog_Id				m_id;
 };
 
 
-class AP_Dialog_NonPersistent : public AP_Dialog
+class XAP_Dialog_NonPersistent : public XAP_Dialog
 {
 public:
-	AP_Dialog_NonPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_NonPersistent(void);
+	XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_Dialog_NonPersistent(void);
 
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
 
-	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_NON_PERSISTENT; };
+	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_NON_PERSISTENT; };
 	
 protected:
 };
 
-class AP_Dialog_Persistent : public AP_Dialog
+class XAP_Dialog_Persistent : public XAP_Dialog
 {
 public:
-	AP_Dialog_Persistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_Persistent(void);
+	XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_Dialog_Persistent(void);
 
 	virtual void				useStart(void);
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
@@ -84,34 +84,34 @@ protected:
 	UT_Bool						m_bInUse;
 };
 
-class AP_Dialog_FramePersistent : public AP_Dialog_Persistent
+class XAP_Dialog_FramePersistent : public XAP_Dialog_Persistent
 {
 public:
-	AP_Dialog_FramePersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_FramePersistent(void);
+	XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_Dialog_FramePersistent(void);
 
 	virtual void				useStart(void);
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
-	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_FRAME_PERSISTENT; };
+	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_FRAME_PERSISTENT; };
 	
 protected:
 };
 
-class AP_Dialog_AppPersistent : public AP_Dialog_Persistent
+class XAP_Dialog_AppPersistent : public XAP_Dialog_Persistent
 {
 public:
-	AP_Dialog_AppPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Dialog_AppPersistent(void);
+	XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_Dialog_AppPersistent(void);
 
 	virtual void				useStart(void);
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
-	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_APP_PERSISTENT; };
+	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 	
 protected:
 };
 
-#endif /* AP_DIALOG_H */
+#endif /* XAP_DIALOG_H */

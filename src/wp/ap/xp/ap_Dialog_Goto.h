@@ -27,10 +27,10 @@
 #include "fl_BlockLayout.h"
 #include "pt_Types.h"
 
-class AP_Dialog_Goto : public AP_Dialog_FramePersistent
+class AP_Dialog_Goto : public XAP_Dialog_FramePersistent
 {
 public:
-	AP_Dialog_Goto(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Goto(void);
 
 	virtual void				useStart(void);

@@ -29,7 +29,7 @@
 
 #include <gdk/gdk.h>
 
-class AP_Args;
+class XAP_Args;
 class AP_UnixToolbar_Icons;
 
 /*****************************************************************
@@ -41,15 +41,15 @@ class AP_UnixToolbar_Icons;
 class XAP_UnixApp : public XAP_App
 {
 public:
-	XAP_UnixApp(AP_Args * pArgs, const char * szAppName);
+	XAP_UnixApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_UnixApp(void);
 
 	virtual UT_Bool							initialize(void);
 	virtual XAP_Frame * 					newFrame(void) = 0;
 	virtual void							reallyExit(void);
 
-	virtual AP_DialogFactory *				getDialogFactory(void);
-	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
+	virtual XAP_DialogFactory *				getDialogFactory(void);
+	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
 	virtual XAP_Prefs *						getPrefs(void) const = 0;
 	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;

@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_BEOSTOOLBARICONS_H
-#define AP_BEOSTOOLBARICONS_H
+#ifndef XAP_BEOSTOOLBARICONS_H
+#define XAP_BEOSTOOLBARICONS_H
 
 #include "ut_types.h"
 #include "xap_Toolbar_Icons.h"
@@ -36,4 +36,4 @@ public:
 protected:
 };
 
-#endif /* AP_BEOSTOOLBARICONS_H */
+#endif /* XAP_BEOSTOOLBARICONS_H */

@@ -29,12 +29,12 @@ class EV_Toolbar;
 class AP_BeOSToolbar_SizeCombo : public EV_Toolbar_Control
 {
 public:
-	AP_BeOSToolbar_SizeCombo(EV_Toolbar * pToolbar, AP_Toolbar_Id id);
+	AP_BeOSToolbar_SizeCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	virtual ~AP_BeOSToolbar_SizeCombo(void);
 
 	virtual UT_Bool		populate(void);
 
-	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, AP_Toolbar_Id id);
+	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
 protected:
 };

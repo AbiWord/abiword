@@ -18,11 +18,11 @@
  */
 
 
-#ifndef AP_TOOLBAR_ACTIONSET_H
-#define AP_TOOLBAR_ACTIONSET_H
+#ifndef XAP_TOOLBAR_ACTIONSET_H
+#define XAP_TOOLBAR_ACTIONSET_H
 
 #include "ev_Toolbar_Actions.h"
 
 EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void);
 
-#endif /* AP_TOOLBAR_ACTIONSET_H */
+#endif /* XAP_TOOLBAR_ACTIONSET_H */

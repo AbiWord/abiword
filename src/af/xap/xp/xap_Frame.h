@@ -26,7 +26,7 @@
 #include "xav_Listener.h"	// for AV_ListenerID
 
 class XAP_App;
-class AP_DialogFactory;
+class XAP_DialogFactory;
 class ap_ViewListener;
 class AV_View;
 class AD_Document;
@@ -107,7 +107,7 @@ public:
 
 	inline void *				getFrameData(void) const { return m_pData; }
 
-	virtual AP_DialogFactory *	getDialogFactory(void) = 0;
+	virtual XAP_DialogFactory *	getDialogFactory(void) = 0;
 	virtual void				setXScrollRange(void) = 0;
 	virtual void				setYScrollRange(void) = 0;
 

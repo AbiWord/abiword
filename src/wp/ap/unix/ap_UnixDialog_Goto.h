@@ -28,10 +28,10 @@ class XAP_UnixFrame;
 class AP_UnixDialog_Goto: public AP_Dialog_Goto
 {
 public:
-	AP_UnixDialog_Goto(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Goto(void);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 

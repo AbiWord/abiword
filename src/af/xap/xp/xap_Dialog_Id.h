@@ -26,7 +26,7 @@
 // sets.  this lets the XAP code be compiled once and linked with
 // each application.
 
-// we use a typedef to get unique symbols, but use AP_Dialog_Id
+// we use a typedef to get unique symbols, but use XAP_Dialog_Id
 // (defined in ap_Types.h as the actual parameter type (this
 // solves some compiler oddities)).
 

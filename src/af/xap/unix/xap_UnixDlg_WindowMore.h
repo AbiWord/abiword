@@ -28,12 +28,12 @@ class XAP_UnixFrame;
 class XAP_UnixDialog_WindowMore: public XAP_Dialog_WindowMore
 {
 public:
-	XAP_UnixDialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_UnixDialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_WindowMore(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
 

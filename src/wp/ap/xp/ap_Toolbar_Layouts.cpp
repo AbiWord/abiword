@@ -37,7 +37,7 @@
 struct _lt
 {
 	EV_Toolbar_LayoutFlags			m_flags;
-	AP_Toolbar_Id					m_id;
+	XAP_Toolbar_Id					m_id;
 };
 
 #define BeginLayout(Name)		static struct _lt s_ltTable_##Name[] = {

@@ -53,7 +53,7 @@ public:
 	virtual UT_Bool				show(void);
 	virtual UT_Bool				openURL(const char * szURL);
 
-	virtual AP_DialogFactory *	getDialogFactory(void);
+	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 

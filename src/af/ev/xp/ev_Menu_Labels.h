@@ -42,17 +42,17 @@
 class EV_Menu_Label
 {
 public:
-	EV_Menu_Label(AP_Menu_Id id,
+	EV_Menu_Label(XAP_Menu_Id id,
 				  const char * szMenuLabel,		/* label on the actual menu itself */
 				  const char * szStatusMsg);	/* status bar message */
 	~EV_Menu_Label(void);
 
-	AP_Menu_Id						getMenuId(void) const;
+	XAP_Menu_Id						getMenuId(void) const;
 	const char *					getMenuLabel(void) const;
 	const char *					getMenuStatusMessage(void) const;
 
 protected:
-	AP_Menu_Id						m_id;
+	XAP_Menu_Id						m_id;
 	char *							m_szMenuLabel;
 	char *							m_szStatusMsg;
 };
@@ -63,19 +63,19 @@ class EV_Menu_LabelSet					/* a glorified array with bounds checking */
 {
 public:
 	EV_Menu_LabelSet(const char * szLanguage,
-					 AP_Menu_Id first, AP_Menu_Id last);
+					 XAP_Menu_Id first, XAP_Menu_Id last);
 	~EV_Menu_LabelSet(void);
 
-	UT_Bool				setLabel(AP_Menu_Id id,
+	UT_Bool				setLabel(XAP_Menu_Id id,
 								 const char * szMenuLabel,
 								 const char * szStatusMsg);
-	EV_Menu_Label *		getLabel(AP_Menu_Id id) const;
+	EV_Menu_Label *		getLabel(XAP_Menu_Id id) const;
 	const char *		getLanguage(void) const;
 
 protected:
 	EV_Menu_Label **	m_labelTable;
-	AP_Menu_Id			m_first;
-	AP_Menu_Id			m_last;
+	XAP_Menu_Id			m_first;
+	XAP_Menu_Id			m_last;
 	char *				m_szLanguage;	/* for the convenience of the app only  */
 };
 

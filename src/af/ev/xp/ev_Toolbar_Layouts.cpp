@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-EV_Toolbar_LayoutItem::EV_Toolbar_LayoutItem(AP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)
+EV_Toolbar_LayoutItem::EV_Toolbar_LayoutItem(XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)
 {
 	m_id = id;
 	m_flags = flags;
@@ -36,7 +36,7 @@ EV_Toolbar_LayoutItem::~EV_Toolbar_LayoutItem(void)
 {
 }
 
-AP_Toolbar_Id EV_Toolbar_LayoutItem::getToolbarId(void) const
+XAP_Toolbar_Id EV_Toolbar_LayoutItem::getToolbarId(void) const
 {
 	return m_id;
 }
@@ -69,7 +69,7 @@ EV_Toolbar_Layout::~EV_Toolbar_Layout(void)
 	free(m_layoutTable);
 }
 
-UT_Bool EV_Toolbar_Layout::setLayoutItem(UT_uint32 indexLayoutItem, AP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)
+UT_Bool EV_Toolbar_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)
 {
 	UT_ASSERT(indexLayoutItem < m_nrLayoutItems);
 	FREEP(m_layoutTable[indexLayoutItem]);

@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-AP_DialogFactory::AP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
+XAP_DialogFactory::XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
 {
 	UT_ASSERT(pApp);
 
@@ -33,12 +33,12 @@ AP_DialogFactory::AP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg
 
 	m_pApp = pApp;
 	m_pFrame = NULL;
-	m_dialogType = AP_DLGT_APP_PERSISTENT;
+	m_dialogType = XAP_DLGT_APP_PERSISTENT;
 	m_nrElementsDlgTable = nrElem;
 	m_dlg_table = pDlgTable;
 }
 
-AP_DialogFactory::AP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
+XAP_DialogFactory::XAP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
 {
 	UT_ASSERT(pApp);
 
@@ -46,17 +46,17 @@ AP_DialogFactory::AP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrEle
 	
 	m_pApp = pApp;
 	m_pFrame = pFrame;
-	m_dialogType = AP_DLGT_FRAME_PERSISTENT;
+	m_dialogType = XAP_DLGT_FRAME_PERSISTENT;
 	m_nrElementsDlgTable = nrElem;
 	m_dlg_table = pDlgTable;
 }
 
-AP_DialogFactory::~AP_DialogFactory(void)
+XAP_DialogFactory::~XAP_DialogFactory(void)
 {
-	UT_VECTOR_PURGEALL(AP_Dialog *, m_vecDialogs);
+	UT_VECTOR_PURGEALL(XAP_Dialog *, m_vecDialogs);
 }
 
-UT_Bool AP_DialogFactory::_findDialogInTable(AP_Dialog_Id id, UT_uint32 * pIndex) const
+UT_Bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const
 {
 	// search the table and return the index of the entry with this id.
 
@@ -77,27 +77,27 @@ UT_Bool AP_DialogFactory::_findDialogInTable(AP_Dialog_Id id, UT_uint32 * pIndex
 
 /*****************************************************************/
 
-AP_Dialog * AP_DialogFactory::requestDialog(AP_Dialog_Id id)
+XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 {
 	UT_uint32 index;
-	AP_Dialog * pDialog = NULL;
+	XAP_Dialog * pDialog = NULL;
 	
 	_findDialogInTable(id,&index);
 
 	switch (m_dlg_table[index].m_type)
 	{
-	case AP_DLGT_NON_PERSISTENT:	// construct a non-persistent dialog and just return it.
+	case XAP_DLGT_NON_PERSISTENT:	// construct a non-persistent dialog and just return it.
 		goto CreateItSimple;
 
-	case AP_DLGT_FRAME_PERSISTENT:						// if requested frame-persistent dialog
-		if (m_dialogType == AP_DLGT_FRAME_PERSISTENT)	// from a frame-persistent factory.
+	case XAP_DLGT_FRAME_PERSISTENT:						// if requested frame-persistent dialog
+		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	// from a frame-persistent factory.
 			goto CreateItPersistent;
 		break;
 		
-	case AP_DLGT_APP_PERSISTENT:						// if requested app-persistent dialog
-		if (m_dialogType == AP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
+	case XAP_DLGT_APP_PERSISTENT:						// if requested app-persistent dialog
+		if (m_dialogType == XAP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
 			goto CreateItPersistent;
-		if (m_dialogType == AP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
+		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
 			goto HandToAppFactory;						//     let the app's factory do it....
 		break;
 	}
@@ -109,7 +109,7 @@ CreateItSimple:
 	{
 		// create a fresh dialog object and return it -- no strings attached.
 		
-		pDialog = (AP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
+		pDialog = (XAP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
 		return pDialog;
 	}
 	
@@ -121,18 +121,18 @@ CreateItPersistent:
 		UT_sint32 indexVec = m_vecDialogIds.findItem((void*)(index+1));
 		if (indexVec < 0)				// not present, create new object and add it to vector
 		{
-			pDialog = (AP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
+			pDialog = (XAP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
 			m_vecDialogIds.addItem((void*)(index+1));
 			m_vecDialogs.addItem(pDialog);
 		}
 		else							// already present, reuse this object
 		{
-			pDialog = (AP_Dialog *)m_vecDialogs.getNthItem(indexVec);
+			pDialog = (XAP_Dialog *)m_vecDialogs.getNthItem(indexVec);
 		}
 
 		// let the dialog object know that we are reusing it.
 		
-		AP_Dialog_Persistent * pDialogPersistent = (AP_Dialog_Persistent *)pDialog;
+		XAP_Dialog_Persistent * pDialogPersistent = (XAP_Dialog_Persistent *)pDialog;
 		pDialogPersistent->useStart();
 		
 		return pDialog;
@@ -148,33 +148,33 @@ HandToAppFactory:
 	}
 }
 
-void AP_DialogFactory::releaseDialog(AP_Dialog * pDialog)
+void XAP_DialogFactory::releaseDialog(XAP_Dialog * pDialog)
 {
 	// the caller is done with the dialog.  if it is non-persistent, we
 	// can just delete it.  otherwise, we should just store it for later
 	// reuse.
 
 	UT_ASSERT(pDialog);
-	AP_Dialog_Id id = pDialog->getDialogId();
+	XAP_Dialog_Id id = pDialog->getDialogId();
 	
 	UT_uint32 index;
 	_findDialogInTable(id,&index);
 
 	switch (m_dlg_table[index].m_type)
 	{
-	case AP_DLGT_NON_PERSISTENT:						// for non-persistent dialog objects, we
+	case XAP_DLGT_NON_PERSISTENT:						// for non-persistent dialog objects, we
 		delete pDialog;									// just delete it now.
 		return;
 
-	case AP_DLGT_FRAME_PERSISTENT:						// if requested frame-persistent dialog
-		if (m_dialogType == AP_DLGT_FRAME_PERSISTENT)	//   from a frame-persistent factory.
+	case XAP_DLGT_FRAME_PERSISTENT:						// if requested frame-persistent dialog
+		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   from a frame-persistent factory.
 			goto FinishedUsingObject;					//     we remember it in our vector.
 		break;
 		
-	case AP_DLGT_APP_PERSISTENT:						// if requested app-persistent dialog
-		if (m_dialogType == AP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
+	case XAP_DLGT_APP_PERSISTENT:						// if requested app-persistent dialog
+		if (m_dialogType == XAP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
 			goto FinishedUsingObject;					//     we remember it in our vector.
-		if (m_dialogType == AP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
+		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
 			goto HandToAppFactory;						//     let the app's factory do it....
 		break;
 	}
@@ -186,7 +186,7 @@ FinishedUsingObject:
 	{
 		// let the dialog object know that we are reusing it.
 		
-		AP_Dialog_Persistent * pDialogPersistent = (AP_Dialog_Persistent *)pDialog;
+		XAP_Dialog_Persistent * pDialogPersistent = (XAP_Dialog_Persistent *)pDialog;
 		pDialogPersistent->useEnd();
 		return;
 	}

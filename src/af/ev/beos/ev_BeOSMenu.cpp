@@ -65,7 +65,7 @@ filter_result MenuFilter::Filter(BMessage *message, BHandler **target) {
 	if (message->what != ABI_BEOS_MENU_EV) {
 		return(B_DISPATCH_MESSAGE);
 	}
-	//AP_Menu_Id id = 0;
+	//XAP_Menu_Id id = 0;
 	int32	id = 0;
 	message->FindInt32(ABI_BEOS_MENU_EV_NAME, &id);
 
@@ -224,7 +224,7 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
-		AP_Menu_Id id = pLayoutItem->getMenuId();
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);

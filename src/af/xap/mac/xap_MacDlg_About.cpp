@@ -28,7 +28,7 @@
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
 
-#include "ap_Dialog_Id.h"
+#include "xap_Dialog_Id.h"
 #include "xap_Dlg_About.h"
 #include "xap_MacDlg_All.h"
 #include "xap_MacDlg_About.h"
@@ -37,15 +37,15 @@
 
 
 /*****************************************************************/
-AP_Dialog * XAP_MacDialog_About::static_constructor(AP_DialogFactory * pFactory,
-															 AP_Dialog_Id id)
+XAP_Dialog * XAP_MacDialog_About::static_constructor(XAP_DialogFactory * pFactory,
+													 XAP_Dialog_Id id)
 {
 	XAP_MacDialog_About * p = new XAP_MacDialog_About(pFactory,id);
 	return p;
 }
 
-XAP_MacDialog_About::XAP_MacDialog_About(AP_DialogFactory * pDlgFactory,
-											 AP_Dialog_Id id)
+XAP_MacDialog_About::XAP_MacDialog_About(XAP_DialogFactory * pDlgFactory,
+											 XAP_Dialog_Id id)
 	: XAP_Dialog_About(pDlgFactory,id)
 {
 }

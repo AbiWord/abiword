@@ -29,12 +29,12 @@ class XAP_MacFrame;
 class XAP_MacDialog_MessageBox : public XAP_Dialog_MessageBox
 {
 public:
-	XAP_MacDialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_MacDialog_MessageBox(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_MacDialog_MessageBox(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 	XAP_MacFrame *		m_pMacFrame;

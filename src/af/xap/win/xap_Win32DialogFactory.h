@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOGFACTORY_H
-#define AP_WIN32DIALOGFACTORY_H
+#ifndef XAP_WIN32DIALOGFACTORY_H
+#define XAP_WIN32DIALOGFACTORY_H
 
 #include "xap_DialogFactory.h"
 
-class AP_Win32DialogFactory : public AP_DialogFactory
+class AP_Win32DialogFactory : public XAP_DialogFactory
 {
 public:
 	AP_Win32DialogFactory(XAP_App * pApp);
@@ -32,4 +32,4 @@ public:
 protected:
 };
 
-#endif /* AP_WIN32DIALOGFACTORY_H */
+#endif /* XAP_WIN32DIALOGFACTORY_H */

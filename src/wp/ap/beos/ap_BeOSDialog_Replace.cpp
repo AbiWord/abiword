@@ -35,16 +35,16 @@
 #include "ap_BeOSDialog_Replace.h"
 
 /*****************************************************************/
-AP_Dialog * AP_BeOSDialog_Replace::static_constructor(AP_DialogFactory * pFactory,
-															 AP_Dialog_Id id)
+XAP_Dialog * AP_BeOSDialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
+													  XAP_Dialog_Id id)
 {
 	//AP_BeOSDialog_Replace * p = new AP_BeOSDialog_Replace(pFactory,id);
 	//return p;
 	return(NULL);
 }
 
-AP_BeOSDialog_Replace::AP_BeOSDialog_Replace(AP_DialogFactory * pDlgFactory,
-														   AP_Dialog_Id id)
+AP_BeOSDialog_Replace::AP_BeOSDialog_Replace(XAP_DialogFactory * pDlgFactory,
+														   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 

@@ -76,11 +76,11 @@ EV_MacMenu::~EV_MacMenu(void)
 UT_Bool EV_MacMenu::onCommand(AV_View * pView, 
 								WindowPtr hWnd, int wParam)
 {
-	// map the windows WM_COMMAND command-id into one of our AP_Menu_Id.
+	// map the windows WM_COMMAND command-id into one of our XAP_Menu_Id.
 	// we don't need to range check it, getAction() will puke if it's
 	// out of range.
 	
-	AP_Menu_Id id = LoWord(wParam);
+	XAP_Menu_Id id = LoWord(wParam);
 
 	// user selected something from the menu.
 	// invoke the appropriate function.
@@ -138,7 +138,7 @@ UT_Bool EV_MacMenu::synthesize(void)
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
-		AP_Menu_Id id = pLayoutItem->getMenuId();
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
@@ -164,7 +164,7 @@ UT_Bool EV_MacMenu::synthesize(void)
 				
 				UINT flags = MF_STRING | MF_ENABLED | MF_UNCHECKED;
 
-				// map our AP_Menu_Id into a windows WM_COMMAND id.
+				// map our XAP_Menu_Id into a windows WM_COMMAND id.
 				
 				UINT u = WmCommandFromMenuId(id);
 
@@ -260,7 +260,7 @@ UT_Bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		AP_Menu_Id id = pLayoutItem->getMenuId();
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 

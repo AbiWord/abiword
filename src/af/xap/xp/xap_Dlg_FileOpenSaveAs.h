@@ -33,10 +33,10 @@ class XAP_App;
 ** file-save-as dialogs.
 *****************************************************************/
 
-class XAP_Dialog_FileOpenSaveAs : public AP_Dialog_AppPersistent
+class XAP_Dialog_FileOpenSaveAs : public XAP_Dialog_AppPersistent
 {
 public:
-	XAP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_FileOpenSaveAs(void);
 
 	virtual void						useStart(void);

@@ -34,15 +34,15 @@
 #include "ap_UnixDialog_Goto.h"
 
 /*****************************************************************/
-AP_Dialog * AP_UnixDialog_Goto::static_constructor(AP_DialogFactory * pFactory,
-												   AP_Dialog_Id id)
+XAP_Dialog * AP_UnixDialog_Goto::static_constructor(XAP_DialogFactory * pFactory,
+												   XAP_Dialog_Id id)
 {
 	AP_UnixDialog_Goto * p = new AP_UnixDialog_Goto(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_Goto::AP_UnixDialog_Goto(AP_DialogFactory * pDlgFactory,
-									   AP_Dialog_Id id)
+AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory,
+									   XAP_Dialog_Id id)
 	: AP_Dialog_Goto(pDlgFactory,id)
 {
 

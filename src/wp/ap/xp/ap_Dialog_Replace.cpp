@@ -34,8 +34,8 @@
 #include "fv_View.h"
 
 
-AP_Dialog_Replace::AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_FramePersistent(pDlgFactory,id)
+AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_FramePersistent(pDlgFactory,id)
 {
 	persist_findString = NULL;
 	persist_replaceString = NULL;
@@ -69,7 +69,7 @@ void AP_Dialog_Replace::useStart(void)
 {
 	UT_DEBUGMSG(("AP_Dialog_Replace::useStart(void) I've been called\n"));
 
-	AP_Dialog_FramePersistent::useStart();
+	XAP_Dialog_FramePersistent::useStart();
 
 	// restore from persistent storage
 	if (persist_findString)
@@ -85,7 +85,7 @@ void AP_Dialog_Replace::useEnd(void)
 {
 
 	UT_DEBUGMSG(("AP_Dialog_Replace::useEnd(void) I've been called\n"));
-	AP_Dialog_FramePersistent::useEnd();
+	XAP_Dialog_FramePersistent::useEnd();
 
 	// Let the view know it doens't need to maintain it's
 	// "find" or "replace" session-oriented counters
@@ -285,8 +285,8 @@ void AP_Dialog_Replace::_messageFinishedReplace(UT_uint32 numReplaced)
 
 void AP_Dialog_Replace::_messageBox(char * message)
 {
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(m_pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(m_pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));

@@ -32,7 +32,7 @@
 
 // fill in the table
 
-static struct AP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = { 0 };
+static struct XAP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = { 0 };
 	
 #if 0
 #define Declare_Control(id,cls)	{ id, cls::static_constructor },
@@ -46,7 +46,7 @@ static struct AP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = { 0 };
 /*****************************************************************/
   
 AP_MacToolbar_ControlFactory::AP_MacToolbar_ControlFactory()
-	: AP_Toolbar_ControlFactory(NrElements(s_ctl_table), s_ctl_table)
+	: XAP_Toolbar_ControlFactory(NrElements(s_ctl_table), s_ctl_table)
 {
 }
 

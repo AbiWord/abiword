@@ -25,15 +25,15 @@
 #include <string.h>
 
 /*****************************************************************/
-AP_Dialog * XAP_BeOSDialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,
-														 AP_Dialog_Id id)
+XAP_Dialog * XAP_BeOSDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,
+														 XAP_Dialog_Id id)
 {
 	XAP_BeOSDialog_MessageBox * p = new XAP_BeOSDialog_MessageBox(pFactory,id);
 	return p;
 }
 
-XAP_BeOSDialog_MessageBox::XAP_BeOSDialog_MessageBox(AP_DialogFactory * pDlgFactory,
-												   AP_Dialog_Id id)
+XAP_BeOSDialog_MessageBox::XAP_BeOSDialog_MessageBox(XAP_DialogFactory * pDlgFactory,
+												   XAP_Dialog_Id id)
 	: XAP_Dialog_MessageBox(pDlgFactory,id)
 {
 }

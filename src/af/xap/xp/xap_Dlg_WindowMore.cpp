@@ -32,8 +32,8 @@
 #include "xap_Dlg_MessageBox.h"
 
 
-XAP_Dialog_WindowMore::XAP_Dialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_NonPersistent(pDlgFactory,id)
+XAP_Dialog_WindowMore::XAP_Dialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
 	m_answer = a_OK;
 	m_ndxSelFrame = -1;		// nothing selected

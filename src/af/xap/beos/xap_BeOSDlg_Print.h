@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_BEOSDIALOG_PRINT_H
-#define AP_BEOSDIALOG_PRINT_H
+#ifndef XAP_BEOSDIALOG_PRINT_H
+#define XAP_BEOSDIALOG_PRINT_H
 
 #include "xap_BeOSFrame.h"
 #include "xap_Dlg_Print.h"
@@ -30,7 +30,7 @@ class PS_Graphics;
 class XAP_BeOSDialog_Print : public XAP_Dialog_Print
 {
 public:
-	XAP_BeOSDialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_BeOSDialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_BeOSDialog_Print(void);
 
 	virtual void			useStart(void);
@@ -40,7 +40,7 @@ public:
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
 	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 
@@ -69,4 +69,4 @@ protected:
 	
 };
 
-#endif /* AP_BEOSDIALOG_PRINT_H */
+#endif /* XAP_BEOSDIALOG_PRINT_H */

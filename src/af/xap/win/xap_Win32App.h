@@ -28,7 +28,7 @@
 #include "xap_Strings.h"
 
 class XAP_Win32Slurp;
-class AP_Args;
+class XAP_Args;
 class AP_Win32Toolbar_Icons;
 
 /*****************************************************************
@@ -40,7 +40,7 @@ class AP_Win32Toolbar_Icons;
 class XAP_Win32App : public XAP_App
 {
 public:
-	XAP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName);
+	XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_Win32App(void);
 
 	virtual UT_Bool							initialize(void);
@@ -49,8 +49,8 @@ public:
 
 	virtual HINSTANCE						getInstance() const;
 
-	virtual AP_DialogFactory *				getDialogFactory(void);
-	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
+	virtual XAP_DialogFactory *				getDialogFactory(void);
+	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
 	virtual XAP_Prefs *						getPrefs(void) const = 0;
 	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;

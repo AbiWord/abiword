@@ -18,11 +18,11 @@
  */
 
 
-#ifndef AP_TOOLBAR_LAYOUTS_H
-#define AP_TOOLBAR_LAYOUTS_H
+#ifndef XAP_TOOLBAR_LAYOUTS_H
+#define XAP_TOOLBAR_LAYOUTS_H
 
 #include "ev_Toolbar_Layouts.h"
 
 EV_Toolbar_Layout * AP_CreateToolbarLayout(const char * szName);
 
-#endif /* AP_TOOLBAR_LAYOUTS_H */
+#endif /* XAP_TOOLBAR_LAYOUTS_H */

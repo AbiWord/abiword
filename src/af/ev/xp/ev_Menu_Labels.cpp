@@ -28,7 +28,7 @@
 
 /*****************************************************************/
 
-EV_Menu_Label::EV_Menu_Label(AP_Menu_Id id,
+EV_Menu_Label::EV_Menu_Label(XAP_Menu_Id id,
 							 const char * szMenuLabel,
 							 const char * szStatusMsg)
 {
@@ -43,7 +43,7 @@ EV_Menu_Label::~EV_Menu_Label(void)
 	FREEP(m_szStatusMsg);
 }
 
-AP_Menu_Id EV_Menu_Label::getMenuId(void) const
+XAP_Menu_Id EV_Menu_Label::getMenuId(void) const
 {
 	return m_id;
 }
@@ -61,7 +61,7 @@ const char * EV_Menu_Label::getMenuStatusMessage(void) const
 /*****************************************************************/
 
 EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
-								   AP_Menu_Id first, AP_Menu_Id last)
+								   XAP_Menu_Id first, XAP_Menu_Id last)
 {
 	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
@@ -84,7 +84,7 @@ EV_Menu_LabelSet::~EV_Menu_LabelSet(void)
 	free(m_labelTable);
 }
 
-UT_Bool EV_Menu_LabelSet::setLabel(AP_Menu_Id id,
+UT_Bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 								   const char * szMenuLabel,
 								   const char * szStatusMsg)
 {
@@ -97,7 +97,7 @@ UT_Bool EV_Menu_LabelSet::setLabel(AP_Menu_Id id,
 	return (m_labelTable[index] != NULL);
 }
 
-EV_Menu_Label * EV_Menu_LabelSet::getLabel(AP_Menu_Id id) const
+EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 {
 	if ((id < m_first) || (id > m_last))
 		return NULL;

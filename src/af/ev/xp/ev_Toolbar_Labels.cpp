@@ -28,7 +28,7 @@
 
 /*****************************************************************/
 
-EV_Toolbar_Label::EV_Toolbar_Label(AP_Toolbar_Id id,
+EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 								   const char * szToolbarLabel,
 								   const char * szIconName,
 								   const char * szToolTip,
@@ -49,7 +49,7 @@ EV_Toolbar_Label::~EV_Toolbar_Label(void)
 	FREEP(m_szStatusMsg);
 }
 
-AP_Toolbar_Id EV_Toolbar_Label::getToolbarId(void) const
+XAP_Toolbar_Id EV_Toolbar_Label::getToolbarId(void) const
 {
 	return m_id;
 }
@@ -77,7 +77,7 @@ const char * EV_Toolbar_Label::getStatusMsg(void) const
 /*****************************************************************/
 
 EV_Toolbar_LabelSet::EV_Toolbar_LabelSet(const char * szLanguage,
-										 AP_Toolbar_Id first, AP_Toolbar_Id last)
+										 XAP_Toolbar_Id first, XAP_Toolbar_Id last)
 {
 	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
@@ -100,7 +100,7 @@ EV_Toolbar_LabelSet::~EV_Toolbar_LabelSet(void)
 	free(m_labelTable);
 }
 
-UT_Bool EV_Toolbar_LabelSet::setLabel(AP_Toolbar_Id id,
+UT_Bool EV_Toolbar_LabelSet::setLabel(XAP_Toolbar_Id id,
 									  const char * szToolbarLabel,
 									  const char * szIconName,
 									  const char * szToolTip,
@@ -115,7 +115,7 @@ UT_Bool EV_Toolbar_LabelSet::setLabel(AP_Toolbar_Id id,
 	return (m_labelTable[index] != NULL);
 }
 
-EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(AP_Toolbar_Id id) const
+EV_Toolbar_Label * EV_Toolbar_LabelSet::getLabel(XAP_Toolbar_Id id) const
 {
 	if ((id < m_first) || (id > m_last))
 		return NULL;

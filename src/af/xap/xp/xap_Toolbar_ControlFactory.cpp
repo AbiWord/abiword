@@ -24,17 +24,17 @@
 
 /*****************************************************************/
 
-AP_Toolbar_ControlFactory::AP_Toolbar_ControlFactory(int nrElem, const struct _ctl_table * pCtlTable)
+XAP_Toolbar_ControlFactory::XAP_Toolbar_ControlFactory(int nrElem, const struct _ctl_table * pCtlTable)
 {
 	m_nrElementsCtlTable = nrElem;
 	m_ctl_table = pCtlTable;
 }
 
-AP_Toolbar_ControlFactory::~AP_Toolbar_ControlFactory(void)
+XAP_Toolbar_ControlFactory::~XAP_Toolbar_ControlFactory(void)
 {
 }
 
-UT_Bool AP_Toolbar_ControlFactory::_find_ControlInTable(AP_Toolbar_Id id, UT_uint32 * pIndex) const
+UT_Bool XAP_Toolbar_ControlFactory::_find_ControlInTable(XAP_Toolbar_Id id, UT_uint32 * pIndex) const
 {
 	// search the table and return the index of the entry with this id.
 
@@ -55,7 +55,7 @@ UT_Bool AP_Toolbar_ControlFactory::_find_ControlInTable(AP_Toolbar_Id id, UT_uin
 
 /*****************************************************************/
 
-EV_Toolbar_Control * AP_Toolbar_ControlFactory::getControl(EV_Toolbar * pToolbar, AP_Toolbar_Id id)
+EV_Toolbar_Control * XAP_Toolbar_ControlFactory::getControl(EV_Toolbar * pToolbar, XAP_Toolbar_Id id)
 {
 	UT_uint32 index;
 	EV_Toolbar_Control * pControl = NULL;

@@ -25,7 +25,7 @@
 #include "xap_App.h"
 #include "xap_MacDialogFactory.h"
 #include "xap_MacTlbr_ControlFactory.h"
-class AP_Args;
+class XAP_Args;
 class AP_MacToolbar_Icons;
 
 /*****************************************************************
@@ -37,15 +37,15 @@ class AP_MacToolbar_Icons;
 class XAP_MacApp : public XAP_App
 {
 public:
-	XAP_MacApp(AP_Args * pArgs, const char * szAppName);
+	XAP_MacApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_MacApp(void);
 
 	virtual UT_Bool			initialize(void);
 	virtual XAP_Frame *		newFrame(void) = 0;
 	virtual void			reallyExit(void);
 
-	virtual AP_DialogFactory *				getDialogFactory(void);
-	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
+	virtual XAP_DialogFactory *				getDialogFactory(void);
+	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
 	virtual XAP_Prefs *		getPrefs(void) const = 0;
 	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 

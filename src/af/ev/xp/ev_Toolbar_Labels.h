@@ -42,21 +42,21 @@
 class EV_Toolbar_Label
 {
 public:
-	EV_Toolbar_Label(AP_Toolbar_Id id,
+	EV_Toolbar_Label(XAP_Toolbar_Id id,
 					 const char * szToolbarLabel,	/* label on the actual toolbar itself */
 					 const char * szIconName,		/* name of the icon we use */
 					 const char * szToolTip,		/* display message on tool tip */
 					 const char * szStatusMsg);		/* status bar message */
 	~EV_Toolbar_Label(void);
 
-	AP_Toolbar_Id		getToolbarId(void) const;
+	XAP_Toolbar_Id		getToolbarId(void) const;
 	const char *		getToolbarLabel(void) const;
 	const char *		getIconName(void) const;
 	const char *		getToolTip(void) const;
 	const char *		getStatusMsg(void) const;
 
 protected:
-	AP_Toolbar_Id		m_id;
+	XAP_Toolbar_Id		m_id;
 	char *				m_szToolbarLabel;
 	char *				m_szIconName;
 	char *				m_szToolTip;
@@ -69,21 +69,21 @@ class EV_Toolbar_LabelSet					/* a glorified array with bounds checking */
 {
 public:
 	EV_Toolbar_LabelSet(const char * szLanguage,
-						AP_Toolbar_Id first, AP_Toolbar_Id last);
+						XAP_Toolbar_Id first, XAP_Toolbar_Id last);
 	~EV_Toolbar_LabelSet(void);
 
-	UT_Bool				setLabel(AP_Toolbar_Id id,
+	UT_Bool				setLabel(XAP_Toolbar_Id id,
 								 const char * szToolbarLabel,
 								 const char * szIconName,
 								 const char * szToolTip,
 								 const char * szStatusMsg);
-	EV_Toolbar_Label *	getLabel(AP_Toolbar_Id id) const;
+	EV_Toolbar_Label *	getLabel(XAP_Toolbar_Id id) const;
 	const char *		getLanguage(void) const;
 
 protected:
 	EV_Toolbar_Label **	m_labelTable;
-	AP_Toolbar_Id		m_first;
-	AP_Toolbar_Id		m_last;
+	XAP_Toolbar_Id		m_first;
+	XAP_Toolbar_Id		m_last;
 	char *				m_szLanguage;	/* for the convenience of the app only  */
 };
 

@@ -18,8 +18,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACTOOLBARICONS_H
-#define AP_MACTOOLBARICONS_H
+#ifndef XAP_MACTOOLBARICONS_H
+#define XAP_MACTOOLBARICONS_H
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -42,4 +42,4 @@ public:
 protected:
 };
 
-#endif /* AP_MACTOOLBARICONS_H */
+#endif /* XAP_MACTOOLBARICONS_H */

@@ -29,15 +29,15 @@
 #include "gr_Win32Graphics.h"
 
 /*****************************************************************/
-AP_Dialog * XAP_Win32Dialog_Print::static_constructor(AP_DialogFactory * pFactory,
-													 AP_Dialog_Id id)
+XAP_Dialog * XAP_Win32Dialog_Print::static_constructor(XAP_DialogFactory * pFactory,
+													 XAP_Dialog_Id id)
 {
 	XAP_Win32Dialog_Print * p = new XAP_Win32Dialog_Print(pFactory,id);
 	return p;
 }
 
-XAP_Win32Dialog_Print::XAP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory,
-										   AP_Dialog_Id id)
+XAP_Win32Dialog_Print::XAP_Win32Dialog_Print(XAP_DialogFactory * pDlgFactory,
+										   XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	m_pPersistPrintDlg = (PRINTDLG *)calloc(1,sizeof(PRINTDLG));

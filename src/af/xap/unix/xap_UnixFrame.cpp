@@ -301,7 +301,7 @@ ev_UnixKeyboard * XAP_UnixFrame::getUnixKeyboard(void)
 	return m_pUnixKeyboard;
 }
 
-AP_DialogFactory * XAP_UnixFrame::getDialogFactory(void)
+XAP_DialogFactory * XAP_UnixFrame::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }

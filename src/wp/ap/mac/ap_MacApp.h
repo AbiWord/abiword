@@ -34,7 +34,7 @@
 class AP_MacApp : public XAP_MacApp
 {
 public:
-	AP_MacApp(AP_Args * pArgs, const char * szAppName);
+	AP_MacApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_MacApp(void);
 
 	virtual UT_Bool			initialize(void);

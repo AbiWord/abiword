@@ -18,12 +18,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_MACDIALOGFACTORY_H
-#define AP_MACDIALOGFACTORY_H
+#ifndef XAP_MACDIALOGFACTORY_H
+#define XAP_MACDIALOGFACTORY_H
 
 #include "xap_DialogFactory.h"
 
-class AP_MacDialogFactory : public AP_DialogFactory
+class AP_MacDialogFactory : public XAP_DialogFactory
 {
 public:
 	AP_MacDialogFactory(XAP_App * pApp);
@@ -33,4 +33,4 @@ public:
 protected:
 };
 
-#endif /* AP_MACDIALOGFACTORY_H */
+#endif /* XAP_MACDIALOGFACTORY_H */

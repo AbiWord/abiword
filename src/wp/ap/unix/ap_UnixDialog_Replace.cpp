@@ -46,15 +46,15 @@
 
 /*****************************************************************/
 
-AP_Dialog * AP_UnixDialog_Replace::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * AP_UnixDialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	AP_UnixDialog_Replace * p = new AP_UnixDialog_Replace(pFactory,id);
 	return p;
 }
 
-AP_UnixDialog_Replace::AP_UnixDialog_Replace(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+AP_UnixDialog_Replace::AP_UnixDialog_Replace(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 	m_windowMain = NULL;

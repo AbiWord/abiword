@@ -30,7 +30,7 @@
 
 /*****************************************************************/
 
-XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
+XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	UT_ASSERT(hInstance);
@@ -83,12 +83,12 @@ void XAP_Win32App::reallyExit(void)
 	PostQuitMessage (0);
 }
 
-AP_DialogFactory * XAP_Win32App::getDialogFactory(void)
+XAP_DialogFactory * XAP_Win32App::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-AP_Toolbar_ControlFactory * XAP_Win32App::getControlFactory(void)
+XAP_Toolbar_ControlFactory * XAP_Win32App::getControlFactory(void)
 {
 	return &m_controlFactory;
 }

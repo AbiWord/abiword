@@ -26,7 +26,7 @@
 #include "xap_App.h"
 #include "xap_BeOSDialogFactory.h"
 #include "xap_BeOSToolbar_ControlFactory.h"
-class AP_Args;
+class XAP_Args;
 class AP_BeOSToolbar_Icons;
 
 /*****************************************************************
@@ -45,28 +45,27 @@ class ABI_BApp:public BApplication {
 class XAP_BeOSApp : public XAP_App
 {
 public:
-	XAP_BeOSApp(AP_Args * pArgs, const char * szAppName);
+	XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_BeOSApp(void);
 
 	virtual UT_Bool					initialize(void);
 //	virtual XAP_Frame * 			newFrame(void);
 	virtual void					reallyExit(void);
 
-	virtual AP_DialogFactory *				getDialogFactory(void);
-	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
-	virtual XAP_Prefs *				getPrefs(void) const = 0;
- 	virtual UT_Bool                                 getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
-        virtual const XAP_StringSet *                   getStringSet(void) const = 0;
-        virtual const char *                                    getUserPrivateDirectory(void);
+	virtual XAP_DialogFactory *				getDialogFactory(void);
+	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
+	virtual XAP_Prefs *						getPrefs(void) const = 0;
+	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	virtual const XAP_StringSet *			getStringSet(void) const = 0;
+	virtual const char *					getUserPrivateDirectory(void);
 
-                                        
 
 	ABI_BApp				m_BApp;		
 
 protected:
 	AP_BeOSToolbar_Icons *			m_pBeOSToolbarIcons;
 	AP_BeOSDialogFactory			m_dialogFactory;
-	AP_BeOSToolbar_ControlFactory		m_controlFactory;
+	AP_BeOSToolbar_ControlFactory	m_controlFactory;
 
 };
 

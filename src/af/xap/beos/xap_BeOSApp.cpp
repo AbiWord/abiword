@@ -27,11 +27,9 @@
 #include "xap_BeOSToolbar_Icons.h"
 #include "xap_BeOSToolbar_ControlFactory.h"
 
-#include "ap_BeOSFrame.h"		// TODO move this
-
 /*****************************************************************/
 
-XAP_BeOSApp::XAP_BeOSApp(AP_Args * pArgs, const char * szAppName)
+XAP_BeOSApp::XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 	  : XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	printf("BEAPP: Starting Application! \n");
@@ -60,33 +58,18 @@ UT_Bool XAP_BeOSApp::initialize(void)
 	return UT_TRUE;
 }
 
-/*
-XAP_Frame * XAP_BeOSApp::newFrame(void)
-{
-	printf("BEAPP: New Frame! \n");
-
-	//Create a new on screen frame and initialize it
-	AP_BeOSFrame * pBeOSFrame = new AP_BeOSFrame(this);
-
-	if (pBeOSFrame)
-		pBeOSFrame->initialize();
-
-	return pBeOSFrame;
-}
-*/
-
 void XAP_BeOSApp::reallyExit(void)
 {
 	//Send an exit message to the application
 	m_BApp.PostMessage(B_QUIT_REQUESTED);
 }
 
-AP_DialogFactory * XAP_BeOSApp::getDialogFactory(void)
+XAP_DialogFactory * XAP_BeOSApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-AP_Toolbar_ControlFactory * XAP_BeOSApp::getControlFactory(void)
+XAP_Toolbar_ControlFactory * XAP_BeOSApp::getControlFactory(void)
 {
 	return &m_controlFactory;
 }

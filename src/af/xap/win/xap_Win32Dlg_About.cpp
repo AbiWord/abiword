@@ -36,15 +36,15 @@
 
 
 /*****************************************************************/
-AP_Dialog * XAP_Win32Dialog_About::static_constructor(AP_DialogFactory * pFactory,
-															 AP_Dialog_Id id)
+XAP_Dialog * XAP_Win32Dialog_About::static_constructor(XAP_DialogFactory * pFactory,
+															 XAP_Dialog_Id id)
 {
 	XAP_Win32Dialog_About * p = new XAP_Win32Dialog_About(pFactory,id);
 	return p;
 }
 
-XAP_Win32Dialog_About::XAP_Win32Dialog_About(AP_DialogFactory * pDlgFactory,
-											 AP_Dialog_Id id)
+XAP_Win32Dialog_About::XAP_Win32Dialog_About(XAP_DialogFactory * pDlgFactory,
+											 XAP_Dialog_Id id)
 	: XAP_Dialog_About(pDlgFactory,id)
 {
 }

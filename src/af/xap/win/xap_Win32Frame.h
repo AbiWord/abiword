@@ -68,7 +68,7 @@ public:
 	EV_Win32Mouse *				getWin32Mouse(void);
 	ev_Win32Keyboard *			getWin32Keyboard(void);
 
-	virtual AP_DialogFactory *	getDialogFactory(void);
+	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
 	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,

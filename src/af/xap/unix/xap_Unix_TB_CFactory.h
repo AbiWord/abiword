@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXTOOLBAR_CONTROLFACTORY_H
-#define AP_UNIXTOOLBAR_CONTROLFACTORY_H
+#ifndef XAP_UNIXTOOLBAR_CONTROLFACTORY_H
+#define XAP_UNIXTOOLBAR_CONTROLFACTORY_H
 
 #include "xap_Toolbar_ControlFactory.h"
 
-class AP_UnixToolbar_ControlFactory : public AP_Toolbar_ControlFactory
+class AP_UnixToolbar_ControlFactory : public XAP_Toolbar_ControlFactory
 {
 public:
 	AP_UnixToolbar_ControlFactory();
@@ -31,4 +31,4 @@ public:
 protected:
 };
 
-#endif /* AP_UNIXTOOLBAR_CONTROLFACTORY_H */
+#endif /* XAP_UNIXTOOLBAR_CONTROLFACTORY_H */

@@ -706,8 +706,8 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
 {
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -730,8 +730,8 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 {
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -758,8 +758,8 @@ static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -786,8 +786,8 @@ static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -812,8 +812,8 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -875,10 +875,10 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 
 	pFrame->raise();
 
-	AP_Dialog_Id id = ((bSaveAs) ? XAP_DIALOG_ID_FILE_SAVEAS : XAP_DIALOG_ID_FILE_OPEN);
+	XAP_Dialog_Id id = ((bSaveAs) ? XAP_DIALOG_ID_FILE_SAVEAS : XAP_DIALOG_ID_FILE_OPEN);
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
@@ -977,8 +977,8 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 {
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -1349,14 +1349,14 @@ Defun1(activateWindow_9)
 	return _activateWindow(pAV_View, 9);
 }
 
-static UT_Bool s_doMoreWindowsDlg(XAP_Frame* pFrame, AP_Dialog_Id id)
+static UT_Bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 {
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_WindowMore * pDialog
 		= (XAP_Dialog_WindowMore *)(pDialogFactory->requestDialog(id));
@@ -1389,14 +1389,14 @@ Defun1(dlgMoreWindows)
 	return UT_TRUE;
 }
 
-static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, AP_Dialog_Id id)
+static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 {
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_About * pDialog
 		= (XAP_Dialog_About *)(pDialogFactory->requestDialog(id));
@@ -2705,15 +2705,15 @@ Defun1(paste)
 /*****************************************************************/
 
 #if 0
-static UT_Bool s_doGotoDlg(FV_View * pView, AP_Dialog_Id id)
+static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	AP_Dialog_Goto * pDialog
 		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
@@ -2736,7 +2736,7 @@ Defun1(go)
 #if 0
 	// TODO: this crashes on Win32.  does it work already on Linux?
 	ABIWORD_VIEW;
-	AP_Dialog_Id id = AP_DIALOG_ID_GOTO;
+	XAP_Dialog_Id id = AP_DIALOG_ID_GOTO;
 	
 	return s_doGotoDlg(pView, id);
 #else
@@ -2750,15 +2750,15 @@ Defun1(go)
 
 /*****************************************************************/
 
-static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, AP_Dialog_Id id)
+static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	AP_Dialog_Replace * pDialog
 		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
@@ -2790,7 +2790,7 @@ static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, AP_Dialog_Id id)
 Defun1(find)
 {
 	ABIWORD_VIEW;
-	AP_Dialog_Id id = AP_DIALOG_ID_FIND;
+	XAP_Dialog_Id id = AP_DIALOG_ID_FIND;
 
 	return s_doFindOrFindReplaceDlg(pView,id);
 }
@@ -2805,7 +2805,7 @@ Defun1(findAgain)
 Defun1(replace)
 {
 	ABIWORD_VIEW;
-	AP_Dialog_Id id = AP_DIALOG_ID_REPLACE;
+	XAP_Dialog_Id id = AP_DIALOG_ID_REPLACE;
 
 	return s_doFindOrFindReplaceDlg(pView,id);
 }
@@ -2819,10 +2819,10 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 
 	pFrame->raise();
 
-	AP_Dialog_Id id = XAP_DIALOG_ID_FONT;
+	XAP_Dialog_Id id = XAP_DIALOG_ID_FONT;
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_FontChooser * pDialog
 		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
@@ -3083,8 +3083,8 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_Print * pDialog
 		= (XAP_Dialog_Print *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINT));
@@ -3182,8 +3182,8 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_Zoom * pDialog
 		= (XAP_Dialog_Zoom *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_ZOOM));
@@ -3227,8 +3227,8 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 
 	pFrame->raise();
 
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	AP_Dialog_Break * pDialog
 		= (AP_Dialog_Break *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BREAK));

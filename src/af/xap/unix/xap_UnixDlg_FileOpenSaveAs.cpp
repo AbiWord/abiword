@@ -35,15 +35,15 @@
 #include "xap_Strings.h"
 
 /*****************************************************************/
-AP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
-															 AP_Dialog_Id id)
+XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
+															 XAP_Dialog_Id id)
 {
 	XAP_UnixDialog_FileOpenSaveAs * p = new XAP_UnixDialog_FileOpenSaveAs(pFactory,id);
 	return p;
 }
 
-XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory,
-														   AP_Dialog_Id id)
+XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
+														   XAP_Dialog_Id id)
 	: XAP_Dialog_FileOpenSaveAs(pDlgFactory,id)
 {
 }
@@ -254,8 +254,8 @@ ReturnTrue:
 UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
 {
 	// return UT_TRUE if we should overwrite the file
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -278,8 +278,8 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, c
 	
 void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, XAP_String_Id sid)
 {
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -300,8 +300,8 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 														XAP_String_Id sid,
 														const char * sz1)
 {
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));

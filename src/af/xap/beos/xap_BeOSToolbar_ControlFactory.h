@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_BEOSTOOLBAR_CONTROLFACTORY_H
-#define AP_BEOSTOOLBAR_CONTROLFACTORY_H
+#ifndef XAP_BEOSTOOLBAR_CONTROLFACTORY_H
+#define XAP_BEOSTOOLBAR_CONTROLFACTORY_H
 
 #include "xap_Toolbar_ControlFactory.h"
 
-class AP_BeOSToolbar_ControlFactory : public AP_Toolbar_ControlFactory
+class AP_BeOSToolbar_ControlFactory : public XAP_Toolbar_ControlFactory
 {
 public:
 	AP_BeOSToolbar_ControlFactory();
@@ -31,4 +31,4 @@ public:
 protected:
 };
 
-#endif /* AP_BEOSTOOLBAR_CONTROLFACTORY_H */
+#endif /* XAP_BEOSTOOLBAR_CONTROLFACTORY_H */

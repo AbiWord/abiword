@@ -29,21 +29,21 @@
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrame.h"
 
-#include "ap_Dialog_Id.h"
+#include "xap_Dialog_Id.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_BeOSDlg_WindowMore.h"
 
 /*****************************************************************/
 
-AP_Dialog * XAP_BeOSDialog_WindowMore::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * XAP_BeOSDialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	XAP_BeOSDialog_WindowMore * p = new XAP_BeOSDialog_WindowMore(pFactory,id);
 	return p;
 }
 
-XAP_BeOSDialog_WindowMore::XAP_BeOSDialog_WindowMore(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+XAP_BeOSDialog_WindowMore::XAP_BeOSDialog_WindowMore(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: XAP_Dialog_WindowMore(pDlgFactory,id)
 {
 }

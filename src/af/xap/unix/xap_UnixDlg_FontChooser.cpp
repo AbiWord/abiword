@@ -44,15 +44,15 @@
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
 
 /*****************************************************************/
-AP_Dialog * XAP_UnixDialog_FontChooser::static_constructor(AP_DialogFactory * pFactory,
-														 AP_Dialog_Id id)
+XAP_Dialog * XAP_UnixDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
+														 XAP_Dialog_Id id)
 {
 	XAP_UnixDialog_FontChooser * p = new XAP_UnixDialog_FontChooser(pFactory,id);
 	return p;
 }
 
-XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFactory,
-												   AP_Dialog_Id id)
+XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgFactory,
+												   XAP_Dialog_Id id)
 	: XAP_Dialog_FontChooser(pDlgFactory,id)
 {
 	m_fontManager = NULL;

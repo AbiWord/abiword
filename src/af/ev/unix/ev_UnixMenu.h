@@ -42,7 +42,7 @@ public:
 	virtual ~EV_UnixMenu(void);
 
 	UT_Bool				synthesizeMenu(GtkWidget * wMenuRoot);
-	UT_Bool				menuEvent(AP_Menu_Id id);
+	UT_Bool				menuEvent(XAP_Menu_Id id);
 	virtual UT_Bool		refreshMenu(AV_View * pView) = 0;
 
 	XAP_UnixFrame * 	getFrame(void);
@@ -50,7 +50,7 @@ public:
 protected:
 
 	UT_Bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
-	UT_Bool				_isItemPresent(AP_Menu_Id id) const;
+	UT_Bool				_isItemPresent(XAP_Menu_Id id) const;
 
 	XAP_UnixApp *		m_pUnixApp;
 	XAP_UnixFrame *		m_pUnixFrame;

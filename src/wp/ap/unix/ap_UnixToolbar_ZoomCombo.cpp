@@ -25,14 +25,14 @@
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_UnixToolbar_ZoomCombo::static_constructor(EV_Toolbar * pToolbar,
-														  AP_Toolbar_Id id)
+														  XAP_Toolbar_Id id)
 {
 	AP_UnixToolbar_ZoomCombo * p = new AP_UnixToolbar_ZoomCombo(pToolbar,id);
 	return p;
 }
 
 AP_UnixToolbar_ZoomCombo::AP_UnixToolbar_ZoomCombo(EV_Toolbar * pToolbar,
-													 AP_Toolbar_Id id)
+													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);

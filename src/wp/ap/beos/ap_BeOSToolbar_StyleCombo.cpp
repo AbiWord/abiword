@@ -26,14 +26,14 @@
 /*****************************************************************/
 
 EV_Toolbar_Control * AP_BeOSToolbar_StyleCombo::static_constructor(EV_Toolbar * pToolbar,
-														  AP_Toolbar_Id id)
+														  XAP_Toolbar_Id id)
 {
 	AP_BeOSToolbar_StyleCombo * p = new AP_BeOSToolbar_StyleCombo(pToolbar,id);
 	return p;
 }
 
 AP_BeOSToolbar_StyleCombo::AP_BeOSToolbar_StyleCombo(EV_Toolbar * pToolbar,
-													 AP_Toolbar_Id id)
+													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);

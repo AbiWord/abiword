@@ -29,7 +29,7 @@ class XAP_StringSet;
 class AP_UnixApp : public XAP_UnixApp
 {
  public:
-	AP_UnixApp(AP_Args* pArgs, const char* szAppName);
+	AP_UnixApp(XAP_Args* pArgs, const char* szAppName);
 	~AP_UnixApp(void);
 
 	virtual UT_Bool                initialize(void);

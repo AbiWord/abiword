@@ -93,14 +93,14 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 }
 
 /*****************************************************************/
-AP_Dialog * XAP_BeOSDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
-															 AP_Dialog_Id id)
+XAP_Dialog * XAP_BeOSDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
+															 XAP_Dialog_Id id)
 {
 	XAP_BeOSDialog_FileOpenSaveAs * p = new XAP_BeOSDialog_FileOpenSaveAs(pFactory,id);
 	return p;
 }
 
-XAP_BeOSDialog_FileOpenSaveAs::XAP_BeOSDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+XAP_BeOSDialog_FileOpenSaveAs::XAP_BeOSDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_FileOpenSaveAs(pDlgFactory,id)
 {
 	m_pOpenPanel = NULL;

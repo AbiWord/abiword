@@ -118,11 +118,11 @@ UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 {
 	// TODO do we need the hWnd parameter....
 
-	// map the windows WM_COMMAND command-id into one of our AP_Menu_Id.
+	// map the windows WM_COMMAND command-id into one of our XAP_Menu_Id.
 	// we don't need to range check it, getAction() will puke if it's
 	// out of range.
 	
-	AP_Menu_Id id = MenuIdFromWmCommand(LOWORD(wParam));
+	XAP_Menu_Id id = MenuIdFromWmCommand(LOWORD(wParam));
 
 	// user selected something from the menu.
 	// invoke the appropriate function.
@@ -175,7 +175,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
-		AP_Menu_Id id = pLayoutItem->getMenuId();
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
@@ -198,7 +198,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 
 				// set standard flags on the item, we'll update the
 				// state on an onInitMenu().
-				// map our AP_Menu_Id into a windows WM_COMMAND id.
+				// map our XAP_Menu_Id into a windows WM_COMMAND id.
 				
 				UINT flags = MF_STRING | MF_ENABLED | MF_UNCHECKED;
 				UINT u = WmCommandFromMenuId(id);
@@ -288,7 +288,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		AP_Menu_Id id = pLayoutItem->getMenuId();
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
@@ -463,7 +463,7 @@ UT_Bool EV_Win32Menu::onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
 		return 1;
 	}
 	
-	AP_Menu_Id id = MenuIdFromWmCommand(nItemID);
+	XAP_Menu_Id id = MenuIdFromWmCommand(nItemID);
 	EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 	if (!pLabel)
 	{

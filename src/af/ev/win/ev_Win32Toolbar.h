@@ -50,7 +50,7 @@ public:
 	
 	~EV_Win32Toolbar(void);
 
-	UT_Bool toolbarEvent(AP_Toolbar_Id id,
+	UT_Bool toolbarEvent(XAP_Toolbar_Id id,
 						 UT_UCSChar * pData = 0,
 						 UT_uint32 dataLength = 0);
 	UT_Bool synthesize(void);
@@ -64,17 +64,17 @@ public:
 		Note that the namespaces for toolbar and menu command ids 
 		do *not* overlap.  
 	*/
-	inline AP_Toolbar_Id	ItemIdFromWmCommand(UINT cmd)			{ return (AP_Toolbar_Id)(cmd - WM_USER - _ev_MENU_OFFSET); };
-	inline UINT				WmCommandFromItemId(AP_Toolbar_Id id)	{ return (id + WM_USER + _ev_MENU_OFFSET); };
+	inline XAP_Toolbar_Id	ItemIdFromWmCommand(UINT cmd)			{ return (XAP_Toolbar_Id)(cmd - WM_USER - _ev_MENU_OFFSET); };
+	inline UINT				WmCommandFromItemId(XAP_Toolbar_Id id)	{ return (id + WM_USER + _ev_MENU_OFFSET); };
 
 protected:
 	void							_releaseListener(void);
-	HWND							_getControlWindow(AP_Toolbar_Id id);
+	HWND							_getControlWindow(XAP_Toolbar_Id id);
 
-	UT_Bool							_refreshID(AP_Toolbar_Id id);
+	UT_Bool							_refreshID(XAP_Toolbar_Id id);
 	UT_Bool							_refreshItem(AV_View * pView, 
 												 const EV_Toolbar_Action * pAction, 
-												 AP_Toolbar_Id id);
+												 XAP_Toolbar_Id id);
 
 	static LRESULT CALLBACK			_ComboWndProc(HWND, UINT, WPARAM, LPARAM);
 	static LRESULT CALLBACK			_ComboEditWndProc(HWND, UINT, WPARAM, LPARAM);

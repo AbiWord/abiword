@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_BEOSDIALOG_MESSAGEBOX_H
-#define AP_BEOSDIALOG_MESSAGEBOX_H
+#ifndef XAP_BEOSDIALOG_MESSAGEBOX_H
+#define XAP_BEOSDIALOG_MESSAGEBOX_H
 
 #include "xap_BeOSFrame.h"
 #include "xap_Dlg_MessageBox.h"
@@ -29,12 +29,12 @@ class XAP_BeOSFrame;
 class XAP_BeOSDialog_MessageBox : public XAP_Dialog_MessageBox
 {
 public:
-	XAP_BeOSDialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_BeOSDialog_MessageBox(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_BeOSDialog_MessageBox(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// must let static callbacks read our bindings
 	UT_Vector * 		_getBindingsVector();
@@ -51,4 +51,4 @@ protected:
 	};
 };
 
-#endif /* AP_BEOSDIALOG_MESSAGEBOX_H */
+#endif /* XAP_BEOSDIALOG_MESSAGEBOX_H */

@@ -38,15 +38,15 @@
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
-AP_Dialog * AP_Win32Dialog_Replace::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * AP_Win32Dialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	AP_Win32Dialog_Replace * p = new AP_Win32Dialog_Replace(pFactory,id);
 	return p;
 }
 
-AP_Win32Dialog_Replace::AP_Win32Dialog_Replace(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+AP_Win32Dialog_Replace::AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 	m_findString = NULL;

@@ -32,7 +32,7 @@
 
 // fill in the table
 
-static struct AP_DialogFactory::_dlg_table s_dlg_table[] = {
+static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 	
 #define DeclareDialog(id,cls)	{ id, cls::s_getPersistence(), cls::static_constructor },
 #include "ap_MacDlg_All.h"
@@ -44,12 +44,12 @@ static struct AP_DialogFactory::_dlg_table s_dlg_table[] = {
 /*****************************************************************/
   
 AP_MacDialogFactory::AP_MacDialogFactory(XAP_App * pApp)
-	: AP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table)
+	: XAP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table)
 {
 }
 
 AP_MacDialogFactory::AP_MacDialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
-	: AP_DialogFactory(pFrame, pApp, NrElements(s_dlg_table), s_dlg_table)
+	: XAP_DialogFactory(pFrame, pApp, NrElements(s_dlg_table), s_dlg_table)
 {
 }
 

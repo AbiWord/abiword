@@ -24,10 +24,10 @@
 #include "xap_Dialog.h"
 class XAP_App;
 
-class XAP_Dialog_WindowMore : public AP_Dialog_NonPersistent
+class XAP_Dialog_WindowMore : public XAP_Dialog_NonPersistent
 {
 public:
-	XAP_Dialog_WindowMore(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Dialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_WindowMore(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;

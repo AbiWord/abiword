@@ -32,8 +32,8 @@
 
 /******************************************************************/
 
-XAP_Dialog_Print::XAP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_AppPersistent(pDlgFactory,id)
+XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_AppPersistent(pDlgFactory,id)
 {
 	m_bPersistValid = UT_FALSE;
 	m_persistNrCopies = 1;
@@ -61,7 +61,7 @@ XAP_Dialog_Print::~XAP_Dialog_Print(void)
 
 void XAP_Dialog_Print::useStart(void)
 {
-	AP_Dialog_AppPersistent::useStart();
+	XAP_Dialog_AppPersistent::useStart();
 	
 	FREEP(m_szDocumentTitle);
 	FREEP(m_szDocumentPathname);
@@ -83,7 +83,7 @@ void XAP_Dialog_Print::useStart(void)
 
 void XAP_Dialog_Print::useEnd(void)
 {
-	AP_Dialog_AppPersistent::useEnd();
+	XAP_Dialog_AppPersistent::useEnd();
 
 	FREEP(m_szDocumentTitle);
 	FREEP(m_szDocumentPathname);
@@ -199,10 +199,10 @@ UT_Bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 	UT_ASSERT(pFrame);
 	UT_ASSERT(szSuggestedName && *szSuggestedName);
 
-	AP_Dialog_Id id = XAP_DIALOG_ID_PRINTTOFILE;
+	XAP_Dialog_Id id = XAP_DIALOG_ID_PRINTTOFILE;
 	
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));

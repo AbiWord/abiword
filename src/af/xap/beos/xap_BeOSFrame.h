@@ -35,14 +35,13 @@ class GR_Graphics;
 
 /*****************************************************************
 ******************************************************************
-** This file defines the unix-platform-specific class for the
+** This file defines the beos-platform-specific class for the
 ** cross-platform application frame.  This is used to hold all
 ** BeOS-specific data.  One of these is created for each top-level
 ** document window.
 ******************************************************************
 *****************************************************************/
 class XAP_BeOSFrame;
-class AP_BeOSFrame;
 
 class TFScrollBar: public BScrollBar {
 	public:
@@ -121,7 +120,7 @@ public:
 	ev_BeOSMouse *				getBeOSMouse(void);
 	ev_BeOSKeyboard *			getBeOSKeyboard(void);
 
-	virtual AP_DialogFactory 		*getDialogFactory(void);
+	virtual XAP_DialogFactory 	*getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
 	virtual UT_Bool 			runModalContextMenu(AV_View * pView, const char * szMenuName, UT_sint32 x, UT_sint32 y);

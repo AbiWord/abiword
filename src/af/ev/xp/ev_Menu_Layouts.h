@@ -53,14 +53,14 @@ typedef enum _ev_Menu_LayoutFlags
 class EV_Menu_LayoutItem
 {
 public:
-	EV_Menu_LayoutItem(AP_Menu_Id id, EV_Menu_LayoutFlags flags);
+	EV_Menu_LayoutItem(XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
 	~EV_Menu_LayoutItem(void);
 
-	AP_Menu_Id						getMenuId(void) const;
+	XAP_Menu_Id						getMenuId(void) const;
 	EV_Menu_LayoutFlags				getMenuLayoutFlags(void) const;
 
 protected:
-	AP_Menu_Id						m_id;
+	XAP_Menu_Id						m_id;
 	EV_Menu_LayoutFlags				m_flags;
 };
 
@@ -72,7 +72,7 @@ public:
 	EV_Menu_Layout(const char * szName, UT_uint32 nrLayoutItems);
 	~EV_Menu_Layout(void);
 
-	UT_Bool					setLayoutItem(UT_uint32 indexLayoutItem, AP_Menu_Id id, EV_Menu_LayoutFlags flags);
+	UT_Bool					setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
 	EV_Menu_LayoutItem *	getLayoutItem(UT_uint32 indexLayoutItem) const;
 	const char *			getName(void) const;
 	UT_uint32				getLayoutItemCount(void) const;

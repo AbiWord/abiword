@@ -43,7 +43,7 @@
 
 AP_Clipboard* XAP_App::_pClipboard = NULL;
 
-XAP_App::XAP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
+XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 {
 	UT_ASSERT(szAppName && *szAppName);
 

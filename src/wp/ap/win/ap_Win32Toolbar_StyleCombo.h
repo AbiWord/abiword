@@ -30,12 +30,12 @@ class EV_Toolbar;
 class AP_Win32Toolbar_StyleCombo : public EV_Toolbar_Control
 {
 public:
-	AP_Win32Toolbar_StyleCombo(EV_Toolbar * pToolbar, AP_Toolbar_Id id);
+	AP_Win32Toolbar_StyleCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	virtual ~AP_Win32Toolbar_StyleCombo(void);
 
 	virtual UT_Bool		populate(void);
 
-	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, AP_Toolbar_Id id);
+	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
 protected:
 };

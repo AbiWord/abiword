@@ -31,15 +31,15 @@
 
 /*****************************************************************/
 
-AP_Dialog * XAP_BeOSDialog_Zoom::static_constructor(AP_DialogFactory * pFactory,
-													AP_Dialog_Id id)
+XAP_Dialog * XAP_BeOSDialog_Zoom::static_constructor(XAP_DialogFactory * pFactory,
+													XAP_Dialog_Id id)
 {
 	XAP_BeOSDialog_Zoom * p = new XAP_BeOSDialog_Zoom(pFactory,id);
 	return p;
 }
 
-XAP_BeOSDialog_Zoom::XAP_BeOSDialog_Zoom(AP_DialogFactory * pDlgFactory,
-										 AP_Dialog_Id id)
+XAP_BeOSDialog_Zoom::XAP_BeOSDialog_Zoom(XAP_DialogFactory * pDlgFactory,
+										 XAP_Dialog_Id id)
 	: XAP_Dialog_Zoom(pDlgFactory,id)
 {
 

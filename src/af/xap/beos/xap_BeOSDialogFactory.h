@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_BEOSDIALOGFACTORY_H
-#define AP_BEOSDIALOGFACTORY_H
+#ifndef XAP_BEOSDIALOGFACTORY_H
+#define XAP_BEOSDIALOGFACTORY_H
 
 #include "xap_DialogFactory.h"
 
-class AP_BeOSDialogFactory : public AP_DialogFactory
+class AP_BeOSDialogFactory : public XAP_DialogFactory
 {
 public:
 	AP_BeOSDialogFactory(XAP_App * pApp);
@@ -32,4 +32,4 @@ public:
 protected:
 };
 
-#endif /* AP_BEOSDIALOGFACTORY_H */
+#endif /* XAP_BEOSDIALOGFACTORY_H */

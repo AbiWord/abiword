@@ -47,7 +47,7 @@ enum _tb_types {
 
 typedef struct {
 	int 			type, state;
-	AP_Toolbar_Id	id;
+	XAP_Toolbar_Id	id;
 	BBitmap 		*bitmap; 
 	BMenuField		*menu;
 	BRect			rect;
@@ -67,14 +67,14 @@ class ToolbarView: public BView {
 		~ToolbarView();
 				
 		bool AddSeperator();
-		bool AddItem(BBitmap *onbitmap, BBitmap *offbitmap, AP_Toolbar_Id id);
-		bool AddItem(BPopUpMenu * menu, int width, AP_Toolbar_Id id);
+		bool AddItem(BBitmap *onbitmap, BBitmap *offbitmap, XAP_Toolbar_Id id);
+		bool AddItem(BPopUpMenu * menu, int width, XAP_Toolbar_Id id);
 		
 		virtual void Draw(BRect clip);
 		virtual void FrameResized(float width, float height);
 		virtual void MessageReceived(BMessage *msg);
 		virtual	void MouseMoved(BPoint where, uint32 code, const BMessage *msg);
-		tb_item_t *  FindItemByID(AP_Toolbar_Id id);
+		tb_item_t *  FindItemByID(XAP_Toolbar_Id id);
 				
 		void 		HighLightItem(int index, int up);
 
@@ -102,7 +102,7 @@ public:
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 	//This is called by the local BeOS View
-	UT_Bool toolbarEvent(AP_Toolbar_Id id,
+	UT_Bool toolbarEvent(XAP_Toolbar_Id id,
 			 UT_UCSChar * pData,
 			 UT_uint32 dataLength);
 

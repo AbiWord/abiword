@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_BEOSDIALOG_FONTCHOOSER_H
-#define AP_BEOSDIALOG_FONTCHOOSER_H
+#ifndef XAP_BEOSDIALOG_FONTCHOOSER_H
+#define XAP_BEOSDIALOG_FONTCHOOSER_H
 
 #include "xap_Dlg_FontChooser.h"
 class XAP_BeOSFrame;
@@ -28,12 +28,12 @@ class XAP_BeOSFrame;
 class XAP_BeOSDialog_FontChooser : public XAP_Dialog_FontChooser
 {
 public:
-	XAP_BeOSDialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_BeOSDialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_BeOSDialog_FontChooser(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 
@@ -43,4 +43,4 @@ protected:
 	
 };
 
-#endif /* AP_BEOSDIALOG_FONTCHOOSER_H */
+#endif /* XAP_BEOSDIALOG_FONTCHOOSER_H */

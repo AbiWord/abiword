@@ -17,17 +17,17 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_ARGS_H
-#define AP_ARGS_H
+#ifndef XAP_ARGS_H
+#define XAP_ARGS_H
 
 #include "ut_types.h"
 
-class AP_Args
+class XAP_Args
 {
 public:
-	AP_Args(int argc, char ** argv);	/* for systems which cut up the command line for us */
-	AP_Args(const char * szCmdLine);	/* for systems which give one big arg */
-	~AP_Args(void);
+	XAP_Args(int argc, char ** argv);	/* for systems which cut up the command line for us */
+	XAP_Args(const char * szCmdLine);	/* for systems which give one big arg */
+	~XAP_Args(void);
 
 	int		m_argc;
 	char **	m_argv;
@@ -37,4 +37,4 @@ private:
 	char *	m_szBuf;
 };
 
-#endif /* AP_ARGS_H */
+#endif /* XAP_ARGS_H */

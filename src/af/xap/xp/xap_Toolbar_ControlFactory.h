@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_TOOLBAR_CONTROLFACTORY_H
-#define AP_TOOLBAR_CONTROLFACTORY_H
+#ifndef XAP_TOOLBAR_CONTROLFACTORY_H
+#define XAP_TOOLBAR_CONTROLFACTORY_H
 
 #include "ut_vector.h"
 //#include "EV_Toolbar_Control.h"
@@ -37,25 +37,25 @@ class EV_Toolbar;
 
 /*****************************************************************/
 
-class AP_Toolbar_ControlFactory
+class XAP_Toolbar_ControlFactory
 {
 public:
 	struct _ctl_table
 	{
-		AP_Toolbar_Id			m_id;
-		EV_Toolbar_Control *	(*m_pfnStaticConstructor)(EV_Toolbar * pToolbar, AP_Toolbar_Id id);
+		XAP_Toolbar_Id			m_id;
+		EV_Toolbar_Control *	(*m_pfnStaticConstructor)(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	};
 
-	AP_Toolbar_ControlFactory(int nrElem, const struct _ctl_table * pDlgTable);
-	virtual ~AP_Toolbar_ControlFactory(void);
+	XAP_Toolbar_ControlFactory(int nrElem, const struct _ctl_table * pDlgTable);
+	virtual ~XAP_Toolbar_ControlFactory(void);
 
-	EV_Toolbar_Control *		getControl(EV_Toolbar * pToolbar, AP_Toolbar_Id id);
+	EV_Toolbar_Control *		getControl(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 
 protected:
-	UT_Bool						_find_ControlInTable(AP_Toolbar_Id id, UT_uint32 * pIndex) const;
+	UT_Bool						_find_ControlInTable(XAP_Toolbar_Id id, UT_uint32 * pIndex) const;
 	
 	UT_uint32					m_nrElementsCtlTable;
 	const struct _ctl_table *	m_ctl_table;			/* an array of elements */
 };
 
-#endif /* AP_TOOLBAR_CONTROLFACTORY_H */
+#endif /* XAP_TOOLBAR_CONTROLFACTORY_H */

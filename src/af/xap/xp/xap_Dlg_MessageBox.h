@@ -22,10 +22,10 @@
 
 #include "xap_Dialog.h"
 
-class XAP_Dialog_MessageBox : public AP_Dialog_NonPersistent
+class XAP_Dialog_MessageBox : public XAP_Dialog_NonPersistent
 {
 public:
-	XAP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Dialog_MessageBox(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_MessageBox(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;

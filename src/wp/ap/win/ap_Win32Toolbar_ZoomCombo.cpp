@@ -26,14 +26,14 @@
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_Win32Toolbar_ZoomCombo::static_constructor(EV_Toolbar * pToolbar,
-														  AP_Toolbar_Id id)
+														  XAP_Toolbar_Id id)
 {
 	AP_Win32Toolbar_ZoomCombo * p = new AP_Win32Toolbar_ZoomCombo(pToolbar,id);
 	return p;
 }
 
 AP_Win32Toolbar_ZoomCombo::AP_Win32Toolbar_ZoomCombo(EV_Toolbar * pToolbar,
-													 AP_Toolbar_Id id)
+													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);

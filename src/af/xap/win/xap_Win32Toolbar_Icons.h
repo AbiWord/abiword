@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32TOOLBARICONS_H
-#define AP_WIN32TOOLBARICONS_H
+#ifndef XAP_WIN32TOOLBARICONS_H
+#define XAP_WIN32TOOLBARICONS_H
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -42,4 +42,4 @@ public:
 protected:
 };
 
-#endif /* AP_WIN32TOOLBARICONS_H */
+#endif /* XAP_WIN32TOOLBARICONS_H */

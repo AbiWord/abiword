@@ -32,7 +32,7 @@
 
 /*****************************************************************/
 
-XAP_MacApp::XAP_MacApp(AP_Args * pArgs, const char * szAppName)
+XAP_MacApp::XAP_MacApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	m_pMacToolbarIcons = 0;
@@ -66,12 +66,12 @@ void XAP_MacApp::reallyExit(void)
 	ExitToShell();
 }
 
-AP_DialogFactory * XAP_MacApp::getDialogFactory(void)
+XAP_DialogFactory * XAP_MacApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-AP_Toolbar_ControlFactory * XAP_MacApp::getControlFactory(void)
+XAP_Toolbar_ControlFactory * XAP_MacApp::getControlFactory(void)
 {
 	return &m_controlFactory;
 }

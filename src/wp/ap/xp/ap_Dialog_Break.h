@@ -26,10 +26,10 @@
 
 class XAP_Frame;
 
-class AP_Dialog_Break : public AP_Dialog_NonPersistent
+class AP_Dialog_Break : public XAP_Dialog_NonPersistent
 {
 public:
-	AP_Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	AP_Dialog_Break(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Break(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;

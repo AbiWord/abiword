@@ -32,7 +32,7 @@
 
 // fill in the table
 
-static struct AP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = {
+static struct XAP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = {
 	
 #define Declare_Control(id,cls)	{ id, cls::static_constructor },
 #include "ap_Win32Toolbar_Control_All.h"
@@ -44,7 +44,7 @@ static struct AP_Toolbar_ControlFactory::_ctl_table s_ctl_table[] = {
 /*****************************************************************/
   
 AP_Win32Toolbar_ControlFactory::AP_Win32Toolbar_ControlFactory()
-	: AP_Toolbar_ControlFactory(NrElements(s_ctl_table), s_ctl_table)
+	: XAP_Toolbar_ControlFactory(NrElements(s_ctl_table), s_ctl_table)
 {
 }
 

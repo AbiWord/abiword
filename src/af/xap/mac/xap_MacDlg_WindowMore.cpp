@@ -25,21 +25,21 @@
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
 
-#include "ap_Dialog_Id.h"
+#include "xap_Dialog_Id.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_MacDlg_WindowMore.h"
 
 
 /*****************************************************************/
-AP_Dialog * XAP_MacDialog_WindowMore::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * XAP_MacDialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	XAP_MacDialog_WindowMore * p = new XAP_MacDialog_WindowMore(pFactory,id);
 	return p;
 }
 
-XAP_MacDialog_WindowMore::XAP_MacDialog_WindowMore(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+XAP_MacDialog_WindowMore::XAP_MacDialog_WindowMore(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: XAP_Dialog_WindowMore(pDlgFactory,id)
 {
 }

@@ -48,7 +48,7 @@
 
 /*****************************************************************/
 
-AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
+AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_UnixApp(pArgs,szAppName)
 {
 	m_prefs = NULL;
@@ -256,7 +256,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	
 	// initialize our application.
 
-	AP_Args Args = AP_Args(argc,argv);
+	XAP_Args Args = XAP_Args(argc,argv);
 
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
 

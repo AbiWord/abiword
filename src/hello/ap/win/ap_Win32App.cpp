@@ -47,7 +47,7 @@
 
 /*****************************************************************/
 
-AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
+AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
 	: XAP_Win32App(hInstance, pArgs,szAppName)
 {
 	m_prefs = NULL;
@@ -199,7 +199,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	// initialize our application.
 
-	AP_Args Args = AP_Args(argc,argv);
+	XAP_Args Args = XAP_Args(argc,argv);
 	
 	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();

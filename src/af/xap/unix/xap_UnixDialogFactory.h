@@ -17,12 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOGFACTORY_H
-#define AP_UNIXDIALOGFACTORY_H
+#ifndef XAP_UNIXDIALOGFACTORY_H
+#define XAP_UNIXDIALOGFACTORY_H
 
 #include "xap_DialogFactory.h"
 
-class AP_UnixDialogFactory : public AP_DialogFactory
+class AP_UnixDialogFactory : public XAP_DialogFactory
 {
 public:
 	AP_UnixDialogFactory(XAP_App * pApp);
@@ -32,4 +32,4 @@ public:
 protected:
 };
 
-#endif /* AP_UNIXDIALOGFACTORY_H */
+#endif /* XAP_UNIXDIALOGFACTORY_H */

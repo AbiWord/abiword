@@ -39,7 +39,7 @@
 
 /*****************************************************************/
 
-XAP_UnixApp::XAP_UnixApp(AP_Args * pArgs, const char * szAppName)
+XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	m_pUnixToolbarIcons = 0;
@@ -97,12 +97,12 @@ void XAP_UnixApp::reallyExit(void)
 	gtk_main_quit();
 }
 
-AP_DialogFactory * XAP_UnixApp::getDialogFactory(void)
+XAP_DialogFactory * XAP_UnixApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-AP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory(void)
+XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory(void)
 {
 	return &m_controlFactory;
 }

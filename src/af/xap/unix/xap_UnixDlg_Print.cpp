@@ -38,8 +38,8 @@
 
 static void _notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
 {
-	AP_DialogFactory * pDialogFactory
-		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
@@ -58,15 +58,15 @@ static void _notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
 
 /*****************************************************************/
 
-AP_Dialog * XAP_UnixDialog_Print::static_constructor(AP_DialogFactory * pFactory,
-													 AP_Dialog_Id id)
+XAP_Dialog * XAP_UnixDialog_Print::static_constructor(XAP_DialogFactory * pFactory,
+													 XAP_Dialog_Id id)
 {
 	XAP_UnixDialog_Print * p = new XAP_UnixDialog_Print(pFactory,id);
 	return p;
 }
 
-XAP_UnixDialog_Print::XAP_UnixDialog_Print(AP_DialogFactory * pDlgFactory,
-										   AP_Dialog_Id id)
+XAP_UnixDialog_Print::XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory,
+										   XAP_Dialog_Id id)
 	: XAP_Dialog_Print(pDlgFactory,id)
 {
 	memset(&m_persistPrintDlg, 0, sizeof(m_persistPrintDlg));

@@ -49,14 +49,14 @@ typedef enum _ev_Toolbar_LayoutFlags
 class EV_Toolbar_LayoutItem
 {
 public:
-	EV_Toolbar_LayoutItem(AP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags);
+	EV_Toolbar_LayoutItem(XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags);
 	~EV_Toolbar_LayoutItem(void);
 
-	AP_Toolbar_Id				getToolbarId(void) const;
+	XAP_Toolbar_Id				getToolbarId(void) const;
 	EV_Toolbar_LayoutFlags		getToolbarLayoutFlags(void) const;
 
 protected:
-	AP_Toolbar_Id				m_id;
+	XAP_Toolbar_Id				m_id;
 	EV_Toolbar_LayoutFlags		m_flags;
 };
 
@@ -69,7 +69,7 @@ public:
 	~EV_Toolbar_Layout(void);
 
 	UT_Bool						setLayoutItem(UT_uint32 indexLayoutItem,
-											  AP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags);
+											  XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags);
 	EV_Toolbar_LayoutItem *		getLayoutItem(UT_uint32 indexLayoutItem) const;
 	const char *				getName(void) const;
 	UT_uint32					getLayoutItemCount(void) const;

@@ -76,7 +76,7 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pBeOSApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
-	AP_Toolbar_ControlFactory * pFactory = m_pBeOSApp->getControlFactory();
+	XAP_Toolbar_ControlFactory * pFactory = m_pBeOSApp->getControlFactory();
 	UT_ASSERT(pFactory);
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
@@ -103,7 +103,7 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
-		AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
@@ -216,7 +216,7 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
-		AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		UT_ASSERT(pAction);
 
@@ -319,7 +319,7 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 }
 
 // We call this when something substantial has happened to us
-UT_Bool EV_BeOSToolbar::toolbarEvent(AP_Toolbar_Id id,
+UT_Bool EV_BeOSToolbar::toolbarEvent(XAP_Toolbar_Id id,
 				 UT_UCSChar * pData,
 				 UT_uint32 dataLength) {
 	// user selected something from this toolbar.
@@ -440,7 +440,7 @@ ToolbarView::~ToolbarView() {
 	; //Do nothing ...
 }
 
-tb_item_t * ToolbarView::FindItemByID(AP_Toolbar_Id id) {
+tb_item_t * ToolbarView::FindItemByID(XAP_Toolbar_Id id) {
 	int i;
 	
 	for (i=0; i<item_count; i++) {
@@ -453,7 +453,7 @@ tb_item_t * ToolbarView::FindItemByID(AP_Toolbar_Id id) {
 	return(NULL);
 }
 
-bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, AP_Toolbar_Id id) {
+bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id id) {
 	if (item_count >= ITEM_MAX -1)
 		return(false);
 		
@@ -475,7 +475,7 @@ bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, AP_Toolbar_Id 
 	}
 	return(true);
 }
-bool ToolbarView::AddItem(BPopUpMenu *popupmenu, int iWidth, AP_Toolbar_Id id) {
+bool ToolbarView::AddItem(BPopUpMenu *popupmenu, int iWidth, XAP_Toolbar_Id id) {
 	if (item_count >= ITEM_MAX -1)
 		return(false);
 

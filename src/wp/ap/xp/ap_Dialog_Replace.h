@@ -26,10 +26,10 @@
 #include "xav_View.h"
 #include "pt_Types.h"
 
-class AP_Dialog_Replace : public AP_Dialog_FramePersistent
+class AP_Dialog_Replace : public XAP_Dialog_FramePersistent
 {
 public:
-	AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Replace(void);
 
 	virtual void				useStart(void);

@@ -26,7 +26,7 @@
 
 /*****************************************************************/
 
-EV_Menu_LayoutItem::EV_Menu_LayoutItem(AP_Menu_Id id, EV_Menu_LayoutFlags flags)
+EV_Menu_LayoutItem::EV_Menu_LayoutItem(XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
 {
 	m_id = id;
 	m_flags = flags;
@@ -36,7 +36,7 @@ EV_Menu_LayoutItem::~EV_Menu_LayoutItem(void)
 {
 }
 
-AP_Menu_Id EV_Menu_LayoutItem::getMenuId(void) const
+XAP_Menu_Id EV_Menu_LayoutItem::getMenuId(void) const
 {
 	return m_id;
 }
@@ -69,7 +69,7 @@ EV_Menu_Layout::~EV_Menu_Layout(void)
 	free(m_layoutTable);
 }
 
-UT_Bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, AP_Menu_Id id, EV_Menu_LayoutFlags flags)
+UT_Bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
 {
 	UT_ASSERT(indexLayoutItem < m_nrLayoutItems);
 	FREEP(m_layoutTable[indexLayoutItem]);

@@ -44,7 +44,7 @@
 
 /*****************************************************************/
 
-AP_BeOSApp::AP_BeOSApp(AP_Args * pArgs, const char * szAppName)
+AP_BeOSApp::AP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_BeOSApp(pArgs,szAppName)
 {
 	m_prefs = NULL;
@@ -251,7 +251,7 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	
 	// initialize our application.
 
-	AP_Args Args = AP_Args(argc,argv);
+	XAP_Args Args = XAP_Args(argc,argv);
 
 	AP_BeOSApp * pMyBeOSApp = new AP_BeOSApp(&Args, szAppName);
 

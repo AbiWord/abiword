@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOGFACTORY_H
-#define AP_DIALOGFACTORY_H
+#ifndef XAP_DIALOGFACTORY_H
+#define XAP_DIALOGFACTORY_H
 
 #include "ut_vector.h"
 #include "xap_Dialog.h"
@@ -32,37 +32,37 @@
 *****************************************************************/
 
 #include "xap_Types.h"
-class AP_Dialog;
+class XAP_Dialog;
 class XAP_App;
 class XAP_Frame;
 
 /*****************************************************************/
 
-class AP_DialogFactory
+class XAP_DialogFactory
 {
 public:
 	struct _dlg_table
 	{
-		AP_Dialog_Id	m_id;
-		AP_Dialog_Type	m_type;
-		AP_Dialog *		(*m_pfnStaticConstructor)(AP_DialogFactory *, AP_Dialog_Id id);
+		XAP_Dialog_Id	m_id;
+		XAP_Dialog_Type	m_type;
+		XAP_Dialog *	(*m_pfnStaticConstructor)(XAP_DialogFactory *, XAP_Dialog_Id id);
 	};
 
-	AP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
-	AP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
-	virtual ~AP_DialogFactory(void);
+	XAP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
+	XAP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
+	virtual ~XAP_DialogFactory(void);
 
 	inline XAP_App *	getApp(void) const	{ return m_pApp; };
 
-	AP_Dialog *			requestDialog(AP_Dialog_Id id);
-	void				releaseDialog(AP_Dialog * pDialog);
+	XAP_Dialog *		requestDialog(XAP_Dialog_Id id);
+	void				releaseDialog(XAP_Dialog * pDialog);
 
 protected:
-	UT_Bool				_findDialogInTable(AP_Dialog_Id id, UT_uint32 * pIndex) const;
+	UT_Bool				_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const;
 	
 	XAP_App *			m_pApp;
 	XAP_Frame *			m_pFrame;
-	AP_Dialog_Type		m_dialogType;
+	XAP_Dialog_Type		m_dialogType;
 	UT_Vector			m_vecDialogs;
 	UT_Vector			m_vecDialogIds;
 
@@ -70,4 +70,4 @@ protected:
 	const struct _dlg_table *	m_dlg_table;			/* an array of elements */
 };
 
-#endif /* AP_DIALOGFACTORY_H */
+#endif /* XAP_DIALOGFACTORY_H */

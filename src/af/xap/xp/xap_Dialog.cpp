@@ -23,7 +23,7 @@
 
 /*****************************************************************/
 
-AP_Dialog::AP_Dialog(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
+XAP_Dialog::XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 {
 	UT_ASSERT(pDlgFactory);
 
@@ -34,45 +34,45 @@ AP_Dialog::AP_Dialog(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	UT_ASSERT(m_pApp);
 }
 
-AP_Dialog::~AP_Dialog(void)
+XAP_Dialog::~XAP_Dialog(void)
 {
 }
 
-AP_Dialog_Id AP_Dialog::getDialogId(void) const
+XAP_Dialog_Id XAP_Dialog::getDialogId(void) const
 {
 	return m_id;
 }
 
 /*****************************************************************/
 
-AP_Dialog_NonPersistent::AP_Dialog_NonPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog(pDlgFactory,id)
+XAP_Dialog_NonPersistent::XAP_Dialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog(pDlgFactory,id)
 {
 }
 
-AP_Dialog_NonPersistent::~AP_Dialog_NonPersistent(void)
+XAP_Dialog_NonPersistent::~XAP_Dialog_NonPersistent(void)
 {
 }
 
 /*****************************************************************/
 
-AP_Dialog_Persistent::AP_Dialog_Persistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog(pDlgFactory,id)
+XAP_Dialog_Persistent::XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog(pDlgFactory,id)
 {
 	m_bInUse = UT_FALSE;
 }
 
-AP_Dialog_Persistent::~AP_Dialog_Persistent(void)
+XAP_Dialog_Persistent::~XAP_Dialog_Persistent(void)
 {
 }
 
-void AP_Dialog_Persistent::useStart(void)
+void XAP_Dialog_Persistent::useStart(void)
 {
 	UT_ASSERT(!m_bInUse);
 	m_bInUse = UT_TRUE;
 }
 
-void AP_Dialog_Persistent::useEnd(void)
+void XAP_Dialog_Persistent::useEnd(void)
 {
 	UT_ASSERT(m_bInUse);
 	m_bInUse = UT_FALSE;
@@ -80,42 +80,42 @@ void AP_Dialog_Persistent::useEnd(void)
 
 /*****************************************************************/
 
-AP_Dialog_FramePersistent::AP_Dialog_FramePersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_Persistent(pDlgFactory,id)
+XAP_Dialog_FramePersistent::XAP_Dialog_FramePersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_Persistent(pDlgFactory,id)
 {
 }
 
-AP_Dialog_FramePersistent::~AP_Dialog_FramePersistent(void)
+XAP_Dialog_FramePersistent::~XAP_Dialog_FramePersistent(void)
 {
 }
 
-void AP_Dialog_FramePersistent::useStart(void)
+void XAP_Dialog_FramePersistent::useStart(void)
 {
-	AP_Dialog_Persistent::useStart();
+	XAP_Dialog_Persistent::useStart();
 }
 
-void AP_Dialog_FramePersistent::useEnd(void)
+void XAP_Dialog_FramePersistent::useEnd(void)
 {
-	AP_Dialog_Persistent::useEnd();
+	XAP_Dialog_Persistent::useEnd();
 }
 
 /*****************************************************************/
 
-AP_Dialog_AppPersistent::AP_Dialog_AppPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_Persistent(pDlgFactory,id)
+XAP_Dialog_AppPersistent::XAP_Dialog_AppPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_Persistent(pDlgFactory,id)
 {
 }
 
-AP_Dialog_AppPersistent::~AP_Dialog_AppPersistent(void)
+XAP_Dialog_AppPersistent::~XAP_Dialog_AppPersistent(void)
 {
 }
 
-void AP_Dialog_AppPersistent::useStart(void)
+void XAP_Dialog_AppPersistent::useStart(void)
 {
-	AP_Dialog_Persistent::useStart();
+	XAP_Dialog_Persistent::useStart();
 }
 
-void AP_Dialog_AppPersistent::useEnd(void)
+void XAP_Dialog_AppPersistent::useEnd(void)
 {
-	AP_Dialog_Persistent::useEnd();
+	XAP_Dialog_Persistent::useEnd();
 }

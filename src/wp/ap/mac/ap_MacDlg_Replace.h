@@ -29,7 +29,7 @@ class XAP_MacFrame;
 class AP_MacDialog_Replace: public AP_Dialog_Replace
 {
 public:
-	AP_MacDialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	AP_MacDialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_MacDialog_Replace(void);
 
 };

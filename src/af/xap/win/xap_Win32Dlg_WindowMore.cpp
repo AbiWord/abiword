@@ -35,15 +35,15 @@
 #include "xap_Win32Resources.rc2"
 
 /*****************************************************************/
-AP_Dialog * XAP_Win32Dialog_WindowMore::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * XAP_Win32Dialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	XAP_Win32Dialog_WindowMore * p = new XAP_Win32Dialog_WindowMore(pFactory,id);
 	return p;
 }
 
-XAP_Win32Dialog_WindowMore::XAP_Win32Dialog_WindowMore(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+XAP_Win32Dialog_WindowMore::XAP_Win32Dialog_WindowMore(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: XAP_Dialog_WindowMore(pDlgFactory,id)
 {
 }

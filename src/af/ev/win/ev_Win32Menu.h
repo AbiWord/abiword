@@ -48,8 +48,8 @@ public:
 									 HWND hWnd, HMENU hMenu, WPARAM wParam);
 
 	inline HMENU		getMenuHandle(void) const			{ return m_myMenu; };
-	inline AP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (AP_Menu_Id)(cmd - WM_USER); };
-	inline UINT			WmCommandFromMenuId(AP_Menu_Id id)	{ return (id + WM_USER); };
+	inline XAP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (XAP_Menu_Id)(cmd - WM_USER); };
+	inline UINT			WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); };
 
 protected:
 	XAP_Win32App *				m_pWin32App;

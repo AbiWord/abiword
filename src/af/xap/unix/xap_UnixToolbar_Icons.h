@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXTOOLBARICONS_H
-#define AP_UNIXTOOLBARICONS_H
+#ifndef XAP_UNIXTOOLBARICONS_H
+#define XAP_UNIXTOOLBARICONS_H
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
@@ -39,4 +39,4 @@ public:
 protected:
 };
 
-#endif /* AP_UNIXTOOLBARICONS_H */
+#endif /* XAP_UNIXTOOLBARICONS_H */

@@ -96,7 +96,7 @@ UT_Bool XAP_MacFrame::openURL(const char * szURL)
 	return UT_FALSE;
 }
 
-AP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
+XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 {
 	return 0;
 }

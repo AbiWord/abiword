@@ -53,9 +53,9 @@ typedef enum _ev_Toolbar_ItemState			/* values may be ORed */
 	
 } EV_Toolbar_ItemState;
 
-typedef EV_Toolbar_ItemState ( EV_GetToolbarItemState_Fn )(AV_View * pAV_View, AP_Toolbar_Id id, const char ** pszState);
-typedef EV_Toolbar_ItemState (*EV_GetToolbarItemState_pFn)(AV_View * pAV_View, AP_Toolbar_Id id, const char ** pszState);
-#define Defun_EV_GetToolbarItemState_Fn(fn) EV_Toolbar_ItemState fn(AV_View * pAV_View, AP_Toolbar_Id id, const char ** pszState)
+typedef EV_Toolbar_ItemState ( EV_GetToolbarItemState_Fn )(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState);
+typedef EV_Toolbar_ItemState (*EV_GetToolbarItemState_pFn)(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState);
+#define Defun_EV_GetToolbarItemState_Fn(fn) EV_Toolbar_ItemState fn(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState)
 
 #define EV_TIS_ShouldBeGray(tis)		(((tis) & EV_TIS_Gray)!=0)
 #define EV_TIS_ShouldBeToggled(tis)		(((tis) & EV_TIS_Toggled)!=0)
@@ -82,21 +82,21 @@ typedef enum _ev_Toolbar_ItemType
 class EV_Toolbar_Action
 {
 public:
-	EV_Toolbar_Action(AP_Toolbar_Id id,
+	EV_Toolbar_Action(XAP_Toolbar_Id id,
 					  EV_Toolbar_ItemType type,
 					  const char * szMethodName,
 					  AV_ChangeMask maskOfInterest,
 					  EV_GetToolbarItemState_pFn pfnGetState);
 	~EV_Toolbar_Action(void);
 
-	AP_Toolbar_Id					getToolbarId(void) const;
+	XAP_Toolbar_Id					getToolbarId(void) const;
 	EV_Toolbar_ItemType				getItemType(void) const;
 	const char *					getMethodName(void) const;
 	AV_ChangeMask					getChangeMaskOfInterest(void) const;
 	EV_Toolbar_ItemState			getToolbarItemState(AV_View * pView, const char ** pszState) const;
 	
 protected:
-	AP_Toolbar_Id					m_id;
+	XAP_Toolbar_Id					m_id;
 	EV_Toolbar_ItemType				m_type;
 	char *							m_szMethodName;		/* name of method to invoke */
 
@@ -109,20 +109,20 @@ protected:
 class EV_Toolbar_ActionSet				/* a glorified array with bounds checking */
 {
 public:
-	EV_Toolbar_ActionSet(AP_Toolbar_Id first, AP_Toolbar_Id last);
+	EV_Toolbar_ActionSet(XAP_Toolbar_Id first, XAP_Toolbar_Id last);
 	~EV_Toolbar_ActionSet(void);
 
-	UT_Bool				setAction(AP_Toolbar_Id id,
+	UT_Bool				setAction(XAP_Toolbar_Id id,
 								  EV_Toolbar_ItemType type,
 								  const char * szMethodName,
 								  AV_ChangeMask maskOfInterest,
 								  EV_GetToolbarItemState_pFn pfnGetState);
-	EV_Toolbar_Action *	getAction(AP_Toolbar_Id id) const;
+	EV_Toolbar_Action *	getAction(XAP_Toolbar_Id id) const;
 
 protected:
 	EV_Toolbar_Action **	m_actionTable;
-	AP_Toolbar_Id			m_first;
-	AP_Toolbar_Id			m_last;
+	XAP_Toolbar_Id			m_first;
+	XAP_Toolbar_Id			m_last;
 };
 
 #endif /* EV_TOOLBAR_ACTIONS_H */

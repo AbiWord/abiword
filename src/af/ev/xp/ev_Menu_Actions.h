@@ -58,25 +58,25 @@ typedef enum _ev_Menu_ItemState			/* values may be ORed */
 
 } EV_Menu_ItemState;
 
-typedef EV_Menu_ItemState ( EV_GetMenuItemState_Fn )(AV_View * pView, AP_Menu_Id id);
-typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, AP_Menu_Id id);
-#define Defun_EV_GetMenuItemState_Fn(fn) EV_Menu_ItemState fn(AV_View * pAV_View, AP_Menu_Id id)
+typedef EV_Menu_ItemState ( EV_GetMenuItemState_Fn )(AV_View * pView, XAP_Menu_Id id);
+typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, XAP_Menu_Id id);
+#define Defun_EV_GetMenuItemState_Fn(fn) EV_Menu_ItemState fn(AV_View * pAV_View, XAP_Menu_Id id)
 
 // TODO decide if ...GetMenuItemComputedLabel... should take an XAP_App or an AV_View.
 // TODO for most-recently-used-file-list and window-history, we probably just need
 // TODO the ap.  but for view-specific things (like toggles where we change the menu
 // TODO item name rather than doing a checkmark), we need the view.
 
-typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(XAP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
-typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(XAP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
-#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(XAP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id)
+typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(XAP_App * pApp, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
+typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(XAP_App * pApp, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
+#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(XAP_App * pApp, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
 
 /*****************************************************************/
 
 class EV_Menu_Action
 {
 public:
-	EV_Menu_Action(AP_Menu_Id id,
+	EV_Menu_Action(XAP_Menu_Id id,
 				   UT_Bool bHoldsSubMenu,
 				   UT_Bool bRaisesDialog,
 				   UT_Bool bCheckable,
@@ -85,7 +85,7 @@ public:
 				   EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
 	~EV_Menu_Action(void);
 
-	AP_Menu_Id						getMenuId(void) const;
+	XAP_Menu_Id						getMenuId(void) const;
 	UT_Bool							hasDynamicLabel(void) const;
 	const char *					getDynamicLabel(XAP_App * pApp, const EV_Menu_Label * pLabel) const;
 	const char *					getMethodName(void) const;
@@ -95,7 +95,7 @@ public:
 	UT_Bool							isCheckable(void) const;
 	
 protected:
-	AP_Menu_Id						m_id;
+	XAP_Menu_Id						m_id;
 	UT_Bool							m_bHoldsSubMenu;	/* is a PullRight */
 	UT_Bool							m_bRaisesDialog;	/* does it raise a dialog */
 	UT_Bool							m_bCheckable;		/* is it checkable */
@@ -109,22 +109,22 @@ protected:
 class EV_Menu_ActionSet					/* a glorified array with bounds checking */
 {
 public:
-	EV_Menu_ActionSet(AP_Menu_Id first, AP_Menu_Id last);
+	EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last);
 	~EV_Menu_ActionSet(void);
 
-	UT_Bool				setAction(AP_Menu_Id id,
+	UT_Bool				setAction(XAP_Menu_Id id,
 								  UT_Bool bHoldsSubMenu,
 								  UT_Bool bRaisesDialog,
 								  UT_Bool bCheckable,
 								  const char * szMethodName,
 								  EV_GetMenuItemState_pFn pfnGetState,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
-	EV_Menu_Action *	getAction(AP_Menu_Id id) const;
+	EV_Menu_Action *	getAction(XAP_Menu_Id id) const;
 
 protected:
 	EV_Menu_Action **	m_actionTable;
-	AP_Menu_Id			m_first;
-	AP_Menu_Id			m_last;
+	XAP_Menu_Id			m_first;
+	XAP_Menu_Id			m_last;
 };
 
 #endif /* EV_MENU_ACTIONS_H */

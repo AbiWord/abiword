@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_SCROLLBAR_VIEWLISTENER_H
-#define AP_SCROLLBAR_VIEWLISTENER_H
+#ifndef XAP_SCROLLBAR_VIEWLISTENER_H
+#define XAP_SCROLLBAR_VIEWLISTENER_H
 
 #include "xav_Listener.h"
 class AV_View;
@@ -36,4 +36,4 @@ protected:
 	AV_View *			m_pView;
 };
 
-#endif /* AP_SCROLLBAR_VIEWLISTENER_H */
+#endif /* XAP_SCROLLBAR_VIEWLISTENER_H */

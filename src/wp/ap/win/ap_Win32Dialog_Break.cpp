@@ -36,15 +36,15 @@
 
 /*****************************************************************/
 
-AP_Dialog * AP_Win32Dialog_Break::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * AP_Win32Dialog_Break::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	AP_Win32Dialog_Break * p = new AP_Win32Dialog_Break(pFactory,id);
 	return p;
 }
 
-AP_Win32Dialog_Break::AP_Win32Dialog_Break(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+AP_Win32Dialog_Break::AP_Win32Dialog_Break(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: AP_Dialog_Break(pDlgFactory,id)
 {
 }

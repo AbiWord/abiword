@@ -35,7 +35,7 @@
 
 /*****************************************************************/
 
-AP_MacApp::AP_MacApp(AP_Args * pArgs, const char * szAppName)
+AP_MacApp::AP_MacApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_MacApp(pArgs,szAppName)
 {
 	m_prefs = NULL;
@@ -132,7 +132,7 @@ int AP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 {
 	// initialize our application.
 
-	AP_Args Args = AP_Args(argc,argv);
+	XAP_Args Args = XAP_Args(argc,argv);
 	
 	AP_MacApp * pMyMacApp = new AP_MacApp(&Args, szAppName);
 	pMyMacApp->initialize();

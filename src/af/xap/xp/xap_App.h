@@ -30,9 +30,9 @@
 #include "ut_hash.h"
 #include "xmlparse.h"
 
-class AP_Args;
-class AP_DialogFactory;
-class AP_Toolbar_ControlFactory;
+class XAP_Args;
+class XAP_DialogFactory;
+class XAP_Toolbar_ControlFactory;
 class XAP_Frame;
 class EV_EditMethodContainer;
 class EV_EditBindingMap;
@@ -62,7 +62,7 @@ public:									/* TODO these should be protected */
 	static const char* s_szBuild_CompileDate;
 
 public:
-	XAP_App(AP_Args * pArgs, const char * szAppName);
+	XAP_App(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_App(void);
 
 	virtual UT_Bool					initialize(void);
@@ -86,10 +86,10 @@ public:
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
 	const EV_Toolbar_ActionSet *	getToolbarActionSet(void) const;
 
-	AP_Args *						getArgs(void) const;
+	XAP_Args *						getArgs(void) const;
 
-	virtual AP_DialogFactory *				getDialogFactory(void) = 0;
-	virtual AP_Toolbar_ControlFactory *		getControlFactory(void) = 0;
+	virtual XAP_DialogFactory *				getDialogFactory(void) = 0;
+	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void) = 0;
 
 	virtual XAP_Prefs *						getPrefs(void) const = 0;
 	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
@@ -99,7 +99,7 @@ public:
 	static AP_Clipboard*					getClipboard(void);
 	
 protected:
-	AP_Args *						m_pArgs;
+	XAP_Args *						m_pArgs;
 	const char *					m_szAppName;
 
 	EV_EditMethodContainer *		m_pEMC;				/* the set of all possible EditMethods in the app */

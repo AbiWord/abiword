@@ -172,7 +172,7 @@ ev_BeOSKeyboard * XAP_BeOSFrame::getBeOSKeyboard(void)
 	return m_pBeOSKeyboard;
 }
 
-AP_DialogFactory * XAP_BeOSFrame::getDialogFactory(void)
+XAP_DialogFactory * XAP_BeOSFrame::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }

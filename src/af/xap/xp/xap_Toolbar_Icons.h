@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_TOOLBAR_ICONS_H
-#define AP_TOOLBAR_ICONS_H
+#ifndef XAP_TOOLBAR_ICONS_H
+#define XAP_TOOLBAR_ICONS_H
 
 class AP_Toolbar_Icons
 {
@@ -32,4 +32,4 @@ protected:
 									   UT_uint32 * pSizeofData);
 };
 
-#endif /* AP_TOOLBAR_ICONS_H */
+#endif /* XAP_TOOLBAR_ICONS_H */

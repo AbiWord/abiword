@@ -32,15 +32,15 @@
 
 /*****************************************************************/
 
-AP_Dialog * AP_MacDialog_Break::static_constructor(AP_DialogFactory * pFactory,
-													 AP_Dialog_Id id)
+XAP_Dialog * AP_MacDialog_Break::static_constructor(XAP_DialogFactory * pFactory,
+													 XAP_Dialog_Id id)
 {
 	AP_MacDialog_Break * p = new AP_MacDialog_Break(pFactory,id);
 	return p;
 }
 
-AP_MacDialog_Break::AP_MacDialog_Break(AP_DialogFactory * pDlgFactory,
-										   AP_Dialog_Id id)
+AP_MacDialog_Break::AP_MacDialog_Break(XAP_DialogFactory * pDlgFactory,
+										   XAP_Dialog_Id id)
 	: AP_Dialog_Break(pDlgFactory,id)
 {
 }

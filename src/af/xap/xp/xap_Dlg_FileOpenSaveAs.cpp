@@ -51,8 +51,8 @@
 
 ******************************************************************/
 
-XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_AppPersistent(pDlgFactory,id)
+XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_AppPersistent(pDlgFactory,id)
 {
 	m_szPersistPathname = NULL;
 	m_szInitialPathname = NULL;
@@ -77,7 +77,7 @@ XAP_Dialog_FileOpenSaveAs::~XAP_Dialog_FileOpenSaveAs(void)
 
 void XAP_Dialog_FileOpenSaveAs::useStart(void)
 {
-	AP_Dialog_AppPersistent::useStart();
+	XAP_Dialog_AppPersistent::useStart();
 	
 	FREEP(m_szInitialPathname);
 	FREEP(m_szFinalPathname);
@@ -87,7 +87,7 @@ void XAP_Dialog_FileOpenSaveAs::useStart(void)
 
 void XAP_Dialog_FileOpenSaveAs::useEnd(void)
 {
-	AP_Dialog_AppPersistent::useEnd();
+	XAP_Dialog_AppPersistent::useEnd();
 
 	FREEP(m_szInitialPathname);
 	if (m_answer == a_OK)

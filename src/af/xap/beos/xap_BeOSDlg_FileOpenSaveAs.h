@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_BEOSDIALOG_FILEOPENSAVEAS_H
-#define AP_BEOSDIALOG_FILEOPENSAVEAS_H
+#ifndef XAP_BEOSDIALOG_FILEOPENSAVEAS_H
+#define XAP_BEOSDIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "ut_string.h"
@@ -35,12 +35,12 @@ extern sem_id					sync_sem;
 class XAP_BeOSDialog_FileOpenSaveAs : public XAP_Dialog_FileOpenSaveAs
 {
 public:
-	XAP_BeOSDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_BeOSDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_BeOSDialog_FileOpenSaveAs(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	void				SetAnswer(XAP_Dialog_FileOpenSaveAs::tAnswer ans) { 
 								m_answer = ans; 
 							}
@@ -54,4 +54,4 @@ protected:
 	BFilePanel				*m_pOpenPanel, *m_pSavePanel;
 };
 
-#endif /* AP_BEOSDIALOG_FILEOPENSAVEAS_H */
+#endif /* XAP_BEOSDIALOG_FILEOPENSAVEAS_H */

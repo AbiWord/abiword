@@ -23,6 +23,9 @@
 #include "xap_Dialog.h"
 #include "xav_View.h"
 
+// NOTE: don't localize these through the strings mechanism
+// NOTE: we need to be sure that legal text is built into the app
+
 #define XAP_ABOUT_TITLE "About %s"
 #define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."
 #define XAP_ABOUT_COPYRIGHT "Copyright 1998, 1999 AbiSource, Inc."
@@ -31,10 +34,10 @@
 #define XAP_ABOUT_BUILD "Build options: %s"
 #define XAP_ABOUT_URL "For more information: http://www.abisource.com/"
 
-class XAP_Dialog_About : public AP_Dialog_NonPersistent
+class XAP_Dialog_About : public XAP_Dialog_NonPersistent
 {
  public:
-	XAP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Dialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_About(void);
 
 	virtual void				runModal(XAP_Frame * pFrame) = 0;

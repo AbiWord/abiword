@@ -48,7 +48,7 @@ public:
 	
 	~EV_MacToolbar(void);
 
-	UT_Bool toolbarEvent(AP_Toolbar_Id id,
+	UT_Bool toolbarEvent(XAP_Toolbar_Id id,
 						 UT_UCSChar * pData = 0,
 						 UT_uint32 dataLength = 0);
 	UT_Bool synthesize(void);
@@ -68,8 +68,8 @@ private:
 	UT_Vector						m_vecToolbarWidgets;
 	WindowPtr						m_hwnd;
 	
-	UT_Bool _refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, AP_Toolbar_Id id);
-	UT_Bool _refreshID(AP_Toolbar_Id id);
+	UT_Bool _refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id);
+	UT_Bool _refreshID(XAP_Toolbar_Id id);
 
 };
 

@@ -19,10 +19,10 @@
 
 
 
-#ifndef AP_EDITMETHOD_H
-#define AP_EDITMETHOD_H
+#ifndef XAP_EDITMETHOD_H
+#define XAP_EDITMETHOD_H
 
 EV_EditMethodContainer * AP_GetEditMethods(void);
 
-#endif /* AP_EDITMETHOD_H */
+#endif /* XAP_EDITMETHOD_H */
 

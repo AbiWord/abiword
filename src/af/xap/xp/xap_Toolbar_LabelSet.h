@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_TOOLBAR_LABELSET_H
-#define AP_TOOLBAR_LABELSET_H
+#ifndef XAP_TOOLBAR_LABELSET_H
+#define XAP_TOOLBAR_LABELSET_H
 
 #include "ev_Toolbar_Labels.h"
 
@@ -27,4 +27,4 @@ EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage);
 UT_uint32 AP_GetToolbarLabelSetLanguageCount(void);
 const char * AP_GetNthToolbarLabelLanguageName(UT_uint32 ndx);
 
-#endif /* AP_TOOLBAR_LABELSET_H */
+#endif /* XAP_TOOLBAR_LABELSET_H */

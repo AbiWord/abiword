@@ -68,7 +68,7 @@ public:
 	EV_UnixMouse *				getUnixMouse(void);
 	ev_UnixKeyboard *			getUnixKeyboard(void);
 
-	virtual AP_DialogFactory *	getDialogFactory(void);
+	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
 	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,

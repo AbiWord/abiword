@@ -37,7 +37,7 @@
 struct _lt
 {
 	EV_Menu_LayoutFlags			m_flags;
-	AP_Menu_Id					m_id;
+	XAP_Menu_Id					m_id;
 };
 
 #define BeginLayout(Name,Cxt)	static struct _lt s_ltTable_##Name[] = {

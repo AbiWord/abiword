@@ -26,10 +26,10 @@
 
 class XAP_Frame;
 
-class XAP_Dialog_Zoom : public AP_Dialog_NonPersistent
+class XAP_Dialog_Zoom : public XAP_Dialog_NonPersistent
 {
 public:
-	XAP_Dialog_Zoom(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Zoom(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;

@@ -53,7 +53,7 @@ EV_MacToolbar::~EV_MacToolbar(void)
 //	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 }
 
-UT_Bool EV_MacToolbar::toolbarEvent(AP_Toolbar_Id id,
+UT_Bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
 									  UT_UCSChar * pData,
 									  UT_uint32 dataLength)
 {
@@ -115,7 +115,7 @@ UT_Bool EV_MacToolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	AP_Toolbar_ControlFactory * pFactory = m_pMacApp->getControlFactory();
+	XAP_Toolbar_ControlFactory * pFactory = m_pMacApp->getControlFactory();
 	UT_ASSERT(pFactory);
 
 #if 0
@@ -173,7 +173,7 @@ UT_Bool EV_MacToolbar::synthesize(void)
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
-		AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
@@ -387,7 +387,7 @@ UT_Bool EV_MacToolbar::synthesize(void)
 			EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 			UT_ASSERT(pLayoutItem);
 
-			AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+			XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 			EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 			UT_ASSERT(pAction);
 
@@ -482,7 +482,7 @@ UT_Bool EV_MacToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
-		AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		UT_ASSERT(pAction);
 
@@ -510,7 +510,7 @@ UT_Bool EV_MacToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	return UT_TRUE;
 }
 
-UT_Bool EV_MacToolbar::_refreshID(AP_Toolbar_Id id)
+UT_Bool EV_MacToolbar::_refreshID(XAP_Toolbar_Id id)
 {
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pMacApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -524,7 +524,7 @@ UT_Bool EV_MacToolbar::_refreshID(AP_Toolbar_Id id)
 	return _refreshItem(pView, pAction, id);
 }
 
-UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, AP_Toolbar_Id id)
+UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id)
 {
 	const char * szState = 0;
 	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
@@ -608,7 +608,7 @@ UT_Bool EV_MacToolbar::getToolTip(long lParam)
 
 	// who's asking?
 	UINT idButton = lpttt->hdr.idFrom;
-	AP_Toolbar_Id id = ItemIdFromWmCommand(idButton);
+	XAP_Toolbar_Id id = ItemIdFromWmCommand(idButton);
 	
 	EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
 	if (!pLabel)

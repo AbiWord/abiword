@@ -26,8 +26,8 @@
 
 /*****************************************************************/
 
-XAP_Dialog_MessageBox::XAP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_NonPersistent(pDlgFactory,id)
+XAP_Dialog_MessageBox::XAP_Dialog_MessageBox(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
 	m_szMessage = NULL;
 	m_buttons = b_O;

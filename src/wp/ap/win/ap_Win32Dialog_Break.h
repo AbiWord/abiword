@@ -28,12 +28,12 @@ class XAP_Win32Frame;
 class AP_Win32Dialog_Break: public AP_Dialog_Break
 {
 public:
-	AP_Win32Dialog_Break(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	AP_Win32Dialog_Break(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Break(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
 protected:

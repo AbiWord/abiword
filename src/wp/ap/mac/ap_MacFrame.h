@@ -38,7 +38,7 @@ public:
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
 
-	virtual AP_DialogFactory *	getDialogFactory(void);
+	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 };

@@ -28,12 +28,12 @@ class XAP_Frame;
 class AP_BeOSDialog_Replace: public AP_Dialog_Replace
 {
 public:
-	AP_BeOSDialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	AP_BeOSDialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_BeOSDialog_Replace(void);
 
 	void 					runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 

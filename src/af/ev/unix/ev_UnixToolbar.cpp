@@ -45,7 +45,7 @@
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
-	_wd(EV_UnixToolbar * pUnixToolbar, AP_Toolbar_Id id, GtkWidget * widget = NULL)
+	_wd(EV_UnixToolbar * pUnixToolbar, XAP_Toolbar_Id id, GtkWidget * widget = NULL)
 	{
 		m_pUnixToolbar = pUnixToolbar;
 		m_id = id;
@@ -134,7 +134,7 @@ public:									// we create...
 	}
 	
 	EV_UnixToolbar *	m_pUnixToolbar;
-	AP_Toolbar_Id		m_id;
+	XAP_Toolbar_Id		m_id;
 	GtkWidget *			m_widget;
 	bool				m_blockSignal;
 
@@ -171,7 +171,7 @@ UT_Bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 	// invoke the appropriate function.
 	// return UT_TRUE iff handled.
 
-	AP_Toolbar_Id id = wd->m_id;
+	XAP_Toolbar_Id id = wd->m_id;
 	
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -229,7 +229,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
-	AP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
+	XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
 	UT_ASSERT(pFactory);
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
@@ -271,7 +271,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
-		AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
@@ -516,7 +516,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
-		AP_Toolbar_Id id = pLayoutItem->getToolbarId();
+		XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		UT_ASSERT(pAction);
 

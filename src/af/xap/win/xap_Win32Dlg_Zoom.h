@@ -28,12 +28,12 @@ class XAP_Win32Frame;
 class XAP_Win32Dialog_Zoom: public XAP_Dialog_Zoom
 {
 public:
-	XAP_Win32Dialog_Zoom(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Win32Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Win32Dialog_Zoom(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 

@@ -30,7 +30,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-EV_Toolbar_Action::EV_Toolbar_Action(AP_Toolbar_Id id,
+EV_Toolbar_Action::EV_Toolbar_Action(XAP_Toolbar_Id id,
 									 EV_Toolbar_ItemType type,
 									 const char * szMethodName,
 									 AV_ChangeMask maskOfInterest,
@@ -48,7 +48,7 @@ EV_Toolbar_Action::~EV_Toolbar_Action(void)
 	FREEP(m_szMethodName);
 }
 
-AP_Toolbar_Id EV_Toolbar_Action::getToolbarId(void) const
+XAP_Toolbar_Id EV_Toolbar_Action::getToolbarId(void) const
 {
 	return m_id;
 }
@@ -79,7 +79,7 @@ EV_Toolbar_ItemState EV_Toolbar_Action::getToolbarItemState(AV_View * pView, con
 /*****************************************************************/
 /*****************************************************************/
 
-EV_Toolbar_ActionSet::EV_Toolbar_ActionSet(AP_Toolbar_Id first, AP_Toolbar_Id last)
+EV_Toolbar_ActionSet::EV_Toolbar_ActionSet(XAP_Toolbar_Id first, XAP_Toolbar_Id last)
 {
 	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
 	// TODO move this allocation to somewhere else.
@@ -99,7 +99,7 @@ EV_Toolbar_ActionSet::~EV_Toolbar_ActionSet(void)
 	free(m_actionTable);
 }
 
-UT_Bool EV_Toolbar_ActionSet::setAction(AP_Toolbar_Id id,
+UT_Bool EV_Toolbar_ActionSet::setAction(XAP_Toolbar_Id id,
 										EV_Toolbar_ItemType type,
 										const char * szMethodName,
 										AV_ChangeMask maskOfInterest,
@@ -114,7 +114,7 @@ UT_Bool EV_Toolbar_ActionSet::setAction(AP_Toolbar_Id id,
 	return (m_actionTable[index] != NULL);
 }
 
-EV_Toolbar_Action * EV_Toolbar_ActionSet::getAction(AP_Toolbar_Id id) const
+EV_Toolbar_Action * EV_Toolbar_ActionSet::getAction(XAP_Toolbar_Id id) const
 {
 	if ((id < m_first) || (id > m_last))
 		return NULL;

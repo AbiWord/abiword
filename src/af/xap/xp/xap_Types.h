@@ -18,16 +18,16 @@
  */
 
 
-#ifndef AP_TYPES_H
-#define AP_TYPES_H
+#ifndef XAP_TYPES_H
+#define XAP_TYPES_H
 
 /*
 	The actual set of IDs is private to each app, but we want a general
 	way to reference them.  
 */
 
-typedef int		AP_Menu_Id;
-typedef int		AP_Toolbar_Id;
-typedef int		AP_Dialog_Id;
+typedef int		XAP_Menu_Id;
+typedef int		XAP_Toolbar_Id;
+typedef int		XAP_Dialog_Id;
 
-#endif /* AP_TYPES_H */
+#endif /* XAP_TYPES_H */

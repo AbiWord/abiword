@@ -198,7 +198,7 @@ ev_Win32Keyboard * XAP_Win32Frame::getWin32Keyboard(void)
 	return m_pWin32Keyboard;
 }
 
-AP_DialogFactory * XAP_Win32Frame::getDialogFactory(void)
+XAP_DialogFactory * XAP_Win32Frame::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
@@ -407,7 +407,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			for (k=0; k < nrToolbars; k++)
 			{
 				EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
-				AP_Toolbar_Id id = t->ItemIdFromWmCommand(LOWORD(wParam));
+				XAP_Toolbar_Id id = t->ItemIdFromWmCommand(LOWORD(wParam));
 				if (t->toolbarEvent(id))
 					return 0;
 			}

@@ -18,11 +18,11 @@
  */
 
 
-#ifndef AP_MENU_ACTIONSET_H
-#define AP_MENU_ACTIONSET_H
+#ifndef XAP_MENU_ACTIONSET_H
+#define XAP_MENU_ACTIONSET_H
 
 #include "ev_Menu_Actions.h"
 
 EV_Menu_ActionSet * AP_CreateMenuActionSet(void);
 
-#endif /* AP_MENU_ACTIONSET_H */
+#endif /* XAP_MENU_ACTIONSET_H */

@@ -37,7 +37,7 @@ typedef struct _printCBStruct printCBStruct;
 class XAP_UnixDialog_Print : public XAP_Dialog_Print
 {
 public:
-	XAP_UnixDialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_UnixDialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixDialog_Print(void);
 
 	virtual void			useStart(void);
@@ -47,7 +47,7 @@ public:
 	virtual GR_Graphics *	getPrinterGraphicsContext(void);
 	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
 
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
 

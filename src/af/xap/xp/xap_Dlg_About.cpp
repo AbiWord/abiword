@@ -29,8 +29,8 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 
-XAP_Dialog_About::XAP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_NonPersistent(pDlgFactory,id)
+XAP_Dialog_About::XAP_Dialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
 
 }

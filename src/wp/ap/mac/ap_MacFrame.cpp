@@ -59,7 +59,7 @@ UT_Bool	AP_MacFrame::show(void)
 	return UT_TRUE;
 }
 
-AP_DialogFactory *AP_MacFrame::getDialogFactory(void)
+XAP_DialogFactory *AP_MacFrame::getDialogFactory(void)
 {
 	return 0;
 }

@@ -36,15 +36,15 @@
 #define DEFAULT_BUTTON_WIDTH 85
 
 /*****************************************************************/
-AP_Dialog * XAP_BeOSDialog_About::static_constructor(AP_DialogFactory * pFactory,
-															 AP_Dialog_Id id)
+XAP_Dialog * XAP_BeOSDialog_About::static_constructor(XAP_DialogFactory * pFactory,
+													 XAP_Dialog_Id id)
 {
 	XAP_BeOSDialog_About * p = new XAP_BeOSDialog_About(pFactory,id);
 	return p;
 }
 
-XAP_BeOSDialog_About::XAP_BeOSDialog_About(AP_DialogFactory * pDlgFactory,
-											 AP_Dialog_Id id)
+XAP_BeOSDialog_About::XAP_BeOSDialog_About(XAP_DialogFactory * pDlgFactory,
+											 XAP_Dialog_Id id)
 	: XAP_Dialog_About(pDlgFactory,id)
 {
 }

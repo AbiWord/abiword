@@ -25,10 +25,10 @@ class GR_Graphics;
 
 /*****************************************************************/
 
-class XAP_Dialog_Print : public AP_Dialog_AppPersistent
+class XAP_Dialog_Print : public XAP_Dialog_AppPersistent
 {
 public:
-	XAP_Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
+	XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Print(void);
 
 	virtual void					useStart(void);

@@ -44,7 +44,7 @@
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
-	_wd(EV_UnixMenu * pUnixMenu, AP_Menu_Id id)
+	_wd(EV_UnixMenu * pUnixMenu, XAP_Menu_Id id)
 	{
 		m_pUnixMenu = pUnixMenu;
 		m_id = id;
@@ -144,7 +144,7 @@ public:									// we create...
 
 	GtkAccelGroup *		m_accelGroup;
 	EV_UnixMenu *		m_pUnixMenu;
-	AP_Menu_Id			m_id;
+	XAP_Menu_Id			m_id;
 };
 
 
@@ -251,7 +251,7 @@ XAP_UnixFrame * EV_UnixMenu::getFrame(void)
 	return m_pUnixFrame;
 }
 
-UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
+UT_Bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 {
 	// user selected something from the menu.
 	// invoke the appropriate function.
@@ -408,7 +408,7 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
-		AP_Menu_Id id = pLayoutItem->getMenuId();
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
@@ -760,7 +760,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		AP_Menu_Id id = pLayoutItem->getMenuId();
+		XAP_Menu_Id id = pLayoutItem->getMenuId();
 		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 

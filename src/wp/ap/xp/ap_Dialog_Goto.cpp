@@ -32,8 +32,8 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 
-AP_Dialog_Goto::AP_Dialog_Goto(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
-	: AP_Dialog_FramePersistent(pDlgFactory,id)
+AP_Dialog_Goto::AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_FramePersistent(pDlgFactory,id)
 {
 	persist_targetData = NULL;
 	persist_targetType = FV_JUMPTARGET_PAGE;
@@ -62,7 +62,7 @@ void AP_Dialog_Goto::useStart(void)
 {
 	UT_DEBUGMSG(("AP_Dialog_Goto::useStart(void) I've been called\n"));
 
-	AP_Dialog_FramePersistent::useStart();
+	XAP_Dialog_FramePersistent::useStart();
 
 	// restore from persistent storage
 	if (persist_targetData)
@@ -73,7 +73,7 @@ void AP_Dialog_Goto::useEnd(void)
 {
 
 	UT_DEBUGMSG(("AP_Dialog_Goto::useEnd(void) I've been called\n"));
-	AP_Dialog_FramePersistent::useEnd();
+	XAP_Dialog_FramePersistent::useEnd();
 
 	// persistent dialogs don't destroy this data
 	if (m_didSomething)

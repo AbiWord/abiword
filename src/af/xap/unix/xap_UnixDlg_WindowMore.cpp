@@ -35,15 +35,15 @@
 
 /*****************************************************************/
 
-AP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(AP_DialogFactory * pFactory,
-													   AP_Dialog_Id id)
+XAP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,
+													   XAP_Dialog_Id id)
 {
 	XAP_UnixDialog_WindowMore * p = new XAP_UnixDialog_WindowMore(pFactory,id);
 	return p;
 }
 
-XAP_UnixDialog_WindowMore::XAP_UnixDialog_WindowMore(AP_DialogFactory * pDlgFactory,
-											   AP_Dialog_Id id)
+XAP_UnixDialog_WindowMore::XAP_UnixDialog_WindowMore(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
 	: XAP_Dialog_WindowMore(pDlgFactory,id)
 {
 }

@@ -29,10 +29,10 @@ class EV_Toolbar;
 class AP_UnixToolbar_FontCombo : public EV_Toolbar_Control
 {
 public:
-	AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar, AP_Toolbar_Id id);
+	AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	virtual ~AP_UnixToolbar_FontCombo(void);
 
-	static EV_Toolbar_Control * 	static_constructor(EV_Toolbar *, AP_Toolbar_Id id);
+	static EV_Toolbar_Control * 	static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
 	virtual UT_Bool					populate(void);
 
