@@ -674,6 +674,10 @@ private:
 	s_StyleTree		m_style_tree;
 	bool            m_bIgnoreTillEnd;
 	PT_DocPosition  m_iEmbedStartPos;
+
+	double          m_dPageWidthInches;
+	double          m_dSecLeftMarginInches;
+	double          m_dSecRightMarginInches;
 };
 
 /*****************************************************************/
@@ -1557,6 +1561,32 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
 
 	m_utf8_1 = "div";
 	tagOpen (TT_DIV, m_utf8_1);
+	m_dPageWidthInches = m_pDocument->m_docPageSize.Width(DIM_IN);
+
+	const PP_AttrProp* pSectionAP = NULL;
+	m_pDocument->getAttrProp(api, &pSectionAP);
+	const char* pszLeftMargin = NULL;
+	const char* pszRightMargin = NULL;
+	pSectionAP->getProperty("page-margin-left", (const XML_Char *&)pszLeftMargin);
+	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
+
+	if(pszLeftMargin && pszLeftMargin[0])
+	{
+		m_dSecLeftMarginInches = UT_convertToInches(pszLeftMargin);
+	}
+	else
+	{
+		m_dSecLeftMarginInches = 1.0;
+	}
+
+	if(pszRightMargin && pszRightMargin[0])
+	{
+		m_dSecRightMarginInches = UT_convertToInches(pszLeftMargin);
+	}
+	else
+	{
+		m_dSecRightMarginInches = 1.0;
+	}
 
 	m_bInSection = true;
 }
@@ -2946,19 +2976,81 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	m_utf8_1 += styles;
 	m_utf8_1 += "\"";
 
-	tagOpen (TT_TABLE, m_utf8_1);
 
 	int nCols = m_TableHelper.getNumCols ();
 
 	float colWidth = 100 / static_cast<float>(nCols);
-	  
-	char * old_locale = setlocale (LC_NUMERIC, "C");
-	m_utf8_1  = "colgroup width=\"";
-	m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", colWidth, nCols);
-	m_utf8_1 += "\"";
-	setlocale (LC_NUMERIC, old_locale);
+	double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+//
+// Positioned columns controls
+//
+	const char * pszColumnProps = m_TableHelper.getTableProp("table-column-props");
+	if(pszColumnProps && *pszColumnProps)
+	{
+/*
+   These will be properties applied to all columns. To start with, just the 
+    widths of each column are specifed. These are translated to layout units.
+ 
+   The format of the string of properties is:
 
-	tagOpenClose (m_utf8_1, false);
+   table-column-props:1.2in/3.0in/1.3in/;
+
+   So we read back in pszColumnProps
+   1.2in/3.0in/1.3in/
+
+   The "/" characters will be used to delineate different column entries.
+   As new properties for each column are defined these will be delineated with "_"
+   characters. But we'll cross that bridge later.
+*/
+		UT_DEBUGMSG(("Processing Column width string %s \n",pszColumnProps));
+		UT_Vector vecDWidths;
+		UT_String sProps = pszColumnProps;
+		UT_sint32 sizes = sProps.size();
+		UT_sint32 i =0;
+		UT_sint32 j =0;
+		while(i < sizes)
+		{
+			for (j=i; (j<sizes) && (sProps[j] != '/') ; j++) {}
+			if((j+1)>i && sProps[j] == '/')
+			{
+				UT_String sSub = sProps.substr(i,(j-i));
+				i = j + 1;
+				double * pDWidth = new double;
+				*pDWidth = UT_convertToInches(sSub.c_str());
+				vecDWidths.addItem(reinterpret_cast<void *>(pDWidth));
+				UT_DEBUGMSG(("SEVIOR: width char %s \n",sSub.c_str()));
+			}
+		}
+		tagOpen (TT_TABLE, m_utf8_1);
+		for(i = 0; i< static_cast<UT_sint32>(vecDWidths.getItemCount());i++)
+		{
+			double * pDWidth = reinterpret_cast<double *>(vecDWidths.getNthItem(i));
+			double percent = 100.0*(*pDWidth/totWidth);
+
+
+			char * old_locale = setlocale (LC_NUMERIC, "C");
+			m_utf8_1  = "colgroup width=\"";
+			m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", percent,1);
+			m_utf8_1 += "\"";
+			UT_DEBUGMSG(("Output width def %s \n",m_utf8_1.utf8_str()));
+			setlocale (LC_NUMERIC, old_locale);
+			tagOpenClose (m_utf8_1, false);
+			m_utf8_1.clear();		
+		}
+		UT_VECTOR_PURGEALL(double *,vecDWidths);
+ 	}
+	else
+	{
+		tagOpen (TT_TABLE, m_utf8_1);
+
+		char * old_locale = setlocale (LC_NUMERIC, "C");
+		m_utf8_1  = "colgroup width=\"";
+		m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", colWidth, nCols);
+		m_utf8_1 += "\"";
+		setlocale (LC_NUMERIC, old_locale);
+
+		tagOpenClose (m_utf8_1, false);
+	}
 
 	m_utf8_1 = "tbody style=\"border: inherit\"";
 	tagOpen (TT_TBODY, m_utf8_1);
@@ -3305,7 +3397,10 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_tlistIndent(0),
 	m_tlistListID(0),
 	m_bIgnoreTillEnd(false),
-	m_iEmbedStartPos(0)
+	m_iEmbedStartPos(0),
+	m_dPageWidthInches(0.0),
+	m_dSecLeftMarginInches(0.0),
+	m_dSecRightMarginInches(0.0)
 {
 	// 
 }

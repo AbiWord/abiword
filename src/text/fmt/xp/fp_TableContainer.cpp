@@ -844,11 +844,13 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		return;
 	}
 	pPage->getScreenOffsets(pCol, col_x,col_y);
+	bool bDoClear = true;
 	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 //
 // Now correct for printing
 //
+		bDoClear = false;
 		UT_sint32 xdiff,ydiff;
 		pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
 		col_y = col_y - ydiff;
@@ -939,20 +941,50 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 // 		iBot = iTop + bRec.height;
 // 		iRight = iLeft + bRec.width;
 		m_bDrawRight = true;
+
+		//
+		// Have to draw white first because drawing is additive
+		//
+		PP_PropertyMap::Line clineBottom = getBottomStyle (pTableLayout);
+		PP_PropertyMap::Line clineLeft   = getLeftStyle   (pTableLayout);
+		PP_PropertyMap::Line clineRight  = getRightStyle  (pTableLayout);
+		PP_PropertyMap::Line clineTop    = getTopStyle    (pTableLayout);
+
+		UT_RGBColor white(255,255,255);
 		if (m_bDrawLeft)
 		{
+			if(bDoClear)
+			{
+				clineLeft.m_color = white;
+				_drawLine (clineLeft, iLeft, iTop, iLeft,  iBot);
+			}
 			_drawLine(lineLeft, iLeft, iTop, iLeft, iBot);
 		}
 		if(m_bDrawTop || bDrawTop)
 		{
+			if(bDoClear)
+			{
+				clineTop.m_color = white;
+				_drawLine(clineTop, iLeft, iTop, iRight, iTop);
+			}
 			_drawLine(lineTop, iLeft, iTop, iRight, iTop);
 		}
 		if(m_bDrawRight)
 		{
+			if(bDoClear)
+			{
+				clineRight.m_color = white;
+				_drawLine(clineRight, iRight, iTop, iRight, iBot);
+			}
 			_drawLine(lineRight, iRight, iTop, iRight, iBot);
 		}
 		if(m_bDrawBot || bDrawBot)
 		{
+			if(bDoClear)
+			{
+				clineBottom.m_color = white;
+				_drawLine(clineBottom, iLeft, iBot, iRight, iBot);
+			}
 			_drawLine(lineBottom, iLeft, iBot, iRight, iBot);
 		}
 	}

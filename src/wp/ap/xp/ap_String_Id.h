@@ -138,6 +138,7 @@ dcl(DLG_FormatFootnotes_EndPlaceEndSec,    "Place at end of Section")
 dcl(DLG_FormatFootnotes_EndPlacement,      "Placement")
 dcl(DLG_FormatFootnotes_FootnoteRestart,   "Numbering")
 
+
 /* Word Count dialog */
 dcl(DLG_WordCount_WordCountTitle,	"Word Count")
 dcl(DLG_WordCount_Statistics,		"Statistics:")
