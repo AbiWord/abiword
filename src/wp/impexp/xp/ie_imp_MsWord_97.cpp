@@ -5433,81 +5433,82 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 			}
 		}
 
+		if (m_iCurrentHeader < m_iHeadersCount) {
 
-		if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos +
-		                   m_pHeaders[m_iCurrentHeader].len)
-		{
-			// new header, time to move on ...
-			m_iCurrentHeader++;
-
-			// some headers can be 0-length, skip them ... (0-length:  len <=2)
-			while(m_pHeaders[m_iCurrentHeader].len <= 2 && m_iCurrentHeader < m_iHeadersCount)
+			if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos +
+			   m_pHeaders[m_iCurrentHeader].len)
 			{
+				// new header, time to move on ...
 				m_iCurrentHeader++;
-			}
+				
+				// some headers can be 0-length, skip them ... (0-length:  len <=2)
+				while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].len <= 2)
+				{
+					m_iCurrentHeader++;
+				}
 
-			// after the last header there is an extra paragraph
-			// marker that is still a part of the header section --
-			// we do not want that marker imported
-			if(m_iCurrentHeader ==  m_iHeadersCount)
-			{
-				UT_DEBUGMSG(("End of header marker at pos %d\n", iDocPosition));
-				return false;
+				// after the last header there is an extra paragraph
+				// marker that is still a part of the header section --
+				// we do not want that marker imported
+				if(m_iCurrentHeader ==  m_iHeadersCount)
+				{
+					UT_DEBUGMSG(("End of header marker at pos %d\n", iDocPosition));
+					return false;
+				}
+				
+				// do not return, processing needs to continue ...
 			}
-
-			// do not return, processing needs to continue ...
-		}
 		
-		if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos)
-		{
-			// need to insert our header/footer section, preserving
-			// any existing formatting ...
-			if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported &&
-			   m_pHeaders[m_iCurrentHeader].len > 2)
+			if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos)
 			{
-				UT_uint32 iOff = 0;
-				const XML_Char * attribsB[] = {NULL, NULL,
-											   NULL, NULL,
-											   NULL};
-
-				if(m_paraProps.size())
+				// need to insert our header/footer section, preserving
+				// any existing formatting ...
+				if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported &&
+				   m_pHeaders[m_iCurrentHeader].len > 2)
 				{
-					attribsB[iOff++] = "props";
-					attribsB[iOff++] = m_paraProps.c_str();
-				}
-
-				if(m_paraStyle.size())
-				{
-					attribsB[iOff++] = "style";
-					attribsB[iOff++] = m_paraStyle.c_str();
-				}
-				
-				const XML_Char * attribsC[] = {NULL, NULL,
-											   NULL, NULL,
-											   NULL};
-				iOff = 0;
-				if(m_charProps.size())
-				{
-					attribsC[iOff++] = "props";
-					attribsC[iOff++] = m_charProps.c_str();
-				}
-
-				if(m_charStyle.size())
-				{
-					attribsC[iOff++] = "style";
-					attribsC[iOff++] = m_charStyle.c_str();
-				}
-
-				const XML_Char * attribsS[] = {"type", NULL,
-											   "id",   NULL,
-											   NULL};
-
-				UT_String id;
-				UT_String_sprintf(id,"%d",m_pHeaders[m_iCurrentHeader].pid);
-				attribsS[3] = id.c_str();
-				
-				switch(m_pHeaders[m_iCurrentHeader].type)
-				{
+					UT_uint32 iOff = 0;
+					const XML_Char * attribsB[] = {NULL, NULL,
+												   NULL, NULL,
+												   NULL};
+					
+					if(m_paraProps.size())
+					{
+						attribsB[iOff++] = "props";
+						attribsB[iOff++] = m_paraProps.c_str();
+					}
+					
+					if(m_paraStyle.size())
+					{
+						attribsB[iOff++] = "style";
+						attribsB[iOff++] = m_paraStyle.c_str();
+					}
+					
+					const XML_Char * attribsC[] = {NULL, NULL,
+												   NULL, NULL,
+												   NULL};
+					iOff = 0;
+					if(m_charProps.size())
+					{
+						attribsC[iOff++] = "props";
+						attribsC[iOff++] = m_charProps.c_str();
+					}
+					
+					if(m_charStyle.size())
+					{
+						attribsC[iOff++] = "style";
+						attribsC[iOff++] = m_charStyle.c_str();
+					}
+					
+					const XML_Char * attribsS[] = {"type", NULL,
+												   "id",   NULL,
+												   NULL};
+					
+					UT_String id;
+					UT_String_sprintf(id,"%d",m_pHeaders[m_iCurrentHeader].pid);
+					attribsS[3] = id.c_str();
+					
+					switch(m_pHeaders[m_iCurrentHeader].type)
+					{
 					case HF_HeaderEven:
 						attribsS[1] = "header-even";
 						break;
@@ -5528,29 +5529,29 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 						break;
 					default:
 						UT_ASSERT(UT_NOT_REACHED);
-				}
-
-				// we use the document methods, not the importer methods intentionally 
-				getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
-				m_bInSect = true;
-
-				getDoc()->appendStrux(PTX_Block, attribsB);
-				m_bInPara = true;
-				
-				_appendFmt(attribsC);
-
-				// now we insert the same for any derivative headers
-				// ...
-				for (UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.hdr.getItemCount(); i++)
-				{
-					header * pH = (header*)m_pHeaders[m_iCurrentHeader].d.hdr.getNthItem(i);
-					UT_return_val_if_fail(pH, true);
+					}
 					
-					UT_String_sprintf(id,"%d",pH->pid);
-					attribsS[3] = id.c_str();
-
-					switch(pH->type)
+					// we use the document methods, not the importer methods intentionally 
+					getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
+					m_bInSect = true;
+					
+					getDoc()->appendStrux(PTX_Block, attribsB);
+					m_bInPara = true;
+					
+					_appendFmt(attribsC);
+					
+					// now we insert the same for any derivative headers
+					// ...
+					for (UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.hdr.getItemCount(); i++)
 					{
+						header * pH = (header*)m_pHeaders[m_iCurrentHeader].d.hdr.getNthItem(i);
+						UT_return_val_if_fail(pH, true);
+						
+						UT_String_sprintf(id,"%d",pH->pid);
+						attribsS[3] = id.c_str();
+						
+						switch(pH->type)
+						{
 						case HF_HeaderEven:
 							attribsS[1] = "header-even";
 							break;
@@ -5571,33 +5572,37 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 							break;
 						default:
 							UT_ASSERT(UT_NOT_REACHED);
+						}
+						
+						getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
+						
+						// we need to remember the HdrFtr fragment for
+						// later ...
+						pf_Frag * pF = getDoc()->getLastFrag();
+						UT_return_val_if_fail(pF && pF->getType() == pf_Frag::PFT_Strux, true);
+						
+						pf_Frag_Strux * pFS = (pf_Frag_Strux*)pF;
+						UT_return_val_if_fail(pFS->getStruxType() == PTX_SectionHdrFtr, true);
+						
+						m_pHeaders[m_iCurrentHeader].d.frag.addItem((void*)pF);
+						
+						getDoc()->appendStrux(PTX_Block, attribsB);
+						getDoc()->appendFmt(attribsC);
+						
 					}
-
-					getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
-
-					// we need to remember the HdrFtr fragment for
-					// later ...
-					pf_Frag * pF = getDoc()->getLastFrag();
-					UT_return_val_if_fail(pF && pF->getType() == pf_Frag::PFT_Strux, true);
-
-					pf_Frag_Strux * pFS = (pf_Frag_Strux*)pF;
-					UT_return_val_if_fail(pFS->getStruxType() == PTX_SectionHdrFtr, true);
-
-					m_pHeaders[m_iCurrentHeader].d.frag.addItem((void*)pF);
 					
-					getDoc()->appendStrux(PTX_Block, attribsB);
-					getDoc()->appendFmt(attribsC);
-					
+					return true;
 				}
-				
-				return true;
-			}
-			else
-			{
-				// just gobble the character ...
-				return false;
+				else
+				{
+					// just gobble the character ...
+					return false;
+				}
 			}
 			
+		} else {
+			UT_DEBUGMSG(("DOM: bad header joo joo\n"));
+			return false;
 		}
 
 		// if we got this far, we are somwhere inside the header, just
