@@ -74,6 +74,13 @@ WordPerfectParagraphProperties::WordPerfectParagraphProperties()
    m_justificationMode = WordPerfectParagraphProperties::full;
 }
 
+WordPerfectByteTag::WordPerfectByteTag(unsigned char byte, UT_Error (IE_Imp_WordPerfect::*func)())
+{
+   m_byte = byte;
+   m_func = func;
+}
+
+
 
 /****************************************************************************/
 /****************************************************************************/
@@ -211,6 +218,31 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
 {
    m_firstParagraph = true;
    m_undoOn = false;
+
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_EOL, &IE_Imp_WordPerfect::_insertSpace));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_SPACE, &IE_Imp_WordPerfect::_insertSpace));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_HARD_HYPHEN, &IE_Imp_WordPerfect::_insertHyphen));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_EXTENDED_CHARACTER, &IE_Imp_WordPerfect::_handleExtendedCharacter));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_DORMANT_HARD_RETURN, &IE_Imp_WordPerfect::_handleHardEndOfLine));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_HARD_EOL, &IE_Imp_WordPerfect::_handleHardEndOfLine));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_EOL_GROUP, &IE_Imp_WordPerfect::_handleEndOfLineGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_PAGE_GROUP, &IE_Imp_WordPerfect::_handlePageGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_COLUMN_GROUP, &IE_Imp_WordPerfect::_handleColumnGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_PARAGRAPH_GROUP, &IE_Imp_WordPerfect::_handleParagraphGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SET_NUMBER_GROUP, &IE_Imp_WordPerfect::_handleSetNumberGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_NUMBERING_METHOD_GROUP, &IE_Imp_WordPerfect::_handleNumberingMethodGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_DISPLAY_NUMBER_REFERENCE_GROUP, &IE_Imp_WordPerfect::_handleDisplayNumberReferenceGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_INCREMENT_NUMBER_GROUP, &IE_Imp_WordPerfect::_handleIncrementNumberGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_DECREMENT_NUMBER_GROUP, &IE_Imp_WordPerfect::_handleDecrementNumberGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_STYLE_GROUP, &IE_Imp_WordPerfect::_handleStyleGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_BOX_GROUP, &IE_Imp_WordPerfect::_handleBoxGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_TAB_GROUP, &IE_Imp_WordPerfect::_handleTabGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_CHARACTER_GROUP, &IE_Imp_WordPerfect::_handleCharacterGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_FOOTENDNOTE_GROUP, &IE_Imp_WordPerfect::_handleFootEndNoteGroup));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_UNDO_GROUP, &IE_Imp_WordPerfect::_handleUndo));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_ATTRIBUTE_ON, &IE_Imp_WordPerfect::_handleAttributeOn));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_ATTRIBUTE_OFF, &IE_Imp_WordPerfect::_handleAttributeOff));
+   m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_UNDO_GROUP, &IE_Imp_WordPerfect::_handleUndo));
 }
 
 IE_Imp_WordPerfect::~IE_Imp_WordPerfect() 
@@ -389,8 +421,6 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
 {
    UT_DEBUGMSG(("WordPerfect: Parsing the Document \n"));
 
-   wchar_t wc = 0;
-
    X_CheckDocumentError(getDoc()->appendStrux(PTX_Section, NULL));
    
    if (fseek(m_importFile, m_documentPointer, SEEK_SET) != 0)
@@ -400,86 +430,59 @@ UT_Error IE_Imp_WordPerfect::_parseDocument()
      {
 	int readVal = fgetc(m_importFile);
 	X_CheckFileError(readVal);
-
-	switch (readVal)
-	  { 
-	   case WP_TOP_HARD_HYPHEN:
-	     if(!m_undoOn)
-	       {		  
-		  m_Mbtowc.mbtowc(wc, '-');
-		  m_textBuf.append( (UT_uint16 *)&wc, 1);
-	       }
-	     break;
-	   case WP_TOP_SOFT_SPACE:
-	     if(!m_undoOn)
-	       {		  
-		  m_Mbtowc.mbtowc(wc, ' ');
-		  m_textBuf.append( (UT_uint16 *)&wc, 1);
-	       }	     
-	     break;
-	   case WP_TOP_SOFT_EOL:
-	     if(!m_undoOn)
-	       {		  
-		  m_Mbtowc.mbtowc(wc, ' ');
-		  m_textBuf.append( (UT_uint16 *)&wc, 1);
-	       }
-	     break;
-	   case WP_TOP_DORMANT_HARD_RETURN:
-	   case WP_TOP_HARD_EOL: 
-	     X_CheckWordPerfectError(_handleHardEndOfLine());
-	     break;
-	   case WP_TOP_EOL_GROUP: 
-	     X_CheckWordPerfectError(_handleEndOfLineGroup());
-	     break;
-	   case WP_TOP_CHARACTER_GROUP:
-	     X_CheckWordPerfectError(_handleCharacterGroup());
-	     break;
-	   case WP_TOP_PAGE_GROUP:
-	     X_CheckWordPerfectError(_handlePageGroup());
-	     break;
-	   case WP_TOP_COLUMN_GROUP:
-	     X_CheckWordPerfectError(_handleColumnGroup());
-	     break;
-	   case WP_TOP_PARAGRAPH_GROUP:
-	     X_CheckWordPerfectError(_handleParagraphGroup());
-	     break;
-	   case WP_TOP_FOOTENDNOTE_GROUP:
-	     X_CheckWordPerfectError(_handleFootEndNoteGroup());
-	     break;
-	   case WP_TOP_STYLE_GROUP:
-  	     X_CheckWordPerfectError(_handleStyleGroup());
-	     break;
-	   case WP_TOP_TAB_GROUP:
-  	     X_CheckWordPerfectError(_handleTabGroup());
-	     break;
-	   case WP_TOP_EXTENDED_CHARACTER:
-	     X_CheckWordPerfectError(_handleExtendedCharacter());
-	     break;
-	   case WP_TOP_UNDO:
-	     X_CheckWordPerfectError(_handleUndo());
-	     break;
-	   case WP_TOP_ATTRIBUTE_ON:
-	     X_CheckWordPerfectError(_handleAttribute(true));
-	     break;
-	   case WP_TOP_ATTRIBUTE_OFF:
-	     X_CheckWordPerfectError(_handleAttribute(false));
-	     break;
-	   default:	     
-	     if(readVal > 32 && readVal < 127 && !m_undoOn) // ASCII characters
+	
+	if(readVal > 32 && readVal < 127 && !m_undoOn) // ASCII characters
+	  {
+	     //UT_DEBUGMSG((" current char = %c \n",(char)readVal));
+	     wchar_t wc = 0;
+	     m_Mbtowc.mbtowc(wc, (char)readVal);
+	     m_textBuf.append( (UT_uint16 *)&wc, 1);
+	  }	     
+	else 
+	  {
+	     
+	     for (unsigned int i=0; i<m_wordPerfectDispatchBytes.size(); i++)
 	       {
-		  //UT_DEBUGMSG((" current char = %c \n",(char)readVal));
-		  m_Mbtowc.mbtowc(wc, (char)readVal);
-		  m_textBuf.append( (UT_uint16 *)&wc, 1);
-	       }	     
-	     break;
+		  WordPerfectByteTag *dispatchByte = (WordPerfectByteTag *) m_wordPerfectDispatchBytes.getNthItem( i );
+		  if( dispatchByte->m_byte == (unsigned char) readVal )
+		    {
+		       (*this.*(dispatchByte->m_func)) ();
+		       break;
+		    }	  
+	       }
 	  }
      }
+   
 
    
    UT_DEBUGMSG(("WordPerfect: File Pointer at %i exceeds document length of %i\n", (int)ftell(m_importFile), (int)m_documentEnd));
    
    if(m_textBuf.getLength() > 0)   
      X_CheckDocumentError(getDoc()->appendSpan(m_textBuf.getPointer(0), m_textBuf.getLength()));
+   
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_insertSpace()
+{
+   if(!m_undoOn)
+     {
+	wchar_t wc = 0;
+	m_Mbtowc.mbtowc(wc, ' ');
+	m_textBuf.append( (UT_uint16 *)&wc, 1);
+     }
+   
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_insertHyphen()
+{
+   if(!m_undoOn)
+     {		  
+	wchar_t wc = 0;
+	m_Mbtowc.mbtowc(wc, '-');
+	m_textBuf.append( (UT_uint16 *)&wc, 1);
+     }
    
    return UT_OK;
 }
@@ -617,7 +620,7 @@ UT_Error IE_Imp_WordPerfect::_handleTabGroup()
    return UT_OK;
 }
 
-// handles a tab group
+// handles a foot or end note group
 // (TODO: not implemented, just skips over it)
 UT_Error IE_Imp_WordPerfect::_handleFootEndNoteGroup()
 {
@@ -627,12 +630,71 @@ UT_Error IE_Imp_WordPerfect::_handleFootEndNoteGroup()
    return UT_OK;
 }
 
-// handles an attribute byte in wordperfect. if attributeOn is true,
-// turn the attribute on, if attributeOn is false, turn the attribute
-// off.
-UT_Error IE_Imp_WordPerfect::_handleAttribute(bool attributeOn)
+// handles a set number group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handleSetNumberGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a set number group\n"));
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_SET_NUMBER_GROUP));
+   
+   return UT_OK;
+}
+
+// handles a numbering method group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handleNumberingMethodGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a numbering method group\n"));
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_NUMBERING_METHOD_GROUP));
+   
+   return UT_OK;
+}
+
+
+// handles a display number reference group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handleDisplayNumberReferenceGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a display number rerference group\n"));
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_DISPLAY_NUMBER_REFERENCE_GROUP));
+   
+   return UT_OK;
+}
+
+// handles a increment number group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handleIncrementNumberGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling an increment number group\n"));
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_INCREMENT_NUMBER_GROUP));
+   
+   return UT_OK;
+}
+
+
+// handles a decrement number reference group
+// (TODO: not implemented, just skips over it)
+UT_Error IE_Imp_WordPerfect::_handleDecrementNumberGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a decrement number group\n"));
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_DECREMENT_NUMBER_GROUP));
+   
+   return UT_OK;
+}
+
+UT_Error IE_Imp_WordPerfect::_handleBoxGroup()
+{
+   UT_DEBUGMSG(("WordPerfect: Handling a box group\n"));
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_BOX_GROUP));
+   
+   return UT_OK;
+}
+
+// handles an attribute "on" byte in wordperfect. turns a formatting/style
+// property on.
+UT_Error IE_Imp_WordPerfect::_handleAttributeOn()
 {   
-   UT_DEBUGMSG(("WordPerfect: Handling an attribute\n"));
+   UT_DEBUGMSG(("WordPerfect: Handling an attribute ON\n"));
    int readVal = fgetc(m_importFile); // TODO: handle case that we get eof?
    X_CheckFileError(readVal);
    
@@ -646,10 +708,10 @@ UT_Error IE_Imp_WordPerfect::_handleAttribute(bool attributeOn)
 	switch (readVal)
 	  { 
 	   case 14: // underline
-	     m_textAttributes.m_underLine = attributeOn;
+	     m_textAttributes.m_underLine = true;
 	     break;
 	   case 12: // bold
-	     m_textAttributes.m_bold = attributeOn;
+	     m_textAttributes.m_bold = true;
 	     break;
 	   default: // something we don't support yet
 	     break;
@@ -657,16 +719,42 @@ UT_Error IE_Imp_WordPerfect::_handleAttribute(bool attributeOn)
         
  	X_CheckWordPerfectError(_appendCurrentTextProperties());
      }
+      
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_ATTRIBUTE_ON));
+   return UT_OK;
+}
+
+// handles an attribute "off" byte in wordperfect. turns a formatting/style
+// property off.
+UT_Error IE_Imp_WordPerfect::_handleAttributeOff()
+{   
+   UT_DEBUGMSG(("WordPerfect: Handling an attribute OFF\n"));
+   int readVal = fgetc(m_importFile); // TODO: handle case that we get eof?
+   X_CheckFileError(readVal);
    
-   // read the ending byte
-   readVal = fgetc(m_importFile); 
-   if((attributeOn && readVal != WP_TOP_ATTRIBUTE_ON) ||
-      (!attributeOn && readVal != WP_TOP_ATTRIBUTE_OFF))
+   if(!m_undoOn)
      {
-	UT_DEBUGMSG(("WordPerfect: Error! Didn't receive the anticipated closing byte!\n"));
-	return UT_IE_IMPORTERROR;
+	// flush what's come before this change (even if it's nothing, which
+	// IS a case we have to be worried about in case we are writing the first
+	// paragraph)
+	X_CheckWordPerfectError(_flushText());
+
+	switch (readVal)
+	  { 
+	   case 14: // underline
+	     m_textAttributes.m_underLine = false;
+	     break;
+	   case 12: // bold
+	     m_textAttributes.m_bold = false;
+	     break;
+	   default: // something we don't support yet
+	     break;
+	  }
+        
+ 	X_CheckWordPerfectError(_appendCurrentTextProperties());
      }
-   
+      
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_ATTRIBUTE_OFF));
    return UT_OK;
 }
 
@@ -800,7 +888,7 @@ UT_Error IE_Imp_WordPerfect::_handleUndo()
 
    int undoType = fgetc(m_importFile);
    X_CheckFileError(undoType);
-   X_CheckWordPerfectError(_skipGroup(WP_TOP_UNDO));
+   X_CheckWordPerfectError(_skipGroup(WP_TOP_UNDO_GROUP));
    
    //X_CheckWordPerfectError(_flushText()); // flush text before the undo
    

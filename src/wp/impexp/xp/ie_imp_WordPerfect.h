@@ -59,10 +59,16 @@
 #define WP_TOP_PARAGRAPH_GROUP 211 // (0xd3)
 #define WP_TOP_CHARACTER_GROUP 212 // (0xd4)
 #define WP_TOP_FOOTENDNOTE_GROUP 215 // (0xd7)
+#define WP_TOP_SET_NUMBER_GROUP 216  // (0xd8)
+#define WP_TOP_NUMBERING_METHOD_GROUP 217 // (0xd9)
+#define WP_TOP_DISPLAY_NUMBER_REFERENCE_GROUP 218 // (0xda)
+#define WP_TOP_INCREMENT_NUMBER_GROUP 219 // (0xdb)
+#define WP_TOP_DECREMENT_NUMBER_GROUP 220 // (0xdc)
 #define WP_TOP_STYLE_GROUP 221 // (0xdd)
+#define WP_TOP_BOX_GROUP 222 // (0xde)
 #define WP_TOP_TAB_GROUP 224 // (0xe0)
 #define WP_TOP_EXTENDED_CHARACTER 240// (0xf0)
-#define WP_TOP_UNDO 241 // (0xf1)
+#define WP_TOP_UNDO_GROUP 241 // (0xf1)
 #define WP_TOP_ATTRIBUTE_ON 242 // (0xf2)
 #define WP_TOP_ATTRIBUTE_OFF 243 // (0xf3)
 
@@ -194,13 +200,21 @@ public:
    UT_Error _parseIndexHeader();
    UT_Error _parseFontDescriptorPacket(int packetID, UT_uint32 dataPacketSize, UT_uint32 dataPointer);
    UT_Error _parseDocument();
+   UT_Error _insertSpace();
+   UT_Error _insertHyphen();
    UT_Error _handleHardEndOfLine();
    UT_Error _handleEndOfLineGroup();
    UT_Error _handlePageGroup();
    UT_Error _handleColumnGroup();
    UT_Error _handleParagraphGroup();
    UT_Error _handleParagraphGroupJustification();
+   UT_Error _handleSetNumberGroup();
+   UT_Error _handleNumberingMethodGroup();
+   UT_Error _handleDisplayNumberReferenceGroup();
+   UT_Error _handleIncrementNumberGroup();
+   UT_Error _handleDecrementNumberGroup();
    UT_Error _handleStyleGroup();
+   UT_Error _handleBoxGroup();
    UT_Error _handleTabGroup();
    UT_Error _handleCharacterGroup();
    UT_Error _handleFootEndNoteGroup();
@@ -208,7 +222,8 @@ public:
    UT_Error _handleFontSizeChange();
    UT_Error _handleExtendedCharacter();
    UT_Error _handleUndo();
-   UT_Error _handleAttribute(bool attributeOn);
+   UT_Error _handleAttributeOn();
+   UT_Error _handleAttributeOff();
    UT_Error _skipGroup(int groupByte);
    UT_Error _appendCurrentTextProperties();
    UT_Error _appendCurrentParagraphProperties();
@@ -225,8 +240,16 @@ public:
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
    UT_Vector m_fontDescriptorList;
+   UT_Vector m_wordPerfectDispatchBytes;
    WordPerfectTextAttributes m_textAttributes;
    WordPerfectParagraphProperties m_paragraphProperties;
 };
+
+struct WordPerfectByteTag
+{
+   WordPerfectByteTag( unsigned char byte, UT_Error (IE_Imp_WordPerfect::*func)() );
+   unsigned char m_byte;
+   UT_Error (IE_Imp_WordPerfect::*m_func) () ;
+}; 
 
 #endif /* IE_IMP_WP_H */
