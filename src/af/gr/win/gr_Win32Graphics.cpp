@@ -314,7 +314,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 UT_UCSChar*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int iLength)
 {
 
-	if(iLength > m_remapBufferSize)
+	if (iLength > (int)m_remapBufferSize)
 	{
 		delete [] m_remapBuffer;
 		m_remapBuffer = new UT_UCSChar[iLength];
@@ -335,7 +335,17 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 
 	GR_Win32Font* pWin32Font = static_cast<GR_Win32Font*>(pFont);
 
-	if (m_pFont != pWin32Font)
+// TMN: This currently won't work since there is no way to tell
+// GR_Win32Graphics to "drop" a font. If a user of this class:
+// 1. Creates a new font on the heap.
+// 2. Calls this setFont()
+// 3. Deletes the font.
+// 4. Creates a new font on the heap.
+// 5. Calls this setFont()
+// it is possible (and it has happened) that the pointers are the same,
+// but it's two different fonts.
+//
+//	if (m_pFont != pWin32Font)
 	{
 		m_pFont = pWin32Font;
 		GR_Win32Font::Acq::selectFontIntoDC(*m_pFont, m_hdc);
