@@ -868,7 +868,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				{
 					pfNewEnd = pfs->getNext();
 					fragOffsetNewEnd = 0;
-					dpos1 = dpos1 +  lengthInFrag;
+					dpos1 = dpos1 + lengthInFrag;
 				}
 				stDelayStruxDelete->push(pfs);
 			}
@@ -922,11 +922,12 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 				}
+				break;
 			}
 //
 // Look to see if we've reached the end of a footnote section.
 //
-			if(isEndFootnote(pfs))
+			if (isEndFootnote(pfs))
 			{
 //
 // First delete the EndFootnote Strux
@@ -968,7 +969,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // For the EndFootnote
 //
 				dpos1 -= 1;
+				break;
 			}
+			
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.
 		}
