@@ -3758,6 +3758,41 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 	return bResult;
 }
 
+/*!
+ * Delete Just the cell struxes from the HdrFtr shadows
+ */
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteCellStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
+{
+	bool bResult = true;
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_CELL);
+	fl_ContainerLayout * pShadowBL = NULL;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	if(iCount <=0)
+	{
+		UT_ASSERT(0);
+	}
+	m_pDoc->setDontChangeInsPoint();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+
+		// Find matching block in this shadow.
+
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		if(pShadowBL)
+		{
+			UT_ASSERT(pShadowBL->getContainerType() == FL_CONTAINER_CELL);
+			bResult = static_cast<fl_CellLayout *>(pShadowBL)->doclistener_deleteStrux(pcrx)
+				&& bResult;
+		}
+		else
+		{
+			UT_ASSERT(0);
+		}
+	}
+	return bResult;
+}
+
 
 bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {

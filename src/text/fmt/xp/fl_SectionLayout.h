@@ -411,6 +411,7 @@ public:
 	virtual bool bl_doclistener_deleteSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);
 	virtual bool bl_doclistener_changeSpan(fl_ContainerLayout*, const PX_ChangeRecord_SpanChange * pcrsc);
 	virtual bool bl_doclistener_deleteStrux(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx);
+	bool bl_doclistener_deleteCellStrux(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx);
 	virtual bool bl_doclistener_changeStrux(fl_ContainerLayout*, const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual fl_SectionLayout * bl_doclistener_insertTable(fl_ContainerLayout*,
 											  SectionType iType,

@@ -1554,17 +1554,17 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 	UT_ASSERT(bRes);
 	if(m_pDoc->isEndFootnoteAtPos(pos))
 	{
-		UT_DEBUGMSG(("End footnote found at %d \n",pos));
+		xxx_UT_DEBUGMSG(("End footnote found at %d \n",pos));
 		pos--;
 	}
 	if(m_pDoc->isFootnoteAtPos(pos))
 	{
-		UT_DEBUGMSG(("Start footnote found at %d \n",pos));
+		xxx_UT_DEBUGMSG(("Start footnote found at %d \n",pos));
 		pos+=2;
 	}
 	if(m_pDoc->isFootnoteAtPos(pos-1))
 	{
-		UT_DEBUGMSG(("Start footnote found at %d \n",pos));
+		xxx_UT_DEBUGMSG(("Start footnote found at %d \n",pos));
 		pos+=1;
 	}
 

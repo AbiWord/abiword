@@ -432,7 +432,8 @@ void fl_TableLayout::format(void)
 			getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 		}
 	}
-	if(myL && (myL->getContainerType() == FL_CONTAINER_SHADOW))
+	//	if(myL && (myL->getContainerType() == FL_CONTAINER_SHADOW) && !getDocument()->isDontImmediateLayout() )
+   	if(myL && (myL->getContainerType() == FL_CONTAINER_SHADOW) )
 	{
 		m_bNeedsReformat = false;
 		myL->format();
@@ -1849,6 +1850,10 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 	// Look to see if we're in a HfrFtr section
 	//
 	fl_ContainerLayout * pMyCL = myContainingLayout();
+	if(pMyCL)
+	{
+		pMyCL = pMyCL->myContainingLayout();
+	}
 	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
 	{
 		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
@@ -2252,6 +2257,20 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	{
 		myContainingLayout()->setLastLayout(pPrev);
 	}
+	//
+	// Look to see if we're in a HdrFtr
+	//
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	if(pMyCL)
+	{
+		pMyCL = pMyCL->myContainingLayout();
+	}
+	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
+		pHFSL->bl_doclistener_deleteCellStrux(this,pcrx);
+	}
+
 //	pTL->updateTable(); // may not need this. FIXME check if we do!
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
