@@ -31,6 +31,8 @@
 #include "gr_CocoaGraphics.h"
 #include "ap_CocoaTopRuler.h"
 
+#import "ap_CocoaFrameImpl.h"
+
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/

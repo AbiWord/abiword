@@ -527,6 +527,7 @@ UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
  */
 NSImage * GR_CocoaImage::getNSImage ()
 {
+	UT_ASSERT (m_image);
 	GR_CocoaBitmapWrapper * bmp_wrapper = [[GR_CocoaBitmapWrapper alloc] initWithRGBPlane:m_image->data pixelsWide:m_image->width pixelsHigh:m_image->height];
 	if (bmp_wrapper == nil)
 	{

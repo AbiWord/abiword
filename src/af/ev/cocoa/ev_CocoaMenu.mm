@@ -44,6 +44,7 @@
 #include "ut_string_class.h"
 #include "ap_Menu_Id.h"
 #include "ap_CocoaFrame.h"
+#import "xap_CocoaFrameImpl.h"
 
 #import <Cocoa/Cocoa.h>
 #import <AppKit/NSNibControlConnector.h>
@@ -66,8 +67,8 @@ public:									// we create...
 	UT_ASSERT ([menuItem isKindOfClass:[NSMenuItem class]]);
 	_wd *wd = (_wd *)[menuItem tag];
 	
-	wd->m_pCocoaMenu->_refreshMenu (wd->m_pCocoaMenu->getFrame()->getCurrentView(), [menuItem menu]);
-	return NO;
+//	wd->m_pCocoaMenu->_refreshMenu (wd->m_pCocoaMenu->getFrame()->getCurrentView(), [menuItem menu]);
+	return YES;
 }
 
 

@@ -37,7 +37,10 @@ class EV_Toolbar;
 class EV_Mouse;
 class EV_Keyboard;
 class UT_Timer;
+class UT_Vector;
 class UT_Worker;
+class GR_Graphics;
+class AV_View;
 
 typedef enum _FrameModes
 {
