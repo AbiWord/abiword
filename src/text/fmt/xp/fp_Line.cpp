@@ -284,7 +284,7 @@ void fp_Line::remove(void)
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 							  bool& bBOL, bool& bEOL)
 {
-	const int count = m_vecRuns.getItemCount();
+	const UT_sint32 count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
 #ifdef BIDI_ENABLED
 	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(0)); //#TF retrieve first visual run
@@ -572,7 +572,7 @@ void fp_Line::recalcHeight()
 
 fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 {
-	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	fp_Run * pRun = NULL;
 	if(count > 0 && runIndex < count)
 	{
@@ -583,7 +583,7 @@ fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 
 void fp_Line::clearScreen(void)
 {
-	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	if(count)
 	{
 		fp_Run* pRun;
@@ -639,7 +639,7 @@ void fp_Line::clearScreen(void)
 void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 {
 	fp_Run * pRun = NULL;
-	UT_uint32 count =  m_vecRuns.getItemCount();
+	UT_sint32 count =  m_vecRuns.getItemCount();
 	if(count > 0)
 	{
 		pRun = (fp_Run*) m_vecRuns.getNthItem(0);
@@ -722,7 +722,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 {
 	//fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
 	fp_Run* pRun; //#TF initialization not needed
-	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 
 	pRun = (fp_Run*) m_vecRuns.getNthItem(0);
 	if(count && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -832,7 +832,7 @@ void fp_Line::setNeedsRedraw(void)
 
 void fp_Line::redrawUpdate(void)
 {
-	UT_uint32 count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	if(count)
 	{
 		draw(((fp_Run*) m_vecRuns.getNthItem(0))->getGraphics());
@@ -864,7 +864,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.xoff = my_xoff;
 	da.pG = pG;
 
-	int count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	
 	for (int i=0; i < count; i++)
 	{
@@ -899,7 +899,7 @@ void fp_Line::draw(GR_Graphics* pG)
 
 void fp_Line::draw(dg_DrawArgs* pDA)
 {
-	int count = m_vecRuns.getItemCount();
+	UT_sint32 count = m_vecRuns.getItemCount();
 	
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
 
@@ -1009,7 +1009,7 @@ void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirec
 
 fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIndxVisual, FL_WORKING_DIRECTION eWorkingDirection, FL_WHICH_TABSTOP eUseTabStop)
 {
-	const UT_uint32 iCountRuns		  = m_vecRuns.getItemCount();
+	const UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
 	UT_sint32 iXLreal, iXreal;
 	const UT_sint32 Screen_resolution =
 		m_pBlock->getDocLayout()->getGraphics()->getResolution();
@@ -1466,7 +1466,7 @@ void fp_Line::layout(void)
 	UT_ASSERT(pAlignment);
 	FB_AlignmentType eAlignment 	  = pAlignment->getType();
 
-	UT_uint32 iCountRuns		  = m_vecRuns.getItemCount();
+	UT_sint32 iCountRuns		  = m_vecRuns.getItemCount();
 	
 	//we have to remember the old X coordinances of these runs
 	//to be able to decide latter whether and where from to erase
@@ -2869,7 +2869,7 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 const
 #endif
 {
-	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
+	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 i;
 	UT_uint32 iSpaceCount = 0;
 	bool bStartFound = false;
@@ -2981,8 +2981,8 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 			FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
 #endif
 
-			UT_uint32 count = m_vecRuns.getItemCount();
-			for (UT_uint32 i=count - 1; i >= 0 && iSpaceCount > 0; i--)
+			UT_sint32 count = m_vecRuns.getItemCount();
+			for (UT_sint32 i=count - 1; i >= 0 && iSpaceCount > 0; i--)
 			{
 #ifdef BIDI_ENABLED
 				// work from the run on the visual end of the line
