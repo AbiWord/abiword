@@ -1448,7 +1448,7 @@ void AP_UnixApp::catchSignals(int sig_num)
     // (not that it matters - this is mostly for race conditions)
     signal(SIGSEGV, signalWrapper);
 
-#if 1 // !!! remove this!!!! before committing 
+#if 0 // !!! remove this!!!! before committing 
 	// Use for debug Bonobo server
 	int ii = 1;
     while( ii == 1)
