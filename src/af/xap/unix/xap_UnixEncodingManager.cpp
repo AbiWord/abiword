@@ -388,17 +388,29 @@ static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
 
 const char* XAP_UnixEncodingManager::getNativeEncodingName() const
-{     return NativeEncodingName; };
+{     
+  return NativeEncodingName; 
+}
+
+const char* XAP_UnixEncodingManager::getNativeUnicodeEncodingName() const
+{     
+  return NativeEncodingName; 
+}
 
 const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
-{     return NativeEncodingName; };
+{     
+  return NativeEncodingName; 
+}
 
 const char* XAP_UnixEncodingManager::getLanguageISOName() const
-{ 	return LanguageISOName; };
+{
+ 	return LanguageISOName; 
+}
 
 const char* XAP_UnixEncodingManager::getLanguageISOTerritory() const
-{ 	return LanguageISOTerritory; };
-
+{ 	
+  return LanguageISOTerritory; 
+}
 
 void  XAP_UnixEncodingManager::initialize()
 {	
