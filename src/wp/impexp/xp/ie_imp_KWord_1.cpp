@@ -37,6 +37,15 @@
 /*****************************************************************/
 /*****************************************************************/
 
+#define X_CheckError(v)			do {  if (!(v))								\
+									  {  m_error = UT_ERROR;			\
+										 return; } } while (0)
+
+#define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
+
+/*****************************************************************/
+/*****************************************************************/
+
 #ifdef ENABLE_PLUGINS
 
 // completely generic code to allow this to be a plugin
@@ -46,7 +55,7 @@
 // we use a reference-counted sniffer
 static IE_Imp_KWord_1_Sniffer * m_sniffer = 0;
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo *mi)
 {
   if (!m_sniffer)
@@ -68,7 +77,7 @@ int abi_plugin_register (XAP_ModuleInfo *mi)
   return 1;
 }
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_unregister(XAP_ModuleInfo *mi)
 {
   mi->name = 0;
@@ -88,7 +97,7 @@ int abi_plugin_unregister(XAP_ModuleInfo *mi)
   return 1;
 }
 
-ABI_FAR extern "C"
+ABI_FAR_CALL
 int abi_plugin_supports_version(UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
   return isCurrentAbiVersion(major, minor, release) ? 1 : 0;
@@ -146,10 +155,71 @@ IE_Imp_KWord_1::IE_Imp_KWord_1(PD_Document *pDocument) : IE_Imp_XML(pDocument, t
   m_bInText = false;
 }
 
-void IE_Imp_KWord_1::_charData(const XML_Char *buf, int len)
+void IE_Imp_KWord_1::_charData(const XML_Char *s, int len)
 {
-  for (int i = 0; i < len; i++)
-  m_szTextBuffer += buf[i];
+  X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
+
+  UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
+  UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
+
+  if(!m_bInText)
+    return;
+  
+  // parse UTF-8 text and convert to Unicode.
+  
+  UT_Byte * ss = (UT_Byte *)s;
+  UT_UCS2String buf;
+  UT_Byte currentChar;
+  
+  for (int k=0; k<len; k++)
+    {
+      currentChar = ss[k];
+      
+      if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
+	{
+	  // is it us-ascii and we are in a UTF-8
+	  // multi-byte sequence.  puke.
+	  X_CheckError(0);
+	}
+      
+      if (currentChar < 0x80)			// plain us-ascii part of latin-1
+	{
+	  buf += ss[k];		// copy as is.
+	}
+      else if ((currentChar & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
+	{
+	  // surrogate pairs are defined in section 3.7 of the
+	  // unicode standard version 2.0 as an extension
+	  // mechanism for rare characters in future extensions
+	  // of the unicode standard.
+	  UT_ASSERT(m_lenCharDataSeen == 0);
+	  UT_ASSERT(UT_NOT_IMPLEMENTED);
+	}
+      else if ((currentChar & 0xe0) == 0xe0)  // lead byte in 3-byte sequence
+	{
+	  UT_ASSERT(m_lenCharDataSeen == 0);
+	  m_lenCharDataExpected = 3;
+	  m_charDataSeen[m_lenCharDataSeen++] = currentChar;
+	}
+      else if ((currentChar & 0xc0) == 0xc0)	// lead byte in 2-byte sequence
+	{
+	  UT_ASSERT(m_lenCharDataSeen == 0);
+	  m_lenCharDataExpected = 2;
+	  m_charDataSeen[m_lenCharDataSeen++] = currentChar;
+	}
+      else if ((currentChar & 0x80) == 0x80)		// trailing byte in multi-byte sequence
+	{
+	  UT_ASSERT(m_lenCharDataSeen > 0);
+	  m_charDataSeen[m_lenCharDataSeen++] = currentChar;
+	  if (m_lenCharDataSeen == m_lenCharDataExpected)
+	    {
+	      buf += UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
+	      m_lenCharDataSeen = 0;
+	    }
+	}
+    }
+
+  m_szTextBuffer += buf;
 }
 
 /*****************************************************************/
@@ -251,6 +321,61 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 /*****************************************************************/
 
+// turns a KWord justification number into left/right/center/justify
+static const char *
+numberToJustification(const char * justification_name)
+{
+	if (! strcmp(justification_name,"0"))
+		return "left";
+	else if (! strcmp(justification_name,"1"))
+		return "right";
+	else if (! strcmp(justification_name,"2"))
+		return "center";
+	else if (! strcmp(justification_name,"3"))
+		return "justify";
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return "";
+	}
+}
+
+// turns as KWord page-size number into a fp_PageSize::Predefined
+static fp_PageSize::Predefined
+kPageToFpPageSize (const char * sz)
+{
+  // TODO: handle more of these
+
+  if(!strcmp(sz, "0"))
+    return fp_PageSize::A3;
+  else if(!strcmp(sz, "1"))
+    return fp_PageSize::A4;
+  else if(!strcmp(sz, "2"))
+    return fp_PageSize::A5;
+  else if(!strcmp(sz, "3"))
+    return fp_PageSize::Letter;
+  else if(!strcmp(sz, "4"))
+    return fp_PageSize::Legal;
+  else if(!strcmp(sz, "7"))
+    return fp_PageSize::B5;
+  else
+    return fp_PageSize::Custom;
+}
+
+// superscript/subscript/normal
+static const char *
+kVertAlignToTextPos ( const char * sz )
+{
+  if (!strcmp(sz, "1"))
+    return "superscript";
+  else if(!strcmp(sz, "2"))
+    return "subscript";
+  else
+    return "normal";
+}
+
+/*****************************************************************/
+/*****************************************************************/
 
 void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 {
@@ -327,8 +452,6 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       {
         //  X_VerifyParseState(_PS_Init);
         m_parseState = _PS_Doc;
-        X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char**)NULL));
-        X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
         return;
       }
       
@@ -341,6 +464,9 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
     case TT_FRAME:
       {
         UT_DEBUGMSG(("ABIDEBUG: begin FRAME\n"));
+
+	// TODO: left,right,top,bottom
+        X_CheckError(getDoc()->appendStrux(PTX_Section,(const XML_Char**)NULL));
         break;
       }
       
@@ -383,12 +509,76 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
     case TT_PAPER:
       {
         UT_DEBUGMSG(("ABIDEBUG: begin PAPER\n"));
+	
+	const XML_Char * pVal = NULL;
+
+	pVal = _getXMLPropValue("format", atts);
+	if(pVal)
+	  {
+	    // we now have the paper type. remap
+	  }
+
+
+	pVal = _getXMLPropValue("orientation", atts);
+	if(pVal)
+	  {
+	    if(strcmp(pVal, "1") == 0)
+	      {
+		// landscape
+	      }
+	    else
+	      {
+		// portrait
+	      }
+	  }
+
+	pVal = _getXMLPropValue("width", atts);
+	if(pVal)
+	  {
+	    // paper width from mm
+	  }
+
+	pVal = _getXMLPropValue("height", atts);
+	if(pVal)
+	  {
+	    // paper height from mm
+	  }
+
         break;
       }
       
     case TT_PAPERBORDERS:
       {
         UT_DEBUGMSG(("ABIDEBUG: begin PAPERBORDERS\n"));
+
+	// margins
+
+	const XML_Char * pVal = NULL;
+
+	pVal = _getXMLPropValue("left", atts);
+	if(pVal)
+	  {
+	    // page-margin-left from mm
+	  }
+
+	pVal = _getXMLPropValue("right", atts);
+	if(pVal)
+	  {
+	    // page-margin-right from mm
+	  }
+
+	pVal = _getXMLPropValue("top", atts);
+	if(pVal)
+	  {
+	    // page-margin-top from mm
+	  }
+
+	pVal = _getXMLPropValue("bottom", atts);
+	if(pVal)
+	  {
+	    // page-margin-bottom from mm
+	  }
+
         break;
       }
       
@@ -401,6 +591,9 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
     case TT_PARAGRAPH:
       {
         UT_DEBUGMSG(("ABIDEBUG: begin PARAGRPAHS\n"));
+
+	// TODO: handle properties
+        X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
         break;
       }
       
@@ -572,7 +765,7 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
 
     case TT_FORMAT:
     {
-      XML_Char *propsArray[3]; // I don't think that this is necessary!
+      const XML_Char *propsArray[3];
 
       if (m_szProps.size() == 0)
         {
@@ -588,13 +781,15 @@ void IE_Imp_KWord_1::_endElement(const XML_Char *name)
       propsArray[2] = 0;
 
       UT_DEBUGMSG(("ABIDEBUG: formatting properties are: %s\n",propsArray[1]));
-      if (!getDoc()->appendFmt((const XML_Char **)propsArray))
-        {
-          UT_DEBUGMSG(("Error appending character formatting\n"));
-        }
+
+      X_CheckError(_pushInlineFmt(propsArray));
+      X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 
       m_szProps.clear();
       _appendText();
+
+      _popInlineFmt();
+      X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
 
       break;
     }

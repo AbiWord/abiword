@@ -473,7 +473,7 @@ justificationToNumber(const char * justification_name)
 // compare abi/src/text/fmt/xp/fp_PageSize.h
 // and koffice/lib/kofficeui/koGlobal.h
 // FIXME: put a prototype above
-const char*
+static const char*
 abiPageSizeToKoPageFormat (fp_PageSize abi_page_size)
 {
 	// The goofy order of the pagesizes is due to koGlobal.h
@@ -1042,9 +1042,8 @@ void s_KWord_1_Listener::_openSpan(PT_AttrPropIndex api, PT_BlockOffset pos, UT_
 	if (bHaveProp && pAP)
 	{
 		// query and output properties
-		const XML_Char * szValue;
+		const XML_Char * szValue = 0;
 
-		// <COLOR red="" green="" blue=""/> er, what is the range for these?
 		if (pAP->getProperty("color", szValue))
 		{
 		  char red[4], green[4], blue[4];
