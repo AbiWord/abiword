@@ -35,6 +35,7 @@ public:
 	
 	void							setMessage(const char * szMessage);
 	void							setMessage(const char * szMessage, const char * sz1);
+	void                                                    setMessage(const char * szMessage, const char * sz1, const char * sz2, int num); // Used for Dialog not implemented 
 	void							setButtons(XAP_Dialog_MessageBox::tButtons buttons);
 	void							setDefaultAnswer(XAP_Dialog_MessageBox::tAnswer answer);
 	XAP_Dialog_MessageBox::tAnswer	getAnswer(void) const;

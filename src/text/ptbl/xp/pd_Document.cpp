@@ -149,7 +149,7 @@ UT_Bool PD_Document::newDocument(void)
 UT_ErrorCode PD_Document::saveAs(const char * szFilename, int ieft)
 {
 	if (!szFilename)
-		return UT_SaveOtherError;
+		return UT_SaveNameError;
 	
 	IE_Exp * pie = NULL;
 	IEStatus ies;
@@ -158,7 +158,7 @@ UT_ErrorCode PD_Document::saveAs(const char * szFilename, int ieft)
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
-		return UT_SaveOtherError;
+		return UT_SaveExportError;
 	}
 
 	ies = pie->writeFile(szFilename);
@@ -193,7 +193,7 @@ UT_ErrorCode PD_Document::saveAs(const char * szFilename, int ieft)
 UT_ErrorCode PD_Document::save(void)
 {
 	if (!m_szFilename || !*m_szFilename)
-		return UT_SaveOtherError;
+		return UT_SaveNameError;
 
 	IE_Exp * pie = NULL;
 	IEStatus ies;
@@ -202,7 +202,7 @@ UT_ErrorCode PD_Document::save(void)
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
-		return UT_SaveOtherError;
+		return UT_SaveExportError;
 	}
 
 	ies = pie->writeFile(m_szFilename);

@@ -760,12 +760,17 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	// TODO consider adding a reason for the failure to the message....
-
+	
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	
 	if (errorCode == -201) // We have a write error
 	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailedWrite), fileName);
+
+	else if (errorCode == -202) // We have a name error
+	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailedName), fileName);
+
+	else if (errorCode == -203) // We have an export error
+	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailedExport), fileName);
 	
 	else // The generic case - should be eliminated eventually
 	  pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailed), fileName);
@@ -811,14 +816,11 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	char buf[1024];
-	// THIS ONE IS NOT LOCALIZED
-	sprintf(buf, "%s not implemented yet.\n\nIf you are a programmer, feel free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise, please be patient.", szWhat, __FILE__, iLine);
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+        pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_DlgNotImp), szWhat, __FILE__, iLine);
 
-	pDialog->setMessage(buf);
 	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
-
 	pDialog->runModal(pFrame);
 
 //	XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();

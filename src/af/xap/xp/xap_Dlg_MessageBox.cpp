@@ -60,6 +60,21 @@ void XAP_Dialog_MessageBox::setMessage(const char * szMessage, const char * sz1)
 	sprintf(m_szMessage,szMessage,sz1);
 }
 
+void XAP_Dialog_MessageBox::setMessage(const char * szMessage, const char * sz1, const char * sz2, int num)
+{
+	FREEP(m_szMessage);
+	UT_uint32 joinedSize = strlen(szMessage) + strlen(sz1) + strlen(sz2) + 4 + 10; // The 4 is for the line #
+	m_szMessage = (char *)malloc(joinedSize * sizeof(char));
+	if (!m_szMessage)
+	{
+		UT_DEBUGMSG(("Could not allocate string for [%s %s %s %d]\n",szMessage,sz1));
+		return;
+	}
+
+	sprintf(m_szMessage,szMessage,sz1,sz2,num);
+}
+
+
 void XAP_Dialog_MessageBox::setButtons(XAP_Dialog_MessageBox::tButtons buttons)
 {
 	m_buttons = buttons;
