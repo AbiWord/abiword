@@ -399,10 +399,13 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 						UINT u = GetDlgCtrlID(hWnd);
 						XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
 
-						static char buf[COMBO_BUF_LEN];
+						static UT_UCSChar ucs_buf[COMBO_BUF_LEN];
+						char buf[COMBO_BUF_LEN];
 
-						UT_UCSChar * pData = (UT_UCSChar *) buf;	// HACK: should be void *
 						UT_uint32 dataLength = GetWindowText(hWnd, buf, COMBO_BUF_LEN);
+
+						UT_UCS4_strcpy_utf8_char(ucs_buf, buf);
+						UT_UCSChar * pData = (UT_UCSChar *) ucs_buf;	// HACK: should be void *
 						
 						if(dataLength)
 						{	
