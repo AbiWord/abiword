@@ -624,6 +624,11 @@ endif
 endif
 endif
 
+LIBGLADE_CFLAGS = $(shell $(LIBGLADE_CONFIG) --cflags)
+LIBGLADE_LIBS = $(shell $(LIBGLADE_CONFIG) --libs)
+CFLAGS 	 +=	$(LIBGLADE_CFLAGS)
+EXTRA_LIBS +=	$(LIBGLADE_LIBS)
+
 ##################################################################
 ##################################################################
 ## Generic Unix includes for Gtk, as it moves about installation paths.
@@ -684,8 +689,6 @@ ABI_OPTIONS += Xft:On
 GNOME_CFLAGS += $(shell if test "x`which nautilus-config 2> /dev/null`" == "x" ; then echo ; else nautilus-config --cflags ; fi)
 GNOME_CFLAGS += -DHAVE_NAUTILUS
 GNOME_LIBS   += $(shell if test "x`which nautilus-config 2> /dev/null`" == "x" ; then echo ; else nautilus-config --libs ; fi)
-
-
 GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 
 # the bonobo target is known not to work properly yet

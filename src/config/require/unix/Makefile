@@ -79,6 +79,9 @@ else
 _GNOME_:
 endif
 
+_LIBGLADE_:
+	@$(LIBGLADE_CONFIG) --modversion 2>&1 1>/dev/null
+	|| (echo libglade not found; exit 1)
 
 # zlib can only be used if located in a system directory.
 
