@@ -123,7 +123,7 @@ ifdef HELPER_PROGRAM
 $(HELPER_PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME),WIN32)
-	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
+	@$(CC) -nologo $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
 else
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) 
 endif
@@ -132,14 +132,18 @@ endif
 $(LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
+ifeq ($(OS_NAME),WIN32)
+	@$(AR) $(subst /,\\,$(OBJS)) $(AR_EXTRA_ARGS)
+else
 	@$(AR) $(OBJS) $(AR_EXTRA_ARGS)
+endif
 	@$(RANLIB) $@
 
 $(SHARED_LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@rm -f $@
 ifeq ($(OS_NAME), WIN32)
-	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) $(EXTRA_LIBS) $(OBJS)
+	@$(LINK_DLL) -MAP $(DLLBASE) $(OS_LIBS) $(EXTRA_LIBS) $(subst /,\\,$(OBJS))
 else
 	$(MKSHLIB) -o $@ $(OBJS) $(EXTRA_LIBS) $(OS_LIBS)
 endif
@@ -154,7 +158,7 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.cpp
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CCC) -Fo$@ -c $(CFLAGS) $<
+	@$(CCC) -Fo$(subst /,\\,$@) -c $(CFLAGS) $<
 else
 	@echo $<:
 	@$(CCC) -o $@ -c $(CFLAGS) $<
@@ -163,7 +167,7 @@ endif
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.c
 	@$(MAKE_OBJDIR)
 ifeq ($(OS_NAME), WIN32)
-	@$(CC) -Fo$@ -c $(CFLAGS) $*.c
+	@$(CC) -Fo$(subst /,\\,$@) -c $(CFLAGS) $*.c
 else
 	@echo $<:
 	@$(CC) -o $@ -c $(CFLAGS) $*.c

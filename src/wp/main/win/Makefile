@@ -53,10 +53,10 @@ THE_LIBS=		$(LIBDIR)/*
 $(PROGRAM): $(OBJS) $(THE_LIBS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CC) $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(EXTRA_LIBS)
+	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
 
 build:: $(TARGETS)
-	@echo Exporting $(TARGETS) from `pwd`...
+	@echo Exporting $(TARGETS) from `pwd` to $(BINDIR)
 	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(TARGETS) $(BINDIR)
 
