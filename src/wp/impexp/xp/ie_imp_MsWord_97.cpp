@@ -86,16 +86,20 @@ static int word_colors[][3] = {
 static TokenTable s_Tokens[] =
 {
 	{"TIME",      FC_TIME},
-	{"\\@",       FC_DateTimePicture},
+	{"EDITTIME",  FC_EDITTIME},
 	{"HYPERLINK", FC_HYPERLINK},
-	{"TOC",       FC_TOC},
-	{"\\o",       FC_TOC_FROM_RANGE},
 	{"PAGEREF",   FC_PAGEREF},
 	{"EMBED",     FC_EMBED},
-	{"EDITTIME",  FC_EDITTIME},
+	{"TOC",       FC_TOC},
+	{"\\@",       FC_DateTimePicture},
+	{"\\o",       FC_TOC_FROM_RANGE},
 	{ "*",        FC_OTHER}
 };
 
+
+// a linear search is fine here. we don't encounter fields
+// that often, and the length of the list is very short
+// and roughly in the order of how often they are encountered
 static unsigned int s_mapNameToToken(const char* name)
 {
   unsigned int k;
@@ -803,6 +807,16 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			      word_colors[achp->ico-1][0], 
 			      word_colors[achp->ico-1][1], 
 			      word_colors[achp->ico-1][2]);
+		   }
+
+		   // i think that this will do background colors
+		   // untested!! - Dom
+		   if (achp->fHighlight) {
+		     sprintf((propBuffer + strlen(propBuffer)), 
+			     "bgcolor:%02x%02x%02x;", 
+			     word_colors[achp->icoHighlight-1][0], 
+			     word_colors[achp->icoHighlight-1][1], 
+			     word_colors[achp->icoHighlight-1][2]);
 		   }
 
 		   // font family
