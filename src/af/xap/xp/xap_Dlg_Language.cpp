@@ -27,7 +27,7 @@
 #include "ut_Language.h"
 #include "xap_Dlg_Language.h"
 #include "xap_Strings.h"   
-
+#include "xap_App.h"
 
 static int s_compareQ(const void * a, const void * b)                           
 {                                                                               
