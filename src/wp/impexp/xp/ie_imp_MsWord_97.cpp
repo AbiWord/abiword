@@ -48,6 +48,26 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype);
 int ElementProc(wvParseStruct *ps,wvTag tag, void *props);
 int DocProc(wvParseStruct *ps,wvTag tag);
 
+// a little look-up table for mapping Word text colors 
+// (the comments) to Abiword's superior RGB color encoding
+static int word_colors[][3] = {
+   {0x00, 0x00, 0x00}, /* black */
+   {0x00, 0x00, 0xff}, /* blue */
+   {0x00, 0xff, 0xff}, /* cyan */
+   {0x00, 0xff, 0x00}, /* green */
+   {0xff, 0x00, 0xff}, /* magenta */
+   {0xff, 0x00, 0x00}, /* red */
+   {0xff, 0xff, 0x00}, /* yellow */
+   {0xff, 0xff, 0xff}, /* white */
+   {0x00, 0x00, 0x80}, /* dark blue */
+   {0x00, 0x80, 0x80}, /* dark cyan */
+   {0x00, 0x80, 0x00}, /* dark green */
+   {0x80, 0x00, 0x80}, /* dark magenta */
+   {0x80, 0x00, 0x00}, /* dark red */
+   {0x80, 0x80, 0x00}, /* dark yellow */
+   {0x80, 0x80, 0x80}, /* dark gray */
+   {0xc0, 0xc0, 0xc0}, /* light gray */
+};
 
 
 /*****************************************************************/
@@ -140,7 +160,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 	UT_DEBUGMSG((" started\n"));
 	PAP *apap;
 	CHP *achp;
-	   
+
 	switch(tag)
 		{
 		case PARABEGIN:
@@ -179,16 +199,19 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 			break;
 		case CHARPROPBEGIN:
 		   achp = (CHP*)props;
+		   // bold text
 		   if (achp->fBold) { 
 		      strcat(propBuffer, "font-weight:bold;");
 		   } else {
 		      strcat(propBuffer, "font-weight:normal;");
 		   }
+		   // italic text
 		   if (achp->fItalic) {
 		      strcat(propBuffer, "font-style:italic;");
 		   } else {
 		      strcat(propBuffer, "font-style:normal;");
 		   }
+		   // underline and strike-through
 		   strcat(propBuffer, "text-decoration:");
 		   if (achp->fStrike && achp->kul) {
 		      strcat(propBuffer, "underline line-through;");
@@ -199,6 +222,44 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   } else {
 		      strcat(propBuffer, "normal;");
 		   }
+		   // text color
+		   if (achp->ico) {
+		      sprintf((propBuffer + strlen(propBuffer)), 
+			      "color:%02x%02x%02x;", 
+			      word_colors[achp->ico-1][0], 
+			      word_colors[achp->ico-1][1], 
+			      word_colors[achp->ico-1][2]);
+		   }
+		   // font family
+		   char *fname;
+		   // if FarEast flag is set, use the FarEast font,
+		   // otherwise, we'll use the ASCII font.
+		   if (!ps->fib.fFarEast) {
+		     fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
+		      UT_DEBUGMSG(("ASCII font id = %d\n", achp->ftcAscii));
+		   } else {
+		     fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
+		      UT_DEBUGMSG(("FE font id = %d\n", achp->ftcFE));
+		   }
+		   // there are times when we should use the third, Other font, 
+		   // and the logic to know when somehow depends on the
+		   // character sets or encoding types? it's in the docs.
+		   
+		   UT_DEBUGMSG(("font-family = %s\n", fname));
+
+		   // this if really shouldn't be needed, but due to
+		   // massive character property problems in complex docs
+		   // at the moment, it does prevent a segfault...
+		   if (fname != NULL) {
+		      strcat(propBuffer, "font-family:");
+		      strcat(propBuffer, fname);
+		      strcat(propBuffer, ";");
+		   }
+		   
+		   // font size (hps is half-points)
+		   sprintf(propBuffer + strlen(propBuffer), 
+			   "font-size:%dpt;", (achp->hps/2));
+
 		   propsArray[0] = pProps;
 		   // remove trailing ;
 		   propBuffer[strlen(propBuffer)-1] = 0;
@@ -211,7 +272,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		case CHARPROPEND: /* not needed */
 		default:
 		   break;
-		}
+			 }
 	UT_DEBUGMSG(("ended\n"));
 	return(0);
 	}
