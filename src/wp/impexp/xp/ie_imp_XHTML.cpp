@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -941,23 +943,35 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_HREF:
 	{
-		X_VerifyParseState(_PS_Block);
-		const XML_Char *p_val;
-		p_val = _getXMLPropValue((const XML_Char *)"href", atts);
+		const XML_Char * p_val = 0;
+		p_val = _getXMLPropValue((const XML_Char *)"xlink:href", atts);
+		if (p_val == 0) p_val = _getXMLPropValue((const XML_Char *)"href", atts);
 		if( p_val )
 		{
+			X_VerifyParseState(_PS_Block);
 		    UT_XML_cloneString(sz, "xlink:href");
 		    new_atts[0] = sz;
 	    	sz = NULL;
 		    UT_XML_cloneString(sz, p_val);
 		    new_atts[1] = sz;
 			X_CheckError(getDoc()->appendObject(PTO_Hyperlink,new_atts));
+			for( i = 0; i < 2; i++) FREEP(new_atts[i]);
 		}
 		else
 		{
-			p_val = _getXMLPropValue((const XML_Char *)"name", atts);
+			p_val = _getXMLPropValue((const XML_Char *)"id", atts);
+			if (p_val == 0) p_val = _getXMLPropValue((const XML_Char *)"name", atts);
 			if( p_val )
 			{
+				if (m_parseState == _PS_Sec)
+				{
+					/* AbiWord likes things to sit inside blocks, but XHTML has
+					 * no such requirement.
+					 */
+					X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+				}
+				else X_VerifyParseState(_PS_Block);
+
 				UT_sint32 i;
  				const XML_Char *bm_new_atts[5];
 				for( i = 0; i < 5; i++) bm_new_atts[i] = NULL;
@@ -974,8 +988,31 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		    	UT_XML_cloneString(sz, p_val);
 				UT_XML_cloneString(m_szBookMarkName, p_val);
 			    bm_new_atts[3] = sz;
-				X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
-				for( i = 0; i < 5; i++) FREEP(bm_new_atts[i]);
+				if (m_szBookMarkName)
+				{
+					X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
+				}
+				for( i = 0; i < 4; i++) FREEP(bm_new_atts[i]);
+
+				if (m_szBookMarkName && (m_parseState == _PS_Sec))
+				{
+					for(i = 0; i < 5; i++) bm_new_atts[i] = NULL;
+					UT_XML_cloneString(sz, "type");
+					bm_new_atts[0] = sz; 
+					sz = NULL;
+					UT_XML_cloneString(sz, "end");
+					bm_new_atts[1] = sz;
+					sz = NULL;
+					UT_XML_cloneString(sz, "name");
+					bm_new_atts[2] = sz;
+					sz = NULL;
+					UT_XML_cloneString(sz, m_szBookMarkName);
+					bm_new_atts[3] = sz;
+					X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
+					for(i = 0; i < 4; i++) FREEP(bm_new_atts[i]);
+					FREEP(m_szBookMarkName);
+					m_szBookMarkName = NULL;
+				}
 			}
 		}
 		return;
