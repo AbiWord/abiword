@@ -189,9 +189,11 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, UT_FALSE);
 				else
 					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, UT_FALSE);
-
-				// TODO : for ATLEAST, EXACTLY, and MULTIPLE, set id_SPIN_SPECIAL_SPACING
 			}
+
+			// set the spin contents regardless of menu content; platforms will
+			// enable or disable the spin item for varying states of menu
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, sz, UT_FALSE);
 		}
 
 		sz = UT_getAttribute("margin-top", pProps);

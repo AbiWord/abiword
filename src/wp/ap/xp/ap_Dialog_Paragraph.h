@@ -78,7 +78,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	UT_uint32 			_getMenuItemValue(tControl item);
 	void 				_setCheckItemValue(tControl item, tCheckState value, UT_Bool bToggleDirty = UT_TRUE);
 	tCheckState 		_getCheckItemValue(tControl item);
-	void 				_setSpinItemValue(tControl item, const XML_Char * value, const UT_Bool bToggleDirty = UT_TRUE);
+	void 				_setSpinItemValue(tControl item, const XML_Char * value, UT_Bool bToggleDirty = UT_TRUE);
 	const XML_Char * 	_getSpinItemValue(tControl item);
 
 	UT_Bool				_wasChanged(tControl item);

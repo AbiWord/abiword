@@ -44,26 +44,20 @@ public:
 	virtual void event_Tabs(void);
 	virtual void event_WindowDelete(void);
 
-	// Indents and Spacing page
-	virtual void event_AlignmentChanged(void);
+	// all data controls are of three types in this dialog; the static
+	// functions pass in widget pointers which are mapped into
+	// base class "tControl" IDs for data operations.
 
-	// actions for all indent-related spin-button changes are the same
-	virtual void event_UpdateEntry(GtkWidget * widget);
-//	virtual void event_IndentSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj);
-//	virtual void event_SpecialIndentListChanged(void);
+		// menus take a "changed" event
+		virtual void event_MenuChanged(GtkWidget * widget);
 
-	// actions for all spacing-related spin-button changes are the same
-//	virtual void event_SpacingSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj);
-//	virtual void event_SpecialSpacingListChanged(void);
+		// spin buttons can take "increment", "decrement", and "changed"
+		virtual void event_SpinIncrement(GtkWidget * widget);
+		virtual void event_SpinDecrement(GtkWidget * widget);
+		virtual void event_SpinChanged(GtkWidget * widget);
 
-	// Line and Page Breaks
-//	virtual void event_WidowOrphanControlToggled(void);
-//	virtual void event_KeepLinesTogetherToggled(void);
-//	virtual void event_KeepWithNextToggled(void);
-//	virtual void event_PageBreakBeforeToggled(void);
-
-//	virtual void event_SuppressLineNumbersToggled(void);
-//	virtual void event_NoHyphenateToggled(void);
+		// checks are just "toggled"
+		virtual void event_CheckToggled(GtkWidget * widget);
 	
 	// Preview
 	virtual void event_PreviewAreaExposed(void);
@@ -74,6 +68,8 @@ public:
 	
 	// private construction functions
 	GtkWidget * _constructWindow(void);
+	void 		_connectCallbackSignals(void);
+	
 	void		_populateWindowData(void);
 	void		_enablePercentSpin(UT_Bool enable);
 	void 		_storeWindowData(void);
