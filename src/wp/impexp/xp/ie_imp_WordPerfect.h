@@ -269,8 +269,7 @@ public:
    UT_Error _appendCurrentParagraphProperties();
    UT_Error _flushText();
    UT_Error _flushParagraph();
-   
-   bool _appendSection( const XML_Char ** props = NULL ) ;
+   UT_Error _appendSection() ;
 
  private:
    FILE *m_importFile;
@@ -281,6 +280,7 @@ public:
    bool m_bParagraphChanged;
    bool m_bParagraphExists;
    bool m_bInSection;
+   bool m_bParagraphInSection;
    bool m_bFirstMargin;
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
@@ -289,6 +289,13 @@ public:
    UT_Vector m_wordPerfectDispatchBytes;
    WordPerfectTextAttributes m_textAttributes;
    WordPerfectParagraphProperties m_paragraphProperties;
+
+   float m_leftMargin;
+   float m_rightMargin;
+   bool m_bLeftMarginSet;
+   bool m_bRightMarginSet;
+   unsigned char m_numberOfColumns;
+   bool m_bColumnsSet;
 };
 
 struct ABI_EXPORT WordPerfectByteTag
