@@ -6021,6 +6021,10 @@ bool IE_Imp_MsWord_97::_shouldUseInsert() const
 
 bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
+	if(pts == PTX_SectionFrame)
+	{
+		UT_DEBUGMSG(("Appending Frame \n"));
+	}
 	if(m_bInHeaders)
 	{
 		return _appendStruxHdrFtr(pts, attributes);
@@ -6037,6 +6041,27 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attribute
 	{
 //		Make sure any pending text is flushed
 		_flush();
+
+//
+// Text boxes need to be preceded by Blocks
+//
+		pf_Frag * pf = getDoc()->getLastFrag();
+		while(pf && pf->getType() != pf_Frag::PFT_Strux)
+		{
+			pf = pf->getPrev();
+		}
+		if(pf && (pf->getType() == pf_Frag::PFT_Strux) )
+		{
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+			if(pfs->getStruxType() != PTX_Block)
+			{
+				getDoc()->appendStrux(PTX_Block, NULL);
+			}
+		}
+		else if( pf == NULL)
+		{
+			getDoc()->appendStrux(PTX_Block, NULL);
+		}
 	}
 	return getDoc()->appendStrux(pts, attributes);
 }

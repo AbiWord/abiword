@@ -667,9 +667,29 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		UT_ASSERT(m_pCurrentSL);
 		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+		fl_ContainerLayout*	pCL = NULL;
+//
+// Look to see if we're in a table.
+//
+		fl_ContainerLayout * pCon = getTopContainerLayout();
+		if((pCon != NULL))
+		{
+			if(pCon->getContainerType() == FL_CONTAINER_CELL)
+			{
+				fl_ContainerLayout * pCL = pCon->append(sdh,pcr->getIndexAP(),FL_CONTAINER_FRAME);
+				m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL);
+				*psfh = (PL_StruxFmtHandle)pCL;
+				break;
+			}
+#ifdef DEBUG
+			m_pDoc->miniDump(sdh,6);
+#endif
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+
 		// Append a new FrameLayout to the SectionLayout
 
-		fl_ContainerLayout*	pCL = NULL;
+
 		UT_DEBUGMSG(("!!!!Appending Frame \n"));
 		pCL = m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FRAME);
 		if (!pCL)
@@ -692,6 +712,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		pCL = m_pCurrentSL;
 		*psfh = (PL_StruxFmtHandle)pCL;
 		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL->myContainingLayout());
+		if(m_pCurrentSL->getContainerType() == FL_CONTAINER_CELL)
+		{
+			m_pCurrentSL = static_cast<fl_CellLayout *>(m_pCurrentSL)->getDocSectionLayout();
+		}
 		UT_ASSERT(m_pCurrentSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	}
 	break;
