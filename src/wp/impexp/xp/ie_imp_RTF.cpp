@@ -2031,7 +2031,7 @@ void IE_Imp_RTF::HandleNoteReference(void)
 	UT_String footpid;
 	if(m_bInFootnote && !m_bFtnReferencePending)
 	{
-		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId-1);
 		attribs[1] = footpid.c_str();
 
 		if(m_bNoteIsFNote)
@@ -2055,7 +2055,7 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		m_stateStack.push(&m_FootnoteRefState);
 		m_currentRTFState = m_FootnoteRefState;
 		m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
-		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+		UT_String_sprintf(footpid,"%i",m_iLastFootnoteId-1);
 		attribs[1] = footpid.c_str();
 
 		if(m_bNoteIsFNote)
@@ -2110,7 +2110,7 @@ void IE_Imp_RTF::HandleNote(void)
 	}
 	
 	UT_String footpid;
-	UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+	UT_String_sprintf(footpid,"%i",m_iLastFootnoteId-1);
 	attribs[1] = footpid.c_str();
 	UT_DEBUGMSG(("ie_imp_RTF: Handle Footnote now \n"));
 
