@@ -45,6 +45,9 @@ class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 	HDC            getPrintDC() const {return m_printHDC;}
 	void           setPrintDC(HDC dc) {m_printHDC = dc;}
 
+	UT_sint32      getScreenAscent() const {return m_iScreenAscent;}
+	void           setScreenAscent(UT_sint32 iA) {m_iScreenAscent = iA;}
+
   protected:
 	// all construction has to be done via the graphics class
 	GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC);
@@ -54,6 +57,7 @@ class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
   private:
 	SCRIPT_CACHE m_sc;
 	HDC          m_printHDC;
+	UT_sint32    m_iScreenAscent;
 };
 
 class GR_Win32USPRenderInfo;

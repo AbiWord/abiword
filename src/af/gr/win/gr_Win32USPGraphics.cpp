@@ -1215,8 +1215,8 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	UT_return_if_fail(pItem && pFont);
 
 	UT_sint32 xoff = (UT_sint32)((double)_tduX(RI.m_xoff) * m_fXYRatio);
-	UT_sint32 yoff = _tduY(RI.m_yoff);
 
+	// we will deal with yoff later
 	if(RI.m_iLength == 0)
 		return;
 	
@@ -1260,6 +1260,24 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	// need to make sure that the HDC has the correct font set
 	// we scale this font
 	_setupFontOnDC(pFont, true);
+
+	// Now deal with y offset RI.m_yoff is the top of the run, based on the ascent of the
+	// font; if we are drawing on screen and using printer metrics to do the layout, the
+	// ascent of the screen font can be smaller/greater and so we need to adjust the yoff
+	// accordingly
+	UT_sint32 iAscentScreen = pFont->getScreenAscent();
+	
+	if(!iAscentScreen)
+	{
+		TEXTMETRIC tm = { 0 };
+		GetTextMetrics(m_hdc, &tm);
+		iAscentScreen = tm.tmAscent * getResolution() / getDeviceResolution();
+		pFont->setScreenAscent(iAscentScreen);	
+	}
+
+	UT_sint32 iAscentPrint = pFont->getTextMetric().tmAscent * getResolution() / getDeviceResolution();
+	
+	UT_sint32 yoff = _tduY(RI.m_yoff + iAscentPrint - iAscentScreen);
 	
 	int * pJustify = RI.m_pJustify && RI.m_bRejustify ? RI.s_pJustify + iGlyphOffset : NULL;
 	
@@ -2357,10 +2375,9 @@ GR_Win32USPFont *  GR_Win32USPFont::newFont(LOGFONT &lf, double fPoints, HDC hdc
 GR_Win32USPFont::GR_Win32USPFont(LOGFONT & lf, double fPoints, HDC hdc, HDC printHDC)
 	: GR_Win32Font(lf, fPoints, hdc, printHDC),
 	  m_sc(NULL),
-	  m_printHDC(NULL)
+	  m_printHDC(NULL),
+	  m_iScreenAscent(0)
 {
-	// we need to get text metrix for the font afresh
-	// GetTextMetrics(hdc, m_tm);
 };
 
 void GR_Win32USPFont::_clearAnyCachedInfo()

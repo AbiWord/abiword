@@ -103,6 +103,8 @@ public:
 								  UT_uint32 zoomPercentage) const;
 
 	void         fetchFont(UT_uint32 pixelsize) const;
+
+	const TEXTMETRIC & getTextMetric() const {return m_tm;}
    	
 private:
 
