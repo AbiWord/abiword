@@ -3977,6 +3977,13 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		}
 	}
 
+	// we cannot bookmark lesser position than 2, because the bookmark object has to be located
+	// withing a block; this was the cause of bug 7128
+	// (we might consider one day to allow the bookmark object before the first block strux, but the
+	// complications this would cause are possibly not worth it)
+	if(posStart < 2)
+		posStart = 2;
+	
 	posEnd++;
 
 	if(!m_pDoc->isBookmarkUnique(static_cast<const XML_Char*>(szName)))
