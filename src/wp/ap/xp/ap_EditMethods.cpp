@@ -13181,7 +13181,9 @@ Defun(deleteFrame)
 Defun(cutFrame)
 {
 	CHECK_FRAME;
+	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Cut Frame \n"));
+	pView->cutFrame();
 	return true;
 }
 
@@ -13189,7 +13191,14 @@ Defun(cutFrame)
 Defun(copyFrame)
 {
 	CHECK_FRAME;
+	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Copy Frame \n"));
+	fl_FrameLayout * pFL = pView->getFrameLayout();
+	PT_DocPosition posLow = pFL->getPosition(true);
+	PT_DocPosition posHigh = posLow + pFL->getLength();
+	PD_DocumentRange dr(pView->getDocument(),posLow,posHigh);
+	XAP_App::getApp()->copyToClipboard(&dr, true);
+	pView->notifyListeners(AV_CHG_CLIPBOARD);
 	return true;
 }
 
@@ -13198,6 +13207,8 @@ Defun(selectFrame)
 {
 	CHECK_FRAME;
 	UT_DEBUGMSG(("Select Frame \n"));
+	ABIWORD_VIEW;
+	pView->selectFrame();
 	return true;
 }
 

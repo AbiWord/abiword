@@ -785,9 +785,14 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	m_bInFrame = true;
 
 	const XML_Char *pszFrameType = NULL;
+	const XML_Char *pszWrapMode = NULL;
 	const XML_Char *pszPositionTo = NULL;
 	const XML_Char *pszXpos = NULL;
 	const XML_Char *pszYpos = NULL;
+	const XML_Char *pszColXpos = NULL;
+	const XML_Char *pszColYpos = NULL;
+	const XML_Char *pszPageXpos = NULL;
+	const XML_Char *pszPageYpos = NULL;
 	const XML_Char *pszWidth = NULL;
 	const XML_Char *pszHeight = NULL;
 	const XML_Char *pszXpad = NULL;
@@ -800,8 +805,13 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	
 	FL_FrameType iFrameType = FL_FRAME_TEXTBOX_TYPE;
 	FL_FrameFormatMode iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
+	FL_FrameWrapMode iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
 	UT_sint32 iXpos = convertInchToTwips(UT_convertToInches("0.0in"));
 	UT_sint32 iYpos = convertInchToTwips(UT_convertToInches("0.0in"));
+	UT_sint32 iXColumn = convertInchToTwips(UT_convertToInches("0.0in"));
+	UT_sint32 iYColumn = convertInchToTwips(UT_convertToInches("0.0in"));
+	UT_sint32 iXPage = convertInchToTwips(UT_convertToInches("0.0in"));
+	UT_sint32 iYPage = convertInchToTwips(UT_convertToInches("0.0in"));
 	UT_sint32 iWidth = convertInchToTwips(UT_convertToInches("1.0in"));
 	UT_sint32 iHeight = convertInchToTwips(UT_convertToInches("1.0in"));
 	UT_sint32 iXpad = convertInchToTwips(UT_convertToInches("0.03in"));
@@ -823,6 +833,10 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	{
 		iFrameType = FL_FRAME_TEXTBOX_TYPE;
 	}
+	else if(strcmp(pszFrameType,"image") == 0)
+	{
+		iFrameType = FL_FRAME_WRAPPER_IMAGE;
+	}
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Frame Type %s \n",pszFrameType));
@@ -840,11 +854,52 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	{
 		iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK;
 	}
+	else if(strcmp(pszPositionTo,"column-above-text") == 0)
+	{
+		iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN;
+	}
+	else if(strcmp(pszPositionTo,"page-above-text") == 0)
+	{
+		iFramePositionTo = FL_FRAME_POSITIONED_TO_PAGE;
+	}
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK;
+	}
+
+// wrap-mode
+
+	if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
+	{
+		iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+	}
+	else if(strcmp(pszWrapMode,"above-text") == 0)
+	{
+		iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
+	}
+	else if(strcmp(pszWrapMode,"below-text") == 0)
+	{
+		iFrameWrapMode = FL_FRAME_BELOW_TEXT;
+	}
+	else if(strcmp(pszWrapMode,"wrapped-to-right") == 0)
+	{
+		iFrameWrapMode = FL_FRAME_WRAPPED_TO_RIGHT;
+	}
+	else if(strcmp(pszWrapMode,"wrapped-to-left") == 0)
+	{
+		iFrameWrapMode = FL_FRAME_WRAPPED_TO_LEFT;
+	}
+	else if(strcmp(pszWrapMode,"wrapped-both") == 0)
+	{
+		iFrameWrapMode = FL_FRAME_WRAPPED_BOTH_SIDES;
+	}
+	else 
+	{
+		UT_DEBUGMSG(("Unknown wrap-mode %s \n",pszWrapMode));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		iFrameWrapMode = FL_FRAME_ABOVE_TEXT;
 	}
 
 // Xpos
@@ -869,6 +924,54 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 		iYpos = convertInchToTwips(UT_convertToInches(pszYpos));
 	}
 	UT_DEBUGMSG(("ypos for frame is %s \n",pszYpos));
+
+// ColXpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-col-xpos",pszColXpos))
+	{
+		iXColumn = convertInchToTwips(UT_convertToInches("0.0in"));
+	}
+	else
+	{
+		iXColumn = convertInchToTwips(UT_convertToInches(pszColXpos));
+	}
+	UT_DEBUGMSG(("ColXpos for frame is %s \n",pszColXpos));
+
+// colYpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-col-ypos",pszColYpos))
+	{
+		iYColumn = convertInchToTwips(UT_convertToInches("0.0in"));
+	}
+	else
+	{
+		iYColumn = convertInchToTwips(UT_convertToInches(pszColYpos));
+	}
+	UT_DEBUGMSG(("ColYpos for frame is %s units %d \n",pszColYpos,iYColumn));
+
+
+// PageXpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
+	{
+		iXPage = convertInchToTwips(UT_convertToInches("0.0in"));
+	}
+	else
+	{
+		iXPage = convertInchToTwips(UT_convertToInches(pszPageXpos));
+	}
+	UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
+// PageYpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
+	{
+		iYPage = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		iYPage = UT_convertToLogicalUnits(pszPageYpos);
+	}
+	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszColYpos,iYPage));
 
 // Width
 
@@ -986,8 +1089,56 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 		m_pie->_rtf_keyword("shpz",0); // All at z= 0;
 		m_pie->_rtf_keyword("shpbxmargin");
 		m_pie->_rtf_keyword("shpbypara"); // position relative to next paragraph
-		m_pie->_rtf_keyword("shpwr",3); // no text wrapping
-        m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+		if(iFrameWrapMode <= FL_FRAME_BELOW_TEXT)
+		{
+			m_pie->_rtf_keyword("shpwr",3); // no text wrapping
+			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+		}
+		else if(iFrameWrapMode >= FL_FRAME_BELOW_TEXT)
+		{
+			m_pie->_rtf_keyword("shpwr",2); // text wrapping
+			m_pie->_rtf_keyword("shpwrk",0); // text wrap both sides
+			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+		}
+	}
+	else if( iFramePositionTo == FL_FRAME_POSITIONED_TO_COLUMN)
+	{
+		iXpos = iXColumn;
+		iYpos = iYColumn;
+		m_pie->_rtf_keyword("shpz",0); // All at z= 0;
+		m_pie->_rtf_keyword("shpbxmargin");
+		m_pie->_rtf_keyword("shpbymargin"); // position relative to margin
+		if(iFrameWrapMode <= FL_FRAME_BELOW_TEXT)
+		{
+			m_pie->_rtf_keyword("shpwr",3); // no text wrapping
+			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+		}
+		else if(iFrameWrapMode >= FL_FRAME_BELOW_TEXT)
+		{
+			m_pie->_rtf_keyword("shpwr",2); // text wrapping
+			m_pie->_rtf_keyword("shpwrk",0); // text wrap both sides
+			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+		}
+	}
+	else if( iFramePositionTo == FL_FRAME_POSITIONED_TO_PAGE)
+	{
+		iXpos = iXPage;
+		iYpos = iYPage;
+		m_pie->_rtf_keyword("shpz",0); // All at z= 0;
+		m_pie->_rtf_keyword("shpbxmargin");
+		m_pie->_rtf_keyword("shpbypage"); // position relative to page
+
+		if(iFrameWrapMode <= FL_FRAME_BELOW_TEXT)
+		{
+			m_pie->_rtf_keyword("shpwr",3); // no text wrapping
+			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+		}
+		else if(iFrameWrapMode >= FL_FRAME_BELOW_TEXT)
+		{
+			m_pie->_rtf_keyword("shpwr",2); // text wrapping
+			m_pie->_rtf_keyword("shpwrk",0); // text wrap both sides
+			m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+		}
 	}
 	else
 	{

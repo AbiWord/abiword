@@ -813,7 +813,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iXPage = UT_convertToLogicalUnits(pszColXpos);
+		m_iXPage = UT_convertToLogicalUnits(pszPageXpos);
 	}
 	UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
 // PageYpos
@@ -824,9 +824,9 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iYPage = UT_convertToLogicalUnits(pszColYpos);
+		m_iYPage = UT_convertToLogicalUnits(pszPageYpos);
 	}
-	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszColYpos,m_iYColumn));
+	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszColYpos,m_iYPage));
 
 // Width
 

@@ -363,6 +363,8 @@ public:
 	void            releaseFrame(UT_sint32 x, UT_sint32 y);
 	bool            isInFrame(PT_DocPosition pos);
 	void            deleteFrame(void);
+	void            cutFrame(void);
+	void            selectFrame(void);
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos);
 	fl_FrameLayout * getFrameLayout(void);
 	void            setFrameFormat(const XML_Char ** props);
