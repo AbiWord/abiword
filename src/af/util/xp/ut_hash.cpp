@@ -93,7 +93,9 @@ UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void
 
 UT_sint32 UT_HashTable::setEntry(UT_HashTable::UT_HashEntry* pEntry, const char* pszRight, void* pData)
 {
-	pEntry->pszRight = m_pool.addString(pszRight);	// TODO this can fail, right?
+	if (pszRight)
+		pEntry->pszRight = m_pool.addString(pszRight);	// TODO this can fail, right?
+	
 	pEntry->pData = pData;
 
 	return 0;
