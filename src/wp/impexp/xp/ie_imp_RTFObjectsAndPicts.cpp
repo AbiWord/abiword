@@ -862,9 +862,11 @@ void IE_Imp_RTF::HandleShape(void)
 	// Formely in HandleEndFrame()
 	if(!bUseInsertNotAppend()) {
 		getDoc()->appendStrux(PTX_EndFrame, NULL);
+		m_newParaFlagged = true;
 	}
 	else {
 		getDoc()->insertStrux(m_dposPaste, PTX_EndFrame);
+		m_newParaFlagged = true;
 		m_dposPaste++;
 	}
 
