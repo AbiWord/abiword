@@ -17,12 +17,10 @@
  * 02111-1307, USA.
  */
 
-// for gtkclist. todo: rewrite to use gtktreeview
-#undef GTK_DISABLE_DEPRECATED
-
 #include <stdlib.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -52,19 +50,18 @@
 XAP_Dialog * AP_UnixDialog_New::static_constructor(XAP_DialogFactory * pFactory,
 												   XAP_Dialog_Id id)
 {
-	AP_UnixDialog_New * p = new AP_UnixDialog_New(pFactory,id);
-	return p;
+	return new AP_UnixDialog_New(pFactory,id);
 }
 
 AP_UnixDialog_New::AP_UnixDialog_New(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-  : AP_Dialog_New(pDlgFactory,id), m_pFrame(0), mRow(0), mCol(0)
+  : AP_Dialog_New(pDlgFactory,id), m_pFrame(0)
 {
 }
 
 AP_UnixDialog_New::~AP_UnixDialog_New(void)
 {
-  UT_VECTOR_PURGEALL(UT_String*, mTemplates);
+  UT_VECTOR_PURGEALL(UT_UTF8String*, mTemplates);
 }
 
 void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
@@ -77,18 +74,10 @@ void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_return_if_fail(mainWindow);
 	
-	/*connectFocus(GTK_WIDGET(mainWindow),pFrame);
-
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_return_if_fail(parentWindow);*/
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this,
-								 BUTTON_CANCEL, false ) )
+								 GTK_RESPONSE_CANCEL, false ) )
 	{
-		case BUTTON_OK:
+		case GTK_RESPONSE_OK:
 			event_Ok (); break ;
 		default:
 			event_Cancel () ; break ;
@@ -110,17 +99,37 @@ void AP_UnixDialog_New::event_Ok ()
 	}
 	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioNew)))
 	{
-	  UT_String * tmpl = (UT_String*)mTemplates[mRow] ;
-	  if (tmpl && tmpl->c_str())
-	    {
-	      setFileName (tmpl->c_str());
-	      setOpenType(AP_Dialog_New::open_Template);
-	    }
-		else
-		  {
+		GtkTreeSelection * selection;
+		GtkTreeIter iter;
+		GtkTreeModel * model;
+		
+		selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_choicesList) );
+
+		// if there is no selection, or the selection's data (GtkListItem widget)
+		// is empty, return cancel.  GTK can make this happen.
+		if ( !selection || 
+			 !gtk_tree_selection_get_selected (selection, &model, &iter)
+			)
+		{
 		    // fall back
 		    setOpenType(AP_Dialog_New::open_New);
-		  }
+		} else {
+			// get the ID of the selected Type
+			int mRow;
+			gtk_tree_model_get (model, &iter, 1, &mRow, -1);
+			
+			UT_UTF8String * tmpl = (UT_UTF8String*)mTemplates[mRow] ;
+			if (tmpl && tmpl->utf8_str())
+			{
+				setFileName (tmpl->utf8_str());
+				setOpenType(AP_Dialog_New::open_Template);
+			}
+			else
+			{
+				// fall back
+				setOpenType(AP_Dialog_New::open_New);
+			}
+		}
 	}
 	else
 	{
@@ -198,14 +207,6 @@ static void s_choose_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
 	dlg->event_ToggleOpenExisting();
 }
 
-static void
-s_clist_clicked (GtkWidget *w, gint row, gint col, 
-		 GdkEvent *evt, gpointer d)
-{
-	AP_UnixDialog_New * dlg = static_cast <AP_UnixDialog_New *>(d);
-	dlg->event_ClistClicked (row, col);
-}
-
 /*************************************************************************/
 /*************************************************************************/
 
@@ -238,86 +239,62 @@ extern "C" {
 /*************************************************************************/
 /*************************************************************************/
 
-GtkWidget * AP_UnixDialog_New::_constructWindow ()
+static void s_template_clicked(GtkTreeView *treeview,
+							   AP_UnixDialog_New * dlg)
 {
-	GtkWidget *mainWindow;
-	GtkWidget *dialog_vbox1;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	mainWindow = abiDialogNew ( "new dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Title).c_str());
-	dialog_vbox1 = GTK_DIALOG (mainWindow)->vbox;
-	gtk_widget_show (dialog_vbox1);
-
-	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK ) ;
-	
-	// assign pointers to widgets
-	m_mainWindow   = mainWindow;
-	
-	// construct the window contents
-	_constructWindowContents (dialog_vbox1);
-
-	return mainWindow;
+	UT_ASSERT(treeview && dlg);
+	dlg->event_ListClicked();
 }
 
-void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
+void AP_UnixDialog_New::s_template_dblclicked(GtkTreeView *treeview,
+											  GtkTreePath *arg1,
+											  GtkTreeViewColumn *arg2,
+											  AP_UnixDialog_New * me)
 {
-	GtkWidget *vbox1;
-	GtkWidget *hbox1;
+	me->event_ListClicked();
+	gtk_dialog_response (GTK_DIALOG(me->m_mainWindow), GTK_RESPONSE_OK);
+}
 
-	GtkWidget *radio_new;
-	GtkWidget *radio_existing;
-	GtkWidget *radio_empty;
-	GSList    *vbox1_group = NULL;
-
-	GtkWidget *choicesList;
-
-	GtkWidget *hseparator1;
-	GtkWidget *hseparator2;
-	GtkWidget *hseparator3;
-
-	GtkWidget *entry_filename;
-	GtkWidget *choose_btn;
-
-	GtkWidget *scrolledwindow1;
-	GtkWidget *viewport1;
-
+GtkWidget * AP_UnixDialog_New::_constructWindow ()
+{
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_New.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 
-	vbox1 = gtk_vbox_new (FALSE, 10);
-	gtk_widget_show (vbox1);
-	gtk_box_pack_start (GTK_BOX (container), vbox1, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox1), 6);
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	m_mainWindow = glade_xml_get_widget(xml, "ap_UnixDialog_New");
+	gtk_window_set_title(GTK_WINDOW(m_mainWindow), 
+						 pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
 
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, TRUE, TRUE, 0);
+	m_radioNew = glade_xml_get_widget(xml, "rdTemplate");
+	m_radioExisting = glade_xml_get_widget(xml, "rdOpen");
+	m_radioEmpty = glade_xml_get_widget(xml, "rdEmpty");
+	m_entryFilename = glade_xml_get_widget(xml, "enFile");
+	m_choicesList = glade_xml_get_widget(xml, "tvTemplates");
 
-	radio_new = gtk_radio_button_new_with_label (vbox1_group, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Create).c_str());
-	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_new));
-	gtk_widget_show (radio_new);
-	gtk_box_pack_start (GTK_BOX (vbox1), radio_new, FALSE, FALSE, 0);
+	gtk_button_set_label(GTK_BUTTON(m_radioNew), pSS->getValue(AP_STRING_ID_DLG_NEW_Create));
+	gtk_button_set_label(GTK_BUTTON(m_radioExisting), pSS->getValue(AP_STRING_ID_DLG_NEW_Open));
+	gtk_button_set_label(GTK_BUTTON(m_radioEmpty), pSS->getValue(AP_STRING_ID_DLG_NEW_NoFile));
 
-	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_show (scrolledwindow1);
-	gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1),
-					GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+							 renderer,
+							 "text", 
+							 0,
+							 NULL);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_choicesList), column);
 
-	viewport1 = gtk_viewport_new (NULL, NULL);
-	gtk_widget_show (viewport1);
-	gtk_container_add (GTK_CONTAINER (scrolledwindow1), viewport1);
-
-	choicesList = gtk_clist_new ( 1 );
-	gtk_clist_column_titles_passive (GTK_CLIST(choicesList));
-	gtk_widget_show (choicesList);
-	gtk_container_add (GTK_CONTAINER (viewport1), choicesList);
-
-	// TODO: find better size
-	gtk_widget_set_usize ( choicesList, 150, 150 ) ;
-
-	UT_String templateList[2];
-	UT_String templateDir;
+	UT_UTF8String templateList[2];
+	UT_UTF8String templateDir;
 
 	// the locally installed templates (per-user basis)
 	templateDir = XAP_App::getApp()->getUserPrivateDirectory();
@@ -329,10 +306,13 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	templateDir += "/templates/";
 	templateList[1] = templateDir;
 
-	gtk_clist_freeze (GTK_CLIST (choicesList));
-	gtk_clist_clear (GTK_CLIST (choicesList));
-
-	unsigned int howManyAdded = 0 ;
+	GtkListStore *model;
+	GtkTreeIter iter;
+	
+	model = gtk_list_store_new (2, 
+							    G_TYPE_STRING,
+								G_TYPE_INT
+	                            );
 
 	for ( unsigned int i = 0; i < (sizeof(templateList)/sizeof(templateList[0])); i++ )
 	  {
@@ -340,85 +320,53 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	    UT_sint32 n = 0;
 	    templateDir = templateList[i];
 
-	    n = scandir(templateDir.c_str(), &namelist, awt_only, alphasort);
+	    n = scandir(templateDir.utf8_str(), &namelist, awt_only, alphasort);
 
 	    if (n > 0)
-	      {
-		while(n-- > 0) 
-		  {
-		    UT_String myTemplate (templateDir + namelist[n]->d_name);
-		    
-		    UT_String * myTemplateCopy = new UT_String ( myTemplate ) ;
-		    mTemplates.addItem ( myTemplateCopy ) ;
-
-			  myTemplate = myTemplate.substr ( 0, myTemplate.size() - 4 ) ;
-			  gchar * txt[2];
-			  txt[0] = (gchar*) UT_basename ( myTemplate.c_str() );
-			  txt[1] = NULL;
-
-			  gtk_clist_append ( GTK_CLIST(choicesList), txt ) ;
-			  free (namelist[n]);
-
-			  howManyAdded++ ;
-		  }
-	      }
+		{
+			while(n-- > 0) 
+			{
+				UT_UTF8String * myTemplate = new UT_UTF8String(templateDir + namelist[n]->d_name);
+				mTemplates.addItem ( myTemplate ) ;		    
+				
+				// Add a new row to the model
+				gtk_list_store_append (model, &iter);
+				gtk_list_store_set (model, &iter,
+									0, UT_basename(myTemplate->utf8_str()),
+									1, mTemplates.size()-1,
+									-1);
+				free (namelist[n]);
+			}
+		}
 	  }
 
-	gtk_clist_thaw (GTK_CLIST (choicesList));
-	gtk_clist_select_row (GTK_CLIST (choicesList), 0, 0);
+	gtk_tree_view_set_model( GTK_TREE_VIEW(m_choicesList), reinterpret_cast<GtkTreeModel *>(model));
 
-	// connect the select_row signal to the clist
-	g_signal_connect (G_OBJECT (choicesList), "select-row",
-			    G_CALLBACK (s_clist_clicked), (gpointer)this);
+	g_object_unref (model);	
 
-	// TODO? Put clist inside of scrolled window
+	// now select first item in box
+ 	gtk_widget_grab_focus (m_choicesList);
 
-	hseparator2 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator2);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator2, TRUE, TRUE, 0);
+	g_signal_connect_after(G_OBJECT(m_choicesList),
+						   "cursor-changed",
+						   G_CALLBACK(s_template_clicked),
+						   static_cast<gpointer>(this));
 
-	radio_existing = gtk_radio_button_new_with_label (vbox1_group, pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Open).c_str());
-	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_existing));
-	gtk_widget_show (radio_existing);
-	gtk_box_pack_start (GTK_BOX (vbox1), radio_existing, FALSE, FALSE, 0);
-
-	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbox1, TRUE, TRUE, 0);
-
-	entry_filename = gtk_entry_new ();
-	gtk_widget_show (entry_filename);
-	gtk_box_pack_start (GTK_BOX (hbox1), entry_filename, TRUE, TRUE, 0);
-	gtk_entry_set_editable (GTK_ENTRY (entry_filename), FALSE);
-	gtk_entry_set_text (GTK_ENTRY (entry_filename), pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_NoFile).c_str());
-
-	choose_btn = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_Choose).c_str());
-	gtk_widget_show (choose_btn);
-	gtk_box_pack_start (GTK_BOX (hbox1), choose_btn, FALSE, FALSE, 0);
-
-	hseparator3 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator3);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator3, TRUE, TRUE, 0);
-
-	radio_empty = gtk_radio_button_new_with_label (vbox1_group, 
-						       pSS->getValueUTF8(AP_STRING_ID_DLG_NEW_StartEmpty).c_str());
-	vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radio_empty));
-	gtk_widget_show (radio_empty);
-	gtk_box_pack_start (GTK_BOX (vbox1), radio_empty, FALSE, FALSE, 0);
-
-	// make this one the default
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_empty), TRUE);
+	g_signal_connect_after(G_OBJECT(m_choicesList),
+						   "row-activated",
+						   G_CALLBACK(s_template_dblclicked),
+						   static_cast<gpointer>(this));
 
 	// connect signals
-	g_signal_connect (G_OBJECT(choose_btn), 
-						"clicked",
-						G_CALLBACK(s_choose_clicked), 
-						(gpointer)this);
+	g_signal_connect (G_OBJECT(m_radioExisting), 
+					  "clicked",
+					  G_CALLBACK(s_choose_clicked), 
+					  (gpointer)this);
 
-	// set the private pointers
-	m_radioNew      = radio_new;
-	m_radioExisting = radio_existing;
-	m_radioEmpty    = radio_empty;
-	m_entryFilename = entry_filename;
-	m_choicesList   = choicesList;
+	return m_mainWindow;
+}
+
+void AP_UnixDialog_New::event_ListClicked()
+{
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_radioNew), TRUE);
 }

@@ -49,8 +49,7 @@
 XAP_Dialog * AP_UnixDialog_Field::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
-	AP_UnixDialog_Field * p = new AP_UnixDialog_Field(pFactory,id);
-	return p;
+	return new AP_UnixDialog_Field(pFactory,id);
 }
 
 AP_UnixDialog_Field::AP_UnixDialog_Field(XAP_DialogFactory * pDlgFactory,
@@ -66,7 +65,6 @@ AP_UnixDialog_Field::AP_UnixDialog_Field(XAP_DialogFactory * pDlgFactory,
 AP_UnixDialog_Field::~AP_UnixDialog_Field(void)
 {
 }
-
 
 /*****************************************************************/
 

@@ -47,6 +47,7 @@ glade_DATA = \
 	ap_UnixDialog_MailMerge.glade	\
 	ap_UnixDialog_PageNumbers.glade		\
 	ap_UnixDialog_Replace.glade		\
+	ap_UnixDialog_New.glade		\
 	ap_UnixDialog_WordCount.glade
 
 if WITH_CURL

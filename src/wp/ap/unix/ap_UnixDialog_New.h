@@ -41,28 +41,22 @@ public:
 
 	void event_Ok ();
 	void event_Cancel ();
-	void event_ClistClicked ( gint row, gint col )
-	  {
-	    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_radioNew), TRUE);
-	    mRow = row; mCol = col;
-	  }
 	void event_ToggleOpenExisting ();
 	
-protected:
+	void event_ListClicked();
 
-	typedef enum
-		{
-			BUTTON_OK,
-			BUTTON_CANCEL
-		} ResponseId ;
-	
-	virtual GtkWidget * _constructWindow ();
-	virtual void _constructWindowContents (GtkWidget * container);
+private:
+
+	GtkWidget * _constructWindow ();
+
+	static void s_template_dblclicked(GtkTreeView *treeview,
+									  GtkTreePath *arg1,
+									  GtkTreeViewColumn *arg2,
+									  AP_UnixDialog_New * me);
 
 	/* private ... */
 	GtkWidget * m_mainWindow;
 
-private:
 	XAP_Frame * m_pFrame;
 
 	GtkWidget * m_entryFilename;
@@ -70,8 +64,6 @@ private:
 	GtkWidget * m_radioExisting;
 	GtkWidget * m_radioEmpty;
 	GtkWidget * m_choicesList;
-
-	gint mRow, mCol;
 
 	UT_Vector mTemplates ;
 };
