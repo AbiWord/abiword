@@ -29,7 +29,6 @@ TARGETS=		$(LIBRARY)
 
 PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)DragAndDrop.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_MessageBox.$(OBJ_SUFFIX)		\
@@ -87,6 +86,7 @@ ifeq ($(ABI_FE), Win32)
 PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)PreviewWidget.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)DialogHelper.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/xap_$(ABI_FE)DragAndDrop.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)LabelledSeparator.$(OBJ_SUFFIX)
 endif
 
