@@ -416,8 +416,16 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	if (bChar)
 	{
+		char c = static_cast<char>(i-1);
+		if ((c >= 'a') && (c <= 'z')) {
+			/* always return an uppercase letter for the shortcut, unlike the mapper do */
+			c -= 32;
+			if (!(ems&EV_EMS_SHIFT)) {
+				strcat(buf, "Shift+");
+			}
+		}
 		int len = strlen(buf);
-		buf[len] = static_cast<char>(i-1);
+		buf[len] = c;
 	}
 	else
 	{

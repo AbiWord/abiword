@@ -237,8 +237,10 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 	}
 
 	// set shortcut mnemonic, if any
-	if (*accelbuf)
+	if (*accelbuf) {
+		xxx_UT_DEBUGMSG(("found accelerator %s\n", accelbuf));
 		data[1] = accelbuf;
+	}
 	
 	if (!pAction->raisesDialog())
 	{

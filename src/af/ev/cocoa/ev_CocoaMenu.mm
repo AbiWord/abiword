@@ -123,6 +123,8 @@ EV_CocoaMenu::_refreshMenu(EV_NSMenu *menu)
 		pView = NULL;
 	}
 	const EV_Menu_ActionSet * pMenuActionSet = app->getMenuActionSet();
+	const EV_EditMethodContainer * pEMC = app->getEditMethodContainer();
+	UT_ASSERT(pEMC);
 	
 	NSMenuItem *menuItem;
 	NSEnumerator * enumerator = [[menu itemArray] objectEnumerator];
@@ -158,6 +160,24 @@ EV_CocoaMenu::_refreshMenu(EV_NSMenu *menu)
 				else {
 					bEnable = false;
 					bCheck = false;				
+				}
+			}
+			else {
+				// TODO FIXME: store this somewhere
+				const char *methodName = pAction->getMethodName();
+
+				EV_EditMethod * pEM = pEMC->findEditMethodByName(methodName);
+				if (pEM) {
+					EV_EditMethodType t = pEM->getType();
+					if (!(t & EV_EMT_APP_METHOD)) {
+						bEnable = (pView != NULL);
+					}
+					else {
+						bEnable = true;
+					}
+				}
+				else {
+					bEnable = false;
 				}
 			}
 
@@ -206,7 +226,7 @@ EV_CocoaMenu::_refreshMenu(EV_NSMenu *menu)
 
 		case EV_MLF_BeginSubMenu:
 		{
-			bool bEnable = true;
+			bool bEnable = (pView != NULL);
 			if (pAction->hasGetStateFunction())
 			{
 				if (pView) {
@@ -483,23 +503,35 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
  */
 NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers)
 {
+	bool needsShift = false;
 	modifiers = 0;
 	char * p;
 	if (strstr (mnemonic, "Alt+")) {
 		modifiers |= NSAlternateKeyMask;
 	}
-	else if (strstr (mnemonic, "Ctrl+") != NULL) {
+	if (strstr (mnemonic, "Ctrl+") != NULL) {
 		modifiers |= NSCommandKeyMask;
+	}
+	if (strstr (mnemonic, "Shift+") != NULL) {
+		needsShift = true;
 	}
 	if ((modifiers & NSCommandKeyMask) == 0) {
 		p = (char *)mnemonic;
 	}
 	else {
-		p = strchr (mnemonic, '+');
+		p = strrchr (mnemonic, '+');
 		p++;
 	}
 
-	return [[NSString stringWithUTF8String:p] lowercaseString];
+	NSString *shortcut = nil;
+	if ((p[1] == 0) && !needsShift) {
+		shortcut = [[NSString stringWithUTF8String:p] lowercaseString];
+	}
+	else {
+		shortcut = [NSString stringWithUTF8String:p];
+	}
+	xxx_UT_DEBUGMSG(("returning shortcut %s\n", [shortcut UTF8String]));
+	return shortcut;
 }
 
 
