@@ -49,6 +49,7 @@ public:
 	
 private:
 	PD_Document *		m_pDoc;
+	FV_View *           m_pView;
 	
 	AP_Dialog_InsertHyperlink::tAnswer	m_answer;
 	XML_Char *			m_pHyperlink;

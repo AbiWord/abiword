@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2001 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -64,7 +64,7 @@ void AP_Dialog_InsertHyperlink::setHyperlink(const XML_Char * link)
 {
 	if(m_pHyperlink)
 		delete [] m_pHyperlink;
-		
+
 	UT_uint32 len = UT_XML_strlen(link);
 	m_pHyperlink = new XML_Char [len+1];
 	UT_XML_strncpy(m_pHyperlink, len + 1, link);
@@ -72,5 +72,26 @@ void AP_Dialog_InsertHyperlink::setHyperlink(const XML_Char * link)
 
 void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)
 {
+	m_pView = pView;
 	m_pDoc = pView->getDocument();
+
+	// we will also init here the m_pHyperlink member
+	if(!m_pHyperlink)
+	{
+		UT_return_if_fail(!pView->isSelectionEmpty());
+
+		UT_UCS4Char * pSelection = pView->getSelectionText();
+		UT_return_if_fail(pSelection);
+
+		m_pHyperlink = new XML_Char [UT_UCS4_strlen(pSelection)+1];
+		UT_UCS4_strcpy_to_char(m_pHyperlink, pSelection);
+
+		// now check if this is a valid URL, if not just delete the
+		// whole thing
+		if(!UT_isUrl(m_pHyperlink))
+		{
+			delete [] m_pHyperlink;
+			m_pHyperlink = NULL;
+		}
+	}
 }
