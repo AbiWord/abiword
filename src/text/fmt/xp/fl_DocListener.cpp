@@ -182,8 +182,11 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	UT_ASSERT(m_pLayout);
 
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	pFrame->nullUpdate();
-	UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
+	if(pFrame)
+	{
+		pFrame->nullUpdate();
+		UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
+	}
 //
 // This piece of code detects if there is enough document to notify
 // listeners and other things.
