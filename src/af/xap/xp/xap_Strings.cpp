@@ -64,12 +64,19 @@ const XML_Char * XAP_StringSet::getLanguageName(void) const
 	return m_szLanguageName;
 }
 
-UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) const
+/*
+   I changed the return values to reference, because without that we were returning temporary
+   variables of uncertain life span (was getting crashes in synthesizing menus).
+   Tomas, Apr 9, 2004
+*/
+UT_String & XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) const
 {
-	return UT_String(getValue(id));
+	static UT_String s;
+	s = getValue(id);
+	return s;
 }
 
-UT_UTF8String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
+UT_UTF8String & XAP_StringSet::getValueUTF8(XAP_String_Id id) const
 {	
 	//TODO: We can return early and avoid conversion if string is already in UTF-8	
 	const char * toTranslate = getValue(id);                                                     	
@@ -78,7 +85,9 @@ UT_UTF8String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
 
 	UT_ASSERT(translated);                                                    
 
-	UT_UTF8String toReturn(translated);                                           
+	// cannot return local variable !!!
+	static UT_UTF8String toReturn;
+	toReturn = translated; 
 
 	free(translated);       
 	return toReturn;  	
