@@ -41,7 +41,7 @@ BeginLayout(Main,0)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
 
-#if 0 // HAVE_GNOME_DIRECT_PRINT
+#if HAVE_GNOME_DIRECT_PRINT
 		MenuItem(AP_MENU_ID_FILE_PRINT_DIRECTLY)
 #endif
 		Separator()
