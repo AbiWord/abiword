@@ -3710,7 +3710,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 	time_t	tim = time(NULL);
 	struct tm *pTime = localtime(&tim);
 
-	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%I:%M:%S %p", pTime);
+	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%X", pTime);
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
