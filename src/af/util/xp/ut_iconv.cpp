@@ -137,8 +137,10 @@ UT_iconv_t  UT_iconv_open( const char* to, const char* from )
 size_t  UT_iconv( UT_iconv_t cd, const char **inbuf, 
 		  size_t *inbytesleft, char **outbuf, size_t *outbytesleft )
 {
-    return iconv( cd, const_cast<ICONV_CONST char **>(inbuf), 
-		  inbytesleft, outbuf, outbytesleft );
+    // this should take care of iconv problems with different compilers,
+    // esp. strict ones like gcc3.0, and the other older iconv prototypes
+    char ** buf = const_cast<char **>(inbuf);
+    return iconv( cd, buf, inbytesleft, outbuf, outbytesleft );
 }
 
 int  UT_iconv_close( UT_iconv_t cd )
