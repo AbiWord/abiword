@@ -48,6 +48,7 @@ public:
     void				_endElement(const XML_Char *name);
     void				_charData(const XML_Char*, int);
 
+    static UT_Bool		RecognizeContents(const char * szBuf, int iNumbytes);
     static UT_Bool		RecognizeSuffix(const char * szSuffix);
     static UT_Error		StaticConstructor(PD_Document * pDocument,
 	    IE_Imp ** ppie);

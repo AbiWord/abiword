@@ -681,6 +681,82 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
+UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, int iNumbytes)
+{
+	// TODO: This is rather crude, because we don't parse OLE files.
+	// TODO: For the time being, we assume that any OLE file is an
+	// TODO: msword document.
+	// TODO: Caolan is gonna kill me for this.  :)
+	// Most of the magic numbers here were taken from the public domain
+	// /etc/magic file distributed with the file(1) command written
+	// by Ian F. Darwin, with contributions and magic entries from
+	// Rob McMahon, Guy Harris, Christos Zoulas <christos@astron.com>,
+	// Mark Moraes <moraes@deshaw.com>, and Pawel Wiecek.
+	char *magic ;
+	int magicoffset ;
+	magic = "Microsoft Word 6.0 Document" ;
+	magicoffset = 2080 ;
+	if ( iNumbytes > magicoffset+strlen(magic) )
+	{
+		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		{
+			return(UT_TRUE);
+		}
+	}
+	magic = "Documento Microsoft Word 6" ;
+	magicoffset = 2080 ;
+	if ( iNumbytes > magicoffset+strlen(magic) )
+	{
+		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		{
+			return(UT_TRUE);
+		}
+	}
+	magic = "MSWordDoc" ;
+	magicoffset = 2112 ;
+	if ( iNumbytes > magicoffset+strlen(magic) )
+	{
+		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
+		{
+			return(UT_TRUE);
+		}
+	}
+	if ( iNumbytes > 8 )
+	{
+		if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
+			 szBuf[2] == (char)0 && szBuf[3] == (char)0 )
+		{
+			return(UT_TRUE);
+		}
+		if ( szBuf[0] == 'P' && szBuf[1] == 'O' &&
+			 szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`' )
+		{
+			return(UT_TRUE);
+		}
+		if ( szBuf[0] == (char)0xfe && szBuf[1] == (char)0x37 &&
+			 szBuf[2] == (char)0 && szBuf[3] == (char)0x23 )
+		{
+			return(UT_TRUE);
+		}
+		// OLE magic:
+		// TODO: Dig through the OLE file
+		if ( szBuf[0] == (char)0xd0 && szBuf[1] == (char)0xcf &&
+			 szBuf[2] == (char)0x11 && szBuf[3] == (char)0xe0 &&
+			 szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
+			 szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1 )
+		{
+			return(UT_TRUE);
+		}
+		if ( szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
+			 szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
+			 szBuf[4] == (char)0 && szBuf[5] == (char)0 )
+		{
+			return(UT_TRUE);
+		}
+	}
+	return(UT_FALSE);
+}
+
 UT_Bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".doc") == 0);

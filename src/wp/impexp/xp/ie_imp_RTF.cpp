@@ -319,6 +319,19 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 /*****************************************************************/
 /*****************************************************************/
 
+UT_Bool IE_Imp_RTF::RecognizeContents(const char * szBuf, int iNumbytes)
+{
+	if ( iNumbytes < 5 )
+	{
+		return(UT_FALSE);
+	}
+	if ( strncmp( szBuf, "{\\rtf", 5 ) == 0 )
+	{
+		return(UT_TRUE) ;
+	}
+	return(UT_FALSE);
+}
+
 UT_Bool IE_Imp_RTF::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".rtf") == 0);

@@ -38,6 +38,9 @@ public:
 	// responsible for destroying the importer when finished
 	// with it.
 
+	static IEFileType	fileTypeForContents(const char * szBuf,
+					int iNumbytes);
+
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
 	static UT_Error		constructImporter(PD_Document * pDocument,

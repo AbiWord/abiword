@@ -38,6 +38,8 @@
 
 struct _imp
 {
+	UT_Bool			(*fpRecognizeContents)(const char * szBuf,
+							int iNumbytes);
 	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
 	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Imp ** ppie);
@@ -47,16 +49,16 @@ struct _imp
 	UT_Bool			(*fpSupportsFileType)(IEFileType ft);
 };
 
-#define DeclareImporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
+#define DeclareImporter(n)	{ n::RecognizeContents, n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
 
 static struct _imp s_impTable[] =
 {
 	DeclareImporter(IE_Imp_AbiWord_1),
       DeclareImporter(IE_Imp_GZipAbiWord),
-	DeclareImporter(IE_Imp_Text),
 	DeclareImporter(IE_Imp_RTF),
 	DeclareImporter(IE_Imp_MsWord_97),
 	DeclareImporter(IE_Imp_UTF8),
+	DeclareImporter(IE_Imp_Text),
 };
 
 		
@@ -75,10 +77,38 @@ IE_Imp::~IE_Imp()
 /*****************************************************************/
 /*****************************************************************/
 
+IEFileType IE_Imp::fileTypeForContents(const char * szBuf, int iNumbytes)
+{
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a match for all file types
+	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
+	{
+		struct _imp * s = &s_impTable[k];
+		if (s->fpRecognizeContents(szBuf, iNumbytes))
+		{
+			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			{
+				if (s->fpSupportsFileType((IEFileType) a))
+					return (IEFileType) a;
+			}
+
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// Hm... an importer recognizes the given data
+			// but refuses to support any file type we request.
+			return IEFT_Unknown;
+		}
+	}
+
+	// No filter recognizes this data
+	return IEFT_Unknown;
+	
+}
+
 IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 {
 	if (!szSuffix)
-		return IEFT_Text;
+		return IEFT_Unknown;
 	
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,
@@ -96,14 +126,13 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			// Hm... an importer has registered for the given suffix,
-			// bug refuses to support any file type we request.
-			// Default to Text.
-			return IEFT_Text;
+			// but refuses to support any file type we request.
+			return IEFT_Unknown;
 		}
 	}
 
-	// No filter is registered for that extension, try Text for import
-	return IEFT_Text;
+	// No filter is registered for that extension
+	return IEFT_Unknown;
 	
 }
 
@@ -120,12 +149,30 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	UT_ASSERT(szFilename && *szFilename);
 	UT_ASSERT(ppie);
 
-	// no filter will support IEFT_Unknown, so we detect from the
-	// suffix of the filename, the real importer to use and assign
-	// that back to ieft.
+	// no filter will support IEFT_Unknown, so we try to detect
+	// from the contents of the file or the filename suffix
+	// the importer to use and assign that back to ieft.
+	// Give precedence to the file suffix.
 	if (ieft == IEFT_Unknown)
 	{
 		ieft = IE_Imp::fileTypeForSuffix(UT_pathSuffix(szFilename));
+	}
+	if (ieft == IEFT_Unknown)
+	{
+		char szBuf[4096];  // 4096 ought to be enough
+		int iNumbytes;
+		FILE *f;
+		if ( ( f = fopen( szFilename, "r" ) ) != (FILE *)0 )
+		{
+			iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
+			fclose(f);
+			ieft = IE_Imp::fileTypeForContents(szBuf, iNumbytes);
+		}
+	}
+	// as a last resort, just try importing it as text  :(
+	if (ieft == IEFT_Unknown)
+	{
+		ieft = IEFT_Text ;
 	}
 
 	UT_ASSERT(ieft != IEFT_Unknown);

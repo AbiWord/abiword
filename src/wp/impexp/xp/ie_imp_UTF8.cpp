@@ -302,6 +302,12 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
+UT_Bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, int iNumbytes)
+{
+	// TODO: Not yet written
+	return(UT_FALSE);
+}
+
 UT_Bool IE_Imp_UTF8::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".utf8") == 0);

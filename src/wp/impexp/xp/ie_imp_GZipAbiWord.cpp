@@ -54,6 +54,23 @@ IE_Imp_GZipAbiWord::IE_Imp_GZipAbiWord(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
+UT_Bool IE_Imp_GZipAbiWord::RecognizeContents(const char * szBuf, int iNumbytes)
+{
+	// TODO: This is a hack.  Since we're just passed in some
+	// TODO: some data, and not the actual filename, there isn't
+	// TODO: much we can do other than verify that it is gzip'ed
+	// TODO: data.  For the time being, assume that if it is
+	// TODO: gzip'ed, it's gzip'ed abiword.  This assumption will
+	// TODO: be false if and when we support any other compressed
+	// TODO: formats.
+	if ( iNumbytes < 2 ) return(UT_FALSE);
+	if ( ( szBuf[0] == (char)0x1f ) && ( szBuf[1] == (char)0x8b ) )
+	{
+		return(UT_TRUE);
+	}
+	return(UT_FALSE);
+}
+
 UT_Bool IE_Imp_GZipAbiWord::RecognizeSuffix(const char * szSuffix)
 {
     return (UT_stricmp(szSuffix,".zabw") == 0);

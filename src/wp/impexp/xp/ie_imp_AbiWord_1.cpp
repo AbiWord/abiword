@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -144,6 +145,40 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 
 /*****************************************************************/
 /*****************************************************************/
+
+UT_Bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, int iNumbytes)
+{
+	int iLinesToRead = 6 ;  // Only examine the first few lines of the file
+	int iBytesScanned = 0 ;
+	const char *p ;
+	char *magic ;
+	p = szBuf ;
+	while( iLinesToRead-- )
+	{
+		magic = "<abiword " ;
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_FALSE);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_TRUE);
+		magic = "<!-- This file is an AbiWord document." ;
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_FALSE);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_TRUE);
+		/*  Seek to the next newline:  */
+		while ( *p != '\n' && *p != '\r' )
+		{
+			iBytesScanned++ ; p++ ;
+			if( iBytesScanned+2 >= iNumbytes ) return(UT_FALSE);
+		}
+		/*  Seek past the next newline:  */
+		if ( *p == '\n' || *p == '\r' )
+		{
+			iBytesScanned++ ; p++ ;
+			if ( *p == '\n' || *p == '\r' )
+			{
+				iBytesScanned++ ; p++ ;
+			}
+		}
+	}
+	return(UT_FALSE);
+}
 
 UT_Bool IE_Imp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
 {
