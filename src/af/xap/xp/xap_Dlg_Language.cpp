@@ -31,7 +31,7 @@ static int s_compareQ(const void * a, const void * b)
 	const XML_Char ** A = (const XML_Char ** ) a;
 	const XML_Char ** B = (const XML_Char ** ) b;
 
-	return UT_strcmp(*A,*B);
+	return UT_strcoll(*A,*B);
 }
 
 XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
