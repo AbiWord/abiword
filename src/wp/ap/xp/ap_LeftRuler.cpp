@@ -264,16 +264,6 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
  	{
 		FV_View *pView = static_cast<FV_View *>(m_pView);
 
-		// it makes no sense to click on the bottom margin for the footer.
-		if (pView->isHdrFtrEdit())
-		{
-			fl_HdrFtrShadow * pShadow = pView->getEditShadow();
-
-			if (pShadow->getHdrFtrSectionLayout()->getHFType() 
-				                == FL_HDRFTR_FOOTER)
-				return;
-		}
-
  		m_bValidMouseClick = true;
  		m_draggingWhat = DW_BOTTOMMARGIN;
  		m_bBeforeFirstMotion = true;
@@ -387,7 +377,20 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
 
 	bool hdr = (hdrftr && 
-				pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
+				pShadow->getHdrFtrSectionLayout()->getHFType() < FL_HDRFTR_FOOTER);
+	HdrFtrType hfType = FL_HDRFTR_HEADER;
+	if(pShadow)
+	{
+		hfType = pShadow->getHdrFtrSectionLayout()->getHFType();
+	}
+    PT_DocPosition insPos = pView->getPoint();
+	UT_sint32 iPage = -1;
+	fl_DocSectionLayout * pDSL = NULL;
+	if(pShadow)
+	{
+		pDSL = pShadow->getHdrFtrSectionLayout()->getDocSectionLayout();
+		iPage = pDSL->getDocLayout()->findPage(pShadow->getPage());
+	}
 
 	double dyrel = 0.0;
 	UT_sint32 yOrigin = m_infoCache.m_yPageStart + 
@@ -418,13 +421,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 						properties[0] = "page-margin-header";
 					else
 					{
-						properties[0] = "page-margin-footer";
-						
-						dyrel = tick.scalePixelDistanceToUnits
-							(pShadow->getHdrFtrSectionLayout()->
-							 getDocSectionLayout()->getBottomMargin() + 
-							 (m_draggingCenter + m_yScrollOffset -
-							  (m_infoCache.m_yPageStart + m_infoCache.m_yPageSize)));
+						properties[0] = "page-margin-bottom";
+
+						dyrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
 					}
 				}
 				sHeights = pG->invertDimension(tick.dimType,dyrel);
@@ -494,9 +493,31 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
 			notify(pView, AV_CHG_HDRFTR);
+			pView->setPoint(insPos);
+			pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+			pView->setPoint(insPos);
+			pView->ensureInsertionPointOnScreen();
+//
+// Put the point at the right point in the header/footer on the right page.
+//
+			if(iPage >= 0)
+			{
+				fp_Page * pPage = pDSL->getDocLayout()->getNthPage(iPage);
+				if(pPage)
+				{
+					fp_ShadowContainer* pShadowC = pPage->getHdrFtrP(hfType);
+					pShadow = pShadowC->getShadow();
+					pView->setHdrFtrEdit(pShadow);
+				}
+				pView->setPoint(insPos);
+				pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+				pView->setPoint(insPos);
+				pView->ensureInsertionPointOnScreen();
+			}
+
 			return;
 		}
-		break;
+		return;
 
 	case DW_BOTTOMMARGIN:
 		{
@@ -515,7 +536,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 							(m_draggingCenter - yAbsTop);
 					}
 					else
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					{
+						properties[0] = "page-margin-footer";
+					}
 				}
 				UT_String sHeights = pG->invertDimension(tick.dimType,dyrel);
 				properties[1] = sHeights.c_str();
@@ -567,9 +590,30 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
 			notify(pView, AV_CHG_HDRFTR);
+			pView->setPoint(insPos);
+			pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+			pView->setPoint(insPos);
+			pView->ensureInsertionPointOnScreen();
+//
+// Put the point at the right point in the header/footer on the right page.
+//
+			if(iPage >= 0)
+			{
+				fp_Page * pPage = pDSL->getDocLayout()->getNthPage(iPage);
+				if(pPage)
+				{
+					fp_ShadowContainer* pShadowC = pPage->getHdrFtrP(hfType);
+					pShadow = pShadowC->getShadow();
+					pView->setHdrFtrEdit(pShadow);
+				}
+				pView->setPoint(insPos);
+				pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+				pView->setPoint(insPos);
+				pView->ensureInsertionPointOnScreen();
+			}
 			return;
 		}
-		break;
+		return;
 	case DW_CELLMARK:
 	    {
 			xxx_UT_DEBUGMSG(("Handling CellMark \n"));
@@ -696,49 +740,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 			return;
 		}
 	}
-
-	properties[1] = pG->invertDimension(tick.dimType,dyrel);
-	properties[2] = 0;
-
-	xxx_UT_DEBUGMSG(("LeftRuler: %s [%s]\n",properties[0], properties[1]));
-
-	_xorGuide(true);
-	m_draggingWhat = DW_NOTHING;
-
-	if(hdrftr)
-	{
-		pView->rememberCurrentPosition();
-
-		pView->clearHdrFtrEdit();
-  		pView->warpInsPtToXY(0,0,false);
-	}
-
-	//
-	// Finally we've got it all in place, Make the change!
-	//
-
-	pView->setSectionFormat(properties);
-
-    // todo: make this warp back to the last saved editing position
-    // todo: instead of just the header/footer in general
-	if (hdrftr)
-	{
-		if (hdr)
-			pView->cmdEditHeader();
-		else
-			pView->cmdEditFooter();
-
-		xxx_UT_DEBUGMSG(("DOM: %d\n", pView->getSavedPosition()));
-
-		pView->setPoint(pView->getSavedPosition());
-
-		pView->moveInsPtTo(pView->getSavedPosition());
-		pView->clearSavedPosition();
-	}
 //
 // Redraw the left ruler.
 //
-	notify(pView,AV_CHG_MOTION);
 	return;
 }
 
@@ -862,6 +866,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		rBottomMargin.width = getWidth();
 		if (rTopMargin.containsPoint(x,y))
 		{
+			UT_DEBUGMSG(("In Top Margin box \n"));
 			if(m_pG)
 			{
 				m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
@@ -869,6 +874,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		}
 		else if (rBottomMargin.containsPoint(x,y))
 		{
+			UT_DEBUGMSG(("In Bottom Margin box \n"));
 			if(m_pG)
 			{
 				m_pG->setCursor( GR_Graphics::GR_CURSOR_UPDOWN);
@@ -953,7 +959,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		fl_HdrFtrShadow * pShadow = pView->getEditShadow();
 
 		bool hdr = (hdrftr && 
-					pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
+					pShadow->getHdrFtrSectionLayout()->getHFType() < FL_HDRFTR_FOOTER);
 
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
@@ -1006,6 +1012,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		if (m_draggingWhat == DW_BOTTOMMARGIN)
 		{
 			m_infoCache.m_yBottomMargin -= m_draggingCenter - oldDragCenter;
+			UT_DEBUGMSG(("Dragging bottom margin new value %d \n",	m_infoCache.m_yBottomMargin));
 		}
 				
 		draw(NULL, &m_infoCache);
@@ -1297,7 +1304,8 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
 
 	bool hdr = (hdrftr && 
-				pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
+				pShadow->getHdrFtrSectionLayout()->getHFType() < FL_HDRFTR_FOOTER);
+
 
 	UT_Rect rTop, rBottom;
 	UT_uint32 onePX = m_pG->tlu(1);
@@ -1318,8 +1326,8 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	painter.drawLine( rTop.left + onePX,  rTop.top + rTop.height - m_pG->tlu(2), rTop.left + onePX, rTop.top + onePX);
 	
 	// TODO: this isn't the right place for this logic. But it works.
-	if (hdrftr && !hdr)
-		return;
+//	if (hdrftr && !hdr)
+//		return;
 
 	painter.fillRect(GR_Graphics::CLR3D_Background, rBottom);
 

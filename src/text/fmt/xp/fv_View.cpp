@@ -7244,7 +7244,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
 
-			if(pHF->getHFType() == FL_HDRFTR_FOOTER)
+			if(pHF->getHFType() >= FL_HDRFTR_FOOTER)
 			{
 				pInfo->m_yTopMargin = pPage->getHeight() - pDSL->getBottomMargin();
 				UT_ASSERT(pInfo->m_yTopMargin>= 0);

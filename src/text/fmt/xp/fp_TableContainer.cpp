@@ -3521,7 +3521,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 			fp_CellContainer * pUpCell = static_cast<fp_CellContainer *>(pUpTab->getContainer());
 			pUpTab = static_cast<fp_TableContainer *>(pUpCell->getContainer());
 		}
-		if(pUpTab != this)
+		if(pUpTab && (pUpTab != this))
 		{
 			pUpTab->deleteBrokenTables(bClearFirst,false);
 			return;
