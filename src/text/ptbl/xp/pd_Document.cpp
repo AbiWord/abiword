@@ -5077,6 +5077,8 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 	
 	const PP_Revision * pRev;
 
+	notifyPieceTableChangeStart();
+	
 	beginUserAtomicGlob();	
 	while(t.getStatus() == UTIter_OK)
 	{
@@ -5086,6 +5088,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
 			return false;
 		}
 		
@@ -5097,6 +5100,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
 			return false;
 		}
 		
@@ -5135,6 +5139,7 @@ bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 	}
 
 	endUserAtomicGlob();
+	notifyPieceTableChangeEnd();
 	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	return true;
 }
@@ -5169,6 +5174,8 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 	UT_uint32 iLenProcessed = 0;
 	bool bFirst = true;
 	
+	notifyPieceTableChangeStart();
+
 	beginUserAtomicGlob();	
 	while(t.getStatus() == UTIter_OK && iPosStart + iLenProcessed < iPosEnd)
 	{
@@ -5177,6 +5184,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
 			return false;
 		}
 
@@ -5199,6 +5207,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
 			return false;
 		}
 		
@@ -5237,6 +5246,7 @@ bool PD_Document::acceptRejectRevision(bool bReject, UT_uint32 iPos1,
 	}
 
 	endUserAtomicGlob();
+	notifyPieceTableChangeEnd();
 	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	return true;
 }
