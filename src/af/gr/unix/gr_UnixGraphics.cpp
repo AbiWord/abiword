@@ -352,7 +352,7 @@ GR_Font* GR_UNIXGraphics::findFont(const char* pszFontFamily,
 	{
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
-		AP_UnixFont * fallback = m_pFontManager->getFont("Times New Roman", s);
+		AP_UnixFont * fallback = m_pFontManager->getFont("times new roman", s);
 		if (!fallback)
 		{
 			char message[1024];

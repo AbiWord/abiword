@@ -20,64 +20,132 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-// library interface to mswordview
-#if 0
-#include "utf.h"
-#include "roman.h"
-#include "config.h"
-#include "mswordview.h"
-#endif
-
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ie_imp_MsWord_97.h"
+#include "pd_Document.h"
+#include "ut_bytebuf.h"
 #include "ut_growbuf.h"
 
-#include "ie_imp_MsWord_97.h"
+#ifdef LIBMSWORDVIEW
+// Includes for libmswordview
+#include <mswordview/roman.h>
+#include <mswordview/utf.h>
+#include <mswordview/config.h>
+#include <mswordview/mswordview.h>
+#endif /* LIBMSWORDVIEW */
 
-#include "pd_Document.h"
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
+#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
+#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
+
+/*
+  WARNING!  This file is a straight copy of the native (AbiWord_1)
+  file import filter, with minor tweaks to call libmswordview
+  to read in raw data and produce AbiWord XML.  Instead of reading
+  from a file, like the native filter, we read from buffers
+  we pass to libmswordview.
+*/
+																  
+///////////////////////////////////////////////////////////////////
+// TODO Move this UT_ function to src/util/xp
+///////////////////////////////////////////////////////////////////
+
+UT_UCSChar UT_decodeUTF82(const XML_Char * p, UT_uint32 len)
+{
+	UT_UCSChar ucs, ucs1, ucs2, ucs3;
+	
+	switch (len)
+	{
+	case 2:
+		ucs1 = (UT_UCSChar)(p[0] & 0x1f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs  = (ucs1 << 6) | ucs2;
+		return ucs;
+		
+	case 3:
+		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
+		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
+		return ucs;
+		
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+}
+
+/*****************************************************************
+******************************************************************
+** C-style callback functions that we register with the XML parser
+******************************************************************
+*****************************************************************/
+
+static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
+{
+	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97*) userData;
+	pDocReader->_startElement(name, atts);
+}
+
+static void endElement(void *userData, const XML_Char *name)
+{
+	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97*) userData;
+	pDocReader->_endElement(name);
+}
+
+static void charData(void* userData, const XML_Char *s, int len)
+{
+	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97*) userData;
+	pDocReader->_charData(s, len);
+}
 
 /*****************************************************************/
 
+/*
+  This is the static callback called by libmswordview.
+*/
+
+// this is a bad way to trap all that info coming back, fix it
+UT_ByteBuf bigbuf;
+
 static int s_readBuffer(char * buffer, int len, void * data)
 {
+
+	
 	UT_ASSERT(buffer && data && len > 0);
 
-	IE_Imp_MsWord_97 * ourClass = (IE_Imp_MsWord_97 *) data;
-
-	UT_UCSChar * dest = new UT_UCSChar[len + 1];
-	UT_ASSERT(dest);
+	XML_Parser parser = (XML_Parser) data;
+	UT_ASSERT(parser);
 	
- 	UT_UCS_strcpy_char(dest, buffer);
-
 	if (len > 0)
-		ourClass->suckXMLData(dest);
-
-	if (dest)
 	{
-		delete [] dest;
-		dest = NULL;
+		//UT_UCSChar * dest = new UT_UCSChar[len + 1];
+//		UT_ASSERT(dest);
+	
+//		UT_UCS_strcpy_char(dest, buffer);
+		
+		bigbuf.ins(bigbuf.getLength(), (const UT_Byte *) buffer, (UT_uint32) len);
 	}
-
+	
 	return 0; // want more data
 }
 
-	
-int IE_Imp_MsWord_97::suckXMLData(UT_UCSChar * data)
-{
-	UT_ASSERT(data);
+/*****************************************************************/
 
-	return m_growBuf.ins(m_growBuf.getLength(), data, UT_UCS_strlen(data));
-}
- 
-	
 IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
+	UT_ASSERT(szFilename);
+	
+	XML_Parser parser = NULL;
+	char buf[4096];
 
-#if 0
-	char buffer[4096];
+	parser = XML_ParserCreate(NULL);
+	XML_SetUserData(parser, this);
+	XML_SetElementHandler(parser, startElement, endElement);
+	XML_SetCharacterDataHandler(parser, charData);
 
 	char ** argv = (char **) malloc(sizeof(char *) * 5);
 	argv[0] = "mswordview";
@@ -85,86 +153,51 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	argv[2] = "-";
 	argv[3] = (char *) szFilename;
 	argv[4] = NULL;
-	
-	m_growBuf.truncate(0);
-	decodeWordFile(4, argv, buffer, 4096, this, s_readBuffer);
+
+	bigbuf.truncate(0);
+
+#ifdef LIBMSWORDVIEW	
+	decodeWordFile(4, argv, buf, 4096, (void *) parser, s_readBuffer);
+#endif /* LIBMSWORDVIEW */
 
 	free(argv);
+	
+#ifdef DEBUG
+	// dump out byte buffer to file
+	FILE * out = fopen("dump.xml", "w");
+	fwrite(bigbuf.getPointer(0), sizeof(UT_Byte), bigbuf.getLength(), out);
+	fclose(out);
 #endif
 	
-#if 0	
-	// read the File Information Block
-
-	fseek(fp, 0x200, SEEK_SET);
-	readFIB(fp, &fib);
-	fseek(fp, 0, SEEK_SET);
-
-	// check the file header
-
-	if (readULong(fp, header, 2) < 0 ||
-		(header[0] != 0xe011cfd0 || header[1] != 0xe11ab1a1))
-    {
-		UT_DEBUGMSG(("Problem reading header\n"));
-		goto Cleanup;
-	}
-
-	/*******************************************************************/
-	/* TODO - figure out what exactly the bytes between 0x0 - 0x1c are */
-	/* 0x1c is the beginning of our property header                    */
-	/*******************************************************************/
-
-	fseek(fp, 0x1c, SEEK_SET);
-
-	fseek(fp, 0x200 + fib.fcMin, SEEK_SET);
-
-	nBytes = fib.fcMac - fib.fcMin;
-	
-	m_pDocument->appendStrux(PTX_Section, NULL);
-	m_pDocument->appendStrux(PTX_Block, NULL);
-
-	while (i < nBytes)
+	if (bigbuf.getLength() > 0)
 	{
-		unsigned char c;
-
-		readUByte(fp, &c, 1);
-
-		if (c == 13)
+		if (!XML_Parse(parser, (const char *) bigbuf.getPointer(0), bigbuf.getLength(), 1))
 		{
-			m_pDocument->appendStrux(PTX_Block, NULL);
-
-			if (gbBlock.getLength() > 0)
-			{
-				bResult = m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength());
-				gbBlock.truncate(0);
-			}
-			offset = 0;
+			UT_DEBUGMSG(("%s at line %d\n",
+						 XML_ErrorString(XML_GetErrorCode(parser)),
+						 XML_GetCurrentLineNumber(parser)));
+			// stop
+			m_iestatus = IES_BogusDocument;
+			goto Cleanup;
 		}
-		else
-		{
-			// HACK: this cast is bogus
-			UT_UCSChar uc = (UT_UCSChar) c;
-
-			gbBlock.ins(offset, 1);
-			gbBlock.overwrite(offset, &uc, 1);
-			offset++;
-		}
-
-		++i;
+		m_iestatus = IES_OK;
 	}
-
-#endif
-	
-	m_iestatus = IES_OK;
+	else
+		m_iestatus = IES_BogusDocument;	
 
  Cleanup:
-//	if (fp)
-//		fclose(fp);
-	
+	if (parser)
+		XML_ParserFree(parser);
+
 	return m_iestatus;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
 IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 {
+	FREEP(m_currentDataItemName);
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
@@ -172,6 +205,11 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 {
 	m_iestatus = IES_OK;
 	m_parseState = _PS_Init;
+	m_lenCharDataSeen = 0;
+	m_lenCharDataExpected = 0;
+	m_bSeenCR = UT_FALSE;
+
+	m_currentDataItemName = NULL;
 }
 
 /*****************************************************************/
@@ -194,23 +232,29 @@ IEStatus IE_Imp_MsWord_97::StaticConstructor(const char * szSuffix,
 }
 
 UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList)
+								  const char ** pszSuffixList)
 {
 	*pszDesc = "Word 97 (.doc)";
 	*pszSuffixList = "*.doc";
 	return UT_TRUE;
 }
 
-
-#if 0	// save this for later?
 /*****************************************************************/
 /*****************************************************************/
 
 #define TT_OTHER		0
-#define TT_DOCUMENT		1
-#define TT_SECTION		2
-#define TT_BLOCK		3
-#define TT_INLINE		4
+#define TT_DOCUMENT		1		// a document <awml>
+#define TT_SECTION		2		// a section <section>
+#define TT_BLOCK		3		// a paragraph <p>
+#define TT_INLINE		4		// inline span of text <c>
+#define TT_IMAGE		5		// an image object <i>
+#define TT_FIELD		6		// a computed field object <f>
+#define TT_BREAK		7		// a forced line-break <br>
+#define TT_DATASECTION	8		// a data section <data>
+#define TT_DATAITEM		9		// a data item <d> within a data section
+#define TT_COLBREAK		10		// a forced column-break <cbr>
+#define TT_PAGEBREAK	11		// a forced page-break <pbr>
+
 struct _TokenTable
 {
 	const char *	m_name;
@@ -222,6 +266,13 @@ static struct _TokenTable s_Tokens[] =
 	{	"section",		TT_SECTION		},
 	{	"p",			TT_BLOCK		},
 	{	"c",			TT_INLINE		},
+	{	"i",			TT_IMAGE		},
+	{	"f",			TT_FIELD		},
+	{	"br",			TT_BREAK		},
+	{	"data",			TT_DATASECTION	},
+	{	"d",			TT_DATAITEM		},
+	{	"cbr",			TT_COLBREAK		},
+	{	"pbr",			TT_PAGEBREAK	},
 	{	"*",			TT_OTHER		}};	// must be last
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -258,343 +309,387 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 
 /*****************************************************************/
 /*****************************************************************/
-#endif
 
-int IE_Imp_MsWord_97::readUByte(FILE *fp, unsigned char *c, int num)
+void IE_Imp_MsWord_97::_startElement(const XML_Char *name, const XML_Char **atts)
 {
-	int ret, i;
+	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
-	for (i = 0; i < num; i++)
+	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+	
+	UT_uint32 tokenIndex = s_mapNameToToken(name);
+	switch (s_Tokens[tokenIndex].m_type)
 	{
-		ret = fread(&c[i], 1, 1, fp);
+	case TT_DOCUMENT:
+		X_VerifyParseState(_PS_Init);
+		m_parseState = _PS_Doc;
+		return;
 
-		if (ret <= 0)
-			return -1;
+	case TT_SECTION:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_Sec;
+		X_CheckError(m_pDocument->appendStrux(PTX_Section,atts));
+		return;
+
+	case TT_BLOCK:
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Block;
+		X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
+		return;
+		
+	case TT_INLINE:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(_pushInlineFmt(atts));
+		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		return;
+
+		// Images and Fields are not containers.  Therefore we don't
+		// push the ParseState (_PS_...).
+		// TODO should Images or Fields inherit the (possibly nested)
+		// TODO inline span formatting.
+		
+	case TT_IMAGE:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(m_pDocument->appendObject(PTO_Image,atts));
+		return;
+
+	case TT_FIELD:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
+		return;
+
+		// Forced Line Breaks are not containers.  Therefore we don't
+		// push the ParseState (_PS_...).  Breaks are marked with a
+		// tag, but are translated into character data (LF).  This may
+		// seem a little odd (perhaps an &lf; entity would be better).
+		// Anyway, this distinction from ordinary LF's in the document
+		// (which get mapped into SPACE) keeps the file sanely editable.
+
+	case TT_BREAK:
+		X_VerifyParseState(_PS_Block);
+		// TODO decide if we should push and pop the attr's
+		// TODO that came in with the <br/>.  that is, decide
+		// TODO if <br/>'s will have any attributes or will
+		// TODO just inherit everything from the surrounding
+		// TODO spans.
+		{
+			UT_UCSChar ucs = UCS_LF;
+			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+		}
+		return;
+
+	case TT_COLBREAK:
+		X_VerifyParseState(_PS_Block);
+		// TODO decide if we should push and pop the attr's
+		// TODO that came in with the <cbr/>.  that is, decide
+		// TODO if <cbr/>'s will have any attributes or will
+		// TODO just inherit everything from the surrounding
+		// TODO spans.
+		{
+			UT_UCSChar ucs = UCS_VTAB;
+			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+		}
+		return;
+
+	case TT_PAGEBREAK:
+		X_VerifyParseState(_PS_Block);
+		// TODO decide if we should push and pop the attr's
+		// TODO that came in with the <pbr/>.  that is, decide
+		// TODO if <pbr/>'s will have any attributes or will
+		// TODO just inherit everything from the surrounding
+		// TODO spans.
+		{
+			UT_UCSChar ucs = UCS_FF;
+			X_CheckError(m_pDocument->appendSpan(&ucs,1));
+		}
+		return;
+
+	case TT_DATASECTION:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_DataSec;
+		// We don't need to notify the piece table of the data section,
+		// it will get the hint when we begin sending data items.
+		return;
+
+	case TT_DATAITEM:
+		X_VerifyParseState(_PS_DataSec);
+		m_parseState = _PS_DataItem;
+		m_currentDataItem.truncate(0);
+		X_CheckError(UT_XML_cloneString(m_currentDataItemName,_getDataItemName(atts)));
+		return;
+		
+	case TT_OTHER:
+	default:
+		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
+		m_iestatus = IES_BogusDocument;
+		return;
 	}
-
-	return 0;
 }
 
-int IE_Imp_MsWord_97::readByte(FILE *fp, char *c, int num)
+void IE_Imp_MsWord_97::_endElement(const XML_Char *name)
 {
-	int ret, i;
+	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+	
+	UT_uint32 tokenIndex = s_mapNameToToken(name);
 
-	for (i = 0; i < num; i++)
+	switch (s_Tokens[tokenIndex].m_type)
 	{
-		ret = fread(&c[i], 1, 1, fp);
+	case TT_DOCUMENT:
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_Init;
+		return;
 
-		if (ret <= 0)
-			return -1;
+	case TT_SECTION:
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_BLOCK:
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		m_parseState = _PS_Sec;
+		X_CheckDocument(_getInlineDepth()==0);
+		return;
+		
+	case TT_INLINE:
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		X_CheckDocument(_getInlineDepth()>0);
+		_popInlineFmt();
+		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		return;
+
+	case TT_IMAGE:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_FIELD:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_BREAK:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_COLBREAK:					// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_PAGEBREAK:					// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_DATASECTION:
+		X_VerifyParseState(_PS_DataSec);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_DATAITEM:
+		X_VerifyParseState(_PS_DataItem);
+		m_parseState = _PS_DataSec;
+		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,UT_TRUE,&m_currentDataItem,NULL,NULL));
+		FREEP(m_currentDataItemName);
+		return;
+		
+	case TT_OTHER:
+	default:
+		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
+		m_iestatus = IES_BogusDocument;
+		return;
 	}
-
-	return 0;
 }
 
-int IE_Imp_MsWord_97::readUShort(FILE *fp, unsigned short *s, int num)
+void IE_Imp_MsWord_97::_charData(const XML_Char *s, int len)
 {
-	int i;
-	unsigned char b[2];
+	// TODO XML_Char is defined in the xml parser
+	// TODO as a 'char' not as a 'unsigned char'.
+	// TODO does this cause any problems ??
+	
+	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 
-	for (i = 0; i < num; i++)
+	switch (m_parseState)
 	{
-		if (readUByte(fp, b, 2) < 0)
-			return -1;
+	default:
+		{
+			xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
+			return;
+		}
+		
+	case _PS_Block:
+		{
+			UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
+			UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
 
-		*s = (b[1] << 8) | b[0];
+			// parse UTF-8 text and convert to Unicode.
+			// also take care of some white-space issues:
+			//    [] convert CRLF to SP.
+			//    [] convert CR to SP.
+			//    [] convert LF to SP.
+
+			UT_Byte * ss = (UT_Byte *)s;
+			UT_UCSChar buf[1024];
+			int bufLen = 0;
+
+			for (int k=0; k<len; k++)
+			{
+				if (bufLen == NrElements(buf))		// pump it out in chunks
+				{
+					X_CheckError(m_pDocument->appendSpan(buf,bufLen));
+					bufLen = 0;
+				}
+
+				if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
+				{
+					// is it us-ascii and we are in a UTF-8
+					// multi-byte sequence.  puke.
+					X_CheckError(0);
+				}
+
+				if (ss[k] == UCS_CR)
+				{
+					buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
+					m_bSeenCR = UT_TRUE;
+					continue;
+				}
+
+				if (ss[k] == UCS_LF)				// LF
+				{
+					if (!m_bSeenCR)					// if not immediately after a CR,
+						buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
+					m_bSeenCR = UT_FALSE;
+					continue;
+				}
+				
+				m_bSeenCR = UT_FALSE;
+
+				if (ss[k] < 0x80)					// plain us-ascii part of latin-1
+				{
+					buf[bufLen++] = ss[k];			// copy as is.
+				}
+				else if ((ss[k] & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
+				{
+					// surrogate pairs are defined in section 3.7 of the
+					// unicode standard version 2.0 as an extension
+					// mechanism for rare characters in future extensions
+					// of the unicode standard.
+					UT_ASSERT(m_lenCharDataSeen == 0);
+					UT_ASSERT(UT_NOT_IMPLEMENTED);
+				}
+				else if ((ss[k] & 0xe0) == 0xe0)		// lead byte in 3-byte sequence
+				{
+					UT_ASSERT(m_lenCharDataSeen == 0);
+					m_lenCharDataExpected = 3;
+					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+				}
+				else if ((ss[k] & 0xc0) == 0xc0)		// lead byte in 2-byte sequence
+				{
+					UT_ASSERT(m_lenCharDataSeen == 0);
+					m_lenCharDataExpected = 2;
+					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+				}
+				else if ((ss[k] & 0x80) == 0x80)		// trailing byte in multi-byte sequence
+				{
+					UT_ASSERT(m_lenCharDataSeen > 0);
+					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+					if (m_lenCharDataSeen == m_lenCharDataExpected)
+					{
+						buf[bufLen++] = UT_decodeUTF82(m_charDataSeen,m_lenCharDataSeen);
+						m_lenCharDataSeen = 0;
+					}
+				}
+			}
+
+			// flush out the last piece of a buffer
+
+			if (bufLen > 0)
+				X_CheckError(m_pDocument->appendSpan(buf,bufLen));
+			return;
+		}
+
+	case _PS_DataItem:
+		{
+#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
+			
+			// DataItem data consists of Base64 encoded data with
+			// white space added for readability.  strip out any
+			// white space and put the rest in the ByteBuf.
+
+			UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
+			
+			const UT_Byte * ss = (UT_Byte *)s;
+			const UT_Byte * ssEnd = ss + len;
+			while (ss < ssEnd)
+			{
+				while ((ss < ssEnd) && MyIsWhite(*ss))
+					ss++;
+				UT_uint32 k=0;
+				while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
+					k++;
+				if (k > 0)
+					m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
+
+				ss += k;
+			}
+
+			return;
+#undef MyIsWhite
+		}
 	}
-
-	return 0;
 }
 
-int IE_Imp_MsWord_97::readShort(FILE *fp, short *s, int num)
+/*****************************************************************/
+/*****************************************************************/
+
+UT_uint32 IE_Imp_MsWord_97::_getInlineDepth(void) const
 {
-	int i;
-	unsigned char b[2];
-
-	for (i = 0; i < num; i++)
-	{
-		if (readUByte(fp, b, 2) < 0)
-			return -1;
-
-		*s = (b[1] << 8) | b[0];
-	}
-
-	return 0;
+	return m_stackFmtStartIndex.getDepth();
 }
 
-int IE_Imp_MsWord_97::readULong(FILE *fp, unsigned long *l, int num)
+UT_Bool IE_Imp_MsWord_97::_pushInlineFmt(const XML_Char ** atts)
 {
-	unsigned char b[4];
-	int i;
+	UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
+	UT_uint32 k;
 
-	for (i = 0; i < num; i++)
+	for (k=0; (atts[k]); k++)
 	{
-		if (readUByte(fp, b, 4) < 0)
-			return -1;
-
-		l[i] = (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | b[0];
+		XML_Char * p;
+		if (!UT_XML_cloneString(p,atts[k]))
+			return UT_FALSE;
+		if (m_vecInlineFmt.addItem(p)!=0)
+			return UT_FALSE;
 	}
-
-	return 0;
+	if (!m_stackFmtStartIndex.push((void*)start))
+		return UT_FALSE;
+	return UT_TRUE;
 }
 
-int IE_Imp_MsWord_97::readLong(FILE *fp, long *l, int num)
+void IE_Imp_MsWord_97::_popInlineFmt(void)
 {
-	unsigned char b[4];
-	int i;
-
-	for (i = 0; i < num; i++)
+	UT_uint32 start;
+	if (!m_stackFmtStartIndex.pop((void **)&start))
+		return;
+	UT_uint32 k;
+	UT_uint32 end = m_vecInlineFmt.getItemCount();
+	for (k=end; k>=start; k--)
 	{
-		if (readUByte(fp, b, 4) < 0)
-			return -1;
-
-		l[i] = (b[3] << 24) | (b[2] << 16) | (b[1] << 8) | b[0];
+		const XML_Char * p = (const XML_Char *)m_vecInlineFmt.getNthItem(k-1);
+		m_vecInlineFmt.deleteNthItem(k-1);
+		if (p)
+			free((void *)p);
 	}
-
-	return 0;
 }
 
-void IE_Imp_MsWord_97::readFIB(FILE* f, FIB* fib)
+const XML_Char * IE_Imp_MsWord_97::_getDataItemName(const XML_Char ** atts)
 {
-	readUShort(f, &fib->wIdent, 1);
-	readUShort(f, &fib->nFib, 1);
-	readUShort(f, &fib->nProduct, 1);
-	readUShort(f, &fib->lid, 1);
-	readShort(f, &fib->pnNext, 1);
-	readUShort(f, &fib->fDot, 1);
-	readUShort(f, &fib->nFibBack, 1);
-	readULong(f, &fib->lKey, 1);
-	readUByte(f, &fib->envr, 1);
-	readUByte(f, &fib->fMac, 1);
-	readUShort(f, &fib->chs, 1);
-	readUShort(f, &fib->chsTables, 1);
-	readLong(f, &fib->fcMin, 1);
-	readLong(f, &fib->fcMac, 1);
-	readUShort(f, &fib->csw, 1);
-	readUShort(f, &fib->wMagicCreated, 1);
-	readUShort(f, &fib->wMagicRevised, 1);
-	readUShort(f, &fib->wMagicCreatedPrivate, 1);
-	readUShort(f, &fib->wMagicRevisedPrivate, 1);
-	readShort(f, &fib->pnFbpChpFIrst_W6, 1);      /* not used */
-	readShort(f, &fib->pnChpFirst_W6, 1);         /* not used */
-	readShort(f, &fib->cpnBteChp_W6, 1);          /* not used */
-	readShort(f, &fib->pnFbpPapFirst_W6, 1);      /* not used */
-	readShort(f, &fib->pnPapFirst_W6, 1);         /* not used */
-	readShort(f, &fib->cpnBtePap_W6, 1);          /* not used */
-	readShort(f, &fib->pnFbpLvcFirst_W6, 1);      /* not used */
-	readShort(f, &fib->pnLvcFirst_W6, 1);         /* not used */
-	readShort(f, &fib->cpmBteLvc_W6, 1);          /* not used */
-	readShort(f, &fib->lidFE, 1);
-	readUShort(f, &fib->clw, 1);
-	readLong(f, &fib->cbMac, 1);
-	readULong(f, &fib->lProductCreated, 1);
-	readULong(f, &fib->lProductRevised, 1);
-	readLong(f, &fib->ccpText, 1);
-	readLong(f, &fib->ccpFtn, 1);
-	readLong(f, &fib->ccpHdd, 1);
-	readLong(f, &fib->ccpMcr, 1);
-	readLong(f, &fib->ccpAtn, 1);
-	readLong(f, &fib->ccpEdn, 1);
-	readLong(f, &fib->ccpTxbx, 1);
-	readLong(f, &fib->ccpHdrTxbx, 1);
-	readLong(f, &fib->pnFbpChpFirst, 1);
-	readLong(f, &fib->pnChpFirst, 1);
-	readLong(f, &fib->cpnBteChp, 1);
-	readLong(f, &fib->pnFbpPapFirst, 1);
-	readLong(f, &fib->pnPapFirst, 1);
-	readLong(f, &fib->cpnBtePap, 1);
-	readLong(f, &fib->pnFbpLvcFirst, 1);
-	readLong(f, &fib->pnLvcFirst, 1);
-	readLong(f, &fib->cpnBteLvc, 1);
-	readLong(f, &fib->fcIslandFirst, 1);
-	readLong(f, &fib->fcIslandLim, 1);
-	readUShort(f, &fib->cfclcb, 1);
-	readLong(f, &fib->fcStshfOrig, 1);
-	readULong(f, &fib->lcbStshOrig, 1);
-	readLong(f, &fib->fcStshf, 1);
-	readULong(f, &fib->lcbStshf, 1);
-	readLong(f, &fib->fcPlcffndRef, 1);
-	readULong(f, &fib->lcbPlcffndRef, 1);
-	readLong(f, &fib->fcPlcffndTxt, 1);
-	readULong(f, &fib->lcbPlcffndTxt, 1);
-	readLong(f, &fib->fcPlcfandRef, 1);
-	readULong(f, &fib->lcbPlcfandRef, 1);
-	readLong(f, &fib->fcPlcfandTxt, 1);
-	readULong(f, &fib->lcbPlcfandTxt, 1);
-	readLong(f, &fib->fcPlcfsed, 1);
-	readULong(f, &fib->lcbPlcfsed, 1);
-	readLong(f, &fib->fcPlcpad, 1);
-	readULong(f, &fib->lcbPlcpad, 1);
-	readLong(f, &fib->fcPlcfphe, 1);
-	readULong(f, &fib->lcbPlcfphe, 1);
-	readLong(f, &fib->fcSttbfglsy, 1);
-	readULong(f, &fib->lcbSttbfglsy, 1);
-	readLong(f, &fib->fcPlcfglsy, 1);
-	readULong(f, &fib->lcbPlcfglsy, 1);
-	readLong(f, &fib->fcPlcfhdd, 1);
-	readULong(f, &fib->lcbPlcfhdd, 1);
-	readLong(f, &fib->fcPlcfbteChpx, 1);
-	readULong(f, &fib->lcbPlcfbteChpx, 1);
-	readLong(f, &fib->fcPlcfbtePapx, 1);
-	readULong(f, &fib->lcbPlcfbtePapx, 1);
-	readLong(f, &fib->fcPlcfsea, 1);
-	readULong(f, &fib->lcbPlcfsea, 1);
-	readLong(f, &fib->fcSttbfffn, 1);
-	readULong(f, &fib->lcbSttbfffn, 1);
-	readLong(f, &fib->fcPlcffldMom, 1);
-	readULong(f, &fib->lcbPlcffldMom, 1);
-	readLong(f, &fib->fcPlcffldHdr, 1);
-	readULong(f, &fib->lcbPlcffldHdr, 1);
-	readLong(f, &fib->fcPlcffldFtn, 1);
-	readULong(f, &fib->lcbPlcffldFtn, 1);
-	readLong(f, &fib->fcPlcffldAtn, 1);
-	readULong(f, &fib->lcbPlcffldAtn, 1);
-	readLong(f, &fib->fcPlcffldMcr, 1);
-	readULong(f, &fib->lcbPlcffldMcr, 1);
-	readLong(f, &fib->fcSttbfbkmk, 1);
-	readULong(f, &fib->lcbSttbfbkmk, 1);
-	readLong(f, &fib->fcPlcfbfk, 1);
-	readULong(f, &fib->lcbPlcfbfk, 1);
-	readLong(f, &fib->fcPlcfbkl, 1);
-	readULong(f, &fib->lcbPlcfbkl, 1);
-	readLong(f, &fib->fcCmds, 1);
-	readULong(f, &fib->lcbCmds, 1);
-	readLong(f, &fib->fcPlcmcr, 1);
-	readULong(f, &fib->lcbPlcmcr, 1);
-	readLong(f, &fib->fcSttbfmcr, 1);
-	readULong(f, &fib->lcdSttbfmcr, 1);
-	readLong(f, &fib->fcPrDrvr, 1);
-	readULong(f, &fib->lcbPrDrvr, 1);
-	readLong(f, &fib->fcPrEnvPort, 1);
-	readULong(f, &fib->lcbPrEnvPort, 1);
-	readLong(f, &fib->fcPrEnvLand, 1);
-	readULong(f, &fib->lcbPrEnvLand, 1);
-	readLong(f, &fib->fcWss, 1);
-	readULong(f, &fib->lcbWss, 1);
-	readLong(f, &fib->fcDop, 1);
-	readULong(f, &fib->lcbDop, 1);
-	readLong(f, &fib->fcSttbfAssoc, 1);
-	readULong(f, &fib->lcbSttbfAssoc, 1);
-	readLong(f, &fib->fcClx, 1);
-	readULong(f, &fib->lcbClx, 1);
-	readLong(f, &fib->fcPlcfpgdFtn, 1);
-	readULong(f, &fib->lcbPlcfpgdFtn, 1);
-	readLong(f, &fib->fcAutosaveSource, 1);
-	readULong(f, &fib->lcbAutosaveSource, 1);
-	readLong(f, &fib->fcGrpXstAtnOwners, 1);
-	readULong(f, &fib->lcbGrpXstAtnOwners, 1);
-	readLong(f, &fib->fcSttbfAtnbkmk, 1);
-	readULong(f, &fib->lcbSttbAtnbkmk, 1);
-	readLong(f, &fib->fcPlcdoaMom, 1);
-	readULong(f, &fib->lcbPlcdoaMom, 1);
-	readLong(f, &fib->fcPlcdoaHdr, 1);
-	readULong(f, &fib->lcbPlcdoaHdr, 1);
-	readLong(f, &fib->fcPlcspaMom, 1);
-	readULong(f, &fib->lcbPlcspaMom, 1);
-	readLong(f, &fib->fcPlcspaHdr, 1);
-	readULong(f, &fib->lcbPlcspaHdr, 1);
-	readLong(f, &fib->fcPlcfAtnbkf, 1);
-	readULong(f, &fib->lcbPlcfAtnbkf, 1);
-	readLong(f, &fib->fcPlcfAtnbkl, 1);
-	readULong(f, &fib->lcbPlcfAtnbkl, 1);
-	readLong(f, &fib->fcPms, 1);
-	readULong(f, &fib->lcbPms, 1);
-	readLong(f, &fib->fcFormFldSttbs, 1);
-	readULong(f, &fib->lcbFormFldSttbs, 1);
-	readLong(f, &fib->fcPlcfendRef, 1);
-	readULong(f, &fib->lcbPlcfendRef, 1);
-	readLong(f, &fib->fcPlcfendTxt, 1);
-	readULong(f, &fib->lcbPlcfendTxt, 1);
-	readLong(f, &fib->fcPlcffldEdn, 1);
-	readULong(f, &fib->lcbPlcffldEdn, 1);
-	readLong(f, &fib->fcPlcfpgdEdn, 1);
-	readULong(f, &fib->lcbPlcfpgdEdn, 1);
-	readLong(f, &fib->fcDggInfo, 1);
-	readULong(f, &fib->lcbDggInfo, 1);
-	readLong(f, &fib->fcSttbfRMark, 1);
-	readULong(f, &fib->lcbSttbfRMark, 1);
-	readLong(f, &fib->fcSttbCaption, 1);
-	readULong(f, &fib->lcbSttbCaption, 1);
-	readLong(f, &fib->fcSttbAutoCaption, 1);
-	readULong(f, &fib->lcbSttbAutoCaption, 1);
-	readLong(f, &fib->fcPlcfwkb, 1);
-	readULong(f, &fib->lcbPlcfwkb, 1);
-	readLong(f, &fib->fcPlcfspl, 1);
-	readULong(f, &fib->lcbPlcfspl, 1);
-	readLong(f, &fib->fcPlcftxbxTxt, 1);
-	readULong(f, &fib->lcbPlcftxbxTxt, 1);
-	readLong(f, &fib->fcPlcffldTxbx, 1);
-	readULong(f, &fib->lcbPlcffldTxbx, 1);
-	readLong(f, &fib->fcPlcfhdrtxbxTxt, 1);
-	readULong(f, &fib->lcbPlcfhdrtxbxTxt, 1);
-	readLong(f, &fib->fcPlcffldHdrTxbx, 1);
-	readULong(f, &fib->lcbPlcffldHdrTxbx, 1);
-	readLong(f, &fib->fcStwUser, 1);
-	readULong(f, &fib->lcbStwUser, 1);
-	readLong(f, &fib->fcSttbttmdb, 1);
-	readULong(f, &fib->lcbSttbttmbd, 1);
-	readLong(f, &fib->fcUnused, 1);
-	readULong(f, &fib->lcbUnused, 1);
-	readLong(f, &fib->rgpgdbkd, 1);   /* change me */
-	readLong(f, &fib->fcPgdMother, 1);
-	readULong(f, &fib->lcbPgbMother, 1);
-	readLong(f, &fib->fcBkdMother, 1);
-	readULong(f, &fib->lcbBkdMother, 1);
-	readLong(f, &fib->fcPgdFtn, 1);
-	readULong(f, &fib->lcbPgdFtn, 1);
-	readLong(f, &fib->fcBkdFtn, 1);
-	readULong(f, &fib->lcdBkdftn, 1);
-	readLong(f, &fib->fcPgdEdn, 1);
-	readULong(f, &fib->lcbPgdEdn, 1);
-	readLong(f, &fib->fcBkdEdn, 1);
-	readULong(f, &fib->lcbBkdEdn, 1);
-	readLong(f, &fib->fcSttbfIntlFld, 1);
-	readULong(f, &fib->lcbSttbfIntlFld, 1);
-	readLong(f, &fib->fcRouteSlip, 1);
-	readULong(f, &fib->lcbRouteSlip, 1);
-	readLong(f, &fib->fcSttbSavedBy, 1);
-	readULong(f, &fib->lcbSttbSavedBy, 1);
-	readLong(f, &fib->fcSttbFnm, 1);
-	readULong(f, &fib->lcbSttbFnm, 1);
-	readLong(f, &fib->fcPlcfLst, 1);
-	readULong(f, &fib->lcbPlcfLst, 1);
-	readLong(f, &fib->fcPlfLfo, 1);
-	readULong(f, &fib->lcbPlfLfo, 1);
-	readLong(f, &fib->fcPlcftxbxBkd, 1);
-	readULong(f, &fib->lcbPlcftxbxBkd, 1);
-	readLong(f, &fib->fcPlcftxbxHdrBkd, 1);
-	readULong(f, &fib->lcbPlcftxbxHdrBkd, 1);
-	readLong(f, &fib->fcDocUndo, 1);
-	readULong(f, &fib->lcbDocUndo, 1);
-	readLong(f, &fib->fcRgbuse, 1);
-	readULong(f, &fib->lcbRgbuse, 1);
-	readLong(f, &fib->fcUsp, 1);
-	readULong(f, &fib->lcbUsp, 1);
-	readLong(f, &fib->fcUskf, 1);
-	readULong(f, &fib->lcbUskf, 1);
-	readLong(f, &fib->fcPlcupcRgbuse, 1);
-	readULong(f, &fib->lcbPlcupcRgbuse, 1);
-	readLong(f, &fib->fcPlcupcUsp, 1);
-	readULong(f, &fib->lcbPlcupcUsp, 1);
-	readLong(f, &fib->fcSttbGlsyStyle, 1);
-	readULong(f, &fib->lcbSttbGlsyStyle, 1);
-	readLong(f, &fib->fcPlgosl, 1);
-	readULong(f, &fib->lcbPlgosl, 1);
-	readLong(f, &fib->fcPlcocx, 1);
-	readULong(f, &fib->lcbPlcocx, 1);
-	readLong(f, &fib->fcPlcfbteLvc, 1);
-	readULong(f, &fib->lcbPlcfbteLvc, 1);
-	readLong(f, &fib->ftModified, 1);       /* change me */
-	readULong(f, &fib->dwLowDateTime, 1);
-	readULong(f, &fib->dwHighDateTime, 1);
-	readLong(f, &fib->fcPlcflvc, 1);
-	readULong(f, &fib->lcbPlcflvc, 1);
-	readLong(f, &fib->fcPlcasumy, 1);
-	readULong(f, &fib->lcbPlcasumy, 1);
-	readLong(f, &fib->fcPlcfgram, 1);
-	readULong(f, &fib->lcbPlcfgram, 1);
-	readLong(f, &fib->fcSttbListNames, 1);
-	readULong(f, &fib->lcbSttbListNames, 1);
-	readLong(f, &fib->fcSttbfUssr, 1);
-	readULong(f, &fib->lcbSttbfUssr, 1);
+	// find the 'name="value"' pair and return the "value".
+	// ignore everything else (which there shouldn't be)
+
+	for (const XML_Char ** a = atts; (*a); a++)
+		if (UT_XML_stricmp(a[0],"name") == 0)
+			return a[1];
+	return NULL;
 }
