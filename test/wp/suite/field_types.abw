@@ -1,0 +1,20 @@
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On -->
+<!--         Build_Target      = /abisource/build/abi/src/WIN32_20.1_i386_DBG/obj -->
+<!--         Build_CompileTime = 21:08:08 -->
+<!--         Build_CompileDate = Oct 23 1999 -->
+
+<abiword version="unnumbered">
+<section>
+<p props="text-align:left"><c props="font-size:22pt">The current time is </c><field type="time" props="font-size:22pt"/><c props="font-size:22pt"> </c></p>
+<p props="line-height:1.0; margin-top:12pt; text-align:left"><c props="font-size:14pt"> This is page </c><field type="page_number" props="font-size:14pt"/><c props="font-size:14pt"> of </c><field type="page_count" props="font-size:14pt"/><c props="font-size:14pt"> </c></p>
+</section>
+</abiword>

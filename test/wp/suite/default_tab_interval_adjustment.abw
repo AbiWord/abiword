@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off -->
+<!--         Build_Target      = /home/abisource/abi/src/Linux_2.2.5-15_i386_DBG/obj -->
+<!--         Build_CompileTime = 08:43:19 -->
+<!--         Build_CompileDate = Jan 30 2000 -->
+
+<section>
+<p>a			|</p>
+<p>ab			|</p>
+<p>abc			|</p>
+<p>abcd			|</p>
+<p>abcde			|</p>
+<p>abcdef			|</p>
+<p>abcdefg			|</p>
+<p>abcdefgh			|</p>
+<p>abcdefghi		|</p>
+<p>abcdefghij		|</p>
+<p>abcdefghijk		|</p>
+<p>abcdefghijkl		|</p>
+<p>abcdefghijklm		|</p>
+<p>abcdefghijklmn		|</p>
+<p>abcdefghijklmno		|</p>
+<p><c props="color:000000; font-family:Times New Roman; font-size:10pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">abcdefghijklmnop		|</c></p>
+<p><c props="color:000000; font-family:Times New Roman; font-size:10pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">abcdefghijklmnopq		|</c></p>
+<p><c props="color:000000; font-family:Times New Roman; font-size:10pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">abcdefghijklmnopqr	|</c></p>
+<p><c props="color:000000; font-family:Times New Roman; font-size:10pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">abcdefghijklmnopqrs	|</c></p>
+<p><c props="color:000000; font-family:Times New Roman; font-size:10pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">abcdefghijklmnopqrst	|</c></p>
+<p><c props="color:000000; font-family:Times New Roman; font-size:10pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">abcdefghijklmnopqrstu	|</c></p>
+<p></p>
+</section>
+</abiword>

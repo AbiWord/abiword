@@ -1,0 +1,20 @@
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = 0.7.6 -->
+<!--         Build_Options     = LicensedTrademarks:On Debug:Off -->
+<!--         Build_Target      = /Builds/AbiBldSvr/0940446998/tmp/abi-0.7.6/src/WIN32_4.0_i386_OBJ/obj -->
+<!--         Build_CompileTime = 14:30:34 -->
+<!--         Build_CompileDate = Oct 20 1999 -->
+
+<abiword version="0.7.6">
+<section>
+<p style="Heading 2">Heading two</p>
+<p style="Heading 2">And anothe heading two</p>
+</section>
+</abiword>

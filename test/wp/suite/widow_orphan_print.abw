@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off -->
+<!--         Build_Target      = /home/abisource/abi/src/Linux_2.2.5-15_i386_DBG/obj -->
+<!--         Build_CompileTime = 08:43:19 -->
+<!--         Build_CompileDate = Jan 30 2000 -->
+
+<section props="page-margin-bottom:1.0000in; page-margin-left:1.2500in; page-margin-right:1.2500in; page-margin-top:1.0000in; section-space-after:0.0000in">
+<p props="text-align:left"><c props="color:000000; font-family:Times New Roman; font-size:14pt">This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space. This paragraph is filler space.</c></p>
+<p props="text-align:left"></p>
+<p props="orphans:0; text-align:left; widows:0"><c props="color:000000; font-family:Times New Roman; font-size:14pt">This paragraph has no widow/orphan settings.  Adding blank space before this paragraph can strand one line on either side of the upcoming page break. This paragraph has no widow/orphan settings.  Adding blank space before this paragraph can strand one line on either side of the upcoming page break.</c></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"></p>
+<p props="text-align:left"><c props="color:000000; font-family:Times New Roman; font-size:14pt">This paragraph DOES have widow/orphan control.  You should never be able to strand one line on either side of the upcoming paragraph break. This paragraph DOES have widow/orphan control.  You should never be able to strand one line on either side of the upcoming paragraph break.</c></p>
+</section>
+</abiword>
