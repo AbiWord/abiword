@@ -3780,9 +3780,17 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	RTFFontTableItem* pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);
 	if (pFont != NULL)
 	{
-		UT_ASSERT(pFont->m_pFontName != NULL);
 		propBuffer += "; font-family:";
-		propBuffer += pFont->m_pFontName;
+
+		// see bug 2633 - we get a font entry like this (unika.rtf):
+		// {\f83\fnil\fcharset0\fprq0{\*\panose 00000000000000000000} ;}
+		// note the empty slot after the panose entry
+		// later it gets referenced: {\b\f83\fs24\cf1\cgrid0 Malte Cornils
+		// this turns those into "Times New Roman" for now, as a hack to keep from crashing
+		if ( pFont->m_pFontName != NULL )
+			propBuffer += pFont->m_pFontName;
+		else
+			propBuffer += "Times New Roman";
 	}
 	if (m_currentRTFState.m_charProps.m_hasColour) 
 	{
@@ -5731,9 +5739,9 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 				
 				for (int i = 0; i < 10; i++)
 				{
-					// TODO: MattiPicus commented out the original code
+					// TODO: Matti Picus commented out the original code
 					// since he read the web page above and realized it
-					// is broken.  Perhpas someone can explain what the
+					// is broken.  Perhaps someone can explain what the
 					// original author's intent was? The code now just
 					// grabs the second char from each byte of the number
 					//
