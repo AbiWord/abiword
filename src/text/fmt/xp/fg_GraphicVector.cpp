@@ -18,21 +18,22 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "ut_assert.h"
-#include "ut_png.h"
+#include "ut_svg.h"
 #include "ut_bytebuf.h"
 #include "fl_Layout.h"
 #include "px_CR_Object.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 
-#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
 
-FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL, 
-											const PX_ChangeRecord_Object* pcro)
+FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
+						     const PX_ChangeRecord_Object* pcro)
 {
-	FG_GraphicRaster* pFG = new FG_GraphicRaster();
+	FG_GraphicVector* pFG = new FG_GraphicVector();
 
 	UT_Bool bFoundDataItem = UT_FALSE;
 	const PD_Document* pDoc = pFL->getDocument();
@@ -41,16 +42,16 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 	/*
 	  Get the attribute list for this offset, lookup the dataid
 	  for the image, and get the dataItem.  The bytes in the
-	  dataItem should be a PNG image.
+	  dataItem should be a SVG image.
 	*/
 	UT_Bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, UT_FALSE,
-												&pFG->m_pSpanAP);
+						    &pFG->m_pSpanAP);
 	if (bFoundSpanAP && pFG->m_pSpanAP)
 	{
 		UT_Bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbPNG, NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbSVG, NULL, NULL);
 		}
 	}
 
@@ -61,37 +62,37 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 }
 
 
-FG_GraphicRaster::FG_GraphicRaster()
+FG_GraphicVector::FG_GraphicVector()
 {
-	m_pbbPNG = NULL;
-	m_bOwnPNG = UT_FALSE;
+	m_pbbSVG = NULL;
+	m_bOwnSVG = UT_FALSE;
 	m_pSpanAP = NULL;
 	m_pszDataID = NULL;
 }
 
-FG_GraphicRaster::~FG_GraphicRaster()
+FG_GraphicVector::~FG_GraphicVector()
 {
-	if (m_bOwnPNG)
-		DELETEP(m_pbbPNG);
+	if (m_bOwnSVG)
+		DELETEP(m_pbbSVG);
 	else
-		m_pbbPNG = NULL;
+		m_pbbSVG = NULL;
 }
 
-FGType FG_GraphicRaster::getType(void)
+FGType FG_GraphicVector::getType(void)
 {
-	return FGT_Raster;
+	return FGT_Vector;
 }
 
-double FG_GraphicRaster::getWidth(void)
+double FG_GraphicVector::getWidth(void)
 {
-	UT_ASSERT(m_pbbPNG);
+	UT_ASSERT(m_pbbSVG);
 
 	return m_iWidth / 72.0;
 }
 
-double FG_GraphicRaster::getHeight(void)
+double FG_GraphicVector::getHeight(void)
 {
-	UT_ASSERT(m_pbbPNG);
+	UT_ASSERT(m_pbbSVG);
 
 	return m_iHeight / 72.0;
 }
@@ -100,7 +101,7 @@ double FG_GraphicRaster::getHeight(void)
 //  We will generate an image at the proper resolution for display in the
 //  graphics object we are given.
 //
-GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
+GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG)
 {
 	UT_ASSERT(m_pSpanAP);
 	UT_ASSERT(m_pszDataID);
@@ -127,36 +128,52 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 	}
 	else
 	{
-		UT_sint32 iImageWidth;
-		UT_sint32 iImageHeight;
-			
-		UT_PNG_getDimensions(m_pbbPNG, iImageWidth, iImageHeight);
-			
-#if 0					
-		if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		{
-			iDisplayWidth = iImageWidth;
-			iDisplayHeight = iImageHeight;
-		}
-		else
-#endif						
-		{
-			double fScale = pG->getResolution() / 72.0;
-			
-			iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
-			iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
+		// the SVG dimensions might be in a variety of units. let's see what we have.
+	   	UT_SVG_getDimensions(m_pbbSVG, &((UT_Byte*)pszWidth), &((UT_Byte*)pszHeight));
+
+	   	UT_sint32 dimWidth = UT_determineDimension((const char*)pszWidth, DIM_PX);
+	   	UT_sint32 dimHeight = UT_determineDimension((const char*)pszHeight, DIM_PX);
+	   
+	   	if (dimWidth != DIM_PX && dimWidth != DIM_none) 
+	     	{
+		   	iDisplayWidth = pG->convertDimension(pszWidth);
+		   	iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
+		
+		} else {
+	   
+		   	double iImageWidth = UT_convertDimensionless(pszWidth);
+		   
+		   	double fScale = pG->getResolution() / 72.0;
+       			iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
 
 			fScale = 1440.0 / 72.0;
 			iLayoutWidth = (UT_sint32) (iImageWidth * fScale);
-			iLayoutHeight = (UT_sint32) (iImageHeight * fScale);
-
 		}
+	   
+	   	if (dimHeight != DIM_PX && dimHeight != DIM_none) 
+	     	{
+		   	iDisplayHeight = pG->convertDimension(pszHeight);
+		   	iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
+
+		} else {
+
+		   	double iImageHeight = UT_convertDimensionless(pszHeight);
+		   
+		   	double fScale = pG->getResolution() / 72.0;
+   			iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
+
+		   	fScale = 1440.0 / 72.0;
+		   	iLayoutHeight = (UT_sint32) (iImageHeight * fScale);
+		}
+	 
+	 	FREEP(pszWidth);
+	 	FREEP(pszHeight);
 	}
 
 	UT_ASSERT(iDisplayWidth > 0);
 	UT_ASSERT(iDisplayHeight > 0);
 
-   	GR_Image *pImage = pG->createNewImage(m_pszDataID, m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
+	GR_Image *pImage = pG->createNewImage(m_pszDataID, m_pbbSVG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Vector);
 
 	pImage->setLayoutSize(iLayoutWidth, iLayoutHeight);
 
@@ -166,10 +183,10 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 //
 //  We need to be able to add a representation of ourselves to an
 //  existing document.  This added representation can be used to 
-//  reconstruct an equivalent FG_GraphicRaster object after this one
+//  reconstruct an equivalent FG_GraphicVector object after this one
 //  is discarded.
 //
-UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
+UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, double fDPI,
 										 UT_uint32 iPos, const char* szName)
 {
 	UT_ASSERT(pDoc);
@@ -178,7 +195,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	/*
 	  Create the data item
 	*/
-	pDoc->createDataItem(szName, UT_FALSE, m_pbbPNG, NULL, NULL);
+	pDoc->createDataItem(szName, UT_FALSE, m_pbbSVG, NULL, NULL);
 
 	/*
 	  Insert the object into the document.
@@ -193,8 +210,8 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
 		"PROPS", szProps,
-		"mime-type", "image/png",
-	   	NULL, NULL
+	   	"mime-type", "image/svg-xml",
+		NULL, NULL
 	};
 
 	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
@@ -203,23 +220,37 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	return UT_OK;
 }
 
-UT_Bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
+UT_Bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 {
-	if (m_bOwnPNG)
-		DELETEP(m_pbbPNG);
+	if (m_bOwnSVG)
+		DELETEP(m_pbbSVG);
 
-	m_pbbPNG = pBB;
-	m_bOwnPNG = UT_TRUE;
+	m_pbbSVG = pBB;
+	m_bOwnSVG = UT_TRUE;
 
 	//  We want to calculate the dimensions of the image here.
-	UT_PNG_getDimensions(pBB, m_iWidth, m_iHeight);
+	UT_Byte * pszWidth, * pszHeight;
+   	UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight);
 
+   	if (UT_determineDimension((const char*)pszWidth, DIM_PX) != DIM_PX)
+     		m_iWidth = (UT_sint32)(UT_convertToInches((const char*)pszWidth) * 72);
+	else
+     		m_iWidth = (UT_sint32)(UT_convertDimensionless((const char*)pszWidth));
+   
+      	if (UT_determineDimension((const char*)pszHeight, DIM_PX) != DIM_PX)
+     		m_iHeight = (UT_sint32)(UT_convertToInches((const char*)pszHeight) * 72);
+	else
+     		m_iHeight = (UT_sint32)(UT_convertDimensionless((const char*)pszHeight));
+
+   	FREEP(pszWidth); 
+   	FREEP(pszHeight);
+   
 	return UT_TRUE;
 }
 
-UT_ByteBuf* FG_GraphicRaster::getRaster_PNG(void)
+UT_ByteBuf* FG_GraphicVector::getVector_SVG(void)
 {
-	UT_ASSERT(m_pbbPNG);
+	UT_ASSERT(m_pbbSVG);
 
-	return m_pbbPNG;
+	return m_pbbSVG;
 }

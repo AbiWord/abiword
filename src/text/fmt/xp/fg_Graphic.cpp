@@ -20,11 +20,35 @@
 
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
+
+#include "ut_string.h"
+#include "fl_Layout.h"
+#include "px_CR_Object.h"
+#include "pp_AttrProp.h"
 
 FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
-											const PX_ChangeRecord_Object* pcro)
+					       const PX_ChangeRecord_Object* pcro)
 {
-	return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
+   PT_BlockOffset blockOffset = pcro->getBlockOffset();
+   
+   // Get the attribute list for this offset.
+   const PP_AttrProp* pSpanAP;
+   UT_Bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, UT_FALSE, &pSpanAP);
+   if (bFoundSpanAP && pSpanAP)
+     {
+	const XML_Char *pszType;
+	UT_Bool bFoundType = pSpanAP->getAttribute("mime-type", pszType);
+	
+	// figure out what type to create
+	
+	if (!bFoundType || UT_stricmp(pszType, "image/svg-xml") != 0) {
+	   return FG_GraphicRaster::createFromChangeRecord(pFL, pcro);
+	} else {
+	   return FG_GraphicVector::createFromChangeRecord(pFL, pcro);
+	}
+     }
+   return NULL;
 }
 
 FG_Graphic::~FG_Graphic() {
