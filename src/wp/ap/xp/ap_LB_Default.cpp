@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -311,7 +311,7 @@ ap_bs_Char CharTable[] =
 	{0x27, /* '      */ { "insertData",			"",					"",				""					}},
 	{0x28, /* (      */ { "insertData",			"",					"",				""					}},
 	{0x29, /* )      */ { "insertData",			"",					"",				""					}},
-	{0x2a, /* *      */ { "insertData",			"",					"",				""					}},
+	{0x2a, /* *      */ { "insertData",			"viewPara",			"",				""					}},
 	{0x2b, /* +      */ { "insertData",			"",					"",				""					}},
 	{0x2c, /* ,      */ { "insertData",			"",					"",				""					}},
 	{0x2d, /* -      */ { "insertData",			"toggleSub",		"",				""					}},
@@ -346,7 +346,7 @@ ap_bs_Char CharTable[] =
 	{0x4a, /* J      */ { "insertData",			"alignJustify",		"",				""					}},
 	{0x4b, /* K      */ { "insertData",			"toggleStrike",		"",				""					}},
 	{0x4c, /* L      */ { "insertData",			"alignLeft",		"",				""					}},
-	{0x4d, /* M      */ { "insertData",			"insSymbol",					"",				""					}},
+	{0x4d, /* M      */ { "insertData",			"insSymbol",		"",				""					}},
 	{0x4e, /* N      */ { "insertData",			"fileNew",			"",				""					}},
 	{0x4f, /* O      */ { "insertData",			"fileOpen",			"",				""					}},
 	{0x50, /* P      */ { "insertData",			"print",			"",				""					}},
@@ -378,7 +378,7 @@ ap_bs_Char CharTable[] =
 	{0x6a, /* j      */ { "insertData",			"alignJustify",		"",				""					}},
 	{0x6b, /* k      */ { "insertData",			"toggleStrike",		"",				""					}},
 	{0x6c, /* l      */ { "insertData",			"alignLeft",		"",				""					}},
-	{0x6d, /* m      */ { "insertData",			"insSymbol",					"",				""					}},
+	{0x6d, /* m      */ { "insertData",			"insSymbol",		"",				""					}},
 	{0x6e, /* n      */ { "insertData",			"fileNew",			"",				""					}},
 	{0x6f, /* o      */ { "insertData",			"fileOpen",			"",				""					}},
 	{0x70, /* p      */ { "insertData",			"print",			"",				""					}},

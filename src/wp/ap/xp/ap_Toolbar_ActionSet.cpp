@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -75,12 +75,12 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave",		AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"printTB",		AV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton, "printPreview", AV_CHG_NONE, NULL);
-	_s(AP_TOOLBAR_ID_SPELLCHECK, EV_TBIT_PushButton, "dlgSpell", AV_CHG_NONE, NULL);
-	_s(AP_TOOLBAR_ID_IMG, EV_TBIT_PushButton, "fileInsertGraphic", AV_CHG_NONE, NULL);
-	_s(AP_TOOLBAR_ID_HELP, EV_TBIT_PushButton, "helpContents", AV_CHG_NONE, NULL);
-	_s(AP_TOOLBAR_ID_COLOR_FORE, EV_TBIT_ColorFore, "colorForeTB", AV_CHG_NONE, NULL);
-	_s(AP_TOOLBAR_ID_COLOR_BACK, EV_TBIT_ColorBack, "colorBackTB", AV_CHG_NONE, NULL);
+	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton,	"printPreview", AV_CHG_NONE,	NULL);
+	_s(AP_TOOLBAR_ID_SPELLCHECK,	EV_TBIT_PushButton,		"dlgSpell",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_IMG,			EV_TBIT_PushButton,		"fileInsertGraphic", AV_CHG_NONE,	NULL);
+	_s(AP_TOOLBAR_ID_HELP,			EV_TBIT_PushButton,		"helpContents",	AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_COLOR_FORE,	EV_TBIT_ColorFore,		"colorForeTB",	AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_COLOR_BACK,	EV_TBIT_ColorBack,		"colorBackTB",	AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
 	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
 	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut",			AV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
@@ -96,11 +96,11 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FMT_OVERLINE,	EV_TBIT_ToggleButton,	"toggleOline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 
-	_s(AP_TOOLBAR_ID_INDENT, EV_TBIT_PushButton, "toggleIndent", AV_CHG_NONE,	NULL);
-	_s(AP_TOOLBAR_ID_UNINDENT, EV_TBIT_PushButton, "toggleUnIndent", AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_INDENT,		EV_TBIT_PushButton,		"toggleIndent",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_UNINDENT,		EV_TBIT_PushButton,		"toggleUnIndent",	AV_CHG_NONE,	NULL);
 
-	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);	
+	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_SUBSCRIPT,		EV_TBIT_ToggleButton,	"toggleSub",	AV_CHG_FMTCHAR,	ap_ToolbarGetState_CharFmt);	
 	_s(AP_TOOLBAR_ID_INSERT_SYMBOL,		EV_TBIT_PushButton,	"insSymbol",	AV_CHG_NONE,		NULL);
 
 	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_GroupButton,	"alignLeft",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
@@ -119,11 +119,14 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_GroupButton,	"sectColumns2",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
 	_s(AP_TOOLBAR_ID_3COLUMN,		EV_TBIT_GroupButton,	"sectColumns3",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
 
+	_s(AP_TOOLBAR_ID_VIEW_SHOWPARA,	EV_TBIT_ToggleButton,	"viewPara",		AV_CHG_FRAMEDATA,	ap_ToolbarGetState_View);
+
 	// AV_CHG_WINDOWSIZE, below, doesn't seem right.  TODO
-	
-	_s(AP_TOOLBAR_ID_ZOOM,			EV_TBIT_ComboBox,		"zoom",			AV_CHG_WINDOWSIZE,	ap_ToolbarGetState_Zoom);
-	_s(AP_TOOLBAR_ID_LISTS_BULLETS,		EV_TBIT_ToggleButton,		"doBullets",		AV_CHG_ALL,	ap_ToolbarGetState_Bullets	);
-	_s(AP_TOOLBAR_ID_LISTS_NUMBERS,		EV_TBIT_ToggleButton,		"doNumbers",		AV_CHG_ALL,	ap_ToolbarGetState_Numbers	);
+	_s(AP_TOOLBAR_ID_ZOOM,				EV_TBIT_ComboBox,		"zoom",		AV_CHG_WINDOWSIZE,	ap_ToolbarGetState_Zoom);
+
+	// AV_CHG_ALL, below, doesn't seem right.  TODO
+	_s(AP_TOOLBAR_ID_LISTS_BULLETS,		EV_TBIT_ToggleButton,	"doBullets",	AV_CHG_ALL,		ap_ToolbarGetState_Bullets	);
+	_s(AP_TOOLBAR_ID_LISTS_NUMBERS,		EV_TBIT_ToggleButton,	"doNumbers",	AV_CHG_ALL,		ap_ToolbarGetState_Numbers	);
 	
 	// ... add others here ...
 #ifdef BIDI_ENABLED

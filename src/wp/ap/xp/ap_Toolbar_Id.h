@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -79,6 +79,7 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_2COLUMN,
 	AP_TOOLBAR_ID_3COLUMN,
 
+	AP_TOOLBAR_ID_VIEW_SHOWPARA,
 	AP_TOOLBAR_ID_ZOOM,
 	AP_TOOLBAR_ID_LISTS_NUMBERS,
 	AP_TOOLBAR_ID_LISTS_BULLETS,

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -4649,24 +4649,25 @@ Defun1(viewPara)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-    AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
-    UT_ASSERT(pFrameData);
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
 
-    pFrameData->m_bShowPara = !pFrameData->m_bShowPara;
+	pFrameData->m_bShowPara = !pFrameData->m_bShowPara;
 
-    ABIWORD_VIEW;
-    pView->setShowPara(pFrameData->m_bShowPara);
+	ABIWORD_VIEW;
+	pView->setShowPara(pFrameData->m_bShowPara);
+	pView->notifyListeners(AV_CHG_FRAMEDATA);	// to update toolbar
 
-#if 0
-    // POLICY: make this the default for new frames, too
-    XAP_App * pApp = pFrame->getApp();
-    UT_ASSERT(pApp);
-    XAP_Prefs * pPrefs = pApp->getPrefs();
-    UT_ASSERT(pPrefs);
-    XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
-    UT_ASSERT(pScheme);
+#if 1
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
 
-    pScheme->setValueBool(AP_PREF_KEY_ParaVisible, pFrameData->m_bShowPara);
+	pScheme->setValueBool(AP_PREF_KEY_ParaVisible, pFrameData->m_bShowPara);
 #endif
 
 	return true;

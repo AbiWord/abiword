@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,14 +48,14 @@
 #	include "tb_text_underline.xpm"
 #	include "tb_text_overline.xpm"
 #	include "tb_text_superscript.xpm"
-# 	include "tb_text_subscript.xpm"
-#       include "tb_help.xpm"
+#	include "tb_text_subscript.xpm"
+#	include "tb_help.xpm"
 #ifdef BIDI_ENABLED
-#	include "tb_text_direction_rtl.xpm"	
-#	include "tb_text_direction_ltr.xpm"	
-#	include "tb_text_dom_direction_rtl.xpm"	
+#	include "tb_text_direction_rtl.xpm" 
+#	include "tb_text_direction_ltr.xpm" 
+#	include "tb_text_dom_direction_rtl.xpm" 
 #endif
-# 	include "tb_symbol.xpm"
+#	include "tb_symbol.xpm"
 #	include "tb_para_0before.xpm"
 #	include "tb_para_12before.xpm"
 #	include "tb_1column.xpm"
@@ -71,20 +71,21 @@
 #	include "tb_open.xpm"
 #	include "tb_paste.xpm"
 #	include "tb_print.xpm"
-#       include "tb_print_preview.xpm"
+#	include "tb_print_preview.xpm"
 #	include "tb_redo.xpm"
 #	include "tb_save.xpm"
 #	include "tb_save_as.xpm"
 #	include "tb_undo.xpm"
 #	include "tb_todo.xpm"
-#       include "tb_lists_bullets.xpm"
-#       include "tb_lists_numbers.xpm"
-#       include "tb_text_indent.xpm"
-#       include "tb_text_unindent.xpm"
-#       include "tb_spellcheck.xpm"
-#       include "tb_insert_graphic.xpm"
-#       include "tb_text_fgcolor.xpm"
-#       include "tb_text_bgcolor.xpm"
+#	include "tb_lists_bullets.xpm"
+#	include "tb_lists_numbers.xpm"
+#	include "tb_text_indent.xpm"
+#	include "tb_text_unindent.xpm"
+#	include "tb_spellcheck.xpm"
+#	include "tb_insert_graphic.xpm"
+#	include "tb_view_showpara.xpm"
+#	include "tb_text_fgcolor.xpm"
+#	include "tb_text_bgcolor.xpm"
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
@@ -134,7 +135,7 @@
 	DefineToolbarIcon(tb_text_overline_xpm)
 	DefineToolbarIcon(tb_text_superscript_xpm)	
 	DefineToolbarIcon(tb_text_subscript_xpm)
-        DefineToolbarIcon(tb_help_xpm)
+	DefineToolbarIcon(tb_help_xpm)
 #ifdef BIDI_ENABLED
 	//DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_direction_ltr_xpm)
@@ -157,20 +158,21 @@
 	DefineToolbarIcon(tb_open_xpm)
 	DefineToolbarIcon(tb_paste_xpm)
 	DefineToolbarIcon(tb_print_xpm)
-        DefineToolbarIcon(tb_print_preview_xpm)
+	DefineToolbarIcon(tb_print_preview_xpm)
 	DefineToolbarIcon(tb_redo_xpm)
 	DefineToolbarIcon(tb_save_xpm)
 	DefineToolbarIcon(tb_save_as_xpm)
 	DefineToolbarIcon(tb_undo_xpm)
 	DefineToolbarIcon(tb_todo_xpm)
-      	DefineToolbarIcon(tb_lists_numbers_xpm)
-       	DefineToolbarIcon(tb_lists_bullets_xpm)
-        DefineToolbarIcon(tb_text_indent_xpm)
-        DefineToolbarIcon(tb_text_unindent_xpm)
-        DefineToolbarIcon(tb_spellcheck_xpm)
-        DefineToolbarIcon(tb_insert_graphic_xpm)
-        DefineToolbarIcon(tb_text_fgcolor_xpm)
-        DefineToolbarIcon(tb_text_bgcolor_xpm)
+	DefineToolbarIcon(tb_lists_numbers_xpm)
+	DefineToolbarIcon(tb_lists_bullets_xpm)
+	DefineToolbarIcon(tb_text_indent_xpm)
+	DefineToolbarIcon(tb_text_unindent_xpm)
+	DefineToolbarIcon(tb_spellcheck_xpm)
+	DefineToolbarIcon(tb_insert_graphic_xpm)
+	DefineToolbarIcon(tb_view_showpara_xpm)
+	DefineToolbarIcon(tb_text_fgcolor_xpm)
+	DefineToolbarIcon(tb_text_bgcolor_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

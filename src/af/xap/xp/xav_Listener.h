@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@ class AV_View;
 
 typedef UT_uint32 AV_ListenerId;
 
+// TODO how did we fill this mask so fast?  
+// TODO next it'll need to become a 32-bit mask
 typedef UT_uint16 AV_ChangeMask;
 #define AV_CHG_NONE			((AV_ChangeMask) 0x0000) 
 #define AV_CHG_DO			((AV_ChangeMask) 0x0001)		// canDo
@@ -48,6 +50,7 @@ typedef UT_uint16 AV_ChangeMask;
 #define AV_CHG_DIRECTIONMODE ((AV_ChangeMask)0x4000)
 #endif
 
+#define AV_CHG_FRAMEDATA	((AV_ChangeMask) 0x8000)		// frame-level preferences (pFrameData)
 #define AV_CHG_ALL			((AV_ChangeMask) 0xFFFF)
 
 #define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 #include "gr_Graphics.h"
 #include "fl_AutoNum.h"
 #include "ap_Prefs_SchemeIds.h"
+#include "ap_FrameData.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -537,6 +538,34 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 	}
 
 	*pszState = buf;
+
+	return s;
+}
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_View)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+	switch(id)
+	{
+	case AP_TOOLBAR_ID_VIEW_SHOWPARA:
+        if ( pFrameData->m_bShowPara )
+            s = EV_TIS_Toggled;
+        break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
 
 	return s;
 }

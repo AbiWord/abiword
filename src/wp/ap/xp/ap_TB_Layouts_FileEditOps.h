@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,9 +35,9 @@ BeginLayout(FileEditOps)
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT)
 #if defined(HAVE_GNOME)
-        ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
+	ToolbarItem(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW)
 #endif
-        ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
+	ToolbarItem(AP_TOOLBAR_ID_SPELLCHECK)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
@@ -54,7 +54,8 @@ BeginLayout(FileEditOps)
 	ToolbarItem(AP_TOOLBAR_ID_3COLUMN)
 
 	Spacer()
-        ToolbarItem(AP_TOOLBAR_ID_IMG)
+	ToolbarItem(AP_TOOLBAR_ID_IMG)
+	ToolbarItem(AP_TOOLBAR_ID_VIEW_SHOWPARA)
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
-        ToolbarItem(AP_TOOLBAR_ID_HELP)
+	ToolbarItem(AP_TOOLBAR_ID_HELP)
 EndLayout()
