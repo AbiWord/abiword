@@ -800,11 +800,6 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		cursor_name = MAKEINTRESOURCE(IDC_EXCHANGE);
 		break;
 
-	case GR_CURSOR_LEFTRIGHT:
-		cursor_name = IDC_SIZEWE;
-		hinst = NULL;
-		break;
-
 	case GR_CURSOR_IBEAM:
 		cursor_name = IDC_IBEAM;
 		hinst = NULL;
@@ -834,6 +829,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		hinst = NULL;
 		break;
 		
+	case GR_CURSOR_UPDOWN:
 	case GR_CURSOR_IMAGESIZE_N:
 	case GR_CURSOR_IMAGESIZE_S:
 		cursor_name = IDC_SIZENS;
@@ -846,6 +842,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		hinst = NULL;
 		break;
 		
+	case GR_CURSOR_LEFTRIGHT:
 	case GR_CURSOR_IMAGESIZE_E:
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_name = IDC_SIZEWE;
