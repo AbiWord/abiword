@@ -31,10 +31,17 @@ abi_found_wv="no"
 # check for a shared install
 
 if test "$abi_found_wv" = "no"; then
+	AC_PATH_PROG(WVLIBCFG,wv-libconfig,[$PATH])
+	if [ test "x$WVLIBCFG" = "x" ]; then
+		abi_wv_libs=""
+	else
+		abi_wv_libs=`$WVLIBCFG`
+	fi
 	echo "checking for wv"
-	AC_CHECK_LIB(wv, wvInitParser,
-		WV_LIBS="-lwv" abi_found_wv="yes"
-		)
+	AC_CHECK_LIB(wv,wvInitParser,[
+		WV_LIBS="-lwv"
+		abi_found_wv="yes"
+	],,$abi_wv_libs)
 fi
 
 # check for the header file
