@@ -6097,13 +6097,18 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		UT_String_sprintf(tempBuffer, "text-indent:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentFirst)/1440));
 		propBuffer += tempBuffer;
 	}
-	// line spacing
+// line spacing
 	if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
 	{
-		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
-		UT_String_sprintf(tempBuffer, "line-height:1.0;");
+        if (m_currentRTFState.m_paraProps.m_lineSpaceVal < 0) {  // exact spacing
+			UT_String_sprintf(tempBuffer, "line-height:%spt;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
+		}
+		else                                                         // "at least" spacing
+		{
+			UT_String_sprintf(tempBuffer, "line-height:%spt+;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
+		}
 	}
-	else
+	else                 // multiple line spacing
 	{
 		UT_String_sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
 	}
@@ -7370,7 +7375,7 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword,
 	else if (strcmp(reinterpret_cast<char*>(pKeyword), "slmult") == 0)
 	{
 		pbParas->bm_lineSpaceExact = true;
-		pParas->m_lineSpaceExact = (!fParam  ||  param == 0);
+		pParas->m_lineSpaceExact = (!fParam  ||  param == 0);   // this means exact or "at least" - which depends on sign of \sl param
 	}
 	else if (strcmp(reinterpret_cast<char*>(pKeyword), "super") == 0)
 	{
@@ -10339,13 +10344,20 @@ bool IE_Imp_RTF::buildAllProps(char * propBuffer,  RTFProps_ParaProps * pParas,
     //
 	if (pParas->m_lineSpaceExact)
 	{
-		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
-		UT_String_sprintf(tempBuffer, "line-height:1.0;");
+        if (pParas->m_lineSpaceVal < 0) {  // exact spacing
+			UT_String_sprintf(tempBuffer, "line-height:%spt;",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+		}
+		else                                                         // "at least" spacing
+		{
+			UT_String_sprintf(tempBuffer, "line-height:%spt+;",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+		}
+			
 	}
-	else
+	else   // multiple spacing
 	{
 		UT_String_sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
 	}
+
 	strcat(propBuffer, tempBuffer.c_str());
 //
 // Character Properties.
