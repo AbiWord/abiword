@@ -307,7 +307,7 @@ void AP_TopRuler::_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInf
 
 		// draw light gray lines down and right of area, seperated by 1 pixel all the way
 		m_pG->setColor(clrWhite);
-		m_pG->drawLine(xAbsLeft - 1, yTop + yBar + 1, xAbasRight + 2, yTop + yBar + 1);	// below
+		m_pG->drawLine(xAbsLeft - 1, yTop + yBar + 1, xAbsRight + 2, yTop + yBar + 1);	// below
 		m_pG->drawLine(xAbsRight + 2, yTop + yBar + 1, xAbsRight + 2, yTop - 2);		// right
 
 		m_pG->setColor(clrBlack);
