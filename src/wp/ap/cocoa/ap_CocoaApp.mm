@@ -1163,7 +1163,7 @@ bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args)
 //
 // Execute the plugin, then quit
 //
-		ev_EditMethod_invoke(pInvoke, "Called From CocoaApp");
+		ev_EditMethod_invoke(pInvoke, UT_String("Called From CocoaApp"));
 		return false;
 	}
 
