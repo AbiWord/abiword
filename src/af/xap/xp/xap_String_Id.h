@@ -213,22 +213,29 @@ dcl(DLG_Options_Label_ModifyUnixFontPath, "Modify Unix Font Path")
 
 /* HashDownloader dialogs */
 dcl(DLG_HashDownloader_AskDownload, 		"I could not find a dictionary for %s.\n"
-						"Would you like me to try downloading it from the internet?")
+											"Would you like me to try downloading it from the internet?")
 dcl(DLG_HashDownloader_AskFirstTryFailed, 	"Download failed!\n"
-						"Would you like me to try again?\n"
-						"If yes, please make sure you are connected to the internet.")
+											"Would you like me to try again?\n"
+											"If yes, please make sure you are connected to the internet.")
 dcl(DLG_HashDownloader_AskInstallGlobal, 	"You seem to have permission to install the dictionary system-wide.\n"
-						"Would you like to do that?\n"
-						"If yes, I will install the dictionary in %s")
+											"Would you like to do that?\n"
+											"If yes, I will install the dictionary in %s")
 dcl(DLG_HashDownloader_DictlistDLFail, 		"Sorry! I seem unable to download the dictionary-list.")
-dcl(DLG_HashDownloader_DictDLFail, 		"Sorry! I seem unable to download the dictionary.")
+dcl(DLG_HashDownloader_DictDLFail, 			"Sorry! I seem unable to download the dictionary.")
 dcl(DLG_HashDownloader_DictInstallFail, 	"Sorry! I seem unable to install the dictionary.")
 dcl(DLG_HashDownloader_DictNotAvailable, 	"I'm sorry. The wanted dictionary is not available for download.")
 dcl(DLG_HashDownloader_DictNotForThis, 		"I'm sorry. The wanted dictionary is not available for this release.\n"
-						"Please consider upgrading AbiWord.")
+											"Please consider upgrading AbiWord.")
 dcl(DLG_HashDownloader_FeatureDisabled, 	"I'm sorry. This feature is not available anymore.")
 dcl(DLG_HashDownloader_FeatureDisabledForThis, 	"I'm sorry. This feature is disabled for this release.\n"
-						"Please consider upgrading AbiWord.")
+											"Please consider upgrading AbiWord.")
+dcl(DLG_HashDownloader_DictList,	"the dictionary-list")
+dcl(DLG_HashDownloader_Dict, 		"the dictionary")
+
+/* For the Download_File dialog */
+dcl(DLG_DlFile_Title, 		"New dictionary installation")
+/* First %s is a description, e.g. DLG_HashDownloader_Dict above - the second one is the URL */
+dcl(DLG_DlFile_Status, 		"Abiword is now downloading %s from:\n%s")
 
 
 

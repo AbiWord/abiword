@@ -73,6 +73,9 @@
 #   include "ap_UnixDialog_MetaData.h"
 #   include "ap_UnixDialog_MarkRevisions.h"
 #   include "ap_UnixDialog_ListRevisions.h"
+#ifdef HAVE_CURL
+#	include "ap_UnixDialog_Download_File.h"
+#endif
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
@@ -174,6 +177,9 @@
      DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
      DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
      DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_UnixGnomeDialog_InsertTable)
+#ifdef HAVE_CURL
+	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_UnixDialog_Download_File)
+#endif
      // ... also add new dialogs here ...
 #   else
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
@@ -225,6 +231,9 @@
      DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
      DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
      DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_UnixDialog_InsertTable)
+#ifdef HAVE_CURL
+	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_UnixDialog_Download_File)
+#endif
  	// ... also add new dialogs here ...
 #   endif
 

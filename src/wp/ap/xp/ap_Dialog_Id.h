@@ -55,6 +55,9 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_MARK_REVISIONS,
 	AP_DIALOG_ID_LIST_REVISIONS,
 	AP_DIALOG_ID_INSERT_TABLE,
+#ifdef HAVE_CURL
+	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	
+#endif
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

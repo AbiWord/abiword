@@ -19,6 +19,7 @@
 #ifndef UT_THREAD_H
 #define UT_THREAD_H
 
+#include <stdio.h>
 #include "ut_types.h"
 
 class UT_ThreadImpl;

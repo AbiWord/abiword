@@ -49,7 +49,7 @@ class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
 
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 class XAP_HashDownloader;
 #endif
 /*****************************************************************
@@ -172,7 +172,7 @@ public:
 	virtual bool 							getDisplayStatus(void) const;
 	virtual bool 							setDisplayStatus(bool b);
 
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
 #endif
 protected:
@@ -195,7 +195,7 @@ protected:
 	XAP_Frame *								m_lastFocussedFrame;
 	XAP_Menu_Factory *                      m_pMenuFactory;
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 	XAP_HashDownloader *			        m_pHashDownloader;
 #endif
 

@@ -78,6 +78,10 @@ ifeq ($(ABI_OPT_PERL),1)
 CPPSRCS += ut_PerlBindings.cpp
 endif
 
+ifeq ($(ABI_OPT_THREADS),1)
+CPPSRCS += ut_thread.cpp
+endif
+
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c
 

@@ -63,6 +63,10 @@ CPPSRCS=	ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_ListRevisions.cpp		\
 			ap_$(ABI_FE)TopRuler.cpp
 
+ifeq ($(ABI_OPT_CURL),1)
+CPPSRCS +=			ap_$(ABI_FE)Dialog_Download_File.cpp
+endif
+
 #TF We could use
 #CPPSRCS= $(wildcard *.cpp)
 

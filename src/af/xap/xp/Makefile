@@ -66,7 +66,7 @@ ifeq ($(ABI_OPT_PANGO),1)
 CPPSRCS += xap_PangoFontManager.cpp
 endif
 
-ifeq ($(ABI_OPT_CURLHASH),1)
+ifeq ($(ABI_OPT_CURL),1)
 CPPSRCS +=	xap_HashDownloader.cpp
 endif
 

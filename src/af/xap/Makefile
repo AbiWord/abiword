@@ -150,7 +150,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_Language.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Encoding.$(OBJ_SUFFIX)
 
-ifeq ($(ABI_OPT_CURLHASH),1)
+ifeq ($(ABI_OPT_CURL),1)
 OBJS +=		$(OBJDIR)/xap_HashDownloader.$(OBJ_SUFFIX)
 endif
 

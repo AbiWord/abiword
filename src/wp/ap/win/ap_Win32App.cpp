@@ -73,7 +73,7 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 #include "ap_Win32HashDownloader.h"
 #endif
 
@@ -86,14 +86,14 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szA
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 	m_pHashDownloader = (XAP_HashDownloader *)(new AP_Win32HashDownloader());
 #endif
 }
 
 AP_Win32App::~AP_Win32App(void)
 {
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 	DELETEP(m_pHashDownloader);
 #endif
 

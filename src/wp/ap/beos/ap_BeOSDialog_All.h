@@ -59,6 +59,9 @@
 #include "ap_BeOSDialog_InsertHyperlink.h"
 #include "ap_BeOSDialog_MarkRevisions.h"
 #include "ap_BeOSDialog_ListRevisions.h"
+#ifdef HAVE_CURL
+#include "ap_BeOSDialog_Download_File.h"
+#endif
 	// ... add new dialogs here ...
 
 #else
@@ -96,6 +99,9 @@
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_BeOSDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_BeOSDialog_MarkRevisions)
  	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_BeOSDialog_ListRevisions)
+#ifdef HAVE_CURL
+	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_BeOSDialog_Download_File)
+#endif
 	// ... also add new dialogs here ...
 
 #endif

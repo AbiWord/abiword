@@ -79,7 +79,8 @@ protected:
 	void 				startElement(const XML_Char* name, const XML_Char **atts);
 	void 				endElement(const XML_Char *name);
 	void 				charData(const XML_Char*, int);
-	UT_sint32 			downloadFile(XAP_Frame *pFrame, const char *szFName, tFileData *d, UT_uint32 show_progress);
+	UT_sint32			tryToDownloadHash(XAP_Frame *pFrame, const char *szFName, XAP_HashDownloader::tFileData *fileData);
+	virtual UT_sint32 	downloadFile(XAP_Frame *pFrame, const char *szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress) = 0;
 	UT_sint32			getPref(XAP_Frame *pFrame);
 	UT_sint32			setPref(XAP_Frame *pFrame, UT_sint32 newVal);
 	UT_sint32			getComparableBuildDate(void);
@@ -91,9 +92,6 @@ protected:
 	virtual void 		showNoteDlg(XAP_Frame *pFrame, const char *szMsg);
 	
 	virtual void		showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno=false) const = 0;
-
-	virtual	void		showProgressStart(XAP_Frame *pFrame, CURL *ch) = 0;
-	virtual	void		showProgressStop(XAP_Frame *pFrame, CURL *ch) = 0;
 
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload) = 0;
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;

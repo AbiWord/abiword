@@ -46,6 +46,9 @@
 #	include "ap_MacDialog_InsertHyperlink.h"
 #	include "ap_MacDialog_MarkRevisions.h"
 #	include "ap_MacDialog_ListRevisions.h"
+#ifdef HAVE_CURL
+#	include "ap_MacDialog_Download_File.h"
+#endif
 	// ... add new dialogs here ...
 
 #else
@@ -69,6 +72,9 @@
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_MacDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_MacDialog_MarkRevisions)
  	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_MacDialog_ListRevisions)
+#ifdef HAVE_CURL
+	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_MacDialog_Download_File)
+#endif
 	// ... also add new dialogs here ...
 
 #endif

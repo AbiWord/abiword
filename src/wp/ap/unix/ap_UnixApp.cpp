@@ -95,7 +95,7 @@
 #include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
 
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 #include "ap_UnixHashDownloader.h"
 #endif
 
@@ -128,7 +128,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_cacheSelectionView(0),
 	  m_pFrameSelection(0)
 {
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 	m_pHashDownloader = (XAP_HashDownloader *)(new AP_UnixHashDownloader());
 #endif
 
@@ -147,7 +147,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 */
 AP_UnixApp::~AP_UnixApp(void)
 {
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
     DELETEP(m_pHashDownloader);
 #endif
 

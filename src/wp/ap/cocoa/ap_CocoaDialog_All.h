@@ -73,7 +73,9 @@
 #	include "ap_CocoaDialog_MetaData.h"
 #	include "ap_CocoaDialog_MarkRevisions.h"
 #	include "ap_CocoaDialog_ListRevisions.h"
-
+#ifdef HAVE_CURL
+#	include "ap_CocoaDialog_Download_File.h"
+#endif
 	// ... add new dialogs here ...
 
 #else
@@ -126,6 +128,9 @@
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_CocoaDialog_MetaData)
 //PORT 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
 //PORT 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
+#ifdef HAVE_CURL
+	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)
+#endif
  	// ... also add new dialogs here ...
 
 #endif

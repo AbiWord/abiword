@@ -136,6 +136,10 @@ ifeq ($(ABI_OPT_PERL),1)
 OBJS += $(OBJDIR)/ut_PerlBindings.$(OBJ_SUFFIX)
 endif
 
+ifeq ($(ABI_OPT_THREADS),1)
+OBJS +=	$(OBJDIR)/ut_thread.$(OBJ_SUFFIX)
+endif
+
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 

@@ -73,6 +73,9 @@
 #	include "ap_QNXDialog_MarkRevisions.h"
 #	include "ap_QNXDialog_ListRevisions.h"
 #	include "ap_QNXDialog_MetaData.h"
+#ifdef HAVE_CURL
+#	include "ap_QNXDialog_Download_File.h"
+#endif
 	// ... add new dialogs here ...
 
 #else
@@ -123,6 +126,9 @@
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_QNXDialog_MarkRevisions)
  	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_QNXDialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_QNXDialog_MetaData)
+#ifdef HAVE_CURL
+	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_QNXDialog_Download_File)
+#endif
 	// ... also add new dialogs here ...
 
 #endif

@@ -18,7 +18,7 @@
 #include "xap_Frame.h"
 #include "xap_Strings.h"
 
-#ifdef HAVE_CURLHASH
+#ifdef HAVE_CURL
 #include "ap_HashDownloader.h"
 #endif
 
@@ -346,7 +346,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
   
   if (!(hashname = loadGlobalDictionary(hFile))) {
     if (!(hashname = loadLocalDictionary(hFile))) {
-#ifdef HAVE_CURLHASH
+#ifdef HAVE_CURL
       AP_HashDownloader *hd = (AP_HashDownloader *)XAP_App::getApp()->getHashDownloader();
       XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 

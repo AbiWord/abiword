@@ -45,7 +45,7 @@
 #include "xap_Toolbar_Layouts.h"
 #include "ut_rand.h"
 
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 #include "xap_HashDownloader.h"
 #endif
 
@@ -80,7 +80,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
 	clearIdTable();
 
-#ifdef HAVE_CURLHASH	
+#ifdef HAVE_CURL
 	m_pHashDownloader = NULL;
 #endif
 

@@ -30,31 +30,16 @@
 #include "ut_debugmsg.h"
 
 #include "xap_Frame.h"
+#include "xap_DialogFactory.h"
+#include "ap_Dialog_Id.h"
 
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
 #include "ap_HashDownloader.h"
+#include "ap_Dialog_Download_File.h"
 
 #include "ut_string.h"
 #include "ut_path.h"
-
-extern "C" {
-int 
-dlProgressCallback(AP_StatusBar *statusBar, double total, double dl, double ultotal, double ulnow)
-{
-	/* 
-	 * During the first seconds of download this function may be called with total==0
-	 * This would turn on "constant-progress" on the progressbar, we don't want that
-	 */
-	if ( (int)(total) != 0) {
-		statusBar->setStatusProgressType(0, (int)(total), PROGRESS_START | PROGRESS_SHOW_PERCENT);
-		statusBar->setStatusProgressValue((int)(dl));
-	}
-	
-	return 0;
-}
-}
-
 
 AP_HashDownloader::AP_HashDownloader()
 {
@@ -66,38 +51,33 @@ AP_HashDownloader::~AP_HashDownloader()
 {
 }
 
-
-void
-AP_HashDownloader::showProgressStart(XAP_Frame *pFrame, CURL *ch)
+/*
+ * return:	0  - Ok, no errors
+ *			1  - user aborted download
+ *			<0 - error
+ */
+UT_sint32
+AP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress)
 {
-	AP_FrameData *pFrameData;
-	pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-	UT_ASSERT(pFrameData);
-
-	// turn the view status bit on
-	pFrameData->m_pStatusBar->setStatusProgressType(0, 100, PROGRESS_START);
-	pFrameData->m_pStatusBar->setStatusProgressValue(0);
-
-	didShowStatusBar = pFrame->isStatusBarShown();
-	pFrameData->m_bShowStatusBar = true;
-	pFrame->toggleStatusBar(true);
-
-	curl_easy_setopt(ch, CURLOPT_NOPROGRESS, FALSE);
-	curl_easy_setopt(ch, CURLOPT_PROGRESSFUNCTION, dlProgressCallback);
-	curl_easy_setopt(ch, CURLOPT_PROGRESSDATA, pFrameData->m_pStatusBar);
-}
-
-void
-AP_HashDownloader::showProgressStop(XAP_Frame *pFrame, CURL *ch)
-{
-	AP_FrameData *pFrameData;
-	pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
-	UT_ASSERT(pFrameData);
-
-	// turn the view status bit off
-	pFrameData->m_pStatusBar->setStatusProgressType(0, 100, PROGRESS_STOP);
-	pFrameData->m_bShowStatusBar = didShowStatusBar;
-	pFrame->toggleStatusBar(didShowStatusBar);
+	XAP_DialogFactory * pDialogFactory = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	AP_Dialog_Download_File *pDialog = (AP_Dialog_Download_File *)(pDialogFactory->requestDialog(AP_DIALOG_ID_DOWNLOAD_FILE));
+	
+	pDialog->setURL(szURL);
+	pDialog->setDescription(szDescription);
+	pDialog->runModal(pFrame);
+	
+	if (pDialog->getUserAnswer() == AP_Dialog_Download_File::a_CANCEL)
+		return(1);
+	
+	if (!pDialog->getDLDone() || pDialog->getDLResult())
+		return(-1);
+	
+	d->s = pDialog->getFileSize();
+	d->data = (char *)malloc(d->s);
+	pDialog->getFileData(d->data, 0, d->s);
+	
+	pDialogFactory->releaseDialog(pDialog);
+	return(0);
 }
 
 
@@ -124,6 +104,7 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	FILE *fp;
 	gzFile gzfp;
 	struct stat statBuf;
+	const XAP_StringSet *pSS = pFrame->getApp()->getStringSet();
 
 #ifdef CURLHASH_NO_CACHING_OF_LIST
 	forceDownload = 1;
@@ -142,12 +123,19 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 		if (fileData.data)
 			free(fileData.data);
 		fileData.data = NULL;
-		if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
-			if (dlg_askFirstTryFailed(pFrame))
-				if ((ret = downloadFile(pFrame, szURL, &fileData, 0))) {
-					showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictlistDLFail);
-					return(-1);
+		fileData.s = 0;
+		if ((ret = downloadFile(pFrame, szURL, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_DictList), &fileData, 0))) {
+			if (ret < 0 && dlg_askFirstTryFailed(pFrame)) {
+				if ((ret = downloadFile(pFrame, szURL, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_DictList), &fileData, 0))) {
+					if (ret < 0) {
+						showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictlistDLFail);
+						return(-1);
+					} else {
+						return(1);
+					}
 				}
+			} else
+				return(1);
 		}
 
 		if (!(fp = fopen(szPath, "wb"))) {

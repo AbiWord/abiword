@@ -42,13 +42,11 @@ public:
 	~AP_HashDownloader();
 
 protected:
-	virtual void		showProgressStart(XAP_Frame *pFrame, CURL *ch);
-	virtual	void		showProgressStop(XAP_Frame *pFrame, CURL *ch);
-
 	virtual void 		showErrorMsg(XAP_Frame *pFrame, const char *errMsg, bool showErrno=false) const = 0;
 
 	virtual tPkgType	wantedPackageType(XAP_Frame *pFrame) = 0;
 
+	virtual UT_sint32 	downloadFile(XAP_Frame *pFrame, const char *szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress);
 	virtual UT_sint32	downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload);
 
 	// calls platformInstallPackage, based on result and rm flag handles removal of downloaded package

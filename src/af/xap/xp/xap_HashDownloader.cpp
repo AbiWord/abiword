@@ -35,29 +35,6 @@
 #include "ispell_checker.h"
 
 
-extern "C" {
-size_t
-writeCallback(void *ptr, size_t size, size_t nmemb, void *data)
-{
-	XAP_HashDownloader::tFileData *mem = (XAP_HashDownloader::tFileData *)data;
-
-	if (!mem->data)
-		mem->data = (char *)malloc(size * nmemb + 1);
-	else
-		mem->data = (char *)realloc(mem->data, mem->s + size * nmemb + 1);
-
-	if (mem->data) {
-		memcpy(&(mem->data[mem->s]), ptr, size * nmemb);
-		mem->s += size * nmemb;
-		mem->data[mem->s] = 0;
-	} else
-		return(0);
-
-	return(size * nmemb);
-}
-}
-
-
 XAP_HashDownloader::XAP_HashDownloader()
 {
 	dictionaryListMaxAge = CURLHASH_LISTCACHE_MAX_AGE;
@@ -212,51 +189,6 @@ XAP_HashDownloader::initData()
 }
 
 UT_sint32
-XAP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szFName, tFileData *d, UT_uint32 show_progress)
-{
-	CURL *ch;
-	UT_sint32 ret = 0;
-	
-	if (d->data)
-		free(d->data);
-	d->data = NULL;
-	d->s = 0;
-	
-	/* init the curl session */
-	ch = curl_easy_init();
-	curl_easy_setopt(ch, CURLOPT_URL, szFName);
-	curl_easy_setopt(ch, CURLOPT_WRITEFUNCTION, writeCallback);
-	curl_easy_setopt(ch, CURLOPT_FAILONERROR, 1);
-	
-	/* Data to send to writeCallBack() */
-	curl_easy_setopt(ch, CURLOPT_FILE, (void *)d);
-
-	if (show_progress)
-		showProgressStart(pFrame, ch);
-	else
-		curl_easy_setopt(ch, CURLOPT_NOPROGRESS, TRUE);
-
-	UT_DEBUGMSG(("Starting download of %s\n", szFName));
-	/* get it! */
-	if ((ret = curl_easy_perform(ch))) {
-		UT_DEBUGMSG(("Download of %s failed! (ret=%d)\n", szFName, ret));
-	} else {
-		UT_DEBUGMSG(("Done downloading %s\n", szFName));
-	}
-
-	if (show_progress)
-		showProgressStop(pFrame, ch);
-
-	//TODO: figure out why I crash on Windows
-//#ifndef _WIN32
-	curl_easy_cleanup(ch);
-//#endif
-
-	return ret;
-}
-
-
-UT_sint32
 XAP_HashDownloader::getPref(XAP_Frame *pFrame)
 {
 	char *endptr, *val;
@@ -360,12 +292,41 @@ XAP_HashDownloader::dlg_askFirstTryFailed(XAP_Frame *pFrame)
 }
 
 
+UT_sint32
+XAP_HashDownloader::tryToDownloadHash(XAP_Frame *pFrame, const char *szFName, XAP_HashDownloader::tFileData *fileData)
+{
+	char buff[512];
+	UT_sint32 ret;
+	const XAP_StringSet *pSS = pFrame->getApp()->getStringSet();
+
+	sprintf(buff, "%s%s", host, szFName);
+
+	if ((ret = downloadFile(pFrame, buff, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dict), fileData, 1))) {
+		if (ret < 0) {
+			if (!host2[0])
+				return(-1);
+			
+			sprintf(buff, "%s%s", host2, szFName);
+			if ((ret = downloadFile(pFrame, buff, pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dict), fileData, 1))) {
+				if (ret < 0)
+					return(-1);
+				else
+					return(1);
+			}
+		} else
+			return(1);
+	}
+	
+	return(0);
+}
+
+
 /*
  * Shows a messagebox for the user that suggests letting Abiword download
  * the wanted dictionary and install it. If user answers Yes, do it.
  * It aborts imediatly (before any of the above) if the option "SpellUseHashDownloader" is == 0
  * szLang contains the language code, e.g. "en-US"
- * return:	0  - no, thankyou
+ * return:	0  - no, thankyou - or aborted by user during download
  *			1  - ok, done, all OK
  *			<0 - error
  */
@@ -376,8 +337,6 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 	UT_sint32 i, ret;
 	FILE *fp;
 	tPkgType pkgType;
-
-fprintf(stderr, "XAP_HashDownloader::suggestDownload(): szLang=%s\n", szLang);
 
 #ifdef UT_LITTLE_ENDIAN
 	char endianess[5] = "i386";
@@ -456,15 +415,23 @@ fprintf(stderr, "XAP_HashDownloader::suggestDownload(): szLang=%s\n", szLang);
 			return(0);	/* User said: No thankyou */
 	}
 
-	sprintf(buff, "%s%s", host, szFName);
-	sprintf(buff2, "%s%s", host2, szFName);
-	if ((ret = downloadFile(pFrame, buff, &fileData, 1)) && (host2[0] != 0 && (ret = downloadFile(pFrame, buff2, &fileData, 1))))
-		if (dlg_askFirstTryFailed(pFrame))
-			if ((ret = downloadFile(pFrame, buff, &fileData, 1)) && (host2[0] != 0 && (ret = downloadFile(pFrame, buff2, &fileData, 1)))) {
+	if ((ret = tryToDownloadHash(pFrame, szFName, &fileData))) {
+		if (ret > 0)
+			return(1);
+		
+		if (dlg_askFirstTryFailed(pFrame)) {
+			if (tryToDownloadHash(pFrame, szFName, &fileData)) {
+				if (ret > 0)
+					return(1);
+				
 				showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictDLFail);
 				return(-1);
 			}
-
+		} else
+			return(1);
+	}
+	
+	
 	// TODO: add (or find the) UT_GetTempPath() function and replace this #ifdef logic with it
 #ifdef _WIN32
 	GetTempPath(sizeof(buff), buff);

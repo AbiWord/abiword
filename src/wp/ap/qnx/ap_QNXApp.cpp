@@ -84,7 +84,7 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 
-#ifdef HAVE_CURLHASH
+#ifdef HAVE_CURL
 #include "ap_QNXHashDownloader.h"
 #endif
 
@@ -106,7 +106,7 @@ AP_QNXApp::AP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 	m_pFrameSelection = NULL;
 	m_cacheSelectionView = NULL;
 
-#ifdef HAVE_CURLHASH
+#ifdef HAVE_CURL
 	m_pHashDownloader = (XAP_HashDownloader*)(new AP_QNXHashDownloader());
 #endif
 }
@@ -120,7 +120,7 @@ AP_QNXApp::~AP_QNXApp(void)
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 	
-#ifdef HAVE_CURLHASH
+#ifdef HAVE_CURL
 	DELETEP(m_pHashDownloader);
 #endif
 	IE_ImpExp_UnRegisterXP ();

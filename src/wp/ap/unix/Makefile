@@ -69,8 +69,9 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)ViewListener.cpp \
 	                abiwidget.cpp
 
-ifeq ($(ABI_OPT_CURLHASH),1)
-CPPSRCS +=		ap_$(ABI_FE)HashDownloader.cpp
+ifeq ($(ABI_OPT_CURL),1)
+CPPSRCS +=		ap_$(ABI_FE)HashDownloader.cpp		\
+			ap_$(ABI_FE)Dialog_Download_File.cpp
 endif
 
 TARGETS=		$(OBJS)

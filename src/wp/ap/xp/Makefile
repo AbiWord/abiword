@@ -95,8 +95,9 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_App.cpp			\
 		ap_TopRuler.cpp
 
-ifeq ($(ABI_OPT_CURLHASH),1)
-CPPSRCS +=	ap_HashDownloader.cpp
+ifeq ($(ABI_OPT_CURL),1)
+CPPSRCS +=	ap_HashDownloader.cpp		\
+		ap_Dialog_Download_File.cpp
 endif
 
 GENCPPSRCS=	$(OBJDIR)/ap_wp_splash.cpp	\

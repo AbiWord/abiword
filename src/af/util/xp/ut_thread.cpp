@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-
+#include "ut_assert.h"
 #include "ut_thread.h"
 #include "ut_threadImpl.h"
 
