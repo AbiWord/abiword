@@ -164,6 +164,9 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    m_bSkipWord = false;
 }
 
+/*!
+ * Scan through document until we find a misspelled word or the document ends
+ */
 bool AP_Dialog_Spell::nextMisspelledWord(void)
 {
    UT_ASSERT(m_pWordIterator);
@@ -230,22 +233,38 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   if (!m_pDoc->isIgnore(m_pWord, m_iWordLength) &&
 			       !_spellCheckWord(m_pWord, m_iWordLength)) 
 			   {
-				   // unknown word... prepare list of possibilities
+				   // unknown word... update dialog
+
+				   makeWordVisible(); // display the word now.
+
 				   SpellChecker * checker = _getDict();
 				   if (!checker)
 					   return false;
-				   makeWordVisible(); // display the word now.
 
-				   // Get suggestions from spell checker
-				   _purgeSuggestions();
-				   if (checker->checkWord(m_pWord, m_iWordLength) == SpellChecker::LOOKUP_FAILED)
-					   m_Suggestions = checker->suggestWord(m_pWord, m_iWordLength);
-				   // If it didn't have any, create an empty vector
-				   if(!m_Suggestions)
-				   {
-					   m_Suggestions = new UT_Vector();
-				   }
-				   // Get suggestions from user's AbiWord file
+					_purgeSuggestions();
+
+					// create an empty vector
+					UT_ASSERT(!m_Suggestions);
+
+					m_Suggestions = new UT_Vector();
+					UT_ASSERT(m_Suggestions);
+
+					// get suggestions from spelling engine
+					const UT_Vector *cpvEngineSuggestions;
+
+					if (checker->checkWord(m_pWord, m_iWordLength) == SpellChecker::LOOKUP_FAILED)
+					{
+						cpvEngineSuggestions = checker->suggestWord(m_pWord, m_iWordLength);
+
+				   		for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
+						{
+							const UT_UCSChar *sug = static_cast<const UT_UCSChar *>(cpvEngineSuggestions->getNthItem(i));
+							UT_ASSERT(sug);
+							m_Suggestions->addItem(sug);
+						}
+					}
+
+				   // add suggestions from user's AbiWord file
 				   pApp->suggestWord(m_Suggestions, m_pWord, m_iWordLength);
 
 				   // update sentence boundaries (so we can display

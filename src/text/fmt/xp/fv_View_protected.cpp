@@ -3903,89 +3903,110 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 
 	// TODO these should really be static members, so we can properly
 	// clean up
-	static fl_BlockLayout * pLastBL = 0;
-	static fl_PartOfBlock * pLastPOB = 0;
-	static UT_Vector * pSuggestionCache = 0;
+	static fl_BlockLayout * s_pLastBL = 0;
+	static fl_PartOfBlock * s_pLastPOB = 0;
+	static const UT_Vector * s_pvCachedSuggestions = 0;
 
-	if (pBL == pLastBL && pLastPOB == pPOB)
+	// can we use the cached suggestions?
+	if (pBL != s_pLastBL || pPOB != s_pLastPOB)
 	{
-		if ((pSuggestionCache->getItemCount()) &&
-			( ndx <= pSuggestionCache->getItemCount()))
+		// no we cannot, so we empty and invalidate the cache
+		if (s_pvCachedSuggestions)
 		{
-			UT_UCS4_cloneString(&szSuggest,
-							   static_cast<UT_UCSChar *>(pSuggestionCache->getNthItem(ndx-1)));
-		}
-		return szSuggest;
-	}
+			// clean up
+			for (UT_uint32 i = 0; i < s_pvCachedSuggestions->getItemCount(); i++)
+			{
+				UT_UCSChar * sug = static_cast<UT_UCSChar *>(s_pvCachedSuggestions->getNthItem(i));
+				FREEP(sug);
+			}
 
-	if (pSuggestionCache) // got here, so we need to invalidate the cache
-	{
-		// clean up
-		for (UT_uint32 i = 0; i < pSuggestionCache->getItemCount(); i++)
-		{
-			UT_UCSChar * sug = static_cast<UT_UCSChar *>(pSuggestionCache->getNthItem(i));
-			FREEP(sug);
+			s_pLastBL = 0;
+			s_pLastPOB = 0;
+			DELETEP(s_pvCachedSuggestions);
 		}
 
-		pLastBL = 0;
-		pLastPOB = 0;
-		DELETEP(pSuggestionCache);
-	}
+		// grab a copy of the word
+		UT_GrowBuf pgb(1024);
+		bool bRes = pBL->getBlockBuf(&pgb);
+		UT_ASSERT(bRes);
 
-	// grab a copy of the word
-	UT_GrowBuf pgb(1024);
-	bool bRes = pBL->getBlockBuf(&pgb);
-	UT_ASSERT(bRes);
-
-	const UT_UCSChar * pWord = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
-
-	// lookup suggestions
-	UT_Vector * sg = 0;
-
-	UT_UCSChar theWord[INPUTWORDLEN + 1];
-	// convert smart quote apostrophe to ASCII single quote to be
-	// compatible with ispell
-	UT_uint32 len = pPOB->getLength();
-	for (UT_uint32 ldex=0; ldex < len && ldex < INPUTWORDLEN; ldex++)
-	{
-		UT_UCSChar currentChar;
-		currentChar = *(pWord + ldex);
-		if (currentChar == UCS_RQUOTE) currentChar = '\'';
-		theWord[ldex] = currentChar;
-	}
-
-	{
-		SpellChecker * checker = getDictForSelection ();
-		if (checker->checkWord(theWord, pPOB->getLength()) == SpellChecker::LOOKUP_FAILED)
-			sg = checker->suggestWord (theWord, pPOB->getLength());
-		if(sg)
-			 m_pApp->suggestWord(sg,theWord, pPOB->getLength());
-	}
-
-	if (!sg)
-	{
-		UT_DEBUGMSG(("DOM: no suggestions returned in main dictionary \n"));
-		DELETEP(sg);
-		sg = new UT_Vector();
-		m_pApp->suggestWord(sg,theWord, pPOB->getLength());
-		if(sg->getItemCount() == 0)
+		UT_UCS4String stMisspelledWord;
+		// convert smart quote apostrophe to ASCII single quote to be
+		// compatible with ispell
+		const UT_UCSChar * pWord = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
+		UT_uint32 len = pPOB->getLength();
+		for (UT_uint32 ldex=0; ldex < len && ldex < INPUTWORDLEN; ldex++)
 		{
-			 DELETEP(sg);
-			 return 0;
+			stMisspelledWord += *pWord == UCS_RQUOTE ? '\'' : *pWord;
+			++pWord;
 		}
 
+		// get language code for misspelled word
+		const char * szLang = NULL;
+
+		const XML_Char ** props_in = NULL;
+
+		if (getCharFormat(&props_in))
+		{
+			szLang = UT_getAttribute("lang", props_in);
+			FREEP(props_in);
+		}
+
+		// get spellchecker engine for language code
+		SpellChecker * checker = NULL;
+
+		if (szLang)
+		{
+			// we get smart and request the proper dictionary
+			checker = SpellManager::instance().requestDictionary(szLang);
+		}
+		else
+		{
+			// we just (dumbly) default to the last dictionary
+			// TODO this is known to return the wrong dictionary sometimes in multilanguge docs
+			checker = SpellManager::instance().lastDictionary();
+		}
+
+		// lookup suggestions
+
+		// create an empty vector
+		UT_Vector * pvFreshSuggestions = 0;
+		UT_ASSERT(!pvFreshSuggestions);
+
+		pvFreshSuggestions = new UT_Vector();
+		UT_ASSERT(pvFreshSuggestions);
+
+		if (checker->checkWord(stMisspelledWord.ucs4_str(), pPOB->getLength()) == SpellChecker::LOOKUP_FAILED)
+		{
+			// get suggestions from spelling engine
+			const UT_Vector *cpvEngineSuggestions;
+
+			cpvEngineSuggestions = checker->suggestWord (stMisspelledWord.ucs4_str(), pPOB->getLength());
+
+			for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
+			{
+				const UT_UCSChar *sug = static_cast<const UT_UCSChar *>(cpvEngineSuggestions->getNthItem(i));
+				UT_ASSERT(sug);
+				pvFreshSuggestions->addItem(sug);
+			}
+
+			// add suggestions from user's AbiWord file
+			 m_pApp->suggestWord(pvFreshSuggestions,stMisspelledWord.ucs4_str(), pPOB->getLength());
+		}
+
+		// update static vars for next call
+		s_pvCachedSuggestions = pvFreshSuggestions;
+		s_pLastBL = pBL;
+		s_pLastPOB = pPOB;
 	}
 
-	// we currently return all requested suggestions
-	if ((sg->getItemCount()) &&
-		( ndx <= sg->getItemCount()))
+	// return the indexed suggestion from the cache
+	if ((s_pvCachedSuggestions->getItemCount()) &&
+		( ndx <= s_pvCachedSuggestions->getItemCount()))
 	{
 		UT_UCS4_cloneString(&szSuggest, static_cast<UT_UCSChar *>(sg->getNthItem(ndx-1)));
 	}
 
-	pSuggestionCache = sg;
-	pLastBL = pBL;
-	pLastPOB = pPOB;
 	return szSuggest;
 }
 
