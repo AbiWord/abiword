@@ -327,7 +327,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		    const char * suffix = UT_pathSuffix(szFilename) ;
 		    if ( suffix != NULL )
 			{
-				suffix_confidence = s->recognizeSuffix(UT_pathSuffix(szFilename));
+				suffix_confidence = s->recognizeSuffix(suffix);
 			}
 		    
 		    UT_Confidence_t confidence = s_confidence_heuristic ( content_confidence, 
@@ -730,7 +730,8 @@ public:
 	}
 	
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) {
-		return (!UT_stricmp (szSuffix, m_suffix.utf8_str()) ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_POOR);
+	  // skip over "*"
+		return (!UT_stricmp (szSuffix, (m_suffix.utf8_str() + 1)) ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_POOR);
 	}
 
 	virtual bool getDlgLabels (const char ** szDesc,
