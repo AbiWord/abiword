@@ -2373,7 +2373,7 @@ msgstr ""
 #. DLG_Styles_NewTitle
 #: po/tmp/ap_String_Id.h.h:911
 msgid "New Style"
-msgstr "Nouveau tyle"
+msgstr "Nouveau style"
 
 #. DLG_Styles_New
 #: po/tmp/ap_String_Id.h.h:913
