@@ -45,7 +45,7 @@
 #include "pp_Property.h"
 
 AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogparagraph.html")
 {
 	m_answer = a_OK;
 	m_paragraphPreview = NULL;

@@ -39,17 +39,22 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
  protected:
-
+	typedef enum
+	{
+		BUTTON_OK,
+		BUTTON_CANCEL
+	} ResponseId ;
+	
 	virtual GtkWidget * constructWindow () ;
 
 	static void ok_callback ( GtkWidget*, AP_UnixDialog_MarkRevisions * me)
 	  {
-	    me->event_Ok () ;
+	    me->event_OK () ;
 	  }
 
 	static void cancel_callback ( GtkWidget*, AP_UnixDialog_MarkRevisions * me)
 	  {
-	    me->event_Ok () ;
+	    me->event_OK () ;
 	  }
 	
 	static void destroy_callback ( GtkWidget*, gpointer unused, AP_UnixDialog_MarkRevisions * me)
@@ -62,7 +67,7 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 	    me->event_FocusToggled () ;
 	  }
 
-	void event_Ok () ;
+	void event_OK () ;
 	void event_Cancel () ;
 	void event_FocusToggled () ;
 

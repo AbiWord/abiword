@@ -39,7 +39,7 @@
 #include "ap_TopRuler.h"		// for AP_TopRulerInfo
 
 AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_OK), m_pFrame(0),
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogtabs.html"), m_answer(a_OK), m_pFrame(0),
 	  m_pCallbackFn(0), m_closure(0)
 {
 }

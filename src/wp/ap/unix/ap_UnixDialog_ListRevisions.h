@@ -39,13 +39,18 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
  protected:
-
+	typedef enum
+	{
+		BUTTON_OK,
+		BUTTON_CANCEL
+	} ResponseId ;
+	
 	virtual GtkWidget * constructWindow () ;
 
 	static void ok_callback ( GtkWidget *, AP_UnixDialog_ListRevisions * me )
 	  {
 	    UT_return_if_fail ( me ) ;
-	    me->event_Ok () ;
+	    me->event_OK () ;
 	  }
 
 	static void cancel_callback ( GtkWidget *, AP_UnixDialog_ListRevisions * me )
@@ -77,11 +82,11 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	    // Only respond to double clicks
 	    if (event->type == GDK_2BUTTON_PRESS)
 	      {
-		me->event_Ok();
+		me->event_OK();
 	      }
 	  }
 
-	void event_Ok () ;
+	void event_OK () ;
 	void event_Cancel () ;
 
  private:

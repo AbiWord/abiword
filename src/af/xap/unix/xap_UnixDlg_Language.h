@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,14 +40,20 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	GtkWidget * 			m_pLanguageList;
-
 protected:
+
+	typedef enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
 	
 	// these are Glade helper or Glade generated functions
 	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
 	virtual GtkWidget *             constructWindow(void);
-	GtkWidget *                     constructWindowContents(GtkObject *);
+	GtkWidget *                     constructWindowContents(GtkWidget *);
+
+	GtkWidget * 			m_pLanguageList;
 
 };
 

@@ -62,7 +62,7 @@ static void s_radio_toggled (GtkWidget * w, GtkWidget * c)
 {
   GtkCList * clist = GTK_CLIST (c);
   gboolean b = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w));
-  int row = GPOINTER_TO_INT (gtk_object_get_user_data (G_OBJECT (w)));
+  int row = GPOINTER_TO_INT (gtk_object_get_user_data (GTK_OBJECT (w)));
 
   xxx_UT_DEBUGMSG(("DOM: toggled row: %d val: %d\n", row, b));
 
@@ -154,7 +154,7 @@ void AP_UnixDialog_Options::event_clistClicked (int row, int col)
   GtkCList * clist = GTK_CLIST (m_toolbarClist);
   bool b = (bool)GPOINTER_TO_INT(gtk_clist_get_row_data (clist, row));
 
-  gtk_object_set_user_data (G_OBJECT(m_checkbuttonViewShowTB), GINT_TO_POINTER(row));
+  gtk_object_set_user_data (GTK_OBJECT(m_checkbuttonViewShowTB), GINT_TO_POINTER(row));
   xxx_UT_DEBUGMSG (("DOM: setting row %d to %d\n", row, b));
 
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_checkbuttonViewShowTB), (b ? TRUE : FALSE));
@@ -413,7 +413,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *hbox26;
 	GtkWidget *hbox27;
 	GtkWidget *autosave_cb;
-	GObject *autosave_time_adj;
+	GtkObject *autosave_time_adj;
 	GtkWidget *autosave_time;
 	GtkWidget *frame44;
 	GtkWidget *check_splash;
@@ -1106,7 +1106,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 	mainWindow = gtk_dialog_new ();
 	gtk_window_set_title (GTK_WINDOW (mainWindow), pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle));
-	GTK_WINDOW (mainWindow)->type = GTK_WINDOW_DIALOG;
 	gtk_window_set_policy (GTK_WINDOW (mainWindow), TRUE, TRUE, FALSE);
 
 	hbuttonbox = gtk_hbutton_box_new ();

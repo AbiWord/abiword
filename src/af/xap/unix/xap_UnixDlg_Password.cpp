@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2000-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,51 +39,33 @@
 
 /*****************************************************************/
 
-static void s_delete_clicked(GtkWidget * widget,
-			     gpointer data ,
-			     XAP_UnixDialog_Password* dlg)
-{
-  dlg->event_Cancel ();
-}
-
-static void s_ok_clicked( GtkWidget * widget, XAP_UnixDialog_Password* dlg)
-{
-  dlg->event_Ok ();
-}
-
-static void s_cancel_clicked (GtkWidget * w, XAP_UnixDialog_Password* dlg)
-{
-  dlg->event_Cancel ();
-}
-
 void XAP_UnixDialog_Password::event_Ok ()
 {
   UT_String pass ( gtk_entry_get_text (GTK_ENTRY(mTextEntry)) );
-  
-  UT_DEBUGMSG(("ok: %s\n", pass.c_str()));
-
   setPassword (pass);
   setAnswer(XAP_Dialog_Password::a_OK);
-  gtk_main_quit ();
+}
+
+void XAP_UnixDialog_Password::event_Return()
+{
+  gtk_dialog_response ( GTK_DIALOG ( mMainWindow ), BUTTON_OK ) ;
 }
 
 void XAP_UnixDialog_Password::event_Cancel ()
 {
-  UT_DEBUGMSG(("cancel\n"));
   setAnswer(XAP_Dialog_Password::a_Cancel);
-  gtk_main_quit ();
 }
 
 XAP_Dialog * XAP_UnixDialog_Password::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+							 XAP_Dialog_Id id)
 {
   XAP_UnixDialog_Password * p = new XAP_UnixDialog_Password(pFactory,id);
   return p;
 }
 
 XAP_UnixDialog_Password::XAP_UnixDialog_Password(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: XAP_Dialog_Password(pDlgFactory,id)
+						 XAP_Dialog_Id id)
+  : XAP_Dialog_Password(pDlgFactory,id)
 {
 }
 
@@ -93,36 +75,22 @@ XAP_UnixDialog_Password::~XAP_UnixDialog_Password(void)
 
 void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+  // build the dialog
+  GtkWidget * cf = _constructWindow();
 
-	// build the dialog
-	GtkWidget * cf = _constructWindow();
-	UT_ASSERT(cf);
-	connectFocus(GTK_WIDGET(cf),pFrame);
-
-	// get top level window and its GtkWidget *
-	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
-
-	// center it
-	centerDialog(parent, cf);
+  gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
+  
+  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, false ) )
+    {
+    case BUTTON_OK:
+      event_Ok() ; break ;
+    default:
+      event_Cancel() ; break;
+    }
 	
-	// Run the dialog
-	gtk_widget_show (cf);
-	gtk_grab_add (cf);
+  gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 
-	// grab focus from the keyboard to the current window
-	// reduces chances of password snooping
-	gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
-
-	gtk_main();
-	
-	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
-
-	if (cf && GTK_IS_WIDGET(cf))
-	  gtk_widget_destroy (cf);
+  abiDestroyWidget(cf);
 }
 
 void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
@@ -144,8 +112,8 @@ void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
   gtk_widget_grab_focus(password);
 
   g_signal_connect (G_OBJECT(password), "activate",
-                     G_CALLBACK(s_ok_clicked),
-                     (gpointer)this);
+		    G_CALLBACK(s_return_hit),
+		    (gpointer)this);
 
   mTextEntry = password;
 }
@@ -155,19 +123,10 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
   GtkWidget * dialog1;
   GtkWidget * dialog_vbox1;
   GtkWidget * hbox1;
-  GtkWidget * ok_btn;
-  GtkWidget * cancel_btn;
-  GtkWidget * hbuttonbox1;
-  GtkWidget * dialog_action_area1;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  dialog1 = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (dialog1), 
-			pSS->getValue(XAP_STRING_ID_DLG_Password_Title));
-  gtk_window_set_position (GTK_WINDOW (dialog1), GTK_WIN_POS_CENTER);
-  gtk_window_set_modal (GTK_WINDOW (dialog1), TRUE);
-  gtk_window_set_policy (GTK_WINDOW (dialog1), TRUE, TRUE, FALSE);
+  dialog1 = abiDialogNew ( TRUE, pSS->getValue(XAP_STRING_ID_DLG_Password_Title));
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
   gtk_widget_show (dialog_vbox1);
@@ -178,44 +137,8 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 
   _constructWindowContents (hbox1);
 
-  dialog_action_area1 = GTK_DIALOG (dialog1)->action_area;
-  gtk_widget_show (dialog_action_area1);
-  gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
-
-  hbuttonbox1 = gtk_hbutton_box_new ();
-  gtk_widget_show (hbuttonbox1);
-  gtk_box_pack_start (GTK_BOX (dialog_action_area1), hbuttonbox1, TRUE, TRUE, 0);
-
-  ok_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_show (ok_btn);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox1), ok_btn);
-  GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
-
-  cancel_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show (cancel_btn);
-  gtk_container_add (GTK_CONTAINER (hbuttonbox1), cancel_btn);
-  GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
-
-  g_signal_connect_after(G_OBJECT(dialog1),
-			   "destroy",
-			   NULL,
-			   NULL);
-  
-  g_signal_connect(G_OBJECT(dialog1),
-		     "delete_event",
-		     G_CALLBACK(s_delete_clicked),
-		     (gpointer) this);
-
-  g_signal_connect (G_OBJECT(ok_btn), "clicked",
-		      G_CALLBACK(s_ok_clicked), 
-		      (gpointer)this);
-  
-  g_signal_connect (G_OBJECT(cancel_btn), "clicked",
-		      G_CALLBACK(s_cancel_clicked), 
-		      (gpointer)this);
-
-  GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
-  GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
+  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
   mMainWindow = dialog1;
 

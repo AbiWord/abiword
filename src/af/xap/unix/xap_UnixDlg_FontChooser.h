@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -80,6 +80,13 @@ public:
 	bool		 			m_doneFirstFont;
 
 protected:
+	
+	typedef enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
+
 	// careful, these must be in the order the
 	// list box will show them (Windows order)
 	typedef enum
@@ -93,9 +100,8 @@ protected:
 
 	// these are Glade helper or Glade generated functions
 	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
-	void 					set_notebook_tab(GtkWidget * notebook, gint page_num, GtkWidget * widget);
 	virtual GtkWidget *             constructWindow(void);
-	GtkWidget *                     constructWindowContents(GtkObject *);
+	GtkWidget *                     constructWindowContents(GtkWidget *);
 
 	// a temporary font to hold dynamically allocated "rented"
 	// fonts between style changes

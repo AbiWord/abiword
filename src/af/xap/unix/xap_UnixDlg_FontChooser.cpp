@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -105,25 +105,11 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 	GtkColorSelection * colorSelector;
 
 	colorSelector = (GtkColorSelection *) g_object_get_data(G_OBJECT(area), "_GtkColorSelection");
-
-	// these were stolen from gtkcolorsel.c, are private data,
-	// and as such are subject to immediate change and breakage
-	// without any warning.  the things we do for the user.  :)
-	enum
-	{
-		HUE,
-		SATURATION,
-		VALUE,
-		RED,
-		GREEN,
-		BLUE,
-		OPACITY,
-		NUM_CHANNELS
-	};
-
-	switch (event->type)
+	
+    switch (event->type)
     {
     case GDK_BUTTON_PRESS:
+#if 0
 		// if the color is black (RGB:0,0,0), and someone clicked on
 		// the wheel, and since the wheel has no black area,
 		// snap the value up high
@@ -145,6 +131,7 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 			// snap the "value" slider high
 			GTK_COLOR_SELECTION(colorSelector)->values[VALUE] = 1.0;
 		}
+#endif
 		break;
 	default:
 		break;
@@ -170,27 +157,6 @@ static gint s_bgcolor_update(GtkWidget * /* widget */,
 	UT_ASSERT(dlg);
 	dlg->bgColorChanged();
 	return FALSE;
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 XAP_Dialog_FontChooser::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FontChooser::a_CANCEL;
-	gtk_main_quit();
-}
-
-static void s_ok_clicked(GtkWidget * /* widget */,
-						 XAP_Dialog_FontChooser::tAnswer * answer)
-{	*answer = XAP_Dialog_FontChooser::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-							 XAP_Dialog_FontChooser::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FontChooser::a_CANCEL;
-	gtk_main_quit();
 }
 
 static void s_select_row_font(GtkWidget * /* widget */,
@@ -233,7 +199,7 @@ static gint s_drawing_area_expose(GtkWidget * w,
 								  GdkEventExpose * /* pExposeEvent */)
 {
 	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
-		                              gtk_object_get_user_data(G_OBJECT(w));
+		                              gtk_object_get_user_data(GTK_OBJECT(w));
 
 //
 // Look if updates are blocked and quit if they are.
@@ -445,23 +411,6 @@ void XAP_UnixDialog_FontChooser::bgColorChanged(void)
 	updatePreview();
 }
 
-
-// Glade helper function
-void XAP_UnixDialog_FontChooser::set_notebook_tab(GtkWidget * notebook, gint page_num,
-												 GtkWidget * widget)
-{
-	GtkNotebookPage *page;
-	GtkWidget *notebook_page;
-
-	page = (GtkNotebookPage*) g_list_nth (GTK_NOTEBOOK (notebook)->children, page_num)->data;
-	notebook_page = page->child;
-	gtk_widget_ref (notebook_page);
-	gtk_notebook_remove_page (GTK_NOTEBOOK (notebook), page_num);
-	gtk_notebook_insert_page (GTK_NOTEBOOK (notebook), notebook_page,
-							  widget, page_num);
-	gtk_widget_unref (notebook_page);
-}
-
 GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -469,64 +418,22 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	GtkWidget *vboxMain;
 	GtkWidget *vboxOuter;
 
-	GtkWidget *fixedButtons;
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
+	windowFontSelection = abiDialogNew ( FALSE, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle) ) ;
 
-	windowFontSelection = gtk_window_new (GTK_WINDOW_DIALOG);
-	g_object_set_data (G_OBJECT (windowFontSelection), "windowFontSelection", windowFontSelection);
-	gtk_window_set_title (GTK_WINDOW (windowFontSelection), pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowFontSelection), FALSE, TRUE, FALSE);
+	vboxOuter = GTK_DIALOG(windowFontSelection)->vbox;
 
-	vboxOuter = gtk_vbox_new (FALSE, 0);
-	g_object_set_data (G_OBJECT (windowFontSelection), "vboxOuter", vboxOuter);
-	gtk_widget_show (vboxOuter);
-	gtk_container_add (GTK_CONTAINER (windowFontSelection), vboxOuter);
-
-	vboxMain = constructWindowContents(G_OBJECT (windowFontSelection));
+	vboxMain = constructWindowContents(vboxOuter);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
-	fixedButtons = gtk_fixed_new ();
-	g_object_set_data (G_OBJECT (windowFontSelection), "fixedButtons", fixedButtons);
-	gtk_widget_show (fixedButtons);
-	gtk_box_pack_start (GTK_BOX (vboxOuter), fixedButtons, FALSE, TRUE, 0);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	g_object_set_data (G_OBJECT (windowFontSelection), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-	gtk_widget_grab_default (buttonOK);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	g_object_set_data (G_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
-
-	g_signal_connect_after(G_OBJECT(windowFontSelection),
-							  "destroy",
-							  NULL,
-							  NULL);
-	g_signal_connect(G_OBJECT(windowFontSelection),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) &m_answer);
-
-	g_signal_connect(G_OBJECT(buttonOK),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) &m_answer);
-	g_signal_connect(G_OBJECT(buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) &m_answer);
+	abiAddStockButton ( GTK_DIALOG(windowFontSelection), GTK_STOCK_OK, BUTTON_OK ) ;
+	abiAddStockButton ( GTK_DIALOG(windowFontSelection), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 
 	return windowFontSelection;
 }
 
 // Glade generated dialog, using fixed widgets to closely match
 // the Windows layout, with some changes for color selector
-GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GObject *parent)
+GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *parent)
 {
 	GtkWidget *vboxMain;
 	GtkWidget *notebookMain;
@@ -566,16 +473,14 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GObject *parent)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	vboxMain = gtk_vbox_new (FALSE, 0);
-	g_object_set_data (parent, "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
 
 	notebookMain = gtk_notebook_new ();
-	g_object_set_data (parent, "notebookMain", notebookMain);
 	gtk_widget_show (notebookMain);
 	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, 1, 1, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
 
-	GObject *window1 = parent;
+	GtkWidget *window1 = parent;
   	GtkWidget *table1;
   	GtkWidget *vbox1;
 
@@ -723,12 +628,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GObject *parent)
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 	frameEffects = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel));
-	g_object_set_data (parent, "frameEffects", frameEffects);
 	gtk_widget_show (frameEffects);
 	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
 
 	hboxDecorations = gtk_hbox_new (FALSE, 0);
-	g_object_set_data (parent, "hboxDecorations", hboxDecorations);
 	gtk_widget_show (hboxDecorations);
 	gtk_container_add (GTK_CONTAINER (frameEffects), hboxDecorations);
 
@@ -896,6 +799,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GObject *parent)
 					   G_CALLBACK(s_select_row_size),
 					   (gpointer) this);
 
+#if ABI_GTK_DEPRECATED
 	// we catch the color tab's wheel click event so we can do some nasty
 	// trickery with the value slider, so that when the user first does
 	// some wheel work, the value soars to 100%, instead of 0%, so the
@@ -905,22 +809,24 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GObject *parent)
 	// any other native color selector events get the chance to change
 	// things on us
 	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorSelector)->wheel_area),
-							 "event",
-							 G_CALLBACK(s_color_wheel_clicked),
-							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
-
+			       "event",
+			       G_CALLBACK(s_color_wheel_clicked),
+			       (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
+	
 	g_signal_connect_after(G_OBJECT(GTK_COLOR_SELECTION(colorBGSelector)->wheel_area),
-							 "event",
-							 G_CALLBACK(s_color_wheel_clicked),
-							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
+			       "event",
+			       G_CALLBACK(s_color_wheel_clicked),
+			       (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
+#endif //ABI_GTK_DEPRECATED	
+
 
 	// This is a catch-all color selector callback which catches any
 	// real-time updating of the color so we can refresh our preview
 	// text
 	g_signal_connect(G_OBJECT(colorSelector),
-					   "event",
-					   G_CALLBACK(s_color_update),
-					   (gpointer) this);
+			 "event",
+			 G_CALLBACK(s_color_update),
+			 (gpointer) this);
 
 	g_signal_connect(G_OBJECT(colorBGSelector),
 					   "event",
@@ -961,9 +867,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GObject *parent)
 void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
-	UT_ASSERT(m_pUnixFrame);
-
-	UT_ASSERT(m_pApp);
 
 	// this is used many times below to grab pointers to
 	// strings inside list elements
@@ -973,8 +876,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// Set up our own color space so we work well on 8-bit
 	// displays.
-//    gtk_widget_push_visual(gtk_preview_get_visual());
-//    gtk_widget_push_colormap(gtk_preview_get_cmap());
 
 	// establish the font manager before dialog creation
 #ifndef WITH_PANGO
@@ -989,8 +890,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// build the dialog
 	GtkWidget * cf = constructWindow();
-	UT_ASSERT(cf);
-	connectFocus(GTK_WIDGET(cf),pFrame);
 
 	// freeze updates of the preview
 	m_blockUpdate = true;
@@ -1134,23 +1033,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkOverline), m_bOverline);
 
-	// get top level window and its GtkWidget *
-	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
-	// center it
-    centerDialog(parent, GTK_WIDGET(cf));
-
-	// Run the dialog
-	gtk_widget_show(GTK_WIDGET(cf));
-	gtk_grab_add(GTK_WIDGET(cf));
-
 	m_doneFirstFont = true;
 
 	// attach a new graphics context
 #ifndef WITH_PANGO
-	XAP_App *pApp = frame->getApp();
+	XAP_App *pApp = pFrame->getApp();
 	m_gc = new GR_UnixGraphics(m_preview->window, m_fontManager, pApp);
 #endif
 	_createFontPreviewFromGC(m_gc,m_preview->allocation.width,m_preview->allocation.height);
@@ -1158,30 +1045,30 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 // This enables callbacks on the preview area with a widget pointer to
 // access this dialog.
 //
-	gtk_object_set_user_data(G_OBJECT(m_preview), this);
+	gtk_object_set_user_data(GTK_OBJECT(m_preview), this);
 
 	// unfreeze updates of the preview
 	m_blockUpdate = false;
 	// manually trigger an update
 	updatePreview();
 
-	gtk_main();
-
-//
-// This is fail-safe code. The member variables should already be set to these
-// values from event callbacks.
-//
-
-
-	if(cf && GTK_IS_WIDGET(cf))
-	  gtk_widget_destroy (GTK_WIDGET(cf));
+	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, true ) )
+	  {
+	  case BUTTON_OK:
+	    {
+	      m_answer = a_OK;
+	      break ;
+	    }
+	  default:
+	    {
+	      m_answer = a_CANCEL;
+	      break;
+	    }
+	  }
 
 	// these dialogs are cached around through the dialog framework,
 	// and this variable needs to get set back
 	m_doneFirstFont = false;
-
-//    gtk_widget_pop_visual();
-//    gtk_widget_pop_colormap();
 
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
 				 ((getVal("font-family")) ? getVal("font-family") : ""),	((m_bChangedFontFamily) ? "(chg)" : ""),

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,10 +40,15 @@ public:
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 protected:
 
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
 	void		_populateWindowData(void);
@@ -57,10 +62,6 @@ protected:
 
 	// group of radio buttons for easy traversal
 	GSList *	m_radioGroup;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-
 };
 
 #endif /* AP_UNIXDIALOG_BREAK_H */

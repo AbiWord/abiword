@@ -531,7 +531,7 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowStyles = gtk_window_new (GTK_WINDOW_DIALOG);
+	windowStyles = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (windowStyles), 
 		pSS->getValue(AP_STRING_ID_DLG_Styles_StylesTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowStyles), FALSE, FALSE, TRUE);
@@ -1322,7 +1322,7 @@ void AP_UnixDialog_Styles::new_styleName(void)
 {
 	static char message[200];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
+	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
 	if(psz && strcmp(psz,pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone))== 0)
 	{
 			// TODO: do a real error dialog
@@ -1347,7 +1347,7 @@ void AP_UnixDialog_Styles::new_styleName(void)
  */
 void AP_UnixDialog_Styles::event_RemoveProperty(void)
 {
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wDeletePropEntry));
+	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wDeletePropEntry));
 	removeVecProp(psz);
 	rebuildDeleteProps();
 	updateCurrentStyle();
@@ -1377,7 +1377,7 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
  */
 void AP_UnixDialog_Styles::event_basedOn(void)
 {
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
+	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
 	g_snprintf((gchar *) m_basedonName,40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
 	fillVecWithProps(getBasedonName(),false);
@@ -1390,7 +1390,7 @@ void AP_UnixDialog_Styles::event_basedOn(void)
  */
 void AP_UnixDialog_Styles::event_followedBy(void)
 {
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
+	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
 	g_snprintf((gchar *) m_followedbyName,40,"%s",psz);
 	addOrReplaceVecAttribs("followedby",getFollowedbyName());
 }
@@ -1402,7 +1402,7 @@ void AP_UnixDialog_Styles::event_followedBy(void)
 void AP_UnixDialog_Styles::event_styleType(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
+	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
 	g_snprintf((gchar *) m_styleType,40,"%s",psz);
 	const XML_Char * pszSt = "P";
 	if(strstr(m_styleType, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)

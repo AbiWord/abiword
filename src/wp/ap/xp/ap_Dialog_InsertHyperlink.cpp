@@ -23,7 +23,7 @@
 
 AP_Dialog_InsertHyperlink::AP_Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_CANCEL), m_pHyperlink(0)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoghyperlink.html"), m_answer(a_CANCEL), m_pHyperlink(0)
 {
 }
 

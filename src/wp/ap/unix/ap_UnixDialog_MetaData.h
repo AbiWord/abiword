@@ -42,28 +42,18 @@ class AP_UnixDialog_MetaData: public AP_Dialog_MetaData
   void eventCancel () ;
   void eventOK () ;
 
-  static void ok_callback ( GtkObject * o, AP_UnixDialog_MetaData * me )
-    {
-      me->eventOK () ;
-    }
-
-  static void cancel_callback ( GtkObject * o, AP_UnixDialog_MetaData * me )
-    {
-      me->eventCancel () ;
-    }
-
-  static void delete_callback ( GtkObject *o, gpointer data,
-				AP_UnixDialog_MetaData * me )
-    {
-      me->eventCancel () ;
-    }
-
   virtual GtkWidget * _constructWindow () ;
 
   void _constructWindowContents ( GtkWidget * container ) ;
 
  private:  
 
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
   GtkWidget * m_entryTitle ;
   GtkWidget * m_entrySubject ;
   GtkWidget * m_entryAuthor ;

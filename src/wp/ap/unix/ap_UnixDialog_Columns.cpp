@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,8 +54,6 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XA
 {
 	m_windowMain = NULL;
 
-	m_wbuttonOk = NULL;
-	m_wbuttonCancel = NULL;
 	m_wlineBetween = NULL;
 	m_wtoggleOne = NULL;
 	m_wtoggleTwo = NULL;
@@ -82,83 +80,69 @@ AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_OK();
-}
-
-
-static void s_one_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Toggle(1);
-}
-
-
 static void s_two_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->event_Toggle(2);
 }
 
 
 static void s_three_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->event_Toggle(3);
 }
 
 static void s_spin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->readSpin();
 }
 
 
 static void s_HeightSpin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->doHeightSpin();
 }
 
 
 static void s_SpaceAfterSpin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->doSpaceAfterSpin();
 }
 
 
 static void s_SpaceAfterEntry_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->doSpaceAfterEntry();
 }
 
 
 static void s_MaxHeightEntry_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->doMaxHeightEntry();
 }
 
 
 static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->checkLineBetween();
 }
 
 static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->event_Cancel();
 }
 
 static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
 	return FALSE;
 }
@@ -166,34 +150,35 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 
 static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
-	UT_ASSERT(widget && dlg);
+	UT_return_if_fail(widget && dlg);
 	dlg->event_previewExposed();
 	return FALSE;
 }
 
-
-static void s_delete_clicked(GtkWidget * /* widget */, gpointer /* data */,
-			     AP_UnixDialog_Columns * dlg)
+static void s_one_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
+	UT_return_if_fail(widget && dlg);
+	dlg->event_Toggle(1);
 }
+
 
 /*****************************************************************/
 
 void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 {
-
+	UT_return_if_fail(pFrame);
+	
 	setViewAndDoc(pFrame);
 
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	UT_return_if_fail(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+	// ***show*** before creating gc's
+	gtk_widget_show ( mainWindow ) ;
+
 	// Populate the window's data items
 	_populateWindowData();
-	// To center the dialog, we need the frame of its parent.
 
     g_signal_handler_block(G_OBJECT(m_wSpaceAfterEntry), m_iSpaceAfterID);
 	gtk_entry_set_text( GTK_ENTRY(m_wSpaceAfterEntry),getSpaceAfterString() );
@@ -203,29 +188,11 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 	g_signal_handler_unblock(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
 
-	UT_ASSERT(m_wpreviewArea && m_wpreviewArea->window);
+	UT_return_if_fail(m_wpreviewArea && m_wpreviewArea->window);
 
 	// make a new Unix GC
 	DELETEP (m_pPreviewWidget);
@@ -239,30 +206,35 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// let the widget materialize
 
 	_createPreviewFromGC(m_pPreviewWidget,
-			     (UT_uint32) m_wpreviewArea->allocation.width,
-			     (UT_uint32) m_wpreviewArea->allocation.height);
-
+						 (UT_uint32) m_wpreviewArea->allocation.width,
+						 (UT_uint32) m_wpreviewArea->allocation.height);
+	
 	setLineBetween(getLineBetween());
 	if(getLineBetween()==true)
 	{
-	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wlineBetween),TRUE);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wlineBetween),TRUE);
 	}
 	// Now draw the columns
 
 	event_Toggle(getColumns());
 
-        // Run into the GTK event loop for this window.
+	// Run into the GTK event loop for this window.
 
-	gtk_main();
-
+	switch( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false ) )
+	{
+		case BUTTON_OK:
+			event_OK () ; break ;
+		default:
+			event_Cancel () ; break ;
+	}
+	
 	setColumnOrder (gtk_toggle_button_get_active(
-				GTK_TOGGLE_BUTTON(m_checkOrder)));
+												 GTK_TOGGLE_BUTTON(m_checkOrder)));
 
 	_storeWindowData();
 	DELETEP (m_pPreviewWidget);
 
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	abiDestroyWidget(mainWindow);
 }
 
 void AP_UnixDialog_Columns::checkLineBetween(void)
@@ -393,7 +365,6 @@ void AP_UnixDialog_Columns::event_OK(void)
 {
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Columns::a_OK;
-	gtk_main_quit();
 }
 
 
@@ -430,13 +401,6 @@ void AP_UnixDialog_Columns::doSpaceAfterEntry(void)
 void AP_UnixDialog_Columns::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Columns::a_CANCEL;
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_Columns::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_Columns::a_CANCEL;
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_Columns::event_previewExposed(void)
@@ -452,31 +416,15 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 
 	GtkWidget * windowColumns;
 
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	//	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowColumns = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_window_set_title (GTK_WINDOW (windowColumns), pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowColumns), FALSE, FALSE, FALSE);
+	windowColumns = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle) ) ;
 
-	_constructWindowContents(windowColumns);
+	_constructWindowContents(GTK_DIALOG(windowColumns)->vbox);
 
-	// These buttons need to be gnomified
-	buttonOK = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show(buttonOK );
-	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonOK);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label ( pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show(buttonCancel );
-	gtk_container_add (GTK_CONTAINER (m_wGnomeButtons), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-
-	m_wbuttonOk = buttonOK;
-	m_wbuttonCancel = buttonCancel;
+	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_OK, BUTTON_OK ) ;
+	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 
 	_connectsignals();
 	return windowColumns;
@@ -679,7 +627,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(SpinLabelAfter);
 	gtk_box_pack_start(GTK_BOX(hboxSpinAfter),SpinLabelAfter,FALSE,FALSE,0);
 
-	GObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
+	GtkObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
 	GtkWidget * SpinAfter = gtk_entry_new();
 	gtk_widget_show (SpinAfter);
 	gtk_box_pack_start (GTK_BOX (hboxSpinAfter), SpinAfter, TRUE, TRUE, 0);
@@ -702,7 +650,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(SpinLabelColumnSize);
 	gtk_box_pack_start(GTK_BOX(hboxSpinSize),SpinLabelColumnSize,FALSE,FALSE,0);
 
-	GObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	GtkObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
 	GtkWidget * SpinSize = gtk_entry_new();
 	gtk_widget_show (SpinSize);
 	gtk_box_pack_start (GTK_BOX (hboxSpinSize), SpinSize, TRUE, TRUE, 0);
@@ -798,16 +746,6 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 					   G_CALLBACK(s_line_clicked),
 					   (gpointer) this);
 
-	g_signal_connect(G_OBJECT(m_wbuttonOk),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(m_wbuttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-
 	// the expose event of the preview
 	             g_signal_connect(G_OBJECT(m_wpreviewArea),
 					   "expose_event",
@@ -819,18 +757,6 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 		     					 "expose_event",
 		     				 G_CALLBACK(s_window_exposed),
 		    					 (gpointer) this);
-
-	// the catch-alls
-
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
 }
 
 void AP_UnixDialog_Columns::_populateWindowData(void)

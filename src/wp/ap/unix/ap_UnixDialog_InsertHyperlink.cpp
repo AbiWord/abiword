@@ -131,7 +131,7 @@ void AP_UnixDialog_InsertHyperlink::event_OK(void)
 {
 	UT_ASSERT(m_windowMain);
 	// get the bookmark name, if any (return cancel if no name given)
-	gchar * res = gtk_entry_get_text(GTK_ENTRY(m_entry));
+	const gchar * res = gtk_entry_get_text(GTK_ENTRY(m_entry));
 	if(res && *res)	
 	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);

@@ -26,6 +26,7 @@
 /*****************************************************************/
 
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include "ut_types.h"
 #include "ap_LeftRuler.h"
 #include "gr_UnixGraphics.h"
@@ -46,14 +47,14 @@ public:
 	// cheats for the callbacks
 	void				getWidgetPosition(gint * x, gint * y);
 	GtkWidget * 		getWidget(void) { return m_wLeftRuler; };
-	GdkWindowPrivate * 	getRootWindow(void);
+	GdkWindow * 	getRootWindow(void);
 
 	void _ruler_style_changed (void);
 	
 protected:
 	GtkWidget *		m_wLeftRuler;
 	GtkWidget *		m_wVruler;
-	GdkWindowPrivate *	m_rootWindow;
+	GdkWindow *	m_rootWindow;
     guint            m_iBackgroundRedrawID;
 protected:
 

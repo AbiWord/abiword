@@ -124,7 +124,7 @@ void AP_UnixDialog_InsertBookmark::event_OK(void)
 {
 	UT_ASSERT(m_windowMain);
 	// get the bookmark name, if any (return cancel if no name given)	
-	XML_Char *mark = gtk_entry_get_text(GTK_ENTRY(m_comboEntry));
+	const XML_Char *mark = gtk_entry_get_text(GTK_ENTRY(m_comboEntry));
 	if(mark && *mark)
 	{
 		xxx_UT_DEBUGMSG(("InsertBookmark: OK pressed, first char 0x%x\n", (UT_uint32)*mark));

@@ -44,6 +44,17 @@
 #include "ev_EditEventMapper.h"
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
+#include "ap_Menu_Id.h"
+
+// set up these replacement icons
+#include "stock/menu_import.xpm"
+#include "stock/menu_export.xpm"
+#include "stock/menu_insert_image.xpm"
+#include "stock/menu_insert_symbol.xpm"
+#include "stock/menu_book.xpm"
+#include "stock/menu_about.xpm"
+
+static bool s_init = false;
 
 /*****************************************************************/
 
@@ -116,7 +127,7 @@ public:									// we create...
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
 
 		// attach this new menu's accel group to be triggered off itself
-		gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
+		_gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
 		gtk_accel_group_lock(wd->m_accelGroup);
 	};
 
@@ -133,7 +144,7 @@ public:									// we create...
 		pFrame->setStatusMessage(NULL);
 		
 		// bind this menuitem to its parent menu
-		gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
+		_gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
 		gtk_accel_group_unlock(wd->m_accelGroup);
 	};
 
@@ -243,6 +254,56 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 	  m_pUnixFrame(pUnixFrame)
 {
 	m_accelGroup = gtk_accel_group_new();
+	
+	if (!s_init)
+	{
+		/* register non-standard pixmaps with the gtk-stock engine */
+		s_init = true;
+		
+		// NOTE: KEEP THE ORDER OF THESE TWO STATIC ARRAYS THE SAME
+		static GtkStockItem items[] = {
+			{ "Menu_AbiWord_Import", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Export", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_InsertSymbol", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_InsertImage", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_Book", "_GTK!", (GdkModifierType)0, 0, NULL },
+			{ "Menu_AbiWord_About", "_GTK!", (GdkModifierType)0, 0, NULL }
+		};
+		static struct AbiWordStockPixmap{
+			const char * name;
+			char ** xpm_data;
+		} const item_names [] = {
+			{ "Menu_AbiWord_Import", menu_import_xpm },
+			{ "Menu_AbiWord_Export", menu_export_xpm },
+			{ "Menu_AbiWord_InsertSymbol", menu_insert_symbol_xpm },
+			{ "Menu_AbiWord_InsertImage", menu_insert_image_xpm },
+			{ "Menu_AbiWord_Book", menu_book_xpm },
+			{ "Menu_AbiWord_About", menu_about_xpm },
+			{ NULL, NULL }
+		};
+
+		// register our stock items
+		gtk_stock_add (items, G_N_ELEMENTS (items));
+
+		// create a new icon factory which holds the non-standard pixmaps
+		GtkIconFactory * factory = gtk_icon_factory_new();
+		// add our factory to the default icon factories
+		gtk_icon_factory_add_default(factory);
+
+		// create the stock items to add to our factory
+		for (UT_sint32 i = 0; item_names[i].name != NULL; i++)
+		{
+			GdkPixbuf * pixbuf = gdk_pixbuf_new_from_xpm_data(const_cast<const char **>(item_names[i].xpm_data));
+			UT_ASSERT(pixbuf);
+			GtkIconSet *icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
+			gtk_icon_factory_add (factory, item_names[i].name, icon_set);
+			gtk_icon_set_unref (icon_set);
+			g_object_unref (G_OBJECT (pixbuf));
+		}
+		
+		// drop our reference to the factory, GTK will hold a reference.
+		g_object_unref (G_OBJECT (factory));
+	}
 }
 
 EV_UnixMenu::~EV_UnixMenu()
@@ -392,6 +453,103 @@ static void _ev_convert(char * bufResult,
 	}
 }
 
+struct mapping {
+	int id;
+	char * gtk_stock_item;
+};
+
+const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
+{
+	static struct mapping gtk_stock_mapping[] = {
+		{AP_MENU_ID_FILE_NEW, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_OPEN, GTK_STOCK_OPEN},
+		{AP_MENU_ID_FILE_IMPORT, "Menu_AbiWord_Import"},
+		{AP_MENU_ID_FILE_SAVE, GTK_STOCK_SAVE},
+		{AP_MENU_ID_FILE_SAVEAS, GTK_STOCK_SAVE_AS},
+		{AP_MENU_ID_FILE_EXPORT, "Menu_AbiWord_Export"},
+		{AP_MENU_ID_FILE_CLOSE, GTK_STOCK_CLOSE},
+		{AP_MENU_ID_FILE_PROPERTIES, GTK_STOCK_PROPERTIES},
+		{AP_MENU_ID_FILE_PAGESETUP, GTK_STOCK_PRINT},
+		{AP_MENU_ID_FILE_PRINT, GTK_STOCK_PRINT},
+		{AP_MENU_ID_FILE_PRINT_PREVIEW, GTK_STOCK_PRINT_PREVIEW},
+		{AP_MENU_ID_FILE_EXIT, GTK_STOCK_QUIT},
+		{AP_MENU_ID_FILE_REVERT, GTK_STOCK_REVERT_TO_SAVED},
+
+		{AP_MENU_ID_FILE_RECENT_1, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_2, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_3, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_4, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_5, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_6, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_7, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_8, GTK_STOCK_NEW},
+		{AP_MENU_ID_FILE_RECENT_9, GTK_STOCK_NEW},		
+
+		{AP_MENU_ID_EDIT_UNDO, GTK_STOCK_UNDO},
+		{AP_MENU_ID_EDIT_REDO, GTK_STOCK_REDO},
+		{AP_MENU_ID_EDIT_CUT, GTK_STOCK_CUT},
+		{AP_MENU_ID_EDIT_COPY, GTK_STOCK_COPY},
+		{AP_MENU_ID_EDIT_PASTE, GTK_STOCK_PASTE},
+		{AP_MENU_ID_EDIT_PASTE_SPECIAL, GTK_STOCK_PASTE},
+		{AP_MENU_ID_EDIT_CLEAR, GTK_STOCK_CLEAR},
+		{AP_MENU_ID_EDIT_FIND, GTK_STOCK_FIND},
+		{AP_MENU_ID_EDIT_REPLACE, GTK_STOCK_FIND_AND_REPLACE},
+		{AP_MENU_ID_EDIT_GOTO, GTK_STOCK_JUMP_TO},
+		
+		{AP_MENU_ID_INSERT_SYMBOL, "Menu_AbiWord_InsertSymbol"},
+		{AP_MENU_ID_INSERT_PICTURE, "Menu_AbiWord_InsertImage"},
+		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_InsertImage"},
+
+		{AP_MENU_ID_FMT_FONT, GTK_STOCK_SELECT_FONT},
+		{AP_MENU_ID_FMT_BOLD, GTK_STOCK_BOLD},
+		{AP_MENU_ID_FMT_ITALIC, GTK_STOCK_ITALIC},
+		{AP_MENU_ID_FMT_UNDERLINE, GTK_STOCK_UNDERLINE},
+		{AP_MENU_ID_FMT_STRIKE, GTK_STOCK_STRIKETHROUGH},
+		{AP_MENU_ID_ALIGN_LEFT, GTK_STOCK_JUSTIFY_LEFT},
+		{AP_MENU_ID_ALIGN_RIGHT, GTK_STOCK_JUSTIFY_RIGHT},
+		{AP_MENU_ID_ALIGN_CENTER, GTK_STOCK_JUSTIFY_CENTER},
+		{AP_MENU_ID_ALIGN_JUSTIFY, GTK_STOCK_JUSTIFY_FILL},
+		{AP_MENU_ID_FMT_BACKGROUND, GTK_STOCK_SELECT_COLOR},
+
+		{AP_MENU_ID_TOOLS_SPELL, GTK_STOCK_SPELL_CHECK},
+		{AP_MENU_ID_TOOLS_OPTIONS, GTK_STOCK_PREFERENCES},
+		{AP_MENU_ID_TOOLS_SCRIPTS, GTK_STOCK_EXECUTE},
+
+		{AP_MENU_ID_WEB_SAVEASWEB, GTK_STOCK_SAVE_AS},
+		{AP_MENU_ID_WEB_WEBPREVIEW, GTK_STOCK_INDEX},
+
+		{AP_MENU_ID_WINDOW_1, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_2, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_3, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_4, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_5, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_6, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_7, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_8, GTK_STOCK_NEW},
+		{AP_MENU_ID_WINDOW_9, GTK_STOCK_NEW},
+
+		{AP_MENU_ID_TOOLS_LANGUAGE, "Menu_AbiWord_Book"},
+		{AP_MENU_ID_FMT_LANGUAGE, "Menu_AbiWord_Book"},
+
+		{AP_MENU_ID_HELP_CONTENTS, GTK_STOCK_HELP},
+		{AP_MENU_ID_HELP_INDEX, GTK_STOCK_INDEX},
+		{AP_MENU_ID_HELP_SEARCH, GTK_STOCK_FIND},
+		{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
+		
+		{AP_MENU_ID__BOGUS2__, NULL}
+	};
+	
+	UT_sint32 i = 0;
+	do {
+		if (id == gtk_stock_mapping[i].id)
+			return gtk_stock_mapping[i].gtk_stock_item;
+		else
+			i++;
+	} while (gtk_stock_mapping[i].id != AP_MENU_ID__BOGUS2__);
+	
+	return NULL;
+}
+
 bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 {
 	UT_DEBUGMSG(("EV_UnixMenu::synthesizeMenu\n"));
@@ -442,8 +600,26 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				// create the item with the underscored label
 				GtkWidget * w;
-				if ( !pAction->isCheckable() ) 
-					w = gtk_menu_item_new();
+				if ( !pAction->isCheckable() )
+				{
+					const char * stock_item = s_getStockPixmapFromId(id);
+					if (stock_item != NULL)
+					{
+						// if this is not a checkable menu item, then we'll create an image menu item, if a stock item is available
+						w = gtk_image_menu_item_new_from_stock(s_getStockPixmapFromId(id), NULL);
+						// silly: remove the default accel label that gtk_image_menu_item_new_from_stock automatically adds
+						// silly: if we don't do this, the hbox a few lines below can't be added to this menu item, cause a menu item is a
+						// silly: descendant of GtkBin, which can only contain 1 widget at a time
+						GtkWidget * child = gtk_bin_get_child(GTK_BIN(w));
+						UT_ASSERT(child);
+						gtk_container_remove(GTK_CONTAINER(w), child);
+					}
+					else
+					{
+						// else create a normal menu item
+						w = gtk_menu_item_new();
+					}
+				}
 				else
 				{
 					w = gtk_check_menu_item_new();
@@ -510,10 +686,10 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				if ((keyCode != GDK_VoidSymbol))
 				{
 					gtk_widget_add_accelerator(w,
-											   "activate_item",
+											   "activate-item",
 											   GTK_MENU(wParent)->accel_group,
 											   keyCode,
-											   0,
+											   (GdkModifierType)0,
 											   GTK_ACCEL_LOCKED);
 				}
 
@@ -643,7 +819,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 													   "activate_item",
 													   GTK_MENU(wParent)->accel_group,
 													   keyCode,
-													   0,
+													   (GdkModifierType)0,
 													   GTK_ACCEL_LOCKED);
 						}
 
@@ -749,7 +925,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	// we also have to bind the top level window to our
 	// accelerator group for this menu... it needs to join in
 	// on the action.
-	gtk_accel_group_attach(m_accelGroup, G_OBJECT(m_pUnixFrame->getTopLevelWindow()));
+	_gtk_accel_group_attach(m_accelGroup, G_OBJECT(m_pUnixFrame->getTopLevelWindow()));
 	gtk_accel_group_lock(m_accelGroup);
 
 	return true;
@@ -915,10 +1091,12 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			bool bRemoveIt = (!szLabelName || !*szLabelName);
 			if (bRemoveIt)
 			{
+#if ABI_GTK_DEPRECATED
 				// unbind all accelerators
 				gtk_widget_remove_accelerators(item,
 											   "activate_item",
 											   FALSE);
+#endif
 				// wipe it out
 				gtk_widget_destroy(item);
 
@@ -959,10 +1137,12 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					// destroy the current label
 					gtk_container_remove(GTK_CONTAINER(item), labelChild);
 
+#ifdef ABI_GTK_DEPRECATED
 					// unbind all accelerators
 					gtk_widget_remove_accelerators(item,
 												   "activate_item",
 												   FALSE);
+#endif
 						
 					//gtk_widget_destroy(labelChild);
 				}
@@ -995,7 +1175,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 											   "activate_item",
 											   GTK_MENU(item->parent)->accel_group,
 											   keyCode,
-											   0,
+											   (GdkModifierType)0,
 											   GTK_ACCEL_LOCKED);
 				}
 

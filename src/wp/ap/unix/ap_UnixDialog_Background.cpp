@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2000-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,26 +47,6 @@ static void s_color_cleared(GtkWidget * btn, AP_UnixDialog_Background * dlg)
 	dlg->colorCleared();
 }
 
-static void s_ok_clicked (GtkWidget * btn, AP_UnixDialog_Background * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventOk();
-}
-
-static void s_cancel_clicked (GtkWidget * btn, AP_UnixDialog_Background * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixDialog_Background * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
-}
-
 #define CTI(c, v) (int)(c[v] * 255.0)
 
 static void s_color_changed(GtkWidget * csel,
@@ -108,89 +88,44 @@ AP_UnixDialog_Background::~AP_UnixDialog_Background(void)
 
 void AP_UnixDialog_Background::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
+	UT_return_if_fail(mainWindow);
 	m_dlg = mainWindow;
 
-	connectFocus(GTK_WIDGET(mainWindow), pFrame);
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// run into the gtk main loop for this window
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-		gtk_widget_destroy(mainWindow);
+	switch ( abiRunModalDialog ( GTK_DIALOG(m_dlg), pFrame, this,
+								 BUTTON_CANCEL, true ) )
+	{
+		case BUTTON_OK:
+			eventOk () ; break;
+		default:
+			eventCancel(); break ;
+	}
 }
 
 GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 {
 	GtkWidget * dlg;
-	GtkWidget * k;
-	GtkWidget * cancel;
-	GtkWidget * actionarea;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	dlg = gtk_dialog_new ();
+	
 	if(isForeground())
 	{
-		gtk_window_set_title (GTK_WINDOW(dlg), 
-							  pSS->getValue(AP_STRING_ID_DLG_Background_TitleFore));
+		dlg = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Background_TitleFore)) ;
 	}
 	else if(isHighlight())
 	{
-		gtk_window_set_title (GTK_WINDOW(dlg), 
-							  pSS->getValue(AP_STRING_ID_DLG_Background_TitleHighlight));
+		dlg = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Background_TitleHighlight)) ;
 	}
 	else
 	{
-		gtk_window_set_title (GTK_WINDOW(dlg), 
-							  pSS->getValue(AP_STRING_ID_DLG_Background_Title));
+		dlg = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_Background_Title)) ;
 	}
-	actionarea = GTK_DIALOG (dlg)->action_area;
 
-	k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show(k);
-	gtk_container_add (GTK_CONTAINER(actionarea), k);
-	g_signal_connect (G_OBJECT(k), "clicked", 
-						G_CALLBACK(s_ok_clicked), (gpointer)this);
-
-	cancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show(cancel);
-	gtk_container_add (GTK_CONTAINER(actionarea), cancel);
-	g_signal_connect (G_OBJECT(cancel), "clicked", 
-						G_CALLBACK(s_cancel_clicked), (gpointer)this);
-
-	g_signal_connect_after(G_OBJECT(dlg),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	g_signal_connect(G_OBJECT(dlg),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
+	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;
+	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
   
 	_constructWindowContents (GTK_DIALOG(dlg)->vbox);
 	
@@ -253,13 +188,11 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 void AP_UnixDialog_Background::eventOk (void)
 {
 	setAnswer (a_OK);
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_Background::eventCancel (void)
 {
 	setAnswer(a_CANCEL);
-	gtk_main_quit ();
 }
 
 void AP_UnixDialog_Background::colorCleared(void)

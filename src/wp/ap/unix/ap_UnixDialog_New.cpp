@@ -72,31 +72,26 @@ void AP_UnixDialog_New::runModal(XAP_Frame * pFrame)
 	
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
+	UT_return_if_fail(mainWindow);
 	
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+	/*connectFocus(GTK_WIDGET(mainWindow),pFrame);
 
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_return_if_fail(parentWindow);
+	UT_return_if_fail(parentWindow);*/
+	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this,
+								 BUTTON_CANCEL, false ) )
+	{
+		case BUTTON_OK:
+			event_Ok (); break ;
+		default:
+			event_Cancel () ; break ;
+	}
 	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// Run into the GTK event loop for this window.	
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-		gtk_widget_destroy(mainWindow);
+	abiDestroyWidget ( mainWindow ) ;
 }
 
 /*************************************************************************/
@@ -128,14 +123,11 @@ void AP_UnixDialog_New::event_Ok ()
 	{
 		setOpenType(AP_Dialog_New::open_New);
 	}
-
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_New::event_Cancel ()
 {
 	setAnswer (AP_Dialog_New::a_CANCEL);
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_New::event_ToggleOpenExisting ()
@@ -198,23 +190,6 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 /*************************************************************************/
 /*************************************************************************/
 
-static void s_ok_clicked (GtkWidget *, AP_UnixDialog_New * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_Ok();
-}
-
-static void s_cancel_clicked (GtkWidget *, AP_UnixDialog_New * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_Cancel();
-}
-
-static void s_window_delete (GtkWidget *, gpointer, AP_UnixDialog_New * dlg)
-{
-	s_cancel_clicked (0, dlg);
-}
-
 static void s_choose_clicked (GtkWidget * w, AP_UnixDialog_New * dlg)
 {
 	dlg->event_ToggleOpenExisting();
@@ -263,50 +238,20 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 {
 	GtkWidget *mainWindow;
 	GtkWidget *dialog_vbox1;
-	GtkWidget *hbuttonbox1;
-	GtkWidget *dialog_action_area1;
-	GtkWidget *ok_btn;
-	GtkWidget *cancel_btn;
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	mainWindow = gtk_dialog_new ();
-	gtk_window_set_title (GTK_WINDOW (mainWindow), pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
-	gtk_window_set_policy (GTK_WINDOW (mainWindow), TRUE, TRUE, FALSE);
-
+	mainWindow = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_NEW_Title));
 	dialog_vbox1 = GTK_DIALOG (mainWindow)->vbox;
 	gtk_widget_show (dialog_vbox1);
 
-	dialog_action_area1 = GTK_DIALOG (mainWindow)->action_area;
-	gtk_widget_show (dialog_action_area1);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
-
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox1);
-	gtk_box_pack_start (GTK_BOX (dialog_action_area1), hbuttonbox1, TRUE, 
-						TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), 
-							   GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 0);
-
-	ok_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show (ok_btn);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), ok_btn);
-	GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
-
-	cancel_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (cancel_btn);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), cancel_btn);
-	GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
-
+	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK ) ;
+	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	
 	// assign pointers to widgets
 	m_mainWindow   = mainWindow;
-	m_buttonOk     = ok_btn;
-	m_buttonCancel = cancel_btn;
 	
 	// construct the window contents
 	_constructWindowContents (dialog_vbox1);
-	_connectSignals ();
 
 	return mainWindow;
 }
@@ -472,30 +417,4 @@ void AP_UnixDialog_New::_constructWindowContents (GtkWidget * container)
 	m_radioEmpty    = radio_empty;
 	m_entryFilename = entry_filename;
 	m_choicesList   = choicesList;
-}
-
-void AP_UnixDialog_New::_connectSignals ()
-{
-  	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOk),
-					   "clicked",
-					   G_CALLBACK(s_ok_clicked),
-					   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   (gpointer) this);
-	
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_mainWindow),
-					   "delete_event",
-					   G_CALLBACK(s_window_delete),
-					   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_mainWindow),
-							 "destroy",
-							 NULL,
-							 NULL);
 }

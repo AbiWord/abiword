@@ -53,12 +53,16 @@ public:
 	virtual void			Symbolarea_exposed( void);
 	virtual void			SymbolMap_clicked(GdkEvent * event);
 	virtual void                    CurrentSymbol_clicked(GdkEvent *event);
-	virtual void			Key_Pressed(GdkEventKey * e);
+	virtual gboolean			Key_Pressed(GdkEventKey * e);
 	virtual void			New_Font( void);
 	virtual void			event_WindowDelete(void);
-#if 0
-	virtual void                    Motion_event(GdkEventMotion *e);
-#endif
+
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
 protected:
 
 	GR_UnixGraphics	* 		m_unixGraphics;
@@ -79,8 +83,6 @@ protected:
 	GtkWidget * m_areaCurrentSym;
 	GtkWidget * m_fontcombo;
 	
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
 	GList * m_InsertS_Font_list;
 	gchar * m_fontlist[100];
 	UT_uint32 m_Insert_Symbol_no_fonts;

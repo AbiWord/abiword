@@ -94,7 +94,7 @@ create_spinentry (float v)
   val = g_strdup_printf (FMT_STRING, v);
   gtk_entry_set_text (GTK_ENTRY (e), val);
   gtk_entry_set_editable (GTK_ENTRY (e), TRUE);
-  gtk_widget_set_usize (e, gdk_string_measure (e->style->font, val) + 15, 0);
+  gtk_widget_set_usize (e, gdk_string_measure (e->style->private_font, val) + 15, 0);
   g_free (val);
 
   return e;
@@ -143,26 +143,6 @@ static char _ev_buf[256];
 /*********************************************************************************/
 
 // static event callbacks
-
-static void s_ok_clicked (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
-{
-  UT_ASSERT (dlg);
-  dlg->event_OK ();
-}
-
-static void s_cancel_clicked (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
-{
-  UT_ASSERT (dlg);
-  dlg->event_Cancel ();
-}
-
-static void s_delete_clicked (GtkWidget * w,
-			      gpointer data,
-			      AP_UnixDialog_PageSetup * dlg)
-{
-  UT_ASSERT (dlg);
-  dlg->event_WindowDelete ();
-}
 
 static void s_menu_item_activate (GtkWidget * widget)
 {
@@ -288,7 +268,6 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 								 XAP_Dialog_MessageBox::b_O,
 								 XAP_Dialog_MessageBox::a_OK);
 		setAnswer(a_CANCEL);
-		gtk_main_quit();
 		return;
 	}
 	
@@ -308,9 +287,7 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 	// The window will only close (on an OK click) if the margins
 	// fit inside the paper size.
 	if ( validatePageSettings() ) {
-		setAnswer (a_OK);
-		
-		gtk_main_quit();
+		setAnswer (a_OK);		
 	}
 	else {
 		// "The margins selected are too large to fit on the page."
@@ -323,12 +300,6 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 void AP_UnixDialog_PageSetup::event_Cancel (void)
 {
 	setAnswer (a_CANCEL);
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_PageSetup::event_WindowDelete (void)
-{
-        event_Cancel();
 }
 
 void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
@@ -455,54 +426,31 @@ AP_UnixDialog_PageSetup::~AP_UnixDialog_PageSetup (void)
 
 void AP_UnixDialog_PageSetup::runModal (XAP_Frame *pFrame)
 {
+	UT_return_if_fail(pFrame);
+	
 	// snarf the parent pagesize.
 	m_PageSize = getPageSize();
-
+	m_pFrame = pFrame;
+	
     // Build the window's widgets and arrange them
     GtkWidget * mainWindow = _constructWindow();
-    UT_ASSERT(mainWindow);
+    UT_return_if_fail(mainWindow);
 
-    connectFocus(GTK_WIDGET(mainWindow), pFrame);
+	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
+							 BUTTON_CANCEL, false))
+	{
+		case BUTTON_OK:
+			event_OK() ; break;
+		default:
+			event_Cancel() ; break ;
+	}
 
-	m_pFrame = pFrame;
-
-    // To center the dialog, we need the frame of its parent.
-    XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-    UT_ASSERT(pUnixFrame);
-    
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
-
-    // Run into the GTK event loop for this window.
-    gtk_main();
-    if(mainWindow && GTK_IS_WIDGET(mainWindow))
-      gtk_widget_destroy(mainWindow);
+	abiDestroyWidget ( mainWindow ) ;
 }
 
 void AP_UnixDialog_PageSetup::_connectSignals (void)
 {
   	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK),
-			   "clicked",
-			   G_CALLBACK(s_ok_clicked),
-			   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-			   "clicked",
-			   G_CALLBACK(s_cancel_clicked),
-			   (gpointer) this);
-
  	m_iEntryPageWidthID = g_signal_connect(G_OBJECT(m_entryPageWidth),
  					   "changed",
  					  G_CALLBACK(s_entryPageWidth_changed),
@@ -512,44 +460,22 @@ void AP_UnixDialog_PageSetup::_connectSignals (void)
  					   "changed",
  					  G_CALLBACK(s_entryPageHeight_changed),
  					   (gpointer) this);
-
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_window),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_window),
-				 "destroy",
-				 NULL,
-				 NULL);
-
 }
 
 GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_window = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (m_window), _(AP, DLG_PageSetup_Title));
+  m_window = abiDialogNew (true, _(AP, DLG_PageSetup_Title));
 
   _constructWindowContents (GTK_DIALOG(m_window)->vbox);
 
-  m_buttonOK = gtk_button_new_with_label (_(XAP, DLG_OK));
-  gtk_widget_show (m_buttonOK);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), 
-		     m_buttonOK);
-
-  m_buttonCancel = gtk_button_new_with_label (_(XAP, DLG_Cancel));
-  gtk_widget_show (m_buttonCancel);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(m_window)->action_area), m_buttonCancel);
-
+  abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   _connectSignals ();
   return m_window;
 }
 
-// this code is glade generated
 void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 {
   GtkWidget *notebook;
@@ -577,13 +503,13 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkWidget *table1;
   GtkWidget *label5;
   GtkWidget *label6;
-  GObject *spinPageScale_adj;
+  GtkObject *spinPageScale_adj;
   GtkWidget *spinPageScale;
   GtkWidget *labelPage;
   GtkWidget *tableMargin;
-  GObject *spinMarginBottom_adj;
+  GtkObject *spinMarginBottom_adj;
   GtkWidget *spinMarginBottom;
-  GObject *spinMarginFooter_adj;
+  GtkObject *spinMarginFooter_adj;
   GtkWidget *spinMarginFooter;
   GtkWidget *labelMarginUnits;
   GtkWidget *labelTop;
@@ -591,17 +517,17 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkWidget *labelFooter;
   GtkWidget *labelBottom;
   GtkWidget *customPreview;
-  GObject *spinMarginTop_adj;
+  GtkObject *spinMarginTop_adj;
   GtkWidget *spinMarginTop;
-  GObject *spinMarginHeader_adj;
+  GtkObject *spinMarginHeader_adj;
   GtkWidget *spinMarginHeader;
   GtkWidget *vbox3;
   GtkWidget *labelRight;
-  GObject *spinMarginRight_adj;
+  GtkObject *spinMarginRight_adj;
   GtkWidget *spinMarginRight;
   GtkWidget *vbox2;
   GtkWidget *labelLeft;
-  GObject *spinMarginLeft_adj;
+  GtkObject *spinMarginLeft_adj;
   GtkWidget *spinMarginLeft;
   GtkWidget *optionMarginUnits;
   GtkWidget *optionMarginUnits_menu;
@@ -614,19 +540,22 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_box_pack_start (GTK_BOX (container), notebook, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (notebook), 7);
 
+#ifdef ABI_GTK_DEPRECATED 
   packerPage = gtk_packer_new ();
   gtk_packer_set_default_border_width (GTK_PACKER (packerPage), 2);
   gtk_packer_set_default_pad (GTK_PACKER (packerPage), 8, 8);
   gtk_packer_set_default_ipad (GTK_PACKER (packerPage), 2, 2);
+  gtk_packer_add_defaults (GTK_PACKER (packerPage), framePaper, GTK_SIDE_TOP,
+                           GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
+#else
+  packerPage = gtk_vbox_new ( true, 2 ) ;
+#endif
   gtk_widget_show (packerPage);
   gtk_container_add (GTK_CONTAINER (notebook), packerPage);
   gtk_container_set_border_width (GTK_CONTAINER (packerPage), 2);
 
   framePaper = gtk_frame_new (_(AP, DLG_PageSetup_Paper));
   gtk_widget_show (framePaper);
-  gtk_packer_add_defaults (GTK_PACKER (packerPage), framePaper, GTK_SIDE_TOP,
-                           GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
-
   tablePaper = gtk_table_new (3, 4, TRUE);
   gtk_widget_show (tablePaper);
   gtk_container_add (GTK_CONTAINER (framePaper), tablePaper);
@@ -720,8 +649,13 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   frameOrientation = gtk_frame_new (_(AP, DLG_PageSetup_Orient));
   gtk_widget_show (frameOrientation);
+
+#ifdef ABI_GTK_DEPRECATED
   gtk_packer_add_defaults (GTK_PACKER (packerPage), frameOrientation, GTK_SIDE_TOP,
                            GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
+#else
+  gtk_container_add (GTK_CONTAINER(packerPage), frameOrientation) ;
+#endif
 
   tableOrientation = gtk_table_new (2, 2, TRUE);
   gtk_widget_show (tableOrientation);
@@ -761,9 +695,14 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   frameScale = gtk_frame_new (_(AP, DLG_PageSetup_Scale));
   gtk_widget_show (frameScale);
+
+#ifdef ABI_GTK_DEPRECATED 
   gtk_packer_add_defaults (GTK_PACKER (packerPage), frameScale, GTK_SIDE_TOP,
                            GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
-
+#else
+  gtk_container_add (GTK_CONTAINER(packerPage), frameScale) ;
+#endif
+  
   table1 = gtk_table_new (1, 4, TRUE);
   gtk_widget_show (table1);
   gtk_container_add (GTK_CONTAINER (frameScale), table1);

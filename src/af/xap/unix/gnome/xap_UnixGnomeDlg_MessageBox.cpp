@@ -149,7 +149,7 @@ void XAP_UnixGnomeDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		break;
 
 	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_NOT_REACHED();
 	}
 
 	// get top level window and it's GtkWidget *

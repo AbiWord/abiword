@@ -64,90 +64,32 @@ AP_UnixDialog_ToggleCase::~AP_UnixDialog_ToggleCase(void)
 
 void AP_UnixDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
+	UT_return_if_fail(pFrame);
+	
     // Build the window's widgets and arrange them
     GtkWidget * mainWindow = _constructWindow();
-    UT_ASSERT(mainWindow);
+    UT_return_if_fail(mainWindow);
 
-    connectFocus(GTK_WIDGET(mainWindow), pFrame);
-
-    // To center the dialog, we need the frame of its parent.
-    XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-    UT_ASSERT(pUnixFrame);
-    
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
-
-    // Run into the GTK event loop for this window.
-    gtk_main();
-    if(mainWindow && GTK_IS_WIDGET(mainWindow))
-      gtk_widget_destroy(mainWindow);
-}
-
-static void s_ok_clicked (GtkWidget * w, AP_UnixDialog_ToggleCase * tc)
-{
-  tc->setAnswer(AP_Dialog_ToggleCase::a_OK);
-  gtk_main_quit ();
-}
-
-static void s_cancel_clicked (GtkWidget * w, AP_UnixDialog_ToggleCase * tc)
-{
-  tc->setAnswer(AP_Dialog_ToggleCase::a_CANCEL);
-  gtk_main_quit ();
-}
-
-static void s_delete_clicked (GtkWidget * w, gpointer data, 
-			      AP_UnixDialog_ToggleCase * tc)
-{
-  s_cancel_clicked (w, tc);
+	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
+							 BUTTON_CANCEL, true))
+	{
+		case BUTTON_OK:
+			setAnswer(AP_Dialog_ToggleCase::a_OK); break ;
+		default:
+			setAnswer(AP_Dialog_ToggleCase::a_CANCEL); break ;
+	}
 }
 
 GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
 {
   const XAP_StringSet * pSS = m_pApp->getStringSet();
-  GtkWidget * buttonOK, * buttonCancel;
 
-  GtkWidget * windowMain = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title));
+  GtkWidget * windowMain = abiDialogNew(true,  pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title));
 
   _constructWindowContents (GTK_DIALOG(windowMain)->vbox);
 
-  buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_show (buttonOK);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(windowMain)->action_area), 
-		     buttonOK);
-
-  buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show (buttonCancel);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(windowMain)->action_area), buttonCancel);
-
-	g_signal_connect_after(G_OBJECT(windowMain),
-				 "destroy",
-				 NULL,
-				 NULL);
-	g_signal_connect(G_OBJECT(windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(buttonOK),
-			   "clicked",
-			   G_CALLBACK(s_ok_clicked),
-			   (gpointer) this);
-	g_signal_connect(G_OBJECT(buttonCancel),
-			   "clicked",
-			   G_CALLBACK(s_cancel_clicked),
-			   (gpointer) this);
+  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
+  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
   return windowMain;
 }

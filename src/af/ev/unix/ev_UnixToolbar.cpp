@@ -39,6 +39,8 @@
 #include "xap_EncodingManager.h"
 #include "xap_UnixDialogHelper.h"
 
+// hack
+#include "ap_Toolbar_Id.h"
 
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
@@ -204,11 +206,21 @@ public:									// we create...
 				// block is only honored here
 				if (!wd->m_blockSignal)
 				{
-					gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
+					const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
+
 					UT_uint32 length = strlen(buffer);
-					UT_ASSERT(length > 0);
-					UT_ASSERT(length < 1024);
-					strcpy(wd->m_comboEntryBuffer, buffer);
+					xxx_UT_DEBUGMSG(("LACHANCE: comboChanged, length: %d \n", length));
+				        // LACHANCE: in gtk2, it seems as if the gtk_entry's text buffer length is set to 0
+				        // when we move through combo elements/new combo elements are added. in this case, we 
+				        // have to ignore the signal-- things will be set correctly momentarily. this seems
+					// to work correctly, but it would be nice to find a more elegant solution
+					// (P.S.: GtkCombo SUCKS, and will hopefully soon be deprecated. We should really be 
+					// using GtkOptionMenu for non-changeable drop-down toolbar menus)
+					if (length > 0) 
+					{					
+						UT_ASSERT(length < 1024);				       
+						strcpy(wd->m_comboEntryBuffer, buffer);
+					}				   
 				}
 			}
 			else // widget has no ->parent, so use the buffer's results
@@ -398,6 +410,79 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
 	bindListenerToView(pView);
 }
 
+bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, GdkColor * background,
+									  const char * szIconName, GtkWidget ** pwPixmap)
+{
+	const char * stock_id = NULL ;
+
+	switch ( id )
+	{
+		case AP_TOOLBAR_ID_FILE_NEW: stock_id = GTK_STOCK_NEW ; break ;
+		case AP_TOOLBAR_ID_FILE_OPEN: stock_id = GTK_STOCK_OPEN ; break ;
+		case AP_TOOLBAR_ID_FILE_SAVE: stock_id = GTK_STOCK_SAVE ; break ;
+		case AP_TOOLBAR_ID_FILE_SAVEAS: stock_id = GTK_STOCK_SAVE_AS ; break ;
+		case AP_TOOLBAR_ID_FILE_PRINT: stock_id = GTK_STOCK_PRINT ; break ;
+		case AP_TOOLBAR_ID_FILE_PRINT_PREVIEW: stock_id = GTK_STOCK_PRINT_PREVIEW ; break ;
+			
+		case AP_TOOLBAR_ID_EDIT_UNDO: stock_id = GTK_STOCK_UNDO ; break ;
+		case AP_TOOLBAR_ID_EDIT_REDO: stock_id = GTK_STOCK_REDO ; break ;
+		case AP_TOOLBAR_ID_EDIT_CUT: stock_id = GTK_STOCK_CUT ; break ;
+		case AP_TOOLBAR_ID_EDIT_COPY: stock_id = GTK_STOCK_COPY ; break ;
+		case AP_TOOLBAR_ID_EDIT_PASTE: stock_id = GTK_STOCK_PASTE ; break ;
+						
+		case AP_TOOLBAR_ID_FMT_BOLD: stock_id = GTK_STOCK_BOLD ; break ;
+		case AP_TOOLBAR_ID_FMT_ITALIC: stock_id = GTK_STOCK_ITALIC ; break ;
+		case AP_TOOLBAR_ID_FMT_UNDERLINE: stock_id = GTK_STOCK_UNDERLINE ; break ;
+		case AP_TOOLBAR_ID_FMT_STRIKE: stock_id = GTK_STOCK_STRIKETHROUGH ; break ;
+			
+		case AP_TOOLBAR_ID_ALIGN_LEFT: stock_id = GTK_STOCK_JUSTIFY_LEFT ; break ;
+		case AP_TOOLBAR_ID_ALIGN_CENTER: stock_id = GTK_STOCK_JUSTIFY_CENTER ; break ;
+		case AP_TOOLBAR_ID_ALIGN_RIGHT: stock_id = GTK_STOCK_JUSTIFY_RIGHT ; break ;
+		case AP_TOOLBAR_ID_ALIGN_JUSTIFY: stock_id = GTK_STOCK_JUSTIFY_FILL ; break ;
+			
+		case AP_TOOLBAR_ID_SPELLCHECK: stock_id = GTK_STOCK_SPELL_CHECK ; break ;
+		case AP_TOOLBAR_ID_HELP: stock_id = GTK_STOCK_HELP ; break ;
+		case AP_TOOLBAR_ID_SCRIPT_PLAY: stock_id = GTK_STOCK_EXECUTE ; break ;
+			
+		default:
+			break ;
+	}
+	
+	if ( stock_id == NULL )
+	{
+		return m_pUnixToolbarIcons->getPixmapForIcon ( window, background, szIconName, pwPixmap ) ;
+	}
+	else
+	{
+		*pwPixmap = gtk_image_new_from_stock ( stock_id, GTK_ICON_SIZE_LARGE_TOOLBAR ) ;
+		gtk_widget_show ( *pwPixmap ) ;
+		return true ;
+	}
+}
+
+static void setDragIcon(GtkWidget * wwd, GtkImage * img)
+{
+	if (GTK_IMAGE_PIXMAP == gtk_image_get_storage_type(img))
+	{
+		GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
+		GdkPixmap * pixmap = NULL ;
+		GdkBitmap * bitmap = NULL ;
+		gtk_image_get_pixmap ( img, &pixmap, &bitmap ) ;
+		gtk_drag_source_set_icon(wwd,ClrMap,pixmap,NULL);
+	}
+	else if (GTK_IMAGE_STOCK == gtk_image_get_storage_type(img))
+	{
+		gchar * stk = NULL ;
+		GtkIconSize icn_sz ;
+
+		// TODO: this doesn't quite work
+		
+		gtk_image_get_stock( img, &stk, &icn_sz ) ;
+		gtk_drag_source_set_icon_stock ( wwd, stk ) ;
+		xxx_UT_DEBUGMSG(("DOM: stock icon drag: %s\n", stk ));
+	}
+	// TODO: the rest, if/when applicable
+}
 
 bool EV_UnixToolbar::synthesize(void)
 {
@@ -434,13 +519,12 @@ bool EV_UnixToolbar::synthesize(void)
 	else if (UT_XML_stricmp(szValue,"both")==0)
 		style = GTK_TOOLBAR_BOTH;
 	
-	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
+	m_wToolbar = gtk_toolbar_new();
 	UT_ASSERT(m_wToolbar);
 	
-	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
-	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
-	gtk_toolbar_set_space_style(GTK_TOOLBAR (m_wToolbar), GTK_TOOLBAR_SPACE_LINE);
+	gtk_toolbar_set_style(GTK_TOOLBAR( m_wToolbar), style );
+
 //
 // Make the toolbar a destination for drops
 //
@@ -477,11 +561,10 @@ bool EV_UnixToolbar::synthesize(void)
 			{
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 				GtkWidget * wPixmap;
-				bool bFoundIcon =
-					m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
-														  &wTLW->style->bg[GTK_STATE_NORMAL],
-														  pLabel->getIconName(),
-														  &wPixmap);
+				bool bFoundIcon = getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+													 &wTLW->style->bg[GTK_STATE_NORMAL],
+													 pLabel->getIconName(),
+													 &wPixmap);
 				UT_ASSERT(bFoundIcon);
 
 				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
@@ -497,17 +580,13 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
-				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
-				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+				setDragIcon(wwd, GTK_IMAGE(wPixmap));
 				gtk_drag_dest_set(wwd, GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
-
 			}
 			break;
 
@@ -516,11 +595,10 @@ bool EV_UnixToolbar::synthesize(void)
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
-					bool bFoundIcon =
-						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
-															  &wTLW->style->bg[GTK_STATE_NORMAL],
-															  pLabel->getIconName(),
-															  &wPixmap);
+					bool bFoundIcon = getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+														 &wTLW->style->bg[GTK_STATE_NORMAL],
+														 pLabel->getIconName(),
+														 &wPixmap);
 					UT_ASSERT(bFoundIcon);
 
 					wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
@@ -531,9 +609,9 @@ bool EV_UnixToolbar::synthesize(void)
 															  wPixmap,
 															  G_CALLBACK(_wd::s_callback),
 															  wd);
-//
-// Add in a right drag method
-//
+					//
+					// Add in a right drag method
+					//
 				GtkWidget * wwd = wd->m_widget;
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
@@ -541,10 +619,7 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
-				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
-				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,NULL);
+				setDragIcon(wwd, GTK_IMAGE(wPixmap));
 				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -616,13 +691,17 @@ bool EV_UnixToolbar::synthesize(void)
 //								   wd);
 				
 				// handle changes in content
-				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
-				GtkEditable * yuck = GTK_EDITABLE(blah);
-				g_signal_connect(G_OBJECT(&yuck->widget),
-								   "changed",
-								   G_CALLBACK(_wd::s_combo_changed),
-								   wd);
-				
+			        //GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
+				//g_signal_connect(G_OBJECT(&blah->widget),
+				//		 "changed",
+				//		 G_CALLBACK(_wd::s_combo_changed),
+				//		 wd);
+			        // LACHANCE: I don't know what's going on with the above. Why not just
+				// connect to the ->entry directly? Cleaned up version below.
+			        g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),
+						 "changed",
+						 G_CALLBACK(_wd::s_combo_changed),
+						 wd);
 				// populate it
 				if (pControl)
 				{
@@ -644,7 +723,7 @@ bool EV_UnixToolbar::synthesize(void)
 					}
 				}
  
-				// give a final show
+			        // give a final show
 				gtk_widget_show(comboBox);
 
 				// stick it in the toolbar
@@ -657,9 +736,11 @@ bool EV_UnixToolbar::synthesize(void)
 									     szToolTip,
 									     (const char *)NULL);
 				wd->m_widget = comboBox;
-//
-// Add in a right drag method
-//
+
+#if 0
+				//
+				// Add in a right drag method
+				//
 				GtkWidget * wwd = wd->m_widget;
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
@@ -667,17 +748,13 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(evBox,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-//				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
-//				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-//				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
-//				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,bitmap);
 				gtk_drag_dest_set(evBox,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(evBox),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(evBox),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
 				g_signal_connect(G_OBJECT(evBox),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
-
+#endif
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
 			}
@@ -688,11 +765,10 @@ bool EV_UnixToolbar::synthesize(void)
 			{
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 				GtkWidget * wPixmap;
-				bool bFoundIcon =
-					m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
-														  &wTLW->style->bg[GTK_STATE_NORMAL],
-														  pLabel->getIconName(),
-														  &wPixmap);
+				bool bFoundIcon = getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+													 &wTLW->style->bg[GTK_STATE_NORMAL],
+													 pLabel->getIconName(),
+													 &wPixmap);
 				UT_ASSERT(bFoundIcon);
 
 				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
@@ -701,9 +777,9 @@ bool EV_UnixToolbar::synthesize(void)
 													   wPixmap,
 													   G_CALLBACK(_wd::s_ColorCallback),
 													   wd);
-//
-// Add in a right drag method
-//
+				//
+				// Add in a right drag method
+				//
 				GtkWidget * wwd = wd->m_widget;
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
@@ -711,17 +787,13 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				GdkColormap * ClrMap = gtk_widget_get_colormap (wwd);
-				GdkPixmap * pixmap = GTK_PIXMAP(wPixmap)->pixmap;
-				GdkBitmap * bitmap = GTK_PIXMAP(wPixmap)->mask;
+				setDragIcon(wwd, GTK_IMAGE(wPixmap));
 				gtk_drag_dest_set(wwd,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				gtk_drag_source_set_icon(wwd,ClrMap ,pixmap,bitmap);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_end",G_CALLBACK(_wd::s_drag_end), wd);
-
 			}
 			break;
 				
@@ -1029,7 +1101,10 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Try this....
 //
-    GtkList * oldlist = GTK_LIST(item->list);
+	bool wasBlocked = wd->m_blockSignal;
+	wd->m_blockSignal = true; // block the signal, so we don't try to read the text entry while this is happening..
+    
+	GtkList * oldlist = GTK_LIST(item->list);
 	gtk_list_clear_items(oldlist,0,-1);
 //
 // Now make a new one.
@@ -1042,6 +1117,9 @@ bool EV_UnixToolbar::repopulateStyles(void)
 		gtk_widget_show(li);
 		gtk_container_add (GTK_CONTAINER(GTK_COMBO(item)->list), li);
 	}
+
+        wd->m_blockSignal = wasBlocked;
+
 //
 // Don't need this anymore and we don't like memory leaks in abi
 //

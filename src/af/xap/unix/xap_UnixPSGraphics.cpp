@@ -67,10 +67,11 @@
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
 {
-	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
-	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
-	
-	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
+//	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
+//	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
+
+//	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
+	return false;
 }
 #endif
 

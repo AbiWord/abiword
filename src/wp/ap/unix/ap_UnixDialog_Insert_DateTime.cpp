@@ -55,10 +55,6 @@ AP_UnixDialog_Insert_DateTime::AP_UnixDialog_Insert_DateTime(XAP_DialogFactory *
 	: AP_Dialog_Insert_DateTime(pDlgFactory,id)
 {
 	m_windowMain = NULL;
-
-	m_buttonOK = NULL;
-	m_buttonCancel = NULL;
-
 	m_listFormats = NULL;
 }
 
@@ -67,62 +63,29 @@ AP_UnixDialog_Insert_DateTime::~AP_UnixDialog_Insert_DateTime(void)
 }
 
 /*****************************************************************/
-
-static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Insert_DateTime * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_OK();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Insert_DateTime * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixDialog_Insert_DateTime * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
-}
-
 /*****************************************************************/
 
 void AP_UnixDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 {
+	UT_return_if_fail(pFrame);
+	
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	UT_return_if_fail(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
 	// Populate the window's data items
 	_populateWindowData();
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
 
-	// Show the top level dialog,
-	gtk_widget_show_all(mainWindow);
+	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
+							 BUTTON_CANCEL, false ))
+	{
+		case BUTTON_OK:
+			event_OK(); break;
+		default:
+			event_Cancel(); break ;
+	}
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	abiDestroyWidget ( mainWindow ) ;
 }
 
 void AP_UnixDialog_Insert_DateTime::event_OK(void)
@@ -138,7 +101,6 @@ void AP_UnixDialog_Insert_DateTime::event_OK(void)
 	if (!(listitem) || !(listitem)->data)
 	{
 		m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
-		gtk_main_quit();
 		return;
 	}
 
@@ -150,19 +112,11 @@ void AP_UnixDialog_Insert_DateTime::event_OK(void)
 	m_iFormatIndex = indexdata;
 	
 	m_answer = AP_Dialog_Insert_DateTime::a_OK;
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_Insert_DateTime::event_Cancel(void)
 {
 	m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;
-	gtk_main_quit();
-}
-
-void AP_UnixDialog_Insert_DateTime::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_Insert_DateTime::a_CANCEL;	
-	gtk_main_quit();
 }
 
 /*****************************************************************/
@@ -170,59 +124,18 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 {
   GtkWidget *vbox;
   GtkWidget *contents;
-  GtkWidget *actionarea;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_windowMain = gtk_dialog_new();
-  gtk_window_set_title (GTK_WINDOW (m_windowMain), 
-			pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
-  gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
-  gtk_container_set_border_width(GTK_CONTAINER(m_windowMain), 4);
-
-  actionarea = GTK_DIALOG(m_windowMain)->action_area;
+  m_windowMain = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_DateTime_DateTimeTitle));
+  
   vbox = GTK_DIALOG(m_windowMain)->vbox;
-
   contents = _constructWindowContents();
   gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
 
-  m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_container_add(GTK_CONTAINER(actionarea), m_buttonOK);
-  GTK_WIDGET_SET_FLAGS(m_buttonOK, GTK_CAN_DEFAULT);
-
-  m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_container_add(GTK_CONTAINER(actionarea), m_buttonCancel);
-  GTK_WIDGET_SET_FLAGS(m_buttonCancel, GTK_CAN_DEFAULT);
-
-  _connectSignals();
-
+  abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
+  abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
   return m_windowMain;
-}
-
-void AP_UnixDialog_Insert_DateTime::_connectSignals(void)
-{
-	// the control buttons
-	g_signal_connect(G_OBJECT(m_buttonOK),
-			   "clicked",
-			   G_CALLBACK(s_ok_clicked),
-			   (gpointer) this);
-	
-	g_signal_connect(G_OBJECT(m_buttonCancel),
-			   "clicked",
-			   G_CALLBACK(s_cancel_clicked),
-			   (gpointer) this);
-
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(m_windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-				 "destroy",
-				 NULL,
-				 NULL);
 }
 
 GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindowContents(void)
@@ -237,34 +150,29 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindowContents(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 	vboxFormats = gtk_vbox_new (FALSE, 0);
-	//gtk_widget_ref (vboxFormats);
-	//gtk_widget_show (vboxFormats);
+	gtk_widget_show (vboxFormats);
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_DateTime_AvailableFormats));
 	labelFormats = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	//gtk_widget_ref (labelFormats);
-	//gtk_widget_show (labelFormats);
+	gtk_widget_show (labelFormats);
 	gtk_box_pack_start (GTK_BOX (vboxFormats), labelFormats, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelFormats), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelFormats), 0, 0.5);
 
 	scrolledwindowFormats = gtk_scrolled_window_new (NULL, NULL);
-	//gtk_widget_ref (scrolledwindowFormats);
-	//gtk_widget_show (scrolledwindowFormats);
+	gtk_widget_show (scrolledwindowFormats);
 	gtk_box_pack_start (GTK_BOX (vboxFormats), scrolledwindowFormats, TRUE, TRUE, 0);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindowFormats), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 	gtk_widget_set_usize(scrolledwindowFormats,-1,240);
 
 	viewportFormats = gtk_viewport_new (NULL, NULL);
-	//gtk_widget_ref (viewportFormats);
-	//gtk_widget_show (viewportFormats);
+	gtk_widget_show (viewportFormats);
 	gtk_container_add (GTK_CONTAINER (scrolledwindowFormats), viewportFormats);
 
 	listFormats = gtk_list_new ();
-	//gtk_widget_ref (listFormats);
 	gtk_list_set_selection_mode (GTK_LIST(listFormats), GTK_SELECTION_SINGLE);
-	//gtk_widget_show (listFormats);
+	gtk_widget_show (listFormats);
 	gtk_container_add (GTK_CONTAINER (viewportFormats), listFormats);
 
 	// *must set this here*

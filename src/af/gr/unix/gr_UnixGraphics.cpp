@@ -73,10 +73,7 @@ static bool isFontUnicode(GdkFont *font)
 		return false;
 	}
 
-	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
-	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
-
-	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
+	return false ;
 }
 #endif
 
@@ -1145,10 +1142,8 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	GdkWindowPrivate* pPWin = (GdkWindowPrivate*) m_pWin;
-
-	UT_sint32 winWidth = pPWin->width;
-	UT_sint32 winHeight = pPWin->height;
+	UT_sint32 winWidth, winHeight;
+	gdk_drawable_get_size ( GDK_DRAWABLE(m_pWin), &winWidth, &winHeight ) ;
 	UT_Rect exposeArea;
 //
 // Handle pending expose. The idea is that if there is an expose event that

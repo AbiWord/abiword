@@ -135,10 +135,12 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 //
 // hack to link abi_widget - thanks fjf
 //
+#ifdef ABI_GTK_DEPRECATED
 	if(this == 0)
 	{
 		GtkWidget * pUn = abi_widget_new_with_file("fred.abw");
 	}
+#endif
 }
 
 /*!

@@ -52,15 +52,15 @@ if test "$PLATFORM" = "unix"; then
 	ABI_BE="$ABI_FE"
 	with_unix=true
 	dnl locate glib and gtk
-	ABI_GLIB_GTK
+	ABI_GTK2
 elif test "$PLATFORM" = "mac" ; then
-	ABI_GLIB
+	ABI_GLIB2
 	ABI_FE="Mac"
 	ABI_BE="$ABI_FE"
 	with_macosx=true
 	with_carbon=true
 elif test "$PLATFORM" = "cocoa" ; then
-	ABI_GLIB
+	ABI_GLIB2
 	ABI_FE="Cocoa"
 	ABI_BE="Unix"
 	with_macosx=true
@@ -397,7 +397,7 @@ if test $peerconfig = "true"; then
 		echo "Running configure in ${i}"
 		config_flags='--disable-shared --enable-static'
 		if test `basename "$i"` = wv; then
-		    config_flags="$config_flags --with-exporter --with-glib=$abi_glib_opt"
+		    config_flags="$config_flags --with-exporter --with-glib=glib2"
 		    config_flags="$config_flags $abi_wv_xml $abi_wv_iconv $abi_wv_png $abi_wv_zlib"
 		    (cd $i; CPPFLAGS="$CPPFLAGS $abi_wv_cppflags" ./configure $config_flags)
 		else

@@ -459,55 +459,55 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
-	        szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		bCheckWritePermission = false;    
+		  szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
+		  szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		  bCheckWritePermission = false;    
 	  }
-	case XAP_DIALOG_ID_FILE_OPEN:
-	{
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		bCheckWritePermission = false;
-		break;
-	}
-	case XAP_DIALOG_ID_FILE_IMPORT:
-	  {
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		bCheckWritePermission = false;
-	    break;
-	  }
-	case XAP_DIALOG_ID_INSERT_FILE:
-	  {
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		bCheckWritePermission = false;
-		break;
-	  }
-	case XAP_DIALOG_ID_FILE_SAVEAS:
-	{
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
-		bCheckWritePermission = true;
-		break;
-	}
-	case XAP_DIALOG_ID_FILE_EXPORT:
-	  {
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
-		bCheckWritePermission = true;
-	    break;
-	  }
-	case XAP_DIALOG_ID_PRINTTOFILE:
-	{
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
-		bCheckWritePermission = true;
-		break;
-	}
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
+		case XAP_DIALOG_ID_FILE_OPEN:
+			{
+				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
+				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+				bCheckWritePermission = false;
+				break;
+			}
+		case XAP_DIALOG_ID_FILE_IMPORT:
+			{
+				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+				bCheckWritePermission = false;
+				break;
+			}
+		case XAP_DIALOG_ID_INSERT_FILE:
+			{
+				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
+				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+				bCheckWritePermission = false;
+				break;
+			}
+		case XAP_DIALOG_ID_FILE_SAVEAS:
+			{
+				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+				bCheckWritePermission = true;
+				break;
+			}
+		case XAP_DIALOG_ID_FILE_EXPORT:
+			{
+				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
+				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+				bCheckWritePermission = true;
+				break;
+			}
+		case XAP_DIALOG_ID_PRINTTOFILE:
+			{
+				szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
+				szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
+				bCheckWritePermission = true;
+				break;
+			}
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
 	}
 
 	// NOTE: we use our string mechanism to localize the dialog's
@@ -515,7 +515,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 	
-	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle));
+	GtkFileSelection *pFS = GTK_FILE_SELECTION(
+											   gtk_file_selection_new(
+																	  abiLocaleToUTF8(szTitle).c_str()));
 	m_FS = pFS;
 	
 	connectFocus(GTK_WIDGET(pFS),pFrame);
@@ -567,7 +569,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		  }
 
 		// pulldown label
-		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel);
+		GtkWidget * filetypes_label = gtk_label_new(abiLocaleToUTF8(szFileTypeLabel).c_str());
 		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 		gtk_widget_show(filetypes_label);
@@ -787,7 +789,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	
 	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
 
-	gchar * buf = gtk_file_selection_get_filename (m_FS);
+	const gchar * buf = gtk_file_selection_get_filename (m_FS);
 
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);

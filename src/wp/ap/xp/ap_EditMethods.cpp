@@ -2763,12 +2763,17 @@ Defun(fileNew)
 	return bOK;
 }
 
-bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
+bool _helpOpenURL(XAP_Frame * pFrame, const char* helpURL)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
+	UT_return_val_if_fail(pFrame, false);
 	pFrame->openURL(helpURL);
 	return true;
+}
+
+bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
+{
+	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
+	return _helpOpenURL ( pFrame, helpURL ) ;
 }
 
 inline void _catPath(UT_String& st, const char* st2)
@@ -2784,14 +2789,13 @@ inline void _catPath(UT_String& st, const char* st2)
 	st += st2;
 }
 
-bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
-{
-	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
+bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
+{	
+	UT_return_val_if_fail(pFrame, false);
 	XAP_App* pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
+	UT_return_val_if_fail(pApp, false);
 	XAP_Prefs* pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
+	UT_return_val_if_fail(pPrefs,false);
 
 	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
 	const XML_Char* abiSuiteLocString = NULL;
@@ -2832,7 +2836,14 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 		_catPath(url, pathAfterLang);
 	}
 
-	return _helpOpenURL(pAV_View, url.c_str());
+	return _helpOpenURL(pFrame, url.c_str());
+}
+	
+bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
+{
+	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
+
+	return helpLocalizeAndOpenURL(pFrame, bLocal, pathBeforeLang, pathAfterLang);
 }
 
 Defun1(helpContents)

@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -30,20 +31,18 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
-#include"xav_View.h"
-#include"xap_Frame.h"
-#include"xap_App.h"
+#include "xav_View.h"
+#include "xap_UnixFrame.h"
+#include "xap_App.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_Dialog.h"
 
 #ifdef HAVE_GNOME
 #include <gnome.h>
 #include <libgnomeui/gnome-window-icon.h>
 #endif
 
-
-// default GTK message box button width, in GTK screen units (pixels)
-#define DEFAULT_BUTTON_WIDTH	85
-
+/*****************************************************************/
 /*****************************************************************/
 
 static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
@@ -154,6 +153,9 @@ static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event
       return FALSE;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
 {
       g_object_set_data(G_OBJECT(widget), "frame",
@@ -206,156 +208,6 @@ bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
 	}
   return false;
 }
-
-gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e)
-{
-	UT_ASSERT(e);
-
-	guint key = e->keyval;
-
-	// TODO this is hard coded, maybe fix it
-	if (key == 'k' ||
-		key == GDK_Escape)
-	{
-		gtk_main_quit();
-	}
-
-	return TRUE;
-}
-
-/*
-  This is a small message box for startup warnings and/or
-  errors.  Please do NOT use this for normal system execution
-  user messages; use the XAP_UnixDialog_MessageBox class for that.
-  We can't use that here because there is no parent frame, etc.
-*/
-
-void messageBoxOK(const char * message)
-{
-	// New GTK+ dialog window
-	GtkWidget * dialog_window = gtk_dialog_new();								 
-
-	g_signal_connect_after (G_OBJECT (dialog_window),
-							  "destroy",
-							  NULL,
-							  NULL);
-	g_signal_connect_after (G_OBJECT (dialog_window),
-							  "delete_event",
-							  G_CALLBACK(gtk_main_quit),
-							  NULL);
-
-	gtk_window_set_title(GTK_WINDOW(dialog_window), "AbiWord");
-
-	// don't let user shrink or expand, but auto-size to
-	// contents initially
-    gtk_window_set_policy(GTK_WINDOW(dialog_window),
-						  FALSE,
-						  FALSE,
-						  TRUE);
-
-	// Intercept key strokes
-	g_signal_connect(G_OBJECT(dialog_window),
-					   "key_press_event",
-					   G_CALLBACK(s_key_pressed),
-					   NULL);
-
-	// Add our label string to the dialog in the message area
-	GtkWidget * label = gtk_label_new(message);
-	gtk_misc_set_padding(GTK_MISC(label), 10, 10);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG (dialog_window)->vbox),
-					   label, TRUE, TRUE, 0);
-	gtk_widget_show(label);
-
-	GtkWidget *		ok_label;
-	GtkWidget * 	ok_button;
-	guint			ok_accel;
-	
-	// create the OK
-	ok_label = gtk_label_new("SHOULD NOT APPEAR");
-	ok_accel = gtk_label_parse_uline(GTK_LABEL(ok_label), "O_K");
-	gtk_widget_show(ok_label);
-	ok_button = gtk_button_new();
-	gtk_container_add(GTK_CONTAINER(ok_button), ok_label);
-	g_signal_connect (G_OBJECT (ok_button),
-						"clicked",
-						G_CALLBACK(gtk_main_quit),
-						NULL);
-	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
-	gtk_widget_set_usize(ok_button, DEFAULT_BUTTON_WIDTH, 0);
-
-	// pack the OK
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-						ok_button, FALSE, FALSE, 0);
-	gtk_widget_grab_default (ok_button);
-	gtk_widget_show (ok_button);
-
-	// set the size of the dialog to size with the label inside
-	gtk_widget_size_request(dialog_window, &dialog_window->requisition);
-	gtk_widget_set_usize(dialog_window, dialog_window->requisition.width + 40, 0);
-	
-	// center it (in what?)
-//	GdkWindowPrivate * rootWindow = ::getRootWindow(dialog_window);
-//  centerDialog((GdkWindow *) rootWindow, dialog_window);
-//	gtk_window_set_transient_for(GTK_WINDOW(dialog_window), GTK_WINDOW(parent));
-
-	gtk_grab_add(GTK_WIDGET(dialog_window));
-	gtk_widget_show(dialog_window);
-	
-	gtk_main();
-
-	// clean up
-	gtk_widget_destroy(GTK_WIDGET(dialog_window));
-}
-
-GdkWindowPrivate * getRootWindow(GtkWidget * widget)
-{
-	UT_ASSERT(widget);
-
-	GdkWindowPrivate * priv = (GdkWindowPrivate *) widget->window;
-	while (priv->parent && ((GdkWindowPrivate*) priv->parent)->parent)
-		priv = (GdkWindowPrivate*) priv->parent;
-
-	return (GdkWindowPrivate *) priv;
-}
-
-#ifndef HAVE_GNOME
-
-// plain, vanilla GTK+ version of this function
-
-void centerDialog(GtkWidget * parent, GtkWidget * child)
-{
-	UT_ASSERT(parent);
-	UT_ASSERT(child);
-
-	gtk_window_set_transient_for(GTK_WINDOW(child),
-								 GTK_WINDOW(parent));
-}
-
-#else // HAVE_GNOME
-
-// souped-up gnome version of this function
-
-void centerDialog(GtkWidget * parent, GtkWidget * child)
-{
-	UT_ASSERT(parent);
-	UT_ASSERT(child);
-
-	// if it's a gnome dialog, we want this behavior
-	if (GNOME_IS_DIALOG (child))
-	{
-		gnome_dialog_set_parent (GNOME_DIALOG (child),
-								 GTK_WINDOW (parent));
-	}
-	else
-	{
-		
-		gtk_window_set_transient_for(GTK_WINDOW(child),
-									 GTK_WINDOW(parent));
-	}
-
-	gnome_window_icon_set_from_default (GTK_WINDOW(child));
-}
-#endif
 
 gint searchCList(GtkCList * clist, char * compareText)
 {
@@ -446,14 +298,14 @@ on_notebook_switch_page				   (GtkNotebook		*notebook,
 
 	UT_ASSERT(topwindow && GTK_IS_WINDOW(topwindow));
 	UT_ASSERT(notebook && GTK_IS_NOTEBOOK(notebook));
-	UT_ASSERT(page && page->child && GTK_IS_OBJECT(page->child));
-
-	if ( GTK_OBJECT_DESTROYED(notebook) )
-		return ;
+	UT_ASSERT(page);
 
 	oldaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(notebook),
 													 KEY_ACCEL_GROUP );
-	newaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(page->child),  
+
+	GtkWidget * new_page = gtk_notebook_get_nth_page ( notebook, page_num ) ;
+
+	newaccel = (GtkAccelGroup *)g_object_get_data( G_OBJECT(new_page),  
 													 KEY_ACCEL_GROUP );
 	
 	if ( oldaccel )
@@ -635,7 +487,7 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * the actual exported call
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-void createLabelAccelerators( GtkWidget *widget ) 
+void createLabelAccelerators( GtkWidget *widget )
 {
 	struct fix_label_data data = { 0, 0, 0, 0, 0 };
 
@@ -648,17 +500,297 @@ void createLabelAccelerators( GtkWidget *widget )
 	gtk_window_add_accel_group (GTK_WINDOW (widget), data.accel_group);
 }
 
-#ifdef HAVE_GNOME
-void setDefaultButton (GnomeDialog * dlg, int which)
-{
-  gnome_dialog_set_default (dlg, which);
+/****************************************************************/
+/****************************************************************/
 
-#if 0
-  gnome_dialog_grab_focus (dlg, which);
-  gnome_dialog_set_sensitive (dlg, which, TRUE);
+// in ap_editmethods.cpp
+extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang);
+
+static void sDoHelp ( XAP_Dialog * pDlg )
+{
+	// get any frame to open up a URL, doesn't matter which one
+	XAP_App   * pApp   = XAP_App::getApp () ;
+	XAP_Frame * pFrame = pApp->getLastFocussedFrame () ;
+	
+	// should always be valid, but just in case...
+	UT_return_if_fail(pFrame);
+	UT_return_if_fail(pDlg);
+
+	xxx_UT_DEBUGMSG(("DOM: doing help: %d %s\n", pDlg->getHelpUrl().size (),
+					 pDlg->getHelpUrl().c_str ()));
+	
+	// open the url
+	if ( pDlg->getHelpUrl().size () > 0 )
+    {
+		helpLocalizeAndOpenURL ( pFrame, true, "AbiWord/help", pDlg->getHelpUrl().c_str() ) ;
+    }
+	else
+    {
+		// TODO: warn no help on this topic
+		UT_DEBUGMSG(("NO HELP FOR THIS TOPIC!!\n"));
+    }
+}
+
+/*!
+ * Catch F1 keypress over a dialog and open up the help file, if any
+ */
+static gint modal_keypress_cb ( GtkWidget * wid, GdkEventKey * event, 
+								XAP_Dialog * pDlg )
+{
+	// propegate keypress up if not F1
+	if ( event->keyval == GDK_F1 || event->keyval == GDK_Help )
+	{
+		sDoHelp( pDlg ) ;
+
+		// stop F1 propegation
+		return TRUE ;
+	}
+	
+	return FALSE ;		
+}
+
+/*!
+ * Catch F1 keypress over a dialog and open up the help file, if any
+ */
+static gint nonmodal_keypress_cb ( GtkWidget * wid, GdkEventKey * event, 
+								   XAP_Dialog * pDlg )
+{
+	// propegate keypress up if not F1
+	if ( event->keyval == GDK_F1 || event->keyval == GDK_Help )
+	{
+		sDoHelp( pDlg ) ;
+		return TRUE ;
+	}
+	else if ( event->keyval == GDK_Escape )
+	{
+		gtk_widget_destroy ( wid ) ;
+		return TRUE ;
+	}
+	
+	return FALSE ;
+}
+
+/*!
+ * Centers a dialog, makes it transient, sets up the right window icon
+ */
+void centerDialog(GtkWidget * parent, GtkWidget * child)
+{
+	UT_return_if_fail(parent);
+	UT_return_if_fail(child);
+
+	gtk_window_set_transient_for(GTK_WINDOW(child),
+								 GTK_WINDOW(parent));
+#ifdef HAVE_GNOME
+	gnome_window_icon_set_from_default (GTK_WINDOW(child));
+#else
+	GdkPixbuf * icon = gtk_window_get_icon(GTK_WINDOW(parent));	
+	if ( NULL != icon )
+	{
+		gtk_window_set_icon(GTK_WINDOW(child), icon);
+		UT_DEBUGMSG(("DOM: got&set icon: %p\n", icon));
+	}
 #endif
 }
-#endif
+
+/*!
+ * Runs the dialog \me as a modal dialog
+ * 1) Connect focus to toplevel frame
+ * 2) Centers dialog over toplevel window
+ * 3) Connects F1 to help system
+ * 4) Makes dialog modal
+ * 5) Sets the default button to dfl_response, sets ESC to close
+ * 6) Returns value of gtk_dialog_run(me)
+ * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
+ */
+gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
+					   gint dfl_response, bool destroyDialog )
+{
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	
+	// connect focus to our parent frame
+	connectFocus(GTK_WIDGET(me),pFrame);
+
+	// center the dialog
+	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
+	
+	// connect F1 to the help subsystem
+	g_signal_connect (G_OBJECT(me), "key-press-event",
+					  G_CALLBACK(modal_keypress_cb), pDlg);
+	
+	// set the default response
+	gtk_dialog_set_default_response ( me, dfl_response ) ;
+	
+	// show the window
+	gtk_widget_show ( GTK_WIDGET(me) ) ;
+	
+	// grab the dialog
+	gtk_grab_add ( GTK_WIDGET(me) ) ;
+	
+	// and make it modal
+	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
+	
+	// now run the dialog
+	gint result = gtk_dialog_run ( me ) ;
+	
+	// destroy the dialog
+	if ( destroyDialog )
+		abiDestroyWidget ( GTK_WIDGET ( me ) );
+	
+	return result ;
+}
+
+/*!
+ * Sets up the dialog \me as a modeless dialog
+ * 1) Connect focus to toplevel frame
+ * 2) Centers dialog over toplevel window
+ * 3) Makes the App remember this modeless dialog
+ * 4) Connects F1 to help system
+ * 5) Makes dialog non-modal (modeless)
+ * 6) Sets the default button to dfl_response, sets ESC to close
+ */
+void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
+							gint dfl_response )
+{
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+
+	// remember the modeless id
+	XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	
+	// connect focus to our parent frame
+	connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());
+	
+	// center the dialog
+	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
+	
+	// connect F1 to the help subsystem
+	g_signal_connect (G_OBJECT(me), "key-press-event",
+					  G_CALLBACK(nonmodal_keypress_cb), pDlg);
+	
+	// set the default response
+	gtk_dialog_set_default_response ( me, dfl_response ) ;
+	
+	// show the window
+	gtk_widget_show ( GTK_WIDGET(me) ) ;
+	
+	// grab the dialog
+	gtk_grab_add ( GTK_WIDGET(me) ) ;
+	
+	// and mark it as modeless
+	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
+}
+
+/*!
+ * Create a new GtkDialog
+ */
+GtkWidget * abiDialogNew(gboolean resizable)
+{
+  GtkWidget * dlg = gtk_dialog_new () ;
+  gtk_window_set_resizable ( GTK_WINDOW(dlg), resizable ) ;
+  return dlg ;
+}
+
+/*!
+ * Create a new GtkDialog with this title
+ */
+GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...)
+{
+  GtkWidget * dlg = abiDialogNew(resizable);
+  
+  if ( title != NULL && strlen ( title ) )
+  {
+    UT_String titleStr ( "" ) ;
+
+    va_list args;
+    va_start (args, title);
+    UT_String_vprintf (titleStr, title, args);
+    va_end (args);
+
+	// locale->utf8 title
+	UT_String utf8 ( abiLocaleToUTF8 ( titleStr ) ) ;
+	
+    // create the title
+    gtk_window_set_title ( GTK_WINDOW(dlg), utf8.c_str() ) ;
+  }
+
+  return dlg ;
+}
+
+/*!
+ * Add this stock button to the dialog and make it sensitive
+ */
+void abiAddStockButton (GtkDialog * me, const gchar * btn_id,
+						gint response_id)
+{
+	UT_return_if_fail(me);
+	UT_return_if_fail(btn_id);
+	
+	gtk_dialog_add_button(me, btn_id, response_id);
+	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
+}
+
+/*!
+ * Add this locale-sensitive button to the dialog and
+ * make it sensitive
+ */
+void abiAddButton(GtkDialog * me, const gchar * btn_id,
+				  gint response_id)
+{
+	UT_return_if_fail(me);
+	UT_return_if_fail(btn_id);
+
+	// todo: possibly make me locale sensitive->utf8
+
+	UT_String utf8 ( abiLocaleToUTF8 ( btn_id ) ) ;
+	
+	gtk_dialog_add_button(me, utf8.c_str(), response_id);
+	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
+}
+
+/*!
+ * Calls gtk_widget_destroy on \me if \me is non-null
+ * and GTK_IS_WIDGET(me)
+ */
+void abiDestroyWidget(GtkWidget * me)
+{
+  if(me && GTK_IS_WIDGET(me))
+    gtk_widget_destroy(me);
+}
+
+/*!
+ * Convert the incoming string which is in the user's locale to utf8
+ */
+UT_String abiLocaleToUTF8(const UT_String & inStr)
+{
+	GError * err = NULL ;
+	gsize bytes_read = 0, bytes_written = 0 ;
+
+	gchar * utf8 = g_locale_to_utf8 ( inStr.c_str(), -1,
+									  &bytes_read, &bytes_written, &err ) ;
+
+	// blissfully ignore errors
+	
+	UT_String rtn_utf8 ( utf8 ) ;
+	g_free ( utf8 ) ;
+
+	return rtn_utf8 ;
+}
+
+/*!
+ * Convert the incoming string which is in the user's locale to utf8
+ */
+UT_String abiLocaleToUTF8(const char * str)
+{
+	UT_String input ( str ) ;
+	return abiLocaleToUTF8 ( input ) ;
+}
 
 /*!
  * For a parented/displayed widget, this will just return
@@ -693,17 +825,51 @@ get_ensured_style (GtkWidget * w)
 	return style;
 }
 
+/*!
+ * Creates a new GdkDrawingArea with the proper colormap and visual
+ */
 GtkWidget *createDrawingArea ()
 {
-	GtkWidget *area;
-	
-	gtk_widget_push_visual (gdk_rgb_get_visual ());
-	gtk_widget_push_colormap (gdk_rgb_get_cmap ());
+  GtkWidget *area;
+  
+  gtk_widget_push_visual (gdk_rgb_get_visual ());
+  gtk_widget_push_colormap (gdk_rgb_get_cmap ());
+  
+  area = gtk_drawing_area_new ();
+  
+  gtk_widget_pop_colormap ();
+  gtk_widget_pop_visual ();
+  
+  return area;
+}
 
-	area = gtk_drawing_area_new ();
+/*!
+ * This is a small message box for startup warnings and/or
+ * errors.  Please do NOT use this for normal system execution
+ * user messages; use the XAP_UnixDialog_MessageBox class for that.
+ * We can't use that here because there is no parent frame, etc.
+ */
+void messageBoxOK(const char * message)
+{
+	GtkWidget * msg = gtk_message_dialog_new ( NULL,
+											   GTK_DIALOG_MODAL,
+											   GTK_MESSAGE_INFO,
+											   GTK_BUTTONS_OK,
+											   message ) ;
 
-	gtk_widget_pop_colormap ();
-	gtk_widget_pop_visual ();
+	gtk_window_set_title(GTK_WINDOW(msg), "AbiWord");
+	gtk_widget_show ( msg ) ;
+	gtk_dialog_run ( GTK_DIALOG(msg) ) ;
+	gtk_widget_destroy ( msg ) ;
+}
 
-	return area;
+/****************************************************************/
+/****************************************************************/
+
+GdkWindow * getRootWindow(GtkWidget * widget)
+{
+	UT_return_val_if_fail(widget, NULL);
+
+	// BROKEN!!!!
+	return gdk_get_default_root_window() ;
 }

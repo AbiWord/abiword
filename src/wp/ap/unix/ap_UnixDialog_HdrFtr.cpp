@@ -36,71 +36,51 @@
 
 static void s_HdrEven(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->CheckChanged( AP_Dialog_HdrFtr::HdrEven);
 }
 
 static void s_HdrFirst(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::HdrFirst);
 }
 
 
 static void s_HdrLast(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::HdrLast);
 }
 
 static void s_FtrEven(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrEven);
 }
 
 static void s_FtrFirst(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrFirst);
 }
 
 static void s_FtrLast(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->CheckChanged(AP_Dialog_HdrFtr::FtrLast);
 }
 
 static void s_restart_toggled(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->RestartChanged();
 }
 
 static void s_spin_changed(GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
 {
-	UT_ASSERT(dlg);
+	UT_return_if_fail(dlg);
 	dlg->RestartSpinChanged();
-}
-
-static void s_ok_clicked (GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventOk();
-}
-
-static void s_cancel_clicked (GtkWidget * btn, AP_UnixDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixDialog_HdrFtr * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
 }
 
 /*****************************************************************/
@@ -124,50 +104,30 @@ AP_UnixDialog_HdrFtr::~AP_UnixDialog_HdrFtr(void)
 
 void AP_UnixDialog_HdrFtr::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	UT_return_if_fail(mainWindow);
 
-	connectFocus(GTK_WIDGET(mainWindow), pFrame);
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// run into the gtk main loop for this window
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-		gtk_widget_destroy(mainWindow);
+	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
+							 BUTTON_CANCEL, true ))
+	{
+		case BUTTON_OK:
+			eventOk(); break ;
+		default:
+			eventCancel() ; break ;
+	}
 }
-
 
 void AP_UnixDialog_HdrFtr::eventOk (void)
 {
 	setAnswer (a_OK);
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_HdrFtr::eventCancel (void)
 {
 	setAnswer(a_CANCEL);
-	gtk_main_quit ();
 }
 
 /*!
@@ -220,41 +180,18 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 {
 	GtkWidget *HdrFtrDialog;
 	GtkWidget *vbox1;
-	GtkWidget *hseparator1;
-	GtkWidget *gnomeButtons;
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	HdrFtrDialog = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (HdrFtrDialog),  pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title));
+	HdrFtrDialog = abiDialogNew ( true, pSS->getValue(AP_STRING_ID_DLG_HdrFtr_Title)) ;
 
-	vbox1 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox1);
-	gtk_container_add (GTK_CONTAINER (HdrFtrDialog), vbox1);
+	vbox1 = GTK_DIALOG(HdrFtrDialog)->vbox ;
 
     _constructWindowContents (vbox1);
 
-
-	hseparator1 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, FALSE, TRUE, 0);
-
-	gnomeButtons = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (gnomeButtons);
-	gtk_box_pack_start (GTK_BOX (vbox1), gnomeButtons, TRUE, TRUE, 0);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (buttonCancel);
-	gtk_box_pack_end (GTK_BOX (gnomeButtons), buttonCancel, FALSE, FALSE, 6);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show (buttonOK);
-	gtk_box_pack_end (GTK_BOX (gnomeButtons), buttonOK, FALSE, FALSE, 0);
-
-	m_wButtonOK = buttonOK;
-	m_wButtonCancel = buttonCancel;
+	abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_OK, BUTTON_OK ) ;
+	abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	
 	m_wHdrFtrDialog = HdrFtrDialog;
 
 	_connectSignals();
@@ -277,7 +214,7 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	GtkWidget *hbox1;
 	GtkWidget *ReStartButton;
 	GtkWidget *restartLabel;
-	GObject *spinbutton1_adj;
+	GtkObject *spinbutton1_adj;
 	GtkWidget *spinbutton1;
 
 
@@ -434,21 +371,4 @@ void AP_UnixDialog_HdrFtr::_connectSignals(void)
 						"toggled", 
 						G_CALLBACK(s_restart_toggled), 
 						(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wButtonOK), "clicked", 
-						G_CALLBACK(s_ok_clicked), (gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_wButtonCancel), "clicked", 
-						G_CALLBACK(s_cancel_clicked), (gpointer)this);
-	 
-	g_signal_connect_after(G_OBJECT(m_wHdrFtrDialog),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	g_signal_connect(G_OBJECT(m_wHdrFtrDialog),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
-
 }

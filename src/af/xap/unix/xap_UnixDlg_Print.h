@@ -51,6 +51,12 @@ public:
 
 protected:
 
+	typedef enum
+	  {
+	    BUTTON_CANCEL,
+	    BUTTON_PRINT
+	  } ResponseId ;
+
 	printCBStruct			m_callbackData;
 	
 	virtual void			_raisePrintDialog(XAP_Frame * pFrame);

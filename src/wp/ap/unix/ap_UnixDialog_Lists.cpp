@@ -385,7 +385,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 
 
 		g_signal_handler_block(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
-		g_signal_handler_block_by_data(  G_OBJECT(m_wListStyleBox), (gpointer) this );
+		gtk_signal_handler_block_by_data(  GTK_OBJECT(m_wListStyleBox), (gpointer) this );
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox),
 								  m_wListStyleNone_menu);
 		g_signal_handler_unblock(  G_OBJECT(m_wListStyleBox),m_iStyleBoxID  );
@@ -452,7 +452,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 void  AP_UnixDialog_Lists::setListTypeFromWidget(void)
 {
 	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
-	setNewListType((List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(G_OBJECT(wlisttype))));
+	setNewListType((List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype))));
 }
 
 /*!
@@ -549,7 +549,7 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_wMainWindow = gtk_window_new (GTK_WINDOW_DIALOG);
+	m_wMainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), getWindowName());
 	gtk_window_set_policy (GTK_WINDOW (m_wMainWindow), FALSE, FALSE, FALSE);
 
@@ -619,7 +619,7 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
 
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Lists_Current_Font));
 	gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data (G_OBJECT (glade_menuitem), GINT_TO_POINTER (0));
+	gtk_object_set_user_data (GTK_OBJECT (glade_menuitem), GINT_TO_POINTER (0));
 	gtk_menu_append (GTK_MENU (menu), glade_menuitem);
 	g_signal_connect (G_OBJECT (glade_menuitem), "activate",
 						G_CALLBACK (s_valueChanged), this);
@@ -627,10 +627,10 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
 	{
 		glade_menuitem = gtk_menu_item_new_with_label ((gchar *) g_list_nth_data (m_glFonts, i));
 		gtk_widget_show (glade_menuitem);
-		gtk_object_set_user_data (G_OBJECT (glade_menuitem), GINT_TO_POINTER (i + 1));
+		gtk_object_set_user_data (GTK_OBJECT (glade_menuitem), GINT_TO_POINTER (i + 1));
 		gtk_menu_append (GTK_MENU (menu), glade_menuitem);
 		g_signal_connect (G_OBJECT (glade_menuitem), "activate",
-							G_CALLBACK (s_valueChanged), this);
+				  G_CALLBACK (s_valueChanged), this);
 	}
 
 	  //gtk_option_menu_set_history (GTK_OPTION_MENU (menu), 0);
@@ -654,11 +654,11 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *font_om_menu;
 	GtkWidget *format_en;
 	GtkWidget *decimal_en;
-	GObject *start_sb_adj;
+	GtkObject *start_sb_adj;
 	GtkWidget *start_sb;
-	GObject *text_align_sb_adj;
+	GtkObject *text_align_sb_adj;
 	GtkWidget *text_align_sb;
-	GObject *label_align_sb_adj;
+	GtkObject *label_align_sb_adj;
 	GtkWidget *label_align_sb;
 	GtkWidget *format_lb;
 	GtkWidget *font_lb;
@@ -1381,7 +1381,7 @@ void AP_UnixDialog_Lists::_gatherData(void)
 
 	}
 	GtkWidget * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
-	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(G_OBJECT(wfont)));
+	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wfont)));
 	if(ifont == 0)
 	{
 		copyCharToFont("NULL");
@@ -1390,10 +1390,10 @@ void AP_UnixDialog_Lists::_gatherData(void)
 	{
 		copyCharToFont( (const char *)  g_list_nth_data(m_glFonts, ifont-1));
 	}
-	gchar * pszDec = gtk_entry_get_text( GTK_ENTRY(m_wDecimalEntry));
+	const gchar * pszDec = gtk_entry_get_text( GTK_ENTRY(m_wDecimalEntry));
 	copyCharToDecimal( (const char *) pszDec);
 	setiStartValue(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wStartSpin)));
-	gchar * pszDel = gtk_entry_get_text( GTK_ENTRY(m_wDelimEntry));
+	const gchar * pszDel = gtk_entry_get_text( GTK_ENTRY(m_wDelimEntry));
 	copyCharToDelim((const char *) pszDel);
 }
 

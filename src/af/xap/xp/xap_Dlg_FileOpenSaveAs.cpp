@@ -52,7 +52,7 @@
 ******************************************************************/
 
 XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_AppPersistent(pDlgFactory,id),
+	: XAP_Dialog_AppPersistent(pDlgFactory,id, "interface/dialogopenlinux.html"),
 	  m_szPersistPathname(NULL),
 	  m_szInitialPathname(NULL),
 	  m_szFinalPathname(NULL),

@@ -60,6 +60,9 @@ public:
 	
 protected:
 	void							_releaseListener(void);
+
+	bool getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, GdkColor * background,
+						  const char * szIconName, GtkWidget ** pwPixmap) ;
 	
 	XAP_UnixApp *					m_pUnixApp;
 	XAP_UnixFrame *					m_pUnixFrame;

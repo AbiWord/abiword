@@ -46,6 +46,13 @@ public:
 	GtkWidget * m_wColorsel;
 
  private:
+
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
 	GtkWidget * m_dlg;
 };
 

@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,11 +37,6 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	void event_DeactivateAll ();
-	void event_Deactivate ();
-	void event_Load ();
-	void event_Select1 ();
-
 protected:
 	GtkWidget * m_windowMain;
 
@@ -49,6 +44,32 @@ protected:
 	virtual GtkWidget * _constructWindow ();
 
 private:
+
+	typedef enum
+	  {
+	    BUTTON_CANCEL
+	  } ResponseId ;
+
+	void event_DeactivateAll ();
+	void event_Deactivate ();
+	void event_Load ();
+	void event_Select1 ();
+
+	static void s_deactivate_clicked (GtkWidget * w, 
+					  XAP_UnixDialog_PluginManager * dlg);
+	
+	static void s_deactivate_all_clicked (GtkWidget * w, 
+					      XAP_UnixDialog_PluginManager * dlg);
+	
+	static void s_load_clicked (GtkWidget * w,
+				    XAP_UnixDialog_PluginManager * dlg);
+
+	static void s_clist_selected (GtkWidget * w,
+				      gint /* row */,
+				      gint /* column */,
+				      GdkEventButton * /* event */,
+				      XAP_UnixDialog_PluginManager * dlg) ;
+
 	void _refreshAll ();
 	void _refreshTab1 ();
 	void _refreshTab2 ();

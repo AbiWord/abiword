@@ -50,16 +50,17 @@ public:
 	
 protected:
 
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
 	virtual GtkWidget * _constructWindow ();
 	virtual void _constructWindowContents (GtkWidget * container);
 
-	void _connectSignals ();
-
 	/* private ... */
 	GtkWidget * m_mainWindow;
-	GtkWidget * m_buttonOk;
-	GtkWidget * m_buttonCancel;
-
 
 private:
 	XAP_Frame * m_pFrame;
