@@ -8419,16 +8419,8 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	sPropName = "dataid";
 	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
 	attrs[1] = sDataIDVal.utf8_str();
-	sPropName = "width";
-	UT_UTF8String sWidth = UT_UTF8String_getPropVal(sProps,sPropName);
-	UT_UTF8String_setProperty(sInputAbiProps,sPropName,sWidth);
-	sPropName = "ascent";
-	UT_UTF8String sAscent = UT_UTF8String_getPropVal(sProps,sPropName);
-	UT_UTF8String_setProperty(sInputAbiProps,sPropName,sAscent);
-	sPropName = "descent";
-	UT_UTF8String sDescent = UT_UTF8String_getPropVal(sProps,sPropName);
-	UT_UTF8String_setProperty(sInputAbiProps,sPropName,sDescent);
-	attrs[3] = sInputAbiProps.utf8_str();
+	UT_UTF8String_removeProperty(sProps,sPropName);
+	attrs[3] = sProps.utf8_str();
 	if(bUseInsertNotAppend())
 	{
 		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs,NULL);

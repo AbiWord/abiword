@@ -487,10 +487,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			}
 			tag += "/";
 			tag += ">";
-			tag += "\n";
 			tag += "</math";
 			tag += ">";
-			tag += "\n";
 		}
 		else
 		{

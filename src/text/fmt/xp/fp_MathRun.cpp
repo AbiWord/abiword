@@ -308,6 +308,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 
 	UT_sint32 iLineHeight = getLine()->getHeight();
 	GR_Painter painter(pG);
+	bool bIsSelected = false;
 	if ( isInSelectedTOC() ||
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
 		(iSel1 <= iRunBase)
@@ -315,6 +316,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 		)
 	{
 		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		bIsSelected = true;
 
 	}
 	else
@@ -335,8 +337,11 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)  )
 	{
 	  rec.top -= getAscent();
-	  getMathManager()->makeSnapShot(m_iMathUID,rec);
-	  m_bNeedsSnapshot = false;
+	  if(!bIsSelected)
+	  {
+	    getMathManager()->makeSnapShot(m_iMathUID,rec);
+	    m_bNeedsSnapshot = false;
+	  }
 	}
 }
 

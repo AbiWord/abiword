@@ -2246,36 +2246,33 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 m_pie->_rtf_open_brace();
 		 m_pie->_rtf_keyword("*");
-		 sProps="dataid:";
-		 sProps +=pszDataId;
-		 sProps +="; ";
-		 m_pie->_rtf_keyword("abimathml "); // abiword extension for now.
-		 const XML_Char * szWidth = NULL;
-		 const XML_Char * szAscent = NULL;
-		 const XML_Char * szDescent = NULL;
-		 bool bFoundWidthProperty = pSpanAP->getProperty("width",szWidth);
-		 bool bFoundAscentProperty = pSpanAP->getProperty("ascent",szAscent);
-		 bool bFoundDescentProperty = pSpanAP->getProperty("descent",szDescent);
-		 if(bFoundWidthProperty)
+		 m_pie->_rtf_keyword("abimathml ");
+		 UT_UTF8String sAllProps;
+		 UT_UTF8String sPropName;
+		 UT_UTF8String sPropVal;
+		 UT_sint32 i = 0;
+		 const XML_Char * szProp = NULL;
+		 const XML_Char * szVal = NULL;
+		 for(i = 0; i < 50; i++)
 		 {
-		   sProps +="width:";
-		   sProps +=szWidth;
-		   sProps +="; ";
+		   szProp = NULL;
+		   szVal = NULL;
+		   pSpanAP->getNthProperty(i,szProp,szVal);
+		   if((szProp != NULL) && (szVal != NULL))
+		   { 
+		     sPropName = szProp;
+		     sPropVal = szVal;
+		     UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		   }
+		   else
+		   {
+		     break;
+		   }
 		 }
-
-		 if(bFoundAscentProperty)
-		 {
-		   sProps +="ascent:";
-		   sProps +=szAscent;
-		   sProps +="; ";
-		 }
-
-		 if(bFoundDescentProperty)
-		 {
-		   sProps +="descent:";
-		   sProps +=szDescent;
-		 }
-		 m_pie->write(sProps.utf8_str());
+		 sPropName = "dataid";
+		 sPropVal =pszDataId;
+		 UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		 m_pie->write(sAllProps.utf8_str());
 		 m_pie->_rtf_close_brace();
 	 }
 
