@@ -295,20 +295,24 @@ void AP_TopRuler::_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInf
 
 	if (xAbsRight > xAbsLeft)
 	{
+		// to keep from drawing horizontally outside our clip rect, we draw the left and
+		// right decorations inside the ruler active area, but the top and bottom decorations
+		// get drawn outside the ruler space to preserve maximum working area
+		
 		// draw black lines above and left of area
 		m_pG->setColor(clrBlack);
-		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsRight + 2, yTop - 1);		// above
-		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsLeft - 1, yTop + yBar + 1);	// left
+		m_pG->drawLine(xAbsLeft + 1, yTop - 1, xAbsRight, yTop - 1);		// above
+		m_pG->drawLine(xAbsLeft + 1, yTop - 1, xAbsLeft + 1, yTop + yBar + 1);	// left
 
 		// draw dark gray lines above and left of black lines
 		m_pG->setColor(clrDarkGray);
-		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsRight + 3, yTop - 2);		// above
-		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsLeft - 2, yTop + yBar + 2);	// left
+		m_pG->drawLine(xAbsLeft, yTop - 2, xAbsRight + 1, yTop - 2);		// above
+		m_pG->drawLine(xAbsLeft, yTop - 2, xAbsLeft, yTop + yBar + 2);	// left
 
-		// draw light gray lines down and right of area, seperated by 1 pixel all the way
+		// draw white lines down and right of area, seperated by 1 pixel all the way
 		m_pG->setColor(clrWhite);
-		m_pG->drawLine(xAbsLeft - 1, yTop + yBar + 1, xAbsRight + 2, yTop + yBar + 1);	// below
-		m_pG->drawLine(xAbsRight + 2, yTop + yBar + 1, xAbsRight + 2, yTop - 2);		// right
+		m_pG->drawLine(xAbsLeft, yTop + yBar + 1, xAbsRight, yTop + yBar + 1);	// below
+		m_pG->drawLine(xAbsRight, yTop + yBar + 1, xAbsRight, yTop - 2);		// right
 
 		m_pG->setColor(clrBlack);
 	}
@@ -924,7 +928,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawBar(pClipRect,pInfo,clrDarkGray,sum+1,pInfo->u.c.m_xaRightMargin-1);
 
 	// draw 3D frame around left margin + document + right margin rects
-#if 1
+#if 0
 	_draw3DFrame(pClipRect,pInfo,1,sum + pInfo->u.c.m_xaRightMargin - 2);
 #endif
 	
