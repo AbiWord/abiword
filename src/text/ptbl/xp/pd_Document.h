@@ -58,34 +58,84 @@ enum
 	PD_SIGNAL_REFORMAT_LAYOUT
 };
 
-// the dublin core element set: 
-// SPEC:   http://dublincore.org/documents/dces/
-// DC/RDF: http://dublincore.org/documents/dcmes-xml/
+/////////////////////////////////////////////////////////
+// proper prefixes for the namespaces that we support
+/////////////////////////////////////////////////////////
 
-// abiword tags are prefixed in the "abiword." namespace
-// dublin core tags are prefixed in the "dc." namespace
+// Dublin Core Namespace (http://dublincore.org/documents/dces/)
+#define DC_META_PREFIX      "dc."
+
+// AbiWord Namespace
+#define ABIWORD_META_PREFIX "abiword."
+
+// User-defined custom namespace
+#define CUSTOM_META_PREFIX  "custom."
+
+/////////////////////////////////////////////////////////
+// The key names for our in-house metadata
+/////////////////////////////////////////////////////////
+
+// A formal name given to the resource
 #define PD_META_KEY_TITLE        "dc.title"
+
+// An entity primarily responsible for making the content of the resource
+// typically a person, organization, or service
 #define PD_META_KEY_CREATOR      "dc.creator"
+
+// The topic of the content of the resource, *typically* including keywords
 #define PD_META_KEY_SUBJECT      "dc.subject"
+
+// An account of the content of the resource
 #define PD_META_KEY_DESCRIPTION  "dc.description"
+
+// An entity responsible for making the resource available
 #define PD_META_KEY_PUBLISHER    "dc.publisher"
+
+// An entity responsible for making contributions to the content of the resource
 #define PD_META_KEY_CONTRIBUTOR  "dc.contributor"
+
+// A date associated with an event in the life cycle of the resource
 #define PD_META_KEY_DATE         "dc.date"
+
+// The nature or genre of the content of the resource
+// See http://dublincore.org/documents/dcmi-type-vocabulary/
 #define PD_META_KEY_TYPE         "dc.type"
-#define PD_META_KEY_FORMAT       "dc.format" /* always mime:application/abiword */
+
+// The physical or digital manifestation of the resource. mime-type-ish
+// always application/x-abiword
+#define PD_META_KEY_FORMAT       "dc.format"
+
+// A Reference to a resource from which the present resource is derived
 #define PD_META_KEY_SOURCE       "dc.source"
+
+// A language of the intellectual content of the resource
 #define PD_META_KEY_LANGUAGE     "dc.language"
+
+// A reference to a related resource (see-also)
 #define PD_META_KEY_RELATION     "dc.relation"
+
+// The extent or scope of the content of the resource
+// spatial location, temporal period, or jurisdiction
 #define PD_META_KEY_COVERAGE     "dc.coverage"
+
+// Information about rights held in and over the resource
 #define PD_META_KEY_RIGHTS       "dc.rights"
 
+/////////////////////////////////////////////////////////
 // abiword extensions to the dublin core element set
+/////////////////////////////////////////////////////////
+
+// searchable, indexable keywords
 #define PD_META_KEY_KEYWORDS     "abiword.keywords"
 
-// proper prefixes for the 3 namespaces that we support
-#define DC_META_PREFIX      "dc."
-#define ABIWORD_META_PREFIX "abiword."
-#define CUSTOM_META_PREFIX  "custom."
+// the time this document was created
+#define PD_META_KEY_DATE_CREATED "abiword.date_created"
+
+// the last time this document was saved
+#define PD_META_KEY_DATE_LAST_CHANGED "abiword.date_last_changed"
+
+// the creator (product) of this document. AbiWord, KWord, etc...
+#define PD_META_KEY_GENERATOR "abiword.generator"
 
 /*!
  PD_Document is the representation for a document.
