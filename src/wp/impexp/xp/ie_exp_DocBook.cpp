@@ -643,7 +643,7 @@ bool s_DocBook_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->write(UT_basename(m_pie->getFileName()));
 					m_pie->write("_data/");
 					m_pie->write(buf);
-					m_pie->write("\" format = \"png\"></imageobject>");
+					m_pie->write("\" format=\"PNG\"></imagedata></imageobject>");
                     m_pie->write("</mediaobject></figure>");
 					
 				}
