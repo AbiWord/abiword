@@ -75,7 +75,7 @@ distribution: $(DIST_DEPS)
 	sed "s|ABI_BUILD_VERSION|$(ABI_BUILD_VERSION)|g; s|OUTDIR|$(OUTDIR)|g" package.qpg > abipackage.qpg
 	@rm -f *.qp[rmk]
 	packager  abipackage.qpg
-	@tar -cvzf abiword-$(ABI_BUILD_VERSION).qpr *.qp[mk]
-	@rm -f *.qp[mk]
+	@tar -cvzf abiword-$(ABI_BUILD_VERSION).qpr *.qp[mk] *.repdata
+	@rm -Rf *.qp[mk] *.repdata
 	@echo "Finished building distributions"
 	

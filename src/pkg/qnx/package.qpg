@@ -4,7 +4,7 @@
       <QPG:Defaults type="qnx_package"/>
       <QPG:Source></QPG:Source>
       <QPG:Release number="+"/>
-      <QPG:Build></QPG:Build>
+      <QPG:Build>date</QPG:Build>
       <QPG:FileSorting strip="yes"/>
       <QPG:Package targets="combine"/>
       <QPG:Repository generate="no"/>
@@ -18,19 +18,12 @@
       <QPG:Group></QPG:Group>
       <QPG:Team></QPG:Team>
       <QPG:Employee></QPG:Employee>
-      <QPG:EmailAddress></QPG:EmailAddress>
+      <QPG:EmailAddress>phearbear@home.se</QPG:EmailAddress>
    </QPG:Responsible>
 
-   <QPG:Values>
-      <QPG:Files>
-         <QPG:Add type="tree" file="OUTDIR/AbiSuite" install="usr/local/AbiSuite/"/>
-         <QPG:Add file="./AbiWord" install="usr/photon/bin/abiword"/>
-         <QPG:Add file="OUTDIR/bin/AbiWord_d" install="usr/photon/bin/"/>
-				 <QPG:Add file="./Dingbats.ttf" install="/usr/photon/font_repository/"/>
-				 <QPG:Add file="./symbol.ttf" install="/usr/photon/font_repository/"/>
-      </QPG:Files>
 
-      <QPG:PackageFilter>
+   <QPG:Values>
+  <QPG:PackageFilter>
          <QPM:PackageManifest>
             <QPM:PackageDescription>
                <QPM:PackageType>Application</QPM:PackageType>
@@ -42,15 +35,15 @@
                <QPM:ProductName>AbiWord</QPM:ProductName>
                <QPM:ProductIdentifier>ph_abiword</QPM:ProductIdentifier>
                <QPM:ProductEmail></QPM:ProductEmail>
-               <QPM:VendorName>abisource</QPM:VendorName>
-               <QPM:VendorInstallName>abisource</QPM:VendorInstallName>
+               <QPM:VendorName>Abisource</QPM:VendorName>
+               <QPM:VendorInstallName>Abisource</QPM:VendorInstallName>
                <QPM:VendorURL>http://www.abisource.com</QPM:VendorURL>
                <QPM:VendorEmbedURL></QPM:VendorEmbedURL>
-               <QPM:VendorEmail></QPM:VendorEmail>
-               <QPM:AuthorName>AbiSource</QPM:AuthorName>
+               <QPM:VendorEmail>phearbear@home.se</QPM:VendorEmail>
+               <QPM:AuthorName>Johan Bjork</QPM:AuthorName>
                <QPM:AuthorURL>http://www.abisource.com</QPM:AuthorURL>
                <QPM:AuthorEmbedURL></QPM:AuthorEmbedURL>
-               <QPM:AuthorEmail></QPM:AuthorEmail>
+               <QPM:AuthorEmail>phearbear@home.se</QPM:AuthorEmail>
                <QPM:ProductIconSmall></QPM:ProductIconSmall>
                <QPM:ProductIconLarge></QPM:ProductIconLarge>
                <QPM:ProductDescriptionShort>This is a full featured Word-like editor.</QPM:ProductDescriptionShort>
@@ -69,6 +62,8 @@
                <QPM:ReleaseCopyright>GNU General Public License</QPM:ReleaseCopyright>
             </QPM:ReleaseDescription>
 
+				    <QPM:LicenseUrl>repdata://LicenseUrl/license.txt</QPM:LicenseUrl>
+
             <QPM:ContentDescription>
                <QPM:ContentTopic xmlmultiple="true">Home and Personal/Office Suites</QPM:ContentTopic>
                <QPM:ContentKeyword>abiword,word,editor,abisource</QPM:ContentKeyword>
@@ -76,9 +71,24 @@
                <QPM:TargetAudience xmlmultiple="true">User</QPM:TargetAudience>
             </QPM:ContentDescription>
 
-         </QPM:PackageManifest>
+					 <QPM:Launch name="AbiWord" xmlmultiple="true">
+            <QPM:String name="Topic" value="Applications/Editors" xmlmultiple="true"/>
+            <QPM:String name="Command" value="ABISUITE_HOME=/usr/local/AbiSuite/ /usr/photon/bin/AbiWord_d" xmlmultiple="true"/>
+         </QPM:Launch>
+
+      </QPM:PackageManifest>
       </QPG:PackageFilter>
 
+      <QPG:Files>
+         <QPG:Add type="tree" file="OUTDIR/AbiSuite" install="usr/local/AbiSuite/"/>
+         <QPG:Add file="./AbiWord" install="usr/photon/bin/abiword"/>
+         <QPG:Add file="OUTDIR/bin/AbiWord_d" install="usr/photon/bin/"/>
+				 <QPG:Add file="./Dingbats.ttf" install="/usr/photon/font_repository/"/>
+				 <QPG:Add file="./symbol.ttf" install="/usr/photon/font_repository/"/>
+				 <QPG:Add file="OUTDIR/../../COPYING" install="LicenseUrl/license.txt" handling="repdata"/>
+      </QPG:Files>
+
+    
       <QPG:PackageFilter proc="any">
          <QPM:PackageManifest>
             <QPM:ProductInstallationDependencies>
@@ -112,20 +122,7 @@
             
 					</QPM:ProductInstallationProcedure>
          </QPM:PackageManifest>
+       </QPG:PackageFilter>
 
-         <QPM:Launch name="AbiWord" xmlmultiple="true">
-            <QPM:String name="Topic" value="Applications/Editors" xmlmultiple="true"/>
-            <QPM:String name="Command" value="/bin/ksh -c /usr/photon/bin/abiword" xmlmultiple="true"/>
-            <QPM:String name="Icon" value="/usr/share/icons/topics/document_letter_office_suite.gif" xmlmultiple="true"/>
-         </QPM:Launch>
-      </QPG:PackageFilter>
-
-      <QPG:PackageFilter proc="x86" target="none">
-         <QPM:PackageManifest>
-            <QPM:ProductInstallationDependencies>
-               <QPM:ProductRequirements></QPM:ProductRequirements>
-            </QPM:ProductInstallationDependencies>
-         </QPM:PackageManifest>
-      </QPG:PackageFilter>
    </QPG:Values>
 </QPG:Generation>
