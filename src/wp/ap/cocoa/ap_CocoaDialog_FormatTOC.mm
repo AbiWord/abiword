@@ -68,7 +68,7 @@ void AP_CocoaDialog_FormatTOC::setTOCPropsInGUI(void)
 
 void AP_CocoaDialog_FormatTOC::setSensitivity(bool bSensitive)
 {
-	[m_dlg enableApply:(bSensitive?YES:NO)];
+	[m_dlg setSensitivity:(bSensitive ? YES : NO)];
 }
 
 void AP_CocoaDialog_FormatTOC::destroy(void)
@@ -234,54 +234,97 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 		 */
 		sVal = _xap->getTOCPropVal("toc-has-heading");
 		BOOL bHasHeading = (sVal == "1") ? YES : NO;
-		[_hasHeadingBtn setState:(bHasHeading ? NSOnState : NSOffState)];
+		[    _hasHeadingBtn setState:(bHasHeading ? NSOnState : NSOffState)];
 
 		[_headingTextData setEnabled:bHasHeading];
 		[_headingStyleBtn setEnabled:bHasHeading];
 
 		sVal = _xap->getTOCPropVal("toc-heading");
-		[ _headingTextData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+		[  _headingTextData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
 
 		sVal = _xap->getTOCPropVal("toc-heading-style");
-		[_headingStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+		[ _headingStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+	}
+	[self   syncMainLevelSettings];
+	[self syncDetailLevelSettings];
+}
+
+- (void)syncMainLevelSettings
+{
+	if (_xap) {
+		UT_UTF8String sVal;
 
 		/* Main Properties
 		 */
 		sVal = _xap->getTOCPropVal("toc-has-label", _xap->getMainLevel());
 		BOOL bHasLabel = (sVal == "1") ? YES : NO;
-		[_hasLabelBtn setState:(bHasLabel ? NSOnState : NSOffState)];
+		[      _hasLabelBtn setState:(bHasLabel ? NSOnState : NSOffState)];
 
-		[   _fillStyleData setEnabled:bHasLabel];
-		[_displayStyleData setEnabled:bHasLabel];
+		[    _fillStyleData setEnabled:bHasLabel];
+		[ _displayStyleData setEnabled:bHasLabel];
 
 		sVal = _xap->getTOCPropVal("toc-source-style", _xap->getMainLevel());
-		[   _fillStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+		[    _fillStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
 
 		sVal = _xap->getTOCPropVal("toc-dest-style", _xap->getMainLevel());
-		[_displayStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+		[ _displayStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+	}
+}
+
+- (void)syncDetailLevelSettings
+{
+	if (_xap) {
+		FV_View * pView = 0;
+
+		if (XAP_Frame * pFrame = _xap->getActiveFrame())
+			{
+				pView = static_cast<FV_View *>(pFrame->getCurrentView());
+			}
+		if (!pView)
+			{
+				[self setSensitivity:NO];
+				return;
+			}
+
+		UT_UTF8String sVal;
 
 		/* Label Definitions
 		 */
 		sVal = _xap->getTOCPropVal("toc-label-start", _xap->getDetailsLevel());
-		[     _startAtData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+		[      _startAtData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
 
 		sVal = _xap->getTOCPropVal("toc-label-before", _xap->getDetailsLevel());
-		[  _textBeforeData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+		[   _textBeforeData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
 
-		// TODO: numbering type
+		sVal = _xap->getTOCPropVal("toc-label-type", _xap->getDetailsLevel());
+		[_numberingTypeData selectItemAtIndex:((int) (pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str())))];
 
 		sVal = _xap->getTOCPropVal("toc-label-after", _xap->getDetailsLevel());
-		[   _textAfterData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+		[    _textAfterData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
 
 		sVal = _xap->getTOCPropVal("toc-label-inherits", _xap->getDetailsLevel());
 		BOOL bInherits = (sVal == "1") ? YES : NO;
-		[_inheritLabelBtn setState:(bInherits ? NSOnState : NSOffState)];
+		[ _inheritLabelBtn setState:(bInherits ? NSOnState : NSOffState)];
 
 		/* Tabs & Page Nos
 		 */
-		// TODO: Tab leader
+		sVal = _xap->getTOCPropVal("toc-tab-leader", _xap->getDetailsLevel());
 
-		// TODO: Page No.
+		int iTabLeader = 1;
+
+		if      (UT_stricmp(sVal.utf8_str(), "none"     ) == 0)
+			iTabLeader = 0;
+		else if (UT_stricmp(sVal.utf8_str(), "dot"      ) == 0)
+			iTabLeader = 1;
+		else if (UT_stricmp(sVal.utf8_str(), "hyphen"   ) == 0)
+			iTabLeader = 2;
+		else if (UT_stricmp(sVal.utf8_str(), "underline") == 0)
+			iTabLeader = 3;
+
+		[   _tabLeadersData selectItemAtIndex:iTabLeader];
+
+		sVal = _xap->getTOCPropVal("toc-page-type", _xap->getDetailsLevel());
+		[_pageNumberingData selectItemAtIndex:((int) (pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str())))];
 
 		sVal = _xap->getTOCPropVal("toc-indent", _xap->getDetailsLevel());
 		[      _indentData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
@@ -290,22 +333,50 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)headingStyleAction:(id)sender
 {
-	// TODO
+	if (_xap) {
+		UT_UTF8String sTOCProp = "toc-heading-style";
+
+		UT_UTF8String sVal = _xap->getNewStyle(sTOCProp);
+
+		[[self window] makeKeyAndOrderFront:self];
+
+		[ _headingStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+	}
 }
 
 - (IBAction)fillStyleAction:(id)sender
 {
-	// TODO
+	if (_xap) {
+		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getMainLevel());
+		UT_UTF8String sTOCProp = "toc-source-style";
+		sTOCProp += sLevelNo;
+
+		UT_UTF8String sVal = _xap->getNewStyle(sTOCProp);
+
+		[[self window] makeKeyAndOrderFront:self];
+
+		[    _fillStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+	}
 }
 
 - (IBAction)displayStyleAction:(id)sender
 {
-	// TODO
+	if (_xap) {
+		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getMainLevel());
+		UT_UTF8String sTOCProp = "toc-dest-style";
+		sTOCProp += sLevelNo;
+
+		UT_UTF8String sVal = _xap->getNewStyle(sTOCProp);
+
+		[[self window] makeKeyAndOrderFront:self];
+
+		[ _displayStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+	}
 }
 
 - (IBAction)startAtStepperAction:(id)sender
 {
-	_xap->incrementIndent(_xap->getDetailsLevel(), ([_startAtStepper intValue] > 1));
+	_xap->incrementStartAt(_xap->getDetailsLevel(), ([_startAtStepper intValue] > 1));
 	[_startAtStepper setIntValue:1];
 
 	UT_UTF8String sVal = _xap->getTOCPropVal("toc-label-start", _xap->getDetailsLevel());
@@ -314,7 +385,7 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)startAtAction:(id)sender
 {
-	// TODO
+	// TODO ??
 }
 
 - (IBAction)indentStepperAction:(id)sender
@@ -328,50 +399,180 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (IBAction)indentAction:(id)sender
 {
-	// TODO
+	// TODO ??
 }
 
 - (IBAction)mainLevelAction:(id)sender
 {
+	[self saveMainLevelSettings];
+
 	_xap->setMainLevel([[sender selectedItem] tag]);
-	[self sync];
+
+	[self syncMainLevelSettings];
 }
 
 - (IBAction)detailLevelAction:(id)sender
 {
+	[self saveDetailLevelSettings];
+
 	_xap->setDetailsLevel([[sender selectedItem] tag]);
-	[self sync];
+
+	[self syncDetailLevelSettings];
 }
 
+- (void)saveMainLevelSettings
+{
+	if (_xap) {
+		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getMainLevel());
+		UT_UTF8String sTOCProp;
+		UT_UTF8String sVal;
+
+		sTOCProp  = "toc-has-label";
+		sTOCProp += sLevelNo;
+		if ([_hasLabelBtn state] == NSOnState)
+			sVal = "1";
+		else
+			sVal = "0";
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		sTOCProp  = "toc-source-style";
+		sTOCProp += sLevelNo;
+		sVal = [[    _fillStyleData stringValue] UTF8String];
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		sTOCProp  = "toc-dest-style";
+		sTOCProp += sLevelNo;
+		sVal = [[ _displayStyleData stringValue] UTF8String];
+		_xap->setTOCProperty(sTOCProp, sVal);
+	}
+}
+
+- (void)saveDetaiLevelSettings
+{
+	if (_xap) {
+		const UT_GenericVector<const XML_Char *> * vecPropList = _xap->getVecLabelPropValue();
+
+		UT_UTF8String sLevelNo = UT_UTF8String_sprintf("%d", _xap->getDetailsLevel());
+		UT_UTF8String sTOCProp;
+		UT_UTF8String sVal;
+
+		/* Label Definitions
+		 */
+		// sTOCProp  = "toc-label-start";
+		// sTOCProp += sLevelNo;
+
+		sTOCProp  = "toc-label-before";
+		sTOCProp += sLevelNo;
+		sVal = [[   _textBeforeData stringValue] UTF8String];
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		sTOCProp  = "toc-label-type";
+		sTOCProp += sLevelNo;
+		sVal = vecPropList->getNthItem((UT_sint32) [_numberingTypeData indexOfSelectedItem]);
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		sTOCProp  = "toc-label-after";
+		sTOCProp += sLevelNo;
+		sVal = [[    _textAfterData stringValue] UTF8String];
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		sTOCProp  = "toc-label-inherits";
+		sTOCProp += sLevelNo;
+		if ([ _inheritLabelBtn state] == NSOnState)
+			sVal = "1";
+		else
+			sVal = "0";
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		/* Tabs & Page Nos
+		 */
+		sTOCProp  = "toc-tab-leader";
+		sTOCProp += sLevelNo;
+		switch ([_tabLeadersData indexOfSelectedItem])
+			{
+			case 0:
+				sVal = "none";
+				break;
+			default:
+			case 1:
+				sVal = "dot";
+				break;
+			case 2:
+				sVal = "hyphen";
+				break;
+			case 3:
+				sVal = "underline";
+				break;
+			}
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		sTOCProp  = "toc-page-type";
+		sTOCProp += sLevelNo;
+		sVal = vecPropList->getNthItem((UT_sint32) [_pageNumberingData indexOfSelectedItem]);
+		_xap->setTOCProperty(sTOCProp, sVal);
+
+		// sTOCProp  = "toc-indent";
+		// sTOCProp += sLevelNo;
+	}
+}
 
 - (IBAction)applyAction:(id)sender
 {
-	UT_DEBUGMSG(("Doing apply \n"));
+	[self  saveMainLevelSettings];
+	[self saveDetaiLevelSettings];
 
-// Heading Text
+	UT_UTF8String sTOCProp;
+	UT_UTF8String sVal;
 
-	UT_UTF8String sVal = [[_headingTextData stringValue] UTF8String];
-	_xap->setTOCProperty("toc-heading",sVal.utf8_str());
+	sTOCProp = "toc-has-heading";
+	if ([_hasHeadingBtn state] == NSOnState)
+		sVal = "1";
+	else
+		sVal = "0";
+	_xap->setTOCProperty(sTOCProp, sVal);
 
-// Text before and after
-
-	UT_String sNum =  UT_String_sprintf("%d",_xap->getDetailsLevel());
-
-	sVal = [[_textAfterData stringValue] UTF8String];
-	UT_UTF8String sProp = "toc-label-after";
-	sProp += sNum.c_str();
-	_xap->setTOCProperty(sProp, sVal);
-
-	sVal = [[_textBeforeData stringValue] UTF8String];
-	sProp = "toc-label-before";
-	sProp += sNum.c_str();
-	_xap->setTOCProperty(sProp, sVal);
+	sTOCProp = "toc-heading";
+	sVal = [[ _headingTextData stringValue] UTF8String];
+	_xap->setTOCProperty(sTOCProp, sVal);
 	
+	sTOCProp = "toc-heading-style";
+	sVal = [[_headingStyleData stringValue] UTF8String];
+	_xap->setTOCProperty(sTOCProp, sVal);
+
 	_xap->Apply();
 }
 
-- (void)enableApply:(BOOL)enable
+- (void)setSensitivity:(BOOL)enable
 {
+	[   _mainLevelPopup setEnabled:enable];
+	[ _layoutLevelPopup setEnabled:enable];
+
+	[  _headingTextData setEnabled:enable];
+	[  _headingStyleBtn setEnabled:enable];
+
+	[    _fillStyleData setEnabled:enable];
+	[ _displayStyleData setEnabled:enable];
+
+	[  _headingStyleBtn setEnabled:enable];
+	[     _fillStyleBtn setEnabled:enable];
+	[  _displayStyleBtn setEnabled:enable];
+
+	[    _hasHeadingBtn setEnabled:enable];
+	[      _hasLabelBtn setEnabled:enable];
+
+	[   _startAtStepper setEnabled:enable];
+	[    _indentStepper setEnabled:enable];
+
+	[   _textBeforeData setEnabled:enable];
+	[    _textAfterData setEnabled:enable];
+
+	[  _inheritLabelBtn setEnabled:enable];
+
+	[_numberingTypeData setEnabled:enable];
+	[_pageNumberingData setEnabled:enable];
+
+	[   _tabLeadersData setEnabled:enable];
+
 	[_applyBtn setEnabled:enable];
 }
 

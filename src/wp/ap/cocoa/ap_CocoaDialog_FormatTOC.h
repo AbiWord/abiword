@@ -114,11 +114,17 @@ private:
 - (IBAction)displayStyleAction:(id)sender;
 - (IBAction)applyAction:(id)sender;
 
-- (void)enableApply:(BOOL)enable;
+- (void)setSensitivity:(BOOL)enable;
 
 - (void)createLevelItems:(NSPopUpButton *)popup;
 - (void)createNumberingItems:(NSPopUpButton *)popup;
+
 - (void)sync;
+- (void)syncMainLevelSettings;
+- (void)syncDetailLevelSettings;
+
+- (void)saveMainLevelSettings;
+- (void)saveDetailLevelSettings;
 @end
 
 #endif /* AP_COCOADIALOG_FORMATOC_H */
