@@ -175,7 +175,8 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 						because the width of the run is dependent on its position
 						on the line and the  postion can only be determined after
 						the run has been added to the line. So we have to take
-						care of this
+						care of this and we also have to add any runs between the
+						last run on the line and this one
 					*/
 					
 					fp_Line * pRunsLine = pCurrentRun->getLine();
@@ -186,9 +187,26 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 						UT_DEBUGMSG(("fb_LineBreaker::breakLine: Tab run (0x%x) belonging to different line\n"
 									 "		 pLine 0x%x, pRunsLine 0x%x\n"
 									 ,pCurrentRun, pLine, pRunsLine));
-									
-						pRunsLine->removeRun(pCurrentRun,true);
-						pLine->addRun(pCurrentRun);
+
+						if(pOriginalLastOnLine)
+						{
+							// if there are some runs between this tab ran and the last run that the line knows
+							// belongs to it; we have to add these as well
+							fp_Run * pRun = pOriginalLastOnLine->getNext();
+							while(pRun)
+							{
+								fp_Line * pL = pRun->getLine();
+								if(pL)
+								{
+									pL->removeRun(pRun,true);
+									pLine->addRun(pRun);
+								}
+								if(pRun == pCurrentRun)
+									break;
+
+								pRun = pRun->getNext();
+							}
+						}
 					}
 					
 					FL_WORKING_DIRECTION eWorkingDirection;
