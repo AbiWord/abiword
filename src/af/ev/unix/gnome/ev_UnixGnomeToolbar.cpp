@@ -45,6 +45,7 @@
 extern "C" {
 #include <gal/widgets/gtk-combo-text.h>
 #include <gal/widgets/widget-color-combo.h>
+#include <gal/widgets/color-group.h>
 #include <gal/widgets/widget-pixmap-combo.h>
 }
 

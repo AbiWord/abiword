@@ -189,6 +189,7 @@ menuitem(HELP_ABOUT)
 menuitem(HELP_ABOUTOS)
 menuitem(HELP_ABOUT_GNU)
 menuitem(HELP_ABOUT_GNOMEOFFICE)
+menuitem(HELP_REPORT_BUG)
 
 menuitem(SPELL_SUGGEST_1)		// _suggest_1 thru _suggest_9 must be contiguous
 menuitem(SPELL_SUGGEST_2)

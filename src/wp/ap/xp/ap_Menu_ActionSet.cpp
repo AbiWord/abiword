@@ -218,6 +218,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_HELP_ABOUT_GNU, 0,0,0, "helpAboutGnu", NULL, NULL);
 	_s(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE, 0,0,0, "helpAboutGnomeOffice", NULL, NULL);
 	_s(AP_MENU_ID_HELP_CREDITS, 0,0,0, "helpCredits", NULL, NULL);
+	_s(AP_MENU_ID_HELP_REPORT_BUG, 0,0,0, "helpReportBug", NULL, NULL);
 
 	_s(AP_MENU_ID_SPELL_SUGGEST_1,	0,0,0,	"spellSuggest_1",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
 	_s(AP_MENU_ID_SPELL_SUGGEST_2,	0,0,0,	"spellSuggest_2",	ap_GetState_Suggest,	ap_GetLabel_Suggest);

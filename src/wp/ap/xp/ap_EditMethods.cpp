@@ -415,6 +415,7 @@ public:
   static EV_EditMethod_Fn helpAboutGnu;
   static EV_EditMethod_Fn helpAboutGnomeOffice;
   static EV_EditMethod_Fn helpCredits;
+  static EV_EditMethod_Fn helpReportBug;
 
 	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
@@ -688,6 +689,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpContents),			0,		""),
 	EV_EditMethod(NF(helpCredits), 0, ""),
 	EV_EditMethod(NF(helpIndex),			0,		""),
+	EV_EditMethod(NF(helpReportBug), 0, ""),
 	EV_EditMethod(NF(helpSearch),			0,		""),
 	EV_EditMethod(NF(hyperlinkJump),		0,		""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
@@ -2355,6 +2357,11 @@ Defun1(helpCheckVer)
 	UT_String versionURL = "http://www.abisource.com/users/check_version.phtml?version=";
 	versionURL += XAP_App::s_szBuild_Version;
  	return _helpOpenURL(pAV_View, versionURL.c_str());
+}
+
+Defun1(helpReportBug)
+{
+  return _helpOpenURL(pAV_View, "http://www.abisource.com/support/bugs/");
 }
 
 Defun1(helpSearch)
