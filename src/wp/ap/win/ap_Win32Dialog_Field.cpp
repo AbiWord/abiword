@@ -135,12 +135,14 @@ BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	_DSX(FIELD_BTN_OK,			DLG_OK);
 	_DSX(FIELD_BTN_CANCEL,		DLG_Cancel);
 	
-	_DS(FIELD_TEXT_TYPES, 	 	DLG_Field_Types);
+	_DS(FIELD_TEXT_TYPES,		DLG_Field_Types);
 	_DS(FIELD_TEXT_FORMATS, 	DLG_Field_Fields);
-	
+	_DS(FIELD_TEXT_PARAM,		DLG_Field_Parameters);
+
 	// set initial state
 	m_hwndTypes = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_LIST_TYPES);
 	m_hwndFormats = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_LIST_FORMATS);
+	m_hwndParam = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_EDIT_PARAM);
 	SetTypesList();
 	SetFieldsList();
 	SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
@@ -161,6 +163,10 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		// fall through
 		
 	case IDOK:				// also AP_RID_DIALOG_FIELD_BTN_OK
+		// set the extra param
+		XML_Char param[256];
+		GetWindowText(m_hwndParam,(LPTSTR) &param[0], 256);
+		setParameter(param);
 		EndDialog(hWnd,0);
 		return 1;
 	case AP_RID_DIALOG_FIELD_LIST_TYPES:

@@ -27,21 +27,22 @@ class XAP_Win32Frame;
 class AP_Win32Dialog_Field : public AP_Dialog_Field
 {
 public:
-    AP_Win32Dialog_Field(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id);
+	AP_Win32Dialog_Field(XAP_DialogFactory * pDlgFactory,XAP_Dialog_Id id);
 
-    virtual void      runModal(XAP_Frame * pFrame);
+	virtual void	  runModal(XAP_Frame * pFrame);
 
-    static XAP_Dialog *   static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-    static BOOL CALLBACK  s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	static XAP_Dialog *   static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static BOOL CALLBACK  s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 protected:
-    BOOL          _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-    BOOL          _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL		  _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL		  _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 private:
-    HWND m_hwndTypes;
-    HWND m_hwndFormats;
-    void SetTypesList(void);
-    void SetFieldsList(void);
-    void _FormatListBoxChange(void);
+	HWND m_hwndTypes;
+	HWND m_hwndFormats;
+	HWND m_hwndParam;
+	void SetTypesList(void);
+	void SetFieldsList(void);
+	void _FormatListBoxChange(void);
 };
 
 #endif /* AP_WIN32DIALOG_FIELD_H */
