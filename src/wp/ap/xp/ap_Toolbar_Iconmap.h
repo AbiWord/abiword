@@ -177,8 +177,10 @@ toolbariconmap(OPTIONSDLG, tb_LineLeft_xpm)
 toolbariconmap(_BOGUS2__,NoIcon)
 		
 // Mappings to ID_LANG to non-default icons
-toolbariconmap(LISTS_BULLETS_fi-FI,tb_lists_xpm)
-toolbariconmap(COLOR_FORE_ga-IE,NoIcon)
-toolbariconmap(COLOR_BACK_ga-IE,NoIcon)
-toolbariconmap(LISTS_BULLETS_id-ID,tb_lists_xpm)
+// We can do specific mappings for some languages. For example,
+// in Spainsh, some applications use N for Negrita instead of B for Bold
+// For now, we do not use this.
+//
+// SAMPLE: toolbariconmap(LISTS_BULLETS_fi-FI,tb_lists_xpm)
+
 // Add new overloaded icons here		
