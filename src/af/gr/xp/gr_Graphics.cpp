@@ -265,7 +265,7 @@ UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
 
 double GR_Graphics::tduD(double layoutUnits) const
 {
-	return (layoutUnits * static_cast<double>(getDeviceResolution()) / static_cast<double>(getResolution())) * static_cast<double>(getZoomPercentage()) / 100.0;
+	return (layoutUnits * static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())) / (100.0 * static_cast<double>(getResolution()));
 }
 
 double GR_Graphics::tluD(double deviceUnits) const
@@ -1444,4 +1444,3 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 
 	return true;
 }
-
