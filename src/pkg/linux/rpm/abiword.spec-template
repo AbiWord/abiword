@@ -329,6 +329,7 @@ Go to http://www.aiksaurus.com and download AikSaurus and AikSaurusGTK.
 %package fonts
 Summary: AbiWord Fonts
 Group: Applications/Productivity
+Epoch: 1
 
 %description fonts
 These are the basic fonts used by AbiWord.
@@ -340,26 +341,12 @@ Group: Applications/Productivity
 %description clipart
 This is the clipart portfolio used by AbiWord.
 
-%package help-de-DE
-Summary: AbiWord Help for de-DE
-Group: Documentation
-
-%description help-de-DE
-This is the AbiWord Manual for German.
-
-%package help-es-ES
-Summary: AbiWord Help for es-ES
-Group: Documentation
-
-%description help-es-ES
-This is the AbiWord Manual for Spanish.
-
-%package help-fr-FR
-Summary: AbiWord Help for fr-FR
-Group: Documentation
-
-%description help-fr-FR
-This is the AbiWord Manual for French.
+#%package help-de-DE
+#Summary: AbiWord Help for de-DE
+#Group: Documentation
+#
+#%description help-de-DE
+#This is the AbiWord Manual for German.
 
 %prep
 %__rm -rf $RPM_BUILD_ROOT
@@ -426,10 +413,7 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/COPYING
 %{ABIPREFIX}/AbiSuite/readme.txt
 %{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
-%{ABIPREFIX}/AbiSuite/AbiWord/help/images
 %{ABIPREFIX}/AbiSuite/AbiWord/help/en-US
-%{ABIPREFIX}/AbiSuite/AbiWord/help/index.html
-%{ABIPREFIX}/AbiSuite/AbiWord/sample
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
 %{ABIPREFIX}/AbiSuite/bin
@@ -516,17 +500,9 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/fonts/*.e2u
 %{ABIPREFIX}/AbiSuite/fonts/*.u2g
 
-%files help-de-DE
-%defattr(-,root,root)
-%{ABIPREFIX}/AbiSuite/AbiWord/help/de-DE
-
-%files help-es-ES
-%defattr(-,root,root)
-%{ABIPREFIX}/AbiSuite/AbiWord/help/es-ES
-
-%files help-fr-FR
-%defattr(-,root,root)
-%{ABIPREFIX}/AbiSuite/AbiWord/help/fr-FR
+#%files help-de-DE
+#%defattr(-,root,root)
+#%{ABIPREFIX}/AbiSuite/AbiWord/help/de-DE
 
 %post
 
@@ -535,16 +511,22 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %__ln_s -f %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
 
 %postun
-%__rm -f %{prefix}/bin/abiword
+if test ! -x %{ABIPREFIX}/AbiSuite/bin/AbiWord ; then
+  %__rm -f %{prefix}/bin/abiword
+fi
 
 %post fonts
-if test -x /usr/sbin/chkfontpath ; then
-  /usr/sbin/chkfontpath --add %{ABIPREFIX}/AbiSuite/fonts
+if test -z "`grep AbiSuite /etc/X11/fs/config`" ; then
+  if test -x /usr/sbin/chkfontpath ; then
+    /usr/sbin/chkfontpath --add %{ABIPREFIX}/AbiSuite/fonts
+  fi
 fi
 
 %postun fonts
-if test -x /usr/sbin/chkfontpath ; then
-  /usr/sbin/chkfontpath --remove %{ABIPREFIX}/AbiSuite/fonts
+if test ! -e %{ABIPREFIX}/AbiSuite/fonts/fonts.dir ; then
+  if test -x /usr/sbin/chkfontpath ; then
+    /usr/sbin/chkfontpath --remove %{ABIPREFIX}/AbiSuite/fonts
+  fi
 fi
 
 %changelog
