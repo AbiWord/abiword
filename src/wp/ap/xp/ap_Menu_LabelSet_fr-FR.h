@@ -188,7 +188,7 @@ BeginSetEnc(fr,FR,true,"iso-8859-1")
     MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE,	"Référence",				"")
     MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION,	"Salutation",				"")
     MenuLabel(AP_MENU_ID_AUTOTEXT_SUBJECT,		"Objet",					"")
-    MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL,		"Email",					"")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL,		"Courriel",					"")
 
 	MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN_1, "%s", " ")
 	MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN_2, "%s", " ")
