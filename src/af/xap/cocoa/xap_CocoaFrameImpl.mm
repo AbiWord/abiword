@@ -450,56 +450,21 @@ bool XAP_CocoaFrameImpl::_updateTitle()
 bool XAP_CocoaFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
-#if 0
 	bool bResult = true;
 
 	UT_ASSERT(!m_pCocoaPopup);
 
-	m_pCocoaPopup = new EV_CocoaMenuPopup(m_pCocoaApp,this,szMenuName,m_szMenuLabelSetName);
-	if (m_pCocoaPopup && m_pCocoaPopup->synthesizeMenuPopup())
-	{
-		// the popup will steal the mouse and so we won't get the
-		// button_release_event and we won't know to release our
-		// grab.  so let's do it here.  (when raised from a keyboard
-		// context menu, we may not have a grab, but that should be ok.
-
-		GtkWidget * w = gtk_grab_get_current();
-		if (w)
-		{
-			//UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
-			gtk_grab_remove(w);
-		}
-
-		translateDocumentToScreen(x,y);
-
-		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
-		UT_Point pt;
-		pt.x = x;
-		pt.y = y;
-//
-// OK lets not immediately drop the menu if the user releases the mouse button.
-// From the gtk FAQ.
-//
-		GdkEvent * event = gtk_get_current_event();
-		GdkEventButton *bevent = (GdkEventButton *) event; 
-		gtk_menu_popup(GTK_MENU(m_pCocoaPopup->getMenuHandle()), NULL, NULL,
-					   s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
-
-		// We run this menu synchronously, since GTK doesn't.
-		// Popup menus have a special "unmap" function to call
-		// gtk_main_quit() when they're done.
-		gtk_main();
+	m_pCocoaPopup = new EV_CocoaMenuPopup(m_pCocoaApp,szMenuName,m_szMenuLabelSetName);
+	if (m_pCocoaPopup && m_pCocoaPopup->synthesizeMenuPopup()) {
+		NSEvent *evt = [NSApp currentEvent];
+		[NSMenu popUpContextMenu:m_pCocoaPopup->getMenuHandle() withEvent:evt forView:[m_frameController getMainView]];
 	}
-	XAP_Frame * pFrame = (XAP_Frame *) this;
-	if (pFrame->getCurrentView())
-	{
+	XAP_Frame * pFrame = (XAP_Frame *)getFrame();
+	if (pFrame->getCurrentView()) {
 		pFrame->getCurrentView()->focusChange( AV_FOCUS_HERE);
 	}
 	DELETEP(m_pCocoaPopup);
 	return bResult;
-#endif
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return false;
 }
 
 void XAP_CocoaFrameImpl::setTimeOfLastEvent(NSTimeInterval timestamp)

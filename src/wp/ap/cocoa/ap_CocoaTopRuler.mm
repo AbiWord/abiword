@@ -83,8 +83,7 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 	[[NSNotificationCenter defaultCenter] addObserver:m_delegate
 			selector:@selector(viewDidResize:) 
 			name:NSViewFrameDidChangeNotification object:m_wTopRuler];
-//	[m_delegate release];
-//	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	NSRect bounds = [m_wTopRuler bounds];
 	setWidth(lrintf(bounds.size.width));
 	setHeight(lrintf(bounds.size.height));
@@ -164,9 +163,10 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, v
 {
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
+	bool rightBtn = false;
 
-	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
-	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber]);
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags], rightBtn);
+	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber], rightBtn);
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
@@ -181,8 +181,9 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, v
 - (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
 {
 	EV_EditModifierState ems = 0;
+	bool rightBtn = false;
 	
-	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags], rightBtn);
 
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
@@ -200,9 +201,10 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, v
 {
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
+	bool rightBtn = false;
 
-	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
-	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber]);
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags], rightBtn);
+	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber], rightBtn);
 
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];

@@ -47,12 +47,10 @@
 /*****************************************************************/
 
 AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
-	: AP_LeftRuler(pFrame)
+	: AP_LeftRuler(pFrame),
+		m_wLeftRuler(nil),
+		m_rootWindow(nil)
 {
-	m_rootWindow = nil;
-	m_wLeftRuler = nil;
-	m_pG = NULL;
-    // change ruler color on theme change
 	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<AP_CocoaFrameImpl*>(m_pFrame->getFrameImpl())->_getController()) getVRuler];
 }
 
@@ -63,6 +61,11 @@ AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
 		UT_usleep(100);
 	}
 	DELETEP(m_pG);
+	if (m_delegate) {
+		[[NSNotificationCenter defaultCenter] removeObserver:m_delegate];
+		[m_wLeftRuler setEventDelegate:nil];
+		[m_delegate release];
+	}
 }
 
 XAP_CocoaNSView * AP_CocoaLeftRuler::createWidget(void)
@@ -72,7 +75,6 @@ XAP_CocoaNSView * AP_CocoaLeftRuler::createWidget(void)
 
 void AP_CocoaLeftRuler::setView(AV_View * pView)
 {
-	AP_CocoaLeftRulerDelegate* delegate;
 	AP_LeftRuler::setView(pView);
 	
 	DELETEP(m_pG);
@@ -80,14 +82,13 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wLeftRuler, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
-	delegate = [[AP_CocoaLeftRulerDelegate alloc] init];
-	[m_wLeftRuler setEventDelegate:delegate];
-	[delegate setXAPOwner:this];
-	[[NSNotificationCenter defaultCenter] addObserver:delegate
+	m_delegate = [[AP_CocoaLeftRulerDelegate alloc] init];
+	[m_wLeftRuler setEventDelegate:m_delegate];
+	[m_delegate setXAPOwner:this];
+	[[NSNotificationCenter defaultCenter] addObserver:m_delegate
 			selector:@selector(viewDidResize:) 
 			name:NSViewFrameDidChangeNotification object:m_wLeftRuler];
-	[delegate release];
-//	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	NSRect bounds = [m_wLeftRuler bounds];
 	setWidth(lrintf(bounds.size.width));
 	setHeight(lrintf(bounds.size.height));
@@ -176,9 +177,10 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 {
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
+	bool rightBtn = false;
 
-	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
-	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber]);
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags], rightBtn);
+	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber], rightBtn);
 
 	NSPoint pt = [theEvent locationInWindow];
 	pt = [sender convertPoint:pt fromView:nil];
@@ -193,8 +195,9 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 - (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
 {
 	EV_EditModifierState ems = 0;
+	bool rightBtn = false;
 	
-	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags], rightBtn);
 
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
@@ -211,9 +214,10 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 {
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
+	bool rightBtn = false;
 
-	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
-	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber]);
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags], rightBtn);
+	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber], rightBtn);
 
 	// Map the mouse into coordinates relative to our window.
 	NSPoint pt = [theEvent locationInWindow];
