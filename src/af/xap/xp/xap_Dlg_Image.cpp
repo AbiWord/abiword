@@ -158,10 +158,10 @@ void XAP_Dialog_Image::setHeight(double  dHeight, bool checkaspect)
 	m_height = dHeight*72.0;
 	if(m_height < 0.0)
 	{
-		m_height = 0.0;
-		dHeight  = 0.0;
+		m_height = 0.1;
+		dHeight  = 0.1;
 	}
-	else if(m_height > m_maxWidth)
+	else if(m_height > m_maxHeight)
 	{
 		m_height = m_maxHeight;
 		dHeight = (m_maxHeight - 1)/72.0;
@@ -202,8 +202,8 @@ void XAP_Dialog_Image::setWidth(double  dWidth, bool checkaspect)
 	m_width = dWidth*72.0;
 	if(m_width < 0.0)
 	{
-		m_width = 0.0;
-		dWidth  = 0.0;
+		m_width = 0.1;
+		dWidth  = 0.1;
 	}
 	else if(m_width > m_maxWidth)
 	{
