@@ -19,6 +19,7 @@
 ## 02111-1307, USA.
 
 ABI_ROOT	:=$(shell pwd)
+PREFIX		:=/usr/local
 
 ##################################################################
 ## Useful options:
@@ -38,6 +39,13 @@ default:	compile canonical
 compile:
 	@echo Building AbiSuite with [ABI_ROOT=$(ABI_ROOT)]
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src
+
+##################################################################
+## Quick developer install with no packaging
+
+install:
+	@echo Installing AbiSuite with [PREFIX=$(PREFIX)]
+	$(MAKE) PREFIX=$(PREFIX) -C src install
 
 ##################################################################
 ## Build system library files (strings, dictionaries, example

@@ -69,6 +69,25 @@ ifeq ($(ABI_NATIVE),unix)
 endif
 
 ##################################################################
+## Target for doing a local install.  This is for developers only,
+## who otherwise wouldn't have an easy way to run the binaries
+## they're building without going through building every package
+## format.
+
+install: compile canonical
+ifeq ($(ABI_NATIVE),ufnix)
+	@echo
+	@echo Putting things in [$(PREFIX)]...
+	@echo
+	@echo TODO...
+#	(cd $(ABI_ROOT); tar -cf - $(CANONDIR)/
+else
+	@echo
+	@echo Only Unix people do \'make install\'.
+	@echo
+endif
+
+##################################################################
 ## Target for building a distribution package from the compiled
 ## sources.  Since each platform has it's own quirks, the config
 ## files in abi/src/config/platforms/*.mk must specify which

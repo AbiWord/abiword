@@ -154,6 +154,7 @@ cat >${INSTALL_BASE}/bin/AbiWord<<EOF
 
 # Change this if you move the AbiSuite tree.
 ABISUITE_HOME=${INSTALL_BASE}
+export ABISUITE_HOME
 
 # Change this if you move your fonts
 ABISUITE_FONT_HOME=\$ABISUITE_HOME/fonts
