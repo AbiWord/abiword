@@ -110,12 +110,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	pG->setZoomPercentage(iZoom);
 
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
-	ENSUREP(pDocLayout);
-	if (m_pView != NULL)
-	{
-		point = ((FV_View *) m_pView)->getPoint();
-	}
-  
+	ENSUREP(pDocLayout);  
 
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
@@ -236,27 +231,30 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	setYScrollRange();
 	updateTitle();
 
-#if 1
-	/*
-	  UPDATE:  this code is back, but I'm leaving these comments as
-	  an audit trail.  See bug 99.  This only happens when loading
-	  a document into an empty window -- the case where a frame gets
-	  reused.  TODO consider putting an expose into ap_EditMethods.cpp
-	  instead of a draw() here.
-	*/
-	
-	/*
-	  I've removed this once again.  (Eric)  I replaced it with a call
-	  to draw() which is now in the configure event handler in the GTK
-	  section of the code.  See me if this causes problems.
-	*/
-	pDocLayout->fillLayouts();
-	if (point != 0)
-		((FV_View *) m_pView)->moveInsPtTo(point);
-	m_pView->draw();
+       pDocLayout->fillLayouts();   
+
+       if (m_pView != NULL)
+        {
+	  // WL: adding this method into the UnixFrame from the win32 code to fix 2615
+	  // we cannot just set the insertion position to that of the previous
+	  // view, since the new document could be shorter or completely
+	  // different from the previous one (see bug 2615)
+	  // Instead we have to test that the original position is within
+	  // the editable bounds, and if not, we will set the point
+	  // to the end of the document (i.e., if reloading an earlier
+	  // version of the same document we try to get the point as near
+	  // the users editing position as possible
+	  point = ((FV_View *) m_pView)->getPoint();
+	  PT_DocPosition posEOD;
+	  static_cast<FV_View *>(pView)->getEditableBounds(true, posEOD, false);
+	  if(point > posEOD)
+	    point = posEOD;
+       }
    
-#endif	
-	
+      if (point != 0)
+        ((FV_View *) m_pView)->moveInsPtTo(point);
+      m_pView->draw();
+
 	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
 	{
 		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
