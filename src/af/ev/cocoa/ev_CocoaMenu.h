@@ -58,6 +58,17 @@ class AP_CocoaFrame;
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
 @end
 
+@interface EV_CocoaFontTarget : NSObject
+{
+	NSMutableArray *	m_Fonts;
+}
+- (id)init;
+- (void)dealloc;
+- (NSMenuItem *)fontMenuItem:(NSString *)title;
+- (void)menuSelected:(id)sender;
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+@end
+
 class EV_CocoaMenu : public EV_Menu
 {
 public:
@@ -83,6 +94,7 @@ private:
 	XAP_CocoaApp *			m_pCocoaApp;
 	
 	EV_CocoaMenuTarget *	m_menuTarget;
+	EV_CocoaFontTarget *	m_fontTarget;
 	XAP_CocoaAppMenu_Id		m_AppMenuCurrent;
 
 	UT_Stack *				m_menuStack;
