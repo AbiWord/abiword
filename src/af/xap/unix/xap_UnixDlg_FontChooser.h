@@ -71,6 +71,7 @@ protected:
 	// list box will show them (Windows order)
 	typedef enum
 	{	
+	        LIST_STYLE_NONE = -1,
 		LIST_STYLE_NORMAL = 0,
 		LIST_STYLE_ITALIC,
 		LIST_STYLE_BOLD,

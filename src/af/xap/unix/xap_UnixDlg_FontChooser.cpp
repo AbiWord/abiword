@@ -799,6 +799,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (!m_pFontStyle || !m_pFontWeight)
 	{
 		// select nothing
+	        st = LIST_STYLE_NONE;
 	}
 	else if (!UT_stricmp(m_pFontStyle, "normal") &&
 			 !UT_stricmp(m_pFontWeight, "normal"))
@@ -824,7 +825,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-	gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
+	if (st != LIST_STYLE_NONE)
+	  gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
 	//gtk_clist_moveto(GTK_CLIST(m_styleList), st, 0, 0, -1);
 
 	g_snprintf(sizeString, SIZE_STRING_SIZE, "%s", std_size_string(UT_convertToPoints(m_pFontSize)));
@@ -1084,6 +1086,7 @@ UT_Bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
 		case LIST_STYLE_BOLD_ITALIC:
 			styleNumber = XAP_UnixFont::STYLE_BOLD_ITALIC;
 			break;
+		case LIST_STYLE_NONE: // if we're this, selectedRow should be 0
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return UT_FALSE;
