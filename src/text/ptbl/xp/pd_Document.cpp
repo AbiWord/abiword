@@ -4856,8 +4856,12 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				// remove the revision attribute
 				if(pf->getType() == pf_Frag::PFT_Strux)
 				{
-					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
-					return changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+
+					// the changeStrux function tries to locate the strux which _contains_ the
+					// position we pass into it; however, iStart is the doc position of the actual
+					// strux, so we have to skip over the strux
+					return changeStruxFmt(PTC_RemoveFmt,iStart+1,iEnd,ppAttr,NULL, pfs->getStruxType());
 				}
 				else
 					return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
@@ -4876,7 +4880,10 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				if(pf->getType() == pf_Frag::PFT_Strux)
 				{
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
-					return changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+					// the changeStrux function tries to locate the strux which _contains_ the
+					// position we pass into it; however, iStart is the doc position of the actual
+					// strux, so we have to skip over the strux
+					return changeStruxFmt(PTC_RemoveFmt,iStart+1,iEnd,ppAttr,NULL, pfs->getStruxType());
 				}
 				else
 					return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
@@ -4901,7 +4908,10 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				if(pf->getType() == pf_Frag::PFT_Strux)
 				{
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
-					return changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+					// the changeStrux function tries to locate the strux which _contains_ the
+					// position we pass into it; however, iStart is the doc position of the actual
+					// strux, so we have to skip over the strux
+					return changeStruxFmt(PTC_RemoveFmt,iStart+1,iEnd,ppAttr,NULL, pfs->getStruxType());
 				}
 				else
 					return changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
@@ -4965,7 +4975,10 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 						if(pf->getType() == pf_Frag::PFT_Strux)
 						{
 							pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
-							bRet &= changeStruxFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL, pfs->getStruxType());
+							// the changeStrux function tries to locate the strux which _contains_ the
+							// position we pass into it; however, iStart is the doc position of the actual
+							// strux, so we have to skip over the strux
+							bRet &= changeStruxFmt(PTC_RemoveFmt,iStart+1,iEnd,ppAttr,NULL, pfs->getStruxType());
 						}
 						else
 							bRet &= changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
@@ -4976,7 +4989,10 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				if(pf->getType() == pf_Frag::PFT_Strux)
 				{
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);					
-					bRet &= changeStruxFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,NULL, pfs->getStruxType());
+					// the changeStrux function tries to locate the strux which _contains_ the
+					// position we pass into it; however, iStart is the doc position of the actual
+					// strux, so we have to skip over the strux
+					bRet &= changeStruxFmt(PTC_AddFmt,iStart+1,iEnd,ppAttr2,NULL, pfs->getStruxType());
 				}
 				else
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
