@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,33 +17,59 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+/* $Id */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <gtk/gtk.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaDlg_Language.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 #include "gr_CocoaGraphics.h"
 
+
+class XAP_LanguageList_Proxy: public XAP_GenericListChooser_Proxy
+{
+public:
+	XAP_LanguageList_Proxy (XAP_CocoaDialog_Language* dlg)
+		: XAP_GenericListChooser_Proxy(),
+			m_dlg(dlg)
+	{
+	};
+	virtual void okAction ()
+	{
+		m_dlg->okAction();
+	};
+	virtual void cancelAction ()
+	{
+		m_dlg->cancelAction();
+	};
+	virtual void selectAction ()
+	{
+	};
+private:
+	XAP_CocoaDialog_Language*	m_dlg;
+};
+
+
 /*****************************************************************/
 XAP_Dialog * XAP_CocoaDialog_Language::static_constructor(XAP_DialogFactory * pFactory,
-														 XAP_Dialog_Id id)
+														 XAP_Dialog_Id dlgid)
 {
-	XAP_CocoaDialog_Language * p = new XAP_CocoaDialog_Language(pFactory,id);
+	XAP_CocoaDialog_Language * p = new XAP_CocoaDialog_Language(pFactory,dlgid);
 	return p;
 }
 
 XAP_CocoaDialog_Language::XAP_CocoaDialog_Language(XAP_DialogFactory * pDlgFactory,
-												   XAP_Dialog_Id id)
-	: XAP_Dialog_Language(pDlgFactory,id)
+												   XAP_Dialog_Id dlgid)
+	: XAP_Dialog_Language(pDlgFactory,dlgid),
+		m_dataSource(nil),
+		m_dlg(nil)
 {
-	m_pLanguageList = NULL;
 }
 
 XAP_CocoaDialog_Language::~XAP_CocoaDialog_Language(void)
@@ -50,27 +77,20 @@ XAP_CocoaDialog_Language::~XAP_CocoaDialog_Language(void)
 }
 
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 XAP_Dialog_Language::tAnswer * answer)
+void XAP_CocoaDialog_Language::okAction(void)
+{	
+	m_answer = XAP_Dialog_Language::a_OK;
+	[NSApp stopModal];
+}
+
+
+void XAP_CocoaDialog_Language::cancelAction(void)
 {
-	*answer = XAP_Dialog_Language::a_CANCEL;
-	gtk_main_quit();
+	m_answer = XAP_Dialog_Language::a_CANCEL;
+	[NSApp stopModal];
 }
 
-static void s_ok_clicked(GtkWidget * /* widget */,
-						 XAP_Dialog_Language::tAnswer * answer)
-{	*answer = XAP_Dialog_Language::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-							 XAP_Dialog_Language::tAnswer * answer)
-{
-	*answer = XAP_Dialog_Language::a_CANCEL;
-	gtk_main_quit();
-}
-
+#if 0
 GtkWidget * XAP_CocoaDialog_Language::constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -171,86 +191,55 @@ GtkWidget * XAP_CocoaDialog_Language::constructWindowContents(GObject *parent)
 
 	return vboxMain;
 }
+#endif
 
 void XAP_CocoaDialog_Language::runModal(XAP_Frame * pFrame)
 {
+	NSWindow* window;
+	m_dlg = [XAP_GenericListChooser_Controller loadFromNib];
 	UT_ASSERT(m_pApp);
+	XAP_LanguageList_Proxy proxy(this);
+	[m_dlg setXAPProxy:&proxy];
+	m_dataSource = [[XAP_StringListDataSource alloc] init];
+	
+	window = [m_dlg window];
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	[m_dlg setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle).c_str()]];
+	[m_dlg setLabel:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangLabel).c_str()]];
 
-	// this is used below to grab pointers to
-	// strings inside list elements
-	gchar * text[2] = {NULL, NULL};
-
-	// build the dialog
-	GtkWidget * cf = constructWindow();
-	UT_ASSERT(cf);
-	connectFocus(GTK_WIDGET(cf),pFrame);
-
-	// fill the listbox
-	gtk_clist_freeze(GTK_CLIST(m_pLanguageList));
-	gtk_clist_clear(GTK_CLIST(m_pLanguageList));
-	//UT_DEBUGMSG(("langlist count %d\n", m_pLangTable->getCount()));
 	for (UT_uint32 k = 0; k < m_iLangCount; k++)
 	{
-		text[0] = (gchar *) m_ppLanguages[k];
-		//text[1] = (gchar *) m_pLangTable->getNthProperty(k);
-		//UT_DEBUGMSG(("langlist k=%d, lang=%s, prop=%s\n", k,text[0], text[1]));
-		gtk_clist_append(GTK_CLIST(m_pLanguageList), text);
+		[m_dataSource addString:[NSString stringWithUTF8String:m_ppLanguages[k]]];
 	}
+	[m_dlg setDataSource:m_dataSource];
 	
-	gtk_clist_thaw(GTK_CLIST(m_pLanguageList));
-
 	// Set the defaults in the list boxes according to dialog data
-	gint foundAt = 0;
+	int foundAt = 0;
 
 	// is this safe with an XML_Char * string?
-	foundAt = searchCList(GTK_CLIST(m_pLanguageList), (char *) m_pLanguage);
-
+	foundAt = [m_dataSource rowWithCString:m_pLanguage];
 	if (foundAt >= 0)
 	{
-		gtk_clist_select_row(GTK_CLIST(m_pLanguageList), foundAt, 0);
+		[m_dlg setSelected:foundAt];
 	}
 	
-	// get top level window and its GtkWidget *
-	XAP_CocoaFrame * frame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
-	// center it
-	centerDialog(parent, GTK_WIDGET(cf));
-
-	// make the window big
-	gtk_widget_set_usize(cf, 235, 350);
-	
-	// Run the dialog
-	gtk_widget_show(GTK_WIDGET(cf));
-	gtk_grab_add(GTK_WIDGET(cf));
-
-	gtk_main();
+	[NSApp runModalForWindow:window];
 
 	if (m_answer == XAP_Dialog_Language::a_OK)
 	{
-		GList * selectedRow = NULL;
-		gint rowNumber = 0;
-		
-		selectedRow = GTK_CLIST(m_pLanguageList)->selection;
-		if (selectedRow)
+		int row = [m_dlg selected];
+		NSString* str = [[m_dataSource array] objectAtIndex:row];
+		const char* 	utf8str = [str UTF8String];
+		if (!m_pLanguage || UT_stricmp(m_pLanguage, utf8str))
 		{
-			rowNumber = GPOINTER_TO_INT(selectedRow->data);
-			gtk_clist_get_text(GTK_CLIST(m_pLanguageList), rowNumber, 0, text);
-			UT_ASSERT(text && text[0]);
-			if (!m_pLanguage || UT_stricmp(m_pLanguage, text[0]))
-			{
-				_setLanguage((XML_Char*)text[0]);
-				m_bChangedLanguage = true;
-			}
+			_setLanguage((XML_Char*)utf8str);
+			m_bChangedLanguage = true;
 		}
-		
 	}
+	[m_dlg close];
 
-	if(cf && GTK_IS_WIDGET(cf))
-	  gtk_widget_destroy (GTK_WIDGET(cf));
+	[m_dataSource release];
 
-    gtk_widget_pop_visual();
-    gtk_widget_pop_colormap();
+	m_dlg = nil;
 }
 

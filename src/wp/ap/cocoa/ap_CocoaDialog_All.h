@@ -86,7 +86,7 @@
 //PORT	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_CocoaDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_CocoaDialog_FontChooser)
-//PORT	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_CocoaDialog_Language)
+	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_CocoaDialog_Language)
 //PORT	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_CocoaDialog_WindowMore)
 //PORT	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_CocoaDialog_Zoom)
 //PORT	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_CocoaDialog_Insert_Symbol)

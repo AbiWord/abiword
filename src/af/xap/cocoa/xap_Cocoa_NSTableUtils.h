@@ -33,7 +33,7 @@
 - (void)insertString:(NSString*)string atIndex:(int)index;
 - (void)addString:(NSString*)string;
 - (void)addUT_String:(const UT_String &)string;
-- (int)rowWithCString:(char *)cString;
+- (int)rowWithCString:(const char *)cString;
 - (NSArray*)array;
 
 - (void)loadFontList;

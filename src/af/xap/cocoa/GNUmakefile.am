@@ -19,7 +19,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= @GLIB_CFLAGS@ $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
+INCLUDES= @GLIB_CFLAGS@ $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES) $(OTHER_INCLUDES)
 
 noinst_LIBRARIES = libXap_cocoa.a
 
@@ -32,6 +32,7 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaDlg_About.mm		\
 	xap_CocoaDlg_FileOpenSaveAs.mm	\
 	xap_CocoaDlg_FontChooser.mm \
+	xap_CocoaDlg_Language.mm \
 	xap_CocoaDlg_MessageBox.mm	\
 	xap_CocoaEncodingManager.mm	\
 	xap_CocoaFont.mm		\

@@ -70,7 +70,7 @@
 	[str release];
 }
 
-- (int)rowWithCString:(char *)cString
+- (int)rowWithCString:(const char *)cString
 {
 	NSString *string = [[NSString alloc] initWithUTF8String:cString];
 	unsigned int idx = [_array indexOfObject:string];

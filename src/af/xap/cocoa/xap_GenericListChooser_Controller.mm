@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Hubert Figuiere
+ * Copyright (C) 2002-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 
 #import "XAP_GenericListChooser_Controller.h"
 
+
 @implementation XAP_GenericListChooser_Controller
 
 + (XAP_GenericListChooser_Controller *)loadFromNib
@@ -32,14 +33,57 @@
 
 - (IBAction)cancelClicked:(id)sender
 {
+	if (_proxy) {
+		_proxy->cancelAction();
+	}
 }
 
 - (IBAction)listClicked:(id)sender
 {
+	if (_proxy) {
+		_proxy->selectAction();
+	}
 }
 
 - (IBAction)okClicked:(id)sender
 {
+	if (_proxy) {
+		_proxy->okAction();
+	}
 }
+
+- (void)setTitle:(NSString*)title
+{
+	[[self window] setTitle:title];
+}
+
+
+- (void)setLabel:(NSString*)label
+{
+	[m_enclosingBox setTitle:label];
+}
+
+
+- (void)setXAPProxy:(XAP_GenericListChooser_Proxy*)proxy
+{
+	_proxy = proxy;
+}
+
+- (void)setDataSource:(id)obj
+{
+	[m_listTable setDataSource:obj];
+}
+
+- (void)setSelected:(int)idx
+{
+	[m_listTable selectRow:idx byExtendingSelection:NO];
+	[m_listTable scrollRowToVisible:(int)idx];
+}
+
+- (int)selected
+{
+	return [m_listTable selectedRow];
+}
+
 
 @end

@@ -3,13 +3,13 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {cancelClicked = id; listClicked = id; okClicked = id; }; 
-            CLASS = XAP_GenericListChooser_Controller; 
+            CLASS = "XAP_GenericListChooser_Controller"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                m_cancelBtn = NSButton; 
-                m_enclosingBox = NSBox; 
-                m_listTable = NSTableView; 
-                m_okBtn = NSButton; 
+                "m_cancelBtn" = NSButton; 
+                "m_enclosingBox" = NSBox; 
+                "m_listTable" = NSTableView; 
+                "m_okBtn" = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

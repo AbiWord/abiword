@@ -24,7 +24,10 @@
 
 #include "xap_App.h"
 #include "xap_Dlg_Language.h"
-//#include "ut_misc.h"
+
+#import "xap_Cocoa_NSTableUtils.h"
+#import "xap_GenericListChooser_Controller.h"
+
 
 class XAP_CocoaFrame;
 
@@ -38,18 +41,13 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
+	void					okAction(void);
+	void					cancelAction(void);
+
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 private:
-	NSControl * 			m_pLanguageList;
-
-#if 0
-protected:
-	
-	// these are Glade helper or Glade generated functions
-	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
-	virtual GtkWidget *             constructWindow(void);
-	GtkWidget *                     constructWindowContents(GtkObject *);
-#endif
+	XAP_StringListDataSource*			m_dataSource;
+	XAP_GenericListChooser_Controller*	m_dlg;
 };
 
 #endif /* XAP_COCOADIALOG_LANGUAGE_H */
