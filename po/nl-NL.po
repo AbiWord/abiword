@@ -155,7 +155,7 @@ msgstr "&Over %s"
 #. MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h.h:47
 msgid "&Accept revision"
-msgstr "Herziening &accepteren"
+msgstr "Revisie &accepteren"
 
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:49
