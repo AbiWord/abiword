@@ -65,6 +65,12 @@ need to be enclosed in double quotes:
 
 3. TTF fonts
 ------------
+
+** Note: As of the moment the ttf support only works for locales using
+** iso-8859-1 or utf-8 encoding; this is because the type 42 fonts we
+** generate is coded to Adobe's Standard Encoding. Work is in progress
+** on rectifying this.
+
 First of all, your font server must support ttf fonts. Then, just
 as in the case of pfa fonts, you need to add an entry into 
 fonts.scale, and you should use the same programme (ttmkfdir) to
