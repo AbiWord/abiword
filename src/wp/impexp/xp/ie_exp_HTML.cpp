@@ -3872,7 +3872,12 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 bool IE_Exp_HTML::_openFile (const char * szFilename)
 {
 #ifdef HTML_DIALOG_OPTIONS
-	if (m_bSuppressDialog) return IE_Exp::_openFile (szFilename);
+	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
+
+	if (m_bSuppressDialog || !pFrame) return IE_Exp::_openFile (szFilename);
+
+	/* run the dialog
+	 */
 
 	XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
 
@@ -3885,12 +3890,6 @@ bool IE_Exp_HTML::_openFile (const char * szFilename)
 	UT_return_val_if_fail (pDialog, false);
 
 	pDialog->setHTMLOptions (&m_exp_opt, getDoc()->getApp ());
-
-	/* run the dialog
-	 */
-	XAP_Frame * pFrame = getDoc()->getApp()->getLastFocussedFrame ();
-
-	UT_return_val_if_fail (pFrame, false);
 
 	pDialog->runModal (pFrame);
 
