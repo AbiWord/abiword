@@ -38,14 +38,12 @@
 *****************************************************************/
 
 // TODO decide if we should make all labels Unicode
-// TODO decide if we really need tooltip for menu bar
 
 class EV_Menu_Label
 {
 public:
 	EV_Menu_Label(AP_Menu_Id id,
 				  const char * szMenuLabel,		/* label on the actual menu itself */
-				  const char * szToolTip,		/* display message on tool tip */
 				  const char * szStatusMsg);	/* status bar message */
 	~EV_Menu_Label(void);
 
@@ -56,7 +54,6 @@ public:
 protected:
 	AP_Menu_Id						m_id;
 	char *							m_szMenuLabel;
-	char *							m_szToolTip;
 	char *							m_szStatusMsg;
 };
 
@@ -71,7 +68,6 @@ public:
 
 	UT_Bool				setLabel(AP_Menu_Id id,
 								 const char * szMenuLabel,
-								 const char * szToolTip,
 								 const char * szStatusMsg);
 	EV_Menu_Label *		getLabel(AP_Menu_Id id) const;
 	const char *		getLanguage(void) const;

@@ -39,7 +39,7 @@
 			new EV_Menu_LabelSet(#Language,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	\
 		UT_ASSERT(pLabelSet);
 	
-#define MenuLabel(id,szName,szToolTip,szStatusMsg)	pLabelSet->setLabel((id),(szName),(szToolTip),(szStatusMsg));
+#define MenuLabel(id,szName,szStatusMsg)			pLabelSet->setLabel((id),(szName),(szStatusMsg));
 			
 #define EndSet()									return pLabelSet; }
 
@@ -67,7 +67,7 @@ struct _lt
 };
 
 #define BeginSet(Language)							{ #Language, _ap_CreateLabelSet_##Language },
-#define MenuLabel(id,szName,szToolTip,szStatusMsg)	/*nothing*/
+#define MenuLabel(id,szName,szStatusMsg)			/*nothing*/
 #define EndSet()									/*nothing*/
 
 static struct _lt s_ltTable[] =

@@ -30,19 +30,16 @@
 
 EV_Menu_Label::EV_Menu_Label(AP_Menu_Id id,
 							 const char * szMenuLabel,
-							 const char * szToolTip,
 							 const char * szStatusMsg)
 {
 	m_id = id;
 	UT_cloneString(m_szMenuLabel,szMenuLabel);
-	UT_cloneString(m_szToolTip,szToolTip);
 	UT_cloneString(m_szStatusMsg,szStatusMsg);
 }
 
 EV_Menu_Label::~EV_Menu_Label(void)
 {
 	FREEP(m_szMenuLabel);
-	FREEP(m_szToolTip);
 	FREEP(m_szStatusMsg);
 }
 
@@ -89,7 +86,6 @@ EV_Menu_LabelSet::~EV_Menu_LabelSet(void)
 
 UT_Bool EV_Menu_LabelSet::setLabel(AP_Menu_Id id,
 								   const char * szMenuLabel,
-								   const char * szToolTip,
 								   const char * szStatusMsg)
 {
 	if ((id < m_first) || (id > m_last))
@@ -97,7 +93,7 @@ UT_Bool EV_Menu_LabelSet::setLabel(AP_Menu_Id id,
 
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_labelTable[index]);
-	m_labelTable[index] = new EV_Menu_Label(id,szMenuLabel,szToolTip,szStatusMsg);
+	m_labelTable[index] = new EV_Menu_Label(id,szMenuLabel,szStatusMsg);
 	return (m_labelTable[index] != NULL);
 }
 
