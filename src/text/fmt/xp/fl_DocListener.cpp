@@ -567,6 +567,9 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		fl_ContainerLayout * pCon = getTopContainerLayout();
 		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
 		{
+#ifndef NDEBUG
+			m_pDoc->miniDump(sdh,6);
+#endif
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
@@ -590,6 +593,9 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		UT_DEBUGMSG(("!!!! Append End Table \n"));
 		if(pCon->getContainerType() != FL_CONTAINER_TABLE)
 		{
+#ifndef NDEBUG
+			m_pDoc->miniDump(sdh,6);
+#endif
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
@@ -603,7 +609,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 // Reached the top of the stack. Allow the table layout now.
 //
-			//	m_pDoc->setDontImmediatelyLayout(false);
+			if(!holdTableLayout())
+			{
+				m_pDoc->setDontImmediatelyLayout(false);
+			}
 			pTL->format();
 		}
 	}
@@ -616,10 +625,17 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		UT_ASSERT(pCon);
 		if(pCon == NULL)
 		{
+#ifndef NDEBUG
+			m_pDoc->miniDump(sdh,12);
+#endif
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
 		if(pCon->getContainerType() != FL_CONTAINER_CELL)
 		{
+#ifndef NDEBUG
+			m_pDoc->miniDump(sdh,12);
+#endif
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}

@@ -1521,13 +1521,16 @@ void IE_Imp_RTF::HandleCell(void)
 	}
 	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	ie_imp_cell * pCell = getTable()->getNthCellOnRow(getTable()->getPosOnRow());
+	UT_ASSERT(sdh);
 	if(!pCell)
 	{
 //
 // Cell class doesn't exist so create it.
 //
-		getTable()->OpenCell();
+		UT_sint32 pos  = getTable()->OpenCell();
+		getTable()->setPosOnRow(pos);
 		UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
+
 	}
 	UT_DEBUGMSG(("SEVIOR: set cell sdh %x  at pos %d on row %d \n",sdh,getTable()->getPosOnRow(),getTable()->getRow()));
 	getTable()->setNthCellOnThisRow(getTable()->getPosOnRow());
@@ -1544,6 +1547,7 @@ void IE_Imp_RTF::HandleCell(void)
 		getDoc()->appendStrux(PTX_Block,NULL);
 		m_lastCellSDH = getDoc()->getLastStruxOfType(PTX_SectionCell);
 		m_lastBlockSDH = getDoc()->getLastStruxOfType(PTX_Block);
+		
 	}
 	else
 	{
@@ -1627,7 +1631,6 @@ void IE_Imp_RTF::HandleRow(void)
 	}
 
 	UT_DEBUGMSG(("SEVIOR: Handle Row now \n"));
-	getTable()->removeExtraneousCells();
 	m_TableControl.NewRow();
 }
 		

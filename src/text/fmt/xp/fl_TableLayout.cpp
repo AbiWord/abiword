@@ -255,7 +255,7 @@ void fl_TableLayout::format(void)
 		}
 		pCell = pCell->getNext();
 	}
-	UT_DEBUGMSG(("SEVIOR: Finished Formatting %x isDirty %d \n",this,isDirty()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Finished Formatting %x isDirty %d \n",this,isDirty()));
 
 	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
@@ -802,7 +802,6 @@ void fl_TableLayout::_lookupProperties(void)
 		UT_VECTOR_PURGEALL(fl_ColProps *,m_vecColProps);
 		m_vecColProps.clear();
 	}
-	
 }
 
 UT_sint32 fl_TableLayout::getColSpacing(void) const

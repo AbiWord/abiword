@@ -58,6 +58,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	while (pCurColumn)
 	{
 		fp_Container* pFirstContainerToKeep = pOuterContainer;
+		xxx_UT_DEBUGMSG(("SEVIOR: first to keep 1 %x \n",pFirstContainerToKeep));
 		fp_Container* pLastContainerToKeep = NULL;
 		fp_Container* pOffendingContainer = NULL;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -68,7 +69,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
 #endif
 		bool bEquivColumnBreak = false;
-		UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
+		xxx_UT_DEBUGMSG(("SEVIOR: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
 		if((iMaxSecCol > 0) && (iMaxSecCol < iMaxColHeight))
 		{
 			iMaxColHeight = iMaxSecCol;
@@ -123,8 +124,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		// plam: this var is redundant if the #if 0 remains dead.
 		//bool bDoTableBreak = false;
 		UT_sint32 iTotalContainerSpace = 0;
+		fp_Container * pPrevWorking = pCurContainer;
 		while (pCurContainer)
 		{
+			xxx_UT_DEBUGMSG(("curContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
 			UT_sint32 iContainerHeight = 0;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
@@ -157,14 +160,28 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				  table and if it can be broken to fit in the column.
 				*/
 
-				UT_DEBUGMSG(("SEVIOR: iWorkingColHeight %d iTotalContainerSpace %d iMaxColHeight %d pCurContainer %x height %d \n",iWorkingColHeight,iTotalContainerSpace,iMaxColHeight,   pCurContainer,  iContainerHeight));
+				xxx_UT_DEBUGMSG(("SEVIOR: iWorkingColHeight %d iTotalContainerSpace %d iMaxColHeight %d pCurContainer %x height %d \n",iWorkingColHeight,iTotalContainerSpace,iMaxColHeight,   pCurContainer,  iContainerHeight));
 				if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
 				{
 					if (_breakTable(pOffendingContainer,
 									pLastContainerToKeep,
 									iMaxColHeight, iWorkingColHeight, 
 									iContainerMarginAfter))
+					{
+						pPrevWorking = pCurContainer;
 						pCurContainer = pOffendingContainer;
+					}
+					else
+					{
+//
+// Can't break the table so bump it.
+//
+						pCurContainer = pOffendingContainer;
+						fp_TableContainer * pTabOffend = (fp_TableContainer *) pOffendingContainer;
+						pLastContainerToKeep = pTabOffend->getPrevContainerInSection();
+						xxx_UT_DEBUGMSG(("Can't break table. pCurContainer %x pTabOffend %x pLastContainerToKeep %x \n",pCurContainer,pTabOffend,pLastContainerToKeep));
+						break;
+					}
 				}
 				if (pOffendingContainer == pFirstContainerToKeep)
 				{
@@ -174,7 +191,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					// force it.
 
 					pLastContainerToKeep = pFirstContainerToKeep;
-					UT_DEBUGMSG(("SEVIOR: Set lasttokeep 2 %x \n",pLastContainerToKeep));
+					xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 2 %x \n",pLastContainerToKeep));
 				}
 				else
 				{
@@ -199,7 +216,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					{
 
 						pLastContainerToKeep = pOffendingContainer->getPrevContainerInSection();
-						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 3 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 3 %x \n",pLastContainerToKeep));
 						UT_ASSERT(pLastContainerToKeep);
 //
 // All this deals with widows and orphans. We don't need this for
@@ -213,6 +230,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					fp_Container* pFirstContainerInBlock = 
 						pConLayout->getFirstContainer();
 					pCurContainer = pFirstContainerInBlock;
+					fp_Container * pPrevContainer = NULL;
 					while (pCurContainer)
 					{
 						if (bFoundOffending)
@@ -272,7 +290,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						*/
 
 						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
-						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 4 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 4 %x \n",pLastContainerToKeep));
 					}
 					else if ((iNumContainersInLayout < (iWidows + iOrphans))
 						&& (iNumContainersBeforeOffending == iNumLayoutContainersInThisColumn)
@@ -306,6 +324,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 							{
 								if(pTab == pFirstContainerToKeep)
 								{
+									xxx_UT_DEBUGMSG(("SEVIOR: FirstContainer l325 %x \n",pFirstContainerToKeep)); 
 									pFirstContainerToKeep = 
 										pLastContainerToKeep;
 									break;
@@ -313,7 +332,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 								
 							}
 						}
-						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 5 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 5 %x \n",pLastContainerToKeep));
 					}
 					else if (
 						(iNumContainersBeforeOffending < iOrphans)
@@ -326,7 +345,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						*/
 
 						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
-						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 6 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 6 %x \n",pLastContainerToKeep));
 					}
 					else if (
 						(iNumContainersAfterOffending < iWidows)
@@ -341,19 +360,19 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						UT_uint32 iNumContainersNeeded = (iWidows - iNumContainersAfterOffending);
 
 						pLastContainerToKeep = (fp_Container *) pOffendingContainer->getPrevContainerInSection();
-						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 7 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 7 %x \n",pLastContainerToKeep));
 						for (UT_uint32 iBump = 0; iBump < iNumContainersNeeded; iBump++)
 						{
 
 							pLastContainerToKeep = (fp_Container *) pLastContainerToKeep->getPrevContainerInSection();
-							UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
+							xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
 						}
 					}
 					else
 					{
 
 						pLastContainerToKeep = (fp_Container *) pOffendingContainer->getPrevContainerInSection();
-						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 8 %x \n",pLastContainerToKeep));
 					}
 				}
 				break;
@@ -369,7 +388,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					{
 
 						pLastContainerToKeep = pCurContainer;
-						UT_DEBUGMSG(("SEVIOR: Set lasttokeep 9 %x \n",pLastContainerToKeep));
+						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 9 %x \n",pLastContainerToKeep));
 						bBreakOnColumnBreak = (pL->containsForcedColumnBreak()) ;
 						bBreakOnPageBreak = pL->containsForcedPageBreak();
 						if(iWorkingColHeight >= iMaxColHeight)
@@ -378,7 +397,6 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					}
 				}
 			}
-
 			pCurContainer = (fp_Container *) pCurContainer->getNextContainerInSection();
 			if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 			{
@@ -411,7 +429,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			}
 		}
 //
-// End of big while loop here. After this we've found LastContainerToKeep
+// End of inner while loop here. After this we've found LastContainerToKeep
 //
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
@@ -423,6 +441,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 // OK fill our column with content between pFirstContainerToKeep and pLastContainerToKeep
 //
 		pCurContainer = pFirstContainerToKeep;
+		fp_TableContainer * pTab = (fp_TableContainer *) pFirstContainerToKeep;
 		while (pCurContainer)
 		{
 			if (pCurContainer->getContainer() != pCurColumn)
@@ -435,8 +454,16 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				break;
 			else
 			{
-				UT_ASSERT(!pLastContainerToKeep || 
-						  pCurContainer->getNextContainerInSection());
+				if((pLastContainerToKeep!=NULL) && (pCurContainer->getNextContainerInSection()==NULL))
+				{
+					UT_DEBUGMSG(("Non null LastContainerToKeep yet next container is NULL!!!!!!!!!!!! \n"));
+					UT_DEBUGMSG((" CurContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
+					UT_DEBUGMSG((" FirstContainer to keep %x Last container to keep %x \n",pTab,pLastContainerToKeep));
+					UT_DEBUGMSG(("Try to recover.... \n"));
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					pLastContainerToKeep = NULL;
+					break;
+				}
 				pCurContainer = (fp_Container *) pCurContainer->getNextContainerInSection();
 			}
 		}
@@ -444,6 +471,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		if (pLastContainerToKeep
 			&& pCurColumn->getLastContainer() != pLastContainerToKeep)
 		{
+			if(pLastContainerToKeep->getColumn()!=pCurColumn)
+			{
+				UT_DEBUGMSG(("4111 bug \n"));
+			}
 			UT_ASSERT(pLastContainerToKeep->getColumn()==pCurColumn);
 			fp_Page* pPrevPage = pCurColumn->getPage();
 			fp_Column* pNextColumn = pCurColumn;
@@ -518,8 +549,13 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 
 			pCurColumn = (fp_Column *) pCurColumn->getNext();
 		}
+//
+// Loop back for next pCurContainer. Finish if pCurColumn == NULL.
+//
 	}
-
+//
+// End of massive while loop here
+//
 	return 0; // TODO return code
 }
 
@@ -598,6 +634,16 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 	double scale = ((double) pTab->getGraphics()->getResolution())/UT_LAYOUT_UNITS;
 	iAvail = (UT_sint32)(((double) iAvail)*scale);
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
+//
+// Look to see if the table can be broken. If iBreakAt < 0 we have to bump 
+// the whole table into the next column.
+//
+	if(iBreakAt < 1)
+	{
+		UT_DEBUGMSG(("SEVIOR: Can't break this table %d \n",iBreakAt));
+		return false;
+	}
+
 	UT_ASSERT(iBreakAt <= (iAvail-1));
 
 	UT_sint32 iBreakLO = (UT_sint32) (((double) iBreakAt)/scale);

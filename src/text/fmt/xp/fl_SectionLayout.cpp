@@ -939,7 +939,7 @@ void fl_DocSectionLayout::updateLayout(void)
 
 	if(needsRebuild())
 	{
-		UT_ASSERT(0);
+//		UT_ASSERT(0);
 		checkAndRemovePages();
 		addValidPages();
 	}
@@ -978,7 +978,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	
 		if(needsRebuild())
 		{
-			UT_ASSERT(0);
+//			UT_ASSERT(0);
 			checkAndRemovePages();
 			addValidPages();
 		}

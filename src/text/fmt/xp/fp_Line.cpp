@@ -2748,12 +2748,11 @@ fp_Container*	fp_Line::getNextContainerInSection(void) const
 		return (fp_Container *)getNext();
 	}
 
-	fl_BlockLayout* pNextBlock = (fl_BlockLayout *) m_pBlock->getNext();
+	fl_ContainerLayout* pNextBlock = m_pBlock->getNext();
 	if (pNextBlock)
 	{
 		return (fp_Container *) pNextBlock->getFirstContainer();
 	}
-
 	return NULL;
 }
 
@@ -2764,11 +2763,28 @@ fp_Container*	fp_Line::getPrevContainerInSection(void) const
 		return (fp_Container *) getPrev();
 	}
 
-	fl_BlockLayout* pPrevBlock =  (fl_BlockLayout *) m_pBlock->getPrev();
-	if (pPrevBlock)
+	fl_ContainerLayout* pPrev =  (fl_ContainerLayout *) m_pBlock->getPrev();
+	if(pPrev)
 	{
-		return (fp_Container *) pPrevBlock->getLastContainer();
+		fp_Container * pPrevCon = (fp_Container *) pPrev->getLastContainer();
+//
+// Have to handle broken tables in the previous layout..
+//
+		if(pPrevCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer * pTab = (fp_TableContainer *) pPrevCon;
+			fp_TableContainer * pLLast = pTab;
+			fp_TableContainer * pNext = (fp_TableContainer *) pTab->getNext();
+			while(pNext)
+			{
+				pLLast = pNext;
+				pNext = (fp_TableContainer *) pNext->getNext();
+			}
+			pPrevCon = (fp_Container *) pLLast;
+		}
+		return pPrevCon;
 	}
+
 
 	return NULL;
 }
@@ -3085,7 +3101,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 			UT_sint32 count = m_vecRuns.getItemCount();
 			UT_ASSERT(count);
 
-		UT_DEBUGMSG(("DOM: must split iAmount %d between iSpaceCount %d spaces for count %d runs\n", iAmount, iSpaceCount, count));
+		xxx_UT_DEBUGMSG(("DOM: must split iAmount %d between iSpaceCount %d spaces for count %d runs\n", iAmount, iSpaceCount, count));
 
 			for (UT_sint32 i=count-1; i >= 0 && iSpaceCount > 0; i--)
 			{

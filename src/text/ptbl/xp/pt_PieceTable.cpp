@@ -105,7 +105,7 @@ bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
 {
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
-	UT_DEBUGMSG(("SEVIOR: Inserting strux no update %x \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: Inserting strux of type %d no update %x \n",pts,sdh));
 //
 // Create an indexAP
 //
@@ -131,6 +131,9 @@ bool pt_PieceTable::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType
 		return false;
 	}
 	m_fragments.insertFrag(pfPrev,(pf_Frag *) pNewStrux);
+#if 0
+	m_pDocument->miniDump(sdh,8);
+#endif
 	return true;
 }
 

@@ -1086,6 +1086,72 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 	return false;
 }
 
+void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
+{
+	UT_sint32 i=0;
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	pf_Frag * pf = (pf_Frag *) pfs;
+	for(i=0; pfs && (i< nstruxes); i++)
+	{
+		pf = pf->getPrev();
+		while(pf && pf->getType() != pf_Frag::PFT_Strux)
+		{
+			pf = pf->getPrev();
+		}
+		pfs = (pf_Frag_Strux *) pf;
+	}
+	for(i=0; pfs && (i< 2*nstruxes); i++)
+	{
+		pf = (pf_Frag *) pfs;
+		pfs = (pf_Frag_Strux *) pf;
+		PL_StruxDocHandle sdhTemp = (PL_StruxDocHandle) pfs;
+		const char * szStrux = NULL;
+		if(pfs->getStruxType() == PTX_Block)
+		{
+			szStrux = "Block";
+		}
+		else if(pfs->getStruxType() == PTX_SectionTable)
+		{
+			szStrux = "Table";
+		}
+		else if(pfs->getStruxType() == PTX_SectionCell)
+		{
+			szStrux = "Cell";
+		}
+		else if(pfs->getStruxType() == PTX_EndTable)
+		{
+			szStrux = "End Table";
+		}
+		else if(pfs->getStruxType() == PTX_EndCell)
+		{
+			szStrux = "End Cell";
+		}
+		else
+		{
+			szStrux = "Other Strux";
+		}
+		UT_DEBUGMSG(("MiniDump Frag %x Type %s \n",pfs,szStrux));
+		const char * szLeft=NULL;
+		const char * szRight=NULL;
+		const char * szTop=NULL;
+		const char * szBot = NULL;
+		getPropertyFromSDH(sdhTemp,"left-attach",&szLeft);
+		getPropertyFromSDH(sdhTemp,"right-attach",&szRight);
+		getPropertyFromSDH(sdhTemp,"top-attach",&szTop);
+		getPropertyFromSDH(sdhTemp,"bot-attach",&szBot);
+		UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
+		pf = pf->getNext();
+		while(pf && pf->getType() != pf_Frag::PFT_Strux)
+		{
+			pf = pf->getNext();
+		}
+		if(pf)
+		{
+			pfs= (pf_Frag_Strux *) pf;
+		}
+	}
+}
+		
 
 /*!
  * The method returns the SDH of the cell at the location given by (rows,columns) in table 

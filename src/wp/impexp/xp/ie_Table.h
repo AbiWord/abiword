@@ -157,7 +157,7 @@ class ABI_EXPORT ie_imp_table
  public:
 	ie_imp_table(PD_Document * pDoc);
 	virtual ~ie_imp_table(void);
-	void                OpenCell(void);
+	UT_sint32           OpenCell(void);
 	UT_sint32           NewRow(void);
 	void                setCellRowNthCell(UT_sint32 row, UT_sint32 col);
 	ie_imp_cell *       getNthCellOnRow(UT_sint32 iCell);
@@ -176,6 +176,7 @@ class ABI_EXPORT ie_imp_table
 	void                setNthCellOnThisRow(UT_sint32 iCell);
 	void                buildTableStructure(void);
 	void                setAutoFit(bool bVal) {m_bAutoFit = bVal;}
+	bool                isAutoFit(void) { return m_bAutoFit;}
 	bool                isNewRow(void) { return m_bNewRow;}
 	UT_sint32           getColNumber(ie_imp_cell * pImpCell);
 	ie_imp_cell *       getCellAtRowColX(UT_sint32 newRow,UT_sint32 cellX);
@@ -218,7 +219,7 @@ public:
 	virtual ~ie_imp_table_control(void);
 	UT_sint32           getNestDepth(void);
 	void                OpenTable(void);
-	void                OpenCell(void);
+	UT_sint32           OpenCell(void);
 	void                CloseTable(void);
 	void                CloseCell(void);
 	ie_imp_table *      getTable(void);

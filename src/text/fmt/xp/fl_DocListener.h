@@ -59,7 +59,8 @@ public:
 									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
-
+	void                setHoldTableLayout(bool bHold) {m_bHoldTableLayout = bHold;}
+	bool                holdTableLayout(void) { return m_bHoldTableLayout;}
 	virtual bool		signal(UT_uint32 iSignal);
 
 private:
@@ -73,6 +74,7 @@ private:
 	FL_DocLayout*		   m_pLayout;
 	//! Set when the document is drawn on screen
 	bool				   m_bScreen;
+	bool                   m_bHoldTableLayout;
 	//! Counter used to keep track of when to update the Layout. In
 	//! case of multi-step changes, updating is suspended.
 	UT_uint32			   m_iGlobCounter;

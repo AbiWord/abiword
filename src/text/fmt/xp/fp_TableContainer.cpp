@@ -957,7 +957,7 @@ fp_Container * fp_CellContainer::getPrevContainerInSection() const
 
 void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 {
-	UT_DEBUGMSG(("Doing size request on %x \n",pRequest));
+	xxx_UT_DEBUGMSG(("Doing size request on %x \n",pRequest));
 	UT_sint32 count = countCons();
 	UT_sint32 i =0;
 	UT_sint32 height = 0;
@@ -1047,7 +1047,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 
 	m_MyRequest.width = width;
 	m_MyRequest.height = height;
-	UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
+	xxx_UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
 }
 
 void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
@@ -1359,7 +1359,14 @@ void fp_TableContainer::setFirstBrokenTable(fp_TableContainer * pBroke)
 {
 	if(isThisBroken())
 	{
-		getMasterTable()->setLastBrokenTable(pBroke);
+		fp_TableContainer * pMaster = getMasterTable();
+		pMaster->setFirstBrokenTable(pBroke);
+		fp_TableContainer * pNext = (fp_TableContainer *) pMaster;
+		while(pNext)
+		{
+			pNext->setFirstBrokenTable( pBroke);
+			pNext = (fp_TableContainer *) pNext->getNext();
+		}
 	}
 	m_pFirstBrokenTable = pBroke;
 }
@@ -1368,7 +1375,14 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
 {
 	if(isThisBroken())
 	{
-		getMasterTable()->setLastBrokenTable(pBroke);
+		fp_TableContainer * pMaster = getMasterTable();
+		pMaster->setLastBrokenTable(pBroke);
+		fp_TableContainer * pNext = (fp_TableContainer *) pMaster;
+		while(pNext)
+		{
+			pNext->setLastBrokenTable( pBroke);
+			pNext = (fp_TableContainer *) pNext->getNext();
+		}
 	}
 	m_pLastBrokenTable = pBroke;
 }
@@ -1784,7 +1798,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // Now do the case of breaking a broken table.
 //
 	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
-	setLastBrokenTable(pBroke);
+	getMasterTable()->setLastBrokenTable(pBroke);
 	xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!!  New broken table %x \n",getLastBrokenTable()));
 
 //
@@ -1965,7 +1979,23 @@ fp_Container * fp_TableContainer::getPrevContainerInSection() const
 	fl_ContainerLayout * pPrev = pCL->getPrev();
 	if(pPrev)
 	{
-		return pPrev->getLastContainer();
+		fp_Container * pPrevCon = (fp_Container *) pPrev->getLastContainer();
+//
+// Have to handle broken tables in the previous layout..
+//
+		if(pPrevCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer * pTab = (fp_TableContainer *) pPrevCon;
+			fp_TableContainer * pLLast = pTab;
+			fp_TableContainer * pNext = (fp_TableContainer *) pTab->getNext();
+			while(pNext)
+			{
+				pLLast = pNext;
+				pNext = (fp_TableContainer *) pNext->getNext();
+			}
+			pPrevCon = (fp_Container *) pLLast;
+		}
+		return pPrevCon;
 	}
 	return NULL;
 }

@@ -178,9 +178,11 @@ void FL_DocLayout::fillLayouts(void)
 // the document to pump it's content into the layout classes.
 //
 	m_pDoc->setDontImmediatelyLayout(true);
+	m_pDocListener->setHoldTableLayout(true);
 	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
-	UT_ASSERT(m_lid != 123);
+	m_pDocListener->setHoldTableLayout(false);
 	m_pDoc->setDontImmediatelyLayout(false);
+	UT_ASSERT(m_lid != 123);
 	formatAll();
 	if(m_pView)
 	{

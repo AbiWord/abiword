@@ -689,7 +689,7 @@ ie_imp_table::ie_imp_table(PD_Document * pDoc):
 	m_tableSDH(NULL),
 	m_pCurImpCell(NULL),
 	m_iRowCounter(0),
-	m_bAutoFit(true),
+	m_bAutoFit(false),
 	m_bNewRow(true),
 	m_bTableUsed(false),
 	m_iPosOnRow(0),
@@ -713,12 +713,24 @@ ie_imp_table::~ie_imp_table(void)
 /*!
  * Open a new cell.
  */
-void ie_imp_table::OpenCell(void)
+UT_sint32 ie_imp_table::OpenCell(void)
 {
 	ie_imp_cell * pNewCell = new ie_imp_cell(this, m_pDoc,m_pCurImpCell,m_iRowCounter);
 	m_pCurImpCell = pNewCell;
 	m_vecCells.addItem((void *) pNewCell);
+	UT_sint32 count =0;
+	UT_sint32 i = (UT_sint32) m_vecCells.getItemCount() - 1;
+	while((pNewCell->getRow() == m_iRowCounter) && (i>= 0))
+	{
+		pNewCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pNewCell->getRow() == m_iRowCounter)
+		{
+			count++;
+		}
+		i--;
+	}
 	m_bNewRow = false;
+	return count -1;
 }
 
 /*!
@@ -829,7 +841,9 @@ UT_sint32 ie_imp_table::NewRow(void)
 		{
 			return +1;
 		}
-		if(iMatch != szCurRow )
+		double dMatch = (double) iMatch;
+		double dPrev = (double) szCurRow;
+		if(dMatch/dPrev < 0.6)
 		{
 			return +1;
 		}
@@ -840,7 +854,7 @@ UT_sint32 ie_imp_table::NewRow(void)
 	m_iCellXOnRow = 0;
 	m_bNewRow = true;
 	_buildCellXVector();
-	return true;
+	return 0;
 }
 
 /*!
@@ -852,20 +866,23 @@ void ie_imp_table::setCellRowNthCell(UT_sint32 row, UT_sint32 col)
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
 	UT_sint32 ColCount = 0;
-	for(i=0; i < (UT_sint32) m_vecCells.getItemCount(); i++)
+	bool bFound = false;
+	for(i=0; !bFound && (i < (UT_sint32) m_vecCells.getItemCount()); i++)
 	{
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
 		if(pCell->getRow() == row)
 		{
+			UT_DEBUGMSG(("SEVIOR: col %d colcount %d \n",col,ColCount));
 			if(col == ColCount)
 			{
-				break;
+				bFound = true;
 			}
 			ColCount++;
 		}
 	}
-	if(i == (UT_sint32) m_vecCells.getItemCount())
+	if(!bFound)
 	{
+		UT_ASSERT(0);
 		m_pCurImpCell = NULL;
 	}
 	else
@@ -940,6 +957,8 @@ void ie_imp_table::writeTablePropsInDoc(void)
 		}
 		double dLeftPos = UT_convertToInches(sLeftPos.c_str());
 		double dColSpace = UT_convertToInches(sColSpace.c_str());
+		setProp("table-col-spacing",sColSpace.c_str());
+		setProp("table-column-leftpos",sLeftPos.c_str());
 		UT_sint32 iPrev = 0;
 //
 // Now build the table-col-width string.
@@ -949,14 +968,20 @@ void ie_imp_table::writeTablePropsInDoc(void)
 		for(i=0; i< (UT_sint32) m_vecCellX.getItemCount(); i++)
 		{
 			UT_sint32 iCellx = (UT_sint32) m_vecCellX.getNthItem(i);
-			iCellx -= iPrev;
-			double dCellx = ((double) iCellx)/1440.0 - dLeftPos - dColSpace;
+			UT_sint32 iDiffCellx = iCellx - iPrev;
+			double dCellx = ((double) iDiffCellx)/1440.0 -dColSpace;
+			if(i == 0)
+			{
+				dCellx = dCellx - dLeftPos;
+			}
 			iPrev = iCellx;
 			sColWidth += UT_formatDimensionString(DIM_IN,dCellx,NULL);
 			sColWidth += "/";
 		}
-		setProp("table-col-props",sColWidth.c_str());
+		setProp("table-column-props",sColWidth.c_str());
+		UT_DEBUGMSG(("SEVIOR: table-column-props: %s \n",sColWidth.c_str()));
 	}
+	UT_DEBUGMSG(("SEVIOR: props: %s \n",m_sTableProps.c_str()));
 	m_pDoc->changeStruxAttsNoUpdate(m_tableSDH,"props",m_sTableProps.c_str());
 }
 
@@ -1097,18 +1122,20 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	UT_sint32 cellx = pImpCell->getCellX();
 	UT_sint32 i =0;
 	bool bFound = false;
+	UT_sint32 iFound = 0;
 	for(i=0; !bFound && (i< (UT_sint32) m_vecCellX.getItemCount()); i++)
 	{
 		UT_sint32 icellx = (UT_sint32) m_vecCellX.getNthItem(i);
 		if(icellx == cellx)
 		{
 			bFound = true;
+			iFound = i;
 		}
 	}
 	if(bFound)
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: looking for cellx %d found at %d \n",cellx,i));
-		return i+1;
+		UT_DEBUGMSG(("SEVIOR: looking for cellx %d found at %d \n",cellx,i));
+		return iFound+1;
 	}
 	return -1;
 }
@@ -1260,8 +1287,9 @@ void ie_imp_table::removeExtraneousCells(void)
 	for(i= (UT_sint32) m_vecCells.getItemCount() -1; i >=0 ; i--)
 	{
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
-		if(pCell->getCellX() == 0)
+		if(pCell->getCellX() == -1)
 		{
+			UT_ASSERT(0);
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 			delete pCell;
 			m_vecCells.deleteNthItem(i);
@@ -1278,6 +1306,7 @@ void ie_imp_table::_removeAllStruxes(void)
 {
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
+	UT_ASSERT(0);
 	for(i= (UT_sint32) m_vecCells.getItemCount() -1; i >=0 ; i--)
 	{
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
@@ -1352,6 +1381,7 @@ void ie_imp_table::appendRow(UT_Vector * pVecRowOfCells)
 		pCell->setRow(iNew);
 		m_vecCells.addItem((void *) pCell);
 	}
+	m_bTableUsed = true;
 }
 
 /*!
@@ -1425,11 +1455,11 @@ void ie_imp_table_control::OpenTable(void)
 }
 
 
-void ie_imp_table_control::OpenCell(void)
+UT_sint32 ie_imp_table_control::OpenCell(void)
 {
 	ie_imp_table * pT = NULL;
 	m_sLastTable.viewTop((void **) &pT);
-	pT->OpenCell();
+	return pT->OpenCell();
 }
 
 void ie_imp_table_control::CloseTable(void)
@@ -1479,12 +1509,14 @@ bool ie_imp_table_control::NewRow(void)
 	UT_Vector vecRow;
 	vecRow.clear();
 	UT_sint32 row = getTable()->getRow();
+    UT_ASSERT(row>0);
 	bool bres = true;
 	bres = getTable()->getVecOfCellsOnRow(row, &vecRow);
 	if(!bres)
 	{
 		return bres;
 	}
+	UT_DEBUGMSG(("Number of cells on row %d \n",vecRow.getItemCount()));
 //
 // Got last row, now remove it.
 //
@@ -1495,6 +1527,7 @@ bool ie_imp_table_control::NewRow(void)
 	ie_imp_cell * pCell = (ie_imp_cell *) vecRow.getNthItem(0);
 	PL_StruxDocHandle sdhCell = pCell->getCellSDH();
 	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_EndTable,NULL);
+	bool bAuto = getTable()->isAutoFit();
 	CloseTable();
 //
 // Now create a new table with the old last row and the first new row.
@@ -1502,9 +1535,11 @@ bool ie_imp_table_control::NewRow(void)
 //	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_Block,NULL);
 	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_SectionTable,NULL);
 	OpenTable();
+	getTable()->setAutoFit(bAuto);
 	getTable()->appendRow(&vecRow);
 	getTable()->NewRow();
 	PL_StruxDocHandle sdh = m_pDoc->getLastStruxOfType(PTX_SectionTable);
 	getTable()->setTableSDH(sdh);
+//	UT_ASSERT(0);
 	return true;
 }
