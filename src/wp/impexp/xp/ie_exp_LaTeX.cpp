@@ -170,6 +170,9 @@ static bool _convertLettersToSymbols(char c, char *& subst);
 #define BT_BLOCKTEXT	5
 #define BT_PLAINTEXT	6
 
+#define BULLET_LIST	1
+#define NUMBERED_LIST	2
+
 class s_LaTeX_Listener : public PL_Listener
 {
 public:
@@ -198,6 +201,7 @@ public:
 	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
+	void				_closeParagraph(void);
 	void				_closeSection(void);
 	void				_closeBlock(void);
 	void				_closeSpan(void);
@@ -214,18 +218,32 @@ protected:
 	bool				m_bInSection;
 	bool				m_bInBlock;
 	bool				m_bInSpan;
+	bool				m_bInList;
 	const PP_AttrProp*	m_pAP_Span;
 	bool                m_bMultiCols;
 	UT_uint16           m_iInSymbol;
+ 	UT_uint16	m_iInCourier;
+ 	UT_uint16	m_iInSansSerif;
+  
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
 	bool				m_bFirstSection;
+	bool				m_bInHeading;
+	int 				ChapterNumber;
+	int				list_type;
 
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
 	UT_Wctomb		m_wctomb;
 };
+
+void s_LaTeX_Listener::_closeParagraph(void)
+{
+	m_pie->write("\n");
+	m_bInHeading = false;
+	return;
+}
 
 void s_LaTeX_Listener::_closeSection(void)
 {
@@ -234,6 +252,16 @@ void s_LaTeX_Listener::_closeSection(void)
 		return;
 	}
 
+	if (m_bInList)
+	{
+		m_bInList = false;
+		if (list_type == BULLET_LIST)
+			m_pie->write("\\end{itemize}");
+		else if (list_type == NUMBERED_LIST)
+			m_pie->write("\\end{enumerate}");
+
+	}
+ 
 	if (m_bMultiCols)
 	{
 		m_pie->write("\\end{multicols}\n");
@@ -308,24 +336,97 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 	{
 		const XML_Char * szValue;
 
+		if ((pAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szValue))
+			&& (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
+			&& (0 == UT_strcmp(szValue, "Normal")))
+		{
+			if (m_bInList)
+				m_pie->write("\\item ");
+			else
+			{
+				if (pAP->getProperty("list-style", szValue))
+				{
+					if (0 == UT_strcmp(szValue, "Numbered List"))
+					{
+						list_type = NUMBERED_LIST;
+						m_pie->write("\\begin{enumerate}\n\\item ");
+					}
+					else if (0 == UT_strcmp(szValue, "Bullet List"))
+					{
+						list_type = BULLET_LIST;
+						m_pie->write("\\begin{itemize}\n\\item ");
+					}
+				}
+				m_bInList = true;
+			}
+		} else if (m_bInList) {
+			m_bInList = false;
+			switch (list_type) {
+			case NUMBERED_LIST:
+				m_pie->write("\\end{enumerate}\n");
+				break;
+			case BULLET_LIST:
+				m_pie->write("\\end{itemize}\n");
+				break;
+			default:
+				;
+			}
+		}
+
+
+
 		if (pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
-			
+			if (strstr(szValue, "Heading"))
+				m_bInHeading = true;
 			if(0 == UT_strcmp(szValue, "Heading 1")) 
 			{
 				m_iBlockType = BT_HEADING1;
-				m_pie->write("\\section{");
+				m_pie->write("\\section*{");
 			}
 			else if(0 == UT_strcmp(szValue, "Heading 2")) 
 			{
 				m_iBlockType = BT_HEADING2;
-				m_pie->write("\\subsection{");
+				m_pie->write("\\subsection*{");
 			}
 			else if(0 == UT_strcmp(szValue, "Heading 3")) 
 			{
 				m_iBlockType = BT_HEADING3;
+				m_pie->write("\\subsubsection*{");
+			}
+			else if(0 == UT_strcmp(szValue, "Numbered Heading 1")) 
+			{
+				m_iBlockType = BT_HEADING1;
+				m_pie->write("\\section{");
+			}
+			else if(0 == UT_strcmp(szValue, "Numbered Heading 2")) 
+			{
+				m_iBlockType = BT_HEADING2;
+				m_pie->write("\\subsection{");
+			}
+			else if(0 == UT_strcmp(szValue, "Numbered Heading 3")) 
+			{
+				m_iBlockType = BT_HEADING3;
 				m_pie->write("\\subsubsection{");
 			}
+			else if (0 == UT_strcmp(szValue, "Chapter Heading")) {
+				// TODO: Clean this...
+				char			szChapterNumber[6];
+				m_iBlockType = BT_HEADING1;
+				sprintf(szChapterNumber, "%d", ChapterNumber++);
+				m_pie->write ("\n\\newpage \\section*{\\LARGE\\chaptername\\ ");
+				m_pie->write(szChapterNumber);
+				m_pie->write(" ");	  // \\newline");
+        		}
+			else if (0 == UT_strcmp(szValue, "Chapter Heading")) {
+				// TODO: Clean this...
+				char			szChapterNumber[6];
+				m_iBlockType = BT_HEADING1;
+				sprintf(szChapterNumber, "%d", ChapterNumber++);
+				m_pie->write ("\n\\newpage \\section*{\\LARGE\\chaptername\\ ");
+				m_pie->write(szChapterNumber);
+				m_pie->write(" ");	  // \\newline");
+        		}
 			else if(0 == UT_strcmp(szValue, "Block Text"))
 			{
 				m_iBlockType = BT_BLOCKTEXT;
@@ -402,6 +503,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 	bool bMustEmitMulticol = false;
 	const XML_Char* pszNbCols = NULL;
 
+	m_bInList = false;
 	m_bMultiCols = false;
 
 	if (m_pDocument->getAttrProp(api, &pAP) && pAP)
@@ -527,7 +629,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		const XML_Char * szValue;
 
 		if (
-			(pAP->getProperty("font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue) && !m_bInHeading)
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
@@ -535,7 +637,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		if (
-			(pAP->getProperty("font-style", szValue))
+			(pAP->getProperty("font-style", szValue) && !m_bInHeading)
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
@@ -596,26 +698,32 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		const XML_Char* pszColor = NULL;
 		pAP->getProperty("color", pszColor);
 		if (pszColor)
-		{
-		  UT_String szColor;
-			_convertColor(szColor,(char*)pszColor);
-			m_pie->write("\\textcolor[rgb]{");
-			m_pie->write(szColor);
-			m_pie->write("}{");
-		}
+			if ((0 != UT_strcmp("000000", pszColor)) &&
+				(0 != UT_strcmp("000000", pszColor)))
+			{
+		 	UT_String szColor;
+				_convertColor(szColor,(char*)pszColor);
+				m_pie->write("\\textcolor[rgb]{");
+				m_pie->write(szColor);
+				m_pie->write("}{");
+			}
+			else m_pie->write("{");
 		
 		const XML_Char* pszBgColor = NULL;
 		pAP->getProperty("bgcolor", pszBgColor);
 		if (pszBgColor)
-		{
-		  UT_String szColor;
-			_convertColor(szColor,(char*)pszBgColor);
-			m_pie->write("\\colorbox[rgb]{");
-			m_pie->write(szColor);
-			m_pie->write("}{");
-		}
+			if ((0 != UT_strcmp("000000", pszBgColor)) &&
+				(0 != UT_strcmp("transparent", pszBgColor)))
+			{
+			UT_String szColor;
+				_convertColor(szColor,(char*)pszBgColor);
+				m_pie->write("\\colorbox[rgb]{");
+				m_pie->write(szColor);
+				m_pie->write("}{");
+			}
+			else m_pie->write("{");
 
-		if (pAP->getProperty("font-size", szValue))
+		if (pAP->getProperty("font-size", szValue) && !m_bInHeading)
 		{
 			if (UT_strcmp (DEFAULT_SIZE, szValue) != 0)
 			{
@@ -623,15 +731,26 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 				UT_String szSize;
 				_convertFontSize(szSize, (char*)szValue);
 				m_pie->write(szSize);
-				m_pie->write("{}");
+				m_pie->write(" ");
 			}
 		}
 		
-		if (pAP->getProperty("font-family", szValue))
+		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
 		{
-			if (!UT_strcmp ("Symbol", szValue) || 
+			// TODO: Use a dynamic substitution table
+			if (!UT_strcmp("Symbol", szValue) ||
 				!UT_strcmp("Standard Symbols", szValue))
 				m_iInSymbol++;
+			if (!UT_strcmp("Courier", szValue) ||
+				!UT_strcmp("Courier New", szValue)) {
+				m_iInCourier++;
+				m_pie->write("\\texttt{");
+			}
+			if (!UT_strcmp("Arial", szValue) ||
+				!UT_strcmp("Helvetic", szValue)) {
+				m_iInSansSerif++;
+				m_pie->write("\\textsf{");
+			}
 			UT_DEBUGMSG (("Latex export: TODO: 'font-family' property\n"));
 		}
 
@@ -661,7 +780,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 			m_pie->write("}");
 		}
 
-		if ((pAP->getProperty("font-size", szValue))
+		if ((pAP->getProperty("font-size", szValue) && !m_bInHeading)
 //		    || (pAP->getProperty("font-family", szValue))  // TODO
 			)
 		{
@@ -743,7 +862,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		}
 
 		if (
-			(pAP->getProperty("font-style", szValue))
+			(pAP->getProperty("font-style", szValue) && !m_bInHeading)
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
@@ -751,18 +870,30 @@ void s_LaTeX_Listener::_closeSpan(void)
 		}
 		
 		if (
-			(pAP->getProperty("font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue) && !m_bInHeading)
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
 			m_pie->write("}");
 		}
 
-		if (pAP->getProperty("font-family", szValue))
+		if (pAP->getProperty("font-family", szValue) && !m_bInHeading)
 		{
 			if (!UT_strcmp ("Symbol", szValue) ||
 				!UT_strcmp("Standard Symbols", szValue))
 				m_iInSymbol--;
+			if (!UT_strcmp("Courier", szValue) ||
+				!UT_strcmp("Courier New", szValue))
+			{
+				m_pie->write("}");
+				m_iInCourier--;
+			}
+			if (!UT_strcmp("Helvetic", szValue) ||
+				!UT_strcmp("Arial", szValue))
+			{
+				m_pie->write("}");
+				m_iInSansSerif--;
+			}
 		}
 
 		m_pAP_Span = NULL;
@@ -967,6 +1098,8 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_bInSpan = false;
 	m_bFirstSection = true;
 	m_iInSymbol = 0;
+	m_iInCourier = 0;
+	m_iInSansSerif = 0;
 
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
@@ -975,20 +1108,31 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("\n");
 
-	m_pie->write("\\documentclass[12pt]{article}\n");
-	m_pie->write("\\usepackage[T1]{fontenc}\n");
+	// If (documentclass == book), numbered headings begin with x.y.
+	// If (documentclass == article), there are no chapter headings
+	// TODO: Use correct paper settings from .abw.
+	m_pie->write("\\documentclass[12pt,a4letter]{article}\n");
+	// Better for ISO-8859-1 than previous: [T1] doesn't work very well
+	// TODO: Use inputenc from .abw.
+	m_pie->write("\\usepackage[latin1]{inputenc}\n");
 	m_pie->write("\\usepackage{calc}\n");
 	m_pie->write("\\usepackage{hyperref}");
 	m_pie->write("\\usepackage{setspace}\n");
+	m_pie->write("\\usepackage{graphicx}\n");
 	m_pie->write("\\usepackage{multicol}\n");
 	m_pie->write("\\usepackage[normalem]{ulem}\n");
+	// TODO: Use correct language from .abw.
+	m_pie->write("%% Please set your language here\n");
+	m_pie->write("\\usepackage[english]{babel}\n");
 	m_pie->write("\\usepackage{color}\n");
+
 	{
 	    const char* misc = XAP_EncodingManager::get_instance()->getTexPrologue();
 	    if (misc)
 		m_pie->write(misc);
 	}
 	m_pie->write("\n");
+	ChapterNumber = 1;
 	//	m_pie->write("\\begin{document}\n");  // I've to leave this step to the openSection, and that implies
 	//	m_pie->write("\n");                   // future problems when we will support several sections in the same doc...
 }
@@ -1035,6 +1179,7 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 			const XML_Char* szValue = NULL;
+			XML_Char * szImageName;
 
 			fd_Field* field = NULL;
 
@@ -1042,6 +1187,22 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 				// TODO we *could* insert the images and create separate GIF files.
+				// GIF (EPS,PNG...) files.
+				m_pie->write("\\includegraphics[height=");
+				pAP->getProperty("height", szValue);
+				m_pie->write(szValue);
+				pAP->getProperty("width", szValue);
+				m_pie->write(",width=");
+				m_pie->write(szValue);
+				m_pie->write("]{");
+				pAP->getAttribute("dataid", szValue);
+				szImageName = UT_strdup(szValue);
+				for (int i = strlen(szValue); szValue[i] != '_'; i--) {
+					szImageName[i - 1] = '\0';
+				}
+				m_pie->write(szImageName);
+				m_pie->write("}");
+
 				return true;
 
 			case PTO_Field:
@@ -1164,6 +1325,7 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	{
 		_closeSpan();
 		_closeBlock();
+		_closeParagraph();
 		_openParagraph(pcr->getIndexAP());
 		return true;
 	}
@@ -1308,10 +1470,10 @@ static int wvConvertUnicodeToLaTeX(U16 char16,char*& out)
 			printf("\\&"); /* MV 1.7.2000 */
 			return(1);
 		case 60:
-			printf("<");
+			printf("$<$");
 			return(1);
 		case 62:
-			printf(">");
+			printf("$>$");
 			return(1);
 
 		case 0xF8E7:	
@@ -2165,6 +2327,7 @@ static int wvConvertUnicodeToLaTeX(U16 char16,char*& out)
 			printf("\\euro");
                         /* No known implementation ;-)
 
+			TODO
                         Shouldn't we use the package 'eurofont'?
                         -- 2000-08-15 huftis@bigfoot.com 
                         */
