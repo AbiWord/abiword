@@ -1193,14 +1193,11 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	  Args.parsePoptOpts();
 #else
 	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, 
-												   LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv), 
-#if 0
-												   // TODO: we need to fill these things in
-												   GNOME_PARAM_APP_PREFIX, "/usr",
-												   GNOME_PARAM_APP_SYSCONFDIR, "/etc",
-												   GNOME_PARAM_APP_DATADIR,	"/usr/share/AbiWord",
-												   GNOME_PARAM_APP_LIBDIR, "/usr/lib/AbiWord",
-#endif
+												   LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv),
+												   GNOME_PARAM_APP_PREFIX, ABIWORD_PREFIX,
+												   GNOME_PARAM_APP_SYSCONFDIR, ABIWORD_SYSCONFDIR,
+												   GNOME_PARAM_APP_DATADIR,	ABIWORD_DATADIR,
+												   GNOME_PARAM_APP_LIBDIR, ABIWORD_APP_LIBDIR,
 												   GNOME_PARAM_POPT_TABLE, AP_Args::options, 
 												   GNOME_PARAM_NONE);
 

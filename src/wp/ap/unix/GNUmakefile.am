@@ -22,7 +22,11 @@ if WITH_GNOME
 #SUBDIRS = gnome
 endif
 
-INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
+INCLUDES= \
+	-DABIWORD_PREFIX=\""$(prefix)"\"			\
+	-DABIWORD_SYSCONFDIR=\""$(sysconfdir)"\"			\
+	-DABIWORD_DATADIR=\""$(datadir)"\"			\
+	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	-DABIWORD_APP_LIBDIR="\"$(ABIWORD_APP_LIBDIR)\"" \
 	-DABIWORD_PLUGINDIR="\"$(libdir)/AbiWord-2.0/plugins/\"" \
 	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
