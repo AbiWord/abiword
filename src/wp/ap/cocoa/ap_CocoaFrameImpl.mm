@@ -457,7 +457,7 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	[m_docAreaGRView release];
 	
 	pG = new GR_CocoaGraphics(m_docAreaGRView, pFrame->getApp());
-	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)pFrame);
 }
 
 
@@ -599,18 +599,21 @@ XAP_CocoaFrameController *AP_CocoaFrameImpl::_createController()
 bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
 {
 	// a static function
-	AP_CocoaFrame * pCocoaFrame = (AP_CocoaFrame *)param;
+	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(param);
 	if (!pCocoaFrame)
 		return false;
+	FV_View * pView = static_cast<FV_View *>(pCocoaFrame->getCurrentView());
 
-	UT_Rect rClip;
-	rClip.left = (UT_sint32)aRect->origin.x;
-	rClip.top = (UT_sint32)aRect->origin.y;
-	rClip.width = (UT_sint32)aRect->size.width;
-	rClip.height = (UT_sint32)aRect->size.height;
-	xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	if(pG != NULL)
-		pG->doRepaint(&rClip);
+	UT_DEBUGMSG(("AP_CocoaFrameImpl::_graphicsUpdateCB()\n"));
+	if(pView != NULL) {
+		UT_Rect rClip;
+		rClip.left = static_cast<UT_sint32>(rintf(pG->tlu(aRect->origin.x) + 1));
+		rClip.top = static_cast<UT_sint32>(rintf(pG->tlu(aRect->origin.y) + 1));
+		rClip.width = static_cast<UT_sint32>(rintf(pG->tlu(aRect->size.width)));
+		rClip.height = static_cast<UT_sint32>(rintf(pG->tlu(aRect->size.height)));
+		xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+		pView->draw(&rClip);
+	}
 	else
 		return false;
 	return true;
