@@ -114,10 +114,6 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 #endif
 	m_error = UT_OK;
 Cleanup:
-	if(m_error ==  UT_IE_BOGUSDOCUMENT)
-	  {
-	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	  }
 	return m_error;
 }
 
