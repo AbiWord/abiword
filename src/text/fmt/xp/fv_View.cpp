@@ -2550,14 +2550,12 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
   
 	if (!isSelectionEmpty())
 	{
-	  // m_pDoc->disableListUpdates();
+	        m_pDoc->disableListUpdates();
 
 		_deleteSelection();
 
 		// restore updates and clean up dirty lists
-		//m_pDoc->enableListUpdates();
-
-		_generalUpdate();
+		m_pDoc->enableListUpdates();
 		m_pDoc->updateDirtyLists();
 		_generalUpdate();
 
@@ -2645,8 +2643,7 @@ deleted.
 			// restore updates and clean up dirty lists
 			//	m_pDoc->enableListUpdates();
 			//m_pDoc->updateDirtyLists();
-			_generalUpdate();
-			m_pDoc->updateDirtyLists();
+
 			if(fontFlag)
 			  {
 			    setCharFormat(properties);
