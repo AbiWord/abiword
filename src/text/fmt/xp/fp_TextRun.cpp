@@ -1525,7 +1525,12 @@ bool fp_TextRun::recalcWidth(void)
 
 		UT_sint32 j,k;
 
-		for (UT_uint32 i = 0; i < getLength(); i++)
+		// the setFont() call is a major bottleneck; we will be better
+		// of runing two separate loops for screen and layout fonts
+		UT_uint32 i;
+		getGR()->setFont(_getLayoutFont());
+		
+		for (i = 0; i < getLength(); i++)
 		{
 			// this is a bit tricky, since we want the resulting width array in
 			// logical order, so if we reverse the draw buffer ourselves, we
@@ -1536,16 +1541,28 @@ bool fp_TextRun::recalcWidth(void)
 
 			if(s_bUseContextGlyphs)
 			{
-				getGR()->setFont(_getLayoutFont());
 				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsLayout + k);
-				getGR()->setFont(_getScreenFont());
-				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
+			}
+			_setWidthLayoutUnits(getWidthInLayoutUnits()+pCharWidthsLayout[k]);
+		}
 
+		getGR()->setFont(_getScreenFont());
+		for (i = 0; i < getLength(); i++)
+		{
+			// this is a bit tricky, since we want the resulting width array in
+			// logical order, so if we reverse the draw buffer ourselves, we
+			// have to address the draw buffer in reverse
+			j = bReverse ? getLength() - i - 1 : i;
+			//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? getLength() - i - 1: i;
+			k = i + getBlockOffset();
+
+			if(s_bUseContextGlyphs)
+			{
+				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
 			}
 			_setWidth(getWidth() + pCharWidthsDisplay[k]);
-			_setWidthLayoutUnits(getWidthInLayoutUnits()+pCharWidthsLayout[k]);
-
 		}
+		
 #endif // #ifndef WITH_PANGO
 
 		return true;
