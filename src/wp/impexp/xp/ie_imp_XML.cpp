@@ -507,7 +507,7 @@ void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 #ifdef HAVE_LIBXML2
 #include <libxml/parserInternals.h>
 
-static xmlEntityPtr _getEntity(void *user_data, const CHAR *name) {
+static xmlEntityPtr _getEntity(void *user_data, const xmlChar *name) {
       return xmlGetPredefinedEntity(name);
 }
 

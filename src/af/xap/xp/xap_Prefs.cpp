@@ -1411,7 +1411,7 @@ void XAP_Prefs::_sendPrefsSignal( UT_HashTable *hash  )
 #ifdef HAVE_LIBXML2
 #include <libxml/parserInternals.h>
 
-static xmlEntityPtr _getEntity(void *user_data, const CHAR *name) {
+static xmlEntityPtr _getEntity(void *user_data, const xmlChar *name) {
       return xmlGetPredefinedEntity(name);
 }
 
