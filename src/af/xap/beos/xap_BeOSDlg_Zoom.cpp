@@ -41,7 +41,7 @@ class ZoomWin:public BWindow {
 		void SetDlg(XAP_BeOSDialog_Zoom *brk);
 		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
 		virtual void MessageReceived(BMessage *msg);
-		void GetAnswer(XAP_BeOSDialog_Zoom::zoomType &ZoomType,UT_uint32 &ZoomPercent);
+		void GetAnswer(XAP_Frame::tZoomType &ZoomType,UT_uint32 &ZoomPercent);
 		
 		virtual bool QuitRequested();
 		
@@ -51,7 +51,7 @@ class ZoomWin:public BWindow {
 		GR_BeOSGraphics		*m_BeOSGraphics;
 		BTextControl 		*m_CustomText;	
 		UT_uint32		 m_CurrentPercent;
-		XAP_BeOSDialog_Zoom::zoomType	 m_CurrentType;
+		XAP_Frame::tZoomType	 m_CurrentType;
 		UT_Bool			 m_Okay;
 		
 		sem_id modalSem;
@@ -94,7 +94,7 @@ bool ZoomWin::QuitRequested()
 	return (false); // We can't quit twice, so, the little close box would fail if we didn't do this.
 }
 
-void ZoomWin::GetAnswer(XAP_BeOSDialog_Zoom::zoomType &ZoomType, UT_uint32 &ZoomPercent)
+void ZoomWin::GetAnswer(XAP_Frame::tZoomType &ZoomType, UT_uint32 &ZoomPercent)
 {
 	if (m_Okay==UT_TRUE)
 	{
