@@ -30,6 +30,9 @@ typedef enum
 	UPPERCASE_LIST,
 	LOWERROMAN_LIST,
 	UPPERROMAN_LIST,
+#ifdef BIDI_ENABLED
+	HEBREW_LIST,
+#endif
 	BULLETED_LIST,
 	DASHED_LIST,
 	SQUARE_LIST,
@@ -53,6 +56,7 @@ typedef enum
 #define  XML_UPPERCASE_LIST ((const XML_Char *) "Upper Case List")
 #define  XML_LOWERROMAN_LIST ((const XML_Char *) "Lower Roman List")
 #define  XML_UPPERROMAN_LIST ((const XML_Char *) "Upper Roman List")
+#define  XML_HEBREW_LIST ((const XML_Char *) "Hebrew List")
 #define  XML_BULLETED_LIST ((const XML_Char *) "Bullet List")
 #define  XML_DASHED_LIST ((const XML_Char *) "Dashed List")
 #define  XML_SQUARE_LIST ((const XML_Char *) "Square List")

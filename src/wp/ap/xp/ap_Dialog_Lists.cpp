@@ -40,6 +40,10 @@
 #include "ap_Preview_Paragraph.h"
 #include "xad_Document.h"
 
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
+
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 :	XAP_Dialog_Modeless(pDlgFactory, id),
 	m_pView(0),
@@ -400,6 +404,15 @@ void AP_Dialog_Lists::Apply(void)
  */
 void  AP_Dialog_Lists::fillUncustomizedValues(void)
 {
+	// if we can get the current font, we will use it where appropriate
+	// the "NULL" string does not work too well on Windows in numbered lists
+	const XML_Char** props_in = NULL;
+	const XML_Char * font_family;
+	if (getView()->getCharFormat(&props_in))
+		font_family = UT_getAttribute("font-family", props_in);
+	else
+		font_family =(const XML_Char *) "NULL";
+
 	if(m_NewListType == NOT_A_LIST)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
@@ -422,25 +435,34 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 
 	if( m_NewListType == NUMBERED_LIST)
 	{   
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L.");
 	}
 	else if( m_NewListType == LOWERCASE_LIST)
 	{   
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
 	}
 	else if( m_NewListType == UPPERCASE_LIST)
 	{   
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		m_iStartValue = 1;
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L)");
 	}
+#ifdef BIDI_ENABLED
+	else if( m_NewListType == HEBREW_LIST)
+	{   
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, font_family);
+		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) "");
+		m_iStartValue = 1;
+		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+	}
+#endif
 	else if( m_NewListType < BULLETED_LIST)
 	{   
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
@@ -466,6 +488,9 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
+
+	if(props_in)
+		free(props_in);
 }
 
 /*!
@@ -991,6 +1016,7 @@ void AP_Lists_preview::draw(void)
 	UT_sint32 iWidth = getWindowWidth();
 	UT_sint32 iHeight = getWindowHeight();
 	UT_UCSChar ucs_label[50];
+	
 	//
 	// we draw at 16 points in this preview
 	//
@@ -1049,7 +1075,9 @@ void AP_Lists_preview::draw(void)
 			{
 				ucs_label[j] = *lv++;
 			}
+			
 			ucs_label[len] = NULL;
+
 			len = UT_UCS_strlen(ucs_label);
 			yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/4;
 			//    m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
@@ -1068,8 +1096,10 @@ void AP_Lists_preview::draw(void)
         // UT_sint32 vspace = (iHeight - 2*yoff -iFont)*i/16;
 	z = (float)((fwidth - 2.0*static_cast<float>(xoff)) /(float)pagew);
 	UT_sint32 ialign = static_cast<UT_sint32>( z*m_fAlign);
+
 	xx = xoff + ialign;
 	xy = xoff + ialign;
+	
 	if(xx < (xoff + maxw + indent))
 		xy = xoff + maxw + indent + 1;
 	ii = 0;
@@ -1086,6 +1116,11 @@ void AP_Lists_preview::draw(void)
 	//
 	// Now finally draw the preview
 	//
+	
+#ifdef BIDI_ENABLED
+	FriBidiCharType iDirection = getLists()->getBlock()->getDominantDirection();
+#endif
+	
 	for(i=0; i<8; i++)
 	{
 		//
@@ -1103,22 +1138,67 @@ void AP_Lists_preview::draw(void)
 			if(lv != NULL) 
 			{
 				len = UT_MIN(UT_UCS_strlen(lv),51);
-				for(j=0; j<=len;j++)
+#ifdef BIDI_ENABLED
+				if(len > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
 				{
-					ucs_label[j] = *lv++;
+					FriBidiChar * fLogStr = new FriBidiChar[len];
+					FriBidiChar * fVisStr = new FriBidiChar[len];
+					UT_ASSERT(fLogStr && fVisStr);
+			
+					for(j=0; j<=len;j++)
+						fLogStr[j] = lv[j];
+				
+					fribidi_log2vis(/* input */
+			    		 fLogStr,
+					     len,
+					     &iDirection,
+					     /* output */
+					     fVisStr,
+					     NULL,
+					     NULL,
+					     NULL
+					     );
+
+					for(j=0; j<=len;j++)
+						ucs_label[j] = (UT_UCSChar)fVisStr[j];
+				
+					delete [] fLogStr;
+					delete [] fVisStr;
 				}
+				else
+#endif
+				{
+					for(j=0; j<=len;j++)
+						ucs_label[j] = *lv++;
+				}
+				
 				ucs_label[len] = NULL;
 				len = UT_UCS_strlen(ucs_label);
 				yloc = yoff + iAscent + (iHeight - 2*yoff -iFont)*i/8;
-				m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
+#ifdef BIDI_ENABLED
+				if(iDirection == FRIBIDI_TYPE_RTL)
+					m_gc->drawChars(ucs_label,0,len,iWidth - xoff - indent - maxw,yloc);
+				else
+#endif
+					m_gc->drawChars(ucs_label,0,len,xoff+indent,yloc);
 				yy = m_iLine_pos[i];
 				awidth = iWidth - 2*xoff - xy;
-				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
+#ifdef BIDI_ENABLED
+				if(iDirection == FRIBIDI_TYPE_RTL)
+					m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
+				else
+#endif
+					m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 			else
 			{
 				yy = m_iLine_pos[i];
 				awidth = iWidth - 2*xoff - xy;
+#ifdef BIDI_ENABLED
+			if(iDirection == FRIBIDI_TYPE_RTL)
+				m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
+			else
+#endif
 				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 			}
 		}
@@ -1126,7 +1206,12 @@ void AP_Lists_preview::draw(void)
 		{
 			yy = m_iLine_pos[i];
 			awidth = iWidth - 2*xoff - xx;
-			m_gc->fillRect(clrGrey,xx,yy,awidth,aheight);
+#ifdef BIDI_ENABLED
+			if(iDirection == FRIBIDI_TYPE_RTL)
+				m_gc->fillRect(clrGrey,xoff,yy,awidth,aheight);
+			else
+#endif
+				m_gc->fillRect(clrGrey,xy,yy,awidth,aheight);
 		}
 	}
 

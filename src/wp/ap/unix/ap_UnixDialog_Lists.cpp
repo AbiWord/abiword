@@ -84,6 +84,9 @@ static void s_styleChangedNone (GtkWidget * widget, AP_UnixDialog_Lists * me)
 static void s_styleChangedBullet (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
   	me->setDirty();
+#ifdef BIDI_ENABLED
+	me->fillUncustomizedValues(); // Use defaults to start.
+#endif
 	me->styleChanged ( 1 );
 }
 
@@ -91,6 +94,9 @@ static void s_styleChangedBullet (GtkWidget * widget, AP_UnixDialog_Lists * me)
 static void s_styleChangedNumbered (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
   	me->setDirty();
+#ifdef BIDI_ENABLED
+	me->fillUncustomizedValues(); // Use defaults to start.
+#endif
 	me->styleChanged ( 2 );
 }
 
@@ -1049,6 +1055,18 @@ void AP_UnixDialog_Lists::_fillNumberedStyleMenu( GtkWidget *listmenu)
 	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
 	gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
 						GTK_SIGNAL_FUNC (s_typeChanged), this);
+
+#ifdef BIDI_ENABLED
+	glade_menuitem = gtk_menu_item_new_with_label (
+		pSS->getValue(AP_STRING_ID_DLG_Lists_Hebrew_List));
+	gtk_widget_show (glade_menuitem);
+	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
+		(gint) HEBREW_LIST));
+	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
+	gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
+						GTK_SIGNAL_FUNC (s_typeChanged), this);
+#endif
+
 }
 
 

@@ -392,7 +392,11 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
 		break;
-
+#ifdef BIDI_ENABLED
+	case HEBREW_LIST:
+		dec2hebrew(labelStr,insPoint,place);
+		break;
+#endif
 	case BULLETED_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xb7; // was UCS_BULLET;
 		break;
@@ -1090,7 +1094,70 @@ char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset)
 	
 	return UT_strdup(ascii);
 }
+#ifdef BIDI_ENABLED
+void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value)
+{
+	UT_UCSChar gHebrewDigit[22] = 
+	{
+		//   1       2       3       4       5       6       7       8       9
+		0x05D0, 0x05D1, 0x05D2, 0x05D3, 0x05D4, 0x05D5, 0x05D6, 0x05D7, 0x05D8,
+		//  10      20      30      40      50      60      70      80      90
+		0x05D9, 0x05DB, 0x05DC, 0x05DE, 0x05E0, 0x05E1, 0x05E2, 0x05E4, 0x05E6,
+		// 100     200     300     400
+		0x05E7, 0x05E8, 0x05E9, 0x05EA
+	};
 
+	bool outputSep = false;
+	UT_UCSChar digit;
+	do
+ 	{
+		UT_sint32 n3 = value % 1000;
+
+		if(outputSep)
+			labelStr[(*insPoint)++] = 0x0020; // output thousand seperator
+		outputSep = ( n3 > 0); // request to output thousand seperator next time.
+
+		// Process digit for 100 - 900
+		for(UT_sint32 n1 = 400; n1 > 0; )
+		{
+			if( n3 >= n1)
+			{
+				n3 -= n1;
+				labelStr[(*insPoint)++] = gHebrewDigit[(n1/100)-1+18];
+			} else {
+				n1 -= 100;
+			} // if
+		} // for
+
+		// Process digit for 10 - 90
+		UT_sint32 n2;
+		if( n3 >= 10 )
+		{
+			// Special process for 15 and 16
+			if(( 15 == n3 ) || (16 == n3)) {
+				// Special rule for religious reason...
+				// 15 is represented by 9 and 6, not 10 and 5
+				// 16 is represented by 9 and 7, not 10 and 6
+				n2 = 9;
+				digit = gHebrewDigit[ n2 - 1];    
+			} else {
+				n2 = n3 - (n3 % 10);
+				digit = gHebrewDigit[(n2/10)-1+9];
+			} // if
+
+			n3 -= n2;
+			labelStr[(*insPoint)++] = digit;
+		} // if
+  
+		// Process digit for 1 - 9 
+		if ( n3 > 0)
+		{
+			labelStr[(*insPoint)++] = gHebrewDigit[n3-1];
+		} // if
+		value /= 1000;
+	} while (value >= 1);
+}
+#endif
 const char ** fl_AutoNum::getAttributes(void) 
 {
 	static char  szID[15], szPid[15], szType[5], szStart[5];

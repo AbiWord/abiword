@@ -112,7 +112,9 @@ public:
 	UT_uint32					getParentID() const { return m_iParentID; }
 	static char *				dec2roman(UT_sint32 value, bool lower);
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
-	
+#ifdef BIDI_ENABLED
+	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
+#endif
 	const char **				getAttributes(void) ;
 	
 protected:

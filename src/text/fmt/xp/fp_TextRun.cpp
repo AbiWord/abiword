@@ -1257,24 +1257,30 @@ bool fp_TextRun::recalcWidth(void)
 		
 		bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
 	  		|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
-		 	
-	 	UT_sint32 j;
+		
+	 	UT_sint32 j,k;
 	 	
 		for (UT_uint32 i = 0; i < m_iLen; i++)
 		{
+			// this is a bit tricky, since we want the resulting widht array in
+			// visual order, so (1) if we reverse the draw buffer ourselves, we
+			// have to address the draw buffer in reverse (2) if we do not reverse
+			// the draw buffer but the OS does, we have to address the width array in reverse
 			j = bReverse ? m_iLen - i - 1 : i;
+			k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? m_iLen - i - 1: i;
+		    k += m_iOffsetFirst;
 		
 			if(s_bUseContextGlyphs)
 			{
 				m_pG->setFont(m_pLayoutFont);
-				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsLayout + m_iOffsetFirst + i);
+				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsLayout + k);
 					
 				m_pG->setFont(m_pScreenFont);
-				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsDisplay + m_iOffsetFirst + i);
+				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsDisplay + k);
 				
 			}
-				m_iWidth += pCharWidthsDisplay[i + m_iOffsetFirst];
-				m_iWidthLayoutUnits += pCharWidthsLayout[i + m_iOffsetFirst];
+				m_iWidth += pCharWidthsDisplay[k];
+				m_iWidthLayoutUnits += pCharWidthsLayout[k];
 
 		}
 		

@@ -2647,7 +2647,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 		UT_uint32 iLen = UT_UCS_strlen(p_new_value);
 		iLen = UT_MIN(iLen,FPFIELD_MAX_LENGTH);
 
-		if(iLen > 1)
+		if(iLen > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
 		{
 			FriBidiChar * fVisStr = new FriBidiChar[iLen];
 			FriBidiChar * fLogStr = new FriBidiChar[iLen];
