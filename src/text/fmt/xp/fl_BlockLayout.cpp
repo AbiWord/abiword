@@ -825,6 +825,8 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 		pRun = pRun->getNext();
 	}
 
+	UT_ASSERT(m_pFirstRun);				// TODO eric, can you look at this
+	
 	if (iRelOffset < m_pFirstRun->getBlockOffset())
 	{
 		m_pFirstRun->findPointCoords(iRelOffset, x, y, height);
