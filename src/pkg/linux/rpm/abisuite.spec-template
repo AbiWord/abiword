@@ -82,6 +82,14 @@ chmod 0644 /usr/share/pixmaps/abiword*
 chown root.root /usr/share/gnome/apps/Applications/abiword.desktop
 chmod 0644 /usr/share/gnome/apps/Applications/abiword.desktop
 
+%post
+/usr/sbin/chkfontpath -q -a /usr/share/abisuite/fonts
+
+%postun
+if [ "$1" = "0" ]; then
+        /usr/sbin/chkfontpath -q -r /usr/share/abisuite/fonts
+fi
+
 %files
 /usr/bin/AbiWord
 /usr/bin/abiword
